@@ -96,6 +96,7 @@ class ImageList
 		{
 			$this->images[$i]=new GridImage;
 			$this->images[$i]->loadFromRecordset($recordSet);
+			$this->images[$i]->compact();
 			$recordSet->MoveNext();
 			$i++;
 		}
@@ -138,6 +139,7 @@ class ImageList
 		{
 			$this->images[$i]=new GridImage;
 			$this->images[$i]->loadFromRecordset($recordSet);
+			$this->images[$i]->compact();
 			$recordSet->MoveNext();
 			$i++;
 		}
@@ -149,9 +151,10 @@ class ImageList
 
 	
 	/**
-	* get image list for particular area...
+	* get image list or count for particular area...
+	* @access private
 	*/
-	function getImagesByArea($left,$right,$top,$bottom,$reference_index=null)
+	function _getImagesByArea($left,$right,$top,$bottom,$reference_index=null, $count_only=true)
 	{
 		$db=&$this->_getDB();
 
@@ -170,7 +173,9 @@ class ImageList
 		if (!is_null($reference_index))
 			$rfilter="and gridsquare.reference_index=$reference_index";
 		
-		$sql="select gridimage.*,user.realname ".
+		$cols=$count_only?"count(*) as cnt":"gridimage.*,user.realname";
+		
+		$sql="select $cols ".
 			"from gridimage ".
 			"inner join user using(user_id) ".
 			"inner join gridsquare on(gridimage.gridsquare_id=gridsquare.gridsquare_id) ".
@@ -179,20 +184,46 @@ class ImageList
 			"y between $t and $b ".
 			"$rfilter $orderby $limit";
 		
-			
 		$this->images=array();
-		$i=0;
-		$recordSet = &$db->Execute($sql);
-		while (!$recordSet->EOF) 
+		if ($count_only)
 		{
-			$this->images[$i]=new GridImage;
-			$this->images[$i]->loadFromRecordset($recordSet);
-			$recordSet->MoveNext();
-			$i++;
+			$count=$db->GetOne($sql);
 		}
-		$recordSet->Close(); 
-
-		return $i;
+		else
+		{
+			$count=0;
+			$recordSet = &$db->Execute($sql);
+			while (!$recordSet->EOF) 
+			{
+				$this->images[$count]=new GridImage;
+				$this->images[$count]->loadFromRecordset($recordSet);
+				$this->images[$count]->compact();
+				$recordSet->MoveNext();
+				$count++;
+			}
+			$recordSet->Close(); 
+		}
+		
+		return $count;
+	}
+	
+	/**
+	* get image list for particular area...
+	* @access public
+	*/
+	function getImagesByArea($left,$right,$top,$bottom,$reference_index=null)
+	{
+		return $this->_getImagesByArea($left,$right,$top,$bottom,$reference_index, false);
+	}
+	
+	
+	/**
+	* get image count for particular area...
+	* @access public
+	*/
+	function countImagesByArea($left,$right,$top,$bottom,$reference_index=null)
+	{
+		return $this->_getImagesByArea($left,$right,$top,$bottom,$reference_index, true);
 	}
 	
 	/**
