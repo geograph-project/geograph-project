@@ -43,43 +43,37 @@ class GridShader
 	var $db=null;
 	
 	/**
-	* internal function returns array of grid references by looking for
+	* internal function returns the grid reference by looking for
 	* suitable gridsquares in the gridprefix table.
 	*/
-	function _getGridRefs($x, $y)
+	function _getGridRef($x, $y, $reference_index)
 	{
-		$refs=array();
-		
-		//initialise refs with some dummy references - we guarantee to return something!
-		$dummy_ref=sprintf("#%d#%d", $x,$y);
-		$refs[1]=$dummy_ref;
-		$refs[2]=$dummy_ref;
+		$gridref="";
 		
 		//find all grid boxes in which the coordinate falls
-		$sql="select reference_index,prefix,origin_x,origin_y from gridprefix where ".
+		$sql="select prefix,origin_x,origin_y from gridprefix where ".
 			"$x between origin_x and (origin_x+width-1) and ".
-			"$y between origin_y and (origin_y+height-1)";
+			"$y between origin_y and (origin_y+height-1) and ".
+			"reference_index=$reference_index";
 		
 		$recordSet = &$this->db->Execute($sql);
-		while (!$recordSet->EOF) 
+		if (!$recordSet->EOF) 
 		{
-			$idx=$recordSet->fields[0];
-			$refs[$idx]=sprintf("%s%02d%02d", 
-				$recordSet->fields[1],
-				$x-$recordSet->fields[2],
-				$y-$recordSet->fields[3]);
+			$gridref=sprintf("%s%02d%02d", 
+				$recordSet->fields[0],
+				$x-$recordSet->fields[1],
+				$y-$recordSet->fields[2]);
 			
-			$recordSet->MoveNext();
 		}
 		$recordSet->Close(); 
 		
-		return $refs;
+		return $gridref;
 	}
 	
 	/**
 	* adds or updates squares
 	*/
-	function process($imgfile, $x_offset, $y_offset)
+	function process($imgfile, $x_offset, $y_offset, $reference_index, $clearexisting)
 	{
 		if (file_exists($imgfile))
 		{
@@ -125,17 +119,24 @@ class GridShader
 						$gridx=$x_offset + $imgx;
 						$gridy=$y_offset + ($imgh-$imgy-1);
 						
+						$gridref=$this->_getGridRef($gridx,$gridy,$reference_index);
+
 						//$this->_trace("img($imgx,$imgy) = grid($gridx,$gridy) $percent_land%");
 						
 						//ok, that's everything we need - can we obtain an existing grid square
-						$square = $this->db->GetRow("select grid_id,percent_land from gridsquare where x='$gridx' and y='$gridy'");	
+						$square = $this->db->GetRow("select gridsquare_id,percent_land from gridsquare where x='$gridx' and y='$gridy'");	
 						
 						
 						if (is_array($square) && count($square))
 						{
-							if ($square['percent_land']!=$percent_land)
+							if (($square['percent_land']!=$percent_land) &&
+							    ($clearexisting || ($square['percent_land']==0)))
 							{
-								$sql="update gridsquare set percent_land='$percent_land' where gridsquare_id={$square['gridsquare_id']}";
+								
+								$sql="update gridsquare set grid_reference='{$gridref}', ".
+									"reference_index='$reference_index', ".
+									"percent_land='$percent_land' ".
+									"where gridsquare_id={$square['gridsquare_id']}";
 								$this->db->Execute($sql);
 								$updated++;
 							}
@@ -149,12 +150,8 @@ class GridShader
 							//we only create squares for land
 							if ($percent_land>0)
 							{
-								//we don't have a gridsquare for this coordinate, so we must create one with a dummy
-								//grid reference
-								$gridrefs=$this->_getGridRefs($gridx,$gridy);
-
-								$sql="insert into gridsquare (grid_reference1,grid_reference2,x,y,percent_land) ".
-									"values('{$gridrefs[1]}','{$gridrefs[2]}',$gridx,$gridy,$percent_land)";
+								$sql="insert into gridsquare (grid_reference,reference_index,x,y,percent_land) ".
+									"values('{$gridref}','{$reference_index}',$gridx,$gridy,$percent_land)";
 								$this->db->Execute($sql);
 
 								$created++;
@@ -185,6 +182,7 @@ class GridShader
 					$count=$this->db->GetOne("select count(*) from gridsquare where ".
 						"x between $minx and $maxx and ".
 						"y between $miny and $maxy and ".
+						"reference_index={$prefix['reference_index']} and ".
 						"percent_land>0");
 
 					//$this->_trace("{$prefix['prefix']} $minx,$miny to $maxx,$maxy has $count");
