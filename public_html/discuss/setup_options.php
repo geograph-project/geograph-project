@@ -28,9 +28,9 @@ $skin='default';
 $main_url='http://'.$_SERVER['HTTP_HOST'].'/discuss';
 $sitename='discuss';
 $emailadmin=0;
-$emailusers=0;
+$emailusers=1;
 $userRegName='_A-Za-z0-9 ';
-$l_sepr='<span style="color:#006699">°</span>';
+$l_sepr='<span style="color:#006699">&nbsp;-&nbsp;</span>';
 
 $post_text_maxlength=10240;
 $post_word_maxlength=70;
