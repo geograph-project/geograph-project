@@ -14,6 +14,11 @@
 {elseif $confirmation_ok}
 	<p>Congratulations - your registration is complete. We 
 	hope you'll enjoy contributing!</p>
+	
+	<p>You should now <a title="view your profile" href="/profile.php">view your profile</a>
+	to configure your site preferences.
+
+	</p>
 
 {elseif $confirmation_failed}
 	<p>Sorry, there was a problem confirming your registration.
