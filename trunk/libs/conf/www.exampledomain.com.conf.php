@@ -21,4 +21,9 @@ $CONF['smarty_debugging']=1;
 //disable caching for everyday development
 $CONF['smarty_caching']=0;
 
+//email address to send messages to
+$CONF['contact_email']='lordelph@gmail.com,editor@geocachingtoday.com';
+
+//secret string used for registration confirmation hash
+$CONF['register_confirmation_secret']='CHANGETHIS';
 ?>
