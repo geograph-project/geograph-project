@@ -49,6 +49,8 @@ create table gridprefix
 
 );
 
+alter table gridprefix add column landcount int default '0';
+
 #OSGB Grid
 #set up grids from bottom to top
 replace into gridprefix(prefix, reference_index, origin_x,origin_y) values
