@@ -98,7 +98,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign_by_ref('mosaic', $images);
 	
 	//for debugging pass the entire mosaic object
-	if ($CONF['smarty_debugging'])
+	//if ($CONF['smarty_debugging'])
 		$smarty->assign_by_ref('mosaicobj', $mosaic);
 	
 	
