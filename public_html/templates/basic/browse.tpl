@@ -62,7 +62,16 @@ we'll tell you how far away the nearest one is...</p>
 		{foreach from=$images item=image}
 		
 		  <div style="float:left;" class="photo33"><a title="view full size image" href="view.php?id={$image->gridimage_id}">{$image->getThumbnail(213,160)}</a>
-		  <div class="caption"><a title="view full size image" href="/view.php?id={$image->gridimage_id}">{$image->title|escape:'html'}</a></div></div>
+		  <div class="caption"><a title="view full size image" href="/view.php?id={$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
+		  
+		  {if $is_admin}
+			  <div class="caption">status: {$image->moderation_status}
+			  {if $image->ftf}(FTF){/if}
+			  </div>
+		  {/if}
+		  
+		  
+		  </div>
 		  
 		  
 		{/foreach}
