@@ -225,6 +225,7 @@ div.copyright
 }
 div.caption
 {
+	clear:left;
 	font-size:0.8em;
 }
 
@@ -246,24 +247,30 @@ div.photolandscape
 	margin:10px;
 }
 
+.img-shadow img {
+  border: 1px solid #a9a9a9;
+  padding: 4px;
+  }
+
 /* kudos to http://www.alistapart.com/articles/cssdropshadows/*/
+/* doesn't work in IE on our layout...*/  
+ /*
 .img-shadow {
-	float:left;
-	background: url(/templates/basic/img/shadow.gif) no-repeat bottom right;
-	margin: 10px 0 0 10px !important;
-	margin: 10px 0 0 5px;
-}
+  float:left;
+  background: url(/templates/basic/img/shadow.gif) no-repeat bottom right;
+  margin: 10px 0 0 10px !important;
+  margin: 10px 0 0 5px;
+  }
 
 .img-shadow img {
-	display: block;
-	position: relative;
-	background-color: #fff;
-	border: 1px solid #a9a9a9;
-	margin: -6px 6px 6px -6px;
-	padding: 4px;
-}
-
-
+  display: block;
+  position: relative;
+  background-color: #fff;
+  border: 1px solid #a9a9a9;
+  margin: -6px 6px 6px -6px;
+  padding: 4px;
+  }
+*/
 
 
 
