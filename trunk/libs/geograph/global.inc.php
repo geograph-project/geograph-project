@@ -102,6 +102,10 @@ class GeographPage extends Smarty
 		$this->assign_by_ref('http_host', $_SERVER['HTTP_HOST']);
 		$this->assign_by_ref('script_name', $_SERVER['SCRIPT_NAME']);
 		$this->assign_by_ref('script_uri', $_SERVER['REQUEST_URI']);
+		$this->assign_by_ref('searchq', $_SESSION['searchq']);
+		
+		
+		
 		$this->assign('session_id', session_id());
 		
 		
