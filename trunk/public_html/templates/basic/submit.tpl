@@ -43,7 +43,7 @@ If you're new, you may like to check our <a href="/help/guide">guide to geograph
 		<p><label for="gridreference">Grid Reference</label>
 		<input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="12"/>
 		<input type="submit" name="setpos" value="Next &gt;"/><br/>
-		<small>You might find <A HREF='http://www.trigpointinguk.com/info/convert-wgs.php' onClick="window.open(href,'wgs','height=300,width=600,status,scrollbars');return false;" TARGET=_blank>WGS84 Lat/Long to OSGB36 Grid Ref</A> Popup useful.</small></p>
+		<small>You might find <a href='http://www.trigpointinguk.com/info/convert-wgs.php' onClick="window.open(href,'wgs','height=300,width=600,status,scrollbars');return false;" target="_blank">WGS84 Lat/Long to OSGB36 Grid Ref</a> Popup useful.</small></p>
 		
 		<p>The corresponding geograph grid square will be automatically selected.</p>
 		
