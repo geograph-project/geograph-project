@@ -238,6 +238,19 @@ class GridImage
 	}
 	
 	/**
+	* trim members to make object as small as possible
+	*/
+	function compact()
+	{
+		unset($this->db);
+		unset($this->exif);
+		if (is_object($this->grid_square))
+		{
+			unset($this->grid_square->db);
+		}
+	}
+	
+	/**
 	* assign members from gridimage_id
 	*/
 	function loadFromId($gridimage_id)
