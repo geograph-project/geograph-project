@@ -34,8 +34,8 @@ $l_sub_tpc='topic';
 $l_sub_msg='message';
 $l_sub_name='Name';
 $l_sub_pass='Password';
-$l_sub_post_msg='Login/Post message';
-$l_sub_post_tpc='Login/Post topic';
+$l_sub_post_msg='Post message';
+$l_sub_post_tpc='Post topic';
 
 $l_emptyTopic='Simply a topic';
 $l_topicTitle='Topic title';
@@ -180,8 +180,8 @@ $l_topicTitleUpdated='Topic title was updated.';
 $l_onlyAdminCanEdit='This post was edited or censored by admin previously. You can not edit it anymore!';
 $l_topicTextUpdated='Post text was updated.';
 
-$l_disableBbCode='Disable';
-$l_whatIsIt='What`s that?';
+$l_disableBbCode='Disable formatting';
+$l_whatIsIt='[help]';
 
 $l_moveTopic='Move topic';
 
