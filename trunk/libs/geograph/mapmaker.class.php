@@ -113,7 +113,7 @@ class MapMaker
 				if ($scale > 5) 
 					imagesetpixel($img, $imgx, $imgy, $dotcolor);
 				else 
-					imagefilledrectangle ( $img, $imgx-1, $imgy+1, $imgx+1, $imgy-1, $dotcolor);
+					imagefilledrectangle ( $img, $imgx-2, $imgy-2, $imgx+2, $imgy+2, $dotcolor);
 			} else {
 				imagesetpixel($img, $imgx, $imgy, $land[$recordSet->fields[2]]);
 			}
