@@ -34,7 +34,7 @@ header("Content-Disposition: attachment; filename=\"geograph.csv\"");
 
 $images=new ImageList;
 
-$count=$images->getImages(array('accepted','pending'));
+$count=$images->getImages(array('accepted','geograph'));
 if ($count>0)
 {
 	echo "Id,Name,Grid Ref,Submitter\n";
