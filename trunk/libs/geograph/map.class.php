@@ -31,6 +31,11 @@
 * @version $Revision$
 */
 
+/**
+* Needs the Token class, so we pull that in here
+*/
+require_once('geograph/token.class.php');
+
 
 /**
 * Geograph Map class
