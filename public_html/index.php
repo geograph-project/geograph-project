@@ -22,14 +22,10 @@
  */
 
 require_once('geograph/global.inc.php');
-
 init_session();
 
 
-
-
-$smarty = new GeoGraphPage;
-
+$smarty = new GeographPage;
 $smarty->display("homepage.tpl");
 
 	
