@@ -77,6 +77,23 @@ else
 	fail($inc.' should be on include path');
 }
 
+//pull in the exampledomain, it contains all configuration settings
+include('conf/www.exampledomain.com.conf.php');
+$example=$CONF;
+unset($CONF);
+
+//try and include the real configuration
+include('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
+
+//check everything is set
+foreach($example as $name=>$value)
+{
+	if (!isset($CONF[$name]))
+	{
+		fail("Your domain configuration file has no \$CONF['$name'] entry - see www.exampledomain.com.conf.php for an example");
+	}
+}
+
 //////////////////////////////////////////////////////////////////
 // directory permissions
 
@@ -94,6 +111,10 @@ if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/basic/compiled'))
 
 if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/basic/cache'))
 	fail('public_html/templates/basic/cache not writable - REQUIRED');
+
+if (!is_writable($CONF['adodb_cache_dir']))
+	fail('$CONF[\'adodb_cache_dir\'] ('.$CONF['adodb_cache_dir'].') not writable - REQUIRED');
+
 
 //show some diagnostics if not ok...
 if (!$ok)
