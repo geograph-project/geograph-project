@@ -5,7 +5,13 @@
 
     <form enctype="multipart/form-data" action="{$script_name}" method="post">
 
-{if $step eq 1}<h2>Submit Step 1 of 4 : Choose grid square</h2>{/if}
+{if $step eq 1}<h2>Submit Step 1 of 4 : Choose grid square</h2>
+
+<p>Begin by choosing the grid square you wish to submit. If you're new,
+you may like to check our <a href="/help/guide">guide to geographing</a> first.</p>
+
+{/if}
+
 {if $step eq 2}<h2>Submit Step 2 of 4 : Upload photo for {$gridref}</h2>{/if}
 
 {if $step lt 3}	
@@ -50,6 +56,9 @@
 		<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}!</p>
 	{/if}
 	
+	<p>You might like to check you've selected the correct square by
+	viewing the {getamap gridref=$gridref text="OS Map for $gridref"}</p>
+	
 	<label for="jpeg">JPEG Image File</label>
 	<input id="jpeg" name="jpeg" type="file" />
 	{if $error}<br /><p>{$error}</p>{/if}
@@ -68,8 +77,30 @@ Below is a full-size preview of the image we will store for grid reference
 <img src="{$preview_url}" width="{$preview_width}" height="{$preview_height}">
 <br/><br/>
 
-<p>If you like, you can provide a little extra information about the image and
-where or how it was taken (you'll be able to edit this later if you prefer)</p>
+<h3>Is the image a &quot;geograph&quot;?</h3>
+<p>If you're the first to submit a proper &quot;geograph&quot; for {$gridref}
+you'll get a geograph point added to your profile and the warm glow that comes
+with it. So what makes an image a genuine geograph?</p>
+<ul>
+<li>The image must be taken within grid square {getamap gridref=$gridref}</li>
+<li>You must clearly show at close range one of the main geographical features within the square</li>
+<li>You should include a short description relating the image to the map square</li>
+</ul>
+
+<p>Good quality, visually appealing and historically relevant pictures (eg wide area views
+covering many square kilometers) may also be accepted as secondary images 
+for {$gridref} provided they are accurately located, but may not qualify as geographs.
+.</p>
+
+<p>If you like, you can provide more images or extra information (which
+can be edited at any time) but to activate a square you need to be first to meet the
+criteria above!</p>
+
+
+
+<h3>Title and comments</h3>
+<p>Please provide a short title for the image, and any other comments about where
+it was taken or other interesting geographical information.</p>
 
 <label for="title">Title</label><br/>
 <input size="50" id="title" name="title" value="" />
