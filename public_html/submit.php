@@ -56,7 +56,17 @@ $smarty->assign('kmlist', $square->getKMList());
 if (isset($_POST['gridsquare']))
 {
 	//ensure the submitted reference is valid
-	$ok= $square->setGridPos($_POST['gridsquare'], $_POST['eastings'], $_POST['northings']);
+	if (!empty($_POST['gridreference'])) 
+	{
+		$ok= $square->setByFullGridRef($_POST['gridreference']);
+		
+		//preserve inputs in smarty
+		$smarty->assign('gridreference', $_POST['gridreference']);	
+	} 
+	else 
+	{
+		$ok= $square->setGridPos($_POST['gridsquare'], $_POST['eastings'], $_POST['northings']);
+	}
 	if ($ok)
 	{
 		$uploadmanager->setSquare($square);
