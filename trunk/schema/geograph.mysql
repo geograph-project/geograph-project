@@ -271,3 +271,15 @@ create table sessions
 	DATA text not null,
 	primary key (sesskey)
 );
+
+
+#
+# 07-Mar-2005 Paul - added title for grid square
+#
+alter table gridprefix add column title varchar(128);
+update gridprefix set title=concat('GB grid square ', prefix) 
+where reference_index=1 and title is null;
+update gridprefix set title=concat('Irish grid square ', prefix) 
+where reference_index=2 and title is null;
+
+
