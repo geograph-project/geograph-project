@@ -104,7 +104,7 @@ with it. So what makes an image a genuine geograph?</p>
 </ul>
 
 <p>Good quality, visually appealing and historically relevant pictures (eg wide area views
-covering many square kilometers) may also be accepted as secondary images 
+covering many square kilometers) may also be accepted as supplemental images 
 for {$gridref} provided they are accurately located, but may not qualify as geographs.
 .</p>
 
@@ -134,14 +134,39 @@ it was taken or other interesting geographical information.</p>
 
 <p>Please provide the following information to help us better classify the images in the geograph database.</p>
 
-<p><label for="imageclass">Image Subject</label>	
-	<select id="imageclass" name="imageclass">
+{literal}
+<script type="text/javascript">
+<!--
+function onChangeImageclass()
+{
+	var sel=document.getElementById('imageclass');
+	var idx=sel.selectedIndex;
+	
+	var isOther=idx==sel.options.length-1
+
+	
+	var otherblock=document.getElementById('otherblock');
+	otherblock.style.display=isOther?'block':'none';
+	
+}
+
+
+//-->
+</script>
+{/literal}
+
+<p><label for="imageclass">Primary geographical feature</label>	
+	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()">
 		{html_options options=$classes selected=$imageclass}
 	</select>
-	(<label for="imageclassother">Other</label> 
-	<input size="32" id="imageclassother" name="imageclassother" value="" maxlength="32"/>)</p>
 	
-<p>Date picture taken
+	<div id="otherblock" {if $imageclass ne 'Other'}style="display:none;"{else}style="display:block;"{/if}>
+
+	<label for="imageclassother">Please specify feature</label> 
+	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32"/></p>
+	</div>
+	
+<p><label>Date picture taken</label>
 	{html_select_date prefix="imagetaken" time=$imagetaken start_year="-200" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
 	{if $imagetakenmessage}
 	    {$imagetakenmessage}
