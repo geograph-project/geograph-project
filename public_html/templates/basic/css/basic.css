@@ -233,7 +233,6 @@ div.photoportrait
 {
 	width:500px;
 	padding:10px;
-	border: silver 1px solid;
 	text-align:center;
 	margin:10px;
 }
@@ -243,7 +242,6 @@ div.photolandscape
 {
 	width:660px;
 	padding:10px;
-	border: silver 1px solid;
 	text-align:center;
 	margin:10px;
 }
