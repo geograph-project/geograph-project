@@ -162,9 +162,7 @@ class GeographMapMosaic
 	*/
 	function reCenter($x,$y)
 	{
-		$this->map_x=intval($x - $this->image_w / $this->pixels_per_km/2);
-		$this->map_y=intval($y - $this->image_h / $this->pixels_per_km/2);
-		return true;
+		return $this->setAlignedOrigin(intval($x - $this->image_w / $this->pixels_per_km/2),intval($y - $this->image_h / $this->pixels_per_km/2) );
 	}
 
 	/**
@@ -450,6 +448,29 @@ class GeographMapMosaic
 		}
 		
 		return $out->getToken();
+	}
+
+	/**
+	* get a url that will zoom us out one level from this gridsquare
+	* @access public
+	*/
+	function getGridSquareToken($gridsquare) 
+	{
+		if (is_numeric($gridsquare)) {
+			$id = $gridsquare;
+			$gridsquare = new GridSquare;
+			$gridsquare->loadFromId($id);
+		}
+		
+		$out=new GeographMapMosaic;	
+		
+		//start with same params
+		$out->setScale(40);
+		$out->setMosaicFactor(2);
+
+		$out->reCenter($gridsquare->x,$gridsquare->y);
+	
+		return $out->getToken();		
 	}
 
 	/**
