@@ -5,17 +5,14 @@
 
     <form enctype="multipart/form-data" action="{$script_name}" method="post">
 
-{if $step eq 1}<h2>Submit Step 1 of 4 : Choose grid square</h2>
+{if $step eq 1}	
 
-<p>Begin by choosing the grid square you wish to submit. <br/>
-If you're new, you may like to check our <a href="/help/guide">guide to geographing</a> first.</p>
+	<h2>Submit Step 1 of 4 : Choose grid square</h2>
 
-{/if}
+	<p>Begin by choosing the grid square you wish to submit. <br/>
+	If you're new, you may like to check our <a href="/help/guide">guide to geographing</a> first.</p>
 
-{if $step eq 2}<h2>Submit Step 2 of 4 : Upload photo for {$gridref}</h2>{/if}
-
-{if $step lt 3}	
-	<label for="gridsquare">Grid square</label>
+	<label for="gridsquare">Choose 1km Grid square...</label><br/>
 	<select id="gridsquare" name="gridsquare">
 		{html_options options=$prefixes selected=$gridsquare}
 	</select>
@@ -38,16 +35,25 @@ If you're new, you may like to check our <a href="/help/guide">guide to geograph
 	<p><b>{$errormsg}</b></p>
 	{/if}
 	{if $step eq 1}
-		<p> or enter an exact grid reference (6,8 or 10 figure) for this picture location. </p>
-		
-		<p><label for="gridreference">Grid Reference</label>
+		<p><label for="gridreference">...or enter an exact grid reference (4,6,8 or 10 figure) for this picture location</label><br />
 		<input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="12"/>
 		<input type="submit" name="setpos" value="Next &gt;"/><br/>
-		<small>You might find <a href='http://www.trigpointinguk.com/info/convert-wgs.php' onClick="window.open(href,'wgs','height=300,width=600,status,scrollbars');return false;" target="_blank">WGS84 Lat/Long to OSGB36 Grid Ref</a> Popup useful.</small></p>
+		</p>
 		
-		<p>The corresponding geograph grid square will be automatically selected.</p>
+		<p>If you are unsure of the photo location there are a number of online 
+		sources available to help:</p>
 		
-		<p>If you are unsure of the photo location there are a number of online sources available to help, for example {getamap}, provides a search by placename or postcode. Once you have centered the map on the picture location return here, and enter the 'Grid reference at centre' value shown into the box above.
+		<ul>
+		<li>{getamap} provides a search by 
+		placename or postcode. Once you have centered the map on the picture location 
+		return here, and enter the 'Grid reference at centre' value shown into the box 
+		above.</li>
+		
+		<li>If you have a WGS84 coordinate from a GPS receiver, this 
+		<a href='http://www.trigpointinguk.com/info/convert-wgs.php' onClick="window.open(href,'wgs','height=300,width=600,status,scrollbars');return false;" target="_blank">WGS84 to OSGB36 Grid Ref Convertor</a> may be useful.</li>
+		</ul>
+		
+		
 	{else}
 		<input type="hidden" name="gridreference" value="{$gridreference|escape:'html'}">
 	{/if}
@@ -61,6 +67,9 @@ If you're new, you may like to check our <a href="/help/guide">guide to geograph
 
 
 {if $step eq 2}
+
+	<h2>Submit Step 2 of 4 : Upload photo for {$gridref}</h2>
+
 	
 	{if $imagecount gt 0}
 		<p style="color:#440000">We already have 
@@ -71,15 +80,18 @@ If you're new, you may like to check our <a href="/help/guide">guide to geograph
 		<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}!</p>
 	{/if}
 	
-	<p>You might like to check you've selected the correct square by
-	viewing the {getamap gridref=$gridref text="OS Map for $gridref"}</p>
 	
 	<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
 	<label for="jpeg">JPEG Image File</label>
 	<input id="jpeg" name="jpeg" type="file" />
 	{if $error}<br /><p>{$error}</p>{/if}
 	<br />
-	<input type="submit" name="upload" value="Next &gt;"/>
+	<p>You might like to check you've selected the correct square by
+	viewing the {getamap gridref=$gridref text="OS Map for $gridref"}</p>
+	
+
+	<br />
+	<input type="submit" name="goback" value="&lt; Back"/> <input type="submit" name="upload" value="Next &gt;"/>
 	
 {/if}
 
@@ -121,18 +133,15 @@ criteria above!</p>
 it was taken or other interesting geographical information.</p>
 
 <label for="title">Title</label><br/>
-<input size="50" id="title" name="title" value="" />
+<input size="50" id="title" name="title" value="{$title|escape:'html'}" />
 
 <br/><br/>
 
-<label for="common">Comment</label><br/>
-<textarea id="comment" name="comment" rows="3" cols="50">
-</textarea></p>
+<label for="comment">Comment</label><br/>
+<textarea id="comment" name="comment" rows="3" cols="50">{$comment|escape:'html'}</textarea></p>
 
 
-<h3>Information on the Image</h3>
-
-<p>Please provide the following information to help us better classify the images in the geograph database.</p>
+<h3>Further Image Information</h3>
 
 {literal}
 <script type="text/javascript">
@@ -155,28 +164,33 @@ function onChangeImageclass()
 </script>
 {/literal}
 
-<p><label for="imageclass">Primary geographical feature</label>	
+<p><label for="imageclass">Primary geographical category</label><br />	
 	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()">
+		<option value="">--please select feature--</option>
 		{html_options options=$classes selected=$imageclass}
 	</select>
-	
-	<div id="otherblock" {if $imageclass ne 'Other'}style="display:none;"{else}style="display:block;"{/if}>
 
-	<label for="imageclassother">Please specify feature</label> 
+<span id="otherblock" {if $imageclass ne 'Other'}style="display:none;"{else}style="display:inline;"{/if}>
+	<label for="imageclassother">Please specify </label> 
 	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32"/></p>
-	</div>
+	</span>
 	
-<p><label>Date picture taken</label>
+	
+	
+	
+<p><label>Date picture taken</label><br/>
 	{html_select_date prefix="imagetaken" time=$imagetaken start_year="-200" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
 	{if $imagetakenmessage}
 	    {$imagetakenmessage}
 	{/if}
 	<br/><small>(please provide as much detail as possible, if you only know the year or month then that's fine)</small></p>
 
-<p>If you are happy with the image, click 'next' to continue...
-</p>
 <input type="hidden" name="upload_id" value="{$upload_id}">
-<input type="submit" name="agreeterms" value="Next &gt;"/>
+
+<br />
+<input type="hidden" name="savedata" value="1">
+<input type="submit" name="goback" value="&lt; Back"/>
+<input type="submit" name="next" value="Next &gt;"/>
 {/if}
 
 {if $step eq 4}
@@ -207,31 +221,37 @@ function onChangeImageclass()
 	
 	<p><a title="View licence" target="_blank" href="http://creativecommons.org/licenses/by-sa/2.0/">Here is the Commons Deed outlining the licence terms</a></p>
 	
+	
+	<p>If you do
+	not agree with these terms, click "I do not agree" and your upload will
+	be abandoned.<br />
+	<input style="width:200px" type="submit" name="abandon" value="I DO NOT AGREE"/>
+	
+	</p>
+
+
 	<p>If you agree with these terms, click "I agree" and your image will be
 	stored in grid square {$gridref}.<br />
+	<input type="submit" name="goback3" value="&lt; Back"/>
 	<input style="width:200px" type="submit" name="finalise" value="I AGREE &gt;"/>
 	</p>
 	
 
-<p>If you do
-not agree with these terms, click "I do not agree" and your upload will
-be abandoned.<br />
-<input style="width:200px" type="submit" name="abandon" value="I DO NOT AGREE"/>
-
-</p>
 
 {/if}
 
 {if $step eq 5}
 <h2>Submission Complete!</h2>
-<p>Thank you very much - your photo has now been added to grid square <a title="Grid Reference {$gridref}" href="/browse.php?gridref={$gridref}">{$gridref}</a></p>
+<p>Thank you very much - your photo has now been added to grid square 
+<a title="Grid Reference {$gridref}" href="/browse.php?gridref={$gridref}">{$gridref}</a></p>
 <p><a title="submit another photo" href="submit.php">Click here to submit a new photo...</a></p>
 {/if}
 
 {if $step eq 6}
 <h2>Submission Abandoned</h2>
-<p>Your upload has been erased from our server - if you have any
-queries regarding our licence terms, please <a title="contact us" href="/contact.php">contact us</a></p>
+<p>Your upload has been aborted - if you have any
+concerns or feedback regarding our licence terms, 
+please <a title="contact us" href="/contact.php">contact us</a></p>
 {/if}
 
 
