@@ -204,6 +204,22 @@ class GridImage
 	}
 	
 	/**
+	* advanced method which sets up a gridimage without a gridsquare instance
+	* only use this method if you know what you are doing
+	*/
+	function fastInit(&$arr)
+	{
+		foreach($arr as $name=>$value)
+		{
+			if (!is_numeric($name))
+				$this->$name=$value;
+
+		}
+		$this->grid_square=null;
+		$this->grid_reference='';
+	}
+	
+	/**
 	* return true if instance references a valid grid image
 	*/
 	function isValid()
@@ -418,6 +434,92 @@ class GridImage
 		return $html;
 	}
 
+	
+	/**
+	* returns a GD image instance for a square thumbnail of the image
+	*/
+	function getSquareThumb($size)
+	{
+		$ab=sprintf("%02d", floor($this->gridimage_id/10000));
+		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
+		$abcdef=sprintf("%06d", $this->gridimage_id);
+		$hash=$this->_getAntiLeechHash();
+		$img=null;
+		
+		
+		$base=&$_SERVER['DOCUMENT_ROOT'];
+		$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$size}x{$size}.gd";
+		if (!file_exists($base.$thumbpath))
+		{
+		
+			$fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}.jpg";
+		
+			if (file_exists($base.$fullpath))
+			{
+				
+		
+				//generate resized image
+				$fullimg = @imagecreatefromjpeg($base.$fullpath); 
+				if ($fullimg)
+				{
+					$srcw=imagesx($fullimg);
+					$srch=imagesy($fullimg);
+					
+					//crop percentage is how much of the
+					//image to keep in the thumbnail
+					$crop=0.5;
+					
+					//figure out size of image we'll keep
+					if ($srcw>$srch)
+					{
+						//landscape
+						$s=$srch*$crop;
+						
+						
+					}
+					else
+					{
+						//portrait
+						$s=$srcw*$crop;
+					}
+
+					$srcx = round(($srcw-$s)/2);
+					$srcy = round(($srch-$s)/2);
+					$srcw = $s;
+					$srch=$s;
+					
+					$img = imagecreatetruecolor($size, $size);
+					imagecopyresampled($img, $fullimg, 0, 0, $srcx, $srcy, 
+								$size,$size, $srcw, $srch);
+
+					imagedestroy($fullimg);
+
+					//save the thumbnail
+					imagegd($img, $base.$thumbpath);
+						
+					
+				}
+				else
+				{
+					//couldn't load full jpeg
+					$img=null;
+				}
+			}
+			else
+			{
+				//no original image!
+				$img=null;
+		
+			}
+			
+		}
+		else
+		{
+			$img=imagecreatefromgd($base.$thumbpath);
+		}
+		return $img;
+	}
+	
 
 	/**
 	* returns HTML img tag to display a thumbnail that would fit the given dimensions
