@@ -105,6 +105,49 @@ class ImageList
 	}
 	
 	/**
+	* get image list for particular area...
+	*/
+	function getImagesByArea($left,$right,$top,$bottom)
+	{
+		$db=&$this->_getDB();
+
+		$statuslist="'pending', 'accepted'";
+		$orderby="order by x,y desc";
+		$limit="";
+		
+		//ensure correct order
+		$l=min($left,$right);
+		$r=max($left,$right);
+		$t=min($top,$bottom);
+		$b=max($top,$bottom);
+		
+		
+		$sql="select gridimage.*,user.realname ".
+					"from gridimage ".
+					"inner join user using(user_id) ".
+					"inner join gridsquare on(gridimage.gridsquare_id=gridsquare.gridsquare_id) ".
+					"where moderation_status in ($statuslist) and ".
+					"x between $l and $r and ".
+					"y between $t and $b ".
+			"$orderby $limit";
+		
+			
+		$this->images=array();
+		$i=0;
+		$recordSet = &$db->Execute($sql);
+		while (!$recordSet->EOF) 
+		{
+			$this->images[$i]=new GridImage;
+			$this->images[$i]->loadFromRecordset($recordSet);
+			$recordSet->MoveNext();
+			$i++;
+		}
+		$recordSet->Close(); 
+
+		return $i;
+	}
+	
+	/**
 	 * store image list as $basename in $smarty instance
 	 * a $basenamecount field is also stored
 	 */
