@@ -35,7 +35,7 @@
 /**
 * Needs the GeographMap class, so we pull that in here
 */
-require_once('geograph/geographmap.class.php');
+require_once('geograph/map.class.php');
 
 /**
 * Geograph Map Mosaic class
@@ -84,17 +84,52 @@ class GeographMapMosaic
 	var $mosaic_factor=0;
 	
 	/**
+	* enable caching?
+	*/
+	var $caching=true;
+	
+	/**
+	* debug text contains debugging traces suitable for html output
+	*/
+	var $debugtrace="";
+	
+	/**
+	* enable debug tracing?
+	*/
+	var $debug=true;
+	
+	/**
 	* Constructor - if you don't initialise it further, you get a full map
 	* @access public
 	*/
 	function GeographMapMosaic()
 	{
-		$this->setOrigin(0,0);
+		$this->setOrigin(-210,-50);
 		$this->setMosaicSize(400,400);
 		$this->setScale(0.3);
-		$this->setMosaicFactor(1);
+		$this->setMosaicFactor(3);
 	}
 	
+	function _trace($msg)
+	{
+		if ($this->debug)
+		{
+			$this->debugtrace.="<li>$msg</li>";
+		}
+	}
+	
+	function _err($msg)
+	{
+		if ($this->debug)
+		{
+			$this->debugtrace.="<li style=\"color:#880000;\">$msg</li>";
+		}
+	}
+	
+	function enableCaching($enable)
+	{
+		$this->caching=$enable;
+	}
 	
 	/**
 	* Set origin of map in internal coordinates, returns true if valid
@@ -102,8 +137,8 @@ class GeographMapMosaic
 	*/
 	function setOrigin($x,$y)
 	{
-		$this->origin_x=intval($x);
-		$this->origin_y=intval($y);
+		$this->map_x=intval($x);
+		$this->map_y=intval($y);
 		return true;
 	}
 
@@ -165,12 +200,12 @@ class GeographMapMosaic
 		$token=new Token;
 		if ($token->parse($tokenstr))
 		{
-			$ok=$token->getValue("x") &&
-				$token->getValue("y") &&
-				$token->getValue("w") &&
-				$token->getValue("h") &&
-				$token->getValue("s") &&
-				$token->getValue("f");
+			$ok=$token->hasValue("x") &&
+				$token->hasValue("y") &&
+				$token->hasValue("w") &&
+				$token->hasValue("h") &&
+				$token->hasValue("s") &&
+				$token->hasValue("f");
 			if ($ok)
 			{
 				$this->setOrigin($token->getValue("x"), $token->getValue("y"));
@@ -178,6 +213,20 @@ class GeographMapMosaic
 				$this->setScale($token->getValue("s"));
 				$this->setMosaicFactor($token->getValue("f"));
 			}
+			else
+			{
+				$info="";
+				foreach($token->data as $name=>$value)
+				{
+					$info.="$name=$value ";
+				}
+				$this->_err("setToken: missing elements ($info)");
+			}
+		}
+		else
+		{
+			$this->_err("setToken: parse failure");
+		
 		}
 		
 		return $ok;
@@ -192,32 +241,33 @@ class GeographMapMosaic
 	{
 		$images=array();
 		
-		//left to right
-		for ($i=0; $i<$this->mosaic_factor; $i++)
+		//top to bottom
+		for ($j=0; $j<$this->mosaic_factor; $j++)
 		{
-			$images[$i]=array();
+			$images[$j]=array();
 			
-			//top to bottom
-			for ($j=0; $j<$this->mosaic_factor; $j++)
+			//left to right
+			for ($i=0; $i<$this->mosaic_factor; $i++)
 			{
-				$img=new GeographMap;	
+				$images[$j][$i]=new GeographMap;	
 				
 				//to calc the origin we need to know
 				//how many internal units in each image
 				$img_w_km=($this->image_w / $this->pixels_per_km) / $this->mosaic_factor;
 				$img_h_km=($this->image_h / $this->pixels_per_km) / $this->mosaic_factor;
 				
-				$img->setOrigin(
+				$images[$j][$i]->enableCaching($this->caching);
+				
+				$images[$j][$i]->setOrigin(
 					$this->map_x + $i*$img_w_km,
 					$this->map_y + ($this->mosaic_factor-$j-1)*$img_h_km);
 					
-				$img->setImageSize(
+				$images[$j][$i]->setImageSize(
 					$this->image_w/$this->mosaic_factor,
 					$this->image_h/$this->mosaic_factor);
 				
-				$img->setScale($this->pixels_per_km);
+				$images[$j][$i]->setScale($this->pixels_per_km);
 		
-				$images[$i][$j]=&$img;
 			}
 		
 		}
@@ -260,17 +310,123 @@ class GeographMapMosaic
 	* @param ydir = amount of up/down panning, e.g. 1 to pan up
 	* @access public
 	*/
-	function getPanUrl($xdir,$ydir)
+	function getPanToken($xdir,$ydir)
 	{
+		$out=new GeographMapMosaic;
+		
+		//no panning unless you are zoomed in
+		if ($this->pixels_per_km >=1)
+		{
+			//start with same params
+			$out->setScale($this->pixels_per_km);
+			$out->setMosaicFactor($this->mosaic_factor);
+			$out->setMosaicSize($this->image_w, $this->image_h);
+
+			//pan half a map
+			//figure out image size in km
+			$mapw=$out->image_w/$out->pixels_per_km;
+			$maph=$out->image_h/$out->pixels_per_km;
+
+			//figure out how many pixels to pan by
+			$panx=round($mapw/$out->mosaic_factor);
+			$pany=round($maph/$out->mosaic_factor);
+
+			$out->setAlignedOrigin(
+				$this->map_x + $panx*$xdir,
+				$this->map_y + $pany*$ydir);
+		}
+		return $out->getToken();
 	}
 	
 	/**
 	* get a url that will zoom us out one level of this mosaic
 	* @access public
 	*/
-	function getZoomOutUrl()
+	function getZoomOutToken()
 	{
-	
+		$out=new GeographMapMosaic;
+			
+		
+		//if we're zoomed out 1 pixel per km, then we only need
+		//zoom out to a default map, otherwise, we need to zoom
+		//out keeping vaguely centred on current position
+		if ($this->pixels_per_km > 1)
+		{
+			//figure out central point
+			$centrex=$this->map_x + ($this->image_w / $this->pixels_per_km)/2;
+			$centrey=$this->map_y + ($this->image_h / $this->pixels_per_km)/2;
+
+		
+			//decide scale factor
+			if ($this->pixels_per_km == 4)
+			{
+				//zoom out to 1 pixel per km
+				$scale=1;
+
+			}
+			elseif ($this->pixels_per_km == 40)
+			{
+				//zoom out to 4 pixel per km
+				$scale=4;
+			}
+			else
+			{
+				//zoom out to 40 pixel per km
+				$scale=40;
+				
+			}
+			
+			$out->setScale($scale);
+			
+			//stick with current mosaic factor
+			$out->setMosaicFactor($this->mosaic_factor);
+			
+			//figure out what the perfect origin would be
+			$mapw=$this->image_w/$scale;
+			$maph=$this->image_h/$scale;
+			
+			$bestoriginx=$centrex - $mapw/2;
+			$bestoriginy=$centrey - $maph/2;
+			
+			$out->setAlignedOrigin($bestoriginx, $bestoriginy);
+			
+		}
+		
+		return $out->getToken();
+	}
+
+	/**
+	* Sets the origin, but aligns the origin on particular boundaries to
+	* reduce the number of image tiles that get generated
+	*/
+	function setAlignedOrigin($bestoriginx, $bestoriginy)
+	{
+		//figure out image size in km
+		$mapw=$this->image_w/$this->pixels_per_km;
+		$maph=$this->image_h/$this->pixels_per_km;
+		
+		
+		//figure out an alignment factor - here we align on tile
+		//boundaries so that panning the image allows reuse of tiles
+		$walign=$mapw/$this->mosaic_factor;
+		$halign=$maph/$this->mosaic_factor;
+		
+		//dividing by 2 makes for more accurate clicking
+		$walign=round($walign/2);
+		$halign=round($halign/2);
+		
+		//range check the bestorigin - we've got some hard coded
+		//values here
+		$bestoriginx=max($bestoriginx, 0);
+		$bestoriginx=min($bestoriginx, 860);
+		$bestoriginy=max($bestoriginy, 0);
+		$bestoriginy=min($bestoriginy, 1220);
+		
+		//find closest aligned origin
+		$originx=round($bestoriginx/$walign)*$walign;
+		$originy=round($bestoriginy/$halign)*$halign;
+
+		$this->setOrigin($originx, $originy);
 	}
 
 	/**
@@ -281,7 +437,97 @@ class GeographMapMosaic
 	*/
 	function zoomIn($i, $j, $x, $y)
 	{
-	
+		//we got the click coords x,y on mosaic i,j
+		$imgw=$this->image_w / $this->mosaic_factor;
+		$imgh=$this->image_h / $this->mosaic_factor;
+		$x+=$i*$imgw;
+		$y+=$j*$imgh;
+		
+		//$this->_trace("zoomIn mosaic factor {$this->mosaic_factor}");
+		
+		
+		//$this->_trace(sprintf("zoomIn: mosaic size %0.2f x %0.2f", $imgw, $imgh));
+		
+		//remap origin from top left to bottom left
+		$y=$this->image_h-$y;
+		
+		//$this->_trace(sprintf("zoomIn: pixel click %0.2f x %0.2f", $x, $y));
+		
+		//lets figure out internal coords
+		$clickx=floor($this->map_x + $x/$this->pixels_per_km);
+		$clicky=floor($this->map_y + $y/$this->pixels_per_km);
+		
+		//$this->_trace(sprintf("zoomIn: map click %0.2f x %0.2f", $clickx, $clicky));
+		
+		//what's our zoom level going to be?
+		if ($this->pixels_per_km < 1)
+		{
+			$scale=1;
+			$mosaic=2;
+			
+		}
+		elseif ($this->pixels_per_km == 1)
+		{
+			$scale=4;
+			$mosaic=2;
+		}
+		elseif ($this->pixels_per_km == 4)
+		{
+			$scale=40;
+			$mosaic=2;
+		}
+		elseif ($this->pixels_per_km == 40)
+		{
+			$scale=100;
+			$mosaic=2;
+		}
+		else
+		{
+			
+			//we're going to zoom into a grid square
+			$square=new GridSquare;
+			if ($square->loadFromPosition($clickx, $clicky))
+			{
+				
+				
+				$images=$square->getImages();
+				
+				//if the image count is 1, we'll go straight to the image
+				if (count($images)==1)
+				{
+					$url="http://".$_SERVER['HTTP_HOST'].'/view.php?id='.
+						$images[0]->gridimage_id;
+				}
+				else
+				{
+					//lets go to the grid reference
+					$url="http://".$_SERVER['HTTP_HOST'].'/gridref/'.$square->grid_reference;
+				}
+				
+				header("Location:$url");
+				exit;
+			}
+			else
+			{
+				//stay where we are
+				$scale=100;
+				$mosaic=2;
+			}
+			
+		}
+
+		
+		//size of new map in km
+		$mapw=$this->image_w/$scale;
+		$maph=$this->image_h/$scale;
+			
+		//here's the perfect origin
+		$bestoriginx=$clickx-$mapw/2;
+		$bestoriginy=$clicky-$maph/2;
+
+		$this->setScale($scale);
+		$this->setMosaicFactor($mosaic);
+		$this->setAlignedOrigin($bestoriginx, $bestoriginy);
 	}
 
 	/**
@@ -294,6 +540,24 @@ class GeographMapMosaic
 	
 	}
 	
+	/**
+	* Expires all cached maps
+	* Base maps (blue/green raster) are not expired unless you pass true as the 
+	* first parameter
+	* @access public
+	*/
+	function expireAll($expire_basemaps=false)
+	{
+		$dir=$_SERVER['DOCUMENT_ROOT'].'/maps/detail';
+		`rm -Rf $dir`;
+		
+		if ($expire_basemaps)
+		{
+			$dir=$_SERVER['DOCUMENT_ROOT'].'/maps/base';
+			`rm -Rf $dir`;
+		
+		}
+	}
 	
 	/**
 	 * get stored db object, creating if necessary
