@@ -10,7 +10,7 @@
 <li>It's a geography project for the people</li>
 <li>It's a national photography project</li>
 <li>It's a good excuse to get out more!</li>
-<li>It's an free and open online community project for all</li>
+<li>It's a free and open online community project for all</li>
 </ul>
 </div></div>
 
@@ -33,7 +33,7 @@ and you can be part of it.</p>
 
 
 <p><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how 
-many grid squares you can activate!</p>
+many grid squares you can claim first!</p>
 
 <p>If you have any questions, check the <a title="Frequently Asked Questions" href="/faq.php">FAQ</a>, and 
 <a title="contact us" href="contact.php">contact us</a> with any queries</p>
