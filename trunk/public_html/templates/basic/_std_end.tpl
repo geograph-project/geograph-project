@@ -9,6 +9,7 @@
     <li><a title="Submit" href="/submit.php">Submit</a></li>
     <li><a title="Discuss" href="/discuss/">Discuss</a></li>
     <li><a title="Leaderboard" href="/leaderboard.php">Leaderboard</a></li>
+    <li><a title="Statistics" href="/statistics.php">Statistics</a></li>
     <li><a title="FAQ" href="/faq.php">FAQ</a></li>
     <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact</a></li>
   </ul>
