@@ -41,6 +41,28 @@ if (!$smarty->is_cached($template, $cacheid))
 	//lets find some recent photos
 	$images=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
 	$images->assignSmarty(&$smarty, 'recent');
+	
+	//let's find recent posts in the announcements forum made by
+	//administrators
+	$db=NewADOConnection($GLOBALS['DSN']);
+	$sql='select u.user_id,u.realname,t.topic_title,p.post_text,t.topic_id,t.topic_time '.
+		'from geobb_topics as t '.
+		'inner join geobb_posts as p on(t.topic_id=p.topic_id) '.
+		'inner join user as u on (p.poster_id=u.user_id) '.
+		'where find_in_set(\'admin\',u.rights)>0 and '.
+		't.topic_time=p.post_time and '.
+		't.forum_id=1 '.
+		'order by t.topic_time desc limit 3';
+	$news=$db->GetAll($sql);
+	foreach($news as $idx=>$item)
+
+	{
+		$news[$idx]['comments']=$db->GetOne('select count(*)-1 as comments from geobb_posts where topic_id='.$item['topic_id']);
+	}
+	
+
+	$smarty->assign_by_ref('news', $news);
+	
 }
 
 

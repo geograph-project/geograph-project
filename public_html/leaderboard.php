@@ -22,6 +22,9 @@
  */
 
 require_once('geograph/global.inc.php');
+require_once('geograph/gridimage.class.php');
+require_once('geograph/gridsquare.class.php');
+require_once('geograph/imagelist.class.php');
 init_session();
 
 
@@ -58,6 +61,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	
 	$smarty->assign_by_ref('topusers', $topusers);
+	
+	//lets find some recent photos
+	$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
+	$recent->assignSmarty(&$smarty, 'recent');
 }
 
 $smarty->display($template, $cacheid);
