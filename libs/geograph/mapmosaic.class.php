@@ -91,6 +91,10 @@ class GeographMapMosaic
 	*/
 	var $pixels_per_km=0;
 	
+	/** 
+	* list of valid scales for this modaic	
+	*/
+	var $scales;
 	
 	/**
 	* width/height of mosaic
@@ -122,6 +126,8 @@ class GeographMapMosaic
 		$this->setMosaicSize(400,400);
 		$this->setScale(0.3);
 		$this->setMosaicFactor(3);
+		$this->scales = array(1 => 1, 2 => 4, 3 => 40);
+	
 	}
 	
 	function _trace($msg)
@@ -392,52 +398,45 @@ class GeographMapMosaic
 	{
 		$out=new GeographMapMosaic;
 			
+		//if at full extent then dont want a zoom out token
+		if ($this->pixels_per_km ==  0.3) {
+			return FALSE;
+		} 
+		else
 		
 		//if we're zoomed out 1 pixel per km, then we only need
 		//zoom out to a default map, otherwise, we need to zoom
 		//out keeping vaguely centred on current position
 		if ($this->pixels_per_km > 1)
 		{
-			//figure out central point
-			$centrex=$this->map_x + ($this->image_w / $this->pixels_per_km)/2;
-			$centrey=$this->map_y + ($this->image_h / $this->pixels_per_km)/2;
+			$zoomindex = array_search($this->pixels_per_km,$this->scales);
+			$zoomindex--;
+			
+			if ($zoomindex >=1)
+			{
+				//figure out central point
+				$centrex=$this->map_x + ($this->image_w / $this->pixels_per_km)/2;
+				$centrey=$this->map_y + ($this->image_h / $this->pixels_per_km)/2;
 
-		
-			//decide scale factor
-			if ($this->pixels_per_km == 4)
-			{
-				//zoom out to 1 pixel per km
-				$scale=1;
+				$scale = $this->scales[$zoomindex];
+			
+				$out->setScale($scale);
 
+				//stick with current mosaic factor
+				$out->setMosaicFactor($this->mosaic_factor);
+
+				//figure out what the perfect origin would be
+				$mapw=$this->image_w/$scale;
+				$maph=$this->image_h/$scale;
+
+				$bestoriginx=$centrex - $mapw/2;
+				$bestoriginy=$centrey - $maph/2;
+
+				$out->setAlignedOrigin($bestoriginx, $bestoriginy);
 			}
-			elseif ($this->pixels_per_km == 40)
-			{
-				//zoom out to 4 pixel per km
-				$scale=4;
-			}
-			else
-			{
-				//zoom out to 40 pixel per km
-				$scale=40;
-				
-			}
-			
-			$out->setScale($scale);
-			
-			//stick with current mosaic factor
-			$out->setMosaicFactor($this->mosaic_factor);
-			
-			//figure out what the perfect origin would be
-			$mapw=$this->image_w/$scale;
-			$maph=$this->image_h/$scale;
-			
-			$bestoriginx=$centrex - $mapw/2;
-			$bestoriginy=$centrey - $maph/2;
-			
-			$out->setAlignedOrigin($bestoriginx, $bestoriginy);
-			
+		} else {
+			$out->setMosaicFactor(3);
 		}
-		
 		return $out->getToken();
 	}
 
@@ -447,8 +446,39 @@ class GeographMapMosaic
 	*/
 	function getZoomInToken()
 	{
-		//TODO!
-		return $this->getToken();
+		$out=new GeographMapMosaic;
+			
+		$zoomindex = array_search($this->pixels_per_km,$this->scales);
+		if ($zoomindex === FALSE) 
+			$zoomindex = 0;
+		$zoomindex++;
+
+		if ($zoomindex <= count($this->scales))
+		{
+			//figure out central point
+			$centrex=$this->map_x + ($this->image_w / $this->pixels_per_km)/2;
+			$centrey=$this->map_y + ($this->image_h / $this->pixels_per_km)/2;
+
+			$scale = $this->scales[$zoomindex];
+
+			$out->setScale($scale);
+
+			$out->setMosaicFactor(2);
+
+			//figure out what the perfect origin would be
+			$mapw=$this->image_w/$scale;
+			$maph=$this->image_h/$scale;
+
+			$bestoriginx=$centrex - $mapw/2;
+			$bestoriginy=$centrey - $maph/2;
+			
+			$out->setAlignedOrigin($bestoriginx, $bestoriginy);
+			return $out->getToken();
+		}
+		else 
+		{
+			return FALSE;
+		}
 	}
 	
 	/**
@@ -545,6 +575,7 @@ class GeographMapMosaic
 	
 	
 	
+	
 	/**
 	* Given index of a mosaic image, and a pixel position on that image handle a zoom
 	* If the zoom level is 2, this needs to perform a redirect to the gridsquare page
@@ -556,29 +587,11 @@ class GeographMapMosaic
 		//so where did we click?
 		list($clickx, $clicky)=$this->getClickCoordinates($i, $j, $x, $y);
 		
-		//what's our zoom level going to be?
-		if ($this->pixels_per_km < 1)
-		{
-			$scale=1;
-			$mosaic=2;
-			
-		}
-		elseif ($this->pixels_per_km == 1)
-		{
-			$scale=4;
-			$mosaic=2;
-		}
-		elseif ($this->pixels_per_km == 4)
-		{
-			$scale=40;
-			$mosaic=2;
-		}
-		#elseif ($this->pixels_per_km == 40)
-		#{
-		#	$scale=100;
-		#	$mosaic=2;
-		#}
-		else
+		$zoomindex = array_search($this->pixels_per_km,$this->scales);
+		if ($zoomindex === FALSE)
+			$zoomindex = 0;
+		$zoomindex++;
+		if ($zoomindex > count($this->scales))
 		{
 			
 			//we're going to zoom into a grid square
@@ -608,9 +621,10 @@ class GeographMapMosaic
 			{
 				//stay where we are
 				$scale=100;
-				$mosaic=2;
 			}
 			
+		} else {
+			$scale = $this->scales[$zoomindex];
 		}
 
 		
@@ -623,7 +637,7 @@ class GeographMapMosaic
 		$bestoriginy=$clicky-$maph/2;
 
 		$this->setScale($scale);
-		$this->setMosaicFactor($mosaic);
+		$this->setMosaicFactor(2);
 		$this->setAlignedOrigin($bestoriginx, $bestoriginy);
 	}
 
