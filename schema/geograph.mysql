@@ -302,3 +302,26 @@ create table autologin
 );
 
 
+#paul 10th March 2005 - altered the way we record the idea of a
+#ftf - this is now an image which has been moderated as a geograph
+#and the ordering of the enum items allows more logical ordering of
+#images, e.g. order by moderation_status+0 desc,seq_no
+alter table gridimage
+change column moderation_status
+moderation_status enum('rejected', 'pending', 'accepted', 'geograph');
+
+#add column for recording whether a square has geographs
+alter table gridsquare add column
+has_geographs tinyint not null default '0';
+
+#already moderated ftfs are geographs
+update gridimage set moderation_status='geograph'
+where ftf=1 and moderation_status='accepted';
+
+#all pending images are ftf 0
+update gridimage set ftf=0 where moderation_status='pending';
+
+#this isn't quite right but might work
+update gridsquare set has_geographs=1
+where imagecount>0;
+
