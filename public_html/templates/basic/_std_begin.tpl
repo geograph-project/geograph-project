@@ -7,7 +7,7 @@
 <link rel="stylesheet" type="text/css" title="geograph" href="/templates/basic/css/basic.css" media="screen" />
 <link rel="Shortcut Icon" type="image/ico" href="/favicon.ico" />
  
-<title>geograph</title>
+<title>{$page_title|lower} :: geograph.co.uk</title>
 </head>
 
 <body>
