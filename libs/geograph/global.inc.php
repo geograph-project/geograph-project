@@ -79,6 +79,40 @@ function smarty_block_dynamic($param, $content, &$smarty)
     return $content;
 }
 
+/**
+* Smarty Getamap linker
+* 
+* Makes linking to OS maps easy {getamap gridref='TL0000' text='get a map'}
+*/
+function smarty_function_getamap($params)
+{
+  	//get params
+  	$gridref4=$params['gridref'];
+  	if (preg_match('/([A-Z]{1,2})(\d\d)(\d\d)/i', $gridref4))
+  	{
+		$text=$gridref4;
+		if (!empty($params['text']))
+			$text=$params['text'];
+		else
+			$text=$gridref4;
+
+		//we take a 4 figure reference, need to turn this into a 
+		//6 figure one centred on the desired square
+		$gridref6=preg_replace('/([A-Z]{1,2})(\d\d)(\d\d)/i', 
+			'${1}${2}5${3}5', $gridref4);
+
+		return "<a title=\"Ordnance Survey Get-a-Map for $gridref4\" href=\"javascript:popupOSMap('$gridref6')\">$text</a>";
+  	}
+  	else
+  	{
+  		//error
+  		return $gridref4;
+  	}
+}
+
+
+
+
 
 /**
 * Smarty derivation for Geograph
@@ -113,6 +147,9 @@ class GeographPage extends Smarty
 		
 		//register our "dynamic" handler for non-cached sections of templates
 		$this->register_block('dynamic', 'smarty_block_dynamic', false);
+		
+		//handy function for linking to getamap
+		$this->register_function("getamap", "smarty_function_getamap");
 
 
 		//assign globallly useful stuff
