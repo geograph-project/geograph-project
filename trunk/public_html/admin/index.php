@@ -36,7 +36,7 @@ if (!$db) die('Database connection failed');
 $users_total=$db->GetOne("select count(*) from user where rights>0");
 $users_thisweek=$db->GetOne("select count(*) from user where rights>0 and ".
 	"(unix_timestamp(now())-unix_timestamp(signup_date))<604800");
-$users_submitted=$db->GetOne("select count(distinct user_id) from gridimage group by user_id"); 
+$users_submitted=$db->GetOne("select count(distinct user_id) from gridimage"); 
 $users_pending=$db->GetOne("select count(*) from user where rights=0");
 
 $images_total=$db->GetOne("select count(*) from gridimage where moderation_status<>'rejected'");
