@@ -2,14 +2,21 @@
                              GEOGRAPH README
 =======================================================================
 
-A) Introduction
-B) Directory Structure
-C) Installation
-D) Getting Started
-E) Adapting for other countries
+A) History
+B) Introduction
+C) Directory Structure
+D) Installation
+E) Getting Started
+F) Adapting for other countries
 
 
-A) Introduction
+A) History
+-----------------------------------------------------------------------
+v0.10 - 17 Mar 2005 - first working beta, basically a CVS snapshot with 
+                      code still in development removed.
+
+
+B) Introduction
 -----------------------------------------------------------------------
 
 GeoGraph is web based project to collect and reference geographically
@@ -27,7 +34,7 @@ The GeoGraph software is licenced using the GNU General Public Licence,
 see LICENCE.txt for details.
 
 
-B) Directory Structure
+C) Directory Structure
 -----------------------------------------------------------------------
 
 apache/
@@ -57,7 +64,7 @@ schema/
   mysql database schema
   
   
-C) Installation
+D) Installation
 -----------------------------------------------------------------------
 
 1. unpack the files into <basedir>
@@ -96,7 +103,7 @@ C) Installation
 8. Once test.php reports success, you're good to go!
 
 
-D) Getting Started
+E) Getting Started
 -----------------------------------------------------------------------
 
 Register as a user then use the mysql command line to grant that user 
@@ -114,7 +121,7 @@ admin/gridbuilder.php script to perform this task.
 Once that is done, the system is ready to accept photographs.
 
 
-E) Adapting for other countries
+F) Adapting for other countries
 -----------------------------------------------------------------------
 
 The code as supplied is ready for the British Isles, and we're happy to
