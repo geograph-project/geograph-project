@@ -209,9 +209,9 @@ my $cmd="$rrdtool graph ".
   	"DEF:pending=$basepath/submissions.rrd:pending:LAST ".
   	"DEF:accepted=$basepath/submissions.rrd:accepted:LAST ".
   	"DEF:geograph=$basepath/submissions.rrd:geograph:LAST ".
-  	"AREA:pending#006000:pending ".
-  	"STACK:accepted#00C000:supplemental ".
-  	"STACK:geograph#80FF80:geographs ";
+  	"AREA:accepted#006000:supplemental ".
+	"STACK:geograph#00C000:geographs ".
+  	"STACK:pending#80FF80:'pending moderation'";
   
 `$cmd`;
 
