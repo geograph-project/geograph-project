@@ -45,11 +45,8 @@ $template='mapbrowse.tpl';
 $smarty = new GeographPage;
 
 
-$overview=new GeographMapMosaic;
-$overview->setOrigin(-10,-10);
-$overview->setMosaicSize(120,170);
-$overview->setScale(0.13);
-$overview->setMosaicFactor(1);
+$overview=new GeographMapMosaic(true);
+
 $overview->enableCaching($CONF['smarty_caching']);
 
 //initialise mosaic
@@ -87,7 +84,24 @@ if (isset($_GET['zoomin']))
 	$mosaic->zoomIn($i, $j, $x, $y);	
 }
 
-
+if (isset($_GET['center']))
+{
+	//extract x and y click coordinate from imagemap
+	$bits=explode(',', substr($_GET['center'],1));
+	$x=intval($bits[0]);
+	$y=intval($bits[1]);
+	
+	//get the image index
+	$i=intval($_GET['i']);
+	$j=intval($_GET['j']);
+	
+	//get click coordinate on overview, use it to centre the main map
+	list($intx, $inty)=$overview->getClickCoordinates($i, $j, $x, $y);	
+	$mosaic->setScale($mosaic->scales[1]);
+	$mosaic->setMosaicFactor(2);
+	$mosaic->setCentre($intx, $inty);	
+	
+}
 
 if (isset($_GET['recenter']))
 {
