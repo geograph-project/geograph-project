@@ -31,7 +31,7 @@ referring to <b>image {$image->gridimage_id}</b>
 <br style="clear:both;"/>		  
 
 <table>		
-<tr><td>Submitted by</td><td><a title="View profile" href="/profile.php?id={$image->user_id}">{$image->realname|escape:'html'}</a></td></tr>
+<tr><td>Submitted by</td><td><a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a></td></tr>
 <tr><td>Submission date</td><td>{$image->submitted}</td></tr>
 <tr><td>Comments</td><td>{$image->comment}</td></tr>
 <tr><td>Copyright</td><td>
