@@ -1,3 +1,4 @@
+{assign var="page_title" value="Login"}
 {include file="_std_begin.tpl"}
 
 
