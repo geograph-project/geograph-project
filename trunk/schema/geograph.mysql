@@ -354,7 +354,7 @@ CREATE TABLE `geobb_forums` (
   PRIMARY KEY  (`forum_id`)
 ) TYPE=MyISAM;
 
-INSERT INTO `geobb_forums` VALUES (1,'Announcements','Announcements of site changes will be made here',1,'announce.gif',2,2);
+INSERT INTO `geobb_forums` VALUES (1,'Announcements','Announcements of site changes will be made here',1,'announce.gif',0,0);
 INSERT INTO `geobb_forums` VALUES (2,'General Discussion','General discussion about the site',2,'general.gif',0,0);
 INSERT INTO `geobb_forums` VALUES (3,'Suggestions','Got an idea? Let us know!',3,'suggestions.gif',0,0);
 INSERT INTO `geobb_forums` VALUES (4,'Bug reports','Found a problem? Let us know here',4,'bugs.gif',0,0);
