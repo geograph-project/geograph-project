@@ -2,7 +2,7 @@
 
 {if $image}
 
- <h2><a title="Grid Reference {$image->gridref}" href="/browse.php?gridref={$image->gridref}">{$image->gridref}</a> : {$image->title}</h2>
+ <h2><a title="Grid Reference {$image->grid_reference}" href="/browse.php?gridref={$image->grid_reference}">{$image->grid_reference}</a> : {$image->title}</h2>
  
 {if $image->moderation_status eq 'rejected'}
 <h3>Rejected</h3>
@@ -39,7 +39,7 @@ referring to <b>image {$image->gridimage_id}</b>
 
 
 <!-- Creative Commons License -->
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img align="right" alt="Creative Commons License" border="0" src="http://creativecommons.org/images/public/somerights20.gif" /></a>
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img align="right" alt="Creative Commons License" src="http://creativecommons.org/images/public/somerights20.gif" /></a>
 The copyright on this image is owned by <a title="View profile" href="/profile.php?id={$image->user_id}">{$image->realname|escape:'html'}</a> and is 
 licenced under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.
 <!-- /Creative Commons License -->

@@ -8,7 +8,7 @@
 <h3>{$square.title}</h3>
 <ul>		
     {foreach from=$square.images item=image}
-    <li><a title="view full size image" href="/view.php?id={$image->gridimage_id}">{$image->gridref}</a> {$image->title}</li>
+    <li><a title="view full size image" href="/view.php?id={$image->gridimage_id}">{$image->grid_reference}</a> {$image->title}</li>
     {/foreach}
 </ul>		
 
