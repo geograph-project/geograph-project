@@ -22,12 +22,13 @@
  */
 
 require_once('geograph/global.inc.php');
-
+	
 init_session();
 
 $smarty = new GeographPage;
 $template='profile.tpl';	
-	
+$cacheid='';
+
 //this script works in two modes - editing the currently logged in users profile
 //or viewing any users profile in read-only fashion - here we decide which to do
 if (isset($_REQUEST['edit']))
@@ -85,14 +86,33 @@ if ($template=='profile.tpl')
 		$uid=$USER->user_id;
 	}
 
-	$profile=new GeographUser($uid);
-	$profile->getStats();
+	$cacheid=$uid;
+	if (!$smarty->is_cached($template, $cacheid))
+	{
+		require_once('geograph/imagelist.class.php');
+		require_once('geograph/gridimage.class.php');
+		require_once('geograph/gridsquare.class.php');
 
-	$smarty->assign('page_title', 'Profile for '.$profile->realname);
-	$smarty->assign_by_ref('profile', $profile);
+		$profile=new GeographUser($uid);
+		$profile->getStats();
+
+		$smarty->assign('page_title', 'Profile for '.$profile->realname);
+		$smarty->assign_by_ref('profile', $profile);
+		
+		$images=new ImageList;
+		
+		if ($uid==$USER->user_id)
+			$statuses=array('rejected', 'pending', 'accepted', 'geograph');
+		else
+			$statuses=array('pending', 'accepted', 'geograph');
+		
+		$images->getImagesByUser($uid, $statuses);
+		$images->assignSmarty(&$smarty, 'userimages');
+		
+	}
 }
 
-$smarty->display($template);
+$smarty->display($template, $cacheid);
 
 	
 ?>
