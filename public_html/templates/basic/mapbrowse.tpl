@@ -6,7 +6,7 @@
 {*begin containing div for main map*}
 <div style="position:relative;float:left;width:{$mosaic_width+20}px">
 {if $token_zoomout}
-	<div class="map" style="height:{$mosaic_width+20}px;width:{$mosaic_width+20}px">
+	<div class="map" style="height:{$mosaic_height+20}px;width:{$mosaic_width+20}px">
 	<div class="cnr"></div>
 	<div class="side" style="width:{$mosaic_width}px;"><a accesskey="W" title="Pan map north (Alt+W)" href="/mapbrowse.php?t={$token_north}"><img src="/templates/basic/img/arrow_n.gif" alt="North" width="13" height="8"/></a></div>
 	<div class="cnr"></div>
@@ -32,7 +32,7 @@
 	<div class="cnr"></div>
 	</div>
 {else}
-	<div class="map" style="height:{$mosaic_width+20}px;width:{$mosaic_width+20}px">
+	<div class="map" style="height:{$mosaic_height+20}px;width:{$mosaic_width+20}px">
 	<div class="cnr"></div>
 	<div class="side" style="width:{$mosaic_width}px;">&nbsp;</div>
 	<div class="cnr"></div>
@@ -65,7 +65,7 @@
 {*begin containing div for overview map*}
 <div style="position:relative;float:left;width:{$overview_width+20}px;margin-left:16px;">
 
-<div class="map" style="height:{$overview_width+20}px;width:{$overview_width+20}px">
+<div class="map" style="height:{$overview_height+20}px;width:{$overview_width+20}px">
 <div class="cnr"></div>
 <div class="side" style="width:{$overview_width}px;">&nbsp;</div>
 <div class="cnr"></div>
@@ -111,62 +111,8 @@
 
 </div>
 
-<br style="clear:both"/>
 
-{literal}
-<script language="JavaScript">
-<!-- hide this script from non-javascript-enabled browsers
-
-if (document.images) {
-zoomin_F1 = new Image(30,29); zoomin_F1.src = "geographmap/zoomin.gif";
-zoomin_F2 = new Image(30,29); zoomin_F2.src = "geographmap/zoomin_F2.gif";
-north_F1 = new Image(30,29); north_F1.src = "geographmap/north.gif";
-north_F2 = new Image(30,29); north_F2.src = "geographmap/north_F2.gif";
-west_F1 = new Image(30,29); west_F1.src = "geographmap/west.gif";
-west_F2 = new Image(30,29); west_F2.src = "geographmap/west_F2.gif";
-east_F1 = new Image(30,29); east_F1.src = "geographmap/east.gif";
-east_F2 = new Image(30,29); east_F2.src = "geographmap/east_F2.gif";
-zoomout_F1 = new Image(30,29); zoomout_F1.src = "geographmap/zoomout.gif";
-zoomout_F2 = new Image(30,29); zoomout_F2.src = "geographmap/zoomout_F2.gif";
-south_F1 = new Image(30,29); south_F1.src = "geographmap/south.gif";
-south_F2 = new Image(30,29); south_F2.src = "geographmap/south_F2.gif";
-}
-
-/* Function that swaps images. */
-
-function di20(id, newSrc) {
-    var theImage = FWFindImage(document, id, 0);
-    if (theImage) {
-        theImage.src = newSrc;
-    }
-}
-
-/* Functions that track and set toggle group button states. */
-
-function FWFindImage(doc, name, j) {
-    var theImage = false;
-    if (doc.images) {
-        theImage = doc.images[name];
-    }
-    if (theImage) {
-        return theImage;
-    }
-    if (doc.layers) {
-        for (j = 0; j < doc.layers.length; j++) {
-            theImage = FWFindImage(doc.layers[j].document, name, 0);
-            if (theImage) {
-                return (theImage);
-            }
-        }
-    }
-    return (false);
-}
-
-// stop hiding -->
-</script>
-{/literal}
-
-<table style="line-height:0px" border="0" cellpadding="0" cellspacing="0" width="143">
+<table style="margin-top:5px;line-height:0px" border="0" cellpadding="0" cellspacing="0" width="143">
 
   <tr><!-- Shim row, height 1. -->
    <td><img src="/templates/basic/mapnav/shim.gif" width="12" height="1" border="0"></td>
@@ -230,6 +176,27 @@ function FWFindImage(doc, name, j) {
   </tr>
 
 </table>
+
+{literal}
+<script language="JavaScript">
+<!-- 
+if (document.images) {
+zoomin_F1 = new Image(30,29); zoomin_F1.src = "geographmap/zoomin.gif";
+zoomin_F2 = new Image(30,29); zoomin_F2.src = "geographmap/zoomin_F2.gif";
+north_F1 = new Image(30,29); north_F1.src = "geographmap/north.gif";
+north_F2 = new Image(30,29); north_F2.src = "geographmap/north_F2.gif";
+west_F1 = new Image(30,29); west_F1.src = "geographmap/west.gif";
+west_F2 = new Image(30,29); west_F2.src = "geographmap/west_F2.gif";
+east_F1 = new Image(30,29); east_F1.src = "geographmap/east.gif";
+east_F2 = new Image(30,29); east_F2.src = "geographmap/east_F2.gif";
+zoomout_F1 = new Image(30,29); zoomout_F1.src = "geographmap/zoomout.gif";
+zoomout_F2 = new Image(30,29); zoomout_F2.src = "geographmap/zoomout_F2.gif";
+south_F1 = new Image(30,29); south_F1.src = "geographmap/south.gif";
+south_F2 = new Image(30,29); south_F2.src = "geographmap/south_F2.gif";
+}
+-->
+</script>
+{/literal}
 
 
 
