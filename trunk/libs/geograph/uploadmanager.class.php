@@ -45,6 +45,8 @@ class UploadManager
 	var $upload_height=0;
 	var $square=null;
 	
+	var $tmppath="";
+	
 	/**
 	* Constructor
 	*/
@@ -52,6 +54,9 @@ class UploadManager
 	{
 		$this->db = NewADOConnection($GLOBALS['DSN']);
 		if (!$this->db) die('Database connection failed');   
+		
+		$this->tmppath=isset($_ENV['TMP'])?$_ENV['TMP']:'/tmp';
+		 
 	}
 	
 	
@@ -69,7 +74,7 @@ class UploadManager
 	function _pendingJPEG($id)
 	{
 		global $USER;
-		return "/tmp/newpic_u".$USER->user_id."_".$id.".jpeg";
+		return $this->tmppath.'/newpic_u'.$USER->user_id.'_'.$id.'.jpeg';
 	}
 
 	/**
@@ -78,7 +83,7 @@ class UploadManager
 	function _pendingEXIF($id)
 	{
 		global $USER;
-		return "/tmp/newpic_u".$USER->user_id."_".$id.".exif";
+		return $this->tmppath.'/newpic_u'.$USER->user_id.'_'.$id.'.exif';
 	}
 		
 	
@@ -170,12 +175,42 @@ class UploadManager
 		$this->errormsg=$msg;
 	}
 	
+	/**
+	* See if file is a JPEG
+	*/
+	function _isJpeg($file)
+	{
+		$is_jpeg=false;
+		
+		//use built in mime_content_type if available...
+		if (function_exists('mime_content_type'))
+		{
+			$is_jpeg= mime_content_type($file)=='image/jpeg';
+		}
+		else
+		{
+			//basic home grown version
+			$fp=fopen($file, 'rb');
+			if ($fp)
+			{
+				$sig=fread($fp,2);
+				fclose($fp);
+				
+				$b1=ord($sig{0});
+				$b2=ord($sig{1});
+				$is_jpeg=($b1=255) && ($b2==216);
+			}
+		}
+		
+		return $is_jpeg;
+	}
+	
 	function processUpload($upload_file)
 	{
 		global $USER;
 		$ok=false;
 		
-		if ( mime_content_type($upload_file)=="image/jpeg")
+		if ($this->_isJpeg($upload_file))
 		{
 			//generate a unique "upload id" - we use this to hold the image until
 			//they've confirmed they want to submit
@@ -284,7 +319,7 @@ class UploadManager
 		}
 						
 		//get sequence number
-		$seq_no = $this->db->GetOne("select count(*) from gridimage where gridsquare_id={$this->square->gridsquare_id}");
+		$seq_no = $this->db->GetOne("select count(*) from gridimage where gridsquare_id={$this->square->gridsquare_id} and moderation_status<>'rejected'");
 		$ftf=($seq_no==0)?1:0;
 		
 		//get the exif data
