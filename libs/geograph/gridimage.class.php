@@ -396,7 +396,12 @@ class GridImage
 				//we always clear the ftf flag on rejected images...
 				//we also give rejected images a negative sequence number
 				$this->ftf=0;
-				$this->seq_no=-1;
+				
+				$min = $this->db->GetOne("select min(seq_no) from gridimage where gridsquare_id={$this->gridsquare_id} and moderation_status='rejected'");
+				if (!isset($min))
+					$min=0;
+					
+				$this->seq_no=$min-1;
 			}
 			
 			//if we're going from rejected to accepted, we must undo the above
@@ -414,12 +419,15 @@ class GridImage
 			$this->moderation_status=$status;
 			
 			//update image status and ftf flag
-			$db=&$this->_getDB();
-			$db->query("update gridimage set ".
+			$sql="update gridimage set ".
 				"moderation_status='$status',".
 				"ftf={$this->ftf},".
 				"seq_no={$this->seq_no} ".
-				"where gridimage_id={$this->gridimage_id}");
+				"where gridimage_id={$this->gridimage_id}";
+				
+			
+			$db=&$this->_getDB();
+			$db->query($sql);
 			
 			
 			
