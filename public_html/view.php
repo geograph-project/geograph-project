@@ -60,7 +60,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	//do we have a valid image?
 	if ($image->isValid())
 	{
-		$smarty->assign('page_title', $image->gridref);
+		$smarty->assign('page_title', $image->grid_reference);
 		$smarty->assign_by_ref('image', $image);
 	}
 
