@@ -6,11 +6,11 @@
 <li><a href="/admin/moderation.php">Moderate</a> new photo submissions</li>
 
 
-<li><a title="Grid Builder" href="/admin/gridbuilder.php">Grid Building</a> sets up gridsquares
-from a source bitmap</li>
 <li><a title="Map Maker" href="/admin/mapmaker.php">Map Maker</a> is a simple tool for checking
-the results of the grid building tool</li>
-     
+the internal land/sea map</li>
+  <li><a title="Server Stats" href="http://www.geograph.co.uk/logs/">Server Stats</a> - 
+   check the server activity logs</li>
+      
      
 </ul>
     
