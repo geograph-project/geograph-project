@@ -383,6 +383,7 @@ class GeographUser
 				//hurrah - it's all good - lets update ourself..
 				$this->realname=stripslashes($profile['realname']);
 				$this->nickname=stripslashes($profile['nickname']);
+				$this->website=stripslashes($profile['website']);
 				$this->public_email=isset($profile['public_email'])?1:0;
 				
 				$this->_forumUpdateProfile();
@@ -405,6 +406,8 @@ class GeographUser
 		{
 			unset($this->$name);
 		}
+		
+		$this->_forumLogout();
 		
 		//initialise a few essentials
 		$this->registered=false;
@@ -644,6 +647,47 @@ class GeographUser
 	*/
 	function _forumUpdateProfile()
 	{
+		$db = NewADOConnection($GLOBALS['DSN']);
+		if (!$db) die('Database connection failed');   
+	
+		//we maintain a direct user_id to user_id mapping with the minibb 
+		//forum software....
+	
+		$username=$this->nickname;
+		if ($username=="")
+			$username=substr(" ", "", $this->realname);
+	
+		//do we have a forum user?
+		$existing=$db->GetRow("select * from geobb_users where user_id='{$this->user_id}'");
+		if (count($existing))
+		{
+			//update profile
+			$sql="update geobb_users set username=".$db->Quote($username).
+				", user_email=".$db->Quote($this->email).
+				", user_password=md5(".$db->Quote($this->password).")".
+				", user_website=".$db->Quote($this->website).
+				", user_viewemail=".$this->public_email.
+				" where user_id={$this->user_id}";
+				
+			$db->Execute($sql);	
+		}
+		else
+		{
+			//create new profile
+			$sql="insert into geobb_users(user_id,username, user_regdate,user_password,user_email,user_website,user_viewemail) values (".
+				$this->user_id.",".
+				$db->Quote($username).",".
+				"now(),".
+				"md5(".$db->Quote($this->password)."),".
+				$db->Quote($this->email).",".
+				$db->Quote($this->website).",".
+				$this->public_email.")";
+				
+			$db->Execute($sql);		
+				
+		}
+		
+		
 	}
 
 	/**
@@ -651,7 +695,24 @@ class GeographUser
 	*/
 	function _forumLogin()
 	{
+		$this->_forumUpdateProfile();
+		
+		$passmd5=md5($this->password);
+		$expiry=time()+108000;
+		
+		setcookie('geographbb', 
+			$this->nickname.'|'.$passmd5.'|'.$expiry, 
+			$expiry);
 	}
+
+	/**
+	* Log out of forum
+	*/
+	function _forumLogout()
+	{
+		setcookie('geographbb', '', time()-108000);
+	}
+	
 	
 }
 ?>
