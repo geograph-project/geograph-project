@@ -4,7 +4,7 @@
 <div id="nav_block">
  <div class="nav">
   <ul>
-    <li><a title="Home Page" href="/">Home</a></li>
+    <li><a accesskey="1" title="Home Page" href="/">Home</a></li>
     <li><a title="Browse the grid and submit photos" href="/browse.php">Browse</a></li>
     <li><a title="View map of all submissions" href="/mapbrowse.php">Map (beta!)</a></li>
     <li><a title="Submit" href="/submit.php">Submit</a></li>
