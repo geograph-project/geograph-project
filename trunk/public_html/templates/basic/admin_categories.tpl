@@ -1,6 +1,6 @@
 {assign var="page_title" value="Category Consolidation"}
 {include file="_std_begin.tpl"}
-
+{dynamic}
 
 <h2>Category Consolidation</h2>
 <p>Use this page to correct and consolidate the user submitted image 'categories'. 
@@ -79,5 +79,5 @@ function onc(that) {
 <p>Warning: Be careful using this page to swap categories, 
 it can cope will two way swap, but three ways swaps will probably get confused</p>
 
-    
+{/dynamic}    
 {include file="_std_end.tpl"}
