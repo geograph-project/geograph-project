@@ -45,6 +45,9 @@ corrected</li>
    
 <li><a title="Map Maker" href="/admin/mapmaker.php">Map Maker</a> is a simple tool for checking
 the internal land/sea map</li>
+
+<li><a title="DB Check" href="/admin/dbcheck.php">Database Check</a> analyse database for
+database or application problems</li>
 </ul>
 
     
