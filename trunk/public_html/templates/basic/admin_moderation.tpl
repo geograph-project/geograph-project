@@ -17,7 +17,7 @@
 	  <div style="float:left;" class="photo33"><a title="view full size image" href="/view.php?id={$image->gridimage_id}">{$image->getThumbnail(213,160)}</a>
 	  <div class="caption">
 	  
-	  <a title="view page for {$image->gridref}" href="/browse.php?gridref={$image->gridref}">{$image->gridref}</a> by 
+	  <a title="view page for {$image->grid_reference}" href="/browse.php?gridref={$image->grid_reference}">{$image->grid_reference}</a> by 
 	  
 	  <a title="view user profile" href="/profile.php?u={$image->user_id}">{$image->realname}</a> entitled 
 	  

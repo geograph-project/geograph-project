@@ -67,7 +67,7 @@ if (isset($_POST['gridsquare']))
 		$smarty->assign('gridsquare', $square->gridsquare);
 		$smarty->assign('eastings', $square->eastings);
 		$smarty->assign('northings', $square->northings);
-		$smarty->assign('gridref', $square->gridref);
+		$smarty->assign('gridref', $square->grid_reference);
 	
 		//store other useful info about the square
 		$smarty->assign('imagecount', $square->imagecount);
