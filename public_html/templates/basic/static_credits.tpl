@@ -41,6 +41,7 @@
     <p>We also strive to adhere to the following standards</p>
     <a title="Check our XHTML Compliance" href="http://validator.w3.org/check/referer"><img border="0" src="/img/valid-xhtml10.png" width="88" height="31" alt="XHTML"></a>
     <a title="Check our CSS Compliance" href="http://jigsaw.w3.org/css-validator/validator?uri=http://{$http_host}/templates/basic/css/basic.css"><img border="0" src="/img/css1.png" width="88" height="31" alt="CSS"></a>
-    
+    <a href="http://bobby.watchfire.com/" title="Bobby's Home Page"><img border="0" src="/img/approved_508.gif" alt="Bobby WorldWide Approved 508" width="88" height="31"></a> 
+
     
 {include file="_std_end.tpl"}
