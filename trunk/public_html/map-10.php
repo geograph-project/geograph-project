@@ -132,7 +132,7 @@ $smarty->display('_std_end.tpl');
 
 function get_direction($ox,$oy,$dx,$dy,$title) {
 	global $db;
-	$sql="select grid_reference1 ".
+	$sql="select grid_reference ".
 	"from gridsquare ".
 	"where x = ".($ox+$dx)." and y = ".($oy+$dy);
 	$grid_reference1 = $db->GetOne($sql);
