@@ -141,17 +141,16 @@ class GridImage
 	/**
 	* Get an array of current image classes
 	*/
-	function getImageClasses()
+	function& getImageClasses()
 	{
-		//only show gb grid if we have land there
-		//show all irish grid squares...
 		$db=&$this->_getDB();
-		$arr[''] = '';
-		$arr = $db->GetAssoc("select imageclass,imageclass from gridimage ".
+		
+		$arr = $db->CacheGetAssoc(24*3600,"select imageclass,imageclass from gridimage ".
+			"where length(imageclass)>0 and moderation_status in ('accepted','geograph') ".
 			"group by imageclass");
 		
 		//temp 'defaults' until the group by will pick them up!
-		foreach(array('','Urban Landscape',
+		foreach(array('Urban Landscape',
 		'Urban Landmark',
 		'Open Countryside',
 		'Farmland',
@@ -163,9 +162,8 @@ class GridImage
 			if(!$arr[$val]) 
 				$arr[$val]=$val;
 		}
-		natcasesort ($arr);
-		$arr[' '] = '-------------------';
-		$arr['Other'] = 'Other (Enter --&gt;)';
+		natcasesort($arr);
+		
 		return $arr;
 	}
 	
