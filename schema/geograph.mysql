@@ -209,8 +209,15 @@ create table user
     #signup date used to weed out unverified users
     signup_date datetime,
 
+	#nickname
+  	nickname varchar(128),
+  	
+  	#privacy flag
+  	public_email int default '0',
+
     primary key(user_id)
 );
+
 
 
 create table gridimage
