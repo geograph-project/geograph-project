@@ -13,14 +13,13 @@
 
 <a href="JavaScript:paste_strinL('[email=][/email]',0)" onMouseOver="window.status='Email Link'; return true" onMouseOut="window.status=''; return true"><img src="{$main_url}/img/button_email.gif" width="23" height="22" alt="Email Link" border="0"></a>&nbsp;
 
-<input type=checkbox name=disbbcode value=on>{$l_disableBbCode} <span class=txtSm> *<a href="{$main_url}/{$indexphp}action=manual#bbcodes">{$l_whatIsIt}</a></span>
+<input type="checkbox" name="disbbcode" id="disbbcode" value="on"><label for="disbbcode">{$l_disableBbCode}</label> <span class=txtSm> <a href="{$main_url}/{$indexphp}action=manual#bbcodes">{$l_whatIsIt}</a></span>
 </td>
 </tr>
 <tr>
 <td class=caption5><textarea name=postText cols=38 rows=10 class=textForm tabindex=2 style="width:450px;">{$postText}</textarea>
 <br>
 {$emailCheckBox}
-<br><span class=txtSm>{$l_warnEncoding}</span>
 </td>
 </tr>
 <tr><td class=tbTransparent>{$loginLogout}</td></tr>
