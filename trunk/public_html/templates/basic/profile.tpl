@@ -8,9 +8,23 @@
  	<ul>
  	<li>Name: {$profile->realname|escape:'html'}</li>
  	
+ 	<li>Nickname: 
+ 	{if $profile->nickname}
+	 	{$profile->nickname|escape:'html'}
+	{else}
+	    <i>n/a</i>
+	{/if}
+	</li>
+ 	
+ 	<li>Website: 
  	{if $profile->website}
- 	<li>Website: <a href="{$profile->website|escape:'html'}">{$profile->website|escape:'html'}</a></li>
- 	{/if}
+	 	<a href="{$profile->website|escape:'html'}">{$profile->website|escape:'html'}</a>
+	{else}
+	    <i>n/a</i>
+	{/if}
+	</li>
+ 	
+ 	
  	
  	{if $user->user_id ne $profile->user_id}
  		{if $profile->public_email eq 1}
