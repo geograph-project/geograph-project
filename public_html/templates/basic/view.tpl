@@ -22,7 +22,7 @@ referring to <b>image {$image->gridimage_id}</b>
 </p>
 
 {/if}
-     
+      
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   {$image->getFull()}
   <div class="caption">{$image->title|escape:'html'}</div>
@@ -34,6 +34,7 @@ referring to <b>image {$image->gridimage_id}</b>
 <tr><td>Submitted by</td><td><a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a></td></tr>
 <tr><td>Submission date</td><td>{$image->submitted}</td></tr>
 <tr><td>Comments</td><td>{$image->comment}</td></tr>
+<tr><td>See Also</td><td>{getamap gridref=$image->grid_reference text="OS Map for `$image->grid_reference`"}</td></tr>
 <tr><td>Copyright</td><td>
 
 
