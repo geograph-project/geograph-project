@@ -1,43 +1,62 @@
-{assign var="page_title" value="Map Browsing"}
+{assign var="page_title" value="Map Browsing :: $gridref"}
 {include file="_std_begin.tpl"}
 
     <h2>Map Browsing</h2>
  
  <div style="float:right">
 
- <a href="/mapbrowse.php?t={$token_zoomout}">Zoom out</a><br>
- 
- &nbsp;&nbsp;&nbsp;&nbsp;<a href="/mapbrowse.php?t={$token_north}">N</a><br>
- <a href="/mapbrowse.php?t={$token_west}">W</a> &nbsp;
- <a href="/mapbrowse.php?t={$token_east}">E</a> <br>
- &nbsp;&nbsp;&nbsp;&nbsp;<a href="/mapbrowse.php?t={$token_south}">S</a><br>
+	<div style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;background:#6574FF;border:3px solid #000066;">
+		<div style="position:absolute;top:0px;left:0px;">
+		{foreach from=$overview key=y item=maprow}
+			<div>
+			{foreach from=$maprow key=x item=mapcell}
+			<a href="/mapbrowse.php?t={$token}&i={$x}&j={$y}&recenter="><img 
+			ismap="ismap" style="float:left;" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+			{/foreach}
+			</div>
+		{/foreach}
+		</div>
+		{if $marker->width < 150}
 
+			{if $marker->width > 3}
+			<div style="position:absolute;top:{$marker->top}px;left:{$marker->left}px;width:{$marker->width}px;height:{$marker->height}px; border:1px solid yellow; font-size:1px;"></div>
+			{else}
+			<div style="position:absolute;top:{$marker->top-4}px;left:{$marker->left-4}px;"><img src="	/templates/basic/img/crosshairs.gif" alt="+" width="9" height="9"></div>
+			{/if}
+		{/if}
 
- <table>
- <tr><td>map_x</td><td>{$mosaicobj->map_x}</td></tr>
- <tr><td>map_y</td><td>{$mosaicobj->map_y}</td></tr>
- <tr><td>image_w</td><td>{$mosaicobj->image_w}</td></tr>
- <tr><td>image_h</td><td>{$mosaicobj->image_h}</td></tr>
- <tr><td>pixels_per_km</td><td>{$mosaicobj->pixels_per_km}</td></tr>
- <tr><td>mosaic_factor</td><td>{$mosaicobj->mosaic_factor}</td></tr>
- <tr><td>caching</td><td>{$mosaicobj->caching}</td></tr>
- <tr><td colspan="2">{$mosaicobj->debugtrace}</td></tr>
- </table>
- </div>
- 
- 
- 
- 	<div style="width:{$mosaic_width}px;height:{$mosaic_height}px;background:#6574FF;border:10px solid #000066;">
- 	{foreach from=$mosaic key=y item=maprow}
- 		<div>
- 		{foreach from=$maprow key=x item=mapcell}
- 		<a href="/mapbrowse.php?t={$token}&i={$x}&j={$y}&zoomin="><img 
- 		ismap="ismap" title="{$mapcell->getImageUrl()}" style="float:left;" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
- 		{/foreach}
- 		</div>
- 	{/foreach}
  	</div>
+ 	
+<br/>
+ <a href="/mapbrowse.php?t={$token_zoomout}">Zoom out</a><br/>
  
+ <p>Grid Reference at center<br/>
+ <b>{$gridref}</b></p>
+ <p>&middot; Click on the map to zoom in</p>
+ <p>&middot; Click a thumbnail to view</p>
+ <p>&middot; Click on small map above <br/>
+ to pan around</p>
+ </div>
+	<div class="nav" style="width:{$mosaic_width+20}px;height:9px;"><a href="/mapbrowse.php?t={$token_north}" class="nav"><img src="/templates/basic/img/arrow_n.gif" alt="North" width="13" height="8"><img src="/templates/basic/img/arrow_n.gif" alt="North" width="13" height="8"></a></div>
+<div style="display:block; width:600px;">
+	<div class="nav" style="float:left;width:9px;height:{$mosaic_height+2}px;"><a href="/mapbrowse.php?t={$token_west}" class="nav"><img src="/templates/basic/img/arrow_w.gif" alt="West" width="8" height="13"><img src="/templates/basic/img/arrow_w.gif" alt="West" width="8" height="13"></a></div>
+	
+
+	<div style="float:left;width:{$mosaic_width}px;height:{$mosaic_height}px;background:#6574FF;border:1px solid #000066;">
+	{foreach from=$mosaic key=y item=maprow}
+		<div>
+		{foreach from=$maprow key=x item=mapcell}
+		<a href="/mapbrowse.php?t={$token}&i={$x}&j={$y}&zoomin="><img 
+		ismap="ismap" title="{$mapcell->getImageUrl()}" style="float:left;" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+		{/foreach}
+		</div>
+	{/foreach}
+	</div>
+	
+	<div class="nav" style="float:left;width:9px;height:{$mosaic_height+2}px;"><a href="/mapbrowse.php?t={$token_east}" class="nav"><img src="/templates/basic/img/arrow_e.gif" alt="East" width="8" height="13"><img src="/templates/basic/img/arrow_e.gif" alt="East" width="8" height="13"></a></div>
+	</div>
+	<div class="nav" style="width:{$mosaic_width+20}px;height:9px;"><a href="/mapbrowse.php?t={$token_south}" class="nav"><img src="/templates/basic/img/arrow_s.gif" alt="South" width="13" height="8"><img src="/templates/basic/img/arrow_s.gif" alt="South" width="13" height="8"></a></div>
+ <br/>
 {if $is_admin}
 <p><a href="mapbrowse.php?expireAll=0">Clear cache</a>
 <a href="mapbrowse.php?expireAll=1">(clear basemaps too)</a></p>
