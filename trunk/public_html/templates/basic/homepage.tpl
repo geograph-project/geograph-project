@@ -24,6 +24,7 @@ and you can be part of it.</p>
 
     <li><a title="Browse photographs" href="/browse.php">browse images taken by other members</a></li>
     <li><a title="Submit a photograph" href="/submit.php">upload pictures and information</a></li>
+    <li><a title="Discussion forums" href="/discuss/">discuss the site on our forums <b>(NEW!)</b></a></li>
 </ul>
 
 <p>Look out for more cool features coming soon!</p>
