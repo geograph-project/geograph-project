@@ -8,6 +8,7 @@
 <link rel="Shortcut Icon" type="image/ico" href="/favicon.ico" />
  
 <title>{$page_title|lower} :: geograph.co.uk</title>
+<script type="text/javascript" src="/geograph.js"></script>
 </head>
 
 <body>
