@@ -3,30 +3,30 @@
 This file is part of miniBB. miniBB is free discussion forums/message board software, without any warranty. See COPYING file for more details. Copyright (C) 2004 Paul Puzyrev, Sergei Larionov. www.minibb.net
 */
 
-$DB='mysql';
+$DB=$CONF['db_driver'];
 
-$DBhost='localhost';
-$DBname='database_name';
-$DBusr='database_login';
-$DBpwd='database_password';
+$DBhost=$CONF['db_connect'];
+$DBname=$CONF['db_db'];
+$DBusr=$CONF['db_user'];
+$DBpwd=$CONF['db_pwd'];
 
-$Tf='minibbtable_forums';
-$Tp='minibbtable_posts';
-$Tt='minibbtable_topics';
-$Tu='minibbtable_users';
-$Ts='minibbtable_send_mails';
-$Tb='minibbtable_banned';
+$Tf='geobb_forums';
+$Tp='geobb_posts';
+$Tt='geobb_topics';
+$Tu='geobb_users';
+$Ts='geobb_send_mails';
+$Tb='geobb_banned';
 
-$admin_usr='admin_login';
-$admin_pwd='admin_pass';
-$admin_email='admin@email';
+$admin_usr=$CONF['minibb_admin_user'];
+$admin_pwd=$CONF['minibb_admin_pwd'];
+$admin_email=$CONF['minibb_admin_email'];
 
 $bb_admin='bb_admin.php?';
 
 $lang='eng';
 $skin='default';
-$main_url='http://www_yourdomain_url/forums';
-$sitename='miniBB forums';
+$main_url='http://'.$_SERVER['HTTP_HOST'].'/discuss';
+$sitename='discuss';
 $emailadmin=0;
 $emailusers=0;
 $userRegName='_A-Za-z0-9 ';
@@ -50,7 +50,7 @@ $postRange=60;
 $dateFormat='j F Y H:i:s';
 
 $cookiedomain='';
-$cookiename='miniBBsite';
+$cookiename='geographbb';
 $cookiepath='';
 $cookiesecure=FALSE;
 $cookie_expires=108000;
