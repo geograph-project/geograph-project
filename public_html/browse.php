@@ -68,13 +68,19 @@ elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 	$grid_ok=$square->setGridRef($_GET['gridref']);
 	
 	//preserve inputs in smarty
-	$smarty->assign('gridref', stripslashes($_GET['gridref']));
 	
 	if ($grid_ok)
 	{
+		$smarty->assign('gridref', $square->grid_reference);
 		$smarty->assign('gridsquare', $square->gridsquare);
 		$smarty->assign('eastings', $square->eastings);
 		$smarty->assign('northings', $square->northings);
+	}
+	else
+	{
+		//preserve the input at least
+		$smarty->assign('gridref', stripslashes($_GET['gridref']));
+	
 	}
 	
 }
