@@ -400,7 +400,11 @@ class GridSquare
 					//ensure we initialise ourselves properly
 					$this->loadFromId($gridimage_id);
 				}
+			
+				//we know there are no images, so lets find some nearby squares...
+				$this->findNearby($x, $y, 100);
 			}
+			
 			
 			if (!$ok)
 				$this->_error("$gridref seems to be all at sea! Please contact us if you think this is in error");
