@@ -16,30 +16,20 @@ you can be part of</li>
 </ul>
 </div></div>
 
-<p>We have a growing collection of geographically representative photographs 
-for every square kilometre of the 
+<p>The Geograph British Isles project aims to collect a geographically
+representative photograph for every square kilometre of the 
 <acronym title="Great Britain, Ireland and smaller adjacent islands">British Isles</acronym>
-but we need your help!<p>
+and you can be part of it.</p>
 
-<p>You can</p>
+<p>Already you can...</p>
 <ul>
 
-    <li><a title="Submit a photograph" href="/submit.php">upload pictures and information</a></li>
     <li><a title="Browse photographs" href="/browse.php">browse images taken by other members</a></li>
+    <li><a title="Submit a photograph" href="/submit.php">upload pictures and information</a></li>
 </ul>
 
 <p>Look out for more cool features coming soon!</p>
 
-<h3>How can I activate a grid square?</h3>
-
-<p>If you're the first to submit a proper &quot;geograph&quot; for the grid square
-you'll get a geograph point added to your profile and the warm glow that comes
-with it. So what makes an image a genuine geograph?</p>
-<ul>
-<li>The image must be taken within the grid square </li>
-<li>You must clearly show at close range one of the main geographical features within the square</li>
-<li>You should include a short description relating the image to the map square</li>
-</ul>
 
 <h3>How do I get started?</h3>
 
