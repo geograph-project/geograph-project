@@ -49,6 +49,11 @@ if (isset($_REQUEST['edit']))
 		{
 			//show the user their new profile
 			$template='profile.tpl';	
+			
+			//clear the cache for the profile for both the user
+			//and other people
+			$smarty->clear_cache($template, "{$USER->user_id}_0");
+			$smarty->clear_cache($template, "{$USER->user_id}_1");
 		}
 		else
 		{
@@ -86,7 +91,9 @@ if ($template=='profile.tpl')
 		$uid=$USER->user_id;
 	}
 
-	$cacheid=$uid;
+	$isself=($uid==$USER->user_id)?1:0;
+
+	$cacheid="{$uid}_{$isself}";
 	if (!$smarty->is_cached($template, $cacheid))
 	{
 		require_once('geograph/imagelist.class.php');
