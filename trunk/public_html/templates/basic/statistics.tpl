@@ -82,6 +82,7 @@
 
     
 {if $by}
+	{if $total > 0}
 	<p><small>Click a column header to change the sort order.</small></p>
 
 	<table class="report">
@@ -102,7 +103,9 @@
 	<th align=right>100%</th></tr>
 	</tbody>
 	</table>
-
+	{else}
+		<p><i>No Results to Display</i></p>
+	{/if}
 {else} 
     <p>Here's a graph of photo submissions since we began...<br/>
     <img src="/img/submission_graph.png" width="480" height="161"/>
