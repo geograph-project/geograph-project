@@ -107,12 +107,12 @@ $dbUserAct='activity';
 $dbUserNp='user_newpasswd';
 $dbUserNk='user_newpwdkey';
 
-$enableNewRegistrations=TRUE;
-$enableProfileUpdate=TRUE;
+$enableNewRegistrations=true;
+$enableProfileUpdate=true;
 
 $indexphp='index.php?';
-$useSessions=FALSE;
-$usersEditTopicTitle=FALSE;
+$useSessions=true;
+$usersEditTopicTitle=false;
 $pathToFiles='./';
 //$includeHeader='header.php';
 //$includeFooter='footer.php';
@@ -120,6 +120,6 @@ $pathToFiles='./';
 //$allForumsReg=TRUE;
 //$registerInactiveUsers=TRUE;
 //$mod_rewrite=TRUE;
-$enableViews=TRUE;
+$enableViews=true;
 
 ?>
