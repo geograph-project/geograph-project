@@ -37,9 +37,9 @@
  <p>&middot; Click on small map above <br/>
  to pan around</p>
  </div>
-	<div class="nav" style="width:{$mosaic_width+20}px;height:9px;"><a href="/mapbrowse.php?t={$token_north}" class="nav"><img src="/templates/basic/img/arrow_n.gif" alt="North" width="13" height="8"><img src="/templates/basic/img/arrow_n.gif" alt="North" width="13" height="8"></a></div>
+	<div class="mapnav" style="width:{$mosaic_width+20}px;height:9px;"><a href="/mapbrowse.php?t={$token_north}" class="mapnav"><img src="/templates/basic/img/arrow_n.gif" alt="North" width="13" height="8"><img src="/templates/basic/img/arrow_n.gif" alt="North" width="13" height="8"></a></div>
 <div style="display:block; width:600px;">
-	<div class="nav" style="float:left;width:9px;height:{$mosaic_height+2}px;"><a href="/mapbrowse.php?t={$token_west}" class="nav"><img src="/templates/basic/img/arrow_w.gif" alt="West" width="8" height="13"><img src="/templates/basic/img/arrow_w.gif" alt="West" width="8" height="13"></a></div>
+	<div class="mapnav" style="float:left;width:9px;height:{$mosaic_height+2}px;"><a href="/mapbrowse.php?t={$token_west}" class="mapnav"><img src="/templates/basic/img/arrow_w.gif" alt="West" width="8" height="13"><img src="/templates/basic/img/arrow_w.gif" alt="West" width="8" height="13"></a></div>
 	
 
 	<div style="float:left;width:{$mosaic_width}px;height:{$mosaic_height}px;background:#6574FF;border:1px solid #000066;">
@@ -53,9 +53,9 @@
 	{/foreach}
 	</div>
 	
-	<div class="nav" style="float:left;width:9px;height:{$mosaic_height+2}px;"><a href="/mapbrowse.php?t={$token_east}" class="nav"><img src="/templates/basic/img/arrow_e.gif" alt="East" width="8" height="13"><img src="/templates/basic/img/arrow_e.gif" alt="East" width="8" height="13"></a></div>
+	<div class="mapnav" style="float:left;width:9px;height:{$mosaic_height+2}px;"><a href="/mapbrowse.php?t={$token_east}" class="mapnav"><img src="/templates/basic/img/arrow_e.gif" alt="East" width="8" height="13"><img src="/templates/basic/img/arrow_e.gif" alt="East" width="8" height="13"></a></div>
 	</div>
-	<div class="nav" style="width:{$mosaic_width+20}px;height:9px;"><a href="/mapbrowse.php?t={$token_south}" class="nav"><img src="/templates/basic/img/arrow_s.gif" alt="South" width="13" height="8"><img src="/templates/basic/img/arrow_s.gif" alt="South" width="13" height="8"></a></div>
+	<div class="mapnav" style="width:{$mosaic_width+20}px;height:9px;"><a href="/mapbrowse.php?t={$token_south}" class="mapnav"><img src="/templates/basic/img/arrow_s.gif" alt="South" width="13" height="8"><img src="/templates/basic/img/arrow_s.gif" alt="South" width="13" height="8"></a></div>
  <br/>
 {if $is_admin}
 <p><a href="mapbrowse.php?expireAll=0">Clear cache</a>
