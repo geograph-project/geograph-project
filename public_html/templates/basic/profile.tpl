@@ -45,9 +45,14 @@
  	<ul>
  	
  	{if $profile->stats.total gt 0}
- 	  <li>{$profile->stats.total} {if $profile->stats.total eq 1}photograph{else}photographs{/if} submitted</li>
-      <li>First to photograph {$profile->stats.ftf} grid {if $profile->stats.ftf eq 1}square{else}squares{/if}</li>
- 	{else}
+ 	  <li>Geograph points: {$profile->stats.ftf} (see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)</li>
+ 	  <li>{$profile->stats.total} {if $profile->stats.total eq 1}photograph{else}photographs{/if} submitted
+ 	  
+ 	  {if $profile->stats.pending gt 0}
+ 	 	  ({$profile->stats.pending} awaiting moderation)
+ 	  {/if}
+ 	  </li>
+   {else}
  	  <li>No photographs submitted</li>
  	{/if}
 
