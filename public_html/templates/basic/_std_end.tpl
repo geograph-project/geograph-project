@@ -17,6 +17,7 @@
   {if $is_admin}
   <h3>Admin</h3>
   <ul>
+     <li><a title="Discuss" href="/discuss/">Discuss (beta)</a></li>
      <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
      <li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
      <li><a title="Map Maker" href="/admin/mapmaker.php">Map Maker</a></li>
