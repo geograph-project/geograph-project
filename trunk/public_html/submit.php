@@ -106,15 +106,19 @@ if (isset($_POST['gridsquare']))
 						$smarty->assign('upload_id', $uploadmanager->upload_id);
 						
 						$image = new GridImage;
-						$smarty->assign('classes', $image->getImageClasses());
+						
+						$classes=&$image->getImageClasses();
+						$classes['Other']='Other...';
+						
+						$smarty->assign_by_ref('classes', $classes);
 
 						if (isset($uploadmanager->exifdate)) {
 							$smarty->assign('imagetaken', $uploadmanager->exifdate);
-							$smarty->assign('imagetakenmessage', ' ('.$uploadmanager->exifdate.' stated in exif header)');
+							//$smarty->assign('imagetakenmessage', ' ('.$uploadmanager->exifdate.' stated in exif header)');
 						} else {
 							$smarty->assign('imagetaken', '--');
 						}
-
+						
 						$step=3;
 					}
 					break;
@@ -155,7 +159,8 @@ if (isset($_POST['gridsquare']))
 			//preserve title and comment
 			$smarty->assign('title', stripslashes($_POST['title']));
 			$smarty->assign('comment', stripslashes($_POST['comment']));
-		
+			
+			//To Do - do some checking here and maybe go back to step 3?
 			
 		
 			$step=4;
