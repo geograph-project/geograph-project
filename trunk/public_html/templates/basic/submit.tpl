@@ -7,8 +7,8 @@
 
 {if $step eq 1}<h2>Submit Step 1 of 4 : Choose grid square</h2>
 
-<p>Begin by choosing the grid square you wish to submit. If you're new,
-you may like to check our <a href="/help/guide">guide to geographing</a> first.</p>
+<p>Begin by choosing the grid square you wish to submit. <br/>
+If you're new, you may like to check our <a href="/help/guide">guide to geographing</a> first.</p>
 
 {/if}
 
@@ -35,13 +35,28 @@ you may like to check our <a href="/help/guide">guide to geographing</a> first.<
 	{/if}
 	
 	{if $errormsg}
-	<p>{$errormsg}</p>
+	<p><b>{$errormsg}</b></p>
+	{/if}
+	{if $step eq 1}
+		<p> or enter an exact grid reference (6,8 or 10 figure) for this picture location. </p>
+		
+		<p><label for="gridreference">Grid Reference</label>
+		<input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="12"/>
+		<input type="submit" name="setpos" value="Next &gt;"/><br/>
+		<small>You might find <A HREF='http://www.trigpointinguk.com/info/convert-wgs.php' onClick="window.open(href,'wgs','height=300,width=600,status,scrollbars');return false;" TARGET=_blank>WGS84 Lat/Long to OSGB36 Grid Ref</A> Popup useful.</small></p>
+		
+		<p>The corresponding geograph grid square will be automatically selected.</p>
+		
+		<p>If you are unsure of the photo location there are a number of online sources available to help, for example {getamap}, provides a search by placename or postcode. Once you have centered the map on the picture location return here, and enter the 'Grid reference at centre' value shown into the box above.
+	{else}
+		<input type="hidden" name="gridreference" value="{$gridreference|escape:'html'}">
 	{/if}
 
 {else}
 	<input type="hidden" name="gridsquare" value="{$gridsquare|escape:'html'}">
 	<input type="hidden" name="eastings" value="{$eastings|escape:'html'}">
 	<input type="hidden" name="northings" value="{$northings|escape:'html'}">
+	<input type="hidden" name="gridreference" value="{$gridreference|escape:'html'}">
 {/if}
 
 
