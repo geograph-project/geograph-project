@@ -24,7 +24,7 @@ referring to <b>image {$image->gridimage_id}</b>
 {/if}
       
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
-  {$image->getFull()}
+  <div class="img-shadow">{$image->getFull()}</div>
   <div class="caption">{$image->title|escape:'html'}</div>
   
   {if $image->comment}
@@ -35,7 +35,7 @@ referring to <b>image {$image->gridimage_id}</b>
   <div class="caption"><a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">Edit Photo Information</a></div>
   {/if}
   
-  {if $is_admin}
+  {if $ismoderator}
 	  <form method="post" action="/usermsg.php">
 	  <input type="hidden" name="to" value="{$image->user_id}"/>
 	  <input type="hidden" name="init" value="Re: image for {$image->grid_reference} ({$image->title})&#13;&#10;http://{$http_host}/view.php?id={$image->gridimage_id}&#13;&#10;"/>
