@@ -218,8 +218,8 @@ function init_session()
 //this is a bit cheeky - if the xhtml validator calls, turn off the automatic
 //session id insertion, as it uses & instead of &amp; in urls
 //we also turn it off for bots, as session ids can bugger it up
-if (($_SERVER['HTTP_USERAGENT']=='W3C_Validator/1.305.2.148 libwww-perl/5.803')||
-    (strpos($_SERVER['HTTP_USERAGENT'], 'bot')>0))
+if (($_SERVER['HTTP_USER_AGENT']=='W3C_Validator/1.305.2.148 libwww-perl/5.803')||
+    (strpos($_SERVER['HTTP_USER_AGENT'], 'bot')>0))
 {
 	ini_set ('url_rewriter.tags', '');
 }
