@@ -13,7 +13,6 @@
     you'll get a geograph point added to your profile and the warm glow that comes
     with it. So what makes an image a genuine geograph?</p>
     <ul>
-    <li>The image must be taken within the grid square </li>
     <li>You must clearly show at close range one of the main geographical features within the square</li>
     <li>You should include a short description relating the image to the map square</li>
     </ul>
