@@ -32,9 +32,30 @@ $image=new GridImage;
 if (isset($_GET['id']))
 {
 	$image->loadFromId($_GET['id']);
+	
+	//is the image rejected? - only the owner and administrator should see it
+	if ($image->moderation_status=='rejected')
+	{
+		if (($image->user_id == $USER->user_id) ||
+		    ($USER->hasPerm('admin')))
+		{
+			//ok, we'll let it lie...
+		}
+		else
+		{
+			//clear the image
+			$image=new GridImage;
+		}
+	}
 }
-$smarty->assign('page_title', $image->gridref);
-$smarty->assign_by_ref('image', $image);
+
+//do we have a valid image?
+if ($image->isValid())
+{
+	$smarty->assign('page_title', $image->gridref);
+	$smarty->assign_by_ref('image', $image);
+}
+
 $smarty->display('view.tpl');
 
 	
