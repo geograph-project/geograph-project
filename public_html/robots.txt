@@ -3,3 +3,5 @@
 
 User-agent: *
 Disallow: /photos
+Disallow: /mapbrowse.php?
+Disallow: /admin
