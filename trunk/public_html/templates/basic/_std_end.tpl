@@ -5,7 +5,7 @@
   <div id="nav">
   <ul>
     <li><a title="Home Page" href="/">Home</a></li>
-    <li><a title="Browse the grid" href="/browse.php">Browse</a></li>
+    <li><a title="Browse the grid and submit photos" href="/browse.php">Browse &amp Submit</a></li>
     <li><a title="Members" href="/statistics.php">Statistics</a></li>
     <li><a title="FAQ" href="/faq.php">FAQ</a></li>
     <li><a title="Contact Us" href="/contact.php">Contact</a></li>
@@ -16,6 +16,7 @@
   <ul>
      <li><a title="Admin Tools" href="/admin/">Admin</a></li>
      <li><a title="Grid Builder" href="/admin/gridbuilder.php">Grid Building</a></li>
+     <li><a title="Map Maker" href="/admin/mapmaker.php">Map Maker</a></li>
   </ul>
   {/if}
   
@@ -35,16 +36,16 @@
   <div id="login">
   
   {if $user->registered}
-  	  Logged in as {$user->realname}
+  	  Logged in as {$user->realname|escape:'html'}
   	  <span class="sep">|</span>
   	  <a title="Profile" href="/profile.php">profile</a>
   	  <span class="sep">|</span>
   	  <a title="Log out" href="/logout.php">logout</a>
   {else}
 	  You are not logged in
-	  <a title="Already registered? Login in here" href="login.php">login</a>
+	  <a title="Already registered? Login in here" href="/login.php">login</a>
 		<span class="sep">|</span>
-	  <a title="Register to upload photos" href="register.php">register</a>
+	  <a title="Register to upload photos" href="/register.php">register</a>
   {/if}
   
   </div>
@@ -54,7 +55,7 @@
 
 <div id="footer_block">
   <div id="footer">
-    <p><a href="credits.php" title="Who built this and how?">Credits</a>
+    <p><a href="/help/credits" title="Who built this and how?">Credits</a>
        <span class="sep">|</span>
        <a href="http://validator.w3.org/check/referer" title="check our xhtml standards compliance">XHTML</a>
        <span class="sep">|</span>
