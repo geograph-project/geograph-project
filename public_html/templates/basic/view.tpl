@@ -58,7 +58,9 @@ referring to <b>image {$image->gridimage_id}</b>
 
 
 <tr><td>Submission date</td><td>{$image->submitted}</td></tr>
+{if $image->comment}
 <tr><td>Comments</td><td>{$image->comment}</td></tr>
+{/if}
 <tr><td>See Also</td><td>{getamap gridref=$image->grid_reference text="OS Map for `$image->grid_reference`"}</td></tr>
 <tr><td>Copyright</td><td>
 
@@ -100,6 +102,24 @@ licenced under a <a rel="license" href="http://creativecommons.org/licenses/by-s
 </td></tr>
 </table>
 
+
+{if $image->grid_square->reference_index eq 1}
+<p>View Map of this Location: 
+<a href="javascript:popupOSMap('{$image->grid_square->get6FigGridRef()}')">getamap.co.uk</a>, 
+<a href="http://www.streetmap.co.uk/streetmap.dll?Grid2Map?X={$image->grid_square->getNatEastings()}&Y={$image->grid_square->getNatNorthings()}&title={$image->title|escape:'url'}&back=Return+to+Geograph&url=http://{$http_host}/view.php?id={$image->gridimage_id}&nolocal=X&bimage=background%3dhttp://{$http_host}/templates/basic/img/background.gif" target="_blank">streetmap.co.uk</a>, 
+<a href="http://www.multimap.com/map/browse.cgi?GridE={$image->grid_square->getNatEastings()}&GridN={$image->grid_square->getNatNorthings()}&scale=25000" target="_blank">multimap.co.uk</a>, 
+<a href="http://www.deformedweb.co.uk/trigs/coord.cgi?p={$image->grid_reference}" target="_blank">more...</a><br>
+Find Nearby: 
+<a title="Grid Reference {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">Geograph Pictures</a>, 
+<a href="http://stats.guk2.com/caches/search_parse.php?osgbe={$image->grid_square->getNatEastings()}&osgbn={$image->grid_square->getNatNorthings()}" target="_blank">Geocaches</a>, 
+<a href="http://www.trigpointinguk.com/trigs/search-parse.php?gridref={$image->grid_square->get6FigGridRef()}" target="_blank">Trigpoints</a>, 
+<a href="http://www.deformedweb.co.uk/trigs/coord.cgi?p={$image->grid_reference}" target="_blank">more...</a></p>
+{else}
+<p>View Map of this Location: 
+<a href="javascript:popupOSMap('{$image->grid_square->get6FigGridRef()}')">getamap.co.uk</a>, 
+<a href="http://www.deformedweb.co.uk/trigs/coord.cgi?p={$image->grid_reference}" target="_blank">more...</a><br>
+Find Nearby: <a href="http://www.deformedweb.co.uk/trigs/coord.cgi?p={$image->grid_reference}" target="_blank">features</a></p>
+{/if}
 
 {else}
 <h2>Sorry, image not available</h2>
