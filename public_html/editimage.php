@@ -62,14 +62,11 @@ if (isset($_REQUEST['id']))
 			//add other to the end
 			$classes['Other']='Other...';
 			
-			
-			
-			
 			$smarty->assign_by_ref('classes', $classes);
 			$smarty->assign_by_ref('imageclassother', $imageclassother);
 
 
-//save changes?
+			//save changes?
 			if (isset($_POST['title']))
 			{
 				$ok=true;
@@ -125,6 +122,19 @@ if (isset($_REQUEST['id']))
 				$image->imageclass=$imageclass;
 				$image->imageclassother=$imageclassother;
 				$image->imagetaken=$imagetaken;
+				
+				
+				//change grid reference?
+				if ($ok &&
+				    (($image->moderation_status=='pending')||($isadmin)) &&
+					($_POST['grid_reference']!=$image->grid_reference))
+				{
+					//we are allowed to change the reference, and it has definitely changed...
+					
+					$ok=$image->reassignGridsquare($_POST['grid_reference'], $err);
+					if (!$ok)
+						$error['grid_reference']=$err;
+				}
 				
 				if ($ok)
 				{

@@ -10,7 +10,7 @@ to the {getamap gridref=$image->grid_reference text="OS Get-a-Map for `$image->g
 
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
-  {$image->getFull()}
+  <div class="img-shadow">{$image->getFull()}</div>
   <div class="caption">{$image->title|escape:'html'}</div>
   
   {if $image->comment}
@@ -21,6 +21,28 @@ to the {getamap gridref=$image->grid_reference text="OS Get-a-Map for `$image->g
 
 <form method="post" action="/editimage.php">
 <input type="hidden" name="id" value="{$image->gridimage_id}"/>
+
+
+
+<p><label for="grid_reference">Grid Reference</label><br/>
+{if $image->moderation_status eq "pending" or $is_admin}
+  <input type="text" id="grid_reference" name="grid_reference" size="6" value="{$image->grid_reference|escape:'html'}"/>
+   {if $image->moderation_status eq "pending"}
+     (<i>This image hasn't been moderated yet, so you can change the grid square.</i>)
+   {else}
+     (<i>Although this image has been moderated, your login has sufficient privileges to change the grid square</i>)
+   {/if}
+  
+  {if $error.grid_reference}<br/><span class="formerror">{$error.grid_reference}</span>{/if}
+{else}
+  {$image->grid_reference|escape:'html'} (<i>You cannot change this grid reference as the image has been moderated - 
+  if you believe the grid reference
+  is incorrect, please contact us</i>)
+{/if}
+</p>
+
+
+
 
 <p><label for="title">Title</label><br/>
 <input type="text" id="title" name="title" size="50" value="{$image->title|escape:'html'}"/>
