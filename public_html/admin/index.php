@@ -37,7 +37,7 @@ $users_total=$db->GetOne("select count(*) from user where rights>0");
 $users_thisweek=$db->GetOne("select count(*) from user where rights>0 and ".
 	"(unix_timestamp(now())-unix_timestamp(signup_date))<604800");
 $users_submitted=$db->GetOne("select count(distinct user_id) from gridimage"); 
-$users_pending=$db->GetOne("select count(*) from user where rights=0");
+$users_pending=$db->GetOne("select count(*) from user where rights is null");
 
 $images_total=$db->GetOne("select count(*) from gridimage where moderation_status<>'rejected'");
 $images_thisweek=$db->GetOne("select count(*) from gridimage where moderation_status<>'rejected' and ".
