@@ -8,6 +8,7 @@
     <li><a title="Home Page" href="/">Home</a></li>
     <li><a title="Browse the grid and submit photos" href="/browse.php">Browse</a></li>
     <li><a title="Submit" href="/submit.php">Submit</a></li>
+    <li><a title="Discuss" href="/discuss/">Discuss</a></li>
     <li><a title="Leaderboard" href="/leaderboard.php">Leaderboard</a></li>
     <li><a title="FAQ" href="/faq.php">FAQ</a></li>
     <li><a title="Contact Us" href="/contact.php">Contact</a></li>
@@ -17,7 +18,6 @@
   {if $is_admin}
   <h3>Testing</h3>
   <ul>
-       <li><a title="Discuss" href="/discuss/">Discuss (beta)</a></li>
        <li><a title="Browser" href="/mapbrowse.php">Map Browser (beta)</a></li>
   </ul>
   <h3>Admin</h3>
