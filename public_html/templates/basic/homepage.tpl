@@ -9,10 +9,8 @@
 <li>It's a game - how many grid squares will you contribute?</li>
 <li>It's a geography project for the people</li>
 <li>It's a national photography project</li>
-<li>It's a great reason to go out and enjoy the cities, towns, 
-villages and countryside that is the British Isles and it's a 
-truly open source, open community web development project that 
-you can be part of</li>
+<li>It's a good excuse to get out more!</li>
+<li>It's an free and open online community project for all</li>
 </ul>
 </div></div>
 
