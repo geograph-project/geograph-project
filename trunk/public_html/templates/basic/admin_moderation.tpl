@@ -5,6 +5,7 @@
 
 <h2>Moderation</h2>
 
+{dynamic}
 
 {if $unmoderatedcount}
 
@@ -48,5 +49,5 @@
 {/if}
 	
     
-    
+{/dynamic}    
 {include file="_std_end.tpl"}

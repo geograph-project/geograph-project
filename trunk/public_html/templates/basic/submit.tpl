@@ -1,6 +1,8 @@
 {assign var="page_title" value="Submit"}
 {include file="_std_begin.tpl"}
 
+{dynamic}
+
     <form enctype="multipart/form-data" action="{$script_name}" method="post">
 
 {if $step eq 1}<h2>Submit Step 1 of 4 : Choose grid square</h2>{/if}
@@ -151,5 +153,5 @@ have problems
 
 	</form> 
 
-
+{/dynamic}
 {include file="_std_end.tpl"}

@@ -1,5 +1,6 @@
 {assign var="page_title" value="Browse"}
 {include file="_std_begin.tpl"}
+{dynamic}
 
     <h2>Browse &amp; Submit</h2>
      
@@ -8,12 +9,15 @@
 {if !$user->registered}
 	<i>Note that you will be asked to login when you visit the
 	submit page - please <a title="Register to create account" href="/register.php">register</a> if you haven't 
-	already done so</i>
+	already done so.</i>
 {/if}
+A <a title="Photograph Listing" href="/list.php">complete listing of all photographs</a> is available also.
 </p>   
 
 <p>You can view a particular grid square below - if the square hasn't been filled yet,
 we'll tell you how far away the nearest one is...</p>
+
+
 
 <form action="{$script_name}" method="get">
 <div>
@@ -33,7 +37,6 @@ we'll tell you how far away the nearest one is...</p>
 		<input type="submit" name="setpos" value="Show &gt;"/>
 </div>
 </form>
-
 
 {if $errormsg}
 <p>{$errormsg}</p>
@@ -74,5 +77,7 @@ we'll tell you how far away the nearest one is...</p>
    
    
 {/if}
+
+{/dynamic}
 
 {include file="_std_end.tpl"}

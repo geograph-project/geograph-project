@@ -1,5 +1,5 @@
 {include file="_std_begin.tpl"}
-
+{dynamic}
 
 <h2>Grid Building</h2>
 <p>This page links to tools for initialising the database of
@@ -23,5 +23,6 @@ Internal Y coordinate of bottom left: <input size="3" type="text" name="shader_y
 
 
 </form>
-    
+
+{/dynamic}    
 {include file="_std_end.tpl"}

@@ -1,5 +1,5 @@
 {include file="_std_begin.tpl"}
-
+{dynamic}
 
 <h2>Hash Changer</h2>
 <p>This is an advanced administrative tool for changing the 
@@ -17,5 +17,5 @@ New photo_hashing_secret: <input type="text" name="to" value="{$to}"/><br />
 <input type="submit" name="go" value="Rename Images">
 
 </form>
-    
+{/dynamic}    
 {include file="_std_end.tpl"}

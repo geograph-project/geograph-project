@@ -1,5 +1,5 @@
 {include file="_std_begin.tpl"}
-
+{dynamic}
 
 <h2>Map Maker</h2>
 <p>This is a very basic tool for exploring the grid database.
@@ -19,5 +19,6 @@ y2: <input size="3" type="text" name="y2" value="{$y2}"/><br />
 <input type="submit" name="make" value="Make Map">
 
 </form>
-    
+
+{/dynamic}    
 {include file="_std_end.tpl"}
