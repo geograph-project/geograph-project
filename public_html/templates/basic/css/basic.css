@@ -1,17 +1,19 @@
 body
 {
-	font-family:Verdana;
+	font-family:Georgia, Verdana, Arial;
 	margin:0px;
 	background: #eeeeff;
 	font-size: 1em;
 }
 
-
+/*---------------------------------------------------------------*
+ * title header
+ *---------------------------------------------------------------*/
 
 /* header content placement*/
 #header_block
 {
-	background:black;
+	background:#000066;
 	margin:0px;
 }
 
@@ -25,15 +27,95 @@ body
 {
 	margin:0px;
 	color:white;
-	font-size:1em;
+	font-size:0em;
+	
+	background-image: url('/templates/basic/img/logo.gif');
+	height:74px;
+	width:257px;
 }
 
+/*---------------------------------------------------------------*
+ * search block (incorporates login/register links)
+ *---------------------------------------------------------------*/
+
+#search_block {
+	position:absolute;
+	top:4px;
+	right:0.4em;
+	width:20em;
+	background:#000066;
+	text-align:right;
+}
+
+#search
+{
+	color:white;
+	font-weight:bold;
+}
+
+#login
+{
+	font-size:0.8em;
+
+	color:white;
+	font-weight:bold;
+}
+
+#login a
+{
+	color: #aaaaaa;
+}
+
+#login a:hover
+{
+	color: #eeeeee;
+}
+
+/*---------------------------------------------------------------*
+ * navigation block
+ * Kudos to http://bluerobot.com/web/layouts/default.asp
+ *---------------------------------------------------------------*/
+
+#nav_block {
+	position:absolute;
+	top:78px;
+	left:0.4em;
+	width:11em;
+	padding:5px;
+	background-color:white;
+	border:2px solid black;
+	
+
+	/* Again, the ugly brilliant hack. */
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	width:10em;
+	}
+/* "be nice to Opera 5". */
+body>#nav_block {width:10em;}
+
+
+#nav
+{
+	font-size:0.8em;
+}
+
+#nav ul
+{
+	margin:0;
+	padding:0 0 0 1em;
+}
+
+/*---------------------------------------------------------------*
+ * main content block
+ *---------------------------------------------------------------*/
 
 /* main content placement*/
 #maincontent_block
 {
-	margin:20px;
-	padding:20px;
+	margin:0.2em 0.2em 0.2em 12em;
+	padding:10px;
+	
 	border:2px solid black;
 	background:white;	
 }
@@ -49,13 +131,15 @@ body
 	margin-top:0px;
 }
 
+/*---------------------------------------------------------------*
+ *footer block
+ *---------------------------------------------------------------*/
 
 /* footer placement */
 #footer_block
 {
-	margin:20px;
+	margin:0px;
 	padding:1px;
-	border:2px solid silver;
 }
 
 /* main content interior */
