@@ -22,22 +22,29 @@
  */
 
 require_once('geograph/global.inc.php');
-require_once('geograph/gridimage.class.php');
-require_once('geograph/gridsquare.class.php');
-require_once('geograph/imagelist.class.php');
-
 init_session();
 
 
 $smarty = new GeographPage;
 
-//lets find some recent photos
-$images=new ImageList(array('pending', 'accepted'), 'submitted desc', 5);
-$images->assignSmarty(&$smarty, 'recent');
+
+$template='homepage.tpl';
+$cacheid='';
+
+//regenerate?
+if (!$smarty->is_cached($template, $cacheid))
+{
+	require_once('geograph/gridimage.class.php');
+	require_once('geograph/gridsquare.class.php');
+	require_once('geograph/imagelist.class.php');
+
+	//lets find some recent photos
+	$images=new ImageList(array('pending', 'accepted'), 'submitted desc', 5);
+	$images->assignSmarty(&$smarty, 'recent');
+}
 
 
-
-$smarty->display("homepage.tpl");
+$smarty->display($template, $cacheid);
 
 	
 ?>

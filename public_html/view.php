@@ -27,36 +27,46 @@ require_once('geograph/gridsquare.class.php');
 init_session();
 
 $smarty = new GeographPage;
-$image=new GridImage;
 
-if (isset($_GET['id']))
+$template='view.tpl';
+$cacheid=$_GET['id'];
+
+//regenerate?
+if (!$smarty->is_cached($template, $cacheid))
 {
-	$image->loadFromId($_GET['id']);
-	
-	//is the image rejected? - only the owner and administrator should see it
-	if ($image->moderation_status=='rejected')
+
+	$image=new GridImage;
+
+	if (isset($_GET['id']))
 	{
-		if (($image->user_id == $USER->user_id) ||
-		    ($USER->hasPerm('admin')))
+		$image->loadFromId($_GET['id']);
+
+		//is the image rejected? - only the owner and administrator should see it
+		if ($image->moderation_status=='rejected')
 		{
-			//ok, we'll let it lie...
-		}
-		else
-		{
-			//clear the image
-			$image=new GridImage;
+			if (($image->user_id == $USER->user_id) ||
+				($USER->hasPerm('admin')))
+			{
+				//ok, we'll let it lie...
+			}
+			else
+			{
+				//clear the image
+				$image=new GridImage;
+			}
 		}
 	}
+
+	//do we have a valid image?
+	if ($image->isValid())
+	{
+		$smarty->assign('page_title', $image->gridref);
+		$smarty->assign_by_ref('image', $image);
+	}
+
 }
 
-//do we have a valid image?
-if ($image->isValid())
-{
-	$smarty->assign('page_title', $image->gridref);
-	$smarty->assign_by_ref('image', $image);
-}
-
-$smarty->display('view.tpl');
+$smarty->display($template, $cacheid);
 
 	
 ?>
