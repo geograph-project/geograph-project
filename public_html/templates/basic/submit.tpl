@@ -74,6 +74,7 @@ If you're new, you may like to check our <a href="/help/guide">guide to geograph
 	<p>You might like to check you've selected the correct square by
 	viewing the {getamap gridref=$gridref text="OS Map for $gridref"}</p>
 	
+	<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
 	<label for="jpeg">JPEG Image File</label>
 	<input id="jpeg" name="jpeg" type="file" />
 	{if $error}<br /><p>{$error}</p>{/if}
