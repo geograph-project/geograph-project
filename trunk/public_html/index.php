@@ -42,17 +42,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/mapmosaic.class.php');
 
 	$overview=new GeographMapMosaic('overview');
-	$overview->enableCaching($CONF['smarty_caching']);
+	$overview->assignToSmarty($smarty, 'overview');
 	
-	
-
-	//setup the overview variables
-	$overviewimages =& $overview->getImageArray();
-	$smarty->assign_by_ref('overview', $overviewimages);
-	$smarty->assign('overview_width', $overview->image_w);
-	$smarty->assign('overview_height', $overview->image_h);
-	$mosaic=new GeographMapMosaic;
-	$smarty->assign('token', $overview->getToken());
 	
 	//lets find some recent photos
 	$images=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
