@@ -16,7 +16,7 @@ out;
 echo load_header();
 echo $tplTmp[0];
 
-$manbase="usermanual";
+$manbase=($logged_admin)?'manual':'usermanual';
 $langpage=$pathToFiles.'templates/'.$manbase.'_'.$lang.'.html';
 $engpage=$pathToFiles.'templates/'.$manbase.'_eng.html';
 
