@@ -92,6 +92,7 @@ class GridShader
 				
 				$imgw=imagesx($img);
 				$imgh=imagesy($img);
+				
 
 				$this->_trace("Image is {$imgw}km x {$imgh}km");
 
@@ -168,13 +169,39 @@ class GridShader
 					}
 				
 				}
+				imagedestroy($img);
+				
+				$this->_trace("Setting land flags for gridprefixes");
+				$prefixes = $this->db->GetAll("select * from gridprefix");	
+				foreach($prefixes as $idx=>$prefix)
+				{
+					
+					$minx=$prefix['origin_x'];
+					$maxx=$prefix['origin_x']+$prefix['width']-1;
+					$miny=$prefix['origin_y'];
+					$maxy=$prefix['origin_y']+$prefix['height']-1;
+					
+					
+					$count=$this->db->GetOne("select count(*) from gridsquare where ".
+						"x between $minx and $maxx and ".
+						"y between $miny and $maxy and ".
+						"percent_land>0");
 
+					//$this->_trace("{$prefix['prefix']} $minx,$miny to $maxx,$maxy has $count");
+					
+					$this->db->query("update gridprefix set landcount=$count where ".
+						"reference_index={$prefix['reference_index']} and ".
+						"prefix='{$prefix['prefix']}'");
+				}
+				
+				
 				$this->_trace("$created new squares created");
 				$this->_trace("$updated squares updated with new land percentage");
 				$this->_trace("$untouched squares examined but left untouched");
 				$this->_trace("$skipped squares were all water and not created");
 
-				imagedestroy($img);
+				
+				
 			}
 			else
 			{
