@@ -30,10 +30,10 @@ init_session();
 $smarty = new GeographPage;
 
 $template='list.tpl';
-$cacheid='';
+$cacheid='list|'.substr($_GET['square'],0,2);
 
-if (isset($_GET['refresh']))
-	$smarty->clear_cache($template, $cacheid);
+if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
+	$smarty->clear_cache($template, 'list');
 
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
@@ -49,18 +49,35 @@ if (!$smarty->is_cached($template, $cacheid))
 	$images=array();
 	$i=0;
 
+	$page_title='Photograph Listing';
+
 	$prefixes=$db->GetAll("select * from gridprefix where landcount>0");
 	foreach ($prefixes as $prefix)
 	{
 		$squares[$i]=$prefix;
 		$images=new ImageList;
 
-		$count=$images->getImagesByArea($prefix['origin_x'],$prefix['origin_x']+$prefix['width']-1,
+		//which method to use?
+		if ($_GET['square']==$prefix['prefix'])
+		{
+			$getImages="getImagesByArea";
+			$page_title='Photograph Listing ('.$prefix['title'].')';
+		}
+		else
+		{
+			$getImages="countImagesByArea";
+		}
+		
+
+		$count=$images->$getImages($prefix['origin_x'],$prefix['origin_x']+$prefix['width']-1,
 			$prefix['origin_y']+$prefix['height']-1,$prefix['origin_y'], $prefix['reference_index']);
 		if ($count>0)
 		{
-			$squares[$i]['images']=$images->images;
 			$squares[$i]['imagecount']=$count;
+			$squares[$i]['images']=$images->images;
+			
+			
+			
 			$i++;
 		}
 		else
@@ -72,7 +89,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	}
 
-
+	$smarty->assign_by_ref('page_title', $page_title);
 	$smarty->assign_by_ref('squares', $squares);
 }
 
