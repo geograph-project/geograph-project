@@ -4,25 +4,49 @@
 <div id="nav_block">
   <div id="nav">
   <ul>
-    <li><a title="nav link example" href="/">nav link 1</a></li>
-    <li><a title="nav link example" href="/">nav link 2</a></li>
+    <li><a title="Home Page" href="/">Home</a></li>
+    <li><a title="Browse the grid" href="/browse.php">Browse</a></li>
+    <li><a title="Members" href="/statistics.php">Statistics</a></li>
+    <li><a title="FAQ" href="/faq.php">FAQ</a></li>
+    <li><a title="Contact Us" href="/contact.php">Contact</a></li>
   </ul>
+  
+  {if $is_admin}
+  <h3>Admin</h3>
+  <ul>
+     <li><a title="Admin Tools" href="/admin/">Admin</a></li>
+     <li><a title="Grid Builder" href="/admin/gridbuilder.php">Grid Building</a></li>
+  </ul>
+  {/if}
+  
   </div>
 </div>
 
 <div id="search_block">
   <div id="search">
-    <form method="get" action="search.php">
-    Search <input id="searchterm" type="text" name="q" value="" size="10">
-    <input id="searchbutton" type="submit" name="go" value="Find">
+    <form method="get" action="/search.php">
+    <div id="searchform">
+    <label for="searchterm">Search</label> <input id="searchterm" type="text" name="q" value="" size="10"/>
+    <input id="searchbutton" type="submit" name="go" value="Find"/>
+    </div>
     </form>
   </div>
   
   <div id="login">
-  You are not logged in
-  <a title="Already registered? Login in here" href="login.php">login</a>
-  	<span class="sep">|</span>
-  <a title="Register to upload photos" href="register.php">register</a>
+  
+  {if $user->registered}
+  	  Logged in as {$user->realname}
+  	  <span class="sep">|</span>
+  	  <a title="Profile" href="/profile.php">profile</a>
+  	  <span class="sep">|</span>
+  	  <a title="Log out" href="/logout.php">logout</a>
+  {else}
+	  You are not logged in
+	  <a title="Already registered? Login in here" href="login.php">login</a>
+		<span class="sep">|</span>
+	  <a title="Register to upload photos" href="register.php">register</a>
+  {/if}
+  
   </div>
 </div>
 
