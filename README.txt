@@ -66,6 +66,8 @@ schema/
   
 D) Installation
 -----------------------------------------------------------------------
+This software requires PHP 4.3 or higher, and was designed to run on
+apache webservers using the php4 module. Y
 
 1. unpack the files into <basedir>
 
