@@ -104,6 +104,16 @@ if (isset($_POST['gridsquare']))
 						$smarty->assign('preview_width', $uploadmanager->upload_width);
 						$smarty->assign('preview_height', $uploadmanager->upload_height);
 						$smarty->assign('upload_id', $uploadmanager->upload_id);
+						
+						$image = new GridImage;
+						$smarty->assign('classes', $image->getImageClasses());
+
+						if (isset($uploadmanager->exifdate)) {
+							$smarty->assign('imagetaken', $uploadmanager->exifdate);
+							$smarty->assign('imagetakenmessage', ' ('.$uploadmanager->exifdate.' stated in exif header)');
+						} else {
+							$smarty->assign('imagetaken', '--');
+						}
 
 						$step=3;
 					}
@@ -119,7 +129,6 @@ if (isset($_POST['gridsquare']))
 					$smarty->assign('error', 'We were unable to process your upload - please try again');
 					break;
 			}
-				
 		}
 		//user likes the image, lets have them agree to our terms
 		elseif (isset($_POST['agreeterms']))
@@ -128,10 +137,26 @@ if (isset($_POST['gridsquare']))
 			if($uploadmanager->validUploadId($_POST['upload_id']))
 				$smarty->assign('upload_id', $_POST['upload_id']);
 		
+			//preserve the meta info
+			if (empty($_POST['imagetakenYear']))
+				$_POST['imagetakenYear'] = '0000';
+			if (empty($_POST['imagetakenMonth']))
+				$_POST['imagetakenMonth'] = '00';
+			if (empty($_POST['imagetakenDay']))
+				$_POST['imagetakenDay'] = '00';
+			
+			$smarty->assign('imagetaken', $_POST['imagetakenYear'].'-'.$_POST['imagetakenMonth'].'-'.$_POST['imagetakenDay']);
+			if (($_POST['imageclass'] == 'Other' || empty($_POST['imageclass'])) && !empty($_POST['imageclassother'])) {
+				$smarty->assign('imageclass', stripslashes($_POST['imageclassother']));
+			} else {
+				$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
+			}
+		
 			//preserve title and comment
 			$smarty->assign('title', stripslashes($_POST['title']));
 			$smarty->assign('comment', stripslashes($_POST['comment']));
 		
+			
 		
 			$step=4;
 		}
@@ -142,6 +167,8 @@ if (isset($_POST['gridsquare']))
 			{
 				$uploadmanager->setTitle(stripslashes($_POST['title']));
 				$uploadmanager->setComment(stripslashes($_POST['comment']));
+				$uploadmanager->setTaken(stripslashes($_POST['imagetaken']));
+				$uploadmanager->setClass(stripslashes($_POST['imageclass']));
 				
 				$uploadmanager->commit();
 			}
