@@ -137,6 +137,17 @@ if (isset($_POST['gridsquare']))
 	else
 	{
 		$smarty->assign('errormsg', $square->errormsg);
+		
+		//we've rejected the gridsquare, but the inputs may be valid...
+		if ($square->validGridPos($_POST['gridsquare'], $_POST['eastings'], $_POST['northings']))
+		{
+			$smarty->assign('gridsquare', $_POST['gridsquare']);
+			$smarty->assign('eastings', $_POST['eastings']);
+			$smarty->assign('northings', $_POST['northings']);
+			$smarty->assign('gridref', sprintf("%s%02d%02d", $_POST['gridsquare'],$_POST['eastings'],$_POST['northings']));
+		}
+		
+	
 	}
 	
 }
