@@ -24,11 +24,31 @@
     in return for attribution (take a look at a submission for more details)</p>
     
     <p>In a nutshell, we wanted to build a true community project that won't 
-    leave a nasty taste in the mouth by getting sold for shedloads of cash.
+    leave a nasty taste in the mouth by getting sold for shedloads of cash and
+    taken away from the people who contributed. Our licence terms ensure that the
+    site and content can never be "taken away".
     </p>
     
-    <h3>Hasn't anyone asked any more questions yet?</h3>
-    <p>Nope!</p>
+    <h3>Why must I agree to allow commercial use of my image?</h3>
+    <p>Running this site costs money, particularly over time as the storage
+    requirements are quite large. We require commercial rights to enable us to
+    support the running costs. One way we may do this is through sales of 
+    montage posters once we reach a critical mass of submissions.</p>
+    
+    <p>Granting everyone the same rights actually protects the site community
+    from exploitation (see previous FAQ entry), but do bear in mind that we only
+    retain a screen-quality version of your image, and that under the terms of 
+    the Creative Commons licence, you must be credited for any use of your image</p>
+    
+    
+    <h3>Do I need to resize my photos? Are there size limits?</h3>
+    <p>You can upload images of any size, portrait or landscape, but we do resize them so their
+    longest dimension is 640 pixels. We do not keep your original print quality image,
+    only our resized screen-quality version.</p>
+    
+    <p>We do preserve the EXIF headers from your original image, so it is
+    advantageous to upload your original camera image if you want this information
+    to be kept.</p>
     
     <h3>I have a question, what should I do?</h3>
 	<p>Please <a title="Contact Us" href="contact.php">Contact Us</a></p>
