@@ -5,7 +5,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <meta name="description" content="GeoGraph is a web based project to collect and reference geographically representative images of every square kilometer of the British Isles." />
 <link rel="stylesheet" type="text/css" title="geograph" href="/templates/basic/css/basic.css" media="screen" />
-<link rel="Shortcut Icon" type="image/ico" href="/favicon.ico" />
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
+<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="syndicator.php"/>
  
 <title>{$page_title|lower} :: geograph.co.uk</title>
 <script type="text/javascript" src="/geograph.js"></script>
