@@ -275,17 +275,21 @@ class UploadManager
 			if (move_uploaded_file($upload_file, $pendingfile)) 
 			{
 				//save the exif data for the loaded image
-				$exif = exif_read_data($pendingfile,0,true); 
-				$this->trySetDateFromExif($exif);
-				$strExif=serialize($exif);
-				$exif =  $this->_pendingEXIF($upload_id);
-				$f=fopen($exif, 'w');
-				if ($f)
+				$exif = @exif_read_data($pendingfile,0,true); 
+				
+				if ($exif!==false)
 				{
-					fwrite($f, $strExif);
-					fclose($f);
+					$this->trySetDateFromExif($exif);
+					$strExif=serialize($exif);
+					$exif =  $this->_pendingEXIF($upload_id);
+					$f=fopen($exif, 'w');
+					if ($f)
+					{
+						fwrite($f, $strExif);
+						fclose($f);
+					}
 				}
-
+				
 				//generate a resized image
 				$uploadimg = @imagecreatefromjpeg ($pendingfile); 
 				if ($uploadimg)
@@ -384,7 +388,7 @@ class UploadManager
 		//get the exif data
 		$exiffile=$this->_pendingEXIF($this->upload_id);
 		$exif="";
-		$f=fopen($exiffile, 'r');
+		$f=@fopen($exiffile, 'r');
 		if ($f)
 		{
 			$exif = fread ($f, filesize($exiffile)); 
