@@ -181,18 +181,12 @@
 <script type="text/javascript">
 <!-- 
 if (document.images) {
-zoomin_F1 = new Image(30,29); zoomin_F1.src = "geographmap/zoomin.gif";
-zoomin_F2 = new Image(30,29); zoomin_F2.src = "geographmap/zoomin_F2.gif";
-north_F1 = new Image(30,29); north_F1.src = "geographmap/north.gif";
-north_F2 = new Image(30,29); north_F2.src = "geographmap/north_F2.gif";
-west_F1 = new Image(30,29); west_F1.src = "geographmap/west.gif";
-west_F2 = new Image(30,29); west_F2.src = "geographmap/west_F2.gif";
-east_F1 = new Image(30,29); east_F1.src = "geographmap/east.gif";
-east_F2 = new Image(30,29); east_F2.src = "geographmap/east_F2.gif";
-zoomout_F1 = new Image(30,29); zoomout_F1.src = "geographmap/zoomout.gif";
-zoomout_F2 = new Image(30,29); zoomout_F2.src = "geographmap/zoomout_F2.gif";
-south_F1 = new Image(30,29); south_F1.src = "geographmap/south.gif";
-south_F2 = new Image(30,29); south_F2.src = "geographmap/south_F2.gif";
+zoomin_F2 = new Image(30,29); zoomin_F2.src = "/templates/basic/mapnav/zoomin_F2.gif";
+north_F2 = new Image(30,29); north_F2.src = "/templates/basic/mapnav/north_F2.gif";
+west_F2 = new Image(30,29); west_F2.src = "/templates/basic/mapnav/west_F2.gif";
+east_F2 = new Image(30,29); east_F2.src = "/templates/basic/mapnav/east_F2.gif";
+zoomout_F2 = new Image(30,29); zoomout_F2.src = "/templates/basic/mapnav/zoomout_F2.gif";
+south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gif";
 }
 -->
 </script>
