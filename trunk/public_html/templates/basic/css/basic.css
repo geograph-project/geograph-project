@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------*
+ * Kudos to http://bluerobot.com/web/layouts/default.asp
+ * for the 3 column layout
+ *---------------------------------------------------------------*/
+ 
 body
 {
 	font-family:Georgia, Verdana, Arial;
@@ -83,54 +88,112 @@ a img
 	color: #eeeeee;
 }
 
+
+
+
+
 /*---------------------------------------------------------------*
- * navigation block
- * Kudos to http://bluerobot.com/web/layouts/default.asp
+ * right navigation block
+ *---------------------------------------------------------------*/
+
+		
+#right_block {
+	position:absolute;
+	width:190px;
+	top:78px;
+	right:10px;
+	border:2px solid black;
+	background-color:white;
+	padding:10px;
+	z-index:1;
+
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	width:168px;
+	}
+body>#right_block {width:168px;}
+
+#right_block h3
+{
+	margin: 0 0 0.5em 0;
+}
+
+/*---------------------------------------------------------------*
+ * left navigation block
  *---------------------------------------------------------------*/
 
 #nav_block {
 	position:absolute;
+	width:150px;
 	top:78px;
-	left:0.4em;
-	width:11em;
-	padding:5px;
-	background-color:white;
+	left:10px;
 	border:2px solid black;
-	
-	/* Again, the ugly brilliant hack. */
+	background-color:white;
+	padding:10px;
+	z-index:2;
+
 	voice-family: "\"}\"";
 	voice-family:inherit;
-	width:10em;
+	width:128px;
 	}
-/* "be nice to Opera 5". */
-body>#nav_block {width:10em;}
+body>#nav_block {width:128px;}
 
-
-#nav
+.nav
 {
 	font-size:0.8em;
 }
 
-#nav ul
+.nav ul
 {
 	margin:0;
 	padding:0 0 0 1em;
+}
+
+.nav h3.newstitle
+{
+	font-weight:bold;
+	margin: 0.8em 0 0 0;
+}
+
+.nav .newsbody
+{
+	font-size:0.8em;
+}
+
+.nav .newsfooter
+{
+	font-size:0.7em;
+	color:silver;
 }
 
 /*---------------------------------------------------------------*
  * main content block
  *---------------------------------------------------------------*/
 
-/* main content placement*/
-#maincontent_block
-{
-	margin:0.2em 0.2em 0.2em 12em;
-	padding:10px;
-	
-	border:2px solid black;
-	background:white;	
-}
 
+/* All the content boxes belong to the content class. */
+.content3 {
+	position:relative;
+	width:auto;
+	min-width:120px;
+	margin:4px 210px 0px 170px;
+	border:2px solid black;
+	background-color:white;
+	padding:10px;
+	z-index:3; 
+	}
+
+.content2 {
+	position:relative;
+	width:auto;
+	min-width:120px;
+	margin:4px 10px 0px 170px;
+	border:2px solid black;
+	background-color:white;
+	padding:10px;
+	z-index:3; 
+	}	
+	
 /* main content interior */
 #maincontent
 {
@@ -295,20 +358,20 @@ input.reject
  * buttons for map nav
  *---------------------------------------------------------------*/
  
-div.nav 
+div.mapnav 
 {
 	background:#000066;
 	text-align:center;
 	line-height:8px;
 }
  
-a.nav
+a.mapnav
 {
 	display:block;
 	height:100%;
 }
 
-a.nav:hover 
+a.mapnav:hover 
 {
 	background-color:red;
 }
@@ -320,8 +383,7 @@ a.nav:hover
 /* footer placement */
 #footer_block
 {
-	margin:0px;
-	padding:1px;
+	border:0;margin-top:0;background:none;
 }
 
 /* main content interior */
