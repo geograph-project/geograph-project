@@ -2,7 +2,8 @@
 </div>
 
 <div id="nav_block">
-  <div id="nav">
+ <div id="nav">
+  <div id="navlinks">
   <ul>
     <li><a title="Home Page" href="/">Home</a></li>
     <li><a title="Browse the grid and submit photos" href="/browse.php">Browse</a></li>
@@ -28,6 +29,7 @@
   </ul>
   {/if}
   {/dynamic}
+  </div>
   
   {if $recentcount}
   
