@@ -282,9 +282,9 @@ class GridSquare
 	* No attempt is made to see if its a real grid position, just to ensure
 	* that the input isn't anything nasty from the client side
 	*/
-	function validGridRef($gridref)
+	function validGridRef($gridref, $figures=4)
 	{
-		return preg_match('/^[A-Z]{1,2}[0-9]{4}$/',$gridref);
+		return preg_match('/^[A-Z]{1,2}[0-9]{'.$figures.'}$/',$gridref);
 	}
 
 
@@ -302,7 +302,17 @@ class GridSquare
 		}
 		else
 		{
-			$this->_error(htmlentities($gridref).' is not a valid grid reference');
+			//six figures?
+			$matches=array();
+			if (preg_match('/^([A-Z]{1,2})(\d\d)\d(\d\d)\d$/',$gridref,$matches))
+			{
+				$fixed=$matches[1].$matches[2].$matches[3];
+				$this->_error('Please enter a 4 figure reference, i.e. '.$fixed.' instead of '.$gridref);
+			}
+			else
+			{
+				$this->_error(htmlentities($gridref).' is not a valid grid reference');
+			}
 		}
 		
 		return $ok;
@@ -395,7 +405,7 @@ class GridSquare
 					$sql="insert into gridsquare(x,y,percent_land,grid_reference,reference_index) ".
 						"values($x,$y,-1,'$gridref',{$prefix['reference_index']})";
 					$db->Execute($sql);
-					$gridimage_id=$this->db->Insert_ID();
+					$gridimage_id=$db->Insert_ID();
 					
 					//ensure we initialise ourselves properly
 					$this->loadFromId($gridimage_id);
