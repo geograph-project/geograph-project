@@ -698,26 +698,49 @@ class GridImage
 
 		}
 			
-		
 		//finally, we update status information for the gridsquare
-		$geographs= $db->GetOne("select count(*) from gridimage ".
-					"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph'");
+		$this->grid_square->updateCounts();
 		
-		$has_geographs=$geographs?1:0;
-		
-		//count how many images in the square
-		$imagecount= $db->GetOne("select count(*) from gridimage ".
-			"where gridsquare_id={$this->gridsquare_id} and moderation_status<>'rejected'");
-		
-		//update the has_geographs flag
-		$db->Query("update gridsquare set has_geographs=$has_geographs,imagecount=$imagecount ".
-					"where gridsquare_id={$this->gridsquare_id}");
-					
 		return "Status is now $status";	
 			
 		
 	}
 
+	/**
+	* Reassigns the reference of this image - callers of this are responsible for ensuring
+	* only authorized calls can be made, but the method performs full error checking of 
+	* the supplied reference
+	*/
+	function reassignGridsquare($grid_reference, &$error)
+	{
+		$ok=false;
+		
+		//is the reference valid?
+		//old one is in $this->grid_square
+		$newsq=new GridSquare;
+		if ($newsq->setGridRef($grid_reference))
+		{
+			$db=&$this->_getDB();
+		
+			//reassign image
+			$db->Execute("update gridimage set gridsquare_id='{$newsq->gridsquare_id}' where gridimage_id='$this->gridimage_id'");
+
+			//update cached data for old square and new square
+			$this->grid_square->updateCounts();
+			$newsq->updateCounts();
+			
+			$ok=true;
+		}
+		else
+		{
+			//bad grid reference
+			$ok=false;
+			$error=$newsq->errormsg;
+		}
+		return $ok;			
+	}
+	
+	
 	/**
 	* Saves selected members to the gridimage record
 	*/
