@@ -35,7 +35,28 @@
     <p>We do preserve the EXIF headers from your original image, so it is
     advantageous to upload your original camera image if you want this information
     to be kept.</p>
+
+<h3>Do you have an RSS feed?</h3>
+    <p>RSS, or Really Simple Syndication, allows you to obtain an up-to-date listing of
+    the latest geograph submissions for integration into another website or RSS reader. For more information,
+    try this <a title="Wikipedia article on RSS" href="http://en.wikipedia.org/wiki/RSS_(protocol)">Wikipedia article on RSS</a>.</p>
     
+    
+    <p>We provide an RSS1.0 feed at 
+    <a title="Geograph RSS feed" href="http://{$http_host}/syndicator.php">http://{$http_host}/syndicator.php</a>
+    which contains links to the latest 20 moderated images. 
+    
+    The feed is also available in
+    <a title="Geograph RSS 0.91 feed" href="http://{$http_host}/syndicator.php?format=RSS0.91">RSS 0.91</a>,
+    <a title="Geograph RSS 2.0 feed" href="http://{$http_host}/syndicator.php?format=RSS2.0">RSS 2.0</a>,
+    <a title="Geograph OPML feed" href="http://{$http_host}/syndicator.php?format=OPML">OPML</a>,
+    <a title="Geograph HTML feed" href="http://{$http_host}/syndicator.php?format=HTML">HTML</a> and
+    <a title="Geograph JavaScript feed" href="http://{$http_host}/syndicator.php?format=JS">JavaScript</a>
+    formats.</p>
+    
+    <p>If you use the <a title="Firefox Web Browser" href="http://www.mozilla.org/products/firefox/">Firefox</a> web browser, 
+    you should be able use our feed as a "live bookmark" - simply
+    click the orange button in the bottom right of your browser window.</p>    
 
 <h3>Who built this marvellous site?</h3>
     <p>Please see the <a href="/help/credits" title="Credits Page">Credits Page</a> for
