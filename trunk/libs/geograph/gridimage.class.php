@@ -133,6 +133,19 @@ class GridImage
 		$this->db=$db;
 	}
 	
+	/**
+	 * clear all member vars
+	 * @access private
+	 */
+	function _clear()
+	{
+		$vars=get_object_vars($this);
+		foreach($vars as $name=>$val)
+		{
+			if ($name!="db")
+				unset($this->$name);
+		}
+	}
 	
 	/**
 	* assign members from array containing required members
@@ -156,11 +169,21 @@ class GridImage
 	}
 	
 	/**
+	* return true if instance references a valid grid image
+	*/
+	function isValid()
+	{
+		return isset($this->gridimage_id) && ($this->gridimage_id>0);
+	}
+	
+	/**
 	* assign members from recordset containing required members
 	*/
 	function loadFromRecordset(&$rs)
 	{
+		$this->_clear();
 		$this->_initFromArray($rs->fields);
+		return $this->isValid();
 	}
 	
 	/**
@@ -170,6 +193,7 @@ class GridImage
 	{
 		$db=&$this->_getDB();
 		
+		$this->_clear();
 		if (preg_match('/^\d+$/', $gridimage_id))
 		{
 			$row = &$db->GetRow("select gridimage.*,user.realname,user.email,user.website ".
@@ -181,14 +205,22 @@ class GridImage
 				$this->_initFromArray($row);
 			}
 		}
+		
+		return $this->isValid();
 	}
 	
+	/**
+	* calculate a hash to prevent easy downloading of every image in sequence
+	*/
 	function _getAntiLeechHash()
 	{
 		global $CONF;
 		return substr(md5($this->gridimage_id.$this->user_id.$CONF['photo_hashing_secret']), 0, 8);
 	}
 	
+	/**
+	* given a temporary file, transfer to final destination for the image
+	*/
 	function storeImage($srcfile)
 	{
 		$ab=sprintf("%02d", floor($this->gridimage_id/10000));
@@ -206,6 +238,9 @@ class GridImage
 		return @copy($srcfile, $dest);
 	}
 	
+	/**
+	* calculate the path to the full size photo image
+	*/
 	function _getFullpath()
 	{
 		$ab=sprintf("%02d", floor($this->gridimage_id/10000));
@@ -220,6 +255,9 @@ class GridImage
 		return $fullpath;
 	}
 	
+	/**
+	* returns HTML img tag to display this image at full size
+	*/
 	function getFull()
 	{
 		$fullpath=$this->_getFullpath();
@@ -231,6 +269,9 @@ class GridImage
 		return $html;
 	}
 	
+	/**
+	* returns true if picture is wider than it is tall
+	*/
 	function isLandscape()
 	{
 		$fullpath=$this->_getFullpath();
@@ -239,6 +280,12 @@ class GridImage
 		
 	}
 	
+	/**
+	* returns HTML img tag to display a thumbnail that would fit the given dimensions
+	* If the required thumbnail doesn't exist, it is created. This method is really
+	* handy helper for Smarty templates, for instance, given an instance of this
+	* class, you can use this {$image->getThumbnail(213,160)} to show a thumbnail
+	*/
 	function getThumbnail($maxw, $maxh)
 	{
 		
@@ -325,6 +372,58 @@ class GridImage
 		
 		
 		return $html;
+	}
+	
+	/**
+	* Sets the moderation status for the image, intelligently updating user stats appropriately
+	* status must either 'accepted' or 'rejected'
+	*/
+	function setModerationStatus($status)
+	{
+		$valid_status=array('accepted', 'rejected');
+		
+		//is this a valid instance with a definite change of status?
+		if ($this->isValid() && 
+		    ($status!=$this->moderation_status) &&
+		    in_array($status, $valid_status)
+		   )
+		{
+			if ($status=='rejected')
+			{
+				//lower image count for this square...
+				$this->db->Query("update gridsquare set imagecount=imagecount-1 where gridsquare_id={$this->gridsquare_id}");
+						
+				//we always clear the ftf flag on rejected images...
+				//we also give rejected images a negative sequence number
+				$this->ftf=0;
+				$this->seq_no=-1;
+			}
+			
+			//if we're going from rejected to accepted, we must undo the above
+			if (($status=='accepted') && ($this->moderation_status=='rejected'))
+			{
+				//lower image count for this square...
+				$this->db->Query("update gridsquare set imagecount=imagecount+1 where gridsquare_id={$this->gridsquare_id}");
+				
+				//figure out a sequence number and ftf status
+				$this->seq_no = $this->db->GetOne("select count(*) from gridimage where gridsquare_id={$this->gridsquare_id} and moderation_status<>'rejected'");
+				$this->ftf=($this->seq_no==0)?1:0;
+		
+			}
+			
+			$this->moderation_status=$status;
+			
+			//update image status and ftf flag
+			$db=&$this->_getDB();
+			$db->query("update gridimage set ".
+				"moderation_status='$status',".
+				"ftf={$this->ftf},".
+				"seq_no={$this->seq_no} ".
+				"where gridimage_id={$this->gridimage_id}");
+			
+			
+			
+		}
 	}
 	
 }
