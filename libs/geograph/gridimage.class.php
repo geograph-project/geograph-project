@@ -636,7 +636,7 @@ class GridImage
 	* This is all quite hairy stuff, as we maintain need to maintain a number of 
 	* counts and status fields in the database
 	*/
-	function setModerationStatus($status)
+	function setModerationStatus($status, $moderator_id)
 	{
 		$valid_status=array('accepted', 'rejected', 'geograph');
 		
@@ -676,6 +676,8 @@ class GridImage
 		//update image status and ftf flag
 		$sql="update gridimage set ".
 			"moderation_status='$status',".
+			"moderator_id='$moderator_id',".
+			"moderated=now(),".
 			"ftf={$this->ftf},".
 			"seq_no={$this->seq_no} ".
 			"where gridimage_id={$this->gridimage_id}";
