@@ -51,7 +51,7 @@
  	 	  ({$profile->stats.pending} awaiting moderation)
  	  {/if}
  	  </li>
- 	  <li><a href="/statistics.php?by=type&u={$profile->user_id}">More detailed Stats...</a></li>
+ 	  {if $is_admin}<li><a href="/statistics.php?by=type&u={$profile->user_id}">More detailed Stats...</a></li>{/if}
    {else}
  	  <li>No photographs submitted</li>
  	{/if}
