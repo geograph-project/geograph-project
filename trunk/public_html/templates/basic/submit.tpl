@@ -65,7 +65,7 @@
 Below is a full-size preview of the image we will store for grid reference 
 {$gridref}.<br/><br/>
 
-<img src="{$preview_url}" width="{$preview_width}" height="{$preview_height}" border="0">
+<img src="{$preview_url}" width="{$preview_width}" height="{$preview_height}">
 <br/><br/>
 
 <p>If you like, you can provide a little extra information about the image and
