@@ -7,9 +7,7 @@
     <li><a title="Home Page" href="/">Home</a></li>
     <li><a title="Browse the grid and submit photos" href="/browse.php">Browse</a></li>
     <li><a title="Submit" href="/submit.php">Submit</a></li>
-    <!--
-    <li><a title="Members" href="/statistics.php">Statistics</a></li>
-    -->
+    <li><a title="Leaderboard" href="/leaderboard.php">Leaderboard</a></li>
     <li><a title="FAQ" href="/faq.php">FAQ</a></li>
     <li><a title="Contact Us" href="/contact.php">Contact</a></li>
   </ul>
