@@ -26,4 +26,8 @@ $CONF['contact_email']='lordelph@gmail.com,editor@geocachingtoday.com';
 
 //secret string used for registration confirmation hash
 $CONF['register_confirmation_secret']='CHANGETHIS';
+
+//secret string used for hashing photo filenames
+$CONF['photo_hashing_secret']='CHANGETHISTOO';
+
 ?>
