@@ -40,7 +40,7 @@ if (isset($_GET['gridimage_id']))
 {
 	//user may have an expired session, or playing silly buggers,
 	//either way, we want to check for admin status on the session
-	if ($USER->hasPerm("admin"))
+	if ($USER->hasPerm('moderator'))
 	{
 	
 		$gridimage_id=intval($_GET['gridimage_id']);
@@ -50,7 +50,7 @@ if (isset($_GET['gridimage_id']))
 		$image=new GridImage;
 		if ($image->loadFromId($gridimage_id))
 		{
-			$info=$image->setModerationStatus($status);
+			$info=$image->setModerationStatus($status, $USER->user_id);
 			echo $info;
 			
 			//clear caches involving the image
@@ -79,8 +79,8 @@ if (isset($_GET['gridimage_id']))
 }
 
 ///////////////////////////////
-// administrators only!
-$USER->mustHavePerm("admin");
+// moderator only!
+$USER->mustHavePerm('moderator');
 
 
 
