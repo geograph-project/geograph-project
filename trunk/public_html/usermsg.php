@@ -81,6 +81,13 @@ if (isset($_POST['msg']))
 		$smarty->assign('sent', 1);
 	}
 }
+elseif (isset($_POST['init']))
+{
+	//initialise message
+
+	$msg=trim(stripslashes($_POST['init']));
+	$smarty->assign_by_ref('msg', $msg);
+}
 
 $smarty->display($template);
 
