@@ -1,39 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
- "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" id="geograph">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="description" content="GeoGraph is a web based project to collect and reference geographically representative images of every square kilometer of the British Isles." />
-<link rel="stylesheet" type="text/css" title="geograph" href="/templates/basic/css/basic.css" media="screen" />
-<link rel="Shortcut Icon" type="image/ico" href="/favicon.ico" />
+{include file="_std_begin.tpl"}
+
+    <h1>GeoGraph</h1>
  
-<title>geograph</title>
-</head>
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Quisque nonummy massa sit amet quam. Ut elementum venenatis dui. Cras ultrices, ipsum eget semper pharetra, libero turpis faucibus dui, sit amet placerat libero arcu ac mi. Phasellus metus orci, pellentesque nec, pharetra a, vulputate ac, turpis. Nam convallis mauris ut felis. Nam ante. Nunc mollis. Nullam sollicitudin porta ipsum. Donec fermentum volutpat massa. Integer ac ipsum. In sit amet turpis ac massa ullamcorper convallis. Cras magna wisi, feugiat quis, rhoncus non, ullamcorper vel, mauris. Etiam tristique hendrerit nunc. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
 
-<body>
+<p>Praesent odio wisi, cursus a, sodales quis, dapibus consectetuer, mauris. In ac magna. Fusce elementum lobortis lacus. Proin eu est eget elit gravida rhoncus. Etiam pulvinar. Nulla facilisi. Integer velit tortor, scelerisque ac, hendrerit sit amet, tincidunt et, justo. Integer neque. Donec placerat neque. Suspendisse quis nunc ut risus pellentesque auctor.</p>
 
-<div id="header_block">
-  <div id="header">
-    <h1>GeoGraph</h1>
-  </div>
-</div>
+<p>Aenean sit amet magna in ipsum dictum lobortis. Cras interdum, lectus sit amet dictum facilisis, mi urna lacinia tortor, at suscipit arcu lacus a odio. Phasellus rhoncus laoreet purus. Donec sit amet nibh. Quisque eu mi. Mauris molestie, sapien sit amet aliquam nonummy, arcu massa luctus ante, at tincidunt velit risus a justo. Cras a nisl vulputate velit rhoncus sagittis. Sed at nunc. Nunc condimentum. Proin ac dolor. Integer tempor. Donec tincidunt turpis vel odio. </p>
 
-
-<div id="maincontent_block">
-  <div id="maincontent">
-    <h1>GeoGraph</h1>
-  </div>
-</div>
-
-<div id="footer_block">
-  <div id="footer">
-    <p><a href="credits.php">Credits</a>
-       <a href="http://validator.w3.org/check/referer" title="check our xhtml standards compliance">XHTML</a>
-       <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://{$http_host}/templates/basic/css/basic.css" title="check our css standards compliance">CSS</a>
-       <a href="http://bobby.watchfire.com/bobby/bobbyServlet?URL=http%3A%2F%2F{$http_host}%2F&amp;output=Submit&amp;gl=sec508" title="check our accessibility standards compliance">Accessibility</a>
-    </p>
-  </div>
-</div>
-
-</body>
-</html>
+{include file="_std_end.tpl"}
