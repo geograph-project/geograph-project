@@ -122,6 +122,8 @@ class GeographMapMosaic
 	*/
 	function GeographMapMosaic($preset='full')
 	{
+		global $CONF;
+		$this->enableCaching($CONF['smarty_caching']);
 		$this->setPreset($preset);
 		$this->scales = array(1 => 1, 2 => 4, 3 => 40);
 	}
@@ -174,6 +176,27 @@ class GeographMapMosaic
 	{
 		$this->caching=$enable;
 	}
+	
+	/**
+	* Assigns useful stuff to the given smarty object
+	* basename = 2d array of image tiles (see getImageArray)
+	* basename_width and basename_height contain dimensions of mosaic
+	* basename_token contains mosaic token
+	* @access public
+	*/
+	function assignToSmarty(&$smarty, $basename)
+	{
+		//setup the overview variables
+		$overviewimages =& $this->getImageArray();
+		$smarty->assign_by_ref($basename, $overviewimages);
+		$smarty->assign($basename.'_width', $this->image_w);
+		$smarty->assign($basename.'_height', $this->image_h);
+		$smarty->assign($basename.'_token', $this->getToken());
+	
+	}
+		
+		
+	
 	
 	/**
 	* Set origin of map in internal coordinates, returns true if valid
