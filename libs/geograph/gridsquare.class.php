@@ -367,7 +367,7 @@ class GridSquare
 			"x between $left and $right and ".
 			"y between $top and $bottom and ".
 			"imagecount>0 ".
-			"order by distance desc";
+			"order by distance asc";
 		
 		$square = $db->GetRow($sql);	
 		if (count($square) && ($square['distance'] <= $radius))
