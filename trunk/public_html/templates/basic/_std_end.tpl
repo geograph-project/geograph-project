@@ -2,8 +2,7 @@
 </div>
 
 <div id="nav_block">
- <div id="nav">
-  <div id="navlinks">
+ <div class="nav">
   <ul>
     <li><a title="Home Page" href="/">Home</a></li>
     <li><a title="Browse the grid and submit photos" href="/browse.php">Browse</a></li>
@@ -16,48 +15,32 @@
   
   {dynamic}
   {if $is_admin}
-  <h3>Testing</h3>
-  <ul>
-       <li><a title="Browser" href="/mapbrowse.php">Map Browser (beta)</a></li>
-  </ul>
   <h3>Admin</h3>
   <ul>
+       <li><a title="Browser" href="/mapbrowse.php">Map Browser (beta)</a></li>
     <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
      <li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
-     <li><a title="Map Maker" href="/admin/mapmaker.php">Map Maker</a></li>
      <li><a title="Server Stats" href="http://www.geograph.co.uk/logs/">Server Stats</a></li>
-  </ul>
-  <h3>Developers</h3>
-  <ul>
-     <li><a title="Grid Builder" href="/admin/gridbuilder.php">Grid Building</a></li>
-     <li><a title="Hash Changer" href="/admin/hashchanger.php">Hash Changer</a></li>
   </ul>
   {/if}
   {/dynamic}
-  </div>
+
   
-  {if $recentcount}
+{if $news}
+
+{foreach from=$news item=newsitem}
+<h3 class="newstitle">{$newsitem.topic_title}</h3>
+<div class="newsbody">{$newsitem.post_text}</div>
+<div class="newsfooter">
+Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> on {$newsitem.topic_time|date_format:"%a, %e %b"}
+<a href="/discuss/index.php?action=vthread&amp;forum=1&amp;topic={$newsitem.topic_id}">({$newsitem.comments} {if $newsitem.comments eq 1}comment{else}comments{/if})</a>
+</div>
+
+
+{/foreach}
+
+{/if}  
   
-  	<h3>Recent Photos</h3>
-  	
-  	{foreach from=$recent item=image}
-  
-  	  <div style="text-align:center;padding-bottom:1em;">
-  	  <a title="{$image->title|escape:'html'} - click to view full size image" href="/view.php?id={$image->gridimage_id}">{$image->getThumbnail(120,80)}</a>
-  	  
-  	  <div>
-  	  <a title="view full size image" href="/view.php?id={$image->gridimage_id}">{$image->title|escape:'html'}</a>
-  	  by <a title="view user profile" href="/profile.php?u={$image->user_id}">{$image->realname}</a>
-	  for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
-	  
-	  </div>
-  	  
-  	  </div>
-  	  
-  
-  	{/foreach}
-  
-  {/if}
   
   
   </div>
@@ -95,9 +78,14 @@
   </div>
 </div>
 
+{if $right_block}
+	{include file=$right_block}
+	<div class="content3" id="footer_block">
+{else}
+	<div class="content2" id="footer_block">
+{/if}
 
-
-<div id="footer_block">
+<div class="content" id="footer_block">
   <div id="footer">
     <p><a href="/help/credits" title="Who built this and how?">Credits</a>
        <span class="sep">|</span>

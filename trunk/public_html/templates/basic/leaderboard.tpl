@@ -1,4 +1,5 @@
-{assign var="page_title" value="Photographs"}
+{assign var="page_title" value="Leaderboard"}
+{assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
 <h2>Geograph Leaderboard</h2>

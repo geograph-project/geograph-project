@@ -22,6 +22,10 @@
 </div>
 
 
+{if $right_block}
+<div class="content3" id="maincontent_block">
+{else}
+<div class="content2" id="maincontent_block">
+{/if}
 
-<div id="maincontent_block">
   <div id="maincontent">
