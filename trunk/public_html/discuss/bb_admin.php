@@ -4,6 +4,12 @@ This file is part of miniBB. miniBB is free discussion forums/message board soft
 */
 define ('INCLUDED776',1);
 
+//use our own authentication first...
+require_once('geograph/global.inc.php');
+init_session();
+$USER->mustHavePerm("admin");
+
+
 function get_microtime() {
 $mtime=explode(' ',microtime());
 return $mtime[1]+$mtime[0];
