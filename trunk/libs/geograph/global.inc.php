@@ -39,6 +39,8 @@ require_once('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
 
 //adodb configuration
 require_once('adodb/adodb.inc.php');
+if ($CONF['adodb_debugging'])
+   require_once('adodb/adodb-errorhandler.inc.php');
 
 //build DSN
 $DSN = $CONF['db_driver'].'://'.
@@ -116,7 +118,7 @@ class GeographPage extends Smarty
 		//assign globallly useful stuff
 		$this->assign_by_ref('user', $GLOBALS['USER']);
 		$this->assign_by_ref('http_host', $_SERVER['HTTP_HOST']);
-		$this->assign_by_ref('script_name', $_SERVER['SCRIPT_NAME']);
+		$this->assign_by_ref('script_name', $_SERVER['PHP_SELF']);
 		$this->assign_by_ref('script_uri', $_SERVER['REQUEST_URI']);
 		$this->assign_by_ref('searchq', $_SESSION['searchq']);
 		
