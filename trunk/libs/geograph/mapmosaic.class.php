@@ -451,6 +451,16 @@ class GeographMapMosaic
 	}
 
 	/**
+	* get a token that will zoom us one level into this mosaic
+	* @access public
+	*/
+	function getZoomInToken()
+	{
+		//TODO!
+		return $this->getToken();
+	}
+	
+	/**
 	* get a url that will zoom us out one level from this gridsquare
 	* @access public
 	*/
