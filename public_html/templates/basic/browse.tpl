@@ -61,7 +61,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 		
 		{foreach from=$images item=image}
 		
-		  <div style="float:left;" class="photo33"><a title="view full size image" href="view.php?id={$image->gridimage_id}">{$image->getThumbnail(213,160)}</a>
+		  <div style="float:left;" class="photo33"><a title="view full size image" href="/view.php?id={$image->gridimage_id}">{$image->getThumbnail(213,160)}</a>
 		  <div class="caption"><a title="view full size image" href="/view.php?id={$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
 		  
 		  {if $is_admin}
