@@ -53,6 +53,13 @@ class GeographUser
 	var $registered=false;
 	
 	/**
+	* records whether user was automatically logged in via cookie - 
+	* there are some operations which should force the user to give
+	* their password for additional security in this event
+	*/
+	var $autologin=false;
+	
+	/**
 	* stats gathered by getStats
 	*/
 	var $stats=array();
@@ -367,6 +374,10 @@ class GeographUser
 		$this->user_id=0;
 		$this->realname="";
 		
+		//we've changed state, won't hurt to use a new
+		//session id...
+		session_regenerate_id(); 
+		
 	}
 
 	
@@ -423,6 +434,7 @@ class GeographUser
 			{
 				$email=stripslashes(trim($_POST['email']));
 				$password=stripslashes(trim($_POST['password']));
+				$remember_me=isset($_POST['remember_me'])?1:0;
 				
 				if (isValidEmailAddress($email))
 				{
@@ -446,7 +458,19 @@ class GeographUser
 									if (!is_numeric($name))
 										$this->$name=$value;
 								}
-
+								
+								//give user a remember me cookie?
+								if (isset($remember_me))
+								{
+									$token = md5(uniqid(rand(),1)); 
+									$db->query("insert into autologin(user_id,token) values ('{$this->user_id}', '$token')");
+									setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365);  
+								}
+								
+								//we're changing privilege state, so we should
+								//generate a new session id to avoid fixation attacks
+								session_regenerate_id(); 
+								
 								$this->registered=true;
 								$logged_in=true;
 							}
@@ -481,6 +505,8 @@ class GeographUser
 			if (!$logged_in)
 			{
 				$smarty = new GeoGraphPage;
+				
+				$smarty->assign('remember_me', isset($_COOKIE['autologin'])?1:0);
 				$smarty->assign('inline', $inline);
 				$smarty->assign('email', $email);
 				$smarty->assign('password', $password);
@@ -503,9 +529,63 @@ class GeographUser
 	/**
 	* attempt to authenticate user from persistent cookie
 	*/
-	function auto_login()
+	function autoLogin()
 	{
-	
+		if(isset($_COOKIE['autologin']))
+		{
+			$db = NewADOConnection($GLOBALS['DSN']);
+			
+			$valid=false;
+			$bits=explode('_', $_COOKIE['autologin']);
+			if ((count($bits)==2) &&
+			    is_numeric($bits[0]) &&
+			    preg_match('/^[a-f0-9]{32}$/' , $bits[1]))
+			{
+				$clause="user_id='{$bits[0]}' and token='{$bits[1]}'";
+				$row=$db->GetRow("select * from autologin where $clause");
+				if (count($row))
+				{
+					//log the user in
+					$sql="select * from user where user_id=".$db->Quote($bits[0]);
+					
+					$user = $db->GetRow($sql);	
+					if (count($user))
+					{
+						$valid=true;
+						
+						foreach($user as $name=>$value)
+						{
+							if (!is_numeric($name))
+								$this->$name=$value;
+						}
+
+						//we're changing privilege state, so we should
+						//generate a new session id to avoid fixation attacks
+						session_regenerate_id(); 
+
+						$this->registered=true;
+						$this->autologin=true;
+						
+						//delete the autologin, we've used it
+						$db->query("delete from autologin where $clause");
+
+						//given the user a new one
+						$token = md5(uniqid(rand(),1)); 
+						$db->query("insert into autologin(user_id,token) values ('{$this->user_id}', '$token')");
+						setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365);  
+					
+					}
+								
+				}
+			}
+		
+			//clear the cookie?
+			if (!$valid)
+			{
+				setcookie('autologin', '', time()-3600*24*365);  
+					
+			}
+		}
 	}
 	
 }
