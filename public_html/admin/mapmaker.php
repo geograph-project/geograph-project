@@ -53,7 +53,7 @@ if (isset($_POST['make']))
 	set_time_limit(3600*24);
 	
 	$mapmaker=new MapMaker;
-	$imgfile=$mapmaker->build($x1, $y1, $x2, $y2);
+	$imgfile=$mapmaker->build($x1, $y1, $x2, $y2,true,0.35);
 	
 	echo "<img src=\"$imgfile\">";
 	
