@@ -42,15 +42,15 @@ if (isset($_GET['gridimage_id']))
 	if ($USER->hasPerm("admin"))
 	{
 	
-		$gridimage_id=$_GET['gridimage_id'];
-		$status=($_GET['is_ok']=='true')?'accepted':'rejected';
+		$gridimage_id=intval($_GET['gridimage_id']);
+		$status=$_GET['status'];
 
 
 		$image=new GridImage;
 		if ($image->loadFromId($gridimage_id))
 		{
-			$image->setModerationStatus($status);
-			echo "Image $status";
+			$info=$image->setModerationStatus($status);
+			echo $info;
 		}
 		else
 		{
