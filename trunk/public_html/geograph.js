@@ -24,13 +24,22 @@ function di20(id, newSrc) {
 
 function FWFindImage(doc, name, j) {
     var theImage = false;
+    if (doc.getElementById) {
+    	theImage = doc.getElementById(name);
+    }
+    if (theImage) {
+	    return theImage;
+	}
+   
+    
     if (doc.images) {
         theImage = doc.images[name];
     }
     if (theImage) {
         return theImage;
     }
-    if (doc.layers) {
+   
+   if (doc.layers) {
         for (j = 0; j < doc.layers.length; j++) {
             theImage = FWFindImage(doc.layers[j].document, name, 0);
             if (theImage) {
