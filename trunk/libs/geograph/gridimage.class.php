@@ -768,10 +768,14 @@ class GridImage
 					$this->ftf=1;
 			}
 			
+			$east=$newsq->getNatEastings();
+			$north=$newsq->getNatNorthings();
 			
 			//reassign image
 			$db->Execute("update gridimage set gridsquare_id='{$newsq->gridsquare_id}',".
-				"seq_no=$seq_no,ftf=$this->ftf where gridimage_id='$this->gridimage_id'");
+				"seq_no=$seq_no,ftf=$this->ftf, ".
+				"nateastings='$east',natnorthings='$north' ".
+				"where gridimage_id='$this->gridimage_id'");
 
 			//update cached data for old square and new square
 			$this->grid_square->updateCounts();
