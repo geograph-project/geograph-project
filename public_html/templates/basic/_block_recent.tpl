@@ -1,5 +1,29 @@
 <div id="right_block">
 <div class="nav">
+
+{if $overview}
+
+<h3>Overview Map</h3>
+<div class="map" style="margin-left:20px;border:2px solid black; height:{$overview_height}px;width:{$overview_width}px">
+
+<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
+
+{foreach from=$overview key=y item=maprow}
+	<div>
+	{foreach from=$maprow key=x item=mapcell}
+	<a href="/mapbrowse.php?o={$token}&i={$x}&j={$y}&center="><img 
+	ismap="ismap" title="Click to pan main map" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+	{/foreach}
+	</div>
+{/foreach}
+</div>
+
+</div>
+
+
+{/if}	
+
+
  {if $recentcount}
   
   	<h3>Recent Photos</h3>
