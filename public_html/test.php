@@ -26,8 +26,11 @@
  * This file should test the local environment to ensure the geograph
  * application can run successfully
  */
-$ok=true;
 
+//////////////////////////////////////////////////////////////////
+// helper functions
+
+$ok=true;
 function fail($msg)
 {
 	global $ok;
@@ -53,6 +56,88 @@ function check_include($file)
 	return $ok;
 }
 
+function check_http($page, $pattern, &$errstr)
+{
+	$ok=false;
+
+	$errstr='';
+	$host=$_SERVER['HTTP_HOST'];
+
+
+	$fp = fsockopen($host, 80, $errno, $errstr, 30);
+	if (!$fp) 
+	{
+		return $ok;
+	} 
+	else 
+	{
+		$out = "GET $page HTTP/1.0\r\n";
+		$out .= "Host: $host\r\n";
+		$out .= "User-Agent: Geograph System Tester\r\n";
+		$out .= "Connection: Close\r\n\r\n";
+
+		$headers=array();
+		$body="";
+		$in_headers=true;
+
+		fwrite($fp, $out);
+		while (!feof($fp)) 
+		{
+			$line=fgets($fp, 1024);
+			if ($in_headers)
+			{
+				$line=trim($line);
+				if (strlen($line))
+				{
+					$headers[]=$line;
+				}
+				else
+				{
+					$in_headers=false;
+				}
+			}
+			else
+			{
+				$body.=$line;
+			}
+		}
+		fclose($fp);
+	}
+	
+
+	//HTTP/1.1 404 Not Found
+	if (preg_match('{HTTP/\d+\.\d+ (\d+) (.*)}', $headers[0], $matches))
+	{
+
+		$status=$matches[1];
+		if ($status==200)
+		{
+			//hurrah - lets check the content
+			$ok=preg_match($pattern, $body);
+			if (!$ok)
+			{
+				$errstr="Page did not contain expected text";
+			}
+		}
+		else
+		{
+			//server failed us
+			$errstr="Server returned $status {$matches[2]}";
+		}
+	}
+	else
+	{
+		$errstr="Server returned unexpected response to HTTP request ({$headers[0]})";
+	}
+	
+
+	return $ok;
+}
+
+
+//////////////////////////////////////////////////////////////////
+// BEGIN TESTING
+
 echo "<h1>Geograph System Test...</h1>";
 
 
@@ -65,6 +150,9 @@ if (!extension_loaded('gd'))
 if (!extension_loaded('exif'))
 	fail('PHP EXIF extension not available - REQUIRED');
 
+if(get_cfg_var('register_globals'))
+	fail('register_globals should be turned OFF - REQUIRED');
+
 //check for a recent browscap.ini
 $browscap=get_cfg_var("browscap");
 if (strlen($browscap) && @file_exists($browscap))
@@ -75,14 +163,12 @@ if (strlen($browscap) && @file_exists($browscap))
 	{
 		warn("browscap.ini more than six months old - check for updates at http://www.garykeith.com/browsers/downloads.asp");
 	}
-	
-	
 }
 else
 {
 	fail('browscap file not configured in php.ini - REQUIRED');
-
 }
+
 
 //////////////////////////////////////////////////////////////////
 // include files
@@ -120,6 +206,8 @@ foreach($example as $name=>$value)
 	}
 }
 
+
+
 //////////////////////////////////////////////////////////////////
 // directory permissions
 
@@ -142,7 +230,23 @@ if (!is_writable($CONF['adodb_cache_dir']))
 	fail('$CONF[\'adodb_cache_dir\'] ('.$CONF['adodb_cache_dir'].') not writable - REQUIRED');
 
 
-//show some diagnostics if not ok...
+
+/////////////////////////////////////////////////////////////
+// rewrite rules
+
+$httperr='';
+if (!check_http('/gridref/HP0000', '/HP0000 seems to be all at sea/',$httperr))
+	fail("mod_rewrite rule for /gridref/<em>xxnnnn</em> failed ($httperr) - REQUIRED");
+if (!check_http('/help/credits', '/This project relies on the following open-source technologies/',$httperr))
+	fail("mod_rewrite rule for /help/<em>page</em> failed ($httperr) - REQUIRED");
+if (!check_http('/reg/123/abcdef1234567890', '/there was a problem confirming your registration/',$httperr))
+	fail("mod_rewrite rule for /reg/<em>uid</em>/<em>hash</em> failed ($httperr) - REQUIRED");
+
+
+//////////////////////////////////////////////////////////////////
+// END OF TESTING
+// We show some diagnostics if any tests failed...
+
 if (!$ok)
 {
 	echo "<br><br><br><br>";
@@ -150,7 +254,6 @@ if (!$ok)
 }
 else
 {
-	echo "<li style=\"color:green;font-weight:bold;\>Server is correctly configured to run Geograph!</li>";
+	echo "<li style=\"color:green;font-weight:bold;\">Server is correctly configured to run Geograph!</li>";
 }
-//just adding this comment to test if can now commit... (Barry) another commit try!
 ?>
