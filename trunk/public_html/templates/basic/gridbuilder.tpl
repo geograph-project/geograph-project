@@ -3,7 +3,7 @@
 
 <h2>Grid Building</h2>
 <p>This page links to tools for initialising the database of
-grid squares - this chief consists of two phase - shading the squares
+grid squares - this chiefly consists of two elements - shading the squares
 to indicate whether they are land or sea, and assigning real-world
 coordinates to such squares.</p>
 
