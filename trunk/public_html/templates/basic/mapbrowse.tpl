@@ -113,6 +113,129 @@
 
 <br style="clear:both"/>
 
+{literal}
+<script language="JavaScript">
+<!-- hide this script from non-javascript-enabled browsers
+
+if (document.images) {
+zoomin_F1 = new Image(30,29); zoomin_F1.src = "geographmap/zoomin.gif";
+zoomin_F2 = new Image(30,29); zoomin_F2.src = "geographmap/zoomin_F2.gif";
+north_F1 = new Image(30,29); north_F1.src = "geographmap/north.gif";
+north_F2 = new Image(30,29); north_F2.src = "geographmap/north_F2.gif";
+west_F1 = new Image(30,29); west_F1.src = "geographmap/west.gif";
+west_F2 = new Image(30,29); west_F2.src = "geographmap/west_F2.gif";
+east_F1 = new Image(30,29); east_F1.src = "geographmap/east.gif";
+east_F2 = new Image(30,29); east_F2.src = "geographmap/east_F2.gif";
+zoomout_F1 = new Image(30,29); zoomout_F1.src = "geographmap/zoomout.gif";
+zoomout_F2 = new Image(30,29); zoomout_F2.src = "geographmap/zoomout_F2.gif";
+south_F1 = new Image(30,29); south_F1.src = "geographmap/south.gif";
+south_F2 = new Image(30,29); south_F2.src = "geographmap/south_F2.gif";
+}
+
+/* Function that swaps images. */
+
+function di20(id, newSrc) {
+    var theImage = FWFindImage(document, id, 0);
+    if (theImage) {
+        theImage.src = newSrc;
+    }
+}
+
+/* Functions that track and set toggle group button states. */
+
+function FWFindImage(doc, name, j) {
+    var theImage = false;
+    if (doc.images) {
+        theImage = doc.images[name];
+    }
+    if (theImage) {
+        return theImage;
+    }
+    if (doc.layers) {
+        for (j = 0; j < doc.layers.length; j++) {
+            theImage = FWFindImage(doc.layers[j].document, name, 0);
+            if (theImage) {
+                return (theImage);
+            }
+        }
+    }
+    return (false);
+}
+
+// stop hiding -->
+</script>
+{/literal}
+
+<table style="line-height:0px" border="0" cellpadding="0" cellspacing="0" width="143">
+
+  <tr><!-- Shim row, height 1. -->
+   <td><img src="/templates/basic/mapnav/shim.gif" width="12" height="1" border="0"></td>
+   <td><img src="/templates/basic/mapnav/shim.gif" width="30" height="1" border="0"></td>
+   <td><img src="/templates/basic/mapnav/shim.gif" width="30" height="1" border="0"></td>
+   <td><img src="/templates/basic/mapnav/shim.gif" width="30" height="1" border="0"></td>
+   <td><img src="/templates/basic/mapnav/shim.gif" width="30" height="1" border="0"></td>
+   <td><img src="/templates/basic/mapnav/shim.gif" width="11" height="1" border="0"></td>
+   <td><img src="/templates/basic/mapnav/shim.gif" width="1" height="1" border="0"></td>
+  </tr>
+
+  <tr><!-- row 1 -->
+   <td colspan="6"><img name="top" src="/templates/basic/mapnav/top.gif" width="143" height="9" border="0"></td>
+   <td><img src="/templates/basic/mapnav/shim.gif" width="1" height="9" border="0"></td>
+  </tr>
+
+  <tr><!-- row 2 -->
+   <td rowspan="6"><img name="left" src="/templates/basic/mapnav/left.gif" width="12" height="211" border="0"></td>
+   <td><a href="/mapbrowse.php?t={$token_zoomin}" onMouseOut="di20('zoomin','/templates/basic/mapnav/zoomin.gif');"  onMouseOver="di20('zoomin','/templates/basic/mapnav/zoomin_F2.gif');" ><img name="zoomin" src="/templates/basic/mapnav/zoomin.gif" width="30" height="29" border="0"></a></td>
+   <td><img name="fill1" src="/templates/basic/mapnav/fill1.gif" width="30" height="29" border="0"></td>
+   <td><a href="/mapbrowse.php?t={$token_north}" onMouseOut="di20('north','/templates/basic/mapnav/north.gif');"  onMouseOver="di20('north','/templates/basic/mapnav/north_F2.gif');" ><img name="north" src="/templates/basic/mapnav/north.gif" width="30" height="29" border="0"></a></td>
+   <td><img name="fill2" src="/templates/basic/mapnav/fill2.gif" width="30" height="29" border="0"></td>
+   <td rowspan="6"><img name="right" src="/templates/basic/mapnav/right.gif" width="11" height="211" border="0"></td>
+   <td><img src="/templates/basic/mapnav/shim.gif" width="1" height="29" border="0"></td>
+  </tr>
+
+  <tr><!-- row 3 -->
+   <td><img name="fill3" src="/templates/basic/mapnav/fill3.gif" width="30" height="29" border="0"></td>
+   <td><a href="/mapbrowse.php?t={$token_west}" onMouseOut="di20('west','/templates/basic/mapnav/west.gif');"  onMouseOver="di20('west','/templates/basic/mapnav/west_F2.gif');" ><img name="west" src="/templates/basic/mapnav/west.gif" width="30" height="29" border="0"></a></td>
+   <td><img name="fill4" src="/templates/basic/mapnav/fill4.gif" width="30" height="29" border="0"></td>
+   <td><a href="/mapbrowse.php?t={$token_east}" onMouseOut="di20('east','/templates/basic/mapnav/east.gif');"  onMouseOver="di20('east','/templates/basic/mapnav/east_F2.gif');" ><img name="east" src="/templates/basic/mapnav/east.gif" width="30" height="29" border="0"></a></td>
+   <td><img src="/templates/basic/mapnav/shim.gif" width="1" height="29" border="0"></td>
+  </tr>
+
+  <tr><!-- row 4 -->
+   <td><a href="/mapbrowse.php?t={$token_zoomout}" onMouseOut="di20('zoomout','/templates/basic/mapnav/zoomout.gif');"  onMouseOver="di20('zoomout','/templates/basic/mapnav/zoomout_F2.gif');" ><img name="zoomout" src="/templates/basic/mapnav/zoomout.gif" width="30" height="29" border="0"></a></td>
+   <td><img name="fill5" src="/templates/basic/mapnav/fill5.gif" width="30" height="29" border="0"></td>
+   <td><a href="/mapbrowse.php?t={$token_south}" onMouseOut="di20('south','/templates/basic/mapnav/south.gif');"  onMouseOver="di20('south','/templates/basic/mapnav/south_F2.gif');" ><img name="south" src="/templates/basic/mapnav/south.gif" width="30" height="29" border="0"></a></td>
+   <td><img name="fill6" src="/templates/basic/mapnav/fill6.gif" width="30" height="29" border="0"></td>
+   <td><img src="/templates/basic/mapnav/shim.gif" width="1" height="29" border="0"></td>
+  </tr>
+
+  <tr><!-- row 5 -->
+   <td colspan="4"><img name="middle" src="/templates/basic/mapnav/middle.gif" width="120" height="11" border="0"></td>
+   <td><img src="/templates/basic/mapnav/shim.gif" width="1" height="11" border="0"></td>
+  </tr>
+
+  <tr><!-- row 6 -->
+   <td colspan="4" bgcolor="#6476fc">
+   
+   <p style="line-height:1em;font-size:0.8em;">Grid Reference at center
+ <b>{$gridref}</b></p>
+ 
+   </td>
+   <td><img src="/templates/basic/mapnav/shim.gif" width="1" height="103" border="0"></td>
+  </tr>
+
+  <tr><!-- row 7 -->
+   <td colspan="4"><img name="bottom" src="/templates/basic/mapnav/bottom.gif" width="120" height="10" border="0"></td>
+   <td><img src="/templates/basic/mapnav/shim.gif" width="1" height="10" border="0"></td>
+  </tr>
+
+</table>
+
+
+
+
+
+{*
 {if $token_zoomin}
 <a accesskey="S" title="Zoom in (Alt+S)" href="/mapbrowse.php?t={$token_zoomin}">Zoom in</a>
 {else}
@@ -124,8 +247,7 @@
 {else}
 <span style="color:silver">Zoom out</span>
 {/if}
- <p>Grid Reference at center<br/>
- <b>{$gridref}</b></p>
+ 
 {if $token_zoomin}
  <p>&middot; Click on the large map to zoom in</p>
 {else}
@@ -135,6 +257,8 @@
  <p>&middot; Click on small map above <br/>
  to pan around</p>
 {/if} 
+*}
+
  {*end containing div for overview map*}
  </div>
  
@@ -152,5 +276,8 @@
 {/if}
  
  &nbsp;
+ 
+
+
  
 {include file="_std_end.tpl"}
