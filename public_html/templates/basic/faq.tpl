@@ -21,7 +21,8 @@
     <a href="http://creativecommons.org">Creative Commons</a> 
     licence on their photographic submissions. While our volunteer photographers
     keep copyright on their photos, they also grant the use of their photographs
-    in return for attribution (take a look at a submission for more details)</p>
+    in return for attribution (take a look at a <a title="View a typical photograph" href="/view.php?id=14">typical 
+    submission</a> for more details)</p>
     
     <p>In a nutshell, we wanted to build a true community project that won't 
     leave a nasty taste in the mouth by getting sold for shedloads of cash and
