@@ -105,7 +105,8 @@ class GeographUser
 		$this->stats=array();
 		
 		$this->stats['ftf']=$db->GetOne("select count(*) from gridimage where user_id='{$this->user_id}' and ftf=1");
-		$this->stats['total']=$db->GetOne("select count(*) from gridimage where user_id='{$this->user_id}'");
+		$this->stats['total']=$db->GetOne("select count(*) from gridimage where user_id='{$this->user_id}' and moderation_status<>'rejected'");
+		$this->stats['pending']=$db->GetOne("select count(*) from gridimage where user_id='{$this->user_id}' and moderation_status='pending'");
 		
 
 	}
