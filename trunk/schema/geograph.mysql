@@ -15,6 +15,10 @@ create table gridsquare
    #might be handy for plotting squares to build a map
    percent_land int not null default '100',
 
+   #image count - this is an optimisation to allow us to easily find
+   #occupied squares without a join
+   imagecount int not null default '0',
+
    primary key(gridsquare_id),
    unique(grid_reference1),
    unique(grid_reference2),
@@ -234,6 +238,11 @@ create table gridimage
     #user submitted information
     title varchar(128),
     comment text,
+
+	#exif headers as serialized array for now
+	exif text,
+
+	submitted datetime,
 
     primary key(gridimage_id),
     unique(gridsquare_id, seq_no),
