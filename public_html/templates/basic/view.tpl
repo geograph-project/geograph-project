@@ -32,6 +32,31 @@ referring to <b>image {$image->gridimage_id}</b>
 
 <table>		
 <tr><td>Submitted by</td><td><a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a></td></tr>
+
+<tr><td>Image status</td><td>
+{if $image->ftf}
+	First geograph for this square!
+{else}
+	{if $image->moderation_status eq "rejected"}
+	Rejected
+	{/if}
+
+	{if $image->moderation_status eq "pending"}
+	Awaiting moderation
+	{/if}
+
+	{if $image->moderation_status eq "geograph"}
+	Secondary geograph for this grid square
+	{/if}
+
+	{if $image->moderation_status eq "accepted"}
+	Supplemental image for this grid square
+	{/if}
+{/if}
+</td></tr>
+
+
+
 <tr><td>Submission date</td><td>{$image->submitted}</td></tr>
 <tr><td>Comments</td><td>{$image->comment}</td></tr>
 <tr><td>See Also</td><td>{getamap gridref=$image->grid_reference text="OS Map for `$image->grid_reference`"}</td></tr>
