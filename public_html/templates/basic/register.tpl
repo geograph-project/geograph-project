@@ -1,3 +1,4 @@
+{assign var="page_title" value="Register"}
 {include file="_std_begin.tpl"}
 
 <h2>Register</h2>
