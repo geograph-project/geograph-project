@@ -47,18 +47,9 @@ $grid_given=false;
 $grid_ok=false;
 
 
-//set by grid ref?
-if (isset($_GET['gridref']) && strlen($_GET['gridref']))
-{
-	$grid_given=true;
-	$grid_ok=$square->setGridRef($_GET['gridref']);
-	
-	//preserve inputs in smarty
-	$smarty->assign('gridref', stripslashes($_GET['gridref']));
-	
-}
+
 //set by grid components?
-elseif (isset($_GET['gridsquare']))
+if (isset($_GET['setpos']))
 {	
 	$grid_given=true;
 	$grid_ok=$square->setGridPos($_GET['gridsquare'], $_GET['eastings'], $_GET['northings']);
@@ -67,7 +58,24 @@ elseif (isset($_GET['gridsquare']))
 	$smarty->assign('gridsquare', $square->gridsquare);
 	$smarty->assign('eastings', $square->eastings);
 	$smarty->assign('northings', $square->northings);
-
+	$smarty->assign('gridref', $square->grid_reference);
+	
+}
+//set by grid ref?
+elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
+{
+	$grid_given=true;
+	$grid_ok=$square->setGridRef($_GET['gridref']);
+	
+	//preserve inputs in smarty
+	$smarty->assign('gridref', stripslashes($_GET['gridref']));
+	
+	if ($grid_ok)
+	{
+		$smarty->assign('gridsquare', $square->gridsquare);
+		$smarty->assign('eastings', $square->eastings);
+		$smarty->assign('northings', $square->northings);
+	}
 	
 }
 
@@ -90,7 +98,7 @@ if ($grid_given)
 		if (is_object($square->nearest))
 		{
 			$smarty->assign('nearest_distance', $square->nearest->distance);
-			$smarty->assign('nearest_gridref', $square->nearest->gridref);
+			$smarty->assign('nearest_gridref', $square->nearest->grid_reference);
 		
 		}
 		
