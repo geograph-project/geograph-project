@@ -41,14 +41,14 @@ if (isset($_GET['id']))
 {
 	$image->loadFromId($_GET['id']);
 	$isowner=($image->user_id==$USER->user_id)?1:0;
-	$isadmin=$USER->hasPerm('admin')?1:0;
+	$ismoderator=$USER->hasPerm('moderator')?1:0;
 	
-	$cacheid="{$_GET['id']}_{$isowner}_{$isadmin}";
+	$cacheid="{$_GET['id']}_{$isowner}_{$ismoderator}";
 	
 	//is the image rejected? - only the owner and administrator should see it
 	if ($image->moderation_status=='rejected')
 	{
-		if ($isowner||$isadmin)
+		if ($isowner||$ismoderator)
 		{
 			//ok, we'll let it lie...
 		}
@@ -67,6 +67,7 @@ if ($image->isValid())
 	$taken=$image->getFormattedTakenDate();
 	$smarty->assign('page_title', $image->grid_reference);
 	$smarty->assign('image_taken', $taken);
+	$smarty->assign('ismoderator', $USER->hasPerm('moderator')?1:0);
 	$smarty->assign_by_ref('image', $image);
 	
 	$mosaic=new GeographMapMosaic;
