@@ -45,7 +45,7 @@ class MapMaker
 	/**
 	* adds or updates squares
 	*/
-	function build($x1, $y1, $x2, $y2, $showgrid=true)
+	function build($x1, $y1, $x2, $y2, $showgrid=true,$scale = 1,$force = false,$reference_index = 0)
 	{
 		$this->db = NewADOConnection($GLOBALS['DSN']);
 		if (!$this->db) die('Database connection failed');   
@@ -58,7 +58,12 @@ class MapMaker
 		$bottom=min($y1, $y2);
 	
 		//figure out filename
-		$filename="map_{$left}_{$top}_{$right}_{$bottom}.png";
+		$filename="map_{$left}_{$top}_{$right}_{$bottom}_{$scale}.png";
+	
+		#elementry caching!
+		if (!$force && file_exists($_SERVER['DOCUMENT_ROOT']."/maps/$filename")) {
+			return "/maps/$filename";
+ 		}
 	
 		//figure out dimensions
 		$width=$right-$left;
@@ -86,12 +91,12 @@ class MapMaker
 		
 		}
 		$dotcolor = imagecolorallocate($img,255,0,0);
+		$otherlandcolor = $land[20];
 		
 		//now plot all squares in the desired area
-		$sql="select x,y,percent_land,imagecount from gridsquare where ".
+		$sql="select x,y,percent_land,imagecount,reference_index from gridsquare where ".
 			"(x between $left and $right) and ".
-			"(y between $bottom and $top) and ".
-			"percent_land > 0 order by y,x";
+			"(y between $bottom and $top) order by imagecount";
 			
 		$recordSet = &$this->db->Execute($sql);
 		while (!$recordSet->EOF) 
@@ -102,19 +107,13 @@ class MapMaker
 			$imgx=$gridx-$left;
 			$imgy=$height-($gridy-$bottom);
 			
-			if ($recordSet->fields[3] > 0) {
-				imagesetpixel($img, $imgx,   $imgy, $dotcolor);
-				imagesetpixel($img, $imgx-1, $imgy, $dotcolor);
-				imagesetpixel($img, $imgx-2, $imgy, $dotcolor);
-				imagesetpixel($img, $imgx,   $imgy+1, $dotcolor);
-				imagesetpixel($img, $imgx-1, $imgy+1, $dotcolor);
-				imagesetpixel($img, $imgx-2, $imgy+1, $dotcolor);
-				imagesetpixel($img, $imgx,   $imgy+2, $dotcolor);
-				imagesetpixel($img, $imgx-1, $imgy+2, $dotcolor);
-				imagesetpixel($img, $imgx-2, $imgy+2, $dotcolor);
-				
-				
-				
+			if ($reference_index && $recordSet->fields[4] != $reference_index) {
+				imagesetpixel($img, $imgx, $imgy, $otherlandcolor);
+			} else if ($recordSet->fields[3] > 0) {
+				if ($scale > 5) 
+					imagesetpixel($img, $imgx, $imgy, $dotcolor);
+				else 
+					imagefilledrectangle ( $img, $imgx-1, $imgy+1, $imgx+1, $imgy-1, $dotcolor);
 			} else {
 				imagesetpixel($img, $imgx, $imgy, $land[$recordSet->fields[2]]);
 			}
@@ -129,6 +128,8 @@ class MapMaker
 				"origin_x between $left-width and $right and ".
 				"origin_y between $bottom-height and $top ".
 				"and landcount>0";
+				if ($reference_index)
+					$sql .= " and reference_index = $reference_index";
 				//"and reference_index=1 and landcount>0";
 
 
@@ -168,7 +169,7 @@ class MapMaker
 		}
 		
 		//resize to half size
-		$scale=0.5;
+		
 		$resized = imagecreatetruecolor($width*$scale,$height*$scale);
 		imagecopyresampled($resized, $img, 0, 0, 0, 0, 
 			$width*$scale,$height*$scale, $width, $height);
