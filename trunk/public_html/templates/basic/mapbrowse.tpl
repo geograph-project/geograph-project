@@ -27,12 +27,14 @@
  
  
  
- 	<div style="width:{$mosaic_width}px;height:{$mosaic_height}px;background:#6574FF;">
+ 	<div style="width:{$mosaic_width}px;height:{$mosaic_height}px;background:#6574FF;border:10px solid #000066;">
  	{foreach from=$mosaic key=y item=maprow}
+ 		<div>
  		{foreach from=$maprow key=x item=mapcell}
  		<a href="/mapbrowse.php?t={$token}&i={$x}&j={$y}&zoomin="><img 
- 		ismap="ismap" title="{$mapcell->getImageUrl()}" align="left" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}" border="0"/></a>
+ 		ismap="ismap" title="{$mapcell->getImageUrl()}" style="float:left;" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
  		{/foreach}
+ 		</div>
  	{/foreach}
  	</div>
  
