@@ -1,0 +1,2 @@
+grab the latest smarty release and untar it here
+http://smarty.php.net

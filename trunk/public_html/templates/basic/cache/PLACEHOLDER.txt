@@ -1,0 +1,1 @@
+Smarty cache dir - should be writable by webserver
