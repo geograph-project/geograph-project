@@ -45,7 +45,7 @@ $viewTopicsIfOnlyOneForum=0;
 $protectWholeForum=0;
 $protectWholeForumPwd='pwd';
 
-$postRange=60;
+$postRange=20;
 
 $dateFormat='j F Y H:i:s';
 
