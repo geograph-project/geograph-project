@@ -33,6 +33,11 @@ $recipient=new GeographUser($_REQUEST['to']);
 $from_name=isset($_POST['from_name'])?stripslashes($_POST['from_name']):$USER->realname;
 $from_email=isset($_POST['from_email'])?stripslashes($_POST['from_email']):$USER->email;
 
+$smarty->assign_by_ref('recipient', $recipient);
+$smarty->assign_by_ref('from_name', $from_name);
+$smarty->assign_by_ref('from_email', $from_email);
+
+	
 //try and send?
 if (isset($_POST['msg']))
 {
@@ -57,9 +62,6 @@ if (isset($_POST['msg']))
 	}
 	$smarty->assign_by_ref('errors', $errors);
 
-	$smarty->assign_by_ref('recipient', $recipient);
-	$smarty->assign_by_ref('from_name', $from_name);
-	$smarty->assign_by_ref('from_email', $from_email);
 	$smarty->assign_by_ref('msg', $msg);
 
 	
