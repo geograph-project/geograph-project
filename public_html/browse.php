@@ -24,7 +24,7 @@
 require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
-//require_once('geograph/gridbrowser.class.php');
+require_once('geograph/imagelist.class.php');
 init_session();
 
 
@@ -36,6 +36,10 @@ $square=new GridSquare;
 
 $smarty->assign('prefixes', $square->getGridPrefixes());
 $smarty->assign('kmlist', $square->getKMList());
+
+
+
+
 
 //we can be passed a gridreference as gridsquare/northings/eastings 
 //or just gridref. So lets initialise our grid square
@@ -106,6 +110,11 @@ else
 	$smarty->assign('northings', $_SESSION['northings']);
 	
 }
+
+//lets find some recent photos
+$images=new ImageList(array('pending', 'accepted'), 'submitted desc', 5);
+$images->assignSmarty(&$smarty, 'recent');
+
 
 $smarty->display('browse.tpl');
 
