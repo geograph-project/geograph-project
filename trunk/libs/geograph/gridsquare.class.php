@@ -149,9 +149,6 @@ class GridSquare
 	*/
 	function get6FigGridRef()
 	{
-		//this is needed beucase when gridsquare is loaded by gridimage the exploded elements dont get set
-		$this->_storeGridRef($this->grid_reference);
-	
 		return sprintf("%s%03d%03d", $this->gridsquare, $this->eastings*10 + 5, $this->northings*10 + 5);
 	}
 
@@ -163,18 +160,17 @@ class GridSquare
 		if (!isset($this->nateastings)) {
 			$db=&$this->_getDB();
 			
-			//this is needed beucase when gridsquare is loaded by gridimage the exploded elements dont get set
-			$this->_storeGridRef($this->grid_reference);
-			
 			$square = $db->GetRow("select origin_x,origin_y from gridprefix where prefix=".$db->Quote($this->gridsquare));	
-			//not sure how to get these 'offsets' without hardcoding them
-			if ($this->reference_index == 1) {
-				$square['origin_x'] -=206;
-			} else if ($this->reference_index == 2) {
-				$square['origin_x'] -=10;
-				$square['origin_y'] -=149;
-			}
-			#var_dump($this);
+			
+			//get the first gridprefix with the required reference_index
+			//after ordering by x,y - you'll get the bottom
+			//left gridprefix, and hence the origin
+			
+			$origin = $db->GetRow("select * from gridprefix where reference_index={$this->reference_index} order by origin_x,origin_y");	
+			
+			$square['origin_x'] -= $origin['origin_x'];
+			$square['origin_y'] -= $origin['origin_y'];
+			
 			$this->nateastings = sprintf("%d%05d",intval($square['origin_x']/100),$this->eastings * 1000 + 500);
 			$this->natnorthings = sprintf("%d%05d",intval($square['origin_y']/100),$this->northings * 1000 +500);
 			
@@ -328,6 +324,10 @@ class GridSquare
 					$this->$name=$value;
 								
 			}
+			
+			//ensure we get exploded reference members too
+			$this->_storeGridRef($this->grid_reference);
+			
 			
 		}
 	}
