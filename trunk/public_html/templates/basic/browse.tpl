@@ -21,7 +21,16 @@ we'll tell you how far away the nearest one is...</p>
 
 <form action="{$script_name}" method="get">
 <div>
-	<label for="gridsquare">Grid square</label>
+
+	<label for="gridref">Enter grid reference (e.g. SY9582)</label>
+	<input id="gridref" type="text" name="gridref" value="{$gridref|escape:'html'}" size="8"/>
+	<input type="submit" name="setpos" value="Show &gt;"/>
+
+	
+	
+	<p>or</p>
+
+	<label for="gridsquare">Choose grid reference</label>
 	<select id="gridsquare" name="gridsquare">
 		{html_options options=$prefixes selected=$gridsquare}
 	</select>
@@ -34,7 +43,7 @@ we'll tell you how far away the nearest one is...</p>
 		{html_options options=$kmlist selected=$northings}
 	</select>
 
-		<input type="submit" name="setpos" value="Show &gt;"/>
+	<input type="submit" name="setpos" value="Show &gt;"/>
 </div>
 </form>
 
