@@ -26,21 +26,29 @@ if(isset($isMod)) unset($isMod);
 if(isset($user_id)) unset($user_id);
 if(isset($langu)) unset($langu);
 
-//enable admin from geograph?
-if ($USER->hasPerm('admin'))
-	$logged_admin=1;
-
 define ('INCLUDED776',1);
 
 include ('./setup_options.php');
 
 $indexphp=(!isset($GLOBALS['indexphp'])?'index.php':$GLOBALS['indexphp']);
 
-if($useSessions) { 
-$sessname=ini_get('session.name');
-if($sessname=='') $sessname='PHPSESSID';
-session_start();
-if(!isset($$sessname)) { $indexphp.=SID.'&'; $bb_admin.=SID.'&'; } else { $indexphp.="{$sessname}=".$$sessname.'&'; $bb_admin.="{$sessname}=".$$sessname.'&'; }
+if($useSessions) 
+{ 
+	$sessname=ini_get('session.name');
+	if($sessname=='') 
+		$sessname='PHPSESSID';
+	
+	//we already did this for the geograph session handling
+	//session_start();
+	
+	if(!isset($$sessname)) 
+	{ 
+		$indexphp.=SID.'&'; 
+		$bb_admin.=SID.'&'; 
+	} else { 
+		$indexphp.="{$sessname}=".$$sessname.'&'; 
+		$bb_admin.="{$sessname}=".$$sessname.'&'; 
+	}
 }
 
 
