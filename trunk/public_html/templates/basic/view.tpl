@@ -2,7 +2,7 @@
 
 {if $image}
 
- <h2><a title="Grid Reference {$image->grid_reference}" href="/browse.php?gridref={$image->grid_reference}">{$image->grid_reference}</a> : {$image->title}</h2>
+ <h2><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->title}</h2>
  
 {if $image->moderation_status eq 'rejected'}
 <h3>Rejected</h3>
@@ -31,15 +31,20 @@ referring to <b>image {$image->gridimage_id}</b>
   <div class="caption">{$image->comment|escape:'html'}</div>
   {/if}
   
+  {if $user->user_id eq $image->user_id}
+  <div class="caption"><a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">Edit Photo Information</a></div>
+  {/if}
+  
   {if $is_admin}
 	  <form method="post" action="/usermsg.php">
 	  <input type="hidden" name="to" value="{$image->user_id}"/>
 	  <input type="hidden" name="init" value="Re: image for {$image->grid_reference} ({$image->title})&#13;&#10;http://{$http_host}/view.php?id={$image->gridimage_id}&#13;&#10;"/>
 	  <script type="text/javascript" src="/admin/moderation.js"></script>
 	  <b>Moderation</b> 
-	  <input class="accept" type="button" id="geograph" value="Geograph!" onClick="moderateImage({$image->gridimage_id}, 'geograph')"/>
-	  <input class="accept" type="button" id="accept" value="Accept" onClick="moderateImage({$image->gridimage_id}, 'accepted')"/>
-	  <input class="reject" type="button" id="reject" value="Reject" onClick="moderateImage({$image->gridimage_id}, 'rejected')"/>
+	  <input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')"/>
+	  <input class="accept" type="button" id="accept" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')"/>
+	  <input class="reject" type="button" id="reject" value="Reject" onclick="moderateImage({$image->gridimage_id}, 'rejected')"/>
+	  <input class="reject" type="button" name="edit" value="Edit" title="Edit Photo Information" onclick="document.location='/editimage.php?id={$image->gridimage_id}';"/>
 	  <input class="reject" type="submit" name="query" value="?" title="Send email to user"/>
 	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
 	  </form>
@@ -76,7 +81,11 @@ referring to <b>image {$image->gridimage_id}</b>
 
 
 
-<tr><td>Submitted</td><td>{$image->submitted|date_format:"%A, %B %e, %Y (%H:%M)"}</td></tr>
+<tr><td>Submitted</td><td>{$image->submitted|date_format:"%A, %e %B, %Y"}</td></tr>
+
+<tr><td>Taken</td><td>{$image_taken} </td></tr>
+
+<tr><td>Category</td><td>{if $image->imageclass}{$image->imageclass}{else}<i>n/a</i>{/if}</td></tr>
 
 <tr><td>Maps for {$image->grid_reference}</td><td>
 
