@@ -10,11 +10,6 @@ for each 1km grid squares to be updated, which allows "that square is all at sea
 corrected</li>
 
 
-<li><a title="Map Maker" href="/admin/mapmaker.php">Map Maker</a> is a simple tool for checking
-the internal land/sea map</li>
-
-<li><a title="Server Stats" href="http://www.geograph.co.uk/logs/">Server Stats</a> - 
-   check the server activity logs</li>
       
 <li><a title="Category Consolidation" href="/admin/categories.php">Category Consolidation</a> - 
    Organise the user submitted categories</li>
@@ -29,13 +24,28 @@ the internal land/sea map</li>
 <li>{$users_pending} registrations awaiting email address confirmation</li>
 <li>Total images: {$images_total} ({$images_thisweek} new images in past 7 days)</li>
 
+  <li>Breakdown:
   {foreach key=key item=item from=$images_status}
-    <li>Images <i>{$key}</i>: {$item}</li>
+    {$item} {$key}
   {/foreach}
+  </li>
 
 </ul>
 {/dynamic}    
 
 <img src="/img/submission_graph.png" width="480" height="161"/>
+
+<h2>Developer / Sysadmin Tools</h2>
+<ul>
+<li><a title="Web Stats" href="http://www.geograph.co.uk/logs/">Web Stats</a> - 
+   check the apache activity logs</li>
+
+<li><a title="Server Stats" href="server.php">Server Stats</a> - 
+   check server status</li>
+   
+<li><a title="Map Maker" href="/admin/mapmaker.php">Map Maker</a> is a simple tool for checking
+the internal land/sea map</li>
+</ul>
+
     
 {include file="_std_end.tpl"}
