@@ -112,8 +112,8 @@ else
 }
 
 //lets find some recent photos
-$images=new ImageList(array('pending', 'accepted'), 'submitted desc', 5);
-$images->assignSmarty(&$smarty, 'recent');
+$recent=new ImageList(array('pending', 'accepted'), 'submitted desc', 5);
+$recent->assignSmarty(&$smarty, 'recent');
 
 
 $smarty->display('browse.tpl');
