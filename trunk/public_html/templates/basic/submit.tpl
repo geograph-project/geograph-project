@@ -113,8 +113,10 @@ can be edited at any time) but to activate a square you need to be first to meet
 criteria above!</p>
 
 
+	
+	
 
-<h3>Title and comments</h3>
+<h3>Title and Comments</h3>
 <p>Please provide a short title for the image, and any other comments about where
 it was taken or other interesting geographical information.</p>
 
@@ -125,10 +127,28 @@ it was taken or other interesting geographical information.</p>
 
 <label for="common">Comment</label><br/>
 <textarea id="comment" name="comment" rows="3" cols="50">
-</textarea>
-<br/><br/>
+</textarea></p>
 
-If you are happy with the image, click 'next' to continue...
+
+<h3>Information on the Image</h3>
+
+<p>Please provide the following information to help us better classify the images in the geograph database.</p>
+
+<p><label for="imageclass">Image Subject</label>	
+	<select id="imageclass" name="imageclass">
+		{html_options options=$classes selected=$imageclass}
+	</select>
+	(<label for="imageclassother">Other</label> 
+	<input size="32" id="imageclassother" name="imageclassother" value="" maxlength="32"/>)</p>
+	
+<p>Date picture taken
+	{html_select_date prefix="imagetaken" time=$imagetaken start_year="-200" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
+	{if $imagetakenmessage}
+	    {$imagetakenmessage}
+	{/if}
+	<br/><small>(please provide as much detail as possible, if you only know the year or month then that's fine)</small></p>
+
+<p>If you are happy with the image, click 'next' to continue...
 </p>
 <input type="hidden" name="upload_id" value="{$upload_id}">
 <input type="submit" name="agreeterms" value="Next &gt;"/>
@@ -138,6 +158,8 @@ If you are happy with the image, click 'next' to continue...
 	<input type="hidden" name="upload_id" value="{$upload_id}">
 	<input type="hidden" name="title" value="{$title|escape:'html'}">
 	<input type="hidden" name="comment" value="{$comment|escape:'html'}">
+	<input type="hidden" name="imageclass" value="{$imageclass|escape:'html'}">
+	<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}">
 	
 	<h2>Submit Step 4 of 4 : Confirm image rights</h2>
 		
