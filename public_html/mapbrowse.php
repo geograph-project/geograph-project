@@ -45,8 +45,7 @@ $template='mapbrowse.tpl';
 $smarty = new GeographPage;
 
 
-$overview=new GeographMapMosaic(true);
-
+$overview=new GeographMapMosaic('overview');
 $overview->enableCaching($CONF['smarty_caching']);
 
 //initialise mosaic
