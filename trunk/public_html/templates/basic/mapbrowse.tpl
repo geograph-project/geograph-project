@@ -56,12 +56,13 @@
 	<div class="mapnav" style="float:left;width:9px;height:{$mosaic_height+2}px;"><a href="/mapbrowse.php?t={$token_east}" class="mapnav"><img src="/templates/basic/img/arrow_e.gif" alt="East" width="8" height="13"><img src="/templates/basic/img/arrow_e.gif" alt="East" width="8" height="13"></a></div>
 	</div>
 	<div class="mapnav" style="width:{$mosaic_width+20}px;height:9px;"><a href="/mapbrowse.php?t={$token_south}" class="mapnav"><img src="/templates/basic/img/arrow_s.gif" alt="South" width="13" height="8"><img src="/templates/basic/img/arrow_s.gif" alt="South" width="13" height="8"></a></div>
- <br/>
+ <br style="clear:both;"/>
 {if $is_admin}
 <p><a href="mapbrowse.php?expireAll=0">Clear cache</a>
 <a href="mapbrowse.php?expireAll=1">(clear basemaps too)</a></p>
 
 {/if}
  
+ &nbsp;
  
 {include file="_std_end.tpl"}
