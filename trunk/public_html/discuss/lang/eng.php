@@ -23,7 +23,7 @@ $l_reply='Reply';
 
 $l_author='Author';
 $l_lastAuthor='Last poster';
-$l_sub_answer='Your answer';
+$l_sub_answer='Reply to this topic';
 $l_message='Message';
 $l_views='Views';
 
@@ -99,7 +99,7 @@ $l_newTopics='New topics';
 
 $l_sortedBy='Sorted by:';
 
-$l_lastDiscussions='Last discussions';
+$l_lastDiscussions='Recent Topics';
 
 $l_topic_closed='This topic is closed. You can`t post a reply.';
 
@@ -314,6 +314,7 @@ $l_warnEncoding='Before posting non-english message, check your browser`s encodi
 
 /* Language variables miniBB v1.1 */
 
+$l_unsubscribeinfo='You will receive email notifications of new posts to this topic -';
 $l_unsubscribe='Unsubscribe';
 $l_member='Member';
 
