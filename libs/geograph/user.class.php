@@ -331,7 +331,10 @@ class GeographUser
 		
 		$ok=true;
 		
-		
+		$profile['realname']=stripslashes($profile['realname']);
+		$profile['nickname']=stripslashes($profile['nickname']);
+		$profile['website']=stripslashes($profile['website']);
+			
 		if (strlen($profile['realname']))
 		{
 			if (!isValidRealName($profile['realname']))
