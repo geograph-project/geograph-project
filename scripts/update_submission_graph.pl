@@ -130,11 +130,14 @@ if ($init>0)
 		
 	print "\nrrd database initialised - prime it as follows:\n";
 	#now output the commands needed to update
+	$now=time();
+	
 	my $t;
 	for ($t=$init+86400; $t<$now; $t+=86400)
 	{
-		print "perl update_submission_graph.pl --update=$t --base=$basepath --user=$user --pass=$password\n";
-	}
+		print "perl update_submission_graph.pl --update=$t \\\n".
+		"    --base=$basepath --db=$db --user=$user --pass=$password\n";
+        }
 	
 	print "\n";
 	exit;
