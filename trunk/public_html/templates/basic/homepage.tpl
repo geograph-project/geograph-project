@@ -4,27 +4,11 @@
 
 <h2>Welcome to Geograph British Isles</h2>
 
-	<div class="map" style="float:right;height:{$overview_height}px;width:{$overview_width}px;border:3px solid #000066;">
-	
-	
-	{foreach from=$overview key=y item=maprow}
-		<div>
-		{foreach from=$maprow key=x item=mapcell}
-		<a href="/mapbrowse.php?i={$x}&j={$y}&center="><img 
-		ismap="ismap" title="Click to pan main map" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
-		{/foreach}
-		</div>
-	{/foreach}
-	
-	</div>
-
-
+<div style="width:60%;float:left;padding-right:5px;position:relative">
 <p>The Geograph British Isles project aims to collect a geographically
 representative photograph for every square kilometre of the 
 <acronym title="Great Britain, Ireland and smaller adjacent islands">British Isles</acronym>
 and you can be part of it.</p>
-
-
 
 <p>Already you can...</p>
 <ul>
@@ -35,10 +19,9 @@ and you can be part of it.</p>
 </ul>
 
 <p>Look out for more cool features coming soon!</p>
+</div>
 
-<br style="clear:both"/>
-
-<div style="font-size:0.8em;padding:5px;background:#dddddd;position:relative">
+<div style="width:35%;float:left;font-size:0.8em;padding:5px;background:#dddddd;position:relative">
 <h3 style="margin-bottom:0;">What is Geographing?</h3>
 <ul style="margin-top:0;padding:0 0 0 1em;">
 <li>It's a game - how many grid squares will you contribute?</li>
