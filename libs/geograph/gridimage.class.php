@@ -284,6 +284,107 @@ class GridImage
 	}
 	
 	/**
+	* returns HTML img tag to display a square thumbnail that would fit the given dimensions
+	* If the required thumbnail doesn't exist, it is created. This method is really
+	* handy helper for Smarty templates, for instance, given an instance of this
+	* class, you can use this {$image->getSquareThumbnail(100,100)} to show a thumbnail
+	*/
+	function getSquareThumbnail($maxw, $maxh)
+	{
+		
+		//establish whether we have a cached thumbnail
+		$ab=sprintf("%02d", floor($this->gridimage_id/10000));
+		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
+		$abcdef=sprintf("%06d", $this->gridimage_id);
+		$hash=$this->_getAntiLeechHash();
+
+		$base=$_SERVER['DOCUMENT_ROOT'].'/photos';
+		$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$maxw}XX{$maxh}.jpg"; ##two XX's as windows isnt case sensitive!
+		if (!file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))
+		{
+			$fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}.jpg";
+			if (file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
+			{
+				//generate resized image
+				$fullimg = @imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$fullpath); 
+				if ($fullimg)
+				{
+					$srcw=imagesx($fullimg);
+					$srch=imagesy($fullimg);
+
+					if (($srcw>$maxw) || ($srch>$maxh))
+					{
+						//figure out size of image we'll keep
+						if ($srcw>$srch)
+						{
+							//landscape
+							
+							$srcx = round(($srcw - $srch)/2);
+							$srcy = 0;
+							
+							$srcw = $srch;
+						}
+						else
+						{
+							//portrait
+							
+							$srcx = 0;
+							$srcy = round(($srch - $srcw)/2);
+							
+							$srch = $srcw;
+						}
+
+
+						$resized = imagecreatetruecolor($maxw, $maxh);
+						imagecopyresampled($resized, $fullimg, 0, 0, $srcx, $srcy, 
+									$maxw,$maxh, $srcw, $srch);
+
+						imagedestroy($fullimg);
+
+						//save the thumbnail
+						imagejpeg ($resized, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
+						imagedestroy($resized);
+					}
+					else
+					{
+						//requested thumb is larger than original - stick with original
+						copy($_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
+					}
+				}
+				else
+				{
+					//couldn't load full jpeg
+					$thumbpath="/photos/error.jpg";
+				}
+			}
+			else
+			{
+				//no original image! - return link to error image
+				$thumbpath="/photos/error.jpg";
+		
+			}
+		}
+		
+		
+		if ($thumbpath=='/photos/error.jpg')
+		{
+			$html="<img src=\"$thumbpath\" width=\"$maxw\" height=\"$maxh\" border=\"0\"/>";
+		}
+		else
+		{
+			$title=htmlentities($this->title);
+			
+			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
+			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]} border=\"0\"/>";
+		}
+		
+		
+		
+		return $html;
+	}
+
+
+	/**
 	* returns HTML img tag to display a thumbnail that would fit the given dimensions
 	* If the required thumbnail doesn't exist, it is created. This method is really
 	* handy helper for Smarty templates, for instance, given an instance of this
