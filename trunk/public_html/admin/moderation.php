@@ -24,6 +24,8 @@
 require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
+require_once('geograph/imagelist.class.php');
+
 init_session();
 
 
@@ -74,23 +76,10 @@ $USER->mustHavePerm("admin");
 $smarty = new GeographPage;
 
 //lets find all unmoderated submissions
-$images=array();
-$i=0;
-$recordSet = &$db->Execute("select gridimage.*,user.realname ".
-	"from gridimage ".
-	"inner join user using(user_id) ".
-	"where moderation_status='pending'");
-while (!$recordSet->EOF) 
-{
-	$images[$i]=new GridImage;
-	$images[$i]->loadFromRecordset($recordSet);
-	$recordSet->MoveNext();
-	$i++;
-}
-$recordSet->Close(); 
+$images=new ImageList('pending', 'submitted desc');
+$images->assignSmarty(&$smarty, 'unmoderated');
 
-$smarty->assign_by_ref('images', $images);		
-$smarty->assign('imagecount', $i);
+
 		
 $smarty->display('admin_moderation.tpl');
 
