@@ -154,6 +154,32 @@ div.copyright
 	color: silver;
 	
 }
+div.caption
+{
+	font-size:0.8em;
+}
+
+/* styling for a full size portrait photo*/
+div.photoportrait
+{
+	width:500px;
+	padding:10px;
+	border: silver 1px solid;
+	text-align:center;
+	margin:10px;
+}
+
+/* styling for a full size portrait photo*/
+div.photolandscape
+{
+	width:660px;
+	padding:10px;
+	border: silver 1px solid;
+	text-align:center;
+	margin:10px;
+}
+
+
 
 /* styling for a 66% resized photo*/
 div.photo66
@@ -165,10 +191,20 @@ div.photo66
 	margin:10px;
 }
 
-div.photo66 div.caption
+
+
+/* styling for a 33% resized photo*/
+div.photo33
 {
-	font-size:0.8em;
+	width:233px;
+	padding:10px;
+	border: silver 1px solid;
+	text-align:center;
+	margin:10px;
 }
+
+
+
 
 /*---------------------------------------------------------------*
  *footer block
