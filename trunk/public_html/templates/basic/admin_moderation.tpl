@@ -3,7 +3,7 @@
 <script src="/admin/moderation.js"></script>
 
 
-<h2>Moderation</h2>
+<h2><a title="Admin home page" href="/admin/index.php">Admin</a> : Moderation</h2>
 
 {dynamic}
 
