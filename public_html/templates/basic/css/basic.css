@@ -236,6 +236,28 @@ div.contentsidebar h3
 {
 	margin-top:0;
 }
+
+/*---------------------------------------------------------------*
+ * report table
+ *---------------------------------------------------------------*/
+
+table.report thead tr
+{
+	background:black;
+}
+table.report thead tr td
+{
+	color:white;
+	padding:0.2em;
+	font-weight:bold;
+}
+
+table.report tbody tr td
+{
+	padding-left:0.2em;
+	padding-right:0.2em;
+}
+
 /*---------------------------------------------------------------*
  * form table
  *---------------------------------------------------------------*/
