@@ -30,4 +30,9 @@ $CONF['register_confirmation_secret']='CHANGETHIS';
 //secret string used for hashing photo filenames
 $CONF['photo_hashing_secret']='CHANGETHISTOO';
 
+//only enable debugging on development domains - this pulls in the
+//adodb-errorhandler.inc.php file which causes db errors to output using
+//the php error handler
+$CONF['adodb_debugging']=1;
+
 ?>
