@@ -1,6 +1,6 @@
 <script type="text/javascript">
 <!--
-function paste_strinL(strinL){ 
+function paste_strinL(strinL){
 var input=document.postMsg.elements["postText"];
 input.value=input.value+strinL;
 }
@@ -12,8 +12,8 @@ input.value=input.value+strinL;
 <table class=forums>
 <tr>
 <td width=25 class=caption3 align=center><img src="{$main_url}/img/!pix.gif" width=4 height=1 alt=""><img src="{$main_url}/img/forum_icons/{$forumIcon}" width=16 height=16 alt=""><img src="{$main_url}/img/!pix.gif" width=5 height=1 alt=""></td>
-<td valign=top class=caption3><b><a href="{$main_url}/{$indexphp}">{$sitename}</a></b> / <b>{$forumName}</b></td>
-<td align=right valign=top width="40%" class=caption3><span class=txtSm>{$l_sortedBy}&nbsp;{$sortedByT}.&nbsp;<a href="{$main_url}/{$indexphp}action=vtopic&amp;forum={$forum}&amp;sortBy={$sortByNew}">{$l_sortBy}&nbsp;{$sortByT}</a></span></td>
+<td valign=top class=caption3><b><a title="Forum Listing" href="{$main_url}/{$indexphp}">{$sitename}</a></b> / <b>{$forumName}</b></td>
+<td align=right valign=top width="40%" class=caption3><span class=txtSm>{$l_sortedBy}&nbsp;{$sortedByT}.&nbsp;<a title="Change sort order" href="{$main_url}/{$indexphp}action=vtopic&amp;forum={$forum}&amp;sortBy={$sortByNew}">{$l_sortBy}&nbsp;{$sortByT}</a></span></td>
 </tr>
 </table>
 
@@ -46,10 +46,10 @@ input.value=input.value+strinL;
 <td class=caption2>{$l_new_topic}</td>
 </tr>
 <tr>
-<td class=caption5>
-<INPUT TYPE=HIDDEN NAME=action VALUE=ptopic>
-<INPUT TYPE=HIDDEN NAME=forum VALUE="{$forum}">
-<INPUT TYPE=TEXT NAME=topicTitle SIZE=38 MAXLENGTH=100 class=textForm tabindex=1 style="width:450px;">
+<td class="caption5">
+<input type="hidden" name="action" value="ptopic"/>
+<input type="hidden" name="forum" value="{$forum}"/>
+<label for="topicTitle">Topic Title</label> <input type="text" id="topicTitle" name="topicTitle" size="30" maxlength="100" class="textForm" tabindex="1" style="width:400px;"/>
 </td>
 </tr>
 
