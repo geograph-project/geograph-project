@@ -254,6 +254,9 @@ class GeographUser
 					$this->$name=$value;
 			
 			}
+			
+			//setup forum user
+			$this->_forumUpdateProfile();
 				
 		}
 		
@@ -306,19 +309,26 @@ class GeographUser
 	*/
 	function updateProfile(&$profile, &$errors)
 	{
+		$db = NewADOConnection($GLOBALS['DSN']);
+		if (!$db) die('Database connection failed');   
+		
 		$ok=true;
 		
-		if (!isValidRealName($profile['realname']))
+		
+		if (strlen($profile['realname']))
+		{
+			if (!isValidRealName($profile['realname']))
+			{
+				$ok=false;
+				$errors['realname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+			}
+		}
+		else
 		{
 			$ok=false;
-			$errors['realname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+			$errors['realname']='Please enter your real name, we use it to credit your photographs';
 		}
 		
-		if (strlen($profile['nickname']) && !isValidRealName($profile['nickname']))
-		{
-			$ok=false;
-			$errors['nickname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
-		}
 		
 		if (strlen($profile['website']) && !isValidURL($profile['website']))
 		{
@@ -326,10 +336,33 @@ class GeographUser
 			$errors['website']='This doesn\'t appear to be a valid URL';
 		}
 		
+		
+		//unique nickname, since you can log in with it
+		if (isValidRealName($profile['nickname']))
+		{
+			//lets be sure it's unique
+			$sql="select * from user where nickname=".
+				$db->Quote(stripslashes($profile['nickname'])).
+				" and user_id<>{$this->user_id}";
+			$r=$db->GetRow($sql);
+			if (count($r))
+			{
+				$ok=false;
+				$errors['nickname']='Sorry, this nickname is already taken by another user';
+			}
+		}
+		else
+		{
+			$ok=false;
+			if (strlen($errors['nickname']))
+				$errors['nickname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+			else
+				$errors['nickname']='Please enter a nickname for use on the forums';
+		}
+
+		
 		if ($ok)
 		{
-			$db = NewADOConnection($GLOBALS['DSN']);
-			if (!$db) die('Database connection failed');   
 		
 			$sql = sprintf("update user set realname=%s,nickname=%s,website=%s,public_email=%d ".
 				"where user_id=%d",
@@ -351,6 +384,9 @@ class GeographUser
 				$this->realname=stripslashes($profile['realname']);
 				$this->nickname=stripslashes($profile['nickname']);
 				$this->public_email=isset($profile['public_email'])?1:0;
+				
+				$this->_forumUpdateProfile();
+				
 			}
 		
 		}
@@ -437,13 +473,20 @@ class GeographUser
 				$password=stripslashes(trim($_POST['password']));
 				$remember_me=isset($_POST['remember_me'])?1:0;
 				
-				if (isValidEmailAddress($email))
-				{
 				
-					$db = NewADOConnection($GLOBALS['DSN']);
+				$db = NewADOConnection($GLOBALS['DSN']);
 
+				$sql="";
+				if (isValidEmailAddress($email))
+					$sql="select * from user where email=".$db->Quote($email);
+				elseif (isValidRealName($email))
+					$sql="select * from user where nickname=".$db->Quote($email);
+				
+				
+				if (strlen($sql))
+				{
 					//user registered?
-					$arr = $db->GetRow("select * from user where email=".$db->Quote($email));	
+					$arr = $db->GetRow($sql);	
 					if (count($arr))
 					{
 						//passwords match?
@@ -474,6 +517,10 @@ class GeographUser
 								
 								$this->registered=true;
 								$logged_in=true;
+								
+								//log into forum too
+								$this->_forumLogin();
+								
 							}
 							else
 							{
@@ -490,12 +537,12 @@ class GeographUser
 					else
 					{
 						//sorry son, your name's not on the list
-						$errors['email']='This email address is not registered';
+						$errors['email']='This email address or nickname is not registered';
 					}
 				}
 				else
 				{
-					$errors['email']='This is not a valid email address';
+					$errors['email']='This is not a valid email address or nickname';
 					
 				}
 				
@@ -567,6 +614,9 @@ class GeographUser
 						$this->registered=true;
 						$this->autologin=true;
 						
+						//log into forum
+						$this->_forumLogin();
+						
 						//delete the autologin, we've used it
 						$db->query("delete from autologin where $clause");
 
@@ -587,6 +637,20 @@ class GeographUser
 					
 			}
 		}
+	}
+	
+	/**
+	* Updates forum profile to keep the forum software in sync with us
+	*/
+	function _forumUpdateProfile()
+	{
+	}
+
+	/**
+	* Setup a forum session so use is automatically logged in
+	*/
+	function _forumLogin()
+	{
 	}
 	
 }
