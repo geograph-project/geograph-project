@@ -359,22 +359,46 @@ input.reject
  * buttons for map nav
  *---------------------------------------------------------------*/
  
-div.mapnav 
+div.map div.cnr
 {
+	float:left;
+	width:10px;
+	height:10px;
 	background:#000066;
-	text-align:center;
-	xline-height:8px;
+	font-size:0;
 }
- 
-a.mapnav
+
+div.map div.side
+{
+	float:left;
+	height:10px;
+	width:10px;
+	background:#000066;
+	line-height:0;
+	text-align:center;
+}
+
+
+div.map div.side a
 {
 	display:block;
 	height:100%;
 }
 
-a.mapnav:hover 
+div.map div.side a:hover 
 {
 	background-color:#660066;
+}
+
+div.map div.inner
+{
+	float:left;
+	background:#6574FF;
+}
+
+div.map div.inner img
+{
+	float:left;
 }
 
 /*---------------------------------------------------------------*
