@@ -24,7 +24,7 @@ we'll tell you how far away the nearest one is...</p>
 
 	<label for="gridref">Enter grid reference (e.g. SY9582)</label>
 	<input id="gridref" type="text" name="gridref" value="{$gridref|escape:'html'}" size="8"/>
-	<input type="submit" name="setpos" value="Show &gt;"/>
+	<input type="submit" name="setref" value="Show &gt;"/>
 
 	
 	
