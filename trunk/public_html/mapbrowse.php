@@ -45,6 +45,13 @@ $template='mapbrowse.tpl';
 $smarty = new GeographPage;
 
 
+$overview=new GeographMapMosaic;
+$overview->setOrigin(-10,-10);
+$overview->setMosaicSize(120,170);
+$overview->setScale(0.13);
+$overview->setMosaicFactor(1);
+$overview->enableCaching($CONF['smarty_caching']);
+
 //initialise mosaic
 $mosaic=new GeographMapMosaic;
 if (isset($_GET['t']))
@@ -78,8 +85,28 @@ if (isset($_GET['zoomin']))
 	
 	//handle the zoom
 	$mosaic->zoomIn($i, $j, $x, $y);	
+}
+
+
+
+if (isset($_GET['recenter']))
+{
+	//extract x and y click coordinate from imagemap
+	$bits=explode(',', substr($_GET['recenter'],1));
+	$x=intval($bits[0]);
+	$y=intval($bits[1]);
 	
+	$y=$overview->image_h - $y;
 	
+	//convert x,y to internal coords
+	$x /= $overview->pixels_per_km; 
+	$y /= $overview->pixels_per_km; 
+	
+	$x += $overview->map_x;
+	$y += $overview->map_y;
+	
+	//handle the recenter
+	$mosaic->reCenter($x, $y);	
 }
 
 
@@ -94,9 +121,25 @@ $cacheid='mapbrowse|'.$token.'_'.$is_admin;
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
+	//setup the overview variables
+	$overviewimages =& $overview->getImageArray();
+	$smarty->assign_by_ref('overview', $overviewimages);
+	$smarty->assign('overview_width', $overview->image_w);
+	$smarty->assign('overview_height', $overview->image_h);
+	$smarty->assign('overview_token', $overview->getToken());
+	
+	//calculate the position of the markerbox
+	$smarty->assign('marker', $overview->getBoundingBox($mosaic));
+	
+	
+	
+
 	//get the image array
 	$images =& $mosaic->getImageArray();
 	$smarty->assign_by_ref('mosaic', $images);
+	
+	$smarty->assign('gridref', $mosaic->getGridRef(-1,-1));
+	
 	
 	//for debugging pass the entire mosaic object
 	//if ($CONF['smarty_debugging'])
