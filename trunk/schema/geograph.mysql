@@ -26,6 +26,10 @@ create table gridsquare
    index(y)
 );
 
+alter table gridsquare 
+change column grid_reference1 grid_reference1 char(10) not null,
+change column grid_reference2 grid_reference2 char(10) not null;
+
 #holds prefix letters and extents of grid systems
 create table gridprefix
 (
