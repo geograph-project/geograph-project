@@ -19,8 +19,13 @@
   <ul>
      <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
      <li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
-     <li><a title="Grid Builder" href="/admin/gridbuilder.php">Grid Building</a></li>
      <li><a title="Map Maker" href="/admin/mapmaker.php">Map Maker</a></li>
+     <li><a title="Server Stats" href="http://www.geograph.co.uk/logs/">Server Stats</a></li>
+  </ul>
+  <h3>Developers</h3>
+  <ul>
+     <li><a title="Grid Builder" href="/admin/gridbuilder.php">Grid Building</a></li>
+     <li><a title="Hash Changer" href="/admin/hashchanger.php">Hash Changer</a></li>
   </ul>
   {/if}
   
