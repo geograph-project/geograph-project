@@ -34,6 +34,9 @@ $order = $_GET['order'];
 $template='statistics.tpl';
 $cacheid='statistics|'.$by.'_'.$ri.'_'.$u.'_'.$order;
 
+$smarty->caching = 2; // lifetime is per cache
+$smarty->cache_lifetime = 3600*24; //24hr cache
+
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db=NewADOConnection($GLOBALS['DSN']);
