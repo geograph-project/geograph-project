@@ -553,6 +553,9 @@ class GridImage
 			
 		
 		//finally, we update status information for the gridsquare
+		$geographs= $db->GetOne("select count(*) from gridimage ".
+					"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph'");
+		
 		$has_geographs=$geographs?1:0;
 		
 		//count how many images in the square
