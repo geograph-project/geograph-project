@@ -1,3 +1,4 @@
+{assign var="page_title" value="Moderation"}
 {include file="_std_begin.tpl"}
 <script src="/admin/moderation.js"></script>
 
@@ -5,12 +6,12 @@
 <h2>Moderation</h2>
 
 
-{if $imagecount}
+{if $unmoderatedcount}
 
 	<p>The following images have been submitted recently. Click an image to 
 	view fullsize</p>
 	
-	{foreach from=$images item=image}
+	{foreach from=$unmoderated item=image}
 
 	  <div style="float:left;" class="photo33"><a title="view full size image" href="/view.php?id={$image->gridimage_id}">{$image->getThumbnail(213,160)}</a>
 	  <div class="caption">
