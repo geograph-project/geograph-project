@@ -120,21 +120,38 @@ class GeographMapMosaic
 	* Constructor - pass true to get a small overview map, otherwise you get a full map
 	* @access public
 	*/
-	function GeographMapMosaic($isoverview = false)
+	function GeographMapMosaic($preset='full')
 	{
-		if ($isoverview) {
-			$this->setOrigin(-10,-10);
-			$this->setMosaicSize(120,170);
-			$this->setScale(0.13);
-			$this->setMosaicFactor(1);
-		} else {
-			$this->setOrigin(-210,-50);
-			$this->setMosaicSize(400,400);
-			$this->setScale(0.3);
-			$this->setMosaicFactor(3);
-		}
+		$this->setPreset($preset);
 		$this->scales = array(1 => 1, 2 => 4, 3 => 40);
-	
+	}
+
+	/**
+	* configure map to use a hard coded configuration accessed by name
+	* @access public
+	*/
+	function setPreset($name)
+	{
+		switch ($name)
+		{
+			case 'full':
+				$this->setOrigin(-210,-50);
+				$this->setMosaicSize(400,400);
+				$this->setScale(0.3);
+				$this->setMosaicFactor(3);
+				break;
+			case 'overview':
+				$this->setOrigin(-10,-10);
+				$this->setMosaicSize(120,170);
+				$this->setScale(0.13);
+				$this->setMosaicFactor(1);
+				break;
+			default:
+				trigger_error("GeographMapMosaic::setPreset unknown preset $name", E_USER_ERROR);
+				break;
+			
+		}
+		
 	}
 	
 	function _trace($msg)
