@@ -22,6 +22,7 @@
  */
 
 require_once('geograph/global.inc.php');
+require_once('geograph/security.inc.php');
 init_session();
 
 $smarty = new GeographPage;
@@ -32,21 +33,37 @@ if (isset($_POST['msg']))
 	$msg=stripslashes(trim($_POST['msg']));
 	$from=stripslashes(trim($_POST['from']));
 	
+	$smarty->assign('msg', $msg);
+	$smarty->assign('from', $from);
+	
 	//ensure we only got one from line
-	list($from)=explode("\n", $from);
-	
-	
-	if (strlen($msg))
+	if (isValidEmailAddress($from))
 	{
-		mail($CONF['contact_email'], 
-			'Message from '.$_SERVER['HTTP_HOST'],
-			$msg,
-			'From:'.$from);	
+		if (strlen($msg))
+		{
+			mail($CONF['contact_email'], 
+				'Message from '.$_SERVER['HTTP_HOST'],
+				$msg,
+				'From:'.$from);	
+
+			$smarty->assign('message_sent', true);
+		}
+		else
+		{
+			$smarty->assign('msg_error', 'Please enter your message to us above');
+		}
+	}
+	else
+	{
+		$smarty->assign('from_error', 'Invalid email address');
 		
-		$smarty->assign('message_sent', true);
 	}
 }
-
+else
+{
+	if ($USER->registered)
+		$smarty->assign('from', $USER->email);
+}
 
 $smarty->display('contact.tpl');
 
