@@ -232,6 +232,43 @@ class GridSquare
 	}
 	
 	/**
+	*
+	*/
+	function setByFullGridRef($gridreference)
+	{
+		if (preg_match("/\b([a-zA-Z]{2}) ?(\d{5})[ \.]?(\d{5})\b/",$gridreference,$matchs)) {
+			list ($ll,$e,$n) = array($matchs[1],$matchs[2],$matchs[3]);
+		} else if (preg_match("/\b([a-zA-Z]{2}) ?(\d{4})[ \.]?(\d{4})\b/",$gridreference,$matchs)) {
+			list ($ll,$e,$n) = array($matchs[1],"$matchs[2]0","$matchs[3]0");
+		} else if (preg_match("/\b([a-zA-Z]{2}) ?(\d{3})[ \.]*(\d{3})\b/",$gridreference,$matchs)) {
+			list ($ll,$e,$n) = array($matchs[1],"$matchs[2]00","$matchs[3]00");
+		} else if (preg_match("/\b([a-zA-Z]{2}) ?(\d{2})[ \.]?(\d{2})\b/",$gridreference,$matchs)) {
+			list ($ll,$e,$n) = array($matchs[1],"$matchs[2]000","$matchs[3]000");
+			$isfour = 1;
+		}		
+		if (!empty($ll))
+		{
+			$gridref=sprintf("%s%02d%02d", strtoupper($ll), intval($e/1000), intval($n/1000));
+			$ok=$this->_setGridRef($gridref);
+			if ($ok && !$isfour)
+			{
+				//use this function to work out the major easting/northing then convert to our exact values
+				$this->getNatEastings();
+				$emajor = intval($this->nateastings / 100000);
+				$nmajor = intval($this->natnorthings / 100000);
+	
+				$this->nateastings = $emajor.sprintf("%05d",$e);
+				$this->natnorthings = $nmajor.sprintf("%05d",$n);
+				
+			}
+		} else {
+			$ok=false;
+		}
+				
+		return $ok;
+	}
+	
+	/**
 	* Stores the grid reference along with handy exploded elements 
 	*/
 	function _storeGridRef($gridref)
