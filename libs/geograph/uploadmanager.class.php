@@ -375,11 +375,8 @@ class UploadManager
 						
 		//get sequence number
 		$seq_no = $this->db->GetOne("select max(seq_no) from gridimage ".
-			"where gridsquare_id={$this->square->gridsquare_id} and moderation_status<>'rejected'");
-		if ($seq_no>=0)
-			$seq_no++;
-		else
-			$seq_no=0;
+			"where gridsquare_id={$this->square->gridsquare_id}");
+		$seq_no=max($seq_no+1, 0);
 		
 		//ftf is zero under image is moderated
 		$ftf=0;
