@@ -19,7 +19,14 @@
     </ul>
     <p>See the <a title="guide to geographing" href="/help/guide">guide to good geographing</a> 
     for more details</p>
-  
+
+<h3>What is a supplemental image?</h3>
+    <p>If an image doesn't quite fulfill the geograph criteria above, but is still a good
+    image, we'll accept it as &quot;supplemental image&quot; - no geograph points are awarded,
+    but the image will still appear on the selected grid square. A square that just contains
+    supplemental images is still open to be claimed as a geograph though!
+    </p>
+
 <h3>Do I need to resize my photos? Are there size limits?</h3>
     <p>You can upload images of any size, portrait or landscape, but we do resize them so their
     longest dimension is 640 pixels. We do not keep your original print quality image,
