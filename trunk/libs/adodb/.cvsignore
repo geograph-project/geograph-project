@@ -1,3 +1,14 @@
+contrib
+cute_icons_for_site
+datadict
+docs
+drivers
+lang
+pear
+perf
+session
+tests
+xsl
 *.php
 *.txt
 *.dtd
