@@ -148,6 +148,27 @@ span.formerror
 	color:red;	
 }
 
+div.copyright
+{
+	font-size:0.8em;
+	color: silver;
+	
+}
+
+/* styling for a 66% resized photo*/
+div.photo66
+{
+	width:442px;
+	padding:10px;
+	border: silver 1px solid;
+	text-align:center;
+	margin:10px;
+}
+
+div.photo66 div.caption
+{
+	font-size:0.8em;
+}
 
 /*---------------------------------------------------------------*
  *footer block
