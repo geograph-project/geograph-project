@@ -600,6 +600,64 @@ class GridImage
 			
 		
 	}
+
+	/**
+	* Saves selected members to the gridimage record
+	*/
+	function getFormattedTakenDate()
+	{
+		list($y,$m,$d)=explode('-', $this->imagetaken);
+		$date="";
+		if ($d>0)
+		{
+			if ($y>1970)
+			{
+				//we can use strftime
+				$t=strtotime($this->imagetaken);
+				$date=strftime("%A, %e %B, %Y", $t);
+			}
+			else
+			{
+				//oh my!
+				$t=strtotime("2000-$m-%d");
+				$date=strftime("%e %B", $t)." $y";
+			}
+			
+		}
+		elseif ($m>0)
+		{
+			//well, it saves having an array of months...
+			$t=strtotime("2000-$m-01");
+			$date=strftime("%B", $t)." $y";
+			
+		}
+		elseif ($y>0)
+		{
+			$date=$y;
+		}
+		
+		
+		
+		
+		return $date;
+	}
+	
+	/**
+	* Saves selected members to the gridimage record
+	*/
+	function commitChanges()
+	{
+		$db=&$this->_getDB();
+		
+		$sql="update gridimage set title=".$db->Quote($this->title).
+			", comment=".$db->Quote($this->comment).
+			", imageclass=".$db->Quote($this->imageclass).
+			", imagetaken=".$db->Quote($this->imagetaken).
+			"where gridimage_id = '{$this->gridimage_id}'";
+		$db->Execute($sql);
+			
+		
+	}
 	
 }
 ?>
