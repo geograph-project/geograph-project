@@ -1,3 +1,4 @@
+{assign var="page_title" value="Contact"}
 {include file="_std_begin.tpl"}
 
 {if $message_sent}
