@@ -8,11 +8,6 @@ physical geographical feature(s) present in any given ordnance survey 1km
 grid square.
 </p>
 
- 
-
-<p>To claim a square at least one photograph must be taken from within the 
-grid square.</p>
-
 <p>Photos need not be master works of art, the important thing is the human 
 and physical geographical information they contain.</p>
 
