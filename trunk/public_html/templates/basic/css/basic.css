@@ -316,10 +316,25 @@ table.report thead tr td
 	font-weight:bold;
 }
 
+table.report thead tr td a
+{
+	color:white;
+}
+
 table.report tbody tr td
 {
 	padding-left:0.2em;
 	padding-right:0.2em;
+}
+
+table.report tbody tr.totalrow
+{
+	background: silver;
+}
+
+table.report tbody tr.totalrow th
+{
+	border-top: 1px solid black;
 }
 
 /*---------------------------------------------------------------*
@@ -354,6 +369,17 @@ input.reject
 	font-size:0.7em;
 	background:#aa8888;
 }
+
+/*---------------------------------------------------------------*
+ * buttons for map nav
+ *---------------------------------------------------------------*/
+
+table.statstable td
+{
+	text-align:right;
+}
+
+
 
 /*---------------------------------------------------------------*
  * buttons for map nav
