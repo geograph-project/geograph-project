@@ -62,7 +62,7 @@
 	<h3>Photographs</h3>
 	<ul>		
 		{foreach from=$userimages item=image}
-		<li><a title="view full size image" href="/view.php?id={$image->gridimage_id}">{$image->grid_reference}</a> {$image->title} ({$image->moderation_status})</li>
+		<li><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->grid_reference}</a> {$image->title} ({$image->moderation_status})</li>
 		{/foreach}
 	</ul> 	
 {/if} 	
