@@ -70,6 +70,12 @@
 
 	<h2>Submit Step 2 of 4 : Upload photo for {$gridref}</h2>
 
+<div style="float:right; text-align:center;">
+<b>Map of {$gridref} from 1920's</b><br/>
+{$vobmap->getImageTag()}<br/>
+<span style="color:gray"><small>Historical Map &copy;<a href="http://www.visionofbritain.org.uk/">VisionOfBritain.org.uk</a></small></span>
+</div>
+
 	
 	{if $imagecount gt 0}
 		<p style="color:#440000">We already have 
@@ -87,10 +93,11 @@
 	{if $error}<br /><p>{$error}</p>{/if}
 	<br />
 	<p>You might like to check you've selected the correct square by
-	viewing the {getamap gridref=$gridref text="OS Map for $gridref"}</p>
+	viewing the Modern {getamap gridref=$gridref text="OS Map for $gridref"}</p>
 	
 
-	<br />
+
+	<br style="clear:right"/>
 	<input type="submit" name="goback" value="&lt; Back"/> <input type="submit" name="upload" value="Next &gt;"/>
 	
 {/if}
