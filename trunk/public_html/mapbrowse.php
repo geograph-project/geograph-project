@@ -88,7 +88,8 @@ $token=$mosaic->getToken();
 
 
 //regenerate html?
-$cacheid='mapbrowse|'.$token;
+$is_admin=$USER->hasPerm('admin')?1:0;
+$cacheid='mapbrowse|'.$token.'_'.$is_admin;
 
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
