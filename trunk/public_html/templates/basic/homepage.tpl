@@ -1,4 +1,3 @@
-{assign var="page_title" value="Geograph British Isles"}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
