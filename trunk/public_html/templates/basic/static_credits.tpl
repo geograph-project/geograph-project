@@ -22,7 +22,14 @@
     software development as an open-source, GPL licenced project, and was responsible for 
     much of the coding / design. He hopes you'll want to contract him for your next web
     project through <a href="http://www.elphin.com/" title="Elphin Limited">Elphin Limited</a>!</li>
+    
+    <li>{mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}, 
+    developer and maintainer of 
+    <a title="Trigtools Website" href="http://www.trigtools.co.uk">www.trigtools.co.uk</a> has
+    contributed numerous fixes and enhancements, as well as lending his
+    experience of working with mapping technologies.</li>
     </ul>
+    
 
     <h3>Hosting</h3>
     <ul>
@@ -33,15 +40,15 @@
     <h3>Technology</h3>
     <p>This project relies on the following open-source technologies. </p>
     
-    <a title="PHP Programming Language" href="http://www.php.net"><img border="0" src="/img/php.png" width="88" height="31" alt="PHP"></a>
-    <a title="Smarty Template Engine" href="http://smarty.php.net"><img border="0" src="/img/smarty.gif" width="88" height="31" alt="Smarty"></a>
-    <a title="ADOdb Database Abstraction Library" href="http://adodb.sourceforge.net"><img border="0" src="/img/adodb.gif" width="88" height="31" alt="adodb"></a>
-    <a title="MySQL Database Server" href="http://www.mysql.com"><img border="0" src="/img/mysql.png" width="88" height="31" alt="MySQL"></a>
+    <a title="PHP Programming Language" href="http://www.php.net"><img src="/img/php.png" width="88" height="31" alt="PHP"></a>
+    <a title="Smarty Template Engine" href="http://smarty.php.net"><img src="/img/smarty.gif" width="88" height="31" alt="Smarty"></a>
+    <a title="ADOdb Database Abstraction Library" href="http://adodb.sourceforge.net"><img src="/img/adodb.gif" width="88" height="31" alt="adodb"></a>
+    <a title="MySQL Database Server" href="http://www.mysql.com"><img src="/img/mysql.png" width="88" height="31" alt="MySQL"></a>
     
     <p>We also strive to adhere to the following standards</p>
-    <a title="Check our XHTML Compliance" href="http://validator.w3.org/check/referer"><img border="0" src="/img/valid-xhtml10.png" width="88" height="31" alt="XHTML"></a>
-    <a title="Check our CSS Compliance" href="http://jigsaw.w3.org/css-validator/validator?uri=http://{$http_host}/templates/basic/css/basic.css"><img border="0" src="/img/css1.png" width="88" height="31" alt="CSS"></a>
-    <a href="http://bobby.watchfire.com/" title="Bobby's Home Page"><img border="0" src="/img/approved_508.gif" alt="Bobby WorldWide Approved 508" width="88" height="31"></a> 
+    <a title="Check our XHTML Compliance" href="http://validator.w3.org/check/referer"><img  src="/img/valid-xhtml10.png" width="88" height="31" alt="XHTML"></a>
+    <a title="Check our CSS Compliance" href="http://jigsaw.w3.org/css-validator/validator?uri=http://{$http_host}/templates/basic/css/basic.css"><img  src="/img/css1.png" width="88" height="31" alt="CSS"></a>
+    <a href="http://bobby.watchfire.com/" title="Bobby's Home Page"><img  src="/img/approved_508.gif" alt="Bobby WorldWide Approved 508" width="88" height="31"></a> 
 
     
 {include file="_std_end.tpl"}
