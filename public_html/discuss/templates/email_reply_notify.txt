@@ -1,0 +1,18 @@
+SUBJECT>>{$sitename}: New post<<
+Hello,
+
+You receive this letter since you are subscribed to topic "{$topicTitle}" in our forums, and {$user_usr} has posted it or replied in it.
+
+Message begins:
+--
+
+{$postTextSmall}
+
+--
+
+Let's see the whole topic on {$sitename}:
+
+{$main_url}/{$indexphp}action=vthread&forum={$forum}&topic={$topic}&page=-1
+
+Peace,
+miniBB engine

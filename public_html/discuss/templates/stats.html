@@ -1,0 +1,53 @@
+<div align=center>
+
+<table class=forums>
+<tr>
+<td width="100%" class=caption3><span class=txtNr><b><a href="{$main_url}/{$indexphp}">{$sitename}</a></b> / <b>{$l_stats}</b> / <b>{$statsTop}</b></span></td>
+</tr>
+</table>
+
+<br>
+<form action="{$main_url}/{$indexphp}" method=post class=formStyle>
+
+<table class=forums>
+<tr>
+<td class=caption2>{$l_stats_numUsers} &raquo; {$numUsers}</td>
+<td class=caption2>{$l_stats_numTopics} &raquo; {$numTopics}</td>
+<td class=caption2>{$l_stats_numPosts} &raquo; {$numPosts}</td>
+</tr>
+<tr>
+<td class=caption2 colspan=3>
+{$l_stats_admin} <a href="{$main_url}/{$indexphp}action=userinfo&amp;user=1">{$adminInf}</a>
+</td>
+</tr>
+
+<tr>
+<td class=caption2 colspan=3>
+{$l_stats_lastReg} <a href="{$main_url}/{$indexphp}action=userinfo&amp;user={$lastRegUsr[0]}">{$lastRegUsr[1]}</a>
+</td>
+</tr>
+
+<tr>
+<td class=caption5 colspan=3 align=left>
+<br>
+<input type=hidden name=action value="stats">
+<input type=hidden name=top value="{$top}">
+<input type=hidden name=lst value="{$lst}">
+<b>*</b> {$l_days_within} <input type=text size=4 maxlength=4 name=days value="{$days}" class=textForm> {$l_days} 
+<input type=submit value="{$l_search[3]}" class=inputButton>
+<br>
+* {$l_stats_days_c}
+<br><br>
+</td>
+</tr>
+<!--/13-->
+
+<tr>
+<td class=caption1 colspan=3>{$statsOpt}</td>
+</tr>
+<tr>
+<td class=caption5 colspan=3 align=center><br>{$list_stats_popular}{$list_stats_aUsers}{$list_stats_viewed}<br></td>
+</tr>
+</table>
+</form>
+</div>
