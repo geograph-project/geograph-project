@@ -86,6 +86,15 @@ if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/maps'))
 if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/photos'))
 	fail('public_html/photos not writable - REQUIRED');
 
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/rss'))
+	fail('public_html/rss not writable - REQUIRED');
+
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/basic/compiled'))
+	fail('public_html/templates/basic/compiled not writable - REQUIRED');
+
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/basic/cache'))
+	fail('public_html/templates/basic/cache not writable - REQUIRED');
+
 //show some diagnostics if not ok...
 if (!$ok)
 {
