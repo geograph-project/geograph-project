@@ -302,10 +302,20 @@ class GeographMap
 		$t=filemtime($full);
 		$lastmod=strftime("%a, %d %b %Y %H:%M:%S GMT", $t);
 		
+		$t=time()+3600;
+		$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", $t);
+		
+		
 		$size=filesize($full);
 		header("Content-Type: $type");
 		header("Content-Size: $size");
 		header("Last-Modified: $lastmod");
+		header("Expires: $expires");
+		//header("Cache-Control: public");
+		//header("Cache-Control: no-store, no-cache, must-revalidate");  // HTTP/1.1 
+		//header("Cache-Control: post-check=0, pre-check=0", false); 
+		//header("Pragma: no-cache");         
+		
 		readfile($full);
 		
 		
