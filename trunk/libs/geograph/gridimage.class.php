@@ -221,7 +221,7 @@ class GridImage
 	/**
 	* given a temporary file, transfer to final destination for the image
 	*/
-	function storeImage($srcfile)
+	function storeImage($srcfile, $movefile=false)
 	{
 		$ab=sprintf("%02d", floor($this->gridimage_id/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
@@ -235,7 +235,10 @@ class GridImage
 			mkdir("$base/$ab/$cd");
 
 		$dest="$base/$ab/$cd/{$abcdef}_{$hash}.jpg";
-		return @copy($srcfile, $dest);
+		if ($movefile)
+			return @rename($srcfile, $dest);
+		else
+			return @copy($srcfile, $dest);
 	}
 	
 	/**
