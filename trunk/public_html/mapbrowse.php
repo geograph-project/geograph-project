@@ -96,17 +96,14 @@ if (isset($_GET['recenter']))
 	$x=intval($bits[0]);
 	$y=intval($bits[1]);
 	
-	$y=$overview->image_h - $y;
+	//get the image index
+	$i=intval($_GET['i']);
+	$j=intval($_GET['j']);
 	
-	//convert x,y to internal coords
-	$x /= $overview->pixels_per_km; 
-	$y /= $overview->pixels_per_km; 
+	//get click coordinate on overview, use it to centre the main map
+	list($intx, $inty)=$overview->getClickCoordinates($i, $j, $x, $y);	
+	$mosaic->setCentre($intx, $inty);	
 	
-	$x += $overview->map_x;
-	$y += $overview->map_y;
-	
-	//handle the recenter
-	$mosaic->reCenter($x, $y);	
 }
 
 
@@ -151,6 +148,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('token', $token);
 	
 	//navigation urls
+	$smarty->assign('token_zoomin', $mosaic->getZoomInToken());
 	$smarty->assign('token_zoomout', $mosaic->getZoomOutToken());
 	$smarty->assign('token_north', $mosaic->getPanToken(0, 1));
 	$smarty->assign('token_south', $mosaic->getPanToken(0, -1));
