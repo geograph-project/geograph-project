@@ -93,17 +93,32 @@ if (isset($_POST['gridsquare']))
 			//assume step 2
 			$step=2;
 			
-			if ($uploadmanager->processUpload($_FILES['jpeg']['tmp_name']))
+			switch($_FILES['jpeg']['error'])
 			{
-				//we got a suitable image, we need to show it to the user
-				$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
-				$smarty->assign('preview_url', $preview_url);
-				$smarty->assign('preview_width', $uploadmanager->upload_width);
-				$smarty->assign('preview_height', $uploadmanager->upload_height);
-				$smarty->assign('upload_id', $uploadmanager->upload_id);
+				case 0:
+					if ($uploadmanager->processUpload($_FILES['jpeg']['tmp_name']))
+					{
+						//we got a suitable image, we need to show it to the user
+						$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
+						$smarty->assign('preview_url', $preview_url);
+						$smarty->assign('preview_width', $uploadmanager->upload_width);
+						$smarty->assign('preview_height', $uploadmanager->upload_height);
+						$smarty->assign('upload_id', $uploadmanager->upload_id);
 
-				$step=3;
-			}						
+						$step=3;
+					}
+					break;
+				case UPLOAD_ERR_INI_SIZE:
+				case UPLOAD_ERR_FORM_SIZE:
+					$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 8Mb - please resize the image and try again');
+					break;
+				case UPLOAD_ERR_PARTIAL:
+					$smarty->assign('error', 'Your file was only partially uploaded - please try again');
+					break;
+				default:
+					$smarty->assign('error', 'We were unable to process your upload - please try again');
+					break;
+			}
 				
 		}
 		//user likes the image, lets have them agree to our terms
