@@ -45,7 +45,7 @@ class MapMaker
 	/**
 	* adds or updates squares
 	*/
-	function build($x1, $y1, $x2, $y2)
+	function build($x1, $y1, $x2, $y2, $showgrid=true)
 	{
 		$this->db = NewADOConnection($GLOBALS['DSN']);
 		if (!$this->db) die('Database connection failed');   
@@ -66,6 +66,8 @@ class MapMaker
 		
 		//create new image of appropriate size
 		$img=imagecreate($width,$height);
+		
+		$gridcol=imagecolorallocate ($img, 0,0,0);
 		
 		$blue=imagecolorallocate ($img, 0,0,200);
 		imagefill($img,0,0,$blue);
@@ -106,6 +108,49 @@ class MapMaker
 		}
 		$recordSet->Close(); 
 		
+		//plot all gridprefixes
+		if ($showgrid)
+		{
+			$sql="select * from gridprefix where ".
+				"origin_x between $left-width and $right and ".
+				"origin_y between $bottom-height and $top ".
+				"and reference_index=1 and landcount>0";
+
+
+			$recordSet = &$this->db->Execute($sql);
+			while (!$recordSet->EOF) 
+			{
+				$origin_x=$recordSet->fields['origin_x'];
+				$origin_y=$recordSet->fields['origin_y'];
+				$w=$recordSet->fields['width'];
+				$h=$recordSet->fields['height'];
+
+				$gleft=$origin_x-$left;
+				$gbottom=$height-($origin_y-$bottom);
+
+				$gright=$gleft + $w;
+				$gtop=$gbottom - $h;
+
+				//echo "{$recordSet->fields['prefix']} $imgx,$imgy<br>";
+				//left
+				imageline($img, $gleft, $gtop, $gleft, $gbottom, $gridcol);
+
+				//right
+				imageline($img, $gright, $gtop, $gright, $gbottom, $gridcol);
+
+				//top
+				imageline($img, $gleft, $gtop, $gright, $gtop, $gridcol);
+
+				//bottom
+				imageline($img, $gleft, $gbottom, $gright, $gbottom, $gridcol);
+
+				imagestring ($img, 5, ($gleft+$gright)/2, ($gtop+$gbottom)/2, $recordSet->fields['prefix'], $gridcol);
+
+
+				$recordSet->MoveNext();
+			}
+			$recordSet->Close(); 		
+		}
 		
 		//resize to half size
 		$scale=0.5;
