@@ -28,8 +28,9 @@ skills and generosity of people like you with an interest in geography,
 photography, web development, the outdoors, geocaching or may be even 
 all of them!</p>
 
-<p>We've already made it possible for you to upload pictures and information 
-and browse those taken by other members and we've got some cool ideas for 
+<p>We've already made it possible for you to 
+<a title="Submit a photograph" href="/submit.php">upload</a> pictures and 
+<a title="Browse photographs" href="/browse.php">browse</a> those taken by other members and we've got some cool ideas for 
 new features to be added soon.</p>
 
 <p><a title="register now" href="/register.php">Registration</a> is free so 
