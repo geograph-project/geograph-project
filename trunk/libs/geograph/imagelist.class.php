@@ -103,6 +103,50 @@ class ImageList
 		
 		return $i;
 	}
+
+	/**
+	* get image list for particular user
+	*/
+	function getImagesByUser($user_id, $statuses)
+	{
+		$db=&$this->_getDB();
+
+		//we accept an array or a single status...
+		if (is_array($statuses))
+			$statuslist="'".implode("','", $statuses)."'";
+		else
+			$statuslist="'$statuses'";
+				
+		$user_id=intval($user_id);		
+				
+		$orderby="order by submitted";
+		$limit="";
+		
+		$sql="select gridimage.*,user.realname ".
+			"from gridimage ".
+			"inner join user using(user_id) ".
+			"inner join gridsquare on(gridimage.gridsquare_id=gridsquare.gridsquare_id) ".
+			"where moderation_status in ($statuslist) and ".
+			"user.user_id='$user_id' ".
+			"$orderby $limit";
+		
+			
+		$this->images=array();
+		$i=0;
+		$recordSet = &$db->Execute($sql);
+		while (!$recordSet->EOF) 
+		{
+			$this->images[$i]=new GridImage;
+			$this->images[$i]->loadFromRecordset($recordSet);
+			$recordSet->MoveNext();
+			$i++;
+		}
+		$recordSet->Close(); 
+
+		return $i;
+	}
+	
+
 	
 	/**
 	* get image list for particular area...
