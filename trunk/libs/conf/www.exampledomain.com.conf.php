@@ -44,5 +44,7 @@ $CONF['minibb_admin_user']='admin';
 $CONF['minibb_admin_pwd']='CHANGETHIS';
 $CONF['minibb_admin_email']='root@wherever';
 
+//secret used for securing map tokens
+$CONF['token_secret']='CHANGETHIS';
 
 ?>
