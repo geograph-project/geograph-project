@@ -90,6 +90,12 @@ class GridSquare
 	var $northings=0;
   	
   	/**
+	* national easting/northing (ie not internal)
+	*/
+	var $nateastings;
+  	var $natnorthings;
+  	
+  	/**
 	* GridSquare instance of nearest square to this one with an image
 	*/
 	var $nearest=null;
@@ -136,6 +142,55 @@ class GridSquare
 	function _error($msg)
 	{
 		$this->errormsg=$msg;
+	}
+	
+	/**
+	* Conveience function to get six figure GridRef
+	*/
+	function get6FigGridRef()
+	{
+		//this is needed beucase when gridsquare is loaded by gridimage the exploded elements dont get set
+		$this->_storeGridRef($this->grid_reference);
+	
+		return sprintf("%s%03d%03d", $this->gridsquare, $this->eastings*10 + 5, $this->northings*10 + 5);
+	}
+
+	/**
+	* Conveience function to get national easting (not internal)
+	*/
+	function getNatEastings()
+	{
+		if (!isset($this->nateastings)) {
+			$db=&$this->_getDB();
+			
+			//this is needed beucase when gridsquare is loaded by gridimage the exploded elements dont get set
+			$this->_storeGridRef($this->grid_reference);
+			
+			$square = $db->GetRow("select origin_x,origin_y from gridprefix where prefix=".$db->Quote($this->gridsquare));	
+			//not sure how to get these 'offsets' without hardcoding them
+			if ($this->reference_index == 1) {
+				$square['origin_x'] -=206;
+			} else if ($this->reference_index == 2) {
+				$square['origin_x'] -=10;
+				$square['origin_y'] -=149;
+			}
+			#var_dump($this);
+			$this->nateastings = sprintf("%d%05d",intval($square['origin_x']/100),$this->eastings * 1000 + 500);
+			$this->natnorthings = sprintf("%d%05d",intval($square['origin_y']/100),$this->northings * 1000 +500);
+			
+		} 
+		return $this->nateastings;
+	}
+	
+	/**
+	* Conveience function to get national northing (not internal)
+	*/
+	function getNatNorthings()
+	{
+		if (!isset($this->natnorthings)) {
+			$this->getNatEastings();
+		} 
+		return $this->natnorthings;
 	}
 	
 	/**
