@@ -5,8 +5,10 @@
   <div id="nav">
   <ul>
     <li><a title="Home Page" href="/">Home</a></li>
-    <li><a title="Browse the grid and submit photos" href="/browse.php">Browse &amp Submit</a></li>
+    <li><a title="Browse the grid and submit photos" href="/browse.php">Browse &amp; Submit</a></li>
+    <!--
     <li><a title="Members" href="/statistics.php">Statistics</a></li>
+    -->
     <li><a title="FAQ" href="/faq.php">FAQ</a></li>
     <li><a title="Contact Us" href="/contact.php">Contact</a></li>
   </ul>
@@ -25,12 +27,13 @@
 
 <div id="search_block">
   <div id="search">
-    <form method="get" action="/search.php">
     <div id="searchform">
+    <form method="get" action="/search.php">
     <label for="searchterm">Search</label> <input id="searchterm" type="text" name="q" value="" size="10"/>
     <input id="searchbutton" type="submit" name="go" value="Find"/>
-    </div>
     </form>
+    </div>
+    
   </div>
   
   <div id="login">
@@ -56,6 +59,8 @@
 <div id="footer_block">
   <div id="footer">
     <p><a href="/help/credits" title="Who built this and how?">Credits</a>
+       <span class="sep">|</span>
+       <a href="/help/terms" title="Terms and Conditions">Terms of use</a>
        <span class="sep">|</span>
        <a href="http://validator.w3.org/check/referer" title="check our xhtml standards compliance">XHTML</a>
        <span class="sep">|</span>
