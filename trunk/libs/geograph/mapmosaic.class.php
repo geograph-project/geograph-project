@@ -117,15 +117,22 @@ class GeographMapMosaic
 	var $debug=true;
 	
 	/**
-	* Constructor - if you don't initialise it further, you get a full map
+	* Constructor - pass true to get a small overview map, otherwise you get a full map
 	* @access public
 	*/
-	function GeographMapMosaic()
+	function GeographMapMosaic($isoverview = false)
 	{
-		$this->setOrigin(-210,-50);
-		$this->setMosaicSize(400,400);
-		$this->setScale(0.3);
-		$this->setMosaicFactor(3);
+		if ($isoverview) {
+			$this->setOrigin(-10,-10);
+			$this->setMosaicSize(120,170);
+			$this->setScale(0.13);
+			$this->setMosaicFactor(1);
+		} else {
+			$this->setOrigin(-210,-50);
+			$this->setMosaicSize(400,400);
+			$this->setScale(0.3);
+			$this->setMosaicFactor(3);
+		}
 		$this->scales = array(1 => 1, 2 => 4, 3 => 40);
 	
 	}
@@ -499,7 +506,7 @@ class GeographMapMosaic
 		$out->setScale(40);
 		$out->setMosaicFactor(2);
 
-		$out->reCenter($gridsquare->x,$gridsquare->y);
+		$out->setCentre($gridsquare->x,$gridsquare->y);
 	
 		return $out->getToken();		
 	}
