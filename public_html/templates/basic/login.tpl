@@ -27,6 +27,11 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 <span class="formerror">{$errors.password}</span>
 <a title="email forgotten password" href="forgotten.php?email={$email|escape:'url'}">Forgot your password?</a>
 
+<br/><br/>
+
+<input type="checkbox" name="remember_me" id="remember_me" value="1" {if $remember_me}checked="checked"{/if}>
+<label for="remember_me">Remember me - login automatically in future</label>
+
 <br/>
 <span class="formerror">{$errors.general}</span>
 <br/>
