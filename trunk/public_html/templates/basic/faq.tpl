@@ -2,8 +2,11 @@
 
     <h2>FAQ</h2>
  
+    <h3>What is Geographing?</h3>
+    <p>See our <a title="guide to geographing" href="/help/guide">handy guide</a></p>
+    
     <h3>Who built this marvellous site?</h3>
-    <p>Please see the <a href="credits.php" title="Credits Page">Credits Page</a> for
+    <p>Please see the <a href="/help/credits" title="Credits Page">Credits Page</a> for
     information on all the people who made this site possible.</p>
  
     <h3>Open source? Creative Commons? What's that all about?</h3>
