@@ -4,7 +4,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <meta name="description" content="GeoGraph is a web based project to collect and reference geographically representative images of every square kilometer of the British Isles." />
-<link rel="stylesheet" type="text/css" title="geograph" href="/templates/basic/css/basic.css" media="screen" />
+<link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/basic.css" media="screen" />
+<link rel="stylesheet" type="text/css" title="Printer" href="/templates/basic/css/basicp.css" media="print" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
 <link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="syndicator.php"/>
  
