@@ -90,7 +90,6 @@ function smarty_function_getamap($params)
   	$gridref4=$params['gridref'];
   	if (preg_match('/([A-Z]{1,2})(\d\d)(\d\d)/i', $gridref4))
   	{
-		$text=$gridref4;
 		if (!empty($params['text']))
 			$text=$params['text'];
 		else
@@ -103,12 +102,14 @@ function smarty_function_getamap($params)
 
 		return "<a title=\"Ordnance Survey Get-a-Map for $gridref4\" href=\"javascript:popupOSMap('$gridref6')\">$text</a>";
   	}
-  	elseif (strlen($gridref4)==0)
+  	else if (empty($gridref4)) 
   	{
-  		$text=$params['text'];
+  		if (!empty($params['text']))
+			$text=$params['text'];
+		else
+			$text='OS Get-A-Map';
   		return "<a title=\"Ordnance Survey Get-a-Map\" href=\"javascript:popupOSMap('')\">$text</a>";
-  	
-  	}
+  	} 
   	else
   	{
   		//error
