@@ -98,14 +98,18 @@ class GeographPage extends Smarty
 		$this->caching = $CONF['smarty_caching'];
 		
 		//assign globallly useful stuff
-		$this->assign("user", $GLOBALS['USER']);
-		$this->assign("http_host", $_SERVER['HTTP_HOST']);
-		$this->assign("script_name", $_SERVER['SCRIPT_NAME']);
+		$this->assign_by_ref('user', $GLOBALS['USER']);
+		$this->assign_by_ref('http_host', $_SERVER['HTTP_HOST']);
+		$this->assign_by_ref('script_name', $_SERVER['SCRIPT_NAME']);
+		$this->assign_by_ref('script_uri', $_SERVER['REQUEST_URI']);
+		$this->assign('session_id', session_id());
+		
+		
 		
 		//show more links in template?
 		if ($GLOBALS['USER']->hasPerm('admin'))
 		{
-			$this->assign("is_admin", true);
+			$this->assign('is_admin', true);
 		
 		
 		}
