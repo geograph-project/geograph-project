@@ -340,15 +340,17 @@ class UploadManager
 		}
 		
 		//create record
+		// nateasting/natnorthings will only have values if getNatEastings has been called (in this case because setByFullGridRef has been called IF an exact location is specifed)
 		$sql=sprintf("insert into gridimage(".
 			"gridsquare_id, seq_no, user_id, ftf,".
-			"moderation_status,title,comment,exif,".
+			"moderation_status,title,comment,exif,nateastings,natnorthings,".
 			"submitted) values ".
 			"(%d,%d,%d,%d,".
-			"'pending',%s,%s,%s,".
+			"'pending',%s,%s,%s,%d,%d,".
 			"now())",
 			$this->square->gridsquare_id, $seq_no,$USER->user_id, $ftf,
-			$this->db->Quote($this->title), $this->db->Quote($this->comment), $this->db->Quote($exif));
+			$this->db->Quote($this->title), $this->db->Quote($this->comment), $this->db->Quote($exif),
+			$this->square->nateastings,$this->square->natnorthings);
 		
 		$this->db->Query($sql);
 		
