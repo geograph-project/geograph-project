@@ -255,6 +255,11 @@ class GeographUser
 			
 			}
 			
+			//temporary nickname fix for beta accounts
+			if (strlen($this->nickname)==0)
+				$this->nickname=str_replace(" ", "", $this->realname);
+	
+			
 			//setup forum user
 			$this->_forumUpdateProfile();
 				
@@ -506,6 +511,10 @@ class GeographUser
 										$this->$name=$value;
 								}
 								
+								//temporary nickname fix for beta accounts
+								if (strlen($this->nickname)==0)
+									$this->nickname=str_replace(" ", "", $this->realname);
+
 								//give user a remember me cookie?
 								if (isset($remember_me))
 								{
@@ -610,6 +619,11 @@ class GeographUser
 								$this->$name=$value;
 						}
 
+							
+						//temporary nickname fix for beta accounts
+						if (strlen($this->nickname)==0)
+							$this->nickname=str_replace(" ", "", $this->realname);
+	
 						//we're changing privilege state, so we should
 						//generate a new session id to avoid fixation attacks
 						session_regenerate_id(); 
@@ -653,16 +667,13 @@ class GeographUser
 		//we maintain a direct user_id to user_id mapping with the minibb 
 		//forum software....
 	
-		$username=$this->nickname;
-		if ($username=="")
-			$username=substr(" ", "", $this->realname);
-	
+		
 		//do we have a forum user?
 		$existing=$db->GetRow("select * from geobb_users where user_id='{$this->user_id}'");
 		if (count($existing))
 		{
 			//update profile
-			$sql="update geobb_users set username=".$db->Quote($username).
+			$sql="update geobb_users set username=".$db->Quote($this->nickname).
 				", user_email=".$db->Quote($this->email).
 				", user_password=md5(".$db->Quote($this->password).")".
 				", user_website=".$db->Quote($this->website).
@@ -676,13 +687,15 @@ class GeographUser
 			//create new profile
 			$sql="insert into geobb_users(user_id,username, user_regdate,user_password,user_email,user_website,user_viewemail) values (".
 				$this->user_id.",".
-				$db->Quote($username).",".
+				$db->Quote($this->nickname).",".
 				"now(),".
 				"md5(".$db->Quote($this->password)."),".
 				$db->Quote($this->email).",".
 				$db->Quote($this->website).",".
 				$this->public_email.")";
-				
+
+			
+			
 			$db->Execute($sql);		
 				
 		}
@@ -700,9 +713,12 @@ class GeographUser
 		$passmd5=md5($this->password);
 		$expiry=time()+108000;
 		
-		setcookie('geographbb', 
-			$this->nickname.'|'.$passmd5.'|'.$expiry, 
-			$expiry);
+		//we don't need a permanent cookie
+		//setcookie('geographbb', 
+		//	$this->nickname.'|'.$passmd5.'|'.$expiry, 
+		//	$expiry);
+			
+		$_SESSION['minimalistBBSession']=$this->nickname.'|'.$passmd5.'|'.$expiry;
 	}
 
 	/**
@@ -710,7 +726,10 @@ class GeographUser
 	*/
 	function _forumLogout()
 	{
+		//we clear the miniBB cookie here as early betas
+		//did set it
 		setcookie('geographbb', '', time()-108000);
+		unset($_SESSION['minimalistBBSession']);
 	}
 	
 	
