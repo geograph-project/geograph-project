@@ -691,7 +691,7 @@ class GridImage
 			$next_geograph= $db->GetOne("select gridimage_id from gridimage ".
 				"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' ".
 				"order by submitted");
-			if ($gridimage_id)
+			if ($next_geograph)
 			{
 				$db->Query("update gridimage set ftf=1 where gridimage_id={$next_geograph}");
 			}
@@ -721,9 +721,57 @@ class GridImage
 		if ($newsq->setGridRef($grid_reference))
 		{
 			$db=&$this->_getDB();
-		
+			
+			//ensure this is a real change
+			if ($newsq->gridsquare_id == $this->gridsquare_id)
+				return true;
+			
+			//get sequence number of target square - for a rejected image
+			//we use a negative sequence number
+			if ($this->moderation_status!='rejected')
+			{
+				$seq_no = $this->db->GetOne("select max(seq_no) from gridimage ".
+					"where gridsquare_id={$newsq->gridsquare_id}");
+				$seq_no=max($seq_no+1, 0);
+			}
+			else
+			{
+				$seq_no = $this->db->GetOne("select min(seq_no) from gridimage ".
+					"where gridsquare_id={$newsq->gridsquare_id}");
+				$seq_no=min($seq_no-1, -1);
+			}
+			
+			//was this image ftf? 
+			if ($this->ftf)
+			{
+				//reset the ftf flag
+				$this->ftf=0;
+				
+				//need to assign ftf to another image in the square if possible
+				$next_geograph= $db->GetOne("select gridimage_id from gridimage ".
+					"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' ".
+					"and gridimage_id<>{$this->gridimage_id} ".
+					"order by submitted");
+				if ($next_geograph)
+				{
+					$db->Query("update gridimage set ftf=1 where gridimage_id={$next_geograph}");
+				}
+			
+			}
+			
+			//does the image get ftf in the target square?
+			if ($this->moderation_status=='geograph')
+			{
+				$geographs= $db->GetOne("select count(*) from gridimage ".
+					"where gridsquare_id={$newsq->gridsquare_id} and moderation_status='geograph'");
+				if ($geographs==0)
+					$this->ftf=1;
+			}
+			
+			
 			//reassign image
-			$db->Execute("update gridimage set gridsquare_id='{$newsq->gridsquare_id}' where gridimage_id='$this->gridimage_id'");
+			$db->Execute("update gridimage set gridsquare_id='{$newsq->gridsquare_id}',".
+				"seq_no=$seq_no,ftf=$this->ftf where gridimage_id='$this->gridimage_id'");
 
 			//update cached data for old square and new square
 			$this->grid_square->updateCounts();
