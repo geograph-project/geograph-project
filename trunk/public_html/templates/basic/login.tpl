@@ -22,7 +22,7 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 
 <br/><br/>
 
-<label for="password">Your password</label><br/>
+<label for="password">Your password (case sensitive)</label><br/>
 <input size="12" type="password" id="password" name="password" value="{$password|escape:'html'}"/>
 <span class="formerror">{$errors.password}</span>
 <a title="email forgotten password" href="forgotten.php?email={$email|escape:'url'}">Forgot your password?</a>

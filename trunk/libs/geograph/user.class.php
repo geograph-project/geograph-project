@@ -482,7 +482,7 @@ class GeographUser
 						else
 						{
 							//speak friend and enter					
-							$errors['password']='Wrong password';
+							$errors['password']='Wrong password - don\'t forget passwords are case-sensitive';
 						}
 
 					}
