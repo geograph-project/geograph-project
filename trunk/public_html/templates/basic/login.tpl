@@ -16,7 +16,7 @@
 If you haven't
 registered yet, <a title="register now" href="/register.php">go and register</a>, it's quick and free!</p>
 
-<label for="email">Your email address</label><br/>
+<label for="email">Your email address or nickname</label><br/>
 <input id="email" name="email" value="{$email|escape:'html'}"/>
 <span class="formerror">{$errors.email}</span>
 
