@@ -28,12 +28,17 @@ $smarty = new GeographPage;
 
 //pick up email from url? login form can send this to us...
 if (isset($_GET['email']))
-	$smarty->assign('email', $_GET['email']);
+{
+
+	
+
+	$smarty->assign('email', stripslashes(trim($_GET['email'])));
+}
 
 //process reminder?
 if (isset($_POST['reminder']))
 {
-	$smarty->assign('email', $_POST['reminder']);
+	$smarty->assign('email', stripslashes(trim($_POST['reminder'])));
 	
 	$errors=array();
 	$ok=$USER->sendReminder($_POST['reminder'], $errors);
