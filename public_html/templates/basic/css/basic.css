@@ -270,6 +270,7 @@ div.photo33
 	border: silver 1px solid;
 	text-align:center;
 	margin:10px;
+	position:relative;
 }
 
 /*---------------------------------------------------------------*
@@ -362,7 +363,7 @@ div.mapnav
 {
 	background:#000066;
 	text-align:center;
-	line-height:8px;
+	xline-height:8px;
 }
  
 a.mapnav
@@ -373,7 +374,7 @@ a.mapnav
 
 a.mapnav:hover 
 {
-	background-color:red;
+	background-color:#660066;
 }
 
 /*---------------------------------------------------------------*
