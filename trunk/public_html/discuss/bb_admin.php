@@ -124,7 +124,7 @@ user_logged_in();
 if(isset($langu) and file_exists($pathToFiles."lang/{$langu}.php")) $lang=$langu;
 include ($pathToFiles."lang/$lang.php");
 
-if($user_id==1){
+if($logged_admin==1){
 
 $l_adminpanel_link="<p><a href=\"$bb_admin\">".$l_adminpanel."</a></p>";
 
