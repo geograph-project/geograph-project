@@ -55,8 +55,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		'order by t.topic_time desc limit 3';
 	$news=$db->GetAll($sql);
 	foreach($news as $idx=>$item)
-
 	{
+		$news[$idx]['post_text']=str_replace('<br>', '<br/>', $news[$idx]['post_text']);
 		$news[$idx]['comments']=$db->GetOne('select count(*)-1 as comments from geobb_posts where topic_id='.$item['topic_id']);
 	}
 	

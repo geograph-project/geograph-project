@@ -84,8 +84,6 @@ Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> 
 {else}
 	<div class="content2" id="footer_block">
 {/if}
-
-<div class="content" id="footer_block">
   <div id="footer">
     <p><a href="/help/credits" title="Who built this and how?">Credits</a>
        <span class="sep">|</span>
