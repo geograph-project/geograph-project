@@ -83,16 +83,19 @@ referring to <b>image {$image->gridimage_id}</b>
 
 <tr><td>Submitted</td><td>{$image->submitted|date_format:"%A, %e %B, %Y"}</td></tr>
 
+{if $image_taken}
 <tr><td>Taken</td><td>{$image_taken} </td></tr>
-
+{/if}
 <tr><td>Category</td><td>{if $image->imageclass}{$image->imageclass}{else}<i>n/a</i>{/if}</td></tr>
 
 <tr><td>Maps for {$image->grid_reference}</td><td>
 
-{getamap gridref=$image->grid_reference text="OS Get-a-Map for `$image->grid_reference`"}
+<a href="/mapbrowse.php?t={$map_token}">Geograph Map</a>
+
+{getamap gridref=$image->grid_reference text="OS Get-a-Map"}
 
 {if $image->grid_square->reference_index eq 1}
-	(other maps at 
+	(also 
 
 	<a href="http://www.streetmap.co.uk/streetmap.dll?Grid2Map?X={$image->grid_square->getNatEastings()}&amp;Y={$image->grid_square->getNatNorthings()}&amp;title={$image->title|escape:'url'}&amp;back=Return+to+Geograph&amp;url=http://{$http_host}/view.php?id={$image->gridimage_id}&amp;nolocal=X&amp;bimage=background%3dhttp://{$http_host}/templates/basic/img/background.gif" target="_blank">streetmap.co.uk</a> &amp;
 	<a href="http://www.multimap.com/map/browse.cgi?GridE={$image->grid_square->getNatEastings()}&amp;GridN={$image->grid_square->getNatNorthings()}&amp;scale=25000" target="_blank">multimap.com</a> 
@@ -109,9 +112,9 @@ referring to <b>image {$image->gridimage_id}</b>
 	<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">Geograph Images</a>, 
 	<a title="Geocaches from stats.guk2.com" href="http://stats.guk2.com/caches/search_parse.php?osgbe={$image->grid_square->getNatEastings()}&amp;osgbn={$image->grid_square->getNatNorthings()}" target="_blank">Geocaches</a>, 
 	<a title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigs/search-parse.php?gridref={$image->grid_square->get6FigGridRef()}" target="_blank">Trigpoints</a>, 
-	<a title="Many more links from trigtools.co.uk" href="http://www.deformedweb.co.uk/trigs/coord.cgi?p={$image->grid_reference}" target="_blank">more...</a>
+	<a title="Many more links from nearby.org.uk" href="http://www.nearby.org/coord.cgi?p={$image->grid_square->getNatEastings()}+{$image->grid_square->getNatNorthings()}" target="_blank">more...</a>
 {else}
-	<a title="Many more links from trigtools.co.uk" href="http://www.deformedweb.co.uk/trigs/coord.cgi?p={$image->grid_reference}" target="_blank">See related information from trigtools.co.uk</a>
+	<a title="Many more links from nearby.org.uk" href="http://www.nearby.org/coord.cgi?p={$image->grid_square->getNatEastings()}+{$image->grid_square->getNatNorthings()}" target="_blank">See related information from trigtools.co.uk</a>
 
 {/if}
 
