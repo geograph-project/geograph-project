@@ -203,8 +203,38 @@ div.photo33
 	margin:10px;
 }
 
+/*---------------------------------------------------------------*
+ * form table
+ *---------------------------------------------------------------*/
+
+table.formtable td
+{
+	vertical-align:top;
+}
 
 
+
+table.formtable div.fieldnotes
+{
+	font-size:0.8em;
+	color:#777799;
+}
+
+/*---------------------------------------------------------------*
+ * accept/reject buttons
+ *---------------------------------------------------------------*/
+
+input.accept
+{
+	font-size:0.7em;
+	background:#88aa88;
+}
+
+input.reject
+{
+	font-size:0.7em;
+	background:#aa8888;
+}
 
 /*---------------------------------------------------------------*
  *footer block
