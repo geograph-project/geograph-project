@@ -205,14 +205,26 @@ class GeographUser
 					
 					//build an authentication url
 					$register_authentication_url="http://".
-						$_SERVER['HTTP_HOST'].'/register.php?u='.$user_id.
-						'&confirm='.substr(md5($user_id.$CONF['register_confirmation_secret']),0,16);
+						$_SERVER['HTTP_HOST'].'/reg/'.$user_id.
+						'/'.substr(md5($user_id.$CONF['register_confirmation_secret']),0,16);
 					
+					$msg="Thankyou for registering at http://".$_SERVER['HTTP_HOST']."\n\n";
 					
-					$msg="To complete your geograph registration, follow the link below\n\n";
+					$msg="Before you can log in, you must first confirm your registration ".
+						"by following the link below:\n\n";
 					$msg.=$register_authentication_url."\n\n";
 					
-					@mail($email, 'Confirm your '.$_SERVER['HTTP_HOST'].' registration', $msg,
+					$msg.="Once you have confirmed your registration, you will be able to ".
+						"log in with the email address and password you provided:\n";
+					$msg.="    email: $email\n";
+					$msg.="    password: $password1\n\n";
+					
+					$msg.="We hope you enjoy using and contributing to the site\n\n";
+					$msg.="Kind Regards,\n\n";
+					$msg.="The Geograph.co.uk Team";
+					
+					
+					@mail($email, '[geograph] Confirm registration', $msg,
 						"From: Geograph Website <noreply@geograph.co.uk>");
 				
 				}
