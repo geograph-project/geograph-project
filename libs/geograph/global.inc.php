@@ -152,11 +152,15 @@ function init_session()
 	//do we have a user object?
 	if (!isset($_SESSION['user']))
 	{
+		//this is a new session - as a safeguard against session
+		//fixation, we regenerate the session id
+		session_regenerate_id(); 
+		
 		//create new user object - initially anonymous
 		$_SESSION['user'] =& new GeographUser;
 		
 		//give object a chance to auto-login via cookie
-		$_SESSION['user']->auto_login();
+		$_SESSION['user']->autoLogin();
 	}
 	
 	//put user object into global scope
