@@ -40,7 +40,7 @@ referring to <b>image {$image->gridimage_id}</b>
 
 <!-- Creative Commons License -->
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img align="right" alt="Creative Commons License" src="http://creativecommons.org/images/public/somerights20.gif" /></a>
-The copyright on this image is owned by <a title="View profile" href="/profile.php?id={$image->user_id}">{$image->realname|escape:'html'}</a> and is 
+The copyright on this image is owned by <a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a> and is 
 licenced under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.
 <!-- /Creative Commons License -->
 
