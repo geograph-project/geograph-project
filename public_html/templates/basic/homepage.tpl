@@ -37,7 +37,7 @@ new features to be added soon.</p>
 why not join us, then go out and take some 
 pictures in a grid square near you - all you need is a camera and a map. 
 Have a look at some of the recent submisions to get an idea of what 
-it's all about.</p>
+it's all about, or read our <a title="guide to geographing" href="/help/guide">guide to geographing</a></p>
 
 
 <p>If you have any questions, check the <a title="Frequently Asked Questions" href="/faq.php">FAQ</a>, and 
