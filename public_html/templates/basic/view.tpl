@@ -90,7 +90,7 @@ referring to <b>image {$image->gridimage_id}</b>
 
 <tr><td>Maps for {$image->grid_reference}</td><td>
 
-<a href="/mapbrowse.php?t={$map_token}">Geograph Map</a>
+<a href="/mapbrowse.php?t={$map_token}">Geograph Map</a>, 
 
 {getamap gridref=$image->grid_reference text="OS Get-a-Map"}
 
