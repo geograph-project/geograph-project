@@ -2,6 +2,14 @@
 /*
 This file is part of miniBB. miniBB is free discussion forums/message board software, without any warranty. See COPYING file for more details. Copyright (C) 2004 Paul Puzyrev, Sergei Larionov. www.minibb.net
 */
+
+//use our own authentication first...
+require_once('geograph/global.inc.php');
+init_session();
+$USER->mustHavePerm("basic");
+
+//most of everthing below is standard minibb stuff
+
 $currY=date('Y');
 
 function get_microtime() {
@@ -18,6 +26,10 @@ if(isset($isMod)) unset($isMod);
 if(isset($user_id)) unset($user_id);
 if(isset($langu)) unset($langu);
 
+//enable admin from geograph?
+if ($USER->hasPerm('admin'))
+	$logged_admin=1;
+
 define ('INCLUDED776',1);
 
 include ('./setup_options.php');
@@ -30,6 +42,9 @@ if($sessname=='') $sessname='PHPSESSID';
 session_start();
 if(!isset($$sessname)) { $indexphp.=SID.'&'; $bb_admin.=SID.'&'; } else { $indexphp.="{$sessname}=".$$sessname.'&'; $bb_admin.="{$sessname}=".$$sessname.'&'; }
 }
+
+
+
 
 include ($pathToFiles.'setup_'.$DB.'.php');
 include ($pathToFiles.'bb_codes.php');
@@ -241,7 +256,14 @@ elseif($action=='movetopic') {$step=0;require($pathToFiles.'bb_func_movetpc.php'
 
 elseif($action=='movetopic2') {$step=1;require($pathToFiles.'bb_func_movetpc.php');}
 
-elseif($action=='userinfo') require($pathToFiles.'bb_func_usernfo.php');
+elseif($action=='userinfo')
+{
+	//require($pathToFiles.'bb_func_usernfo.php');
+	$url="http://".$_SERVER['HTTP_HOST']."/profile.php?u=".$_GET['user'];
+	header("Location: $url");
+	exit;
+	
+}
 
 elseif($action=='sendpass') {$step=0;require($pathToFiles.'bb_func_sendpwd.php');}
 
