@@ -133,9 +133,10 @@ if (isset($_POST['gridsquare']))
 			
 			$step=6;
 		}
-
-		
-		
+	}
+	else
+	{
+		$smarty->assign('errormsg', $square->errormsg);
 	}
 	
 }
