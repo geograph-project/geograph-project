@@ -73,7 +73,7 @@ if (isset($_POST['msg']))
 		$body=$smarty->fetch('email_usermsg.tpl');
 		$subject="[Geograph] $from_name contacting you from {$_SERVER['HTTP_HOST']}";
 		
-		@mail($recipient['email'], $subject, $body, 
+		@mail($recipient->email, $subject, $body, 
 			"From: $from_name <$from_email>");
 		
 		
