@@ -1,12 +1,7 @@
 {assign var="page_title" value="Map Browsing :: $gridref"}
 {include file="_std_begin.tpl"}
 
-
-<div id="info" style="background:silver;width:300px;height:150px;">
-</div>
-
-
-
+    
  
 {*begin containing div for main map*}
 <div style="position:relative;float:left;width:{$mosaic_width+20}px">
@@ -19,12 +14,11 @@
 
 	<div class="side" style="height:{$mosaic_height}px;"><a accesskey="A" title="Pan map west (Alt+A)" href="/mapbrowse.php?t={$token_west}"><img style="padding-top:{$mosaic_height/2 - 4}px" src="/templates/basic/img/arrow_w.gif" alt="West" width="8" height="13"></a></div>
 
-	<div id="mainmap" class="inner" style="width:{$mosaic_width}px;height:{$mosaic_height}px;">
+	<div class="inner" style="width:{$mosaic_width}px;height:{$mosaic_height}px;">
 	{foreach from=$mosaic key=y item=maprow}
 		<div>
 		{foreach from=$maprow key=x item=mapcell}
 		<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img 
-		id="map{$x}_{$y}"
 		alt="Clickable map" ismap="ismap" title="Click to zoom in or view image" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 		{/foreach}
 		</div>
@@ -51,7 +45,6 @@
 		<div>
 		{foreach from=$maprow key=x item=mapcell}
 		<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img 
-		
 		alt="Clickable map" ismap="ismap" title="Click to zoom in or view image" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 		{/foreach}
 		</div>
@@ -67,88 +60,6 @@
 {/if}
 {*end containing div for main map*}
 </div>
-
-{literal}
-<script type='text/javascript' src='/xlib/x_core.js'></script>
-<script type='text/javascript' src='/xlib/x_event.js'></script>
-<script type="text/javascript">
-
-function winOnLoad()
-{
-  //xAddEventListener(document, 'mousemove', onMousemove, false);
-  //xAddEventListener(document, 'mouseover', onMouseover, false);
-  //xAddEventListener(document, 'mouseout', onMouseout, false);
-
-  xAddEventListener('mainmap', 'mousemove', onMousemove, false);
-  xAddEventListener('mainmap', 'mouseover', onMouseover, false);
-  xAddEventListener('mainmap', 'mouseout', onMouseout, false);
-
-  //xAddEventListener('map0_0', 'mousemove', onMousemove, false);
-  //xAddEventListener('map0_0', 'mouseover', onMouseover, false);
-  //xAddEventListener('map0_0', 'mouseout', onMouseout, false);
-
-  //xAddEventListener('map1_0', 'mousemove', onMousemove, false);
-  //xAddEventListener('map1_0', 'mouseover', onMouseover, false);
-  //xAddEventListener('map1_0', 'mouseout', onMouseout, false);
-
-}
-function onMousemove(e)
-{
-  return demo(e, 1);
-}
-function onMouseover(e)
-{
-  return demo(e, 2);
-}
-function onMouseout(e)
-{
-  return demo(e, 3);
-}
-function demo(evt, n)
-{
-  var e = new xEvent(evt);
-  var x=e.offsetX;
-  var y=e.offsetY;
-  
-  
-  var atag=xParent(e.target,true);
-  var p=xParent(atag,true);
-  
-  var a=xPageX(p);
-    var b=xPageY(p);
-  
-  var a=xOffsetLeft(atag);
-  var b=xOffsetLeft(atag);
-  
-  
-  var info=document.getElementById('info');
-  info.innerHTML="Coords: (" + x+ ", " + y + ")<br>"+
-  	"parent: (" + a+ ", " + b + ")<br>"+
-  	"p:"+p.nodeName+"<br>"+
-  	"target:"+(e.target ? e.target.nodeName : 'null')+"<br>"+
-  	"topright:"+a+","+b+"<br>"
-  	;
- 
- /*var fe = xGetElementById('form1').elements;
-  fe['ty'+n].value = e.type;
-  fe['ta'+n].value = e.target ? e.target.nodeName : 'null';
-  fe['rt'+n].value = e.relatedTarget ? e.relatedTarget.nodeName : 'null';
-  fe['px'+n].value = e.pageX;
-  fe['py'+n].value = e.pageY;
-  fe['ox'+n].value = e.offsetX;
-  fe['oy'+n].value = e.offsetY;
-  */
-  return true;
-}
-
-winOnLoad();
-
-
-
-</script>
-{/literal}
-
-
 
 
 {*begin containing div for overview map*}
