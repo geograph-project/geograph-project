@@ -16,7 +16,7 @@
 we'll tell you how far away the nearest one is...</p>
 
 <form action="{$script_name}" method="get">
-
+<div>
 	<label for="gridsquare">Grid square</label>
 	<select id="gridsquare" name="gridsquare">
 		{html_options options=$prefixes selected=$gridsquare}
@@ -31,6 +31,7 @@ we'll tell you how far away the nearest one is...</p>
 	</select>
 
 		<input type="submit" name="setpos" value="Show &gt;"/>
+</div>
 </form>
 
 
@@ -54,7 +55,7 @@ we'll tell you how far away the nearest one is...</p>
 		  
 		{/foreach}
 		
-		<br style="clear:both;"/>
+		<br style="clear:left;"/>&nbsp;
 		
 
 	{else}
