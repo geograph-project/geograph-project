@@ -57,9 +57,9 @@ function onModerationCompleted()
 }
 
 
-function moderateImage(gridimage_id, is_ok)
+function moderateImage(gridimage_id, status)
 {
-	var url="/admin/moderation.php?gridimage_id="+gridimage_id+"&is_ok="+is_ok;
+	var url="/admin/moderation.php?gridimage_id="+gridimage_id+"&status="+status;
 	
 	//make the request
 	var req=getXMLRequestObject();
