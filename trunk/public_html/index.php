@@ -38,6 +38,19 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');
 
+	require_once('geograph/map.class.php');
+	require_once('geograph/mapmosaic.class.php');
+
+	$overview=new GeographMapMosaic(true);
+	$overview->enableCaching($CONF['smarty_caching']);
+	//setup the overview variables
+	$overviewimages =& $overview->getImageArray();
+	$smarty->assign_by_ref('overview', $overviewimages);
+	$smarty->assign('overview_width', $overview->image_w);
+	$smarty->assign('overview_height', $overview->image_h);
+	$mosaic=new GeographMapMosaic;
+	$smarty->assign('token', $overview->getToken());
+	
 	//lets find some recent photos
 	$images=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
 	$images->assignSmarty(&$smarty, 'recent');
