@@ -150,7 +150,8 @@ if (!extension_loaded('gd'))
 if (!extension_loaded('exif'))
 	fail('PHP EXIF extension not available - REQUIRED');
 
-if(get_cfg_var('register_globals'))
+$register_globals=strtolower(ini_get('register_globals'));
+if($register_globals=='on' || $register_globals=='1')
 	fail('register_globals should be turned OFF - REQUIRED');
 
 //check for a recent browscap.ini
