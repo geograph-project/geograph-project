@@ -380,6 +380,34 @@ class GridSquare
 	}
 	
 	/**
+	* load square from internal coordinates
+	*/
+	function loadFromPosition($internalx, $internaly)
+	{
+		$ok=false;
+		$db=&$this->_getDB();
+		$square = $db->GetRow("select * from gridsquare where ".
+			"x=".$db->Quote($internalx).
+			" and y=".$db->Quote($internaly));	
+		if (count($square))
+		{		
+			$ok=true;
+			
+			//store cols as members
+			foreach($square as $name=>$value)
+			{
+				if (!is_numeric($name))
+					$this->$name=$value;
+								
+			}
+			
+			//ensure we get exploded reference members too
+			$this->_storeGridRef($this->grid_reference);
+		}
+		return $ok;
+	}
+
+	/**
 	* set up and validate grid square selection
 	*/
 	function _setGridRef($gridref)
