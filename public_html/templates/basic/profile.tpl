@@ -12,7 +12,7 @@
  	<li>Website: <a href="{$profile->website|escape:'html'}">{$profile->website|escape:'html'}</a></li>
  	{/if}
  	
- 	{if $user->user_id eq $profile->user_id}
+ 	{if $user->user_id ne $profile->user_id}
  		{if $profile->public_email eq 1}
 	 		<li>Email: {mailto address=$profile->email encode="javascript"}</li> 	
 	 	{else}
