@@ -104,7 +104,7 @@ $cc=$cols[0];
 if (isset($userRanks[$cc])) $ins=$userRanks[$cc];
 elseif (isset($mods[$forum]) and is_array($mods[$forum]) and in_array($cc,$mods[$forum])) $ins=$l_moderator;
 else { $ins=($cc==1?$l_admin:$l_member); }
-if(isset($mod_rewrite) and $mod_rewrite) $viewReg="<a href=\"{$main_url}/user{$cc}.html\">{$ins}</a>"; else $viewReg="<a href=\"{$main_url}/{$indexphp}action=userinfo&amp;user={$cc}\">$ins</a>";
+if(isset($mod_rewrite) and $mod_rewrite) $viewReg="<a href=\"{$main_url}/user{$cc}.html\">{$ins}</a>"; else $viewReg="<a title=\"View user profile\" href=\"{$main_url}/{$indexphp}action=userinfo&amp;user={$cc}\">$ins</a>";
 }
 else $viewReg='';
 
