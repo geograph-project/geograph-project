@@ -14,3 +14,29 @@ function popupOSMap(gridref)
 		'left='+wLeft+',screenX='+wLeft+',top='+wTop+',screenY='+wTop+',width='+wWidth+',height='+wHeight+',status,scrolling=no');
 	}
 }
+
+function di20(id, newSrc) {
+    var theImage = FWFindImage(document, id, 0);
+    if (theImage) {
+        theImage.src = newSrc;
+    }
+}
+
+function FWFindImage(doc, name, j) {
+    var theImage = false;
+    if (doc.images) {
+        theImage = doc.images[name];
+    }
+    if (theImage) {
+        return theImage;
+    }
+    if (doc.layers) {
+        for (j = 0; j < doc.layers.length; j++) {
+            theImage = FWFindImage(doc.layers[j].document, name, 0);
+            if (theImage) {
+                return (theImage);
+            }
+        }
+    }
+    return (false);
+}
