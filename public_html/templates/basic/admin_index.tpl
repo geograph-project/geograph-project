@@ -28,5 +28,7 @@ the internal land/sea map</li>
 <li>{$images_pending} images awaiting <a href="moderation.php">moderation</a></li>
 </ul>
 {/dynamic}    
+
+<img src="/img/submission_graph.png" width="480" height="161"/>
     
 {include file="_std_end.tpl"}
