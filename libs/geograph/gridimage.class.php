@@ -69,7 +69,7 @@ class GridImage
 	var $ftf;
 
 	/**
-	* moderation status - 'pending', 'accepted', 'rejected'
+	* moderation status - 'pending', 'accepted', 'rejected' or 'geograph'
 	*/
 	var $moderation_status;
 
@@ -486,61 +486,86 @@ class GridImage
 	/**
 	* Sets the moderation status for the image, intelligently updating user stats appropriately
 	* status must either 'accepted' or 'rejected'
+	* returns a textual describing the action taken
+	*
+	* This is all quite hairy stuff, as we maintain need to maintain a number of 
+	* counts and status fields in the database
 	*/
 	function setModerationStatus($status)
 	{
-		$valid_status=array('accepted', 'rejected');
+		$valid_status=array('accepted', 'rejected', 'geograph');
 		
-		//is this a valid instance with a definite change of status?
-		if ($this->isValid() && 
-		    ($status!=$this->moderation_status) &&
-		    in_array($status, $valid_status)
-		   )
+		if (!$this->isValid())
+			return "Invalid image";
+		
+		if ($status==$this->moderation_status)
+			return "No change, still {$this->moderation_status}";
+		
+		if (!in_array($status, $valid_status))
+			return "Bad status $status";
+		
+		//to get this far, the image is valid, the status
+		//is valid, and it is a definite change of status
+		$db=&$this->_getDB();
+		
+		
+		//we want to detect changes in ftf status...a pending image is always ftf 0
+		$original_ftf=$this->ftf;
+		
+		//you only get ftf if new status is 'geograph' and there are no other 
+		//geograph images
+		$geographs= $db->GetOne("select count(*) from gridimage ".
+					"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph'");
+		$this->ftf=0;
+		if (($status=='geograph') && ($geographs==0))
 		{
-			if ($status=='rejected')
-			{
-				//lower image count for this square...
-				$this->db->Query("update gridsquare set imagecount=imagecount-1 where gridsquare_id={$this->gridsquare_id}");
-						
-				//we always clear the ftf flag on rejected images...
-				//we also give rejected images a negative sequence number
-				$this->ftf=0;
-				
-				$min = $this->db->GetOne("select min(seq_no) from gridimage where gridsquare_id={$this->gridsquare_id} and moderation_status='rejected'");
-				if (!isset($min))
-					$min=0;
-					
-				$this->seq_no=$min-1;
-			}
-			
-			//if we're going from rejected to accepted, we must undo the above
-			if (($status=='accepted') && ($this->moderation_status=='rejected'))
-			{
-				//lower image count for this square...
-				$this->db->Query("update gridsquare set imagecount=imagecount+1 where gridsquare_id={$this->gridsquare_id}");
-				
-				//figure out a sequence number and ftf status
-				$this->seq_no = $this->db->GetOne("select count(*) from gridimage where gridsquare_id={$this->gridsquare_id} and moderation_status<>'rejected'");
-				$this->ftf=($this->seq_no==0)?1:0;
-		
-			}
-			
-			$this->moderation_status=$status;
-			
-			//update image status and ftf flag
-			$sql="update gridimage set ".
-				"moderation_status='$status',".
-				"ftf={$this->ftf},".
-				"seq_no={$this->seq_no} ".
-				"where gridimage_id={$this->gridimage_id}";
-				
-			
-			$db=&$this->_getDB();
-			$db->query($sql);
-			
-			
-			
+			$this->ftf=1;
+			$geographs=1;
 		}
+					
+			
+			
+		//ok, update the image
+		$this->moderation_status=$status;
+
+		//update image status and ftf flag
+		$sql="update gridimage set ".
+			"moderation_status='$status',".
+			"ftf={$this->ftf},".
+			"seq_no={$this->seq_no} ".
+			"where gridimage_id={$this->gridimage_id}";
+		$db->query($sql);
+		
+		//if we've just cleared the ftf flag, we should check to see
+		//the square contains other geographs, in which case, we award ftf to the
+		//first one submitted
+		if ($original_ftf && !$this->ftf)
+		{
+			$next_geograph= $db->GetOne("select gridimage_id from gridimage ".
+				"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' ".
+				"order by submitted");
+			if ($gridimage_id)
+			{
+				$db->Query("update gridimage set ftf=1 where gridimage_id={$next_geograph}");
+			}
+
+		}
+			
+		
+		//finally, we update status information for the gridsquare
+		$has_geographs=$geographs?1:0;
+		
+		//count how many images in the square
+		$imagecount= $db->GetOne("select count(*) from gridimage ".
+			"where gridsquare_id={$this->gridsquare_id} and moderation_status<>'rejected'");
+		
+		//update the has_geographs flag
+		$db->Query("update gridsquare set has_geographs=$has_geographs,imagecount=$imagecount ".
+					"where gridsquare_id={$this->gridsquare_id}");
+					
+		return "Status is now $status";	
+			
+		
 	}
 	
 }
