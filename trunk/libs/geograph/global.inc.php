@@ -58,6 +58,8 @@ require_once('adodb/session/adodb-session.php');
 //smarty needed everywhere too
 require_once('smarty/libs/Smarty.class.php');
 
+//and our user class
+require_once('geograph/user.class.php');
 
 
 
@@ -69,9 +71,12 @@ require_once('smarty/libs/Smarty.class.php');
 *
 * @package Geograph
 */
-class GeoGraphPage extends Smarty
+class GeographPage extends Smarty
 {
-	function GeoGraphPage()
+	/**
+	* Constructor - sets up smarty appropriately
+	*/
+	function GeographPage()
 	{
 		global $CONF;
 				
@@ -89,52 +94,20 @@ class GeoGraphPage extends Smarty
 		$this->debugging = $CONF['smarty_debugging'];
 		$this->caching = $CONF['smarty_caching'];
 		
+		//assign globallly useful stuff
 		$this->assign("user", $GLOBALS['USER']);
 		$this->assign("http_host", $_SERVER['HTTP_HOST']);
+		$this->assign("script_name", $_SERVER['SCRIPT_NAME']);
+		
+		//show more links in template?
+		if ($GLOBALS['USER']->hasPerm('admin'))
+		{
+			$this->assign("is_admin", true);
+		
+		
+		}
 		
 	}
-}
-
-
-/**
-* Geograph User class
-*
-* Provides facilities for inline login and querying permissions
-* of current user (which might be an anonymous)
-*
-* @package Geograph
-*/
-class GeoGraphUser
-{
-	var $user_id="";
-	var $registered=false;
-	
-	
-	/**
-	* force inline login if user isn't authenticated
-	*/
-	function has_perm()
-	{
-	
-	}
-	
-	/**
-	* force inline login if user isn't authenticated
-	* only return after successful login
-	*/
-	function login()
-	{
-	
-	}
-	
-	/**
-	* attempt to authenticate user from persistent cookie
-	*/
-	function auto_login()
-	{
-	
-	}
-	
 }
 
 //global page initialisation
@@ -146,7 +119,7 @@ function init_session()
 	if (!isset($_SESSION['user']))
 	{
 		//create new user object - initially anonymous
-		$_SESSION['user'] =& new GeoGraphUser;
+		$_SESSION['user'] =& new GeographUser;
 		
 		//give object a chance to auto-login via cookie
 		$_SESSION['user']->auto_login();
