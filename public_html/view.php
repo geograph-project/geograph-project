@@ -65,7 +65,13 @@ if (isset($_GET['id']))
 if ($image->isValid())
 {
 	$taken=$image->getFormattedTakenDate();
-	$smarty->assign('page_title', $image->grid_reference);
+	
+	//remove grid reference from title
+
+	$image->title=trim(str_replace($image->grid_reference, '', $image->title));
+
+	$smarty->assign('page_title', $image->title.":: OS grid {$image->grid_reference}");
+	$smarty->assign('meta_description', $image->comment);
 	$smarty->assign('image_taken', $taken);
 	$smarty->assign('ismoderator', $USER->hasPerm('moderator')?1:0);
 	$smarty->assign_by_ref('image', $image);
