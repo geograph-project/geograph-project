@@ -96,5 +96,5 @@ else
 {
 	echo "<li>Server is correctly configured to run Geograph!</li>";
 }
-
+//just adding this comment to test if can now commit... (Barry)
 ?>
