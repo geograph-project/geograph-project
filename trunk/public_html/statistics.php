@@ -71,7 +71,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		if ($u) {
 			$user_crit = " and user_id = $u";
-			$link = "&amp;u=$u";
+			$link .= "&amp;u=$u";
 			$smarty->assign_by_ref('u', $u);
 		}
 		$smarty->assign_by_ref('link', $link);
@@ -105,7 +105,8 @@ $sql_order";
 		foreach($breakdown as $idx=>$entry) {
 			$total += $breakdown[$idx]['c'];
 		}
-		$totalperc = 100 /$total;
+		if ($total > 0)
+			$totalperc = 100 /$total;
 		
 		foreach($breakdown as $idx=>$entry)
 		{
