@@ -38,7 +38,8 @@ $CONF['adodb_debugging']=1;
 //path to adodb cache dir
 $CONF['adodb_cache_dir']=$_SERVER['DOCUMENT_ROOT'].'/../adodbcache/';
 
-//admin user for miniBB -ToDo: make this db driven
+//you get minibb admin privilege by using a geograph admin login - these
+//settings are no longer used, but you can initialise them "just in case"
 $CONF['minibb_admin_user']='admin';
 $CONF['minibb_admin_pwd']='CHANGETHIS';
 $CONF['minibb_admin_email']='root@wherever';
