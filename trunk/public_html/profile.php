@@ -25,11 +25,74 @@ require_once('geograph/global.inc.php');
 
 init_session();
 
-
-
-
 $smarty = new GeographPage;
-$smarty->display('profile.tpl');
+$template='profile.tpl';	
+	
+//this script works in two modes - editing the currently logged in users profile
+//or viewing any users profile in read-only fashion - here we decide which to do
+if (isset($_REQUEST['edit']))
+{
+	//must be logged in to proceed with an edit
+	$USER->login();
+	
+	$template='profile_edit.tpl';
+	$profile=new GeographUser($USER->user_id);
+	
+	//save changes?
+	if (isset($_POST['savechanges']))
+	{
+		$errors=array();
+		$ok=$USER->updateProfile($_POST, $errors);
+		
+		if ($ok)
+		{
+			//show the user their new profile
+			$template='profile.tpl';	
+		}
+		else
+		{
+			$smarty->assign('errors', $errors);
+			//ensure we keep submission intact
+			foreach($_POST as $name=>$value)
+			{
+				$profile->$name=stripslashes($value);
+			}
+		}
+	}
+	
+	$smarty->assign_by_ref('profile', $profile);
+}
+
+
+if ($template=='profile.tpl')
+{
+	//assume viewing logged in user
+	$uid=$USER->user_id;
+
+	//see if we were passed a param
+	if (isset($_GET['u']) && preg_match('/^[0-9]+$/' , $_GET['u']))
+	{
+		$uid=$_GET['u'];
+	}
+
+	if ($uid==0)
+	{
+		//no uid given, so we'll assume user was trying to access their own
+		//profile, in which case, they must login...
+		$USER->login();
+
+		//to reach here, user must be logged in...
+		$uid=$USER->user_id;
+	}
+
+	$profile=new GeographUser($uid);
+	$profile->getStats();
+
+	$smarty->assign('page_title', 'Profile for '.$profile->realname);
+	$smarty->assign_by_ref('profile', $profile);
+}
+
+$smarty->display($template);
 
 	
 ?>
