@@ -5,10 +5,15 @@
 <ul>
 <li><a href="/admin/moderation.php">Moderate</a> new photo submissions</li>
 
+<li><a title="Map Fixer" href="/admin/mapfixer.php">Map Fixer</a> allows the land percentage
+for each 1km grid squares to be updated, which allows "that square is all at sea' to be 
+corrected</li>
+
 
 <li><a title="Map Maker" href="/admin/mapmaker.php">Map Maker</a> is a simple tool for checking
 the internal land/sea map</li>
-  <li><a title="Server Stats" href="http://www.geograph.co.uk/logs/">Server Stats</a> - 
+
+<li><a title="Server Stats" href="http://www.geograph.co.uk/logs/">Server Stats</a> - 
    check the server activity logs</li>
       
      
