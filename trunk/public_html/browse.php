@@ -25,6 +25,9 @@ require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
+require_once('geograph/map.class.php');
+require_once('geograph/mapmosaic.class.php');
+
 init_session();
 
 
@@ -36,6 +39,7 @@ $square=new GridSquare;
 
 $smarty->assign('prefixes', $square->getGridPrefixes());
 $smarty->assign('kmlist', $square->getKMList());
+
 
 
 
@@ -136,6 +140,10 @@ else
 //lets find some recent photos
 $recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
 $recent->assignSmarty(&$smarty, 'recent');
+
+//lets add an overview map too
+$overview=new GeographMapMosaic('overview');
+$overview->assignToSmarty($smarty, 'overview');
 
 
 $smarty->display('browse.tpl');
