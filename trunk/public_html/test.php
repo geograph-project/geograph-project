@@ -32,8 +32,14 @@ function fail($msg)
 {
 	global $ok;
 	$ok=false;
-	echo "<li>$msg</li>";
+	echo "<li style=\"color:red;\">FAIL: $msg</li>";
 }
+
+function warn($msg)
+{
+	echo "<li style=\"color:orange;\">WARN: $msg</li>";
+}
+
 
 function check_include($file)
 {
@@ -49,6 +55,7 @@ function check_include($file)
 
 echo "<h1>Geograph System Test...</h1>";
 
+
 //////////////////////////////////////////////////////////////////
 // general php configuration
 
@@ -57,6 +64,25 @@ if (!extension_loaded('gd'))
 
 if (!extension_loaded('exif'))
 	fail('PHP EXIF extension not available - REQUIRED');
+
+//check for a recent browscap.ini
+$browscap=get_cfg_var("browscap");
+if (strlen($browscap) && @file_exists($browscap))
+{
+	$ageDays=(time() - filemtime($browscap))/86400;
+	if ($ageDays > 180)
+
+	{
+		warn("browscap.ini more than six months old - check for updates at http://www.garykeith.com/browsers/downloads.asp");
+	}
+	
+	
+}
+else
+{
+	fail('browscap file not configured in php.ini - REQUIRED');
+
+}
 
 //////////////////////////////////////////////////////////////////
 // include files
@@ -124,7 +150,7 @@ if (!$ok)
 }
 else
 {
-	echo "<li>Server is correctly configured to run Geograph!</li>";
+	echo "<li style=\"color:green;font-weight:bold;\>Server is correctly configured to run Geograph!</li>";
 }
 //just adding this comment to test if can now commit... (Barry) another commit try!
 ?>
