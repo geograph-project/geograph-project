@@ -49,14 +49,14 @@ class GridSquare
 	var $gridsquare_id=0;
 
    /**
-   	* gridsquare.grid_reference1 GB OS Reference
+   	* gridsquare.grid_reference 
    	*/
-	var $grid_reference1=0;
+	var $grid_reference='';
  
  	/**
-	* gridsquare.grid_reference2 Irish OS Reference
+	* gridsquare.reference_index type of grid reference
 	*/
- 	var $grid_reference2=0;
+ 	var $reference_index=0;
  
 	/**
 	* gridsquare.x,y internal grid position
@@ -75,22 +75,17 @@ class GridSquare
 	var $imagecount=0;
   	
   	/**
-	* actual grid reference we're using for this square
-	*/
-	var $gridref="";
-  	
-  	/**
-	* exploded gridsquare element of $this->gridref
+	* exploded gridsquare element of $this->grid_reference
 	*/
 	var $gridsquare="";
   	
   	/**
-	* exploded eastings element of $this->gridref
+	* exploded eastings element of $this->grid_reference
 	*/
 	var $eastings=0;
   	
   	/**
-	* exploded northings element of $this->gridref
+	* exploded northings element of $this->grid_reference
 	*/
 	var $northings=0;
   	
@@ -152,7 +147,7 @@ class GridSquare
 		//show all irish grid squares...
 		$db=&$this->_getDB();
 		return $db->GetAssoc("select prefix,prefix from gridprefix ".
-			"where reference_index=2 or landcount>0 ".
+			"where landcount>0 ".
 			"order by reference_index,prefix");
 
 	}
@@ -175,9 +170,9 @@ class GridSquare
 	*/
 	function rememberInSession()
 	{
-		if (strlen($this->gridref))
+		if (strlen($this->grid_reference))
 		{
-			$_SESSION['gridref']=$this->gridref;
+			$_SESSION['gridref']=$this->grid_reference;
 			$_SESSION['gridsquare']=$this->gridsquare;
 			$_SESSION['eastings']=$this->eastings;
 			$_SESSION['northings']= $this->northings;
@@ -190,8 +185,8 @@ class GridSquare
 	*/
 	function _storeGridRef($gridref)
 	{
-		$this->gridref=$gridref;
-		if (preg_match('/^([A-Z]{1,2})(\d\d)(\d\d)$/',$this->gridref, $matches))
+		$this->grid_reference=$gridref;
+		if (preg_match('/^([A-Z]{1,2})(\d\d)(\d\d)$/',$this->grid_reference, $matches))
 		{
 			$this->gridsquare=$matches[1];
 			$this->eastings=$matches[2];
@@ -262,30 +257,6 @@ class GridSquare
 	}
 	
 	/**
-	* figure out whether gridref should be grid_reference1 or grid_reference2
-	*/
-	function setPrimaryReference()
-	{
-		//figure out which reference to use for grid square
-		$gridref=$this->grid_reference1;
-		if (substr($this->grid_reference1,0,1)=='#')
-			$gridref=$this->grid_reference2;
-		elseif (substr($this->grid_reference2,0,1)=='#')
-			$gridref=$this->grid_reference1;
-		else
-		{
-			//overlapping reference - if it's land, and has a irish reference, we'll
-			//use it, otherwise, use the GB on
-			if ($this->land_percent)
-				$gridref=$this->grid_reference2;
-			else
-				$gridref=$this->grid_reference1;
-		}	
-		
-		$this->_storeGridRef($gridref);
-	}
-	
-	/**
 	* load square from database
 	*/
 	function loadFromId($gridsquare_id)
@@ -302,7 +273,6 @@ class GridSquare
 								
 			}
 			
-			$this->setPrimaryReference();
 		}
 	}
 	
@@ -320,7 +290,7 @@ class GridSquare
 			
 		//check the square exists in database
 		$count=0;
-		$square = $db->GetRow("select * from gridsquare where ".$db->Quote($gridref)."in (grid_reference1,grid_reference2)");	
+		$square = $db->GetRow("select * from gridsquare where grid_reference=".$db->Quote($gridref));	
 		if (count($square))
 		{		
 			//store cols as members
@@ -391,9 +361,6 @@ class GridSquare
 									
 			}
 			
-			//figure out which reference to use for grid square
-			$this->nearest->setPrimaryReference();
-			
 			return true;
 		}
 		else
@@ -412,7 +379,9 @@ class GridSquare
 		$recordSet = &$db->Execute("select gridimage.*,user.realname,user.email,user.website ".
 			"from gridimage ".
 			"inner join user using(user_id) ".
-			"where gridsquare_id={$this->gridsquare_id} order by seq_no");
+			"where gridsquare_id={$this->gridsquare_id} ".
+			"and moderation_status in ('pending', 'accepted')".
+			"order by seq_no");
 		while (!$recordSet->EOF) 
 		{
 			$images[$i]=new GridImage;
