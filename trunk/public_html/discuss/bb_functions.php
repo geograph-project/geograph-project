@@ -181,7 +181,7 @@ $true3b=($GLOBALS['user_id']!=1 and !$isInDb);
 $true3=($true3a or $true3b);
 
 if ($true0 and $true1 and $true2 and $true3) {
-$checkEmail="<input type=checkbox name=CheckSendMail> <a href=\"{$GLOBALS['indexphp']}action=manual#emailNotifications\">{$GLOBALS['l_emailNotify']}</a>";
+$checkEmail="<input type=\"checkbox\" id=\"CheckSendMail\" name=\"CheckSendMail\"><label for=\"CheckSendMail\">{$GLOBALS['l_emailNotify']}</label>";
 }
 elseif($isInDb) $checkEmail="<!--U--><a href=\"{$GLOBALS['indexphp']}action=unsubscribe&topic={$GLOBALS['topic']}&usrid={$GLOBALS['user_id']}\">{$GLOBALS['l_unsubscribe']}</a>";
 }
