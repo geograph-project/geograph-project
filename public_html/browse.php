@@ -128,7 +128,7 @@ else
 }
 
 //lets find some recent photos
-$recent=new ImageList(array('pending', 'accepted'), 'submitted desc', 5);
+$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
 $recent->assignSmarty(&$smarty, 'recent');
 
 

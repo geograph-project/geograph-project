@@ -39,7 +39,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/imagelist.class.php');
 
 	//lets find some recent photos
-	$images=new ImageList(array('pending', 'accepted'), 'submitted desc', 5);
+	$images=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
 	$images->assignSmarty(&$smarty, 'recent');
 }
 
