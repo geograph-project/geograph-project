@@ -103,6 +103,12 @@ function smarty_function_getamap($params)
 
 		return "<a title=\"Ordnance Survey Get-a-Map for $gridref4\" href=\"javascript:popupOSMap('$gridref6')\">$text</a>";
   	}
+  	elseif (strlen($gridref4)==0)
+  	{
+  		$text=$params['text'];
+  		return "<a title=\"Ordnance Survey Get-a-Map\" href=\"javascript:popupOSMap('')\">$text</a>";
+  	
+  	}
   	else
   	{
   		//error
