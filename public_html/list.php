@@ -56,7 +56,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$images=new ImageList;
 
 		$count=$images->getImagesByArea($prefix['origin_x'],$prefix['origin_x']+$prefix['width']-1,
-			$prefix['origin_y']+$prefix['height']-1,$prefix['origin_y']);
+			$prefix['origin_y']+$prefix['height']-1,$prefix['origin_y'], $prefix['reference_index']);
 		if ($count>0)
 		{
 			$squares[$i]['images']=$images->images;

@@ -107,7 +107,7 @@ class ImageList
 	/**
 	* get image list for particular area...
 	*/
-	function getImagesByArea($left,$right,$top,$bottom)
+	function getImagesByArea($left,$right,$top,$bottom,$reference_index=null)
 	{
 		$db=&$this->_getDB();
 
@@ -121,15 +121,19 @@ class ImageList
 		$t=min($top,$bottom);
 		$b=max($top,$bottom);
 		
+		//figure for particular grid system?
+		$rfilter="";
+		if (!is_null($reference_index))
+			$rfilter="and gridsquare.reference_index=$reference_index";
 		
 		$sql="select gridimage.*,user.realname ".
-					"from gridimage ".
-					"inner join user using(user_id) ".
-					"inner join gridsquare on(gridimage.gridsquare_id=gridsquare.gridsquare_id) ".
-					"where moderation_status in ($statuslist) and ".
-					"x between $l and $r and ".
-					"y between $t and $b ".
-			"$orderby $limit";
+			"from gridimage ".
+			"inner join user using(user_id) ".
+			"inner join gridsquare on(gridimage.gridsquare_id=gridsquare.gridsquare_id) ".
+			"where moderation_status in ($statuslist) and ".
+			"x between $l and $r and ".
+			"y between $t and $b ".
+			"$rfilter $orderby $limit";
 		
 			
 		$this->images=array();
