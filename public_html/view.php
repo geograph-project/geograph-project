@@ -24,6 +24,8 @@
 require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
+require_once('geograph/mapmosaic.class.php');
+
 init_session();
 
 $smarty = new GeographPage;
@@ -66,6 +68,9 @@ if ($image->isValid())
 	$smarty->assign('page_title', $image->grid_reference);
 	$smarty->assign('image_taken', $taken);
 	$smarty->assign_by_ref('image', $image);
+	
+	$mosaic=new GeographMapMosaic;
+	$smarty->assign('map_token', $mosaic->getGridSquareToken($image->grid_square));
 }
 
 
