@@ -148,8 +148,12 @@ class GridSquare
 	*/
 	function getGridPrefixes()
 	{
+		//only show gb grid if we have land there
+		//show all irish grid squares...
 		$db=&$this->_getDB();
-		return $db->GetAssoc("select prefix,prefix from gridprefix order by reference_index,prefix");
+		return $db->GetAssoc("select prefix,prefix from gridprefix ".
+			"where reference_index=2 or landcount>0 ".
+			"order by reference_index,prefix");
 
 	}
 	
