@@ -103,6 +103,7 @@ class UploadManager
 		if ($this->validUploadId($id))
 		{
 			$this->upload_id=$id;
+			$this->initUploadSize();
 			return true;
 		}
 		else
@@ -183,6 +184,29 @@ class UploadManager
 		exit;		
 	}
 
+	/**
+	* initialise size members for preview Image
+	*/
+	function initUploadSize()
+	{
+		$this->upload_width=0;
+		$this->upload_height=0;
+		$ok=false;
+		
+		if($this->validUploadId($this->upload_id))
+		{
+			$uploadfile = $this->_pendingJPEG($this->upload_id);
+			if (@file_exists($uploadfile))
+			{
+				$s=getimagesize($uploadfile);
+				$this->upload_width=$s[0];
+				$this->upload_height=$s[1];
+				$ok=true;
+			}
+		}
+		return $ok;
+	}
+	
 	/**
 	* store error message
 	*/
