@@ -43,6 +43,13 @@ function warn($msg)
 	echo "<li style=\"color:orange;\">WARN: $msg</li>";
 }
 
+function status($msg)
+{
+	echo "<script langauge=\"javascript\">\n";
+	echo "info.innerHTML='$msg';\n";
+	echo "</script>\n";
+	flush();
+}
 
 function check_include($file)
 {
@@ -138,11 +145,19 @@ function check_http($page, $pattern, &$errstr)
 //////////////////////////////////////////////////////////////////
 // BEGIN TESTING
 
-echo "<h1>Geograph System Test...</h1>";
 
+?><h1>Geograph System Test...</h1>
+<li id="info"></li>
+<script language="javascript">
+info=document.getElementById('info');
+</script>
+
+<?php
+flush();
 
 //////////////////////////////////////////////////////////////////
 // got the right php version?
+status("checking php version...");
 
 $version=phpversion();
 $v=explode('.', $version);
@@ -169,6 +184,7 @@ else
 
 //////////////////////////////////////////////////////////////////
 // general php configuration
+status("checking php configuration...");
 
 if (!extension_loaded('gd'))
 	fail('PHP GD extension not available - REQUIRED');
@@ -199,6 +215,7 @@ else
 
 //////////////////////////////////////////////////////////////////
 // include files
+status("checking php include files...");
 
 $inc=realpath($_SERVER['DOCUMENT_ROOT'].'/../libs');
 if (check_include('geograph/global.inc.php'))
@@ -237,6 +254,7 @@ foreach($example as $name=>$value)
 
 //////////////////////////////////////////////////////////////////
 // directory permissions
+status("checking file permissions...");
 
 if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/maps'))
 	fail('public_html/maps not writable - REQUIRED');
@@ -262,17 +280,32 @@ if (!is_writable($CONF['adodb_cache_dir']))
 // rewrite rules
 
 $httperr='';
+status("checking /gridref rewrite rules...");
 if (!check_http('/gridref/HP0000', '/HP0000 seems to be all at sea/',$httperr))
 	fail("mod_rewrite rule for /gridref/<em>xxnnnn</em> failed ($httperr) - REQUIRED");
+
+status("checking /help rewrite rules...");
 if (!check_http('/help/credits', '/This project relies on the following open-source technologies/',$httperr))
 	fail("mod_rewrite rule for /help/<em>page</em> failed ($httperr) - REQUIRED");
+
+status("checking /reg rewrite rules...");
 if (!check_http('/reg/123/abcdef1234567890', '/there was a problem confirming your registration/',$httperr))
 	fail("mod_rewrite rule for /reg/<em>uid</em>/<em>hash</em> failed ($httperr) - REQUIRED");
+
+status("checking /photo rewrite rules...");
+if (!check_http('/photo/999999', '/image not available/',$httperr))
+	fail("mod_rewrite rule for /photo/<em>id</em> failed ($httperr) - REQUIRED");
+
+status("checking /mapbrowse.php rewrite rules...");
+if (!check_http('/mapbrowse.php?t=dummy&i=2&j=2&zoomin=1?43,72', '/TL0094/',$httperr))
+	fail("mod_rewrite rule for mapbrowse.php image maps failed ($httperr) - REQUIRED");
+
 
 
 //////////////////////////////////////////////////////////////////
 // END OF TESTING
 // We show some diagnostics if any tests failed...
+status("completed");
 
 if (!$ok)
 {
