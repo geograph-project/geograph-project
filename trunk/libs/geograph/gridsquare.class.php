@@ -368,9 +368,42 @@ class GridSquare
 		}
 		else
 		{
-			//is it sea? what's the closes square with land? more than 5km away? disallow
 			$ok=false;
-			$this->_error("$gridref seems to be all at sea! Please contact us if you think this is in error");
+			
+			//we don't have a square for given gridref, so first we
+			//must figure out what the internal coords are for it
+			
+			$sql="select * from gridprefix where prefix='{$this->gridsquare}'";
+			$prefix=$db->GetRow($sql);
+			if (count($prefix))
+			{
+				$x=$prefix['origin_x'] + $this->eastings;
+				$y=$prefix['origin_y'] + $this->northings;
+			
+				//what's the closes square with land? more than 5km away? disallow
+				$ok=$this->findNearby($x,$y, 2, false);
+			
+				//we only need to know we found one...
+				unset($this->nearest);
+				
+				if ($ok)
+				{
+					//square is close to land, so we're letting it slide, but we
+					//need to create the square - we give it a land_percent of -1
+					//to indicate it needs review, and also to prevent it being
+					//used in further findNearby calls
+					$sql="insert into gridsquare(x,y,percent_land,grid_reference,reference_index) ".
+						"values($x,$y,-1,'$gridref',{$prefix['reference_index']})";
+					$db->Execute($sql);
+					$gridimage_id=$this->db->Insert_ID();
+					
+					//ensure we initialise ourselves properly
+					$this->loadFromId($gridimage_id);
+				}
+			}
+			
+			if (!$ok)
+				$this->_error("$gridref seems to be all at sea! Please contact us if you think this is in error");
 
 		}
 
@@ -381,8 +414,9 @@ class GridSquare
 	/**
 	* find a nearby occupied square and store it in $this->nearby
 	* returns true if an occupied square was found
+	* if occupied is false, finds the nearest land square
 	*/
-	function findNearby($x, $y, $radius)
+	function findNearby($x, $y, $radius, $occupied=true)
 	{
 		$db=&$this->_getDB();
 		
@@ -393,12 +427,17 @@ class GridSquare
 		$top=$y-$radius;
 		$bottom=$y+$radius;
 		
+		if ($occupied)
+			$ofilter=" and imagecount>0 ";
+		else
+			$ofilter=" and percent_land>0 ";
+			
 		$sql="select *, ".
 			"power(x-$x,2)+power(y-$y,2) as distance ".
 			"from gridsquare where ".
 			"x between $left and $right and ".
-			"y between $top and $bottom and ".
-			"imagecount>0 ".
+			"y between $top and $bottom ".
+			$ofilter.
 			"order by distance asc limit 1";
 		
 		$square = $db->GetRow($sql);	
