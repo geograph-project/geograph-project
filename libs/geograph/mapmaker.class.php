@@ -85,13 +85,13 @@ class MapMaker
 			$land[$p]=imagecolorallocate($img, 0,$g,$b);
 		
 		}
-		$dotcolor = imagecolorallocate($img,192,0,192);
+		$dotcolor = imagecolorallocate($img,255,0,0);
 		
 		//now plot all squares in the desired area
 		$sql="select x,y,percent_land,imagecount from gridsquare where ".
 			"(x between $left and $right) and ".
 			"(y between $bottom and $top) and ".
-			"percent_land > 0";
+			"percent_land > 0 order by y,x";
 			
 		$recordSet = &$this->db->Execute($sql);
 		while (!$recordSet->EOF) 
@@ -103,7 +103,18 @@ class MapMaker
 			$imgy=$height-($gridy-$bottom);
 			
 			if ($recordSet->fields[3] > 0) {
-				imagesetpixel($img, $imgx, $imgy, $dotcolor);
+				imagesetpixel($img, $imgx,   $imgy, $dotcolor);
+				imagesetpixel($img, $imgx-1, $imgy, $dotcolor);
+				imagesetpixel($img, $imgx-2, $imgy, $dotcolor);
+				imagesetpixel($img, $imgx,   $imgy+1, $dotcolor);
+				imagesetpixel($img, $imgx-1, $imgy+1, $dotcolor);
+				imagesetpixel($img, $imgx-2, $imgy+1, $dotcolor);
+				imagesetpixel($img, $imgx,   $imgy+2, $dotcolor);
+				imagesetpixel($img, $imgx-1, $imgy+2, $dotcolor);
+				imagesetpixel($img, $imgx-2, $imgy+2, $dotcolor);
+				
+				
+				
 			} else {
 				imagesetpixel($img, $imgx, $imgy, $land[$recordSet->fields[2]]);
 			}
@@ -117,7 +128,8 @@ class MapMaker
 			$sql="select * from gridprefix where ".
 				"origin_x between $left-width and $right and ".
 				"origin_y between $bottom-height and $top ".
-				"and reference_index=1 and landcount>0";
+				"and landcount>0";
+				//"and reference_index=1 and landcount>0";
 
 
 			$recordSet = &$this->db->Execute($sql);
