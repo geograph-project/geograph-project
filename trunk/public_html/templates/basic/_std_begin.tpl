@@ -14,7 +14,7 @@
 
 <div id="header_block">
   <div id="header">
-    <a title="Geograph home page" href="/"><h1>GeoGraph - photograph every grid square</h1></a>
+    <h1 onClick="document.location='/';"><a title="Geograph home page" href="/">GeoGraph - photograph every grid square</a></h1>
   </div>
 </div>
 
