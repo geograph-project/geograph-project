@@ -290,7 +290,15 @@ create table gridimage
     index(user_id)
 );
 
-
-
+#autologin system adopting practices outlined in
+#http://fishbowl.pastiche.org/2004/01/19/persistent_login_cookie_best_practice
+create table autologin
+(
+	user_id int,
+	token char(32),
+	created timestamp,
+	
+	primary key(user_id,token)
+);
 
 
