@@ -76,7 +76,7 @@ $USER->mustHavePerm("admin");
 $smarty = new GeographPage;
 
 //lets find all unmoderated submissions
-$images=new ImageList('pending', 'submitted desc');
+$images=new ImageList('pending', 'submitted asc');
 $images->assignSmarty(&$smarty, 'unmoderated');
 
 
