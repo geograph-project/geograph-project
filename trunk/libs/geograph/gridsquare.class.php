@@ -242,6 +242,7 @@ class GridSquare
 	*/
 	function setGridRef($gridref)
 	{
+		$gridref = preg_replace('/[^\w]+/','',strtoupper($gridref)); #assume the worse and remove everything, also not everyone uses the shift key
 		//assume the inputs are tainted..
 		$ok=$this->validGridRef($gridref);
 		if ($ok)

@@ -125,7 +125,7 @@ class GridShader
 						
 						//ok, that's everything we need - can we obtain an existing grid square
 						$square = $this->db->GetRow("select gridsquare_id,percent_land from gridsquare where x='$gridx' and y='$gridy'");	
-						
+					##no need to check this as this is the first import (and its rather expensive!)	
 						
 						if (is_array($square) && count($square))
 						{
