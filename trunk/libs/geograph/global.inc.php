@@ -55,6 +55,9 @@ $ADODB_SESSION_PWD =$CONF['db_pwd'];
 $ADODB_SESSION_DB =$CONF['db_db'];
 require_once('adodb/session/adodb-session.php');
 
+//global security routines
+require_once('geograph/security.inc.php');
+
 //smarty needed everywhere too
 require_once('smarty/libs/Smarty.class.php');
 
@@ -107,6 +110,11 @@ class GeographPage extends Smarty
 		
 		}
 		
+	}
+	
+	function templateExists($file)
+	{
+		return file_exists($this->template_dir.'/'.$file);
 	}
 }
 
