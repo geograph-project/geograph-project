@@ -23,10 +23,9 @@ create table gridsquare
 
 create table user
 (
-    user_id int not null,
+    user_id int not null auto_increment,
 
     #username and password
-    username varchar(64),
     password varchar(64),
     realname varchar(128),
 
