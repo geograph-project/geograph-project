@@ -53,18 +53,6 @@ class GeographUser
 	var $registered=false;
 	
 	/**
-	* basic email address check
-	*/
-	function _isValidEmailAddress($email) 
-	{
-		if (!preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/" , $email)) 
-		{
-	  		return false;
-	 	}
-	 	return true;
-	}
-
-	/**
 	* register user 
 	* returns true if successful and false if not. Array of
 	* errors returned via $error param
@@ -90,9 +78,17 @@ class GeographUser
 			$ok=false;
 			$errors['name']='You must give your name';
 		}
-	
+		else
+		{
+			if (!isValidRealName($name))
+			{
+				$ok=false;
+				$errors['name']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+			}
+		}
+		
 		//basic email address check
-		if (!$this->_isValidEmailAddress($email))
+		if (!isValidEmailAddress($email))
 		{
 			$ok=false;
 			$errors['email']='Please enter a valid email address';
@@ -205,23 +201,30 @@ class GeographUser
 		$errors=array();
 		$ok=false;
 		
-		$db = NewADOConnection($GLOBALS['DSN']);
-			
-		//user registered?
-		$arr = $db->GetRow("select * from user where email=".$db->Quote($email));	
-		if (count($arr))
+		if (isValidEmailAddress($email))
 		{
-			$msg="Someone, probably you, requested a password reminder for ".$_SERVER['HTTP_HOST']."\n\n";
-			$msg.="Your password is: ".$arr['password']."\n\n";
+			$db = NewADOConnection($GLOBALS['DSN']);
 
-			@mail($email, 'Password Reminder for '.$_SERVER['HTTP_HOST'], $msg,
-			"From: Geograph Website <noreply@geograph.co.uk>");
-			
-			$ok=true;
+			//user registered?
+			$arr = $db->GetRow("select * from user where email=".$db->Quote($email));	
+			if (count($arr))
+			{
+				$msg="Someone, probably you, requested a password reminder for ".$_SERVER['HTTP_HOST']."\n\n";
+				$msg.="Your password is: ".$arr['password']."\n\n";
+
+				@mail($email, 'Password Reminder for '.$_SERVER['HTTP_HOST'], $msg,
+				"From: Geograph Website <noreply@geograph.co.uk>");
+
+				$ok=true;
+			}
+			else
+			{
+				$errors['email']="This email address isn't registered";
+			}
 		}
 		else
 		{
-			$errors['email']="This email address isn't registered";
+			$errors['email']='This isn\'t a valid email address';
 		}
 		
 		return $ok;
@@ -293,45 +296,54 @@ class GeographUser
 				$email=stripslashes(trim($_POST['email']));
 				$password=stripslashes(trim($_POST['password']));
 				
-				$db = NewADOConnection($GLOBALS['DSN']);
-							
-				//user registered?
-				$arr = $db->GetRow("select * from user where email=".$db->Quote($email));	
-				if (count($arr))
+				if (isValidEmailAddress($email))
 				{
-					//passwords match?
-					if ($arr['password']==$password)
+				
+					$db = NewADOConnection($GLOBALS['DSN']);
+
+					//user registered?
+					$arr = $db->GetRow("select * from user where email=".$db->Quote($email));	
+					if (count($arr))
 					{
-						//final test = if they have no rights, they haven't confirmed
-						//their registration
-						if (strlen($arr['rights']))
+						//passwords match?
+						if ($arr['password']==$password)
 						{
-							//copy user fields into this object
-							foreach($arr as $name=>$value)
+							//final test = if they have no rights, they haven't confirmed
+							//their registration
+							if (strlen($arr['rights']))
 							{
-								if (!is_numeric($name))
-									$this->$name=$value;
+								//copy user fields into this object
+								foreach($arr as $name=>$value)
+								{
+									if (!is_numeric($name))
+										$this->$name=$value;
+								}
+
+								$this->registered=true;
+								$logged_in=true;
 							}
-							
-							$this->registered=true;
-							$logged_in=true;
+							else
+							{
+								$errors['general']='You must confirm your registration by following the link in the email sent to '.$email;
+							}
 						}
 						else
 						{
-							$errors['general']='You must confirm your registration by following the link in the email sent to '.$email;
+							//speak friend and enter					
+							$errors['password']='Wrong password';
 						}
+
 					}
 					else
 					{
-						//speak friend and enter					
-						$errors['password']='Wrong password';
+						//sorry son, your name's not on the list
+						$errors['email']='This email address is not registered';
 					}
-				
 				}
 				else
 				{
-					//sorry son, your name's not on the list
-					$errors['email']='This email address is not registered';
+					$errors['email']='This is not a valid email address';
+					
 				}
 				
 			}
