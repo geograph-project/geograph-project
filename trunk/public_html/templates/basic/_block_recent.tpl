@@ -12,7 +12,7 @@
 	<div>
 	{foreach from=$maprow key=x item=mapcell}
 	<a href="/mapbrowse.php?o={$token}&i={$x}&j={$y}&center="><img 
-	ismap="ismap" title="Click to pan main map" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+	ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 	{/foreach}
 	</div>
 {/foreach}
