@@ -35,4 +35,7 @@ $CONF['photo_hashing_secret']='CHANGETHISTOO';
 //the php error handler
 $CONF['adodb_debugging']=1;
 
+//path to adodb cache dir
+$CONF['adodb_cache_dir']=$_SERVER['DOCUMENT_ROOT'].'/../adodbcache/';
+
 ?>
