@@ -95,6 +95,7 @@ class Token
 	
 	/**
 	* hash secret used as part of md5 validation hash generation
+	* this is initialised from the configuration array if available
 	* @access private
 	*/
 	var $magic="dangermouse";
@@ -124,6 +125,18 @@ class Token
 	* @access public
 	*/
 	var $errors=array();
+	
+	/**
+	* Constructor
+	*/
+	function Token()
+	{
+		global $CONF;
+		if (isset($CONF['token_secret']))
+		{
+			$this->magic=$CONF['token_secret'];
+		}
+	}
 	
 	/** 
 	* Obfuscate input with simple caesar cipher. This is more to make the value
