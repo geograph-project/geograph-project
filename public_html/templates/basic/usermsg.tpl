@@ -1,6 +1,6 @@
 {assign var="page_title" value="Send Message"}
 {include file="_std_begin.tpl"}
-
+{dynamic}
 
 {if $recipient->registered}
     <h2>Send Message to {$recipient->realname|escape:'html'}</h2>
@@ -39,5 +39,5 @@
 {/if}
  	
 
-    
+{/dynamic}    
 {include file="_std_end.tpl"}

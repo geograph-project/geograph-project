@@ -1,6 +1,7 @@
 {assign var="page_title" value="Contact"}
 {include file="_std_begin.tpl"}
 
+{dynamic}
 {if $message_sent}
 	<h2>Thanks!</h2>
 	<p>Your message has been sent.</p>
@@ -22,5 +23,5 @@
     <input type="submit" name="send" value="Send"/>
     </form>
 {/if} 
-    
+{/dynamic}    
 {include file="_std_end.tpl"}

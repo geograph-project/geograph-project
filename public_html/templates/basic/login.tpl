@@ -1,6 +1,6 @@
 {assign var="page_title" value="Login"}
 {include file="_std_begin.tpl"}
-
+{dynamic}
 
 
 <form action="{$script_uri}" method="post">
@@ -35,5 +35,5 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 </form>  
 
     
-    
+{/dynamic}    
 {include file="_std_end.tpl"}

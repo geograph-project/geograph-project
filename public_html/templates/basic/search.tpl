@@ -1,4 +1,5 @@
 {include file="_std_begin.tpl"}
+{dynamic}
 
 <h2>Search</h2>
 
@@ -10,5 +11,5 @@
 </form>
 
 
-    
+{/dynamic}    
 {include file="_std_end.tpl"}

@@ -1,5 +1,5 @@
 {include file="_std_begin.tpl"}
-
+{dynamic}
 
     <h2>Profile for {$profile->realname|escape:'html'}</h2>
  
@@ -55,5 +55,5 @@
  	
  	
 
-    
+ {/dynamic}   
 {include file="_std_end.tpl"}

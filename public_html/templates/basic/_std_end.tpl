@@ -14,6 +14,7 @@
     <li><a title="Contact Us" href="/contact.php">Contact</a></li>
   </ul>
   
+  {dynamic}
   {if $is_admin}
   <h3>Admin</h3>
   <ul>
@@ -28,7 +29,7 @@
      <li><a title="Hash Changer" href="/admin/hashchanger.php">Hash Changer</a></li>
   </ul>
   {/if}
-  
+  {/dynamic}
   
   {if $recentcount}
   
@@ -61,7 +62,8 @@
   <div id="search">
     <div id="searchform">
     <form method="get" action="/search.php">
-    <div id="searchfield"><label for="searchterm">Search</label> <input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10"/>
+    <div id="searchfield"><label for="searchterm">Search</label> 
+    {dynamic}<input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10"/>{/dynamic}
     <input id="searchbutton" type="submit" name="go" value="Find"/></div>
     </form>
     </div>
@@ -70,6 +72,7 @@
   
   <div id="login">
   
+  {dynamic}
   {if $user->registered}
   	  Logged in as {$user->realname|escape:'html'}
   	  <span class="sep">|</span>
@@ -82,6 +85,7 @@
 		<span class="sep">|</span>
 	  <a title="Register to upload photos" href="/register.php">register</a>
   {/if}
+  {/dynamic}
   
   </div>
 </div>

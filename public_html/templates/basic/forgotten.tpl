@@ -1,5 +1,5 @@
 {include file="_std_begin.tpl"}
-
+{dynamic}
 {if $sent}
 
 <h2>Reminder sent to {$email}</h2>
@@ -24,5 +24,5 @@ any problems, please <a title="Contact Us" href="contact.php">contact us</a></p>
 
 {/if}
     
-    
+{/dynamic}    
 {include file="_std_end.tpl"}

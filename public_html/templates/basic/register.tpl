@@ -3,6 +3,8 @@
 
 <h2>Register</h2>
 
+{dynamic}
+
 {if $registration_ok}
 
 	<p>Thanks for registering - we've sent you an email, simply
@@ -54,5 +56,7 @@
 	email address, we hate spam, we really do.</p>
 
 {/if}
+
+{/dynamic}
     
 {include file="_std_end.tpl"}

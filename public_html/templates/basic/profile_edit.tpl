@@ -1,5 +1,5 @@
 {include file="_std_begin.tpl"}
-
+{dynamic}
 
     <h2>Edit Profile</h2>
  
@@ -53,5 +53,5 @@
  	<input type="submit" name="cancel" value="Cancel"/>
  </form>	
 
-    
+{/dynamic}    
 {include file="_std_end.tpl"}
