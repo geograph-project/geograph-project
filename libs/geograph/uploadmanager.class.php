@@ -128,6 +128,22 @@ class UploadManager
 	}
 	
 	/**
+	* set image taken date
+	*/
+	function setTaken($taken)
+	{
+		$this->imagetaken=$taken;
+	}
+
+	/**
+	* set imageclass
+	*/
+	function setClass($imageclass)
+	{
+		$this->imageclass=$imageclass;
+	}
+	
+	/**
 	* outputs jpeg data for upload id $id and exits
 	*/
 	function outputPreviewImage($id)
@@ -205,6 +221,20 @@ class UploadManager
 		return $is_jpeg;
 	}
 	
+	function trySetDateFromExif($exif) 
+	{
+		//dont know yet which of these is best but they all seem to be the same on my test images
+		if (($date = $exif['IFD0']['DateTime']) ||
+		    ($date = $exif['EXIF']['DateTimeOriginal']) ||
+		    ($date = $exif['EXIF']['DateTimeDigitized']) ) 
+		{
+			//Example: ["DateTimeOriginal"]=> string(19) "2004:07:09 14:05:19"
+			 list($date,$time) = explode(' ',$date);
+			 $dates = explode(':',$date);
+			 $this->exifdate = implode('-',$dates);
+		}
+	}
+	
 	function processUpload($upload_file)
 	{
 		global $USER;
@@ -222,6 +252,7 @@ class UploadManager
 			{
 				//save the exif data for the loaded image
 				$exif = exif_read_data($pendingfile,0,true); 
+				$this->trySetDateFromExif($exif);
 				$strExif=serialize($exif);
 				$exif =  $this->_pendingEXIF($upload_id);
 				$f=fopen($exif, 'w');
@@ -338,19 +369,20 @@ class UploadManager
 			$exif = fread ($f, filesize($exiffile)); 
 			fclose($f);
 		}
-		
+		#$this->db->debug = true;
 		//create record
 		// nateasting/natnorthings will only have values if getNatEastings has been called (in this case because setByFullGridRef has been called IF an exact location is specifed)
 		$sql=sprintf("insert into gridimage(".
 			"gridsquare_id, seq_no, user_id, ftf,".
-			"moderation_status,title,comment,exif,nateastings,natnorthings,".
+			"moderation_status,title,comment,exif,nateastings,natnorthings,imageclass,imagetaken,".
 			"submitted) values ".
 			"(%d,%d,%d,%d,".
-			"'pending',%s,%s,%s,%d,%d,".
+			"'pending',%s,%s,%s,%d,%d,%s,%s,".
 			"now())",
 			$this->square->gridsquare_id, $seq_no,$USER->user_id, $ftf,
 			$this->db->Quote($this->title), $this->db->Quote($this->comment), $this->db->Quote($exif),
-			$this->square->nateastings,$this->square->natnorthings);
+			$this->square->nateastings,$this->square->natnorthings,
+			$this->db->Quote($this->imageclass), $this->db->Quote($this->imagetaken));
 		
 		$this->db->Query($sql);
 		
