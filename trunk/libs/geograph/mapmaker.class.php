@@ -108,7 +108,7 @@ class MapMaker
 		
 		
 		//resize to half size
-		$scale=3.25;
+		$scale=0.5;
 		$resized = imagecreatetruecolor($width*$scale,$height*$scale);
 		imagecopyresampled($resized, $img, 0, 0, 0, 0, 
 			$width*$scale,$height*$scale, $width, $height);
