@@ -85,85 +85,105 @@ if (isset($_POST['gridsquare']))
 		//we're just setting up the position, move to step 2
 		if (isset($_POST['setpos']))
 		{
+			//Submit Step 1...
 			$step=2;
 		}
 		//see if we have an upload to process?
 		elseif (isset($_FILES['jpeg']))
 		{
-			//assume step 2
-			$step=2;
+			//Submit Step 2..
 			
-			switch($_FILES['jpeg']['error'])
+			if (isset($_POST['goback']))
 			{
-				case 0:
-					if ($uploadmanager->processUpload($_FILES['jpeg']['tmp_name']))
-					{
-						//we got a suitable image, we need to show it to the user
-						$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
-						$smarty->assign('preview_url', $preview_url);
-						$smarty->assign('preview_width', $uploadmanager->upload_width);
-						$smarty->assign('preview_height', $uploadmanager->upload_height);
-						$smarty->assign('upload_id', $uploadmanager->upload_id);
-						
-						$image = new GridImage;
-						
-						$classes=&$image->getImageClasses();
-						$classes['Other']='Other...';
-						
-						$smarty->assign_by_ref('classes', $classes);
+				$step=1;
+			}
+			else
+			{
+				//assume step 2
+				$step=2;
 
-						if (isset($uploadmanager->exifdate)) {
-							$smarty->assign('imagetaken', $uploadmanager->exifdate);
-							//$smarty->assign('imagetakenmessage', ' ('.$uploadmanager->exifdate.' stated in exif header)');
-						} else {
-							$smarty->assign('imagetaken', '--');
+				switch($_FILES['jpeg']['error'])
+				{
+					case 0:
+						if ($uploadmanager->processUpload($_FILES['jpeg']['tmp_name']))
+						{
+							//we got a suitable image, we need to show it to the user
+							$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
+							$smarty->assign('preview_url', $preview_url);
+							$smarty->assign('preview_width', $uploadmanager->upload_width);
+							$smarty->assign('preview_height', $uploadmanager->upload_height);
+							$smarty->assign('upload_id', $uploadmanager->upload_id);
+
+							$image = new GridImage;
+
+							$classes=&$image->getImageClasses();
+							$classes['Other']='Other...';
+
+							$smarty->assign_by_ref('classes', $classes);
+
+							if (isset($uploadmanager->exifdate)) {
+								$smarty->assign('imagetaken', $uploadmanager->exifdate);
+								//$smarty->assign('imagetakenmessage', ' ('.$uploadmanager->exifdate.' stated in exif header)');
+							} else {
+								$smarty->assign('imagetaken', '--');
+							}
+
+							$step=3;
 						}
-						
-						$step=3;
-					}
-					break;
-				case UPLOAD_ERR_INI_SIZE:
-				case UPLOAD_ERR_FORM_SIZE:
-					$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 8Mb - please resize the image and try again');
-					break;
-				case UPLOAD_ERR_PARTIAL:
-					$smarty->assign('error', 'Your file was only partially uploaded - please try again');
-					break;
-				default:
-					$smarty->assign('error', 'We were unable to process your upload - please try again');
-					break;
+						break;
+					case UPLOAD_ERR_INI_SIZE:
+					case UPLOAD_ERR_FORM_SIZE:
+						$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 8Mb - please resize the image and try again');
+						break;
+					case UPLOAD_ERR_PARTIAL:
+						$smarty->assign('error', 'Your file was only partially uploaded - please try again');
+						break;
+					default:
+						$smarty->assign('error', 'We were unable to process your upload - please try again');
+						break;
+				}
 			}
 		}
 		//user likes the image, lets have them agree to our terms
-		elseif (isset($_POST['agreeterms']))
+		elseif (isset($_POST['savedata']))
 		{
-			//preserve the upload id
-			if($uploadmanager->validUploadId($_POST['upload_id']))
-				$smarty->assign('upload_id', $_POST['upload_id']);
-		
-			//preserve the meta info
-			if (empty($_POST['imagetakenYear']))
-				$_POST['imagetakenYear'] = '0000';
-			if (empty($_POST['imagetakenMonth']))
-				$_POST['imagetakenMonth'] = '00';
-			if (empty($_POST['imagetakenDay']))
-				$_POST['imagetakenDay'] = '00';
+			//Submit Step 3..
 			
-			$smarty->assign('imagetaken', $_POST['imagetakenYear'].'-'.$_POST['imagetakenMonth'].'-'.$_POST['imagetakenDay']);
-			if (($_POST['imageclass'] == 'Other' || empty($_POST['imageclass'])) && !empty($_POST['imageclassother'])) {
-				$smarty->assign('imageclass', stripslashes($_POST['imageclassother']));
-			} else {
-				$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
+			if (isset($_POST['goback']))
+			{
+				$step=2;
 			}
-		
-			//preserve title and comment
-			$smarty->assign('title', stripslashes($_POST['title']));
-			$smarty->assign('comment', stripslashes($_POST['comment']));
+			else
+			{
 			
-			//To Do - do some checking here and maybe go back to step 3?
-			
-		
-			$step=4;
+				//preserve the upload id
+				if($uploadmanager->validUploadId($_POST['upload_id']))
+					$smarty->assign('upload_id', $_POST['upload_id']);
+
+				//preserve the meta info
+				if (empty($_POST['imagetakenYear']))
+					$_POST['imagetakenYear'] = '0000';
+				if (empty($_POST['imagetakenMonth']))
+					$_POST['imagetakenMonth'] = '00';
+				if (empty($_POST['imagetakenDay']))
+					$_POST['imagetakenDay'] = '00';
+
+				$smarty->assign('imagetaken', $_POST['imagetakenYear'].'-'.$_POST['imagetakenMonth'].'-'.$_POST['imagetakenDay']);
+				if (($_POST['imageclass'] == 'Other' || empty($_POST['imageclass'])) && !empty($_POST['imageclassother'])) {
+					$smarty->assign('imageclass', stripslashes($_POST['imageclassother']));
+				} else {
+					$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
+				}
+
+				//preserve title and comment
+				$smarty->assign('title', stripslashes($_POST['title']));
+				$smarty->assign('comment', stripslashes($_POST['comment']));
+
+				//To Do - do some checking here and maybe go back to step 3?
+
+
+				$step=4;
+			}
 		}
 		elseif (isset($_POST['finalise']))
 		{
@@ -189,6 +209,29 @@ if (isset($_POST['gridsquare']))
 			}
 			
 			$step=6;
+		}
+		elseif (isset($_POST['goback3']))
+		{
+			$uploadmanager->setUploadId($_POST['upload_id']);
+			
+			//preserve stuff
+			$smarty->assign('upload_id', $_POST['upload_id']);
+			$smarty->assign('title', stripslashes($_POST['title']));
+			$smarty->assign('comment', stripslashes($_POST['comment']));
+			$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
+			$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
+
+			$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
+			$smarty->assign('preview_url', $preview_url);
+			$smarty->assign('preview_width', $uploadmanager->upload_width);
+			$smarty->assign('preview_height', $uploadmanager->upload_height);
+			
+			$image = new GridImage;
+			$classes=&$image->getImageClasses();
+			$classes['Other']='Other...';
+			$smarty->assign_by_ref('classes', $classes);
+
+			$step=3;
 		}
 	}
 	else
