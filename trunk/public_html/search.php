@@ -22,8 +22,22 @@
  */
 
 require_once('geograph/global.inc.php');
+require_once('geograph/gridimage.class.php');
+require_once('geograph/gridsquare.class.php');
 init_session();
 
+$q=stripslashes($_GET['q']);
+
+//remember the query in the session
+$_SESSION['searchq']=$q;
+
+$square=new GridSquare;
+$grid_ok=$square->setGridRef($q);
+if ($grid_ok)
+{
+	header("Location:http://{$_SERVER['HTTP_HOST']}/browse.php?gridref={$q}");
+	exit;
+}
 
 
 
