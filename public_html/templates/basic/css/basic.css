@@ -204,6 +204,33 @@ div.photo33
 }
 
 /*---------------------------------------------------------------*
+ * inline sidebar
+ *---------------------------------------------------------------*/
+
+div.contentsidebar_block
+{
+	float:right;
+	width:20em;
+	background:#ddffdd;
+	padding:0.5em;
+}
+
+div.contentsidebar ul
+{
+	margin:0;
+	padding:0 0 0 1em;
+}
+
+div.contentsidebar li
+{
+	font-size:0.8em;
+}
+
+div.contentsidebar h3
+{
+	margin-top:0;
+}
+/*---------------------------------------------------------------*
  * form table
  *---------------------------------------------------------------*/
 
