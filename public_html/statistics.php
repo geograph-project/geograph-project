@@ -32,7 +32,7 @@ $u = intval($_GET['u']);
 $order = $_GET['order'];
 
 $template='statistics.tpl';
-$cacheid=$by.'_'.$ri.'_'.$u.'_'.$order;
+$cacheid='statistics|'.$by.'_'.$ri.'_'.$u.'_'.$order;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -150,7 +150,7 @@ $sql_order";
 }
 
 
-$smarty->display('statistics.tpl');
+$smarty->display($template, $cacheid);
 
 	
 ?>
