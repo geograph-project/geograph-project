@@ -1,0 +1,5 @@
+# www.geograph.co.uk robot exclusion file
+# * $Id$
+
+User-agent: *
+Disallow: /photos
