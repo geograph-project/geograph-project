@@ -40,6 +40,8 @@ if (isset($_GET['map']))
 
 
 init_session();
+$template='mapbrowse.tpl';
+
 $smarty = new GeographPage;
 
 
@@ -51,12 +53,13 @@ if (isset($_GET['t']))
 if (isset($_GET['expireAll']) && $USER->hasPerm('admin'))
 {
 	$mosaic->expireAll($_GET['expireAll']?true:false);
+	$smarty->clear_cache(null, 'mapbrowse');
 }
 
 
 
 //cache graphics files?
-//$mosaic->enableCaching($CONF['smarty_caching']);
+$mosaic->enableCaching($CONF['smarty_caching']);
 
 
 //are we zooming in on an image map? we'll have a url like this
@@ -85,8 +88,7 @@ $token=$mosaic->getToken();
 
 
 //regenerate html?
-$template='mapbrowse.tpl';
-$cacheid=$token;
+$cacheid='mapbrowse|'.$token;
 
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
