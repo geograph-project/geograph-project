@@ -1,7 +1,7 @@
 {assign var="page_title" value="Map Browsing :: $gridref"}
 {include file="_std_begin.tpl"}
 
-    <h2>Map Browsing</h2>
+    
  
 {*begin containing div for main map*}
 <div style="position:relative;float:left;width:{$mosaic_width+20}px">
@@ -131,9 +131,9 @@
 
   <tr><!-- row 2 -->
    <td rowspan="6"><img name="left" src="/templates/basic/mapnav/left.gif" width="12" height="211" border="0"></td>
-   <td><a href="/mapbrowse.php?t={$token_zoomin}" onMouseOut="di20('zoomin','/templates/basic/mapnav/zoomin.gif');"  onMouseOver="di20('zoomin','/templates/basic/mapnav/zoomin_F2.gif');" ><img name="zoomin" src="/templates/basic/mapnav/zoomin.gif" width="30" height="29" border="0"></a></td>
+   <td>{if $token_zoomin}<a accesskey="S" title="Zoom in (Alt+S)" href="/mapbrowse.php?t={$token_zoomin}" onMouseOut="di20('zoomin','/templates/basic/mapnav/zoomin.gif');"  onMouseOver="di20('zoomin','/templates/basic/mapnav/zoomin_F2.gif');" ><img name="zoomin" src="/templates/basic/mapnav/zoomin.gif" width="30" height="29" border="0"></a>{else}<img alt="Zoom In" title="Can't zoom in any further" name="zoomin" src="/templates/basic/mapnav/zoomin_F3.gif" width="30" height="29" border="0">{/if}</td>
    <td><img name="fill1" src="/templates/basic/mapnav/fill1.gif" width="30" height="29" border="0"></td>
-   <td><a href="/mapbrowse.php?t={$token_north}" onMouseOut="di20('north','/templates/basic/mapnav/north.gif');"  onMouseOver="di20('north','/templates/basic/mapnav/north_F2.gif');" ><img name="north" src="/templates/basic/mapnav/north.gif" width="30" height="29" border="0"></a></td>
+   <td>{if $token_zoomout}<a accesskey="W" title="Pan north (Alt+W)" href="/mapbrowse.php?t={$token_north}" onMouseOut="di20('north','/templates/basic/mapnav/north.gif');"  onMouseOver="di20('north','/templates/basic/mapnav/north_F2.gif');" ><img name="north" src="/templates/basic/mapnav/north.gif" width="30" height="29" border="0"></a>{else}<img  alt="Pan North" title="Pan North" name="north" src="/templates/basic/mapnav/north_F3.gif" width="30" height="29" border="0">{/if}</td>
    <td><img name="fill2" src="/templates/basic/mapnav/fill2.gif" width="30" height="29" border="0"></td>
    <td rowspan="6"><img name="right" src="/templates/basic/mapnav/right.gif" width="11" height="211" border="0"></td>
    <td><img src="/templates/basic/mapnav/shim.gif" width="1" height="29" border="0"></td>
@@ -141,16 +141,16 @@
 
   <tr><!-- row 3 -->
    <td><img name="fill3" src="/templates/basic/mapnav/fill3.gif" width="30" height="29" border="0"></td>
-   <td><a href="/mapbrowse.php?t={$token_west}" onMouseOut="di20('west','/templates/basic/mapnav/west.gif');"  onMouseOver="di20('west','/templates/basic/mapnav/west_F2.gif');" ><img name="west" src="/templates/basic/mapnav/west.gif" width="30" height="29" border="0"></a></td>
+   <td>{if $token_zoomout}<a accesskey="A" title="Pan west (Alt+A)" href="/mapbrowse.php?t={$token_west}" onMouseOut="di20('west','/templates/basic/mapnav/west.gif');"  onMouseOver="di20('west','/templates/basic/mapnav/west_F2.gif');" ><img name="west" src="/templates/basic/mapnav/west.gif" width="30" height="29" border="0"></a>{else}<img alt="Pan West" title="Pan West" name="west" src="/templates/basic/mapnav/west_F3.gif" width="30" height="29" border="0">{/if}</td>
    <td><img name="fill4" src="/templates/basic/mapnav/fill4.gif" width="30" height="29" border="0"></td>
-   <td><a href="/mapbrowse.php?t={$token_east}" onMouseOut="di20('east','/templates/basic/mapnav/east.gif');"  onMouseOver="di20('east','/templates/basic/mapnav/east_F2.gif');" ><img name="east" src="/templates/basic/mapnav/east.gif" width="30" height="29" border="0"></a></td>
+   <td>{if $token_zoomout}<a accesskey="D" title="Pan east (Alt+D)" href="/mapbrowse.php?t={$token_east}" onMouseOut="di20('east','/templates/basic/mapnav/east.gif');"  onMouseOver="di20('east','/templates/basic/mapnav/east_F2.gif');" ><img name="east" src="/templates/basic/mapnav/east.gif" width="30" height="29" border="0"></a>{else}<img alt="Pan East" title="Pan East" name="east" src="/templates/basic/mapnav/east_F3.gif" width="30" height="29" border="0">{/if}</td>
    <td><img src="/templates/basic/mapnav/shim.gif" width="1" height="29" border="0"></td>
   </tr>
 
   <tr><!-- row 4 -->
-   <td><a href="/mapbrowse.php?t={$token_zoomout}" onMouseOut="di20('zoomout','/templates/basic/mapnav/zoomout.gif');"  onMouseOver="di20('zoomout','/templates/basic/mapnav/zoomout_F2.gif');" ><img name="zoomout" src="/templates/basic/mapnav/zoomout.gif" width="30" height="29" border="0"></a></td>
+   <td>{if $token_zoomout}<a accesskey="Q" title="Zoom out (Alt+Q)" href="/mapbrowse.php?t={$token_zoomout}" onMouseOut="di20('zoomout','/templates/basic/mapnav/zoomout.gif');"  onMouseOver="di20('zoomout','/templates/basic/mapnav/zoomout_F2.gif');" ><img name="zoomout" src="/templates/basic/mapnav/zoomout.gif" width="30" height="29" border="0"></a>{else}<img alt="Zoom Out" title="Can't zoom out any further" name="zoomout" src="/templates/basic/mapnav/zoomout_F3.gif" width="30" height="29" border="0">{/if}</td>
    <td><img name="fill5" src="/templates/basic/mapnav/fill5.gif" width="30" height="29" border="0"></td>
-   <td><a href="/mapbrowse.php?t={$token_south}" onMouseOut="di20('south','/templates/basic/mapnav/south.gif');"  onMouseOver="di20('south','/templates/basic/mapnav/south_F2.gif');" ><img name="south" src="/templates/basic/mapnav/south.gif" width="30" height="29" border="0"></a></td>
+   <td>{if $token_zoomout}<a accesskey="X" title="Zoom out (Alt+X)" href="/mapbrowse.php?t={$token_south}" onMouseOut="di20('south','/templates/basic/mapnav/south.gif');"  onMouseOver="di20('south','/templates/basic/mapnav/south_F2.gif');" ><img name="south" src="/templates/basic/mapnav/south.gif" width="30" height="29" border="0"></a>{else}<img alt="Pan South" title="Pan South" name="south" src="/templates/basic/mapnav/south_F3.gif" width="30" height="29" border="0">{/if}</td>
    <td><img name="fill6" src="/templates/basic/mapnav/fill6.gif" width="30" height="29" border="0"></td>
    <td><img src="/templates/basic/mapnav/shim.gif" width="1" height="29" border="0"></td>
   </tr>
@@ -163,7 +163,7 @@
   <tr><!-- row 6 -->
    <td colspan="4" bgcolor="#6476fc">
    
-   <p style="line-height:1em;font-size:0.8em;">Grid Reference at center
+   <p style="line-height:1em;font-size:0.8em;text-align:center">Grid Reference at centre
  <b>{$gridref}</b></p>
  
    </td>
@@ -236,6 +236,19 @@ south_F2 = new Image(30,29); south_F2.src = "geographmap/south_F2.gif";
 
 
  <br style="clear:both;"/>
+ 
+<h2>Map Browsing (beta!)</h2>
+<p>Here's a few tips for using our map - we're still developing and testing this, so if you
+notice any problems, do let us know.</p>
+<ul>
+<li>Click on the large map to zoom in on an area of interest. You can also use the +
+and - buttons to zoom in and out, or the keyboard shortcuts Alt+Q to zoom out and Alt+S to zoom in</li>
+<li>Pan the map using the links at the edges of the map, or the N,E,S,W buttons.
+You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the map</li>
+<li>You can also pan the map by clicking the smaller overview map</li>
+</ul>
+
+ 
 {if $is_admin}
 <p><a href="mapbrowse.php?expireAll=0">Clear cache</a>
 <a href="mapbrowse.php?expireAll=1">(clear basemaps too)</a></p>
