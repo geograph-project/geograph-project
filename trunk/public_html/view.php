@@ -29,42 +29,44 @@ init_session();
 $smarty = new GeographPage;
 
 $template='view.tpl';
-$cacheid=$_GET['id'];
 
-//regenerate?
-if (!$smarty->is_cached($template, $cacheid))
+$cacheid=0;
+
+
+$image=new GridImage;
+
+if (isset($_GET['id']))
 {
-
-	$image=new GridImage;
-
-	if (isset($_GET['id']))
+	$image->loadFromId($_GET['id']);
+	$isowner=($image->user_id==$USER->user_id)?1:0;
+	$isadmin=$USER->hasPerm('admin')?1:0;
+	
+	$cacheid="{$_GET['id']}_{$isowner}_{$isadmin}";
+	
+	//is the image rejected? - only the owner and administrator should see it
+	if ($image->moderation_status=='rejected')
 	{
-		$image->loadFromId($_GET['id']);
-
-		//is the image rejected? - only the owner and administrator should see it
-		if ($image->moderation_status=='rejected')
+		if ($isowner||$isadmin)
 		{
-			if (($image->user_id == $USER->user_id) ||
-				($USER->hasPerm('admin')))
-			{
-				//ok, we'll let it lie...
-			}
-			else
-			{
-				//clear the image
-				$image=new GridImage;
-			}
+			//ok, we'll let it lie...
+		}
+		else
+		{
+			//clear the image
+			$image=new GridImage;
+			$cacheid=0;
 		}
 	}
-
-	//do we have a valid image?
-	if ($image->isValid())
-	{
-		$smarty->assign('page_title', $image->grid_reference);
-		$smarty->assign_by_ref('image', $image);
-	}
-
 }
+
+//do we have a valid image?
+if ($image->isValid())
+{
+	$smarty->assign('page_title', $image->grid_reference);
+	$smarty->assign_by_ref('image', $image);
+}
+
+
 
 $smarty->display($template, $cacheid);
 
