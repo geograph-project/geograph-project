@@ -15,7 +15,7 @@ A <a title="Photograph Listing" href="/list.php">complete listing of all photogr
 </p>   
 
 <p>You can view a particular grid square below - if the square hasn't been filled yet,
-we'll tell you how far away the nearest one is...</p>
+we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Ordnance Survey Get-a-Map'} to help locate your grid square)</p>
 
 
 
