@@ -283,7 +283,7 @@ $l_usrInfo[9]='Interests';
 $l_usrInfo[10]='User Activities';
 
 $l_antiSpam='Anti-spam protection: you can make only one post in '.$postRange.' seconds!';
-$l_emailNotify='Email notifications';
+$l_emailNotify='Notify me of new posts to this topic';
 
 $l_delSendMais='Type an email to delete or simply press button for clearing up the whole table';
 $l_delete='Delete';
