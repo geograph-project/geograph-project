@@ -263,6 +263,8 @@ class GridSquare
 			}
 		} else {
 			$ok=false;
+			$this->_error(htmlentities($gridreference).' is not a valid grid reference');
+
 		}
 				
 		return $ok;
