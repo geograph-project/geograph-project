@@ -62,7 +62,9 @@ if (isset($_GET['id']))
 //do we have a valid image?
 if ($image->isValid())
 {
+	$taken=$image->getFormattedTakenDate();
 	$smarty->assign('page_title', $image->grid_reference);
+	$smarty->assign('image_taken', $taken);
 	$smarty->assign_by_ref('image', $image);
 }
 
