@@ -321,7 +321,16 @@ where ftf=1 and moderation_status='accepted';
 #all pending images are ftf 0
 update gridimage set ftf=0 where moderation_status='pending';
 
-#this isn't quite right but might work
-update gridsquare set has_geographs=1
-where imagecount>0;
+
+
+#barry 13th March 2005
+ALTER TABLE `gridimage` ADD `nateastings` MEDIUMINT UNSIGNED DEFAULT '0' NOT NULL ,
+ADD `natnorthings` MEDIUMINT UNSIGNED DEFAULT '0' NOT NULL ;
+
+#barry 15th March
+#for the moment imageclass is a varchar, but when remove other can make it enum
+ALTER TABLE gridimage 
+	ADD COLUMN imageclass VARCHAR( 32 ) NOT NULL,
+	ADD INDEX ( imageclass ),
+	ADD imagetaken DATE NOT NULL;
 
