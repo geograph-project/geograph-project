@@ -124,7 +124,7 @@ be abandoned.<br />
 
 {if $step eq 5}
 <h2>Submission Complete!</h2>
-<p>Thank you very much - your photo has now been added to grid square {$gridref}</p>
+<p>Thank you very much - your photo has now been added to grid square <a title="Grid Reference {$gridref}" href="/browse.php?gridref={$gridref}">{$gridref}</a></p>
 <p><a title="submit another photo" href="submit.php">Click here to submit a new photo...</a></p>
 {/if}
 
