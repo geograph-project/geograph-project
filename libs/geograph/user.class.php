@@ -53,6 +53,57 @@ class GeographUser
 	var $registered=false;
 	
 	/**
+	* stats gathered by getStats
+	*/
+	var $stats=array();
+
+	
+	/**
+	* Constructor doesn't normally do anything, but if supplied with a user id
+	* can be used to create an instance for a particular user. 
+	*/
+	function GeographUser($uid=0)
+	{
+		if (($uid>0) && preg_match('/^[0-9]+$/' , $uid))
+		{
+			$db = NewADOConnection($GLOBALS['DSN']);
+			if (!$db) die('Database connection failed');   
+			
+			
+						
+			$arr = $db->GetRow("select * from user where user_id='$uid'");	
+			if (count($arr))
+			{
+				$this->registered=strlen($arr['rights'])>0;
+				foreach($arr as $name=>$value)
+				{
+					if (!is_numeric($name))
+						$this->$name=$value;
+
+				}
+			}
+
+		}
+	}
+	
+	/**
+	* get stats for user represented by this instance - 
+	* all stats are stored in
+	*/
+	function getStats()
+	{
+		$db = NewADOConnection($GLOBALS['DSN']);
+		if (!$db) die('Database connection failed');   
+		
+		$this->stats=array();
+		
+		$this->stats['ftf']=$db->GetOne("select count(*) from gridimage where user_id='{$this->user_id}' and ftf=1");
+		$this->stats['total']=$db->GetOne("select count(*) from gridimage where user_id='{$this->user_id}'");
+		
+
+	}
+	
+	/**
 	* register user 
 	* returns true if successful and false if not. Array of
 	* errors returned via $error param
@@ -239,10 +290,78 @@ class GeographUser
 	}
 	
 	/**
-	* force inline login if user isn't authenticated
+	* update user profile
+	* profile array should contain website, nickname, realname flag. A
+	* public_email entry, if present, will cause the public_email flag
+	* to be set. The idea is to simply pass the $_POST array - all values
+	* are checked for validity
+	*/
+	function updateProfile(&$profile, &$errors)
+	{
+		$ok=true;
+		
+		if (!isValidRealName($profile['realname']))
+		{
+			$ok=false;
+			$errors['realname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+		}
+		
+		if (strlen($profile['nickname']) && !isValidRealName($profile['nickname']))
+		{
+			$ok=false;
+			$errors['nickname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+		}
+		
+		if (strlen($profile['website']) && !isValidURL($profile['website']))
+		{
+			$ok=false;
+			$errors['website']='This doesn\'t appear to be a valid URL';
+		}
+		
+		if ($ok)
+		{
+			$db = NewADOConnection($GLOBALS['DSN']);
+			if (!$db) die('Database connection failed');   
+		
+			$sql = sprintf("update user set realname=%s,website=%s,public_email=%d ".
+				"where user_id=%d",
+				$db->Quote(stripslashes($profile['realname'])),
+				$db->Quote(stripslashes($profile['website'])),
+				isset($profile['public_email'])?1:0,
+				$this->user_id
+				);
+
+			if ($db->Execute($sql) === false) 
+			{
+				$errors['general']='error updating: '.$db->ErrorMsg();
+				$ok=false;
+			}
+			else
+			{
+				//hurrah - it's all good - lets update ourself..
+				$this->realname=stripslashes($profile['realname']);
+				$this->nickname=stripslashes($profile['nickname']);
+				$this->public_email=isset($profile['public_email'])?1:0;
+			}
+		
+		}
+		
+		return $ok;
+	}
+	
+	/**
+	* log the user out
 	*/
 	function logout()
 	{
+		//clear member vars
+		$vars=get_object_vars($this);
+		foreach($vars as $name=>$val)
+		{
+			unset($this->$name);
+		}
+		
+		//initialise a few essentials
 		$this->registered=false;
 		$this->user_id=0;
 		$this->realname="";
