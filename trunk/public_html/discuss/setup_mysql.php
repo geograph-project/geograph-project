@@ -47,6 +47,7 @@ if($orderby!='') $orderby='order by '.$orderby;
 if($groupBy!='') $groupBy='group by '.$groupBy;
 $xtr=(!isset($GLOBALS['xtr'])?'':$GLOBALS['xtr']);
 $sql='SELECT '.$fields.' FROM '.$table.$where.' '.$xtr.' '.$groupBy.' '.$orderby.' '.$limit;
+
 $result=mysql_query($sql);
 if($result) {
 $GLOBALS['countRes']=mysql_num_rows($result);
@@ -112,12 +113,36 @@ if(!$GLOBALS['exact']) return $column." LIKE '%".$GLOBALS['exploded'][$i]."%'";
 else return "( $column LIKE '% ".$GLOBALS['exploded'][$i]."' OR $column LIKE '".$GLOBALS['exploded'][$i]."' OR $column LIKE '".$GLOBALS['exploded'][$i]." %' OR $column LIKE '% ".$GLOBALS['exploded'][$i]." %' )";
 }
 
+
+/*
+Because geograph allows nicknames to have apostrophes,
+minibb code blows up - this function is for detecting
+when strings haven't been escaped and adding appropriate
+escapes
+
+input:		noslash		no'escape	with\'escape
+escaped:	noslash		no\'scape	with\\\'escape
+unescaped:	noslash		no'escape	with'escape
+
+returns:	noslash		no\'scape	with\'escape
+*/
+function _smartQuote($input)
+{
+	$escaped=mysql_escape_string($input);
+	$unescaped=stripslashes($input);
+	if ($input==$unescaped)
+		return $escaped;
+	else
+		return $input;
+}
+
+
 function insertArray($insertArray,$tabh){
 $into=''; $values='';
 foreach($insertArray as $ia) {
 $iia=$GLOBALS[$ia];
 $into.=$ia.',';
-$values.=($iia=='now()'?$iia.',':"'".$iia."',");
+$values.=($iia=='now()'?$iia.',':"'"._smartQuote($iia)."',");
 }
 $into=substr($into,0,strlen($into)-1);
 $values=substr($values,0,strlen($values)-1);
@@ -130,7 +155,7 @@ function updateArray($updateArray,$tabh,$uniq,$uniqVal){
 $into='';
 foreach($updateArray as $ia) {
 $iia=$GLOBALS[$ia];
-$into.=($iia=='now()'?$ia.'='.$iia.',':$ia."='".$iia."',");
+$into.=($iia=='now()'?$ia.'='.$iia.',':$ia."='"._smartQuote($iia)."',");
 }
 $into=substr($into,0,strlen($into)-1);
 $unupdate=($uniq!=''?' where '.$uniq.'='."'".$uniqVal."'":'');
