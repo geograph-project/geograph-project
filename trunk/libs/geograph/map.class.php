@@ -498,57 +498,60 @@ class GeographMap
 			$imgx1=round($imgx1);
 			$imgy1=round($imgy1);
 
-			if ($this->pixels_per_km<=1)
+			$imgx2=$imgx1 + $this->pixels_per_km;
+			$imgy2=$imgy1 + $this->pixels_per_km;
+				
+				
+			if ($this->pixels_per_km<0.3)
 			{
 				//imagesetpixel($img, $imgx1, $imgy1, $colMarker);
-				
+				imagefilledrectangle ($img, $imgx1, $imgy1, $imgx1+1, $imgy1+1, $colMarker);
+			}
+			elseif ($this->pixels_per_km<=1)
+			{
 				//nice large marker
 				imagefilledrectangle ($img, $imgx1-2, $imgy1-1, $imgx1+2, $imgy1+1, $colMarker);
 				imagefilledrectangle ($img, $imgx1-1, $imgy1-2, $imgx1+1, $imgy1+2, $colMarker);
 			}
+			elseif ($this->pixels_per_km<=4)
+			{
+				//nice large marker
+				imagefilledrectangle ($img, $imgx1-1, $imgy1, $imgx2+1, $imgy2, $colMarker);
+				imagefilledrectangle ($img, $imgx1, $imgy1-1, $imgx2, $imgy2+1, $colMarker);
+			}
 			else
 			{
-				$imgx2=$imgx1 + $this->pixels_per_km;
-				$imgy2=$imgy1 + $this->pixels_per_km;
-				
-				if ($this->pixels_per_km>=40)
-				{
-					$gridsquare_id=$recordSet->fields[2];
-				
-					$sql="select * from gridimage where gridsquare_id=$gridsquare_id ".
-						"and moderation_status<>'rejected' order by moderation_status+0 desc,seq_no limit 1";
-						
-					//echo "$sql\n";	
-					$rec=$dbImg->GetRow($sql);
-					if (count($rec))
-					{
-						$gridimage=new GridImage;
-						$gridimage->fastInit($rec);
-						
-						$photo=$gridimage->getSquareThumb($this->pixels_per_km);
-						if (!is_null($photo))
-						{
-							imagecopy ($img, $photo, $imgx1, $imgy1, 0,0, $this->pixels_per_km,$this->pixels_per_km);
-						 	imagedestroy($photo);
-						 	
-						 	imagerectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $colBorder);
-						 	imagerectangle ($img, $imgx1+1, $imgy1+1, $imgx2-1, $imgy2-1, $colBorder);
-						 	
-							
+				$gridsquare_id=$recordSet->fields[2];
 
-						}
-						
+				$sql="select * from gridimage where gridsquare_id=$gridsquare_id ".
+					"and moderation_status<>'rejected' order by moderation_status+0 desc,seq_no limit 1";
+
+				//echo "$sql\n";	
+				$rec=$dbImg->GetRow($sql);
+				if (count($rec))
+				{
+					$gridimage=new GridImage;
+					$gridimage->fastInit($rec);
+
+					$photo=$gridimage->getSquareThumb($this->pixels_per_km);
+					if (!is_null($photo))
+					{
+						imagecopy ($img, $photo, $imgx1, $imgy1, 0,0, $this->pixels_per_km,$this->pixels_per_km);
+						imagedestroy($photo);
+
+						imagerectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $colBorder);
+						imagerectangle ($img, $imgx1+1, $imgy1+1, $imgx2-1, $imgy2-1, $colBorder);
+
+
 
 					}
-					
+
+
 				}
-				else
-				{
-					//just mark the square
-					imagefilledrectangle ($img, $imgx1-1, $imgy1, $imgx2+1, $imgy2, $colMarker);
-					imagefilledrectangle ($img, $imgx1, $imgy1-1, $imgx2, $imgy2+1, $colMarker);
-				}
+
 			}
+			
+			
 			
 			$recordSet->MoveNext();
 		}
