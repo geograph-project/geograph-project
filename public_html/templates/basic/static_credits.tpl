@@ -33,8 +33,10 @@
 
     <h3>Hosting</h3>
     <ul>
-    <li>Server resources jointly donated by <a title="QTDM Web Design" href="http://www.qtdm.co.uk">QTDM Ltd</a> 
-     and <a title="Elphin Limited" href="http://www.elphin.com">Elphin Ltd</a></li>
+    <li>Dedicated server generously donated by <a title="Visit Positive Internet website" href="http://www.positive-internet.com/">Positive Internet</a>
+    - If you need GNU/Linux hosting with staff that know what they are talking about, we highly recommend them!
+    </li> 
+    
     </ul>
     
     <h3>Technology</h3>
