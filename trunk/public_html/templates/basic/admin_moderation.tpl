@@ -1,6 +1,6 @@
 {assign var="page_title" value="Moderation"}
 {include file="_std_begin.tpl"}
-<script src="/admin/moderation.js"></script>
+<script type="text/javascript" src="/admin/moderation.js"></script>
 
 
 <h2><a title="Admin home page" href="/admin/index.php">Admin</a> : Moderation</h2>
