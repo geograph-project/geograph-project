@@ -67,6 +67,18 @@ require_once('geograph/user.class.php');
 
 
 /**
+* Smarty block handler 
+* Although it doesn't appear to do much, this is registered as a
+* non-caching block handler - anything between {dynamic}{/dynamic} will
+* not be cached
+*/
+function smarty_block_dynamic($param, $content, &$smarty) 
+{
+    return $content;
+}
+
+
+/**
 * Smarty derivation for Geograph
 *
 * This is a subclass of smarty which does all the setting up
@@ -97,6 +109,10 @@ class GeographPage extends Smarty
 		$this->debugging = $CONF['smarty_debugging'];
 		$this->caching = $CONF['smarty_caching'];
 		
+		//register our "dynamic" handler for non-cached sections of templates
+		$this->register_block('dynamic', 'smarty_block_dynamic', false);
+
+
 		//assign globallly useful stuff
 		$this->assign_by_ref('user', $GLOBALS['USER']);
 		$this->assign_by_ref('http_host', $_SERVER['HTTP_HOST']);
