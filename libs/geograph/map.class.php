@@ -255,6 +255,9 @@ class GeographMap
 		
 		$file=$this->getImageFilename();
 		$full=$_SERVER['DOCUMENT_ROOT'].$file;
+		
+		//
+		/*
 		if ($this->caching && @file_exists($full))
 		{
 			//we can just return file!
@@ -264,6 +267,12 @@ class GeographMap
 			$token=$this->getToken();
 			$file="/mapbrowse.php?map=$token";
 		}
+		*/
+		
+		//always given dynamic url, that way cached HTML can 
+		//always get an image
+		$token=$this->getToken();
+		$file="/mapbrowse.php?map=$token";
 		
 		return $file;
 		
@@ -289,9 +298,14 @@ class GeographMap
 		if (strpos($full, ".jpg")>0)
 			$type="image/jpeg";
 			
+		//Last-Modified: Sun, 20 Mar 2005 18:19:58 GMT
+		$t=filemtime($full);
+		$lastmod=strftime("%a, %d %b %Y %H:%M:%S GMT", $t);
+		
 		$size=filesize($full);
 		header("Content-Type: $type");
 		header("Content-Size: $size");
+		header("Last-Modified: $lastmod");
 		readfile($full);
 		
 		
