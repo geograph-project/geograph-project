@@ -61,7 +61,7 @@
   <div id="search">
     <div id="searchform">
     <form method="get" action="/search.php">
-    <div id="searchfield"><label for="searchterm">Search</label> <input id="searchterm" type="text" name="q" value="" size="10"/>
+    <div id="searchfield"><label for="searchterm">Search</label> <input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10"/>
     <input id="searchbutton" type="submit" name="go" value="Find"/></div>
     </form>
     </div>
