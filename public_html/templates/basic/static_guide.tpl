@@ -1,6 +1,26 @@
 {assign var="page_title" value="Guide"}
 {include file="_std_begin.tpl"}
 
+{literal}
+<script language="JavaScript">
+<!--
+function popupOSMap(gridref)
+{
+        var wWidth = 740;
+        var wHeight = 520;
+        var wLeft = Math.round(0.5 * (screen.availWidth - wWidth));
+        var wTop = Math.round(0.5 * (screen.availHeight - wHeight)) - 20;
+        
+        var newWin = window.open('http://getamap.ordnancesurvey.co.uk/getamap/frames.htm?mapAction=gaz&gazName=g&gazString='+gridref, 
+		'gam',
+		'left='+wLeft+',screenX='+wLeft+',top='+wTop+',screenY='+wTop+',width='+wWidth+',height='+wHeight+',status,scrolling=no');
+}
+
+//-->
+</script>
+{/literal}
+
+
 <h2>Geographing Guide</h2>
 
 <p>A good Geograph presents images and information on the main human and 
@@ -31,9 +51,9 @@ kind permission of Ordnance Survey and Ordnance Survey of Northern Ireland.</div
 
 <p>
 I entered my home village of Billinge in the search box on the 
-<a title="Ordnance Survey Get-a-Map" href="http://getamap.ordnancesurvey.co.uk/getamap/frames.htm">Get-a-Map</a> 
-page and the result was this map (The purple spot indicates the centre of the SD5300 
-grid square).</p>
+<a title="Ordnance Survey Get-a-Map" href="javascript:popupOSMap('SD535005')">Get-a-Map</a> 
+page and the result was this map (The purple spot indicates the centre of the 
+SD5300 grid square).</p>
 
 
 
