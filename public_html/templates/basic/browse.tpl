@@ -1,4 +1,5 @@
 {assign var="page_title" value="Browse"}
+{assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 {dynamic}
 
