@@ -157,15 +157,6 @@ class GeographMapMosaic
 	}
 	
 	/**
-	* Set center of map in internal coordinates, returns true if valid
-	* @access public
-	*/
-	function reCenter($x,$y)
-	{
-		return $this->setAlignedOrigin(intval($x - $this->image_w / $this->pixels_per_km/2),intval($y - $this->image_h / $this->pixels_per_km/2) );
-	}
-
-	/**
 	* Set size of mosaic image
 	* @access public
 	*/
@@ -517,6 +508,43 @@ class GeographMapMosaic
 		$this->setOrigin($originx, $originy);
 	}
 
+
+	/**
+	* get internal coordinates of a mosaic click
+	* @access public
+	*/
+	function getClickCoordinates($i, $j, $x, $y)
+	{
+		//we got the click coords x,y on mosaic i,j
+		$imgw=$this->image_w / $this->mosaic_factor;
+		$imgh=$this->image_h / $this->mosaic_factor;
+		$x+=$i*$imgw;
+		$y+=$j*$imgh;
+		
+		//remap origin from top left to bottom left
+		$y=$this->image_h-$y;
+		
+		//lets figure out internal coords
+		$coord=array();
+		$coord[0]=floor($this->map_x + $x/$this->pixels_per_km);
+		$coord[1]=floor($this->map_y + $y/$this->pixels_per_km);
+
+		return $coord;
+	}
+	
+	/**
+	* Set center of map in internal coordinates, returns true if valid
+	* @access public
+	*/
+	function setCentre($x,$y)
+	{
+		return $this->setAlignedOrigin(
+			intval($x - ($this->image_w / $this->pixels_per_km)/2),
+			intval($y - ($this->image_h / $this->pixels_per_km)/2) );
+	}
+	
+	
+	
 	/**
 	* Given index of a mosaic image, and a pixel position on that image handle a zoom
 	* If the zoom level is 2, this needs to perform a redirect to the gridsquare page
@@ -525,27 +553,8 @@ class GeographMapMosaic
 	*/
 	function zoomIn($i, $j, $x, $y)
 	{
-		//we got the click coords x,y on mosaic i,j
-		$imgw=$this->image_w / $this->mosaic_factor;
-		$imgh=$this->image_h / $this->mosaic_factor;
-		$x+=$i*$imgw;
-		$y+=$j*$imgh;
-		
-		//$this->_trace("zoomIn mosaic factor {$this->mosaic_factor}");
-		
-		
-		//$this->_trace(sprintf("zoomIn: mosaic size %0.2f x %0.2f", $imgw, $imgh));
-		
-		//remap origin from top left to bottom left
-		$y=$this->image_h-$y;
-		
-		//$this->_trace(sprintf("zoomIn: pixel click %0.2f x %0.2f", $x, $y));
-		
-		//lets figure out internal coords
-		$clickx=floor($this->map_x + $x/$this->pixels_per_km);
-		$clicky=floor($this->map_y + $y/$this->pixels_per_km);
-		
-		//$this->_trace(sprintf("zoomIn: map click %0.2f x %0.2f", $clickx, $clicky));
+		//so where did we click?
+		list($clickx, $clicky)=$this->getClickCoordinates($i, $j, $x, $y);
 		
 		//what's our zoom level going to be?
 		if ($this->pixels_per_km < 1)
