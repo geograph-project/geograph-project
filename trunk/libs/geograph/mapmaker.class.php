@@ -85,10 +85,10 @@ class MapMaker
 			$land[$p]=imagecolorallocate($img, 0,$g,$b);
 		
 		}
-		
+		$dotcolor = imagecolorallocate($img,192,0,192);
 		
 		//now plot all squares in the desired area
-		$sql="select x,y,percent_land from gridsquare where ".
+		$sql="select x,y,percent_land,imagecount from gridsquare where ".
 			"(x between $left and $right) and ".
 			"(y between $bottom and $top) and ".
 			"percent_land > 0";
@@ -102,8 +102,11 @@ class MapMaker
 			$imgx=$gridx-$left;
 			$imgy=$height-($gridy-$bottom);
 			
-			imagesetpixel($img, $imgx, $imgy, $land[$recordSet->fields[2]]);
-			
+			if ($recordSet->fields[3] > 0) {
+				imagesetpixel($img, $imgx, $imgy, $dotcolor);
+			} else {
+				imagesetpixel($img, $imgx, $imgy, $land[$recordSet->fields[2]]);
+			}
 			$recordSet->MoveNext();
 		}
 		$recordSet->Close(); 
