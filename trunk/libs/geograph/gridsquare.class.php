@@ -227,6 +227,7 @@ class GridSquare
 			$gridref=sprintf("%s%02d%02d", $gridsquare, $eastings, $northings);
 			$ok=$this->_setGridRef($gridref);
 		}
+		
 		return $ok;
 	}
 
@@ -252,6 +253,11 @@ class GridSquare
 		{
 			$ok=$this->_setGridRef($gridref);
 		}
+		else
+		{
+			$this->_error(htmlentities($gridref).' is not a valid grid reference');
+		}
+		
 		return $ok;
 	}
 	
@@ -362,18 +368,19 @@ class GridSquare
 		$bottom=$y+$radius;
 		
 		$sql="select *, ".
-			"sqrt(power(x-$x,2)+power(y-$y,2)) as distance ".
+			"power(x-$x,2)+power(y-$y,2) as distance ".
 			"from gridsquare where ".
 			"x between $left and $right and ".
 			"y between $top and $bottom and ".
 			"imagecount>0 ".
-			"order by distance asc";
+			"order by distance asc limit 1";
 		
 		$square = $db->GetRow($sql);	
-		if (count($square) && ($square['distance'] <= $radius))
+		$distance = sqrt($square['distance']);
+		if (count($square) && ($distance <= $radius))
 		{
 			//round off distance
-			$square['distance']=round($square['distance']);
+			$square['distance']=round($distance);
 			
 			//create new grid square and store members
 			$this->nearest=new GridSquare;
