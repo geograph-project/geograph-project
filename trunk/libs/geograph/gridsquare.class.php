@@ -436,8 +436,8 @@ class GridSquare
 			"from gridimage ".
 			"inner join user using(user_id) ".
 			"where gridsquare_id={$this->gridsquare_id} ".
-			"and moderation_status in ('pending', 'accepted')".
-			"order by seq_no");
+			"and moderation_status in ('pending', 'accepted', 'geograph')".
+			"order by moderation_status+0 desc,seq_no");
 		while (!$recordSet->EOF) 
 		{
 			$images[$i]=new GridImage;
