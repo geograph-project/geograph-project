@@ -18,7 +18,7 @@
 	{foreach from=$mosaic key=y item=maprow}
 		<div>
 		{foreach from=$maprow key=x item=mapcell}
-		<a href="/mapbrowse.php?t={$token}&amp;i={$x}&amp;j={$y}&amp;zoomin="><img 
+		<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img 
 		alt="Clickable map" ismap="ismap" title="Click to zoom in or view image" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 		{/foreach}
 		</div>
@@ -28,7 +28,7 @@
 	<div class="side" style="height:{$mosaic_height}px;"><a accesskey="D" title="Pan map east (Alt+D)" href="/mapbrowse.php?t={$token_east}"><img style="padding-top:{$mosaic_height/2 - 4}px" src="/templates/basic/img/arrow_e.gif" alt="East" width="8" height="13"></a></div>
 
 	<div class="cnr"></div>
-	<div class="side" style="width:{$mosaic_width}px;"><a accesskey="X" title="Pan map south (Alt+X)" href="/mapbrowse.php?t={$token_south}"><img src="/templates/basic/img/arrow_s.gif" alt="North" width="13" height="8"></a></div>
+	<div class="side" style="width:{$mosaic_width}px;"><a accesskey="X" title="Pan map south (Alt+X)" href="/mapbrowse.php?t={$token_south}"><img src="/templates/basic/img/arrow_s.gif" alt="South" width="13" height="8"></a></div>
 	<div class="cnr"></div>
 	</div>
 {else}
@@ -44,7 +44,7 @@
 	{foreach from=$mosaic key=y item=maprow}
 		<div>
 		{foreach from=$maprow key=x item=mapcell}
-		<a href="/mapbrowse.php?t={$token}&amp;i={$x}&amp;j={$y}&amp;zoomin="><img 
+		<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img 
 		alt="Clickable map" ismap="ismap" title="Click to zoom in or view image" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 		{/foreach}
 		</div>
@@ -78,7 +78,7 @@
 	{foreach from=$overview key=y item=maprow}
 		<div style="position:absolute;top:0px;left:0px;">
 		{foreach from=$maprow key=x item=mapcell}
-		<a href="/mapbrowse.php?t={$token}&amp;i={$x}}&amp;j={$y}&amp;recenter="><img 
+		<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}}&amp;j={$y}&amp;recenter=1"><img 
 		ismap="ismap" alt="Clickable map" title="Click to pan main map" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 		{/foreach}
 		</div>
@@ -150,7 +150,7 @@
   <tr><!-- row 4 -->
    <td>{if $token_zoomout}<a accesskey="Q" title="Zoom out (Alt+Q)" href="/mapbrowse.php?t={$token_zoomout}" onMouseOut="di20('zoomout','/templates/basic/mapnav/zoomout.gif');"  onMouseOver="di20('zoomout','/templates/basic/mapnav/zoomout_F2.gif');" ><img id="zoomout" src="/templates/basic/mapnav/zoomout.gif" width="30" height="29"/></a>{else}<img alt="Zoom Out" title="Can't zoom out any further" id="zoomout" src="/templates/basic/mapnav/zoomout_F3.gif" width="30" height="29"/>{/if}</td>
    <td><img alt="" id="fill5" src="/templates/basic/mapnav/fill5.gif" width="30" height="29"/></td>
-   <td>{if $token_zoomout}<a accesskey="X" title="Zoom out (Alt+X)" href="/mapbrowse.php?t={$token_south}" onMouseOut="di20('south','/templates/basic/mapnav/south.gif');"  onMouseOver="di20('south','/templates/basic/mapnav/south_F2.gif');" ><img id="south" src="/templates/basic/mapnav/south.gif" width="30" height="29"/></a>{else}<img alt="Pan South" title="Pan South" id="south" src="/templates/basic/mapnav/south_F3.gif" width="30" height="29"/>{/if}</td>
+   <td>{if $token_zoomout}<a accesskey="X" title="Pan south (Alt+X)" href="/mapbrowse.php?t={$token_south}" onMouseOut="di20('south','/templates/basic/mapnav/south.gif');"  onMouseOver="di20('south','/templates/basic/mapnav/south_F2.gif');" ><img id="south" src="/templates/basic/mapnav/south.gif" width="30" height="29"/></a>{else}<img alt="Pan South" title="Pan South" id="south" src="/templates/basic/mapnav/south_F3.gif" width="30" height="29"/>{/if}</td>
    <td><img alt="" id="fill6" src="/templates/basic/mapnav/fill6.gif" width="30" height="29"/></td>
    <td><img alt="" src="/templates/basic/mapnav/shim.gif" width="1" height="29"/></td>
   </tr>
