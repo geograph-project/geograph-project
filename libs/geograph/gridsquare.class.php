@@ -166,7 +166,7 @@ class GridSquare
 			//after ordering by x,y - you'll get the bottom
 			//left gridprefix, and hence the origin
 			
-			$origin = $db->GetRow("select * from gridprefix where reference_index={$this->reference_index} order by origin_x,origin_y");	
+			$origin = $db->GetRow("select * from gridprefix where reference_index={$this->reference_index} order by origin_x,origin_y limit 1");	
 			
 			$square['origin_x'] -= $origin['origin_x'];
 			$square['origin_y'] -= $origin['origin_y'];
