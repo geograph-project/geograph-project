@@ -294,8 +294,8 @@ create table gridimage
 #http://fishbowl.pastiche.org/2004/01/19/persistent_login_cookie_best_practice
 create table autologin
 (
-	user_id int,
-	token char(32),
+	user_id int not null,
+	token char(32) not null,
 	created timestamp,
 	
 	primary key(user_id,token)
