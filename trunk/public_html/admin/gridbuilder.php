@@ -34,6 +34,26 @@ $smarty = new GeographPage;
 $shader_image=isset($_POST['shader_image'])?$_POST['shader_image']:'admin/gb.png';
 $shader_x=isset($_POST['shader_x'])?$_POST['shader_x']:(54 + 206);
 $shader_y=isset($_POST['shader_y'])?$_POST['shader_y']:7;
+$reference_index=isset($_POST['reference_index'])?$_POST['reference_index']:1;
+
+
+$clearexisting=isset($_POST['clearexisting'])?true:false;
+
+/*
+ireland image is 
+left = 16808.222
+right = 366547.765
+top = 19480.97
+bottom = 465594.31
+
+so bottom left of image is 16.808,19.480 km from Irish origin
+
+Irish origin is at 0,159
+
+So this bitmap should be 17,178
+
+This doesn't look right! Try 27,168 (Irish origin of 10,149)
+*/
 
 //do some processing?
 if (isset($_POST['shader']))
@@ -48,7 +68,7 @@ if (isset($_POST['shader']))
 	$imgfile=$_SERVER['DOCUMENT_ROOT'].'/'.$shader_image;
 	$shader=new GridShader;
 
-	$shader->process($imgfile, $shader_x, $shader_y);
+	$shader->process($imgfile, $shader_x, $shader_y, $reference_index, $clearexisting);
 	
 
 	//close output and exit (we don't want to output a page twice)
@@ -61,6 +81,9 @@ if (isset($_POST['shader']))
 $smarty->assign('shader_image', $shader_image);
 $smarty->assign('shader_x', $shader_x);
 $smarty->assign('shader_y', $shader_y);
+$smarty->assign('clearexisting', $clearexisting);
+$smarty->assign('reference_index', $reference_index);
+
 $smarty->display('gridbuilder.tpl');
 
 	
