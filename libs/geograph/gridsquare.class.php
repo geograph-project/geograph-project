@@ -567,6 +567,27 @@ class GridSquare
 		
 		return $images;
 	}
+	
+	/**
+	* Updates the imagecount and has_geographs columns for a square - use this after making changes
+	*/
+	function updateCounts()
+	{
+		$db=&$this->_getDB();
+		
+		$geographs= $db->GetOne("select count(*) from gridimage ".
+					"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph'");
+
+		$has_geographs=$geographs?1:0;
+
+		//count how many images in the square
+		$imagecount= $db->GetOne("select count(*) from gridimage ".
+			"where gridsquare_id={$this->gridsquare_id} and moderation_status<>'rejected'");
+
+		//update the has_geographs flag
+		$db->Query("update gridsquare set has_geographs=$has_geographs,imagecount=$imagecount ".
+			"where gridsquare_id={$this->gridsquare_id}");
+	}
 }
 
 
