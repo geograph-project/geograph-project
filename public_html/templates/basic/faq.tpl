@@ -79,7 +79,7 @@
     <p>In a nutshell, we wanted to build a true community project that won't 
     leave a nasty taste in the mouth by getting sold for shedloads of cash and
     taken away from the people who contributed. Our licence terms ensure that the
-    site and content can never be "taken away".
+    site and content can never be "taken away" from you.
     </p>
     
 <h3>Why must I agree to allow commercial use of my image?</h3>
