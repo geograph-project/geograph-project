@@ -33,6 +33,7 @@ init_session();
 $db = NewADOConnection($GLOBALS['DSN']);
 if (!$db) die('Database connection failed');   
 
+$smarty = new GeographPage;
 
 //doing some moderating?
 if (isset($_GET['gridimage_id']))
@@ -51,6 +52,16 @@ if (isset($_GET['gridimage_id']))
 		{
 			$info=$image->setModerationStatus($status);
 			echo $info;
+			
+			//clear caches involving the image
+			$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_0");
+			$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_1");
+			$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_0");
+			$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_1");
+		
+			//clear the users profile cache
+			$smarty->clear_cache('profile.tpl', "{$image->user_id}_0");
+			$smarty->clear_cache('profile.tpl', "{$image->user_id}_1");
 		}
 		else
 		{
@@ -73,7 +84,7 @@ $USER->mustHavePerm("admin");
 
 
 
-$smarty = new GeographPage;
+
 
 //lets find all unmoderated submissions
 $images=new ImageList('pending', 'submitted asc');
