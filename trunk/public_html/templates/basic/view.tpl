@@ -112,9 +112,9 @@ referring to <b>image {$image->gridimage_id}</b>
 	<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">Geograph Images</a>, 
 	<a title="Geocaches from stats.guk2.com" href="http://stats.guk2.com/caches/search_parse.php?osgbe={$image->grid_square->getNatEastings()}&amp;osgbn={$image->grid_square->getNatNorthings()}" target="_blank">Geocaches</a>, 
 	<a title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigs/search-parse.php?gridref={$image->grid_square->get6FigGridRef()}" target="_blank">Trigpoints</a>, 
-	<a title="Many more links from nearby.org.uk" href="http://www.nearby.org/coord.cgi?p={$image->grid_square->getNatEastings()}+{$image->grid_square->getNatNorthings()}" target="_blank">more...</a>
+	<a title="Many more links from nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p={$image->grid_square->getNatEastings()}+{$image->grid_square->getNatNorthings()}" target="_blank">more...</a>
 {else}
-	<a title="Many more links from nearby.org.uk" href="http://www.nearby.org/coord.cgi?p={$image->grid_square->getNatEastings()}+{$image->grid_square->getNatNorthings()}" target="_blank">See related information from trigtools.co.uk</a>
+	<a title="Many more links from nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p={$image->grid_square->getNatEastings()}+{$image->grid_square->getNatNorthings()}" target="_blank">See related information from trigtools.co.uk</a>
 
 {/if}
 
