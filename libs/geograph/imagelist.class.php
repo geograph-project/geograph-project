@@ -155,7 +155,7 @@ class ImageList
 	{
 		$db=&$this->_getDB();
 
-		$statuslist="'pending', 'accepted'";
+		$statuslist="'pending', 'accepted','geograph'";
 		$orderby="order by x,y desc";
 		$limit="";
 		
