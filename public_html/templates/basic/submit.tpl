@@ -25,6 +25,10 @@
 	{else}
 		<input type="submit" name="setpos" value="Change"/>
 	{/if}
+	
+	{if $errormsg}
+	<p>{$errormsg}</p>
+	{/if}
 
 {else}
 	<input type="hidden" name="gridsquare" value="{$gridsquare|escape:'html'}">
