@@ -38,7 +38,7 @@ referring to <b>image {$image->gridimage_id}</b>
   {if $ismoderator}
 	  <form method="post" action="/usermsg.php">
 	  <input type="hidden" name="to" value="{$image->user_id}"/>
-	  <input type="hidden" name="init" value="Re: image for {$image->grid_reference} ({$image->title})&#13;&#10;http://{$http_host}/view.php?id={$image->gridimage_id}&#13;&#10;"/>
+	  <input type="hidden" name="init" value="Re: image for {$image->grid_reference} ({$image->title})&#13;&#10;http://{$http_host}/photo/{$image->gridimage_id}&#13;&#10;"/>
 	  <script type="text/javascript" src="/admin/moderation.js"></script>
 	  <b>Moderation</b> 
 	  <input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')"/>
@@ -97,7 +97,7 @@ referring to <b>image {$image->gridimage_id}</b>
 {if $image->grid_square->reference_index eq 1}
 	(also 
 
-	<a href="http://www.streetmap.co.uk/streetmap.dll?Grid2Map?X={$image->grid_square->getNatEastings()}&amp;Y={$image->grid_square->getNatNorthings()}&amp;title={$image->title|escape:'url'}&amp;back=Return+to+Geograph&amp;url=http://{$http_host}/view.php?id={$image->gridimage_id}&amp;nolocal=X&amp;bimage=background%3dhttp://{$http_host}/templates/basic/img/background.gif" target="_blank">streetmap.co.uk</a> &amp;
+	<a href="http://www.streetmap.co.uk/streetmap.dll?Grid2Map?X={$image->grid_square->getNatEastings()}&amp;Y={$image->grid_square->getNatNorthings()}&amp;title={$image->title|escape:'url'}&amp;back=Return+to+Geograph&amp;url=http://{$http_host}/photo/{$image->gridimage_id}&amp;nolocal=X&amp;bimage=background%3dhttp://{$http_host}/templates/basic/img/background.gif" target="_blank">streetmap.co.uk</a> &amp;
 	<a href="http://www.multimap.com/map/browse.cgi?GridE={$image->grid_square->getNatEastings()}&amp;GridN={$image->grid_square->getNatNorthings()}&amp;scale=25000" target="_blank">multimap.com</a> 
 	)<br>
 

@@ -11,7 +11,7 @@
     {if $square.imagecount gt 0}
     <a name="{$square.prefix}"></a><ul>
     {foreach from=$square.images item=image}
-    <li> <a title="view full size image" href="/view.php?id={$image->gridimage_id}">{$image->grid_reference}</a> {$image->title}</li>
+    <li> <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->grid_reference}</a> {$image->title}</li>
     {/foreach}
     </ul>
     {/if}	

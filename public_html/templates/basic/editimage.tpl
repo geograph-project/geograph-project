@@ -103,7 +103,7 @@ function onChangeImageclass()
 
 
 <input type="submit" name="save" value="Save Changes"/>
-<input type="button" name="cancel" value="Cancel" onclick="document.location='/view.php?id={$image->gridimage_id}';"/>
+<input type="button" name="cancel" value="Cancel" onclick="document.location='/photo/{$image->gridimage_id}';"/>
 
 
 
