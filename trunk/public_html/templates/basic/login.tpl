@@ -3,7 +3,7 @@
 
 
 
-<form action="{$script_name}" method="post">
+<form action="{$script_uri}" method="post">
     
 {if $inline}
    <h2>Login Required</h2>
