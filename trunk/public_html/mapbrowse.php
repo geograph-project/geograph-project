@@ -45,11 +45,10 @@ $template='mapbrowse.tpl';
 $smarty = new GeographPage;
 
 
-$overview=new GeographMapMosaic('overview');
-$overview->enableCaching($CONF['smarty_caching']);
-
 //initialise mosaic
 $mosaic=new GeographMapMosaic;
+$overview=new GeographMapMosaic('overview');
+
 if (isset($_GET['t']))
 	$mosaic->setToken($_GET['t']);
 
@@ -67,8 +66,7 @@ if (isset($_GET['expireAll']) && $USER->hasPerm('admin'))
 
 
 
-//cache graphics files?
-$mosaic->enableCaching($CONF['smarty_caching']);
+
 
 
 //are we zooming in on an image map? we'll have a url like this
@@ -76,19 +74,11 @@ $mosaic->enableCaching($CONF['smarty_caching']);
 //http://geograph.elphin/mapbrowse.php?t=token&i=0&j=0&zoomin=?275,199
 if (isset($_GET['zoomin']))
 {
-	//extract x and y click coordinate from imagemap
-	if (strlen($_GET['zoomin']))
-	{
-		$bits=explode(',', substr($_GET['zoomin'],1));
-		$x=intval($bits[0]);
-		$y=intval($bits[1]);
-	}
-	else
-	{
-		//href followed without a mouse click - use center
-		$x=round(($mosaic->image_w/$mosaic->mosaic_factor)/2);
-		$y=round(($mosaic->image_h/$mosaic->mosaic_factor)/2);
-	}
+	//get click coordinate, or use centre point if not supplied
+
+	$x=isset($_GET['x'])?intval($_GET['x']):round(($mosaic->image_w/$mosaic->mosaic_factor)/2);
+	$y=isset($_GET['y'])?intval($_GET['y']):round(($mosaic->image_h/$mosaic->mosaic_factor)/2);
+
 	
 	//get the image index
 	$i=intval($_GET['i']);
@@ -101,19 +91,10 @@ if (isset($_GET['zoomin']))
 if (isset($_GET['center']))
 {
 	//extract x and y click coordinate from imagemap
-	if (strlen($_GET['center']))
-	{
-		$bits=explode(',', substr($_GET['center'],1));
-		$x=intval($bits[0]);
-		$y=intval($bits[1]);
-	}
-	else
-	{
-		//href followed without a mouse click - use center
-		$x=round(($overview->image_w/$overview->mosaic_factor)/2);
-		$y=round(($overview->image_h/$overview->mosaic_factor)/2);
-	}
+	$x=isset($_GET['x'])?intval($_GET['x']):round(($overview->image_w/$mosaic->mosaic_factor)/2);
+	$y=isset($_GET['y'])?intval($_GET['y']):round(($overview->image_h/$mosaic->mosaic_factor)/2);
 	
+
 	//get the image index
 	$i=intval($_GET['i']);
 	$j=intval($_GET['j']);
@@ -129,18 +110,9 @@ if (isset($_GET['center']))
 if (isset($_GET['recenter']))
 {
 	//extract x and y click coordinate from imagemap
-	if (strlen($_GET['recenter']))
-	{
-		$bits=explode(',', substr($_GET['recenter'],1));
-		$x=intval($bits[0]);
-		$y=intval($bits[1]);
-	}
-	else
-	{
-		//href followed without a mouse click - use center
-		$x=round(($overview->image_w/$overview->mosaic_factor)/2);
-		$y=round(($overview->image_h/$overview->mosaic_factor)/2);
-	}
+	$x=isset($_GET['x'])?intval($_GET['x']):round(($overview->image_w/$mosaic->mosaic_factor)/2);
+	$y=isset($_GET['y'])?intval($_GET['y']):round(($overview->image_h/$mosaic->mosaic_factor)/2);
+	
 	
 	//get the image index
 	$i=intval($_GET['i']);
@@ -164,36 +136,18 @@ $cacheid='mapbrowse|'.$token.'_'.$is_admin;
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
-	//setup the overview variables
-	$overviewimages =& $overview->getImageArray();
-	$smarty->assign_by_ref('overview', $overviewimages);
-	$smarty->assign('overview_width', $overview->image_w);
-	$smarty->assign('overview_height', $overview->image_h);
-	$smarty->assign('overview_token', $overview->getToken());
-	
-	//calculate the position of the markerbox
+	//assign overview to smarty
+	$overview->assignToSmarty($smarty, 'overview');
 	$smarty->assign('marker', $overview->getBoundingBox($mosaic));
 	
-	
-	
+	//assign main map to smarty
 
-	//get the image array
-	$images =& $mosaic->getImageArray();
-	$smarty->assign_by_ref('mosaic', $images);
+	$mosaic->assignToSmarty($smarty, 'mosaic');
 	
+	//assign all the other useful stuff
+
 	$smarty->assign('gridref', $mosaic->getGridRef(-1,-1));
 	
-	
-	//for debugging pass the entire mosaic object
-	//if ($CONF['smarty_debugging'])
-		$smarty->assign_by_ref('mosaicobj', $mosaic);
-	
-	
-	$smarty->assign('mosaic_width', $mosaic->image_w);
-	$smarty->assign('mosaic_height', $mosaic->image_h);
-	$smarty->assign('token', $token);
-	
-	//navigation urls
 	$smarty->assign('token_zoomin', $mosaic->getZoomInToken());
 	$smarty->assign('token_zoomout', $mosaic->getZoomOutToken());
 	$smarty->assign('token_north', $mosaic->getPanToken(0, 1));
