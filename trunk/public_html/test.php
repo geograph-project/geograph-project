@@ -142,6 +142,32 @@ echo "<h1>Geograph System Test...</h1>";
 
 
 //////////////////////////////////////////////////////////////////
+// got the right php version?
+
+$version=phpversion();
+$v=explode('.', $version);
+if ($v[0]<4)
+{
+	fail('You need PHP 4.3 or higher, you have '.$version);
+}
+elseif ($v[0]==4)
+{
+	//hurrah, php4, that's the ticket
+
+	if ($v[1]<3)
+	{
+		fail('You need PHP 4.3 or higher, you have '.$version);
+	}
+	
+}
+else
+{
+	//5 might work...
+
+	warn("Software is untested on php $version");
+}
+
+//////////////////////////////////////////////////////////////////
 // general php configuration
 
 if (!extension_loaded('gd'))
