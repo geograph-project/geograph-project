@@ -6,7 +6,7 @@
 <h3>What is Geographing?</h3>
     <p>See our <a title="guide to geographing" href="/help/guide">guide to good geographing</a></p>
     
-    
+<a name="points"></a>    
 <h3>How do I get a geograph point for my image? What makes a good geograph?</h3>
     
     <p>If you're the first to submit a proper &quot;geograph&quot; for the grid square
