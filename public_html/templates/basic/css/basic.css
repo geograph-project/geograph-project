@@ -26,12 +26,14 @@ body
 #header h1
 {
 	margin:0px;
-	color:white;
-	font-size:0em;
-	
 	background-image: url('/templates/basic/img/logo.gif');
 	height:74px;
 	width:257px;
+}
+
+#header h1 a
+{
+	display:none;
 }
 
 /*---------------------------------------------------------------*
@@ -53,10 +55,14 @@ body
 	font-weight:bold;
 }
 
+#search form
+{
+	margin:0;
+}
+
 #login
 {
 	font-size:0.8em;
-
 	color:white;
 	font-weight:bold;
 }
@@ -85,7 +91,6 @@ body
 	background-color:white;
 	border:2px solid black;
 	
-
 	/* Again, the ugly brilliant hack. */
 	voice-family: "\"}\"";
 	voice-family:inherit;
@@ -126,10 +131,23 @@ body>#nav_block {width:10em;}
 
 }
 
-#maincontent h1
+#maincontent h2
 {
 	margin-top:0px;
 }
+
+/* form styles */
+#maincontent form label
+{
+	font-size:0.8em;
+}
+
+span.formerror
+{
+	font-size:0.8em;
+	color:red;	
+}
+
 
 /*---------------------------------------------------------------*
  *footer block
