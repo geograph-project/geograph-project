@@ -179,7 +179,7 @@ if (check_include('geograph/global.inc.php'))
 {
 	//include path is ok - let see if it contains the other stuff we need
 	if (!check_include('conf/'.$_SERVER['HTTP_HOST'].'.conf.php'))
-		fail('conf/'.$_SERVER['HTTP_HOST'].'conf.php not found - copy and adapt the www.example.com.conf.php file');
+		fail('conf/'.$_SERVER['HTTP_HOST'].'.conf.php not found - copy and adapt the www.example.com.conf.php file');
 	if (!check_include('adodb/adodb.inc.php'))
 		fail("ADOdb not found in $inc/adodb - download and install it there");
 	if (!check_include('smarty/libs/Smarty.class.php'))
