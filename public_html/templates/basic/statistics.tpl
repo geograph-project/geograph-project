@@ -1,10 +1,9 @@
 {assign var="page_title" value="Statistics"}
 {include file="_std_begin.tpl"}
 
-{if !$by}
+{if !$by} 
     <h2>Overview Statistics for Geograph British Isles</h2>
 
-{dynamic}
 <ul>
 <li><b>{$users_submitted}/{$users_total}</b> of Registered Users have Submitted Images</li>
 <li><b>{$users_thisweek}</b> new users in past 7 days</li>
@@ -49,7 +48,7 @@
 	<td>{$grid_submitted_1+$grid_submitted_2}<br/>/{$grid_total_1+$grid_total_2}</td>
 </tr></tbody>
 </table>
-{/dynamic}
+
     
     <h3>More Statistics</h3>
     
@@ -84,7 +83,7 @@
     
 {if $by}
 	<p><small>Click a column header to change the sort order.</small></p>
-{dynamic}
+
 	<table class="report">
 	<thead><tr>
 	<td><a href="{$script_name}?{$link}&amp;order={$no}">{$title}</a></td>
@@ -103,7 +102,7 @@
 	<th align=right>100%</th></tr>
 	</tbody>
 	</table>
-{/dynamic}
+
 {else} 
     <p>Here's a graph of photo submissions since we began...<br/>
     <img src="/img/submission_graph.png" width="480" height="161"/>
