@@ -282,4 +282,76 @@ where reference_index=1 and title is null;
 update gridprefix set title=concat('Irish grid square ', prefix) 
 where reference_index=2 and title is null;
 
+#
+# 08-Mar-2005 Paul - adjustment to Irish grid squares
+#
+delete from gridprefix where reference_index=2;
 
+replace into gridprefix(prefix, reference_index, origin_x,origin_y) values
+('V',2,000,000),
+('W',2,100,000),
+('X',2,200,000),
+('Y',2,300,000),
+('Z',2,400,000),
+
+('Q',2,000,100),
+('R',2,100,100),
+('S',2,200,100),
+('T',2,300,100),
+('U',2,400,100),
+
+('L',2,000,200),
+('M',2,100,200),
+('N',2,200,200),
+('O',2,300,200),
+('P',2,400,200),
+
+('F',2,000,300),
+('G',2,100,300),
+('H',2,200,300),
+('J',2,300,300),
+('K',2,400,300),
+
+('A',2,000,400),
+('B',2,100,400),
+('C',2,200,400),
+('D',2,300,400),
+('E',2,400,400);
+
+#lose the rightmost column, there's no land there
+delete from gridprefix where origin_x=400 and reference_index=2;
+
+#relocate onto our grid
+update gridprefix set origin_x=origin_x+10,origin_y=origin_y+149 where reference_index=2;
+
+#create pseudo titles
+update gridprefix set title=concat('Irish grid square ', prefix) 
+where reference_index=2 and title is null;
+
+#add revised method of storing grid reference
+alter table gridsquare
+add column grid_reference char(6) not null,
+add column reference_index tinyint default '1';
+
+#drop indexes to allow us to proceed
+alter table gridsquare
+drop index  grid_reference1,
+drop index grid_reference2;
+
+#initialise GB references
+update gridsquare set grid_reference=grid_reference1 where grid_reference1 not like '#%';
+
+#now proceed with Irish grid building
+
+#add unique key
+alter table gridsquare
+add unique (grid_reference);
+
+#drop old columns
+alter table gridsquare
+drop column grid_reference1,
+drop column grid_reference2;
+
+#make percent land a tinyint while we're at it
+alter table gridsquare
+change column percent_land percent_land tinyint not null default '100',
