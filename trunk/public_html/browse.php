@@ -45,18 +45,31 @@ $smarty->assign('kmlist', $square->getKMList());
 //or just gridref. So lets initialise our grid square
 $grid_given=false;
 $grid_ok=false;
-if (isset($_GET['gridsquare']))
-{
-	$grid_given=true;
-	$grid_ok=$square->setGridPos($_GET['gridsquare'], $_GET['eastings'], $_GET['northings']);
-}
 
-if (isset($_GET['gridref']))
+
+//set by grid ref?
+if (isset($_GET['gridref']) && strlen($_GET['gridref']))
 {
 	$grid_given=true;
 	$grid_ok=$square->setGridRef($_GET['gridref']);
+	
+	//preserve inputs in smarty
+	$smarty->assign('gridref', stripslashes($_GET['gridref']));
+	
 }
+//set by grid components?
+elseif (isset($_GET['gridsquare']))
+{	
+	$grid_given=true;
+	$grid_ok=$square->setGridPos($_GET['gridsquare'], $_GET['eastings'], $_GET['northings']);
 
+	//preserve inputs in smarty
+	$smarty->assign('gridsquare', $square->gridsquare);
+	$smarty->assign('eastings', $square->eastings);
+	$smarty->assign('northings', $square->northings);
+
+	
+}
 
 //process grid reference
 if ($grid_given)
@@ -64,11 +77,6 @@ if ($grid_given)
 	$square->rememberInSession();
 	
 
-	//preserve inputs in smarty
-	$smarty->assign('gridsquare', $square->gridsquare);
-	$smarty->assign('eastings', $square->eastings);
-	$smarty->assign('northings', $square->northings);
-	$smarty->assign('gridref', $square->gridref);
 	
 
 	//now we see if the grid reference is actually available...
