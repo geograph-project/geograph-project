@@ -57,6 +57,12 @@ if (isset($_GET['expireAll']) && $USER->hasPerm('admin'))
 {
 	$mosaic->expireAll($_GET['expireAll']?true:false);
 	$smarty->clear_cache(null, 'mapbrowse');
+	
+
+	//redirect to prevent page refreshes of this url
+
+	header("Location:http://{$_SERVER['HTTP_HOST']}/mapbrowse.php");
+	exit;
 }
 
 
@@ -71,9 +77,18 @@ $mosaic->enableCaching($CONF['smarty_caching']);
 if (isset($_GET['zoomin']))
 {
 	//extract x and y click coordinate from imagemap
-	$bits=explode(',', substr($_GET['zoomin'],1));
-	$x=intval($bits[0]);
-	$y=intval($bits[1]);
+	if (strlen($_GET['zoomin']))
+	{
+		$bits=explode(',', substr($_GET['zoomin'],1));
+		$x=intval($bits[0]);
+		$y=intval($bits[1]);
+	}
+	else
+	{
+		//href followed without a mouse click - use center
+		$x=round(($mosaic->image_w/$mosaic->mosaic_factor)/2);
+		$y=round(($mosaic->image_h/$mosaic->mosaic_factor)/2);
+	}
 	
 	//get the image index
 	$i=intval($_GET['i']);
@@ -86,9 +101,18 @@ if (isset($_GET['zoomin']))
 if (isset($_GET['center']))
 {
 	//extract x and y click coordinate from imagemap
-	$bits=explode(',', substr($_GET['center'],1));
-	$x=intval($bits[0]);
-	$y=intval($bits[1]);
+	if (strlen($_GET['center']))
+	{
+		$bits=explode(',', substr($_GET['center'],1));
+		$x=intval($bits[0]);
+		$y=intval($bits[1]);
+	}
+	else
+	{
+		//href followed without a mouse click - use center
+		$x=round(($overview->image_w/$overview->mosaic_factor)/2);
+		$y=round(($overview->image_h/$overview->mosaic_factor)/2);
+	}
 	
 	//get the image index
 	$i=intval($_GET['i']);
@@ -105,9 +129,18 @@ if (isset($_GET['center']))
 if (isset($_GET['recenter']))
 {
 	//extract x and y click coordinate from imagemap
-	$bits=explode(',', substr($_GET['recenter'],1));
-	$x=intval($bits[0]);
-	$y=intval($bits[1]);
+	if (strlen($_GET['recenter']))
+	{
+		$bits=explode(',', substr($_GET['recenter'],1));
+		$x=intval($bits[0]);
+		$y=intval($bits[1]);
+	}
+	else
+	{
+		//href followed without a mouse click - use center
+		$x=round(($overview->image_w/$overview->mosaic_factor)/2);
+		$y=round(($overview->image_h/$overview->mosaic_factor)/2);
+	}
 	
 	//get the image index
 	$i=intval($_GET['i']);
