@@ -10,6 +10,35 @@ representative photograph for every square kilometre of the
 <acronym title="Great Britain, Ireland and smaller adjacent islands">British Isles</acronym>
 and you can be part of it.</p>
 
+	<div class="map" style="height:{$overview_width+20}px;width:{$overview_width+20}px">
+	<div class="cnr"></div>
+	<div class="side" style="width:{$overview_width}px;">&nbsp;</div>
+	<div class="cnr"></div>
+
+
+	<div class="side" style="height:{$overview_height}px;">&nbsp;</div>
+
+	<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
+
+	{foreach from=$overview key=y item=maprow}
+		<div>
+		{foreach from=$maprow key=x item=mapcell}
+		<a href="/mapbrowse.php?i={$x}&j={$y}&center="><img 
+		ismap="ismap" title="Click to pan main map" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+		{/foreach}
+		</div>
+	{/foreach}
+	</div>
+
+	<div class="side" style="height:{$overview_height}px;">&nbsp;</div>
+
+	<div class="cnr"></div>
+	<div class="side" style="width:{$overview_width}px;">&nbsp;</div>
+	<div class="cnr"></div>
+
+
+	</div>
+
 <p>Already you can...</p>
 <ul>
 
