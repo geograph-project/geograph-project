@@ -323,9 +323,10 @@ class GeographUser
 			$db = NewADOConnection($GLOBALS['DSN']);
 			if (!$db) die('Database connection failed');   
 		
-			$sql = sprintf("update user set realname=%s,website=%s,public_email=%d ".
+			$sql = sprintf("update user set realname=%s,nickname=%s,website=%s,public_email=%d ".
 				"where user_id=%d",
 				$db->Quote(stripslashes($profile['realname'])),
+				$db->Quote(stripslashes($profile['nickname'])),
 				$db->Quote(stripslashes($profile['website'])),
 				isset($profile['public_email'])?1:0,
 				$this->user_id
