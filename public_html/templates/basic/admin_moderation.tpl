@@ -28,8 +28,9 @@
 	  {/if}
 	  
 	  <br />
-	  <input class="accept" type="button" id="accept" value="Accept" onClick="moderateImage({$image->gridimage_id}, true)">
-	  <input class="reject" type="button" id="reject" value="Reject" onClick="moderateImage({$image->gridimage_id}, false)">
+	  <input class="accept" type="button" id="geograph" value="Geograph!" onClick="moderateImage({$image->gridimage_id}, 'geograph')">
+	  <input class="accept" type="button" id="accept" value="Accept" onClick="moderateImage({$image->gridimage_id}, 'accepted')">
+	  <input class="reject" type="button" id="reject" value="Reject" onClick="moderateImage({$image->gridimage_id}, 'rejected')">
 	  
 	  </div>
 	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
