@@ -161,7 +161,7 @@ class GridImage
 		
 		$sq=new GridSquare;
 		$sq->loadFromId($this->gridsquare_id);
-		$this->gridref=$sq->gridref;
+		$this->grid_reference=$sq->grid_reference;
 		
 		
 		if (strlen($this->title)==0)
@@ -362,14 +362,14 @@ class GridImage
 		
 		if ($thumbpath=='/photos/error.jpg')
 		{
-			$html="<img src=\"$thumbpath\" width=\"$maxw\" height=\"$maxh\" border=\"0\"/>";
+			$html="<img src=\"$thumbpath\" width=\"$maxw\" height=\"$maxh\" />";
 		}
 		else
 		{
 			$title=htmlentities($this->title);
 			
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
-			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]} border=\"0\"/>";
+			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]} />";
 		}
 		
 		
