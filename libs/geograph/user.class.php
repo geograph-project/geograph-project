@@ -170,7 +170,14 @@ class GeographUser
 	{
 		global $CONF;
 		$ok=true;
-		if($hash==substr(md5($user_id.$CONF['register_confirmation_secret']),0,16))
+		
+		//validate inputs, they came from outside
+		$ok=$ok && preg_match('/\d+/', $user_id);
+		$ok=$ok && preg_match('/[0-9a-f]+/', $hash);
+		
+		//validate hash
+		$ok=$ok && ($hash==substr(md5($user_id.$CONF['register_confirmation_secret']),0,16));
+		if ($ok)
 		{
 			$db = NewADOConnection($GLOBALS['DSN']);
 			
@@ -186,6 +193,7 @@ class GeographUser
 			{
 				if (!is_numeric($name))
 					$this->$name=$value;
+			
 			}
 				
 		}
