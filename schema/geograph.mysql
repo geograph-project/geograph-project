@@ -1,34 +1,44 @@
+#adodb session table
+create table sessions 
+(
+   SESSKEY char(32) not null,
+   EXPIRY int(11) unsigned not null,
+   EXPIREREF varchar(64),
+   DATA text not null,
+   primary key (sesskey)
+);
+
+
+
 create table gridsquare
 (
    #primary key, used to identify the square internally
    gridsquare_id int not null auto_increment,
 
    #grid reference, used by site visitors
-   grid_reference1 char(8) not null,
-   grid_reference2 char(8) not null,
+   grid_reference char(6) not null,
+   
+   #type of grid reference (keys into gridprefix table)
+   reference_index tinyint default '1',
 
    #internal coordinate of square, used to locate square into a 2d space
    x int not null,
    y int not null,
 
    #indicator of whether square is water (0), land(100) or something inbetween.
-   #might be handy for plotting squares to build a map
-   percent_land int not null default '100',
+   #handy for plotting squares to build a map
+   percent_land tinyint not null default '100',
 
    #image count - this is an optimisation to allow us to easily find
    #occupied squares without a join
    imagecount int not null default '0',
 
    primary key(gridsquare_id),
-   unique(grid_reference1),
-   unique(grid_reference2),
+   unique(grid_reference),
    index(x),
    index(y)
 );
 
-alter table gridsquare 
-change column grid_reference1 grid_reference1 char(10) not null,
-change column grid_reference2 grid_reference2 char(10) not null;
 
 #holds prefix letters and extents of grid systems
 create table gridprefix
@@ -45,11 +55,17 @@ create table gridprefix
 	width int not null default 100,
 	height int not null default 100,
 	
+	#title of square
+
+	title varchar(128),
+	
+	#how many squares contain land?
+
+	landcount int default '0',
+	
 	primary key(reference_index,prefix)
 
 );
-
-alter table gridprefix add column landcount int default '0';
 
 #OSGB Grid
 #set up grids from bottom to top
@@ -161,131 +177,10 @@ replace into gridprefix(prefix, reference_index, origin_x,origin_y) values
 #now offset them for our internal coords
 update gridprefix set origin_x=origin_x+206 where reference_index=1;
 
-replace into gridprefix(prefix, reference_index, origin_x,origin_y) values
-('V',2,000,000),
-('W',2,100,000),
-('X',2,200,000),
-('Y',2,300,000),
-('Z',2,400,000),
-
-('Q',2,000,100),
-('R',2,100,100),
-('S',2,200,100),
-('T',2,300,100),
-('U',2,400,100),
-
-('L',2,000,200),
-('M',2,100,200),
-('N',2,200,200),
-('O',2,300,200),
-('P',2,400,200),
-
-('F',2,000,300),
-('G',2,100,300),
-('H',2,200,300),
-('J',2,300,300),
-('K',2,400,300),
-
-('A',2,000,400),
-('B',2,100,400),
-('C',2,200,400),
-('D',2,300,400),
-('E',2,400,400);
-
-update gridprefix set origin_y=origin_y+159 where reference_index=2;
-
-
-create table user
-(
-    user_id int not null auto_increment,
-
-    #username and password
-    password varchar(64),
-    realname varchar(128),
-
-    #verified email address
-    email varchar(128),
-
-    #link to users website
-    website varchar(255),
-
-    #user level - on email verification user is grant basic rights
-    rights set('basic', 'admin'),
-
-    #signup date used to weed out unverified users
-    signup_date datetime,
-
-	#nickname
-  	nickname varchar(128),
-  	
-  	#privacy flag
-  	public_email int default '0',
-
-    primary key(user_id)
-);
-
-
-
-create table gridimage
-(
-    #unique id, forms basis of filename
-    gridimage_id int not null auto_increment,
-
-    #what square is this image for?
-    gridsquare_id int not null,
-
-    #what's the sequence number? 0 is first image
-    seq_no int not null,
-
-    #who submitted it?
-    user_id int not null,
-
-    #first to find this square? normally indicated by seq_no=0 but
-    #separating the bits of information allows a better photograph to
-    #be more prominent later
-    ftf int not null,
-
-    #what's the status
-    moderation_status enum('pending', 'accepted', 'rejected'),
-
-    #user submitted information
-    title varchar(128),
-    comment text,
-
-	#exif headers as serialized array for now
-	exif text,
-
-	submitted datetime,
-
-    primary key(gridimage_id),
-    unique(gridsquare_id, seq_no),
-    index(user_id)
-);
-
-
-create table sessions 
-(
-	SESSKEY char(32) not null,
-	EXPIRY int(11) unsigned not null,
-	EXPIREREF varchar(64),
-	DATA text not null,
-	primary key (sesskey)
-);
-
-
-#
-# 07-Mar-2005 Paul - added title for grid square
-#
-alter table gridprefix add column title varchar(128);
+#give them a title
 update gridprefix set title=concat('GB grid square ', prefix) 
 where reference_index=1 and title is null;
-update gridprefix set title=concat('Irish grid square ', prefix) 
-where reference_index=2 and title is null;
 
-#
-# 08-Mar-2005 Paul - adjustment to Irish grid squares
-#
-delete from gridprefix where reference_index=2;
 
 replace into gridprefix(prefix, reference_index, origin_x,origin_y) values
 ('V',2,000,000),
@@ -328,30 +223,74 @@ update gridprefix set origin_x=origin_x+10,origin_y=origin_y+149 where reference
 update gridprefix set title=concat('Irish grid square ', prefix) 
 where reference_index=2 and title is null;
 
-#add revised method of storing grid reference
-alter table gridsquare
-add column grid_reference char(6) not null,
-add column reference_index tinyint default '1';
+create table user
+(
+    user_id int not null auto_increment,
 
-#drop indexes to allow us to proceed
-alter table gridsquare
-drop index  grid_reference1,
-drop index grid_reference2;
+    #username and password
+    password varchar(64),
+    realname varchar(128),
 
-#initialise GB references
-update gridsquare set grid_reference=grid_reference1 where grid_reference1 not like '#%';
+    #verified email address
+    email varchar(128),
 
-#now proceed with Irish grid building
+    #link to users website
+    website varchar(255),
 
-#add unique key
-alter table gridsquare
-add unique (grid_reference);
+    #user level - on email verification user is grant basic rights
+    rights set('basic', 'admin'),
 
-#drop old columns
-alter table gridsquare
-drop column grid_reference1,
-drop column grid_reference2;
+    #signup date used to weed out unverified users
+    signup_date datetime,
 
-#make percent land a tinyint while we're at it
-alter table gridsquare
-change column percent_land percent_land tinyint not null default '100',
+    #nickname
+    nickname varchar(128),
+
+    #privacy flag
+    public_email int default '0',
+
+    primary key(user_id)
+);
+
+
+
+create table gridimage
+(
+    #unique id, forms basis of filename
+    gridimage_id int not null auto_increment,
+
+    #what square is this image for?
+    gridsquare_id int not null,
+
+    #what's the sequence number? 0 is first image
+    seq_no int not null,
+
+    #who submitted it?
+    user_id int not null,
+
+    #first to find this square? normally indicated by seq_no=0 but
+    #separating the bits of information allows a better photograph to
+    #be more prominent later
+    ftf int not null,
+
+    #what's the status
+    moderation_status enum('pending', 'accepted', 'rejected'),
+
+    #user submitted information
+    title varchar(128),
+    comment text,
+
+    #exif headers as serialized array for now
+    exif text,
+
+    submitted datetime,
+
+    primary key(gridimage_id),
+    unique(gridsquare_id, seq_no),
+    index(user_id)
+);
+
+
+
+
+
