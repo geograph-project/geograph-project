@@ -19,7 +19,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 
 
 
-<form action="{$script_name}" method="get">
+<form action="/browse.php" method="get">
 <div>
 
 	<label for="gridref">Enter grid reference (e.g. SY9582)</label>
@@ -84,7 +84,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 		<p>We have no images for {$gridref}, 
 		
 		{if $nearest_distance}
-			the closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/browse.php?gridref={$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away.
+			the closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away.
 		{else}
 			and have no pictures for any grid square within 100km either!
 		{/if}
