@@ -16,29 +16,36 @@ you can be part of</li>
 </ul>
 </div></div>
 
+<p>We have a growing collection of geographically representative photographs 
+for every square kilometre of the 
+<acronym title="Great Britain, Ireland and smaller adjacent islands">British Isles</acronym>
+but we need your help!<p>
 
-<p>The Geograph <acronym title="Great Britain, Ireland and smaller adjacent islands">British Isles</acronym> 
-project aims to collect a geographically 
-representative photograph for every square kilometre of the 
-<acronym title="Great Britain, Ireland and smaller adjacent islands">British Isles</acronym> 
-and you can be part of it.</p>
+<p>You can</p>
+<ul>
 
-<p>This a true community project, possible only thanks to the amazing 
-skills and generosity of people like you with an interest in geography, 
-photography, web development, the outdoors, geocaching or may be even 
-all of them!</p>
+    <li><a title="Submit a photograph" href="/submit.php">upload pictures and information</a></li>
+    <li><a title="Browse photographs" href="/browse.php">browse images taken by other members</a></li>
+</ul>
 
-<p>We've already made it possible for you to 
-<a title="Submit a photograph" href="/submit.php">upload</a> pictures and 
-<a title="Browse photographs" href="/browse.php">browse</a> those taken by other members and we've got some cool ideas for 
-new features to be added soon.</p>
+<p>Look out for more cool features coming soon!</p>
 
-<p><a title="register now" href="/register.php">Registration</a> is free so 
-why not join us, then go out and take some 
-pictures in a grid square near you - all you need is a camera and a map. 
-Have a look at some of the recent submisions to get an idea of what 
-it's all about, or read our <a title="guide to geographing" href="/help/guide">guide to geographing</a></p>
+<h3>How can I activate a grid square?</h3>
 
+<p>If you're the first to submit a proper &quot;geograph&quot; for the grid square
+you'll get a geograph point added to your profile and the warm glow that comes
+with it. So what makes an image a genuine geograph?</p>
+<ul>
+<li>The image must be taken within the grid square </li>
+<li>You must clearly show at close range one of the main geographical features within the square</li>
+<li>You should include a short description relating the image to the map square</li>
+</ul>
+
+<h3>How do I get started?</h3>
+
+
+<p><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how 
+many grid squares you can activate!</p>
 
 <p>If you have any questions, check the <a title="Frequently Asked Questions" href="/faq.php">FAQ</a>, and 
 <a title="contact us" href="contact.php">contact us</a> with any queries</p>
@@ -48,6 +55,7 @@ it's all about, or read our <a title="guide to geographing" href="/help/guide">g
 <p>Thanks and happy Geographing!</p>
 
 <p><b>The geograph.co.uk team</b></p>
+
 
 
 {include file="_std_end.tpl"}
