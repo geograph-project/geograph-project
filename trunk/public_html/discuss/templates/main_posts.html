@@ -13,8 +13,8 @@ this.opr=(navigator.userAgent.toLowerCase().indexOf("opera")!=-1)?1:0;
 return this
 }
 
-function paste_strinL(strinL,isQuote){ 
-if(strinL=='') alert('Please, select some text first!');
+function paste_strinL(strinL,isQuote){
+if(strinL=='') alert('First highlight the text you wish to quote, then click the \'quote\' link');
 else{
 if (isQuote==1) {
 strinL='[i]'+strinL+'[/i]'+'\n';
@@ -25,17 +25,17 @@ strinL='[b]'+strinL+'[/b]'+'\n';
 var isForm=document.forms["postMsg"];
 if (isForm) {
 var input=document.forms["postMsg"].elements["postText"];
-input.value=input.value+strinL; 
+input.value=input.value+strinL;
 }
 else alert('{$l_accessDenied}');
 }
 }
 
-function pasteSel() { 
-if(document.getSelection) selection=document.getSelection(); 
-else if(document.selection) selection=document.selection.createRange().text; 
-else if(window.getSelection) selection=window.getSelection(); 
-else selection=''; 
+function pasteSel() {
+if(document.getSelection) selection=document.getSelection();
+else if(document.selection) selection=document.selection.createRange().text;
+else if(window.getSelection) selection=window.getSelection();
+else selection='';
 }
 
 function getQuotation() {
@@ -59,7 +59,7 @@ document.location='{$main_url}/{$indexphp}'+url;
 <table class=forums>
 <tr>
 <td width=25 align=center class=caption3><img src="{$main_url}/img/forum_icons/{$forumIcon}" width=16 height=16 alt=""></td>
-<td width="100%" class=caption3><b><a href="{$main_url}/{$indexphp}">{$sitename}</a></b> / <b><a href="{$linkToForums}">{$forumName}</a></b> / <b>{$topic_reverse}{$topicName}</b></td>
+<td width="100%" class=caption3><b><a title="Forum Listing" href="{$main_url}/{$indexphp}">{$sitename}</a></b> / <b><a title="Topic listing for {$forumName}" href="{$linkToForums}">{$forumName}</a></b> / <b>{$topic_reverse}{$topicName}</b></td>
 </tr>
 </table>
 
