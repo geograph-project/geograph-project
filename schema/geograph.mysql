@@ -427,8 +427,20 @@ CREATE TABLE `geobb_users` (
   PRIMARY KEY  (`user_id`)
 ) TYPE=MyISAM;
 
+#paul march 27th - expanded moderation system
+alter table gridimage 
+add column moderator_id int not null default '0',
+add column moderated datetime;
 
+#update old data
+update gridimage set moderator_id=1,moderated=submitted where moderation_status<>'pending';
 
+#add new moderation rights
+alter table user
+change column rights rights set('basic', 'moderator', 'admin');
+
+#give moderator rights to all admins
+update user set rights='basic,moderator,admin' where FIND_IN_SET('admin',rights)>0;
 
 
 
