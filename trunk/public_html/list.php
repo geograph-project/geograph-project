@@ -32,6 +32,9 @@ $smarty = new GeographPage;
 $template='list.tpl';
 $cacheid='';
 
+if (isset($_GET['refresh']))
+	$smarty->clear_cache($template, $cacheid);
+
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -53,7 +56,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$images=new ImageList;
 
 		$count=$images->getImagesByArea($prefix['origin_x'],$prefix['origin_x']+$prefix['width']-1,
-			$prefix['origin_y']-$prefix['height']+1,$prefix['origin_y']);
+			$prefix['origin_y']+$prefix['height']-1,$prefix['origin_y']);
 		if ($count>0)
 		{
 			$squares[$i]['images']=$images->images;
