@@ -5,7 +5,8 @@
   <div id="nav">
   <ul>
     <li><a title="Home Page" href="/">Home</a></li>
-    <li><a title="Browse the grid and submit photos" href="/browse.php">Browse &amp; Submit</a></li>
+    <li><a title="Browse the grid and submit photos" href="/browse.php">Browse</a></li>
+    <li><a title="Submit" href="/submit.php">Submit</a></li>
     <!--
     <li><a title="Members" href="/statistics.php">Statistics</a></li>
     -->
@@ -16,7 +17,8 @@
   {if $is_admin}
   <h3>Admin</h3>
   <ul>
-     <li><a title="Admin Tools" href="/admin/">Admin</a></li>
+     <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
+     <li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
      <li><a title="Grid Builder" href="/admin/gridbuilder.php">Grid Building</a></li>
      <li><a title="Map Maker" href="/admin/mapmaker.php">Map Maker</a></li>
   </ul>
@@ -29,8 +31,8 @@
   <div id="search">
     <div id="searchform">
     <form method="get" action="/search.php">
-    <label for="searchterm">Search</label> <input id="searchterm" type="text" name="q" value="" size="10"/>
-    <input id="searchbutton" type="submit" name="go" value="Find"/>
+    <div id="searchfield"><label for="searchterm">Search</label> <input id="searchterm" type="text" name="q" value="" size="10"/>
+    <input id="searchbutton" type="submit" name="go" value="Find"/></div>
     </form>
     </div>
     
