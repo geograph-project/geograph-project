@@ -44,7 +44,7 @@ require_once('adodb/adodb.inc.php');
 $DSN = $CONF['db_driver'].'://'.
 	$CONF['db_user'].':'.$CONF['db_pwd'].
 	'@'.$CONF['db_connect'].
-	'/'.$CONF['db_db'].'?persist";
+	'/'.$CONF['db_db'].'?persist';
 
 
 //adodb session configuration - we use same database
