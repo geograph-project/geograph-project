@@ -38,6 +38,20 @@
 require_once('geograph/map.class.php');
 
 /**
+* Geograph Bounding Box class
+*
+* method to pass a rectangle around
+*
+* @package Geograph
+*/
+class BoundingBox {
+	var $top;
+	var $left;
+	var $height;
+	var $width;
+}
+
+/**
 * Geograph Map Mosaic class
 *
 * Provides an abstraction of a group of GeographMap objects which can
@@ -141,6 +155,17 @@ class GeographMapMosaic
 		$this->map_y=intval($y);
 		return true;
 	}
+	
+	/**
+	* Set center of map in internal coordinates, returns true if valid
+	* @access public
+	*/
+	function reCenter($x,$y)
+	{
+		$this->map_x=intval($x - $this->image_w / $this->pixels_per_km/2);
+		$this->map_y=intval($y - $this->image_h / $this->pixels_per_km/2);
+		return true;
+	}
 
 	/**
 	* Set size of mosaic image
@@ -172,6 +197,28 @@ class GeographMapMosaic
 		$this->mosaic_factor=intval($factor);
 		return true;
 	}
+
+	/**
+	* get the bounding box in pixels in terms of another mosaic
+	* @access public
+	*/
+	function getBoundingBox($mosaic) {
+		$R = $this->pixels_per_km / $mosaic->pixels_per_km;
+	
+
+		$bounds = new BoundingBox;
+		$bounds->width = $mosaic->image_w * $R;
+		$bounds->height = $mosaic->image_h * $R;
+		
+		$bounds->left = ($mosaic->map_x - $this->map_x) * $this->pixels_per_km;
+		$bounds->top = ($mosaic->map_y - $this->map_y) * $this->pixels_per_km;
+		
+		$bounds->top =$this->image_h - $bounds->top - $bounds->height;
+		
+		return $bounds;
+	}
+
+
 
 	/**
 	* Return an opaque, url-safe token representing this mosaic
@@ -281,17 +328,27 @@ class GeographMapMosaic
 	*/
 	function getGridRef($x, $y)
 	{
+		if ($x == -1 && $y == -1) {
+			$x = intval($this->image_w / 2);
+			$y = intval($this->image_h / 2);
+		}
 		$db=&$this->_getDB();
 		
 		//invert the y coordinate
 		$y=$this->image_h-$y;
 		
 		//convert pixel pos to internal coordinates
-		$x_km=$this->origin_x + floor($x/$this->pixels_per_km);
-		$y_km=$this->origin_y + floor($y/$this->pixels_per_km);
+		$x_km=$this->map_x + floor($x/$this->pixels_per_km);
+		$y_km=$this->map_y + floor($y/$this->pixels_per_km);
+		
 		
 		//this could be done in one query, but it's a funky join for something so simple
 		$reference_index=$db->GetOne("select reference_index from gridsquare where x=$x_km and y=$y_km");
+				
+		##But what to do when the square is not on land??
+		if (!$reference_index) {
+			$reference_index = "1";
+		}
 				
 		$sql="select prefix,origin_x,origin_y from gridprefix ".
 			"where $x_km between origin_x and (origin_x+width-1) and ".
@@ -476,11 +533,11 @@ class GeographMapMosaic
 			$scale=40;
 			$mosaic=2;
 		}
-		elseif ($this->pixels_per_km == 40)
-		{
-			$scale=100;
-			$mosaic=2;
-		}
+		#elseif ($this->pixels_per_km == 40)
+		#{
+		#	$scale=100;
+		#	$mosaic=2;
+		#}
 		else
 		{
 			
