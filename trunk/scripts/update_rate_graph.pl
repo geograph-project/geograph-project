@@ -168,12 +168,12 @@ if ($now > 0)
 	my $submitted=0;
 	
 	my $sthCount = $dbh->prepare("select count(*) as cnt from gridimage where ".
-		"(unix_timestamp(submitted) between ($now-86400) and $now)");
-
+		"(unix_timestamp(submitted) between ($now-86400*7) and $now)");
+	
 	$sthCount->execute() || die($DBI::errstr);
 	if (my $row = $sthCount->fetchrow_hashref())
 	{
-	    $submitted=$row->{"cnt"};
+	    $submitted=$row->{"cnt"} / 7;
 	}
 
 	#print "t=$now submitted=$submitted\n";
@@ -201,7 +201,7 @@ if ($graph)
 		"--end now ".
 		#"--vertical-label=\"images per day\" ".
 		"DEF:submitted=$basepath/rate.rrd:submitted:AVERAGE ".
-		"LINE2:submitted#006000:submitted ";
+		"LINE2:submitted#006000:'average daily submissions' ";
 
 	`$cmd`;
 }
