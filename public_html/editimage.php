@@ -143,11 +143,10 @@ if (isset($_REQUEST['id']))
 				 		$image->imageclass=$imageclassother;
 				 	
 				 	//clear caches involving the image
-					$smarty->clear_cache('view.tpl', "{$image->gridimage_id}_0_0");
-					$smarty->clear_cache('view.tpl', "{$image->gridimage_id}_0_1");
-					$smarty->clear_cache('view.tpl', "{$image->gridimage_id}_1_0");
-					$smarty->clear_cache('view.tpl', "{$image->gridimage_id}_1_1");
-		
+					$smarty->clear_cache(null, "img{$image->gridimage_id}");
+					
+					//clear user specific stuff like profile page
+					$smarty->clear_cache(null, "user{$image->user_id}");
 		
 				 	$image->commitChanges();
 				 	header("Location: http://{$_SERVER['HTTP_HOST']}/view.php?id={$image->gridimage_id}");
