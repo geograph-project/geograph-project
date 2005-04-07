@@ -203,6 +203,9 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->setClass(stripslashes($_POST['imageclass']));
 				
 				$uploadmanager->commit();
+				
+				//clear user profile
+				$smarty->clear_cache(null, "user{$USER->user_id}");
 			}
 			
 			$step=5;

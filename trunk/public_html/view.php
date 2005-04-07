@@ -43,7 +43,7 @@ if (isset($_GET['id']))
 	$isowner=($image->user_id==$USER->user_id)?1:0;
 	$ismoderator=$USER->hasPerm('moderator')?1:0;
 	
-	$cacheid="{$_GET['id']}_{$isowner}_{$ismoderator}";
+	$cacheid="img{$_GET['id']}|{$isowner}_{$ismoderator}";
 	
 	//is the image rejected? - only the owner and administrator should see it
 	if ($image->moderation_status=='rejected')
