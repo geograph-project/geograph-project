@@ -33,7 +33,11 @@ corrected</li>
 </ul>
 {/dynamic}    
 
+<h2>Total Submissions</h2>
 <img src="/img/submission_graph.png" width="480" height="161"/>
+
+<h2>Daily Submission Rate</h2>
+<img src="/img/rate.png" width="480" height="161"/>
 
 <h2>Developer / Sysadmin Tools</h2>
 <ul>
