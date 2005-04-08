@@ -86,12 +86,10 @@ if (isset($_POST['gridsquare']))
 		if (isset($_POST['setpos']))
 		{
 			//Submit Step 1...
-			
-			require_once('geograph/vobmaps.class.php');
+			require_once('geograph/rastermap.class.php');
 
-			$vobmap = new VisionOfBritainMaps($square->getNatEastings(),$square->getNatNorthings());
-
-			$smarty->assign_by_ref('vobmap', $vobmap);
+			$rastermap = new RasterMap($square);
+			$smarty->assign_by_ref('rastermap', $rastermap);
 
 			$step=2;
 		}
