@@ -47,4 +47,11 @@ $CONF['minibb_admin_email']='root@wherever';
 //secret used for securing map tokens
 $CONF['token_secret']='CHANGETHIS';
 
+//mapping service to use for the rather maps 
+$CONF['raster_service']='';
+//valid values:
+// 'vob' - VisionOfBritain Historical Maps - Permission MUST be sought from the visionofbritain.org.uk webmaster before enableing this feature!
+
+
+
 ?>
