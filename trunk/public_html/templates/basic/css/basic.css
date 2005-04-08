@@ -229,6 +229,17 @@ div.caption
 	font-size:0.8em;
 }
 
+div.rastermap {
+  border: 1px solid #a9a9a9;
+  padding: 4px;
+  float:left; 
+  text-align:center;
+  z-index:5; 
+  padding:10px;
+ 
+}
+
+
 /* styling for a full size portrait photo*/
 div.photoportrait
 {
