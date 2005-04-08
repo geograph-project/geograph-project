@@ -63,7 +63,7 @@
 
 
 {*begin containing div for overview map*}
-<div style="position:relative;float:left;width:{$overview_width+20}px;margin-left:16px;">
+<div style="position:relative;float:left;width:{$overview_height+20}px;margin-left:16px;">
 
 <div class="map" style="height:{$overview_height+20}px;width:{$overview_width+20}px">
 <div class="cnr"></div>
@@ -166,6 +166,9 @@
    
    <p style="line-height:1em;font-size:0.8em;text-align:center">Grid Reference at centre
  <b>{$gridref}</b></p>
+ 
+   <p style="line-height:1em;font-size:0.8em;text-align:center">Map Width 
+ <br/><b>{$mapwidth} km</b></p>
  
    </td>
    <td><img alt="" src="/templates/basic/mapnav/shim.gif" width="1" height="103"/></td>
