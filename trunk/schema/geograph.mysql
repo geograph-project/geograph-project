@@ -442,5 +442,28 @@ change column rights rights set('basic', 'moderator', 'admin');
 #give moderator rights to all admins
 update user set rights='basic,moderator,admin' where FIND_IN_SET('admin',rights)>0;
 
+#row locking table (not yet used)
+#create table rowlock
+#(
+#	tablename varchar(32) not null,
+#	keyvalue varchar(32) not null,
+#	user_id int not null,
+#	expires datetime,
+#	
+#	primary key(tablename, keyvalue)
+#);
 
+#paul - 8th April - boundary polygons for gridsquares
+alter table gridprefix
+add column boundary varchar(128),
+add column labelcentre varchar(16);
 
+#define polygons to prevent GB/Irish overlaps
+update gridprefix set boundary="0,0,0,100,70,100,20,0", labelcentre="20,50" where prefix="T";
+update gridprefix set boundary="0,0,0,100,70,100,70,0", labelcentre="35,50" where prefix="O";
+update gridprefix set boundary="0,0,0,100,70,100,70,0", labelcentre="35,50" where prefix="J";
+update gridprefix set boundary="0,0,0,100,70,0", labelcentre="20,50" where prefix="D";
+update gridprefix set boundary="40,0,40,100,100,100,100,0", labelcentre="75,50" where prefix="SR";
+update gridprefix set boundary="40,0,40,65,100,65,100,0", labelcentre="75,50" where prefix="SM";
+update gridprefix set boundary="80,0,80,100,100,100,100,0", labelcentre="90,50" where prefix="NW";
+update gridprefix set boundary="0,64,0,100,100,100,100,0,44,0", labelcentre="70,50" where prefix="NR";
