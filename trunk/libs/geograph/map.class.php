@@ -454,6 +454,7 @@ class GeographMap
 		
 		$colMarker=imagecolorallocate($img, 255,0,0);
 		$colBorder=imagecolorallocate($img, 255,255,255);
+		$colAlias=imagecolorallocate($img, 182,163,57);
 		
 		//figure out what we're mapping in internal coords
 		$db=&$this->_getDB();
@@ -504,14 +505,43 @@ class GeographMap
 				
 			if ($this->pixels_per_km<0.3)
 			{
+				$rgb = imagecolorat($img, $imgx1, $imgy1);
+				imagesetpixel($img,$imgx1, $imgy1,$colMarker);
+				
+				$rgb = imagecolorat($img, $imgx1+1, $imgy1);
+				imagesetpixel($img,$imgx1+1, $imgy1,($rgb==$colAlias||$rgb==$colMarker)?$colMarker:$colAlias);
+				
+				$rgb = imagecolorat($img, $imgx1, $imgy1+1);
+				imagesetpixel($img,$imgx1, $imgy1+1,($rgb==$colAlias||$rgb==$colMarker)?$colMarker:$colAlias);
+				
+				$rgb = imagecolorat($img, $imgx1+1, $imgy1+1);
+				imagesetpixel($img,$imgx1+1, $imgy1+1,($rgb==$colAlias||$rgb==$colMarker)?$colMarker:$colAlias);
+				
 				//imagesetpixel($img, $imgx1, $imgy1, $colMarker);
-				imagefilledrectangle ($img, $imgx1, $imgy1, $imgx1+1, $imgy1+1, $colMarker);
+				//imagefilledrectangle ($img, $imgx1, $imgy1, $imgx1+1, $imgy1+1, $colMarker);
 			}
-			elseif ($this->pixels_per_km<=1)
+			elseif ($this->pixels_per_km<1)
 			{
-				//nice large marker
-				imagefilledrectangle ($img, $imgx1-2, $imgy1-1, $imgx1+2, $imgy1+1, $colMarker);
-				imagefilledrectangle ($img, $imgx1-1, $imgy1-2, $imgx1+1, $imgy1+2, $colMarker);
+				//plot a simple cross
+				imageline ($img, $imgx1-1, $imgy1, $imgx1+1, $imgy1, $colMarker);
+				imageline ($img, $imgx1, $imgy1-1, $imgx1, $imgy1+1, $colMarker);
+				
+				//antialias corners if not already marked
+				$rgb = imagecolorat($img, $imgx1-1, $imgy1-1);
+				if ($rgb!=$colMarker)
+					imagesetpixel($img,$imgx1-1, $imgy1-1,$colAlias);
+				
+				$rgb = imagecolorat($img, $imgx1+1, $imgy1-1);
+				if ($rgb!=$colMarker)
+					imagesetpixel($img,$imgx1+1, $imgy1-1,$colAlias);
+				
+				$rgb = imagecolorat($img, $imgx1-1, $imgy1+1);
+				if ($rgb!=$colMarker)
+					imagesetpixel($img,$imgx1-1, $imgy1+1,$colAlias);
+				
+				$rgb = imagecolorat($img, $imgx1+1, $imgy1+1);
+				if ($rgb!=$colMarker)
+					imagesetpixel($img,$imgx1+1, $imgy1+1,$colAlias);
 			}
 			elseif ($this->pixels_per_km<=4)
 			{
