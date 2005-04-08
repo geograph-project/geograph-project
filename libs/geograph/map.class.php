@@ -556,6 +556,99 @@ class GeographMap
 			$recordSet->MoveNext();
 		}
 		$recordSet->Close(); 
+
+		//plot grid square?
+		if ($this->pixels_per_km>=0)
+		{
+			$gridcol=imagecolorallocate ($img, 109,186,178);
+			
+			$text1=imagecolorallocate ($img, 255,255,255);
+			$text2=imagecolorallocate ($img, 0,64,0);
+			
+
+
+			$sql="select * from gridprefix where ".
+				"origin_x between $scanleft-width and $scanright and ".
+				"origin_y between $scanbottom-height and $scantop ".
+				"and landcount>0";
+			
+			$recordSet = &$db->Execute($sql);
+			while (!$recordSet->EOF) 
+			{
+				$origin_x=$recordSet->fields['origin_x'];
+				$origin_y=$recordSet->fields['origin_y'];
+				$w=$recordSet->fields['width'];
+				$h=$recordSet->fields['height'];
+
+				//get polygon of boundary relative to corner of square
+				if (strlen($recordSet->fields['boundary']))
+				{
+					$polykm=explode(',', $recordSet->fields['boundary']);
+					$labelkm=explode(',', $recordSet->fields['labelcentre']);
+				}
+				else
+				{
+					$polykm=array(0,0, 0,100, 100,100, 100,0);
+					$labelkm=array(50,50);
+				}
+				
+				//now convert km to pixels
+				$poly=array();
+				$label=array();
+				$pts=count($polykm)/2;
+				for($i=0; $i<$pts; $i++)
+				{
+					$poly[$i*2]=round(($polykm[$i*2]+$origin_x-$left)* $this->pixels_per_km);
+					$poly[$i*2+1]=round(($this->image_h-($polykm[$i*2+1]+$origin_y-$bottom)* $this->pixels_per_km));
+				}
+				
+				$labelx=round(($labelkm[0]+$origin_x-$left)* $this->pixels_per_km);
+				$labely=round(($this->image_h-($labelkm[1]+$origin_y-$bottom)* $this->pixels_per_km));
+				
+				
+				imagepolygon($img, $poly,$pts,$gridcol);
+
+
+
+				if($this->pixels_per_km>=0.3)
+				{
+					//font size 1= 4x6
+					//font size 2= 6x8 normal
+					//font size 3= 6x8 bold
+					//font size 4= 7x10 normal
+					//font size 5= 8x10 bold
+					
+					if($this->pixels_per_km>=1)
+						$font=5;
+					else
+						$font=3;
+						
+					
+					$text=$recordSet->fields['prefix'];
+					
+					switch($font)
+					{
+						case 3:
+							$txtw=strlen($text)*7;
+							$txth=8;
+							break;
+						case 5:
+							$txtw=strlen($text)*8;
+							$txth=10;
+							break;
+					}
+
+					$txtx=round($labelx - $txtw/2);
+					$txty=round($labely - $txth/2);
+
+					imagestring ($img, $font, $txtx+1,$txty+1, $text, $text2);
+					imagestring ($img, $font, $txtx,$txty, $text, $text1);
+				}
+
+				$recordSet->MoveNext();
+			}
+			$recordSet->Close(); 		
+		}
 				
 		$target=$this->getImageFilename();
 		imagepng($img, $root.$target);
