@@ -400,7 +400,7 @@ class GeographMapMosaic
 		
 		$n=$y_km-$prefix['origin_y'];
 		$e=$x_km-$prefix['origin_x'];
-		return sprintf('%s%02d%02d', $prefix['prefix'], $n, $e);
+		return sprintf('%s%02d%02d', $prefix['prefix'], $e, $n);
 	}
 	
 	/**
@@ -578,8 +578,9 @@ class GeographMapMosaic
 		$bestoriginy=max($bestoriginy, 0);
 		$bestoriginy=min($bestoriginy, 1220);
 		
-		//find closest aligned origin
-		$originx=round($bestoriginx/$walign)*$walign;
+		//find closest aligned origin - we've got a hard coded
+		//alignment here to the GB grid origin
+		$originx=round(($bestoriginx-206)/$walign)*$walign+206;
 		$originy=round($bestoriginy/$halign)*$halign;
 
 		$this->setOrigin($originx, $originy);
