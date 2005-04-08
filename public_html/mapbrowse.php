@@ -49,6 +49,9 @@ $smarty = new GeographPage;
 $mosaic=new GeographMapMosaic;
 $overview=new GeographMapMosaic('overview');
 
+if ($_GET['o'])
+	$overview->setToken($_GET['o']);
+	
 if (isset($_GET['t']))
 	$mosaic->setToken($_GET['t']);
 
@@ -147,6 +150,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	//assign all the other useful stuff
 
 	$smarty->assign('gridref', $mosaic->getGridRef(-1,-1));
+	$smarty->assign('mapwidth', round($mosaic->image_w /$mosaic->pixels_per_km ) );
 	
 	$smarty->assign('token_zoomin', $mosaic->getZoomInToken());
 	$smarty->assign('token_zoomout', $mosaic->getZoomOutToken());
