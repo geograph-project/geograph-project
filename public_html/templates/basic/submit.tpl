@@ -69,14 +69,11 @@
 {if $step eq 2}
 
 	<h2>Submit Step 2 of 4 : Upload photo for {$gridref}</h2>
-
-<div style="float:right; text-align:center;">
-<b>Map of {$gridref} from 1920's</b><br/>
-{$vobmap->getImageTag()}<br/>
-<span style="color:gray"><small>Historical Map &copy;<a href="http://www.visionofbritain.org.uk/">VisionOfBritain.org.uk</a></small></span>
-</div>
-
-	
+{if $rastermap->enabled}
+	<div style="float:left;width:50%;position:relative">
+{else}
+	<div>
+{/if}
 	{if $imagecount gt 0}
 		<p style="color:#440000">We already have 
 		{if $imagecount eq 1}an image{else}{$imagecount} images{/if} 
@@ -94,11 +91,21 @@
 	<br />
 	<p>You might like to check you've selected the correct square by
 	viewing the Modern {getamap gridref=$gridref text="OS Map for $gridref"}</p>
+</div>
+
+{if $rastermap->enabled}
+	<div class="rastermap" style="width:45%;position:relative">
+	<b>{$rastermap->getTitle($gridref)}</b><br/><br/>
+	{$rastermap->getImageTag()}<br/>
+	<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
+	</div>
+{/if}
+
 	
 
-
-	<br style="clear:right"/>
+	<br/>
 	<input type="submit" name="goback" value="&lt; Back"/> <input type="submit" name="upload" value="Next &gt;"/>
+	<br style="clear:right"/>
 	
 {/if}
 
