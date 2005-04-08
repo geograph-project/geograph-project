@@ -12,7 +12,7 @@ any problems, please <a title="Contact Us" href="contact.php">contact us</a></p>
 <h2>Forgot your password?</h2>
 
 
-<form action="forgotten.php" method="post">
+<form action="/forgotten.php" method="post">
     
 <p>Enter your email address below and we'll email you a reminder...</p>
 
