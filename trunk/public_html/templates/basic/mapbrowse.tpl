@@ -227,9 +227,8 @@ You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the
 
 {/if}
  
- &nbsp;
- 
-
+<p style="font-size:8pt" align="center"><i>Great Britain outline reproduced from Ordnance Survey map data<br/> by 
+    permission of the Ordnance Survey &copy; Crown copyright 2001.</i></p> 
 
  
 {include file="_std_end.tpl"}
