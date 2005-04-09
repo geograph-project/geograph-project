@@ -535,7 +535,7 @@ class GeographUser
 								{
 									$token = md5(uniqid(rand(),1)); 
 									$db->query("insert into autologin(user_id,token) values ('{$this->user_id}', '$token')");
-									setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365);  
+									setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365,'/');  
 								}
 								
 								//we're changing privilege state, so we should
@@ -655,7 +655,7 @@ class GeographUser
 						//given the user a new one
 						$token = md5(uniqid(rand(),1)); 
 						$db->query("insert into autologin(user_id,token) values ('{$this->user_id}', '$token')");
-						setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365);  
+						setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365,'/');  
 					
 					}
 								
@@ -665,7 +665,7 @@ class GeographUser
 			//clear the cookie?
 			if (!$valid)
 			{
-				setcookie('autologin', '', time()-3600*24*365);  
+				setcookie('autologin', '', time()-3600*24*365,'/');  
 					
 			}
 		}
