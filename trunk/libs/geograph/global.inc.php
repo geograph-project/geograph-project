@@ -90,6 +90,9 @@ function smarty_block_dynamic($param, $content, &$smarty)
 */
 function smarty_function_getamap($params)
 {
+  	
+  	$icon="<img style=\"padding-left:2px;\" title=\"External link - opens in popup window\" src=\"/img/external.png\" width=\"10\" height=\"10\"/>";
+  	
   	//get params
   	$gridref4=$params['gridref'];
   	if (preg_match('/([A-Z]{1,2})(\d\d)(\d\d)/i', $gridref4))
@@ -104,7 +107,7 @@ function smarty_function_getamap($params)
 		$gridref6=preg_replace('/([A-Z]{1,2})(\d\d)(\d\d)/i', 
 			'${1}${2}5${3}5', $gridref4);
 
-		return "<a title=\"Ordnance Survey Get-a-Map for $gridref4\" href=\"javascript:popupOSMap('$gridref6')\">$text</a>";
+		return "<a title=\"Ordnance Survey Get-a-Map for $gridref4\" href=\"javascript:popupOSMap('$gridref6')\">$text</a>$icon";
   	}
   	else if (empty($gridref4)) 
   	{
@@ -112,7 +115,7 @@ function smarty_function_getamap($params)
 			$text=$params['text'];
 		else
 			$text='OS Get-A-Map';
-  		return "<a title=\"Ordnance Survey Get-a-Map\" href=\"javascript:popupOSMap('')\">$text</a>";
+  		return "<a title=\"Ordnance Survey Get-a-Map\" href=\"javascript:popupOSMap('')\">$text</a>$icon";
   	} 
   	else
   	{
@@ -122,6 +125,30 @@ function smarty_function_getamap($params)
 }
 
 
+/**
+* Smarty external site linker
+* 
+* Provides centralised formatting of external links
+* href, title and text are the params here...
+*/
+function smarty_function_external($params)
+{
+  	//get params and use intelligent defaults...
+  	$href=$params['href'];
+  	if (isset($params['text']))
+  		$text=$params['text'];
+  	else
+  		$text=$href;
+  	
+  	if (isset($params['title']))
+		$title=$params['title'];
+	else
+		$title=$text;
+  	
+  	return "<a title=\"$title\" href=\"$href\">$text</a>".
+  		"<img style=\"padding-left:2px;\" title=\"External link - shift click to open in new window\" src=\"/img/external.png\" width=\"10\" height=\"10\"/>";
+  	  	
+}
 
 
 
@@ -161,6 +188,9 @@ class GeographPage extends Smarty
 		
 		//handy function for linking to getamap
 		$this->register_function("getamap", "smarty_function_getamap");
+		
+		//external site linker...
+		$this->register_function("external", "smarty_function_external");
 
 
 		//assign globallly useful stuff
