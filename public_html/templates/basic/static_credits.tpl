@@ -12,7 +12,7 @@
 	<h3>Photographs</h3>
     <ul>
     <li>Copyright on all photographs is retained by the original submitters, but all are 
-    published under a <a title="Creative Commons website" href="http://creativecommons.org" target="_blank">Creative Commons</a> licence -
+    published under a {external title="Creative Commons website" href="http://creativecommons.org" text="Creative Commons"} licence -
     each individual photograph on the site details the original photographer and their precise licence terms.</li>
     </ul>
     
@@ -20,32 +20,31 @@
     <ul>
     <li>{mailto address="paul@elphin.com" text="Paul Dixon" encode="javascript"} managed the
     software development as an open-source, GPL licenced project, and was responsible for 
-    much of the coding / design. He hopes you'll want to contract him for your next web
-    project through <a href="http://www.elphin.com/" title="Elphin Limited" target="_blank">Elphin Limited</a>!</li>
+    much of the coding / design. Paul can be contracted through his company
+    {external href="http://www.elphin.com/" title="Elphin Limited" text="Elphin Limited"}.</li>
     
     <li>{mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}, 
     developer and maintainer of 
-    <a title="Trigtools Website" href="http://www.trigtools.co.uk" target="_blank">www.trigtools.co.uk</a> has
+    {external title="Trigtools Website" href="http://www.trigtools.co.uk" text="www.trigtools.co.uk"} has
     contributed numerous fixes and enhancements, as well as lending his
     experience of working with mapping technologies.</li>
     </ul>
     
-    <h3>Base Maps</h3>
+    <h3>Mapping Data</h3>
     <ul>
-    <li>Historical Maps from the mid 20<sup>th</sup> century kindly made available by <a href="http://www.visionofbritain.org.uk/"
-    title="a Vision of Britain" target="_blank">VisionOfBritain.org.uk</a>. <small>We have just started to 
-    include Historic Maps in the submit process, to help with identifing the correct grid square, 
-    look out for these maps in other parts of the site soon.</small></li>
-    <li>Great Britain outline reproduced from <a title="Ordnance Survey Outline Maps" 
-    href="http://www.ordnancesurvey.co.uk/oswebsite/freefun/outlinemaps/" target="_blank">Ordnance Survey map data</a> by 
+    <li>Historical Maps from the mid 20<sup>th</sup> century kindly made available by 
+    {external href="http://www.visionofbritain.org.uk/" title="a Vision of Britain" text="VisionOfBritain.org.uk"}.</li>
+    <li>Great Britain outline reproduced from {external title="Ordnance Survey Outline Maps" 
+    href="http://www.ordnancesurvey.co.uk/oswebsite/freefun/outlinemaps/" text="Ordnance Survey map data"} by 
     permission of the Ordnance Survey &copy; Crown copyright 2001. </li>
-    <li>Ireland outline reproduced from 1990 World Vector Shoreline dataset by <a href="http://www.nima.mil/" 
-    title="U.S. National Imagery and Mapping Agency" target="_blank">MIMA</a>, not subject to copyright protection under 17 U.S.C. 403. (apparently)</li> 
+    <li>Ireland outline reproduced from 1990 World Vector Shoreline dataset by 
+    {external href="http://www.nima.mil/" title="U.S. National Imagery and Mapping Agency" text="MIMA"}, 
+    not subject to copyright protection under 17 U.S.C. 403.</li> 
     </ul>
     
     <h3>Hosting</h3>
     <ul>
-    <li>Dedicated server generously donated by <a title="Visit Positive Internet website" href="http://www.positive-internet.com/" target="_blank">Positive Internet</a>
+    <li>Dedicated server generously donated by {external title="Visit Positive Internet website" href="http://www.positive-internet.com/" text="Positive Internet"}
     - If you need GNU/Linux hosting with staff that know what they are talking about, we highly recommend them!
     </li> 
     </ul>

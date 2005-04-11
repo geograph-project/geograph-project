@@ -12,8 +12,7 @@ grid square.
 and physical geographical information they contain.</p>
 
 <p>You can plan your Geograph using a hardcopy map or by visiting the 
-<a title="Ordnance Survey Get-a-Map" href="http://www.ordnancesurvey.co.uk/oswebsite/getamap/">Ordnance 
-Survey Get-a-Map</a> website or for really high tech geographing, you could use a 
+{external title="Ordnance Survey Get-a-Map" href="http://www.ordnancesurvey.co.uk/oswebsite/getamap/" text="Ordnance Survey Get-a-Map"} website or for really high tech geographing, you could use a 
 Pocket PC or GPS equipped with mapping software (for example Memory Map).</p>
 
 <h3>Example</h3>
