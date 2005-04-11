@@ -38,7 +38,7 @@
 <h3>Do you have an RSS feed?</h3>
     <p>RSS, or Really Simple Syndication, allows you to obtain an up-to-date listing of
     the latest geograph submissions for integration into another website or RSS reader. For more information,
-    try this <a title="Wikipedia article on RSS" href="http://en.wikipedia.org/wiki/RSS_(protocol)">Wikipedia article on RSS</a>.</p>
+    try this {external href="http://en.wikipedia.org/wiki/RSS_(protocol)" text="Wikipedia article on RSS"}.</p>
     
     
     <p>We provide an RSS1.0 feed at 
@@ -53,7 +53,7 @@
     <a title="Geograph JavaScript feed" href="http://{$http_host}/syndicator.php?format=JS">JavaScript</a>
     formats.</p>
     
-    <p>If you use the <a title="Firefox Web Browser" href="http://www.mozilla.org/products/firefox/">Firefox</a> web browser, 
+    <p>If you use the {external title="Firefox Web Browser" href="http://www.mozilla.org/products/firefox/" text="Firefox"} web browser, 
     you should be able use our feed as a "live bookmark" - simply
     click the orange button in the bottom right of your browser window.</p>    
 
@@ -65,11 +65,11 @@
     <p>Putting this together requires many people to donate their
     time or resources, and we wanted to be sure that we created a resource
     free from commercial exploitation in future. To that end, the site
-    <a title="geograph source code" href="http://geograph.sourceforge.net">source code</a> is available 
+    {external title="geograph source code" href="http://geograph.sourceforge.net" text="source code"} is available 
     for re-use under the terms of the GNU Public Licence (GPL).</p>
     
     <p>In addition, we require all submitters to adopt a 
-    <a href="http://creativecommons.org">Creative Commons</a> 
+    {external href="http://creativecommons.org" text="Creative Commons"} 
     licence on their photographic submissions. While our volunteer photographers
     keep copyright on their photos, they also grant the use of their photographs
     in return for attribution (take a look at a <a title="View a typical photograph" href="/photo/14">typical 
