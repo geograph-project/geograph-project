@@ -297,7 +297,7 @@ if (!check_http('/photo/999999', '/image not available/',$httperr))
 	fail("mod_rewrite rule for /photo/<em>id</em> failed ($httperr) - REQUIRED");
 
 status("checking /mapbrowse.php rewrite rules...");
-if (!check_http('/mapbrowse.php?t=dummy&i=2&j=2&zoomin=1?43,72', '/TL0094/',$httperr))
+if (!check_http('/mapbrowse.php?t=dummy&i=2&j=2&zoomin=1?43,72', '/TM0000/',$httperr))
 	fail("mod_rewrite rule for mapbrowse.php image maps failed ($httperr) - REQUIRED");
 
 
