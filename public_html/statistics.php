@@ -26,10 +26,14 @@ init_session();
 
 $smarty = new GeographPage;
 
-$by = $_GET['by'];
-$ri = intval($_GET['ri']);
-$u = intval($_GET['u']);
-$order = $_GET['order'];
+if (isset($_GET['by']) && preg_match('/^\w+$/' , $_GET['by']))
+	$by = $_GET['by'];
+if (isset($_GET['ri']) && preg_match('/^[0-9]+$/' , $_GET['ri']))
+	$ri = intval($_GET['ri']);
+if (isset($_GET['u']) && preg_match('/^[0-9]+$/' , $_GET['u']))
+	$u = intval($_GET['u']);
+if (isset($_GET['order']) && preg_match('/^\w+$/' , $_GET['order']))
+	$order = $_GET['order'];
 
 $template='statistics.tpl';
 $cacheid='statistics|'.$by.'_'.$ri.'_'.$u.'_'.$order;
@@ -37,29 +41,38 @@ $cacheid='statistics|'.$by.'_'.$ri.'_'.$u.'_'.$order;
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
+$references = array(1 => 'Great Britain',2 => 'Ireland');
+$smarty->assign_by_ref('references',$references);	
+
+$bys = array('status' => 'Status','class' => 'Category','gridsq' => 'Grid Square');
+$smarty->assign_by_ref('bys',$bys);
+
+$smarty->assign('by', $by);
+
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 	#$db->debug = true;
-	$smarty->assign('references',array(1 => 'Great Britain',2 => 'Ireland'));
-	
-
-	$bys = array('type' => 'Image Type','class' => 'Category','gridsq' => 'Grid Square');
-
-	$smarty->assign_by_ref('bys',$bys);
-	
-	$smarty->assign('by', $by);
 	
 	
+	
+//------------------
+// Breakdown Section
+//------------------
 	if ($by) {
 		$smarty->assign('title', $bys[$by]);
+		
+		$title = "Breakdown of Photos by ".$bys[$by];
+		
 		if (!$ri)
 			$ri = 1;
 		$smarty->assign('ri', $ri);
 		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 		
-		if ($by == 'type') {
+		$title .= " in ".$references[$ri];
+		
+		if ($by == 'status') {
 			$sql_group = $sql_fieldname = 'moderation_status';
 		} else if ($by == 'class') {
 			$sql_group = $sql_fieldname = 'imageclass';
@@ -73,8 +86,14 @@ if (!$smarty->is_cached($template, $cacheid))
 			$user_crit = " and user_id = $u";
 			$link .= "&amp;u=$u";
 			$smarty->assign_by_ref('u', $u);
-		}
+			
+			
+			$profile=new GeographUser($u);
+			$smarty->assign_by_ref('profile', $profile);
+			$title .= " for ".($profile->realname);
+		} 
 		$smarty->assign_by_ref('link', $link);
+		$smarty->assign_by_ref('h2title', $title);
 		
 		
 		
@@ -105,31 +124,35 @@ $sql_order";
 		foreach($breakdown as $idx=>$entry) {
 			$total += $breakdown[$idx]['c'];
 		}
-		if ($total > 0)
+		if ($total > 0) {
 			$totalperc = 100 /$total;
 		
-		foreach($breakdown as $idx=>$entry)
-		{
-			$breakdown[$idx]['per'] = sprintf("%.2f",$breakdown[$idx]['c'] * $totalperc);
-			if (!$breakdown[$idx]['field'])
-				$breakdown[$idx]['field'] = "<i>-unspecified-</i>";
-		}
-		
-		if ($by == 'type') {
-			$friendly = array('rejected' => 'Rejected', 'pending' => 'Pending', 'accepted' => 'Supplemental', 'geograph' => 'Geograph');
-			foreach($breakdown as $idx=>$entry) {
-				$breakdown[$idx]['field'] = $friendly[$breakdown[$idx]['field']];
+			foreach($breakdown as $idx=>$entry)
+			{
+				$breakdown[$idx]['per'] = sprintf("%.2f",$breakdown[$idx]['c'] * $totalperc);
+				if (!$breakdown[$idx]['field'])
+					$breakdown[$idx]['field'] = "<i>-unspecified-</i>";
+			}
+
+			if ($by == 'type') {
+				$friendly = array('rejected' => 'Rejected', 'pending' => 'Pending', 'accepted' => 'Supplemental', 'geograph' => 'Geograph');
+				foreach($breakdown as $idx=>$entry) {
+					$breakdown[$idx]['field'] = $friendly[$breakdown[$idx]['field']];
+				}
 			}
 		}
 		
 		$smarty->assign_by_ref('total', $total);
 		$smarty->assign_by_ref('breakdown', $breakdown);
+		
+//------------------
+// General Section
+//------------------
 	} else {
 
-		
 
 		$smarty->assign('users_submitted',  $db->GetOne("select count(distinct user_id) from gridimage"));
-		$smarty->assign('users_total',  $db->GetOne("select count(*) from user where rights>0"));
+		#$smarty->assign('users_total',  $db->GetOne("select count(*) from user where rights>0"));
 		$smarty->assign('users_thisweek',  $db->GetOne("select count(*) from user where rights>0 and (unix_timestamp(now())-unix_timestamp(signup_date))<604800"));
 
 		$smarty->assign("images_ftf",  $db->GetOne("select count(*) from gridimage where ftf = 1"));
@@ -149,8 +172,20 @@ $sql_order";
 			$smarty->assign("grid_total_$ri",  $db->CacheGetOne(100*24*3600,"select count(*) from gridprefix where reference_index = $ri and landcount > 0"));
 			$smarty->assign("grid_submitted_$ri",  $db->GetOne("select count(distinct substring(grid_reference,1,$letterlength)) from gridimage inner join gridsquare using (gridsquare_id) where reference_index = $ri"));
 		}
+		foreach (array('images_total','images_thisweek','squares_total','squares_submitted','geographs_submitted') as $name) {
+			$smarty->assign($name.'_both',$smarty->get_template_vars($name.'_1')+$smarty->get_template_vars($name.'_2'));
+		}
+		foreach (array('both','1','2') as $name) {
+			$smarty->assign('percent_'.$name,sprintf("%.3f",$smarty->get_template_vars('squares_submitted_'.$name)/$smarty->get_template_vars('squares_total_'.$name)*100));
+		}
 	}
 	$smarty->assign("gentime",date("D, d M Y H:i:s"));
+} else {
+	//bare minimum for the dynamic section
+	if ($u) {
+		$profile=new GeographUser($u);
+		$smarty->assign_by_ref('profile', $profile);
+	}
 }
 
 

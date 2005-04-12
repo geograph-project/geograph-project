@@ -5,8 +5,8 @@
     <h2>Overview Statistics for Geograph British Isles</h2>
 
 <ul>
-<li><b>{$users_submitted}/{$users_total}</b> of Registered Users have Submitted Images</li>
-<li><b>{$users_thisweek}</b> new users in past 7 days</li>
+<li><b>{$users_submitted}</b> Users have Submitted Images</li>
+<li><b>{$users_thisweek}</b> new Users in past 7 days</li>
 <li>A total of <b>{$images_ftf}</b> Geograph Points have been awarded</p>
 </ul>
 
@@ -19,27 +19,33 @@
 </tr></thead>
 <tbody><tr>
 	<th>Images Submitted</th>
-	<td><b>{$images_total_1}</b></td>
-	<td><b>{$images_total_2}</b></td>
-	<td>{$images_total_1+$images_total_2}</td>
+	<td><b>{$images_total_1|thousends}</b></td>
+	<td><b>{$images_total_2|thousends}</b></td>
+	<td>{$images_total_both|thousends}</td>
 </tr>
 <tr>
 	<th>&nbsp;[in past 7 days]</th>
-	<td><b>{$images_thisweek_1}</b></td>
-	<td><b>{$images_thisweek_2}</b></td>
-	<td>{$images_thisweek_1+$images_thisweek_2}</td>
+	<td><b>{$images_thisweek_1|thousends}</b></td>
+	<td><b>{$images_thisweek_2|thousends}</b></td>
+	<td>{$images_thisweek_both|thousends}</td>
 </tr>
 <tr>
 	<th>1km<sup>2</sup> Grid Squares</th>
-	<td><b>{$squares_submitted_1}</b><br/>/{$squares_total_1}</td>
-	<td><b>{$squares_submitted_2}</b><br/>/{$squares_total_2}</td>
-	<td valign="top">{$squares_submitted_1+$squares_submitted_2}<br/>/{$squares_total_1+$squares_total_2}</td>
+	<td><b>{$squares_submitted_1|thousends}</b><br/>/{$squares_total_1|thousends}</td>
+	<td><b>{$squares_submitted_2|thousends}</b><br/>/{$squares_total_2|thousends}</td>
+	<td valign="top">{$squares_submitted_both|thousends}<br/>/{$squares_total_both|thousends}</td>
+</tr>
+<tr>
+	<th>&nbsp;[as percentage]</th>
+	<td><b>{$percent_1}%</b></td>
+	<td><b>{$percent_2}%</b></td>
+	<td>{$percent_both}%</td>
 </tr>
 <tr>
 	<th>&nbsp;[with geograph(s)]</th>
-	<td><b>{$geographs_submitted_1}</b></td>
-	<td><b>{$geographs_submitted_2}</b></td>
-	<td>{$geographs_submitted_1+$geographs_submitted_2}</td>
+	<td><b>{$geographs_submitted_1|thousends}</b></td>
+	<td><b>{$geographs_submitted_2|thousends}</b></td>
+	<td>{$geographs_submitted_both|thousends}</td>
 </tr>
 <tr>
 	<th>100km<sup>2</sup> Grid Squares</th>
@@ -57,14 +63,15 @@
     <p>View breakdown of images by 
     <select name="by">
     	{html_options options=$bys selected=$by}
-    </select> for <select name="ri">
+    </select> in <select name="ri">
     	{html_options options=$references selected=$ri}
     </select> 
     
+    {dynamic}
     {if $user->registered}
 	<select name="u">
 		{if $u && $u != $user->user_id}
-			<option value="{$u}">Just for Selected User</option>
+			<option value="{$u}">Just for {$profile->realname}</option>
 		{/if}
 		<option value="{$user->user_id}">Just for {$user->realname}</option>
 		<option value="" {if !$u} selected{/if}>For Everyone</option>
@@ -72,16 +79,18 @@
     {else}
 	{if $u}
 	<select name="u">
-		<option value="{$u}">Just for Selected User</option>
+		<option value="{$u}">Just for {$profile->realname}</option>
 		<option value="">For Everyone</option>
 	</select>
 	{/if}
     {/if}
+    {/dynamic}
     <input type="submit" value="Go"></p></form>
     
 
     
 {if $by}
+	<h3>{$h2title}</h3>
 	{if $total > 0}
 	<p><small>Click a column header to change the sort order.</small></p>
 
