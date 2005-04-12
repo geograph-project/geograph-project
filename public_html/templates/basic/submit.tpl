@@ -182,6 +182,7 @@ function onChangeImageclass()
 	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()">
 		<option value="">--please select feature--</option>
 		{html_options options=$classes selected=$imageclass}
+		<option value="Other">Other...</option>
 	</select>
 
 <span id="otherblock" {if $imageclass ne 'Other'}style="display:none;"{else}style="display:inline;"{/if}>
@@ -233,7 +234,7 @@ function onChangeImageclass()
 	<li>The right to modify the image to create derivative works</li>
 	</ul>
 	
-	<p><a title="View licence" target="_blank" href="http://creativecommons.org/licenses/by-sa/2.0/">Here is the Commons Deed outlining the licence terms</a></p>
+	<p>{external title="View licence" href="http://creativecommons.org/licenses/by-sa/2.0/" text="Here is the Commons Deed outlining the licence terms"}</p>
 	
 	
 	<p>If you do
