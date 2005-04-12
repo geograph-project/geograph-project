@@ -19,6 +19,7 @@
   <h3>Admin</h3>
   <ul>
     <li><a title="Statistics" href="/statistics.php">Statistics(beta)</a></li>
+    <li><a title="Moversboard" href="/moversboard.php">Moversboard(alpha)</a></li>
     <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
      <li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
      <li><a title="Server Stats" href="http://www.geograph.co.uk/logs/">Server Stats</a></li>
