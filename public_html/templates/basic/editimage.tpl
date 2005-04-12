@@ -78,6 +78,7 @@ function onChangeImageclass()
 	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()">
 		<option value="">--please select feature--</option>
 		{html_options options=$classes selected=$image->imageclass}
+		<option value="Other">Other...</option>
 	</select>
 	
 	
