@@ -65,7 +65,7 @@ Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> 
   {if $user->registered}
   	  Logged in as {$user->realname|escape:'html'}
   	  <span class="sep">|</span>
-  	  <a title="Profile" href="/profile.php">profile</a>
+  	  <a title="Profile" href="/profile.php?u={$user->user_id}">profile</a>
   	  <span class="sep">|</span>
   	  <a title="Log out" href="/logout.php">logout</a>
   {else}
