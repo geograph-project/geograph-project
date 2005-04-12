@@ -150,6 +150,15 @@ function smarty_function_external($params)
   	  	
 }
 
+/**
+* adds commas to thousendise a number
+* 
+* todo: make more generic!
+*/
+function smarty_function_thousends($input) {
+	return preg_replace("/([0-9]{3})$/",',$1',$input);
+}
+
 
 
 /**
@@ -191,6 +200,8 @@ class GeographPage extends Smarty
 		
 		//external site linker...
 		$this->register_function("external", "smarty_function_external");
+
+		$this->register_modifier("thousends", "smarty_function_thousends");
 
 
 		//assign globallly useful stuff
