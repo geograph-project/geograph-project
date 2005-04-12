@@ -59,9 +59,6 @@ if (isset($_REQUEST['id']))
 				$image->imageclass="Other";
 			}
 			
-			//add other to the end
-			$classes['Other']='Other...';
-			
 			$smarty->assign_by_ref('classes', $classes);
 			$smarty->assign_by_ref('imageclassother', $imageclassother);
 
