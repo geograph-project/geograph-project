@@ -176,6 +176,8 @@ if (isset($_POST['gridsquare']))
 				$smarty->assign('imagetaken', $_POST['imagetakenYear'].'-'.$_POST['imagetakenMonth'].'-'.$_POST['imagetakenDay']);
 				if (($_POST['imageclass'] == 'Other' || empty($_POST['imageclass'])) && !empty($_POST['imageclassother'])) {
 					$smarty->assign('imageclass', stripslashes($_POST['imageclassother']));
+				} else if ($_POST['imageclass'] == 'Other') {
+					$smarty->assign('imageclass', '');
 				} else {
 					$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
 				}
