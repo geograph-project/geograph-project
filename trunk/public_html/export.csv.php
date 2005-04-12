@@ -37,7 +37,7 @@ $images=new ImageList;
 $count=$images->getImages(array('accepted','geograph'));
 if ($count>0)
 {
-	echo "Id,Name,Grid Ref,Submitter\n";
+	echo "Id,Name,Grid Ref,Submitter,Image Class\n";
 	
 	foreach ($images->images as $image) 
 	{
@@ -45,7 +45,7 @@ if ($count>0)
 		{
 			$image->title = '"'.$image->title.'"';
 		}
-		echo "{$image->gridimage_id},{$image->title},{$image->grid_reference},{$image->realname}\n";
+		echo "{$image->gridimage_id},{$image->title},{$image->grid_reference},{$image->realname},{$image->imageclass}\n";
 	}
 } 
 else 
