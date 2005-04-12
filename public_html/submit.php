@@ -122,8 +122,6 @@ if (isset($_POST['gridsquare']))
 							$image = new GridImage;
 
 							$classes=&$image->getImageClasses();
-							$classes['Other']='Other...';
-
 							$smarty->assign_by_ref('classes', $classes);
 
 							if (isset($uploadmanager->exifdate)) {
