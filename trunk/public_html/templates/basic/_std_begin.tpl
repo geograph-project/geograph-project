@@ -7,7 +7,7 @@
 {else}<meta name="description" content="Geograph British Isles is a web based project to collect and reference geographically representative images of every square kilometer of the British Isles."/>{/if}
 <link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/basic.css" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
-<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="syndicator.php"/>
+<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/syndicator.php"/>
 {if $page_title}<title>{$page_title|escape:'html'} :: Geograph British Isles - photograph every grid square!</title>
 {else}<title>Geograph British Isles - photograph every grid square!</title>{/if}
 <script type="text/javascript" src="/geograph.js"></script>
