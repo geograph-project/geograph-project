@@ -56,14 +56,18 @@ if (!$smarty->is_cached($template, $cacheid))
 		$last = $lastweek[$user_id]['imgcount'];
 		$imgcount = $fields['imgcount'];
 		if ($last == 0) {
-			$perc = 100;
+		#	$perc = 100;
+		#	$perc = ( ($imgcount)/1 ) * 25;
 		} else if ($last == $imgcount) {
-			$perc = 0;
+		#	$perc = 0;
 		} else {
 			$perc = ( ($imgcount)/$last ) * 100;
+			$topusers[$user_id]['perc'] = floor($perc).'%';
 		}
-		$topusers[$user_id]['perc'] = sprintf("%d",$perc);
+		$topusers[$user_id]['dif'] = $imgcount - $last;
+		
 		$topusers[$user_id]['lastweek'] = $last;
+		
 	}
 	
 	function cmp_last($a, $b) {
@@ -84,10 +88,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	function cmp_perc($a, $b) {
 		global $topusers;
-		if ($topusers[$a]['perc'] == $topusers[$b]['perc']) {
+		if ($topusers[$a]['dif'] == $topusers[$b]['dif']) {
 			return cmp_imgcount($a,$b);
 		}
-		return ($topusers[$a]['perc'] > $topusers[$b]['perc']) ? -1 : 1;
+		return ($topusers[$a]['dif'] > $topusers[$b]['dif']) ? -1 : 1;
 	}
 	
 	uksort($topusers, "cmp_perc");
@@ -106,7 +110,7 @@ if (!$smarty->is_cached($template, $cacheid))
 				case 3:$end=($i==13)?'th':'rd';break;
 				default: $end="th";	
 			}
-
+			
 			$topusers[$idx]['ordinal']=$i.$end;
 			$i++;
 		}
