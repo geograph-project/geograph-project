@@ -114,7 +114,7 @@ referring to <b>image {$image->gridimage_id}</b>
 	<a title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigs/search-parse.php?gridref={$image->grid_square->get6FigGridRef()}" target="_blank">Trigpoints</a>, 
 	<a title="Many more links from nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p={$image->grid_square->getNatEastings()}+{$image->grid_square->getNatNorthings()}" target="_blank">more...</a>
 {else}
-	<a title="Many more links from nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p={$image->grid_square->getNatEastings()}+{$image->grid_square->getNatNorthings()}" target="_blank">See related information from trigtools.co.uk</a>
+	<a title="Many more links from nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p={$image->grid_square->getNatEastings()}+{$image->grid_square->getNatNorthings()}+OSI" target="_blank">See related information from trigtools.co.uk</a>
 
 {/if}
 
