@@ -13,10 +13,10 @@ geographs they have submitted in total to that of last week.</p>
 <tbody>
 
 {foreach from=$topusers item=topuser}
-<tr><td>{$topuser.ordinal}</td><td><a title="View profile" href="/profile.php?u={$topuser.user_id}">{$topuser.realname}</a></td>
-<td>{$topuser.lastweek}</td>
-<td>{$topuser.imgcount}</td>
-<td>{$topuser.perc}%</td></tr>
+<tr><td align="right">{$topuser.ordinal}</td><td><a title="View profile" href="/profile.php?u={$topuser.user_id}">{$topuser.realname}</a></td>
+<td align="right">{$topuser.lastweek}</td>
+<td align="right">{$topuser.imgcount}</td>
+<td align="right">{$topuser.perc}</td></tr>
 {/foreach}
 
 </tbody>
