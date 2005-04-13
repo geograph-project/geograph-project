@@ -30,7 +30,7 @@ init_session();
 $smarty = new GeographPage;
 
 $template='moversboard.tpl';
-$cacheid='';
+$cacheid='dfg';
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -39,7 +39,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/imagelist.class.php');
 
 	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
+	if (!$db) die('Database connection failed'); 
+	#$db->debug=true;
 
 	$topusers=$db->GetAssoc("select user.user_id,realname,count(*) as imgcount,max(submitted) as last  ".
 	"from user inner join gridimage using(user_id) where ftf=1 ".
@@ -47,17 +48,17 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$lastweek=$db->GetAssoc("select user.user_id,realname,count(*) as imgcount,max(submitted) as last  ".
 	"from user inner join gridimage using(user_id) where ftf=1 ".
-	"and (unix_timestamp(now())-unix_timestamp(submitted))>604800".
+	"and (unix_timestamp(now())-unix_timestamp(submitted))>604800 ".
 	"group by user_id");
+	
 	
 	foreach($topusers as $user_id => $fields) {
 		$last = $lastweek[$user_id]['imgcount'];
-		$this = $fields['imgcount'];
-		
-		if (!$last) {
+		$imgcount = $fields['imgcount'];
+		if ($last == 0) {
 			$perc = 100;
 		} else {
-			$perc = ( $this/$last ) * 100;
+			$perc = ( ($imgcount - $last)/$last ) * 100;
 		}
 		$topusers[$user_id]['perc'] = $perc;
 		$topusers[$user_id]['lastweek'] = $last;
