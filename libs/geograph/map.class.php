@@ -569,8 +569,8 @@ class GeographMap
 						imagecopy ($img, $photo, $imgx1, $imgy1, 0,0, $this->pixels_per_km,$this->pixels_per_km);
 						imagedestroy($photo);
 
-						imagerectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $colBorder);
-						imagerectangle ($img, $imgx1+1, $imgy1+1, $imgx2-1, $imgy2-1, $colBorder);
+					//	imagerectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $colBorder);
+					//	imagerectangle ($img, $imgx1+1, $imgy1+1, $imgx2-1, $imgy2-1, $colBorder);
 
 
 
@@ -590,94 +590,7 @@ class GeographMap
 		//plot grid square?
 		if ($this->pixels_per_km>=0)
 		{
-			$gridcol=imagecolorallocate ($img, 109,186,178);
-			
-			$text1=imagecolorallocate ($img, 255,255,255);
-			$text2=imagecolorallocate ($img, 0,64,0);
-			
-
-
-			$sql="select * from gridprefix where ".
-				"origin_x between $scanleft-width and $scanright and ".
-				"origin_y between $scanbottom-height and $scantop ".
-				"and landcount>0";
-			
-			$recordSet = &$db->Execute($sql);
-			while (!$recordSet->EOF) 
-			{
-				$origin_x=$recordSet->fields['origin_x'];
-				$origin_y=$recordSet->fields['origin_y'];
-				$w=$recordSet->fields['width'];
-				$h=$recordSet->fields['height'];
-
-				//get polygon of boundary relative to corner of square
-				if (strlen($recordSet->fields['boundary']))
-				{
-					$polykm=explode(',', $recordSet->fields['boundary']);
-					$labelkm=explode(',', $recordSet->fields['labelcentre']);
-				}
-				else
-				{
-					$polykm=array(0,0, 0,100, 100,100, 100,0);
-					$labelkm=array(50,50);
-				}
-				
-				//now convert km to pixels
-				$poly=array();
-				$label=array();
-				$pts=count($polykm)/2;
-				for($i=0; $i<$pts; $i++)
-				{
-					$poly[$i*2]=round(($polykm[$i*2]+$origin_x-$left)* $this->pixels_per_km);
-					$poly[$i*2+1]=round(($this->image_h-($polykm[$i*2+1]+$origin_y-$bottom)* $this->pixels_per_km));
-				}
-				
-				$labelx=round(($labelkm[0]+$origin_x-$left)* $this->pixels_per_km);
-				$labely=round(($this->image_h-($labelkm[1]+$origin_y-$bottom)* $this->pixels_per_km));
-				
-				
-				imagepolygon($img, $poly,$pts,$gridcol);
-
-
-
-				if($this->pixels_per_km>=0.3)
-				{
-					//font size 1= 4x6
-					//font size 2= 6x8 normal
-					//font size 3= 6x8 bold
-					//font size 4= 7x10 normal
-					//font size 5= 8x10 bold
-					
-					if($this->pixels_per_km>=1)
-						$font=5;
-					else
-						$font=3;
-						
-					
-					$text=$recordSet->fields['prefix'];
-					
-					switch($font)
-					{
-						case 3:
-							$txtw=strlen($text)*7;
-							$txth=8;
-							break;
-						case 5:
-							$txtw=strlen($text)*8;
-							$txth=10;
-							break;
-					}
-
-					$txtx=round($labelx - $txtw/2);
-					$txty=round($labely - $txth/2);
-
-					imagestring ($img, $font, $txtx+1,$txty+1, $text, $text2);
-					imagestring ($img, $font, $txtx,$txty, $text, $text1);
-				}
-
-				$recordSet->MoveNext();
-			}
-			$recordSet->Close(); 		
+			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
 		}
 				
 		$target=$this->getImageFilename();
@@ -685,6 +598,229 @@ class GeographMap
 		
 		imagedestroy($img);
 		
+	}	
+	
+	/**
+	* render the image to cached file if not already available
+	* @access private
+	*/
+	function _renderRandomGeographMap()
+	{
+		$root=&$_SERVER['DOCUMENT_ROOT'];
+		
+		//first of all, generate or pull in a cached based map
+		$basemap=$this->getBaseMapFilename();
+		if ($this->caching && @file_exists($root.$basemap))
+		{
+			//load it up!
+			$img=imagecreatefromgd($root.$basemap);
+		}
+		else
+		{
+			//we need to generate a basemap
+			$img=&$this->_createBasemap($root.$basemap);
+		}
+		
+		$colMarker=imagecolorallocate($img, 255,0,0);
+		$colBorder=imagecolorallocate($img, 255,255,255);
+		$colAlias=imagecolorallocate($img, 182,163,57);
+		
+		//figure out what we're mapping in internal coords
+		$db=&$this->_getDB();
+		
+		$dbImg=NewADOConnection($GLOBALS['DSN']);
+		
+
+		$left=$this->map_x;
+		$bottom=$this->map_y;
+		$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
+		$top=$bottom + floor($this->image_h/$this->pixels_per_km)-1;
+
+		//size of a marker in pixels
+		$markerpixels=5;
+		
+		//size of marker in km
+		$markerkm=ceil($markerpixels/$this->pixels_per_km);
+		
+		//we scan for images a little over the edges so that if
+		//an image lies on a mosaic edge, we still plot the point
+		//on both mosaics
+		$overscan=$markerkm;
+		$scanleft=$left-$overscan;
+		$scanright=$right+$overscan;
+		$scanbottom=$bottom-$overscan;
+		$scantop=$top+$overscan;
+		
+		//plot grid square?
+		if ($this->pixels_per_km>=0)
+		{
+			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
+		}
+		
+		$sql="select x,y,gridsquare_id from gridsquare where ".
+			"(x between $scanleft and $scanright) and ".
+			"(y between $scanbottom and $scantop) ".
+			"and imagecount>0 order by rand() limit 500";
+
+		$recordSet = &$db->Execute($sql);
+		while (!$recordSet->EOF) 
+		{
+			$gridx=$recordSet->fields[0];
+			$gridy=$recordSet->fields[1];
+
+			$imgx1=($gridx-$left) * $this->pixels_per_km;
+			$imgy1=($this->image_h-($gridy-$bottom+1)* $this->pixels_per_km);
+
+			$photopixels = 40;
+
+			$imgx1=round($imgx1) - (0.5 * $photopixels);
+			$imgy1=round($imgy1) - (0.5 * $photopixels);
+
+			$imgx2=$imgx1 + $photopixels;
+			$imgy2=$imgy1 + $photopixels;
+				
+				
+			$gridsquare_id=$recordSet->fields[2];
+
+			$sql="select * from gridimage where gridsquare_id=$gridsquare_id ".
+				"and moderation_status<>'rejected' order by moderation_status+0 desc,seq_no limit 1";
+
+			//echo "$sql\n";	
+			$rec=$dbImg->GetRow($sql);
+			if (count($rec))
+			{
+				$gridimage=new GridImage;
+				$gridimage->fastInit($rec);
+
+				$photo=$gridimage->getSquareThumb($photopixels);
+				if (!is_null($photo))
+				{
+					imagecopy ($img, $photo, $imgx1, $imgy1, 0,0, $photopixels,$photopixels);
+					imagedestroy($photo);
+
+					imagerectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $colBorder);
+				//	imagerectangle ($img, $imgx1+1, $imgy1+1, $imgx2-1, $imgy2-1, $colBorder);
+
+
+
+				}
+
+
+			}
+
+			
+			
+			
+			
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close(); 
+
+	
+				
+		$target=$this->getImageFilename();
+		imagepng($img, $root.$target);
+		
+		imagedestroy($img);
+		
+	}		
+	
+	/**
+	* render the image to cached file if not already available
+	* @access private
+	*/	
+	function _plotGridLines(&$img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left) {			
+		//figure out what we're mapping in internal coords
+		$db=&$this->_getDB();
+				
+		$gridcol=imagecolorallocate ($img, 109,186,178);
+
+		$text1=imagecolorallocate ($img, 255,255,255);
+		$text2=imagecolorallocate ($img, 0,64,0);
+
+
+
+		$sql="select * from gridprefix where ".
+			"origin_x between $scanleft-width and $scanright and ".
+			"origin_y between $scanbottom-height and $scantop ".
+			"and landcount>0";
+
+		$recordSet = &$db->Execute($sql);
+		while (!$recordSet->EOF) 
+		{
+			$origin_x=$recordSet->fields['origin_x'];
+			$origin_y=$recordSet->fields['origin_y'];
+			$w=$recordSet->fields['width'];
+			$h=$recordSet->fields['height'];
+
+			//get polygon of boundary relative to corner of square
+			if (strlen($recordSet->fields['boundary']))
+			{
+				$polykm=explode(',', $recordSet->fields['boundary']);
+				$labelkm=explode(',', $recordSet->fields['labelcentre']);
+			}
+			else
+			{
+				$polykm=array(0,0, 0,100, 100,100, 100,0);
+				$labelkm=array(50,50);
+			}
+
+			//now convert km to pixels
+			$poly=array();
+			$label=array();
+			$pts=count($polykm)/2;
+			for($i=0; $i<$pts; $i++)
+			{
+				$poly[$i*2]=round(($polykm[$i*2]+$origin_x-$left)* $this->pixels_per_km);
+				$poly[$i*2+1]=round(($this->image_h-($polykm[$i*2+1]+$origin_y-$bottom)* $this->pixels_per_km));
+			}
+
+			$labelx=round(($labelkm[0]+$origin_x-$left)* $this->pixels_per_km);
+			$labely=round(($this->image_h-($labelkm[1]+$origin_y-$bottom)* $this->pixels_per_km));
+
+
+			imagepolygon($img, $poly,$pts,$gridcol);
+
+
+
+			if($this->pixels_per_km>=0.3)
+			{
+				//font size 1= 4x6
+				//font size 2= 6x8 normal
+				//font size 3= 6x8 bold
+				//font size 4= 7x10 normal
+				//font size 5= 8x10 bold
+
+				if($this->pixels_per_km>=1)
+					$font=5;
+				else
+					$font=3;
+
+
+				$text=$recordSet->fields['prefix'];
+
+				switch($font)
+				{
+					case 3:
+						$txtw=strlen($text)*7;
+						$txth=8;
+						break;
+					case 5:
+						$txtw=strlen($text)*8;
+						$txth=10;
+						break;
+				}
+
+				$txtx=round($labelx - $txtw/2);
+				$txty=round($labely - $txth/2);
+
+				imagestring ($img, $font, $txtx+1,$txty+1, $text, $text2);
+				imagestring ($img, $font, $txtx,$txty, $text, $text1);
+			}
+
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close(); 		
 	}
 	
 	
