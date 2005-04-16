@@ -47,7 +47,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	//lets find some recent photos
 	$images=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
-	$images->assignSmarty(&$smarty, 'recent');
+	$images->assignSmarty($smarty, 'recent');
 	
 	//let's find recent posts in the announcements forum made by
 	//administrators

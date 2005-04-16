@@ -65,7 +65,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	//lets find some recent photos
 	$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
-	$recent->assignSmarty(&$smarty, 'recent');
+	$recent->assignSmarty($smarty, 'recent');
 }
 
 $smarty->display($template, $cacheid);
