@@ -322,7 +322,7 @@ class UploadManager
 						imagedestroy($uploadimg);
 
 						//overwrite the upload
-						imagejpeg ($resized, $pendingfile);
+						imagejpeg ($resized, $pendingfile, 85);
 						imagedestroy($resized);
 
 					}
