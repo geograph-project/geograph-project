@@ -139,7 +139,7 @@ else
 
 //lets find some recent photos
 $recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
-$recent->assignSmarty(&$smarty, 'recent');
+$recent->assignSmarty($smarty, 'recent');
 
 //lets add an overview map too
 $overview=new GeographMapMosaic('overview');

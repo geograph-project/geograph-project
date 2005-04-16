@@ -113,7 +113,7 @@ if ($template=='profile.tpl')
 			$statuses=array('pending', 'accepted', 'geograph');
 		
 		$images->getImagesByUser($uid, $statuses);
-		$images->assignSmarty(&$smarty, 'userimages');
+		$images->assignSmarty($smarty, 'userimages');
 		
 	}
 }
