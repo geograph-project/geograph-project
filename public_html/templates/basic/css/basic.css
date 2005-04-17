@@ -2,7 +2,7 @@
  * Kudos to http://bluerobot.com/web/layouts/default.asp
  * for the 3 column layout
  *---------------------------------------------------------------*/
- 
+
 body
 {
 	font-family:Georgia, Verdana, Arial;
@@ -31,7 +31,7 @@ a img
 /* header content interior */
 #header
 {
-	
+
 }
 
 #header h1
@@ -96,7 +96,7 @@ a img
  * right navigation block
  *---------------------------------------------------------------*/
 
-		
+
 #right_block {
 	position:absolute;
 	width:190px;
@@ -180,7 +180,7 @@ body>#nav_block {width:128px;}
 	border:2px solid black;
 	background-color:white;
 	padding:10px;
-	z-index:3; 
+	z-index:3;
 	}
 
 .content2 {
@@ -191,9 +191,9 @@ body>#nav_block {width:128px;}
 	border:2px solid black;
 	background-color:white;
 	padding:10px;
-	z-index:3; 
-	}	
-	
+	z-index:3;
+	}
+
 /* main content interior */
 #maincontent
 {
@@ -214,14 +214,14 @@ body>#nav_block {width:128px;}
 span.formerror
 {
 	font-size:0.8em;
-	color:red;	
+	color:red;
 }
 
 div.copyright
 {
 	font-size:0.8em;
 	color: silver;
-	
+
 }
 div.caption
 {
@@ -232,11 +232,11 @@ div.caption
 div.rastermap {
   border: 1px solid #a9a9a9;
   padding: 4px;
-  float:left; 
+  float:left;
   text-align:center;
-  z-index:5; 
+  z-index:5;
   padding:10px;
- 
+
 }
 
 
@@ -249,7 +249,7 @@ div.photoportrait
 	margin:10px;
 }
 
-/* styling for a full size portrait photo*/
+/* styling for a full size landscape photo*/
 div.photolandscape
 {
 	width:660px;
@@ -262,27 +262,6 @@ div.photolandscape
   border: 1px solid #a9a9a9;
   padding: 4px;
   }
-
-/* kudos to http://www.alistapart.com/articles/cssdropshadows/*/
-/* doesn't work in IE on our layout...*/  
- /*
-.img-shadow {
-  float:left;
-  background: url(/templates/basic/img/shadow.gif) no-repeat bottom right;
-  margin: 10px 0 0 10px !important;
-  margin: 10px 0 0 5px;
-  }
-
-.img-shadow img {
-  display: block;
-  position: relative;
-  background-color: #fff;
-  border: 1px solid #a9a9a9;
-  margin: -6px 6px 6px -6px;
-  padding: 4px;
-  }
-*/
-
 
 
 /* styling for a 66% resized photo*/
@@ -419,7 +398,7 @@ table.statstable td
 /*---------------------------------------------------------------*
  * buttons for map nav
  *---------------------------------------------------------------*/
- 
+
 div.map div.cnr
 {
 	float:left;
@@ -446,7 +425,7 @@ div.map div.side a
 	height:100%;
 }
 
-div.map div.side a:hover 
+div.map div.side a:hover
 {
 	background-color:#660066;
 }
@@ -479,7 +458,7 @@ div.map div.inner img
 	text-align:right;
 	margin-top:0;
 	margin-bottom:0;
-	
+
 }
 
 #footer a
