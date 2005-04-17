@@ -12,7 +12,7 @@ body
 }
 
 /* no border on hyperlinked images*/
-a img
+a Img
 {
 	border:0;
 }
@@ -243,7 +243,7 @@ div.rastermap {
 /* styling for a full size portrait photo*/
 div.photoportrait
 {
-	width:500px;
+	width:this.nextSibling.width;
 	padding:10px;
 	text-align:center;
 	margin:10px;
@@ -252,15 +252,17 @@ div.photoportrait
 /* styling for a full size landscape photo*/
 div.photolandscape
 {
-	width:660px;
+	width:this.nextSibling.width;
 	padding:10px;
 	text-align:center;
 	margin:10px;
 }
 
 .img-shadow img {
-  border: 1px solid #a9a9a9;
-  padding: 4px;
+	width:100%;
+	height:100%;
+  	border: 1px solid #a9a9a9;
+  	padding: 4px;
   }
 
 
