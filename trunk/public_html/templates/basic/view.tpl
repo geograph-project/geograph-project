@@ -70,11 +70,11 @@ referring to <b>image {$image->gridimage_id}</b>
 	{/if}
 
 	{if $image->moderation_status eq "geograph"}
-	Secondary geograph for this grid square
+	Geograph
 	{/if}
 
 	{if $image->moderation_status eq "accepted"}
-	Supplemental image for this grid square
+	Supplemental image
 	{/if}
 {/if}
 </td></tr>
@@ -97,7 +97,7 @@ referring to <b>image {$image->gridimage_id}</b>
 {if $image->grid_square->reference_index eq 1}
 	(also 
 
-	<a href="http://www.streetmap.co.uk/streetmap.dll?Grid2Map?X={$image->grid_square->getNatEastings()}&amp;Y={$image->grid_square->getNatNorthings()}&amp;title={$image->title|escape:'url'}&amp;back=Return+to+Geograph&amp;url=http://{$http_host}/photo/{$image->gridimage_id}&amp;nolocal=X&amp;bimage=background%3dhttp://{$http_host}/templates/basic/img/background.gif" target="_blank">streetmap.co.uk</a> &amp;
+	{external href="http://www.streetmap.co.uk/streetmap.dll?Grid2Map?X=`$image->grid_square->getNatEastings()`&amp;Y=`$image->grid_square->getNatNorthings()`&amp;title=`$image->title`&amp;back=Return+to+Geograph&amp;url=http://$http_host/photo/`$image->gridimage_id`&amp;nolocal=X&amp;bimage=background%3dhttp://$http_host/templates/basic/img/background.gif" text="streetmap.co.uk"} &amp;
 	<a href="http://www.multimap.com/map/browse.cgi?GridE={$image->grid_square->getNatEastings()}&amp;GridN={$image->grid_square->getNatNorthings()}&amp;scale=25000" target="_blank">multimap.com</a> 
 	)<br>
 
