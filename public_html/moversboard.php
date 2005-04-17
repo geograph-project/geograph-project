@@ -42,78 +42,32 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (!$db) die('Database connection failed'); 
 	#$db->debug=true;
 
-	$topusers=$db->GetAssoc("select user.user_id,realname,count(*) as imgcount,max(submitted) as last  ".
+	$topusers=$db->GetAssoc("select user.user_id,realname,count(*) as newcount,max(submitted) as last  ".
 	"from user inner join gridimage using(user_id) where ftf=1 ".
+	"and (unix_timestamp(now())-unix_timestamp(submitted))<604800 ".
+	"group by user_id order by newcount desc,last asc limit 50");
+	
+	$pending=$db->GetAssoc("select user_id,count(*) as imgcount  ".
+	"from gridimage where moderation_status = 'pending' ".
 	"group by user_id");
 	
-	$lastweek=$db->GetAssoc("select user.user_id,realname,count(*) as imgcount,max(submitted) as last  ".
-	"from user inner join gridimage using(user_id) where ftf=1 ".
-	"and (unix_timestamp(now())-unix_timestamp(submitted))>604800 ".
-	"group by user_id");
 	
-	
-	foreach($topusers as $user_id => $fields) {
-		$last = $lastweek[$user_id]['imgcount'];
-		$imgcount = $fields['imgcount'];
-		if ($last == 0) {
-		#	$perc = 100;
-		#	$perc = ( ($imgcount)/1 ) * 25;
-		} else if ($last == $imgcount) {
-		#	$perc = 0;
-		} else {
-			$perc = ( ($imgcount)/$last ) * 100;
-			$topusers[$user_id]['perc'] = floor($perc).'%';
-		}
-		$topusers[$user_id]['dif'] = $imgcount - $last;
-		
-		$topusers[$user_id]['lastweek'] = $last;
-		
-	}
-	
-	function cmp_last($a, $b) {
-		global $topusers;
-		if ($topusers[$a]['last'] == $topusers[$b]['last']) {
-			return 0;
-		}
-		return ($topusers[$a]['last'] > $topusers[$b]['last']) ? -1 : 1;
-	}
-	
-	function cmp_imgcount($a, $b) {
-		global $topusers;
-		if ($topusers[$a]['imgcount'] == $topusers[$b]['imgcount']) {
-			return cmp_last($a,$b);
-		}
-		return ($topusers[$a]['imgcount'] > $topusers[$b]['imgcount']) ? -1 : 1;
-	}
-	
-	function cmp_perc($a, $b) {
-		global $topusers;
-		if ($topusers[$a]['dif'] == $topusers[$b]['dif']) {
-			return cmp_imgcount($a,$b);
-		}
-		return ($topusers[$a]['dif'] > $topusers[$b]['dif']) ? -1 : 1;
-	}
-	
-	uksort($topusers, "cmp_perc");
-	
-	$i = 1;
+	$i++;
 	foreach($topusers as $idx=>$entry)
 	{
-		if ($i > 50) {
-			unset($topusers[$idx]);
-		} else {
-			$units=$i%10;
-			switch($units)
-			{
-				case 1:$end=($i==11)?'th':'st';break;
-				case 2:$end=($i==12)?'th':'nd';break;
-				case 3:$end=($i==13)?'th':'rd';break;
-				default: $end="th";	
-			}
-			
-			$topusers[$idx]['ordinal']=$i.$end;
-			$i++;
+			$topusers[$idx]['pending'] = $pending[$idx]['imgcount'];
+	
+		$units=$i%10;
+		switch($units)
+		{
+			case 1:$end=($i==11)?'th':'st';break;
+			case 2:$end=($i==12)?'th':'nd';break;
+			case 3:$end=($i==13)?'th':'rd';break;
+			default: $end="th";	
 		}
+		
+		$topusers[$idx]['ordinal']=$i.$end;
+		$i++;
 	}
 	
 	$smarty->assign_by_ref('topusers', $topusers);
