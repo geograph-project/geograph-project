@@ -18,8 +18,8 @@ how much each person will climb when their pictures are moderated!</p>
 
 {foreach from=$topusers key=topuser_id item=topuser}
 <tr><td align="right">{$topuser.ordinal}</td><td><a title="View profile" href="/profile.php?u={$topuser_id}">{$topuser.realname}</a></td>
-<td align="right">{$topuser.geographs}</td>
-<td align="right">{$topuser.pending}</td>
+<td align="right">{if $topuser.geographs gt 0}{$topuser.geographs}{/if}</td>
+<td align="right">{if $topuser.pending gt 0}({$topuser.pending} pending){/if}</td>
 </tr>
 {/foreach}
 
