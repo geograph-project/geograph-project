@@ -30,7 +30,7 @@ init_session();
 $smarty = new GeographPage;
 
 $template='moversboard.tpl';
-$cacheid='dfg';
+$cacheid='';
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -38,25 +38,44 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');
 
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed'); 
-	#$db->debug=true;
-
-	$topusers=$db->GetAssoc("select user.user_id,realname,count(*) as newcount,max(submitted) as last  ".
-	"from user inner join gridimage using(user_id) where ftf=1 ".
-	"and (unix_timestamp(now())-unix_timestamp(submitted))<604800 ".
-	"group by user_id order by newcount desc,last asc limit 50");
 	
-	$pending=$db->GetAssoc("select user_id,count(*) as imgcount  ".
-	"from gridimage where moderation_status = 'pending' ".
-	"group by user_id");
+	//get counts of geographs by user for last 7 days
+	$sql="select i.user_id,u.realname,count(*) as geographs,0 as pending from gridimage as i ".
+		"inner join user as u using(user_id) ".
+		"where i.submitted > date_sub(now(), interval 7 day) and ".
+		"i.ftf=1 and i.moderation_status='geograph' ".
+		"group by i.user_id,i.moderation_status ".
+		"order by geographs desc";
+	$topusers=$db->GetAssoc($sql);
 	
-	
-	$i++;
-	foreach($topusers as $idx=>$entry)
+	//now we want to find all users with pending images and add them to this array
+	$sql="select i.user_id,u.realname,0 as geographs, count(*) as pending from gridimage as i ".
+			"inner join user as u using(user_id) ".
+			"where i.submitted > date_sub(now(), interval 7 day) and ".
+			"i.moderation_status='pending' ".
+			"group by i.user_id,i.moderation_status ".
+			"order by pending desc";
+	$pendingusers=$db->GetAssoc($sql);
+	foreach($pendingusers as $user_id=>$pending)
 	{
-			$topusers[$idx]['pending'] = $pending[$idx]['imgcount'];
+		if (isset($topusers[$user_id]))
+		{
+			$topusers[$user_id]['pending']=$pending['pending'];
+		}
+		else
+		{
+			$topusers[$user_id]=$pending;
+		}
+	}
 	
+	//assign an ordinal
+
+	$i++;
+	foreach($topusers as $user_id=>$entry)
+	{
 		$units=$i%10;
 		switch($units)
 		{
@@ -66,15 +85,17 @@ if (!$smarty->is_cached($template, $cacheid))
 			default: $end="th";	
 		}
 		
-		$topusers[$idx]['ordinal']=$i.$end;
+		$topusers[$user_id]['ordinal']=$i.$end;
 		$i++;
-	}
+	}	
+	
 	
 	$smarty->assign_by_ref('topusers', $topusers);
+	$smarty->assign('generation_time', time());
 	
 	//lets find some recent photos
 	$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
-	$recent->assignSmarty(&$smarty, 'recent');
+	$recent->assignSmarty($smarty, 'recent');
 }
 
 $smarty->display($template, $cacheid);
