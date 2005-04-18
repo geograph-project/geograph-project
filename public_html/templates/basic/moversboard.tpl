@@ -16,8 +16,8 @@ how much each person will climb when their pictures are moderated!</p>
 <thead><tr><td>Position</td><td>Contributor</td><td>New Geographs</td><td>Pending</td></tr></thead>
 <tbody>
 
-{foreach from=$topusers item=topuser}
-<tr><td align="right">{$topuser.ordinal}</td><td><a title="View profile" href="/profile.php?u={$topuser.user_id}">{$topuser.realname}</a></td>
+{foreach from=$topusers key=topuser_id item=topuser}
+<tr><td align="right">{$topuser.ordinal}</td><td><a title="View profile" href="/profile.php?u={$topuser_id}">{$topuser.realname}</a></td>
 <td align="right">{$topuser.geographs}</td>
 <td align="right">{$topuser.pending}</td>
 </tr>
