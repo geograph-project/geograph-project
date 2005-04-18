@@ -5,7 +5,7 @@
 
 body
 {
-	font-family:Georgia, Verdana, Arial;
+	font-family:Georgia, Verdana, Arial, serif;
 	margin:0px;
 	background: #eeeeff;
 	font-size: 1em;
@@ -243,7 +243,7 @@ div.rastermap {
 /* styling for a full size portrait photo*/
 div.photoportrait
 {
-	width:this.nextSibling.width;
+	width:inherit;
 	padding:10px;
 	text-align:center;
 	margin:10px;
@@ -252,7 +252,7 @@ div.photoportrait
 /* styling for a full size landscape photo*/
 div.photolandscape
 {
-	width:this.nextSibling.width;
+	width:inherit;
 	padding:10px;
 	text-align:center;
 	margin:10px;
