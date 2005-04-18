@@ -10,7 +10,8 @@ how much each person will climb when their pictures are moderated!</p>
 
 <p>The <a href="/leaderboard.php">all-time top 50 leaderboard</a> is also available</p>
 
-<p>Last generated at {$generation_time|date_format:"%H:%M"}</>
+<p>Last generated at {$generation_time|date_format:"%H:%M"} and covers all submissions since
+{$cutoff_time|date_format:"%A, %d %b at %H:%M"}</>
 
 <table class="report"> 
 <thead><tr><td>Position</td><td>Contributor</td><td>New Geographs</td><td>Pending</td></tr></thead>
@@ -18,7 +19,7 @@ how much each person will climb when their pictures are moderated!</p>
 
 {foreach from=$topusers key=topuser_id item=topuser}
 <tr><td align="right">{$topuser.ordinal}</td><td><a title="View profile" href="/profile.php?u={$topuser_id}">{$topuser.realname}</a></td>
-<td align="right">{if $topuser.geographs gt 0}{$topuser.geographs}{/if}</td>
+<td align="right">{$topuser.geographs}</td>
 <td align="right">{if $topuser.pending gt 0}({$topuser.pending} pending){/if}</td>
 </tr>
 {/foreach}
