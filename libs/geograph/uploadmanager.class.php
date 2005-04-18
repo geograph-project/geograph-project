@@ -261,7 +261,7 @@ class UploadManager
 	
 	function processUpload($upload_file)
 	{
-		global $USER;
+		global $USER,$CONF;
 		$ok=false;
 		
 		if ($this->_isJpeg($upload_file))
@@ -289,61 +289,85 @@ class UploadManager
 						fclose($f);
 					}
 				}
+				$max_dimension=640;
 				
-				//generate a resized image
-				$uploadimg = @imagecreatefromjpeg ($pendingfile); 
-				if ($uploadimg)
-				{
-					$srcw=imagesx($uploadimg);
-					$srch=imagesy($uploadimg);
-
-					$max_dimension=640;
-					if (($srcw>$max_dimension) || ($srch>$max_dimension))
-					{
-						//figure out size of image we'll keep
-						if ($srcw>$srch)
-						{
-							//landscape
-							$destw=$max_dimension;
-							$desth=round(($destw * $srch)/$srcw);
-						}
-						else
-						{
-							//portrait
-							$desth=$max_dimension;
-							$destw=round(($desth * $srcw)/$srch);
-						}
-
-
-						$resized = imagecreatetruecolor($destw, $desth);
-						imagecopyresampled($resized, $uploadimg, 0, 0, 0, 0, 
-									$destw,$desth, $srcw, $srch);
-
-						imagedestroy($uploadimg);
-
-						//overwrite the upload
-						imagejpeg ($resized, $pendingfile, 85);
-						imagedestroy($resized);
-
-					}
-					else
-					{
-						//don't need it anymore
-						imagedestroy($uploadimg);
-						$desth=$srch;
-						$destw=$srcw;
-
+				if ($CONF['use_imagemagick']) {
+				
+					list($width, $height, $type, $attr) = getimagesize($pendingfile);
+				
+					if ($width > $max_dimension || $height > $max_dimension) {
+						$cmd = sprintf ("%smogrify -sample %ldx%ld  -filter Lanczos -unsharp 1x3+1+.1 -quality 87 jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $pendingfile);
+						passthru ($cmd);
+						
+						list($width, $height, $type, $attr) = getimagesize($pendingfile);
 					}
 					
 					//remember useful stuff
 					$this->upload_id=$upload_id;
-					$this->upload_width=$destw;
-					$this->upload_height=$desth;
+					$this->upload_width=$width;
+					$this->upload_height=$height;
 					$ok=true;
-				}
-				else
-				{
-					$this->error("Unable to load image - we can only accept valid JPEG images");
+					
+				} else {
+					//generate a resized image
+					$uploadimg = @imagecreatefromjpeg ($pendingfile); 
+					if ($uploadimg)
+					{
+						$srcw=imagesx($uploadimg);
+						$srch=imagesy($uploadimg);
+
+						
+						if (($srcw>$max_dimension) || ($srch>$max_dimension))
+						{
+							//figure out size of image we'll keep
+							if ($srcw>$srch)
+							{
+								//landscape
+								$destw=$max_dimension;
+								$desth=round(($destw * $srch)/$srcw);
+							}
+							else
+							{
+								//portrait
+								$desth=$max_dimension;
+								$destw=round(($desth * $srcw)/$srch);
+							}
+
+
+							$resized = imagecreatetruecolor($destw, $desth);
+							imagecopyresampled($resized, $uploadimg, 0, 0, 0, 0, 
+										$destw,$desth, $srcw, $srch);
+
+							require_once('geograph/image.inc.php');
+
+							UnsharpMask($resized,100,0.5,3);
+
+							imagedestroy($uploadimg);
+
+							//overwrite the upload
+							imagejpeg ($resized, $pendingfile, 85);
+							imagedestroy($resized);
+
+						}
+						else
+						{
+							//don't need it anymore
+							imagedestroy($uploadimg);
+							$desth=$srch;
+							$destw=$srcw;
+
+						}
+
+						//remember useful stuff
+						$this->upload_id=$upload_id;
+						$this->upload_width=$destw;
+						$this->upload_height=$desth;
+						$ok=true;
+					}
+					else
+					{
+						$this->error("Unable to load image - we can only accept valid JPEG images");
+					}
 				}
 			}
 			else
