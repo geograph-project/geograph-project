@@ -35,6 +35,17 @@
     advantageous to upload your original camera image if you want this information
     to be kept.</p>
 
+
+<h3>I use AOL, and the images look terrible!</h3>
+<p>AOL's default settings for graphics is to show &quot;Compressed Graphics Only&quot;. 
+This means AOL is selectively <i>re-compressing</i> images before you see them on your
+screen. This loses a lot of image quality.</p>
+
+<p>You should reset the preferences under &quot;My AOL/Preferences/WWW&quot; to display 
+&quot;Uncompressed Graphics&quot;. You will pay only a small penalty in download time to see 
+this and other photo oriented sites the way everyone else can see them.</p>
+
+
 <h3>Do you have an RSS feed?</h3>
     <p>RSS, or Really Simple Syndication, allows you to obtain an up-to-date listing of
     the latest geograph submissions for integration into another website or RSS reader. For more information,
