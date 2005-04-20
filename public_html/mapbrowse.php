@@ -30,6 +30,8 @@ require_once('geograph/mapmosaic.class.php');
 
 if (isset($_GET['map']))
 {
+	require_once('geograph/image.inc.php');
+					
 	//render and return a map with token $_GET['map'];
 	$map=new GeographMap;
 	$map->setToken($_GET['map']);
@@ -67,7 +69,10 @@ if (isset($_GET['expireAll']) && $USER->hasPerm('admin'))
 	exit;
 }
 
-
+if (preg_match('/\?([0-9]+),([0-9]+)$/',$_SERVER['QUERY_STRING'],$matchs)) {
+	$_GET['x']=$matchs[1];
+	$_GET['y']=$matchs[2];
+}
 
 
 
