@@ -403,6 +403,11 @@ class GridImage
 						imagecopyresampled($resized, $fullimg, 0, 0, $srcx, $srcy, 
 									$maxw,$maxh, $srcw, $srch);
 
+						
+						require_once('geograph/image.inc.php');
+						UnsharpMask($resized,100,0.5,3);
+						
+							
 						imagedestroy($fullimg);
 
 						//save the thumbnail
@@ -480,7 +485,7 @@ class GridImage
 					
 					//crop percentage is how much of the
 					//image to keep in the thumbnail
-					$crop=0.5;
+					$crop=0.75;
 					
 					//figure out size of image we'll keep
 					if ($srcw>$srch)
@@ -504,6 +509,8 @@ class GridImage
 					$img = imagecreatetruecolor($size, $size);
 					imagecopyresampled($img, $fullimg, 0, 0, $srcx, $srcy, 
 								$size,$size, $srcw, $srch);
+
+					UnsharpMask($img,200,0.5,3);
 
 					imagedestroy($fullimg);
 
@@ -542,7 +549,7 @@ class GridImage
 	*/
 	function getThumbnail($maxw, $maxh)
 	{
-		
+		global $CONF;
 		//establish whether we have a cached thumbnail
 		$ab=sprintf("%02d", floor($this->gridimage_id/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
@@ -556,50 +563,83 @@ class GridImage
 			$fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}.jpg";
 			if (file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			{
-				//generate resized image
-				$fullimg = @imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$fullpath); 
-				if ($fullimg)
-				{
-					$srcw=imagesx($fullimg);
-					$srch=imagesy($fullimg);
+				if ($CONF['use_imagemagick']) {
+								
+					list($width, $height, $type, $attr) = getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
 
-					if (($srcw>$maxw) || ($srch>$maxh))
-					{
+					if (($width>$maxw) || ($height>$maxh)) {
 						//figure out size of image we'll keep
-						if ($srcw>$srch)
+						if ($width>$height)
 						{
 							//landscape
 							$destw=$maxw;
-							$desth=round(($destw * $srch)/$srcw);
+							$desth=round(($destw * $height)/$width);
 						}
 						else
 						{
 							//portrait
 							$desth=$maxh;
-							$destw=round(($desth * $srcw)/$srch);
+							$destw=round(($desth * $width)/$height);
 						}
+					
+					
+						$cmd = sprintf ("\"%sconvert\" -thumbnail %ldx%ld -unsharp 0x1+1.4+0.1 -raise 2x2 -quality 87 jpg:%s jpg:%s", $CONF['imagemagick_path'],$maxw, $maxh, $_SERVER['DOCUMENT_ROOT'].$fullpath,$_SERVER['DOCUMENT_ROOT'].$thumbpath);
+						passthru ($cmd);
+
+					} else {
+						//requested thumb is larger than original - stick with original
+						copy($_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
+					}											
+				} else {
+					//generate resized image
+					$fullimg = @imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$fullpath); 
+					if ($fullimg)
+					{
+						$srcw=imagesx($fullimg);
+						$srch=imagesy($fullimg);
+
+						if (($srcw>$maxw) || ($srch>$maxh))
+						{
+							//figure out size of image we'll keep
+							if ($srcw>$srch)
+							{
+								//landscape
+								$destw=$maxw;
+								$desth=round(($destw * $srch)/$srcw);
+							}
+							else
+							{
+								//portrait
+								$desth=$maxh;
+								$destw=round(($desth * $srcw)/$srch);
+							}
 
 
-						$resized = imagecreatetruecolor($destw, $desth);
-						imagecopyresampled($resized, $fullimg, 0, 0, 0, 0, 
-									$destw,$desth, $srcw, $srch);
+							$resized = imagecreatetruecolor($destw, $desth);
+							imagecopyresampled($resized, $fullimg, 0, 0, 0, 0, 
+										$destw,$desth, $srcw, $srch);
+	
 
-						imagedestroy($fullimg);
+							require_once('geograph/image.inc.php');
+							UnsharpMask($resized,100,0.5,3);
 
-						//save the thumbnail
-						imagejpeg ($resized, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
-						imagedestroy($resized);
+							imagedestroy($fullimg);
+
+							//save the thumbnail
+							imagejpeg ($resized, $_SERVER['DOCUMENT_ROOT'].$thumbpath,85);
+							imagedestroy($resized);
+						}
+						else
+						{
+							//requested thumb is larger than original - stick with original
+							copy($_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
+						}
 					}
 					else
 					{
-						//requested thumb is larger than original - stick with original
-						copy($_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
+						//couldn't load full jpeg
+						$thumbpath="/photos/error.jpg";
 					}
-				}
-				else
-				{
-					//couldn't load full jpeg
-					$thumbpath="/photos/error.jpg";
 				}
 			}
 			else
@@ -780,6 +820,16 @@ class GridImage
 			//update cached data for old square and new square
 			$this->grid_square->updateCounts();
 			$newsq->updateCounts();
+			
+			
+			//invalidate any cached maps
+			require_once('geograph/mapmosaic.class.php');
+			$mosaic=new GeographMapMosaic;
+			
+			$mosaic->expirePosition($this->grid_square->x,$this->grid_square->y);
+			
+			$mosaic->expirePosition($newsq->x,$newsq->y);
+					
 			
 			$ok=true;
 		}
