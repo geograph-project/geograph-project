@@ -35,7 +35,7 @@
 	<p><b>{$errormsg}</b></p>
 	{/if}
 	{if $step eq 1}
-		<p><label for="gridreference">...or enter an exact grid reference (4,6,8 or 10 figure) for this picture location</label><br />
+		<p><label for="gridreference">...or enter an exact grid reference (<U TITLE="TQ4364 --> TQ 43 64">4</U>,<U TITLE="TQ435646 --> TQ 435 646">6</U>,<U TITLE="TQ43526467 --> TQ 4352 6467">8</U> or <U TITLE="TQ4352364673 --> TQ 43523 64673">10</U> figure) for this picture location</label><br />
 		<input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="12"/>
 		<input type="submit" name="setpos" value="Next &gt;"/><br/>
 		</p>
@@ -44,13 +44,17 @@
 		sources available to help:</p>
 		
 		<ul>
-		<li>{getamap} provides a search by 
-		placename or postcode. Once you have centered the map on the picture location 
-		return here, and enter the 'Grid reference at centre' value shown into the box 
-		above.</li>
+		<li><b>{getamap} provides a search by 
+		Placename or Postcode.</b><br/> Once you have centered the map on the picture location, 
+		return here and enter the <i>Grid reference at centre</i> value shown into the box 
+		above.<br/><br/></li>
 		
-		<li>If you have a WGS84 coordinate from a GPS receiver, this 
-		<a href='http://www.trigpointinguk.com/info/convert-wgs.php' onClick="window.open(href,'wgs','height=300,width=600,status,scrollbars');return false;" target="_blank">WGS84 to OSGB36 Grid Ref Convertor</a> may be useful.</li>
+		<li><b>If you have a WGS84 coordinate</b> (e.g. from a GPS receiver),<br/> this 
+		<a href='http://www.trigpointinguk.com/info/convert-wgs.php' onClick="window.open(href,'wgs','height=300,width=600,status,scrollbars');return false;" target="_blank">WGS84 to OSGB36 Grid Ref Convertor</a> may be useful.<br/><br/></li>
+		<li><b>For information on Grid References</b> <br/>see {external title="Guide to the National Grid" text="Interactive Guide to the National Grid in Great Britain" href="http://www.ordnancesurvey.co.uk/oswebsite/freefun/nationalgrid/nghelp1.html"}
+		<ul>
+		<li>the Irish National Grid is very similar, but using a single letter prefix, see <a href="/mapbrowse.php">Overview Map</a> for the layout of the squares.</li>
+		</ul></li>
 		</ul>
 		
 		
