@@ -78,7 +78,13 @@ class GeographMap
 	var $pixels_per_km=0;
 	
 	/**
-	* scale in pixels per kilometre
+	* the type of map or user its tailered to
+	*/
+	var $type_or_user=0;
+	
+	
+	/**
+	* should the map be cached?
 	*/
 	var $caching=true;
 	
@@ -90,6 +96,7 @@ class GeographMap
 		$this->setOrigin(0,0);
 		$this->setImageSize(400,400);
 		$this->setScale(0.3);
+		$this->type_or_user = 0;
 	}
 
 
@@ -147,6 +154,7 @@ class GeographMap
 		$token->setValue("w",  $this->image_w);
 		$token->setValue("h",  $this->image_h);
 		$token->setValue("s",  $this->pixels_per_km);
+		$token->setValue("t",  $this->type_or_user);
 		return $token->getToken();
 	}
 
@@ -171,6 +179,9 @@ class GeographMap
 				$this->setOrigin($token->getValue("x"), $token->getValue("y"));
 				$this->setImageSize($token->getValue("w"), $token->getValue("h"));
 				$this->setScale($token->getValue("s"));
+				if ($token->hasValue("t")) {
+					$this->type_or_user = $token->getValue("t");
+				}
 			}
 		}
 		else
@@ -212,7 +223,7 @@ class GeographMap
 		if (!is_dir($root.$dir))
 			mkdir($root.$dir);
 		
-		$file="detail_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}.png";
+		$file="detail_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}_{$this->type_or_user}.png";
 		
 		
 		return $dir.$file;
@@ -253,11 +264,11 @@ class GeographMap
 	function getImageUrl()
 	{
 		
+		//
+		/*
 		$file=$this->getImageFilename();
 		$full=$_SERVER['DOCUMENT_ROOT'].$file;
 		
-		//
-		/*
 		if ($this->caching && @file_exists($full))
 		{
 			//we can just return file!
@@ -288,7 +299,7 @@ class GeographMap
 		$full=$_SERVER['DOCUMENT_ROOT'].$file;
 		if (!$this->caching || !@file_exists($full))
 		{
-			$this->_renderImage();
+			$this->_renderMap();			
 		}
 		
 		if (!@file_exists($full))
@@ -319,6 +330,27 @@ class GeographMap
 		readfile($full);
 		
 		
+	}
+	
+	/**
+	* render the map to a file
+	* @access private
+	*/
+	function& _renderMap() {
+		if ($this->type_or_user == -1) {
+			$this->_renderRandomGeographMap();
+		} else if ($this->type_or_user > 0) {
+			//todo
+			//$this->_renderUserMap();
+		} else {
+			$this->_renderImage();
+		}
+
+		$db=&$this->_getDB();
+
+		$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%f,type_or_user=%d",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user);
+
+		$db->Execute($sql);
 	}
 	
 	/**
