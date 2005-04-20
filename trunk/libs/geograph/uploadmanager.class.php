@@ -296,7 +296,7 @@ class UploadManager
 					list($width, $height, $type, $attr) = getimagesize($pendingfile);
 				
 					if ($width > $max_dimension || $height > $max_dimension) {
-						$cmd = sprintf ("%smogrify -sample %ldx%ld  -filter Lanczos -unsharp 1x3+1+.1 -quality 87 jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $pendingfile);
+						$cmd = sprintf ("\"%smogrify\" -filter Lanczos -sample %ldx%ld -unsharp 0x1+0.8+0.1 -blur 0x.1 -quality 87 jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $pendingfile);
 						passthru ($cmd);
 						
 						list($width, $height, $type, $attr) = getimagesize($pendingfile);
@@ -438,6 +438,12 @@ class UploadManager
 		//increment image count
 		$this->db->Query("update gridsquare set imagecount=imagecount+1 ".
 			"where gridsquare_id={$this->square->gridsquare_id}");
+		
+		//invalidate any cached maps
+		require_once('geograph/mapmosaic.class.php');
+		$mosaic=new GeographMapMosaic;
+		$mosaic->expirePosition($this->square->x,$this->square->y);
+		
 		
 		//get the id
 		$gridimage_id=$this->db->Insert_ID();
