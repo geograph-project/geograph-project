@@ -467,3 +467,17 @@ update gridprefix set boundary="40,0,40,100,100,100,100,0", labelcentre="75,50" 
 update gridprefix set boundary="40,0,40,65,100,65,100,0", labelcentre="75,50" where prefix="SM";
 update gridprefix set boundary="80,0,80,100,100,100,100,0", labelcentre="90,50" where prefix="NW";
 update gridprefix set boundary="0,64,0,100,100,100,100,0,44,0", labelcentre="70,50" where prefix="NR";
+
+
+#barry - 20th April 
+#table for tracking invalidated maps (for later regeneration)
+CREATE TABLE `mapcache` (
+  `map_x` smallint(6) NOT NULL default '0',
+  `map_y` smallint(6) NOT NULL default '0',
+  `image_w` smallint(6) unsigned NOT NULL default '0',
+  `image_h` smallint(6) unsigned NOT NULL default '0',
+  `pixels_per_km` float NOT NULL default '0',
+  `type_or_user` smallint(6) NOT NULL default '0',
+  `age` smallint(5) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`map_x`,`map_y`,`image_w`,`image_h`,`pixels_per_km`,`type_or_user`)
+) TYPE=MyISAM;
