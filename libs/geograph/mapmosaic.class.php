@@ -142,8 +142,14 @@ class GeographMapMosaic
 				$this->setScale(0.3);
 				$this->setMosaicFactor(3);
 				break;
+			case 'geograph':
+				$this->setOrigin(-10,-30);
+				$this->setMosaicSize(4615,6538);
+				$this->setScale(5);
+				$this->setMosaicFactor(3);
+				break;
 			case 'overview':
-				$this->setOrigin(-10,-10);
+				$this->setOrigin(-10,-30);
 				$this->setMosaicSize(120,170);
 				$this->setScale(0.13);
 				$this->setMosaicFactor(1);
@@ -696,7 +702,11 @@ class GeographMapMosaic
 	*/
 	function expirePosition($x,$y)
 	{
-	
+		$db=&$this->_getDB();
+		$sql="update mapcache set age=age+1 ".
+			"where $x between map_x and (map_x+image_w/pixels_per_km-1) and ".
+			"$y between map_y and (map_y+image_h/pixels_per_km-1)";
+		$db->Execute($sql);
 	}
 	
 	/**
@@ -708,13 +718,21 @@ class GeographMapMosaic
 	function expireAll($expire_basemaps=false)
 	{
 		$dir=$_SERVER['DOCUMENT_ROOT'].'/maps/detail';
+		
+		//todo *nix specific
 		`rm -Rf $dir`;
+		
+		//clear out the table as well!
+		$db=&$this->_getDB();
+		$sql="delete from mapcache";
+		$db->Execute($sql);
 		
 		if ($expire_basemaps)
 		{
 			$dir=$_SERVER['DOCUMENT_ROOT'].'/maps/base';
-			`rm -Rf $dir`;
-		
+			
+			//todo *nix specific
+			`rm -Rf $dir`;		
 		}
 	}
 	
