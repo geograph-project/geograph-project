@@ -149,7 +149,7 @@ class GeographMapMosaic
 				$this->setMosaicFactor(3);
 				break;
 			case 'overview':
-				$this->setOrigin(-10,-30);
+				$this->setOrigin(0,-10);
 				$this->setMosaicSize(120,170);
 				$this->setScale(0.13);
 				$this->setMosaicFactor(1);
@@ -336,6 +336,11 @@ class GeographMapMosaic
 	{
 		$images=array();
 		
+		//to calc the origin we need to know
+		//how many internal units in each image
+		$img_w_km=($this->image_w / $this->pixels_per_km) / $this->mosaic_factor;
+		$img_h_km=($this->image_h / $this->pixels_per_km) / $this->mosaic_factor;
+#print "({$this->map_x},{$this->map_y})";
 		//top to bottom
 		for ($j=0; $j<$this->mosaic_factor; $j++)
 		{
@@ -345,11 +350,6 @@ class GeographMapMosaic
 			for ($i=0; $i<$this->mosaic_factor; $i++)
 			{
 				$images[$j][$i]=new GeographMap;	
-				
-				//to calc the origin we need to know
-				//how many internal units in each image
-				$img_w_km=($this->image_w / $this->pixels_per_km) / $this->mosaic_factor;
-				$img_h_km=($this->image_h / $this->pixels_per_km) / $this->mosaic_factor;
 				
 				$images[$j][$i]->enableCaching($this->caching);
 				
@@ -435,10 +435,11 @@ class GeographMapMosaic
 			//figure out how many pixels to pan by
 			$panx=round($mapw/$out->mosaic_factor);
 			$pany=round($maph/$out->mosaic_factor);
-
 			$out->setAlignedOrigin(
 				$this->map_x + $panx*$xdir,
 				$this->map_y + $pany*$ydir);
+	#		printf ("(%d,%d)-(%d,%d)",$this->map_x + $panx*$xdir,$this->map_y + $pany*$ydir,$out->map_x,$out->map_y);
+
 		}
 		return $out->getToken();
 	}
@@ -567,15 +568,14 @@ class GeographMapMosaic
 		$mapw=$this->image_w/$this->pixels_per_km;
 		$maph=$this->image_h/$this->pixels_per_km;
 		
-		
 		//figure out an alignment factor - here we align on tile
 		//boundaries so that panning the image allows reuse of tiles
 		$walign=$mapw/$this->mosaic_factor;
 		$halign=$maph/$this->mosaic_factor;
 		
-		//dividing by 2 makes for more accurate clicking
-		$walign=round($walign/2);
-		$halign=round($halign/2);
+				//dividing by 2 makes for more accurate clicking - DIDNT WORK as rounded 2.5 to 3!
+		$walign=round($walign);
+		$halign=round($halign);
 		
 		//range check the bestorigin - we've got some hard coded
 		//values here
