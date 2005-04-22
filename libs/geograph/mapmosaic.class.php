@@ -340,7 +340,7 @@ class GeographMapMosaic
 		//how many internal units in each image
 		$img_w_km=($this->image_w / $this->pixels_per_km) / $this->mosaic_factor;
 		$img_h_km=($this->image_h / $this->pixels_per_km) / $this->mosaic_factor;
-#print "({$this->map_x},{$this->map_y})";
+
 		//top to bottom
 		for ($j=0; $j<$this->mosaic_factor; $j++)
 		{
@@ -435,11 +435,10 @@ class GeographMapMosaic
 			//figure out how many pixels to pan by
 			$panx=round($mapw/$out->mosaic_factor);
 			$pany=round($maph/$out->mosaic_factor);
+
 			$out->setAlignedOrigin(
 				$this->map_x + $panx*$xdir,
 				$this->map_y + $pany*$ydir);
-	#		printf ("(%d,%d)-(%d,%d)",$this->map_x + $panx*$xdir,$this->map_y + $pany*$ydir,$out->map_x,$out->map_y);
-
 		}
 		return $out->getToken();
 	}
