@@ -6,7 +6,7 @@
 <ul>
 {foreach from=$squares item=square}
 
-<li><a title="List photographs in {$square.title}" href="/list.php?square={$square.prefix}#{$square.prefix}">{$square.title}</a> ({$square.imagecount} images)</li>
+<li><a title="List photographs in {$square.title}" href="/list/{$square.prefix}#{$square.prefix}">{$square.title}</a> ({$square.imagecount} images)</li>
 		
     {if $square.imagecount gt 0}
     <a name="{$square.prefix}"></a><ul>
