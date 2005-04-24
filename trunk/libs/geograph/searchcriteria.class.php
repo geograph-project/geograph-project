@@ -56,13 +56,6 @@ class SearchCriteria
 	var $resultsperpage;
 	var $displayclass;
 	
-	/**
-	* setup the values
-	*/
-	function SearchCriteria($query = '')
-	{
-		//todo this should create the relevent search class depending on the query
-	} 
 	
 	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where) 
 	{
@@ -76,7 +69,7 @@ class SearchCriteria
 	
 		$sql_where = '';
 		if (!empty($this->limit1)) {
-			if (preg_match('/^!/',$this->limit1) !== FALSE) {
+			if (strpos($this->limit1,'!') === 0) {
 				$sql_where = "gi.user_id != ".preg_replace('/^!/','',$this->limit1);
 			} else {
 				$sql_where = "gi.user_id = ".($this->limit1);
@@ -103,9 +96,19 @@ class SearchCriteria
 		} 
 		if (!empty($this->limit5)) {
 			if ($sql_where) {
-			//	$sql_where .= " and ";
+				$sql_where .= " and ";
 			}
-			//todo - will need to join in gridprefix...
+			
+			$db = $this->_getDB();
+			
+			$prefix = $db->GetRow("select * from gridprefix where prefix=".$db->Quote($this->limit5));	
+			
+			$sql_where .= sprintf("x between %d and %d and y between %d and %d",$prefix['origin_x'],$prefix['origin_x']+$prefix['width']-1,$prefix['origin_y'],
+			$prefix['origin_y']+$prefix['height']-1);
+			
+			if (empty($this->limit4))
+				$sql_where .= " and reference_index = ".$prefix['reference_index']." ";
+			
 		}
 	
 	}
