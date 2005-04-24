@@ -303,7 +303,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				break;
 		}
 	
-		if (preg_match('/^!/',$this->limit1)) {
+		if (preg_match('/^!/',$this->limit1) !== FALSE) {
 			$smarty->assign('user_id', preg_replace('/^!/','',$query['limit1']));
 			$smarty->assign('user_invert_checked', 'checked="checked"');
 		} else {
