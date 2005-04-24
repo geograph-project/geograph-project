@@ -5,10 +5,11 @@
  <div class="nav">
   <ul>
     <li><a accesskey="1" title="Home Page" href="/">Home</a></li>
-    <li><a title="Browse the grid and submit photos" href="/browse.php">Browse</a></li>
+    <li><a title="Find images" href="/search.php">Search</a></li>
     <li><a title="View map of all submissions" href="/mapbrowse.php">Map (beta!)</a></li>
     <li><a title="Submit" href="/submit.php">Submit</a></li>
     <li><a title="Discuss" href="/discuss/">Discuss</a></li>
+    <li><a title="Statistics" href="/statistics.php">Statistics</a></li>
     <li><a title="Leaderboard" href="/moversboard.php">Leaderboard</a></li>
     <li><a title="FAQ" href="/faq.php">FAQ</a></li>
     <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact</a></li>
@@ -18,9 +19,8 @@
   {if $is_admin}
   <h3>Admin</h3>
   <ul>
-    <li><a title="Statistics" href="/statistics.php">Statistics(beta)</a></li>
-    <li><a title="Moversboard" href="/moversboard.php">Moversboard(alpha)</a></li>
-    <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
+     <li><a title="Moversboard" href="/moversboard.php">Moversboard(alpha)</a></li>
+     <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
      <li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
      <li><a title="Server Stats" href="http://www.geograph.co.uk/logs/">Server Stats</a></li>
   </ul>
