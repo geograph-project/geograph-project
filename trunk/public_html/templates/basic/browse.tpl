@@ -3,22 +3,12 @@
 {include file="_std_begin.tpl"}
 {dynamic}
 
-    <h2>Browse &amp; Submit</h2>
-     
-<p>We're still working on the browsing features, but you are welcome to
-<a href="/submit.php">submit your pictures</a>.   
-{if !$user->registered}
-	<i>Note that you will be asked to login when you visit the
-	submit page - please <a title="Register to create account" href="/register.php">register</a> if you haven't 
-	already done so.</i>
-{/if}
-A <a title="Photograph Listing" href="/list.php">complete listing of all photographs</a> is available also.
-</p>   
+    <h2>Browse</h2>
 
+{if !$showresult}     
 <p>You can view a particular grid square below - if the square hasn't been filled yet,
 we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Ordnance Survey Get-a-Map'} to help locate your grid square)</p>
-
-
+{/if}
 
 <form action="/browse.php" method="get">
 <div>
@@ -28,8 +18,8 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 	<input type="submit" name="setref" value="Show &gt;"/>
 
 	
-	
-	<p>or</p>
+	<br/>
+	<i>or</i><br/>
 
 	<label for="gridsquare">Choose grid reference</label>
 	<select id="gridsquare" name="gridsquare">
@@ -56,9 +46,9 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 
 	{if $imagecount}
 
-		<p>We have 
+		<p><b>We have 
 		{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
-		for {$gridref} - click for larger version</p>
+		for {$gridref}</b> - click for larger version</p>
 		
 		{foreach from=$images item=image}
 		
@@ -85,7 +75,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 		<p>We have no images for {$gridref}, 
 		
 		{if $nearest_distance}
-			the closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away.
+			the closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away. You can also search for nearby images <a title="search for nearby images to {$nearest_gridref}" href="/search.php?q={$nearest_gridref}">search for nearby images</a>.
 		{else}
 			and have no pictures for any grid square within 100km either!
 		{/if}
