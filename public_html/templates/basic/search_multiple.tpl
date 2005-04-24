@@ -3,6 +3,8 @@
 
 <h2>Please refine your Search</h2>
 
+<p>In your search for images<i>{$searchdesc}</i>.</p>
+
 <p>'{$criteria->searchq}' for {$multipletitle} has multiple possiblities:</p>
 
 <form action="/search.php" method="post">
