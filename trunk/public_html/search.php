@@ -29,140 +29,50 @@ $smarty = new GeographPage;
 
 $_GET['i']=intval(stripslashes($_GET['i']));
 
-$imagestatuses = array('geograph' => 'geographs','geograph,accepted' => 'geographs &amp; supplemental','geograph,accepted,pending' => 'all','pending' => 'pending only');
+$imagestatuses = array('geograph' => 'geograph','geograph,accepted' => 'geographs &amp; supplemental','geograph,accepted,pending' => 'all','pending' => 'pending only');
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_GET['imageclass']) {
+	// -------------------------------
+	//  special handler to build a advanced query from the link in stats.  
+	// -------------------------------
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+
+	$engine = new SearchEngine('#'); 
+ 	$engine->buildAdvancedQuery($_GET);
+ 	
+ 	//should never fail?? - but display form 'in case'
+ 	
+ 	$db=NewADOConnection($GLOBALS['DSN']);
+	if (!$db) die('Database connection failed');
+
+	advanced_form(&$smarty,$db);
+ 	
+} else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	// -------------------------------
 	//  Build advacned query 
 	// -------------------------------
 	
-	if (preg_match("/^ *([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9])([A-Z]{0,2}) *$/",strtoupper($_POST['postcode']),$pc)) {
-		require_once('geograph/searchcriteria.class.php');
-		$searchq = $pc[1].$pc[2]." ".$pc[3];
-		$criteria = new SearchCriteria_Postcode();
-		$criteria->setByPostcode($searchq);
-		if ($criteria->x != 0) {
-			$searchclass = 'Postcode';
-			$searchdesc = ", near postcode ".$searchq;
-			$searchx = $criteria->x;
-			$searchy = $criteria->y;	
-		} else {
-			$smarty->assign('errormsg', "Invalid Postcode");
-		}
-	} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/",$_POST['gridref'],$gr)) {
-		require_once('geograph/gridsquare.class.php');
-		$square=new GridSquare;
-		$grid_ok=$square->setByFullGridRef($q);
-		if ($grid_ok) {
-			$searchclass = 'GridRef';
-			$searchq = $_POST['gridref'];
-			$searchdesc = ", near grid reference ".$square->grid_reference;
-			$searchx = $square->x;
-			$searchy = $square->y;	
-		} else {
-			$smarty->assign('errormsg', $square->errormsg);
-		}
-	} else if ($_POST['county_id']) {
-		require_once('geograph/searchcriteria.class.php');
-		$criteria = new SearchCriteria_County();
-		$criteria->setByCounty($_POST['county_id']);
-		if (!empty($criteria->county_name)) {
-			$searchclass = 'County';
-			$searchq = $_POST['county_id'];
-			$searchdesc = ", near center of ".$criteria->county_name;
-			$searchx = $criteria->x;
-			$searchy = $criteria->y;	
-		} else {
-			$smarty->assign('errormsg', "Invalid County????");
-		}
-	} else if ($_POST['placename']) {
-		require_once('geograph/searchcriteria.class.php');
-		$criteria = new SearchCriteria_Placename();
-		$criteria->setByPlacename($_POST['placename']);
-		if (!empty($criteria->placename)) {
-			$searchclass = 'Placename';
-			$searchq = $criteria->placename;
-			$searchdesc = ", near ".$criteria->placename;
-			$searchx = $criteria->x;
-			$searchy = $criteria->y;	
-		} else if ($criteria->is_multiple) {
-			$searchdesc = ", near '".$criteria->$_POST['placename']."'?";
-			$smarty->assign('multipletitle', "Placename");
-			$smarty->assign('multipleon', "placename");
-			$smarty->assign_by_ref('criteria', $criteria);
-			$smarty->assign_by_ref('post', $_POST);
-		} else {
-			$smarty->assign('errormsg', "Invalid Placename????");
-		}
-	} else if (!empty($_POST['textsearch'])) {
-		$searchclass = 'Text';
-		$searchq = $_POST['textsearch'];
-		$searchdesc = ", containing '{$_POST['textsearch']}' ";	
-	} else { //if (!empty($_POST['random_ind'])) {
-		$searchclass = 'Random';
-		$searchdesc = ", in random order ";	
-	} 
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+
+ 	$engine = new SearchEngine('#'); 
+ 	$engine->buildAdvancedQuery($_POST);	
 	
-	if ($searchclass) {
-		$db=NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed'); 
-
-		$sql = "INSERT INTO queries SET searchclass = '$searchclass',".
-		"searchq = ".$db->Quote($searchq).",".
-		"displayclass = ".$db->Quote($_POST['displayclass']).",".
-		"resultsperpage = ".$db->Quote($_POST['resultsperpage']);
-		if ($searchx > 0 && $searchy > 0)
-			$sql .= ",x = $searchx,y = $searchy";
-		if ($USER->registered)
-			$sql .= ",user_id = {$USER->user_id}";
-
-		if ($_POST['user_id']) {
-			$sql .= ",limit1 = ".$db->Quote(($_POST['user_invert_ind']?'!':'').$_POST['user_id']);
-			$searchdesc .= ", by user";//todo put in name!
-		}
-		if ($_POST['moduration_status']) {
-			$sql .= ",limit2 = ".$db->Quote($_POST['moduration_status']);
-			$searchdesc .= ", showing ".$imagestatuses[$_POST['moduration_status']]." images";
-		}
-		if ($_POST['imageclass']) {
-			$sql .= ",limit3 = ".$db->Quote($_POST['imageclass']);
-			$searchdesc .= ", classifed as ".$_POST['imageclass'];
-		}
-		if ($_POST['reference_index']) {
-			$sql .= ",limit4 = ".$db->Quote($_POST['reference_index']);
-			$searchdesc .= ", in ".$CONF['references'][$_POST['reference_index']];
-		}
-		if ($_POST['gridsquare']) {
-			$sql .= ",limit5 = ".$db->Quote($_POST['gridsquare']);
-			$searchdesc .= ", in ".$_POST['gridsquare'];
-		}
-
-		$sql .= ",searchdesc = ".$db->Quote($searchdesc);
-
-		$db->debug=true;
-		$db->Execute($sql);
-
-		$i = $db->Insert_ID();
-		header("Location:http://{$_SERVER['HTTP_HOST']}/search.php?i={$i}");
-		print "<a href=\"http://{$_SERVER['HTTP_HOST']}/search.php?i={$i}\">Your Search Results</a>";
-		exit;		
-	} else if ($criteria->is_multiple) {
-		if ($_POST['user_id']) {
-			$searchdesc .= ", by user";//todo put in name!
-		}
-		if ($_POST['moduration_status']) {
-			$searchdesc .= ", showing ".$imagestatuses[$_POST['moduration_status']]." images";
-		}
-		if ($_POST['imageclass']) {
-			$searchdesc .= ", classifed as ".$_POST['imageclass'];
-		}
-		if ($_POST['reference_index']) {
-			$searchdesc .= ", in ".$CONF['references'][$_POST['reference_index']];
-		}
-		if ($_POST['gridsquare']) {
-			$searchdesc .= ", in ".$_POST['gridsquare'];
-		}
-		$smarty->assign('searchdesc', $searchdesc);
+	//if we get this far then theres a problem...
+	
+	
+	$smarty->assign('errormsg', $engine->errormsg);
+	
+	if ($engine->criteria->is_multiple) {
+		//todo these shouldnt be hardcoded as there other possiblities for suggestions
+		$smarty->assign('multipletitle', "Placename");
+		$smarty->assign('multipleon', "placename");
+		
+		$smarty->assign_by_ref('criteria', $engine->criteria);
+		$smarty->assign_by_ref('post', $_POST);
+	
+		$smarty->assign('searchdesc', $engine->searchdesc);
 		$smarty->display('search_multiple.tpl');
 	} else {
 		$smarty->assign('searchq', $q);
@@ -193,76 +103,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	//remember the query in the session
 	$_SESSION['searchq']=$q;
 
-	if (preg_match("/^ *([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9])([A-Z]{0,2}) *$/",strtoupper($q),$pc)) {
-		require_once('geograph/searchcriteria.class.php');
-		$searchq = $pc[1].$pc[2]." ".$pc[3];
-		$criteria = new SearchCriteria_Postcode();
-		$criteria->setByPostcode($searchq);
-		if ($criteria->x != 0) {
-			$searchclass = 'Postcode';
-			$searchdesc = ", near postcode ".$searchq;
-			$searchx = $criteria->x;
-			$searchy = $criteria->y;	
-		} else {
-			$smarty->assign('errormsg', "Invalid Postcode");
-		}
-	} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/",$q,$gr)) {
-		require_once('geograph/gridsquare.class.php');
-		$square=new GridSquare;
-		$grid_ok=$square->setByFullGridRef($q);
-		if ($grid_ok) {
-			$searchclass = 'GridRef';
-			$searchdesc = ", near grid reference ".$square->grid_reference;
-			$searchx = $square->x;
-			$searchy = $square->y;			
-		} else {
-			$smarty->assign('errormsg', $square->errormsg);
-		}
-	} else {
-		require_once('geograph/searchcriteria.class.php');
-		$criteria = new SearchCriteria_Placename();
-		$criteria->setByPlacename($q);
-		if (!empty($criteria->placename)) {
-			//if one placename the search on that
-			$searchclass = 'Placename';
-			$searchq = $criteria->placename;
-			$searchdesc = ", near ".$criteria->placename;
-			$searchx = $criteria->x;
-			$searchy = $criteria->y;	
-		} else {
-			//asuume a text search
-			$searchclass = 'Text';
-			$searchq = $q;
-			$searchdesc = ", containing '{$q}' ";	
-		}
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+
+ 	$engine = new SearchEngine('#'); 
+ 	$engine->buildSimpleQuery($q);
+ 	
+	#if (!empty($engine->errormsg)) {//infact redundant because must be error to get this far...
+		$smarty->assign('errormsg', $engine->errormsg);
 		
-		$smarty->assign('errormsg', "Query not understood!!");
-	}
-	
-	if ($searchclass) {
-		$db=NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed'); 
-		
-		$sql = "INSERT INTO queries SET searchclass = '$searchclass',".
-		"searchdesc = ".$db->Quote($searchdesc).",".
-		"searchq = ".$db->Quote($q);
-		if ($searchx > 0 && $searchy > 0)
-			$sql .= ",x = $searchx,y = $searchy";
-		if ($USER->registered)
-			$sql .= ",user_id = {$USER->user_id}";
-			
-		$db->debug=true;
-		$db->Execute($sql);
-		
-		$i = $db->Insert_ID();
-		header("Location:http://{$_SERVER['HTTP_HOST']}/search.php?i={$i}");
-		print "<a href=\"http://{$_SERVER['HTTP_HOST']}/search.php?i={$i}\">Your Search Results</a>";
-		exit;		
-	} else {
 		$smarty->assign('searchq', $q);
-		$smarty->display('search.tpl');
-	}
-	
+		
+		
+		//lets find some recent photos
+		$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
+		$recent->assignSmarty($smarty, 'recent');
+		$smarty->display('search.tpl');	
+	#}
 
 } else if ($_GET['form'] == 'advanced') {
 	// -------------------------------
@@ -303,7 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				break;
 		}
 	
-		if (preg_match('/^!/',$this->limit1) !== FALSE) {
+		if (strpos($query['limit1'],'!') === 0) {
 			$smarty->assign('user_id', preg_replace('/^!/','',$query['limit1']));
 			$smarty->assign('user_invert_checked', 'checked="checked"');
 		} else {
@@ -318,6 +175,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 		$smarty->assign('displayclass', $query['displayclass']);
 		$smarty->assign('resultsperpage', $query['resultsperpage']);
+		$smarty->assign('i', $_GET['i']);
+		
 	} else {
 		$smarty->assign('resultsperpage', 15);	
 	}
@@ -325,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	advanced_form($smarty,$db);
 
 
-} else if ($_GET['i']) {
+} else if ($_GET['i'] && !$_GET['form']) {
 	// -------------------------------
 	//  Search Results
 	// -------------------------------
@@ -353,11 +212,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	// -------------------------------
 	
 	if ($_GET['i']) {
-		//todo get a string from the relevent search 
+		$db=NewADOConnection($GLOBALS['DSN']);
+		if (!$db) die('Database connection failed');
+	
+		$query = $db->GetRow("SELECT searchq FROM queries WHERE id = ".$_GET['i']);
+		$smarty->assign('searchq', $query['searchq']);
 	} else if ($_SESSION['searchq']) {
 		$smarty->assign('searchq', $_SESSION['searchq']);
 	}
 	
+	require_once('geograph/imagelist.class.php');
+	require_once('geograph/gridimage.class.php');
+	require_once('geograph/gridsquare.class.php');
+	//lets find some recent photos
+	$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
+	$recent->assignSmarty($smarty, 'recent');
+	
+
 	$smarty->display('search.tpl');
 }
 
@@ -371,7 +242,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		
 
 		$countylist = array();
-		$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties"); 
+		$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0"); 
 		while (!$recordSet->EOF) 
 		{
 			$countylist[$CONF['references'][$recordSet->fields[0]]][$recordSet->fields[1]] = $recordSet->fields[2];
