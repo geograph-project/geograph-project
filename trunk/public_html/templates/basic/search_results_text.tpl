@@ -5,10 +5,10 @@
 
 <p>Your search for images<i>{$engine->criteria->searchdesc}</i>, returns 
 {if $engine->islimited}
-<b>{$engine->resultCount}</b>
+<b>{$engine->resultCount}</b> images
 {else}
 the following
-{/if} images:
+{/if}:
 {if $engine->resultCount}
 	<br/>( Page {$engine->pagesString()}) [<a href="search.php?i={$i}&amp;form=advanced">refine search</a>]
 	</p>
