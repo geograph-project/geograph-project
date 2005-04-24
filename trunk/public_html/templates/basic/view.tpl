@@ -54,6 +54,30 @@ referring to <b>image {$image->gridimage_id}</b>
 		  
 <br style="clear:both;"/>		  
 
+{if $overview}
+<div style="float:right; width{$overview_width+30}px;"> 
+<h3>Overview Map</h3>
+<div class="map" style="margin-left:20px;border:2px solid black; height:{$overview_height}px;width:{$overview_width}px">
+
+<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
+
+{foreach from=$overview key=y item=maprow}
+	<div>
+	{foreach from=$maprow key=x item=mapcell}
+	<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img 
+	alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+	{/foreach}
+	</div>
+{/foreach}
+{if $marker}
+<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><img src="/templates/basic/img/crosshairs.gif" alt="+" width="16" height="16"></div>
+{/if}
+</div>
+</div>
+</div>
+{/if}
+
+
 <table class="formtable">		
 <tr><td>Submitted by</td><td><a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a></td></tr>
 
@@ -97,8 +121,8 @@ referring to <b>image {$image->gridimage_id}</b>
 {if $image->grid_square->reference_index eq 1}
 	(also 
 
-	{external href="http://www.streetmap.co.uk/streetmap.dll?Grid2Map?X=`$image->grid_square->getNatEastings()`&amp;Y=`$image->grid_square->getNatNorthings()`&amp;title=`$image->title`&amp;back=Return+to+Geograph&amp;url=http://$http_host/photo/`$image->gridimage_id`&amp;nolocal=X&amp;bimage=background%3dhttp://$http_host/templates/basic/img/background.gif" text="streetmap.co.uk"} &amp;
-	<a href="http://www.multimap.com/map/browse.cgi?GridE={$image->grid_square->getNatEastings()}&amp;GridN={$image->grid_square->getNatNorthings()}&amp;scale=25000" target="_blank">multimap.com</a> 
+	{external href="http://www.streetmap.co.uk/streetmap.dll?Grid2Map?X=`$image->grid_square->nateastings`&amp;Y=`$image->grid_square->natnorthings`&amp;title=`$image->title`&amp;back=Return+to+Geograph&amp;url=http://$http_host/photo/`$image->gridimage_id`&amp;nolocal=X&amp;bimage=background%3dhttp://$http_host/templates/basic/img/background.gif" text="streetmap.co.uk"} &amp;
+	{external href="http://www.multimap.com/map/browse.cgi?GridE=`$image->grid_square->nateastings`&amp;GridN=`$image->grid_square->natnorthings`&amp;scale=25000" text="multimap.com"} 
 	)<br>
 
 {/if}
@@ -110,11 +134,11 @@ referring to <b>image {$image->gridimage_id}</b>
 
 {if $image->grid_square->reference_index eq 1}
 	<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">Geograph Images</a>, 
-	<a title="Geocaches from stats.guk2.com" href="http://stats.guk2.com/caches/search_parse.php?osgbe={$image->grid_square->getNatEastings()}&amp;osgbn={$image->grid_square->getNatNorthings()}" target="_blank">Geocaches</a>, 
-	<a title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigs/search-parse.php?gridref={$image->grid_square->get6FigGridRef()}" target="_blank">Trigpoints</a>, 
-	<a title="Many more links from nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p={$image->grid_square->getNatEastings()}+{$image->grid_square->getNatNorthings()}" target="_blank">more...</a>
+	{external title="Geocaches from stats.guk2.com" href="http://stats.guk2.com/caches/search_parse.php?osgbe=`$image->grid_square->nateastings`&amp;osgbn=`$image->grid_square->natnorthings`" text="Geocaches"}, 
+	{external title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigtools/find.php?t=`$image->grid_reference`" text="Trigpoints"}, 
+	{external title="Many more links from nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$image->grid_square->nateastings`+`$image->grid_square->natnorthings`" text="more..."}
 {else}
-	<a title="Many more links from nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p={$image->grid_square->getNatEastings()}+{$image->grid_square->getNatNorthings()}+OSI" target="_blank">See related information from nearby.org.uk</a>
+	{external title="Many more links from nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$image->grid_square->nateastings`+`$image->grid_square->natnorthings`+OSI" text="See related information from nearby.org.uk"}
 
 {/if}
 
