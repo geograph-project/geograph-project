@@ -41,8 +41,7 @@ $cacheid='statistics|'.$by.'_'.$ri.'_'.$u.'_'.$order;
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
-$references = array(1 => 'Great Britain',2 => 'Ireland');
-$smarty->assign_by_ref('references',$references);	
+$smarty->assign_by_ref('references',$CONF['references']);	
 
 $bys = array('status' => 'Status','class' => 'Category','gridsq' => 'Grid Square');
 $smarty->assign_by_ref('bys',$bys);
@@ -70,7 +69,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign('ri', $ri);
 		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 		
-		$title .= " in ".$references[$ri];
+		$title .= " in ".$CONF['references'][$ri];
 		
 		if ($by == 'status') {
 			$sql_group = $sql_fieldname = 'moderation_status';
