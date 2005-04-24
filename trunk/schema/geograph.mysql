@@ -318,25 +318,25 @@ CREATE TABLE `mapcache` (
 ) TYPE=MyISAM;
 
 
-#barry - 24th April 
+#barry - 24th April - updated 25th 
 CREATE TABLE `queries` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `searchdesc` varchar(128) NOT NULL default '',
-  `searchclass` varchar(32) NOT NULL default '',
+  `searchclass` enum('County','GridRef','Placename','Postcode','Random','Text') NOT NULL default 'Random',
   `searchq` varchar(64) NOT NULL default '',
-  `limit1` varchar(64) NOT NULL default '',
-  `limit2` varchar(64) NOT NULL default '',
-  `limit3` varchar(64) NOT NULL default '',
-  `limit4` varchar(64) NOT NULL default '',
-  `limit5` varchar(64) NOT NULL default '',
+  `limit1` varchar(5) NOT NULL default '',
+  `limit2` enum('','geograph','geograph,accepted','geograph,accepted,pending','pending') NOT NULL default '',
+  `limit3` varchar(32) NOT NULL default '',
+  `limit4` char(1) NOT NULL default '',
+  `limit5` char(2) NOT NULL default '',
   `x` smallint(5) unsigned NOT NULL default '0',
   `y` smallint(5) unsigned NOT NULL default '0',
-  `displayclass` varchar(16) NOT NULL default 'full',
+  `displayclass` enum('full','text','thumbs') NOT NULL default 'full',
   `resultsperpage` smallint(5) NOT NULL default '15',
   `crt_timestamp` timestamp(14) NOT NULL,
   `user_id` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=18 ;
+) TYPE=MyISAM;
 
 CREATE TABLE `loc_counties` (
   `county_id` smallint(6) NOT NULL auto_increment,
@@ -345,7 +345,7 @@ CREATE TABLE `loc_counties` (
   `name` varchar(64) NOT NULL default '',
   `reference_index` tinyint(4) NOT NULL default '0',
   PRIMARY KEY  (`county_id`)
-) TYPE=MyISAM AUTO_INCREMENT=97 ;
+) TYPE=MyISAM;
 
 CREATE TABLE `loc_dsg` (
   `code` varchar(64) NOT NULL default '',
