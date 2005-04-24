@@ -265,6 +265,22 @@ class GeographMapMosaic
 		
 		return $bounds;
 	}
+	
+
+	/**
+	* get position in pixels in terms of a gridsquare
+	* @access public
+	*/
+	function getSquarePoint($square) {
+		$point = new BoundingBox;
+		
+		$point->left = ($square->x - $this->map_x) * $this->pixels_per_km;
+		$point->top = ($square->y - $this->map_y) * $this->pixels_per_km;
+		
+		$point->top =$this->image_h - $point->top;
+		
+		return $point;
+	}
 
 
 
