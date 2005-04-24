@@ -76,8 +76,8 @@ class SearchCriteria
 	
 		$sql_where = '';
 		if (!empty($this->limit1)) {
-			if (preg_match('/^!/',$this->limit1)) {
-				$sql_where = "gi.user_id = ".preg_replace('/^!/','',$this->limit1);
+			if (preg_match('/^!/',$this->limit1) !== FALSE) {
+				$sql_where = "gi.user_id != ".preg_replace('/^!/','',$this->limit1);
 			} else {
 				$sql_where = "gi.user_id = ".($this->limit1);
 			}
