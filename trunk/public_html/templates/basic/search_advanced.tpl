@@ -1,0 +1,163 @@
+{include file="_std_begin.tpl"}
+{dynamic}
+
+<h2>Advanced Search</h2>
+
+{if $errormsg}
+<p style="color:red"><b>{$errormsg}</b></p>
+{/if}
+<form action="/search.php" method="post" name="theForm">
+		<h4>Choose One of:</h4> 
+		<table cellpadding="3" cellspacing="0"> 
+		  <tr> 
+			 <td colspan="3"><b>center search on: </b></td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="gridref">grid reference</label></td> 
+			 <td><input type="text" name="gridref" id="gridref" value="{$gridref|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
+			 <td>eg TQ 7050 or N2343</td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="postcode">postcode</label></td> 
+			 <td><input type="text" name="postcode" id="postcode" value="{$postcode|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
+			 <td>eg RH13 1BU (GB fine - NI inaccuate)</td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="placename">placename</label></td> 
+			 <td><input type="text" name="placename" id="placename" value="{$placename|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
+			 <td>eg Peterbrough (GB only)</td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="county_id">county</label></td> 
+			 <td> 
+				<select name="county_id" id="county_id" size="1" class="searchinput" onchange="onlyone(this)" onblur="onlyone(this)"/> 
+				  <option value=""> </option> 
+					{html_options options=$countylist selected=$county_id}				  
+				  
+				</select></td> 
+			 <td></td> 
+		  </tr>
+		  <tr> 
+			 <td colspan="3"><b>or show: </b></td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="textsearch">containing text</label></td> 
+			 <td><input type="text" name="textsearch" id="textsearch" value="{$textsearch|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
+			 <td>eg Island</td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="random_ind">random images</label></td> 
+			 <td><input type="checkbox" name="random_ind" id="random_ind" {$random_checked} onclick="onlyone(this)" onblur="onlyone(this)"/></td> 
+			 <td>&nbsp;<input type="submit" value="Find"/></td> 
+		  </tr> 
+		  <tr> 
+			 <td colspan="3"><hr/><h4>and limit to results to: </h4></td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="user_id">contributor</label></td> 
+			 <td> 
+				<select name="user_id" id="user_id" size="1" class="searchinput"> 
+				  <option value=""> </option> 
+				  
+					  {if $user->registered}
+						<option value="{$user->user_id}">&nbsp; {$user->realname}</option>
+						<option value=""> </option> 
+					  {/if}
+				  	
+				  
+					{html_options options=$userlist selected=$user_id}				  
+				  
+				</select></td> 
+			 <td><input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label></td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="moduration_status">status</label></td> 
+			 <td> 
+				<select name="moduration_status" id="moduration_status" size="1" class="searchinput"> 
+				  <option value=""> </option> 
+					{html_options options=$imagestatuses selected=$moduration_status}				  
+				</select></td> 
+			 <td>&nbsp;</td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="imageclass">category</label></td> 
+			 <td> 
+				<select name="imageclass" id="imageclass" size="1" class="searchinput"> 
+				  <option value=""> </option> 
+					{html_options options=$imageclasslist selected=$imageclass}				  
+				</select></td> 
+			 <td>&nbsp;</td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="reference_index">country</label></td> 
+			 <td> 
+				<select name="reference_index" id="reference_index" size="1" class="searchinput"> 
+				  <option value=""> </option> 
+					{html_options options=$references selected=$reference_index} 
+				</select></td> 
+			 <td>&nbsp;</td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="gridsquare">grid square</label></td> 
+			 <td> 
+				<select name="gridsquare" id="gridsquare" size="1" class="searchinput"> 
+				  <option value=""> </option> 
+					{html_options options=$prefixes selected=$gridsquare}
+				</select></td> 
+			 <td>&nbsp;</td> 
+		  </tr> 
+		  <tr> 
+			 <td colspan="3"><hr/></td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="displayclass">format</label></td> 
+			 <td> 
+				<select name="displayclass" id="displayclass" size="1"> 
+					{html_options options=$displayclasses selected=$displayclass}
+				</select></td>
+			 <td>&nbsp;</td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="resultsperpage">results per page</label></td> 
+			 <td> 
+				<select name="resultsperpage" id="resultsperpage" size="1"> 
+					{html_options values=$pagesizes output=$pagesizes selected=$resultsperpage}
+				</select></td>
+			 <td>&nbsp;<input type="submit" value="Find"/></td>
+			 
+		  </tr> 
+		</table></form>
+{/dynamic}   
+{literal}
+<script type="text/javascript"><!--
+
+function onlyone(that) {
+	if (that.name == 'county_id') {
+		isvalue = (that.selectedIndex > 0)?true:false;
+	} else if (that.name == 'random_ind') {
+		isvalue = that.checked;
+	} else {
+		isvalue = (that.value.length > 0)?true:false;
+	}
+	f = that.form;
+	if (that.name != 'gridref') 
+		f.gridref.disabled = isvalue;
+	if (that.name != 'postcode') 
+		f.postcode.disabled = isvalue;
+	if (that.name != 'placename') 
+		f.placename.disabled = isvalue;
+	if (that.name != 'county_id') 
+		f.county_id.disabled = isvalue;
+	if (that.name != 'textsearch') 
+		f.textsearch.disabled = isvalue;
+	if (that.name != 'random_ind') 
+		f.random_ind.disabled = isvalue;
+}
+{/literal}
+{if $elementused}
+	onlyone(document.theForm.{$elementused});
+{/if}
+//--></script>
+
+
+{include file="_std_end.tpl"}
