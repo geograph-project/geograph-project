@@ -60,9 +60,6 @@ if (!$smarty->is_cached($template, $cacheid))
 // Breakdown Section
 //------------------
 	if ($by) {
-		$smarty->assign('title', $bys[$by]);
-		
-		$title = "Breakdown of Photos by ".$bys[$by];
 		
 		if (!$ri)
 			$ri = 1;
@@ -77,7 +74,14 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_group = $sql_fieldname = 'imageclass';
 		} else if ($by == 'gridsq') {
 			$sql_group = $sql_fieldname = "SUBSTRING(grid_reference,1,$letterlength)";
+		} else {
+			$by = 'status';
+			$sql_group = $sql_fieldname = 'moderation_status';
 		}
+		
+		$smarty->assign('title', $bys[$by]);
+				
+		$title = "Breakdown of Photos by ".$bys[$by];
 		
 		$link .= "by=$by&amp;ri=$ri";
 		
