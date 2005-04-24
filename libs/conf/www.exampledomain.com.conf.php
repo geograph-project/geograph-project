@@ -58,5 +58,8 @@ $CONF['use_imagemagick'] = false;
 //if using im put the path here, if on available on env-path this can be empty
 $CONF['imagemagick_path'] = "C:/Perl/ImageMagick/";
 
+//the countries referenced in the reference index 
+$CONF['references'] = array(1 => 'Great Britain',2 => 'Ireland');
+
 
 ?>
