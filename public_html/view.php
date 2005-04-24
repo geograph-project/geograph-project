@@ -78,6 +78,14 @@ if ($image->isValid())
 	
 	$mosaic=new GeographMapMosaic;
 	$smarty->assign('map_token', $mosaic->getGridSquareToken($image->grid_square));
+	
+	//lets add an overview map too
+	$overview=new GeographMapMosaic('overview');
+	$overview->assignToSmarty($smarty, 'overview');
+	$smarty->assign('marker', $overview->getSquarePoint($image->grid_square));
+
+	//this is needed as smarty is unable to call it!
+	$image->grid_square->getNatEastings();
 }
 
 
