@@ -1,7 +1,7 @@
 {include file="_std_begin.tpl"}
 {dynamic}
 
-<h2>Advanced Search</h2>
+<h2>Advanced Search <small>[<a href="/search.php?i={$i}&amp;form=simple">simple form</a>]</small></h2>
 
 {if $errormsg}
 <p style="color:red"><b>{$errormsg}</b></p>
@@ -13,22 +13,22 @@
 			 <td colspan="3"><b>center search on: </b></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="gridref">grid reference</label></td> 
+			 <td><label for="gridref" id="l_gridref">grid reference</label></td> 
 			 <td><input type="text" name="gridref" id="gridref" value="{$gridref|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
 			 <td>eg TQ 7050 or N2343</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="postcode">postcode</label></td> 
+			 <td><label for="postcode" id="l_postcode">postcode</label></td> 
 			 <td><input type="text" name="postcode" id="postcode" value="{$postcode|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
 			 <td>eg RH13 1BU (GB fine - NI inaccuate)</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="placename">placename</label></td> 
+			 <td><label for="placename" id="l_placename">placename</label></td> 
 			 <td><input type="text" name="placename" id="placename" value="{$placename|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
 			 <td>eg Peterbrough (GB only)</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="county_id">county</label></td> 
+			 <td><label for="county_id" id="l_county_id">county</label></td> 
 			 <td> 
 				<select name="county_id" id="county_id" size="1" class="searchinput" onchange="onlyone(this)" onblur="onlyone(this)"/> 
 				  <option value=""> </option> 
@@ -41,12 +41,12 @@
 			 <td colspan="3"><b>or show: </b></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="textsearch">containing text</label></td> 
+			 <td><label for="textsearch" id="l_textsearch">containing text</label></td> 
 			 <td><input type="text" name="textsearch" id="textsearch" value="{$textsearch|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
 			 <td>eg Island</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="random_ind">random images</label></td> 
+			 <td><label for="random_ind" id="l_random_ind">random images</label></td> 
 			 <td><input type="checkbox" name="random_ind" id="random_ind" {$random_checked} onclick="onlyone(this)" onblur="onlyone(this)"/></td> 
 			 <td>&nbsp;<input type="submit" value="Find"/></td> 
 		  </tr> 
@@ -139,19 +139,33 @@ function onlyone(that) {
 	} else {
 		isvalue = (that.value.length > 0)?true:false;
 	}
+	classname = (isvalue)?'disabledLabel':'';
 	f = that.form;
-	if (that.name != 'gridref') 
+	if (that.name != 'gridref') {
 		f.gridref.disabled = isvalue;
-	if (that.name != 'postcode') 
+		document.getElementById('l_gridref').className = classname;
+	}
+
+	if (that.name != 'postcode') {
 		f.postcode.disabled = isvalue;
-	if (that.name != 'placename') 
+		document.getElementById('l_postcode').className = classname;
+	}
+	if (that.name != 'placename') {
 		f.placename.disabled = isvalue;
-	if (that.name != 'county_id') 
+		document.getElementById('l_placename').className = classname;
+	}
+	if (that.name != 'county_id') {
 		f.county_id.disabled = isvalue;
-	if (that.name != 'textsearch') 
+		document.getElementById('l_county_id').className = classname;
+	}
+	if (that.name != 'textsearch') {
 		f.textsearch.disabled = isvalue;
-	if (that.name != 'random_ind') 
+		document.getElementById('l_textsearch').className = classname;
+	}
+	if (that.name != 'random_ind') {
 		f.random_ind.disabled = isvalue;
+		document.getElementById('l_random_ind').className = classname;
+	}
 }
 {/literal}
 {if $elementused}
