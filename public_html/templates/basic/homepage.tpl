@@ -12,9 +12,11 @@ and you can be part of it.</p>
 <p>Already you can...</p>
 <ul>
 
-    <li><a title="Browse photographs" href="/browse.php">browse images taken by other members</a></li>
+    <li><a title="Find photographs" href="/search.php">search images taken by other members</a></li>
+    <li><a title="Browse by Map" href="/mapbrowse.php">browse images on a Map</a></li>
     <li><a title="Submit a photograph" href="/submit.php">upload pictures and information</a></li>
-    <li><a title="Discussion forums" href="/discuss/">discuss the site on our forums <b>(NEW!)</b></a></li>
+    <li><a title="Discussion forums" href="/discuss/">discuss the site on our forums</a></li>
+    <li><a title="Statistical Breakdown" href="/statistics.php">view statistics of images submitted</a></li>
 </ul>
 
 <p>Look out for more cool features coming soon!</p>
