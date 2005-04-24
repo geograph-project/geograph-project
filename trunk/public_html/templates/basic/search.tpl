@@ -1,3 +1,5 @@
+{assign var="page_title" value="Search"}
+{assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 {dynamic}
 
@@ -23,13 +25,6 @@
 
 <li>Or you can view a <a title="choose a photograph" href="browse.php">particular grid square</a>.<br/><br/></li>
 
-<li>You may also wish to <a href="/submit.php">submit your pictures</a>.   
-{if !$user->registered}
-	<i>Note that you will be asked to login when you visit the
-	submit page - please <a title="Register to create account" href="/register.php">register</a> if you haven't 
-	already done so.</i>
-{/if}
-</li> 
 </ul>
 
 {/dynamic}    
