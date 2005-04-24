@@ -144,6 +144,9 @@ $recent->assignSmarty($smarty, 'recent');
 //lets add an overview map too
 $overview=new GeographMapMosaic('overview');
 $overview->assignToSmarty($smarty, 'overview');
+if ($grid_ok)
+	$smarty->assign('marker', $overview->getSquarePoint($square));
+
 
 
 $smarty->display('browse.tpl');
