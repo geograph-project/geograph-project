@@ -28,9 +28,9 @@ how much each person will climb when their pictures are moderated!</p>
 </table>
 
 
-<h2 style="margin-top:2em;margin-bottom:0">Overall Status</h2>
-<p>Here's a graph of photo submissions since we began...<br/>
-<img src="/img/submission_graph.png" width="480" height="161"/>
+<h2 style="margin-top:2em;margin-bottom:0">Daily Submission Rate</h2>
+<p>Here's a graph of average daily submissions for the last few weeks...<br/>
+<img src="/img/rate.png" width="480" height="161"/>
 </p>
 
 
