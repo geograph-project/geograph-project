@@ -264,11 +264,6 @@ class SearchCriteria_Postcode extends SearchCriteria
 		
 		$postcode = $db->GetRow("select e,n,reference_index from loc_postcodes where code=".$db->Quote($code));	
 		
-
-		//todo - NI postcodes (ref_ind = 2) are actully GB easting/northings
-			//- so for full accuracy should be converted to a irigh easting/norhting
-			$postcode['reference_index'] = 1;
-		
 		$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$postcode['reference_index']." order by origin_x,origin_y limit 1");	
 
 		$this->x = intval($postcode['e']/1000) + $origin['origin_x'];
