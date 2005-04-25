@@ -274,6 +274,18 @@ if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/basic/cache'))
 if (!is_writable($CONF['adodb_cache_dir']))
 	fail('$CONF[\'adodb_cache_dir\'] ('.$CONF['adodb_cache_dir'].') not writable - REQUIRED');
 
+/////////////////////////////////////////////////////////////
+// other required software
+
+if (strlen($CONF['imagemagick_path']))
+{
+	if (!file_exists($CONF['imagemagick_path'].'mogrify'))
+		fail('$CONF[\'imagemagick_path\'] ('.$CONF['imagemagick_path'].') not valid (mogrify not found) - clear this configuration variable if ImageMagick is not available');
+}
+else
+{
+	warn('imagemagick_path not set - resize operations will be slower, lower quality');
+}
 
 
 /////////////////////////////////////////////////////////////
