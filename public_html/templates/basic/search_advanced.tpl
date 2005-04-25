@@ -46,8 +46,8 @@
 			 <td>eg Island</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="random_ind" id="l_random_ind">random images</label></td> 
-			 <td><input type="checkbox" name="random_ind" id="random_ind" {$random_checked} onclick="onlyone(this)" onblur="onlyone(this)"/></td> 
+			 <td><label for="all_ind" id="l_all_ind">all images</label></td> 
+			 <td><input type="checkbox" name="all_ind" id="all_ind" {$all_checked} onclick="onlyone(this)" onblur="onlyone(this)"/></td> 
 			 <td>&nbsp;<input type="submit" value="Find"/></td> 
 		  </tr> 
 		  <tr> 
@@ -118,11 +118,18 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="resultsperpage">results per page</label></td> 
+			 <td><label for="orderby" id="l_orderby">order</label></td> 
+			 <td colspan="2"> 
+				<select name="orderby" id="orderby" size="1"> 
+					{html_options options=$sortorders selected=$orderby}
+				</select> <input type="checkbox" name="reverse_order_ind" id="reverse_order_ind" {$reverse_order_checked}/> <label for="reverse_order_ind" id="l_reverse_order_ind">reverse order</label></td> 
+		  </tr> 
+		  <tr> 
+			 <td>&nbsp;</td> 
 			 <td> 
 				<select name="resultsperpage" id="resultsperpage" size="1"> 
 					{html_options values=$pagesizes output=$pagesizes selected=$resultsperpage}
-				</select></td>
+				</select> <label for="resultsperpage">results per page</label></td>
 			 <td>&nbsp;<input type="submit" value="Find"/></td>
 			 
 		  </tr> 
@@ -134,7 +141,7 @@
 function onlyone(that) {
 	if (that.name == 'county_id') {
 		isvalue = (that.selectedIndex > 0)?true:false;
-	} else if (that.name == 'random_ind') {
+	} else if (that.name == 'all_ind') {
 		isvalue = that.checked;
 	} else {
 		isvalue = (that.value.length > 0)?true:false;
@@ -162,10 +169,21 @@ function onlyone(that) {
 		f.textsearch.disabled = isvalue;
 		document.getElementById('l_textsearch').className = classname;
 	}
-	if (that.name != 'random_ind') {
-		f.random_ind.disabled = isvalue;
-		document.getElementById('l_random_ind').className = classname;
+	if (that.name != 'all_ind') {
+		f.all_ind.disabled = isvalue;
+		document.getElementById('l_all_ind').className = classname;
 	}
+	iscenter = (isvalue && (that.name == 'gridref' || that.name == 'postcode' || that.name == 'placename' || that.name == 'county_id') );
+	classname = (iscenter)?'disabledLabel':'';
+
+	f.orderby.disabled = iscenter;
+	if (iscenter)
+		f.orderby.selectedIndex = 2 //todo this shouldnt be hardcoded!
+	else if (f.orderby.selectedIndex == 2)
+		f.orderby.selectedIndex = 0;
+	document.getElementById('l_orderby').className = classname;
+	f.reverse_order_ind.disabled = iscenter;
+	document.getElementById('l_reverse_order_ind').className = classname;
 }
 {/literal}
 {if $elementused}
