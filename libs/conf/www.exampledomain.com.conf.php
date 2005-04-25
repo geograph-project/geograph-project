@@ -52,11 +52,10 @@ $CONF['raster_service']='';
 //valid values:
 // 'vob' - VisionOfBritain Historical Maps - Permission MUST be sought from the visionofbritain.org.uk webmaster before enableing this feature!
 
-//use imagemagick for image resizing otherwise use php routines (LOT slower)
-$CONF['use_imagemagick'] = false;
-
-//if using im put the path here, if on available on env-path this can be empty
-$CONF['imagemagick_path'] = "C:/Perl/ImageMagick/";
+//to enable the use of ImageMagick for resize operations, enter path 
+//where mogrify etc can be found (highly recommended, faster than the PHP GD based routines)
+//set to null or empty string to use php-based routines.
+$CONF['imagemagick_path'] = '/usr/bin/';
 
 //the countries referenced in the reference index 
 $CONF['references'] = array(1 => 'Great Britain',2 => 'Ireland');
