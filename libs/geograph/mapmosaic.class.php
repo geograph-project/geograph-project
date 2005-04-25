@@ -725,6 +725,17 @@ class GeographMapMosaic
 	}
 	
 	/**
+	* Invalidates all cached maps - recommended above expireAll as the recreation will be handled by the deamon
+	* @access public
+	*/
+	function invalidateAll()
+	{
+		$db=&$this->_getDB();
+		$sql="update mapcache set age=age+1";
+		$db->Execute($sql);
+	}
+	
+	/**
 	* Expires all cached maps
 	* Base maps (blue/green raster) are not expired unless you pass true as the 
 	* first parameter

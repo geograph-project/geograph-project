@@ -222,7 +222,8 @@ You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the
 
  
 {if $is_admin}
-<p><a href="mapbrowse.php?expireAll=0">Clear cache</a>
+<p><a href="mapbrowse.php?invalidateAll=1">Invalidate All Maps</a>
+<a href="mapbrowse.php?expireAll=0">Clear Cache</a>
 <a href="mapbrowse.php?expireAll=1">(clear basemaps too)</a></p>
 
 {/if}
