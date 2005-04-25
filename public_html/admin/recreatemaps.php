@@ -45,7 +45,7 @@ if (isset($_POST['go']))
 	
 	$map=new GeographMap;
 		
-	$recordSet = &$db->Execute("select * from mapcache where age > 0 order by age desc limit 10");
+	$recordSet = &$db->Execute("select * from mapcache where age > 0 order by pixels_per_km desc, age desc limit 10");
 	while (!$recordSet->EOF) 
 	{
 		foreach($recordSet->fields as $name=>$value)
