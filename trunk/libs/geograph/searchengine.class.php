@@ -89,8 +89,8 @@ class SearchEngine
 				case "Placename":
 					$this->criteria = new SearchCriteria_Placename($query['q']);
 					break;
-				case "Random":
-					$this->criteria = new SearchCriteria_Random($query['q']);
+				case "All":
+					$this->criteria = new SearchCriteria_All($query['q']);
 					break;
 				case "Text":
 					$this->criteria = new SearchCriteria_Text($query['q']);
@@ -170,7 +170,7 @@ class SearchEngine
 
 	function buildAdvancedQuery(&$dataarray)
 	{
-		global $CONF,$imagestatuses;
+		global $CONF,$imagestatuses,$sortorders;
 		if (!empty($dataarray['postcode'])) {
 			if (preg_match("/^ *([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9])([A-Z]{0,2}) *$/",strtoupper($dataarray['postcode']),$pc)) {
 				require_once('geograph/searchcriteria.class.php');
@@ -238,17 +238,17 @@ class SearchEngine
 			$searchclass = 'Text';
 			$searchq = $dataarray['textsearch'];
 			$searchdesc = ", containing '{$dataarray['textsearch']}' ";	
-		} else if (!empty($dataarray['random_ind'])) {
-			$searchclass = 'Random';
-			$searchdesc = ", in random order ";	
+		} else if (!empty($dataarray['all_ind'])) {
+			$searchclass = 'All';
 		} else {
-			$searchclass = 'Random';
+			$searchclass = 'All';
 		} 
 
 		if ($searchclass) {
 			$db=NewADOConnection($GLOBALS['DSN']);
 			if (!$db) die('Database connection failed'); 
 
+			
 			
 			$sql = "INSERT INTO queries SET searchclass = '$searchclass',".
 			"searchq = ".$db->Quote($searchq);
@@ -282,6 +282,33 @@ class SearchEngine
 				$sql .= ",limit5 = ".$db->Quote($dataarray['gridsquare']);
 				$searchdesc .= ", in ".$dataarray['gridsquare'];
 			}
+			switch ($dataarray['orderby']) {
+				case "":
+					if ($searchclass == 'All') {
+						$sql .= ",orderby = 'random'";
+						$searchdesc .= ", in random order";
+					}
+					break;
+				case "random":
+					$sql .= ",orderby = ".$db->Quote($dataarray['orderby']);
+					$searchdesc .= ", in Random order";
+					break;
+				case "dist_sqd":
+					break;
+				default:
+					$sql .= ",orderby = ".$db->Quote($dataarray['orderby'].($dataarray['reverse_order_ind']?' desc':''));
+					if ($dataarray['reverse_order_ind']) {
+						if (strpos($sortorders[$dataarray['orderby']],'-') > 1) {
+							$searchdesc .= ", in ".(implode('-&gt;',array_reverse(explode('-&gt;',$sortorders[$dataarray['orderby']]))))." order";
+						} else {
+							$searchdesc .= ", in reverse ".($sortorders[$dataarray['orderby']])." order";
+						}
+					} else {
+						$searchdesc .= ", in ".($sortorders[$dataarray['orderby']])." order";
+
+					}
+			}
+			
 
 			$sql .= ",searchdesc = ".$db->Quote($searchdesc);
 
@@ -310,6 +337,21 @@ class SearchEngine
 			if ($dataarray['gridsquare']) {
 				$searchdesc .= ", in ".$dataarray['gridsquare'];
 			}
+			
+			if (!empty($dataarray['orderby'])) {
+				switch ($dataarray['orderby']) {
+					case "":
+						break;
+					case "random":
+						$searchdesc .= ", in Random order";
+						break;
+					case "dist_sqd":
+						break;
+					default:
+						$searchdesc .= ", in ".($dataarray['reverse_order_ind']?'reverse ':'').($sortorders[$dataarray['orderby']])." order";
+				}
+			}
+	
 			$this->searchdesc = $searchdesc;
 			$this->criteria = $criteria;
 	
@@ -371,7 +413,7 @@ $sql = <<<END
 		ORDER BY $sql_order
 		LIMIT $page,$pgsize
 END;
-//print $sql;
+#print "<BR><BR>$sql";
 		//lets find some photos
 		$this->results=array();
 		$i=0;
@@ -401,7 +443,7 @@ END;
 		$endr = min($this->numberOfPages+1,$this->currentPage+8);
 		
 		if ($start > 1)
-			$r .= "... ";
+			$r .= "<a href=\"search.php?i={$this->query_id}&amp;page=1\">1</a> ... ";
 
 		for($index = $start;$index<$endr;$index++) {
 			if ($index == $this->currentPage) 
@@ -410,10 +452,11 @@ END;
 			else
 				$r .= "<a href=\"search.php?i={$this->query_id}&amp;page=$index\">$index</a> ";
 		}
-		
-		if ($endr < $this->numberOfPages+1)
-			$r .= "... ";
-
+		if ($endr < $this->numberOfPages+1) {
+			$index = $this->numberOfPages;
+			$r .= "... <a href=\"search.php?i={$this->query_id}&amp;page=$index\">$index</a> ";
+		}
+			
 		if ($this->numberOfPages > $this->currentPage) 
 			$r .= "<a href=\"search.php?i={$this->query_id}&amp;page=".($this->currentPage+1)."\">next &gt;&gt;</a> ";
 		return $r;	
