@@ -57,6 +57,16 @@ if ($_GET['o'])
 if (isset($_GET['t']))
 	$mosaic->setToken($_GET['t']);
 
+if (isset($_GET['invalidateAll']) && $USER->hasPerm('admin'))
+{
+	$mosaic->invalidateAll();
+	
+	//redirect to prevent page refreshes of this url
+
+	header("Location:http://{$_SERVER['HTTP_HOST']}/mapbrowse.php");
+	exit;
+}
+
 if (isset($_GET['expireAll']) && $USER->hasPerm('admin'))
 {
 	$mosaic->expireAll($_GET['expireAll']?true:false);
