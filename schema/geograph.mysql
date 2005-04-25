@@ -322,7 +322,7 @@ CREATE TABLE `mapcache` (
 CREATE TABLE `queries` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `searchdesc` varchar(128) NOT NULL default '',
-  `searchclass` enum('County','GridRef','Placename','Postcode','Random','Text') NOT NULL default 'Random',
+  `searchclass` enum('County','GridRef','Placename','Postcode','All','Text') NOT NULL default 'Random',
   `searchq` varchar(64) NOT NULL default '',
   `limit1` varchar(5) NOT NULL default '',
   `limit2` enum('','geograph','geograph,accepted','geograph,accepted,pending','pending') NOT NULL default '',
