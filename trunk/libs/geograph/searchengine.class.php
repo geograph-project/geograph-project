@@ -158,7 +158,6 @@ class SearchEngine
 			if ($USER->registered)
 				$sql .= ",user_id = {$USER->user_id}";
 
-			$db->debug=true;
 			$db->Execute($sql);
 
 			$i = $db->Insert_ID();
@@ -312,7 +311,6 @@ class SearchEngine
 
 			$sql .= ",searchdesc = ".$db->Quote($searchdesc);
 
-			$db->debug=true;
 			$db->Execute($sql);
 
 			$i = $db->Insert_ID();
