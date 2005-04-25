@@ -22,7 +22,9 @@ the following
 	  by <a title="view user profile" href="/profile.php?u={$image->user_id}">{$image->realname}</a> <br/>
 	  for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
 
-	  <i>{$image->dist_string}</i>
+	  <i>{$image->dist_string}</i><br/><br/>
+	  
+	  {if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 	</div>
 
 
