@@ -110,7 +110,7 @@ referring to <b>image {$image->gridimage_id}</b>
 {if $image_taken}
 <tr><td>Taken</td><td>{$image_taken} </td></tr>
 {/if}
-<tr><td>Category</td><td>{if $image->imageclass}{$image->imageclass}{else}<i>n/a</i>{/if}</td></tr>
+<tr><td>Category</td><td>{$image->imageclass|default:"<i>n/a</i>"}</td></tr>
 
 <tr><td>Maps for {$image->grid_reference}</td><td>
 
