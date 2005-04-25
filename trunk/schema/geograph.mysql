@@ -333,6 +333,7 @@ CREATE TABLE `queries` (
   `y` smallint(5) unsigned NOT NULL default '0',
   `displayclass` enum('full','text','thumbs') NOT NULL default 'full',
   `resultsperpage` smallint(5) NOT NULL default '15',
+  `orderby` varchar(32) NOR NULL default '',
   `crt_timestamp` timestamp(14) NOT NULL,
   `user_id` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
