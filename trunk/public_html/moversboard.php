@@ -92,6 +92,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign_by_ref('topusers', $topusers);
 	$smarty->assign('generation_time', time());
+	$smarty->assign('cutoff_time', time()-86400*7);
 	
 	//lets find some recent photos
 	$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
