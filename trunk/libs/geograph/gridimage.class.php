@@ -563,7 +563,7 @@ class GridImage
 			$fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}.jpg";
 			if (file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			{
-				if ($CONF['use_imagemagick']) {
+				if (strlen($CONF['imagemagick_path'])) {
 								
 					list($width, $height, $type, $attr) = getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
 
@@ -583,7 +583,11 @@ class GridImage
 						}
 					
 					
-						$cmd = sprintf ("\"%sconvert\" -thumbnail %ldx%ld -unsharp 0x1+1.4+0.1 -raise 2x2 -quality 87 jpg:%s jpg:%s", $CONF['imagemagick_path'],$maxw, $maxh, $_SERVER['DOCUMENT_ROOT'].$fullpath,$_SERVER['DOCUMENT_ROOT'].$thumbpath);
+						$cmd = sprintf ("\"%sconvert\" -thumbnail %ldx%ld -unsharp 0x1+1.4+0.1 -raise 2x2 -quality 87 jpg:%s jpg:%s", 
+							$CONF['imagemagick_path'],
+							$maxw, $maxh, 
+							$_SERVER['DOCUMENT_ROOT'].$fullpath,
+							$_SERVER['DOCUMENT_ROOT'].$thumbpath);
 						passthru ($cmd);
 
 					} else {
