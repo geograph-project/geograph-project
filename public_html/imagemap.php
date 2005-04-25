@@ -38,13 +38,12 @@ init_session();
 		$map->setOrigin(-10,-30);
 		$map->setImageSize(1200,1700);
 		$map->setScale(1.3);
+		$map->type_or_user = -1;
 	
-
+			//force render of this map 
+			//$map->_renderRandomGeographMap();
+				//now donw with type_or_user = -1
 	
-	//force render of this map 
-	$map->_renderRandomGeographMap();
-	
-	//will return above map becuase it already cached
 	$map->returnImage();
 	exit;
 
