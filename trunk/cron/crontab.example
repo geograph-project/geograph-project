@@ -1,0 +1,4 @@
+*/15 * * * * /usr/bin/php /home/geograph/scripts/recreate_maps.php 14 10 60 > /dev/null
+#first argument is the timeout time (should be one less than time the script is called)
+#second is the sleep time, used to give other processs a chance between every ten regenerations
+#is the max load average the script is create maps, if over it sleeps and chech again later. 
