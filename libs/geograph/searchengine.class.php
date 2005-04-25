@@ -338,12 +338,12 @@ class SearchEngine
 	
 		$page = ($pg -1)* $pgsize;
 	
-		if (!$sql_where) {
+		if (empty($sql_where)) {
 			$sql_where = "moderation_status != 'rejected'";
 		} else {
 			$this->islimited = true;
 			if (strpos($sql_where,'moderation_status') === FALSE) 
-				$sql_where = " and moderation_status != 'rejected'";
+				$sql_where .= " and moderation_status != 'rejected'";
 		}
 		if (!$sql_order) {$sql_order = 'gs.grid_reference';}
 	
