@@ -454,7 +454,7 @@ class GeographMapMosaic
 
 			$out->setAlignedOrigin(
 				$this->map_x + $panx*$xdir,
-				$this->map_y + $pany*$ydir);
+				$this->map_y + $pany*$ydir,true);
 		}
 		return $out->getToken();
 	}
@@ -577,7 +577,7 @@ class GeographMapMosaic
 	* Sets the origin, but aligns the origin on particular boundaries to
 	* reduce the number of image tiles that get generated
 	*/
-	function setAlignedOrigin($bestoriginx, $bestoriginy)
+	function setAlignedOrigin($bestoriginx, $bestoriginy, $ispantoken = false)
 	{
 		//figure out image size in km
 		$mapw=$this->image_w/$this->pixels_per_km;
@@ -588,9 +588,15 @@ class GeographMapMosaic
 		$walign=$mapw/$this->mosaic_factor;
 		$halign=$maph/$this->mosaic_factor;
 		
-				//dividing by 2 makes for more accurate clicking - DIDNT WORK as rounded 2.5 to 3!
-		$walign=round($walign);
-		$halign=round($halign);
+		if ($ispantoken) {
+				//dividing by 2 DIDNT WORK as rounded 2.5 to 3!
+			$walign=round($walign);
+			$halign=round($halign);
+		} else {
+				//dividing by 2 makes for more accurate clicking
+			$walign=round($walign/2);
+			$halign=round($halign/2);
+		}
 		
 		//range check the bestorigin - we've got some hard coded
 		//values here
