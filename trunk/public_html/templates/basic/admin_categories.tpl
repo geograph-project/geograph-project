@@ -30,7 +30,7 @@ Changed values are highlighted in gray. </p>
 	{foreach key=val item=count from=$arr name=loop}
 		<tr>
 		<td>{if $val}
-			{$val}
+		<a href="/search.php?imageclass={$val|escape:url}" target="_blank">{$val}</a>
 		    {else}
 		    	-blank-
 		    {/if}</td>
