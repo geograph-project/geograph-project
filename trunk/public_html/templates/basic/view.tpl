@@ -52,11 +52,11 @@ referring to <b>image {$image->gridimage_id}</b>
   
 </div>
 		  
-<br style="clear:both;"/>		  
+		  
 
 {if $overview}
-<div style="float:right; width{$overview_width+30}px;"> 
-<h3>Overview Map</h3>
+<div style="float:right; width:{$overview_width+30}px; position:relative"> 
+
 <div class="map" style="margin-left:20px;border:2px solid black; height:{$overview_height}px;width:{$overview_width}px">
 
 <div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
@@ -119,11 +119,11 @@ referring to <b>image {$image->gridimage_id}</b>
 {getamap gridref=$image->grid_reference text="OS Get-a-Map"}
 
 {if $image->grid_square->reference_index eq 1}
-	(also 
-
+	
+<br/>
 	{external href="http://www.streetmap.co.uk/streetmap.dll?Grid2Map?X=`$image->grid_square->nateastings`&amp;Y=`$image->grid_square->natnorthings`&amp;title=`$image->title`&amp;back=Return+to+Geograph&amp;url=http://$http_host/photo/`$image->gridimage_id`&amp;nolocal=X&amp;bimage=background%3dhttp://$http_host/templates/basic/img/background.gif" text="streetmap.co.uk"} &amp;
 	{external href="http://www.multimap.com/map/browse.cgi?GridE=`$image->grid_square->nateastings`&amp;GridN=`$image->grid_square->natnorthings`&amp;scale=25000" text="multimap.com"} 
-	)<br>
+
 
 {/if}
 
@@ -147,14 +147,12 @@ referring to <b>image {$image->gridimage_id}</b>
 </td></tr>
 
 
-
-<tr><td>Copyright</td><td>
-
-
-
+</table>
+<br>
+<div align="center">
 <!-- Creative Commons License -->
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img align="right" alt="Creative Commons License" src="http://creativecommons.org/images/public/somerights20.gif" /></a>
-The copyright on this image is owned by <a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a> and is 
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img align="left" alt="Creative Commons License" src="http://creativecommons.org/images/public/somerights20.gif" style="position:relative"/></a>
+The copyright on this image is owned by <a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a> and is <br/>
 licenced under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.
 <!-- /Creative Commons License -->
 
@@ -184,9 +182,8 @@ licenced under a <a rel="license" href="http://creativecommons.org/licenses/by-s
 
 -->
 
+</div>
 
-</td></tr>
-</table>
 
 
 
