@@ -186,9 +186,11 @@ function onlyone(that) {
 	document.getElementById('l_reverse_order_ind').className = classname;
 }
 {/literal}
+{dynamic}
 {if $elementused}
 	onlyone(document.theForm.{$elementused});
 {/if}
+{/dynamic}
 //--></script>
 
 

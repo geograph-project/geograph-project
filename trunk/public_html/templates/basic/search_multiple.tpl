@@ -2,7 +2,7 @@
 {include file="_std_begin.tpl"}
 
 <h2>Please refine your Search</h2>
-
+{dynamic}
 <p>In your search for images<i>{$searchdesc}</i>.</p>
 
 <p>'{$criteria->searchq}' for {$multipletitle} has multiple possiblities:</p>
@@ -20,7 +20,7 @@
 <input type="radio" name="placename" value="{$match.full_name}"> {$match.full_name} <small><small>[<i>{$match.name}</i>]</small></small> <br/>
 		
 {/foreach}
-
+{/dynamic}
 <p><input type="submit" value="Find"></p>
 
 </form>	
