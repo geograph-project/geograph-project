@@ -65,6 +65,18 @@ class SearchCriteria
 						
 			$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
 			$sql_order .= " dist_sqd ";
+		} else if ($this->orderby) {
+			switch ($this->orderby) {
+				case "random":
+					$sql_order .= " rand({$this->crt_timestamp}) ";
+					break;
+				case "dist_sqd":
+					break;
+				default:
+					$sql_order .= $this->orderby;
+			}
+			
+			
 		}
 	
 		$sql_where = '';
@@ -213,12 +225,13 @@ class SearchCriteria_Text extends SearchCriteria
 	}
 }
 
-class SearchCriteria_Random extends SearchCriteria
+class SearchCriteria_All extends SearchCriteria
 {
 	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where) {
 		parent::getSQLParts($sql_fields,$sql_order,$sql_where);
 		
-		$sql_order .= " rand({$this->crt_timestamp}) ";
+		if (!$this->orderby)
+			$sql_order .= " rand({$this->crt_timestamp}) ";
 	}
 }
 
