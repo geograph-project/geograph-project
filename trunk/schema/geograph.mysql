@@ -348,14 +348,14 @@ CREATE TABLE `loc_counties` (
 ) TYPE=MyISAM;
 
 CREATE TABLE `loc_dsg` (
-  `code` varchar(64) NOT NULL default '',
+  `code` enum('ADM1','ADM2','ADM3','ADMD','AGRF','AIRF','AIRQ','ANCH','ANS','ARCH','AREA','BAR','BAY','BCH','BDG','BLDG','BNK','BOG','BTL','CAPE','CARN','CAVE','CHN','CHNM','CHNN','CLF','CMP','CNL','COVE','CRNT','CSTL','CSWY','DCK','DCKB','DEPU','DPR','EST','ESTY','FLLS','FLTT','FRM','FRST','FT','GAP','GDN','GRGE','HBR','HDLD','HLL','HLLS','HSE','HSEC','HSTS','HTH','HTL','INLT','ISL','ISLS','ISLT','LCTY','LDGU','LGN','LK','LKS','LOCK','LTHSE','MDW','MNMT','MOOR','MRSH','MT','MTS','NRWS','NVB','OVF','PAL','PASS','PEN','PIER','PK','PKS','PLN','PND','POOL','PPL','PPLC','PPLL','PPLX','PRK','PROM','PRSH','PRT','PT','RCH','RD','RDA','RDGE','RDST','RECR','RESN','RF','RGN','RK','RKS','RR','RSTN','RSV','RUIN','SAND','SD','SHOL','SLCE','SLP','SPIT','ST','STM','STMC','STMM','STMX','STRT','TNL','TOWR','UPLD','VAL','WHRL') NOT NULL default 'ADM1',
   `name` varchar(64) NOT NULL default '',
   `text` varchar(64) NOT NULL default '',
   `class` varchar(64) NOT NULL default ''
 ) TYPE=MyISAM;
 
 CREATE TABLE `loc_placenames` (
-  `dsg` varchar(10) NOT NULL default '',
+  `dsg` enum('ADM1','ADM2','ADM3','ADMD','AGRF','AIRF','AIRQ','ANCH','ANS','ARCH','AREA','BAR','BAY','BCH','BDG','BLDG','BNK','BOG','BTL','CAPE','CARN','CAVE','CHN','CHNM','CHNN','CLF','CMP','CNL','COVE','CRNT','CSTL','CSWY','DCK','DCKB','DEPU','DPR','EST','ESTY','FLLS','FLTT','FRM','FRST','FT','GAP','GDN','GRGE','HBR','HDLD','HLL','HLLS','HSE','HSEC','HSTS','HTH','HTL','INLT','ISL','ISLS','ISLT','LCTY','LDGU','LGN','LK','LKS','LOCK','LTHSE','MDW','MNMT','MOOR','MRSH','MT','MTS','NRWS','NVB','OVF','PAL','PASS','PEN','PIER','PK','PKS','PLN','PND','POOL','PPL','PPLC','PPLL','PPLX','PRK','PROM','PRSH','PRT','PT','RCH','RD','RDA','RDGE','RDST','RECR','RESN','RF','RGN','RK','RKS','RR','RSTN','RSV','RUIN','SAND','SD','SHOL','SLCE','SLP','SPIT','ST','STM','STMC','STMM','STMX','STRT','TNL','TOWR','UPLD','VAL','WHRL') NOT NULL default 'ADM1',
   `full_name` varchar(64) NOT NULL default '',
   `e` int(11) NOT NULL default '0',
   `n` int(11) NOT NULL default '0',
