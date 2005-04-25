@@ -30,13 +30,19 @@ $smarty = new GeographPage;
 $_GET['i']=intval(stripslashes($_GET['i']));
 
 $imagestatuses = array('geograph' => 'geograph','geograph,accepted' => 'geographs &amp; supplemental','geograph,accepted,pending' => 'all','pending' => 'pending only');
+$sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','submitted'=>'Date Submitted','imageclass'=>'Image Category','realneme'=>'Contributer Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North');
+#,'user_id'=>'Contributer ID'
 
-if ($_GET['imageclass']) {
+
+if ($_GET['imageclass'] || $_GET['u']) {
 	// -------------------------------
-	//  special handler to build a advanced query from the link in stats.  
+	//  special handler to build a advanced query from the link in stats or profile.  
 	// -------------------------------
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
+
+	if ($_GET['u'])
+		$_GET['user_id'] = $_GET['u']; 
 
 	$engine = new SearchEngine('#'); 
  	$engine->buildAdvancedQuery($_GET);
@@ -79,16 +85,18 @@ if ($_GET['imageclass']) {
 		foreach ($_POST as $key=> $value) {
 			$smarty->assign($key, $value);
 		}
-		foreach (array('postcode','textsearch','gridref','county_id','placename','random_checked') as $key) {
+		foreach (array('postcode','textsearch','gridref','county_id','placename','all_checked') as $key) {
 			if ($_POST[$key]) 
 				$smarty->assign('elementused', $key);
 		}
 		
 		
-		if ($_POST['random_ind'])
-			$smarty->assign('random_checked', 'checked="checked"');
+		if ($_POST['all_ind'])
+			$smarty->assign('all_checked', 'checked="checked"');
 		if ($_POST['user_invert_ind'])
 			$smarty->assign('user_invert_checked', 'checked="checked"');
+		if ($_POST['reverse_order_ind'])
+			$smarty->assign('reverse_order_ind', 'checked="checked"');
 				
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
@@ -115,6 +123,9 @@ if ($_GET['imageclass']) {
 		$smarty->assign('searchq', $q);
 		
 		
+		require_once('geograph/imagelist.class.php');
+		require_once('geograph/gridimage.class.php');
+		require_once('geograph/gridsquare.class.php');
 		//lets find some recent photos
 		$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
 		$recent->assignSmarty($smarty, 'recent');
@@ -154,9 +165,9 @@ if ($_GET['imageclass']) {
 				$smarty->assign('placename', $query['searchq']);
 				$smarty->assign('elementused', 'placename');
 				break;
-			case "Random":
-				$smarty->assign('random_checked', 'checked="checked"');
-				$smarty->assign('elementused', 'random_checked');
+			case "All":
+				$smarty->assign('all_checked', 'checked="checked"');
+				$smarty->assign('elementused', 'all_ind');
 				break;
 		}
 	
@@ -171,8 +182,12 @@ if ($_GET['imageclass']) {
 		$smarty->assign('reference_index', $query['limit4']);
 		$smarty->assign('gridsquare', $query['limit5']);
 
-
-
+		if (strpos($query['orderby'],' desc') > 0) {
+			$smarty->assign('orderby', preg_replace('/ desc$/','',$query['orderby']));
+			$smarty->assign('reverse_order_checked', 'checked="checked"');
+		} else {
+			$smarty->assign('orderby', $query['orderby']);
+		}
 		$smarty->assign('displayclass', $query['displayclass']);
 		$smarty->assign('resultsperpage', $query['resultsperpage']);
 		$smarty->assign('i', $_GET['i']);
@@ -233,7 +248,7 @@ if ($_GET['imageclass']) {
 }
 
 	function advanced_form(&$smarty,&$db) {
-		global $CONF,$imagestatuses;
+		global $CONF,$imagestatuses,$sortorders;
 		
 
 		$smarty->assign('displayclasses', array('full' => 'full listing','text' => 'text description only','thumbs' => 'thumbnails only'));
@@ -266,6 +281,7 @@ if ($_GET['imageclass']) {
 		$smarty->assign('prefixes', $square->getGridPrefixes());
 
 		$smarty->assign_by_ref('imagestatuses', $imagestatuses);
+		$smarty->assign_by_ref('sortorders', $sortorders);
 
 		$smarty->assign_by_ref('references',$CONF['references']);	
 
