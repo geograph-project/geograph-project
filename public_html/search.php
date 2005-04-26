@@ -116,8 +116,18 @@ if ($_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 
  	$engine = new SearchEngine('#'); 
  	$engine->buildSimpleQuery($q);
+ 	if ($engine->criteria->is_multiple) {
+		//todo these shouldnt be hardcoded as there other possiblities for suggestions
+		$smarty->assign('multipletitle', "Placename");
+		$smarty->assign('multipleon', "placename");
+
+		$smarty->assign_by_ref('criteria', $engine->criteria);
+		$smarty->assign_by_ref('post', $_GET);
+		$smarty->assign_by_ref('references',$CONF['references']);	
+		$smarty->assign('searchdesc', $engine->searchdesc);
+		$smarty->display('search_multiple.tpl');
+	} else {
  	
-	#if (!empty($engine->errormsg)) {//infact redundant because must be error to get this far...
 		$smarty->assign('errormsg', $engine->errormsg);
 		
 		$smarty->assign('searchq', $q);
@@ -130,7 +140,7 @@ if ($_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
 		$recent->assignSmarty($smarty, 'recent');
 		$smarty->display('search.tpl');	
-	#}
+	}
 
 } else if ($_GET['form'] == 'advanced') {
 	// -------------------------------
