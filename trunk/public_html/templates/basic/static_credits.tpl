@@ -6,7 +6,7 @@
     
     <h3>Original Idea</h3>
     <ul>
-    <li>{mailto address="editor@geocachingtoday.com" text="Gary Rogers" encode="javascript"} - came up with original concept for his <a href="http://www.geocachingtoday.com/" title="Geocaching Today" target="_blank">Geocaching Today</a> online magazine</li>
+    <li>{mailto address="editor@geocachingtoday.com" text="Gary Rogers" encode="javascript"} - came up with original concept for his {external href="http://www.geocachingtoday.com/" title="Geocaching Today" text="Geocaching Today"} online magazine</li>
     </ul>
 
 	<h3>Photographs</h3>
@@ -25,12 +25,12 @@
     
     <li>{mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}, 
     developer and maintainer of 
-    {external title="Trigtools Website" href="http://www.trigtools.co.uk" text="www.trigtools.co.uk"} has
+    {external title="Trigtools Website" href="http://www.nearby.org.uk" text="www.nearby.org.uk"} has
     contributed numerous fixes and enhancements, as well as lending his
     experience of working with mapping technologies.</li>
     </ul>
     
-    <h3>Mapping Data</h3>
+    <h3>Mapping &amp; Location Data</h3>
     <ul>
     <li>Historical Maps from the mid 20<sup>th</sup> century kindly made available by 
     {external href="http://www.visionofbritain.org.uk/" title="a Vision of Britain" text="VisionOfBritain.org.uk"}.</li>
@@ -40,6 +40,12 @@
     <li>Ireland outline reproduced from 1990 World Vector Shoreline dataset by 
     {external href="http://www.nima.mil/" title="U.S. National Imagery and Mapping Agency" text="MIMA"}, 
     not subject to copyright protection under 17 U.S.C. 403.</li> 
+    <li>Placename/Toponymic information is based on the Geographic Names Data Base, containing official 
+    standard names approved by the United States Board on Geographic Names and maintained by the National 
+    Geospatial-Intelligence Agency. More information is available at the Products and Services link at 
+    {external href="http://www.nga.mil/" text="www.nga.mil"}. </li>
+    <li>Low Resolution postcode data, from {external href="http://sourceforge.net/projects/geocode" text="Sourceforge Geocode.Service project"}.</li>
+    <li>County center points compiled by {mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}.</li>
     </ul>
     
     <h3>Hosting</h3>
