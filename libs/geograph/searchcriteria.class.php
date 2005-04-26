@@ -245,7 +245,14 @@ class SearchCriteria_Placename extends SearchCriteria
 		global $places; //only way to get the array into the compare functions
 		$db = $this->_getDB();
 		
-		$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where full_name=".$db->Quote($placename));	
+		if (is_numeric($placename)) {
+			$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where id=".$db->Quote($placename));	
+		
+		} else {
+			$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where full_name=".$db->Quote($placename));	
+		}
+		
+		
 		
 		if (count($places) == 1) {
 			$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$places[0]['reference_index']." order by origin_x,origin_y limit 1");	
@@ -255,14 +262,39 @@ class SearchCriteria_Placename extends SearchCriteria
 			$this->placename = $places[0]['full_name'];
 			$this->searchq = $places[0]['full_name'];
 		} else {
-			if (count($places) > 1) {
-				if ($_REQUEST['boarder']) {
-					$places = array_merge($places,$db->GetAll("select full_name,dsg from loc_placenames where full_name LIKE ".$db->Quote('%'.$placename.'%')." OR SOUNDEX(".$db->Quote($placename).") = SOUNDEX(full_name)"));	
-				}
-			} else {
-				$places = $db->GetAll("select full_name,dsg,loc_dsg.name from loc_placenames inner join loc_dsg on(loc_placenames.dsg = loc_dsg.code) where full_name LIKE ".$db->Quote('%'.$placename.'%')." OR SOUNDEX(".$db->Quote($placename).") = SOUNDEX(full_name)");	
-			}
-					
+			$places = $db->GetAll("select
+				id,
+				full_name,
+				dsg,
+				'populated place' as dsg_name,
+				loc_placenames.reference_index,
+				loc_adm1.name as adm1_name
+			from 
+				loc_placenames
+				left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
+			where
+				dsg = 'PPL' AND (
+				full_name LIKE ".$db->Quote('%'.$placename.'%')."
+				OR SOUNDEX(".$db->Quote($placename).") = SOUNDEX(full_name) )
+			limit 20");		
+			if (count($places) < 10) {
+				$places = array_merge($places,$db->GetAll("select 
+					id, 
+					full_name,
+					dsg,
+					loc_dsg.name as dsg_name,
+					loc_placenames.reference_index,
+					loc_adm1.name as adm1_name
+				from 
+					loc_placenames
+					inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) 
+					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
+				where
+					dsg != 'PPL' AND (
+					full_name LIKE ".$db->Quote('%'.$placename.'%')."
+					OR SOUNDEX(".$db->Quote($placename).") = SOUNDEX(full_name) )
+				LIMIT 20") );				
+			}	
 				$this->matches = $places;
 				$this->is_multiple = true;
 				$this->searchq = $placename;
