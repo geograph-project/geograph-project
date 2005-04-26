@@ -40,10 +40,10 @@
 
 
  	
-<h3>Statistics</h3>
-<ul>
  	
  	{if $profile->stats.total gt 0}
+<h3><a href="/statistics.php?by=status&u={$profile->user_id}">Statistics</a></h3>
+<ul>
  	  <li>Geograph points: {$profile->stats.ftf} (see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)</li>
  	  <li>{$profile->stats.total} {if $profile->stats.total eq 1}photograph{else}photographs{/if} submitted
  	  
@@ -51,16 +51,17 @@
  	 	  ({$profile->stats.pending} awaiting moderation)
  	  {/if}
  	  </li>
- 	   <li><a href="/statistics.php?by=status&u={$profile->user_id}">Statistical Breakdown</a></li>
 
         {else}
+<h3>Statistics</h3>
+<ul>
  	  <li>No photographs submitted</li>
  	{/if}
 
 </ul>
 
 {if $profile->stats.total gt 0}
-	<h3>Photographs <small>[<a href='/search.php?u={$profile->user_id}'>search</a>]</small></h3>
+	<h3><a href='/search.php?u={$profile->user_id}'>Photographs</a></h3>
 	<ul>		
 		{foreach from=$userimages item=image}
 		<li><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->grid_reference}</a> {$image->title} ({$image->moderation_status})</li>
