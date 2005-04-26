@@ -2,7 +2,9 @@
 
 {if $image}
 
- <h2><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->title}</h2>
+ <h2 style="margin-bottom:0px;"><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->title}</h2>
+ {if $place.distance}
+ <div style="color:silver">&nbsp;near <b title="{$place.distance} km">{$place.full_name}</b><small><i>{if $place.adm1_name && $place.adm1_name != $place.reference_name}, {$place.adm1_name}{/if}, {$place.reference_name}</i></small></div>{/if}
  
 {if $image->moderation_status eq 'rejected'}
 <h3>Rejected</h3>
@@ -25,7 +27,7 @@ referring to <b>image {$image->gridimage_id}</b>
       
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   <div class="img-shadow">{$image->getFull()}</div>
-  <div class="caption">{$image->title|escape:'html'}</div>
+  <div class="caption"><b>{$image->title|escape:'html'}</b></div>
   
   {if $image->comment}
   <div class="caption">{$image->comment|escape:'html'}</div>
@@ -130,15 +132,15 @@ referring to <b>image {$image->gridimage_id}</b>
 </td></tr>
 
 <tr><td>What's nearby?</td><td>
-
+<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">Geograph Images</a>, 
 
 {if $image->grid_square->reference_index eq 1}
-	<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">Geograph Images</a>, 
+	
 	{external title="Geocaches from stats.guk2.com" href="http://stats.guk2.com/caches/search_parse.php?osgbe=`$image->grid_square->nateastings`&amp;osgbn=`$image->grid_square->natnorthings`" text="Geocaches"}, 
 	{external title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigtools/find.php?t=`$image->grid_reference`" text="Trigpoints"}, 
-	{external title="Many more links from nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$image->grid_square->nateastings`+`$image->grid_square->natnorthings`" text="more..."}
+	{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$image->grid_square->nateastings`+`$image->grid_square->natnorthings`" text="more..."}
 {else}
-	{external title="Many more links from nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$image->grid_square->nateastings`+`$image->grid_square->natnorthings`+OSI" text="See related information from nearby.org.uk"}
+	{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$image->grid_square->nateastings`+`$image->grid_square->natnorthings`+OSI" text="information from nearby.org.uk"}
 
 {/if}
 
