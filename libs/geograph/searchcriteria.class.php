@@ -295,9 +295,11 @@ class SearchCriteria_Placename extends SearchCriteria
 					OR SOUNDEX(".$db->Quote($placename).") = SOUNDEX(full_name) )
 				LIMIT 20") );				
 			}	
+			if (count($places)) {
 				$this->matches = $places;
 				$this->is_multiple = true;
 				$this->searchq = $placename;
+			}
 		}
 	}
 }
