@@ -132,7 +132,11 @@ class SearchEngine
 		} else {
 			$criteria = new SearchCriteria_Placename();
 			$criteria->setByPlacename($q);
-			if (!empty($criteria->placename)) {
+			if ($criteria->is_multiple) {
+				$searchdesc = ", near '".$q."'";
+				$this->searchdesc = $searchdesc;
+				$this->criteria = $criteria;
+			} else if (!empty($criteria->placename)) {
 				//if one placename the search on that
 				$searchclass = 'Placename';
 				$searchq = $criteria->placename;
