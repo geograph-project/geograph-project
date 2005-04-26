@@ -72,8 +72,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_group = $sql_fieldname = 'moderation_status';
 		} else if ($by == 'class') {
 			$sql_group = $sql_fieldname = 'imageclass';
-			$smarty->assign('linkprefix', "/search.php?".($u?"user_id=$u&amp;":'')."reference_index=$ri&amp;imageclass=");
+			$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;imageclass=");
 		} else if ($by == 'gridsq') {
+			$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."gridsquare=");
 			$sql_group = $sql_fieldname = "SUBSTRING(grid_reference,1,$letterlength)";
 		} else {
 			$by = 'status';
