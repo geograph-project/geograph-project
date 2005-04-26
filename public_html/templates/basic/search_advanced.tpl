@@ -25,7 +25,7 @@
 		  <tr> 
 			 <td><label for="placename" id="l_placename">placename</label></td> 
 			 <td><input type="text" name="placename" id="placename" value="{$placename|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
-			 <td>eg Peterbrough (GB only)</td> 
+			 <td>eg Peterbrough</td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="county_id" id="l_county_id">county</label></td> 
