@@ -17,7 +17,9 @@
 
 {foreach from=$criteria->matches item=match}
 
-<input type="radio" name="placename" value="{$match.full_name}"> {$match.full_name} <small><small>[<i>{$match.name}</i>]</small></small> <br/>
+<input type="radio" name="placename" value="{$match.id}">
+  <b>{$match.full_name}</b><small><i>{if $match.adm1_name}, {$match.adm1_name}{/if}, {$references[$match.reference_index]}</i>
+ <small>[{$match.dsg_name}]</small></small> <br/>
 		
 {/foreach}
 {/dynamic}
