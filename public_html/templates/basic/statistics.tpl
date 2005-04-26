@@ -79,7 +79,7 @@
     {else}
 	{if $u}
 	<select name="u">
-		<option value="{$u}">Just for {$profile->realname}</option>
+		<option value="{$u}" selected>Just for {$profile->realname}</option>
 		<option value="">For Everyone</option>
 	</select>
 	{/if}
