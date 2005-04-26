@@ -77,7 +77,7 @@ if ($_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		
 		$smarty->assign_by_ref('criteria', $engine->criteria);
 		$smarty->assign_by_ref('post', $_POST);
-	
+		$smarty->assign_by_ref('references',$CONF['references']);	
 		$smarty->assign('searchdesc', $engine->searchdesc);
 		$smarty->display('search_multiple.tpl');
 	} else {
