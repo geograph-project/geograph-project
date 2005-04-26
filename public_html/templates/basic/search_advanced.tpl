@@ -20,7 +20,7 @@
 		  <tr> 
 			 <td><label for="postcode" id="l_postcode">postcode</label></td> 
 			 <td><input type="text" name="postcode" id="postcode" value="{$postcode|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
-			 <td>eg RH13 1BU (GB fine - NI inaccuate)</td> 
+			 <td>eg RH13 1BU (GB &amp; NI)</td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="placename" id="l_placename">placename</label></td> 
