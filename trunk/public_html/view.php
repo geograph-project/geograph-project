@@ -76,8 +76,15 @@ if ($image->isValid())
 	$smarty->assign('ismoderator', $USER->hasPerm('moderator')?1:0);
 	$smarty->assign_by_ref('image', $image);
 	
+	//get a token to show a suroudding geograph map
 	$mosaic=new GeographMapMosaic;
 	$smarty->assign('map_token', $mosaic->getGridSquareToken($image->grid_square));
+	
+	//find a possible place within 25km
+
+	$smarty->assign('place', $image->grid_square->findNearestPlace(135000));
+	
+	
 	
 	//lets add an overview map too
 	$overview=new GeographMapMosaic('overview');
@@ -85,7 +92,8 @@ if ($image->isValid())
 	$smarty->assign('marker', $overview->getSquarePoint($image->grid_square));
 
 	//this is needed as smarty is unable to call it!
-	$image->grid_square->getNatEastings();
+	//- now called by findNearestPlace
+	//$image->grid_square->getNatEastings();
 }
 
 

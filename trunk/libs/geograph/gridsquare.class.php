@@ -551,6 +551,43 @@ class GridSquare
 			
 	}
 	
+	
+	function findNearestPlace($radius) {
+		global $CONF;
+		$db=&$this->_getDB();
+
+		if (!isset($this->nateastings))
+			$this->getNatEastings();
+		//to optimise the query, we scan a square centred on the
+		//the required point
+		$left=$this->nateastings-$radius;
+		$right=$this->nateastings+$radius;
+		$top=$this->natnorthings-$radius;
+		$bottom=$this->natnorthings+$radius;
+	
+		$places = $db->GetRow("select
+				id,
+				full_name,
+				dsg,
+				loc_placenames.reference_index,
+				loc_adm1.name as adm1_name,
+				power(e-{$this->nateastings},2)+power(n-{$this->natnorthings},2) as distance
+			from 
+				loc_placenames
+				left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
+			where
+				dsg = 'PPL' AND 
+				e between $left and $right and 
+				n between $top and $bottom and
+				loc_placenames.reference_index = {$this->reference_index}
+			order by distance asc limit 1");
+		if ($places['distance'])
+			$places['distance'] = sprintf("%.1f",sqrt($places['distance'])/1000);
+		$places['reference_name'] = $CONF['references'][$places['reference_index']];
+	
+		return $places;
+	}
+	
 	function &getImages()
 	{
 		$db=&$this->_getDB();
