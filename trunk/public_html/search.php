@@ -34,7 +34,7 @@ $sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','submitted'
 #,'user_id'=>'Contributer ID'
 
 
-if ($_GET['imageclass'] || $_GET['u']) {
+if ($_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	// -------------------------------
 	//  special handler to build a advanced query from the link in stats or profile.  
 	// -------------------------------
