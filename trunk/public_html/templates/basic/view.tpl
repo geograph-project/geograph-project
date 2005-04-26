@@ -4,7 +4,7 @@
 
  <h2 style="margin-bottom:0px;"><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->title}</h2>
  {if $place.distance}
- <div style="color:silver">&nbsp;near <b title="{$place.distance} km">{$place.full_name}</b><small><i>{if $place.adm1_name && $place.adm1_name != $place.reference_name}, {$place.adm1_name}{/if}, {$place.reference_name}</i></small></div>{/if}
+ <div style="color:silver">&nbsp;{$place.distance} km from <b>{$place.full_name}</b><small><i>{if $place.adm1_name && $place.adm1_name != $place.reference_name}, {$place.adm1_name}{/if}, {$place.reference_name}</i></small></div>{/if}
  
 {if $image->moderation_status eq 'rejected'}
 <h3>Rejected</h3>
