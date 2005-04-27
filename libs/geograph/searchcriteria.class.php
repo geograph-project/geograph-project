@@ -273,10 +273,23 @@ class SearchCriteria_Placename extends SearchCriteria
 				loc_placenames
 				left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
 			where
-				dsg = 'PPL' AND (
+				dsg = 'PPL' AND 
 				full_name LIKE ".$db->Quote('%'.$placename.'%')."
-				OR SOUNDEX(".$db->Quote($placename).") = SOUNDEX(full_name) )
 			limit 20");		
+			$places = array_merge($places,$db->GetAll("select
+				id,
+				full_name,
+				dsg,
+				'populated place' as dsg_name,
+				loc_placenames.reference_index,
+				loc_adm1.name as adm1_name
+			from 
+				loc_placenames
+				left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
+			where
+				dsg = 'PPL' AND 
+				SOUNDEX(".$db->Quote($placename).") = SOUNDEX(full_name) 
+			limit 20"));		
 			if (count($places) < 10) {
 				$places = array_merge($places,$db->GetAll("select 
 					id, 
