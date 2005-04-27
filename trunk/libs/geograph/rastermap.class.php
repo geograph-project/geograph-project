@@ -91,7 +91,8 @@ class RasterMap
 				if ($this->nateastings - $east == 500) {
 					return "<img src=\"$mapurl\" width=\"300\" height=\"300\" border=\"1\" alt=\"Historical Map &copy; VisionOfBritain.org.uk\">";
 				} else {
-					return $east." == ".$this->nateastings;
+					return "<img src=\"$mapurl\" width=\"300\" height=\"300\" border=\"1\" alt=\"Historical Map &copy; VisionOfBritain.org.uk\">";
+				//	return $east." == ".$this->nateastings;
 				}
 		}
 	}
@@ -101,7 +102,7 @@ class RasterMap
 		switch ($this->service) {
 		
 			case 'vob': 
-				return "Map from mid 20<sup>th</sup> century";
+				return "1940's OS New Popular Edition";
 		}
 	}
 	function getFootNote() 
