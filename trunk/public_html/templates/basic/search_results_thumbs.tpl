@@ -15,8 +15,10 @@ the following
 	<div>
 	{foreach from=$engine->results item=image}
 	
-	  <div style="float:left;position:relative">
+	  <div style="float:left;position:relative; width:130px; height:130px">
+	  <div align="center">
 	  <a title="{$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a></div>
+	  </div>
 
 	{/foreach}
 	<br style="clear:both"/>
