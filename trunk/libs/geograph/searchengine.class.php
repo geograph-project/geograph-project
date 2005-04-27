@@ -195,7 +195,7 @@ class SearchEngine
 			if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/",$dataarray['gridref'],$gr)) {
 				require_once('geograph/gridsquare.class.php');
 				$square=new GridSquare;
-				$grid_ok=$square->setByFullGridRef($q);
+				$grid_ok=$square->setByFullGridRef($dataarray['gridref']);
 				if ($grid_ok) {
 					$searchclass = 'GridRef';
 					$searchq = $dataarray['gridref'];
