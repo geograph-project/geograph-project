@@ -7,10 +7,10 @@
 <p style="color:red"><b>{$errormsg}</b></p>
 {/if}
 <form action="/search.php" method="post" name="theForm">
-		<h4>Choose One of:</h4> 
+	<p><b>Use the following options to customise your search</b>.<br/> </p>
 		<table cellpadding="3" cellspacing="0"> 
 		  <tr> 
-			 <td colspan="3"><b>center search on: </b></td> 
+			 <td colspan="3"><hr/><b>center results on:</b></td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="gridref" id="l_gridref">grid reference</label></td> 
@@ -28,7 +28,7 @@
 			 <td>eg Peterbrough</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="county_id" id="l_county_id">county</label></td> 
+			 <td><label for="county_id" id="l_county_id">center of county</label></td> 
 			 <td> 
 				<select name="county_id" id="county_id" size="1" class="searchinput" onchange="onlyone(this)" onblur="onlyone(this)"/> 
 				  <option value=""> </option> 
@@ -51,11 +51,12 @@
 			 <td>&nbsp;<input type="submit" value="Find"/></td> 
 		  </tr> 
 		  <tr> 
-			 <td colspan="3"><hr/><h4>and limit to results to: </h4></td> 
+			 <td colspan="3"><small>
+			 Once you have selected one option the others will become unavailable, to choose a different search just clear your current selection. If you don't select anything you will be shown all images.</small><br/><br/><hr/><b>you can optionally limit to results to: </b></td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="user_id">contributor</label></td> 
-			 <td> 
+			 <td colspan="2"> 
 				<select name="user_id" id="user_id" size="1" class="searchinput"> 
 				  <option value=""> </option> 
 				  
@@ -67,8 +68,7 @@
 				  
 					{html_options options=$userlist selected=$user_id}				  
 				  
-				</select></td> 
-			 <td><input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label></td> 
+				</select> <input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label></td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="moduration_status">status</label></td> 
@@ -104,10 +104,10 @@
 				  <option value=""> </option> 
 					{html_options options=$prefixes selected=$gridsquare}
 				</select></td> 
-			 <td>&nbsp;</td> 
+			 <td>&nbsp;<input type="submit" value="Find"/></td> 
 		  </tr> 
 		  <tr> 
-			 <td colspan="3"><hr/></td> 
+			 <td colspan="3"><hr/><b>and specify how you would like the results displayed: </b></td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="displayclass">format</label></td> 
