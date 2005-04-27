@@ -37,8 +37,8 @@
 	{if $step eq 1}
 		<p><label for="gridreference">...or enter an exact grid reference (<U TITLE="TQ4364 --> TQ 43 64">4</U>,<U TITLE="TQ435646 --> TQ 435 646">6</U>,<U TITLE="TQ43526467 --> TQ 4352 6467">8</U> or <U TITLE="TQ4352364673 --> TQ 43523 64673">10</U> figure) for this picture location</label><br />
 		<input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="14"/>
-		<input type="submit" name="setpos" value="Next &gt;"/><br/>
-		<span style="font-size:0.8em">(recommended if you have it, as allows us map the photo location)</span>
+		<input type="submit" name="setpos" value="Next &gt;"/> <span style="color:silver">[the 1km Grid square will be automatically selected]</span><br/>
+		<span style="font-size:0.8em">(recommended if you have it, as allows us to map the photo location)</span>
 		</p>
 		
 		<p>If you are unsure of the photo location there are a number of online 
