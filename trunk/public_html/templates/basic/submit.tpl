@@ -9,10 +9,42 @@
 
 	<h2>Submit Step 1 of 4 : Choose grid square</h2>
 
-	<p>Begin by choosing the grid square you wish to submit. <br/>
-	If you're new, you may like to check our <a href="/help/guide">guide to geographing</a> first.</p>
 
-	<label for="gridsquare">Choose 1km Grid square...</label><br/>
+<div style="width:180px;margin-left:10px;margin-bottom:100px;float:right;font-size:0.8em;padding:10px;background:#dddddd;position:relative">
+<h3 style="margin-bottom:0;margin-top:0">Need Help?</h3>
+
+<p>If you enter the exact location, e.g. <b>TL 246329</b> we'll figure 
+out that it's in the <b>TL 2432</b> 1km square, but we'll also retain 
+the more precise coordinate for accurately mapping the location of the 
+photograph.</p>
+
+<p>When you press Next, we'll find out if there are any existing photographs 
+for that square</p>
+
+<p>If you're new, you may like to check our <a href="/help/guide">guide to 
+geographing</a> first.</p>
+
+</div>
+
+
+	<p>Begin by choosing the grid square you wish to submit.</p>
+
+	{if $errormsg}
+	<p style="color:#990000;font-weight:bold;">{$errormsg}</p>
+	{/if}
+	
+	
+	<p><label for="gridreference">Enter an exact grid reference 
+	(<u title="e.g. TQ4364 or TQ 43 64">4</u>,
+	<u title="e.g. TQ435646 or TQ 435 646">6</u>,
+	<u title="e.g. TQ43526467 or TQ 4352 6467">8</u> or 
+	<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure) for this picture location</label><br />
+	<input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="14"/>
+	<input type="submit" name="setpos" value="Next &gt;"/><br/>
+	</p>
+		
+	
+	<label for="gridsquare">Alternatively, you can select the 1km grid square below...</label><br/>
 	<select id="gridsquare" name="gridsquare">
 		{html_options options=$prefixes selected=$gridsquare}
 	</select>
@@ -31,31 +63,26 @@
 		<input type="submit" name="setpos" value="Change"/>
 	{/if}
 	
-	{if $errormsg}
-	<p><b>{$errormsg}</b></p>
-	{/if}
 	{if $step eq 1}
-		<p><label for="gridreference">...or enter an exact grid reference (<U TITLE="TQ4364 --> TQ 43 64">4</U>,<U TITLE="TQ435646 --> TQ 435 646">6</U>,<U TITLE="TQ43526467 --> TQ 4352 6467">8</U> or <U TITLE="TQ4352364673 --> TQ 43523 64673">10</U> figure) for this picture location</label><br />
-		<input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="14"/>
-		<input type="submit" name="setpos" value="Next &gt;"/> <span style="color:silver">[the 1km Grid square will be automatically selected]</span><br/>
-		<span style="font-size:0.8em">(recommended if you have it, as allows us to map the photo location)</span>
-		</p>
+		
 		
 		<p>If you are unsure of the photo location there are a number of online 
 		sources available to help:</p>
 		
 		<ul>
 		<li><b>{getamap} provides a search by 
-		Placename or Postcode.</b><br/> Once you have centered the map on the picture location, 
+		Placename or Postcode.</b><br/> Once you have centred the map on the picture location, 
 		return here and enter the <i>Grid reference at centre</i> value shown into the box 
 		above.<br/><br/></li>
 		
-		<li><b>If you have a WGS84 coordinate</b> (e.g. from a GPS receiver),<br/> this 
+		<li><b>If you have a WGS84 latitude &amp; longitude coordinate</b>
+		(e.g. from a GPS receiver), this 
 		<a href='http://www.trigpointinguk.com/info/convert-wgs.php' onClick="window.open(href,'wgs','height=300,width=600,status,scrollbars');return false;" target="_blank">WGS84 to OSGB36 Grid Ref Convertor</a> may be useful.<br/><br/></li>
-		<li><b>For information on Grid References</b> <br/>see {external title="Guide to the National Grid" text="Interactive Guide to the National Grid in Great Britain" href="http://www.ordnancesurvey.co.uk/oswebsite/freefun/nationalgrid/nghelp1.html"}
-		<ul>
-		<li>the Irish National Grid is very similar, but using a single letter prefix, see <a href="/mapbrowse.php">Overview Map</a> for the layout of the squares.</li>
-		</ul></li>
+		<li><b>For information on Grid References</b> <br/>see 
+		{external title="Guide to the National Grid" text="Interactive Guide to the National Grid in Great Britain" href="http://www.ordnancesurvey.co.uk/oswebsite/freefun/nationalgrid/nghelp1.html"}.
+		The Irish National Grid is very similar, but using a single letter prefix, 
+		see <a href="/mapbrowse.php">Overview Map</a> for the layout of the squares.
+		</li>
 		</ul>
 		
 		
