@@ -105,6 +105,7 @@ class SearchEngine
 
 	function buildSimpleQuery($q = '')
 	{
+		global $USER;
 		if (preg_match("/^ *([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9])([A-Z]{0,2}) *$/",strtoupper($q),$pc)) {
 			$searchq = $pc[1].$pc[2]." ".$pc[3];
 			$criteria = new SearchCriteria_Postcode();
@@ -173,7 +174,7 @@ class SearchEngine
 
 	function buildAdvancedQuery(&$dataarray)
 	{
-		global $CONF,$imagestatuses,$sortorders;
+		global $CONF,$imagestatuses,$sortorders,$USER;
 		if (!empty($dataarray['postcode'])) {
 			if (preg_match("/^ *([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9])([A-Z]{0,2}) *$/",strtoupper($dataarray['postcode']),$pc)) {
 				require_once('geograph/searchcriteria.class.php');
