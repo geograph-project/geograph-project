@@ -44,8 +44,8 @@
     standard names approved by the United States Board on Geographic Names and maintained by the National 
     Geospatial-Intelligence Agency. More information is available at the Products and Services link at 
     {external href="http://www.nga.mil/" text="www.nga.mil"}. </li>
-    <li>Low Resolution postcode data, from {external href="http://sourceforge.net/projects/geocode" text="Sourceforge Geocode.Service project"}.</li>
-    <li>County center points compiled by {mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}.</li>
+    <li>Low Resolution postcode data from {external href="http://sourceforge.net/projects/geocode" text="Sourceforge Geocode.Service project"}.</li>
+    <li>County centre points compiled by {mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}.</li>
     </ul>
     
     <h3>Hosting</h3>
