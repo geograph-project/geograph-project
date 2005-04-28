@@ -265,8 +265,12 @@ div.photolandscape
 }
 
 .img-shadow img {
+	/*
 	width:100%;
 	height:100%;
+	max-width:640px;
+	max-height:640px;
+	*/
   	border: 1px solid #a9a9a9;
   	padding: 4px;
   }
