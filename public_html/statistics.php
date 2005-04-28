@@ -190,6 +190,7 @@ $sql_order";
 	if ($u) {
 		$profile=new GeographUser($u);
 		$smarty->assign_by_ref('profile', $profile);
+		$smarty->assign_by_ref('u', $u);
 	}
 }
 
