@@ -329,7 +329,6 @@ class SearchEngine
 			if ($dataarray['moduration_status']) {
 				$searchdesc .= ", showing ".$imagestatuses[$dataarray['moduration_status']]." images";
 			}
-			
 			if ($dataarray['imageclass']) {
 				$searchdesc .= ", classifed as ".$dataarray['imageclass'];
 			}
@@ -371,8 +370,6 @@ class SearchEngine
 		
 		$this->criteria->getSQLParts($sql_fields,$sql_order,$sql_where);
 	
-		 
-	
 		$this->currentPage = $pg;
 	
 		$pgsize = $this->criteria->resultsperpage;
@@ -382,6 +379,7 @@ class SearchEngine
 	
 		$page = ($pg -1)* $pgsize;
 	
+		//need to ensure rejected images arent shown
 		if (empty($sql_where)) {
 			$sql_where = "moderation_status != 'rejected'";
 		} else {
@@ -428,6 +426,11 @@ END;
 			if ($d = $recordSet->fields['dist_sqd']) {
 				$this->results[$i]->dist_string = sprintf("Dist:%.1fkm",sqrt($d));
 			}
+			
+			//if we searching on imageclass then theres no point displaying it...
+			if ($this->criteria->limit3) {
+				unset($this->results[$i]->imageclass);
+			}
 			$recordSet->MoveNext();
 			$i++;
 		}
@@ -449,7 +452,6 @@ END;
 
 		for($index = $start;$index<$endr;$index++) {
 			if ($index == $this->currentPage) 
-
 				$r .= "<b>$index</b> "; 
 			else
 				$r .= "<a href=\"search.php?i={$this->query_id}&amp;page=$index\">$index</a> ";
