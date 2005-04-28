@@ -265,7 +265,19 @@ else
 	$smarty->assign('gridsquare', $_SESSION['gridsquare']);
 	$smarty->assign('eastings', $_SESSION['eastings']);
 	$smarty->assign('northings', $_SESSION['northings']);
+	if ($_GET['gridreference']) {
+		$ok= $square->setByFullGridRef($_GET['gridreference']);
+		
+		//preserve inputs in smarty
+		$smarty->assign('gridreference', $_GET['gridreference']);	
 	
+		if ($ok) {
+			$smarty->assign('gridsquare', $square->gridsquare);
+			$smarty->assign('eastings', $square->eastings);
+			$smarty->assign('northings', $square->northings);
+			$smarty->assign('gridref', $square->grid_reference);
+		}
+	}
 }
 
 
