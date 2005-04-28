@@ -106,7 +106,8 @@ class SearchEngine
 	function buildSimpleQuery($q = '')
 	{
 		global $USER;
-		if (preg_match("/^ *([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9])([A-Z]{0,2}) *$/",strtoupper($q),$pc)) {
+		$q = trim($q);
+		if (preg_match("/^([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9])([A-Z]{0,2})$/",strtoupper($q),$pc)) {
 			$searchq = $pc[1].$pc[2]." ".$pc[3];
 			$criteria = new SearchCriteria_Postcode();
 			$criteria->setByPostcode($searchq);
@@ -134,21 +135,32 @@ class SearchEngine
 			$criteria = new SearchCriteria_Placename();
 			$criteria->setByPlacename($q);
 			if ($criteria->is_multiple) {
+				//we've found multiple possible placenames
 				$searchdesc = ", near '".$q."'";
 				$this->searchdesc = $searchdesc;
 				$this->criteria = $criteria;
 			} else if (!empty($criteria->placename)) {
-				//if one placename the search on that
+				//if one placename then search on that
 				$searchclass = 'Placename';
 				$searchq = $criteria->placename;
 				$searchdesc = ", near ".$criteria->placename;
 				$searchx = $criteria->x;
 				$searchy = $criteria->y;	
 			} else {
-				//asuume a text search
-				$searchclass = 'Text';
-				$searchq = $q;
-				$searchdesc = ", containing '{$q}' ";	
+				//check if this is a user 
+				$criteria = new SearchCriteria_All();
+				$criteria->setByUsername($q);
+				if (!empty($criteria->realname)) {
+					$searchclass = 'All';
+					$searchq = '';
+					$limit1 = $criteria->user_id;
+					$searchdesc = ", by '{$criteria->realname}' ";
+				} else {
+					//asuume a text search
+					$searchclass = 'Text';
+					$searchq = $q;
+					$searchdesc = ", containing '{$q}' ";
+				}
 			}
 		}
 
@@ -160,6 +172,8 @@ class SearchEngine
 			"searchq = ".$db->Quote($q);
 			if ($searchx > 0 && $searchy > 0)
 				$sql .= ",x = $searchx,y = $searchy";
+			if ($limit1)
+				$sql .= ",limit1 = $limit1";
 			if ($USER->registered)
 				$sql .= ",user_id = {$USER->user_id}";
 
@@ -175,6 +189,18 @@ class SearchEngine
 	function buildAdvancedQuery(&$dataarray)
 	{
 		global $CONF,$imagestatuses,$sortorders,$USER;
+		
+		//check if we actully want to perform a textsearch (it comes through in the placename beucase of the way the multiple mathc page works)
+		if (strpos($dataarray['placename'],'text:') === 0) {
+			$dataarray['textsearch'] = preg_replace("/^text\:/",'',$dataarray['placename']);
+			unset($dataarray['placename']);
+		}
+		//check if we actully want to perform a user_search
+		if (strpos($dataarray['placename'],'user:') === 0) {
+			$dataarray['user_id'] = preg_replace("/^user\:/",'',$dataarray['placename']);
+			unset($dataarray['placename']);
+		}
+		
 		if (!empty($dataarray['postcode'])) {
 			if (preg_match("/^ *([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9])([A-Z]{0,2}) *$/",strtoupper($dataarray['postcode']),$pc)) {
 				require_once('geograph/searchcriteria.class.php');
@@ -223,6 +249,7 @@ class SearchEngine
 				$this->errormsg =  "Invalid County????";
 			}
 		} else if ($dataarray['placename']) {
+			$dataarray['placename'] = trim($dataarray['placename']);
 			require_once('geograph/searchcriteria.class.php');
 			$criteria = new SearchCriteria_Placename();
 			$criteria->setByPlacename($dataarray['placename']);
@@ -236,9 +263,10 @@ class SearchEngine
 				$searchdesc = ", near '".$dataarray['placename']."'";
 
 			} else {
-				$this->errormsg = "Invalid Placename????";
+				$this->errormsg = "Place not found, you might like to try a placename search";
 			}
 		} else if (!empty($dataarray['textsearch'])) {
+			$dataarray['textsearch'] = trim($dataarray['textsearch']);
 			$searchclass = 'Text';
 			$searchq = $dataarray['textsearch'];
 			$searchdesc = ", containing '{$dataarray['textsearch']}' ";	
