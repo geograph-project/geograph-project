@@ -62,13 +62,16 @@ if ($_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 
- 	$engine = new SearchEngine('#'); 
- 	$engine->buildAdvancedQuery($_POST);	
-	
-	//if we get this far then theres a problem...
-	
-	
-	$smarty->assign('errormsg', $engine->errormsg);
+	if ($_POST['refine']) {
+		//we could use the selected item but then have to check for numberic placenames
+		$_POST['placename'] = $_POST['old-placename'];
+	} else {
+		$engine = new SearchEngine('#'); 
+		$engine->buildAdvancedQuery($_POST);	
+		
+		//if we get this far then theres a problem...
+		$smarty->assign('errormsg', $engine->errormsg);
+	}
 	
 	if ($engine->criteria->is_multiple) {
 		//todo these shouldnt be hardcoded as there other possiblities for suggestions
@@ -120,6 +123,14 @@ if ($_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		//todo these shouldnt be hardcoded as there other possiblities for suggestions
 		$smarty->assign('multipletitle', "Placename");
 		$smarty->assign('multipleon', "placename");
+
+		$usercriteria = new SearchCriteria_All();
+		$usercriteria->setByUsername($q);
+		if (!empty($usercriteria->realname)) {
+			//could also be a username
+			$smarty->assign('pos_realname', $usercriteria->realname);
+			$smarty->assign('pos_user_id', $usercriteria->user_id);
+		}
 
 		$smarty->assign_by_ref('criteria', $engine->criteria);
 		$smarty->assign_by_ref('post', $_GET);
