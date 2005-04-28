@@ -233,6 +233,20 @@ class SearchCriteria_All extends SearchCriteria
 		if (!$this->orderby)
 			$sql_order .= " rand({$this->crt_timestamp}) ";
 	}
+	
+	/*
+	* allows finding of a user by text string
+	*/
+	function setByUsername($username) {
+		$db = $this->_getDB();
+		$username = $db->Quote($username);
+		$users = $db->GetAll("select user_id,realname from user where realname=$username or nickname= $username");
+		if (count($users) == 1) {
+			$this->realname = $users[0]['realname'];
+			$this->user_id = $users[0]['user_id'];
+		}
+	}
+	
 }
 
 class SearchCriteria_Placename extends SearchCriteria
