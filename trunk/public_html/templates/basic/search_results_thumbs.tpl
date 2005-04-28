@@ -12,6 +12,9 @@ the following
 {if $engine->resultCount}
 	<br/>( Page {$engine->pagesString()}) [<a href="search.php?i={$i}&amp;form=advanced">refine search</a>]
 	</p>
+	{if $nofirstmatch}
+	<p style="font-size:0.8em">[We have no images for {$engine->criteria->searchq}, <a href="/submit.php?gridreference={$engine->criteria->searchq}">Submit Yours Now</a>]</p>
+	{/if}
 	<div>
 	{foreach from=$engine->results item=image}
 	
@@ -24,6 +27,10 @@ the following
 	<br style="clear:both"/>
 	</div>
 	<p>( Page {$engine->pagesString()})
+{else}
+	{if $nofirstmatch}
+	<p style="font-size:0.8em">[We have no images for {$engine->criteria->searchq}, <a href="/submit.php?gridreference={$engine->criteria->searchq}">Submit Yours Now</a>]</p>
+	{/if}
 {/if}
 [<a href="search.php?i={$i}&amp;form=advanced">refine search</a>]</p>
 {/dynamic}		
