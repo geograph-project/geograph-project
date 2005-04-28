@@ -25,9 +25,9 @@
     
     <li>{mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}, 
     developer and maintainer of 
-    {external title="Trigtools Website" href="http://www.nearby.org.uk" text="www.nearby.org.uk"} has
-    contributed numerous fixes and enhancements, as well as lending his
-    experience of working with mapping technologies.</li>
+    {external title="Trigtools Website" href="http://www.nearby.org.uk" text="www.nearby.org.uk"} lends his wide experience of working with 
+    mapping technologies and was responsible for the site search, as well as 
+    contributing many other enhancements.</li>
     </ul>
     
     <h3>Mapping &amp; Location Data</h3>
