@@ -239,7 +239,11 @@ if ($_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	$smarty->assign('currentPage', $pg);
 	$smarty->assign_by_ref('engine', $engine);
 	
+	if ($engine->criteria->searchclass == 'GridRef' && strpos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
+		$smarty->assign('nofirstmatch', true);
+	}	
 
+	
 	$smarty->display('search_results_'.$engine->getDisplayclass().'.tpl');
 
 } else {
