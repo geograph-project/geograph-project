@@ -5,8 +5,8 @@
  <div class="nav">
   <ul>
     <li><a accesskey="1" title="Home Page" href="/">Home</a></li>
-    <li><a title="Find images" href="/search.php">Search</a></li>
-    <li><a title="View map of all submissions" href="/mapbrowse.php">Map (beta!)</a></li>
+    <li><a title="Find images" href="/search.php">Search</a> / <a title="Browse a Grid Square" href="/browse.php">Browse</a></li>
+    <li><a title="View map of all submissions" href="/mapbrowse.php">Map Viewer</a></li>
     <li><a title="Submit" href="/submit.php">Submit</a></li>
     <li><a title="Discuss" href="/discuss/">Discuss</a></li>
     <li><a title="Statistics" href="/statistics.php">Statistics</a></li>
