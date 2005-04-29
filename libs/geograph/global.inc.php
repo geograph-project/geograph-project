@@ -134,7 +134,8 @@ function smarty_function_getamap($params)
 function smarty_function_external($params)
 {
   	//get params and use intelligent defaults...
-  	$href=$params['href'];
+  	$href=str_replace(' ','+',$params['href']);
+  	
   	if (isset($params['text']))
   		$text=$params['text'];
   	else
@@ -152,11 +153,9 @@ function smarty_function_external($params)
 
 /**
 * adds commas to thousendise a number
-* 
-* todo: make more generic!
 */
 function smarty_function_thousends($input) {
-	return preg_replace("/([0-9]{3})$/",',$1',$input);
+	return number_format($input);
 }
 
 
@@ -243,7 +242,8 @@ function init_session()
 	{
 		//this is a new session - as a safeguard against session
 		//fixation, we regenerate the session id
-		session_regenerate_id(); 
+		//not sure if wanted: if ($_REQUEST['PHPSESSID'])
+			session_regenerate_id(); 
 		
 		//create new user object - initially anonymous
 		$_SESSION['user'] =& new GeographUser;
