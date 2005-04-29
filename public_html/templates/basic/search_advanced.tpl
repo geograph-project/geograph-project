@@ -10,7 +10,7 @@
 	<p><b>Use the following options to customise your search</b>.<br/> </p>
 		<table cellpadding="3" cellspacing="0"> 
 		  <tr> 
-			 <td colspan="3"><hr/><b>center results on:</b></td> 
+			 <td colspan="3"><hr/><b>centre results on:</b></td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="gridref" id="l_gridref">grid reference</label></td> 
@@ -25,10 +25,10 @@
 		  <tr> 
 			 <td><label for="placename" id="l_placename">placename</label></td> 
 			 <td><input type="text" name="placename" id="placename" value="{$placename|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
-			 <td>eg Peterbrough</td> 
+			 <td>eg Peterborough</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="county_id" id="l_county_id">center of county</label></td> 
+			 <td><label for="county_id" id="l_county_id">centre of county</label></td> 
 			 <td> 
 				<select name="county_id" id="county_id" size="1" class="searchinput" onchange="onlyone(this)" onblur="onlyone(this)"/> 
 				  <option value=""> </option> 
