@@ -566,7 +566,6 @@ class GridSquare
 		$bottom=$this->natnorthings+$radius;
 	
 		$places = $db->GetRow("select
-				id,
 				full_name,
 				dsg,
 				loc_placenames.reference_index,
@@ -581,8 +580,31 @@ class GridSquare
 				n between $top and $bottom and
 				loc_placenames.reference_index = {$this->reference_index}
 			order by distance asc limit 1");
+			
+		$d = 2500*2500;	
+		if ($places['distance'] < $d) {
+			$nearest = $db->GetAll("select
+				distinct full_name,
+				power(e-{$this->nateastings},2)+power(n-{$this->natnorthings},2) as distance
+			from 
+				loc_placenames
+				left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
+			where
+				dsg = 'PPL' AND 
+				e between $left and $right and 
+				n between $top and $bottom and
+				loc_placenames.reference_index = {$this->reference_index} and
+				power(e-{$this->nateastings},2)+power(n-{$this->natnorthings},2) < $d
+			order by distance asc limit 5");
+			foreach ($nearest as $id => $value) {
+				$values[] = $value['full_name'];
+			}
+			$places['full_name'] = implode(', ',$values);
+			$places['full_name'] = preg_replace('/\,([^\,]+)$/',' and $1',$places['full_name']);
+		}
+			
 		if ($places['distance'])
-			$places['distance'] = sprintf("%.1f",sqrt($places['distance'])/1000);
+			$places['distance'] = round(sqrt($places['distance'])/1000);
 		$places['reference_name'] = $CONF['references'][$places['reference_index']];
 	
 		return $places;
