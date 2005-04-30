@@ -14,13 +14,13 @@ how much each person will climb when their pictures are moderated!</p>
 {$cutoff_time|date_format:"%A, %d %b at %H:%M"}</>
 
 <table class="report"> 
-<thead><tr><td>Position</td><td>Contributor</td><td>New Geographs</td><td>Pending</td></tr></thead>
+<thead><tr><td>Position</td><td>Contributor</td><td>New<br/>Geographs</td><td>Pending</td></tr></thead>
 <tbody>
 
 {foreach from=$topusers key=topuser_id item=topuser}
 <tr><td align="right">{$topuser.ordinal}</td><td><a title="View profile" href="/profile.php?u={$topuser_id}">{$topuser.realname}</a></td>
 <td align="right">{$topuser.geographs}</td>
-<td align="right">{if $topuser.pending gt 0}({$topuser.pending} pending){/if}</td>
+<td align="right">{if $topuser.pending gt 0}<span style="font-size:0.8em">({$topuser.pending} pending)</span>{/if}</td>
 </tr>
 {/foreach}
 
