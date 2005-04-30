@@ -30,7 +30,7 @@ init_session();
 $smarty = new GeographPage;
 
 $template='moversboard.tpl';
-$cacheid='';
+$cacheid='1df323';
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -76,16 +76,22 @@ if (!$smarty->is_cached($template, $cacheid))
 	$i++;
 	foreach($topusers as $user_id=>$entry)
 	{
-		$units=$i%10;
-		switch($units)
-		{
-			case 1:$end=($i==11)?'th':'st';break;
-			case 2:$end=($i==12)?'th':'nd';break;
-			case 3:$end=($i==13)?'th':'rd';break;
-			default: $end="th";	
+		if ($lastgeographs == $topusers[$user_id]['geographs'])
+			$topusers[$user_id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
+		else {
+			
+			$units=$i%10;
+			switch($units)
+			{
+				case 1:$end=($i==11)?'th':'st';break;
+				case 2:$end=($i==12)?'th':'nd';break;
+				case 3:$end=($i==13)?'th':'rd';break;
+				default: $end="th";	
+			}
+
+			$topusers[$user_id]['ordinal']=$i.$end;
+			$lastgeographs = $topusers[$user_id]['geographs'];
 		}
-		
-		$topusers[$user_id]['ordinal']=$i.$end;
 		$i++;
 	}	
 	

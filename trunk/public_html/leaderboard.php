@@ -48,17 +48,21 @@ if (!$smarty->is_cached($template, $cacheid))
 	foreach($topusers as $idx=>$entry)
 	{
 		$i=$idx+1;
-		$units=$i%10;
-		switch($units)
-		{
-			case 1:$end=($i==11)?'th':'st';break;
-			case 2:$end=($i==12)?'th':'nd';break;
-			case 3:$end=($i==13)?'th':'rd';break;
-			default: $end="th";	
+		if ($lastimgcount == $topusers[$idx]['imgcount'])
+			$topusers[$idx]['ordinal'] = '&nbsp;&nbsp;&nbsp;&quot;';
+		else {
+			$units=$i%10;
+			switch($units)
+			{
+				case 1:$end=($i==11)?'th':'st';break;
+				case 2:$end=($i==12)?'th':'nd';break;
+				case 3:$end=($i==13)?'th':'rd';break;
+				default: $end="th";	
+			}
+
+			$topusers[$idx]['ordinal']=$i.$end;
+			$lastimgcount = $topusers[$idx]['imgcount'];
 		}
-		
-		$topusers[$idx]['ordinal']=$i.$end;
-		
 	}
 	
 	$smarty->assign_by_ref('topusers', $topusers);
