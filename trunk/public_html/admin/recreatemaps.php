@@ -39,6 +39,11 @@ $db = NewADOConnection($GLOBALS['DSN']);
 //do some processing?
 if (isset($_POST['go']))
 {
+	$limit = intval($_POST['limit']);
+	if (!$limit) {
+		$limit = 10;
+	}
+
 	//this takes a long time, so we output a header first of all
 	$smarty->display('_std_begin.tpl');
 	echo "<h3><a href=\"recreatemaps.php\">&lt;&lt;</a> Re-Creating Maps...</h3>";
@@ -46,7 +51,7 @@ if (isset($_POST['go']))
 	
 	$map=new GeographMap;
 		
-	$recordSet = &$db->Execute("select * from mapcache where age > 0 order by pixels_per_km desc, age desc limit 10");
+	$recordSet = &$db->Execute("select * from mapcache where age > 0 order by pixels_per_km desc, age desc limit $limit");
 	while (!$recordSet->EOF) 
 	{
 		foreach($recordSet->fields as $name=>$value)
