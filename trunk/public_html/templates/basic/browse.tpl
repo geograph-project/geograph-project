@@ -48,7 +48,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 
 		<p><b>We have 
 		{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
-		for {$gridref}</b> - click for larger version</p>
+		for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"}</b> - click for larger version</p>
 		
 		{foreach from=$images item=image}
 		
@@ -72,7 +72,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 
 	{else}
 
-		<p>We have no images for {$gridref}, 
+		<p>We have no images for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"}, 
 		
 		{if $nearest_distance}
 			the closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away. You can also search for nearby images <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}">search for nearby images</a>.
