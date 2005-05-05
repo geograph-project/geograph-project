@@ -135,8 +135,6 @@ $sql_order";
 			foreach($breakdown as $idx=>$entry)
 			{
 				$breakdown[$idx]['per'] = sprintf("%.2f",$breakdown[$idx]['c'] * $totalperc);
-				if (!$breakdown[$idx]['field'])
-					$breakdown[$idx]['field'] = "<i>-unspecified-</i>";
 			}
 
 			if ($by == 'type') {
@@ -162,7 +160,6 @@ $sql_order";
 
 		$smarty->assign("images_ftf",  $db->GetOne("select count(*) from gridimage where ftf = 1"));
 
-
 		foreach (array(1,2) as $ri) {
 			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 			
@@ -176,8 +173,13 @@ $sql_order";
 
 			$smarty->assign("grid_total_$ri",  $db->CacheGetOne(100*24*3600,"select count(*) from gridprefix where reference_index = $ri and landcount > 0"));
 			$smarty->assign("grid_submitted_$ri",  $db->GetOne("select count(distinct substring(grid_reference,1,$letterlength)) from gridimage inner join gridsquare using (gridsquare_id) where reference_index = $ri"));
+			
+			$smarty->assign("tenk_total_$ri",  $db->CacheGetOne(100*24*3600,"select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+2).",1))) from gridsquare where reference_index = $ri and percent_land > 0"));
+			
+			$smarty->assign("tenk_submitted_$ri",  $db->GetOne("select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) from gridimage inner join gridsquare using (gridsquare_id) where reference_index = $ri"));
+			
 		}
-		foreach (array('images_total','images_thisweek','squares_total','squares_submitted','geographs_submitted') as $name) {
+		foreach (array('images_total','images_thisweek','squares_total','squares_submitted','tenk_total','tenk_submitted','geographs_submitted') as $name) {
 			$smarty->assign($name.'_both',$smarty->get_template_vars($name.'_1')+$smarty->get_template_vars($name.'_2'));
 		}
 		foreach (array('both','1','2') as $name) {
