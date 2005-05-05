@@ -48,13 +48,22 @@
 	<td>{$geographs_submitted_both|thousends}</td>
 </tr>
 <tr>
+	<th>10km<sup>2</sup> Grid Squares</th>
+	<td><b>{$tenk_submitted_1|thousends}</b><br/>/{$tenk_total_1|thousends}</td>
+	<td><b>{$tenk_submitted_2|thousends}</b><br/>/{$tenk_total_2|thousends}</td>
+	<td valign="top">{$tenk_submitted_both|thousends}<br/>/{$tenk_total_both|thousends}</td>
+</tr>
+<tr>
 	<th>100km<sup>2</sup> Grid Squares</th>
 	<td><b>{$grid_submitted_1}</b><br/>/{$grid_total_1}</td>
 	<td><b>{$grid_submitted_2}</b><br/>/{$grid_total_2}</td>
 	<td>{$grid_submitted_1+$grid_submitted_2}<br/>/{$grid_total_1+$grid_total_2}</td>
-</tr></tbody>
+</tr>
+</tbody>
 </table>
 
+<p>The <acronym title="the center of 'gravity' for all images, submitted so far">Geograph Center</acronym> for images in the {$references.1} is {$centergr_1} </p>   
+    
     
     <h3>More Statistics</h3>
     
@@ -103,7 +112,7 @@
 
 	{if $linkprefix}
 		{foreach from=$breakdown item=line}
-		<tr><td><a href="{$linkprefix}{$line.field|escape:url}">{$line.field}</a></td>
+		<tr><td><a href="{$linkprefix}{$line.field|escape:url}">{$line.field|default:"<i>-unspecified-</i>"}</a></td>
 		<td align=right>{$line.c}</td>
 		<td align=right>{$line.per}%</td></tr>
 		{/foreach}
