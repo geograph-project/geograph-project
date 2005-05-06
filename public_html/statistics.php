@@ -152,6 +152,7 @@ $sql_order";
 // General Section
 //------------------
 	} else {
+		require_once('geograph/gridsquare.class.php');
 
 
 		$smarty->assign('users_submitted',  $db->GetOne("select count(distinct user_id) from gridimage"));
@@ -178,6 +179,22 @@ $sql_order";
 			
 			$smarty->assign("tenk_submitted_$ri",  $db->GetOne("select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) from gridimage inner join gridsquare using (gridsquare_id) where reference_index = $ri"));
 			
+			//this would be the ideal query but seems to look up mysql!?! //todo?
+			#$center = $db->GetRow("SELECT sum( x ) , sum( y ) FROM `gridimage` INNER JOIN gridsquare ON ( gridimage_id ) WHERE moderation_status != 'rejected' AND reference_index = $ri");
+			
+			$center = $db->GetRow("SELECT avg( x ) , avg( y ) FROM `gridsquare` WHERE imagecount >0 AND reference_index = $ri");
+			
+			$censquare = new GridSquare;
+			$ok = $censquare->loadFromPosition(intval($center[0]),intval($center[1]));
+			
+			if ($ok) {
+				$smarty->assign("centergr_$ri",$censquare->grid_reference);
+				
+				//find a possible place within 135km
+				$smarty->assign("place_$ri", $censquare->findNearestPlace(135000));
+			} else {
+				$smarty->assign("centergr_$ri",'unknown');
+			}
 		}
 		foreach (array('images_total','images_thisweek','squares_total','squares_submitted','tenk_total','tenk_submitted','geographs_submitted') as $name) {
 			$smarty->assign($name.'_both',$smarty->get_template_vars($name.'_1')+$smarty->get_template_vars($name.'_2'));
