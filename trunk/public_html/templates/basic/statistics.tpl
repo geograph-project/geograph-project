@@ -62,8 +62,9 @@
 </tbody>
 </table>
 
-<p>The <acronym title="the center of 'gravity' for all images, submitted so far">Geograph Center</acronym> for images in the {$references.1} is {$centergr_1} </p>   
-    
+<p>The <acronym title="the center of 'gravity' for all images submitted so far">Geograph Center</acronym> for images in the {$references.1} is <a href="/gridref/{$centergr_1}" title="view square {$centergr_1}">{$centergr_1}</a>, {if $place_1.distance > 3}{$place_1.distance} km from{else}near to{/if} <b>{$place_1.full_name}</b><small><i>{if $place_1.adm1_name && $place_1.adm1_name != $place_1.reference_name}, {$place_1.adm1_name}{/if}</i></small>.
+
+And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {$centergr_2}">{$centergr_2}</a>, {if $place_2.distance > 3}{$place_2.distance} km from{else}near to{/if} <b>{$place_2.full_name}</b><small><i>{if $place_2.adm1_name && $place_2.adm1_name != $place_2.reference_name}, {$place_2.adm1_name}{/if}</i></small>.</p>    
     
     <h3>More Statistics</h3>
     
