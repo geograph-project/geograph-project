@@ -69,4 +69,6 @@
 	</ul> 	
 {/if} 	
 
+<div align="right"><a href="#top">Back to Top</a></div>
+
 {include file="_std_end.tpl"}
