@@ -55,6 +55,9 @@ class SearchEngine
 	var $numberOfPages;
 	var $currentPage;
 
+	var $page = "search.php";
+	var $searchuse = "search";
+
 	/**
 	* true if a where cluase is in effect
 	*/	
@@ -169,6 +172,7 @@ class SearchEngine
 
 			$sql = "INSERT INTO queries SET searchclass = '$searchclass',".
 			"searchdesc = ".$db->Quote($searchdesc).",".
+			"searchuse = ".$db->Quote($this->searchuse).",".
 			"searchq = ".$db->Quote($q);
 			if ($searchx > 0 && $searchy > 0)
 				$sql .= ",x = $searchx,y = $searchy";
@@ -180,8 +184,8 @@ class SearchEngine
 			$db->Execute($sql);
 
 			$i = $db->Insert_ID();
-			header("Location:http://{$_SERVER['HTTP_HOST']}/search.php?i={$i}");
-			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/search.php?i={$i}\">Your Search Results</a>";
+			header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}");
+			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}\">Your Search Results</a>";
 			exit;		
 		} 
 	}
@@ -283,6 +287,7 @@ class SearchEngine
 			
 			
 			$sql = "INSERT INTO queries SET searchclass = '$searchclass',".
+			"searchuse = ".$db->Quote($this->searchuse).",".
 			"searchq = ".$db->Quote($searchq);
 			if ($dataarray['displayclass'])
 				$sql .= ",displayclass = ".$db->Quote($dataarray['displayclass']);
@@ -347,8 +352,8 @@ class SearchEngine
 			$db->Execute($sql);
 
 			$i = $db->Insert_ID();
-			header("Location:http://{$_SERVER['HTTP_HOST']}/search.php?i={$i}");
-			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/search.php?i={$i}\">Your Search Results</a>";
+			header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}");
+			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}\">Your Search Results</a>";
 			exit;		
 		} else if ($criteria->is_multiple) {
 			if ($dataarray['user_id']) {
@@ -472,26 +477,26 @@ END;
 	
 	function pagesString() {
 		if ($this->currentPage > 1) 
-			$r .= "<a href=\"search.php?i={$this->query_id}&amp;page=".($this->currentPage-1)."\">&lt; &lt; prev</a> ";
+			$r .= "<a href=\"{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage-1)."\">&lt; &lt; prev</a> ";
 		$start = max(1,$this->currentPage-5);
 		$endr = min($this->numberOfPages+1,$this->currentPage+8);
 		
 		if ($start > 1)
-			$r .= "<a href=\"search.php?i={$this->query_id}&amp;page=1\">1</a> ... ";
+			$r .= "<a href=\"{$this->page}?i={$this->query_id}&amp;page=1\">1</a> ... ";
 
 		for($index = $start;$index<$endr;$index++) {
 			if ($index == $this->currentPage) 
 				$r .= "<b>$index</b> "; 
 			else
-				$r .= "<a href=\"search.php?i={$this->query_id}&amp;page=$index\">$index</a> ";
+				$r .= "<a href=\"{$this->page}?i={$this->query_id}&amp;page=$index\">$index</a> ";
 		}
 		if ($endr < $this->numberOfPages+1) {
 			$index = $this->numberOfPages;
-			$r .= "... <a href=\"search.php?i={$this->query_id}&amp;page=$index\">$index</a> ";
+			$r .= "... <a href=\"{$this->page}?i={$this->query_id}&amp;page=$index\">$index</a> ";
 		}
 			
 		if ($this->numberOfPages > $this->currentPage) 
-			$r .= "<a href=\"search.php?i={$this->query_id}&amp;page=".($this->currentPage+1)."\">next &gt;&gt;</a> ";
+			$r .= "<a href=\"{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage+1)."\">next &gt;&gt;</a> ";
 		return $r;	
 	}
 	
