@@ -55,6 +55,53 @@ if ($_GET['gridsquare']) {
 
 	advanced_form($smarty,$db);
  	
+} else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+	// -------------------------------
+	//  Build advacned query 
+	// -------------------------------
+	
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchengineflickr.class.php');
+	
+	if ($_POST['refine']) {
+		//we could use the selected item but then have to check for numberic placenames
+		$_POST['placename'] = $_POST['old-placename'];
+	} else {
+		$engine = new SearchEngineFlickr('#'); 
+		$engine->buildAdvancedQuery($_POST);	
+		
+		//if we get this far then theres a problem...
+		$smarty->assign('errormsg', $engine->errormsg);
+	}
+	
+	if ($engine->criteria->is_multiple) {
+		//todo these shouldnt be hardcoded as there other possiblities for suggestions
+		$smarty->assign('multipletitle', "Placename");
+		$smarty->assign('multipleon', "placename");
+		
+		$smarty->assign_by_ref('criteria', $engine->criteria);
+		$smarty->assign_by_ref('post', $_POST);
+		$smarty->assign_by_ref('references',$CONF['references']);	
+		$smarty->assign('searchdesc', $engine->searchdesc);
+		$smarty->display('search_multiple.tpl');
+	} else {
+		if ($_GET['i']) {
+			$db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) die('Database connection failed');
+		
+			$query = $db->GetRow("SELECT searchq FROM queries WHERE id = ".$_GET['i']);
+			$smarty->assign('searchq', $query['searchq']);
+		} else if ($_SESSION['searchq']) {
+			$smarty->assign('searchq', $_SESSION['searchq']);
+		}
+		require_once('geograph/imagelist.class.php');
+		require_once('geograph/gridimage.class.php');
+		require_once('geograph/gridsquare.class.php');
+		//lets find some recent photos
+		$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
+		$recent->assignSmarty($smarty, 'recent');
+	}
 } else if ($q=stripslashes($_GET['q'])) {
 	// -------------------------------
 	//  Build a query from a single text string
