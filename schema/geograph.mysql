@@ -382,3 +382,48 @@ CREATE TABLE `loc_postcodes` (
   PRIMARY KEY  (`code`)
 ) TYPE=MyISAM;
         
+
+
+#barry - 6th May
+
+ALTER TABLE `queries` ADD `searchuse` ENUM( 'search', 'flickr', 'gazetteer' ) DEFAULT 'search' NOT NULL ;
+
+
+CREATE TABLE `flickr_photos` (
+  `id` int(11) NOT NULL default '0',
+  `upd_timestamp` timestamp(14) NOT NULL,
+  `owner` varchar(15) NOT NULL default '',
+  `secret` varchar(12) NOT NULL default '',
+  `server` char(3) NOT NULL default '',
+  `title` varchar(64) NOT NULL default '',
+  `ispublic` enum('0','1') NOT NULL default '0',
+  `isfriend` enum('0','1') NOT NULL default '0',
+  `isfamily` enum('0','1') NOT NULL default '0',
+  `dateadded` int(11) NOT NULL default '0',
+  `isgeograph` enum('0','1') NOT NULL default '0',
+  `gridsquare_id` int(11) NOT NULL default '0',
+  `nateastings` mediumint(9) NOT NULL default '0',
+  `natnorthings` mediumint(9) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+
+
+
+CREATE TABLE `flickr_tags` (
+  `id` int(11) NOT NULL default '0',
+  `photo_id` int(11) NOT NULL default '0',
+  `author` varchar(15) NOT NULL default '',
+  `raw` varchar(64) NOT NULL default '',
+  `tag_tidy` varchar(64) NOT NULL default '',
+  PRIMARY KEY  (`id`),
+  KEY `photo_id` (`photo_id`)
+) TYPE=MyISAM;
+
+
+
+CREATE TABLE `flickr_users` (
+  `owner` varchar(15) NOT NULL default '',
+  `ownername` varchar(64) NOT NULL default '',
+  PRIMARY KEY  (`owner`)
+) TYPE=MyISAM;
+        
