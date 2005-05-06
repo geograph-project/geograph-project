@@ -7,7 +7,7 @@
 
 <p>We have found the following possible match{if count($criteria->matches) > 1}es{/if} for '{$criteria->searchq}':</p>
 
-<form action="/search.php" method="post">
+<form action="{$script_name}" method="post">
 
 {foreach key=name item=value from=$post}
 	{if $value && $name != 'placename' && $name != 'go'}
