@@ -60,5 +60,8 @@ $CONF['imagemagick_path'] = '/usr/bin/';
 //the countries referenced in the reference index 
 $CONF['references'] = array(1 => 'Great Britain',2 => 'Ireland');
 
+//to use the flickr search will need to obtain a flicker api key
+//    http://flickr.com/services/api/misc.api_keys.html
+$CONF['flickr_api_key'] = '';
 
 ?>
