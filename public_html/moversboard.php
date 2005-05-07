@@ -30,7 +30,7 @@ init_session();
 $smarty = new GeographPage;
 
 $template='moversboard.tpl';
-$cacheid='1df323';
+$cacheid='';
 
 if (!$smarty->is_cached($template, $cacheid))
 {
