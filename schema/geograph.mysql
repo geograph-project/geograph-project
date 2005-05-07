@@ -432,4 +432,5 @@ CREATE TABLE `flickr_users` (
 
 ALTER TABLE `gridimage` ADD `upd_timestamp` TIMESTAMP NOT NULL ;
 #one off update for current images to have a reasonable 'start value'
-UPDATE gridimage SET upd_timestamp = moderated 
+UPDATE gridimage SET upd_timestamp = moderated WHERE moderation_status<>'pending'
+UPDATE gridimage SET upd_timestamp = submitted WHERE moderation_status='pending'
