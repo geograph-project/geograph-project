@@ -42,7 +42,7 @@
  	
  	
  	{if $profile->stats.total gt 0}
-<h3><a href="/statistics.php?by=status&u={$profile->user_id}">Statistics</a></h3>
+<h3><a href="/statistics/breakdown.php?by=status&u={$profile->user_id}">Statistics</a></h3>
 <ul>
  	  <li>Geograph points: {$profile->stats.ftf} (see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)</li>
  	  <li>{$profile->stats.total} {if $profile->stats.total eq 1}photograph{else}photographs{/if} submitted
