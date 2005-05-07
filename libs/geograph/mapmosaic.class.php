@@ -409,20 +409,23 @@ class GeographMapMosaic
 		//this could be done in one query, but it's a funky join for something so simple
 		$reference_index=$db->GetOne("select reference_index from gridsquare where x=$x_km and y=$y_km");
 				
-		##But what to do when the square is not on land??
-		if (!$reference_index) {
-			$reference_index = "1";
+		//But what to do when the square is not on land??
+			//when not on land just try any square!
+		if ($reference_index) {
+			$where_crit =  "and reference_index=$reference_index";
 		}
 				
 		$sql="select prefix,origin_x,origin_y from gridprefix ".
 			"where $x_km between origin_x and (origin_x+width-1) and ".
-			"$y_km between origin_y and (origin_y+height-1) and ".
-			"reference_index=$reference_index";
+			"$y_km between origin_y and (origin_y+height-1) $where_crit";
 		$prefix=$db->GetRow($sql);
-		
-		$n=$y_km-$prefix['origin_y'];
-		$e=$x_km-$prefix['origin_x'];
-		return sprintf('%s%02d%02d', $prefix['prefix'], $e, $n);
+		if ($prefix['prefix']) { 
+			$n=$y_km-$prefix['origin_y'];
+			$e=$x_km-$prefix['origin_x'];
+			return sprintf('%s%02d%02d', $prefix['prefix'], $e, $n);
+		} else {
+			return "unknown";
+		}
 	}
 	
 	/**
