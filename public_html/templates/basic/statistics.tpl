@@ -1,7 +1,6 @@
 {assign var="page_title" value="Statistics"}
 {include file="_std_begin.tpl"}
-
-{if !$by} 
+ 
     <h2>Overview Statistics for Geograph British Isles</h2>
 
 <ul>
@@ -68,8 +67,8 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
     
     <h3>More Statistics</h3>
     
-{/if}
-    <form method="get" action="{$script_name}">
+
+    <form method="get" action="/statistics/breakdown.php">
     <p>View breakdown of images by 
     <select name="by">
     	{html_options options=$bys selected=$by}
@@ -96,48 +95,9 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
     {/if}
     {/dynamic}
     <input type="submit" value="Go"></p></form>
-    
+    <p><a href="/statistics/most_geographed.php">Most Geographed 10km<sup>2</sup> Squares</a>, <a href="/statistics/wordnet.php">Popular Words</a>, and more coming soon.</p>
 
     
-{if $by}
-	<h3>{$h2title}</h3>
-	{if $total > 0}
-	<p><small>Click a column header to change the sort order.</small></p>
-
-	<table class="report">
-	<thead><tr>
-	<td><a href="{$script_name}?{$link}&amp;order={$no}">{$title}</a></td>
-	<td><a href="{$script_name}?{$link}&amp;order=c{$no}">Number</a></td>
-	<td>Percentage</td></tr></thead>
-	<tbody>
-
-	{if $linkprefix}
-		{foreach from=$breakdown item=line}
-		<tr><td><a href="{$linkprefix}{$line.field|escape:url}">{$line.field|default:"<i>-unspecified-</i>"}</a></td>
-		<td align=right>{$line.c}</td>
-		<td align=right>{$line.per}%</td></tr>
-		{/foreach}
-	{else}
-		{foreach from=$breakdown item=line}
-		<tr><td>{$line.field}</td>
-		<td align=right>{$line.c}</td>
-		<td align=right>{$line.per}%</td></tr>
-		{/foreach}
-	{/if}
-	
-	<tr class="totalrow"><td>&nbsp;</td>
-	<th align=right>{$total}</th>
-	<th align=right>100%</th></tr>
-	</tbody>
-	</table>
-	{else}
-		<p><i>No Results to Display</i></p>
-	{/if}
-{else} 
-    <p>Here's a graph of photo submissions since we began...<br/>
-    <img src="/img/submission_graph.png" width="480" height="161"/>
-    </p> 
-{/if}
-	<p align="center"><i>This page was last updated {$gentime}</i>.</p>
+   <p align="center"><i>This page was last updated {$generation_time|date_format:"%H:%M"}</i>.</p>
 
 {include file="_std_end.tpl"}
