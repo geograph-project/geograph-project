@@ -2,3 +2,7 @@
 #first argument is the timeout time (should be one less than time the script is called)
 #second is the sleep time, used to give other processs a chance between every ten regenerations
 #is the max load average the script is create maps, if over it sleeps and chech again later. 
+
+
+*/15 * * * * /usr/bin/php /home/geograph/scripts/update_wordnet.php 3 > /dev/null
+#argument is the number of days to look for updated images for - a few days is best incase the cron hasnt run for a few days
