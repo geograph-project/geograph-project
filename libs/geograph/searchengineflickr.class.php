@@ -84,7 +84,7 @@ END;
 	
 	// construct the query sql
 $sql = <<<END
-	   SELECT distinct gi.*,flickr_users.ownername as realname,grid_reference
+	   SELECT distinct gi.*,x,y,flickr_users.ownername as realname,grid_reference
 			$sql_fields
 		FROM flickr_photos AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 		INNER JOIN flickr_users ON(gi.owner=flickr_users.owner)
@@ -103,7 +103,9 @@ END;
 		{
 			$this->results[$i] = $recordSet->fields;
 			if ($d = $recordSet->fields['dist_sqd']) {
-				$this->results[$i]['dist_string'] = sprintf("Dist:%.1fkm",sqrt($d));
+				$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
+				$this->results[$i]['dist_string'] = sprintf("Dist:%.1fkm %s",sqrt($d),$this->heading_string($angle));
+			
 			}
 			
 			$recordSet->MoveNext();
