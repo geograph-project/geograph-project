@@ -434,3 +434,15 @@ ALTER TABLE `gridimage` ADD `upd_timestamp` TIMESTAMP NOT NULL ;
 #one off update for current images to have a reasonable 'start value'
 UPDATE gridimage SET upd_timestamp = moderated WHERE moderation_status<>'pending'
 UPDATE gridimage SET upd_timestamp = submitted WHERE moderation_status='pending'
+
+
+CREATE TABLE `wordnet` (
+  `gid` int(11) NOT NULL default '0',
+  `len` char(1) NOT NULL default '',
+  `words` varchar(64) NOT NULL default '',
+  `title` smallint(6) NOT NULL default '0',
+  `comment` smallint(6) NOT NULL default '0',
+  `total` smallint(6) NOT NULL default '0',
+  KEY `len` (`len`,`words`),
+  KEY `gid` (`gid`)
+) TYPE=MyISAM;
