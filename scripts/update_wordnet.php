@@ -106,12 +106,10 @@ function docount($text,$field,$id) {
 	$recordSet = &$db->Execute("select gridimage_id,title,comment from gridimage where moderation_status != 'rejected' and upd_timestamp > date_sub(now(), interval $days day)");
 	while (!$recordSet->EOF) 
 	{
+		$db->Execute("delete from wordnet where gid = ".$recordSet->fields['gridimage_id']);
 		docount($recordSet->fields['title'],'title',$recordSet->fields['gridimage_id']);
 		docount($recordSet->fields['comment'],'comment',$recordSet->fields['gridimage_id']);
-		
-		if ($recordSet->fields['gridimage_id']%10==0)
-			printf("done %d at <b>%d</b> seconds\n",$recordSet->fields['gridimage_id'],time()-$tim);
-		
+				
 		$recordSet->MoveNext();
 	}
 	$recordSet->Close(); 
