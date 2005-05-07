@@ -337,11 +337,12 @@ class SearchCriteria_Postcode extends SearchCriteria
 		$db = $this->_getDB();
 		
 		$postcode = $db->GetRow("select e,n,reference_index from loc_postcodes where code=".$db->Quote($code));	
-		
-		$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$postcode['reference_index']." order by origin_x,origin_y limit 1");	
+		if ($postcode['reference_index']) {
+			$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$postcode['reference_index']." order by origin_x,origin_y limit 1");	
 
-		$this->x = intval($postcode['e']/1000) + $origin['origin_x'];
-		$this->y = intval($postcode['n']/1000) + $origin['origin_y'];
+			$this->x = intval($postcode['e']/1000) + $origin['origin_x'];
+			$this->y = intval($postcode['n']/1000) + $origin['origin_y'];
+		}
 	}
 }
 
