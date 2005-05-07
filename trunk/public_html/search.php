@@ -52,7 +52,7 @@ if ($_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
  	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');
 
-	advanced_form(&$smarty,$db);
+	advanced_form($smarty,$db);
  	
 } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	// -------------------------------
@@ -104,7 +104,7 @@ if ($_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
 		
-		advanced_form(&$smarty,$db);
+		advanced_form($smarty,$db);
 	}
 } else if ($q=stripslashes($_GET['q'])) {
 	// -------------------------------
