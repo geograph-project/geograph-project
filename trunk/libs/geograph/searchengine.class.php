@@ -437,7 +437,7 @@ END;
 	
 	// construct the query sql
 $sql = <<<END
-	   SELECT distinct gi.*,user.realname
+	   SELECT distinct gi.*,x,y,user.realname
 			$sql_fields
 		FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 		INNER JOIN user ON(gi.user_id=user.user_id)
@@ -458,7 +458,8 @@ END;
 			$this->results[$i]->loadFromRecordset($recordSet);
 			$this->results[$i]->compact();
 			if ($d = $recordSet->fields['dist_sqd']) {
-				$this->results[$i]->dist_string = sprintf("Dist:%.1fkm",sqrt($d));
+				$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
+				$this->results[$i]->dist_string = sprintf("Dist:%.1fkm %s",sqrt($d),$this->heading_string($angle));
 			}
 			
 			//if we searching on imageclass then theres no point displaying it...
@@ -470,6 +471,22 @@ END;
 		}
 		$recordSet->Close(); 
 	}
+	
+	function heading_string($deg) {
+		
+		$dirs = array('north','east','south','west'); 
+		$rounded = round($deg / 22.5) % 16; 
+		if (($rounded % 4) == 0) { 
+			$s = $dirs[$rounded/4]; 
+		} else { 
+			$s = $dirs[2 * intval(((intval($rounded / 4) + 1) % 4) / 2)]; 
+			$s .= $dirs[1 + 2 * intval($rounded / 8)]; 
+			if ($rounded % 2 == 1) { 
+				$s = $dirs[round($rounded/4) % 4] . '-' . $s;
+			} 
+		} 
+		return $s; 
+	} 
 	
 	function getDisplayclass() {
 		return $this->criteria->displayclass;
