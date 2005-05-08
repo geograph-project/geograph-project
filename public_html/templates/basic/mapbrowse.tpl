@@ -165,7 +165,8 @@
    <td colspan="4" style="background:#6476fc;">
    
    <p style="line-height:1em;font-size:0.8em;text-align:center">Grid Reference at centre
- <b>{$gridref}</b></p>
+ <b>{$gridref}</b><br/>
+ {if $token_zoomout}[<a href="/search.php?q={$gridref}" title="Search for images centered around {$gridref}">Perform Search</a>]{/if}</p>
  
    <p style="line-height:1em;font-size:0.8em;text-align:center">Map Width 
  <br/><b>{$mapwidth} km</b></p>
