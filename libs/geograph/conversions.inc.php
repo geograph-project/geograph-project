@@ -9,6 +9,7 @@
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
  *   adapted from OSGB spreadsheet (www.gps.gov.uk)
  *    by Ian Harris 2004 (ian@teasel.org)
+ *     added Irish Grid References by Barry Hunter
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -55,10 +56,11 @@ function distance ($lat1, $lon1, $lat2, $lon2) {
 #source of ellipsoid axis dimensions a,b : http://www.osni.gov.uk/technical/grid.doc
 
 
-function wgs84_to_irish($lat,$long,$usehermert = false) {
+function wgs84_to_irish($lat,$long,$uselevel2 = true) {
     $height = 0;
 
-	if ($usehermert) {
+	if ($uselevel2) {
+		//Level 2 Transformation - 95% of points should fall within 40 cm
 		$x1 = Lat_Long_H_to_X($lat,$long,$height,6378137.00,6356752.313);
 		$y1 = Lat_Long_H_to_Y($lat,$long,$height,6378137.00,6356752.313);
 		$z1 = Lat_H_to_Z     ($lat,      $height,6378137.00,6356752.313);
@@ -69,13 +71,15 @@ function wgs84_to_irish($lat,$long,$usehermert = false) {
 
 		$lat  = XYZ_to_Lat ($x2,$y2,$z2,6377340.189,6356034.447);
 		$long = XYZ_to_Long($x2,$y2);
-	}
+	} 
 
     $e = Lat_Long_to_East ($lat,$long,6377340.189,6356034.447, 200000,1.000035,53.50000,-8.00000);
     $n = Lat_Long_to_North($lat,$long,6377340.189,6356034.447, 200000,250000,1.000035,53.50000,-8.00000);
 
-	if (!$usehermert) {
+	if (!$uselevel2) {
+		//Level 1 Transformation - 95% of points within 2 metres
 		#fixed datum shift correction (instead of fancy hermert translation above!)
+		##source http://www.osni.gov.uk/downloads/Making%20maps%20GPS%20compatible.pdf
 		$e=$e+49;
 		$n=$n-23.4;
 	}
@@ -83,10 +87,13 @@ function wgs84_to_irish($lat,$long,$usehermert = false) {
     return array($e,$n);
 }
 
-function irish_to_wgs84($e,$n,$usehermert = false) {
+
+
+
+function irish_to_wgs84($e,$n,$uselevel2 = true) {
     $height = 0;
 
-	if (!$usehermert) {
+	if (!$uselevel2) {
 		#fixed datum shift correction (instead of fancy hermert translation below!)
 		$e = $e-49;
 		$n = $n+23.4;
@@ -95,7 +102,7 @@ function irish_to_wgs84($e,$n,$usehermert = false) {
     $lat = E_N_to_Lat ($e,$n,6377340.189,6356034.447,200000,250000,1.000035,53.50000,-8.00000);
     $lon = E_N_to_Long($e,$n,6377340.189,6356034.447,200000,250000,1.000035,53.50000,-8.00000);
 
-	if ($usehermert) {
+	if ($uselevel2) {
 		$x1 = Lat_Long_H_to_X($lat,$lon,$height,6377340.189,6356034.447);
 		$y1 = Lat_Long_H_to_Y($lat,$lon,$height,6377340.189,6356034.447);
 		$z1 = Lat_H_to_Z     ($lat,     $height,6377340.189,6356034.447);
@@ -105,10 +112,10 @@ function irish_to_wgs84($e,$n,$usehermert = false) {
 		$z2 = Helmert_Z($x1,$y1,$z1, 564.557,1.042,0.214,8.15);
 
 		$lat  = XYZ_to_Lat ($x2,$y2,$z2,6378137.000,6356752.313);
-		$long = XYZ_to_Long($x2,$y2);
-	}
+		$lon  = XYZ_to_Long($x2,$y2);
+	} 
 
-    return array($lat,$long);
+    return array($lat,$lon);
 }
 
 /**************************
