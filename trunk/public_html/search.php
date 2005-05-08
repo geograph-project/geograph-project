@@ -239,7 +239,7 @@ if ($_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	$smarty->assign('currentPage', $pg);
 	$smarty->assign_by_ref('engine', $engine);
 	
-	if ($engine->criteria->searchclass == 'GridRef' && strpos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
+	if ($pg == 1 && $engine->criteria->searchclass == 'GridRef' && strpos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
 		$smarty->assign('nofirstmatch', true);
 	}	
 
