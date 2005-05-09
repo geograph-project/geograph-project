@@ -36,8 +36,8 @@ $cacheid='statistics|wordnet.'.$len;
 $smarty->caching = 0; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
-#if (!$smarty->is_cached($template, $cacheid))
-#{
+if (!$smarty->is_cached($template, $cacheid))
+{
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 	#$db->debug = true;
@@ -113,14 +113,7 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 	
 	$smarty->assign('generation_time', time());
 	
-#} else {
-#	//bare minimum for the dynamic section
-#	if ($u) {
-#		$profile=new GeographUser($u);
-#		$smarty->assign_by_ref('profile', $profile);
-#		$smarty->assign_by_ref('u', $u);
-#	}
-#}
+}
 
 
 $smarty->display($template, $cacheid);
