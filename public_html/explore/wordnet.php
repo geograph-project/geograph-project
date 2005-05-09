@@ -30,8 +30,11 @@ $len = intval($_GET['len']);
 if (!$len)
 	$len = 2;
 
+if (preg_match('/^[\w ]$',$_GET['words']))
+	$words = $_GET['words'];
+
 $template='statistics_wordnet.tpl';
-$cacheid='statistics|wordnet.'.$len;
+$cacheid='statistics|wordnet.'.$len.".".str_replace(' ','.',$words);
 
 $smarty->caching = 0; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
