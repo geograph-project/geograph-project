@@ -22,38 +22,33 @@
  */
 
 require_once('geograph/global.inc.php');
-require_once('geograph/gridimage.class.php');
-require_once('geograph/gridsquare.class.php');
-require_once('geograph/imagelist.class.php');
-init_session();
 
 # let the browser know what's coming
 header("Content-type: application/octet-stream");
 header("Content-Disposition: attachment; filename=\"geograph.csv\"");
 
+$db=NewADOConnection($GLOBALS['DSN']);
 
-$images=new ImageList;
-
-$count=$images->getImages(array('accepted','geograph'));
-if ($count>0)
+$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass ".
+	"from user ".
+	"inner join gridimage using(user_id) ".
+	"inner join gridsquare using(gridsquare_id) ".
+	"where moderation_status in ('accepted','geograph')");
+while (!$recordSet->EOF) 
 {
-	echo "Id,Name,Grid Ref,Submitter,Image Class\n";
-	
-	foreach ($images->images as $image) 
+	$image = $recordSet->fields;
+	if (strpos($image['title'],',') !== FALSE || strpos($image['title'],'"') !== FALSE) 
 	{
-		if (strpos($image->title,',') !== FALSE) 
-		{
-			$image->title = '"'.$image->title.'"';
-		}
-		echo "{$image->gridimage_id},{$image->title},{$image->grid_reference},{$image->realname},{$image->imageclass}\n";
+		$image['title'] = '"'.str_replace('"', '""', $image['title']).'"';
 	}
-} 
-else 
-{
-	echo "No Images";
+	if (strpos($image['imageclass'],',') !== FALSE || strpos($image['imageclass'],'"') !== FALSE) 
+	{
+		$image['imageclass'] = '"'.str_replace('"', '""', $image['imageclass']).'"';
+	}
+	echo "{$image['gridimage_id']},{$image['title']},{$image['grid_reference']},{$image['realname']},{$image['imageclass']}\n";
+	$recordSet->MoveNext();
+	$i++;
 }
-
-
-
+$recordSet->Close(); 
 	
 ?>
