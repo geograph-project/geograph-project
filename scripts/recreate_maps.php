@@ -150,13 +150,16 @@ while (1) {
 			"order by pixels_per_km desc, age desc limit 10;");
 		while (!$recordSet->EOF) 
 		{
-			//sleep until calm
-			while (get_loadavg() > $param['load'])
+			//sleep until calm if we've specified a load average
+			if ($param['load']<100)
 			{
-				sleep($param['sleep']);
-				if (time()>$end_time) 
-					exit;	
-				
+				while (get_loadavg() > $param['load'])
+				{
+					sleep($param['sleep']);
+					if (time()>$end_time) 
+						exit;	
+
+				}
 			}
 			
 			foreach($recordSet->fields as $name=>$value)
