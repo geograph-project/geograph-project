@@ -29,7 +29,7 @@ $smarty = new GeographPage;
 
 $_GET['i']=intval(stripslashes($_GET['i']));
 
-$imagestatuses = array('geograph' => 'geograph','geograph,accepted' => 'geographs &amp; supplemental','geograph,accepted,pending' => 'all','pending' => 'pending only');
+$imagestatuses = array('geograph' => 'geograph only','geograph,accepted' => 'geographs &amp; supplemental','accepted' => 'supplemental only','geograph,accepted,pending' => 'all','pending' => 'pending only');
 $sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','submitted'=>'Date Submitted','imageclass'=>'Image Category','realname'=>'Contributer Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North');
 #,'user_id'=>'Contributer ID'
 
