@@ -64,7 +64,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$title .= " in ".$CONF['references'][$ri];
 
 	if ($by == 'status') {
-		$sql_group = $sql_fieldname = 'moderation_status';
+		$sql_group = $sql_fieldname = "CONCAT(moderation_status,ELT(ftf+1, '',' (ftf)'))";
 	} else if ($by == 'class') {
 		$sql_group = $sql_fieldname = 'imageclass';
 		$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;imageclass=");
