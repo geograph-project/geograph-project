@@ -30,7 +30,7 @@ $len = intval($_GET['len']);
 if (!$len)
 	$len = 2;
 
-if (preg_match('/^[\w ]$',$_GET['words']))
+if (preg_match('/^[\w ]$/',$_GET['words']))
 	$words = $_GET['words'];
 
 $template='statistics_wordnet.tpl';
