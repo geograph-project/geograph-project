@@ -21,34 +21,107 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-//doesnt seem to work???
-	//$timeout_value = $argv[1];
-	//$sleep_time = $argv[2];  
-	//$maxload_value = $argv[3];  
+/**
+* get 1 minute load average
+*/
+function get_loadavg() 
+{
+	$uname = posix_uname();
+	switch ($uname['sysname']) {
+		case 'Linux':
+			return linux_loadavg();
+			break;
+		case 'FreeBSD':
+			return freebsd_loadavg();
+			break;
+		default:
+			return -1;
+	}
+}
 
-list ($timeout_value,$sleep_time,$maxload_value) = array_keys($_REQUEST);
+/*
+ * linux_loadavg() - Gets the 1 min load average from /proc/loadavg
+ */
+function linux_loadavg() {
+	$buffer = "0 0 0";
+	$f = fopen("/proc/loadavg","r");
+	if (!feof($f)) {
+		$buffer = fgets($f, 1024);
+	}
+	fclose($f);
+	$load = explode(" ",$buffer);
+	return (float)$load[0];
+}
 
-//how many minutes to allow the program to run
-	//can use 0 to process upto 10 images straight away but will exit as soon as load average is too high!
-if (!$timeout_value)
-	$timeout_value = 14; //because probably being run every 15 minutes via cron
+/*
+ * freebsd_loadavg() - Gets the 1 min  load average from uptime
+ */
+function freebsd_loadavg() {
+	$buffer= `uptime`;
+	ereg("averag(es|e): ([0-9][.][0-9][0-9]), ([0-9][.][0-9][0-9]), ([0-9][.][0-9][0-9]*)", $buffer, $load);
+	return (float)$load[2];
+}
+    
+    
 
-//percentage load that we must be under to do any processing...
-if (!$sleep_time)
-	$sleep_time = 10; 
+//these are the arguments we expect
+$param=array(
+	'dir'=>'/home/geograph',		//base installation dir
+
+	'config'=>'www.geograph.co.uk', //effective config
+
+	'timeout'=>14, //timeout in minutes
+	'sleep'=>10,	//sleep time in seconds
+	'load'=>100,	//maximum load average
+	'help'=>0,		//show script help?
+);
+
+//very simple argument parser
+for($i=1; $i<count($_SERVER['argv']); $i++)
+{
+	$arg=$_SERVER['argv'][$i];
+
+	if (substr($arg,0,2)=='--')
+
+	{
+		$arg=substr($arg,2);
+		$bits=explode('=', $arg,2);
+		if (isset($param[$bits[0]]))
+		{
+			//if we have a value, use it, else just flag as true
+			$param[$bits[0]]=isset($bits[1])?$bits[1]:true;
+		}
+		else die("unknown argument --$arg\nTry --help\n");
+	}
+	else die("unexpected argument $arg - try --help\n");
 	
-//time in seconds to sleep between checking the load avarage
-if (!$maxload_value)
-	$maxload_value = 100; //because if missing then means then probablt wont work anyway on this system
+}
 
-//needed to allow the config file to load - could be passed in as a argument??
-$_SERVER['HTTP_HOST'] = "geograph.local";
 
-//not sure how to autodetect this?
-$_SERVER['DOCUMENT_ROOT'] = "/home/geograph/public_html/"; 
+if ($param['help'])
+{
+	echo <<<ENDHELP
+---------------------------------------------------------------------
+recreate_maps.php 
+---------------------------------------------------------------------
+php recreate_maps.php 
+    --dir=<dir>         : base directory (/home/geograph)
+    --config=<domain>   : effective domain config (www.geograph.co.uk)
+    --timeout=<minutes> : maximum runtime of script (14)
+    --sleep=<seconds>   : seconds to sleep if load average exceeded (10)
+    --load=<loadavg>    : maximum load average (100)
+    --help              : show this message	
+---------------------------------------------------------------------
+	
+ENDHELP;
+exit;
+}
+	
+//set up  suitable environment
+ini_set('include_path', $param['dir'].'/libs/');
+$_SERVER['DOCUMENT_ROOT'] = $param['dir'].'/public_html/'; 
+$_SERVER['HTTP_HOST'] = $param['config'];
 
-//the number of maps to process before checking for new maps
-$group_size = 10;
 
 //--------------------------------------------
 // nothing below here should need changing
@@ -63,24 +136,27 @@ $db = NewADOConnection($GLOBALS['DSN']);
 
 $start_time = time();
 
-$end_time = $start_time + (60*$timeout_value);
+$end_time = $start_time + (60*$param['timeout']);
 
+$map=new GeographMap;
+			
 while (1) {
 
 	$invalid_maps = $db->GetOne("select count(*) from mapcache where age > 0");
 
 	if ($invalid_maps) {
-		$map=new GeographMap;
 		//done many small select statements to allow new maps to be processed 
-		$recordSet = &$db->Execute("select * from mapcache where age > 0 order by pixels_per_km desc, age desc limit $group_size");
+		$recordSet = &$db->Execute("select * from mapcache where age > 0 ".
+			"order by pixels_per_km desc, age desc limit 10;");
 		while (!$recordSet->EOF) 
 		{
-			while ($maxload_value < 100 && get_loadavg() > $maxload_value) {
-				if (time()>$end_time) {
-					//we've waited too long, let the next recruit have a go.
+			//sleep until calm
+			while (get_loadavg() > $param['load'])
+			{
+				sleep($param['sleep']);
+				if (time()>$end_time) 
 					exit;	
-				}
-				sleep($sleep_time);
+				
 			}
 			
 			foreach($recordSet->fields as $name=>$value)
@@ -93,7 +169,8 @@ while (1) {
 
 			echo "re-rendered ".$map->getImageFilename()."\n";
 			flush();
-
+			
+			
 			if (time()>$end_time) {
 				$recordSet->Close(); 
 				//well come to the end of the scripts useful life
@@ -103,7 +180,7 @@ while (1) {
 			$recordSet->MoveNext();
 
 		}
-		sleep($sleep_time);
+		
 	} else {
 		//nothing more to do here
 
@@ -116,49 +193,7 @@ while (1) {
 	}
 }	
 
-	//load average code from http://leknor.com/code/php/view/class.gzip_encode.php.txt
-	 function get_loadavg() {
-		$uname = posix_uname();
-		switch ($uname['sysname']) {
-			case 'Linux':
-				return linux_loadavg();
-				break;
-			case 'FreeBSD':
-				return freebsd_loadavg();
-				break;
-		}
-   }
-
-    /*
-     * linux_loadavg() - Gets the max() system load average from /proc/loadavg
-     *
-     * The max() Load Average will be returned
-     */
-    function linux_loadavg() {
-		$buffer = "0 0 0";
-		$f = fopen("/proc/loadavg","r");
-		if (!feof($f)) {
-			$buffer = fgets($f, 1024);
-		}
-		fclose($f);
-		$load = explode(" ",$buffer);
-		return max((float)$load[0], (float)$load[1], (float)$load[2]);
-    }
-
-    /*
-     * freebsd_loadavg() - Gets the max() system load average from uname(1)
-     *
-     * The max() Load Average will be returned
-     *
-     * I've been told the code below will work on solaris too, anyone wanna
-     * test it?
-     */
-    function freebsd_loadavg() {
-		$buffer= `uptime`;
-		ereg("averag(es|e): ([0-9][.][0-9][0-9]), ([0-9][.][0-9][0-9]), ([0-9][.][0-9][0-9]*)", $buffer, $load);
-
-		return max((float)$load[2], (float)$load[3], (float)$load[4]);
-    } 
+ 
 
 	
 ?>
