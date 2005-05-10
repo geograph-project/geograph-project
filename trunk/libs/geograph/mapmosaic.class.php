@@ -410,9 +410,13 @@ class GeographMapMosaic
 		$reference_index=$db->GetOne("select reference_index from gridsquare where x=$x_km and y=$y_km");
 				
 		//But what to do when the square is not on land??
-			//when not on land just try any square!
+			
 		if ($reference_index) {
 			$where_crit =  "and reference_index=$reference_index";
+		} else {
+			//when not on land just try any square!
+			// but favour the _smaller_ grid - works better, but still not quite right where the two grids almost overlap
+			$where_crit =  "order by reference_index desc";
 		}
 				
 		$sql="select prefix,origin_x,origin_y from gridprefix ".
