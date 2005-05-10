@@ -29,7 +29,9 @@ header("Content-Disposition: attachment; filename=\"geograph.csv\"");
 
 $db=NewADOConnection($GLOBALS['DSN']);
 
-$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass ".
+   echo "Id,Name,Grid Ref,Submitter,Image Class,easting,northing\n";
+
+$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,nateastings,natnorthings ".
 	"from user ".
 	"inner join gridimage using(user_id) ".
 	"inner join gridsquare using(gridsquare_id) ".
@@ -45,7 +47,7 @@ while (!$recordSet->EOF)
 	{
 		$image['imageclass'] = '"'.str_replace('"', '""', $image['imageclass']).'"';
 	}
-	echo "{$image['gridimage_id']},{$image['title']},{$image['grid_reference']},{$image['realname']},{$image['imageclass']}\n";
+	echo "{$image['gridimage_id']},{$image['title']},{$image['grid_reference']},{$image['realname']},{$image['imageclass']}".(($image['nateastings'])?",{$image['nateastings']},{$image['natnorthings']}":'')."\n";
 	$recordSet->MoveNext();
 	$i++;
 }
