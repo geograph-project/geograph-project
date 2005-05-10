@@ -44,7 +44,7 @@ $rss->useCached($rssfile);
 $rss->title = 'Geograph.co.uk'; 
 $rss->description = 'Latest images and news'; 
 $rss->link = "http://{$_SERVER['HTTP_HOST']}";
-$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/rss.php"; 
+$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php"; 
 
 
 #$image = new FeedImage(); 
