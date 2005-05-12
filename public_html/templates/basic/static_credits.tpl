@@ -6,7 +6,8 @@
     
     <h3>Original Idea</h3>
     <ul>
-    <li>{mailto address="editor@geocachingtoday.com" text="Gary Rogers" encode="javascript"} - came up with original concept for his {external href="http://www.geocachingtoday.com/" title="Geocaching Today" text="Geocaching Today"} online magazine</li>
+    <li>{mailto address="rogersgm@gmail.com" text="Gary Rogers" encode="javascript"} came up with original 
+concept.</li>
     </ul>
 
 	<h3>Photographs</h3>
