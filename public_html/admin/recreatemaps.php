@@ -36,8 +36,51 @@ $db = NewADOConnection($GLOBALS['DSN']);
 
 
 
+if (isset($_POST['inv']))
+{
+
+	$square=new GridSquare;
+	$grid_ok=$square->setGridRef($_POST['gridref']);
+		
+		
+		
+	if (!$grid_ok) {
+		$smarty->assign('errormsg',$square->errormsg);
+		
+		
+		$smarty->display('admin_recreatemaps.tpl');
+		exit;
+	}
+
+	$smarty->display('_std_begin.tpl');
+	echo "<h3><a href=\"recreatemaps.php\">&lt;&lt;</a> Invalidating Maps...</h3>";
+	flush();
+	
+	
+	$x = $square->x;
+	$y = $square->y;
+	
+		$sql="select * from mapcache ".
+					"where $x between map_x and (map_x+image_w/pixels_per_km-1) and ".
+					"$y between map_y and (map_y+image_h/pixels_per_km-1)";
+		$db->Execute($sql);
+	$recordSet = &$db->Execute("$sql");
+	while (!$recordSet->EOF) 
+	{
+		print implode(',',array_values($recordSet->fields))."<br/>";
+		$recordSet->MoveNext();
+	}
+	$recordSet->Close(); 
+
+	require_once('geograph/mapmosaic.class.php');
+	$mosaic = new GeographMapMosaic;
+	$mosaic->expirePosition($x,$y);
+
+	$smarty->display('_std_end.tpl');
+	exit;
+	
 //do some processing?
-if (isset($_POST['go']))
+} else if (isset($_POST['go']))
 {
 	$limit = intval($_POST['limit']);
 	if (!$limit) {
