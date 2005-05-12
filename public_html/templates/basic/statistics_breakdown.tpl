@@ -43,7 +43,7 @@
 
 	{if $linkprefix}
 		{foreach from=$breakdown item=line}
-		<tr><td><a href="{$linkprefix}{$line.field|escape:url}">{$line.field|default:"<i>-unspecified-</i>"}</a></td>
+		<tr><td><a href="{$linkprefix}{$line.field|escape:url|default:"-"}">{$line.field|default:"<i>-unspecified-</i>"}</a></td>
 		<td align=right>{$line.c}</td>
 		<td align=right>{$line.per}%</td></tr>
 		{/foreach}

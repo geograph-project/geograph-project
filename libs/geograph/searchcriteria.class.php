@@ -98,7 +98,7 @@ class SearchCriteria
 			if ($sql_where) {
 				$sql_where .= " and ";
 			}
-			$sql_where .= "imageclass = '".addslashes($this->limit3)."' ";
+			$sql_where .= "imageclass = '".addslashes(($this->limit3 == '-')?'':$this->limit3)."' ";
 		} 
 		if (!empty($this->limit4)) {
 			if ($sql_where) {

@@ -308,8 +308,13 @@ class SearchEngine
 				$searchdesc .= ", showing ".$imagestatuses[$dataarray['moduration_status']]." images";
 			}
 			if ($dataarray['imageclass']) {
-				$sql .= ",limit3 = ".$db->Quote($dataarray['imageclass']);
-				$searchdesc .= ", classifed as ".$dataarray['imageclass'];
+				if ($dataarray['imageclass'] == '-') {
+					$sql .= ",limit3 = '-'";
+					$searchdesc .= ", unclassifed";
+				} else {
+					$sql .= ",limit3 = ".$db->Quote($dataarray['imageclass']);
+					$searchdesc .= ", classifed as ".$dataarray['imageclass'];
+				}
 			}
 			if ($dataarray['reference_index']) {
 				$sql .= ",limit4 = ".$db->Quote($dataarray['reference_index']);
