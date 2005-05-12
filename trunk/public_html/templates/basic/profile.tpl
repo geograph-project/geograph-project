@@ -1,6 +1,6 @@
 {include file="_std_begin.tpl"}
 
-<h2>Profile for {$profile->realname|escape:'html'}</h2>
+<h2><a name="top"></a>Profile for {$profile->realname|escape:'html'}</h2>
 
 
 <h3>Basic information</h3>
