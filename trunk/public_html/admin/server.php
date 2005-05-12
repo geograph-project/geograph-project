@@ -33,6 +33,8 @@ $cacheid='';
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+	//todo: these functions are *nix specific?
+
 	$uptime=`uptime`;
 
 	$smarty->assign_by_ref('uptime', $uptime);
@@ -42,8 +44,15 @@ if (!$smarty->is_cached($template, $cacheid))
 	$photodir=`du -h --summarize {$_SERVER['DOCUMENT_ROOT']}/photos/`;
 	$smarty->assign_by_ref('photodir', $photodir);
 
-	$mapdir=`du -h --summarize {$_SERVER['DOCUMENT_ROOT']}/maps/`;
-	$smarty->assign_by_ref('mapdir', $mapdir);
+	$mapbasedir=`du -h --summarize {$_SERVER['DOCUMENT_ROOT']}/maps/base/`;
+	$smarty->assign_by_ref('mapbasedir', $mapbasedir);
+
+	$mapdetaildir=`du -h --summarize {$_SERVER['DOCUMENT_ROOT']}/maps/detail/`;
+	$smarty->assign_by_ref('mapbasedir', $mapdetaildir);
+
+
+	$cachedir=`du -h --summarize {$_SERVER['DOCUMENT_ROOT']}/templates/basic/cache`;
+	$smarty->assign_by_ref('cachedir', $cachedir);
 
 }
 
