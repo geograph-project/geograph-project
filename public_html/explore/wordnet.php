@@ -36,7 +36,7 @@ if (preg_match('/^[\w ]$/',$_GET['words']))
 $template='statistics_wordnet.tpl';
 $cacheid='statistics|wordnet.'.$len.".".str_replace(' ','.',$words);
 
-$smarty->caching = 0; // lifetime is per cache
+$smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
 if (!$smarty->is_cached($template, $cacheid))
