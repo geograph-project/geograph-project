@@ -30,7 +30,7 @@ $len = intval($_GET['len']);
 if (!$len)
 	$len = 2;
 
-if (preg_match('/^[\w ]$/',$_GET['words']))
+if (preg_match('/^[\w ]+$/',$_GET['words']))
 	$words = $_GET['words'];
 
 $template='statistics_wordnet.tpl';
@@ -70,11 +70,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		$size = $startsize = 30;
 		$sizedelta = 0.3;
 	} else {
-		$size = $startsize = 20;
+		$size = $startsize = 28;
 		$sizedelta = 0.3;
 	}
 	
-	$wordlist = $db->GetAssoc("SELECT REPLACE(words,' ','&nbsp;'),len,SUM(wordnet.title) as sum_title FROM `wordnet` INNER JOIN `gridimage` ON(gid = gridimage_id) WHERE len = $len AND submitted > date_sub(now(), interval 7 day) $sql_crit GROUP BY len,words ORDER BY sum_title desc LIMIT 50");
+	$wordlist = $db->GetAssoc("SELECT REPLACE(words,' ','&nbsp;'),len,SUM(wordnet.title) as sum_title FROM `wordnet` INNER JOIN `gridimage` ON(gid = gridimage_id) WHERE wordnet.title > 0 AND len = $len AND submitted > date_sub(now(), interval 7 day) $sql_crit GROUP BY len,words ORDER BY sum_title desc LIMIT 50");
 	#foreach($wordlist as $words=>$obj) {
 	#	$total += $obj['sum_title'];
 	#}
@@ -98,7 +98,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$size = $startsize;
 	$sizedelta /= 2;
 	
-	$toplist = $db->GetAssoc("SELECT REPLACE(words,' ','&nbsp;'),len,SUM(title) as sum_title FROM `wordnet` WHERE len = $len $sql_crit GROUP BY len,words ORDER BY sum_title desc LIMIT 100");
+	$toplist = $db->GetAssoc("SELECT REPLACE(words,' ','&nbsp;'),len,SUM(title) as sum_title FROM `wordnet` WHERE title > 0 AND len = $len $sql_crit GROUP BY len,words ORDER BY sum_title desc LIMIT 100");
 	foreach($toplist as $words=>$obj) {
 		$count=0;
 		foreach (explode('&nbsp;',$words) as $word) {
