@@ -19,11 +19,19 @@
 
 <h3>Maps</h3>
 <ul>
+<li>Cached base maps</li>
+<li>{$mapbasedir}</li>
 <li>Cached map browsing graphics</li>
-<li>{$mapdir}</li>
+<li>{$mapdetaildir}</li>
+<li>Total</li>
+<li>{$mapdetaildir}</li>
 </ul>
 
-
+<h3>Cached Templates</h3>
+<ul>
+<li>Total size of the cached smarty templates</li>
+<li>{$cachedir}</li>
+</ul>
 
 
 {include file="_std_end.tpl"}
