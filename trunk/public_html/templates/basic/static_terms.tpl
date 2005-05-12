@@ -116,7 +116,7 @@ boilerplate...</p>
  Materials. You may not distribute such copies to others, whether or not in
  electronic form and whether or not for a charge or other consideration, without
  prior written consent of the owner of such materials. If you have any questions,
- contact us at {mailto address="editor@geocachingtoday.com" text="editor@geocachingtoday.com" encode="javascript"}</p>
+ please <a href="/contact.php">contact us</a>.</p>
 
 
 
@@ -193,8 +193,9 @@ boilerplate...</p>
  the Site or available through the Site (collectively, <b>Submissions</b>) remain the
  property and copyright of the original author. If You submit Submissions to The
  Geograph.co.uk Collective, You must adhere to any applicable submission guidelines
- that may be posted from time to time on the Site. By submitting any Submission to The
- Geograph.co.uk Collective, You grant The Geograph.co.uk Collective a worldwide, non-
+ that may be posted from time to time on the Site. All submitted photographs and accompanying
+metadata are licenced under a Creative Commons licence. For all
+other types of site submission, you grant The Geograph.co.uk Collective a worldwide, non-
  exclusive, transferable, perpetual, irrevocable, fully-paid royalty-free license and
  right to use, reproduce, distribute, import, broadcast, transmit, modify and create
  derivative works of, license, offer to sell, and sell, rent, lease or lend copies of,
@@ -232,8 +233,8 @@ boilerplate...</p>
  the copyright owner or are authorized to act on the copyright owner's behalf in this
  situation.</li>
 </ul>
- <p>Notices of copyright infringement claims should be sent by email to
-{mailto address="editor@geocachingtoday.com" text="editor@geocachingtoday.com" encode="javascript"}</p>
+ <p>Notices of copyright infringement claims should be sent to use via our
+<a href="/contact.php">contact</a> page.</p>
 
 
  <h3>8. Logo Usage</h3>
