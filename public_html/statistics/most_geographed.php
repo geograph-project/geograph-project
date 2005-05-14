@@ -47,14 +47,12 @@ if (!$smarty->is_cached($template, $cacheid))
 		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 			
 		$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=$ri order by origin_x,origin_y limit 1");
-			var_dump($origin);	
+		
 			
 		$most = $db->GetAll("select grid_reference,x,y,concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,count(*) as geograph_count from gridsquare where reference_index = $ri and imagecount>0 group by tenk_square having geograph_count > 1 order by geograph_count desc limit 50");
 		
 		foreach($most as $id=>$entry) 
 		{
-			printf("%d %d %d %d<BR>",$most[$id]['x'],$most[$id]['x'] - $origin['origin_x'],( intval(($most[$id]['x'] - $origin['origin_x'])/10)*10 ),( intval(($most[$id]['x'] - $origin['origin_x'])/10)*10 ) +  $origin['origin_x']);
-		
 			$most[$id]['x'] = ( intval(($most[$id]['x'] - $origin['origin_x'])/10)*10 ) +  $origin['origin_x'];
 			$most[$id]['y'] = ( intval(($most[$id]['y'] - $origin['origin_y'])/10)*10 ) +  $origin['origin_y'];
 		}
