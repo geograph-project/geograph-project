@@ -110,7 +110,8 @@ function docount($text,$field,$id) {
 	while (!$recordSet->EOF) 
 	{
 		docount($recordSet->fields['title'],'title',$recordSet->fields['gridimage_id']);
-		docount($recordSet->fields['comment'],'comment',$recordSet->fields['gridimage_id']);
+		//the comments arent searched yet anyway...
+		//docount($recordSet->fields['comment'],'comment',$recordSet->fields['gridimage_id']);
 		if ($recordSet->fields['gridimage_id']%10==0)
 			printf("done %d at <b>%d</b> seconds<BR>",$recordSet->fields['gridimage_id'],time()-$tim);
 	
