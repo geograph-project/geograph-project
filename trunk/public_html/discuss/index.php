@@ -64,11 +64,33 @@ include ($pathToFiles.'bb_specials.php');
 $loginError=0;
 $title=$sitename.' - ';
 
+$forum=0;
+$action='';
+$topic=0;
+
+if(isset($_GET['gridref'])) {
+	$gridref=$_GET['gridref']; 
+	$forum = 5;
+	
+
+	$result=mysql_query("SELECT topic_id FROM $Tt WHERE forum_id = $forum AND topic_title = '".mysql_escape_string($gridref)."'");
+	$currentgridreftopics = mysql_num_rows($result);
+		
+	if ($currentgridreftopics == 1) {
+		$action = "vthread";
+		$topic = mysql_result($result,0);		
+	} else {
+		$action = "vtopic";
+	}
+	
+} else $gridref='';
+
 if(!isset($user_id)) $user_id=0;
 if(isset($_GET['page'])) $page=$_GET['page']; elseif(isset($_POST['page'])) $page=$_POST['page']; else $page=0;
-if(isset($_GET['forum'])) $forum=$_GET['forum']; elseif(isset($_POST['forum'])) $forum=$_POST['forum']; else $forum=0;
-if(isset($_GET['topic'])) $topic=$_GET['topic']; elseif(isset($_POST['topic'])) $topic=$_POST['topic']; else $topic=0;
-if (isset($_POST['action'])) $action=$_POST['action']; elseif (isset($_GET['action'])) $action=$_GET['action']; else $action='';
+if(isset($_GET['forum'])) $forum=$_GET['forum']; elseif(isset($_POST['forum'])) $forum=$_POST['forum']; 
+if(isset($_GET['topic'])) $topic=$_GET['topic']; elseif(isset($_POST['topic'])) $topic=$_POST['topic'];
+
+if (isset($_POST['action'])) $action=$_POST['action']; elseif (isset($_GET['action'])) $action=$_GET['action'];
 
 $forum+=0;
 $user_id+=0;
