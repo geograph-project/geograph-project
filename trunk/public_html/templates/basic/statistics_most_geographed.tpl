@@ -3,7 +3,7 @@
 
 <h2>Most Photographed Squares</h2>
 
-<p>These are the 10km<sup>2</sup> squares with the best coverage so far!</p>
+<p>These are the 10km x 10km squares with the best coverage so far!</p>
 
 
 <p>Last generated at {$generation_time|date_format:"%H:%M"}.</p>
