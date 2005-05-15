@@ -104,15 +104,38 @@ $newTopicLink='<a href="'.$main_url.'/'.$indexphp.'action=vtopic&forum='.$forum.
 $st=1; $frm=$forum;
 include ($pathToFiles.'bb_func_forums.php');
 
-$l_messageABC=$l_message;
+if ($gridref) {
+	require_once('geograph/gridimage.class.php');
+	require_once('geograph/gridsquare.class.php');
+
+	$smarty = new GeographPage;
+	$square=new GridSquare;
+
+	$grid_ok=$square->setGridRef($gridref);
+	
+	if ($grid_ok) {
+		if ($square->imagecount)
+		{
+			$images=$square->getImages();
+			$smarty->assign_by_ref('images', $images);
+
+			$gridThumbs = $smarty->fetch("_discuss_gridref_cell.tpl");
+		}
+	}
+
+	$l_messageABC="New ".$l_message." for ".$gridref ;
+}
+else
+	$l_messageABC=$l_message;
 
 $emailCheckBox=emailCheckBox();
 
 $mainPostForm=ParseTpl(makeUp('main_post_form'));
 
 $title=$title.' '.$forumName;
-
-if(!isset($showSep)) $main=makeUp('main_topics');
+if ($gridref && $currentgridreftopics == 0) 
+ $main=makeUp('main_topics_gridref');
+else if(!isset($showSep)) $main=makeUp('main_topics');
 else $main=makeUp('main_newtopicform');
 
 $nTop=1;
@@ -122,7 +145,7 @@ $c2=(isset($allForumsReg) and $allForumsReg and $user_id==0);
 $c3=(isset($poForums) and in_array($forum, $poForums) and !$allowForm);
 $c4=(isset($roForums) and in_array($forum, $roForums) and !$allowForm);
 
-if ($c1 or $c2 or $c3 or $c4) {
+if ($c1 or $c2 or $c3 or $c4 or ($forum == 5 && !$gridref)) {
 $main=preg_replace("/(<form.*<\/form>)/Uis", '', $main);
 $nTop=0;
 $newTopicLink='';
