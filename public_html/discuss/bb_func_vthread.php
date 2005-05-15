@@ -32,6 +32,31 @@ $forumName=$row[0]; $forumIcon=$row[1];
 
 /* actual */
 
+if ($gridref || ($forum == 5 && $gridref = $topicName)) {
+	
+	
+	require_once('geograph/gridimage.class.php');
+	require_once('geograph/gridsquare.class.php');
+
+	$smarty = new GeographPage;
+	$square=new GridSquare;
+
+	$grid_ok=$square->setGridRef($gridref);
+	
+	if ($grid_ok) {
+		if ($square->imagecount)
+		{
+			$images=$square->getImages();
+			$smarty->assign_by_ref('images', $images);
+
+			$gridThumbs = $smarty->fetch("_discuss_gridref_cell.tpl");
+		}
+	}
+}
+
+
+
+
 $numRows=$topicData[5];
 
 $topicDesc=0;
