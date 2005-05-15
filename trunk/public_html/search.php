@@ -34,7 +34,7 @@ $sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','submitted'
 #,'user_id'=>'Contributer ID'
 
 
-if ($_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
+if ($_GET['go'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	// -------------------------------
 	//  special handler to build a advanced query from the link in stats or profile.  
 	// -------------------------------
@@ -93,6 +93,10 @@ if ($_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 				$smarty->assign('elementused', $key);
 		}
 		
+		$smarty->reassignPostedDate("submitted_start");
+		$smarty->reassignPostedDate("submitted_end");
+		$smarty->reassignPostedDate("taken_start");
+		$smarty->reassignPostedDate("taken_end");
 		
 		if ($_POST['all_ind'])
 			$smarty->assign('all_checked', 'checked="checked"');
@@ -161,6 +165,12 @@ if ($_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');
 
+		$smarty->assign('submitted_start', "0-0-0");
+		$smarty->assign('submitted_end', "0-0-0");
+
+		$smarty->assign('taken_start', "0-0-0");
+		$smarty->assign('taken_end', "0-0-0");
+
 	if ($_GET['i']) {
 		$query = $db->GetRow("SELECT * FROM queries WHERE id = ".$_GET['i']);
 
@@ -202,6 +212,25 @@ if ($_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		$smarty->assign('imageclass', $query['limit3']);
 		$smarty->assign('reference_index', $query['limit4']);
 		$smarty->assign('gridsquare', $query['limit5']);
+		
+		
+		if (!empty($query['limit6'])) {
+			$dates = explode('^',$query['limit6']);
+			if ($dates[0]) 
+				$smarty->assign('submitted_start', $dates[0]);
+			if ($dates[1]) 
+				$smarty->assign('submitted_end', $dates[1]);
+		}
+		if (!empty($query['limit7'])) {
+			$dates = explode('^',$query['limit7']);
+			if ($dates[0]) 
+				$smarty->assign('taken_start', $dates[0]);
+			if ($dates[1]) 
+				$smarty->assign('taken_end', $dates[1]);
+		}
+		
+		$smarty->assign('reference_index', $query['limit6']);
+		$smarty->assign('gridsquare', $query['limit7']);
 
 		if (strpos($query['orderby'],' desc') > 0) {
 			$smarty->assign('orderby', preg_replace('/ desc$/','',$query['orderby']));
@@ -215,6 +244,7 @@ if ($_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		
 	} else {
 		$smarty->assign('resultsperpage', 15);	
+
 	}
 
 	advanced_form($smarty,$db);
@@ -251,14 +281,41 @@ if ($_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	//  Simple Form
 	// -------------------------------
 	
+
 	if ($_GET['i']) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
-	
 		$query = $db->GetRow("SELECT searchq FROM queries WHERE id = ".$_GET['i']);
 		$smarty->assign('searchq', $query['searchq']);
 	} else if ($_SESSION['searchq']) {
 		$smarty->assign('searchq', $_SESSION['searchq']);
+	}
+	if (!$smarty->is_cached('search.tpl')) {
+		if (!$db) {
+			$db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) die('Database connection failed');
+		}
+		//list of a few image classes 
+		$arr = $db->GetAssoc("select imageclass,concat(imageclass,' [',count(*),']') from gridimage ".
+			"where length(imageclass)>0 and moderation_status in ('accepted','geograph') ".
+			"group by imageclass order by rand() limit 5");
+		$smarty->assign_by_ref('imageclasslist',$arr);	
+	}
+	if ($USER->registered) {
+		if (!$db) {
+			$db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) die('Database connection failed');
+		}
+		if ($_GET['more']) {
+			$limit = 30;
+			$smarty->assign('more',1);	
+		} else
+			$limit = 8;
+		//list of a few image classes 
+		$recentsearchs = $db->GetAssoc("select id,searchdesc from queries ".
+			"where user_id = ".$USER->user_id.
+			" group by searchdesc order by crt_timestamp desc limit $limit");
+		$smarty->assign_by_ref('recentsearchs',$recentsearchs);	
 	}
 	
 	require_once('geograph/imagelist.class.php');
@@ -306,6 +363,7 @@ if ($_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		$smarty->assign('prefixes', $square->getGridPrefixes());
 
 		$smarty->assign_by_ref('imagestatuses', $imagestatuses);
+
 		$smarty->assign_by_ref('sortorders', $sortorders);
 
 		$smarty->assign_by_ref('references',$CONF['references']);	
