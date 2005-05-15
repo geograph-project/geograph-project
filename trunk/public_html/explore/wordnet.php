@@ -32,9 +32,15 @@ if (!$len)
 
 if (preg_match('/^[\w ]+$/',$_GET['words']))
 	$words = $_GET['words'];
+	
+if ($_GET['t']) {
+	$template='statistics_wordnet_simple.tpl';
+	$cacheid='statistics|wordnet_simple.'.$len.".".str_replace(' ','.',$words);
+} else {	
 
-$template='statistics_wordnet.tpl';
-$cacheid='statistics|wordnet.'.$len.".".str_replace(' ','.',$words);
+	$template='statistics_wordnet.tpl';
+	$cacheid='statistics|wordnet.'.$len.".".str_replace(' ','.',$words);
+}
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
@@ -74,7 +80,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sizedelta = 0.3;
 	}
 	
-	$wordlist = $db->GetAssoc("SELECT REPLACE(words,' ','&nbsp;'),len,SUM(wordnet.title) as sum_title FROM `wordnet` INNER JOIN `gridimage` ON(gid = gridimage_id) WHERE wordnet.title > 0 AND len = $len AND submitted > date_sub(now(), interval 7 day) $sql_crit GROUP BY len,words ORDER BY sum_title desc LIMIT 50");
+	$wordlist = $db->GetAssoc("SELECT REPLACE(words,' ','&nbsp;'),len,SUM(wordnet.title) as sum_title FROM `wordnet` INNER JOIN `gridimage` ON(gid = gridimage_id) WHERE wordnet.title > 0 AND len = $len AND submitted > date_sub(now(), interval 7 day) $sql_crit GROUP BY len,words HAVING sum_title > 1 ORDER BY sum_title desc LIMIT 50");
 	#foreach($wordlist as $words=>$obj) {
 	#	$total += $obj['sum_title'];
 	#}
@@ -92,13 +98,14 @@ if (!$smarty->is_cached($template, $cacheid))
 		$hex = dechex($count*100);
 		$wordlist[$words]['color'] = $hex.$hex.$hex;
 	}
-	ksort($wordlist);	
+	if (!$_GET['t'])
+		ksort($wordlist);	
 	$smarty->assign_by_ref('wordlist', $wordlist);
 	
 	$size = $startsize;
 	$sizedelta /= 2;
 	
-	$toplist = $db->GetAssoc("SELECT REPLACE(words,' ','&nbsp;'),len,SUM(title) as sum_title FROM `wordnet` WHERE title > 0 AND len = $len $sql_crit GROUP BY len,words ORDER BY sum_title desc LIMIT 100");
+	$toplist = $db->GetAssoc("SELECT REPLACE(words,' ','&nbsp;'),len,SUM(title) as sum_title FROM `wordnet` WHERE title > 0 AND len = $len $sql_crit GROUP BY len,words HAVING sum_title > 1 ORDER BY sum_title desc LIMIT 100");
 	foreach($toplist as $words=>$obj) {
 		$count=0;
 		foreach (explode('&nbsp;',$words) as $word) {
@@ -110,7 +117,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		$hex = dechex($count*100);
 		$toplist[$words]['color'] = $hex.$hex.$hex;
 	}
-	ksort($toplist);	
+	if (!$_GET['t'])
+		ksort($toplist);	
 	$smarty->assign_by_ref('toplist', $toplist);
 	
 	
