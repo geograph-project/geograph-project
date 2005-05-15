@@ -51,8 +51,10 @@ class SearchEngineFlickr extends SearchEngine
 		$sql_fields = "";
 		$sql_order = "";
 		$sql_where = "";
+		$sql_from = "";
 		
-		$this->criteria->getSQLParts($sql_fields,$sql_order,$sql_where);
+		
+		$this->criteria->getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
 	
 		$this->currentPage = $pg;
 	
