@@ -41,10 +41,6 @@ $smarty->assign('prefixes', $square->getGridPrefixes());
 $smarty->assign('kmlist', $square->getKMList());
 
 
-
-
-
-
 //we can be passed a gridreference as gridsquare/northings/eastings 
 //or just gridref. So lets initialise our grid square
 $grid_given=false;
@@ -119,6 +115,31 @@ if ($grid_given)
 			$smarty->assign_by_ref('images', $images);
 		}
 	
+	
+		//let's find posts in the gridref discussion forum
+		$db=NewADOConnection($GLOBALS['DSN']);
+		$sql='select u.user_id,u.realname,CONCAT(\'Discussion on \',t.topic_title) as topic_title,p.post_text,t.topic_id,t.topic_time '.
+			'from geobb_topics as t '.
+			'inner join geobb_posts as p on(t.topic_id=p.topic_id) '.
+			'inner join user as u on (p.poster_id=u.user_id) '.
+			'where t.topic_time=p.post_time and '.
+			't.forum_id=5 and '.
+			't.topic_title = \''.mysql_escape_string($square->grid_reference).'\' '.
+			'order by t.topic_time desc limit 3';
+		$news=$db->GetAll($sql);
+		if ($news) 
+		{
+			foreach($news as $idx=>$item)
+			{
+				$news[$idx]['post_text']=str_replace('<br>', '<br/>', $news[$idx]['post_text']);
+				$news[$idx]['comments']=$db->GetOne('select count(*)-1 as comments from geobb_posts where topic_id='.$item['topic_id']);
+				$totalcomments += $news[$idx]['comments'] + 1;
+			}
+			$smarty->assign_by_ref('news', $news);
+			$smarty->assign('totalcomments', $totalcomments);
+		} 
+	
+		
 	}
 	else
 	{
