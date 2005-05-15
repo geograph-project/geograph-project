@@ -446,3 +446,8 @@ CREATE TABLE `wordnet` (
   KEY `len` (`len`,`words`),
   KEY `gid` (`gid`)
 ) TYPE=MyISAM;
+
+
+ALTER TABLE `queries`
+ADD `limit6` VARCHAR( 32 ) NOT NULL AFTER `limit5` ,
+ADD `limit7` VARCHAR( 32 ) NOT NULL AFTER `limit6` ;
