@@ -57,7 +57,7 @@ class SearchCriteria
 	var $displayclass;
 	
 	
-	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where) 
+	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) 
 	{
 		$x = $this->x;
 		$y = $this->y;
@@ -122,7 +122,81 @@ class SearchCriteria
 				$sql_where .= " and reference_index = ".$prefix['reference_index']." ";
 			
 		}
-	
+		if (!empty($this->limit6)) {
+			if ($sql_where) {
+				$sql_where .= " and ";
+			}
+			$dates = explode('^',$this->limit6);
+			
+			//if a 'to' search then we must make blank bits match the end!
+			list($y,$m,$d) = explode('-',$dates[1]);
+			if ($y > 0) {
+				if ($m == 0) {
+					$m = 12; $d = 31;
+				} else if ($d == 0) {
+					$d = 31;
+				}
+				$dates[1] = "$y-$m-$d";
+			}
+			
+			if ($dates[0]) {
+				if ($dates[1]) {
+					if ($dates[0] == $dates[1]) {
+						//both the same
+						$sql_where .= "submitted = '".$dates[0]."' ";
+					} else {
+						//between
+						$sql_where .= "submitted BETWEEN '".$dates[0]."' AND '".$dates[1]."' ";
+					}
+				} else {
+					//from
+					$sql_where .= "submitted >= '".$dates[0]."' ";
+				}
+			} else {
+				//to
+				$sql_where .= "submitted != '0000-00-00' AND submitted <= '".$dates[1]."' ";
+			}
+			
+			
+		}	
+		if (!empty($this->limit7)) {
+			if ($sql_where) {
+				$sql_where .= " and ";
+			}
+			$dates = explode('^',$this->limit7);
+			
+			//if a 'to' search then we must make blank bits match the end!
+			list($y,$m,$d) = explode('-',$dates[1]);
+			if ($y > 0) {
+				if ($m == 0) {
+					$m = 12; $d = 31;
+				} else if ($d == 0) {
+					$d = 31;
+				}
+				$dates[1] = "$y-$m-$d";
+			}
+			
+			
+			if ($dates[0]) {
+				if ($dates[1]) {
+					if ($dates[0] == $dates[1]) {
+						//both the same
+						$sql_where .= "imagetaken = '".$dates[0]."' ";
+					} else {
+						//between
+						$sql_where .= "imagetaken BETWEEN '".$dates[0]."' AND '".$dates[1]."' ";
+					}
+				} else {
+					//from
+					$sql_where .= "imagetaken >= '".$dates[0]."' ";
+				}
+			} else {
+				//to
+				$sql_where .= "imagetaken != '0000-00-00' AND imagetaken <= '".$dates[1]."' ";
+			}
+			
+			
+		}	
 	}
 	
 	
@@ -167,9 +241,8 @@ class SearchCriteria
 		foreach($arr as $name=>$value)
 		{
 			if (!is_numeric($name))
-				$this->$name=$value;						
+				$this->$name=$value;	
 		}
-		
 	}
 	
 	/**
@@ -215,20 +288,26 @@ class SearchCriteria_GridRef extends SearchCriteria
 
 class SearchCriteria_Text extends SearchCriteria
 {
-	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where) {
-		parent::getSQLParts($sql_fields,$sql_order,$sql_where);
+	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) {
+		parent::getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
 		$db = $this->_getDB();
 		if ($sql_where) {
 			$sql_where .= " and ";
 		}
-		$sql_where .= " gi.title LIKE ".$db->Quote('%'.$this->searchq.'%');
+		if (strpos($this->searchq,'^') === 0) {
+			$words = str_replace('^','',$this->searchq);
+			$sql_where .= " wordnet.title>0 AND words = ".$db->Quote($words);
+			$sql_from = " INNER JOIN wordnet ON(gi.gridimage_id=wordnet.gid) ";
+		} else {
+			$sql_where .= " gi.title LIKE ".$db->Quote('%'.$this->searchq.'%');
+		}
 	}
 }
 
 class SearchCriteria_All extends SearchCriteria
 {
-	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where) {
-		parent::getSQLParts($sql_fields,$sql_order,$sql_where);
+	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) {
+		parent::getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
 		
 		if (!$this->orderby)
 			$sql_order .= " rand({$this->crt_timestamp}) ";
