@@ -273,7 +273,8 @@ class SearchEngine
 			$dataarray['textsearch'] = trim($dataarray['textsearch']);
 			$searchclass = 'Text';
 			$searchq = $dataarray['textsearch'];
-			$searchdesc = ", containing '{$dataarray['textsearch']}' ";	
+			
+			$searchdesc = ", containing '".str_replace('^','',$dataarray['textsearch'])."' ";	
 		} else if (!empty($dataarray['all_ind'])) {
 			$searchclass = 'All';
 		} else {
@@ -323,6 +324,56 @@ class SearchEngine
 			if ($dataarray['gridsquare']) {
 				$sql .= ",limit5 = ".$db->Quote($dataarray['gridsquare']);
 				$searchdesc .= ", in ".$dataarray['gridsquare'];
+			}
+			
+			$this->builddate($dataarray,"submitted_start");
+			$this->builddate($dataarray,"submitted_end");
+			if ($dataarray['submitted_start'] || $dataarray['submitted_end']) {
+				
+				if ($dataarray['submitted_start']) {
+					if ($dataarray['submitted_end']) {
+						if ($dataarray['submitted_end'] == $dataarray['submitted_start']) {
+							//both the same
+							$searchdesc .= ", submitted ".(is_numeric($dataarray['submitted_startString'])?'in ':'').$dataarray['submitted_startString'];
+						} else {
+							//between
+							$searchdesc .= ", submitted between ".$dataarray['submitted_startString']." and ".$dataarray['submitted_endString']." ";
+						}
+					} else {
+						//from
+						$searchdesc .= ", submitted after ".$dataarray['submitted_startString'];
+					}
+				} else {
+					//to
+					$searchdesc .= ", submitted before ".$dataarray['submitted_endString'];
+				}
+			
+				$sql .= ",limit6 = '{$dataarray['submitted_start']}^{$dataarray['submitted_end']}'";
+			}
+			
+			$this->builddate($dataarray,"taken_start");
+			$this->builddate($dataarray,"taken_end");
+			if ($dataarray['taken_start'] || $dataarray['taken_end']) {
+				
+				if ($dataarray['taken_start']) {
+					if ($dataarray['taken_end']) {
+						if ($dataarray['taken_end'] == $dataarray['taken_start']) {
+							//both the same
+							$searchdesc .= ", taken ".(is_numeric($dataarray['taken_startString'])?'in ':'').$dataarray['taken_startString'];
+						} else {
+							//between
+							$searchdesc .= ", taken between ".$dataarray['taken_startString']." and ".$dataarray['taken_endString']." ";
+						}
+					} else {
+						//from
+						$searchdesc .= ", taken after ".$dataarray['taken_startString'];
+					}
+				} else {
+					//to
+					$searchdesc .= ", taken before ".$dataarray['taken_endString'];
+				}
+			
+				$sql .= ",limit7 = '{$dataarray['taken_start']}^{$dataarray['taken_end']}'";
 			}
 			switch ($dataarray['orderby']) {
 				case "":
@@ -398,6 +449,24 @@ class SearchEngine
 		}
 	}
 	
+	function builddate(&$dataarray,$which) {
+		if (empty($dataarray[$which.'Year']))
+			$dataarray[$which.'Year'] = '0000';
+		if (empty($dataarray[$which.'Month']))
+			$dataarray[$which.'Month'] = '0'; //single need to get round bug in smarty, luckily sql should cope!
+		if (empty($dataarray[$which.'Day']))
+			$dataarray[$which.'Day'] = '00';
+
+		$dataarray[$which] =  $dataarray[$which.'Year'].'-'.$dataarray[$which.'Month'].'-'.$dataarray[$which.'Day'];
+		if ($dataarray[$which] == '0000-0-00') {
+			$dataarray[$which] = ''; 
+		} else {
+			$image = new GridImage();
+			$image->imagetaken = $dataarray[$which];					
+			$dataarray[$which.'String'] = $image->getFormattedTakenDate();
+		}
+	}	
+	
 	function Execute($pg) 
 	{
 		$db=$this->_getDB();
@@ -406,8 +475,9 @@ class SearchEngine
 		$sql_fields = "";
 		$sql_order = "";
 		$sql_where = "";
+		$sql_from = "";
 		
-		$this->criteria->getSQLParts($sql_fields,$sql_order,$sql_where);
+		$this->criteria->getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
 	
 		$this->currentPage = $pg;
 	
@@ -471,6 +541,12 @@ END;
 			if ($this->criteria->limit3) {
 				unset($this->results[$i]->imageclass);
 			}
+			
+			//if we searching on taken date then display it...
+			if ($this->criteria->limit7) {
+				$this->results[$i]->imagetakenString = $this->results[$i]->getFormattedTakenDate();
+			}
+						
 			$recordSet->MoveNext();
 			$i++;
 		}
