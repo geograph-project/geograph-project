@@ -28,6 +28,8 @@ the following
 
 	  <i>{$image->dist_string}</i><br/><br/>
 	  
+	  {if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/><br/>{/if}
+	  
 	  {if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 	</div>
 
