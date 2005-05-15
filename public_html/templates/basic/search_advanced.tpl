@@ -10,7 +10,7 @@
 	<p><b>Use the following options to customise your search</b>.<br/> </p>
 		<table cellpadding="3" cellspacing="0"> 
 		  <tr> 
-			 <td colspan="3"><hr/><b>centre results on:</b></td> 
+			 <td colspan="3" style="background:#dddddd;"><b>centre results on:</b></td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="gridref" id="l_gridref">grid reference</label></td> 
@@ -35,10 +35,13 @@
 					{html_options options=$countylist selected=$county_id}				  
 				  
 				</select></td> 
-			 <td></td> 
+			 <td>&nbsp;<input type="submit" value="Find"/></td> 
 		  </tr>
 		  <tr> 
-			 <td colspan="3"><b>or show: </b></td> 
+			 <td colspan="3">&nbsp;</td> 
+		  </tr> 
+		  <tr> 
+			 <td colspan="3" style="background:#eeeeee;"><b>or show: </b></td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="textsearch" id="l_textsearch">containing text</label></td> 
@@ -52,7 +55,14 @@
 		  </tr> 
 		  <tr> 
 			 <td colspan="3"><small>
-			 Once you have selected one option the others will become unavailable, to choose a different search just clear your current selection. If you don't select anything you will be shown all images.</small><br/><br/><hr/><b>you can optionally limit to results to: </b></td> 
+			 Once you have selected one option the others will become unavailable, to choose a different search just clear your current selection. If you don't select anything you will be shown all images.</small>
+			 </td> 
+		  </tr> 
+		  <tr> 
+			 <td colspan="3">&nbsp;</td> 
+		  </tr> 
+		  <tr> 
+		 	 <td colspan="3" style="background:#dddddd;"><b>you can optionally limit to results to: </b></td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="user_id">contributor</label></td> 
@@ -107,7 +117,24 @@
 			 <td>&nbsp;<input type="submit" value="Find"/></td> 
 		  </tr> 
 		  <tr> 
-			 <td colspan="3"><hr/><b>and specify how you would like the results displayed: </b></td> 
+			 <td><label for="submitted_startDay">submitted</label></td> 
+			 <td colspan="2"> 
+				between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
+				and {html_select_date prefix="submitted_end" time=$submitted_end start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
+				</td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="taken_startDay">taken</label></td> 
+			 <td colspan="2"> 
+				between {html_select_date prefix="taken_start" time=$taken_start start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
+				and {html_select_date prefix="taken_end" time=$taken_end start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
+				</td> 
+		  </tr> 
+		  <tr> 
+			 <td colspan="3">&nbsp;</td> 
+		  </tr> 
+		  <tr> 
+			 <td colspan="3" style="background:#dddddd;"><b>and specify how you would like the results displayed: </b></td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="displayclass">format</label></td> 
