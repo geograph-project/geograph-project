@@ -53,8 +53,20 @@ referring to <b>image {$image->gridimage_id}</b>
   {/if}
   
 </div>
-		  
-		  
+
+<div style="text-align:center; font-size: 0.8em;">		  
+{if $news}
+	There is {$totalcomments} post{if $totalcomments ne 1}s{/if} in a 
+	<a href="/discuss/index.php?gridref={$image->grid_reference}">discussion on {$image->grid_reference}</a> (preview on the left)
+	
+{else}
+	{if $user->registered} 
+		<a href="/discuss/index.php?gridref={$image->grid_reference}#newtopic">Start a discussion on {$image->grid_reference}</a>
+	{else}
+		it you where <a href="/login.php">logged in</a> you would be able to comment on {$image->grid_reference} 
+	{/if}
+{/if}<br/><br/>
+</div>
 
 {if $overview}
 <div style="float:right; width:{$overview_width+30}px; position:relative"> 

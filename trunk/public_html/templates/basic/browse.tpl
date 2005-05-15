@@ -42,6 +42,20 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 <p>{$errormsg}</p>
 {/if}
 
+<div style="text-align:center; font-size: 0.8em;">		  
+{if $news}
+	There is {$totalcomments} post{if $totalcomments ne 1}s{/if} in a 
+	<a href="/discuss/index.php?gridref={$gridref}">discussion on {$gridref}</a> (preview on the left)
+	
+{else}
+	{if $user->registered} 
+		<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a discussion on {$gridref}</a>
+	{else}
+		it you where <a href="/login.php">logged in</a> you would be able to comment on {$gridref} 
+	{/if}
+{/if}<br/><br/>
+</div>
+
 {if $showresult}
 
 	{if $imagecount}
