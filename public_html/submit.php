@@ -164,14 +164,9 @@ if (isset($_POST['gridsquare']))
 					$smarty->assign('upload_id', $_POST['upload_id']);
 
 				//preserve the meta info
-				if (empty($_POST['imagetakenYear']))
-					$_POST['imagetakenYear'] = '0000';
-				if (empty($_POST['imagetakenMonth']))
-					$_POST['imagetakenMonth'] = '00';
-				if (empty($_POST['imagetakenDay']))
-					$_POST['imagetakenDay'] = '00';
-
-				$smarty->assign('imagetaken', $_POST['imagetakenYear'].'-'.$_POST['imagetakenMonth'].'-'.$_POST['imagetakenDay']);
+				$smarty->reassignPostedDate('imagetaken');
+				
+				
 				if (($_POST['imageclass'] == 'Other' || empty($_POST['imageclass'])) && !empty($_POST['imageclassother'])) {
 					$smarty->assign('imageclass', stripslashes($_POST['imageclassother']));
 				} else if ($_POST['imageclass'] == 'Other') {
