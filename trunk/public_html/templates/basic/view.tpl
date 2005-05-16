@@ -55,7 +55,7 @@ referring to <b>image {$image->gridimage_id}</b>
 </div>
 
 <div style="text-align:center; font-size: 0.8em;">		  
-{if $news}
+{if $discuss}
 	There is {$totalcomments} post{if $totalcomments ne 1}s{/if} in a 
 	<a href="/discuss/index.php?gridref={$image->grid_reference}">discussion on {$image->grid_reference}</a> (preview on the left)
 	
