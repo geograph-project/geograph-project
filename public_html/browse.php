@@ -135,7 +135,7 @@ if ($grid_given)
 				$news[$idx]['comments']=$db->GetOne('select count(*)-1 as comments from geobb_posts where topic_id='.$item['topic_id']);
 				$totalcomments += $news[$idx]['comments'] + 1;
 			}
-			$smarty->assign_by_ref('news', $news);
+			$smarty->assign_by_ref('discuss', $news);
 			$smarty->assign('totalcomments', $totalcomments);
 		} 
 	
