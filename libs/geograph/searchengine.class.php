@@ -331,12 +331,29 @@ class SearchEngine
 			if ($dataarray['submitted_start'] || $dataarray['submitted_end']) {
 				
 				if ($dataarray['submitted_start']) {
-					if ($dataarray['submitted_end']) {
+					if (preg_match("/0{4}-(1?[1-9]+)-/",$dataarray['submitted_start']) > 0) {
+						//month only
+						$searchdesc .= ", submitted during ".$dataarray['submitted_startString'];
+						$dataarray['submitted_end'] = "";
+					} else if ($dataarray['submitted_end']) {
 						if ($dataarray['submitted_end'] == $dataarray['submitted_start']) {
 							//both the same
 							$searchdesc .= ", submitted ".(is_numeric($dataarray['submitted_startString'])?'in ':'').$dataarray['submitted_startString'];
 						} else {
 							//between
+								
+								//if the start date is later than the end then lets swap them!
+								$startdate = vsprintf("%04d%02%02",explode('-',$dataarray['submitted_start']));
+								$enddate = vsprintf("%04d%02%02",explode('-',$dataarray['submitted_end']));
+								if ($startdate > $enddate) {
+									$temp = $dataarray['submitted_startString'];
+									$dataarray['submitted_startString'] = $dataarray['submitted_endString'];
+									$dataarray['submitted_endString'] = $temp;
+									$temp = $dataarray['submitted_start'];
+									$dataarray['submitted_start'] = $dataarray['submitted_end'];
+									$dataarray['submitted_end'] = $temp;
+								}
+							
 							$searchdesc .= ", submitted between ".$dataarray['submitted_startString']." and ".$dataarray['submitted_endString']." ";
 						}
 					} else {
@@ -356,12 +373,29 @@ class SearchEngine
 			if ($dataarray['taken_start'] || $dataarray['taken_end']) {
 				
 				if ($dataarray['taken_start']) {
-					if ($dataarray['taken_end']) {
+					if (preg_match("/0{4}-(1?[1-9]+)-/",$dataarray['taken_start']) > 0) {
+						//month only
+						$searchdesc .= ", taken during ".$dataarray['taken_startString'];
+						$dataarray['taken_end'] = "";
+					} else if ($dataarray['taken_end']) {
 						if ($dataarray['taken_end'] == $dataarray['taken_start']) {
 							//both the same
 							$searchdesc .= ", taken ".(is_numeric($dataarray['taken_startString'])?'in ':'').$dataarray['taken_startString'];
 						} else {
 							//between
+							
+								//if the start date is later than the end then lets swap them!
+								$startdate = vsprintf("%04d%02%02",explode('-',$dataarray['taken_start']));
+								$enddate = vsprintf("%04d%02%02",explode('-',$dataarray['taken_end']));
+								if ($startdate > $enddate) {
+									$temp = $dataarray['taken_startString'];
+									$dataarray['taken_startString'] = $dataarray['taken_endString'];
+									$dataarray['taken_endString'] = $temp;
+									$temp = $dataarray['taken_start'];
+									$dataarray['taken_start'] = $dataarray['taken_end'];
+									$dataarray['taken_end'] = $temp;
+								}
+							
 							$searchdesc .= ", taken between ".$dataarray['taken_startString']." and ".$dataarray['taken_endString']." ";
 						}
 					} else {
@@ -450,14 +484,8 @@ class SearchEngine
 	}
 	
 	function builddate(&$dataarray,$which) {
-		if (empty($dataarray[$which.'Year']))
-			$dataarray[$which.'Year'] = '0000';
-		if (empty($dataarray[$which.'Month']))
-			$dataarray[$which.'Month'] = '0'; //single need to get round bug in smarty, luckily sql should cope!
-		if (empty($dataarray[$which.'Day']))
-			$dataarray[$which.'Day'] = '00';
-
-		$dataarray[$which] =  $dataarray[$which.'Year'].'-'.$dataarray[$which.'Month'].'-'.$dataarray[$which.'Day'];
+		$dataarray[$which] = sprintf("%04d-%d-%02d",$dataarray[$which.'Year'],$dataarray[$which.'Month'],$dataarray[$which.'Day']);
+		//single digit month need to get round bug in smarty, luckily sql should cope!
 		if ($dataarray[$which] == '0000-0-00') {
 			$dataarray[$which] = ''; 
 		} else {
