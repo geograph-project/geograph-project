@@ -131,6 +131,11 @@
 				</td> 
 		  </tr> 
 		  <tr> 
+			 <td colspan="3"><small>
+			 You can just specify part of a date, for example just a year, or just month and year. Setting both the start and end date to the same value allows you to find pictures on during that period, eg 'Jan 2001' or even just 1988. If you select just a month, then we will find just images taken during that month.</small>
+			 </td> 
+		  </tr> 
+		  <tr> 
 			 <td colspan="3">&nbsp;</td> 
 		  </tr> 
 		  <tr> 
