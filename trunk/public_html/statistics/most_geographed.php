@@ -109,18 +109,36 @@ $mosaic->setMosaicFactor(2);
 
 	$smarty->assign_by_ref("both", $both);	
 	
-	
+	$onekm = $db->GetAll("select grid_reference,imagecount from gridsquare where imagecount>1 order by imagecount desc limit 75");
+		
+	$i = 1;
+	foreach($onekm as $id=>$entry)
+	{
+		if ($lastgeographs == $onekm[$id]['imagecount'])
+			$onekm[$id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
+		else {
+
+			$units=$i%10;
+			switch($units)
+			{
+				case 1:$end=($i==11)?'th':'st';break;
+				case 2:$end=($i==12)?'th':'nd';break;
+				case 3:$end=($i==13)?'th':'rd';break;
+				default: $end="th";	
+			}
+
+			$onekm[$id]['ordinal']=$i.$end;
+			$lastgeographs = $onekm[$id]['imagecount'];
+		}
+		$i++;
+		
+	}
+
+	$smarty->assign_by_ref("onekm", $onekm);		
 	
 	
 	$smarty->assign('generation_time', time());
 	
-#} else {
-#	//bare minimum for the dynamic section
-#	if ($u) {
-#		$profile=new GeographUser($u);
-#		$smarty->assign_by_ref('profile', $profile);
-#		$smarty->assign_by_ref('u', $u);
-#	}
 }
 
 
