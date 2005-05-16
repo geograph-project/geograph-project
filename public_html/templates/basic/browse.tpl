@@ -43,7 +43,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 {/if}
 
 <div style="text-align:center; font-size: 0.8em;">		  
-{if $news}
+{if $discuss}
 	There is {$totalcomments} post{if $totalcomments ne 1}s{/if} in a 
 	<a href="/discuss/index.php?gridref={$gridref}">discussion on {$gridref}</a> (preview on the left)
 	
