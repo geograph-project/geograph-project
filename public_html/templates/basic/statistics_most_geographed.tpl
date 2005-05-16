@@ -3,13 +3,10 @@
 
 <h2>Most Photographed Squares</h2>
 
-<p>These are the 10km x 10km squares with the best coverage so far!</p>
+<p>These are the squares with the best coverage so far! See also <a href="/statistics/breakdown.php?by=gridsq&ri=1&order=c2">100km x 100km Squares</a>.</p>
 
-
-<p>Last generated at {$generation_time|date_format:"%H:%M"}.</p>
-
-<p>
-
+<div style="float:left;position:relative;width:50%">
+<h3>10km x 10km Squares</h3>
 <table class="report"> 
 <thead><tr><td>Position</td><td>Square</td><td>Geographs</td></tr></thead>
 <tbody>
@@ -24,7 +21,26 @@
 </tbody>
 </table>
 
-</p>
+</div>
+
+<div style="float:left;position:relative;width:50%">
+<h3>1km Squares</h3>
+<table class="report"> 
+<thead><tr><td>Position</td><td>Square</td><td>Images</td></tr></thead>
+<tbody>
+
+{foreach from=$onekm key=id item=obj}
+<tr><td align="right">{$obj.ordinal}</td><td><a title="View map for `$obj.grid_reference`" href="/gridref/{$obj.grid_reference}">{$obj.grid_reference}</a></td>
+<td align="right">{$obj.imagecount}</td>
+
+</tr>
+{/foreach}
+
+</tbody>
+</table>
+</div>
+<br style="clear:both"/>
+<p style="text-align:center">Last generated at {$generation_time|date_format:"%H:%M"}</p>
 
  		
 {include file="_std_end.tpl"}
