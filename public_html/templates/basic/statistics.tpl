@@ -95,9 +95,9 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
     {/if}
     {/dynamic}
     <input type="submit" value="Go"></p></form>
-    <p><a href="/statistics/most_geographed.php">Most Geographed 10km x 10km Squares</a>, <a href="/statistics/wordnet.php">Popular Words</a>, and more coming soon.</p>
+    <p><a href="/statistics/most_geographed.php">Most Photographed Squares</a>, <a href="/statistics/wordnet.php">Popular Words</a>, and more coming soon.</p>
 
     
-   <p align="center"><i>This page was last updated {$generation_time|date_format:"%H:%M"}</i>.</p>
+   <p style="text-align:center"><i>This page was last updated {$generation_time|date_format:"%H:%M"}</i>.</p>
 
 {include file="_std_end.tpl"}
