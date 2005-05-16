@@ -447,10 +447,13 @@ CREATE TABLE `wordnet` (
   KEY `gid` (`gid`)
 ) TYPE=MyISAM;
 
-
+#Barry 15th May
 ALTER TABLE `queries`
 ADD `limit6` VARCHAR( 32 ) NOT NULL AFTER `limit5` ,
 ADD `limit7` VARCHAR( 32 ) NOT NULL AFTER `limit6` ;
 
 INSERT INTO `geobb_forums` VALUES (5, 'Grid Square Discussions', 'Discuss specific Grid Squares here, start a new discussion with the link on the image page.', 5, 'default.gif', 0, 0);
 
+#Barry 16th May 
+# this was added to the page a while ago but forgot to add 'accepted' to the table
+ALTER TABLE `queries` CHANGE `limit2` `limit2` ENUM( '', 'geograph', 'geograph,accepted', 'geograph,accepted,pending', 'pending', 'accepted' ) NOT NULL;
