@@ -3,7 +3,9 @@
 
 <h2>Popular Phrases {if $words}related to <i>{$words}</i>{/if}</h2>
 
+{if $words}
 <p><a href="/search.php?textsearch=^{$words|escape:url}&amp;go=1">Search for images containing <b>{$words}</b></a></p>
+{/if}
 
 <p>Here are the most common phrases used within the titles of submitted images.</p>
 <ul><li><small>The bigger the text the more common the phrase, phrases get lighter the more common the words are, eg 'and the' will be light gray, but 'romney marsh' will be darker because not using common english words. You can also click a phrase to see common phrases from images using the selected phrase. (If you dont like all this multi size text then try the <a href="wordnet.php?t=1">simple version</a>)</small></li></ul>

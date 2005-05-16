@@ -2,8 +2,9 @@
 {include file="_std_begin.tpl"}
 
 <h2>Popular Phrases {if $words}related to <i>{$words}</i>{/if}</h2>
-
+{if $words}
 <p><a href="/search.php?textsearch=^{$words|escape:url}&amp;go=1">Search for images containing <b>{$words}</b></a></p>
+{/if}
 <p>Show for {section name=l loop=3 start=0}
 {if $len == $smarty.section.l.iteration}
 <b>{%l.iteration%} word phrases</b>
