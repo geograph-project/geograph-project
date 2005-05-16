@@ -140,7 +140,11 @@ class SearchCriteria
 			}
 			
 			if ($dates[0]) {
-				if ($dates[1]) {
+				if (preg_match("/0{4}-(1?[1-9]+)-/",$dates[0]) > 0) {
+						//month only
+						list($y,$m,$d) = explode('-',$dates[0]);
+						$sql_where .= "MONTH(submitted) = $m ";
+				} else if ($dates[1]) {
 					if ($dates[0] == $dates[1]) {
 						//both the same
 						$sql_where .= "submitted = '".$dates[0]."' ";
@@ -178,7 +182,11 @@ class SearchCriteria
 			
 			
 			if ($dates[0]) {
-				if ($dates[1]) {
+				if (preg_match("/0{4}-(1?[1-9]+)-/",$dates[0]) > 0) {
+					//month only
+					list($y,$m,$d) = explode('-',$dates[0]);
+					$sql_where .= "MONTH(imagetaken) = $m ";
+				} else if ($dates[1]) {
 					if ($dates[0] == $dates[1]) {
 						//both the same
 						$sql_where .= "imagetaken = '".$dates[0]."' ";
