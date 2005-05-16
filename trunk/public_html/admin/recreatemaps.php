@@ -25,6 +25,7 @@ require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/map.class.php');
+require_once('geograph/mapmosaic.class.php');
 require_once('geograph/image.inc.php');
 init_session();
 
