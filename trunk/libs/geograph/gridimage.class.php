@@ -848,7 +848,7 @@ class GridImage
 	
 	
 	/**
-	* Saves selected members to the gridimage record
+	* gets a human readable version of the potentially part date
 	*/
 	function getFormattedTakenDate()
 	{
@@ -874,8 +874,11 @@ class GridImage
 		{
 			//well, it saves having an array of months...
 			$t=strtotime("2000-$m-01");
-			$date=strftime("%B", $t)." $y";
-			
+			if ($y > 0) {
+				$date=strftime("%B", $t)." $y";
+			} else {
+				$date=strftime("%B", $t);
+			}
 		}
 		elseif ($y>0)
 		{
