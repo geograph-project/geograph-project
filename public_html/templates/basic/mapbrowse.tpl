@@ -222,13 +222,6 @@ You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the
 </ul>
 
  
-{if $is_admin}
-<p><a href="mapbrowse.php?invalidateAll=1">Invalidate All Maps</a>
-<a href="mapbrowse.php?expireAll=0">Clear Cache</a>
-<a href="mapbrowse.php?expireAll=1">(clear basemaps too)</a></p>
-
-{/if}
- 
 <p style="font-size:8pt" align="center"><i>Great Britain outline reproduced from Ordnance Survey map data<br/> by 
     permission of the Ordnance Survey &copy; Crown copyright 2001.</i></p> 
 
