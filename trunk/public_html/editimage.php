@@ -110,9 +110,7 @@ if (isset($_REQUEST['id']))
 					$imageclassother="";
 				}
 				
-				$imagetaken=intval($_POST['imagetakenYear']).'-'.
-					intval($_POST['imagetakenMonth']).'-'.
-					intval($_POST['imagetakenDay']);
+				$imagetaken=sprintf("%04d-%d-%02d",$_POST['imagetakenYear'],$_POST['imagetakenMonth'],$_POST['imagetakenDay']);
 				
 				$image->title=$title;
 				$image->comment=$comment;
@@ -156,8 +154,8 @@ if (isset($_REQUEST['id']))
 			}	
 			
 			//strip out zeros from date
-			$image->imagetaken=str_replace('00-', '-', $image->imagetaken);
-			$image->imagetaken=str_replace('-0000', '-', $image->imagetaken);
+			#$image->imagetaken=str_replace('0000-', '-', $image->imagetaken);
+			#$image->imagetaken=str_replace('-00', '-', $image->imagetaken);
 			
 
 		}
