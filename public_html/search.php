@@ -228,9 +228,6 @@ if ($_GET['go'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 			if ($dates[1]) 
 				$smarty->assign('taken_end', $dates[1]);
 		}
-		
-		$smarty->assign('reference_index', $query['limit6']);
-		$smarty->assign('gridsquare', $query['limit7']);
 
 		if (strpos($query['orderby'],' desc') > 0) {
 			$smarty->assign('orderby', preg_replace('/ desc$/','',$query['orderby']));
