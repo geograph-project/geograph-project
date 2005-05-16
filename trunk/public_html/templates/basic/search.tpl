@@ -40,6 +40,8 @@
 {foreach from=$imageclasslist key=id item=name}
 <li><a href="search.php?imageclass={$id|escape:url}" title="Show images classed as {$id|escape:html}">{$name|escape:html}</a></li>
 {/foreach}
+<li><a href="/statistics/breakdown.php?by=class" title="Show Image Categories"><i>more categories...</i></a></li>
+
 </ul>
 </div><br style="clear:both;"><br/><span style="font-size:0.8em">Tip: all these searches and more 
 are available in the <a href="/search.php?form=advanced" 
