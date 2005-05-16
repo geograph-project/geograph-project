@@ -749,6 +749,22 @@ class GeographMapMosaic
 	}
 	
 	/**
+	* delete and Invalidates all cached maps - use this to clear the whole cache, but maps will slowlly be recreated by deamon
+	* @access public
+	*/
+	function deleteAndInvalidateAll()
+	{
+		$dir=$_SERVER['DOCUMENT_ROOT'].'/maps/detail';
+				
+		//todo *nix specific
+		`rm -Rf $dir`;
+		
+		$db=&$this->_getDB();
+		$sql="update mapcache set age=age+1";
+		$db->Execute($sql);
+	}
+	
+	/**
 	* Expires all cached maps
 	* Base maps (blue/green raster) are not expired unless you pass true as the 
 	* first parameter
