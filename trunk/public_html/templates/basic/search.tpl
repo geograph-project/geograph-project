@@ -30,6 +30,7 @@
 {else}
 <li><a href="search.php?displayclass=text&amp;orderby=submitted&amp;reverse_order_ind=1&amp;resultsperpage=50&amp;go=1" title="recent photo without thumbnails">Recent (Text only)</a></li>
 {/if}
+<li><a href="search.php?taken_endYear=1980&amp;go=1" title="View Historic Pictures">Taken Before 1980</a></li>
 <li><a href="search.php?gridsquare=TQ" title="Images in TQ Grid Square">Gridsquare TQ</a></li>
 <li><a href="search.php?reference_index=2&amp;go=1" title="Irish Pictures">Pictures of Ireland</a></li>
 </ul>
