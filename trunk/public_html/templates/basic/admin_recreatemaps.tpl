@@ -36,4 +36,11 @@ Invalidate Grid Square: <input type="text" name="gridref" value="" size="10"/>
 </form>
 
 {/dynamic}    
+
+<p><a href="recreatemaps.php?deleteInvalidateAll=1">Delete & Invalidate All Maps</a>
+<a href="recreatemaps.php?invalidateAll=1">Invalidate All Maps</a>
+<a href="recreatemaps.php?expireAll=0">Clear Cache</a>
+<a href="recreatemaps.php?expireAll=1">(clear basemaps too)</a></p>
+
+
 {include file="_std_end.tpl"}
