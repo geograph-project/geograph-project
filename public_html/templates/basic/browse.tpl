@@ -41,6 +41,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 {if $errormsg}
 <p>{$errormsg}</p>
 {/if}
+{if $showresult}
 
 <div style="text-align:center; font-size: 0.8em;">		  
 {if $discuss}
@@ -56,7 +57,6 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 {/if}<br/><br/>
 </div>
 
-{if $showresult}
 
 	{if $imagecount}
 
