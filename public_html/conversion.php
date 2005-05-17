@@ -22,11 +22,11 @@
  */
 
 require_once('geograph/global.inc.php');
-require_once('geograph/conversions.inc.php');
+require_once('geograph/geographconversions.class.php');
 init_session();
 
 
-
+$conv = new GeographConversions;
 
 $smarty = new GeographPage;
 
@@ -36,13 +36,13 @@ $cacheid='';
 
 if ($_GET['To']) { //to lat/long
 	if ($_GET['datum'] == 'osgb36') {
-		$latlong = osgb36_to_wgs84($_GET['e'],$_GET['n']);
+		$latlong = $conv->osgb36_to_wgs84($_GET['e'],$_GET['n']);
 	} else if ($_GET['datum'] == 'irish') {
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_before = ((float)$usec + (float)$sec);
 		for($q =0;$q<200;$q++)
-        	$latlong = irish_to_wgs84($_GET['e'],$_GET['n'],$_GET['usehermert']);
-		$latlong = irish_to_wgs84($_GET['e'],$_GET['n'],$_GET['usehermert']);
+        	$latlong = $conv->irish_to_wgs84($_GET['e'],$_GET['n'],$_GET['usehermert']);
+		$latlong = $conv->irish_to_wgs84($_GET['e'],$_GET['n'],$_GET['usehermert']);
 		
 		
 		list($usec, $sec) = explode(' ',microtime());
@@ -61,20 +61,27 @@ if ($_GET['To']) { //to lat/long
 	} 
 } else if ($_GET['From']) { //from lat/long
 	if ($_GET['datum'] == 'osgb36') {
-		$en = wgs84_to_osgb36($_GET['lat'],$_GET['long']);
+		$en = $conv->wgs84_to_osgb36($_GET['lat'],$_GET['long']);
 	} else if ($_GET['datum'] == 'irish') {
 		list($usec, $sec) = explode(' ',microtime());
         $querytime_before = ((float)$usec + (float)$sec);
         for($q =0;$q<200;$q++)
-        	$en = wgs84_to_irish($_GET['lat'],$_GET['long'],$_GET['usehermert']);
-        $en = wgs84_to_irish($_GET['lat'],$_GET['long'],$_GET['usehermert']);
+        	$en = $conv->wgs84_to_irish($_GET['lat'],$_GET['long'],$_GET['usehermert']);
+        $en = $conv->wgs84_to_irish($_GET['lat'],$_GET['long'],$_GET['usehermert']);
         
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_after = ((float)$usec + (float)$sec);
 		
         $smarty->assign('querytime', "200 conversions took ".number_format($querytime_after - $querytime_before,4)." Seconds");
 	} else {
-		//todo: autodetect
+		list($e,$n,$reference_index) = $conv->wgs84_to_national($_GET['lat'],$_GET['long'],$_GET['usehermert']);
+		if ($reference_index == 1) {
+			$en = array($e,$n);
+			$_GET['datum'] = "osgb36";
+		} else if ($reference_index == 2) {
+			$en = array($e,$n);
+			$_GET['datum'] = "irish";
+		}
 	}
 	if (count($en)) {
 		$smarty->assign('e', $en[0]);
