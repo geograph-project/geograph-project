@@ -702,7 +702,7 @@ class GeographMapMosaic
 			else
 			{
 				//stay where we are
-				$scale=100;
+				$scale=40;
 			}
 			
 		} else {
