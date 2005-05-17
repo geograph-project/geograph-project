@@ -197,7 +197,10 @@ class GridImage
 		$this->grid_square=new GridSquare;
 		$this->grid_square->loadFromId($this->gridsquare_id);
 		$this->grid_reference=$this->grid_square->grid_reference;
-		
+		if ($this->nateastings) {
+			$this->grid_square->nateastings=$this->nateastings;
+			$this->grid_square->natnorthings=$this->natnorthings;
+		}
 		
 		if (strlen($this->title)==0)
 			$this->title="Untitled photograph for {$this->grid_reference}";
