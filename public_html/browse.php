@@ -65,7 +65,7 @@ if (isset($_GET['setpos']))
 elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 {
 	$grid_given=true;
-	$grid_ok=$square->setGridRef($_GET['gridref']);
+	$grid_ok=$square->setByFullGridRef($_GET['gridref']);
 	
 	//preserve inputs in smarty
 	
