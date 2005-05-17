@@ -80,8 +80,12 @@ if ($image->isValid())
 	$mosaic=new GeographMapMosaic;
 	$smarty->assign('map_token', $mosaic->getGridSquareToken($image->grid_square));
 	
-	//find a possible place within 25km
+	//if this image doesnt have an exact position then we need to remove the move to the center of the square
+	//must be before getNatEastings is called
+	$correction = ($image->grid_square->nateastings)?0:500;
+	
 
+	//find a possible place within 25km
 	$smarty->assign('place', $image->grid_square->findNearestPlace(135000));
 	
 	//let's find posts in the gridref discussion forum
@@ -115,6 +119,27 @@ if ($image->isValid())
 	//this is needed as smarty is unable to call it!
 	//- now called by findNearestPlace
 	//$image->grid_square->getNatEastings();
+	
+	require_once('geograph/conversions.class.php');
+	$conv = new Conversions;
+
+	list($lat,$long) = $conv->gridsquare_to_wgs84($image->grid_square);
+	
+
+	$smarty->assign('lat', $lat);
+	$smarty->assign('long', $long);
+	
+	list($latdm,$longdm) = $conv->wgs84_to_friendly($lat,$long);
+	
+	$smarty->assign('latdm', $latdm);
+	$smarty->assign('longdm', $longdm);
+	
+
+	list($smallgr,$len) = $conv->national_to_gridref($image->grid_square->nateastings-$correction,$image->grid_square->natnorthings-$correction,0,$image->grid_square->reference_index);
+	
+	$smarty->assign('smallgr', $smallgr);
+	
+	$smarty->assign('accucacy', pow(10,6-$len)/10);
 }
 
 
