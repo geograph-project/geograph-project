@@ -156,7 +156,12 @@ referring to <b>image {$image->gridimage_id}</b>
 
 {/if}
 
+<tr><td>Location</td>
 
+<td style="font-family:verdana, arial, sans serif; font-size:0.8em">
+{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {$smallgr} <span style="font-size:0.8em"> [Accurate to ~{$accucacy}m]</span><br/>
+WGS84: {$latdm} {$longdm} 
+<span style="font-size:0.8em">[{$lat|string_format:"%.5f"},{$long|string_format:"%.5f"}]</span> </td></tr>
 
 </td></tr>
 
