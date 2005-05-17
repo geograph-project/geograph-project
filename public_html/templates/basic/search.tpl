@@ -23,16 +23,16 @@
 <li>Here are a couple of example searches:
 <div style="float:left; width:50%; position:relative">
 <ul>
-<li><a href="search.php?orderby=submitted&amp;reverse_order_ind=1&amp;go=1" title="Show the most recent submissions">Recent Submissions</a></li>
-<li><a href="search.php?displayclass=thumbs&amp;go=1" title="Show a selection of random thumbnails">Random (Thumbnails)</a></li>
+<li><a href="search.php?orderby=submitted&amp;reverse_order_ind=1&amp;do=1" title="Show the most recent submissions">Recent Submissions</a></li>
+<li><a href="search.php?displayclass=thumbs&amp;do=1" title="Show a selection of random thumbnails">Random (Thumbnails)</a></li>
 {if $user->registered}
 <li><a href="search.php?u={$user->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1" title="show your recent photos">Your Photos (recent first)</a></li>
 {else}
-<li><a href="search.php?displayclass=text&amp;orderby=submitted&amp;reverse_order_ind=1&amp;resultsperpage=50&amp;go=1" title="recent photo without thumbnails">Recent (Text only)</a></li>
+<li><a href="search.php?displayclass=text&amp;orderby=submitted&amp;reverse_order_ind=1&amp;resultsperpage=50&amp;do=1" title="recent photo without thumbnails">Recent (Text only)</a></li>
 {/if}
-<li><a href="search.php?taken_endYear=1980&amp;go=1" title="View Historic Pictures">Taken Before 1980</a></li>
+<li><a href="search.php?taken_endYear=1980&amp;do=1" title="View Historic Pictures">Taken Before 1980</a></li>
 <li><a href="search.php?gridsquare=TQ" title="Images in TQ Grid Square">Gridsquare TQ</a></li>
-<li><a href="search.php?reference_index=2&amp;go=1" title="Irish Pictures">Pictures of Ireland</a></li>
+<li><a href="search.php?reference_index=2&amp;do=1" title="Irish Pictures">Pictures of Ireland</a></li>
 </ul>
 </div>
 <div style="float:left; width:50%; position:relative">

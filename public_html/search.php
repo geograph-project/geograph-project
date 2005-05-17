@@ -26,15 +26,15 @@ require_once('geograph/gridimage.class.php');
 init_session();
 
 $smarty = new GeographPage;
-
-$_GET['i']=intval(stripslashes($_GET['i']));
+if ($_GET['i'])
+	$_GET['i']=intval(stripslashes($_GET['i']));
 
 $imagestatuses = array('geograph' => 'geograph only','geograph,accepted' => 'geographs &amp; supplemental','accepted' => 'supplemental only','geograph,accepted,pending' => 'all','pending' => 'pending only');
 $sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','submitted'=>'Date Submitted','imageclass'=>'Image Category','realname'=>'Contributer Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North');
 #,'user_id'=>'Contributer ID'
 
 
-if ($_GET['go'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
+if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	// -------------------------------
 	//  special handler to build a advanced query from the link in stats or profile.  
 	// -------------------------------
