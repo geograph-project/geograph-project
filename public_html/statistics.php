@@ -71,15 +71,15 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign("images_total_$ri",  $db->GetOne("select count(*) from gridimage inner join gridsquare using (gridsquare_id) where reference_index = $ri"));
 		$smarty->assign("images_thisweek_$ri",  $db->GetOne("select count(*) from gridimage inner join gridsquare using (gridsquare_id) where reference_index = $ri and (unix_timestamp(now())-unix_timestamp(submitted))<604800"));
 
-		$smarty->assign("squares_total_$ri",  $db->CacheGetOne(100*24*3600,"select count(*) from gridsquare where reference_index = $ri and percent_land > 0"));
+		$smarty->assign("squares_total_$ri",  $db->CacheGetOne(24*3600,"select count(*) from gridsquare where reference_index = $ri and percent_land > 0"));
 		$smarty->assign("squares_submitted_$ri",  $db->GetOne("select count(*) from gridsquare where reference_index = $ri and imagecount > 0"));
 
 		$smarty->assign("geographs_submitted_$ri",  $db->GetOne("select count(*) from gridsquare where reference_index = $ri and has_geographs > 0"));
 
-		$smarty->assign("grid_total_$ri",  $db->CacheGetOne(100*24*3600,"select count(*) from gridprefix where reference_index = $ri and landcount > 0"));
+		$smarty->assign("grid_total_$ri",  $db->CacheGetOne(24*3600,"select count(*) from gridprefix where reference_index = $ri and landcount > 0"));
 		$smarty->assign("grid_submitted_$ri",  $db->GetOne("select count(distinct substring(grid_reference,1,$letterlength)) from gridimage inner join gridsquare using (gridsquare_id) where reference_index = $ri"));
 
-		$smarty->assign("tenk_total_$ri",  $db->CacheGetOne(100*24*3600,"select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+2).",1))) from gridsquare where reference_index = $ri and percent_land > 0"));
+		$smarty->assign("tenk_total_$ri",  $db->CacheGetOne(24*3600,"select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+2).",1))) from gridsquare where reference_index = $ri and percent_land > 0"));
 
 		$smarty->assign("tenk_submitted_$ri",  $db->GetOne("select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) from gridimage inner join gridsquare using (gridsquare_id) where reference_index = $ri"));
 
