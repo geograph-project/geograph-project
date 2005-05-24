@@ -77,7 +77,7 @@ geographing</a> first.</p>
 		
 		<li><b>If you have a WGS84 latitude &amp; longitude coordinate</b>
 		(e.g. from a GPS receiver), this 
-		<a href='http://www.trigpointinguk.com/info/convert-wgs.php' onClick="window.open(href,'wgs','height=300,width=600,status,scrollbars');return false;" target="_blank">WGS84 to OSGB36 Grid Ref Convertor</a> may be useful.<br/><br/></li>
+		<a href='http://www.trigpointinguk.com/info/convert-wgs.php' onClick="window.open(href,'wgs','height=300,width=600,status,scrollbars');return false;" target="_blank">WGS84 to OSGB36 Grid Ref Convertor</a><img style="padding-left:2px;" title="External link - opens in popup window" src="/img/external.png" width="10" height="10"/> may be useful.<br/><br/></li>
 		<li><b>For information on Grid References</b> <br/>see 
 		{external title="Guide to the National Grid" text="Interactive Guide to the National Grid in Great Britain" href="http://www.ordnancesurvey.co.uk/oswebsite/freefun/nationalgrid/nghelp1.html"}.
 		The Irish National Grid is very similar, but using a single letter prefix, 
@@ -121,8 +121,14 @@ geographing</a> first.</p>
 	<input id="jpeg" name="jpeg" type="file" />
 	{if $error}<br /><p>{$error}</p>{/if}
 	<br />
-	<p>You might like to check you've selected the correct square by
+	<p>You might like to check you've selected the correct square<br/> by
 	viewing the Modern {getamap gridref=$gridref text="OS Map for $gridref"}</p>
+	
+	{if $reference_index == 2} 
+	New! {external href="http://www.multimap.com/p/browse.cgi?scale=25000&lon=`$long`&lat=`$lat`&GridE=`$long`&GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
+	{/if}
+	
+	
 </div>
 
 {if $rastermap->enabled}
@@ -251,7 +257,7 @@ function onChangeImageclass()
 		
 	<p>
 	Because we are an open project we want to ensure our content is licenced
-	as openly as possible and so we ask that you adopt a <a title="Learn more about Creative Commons" href="http://creativecommons.org">Creative Commons</a>
+	as openly as possible and so we ask that you adopt a {external title="Learn more about Creative Commons" href="http://creativecommons.org" text="Creative Commons"  target="_blank"}
 	licence for your image.</p>
 	
 	<p>With a Creative Commons licence, you <b>keep your copyright</b> but allow 
@@ -266,7 +272,7 @@ function onChangeImageclass()
 	<li>The right to modify the image to create derivative works</li>
 	</ul>
 	
-	<p>{external title="View licence" href="http://creativecommons.org/licenses/by-sa/2.0/" text="Here is the Commons Deed outlining the licence terms"}</p>
+	<p>{external title="View licence" href="http://creativecommons.org/licenses/by-sa/2.0/" text="Here is the Commons Deed outlining the licence terms" target="_blank"}</p>
 	
 	
 	<p>If you do
