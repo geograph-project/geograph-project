@@ -4,7 +4,7 @@
 <h2>Popular Phrases {if $words}related to <i>{$words}</i>{/if}</h2>
 
 {if $words}
-<p><a href="/search.php?textsearch=^{$words|escape:url}&amp;go=1">Search for images containing <b>{$words}</b></a></p>
+<p><a href="/search.php?textsearch=^{$words|escape:url}&amp;do=1">Search for images containing <b>{$words}</b></a></p>
 {/if}
 
 <p>Here are the most common phrases used within the titles of submitted images.</p>
