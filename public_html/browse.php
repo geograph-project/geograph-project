@@ -114,6 +114,14 @@ if ($grid_given)
 			$images=$square->getImages();
 			$smarty->assign_by_ref('images', $images);
 		}
+
+		//geotag the page	
+		require_once('geograph/conversions.class.php');
+		$conv = new Conversions;
+		list($lat,$long) = $conv->gridsquare_to_wgs84($square);
+		$smarty->assign('lat', $lat);
+		$smarty->assign('long', $long);
+	
 	
 	
 		//let's find posts in the gridref discussion forum
