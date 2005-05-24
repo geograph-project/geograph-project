@@ -63,7 +63,7 @@ referring to <b>image {$image->gridimage_id}</b>
 	{if $user->registered} 
 		<a href="/discuss/index.php?gridref={$image->grid_reference}#newtopic">Start a discussion on {$image->grid_reference}</a>
 	{else}
-		it you where <a href="/login.php">logged in</a> you would be able to comment on {$image->grid_reference} 
+		<a href="/login.php">login</a> to start a discussion on {$image->grid_reference} 
 	{/if}
 {/if}<br/><br/>
 </div>
