@@ -91,6 +91,14 @@ if (isset($_POST['gridsquare']))
 			$rastermap = new RasterMap($square);
 			$smarty->assign_by_ref('rastermap', $rastermap);
 
+			$smarty->assign('reference_index', $square->reference_index);
+
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;
+			list($lat,$long) = $conv->gridsquare_to_wgs84($square);
+			$smarty->assign('lat', $lat);
+			$smarty->assign('long', $long);
+
 			$step=2;
 		}
 		//see if we have an upload to process?
