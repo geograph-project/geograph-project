@@ -52,7 +52,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 	{if $user->registered} 
 		<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a discussion on {$gridref}</a>
 	{else}
-		it you where <a href="/login.php">logged in</a> you would be able to comment on {$gridref} 
+		<a href="/login.php">login</a> to start a discussion on {$gridref} 
 	{/if}
 {/if}<br/><br/>
 </div>
@@ -89,9 +89,9 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 		<p>We have no images for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"}, 
 		
 		{if $nearest_distance}
-			the closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away. You can also search for nearby images <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}">search for nearby images</a>.
+			the closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away. You can also <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}">search for nearby images</a>.
 		{else}
-			and have no pictures for any grid square within 100km either! Search for nearby images <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}">search for nearby images</a>.
+			and have no pictures for any grid square within 100km either! <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}">search for nearby images</a>.
 		{/if}
 		
 		</p>
