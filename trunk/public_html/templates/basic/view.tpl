@@ -5,7 +5,7 @@
  <h2 style="margin-bottom:0px;"><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->title}</h2>
  {if $place.distance}
  <div style="color:silver">&nbsp;{if $place.distance > 3}{$place.distance} km from{else}near to{/if} <b>{$place.full_name}</b><small><i>{if $place.adm1_name && $place.adm1_name != $place.reference_name}, {$place.adm1_name}{/if}, {$place.reference_name}</i></small></div>{/if}
- 
+
 {if $image->moderation_status eq 'rejected'}
 <h3>Rejected</h3>
 <p>This photograph has been rejected by the site moderators, and is only viewable by you.
@@ -13,7 +13,7 @@ Possible reasons for rejection include:
 </p>
 <ul>
 <li>Doesn't offer much geographical context - closeups tend to fall into this category.
-Shots don't have to be sweeping landscapes, but must provide a reasonable idea of 
+Shots don't have to be sweeping landscapes, but must provide a reasonable idea of
 typical geography.</li>
 <li>Family snap - while people can be in the photo, they must not <i>be</i> the photo</li>
 <li>Inappropriate content - any image containing material inappropriate for minors</li>
@@ -24,25 +24,25 @@ referring to <b>image {$image->gridimage_id}</b>
 </p>
 
 {/if}
-      
+
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   <div class="img-shadow">{$image->getFull()}</div>
   <div class="caption"><b>{$image->title|escape:'html'}</b></div>
-  
+
   {if $image->comment}
   <div class="caption">{$image->comment|escape:'html'}</div>
   {/if}
-  
+
   {if $user->user_id eq $image->user_id}
   <div class="caption"><a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">Edit Photo Information</a></div>
   {/if}
-  
+
   {if $ismoderator}
 	  <form method="post" action="/usermsg.php">
 	  <input type="hidden" name="to" value="{$image->user_id}"/>
 	  <input type="hidden" name="init" value="Re: image for {$image->grid_reference} ({$image->title})&#13;&#10;http://{$http_host}/photo/{$image->gridimage_id}&#13;&#10;"/>
 	  <script type="text/javascript" src="/admin/moderation.js"></script>
-	  <b>Moderation</b> 
+	  <b>Moderation</b>
 	  <input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')"/>
 	  <input class="accept" type="button" id="accept" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')"/>
 	  <input class="reject" type="button" id="reject" value="Reject" onclick="moderateImage({$image->gridimage_id}, 'rejected')"/>
@@ -51,27 +51,27 @@ referring to <b>image {$image->gridimage_id}</b>
 	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
 	  </form>
   {/if}
-  
+
 </div>
 
 {dynamic}
-<div style="text-align:center; font-size: 0.8em;">		  
+<div style="text-align:center; font-size: 0.8em;">
 {if $discuss}
-	There is {$totalcomments} post{if $totalcomments ne 1}s{/if} in a 
+	There {if $totalcomments eq 1}is{else}are{/if} {$totalcomments} post{if $totalcomments ne 1}s{/if} in a
 	<a href="/discuss/index.php?gridref={$image->grid_reference}">discussion on {$image->grid_reference}</a> (preview on the left)
-	
+
 {else}
-	{if $user->registered} 
+	{if $user->registered}
 		<a href="/discuss/index.php?gridref={$image->grid_reference}#newtopic">Start a discussion on {$image->grid_reference}</a>
 	{else}
-		<a href="/login.php">login</a> to start a discussion on {$image->grid_reference} 
+		<a href="/login.php">login</a> to start a discussion on {$image->grid_reference}
 	{/if}
 {/if}<br/><br/>
 </div>
 {/dynamic}
 
 {if $overview}
-<div style="float:right; width:{$overview_width+30}px; position:relative"> 
+<div style="float:right; width:{$overview_width+30}px; position:relative">
 
 <div class="map" style="margin-left:20px;border:2px solid black; height:{$overview_height}px;width:{$overview_width}px">
 
@@ -80,7 +80,7 @@ referring to <b>image {$image->gridimage_id}</b>
 {foreach from=$overview key=y item=maprow}
 	<div>
 	{foreach from=$maprow key=x item=mapcell}
-	<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img 
+	<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img
 	alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 	{/foreach}
 	</div>
@@ -94,7 +94,7 @@ referring to <b>image {$image->gridimage_id}</b>
 {/if}
 
 
-<table class="formtable">		
+<table class="formtable">
 <tr><td>Submitted by</td><td><a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a></td></tr>
 
 <tr><td>Image status</td><td>
@@ -130,27 +130,27 @@ referring to <b>image {$image->gridimage_id}</b>
 
 <tr><td>Maps for {$image->grid_reference}</td><td>
 
-<a href="/mapbrowse.php?t={$map_token}">Geograph Map</a>, 
+<a href="/mapbrowse.php?t={$map_token}">Geograph Map</a>,
 
 {getamap gridref=$image->grid_reference text="OS Get-a-Map"},
 <br/>
 {if $image->grid_square->reference_index eq 1}
 	{external href="http://www.streetmap.co.uk/streetmap.dll?Grid2Map?X=`$image->grid_square->nateastings`&amp;Y=`$image->grid_square->natnorthings`&amp;title=[`$image->title`]+from+geograph.co.uk&amp;back=Return+to+Geograph&amp;url=http://$http_host/photo/`$image->gridimage_id`&amp;nolocal=X&amp;bimage=background%3dhttp://$http_host/templates/basic/img/background.gif" text="streetmap.co.uk"},
-	{external href="http://www.multimap.com/map/browse.cgi?GridE=`$image->grid_square->nateastings`&amp;GridN=`$image->grid_square->natnorthings`&amp;scale=25000&amp;title=[`$image->title`]+on+geograph.co.uk" text="multimap.com"} 
+	{external href="http://www.multimap.com/map/browse.cgi?GridE=`$image->grid_square->nateastings`&amp;GridN=`$image->grid_square->natnorthings`&amp;scale=25000&amp;title=[`$image->title`]+on+geograph.co.uk" text="multimap.com"}
 {else}
-	{external href="http://www.multimap.com/p/browse.cgi?scale=25000&lon=`$long`&lat=`$lat`&GridE=`$long`&GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"} 
+	{external href="http://www.multimap.com/p/browse.cgi?scale=25000&lon=`$long`&lat=`$lat`&GridE=`$long`&GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"}
 {/if}
-&amp; 
+&amp;
 {external href="http://maps.google.co.uk/maps?ll=`$lat`,`$long`&spn=0.014648,0.025312&hl=en" text="maps.google.co.uk"}
 
 </td></tr>
 
 <tr><td>What's nearby?</td><td>
-<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">Geograph Images</a>, 
+<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">Geograph Images</a>,
 
 {if $image->grid_square->reference_index eq 1}
-	{external title="Geocaches from geocaching.com, search by geocacheuk.com" href="http://stats.guk2.com/caches/search_parse.php?osgbe=`$image->grid_square->nateastings`&amp;osgbn=`$image->grid_square->natnorthings`" text="Geocaches"}, 
-	{external title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigtools/find.php?t=`$image->grid_reference`" text="Trigpoints"}, 
+	{external title="Geocaches from geocaching.com, search by geocacheuk.com" href="http://stats.guk2.com/caches/search_parse.php?osgbe=`$image->grid_square->nateastings`&amp;osgbn=`$image->grid_square->natnorthings`" text="Geocaches"},
+	{external title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigtools/find.php?t=`$image->grid_reference`" text="Trigpoints"},
 	{external href="http://geourl.org/near?lat=`$lat`&long=`$long`" text="geourl.org" title="search for webpages near this location"} &amp;
  	{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$image->grid_square->nateastings`+`$image->grid_square->natnorthings`" text="more..."}
 {else}
@@ -164,7 +164,7 @@ referring to <b>image {$image->gridimage_id}</b>
 
 <td style="font-family:verdana, arial, sans serif; font-size:0.8em">
 {if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {$smallgr} <span style="font-size:0.8em"> [Accurate to ~{$accucacy}m]</span><br/>
-WGS84: {$latdm} {$longdm} 
+WGS84: {$latdm} {$longdm}
 <span style="font-size:0.8em">[{$lat|string_format:"%.5f"},{$long|string_format:"%.5f"}]</span> </td></tr>
 
 </td></tr>
@@ -214,7 +214,7 @@ licenced under a <a rel="license" href="http://creativecommons.org/licenses/by-s
 {else}
 <h2>Sorry, image not available</h2>
 <p>The image you requested is not available. This maybe due to software error, or possibly because
-the image was rejected after submission - please <a title="Contact Us" href="/contact.php">contact us</a> 
+the image was rejected after submission - please <a title="Contact Us" href="/contact.php">contact us</a>
 if you have queries</p>
 {/if}
 
