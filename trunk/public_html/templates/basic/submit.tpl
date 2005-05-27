@@ -108,8 +108,8 @@ geographing</a> first.</p>
 {/if}
 	{if $imagecount gt 0}
 		<p style="color:#440000">We already have 
-		{if $imagecount eq 1}an image{else}{$imagecount} images{/if} 
-		uploaded for {$gridref}, but you are welcome to upload 
+		{if $imagecount eq 1}an image{else}{$imagecount} images{/if} (shown below)
+		uploaded for <a title="View Images for {$gridref} (opens in new window)" href="/gridref/{$gridref}" target="_blank">{$gridref}</a>, but you are welcome to upload 
 		another one.</p>
 	{else}
 		<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}!</p>
@@ -129,6 +129,9 @@ geographing</a> first.</p>
 	{/if}
 	
 	
+
+	
+	
 </div>
 
 {if $rastermap->enabled}
@@ -144,6 +147,19 @@ geographing</a> first.</p>
 	<br/>
 	<input type="submit" name="goback" value="&lt; Back"/> <input type="submit" name="upload" value="Next &gt;"/>
 	<br style="clear:right"/>
+
+	{if $imagecount gt 0}
+	{foreach from=$images item=image}
+
+	  <div class="photo33" style="float:left;width:150px"><a title="view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(120,120)}</a>
+	  <div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->title|escape:'html'}</a></div>
+	  </div>
+		
+
+	{/foreach}
+	<br style="clear:both"/>
+	&nbsp;
+	{/if}	
 	
 {/if}
 
