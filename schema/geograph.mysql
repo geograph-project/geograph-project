@@ -457,3 +457,7 @@ INSERT INTO `geobb_forums` VALUES (5, 'Grid Square Discussions', 'Discuss specif
 #Barry 16th May 
 # this was added to the page a while ago but forgot to add 'accepted' to the table
 ALTER TABLE `queries` CHANGE `limit2` `limit2` ENUM( '', 'geograph', 'geograph,accepted', 'geograph,accepted,pending', 'pending', 'accepted' ) NOT NULL;
+
+
+#Barry 27th May
+ALTER TABLE `queries` CHANGE `searchdesc` `searchdesc` VARCHAR( 255 ) NOT NULL 
