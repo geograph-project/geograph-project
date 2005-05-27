@@ -99,6 +99,11 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('lat', $lat);
 			$smarty->assign('long', $long);
 
+			if ($square->imagecount > 0) {
+				$images=$square->getImages();
+				$smarty->assign_by_ref('images', $images);
+			}
+
 			$step=2;
 		}
 		//see if we have an upload to process?
