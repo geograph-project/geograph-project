@@ -63,7 +63,7 @@ $word=$words[$i];
 //Trim below is necessary is the tag is placed at the begin of string
 $c=0;
 
-if(strtolower(substr($words[$i],0,42))=='http://www.geograph.co.uk/mapbrowse.php?t=') {$c=1;$word='<a href=\"'.trim($words[$i]).'\" target=\"_new\" ref=\"nofollow\">Geograph Map</a>';}
+if(strtolower(substr($words[$i],0,strlen($_SERVER['HTTP_HOST'])+24))=='http://'.$_SERVER['HTTP_HOST'].'/mapbrowse.php?t=') {$c=1;$word='<a href=\"'.trim($words[$i]).'\" target=\"_new\" ref=\"nofollow\">Geograph Map</a>';}
 elseif(strtolower(substr($words[$i],0,7))=='http://') {$c=1;$word='<a href=\"'.trim($words[$i]).'\" target=\"_new\" ref=\"nofollow\">'.trim($word).'</a>';}
 elseif(strtolower(substr($words[$i],0,8))=='https://') {$c=1;$word='<a href=\"'.trim($words[$i]).'\" target=\"_new\" ref=\"nofollow\">'.trim($word).'</a>';}
 elseif(strtolower(substr($words[$i],0,6))=='ftp://') {$c=1;$word='<a href=\"'.trim($words[$i]).'\" target=\"_new\" ref=\"nofollow\">'.trim($word).'</a>';}
