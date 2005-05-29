@@ -142,7 +142,7 @@ $map=new GeographMap;
 			
 while (1) {
 
-	$invalid_maps = $db->GetOne("select count(*) from mapcache where age > 0");
+	$invalid_maps = $db->GetOne("select count(*) from mapcache where age > 0 && type_or_user = 0");
 
 	if ($invalid_maps) {
 		//done many small select statements to allow new maps to be processed 
