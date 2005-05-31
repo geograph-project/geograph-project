@@ -74,10 +74,11 @@ geographing</a> first.</p>
 		Placename or Postcode.</b><br/> Once you have centred the map on the picture location, 
 		return here and enter the <i>Grid reference at centre</i> value shown into the box 
 		above.<br/><br/></li>
+		<li>{external href="http://www.multimap.com/map/browse.cgi?lat=54.5445&lon=-6.8228&scale=1000000" text="multimap.com"} now displays 1:50,000 <b>Mapping for Northern Ireland</b>. Use our handy <a href="/latlong.php">Lat/Long Convertor</a> to get the correct Grid Square for a picture.<br/><br/></li>
 		
 		<li><b>If you have a WGS84 latitude &amp; longitude coordinate</b>
-		(e.g. from a GPS receiver), this 
-		<a href='http://www.trigpointinguk.com/info/convert-wgs.php' onClick="window.open(href,'wgs','height=300,width=600,status,scrollbars');return false;" target="_blank">WGS84 to OSGB36 Grid Ref Convertor</a><img style="padding-left:2px;" title="External link - opens in popup window" src="/img/external.png" width="10" height="10"/> may be useful.<br/><br/></li>
+		(e.g. from a GPS receiver, or from multimap site), then see our 
+		<a href="/latlong.php">Lat/Long to Grid Reference Convertor</a><br/><br/></li>
 		<li><b>For information on Grid References</b> <br/>see 
 		{external title="Guide to the National Grid" text="Interactive Guide to the National Grid in Great Britain" href="http://www.ordnancesurvey.co.uk/oswebsite/freefun/nationalgrid/nghelp1.html"}.
 		The Irish National Grid is very similar, but using a single letter prefix, 
