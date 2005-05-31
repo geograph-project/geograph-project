@@ -22,11 +22,12 @@
  */
 
 require_once('geograph/global.inc.php');
-require_once('geograph/geographconversions.class.php');
+require_once('geograph/conversions.class.php');
+require_once('geograph/conversionslatlong.class.php');
 init_session();
 
 
-$conv = new GeographConversions;
+$conv = new ConversionsLatLong;
 
 $smarty = new GeographPage;
 
