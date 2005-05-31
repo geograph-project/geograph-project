@@ -13,7 +13,7 @@
 <tbody>
 
 {foreach from=$most1 key=id item=obj}
-<tr><td align="right">{$obj.ordinal}</td><td><a title="View map for `$obj.tenk_square`" href="/mapbrowse.php?t={$obj.map_token}">{$obj.tenk_square}</a></td>
+<tr><td align="right">{$obj.ordinal}</td><td><a title="View map for {$obj.tenk_square}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.tenk_square}</a></td>
 <td align="right">{$obj.geograph_count}</td>
 
 </tr>
@@ -32,7 +32,7 @@
 <tbody>
 
 {foreach from=$most2 key=id item=obj}
-<tr><td align="right">{$obj.ordinal}</td><td><a title="View map for `$obj.tenk_square`" href="/mapbrowse.php?t={$obj.map_token}">{$obj.tenk_square}</a></td>
+<tr><td align="right">{$obj.ordinal}</td><td><a title="View map for {$obj.tenk_square}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.tenk_square}</a></td>
 <td align="right">{$obj.geograph_count}</td>
 
 </tr>
@@ -51,7 +51,7 @@
 <tbody>
 
 {foreach from=$onekm key=id item=obj}
-<tr><td align="right">{$obj.ordinal}</td><td><a title="View map for `$obj.grid_reference`" href="/gridref/{$obj.grid_reference}">{$obj.grid_reference}</a></td>
+<tr><td align="right">{$obj.ordinal}</td><td><a title="View images for {$obj.grid_reference}" href="/gridref/{$obj.grid_reference}">{$obj.grid_reference}</a></td>
 <td align="right">{$obj.imagecount}</td>
 
 </tr>
