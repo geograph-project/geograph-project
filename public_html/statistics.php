@@ -22,6 +22,7 @@
  */
 
 require_once('geograph/global.inc.php');
+require_once('geograph/mapmosaic.class.php');
 init_session();
 
 $smarty = new GeographPage;
@@ -65,6 +66,11 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$smarty->assign("images_ftf",  $db->GetOne("select count(*) from gridimage where ftf = 1"));
 
+
+	//lets add an overview map too
+	$overview=new GeographMapMosaic('overview');
+	$overview->assignToSmarty($smarty, 'overview');
+	
 	foreach (array(1,2) as $ri) {
 		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 
@@ -96,6 +102,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 			//find a possible place within 135km
 			$smarty->assign("place_$ri", $censquare->findNearestPlace(135000));
+			$smarty->assign("marker_$ri", $overview->getSquarePoint($censquare));
 		} else {
 			$smarty->assign("centergr_$ri",'unknown');
 		}
