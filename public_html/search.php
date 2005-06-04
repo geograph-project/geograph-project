@@ -122,8 +122,11 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	require_once('geograph/searchengine.class.php');
 
  	$engine = new SearchEngine('#'); 
- 	$engine->buildSimpleQuery($q);
+ 	$engine->buildSimpleQuery($q,100);
  	if ($engine->criteria->is_multiple) {
+ 		if (empty($_GET['distance']))
+ 			$_GET['distance'] = 100; //todo should this be more configurable?
+ 	
 		//todo these shouldnt be hardcoded as there other possiblities for suggestions
 		$smarty->assign('multipletitle', "Placename");
 		$smarty->assign('multipleon', "placename");
@@ -228,7 +231,8 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 			if ($dates[1]) 
 				$smarty->assign('taken_end', $dates[1]);
 		}
-
+		$smarty->assign('distance', $query['limit8']);
+		
 		if (strpos($query['orderby'],' desc') > 0) {
 			$smarty->assign('orderby', preg_replace('/ desc$/','',$query['orderby']));
 			$smarty->assign('reverse_order_checked', 'checked="checked"');
@@ -260,18 +264,25 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		if ($pg == '' or $pg < 1) {$pg = 1;}
 		
 	$engine = new SearchEngine($_GET['i']);
-	$engine->Execute($pg); 
 	
-	$smarty->assign('i', $_GET['i']);
-	$smarty->assign('currentPage', $pg);
-	$smarty->assign_by_ref('engine', $engine);
+	$template = 'search_results_'.$engine->getDisplayclass().'.tpl';
+	$cacheid="search|".$_GET['i'].".".$pg;
 	
-	if ($pg == 1 && $engine->criteria->searchclass == 'GridRef' && strpos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
-		$smarty->assign('nofirstmatch', true);
-	}	
+	if (!$smarty->is_cached($template, $cacheid)) {
+		$smarty->assign('querytime', $engine->Execute($pg)); 
 
+		$smarty->assign('i', $_GET['i']);
+		$smarty->assign('currentPage', $pg);
+		$smarty->assign_by_ref('engine', $engine);
+
+		if ($pg == 1 && $engine->criteria->searchclass == 'GridRef' && strpos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
+			$smarty->assign('nofirstmatch', true);
+		}	
+	}
 	
-	$smarty->display('search_results_'.$engine->getDisplayclass().'.tpl');
+	$smarty->display($template, $cacheid);
+
+
 
 } else {
 	// -------------------------------
@@ -332,6 +343,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 
 		$smarty->assign('displayclasses', array('full' => 'full listing','text' => 'text description only','thumbs' => 'thumbnails only'));
 		$smarty->assign('pagesizes', array(5,10,15,20,30,50));
+		$smarty->assign('distances', array(5,10,20,50,100,250,500,1000,2000));
 
 		
 
