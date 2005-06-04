@@ -65,19 +65,24 @@
 		 	 <td colspan="3" style="background:#dddddd;"><b>you can optionally limit to results to: </b></td> 
 		  </tr> 
 		  <tr> 
+			 <td><label for="distance" id="l_distance">distance to above</label></td> 
+			 <td> 
+				<select name="distance" id="distance" size="1" style="text-align:right" onchange="onlyone_part2(this.form)" onblur="onlyone_part2(this.form)"> 
+				  <option value=""> </option> 
+					{html_options values=$distances output=$distances selected=$distance}
+				</select>km</td> 
+			 <td>&nbsp;</td> 
+		  </tr> 
+		  <tr> 
 			 <td><label for="user_id">contributor</label></td> 
 			 <td colspan="2"> 
 				<select name="user_id" id="user_id" size="1" class="searchinput"> 
 				  <option value=""> </option> 
-				  
-					  {if $user->registered}
+					{if $user->registered}
 						<option value="{$user->user_id}">&nbsp; {$user->realname}</option>
 						<option value=""> </option> 
-					  {/if}
-				  	
-				  
+					{/if}
 					{html_options options=$userlist selected=$user_id}				  
-				  
 				</select> <input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label></td> 
 		  </tr> 
 		  <tr> 
@@ -159,7 +164,7 @@
 		  <tr> 
 			 <td>&nbsp;</td> 
 			 <td> 
-				<select name="resultsperpage" id="resultsperpage" size="1"> 
+				<select name="resultsperpage" id="resultsperpage" style="text-align:right" size="1"> 
 					{html_options values=$pagesizes output=$pagesizes selected=$resultsperpage}
 				</select> <label for="resultsperpage">results per page</label></td>
 			 <td>&nbsp;<input type="submit" value="Find"/></td>
@@ -169,6 +174,9 @@
 {/dynamic}   
 {literal}
 <script type="text/javascript"><!--
+
+var isvalue;
+var iscenter;
 
 function onlyone(that) {
 	if (that.name == 'county_id') {
@@ -206,16 +214,46 @@ function onlyone(that) {
 		document.getElementById('l_all_ind').className = classname;
 	}
 	iscenter = (isvalue && (that.name == 'gridref' || that.name == 'postcode' || that.name == 'placename' || that.name == 'county_id') );
+	
+	onlyone_part2(f);
+}
+	
+function onlyone_part2(f) {
+	
 	classname = (iscenter)?'disabledLabel':'';
 
-	f.orderby.disabled = iscenter;
-	if (iscenter)
-		f.orderby.selectedIndex = 2 //todo this shouldnt be hardcoded!
-	else if (f.orderby.selectedIndex == 2)
-		f.orderby.selectedIndex = 0;
-	document.getElementById('l_orderby').className = classname;
-	f.reverse_order_ind.disabled = iscenter;
-	document.getElementById('l_reverse_order_ind').className = classname;
+	f.distance.disabled = !iscenter;
+	classname = (iscenter)?'':'disabledLabel';
+	document.getElementById('l_distance').className = classname;
+
+	if (f.distance.selectedIndex > 0) {
+		f.orderby.disabled = false;
+		document.getElementById('l_orderby').className = '';
+		f.reverse_order_ind.disabled = false;
+		document.getElementById('l_reverse_order_ind').className = '';
+				
+		f.orderby.options[2].className = '';
+	} else {
+		f.orderby.disabled = iscenter;
+		if (iscenter)
+			f.orderby.selectedIndex = 2 //todo this shouldnt be hardcoded!
+		else if (f.orderby.selectedIndex == 2)
+			f.orderby.selectedIndex = 0;
+		document.getElementById('l_orderby').className = classname;
+		
+		f.reverse_order_ind.disabled = iscenter;
+		document.getElementById('l_reverse_order_ind').className = classname;
+
+		f.orderby.options[2].className = classname;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 }
 {/literal}
 {dynamic}
