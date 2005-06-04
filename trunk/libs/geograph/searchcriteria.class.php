@@ -59,28 +59,37 @@ class SearchCriteria
 	
 	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) 
 	{
+		$sql_where = '';
 		$x = $this->x;
 		$y = $this->y;
 		if ($x > 0 && $y > 0) {
-						
+			if ($this->limit8) {
+				$d = $this->limit8;
+				$sql_where .= sprintf("x BETWEEN %d and %d AND y BETWEEN %d and %d",$x-$d,$x+$d,$y-$d,$y+$d);
+				//shame cant use dist_sqd in the next line!
+				$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);
+			}
+			
+			//btw not using "power(gs.x -$x,2) * power( gs.y -$y,2)" beucause is testing could be upto 2 times slower!
 			$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
-			$sql_order .= " dist_sqd ";
-		} else if ($this->orderby) {
+			$sql_order = " dist_sqd ";
+		} 
+		if ((($x == 0 && $y == 0 ) || $this->limit8) && $this->orderby) {
 			switch ($this->orderby) {
 				case "random":
-					$sql_order .= " rand({$this->crt_timestamp}) ";
+					$sql_order = " rand({$this->crt_timestamp}) ";
 					break;
 				case "dist_sqd":
 					break;
 				default:
-					$sql_order .= $this->orderby;
+					$sql_order = $this->orderby;
 			}
-			
-			
 		}
 	
-		$sql_where = '';
 		if (!empty($this->limit1)) {
+			if ($sql_where) {
+				$sql_where .= " and ";
+			}
 			if (strpos($this->limit1,'!') === 0) {
 				$sql_where = "gi.user_id != ".preg_replace('/^!/','',$this->limit1);
 			} else {
