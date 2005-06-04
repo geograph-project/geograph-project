@@ -543,7 +543,7 @@ class SearchEngine
 		}
 		if (!$sql_order) {$sql_order = 'gs.grid_reference';}
 	
-		$count_from = (strpos($sql_where,'gs') >0)?"INNER JOIN gridsquare AS gs USING(gridsquare_id)":'';
+		$count_from = (strpos($sql_where,'gs') !== FALSE)?"INNER JOIN gridsquare AS gs USING(gridsquare_id)":'';
 		##$count_from = "INNER JOIN gridsquare AS gs USING(gridsquare_id)";
 	// construct the count query sql
 $sql = <<<END
@@ -567,7 +567,7 @@ $sql = <<<END
 		ORDER BY $sql_order
 		LIMIT $page,$pgsize
 END;
-#print "<BR><BR>$sql";
+print "<BR><BR>$sql";
 
 		//lets find some photos
 		$this->results=array();

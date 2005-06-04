@@ -124,7 +124,7 @@ class SearchCriteria
 			
 			$prefix = $db->GetRow("select * from gridprefix where prefix=".$db->Quote($this->limit5));	
 			
-			$sql_where .= sprintf("x between %d and %d and y between %d and %d",$prefix['origin_x'],$prefix['origin_x']+$prefix['width']-1,$prefix['origin_y'],
+			$sql_where .= sprintf("gs.x between %d and %d and gs.y between %d and %d",$prefix['origin_x'],$prefix['origin_x']+$prefix['width']-1,$prefix['origin_y'],
 			$prefix['origin_y']+$prefix['height']-1);
 			
 			if (empty($this->limit4))
