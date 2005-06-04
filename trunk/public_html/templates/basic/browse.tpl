@@ -43,23 +43,23 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 {/if}
 {if $showresult}
 
-<div style="text-align:center; font-size: 0.8em;">		  
-{if $discuss}
-	There is {$totalcomments} post{if $totalcomments ne 1}s{/if} in a 
-	<a href="/discuss/index.php?gridref={$gridref}">discussion on {$gridref}</a> (preview on the left)
-	
-{else}
-	{if $user->registered} 
-		<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a discussion on {$gridref}</a>
-	{else}
-		<a href="/login.php">login</a> to start a discussion on {$gridref} 
-	{/if}
-{/if}<br/><br/>
-</div>
+
 
 
 	{if $imagecount}
-
+<div style="text-align:center; font-size: 0.8em;">		  
+{if $discuss}
+	There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a 
+	<a href="/discuss/index.php?gridref={$gridref}">discussion about {$gridref}</a> (preview on the left)
+	
+{else}
+	{if $user->registered} 
+		<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a discussion about {$gridref}</a>
+	{else}
+		<a href="/login.php">login</a> to start a discussion about {$gridref} 
+	{/if}
+{/if}<br/><br/>
+</div>
 		<p><b>We have 
 		{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
 		for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"}</b> - click for larger version</p>
@@ -86,15 +86,30 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 
 	{else}
 
-		<p>We have no images for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"}, 
+		<p>We have no images for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"} yet,
 		
 		{if $nearest_distance}
-			the closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away. You can also <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}">search for nearby images</a>.
+			</p><ul><li>The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away.</li>
 		{else}
-			and have no pictures for any grid square within 100km either! <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}">search for nearby images</a>.
+			and have no pictures for any grid square within 100km either!</p>
+			<ul>
 		{/if}
+		<li>You can also <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}"><b>search</b> for nearby images</a>.</li>
+		<li>		  
+		{if $discuss}
+			There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a 
+			<a href="/discuss/index.php?gridref={$gridref}"><b>discussion</b> about {$gridref}</a>. (preview on the left)
+			
+		{else}
+			{if $user->registered} 
+				<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a <b>discussion</b> about {$gridref}</a>.
+			{else}
+				<a href="/login.php">login</a> to start a <b>discussion</b> about {$gridref}.
+			{/if}
+		{/if}</li>
+		<li>Or <a href="submit.php?gridreference={$gridrefraw}"><b>submit</b> your own picture of {$gridref}</a>.</li>
 		
-		</p>
+		</ul>
 
 	{/if}
    
