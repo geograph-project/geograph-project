@@ -212,14 +212,13 @@ class GridImage
 	*/
 	function fastInit(&$arr)
 	{
+		$this->grid_square=null;
+		$this->grid_reference='';
 		foreach($arr as $name=>$value)
 		{
 			if (!is_numeric($name))
 				$this->$name=$value;
-
 		}
-		$this->grid_square=null;
-		$this->grid_reference='';
 	}
 	
 	/**
