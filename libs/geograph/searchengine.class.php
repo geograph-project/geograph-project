@@ -106,9 +106,16 @@ class SearchEngine
   
 	} 
 
-	function buildSimpleQuery($q = '')
+	function buildSimpleQuery($q = '',$distance = 100)
 	{
 		global $USER;
+		
+		if ($distance) {
+			$nearstring = sprintf("within %dkm of",$distance);
+		} else {
+			$nearstring = 'near';
+		}
+		
 		$q = trim($q);
 		if (preg_match("/^([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9])([A-Z]{0,2})$/",strtoupper($q),$pc)) {
 			$searchq = $pc[1].$pc[2]." ".$pc[3];
@@ -116,7 +123,7 @@ class SearchEngine
 			$criteria->setByPostcode($searchq);
 			if ($criteria->y != 0) {
 				$searchclass = 'Postcode';
-				$searchdesc = ", near postcode ".$searchq;
+				$searchdesc = ", $nearstring postcode ".$searchq;
 				$searchx = $criteria->x;
 				$searchy = $criteria->y;	
 			} else {
@@ -128,7 +135,7 @@ class SearchEngine
 			$grid_ok=$square->setByFullGridRef($q);
 			if ($grid_ok) {
 				$searchclass = 'GridRef';
-				$searchdesc = ", near grid reference ".$square->grid_reference;
+				$searchdesc = ", $nearstring grid reference ".$square->grid_reference;
 				$searchx = $square->x;
 				$searchy = $square->y;			
 			} else {
@@ -139,14 +146,14 @@ class SearchEngine
 			$criteria->setByPlacename($q);
 			if ($criteria->is_multiple) {
 				//we've found multiple possible placenames
-				$searchdesc = ", near '".$q."'";
+				$searchdesc = ", $nearstring '".$q."'";
 				$this->searchdesc = $searchdesc;
 				$this->criteria = $criteria;
 			} else if (!empty($criteria->placename)) {
 				//if one placename then search on that
 				$searchclass = 'Placename';
 				$searchq = $criteria->placename;
-				$searchdesc = ", near ".$criteria->placename;
+				$searchdesc = ", $nearstring ".$criteria->placename;
 				$searchx = $criteria->x;
 				$searchy = $criteria->y;	
 			} else {
@@ -175,7 +182,7 @@ class SearchEngine
 			"searchuse = ".$db->Quote($this->searchuse).",".
 			"searchq = ".$db->Quote($q);
 			if ($searchx > 0 && $searchy > 0)
-				$sql .= ",x = $searchx,y = $searchy";
+				$sql .= ",x = $searchx,y = $searchy,limit8 = $distance";
 			if ($limit1)
 				$sql .= ",limit1 = $limit1";
 			if ($USER->registered)
@@ -193,6 +200,12 @@ class SearchEngine
 	function buildAdvancedQuery(&$dataarray)
 	{
 		global $CONF,$imagestatuses,$sortorders,$USER;
+		
+		if ($dataarray['distance']) {
+			$nearstring = sprintf("within %dkm of",$dataarray['distance']);
+		} else {
+			$nearstring = 'near';
+		}
 		
 		//check if we actully want to perform a textsearch (it comes through in the placename beucase of the way the multiple mathc page works)
 		if (strpos($dataarray['placename'],'text:') === 0) {
@@ -213,7 +226,7 @@ class SearchEngine
 				$criteria->setByPostcode($searchq);
 				if ($criteria->y != 0) {
 					$searchclass = 'Postcode';
-					$searchdesc = ", near postcode ".$searchq;
+					$searchdesc = ", $nearstring postcode ".$searchq;
 					$searchx = $criteria->x;
 					$searchy = $criteria->y;	
 				} else {
@@ -230,7 +243,7 @@ class SearchEngine
 				if ($grid_ok) {
 					$searchclass = 'GridRef';
 					$searchq = $dataarray['gridref'];
-					$searchdesc = ", near grid reference ".$square->grid_reference;
+					$searchdesc = ", $nearstring grid reference ".$square->grid_reference;
 					$searchx = $square->x;
 					$searchy = $square->y;	
 				} else {
@@ -246,7 +259,7 @@ class SearchEngine
 			if (!empty($criteria->county_name)) {
 				$searchclass = 'County';
 				$searchq = $dataarray['county_id'];
-				$searchdesc = ", near center of ".$criteria->county_name;
+				$searchdesc = ", $nearstring center of ".$criteria->county_name;
 				$searchx = $criteria->x;
 				$searchy = $criteria->y;	
 			} else {
@@ -260,11 +273,11 @@ class SearchEngine
 			if (!empty($criteria->placename)) {
 				$searchclass = 'Placename';
 				$searchq = $criteria->placename;
-				$searchdesc = ", near ".$criteria->placename;
+				$searchdesc = ", $nearstring ".$criteria->placename;
 				$searchx = $criteria->x;
 				$searchy = $criteria->y;	
 			} else if ($criteria->is_multiple) {
-				$searchdesc = ", near '".$dataarray['placename']."'";
+				$searchdesc = ", $nearstring '".$dataarray['placename']."'";
 
 			} else {
 				$this->errormsg = "Place not found, you might like to try a placename search";
@@ -409,6 +422,10 @@ class SearchEngine
 			
 				$sql .= ",limit7 = '{$dataarray['taken_start']}^{$dataarray['taken_end']}'";
 			}
+			if ($dataarray['distance'] && $searchx > 0 && $searchy > 0) {
+				$sql .= sprintf(",limit8 = %d",$dataarray['distance']);
+			}
+			
 			switch ($dataarray['orderby']) {
 				case "":
 					if ($searchclass == 'All') {
@@ -526,21 +543,21 @@ class SearchEngine
 		}
 		if (!$sql_order) {$sql_order = 'gs.grid_reference';}
 	
+		$count_from = (strpos($sql_where,'gs') >0)?"INNER JOIN gridsquare AS gs USING(gridsquare_id)":'';
+		##$count_from = "INNER JOIN gridsquare AS gs USING(gridsquare_id)";
 	// construct the count query sql
 $sql = <<<END
 	   SELECT count(*)
-		FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
-		INNER JOIN user ON(gi.user_id=user.user_id)
+		FROM gridimage AS gi $count_from
 			 $sql_from
 		WHERE 
 			$sql_where
 END;
-		$this->resultCount = $db->GetOne($sql);
+		$this->resultCount = $db->CacheGetOne(3600,$sql);
 		$this->numberOfPages = ceil($this->resultCount/$pgsize);
-	
 	// construct the query sql
 $sql = <<<END
-	   SELECT distinct gi.*,x,y,user.realname
+	   SELECT gi.*,x,y,gs.grid_reference,user.realname
 			$sql_fields
 		FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 		INNER JOIN user ON(gi.user_id=user.user_id)
@@ -551,19 +568,34 @@ $sql = <<<END
 		LIMIT $page,$pgsize
 END;
 #print "<BR><BR>$sql";
+
 		//lets find some photos
 		$this->results=array();
 		$i=0;
+		
+		list($usec, $sec) = explode(' ',microtime());
+		$querytime_before = ((float)$usec + (float)$sec);
+				
 		$recordSet = &$db->Execute($sql);
+		
+		list($usec, $sec) = explode(' ',microtime());
+		$querytime_after = ((float)$usec + (float)$sec);
+				
+		$querytime = $querytime_after - $querytime_before;
+		
 		while (!$recordSet->EOF) 
 		{
 			$this->results[$i]=new GridImage;
-			$this->results[$i]->loadFromRecordset($recordSet);
-			$this->results[$i]->compact();
+			$this->results[$i]->fastInit($recordSet->fields);
+			
 			if ($d = $recordSet->fields['dist_sqd']) {
 				$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
 				$this->results[$i]->dist_string = sprintf("Dist:%.1fkm %s",sqrt($d),$this->heading_string($angle));
 			}
+			
+			if (empty($this->results[$i]->title))
+				$this->results[$i]->title="Untitled";
+	
 			
 			//if we searching on imageclass then theres no point displaying it...
 			if ($this->criteria->limit3) {
@@ -579,6 +611,7 @@ END;
 			$i++;
 		}
 		$recordSet->Close(); 
+		return $querytime;
 	}
 	
 	function heading_string($deg) {
@@ -602,6 +635,9 @@ END;
 	}
 	
 	function pagesString() {
+		static $r;
+		if (!empty($r))
+			return($r);
 		if ($this->currentPage > 1) 
 			$r .= "<a href=\"{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage-1)."\">&lt; &lt; prev</a> ";
 		$start = max(1,$this->currentPage-5);
