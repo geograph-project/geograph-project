@@ -461,3 +461,12 @@ ALTER TABLE `queries` CHANGE `limit2` `limit2` ENUM( '', 'geograph', 'geograph,a
 
 #Barry 27th May
 ALTER TABLE `queries` CHANGE `searchdesc` `searchdesc` VARCHAR( 255 ) NOT NULL 
+
+
+#barry 4th July
+
+#new limit for doing distance searches
+ALTER TABLE `queries` ADD `limit8` SMALLINT( 5 ) UNSIGNED NOT NULL AFTER `limit7` ;
+
+# add rejected for internal admin searches
+ALTER TABLE `queries` CHANGE `limit2` `limit2` ENUM( '', 'geograph', 'geograph,accepted', 'geograph,accepted,pending', 'pending', 'accepted', 'rejected' ) NOT NULL
