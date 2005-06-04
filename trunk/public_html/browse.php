@@ -72,6 +72,7 @@ elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 	if ($grid_ok)
 	{
 		$smarty->assign('gridref', $square->grid_reference);
+		$smarty->assign('gridrefraw', stripslashes($_GET['gridref']));
 		$smarty->assign('gridsquare', $square->gridsquare);
 		$smarty->assign('eastings', $square->eastings);
 		$smarty->assign('northings', $square->northings);
