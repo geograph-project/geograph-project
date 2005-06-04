@@ -57,7 +57,7 @@ referring to <b>image {$image->gridimage_id}</b>
 {dynamic}
 <div style="text-align:center; font-size: 0.8em;">
 {if $discuss}
-	There {if $totalcomments eq 1}is{else}are{/if} {$totalcomments} post{if $totalcomments ne 1}s{/if} in a
+	There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a
 	<a href="/discuss/index.php?gridref={$image->grid_reference}">discussion on {$image->grid_reference}</a> (preview on the left)
 
 {else}
@@ -146,16 +146,18 @@ referring to <b>image {$image->gridimage_id}</b>
 </td></tr>
 
 <tr><td>What's nearby?</td><td>
-<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">Geograph Images</a>,
+<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">Geograph Images</a>
+
+<small>(<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}">by this contributer</a> or <a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:html|default:"-"}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:url|default:"-"}">of this category</a>)</small>,<br/>
 
 {if $image->grid_square->reference_index eq 1}
 	{external title="Geocaches from geocaching.com, search by geocacheuk.com" href="http://stats.guk2.com/caches/search_parse.php?osgbe=`$image->grid_square->nateastings`&amp;osgbn=`$image->grid_square->natnorthings`" text="Geocaches"},
-	{external title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigtools/find.php?t=`$image->grid_reference`" text="Trigpoints"},<br/>
+	{external title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigtools/find.php?t=`$image->grid_reference`" text="Trigpoints"},
 	{external href="http://geourl.org/near?lat=`$lat`&long=`$long`" text="geourl.org" title="search for webpages near this location"} &amp;
  	{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$image->grid_square->nateastings`+`$image->grid_square->natnorthings`" text="more..."}
 {else}
 	{external href="http://www.geocaching.com/seek/nearest.aspx?lat=`$lat`&lon=`$long`" text="geocaches" title="Geocaches from geocaching.com"},
- 	{external href="http://geourl.org/near?lat=`$lat`&long=`$long`" text="geourl.org" title="search for webpages near this location"} <br/> &amp;
+ 	{external href="http://geourl.org/near?lat=`$lat`&long=`$long`" text="geourl.org" title="search for webpages near this location"}  &amp;
  	{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$image->grid_square->nateastings`+`$image->grid_square->natnorthings`+OSI" text="more from nearby.org.uk"}
 {/if}
 
