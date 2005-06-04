@@ -438,6 +438,9 @@ class GeographUser
 		//session id...
 		session_regenerate_id(); 
 		
+		//also clear the autologin cookie as doesnt make sence to keep
+		setcookie('autologin', '', time()-3600*24*365,'/');  
+		
 	}
 
 	
