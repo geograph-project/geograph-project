@@ -199,7 +199,44 @@ class GeographMap
 	*/
 	function getGridRef($x, $y)
 	{
-	
+		if ($x == -1 && $y == -1) {
+			$x = intval($this->image_w / 2);
+			$y = intval($this->image_h / 2);
+		}
+		$db=&$this->_getDB();
+
+		//invert the y coordinate
+		$y=$this->image_h-$y;
+
+		//convert pixel pos to internal coordinates
+		$x_km=$this->map_x + floor($x/$this->pixels_per_km);
+		$y_km=$this->map_y + floor($y/$this->pixels_per_km);
+
+
+		//this could be done in one query, but it's a funky join for something so simple
+		$reference_index=$db->GetOne("select reference_index from gridsquare where x=$x_km and y=$y_km");
+
+		//But what to do when the square is not on land??
+
+		if ($reference_index) {
+			$where_crit =  "and reference_index=$reference_index";
+		} else {
+			//when not on land just try any square!
+			// but favour the _smaller_ grid - works better, but still not quite right where the two grids almost overlap
+			$where_crit =  "order by reference_index desc";
+		}
+
+		$sql="select prefix,origin_x,origin_y from gridprefix ".
+			"where $x_km between origin_x and (origin_x+width-1) and ".
+			"$y_km between origin_y and (origin_y+height-1) $where_crit";
+		$prefix=$db->GetRow($sql);
+		if ($prefix['prefix']) { 
+			$n=$y_km-$prefix['origin_y'];
+			$e=$x_km-$prefix['origin_x'];
+			return sprintf('%s%02d%02d', $prefix['prefix'], $e, $n);
+		} else {
+			return "unknown";
+		}
 	}
 
 	/**
@@ -842,6 +879,57 @@ class GeographMap
 		}
 		$recordSet->Close(); 		
 	}
+	
+
+
+	/**
+	* return a sparse 2d array for every grid on the map
+	* @access private
+	*/
+	function& getGridArray()
+	{
+		//figure out what we're mapping in internal coords
+		$db=&$this->_getDB();
+		
+		$grid=array();
+		
+
+		$left=$this->map_x;
+		$bottom=$this->map_y;
+		$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
+		$top=$bottom + floor($this->image_h/$this->pixels_per_km)-1;
+
+		$overscan=0;
+		$scanleft=$left-$overscan;
+		$scanright=$right+$overscan;
+		$scanbottom=$bottom-$overscan;
+		$scantop=$top+$overscan;
+		
+		$sql="select * from gridsquare where ".
+			"(x between $scanleft and $scanright) and ".
+			"(y between $scanbottom and $scantop)";
+			//"and imagecount>0";
+
+		$recordSet = &$db->Execute($sql);
+		while (!$recordSet->EOF) 
+		{
+			$gridx=$recordSet->fields['x'];
+			$gridy=$recordSet->fields['y'];
+
+			$posx=$gridx-$this->map_x;
+			$posy=($top-$bottom) - ($gridy-$bottom);
+			
+			$grid[$posx][$posy]=$recordSet->fields;
+			
+			
+			
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close(); 
+
+		return $grid;
+		
+	}	
 	
 	
 	/**
