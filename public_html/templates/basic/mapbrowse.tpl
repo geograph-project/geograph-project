@@ -165,11 +165,17 @@
    <td colspan="4" style="background:#6476fc;">
    
    <p style="line-height:1em;font-size:0.8em;text-align:center">Grid Reference at centre
- <b>{$gridref}</b><br/>
- {if $token_zoomout}[<a href="/search.php?q={$gridref}" title="Search for images centered around {$gridref}">Perform Search</a>]{/if}</p>
+ {if $token_zoomout}
+ <a href="/search.php?q={$gridref}" title="Search for images centered around {$gridref}">{$gridref}</a>
+ {else}
+
+ {$gridref}
+
+ {/if}</p>
  
-   <p style="line-height:1em;font-size:0.8em;text-align:center">Map Width 
- <br/><b>{$mapwidth} km</b></p>
+   <p style="line-height:1em;font-size:0.8em;text-align:center">Map width <b>{$mapwidth} km</b></p>
+ 
+  <p style="line-height:1em;font-size:0.8em;text-align:center"><a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$mosaic_token}">print check sheet</a></p>
  
    </td>
    <td><img alt="" src="/templates/basic/mapnav/shim.gif" width="1" height="103"/></td>
