@@ -141,7 +141,42 @@ if (!$smarty->is_cached($template, $cacheid))
 	$mosaic->assignToSmarty($smarty, 'mosaic');
 	
 	//assign all the other useful stuff
+	
+	//build template image map
+	//experimental - for use with alternative template 
+	if (false)
 
+	{
+		$template='mapbrowse2.tpl';
+		$rect=array();
+
+		$mapgranulatity=10;
+
+		$mapsize=$mosaic->image_w/$mapgranulatity;
+		$tilegranulatity=$mapgranulatity/$mosaic->mosaic_factor;
+
+
+
+		for($x=0;$x<$tilegranulatity;$x++)
+		{
+			for($y=0;$y<$tilegranulatity;$y++)
+			{
+				$x1=$x*$mapsize;
+				$y1=$y*$mapsize;
+
+				$x2=$x1+$mapsize;
+				$y2=$y1+$mapsize;
+
+				$clickx=$x1+$mapsize/2;
+				$clicky=$y1+$mapsize/2;
+
+				$rect[$x][$y]=array($x1,$y1,$x2,$y2,$clickx,$clicky);		
+			}
+		}
+		$smarty->assign_by_ref('imgmap', $rect);
+	}
+	
+	
 	$smarty->assign('gridref', $mosaic->getGridRef(-1,-1));
 	$smarty->assign('mapwidth', round($mosaic->image_w /$mosaic->pixels_per_km ) );
 	
