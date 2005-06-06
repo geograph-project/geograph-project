@@ -34,6 +34,26 @@ $sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','submitted'
 #,'user_id'=>'Contributer ID'
 
 
+//check load average, abort if too high
+$buffer = "0 0 0";
+$f = fopen("/proc/loadavg","r");
+if ($f)
+{
+	if (!feof($f)) {
+		$buffer = fgets($f, 1024);
+	}
+	fclose($f);
+}
+$loads = explode(" ",$buffer);
+$load=(float)$loads[0];
+
+if ($load>2)
+{
+	$smarty->display('search_unavailable.tpl');	
+	exit;
+}
+
+
 if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	// -------------------------------
 	//  special handler to build a advanced query from the link in stats or profile.  
