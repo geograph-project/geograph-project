@@ -432,8 +432,8 @@ CREATE TABLE `flickr_users` (
 
 ALTER TABLE `gridimage` ADD `upd_timestamp` TIMESTAMP NOT NULL ;
 #one off update for current images to have a reasonable 'start value'
-UPDATE gridimage SET upd_timestamp = moderated WHERE moderation_status<>'pending'
-UPDATE gridimage SET upd_timestamp = submitted WHERE moderation_status='pending'
+UPDATE gridimage SET upd_timestamp = moderated WHERE moderation_status<>'pending';
+UPDATE gridimage SET upd_timestamp = submitted WHERE moderation_status='pending';
 
 
 CREATE TABLE `wordnet` (
@@ -460,7 +460,7 @@ ALTER TABLE `queries` CHANGE `limit2` `limit2` ENUM( '', 'geograph', 'geograph,a
 
 
 #Barry 27th May
-ALTER TABLE `queries` CHANGE `searchdesc` `searchdesc` VARCHAR( 255 ) NOT NULL 
+ALTER TABLE `queries` CHANGE `searchdesc` `searchdesc` VARCHAR( 255 ) NOT NULL ;
 
 
 #barry 4th June
@@ -469,6 +469,7 @@ ALTER TABLE `queries` CHANGE `searchdesc` `searchdesc` VARCHAR( 255 ) NOT NULL
 ALTER TABLE `queries` ADD `limit8` SMALLINT( 5 ) UNSIGNED NOT NULL AFTER `limit7` ;
 
 # add rejected for internal admin searches
+
 ALTER TABLE `queries` CHANGE `limit2` `limit2` ENUM( '', 'geograph', 'geograph,accepted', 'geograph,accepted,pending', 'pending', 'accepted', 'rejected' ) NOT NULL;
 
 #paul 5th June 
