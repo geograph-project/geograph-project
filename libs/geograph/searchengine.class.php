@@ -567,7 +567,7 @@ $sql = <<<END
 		ORDER BY $sql_order
 		LIMIT $page,$pgsize
 END;
-print "<BR><BR>$sql";
+#print "<BR><BR>$sql";
 
 		//lets find some photos
 		$this->results=array();
@@ -582,7 +582,6 @@ print "<BR><BR>$sql";
 		$querytime_after = ((float)$usec + (float)$sec);
 				
 		$querytime = $querytime_after - $querytime_before;
-		
 		while (!$recordSet->EOF) 
 		{
 			$this->results[$i]=new GridImage;
@@ -595,17 +594,14 @@ print "<BR><BR>$sql";
 			
 			if (empty($this->results[$i]->title))
 				$this->results[$i]->title="Untitled";
-	
 			
 			//if we searching on imageclass then theres no point displaying it...
-			if ($this->criteria->limit3) {
+			if ($this->criteria->limit3) 
 				unset($this->results[$i]->imageclass);
-			}
 			
 			//if we searching on taken date then display it...
-			if ($this->criteria->limit7) {
+			if ($this->criteria->limit7) 
 				$this->results[$i]->imagetakenString = $this->results[$i]->getFormattedTakenDate();
-			}
 						
 			$recordSet->MoveNext();
 			$i++;
@@ -615,9 +611,10 @@ print "<BR><BR>$sql";
 	}
 	
 	function heading_string($deg) {
-		
 		$dirs = array('north','east','south','west'); 
 		$rounded = round($deg / 22.5) % 16; 
+		if ($rounded < 0)
+			$rounded += 16;
 		if (($rounded % 4) == 0) { 
 			$s = $dirs[$rounded/4]; 
 		} else { 
