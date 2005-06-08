@@ -65,7 +65,7 @@ div.t
 
 <div style="position:absolute;padding:5px;left:0.2em;top:0.2em;width:10em;height:1em;font-size:4em;border:1px solid black;background:white;">
 <div style="font-size:12pt;font-family:Georgia;Arial;">Print this sheet and take it out with you to mark off the squares that you do, and avoid the squares that
-have already been done.</div>
+have already been done.<br/><div style="text-align:right; font-size:0.7em">Generated {$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</div></div>
 </div>
 
     
