@@ -41,19 +41,30 @@
 	<td>Percentage</td></tr></thead>
 	<tbody>
 
-	{if $linkprefix}
+
+	{if $linkpro}
 		{foreach from=$breakdown item=line}
-		<tr><td><a href="{$linkprefix}{$line.field|escape:url|default:"-"}">{$line.field|default:"<i>-unspecified-</i>"}</a></td>
+		<tr><td><a href="{$line.link}">{$line.field|default:"<i>-unspecified-</i>"}</a></td>
 		<td align=right>{$line.c}</td>
 		<td align=right>{$line.per}%</td></tr>
 		{/foreach}
 	{else}
-		{foreach from=$breakdown item=line}
-		<tr><td>{$line.field}</td>
-		<td align=right>{$line.c}</td>
-		<td align=right>{$line.per}%</td></tr>
-		{/foreach}
+		{if $linkprefix}
+			{foreach from=$breakdown item=line}
+			<tr><td><a href="{$linkprefix}{$line.field|escape:url|default:"-"}">{$line.field|default:"<i>-unspecified-</i>"}</a></td>
+			<td align=right>{$line.c}</td>
+			<td align=right>{$line.per}%</td></tr>
+			{/foreach}
+		{else}
+			{foreach from=$breakdown item=line}
+			<tr><td>{$line.field}</td>
+			<td align=right>{$line.c}</td>
+			<td align=right>{$line.per}%</td></tr>
+			{/foreach}
+		{/if}
 	{/if}
+
+	
 	
 	<tr class="totalrow"><td>&nbsp;</td>
 	<th align=right>{$total}</th>
