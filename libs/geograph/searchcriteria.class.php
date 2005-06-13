@@ -113,7 +113,7 @@ class SearchCriteria
 			if ($sql_where) {
 				$sql_where .= " and ";
 			}
-			$sql_where .= "reference_index = ".($this->limit4)." ";
+			$sql_where .= "gs.reference_index = ".($this->limit4)." ";
 		} 
 		if (!empty($this->limit5)) {
 			if ($sql_where) {
@@ -128,7 +128,7 @@ class SearchCriteria
 			$prefix['origin_y']+$prefix['height']-1);
 			
 			if (empty($this->limit4))
-				$sql_where .= " and reference_index = ".$prefix['reference_index']." ";
+				$sql_where .= " and gs.reference_index = ".$prefix['reference_index']." ";
 			
 		}
 		if (!empty($this->limit6)) {
