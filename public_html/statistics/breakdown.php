@@ -36,7 +36,7 @@ if (isset($_GET['order']) && preg_match('/^\w+$/' , $_GET['order']))
 	$order = $_GET['order'];
 
 $template='statistics_breakdown.tpl';
-$cacheid='statistics|'.$by.'_'.$ri.'_'.$u.'_'.$order;
+$cacheid='statistics|g'.$by.'_'.$ri.'_'.$u.'_'.$order;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
@@ -62,7 +62,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 
 	$title .= " in ".$CONF['references'][$ri];
-
+	$andwhere = " and moderation_status <> 'rejected'";
 	if ($by == 'status') {
 		$sql_group = $sql_fieldname = "CONCAT(moderation_status,ELT(ftf+1, '',' (ftf)'))";
 	} else if ($by == 'class') {
@@ -79,6 +79,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	} else {
 		$by = 'status';
 		$sql_group = $sql_fieldname = 'moderation_status';
+		$andwhere = ''; #do want to see rejected in this query!
 	}
 
 	$smarty->assign('title', $bys[$by]);
