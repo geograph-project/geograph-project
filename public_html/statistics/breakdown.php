@@ -43,7 +43,7 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 
 $smarty->assign_by_ref('references',$CONF['references']);	
 
-$bys = array('status' => 'Status','class' => 'Category','gridsq' => 'Grid Square');
+$bys = array('status' => 'Status','class' => 'Category','taken' => 'Date Taken','gridsq' => 'Grid Square');
 $smarty->assign_by_ref('bys',$bys);
 
 $smarty->assign('by', $by);
@@ -71,6 +71,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	} else if ($by == 'gridsq') {
 		$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."gridsquare=");
 		$sql_group = $sql_fieldname = "SUBSTRING(grid_reference,1,$letterlength)";
+	} else if ($by == 'taken') {
+		$smarty->assign('linkpro', 1);
+		$sql_group = $sql_fieldname = "SUBSTRING(imagetaken,1,7)";
+	} else if ($by == 'count') {
+		$sql_group = $sql_fieldname = "imagecount";
 	} else {
 		$by = 'status';
 		$sql_group = $sql_fieldname = 'moderation_status';
@@ -132,10 +137,31 @@ $sql_order";
 			$breakdown[$idx]['per'] = sprintf("%.2f",$breakdown[$idx]['c'] * $totalperc);
 		}
 
-		if ($by == 'type') {
-			$friendly = array('rejected' => 'Rejected', 'pending' => 'Pending', 'accepted' => 'Supplemental', 'geograph' => 'Geograph');
+		if ($by == 'status') {
+			$friendly = array('rejected' => 'Rejected', 'pending' => 'Pending', 'geograph (ftf)' => 'Geograph (First)', 'accepted' => 'Supplemental', 'geograph' => 'Geograph');
 			foreach($breakdown as $idx=>$entry) {
 				$breakdown[$idx]['field'] = $friendly[$breakdown[$idx]['field']];
+			}
+		} elseif ($by == 'taken') {
+			foreach($breakdown as $idx=>$entry) {
+				list($y,$m)=explode('-', $breakdown[$idx]['field']);
+				
+				$breakdown[$idx]['link'] = "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;taken_endMonth=$m&amp;taken_endYear=$y&amp;taken_startMonth=$m&amp;taken_startYear=$y&amp;orderby=imagetaken&amp;do=1";
+			
+				if ($m>0) {
+					//well, it saves having an array of months...
+					$t=strtotime("2000-$m-01");
+					if ($y > 0) {
+						$breakdown[$idx]['field']=strftime("%B", $t)." $y";
+					} else {
+						$breakdown[$idx]['field']=strftime("%B", $t);
+					}
+				} elseif ($y > 0) {
+					$breakdown[$idx]['field']=$y;
+				} else {
+					$breakdown[$idx]['field'] = ''; //ie unspecified!
+				}
+				
 			}
 		}
 	}
