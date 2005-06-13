@@ -35,8 +35,9 @@ $db = NewADOConnection($GLOBALS['DSN']);
 
 	//this takes a long time, so we output a header first of all
 	$smarty->display('_std_begin.tpl');
-	echo "<h3> RBuilding Wordnet...</h3>";
+	echo "<h3> ReBuilding Wordnet...</h3>";
 	flush();
+	set_time_limit(3600*24);
 	
 function doaddw2($phrase) {
 	global $w2;
@@ -111,8 +112,9 @@ function docount($text,$field,$id) {
 	{
 		docount($recordSet->fields['title'],'title',$recordSet->fields['gridimage_id']);
 		//the comments arent searched yet anyway...
-		//docount($recordSet->fields['comment'],'comment',$recordSet->fields['gridimage_id']);
-		if ($recordSet->fields['gridimage_id']%10==0)
+		if ($_GET['comments']) 
+			docount($recordSet->fields['comment'],'comment',$recordSet->fields['gridimage_id']);
+		if ($recordSet->fields['gridimage_id']%100==0)
 			printf("done %d at <b>%d</b> seconds<BR>",$recordSet->fields['gridimage_id'],time()-$tim);
 	
 		$recordSet->MoveNext();
