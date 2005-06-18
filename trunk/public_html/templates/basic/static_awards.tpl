@@ -24,6 +24,12 @@
 
 <ul><li><a href="http://scout.wisc.edu/Reports/ScoutReport/2005/scout-050603-geninterest.php#7">Internet Scout Project</a></li></ul>
 
+
+<h3>9th June 2005</h3>
+
+<ul><li><a href="http://www.guardian.co.uk/online/story/0,3605,1501801,00.html">Guardian Web watch</a></li></ul>
+
+
 <h2>Uses of image submitted to Geograph</h2>
 
 <!-- //todo store these in a database to make easy get a page title (and possibly the image and/or contributer) -->
