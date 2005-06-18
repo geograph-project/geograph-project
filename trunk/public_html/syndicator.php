@@ -36,16 +36,47 @@ if (isset($_GET['format']) && in_array($_GET['format'], $valid_formats))
 	$format=$_GET['format'];
 }
 
-$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$format}.xml";
-
+if (isset($_GET['i']) && is_numeric($_GET['i'])) {
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$format}.xml";
+} else {
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$format}.xml";
+}
 
 $rss = new UniversalFeedCreator(); 
 $rss->useCached($rssfile); 
 $rss->title = 'Geograph.co.uk'; 
-$rss->description = 'Latest images and news'; 
 $rss->link = "http://{$_SERVER['HTTP_HOST']}";
-$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php"; 
+ 
 
+
+if (isset($_GET['i']) && is_numeric($_GET['i'])) {
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+		
+		$pg = $_GET['page'];
+		if ($pg == '' or $pg < 1) {$pg = 1;}
+		
+	$images = new SearchEngine($_GET['i']);
+	
+	$rss->description = "Images".$images->criteria->searchdesc; 
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=$format&amp;i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
+	
+	//cant use the new cached version as need the comment
+	$images->Execute($pg,',comment');
+	
+	$images->images = $images->results;
+	
+} else {
+	$rss->description = 'Latest images and news'; 
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=$format";
+
+
+	//lets find some recent photos
+	$images=new ImageList(array('accepted', 'geograph'), 'submitted desc', 15);
+}
+#print "<PRE>";
+#	var_dump($images);
+#	exit;
 
 #$image = new FeedImage(); 
 #$image->title = "dailyphp.net logo"; 
@@ -55,10 +86,6 @@ $rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php";
 #$rss->image = $image; 
 
 
-
-
-//lets find some recent photos
-$images=new ImageList(array('accepted', 'geograph'), 'submitted desc', 15);
 $cnt=count($images->images);
 
 //create some feed items
