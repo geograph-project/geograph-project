@@ -12,9 +12,9 @@ the following
 {if $engine->resultCount}
 	<br/>( Page {$engine->pagesString()}) [<a href="search.php?i={$i}&amp;form=advanced">refine search</a>]
 	</p>
-	{if $nofirstmatch}
-	<p style="font-size:0.8em">[<b>We have no images for {$engine->criteria->searchq}</b>, <a href="/submit.php?gridreference={$engine->criteria->searchq}">Submit Yours Now</a>]</p>
-	{/if}
+{if $nofirstmatch}
+<p style="font-size:0.8em">[We have no images for {$engine->criteria->searchq}, <a href="/submit.php?gridreference={$engine->criteria->searchq}">Submit Yours Now</a>]</p>
+{/if}
 	<ul>
 	{foreach from=$engine->results item=image}
 	<li>
@@ -27,12 +27,14 @@ the following
 	
 	{/foreach}
 	</ul>
-	<p>( Page {$engine->pagesString()})
+	<p style="clear:both">Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
 {else}
 	{if $nofirstmatch}
 	<p style="font-size:0.8em">[We have no images for {$engine->criteria->searchq}, <a href="/submit.php?gridreference={$engine->criteria->searchq}">Submit Yours Now</a>]</p>
 	{/if}
 {/if}
 [<a href="search.php?i={$i}&amp;form=advanced">refine search</a>]</p>
-		
+	
+<p align=right><a title="RSS Feed for images{$engine->criteria->searchdesc}" href="/syndicator.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}" class="xml-rss">RSS</a></p>	
+	
 {include file="_std_end.tpl"}
