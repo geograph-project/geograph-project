@@ -66,10 +66,8 @@ function wgs84_to_national($lat,$long,$usehermert = true) {
 			//will probably just call national_to_wgs84 once converted
 
 function internal_to_wgs84($x,$y,$reference_index = 0) {
-	require_once('geograph/conversionslatlong.class.php');
-	$conv = new ConversionsLatLong;
-
-	//todo
+	list ($e,$n,$reference_index) = $this->internal_to_national($x,$y,$reference_index);
+	return $this->national_to_wgs84($e,$n,$reference_index);
 }
 
 
