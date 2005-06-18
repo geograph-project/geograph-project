@@ -1,5 +1,4 @@
 {include file="_std_begin.tpl"}
-{dynamic}
 
 <h2>Advanced Search <small>[<a href="/search.php?i={$i}&amp;form=simple">simple form</a>]</small></h2>
 
@@ -171,7 +170,7 @@
 			 
 		  </tr> 
 		</table></form>
-{/dynamic}   
+  
 {literal}
 <script type="text/javascript"><!--
 
@@ -256,11 +255,11 @@ function onlyone_part2(f) {
 	
 }
 {/literal}
-{dynamic}
+
 {if $elementused}
 	onlyone(document.theForm.{$elementused});
 {/if}
-{/dynamic}
+
 //--></script>
 
 
