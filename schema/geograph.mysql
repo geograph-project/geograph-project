@@ -476,3 +476,29 @@ ALTER TABLE `queries` CHANGE `limit2` `limit2` ENUM( '', 'geograph', 'geograph,a
 #changed icon for discussion forum
 UPDATE geobb_forums SET forum_icon="gridsquare.gif" where forum_id=5;
 
+#barry 18th June
+#new 'prejoined' table for quick searches
+CREATE TABLE `gridimage_search` (
+  `gridimage_id` int(11) NOT NULL default '0',
+  `user_id` int(11) NOT NULL default '0',
+  `moderation_status` enum('rejected','pending','accepted','geograph') default NULL,
+  `title` varchar(128) default NULL,
+  `submitted` datetime default NULL,
+  `imageclass` varchar(32) NOT NULL default '',
+  `imagetaken` date NOT NULL default '0000-00-00',
+  `upd_timestamp` timestamp(14) NOT NULL,
+  `x` smallint(3) NOT NULL default '0',
+  `y` smallint(4) NOT NULL default '0',
+  `grid_reference` varchar(6) NOT NULL default '',
+  `realname` varchar(128) NOT NULL default '',
+  `reference_index` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`gridimage_id`),
+  KEY `user_id` (`user_id`),
+  KEY `imageclass` (`imageclass`),
+  KEY `imagetaken` (`imagetaken`),
+  KEY `submitted` (`submitted`),
+  KEY `x` (`x`,`y`),
+  KEY `moderation_status` (`moderation_status`),
+  KEY `title` (`title`)
+) TYPE=MyISAM;
+
