@@ -512,7 +512,7 @@ class SearchEngine
 		}
 	}	
 	
-	function Execute($pg) 
+	function Execute($pg,$extra_fields = '') 
 	{
 		$db=$this->_getDB();
 		
@@ -558,7 +558,7 @@ END;
 	// construct the query sql
 $sql = <<<END
 	   SELECT gi.*,x,y,gs.grid_reference,user.realname
-			$sql_fields
+			$sql_fields $extra_fields
 		FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 		INNER JOIN user ON(gi.user_id=user.user_id)
 			 $sql_from
@@ -600,7 +600,101 @@ END;
 				unset($this->results[$i]->imageclass);
 			
 			//if we searching on taken date then display it...
-			if ($this->criteria->limit7) 
+			if ($this->criteria->limit7 || $this->criteria->orderby == 'imagetaken') 
+				$this->results[$i]->imagetakenString = $this->results[$i]->getFormattedTakenDate();
+						
+			$recordSet->MoveNext();
+			$i++;
+		}
+		$recordSet->Close(); 
+		return $querytime;
+	}
+
+	function ExecuteCached($pg) 
+	{
+		$db=$this->_getDB();
+		
+		
+		$sql_fields = "";
+		$sql_order = "";
+		$sql_where = "";
+		$sql_from = "";
+		
+		$this->criteria->getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
+	
+		$this->currentPage = $pg;
+	
+		$pgsize = $this->criteria->resultsperpage;
+	
+		if (!$pgsize) {$pgsize = 15;}
+		if ($pg == '' or $pg < 1) {$pg = 1;}
+	
+		$page = ($pg -1)* $pgsize;
+	
+		//need to ensure rejected images arent shown
+		if (!empty($sql_where)) {
+			$sql_where = "WHERE $sql_where";
+			$this->islimited = true;
+		}
+		if (!$sql_order) {$sql_order = 'grid_reference';}
+	
+		if (strpos($sql_where,'gs') !== FALSE) {
+			$sql_where = str_replace('gs.','gi.',$sql_where);
+		}
+		$sql_fields = str_replace('gs.','gi.',$sql_fields);
+	// construct the count sql
+$sql = <<<END
+		SELECT count(*)
+		FROM gridimage_search as gi
+			 $sql_from
+		$sql_where
+END;
+#print "<BR><BR>$sql";
+		$this->resultCount = $db->CacheGetOne(3600,$sql);
+		$this->numberOfPages = ceil($this->resultCount/$pgsize);
+	// construct the query sql
+$sql = <<<END
+		SELECT *
+			$sql_fields
+		FROM gridimage_search as gi
+			 $sql_from
+		$sql_where
+		ORDER BY $sql_order
+		LIMIT $page,$pgsize
+END;
+#print "<BR><BR>$sql";
+		//lets find some photos
+		$this->results=array();
+		$i=0;
+		
+		list($usec, $sec) = explode(' ',microtime());
+		$querytime_before = ((float)$usec + (float)$sec);
+				
+		$recordSet = &$db->Execute($sql);
+		
+		list($usec, $sec) = explode(' ',microtime());
+		$querytime_after = ((float)$usec + (float)$sec);
+				
+		$querytime = $querytime_after - $querytime_before;
+		while (!$recordSet->EOF) 
+		{
+			$this->results[$i]=new GridImage;
+			$this->results[$i]->fastInit($recordSet->fields);
+			
+			if ($d = $recordSet->fields['dist_sqd']) {
+				$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
+				$this->results[$i]->dist_string = sprintf("Dist:%.1fkm %s",sqrt($d),$this->heading_string($angle));
+			}
+			
+			if (empty($this->results[$i]->title))
+				$this->results[$i]->title="Untitled";
+			
+			//if we searching on imageclass then theres no point displaying it...
+			if ($this->criteria->limit3) 
+				unset($this->results[$i]->imageclass);
+			
+			//if we searching on taken date then display it...
+			if ($this->criteria->limit7 || $this->criteria->orderby == 'imagetaken') 
 				$this->results[$i]->imagetakenString = $this->results[$i]->getFormattedTakenDate();
 						
 			$recordSet->MoveNext();
