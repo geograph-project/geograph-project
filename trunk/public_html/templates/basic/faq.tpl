@@ -64,6 +64,8 @@ this and other photo oriented sites the way everyone else can see them.</p>
     <a title="Geograph JavaScript feed" href="http://{$http_host}/syndicator.php?format=JS">JavaScript</a>
     formats.</p>
     
+    <p>You will also find a Feed Link on search results. For example setup a search showing images near you which you can keep your eye on using your feed reader!</p>
+    
     <p>If you use the {external title="Firefox Web Browser" href="http://www.mozilla.org/products/firefox/" text="Firefox"} web browser, 
     you should be able use our feed as a "live bookmark" - simply
     click the orange button in the bottom right of your browser window.</p>    
