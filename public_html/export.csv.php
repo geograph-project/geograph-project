@@ -29,9 +29,24 @@ header("Content-Disposition: attachment; filename=\"geograph.csv\"");
 
 $db=NewADOConnection($GLOBALS['DSN']);
 
-   echo "Id,Name,Grid Ref,Submitter,Image Class,easting,northing\n";
+echo "Id,Name,Grid Ref,Submitter,Image Class";
+if ($_GET['ll']) {
+	echo ",Lat,Long";
+	require_once('geograph/conversions.class.php');
+	$conv = new Conversions;
+	
+	$sql_from = ",x,y,reference_index";	
+} elseif ($_GET['en']) {
+	echo ",Easting,Northing";
+}
+if ($_GET['thumb']) {
+	require_once('geograph/gridimage.class.php');
+	$gridimage = new GridImage;
+	echo ",Thumb URL";
+}
+echo "\n";
 
-$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,nateastings,natnorthings ".
+$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,nateastings,natnorthings $sql_from ".
 	"from user ".
 	"inner join gridimage using(user_id) ".
 	"inner join gridsquare using(gridsquare_id) ".
@@ -47,7 +62,23 @@ while (!$recordSet->EOF)
 	{
 		$image['imageclass'] = '"'.str_replace('"', '""', $image['imageclass']).'"';
 	}
-	echo "{$image['gridimage_id']},{$image['title']},{$image['grid_reference']},{$image['realname']},{$image['imageclass']}".(($image['nateastings'])?",{$image['nateastings']},{$image['natnorthings']}":'')."\n";
+	echo "{$image['gridimage_id']},{$image['title']},{$image['grid_reference']},{$image['realname']},{$image['imageclass']}";
+	if ($image['nateastings']) {
+		if ($_GET['ll']) {
+			list($lat,$long) = $conv->national_to_wgs84($image['nateastings'],$image['natnorthings'],$image['reference_index']);
+			echo ",$lat,$long";
+		} elseif ($_GET['en']) {
+			echo ",{$image['nateastings']},{$image['natnorthings']}";
+		}
+	} elseif ($_GET['ll']) {
+		list($lat,$long) = $conv->internal_to_wgs84($image['x'],$image['y'],$image['reference_index']);
+		echo ",$lat,$long";
+	}
+	if ($_GET['thumb']) {
+		$gridimage->fastInit($image);
+		echo ','.$gridimage->getThumbnail(120,120,true);
+	}
+	echo "\n";
 	$recordSet->MoveNext();
 	$i++;
 }
