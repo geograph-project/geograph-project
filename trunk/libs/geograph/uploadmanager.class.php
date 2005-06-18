@@ -239,9 +239,10 @@ class UploadManager
 				$b1=ord($sig{0});
 				$b2=ord($sig{1});
 				$is_jpeg=($b1=255) && ($b2==216);
+				
 			}
+			
 		}
-		
 		return $is_jpeg;
 	}
 	
@@ -448,7 +449,6 @@ class UploadManager
 		$mosaic=new GeographMapMosaic;
 		$mosaic->expirePosition($this->square->x,$this->square->y);
 		
-		
 		//get the id
 		$gridimage_id=$this->db->Insert_ID();
 		
@@ -459,8 +459,11 @@ class UploadManager
 		$image->loadFromId($gridimage_id);
 		$image->storeImage($src);
 		
-		$this->cleanUp();
+		//updated cached tables
+		$image->updateCachedTables();	
 		
+		$this->cleanUp();
+
 	}
 	
 	/**
