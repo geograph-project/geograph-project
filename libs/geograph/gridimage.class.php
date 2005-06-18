@@ -549,7 +549,7 @@ class GridImage
 	* handy helper for Smarty templates, for instance, given an instance of this
 	* class, you can use this {$image->getThumbnail(213,160)} to show a thumbnail
 	*/
-	function getThumbnail($maxw, $maxh)
+	function getThumbnail($maxw, $maxh,$urlonly = false)
 	{
 		global $CONF;
 		//establish whether we have a cached thumbnail
@@ -655,9 +655,11 @@ class GridImage
 		
 			}
 		}
-		
-		
-		if ($thumbpath=='/photos/error.jpg')
+		if ($urlonly)
+		{
+			$html = $thumbpath;	
+		} 
+		elseif ($thumbpath=='/photos/error.jpg')
 		{
 			$html="<img src=\"$thumbpath\" width=\"$maxw\" height=\"$maxh\" />";
 		}
@@ -743,6 +745,9 @@ class GridImage
 			}
 
 		}
+		
+		//updated cached tables
+		$this->updateCachedTables();	
 			
 		//finally, we update status information for the gridsquare
 		$this->grid_square->updateCounts();
@@ -835,8 +840,11 @@ class GridImage
 			$mosaic->expirePosition($this->grid_square->x,$this->grid_square->y);
 			
 			$mosaic->expirePosition($newsq->x,$newsq->y);
-					
-			
+				
+			//updated cached tables
+			//$this->updateCachedTables();		
+				//this isnt needed as reassignGridsquare is only called before commitChanges
+				
 			$ok=true;
 		}
 		else
@@ -907,8 +915,48 @@ class GridImage
 			"where gridimage_id = '{$this->gridimage_id}'";
 		$db->Execute($sql);
 			
-		
+		//updated cached tables
+		$this->updateCachedTables();	
 	}
 	
+	
+	/**
+	* Saves update tables based on gridimage
+	*/
+	function updateCachedTables()
+	{
+		$db=&$this->_getDB();
+		//quick sanity check
+		if (!$this->gridimage_id) 
+			die("no gridimage_id supplied to updateCachedTables");	
+	
+		if ($this->moderation_status == 'rejected') {
+			$sql="DELETE FROM gridimage_search ".
+				"WHERE gridimage_id = '{$this->gridimage_id}'";
+			$db->Execute($sql);
+			$sql="DELETE FROM wordnet ".
+				"WHERE  gid  = '{$this->gridimage_id}'";
+			$db->Execute($sql);
+		} elseif ($this->moderation_status) {
+			$sql="REPLACE INTO gridimage_search
+			SELECT gridimage_id,gi.user_id,moderation_status,title,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,user.realname,reference_index
+			FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
+			INNER JOIN user ON(gi.user_id=user.user_id)
+			WHERE gridimage_id = '{$this->gridimage_id}'";
+			$db->Execute($sql);
+			
+			
+			require_once('geograph/wordnet.inc.php');
+					
+			updateWordnet($db,$this->title,'title',$this->gridimage_id);
+			
+		} else {
+			//fall back if we dont know the moduration status then lets load it and start again!
+			$this->loadFromId($this->gridimage_id);	
+			return $this->updateCachedTables();
+		}
+		
+		
+	}
 }
 ?>
