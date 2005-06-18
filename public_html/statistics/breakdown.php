@@ -36,14 +36,14 @@ if (isset($_GET['order']) && preg_match('/^\w+$/' , $_GET['order']))
 	$order = $_GET['order'];
 
 $template='statistics_breakdown.tpl';
-$cacheid='statistics|g'.$by.'_'.$ri.'_'.$u.'_'.$order;
+$cacheid='statistics|'.$by.'_'.$ri.'_'.$u.'_'.$order;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
 $smarty->assign_by_ref('references',$CONF['references']);	
 
-$bys = array('status' => 'Status','class' => 'Category','taken' => 'Date Taken','gridsq' => 'Grid Square');
+$bys = array('status' => 'Status','class' => 'Category','takenyear' => 'Date Taken (Year)','taken' => 'Date Taken (Month)','gridsq' => 'Grid Square');
 $smarty->assign_by_ref('bys',$bys);
 
 $smarty->assign('by', $by);
@@ -74,6 +74,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	} else if ($by == 'taken') {
 		$smarty->assign('linkpro', 1);
 		$sql_group = $sql_fieldname = "SUBSTRING(imagetaken,1,7)";
+	} else if ($by == 'takenyear') {
+		$smarty->assign('linkpro', 1);
+		$sql_group = $sql_fieldname = "SUBSTRING(imagetaken,1,4)";
 	} else if ($by == 'count') {
 		$sql_group = $sql_fieldname = "imagecount";
 	} else {
@@ -143,7 +146,16 @@ $sql_order";
 			foreach($breakdown as $idx=>$entry) {
 				$breakdown[$idx]['field'] = $friendly[$breakdown[$idx]['field']];
 			}
-		} elseif ($by == 'taken') {
+		} elseif ($by == 'takenyear') {
+			foreach($breakdown as $idx=>$entry) {
+				$y = $breakdown[$idx]['field'];
+
+				$breakdown[$idx]['link'] = "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;taken_endYear=$y&amp;taken_startYear=$y&amp;orderby=imagetaken&amp;do=1";
+				if ($y < 100) {
+					$breakdown[$idx]['field'] = ''; //ie unspecified!
+				}
+			}
+		} else if ($by == 'taken') {
 			foreach($breakdown as $idx=>$entry) {
 				list($y,$m)=explode('-', $breakdown[$idx]['field']);
 				
