@@ -493,3 +493,12 @@ div.map div.inner img
 {
 	text-decoration:underline;
 }
+
+/*---------------------------------------------------------------*
+ * Search Results
+ *---------------------------------------------------------------*/
+
+
+.xml-rss {font: bold 10px Verdana, sans-serif; padding: 0 0.5em; border: 1px solid;
+  text-decoration: none;
+  background: #F60; color: #FFF; border-color: #FFC8A4 #7D3302 #3F1A01 #FF9A57;}
