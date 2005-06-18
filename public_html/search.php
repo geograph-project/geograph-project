@@ -33,26 +33,26 @@ $imagestatuses = array('geograph' => 'geograph only','geograph,accepted' => 'geo
 $sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','submitted'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributer Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North');
 #,'user_id'=>'Contributer ID'
 
-
-//check load average, abort if too high
-$buffer = "0 0 0";
-$f = fopen("/proc/loadavg","r");
-if ($f)
-{
-	if (!feof($f)) {
-		$buffer = fgets($f, 1024);
+if (strpos($_ENV["OS"],'Windows') === FALSE) {
+	//check load average, abort if too high
+	$buffer = "0 0 0";
+	$f = fopen("/proc/loadavg","r");
+	if ($f)
+	{
+		if (!feof($f)) {
+			$buffer = fgets($f, 1024);
+		}
+		fclose($f);
 	}
-	fclose($f);
-}
-$loads = explode(" ",$buffer);
-$load=(float)$loads[0];
+	$loads = explode(" ",$buffer);
+	$load=(float)$loads[0];
 
-if ($load>2)
-{
-	$smarty->display('search_unavailable.tpl');	
-	exit;
+	if ($load>2)
+	{
+		$smarty->display('search_unavailable.tpl');	
+		exit;
+	}
 }
-
 
 if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	// -------------------------------
@@ -263,12 +263,14 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		$smarty->assign('resultsperpage', $query['resultsperpage']);
 		$smarty->assign('i', $_GET['i']);
 		
+		advanced_form($smarty,$db);
 	} else {
 		$smarty->assign('resultsperpage', 15);	
-
+		
+		advanced_form($smarty,$db,true); //we can cache the blank form!
 	}
 
-	advanced_form($smarty,$db);
+	
 
 
 } else if ($_GET['i'] && !$_GET['form']) {
@@ -289,7 +291,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	$cacheid="search|".$_GET['i'].".".$pg;
 	
 	if (!$smarty->is_cached($template, $cacheid)) {
-		$smarty->assign('querytime', $engine->Execute($pg)); 
+			$smarty->assign('querytime', $engine->ExecuteCached($pg)); 
 
 		$smarty->assign('i', $_GET['i']);
 		$smarty->assign('currentPage', $pg);
@@ -357,47 +359,57 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	$smarty->display('search.tpl');
 }
 
-	function advanced_form(&$smarty,&$db) {
+	function advanced_form(&$smarty,&$db,$is_cachable = false) {
 		global $CONF,$imagestatuses,$sortorders;
 		
-
-		$smarty->assign('displayclasses', array('full' => 'full listing','text' => 'text description only','thumbs' => 'thumbnails only'));
-		$smarty->assign('pagesizes', array(5,10,15,20,30,50));
-		$smarty->assign('distances', array(5,10,20,50,100,250,500,1000,2000));
-
+		$template = 'search_advanced.tpl';
 		
-
-		$countylist = array();
-		$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0"); 
-		while (!$recordSet->EOF) 
-		{
-			$countylist[$CONF['references'][$recordSet->fields[0]]][$recordSet->fields[1]] = $recordSet->fields[2];
-			$recordSet->MoveNext();
+		if ($is_cachable) {
+			$smarty->caching = 2; // lifetime is per cache
+			$smarty->cache_lifetime = 3600*3; //3hr cache
+		} else {
+			$smarty->caching = 0; // NO caching
 		}
-		$recordSet->Close(); 
-		$smarty->assign_by_ref('countylist', $countylist);
+		
+		if (!$is_cachable || !$smarty->is_cached($template, $cacheid)) {
+			$smarty->assign('displayclasses', array('full' => 'full listing','text' => 'text description only','thumbs' => 'thumbnails only'));
+			$smarty->assign('pagesizes', array(5,10,15,20,30,50));
+			$smarty->assign('distances', array(5,10,20,50,100,250,500,1000,2000));
 
-		$arr = $db->CacheGetAssoc(24*3600,"select imageclass,concat(imageclass,' [',count(*),']') from gridimage ".
-			"where length(imageclass)>0 and moderation_status in ('accepted','geograph') ".
-			"group by imageclass");
-		$smarty->assign_by_ref('imageclasslist',$arr);	
 
-		$topusers=$db->CacheGetAssoc(24*3600,"select user.user_id,concat(realname,' [',count(*),']')   ".
-			"from user inner join gridimage using(user_id) where ftf=1 ".
-			"group by user_id order by realname");
-		$smarty->assign_by_ref('userlist',$topusers);
 
-		require_once('geograph/gridsquare.class.php');
-		$square=new GridSquare;
-		$smarty->assign('prefixes', $square->getGridPrefixes());
+			$countylist = array();
+			$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0"); 
+			while (!$recordSet->EOF) 
+			{
+				$countylist[$CONF['references'][$recordSet->fields[0]]][$recordSet->fields[1]] = $recordSet->fields[2];
+				$recordSet->MoveNext();
+			}
+			$recordSet->Close(); 
+			$smarty->assign_by_ref('countylist', $countylist);
 
-		$smarty->assign_by_ref('imagestatuses', $imagestatuses);
+			$arr = $db->CacheGetAssoc(24*3600,"select imageclass,concat(imageclass,' [',count(*),']') from gridimage ".
+				"where length(imageclass)>0 and moderation_status in ('accepted','geograph') ".
+				"group by imageclass");
+			$smarty->assign_by_ref('imageclasslist',$arr);	
 
-		$smarty->assign_by_ref('sortorders', $sortorders);
+			$topusers=$db->CacheGetAssoc(24*3600,"select user.user_id,concat(realname,' [',count(*),']')   ".
+				"from user inner join gridimage using(user_id) where ftf=1 ".
+				"group by user_id order by realname");
+			$smarty->assign_by_ref('userlist',$topusers);
 
-		$smarty->assign_by_ref('references',$CONF['references']);	
+			require_once('geograph/gridsquare.class.php');
+			$square=new GridSquare;
+			$smarty->assign('prefixes', $square->getGridPrefixes());
 
-		$smarty->display('search_advanced.tpl');
+			$smarty->assign_by_ref('imagestatuses', $imagestatuses);
+
+			$smarty->assign_by_ref('sortorders', $sortorders);
+
+			$smarty->assign_by_ref('references',$CONF['references']);
+		}
+		
+		$smarty->display($template, $cacheid);
 	}
 
 	
