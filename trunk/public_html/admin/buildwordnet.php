@@ -22,6 +22,7 @@
  */
 
 require_once('geograph/global.inc.php');
+require_once('geograph/wordnet.inc.php');
 init_session();
 
 $USER->mustHavePerm("admin");
@@ -39,66 +40,7 @@ $db = NewADOConnection($GLOBALS['DSN']);
 	flush();
 	set_time_limit(3600*24);
 	
-function doaddw2($phrase) {
-	global $w2;
-	$w2[$phrase]++; 
-}
 
-function doaddw3($phrase) {
-	global $w3;
-	$w3[$phrase]++; 
-}
-	
-function docount($text,$field,$id) {
-	global $db,$w1,$w2,$w3;
-	
-	$alltext = strtolower(preg_replace('/[^a-zA-Z0-9]+/',' ',str_replace("'",'',$text)));
-	
-
-	if (strlen($text)< 1)
-		return;
-
-		
-	$words = preg_split('/ /',$alltext);
-	
-	$w1 = array();
-	$w2 = array();
-	$w3 = array();
-	
-	//build a list of one word phrases
-	foreach ($words as $word) {
-		$w1[$word]++;
-	}
-	
-	//build a list of two word phrases
-		$text = $alltext;
-	$text = preg_replace('/(\w+) (\w+)/e','doaddw2("$1 $2")',$text);	
-		$text = $alltext;
-		$text = preg_replace('/(\w+)/','',$text,1);
-	$text = preg_replace('/(\w+) (\w+)/e','doaddw2("$1 $2")',$text);
-	
-	//build a list of three word phrases
-		$text = $alltext;
-	$text = preg_replace('/(\w+) (\w+) (\w+)/e','doaddw3("$1 $2 $3")',$text);	
-		$text = $alltext;
-		$text = preg_replace('/(\w+)/','',$text,1);
-	$text = preg_replace('/(\w+) (\w+) (\w+)/e','doaddw3("$1 $2 $3")',$text);	
-		$text = $alltext;
-		$text = preg_replace('/(\w+) (\w+)/','',$text,1);
-	$text = preg_replace('/(\w+) (\w+) (\w+)/e','doaddw3("$1 $2 $3")',$text);
-		
-	
-	
-	foreach ($w1 as $word=>$count) {
-		$db->Execute("insert into wordnet set gid = $id,`len` = 1,words = '$word',$field = $count");// ON DUPLICATE KEY UPDATE $field=$field+$count");
-	}
-	foreach ($w2 as $word=>$count) {
-		$db->Execute("insert into wordnet set gid = $id,`len` = 2,words = '$word',$field = $count");
-	}	
-	foreach ($w3 as $word=>$count) {
-		$db->Execute("insert into wordnet set gid = $id,`len` = 3,words = '$word',$field = $count");
-	}	
-}
 
 	$tim = time();
 	$db->Execute("delete from wordnet");
@@ -110,10 +52,10 @@ function docount($text,$field,$id) {
 	$recordSet = &$db->Execute("select gridimage_id,title,comment from gridimage where moderation_status != 'rejected'");
 	while (!$recordSet->EOF) 
 	{
-		docount($recordSet->fields['title'],'title',$recordSet->fields['gridimage_id']);
+		updateWordnet($db,$recordSet->fields['title'],'title',$recordSet->fields['gridimage_id']);
 		//the comments arent searched yet anyway...
 		if ($_GET['comments']) 
-			docount($recordSet->fields['comment'],'comment',$recordSet->fields['gridimage_id']);
+			updateWordnet($db,$recordSet->fields['comment'],'comment',$recordSet->fields['gridimage_id']);
 		if ($recordSet->fields['gridimage_id']%100==0)
 			printf("done %d at <b>%d</b> seconds<BR>",$recordSet->fields['gridimage_id'],time()-$tim);
 	
