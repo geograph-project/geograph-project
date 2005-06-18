@@ -426,10 +426,11 @@ class GeographMapMosaic
 		if ($prefix['prefix']) { 
 			$n=$y_km-$prefix['origin_y'];
 			$e=$x_km-$prefix['origin_x'];
-			return sprintf('%s%02d%02d', $prefix['prefix'], $e, $n);
+			$this->gridref = sprintf('%s%02d%02d', $prefix['prefix'], $e, $n);
 		} else {
-			return "unknown";
+			$this->gridref = "unknown";
 		}
+		return $this->gridref;
 	}
 	
 	/**
