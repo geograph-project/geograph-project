@@ -1,4 +1,4 @@
-{assign var="page_title" value="Statistics"}
+{assign var="page_title" value="Statistics:: $h2title"}
 {include file="_std_begin.tpl"}
 
     <form method="get" action="{$script_name}">
