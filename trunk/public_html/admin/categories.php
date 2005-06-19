@@ -53,20 +53,28 @@ if (!$db) die('Database connection failed');
 					$message .= "<p>Updating '<i>".$_POST['old'.$c]."</i>' to '<b>-".$_POST['new'.$c]."</b>'.</p>";
 					$sql = "UPDATE gridimage SET `imageclass` = '-".$_POST['new'.$c]."' WHERE `imageclass` = '".$_POST['old'.$c]."'";
 					$db->Execute($sql);	
+						$sql = "UPDATE gridimage_search SET `imageclass` = '-".$_POST['new'.$c]."' WHERE `imageclass` = '".$_POST['old'.$c]."'";
+						$db->Execute($sql);	
 						//do the backwards swap
 						$message .= "<p>Updating '<i>".$_POST['new'.$c]."</i>' to '<b>".$_POST['old'.$c]."</b>'.</p>";
 						$sql = "UPDATE gridimage SET `imageclass` = '".$_POST['old'.$c]."' WHERE `imageclass` = '".$_POST['new'.$c]."'";
 						$db->Execute($sql);	
+							$sql = "UPDATE gridimage_search SET `imageclass` = '".$_POST['old'.$c]."' WHERE `imageclass` = '".$_POST['new'.$c]."'";
+							$db->Execute($sql);	
 					//correct the temp value
 					$message .= "<p>Updating '<i>-".$_POST['new'.$c]."</i>' to '<b>".$_POST['new'.$c]."</b>'.</p>";
 					$sql = "UPDATE gridimage SET `imageclass` = '".$_POST['new'.$c]."' WHERE `imageclass` = '-".$_POST['new'.$c]."'";
 					$db->Execute($sql);	
+						$sql = "UPDATE gridimage_search SET `imageclass` = '".$_POST['new'.$c]."' WHERE `imageclass` = '-".$_POST['new'.$c]."'";
+						$db->Execute($sql);	
 					//we already have done the swap so dont want it to happen on the next iteration
 					$skip[$_POST['new'.$c]]++;
 				} else {
 					$message .= "<p>Updating '<i>".$_POST['old'.$c]."</i>' to '<b>".$_POST['new'.$c]."</b>'.</p>";
 					$sql = "UPDATE gridimage SET `imageclass` = '".$_POST['new'.$c]."' WHERE `imageclass` = '".$_POST['old'.$c]."'";
 					$db->Execute($sql);	
+						$sql = "UPDATE gridimage_search SET `imageclass` = '".$_POST['new'.$c]."' WHERE `imageclass` = '".$_POST['old'.$c]."'";
+						$db->Execute($sql);	
 				}
 			}
 
