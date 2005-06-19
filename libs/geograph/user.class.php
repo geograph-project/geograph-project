@@ -401,10 +401,20 @@ class GeographUser
 			else
 			{
 				//hurrah - it's all good - lets update ourself..
+				
+				//update gridimage_search too
+				if ($this->realname != stripslashes($profile['realname'])) {
+					$sql="update gridimage_search set realname=".$db->Quote(stripslashes($profile['realname'])).
+						" where user_id = {$this->user_id}";
+					$db->Execute($sql);
+				}
+				
+				
 				$this->realname=stripslashes($profile['realname']);
 				$this->nickname=stripslashes($profile['nickname']);
 				$this->website=stripslashes($profile['website']);
 				$this->public_email=isset($profile['public_email'])?1:0;
+				
 				
 				$this->_forumUpdateProfile();
 				
