@@ -61,7 +61,7 @@
 </ul>
 
 {if $profile->stats.total gt 0}
-	<h3><a href='/search.php?u={$profile->user_id}'>Photographs</a></h3>
+	<h3><a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1'>Photographs</a></h3>
 	<ul>		
 		{foreach from=$userimages item=image}
 		<li><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->grid_reference}</a> {$image->title} ({$image->moderation_status})</li>
