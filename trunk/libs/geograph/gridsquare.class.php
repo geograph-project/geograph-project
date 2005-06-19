@@ -616,7 +616,7 @@ class GridSquare
 		$images=array();
 		
 		$i=0;
-		$recordSet = &$db->Execute("select gridimage.*,user.realname,user.email,user.website ".
+		$recordSet = &$db->Execute("select gridimage.*,user.realname ".
 			"from gridimage ".
 			"inner join user using(user_id) ".
 			"where gridsquare_id={$this->gridsquare_id} ".
@@ -625,7 +625,7 @@ class GridSquare
 		while (!$recordSet->EOF) 
 		{
 			$images[$i]=new GridImage;
-			$images[$i]->loadFromRecordset($recordSet);
+			$images[$i]->fastInit($recordSet->fields);
 			$recordSet->MoveNext();
 			$i++;
 		}
