@@ -176,7 +176,7 @@
    <p style="line-height:1em;font-size:0.8em;text-align:center">Map width <b>{$mapwidth} km</b></p>
  
  {if $mapwidth == 10}
-  <p style="line-height:1em;font-size:0.8em;text-align:center"><a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$mosaic_token}">print check sheet</a></p>
+  <p style="line-height:1em;font-size:0.8em;text-align:center"><a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$mosaic_token}" style="color:white">print check sheet</a></p>
  {/if}
  
    </td>
