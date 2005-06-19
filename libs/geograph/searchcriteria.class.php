@@ -91,9 +91,9 @@ class SearchCriteria
 				$sql_where .= " and ";
 			}
 			if (strpos($this->limit1,'!') === 0) {
-				$sql_where = "gi.user_id != ".preg_replace('/^!/','',$this->limit1);
+				$sql_where .= "gi.user_id != ".preg_replace('/^!/','',$this->limit1);
 			} else {
-				$sql_where = "gi.user_id = ".($this->limit1);
+				$sql_where .= "gi.user_id = ".($this->limit1);
 			}
 		} 
 		if (!empty($this->limit2)) {
