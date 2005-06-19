@@ -98,6 +98,9 @@ class SearchEngine
 				case "Text":
 					$this->criteria = new SearchCriteria_Text($query['q']);
 					break;
+				case "Special":
+					$this->criteria = new SearchCriteria_Special($query['q']);
+					break;
 			}
 
 			$this->criteria->_initFromArray($query);
@@ -288,6 +291,17 @@ class SearchEngine
 			$searchq = $dataarray['textsearch'];
 			
 			$searchdesc = ", containing '".str_replace('^','',$dataarray['textsearch'])."' ";	
+		} else if (!empty($dataarray['description']) && !empty($dataarray['searchq'])) {
+			$USER->mustHavePerm("admin");
+			$dataarray['description'] = trim($dataarray['description']);
+			$dataarray['searchq'] = trim($dataarray['searchq']);
+			$searchclass = 'Special';
+			$searchq = $dataarray['searchq'];
+			$searchdesc = ", ".$dataarray['description'];	
+			if ($dataarray['x'] > 0 && $dataarray['y'] > 0) {
+				$searchx = $dataarray['x'];
+				$searchy = $dataarray['y'];
+			}
 		} else if (!empty($dataarray['all_ind'])) {
 			$searchclass = 'All';
 		} else {
@@ -543,7 +557,8 @@ class SearchEngine
 		}
 		if (!$sql_order) {$sql_order = 'gs.grid_reference';}
 	
-		$count_from = (strpos($sql_where,'gs') !== FALSE)?"INNER JOIN gridsquare AS gs USING(gridsquare_id)":'';
+		$count_from = (strpos($sql_where,'gs.') !== FALSE)?"INNER JOIN gridsquare AS gs USING(gridsquare_id)":'';
+		$count_from .= (strpos($sql_where,'user.') !== FALSE)?" INNER JOIN user ON(gi.user_id=user.user_id)":'';
 		##$count_from = "INNER JOIN gridsquare AS gs USING(gridsquare_id)";
 	// construct the count query sql
 $sql = <<<END

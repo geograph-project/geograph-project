@@ -301,7 +301,17 @@ class SearchCriteria_GridRef extends SearchCriteria
 	
 }
 
-
+class SearchCriteria_Special extends SearchCriteria
+{
+	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) {
+		parent::getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
+		$db = $this->_getDB();
+		if ($sql_where) {
+			$sql_where .= " and ";
+		}
+		$sql_where .= $this->searchq;
+	}
+}
 
 class SearchCriteria_Text extends SearchCriteria
 {
