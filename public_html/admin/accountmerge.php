@@ -46,6 +46,8 @@ if (isset($_POST['go']))
 	flush();
 	set_time_limit(3600*24);
 	
+	$realname = $db->Quote($db->GetOne("select realname from user where user_id='$to'"));
+	
 	$recordSet = &$db->Execute("select * from gridimage where user_id='$from'");
 	while (!$recordSet->EOF) 
 	{
@@ -65,6 +67,7 @@ if (isset($_POST['go']))
 			flush();
 			
 			$dbUpdate->Execute("update gridimage set user_id=$to where gridimage_id={$image->gridimage_id}");	
+			$dbUpdate->Execute("update gridimage_search set user_id=$to,realname = $realname where gridimage_id={$image->gridimage_id}");	
 		}	
 		else
 		{
