@@ -41,13 +41,13 @@ corrected</li>
 
 <h2>Developer / Sysadmin Tools</h2>
 <ul>
-<li><a title="Recreate Maps" href="recreatemaps.php">Recreate Maps</a> - 
+<li><a title="Recreate Maps" href="/admin/recreatemaps.php">Recreate Maps</a> - 
    force recreation of the most urgent maps</li>
    
 <li><a title="Web Stats" href="http://www.geograph.co.uk/logs/">Web Stats</a> - 
    check the apache activity logs</li>
 
-<li><a title="Server Stats" href="server.php">Server Stats</a> - 
+<li><a title="Server Stats" href="/admin/server.php">Server Stats</a> - 
    check server status</li>
    
 <li><a title="Map Maker" href="/admin/mapmaker.php">Map Maker</a> is a simple tool for checking
@@ -55,6 +55,16 @@ the internal land/sea map</li>
 
 <li><a title="DB Check" href="/admin/dbcheck.php">Database Check</a> analyse database for
 database or application problems</li>
+
+<li>Rebuild <a title="Rebuild wordnet" href="/admin/buildwordnet.php">WordNet</a>/<a 
+title="Rebuild gridimage_search" href="/admin/buildgridimage_search.php">Search Cache</a> - use if
+tables become corrupted</li>
+
+<li><a title="Search Stats" href="/admin/viewsearches.php">Search Statistics</a> - See the recent Search Activity</li>
+
+<li><a title="Custom Search" href="/search.php?form=advanced&Special=1">Create Custom Search</a> - create a one off special search (sql required)</li>
+
+
 </ul>
 
     
