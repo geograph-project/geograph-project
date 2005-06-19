@@ -1,4 +1,4 @@
-
+{assign var="page_title" value="Search Results`$engine->criteria->searchdesc`"}
 {include file="_std_begin.tpl"}
 
 <h2>Search Results</h2>
