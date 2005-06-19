@@ -87,16 +87,14 @@ class ImageList
 		//lets find some recent photos
 		$this->images=array();
 		$i=0;
-		$recordSet = &$db->Execute("select gridimage.*,user.realname ".
-			"from gridimage ".
-			"inner join user using(user_id) ".
+		$recordSet = &$db->Execute("select * ".
+			"from gridimage_search ".
 			"where moderation_status in ($statuslist) ".
 			"$orderby $limit");
 		while (!$recordSet->EOF) 
 		{
 			$this->images[$i]=new GridImage;
-			$this->images[$i]->loadFromRecordset($recordSet);
-			$this->images[$i]->compact();
+			$this->images[$i]->fastInit($recordSet->fields);
 			$recordSet->MoveNext();
 			$i++;
 		}
@@ -123,12 +121,10 @@ class ImageList
 		$orderby="order by submitted";
 		$limit="";
 		
-		$sql="select gridimage.*,user.realname ".
-			"from gridimage ".
-			"inner join user using(user_id) ".
-			"inner join gridsquare on(gridimage.gridsquare_id=gridsquare.gridsquare_id) ".
+		$sql="select * ".
+			"from gridimage_search ".
 			"where moderation_status in ($statuslist) and ".
-			"user.user_id='$user_id' ".
+			"user_id='$user_id' ".
 			"$orderby $limit";
 		
 			
@@ -138,8 +134,7 @@ class ImageList
 		while (!$recordSet->EOF) 
 		{
 			$this->images[$i]=new GridImage;
-			$this->images[$i]->loadFromRecordset($recordSet);
-			$this->images[$i]->compact();
+			$this->images[$i]->fastInit($recordSet->fields);
 			$recordSet->MoveNext();
 			$i++;
 		}
@@ -171,14 +166,12 @@ class ImageList
 		//figure for particular grid system?
 		$rfilter="";
 		if (!is_null($reference_index))
-			$rfilter="and gridsquare.reference_index=$reference_index";
+			$rfilter="and reference_index=$reference_index";
 		
-		$cols=$count_only?"count(*) as cnt":"gridimage.*,user.realname";
+		$cols=$count_only?"count(*) as cnt":"*";
 		
 		$sql="select $cols ".
-			"from gridimage ".
-			"inner join user using(user_id) ".
-			"inner join gridsquare on(gridimage.gridsquare_id=gridsquare.gridsquare_id) ".
+			"from gridimage_search ".
 			"where moderation_status in ($statuslist) and ".
 			"x between $l and $r and ".
 			"y between $t and $b ".
@@ -196,8 +189,7 @@ class ImageList
 			while (!$recordSet->EOF) 
 			{
 				$this->images[$count]=new GridImage;
-				$this->images[$count]->loadFromRecordset($recordSet);
-				$this->images[$count]->compact();
+				$this->images[$count]->fastInit($recordSet->fields);
 				$recordSet->MoveNext();
 				$count++;
 			}

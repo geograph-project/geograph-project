@@ -60,7 +60,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/gridsquare.class.php');
 
 
-	$smarty->assign('users_submitted',  $db->GetOne("select count(distinct user_id) from gridimage"));
+	$smarty->assign('users_submitted',  $db->GetOne("select count(distinct user_id) from gridimage_search"));
 	#$smarty->assign('users_total',  $db->GetOne("select count(*) from user where rights>0"));
 	$smarty->assign('users_thisweek',  $db->GetOne("select count(*) from user where rights>0 and (unix_timestamp(now())-unix_timestamp(signup_date))<604800"));
 
@@ -74,8 +74,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	foreach (array(1,2) as $ri) {
 		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 
-		$smarty->assign("images_total_$ri",  $db->GetOne("select count(*) from gridimage inner join gridsquare using (gridsquare_id) where reference_index = $ri"));
-		$smarty->assign("images_thisweek_$ri",  $db->GetOne("select count(*) from gridimage inner join gridsquare using (gridsquare_id) where reference_index = $ri and (unix_timestamp(now())-unix_timestamp(submitted))<604800"));
+		$smarty->assign("images_total_$ri",  $db->GetOne("select count(*) from gridimage_search where reference_index = $ri"));
+		$smarty->assign("images_thisweek_$ri",  $db->GetOne("select count(*) from gridimage_search where reference_index = $ri and (unix_timestamp(now())-unix_timestamp(submitted))<604800"));
 
 		$smarty->assign("squares_total_$ri",  $db->CacheGetOne(24*3600,"select count(*) from gridsquare where reference_index = $ri and percent_land > 0"));
 		$smarty->assign("squares_submitted_$ri",  $db->GetOne("select count(*) from gridsquare where reference_index = $ri and imagecount > 0"));
@@ -83,11 +83,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign("geographs_submitted_$ri",  $db->GetOne("select count(*) from gridsquare where reference_index = $ri and has_geographs > 0"));
 
 		$smarty->assign("grid_total_$ri",  $db->CacheGetOne(24*3600,"select count(*) from gridprefix where reference_index = $ri and landcount > 0"));
-		$smarty->assign("grid_submitted_$ri",  $db->GetOne("select count(distinct substring(grid_reference,1,$letterlength)) from gridimage inner join gridsquare using (gridsquare_id) where reference_index = $ri"));
+		$smarty->assign("grid_submitted_$ri",  $db->GetOne("select count(distinct substring(grid_reference,1,$letterlength)) from gridimage_search where reference_index = $ri"));
 
 		$smarty->assign("tenk_total_$ri",  $db->CacheGetOne(24*3600,"select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+2).",1))) from gridsquare where reference_index = $ri and percent_land > 0"));
 
-		$smarty->assign("tenk_submitted_$ri",  $db->GetOne("select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) from gridimage inner join gridsquare using (gridsquare_id) where reference_index = $ri"));
+		$smarty->assign("tenk_submitted_$ri",  $db->GetOne("select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) from gridimage_search where reference_index = $ri"));
 
 		//this would be the ideal query but seems to look up mysql!?! //todo?
 		#$center = $db->GetRow("SELECT sum( x ) , sum( y ) FROM `gridimage` INNER JOIN gridsquare ON ( gridimage_id ) WHERE moderation_status != 'rejected' AND reference_index = $ri");
