@@ -118,7 +118,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	} else {
 		$sql_order = "ORDER BY field $sql_dir";
 	}
-		
+	
+if (strpos($sql_fieldname,'ftf') !== FALSE) {
 $sql = "select 
 $sql_fieldname as field,
 count(distinct(gridimage_id)) as c 
@@ -127,6 +128,16 @@ where reference_index = $ri $user_crit
 $andwhere
 group by $sql_group 
 $sql_order";
+} else {
+$sql = "select 
+$sql_fieldname as field,
+count(distinct(gridimage_id)) as c 
+from gridimage_search 
+where reference_index = $ri $user_crit
+$andwhere
+group by $sql_group 
+$sql_order";
+}
 		
 	$breakdown=$db->GetAll($sql);
 

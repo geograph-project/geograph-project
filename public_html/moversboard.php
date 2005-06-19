@@ -52,11 +52,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	$topusers=$db->GetAssoc($sql);
 	
 	//now we want to find all users with pending images and add them to this array
-	$sql="select i.user_id,u.realname,0 as geographs, count(*) as pending from gridimage as i ".
-			"inner join user as u using(user_id) ".
-			"where i.submitted > date_sub(now(), interval 7 day) and ".
-			"i.moderation_status='pending' ".
-			"group by i.user_id,i.moderation_status ".
+	$sql="select user_id,realname,0 as geographs, count(*) as pending from gridimage_search ".
+			"where submitted > date_sub(now(), interval 7 day) and ".
+			"moderation_status='pending' ".
+			"group by user_id,moderation_status ".
 			"order by pending desc";
 	$pendingusers=$db->GetAssoc($sql);
 	foreach($pendingusers as $user_id=>$pending)
@@ -101,7 +100,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('cutoff_time', time()-86400*7);
 	
 	//lets find some recent photos
-	$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
+	$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 7);
 	$recent->assignSmarty($smarty, 'recent');
 }
 
