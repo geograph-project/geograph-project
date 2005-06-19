@@ -1,4 +1,4 @@
-{include file="_std_begin.tpl"}
+{include file="_std_begin_dynamic.tpl"}
 {dynamic}
 
 {if $image}

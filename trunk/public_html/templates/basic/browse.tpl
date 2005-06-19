@@ -1,6 +1,12 @@
-{assign var="page_title" value="Browse"}
+{dynamic}
+{if $showresult}
+	{assign var="page_title" value="$gridref :: Browse"}
+{else}
+	{assign var="page_title" value="Browse"}
+{/if}
+{/dynamic}
 {assign var="right_block" value="_block_recent.tpl"}
-{include file="_std_begin.tpl"}
+{include file="_std_begin_dynamic.tpl"}
 {dynamic}
 
     <h2>Browse</h2>
