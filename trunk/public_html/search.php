@@ -199,6 +199,9 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 
 		$smarty->assign('searchclass', $query['searchclass']);
 		switch ($query['searchclass']) {
+			case "Special":
+				die("ERROR:Attempt to edit a locked search");
+				break;
 			case "Postcode":
 				$smarty->assign('postcode', $query['searchq']);
 				$smarty->assign('elementused', 'postcode');
@@ -291,8 +294,12 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	$cacheid="search|".$_GET['i'].".".$pg;
 	
 	if (!$smarty->is_cached($template, $cacheid)) {
+		if ($engine->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\./',$engine->criteria->searchq)) {
+			//a Special Search needs full access to GridImage/GridSquare/User
+			$smarty->assign('querytime', $engine->Execute($pg)); 
+		} else {
 			$smarty->assign('querytime', $engine->ExecuteCached($pg)); 
-
+		}
 		$smarty->assign('i', $_GET['i']);
 		$smarty->assign('currentPage', $pg);
 		$smarty->assign_by_ref('engine', $engine);
@@ -360,10 +367,14 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 }
 
 	function advanced_form(&$smarty,&$db,$is_cachable = false) {
-		global $CONF,$imagestatuses,$sortorders;
+		global $CONF,$imagestatuses,$sortorders,$USER;
 		
-		$template = 'search_advanced.tpl';
-		
+		if ($_GET['Special']) {
+			$USER->mustHavePerm("admin");
+			$template = 'search_admin_advanced.tpl';
+		} else {
+			$template = 'search_advanced.tpl';
+		}
 		if ($is_cachable) {
 			$smarty->caching = 2; // lifetime is per cache
 			$smarty->cache_lifetime = 3600*3; //3hr cache
