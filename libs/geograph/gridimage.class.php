@@ -209,6 +209,7 @@ class GridImage
 	/**
 	* advanced method which sets up a gridimage without a gridsquare instance
 	* only use this method if you know what you are doing
+	* if need a grid_reference it should be supplied in the array
 	*/
 	function fastInit(&$arr)
 	{
@@ -262,7 +263,7 @@ class GridImage
 		$this->_clear();
 		if (preg_match('/^\d+$/', $gridimage_id))
 		{
-			$row = &$db->GetRow("select gridimage.*,user.realname,user.email,user.website ".
+			$row = &$db->GetRow("select gridimage.*,user.realname ".
 				"from gridimage ".
 				"inner join user using(user_id) ".
 				"where gridimage_id={$gridimage_id}");
