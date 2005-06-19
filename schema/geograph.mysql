@@ -502,3 +502,7 @@ CREATE TABLE `gridimage_search` (
   KEY `title` (`title`)
 ) TYPE=MyISAM;
 
+#barry 19th June
+
+ALTER TABLE `queries` CHANGE `searchclass` `searchclass` ENUM( 'County', 'GridRef', 'Placename', 'Postcode', 'Random', 'Text', 'All', 'Special' ) DEFAULT 'All' NOT NULL ,
+CHANGE `searchq` `searchq` VARCHAR( 255 ) NOT NULL 
