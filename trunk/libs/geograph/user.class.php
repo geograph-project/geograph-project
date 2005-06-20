@@ -490,6 +490,85 @@ class GeographUser
 		return $this->registered && (strpos($this->rights, $perm)!==false);
 	}
 	
+	function basicAuthLogin() {
+		if (isset($_SERVER['PHP_AUTH_USER']))
+		{
+			$email=stripslashes(trim($_SERVER['PHP_AUTH_USER']));
+			$password=stripslashes(trim($_SERVER['PHP_AUTH_PW']));
+			#print "$email = $password";exit;
+			$db = NewADOConnection($GLOBALS['DSN']);
+
+			$sql="";
+			if (isValidEmailAddress($email))
+				$sql="select * from user where email=".$db->Quote($email);
+			elseif (isValidRealName($email))
+				$sql="select * from user where nickname=".$db->Quote($email);
+
+
+			if (strlen($sql))
+			{
+				//user registered?
+				$arr = $db->GetRow($sql);	
+				if (count($arr))
+				{
+					//passwords match?
+					if ($arr['password']==$password)
+					{
+						//final test = if they have no rights, they haven't confirmed
+						//their registration
+						if (strlen($arr['rights']))
+						{
+							//copy user fields into this object
+							foreach($arr as $name=>$value)
+							{
+								if (!is_numeric($name))
+									$this->$name=$value;
+							}
+
+							$this->registered=true;
+							$logged_in=true;
+						}
+						else
+						{
+							$error ='You must confirm your registration by following the link in the email sent to '.$email;
+						}
+					}
+					else
+					{
+						//speak friend and enter					
+						$error ='Wrong password - don\'t forget passwords are case-sensitive';
+					}
+
+				}
+				else
+				{
+					//sorry son, your name's not on the list
+					$error ='This email address or nickname is not registered';
+				}
+			}
+			else
+			{
+				$error ='This is not a valid email address or nickname';
+
+			}
+		} 
+		else 
+		{
+			$error ='No Credientials Supplied';
+		}
+		
+		
+		//failure to login means we never return - we show a login page
+		//instead...
+		if (!$logged_in)
+		{
+			header('WWW-Authenticate: Basic realm="Geograph"');
+			header('HTTP/1.0 401 Unauthorized');
+			echo 'Error: Unable to Authenticate - '.$error;
+			exit;
+		}
+	}
+	
 	/**
 	* force inline login if user isn't authenticated
 	* only return after successful login
