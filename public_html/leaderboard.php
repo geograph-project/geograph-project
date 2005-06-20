@@ -41,9 +41,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 
+	//GetOne adds a LIMIT even when we already supply one!
+	$rank50 = $db->GetRow("select count(*) as imgcount ".
+	"from gridimage  where ftf=1 ".
+	"group by user_id order by imgcount desc limit 49,1");
+	
 	$topusers=$db->GetAll("select user.user_id,realname,count(*) as imgcount,max(submitted) as last  ".
 	"from user inner join gridimage using(user_id) where ftf=1 ".
-	"group by user_id order by imgcount desc,last asc limit 50");
+	"group by user_id HAVING imgcount >= {$rank50[0]} order by imgcount desc,last asc ");
 	
 	foreach($topusers as $idx=>$entry)
 	{
