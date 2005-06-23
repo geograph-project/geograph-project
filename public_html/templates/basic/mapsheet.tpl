@@ -15,7 +15,7 @@
 {literal}
 div.g1
 {
-	background:white;
+	background:white ;
 	border:1px solid silver;
 	font-size:4em;
 	position:absolute;
@@ -26,7 +26,7 @@ div.g1
 }
 div.g2
 {
-	background:silver;
+	background:lightgrey;
 	border:1px solid silver;
 	font-size:4em;
 	position:absolute;
@@ -53,8 +53,15 @@ div.t
 	
 }
 
+div.zx 
+{
+	border-left:1px solid black;
+}
 
-
+div.zy 
+{
+	border-top:1px solid black;
+}
 
 {/literal}
 </style>
@@ -73,7 +80,7 @@ have already been done.<br/><div style="text-align:right; font-size:0.7em">Gener
 {*begin map square divs*}
 {foreach from=$grid key=x item=maprow}
 {foreach from=$maprow key=y item=mapcell}
-<div class="{if $mapcell.has_geographs}g2{else}g1{/if}" style="left:{$x+0.2}em;top:{$y+1.6}em;"><div class="t">{if $mapcell.has_geographs}x{else}&nbsp;{/if}</div><div class="r">{$mapcell.grid_reference}</div></div>
+<div class="{if $mapcell.has_geographs}g2{else}g1{/if}{if substr($mapcell.grid_reference,3,1) == '0'} zx{/if}{if substr($mapcell.grid_reference,5,1) == '9'} zy{/if}" style="left:{$x+0.2}em;top:{$y+1.6}em;"><div class="t">{if $mapcell.has_geographs}x{else}&nbsp;{/if}</div><div class="r">{$mapcell.grid_reference}</div></div>
 {/foreach}
 {/foreach}
 
