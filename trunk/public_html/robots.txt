@@ -7,4 +7,5 @@ Disallow: /mapbrowse.php?
 Disallow: /admin
 Disallow: /search.php?
 Disallow: /statistics/wordnet.php?words=
+Disallow: /places.php?
 
