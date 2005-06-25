@@ -750,6 +750,15 @@ class GridImage
 		//updated cached tables
 		$this->updateCachedTables();	
 			
+			
+		//invalidate any cached maps
+		require_once('geograph/mapmosaic.class.php');
+		$mosaic=new GeographMapMosaic;
+
+			//nearly any status change could affect the map, so do it anyway!
+		$mosaic->expirePosition($this->grid_square->x,$this->grid_square->y);
+			
+			
 		//finally, we update status information for the gridsquare
 		$this->grid_square->updateCounts();
 		
