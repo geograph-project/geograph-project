@@ -506,3 +506,26 @@ CREATE TABLE `gridimage_search` (
 
 ALTER TABLE `queries` CHANGE `searchclass` `searchclass` ENUM( 'County', 'GridRef', 'Placename', 'Postcode', 'Random', 'Text', 'All', 'Special' ) DEFAULT 'All' NOT NULL ,
 CHANGE `searchq` `searchq` VARCHAR( 255 ) NOT NULL 
+
+
+#barry 25th June
+
+ALTER TABLE `gridimage` ADD `placename_id` INT( 10 ) UNSIGNED NOT NULL ;
+
+ALTER TABLE `gridimage` ADD INDEX ( `placename_id` ) ;
+
+CREATE TABLE `apikeys` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `key` varchar(32) NOT NULL default '',
+  `ip` int(11) unsigned NOT NULL default '0',
+  `enabled` enum('Y','N') NOT NULL default 'Y',
+  `homepage_url` varchar(128) NOT NULL default '',
+  `comments` text NOT NULL,
+  `accesses` int(11) unsigned NOT NULL default '0',
+  `records` int(11) unsigned NOT NULL default '0',
+  `last_use` timestamp(14) NOT NULL,
+  `added_by` int(11) NOT NULL default '0',
+  `upd_timestamp` timestamp(14) NOT NULL,
+  `crt_timestamp` timestamp(14) NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
