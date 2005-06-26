@@ -395,11 +395,11 @@ class GeographMapMosaic
 		if ($x == -1 && $y == -1) {
 			$x = intval($this->image_w / 2);
 			$y = intval($this->image_h / 2);
+		} else {
+			//invert the y coordinate
+			$y=$this->image_h-$y;
 		}
 		$db=&$this->_getDB();
-		
-		//invert the y coordinate
-		$y=$this->image_h-$y;
 		
 		//convert pixel pos to internal coordinates
 		$x_km=$this->map_x + floor($x/$this->pixels_per_km);
@@ -419,14 +419,15 @@ class GeographMapMosaic
 			$where_crit =  "order by reference_index desc";
 		}
 				
-		$sql="select prefix,origin_x,origin_y from gridprefix ".
+		$sql="select prefix,origin_x,origin_y,reference_index from gridprefix ".
 			"where $x_km between origin_x and (origin_x+width-1) and ".
-			"$y_km between origin_y and (origin_y+height-1) $where_crit";
+			"$y_km between origin_y and (origin_y+height-1) $where_crit limit 1";
 		$prefix=$db->GetRow($sql);
 		if ($prefix['prefix']) { 
 			$n=$y_km-$prefix['origin_y'];
 			$e=$x_km-$prefix['origin_x'];
 			$this->gridref = sprintf('%s%02d%02d', $prefix['prefix'], $e, $n);
+			$this->reference_index = $prefix['reference_index'];
 		} else {
 			$this->gridref = "unknown";
 		}
@@ -587,6 +588,7 @@ class GeographMapMosaic
 	*/
 	function setAlignedOrigin($bestoriginx, $bestoriginy, $ispantoken = false)
 	{
+		global $CONF;
 		//figure out image size in km
 		$mapw=$this->image_w/$this->pixels_per_km;
 		$maph=$this->image_h/$this->pixels_per_km;
@@ -613,10 +615,16 @@ class GeographMapMosaic
 		$bestoriginy=max($bestoriginy, 0);
 		$bestoriginy=min($bestoriginy, 1220);
 		
-		//find closest aligned origin - we've got a hard coded
-		//alignment here to the GB grid origin
-		$originx=round(($bestoriginx-206)/$walign)*$walign+206;
-		$originy=round($bestoriginy/$halign)*$halign;
+		
+		//this sets the most likly reference_index for the center of the map
+		if (!$this->reference_index) {
+			$this->setOrigin($bestoriginx, $bestoriginy);
+			$this->getGridRef(-1,-1);
+		}
+		
+		//find closest aligned origin 
+		$originx=round(($bestoriginx-$CONF['origins'][$this->reference_index][0])/$walign)*$walign+$CONF['origins'][$this->reference_index][0];
+		$originy=round(($bestoriginy-$CONF['origins'][$this->reference_index][1])/$halign)*$halign+$CONF['origins'][$this->reference_index][1];
 
 		$this->setOrigin($originx, $originy);
 	}
