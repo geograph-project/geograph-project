@@ -317,6 +317,9 @@ status("checking /mapbrowse.php rewrite rules...");
 if (!check_http('/mapbrowse.php?t=dummy&i=2&j=2&zoomin=1?43,72', '/TM0000/',$httperr))
 	fail("mod_rewrite rule for mapbrowse.php image maps failed ($httperr) - REQUIRED");
 
+status("checking /places rewrite rules...");
+if (!check_http('/places/1/A/', '/This page was last updated/',$httperr))
+	fail("mod_rewrite rule for /places/<em>reference_index</em> failed ($httperr) - REQUIRED");
 
 
 //////////////////////////////////////////////////////////////////
