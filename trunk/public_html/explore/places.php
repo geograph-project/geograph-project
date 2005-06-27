@@ -27,7 +27,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-$smarty->caching = 0; // lifetime is per cache
+$smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
 if ($_GET['ri']) {
