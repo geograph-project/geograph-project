@@ -24,7 +24,7 @@
 require_once('geograph/global.inc.php');
 require_once('geograph/feedcreator.class.php');
 
-if ( (isset($_GET['topic']) && is_numeric($_GET['topic'])) || (isset($_GET['forum']) && is_numeric($_GET['forum']))) {
+if ( ($_GET['topic'] && is_numeric($_GET['topic'])) || ($_GET['forum'] && is_numeric($_GET['forum']))) {
 	init_session();
 	$USER->basicAuthLogin();
 	//if got past must be logged in	
@@ -38,9 +38,9 @@ if (isset($_GET['format']) && in_array($_GET['format'], $valid_formats))
 	$format=$_GET['format'];
 }
 
-if (isset($_GET['topic']) && is_numeric($_GET['topic'])) {
+if ($_GET['topic'] && is_numeric($_GET['topic'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-t{$_GET['topic']}-{$format}.xml";
-} elseif (isset($_GET['forum']) && is_numeric($_GET['forum'])) {
+} elseif ($_GET['forum'] && is_numeric($_GET['forum'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-f{$_GET['forum']}-{$format}-".(($_GET['sortBy'] == 1)?1:0).".xml";	
 } else {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-{$format}-".(($_GET['sortBy'] == 1)?1:0).".xml";
@@ -51,9 +51,9 @@ $rss->useCached($rssfile);
  
 $db=NewADOConnection($GLOBALS['DSN']);
 
-if (isset($_GET['topic']) && is_numeric($_GET['topic'])) {
+if ($_GET['topic'] && is_numeric($_GET['topic'])) {
 
-	$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vthread&amp;topic={$_GET['topic']}"; 
+	$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/topic{$_GET['topic']}"; 
 
 		$title = $db->GetOne("select topic_title from `geobb_topics` where `topic_id` = {$_GET['topic']}");
 	
@@ -92,26 +92,27 @@ ORDER BY `post_time` ASC";
 		$recordSet->MoveNext();
 	}
 } else {
-	if (isset($_GET['forum']) && is_numeric($_GET['forum'])) {
+	if ($_GET['forum'] && is_numeric($_GET['forum'])) {
 		$USER->basicAuthLogin();
 		//if got past must be logged in
-		$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vtopic&amp;forum={$_GET['forum']}"; 
-	
+		$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/forum{$_GET['forum']}"; 
+		$synd = "&amp;forum={$_GET['forum']}";
 		$title = " :: ".$db->GetOne("select forum_name from `geobb_forums` where `forum_id` = {$_GET['forum']}");
 		
 		$sql_where = "WHERE geobb_topics.forum_id={$_GET['forum']}";
+	} else {
+		$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/";
 	}
-	$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/";
-
+	
 	if ($_GET['sortBy'] == 1) {
 		$rss->title = "Geograph.co.uk Forum $title :: Latest Topics"; 
 		$rss->description = 'Latest Geograph Topics'; 
-		$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format&amp;sortBy=1";
+		$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format&amp;sortBy=1".$synd;
 		$sql_order= "geobb_topics.topic_id DESC";
 	} else {
 		$rss->title = "Geograph.co.uk Forum $title :: Latest Discussions"; 
 		$rss->description = 'Latest Geograph Discussions'; 
-		$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format";
+		$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format".$synd;
 		$sql_order= "`topic_last_post_id` DESC";
 	}
 
@@ -127,8 +128,11 @@ LIMIT 30";
 	{	
 		$item = new FeedItem(); 
 		$item->title = $recordSet->fields['topic_title']; 
-		$item->link = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vthread&amp;topic={$recordSet->fields['topic_id']}"; 
-		$item->description = $recordSet->fields['post_text']; 
+		$item->link = "http://{$_SERVER['HTTP_HOST']}/discuss/topic{$recordSet->fields['topic_id']}"; 
+		$description = preg_replace('/^<i>[^<]+<\/i>([\n\r]*<br>)?([\n\r]*<br>)?([\n\r]*<br>)?/','',$recordSet->fields['post_text']); 
+		if (strlen($description) > 160) 
+			$description = substr($description,0,157)."..."; 
+		$item->description = $description; 
 		$item->date = strtotime($recordSet->fields['post_time']); 
 		//$item->source = "http://{$_SERVER['HTTP_HOST']}/discuss/"; 
 		$item->author = $recordSet->fields['poster_name']; 
