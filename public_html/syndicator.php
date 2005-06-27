@@ -94,8 +94,12 @@ for ($i=0; $i<$cnt; $i++)
 	
 	$item = new FeedItem(); 
 	$item->title = $images->images[$i]->grid_reference." : ".$images->images[$i]->title; 
-	$item->link = "http://{$_SERVER['HTTP_HOST']}/view.php?id={$images->images[$i]->gridimage_id}"; 
-	$item->description = $images->images[$i]->comment; 
+	$item->link = "http://{$_SERVER['HTTP_HOST']}/photo/{$images->images[$i]->gridimage_id}";
+	if ($images->images[$i]->dist_string || $images->images[$i]->imagetakenString) {
+		$item->description = $images->images[$i]->dist_string.($images->images[$i]->imagetakenString?' Taken: '.$images->images[$i]->imagetakenString:'')."<br/>".$images->images[$i]->comment; 
+	} else {
+		$item->description = $images->images[$i]->comment; 
+	}
 	$item->date = strtotime($images->images[$i]->submitted); 
 	$item->source = "http://{$_SERVER['HTTP_HOST']}/"; 
 	$item->author = $images->images[$i]->realname; 
