@@ -682,7 +682,7 @@ class GridImage
 	* status must either 'accepted' or 'rejected'
 	* returns a textual describing the action taken
 	*
-	* This is all quite hairy stuff, as we maintain need to maintain a number of 
+	* This is all quite hairy stuff, as we need to maintain a number of 
 	* counts and status fields in the database
 	*/
 	function setModerationStatus($status, $moderator_id)
@@ -779,82 +779,89 @@ class GridImage
 		//is the reference valid?
 		//old one is in $this->grid_square
 		$newsq=new GridSquare;
-		if ($newsq->setGridRef($grid_reference))
+		if ($newsq->setByFullGridRef($grid_reference))
 		{
 			$db=&$this->_getDB();
 			
 			//ensure this is a real change
-			if ($newsq->gridsquare_id == $this->gridsquare_id)
-				return true;
+			if ($newsq->gridsquare_id != $this->gridsquare_id) {
 			
-			//get sequence number of target square - for a rejected image
-			//we use a negative sequence number
-			if ($this->moderation_status!='rejected')
-			{
-				$seq_no = $this->db->GetOne("select max(seq_no) from gridimage ".
-					"where gridsquare_id={$newsq->gridsquare_id}");
-				$seq_no=max($seq_no+1, 0);
-			}
-			else
-			{
-				$seq_no = $this->db->GetOne("select min(seq_no) from gridimage ".
-					"where gridsquare_id={$newsq->gridsquare_id}");
-				$seq_no=min($seq_no-1, -1);
-			}
-			
-			//was this image ftf? 
-			if ($this->ftf)
-			{
-				//reset the ftf flag
-				$this->ftf=0;
-				
-				//need to assign ftf to another image in the square if possible
-				$next_geograph= $db->GetOne("select gridimage_id from gridimage ".
-					"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' ".
-					"and gridimage_id<>{$this->gridimage_id} ".
-					"order by submitted");
-				if ($next_geograph)
+				//get sequence number of target square - for a rejected image
+				//we use a negative sequence number
+				if ($this->moderation_status!='rejected')
 				{
-					$db->Query("update gridimage set ftf=1 where gridimage_id={$next_geograph}");
+					$seq_no = $this->db->GetOne("select max(seq_no) from gridimage ".
+						"where gridsquare_id={$newsq->gridsquare_id}");
+					$seq_no=max($seq_no+1, 0);
 				}
-			
+				else
+				{
+					$seq_no = $this->db->GetOne("select min(seq_no) from gridimage ".
+						"where gridsquare_id={$newsq->gridsquare_id}");
+					$seq_no=min($seq_no-1, -1);
+				}
+
+				//was this image ftf? 
+				if ($this->ftf)
+				{
+					//reset the ftf flag
+					$this->ftf=0;
+
+					//need to assign ftf to another image in the square if possible
+					$next_geograph= $db->GetOne("select gridimage_id from gridimage ".
+						"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' ".
+						"and gridimage_id<>{$this->gridimage_id} ".
+						"order by submitted");
+					if ($next_geograph)
+					{
+						$db->Query("update gridimage set ftf=1 where gridimage_id={$next_geograph}");
+					}
+
+				}
+
+				//does the image get ftf in the target square?
+				if ($this->moderation_status=='geograph')
+				{
+					$geographs= $db->GetOne("select count(*) from gridimage ".
+						"where gridsquare_id={$newsq->gridsquare_id} and moderation_status='geograph'");
+					if ($geographs==0)
+						$this->ftf=1;
+				}
+				
+				//update cached data for old square and new square
+				$this->grid_square->updateCounts();
+				$newsq->updateCounts();
+
+
+				//invalidate any cached maps
+				require_once('geograph/mapmosaic.class.php');
+				$mosaic=new GeographMapMosaic;
+
+				$mosaic->expirePosition($this->grid_square->x,$this->grid_square->y);
+
+				$mosaic->expirePosition($newsq->x,$newsq->y);
+				
+				$sql_set = "gridsquare_id='{$newsq->gridsquare_id}',".
+				"seq_no=$seq_no,ftf=$this->ftf, ";
 			}
+				//if not a new square only update nateastings and natnorthings
 			
-			//does the image get ftf in the target square?
-			if ($this->moderation_status=='geograph')
-			{
-				$geographs= $db->GetOne("select count(*) from gridimage ".
-					"where gridsquare_id={$newsq->gridsquare_id} and moderation_status='geograph'");
-				if ($geographs==0)
-					$this->ftf=1;
-			}
-			
-			$east=$newsq->getNatEastings();
-			$north=$newsq->getNatNorthings();
+			//we DONT use getNatEastings here because only want them if it more than 4 figure
+			$east=$newsq->nateastings+0;
+			$north=$newsq->natnorthings+0;
 			
 			//reassign image
-			$db->Execute("update gridimage set gridsquare_id='{$newsq->gridsquare_id}',".
-				"seq_no=$seq_no,ftf=$this->ftf, ".
-				"nateastings='$east',natnorthings='$north' ".
+			$db->Execute("update gridimage set $sql_set ".
+				"nateastings=$east,natnorthings=$north ".
 				"where gridimage_id='$this->gridimage_id'");
 
-			//update cached data for old square and new square
-			$this->grid_square->updateCounts();
-			$newsq->updateCounts();
-			
-			
-			//invalidate any cached maps
-			require_once('geograph/mapmosaic.class.php');
-			$mosaic=new GeographMapMosaic;
-			
-			$mosaic->expirePosition($this->grid_square->x,$this->grid_square->y);
-			
-			$mosaic->expirePosition($newsq->x,$newsq->y);
-				
 			//updated cached tables
-			//$this->updateCachedTables();		
 				//this isnt needed as reassignGridsquare is only called before commitChanges
-				
+			//$this->updateCachedTables();		
+		
+			//update placename cached column
+			$this->updatePlaceNameId($newsq);
+		
 			$ok=true;
 		}
 		else
@@ -968,5 +975,44 @@ class GridImage
 		
 		
 	}
+	
+	/**
+	* Saves update tables based on gridimage
+	*/
+	function updatePlaceNameId($gridsquare = null)
+	{
+		$db=&$this->_getDB();
+		
+		if (!$gridsquare) 
+			$gridsquare = $this->grid_square;
+		
+		if (!isset($gridsquare->nateastings))
+			$gridsquare->getNatEastings();
+
+		//to optimise the query, we scan a square centred on the
+		//the required point
+		$radius = 100000;
+
+		$left=$gridsquare->nateastings-$radius;
+		$right=$gridsquare->nateastings+$radius;
+		$top=$gridsquare->natnorthings-$radius;
+		$bottom=$gridsquare->natnorthings+$radius;
+		
+		$places = $db->GetRow("select
+			loc_placenames.id as pid,
+			power(e-{$gridsquare->nateastings},2)+power(n-{$gridsquare->natnorthings},2) as distance
+		from 
+			loc_placenames
+			left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
+		where
+			dsg = 'PPL' AND 
+			e between $left and $right and 
+			n between $top and $bottom and
+			loc_placenames.reference_index = {$gridsquare->reference_index}
+		order by distance asc limit 1");
+		
+		$db->Execute("update gridimage set placename_id = '{$places['pid']}',upd_timestamp = '{$this->upd_timestamp}' where gridimage_id = {$this->gridimage_id}");
+	}	
+	
 }
 ?>
