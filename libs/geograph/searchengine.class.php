@@ -320,7 +320,7 @@ class SearchEngine
 			if ($dataarray['displayclass'])
 				$sql .= ",displayclass = ".$db->Quote($dataarray['displayclass']);
 			if ($dataarray['resultsperpage'])
-				$sql .= ",resultsperpage = ".$db->Quote($dataarray['resultsperpage']);
+				$sql .= ",resultsperpage = ".$db->Quote(min(100,$dataarray['resultsperpage']));
 			if ($searchx > 0 && $searchy > 0)
 				$sql .= ",x = $searchx,y = $searchy";
 			if ($USER->registered)
