@@ -63,6 +63,7 @@ $i=-$i;
 
 }
 while($cols=db_simpleSelect(1));
+$forum =0;
 unset($result);unset($countRes);
 }
 $title=$sitename;
