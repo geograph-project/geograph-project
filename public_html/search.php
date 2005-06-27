@@ -385,7 +385,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		if (!$is_cachable || !$smarty->is_cached($template, $cacheid)) {
 			$smarty->assign('displayclasses', array('full' => 'full listing','text' => 'text description only','thumbs' => 'thumbnails only'));
 			$smarty->assign('pagesizes', array(5,10,15,20,30,50));
-			$smarty->assign('distances', array(5,10,20,50,100,250,500,1000,2000));
+			$smarty->assign('distances', array(1,5,10,20,50,100,250,500,1000,2000));
 
 
 
