@@ -30,55 +30,72 @@ $smarty = new GeographPage;
 
 $db = NewADOConnection($GLOBALS['DSN']);
 if (!$db) die('Database connection failed');  
-#$db->debug = true;
-
-
-
 	
-	if ($_POST['submit']) {
-		if ($_POST['id'] == '-new-') {
-			$sql = "INSERT INTO";
-			$message .= "<p>The following info has been added:</p><ul>";
+	if ($_POST['submit'] && $_POST['key'] && $_POST['id']) {
+		//we have a record to insert/update
+		$arr = $db->GetRow("select id from apikeys where `key` = '{$_POST['key']}' and `id` != '{$_POST['id']}'");
+		if ($arr['id']) {
+			//if we found an id then it must already be in use!
+			$arr = $_POST;
+			$smarty->assign('message', "ERROR: Key '{$_POST['key']}' is already in use");
+			$smarty->assign('id', $_POST['id']);
 		} else {
-			$arr = $db->GetRow("select *,INET_NTOA(ip) as ip_text from apikeys where id = {$_POST['id']}");
-			$sql = "UPDATE";
-			$sql_where = " WHERE id = {$_POST['id']}";
-			$message .= "<p>The following info has been updated:</p><ul>";
-		}
-		
+			//can go ahead and add it
 			
-		
-		unset($_POST['id']);
-		unset($_POST['submit']);
-		
-		if ($_POST['ip_text'] != $arr['ip_text']) {
-			$updates[] = "`ip` = INET_ATON('{$_POST['ip_text']}')";
-			$message .="<li>IP</li>";
-		}
-		unset($_POST['ip_text']);
-		
-		foreach ($_POST as $key => $value) 
-			if ($value != $arr[$key]) {
-				$updates[] = '`'.$key.'` = '.$db->Quote($value);
-				$message .="<li>$key</li>";
+			if ($_POST['id'] == '-new-') {
+				//this is a new key so its an insert
+				$sql = "INSERT INTO";
+				$message .= "<p>The following info has been added:</p><ul>";
+				$updates[] = "`added_by` = {$USER->user_id}";
+				$updates[] = "`crt_timestamp` = NOW()";
+			} else {
+				//otherwise we need an update
+				$arr = $db->GetRow("select *,INET_NTOA(ip) as `ip_text` from `apikeys` where `id` = {$_POST['id']}");
+				$sql = "UPDATE";
+				$sql_where = " WHERE id = {$_POST['id']}";
+				$message .= "<p>The following info has been updated:</p><ul>";
 			}
-		
-		if (count($updates)) {
-			$sql .= ' apikeys SET '.implode(',',$updates).$sql_where;
 
-			$db->Execute($sql);
+			//these values shouldnt be added back
+			unset($_POST['id']);
+			unset($_POST['submit']);
 
-			$message .= "</ul>";
-			$smarty->assign('message',  $message);
+			//ip address requires a special handler
+			if ($_POST['ip_text'] != $arr['ip_text']) {
+				$updates[] = "`ip` = INET_ATON('{$_POST['ip_text']}')";
+				$message .="<li>IP</li>";
+			}
+			unset($_POST['ip_text']);
+
+			//loop though all and create the update array
+			foreach ($_POST as $key => $value) 
+				if ($value != $arr[$key]) {
+					$updates[] = '`'.$key.'` = '.$db->Quote($value);
+					$message .="<li>$key</li>";
+				}
+
+			//only need to run the sql if something has updated
+			if (count($updates)) {
+				$updates[] = "`upd_timestamp` = NOW()";
+				$sql .= ' apikeys SET '.implode(',',$updates).$sql_where;
+
+				$db->Execute($sql);
+
+				$message .= "</ul>";
+				$smarty->assign('message',  $message);
+			}
+
+			//just need a list of all keys
+			$arr = $db->GetAssoc("select * from apikeys");
 		}
-		
-		$arr = $db->GetAssoc("select * from apikeys");
 	} elseif ($_GET['id']) {
+		//load the info for editing the record
 		if ($_GET['id'] != '-new-') {
 			$arr = $db->GetRow("select *,INET_NTOA(ip) as ip_text from apikeys where id = {$_GET['id']}");
 		}
 		$smarty->assign('id', $_GET['id']);
 	} else {	
+		//just need a list of all keys
 		$arr = $db->GetAssoc("select * from apikeys");
 	}
 
