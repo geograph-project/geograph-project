@@ -297,6 +297,8 @@ class SearchEngine
 			$dataarray['searchq'] = trim($dataarray['searchq']);
 			$searchclass = 'Special';
 			$searchq = $dataarray['searchq'];
+			if (preg_match("/;|update |delete |drop |replace |alter |password|email/i",$searchq))
+				die("Server Error");
 			$searchdesc = ", ".$dataarray['description'];	
 			if ($dataarray['x'] > 0 && $dataarray['y'] > 0) {
 				$searchx = $dataarray['x'];
@@ -669,7 +671,7 @@ END;
 		$this->numberOfPages = ceil($this->resultCount/$pgsize);
 	// construct the query sql
 $sql = <<<END
-		SELECT *
+		SELECT gi.*
 			$sql_fields
 		FROM gridimage_search as gi
 			 $sql_from
@@ -689,7 +691,6 @@ END;
 		
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_after = ((float)$usec + (float)$sec);
-				
 		$querytime = $querytime_after - $querytime_before;
 		while (!$recordSet->EOF) 
 		{
@@ -700,7 +701,6 @@ END;
 				$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
 				$this->results[$i]->dist_string = sprintf("Dist:%.1fkm %s",sqrt($d),$this->heading_string($angle));
 			}
-			
 			if (empty($this->results[$i]->title))
 				$this->results[$i]->title="Untitled";
 			
