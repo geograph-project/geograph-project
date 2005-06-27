@@ -8,12 +8,13 @@
 <li><a title="Map Fixer" href="/admin/mapfixer.php">Map Fixer</a> allows the land percentage
 for each 1km grid squares to be updated, which allows "that square is all at sea' to be 
 corrected</li>
-
-
       
 <li><a title="Category Consolidation" href="/admin/categories.php">Category Consolidation</a> - 
    Organise the user submitted categories</li>
-     
+ 
+<li><a title="API Keys" href="/admin/apikeys.php">API Keys</a> - 
+   setup who has access to the API</li>
+
 </ul>
 
 {dynamic}
@@ -41,6 +42,7 @@ corrected</li>
 
 <h2>Developer / Sysadmin Tools</h2>
 <ul>
+
 <li><a title="Recreate Maps" href="/admin/recreatemaps.php">Recreate Maps</a> - 
    force recreation of the most urgent maps</li>
    
