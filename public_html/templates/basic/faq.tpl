@@ -1,13 +1,30 @@
 {assign var="page_title" value="FAQ"}
 {include file="_std_begin.tpl"}
 
+ 
+ <div style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;">
+ <b>Contents</b>
+ <ul style="margin-top:0;padding:0 0 0 1em;">
+ <li><a href="#points" style="text-decoration:none">How do I get a geograph point for my image?<br/> What makes a good geograph?</a></li>
+ <li><a href="#supplemental" style="text-decoration:none">What is a supplemental image?</a></li>
+ <li><a href="#resize" style="text-decoration:none">Do I need to resize my photos? Are there size limits?</a></li>
+ <li><a href="#aol" style="text-decoration:none">I use AOL, and the images look terrible!</a></li>
+
+ <li><a href="#rss" style="text-decoration:none">Do you have an RSS feed?</a></li>
+ <li><a href="#use" style="text-decoration:none">I would be interested in using Geograph content, is that possible?</a></li>
+ <li><a href="#built" style="text-decoration:none">Who built this marvellous site?</a></li>
+ <li><a href="#opensource" style="text-decoration:none">Open source? Creative Commons? What's that all about?</a></li>
+ <li><a href="#commercial" style="text-decoration:none">Why must I agree to allow commercial use of my image?</a></li>
+ <li><a href="#question" style="text-decoration:none">I have a question, what should I do?</a></li>
+ </ul></div>
+ 
     <h2>FAQ</h2>
  
 <h3>What is Geographing?</h3>
     <p>See our <a title="guide to geographing" href="/help/guide">guide to good geographing</a></p>
-    
-<a name="points"></a>    
-<h3>How do I get a geograph point for my image? What makes a good geograph?</h3>
+<br style="clear:right"/>
+<a name="points"></a>
+<h3>How do I get a geograph point for my image?<br/> What makes a good geograph?</h3>
     
     <p>If you're the first to submit a proper &quot;geograph&quot; for the grid square
     you'll get a geograph point added to your profile and the warm glow that comes
@@ -18,14 +35,14 @@
     </ul>
     <p>See the <a title="guide to geographing" href="/help/guide">guide to good geographing</a> 
     for more details</p>
-
+<a name="supplemental"></a>
 <h3>What is a supplemental image?</h3>
     <p>If an image doesn't quite fulfill the geograph criteria above, but is still a good
     image, we'll accept it as &quot;supplemental image&quot; - no geograph points are awarded,
     but the image will still appear on the selected grid square. A square that just contains
     supplemental images is still open to be claimed as a geograph though!
     </p>
-
+<a name="resize"></a>
 <h3>Do I need to resize my photos? Are there size limits?</h3>
     <p>You can upload images of any size, portrait or landscape, but we do resize them so their
     longest dimension is 640 pixels. We do not keep your original print quality image,
@@ -35,7 +52,7 @@
     advantageous to upload your original camera image if you want this information
     to be kept.</p>
 
-
+<a name="aol"></a>
 <h3>I use AOL, and the images look terrible!</h3>
 <p>AOL's default settings for graphics is to show &quot;Compressed Graphics Only&quot;. 
 This means AOL is selectively <i>re-compressing</i> images before you see them on your
@@ -45,7 +62,7 @@ screen. This loses a lot of image quality.</p>
 &quot;Uncompressed Graphics&quot;. You will pay only a small penalty in download time to see 
 this and other photo oriented sites the way everyone else can see them.</p>
 
-
+<a name="rss"></a>
 <h3>Do you have an RSS feed?</h3>
     <p>RSS, or Really Simple Syndication, allows you to obtain an up-to-date listing of
     the latest geograph submissions for integration into another website or RSS reader. For more information,
@@ -64,16 +81,24 @@ this and other photo oriented sites the way everyone else can see them.</p>
     <a title="Geograph JavaScript feed" href="http://{$http_host}/syndicator.php?format=JS">JavaScript</a>
     formats.</p>
     
-    <p>You will also find a Feed Link on search results. For example setup a search showing images near you which you can keep your eye on using your feed reader!</p>
+    <p>We have recently added RSS feeds to other parts of the site. You will find an <a class="xml-rss">RSS</a> button at the bottom of search results, useful to keep updated on local images. Registered users can access RSS feed of the latest Topics in the Discussion Forum, and even subscribe to an individual Topic*, just look for the <a class="xml-rss">RSS</a> button! (they also accept the format parameter like the main feed)</p>
     
     <p>If you use the {external title="Firefox Web Browser" href="http://www.mozilla.org/products/firefox/" text="Firefox"} web browser, 
-    you should be able use our feed as a "live bookmark" - simply
-    click the orange button in the bottom right of your browser window.</p>    
+    you should be able use our feeds as "live bookmarks" - simply
+    click the orange button in the bottom right of your browser window. </p>    
 
+    <p>* this feed requires entry of your Geograph email/nickname and password to access.</p>
+<a name="use"></a>
+<h3>I would be interested in using Geograph content, is that possible?</h3>
+    <p>If you can think of an interesting use on your own site, or for a new idea, (beyond what's available via the RSS feeds above) then we would be very interested to <a title="Contact Us" href="contact.php">hear from you</a>. In all liklyhood we can provide a feed to suit your requirements.</p>
+    
+    <p>Of course all images are available under a <a href="#opensource">Creative Commons Licence</a>, so individual images are available for use.</p>
+    
+<a name="built"></a>
 <h3>Who built this marvellous site?</h3>
     <p>Please see the <a href="/help/credits" title="Credits Page">Credits Page</a> for
     information on all the people who made this site possible.</p>
- 
+<a name="opensource"></a>
 <h3>Open source? Creative Commons? What's that all about?</h3>
     <p>Putting this together requires many people to donate their
     time or resources, and we wanted to be sure that we created a resource
@@ -93,7 +118,7 @@ this and other photo oriented sites the way everyone else can see them.</p>
     taken away from the people who contributed. Our licence terms ensure that the
     site and content can never be "taken away" from you.
     </p>
-    
+<a name="commercial"></a>
 <h3>Why must I agree to allow commercial use of my image?</h3>
     <p>Running this site costs money, particularly over time as the storage
     requirements are quite large. We require commercial rights to enable us to
@@ -105,9 +130,7 @@ this and other photo oriented sites the way everyone else can see them.</p>
     retain a screen-quality version of your image, and that under the terms of 
     the Creative Commons licence, you must be credited for any use of your image</p>
     
-    
-
-    
+<a name="question"></a>
 <h3>I have a question, what should I do?</h3>
     <p>Please <a title="Contact Us" href="contact.php">Contact Us</a></p>
     
