@@ -459,8 +459,11 @@ class UploadManager
 		$image->loadFromId($gridimage_id);
 		$image->storeImage($src);
 		
-		//updated cached tables
+		//update cached tables
 		$image->updateCachedTables();	
+		
+		//update placename cached column
+		$image->updatePlaceNameId();
 		
 		$this->cleanUp();
 
