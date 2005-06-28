@@ -88,9 +88,10 @@ class ImageList
 		$this->images=array();
 		$i=0;
 		if ($advanced) {
-			$recordSet = &$db->Execute("select gridimage.*,user.realname ".
-				"from gridimage ".
-				"inner join user using(user_id) ".
+			$recordSet = &$db->Execute("select gi.*,grid_reference,user.realname ".
+				"from gridimage as gi ".
+				"inner join gridsquare as gs using(gridsquare_id) ".
+				"inner join user on(gi.user_id=user.user_id) ".
 				"where moderation_status in ($statuslist) ".
 				"$orderby $limit");
 		} else {
