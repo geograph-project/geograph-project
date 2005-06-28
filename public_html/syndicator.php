@@ -61,8 +61,7 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	$rss->description = "Images".$images->criteria->searchdesc; 
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=$format&amp;i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
 	
-	//cant use the new cached version as need the comment
-	$images->Execute($pg,',comment');
+	$images->ExecuteCached($pg);
 	
 	$images->images = &$images->results;
 	
@@ -72,7 +71,7 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 
 
 	//lets find some recent photos
-	$images=new ImageList(array('accepted', 'geograph'), 'submitted desc', 15, true);
+	$images=new ImageList(array('accepted', 'geograph'), 'submitted desc', 15);
 }
 #print "<PRE>";
 #	var_dump($images);
