@@ -529,3 +529,5 @@ CREATE TABLE `apikeys` (
   `crt_timestamp` timestamp(14) NOT NULL,
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM;
+
+ALTER TABLE `gridimage_search` ADD `comment` TEXT;

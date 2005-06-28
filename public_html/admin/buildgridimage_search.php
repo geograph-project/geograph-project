@@ -35,20 +35,20 @@ $db = NewADOConnection($GLOBALS['DSN']);
 
 	//this takes a long time, so we output a header first of all
 	$smarty->display('_std_begin.tpl');
-	echo "<h3> ReBuilding gridimage_search Table...</h3>";
+	echo "<h3>Rebuilding gridimage_search Table...</h3>";
 	flush();
 	set_time_limit(3600*24);
 	
 	$db->Execute("DELETE FROM gridimage_search");
 	
 	$db->Execute("INSERT INTO gridimage_search
-SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, user.realname,reference_index
+SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, user.realname,reference_index,comment
 FROM gridimage AS gi
 INNER JOIN gridsquare AS gs
 USING ( gridsquare_id ) 
 INNER JOIN user ON ( gi.user_id = user.user_id ) 
 WHERE moderation_status != 'rejected' ");
-
+	echo "<h3>Finished.</h3>";
 
 	$smarty->display('_std_end.tpl');
 	exit;
