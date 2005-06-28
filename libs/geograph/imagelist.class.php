@@ -52,10 +52,10 @@ class ImageList
 	/**
 	* constructor - can be used to build a basic list (See getImages)
 	*/
-	function ImageList($statuses=null, $sort=null, $count=null)
+	function ImageList($statuses=null, $sort=null, $count=null,$advanced = false)
 	{
 		if (!is_null($statuses))
-			$this->getImages($statuses, $sort, $count);
+			$this->getImages($statuses, $sort, $count,$advanced);
 	}
 	
 	/**
@@ -64,7 +64,7 @@ class ImageList
 	* @param sort - optional sort field and direction, e.g. submitted desc
 	* @param count - optional upper limit on images returned
 	*/
-	function getImages($statuses, $sort=null, $count=null)
+	function getImages($statuses, $sort=null, $count=null,$advanced = false)
 	{
 		$db=&$this->_getDB();
 		
@@ -87,10 +87,18 @@ class ImageList
 		//lets find some recent photos
 		$this->images=array();
 		$i=0;
-		$recordSet = &$db->Execute("select * ".
-			"from gridimage_search ".
-			"where moderation_status in ($statuslist) ".
-			"$orderby $limit");
+		if ($advanced) {
+			$recordSet = &$db->Execute("select gridimage.*,user.realname ".
+				"from gridimage ".
+				"inner join user using(user_id) ".
+				"where moderation_status in ($statuslist) ".
+				"$orderby $limit");
+		} else {
+			$recordSet = &$db->Execute("select * ".
+				"from gridimage_search ".
+				"where moderation_status in ($statuslist) ".
+				"$orderby $limit");
+		}
 		while (!$recordSet->EOF) 
 		{
 			$this->images[$i]=new GridImage;
