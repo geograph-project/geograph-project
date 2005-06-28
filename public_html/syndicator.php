@@ -64,7 +64,7 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	//cant use the new cached version as need the comment
 	$images->Execute($pg,',comment');
 	
-	$images->images = $images->results;
+	$images->images = &$images->results;
 	
 } else {
 	$rss->description = 'Latest images and news'; 
@@ -72,7 +72,7 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 
 
 	//lets find some recent photos
-	$images=new ImageList(array('accepted', 'geograph'), 'submitted desc', 15);
+	$images=new ImageList(array('accepted', 'geograph'), 'submitted desc', 15, true);
 }
 #print "<PRE>";
 #	var_dump($images);
