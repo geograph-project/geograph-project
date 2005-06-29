@@ -531,3 +531,5 @@ CREATE TABLE `apikeys` (
 ) TYPE=MyISAM;
 
 ALTER TABLE `gridimage_search` ADD `comment` TEXT;
+
+ALTER TABLE `apikeys` CHANGE `key` `apikey` VARCHAR( 32 ) NOT NULL;
