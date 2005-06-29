@@ -31,13 +31,13 @@ $smarty = new GeographPage;
 $db = NewADOConnection($GLOBALS['DSN']);
 if (!$db) die('Database connection failed');  
 	
-	if ($_POST['submit'] && $_POST['key'] && $_POST['id']) {
+	if ($_POST['submit'] && $_POST['apikey'] && $_POST['id']) {
 		//we have a record to insert/update
-		$arr = $db->GetRow("select id from apikeys where `key` = '{$_POST['key']}' and `id` != '{$_POST['id']}'");
+		$arr = $db->GetRow("select id from apikeys where `apikey` = '{$_POST['apikey']}' and `id` != '{$_POST['id']}'");
 		if ($arr['id']) {
 			//if we found an id then it must already be in use!
 			$arr = $_POST;
-			$smarty->assign('message', "ERROR: Key '{$_POST['key']}' is already in use");
+			$smarty->assign('message', "ERROR: Key '{$_POST['apikey']}' is already in use");
 			$smarty->assign('id', $_POST['id']);
 		} else {
 			//can go ahead and add it

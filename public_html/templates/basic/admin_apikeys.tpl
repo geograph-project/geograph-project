@@ -18,7 +18,7 @@
 		<table cellpadding="3" cellspacing="0" style="font-size:0.8em">
 		  <tr>
 			 <td><b>key</b></td>
-			 <td><input type="text" name="key" value="{$arr.key}"> a-z 0-9 and
+			 <td><input type="text" name="apikey" value="{$arr.apikey}"> a-z 0-9 and
 				underscore only (case sensitive)</td>
 		  </tr>
 		  <tr>
@@ -60,7 +60,7 @@
 	<tr><th>Key</th><th>Accesses</th><th>Records</th><th>Average</th><th>Enabled</th><th>Edit</th></tr>
 	{foreach key=id item=i from=$arr name=loop}
 		<tr>
-		<td>{if $i.homepage_url}<a href="{$i.homepage_url}">{/if}{$i.key}</a></td>
+		<td>{if $i.homepage_url}<a href="{$i.homepage_url}">{/if}{$i.apikey}</a></td>
 		<td align=right>{$i.accesses}</td>
 		<td align=right>{$i.records}</td>
 		<td align=right>{if $i.accesses}{$i.records/$i.accesses|string_format:"%.2f"}{else}0{/if}</td>
