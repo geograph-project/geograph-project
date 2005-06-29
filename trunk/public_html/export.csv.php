@@ -28,11 +28,11 @@ $db=NewADOConnection($GLOBALS['DSN']);
 if (!$_GET['key'] || preg_match("/[^\w]/",$_GET['key']))
 	die("ERROR: no api key");
 	
-$sql = "SELECT * FROM `apikeys` WHERE `key` = '{$_GET['key']}' AND (`ip` = INET_ATON('{$_SERVER['REMOTE_ADDR']}') OR `ip` = 0) AND `enabled` = 'Y'";
+$sql = "SELECT * FROM `apikeys` WHERE `apikey` = '{$_GET['key']}' AND (`ip` = INET_ATON('{$_SERVER['REMOTE_ADDR']}') OR `ip` = 0) AND `enabled` = 'Y'";
 
 $profile = $db->GetRow($sql);
 
-if (!$profile['key'])
+if (!$profile['apikey'])
 	die("ERROR: invalid api key. contact support at geograph dot co dot uk");
 
 
@@ -119,7 +119,7 @@ while (!$recordSet->EOF)
 }
 $recordSet->Close();
 	
-$sql = "UPDATE apikeys SET accesses=accesses+1, records=records+$i,last_use = NOW() WHERE `key` = '{$_GET['key']}'";
+$sql = "UPDATE apikeys SET accesses=accesses+1, records=records+$i,last_use = NOW() WHERE `apikey` = '{$_GET['key']}'";
 
 $db->Execute($sql);	
 
