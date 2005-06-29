@@ -100,6 +100,7 @@ class SearchEngine
 					break;
 				case "Special":
 					$this->criteria = new SearchCriteria_Special($query['q']);
+					$query['searchq'] = stripslashes($query['searchq']);
 					break;
 			}
 
