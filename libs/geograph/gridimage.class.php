@@ -99,17 +99,6 @@ class GridImage
 	var $realname;
 	
 	/**
-	* user email address
-	*/
-	var $email;
-
-	/**
-	* user website
-	*/
-	var $website;
-	
-	    
-	/**
 	* constructor
 	*/
 	function GridImage()
@@ -334,7 +323,7 @@ class GridImage
 		$title=htmlentities($this->title);
 		
 		$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
-		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]} border=\"0\"/>";
+		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
 			
 		return $html;
 	}
@@ -440,14 +429,14 @@ class GridImage
 		
 		if ($thumbpath=='/photos/error.jpg')
 		{
-			$html="<img src=\"$thumbpath\" width=\"$maxw\" height=\"$maxh\" border=\"0\"/>";
+			$html="<img src=\"$thumbpath\" width=\"$maxw\" height=\"$maxh\"/>";
 		}
 		else
 		{
 			$title=htmlentities($this->title);
 			
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
-			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]} border=\"0\"/>";
+			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]}/>";
 		}
 		
 		
