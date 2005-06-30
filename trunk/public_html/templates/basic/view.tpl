@@ -86,7 +86,7 @@ referring to <b>image {$image->gridimage_id}</b>
 	</div>
 {/foreach}
 {if $marker}
-<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><img src="/templates/basic/img/crosshairs.gif" alt="+" width="16" height="16"></div>
+<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><img src="/templates/basic/img/crosshairs.gif" alt="+" width="16" height="16"/></div>
 {/if}
 </div>
 </div>
@@ -140,7 +140,7 @@ referring to <b>image {$image->gridimage_id}</b>
 	{external href="http://www.multimap.com/map/browse.cgi?GridE=`$image->grid_square->nateastings`&amp;GridN=`$image->grid_square->natnorthings`&amp;scale=25000&amp;title=[`$image->title`]+on+geograph.co.uk" text="multimap.com"}
 {else}
 	&amp;
-	{external href="http://www.multimap.com/p/browse.cgi?scale=25000&lon=`$long`&lat=`$lat`&GridE=`$long`&GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"}
+	{external href="http://www.multimap.com/p/browse.cgi?scale=25000&amp;lon=`$long`&amp;lat=`$lat`&amp;GridE=`$long`&amp;GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"}
 {/if}
 
 </td></tr>
@@ -153,11 +153,11 @@ referring to <b>image {$image->gridimage_id}</b>
 {if $image->grid_square->reference_index eq 1}
 	{external title="Geocaches from geocaching.com, search by geocacheuk.com" href="http://stats.guk2.com/caches/search_parse.php?osgbe=`$image->grid_square->nateastings`&amp;osgbn=`$image->grid_square->natnorthings`" text="Geocaches"},
 	{external title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigtools/find.php?t=`$image->grid_reference`" text="Trigpoints"},
-	{external href="http://geourl.org/near?lat=`$lat`&long=`$long`" text="geourl.org" title="search for webpages near this location"} &amp;
+	{external href="http://geourl.org/near?lat=`$lat`&amp;long=`$long`" text="geourl.org" title="search for webpages near this location"} &amp;
  	{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$image->grid_square->nateastings`+`$image->grid_square->natnorthings`" text="more..."}
 {else}
-	{external href="http://www.geocaching.com/seek/nearest.aspx?lat=`$lat`&lon=`$long`" text="geocaches" title="Geocaches from geocaching.com"},
- 	{external href="http://geourl.org/near?lat=`$lat`&long=`$long`" text="geourl.org" title="search for webpages near this location"}  &amp;
+	{external href="http://www.geocaching.com/seek/nearest.aspx?lat=`$lat`&amp;lon=`$long`" text="geocaches" title="Geocaches from geocaching.com"},
+ 	{external href="http://geourl.org/near?lat=`$lat`&amp;long=`$long`" text="geourl.org" title="search for webpages near this location"}  &amp;
  	{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$image->grid_square->nateastings`+`$image->grid_square->natnorthings`+OSI" text="more from nearby.org.uk"}
 {/if}
 
@@ -169,14 +169,11 @@ referring to <b>image {$image->gridimage_id}</b>
 WGS84: {$latdm} {$longdm}
 <span style="font-size:0.8em">[{$lat|string_format:"%.5f"},{$long|string_format:"%.5f"}]</span> </td></tr>
 
-</td></tr>
-
-
 </table>
-<br>
-<div align="center">
+<br/>
+<div style="text-align:center">
 <!-- Creative Commons License -->
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img align="left" alt="Creative Commons License" src="http://creativecommons.org/images/public/somerights20.gif" style="position:relative"/></a>
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" src="http://creativecommons.org/images/public/somerights20.gif" style="float:left; position:relative"/></a>
 The copyright on this image is owned by <a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a> and is <br/>
 licenced under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.
 <!-- /Creative Commons License -->

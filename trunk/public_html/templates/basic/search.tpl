@@ -11,8 +11,8 @@
 
 <form method="get" action="/search.php">
 <div style="padding:5px;background:#dddddd;position:relative"><label for="searchterm">Search</label> 
-<input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="30"/>
-<input id="searchbutton" type="submit" name="go" value="Find"/> [<a href="/search.php?form=advanced">advanced search</a>]
+<input id="searchq" type="text" name="q" value="{$searchq|escape:'html'}" size="30"/>
+<input id="searchgo" type="submit" name="go" value="Find"/> [<a href="/search.php?form=advanced">advanced search</a>]
 
 <br/><br/>
 <small>Enter a Placename, Postcode, Grid Reference, or a text search</small></div>
@@ -45,7 +45,7 @@
 <li><a href="/statistics/breakdown.php?by=class" title="Show Image Categories"><i>more categories...</i></a></li>
 
 </ul>
-</div><br style="clear:both;"><br/><span style="font-size:0.8em">Tip: all these searches and more 
+</div><br style="clear:both;"/><br/><span style="font-size:0.8em">Tip: all these searches and more 
 are available in the <a href="/search.php?form=advanced" 
 title="customisable search options">advanced search</a></span><br/><br/>
 </li>
@@ -64,7 +64,7 @@ title="customisable search options">advanced search</a></span><br/><br/>
 </li>
 {/if}
 {/dynamic} 
-<li>If you are unable to find your location in our search above try {getamap} and return here to enter the <u style="border-bottom: red dotted 1pt; text-decoration: none;"title="look for something like 'Grid reference at centre - NO 255 075 GB Grid">grid reference</u>.<br/><br/></li> 
+<li>If you are unable to find your location in our search above try {getamap} and return here to enter the <acronym style="border-bottom: red dotted 1pt; text-decoration: none;" title="look for something like 'Grid reference at centre - NO 255 075 GB Grid">grid reference</acronym>.<br/><br/></li> 
 
 </ul>
 <div style="padding:5px;background:#dddddd;position:relative">
@@ -83,7 +83,7 @@ title="customisable search options">advanced search</a></span><br/><br/>
 <li>Or you can browse a <a title="choose a photograph" href="browse.php">particular grid square</a>.<br/><br/></li>
 
 
-<li>Registered users can also <a href="/discuss/index.php?action=search">search the forum</a>.</p>
+<li>Registered users can also <a href="/discuss/index.php?action=search">search the forum</a>.</li>
 
 </ul>
 </div>

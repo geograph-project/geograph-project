@@ -7,7 +7,7 @@
 
 <ul>
 {foreach from=$counts key=ri item=count}
-<li><a href="/places/{$ri}/"><b>{$references.$ri}</b></a> [{$count} images]</li>
+<li><a href="/places/{$ri}/"><b>{$references.$ri}</b></a> [{$count} places]</li>
 {/foreach}
 </ul>
 

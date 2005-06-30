@@ -8,8 +8,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 {if $meta_description}<meta name="description" content="{$meta_description|escape:'html'}" />
 {else}<meta name="description" content="Geograph British Isles is a web based project to collect and reference geographically representative images of every square kilometer of the British Isles."/>{/if}
-{if $lat && $long}<meta name="ICBM" content="{$lat}, {$long}">{/if}
-<meta name="DC.title" content="Geograph:: {$page_title|escape:'html'}">
+{if $lat && $long}<meta name="ICBM" content="{$lat}, {$long}"/>{/if}
+<meta name="DC.title" content="Geograph:: {$page_title|escape:'html'}"/>
 <link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/basic.css" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
 {if $engine && $engine->resultCount}

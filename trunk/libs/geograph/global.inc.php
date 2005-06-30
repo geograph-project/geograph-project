@@ -91,7 +91,7 @@ function smarty_block_dynamic($param, $content, &$smarty)
 function smarty_function_getamap($params)
 {
   	
-  	$icon="<img style=\"padding-left:2px;\" title=\"External link - opens in popup window\" src=\"/img/external.png\" width=\"10\" height=\"10\"/>";
+  	$icon="<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in popup window\" src=\"/img/external.png\" width=\"10\" height=\"10\"/>";
   	
   	//get params
   	$gridref4=$params['gridref'];
@@ -148,10 +148,10 @@ function smarty_function_external($params)
   	
   	if ($params['target'] == '_blank') {
   		return "<a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
-  			"<img style=\"padding-left:2px;\" title=\"External link - opens in a new window\" src=\"/img/external.png\" width=\"10\" height=\"10\"/>";
+  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"/img/external.png\" width=\"10\" height=\"10\"/>";
   	} else {
   		return "<a title=\"$title\" href=\"$href\">$text</a>".
-  			"<img style=\"padding-left:2px;\" title=\"External link - shift click to open in new window\" src=\"/img/external.png\" width=\"10\" height=\"10\"/>";
+  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - shift click to open in new window\" src=\"/img/external.png\" width=\"10\" height=\"10\"/>";
   	}  	
 }
 
