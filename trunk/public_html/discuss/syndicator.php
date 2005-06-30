@@ -95,7 +95,7 @@ ORDER BY `post_time` ASC";
 	if ($_GET['forum'] && is_numeric($_GET['forum'])) {
 		$USER->basicAuthLogin();
 		//if got past must be logged in
-		$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/forum{$_GET['forum']}"; 
+		$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vtopic&forum={$_GET['forum']}"; 
 		$synd = "&amp;forum={$_GET['forum']}";
 		$title = " :: ".$db->GetOne("select forum_name from `geobb_forums` where `forum_id` = {$_GET['forum']}");
 		
@@ -128,7 +128,7 @@ LIMIT 30";
 	{	
 		$item = new FeedItem(); 
 		$item->title = $recordSet->fields['topic_title']; 
-		$item->link = "http://{$_SERVER['HTTP_HOST']}/discuss/topic{$recordSet->fields['topic_id']}"; 
+		$item->link = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vthread&topic={$recordSet->fields['topic_id']}"; 
 		$description = preg_replace('/^<i>[^<]+<\/i>([\n\r]*<br>)?([\n\r]*<br>)?([\n\r]*<br>)?/','',$recordSet->fields['post_text']); 
 		if (strlen($description) > 160) 
 			$description = substr($description,0,157)."..."; 
