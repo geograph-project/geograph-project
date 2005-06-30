@@ -564,6 +564,16 @@ class SearchEngine
 		$count_from .= (strpos($sql_where,'user.') !== FALSE)?" INNER JOIN user ON(gi.user_id=user.user_id)":'';
 		##$count_from = "INNER JOIN gridsquare AS gs USING(gridsquare_id)";
 	// construct the count query sql
+		if (preg_match("/group by ([\w\,\(\)]+)/",$sql_where,$matches)) {
+			$sql_where2 = preg_replace("/group by ([\w\,\(\)]+)/",'',$sql_where);
+$sql = <<<END
+	   SELECT count(DISTINCT {$matches[1]})
+		FROM gridimage AS gi $count_from
+			 $sql_from
+		WHERE 
+			$sql_where2
+END;		
+		} else {
 $sql = <<<END
 	   SELECT count(*)
 		FROM gridimage AS gi $count_from
@@ -571,6 +581,7 @@ $sql = <<<END
 		WHERE 
 			$sql_where
 END;
+		}
 		$this->resultCount = $db->CacheGetOne(3600,$sql);
 		$this->numberOfPages = ceil($this->resultCount/$pgsize);
 	// construct the query sql
@@ -585,7 +596,7 @@ $sql = <<<END
 		ORDER BY $sql_order
 		LIMIT $page,$pgsize
 END;
-#print "<BR><BR>$sql";
+print "<BR><BR>$sql";
 
 		//lets find some photos
 		$this->results=array();
@@ -661,12 +672,22 @@ END;
 		}
 		$sql_fields = str_replace('gs.','gi.',$sql_fields);
 	// construct the count sql
+		if (preg_match("/group by ([\w\,\(\)]+)/",$sql_where,$matches)) {
+			$sql_where2 = preg_replace("/group by ([\w\,\(\)]+)/",'',$sql_where);
 $sql = <<<END
-		SELECT count(*)
+	   SELECT count(DISTINCT {$matches[1]})
+		FROM gridimage_search as gi
+			 $sql_from
+		$sql_where2
+END;
+		} else {
+$sql = <<<END
+	   SELECT count(*)
 		FROM gridimage_search as gi
 			 $sql_from
 		$sql_where
 END;
+		}
 #print "<BR><BR>$sql";
 		$this->resultCount = $db->CacheGetOne(3600,$sql);
 		$this->numberOfPages = ceil($this->resultCount/$pgsize);
