@@ -123,6 +123,9 @@ if ($grid_given)
 		$smarty->assign('lat', $lat);
 		$smarty->assign('long', $long);
 	
+		//get a token to show a suroudding geograph map
+		$mosaic=new GeographMapMosaic;
+		$smarty->assign('map_token', $mosaic->getGridSquareToken($image->grid_square));
 	
 	
 		//let's find posts in the gridref discussion forum
