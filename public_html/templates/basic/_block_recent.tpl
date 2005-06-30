@@ -17,7 +17,7 @@
 {/foreach}
 {dynamic}
 {if $marker}
-<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><img src="/templates/basic/img/crosshairs.gif" alt="+" width="16" height="16"></div>
+<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><img src="/templates/basic/img/crosshairs.gif" alt="+" width="16" height="16"/></div>
 {/if}
 {/dynamic}
 </div>

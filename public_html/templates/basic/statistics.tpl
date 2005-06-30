@@ -6,7 +6,7 @@
 <ul>
 <li><b>{$users_submitted}</b> Users have Submitted Images</li>
 <li><b>{$users_thisweek}</b> new Users in past 7 days</li>
-<li>A total of <b>{$images_ftf}</b> Geograph Points have been awarded</p>
+<li>A total of <b>{$images_ftf}</b> Geograph Points have been awarded</li>
 </ul>
 
 <table border="1" cellpadding="4" cellspacing="0" class="statstable">
@@ -77,10 +77,10 @@
 	</div>
 {/foreach}
 {if $marker_1}
-<div style="position:absolute;top:{$marker_1->top-8}px;left:{$marker_1->left-8}px;"><img src="/templates/basic/img/crosshairs.gif" alt="Center for {$place_1.reference_name}" width="16" height="16"></div>
+<div style="position:absolute;top:{$marker_1->top-8}px;left:{$marker_1->left-8}px;"><img src="/templates/basic/img/crosshairs.gif" alt="Center for {$place_1.reference_name}" width="16" height="16"/></div>
 {/if}
 {if $marker_2}
-<div style="position:absolute;top:{$marker_2->top-8}px;left:{$marker_2->left-8}px;"><img src="/templates/basic/img/crosshairs.gif" alt="Center for {$place_2.reference_name}" width="16" height="16"></div>
+<div style="position:absolute;top:{$marker_2->top-8}px;left:{$marker_2->left-8}px;"><img src="/templates/basic/img/crosshairs.gif" alt="Center for {$place_2.reference_name}" width="16" height="16"/></div>
 {/if}
 </div>
 </div>
@@ -120,7 +120,7 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
 	{/if}
     {/if}
     {/dynamic}
-    <input type="submit" value="Go"></p></form>
+    <input type="submit" value="Go"/></p></form>
     <p><a href="/statistics/most_geographed.php">Most Photographed Squares</a>, <a href="/statistics/wordnet.php">Popular Words</a>, and more coming soon.</p>
 
     

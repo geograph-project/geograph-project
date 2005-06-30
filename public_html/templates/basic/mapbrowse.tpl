@@ -88,7 +88,7 @@
 	<div style="position:absolute;top:{$marker->top+1}px;left:{$marker->left+1}px;width:{$marker->width}px;height:{$marker->height}px; border:1px solid white; font-size:1px;"></div>
 	<div style="position:absolute;top:{$marker->top}px;left:{$marker->left}px;width:{$marker->width}px;height:{$marker->height}px; border:1px solid black; font-size:1px;"></div>
 	{else}
-	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><img src="/templates/basic/img/crosshairs.gif" alt="+" width="16" height="16"></div>
+	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><img src="/templates/basic/img/crosshairs.gif" alt="+" width="16" height="16"/></div>
 	{/if}
 {else}
 	{foreach from=$overview key=y item=maprow}
@@ -230,7 +230,7 @@ You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the
 </ul>
 
  
-<p style="font-size:8pt" align="center"><i>Great Britain outline reproduced from Ordnance Survey map data<br/> by 
+<p style="font-size:8pt; text-align:center"><i>Great Britain outline reproduced from Ordnance Survey map data<br/> by 
     permission of the Ordnance Survey &copy; Crown copyright 2001.</i></p> 
 
  
