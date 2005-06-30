@@ -53,22 +53,26 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 
 
 	{if $imagecount}
-<div style="text-align:center; font-size: 0.8em;">		  
-{if $discuss}
-	There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a 
-	<a href="/discuss/index.php?gridref={$gridref}">discussion about {$gridref}</a> (preview on the left)
-	
-{else}
-	{if $user->registered} 
-		<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a discussion about {$gridref}</a>
-	{else}
-		<a href="/login.php">login</a> to start a discussion about {$gridref} 
-	{/if}
-{/if}<br/><br/>
-</div>
-		<p><b>We have 
+		<ul>
+		<li>		  
+		{if $discuss}
+			There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a 
+			<a href="/discuss/index.php?gridref={$gridref}">discussion about {$gridref}</a> (preview on the left)
+
+		{else}
+			{if $user->registered} 
+				<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a discussion about {$gridref}</a>
+			{else}
+				<a href="/login.php">login</a> to start a discussion about {$gridref} 
+			{/if}
+		{/if}</li>
+		<li><a href="/submit.php?gridreference={$gridrefraw}"><b>Submit</b> your own picture of {$gridref}</a>.</li>
+		
+		
+		<li><b>We have 
 		{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
-		for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"}</b> - click for larger version</p>
+		for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"}</b> - click for larger version.</li>
+		</ul>
 		
 		{foreach from=$images item=image}
 		
@@ -95,7 +99,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 		<p>We have no images for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"} yet,
 		
 		{if $nearest_distance}
-			</p><ul><li>The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away.</li>
+			</p><ul><li>The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away.<br/><br/></li>
 		{else}
 			and have no pictures for any grid square within 100km either!</p>
 			<ul>
@@ -113,6 +117,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 				<a href="/login.php">login</a> to start a <b>discussion</b> about {$gridref}.
 			{/if}
 		{/if}</li>
+		<li><a href="/mapbrowse.php?t={$map_token}">Geograph <b>map</b> for {$gridref}</a>.</li>
 		<li>Or <a href="/submit.php?gridreference={$gridrefraw}"><b>submit</b> your own picture of {$gridref}</a>.</li>
 		
 		</ul>
