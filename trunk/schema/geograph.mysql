@@ -533,3 +533,7 @@ CREATE TABLE `apikeys` (
 ALTER TABLE `gridimage_search` ADD `comment` TEXT;
 
 ALTER TABLE `apikeys` CHANGE `key` `apikey` VARCHAR( 32 ) NOT NULL;
+
+#Barry 30th June 
+# add an index on user_id to make recent searches quicker
+ALTER TABLE `queries` ADD INDEX ( `user_id` ) 
