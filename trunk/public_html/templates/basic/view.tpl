@@ -148,7 +148,7 @@ referring to <b>image {$image->gridimage_id}</b>
 <tr><td>What's nearby?</td><td>
 <a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">Geograph Images</a>
 
-<small>(<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}">by this contributer</a> or <a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:html|default:"-"}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:url|default:"-"}">of this category</a>)</small>,<br/>
+<small>(<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}">by this contributor</a> or <a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:html|default:"-"}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:url|default:"-"}">of this category</a>)</small>,<br/>
 
 {if $image->grid_square->reference_index eq 1}
 	{external title="Geocaches from geocaching.com, search by geocacheuk.com" href="http://stats.guk2.com/caches/search_parse.php?osgbe=`$image->grid_square->nateastings`&amp;osgbn=`$image->grid_square->natnorthings`" text="Geocaches"},
