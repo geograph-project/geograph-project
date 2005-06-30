@@ -19,7 +19,7 @@ $CONF['smarty_compile_check']=1;
 $CONF['smarty_debugging']=1;
 
 //disable caching for everyday development
-$CONF['smarty_caching']=0;
+$CONF['smarty_caching']=1;
 
 //email address to send site messages to
 $CONF['contact_email']='someone@somewhere.com,other@elsewhere.com';
@@ -59,6 +59,9 @@ $CONF['imagemagick_path'] = '/usr/bin/';
 
 //the countries referenced in the reference index 
 $CONF['references'] = array(1 => 'Great Britain',2 => 'Ireland');
+
+//false origins for the internal grid
+$CONF['origins'] = array(1 => array(206,0),2 => array(10,149));
 
 //to use the flickr search will need to obtain a flicker api key
 //    http://flickr.com/services/api/misc.api_keys.html
