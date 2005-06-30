@@ -67,6 +67,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 			{/if}
 		{/if}</li>
 		<li><a href="/submit.php?gridreference={$gridrefraw}"><b>Submit</b> your own picture of {$gridref}</a>.</li>
+		<li><a href="/mapbrowse.php?t={$map_token}">Geograph <b>map</b> for {$gridref}</a>.</li>
 		
 		
 		<li><b>We have 
