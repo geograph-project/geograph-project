@@ -113,7 +113,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 				<a href="/login.php">login</a> to start a <b>discussion</b> about {$gridref}.
 			{/if}
 		{/if}</li>
-		<li>Or <a href="submit.php?gridreference={$gridrefraw}"><b>submit</b> your own picture of {$gridref}</a>.</li>
+		<li>Or <a href="/submit.php?gridreference={$gridrefraw}"><b>submit</b> your own picture of {$gridref}</a>.</li>
 		
 		</ul>
 
