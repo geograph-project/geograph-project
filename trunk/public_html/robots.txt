@@ -8,4 +8,9 @@ Disallow: /admin
 Disallow: /search.php?
 Disallow: /statistics/wordnet.php?words=
 Disallow: /places.php?
+Disallow: /usermsg.php?to=
+Disallow: /statistics/breakdown.php?by=status&u=
+Disallow: /submit.php
+Disallow: /discuss/
+
 
