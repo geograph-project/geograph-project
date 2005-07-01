@@ -12,5 +12,6 @@ Disallow: /usermsg.php?to=
 Disallow: /statistics/breakdown.php?by=status&u=
 Disallow: /submit.php
 Disallow: /discuss/
+Disallow: /mapsheet.php
 
 
