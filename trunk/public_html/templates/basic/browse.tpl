@@ -67,7 +67,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 			{/if}
 		{/if}</li>
 		<li><a href="/submit.php?gridreference={$gridrefraw}"><b>Submit</b> your own picture of {$gridref}</a>.</li>
-		<li><a href="/mapbrowse.php?t={$map_token}">Geograph <b>map</b> for {$gridref}</a>.</li>
+		<li><a href="/mapbrowse.php?t={$map_token}">Geograph <b>map</b> for {$gridref}</a> (<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}">print check sheet</a>).</li>
 		
 		
 		<li><b>We have 
@@ -118,7 +118,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 				<a href="/login.php">login</a> to start a <b>discussion</b> about {$gridref}.
 			{/if}
 		{/if}</li>
-		<li><a href="/mapbrowse.php?t={$map_token}">Geograph <b>map</b> for {$gridref}</a>.</li>
+		<li><a href="/mapbrowse.php?t={$map_token}">Geograph <b>map</b> for {$gridref}</a>. (<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}">print check sheet</a>)</li>
 		<li>Or <a href="/submit.php?gridreference={$gridrefraw}"><b>submit</b> your own picture of {$gridref}</a>.</li>
 		
 		</ul>
