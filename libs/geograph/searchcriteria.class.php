@@ -77,7 +77,7 @@ class SearchCriteria
 		if ((($x == 0 && $y == 0 ) || $this->limit8) && $this->orderby) {
 			switch ($this->orderby) {
 				case "random":
-					$sql_order = " rand({$this->crt_timestamp}) ";
+					$sql_order = " rand('{$this->crt_timestamp}') ";
 					break;
 				case "dist_sqd":
 					break;
