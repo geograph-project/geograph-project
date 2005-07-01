@@ -29,6 +29,9 @@ init_session();
 
 $smarty = new GeographPage;
 
+$smarty->caching = 2; // lifetime is per cache
+$smarty->cache_lifetime = 3600*24; //24hr cache
+
 $template='monthlyleader.tpl';
 $cacheid=$_GET['month'];
 
