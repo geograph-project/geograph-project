@@ -596,7 +596,7 @@ $sql = <<<END
 		ORDER BY $sql_order
 		LIMIT $page,$pgsize
 END;
-print "<BR><BR>$sql";
+#print "<BR><BR>$sql";
 
 		//lets find some photos
 		$this->results=array();
