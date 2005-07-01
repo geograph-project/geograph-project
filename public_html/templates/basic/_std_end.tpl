@@ -113,11 +113,9 @@ Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> 
        <span class="sep">|</span>
        <a href="http://bobby.watchfire.com/bobby/bobbyServlet?URL=http%3A%2F%2F{$http_host}%2F&amp;output=Submit&amp;gl=sec508" title="check our accessibility standards compliance">Accessibility</a>
     </p>
-    {if $http_host ne "www.geograph.co.uk"}
     <p style="color:#777788;">Hosting generously donated by 
     {external title="Visit Positive Internet website" href="http://www.positive-internet.com/" text="Positive Internet"}
     </p>
-    {/if}
   </div>
 </div>
 
