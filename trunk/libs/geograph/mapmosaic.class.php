@@ -577,7 +577,7 @@ class GeographMapMosaic
 		$out->setScale(40);
 		$out->setMosaicFactor(2);
 
-		$out->setCentre($gridsquare->x,$gridsquare->y);
+		$out->setCentre($gridsquare->x,$gridsquare->y,true); //true to align to 10x10 map
 	
 		return $out->getToken();		
 	}
@@ -657,11 +657,11 @@ class GeographMapMosaic
 	* Set center of map in internal coordinates, returns true if valid
 	* @access public
 	*/
-	function setCentre($x,$y)
+	function setCentre($x,$y, $ispantoken = false)
 	{
 		return $this->setAlignedOrigin(
 			intval($x - ($this->image_w / $this->pixels_per_km)/2),
-			intval($y - ($this->image_h / $this->pixels_per_km)/2) );
+			intval($y - ($this->image_h / $this->pixels_per_km)/2), $ispantoken);
 	}
 	
 	
@@ -696,7 +696,7 @@ class GeographMapMosaic
 				//if the image count is 1, we'll go straight to the image
 				if (count($images)==1)
 				{
-					$url="http://".$_SERVER['HTTP_HOST'].'/view.php?id='.
+					$url="http://".$_SERVER['HTTP_HOST'].'/photo/'.
 						$images[0]->gridimage_id;
 				}
 				else
