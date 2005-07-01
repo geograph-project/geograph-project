@@ -248,7 +248,11 @@ class GridSquare
 		} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{2})[ \.]?(\d{2})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],"$matches[2]000","$matches[3]000");
 			$isfour = true;
-		}		
+		} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1})[ \.]*(\d{1})\b/",$gridreference,$matches)) {
+			list ($prefix,$e,$n) = array($matches[1],"$matches[2]5000","$matches[3]5000");
+		} else if (preg_match("/\b([a-zA-Z]{1,2})\b/",$gridreference,$matches)) {
+			list ($prefix,$e,$n) = array($matches[1],"50000","50000");
+		} 		
 		if (!empty($prefix))
 		{
 			$gridref=sprintf("%s%02d%02d", strtoupper($prefix), intval($e/1000), intval($n/1000));
