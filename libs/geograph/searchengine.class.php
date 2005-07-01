@@ -559,7 +559,6 @@ class SearchEngine
 				$sql_where .= " and moderation_status != 'rejected'";
 		}
 		if (!$sql_order) {$sql_order = 'gs.grid_reference';}
-	
 		$count_from = (strpos($sql_where,'gs.') !== FALSE)?"INNER JOIN gridsquare AS gs USING(gridsquare_id)":'';
 		$count_from .= (strpos($sql_where,'user.') !== FALSE)?" INNER JOIN user ON(gi.user_id=user.user_id)":'';
 		##$count_from = "INNER JOIN gridsquare AS gs USING(gridsquare_id)";
@@ -572,7 +571,7 @@ $sql = <<<END
 			 $sql_from
 		WHERE 
 			$sql_where2
-END;		
+END;
 		} else {
 $sql = <<<END
 	   SELECT count(*)
@@ -583,6 +582,7 @@ $sql = <<<END
 END;
 		}
 		$this->resultCount = $db->CacheGetOne(3600,$sql);
+	print "here";
 		$this->numberOfPages = ceil($this->resultCount/$pgsize);
 	// construct the query sql
 $sql = <<<END
