@@ -582,7 +582,6 @@ $sql = <<<END
 END;
 		}
 		$this->resultCount = $db->CacheGetOne(3600,$sql);
-	print "here";
 		$this->numberOfPages = ceil($this->resultCount/$pgsize);
 	// construct the query sql
 $sql = <<<END
