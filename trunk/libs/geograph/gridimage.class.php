@@ -817,6 +817,22 @@ class GridImage
 						$this->ftf=1;
 				}
 				
+				$sql_set = "gridsquare_id='{$newsq->gridsquare_id}',".
+							"seq_no=$seq_no,ftf=$this->ftf, ";
+			}
+				//if not a new square only update nateastings and natnorthings
+			
+			//we DONT use getNatEastings here because only want them if it more than 4 figure
+			$east=$newsq->nateastings+0;
+			$north=$newsq->natnorthings+0;
+
+			//reassign image
+			$db->Execute("update gridimage set $sql_set ".
+				"nateastings=$east,natnorthings=$north ".
+				"where gridimage_id='$this->gridimage_id'");
+			
+			//ensure this is a real change
+			if ($newsq->gridsquare_id != $this->gridsquare_id) {
 				//update cached data for old square and new square
 				$this->grid_square->updateCounts();
 				$newsq->updateCounts();
@@ -829,21 +845,8 @@ class GridImage
 				$mosaic->expirePosition($this->grid_square->x,$this->grid_square->y);
 
 				$mosaic->expirePosition($newsq->x,$newsq->y);
-				
-				$sql_set = "gridsquare_id='{$newsq->gridsquare_id}',".
-				"seq_no=$seq_no,ftf=$this->ftf, ";
 			}
-				//if not a new square only update nateastings and natnorthings
 			
-			//we DONT use getNatEastings here because only want them if it more than 4 figure
-			$east=$newsq->nateastings+0;
-			$north=$newsq->natnorthings+0;
-			
-			//reassign image
-			$db->Execute("update gridimage set $sql_set ".
-				"nateastings=$east,natnorthings=$north ".
-				"where gridimage_id='$this->gridimage_id'");
-
 			//updated cached tables
 				//this isnt needed as reassignGridsquare is only called before commitChanges
 			//$this->updateCachedTables();		
