@@ -67,31 +67,26 @@ if (isset($_POST['check']))
 	
 	flush();
 	
-	$total=$db->GetOne("select count(*) from gridsquare");
-	$last_percent=0;
 	
 	$count=0;
-	$recordSet = &$db->Execute("select * from gridsquare");
+	$recordSet = &$db->Execute("SELECT gridimage.gridsquare_id, grid_reference, 
+	imagecount as gridsquare_imagecount, count( * ) AS gridsimage_imagecount,
+	has_geographs as gridsquare_has_geographs, sum(moderation_status='geograph') AS gridsimage_geographcount
+	FROM gridimage
+	INNER JOIN gridsquare USING ( gridsquare_id ) 
+	WHERE moderation_status<>'rejected'
+	GROUP BY gridimage.gridsquare_id
+	HAVING (gridsquare_imagecount != gridsimage_imagecount) OR (gridsquare_has_geographs != (gridsimage_geographcount>0))");
+	
 	while (!$recordSet->EOF) 
 	{
-		$count++;
-		$percent=round(($count*100)/$total);
-		if ($percent!=$last_percent)
-		{
-			$last_percent=$percent;
-			echo "<script language=\"javascript\">completed.innerHTML='$percent% completed';</script>\n";
-			flush();
-		}
-		
 		$gridsquare_id=$recordSet->fields['gridsquare_id'];
 		$grid_reference=$recordSet->fields['grid_reference'];
-		$cached_count=$recordSet->fields['imagecount'];
-		$has_geographs=$recordSet->fields['has_geographs'];
+		$cached_count=$recordSet->fields['gridsquare_imagecount'];
+		$has_geographs=$recordSet->fields['gridsquare_has_geographs'];
 		
-		$realcount=$db->GetOne("select count(*) from gridimage where ".
-			"gridsquare_id=$gridsquare_id and moderation_status<>'rejected'");
-		$geographcount=$db->GetOne("select count(*) from gridimage where ".
-					"gridsquare_id=$gridsquare_id and moderation_status='geograph'");
+		$realcount=$recordSet->fields['gridsimage_imagecount'];
+		$geographcount=$recordSet->fields['gridsimage_geographcount'];
 		$real_has_geographs=($geographcount>0)?1:0;
 		
 		if ($cached_count!=$realcount)
@@ -105,8 +100,6 @@ if (isset($_POST['check']))
 			}
 			
 			echo "</li>";
-			
-			
 			flush();
 		}
 		
