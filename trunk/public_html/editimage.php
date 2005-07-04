@@ -149,6 +149,10 @@ if (isset($_REQUEST['id']))
 				}
 				else
 				{
+					if (isset($_POST['grid_reference'])) {
+						//need to preserve this incase the user did change it
+						$image->grid_reference=trim(stripslashes($_POST['grid_reference']));
+					}
 					$smarty->assign_by_ref('error', $error);
 				}
 			}	
