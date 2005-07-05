@@ -102,6 +102,7 @@ ORDER BY `post_time` ASC";
 		$sql_where = "WHERE geobb_topics.forum_id={$_GET['forum']}";
 	} else {
 		$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/";
+		$sql_where = "WHERE geobb_topics.forum_id!=5"; //we exclude Grid Ref discussions...
 	}
 	
 	if ($_GET['sortBy'] == 1) {
