@@ -30,7 +30,7 @@ if ( ($_GET['topic'] && is_numeric($_GET['topic'])) || ($_GET['forum'] && is_num
 	//if got past must be logged in	
 }
 	
-$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS');
+$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP');
 
 $format="RSS1.0";
 if (isset($_GET['format']) && in_array($_GET['format'], $valid_formats))
