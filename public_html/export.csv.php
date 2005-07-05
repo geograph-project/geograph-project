@@ -62,15 +62,21 @@ if ($_GET['thumb']) {
 }
 echo "\n";
 
-//todo: use upd_timestamp instead of submitted, but as its new will need to allow it to 'stabalise' first
+if ($_GET['ri'] && preg_match("/^\d$/",$_GET['ri']) ) {
+	$sql_crit .= " AND reference_index = {$_GET['ri']}";
+}
 
 if ($_GET['since'] && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
-	$sql_crit = " AND submitted > '{$_GET['since']}'";
+	$sql_crit .= " AND upd_timestamp >= '{$_GET['since']}'";
 } elseif ($_GET['last'] && preg_match("/^\d+ \w+$/",$_GET['last']) ) {
 	$_GET['last'] = preg_replace("/s$/",'',$_GET['last']);
-	$sql_crit = " AND submitted > date_sub(now(), interval {$_GET['last']})";
+	$sql_crit .= " AND upd_timestamp > date_sub(now(), interval {$_GET['last']})";
 } elseif ($_GET['limit'] && is_numeric($_GET['limit'])) {
-	$sql_crit = " ORDER BY submitted DESC LIMIT {$_GET['limit']}";
+	$sql_crit .= " ORDER BY upd_timestamp DESC LIMIT {$_GET['limit']}";
+}
+
+if ($_GET['ri'] && preg_match("/^\d$/",$_GET['ri']) ) {
+
 }
 
 if ($_GET['ll'] || $_GET['en']) {
