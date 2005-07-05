@@ -2,10 +2,16 @@
 </div>
 
 <div id="nav_block">
- <div class="nav">
+ <div class="nav"><div id="browsepanel" style="display:none;position:absolute;"><form method="get" action="/browse.php" style="display:inline">
+    <label for="panelgridref">Grid Reference</label> 
+    <input type="text" id="panelgridref" name="gridref" size="6" 
+    title="Enter a Grid Reference"/><input type="submit" value="Go" style="width:30px"/><br/>
+    <a title="Browse a Grid Square" href="/browse.php">Browse Page</a><br/><br/>
+    <div style="text-align:right"><a href="javascript:void();" onclick="document.getElementById('browsepanel').style.display='none';return false;">Close (X)</a></div>
+    </form></div>
   <ul>
     <li><a accesskey="1" title="Home Page" href="/">Home</a></li>
-    <li><a title="Find images" href="/search.php">Search</a> / <a title="Browse a Grid Square" href="/browse.php">Browse</a></li>
+    <li><a title="Find images" href="/search.php">Search</a> / <a title="Browse a Grid Square" href="/browse.php" onclick="document.getElementById('browsepanel').style.display='';return false;">Browse</a></li>
     <li><a title="View map of all submissions" href="/mapbrowse.php">Map Viewer</a></li>
     <li><a title="Submit" href="/submit.php">Submit</a></li>
     <li><a title="Discuss" href="/discuss/?sortBy=0">Discuss</a></li>
