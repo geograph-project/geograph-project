@@ -90,9 +90,12 @@ this and other photo oriented sites the way everyone else can see them.</p>
     <p>* this feed requires entry of your Geograph email/nickname and password to access.</p>
 <a name="use"></a>
 <h3>I would be interested in using Geograph content, is that possible?</h3>
-    <p>If you can think of an interesting use on your own site, or for a new idea, (beyond what's available via the RSS feeds above) then we would be very interested to <a title="Contact Us" href="contact.php">hear from you</a>. In all liklyhood we can provide a feed to suit your requirements.</p>
+    <p>If you can think of an interesting use on your own site, or for a new idea, (beyond what's available via the RSS feeds above) 
+    then we would be very interested to <a title="Contact Us" href="contact.php">hear from you</a>. 
+    In all likelihood we can provide a feed to suit your requirements.</p>
     
-    <p>Of course all images are available under a <a href="#opensource">Creative Commons Licence</a>, so individual images are available for use.</p>
+    <p>Images are licenced for re-use under a  <a href="#opensource">Creative Commons Licence</a>, see
+    licence details by viewing a full size image.</p>
     
 <a name="built"></a>
 <h3>Who built this marvellous site?</h3>
