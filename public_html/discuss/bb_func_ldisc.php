@@ -19,7 +19,7 @@ if ($closedForums!='n') $xtr=getClForums($closedForums,'where','','forum_id','an
 $lPosts=array();
 if ($user_sort==1) $orderBy='topic_id DESC'; else $orderBy='topic_last_post_id DESC';
 
-if($cols=db_simpleSelect(0, $Tt, 'topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id','','','',$orderBy,$viewlastdiscussions)){
+if($cols=db_simpleSelect(0, $Tt, 'topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id','forum_id','!=','5',$orderBy,$viewlastdiscussions)){
 do $lPosts[]=$cols[7]; while($cols=db_simpleSelect(1));
 }
 
