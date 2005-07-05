@@ -102,7 +102,7 @@ class RasterMap
 		switch ($this->service) {
 		
 			case 'vob': 
-				return "1940's OS New Popular Edition";
+				return "1940s OS New Popular Edition";
 		}
 	}
 	function getFootNote() 
