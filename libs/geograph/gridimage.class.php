@@ -884,7 +884,7 @@ class GridImage
 			else
 			{
 				//oh my!
-				$t=strtotime("2000-$m-%d");
+				$t=strtotime("2000-$m-$d");
 				$date=strftime("%e %B", $t)." $y";
 			}
 			
