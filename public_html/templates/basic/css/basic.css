@@ -98,6 +98,14 @@ a Img
 	color:silver;
 }
 
+#browsepanel {
+	margin:4px 10px 0px 10px;
+	border:2px solid black;
+	background-color:white;
+	padding:10px;
+	z-index:4;
+}
+
 /*---------------------------------------------------------------*
  * right navigation block
  *---------------------------------------------------------------*/
