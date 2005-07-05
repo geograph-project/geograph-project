@@ -32,7 +32,7 @@ $xtr=$xtr1;
 
 $list_topics='';
 
-if($cols=db_simpleSelect(0, $Tt, 'topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views','','','',$orderBy,$viewlastdiscussions)){
+if($cols=db_simpleSelect(0, $Tt, 'topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views','forum_id','!=','5',$orderBy,$viewlastdiscussions)){
 
 $i=1;
 $tpl=makeUp('main_last_discuss_cell');
