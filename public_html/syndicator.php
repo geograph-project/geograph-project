@@ -28,7 +28,7 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
 	
 	
-$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS');
+$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP');
 
 $format="RSS1.0";
 if (isset($_GET['format']) && in_array($_GET['format'], $valid_formats))
@@ -102,6 +102,8 @@ for ($i=0; $i<$cnt; $i++)
 	$item->date = strtotime($images->images[$i]->submitted); 
 	$item->source = "http://{$_SERVER['HTTP_HOST']}/"; 
 	$item->author = $images->images[$i]->realname; 
+	     
+	     $item->thumb = $images->images[$i]->getThumbnail(120,120,true); 
 	     
     $rss->addItem($item); 
 	
