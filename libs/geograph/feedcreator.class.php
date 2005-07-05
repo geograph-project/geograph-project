@@ -1,7 +1,7 @@
 <?php
 /***************************************************************************
 
-FeedCreator class v1.7.2
+FeedCreator class v1.7.3(BH)
 originally (c) Kai Blankenhorn
 www.bitfolge.de
 kaib@bitfolge.de
@@ -26,6 +26,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 Changelog:
+
+v1.7.3(BH)	05-07-05
+	added PHP Feed (Barry Hunter)
 
 v1.7.2	10-11-04
 	license changed to LGPL
@@ -147,7 +150,7 @@ while ($data = mysql_fetch_object($res)) {
 } 
 
 // valid format strings are: RSS0.91, RSS1.0, RSS2.0, PIE0.1 (deprecated),
-// MBOX, OPML, ATOM, ATOM0.3, HTML, JS
+// MBOX, OPML, ATOM, ATOM0.3, HTML, JS, PHP
 echo $rss->saveFeed("RSS1.0", "news/feed.xml");
 
 
@@ -164,7 +167,7 @@ define("TIME_ZONE","");
 /**
  * Version string.
  **/
-define("FEEDCREATOR_VERSION", "FeedCreator 1.7.2");
+define("FEEDCREATOR_VERSION", "FeedCreator 1.7.3(BH)");
 
 
 
@@ -375,6 +378,10 @@ class UniversalFeedCreator extends FeedCreator {
 				
 			case "HTML":
 				$this->_feed = new HTMLCreator();
+				break;
+			
+			case "PHP":
+				$this->_feed = new PHPCreator();
 				break;
 			
 			case "JS":
@@ -1022,6 +1029,51 @@ class RSSCreator20 extends RSSCreator091 {
     
 }
 
+
+/**
+ * PHPCreator is a FeedCreator that implements a PHP output, suitable for a include
+ *
+ * @since 1.7.2
+ * @author Barry Hunter <geo@barryhunter.co.uk>
+ */
+class PHPCreator extends FeedCreator {
+	
+	function PHPCreator() {
+		$this->contentType = "text/plain";
+		$this->encoding = "utf-8";
+	}
+    
+	function createFeed() {
+		$feed = "<?php\n";
+		$feed.= "class FeedItem {}\n";
+		$feed.= "  \$feedTitle='".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."';\n";
+		$this->truncSize = 500;
+		$feed.= "  \$feedDescription='".$this->getDescription()."';\n";
+		$feed.= "  \$feedLink='".$this->link."';\n";
+		$feed.= "  \$feedItem = array();\n";
+		for ($i=0;$i<count($this->items);$i++) {
+			$feed.= "   \$feedItem[$i] = new FeedItem();\n";
+			if ($this->items[$i]->guid!="") {
+				$feed.= "    \$feedItem[$i]->id='".htmlspecialchars($this->items[$i]->guid)."';\n";
+			}
+			$feed.= "    \$feedItem[$i]->title='".FeedCreator::iTrunc(htmlspecialchars(strip_tags($this->items[$i]->title)),100)."';\n";
+			$feed.= "    \$feedItem[$i]->link='".htmlspecialchars($this->items[$i]->link)."';\n";
+			$feed.= "    \$feedItem[$i]->date=".htmlspecialchars($this->items[$i]->date).";\n";
+			if ($this->items[$i]->author!="") {
+				$feed.= "    \$feedItem[$i]->author='".htmlspecialchars($this->items[$i]->author)."';\n";
+				if ($this->items[$i]->authorEmail!="") {
+					$feed.= "    \$feedItem[$i]->authorEmail='".$this->items[$i]->authorEmail."';\n";
+				}
+			}
+			$feed.= "    \$feedItem[$i]->description='".$this->items[$i]->getDescription()."';\n";
+			if ($this->items[$i]->thumb!="") {
+				$feed.= "    \$feedItem[$i]->thumbURL='".htmlspecialchars($this->items[$i]->thumb)."';\n";
+			}
+		}
+		$feed .= "?>\n";
+		return $feed;
+	}
+}
 
 /**
  * PIECreator01 is a FeedCreator that implements the emerging PIE specification,
