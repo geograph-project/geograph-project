@@ -79,42 +79,47 @@ if (isset($_POST['inv']))
 {
 
 	$square=new GridSquare;
-	$grid_ok=$square->setGridRef($_POST['gridref']);
+	require_once('geograph/mapmosaic.class.php');
+	$mosaic = new GeographMapMosaic;
 		
-		
-		
-	if (!$grid_ok) {
-		$smarty->assign('errormsg',$square->errormsg);
-		
-		
-		$smarty->display('admin_recreatemaps.tpl');
-		exit;
-	}
-
 	$smarty->display('_std_begin.tpl');
 	echo "<h3><a href=\"recreatemaps.php\">&lt;&lt;</a> Invalidating Maps...</h3>";
 	flush();
 	
+	$squares = explode(",",$_POST['gridref']);
 	
-	$x = $square->x;
-	$y = $square->y;
-	
-		$sql="select * from mapcache ".
-					"where $x between map_x and (map_x+image_w/pixels_per_km-1) and ".
-					"$y between map_y and (map_y+image_h/pixels_per_km-1)";
-		$db->Execute($sql);
-	$recordSet = &$db->Execute("$sql");
-	while (!$recordSet->EOF) 
-	{
-		print implode(',',array_values($recordSet->fields))."<br/>";
-		$recordSet->MoveNext();
+	foreach ($squares as $gridref) {
+		$grid_ok=$square->setGridRef($gridref);
+
+
+
+		if (!$grid_ok) {
+			$smarty->assign('errormsg',$square->errormsg);
+
+
+			$smarty->display('admin_recreatemaps.tpl');
+			exit;
+		}
+		$x = $square->x;
+		$y = $square->y;
+
+		if (count($squares) < 5) {
+			print "<h3>$gridref</h3>";
+				$sql="select * from mapcache ".
+							"where $x between map_x and (map_x+image_w/pixels_per_km-1) and ".
+							"$y between map_y and (map_y+image_h/pixels_per_km-1)";
+				$db->Execute($sql);
+			$recordSet = &$db->Execute("$sql");
+			while (!$recordSet->EOF) 
+			{
+				print implode(',',array_values($recordSet->fields))."<br/>";
+				$recordSet->MoveNext();
+			}
+			$recordSet->Close(); 
+		}
+
+		$mosaic->expirePosition($x,$y);
 	}
-	$recordSet->Close(); 
-
-	require_once('geograph/mapmosaic.class.php');
-	$mosaic = new GeographMapMosaic;
-	$mosaic->expirePosition($x,$y);
-
 	$smarty->display('_std_end.tpl');
 	exit;
 	
