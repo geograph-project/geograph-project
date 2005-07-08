@@ -47,6 +47,9 @@ concept.</li>
     {external href="http://www.nga.mil/" text="www.nga.mil"}. </li>
     <li>Low Resolution postcode data from {external href="http://sourceforge.net/projects/geocode" text="Sourceforge Geocode.Service project"}.</li>
     <li>County centre points compiled by {mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}.</li>
+    <li>{external href="http://www.osni.gov.uk" text="OSNI"} generously donated a complete set of
+    1:50000 paper maps for Northern Ireland, aiding photo moderation in the absence of suitable online maps.</li>
+
     </ul>
     
     <h3>Hosting</h3>
