@@ -111,7 +111,7 @@ if (isset($_GET['gridref']))
 	
 }
 
-$unknowns=$db->GetAll("select * from gridsquare where percent_land=-1");
+$unknowns=$db->GetAll("select * from gridsquare where percent_land=-1 order by reference_index asc,imagecount desc");
 $smarty->assign_by_ref('unknowns', $unknowns);
 
 
