@@ -908,7 +908,7 @@ class GeographMap
 		$sql="select * from gridsquare where ".
 			"(x between $scanleft and $scanright) and ".
 			"(y between $scanbottom and $scantop)";
-			//"and imagecount>0";
+			"and percent_land<>0";
 
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
