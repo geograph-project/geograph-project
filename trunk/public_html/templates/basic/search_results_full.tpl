@@ -17,7 +17,7 @@ the following
 {/if}
 	{foreach from=$engine->results item=image}
 	  <div style="clear:both">
-		<div style="float:left; position: relative; width:130px; height:100px">
+		<div style="float:left; position: relative; width:130px">
 		<div align="center">
 		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
 		</div>
