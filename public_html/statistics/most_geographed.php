@@ -52,7 +52,7 @@ $mosaic->setMosaicFactor(2);
 		$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=$ri order by origin_x,origin_y limit 1");
 		
 			
-		$most = $db->GetAll("select grid_reference,x,y,concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,count(*) as geograph_count from gridsquare where reference_index = $ri and imagecount>0 group by tenk_square having geograph_count > 1 order by geograph_count desc limit 50");
+		$most = $db->GetAll("select grid_reference,x,y,concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,count(*) as geograph_count from gridsquare where reference_index = $ri and imagecount>0 group by tenk_square having geograph_count > 1 order by geograph_count desc,tenk_square limit 50");
 		
 		$i = 1;
 		foreach($most as $id=>$entry) 
@@ -88,7 +88,7 @@ $mosaic->setMosaicFactor(2);
 	}
 
 	
-	$onekm = $db->GetAll("select grid_reference,imagecount from gridsquare where imagecount>1 order by imagecount desc limit 50");
+	$onekm = $db->GetAll("select grid_reference,imagecount from gridsquare where imagecount>1 order by imagecount desc,grid_reference limit 50");
 		
 	$i = 1;
 	foreach($onekm as $id=>$entry)
