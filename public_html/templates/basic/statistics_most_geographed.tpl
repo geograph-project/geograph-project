@@ -15,10 +15,8 @@
 
 {foreach from=$most1 key=id item=obj}
 <tr><td align="right">{$obj.ordinal}</td><td><a title="View map for {$obj.tenk_square}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.tenk_square}</a></td>
-<td align="right">{$obj.geograph_count}</td>
-<td align="right">{$obj.percentage|thousends}</td>
-
-</tr>
+<td align="right" title="{$obj.geograph_count}/{$obj.land_count}">{$obj.geograph_count}</td>
+<td align="right">{$obj.percentage|thousends}</td></tr>
 {/foreach}
 
 </tbody>
@@ -35,10 +33,8 @@
 
 {foreach from=$most2 key=id item=obj}
 <tr><td align="right">{$obj.ordinal}</td><td><a title="View map for {$obj.tenk_square}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.tenk_square}</a></td>
-<td align="right">{$obj.geograph_count}</td>
-<td align="right">{$obj.percentage|thousends}</td>
-
-</tr>
+<td align="right" title="{$obj.geograph_count}/{$obj.land_count}">{$obj.geograph_count}</td>
+<td align="right">{$obj.percentage|thousends}</td></tr>
 {/foreach}
 
 </tbody>
