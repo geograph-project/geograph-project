@@ -61,11 +61,12 @@ $mosaic->setMosaicFactor(2);
 		from gridsquare 
 		where reference_index = $ri 
 		group by tenk_square 
-		having geograph_count > 0
+		having geograph_count > 0 and percentage <100
 		order by percentage desc,tenk_square 
 		limit 50");
 		
 		$i = 1;
+		$lastgeographs = -1;
 		foreach($most as $id=>$entry) 
 		{
 			$most[$id]['x'] = ( intval(($most[$id]['x'] - $origin['origin_x'])/10)*10 ) +  $origin['origin_x'];
@@ -102,6 +103,7 @@ $mosaic->setMosaicFactor(2);
 	$onekm = $db->GetAll("select grid_reference,imagecount from gridsquare where imagecount>1 order by imagecount desc,grid_reference limit 50");
 		
 	$i = 1;
+	$lastgeographs = -1;
 	foreach($onekm as $id=>$entry)
 	{
 		if ($lastgeographs == $onekm[$id]['imagecount'])
