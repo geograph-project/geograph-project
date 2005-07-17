@@ -72,7 +72,7 @@ $mosaic->setMosaicFactor(2);
 			$most[$id]['x'] = ( intval(($most[$id]['x'] - $origin['origin_x'])/10)*10 ) +  $origin['origin_x'];
 			$most[$id]['y'] = ( intval(($most[$id]['y'] - $origin['origin_y'])/10)*10 ) +  $origin['origin_y'];
 
-			if ($lastgeographs == $most[$id]['geograph_count'])
+			if ($lastgeographs == $most[$id]['percentage'])
 				$most[$id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
 			else {
 
@@ -86,7 +86,7 @@ $mosaic->setMosaicFactor(2);
 				}
 
 				$most[$id]['ordinal']=$i.$end;
-				$lastgeographs = $most[$id]['geograph_count'];
+				$lastgeographs = $most[$id]['percentage'];
 			}
 			$i++;
 
