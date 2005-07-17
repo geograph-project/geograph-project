@@ -56,8 +56,8 @@ $mosaic->setMosaicFactor(2);
 		grid_reference,x,y,
 		concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,
 		sum(imagecount>0) as geograph_count,
-		sum(percent_land >0) as land_count,
-		(sum(imagecount>0) * 100 / sum(percent_land >0)) as percentage
+		sum(percent_land !=0) as land_count,
+		(sum(imagecount>0) * 100 / sum(percent_land !=0)) as percentage
 		from gridsquare 
 		where reference_index = $ri 
 		group by tenk_square 
