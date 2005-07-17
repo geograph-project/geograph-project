@@ -52,7 +52,18 @@ $mosaic->setMosaicFactor(2);
 		$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=$ri order by origin_x,origin_y limit 1");
 		
 			
-		$most = $db->GetAll("select grid_reference,x,y,concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,count(*) as geograph_count from gridsquare where reference_index = $ri and imagecount>0 group by tenk_square having geograph_count > 1 order by geograph_count desc,tenk_square limit 50");
+		$most = $db->GetAll("select 
+		grid_reference,x,y,
+		concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,
+		sum(imagecount>0) as geograph_count,
+		sum(percent_land >0) as land_count,
+		(sum(imagecount>0) * 100 / sum(percent_land >0)) as percentage
+		from gridsquare 
+		where reference_index = $ri 
+		group by tenk_square 
+		having geograph_count > 0
+		order by percentage desc,tenk_square 
+		limit 50");
 		
 		$i = 1;
 		foreach($most as $id=>$entry) 
