@@ -1,4 +1,4 @@
-{assign var="page_title" value="Most Photographed Squares"}
+{assign var="page_title" value="Fully Photographed Squares"}
 {include file="_std_begin.tpl"}
 
 <h2>Fully Photographed Squares</h2>
