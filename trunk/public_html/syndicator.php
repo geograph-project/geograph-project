@@ -36,7 +36,9 @@ if (isset($_GET['format']) && in_array($_GET['format'], $valid_formats))
 	$format=$_GET['format'];
 }
 
-if (isset($_GET['i']) && is_numeric($_GET['i'])) {
+if (isset($_GET['u']) && is_numeric($_GET['u'])) {
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/u{$_GET['u']}-{$format}.xml";
+} elseif (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$format}.xml";
 } else {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$format}.xml";
@@ -65,8 +67,17 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	
 	$images->images = &$images->results;
 	
+} elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
+	$profile=new GeographUser($_GET['u']);
+	$rss->description = 'Latest Images by '.$profile->realname; 
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=$format&amp;u=".$_GET['u'];
+
+
+	//lets find some recent photos
+	$images=new ImageList();
+	$images->getImagesByUser($_GET['u'],array('accepted', 'geograph'), 'submitted desc', 15);
 } else {
-	$rss->description = 'Latest images and news'; 
+	$rss->description = 'Latest Images'; 
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=$format";
 
 
