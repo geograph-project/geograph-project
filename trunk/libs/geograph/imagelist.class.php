@@ -115,7 +115,7 @@ class ImageList
 	/**
 	* get image list for particular user
 	*/
-	function getImagesByUser($user_id, $statuses)
+	function getImagesByUser($user_id, $statuses, $sort = 'submitted', $count=null)
 	{
 		$db=&$this->_getDB();
 
@@ -127,8 +127,14 @@ class ImageList
 				
 		$user_id=intval($user_id);		
 				
-		$orderby="order by submitted";
-		$limit="";
+		if (is_null($sort))
+			$orderby="";
+		else
+			$orderby="order by $sort";
+		if (is_null($count))
+			$limit="";
+		else
+			$limit="limit $count";
 		
 		$sql="select * ".
 			"from gridimage_search ".
