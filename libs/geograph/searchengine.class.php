@@ -609,6 +609,8 @@ END;
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_after = ((float)$usec + (float)$sec);
 				
+		$dist_format = ($this->criteria->searchclass == 'Postcode')?"Dist:%dkm %s":"Dist:%.1fkm %s";		
+		
 		$querytime = $querytime_after - $querytime_before;
 		while (!$recordSet->EOF) 
 		{
@@ -617,7 +619,7 @@ END;
 			
 			if ($d = $recordSet->fields['dist_sqd']) {
 				$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
-				$this->results[$i]->dist_string = sprintf("Dist:%.1fkm %s",sqrt($d),$this->heading_string($angle));
+				$this->results[$i]->dist_string = sprintf($dist_format,sqrt($d),$this->heading_string($angle));
 			}
 			
 			if (empty($this->results[$i]->title))
@@ -710,6 +712,8 @@ END;
 				
 		$recordSet = &$db->Execute($sql);
 		
+		$dist_format = ($this->criteria->searchclass == 'Postcode')?"Dist:%dkm %s":"Dist:%.1fkm %s";		
+		
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_after = ((float)$usec + (float)$sec);
 		$querytime = $querytime_after - $querytime_before;
@@ -720,7 +724,7 @@ END;
 			
 			if ($d = $recordSet->fields['dist_sqd']) {
 				$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
-				$this->results[$i]->dist_string = sprintf("Dist:%.1fkm %s",sqrt($d),$this->heading_string($angle));
+				$this->results[$i]->dist_string = sprintf($dist_format,sqrt($d),$this->heading_string($angle));
 			}
 			if (empty($this->results[$i]->title))
 				$this->results[$i]->title="Untitled";
