@@ -27,6 +27,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 Changelog:
 
+v1.7.4(BH)	05-07-05
+	added KML Feed (Barry Hunter)
+
 v1.7.3(BH)	05-07-05
 	added PHP Feed (Barry Hunter)
 
@@ -383,7 +386,9 @@ class UniversalFeedCreator extends FeedCreator {
 			case "PHP":
 				$this->_feed = new PHPCreator();
 				break;
-			
+			case "KML":
+				$this->_feed = new KMLCreator();
+				break;
 			case "JS":
 				// fall through
 			case "JAVASCRIPT":
@@ -1031,9 +1036,66 @@ class RSSCreator20 extends RSSCreator091 {
 
 
 /**
+ * KMLCreator is a FeedCreator that implements a KML output, suitable for Keyhole/Google Earth
+ *
+ * @since 1.7.3
+ * @author Barry Hunter <geo@barryhunter.co.uk>
+ */
+class KMLCreator extends FeedCreator {
+	
+	function KMLCreator() {
+		$this->encoding = "utf-8";
+	}
+
+
+	
+			   
+	function createFeed() {
+		$feed = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
+		$feed.= $this->_createStylesheetReferences();
+		$feed.= "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n"; 
+		$feed.= "<Folder>\n";
+		$feed.= "  <name>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</name>\n";
+		$this->truncSize = 500;
+		$feed.= "  <visibility>1</visibility>\n";
+		for ($i=0;$i<count($this->items);$i++) {
+			$feed.= "
+		<Placemark>
+			<description><![CDATA[".$this->items[$i]->getDescription()."
+				<br/>by ".htmlspecialchars($this->items[$i]->author)."
+				<br/><br/><a href=\"".htmlspecialchars($this->items[$i]->link)."\">View Online</a>]]></description>
+			<name>".FeedCreator::iTrunc(htmlspecialchars(strip_tags($this->items[$i]->title)),100)."</name>
+			<View>
+				<longitude>".$this->items[$i]->long."</longitude>
+				<latitude>".$this->items[$i]->lat."</latitude>
+				<range>0</range>
+				<tilt>30</tilt>
+				<heading>0</heading>
+			</View>
+			<visibility>1</visibility>
+			<Point>
+				<coordinates>".$this->items[$i]->long.",".$this->items[$i]->lat.",25</coordinates>
+			</Point>";
+			if ($this->items[$i]->thumb!="") {
+				$feed.= "
+			<styleUrl>root://styleMaps#default?iconId=0x307</styleUrl>
+			<Style>
+				<icon>".htmlspecialchars($this->items[$i]->thumb)."</icon>
+			</Style>\n";
+			}
+			$feed.= "
+		</Placemark>\n";
+		}
+		$feed .= "</Folder>\n</kml>\n";
+		return $feed;
+	}
+}
+
+
+/**
  * PHPCreator is a FeedCreator that implements a PHP output, suitable for a include
  *
- * @since 1.7.2
+ * @since 1.7.3
  * @author Barry Hunter <geo@barryhunter.co.uk>
  */
 class PHPCreator extends FeedCreator {
