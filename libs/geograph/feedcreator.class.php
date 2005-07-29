@@ -655,7 +655,11 @@ class FeedCreator extends HtmlDescribable {
 		//Header("Location: ".$filename);
 
 		Header("Content-Type: ".$this->contentType."; charset=".$this->encoding."; filename=".basename($filename));
-		Header("Content-Disposition: inline; filename=".basename($filename));
+		if (preg_match("/\.kml$/",$filename)) {
+			Header("Content-Disposition: attachment; filename=".basename($filename));
+		} else {
+			Header("Content-Disposition: inline; filename=".basename($filename));
+		}
 		readfile($filename, "r");
 		die();
 	}
@@ -1044,6 +1048,7 @@ class RSSCreator20 extends RSSCreator091 {
 class KMLCreator extends FeedCreator {
 	
 	function KMLCreator() {
+		$this->contentType = "application/octet-stream";
 		$this->encoding = "utf-8";
 	}
 
@@ -1088,6 +1093,17 @@ class KMLCreator extends FeedCreator {
 		}
 		$feed .= "</Folder>\n</kml>\n";
 		return $feed;
+	}
+	
+	/**
+	 * Generate a filename for the feed cache file. Overridden from FeedCreator to prevent XML data types.
+	 * @return string the feed cache filename
+	 * @since 1.4
+	 * @access private
+	 */
+	function _generateFilename() {
+		$fileInfo = pathinfo($_SERVER["PHP_SELF"]);
+		return substr($fileInfo["basename"],0,-(strlen($fileInfo["extension"])+1)).".kml";
 	}
 }
 
