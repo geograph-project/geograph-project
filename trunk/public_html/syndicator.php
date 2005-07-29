@@ -28,7 +28,7 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
 	
 	
-$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP');
+$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','KML');
 
 $format="RSS1.0";
 if (isset($_GET['format']) && in_array($_GET['format'], $valid_formats))
@@ -49,7 +49,10 @@ $rss->useCached($rssfile);
 $rss->title = 'Geograph.co.uk'; 
 $rss->link = "http://{$_SERVER['HTTP_HOST']}";
  
-
+if ($format == 'KML') {
+	require_once('geograph/conversions.class.php');
+	$conv = new Conversions;
+}
 
 if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	require_once('geograph/searchcriteria.class.php');
@@ -114,7 +117,16 @@ for ($i=0; $i<$cnt; $i++)
 	$item->source = "http://{$_SERVER['HTTP_HOST']}/"; 
 	$item->author = $images->images[$i]->realname; 
 	     
-	     $item->thumb = $images->images[$i]->getThumbnail(120,120,true); 
+	     if ($format == 'KML') {
+	     	if ($images->images[$i]->nateastings) {
+	     		list($item->lat,$item->long) = $conv->national_to_wgs84($images->images[$i]->nateastings,$images->images[$i]->natnorthings,$images->images[$i]->reference_index);
+	     	} else {
+	     		list($item->lat,$item->long) = $conv->internal_to_wgs84($images->images[$i]->x,$images->images[$i]->y,$images->images[$i]->reference_index);
+	     	}
+	     	$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
+	     } else {
+	     	$item->thumb = $images->images[$i]->getThumbnail(120,120,true); 
+	     }
 	     
     $rss->addItem($item); 
 	
@@ -122,7 +134,12 @@ for ($i=0; $i<$cnt; $i++)
 }
 
 //now output the result
-header("Content-Type:text/xml");
+if ($format == 'KML') {
+	header("Content-type: application/octet-stream");
+	header("Content-Disposition: attachment; filename=\"geograph.kml\"");
+} else {
+	header("Content-Type:text/xml");
+} 
 
 header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past 
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); 
