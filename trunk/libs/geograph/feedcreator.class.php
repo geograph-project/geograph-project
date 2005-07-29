@@ -1060,7 +1060,8 @@ class KMLCreator extends FeedCreator {
 		$feed.= $this->_createStylesheetReferences();
 		$feed.= "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n"; 
 		$feed.= "<Folder>\n";
-		$feed.= "  <name>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</name>\n";
+		$feed.= "  <name>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</name>
+		<description><![CDATA[".$this->getDescription()."]]></description>\n";
 		$this->truncSize = 500;
 		$feed.= "  <visibility>1</visibility>\n";
 		for ($i=0;$i<count($this->items);$i++) {
