@@ -36,12 +36,20 @@ if (isset($_GET['format']) && in_array($_GET['format'], $valid_formats))
 	$format=$_GET['format'];
 }
 
-if (isset($_GET['u']) && is_numeric($_GET['u'])) {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/u{$_GET['u']}-{$format}.xml";
-} elseif (isset($_GET['i']) && is_numeric($_GET['i'])) {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$format}.xml";
+if ($format == 'KML') {
+	require_once('geograph/conversions.class.php');
+	$conv = new Conversions;
+	$extension = "kml";
 } else {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$format}.xml";
+	$extension = "xml";
+}
+
+if (isset($_GET['u']) && is_numeric($_GET['u'])) {
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/u{$_GET['u']}-{$format}.$extension";
+} elseif (isset($_GET['i']) && is_numeric($_GET['i'])) {
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$format}.$extension";
+} else {
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$format}.$extension";
 }
 
 $rss = new UniversalFeedCreator(); 
@@ -49,10 +57,7 @@ $rss->useCached($rssfile);
 $rss->title = 'Geograph.co.uk'; 
 $rss->link = "http://{$_SERVER['HTTP_HOST']}";
  
-if ($format == 'KML') {
-	require_once('geograph/conversions.class.php');
-	$conv = new Conversions;
-}
+
 
 if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	require_once('geograph/searchcriteria.class.php');
