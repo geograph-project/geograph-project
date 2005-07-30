@@ -33,7 +33,10 @@ $db = NewADOConnection($GLOBALS['DSN']);
 
 	$smarty->display('_std_begin.tpl');
 	
-	
+	if ($_GET['recent']) {
+		$sql = "SELECT CONCAT('<a href=\"/search.php?i=',id,'\">',searchclass,'</a>') AS searchclass, searchdesc, realname, crt_timestamp FROM queries LEFT JOIN user USING(user_id) ORDER BY crt_timestamp DESC LIMIT 100";	
+		dump_sql_table($sql,'Last 100 Querys',false);
+	} else {
 	$sql = "select searchq,count(distinct user_id) as users,count(*) as count from queries where crt_timestamp > date_sub(now(), interval 1 day) group by searchq";	
 	dump_sql_table($sql,'Last 1 day Query Strings');
 	
@@ -50,7 +53,7 @@ $db = NewADOConnection($GLOBALS['DSN']);
 	$sql = "select realname,count(*) as count from queries left join user using(user_id) where $datecrit group by queries.user_id";	
 	dump_sql_table($sql,'Most Active Users');
 	
-	$sql = "select limit1,realname,count(*) as count from queries left join user on(limit1=user.user_id) where $datecrit group by limit1";	
+	$sql = "select limit1,realname,count(distinct user_id) as users,count(*) as count from queries left join user on(limit1=user.user_id) where $datecrit group by limit1";	
 	dump_sql_table($sql,'Most Active Searched on User');
 
 	$sql = "select limit2,count(distinct user_id) as users,count(*) as count from queries where $datecrit group by limit2";	
@@ -78,14 +81,15 @@ $db = NewADOConnection($GLOBALS['DSN']);
 
 	$sql = "select searchq,count(distinct user_id) as users,count(*) as count from queries group by searchq";	
 	dump_sql_table($sql,'Most Used Query Strings');
+	}
 	
 	$smarty->display('_std_end.tpl');
 	exit;
 	
 
-function dump_sql_table($sql,$title) {
+function dump_sql_table($sql,$title,$autoorderlimit = true) {
 	
-	$result = mysql_query($sql." order by count desc limit 25") or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
+	$result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
 	
 	$row = mysql_fetch_array($result,MYSQL_ASSOC);
 
