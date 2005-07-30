@@ -261,9 +261,9 @@ class HtmlDescribable {
 	 * $descriptionTruncSize properties
 	 * @return    string    the formatted description  
 	 */
-	function getDescription() {
+	function getDescription($overrideSyndicateHtml = false) {
 		$descriptionField = new FeedHtmlField($this->description);
-		$descriptionField->syndicateHtml = $this->descriptionHtmlSyndicated;
+		$descriptionField->syndicateHtml = $overrideSyndicateHtml || $this->descriptionHtmlSyndicated;
 		$descriptionField->truncSize = $this->descriptionTruncSize;
 		return $descriptionField->output();
 	}
@@ -1096,16 +1096,18 @@ class KMLCreator extends FeedCreator {
 		}
 		$feed.= "<Folder>\n";
 		$feed.= "  <name>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</name>
-		<description><![CDATA[".$this->getDescription()."]]></description>
-		<visibility>1</visibility>\n";
+  <description>".$this->getDescription()."</description>
+  <visibility>1</visibility>\n";
 		$this->truncSize = 500;
 		
 		for ($i=0;$i<count($this->items);$i++) {
+			//added here beucase description gets auto surrounded by cdata
+			$this->items[$i]->description .= "<br/>by ".htmlspecialchars($this->items[$i]->author)."
+				<br/><br/><a href=\"".htmlspecialchars($this->items[$i]->link)."\">View Online</a>";
+			
 			$feed.= "
 		<Placemark>
-			<description><![CDATA[".$this->items[$i]->getDescription()."
-				<br/>by ".htmlspecialchars($this->items[$i]->author)."
-				<br/><br/><a href=\"".htmlspecialchars($this->items[$i]->link)."\">View Online</a>]]></description>
+			<description>".$this->items[$i]->getDescription(true)."</description>
 			<name>".FeedCreator::iTrunc(htmlspecialchars(strip_tags($this->items[$i]->title)),100)."</name>
 			<View>
 				<longitude>".$this->items[$i]->long."</longitude>
