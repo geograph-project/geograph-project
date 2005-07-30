@@ -39,15 +39,29 @@ if (isset($_GET['format']) && in_array($_GET['format'], $valid_formats))
 if ($format == 'KML') {
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions;
-	$extension = "kml";
+	$extension = ($_GET['simple'])?'simple.kml':"kml";
 } else {
 	$extension = "xml";
 }
 
-if (isset($_GET['u']) && is_numeric($_GET['u'])) {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/u{$_GET['u']}-{$format}.$extension";
-} elseif (isset($_GET['i']) && is_numeric($_GET['i'])) {
+if (isset($_GET['q'])) {
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+	
+	$engine = new SearchEngine('#'); 
+ 	$_GET['i'] = $engine->buildSimpleQuery($_GET['q'],100,false,isset($_GET['u'])?$_GET['u']:0);
+ 	
+ 	if ($engine->criteria->is_multiple) {
+ 	print "<pre>";
+ 	var_dump($engine);
+ 		die("unable identify a unique location");
+ 	}
+}
+
+if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$format}.$extension";
+} elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/u{$_GET['u']}-{$format}.$extension";
 } else {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$format}.$extension";
 }
@@ -115,6 +129,7 @@ for ($i=0; $i<$cnt; $i++)
 	$item->link = "http://{$_SERVER['HTTP_HOST']}/photo/{$images->images[$i]->gridimage_id}";
 	if ($images->images[$i]->dist_string || $images->images[$i]->imagetakenString) {
 		$item->description = $images->images[$i]->dist_string.($images->images[$i]->imagetakenString?' Taken: '.$images->images[$i]->imagetakenString:'')."<br/>".$images->images[$i]->comment; 
+		$item->descriptionHtmlSyndicated = true;
 	} else {
 		$item->description = $images->images[$i]->comment; 
 	}
