@@ -53,7 +53,7 @@ $db = NewADOConnection($GLOBALS['DSN']);
 	$sql = "select realname,count(*) as count from queries left join user using(user_id) where $datecrit group by queries.user_id";	
 	dump_sql_table($sql,'Most Active Users');
 	
-	$sql = "select limit1,realname,count(distinct user_id) as users,count(*) as count from queries left join user on(limit1=user.user_id) where $datecrit group by limit1";	
+	$sql = "select limit1,realname,count(distinct queries.user_id) as users,count(*) as count from queries left join user on(limit1=user.user_id) where $datecrit group by limit1";	
 	dump_sql_table($sql,'Most Active Searched on User');
 
 	$sql = "select limit2,count(distinct user_id) as users,count(*) as count from queries where $datecrit group by limit2";	
