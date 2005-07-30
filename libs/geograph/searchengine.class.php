@@ -110,16 +110,14 @@ class SearchEngine
   
 	} 
 
-	function buildSimpleQuery($q = '',$distance = 100)
+	function buildSimpleQuery($q = '',$distance = 100,$autoredirect=true,$userlimit = 0)
 	{
 		global $USER;
 		
-		if ($distance) {
-			$nearstring = sprintf("within %dkm of",$distance);
-		} else {
-			$nearstring = 'near';
-		}
+		$nearstring = ($distance)?sprintf("within %dkm of",$distance):'near';
 		
+		$limit1 = ($userlimit)?$userlimit:'';
+				
 		$q = trim($q);
 		if (preg_match("/^([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9])([A-Z]{0,2})$/",strtoupper($q),$pc)) {
 			$searchq = $pc[1].$pc[2]." ".$pc[3];
@@ -191,13 +189,17 @@ class SearchEngine
 				$sql .= ",limit1 = $limit1";
 			if ($USER->registered)
 				$sql .= ",user_id = {$USER->user_id}";
-
+				
 			$db->Execute($sql);
 
 			$i = $db->Insert_ID();
-			header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}");
-			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}\">Your Search Results</a>";
-			exit;		
+			if ($autoredirect) {
+				header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}");
+				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}\">Your Search Results</a>";
+				exit;		
+			} else {
+				return $i;
+			}
 		} 
 	}
 
