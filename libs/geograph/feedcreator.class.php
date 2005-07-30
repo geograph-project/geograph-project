@@ -1059,11 +1059,47 @@ class KMLCreator extends FeedCreator {
 		$feed = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 		$feed.= $this->_createStylesheetReferences();
 		$feed.= "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n"; 
+		$feed.= "<Document>\n";
+		if ($_GET['simple']) {
+		$feed.= "
+		  <Style id=\"defaultIcon\">
+		    <IconStyle id=\"defaultIcon\">
+		    </IconStyle>
+		    <LabelStyle>
+		      <scale>0</scale>
+		    </LabelStyle>
+		  </Style>
+		  
+		  <Style id=\"hoverIcon\">
+		    <IconStyle id=\"hoverIcon\">
+		      <scale>1.3</scale>
+		    </IconStyle>
+		    <LabelStyle>
+		    </LabelStyle>
+		  </Style>
+		  
+		  
+		  <StyleMap id=\"defaultStyle\">
+		    <Pair>
+		      <key>normal</key>
+		      <styleUrl>#defaultIcon</styleUrl>
+		    </Pair>
+		    <Pair>
+		      <key>highlight</key>
+		      <styleUrl>#hoverIcon</styleUrl>
+		    </Pair>
+		  </StyleMap> 
+";
+		  $style = "#defaultStyle";
+		} else {
+		  $style = "root://styleMaps#default?iconId=0x307";
+		}
 		$feed.= "<Folder>\n";
 		$feed.= "  <name>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</name>
-		<description><![CDATA[".$this->getDescription()."]]></description>\n";
+		<description><![CDATA[".$this->getDescription()."]]></description>
+		<visibility>1</visibility>\n";
 		$this->truncSize = 500;
-		$feed.= "  <visibility>1</visibility>\n";
+		
 		for ($i=0;$i<count($this->items);$i++) {
 			$feed.= "
 		<Placemark>
@@ -1084,15 +1120,15 @@ class KMLCreator extends FeedCreator {
 			</Point>";
 			if ($this->items[$i]->thumb!="") {
 				$feed.= "
-			<styleUrl>root://styleMaps#default?iconId=0x307</styleUrl>
+			<styleUrl>$style</styleUrl>
 			<Style>
 				<icon>".htmlspecialchars($this->items[$i]->thumb)."</icon>
-			</Style>\n";
+			</Style>";
 			}
 			$feed.= "
 		</Placemark>\n";
 		}
-		$feed .= "</Folder>\n</kml>\n";
+		$feed .= "</Folder>\n</Document>\n</kml>\n";
 		return $feed;
 	}
 	
