@@ -35,8 +35,21 @@ if (isset($_GET['u']) && preg_match('/^[0-9]+$/' , $_GET['u']))
 if (isset($_GET['order']) && preg_match('/^\w+$/' , $_GET['order']))
 	$order = $_GET['order'];
 
+
 $template='statistics_breakdown.tpl';
 $cacheid='statistics|'.$by.'_'.$ri.'_'.$u.'_'.$order;
+
+
+if ($_GET['since'] && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
+	$sql_crit .= " AND upd_timestamp >= '{$_GET['since']}'";
+	$link .= "since={$_GET['since']}&amp;";
+	$cacheid.=md5($sql_crit);
+} elseif ($_GET['last'] && preg_match("/^\d+ \w+$/",$_GET['last']) ) {
+	$_GET['last'] = preg_replace("/s$/",'',$_GET['last']);
+	$sql_crit .= " AND upd_timestamp > date_sub(now(), interval {$_GET['last']})";
+	$link .= "last={$_GET['last']}&amp;";
+	$cacheid.=md5($sql_crit);
+}
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
@@ -61,7 +74,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('ri', $ri);
 	$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 
-	$title .= " in ".$CONF['references'][$ri];
 	$andwhere = " and moderation_status <> 'rejected'";
 	if ($by == 'status') {
 		$sql_group = $sql_fieldname = "CONCAT(moderation_status,ELT(ftf+1, '',' (ftf)'))";
@@ -88,7 +100,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('title', $bys[$by]);
 
 	$title = "Breakdown of Photos by ".$bys[$by];
-
+	$title .= " in ".$CONF['references'][$ri];
 	$link .= "by=$by&amp;ri=$ri";
 
 	if ($u) {
@@ -101,7 +113,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign_by_ref('profile', $profile);
 		$title .= " for ".($profile->realname);
 	} 
-	$smarty->assign_by_ref('link', $link);
+	$smarty->assign_by_ref('link', str_replace(' ','+',$link));
 	$smarty->assign_by_ref('h2title', $title);
 
 
@@ -125,7 +137,7 @@ $sql_fieldname as field,
 count(distinct(gridimage_id)) as c 
 from gridimage inner join gridsquare using (gridsquare_id) 
 where reference_index = $ri $user_crit
-$andwhere
+$andwhere $sql_crit
 group by $sql_group 
 $sql_order";
 } else {
@@ -134,7 +146,7 @@ $sql_fieldname as field,
 count(distinct(gridimage_id)) as c 
 from gridimage_search 
 where reference_index = $ri $user_crit
-$andwhere
+$andwhere $sql_crit
 group by $sql_group 
 $sql_order";
 }
