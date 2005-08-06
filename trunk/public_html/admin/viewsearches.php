@@ -36,6 +36,9 @@ $db = NewADOConnection($GLOBALS['DSN']);
 	if ($_GET['recent']) {
 		$sql = "SELECT CONCAT('<a href=\"/search.php?i=',id,'\">',searchclass,'</a>') AS searchclass, searchdesc, realname, crt_timestamp FROM queries LEFT JOIN user USING(user_id) ORDER BY crt_timestamp DESC LIMIT 100";	
 		dump_sql_table($sql,'Last 100 Querys',false);
+	} elseif ($_GET['special']) {
+		$sql = "SELECT CONCAT('<a href=\"/search.php?i=',id,'\">',searchdesc,'</a>') AS searchdesc, realname, crt_timestamp FROM queries LEFT JOIN user USING(user_id) WHERE searchclass = 'Special' ORDER BY crt_timestamp DESC LIMIT 100";	
+		dump_sql_table($sql,'Last 100 Special',false);
 	} else {
 	$sql = "select searchq,count(distinct user_id) as users,count(*) as count from queries where crt_timestamp > date_sub(now(), interval 1 day) group by searchq";	
 	dump_sql_table($sql,'Last 1 day Query Strings');
