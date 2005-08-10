@@ -75,12 +75,7 @@ if ($_GET['since'] && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 	$sql_crit .= " ORDER BY upd_timestamp DESC LIMIT {$_GET['limit']}";
 }
 
-if ($_GET['ri'] && preg_match("/^\d$/",$_GET['ri']) ) {
-
-}
-
 if ($_GET['ll'] || $_GET['en']) {
-
 	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,nateastings,natnorthings $sql_from ".
 	"from user ".
 	"inner join gridimage gi using(user_id) ".
@@ -88,7 +83,7 @@ if ($_GET['ll'] || $_GET['en']) {
 	"where moderation_status in ('accepted','geograph') $sql_crit");
 } else {
 	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass $sql_from ".
-	"from gridimage_search gi".
+	"from gridimage_search gi ".
 	"where moderation_status in ('accepted','geograph') $sql_crit");
 }
 while (!$recordSet->EOF) 
