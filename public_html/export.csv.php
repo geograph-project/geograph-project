@@ -57,7 +57,7 @@ if ($_GET['ll']) {
 if ($_GET['thumb']) {
 	require_once('geograph/gridimage.class.php');
 	$gridimage = new GridImage;
-	$sql_from = ',user_id';
+	$sql_from = ',gi.user_id,x,y';
 	echo ",Thumb URL";
 }
 echo "\n";
@@ -83,13 +83,12 @@ if ($_GET['ll'] || $_GET['en']) {
 
 	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,nateastings,natnorthings $sql_from ".
 	"from user ".
-	"inner join gridimage using(user_id) ".
+	"inner join gridimage gi using(user_id) ".
 	"inner join gridsquare using(gridsquare_id) ".
 	"where moderation_status in ('accepted','geograph') $sql_crit");
-
 } else {
 	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass $sql_from ".
-	"from gridimage_search ".
+	"from gridimage_search gi".
 	"where moderation_status in ('accepted','geograph') $sql_crit");
 }
 while (!$recordSet->EOF) 
