@@ -520,9 +520,9 @@ class SearchEngine
 	}
 	
 	function builddate(&$dataarray,$which) {
-		$dataarray[$which] = sprintf("%04d-%d-%02d",$dataarray[$which.'Year'],$dataarray[$which.'Month'],$dataarray[$which.'Day']);
+		$dataarray[$which] = sprintf("%04d-%02d-%02d",$dataarray[$which.'Year'],$dataarray[$which.'Month'],$dataarray[$which.'Day']);
 		//single digit month need to get round bug in smarty, luckily sql should cope!
-		if ($dataarray[$which] == '0000-0-00') {
+		if ($dataarray[$which] == '0000-00-00') {
 			$dataarray[$which] = ''; 
 		} else {
 			$image = new GridImage();
