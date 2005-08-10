@@ -156,7 +156,7 @@ class SearchCriteria
 				} else if ($dates[1]) {
 					if ($dates[0] == $dates[1]) {
 						//both the same
-						$sql_where .= "submitted = '".$dates[0]."' ";
+						$sql_where .= "submitted LIKE '".$dates[0]."%' ";
 					} else {
 						//between
 						$sql_where .= "submitted BETWEEN '".$dates[0]."' AND '".$dates[1]."' ";
@@ -198,7 +198,7 @@ class SearchCriteria
 				} else if ($dates[1]) {
 					if ($dates[0] == $dates[1]) {
 						//both the same
-						$sql_where .= "imagetaken = '".$dates[0]."' ";
+						$sql_where .= "imagetaken LIKE '".$dates[0]."%' ";
 					} else {
 						//between
 						$sql_where .= "imagetaken BETWEEN '".$dates[0]."' AND '".$dates[1]."' ";
