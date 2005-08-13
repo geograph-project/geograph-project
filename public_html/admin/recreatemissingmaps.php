@@ -117,7 +117,7 @@ $db->Execute("CREATE TABLE `mapcache2` (
 			    `type_or_user` smallint(6) NOT NULL default '0',
 			    `age` smallint(5) unsigned NOT NULL default '0',
 			    PRIMARY KEY  (`map_x`,`map_y`,`image_w`,`image_h`,`pixels_per_km`,`type_or_user`)
-			  ) TYPE=MyISAM; ";
+			  ) TYPE=MyISAM ");
 } elseif (isset($_GET['remove'])) {
 	$db->Execute("DROP TABLE `mapcache2`");
 
