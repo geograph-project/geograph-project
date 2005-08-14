@@ -31,24 +31,54 @@ $smarty = new GeographPage;
 $db = NewADOConnection($GLOBALS['DSN']);
 
 
-
+	require_once('geograph/conversions.class.php');
+	$conv = new Conversions;
 
 	//this takes a long time, so we output a header first of all
 	$smarty->display('_std_begin.tpl');
 	echo "<h3>Rebuilding gridimage_search Table...</h3>";
 	flush();
 	set_time_limit(3600*24);
-	
-	$db->Execute("DELETE FROM gridimage_search");
+if (!$_GET['skip']) {	
+	$db->Execute("TRUNCATE gridimage_search");
 	
 	$db->Execute("INSERT INTO gridimage_search
-SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, user.realname,reference_index,comment
+SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, user.realname,reference_index,comment,0,0
 FROM gridimage AS gi
 INNER JOIN gridsquare AS gs
 USING ( gridsquare_id ) 
 INNER JOIN user ON ( gi.user_id = user.user_id ) 
 WHERE moderation_status != 'rejected' ");
-	echo "<h3>Finished.</h3>";
+	echo "<h3>Finished Coping Records.</h3>";
+}
+$tim = time();
+
+$recordSet = &$db->Execute("select gridimage_id,x,y,reference_index,nateastings,natnorthings  
+from gridimage INNER JOIN gridsquare AS gs
+USING ( gridsquare_id )  
+where moderation_status != 'rejected'");
+
+while (!$recordSet->EOF) 
+{
+	$image = $recordSet->fields;
+
+	if ($image['nateastings']) {
+		list($lat,$long) = $conv->national_to_wgs84($image['nateastings'],$image['natnorthings'],$image['reference_index']);
+	} else {
+		list($lat,$long) = $conv->internal_to_wgs84($image['x'],$image['y'],$image['reference_index']);
+	}
+
+	$db->Execute("UPDATE gridimage_search SET wgs84_lat = $lat, wgs84_long = $long WHERE gridimage_id = ".$image['gridimage_id']);
+	
+	if ($image['gridimage_id']%100==0) {
+			printf("done %d at <b>%d</b> seconds<br/>",$image['gridimage_id'],time()-$tim);
+			flush();
+	}
+	$recordSet->MoveNext();
+}
+
+	echo "<h3>Finished Creating Lat/Long.</h3>";
+
 
 	$smarty->display('_std_end.tpl');
 	exit;
