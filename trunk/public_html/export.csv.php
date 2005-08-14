@@ -45,20 +45,16 @@ header("Content-Disposition: attachment; filename=\"geograph.csv\"");
 
 
 echo "Id,Name,Grid Ref,Submitter,Image Class";
-if ($_GET['ll']) {
-	echo ",Lat,Long";
-	require_once('geograph/conversions.class.php');
-	$conv = new Conversions;
-	
-	$sql_from = ",x,y,reference_index";	
-} elseif ($_GET['en']) {
-	echo ",Easting,Northing";
-}
 if ($_GET['thumb']) {
 	require_once('geograph/gridimage.class.php');
 	$gridimage = new GridImage;
 	$sql_from = ',gi.user_id,x,y';
 	echo ",Thumb URL";
+}
+if ($_GET['ll']) {
+	echo ",Lat,Long";
+} elseif ($_GET['en']) {
+	echo ",Easting,Northing";
 }
 echo "\n";
 
@@ -75,7 +71,7 @@ if ($_GET['since'] && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 	$sql_crit .= " ORDER BY upd_timestamp DESC LIMIT {$_GET['limit']}";
 }
 
-if ($_GET['ll'] || $_GET['en']) {
+if ($_GET['en']) {
 	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,nateastings,natnorthings $sql_from ".
 	"from user ".
 	"inner join gridimage gi using(user_id) ".
@@ -89,29 +85,21 @@ if ($_GET['ll'] || $_GET['en']) {
 while (!$recordSet->EOF) 
 {
 	$image = $recordSet->fields;
-	if (strpos($image['title'],',') !== FALSE || strpos($image['title'],'"') !== FALSE) 
-	{
+	if (strpos($image['title'],',') !== FALSE || strpos($image['title'],'"') !== FALSE) {
 		$image['title'] = '"'.str_replace('"', '""', $image['title']).'"';
 	}
-	if (strpos($image['imageclass'],',') !== FALSE || strpos($image['imageclass'],'"') !== FALSE) 
-	{
+	if (strpos($image['imageclass'],',') !== FALSE || strpos($image['imageclass'],'"') !== FALSE) {
 		$image['imageclass'] = '"'.str_replace('"', '""', $image['imageclass']).'"';
 	}
 	echo "{$image['gridimage_id']},{$image['title']},{$image['grid_reference']},{$image['realname']},{$image['imageclass']}";
-	if ($image['nateastings']) {
-		if ($_GET['ll']) {
-			list($lat,$long) = $conv->national_to_wgs84($image['nateastings'],$image['natnorthings'],$image['reference_index']);
-			echo ",$lat,$long";
-		} elseif ($_GET['en']) {
-			echo ",{$image['nateastings']},{$image['natnorthings']}";
-		}
-	} elseif ($_GET['ll']) {
-		list($lat,$long) = $conv->internal_to_wgs84($image['x'],$image['y'],$image['reference_index']);
-		echo ",$lat,$long";
-	}
 	if ($_GET['thumb']) {
 		$gridimage->fastInit($image);
 		echo ','.$gridimage->getThumbnail(120,120,true);
+	}
+	if ($image['nateastings'] && $_GET['en']) {
+		echo ",{$image['nateastings']},{$image['natnorthings']}";
+	} elseif ($_GET['ll']) {
+		echo ",{$image['wgs84_lat']},{$image['wgs84_long']}";
 	}
 	echo "\n";
 	$recordSet->MoveNext();
