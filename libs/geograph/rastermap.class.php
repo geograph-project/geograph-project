@@ -79,6 +79,8 @@ class RasterMap
 		switch ($this->service) {
 		
 			case 'vob': 
+				$width = 300;
+				
 				$e1 = $east - 500;
 				$e2 = $e1 + 2000;
 
@@ -86,14 +88,38 @@ class RasterMap
 				$n2 = $n1 + 2000;
 
 				//Use of this URL is not permitted outside of geograph.co.uk
-				$mapurl = "http://vision.edina.ac.uk/cgi-bin/wms-vision?version=1.1.0&request=getMap&layers=newpop%2Csmall_1920%2Cmed_1904&styles=&SRS=EPSG:27700&Format=image/png&width=300&height=300&bgcolor=cfd6e5&bbox=$e1,$n1,$e2,$n2&exception=application/vnd.ogc.se_inimage";
+				$mapurl = "http://vision.edina.ac.uk/cgi-bin/wms-vision?version=1.1.0&request=getMap&layers=newpop%2Csmall_1920%2Cmed_1904&styles=&SRS=EPSG:27700&Format=image/png&width=$width&height=$width&bgcolor=cfd6e5&bbox=$e1,$n1,$e2,$n2&exception=application/vnd.ogc.se_inimage";
 				
-				if ($this->nateastings - $east == 500) {
-					return "<img src=\"$mapurl\" width=\"300\" height=\"300\" border=\"1\" alt=\"Historical Map &copy; VisionOfBritain.org.uk\">";
+				if (0 && $this->nateastings - $east == 500 && $this->natnorthings - $nort == 500) {
+					return "<img src=\"$mapurl\" width=\"$width\" height=\"$width\" border=\"1\" alt=\"Historical Map &copy; VisionOfBritain.org.uk\">";
 				} else {
-					return "<img src=\"$mapurl\" width=\"300\" height=\"300\" border=\"1\" alt=\"Historical Map &copy; VisionOfBritain.org.uk\">";
+					$left = ($width/4) + ( ($this->nateastings - $east) * ($width/2) / 1000 ) - 8;
+					$top = $width - ( ($width/4) + ( ($this->natnorthings - $nort) * ($width/2) / 1000 ) ) - 8;
+				
+					$str = "<div style=\"position:relative;\">";
+					$str .= "<img src=\"$mapurl\" width=\"$width\" height=\"$width\" border=\"1\" alt=\"Historical Map &copy; VisionOfBritain.org.uk\">";
+					$str .= "<div style=\"position:absolute;top:{$top}px;left:{$left}px;\" id=\"marker\"><img src=\"/templates/basic/img/crosshairs.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
+					$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" width=\"$width\" height=\"$width\" border=\"1\" alt=\"OVERLAY Historical Map &copy; VisionOfBritain.org.uk\" name=\"map\" galleryimg=\"no\"></div>";
+					return "$str</div>";
 				//	return $east." == ".$this->nateastings;
 				}
+		}
+	}
+	
+	function getScriptTag()
+	{
+		switch ($this->service) {
+		
+			case 'vob': 
+				$east = (floor($this->nateastings/1000) * 1000) + 500;
+				$nort = (floor($this->natnorthings/1000) * 1000) + 500;
+				return "<script type=\"text/javascript\">
+							var cene = {$east};
+							var cenn = {$nort};
+							var maph = 300;
+							var mapw = 300;
+							var mapb = 1;
+							</script>";
 		}
 	}
 	
