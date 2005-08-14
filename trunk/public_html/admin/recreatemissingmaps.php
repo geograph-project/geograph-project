@@ -36,9 +36,46 @@ $smarty = new GeographPage;
 
 $db = NewADOConnection($GLOBALS['DSN']);
 
+if (isset($_GET['check2']))
+{
+	set_time_limit(3600*24);
 
+		
+	//this takes a long time, so we output a header first of all
+	$smarty->display('_std_begin.tpl');
+	echo "<h3><a href=\"recreatemaps.php\">&lt;&lt;</a> Checking Missing GD images...</h3>";
+	flush();
+	
+
+	$base=&$_SERVER['DOCUMENT_ROOT'];
+	$size = 40;
+	
+	$sql = "SELECT * FROM gridimage_search";
+	
+	$recordSet = &$db->Execute($sql);	
+	while (!$recordSet->EOF) 
+	{
+		$image=new GridImage;
+		$image->fastInit($recordSet->fields);	
+		
+		$ab=sprintf("%02d", floor($image->gridimage_id/10000));
+		$cd=sprintf("%02d", floor(($image->gridimage_id%10000)/100));
+		$abcdef=sprintf("%06d", $image->gridimage_id);
+		$hash=$image->_getAntiLeechHash();
+		
+		$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$size}x{$size}.gd";
+		if (!file_exists($base.$thumbpath))
+		{
+			print "Missing GD image for: {$image->grid_reference}<BR>";
+		}
+		$recordSet->MoveNext();
+	}
+	$recordSet->Close();
+	print "<h3>Done</h3>";
+	$smarty->display('_std_end.tpl');
+	exit;
 //do some processing?
-if (isset($_GET['check']))
+} elseif (isset($_GET['check']))
 {
 	set_time_limit(3600*24);
 	
