@@ -1109,13 +1109,6 @@ class KMLCreator extends FeedCreator {
 		<Placemark>
 			<description>".$this->items[$i]->getDescription(true)."</description>
 			<name>".FeedCreator::iTrunc(htmlspecialchars(strip_tags($this->items[$i]->title)),100)."</name>
-			<View>
-				<longitude>".$this->items[$i]->long."</longitude>
-				<latitude>".$this->items[$i]->lat."</latitude>
-				<range>0</range>
-				<tilt>30</tilt>
-				<heading>0</heading>
-			</View>
 			<visibility>1</visibility>
 			<Point>
 				<coordinates>".$this->items[$i]->long.",".$this->items[$i]->lat.",25</coordinates>
