@@ -3,7 +3,7 @@
 
 {dynamic}
 
-    <form enctype="multipart/form-data" action="{$script_name}" method="post">
+    <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm">
 
 {if $step eq 1}	
 
@@ -33,12 +33,14 @@ geographing</a> first.</p>
 	<p style="color:#990000;font-weight:bold;">{$errormsg}</p>
 	{/if}
 	
+	<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, if you wish you can specify a photographer location in the next step.</p>
+
 	
 	<p><label for="gridreference">Enter an exact grid reference 
 	(<u title="e.g. TQ4364 or TQ 43 64">4</u>,
 	<u title="e.g. TQ435646 or TQ 435 646">6</u>,
 	<u title="e.g. TQ43526467 or TQ 4352 6467">8</u> or 
-	<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure) for this picture location</label><br />
+	<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure) for the picture subject</label><br />
 	<input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="14"/>
 	<input type="submit" name="setpos" value="Next &gt;"/><br/>
 	</p>
@@ -56,20 +58,14 @@ geographing</a> first.</p>
 	<select id="northings" name="northings">
 		{html_options options=$kmlist selected=$northings}
 	</select>
-
-	{if $step eq 1}
-		<input type="submit" name="setpos" value="Next &gt;"/>
-	{else}
-		<input type="submit" name="setpos" value="Change"/>
-	{/if}
 	
-	{if $step eq 1}
-		
-		
-		<p>If you are unsure of the photo location there are a number of online 
+	<input type="submit" name="setpos" value="Next &gt;"/>
+	
+	
+	<p>If you are unsure of the photo location there are a number of online 
 		sources available to help:</p>
 		
-		<ul>
+	<ul>
 		<li><b>{getamap} provides a search by 
 		Placename or Postcode.</b><br/> Once you have centred the map on the picture location, 
 		return here and enter the <i>Grid reference at centre</i> value shown into the box 
@@ -84,69 +80,79 @@ geographing</a> first.</p>
 		The Irish National Grid is very similar, but using a single letter prefix, 
 		see <a href="/mapbrowse.php">Overview Map</a> for the layout of the squares.
 		</li>
-		</ul>
-		
-		
-	{else}
-		<input type="hidden" name="gridreference" value="{$gridreference|escape:'html'}">
-	{/if}
+	</ul>
+
 
 {else}
 	<input type="hidden" name="gridsquare" value="{$gridsquare|escape:'html'}">
 	<input type="hidden" name="eastings" value="{$eastings|escape:'html'}">
 	<input type="hidden" name="northings" value="{$northings|escape:'html'}">
+	
+{/if}
+{if $step > 2}
 	<input type="hidden" name="gridreference" value="{$gridreference|escape:'html'}">
 {/if}
-
 
 {if $step eq 2}
 
 	<h2>Submit Step 2 of 4 : Upload photo for {$gridref}</h2>
-{if $rastermap->enabled}
-	<div style="float:left;width:50%;position:relative">
-{else}
-	<div>
-{/if}
-	{if $imagecount gt 0}
-		<p style="color:#440000">We already have 
-		{if $imagecount eq 1}an image{else}{$imagecount} images{/if} (shown below)
-		uploaded for <a title="View Images for {$gridref} (opens in new window)" href="/gridref/{$gridref}" target="_blank">{$gridref}</a>, but you are welcome to upload 
-		another one.</p>
+	{if $rastermap->enabled}
+		<div style="float:left;width:50%;position:relative">
 	{else}
-		<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}!</p>
+		<div>
 	{/if}
-	
-	
-	<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
-	<label for="jpeg">JPEG Image File</label>
-	<input id="jpeg" name="jpeg" type="file" />
-	{if $error}<br /><p>{$error}</p>{/if}
-	<br />
-	<p>You might like to check you've selected the correct square<br/> by
-	viewing the Modern {getamap gridref=$gridref text="OS Map for $gridref"}</p>
-	
-	{if $reference_index == 2} 
-	New! {external href="http://www.multimap.com/p/browse.cgi?scale=25000&lon=`$long`&lat=`$lat`&GridE=`$long`&GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
-	{/if}
-	
-	
+		{if $imagecount gt 0}
+			<p style="color:#440000">We already have 
+			{if $imagecount eq 1}an image{else}{$imagecount} images{/if} (shown below)
+			uploaded for <a title="View Images for {$gridref} (opens in new window)" href="/gridref/{$gridref}" target="_blank">{$gridref}</a>, but you are welcome to upload 
+			another one.</p>
+		{else}
+			<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}!</p>
+		{/if}
 
-	
-	
-</div>
 
-{if $rastermap->enabled}
-	<div class="rastermap" style="width:45%;position:relative">
-	<b>{$rastermap->getTitle($gridref)}</b><br/><br/>
-	{$rastermap->getImageTag()}<br/>
-	<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
+		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
+		<label for="jpeg">JPEG Image File</label>
+		<input id="jpeg" name="jpeg" type="file" />
+		{if $error}<br /><p>{$error}</p>{/if}
+		<br />
+		<p>You might like to check you've selected the correct square<br/> by
+		viewing the Modern {getamap gridref=$gridref text="OS Map for $gridref"}</p>
+
+		{if $reference_index == 2} 
+		New! {external href="http://www.multimap.com/p/browse.cgi?scale=25000&lon=`$long`&lat=`$lat`&GridE=`$long`&GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
+		{/if}
+		
+		<p><b>optional:</b><br/><label for="gridreference">Grid reference for photo subject</label> <input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="14"/>
+		{if $rastermap->enabled}
+		<br/><label for="fmp">Track Mouse Pointer</label><INPUT TYPE="CHECKBOX" NAME="fmp" id="fmp"> <span id="message">(click map to toggle)</span>{/if}</p>
+	
+		<p><label for="viewpoint_gridreference">Grid reference for photographer</label> <input id="viewpoint_gridreference" type="text" name="viewpoint_gridreference" value="{$viewpoint_gridreference|escape:'html'}" size="14"/>
+		{if $rastermap->enabled}
+		<br/><label for="fmp2">Track Mouse Pointer</label><INPUT TYPE="CHECKBOX" NAME="fmp2" id="fmp2" onclick="fmp2click(this)"> <span id="message2"></span>{/if}</p>
+	
+	
 	</div>
-{/if}
+
+	{if $rastermap->enabled}
+		<div class="rastermap" style="width:45%;position:relative">
+		<b>{$rastermap->getTitle($gridref)}</b><br/><br/>
+		{$rastermap->getImageTag()}<br/>
+		<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
+		</div>
+		
+		{$rastermap->getScriptTag()}
+		<script type="text/javascript" src="/mapping.js"></script>
+		<script type="text/javascript">document.images['map'].onmousemove = moprocess;
+		document.images['map'].onclick = moclick;</script>
+	{else} 
+		<script type="text/javascript" src="/mapping.js"></script>
+	{/if}
 
 	
 
 	<br/>
-	<input type="submit" name="goback" value="&lt; Back"/> <input type="submit" name="upload" value="Next &gt;"/>
+	<input type="submit" name="goback" value="&lt; Back"/> <input type="submit" name="upload" value="Next &gt;" onclick="return check_step2(this.form)"/>
 	<br style="clear:right"/>
 
 	{if $imagecount gt 0}
@@ -161,7 +167,9 @@ geographing</a> first.</p>
 	<br style="clear:both"/>
 	&nbsp;
 	{/if}	
-	
+{else}
+	<input type="hidden" name="viewpoint_gridreference" value="{$viewpoint_gridreference|escape:'html'}">
+
 {/if}
 
 {if $step eq 3}
