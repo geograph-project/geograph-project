@@ -37,8 +37,6 @@ if (isset($_GET['format']) && in_array($_GET['format'], $valid_formats))
 }
 
 if ($format == 'KML') {
-	require_once('geograph/conversions.class.php');
-	$conv = new Conversions;
 	$extension = ($_GET['simple'])?'simple.kml':"kml";
 } else {
 	$extension = "xml";
@@ -138,11 +136,8 @@ for ($i=0; $i<$cnt; $i++)
 	$item->author = $images->images[$i]->realname; 
 	     
 	     if ($format == 'KML') {
-	     	if ($images->images[$i]->nateastings) {
-	     		list($item->lat,$item->long) = $conv->national_to_wgs84($images->images[$i]->nateastings,$images->images[$i]->natnorthings,$images->images[$i]->reference_index);
-	     	} else {
-	     		list($item->lat,$item->long) = $conv->internal_to_wgs84($images->images[$i]->x,$images->images[$i]->y,$images->images[$i]->reference_index);
-	     	}
+	     	$item->lat = $images->images[$i]->wgs84_lat;
+	     	$item->long = $images->images[$i]->wgs84_long;
 	     	$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
 	     } else {
 	     	$item->thumb = $images->images[$i]->getThumbnail(120,120,true); 
