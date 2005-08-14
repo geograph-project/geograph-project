@@ -143,6 +143,14 @@ class UploadManager
 	{
 		$this->imageclass=$imageclass;
 	}
+
+	/**
+	* set viewpoint_gridreference
+	*/
+	function setViewpoint($viewpoint_gridreference)
+	{
+		$this->viewpoint_gridreference=$viewpoint_gridreference;
+	}
 	
 	/**
 	* outputs jpeg data for upload id $id and exits
@@ -405,7 +413,16 @@ class UploadManager
 		{
 			die("Must assign square");
 		}
-						
+		
+		
+		if ($this->viewpoint_gridreference) {
+			$viewpoint = new GridSquare;
+			$ok= $viewpoint->setByFullGridRef($this->viewpoint_gridreference);
+			$viewpoint_eastings = $viewpoint->getNatEastings();
+			$viewpoint_northings = $viewpoint->getNatNorthings();
+		}
+		
+		
 		//get sequence number
 		$seq_no = $this->db->GetOne("select max(seq_no) from gridimage ".
 			"where gridsquare_id={$this->square->gridsquare_id}");
@@ -429,14 +446,15 @@ class UploadManager
 		$sql=sprintf("insert into gridimage(".
 			"gridsquare_id, seq_no, user_id, ftf,".
 			"moderation_status,title,comment,exif,nateastings,natnorthings,imageclass,imagetaken,".
-			"submitted) values ".
+			"submitted,viewpoint_eastings,viewpoint_northings) values ".
 			"(%d,%d,%d,%d,".
 			"'pending',%s,%s,%s,%d,%d,%s,%s,".
-			"now())",
+			"now(),%d,%d)",
 			$this->square->gridsquare_id, $seq_no,$USER->user_id, $ftf,
 			$this->db->Quote($this->title), $this->db->Quote($this->comment), $this->db->Quote($exif),
 			$this->square->nateastings,$this->square->natnorthings,
-			$this->db->Quote($this->imageclass), $this->db->Quote($this->imagetaken));
+			$this->db->Quote($this->imageclass), $this->db->Quote($this->imagetaken),
+			$viewpoint_eastings,$viewpoint_northings);
 		
 		$this->db->Query($sql);
 		
