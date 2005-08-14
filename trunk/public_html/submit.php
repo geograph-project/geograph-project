@@ -55,6 +55,10 @@ $smarty->assign('kmlist', $square->getKMList());
 //grid reference posted...
 if (isset($_POST['gridsquare']))
 {
+	if (isset($_POST['viewpoint_gridreference']))
+		$smarty->assign('viewpoint_gridreference', $_POST['viewpoint_gridreference']);
+		
+
 	//ensure the submitted reference is valid
 	if (!empty($_POST['gridreference'])) 
 	{
@@ -86,23 +90,6 @@ if (isset($_POST['gridsquare']))
 		if (isset($_POST['setpos']))
 		{
 			//Submit Step 1...
-			require_once('geograph/rastermap.class.php');
-
-			$rastermap = new RasterMap($square);
-			$smarty->assign_by_ref('rastermap', $rastermap);
-
-			$smarty->assign('reference_index', $square->reference_index);
-
-			require_once('geograph/conversions.class.php');
-			$conv = new Conversions;
-			list($lat,$long) = $conv->gridsquare_to_wgs84($square);
-			$smarty->assign('lat', $lat);
-			$smarty->assign('long', $long);
-
-			if ($square->imagecount > 0) {
-				$images=$square->getImages();
-				$smarty->assign_by_ref('images', $images);
-			}
 
 			$step=2;
 		}
@@ -207,6 +194,7 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->setComment(stripslashes($_POST['comment']));
 				$uploadmanager->setTaken(stripslashes($_POST['imagetaken']));
 				$uploadmanager->setClass(stripslashes($_POST['imageclass']));
+				$uploadmanager->setViewpoint(stripslashes($_POST['viewpoint_gridreference']));
 				
 				$uploadmanager->commit();
 				
@@ -248,6 +236,28 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign_by_ref('classes', $classes);
 
 			$step=3;
+		}
+		if ($step == 2) {
+			require_once('geograph/rastermap.class.php');
+
+			$rastermap = new RasterMap($square);
+			$smarty->assign_by_ref('rastermap', $rastermap);
+
+			$smarty->assign_by_ref('square', $square);
+
+
+			$smarty->assign('reference_index', $square->reference_index);
+
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;
+			list($lat,$long) = $conv->gridsquare_to_wgs84($square);
+			$smarty->assign('lat', $lat);
+			$smarty->assign('long', $long);
+
+			if ($square->imagecount > 0) {
+				$images=$square->getImages();
+				$smarty->assign_by_ref('images', $images);
+			}
 		}
 	}
 	else
