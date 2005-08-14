@@ -50,25 +50,33 @@ if (isset($_GET['check2']))
 	$base=&$_SERVER['DOCUMENT_ROOT'];
 	$size = 40;
 	
-	$sql = "SELECT * FROM gridimage_search";
+	$sql="select gridsquare_id,grid_reference from gridsquare where imagecount>0";
 	
 	$recordSet = &$db->Execute($sql);	
 	while (!$recordSet->EOF) 
 	{
-		$image=new GridImage;
-		$image->fastInit($recordSet->fields);	
+		$sql2="select * from gridimage where gridsquare_id={$recordSet->fields['gridsquare_id']} ".
+				"and moderation_status<>'rejected' order by moderation_status+0 desc,seq_no limit 1";
+
+		$recordSet2 = &$db->Execute($sql2);
 		
-		$ab=sprintf("%02d", floor($image->gridimage_id/10000));
-		$cd=sprintf("%02d", floor(($image->gridimage_id%10000)/100));
-		$abcdef=sprintf("%06d", $image->gridimage_id);
-		$hash=$image->_getAntiLeechHash();
-		
-		$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$size}x{$size}.gd";
-		if (!file_exists($base.$thumbpath))
-		{
-			print "Missing GD image for: {$image->grid_reference}<BR>";
+		if ($recordSet2->fields['gridimage_id']) {
+			$image=new GridImage;
+			$image->fastInit($recordSet2->fields);	
+
+			$ab=sprintf("%02d", floor($image->gridimage_id/10000));
+			$cd=sprintf("%02d", floor(($image->gridimage_id%10000)/100));
+			$abcdef=sprintf("%06d", $image->gridimage_id);
+			$hash=$image->_getAntiLeechHash();
+
+			$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$size}x{$size}.gd";
+			if (!file_exists($base.$thumbpath))
+			{
+				print "Missing GD image for: {$recordSet->fields['grid_reference']}<BR>";
+			}
 		}
 		$recordSet->MoveNext();
+		$recordSet2->Close();
 	}
 	$recordSet->Close();
 	print "<h3>Done</h3>";
