@@ -537,3 +537,14 @@ ALTER TABLE `apikeys` CHANGE `key` `apikey` VARCHAR( 32 ) NOT NULL;
 #Barry 30th June 
 # add an index on user_id to make recent searches quicker
 ALTER TABLE `queries` ADD INDEX ( `user_id` ) 
+
+
+#Barry 10th Aug
+ALTER TABLE `gridimage_search` ADD `wgs84_lat` DECIMAL( 10, 6 ) NOT NULL ,
+ADD `wgs84_long` DECIMAL( 10, 6 ) NOT NULL ;
+
+ALTER TABLE `gridimage_search` ADD INDEX ( `wgs84_lat` , `wgs84_long` ) ;
+
+#barry 14th Aug
+ALTER TABLE `gridimage` ADD `viewpoint_eastings` MEDIUMINT( 8 ) UNSIGNED NOT NULL ,
+ADD `viewpoint_northings` MEDIUMINT( 8 ) UNSIGNED NOT NULL ;
