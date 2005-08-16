@@ -14,14 +14,12 @@ GBGridLetters[7] = ["TX", "TS", "TN", "TH", "TC", "OX", "OS", "ON", "OH", "OC", 
 GBGridLetters[8] = ["TY", "TT", "TO", "TJ", "TD", "OY", "OT", "OO", "OJ", "OD", "JY", "JT", "JO", "JJ", "JD"];
 GBGridLetters[9] = ["TZ", "TU", "TP", "TK", "TE", "OZ", "OU", "OP", "OK", "OE", "JZ", "JU", "JP", "JK", "JE"];
 
-
-
 //if (mapb > 100) {
-//	grlen = 3;
-//	mult = 100;
+	grlen = 3;
+	mult = 100;
 //} else if (mapb > 50) {
-	grlen = 4;
-	mult = 10;
+//	grlen = 4;
+//	mult = 10;
 //} else {
 //	grlen = 5;
 //	mult = 1;
@@ -33,7 +31,7 @@ var h2 = maph / 2;
 var ratw = (mapb / w2) * 1000;
 var rath = (mapb / h2) * 1000;
 
-function moprocess(e) {
+function overlayMouseMove(e) {
 	if (IE) {
 		tempX = event.offsetX;
 		tempY = event.offsetY;
@@ -71,8 +69,7 @@ function moprocess(e) {
 				document.theForm.e.value = "-Invalid-";
 				document.theForm.n.value = "-Invalid-";
 			}
-		}
-		if (document.theForm.fmp2.checked) {
+		} else if (document.theForm.fmp2.checked) {
 			if (document.theForm.viewpoint_gridreference)
 				document.theForm.viewpoint_gridreference.value = "-Invalid-";
 		}
@@ -94,18 +91,15 @@ function moprocess(e) {
 		} else {
 			document.images['map'].alt = grstr + "\n\nClick TWICE to fix this Location";
 		}
-		
 	}
-
-
 }
 
-function moclick() {
+function overlayMouseClick() {
 	if (document.theForm.fmp2.checked) {
 		document.theForm.fmp2.checked = false;
 		if (document.getElementById) {
-			messagediv = document.getElementById("message2");
-			messagediv.innerHTML = '';
+			messagediv2 = document.getElementById("message2");
+			messagediv2.innerHTML = '';
 			messagediv = document.getElementById("message");
 			messagediv.innerHTML = '(click map to toggle)';
 		}
@@ -117,16 +111,16 @@ function moclick() {
 
 function fmp2click(that) {
 	if (document.getElementById && that.checked) {
-		messagediv = document.getElementById("message2");
-		messagediv.innerHTML = '(click map to toggle)';
+		messagediv2 = document.getElementById("message2");
+		messagediv2.innerHTML = '(click map to toggle)';
 		messagediv = document.getElementById("message");
 		messagediv.innerHTML = '';
 	}
 }
 
-function check_step2(that_form) {
+function checkGridReferences(that_form) {
 	GridRef = /\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/;
-	
+
 	if (that_form.gridreference.value.length > 0 && !GridRef.test(that_form.gridreference.value)) {
 		alert("please enter a valid subject grid reference");
 		that_form.gridreference.focus();
@@ -138,4 +132,53 @@ function check_step2(that_form) {
 		return false;
 	}
 	return true;
+}
+
+function updateMapMarker(that) {
+	if (document.getElementById) {
+		gr = that.value;
+
+		GridRef = /\b([a-zA-Z]{2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/;
+
+		if (gr.length > 5) {
+			myArray = GridRef.exec(gr);
+			letters = myArray[1];
+			numbers = myArray[2]+myArray[3];
+			if (numbers.length % 2 == 0) {
+				halve = numbers.length /2;
+				easting = numbers.substr(0, halve);
+				northing = numbers.substr(halve, halve);
+
+				var cenXhun = easting + "00000";
+				var cenYhun = northing + "00000";
+				cenXhun = cenXhun.substr(0, 5);
+				cenYhun = cenYhun.substr(0, 5);
+
+				var cenXblock = 0;
+				letters = letters.toUpperCase();
+				for(x=0;x<10;x++)
+					for(y=0;y<15;y++)
+						if (GBGridLetters[x][y] == letters) {
+							cenXblock = x*100000;
+							cenYblock = y*100000;
+						}
+
+				if (cenXblock > 0) {
+					//we use parseFloat to avoid issues with 0 prefixed numbers!
+					easting = parseInt(cenXblock) + parseFloat(cenXhun);
+					northing = parseInt(cenYblock) + parseFloat(cenYhun);
+
+					tempX = (easting - cene) / ratw;
+					tempY = (cenn - northing) / rath;
+
+					tempX = tempX + w2;
+					tempY = tempY + h2;
+
+					markerdiv = document.getElementById("marker") ;
+					markerdiv.style.left = (tempX - 8)+'px';
+					markerdiv.style.top = (tempY - 8)+'px';
+				}
+			}
+		}
+	}
 }
