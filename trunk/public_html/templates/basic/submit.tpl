@@ -75,9 +75,9 @@ geographing</a> first.</p>
 		<li><b>If you have a WGS84 latitude &amp; longitude coordinate</b>
 		(e.g. from a GPS receiver, or from multimap site), then see our 
 		<a href="/latlong.php">Lat/Long to Grid Reference Convertor</a><br/><br/></li>
-		<li><b>For information on Grid References</b> <br/>see 
+		<li><b>For information on {external href="http://en.wikipedia.org/wiki/Grid_reference" text="Grid References"}</b> <br/>see 
 		{external title="Guide to the National Grid" text="Interactive Guide to the National Grid in Great Britain" href="http://www.ordnancesurvey.co.uk/oswebsite/freefun/nationalgrid/nghelp1.html"}.
-		The Irish National Grid is very similar, but using a single letter prefix, 
+		The {external href="http://en.wikipedia.org/wiki/Irish_national_grid_reference_system" text="Irish National Grid"} is very similar, but using a single letter prefix, 
 		see <a href="/mapbrowse.php">Overview Map</a> for the layout of the squares.
 		</li>
 	</ul>
@@ -114,7 +114,7 @@ geographing</a> first.</p>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
 		<label for="jpeg">JPEG Image File</label>
 		<input id="jpeg" name="jpeg" type="file" />
-		{if $error}<br /><p>{$error}</p>{/if}
+		{if $error}<br /><p style="color:#990000;font-weight:bold;">{$error}</p>{/if}
 		<br />
 		<p>You might like to check you've selected the correct square<br/> by
 		viewing the Modern {getamap gridref=$gridref text="OS Map for $gridref"}</p>
@@ -123,12 +123,10 @@ geographing</a> first.</p>
 		New! {external href="http://www.multimap.com/p/browse.cgi?scale=25000&lon=`$long`&lat=`$lat`&GridE=`$long`&GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
 		{/if}
 		
-		<p><b>optional:</b><br/><label for="gridreference">Grid reference for photo subject</label> <input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="14"/>
-		{if $rastermap->enabled}
+		<p><b>optional:</b><br/><label for="gridreference">Grid reference for photo subject</label> <input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="14" onblur="updateMapMarker(this)"/>{if $rastermap->enabled}<input type="button" value="&gt;" onclick="updateMapMarker(this.form.gridreference)"/>
 		<br/><label for="fmp">Track Mouse Pointer</label><INPUT TYPE="CHECKBOX" NAME="fmp" id="fmp"> <span id="message">(click map to toggle)</span>{/if}</p>
 	
-		<p><label for="viewpoint_gridreference">Grid reference for photographer</label> <input id="viewpoint_gridreference" type="text" name="viewpoint_gridreference" value="{$viewpoint_gridreference|escape:'html'}" size="14"/>
-		{if $rastermap->enabled}
+		<p><label for="viewpoint_gridreference">Grid reference for photographer</label> <input id="viewpoint_gridreference" type="text" name="viewpoint_gridreference" value="{$viewpoint_gridreference|escape:'html'}" size="14" onblur="updateMapMarker(this)"/>{if $rastermap->enabled}<input type="button" value="&gt;" onclick="updateMapMarker(this.form.viewpoint_gridreference)"/>
 		<br/><label for="fmp2">Track Mouse Pointer</label><INPUT TYPE="CHECKBOX" NAME="fmp2" id="fmp2" onclick="fmp2click(this)"> <span id="message2"></span>{/if}</p>
 	
 	
@@ -143,8 +141,8 @@ geographing</a> first.</p>
 		
 		{$rastermap->getScriptTag()}
 		<script type="text/javascript" src="/mapping.js"></script>
-		<script type="text/javascript">document.images['map'].onmousemove = moprocess;
-		document.images['map'].onclick = moclick;</script>
+		<script type="text/javascript">document.images['map'].onmousemove = overlayMouseMove;
+		document.images['map'].onclick = overlayMouseClick;</script>
 	{else} 
 		<script type="text/javascript" src="/mapping.js"></script>
 	{/if}
@@ -152,7 +150,7 @@ geographing</a> first.</p>
 	
 
 	<br/>
-	<input type="submit" name="goback" value="&lt; Back"/> <input type="submit" name="upload" value="Next &gt;" onclick="return check_step2(this.form)"/>
+	<input type="submit" name="goback" value="&lt; Back"/> <input type="submit" name="upload" value="Next &gt;" onclick="return checkGridReferences(this.form)"/>
 	<br style="clear:right"/>
 
 	{if $imagecount gt 0}
