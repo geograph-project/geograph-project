@@ -73,7 +73,7 @@ class SearchEngine
 
 			$db=$this->_getDB();
 
-			$query = $db->GetRow("SELECT * FROM queries WHERE id = $query_id");
+			$query = $db->GetRow("SELECT *,crt_timestamp+0 as crt_timestamp_ts FROM queries WHERE id = $query_id");
 
 			//todo surely there a better way to do this in one line...
 				//			$this->criteria = new ${"SearchCriteria_".$row['searchclass']}();
@@ -704,7 +704,7 @@ $sql = <<<END
 		ORDER BY $sql_order
 		LIMIT $page,$pgsize
 END;
-#print "<BR><BR>$sql";
+print "<BR><BR>$sql";
 		//lets find some photos
 		$this->results=array();
 		$i=0;
