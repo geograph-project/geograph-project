@@ -704,7 +704,8 @@ $sql = <<<END
 		ORDER BY $sql_order
 		LIMIT $page,$pgsize
 END;
-print "<BR><BR>$sql";
+if ($_GET['debug'])
+	print "<BR><BR>$sql";
 		//lets find some photos
 		$this->results=array();
 		$i=0;
