@@ -682,7 +682,7 @@ class GeographMapMosaic
 		if ($zoomindex === FALSE)
 			$zoomindex = 0;
 		$zoomindex++;
-		if ($zoomindex > count($this->scales))
+		if ($zoomindex > count($this->scales) || $this->pixels_per_km > 40)
 		{
 			
 			//we're going to zoom into a grid square
