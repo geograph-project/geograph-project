@@ -1,7 +1,7 @@
 {assign var="page_title" value="Map Viewer :: $gridref"}
 {include file="_std_begin.tpl"}
 
-
+<h2>Geograph Mosaic for {$gridref2}</h2>
 	<div class="map" style="height:{$mosaic_height+20}px;width:{$mosaic_width+20}px">
 	<div class="cnr"></div>
 	<div class="side" style="width:{$mosaic_width}px;">&nbsp;</div>
@@ -27,10 +27,25 @@
 	<div class="side" style="width:{$mosaic_width}px;">&nbsp;</div>
 	<div class="cnr"></div>
 	</div>
+<br/>
+<div style="float:left; width:{$overview_width+30}px; position:relative">
+	{include file="_overview.tpl"}
+</div>
+<div style="height:{$overview_height+30}px;">
 
+<table class="report"> 
+<thead><tr><td>Contributor</td><td>Photos</td></tr></thead>
+<tbody>
 
+{foreach from=$users key=id item=obj}
+<tr><td><a title="View map for {$obj.tenk_square}" href="/profile.php?u={$obj.user_id}">{$obj.realname}</a></td>
+<td align="right" >{$obj.count}</td></tr>
+{/foreach}
 
-
+</tbody>
+</table>
+</div>
  
+<br style="clear:left"/>
  
 {include file="_std_end.tpl"}
