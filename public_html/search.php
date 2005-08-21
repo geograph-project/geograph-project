@@ -142,7 +142,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	require_once('geograph/searchengine.class.php');
 
  	$engine = new SearchEngine('#'); 
- 	$engine->buildSimpleQuery($q,100);
+ 	$engine->buildSimpleQuery($q,100,(isset($_GET['form']) && $_GET['form'] == 'simple')?'simple':'auto');
  	if ($engine->criteria->is_multiple) {
  		if (empty($_GET['distance']))
  			$_GET['distance'] = 100; //todo should this be more configurable?

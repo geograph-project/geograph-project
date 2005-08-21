@@ -110,7 +110,7 @@ class SearchEngine
   
 	} 
 
-	function buildSimpleQuery($q = '',$distance = 100,$autoredirect=true,$userlimit = 0)
+	function buildSimpleQuery($q = '',$distance = 100,$autoredirect='auto',$userlimit = 0)
 	{
 		global $USER;
 		
@@ -136,6 +136,11 @@ class SearchEngine
 			$square=new GridSquare;
 			$grid_ok=$square->setByFullGridRef($q);
 			if ($grid_ok) {
+				if ($square->imagecount && $autoredirect == 'simple') {
+					header("Location:http://{$_SERVER['HTTP_HOST']}/gridref/{$q}");
+					print "<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/{$q}\">View Pictures</a>";
+					exit;		
+				}
 				$searchclass = 'GridRef';
 				$searchdesc = ", $nearstring grid reference ".$square->grid_reference;
 				$searchx = $square->x;
@@ -193,7 +198,7 @@ class SearchEngine
 			$db->Execute($sql);
 
 			$i = $db->Insert_ID();
-			if ($autoredirect) {
+			if ($autoredirect != false) {
 				header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}");
 				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}\">Your Search Results</a>";
 				exit;		
