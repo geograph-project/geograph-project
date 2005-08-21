@@ -71,7 +71,9 @@ referring to <b>image {$image->gridimage_id}</b>
 {/dynamic}
 
 {if $overview}
+<div style="float:right; width:{$overview_width+30}px; position:relative">
 	{include file="_overview.tpl"}
+</div>
 {/if}
 
 
