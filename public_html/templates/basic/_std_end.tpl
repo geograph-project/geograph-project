@@ -59,11 +59,7 @@ Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> 
 
 {/if}  
   
-<form method="get" action="/browse.php">
-    <label for="panelgridref">Grid Reference</label> 
-    <input type="text" id="panelgridref" name="gridref" size="6" 
-    title="Enter a Grid Reference"/><input type="submit" value="Go" style="width:30px"/>
-    </form>  
+  
   
   </div>
 </div>
