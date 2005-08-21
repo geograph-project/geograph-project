@@ -1,5 +1,9 @@
 var IE = document.all?true:false;
 
+if (IE) {
+document.body.ondragstart = function() {event.returnValue = false;};
+}
+
 // These arrays hold the valid 100km references
 var GBGridLetters = new Array (2);
 
@@ -31,6 +35,60 @@ var h2 = maph / 2;
 var ratw = (mapb / w2) * 1000;
 var rath = (mapb / h2) * 1000;
 
+var currentelement = null;
+
+function overlayMouseUp(e) {
+	if (currentelement != null) {
+		if (currentelement.id == 'marker1') {
+			if (document.theForm.gridreference.value == "") {
+				currentelement.style.left = w2+'px';
+				currentelement.style.top = h2+'px';
+			}
+		} else if (currentelement.id == 'marker2') {
+			if (document.theForm.viewpoint_gridreference.value == "") {
+				currentelement.style.left = 5+'px';
+				currentelement.style.top = (maph + 5)+'px';
+			}
+		}
+	}
+	currentelement = null;
+}
+
+function overlayMouseDown(e) {
+	if (currentelement != null) {
+		//huh why we here?
+		return;
+	}
+	
+	if (IE) {
+		tempX = event.offsetX;
+		tempY = event.offsetY;
+	} else {
+		tempX = e.layerX
+		tempY = e.layerY
+	}
+	
+	var m1 = document.getElementById('marker1');
+	
+	m1left = parseInt(m1.style.left)+8;
+	m1top = parseInt(m1.style.top)+8;
+	
+	if (Math.abs(tempX - m1left) < 10 && Math.abs(tempY - m1top) < 10) {
+		currentelement = m1;
+	} else {
+		var m2 = document.getElementById('marker2');
+
+		m2left = parseInt(m2.style.left)+8;
+		m2top = parseInt(m2.style.top)+8;
+
+		if (Math.abs(tempX - m2left) < 10 && Math.abs(tempY - m2top) < 10) {
+			currentelement = m2;
+		}
+	}
+	
+	return false;
+}
+
 function overlayMouseMove(e) {
 	if (IE) {
 		tempX = event.offsetX;
@@ -39,17 +97,30 @@ function overlayMouseMove(e) {
 		tempX = e.layerX
 		tempY = e.layerY
 	}
-	if (document.theForm.fmp.checked || document.theForm.fmp2.checked) {
+	if (currentelement != null) {
 		if (document.getElementById) {
-			markerdiv = document.getElementById("marker") ;
-			markerdiv.style.left = (tempX - 8)+'px';
-			markerdiv.style.top = (tempY - 8)+'px';
+			currentelement.style.left = (tempX - 8)+'px';
+			currentelement.style.top = (tempY - 8)+'px';
 		}
 	}
-	
+
+	if (tempY > maph) {
+		if (currentelement != null) {
+			if (currentelement.id == 'marker1') {
+				if (document.theForm.gridreference)
+					document.theForm.gridreference.value = "";
+			} else if (currentelement.id == 'marker2') {
+				if (document.theForm.viewpoint_gridreference)
+					document.theForm.viewpoint_gridreference.value = "";
+			}
+		}
+		document.images['map'].alt = "";
+		return;
+	}
+
 	tempX = tempX - w2;
 	tempY = tempY - h2;
-
+	
 	var easting = cene + Math.round(tempX * ratw);
 	var northing = cenn - Math.round(tempY * rath);
 
@@ -62,80 +133,71 @@ function overlayMouseMove(e) {
 	var cenYblock = Math.floor(northing / 100000);
 
 	if(cenXblock < 0 || cenYblock < 0 || cenXblock > 9 || cenYblock > 15) {
-		if (document.theForm.fmp.checked) {
-			if (document.theForm.gridreference)
+		if (currentelement != null) {
+			if (currentelement.id == 'marker1') {
 				document.theForm.gridreference.value = "-Invalid-";
-			if (document.theForm.e) {
-				document.theForm.e.value = "-Invalid-";
-				document.theForm.n.value = "-Invalid-";
-			}
-		} else if (document.theForm.fmp2.checked) {
-			if (document.theForm.viewpoint_gridreference)
+			} else if (currentelement.id == 'marker2') {
 				document.theForm.viewpoint_gridreference.value = "-Invalid-";
+			}
 		}
 		document.images['map'].alt = "-Invalid Grid Ref-"
 	} else {
 		grstr = GBGridLetters[cenXblock][cenYblock] + cenXhun + cenYhun;
-		if (document.theForm.fmp.checked) {
-			if (document.theForm.gridreference)
+		if (currentelement != null) {
+			if (currentelement.id == 'marker1') {
 				document.theForm.gridreference.value = grstr;
-			if (document.theForm.e) {
-				document.theForm.e.value = cenXblock + '' + (cenXhun * mult);
-				document.theForm.n.value = cenYblock + '' + (cenYhun * mult);
-			}
-			document.images['map'].alt = grstr + "\n\nClick to fix this Location";
-		} else if (document.theForm.fmp2.checked) {
-			if (document.theForm.viewpoint_gridreference)
+			} else if (currentelement.id == 'marker2') {
 				document.theForm.viewpoint_gridreference.value = grstr;
-			document.images['map'].alt = grstr + "\n\nClick to fix this Location";
-		} else {
-			document.images['map'].alt = grstr + "\n\nClick TWICE to fix this Location";
+			} 
 		}
-	}
-}
-
-function overlayMouseClick() {
-	if (document.theForm.fmp2.checked) {
-		document.theForm.fmp2.checked = false;
-		if (document.getElementById) {
-			messagediv2 = document.getElementById("message2");
-			messagediv2.innerHTML = '';
-			messagediv = document.getElementById("message");
-			messagediv.innerHTML = '(click map to toggle)';
-		}
-	} else {
-		document.theForm.fmp.checked = !document.theForm.fmp.checked ;
-	}
-	document.images['map'].alt = '';
-}
-
-function fmp2click(that) {
-	if (document.getElementById && that.checked) {
-		messagediv2 = document.getElementById("message2");
-		messagediv2.innerHTML = '(click map to toggle)';
-		messagediv = document.getElementById("message");
-		messagediv.innerHTML = '';
+		document.images['map'].alt = grstr;
 	}
 }
 
 function checkGridReferences(that_form) {
-	GridRef = /\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/;
+	if (!checkGridReference(that.gridreference,true)) 
+		return false;
+	if (!checkGridReference(that.viewpoint_gridreference,true)) 
+		return false;
+	return true;
 
-	if (that_form.gridreference.value.length > 0 && !GridRef.test(that_form.gridreference.value)) {
-		alert("please enter a valid subject grid reference");
-		that_form.gridreference.focus();
-		return false;
-	}
-	if (that_form.viewpoint_gridreference.value.length > 0 && !GridRef.test(theForm.viewpoint_gridreference.value)) {
-		alert("please enter a valid photographer grid reference");
-		that_form.viewpoint_gridreference.focus();
-		return false;
+} 
+
+function checkGridReference(that,showmessage) {
+	GridRef = /\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/;
+	if (that.length > 0) {
+		myArray = GridRef.exec(that.value);
+		numbers = myArray[2]+myArray[3];
+		if (numbers.length == 0 || !numbers.length % 2 != 0) {
+			if (!showmessage) 
+				return false;
+			if (that.name == 'gridreference') {
+				alert("please enter a valid subject grid reference");
+			} else {
+				alert("please enter a valid photographer grid reference");
+			}
+			that.focus();
+			return false;
+		}
 	}
 	return true;
 }
 
-function updateMapMarker(that) {
+function updateMapMarker(that,showmessage) {
+	if (!checkGridReference(that,showmessage)) {
+		return false;
+	}
+	if (!document.images['map']) {
+		//we have no map! so we only wanted to check the GR
+		return;
+	}
+
 	if (document.getElementById) {
+		if (that.name == 'viewpoint_gridreference') {
+			currentelement = document.getElementById('marker2');
+		} else {
+			currentelement = document.getElementById('marker1');
+		}
 		gr = that.value;
 
 		GridRef = /\b([a-zA-Z]{2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/;
@@ -173,12 +235,16 @@ function updateMapMarker(that) {
 
 					tempX = tempX + w2;
 					tempY = tempY + h2;
-
-					markerdiv = document.getElementById("marker") ;
-					markerdiv.style.left = (tempX - 8)+'px';
-					markerdiv.style.top = (tempY - 8)+'px';
+					if (currentelement.id == 'marker2' && ( (tempX < 0) || (tempX > mapw) || (tempY < 0) || (tempY > maph) ) ) {
+						currentelement.style.left = 5+'px';
+						currentelement.style.top = (maph + 5)+'px';
+					} else {
+						currentelement.style.left = (tempX - 8)+'px';
+						currentelement.style.top = (tempY - 8)+'px';
+					}
 				}
 			}
 		}
 	}
+	currentelement = null;
 }

@@ -117,18 +117,16 @@ geographing</a> first.</p>
 		{if $error}<br /><p style="color:#990000;font-weight:bold;">{$error}</p>{/if}
 		<br />
 		<p>You might like to check you've selected the correct square<br/> by
-		viewing the Modern {getamap gridref=$gridref text="OS Map for $gridref"}</p>
+		viewing the Modern {getamap gridref="document.theForm.gridreference.value" text="OS Map"}</p>
 
 		{if $reference_index == 2} 
 		New! {external href="http://www.multimap.com/p/browse.cgi?scale=25000&lon=`$long`&lat=`$lat`&GridE=`$long`&GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
 		{/if}
 		
-		<p><b>optional:</b><br/><label for="gridreference">Grid reference for photo subject</label> <input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="14" onblur="updateMapMarker(this)"/>{if $rastermap->enabled}<input type="button" value="&gt;" onclick="updateMapMarker(this.form.gridreference)"/>
-		<br/><label for="fmp">Track Mouse Pointer</label><INPUT TYPE="CHECKBOX" NAME="fmp" id="fmp"> <span id="message">(click map to toggle)</span>{/if}</p>
+		<p><b>Grid References:</b> (optional)<br/><br/><label for="gridreference">Primary Photo Subject</label> <input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="14" onblur="updateMapMarker(this)" onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/crosshairs.gif" alt="Marks the Subject" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/></p>
 	
-		<p><label for="viewpoint_gridreference">Grid reference for photographer</label> <input id="viewpoint_gridreference" type="text" name="viewpoint_gridreference" value="{$viewpoint_gridreference|escape:'html'}" size="14" onblur="updateMapMarker(this)"/>{if $rastermap->enabled}<input type="button" value="&gt;" onclick="updateMapMarker(this.form.viewpoint_gridreference)"/>
-		<br/><label for="fmp2">Track Mouse Pointer</label><INPUT TYPE="CHECKBOX" NAME="fmp2" id="fmp2" onclick="fmp2click(this)"> <span id="message2"></span>{/if}</p>
-	
+		<p><label for="viewpoint_gridreference">Photographer Position</label> <input id="viewpoint_gridreference" type="text" name="viewpoint_gridreference" value="{$viewpoint_gridreference|escape:'html'}" size="14" onblur="updateMapMarker(this,true)" onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/camera.gif" alt="Marks the Photographer" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/></p>
+		<p><small>TIP: drag the markers on the map<br/>to update these boxes</small></p>
 	
 	</div>
 
@@ -140,9 +138,15 @@ geographing</a> first.</p>
 		</div>
 		
 		{$rastermap->getScriptTag()}
-		<script type="text/javascript" src="/mapping.js"></script>
-		<script type="text/javascript">document.images['map'].onmousemove = overlayMouseMove;
-		document.images['map'].onclick = overlayMouseClick;</script>
+		{if $viewpoint_gridreference}
+			{literal}
+			<script type="text/javascript">
+				document.body.onload = function () {
+					updateMapMarker(document.theForm.viewpoint_gridreference,false);
+				}
+			</script>
+			{/literal}
+		{/if}
 	{else} 
 		<script type="text/javascript" src="/mapping.js"></script>
 	{/if}
@@ -319,7 +323,7 @@ function onChangeImageclass()
 {if $step eq 5}
 <h2>Submission Complete!</h2>
 <p>Thank you very much - your photo has now been added to grid square 
-<a title="Grid Reference {$gridref}" href="/browse.php?gridref={$gridref}">{$gridref}</a></p>
+<a title="Grid Reference {$gridref}" href="/gridref/{$gridref}">{$gridref}</a></p>
 <p><a title="submit another photo" href="submit.php">Click here to submit a new photo...</a></p>
 {/if}
 
