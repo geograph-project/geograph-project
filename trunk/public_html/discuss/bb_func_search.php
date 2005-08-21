@@ -23,6 +23,13 @@ if(isset($_GET['eMatch'])) $eMatch=$_GET['eMatch'];
 elseif(isset($_POST['eMatch'])) $eMatch=$_POST['eMatch'];
 elseif(isset($_GET['exact'])) $exact=$_GET['exact'];
 
+if (preg_match("/^([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9])([A-Z]{0,2})$/",strtoupper($searchFor)) ||preg_match("/^([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})$/",$searchFor)) {
+	header("Location:http://{$_SERVER['HTTP_HOST']}/discuss/search.php?q={$searchFor}");
+	print "<a href=\"http://{$_SERVER['HTTP_HOST']}/discuss/search.php?q={$searchFor}\">View Search Results</a>";
+	exit;
+}
+			
+
 $searchWhere+=0;$searchHow+=0;$searchForum+=0;$word=0;$min=2;$i=0;
 $searchFor=textFilter($searchFor,100,$post_word_maxlength,0,1,0,0);
 $days=substr($days,0,4)+0;
