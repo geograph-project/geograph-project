@@ -46,6 +46,12 @@ $mosaic=new GeographMapMosaic;
 $mosaic->setScale(40);
 $mosaic->setMosaicFactor(2);
 
+$largemosaic=new GeographMapMosaic;
+$largemosaic->setScale(80);
+$largemosaic->setMosaicFactor(2);
+$largemosaic->setMosaicSize(800,800);
+
+
 	//lets add an overview map too
 	$overview=new GeographMapMosaic('overview');
 	$overview->assignToSmarty($smarty, 'overview');
@@ -104,6 +110,11 @@ $mosaic->setMosaicFactor(2);
 			$mosaic->setOrigin($most[$id]['x'],$most[$id]['y']);
 
 			$most[$id]['map_token'] = $mosaic->getToken();
+			
+			//get a token to show a suroudding geograph map
+			$largemosaic->setOrigin($most[$id]['x'],$most[$id]['y']);
+
+			$most[$id]['largemap_token'] = $largemosaic->getToken();
 			
 			//actully we dont need the full loading of a square
 			//$ok = $censquare->loadFromPosition($most[$id]['x'],$most[$id]['y']);
