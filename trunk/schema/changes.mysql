@@ -1,0 +1,24 @@
+###############################################################################
+#
+# changes.mysql
+#
+# This file should contain database changes that allow the "live" schema in
+# schema.mysql to be changed into a schema that works with the current CVS
+# code.
+#
+# After each software release, regenerate the schema.mysql and clear the
+# SQL statements from this file.
+#
+###############################################################################
+
+
+
+#Barry 10th Aug
+ALTER TABLE `gridimage_search` ADD `wgs84_lat` DECIMAL( 10, 6 ) NOT NULL ,
+ADD `wgs84_long` DECIMAL( 10, 6 ) NOT NULL ;
+
+ALTER TABLE `gridimage_search` ADD INDEX ( `wgs84_lat` , `wgs84_long` ) ;
+
+#barry 14th Aug
+ALTER TABLE `gridimage` ADD `viewpoint_eastings` MEDIUMINT( 8 ) UNSIGNED NOT NULL ,
+ADD `viewpoint_northings` MEDIUMINT( 8 ) UNSIGNED NOT NULL ;
