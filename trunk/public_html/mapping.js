@@ -1,7 +1,31 @@
-var IE = document.all?true:false;
+/**
+ * $Project: GeoGraph $
+ * $Id$
+ * 
+ * GeoGraph geographic photo archive project
+ * This file copyright (C) 2005  Barry Hunter (geo@barryhunter.co.uk)
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+ 
+
+ var IE = document.all?true:false;
 
 if (IE) {
-document.body.ondragstart = function() {event.returnValue = false;};
+	document.body.ondragstart = function() {event.returnValue = false;};
+	//mozilla based do this by returning false from onmousedown
 }
 
 // These arrays hold the valid 100km references
@@ -155,9 +179,9 @@ function overlayMouseMove(e) {
 }
 
 function checkGridReferences(that_form) {
-	if (!checkGridReference(that.gridreference,true)) 
+	if (!checkGridReference(that_form.gridreference,true)) 
 		return false;
-	if (!checkGridReference(that.viewpoint_gridreference,true)) 
+	if (!checkGridReference(that_form.viewpoint_gridreference,true)) 
 		return false;
 	return true;
 
@@ -165,10 +189,10 @@ function checkGridReferences(that_form) {
 
 function checkGridReference(that,showmessage) {
 	GridRef = /\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/;
-	if (that.length > 0) {
+	if (that.value.length > 0) {
 		myArray = GridRef.exec(that.value);
 		numbers = myArray[2]+myArray[3];
-		if (numbers.length == 0 || !numbers.length % 2 != 0) {
+		if (numbers.length == 0 || numbers.length % 2 != 0) {
 			if (!showmessage) 
 				return false;
 			if (that.name == 'gridreference') {
