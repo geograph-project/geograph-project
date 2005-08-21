@@ -134,12 +134,17 @@ if ($image->isValid())
 	$smarty->assign('latdm', $latdm);
 	$smarty->assign('longdm', $longdm);
 	
-
 	list($smallgr,$len) = $conv->national_to_gridref($image->grid_square->nateastings-$correction,$image->grid_square->natnorthings-$correction,0,$image->grid_square->reference_index);
 	
 	$smarty->assign('smallgr', $smallgr);
 	
 	$smarty->assign('accucacy', pow(10,6-$len)/10);
+	
+	if ($image->viewpoint_northings) {
+		list($posgr,$len) = $conv->national_to_gridref($image->viewpoint_eastings,$image->viewpoint_northings,0,$image->grid_square->reference_index);
+		$smarty->assign('posgr', $posgr);
+	}
+	
 }
 
 

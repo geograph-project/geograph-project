@@ -71,26 +71,7 @@ referring to <b>image {$image->gridimage_id}</b>
 {/dynamic}
 
 {if $overview}
-<div style="float:right; width:{$overview_width+30}px; position:relative">
-
-<div class="map" style="margin-left:20px;border:2px solid black; height:{$overview_height}px;width:{$overview_width}px">
-
-<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
-
-{foreach from=$overview key=y item=maprow}
-	<div>
-	{foreach from=$maprow key=x item=mapcell}
-	<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img
-	alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
-	{/foreach}
-	</div>
-{/foreach}
-{if $marker}
-<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><img src="/templates/basic/img/crosshairs.gif" alt="+" width="16" height="16"/></div>
-{/if}
-</div>
-</div>
-</div>
+	{include file="_overview.tpl"}
 {/if}
 
 
@@ -162,14 +143,22 @@ referring to <b>image {$image->gridimage_id}</b>
 {/if}
 
 </td></tr>
-<tr><td>Location</td>
+<tr><td>Subject Location</td>
 
 <td style="font-family:verdana, arial, sans serif; font-size:0.8em">
 {if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {$smallgr} <span style="font-size:0.8em"> [Accurate to ~{$accucacy}m]</span><br/>
 WGS84: {$latdm} {$longdm}
 <span style="font-size:0.8em">[{$lat|string_format:"%.5f"},{$long|string_format:"%.5f"}]</span> </td></tr>
 
+{if $posgr}
+<tr><td>Photographer Loc.</td>
+
+<td style="font-family:verdana, arial, sans serif; font-size:0.8em">
+{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {$posgr}</td></tr>
+{/if}
+
 </table>
+
 <br/>
 <div style="text-align:center">
 <!-- Creative Commons License -->
