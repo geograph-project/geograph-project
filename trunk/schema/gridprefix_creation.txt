@@ -1,0 +1,179 @@
+#
+# These are the original SQL statements used to set up the UK grid prefixes 
+# and their offets - not much use since the "active" gridprefix table is
+# dumped in gridprefix.mysql.bz, but might be useful in setting up grids
+# for different countries.
+#
+
+
+#OSGB Grid
+#set up grids from bottom to top
+replace into gridprefix(prefix, reference_index, origin_x,origin_y) values
+('SV',1,000,0),
+('SW',1,100,0),
+('SX',1,200,0),
+('SY',1,300,0),
+('SZ',1,400,0),
+('TV',1,500,0),
+('TW',1,600,0),
+
+('SQ',1,000,100),
+('SR',1,100,100),
+('SS',1,200,100),
+('ST',1,300,100),
+('SU',1,400,100),
+('TQ',1,500,100),
+('TR',1,600,100),
+
+('SL',1,000,200),
+('SM',1,100,200),
+('SN',1,200,200),
+('SO',1,300,200),
+('SP',1,400,200),
+('TL',1,500,200),
+('TM',1,600,200),
+
+('SF',1,000,300),
+('SG',1,100,300),
+('SH',1,200,300),
+('SJ',1,300,300),
+('SK',1,400,300),
+('TF',1,500,300),
+('TG',1,600,300),
+
+('SA',1,000,400),
+('SB',1,100,400),
+('SC',1,200,400),
+('SD',1,300,400),
+('SE',1,400,400),
+('TA',1,500,400),
+('TB',1,600,400),
+
+('NV',1,000,500),
+('NW',1,100,500),
+('NX',1,200,500),
+('NY',1,300,500),
+('NZ',1,400,500),
+('OV',1,500,500),
+('OW',1,600,500),
+
+('NQ',1,000,600),
+('NR',1,100,600),
+('NS',1,200,600),
+('NT',1,300,600),
+('NU',1,400,600),
+('OQ',1,500,600),
+('OR',1,600,600),
+
+('NL',1,000,700),
+('NM',1,100,700),
+('NN',1,200,700),
+('NO',1,300,700),
+('NP',1,400,700),
+('OL',1,500,700),
+('OM',1,600,700),
+
+('NF',1,000,800),
+('NG',1,100,800),
+('NH',1,200,800),
+('NJ',1,300,800),
+('NK',1,400,800),
+('OF',1,500,800),
+('OG',1,600,800),
+
+('NA',1,000,900),
+('NB',1,100,900),
+('NC',1,200,900),
+('ND',1,300,900),
+('NE',1,400,900),
+('OA',1,500,900),
+('OB',1,600,900),
+
+('HV',1,000,1000),
+('HW',1,100,1000),
+('HX',1,200,1000),
+('HY',1,300,1000),
+('HZ',1,400,1000),
+('JV',1,500,1000),
+('JW',1,600,1000),
+
+('HQ',1,000,1100),
+('HR',1,100,1100),
+('HS',1,200,1100),
+('HT',1,300,1100),
+('HU',1,400,1100),
+('JQ',1,500,1100),
+('JR',1,600,1100),
+
+('HL',1,000,1200),
+('HM',1,100,1200),
+('HN',1,200,1200),
+('HO',1,300,1200),
+('HP',1,400,1200),
+('JL',1,500,1200),
+('JM',1,600,1200);
+
+#now offset them for our internal coords
+update gridprefix set origin_x=origin_x+206 where reference_index=1;
+
+#give them a title
+update gridprefix set title=concat('GB grid square ', prefix) 
+where reference_index=1 and title is null;
+
+
+replace into gridprefix(prefix, reference_index, origin_x,origin_y) values
+('V',2,000,000),
+('W',2,100,000),
+('X',2,200,000),
+('Y',2,300,000),
+('Z',2,400,000),
+
+('Q',2,000,100),
+('R',2,100,100),
+('S',2,200,100),
+('T',2,300,100),
+('U',2,400,100),
+
+('L',2,000,200),
+('M',2,100,200),
+('N',2,200,200),
+('O',2,300,200),
+('P',2,400,200),
+
+('F',2,000,300),
+('G',2,100,300),
+('H',2,200,300),
+('J',2,300,300),
+('K',2,400,300),
+
+('A',2,000,400),
+('B',2,100,400),
+('C',2,200,400),
+('D',2,300,400),
+('E',2,400,400);
+
+#lose the rightmost column, there's no land there
+delete from gridprefix where origin_x=400 and reference_index=2;
+
+#relocate onto our grid
+update gridprefix set origin_x=origin_x+10,origin_y=origin_y+149 where reference_index=2;
+
+#create pseudo titles
+update gridprefix set title=concat('Irish grid square ', prefix) 
+where reference_index=2 and title is null;
+
+
+#paul - 8th April - boundary polygons for gridsquares
+alter table gridprefix
+add column boundary varchar(128),
+add column labelcentre varchar(16);
+
+#define polygons to prevent GB/Irish overlaps
+update gridprefix set boundary="0,0,0,100,70,100,20,0", labelcentre="20,50" where prefix="T";
+update gridprefix set boundary="0,0,0,100,70,100,70,0", labelcentre="35,50" where prefix="O";
+update gridprefix set boundary="0,0,0,100,70,100,70,0", labelcentre="35,50" where prefix="J";
+update gridprefix set boundary="0,0,0,100,70,0", labelcentre="20,50" where prefix="D";
+update gridprefix set boundary="40,0,40,100,100,100,100,0", labelcentre="75,50" where prefix="SR";
+update gridprefix set boundary="40,0,40,65,100,65,100,0", labelcentre="75,50" where prefix="SM";
+update gridprefix set boundary="80,0,80,100,100,100,100,0", labelcentre="90,50" where prefix="NW";
+update gridprefix set boundary="0,64,0,100,100,100,100,0,44,0", labelcentre="70,50" where prefix="NR";
