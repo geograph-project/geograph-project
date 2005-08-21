@@ -22,3 +22,6 @@ ALTER TABLE `gridimage_search` ADD INDEX ( `wgs84_lat` , `wgs84_long` ) ;
 #barry 14th Aug
 ALTER TABLE `gridimage` ADD `viewpoint_eastings` MEDIUMINT( 8 ) UNSIGNED NOT NULL ,
 ADD `viewpoint_northings` MEDIUMINT( 8 ) UNSIGNED NOT NULL ;
+
+#barry 21st Aug
+ALTER TABLE `queries` CHANGE `searchuse` `searchuse` ENUM( 'search', 'flickr', 'gazetteer', 'discuss' ) DEFAULT 'search' NOT NULL;
