@@ -778,26 +778,26 @@ if ($_GET['debug'])
 		if (!empty($r))
 			return($r);
 		if ($this->currentPage > 1) 
-			$r .= "<a href=\"{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage-1)."\">&lt; &lt; prev</a> ";
+			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage-1)."\">&lt; &lt; prev</a> ";
 		$start = max(1,$this->currentPage-5);
 		$endr = min($this->numberOfPages+1,$this->currentPage+8);
 		
 		if ($start > 1)
-			$r .= "<a href=\"{$this->page}?i={$this->query_id}&amp;page=1\">1</a> ... ";
+			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=1\">1</a> ... ";
 
 		for($index = $start;$index<$endr;$index++) {
 			if ($index == $this->currentPage) 
 				$r .= "<b>$index</b> "; 
 			else
-				$r .= "<a href=\"{$this->page}?i={$this->query_id}&amp;page=$index\">$index</a> ";
+				$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=$index\">$index</a> ";
 		}
 		if ($endr < $this->numberOfPages+1) {
 			$index = $this->numberOfPages;
-			$r .= "... <a href=\"{$this->page}?i={$this->query_id}&amp;page=$index\">$index</a> ";
+			$r .= "... <a href=\"/{$this->page}?i={$this->query_id}&amp;page=$index\">$index</a> ";
 		}
 			
 		if ($this->numberOfPages > $this->currentPage) 
-			$r .= "<a href=\"{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage+1)."\">next &gt;&gt;</a> ";
+			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage+1)."\">next &gt;&gt;</a> ";
 		return $r;	
 	}
 	
