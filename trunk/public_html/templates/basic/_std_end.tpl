@@ -68,6 +68,7 @@ Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> 
   <div id="search">
     <div id="searchform">
     <form method="get" action="/search.php">
+    <input type="hidden" name="form" value="simple"/>
     <div id="searchfield"><label for="searchterm">Search</label> 
     {dynamic}<input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10" title="Enter a Postcode, Grid Reference, Placename or a text search"/>{/dynamic}
     <input id="searchbutton" type="submit" name="go" value="Find"/></div>
