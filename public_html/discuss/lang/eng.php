@@ -191,7 +191,7 @@ $l_goTopic='Go to the topic';
 
 $l_to='to';
 
-$l_searchSite='Search (See Also: <A href="/search.php">Image Search</A>)';
+$l_searchSite='Search';
 
 $l_search[0]='Search for';
 $l_search[1]='Where to Search';
