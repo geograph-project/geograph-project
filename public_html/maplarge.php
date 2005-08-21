@@ -74,10 +74,36 @@ if (!$smarty->is_cached($template, $cacheid))
 	$mosaic->assignToSmarty($smarty, 'mosaic');
 	
 	//assign all the other useful stuff
-	
-	$smarty->assign('gridref', $mosaic->getGridRef(-1,-1));
+	$gridref = $mosaic->getGridRef(-1,-1);
+	$smarty->assign('gridref', $gridref);
 	$smarty->assign('mapwidth', round($mosaic->image_w /$mosaic->pixels_per_km ) );
+	preg_match("/([A-Z]+\d)\d(\d)\d/",$gridref,$matches);
+	$smarty->assign('gridref2',$matches[1].$matches[2] );
 	
+	
+	$left=$mosaic->map_x;
+	$bottom=$mosaic->map_y;
+	$right=$left + floor($mosaic->image_w/$mosaic->pixels_per_km)-1;
+	$top=$bottom + floor($mosaic->image_h/$mosaic->pixels_per_km)-1;
+
+$sql="SELECT user.user_id,realname,count(*) AS count
+FROM 
+	gridsquare gs
+	INNER JOIN gridimage gi USING(gridsquare_id)
+	INNER JOIN user ON(gi.user_id=user.user_id)
+WHERE 
+	(x BETWEEN $left and $right) AND 
+	(y BETWEEN $bottom and $top) AND
+	percent_land<>0 AND
+	seq_no = 1
+GROUP BY user_id 
+ORDER BY count DESC
+";
+	$db=NewADOConnection($GLOBALS['DSN']);
+	if (!$db) die('Database connection failed');  
+
+	$users=&$db->GetAll($sql);
+	$smarty->assign_by_ref('users', $users);
 }
 
 
