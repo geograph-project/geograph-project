@@ -96,10 +96,18 @@ class RasterMap
 					$left = ($width/4) + ( ($this->nateastings - $east) * ($width/2) / 1000 ) - 8;
 					$top = $width - ( ($width/4) + ( ($this->natnorthings - $nort) * ($width/2) / 1000 ) ) - 8;
 				
-					$str = "<div style=\"position:relative;\">";
+					$str = "<div style=\"position:relative;height:".($width+22)."\">";
+					
 					$str .= "<img src=\"$mapurl\" width=\"$width\" height=\"$width\" border=\"1\" alt=\"Historical Map &copy; VisionOfBritain.org.uk\">";
-					$str .= "<div style=\"position:absolute;top:{$top}px;left:{$left}px;\" id=\"marker\"><img src=\"/templates/basic/img/crosshairs.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
-					$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" width=\"$width\" height=\"$width\" border=\"1\" alt=\"OVERLAY Historical Map &copy; VisionOfBritain.org.uk\" name=\"map\" galleryimg=\"no\"></div>";
+					
+					$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&lt;- Drag to mark photographer position.</small></div>";
+					
+					$str .= "<div style=\"position:absolute;top:".($width+5)."px;left:5px;\" id=\"marker2\"><img src=\"/templates/basic/img/camera.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
+					
+					$str .= "<div style=\"position:absolute;top:{$top}px;left:{$left}px;\" id=\"marker1\"><img src=\"/templates/basic/img/crosshairs.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
+					
+					$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" width=\"$width\" height=\"".($width+22)."\" border=\"1\" alt=\"OVERLAY Historical Map &copy; VisionOfBritain.org.uk\" name=\"map\" galleryimg=\"no\"></div>";
+					
 					return "$str</div>";
 				//	return $east." == ".$this->nateastings;
 				}
@@ -113,13 +121,19 @@ class RasterMap
 			case 'vob': 
 				$east = (floor($this->nateastings/1000) * 1000) + 500;
 				$nort = (floor($this->natnorthings/1000) * 1000) + 500;
-				return "<script type=\"text/javascript\">
-							var cene = {$east};
-							var cenn = {$nort};
-							var maph = 300;
-							var mapw = 300;
-							var mapb = 1;
-							</script>";
+				return "
+		<script type=\"text/javascript\">
+			var cene = {$east};
+			var cenn = {$nort};
+			var maph = 300;
+			var mapw = 300;
+			var mapb = 1;
+			</script>
+		<script type=\"text/javascript\" src=\"/mapping.js\"></script>
+		<script type=\"text/javascript\">document.images['map'].onmousemove = overlayMouseMove;
+		document.images['map'].onmouseup = overlayMouseUp;
+		document.images['map'].onmousedown = overlayMouseDown;
+		</script>";
 		}
 	}
 	
@@ -136,7 +150,7 @@ class RasterMap
 		switch ($this->service) {
 
 			case 'vob': 
-				return "Historical Map provided by <a href=\"http://www.visionofbritain.org.uk/\" title=\"Vision of Britain\">VisionOfBritain.org.uk</a>";
+				return "<br/>Historical Map provided by <a href=\"http://www.visionofbritain.org.uk/\" title=\"Vision of Britain\">VisionOfBritain.org.uk</a>";
 		}
 	}
 
