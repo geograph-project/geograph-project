@@ -25,3 +25,52 @@ ADD `viewpoint_northings` MEDIUMINT( 8 ) UNSIGNED NOT NULL ;
 
 #barry 21st Aug
 ALTER TABLE `queries` CHANGE `searchuse` `searchuse` ENUM( 'search', 'flickr', 'gazetteer', 'discuss' ) DEFAULT 'search' NOT NULL;
+
+#paul 23rd aug
+create table gridimage_ticket
+(
+	gridimage_ticket_id int not null auto_increment,
+
+	gridimage_id int,
+	suggested datetime,
+	user_id int,
+	moderator_id int,
+
+	updated datetime,
+	status enum('pending', 'open', 'closed'),
+	
+	notes text,
+	
+	primary key(gridimage_ticket_id),
+	index(gridimage_id)
+);
+
+create table gridimage_ticket_item
+(
+	gridimage_ticket_item_id int not null auto_increment,
+
+	gridimage_ticket_id int not null,
+
+	approver_id int,
+	
+	
+	field varchar(64),
+	oldvalue text,
+	newvalue text,
+	
+	status enum('pending', 'immediate', 'approved', 'rejected'),
+	
+	primary key(gridimage_ticket_item_id),
+	index(gridimage_ticket_id)
+);
+
+create table gridimage_ticket_comment
+(
+	gridimage_ticket_comment_id int not null auto_increment,
+	gridimage_ticket_id int not null,
+	user_id int,
+	comment text,
+	added  datetime,
+	primary key(gridimage_ticket_comment_id),
+	index(gridimage_ticket_id)
+);
