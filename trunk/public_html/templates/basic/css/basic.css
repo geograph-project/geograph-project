@@ -399,6 +399,65 @@ table.formtable div.fieldnotes
 }
 
 /*---------------------------------------------------------------*
+ * picture info
+ *---------------------------------------------------------------*/
+
+div.picinfo
+{
+	background:#f0f0f0;
+	font-size:0.7em;
+	padding:5px;
+}
+
+div.picinfo td
+{
+	vertical-align:top;
+}
+
+/*---------------------------------------------------------------*
+ * tickets
+ *---------------------------------------------------------------*/
+
+div.ticket
+{
+	background:#f0f0f0;
+	margin-bottom:10px;
+	border:1px solid #d0d0d0;
+	font-size:0.7em;
+}
+
+div.ticket div.ticketbasics
+{
+	background:#d0d0d0;
+	padding-left:5px;
+}
+
+div.ticket div.ticketactions input
+{
+	font-size:0.8em
+}
+
+div.ticket div.ticketnotes
+{
+	padding-left:5px;
+	font-style:italic;
+}
+
+div.ticket div.ticketnote
+{
+	margin-bottom:10px;
+}
+
+div.ticket div.ticketfields
+{
+	padding-left:5px;
+}
+
+div.ticket div.ticketnotehdr
+{
+	font-style:normal;
+}
+/*---------------------------------------------------------------*
  * accept/reject buttons
  *---------------------------------------------------------------*/
 
@@ -412,6 +471,13 @@ input.reject
 {
 	font-size:0.7em;
 	background:#aa8888;
+}
+
+.moderatedlabel
+{
+	color:#449944;
+	font-weight:normal;
+	font-size:0.7em;
 }
 
 /*---------------------------------------------------------------*
