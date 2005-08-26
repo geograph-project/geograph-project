@@ -34,9 +34,13 @@ referring to <b>image {$image->gridimage_id}</b>
   {/if}
 
   {if $user->user_id eq $image->user_id}
-  <div class="caption"><a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">Edit Photo Information</a></div>
+  <div class="caption"><a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">Edit picture information</a></div>
+  {else}
+  <div class="caption"><a href="/editimage.php?id={$image->gridimage_id}">Report a problem with this picture</a></div>
   {/if}
 
+
+  
   {if $ismoderator}
 	  <form method="post" action="/usermsg.php">
 	  <input type="hidden" name="to" value="{$image->user_id}"/>
@@ -55,30 +59,45 @@ referring to <b>image {$image->gridimage_id}</b>
 </div>
 
 {dynamic}
-<div style="text-align:center; font-size: 0.8em;">
+<div style="text-align:center; font-size: 0.8em;padding-bottom:16px;">
 {if $discuss}
 	There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a
 	<a href="/discuss/index.php?gridref={$image->grid_reference}">discussion on {$image->grid_reference}</a> (preview on the left)
 
 {else}
-	{if $user->registered}
-		<a href="/discuss/index.php?gridref={$image->grid_reference}#newtopic">Start a discussion on {$image->grid_reference}</a>
-	{else}
-		<a href="/login.php">login</a> to start a discussion on {$image->grid_reference}
-	{/if}
-{/if}<br/><br/>
-</div>
-{/dynamic}
-
-{if $overview}
-<div style="float:right; width:{$overview_width+30}px; position:relative">
-	{include file="_overview.tpl"}
-</div>
+	<a href="/discuss/index.php?gridref={$image->grid_reference}#newtopic">Start a discussion on {$image->grid_reference}</a>
 {/if}
 
 
-<table class="formtable">
-<tr><td>Submitted by</td><td><a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a></td></tr>
+</div>
+{/dynamic}
+
+
+
+
+<div class="picinfo">
+
+{if $overview}
+  <div style="float:left; width:{$overview_width+30}px; position:relative">
+  {include file="_overview.tpl"}
+  </div>
+{/if}
+
+
+<table class="infotable">
+<tr><td>Credit</td><td>
+
+&copy; Copyright <a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a> and  
+licenced for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.
+(find <a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}">nearby pictures by {$image->realname|escape:'html'}</a>) 
+
+
+</td>
+
+<td rowspan="2"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" src="http://creativecommons.org/images/public/somerights20.gif" /></a>
+</td>
+
+</tr>
 
 <tr><td>Image status</td><td>
 {if $image->ftf}
@@ -104,19 +123,29 @@ referring to <b>image {$image->gridimage_id}</b>
 
 
 
-<tr><td>Submitted</td><td>{$image->submitted|date_format:"%A, %e %B, %Y"}</td></tr>
+<tr><td>Submitted</td><td colspan="2">{$image->submitted|date_format:"%A, %e %B, %Y"}
+{if $image_taken} (photo taken  {$image_taken}) {/if}
+</td></tr>
 
-{if $image_taken}
-<tr><td>Taken</td><td>{$image_taken} </td></tr>
+
+<tr><td>Category</td><td colspan="2">
+
+{if $image->imageclass}
+	{$image->imageclass}
+
+	(<a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:html}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:url}">find more nearby</a>)
+{else}
+	<i>n/a</i>
 {/if}
-<tr><td>Category</td><td>{$image->imageclass|default:"<i>n/a</i>"}</td></tr>
 
-<tr><td>Maps for {$image->grid_reference}</td><td>
+</td></tr>
+
+<tr><td>Maps</td><td colspan="2">
 
 <a href="/mapbrowse.php?t={$map_token}">Geograph Map</a>,
 
 {getamap gridref=$image->grid_reference text="OS Get-a-Map"},
-<br/>
+
 {if $image->grid_square->reference_index eq 1}
 	{external href="http://www.streetmap.co.uk/streetmap.dll?Grid2Map?X=`$image->grid_square->nateastings`&amp;Y=`$image->grid_square->natnorthings`&amp;title=[`$image->title`]+from+geograph.co.uk&amp;back=Return+to+Geograph&amp;url=http://$http_host/photo/`$image->gridimage_id`&amp;nolocal=X&amp;bimage=background%3dhttp://$http_host/templates/basic/img/background.gif" text="streetmap.co.uk"}
 	&amp; 
@@ -128,11 +157,10 @@ referring to <b>image {$image->gridimage_id}</b>
 
 </td></tr>
 
-<tr><td>What's nearby?</td><td>
+<tr><td>What's nearby?</td><td colspan="2">
 <a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">Geograph Images</a>
 
-<small>(<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}">by this contributor</a> or <a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:html|default:"-"}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:url|default:"-"}">of this category</a>)</small>,<br/>
-
+or 
 {if $image->grid_square->reference_index eq 1}
 	{external title="Geocaches from geocaching.com, search by geocacheuk.com" href="http://stats.guk2.com/caches/search_parse.php?osgbe=`$image->grid_square->nateastings`&amp;osgbn=`$image->grid_square->natnorthings`" text="Geocaches"},
 	{external title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigtools/find.php?t=`$image->grid_reference`" text="Trigpoints"},
@@ -145,9 +173,10 @@ referring to <b>image {$image->gridimage_id}</b>
 {/if}
 
 </td></tr>
-<tr><td>Subject Location</td>
 
-<td style="font-family:verdana, arial, sans serif; font-size:0.8em">
+
+<tr><td>Subject Location</td >
+<td colspan="2">
 {if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {$smallgr} <span style="font-size:0.8em"> [Accurate to ~{$accucacy}m]</span><br/>
 WGS84: {$latdm} {$longdm}
 <span style="font-size:0.8em">[{$lat|string_format:"%.5f"},{$long|string_format:"%.5f"}]</span> </td></tr>
@@ -161,15 +190,8 @@ WGS84: {$latdm} {$longdm}
 
 </table>
 
-<br/>
-<div style="text-align:center">
-<!-- Creative Commons License -->
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" src="http://creativecommons.org/images/public/somerights20.gif" style="float:left; position:relative"/></a>
-The copyright on this image is owned by <a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a> and is <br/>
-licenced under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.
-<!-- /Creative Commons License -->
 
-
+<br style="clear:both"/>
 <!--
 
 <rdf:RDF xmlns="http://web.resource.org/cc/"
@@ -195,9 +217,8 @@ licenced under a <a rel="license" href="http://creativecommons.org/licenses/by-s
 
 -->
 
+<!--info block-->
 </div>
-
-
 
 
 
