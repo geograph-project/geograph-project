@@ -277,6 +277,44 @@ class GridImage
 	/**
 	* given a temporary file, transfer to final destination for the image
 	*/
+	function& getTroubleTickets($aStatus)
+	{
+		if (!is_array($aStatus))
+			die("GridImage::getTroubleTickets expects array param");
+			
+		$db=&$this->_getDB();
+		
+		$statuses="'".implode("','", $aStatus)."'";
+	
+
+		$tickets=array();
+		
+		$recordSet = &$db->Execute("select t.*,u.realname as suggester_name from gridimage_ticket as t ".
+			"inner join user as u using(user_id) ".
+			"where t.gridimage_id={$this->gridimage_id} and t.status in ($statuses) order by t.updated desc");
+		while (!$recordSet->EOF) 
+		{
+			//create new ticket object
+			$t=new GridImageTroubleTicket;
+			$t->loadFromRecordset($recordSet);
+			
+			//load its ticket items (should this be part of load from Recordset?
+			$t->loadItems();
+			$t->loadComments();
+			
+			$tickets[]=$t;
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close(); 
+	
+	
+		return $tickets;
+	}
+	
+	
+	/**
+	* given a temporary file, transfer to final destination for the image
+	*/
 	function storeImage($srcfile, $movefile=false)
 	{
 		$ab=sprintf("%02d", floor($this->gridimage_id/10000));
