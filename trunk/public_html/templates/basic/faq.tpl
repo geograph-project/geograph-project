@@ -2,12 +2,15 @@
 {include file="_std_begin.tpl"}
 
  
- <div style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;">
+ <div style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;margin-left:20px;">
  <b>Contents</b>
  <ul style="margin-top:0;padding:0 0 0 1em;">
  <li><a href="#points" style="text-decoration:none">How do I get a geograph point for my image?<br/> What makes a good geograph?</a></li>
  <li><a href="#supplemental" style="text-decoration:none">What is a supplemental image?</a></li>
  <li><a href="#resize" style="text-decoration:none">Do I need to resize my photos? Are there size limits?</a></li>
+ <li><a href="#change" style="text-decoration:none">I disagree with the location or title of an image - what can I do?</a></li>
+ <li><a href="#legal" style="text-decoration:none">What are my legal rights when taking photographs?</a></li>
+
  <li><a href="#aol" style="text-decoration:none">I use AOL, and the images look terrible!</a></li>
 
  <li><a href="#rss" style="text-decoration:none">Do you have an RSS feed?</a></li>
@@ -22,7 +25,8 @@
  
 <h3>What is Geographing?</h3>
     <p>See our <a title="guide to geographing" href="/help/guide">guide to good geographing</a></p>
-<br style="clear:right"/>
+
+
 <a name="points"></a>
 <h3>How do I get a geograph point for my image?<br/> What makes a good geograph?</h3>
     
@@ -51,6 +55,24 @@
     <p>We do preserve the EXIF headers from your original image, so it is
     advantageous to upload your original camera image if you want this information
     to be kept.</p>
+
+<a name="change"></a>
+<h3>I disagree with the location or title of an image - what can I do?</h3>
+<p>Our <a href="/help/changes">"Change Request Tickets"</a> allow any registered user 
+to suggest a change of grid reference or title/comment
+information - simply view the full size image and click the "report a problem" link.
+</p>
+
+<a name="legal"></a>
+<h3>What are my legal rights when taking photographs?</h3>
+
+<p>Let's preface this by stating <b>We Are Not Lawyers</b>, and if you have any doubts
+about your right to take picture, then you're probably better off not submitting it to us.
+However, there is a 
+{external href="http://www.sirimo.co.uk/ukpr.php" text="useful guide"}
+available which outlines your rights in the UK fairly concisely. 
+</p>
+
 
 <a name="aol"></a>
 <h3>I use AOL, and the images look terrible!</h3>
