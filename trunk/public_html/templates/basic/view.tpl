@@ -80,21 +80,20 @@ referring to <b>image {$image->gridimage_id}</b>
 {if $overview}
   <div style="float:left; width:{$overview_width+30}px; position:relative">
   {include file="_overview.tpl"}
+  <div style="text-align:center"><br/>
+  <a title="Open in Google Earth" href="/kml.php?id={$image->gridimage_id}" class="xml-kml">KML</a></div>
   </div>
 {/if}
 
 
 <table class="infotable">
-<tr><td>Credit</td><td>
+<tr><td><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" src="http://creativecommons.org/images/public/somerights20.gif" /></a></td><td>
 
 &copy; Copyright <a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a> and  
-licenced for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.
-(find <a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}">nearby pictures by {$image->realname|escape:'html'}</a>) 
+licenced for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" style="white-space: nowrap">Creative Commons Licence</a>.
+(find <a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" style="white-space: nowrap">nearby pictures by {$image->realname|escape:'html'}</a>) 
 
 
-</td>
-
-<td rowspan="2"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" src="http://creativecommons.org/images/public/somerights20.gif" /></a>
 </td>
 
 </tr>
@@ -122,13 +121,14 @@ licenced for reuse under this <a rel="license" href="http://creativecommons.org/
 </td></tr>
 
 
+{if $image_taken}
+<tr><td>Date Taken</td><td colspan="2">{$image_taken}
+ (submitted {$image->submitted|date_format:"%A, %e %B, %Y"})</td></tr>
+{else}
+<tr><td>Submitted</td><td colspan="2">{$image->submitted|date_format:"%A, %e %B, %Y"}</td></tr>
+{/if}
 
-<tr><td>Submitted</td><td colspan="2">{$image->submitted|date_format:"%A, %e %B, %Y"}
-{if $image_taken} (photo taken  {$image_taken}) {/if}
-</td></tr>
-
-
-<tr><td>Category</td><td colspan="2">
+<tr><td>Category</td><td>
 
 {if $image->imageclass}
 	{$image->imageclass}
@@ -140,7 +140,7 @@ licenced for reuse under this <a rel="license" href="http://creativecommons.org/
 
 </td></tr>
 
-<tr><td>Maps</td><td colspan="2">
+<tr><td>Maps</td><td>
 
 <a href="/mapbrowse.php?t={$map_token}">Geograph Map</a>,
 
@@ -157,10 +157,8 @@ licenced for reuse under this <a rel="license" href="http://creativecommons.org/
 
 </td></tr>
 
-<tr><td>What's nearby?</td><td colspan="2">
-<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">Geograph Images</a>
-
-or 
+<tr><td>What's nearby?</td><td>
+<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">Geograph Images</a>, 
 {if $image->grid_square->reference_index eq 1}
 	{external title="Geocaches from geocaching.com, search by geocacheuk.com" href="http://stats.guk2.com/caches/search_parse.php?osgbe=`$image->grid_square->nateastings`&amp;osgbn=`$image->grid_square->natnorthings`" text="Geocaches"},
 	{external title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigtools/find.php?t=`$image->grid_reference`" text="Trigpoints"},
@@ -175,14 +173,14 @@ or
 </td></tr>
 
 
-<tr><td>Subject Location</td >
-<td colspan="2">
-{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {$smallgr} <span style="font-size:0.8em"> [Accurate to ~{$accucacy}m]</span><br/>
+<tr><td>Subject Location</td>
+<td style="font-family:verdana, arial, sans serif; font-size:0.8em">
+{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {$smallgr} [Accurate to ~{$accucacy}m]<br/>
 WGS84: {$latdm} {$longdm}
-<span style="font-size:0.8em">[{$lat|string_format:"%.5f"},{$long|string_format:"%.5f"}]</span> </td></tr>
+[{$lat|string_format:"%.5f"},{$long|string_format:"%.5f"}]</td></tr>
 
 {if $posgr}
-<tr><td>Photographer Loc.</td>
+<tr><td>Photographer Location</td>
 
 <td style="font-family:verdana, arial, sans serif; font-size:0.8em">
 {if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {$posgr}</td></tr>
