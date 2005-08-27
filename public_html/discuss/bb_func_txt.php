@@ -62,8 +62,15 @@ for($i=0;$i<sizeof($words);$i++){
 $word=$words[$i];
 //Trim below is necessary is the tag is placed at the begin of string
 $c=0;
+$host = "http:\/\/".str_replace('.','\.',$_SERVER['HTTP_HOST']);
+$words[$i]=preg_replace("/$host\/photo\/(\d+)/",'[[\1]]',$words[$i]);
+$words[$i]=preg_replace("/$host\/view\.php\?id=(\d+)/",'[[\1]]',$words[$i]);
+$words[$i]=preg_replace("/$host\/gridref\/([STNH]?[A-Z]{1}\d{2,10})/",'[[\1]]',$words[$i]);
+$words[$i]=preg_replace("/^([STNH]?[A-Z]{1}\d{2,10})([^\w]?)$/",'[[\1]]\2',$words[$i]);
 
-if(strtolower(substr($words[$i],0,strlen($_SERVER['HTTP_HOST'])+24))=='http://'.$_SERVER['HTTP_HOST'].'/mapbrowse.php?t=') {$c=1;$word='<a href=\"'.trim($words[$i]).'\" target=\"_new\" ref=\"nofollow\">Geograph Map</a>';}
+
+if ($word!=$words[$i]) {} //we already made a conversion
+elseif(strtolower(substr($words[$i],0,strlen($_SERVER['HTTP_HOST'])+24))=='http://'.$_SERVER['HTTP_HOST'].'/mapbrowse.php?t=') {$c=1;$word='<a href=\"'.trim($words[$i]).'\" target=\"_new\" ref=\"nofollow\">Geograph Map</a>';}
 elseif(strtolower(substr($words[$i],0,7))=='http://') {$c=1;$word='<a href=\"'.trim($words[$i]).'\" target=\"_new\" ref=\"nofollow\">'.trim($word).'</a>';}
 elseif(strtolower(substr($words[$i],0,8))=='https://') {$c=1;$word='<a href=\"'.trim($words[$i]).'\" target=\"_new\" ref=\"nofollow\">'.trim($word).'</a>';}
 elseif(strtolower(substr($words[$i],0,6))=='ftp://') {$c=1;$word='<a href=\"'.trim($words[$i]).'\" target=\"_new\" ref=\"nofollow\">'.trim($word).'</a>';}
