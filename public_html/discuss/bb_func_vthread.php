@@ -149,6 +149,7 @@ if (preg_match_all("/\[\[(\[?)(\w*\d+)(\]?)\]\]/",$posterText,$g_matches)) {
 			if ($ok) {
 				if ($g_matches[1][$i]) {
 					$g_img = $g_image->getThumbnail(120,120);
+					$g_img = str_replace('alt="','alt="'.$g_image->grid_reference.' : ',$g_img);
 					$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\">$g_img</a>",$posterText);
 				} else {
 					$posterText = str_replace("[[$g_id]]","{<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\">{$g_image->grid_reference} : {$g_image->title}</a>}",$posterText);
