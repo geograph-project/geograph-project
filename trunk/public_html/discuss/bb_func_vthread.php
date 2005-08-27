@@ -137,18 +137,22 @@ $posterName=$cols[1];
 $posterText=$cols[3];
 
 
-if (preg_match_all("/\[\[(\w*\d+)\]\]/",$posterText,$g_matches)) {
-	foreach ($g_matches[1] as $g_id) {
+if (preg_match_all("/\[\[(\[?)(\w*\d+)(\]?)\]\]/",$posterText,$g_matches)) {
+	foreach ($g_matches[2] as $i => $g_id) {
 		if (is_numeric($g_id)) {
-			if (!$g_image) {
+			if (!isset($g_image)) {
 				require_once('geograph/gridimage.class.php');
 				require_once('geograph/gridsquare.class.php');
 				$g_image=new GridImage;
 			}
 			$ok = $g_image->loadFromId($g_id);
 			if ($ok) {
-				$g_img = $g_image->getThumbnail(120,120);
-				$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\">$g_img</a>",$posterText);
+				if ($g_matches[1][$i]) {
+					$g_img = $g_image->getThumbnail(120,120);
+					$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\">$g_img</a>",$posterText);
+				} else {
+					$posterText = str_replace("[[$g_id]]","{<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\">{$g_image->grid_reference} : {$g_image->title}</a>}",$posterText);
+				}
 			}			
 		} else {
 			$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/$g_id\" target=\"_blank\">$g_id</a>",$posterText);
