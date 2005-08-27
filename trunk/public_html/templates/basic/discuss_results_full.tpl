@@ -9,11 +9,13 @@
 	<br/>( Page {$engine->pagesString()}) [<a href="/discuss/search.php?i={$i}&amp;form=simple">search again</a>]
 	</p>
 
+<p align="center"><i>perform text search for <a href="/discuss/index.php?action=search&searchForum=0&days=60&searchWhere=0&searchHow=0&searchFor=+{$engine->criteria->searchq}+&go=Find">{$engine->criteria->searchq}</a></i></p>
+
 	{foreach from=$engine->results item=image}
 	  <div style="clear:both">
 		
 	  <a title="view full size image" href="/discuss/index.php?action=vthread&amp;topic={$image.topic_id}">{$image.topic_title|escape:'html'}</a> ({$image.posts_count} Posts)
-		topic started by <a title="view user profile" href="/profile.php?u={$image.user_id}">{$image.realname}</a> <br/>
+		topic started by <a title="view user profile" href="/profile.php?u={$image.user_id}">{$image.realname}</a> at {$image.topic_time}<br/>
 	  for square <a title="view page for {$image.grid_reference}" href="/gridref/{$image.grid_reference}">{$image.grid_reference}</a> 
 
 	  <i>{$image.dist_string}</i><br/><br/>
