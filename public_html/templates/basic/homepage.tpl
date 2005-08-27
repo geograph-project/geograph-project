@@ -13,7 +13,8 @@ and you can be part of it.</p>
 <ul>
     <li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a></li>
     <li><a title="Browse by Map" href="/mapbrowse.php">browse images on a <b>map</b></a></li>
-    <li><a title="Submit a photograph" href="/submit.php"><b>upload pictures</b> and information</a></li>
+    <li><a title="Google Earth Export" href="/kml.php">view images in <b>Google Earth</b></a></li>
+    <li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a></li>
     <li><a title="Discussion forums" href="/discuss/"><b>discuss the site</b> on our forums</a></li>
     <li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a></li>
     <li><a title="List of all images" href="/list.php">view the <b>full list</b> of images</a></li>
