@@ -590,6 +590,8 @@ END;
 		}
 		$this->resultCount = $db->CacheGetOne(3600,$sql);
 		$this->numberOfPages = ceil($this->resultCount/$pgsize);
+		if ($this->countOnly)
+			return 0;
 	// construct the query sql
 $sql = <<<END
 	   SELECT gi.*,x,y,gs.grid_reference,user.realname
@@ -668,7 +670,6 @@ END;
 	
 		$page = ($pg -1)* $pgsize;
 	
-		//need to ensure rejected images arent shown
 		if (!empty($sql_where)) {
 			$sql_where = "WHERE $sql_where";
 			$this->islimited = true;
@@ -699,6 +700,8 @@ END;
 #print "<BR><BR>$sql";
 		$this->resultCount = $db->CacheGetOne(3600,$sql);
 		$this->numberOfPages = ceil($this->resultCount/$pgsize);
+		if ($this->countOnly)
+			return 0;
 	// construct the query sql
 $sql = <<<END
 		SELECT gi.*
