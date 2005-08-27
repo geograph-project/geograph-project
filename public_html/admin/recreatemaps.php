@@ -103,8 +103,8 @@ if (isset($_POST['inv']))
 		$x = $square->x;
 		$y = $square->y;
 
+		print "<h3>$gridref</h3>";
 		if (count($squares) < 5) {
-			print "<h3>$gridref</h3>";
 				$sql="select * from mapcache ".
 							"where $x between map_x and (map_x+image_w/pixels_per_km-1) and ".
 							"$y between map_y and (map_y+image_h/pixels_per_km-1)";

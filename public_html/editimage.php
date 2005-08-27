@@ -54,7 +54,7 @@ init_session();
 $smarty = new GeographPage;
 
 //you must be logged in to request changes
-$USER->login();
+$USER->mustHavePerm("basic");
 
 
 $template='editimage.tpl';

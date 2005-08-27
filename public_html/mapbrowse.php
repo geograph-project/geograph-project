@@ -35,6 +35,8 @@ if (isset($_GET['map']))
 	//render and return a map with token $_GET['map'];
 	$map=new GeographMap;
 	$map->setToken($_GET['map']);
+	if ($map->pixels_per_km >=1)
+		$map->enableCaching(0);
 	$map->returnImage();
 	exit;
 	
