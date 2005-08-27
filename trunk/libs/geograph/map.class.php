@@ -88,6 +88,12 @@ class GeographMap
 	*/
 	var $caching=true;
 	
+	
+	/**
+	* bounding rectangles for labels, in an attempt to prevent collisions
+	*/
+	var $labels = array();
+	
 	/**
 	* Constructor
 	*/
@@ -179,9 +185,7 @@ class GeographMap
 				$this->setOrigin($token->getValue("x"), $token->getValue("y"));
 				$this->setImageSize($token->getValue("w"), $token->getValue("h"));
 				$this->setScale($token->getValue("s"));
-				if ($token->hasValue("t")) {
-					$this->type_or_user = $token->getValue("t");
-				}
+				$this->type_or_user = ($token->hasValue("t"))?$token->getValue("t"):0;
 			}
 		}
 		else
@@ -202,22 +206,22 @@ class GeographMap
 		if ($x == -1 && $y == -1) {
 			$x = intval($this->image_w / 2);
 			$y = intval($this->image_h / 2);
+		} else {
+			//invert the y coordinate
+			$y=$this->image_h-$y;
 		}
 		$db=&$this->_getDB();
-
-		//invert the y coordinate
-		$y=$this->image_h-$y;
-
+		
 		//convert pixel pos to internal coordinates
 		$x_km=$this->map_x + floor($x/$this->pixels_per_km);
 		$y_km=$this->map_y + floor($y/$this->pixels_per_km);
-
-
+		
+		
 		//this could be done in one query, but it's a funky join for something so simple
 		$reference_index=$db->GetOne("select reference_index from gridsquare where x=$x_km and y=$y_km");
-
+				
 		//But what to do when the square is not on land??
-
+			
 		if ($reference_index) {
 			$where_crit =  "and reference_index=$reference_index";
 		} else {
@@ -225,18 +229,20 @@ class GeographMap
 			// but favour the _smaller_ grid - works better, but still not quite right where the two grids almost overlap
 			$where_crit =  "order by reference_index desc";
 		}
-
-		$sql="select prefix,origin_x,origin_y from gridprefix ".
+				
+		$sql="select prefix,origin_x,origin_y,reference_index from gridprefix ".
 			"where $x_km between origin_x and (origin_x+width-1) and ".
-			"$y_km between origin_y and (origin_y+height-1) $where_crit";
+			"$y_km between origin_y and (origin_y+height-1) $where_crit limit 1";
 		$prefix=$db->GetRow($sql);
 		if ($prefix['prefix']) { 
 			$n=$y_km-$prefix['origin_y'];
 			$e=$x_km-$prefix['origin_x'];
-			return sprintf('%s%02d%02d', $prefix['prefix'], $e, $n);
+			$this->gridref = sprintf('%s%02d%02d', $prefix['prefix'], $e, $n);
+			$this->reference_index = $prefix['reference_index'];
 		} else {
-			return "unknown";
+			$this->gridref = "unknown";
 		}
+		return $this->gridref;
 	}
 
 	/**
@@ -537,6 +543,13 @@ class GeographMap
 		$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
 		$top=$bottom + floor($this->image_h/$this->pixels_per_km)-1;
 
+		//plot grid square?
+		if ($this->pixels_per_km>=0)
+		{
+			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left,true);
+		}
+
+
 		//size of a marker in pixels
 		$markerpixels=5;
 		
@@ -602,9 +615,10 @@ class GeographMap
 			}
 			elseif ($this->pixels_per_km<=4)
 			{
+				imagefilledrectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $colMarker);
 				//nice large marker
-				imagefilledrectangle ($img, $imgx1-1, $imgy1, $imgx2+1, $imgy2, $colMarker);
-				imagefilledrectangle ($img, $imgx1, $imgy1-1, $imgx2, $imgy2+1, $colMarker);
+				#imagefilledrectangle ($img, $imgx1-1, $imgy1, $imgx2+1, $imgy2, $colMarker);
+				#imagefilledrectangle ($img, $imgx1, $imgy1-1, $imgx2, $imgy2+1, $colMarker);
 			}
 			else
 			{
@@ -649,6 +663,11 @@ class GeographMap
 		{
 			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
 		}
+			
+		if ($this->pixels_per_km>=1  && $this->pixels_per_km<=40)
+		{
+			$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
+		}				
 				
 		$target=$this->getImageFilename();
 		imagepng($img, $root.$target);
@@ -782,21 +801,226 @@ class GeographMap
 		
 	}		
 	
-	/**
-	* render the image to cached file if not already available
-	* @access private
-	*/	
-	function _plotGridLines(&$img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left) {			
-		//figure out what we're mapping in internal coords
+	function _plotPlacenames(&$img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left) {			
 		$db=&$this->_getDB();
-				
+
+		$black=imagecolorallocate ($img, 0,64,0);
+
+		require_once('geograph/conversions.class.php');
+		$conv = new Conversions;
+
+		//todo take into account reference index! do twice?
+			if (!$this->reference_index) {
+				$this->getGridRef(-1,-1);
+			}
+		$reference_index = $this->reference_index;
+		
 		$gridcol=imagecolorallocate ($img, 109,186,178);
 
-		$text1=imagecolorallocate ($img, 255,255,255);
-		$text2=imagecolorallocate ($img, 0,64,0);
+		list($natleft,$natbottom) = $conv->internal_to_national($scanleft,$scanbottom,$reference_index);
+		list($natright,$nattop) = $conv->internal_to_national($scanright,$scantop,$reference_index);
 
+		if ($this->pixels_per_km < 1) {
+			$div = 500000; //1 per 500k square
+			$crit = "s = '1' AND";
+			$cityfont = 3;
+		} elseif ($this->pixels_per_km == 1) {
+			$div = 100000; 
+			$crit = "(s = '1' OR s = '2') AND";
+			$cityfont = 3;
+		} elseif ($this->pixels_per_km == 4) {
+			$div = 30000;
+		#	$crit = "(s = '1' OR s = '2') AND";
+			$cityfont = 3;
+		} else {
+			$div = 10000;
+			$cityfont = 3;
+		}
 
+if ($reference_index == 1) {
+	//$countries = "'EN','WA','SC'";
+$sql = <<<END
+SELECT name,e,n,s,quad 
+FROM loc_towns
+WHERE 
+reference_index = $reference_index AND $crit
+e BETWEEN $natleft and $natright AND 
+n BETWEEN $natbottom and $nattop 
+ORDER BY s
+END;
+#GROUP BY FLOOR(e/$div),FLOOR(n/$div)
+} else {
+	$countries = "'NI','RI'";
+	$div *= 1.5; //becuase the irish data is more dence
 
+$sql = <<<END
+SELECT e,n,full_name as name
+FROM loc_placenames
+INNER JOIN `loc_wikipedia` ON ( full_name = text ) 
+WHERE dsg = 'PPL' AND
+reference_index = $reference_index AND
+country IN ($countries) AND $crit2
+e BETWEEN $natleft and $natright AND 
+n BETWEEN $natbottom and $nattop 
+ORDER BY RAND()
+END;
+}
+#print "$sql"; exit;
+		
+
+		$recordSet = &$db->Execute($sql);
+		while (!$recordSet->EOF) 
+		{
+			$e=$recordSet->fields['e'];
+			$n=$recordSet->fields['n'];
+			
+			$str = floor($e/$div) .' '. floor($n/$div*1.4);
+			if (!$squares[$str]) {// || $recordSet->fields['s'] ==1) {
+				$squares[$str]++;
+			
+				list($x,$y) = $conv->national_to_internal($e,$n,$reference_index );
+
+				$imgx1=($x-$left) * $this->pixels_per_km;
+				$imgy1=($this->image_h-($y-$bottom+1)* $this->pixels_per_km);
+				
+				if ($this->pixels_per_km<=4) {				
+					imagefilledrectangle ($img, $imgx1-1, $imgy1-2, $imgx1+1, $imgy1+2, $black);
+					imagefilledrectangle ($img, $imgx1-2, $imgy1-1, $imgx1+2, $imgy1+1, $black);
+				}
+				$font = ($recordSet->fields['s'] ==1)?$cityfont:2;
+				$img1 = $this->_posText( $imgx1, $imgy1, $font, $recordSet->fields['name'],$recordSet->fields['quad']);
+				if (count($img1))
+					imageGlowString($img, $font, $img1[0], $img1[1], $recordSet->fields['name'], $gridcol);
+			}
+			
+			$recordSet->MoveNext();
+		}
+		if ($_GET['d'])
+			exit;
+		$recordSet->Close(); 
+	}
+	
+	/*********************************************
+	* attempts to place the label so doesnt get obscured, 
+	* alogirthm isnt perfect but works quite well.
+	*********************************************/
+	function _posText($x,$y,$font,$text,$quad = 0) {
+		$stren = imagefontwidth($font)*strlen($text);
+		$strhr = imagefontheight($font);
+		$xy = array($x,$y);
+		if ($quad == 0) {
+			$intersect = true;
+			$thisrect = array($x,$y,$x + $stren,$y + $strhr);
+			while ($quad < 5 && $intersect) {
+				$intersect = false;
+				reset($this->labels);
+				foreach ($this->labels as $a1) {
+					if (rectinterrect($a1,$thisrect)) {
+						$intersect = true;
+						break;
+					}
+				}
+
+				if ($intersect) {
+					$quad++;
+					list($x,$y) = $xy;
+					if ($quad%2 == 1) {
+					} else {
+						$x = $x - $stren;
+					}
+					if ($quad > 2) {
+					} else {
+						$y = $y - imagefontheight($font); 
+					}
+					$thisrect = array($x,$y,$x + $stren,$y + $strhr);
+					//$thisrect = array($x-3,$y-3,$x + $stren+3,$y + $strhr+3);
+				}
+			}
+		}
+		if (
+		($quad%2 == 1)
+			||
+		( $quad <= 0 && ($x < ($this->image_w - $stren)) )
+		) {
+		} else {
+			list($x,$d) = $xy;
+			$x = $x - $stren;
+		}
+		if (
+		($quad > 2)
+			||
+		( $quad <= 0 && ($y < ($this->image_h - $strhr)) )
+		) {
+		} else {
+			list($d,$y) = $xy;
+			$y = $y - $strhr;
+		}
+		if ($x > 0 && $y > 0 && ($x < ($this->image_w - $stren)) && ($y < ($this->image_h - $strhr))) {
+			$thisrect = array($x-3,$y-3,$x + $stren+3,$y + $strhr+3);
+
+			array_push($this->labels,$thisrect);
+
+			return array($x,$y);
+		} else {
+			return array();
+		}
+	}
+	
+	
+	/**
+	* plot the gridlines
+	* @access private
+	*/	
+	function _plotGridLines(&$img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left,$pre = false) {			
+		static $gridcol,$gridcol2,$text1,$text2; //these are static so they can be assigned before the images are added
+		global $CONF;
+		if ($pre) {
+			if ($this->pixels_per_km == 40) {
+				$gridcol=imagecolorallocate ($img, 89,126,118);
+				$gridcol2=imagecolorallocate ($img, 60,205,252);
+				
+				//plot the individual lines
+				for($i=0;$i<$this->image_w;$i+=$this->pixels_per_km) {
+					imageline($img,$i,0,$i,$this->image_w,$gridcol2);
+				}
+				for($j=0;$j<$this->image_h;$j+=$this->pixels_per_km) {
+					imageline($img,0,$j,$this->image_h,$j,$gridcol2);
+				}
+			} else if (0 && $this->pixels_per_km == 4) {
+				//todo : currently disabled as doesnt work when the map straddles the Irish Sea :-(
+				// needs to only draw lines within the manually defined boundary, but cant (yet) think of a alogorim ???
+				//could enable for when map is wholely one grid, but a bodge and result inconsistent...
+				
+				$gridcol=imagecolorallocate ($img, 89,126,118);
+				$gridcol2=imagecolorallocate ($img, 60,205,252);
+				
+				if (!$this->reference_index) {
+					$this->getGridRef(-1,-1);
+				}
+				
+				//plot the individual lines
+				$s = ($left- $CONF['origins'][$this->reference_index][0])%10;
+				for($i=$s*$this->pixels_per_km;$i<$this->image_w;$i+=$this->pixels_per_km*10) {
+					imageline($img,$i,0,$i,$this->image_w,$gridcol2);
+				}
+				$s = ($bottom- $CONF['origins'][$this->reference_index][1])%10;
+				for($j=$s*$this->pixels_per_km;$j<$this->image_h;$j+=$this->pixels_per_km*10) {
+					imageline($img,0,$j,$this->image_h,$j,$gridcol2);
+				}
+			} else {
+				$gridcol=imagecolorallocate ($img, 109,186,178);
+			}
+			if ($this->pixels_per_km < 1) {
+				$text1=imagecolorallocate ($img, 255,255,255);
+				$text2=imagecolorallocate ($img, 0,64,0);
+			} else {
+				$text1=$gridcol;
+			}
+			return;
+		}
+		
+		$db=&$this->_getDB();
+		
 		$sql="select * from gridprefix where ".
 			"origin_x between $scanleft-width and $scanright and ".
 			"origin_y between $scanbottom-height and $scantop ".
@@ -855,29 +1079,66 @@ class GeographMap
 
 
 				$text=$recordSet->fields['prefix'];
-
-				switch($font)
-				{
-					case 3:
-						$txtw=strlen($text)*7;
-						$txth=8;
-						break;
-					case 5:
-						$txtw=strlen($text)*8;
-						$txth=10;
-						break;
-				}
+				
+				$txtw = imagefontwidth($font)*strlen($text);
+				$txth = imagefontheight($font);
+				
 
 				$txtx=round($labelx - $txtw/2);
 				$txty=round($labely - $txth/2);
-
-				imagestring ($img, $font, $txtx+1,$txty+1, $text, $text2);
-				imagestring ($img, $font, $txtx,$txty, $text, $text1);
+				if ($this->pixels_per_km < 1) {
+					imagestring ($img, $font, $txtx+1,$txty+1, $text, $text2);
+					imagestring ($img, $font, $txtx,$txty, $text, $text1);
+				} else {
+					imagestring ($img, $font, $txtx,$txty, $text, $text1);
+				}
+				$thisrect = array($txtx,$txty,$txtx + $txtw,$txty + $txth);
+				array_push($this->labels,$thisrect);
+				if ($_GET['d']) {
+					print "$text";var_dump($thisrect); print "<BR>";
+				}
 			}
-
 			$recordSet->MoveNext();
 		}
+
 		$recordSet->Close(); 		
+		
+		//plot the number labels
+		if ($this->pixels_per_km == 40) {
+			$gridref = $this->getGridRef(0, $this->image_h); //origin of image is tl, map is bl
+			if (preg_match('/^([A-Z]{1,2})(\d\d)(\d\d)$/',$gridref, $matches))
+			{
+				$gridsquare=$matches[1];
+				$eastings=$matches[2];
+				$northings=$matches[3];
+				$gran = 10;
+				
+				$me = imagefontwidth(4);
+				$mn = floor(imagefontheight(4)/2);
+				
+				$e5 = floor($eastings/$gran)*$gran; if ($e5 < $eastings) $e5 +=$gran;
+				$n5 = floor($northings/$gran)*$gran; if ($n5 < $northings) $n5 +=$gran;
+				$ed = (($e5 - $eastings) * $this->pixels_per_km) + ($this->pixels_per_km / 2) - $me;
+				$nd = $this->image_h - (($n5 - $northings)* $this->pixels_per_km) - ($this->pixels_per_km / 2) - $mn;
+				
+				
+				$e = $eastings;
+				for($i=1-$me;$i<=$this->image_w;$i+=$this->pixels_per_km) {
+					imagestring($img,4,$i,$nd,$e,$gridcol);
+					$e=sprintf("%02d",($e+1)%100);
+				}
+				
+				$n = $northings;
+				for($j=$this->image_h-$mn;$j>=0-$mn;$j-=$this->pixels_per_km) {
+					imagestring($img,4,$ed,$j,$n,$gridcol);
+					$n=sprintf("%02d",($n+1)%100);
+				}
+				
+				#print "$gridref = $e5 = $n5 ".floor($this->image_h/$this->pixels_per_km);
+				#exit;
+				
+			}
+		}		
 	}
 	
 
@@ -921,7 +1182,12 @@ class GeographMap
 			
 			$grid[$posx][$posy]=$recordSet->fields;
 			
-			
+			#if ($posx == 0) {
+			#	$grid[$posx][$posy]['grid_reference'] = preg_replace("/(\w+)(\d{2})(\d{2})/",'$1$2<b>$3</b>',$grid[$posx][$posy]['grid_reference']);
+			#}
+			#if ($posy == 0) {
+			#	$grid[$posx][$posy]['grid_reference'] = preg_replace("/(\w+)(\d{2})(\d{2})/",'$1<b>$2</b>$3',$grid[$posx][$posy]['grid_reference']);
+			#}
 			
 			$recordSet->MoveNext();
 		}
@@ -954,4 +1220,81 @@ class GeographMap
 	}
 	
 }
+
+/**
+ * Draw a GlowString at the specified location 
+ */
+	
+function imageGlowString($img, $font, $xx, $yy, $text, $color) {
+	$width = imagefontwidth($font)*strlen($text);
+	$height = imagefontheight($font);
+	
+	$text_image = imagecreatetruecolor($width, $height);
+
+		$white = imagecolorallocate ($text_image, 255, 255, 255);
+		$gray = imagecolorallocate ($text_image, 80, 12, 200);
+
+		imagestring($text_image, $font, 0, 0, $text, $gray);
+
+	$out_image = imagecreatetruecolor($width+6, $height+6);
+
+		$white = imagecolorallocate ($out_image, 255, 255, 255);
+		$black = imagecolorallocate ($out_image, 70, 70, 0);
+
+		imagefill($out_image, $width, $height, $white);
+		$white = imagecolortransparent($out_image, $white);
+
+    $dist = 1;
+    $numelements = 9;
+    for ($x =-1; $x < $width+1; ++$x) 
+        for ($y =-1; $y < $height+1; ++$y) {
+            $newr = 0;
+            $newg = 0;
+            $newb = 0;
+
+            for ($k = $x - 1; $k <= $x + 1; ++$k)
+                for ($l = $y - 1; $l <= $y + 1; ++$l) {
+                    $colour = imagecolorat($text_image, $k, $l);
+                    
+                    $newr += ($colour >> 16) & 0xFF;
+                    $newg += ($colour >> 8) & 0xFF;
+                    $newb += $colour & 0xFF;
+                }
+
+            $newcol = imagecolorclosest($out_image, 255-$newr/$numelements, 255-$newg/$numelements, 255-$newb/$numelements);
+
+            imagesetpixel($out_image, $x+3, $y+3, $newcol);
+        }
+
+	imagestring($out_image, $font, 3, 3, $text, $black);
+
+	imagecopymerge($img, $out_image, $xx-3, $yy-3, 0, 0, $width+6, $height+6,90);
+	
+
+	
+	imagedestroy($text_image);
+	imagedestroy($out_image);
+}
+
+
+
+function rectinterrect($a1,$a2) {
+	if (pointinrect(array($a1[0],$a1[1]),$a2))
+		return true;
+	if (pointinrect(array($a1[0],$a1[3]),$a2))
+		return true;
+	if (pointinrect(array($a1[2],$a1[1]),$a2))
+		return true;
+	if (pointinrect(array($a1[2],$a1[3]),$a2))
+		return true;
+	return false;
+}
+
+function pointinrect($p,$a) {
+	if ( ($p[0] > $a[0] && $p[0] < $a[2]) &&
+		 ($p[1] > $a[1] && $p[1] < $a[3]) )
+		return true;
+	return false;
+}
+
 ?>

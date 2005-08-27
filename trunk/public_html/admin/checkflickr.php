@@ -59,6 +59,11 @@ if ($photos->photos)
 //todo - repeat if more pages !!
 
 
+//todo - check geobloggers.com for lat/long coded images!
+#http://www.geobloggers.com/feed.cfm?mode=mapdata&lat=54.33700&lon=-3.64115&username=-23&range=4.30232
+
+
+
 function _precess_photo(&$photo) {
 	global $db,$flickr,$owners;
 	print "ID = {$photo['id']}<BR>";
@@ -143,7 +148,7 @@ function _precess_photo(&$photo) {
 					}
 				}
 			} else if (strcasecmp($tag, 'geograph') == 0) {
-				$isgeograph = 1;
+			#	$isgeograph = 1;
 			}
 			print "Found $tag = $grid_reference = $gid<BR>";
 		}

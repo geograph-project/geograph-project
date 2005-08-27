@@ -30,7 +30,7 @@
   	
   	{foreach from=$recent item=image}
   
-  	  <div style="text-align:center;padding-bottom:1em;">
+  	  <div style="text-align:center;padding-bottom:1em;background-color:#777777;">
   	  <a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
   	  
   	  <div>
