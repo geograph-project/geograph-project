@@ -10,7 +10,6 @@
 {/if}
 
 <form method="get" action="/search.php">
-<input type="hidden" name="form" value="simple"/>
 <div style="padding:5px;background:#dddddd;position:relative"><label for="searchterm">Search</label> 
 <input id="searchq" type="text" name="q" value="{$searchq|escape:'html'}" size="30"/>
 <input id="searchgo" type="submit" name="go" value="Find"/> [<a href="/search.php?form=advanced">advanced search</a>]
