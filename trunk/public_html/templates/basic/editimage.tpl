@@ -287,7 +287,7 @@ function onChangeImageclass()
 </p>	
 
 {if $user->user_id eq $image->user_id}
-{$image->imagetaken}
+
 	<p><label>Date picture taken {if $moderated.imagetaken}<span class="moderatedlabel">(moderated)</span>{/if}</label> <br/>
 	{html_select_date prefix="imagetaken" time=`$image->imagetaken` start_year="-200" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
 	<br/><small>(please provide as much detail as possible, if you only know the year or month then that's fine)</small></p>
