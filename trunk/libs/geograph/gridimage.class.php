@@ -182,15 +182,15 @@ class GridImage
 				$this->$name=$value;
 													
 		}
-		
-		$this->grid_square=new GridSquare;
-		$this->grid_square->loadFromId($this->gridsquare_id);
-		$this->grid_reference=$this->grid_square->grid_reference;
-		if ($this->nateastings) {
-			$this->grid_square->nateastings=$this->nateastings;
-			$this->grid_square->natnorthings=$this->natnorthings;
+		if ($this->gridsquare_id) {
+			$this->grid_square=new GridSquare;
+			$this->grid_square->loadFromId($this->gridsquare_id);
+			$this->grid_reference=$this->grid_square->grid_reference;
+			if ($this->nateastings) {
+				$this->grid_square->nateastings=$this->nateastings;
+				$this->grid_square->natnorthings=$this->natnorthings;
+			}
 		}
-		
 		if (strlen($this->title)==0)
 			$this->title="Untitled photograph for {$this->grid_reference}";
 	}
@@ -245,17 +245,23 @@ class GridImage
 	/**
 	* assign members from gridimage_id
 	*/
-	function loadFromId($gridimage_id)
+	function loadFromId($gridimage_id,$usesearch = false)
 	{
 		$db=&$this->_getDB();
 		
 		$this->_clear();
 		if (preg_match('/^\d+$/', $gridimage_id))
 		{
-			$row = &$db->GetRow("select gridimage.*,user.realname ".
-				"from gridimage ".
-				"inner join user using(user_id) ".
-				"where gridimage_id={$gridimage_id}");
+			if ($usesearch) {
+				$row = &$db->GetRow("select * ".
+					"from gridimage_search ".
+					"where gridimage_id={$gridimage_id}");
+			} else {
+				$row = &$db->GetRow("select gridimage.*,user.realname ".
+					"from gridimage ".
+					"inner join user using(user_id) ".
+					"where gridimage_id={$gridimage_id}");
+			}
 			if (is_array($row))
 			{
 				$this->_initFromArray($row);
