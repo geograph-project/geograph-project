@@ -136,12 +136,21 @@ class ImageList
 		else
 			$limit="limit $count";
 		
-		$sql="select * ".
-			"from gridimage_search ".
-			"where moderation_status in ($statuslist) and ".
-			"user_id='$user_id' ".
-			"$orderby $limit";
-		
+		if (in_array('rejected',$statuses)) {
+         	$sql="select gi.*,grid_reference,user.realname ".
+				"from gridimage as gi ".
+				"inner join gridsquare as gs using(gridsquare_id) ".
+				"inner join user on(gi.user_id=user.user_id) ".
+				"where moderation_status in ($statuslist) and ".
+				"gi.user_id='$user_id' ".
+				"$orderby $limit";
+		} else {
+			$sql="select * ".
+				"from gridimage_search ".
+				"where moderation_status in ($statuslist) and ".
+				"user_id='$user_id' ".
+				"$orderby $limit";
+		}
 			
 		$this->images=array();
 		$i=0;
