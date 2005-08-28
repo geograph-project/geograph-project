@@ -66,7 +66,12 @@ $host = "http:\/\/".str_replace('.','\.',$_SERVER['HTTP_HOST']);
 $words[$i]=preg_replace("/$host\/photo\/(\d+)/",'[[\1]]',$words[$i]);
 $words[$i]=preg_replace("/$host\/view\.php\?id=(\d+)/",'[[\1]]',$words[$i]);
 $words[$i]=preg_replace("/$host\/gridref\/([STNH]?[A-Z]{1}\d{2,10})/",'[[\1]]',$words[$i]);
-$words[$i]=preg_replace("/^([STNH]?[A-Z]{1}\d{2,10})([^\w]?)$/",'[[\1]]\2',$words[$i]);
+
+require_once('geograph/gridsquare.class.php');
+$g_square = new GridSquare;
+$prefixes = $g_square->getGridPrefixes();
+
+$words[$i]=preg_replace("/^(\!?)([STNH]?[A-Z]{1})(\d{2,10})([^\w]?)$/e",'((!"$1"&&strlen("$3")%2==0&&$prefixes["$2"])?"[[$2$3]]":"$2$3")."$4"',$words[$i]);
 
 
 if ($word!=$words[$i]) {} //we already made a conversion
