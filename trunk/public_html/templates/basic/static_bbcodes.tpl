@@ -16,16 +16,14 @@
 <h4>Linking</h4>
 
 <ul>
-<li><tt>[[TQ7506]]</tt> renders as <a href="/gridref/TQ7506">TQ7506</a> *<br/><br/></li>
-<li><tt>[[5463]]</tt> renders as {literal}{<a href="/photo/5463" title="Geograph Image by Ben Gamble">TQ3328 : Ardingly Reservoir</a>}{/literal} *<br/><br/></li>
+<li><tt>[[TQ7506]]</tt> renders as <a href="/gridref/TQ7506">TQ7506</a><br/><br/></li>
+<li><tt>[[5463]]</tt> renders as {literal}{<a href="/photo/5463" title="Geograph Image by Ben Gamble">TQ3328 : Ardingly Reservoir</a>}{/literal}<br/><br/></li>
 <li><tt>[[[5463]]]</tt> renders as <a href="/photo/5463"><img alt="TQ3328 : Ardingly Reservoir" src="/photos/00/54/005463_ea60a493_120x120.jpg" width="120" height="90"/></a><br/><br/></li>
-<li><tt>[url=http://www.example.com]Some text[/url]</tt> renders as <a href="http://www.example.com">Some text</a> *<br/><br/></li>
+<li><tt>[url=http://www.example.com]Some text[/url]</tt> renders as <a href="http://www.example.com">Some text</a><br/><br/></li>
 <li><tt>[email=email@example.com]contact me[/email]</tt> renders as <a href="mailto:email@example.com">contact me</a></li>
 </ul>
 
-<p>* can also be used in image comments</p>
-
-<p>Note: plain links will be converted to a clickable link automatically, where appropriate links to Images and Grid References will also be converted automatically.</p>
+<p>Note: plain links will be converted to a clickable link automatically, where appropriate links to Images and Grid References will also be converted automatically. (To stop otherwise Grid Reference looking text being converted, eith use lowercase or prefix with a !. For example !B4567 wont be linked but <a href="/gridref/B4567">B4567</a> would)</p>
 
 <h4>Images</h4>
 
