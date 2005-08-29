@@ -88,6 +88,19 @@ elseif (isset($_POST['init']))
 	$msg=trim(stripslashes($_POST['init']));
 	$smarty->assign_by_ref('msg', $msg);
 }
+elseif (isset($_GET['image']))
+{
+	//initialise message
+	require_once('geograph/gridsquare.class.php');
+  require_once('geograph/gridimage.class.php');
+
+	$image=new GridImage();
+	$image->loadFromId($_GET['image']);
+	
+	$msg="Re: image for {$image->grid_reference} ({$image->title})\r\nhttp://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\r\n";
+	
+	$smarty->assign_by_ref('msg', $msg);
+}
 
 $smarty->display($template);
 
