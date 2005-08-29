@@ -25,7 +25,7 @@ boilerplate...</p>
 
  <h2>geograph.co.uk Detailed Terms of Use Agreement</h2>
 
- <p>Last updated: 18 February 2005</p>
+ <p>Last updated: 29 August 2005</p>
 
 <p>This site run by volunteers of the Geograph.co.uk Collective, and contains
  information on geographing related information, forums and such other services
