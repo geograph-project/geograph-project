@@ -54,7 +54,10 @@ referring to <b>image {$image->gridimage_id}</b>
 
 <div style="background:#bbbbbb">
 
-<div style="width:33%;float:left;font-size:0.7em;">
+<table width="100%"><tr>
+
+<td width="50"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img align="left" src="/templates/basic/img/icon_discuss.gif"/></a></td>
+<td valign="middle" style="font-size:0.7em;">
 {if $discuss}
 	There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a
 	<a href="/discuss/index.php?gridref={$image->grid_reference}">discussion on {$image->grid_reference}</a> (preview on the left)
@@ -62,22 +65,27 @@ referring to <b>image {$image->gridimage_id}</b>
 {else}
 	<a href="/discuss/index.php?gridref={$image->grid_reference}#newtopic">Start a discussion on {$image->grid_reference}</a>
 {/if}
-</div>
+</td>
 
-<div style="width:33%;float:left;font-size:0.7em;">
+<td width="50"><a href="/editimage.php?id={$image->gridimage_id}"><img align="left" src="/templates/basic/img/icon_alert.gif"/></a></td>
+<td valign="middle" style="font-size:0.7em;">
+  
  	{if ($user->user_id eq $image->user_id) or ($ismoderator)}
   	<a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">Edit picture information</a>
   {else}
   	<a href="/editimage.php?id={$image->gridimage_id}">Report a problem with this picture</a>
   {/if}
-</div>
+</td>
 
-<div style="width:33%;float:left;font-size:0.7em;">
- 	<a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the photographer</a>
- 
-</div>
+<td width="50"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img align="left" src="/templates/basic/img/icon_email.gif"/></a></td>
+<td valign="middle" style="font-size:0.7em;">
+  
+  <a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the photographer</a>
+</td>
 
-<br  style="clear:both;"/>
+</tr>
+</table>
+
 </div>
 
 
