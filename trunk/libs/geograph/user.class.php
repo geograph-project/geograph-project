@@ -173,7 +173,7 @@ class GeographUser
 			if (!$db) die('Database connection failed');   
 
 			# no need to call connect/pconnect!
-			$arr = $db->GetRow("select * from user where email=".$db->Quote($email));	
+			$arr = $db->GetRow("select * from user where email=".$db->Quote($email)." and rights is not null");	
 			if (count($arr))
 			{
 				//email address already exists in database
@@ -182,7 +182,10 @@ class GeographUser
 			}
 			else
 			{
-				//ok, user doesn't exist, lets go!
+				//delete any existing attempt...
+				$db->Execute("delete from user where email=".$db->Quote($email)." and rights is null"); 
+				
+				//ok, user doesn't exist (or has no rights), lets go!
 				$sql = sprintf("insert into user (realname,email,password,signup_date) ".
 					"values (%s,%s,%s,now())",
 					$db->Quote($name),
@@ -236,11 +239,13 @@ class GeographUser
 
 	/**
 	* verify registration from given hash
+	* can only do this once, returns ok, fail or alreadycomplete
 	*/
 	function verifyRegistration($user_id, $hash)
 	{
 		global $CONF;
 		$ok=true;
+		$status="ok";
 		
 		//validate inputs, they came from outside
 		$ok=$ok && preg_match('/\d+/', $user_id);
@@ -252,32 +257,53 @@ class GeographUser
 		{
 			$db = NewADOConnection($GLOBALS['DSN']);
 			
-			//assign some basic rights to the user
-			$sql="update user set rights='basic' where user_id=".$db->Quote($user_id);
-			$db->Execute($sql);
-			
-			$this->user_id=$user_id;
-			$this->registered=true;
 			
 			$arr = $db->GetRow("select * from user where user_id=".$db->Quote($user_id));	
-			foreach($arr as $name=>$value)
+			if (strlen($arr['rights']))
 			{
-				if (!is_numeric($name))
-					$this->$name=$value;
+				$status="alreadycomplete";
 			
 			}
+			else
+			{
 			
-			//temporary nickname fix for beta accounts
-			if (strlen($this->nickname)==0)
-				$this->nickname=str_replace(" ", "", $this->realname);
-	
-			
-			//setup forum user
-			$this->_forumUpdateProfile();
+				//assign some basic rights to the user
+				$sql="update user set rights='basic' where user_id=".$db->Quote($user_id);
+				$db->Execute($sql);
+
+				$this->user_id=$user_id;
+				$this->registered=true;
+
+				$arr = $db->GetRow("select * from user where user_id=".$db->Quote($user_id));	
+				foreach($arr as $name=>$value)
+				{
+					if (!is_numeric($name))
+						$this->$name=$value;
+
+				}
+
+				//temporary nickname fix for beta accounts
+				if (strlen($this->nickname)==0)
+					$this->nickname=str_replace(" ", "", $this->realname);
+
+
+				//setup forum user
+				$this->_forumUpdateProfile();
+
+				//log into forum too
+				$this->_forumLogin();
+				
+				$status="ok";
+			}
 				
 		}
+		else
+		{
+			//hash mismatch or param problem
+			$status="fail";
+		}
 		
-		return $ok;
+		return $status;
 	}
 	
 	/**
@@ -554,7 +580,7 @@ class GeographUser
 		} 
 		else 
 		{
-			$error ='No Credientials Supplied';
+			$error ='No Credentials Supplied';
 		}
 		
 		
