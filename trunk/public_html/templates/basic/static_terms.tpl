@@ -107,15 +107,7 @@ boilerplate...</p>
  owners of the intellectual property rights. The Geograph.co.uk Collective reserves
  the right to impose additional terms and conditions upon Your use and viewing of the
  Site, and any such terms and conditions may be posted on the Site in connection with
- those Site Materials. You may not reproduce or retransmit the Site Materials, in
- whole or in part, in any manner, without the prior written consent of the owner of
- such materials, except as follows: You may make a single copy of the Site Materials
- solely for Your personal, non-commercial use, but such copying must be consistent
- with any applicable additional terms and conditions and You must preserve any
- copyright, trademark, or other notices contained in or associated with such Site
- Materials. You may not distribute such copies to others, whether or not in
- electronic form and whether or not for a charge or other consideration, without
- prior written consent of the owner of such materials. If you have any questions,
+ those Site Materials. If you have any questions,
  please <a href="/contact.php">contact us</a>.</p>
 
 
