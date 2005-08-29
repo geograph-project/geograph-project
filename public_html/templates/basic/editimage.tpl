@@ -32,7 +32,9 @@
 
 
 {if $show_all_tickets eq 1}
-	<h2>All Change Requests</h2>
+	<h2>
+	{if $isadmin}<a href="/admin/tickets.php" title="Ticket Admin Listing">&lt;&lt;&lt;</a>{/if}
+	All Change Requests</h2>
 	
 	{if $opentickets}	
 	<p>All change requests for this image are listed below. 
@@ -42,7 +44,9 @@
 
 	{/if}
 {else}
-	<h2>Open Change Requests</h2>
+	<h2>
+	{if $isadmin}<a href="/admin/tickets.php" title="Ticket Admin Listing">&lt;&lt;&lt;</a>{/if}
+	Open Change Requests</h2>
 	{if $opentickets}	
 	<p>Any open change requests are listed below. 
 	{else}

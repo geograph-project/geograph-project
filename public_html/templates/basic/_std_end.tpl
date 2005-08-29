@@ -21,6 +21,7 @@
   <ul>
      <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
      <li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
+     <li><a title="Trouble Tickets" href="/admin/tickets.php">Tickets</a></li>
      <li><a title="Server Stats" href="http://www.geograph.co.uk/logs/">Server Stats</a></li>
   </ul>
   {/if}
