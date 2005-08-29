@@ -28,9 +28,9 @@
 </div>
 
 {if $right_block}
-<div class="content3" id="maincontent_block">
+<div {if $maincontentclass}class="{$maincontentclass}"{else}class="content3"{/if} id="maincontent_block">
 {else}
-<div class="content2" id="maincontent_block">
+<div {if $maincontentclass}class="{$maincontentclass}"{else}class="content2"{/if} id="maincontent_block">
 {/if}
 
 <div id="maincontent">
