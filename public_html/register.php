@@ -31,15 +31,12 @@ $smarty = new GeographPage;
 
 if (isset($_GET['confirm']))
 {
-	if ($USER->verifyRegistration($_GET['u'], $_GET['confirm']))
-	{
-		$smarty->assign('confirmation_ok', true);
+	$confirmation_status = $USER->verifyRegistration($_GET['u'], $_GET['confirm']);
+	if ($confirmation_status=="ok")
 		$smarty->assign("user", $GLOBALS['USER']);
-	}
-	else
-	{
-		$smarty->assign('confirmation_failed', true);
-	}
+	
+	$smarty->assign('confirmation_status', $confirmation_status);
+	
 }
 elseif (isset($_POST['name']))
 {
