@@ -2,7 +2,7 @@
 
 <h2>Sorry, search is temporarily unavailable</h2>
 
-<p>During busy periods we limit the available of search to
+<p>During busy periods we limit the availability of search to
 ensure the site remains responsive - please try again shortly.</p>
 
 
