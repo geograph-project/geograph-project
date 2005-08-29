@@ -11,7 +11,7 @@
 	follow the link contained in the email to confirm your 
 	registration</p>
 
-{elseif $confirmation_ok}
+{elseif $confirmation_status eq "ok"}
 	<p>Congratulations - your registration is complete. We 
 	hope you'll enjoy contributing!</p>
 	
@@ -20,7 +20,11 @@
 
 	</p>
 
-{elseif $confirmation_failed}
+{elseif $confirmation_status eq "alreadycomplete"}
+	<p>You have already completed the registration confirmation - please
+	<a title="Login in here" href="/login.php">log in</a> using your username and password</p>
+
+{elseif $confirmation_status eq "fail"}
 	<p>Sorry, there was a problem confirming your registration.
 	Please <a href="contact.php">contact us</a> if the problem persists.</p>
 {else}
