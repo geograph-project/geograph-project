@@ -184,6 +184,68 @@ body>#nav_block {width:128px;}
  * main content block
  *---------------------------------------------------------------*/
 
+.content_photoblack
+{
+	background:black;
+	position:relative;
+	width:auto;
+	min-width:120px;
+	margin:4px 10px 0px 170px;
+	
+	border:2px solid black;
+	z-index:3;
+	color:silver;
+}
+
+.content_photoblack h2
+{
+	color:white;
+	padding-left:10px;
+	padding-top:10px;
+	margin-bottom:0;
+}
+
+.content_photoblack h3
+{
+	margin-top:0;
+	padding-left:10px;
+	font-weight:normal;
+	color:silver;
+
+}
+
+
+.content_photowhite
+{
+	background:white;
+	position:relative;
+	width:auto;
+	min-width:120px;
+	margin:4px 10px 0px 170px;
+	
+	border:2px solid black;
+	z-index:3;
+	color:black;
+}
+
+.content_photowhite h2
+{
+	color:black;
+	padding-left:10px;
+	padding-top:10px;
+	margin-bottom:0;
+}
+
+.content_photowhite h3
+{
+	margin-top:0;
+	padding-left:10px;
+	font-weight:normal;
+	color:silver;
+
+}
+
+
 
 /* All the content boxes belong to the content class. */
 .content3 {
