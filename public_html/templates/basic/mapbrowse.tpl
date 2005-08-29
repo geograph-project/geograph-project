@@ -166,7 +166,7 @@
    
    <p style="line-height:1em;font-size:0.8em;text-align:center">Grid Reference at centre
  {if $token_zoomout}
- <a href="/search.php?q={$gridref}" title="Search for images centered around {$gridref}">{$gridref}</a>
+ <a style="color:white" href="/search.php?q={$gridref}" title="Search for images centered around {$gridref}">{$gridref}</a>
  {else}
 
  {$gridref}
