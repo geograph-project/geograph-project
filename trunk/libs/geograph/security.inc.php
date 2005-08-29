@@ -56,7 +56,7 @@ function isValidRealName($name)
 */
 function isValidURL($url) 
 {
-	return preg_match('{^http(s?)\:\/\/[a-zA-Z0-9\-\._]+(\.[a-zA-Z0-9\-\._]+){1,}(\/?)([a-zA-Z0-9\-\.\?\,=\'\/\\\+&%\$#_]*)?$}' , $url)?true:false; 
+	return preg_match('{^http(s?)\:\/\/[a-zA-Z0-9\-\._]+(\.[a-zA-Z0-9\-\._]+){1,}(\/?)([a-zA-Z0-9\~\-\.\?\,=\'\/\\\+&%\$#_]*)?$}' , $url)?true:false; 
 }
 	
 ?>
