@@ -340,7 +340,7 @@ class GridImageTroubleTicket
 		else
 		{
 			//update ticket 
-			$sql="update gridimage_ticket set updated='$this->updated' where gridimage_ticket_id={$this->gridimage_ticket_id}";
+			$sql="update gridimage_ticket set updated='{$this->updated}', moderator_id='{$this->moderator_id}' where gridimage_ticket_id={$this->gridimage_ticket_id}";
 			$db->Execute($sql);
 		}
 		
@@ -560,7 +560,7 @@ class GridImageTroubleTicket
 		
 		//associate this moderator with the ticket
 		$this->moderator_id=$user_id;
-		$db->Execute("update gridimage_ticket set moderator_id={$user_id} where gridimage_ticket_id={$this->gridimage_ticket_id}");
+		$db->Execute("update gridimage_ticket set status='open', moderator_id={$user_id} where gridimage_ticket_id={$this->gridimage_ticket_id}");
 		
 		$moderator=new GeographUser($user_id);
 		$comment.="\n\n".$moderator->realname."\nGeograph Moderator\n";
