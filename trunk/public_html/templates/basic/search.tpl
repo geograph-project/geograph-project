@@ -23,7 +23,7 @@
 <li>Here are a couple of example searches:
 <div style="float:left; width:50%; position:relative">
 <ul>
-<li><a href="search.php?orderby=submitted&amp;reverse_order_ind=1&amp;do=1" title="Show the most recent submissions">Recent Submissions</a></li>
+<li><a href="search.php?i=1522" title="Show the most recent submissions">Recent Submissions</a></li>
 <li><a href="search.php?displayclass=thumbs&amp;do=1" title="Show a selection of random thumbnails">Random (Thumbnails)</a></li>
 {dynamic}
 {if $user->registered}
@@ -33,7 +33,7 @@
 {/if}
 {/dynamic}
 <li><a href="search.php?taken_endYear=1980&amp;do=1" title="View Historic Pictures">Taken Before 1980</a></li>
-<li><a href="search.php?gridsquare=TQ" title="Images in TQ Grid Square">Gridsquare TQ</a></li>
+<li><a href="search.php?i=342" title="Images in TQ Grid Square">Gridsquare TQ</a></li>
 <li><a href="search.php?reference_index=2&amp;do=1" title="Irish Pictures">Pictures of Ireland</a></li>
 </ul>
 </div>
