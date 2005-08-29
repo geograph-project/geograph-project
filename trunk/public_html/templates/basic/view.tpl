@@ -2,9 +2,10 @@
 
 {if $image}
 
- <h2 style="margin-bottom:0px;"><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->title}</h2>
+ <h2><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->title}</h2>
  {if $place.distance}
- <div style="color:silver">&nbsp;{if $place.distance > 3}{$place.distance} km from{else}near to{/if} <b>{$place.full_name}</b><small><i>{if $place.adm1_name && $place.adm1_name != $place.reference_name}, {$place.adm1_name}{/if}, {$place.reference_name}</i></small></div>{/if}
+ <h3>{if $place.distance > 3}{$place.distance} km from{else}near to{/if} <b>{$place.full_name}</b><small><i>{if $place.adm1_name && $place.adm1_name != $place.reference_name}, {$place.adm1_name}{/if}, {$place.reference_name}</i></small></h3>
+ {/if}
 
 {if $image->moderation_status eq 'rejected'}
 <h3>Rejected</h3>
@@ -33,33 +34,27 @@ referring to <b>image {$image->gridimage_id}</b>
   <div class="caption">{$image->comment|escape:'html'}</div>
   {/if}
 
-  {if $user->user_id eq $image->user_id}
-  <div class="caption"><a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">Edit picture information</a></div>
-  {else}
-  <div class="caption"><a href="/editimage.php?id={$image->gridimage_id}">Report a problem with this picture</a></div>
-  {/if}
-
-
+ 
   
   {if $ismoderator}
-	  <form method="post" action="/usermsg.php">
-	  <input type="hidden" name="to" value="{$image->user_id}"/>
-	  <input type="hidden" name="init" value="Re: image for {$image->grid_reference} ({$image->title})&#13;&#10;http://{$http_host}/photo/{$image->gridimage_id}&#13;&#10;"/>
+	  <form method="post">
 	  <script type="text/javascript" src="/admin/moderation.js"></script>
 	  <b>Moderation</b>
 	  <input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')"/>
 	  <input class="accept" type="button" id="accept" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')"/>
 	  <input class="reject" type="button" id="reject" value="Reject" onclick="moderateImage({$image->gridimage_id}, 'rejected')"/>
-	  <input class="reject" type="button" name="edit" value="Edit" title="Edit Photo Information" onclick="document.location='/editimage.php?id={$image->gridimage_id}';"/>
-	  <input class="reject" type="submit" name="query" value="?" title="Send email to user"/>
 	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
 	  </form>
   {/if}
 
 </div>
 
-{dynamic}
-<div style="text-align:center; font-size: 0.8em;padding-bottom:16px;">
+
+
+
+<div style="background:#bbbbbb">
+
+<div style="width:33%;float:left;font-size:0.7em;">
 {if $discuss}
 	There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a
 	<a href="/discuss/index.php?gridref={$image->grid_reference}">discussion on {$image->grid_reference}</a> (preview on the left)
@@ -67,10 +62,23 @@ referring to <b>image {$image->gridimage_id}</b>
 {else}
 	<a href="/discuss/index.php?gridref={$image->grid_reference}#newtopic">Start a discussion on {$image->grid_reference}</a>
 {/if}
-
-
 </div>
-{/dynamic}
+
+<div style="width:33%;float:left;font-size:0.7em;">
+ 	{if ($user->user_id eq $image->user_id) or ($ismoderator)}
+  	<a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">Edit picture information</a>
+  {else}
+  	<a href="/editimage.php?id={$image->gridimage_id}">Report a problem with this picture</a>
+  {/if}
+</div>
+
+<div style="width:33%;float:left;font-size:0.7em;">
+ 	<a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the photographer</a>
+ 
+</div>
+
+<br  style="clear:both;"/>
+</div>
 
 
 
@@ -190,6 +198,16 @@ WGS84: {$latdm} {$longdm}
 
 
 <br style="clear:both"/>
+
+
+<p align="center">
+{if $maincontentclass eq "content_photowhite"}
+	<a href="/photo/{$image->gridimage_id}?style=black">Prefer a black background for photo viewing?</a>
+{else}
+	<a href="/photo/{$image->gridimage_id}?style=white">Prefer a white background for photo viewing?</a>
+{/if}
+</p>
+
 <!--
 
 <rdf:RDF xmlns="http://web.resource.org/cc/"
