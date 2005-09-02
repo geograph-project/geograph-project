@@ -43,7 +43,7 @@ if ($_POST['delete'] && $_POST['time']) {
 		$dh = opendir($root.$folder);
 		
 		while (($file = readdir($dh)) !== false) {
-			if (is_dir($root.$folder.$file) || strpos($file,'.') === 0) {
+			if (is_dir($root.$folder.$file) || strpos($file,'.') === 0 || strpos($file,'.') === FALSE) {
 				//skip!
 			} elseif (filemtime($root.$folder.$file) < $cuttoff) {
 				print "$file...";
@@ -60,7 +60,7 @@ $count++;
 		$dh = opendir($root.$folder);
 		
 		while (($file = readdir($dh)) !== false) {
-			if (is_dir($root.$folder.$file) || strpos($file,'.') === 0) {
+			if (is_dir($root.$folder.$file) || strpos($file,'.') === 0 || strpos($file,'.') === FALSE) {
 				//skip!
 			} elseif (filemtime($root.$folder.$file) < $cuttoff) {
 				print "$file<br/>";
