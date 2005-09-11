@@ -20,7 +20,6 @@ corrected</li>
 
 </ul>
 
-{dynamic}
 <h2>Basic Stats</h2>
 <ul>
 <li>Total registered users: {$users_total} ({$users_thisweek} new users in past 7 days)</li>
@@ -35,7 +34,6 @@ corrected</li>
   </li>
 
 </ul>
-{/dynamic}    
 
 <h2>Total Submissions</h2>
 <img src="/img/submission_graph.png" width="480" height="161"/>
