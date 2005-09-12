@@ -74,3 +74,34 @@ create table gridimage_ticket_comment
 	primary key(gridimage_ticket_comment_id),
 	index(gridimage_ticket_id)
 );
+
+
+CREATE TABLE `event` (
+  `event_id` int(11) NOT NULL auto_increment,
+  `event_name` varchar(64) default NULL,
+  `event_param` text default NULL,
+  `posted` datetime default NULL,
+  `processed` datetime default NULL,
+  `instances` int default '1',
+  `priority` int(11) default NULL,
+  `status` enum('pending', 'in_progress', 'completed') default 'pending',
+  PRIMARY KEY  (`event_id`),
+  INDEX(status)
+);
+
+
+CREATE TABLE `event_log` (
+  event_log_id int not null auto_increment,
+  `event_id` int(11) NOT NULL default '0',
+  logtime datetime,
+  verbosity enum('error', 'warning', 'trace', 'verbose'),
+  log text,
+  PRIMARY KEY  (`event_log_id`),
+  INDEX  (`event_id`)
+);
+
+CREATE TABLE `event_handled_by` (
+  `event_id` int(11) NOT NULL default '0',
+  `class_name` varchar(64) default NULL,
+  PRIMARY KEY  (`event_id`, `class_name`)
+);
