@@ -49,6 +49,7 @@ if (strpos($_ENV["OS"],'Windows') === FALSE) {
 
 	if ($load>2)
 	{
+		$smarty->assign('searchq',stripslashes($_GET['q']));	
 		$smarty->display('search_unavailable.tpl');	
 		exit;
 	}
