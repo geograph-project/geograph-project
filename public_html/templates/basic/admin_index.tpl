@@ -64,8 +64,8 @@ title="Rebuild gridimage_search" href="/admin/buildgridimage_search.php">Search 
 tables become corrupted</li>
 
 <li><a title="Search Stats" href="/admin/viewsearches.php">Search Statistics</a> - See the recent Search Activity</li>
-
 <li><a title="Custom Search" href="/search.php?form=advanced&Special=1">Create Custom Search</a> - create a one off special search (sql required)</li>
+<li><a title="Events" href="events.php">Event Diagnostics</a> - see what the event system is doing</li>
 
 
 </ul>
