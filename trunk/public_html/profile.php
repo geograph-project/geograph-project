@@ -116,6 +116,14 @@ if ($template=='profile.tpl')
 		$images->getImagesByUser($uid, $statuses,'submitted desc');
 		$images->assignSmarty($smarty, 'userimages');
 		
+		//find images with outstanding trouble tickets
+		if ($uid==$USER->user_id)
+		{
+			$troubled=new ImageList;
+			$troubled->getTroubledImagesByUser($uid);
+			$troubled->assignSmarty($smarty, 'troubled');
+		}
+		
 	}
 }
 
