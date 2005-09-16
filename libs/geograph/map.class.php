@@ -531,6 +531,49 @@ class GeographMap
 		$colBorder=imagecolorallocate($img, 255,255,255);
 		$colAlias=imagecolorallocate($img, 182,163,57);
 		
+		//if we operating at less than 1 pixel per km,
+		//we need some colours for aliasing
+		if ($this->pixels_per_km < 1)
+		{
+			//we want a range of aliases from 117,255,101 to 255,0,0
+			$rmin=117;
+			$rmax=255;
+			$gmin=255;
+			$gmax=0;
+			$bmin=101;
+			$bmax=0;
+			
+			//we can use the scale to figure out how many square a single image
+			//pixel accounts for
+			$alias_count = ceil(1/$this->pixels_per_km);
+			
+			//seems to help
+			if ($this->pixels_per_km<=0.13)
+				$alias_count*=2;
+			
+			$colAliasedMarker=array();
+			for ($p=0; $p<$alias_count; $p++)
+			{
+				$scale=($p+1)/$alias_count;
+				
+				$r=round($rmin + ($rmax-$rmin)*$scale);
+				$g=round($gmin + ($gmax-$gmin)*$scale);
+				$b=round($bmin + ($bmax-$bmin)*$scale);
+				
+				$colAliasedMarker[$p]=imagecolorallocate($img, $r,$g,$b);
+	
+			}
+			
+			$nextAlias=array();
+			foreach($colAliasedMarker as $idx=>$col)
+			{
+				if ($idx==$alias_count-1)
+					$nextAlias[$col]=$col;
+				else
+					$nextAlias[$col]=$colAliasedMarker[$idx+1];
+				
+			}
+		}
 		
 		//figure out what we're mapping in internal coords
 		$db=&$this->_getDB();
@@ -585,33 +628,24 @@ class GeographMap
 			$imgx2=$imgx1 + $this->pixels_per_km;
 			$imgy2=$imgy1 + $this->pixels_per_km;
 				
-				
-			if ($this->pixels_per_km<0.3)
+			//if less than 1 pixel per km, use our aliasing scheme	
+			if ($this->pixels_per_km<1)
 			{
-				imagesetpixel($img,$imgx1, $imgy1,$colMarker);
+				$rgb = imagecolorat($img, $imgx1, $imgy1);
+				if (isset($nextAlias[$rgb]))
+				{
+					imagesetpixel($img,$imgx1, $imgy1,$nextAlias[$rgb]);
+				}
+				else
+				{
+					imagesetpixel($img,$imgx1, $imgy1,$colAliasedMarker[0]);
+				}
+				
 			}
-			elseif ($this->pixels_per_km<1)
+			elseif ($this->pixels_per_km==1)
 			{
-				//plot a simple cross
-				imageline ($img, $imgx1-1, $imgy1, $imgx1+1, $imgy1, $colMarker);
-				imageline ($img, $imgx1, $imgy1-1, $imgx1, $imgy1+1, $colMarker);
-				
-				//antialias corners if not already marked
-				$rgb = imagecolorat($img, $imgx1-1, $imgy1-1);
-				if ($rgb!=$colMarker)
-					imagesetpixel($img,$imgx1-1, $imgy1-1,$colAlias);
-				
-				$rgb = imagecolorat($img, $imgx1+1, $imgy1-1);
-				if ($rgb!=$colMarker)
-					imagesetpixel($img,$imgx1+1, $imgy1-1,$colAlias);
-				
-				$rgb = imagecolorat($img, $imgx1-1, $imgy1+1);
-				if ($rgb!=$colMarker)
-					imagesetpixel($img,$imgx1-1, $imgy1+1,$colAlias);
-				
-				$rgb = imagecolorat($img, $imgx1+1, $imgy1+1);
-				if ($rgb!=$colMarker)
-					imagesetpixel($img,$imgx1+1, $imgy1+1,$colAlias);
+				//easy!
+				imagesetpixel($img,$imgx1, $imgy1,$colMarker);
 			}
 			elseif ($this->pixels_per_km<=4)
 			{
