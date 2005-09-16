@@ -52,7 +52,7 @@ referring to <b>image {$image->gridimage_id}</b>
 
 
 
-<div style="background:#bbbbbb">
+<div style="background:#bbbbbb;color:black;">
 
 <table width="100%"><tr>
 
