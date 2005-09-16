@@ -167,7 +167,45 @@ class ImageList
 		return $i;
 	}
 	
+	function getTroubledImagesByUser($user_id, $sort = 'submitted', $count=null)
+	{
+		$db=&$this->_getDB();
 
+		$user_id=intval($user_id);		
+				
+		if (is_null($sort))
+			$orderby="";
+		else
+			$orderby="order by $sort";
+		if (is_null($count))
+			$limit="";
+		else
+			$limit="limit $count";
+		
+		$sql="select distinct gi.*,grid_reference,user.realname ".
+				"from gridimage as gi ".
+				"inner join gridsquare as gs using(gridsquare_id) ".
+				"inner join user on(gi.user_id=user.user_id) ".
+				"inner join gridimage_ticket as t on (t.gridimage_id=gi.gridimage_id and t.status<>'closed') ".
+				"where ".
+				"gi.user_id='$user_id' ".
+				"$orderby $limit";
+		
+			
+		$this->images=array();
+		$i=0;
+		$recordSet = &$db->Execute($sql);
+		while (!$recordSet->EOF) 
+		{
+			$this->images[$i]=new GridImage;
+			$this->images[$i]->fastInit($recordSet->fields);
+			$recordSet->MoveNext();
+			$i++;
+		}
+		$recordSet->Close(); 
+
+		return $i;
+	}
 	
 	/**
 	* get image list or count for particular area...
