@@ -160,6 +160,33 @@ function smarty_function_external($params)
 }
 
 /**
+* Smarty gridimage thumbnail link
+* 
+* given image id makes a nice thumbnail link
+*/
+function smarty_function_gridimage($params)
+{
+	require_once("geograph/gridsquare.class.php");
+	require_once("geograph/gridimage.class.php");
+	$image=new GridImage;
+	$image->loadFromId($params['id']);
+	
+	$html='<div style="float:left;" class="photo33">';
+	$html.='<a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
+	$html.=$image->getThumbnail(213,160);
+	$html.='</a><div class="caption"><a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
+	$html.=htmlentities($image->title).'</a>';
+	
+	if (isset($params['extra']))
+		$html.='<div>'.htmlentities($params['extra']).'</div>';
+	
+	$html.='</div></div>';
+	
+	return $html;
+		  
+}
+
+/**
 * adds commas to thousendise a number
 */
 function smarty_function_thousends($input) {
@@ -207,6 +234,10 @@ class GeographPage extends Smarty
 		
 		//external site linker...
 		$this->register_function("external", "smarty_function_external");
+
+		//gridimage
+		$this->register_function("gridimage", "smarty_function_gridimage");
+
 
 		$this->register_modifier("thousends", "smarty_function_thousends");
 
