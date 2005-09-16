@@ -1,5 +1,5 @@
 {include file="_std_begin.tpl"}
-
+<script src="/sorttable.js"></script>
 <h2><a name="top"></a>Profile for {$profile->realname|escape:'html'}</h2>
 
 
@@ -10,7 +10,7 @@
 
 <li>Nickname: 
 {if $profile->nickname}
-	{$profile->nickname|escape:'html'}
+	{$profile->nickname|escape:'html'} 
 {else}
 	<i>n/a</i>
 {/if}
@@ -62,12 +62,44 @@
 
 {if $profile->stats.total gt 0}
 	<h3><a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1'>Photographs</a> <small>(recent first)</small></h3>
-	<ul>		
+	<table class="report sortable" id="photolist" style="font-size:8pt;">
+	<thead><tr>
+		<td>Grid Ref</td>
+		<td>Title</td>
+		<td>Submitted</td>
+		<td>Status</td>
+	</tr></thead>
+	<tbody>
 		{foreach from=$userimages item=image}
-		<li><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->grid_reference}</a> {$image->title} ({$image->moderation_status})</li>
+<tr><td><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->grid_reference}</a></td>
+<td>{$image->title}</td>
+<td>{$image->submitted}</td>
+<td>{$image->moderation_status}</td></tr>
 		{/foreach}
-	</ul> 	
+</tbody></table>
 {/if} 	
+
+{if $troubled}
+	<h3>Images with pending change requests</h3>
+
+<table class="report sortable" id="troublelist" style="font-size:8pt;">
+	<thead><tr>
+		<td>Grid Ref</td>
+		<td>Title</td>
+		<td>Submitted</td>
+		<td>Status</td>
+	</tr></thead>
+	<tbody>
+		{foreach from=$troubled item=image}
+<tr><td><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->grid_reference}</a></td>
+<td>{$image->title}</td>
+<td>{$image->submitted}</td>
+<td>{$image->moderation_status}</td></tr>
+		{/foreach}
+</tbody></table>
+ 	
+{/if} 
+
 
 <div align="right"><a href="#top">Back to Top</a></div>
 
