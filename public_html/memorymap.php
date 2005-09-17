@@ -39,7 +39,7 @@ $smarty = new GeographPage;
 $square = new GridSquare;
 
 
-if(isset($_POST['getsquare'])||isset($_POST['getall'])) {
+if(isset($_POST['gridsquare'])||isset($_POST['getall'])) {
 
 	if (!isset($_POST['getall']))
 		$prefix = $_POST['gridsquare'];
@@ -75,12 +75,12 @@ $smarty->assign('filesize', round(@filesize("memorymap/geograph.csv")/1024));
 
 //lets find some recent photos
 $recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
-$recent->assignSmarty(&$smarty, 'recent');
+$recent->assignSmarty($smarty, 'recent');
 
 
 $smarty->display('memorymap.tpl');
 
-function makefile($prefix=null) {
+function makefile($prefix='TQ') {
 
 	//assign local filename
 	$csvfilename = 'memorymap/geograph'.$prefix.'.csv';
@@ -95,58 +95,40 @@ function makefile($prefix=null) {
 	//OK, file must be too old, or not exist, let's make a shiny new one
 	$images=new ImageList;
 
-	if($prefix)
-		$count=$images->getImagesbyPrefix($prefix);
-	else
-		$count=$images->getImages('geograph');
+	$recordSet=& $images->getRecordSetbyPrefix($prefix);
+	
+	if(file_exists($csvfilename))
+		if(!@unlink($csvfilename))
+			return "Something is wrong, could not delete $csvfile.".
+					" Click <a href=\"$csvfilename\">here to try to download a stale copy";
 
-	if ($count>0)
+	if(!$csvfile=fopen($csvfilename,'w'))
+		return "Something is wrong, could not open $csvfile for writing.";
+
+	//Memory Map header, define geograph.bmp as icon #800
+	fwrite($csvfile, "IC01,800,\"geograph.bmp\"\n");
+
+	while (!$recordSet->EOF) 
 	{
-		if(file_exists($csvfilename))
-			if(!@unlink($csvfilename))
-				return "Something is wrong, could not delete $csvfile.".
-						" Click <a href=\"$csvfilename\">here to try to download a stale copy";
+		$image = $recordSet->fields;
 
-		if(!$csvfile=fopen($csvfilename,'w'))
-			return "Something is wrong, could not open $csvfile for writing.";
+		//limit decimal places
+		$lat   = sprintf("%.6f",$image['wgs84_lat']);
+		$long  = sprintf("%.6f",$image['wgs84_long']);
 
-		//Memory Map header, define geograph.bmp as icon #800
-		fwrite($csvfile, "IC01,800,\"geograph.bmp\"\n");
-
-		foreach ($images->images as $image)
+		//avoid problems with stray commas
+		if (strpos($image['title'],',') !== FALSE)
 		{
-			$gr=$image->grid_reference;
-
-			if(!$prefix || $prefix == $image->grid_square->gridsquare) {
-
-				$image->grid_square->getNatEastings();
-
-				$isirish=0;
-				if (strlen($image->grid_square->gridsquare)==1) $isirish = true;
-
-				$latlong = en2ll($image->grid_square->nateastings,$image->grid_square->natnorthings, $isirish);
-
-				//limit decimal places
-				$lat   = sprintf("%.6f",$latlong[lat]);
-				$long  = sprintf("%.6f",$latlong[long]);
-
-				//avoid problems with stray commas
-				if (strpos($image->title,',') !== FALSE)
-				{
-					$image->title = '"'.$image->title.'"';
-				}
-
-				//WP04,Lat,Lon,Symbol,Name,Comment,File,Radius,Display,Unique,Visible,Locked,Category,Circle
-				fwrite($csvfile, "WP04,$lat,$long,800,$image->title,,http://{$_SERVER['HTTP_HOST']}/view.php?id=$image->gridimage_id,0,1,$gr,1,1,Geographs,0\r\n");
-			}
+			$image['title'] = '"'.$image['title'].'"';
 		}
-		fclose($csvfile);
-		return '';
+
+		//WP04,Lat,Lon,Symbol,Name,Comment,File,Radius,Display,Unique,Visible,Locked,Category,Circle
+		fwrite($csvfile, "WP04,$lat,$long,800,$image[title],,http://{$_SERVER['HTTP_HOST']}/photo/$image[gridimage_id],0,1,$image[grid_reference],1,1,Geographs,0\r\n");
+		$recordSet->MoveNext();
 	}
-	else
-	{
-		return "Grid Square '$prefix' has no geographs yet.";
-	}
+	$recordSet->Close(); 
+	fclose($csvfile);
+	return '';
 }
 
 
