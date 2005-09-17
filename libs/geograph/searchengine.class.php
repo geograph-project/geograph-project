@@ -536,7 +536,7 @@ class SearchEngine
 		}
 	}	
 	
-	function Execute($pg,$extra_fields = '') 
+	function ExecuteReturnRecordset($pg,$extra_fields = '') 
 	{
 		$db=$this->_getDB();
 		
@@ -570,8 +570,8 @@ class SearchEngine
 		$count_from .= (strpos($sql_where,'user.') !== FALSE)?" INNER JOIN user ON(gi.user_id=user.user_id)":'';
 		##$count_from = "INNER JOIN gridsquare AS gs USING(gridsquare_id)";
 	// construct the count query sql
-		if (preg_match("/group by ([\w\,\(\)]+)/",$sql_where,$matches)) {
-			$sql_where2 = preg_replace("/group by ([\w\,\(\)]+)/",'',$sql_where);
+		if (preg_match("/group by ([\w\,\(\) ]+)/i",$sql_where,$matches)) {
+			$sql_where2 = preg_replace("/group by ([\w\,\(\) ]+)/i",'',$sql_where);
 $sql = <<<END
 	   SELECT count(DISTINCT {$matches[1]})
 		FROM gridimage AS gi $count_from
@@ -605,10 +605,6 @@ $sql = <<<END
 		LIMIT $page,$pgsize
 END;
 #print "<BR><BR>$sql";
-
-		//lets find some photos
-		$this->results=array();
-		$i=0;
 		
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_before = ((float)$usec + (float)$sec);
@@ -617,39 +613,13 @@ END;
 		
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_after = ((float)$usec + (float)$sec);
-				
-		$dist_format = ($this->criteria->searchclass == 'Postcode')?"Dist:%dkm %s":"Dist:%.1fkm %s";		
-		
-		$querytime = $querytime_after - $querytime_before;
-		while (!$recordSet->EOF) 
-		{
-			$this->results[$i]=new GridImage;
-			$this->results[$i]->fastInit($recordSet->fields);
-			
-			if ($d = $recordSet->fields['dist_sqd']) {
-				$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
-				$this->results[$i]->dist_string = sprintf($dist_format,sqrt($d),$this->heading_string($angle));
-			}
-			
-			if (empty($this->results[$i]->title))
-				$this->results[$i]->title="Untitled";
-			
-			//if we searching on imageclass then theres no point displaying it...
-			if ($this->criteria->limit3) 
-				unset($this->results[$i]->imageclass);
-			
-			//if we searching on taken date then display it...
-			if ($this->criteria->limit7 || $this->criteria->orderby == 'imagetaken') 
-				$this->results[$i]->imagetakenString = $this->results[$i]->getFormattedTakenDate();
 						
-			$recordSet->MoveNext();
-			$i++;
-		}
-		$recordSet->Close(); 
-		return $querytime;
+		$this->querytime =  $querytime_after - $querytime_before;
+
+		return $recordSet;
 	}
 
-	function ExecuteCached($pg) 
+	function ExecuteCachedReturnRecordset($pg) 
 	{
 		$db=$this->_getDB();
 		
@@ -681,8 +651,8 @@ END;
 		}
 		$sql_fields = str_replace('gs.','gi.',$sql_fields);
 	// construct the count sql
-		if (preg_match("/group by ([\w\,\(\)]+)/",$sql_where,$matches)) {
-			$sql_where2 = preg_replace("/group by ([\w\,\(\)]+)/",'',$sql_where);
+		if (preg_match("/group by ([\w\,\(\) ]+)/i",$sql_where,$matches)) {
+			$sql_where2 = preg_replace("/group by ([\w\,\(\) ]+)/i",'',$sql_where);
 $sql = <<<END
 	   SELECT count(DISTINCT {$matches[1]})
 		FROM gridimage_search as gi
@@ -714,20 +684,47 @@ $sql = <<<END
 END;
 if ($_GET['debug'])
 	print "<BR><BR>$sql";
-		//lets find some photos
-		$this->results=array();
-		$i=0;
 		
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_before = ((float)$usec + (float)$sec);
 				
 		$recordSet = &$db->Execute($sql);
-		
-		$dist_format = ($this->criteria->searchclass == 'Postcode')?"Dist:%dkm %s":"Dist:%.1fkm %s";		
-		
+				
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_after = ((float)$usec + (float)$sec);
-		$querytime = $querytime_after - $querytime_before;
+		
+		$this->querytime =  $querytime_after - $querytime_before;
+		return $recordSet;
+	}
+	
+	function ReturnRecordset($pg) {
+		if ($this->noCache || ($this->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\./',$this->criteria->searchq))) {
+			//a Special Search needs full access to GridImage/GridSquare/User
+			$recordSet =& $this->ExecuteReturnRecordset($pg);
+		} else {
+			$recordSet =& $this->ExecuteCachedReturnRecordset($pg); 
+		}
+		return $recordSet;
+	}
+		
+	function Execute($pg) 
+	{
+		if ($this->noCache || ($this->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\./',$this->criteria->searchq))) {
+			//a Special Search needs full access to GridImage/GridSquare/User
+			$recordSet =& $this->ExecuteReturnRecordset($pg);
+		} else {
+			$recordSet =& $this->ExecuteCachedReturnRecordset($pg); 
+		}
+		//we dont actully want to process anything
+		if ($this->countOnly)
+			return 0;
+			
+			
+		$dist_format = ($this->criteria->searchclass == 'Postcode')?"Dist:%dkm %s":"Dist:%.1fkm %s";		
+		
+		$this->results=array();
+		$i=0;
+		
 		while (!$recordSet->EOF) 
 		{
 			$this->results[$i]=new GridImage;
@@ -752,7 +749,7 @@ if ($_GET['debug'])
 			$i++;
 		}
 		$recordSet->Close(); 
-		return $querytime;
+		return $this->querytime;
 	}
 	
 	function heading_string($deg) {
