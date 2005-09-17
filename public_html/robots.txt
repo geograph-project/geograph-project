@@ -3,6 +3,7 @@
 
 User-agent: *
 Disallow: /mapbrowse.php?
+Disallow: /largemap.php?
 Disallow: /admin
 Disallow: /search.php?
 Disallow: /statistics/wordnet.php?words=
