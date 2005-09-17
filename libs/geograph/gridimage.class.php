@@ -991,26 +991,22 @@ class GridImage
 				"WHERE  gid  = '{$this->gridimage_id}'";
 			$db->Execute($sql);
 		} elseif ($this->moderation_status) {
-			$sql="REPLACE INTO gridimage_search
-			SELECT gridimage_id,gi.user_id,moderation_status,title,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,user.realname,reference_index,comment,0,0
-			FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
-			INNER JOIN user ON(gi.user_id=user.user_id)
-			WHERE gridimage_id = '{$this->gridimage_id}'";
-			$db->Execute($sql);
-			
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
 			if (!$this->grid_square) 
-				die("no square known in updateCachedTables");
+				die("ERROR: no square known in updateCachedTables");
 			if ($this->square->nateastings) {
 				list($lat,$long) = $conv->national_to_wgs84($this->grid_square->nateastings,$this->grid_square->natnorthings,$this->grid_square->reference_index);
 			} else {
 				list($lat,$long) = $conv->internal_to_wgs84($this->grid_square->x,$this->grid_square->y,$this->square->reference_index);
 			}
-			
-			$db->Execute("UPDATE gridimage_search SET wgs84_lat = $lat, wgs84_long = $long WHERE gridimage_id = ".$this->gridimage_id);
-
-			
+	
+			$sql="REPLACE INTO gridimage_search
+			SELECT gridimage_id,gi.user_id,moderation_status,title,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,user.realname,reference_index,comment,$lat,$long,ftf
+			FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
+			INNER JOIN user ON(gi.user_id=user.user_id)
+			WHERE gridimage_id = '{$this->gridimage_id}'";
+			$db->Execute($sql);		
 			
 			require_once('geograph/wordnet.inc.php');
 					
