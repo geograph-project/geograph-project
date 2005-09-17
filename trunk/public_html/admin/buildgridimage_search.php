@@ -43,7 +43,7 @@ if (!$_GET['skip']) {
 	$db->Execute("TRUNCATE gridimage_search");
 	
 	$db->Execute("INSERT INTO gridimage_search
-SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, user.realname,reference_index,comment,0,0
+SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, user.realname,reference_index,comment,0,0,ftf
 FROM gridimage AS gi
 INNER JOIN gridsquare AS gs
 USING ( gridsquare_id ) 
