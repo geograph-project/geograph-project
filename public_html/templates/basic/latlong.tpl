@@ -4,28 +4,28 @@
 	 <h3>WGS84 Lat/Long to Grid Reference Conversion</h3> 
 	 
 {if !$e && !$n}
-	<p>This page will convert Latitude and Longitude (assuming WGS84 datum) into Rectlinear coordinates as suitable for use on this site. (Handles Both GB and Irish Grids)</p> 
+	<p>This page will convert Latitude and Longitude (assuming WGS84 datum) into Rectlinear coordinates as suitable for use on this site. (Handles Both Great Britain and Irish Grids)</p> 
 {/if}
 
-	<div style="float:left;position:relative;width:250;padding-left:10px;padding-right:10px;text-align:center;">
+	<div style="float:left;position:relative;width:200px;height:200px;margin-left:10px;margin-right:10px;text-align:center;background:#dddddd;">
 	<form action="{$script_name}"> 
 	<h4>Decimal Degrees</h4>
 	<table cellpadding="3" cellspacing="0"> 
 
 	  <tr> 
 		 <td align="right">lat</td> 
-		 <td><input type="text" name="lat" size="10" value="{$lat}"/></td> 
+		 <td><input type="text" name="lat" size="15" value="{$lat}"/></td> 
 	  </tr> 
 	  <tr> 
 		 <td align="right">long</td> 
-		 <td><input type="text" name="long" size="10" value="{$long}"/></td> 
+		 <td><input type="text" name="long" size="15" value="{$long}"/></td> 
 	  </tr>
 	</table>
-	<p align=center><input type="submit" name="From" value="convert"/></p>
+	<p align="center"><input type="submit" name="From" value="convert"/></p>
 	</form>
 	</div>
 	
-	<div style="float:left;position:relative;width:450;padding:-left:10px;padding-right:10px;text-align:center;">
+	<div style="float:left;position:relative;width:450px;height:200px;margin-left:10px;margin-right:10px;text-align:center;background:#dddddd;">
 	<form action="{$script_name}"> 
 
 	<h4>Degrees, Minutes and Seconds</h4>
@@ -49,15 +49,16 @@
 				name="longs" value="{$xs}"/> </td> 
 		  </tr> 
 	</table>
-	<p align=center><input type="submit" name="From" value="convert"/></p>
+	<p align="center"><input type="submit" name="From" value="convert"/></p>
 	</form>
 	</div>
-	<div style="clear:left">
-	<form action="{$script_name}"> 
-	<p>or paste in the string from Multimap.com: <br/>
+	<br style="clear:both"/>
+	<div style="text-align:center;margin-top:10px;padding-top:0px;padding-bottom:10px;margin-left:10px;margin-right:10px;width:670px;padding-top:10px;background:#dddddd;">
+	<form action="{$script_name}" style="display:inline"> 
+	or paste in the string from Multimap.com: <br/>
 		<input type="text" name="multimap" size=40/>
 		<input type="submit" name="From" value="convert"/><br/>
-	<small>eg: "<b>Lat</b>: 54:32:40N (54.5445) <b>Lon</b>: 6:49:22W (-6.8228)"</small></p>
+	<small>eg: "<b>Lat</b>: 54:32:40N (54.5445) <b>Lon</b>: 6:49:22W (-6.8228)"</small>
 	</form></div>
 
 	{if $errormgs}
@@ -119,7 +120,7 @@
 		<li>{external href="http://www.nearby.org.uk/coord.cgi?p=`$gridref`" title="More info from nearby.org.uk" text="More information about this location from nearby.org.uk"}</li>
 		</ul>
 	{else}
-		<p>See also {external href="http://www.nearby.org.uk/coord-entry.html" text="nearby.org.uk"} which offers a similar converter, amongst others.</p>
+		<p>See also {external href="http://www.nearby.org.uk/coord-entry.html" text="nearby.org.uk"} which offers a similar converter.</p>
 	{/if}
 
 {/dynamic}    
