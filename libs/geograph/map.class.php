@@ -266,7 +266,9 @@ class GeographMap
 		if (!is_dir($root.$dir))
 			mkdir($root.$dir);
 		
-		$file="detail_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}_{$this->type_or_user}.png";
+		$extension = ($this->pixels_per_km > 10)?'jpg':'png';
+		
+		$file="detail_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}_{$this->type_or_user}.$extension";
 		
 		
 		return $dir.$file;
@@ -704,7 +706,11 @@ class GeographMap
 		}				
 				
 		$target=$this->getImageFilename();
-		imagepng($img, $root.$target);
+		if ($this->pixels_per_km > 10) {
+			imagejpeg($img, $root.$target);
+		} else {
+			imagepng($img, $root.$target);
+		}
 		
 		imagedestroy($img);
 		
@@ -829,7 +835,11 @@ class GeographMap
 	
 				
 		$target=$this->getImageFilename();
-		imagepng($img, $root.$target);
+		if ($this->pixels_per_km > 10) {
+			imagejpeg($img, $root.$target);
+		} else {
+			imagepng($img, $root.$target);
+		}
 		
 		imagedestroy($img);
 		
@@ -1009,7 +1019,7 @@ END;
 		static $gridcol,$gridcol2,$text1,$text2; //these are static so they can be assigned before the images are added
 		global $CONF;
 		if ($pre) {
-			if ($this->pixels_per_km == 40) {
+			if ($this->pixels_per_km >= 40) {
 				$gridcol=imagecolorallocate ($img, 89,126,118);
 				$gridcol2=imagecolorallocate ($img, 60,205,252);
 				
@@ -1138,7 +1148,7 @@ END;
 		$recordSet->Close(); 		
 		
 		//plot the number labels
-		if ($this->pixels_per_km == 40) {
+		if ($this->pixels_per_km >= 40) {
 			$gridref = $this->getGridRef(0, $this->image_h); //origin of image is tl, map is bl
 			if (preg_match('/^([A-Z]{1,2})(\d\d)(\d\d)$/',$gridref, $matches))
 			{
