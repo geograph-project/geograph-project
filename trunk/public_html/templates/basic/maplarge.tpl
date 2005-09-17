@@ -34,11 +34,11 @@
 <div style="height:{$overview_height+30}px;">
 
 <table class="report"> 
-<thead><tr><td>Contributor</td><td>Photos</td></tr></thead>
+<thead><tr><td>Last Submission</td><td>Contributor</td><td>Photos</td></tr></thead>
 <tbody>
 
 {foreach from=$users key=id item=obj}
-<tr><td><a title="View map for {$obj.tenk_square}" href="/profile.php?u={$obj.user_id}">{$obj.realname}</a></td>
+<tr><td>{$obj.last_date}</td><td><a title="View map for {$obj.tenk_square}" href="/profile.php?u={$obj.user_id}">{$obj.realname}</a></td>
 <td align="right" >{$obj.count}</td></tr>
 {/foreach}
 
