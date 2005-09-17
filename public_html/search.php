@@ -33,29 +33,33 @@ $imagestatuses = array('geograph' => 'geograph only','geograph,accepted' => 'geo
 $sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','submitted'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributer Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North');
 #,'user_id'=>'Contributer ID'
 
-if (strpos($_ENV["OS"],'Windows') === FALSE) {
-	//check load average, abort if too high
-	$buffer = "0 0 0";
-	$f = fopen("/proc/loadavg","r");
-	if ($f)
-	{
-		if (!feof($f)) {
-			$buffer = fgets($f, 1024);
+//available as a function, as doesn't come into effect if just re-using a smarty cache
+function dieUnderHighLoad() {
+	if (strpos($_ENV["OS"],'Windows') === FALSE) {
+		//check load average, abort if too high
+		$buffer = "0 0 0";
+		$f = fopen("/proc/loadavg","r");
+		if ($f)
+		{
+			if (!feof($f)) {
+				$buffer = fgets($f, 1024);
+			}
+			fclose($f);
 		}
-		fclose($f);
-	}
-	$loads = explode(" ",$buffer);
-	$load=(float)$loads[0];
+		$loads = explode(" ",$buffer);
+		$load=(float)$loads[0];
 
-	if ($load>2)
-	{
-		$smarty->assign('searchq',stripslashes($_GET['q']));	
-		$smarty->display('search_unavailable.tpl');	
-		exit;
+		if ($load>2)
+		{
+			$smarty->assign('searchq',stripslashes($_GET['q']));	
+			$smarty->display('search_unavailable.tpl');	
+			exit;
+		}
 	}
 }
 
 if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
+	dieUnderHighLoad();
 	// -------------------------------
 	//  special handler to build a advanced query from the link in stats or profile.  
 	// -------------------------------
@@ -76,6 +80,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	advanced_form($smarty,$db);
  	
 } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+	dieUnderHighLoad();
 	// -------------------------------
 	//  Build advacned query 
 	// -------------------------------
@@ -132,6 +137,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		advanced_form($smarty,$db);
 	}
 } else if ($q=stripslashes($_GET['q'])) {
+	dieUnderHighLoad();
 	// -------------------------------
 	//  Build a query from a single text string
 	// -------------------------------
@@ -182,6 +188,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	}
 
 } else if ($_GET['form'] == 'advanced') {
+	dieUnderHighLoad();
 	// -------------------------------
 	//  Advanced Form
 	// -------------------------------
@@ -295,12 +302,10 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	$cacheid="search|".$_GET['i'].".".$pg;
 	
 	if (!$smarty->is_cached($template, $cacheid)) {
-		if ($engine->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\./',$engine->criteria->searchq)) {
-			//a Special Search needs full access to GridImage/GridSquare/User
-			$smarty->assign('querytime', $engine->Execute($pg)); 
-		} else {
-			$smarty->assign('querytime', $engine->ExecuteCached($pg)); 
-		}
+		dieUnderHighLoad();
+		
+		$smarty->assign('querytime', $engine->Execute($pg)); 
+		
 		$smarty->assign('i', $_GET['i']);
 		$smarty->assign('currentPage', $pg);
 		$smarty->assign_by_ref('engine', $engine);
@@ -315,6 +320,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 
 
 } else {
+	dieUnderHighLoad();
 	// -------------------------------
 	//  Simple Form
 	// -------------------------------
