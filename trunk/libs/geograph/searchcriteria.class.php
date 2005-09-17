@@ -59,18 +59,27 @@ class SearchCriteria
 	
 	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) 
 	{
-		$sql_where = '';
+		if ($_GET['BBOX']) {
+			$b = explode(',',$_GET['BBOX']);
+			$sql_where = "(`wgs84_lat` BETWEEN {$b[1]} and {$b[3]}) and (`wgs84_long` BETWEEN {$b[0]} and {$b[2]})";
+		} else {
+			$sql_where = '';
+		}
+		
 		$x = $this->x;
 		$y = $this->y;
 		if ($x > 0 && $y > 0) {
 			if ($this->limit8) {
 				$d = $this->limit8;
+				if ($sql_where) {
+					$sql_where .= " and ";
+				}
 				$sql_where .= sprintf("x BETWEEN %d and %d AND y BETWEEN %d and %d",$x-$d,$x+$d,$y-$d,$y+$d);
 				//shame cant use dist_sqd in the next line!
 				$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);
 			}
 			
-			//btw not using "power(gs.x -$x,2) * power( gs.y -$y,2)" beucause is testing could be upto 2 times slower!
+			//not using "power(gs.x -$x,2) * power( gs.y -$y,2)" beucause is testing could be upto 2 times slower!
 			$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
 			$sql_order = " dist_sqd ";
 		} 
@@ -305,7 +314,6 @@ class SearchCriteria_Special extends SearchCriteria
 {
 	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) {
 		parent::getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
-		$db = $this->_getDB();
 		if ($sql_where) {
 			$sql_where .= " and ";
 		}
