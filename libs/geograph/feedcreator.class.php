@@ -1061,34 +1061,30 @@ class KMLCreator extends FeedCreator {
 		$feed.= "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n"; 
 		$feed.= "<Document>\n";
 		if ($_GET['simple']) {
-		$feed.= "
-		  <Style id=\"defaultIcon\">
-		    <IconStyle id=\"defaultIcon\">
-		    </IconStyle>
-		    <LabelStyle>
-		      <scale>0</scale>
-		    </LabelStyle>
-		  </Style>
-		  
-		  <Style id=\"hoverIcon\">
-		    <IconStyle id=\"hoverIcon\">
-		      <scale>1.3</scale>
-		    </IconStyle>
-		    <LabelStyle>
-		    </LabelStyle>
-		  </Style>
-		  
-		  
-		  <StyleMap id=\"defaultStyle\">
-		    <Pair>
-		      <key>normal</key>
-		      <styleUrl>#defaultIcon</styleUrl>
-		    </Pair>
-		    <Pair>
-		      <key>highlight</key>
-		      <styleUrl>#hoverIcon</styleUrl>
-		    </Pair>
-		  </StyleMap> 
+		$feed.= "<Style id=\"defaultIcon\">
+	<IconStyle id=\"defaultIcon\">
+	</IconStyle>
+	<LabelStyle>
+		<scale>0</scale>
+	</LabelStyle>
+</Style>
+<Style id=\"hoverIcon\">
+	<IconStyle id=\"hoverIcon\">
+		<scale>1.3</scale>
+	</IconStyle>
+	<LabelStyle>
+	</LabelStyle>
+</Style>
+<StyleMap id=\"defaultStyle\">
+	<Pair>
+		<key>normal</key>
+		<styleUrl>#defaultIcon</styleUrl>
+	</Pair>
+	<Pair>
+		<key>highlight</key>
+		<styleUrl>#hoverIcon</styleUrl>
+	</Pair>
+</StyleMap>
 ";
 		  $style = "#defaultStyle";
 		} else {
