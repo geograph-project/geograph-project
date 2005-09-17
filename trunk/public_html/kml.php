@@ -70,7 +70,11 @@ $template='kml.tpl';
 		
 		if (isset($_POST['submit'])) {
 			$simple = $_POST['simple'];
-			$url = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=KML&i=$i&simple=$simple&page=$pg";
+			if ($_POST['type'] == 'view') {
+				$url = "http://{$_SERVER['HTTP_HOST']}/earth.php?i=$i&simple=$simple";
+			} else {
+				$url = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=KML&i=$i&simple=$simple&page=$pg";
+			}
 			if ($_POST['type'] == 'static') {
 				header("Status:302 Found");
 				header("Location:$url");
@@ -80,7 +84,7 @@ $template='kml.tpl';
 			} else {
 				$url = str_replace('&','&amp;',$url);
 				if ($_POST['type'] == 'time') {
-					$view = "<viewRefreshMode>onInterval</viewRefreshMode>\n<refreshInterval>{$_POST['refresh']}</refreshInterval>";
+					$view = "<refreshMode>onInterval</refreshMode>\n<refreshInterval>{$_POST['refresh']}</refreshInterval>";
 				} else {
 					$view = "<viewRefreshMode>onStop</viewRefreshMode>\n<viewRefreshTime>4</viewRefreshTime>";
 				}
@@ -103,12 +107,7 @@ $template='kml.tpl';
 			}		
 		} else {
 			$engine->countOnly = true;
-			if ($engine->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\./',$engine->criteria->searchq)) {
-				//a Special Search needs full access to GridImage/GridSquare/User
-				$smarty->assign('querytime', $engine->Execute($pg)); 
-			} else {
-				$smarty->assign('querytime', $engine->ExecuteCached($pg)); 
-			}
+			$smarty->assign('querytime', $engine->Execute($pg)); 
 			
 			$smarty->assign('i', $i);
 			$smarty->assign('currentPage', $pg);
