@@ -13,10 +13,11 @@ and you can be part of it.</p>
 <ul>
     <li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a><br/><br/></li>
     <li><a title="Browse by Map" href="/mapbrowse.php">browse images on a <b>map</b></a><br/><br/></li>
-    <li><a title="Google Earth Export" href="/kml.php">view images in <b>Google Earth</b></a> <a title="Google Earth Feed" href="/kml.php" class="xml-kml">KML</a><br/><br/></li>
-    <li><a title="RSS Deeds" href="/faq.php#rss">get <b>RSS feeds</b> of images</a> <a title="RSS Feed of Recent Images" href="/syndicator.php" rel="RSS" class="xml-rss">RSS</a><br/><br/></li>
     <li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a><br/><br/></li>
     <li><a title="Discussion forums" href="/discuss/"><b>discuss the site</b> on our forums</a><br/><br/></li>
+    <li><a title="Google Earth Export" href="/kml.php">view images in <b>Google Earth</b></a> <a title="Google Earth Feed" href="/kml.php" class="xml-kml">KML</a><br/><br/></li>
+    <li><a title="RSS Deeds" href="/faq.php#rss">get <b>RSS feeds</b> of images</a> <a title="RSS Feed of Recent Images" href="/syndicator.php" rel="RSS" class="xml-rss">RSS</a><br/><br/></li>
+    <li><a title="Memory Map Export" href="/memorymap.php">view squares in <b>Memory Map</b><br/><br/></li>
     <li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a><br/><br/></li>
     <li><a title="List of all images" href="/list.php">view the <b>full list</b> of images</a></li>
 </ul>
