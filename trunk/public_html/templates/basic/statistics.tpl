@@ -93,6 +93,7 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
     
     <h3>More Statistics</h3>
     
+   <p><a href="/statistics/most_geographed.php">Mostly</a> /<a href="/statistics/fully_geographed.php">Fully</a> Photographed 10<sup><small>km</small></sup>x10<sup><small>km</small></sup> Squares and <a href="/statistics/wordnet.php">Popular Words</a>.</p>
 
     <form method="get" action="/statistics/breakdown.php">
     <p>View breakdown of images by 
@@ -121,8 +122,7 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
     {/if}
     {/dynamic}
     <input type="submit" value="Go"/></p></form>
-    <p><a href="/statistics/most_geographed.php">Most Photographed Squares</a>, <a href="/statistics/wordnet.php">Popular Words</a>, and more coming soon.</p>
-
+ 
     
    <p style="text-align:center"><i>This page was last updated {$generation_time|date_format:"%H:%M"}</i>.</p>
 
