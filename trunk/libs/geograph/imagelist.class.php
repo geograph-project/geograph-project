@@ -260,6 +260,42 @@ class ImageList
 		
 		return $count;
 	}
+
+	/**
+	* get database recordset for an area ... (only returns geograph(ftf)
+	* @access public
+	*/
+	function getRecordSetByArea($left,$right,$top,$bottom,$reference_index=null, $count_only=true)
+	{
+		$db=&$this->_getDB();
+
+		$orderby="";
+		$limit="";
+		
+		//ensure correct order
+		$l=min($left,$right);
+		$r=max($left,$right);
+		$t=min($top,$bottom);
+		$b=max($top,$bottom);
+		
+		//figure for particular grid system?
+		$rfilter="";
+		if (!is_null($reference_index))
+			$rfilter="and reference_index=$reference_index";
+		
+		$cols=$count_only?"count(*) as cnt":"*";
+		
+		$sql="select $cols ".
+			"from gridimage_search ".
+			"where moderation_status = 'geograph' and ftf = 1 $rfilter and ".
+			"x between $l and $r and ".
+			"y between $t and $b ".
+			"$orderby $limit";
+
+		$recordSet = &$db->Execute($sql);
+
+		return $recordSet;
+	}
 	
 	/**
 	* get image list for particular area...
@@ -278,6 +314,17 @@ class ImageList
 	function countImagesByArea($left,$right,$top,$bottom,$reference_index=null)
 	{
 		return $this->_getImagesByArea($left,$right,$top,$bottom,$reference_index, true);
+	}
+
+	function getRecordSetByPrefix($prefix) {
+
+		$db=&$this->_getDB();
+
+		$data=$db->GetRow("select * from gridprefix where prefix='".$prefix."'");
+
+		return $this->getRecordSetByArea($data['origin_x'],$data['origin_x']+$data['width']-1,
+			$data['origin_y']+$data['height']-1,$data['origin_y'], $data['reference_index'], false);
+
 	}
 	
 	/**
