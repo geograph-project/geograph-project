@@ -109,6 +109,11 @@ END;
 			
 			}
 			
+			//temporary nickname fix for beta accounts
+			if (strlen($this->results[$i]['nickname'])==0)
+				$this->results[$i]['nickname']=str_replace(" ", "", $this->results[$i]['realname']);
+
+			
 			$recordSet->MoveNext();
 			$i++;
 		}
