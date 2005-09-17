@@ -15,7 +15,7 @@
 	  <div style="clear:both">
 		
 	  <a title="view full size image" href="/discuss/index.php?action=vthread&amp;topic={$image.topic_id}">{$image.topic_title|escape:'html'}</a> ({$image.posts_count} Posts)
-		topic started by <a title="view user profile" href="/profile.php?u={$image.user_id}">{$image.realname}</a> at {$image.topic_time}<br/>
+		topic started by <a title="view user profile for {$image.realname}" href="/profile.php?u={$image.user_id}">{$image.nickname}</a> at {$image.topic_time}<br/>
 	  for square <a title="view page for {$image.grid_reference}" href="/gridref/{$image.grid_reference}">{$image.grid_reference}</a> 
 
 	  <i>{$image.dist_string}</i><br/><br/>
