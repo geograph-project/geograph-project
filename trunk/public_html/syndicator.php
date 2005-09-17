@@ -50,8 +50,6 @@ if (isset($_GET['q'])) {
  	$_GET['i'] = $engine->buildSimpleQuery($_GET['q'],100,false,isset($_GET['u'])?$_GET['u']:0);
  	
  	if ($engine->criteria->is_multiple) {
- 	print "<pre>";
- 	var_dump($engine);
  		die("unable identify a unique location");
  	}
 }
@@ -83,7 +81,7 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	$rss->description = "Images".$images->criteria->searchdesc; 
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=$format&amp;i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
 	
-	$images->ExecuteCached($pg);
+	$images->Execute($pg);
 	
 	$images->images = &$images->results;
 	
@@ -150,7 +148,7 @@ for ($i=0; $i<$cnt; $i++)
 
 //now output the result
 if ($format == 'KML') {
-	header("Content-type: application/octet-stream");
+	header("Content-type: application/vnd.google-earth.kml+xml");
 	header("Content-Disposition: attachment; filename=\"geograph.kml\"");
 } else {
 	header("Content-Type:text/xml");
