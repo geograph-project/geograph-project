@@ -130,10 +130,9 @@ if ($grid_given)
 	
 		//let's find posts in the gridref discussion forum
 		$db=NewADOConnection($GLOBALS['DSN']);
-		$sql='select u.user_id,u.realname,CONCAT(\'Discussion on \',t.topic_title) as topic_title,p.post_text,t.topic_id,t.topic_time '.
+		$sql='select poster_id as user_id,poster_name as realname,CONCAT(\'Discussion on \',t.topic_title) as topic_title,p.post_text,t.topic_id,t.topic_time '.
 			'from geobb_topics as t '.
 			'inner join geobb_posts as p on(t.topic_id=p.topic_id) '.
-			'inner join user as u on (p.poster_id=u.user_id) '.
 			'where t.topic_time=p.post_time and '.
 			't.forum_id=5 and '.
 			't.topic_title = \''.mysql_escape_string($square->grid_reference).'\' '.
