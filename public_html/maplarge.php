@@ -86,7 +86,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$right=$left + floor($mosaic->image_w/$mosaic->pixels_per_km)-1;
 	$top=$bottom + floor($mosaic->image_h/$mosaic->pixels_per_km)-1;
 
-$sql="SELECT user.user_id,realname,count(*) AS count
+$sql="SELECT user.user_id,realname,count(*) AS count,max(submitted) as last_date
 FROM 
 	gridsquare gs
 	INNER JOIN gridimage gi USING(gridsquare_id)
@@ -97,7 +97,7 @@ WHERE
 	percent_land<>0 AND
 	seq_no = 1
 GROUP BY user_id 
-ORDER BY count DESC
+ORDER BY count DESC,last_date DESC
 ";
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
