@@ -37,7 +37,7 @@ if (isset($_REQUEST['edit']))
 	$USER->login();
 	
 	$template='profile_edit.tpl';
-	$profile=new GeographUser($USER->user_id,true);
+	$profile=new GeographUser($USER->user_id);
 	
 	//save changes?
 	if (isset($_POST['savechanges']))
