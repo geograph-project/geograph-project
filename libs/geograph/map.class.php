@@ -266,7 +266,7 @@ class GeographMap
 		if (!is_dir($root.$dir))
 			mkdir($root.$dir);
 		
-		$extension = ($this->pixels_per_km > 10)?'jpg':'png';
+		$extension = ($this->pixels_per_km > 40)?'jpg':'png';
 		
 		$file="detail_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}_{$this->type_or_user}.$extension";
 		
@@ -706,7 +706,7 @@ class GeographMap
 		}				
 				
 		$target=$this->getImageFilename();
-		if ($this->pixels_per_km > 10) {
+		if ($this->pixels_per_km > 40) {
 			imagejpeg($img, $root.$target);
 		} else {
 			imagepng($img, $root.$target);
@@ -835,7 +835,7 @@ class GeographMap
 	
 				
 		$target=$this->getImageFilename();
-		if ($this->pixels_per_km > 10) {
+		if ($this->pixels_per_km > 40) {
 			imagejpeg($img, $root.$target);
 		} else {
 			imagepng($img, $root.$target);
