@@ -117,7 +117,8 @@ create table gridsquare_topic
 	topic_id int not null,
 	forum_id int not null,
 	last_post datetime,
-	primary key(gridsquare_id, topic_id)
+	primary key(gridsquare_id, topic_id),
+	index(topic_id)
 );
 
 #init
