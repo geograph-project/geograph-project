@@ -123,20 +123,23 @@ if ($image->isValid())
 			'inner join geobb_posts as p on(t.topic_id=p.topic_id) '.
 			'where t.topic_time=p.post_time and '.
 			't.forum_id=5 and '.
-			't.topic_title = \''.mysql_escape_string($square->grid_reference).'\' '.
+			't.topic_title = \''.mysql_escape_string($image->grid_square->grid_reference).'\' '.
 			'order by t.topic_time desc limit 3';
 		$news=$db->GetAll($sql);
 		if ($news) 
 		{
 			foreach($news as $idx=>$item)
 			{
-				$news[$idx]['post_text']=str_replace('<br>', '<br/>', $news[$idx]['post_text']);
+				$news[$idx]['post_text']=GeographLinks(str_replace('<br>', '<br/>', $news[$idx]['post_text']));
 				$news[$idx]['comments']=$db->GetOne('select count(*)-1 as comments from geobb_posts where topic_id='.$item['topic_id']);
 				$totalcomments += $news[$idx]['comments'] + 1;
 			}
 			$smarty->assign_by_ref('discuss', $news);
 			$smarty->assign('totalcomments', $totalcomments);
 		} 
+		
+		//count the number of photos in this square
+		$smarty->assign('square_count', $db->getOne("select count(*) from gridimage_search where grid_reference = '{$image->grid_reference}'"));
 		
 		//lets add an overview map too
 		$overview=new GeographMapMosaic('overview');
