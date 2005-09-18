@@ -31,7 +31,7 @@
  If you are a geocacher, it could be a link to your geocaching profile.</div></td>
  </tr>
  
- <tr><td><label>Email</label></td><td><tt>{$profile->email|escape:'html'}</tt></td></tr>
+ <tr><td><label>Email</label></td><td colspan="2"><tt>{$profile->email|escape:'html'}</tt></td></tr>
  <tr><td colspan="2" class="nowrap">
  <input {if $profile->public_email eq 1}checked{/if} type="checkbox" id="public_email" name="public_email" value="1"> 
   <label for="public_email">Allow site visitors to see my email address</label>
@@ -44,7 +44,7 @@
  <td><select name="sortBy" id="sortBy" size="1">
  	<option value="0">Latest Replies
 
- 	<option value="1" {if $profile->sortBy eq 1}selected{/if}>New Topics</option>
+ 	<option value="1" {if $profile->getForumSortOrder() eq 1}selected{/if}>New Topics</option>
  </select></td>
  <td><div class="fieldnotes">The default order you will see recent discussions.</div></td></tr>
  
