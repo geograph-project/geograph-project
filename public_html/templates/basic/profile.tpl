@@ -45,13 +45,13 @@
 <h3><a href="/statistics/breakdown.php?by=status&u={$profile->user_id}">Statistics</a></h3>
 <ul>
  	  <li>Geograph points: {$profile->stats.ftf} (see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)</li>
- 	  <li>{$profile->stats.total} {if $profile->stats.total eq 1}photograph{else}photographs{/if} submitted
- 	  
+ 	  <li>{$profile->stats.total} photograph{if $profile->stats.total ne 1}s{/if} submitted</li>
  	  {if $profile->stats.pending gt 0}
  	 	  ({$profile->stats.pending} awaiting moderation)
  	  {/if}
  	  </li>
-
+	  <li>{$profile->stats.squares} grid square{if $profile->stats.squares ne 1}s{/if} photographed</li>
+ 	  
         {else}
 <h3>Statistics</h3>
 <ul>
