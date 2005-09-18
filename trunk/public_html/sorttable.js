@@ -206,6 +206,11 @@ function ts_sort_hidden(a,b) {
     aa = a.cells[SORT_COLUMN_INDEX].getAttribute('sortvalue');
     bb = b.cells[SORT_COLUMN_INDEX].getAttribute('sortvalue');
     if (aa==bb) return 0;
+    
+    //we treat empty as a very low priority value...
+    if (aa=="") return 1;
+    if (bb=="") return -1;
+    
     if (aa<bb) return -1;
     return 1;
 }
