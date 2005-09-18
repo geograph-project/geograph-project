@@ -1060,7 +1060,7 @@ class KMLCreator extends FeedCreator {
 		$feed.= $this->_createStylesheetReferences();
 		$feed.= "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n"; 
 		$feed.= "<Document>\n";
-		if ($_GET['simple']) {
+		if ($_GET['simple'] && count($this->items) > 0) {
 		$feed.= "<Style id=\"defaultIcon\">
 	<IconStyle id=\"defaultIcon\">
 	</IconStyle>
