@@ -39,7 +39,9 @@ if (isset($_GET['id']))  {
 	if ($ok) {
 		header("Content-type: application/vnd.google-earth.kml+xml");
 		header("Content-Disposition: attachment; filename=\"Geograph.kml\"");
-
+		header("Cache-Control: Public");
+		header("Expires: ".date("D, d M Y H:i:s",mktime(0,0,0,date('m'),date('d')+14,date('Y')) )." GMT");
+		
 		print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 ?><kml xmlns="http://earth.google.com/kml/2.0">
 	<Placemark>
