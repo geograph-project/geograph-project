@@ -52,7 +52,6 @@ if ($mosaic->pixels_per_km != 80)
 	die("Invalid Parameter");
 
 $mosaic->setMosaicSize(800,800);
-$mosaic->setScale(80);
 
 //get token, we'll use it as a cache id
 $token=$mosaic->getToken();
@@ -86,7 +85,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$right=$left + floor($mosaic->image_w/$mosaic->pixels_per_km)-1;
 	$top=$bottom + floor($mosaic->image_h/$mosaic->pixels_per_km)-1;
 
-$sql="SELECT user.user_id,realname,count(*) AS count,max(submitted) as last_date
+$sql="SELECT user.user_id,realname,COUNT(*) AS count,DATE_FORMAT(MAX(submitted),'%D %b %Y') as last_date
 FROM 
 	gridsquare gs
 	INNER JOIN gridimage gi USING(gridsquare_id)
