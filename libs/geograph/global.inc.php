@@ -151,11 +151,11 @@ function smarty_function_external($params)
 		$title=$text;
   	
   	if ($params['target'] == '_blank') {
-  		return "<a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
-  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"/img/external.png\" width=\"10\" height=\"10\"/>";
+  		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
+  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"/img/external.png\" width=\"10\" height=\"10\"/></span>";
   	} else {
-  		return "<a title=\"$title\" href=\"$href\">$text</a>".
-  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - shift click to open in new window\" src=\"/img/external.png\" width=\"10\" height=\"10\"/>";
+  		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\">$text</a>".
+  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - shift click to open in new window\" src=\"/img/external.png\" width=\"10\" height=\"10\"/></span>";
   	}  	
 }
 
@@ -191,6 +191,13 @@ function smarty_function_gridimage($params)
 */
 function smarty_function_thousends($input) {
 	return number_format($input);
+}
+
+/**
+* wrapper to GeographLinks
+*/
+function smarty_function_geographlinks($input) {
+	return GeographLinks($input);
 }
 
 
@@ -238,6 +245,8 @@ class GeographPage extends Smarty
 		//gridimage
 		$this->register_function("gridimage", "smarty_function_gridimage");
 
+
+		$this->register_modifier("geographlinks", "smarty_function_geographlinks");
 
 		$this->register_modifier("thousends", "smarty_function_thousends");
 
@@ -300,6 +309,40 @@ function init_session()
 	//put user object into global scope
 	$GLOBALS['USER'] =& $_SESSION['user'];
 }
+
+//replace geograph links
+function GeographLinks(&$posterText) {
+	if (preg_match_all('/\[\[(\[?)(\w{0,2}\d+)(\]?)\]\]/',$posterText,$g_matches)) {
+		foreach ($g_matches[2] as $i => $g_id) {
+			if (is_numeric($g_id)) {
+				if (!isset($g_image)) {
+					require_once('geograph/gridimage.class.php');
+					require_once('geograph/gridsquare.class.php');
+					$g_image=new GridImage;
+				}
+				$ok = $g_image->loadFromId($g_id);
+				if ($ok) {
+					if ($g_matches[1][$i]) {
+						//we don't place thumbnails in non forum links
+						$posterText = str_replace("[[[$g_id]]]","{<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">{$g_image->grid_reference} : {$g_image->title}</a>}",$posterText);
+					} else {
+						$posterText = str_replace("[[$g_id]]","{<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">{$g_image->grid_reference} : {$g_image->title}</a>}",$posterText);
+					}
+				}			
+			} else {
+				$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/$g_id\">$g_id</a>",$posterText);
+			}
+		}
+	}
+	if (preg_match_all('/(^| |<br\/?>)(http:\/\/[\w\.]+\.[\w]{2,}\/[^ <]*)( |<br\/?>|$)/',$posterText,$g_matches)) {
+		foreach ($g_matches[2] as $i => $g_url) {
+			
+			$posterText = str_replace("$g_url",smarty_function_external(array('href'=>$g_url,'text'=>'{link}','title'=>$g_url)),$posterText);
+		}
+	}
+	return $posterText;
+}
+
 
 //this is a bit cheeky - if the xhtml validator calls, turn off the automatic
 //session id insertion, as it uses & instead of &amp; in urls
