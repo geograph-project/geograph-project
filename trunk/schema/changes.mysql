@@ -107,3 +107,4 @@ CREATE TABLE `event_handled_by` (
 );
 
 ALTER TABLE `gridimage_search` ADD `ftf` TINYINT UNSIGNED NOT NULL ;
+ALTER TABLE `gridimage_search` ADD `seq_no` SMALLINT UNSIGNED NOT NULL ;
