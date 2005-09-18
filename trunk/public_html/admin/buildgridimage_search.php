@@ -43,7 +43,7 @@ if (!$_GET['skip']) {
 	$db->Execute("TRUNCATE gridimage_search");
 	
 	$db->Execute("INSERT INTO gridimage_search
-SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, user.realname,reference_index,comment,0,0,ftf
+SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, user.realname,reference_index,comment,0,0,ftf,seq_no
 FROM gridimage AS gi
 INNER JOIN gridsquare AS gs
 USING ( gridsquare_id ) 
@@ -52,6 +52,7 @@ WHERE moderation_status != 'rejected' ");
 	echo "<h3>Finished Coping Records.</h3>";
 }
 $tim = time();
+if (!$_GET['skip2']) {	
 
 $recordSet = &$db->Execute("select gridimage_id,x,y,reference_index,nateastings,natnorthings  
 from gridimage INNER JOIN gridsquare AS gs
@@ -78,7 +79,7 @@ while (!$recordSet->EOF)
 }
 
 	echo "<h3>Finished Creating Lat/Long.</h3>";
-
+}
 
 	$smarty->display('_std_end.tpl');
 	exit;
