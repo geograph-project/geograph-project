@@ -69,7 +69,7 @@ class GeographUser
 	* Constructor doesn't normally do anything, but if supplied with a user id
 	* can be used to create an instance for a particular user. 
 	*/
-	function GeographUser($uid=0)
+	function GeographUser($uid=0,$load_forum = false)
 	{
 		if (($uid>0) && preg_match('/^[0-9]+$/' , $uid))
 		{
@@ -78,7 +78,7 @@ class GeographUser
 			
 			
 						
-			$arr = $db->GetRow("select * from user where user_id='$uid'");	
+			$arr =& $db->GetRow("select * from user where user_id='$uid'");	
 			if (count($arr))
 			{
 				$this->registered=strlen($arr['rights'])>0;
@@ -89,7 +89,8 @@ class GeographUser
 
 				}
 			}
-
+			if ($load_forum)
+				$this->sortBy =& $db->getOne("select user_sorttopics from geobb_users where user_id='$uid'");
 		}
 	}
 	
@@ -107,6 +108,7 @@ class GeographUser
 		$this->stats['ftf']=$db->GetOne("select count(*) from gridimage where user_id='{$this->user_id}' and ftf=1");
 		$this->stats['total']=$db->GetOne("select count(*) from gridimage where user_id='{$this->user_id}' and moderation_status<>'rejected'");
 		$this->stats['pending']=$db->GetOne("select count(*) from gridimage where user_id='{$this->user_id}' and moderation_status='pending'");
+		$this->stats['squares']=$db->GetOne("select count(distinct gridsquare_id) from gridimage where user_id='{$this->user_id}' and moderation_status<>'rejected'");
 		
 
 	}
@@ -440,7 +442,8 @@ class GeographUser
 				$this->nickname=stripslashes($profile['nickname']);
 				$this->website=stripslashes($profile['website']);
 				$this->public_email=isset($profile['public_email'])?1:0;
-				
+				if (isset($profile['sortBy'])) 
+					$this->sortBy=stripslashes($profile['sortBy']);
 				
 				$this->_forumUpdateProfile();
 				
@@ -811,6 +814,7 @@ class GeographUser
 				", user_password=md5(".$db->Quote($this->password).")".
 				", user_website=".$db->Quote($this->website).
 				", user_viewemail=".$this->public_email.
+				(isset($this->sortBy)?', user_sorttopics = '.$this->sortBy:'').
 				" where user_id={$this->user_id}";
 				
 			$db->Execute($sql);	
