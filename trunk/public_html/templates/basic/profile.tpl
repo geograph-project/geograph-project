@@ -68,7 +68,7 @@
 		<td><img title="Any grid square discussions?" src="/templates/basic/img/discuss.gif" width="10" height="10"> ?</td>
 		<td>Grid Ref</td>
 		<td>Title</td>
-		<td>Submitted</td>
+		<td sorted="desc">Submitted</td>
 		<td>Status</td>
 			
 		<td><img title="Any image problems or change requests?" src="/templates/basic/img/alert.gif" width="11" height="10"> ?</td>
