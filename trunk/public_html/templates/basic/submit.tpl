@@ -219,7 +219,7 @@ it was taken or other interesting geographical information.</p>
 <p><label for="comment">Comment</label><br/>
 <textarea id="comment" name="comment" rows="4" cols="80">{$comment|escape:'html'}</textarea><br/>
 <small>TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
-to a Grid Square or another Image.<br/>For a weblink use <span style="color:blue">[url=http://www.example.com]Some text[/url]</span></small></p>
+to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></small></p>
 
 
 <h3>Further Image Information</h3>
