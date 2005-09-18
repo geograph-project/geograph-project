@@ -38,6 +38,9 @@
 define('EVENT_NEWPHOTO', 'photo_submitted');
 define('EVENT_MODERATEDPHOTO', 'photo_moderated');
 define('EVENT_MOVEDPHOTO', 'photo_moved');
+define('EVENT_NEWTOPIC', 'topic_new');
+define('EVENT_NEWREPLY', 'topic_reply');
+define('EVENT_DELTOPIC', 'topic_deleted');
 
 //event priorities
 define('PRIORITY_HIGH', 0);
@@ -52,11 +55,23 @@ define('PRIORITY_LOW', 100);
 * 
 * An example event firing would be like this
 * Event::fire(EVENT_NEWPHOTO, $gridimage_id);
+*
+* Can also fire by instantiatng the class (nicer when we switch to php5
+* as the event class can then be auto-loaded
+* new Event(EVENT_NEWPHOTO, $gridimage_id);
 * @package Geograph
 */
 
 class Event
 {
+	function Event($event_name="", $event_param="", $priority=50)
+	{
+		if (strlen($event_name))
+		{
+			Event::fire($event_name, $event_param, $priority);
+		}
+	}
+	
 	/**
 	* Static method for firing an event
 	*/
