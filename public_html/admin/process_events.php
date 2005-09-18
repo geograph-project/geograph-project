@@ -52,7 +52,7 @@ if (isset($_GET['start']))
 
 	
 	$processor=new EventProcessor;
-	$processor->setTestMode(isset($_GET['testmode'])?$_GET['testmode']:1);
+	$processor->setTestMode(isset($_GET['testmode'])?$_GET['testmode']:0);
 	$processor->setVerbosity(isset($_GET['verbosity'])?$_GET['verbosity']:3);
 	$processor->setMaxTime(isset($_GET['max_execution'])?$_GET['max_execution']:180);
 	$processor->setMaxLoad(isset($_GET['max_load'])?$_GET['max_load']:0.8);
