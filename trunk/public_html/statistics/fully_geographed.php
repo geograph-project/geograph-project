@@ -42,15 +42,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (!$db) die('Database connection failed');  
 	#$db->debug = true;
 
-$mosaic=new GeographMapMosaic;
-$mosaic->setScale(40);
-$mosaic->setMosaicFactor(2);
+	$mosaic=new GeographMapMosaic;
+	$mosaic->setScale(40);
+	$mosaic->setMosaicFactor(2);
 
-$largemosaic=new GeographMapMosaic;
-$largemosaic->setScale(80);
-$largemosaic->setMosaicFactor(2);
-$largemosaic->setMosaicSize(800,800);
-
+	$largemosaic=new GeographMapMosaic;
+	$largemosaic->setScale(80);
+	$largemosaic->setMosaicFactor(2);
+	$largemosaic->setMosaicSize(800,800);
 
 	//lets add an overview map too
 	$overview=new GeographMapMosaic('overview');
@@ -60,6 +59,12 @@ $largemosaic->setMosaicSize(800,800);
 	
 	$markers = array();
 	
+	function cmp($a,$b) {
+		if ($a['sort'] == $b['sort'])
+			return 0;
+		return ($a['sort'] > $b['sort'])?-1:1;
+	}
+
 			
 	foreach (array(1,2) as $ri) {
 		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
@@ -87,25 +92,6 @@ $largemosaic->setMosaicSize(800,800);
 			$most[$id]['x'] = ( intval(($most[$id]['x'] - $origin['origin_x'])/10)*10 ) +  $origin['origin_x'];
 			$most[$id]['y'] = ( intval(($most[$id]['y'] - $origin['origin_y'])/10)*10 ) +  $origin['origin_y'];
 
-			if ($lastgeographs == $most[$id]['percentage'])
-				$most[$id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
-			else {
-
-				$units=$i%10;
-				switch($units)
-				{
-					case 1:$end=($i==11)?'th':'st';break;
-					case 2:$end=($i==12)?'th':'nd';break;
-					case 3:$end=($i==13)?'th':'rd';break;
-					default: $end="th";	
-				}
-
-				$most[$id]['ordinal']=$i.$end;
-				$lastgeographs = $most[$id]['percentage'];
-			}
-			$i++;
-
-
 			//get a token to show a suroudding geograph map
 			$mosaic->setOrigin($most[$id]['x'],$most[$id]['y']);
 
@@ -116,14 +102,26 @@ $largemosaic->setMosaicSize(800,800);
 
 			$most[$id]['largemap_token'] = $largemosaic->getToken();
 			
-			//actully we dont need the full loading of a square
+			//actully we don't need the full loading of a square
 			//$ok = $censquare->loadFromPosition($most[$id]['x'],$most[$id]['y']);
 			$censquare->x = $most[$id]['x'];
 			$censquare->y = $most[$id]['y'];
 			
 			$markers[$i] = $overview->getSquarePoint($censquare);
 			$markers[$i]->tenk_square = $most[$id]['tenk_square'];
+			$i++;
+			
+			$crit = substr($most[$id]['tenk_square'],0,3).'_'.substr($most[$id]['tenk_square'],3,1).'_';
+			
+			//todo: add back the year into the date_format, removed temporally for brevity
+			list($most[$id]['date'],$most[$id]['sort']) = $db->getRow(
+			"SELECT DATE_FORMAT(MAX(submitted),'%D %b'),MAX(submitted) as ms
+			FROM gridimage_search
+			WHERE grid_reference LIKE '$crit' AND seq_no = 1");
 		}	
+		
+		uasort($most,"cmp");
+		
 		$smarty->assign("most$ri", $most);	
 	}
 
