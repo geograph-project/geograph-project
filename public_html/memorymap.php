@@ -46,18 +46,22 @@ if(isset($_POST['gridsquare'])||isset($_POST['getall'])) {
 	else
 		$prefix = '';
 
-	if(!($error = makefile($prefix))) {
-		//Let the browser know what to expect
-		$csvfilename="geograph".$prefix.".csv";
-		$len  =(int) filesize("memorymap/$csvfilename");
-		header("Content-type: text/plain");
-		header("Content-Disposition: attachment; filename=\"$csvfilename\"");
-		header("Content-length: $len");
-		@readfile("memorymap/$csvfilename");
-	    die();
-	}
-	else{
-		$smarty->assign('errormsg', $error);
+	if (strlen($prefix) == 2) {
+		if(!($error = makefile($prefix))) {
+			//Let the browser know what to expect
+			$csvfilename="geograph".$prefix.".csv";
+			$len  =(int) filesize("memorymap/$csvfilename");
+			header("Content-type: text/plain");
+			header("Content-Disposition: attachment; filename=\"$csvfilename\"");
+			header("Content-length: $len");
+			@readfile("memorymap/$csvfilename");
+			die();
+		}
+		else{
+			$smarty->assign('errormsg', $error);
+		}
+	} else {
+		$smarty->assign('errormsg', "Please choose a grid square");
 	}
 }
 
