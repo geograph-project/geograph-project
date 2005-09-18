@@ -21,7 +21,7 @@
 		<div style="padding:5px;background:#dddddd;position:relative">
 		Your search for images<i>{$engine->criteria->searchdesc}</i>, returns 
 		<b>{$engine->resultCount}</b> results.	
-
+		{if $engine->criteria->searchclass != 'Special'}[<a href="search.php?i={$i}&amp;form=advanced">refine</a>]{/if}
 		{if $engine->resultCount == 0} 
 			<p>Please enter <a href="/search.php">another search</a>, or select <a href="/kml.php">common exports</a></p>
 		{/if}
@@ -35,7 +35,7 @@
 		look for the the <a title="Google Earth Feed" href="/kml.php" class="xml-kml">KML</a> button.
 	{/if}</div>
 	
-	<p><input type="submit" name="submit" value="Download KML file..."><span id="advtoggle"></span> </p>
+	<p><input type="submit" name="submit" value="Download KML file..."> <span id="advtoggle"></span> </p>
 	
 	<div id="advanced">
 	{if $i && $engine->resultCount || !$i}	
@@ -67,7 +67,7 @@
 			 For a large result set covering a wide area, this option allows the Google Earth application
 			 to just show the photos within the area of view. As you scroll around, Google Earth will
 			 automatically fetch other photos from the result set. Please note that you'll normally only see
-			 around 15 photos at a time with this option.
+			 {if $i && $engine->resultCount}{$engine->criteria->resultsperpage}{else}around 15{/if} photos at a time with this option.
 			 </td> 
 		  </tr> 
 		  {/if}
