@@ -69,7 +69,7 @@ class GeographUser
 	* Constructor doesn't normally do anything, but if supplied with a user id
 	* can be used to create an instance for a particular user. 
 	*/
-	function GeographUser($uid=0,$load_forum = false)
+	function GeographUser($uid=0)
 	{
 		if (($uid>0) && preg_match('/^[0-9]+$/' , $uid))
 		{
@@ -89,9 +89,16 @@ class GeographUser
 
 				}
 			}
-			if ($load_forum)
-				$this->sortBy =& $db->getOne("select user_sorttopics from geobb_users where user_id='$uid'");
 		}
+	}
+	
+	
+	function getForumSortOrder() {
+		$db = NewADOConnection($GLOBALS['DSN']);
+		if (!$db) die('Database connection failed');  
+	
+		$this->sortBy =& $db->getOne("select user_sorttopics from geobb_users where user_id='{$this->user_id}'");
+		return $this->sortBy;
 	}
 	
 	/**
