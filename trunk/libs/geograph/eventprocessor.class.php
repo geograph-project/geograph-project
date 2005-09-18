@@ -203,23 +203,25 @@ class EventProcessor
 				$event_name=$entry;
 				$handlers[$event_name]=array();
 				//now find event handlers in this dir
-				$d2=dir($this->event_handler_dir."/$entry");
-				while (false !== ($entry = $d2->read())) 
+				if (is_dir($this->event_handler_dir."/$entry"))
 				{
-					if ($entry[0]!=".")
+					$d2=dir($this->event_handler_dir."/$entry");
+					while (false !== ($entry = $d2->read())) 
 					{
-
-						list($classname, $ext1, $ext2)=explode(".", $entry,3);
-
-						if ($ext1=="class" && $ext2=="php")
+						if ($entry[0]!=".")
 						{
-							$this->verbose("($classname, $ext1, $ext2)");
-							$this->handlers[$event_name][]=$entry;
+	
+							list($classname, $ext1, $ext2)=explode(".", $entry,3);
+	
+							if ($ext1=="class" && $ext2=="php")
+							{
+								$this->verbose("($classname, $ext1, $ext2)");
+								$this->handlers[$event_name][]=$entry;
+							}
 						}
 					}
+					$d2->close();
 				}
-				$d2->close();
-
 			}
 		}
 		$d1->close(); 
