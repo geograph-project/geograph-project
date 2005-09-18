@@ -81,7 +81,7 @@
 <td>{$image->title}</td>
 <td sortvalue="{$image->submitted}">{$image->submitted|date_format:"%a, %e %b %Y at %H:%M"}</td>
 <td>{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</td>
-<td sortvalue="{$image->open_tickets}">{if $image->open_tickets}<a title="Click to view open change requests" href="/editimage.php?id={$image->gridimage_id}"><img src="/templates/basic/img/alert.gif" width="11" height="10"></a>{/if}</td>
+<td sortvalue="{if $image->open_tickets}{$image->open_tickets}{/if}">{if $image->open_tickets}<a title="Click to view open change requests" href="/editimage.php?id={$image->gridimage_id}"><img src="/templates/basic/img/alert.gif" width="11" height="10"></a>{/if}</td>
 </tr>
 		{/foreach}
 </tbody></table>
