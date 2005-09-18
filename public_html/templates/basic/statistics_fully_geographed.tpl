@@ -9,7 +9,7 @@
 <h3>10km x 10km Squares</h3>
 <h4>Great Britain</h4>
 <table class="report"> 
-<thead><tr><td>Square</td><td>Date Compleated</td><td>#</td><td>Mosaic</td></tr></thead>
+<thead><tr><td>Square</td><td>Date Completed</td><td>#</td><td>Mosaic</td></tr></thead>
 <tbody>
 
 {foreach from=$most1 key=id item=obj}
@@ -28,7 +28,7 @@
 <h3>&nbsp;</h3>
 <h4>Ireland</h4>
 <table class="report"> 
-<thead><tr><td>Square</td><td>Date Compleated</td><td>#</td><td>Mosaic</td></tr></thead>
+<thead><tr><td>Square</td><td>Date Completed</td><td>#</td><td>Mosaic</td></tr></thead>
 <tbody>
 
 {foreach from=$most2 key=id item=obj}
