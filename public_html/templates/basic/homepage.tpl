@@ -35,7 +35,7 @@ and you can be part of it.</p>
 
 <div style="width:35%;float:left;font-size:0.8em;padding:5px;background:#dddddd;position:relative">
 <h3 style="margin-bottom:0;">What is Geographing?</h3>
-<ul style="margin-top:0;padding:0 0 0 1em;">
+<ul style="margin-top:0;margin-left:0;padding:0 0 0 1em;">
 <li>It's a game - how many grid squares will you contribute?</li>
 <li>It's a geography project for the people</li>
 <li>It's a national photography project</li>
