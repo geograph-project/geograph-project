@@ -136,21 +136,19 @@ class ImageList
 		else
 			$limit="limit $count";
 		
-		if (in_array('rejected',$statuses)) {
-         	$sql="select gi.*,grid_reference,user.realname ".
+	
+    $sql="select gi.*,grid_reference,user.realname, t.topic_id,t.forum_id,t.last_post, ".
+    		"(select count(*) from gridimage_ticket where gridimage_id=gi.gridimage_id and status&3) as open_tickets ".
 				"from gridimage as gi ".
 				"inner join gridsquare as gs using(gridsquare_id) ".
 				"inner join user on(gi.user_id=user.user_id) ".
-				"where moderation_status in ($statuslist) and ".
+			  "left join gridsquare_topic as t on(gi.gridsquare_id=t.gridsquare_id and ".
+					"t.last_post=(select max(last_post) from gridsquare_topic where gridsquare_id=gi.gridsquare_id)) ".
+			"where moderation_status in ($statuslist) and ".
 				"gi.user_id='$user_id' ".
 				"$orderby $limit";
-		} else {
-			$sql="select * ".
-				"from gridimage_search ".
-				"where moderation_status in ($statuslist) and ".
-				"user_id='$user_id' ".
-				"$orderby $limit";
-		}
+		
+		
 			
 		$this->images=array();
 		$i=0;
@@ -163,49 +161,13 @@ class ImageList
 			$i++;
 		}
 		$recordSet->Close(); 
+
+	
 
 		return $i;
 	}
 	
-	function getTroubledImagesByUser($user_id, $sort = 'submitted', $count=null)
-	{
-		$db=&$this->_getDB();
-
-		$user_id=intval($user_id);		
-				
-		if (is_null($sort))
-			$orderby="";
-		else
-			$orderby="order by $sort";
-		if (is_null($count))
-			$limit="";
-		else
-			$limit="limit $count";
-		
-		$sql="select distinct gi.*,grid_reference,user.realname ".
-				"from gridimage as gi ".
-				"inner join gridsquare as gs using(gridsquare_id) ".
-				"inner join user on(gi.user_id=user.user_id) ".
-				"inner join gridimage_ticket as t on (t.gridimage_id=gi.gridimage_id and t.status<>'closed') ".
-				"where ".
-				"gi.user_id='$user_id' ".
-				"$orderby $limit";
-		
-			
-		$this->images=array();
-		$i=0;
-		$recordSet = &$db->Execute($sql);
-		while (!$recordSet->EOF) 
-		{
-			$this->images[$i]=new GridImage;
-			$this->images[$i]->fastInit($recordSet->fields);
-			$recordSet->MoveNext();
-			$i++;
-		}
-		$recordSet->Close(); 
-
-		return $i;
-	}
+	
 	
 	/**
 	* get image list or count for particular area...
