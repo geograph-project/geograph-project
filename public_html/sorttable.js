@@ -77,7 +77,7 @@ function ts_resortTable(lnk) {
     if (itm.match(/^[£$]/)) sortfn = ts_sort_currency;
     if (itm.match(/^[\d\.]+$/)) sortfn = ts_sort_numeric;
     
-    if (table.rows[1].cells[column].getAttribute && table.rows[1].cells[column].getAttribute('sortvalue')) sortfn=ts_sort_hidden;
+    if (table.rows[1].cells[column].getAttribute && table.rows[1].cells[column].getAttribute('sortvalue')!=null) sortfn=ts_sort_hidden;
     
     
     SORT_COLUMN_INDEX = column;
