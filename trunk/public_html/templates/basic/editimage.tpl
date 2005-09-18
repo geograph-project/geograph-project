@@ -11,7 +11,7 @@
   <div class="caption">{$image->title|escape:'html'}</div>
   
   {if $image->comment}
-  <div class="caption">{$image->comment|escape:'html'}</div>
+  <div class="caption">{$image->comment|escape:'html'|geographlinks}</div>
   {/if}
 </div>
 
