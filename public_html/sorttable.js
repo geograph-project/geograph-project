@@ -1,7 +1,25 @@
 //Written by Stuart Langridge
 //http://www.kryogenix.org/code/browser/sorttable/
+//Additional features added by Paul Dixon (paul@elphin.com)
 
-//support for 'hidden' sort fields added by Paul Dixon (paul@elphin.com)
+/*
+To use this, simply add
+
+	<script src="/sorttable.js"></script>
+
+and give a table "sortable" class and a unique id
+
+	<table class="myclass sortable" id="mytable">
+
+to make a column sortable on hidden data, use <td sortvalue="sortable">human value</td>
+(good for human readable dates)
+
+to indicate the current sort order in a header cell, use
+<td sorted="asc"> or <td sorted="desc"> and the script will set up the appropriate
+indicator
+
+*/
+
 
 addEvent(window, "load", sortables_init);
 
@@ -32,7 +50,15 @@ function ts_makeSortable(table) {
         //var txt = ts_getInnerText(cell);
         var txt=cell.innerHTML;
         
-        cell.innerHTML = '<a href="#" class="sortheader" style="text-decoration:none;" title="Sort on this column" onclick="ts_resortTable(this);return false;">'+txt+'<span class="sortarrow">&nbsp;&nbsp;&nbsp;</span></a>';
+        var arrow='&nbsp;';
+        var sortorder=cell.getAttribute('sorted');
+        if (sortorder=='asc')
+        	arrow='&darr;';
+        if (sortorder=='desc')
+        	arrow='&uarr;';
+       
+       
+        cell.innerHTML = '<a href="#" class="sortheader" style="text-decoration:none;" title="Sort on this column" onclick="ts_resortTable(this);return false;">'+txt+'<span class="sortarrow">&nbsp;&nbsp;'+arrow+'</span></a>';
     }
 }
 
