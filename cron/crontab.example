@@ -1,3 +1,4 @@
+MAILTO=""
 */15 * * * * /usr/bin/php /home/geograph/scripts/recreate_maps.php 14 10 60 > /dev/null
 #first argument is the timeout time (should be one less than time the script is called)
 #second is the sleep time, used to give other processs a chance between every ten regenerations
@@ -6,3 +7,12 @@
 
 0 3 * * * /usr/bin/php /home/geograph/scripts/update_wordnet.php 3 > /dev/null
 #argument is the number of days to look for updated images for - a few days is best incase the cron hasnt run for a few days
+
+
+#fire time based events
+1 * * * * GET "http://geograph.elphin/admin/fire_event.php?event=every_hour&priority=75&param="
+30 3 * * * GET "http://geograph.elphin/admin/fire_event.php?event=every_day&priority=80&param="
+30 4 * * 7 GET "http://geograph.elphin/admin/fire_event.php?event=every_week&priority=85&param="
+
+#run the event processor
+*/5 * * * * GET "http://geograph.elphin/admin/process_events.php?start=1&max_execution=290&max_load=0.7"
