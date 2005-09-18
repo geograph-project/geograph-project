@@ -2,7 +2,7 @@
 
 {if $image}
 
- <h2><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->title}</h2>
+ <h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} total images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->title}</h2>
  {if $place.distance}
  <h3>{if $place.distance > 3}{$place.distance} km from{else}near to{/if} <b>{$place.full_name}</b><small><i>{if $place.adm1_name && $place.adm1_name != $place.reference_name}, {$place.adm1_name}{/if}, {$place.reference_name}</i></small></h3>
  {/if}
@@ -31,7 +31,7 @@ referring to <b>image {$image->gridimage_id}</b>
   <div class="caption"><b>{$image->title|escape:'html'}</b></div>
 
   {if $image->comment}
-  <div class="caption">{$image->comment|escape:'html'}</div>
+  <div class="caption">{$image->comment|escape:'html'|geographlinks}</div>
   {/if}
 
  
@@ -60,7 +60,7 @@ referring to <b>image {$image->gridimage_id}</b>
 <td valign="middle" style="font-size:0.7em;">
 {if $discuss}
 	There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a
-	<a href="/discuss/index.php?gridref={$image->grid_reference}">discussion on {$image->grid_reference}</a> (preview on the left)
+	<a href="/discuss/index.php?gridref={$image->grid_reference}">discussion<br/>on {$image->grid_reference}</a> (preview on the left)
 
 {else}
 	<a href="/discuss/index.php?gridref={$image->grid_reference}#newtopic">Start a discussion on {$image->grid_reference}</a>
@@ -70,7 +70,7 @@ referring to <b>image {$image->gridimage_id}</b>
 <td width="50"><a href="/editimage.php?id={$image->gridimage_id}"><img align="left" src="/templates/basic/img/icon_alert.gif"/></a></td>
 <td valign="middle" style="font-size:0.7em;">
   
- 	{if ($user->user_id eq $image->user_id) or ($ismoderator)}
+  {if ($user->user_id eq $image->user_id) or ($ismoderator)}
   	<a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">Edit picture information</a>
   {else}
   	<a href="/editimage.php?id={$image->gridimage_id}">Report a problem with this picture</a>
@@ -106,8 +106,8 @@ referring to <b>image {$image->gridimage_id}</b>
 <tr><td><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" src="http://creativecommons.org/images/public/somerights20.gif" /></a></td><td>
 
 &copy; Copyright <a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a> and  
-licenced for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" style="white-space: nowrap">Creative Commons Licence</a>.
-(find <a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" style="white-space: nowrap">nearby pictures by {$image->realname|escape:'html'}</a>) 
+licenced for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.
+(find <a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap">nearby pictures by {$image->realname|escape:'html'}</a>) 
 
 
 </td>
