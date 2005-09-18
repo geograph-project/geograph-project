@@ -9,11 +9,12 @@
 <h3>10km x 10km Squares</h3>
 <h4>Great Britain</h4>
 <table class="report"> 
-<thead><tr><td>Square</td><td>#</td><td>Mosaic</td></tr></thead>
+<thead><tr><td>Square</td><td>Date Compleated</td><td>#</td><td>Mosaic</td></tr></thead>
 <tbody>
 
 {foreach from=$most1 key=id item=obj}
 <tr><td><a title="View map for {$obj.tenk_square}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.tenk_square}</a></td>
+<td align="right">{$obj.date}</td>
 <td align="right" title="{$obj.geograph_count}/{$obj.land_count}">{$obj.geograph_count}</td>
 <td><a title="View Mosaic for {$obj.tenk_square}" href="/maplarge.php?t={$obj.largemap_token}">Mosaic</a></td></tr>
 {/foreach}
@@ -27,11 +28,12 @@
 <h3>&nbsp;</h3>
 <h4>Ireland</h4>
 <table class="report"> 
-<thead><tr><td>Square</td><td>#</td><td>Mosaic</td></tr></thead>
+<thead><tr><td>Square</td><td>Date Compleated</td><td>#</td><td>Mosaic</td></tr></thead>
 <tbody>
 
 {foreach from=$most2 key=id item=obj}
 <tr><td><a title="View map for {$obj.tenk_square}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.tenk_square}</a></td>
+<td align="right">{$obj.date}</td>
 <td align="right" title="{$obj.geograph_count}/{$obj.land_count}">{$obj.geograph_count}</td>
 <td><a title="View Mosaic for {$obj.tenk_square}" href="/maplarge.php?t={$obj.largemap_token}">Mosaic</a></tr>
 {/foreach}
