@@ -24,22 +24,29 @@
   the forums. Geocachers may wish to enter their geocaching alias here!</div></td>
  </tr>
  
- <tr><td><label for="website">Personal home page:</label></td>
+ <tr><td><label for="website" class="nowrap">Personal home page:</label></td>
  <td><input type="text" id="website" name="website" value="{$profile->website|escape:'html'}"/>
    {if $errors.website}<br/><span class="formerror">{$errors.website}</span>{/if}</td>
  <td><div class="fieldnotes">If you wish, tell us the URL of your personal website to link from your profile page.
  If you are a geocacher, it could be a link to your geocaching profile.</div></td>
  </tr>
  
- <tr><td><label>Email</label></td><td>{$profile->email|escape:'html'}</td></tr>
- <tr><td colspan="2">
+ <tr><td><label>Email</label></td><td><tt>{$profile->email|escape:'html'}</tt></td></tr>
+ <tr><td colspan="2" class="nowrap">
  <input {if $profile->public_email eq 1}checked{/if} type="checkbox" id="public_email" name="public_email" value="1"> 
-  <label for="public_email">Allow site visitors to see my email address (if you choose to hide 
-  your address, site visitors can still send messages to you through the site)</label>
+  <label for="public_email">Allow site visitors to see my email address</label>
  
- </td></tr>
+ </td>
+ <td><div class="fieldnotes">If you choose to hide 
+  your address, site visitors can still send messages to you through the site.</div></td></tr>
  
- 
+ <tr><td><label for="sortBy" class="nowrap">Forum Sort Order</label></td>
+ <td><select name="sortBy" id="sortBy" size="1">
+ 	<option value="0">Latest Replies
+
+ 	<option value="1" {if $profile->sortBy eq 1}selected{/if}>New Topics</option>
+ </select></td>
+ <td><div class="fieldnotes">The default order you will see recent discussions.</div></td></tr>
  
 
 </table>
