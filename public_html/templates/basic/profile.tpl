@@ -61,44 +61,33 @@
 </ul>
 
 {if $profile->stats.total gt 0}
-	<h3><a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1'>Photographs</a> <small>(recent first)</small></h3>
+	<h3><a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1'>Photographs</a></h3>
+	<p>Click column headers to sort in a different order</p>
 	<table class="report sortable" id="photolist" style="font-size:8pt;">
 	<thead><tr>
+		<td><img title="Any grid square discussions?" src="/templates/basic/img/discuss.gif" width="10" height="10"> ?</td>
 		<td>Grid Ref</td>
 		<td>Title</td>
 		<td>Submitted</td>
 		<td>Status</td>
+			
+		<td><img title="Any image problems or change requests?" src="/templates/basic/img/alert.gif" width="11" height="10"> ?</td>
 	</tr></thead>
 	<tbody>
 		{foreach from=$userimages item=image}
-<tr><td><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->grid_reference}</a></td>
+<tr>
+<td sortvalue="{$image->last_post}">{if $image->topic_id}<a title="View most recent discussion" href="/discuss/index.php?action=vthread&amp;forum={$image->forum_id}&amp;topic={$image->topic_id}"><img src="/templates/basic/img/discuss.gif" width="10" height="10"></a>{/if}</td>
+<td><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->grid_reference}</a></td>
 <td>{$image->title}</td>
-<td>{$image->submitted}</td>
-<td>{$image->moderation_status}</td></tr>
+<td sortvalue="{$image->submitted}">{$image->submitted|date_format:"%a, %e %b %Y at %H:%M"}</td>
+<td>{$image->moderation_status}</td>
+<td sortvalue="{$image->open_tickets}">{if $image->open_tickets}<a title="Click to view open change requests" href="/editimage.php?id={$image->gridimage_id}"><img src="/templates/basic/img/alert.gif" width="11" height="10"></a>{/if}</td>
+</tr>
 		{/foreach}
 </tbody></table>
 {/if} 	
 
-{if $troubled}
-	<h3>Images with pending change requests</h3>
 
-<table class="report sortable" id="troublelist" style="font-size:8pt;">
-	<thead><tr>
-		<td>Grid Ref</td>
-		<td>Title</td>
-		<td>Submitted</td>
-		<td>Status</td>
-	</tr></thead>
-	<tbody>
-		{foreach from=$troubled item=image}
-<tr><td><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->grid_reference}</a></td>
-<td>{$image->title}</td>
-<td>{$image->submitted}</td>
-<td>{$image->moderation_status}</td></tr>
-		{/foreach}
-</tbody></table>
- 	
-{/if} 
 
 
 <div align="right"><a href="#top">Back to Top</a></div>
