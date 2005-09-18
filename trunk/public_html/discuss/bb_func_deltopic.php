@@ -22,6 +22,11 @@ $postsDel--;
 db_forumReplies($forum,$Tp,$Tf);
 db_forumTopics($forum,$Tt,$Tf);
 
+//fire event
+require_once('geograph/event.class.php');
+new Event(EVENT_DELTOPIC, $topic);
+
+
 if(isset($metaLocation)) { $meta_relocate="{$main_url}/{$indexphp}action=vtopic&forum={$forum}&page={$return}&h={$h}"; echo ParseTpl(makeUp($metaLocation)); exit; } else { header("Location: {$main_url}/{$indexphp}action=vtopic&forum={$forum}&page={$return}&h={$h}"); exit; }
 
 }

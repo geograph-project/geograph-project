@@ -67,6 +67,10 @@ $topic_last_post_id=$insres;
 if(updateArray(array('topic_last_post_id'),$Tt,'topic_id',$topic)>0){
 db_forumReplies($forum,$Tp,$Tf);
 db_topicPosts($topic,$Tt,$Tp);
+
+//fire an event
+	require_once('geograph/event.class.php');
+	new Event(EVENT_NEWREPLY, $topic_last_post_id);
 }
 
 if ($emailusers==1 or (isset($emailadmposts) and $emailadmposts==1)) {
