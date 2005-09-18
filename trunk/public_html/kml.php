@@ -46,7 +46,7 @@ if (isset($_GET['id']))  {
 ?><kml xmlns="http://earth.google.com/kml/2.0">
 	<Placemark>
 		<name><![CDATA[<? echo $image->grid_reference." : ".$image->title; ?>]]></name>
-		<description><![CDATA[<? echo $image->comment.
+		<description><![CDATA[<? echo GeographLinks($image->comment).
 		" (<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id."\">view online</a>)".
 		"<br/>by <a title=\"view user profile\" href=\"http://{$_SERVER['HTTP_HOST']}/profile.php?u=".$image->user_id."\">".$image->realname."</a><br/><br/>"; ?>]]></description>
 		<visibility>1</visibility>
