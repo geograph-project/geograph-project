@@ -142,7 +142,7 @@ if ($grid_given)
 		{
 			foreach($news as $idx=>$item)
 			{
-				$news[$idx]['post_text']=str_replace('<br>', '<br/>', $news[$idx]['post_text']);
+				$news[$idx]['post_text']=GeographLinks(str_replace('<br>', '<br/>', $news[$idx]['post_text']));
 				$news[$idx]['comments']=$db->GetOne('select count(*)-1 as comments from geobb_posts where topic_id='.$item['topic_id']);
 				$totalcomments += $news[$idx]['comments'] + 1;
 			}
