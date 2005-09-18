@@ -152,10 +152,10 @@ function smarty_function_external($params)
   	
   	if ($params['target'] == '_blank') {
   		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
-  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"/img/external.png\" width=\"10\" height=\"10\"/></span>";
+  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"http://{$_SERVER['HTTP_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
   	} else {
   		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\">$text</a>".
-  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - shift click to open in new window\" src=\"/img/external.png\" width=\"10\" height=\"10\"/></span>";
+  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - shift click to open in new window\" src=\"http://{$_SERVER['HTTP_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
   	}  	
 }
 
