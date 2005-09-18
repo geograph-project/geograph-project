@@ -51,10 +51,16 @@ $topic_status=0;
 $topic_last_post_id=0;
 $posts_count=0;
 $dll=insertArray(array('topic_title','topic_poster','topic_poster_name','topic_time','forum_id','topic_status','topic_last_post_id','posts_count'),$Tt);
-if($dll==0) {
-$topic=$insres;
-db_forumTopics($forum,$Tt,$Tf);
-require($pathToFiles.'bb_func_pthread.php');
+if($dll==0) 
+{
+	//fire an event
+	require_once('geograph/event.class.php');
+	new Event(EVENT_NEWTOPIC, $insres);
+	
+	$topic=$insres;
+	db_forumTopics($forum,$Tt,$Tf);
+	require($pathToFiles.'bb_func_pthread.php');
+
 }
 else {
 $errorMSG=$l_mysql_error; $correctErr=$backErrorLink;
