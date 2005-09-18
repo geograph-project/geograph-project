@@ -106,5 +106,22 @@ CREATE TABLE `event_handled_by` (
   PRIMARY KEY  (`event_id`, `class_name`)
 );
 
+
+
 ALTER TABLE `gridimage_search` ADD `ftf` TINYINT UNSIGNED NOT NULL ;
 ALTER TABLE `gridimage_search` ADD `seq_no` SMALLINT UNSIGNED NOT NULL ;
+
+create table gridsquare_topic
+(
+	gridsquare_id int null,
+	topic_id int not null,
+	forum_id int not null,
+	last_post datetime,
+	primary key(gridsquare_id, topic_id)
+);
+
+#init
+replace into gridsquare_topic (gridsquare_id, topic_id, forum_id, last_post) 
+  select s.gridsquare_id,t.topic_id,t.forum_id, topic_time
+	from geobb_topics as t 
+	inner join gridsquare as s on (s.grid_reference=t.topic_title);
