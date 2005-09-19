@@ -5,6 +5,10 @@
 
  <h2><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->title}</h2>
  
+{if $error}
+<h2><span class="formerror">Changes not submitted - check and correct errors below...</span></h2>
+{/if}
+
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   <div class="img-shadow">{$image->getFull()}</div>
@@ -16,6 +20,7 @@
 </div>
 
 {if $thankyou eq 'pending'}
+	<a name="form"></a>
 	<h2>Thankyou!</h2>
 	<p>Thanks for suggesting changes, you will receive an email when 
 	we process your suggestion. </p>
@@ -24,6 +29,7 @@
 {/if}
 
 {if $thankyou eq 'comment'}
+	<a name="form"></a>
 	<h2>Thankyou!</h2>
 	<p>Thanks for commenting on the change request, the moderators have been notified.</p>
 
@@ -176,14 +182,13 @@
 
 
 
-
-{if $error}
-<h2><span class="formerror">Changes not submitted - check and correct errors below...</span></h2>
-{else}
 <h2>Report Problem / Change Image Details <small><a href="/help/changes">[help]</a></small></h2>
+{if $error}
+<a name="form"></a>
+<h2><span class="formerror">Changes not submitted - check and correct errors below...</span></h2>
 {/if}
 
-<form method="post" action="/editimage.php">
+<form method="post" action="/editimage.php#form">
 <input type="hidden" name="id" value="{$image->gridimage_id}"/>
 
 {if $moderated_count}
@@ -224,14 +229,22 @@ detail, e.g. a corrected grid reference)
 
 
 <p>
-<label for="grid_reference">New Grid Reference {if $moderated.grid_reference}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
+<label for="grid_reference">Subject Grid Reference {if $moderated.grid_reference}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.grid_reference}<span class="formerror">{$error.grid_reference}</span><br/>{/if}
-<input type="text" id="grid_reference" name="grid_reference" size="8" value="{$image->grid_reference|escape:'html'}"/>
-It maybe useful to refer to the {getamap gridref=$image->grid_reference text="OS Get-a-Map for `$image->grid_reference`"}
-   
-  
+<input type="text" id="grid_reference" name="grid_reference" size="8" value="{$image->subject_gridref|escape:'html'}"/>
+{getamap gridref=$image->subject_gridref text="OS Get-a-Map for `$image->subject_gridref`"}
 </p>
 
+<p>
+<label for="photographer_gridref">Optional Photographer Grid Reference {if $moderated.photographer_gridref}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
+{if $error.photographer_gridref}<span class="formerror">{$error.photographer_gridref}</span><br/>{/if}
+<input type="text" id="photographer_gridref" name="photographer_gridref" size="8" value="{$image->photographer_gridref|escape:'html'}"/>
+{if $image->photographer_gridref}
+  {getamap gridref=$image->photographer_gridref text="OS Get-a-Map for `$image->photographer_gridref`"}
+{else}
+  {getamap text="OS Get-a-Map"}
+{/if}
+</p>
 
 
 
