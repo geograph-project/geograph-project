@@ -191,18 +191,18 @@ licenced for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <tr><td>Subject Location</td>
 <td style="font-family:verdana, arial, sans serif; font-size:0.8em">
-{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {$smallgr} [Accurate to ~{$accucacy}m]<br/>
+{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {$image->subject_gridref} [Accurate to ~{$image->subject_gridref_accuracy}m]<br/>
 WGS84: {$latdm} {$longdm}
 [{$lat|string_format:"%.5f"},{$long|string_format:"%.5f"}]</td></tr>
 
-{if $posgr}
+{if $image->photographer_gridref}
 <tr><td>Photographer Location</td>
 
 <td style="font-family:verdana, arial, sans serif; font-size:0.8em">
-{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {$posgr}</td></tr>
+{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {$image->photographer_gridref}</td></tr>
 {/if}
 
-</table>
+</table> 
 
 
 <br style="clear:both"/>
