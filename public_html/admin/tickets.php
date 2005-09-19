@@ -38,7 +38,7 @@ $newtickets=$db->GetAll(
 	"inner join user as suggester on (suggester.user_id=t.user_id) ".
 	"inner join gridimage as i on (t.gridimage_id=i.gridimage_id) ".
 	"inner join user as submitter on (submitter.user_id=i.user_id) ".
-	"where t.moderator_id=0 ".
+	"where t.moderator_id=0 and t.status<>'closed'".
 	"order by t.suggested");
 $smarty->assign_by_ref('newtickets', $newtickets);
 
