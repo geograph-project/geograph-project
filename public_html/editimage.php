@@ -285,7 +285,7 @@ if (isset($_REQUEST['id']))
 			//can't always specify this...
 			if (isset($_POST['imagetakenYear']))
 			{
-				$imagetaken=sprintf("%04d-%d-%02d",$_POST['imagetakenYear'],$_POST['imagetakenMonth'],$_POST['imagetakenDay']);
+				$imagetaken=sprintf("%04d-%02d-%02d",$_POST['imagetakenYear'],$_POST['imagetakenMonth'],$_POST['imagetakenDay']);
 			}
 			else
 			{
