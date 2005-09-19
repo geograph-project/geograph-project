@@ -51,12 +51,12 @@ $smarty->display('_std_begin.tpl');
 
 <?php
 
-
+set_time_limit(3600*24);
+	
 if (isset($_POST['recreate']))
 {
 	echo "<h3>Rebuilding gridimage_search from gridimage</h3>";
 	flush();
-	set_time_limit(3600*24);
 	
 	$db->Execute("TRUNCATE gridimage_search");
 	
