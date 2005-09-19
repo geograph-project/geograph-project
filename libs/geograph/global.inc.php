@@ -94,31 +94,38 @@ function smarty_function_getamap($params)
   	$icon="<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in popup window\" src=\"/img/external.png\" width=\"10\" height=\"10\"/>";
   	
   	//get params
+  	$matches=array();
   	$gridref4=$params['gridref'];
   	if (preg_match('/^document\./i', $gridref4))
   	{
-		return "<a title=\"Ordnance Survey Get-a-Map\" href=\"javascript:popupOSMap($gridref4)\">{$params['text']}</a>$icon";
+			return "<a title=\"Ordnance Survey Get-a-Map\" href=\"javascript:popupOSMap($gridref4)\">{$params['text']}</a>$icon";
   	}
-  	else if (preg_match('/([A-Z]{1,2})(\d\d)(\d\d)/i', $gridref4))
+  	else if (preg_match('/^([A-Z]{1,2})(\d{4,10})$/i', $gridref4, $matches))
   	{
-		if (!empty($params['text']))
-			$text=$params['text'];
-		else
-			$text=$gridref4;
-
-		//we take a 4 figure reference, need to turn this into a 
-		//6 figure one centred on the desired square
-		$gridref6=preg_replace('/([A-Z]{1,2})(\d\d)(\d\d)/i', 
-			'${1}${2}5${3}5', $gridref4);
-
-		return "<a title=\"Ordnance Survey Get-a-Map for $gridref4\" href=\"javascript:popupOSMap('$gridref6')\">$text</a>$icon";
+			if (!empty($params['text']))
+				$text=$params['text'];
+			else
+				$text=$gridref4;
+			
+			$gridref6="";
+			$coords=$matches[2];
+			$l=strlen($coords);
+			switch ($l)
+			{
+				case 4: $gridref6=$matches[1].substr($coords,0,2)."5".substr($coords,2,2)."5"; break;
+				case 6: $gridref6=$gridref4; break;
+				case 8: $gridref6=$matches[1].substr($coords,0,3).substr($coords,4,3); break;
+				case 10: $gridref6=$matches[1].substr($coords,0,3).substr($coords,5,3); break;
+			}
+			
+			return "<a title=\"Ordnance Survey Get-a-Map for $gridref4\" href=\"javascript:popupOSMap('$gridref6')\">$text</a>$icon";
   	}
   	else if (empty($gridref4)) 
   	{
   		if (!empty($params['text']))
-			$text=$params['text'];
-		else
-			$text='OS Get-A-Map';
+				$text=$params['text'];
+			else
+				$text='OS Get-A-Map';
   		return "<a title=\"Ordnance Survey Get-a-Map\" href=\"javascript:popupOSMap('')\">$text</a>$icon";
   	} 
   	else
