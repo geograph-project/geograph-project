@@ -189,7 +189,7 @@ Below is a full-size preview of the image we will store for grid reference
 you'll get a geograph point added to your profile and the warm glow that comes
 with it. So what makes an image a genuine geograph?</p>
 <ul>
-<li>The image must be taken within grid square {getamap gridref=$gridref}</li>
+<li>The image subject must be within grid square {getamap gridref=$gridref}, and ideally the photographer should be too.</li>
 <li>You must clearly show at close range one of the main geographical features within the square</li>
 <li>You should include a short description relating the image to the map square</li>
 </ul>
@@ -199,7 +199,7 @@ covering many square kilometers) may also be accepted as supplemental images
 for {$gridref} provided they are accurately located, but may not qualify as geographs.</p>
 
 <div style="float:right;position:relative;">
-<img src="{$preview_url}" width="{$preview_width*0.5|string_format:"%d"}" height="{$preview_height*0.5|string_format:"%d"}"/>	
+<img src="{$preview_url}" width="{$preview_width*0.5|string_format:"%d"}" height="{$preview_height*0.5|string_format:"%d"}" alt="low resolution reminder image"/>	
 </div>
 
 <p>If you like, you can provide more images or extra information (which
