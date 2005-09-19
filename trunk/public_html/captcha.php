@@ -64,11 +64,10 @@ if ($_POST['choice']) {
 } else {
 	$idarray = $db->getAssoc("select gridimage_id,imageclass from gridimage_search where imageclass <> '' order by rand(now()+0) limit 5");
 	
-
-	$id = $ids[2];
-
 	$ids = array_keys($idarray);
 
+	$id = $ids[2];
+	
 	$image = new GridImage;
 
 	$image->loadFromId($id);
@@ -78,7 +77,7 @@ if ($_POST['choice']) {
 
 	$cache = md5(time()); //cache defeat & red hearing ;-)
 	$html = preg_replace("/src=\".*?\"/","src=\"?image=$cache\"",$html);
-	
+	print $cache.' '.$id;
 	
 	//can never be too careful!
 	srand(time());
