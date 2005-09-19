@@ -29,7 +29,7 @@ $USER->mustHavePerm("admin");
 $smarty = new GeographPage;
 
 $db = NewADOConnection($GLOBALS['DSN']);
-
+$db2 = NewADOConnection($GLOBALS['DSN']);
 
 require_once('geograph/conversions.class.php');
 $conv = new Conversions;
@@ -94,7 +94,7 @@ if (isset($_POST['update']))
 			list($lat,$long) = $conv->internal_to_wgs84($image['x'],$image['y'],$image['reference_index']);
 		}
 	
-		$db->Execute("UPDATE gridimage_search SET wgs84_lat = $lat, wgs84_long = $long WHERE gridimage_id = ".$image['gridimage_id']);
+		$db2->Execute("UPDATE gridimage_search SET wgs84_lat = $lat, wgs84_long = $long WHERE gridimage_id = ".$image['gridimage_id']);
 		
 		if (++$count%100==0) {
 				printf("done %d at <b>%d</b> seconds<br/>",$count,time()-$start);
