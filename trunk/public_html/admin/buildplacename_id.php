@@ -38,14 +38,27 @@ $conv = new Conversions();
 
 	//this takes a long time, so we output a header first of all
 	$smarty->display('_std_begin.tpl');
-	echo "<h3> ReBuilding Placeanme_id...</h3>";
+	
+	
+?>
+<h2>gridimage.placename_id Rebuild Tool</h2>
+<form action="buildplacename_id.php" method="post">
+
+<input type="submit" name="go" value="Start">
+</form>
+
+<?php
+
+if (isset($_POST['go']))
+{
+	echo "<h3> Rebuilding gridimage.placename_id...</h3>";
 	flush();
 	set_time_limit(3600*24);
 	
 	
 	$tim = time();
 		 
-	
+	$count=0;
 	$recordSet = &$db->Execute("select * from gridimage");
 	while (!$recordSet->EOF) 
 	{
@@ -81,17 +94,18 @@ $conv = new Conversions();
 				
 		$db->Execute("update gridimage set placename_id = $pid,upd_timestamp = '{$recordSet->fields['upd_timestamp']}' where gridimage_id = $gid");
 				
-		if ($gid%100==0) {
-			printf("done %d at <b>%d</b> seconds<BR>",$gid,time()-$tim);
+		if (++$count%100==0) {
+			printf("done %d at <b>%d</b> seconds<BR>",$count,time()-$tim);
 			flush();
 		}
 		
 		$recordSet->MoveNext();
 	}
 	$recordSet->Close(); 
+}
 
-	$smarty->display('_std_end.tpl');
-	exit;
+$smarty->display('_std_end.tpl');
+exit;
 	
 
 
