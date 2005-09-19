@@ -99,6 +99,21 @@ class GridImage
 	var $realname;
 	
 	/**
+	* photographer grid reference
+	*/
+	var $photographer_gridref;
+	
+	/**
+	* subject grid reference
+	*/
+	var $subject_gridref;
+	
+	/**
+	* subject grid reference accuracy (in metres)
+	*/
+	var $subject_gridref_accuracy;
+	
+	/**
 	* constructor
 	*/
 	function GridImage()
@@ -158,6 +173,60 @@ class GridImage
 	
 	
 	/**
+	* Returns grid reference of photographer if available
+	* Data is additionally stored as member data
+	*/
+	function getPhotographerGridref()
+	{
+		//already calculated?
+		if (strlen($this->photographer_gridref))	
+			return $this->photographer_gridref;
+
+		$this->photographer_gridref='';
+		if ($this->viewpoint_northings) 
+		{
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;
+	
+			list($posgr,$len) = $conv->national_to_gridref(
+				$this->viewpoint_eastings,
+				$this->viewpoint_northings,
+				0,
+				$this->grid_square->reference_index);
+			
+			$this->photographer_gridref=$posgr;
+		}	
+		
+		return $this->photographer_gridref;
+	}
+	
+	function getSubjectGridref()
+	{
+		//already calculated?
+		if (strlen($this->subject_gridref))	
+			return $this->subject_gridref;
+
+		require_once('geograph/conversions.class.php');
+		$conv = new Conversions;
+	
+		//if this image doesnt have an exact position then we need to remove 
+		//the move to the center of the square
+		//must be before getNatEastings is called
+		$correction = ($this->nateastings)?0:500;
+
+		list($gr,$len) = $conv->national_to_gridref(
+			$this->grid_square->getNatEastings()-$correction,
+			$this->grid_square->getNatNorthings()-$correction,
+			0,
+			$this->grid_square->reference_index);
+		
+		$this->subject_gridref=$gr;
+		$this->subject_gridref_accuracy=pow(10,6-$len)/10;
+		
+		return $this->subject_gridref;
+	}
+	
+	/**
 	 * clear all member vars
 	 * @access private
 	 */
@@ -190,6 +259,8 @@ class GridImage
 				$this->grid_square->nateastings=$this->nateastings;
 				$this->grid_square->natnorthings=$this->natnorthings;
 			}
+			
+			
 		}
 		if (strlen($this->title)==0)
 			$this->title="Untitled photograph for {$this->grid_reference}";
@@ -965,7 +1036,9 @@ class GridImage
 			", comment=".$db->Quote($this->comment).
 			", imageclass=".$db->Quote($this->imageclass).
 			", imagetaken=".$db->Quote($this->imagetaken).
-			"where gridimage_id = '{$this->gridimage_id}'";
+			", viewpoint_northings=".$db->Quote($this->viewpoint_northings).
+			", viewpoint_eastings=".$db->Quote($this->viewpoint_eastings).
+			" where gridimage_id = '{$this->gridimage_id}'";
 		$db->Execute($sql);
 			
 		//updated cached tables
