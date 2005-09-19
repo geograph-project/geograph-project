@@ -98,7 +98,7 @@
 		{foreach from=$ticket->changes item=item}
 			<div>
 
-			{if  $ticket->status eq "closed" }
+			{if ($ticket->status eq "closed") or ($item.status eq 'immediate')}
 				<input disabled="disabled" type="checkbox" {if ($item.status eq 'immediate') or ($item.status eq 'approved')}checked="checked"{/if}/>
 				
 			{else}
