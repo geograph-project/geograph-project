@@ -260,6 +260,18 @@ class GridImageTroubleTicket
 					die("Sorry, wasn't expecting reassignGridsquare to fail ($err) please contact us for assistance");
 				}
 			}
+			elseif ($fieldname=="photographer_gridref")
+			{
+				//neet to parse value for nat coords
+				$sq=new GridSquare;
+				if ($sq->setByFullGridRef($newvalue))
+				{
+					$img->viewpoint_eastings=$sq->getNatEastings();
+					$img->viewpoint_northings=$sq->getNatNorthings();
+					$this->commit_count++;
+				}
+				
+			}
 			else
 			{
 				$img->$fieldname=$newvalue;

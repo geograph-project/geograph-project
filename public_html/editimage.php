@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id$
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -23,7 +23,7 @@
 
 
 /*
-to do 
+to do
 
 grab all pending/open tickets for image (should be method of gridimage)
 add to smarty for display
@@ -68,10 +68,14 @@ if (isset($_REQUEST['id']))
 	$image->loadFromId($_REQUEST['id']);
 	$isowner=($image->user_id==$USER->user_id)?1:0;
 	$isadmin=$USER->hasPerm('moderator')?1:0;
-	
+
 	if ($image->isValid())
 	{
-		
+
+		//get the photographer position
+		$image->getPhotographerGridref();
+		$image->getSubjectGridref();
+
 		//do our thing!
 		$smarty->assign('page_title', $image->grid_reference);
 		$smarty->assign_by_ref('image', $image);
@@ -84,14 +88,17 @@ if (isset($_REQUEST['id']))
 
 		//figure out what the user can and cannot edit
 		$moderated=array();
-		
+
 		//assume everything is moderated
 		$moderated["title"]=true;
 		$moderated["comment"]=true;
 		$moderated["imageclass"]=true;
 		$moderated["imagetaken"]=true;
 		$moderated["grid_reference"]=true;
-		
+		$moderated["photographer_gridref"]=true;
+
+
+
 		//now make some exceptions
 		if ($isadmin)
 		{
@@ -100,6 +107,7 @@ if (isset($_REQUEST['id']))
 			$moderated["imageclass"]=false;
 			$moderated["imagetaken"]=false;
 			$moderated["grid_reference"]=false;
+			$moderated["photographer_gridref"]=false;
 		}
 		elseif ($isowner)
 		{
@@ -107,9 +115,12 @@ if (isset($_REQUEST['id']))
 			$moderated["comment"]=false;
 			$moderated["imageclass"]=false;
 			$moderated["imagetaken"]=false;
-		
+
 		 	if ($image->moderation_status == "pending")
 				$moderated["grid_reference"]=false;
+
+			$moderated["photographer_gridref"]=false;
+
 		}
 
 
@@ -125,7 +136,7 @@ if (isset($_REQUEST['id']))
 		$smarty->assign('moderated_count', $moderated_count);
 		$smarty->assign('all_moderated', $moderated_count==count($moderated));
 
-		
+
 		$classes=&$image->getImageClasses();
 
 		$imageclassother="";
@@ -141,19 +152,19 @@ if (isset($_REQUEST['id']))
 		//process a trouble ticket?
 		if (isset($_POST['gridimage_ticket_id']))
 		{
-			//ok, we're processing a ticket update, but lets 
+			//ok, we're processing a ticket update, but lets
 			//exercise some healty paranoia..
 			$gridimage_ticket_id=intval($_POST['gridimage_ticket_id']);
 			$ticket=new GridImageTroubleTicket($gridimage_ticket_id);
-			
+
 			//you sure this is a ticket?
 			if (!$ticket->isValid())
 				die("invalid ticket id");
-				
+
 			//definitely for this image?
 			if ($ticket->gridimage_id != $image->gridimage_id)
 				die("ticket/image mismatch");
-				
+
 			//now lets do our thing depending on your permission level..
 			$comment=stripslashes($_POST['comment']);
 			if ($isadmin)
@@ -165,10 +176,10 @@ if (isset($_REQUEST['id']))
 				elseif (isset($_POST['accept']))
 				{
 					$ticket->closeTicket($USER->user_id,$comment, isset($_POST['accepted'])?$_POST['accepted']:null);
-					
+
 					//reload the image
 					$image->loadFromId($_REQUEST['id']);
-	
+
 				}
 				elseif (isset($_POST['close']))
 				{
@@ -188,28 +199,28 @@ if (isset($_REQUEST['id']))
 			{
 				die("naughty naughty. only moderators and image owners can update tickets.");
 			}
-			
+
 			//refresh this page so you're less likely to repost
 			header("Location: http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$image->gridimage_id}");
-				
+
 		}
-		
-		
+
+
 
 		//get trouble tickets
 		$show_all_tickets = isset($_REQUEST['alltickets']) && $_REQUEST['alltickets']==1;
 		$smarty->assign('show_all_tickets', $show_all_tickets);
-		
+
 		$statuses=array('pending', 'open');
 		if ($show_all_tickets)
 			$statuses[]='closed';
-		
+
 		$openTickets=&$image->getTroubleTickets($statuses);
-		
+
 		if (count($openTickets))
 			$smarty->assign_by_ref('opentickets', $openTickets);
 
-		
+
 		//save changes?
 		if (isset($_POST['title']))
 		{
@@ -235,10 +246,10 @@ if (isset($_REQUEST['id']))
 				$ok=false;
 				$error['updatenote']="Please provide a brief comment about why the change is required";
 			}
-			
+
 			$comment=trim(stripslashes($_POST['comment']));
 			$comment=strip_tags($comment);
-			
+
 			/*
 			if (strlen($comment)==0)
 			{
@@ -280,7 +291,7 @@ if (isset($_REQUEST['id']))
 			{
 				$imagetaken=$image->imagetaken;
 			}
-			
+
 			$sq=new GridSquare;
 			$grid_reference=trim(stripslashes($_POST['grid_reference']));
 			if (strlen($grid_reference))
@@ -291,7 +302,7 @@ if (isset($_REQUEST['id']))
 					//be different to what we entered...
 					if (strlen($sq->grid_reference) > strlen($grid_reference))
 						$grid_reference=$sq->grid_reference;
-						
+
 				}
 				else
 				{
@@ -304,11 +315,32 @@ if (isset($_REQUEST['id']))
 				$ok=false;
 				$error['grid_reference']="Please specify a grid reference";
 			}
-			
-			
+
+
+			$sq=new GridSquare;
+			$photographer_gridref=trim(stripslashes($_POST['photographer_gridref']));
+			if (strlen($photographer_gridref))
+			{
+				if ($sq->setByFullGridRef($photographer_gridref))
+				{
+					//grid reference in $sq->grid_reference is OK, but might
+					//be different to what we entered...
+					if (strlen($sq->grid_reference) > strlen($photographer_gridref))
+						$photographer_gridref=$sq->grid_reference;
+
+				}
+				else
+				{
+					$ok=false;
+					$error['photographer_gridref']=$sq->errormsg;
+				}
+			}
+
+
+
 			/////////////////////////////////////////////////////////////
 			// STEP 2 - change control
-			
+
 			if ($ok)
 			{
 				//create new change control object
@@ -316,10 +348,10 @@ if (isset($_REQUEST['id']))
 				$ticket->setSuggester($USER->user_id);
 				if ($isadmin)
 					$ticket->setModerator($USER->user_id);
-					
+
 				$ticket->setImage($_REQUEST['id']);
 				$ticket->setNotes($updatenote);
-				
+
 				if (strlen($imageclassother))
 					$imageclass=$imageclassother;
 
@@ -329,17 +361,18 @@ if (isset($_REQUEST['id']))
 				$ticket->updateField("imageclass", $image->imageclass, $imageclass, $moderated["imageclass"]);
 				$ticket->updateField("imagetaken", $image->imagetaken, $imagetaken, $moderated["imagetaken"]);
 				$ticket->updateField("grid_reference", $image->grid_reference, $grid_reference, $moderated["grid_reference"]);
-				
+				$ticket->updateField("photographer_gridref", $image->photographer_gridref, $photographer_gridref, $moderated["photographer_gridref"]);
+
 				//finalise the change ticket
 				$status=$ticket->commit();
-				
-				
+
+
 				//clear any caches involving this photo
 				$smarty->clear_cache(null, "img{$image->gridimage_id}");
 
 				//clear user specific stuff like profile page
 				$smarty->clear_cache(null, "user{$image->user_id}");
-				
+
 				//return to this edit screen with a thankyou
 				if ($status=="pending")
 				{
@@ -354,36 +387,37 @@ if (isset($_REQUEST['id']))
 			}
 			else
 			{
-				//update the image with submitted data - smarty uses it to 
+				//update the image with submitted data - smarty uses it to
 				//populate fields
 				$image->title=$title;
 				$image->comment=$comment;
 				$image->imageclass=$imageclass;
 				$image->imageclassother=$imageclassother;
 				$image->imagetaken=$imagetaken;
-				$image->grid_reference=$grid_reference;
+				$image->subject_gridref=$grid_reference;
+				$image->photographer_gridref=$photographer_gridref;
 
 				$smarty->assign_by_ref('updatenote', $updatenote);
 
 				$smarty->assign_by_ref('error', $error);
 			}
-			
-			
-		}	
+
+
+		}
 
 		//strip out zeros from date
 		#$image->imagetaken=str_replace('0000-', '-', $image->imagetaken);
 		#$image->imagetaken=str_replace('-00', '-', $image->imagetaken);
-			
 
-		
-		
+
+
+
 	}
 	else
 	{
 		$smarty->assign('error', 'Invalid image id specified');
 	}
-	
+
 }
 else
 {
@@ -392,5 +426,5 @@ else
 
 $smarty->display($template, $cacheid);
 
-	
+
 ?>
