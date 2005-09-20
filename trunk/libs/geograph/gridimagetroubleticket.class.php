@@ -522,7 +522,7 @@ class GridImageTroubleTicket
 	function _sendMail($to, &$msg)
 	{
 		mail($to, $msg['subject'], $msg['body'],
-				"From: Geograph NO NOT REPLY <lordelph@gmail.com>");
+				"From: Geograph DO NOT REPLY <lordelph@gmail.com>");
 		
 	}
 	
