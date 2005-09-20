@@ -58,7 +58,7 @@ if (!intval($_GET['i'])) {
 <visibility>1</visibility>
 </Folder>
 </Document>
-/kml><?
+</kml><?
 			exit;
 		}
 	}
