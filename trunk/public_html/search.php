@@ -35,6 +35,7 @@ $sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','submitted'
 
 //available as a function, as doesn't come into effect if just re-using a smarty cache
 function dieUnderHighLoad() {
+	global $smarty;
 	if (strpos($_ENV["OS"],'Windows') === FALSE) {
 		//check load average, abort if too high
 		$buffer = "0 0 0";
