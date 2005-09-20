@@ -853,10 +853,14 @@ class GeographMap
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
 
-		//todo take into account reference index! do twice?
 			if (!$this->reference_index) {
 				$this->getGridRef(-1,-1);
+				if (!$this->reference_index) {
+					$this->getGridRef(-1,-1);
+					$this->reference_index = 1;
+				}
 			}
+			
 		$reference_index = $this->reference_index;
 		
 		$gridcol=imagecolorallocate ($img, 109,186,178);
