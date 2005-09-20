@@ -23,7 +23,9 @@
 <li><tt>[email=email@example.com]contact me[/email]</tt> renders as <a href="mailto:email@example.com">contact me</a></li>
 </ul>
 
-<p>Note: plain links will be converted to a clickable link automatically, where appropriate links to Images and Grid References will also be converted automatically. (To stop otherwise Grid Reference looking text being converted, eith use lowercase or prefix with a !. For example !B4567 wont be linked but <a href="/gridref/B4567">B4567</a> would)</p>
+<p>Tip: Get the Image ID for use in building these links from the URL of the page for example, to insert a link to the picture at <a href="/photo/5463">http://$/photo/5463
+
+<p>Note: Plain links will be converted to a clickable link automatically, also where appropriate links to Images and Grid References will also be converted automatically. (To stop otherwise 'Grid Reference Looking Text' being converted, either use lowercase or prefix with a !. For example <span class="nowrap">!B4567</a> won't be linked but <a href="/gridref/B4567">B4567</a> would, the ! mark is not shown on the final page.)</p>
 
 <h4>Images</h4>
 
