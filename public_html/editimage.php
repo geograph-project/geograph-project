@@ -360,7 +360,7 @@ if (isset($_REQUEST['id']))
 				$ticket->updateField("comment", $image->comment, $comment, $moderated["comment"]);
 				$ticket->updateField("imageclass", $image->imageclass, $imageclass, $moderated["imageclass"]);
 				$ticket->updateField("imagetaken", $image->imagetaken, $imagetaken, $moderated["imagetaken"]);
-				$ticket->updateField("grid_reference", $image->grid_reference, $grid_reference, $moderated["grid_reference"]);
+				$ticket->updateField("grid_reference", $image->subject_gridref, $grid_reference, $moderated["grid_reference"]);
 				$ticket->updateField("photographer_gridref", $image->photographer_gridref, $photographer_gridref, $moderated["photographer_gridref"]);
 
 				//finalise the change ticket
