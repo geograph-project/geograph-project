@@ -138,7 +138,7 @@ class ImageList
 		
 	
     $sql="select gi.*,grid_reference,user.realname, t.topic_id,t.forum_id,t.last_post, ".
-    		"(select count(*) from gridimage_ticket where gridimage_id=gi.gridimage_id and status&3) as open_tickets ".
+    		"(select count(*) from gridimage_ticket where gridimage_id=gi.gridimage_id and status<3) as open_tickets ".
 				"from gridimage as gi ".
 				"inner join gridsquare as gs using(gridsquare_id) ".
 				"inner join user on(gi.user_id=user.user_id) ".
