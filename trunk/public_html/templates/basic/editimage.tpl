@@ -75,7 +75,14 @@
 	<div class="ticketbasics">
 
 	{if $isadmin}
-		Submitted by {$ticket->suggester_name} | 
+		Submitted by {$ticket->suggester_name} 
+		
+		{if $ticket->user_id eq $image->user_id}
+		  (photo owner)
+		{else}
+		  (photo owned by {$image->realname})
+		{/if}
+		 
 	{/if} 
 	
 
@@ -115,6 +122,11 @@
 			  to
 			  {getamap gridref=$item.newvalue}
 			  
+			{elseif $item.field eq "comment"}
+			  <br/>
+			  {$item.oldvalue|escape:'html'|default:'blank'}<br/>
+			  to<br/>
+			  {$item.newvalue|escape:'html'|default:'blank'}
 			{else}
 			  {$item.oldvalue|escape:'html'|default:'blank'}
 			  to 
