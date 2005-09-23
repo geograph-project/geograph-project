@@ -67,4 +67,11 @@ $CONF['origins'] = array(1 => array(206,0),2 => array(10,149));
 //    http://flickr.com/services/api/misc.api_keys.html
 $CONF['flickr_api_key'] = '';
 
+//domain from which pictures can be pulled on demand
+//only for use on development systems to allow 'real' pictures to be
+//copied to your local system on demand. Simply give the domain name
+//of the target system.
+//COMMENT THIS LINE OUT ON LIVE SYSTEMS!
+//$CONF['fetch_on_demand'] = 'www.geograph.co.uk';
+
 ?>

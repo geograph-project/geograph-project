@@ -414,18 +414,73 @@ class GridImage
 	
 	/**
 	* calculate the path to the full size photo image
+	* if you specify true for check_exists parameter (the default), the
+	* function will verify the file exists and returnt he path to an
+	* error image if not found. If you specify false, the function will
+	* always return the image page whether it exists or not
+	*
+	* if $CONF['fetch_on_demand'] is set, this will try to fetch missing
+	* images from the fetch_on_demand server, which must use the same
+	* hash secret
 	*/
-	function _getFullpath()
+	function _getFullpath($check_exists=true)
 	{
+		global $CONF;
+		
 		$ab=sprintf("%02d", floor($this->gridimage_id/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
 		$abcdef=sprintf("%06d", $this->gridimage_id);
 		$hash=$this->_getAntiLeechHash();
 		$fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}.jpg";
-		if (!file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
+		
+		
+		$ok=file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath);
+		
+		if (!$ok)
 		{
-					$fullpath="/photos/error.jpg";
+			
+			//can we fetch it from elsewhere?
+			if (isset($CONF['fetch_on_demand']) && ($_SERVER['HTTP_HOST']!=$CONF['fetch_on_demand']))
+			{
+				$url='http://'.$CONF['fetch_on_demand'].$fullpath;
+				$fin=fopen($url, 'rb');
+				
+				if ($fin)
+				{
+					$target=$_SERVER['DOCUMENT_ROOT'].$fullpath;
+					
+					//create target dir
+					$base=$_SERVER['DOCUMENT_ROOT'].'/photos';
+					if (!is_dir("$base/$ab"))
+						mkdir("$base/$ab");
+					if (!is_dir("$base/$ab/$cd"))
+						mkdir("$base/$ab/$cd");
+			
+					$fout=fopen($target, 'wb');
+					if ($fout)
+					{
+						while (!feof($fin))
+						{
+							 $chunk = fread($fin, 8192);
+							 fwrite($fout,$chunk);
+	
+						}	
+						fclose($fout);
+					}
+						
+					fclose($fin);
+					
+					$ok=file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath);
+		
+				}
+			}
+			
+			
+			
 		}
+		
+		if (!$ok)
+			$fullpath="/photos/error.jpg";
 		return $fullpath;
 	}
 	
@@ -473,7 +528,8 @@ class GridImage
 		$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$maxw}XX{$maxh}.jpg"; ##two XX's as windows isnt case sensitive!
 		if (!file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))
 		{
-			$fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}.jpg";
+			//get path to fullsize image, but don't fallback to error image..
+			$fullpath=$this->_getFullpath(false);
 			if (file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			{
 				//generate resized image
@@ -576,9 +632,9 @@ class GridImage
 		$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$size}x{$size}.gd";
 		if (!file_exists($base.$thumbpath))
 		{
-		
-			$fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}.jpg";
-		
+			//get path to fullsize image, but don't fallback to error image..
+			$fullpath=$this->_getFullpath(false);
+			
 			if (file_exists($base.$fullpath))
 			{
 				
@@ -667,7 +723,9 @@ class GridImage
 		$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$maxw}x{$maxh}.jpg";
 		if (!file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))
 		{
-			$fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}.jpg";
+			//get path to fullsize image, but don't fallback to error image..
+			$fullpath=$this->_getFullpath(false);
+			
 			if (file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			{
 				if (strlen($CONF['imagemagick_path'])) {
