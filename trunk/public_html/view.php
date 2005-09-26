@@ -120,26 +120,29 @@ if ($image->isValid())
 
 		//let's find posts in the gridref discussion forum
 		$db=NewADOConnection($GLOBALS['DSN']);
-		$sql='select poster_id as user_id,poster_name as realname,CONCAT(\'Discussion on \',t.topic_title) as topic_title,p.post_text,t.topic_id,t.topic_time '.
+		
+		$sql='select topic_id,posts_count as comments,CONCAT(\'Discussion on \',t.topic_title) as topic_title '.
 			'from geobb_topics as t '.
-			'inner join geobb_posts as p on(t.topic_id=p.topic_id) '.
-			'where t.topic_time=p.post_time and '.
-			't.forum_id=5 and '.
+			'where t.forum_id=5 and '.
 			't.topic_title = \''.mysql_escape_string($image->grid_square->grid_reference).'\' '.
-			'order by t.topic_time desc limit 3';
-		$news=$db->GetAll($sql);
-		if ($news)
+			'order by t.topic_time desc';
+		$topics=$db->GetAll($sql);
+		if ($topics)
 		{
-			foreach($news as $idx=>$item)
+			$news=array();
+			
+			foreach($topics as $idx=>$topic)
 			{
-				$news[$idx]['post_text']=GeographLinks(str_replace('<br>', '<br/>', $news[$idx]['post_text']));
-				$news[$idx]['comments']=$db->GetOne('select count(*)-1 as comments from geobb_posts where topic_id='.$item['topic_id']);
-				$totalcomments += $news[$idx]['comments'] + 1;
+				$firstpost=$db->GetRow("select * from geobb_posts where topic_id={$topic['topic_id']} order by post_time");
+				$topics[$idx]['post_text']=GeographLinks(str_replace('<br>', '<br/>', $firstpost['post_text']));
+				$topics[$idx]['poster_name']=$firstpost['poster_name'];
+				$topics[$idx]['post_time']=$firstpost['post_time'];
+				$totalcomments += $topics[$idx]['comments'] + 1;
 			}
-			$smarty->assign_by_ref('discuss', $news);
-			$smarty->assign('totalcomments', $totalcomments);
+			$smarty->assign_by_ref('discuss', $topics);
+			$smarty->assign('totalcomments', $totalcomments);	
 		}
-
+		
 		//count the number of photos in this square
 		$smarty->assign('square_count', $db->getOne("select count(*) from gridimage_search where grid_reference = '{$image->grid_reference}'"));
 
