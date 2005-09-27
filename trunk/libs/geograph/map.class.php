@@ -700,7 +700,7 @@ class GeographMap
 			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
 		}
 			
-		if ($this->pixels_per_km>=1  && $this->pixels_per_km<=40)
+		if ($this->pixels_per_km>=1  && $this->pixels_per_km<=40 && isset($CONF['enable_newmap']))
 		{
 			$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
 		}				
