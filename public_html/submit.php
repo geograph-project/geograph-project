@@ -119,6 +119,9 @@ if (isset($_POST['gridsquare']))
 							$smarty->assign('preview_height', $uploadmanager->upload_height);
 							$smarty->assign('upload_id', $uploadmanager->upload_id);
 
+							//find a possible place within 25km
+							$smarty->assign('place', $square->findNearestPlace(135000));
+
 							$image = new GridImage;
 
 							$classes=&$image->getImageClasses();
@@ -131,6 +134,11 @@ if (isset($_POST['gridsquare']))
 								$smarty->assign('imagetaken', '--');
 							}
 
+							if (isset($_SESSION['last_imagetaken'])) {
+								$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
+							}
+							$smarty->assign('today_imagetaken', date("Y-m-d"));
+							
 							$step=3;
 						}
 						break;
@@ -196,13 +204,17 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->setClass(stripslashes($_POST['imageclass']));
 				$uploadmanager->setViewpoint(stripslashes($_POST['viewpoint_gridreference']));
 				
-				$uploadmanager->commit();
+				$err = $uploadmanager->commit();
+				
+				if ($_POST['imagetaken'] != '0000-00-00') {
+					$_SESSION['last_imagetaken'] = $_POST['imagetaken'];
+				}
 				
 				//clear user profile
 				$smarty->clear_cache(null, "user{$USER->user_id}");
 			}
 			
-			$step=5;
+			$step=($err)?7:5;
 		}
 		elseif (isset($_POST['abandon']))
 		{
@@ -217,6 +229,9 @@ if (isset($_POST['gridsquare']))
 		elseif (isset($_POST['goback3']))
 		{
 			$uploadmanager->setUploadId($_POST['upload_id']);
+			
+			//find a possible place within 25km
+			$smarty->assign('place', $square->findNearestPlace(135000));
 			
 			//preserve stuff
 			$smarty->assign('upload_id', $_POST['upload_id']);
