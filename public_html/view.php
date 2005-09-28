@@ -121,7 +121,7 @@ if ($image->isValid())
 		//let's find posts in the gridref discussion forum
 		$db=NewADOConnection($GLOBALS['DSN']);
 		
-		$sql='select topic_id,posts_count as comments,CONCAT(\'Discussion on \',t.topic_title) as topic_title '.
+		$sql='select topic_id,posts_count-1 as comments,CONCAT(\'Discussion on \',t.topic_title) as topic_title '.
 			'from geobb_topics as t '.
 			'where t.forum_id=5 and '.
 			't.topic_title = \''.mysql_escape_string($image->grid_square->grid_reference).'\' '.
