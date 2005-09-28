@@ -55,7 +55,7 @@ if (isset($_POST['go']))
 		$CONF['photo_hashing_secret']=$from;
 		$oldfile=$image->_getFullpath();
 		
-		if (file_exists($_SERVER['DOCUMENT_ROOT'].$oldfile))
+		if ($oldfile != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$oldfile))
 		{
 			$CONF['photo_hashing_secret']=$to;
 			$image->storeImage($_SERVER['DOCUMENT_ROOT'].$oldfile, true);
