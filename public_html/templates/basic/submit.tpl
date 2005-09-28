@@ -213,7 +213,9 @@ it was taken or other interesting geographical information.</p>
 
 <p><label for="title">Title</label><br/>
 <input size="50" id="title" name="title" value="{$title|escape:'html'}" /></p>
-
+ {if $place.distance}
+ <p style="font-size:0.7em">Gazetteer info as will appear:<br/> <span style="color:silver;">{if $place.distance > 3}{$place.distance} km from{else}near to{/if} <b>{$place.full_name}</b><small><i>{if $place.adm1_name && $place.adm1_name != $place.reference_name}, {$place.adm1_name}{/if}, {$place.reference_name}</i></small></span></p>
+ {/if}
 <br style="clear:right"/>
 
 <p><label for="comment">Comment</label><br/>
@@ -240,6 +242,21 @@ function onChangeImageclass()
 	
 }
 
+function setdate(name,date,form) {
+	parts = date.split('-');
+	ele = form.elements[name+'Year'].options;
+	for(i=0;i<ele.length;i++) 
+		if (ele[i].value == parts[0]) 
+			ele[i].selected = true;
+	ele = form.elements[name+'Month'].options;
+	for(i=0;i<ele.length;i++) 
+		if (ele[i].value == parts[1]) 
+			ele[i].selected = true;
+	ele = form.elements[name+'Day'].options;
+	for(i=0;i<ele.length;i++) 
+		if (ele[i].value == parts[2]) 
+			ele[i].selected = true;
+}
 
 //-->
 </script>
@@ -265,6 +282,17 @@ function onChangeImageclass()
 	{if $imagetakenmessage}
 	    {$imagetakenmessage}
 	{/if}
+	
+	[ Use 
+	<input type="button" value="Today's" onclick="setdate('imagetaken','{$today_imagetaken}',this.form);" class="accept"/>
+	{if $last_imagetaken}
+		<input type="button" value="Last Submitted" onclick="setdate('imagetaken','{$last_imagetaken}',this.form);" class="accept"/>
+	{/if}
+	{if $imagetaken != '--'}
+		<input type="button" value="EXIF" onclick="setdate('imagetaken','{$imagetaken}',this.form);" class="accept"/>
+	{/if}
+	Date ]
+	
 	<br/><small>(please provide as much detail as possible, if you only know the year or month then that's fine)</small></p>
 
 <input type="hidden" name="upload_id" value="{$upload_id}">
