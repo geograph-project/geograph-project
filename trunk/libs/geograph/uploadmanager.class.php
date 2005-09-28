@@ -404,14 +404,23 @@ class UploadManager
 	{
 		global $USER,$CONF;
 		
-		if(!$this->validUploadId($this->upload_id))
+		if($this->validUploadId($this->upload_id))
 		{
-			die("Must assign upload id");
+			$uploadfile = $this->_pendingJPEG($this->upload_id);
+			if (!file_exists($uploadfile))
+			{
+				return "Upload image not found";
+			}
 		}
-						
+		else
+		{
+			return ("Must assign upload id");
+		}
+		
+		
 		if(!is_object($this->square))
 		{
-			die("Must assign square");
+			return("Must assign square");
 		}
 		
 		
