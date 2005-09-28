@@ -83,11 +83,16 @@ END;
 		$this->resultCount = $db->GetOne($sql);
 		$this->numberOfPages = ceil($this->resultCount/$pgsize);
 	
+		if ($sql_order == 'post_time desc') {
+			$sql_from .= " LEFT JOIN geobb_posts ON (`topic_last_post_id` = geobb_posts.post_id)";
+		
+		}
+	
 	// construct the query sql
 $sql = <<<END
 	   SELECT distinct gi.*,x,y,nickname,realname,grid_reference,user_id,topic_time
 			$sql_fields
-		FROM geobb_topics AS gi INNER JOIN gridsquare AS gs ON(forum_id = 5 AND topic_title = grid_reference)
+		FROM geobb_topics AS gi INNER JOIN gridsquare AS gs ON(gi.forum_id = 5 AND topic_title = grid_reference)
 		INNER JOIN user ON(gi.topic_poster=user.user_id)
 			 $sql_from
 		WHERE 
