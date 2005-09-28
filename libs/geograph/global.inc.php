@@ -288,8 +288,7 @@ class GeographPage extends Smarty
 	
 	function reassignPostedDate($which)
 	{
-		//single digit month to get round a (bug?) inconsistencny in smarty (its a one line fix to get to work as expected)
-		$this->assign($which, sprintf("%04d-%d-%02d",$_POST[$which.'Year'],$_POST[$which.'Month'],$_POST[$which.'Day']));
+		$this->assign($which, sprintf("%04d-%02d-%02d",$_POST[$which.'Year'],$_POST[$which.'Month'],$_POST[$which.'Day']));
 	}
 }
 
