@@ -14,8 +14,14 @@
 <div id="searchfield"><label for="searchterm">Search</label> 
 <input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="30"/>
 <input id="searchbutton" type="submit" name="go" value="Find"/> 
-<br/><br/>
+<br/>
 <small>Enter a Placename, Postcode, Grid Reference</small></div>
+<br/>
+<label for="orderby">Order By</label>
+<select name="orderby" id="orderby">
+	{html_options options=$sortorders selected=$orderby}			
+</select>
+
 </form>
 </li>
 
