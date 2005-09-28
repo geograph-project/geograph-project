@@ -4,7 +4,7 @@
  * $Id$
  * 
  * GeoGraph geographic photo archive project
- * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
+ * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,11 +29,11 @@ $smarty = new GeographPage;
 
 $_GET['i']=intval(stripslashes($_GET['i']));
 
-$sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','submitted'=>'Date Submitted','realname'=>'Contributer Name','grid_reference'=>'Grid Reference','x'=>'West-&gt;East','y'=>'South-&gt;North');
+$sortorders = array('dist_sqd'=>'Distance','topic_time desc'=>'Topic Started','realname'=>'Latest Post','grid_reference'=>'Grid Reference','x'=>'West-&gt;East','y'=>'South-&gt;North');
 #,'user_id'=>'Contributer ID'
 
 
-if ($_GET['gridsquare']) {
+if ($_GET['gridsquare'] || $_GET['u']) {
 	// -------------------------------
 	//  special handler to build a advanced query from the link in stats or profile.  
 	// -------------------------------
@@ -114,7 +114,21 @@ if ($_GET['gridsquare']) {
 	require_once('geograph/searchenginediscuss.class.php');
 	
  	$engine = new SearchEngineDiscuss('#'); 
- 	$engine->buildSimpleQuery($q);
+ 	
+ 	#$engine->buildSimpleQuery($q);
+ 	$q = trim($q);
+	if (preg_match("/^([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9])([A-Z]{0,2})$/",strtoupper($q))) {
+		$dataarray['postcode'] = $q;
+	} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/",$q)) {
+		$dataarray['gridref'] = $q;
+	} else {
+		$dataarray['placename'] = $q;
+	}
+	$dataarray['orderby'] = $_GET['orderby'];	
+ 	$dataarray['distance'] = 100;	
+ 	$engine->buildAdvancedQuery($dataarray);
+ 	
+ 	
  	if ($engine->criteria->is_multiple) {
 		//todo these shouldnt be hardcoded as there other possiblities for suggestions
 		$smarty->assign('multipletitle', "Placename");
@@ -185,11 +199,15 @@ if ($_GET['gridsquare']) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
 	
-		$query = $db->GetRow("SELECT searchq FROM queries WHERE id = ".$_GET['i']);
+		$query = $db->GetRow("SELECT searchq,orderby FROM queries WHERE id = ".$_GET['i']);
 		$smarty->assign('searchq', $query['searchq']);
+		$smarty->assign('orderby', $query['orderby']);
 	} else if ($_SESSION['searchq']) {
 		$smarty->assign('searchq', $_SESSION['searchq']);
 	}
+	
+	$smarty->assign_by_ref('sortorders', $sortorders);
+
 	
 	require_once('geograph/imagelist.class.php');
 	require_once('geograph/gridimage.class.php');
