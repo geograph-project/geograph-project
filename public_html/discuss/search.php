@@ -29,7 +29,7 @@ $smarty = new GeographPage;
 
 $_GET['i']=intval(stripslashes($_GET['i']));
 
-$sortorders = array('dist_sqd'=>'Distance','topic_time desc'=>'Topic Started','realname'=>'Latest Post','grid_reference'=>'Grid Reference','x'=>'West-&gt;East','y'=>'South-&gt;North');
+$sortorders = array('dist_sqd'=>'Distance','topic_time desc'=>'Topic Started','post_time desc'=>'Latest Post','grid_reference'=>'Grid Reference','x'=>'West-&gt;East','y'=>'South-&gt;North');
 #,'user_id'=>'Contributer ID'
 
 
