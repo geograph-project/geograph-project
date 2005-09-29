@@ -288,8 +288,8 @@ function setdate(name,date,form) {
 	{if $last_imagetaken}
 		<input type="button" value="Last Submitted" onclick="setdate('imagetaken','{$last_imagetaken}',this.form);" class="accept"/>
 	{/if}
-	{if $imagetaken != '--'}
-		<input type="button" value="EXIF" onclick="setdate('imagetaken','{$imagetaken}',this.form);" class="accept"/>
+	{if $imagetaken != '--' && $imagetaken != '0000-00-00'}
+		<input type="button" value="Current" onclick="setdate('imagetaken','{$imagetaken}',this.form);" class="accept"/>
 	{/if}
 	Date ]
 	
