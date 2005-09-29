@@ -98,8 +98,7 @@ if ($_GET['gridsquare'] || $_GET['u']) {
 		require_once('geograph/gridimage.class.php');
 		require_once('geograph/gridsquare.class.php');
 		//lets find some recent photos
-		$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
-		$recent->assignSmarty($smarty, 'recent');
+		new RecentImageList($smarty);
 	}
 } else if ($q=stripslashes($_GET['q'])) {
 	// -------------------------------
@@ -158,9 +157,7 @@ if ($_GET['gridsquare'] || $_GET['u']) {
 		require_once('geograph/gridimage.class.php');
 		require_once('geograph/gridsquare.class.php');
 		//lets find some recent photos
-		$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
-		$recent->assignSmarty($smarty, 'recent');
-		$smarty->display('discuss_search.tpl');	
+		new RecentImageList($smarty);
 	}
 
 } else if ($_GET['i'] && !$_GET['form']) {
@@ -213,8 +210,7 @@ if ($_GET['gridsquare'] || $_GET['u']) {
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/gridsquare.class.php');
 	//lets find some recent photos
-	$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
-	$recent->assignSmarty($smarty, 'recent');
+	new RecentImageList($smarty);
 	
 
 	$smarty->display('discuss_search.tpl');
