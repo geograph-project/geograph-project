@@ -322,4 +322,24 @@ class ImageList
 	
 	
 }
+
+
+/**
+* RecentImageList class
+* Provides basic (to be extended in future) functionality 
+* for showing some recent images
+*/
+class RecentImageList extends ImageList {
+
+	/**
+	* constructor - used to build a basic list (See getImages)
+	*/
+	function RecentImageList(&$smarty) {
+		
+		$this->getImages(array('accepted', 'geograph'), 'submitted desc', 5);
+		$this->assignSmarty($smarty, 'recent');
+	}
+
+}
+
 ?>
