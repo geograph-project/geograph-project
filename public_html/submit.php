@@ -237,7 +237,7 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('upload_id', $_POST['upload_id']);
 			$smarty->assign('title', stripslashes($_POST['title']));
 			$smarty->assign('comment', stripslashes($_POST['comment']));
-			$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
+			#$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
 			$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
 
 			$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
@@ -249,6 +249,20 @@ if (isset($_POST['gridsquare']))
 			$classes=&$image->getImageClasses();
 			$classes['Other']='Other...';
 			$smarty->assign_by_ref('classes', $classes);
+
+			if ($_POST['imageclass'] != '0000-00-00') {
+				$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
+			} elseif (isset($uploadmanager->exifdate)) {
+				$smarty->assign('imagetaken', $uploadmanager->exifdate);
+				//$smarty->assign('imagetakenmessage', ' ('.$uploadmanager->exifdate.' stated in exif header)');
+			} else {
+				$smarty->assign('imagetaken', '--');
+			}
+
+			if (isset($_SESSION['last_imagetaken'])) {
+				$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
+			}
+			$smarty->assign('today_imagetaken', date("Y-m-d"));
 
 			$step=3;
 		}
