@@ -318,8 +318,10 @@ function init_session()
 
 //replace geograph links
 function GeographLinks(&$posterText) {
+	//look for [[gridref_or_photoid]] and [[[gridref_or_photoid]]]
 	if (preg_match_all('/\[\[(\[?)(\w{0,2}\d+)(\]?)\]\]/',$posterText,$g_matches)) {
 		foreach ($g_matches[2] as $i => $g_id) {
+			//photo id?
 			if (is_numeric($g_id)) {
 				if (!isset($g_image)) {
 					require_once('geograph/gridimage.class.php');
@@ -330,12 +332,13 @@ function GeographLinks(&$posterText) {
 				if ($ok) {
 					if ($g_matches[1][$i]) {
 						//we don't place thumbnails in non forum links
-						$posterText = str_replace("[[[$g_id]]]","{<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">{$g_image->grid_reference} : {$g_image->title}</a>}",$posterText);
+						$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">{$g_image->grid_reference} : {$g_image->title}</a>",$posterText);
 					} else {
-						$posterText = str_replace("[[$g_id]]","{<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">{$g_image->grid_reference} : {$g_image->title}</a>}",$posterText);
+						$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">{$g_image->grid_reference} : {$g_image->title}</a>",$posterText);
 					}
 				}			
 			} else {
+				//link to grid ref
 				$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/$g_id\">$g_id</a>",$posterText);
 			}
 		}
