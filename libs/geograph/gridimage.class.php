@@ -909,9 +909,13 @@ class GridImage
 
 		}
 		
+		//fire an event (a lot of the stuff that follows should 
+		//really be done asynchronously by an event handler
+		require_once('geograph/event.class.php');
+		new Event(EVENT_MODERATEDPHOTO, $this->gridimage_id);
+		
 		//updated cached tables
 		$this->updateCachedTables();	
-			
 			
 		//invalidate any cached maps
 		require_once('geograph/mapmosaic.class.php');
@@ -920,9 +924,10 @@ class GridImage
 			//nearly any status change could affect the map, so do it anyway!
 		$mosaic->expirePosition($this->grid_square->x,$this->grid_square->y);
 			
-			
 		//finally, we update status information for the gridsquare
 		$this->grid_square->updateCounts();
+		
+		
 		
 		return "Status is now $status";	
 			
@@ -1005,7 +1010,13 @@ class GridImage
 				"where gridimage_id='$this->gridimage_id'");
 			
 			//ensure this is a real change
-			if ($newsq->gridsquare_id != $this->gridsquare_id) {
+			if ($newsq->gridsquare_id != $this->gridsquare_id) 
+			{
+				//fire an event (some of the stuff that follows 
+				//might be better as an event handler
+				require_once('geograph/event.class.php');
+				new Event(EVENT_MOVEDPHOTO, "{$this->gridimage_id},{$this->grid_square->grid_reference},{$newsq->grid_reference}");
+							
 				//update cached data for old square and new square
 				$this->grid_square->updateCounts();
 				$newsq->updateCounts();
@@ -1018,15 +1029,13 @@ class GridImage
 				$mosaic->expirePosition($this->grid_square->x,$this->grid_square->y);
 
 				$mosaic->expirePosition($newsq->x,$newsq->y);
+			
+				//update placename cached column
+				$this->updatePlaceNameId($newsq);
+			
 			}
 			
-			//updated cached tables
-				//this isnt needed as reassignGridsquare is only called before commitChanges
-			//$this->updateCachedTables();		
-		
-			//update placename cached column
-			$this->updatePlaceNameId($newsq);
-		
+			
 			$ok=true;
 		}
 		else
