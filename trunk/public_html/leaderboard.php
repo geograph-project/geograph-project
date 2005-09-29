@@ -73,8 +73,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign_by_ref('topusers', $topusers);
 	
 	//lets find some recent photos
-	$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
-	$recent->assignSmarty($smarty, 'recent');
+	new RecentImageList($smarty);
 }
 
 $smarty->display($template, $cacheid);

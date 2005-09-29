@@ -29,7 +29,7 @@ $smarty = new GeographPage;
 if ($_GET['i'])
 	$_GET['i']=intval(stripslashes($_GET['i']));
 
-$imagestatuses = array('geograph' => 'geograph only','geograph,accepted' => 'geographs &amp; supplemental','accepted' => 'supplemental only','geograph,accepted,pending' => 'all','pending' => 'pending only');
+$imagestatuses = array('geograph' => 'geograph only','geograph,accepted' => 'geographs &amp; supplemental','accepted' => 'supplemental only');
 $sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','submitted'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributer Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North');
 #,'user_id'=>'Contributer ID'
 
@@ -183,8 +183,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		require_once('geograph/gridimage.class.php');
 		require_once('geograph/gridsquare.class.php');
 		//lets find some recent photos
-		$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
-		$recent->assignSmarty($smarty, 'recent');
+		new RecentImageList($smarty);
 		$smarty->display('search.tpl');	
 	}
 
@@ -367,8 +366,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/gridsquare.class.php');
 	//lets find some recent photos
-	$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
-	$recent->assignSmarty($smarty, 'recent');
+	new RecentImageList($smarty);
 	
 
 	$smarty->display('search.tpl');

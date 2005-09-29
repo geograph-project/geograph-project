@@ -78,9 +78,7 @@ $smarty->assign('prefixes', $square->getGridPrefixes());
 $smarty->assign('filesize', round(@filesize("memorymap/geograph.csv")/1024));
 
 //lets find some recent photos
-$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 5);
-$recent->assignSmarty($smarty, 'recent');
-
+new RecentImageList($smarty);
 
 $smarty->display('memorymap.tpl');
 

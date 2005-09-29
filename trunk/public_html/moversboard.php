@@ -100,8 +100,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('cutoff_time', time()-86400*7);
 	
 	//lets find some recent photos
-	$recent=new ImageList(array('pending', 'accepted', 'geograph'), 'submitted desc', 7);
-	$recent->assignSmarty($smarty, 'recent');
+	new RecentImageList($smarty);
 }
 
 $smarty->display($template, $cacheid);

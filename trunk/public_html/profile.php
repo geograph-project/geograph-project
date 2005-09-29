@@ -111,7 +111,7 @@ if ($template=='profile.tpl')
 		if ($uid==$USER->user_id)
 			$statuses=array('rejected', 'pending', 'accepted', 'geograph');
 		else
-			$statuses=array('pending', 'accepted', 'geograph');
+			$statuses=array('accepted', 'geograph');
 		
 		$images->getImagesByUser($uid, $statuses,'submitted desc');
 		$images->assignSmarty($smarty, 'userimages');
