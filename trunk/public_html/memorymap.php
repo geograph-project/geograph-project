@@ -46,7 +46,7 @@ if(isset($_POST['gridsquare'])||isset($_POST['getall'])) {
 	else
 		$prefix = '';
 
-	if (strlen($prefix) == 2) {
+	if (strlen($prefix) == 2 || strlen($prefix) == 1) {
 		if(!($error = makefile($prefix))) {
 			//Let the browser know what to expect
 			$csvfilename="geograph".$prefix.".csv";
