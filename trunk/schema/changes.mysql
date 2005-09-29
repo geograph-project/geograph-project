@@ -11,3 +11,11 @@
 #
 ###############################################################################
 
+
+
+create table recent_gridimage
+(
+	gridimage_id int not null,
+	added datetime,
+	primary key(gridimage_id)
+);
