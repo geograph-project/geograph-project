@@ -556,13 +556,13 @@ class SearchEngine
 	
 		$page = ($pg -1)* $pgsize;
 	
-		//need to ensure rejected images arent shown
+		//need to ensure rejected/pending images arent shown
 		if (empty($sql_where)) {
-			$sql_where = "moderation_status != 'rejected'";
+			$sql_where = " moderation_status in ('accepted','geograph')";
 		} else {
 			$this->islimited = true;
 			if (strpos($sql_where,'moderation_status') === FALSE) 
-				$sql_where .= " and moderation_status != 'rejected'";
+				$sql_where .= " and moderation_status in ('accepted','geograph')";
 		}
 		if (!$sql_order) {$sql_order = 'gs.grid_reference';}
 		$count_from = (strpos($sql_where,'gs.') !== FALSE)?"INNER JOIN gridsquare AS gs USING(gridsquare_id)":'';
