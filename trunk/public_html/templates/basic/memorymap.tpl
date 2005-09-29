@@ -5,11 +5,11 @@
 	<h2>Memory Map Export</h2>
 
 	<p>Use this page to download a CVS file to import into Memory Map, to show squares currently with Geograph Images.</p>
-
+{dynamic}
 {if $errormsg}
 <p><b>{$errormsg}</b></p>
 {/if}
-
+{/dynamic}
 	<form method="post" action="{$script_name}">
 		<p><label for="gridsquare">grid square</label> 
 		<select name="gridsquare" id="gridsquare" size="1"> 
