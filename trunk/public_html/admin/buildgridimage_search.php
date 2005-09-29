@@ -66,7 +66,7 @@ if (isset($_POST['recreate']))
 		INNER JOIN gridsquare AS gs
 		USING ( gridsquare_id ) 
 		INNER JOIN user ON ( gi.user_id = user.user_id ) 
-		WHERE moderation_status != 'rejected' ");
+		WHERE moderation_status in ('accepted','geograph') ");
 	echo "<p>Rebuild completed</p>";
 	
 }

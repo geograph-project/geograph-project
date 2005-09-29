@@ -1114,7 +1114,7 @@ class GridImage
 		if (!$this->gridimage_id) 
 			die("no gridimage_id supplied to updateCachedTables");	
 	
-		if ($this->moderation_status == 'rejected') {
+		if ($this->moderation_status == 'rejected' || $this->moderation_status == 'pending') {
 			$sql="DELETE FROM gridimage_search ".
 				"WHERE gridimage_id = '{$this->gridimage_id}'";
 			$db->Execute($sql);
