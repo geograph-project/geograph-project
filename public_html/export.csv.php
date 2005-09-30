@@ -52,6 +52,7 @@ if ($_GET['thumb']) {
 	echo ",Thumb URL";
 }
 if ($_GET['ll']) {
+	$sql_from = ',wgs84_lat,wgs84_long';
 	echo ",Lat,Long";
 } elseif ($_GET['en']) {
 	echo ",Easting,Northing";
@@ -67,20 +68,29 @@ if ($_GET['since'] && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 } elseif ($_GET['last'] && preg_match("/^\d+ \w+$/",$_GET['last']) ) {
 	$_GET['last'] = preg_replace("/s$/",'',$_GET['last']);
 	$sql_crit .= " AND upd_timestamp > date_sub(now(), interval {$_GET['last']})";
-} elseif ($_GET['limit'] && is_numeric($_GET['limit'])) {
+} elseif ($_GET['limit'] && preg_match("/^\d(,\d+)?$/",$_GET['limit'])) {
 	$sql_crit .= " ORDER BY upd_timestamp DESC LIMIT {$_GET['limit']}";
 }
 
+if ($_GET['supp']) {
+	$mod_sql = "moderation_status in ('accepted','geograph')";
+} else {
+	$mod_sql = "moderation_status = 'geograph'";
+
+}
+
+
+//todo run an i query
 if ($_GET['en']) {
 	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,nateastings,natnorthings $sql_from ".
 	"from user ".
 	"inner join gridimage gi using(user_id) ".
 	"inner join gridsquare using(gridsquare_id) ".
-	"where moderation_status in ('accepted','geograph') $sql_crit");
+	"where $mod_sql $sql_crit");
 } else {
 	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass $sql_from ".
 	"from gridimage_search gi ".
-	"where moderation_status in ('accepted','geograph') $sql_crit");
+	"where $mod_sql $sql_crit");
 }
 while (!$recordSet->EOF) 
 {
