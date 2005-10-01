@@ -244,6 +244,9 @@ function onChangeImageclass()
 
 function setdate(name,date,form) {
 	parts = date.split('-');
+	parts[2] = parseInt(parts[2]);
+	parts[1] = parseInt(parts[1]);
+	
 	ele = form.elements[name+'Year'].options;
 	for(i=0;i<ele.length;i++) 
 		if (ele[i].value == parts[0]) 
