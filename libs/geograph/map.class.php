@@ -513,6 +513,7 @@ class GeographMap
 	*/
 	function _renderImage()
 	{
+		global $CONF;
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 		
 		//first of all, generate or pull in a cached based map
@@ -661,7 +662,7 @@ class GeographMap
 				$gridsquare_id=$recordSet->fields[2];
 
 				$sql="select * from gridimage where gridsquare_id=$gridsquare_id ".
-					"and moderation_status<>'rejected' order by moderation_status+0 desc,seq_no limit 1";
+					"and moderation_status in moderation_status in ('accepted','geograph') order by moderation_status+0 desc,seq_no limit 1";
 
 				//echo "$sql\n";	
 				$rec=$dbImg->GetRow($sql);
@@ -885,7 +886,7 @@ class GeographMap
 			$cityfont = 3;
 		}
 
-if ($reference_index == 1) {
+if ($reference_index == 1 || ($reference_index == 2 && ($this->pixels_per_km == 1 || $this->pixels_per_km == 4) )) {
 	//$countries = "'EN','WA','SC'";
 $sql = <<<END
 SELECT name,e,n,s,quad 
