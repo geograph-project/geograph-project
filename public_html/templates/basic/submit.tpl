@@ -310,7 +310,7 @@ function setdate(name,date,form) {
 
 <input type="hidden" name="upload_id" value="{$upload_id}">
 
-<br />
+<br/>
 <input type="hidden" name="savedata" value="1">
 <input type="submit" name="goback" value="&lt; Back"/>
 <input type="submit" name="next" value="Next &gt;"/>
