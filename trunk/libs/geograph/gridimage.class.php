@@ -881,8 +881,7 @@ class GridImage
 					
 			
 			
-		//ok, update the image
-		$this->moderation_status=$status;
+	
 
 		//update image status and ftf flag
 		$sql="update gridimage set ".
@@ -916,18 +915,24 @@ class GridImage
 		
 		//updated cached tables
 		$this->updateCachedTables();	
-			
-		//invalidate any cached maps
-		require_once('geograph/mapmosaic.class.php');
-		$mosaic=new GeographMapMosaic;
+		
+		if ( !($status == 'rejected' && $this->moderation_status == 'pending') ) {
+		
+			//invalidate any cached maps
+			require_once('geograph/mapmosaic.class.php');
+			$mosaic=new GeographMapMosaic;
 
-			//nearly any status change could affect the map, so do it anyway!
-		$mosaic->expirePosition($this->grid_square->x,$this->grid_square->y);
-			
+			$mosaic->expirePosition($this->grid_square->x,$this->grid_square->y);
+		}
+	
+		//ok, update the image
+		$this->moderation_status=$status;
+	
 		//finally, we update status information for the gridsquare
 		$this->grid_square->updateCounts();
 		
-		
+	
+	
 		
 		return "Status is now $status";	
 			
