@@ -472,9 +472,10 @@ class UploadManager
 			"where gridsquare_id={$this->square->gridsquare_id}");
 		
 		//invalidate any cached maps
-		require_once('geograph/mapmosaic.class.php');
-		$mosaic=new GeographMapMosaic;
-		$mosaic->expirePosition($this->square->x,$this->square->y);
+		//require_once('geograph/mapmosaic.class.php');
+		//$mosaic=new GeographMapMosaic;
+		//$mosaic->expirePosition($this->square->x,$this->square->y);
+			//-> map no longer contains pending images will be invalidated when mod'ed
 		
 		//get the id
 		$gridimage_id=$this->db->Insert_ID();
@@ -487,7 +488,8 @@ class UploadManager
 		$image->storeImage($src);
 		
 		//update cached tables
-		$image->updateCachedTables();	
+		//$image->updateCachedTables();	
+			//-> cached table no longer contains pending images
 		
 		//update placename cached column
 		$image->updatePlaceNameId();
