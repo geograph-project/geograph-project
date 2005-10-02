@@ -74,4 +74,8 @@ $CONF['flickr_api_key'] = '';
 //COMMENT THIS LINE OUT ON LIVE SYSTEMS!
 //$CONF['fetch_on_demand'] = 'www.geograph.co.uk';
 
+//does the map draw the more demanding placenames
+$CONF['enable_newmap'] = 1;
+
+
 ?>
