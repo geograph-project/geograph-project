@@ -646,15 +646,15 @@ class GridSquare
 		$db=&$this->_getDB();
 		
 		//see if we have any geographs
-			//we can use a limit (rather than count) beucase we only interested if *any* not now many, 'limit 1' will stop searching once found 1
+			//we can use a limit, implied by GetOne (rather than count) beucase we only interested if *any* not now many, 'limit 1' will stop searching once found 1
 		$geographs= $db->GetOne("select gridsquare_id from gridimage ".
-					"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' limit 1");
+					"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph'");
 
 		$has_geographs=$geographs?1:0;
 
 		//count how many images in the square
 		$imagecount= $db->GetOne("select count(*) from gridimage ".
-			"where gridsquare_id={$this->gridsquare_id} and moderation_status moderation_status in ('accepted','geograph')");
+			"where gridsquare_id={$this->gridsquare_id} and moderation_status in ('accepted','geograph')");
 
 		//update the has_geographs flag
 		$db->Query("update gridsquare set has_geographs=$has_geographs,imagecount=$imagecount ".
