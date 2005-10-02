@@ -662,7 +662,7 @@ class GeographMap
 				$gridsquare_id=$recordSet->fields[2];
 
 				$sql="select * from gridimage where gridsquare_id=$gridsquare_id ".
-					"and moderation_status in moderation_status in ('accepted','geograph') order by moderation_status+0 desc,seq_no limit 1";
+					"and moderation_status in ('accepted','geograph') order by moderation_status+0 desc,seq_no limit 1";
 
 				//echo "$sql\n";	
 				$rec=$dbImg->GetRow($sql);
