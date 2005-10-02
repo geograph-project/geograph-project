@@ -177,6 +177,11 @@ geographing</a> first.</p>
 {if $step eq 3}
 
 <h2>Submit Step 3 of 4 : Check photo</h2>
+
+{if $errormsg}
+<p style="color:#990000;font-weight:bold;">{$errormsg}</p>
+{/if}
+
 <p>
 Below is a full-size preview of the image we will store for grid reference 
 {$gridref}.<br/><br/>
@@ -211,20 +216,21 @@ criteria above!</p>
 <p>Please provide a short title for the image, and any other comments about where
 it was taken or other interesting geographical information.</p>
 
-<p><label for="title">Title</label><br/>
+<p><label for="title">Title</label> {if $error.title}
+	<br/><span class="formerror">{$error.title}</span>
+	{/if}<br/>
 <input size="50" id="title" name="title" value="{$title|escape:'html'}" /></p>
  {if $place.distance}
  <p style="font-size:0.7em">Gazetteer info as will appear:<br/> <span style="color:silver;">{if $place.distance > 3}{$place.distance} km from{else}near to{/if} <b>{$place.full_name}</b><small><i>{if $place.adm1_name && $place.adm1_name != $place.reference_name}, {$place.adm1_name}{/if}, {$place.reference_name}</i></small></span></p>
  {/if}
-<br style="clear:right"/>
 
-<p><label for="comment">Comment</label><br/>
+<p style="clear:both"><label for="comment">Comment</label><br/>
 <textarea id="comment" name="comment" rows="4" cols="80">{$comment|escape:'html'}</textarea><br/>
-<small>TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
-to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></small></p>
+<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
+to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 
 
-<h3>Further Image Information</h3>
+<h3>Further Information</h3>
 
 {literal}
 <script type="text/javascript">
@@ -265,7 +271,9 @@ function setdate(name,date,form) {
 </script>
 {/literal}
 
-<p><label for="imageclass">Primary geographical category</label><br />	
+<p><label for="imageclass">Primary geographical category</label> {if $error.imageclass}
+	<br/><span class="formerror">{$error.imageclass}</span>
+	{/if}<br />	
 	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()">
 		<option value="">--please select feature--</option>
 		{html_options options=$classes selected=$imageclass}
@@ -280,7 +288,9 @@ function setdate(name,date,form) {
 	
 	
 	
-<p><label>Date picture taken</label><br/>
+<p><label>Date photo taken</label> {if $error.imagetaken}
+	<br/><span class="formerror">{$error.imagetaken}</span>
+	{/if}<br/>
 	{html_select_date prefix="imagetaken" time=$imagetaken start_year="-200" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
 	{if $imagetakenmessage}
 	    {$imagetakenmessage}
@@ -296,7 +306,7 @@ function setdate(name,date,form) {
 	{/if}
 	Date ]
 	
-	<br/><small>(please provide as much detail as possible, if you only know the year or month then that's fine)</small></p>
+	<br/><br/><span style="font-size:0.7em">(please provide as much detail as possible, if you only know the year or month then that's fine)</span></p>
 
 <input type="hidden" name="upload_id" value="{$upload_id}">
 
