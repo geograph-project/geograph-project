@@ -112,33 +112,8 @@ if (isset($_POST['gridsquare']))
 					case 0:
 						if ($uploadmanager->processUpload($_FILES['jpeg']['tmp_name']))
 						{
-							//we got a suitable image, we need to show it to the user
-							$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
-							$smarty->assign('preview_url', $preview_url);
-							$smarty->assign('preview_width', $uploadmanager->upload_width);
-							$smarty->assign('preview_height', $uploadmanager->upload_height);
 							$smarty->assign('upload_id', $uploadmanager->upload_id);
-
-							//find a possible place within 25km
-							$smarty->assign('place', $square->findNearestPlace(135000));
-
-							$image = new GridImage;
-
-							$classes=&$image->getImageClasses();
-							$smarty->assign_by_ref('classes', $classes);
-
-							if (isset($uploadmanager->exifdate)) {
-								$smarty->assign('imagetaken', $uploadmanager->exifdate);
-								//$smarty->assign('imagetakenmessage', ' ('.$uploadmanager->exifdate.' stated in exif header)');
-							} else {
-								$smarty->assign('imagetaken', '--');
-							}
-
-							if (isset($_SESSION['last_imagetaken'])) {
-								$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
-							}
-							$smarty->assign('today_imagetaken', date("Y-m-d"));
-							
+							//we ok to continue
 							$step=3;
 						}
 						break;
@@ -166,31 +141,53 @@ if (isset($_POST['gridsquare']))
 			}
 			else
 			{
-			
 				//preserve the upload id
-				if($uploadmanager->validUploadId($_POST['upload_id']))
+				if($uploadmanager->validUploadId($_POST['upload_id'])) {
 					$smarty->assign('upload_id', $_POST['upload_id']);
+					$uploadmanager->setUploadId($_POST['upload_id']);
+					
+				}
+
+				$ok=true;
 
 				//preserve the meta info
 				$smarty->reassignPostedDate('imagetaken');
-				
+				if ($smarty->get_template_vars('imagetaken')=='0000-00-00')
+				{
+					$ok=false;
+					$error['imagetaken']="Please specify a date for when the photo was taken (even approximate)";
+				}
 				
 				if (($_POST['imageclass'] == 'Other' || empty($_POST['imageclass'])) && !empty($_POST['imageclassother'])) {
-					$smarty->assign('imageclass', stripslashes($_POST['imageclassother']));
-				} else if ($_POST['imageclass'] == 'Other') {
-					$smarty->assign('imageclass', '');
-				} else {
-					$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
+					$imageclass = stripslashes($_POST['imageclassother']);
+				} else if ($_POST['imageclass'] != 'Other') {
+					$imageclass =  stripslashes($_POST['imageclass']);
 				}
-
+				if (strlen($imageclass)==0) {
+					$ok=false;
+					$error['imageclass']="Please choose a geographical feature";	
+				} else {
+					$smarty->assign('imageclass', $imageclass);
+				}
+				
+				$title=trim(stripslashes($_POST['title']));
+				$title=strip_tags($title);
+				if (strlen($title)==0)
+				{
+					$ok=false;
+					$error['title']="Please specify an image title";
+				}
 				//preserve title and comment
-				$smarty->assign('title', stripslashes($_POST['title']));
+				$smarty->assign('title', $title);
 				$smarty->assign('comment', stripslashes($_POST['comment']));
 
-				//To Do - do some checking here and maybe go back to step 3?
-
-
-				$step=4;
+				if ($ok) {
+					$step=4;
+				} else {
+					$smarty->assign('errormsg', "Please provide information about this image, see messages below...");
+					$smarty->assign_by_ref('error', $error);
+					$step=3;
+				}
 			}
 		}
 		elseif (isset($_POST['finalise']))
@@ -230,9 +227,6 @@ if (isset($_POST['gridsquare']))
 		{
 			$uploadmanager->setUploadId($_POST['upload_id']);
 			
-			//find a possible place within 25km
-			$smarty->assign('place', $square->findNearestPlace(135000));
-			
 			//preserve stuff
 			$smarty->assign('upload_id', $_POST['upload_id']);
 			$smarty->assign('title', stripslashes($_POST['title']));
@@ -240,6 +234,14 @@ if (isset($_POST['gridsquare']))
 			#$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
 			$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
 
+			$step = 3;
+		}
+		
+		if ($step == 3) {
+			//find a possible place within 25km
+			$smarty->assign('place', $square->findNearestPlace(135000));
+			
+			
 			$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
 			$smarty->assign('preview_url', $preview_url);
 			$smarty->assign('preview_width', $uploadmanager->upload_width);
@@ -250,8 +252,10 @@ if (isset($_POST['gridsquare']))
 			$classes['Other']='Other...';
 			$smarty->assign_by_ref('classes', $classes);
 
-			if ($_POST['imageclass'] != '0000-00-00') {
+			if ($_POST['imageclass'] && $_POST['imageclass'] != '0000-00-00') {
 				$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
+			} elseif ($smarty->get_template_vars('imagetaken')) {
+				//already set
 			} elseif (isset($uploadmanager->exifdate)) {
 				$smarty->assign('imagetaken', $uploadmanager->exifdate);
 				//$smarty->assign('imagetakenmessage', ' ('.$uploadmanager->exifdate.' stated in exif header)');
@@ -263,8 +267,6 @@ if (isset($_POST['gridsquare']))
 				$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
 			}
 			$smarty->assign('today_imagetaken', date("Y-m-d"));
-
-			$step=3;
 		}
 		if ($step == 2) {
 			require_once('geograph/rastermap.class.php');
@@ -304,7 +306,6 @@ if (isset($_POST['gridsquare']))
 		
 	
 	}
-	
 }
 else
 {
