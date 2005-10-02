@@ -237,7 +237,7 @@ class GeographPage extends Smarty
 
 		//setup optimisations
 		##$this->compile_check = $CONF['smarty_compile_check'];
-		$smarty->compile_check = true; //temporally as needed on live NOW!
+		$smarty->compile_check = false; //temporally as needed on live NOW!
 		
 		$this->debugging = $CONF['smarty_debugging'];
 		$this->caching = $CONF['smarty_caching'];
