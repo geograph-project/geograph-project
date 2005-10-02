@@ -24,7 +24,7 @@
 {foreach from=$newtickets item=ticket}
 <tr>
 <td>{$ticket.submitter}</td>
-<td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title}</a></td>
+<td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
 <td>{$ticket.notes}</td>
 <td>{$ticket.suggester}</td>
 <td>{$ticket.suggested}</td>
@@ -57,7 +57,7 @@
 <tr>
 <td>{$ticket.moderator}</td>
 <td>{$ticket.submitter}</td>
-<td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title}</a></td>
+<td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
 <td>{$ticket.notes}</td>
 <td>{$ticket.suggester}</td>
 <td>{$ticket.updated}</td>
