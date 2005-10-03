@@ -74,7 +74,7 @@ if (isset($_POST['check']))
 	has_geographs as gridsquare_has_geographs, sum(moderation_status='geograph') AS gridsimage_geographcount
 	FROM gridimage
 	INNER JOIN gridsquare USING ( gridsquare_id ) 
-	WHERE moderation_status<>'rejected'
+	WHERE moderation_status in ('accepted','geograph')
 	GROUP BY gridimage.gridsquare_id
 	HAVING (gridsquare_imagecount != gridsimage_imagecount) OR (gridsquare_has_geographs != (gridsimage_geographcount>0))");
 	
