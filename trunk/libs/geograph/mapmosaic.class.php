@@ -689,8 +689,6 @@ class GeographMapMosaic
 			$square=new GridSquare;
 			if ($square->loadFromPosition($clickx, $clicky))
 			{
-				
-				
 				$images=$square->getImages();
 				
 				//if the image count is 1, we'll go straight to the image
@@ -705,15 +703,17 @@ class GeographMapMosaic
 					$url="http://".$_SERVER['HTTP_HOST'].'/gridref/'.$square->grid_reference;
 				}
 				
-				header("Location:$url");
-				exit;
 			}
 			else
 			{
-				//stay where we are
-				$scale=$this->pixels_per_km;
+				require_once('geograph/conversions.class.php');
+				$conv = new Conversions;
+		
+				list($gr,$len) = $conv->internal_to_gridref($clickx,$clicky,0);
+				$url="http://".$_SERVER['HTTP_HOST'].'/gridref/'.$gr;
 			}
-			
+			header("Location:$url");
+			exit;
 		} else {
 			$scale = $this->scales[$zoomindex];
 		}
