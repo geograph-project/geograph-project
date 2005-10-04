@@ -711,7 +711,7 @@ class GeographMapMosaic
 			else
 			{
 				//stay where we are
-				$scale=40;
+				$scale=$this->pixels_per_km;
 			}
 			
 		} else {
