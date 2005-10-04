@@ -93,7 +93,7 @@ if (isset($_GET['check2']))
 	flush();
 
 	# /maps/detail/741/120/detail_741_120_200_200_40_0.png
-	$cutoff = time() - 60*60*10;
+	$cutoff = time() - 60*60*24*4;
 function recurse_maps($folder) {	
 	global $db,$cutoff;
 	$root=&$_SERVER['DOCUMENT_ROOT'];
@@ -105,7 +105,7 @@ function recurse_maps($folder) {
 			print "done $folder $file<br/>";
 		} elseif (preg_match("/detail_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)\.png/",$file,$m)) {
 			array_shift($m);
-			if (filemtime($root.$folder.$file) > $cutoff && $m[4] == 40) {
+			if (filemtime($root.$folder.$file) > $cutoff && $m[4] == 80) {
 				$sql = "INSERT DELAYED IGNORE INTO mapcache2 VALUES(".join(',',$m).",0)";
 				$db->Execute($sql);
 			}
