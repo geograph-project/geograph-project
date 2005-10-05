@@ -385,6 +385,18 @@ div.photo33
 	position:relative;
 }
 
+/* styling for a guide photo*/
+div.photoguide
+{
+	width:650px;
+	padding:10px;
+	border: silver 1px solid;
+	text-align:center;
+	margin:10px;
+	position:relative;
+}
+
+
 /*---------------------------------------------------------------*
  * inline sidebar
  *---------------------------------------------------------------*/
