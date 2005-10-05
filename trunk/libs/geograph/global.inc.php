@@ -178,16 +178,19 @@ function smarty_function_gridimage($params)
 	$image=new GridImage;
 	$image->loadFromId($params['id']);
 	
-	$html='<div style="float:left;" class="photo33">';
-	$html.='<a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
-	$html.=$image->getThumbnail(213,160);
-	$html.='</a><div class="caption"><a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
-	$html.=htmlentities($image->title).'</a>';
+	$html='<div class="photoguide">';
+	
+	$html.='<div style="float:left;">';
+		$html.='<a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
+		$html.=$image->getThumbnail(213,160);
+		$html.='</a><div class="caption"><a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
+		$html.=htmlentities($image->title).'</a></div>';
+	$html.='</div>';
 	
 	if (isset($params['extra']))
-		$html.='<div>'.htmlentities($params['extra']).'</div>';
+		$html.='<div style="float:left;padding-left:20px; width:400px;">'.htmlentities($params['extra']).'</div>';
 	
-	$html.='</div></div>';
+	$html.='<br style="clear:both"/></div>';
 	
 	return $html;
 		  
