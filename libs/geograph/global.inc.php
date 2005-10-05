@@ -180,7 +180,7 @@ function smarty_function_gridimage($params)
 	
 	$html='<div class="photoguide">';
 	
-	$html.='<div style="float:left;">';
+	$html.='<div style="float:left;width:213px">';
 		$html.='<a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
 		$html.=$image->getThumbnail(213,160);
 		$html.='</a><div class="caption"><a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
