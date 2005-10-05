@@ -1,8 +1,6 @@
 {assign var="page_title" value="What is a Geograph?"}
 {include file="_std_begin.tpl"}
 
-<h2>Geographing Guide</h2>
-
 <h2>Geograph or Supplemental - How are pictures moderated?</h2>
 
 <p>If you are new to the site, please have a look at our <a href="/help/guide">guide</a> 
