@@ -10,9 +10,7 @@
  <li><a href="#resize" style="text-decoration:none">Do I need to resize my photos? Are there size limits?</a></li>
  <li><a href="#change" style="text-decoration:none">I disagree with the location or title of an image - what can I do?</a></li>
  <li><a href="#legal" style="text-decoration:none">What are my legal rights when taking photographs?</a></li>
-
  <li><a href="#aol" style="text-decoration:none">I use AOL, and the images look terrible!</a></li>
-
  <li><a href="#rss" style="text-decoration:none">Do you have an RSS feed?</a></li>
  <li><a href="#use" style="text-decoration:none">I would be interested in using Geograph content, is that possible?</a></li>
  <li><a href="#built" style="text-decoration:none">Who built this marvellous site?</a></li>
@@ -37,14 +35,16 @@
     <li>You must clearly show at close range one of the main geographical features within the square</li>
     <li>You should include a short description relating the image to the map square</li>
     </ul>
-    <p>See the <a title="guide to geographing" href="/help/guide">guide to good geographing</a> 
-    for more details</p>
+    <p>See <a title="geograph and supplemental guide" href="/help/geograph_guide">What is a geograph?</a> 
+    for more details.</p>
 <a name="supplemental"></a>
 <h3>What is a supplemental image?</h3>
     <p>If an image doesn't quite fulfill the geograph criteria above, but is still a good
     image, we'll accept it as &quot;supplemental image&quot; - no geograph points are awarded,
     but the image will still appear on the selected grid square. A square that just contains
-    supplemental images is still open to be claimed as a geograph though!
+    supplemental images is still open to be claimed as a geograph though! See <a 
+    title="geograph and supplemental guide" href="/help/geograph_guide">What is a geograph?</a> 
+    for details of how photos are moderated.
     </p>
 <a name="resize"></a>
 <h3>Do I need to resize my photos? Are there size limits?</h3>
