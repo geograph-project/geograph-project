@@ -66,7 +66,8 @@ square.</p>
 </div>
 
 
-
+<p>See <a title="geograph and supplemental guide" href="/help/geograph_guide">What is a geograph?</a> 
+    for more examples of images submitted to geograph and how they are moderated.</p>
  
 
 {include file="_std_end.tpl"}
