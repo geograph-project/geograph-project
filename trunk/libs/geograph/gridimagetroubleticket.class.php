@@ -630,8 +630,11 @@ class GridImageTroubleTicket
 		//add comment to ticket
 		$comment=trim($comment);
 		$dbcomment=$comment;
-		if (strlen($dbcomment))
-			$dbcomment.="\n";
+		if (strlen($dbcomment)) {
+			if (!preg_match("/\.$/",$dbcomment))
+				$dbcomment.=".";
+			$dbcomment.="\n ";
+		}
 		$dbcomment.="Ticket is now closed";
 
 		$this->_addComment($user_id, $dbcomment);
