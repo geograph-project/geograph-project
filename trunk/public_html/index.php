@@ -29,7 +29,7 @@ $smarty = new GeographPage;
 
 
 $template='homepage.tpl';
-$cacheid='';
+$cacheid=rand(1,5); //so we get a selection of homepages
 
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
