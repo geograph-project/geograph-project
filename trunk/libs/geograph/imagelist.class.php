@@ -336,8 +336,29 @@ class RecentImageList extends ImageList {
 	*/
 	function RecentImageList(&$smarty) {
 		
-		$this->getImages(array('accepted', 'geograph'), 'submitted desc', 5);
+		$db=&$this->_getDB();
+		
+		$orderby="order by rand()";
+		
+		$limit="limit 5";
+		
+		//lets find some recent photos
+		$this->images=array();
+		$i=0;
+		
+		$recordSet = &$db->Execute("select * ".
+			"from recent_gridimage natural join gridimage_search ".
+			"$orderby $limit");
+		while (!$recordSet->EOF) 
+		{
+			$this->images[$i]=new GridImage;
+			$this->images[$i]->fastInit($recordSet->fields);
+			$recordSet->MoveNext();
+			$i++;
+		}
+		$recordSet->Close(); 
 		$this->assignSmarty($smarty, 'recent');
+		return $i;
 	}
 
 }
