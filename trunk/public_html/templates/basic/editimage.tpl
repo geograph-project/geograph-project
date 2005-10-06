@@ -141,7 +141,7 @@
 	{/if}
 	
 	<div class="ticketnotes">
-		<div class="ticketnote">{$ticket->notes}</div>
+		<div class="ticketnote">{$ticket->notes|escape:'html'|geographlinks}</div>
 	
 		
 		{if $ticket->comments and ($isadmin or $isowner)}
@@ -150,7 +150,7 @@
 			{foreach from=$ticket->comments item=comment}
 			<div class="ticketnote">
 				<div class="ticketnotehdr">{$comment.realname} {if $comment.moderator}(Moderator){/if} wrote on {$comment.added|date_format:"%a, %e %b %Y at %H:%M"}</div>
-				{$comment.comment}
+				{$comment.comment|escape:'html'|geographlinks}
 
 
 			</div>
@@ -217,28 +217,6 @@
 {/if}
 
 
-<div style="margin-top:20px;">
-<label for="updatenote">Tell us what's wrong...</label><br/>
-
-{if $error.updatenote}<br/><span class="formerror">{$error.updatenote}</span><br/>{/if}
-
-<table><tr><td>
-<textarea id="updatenote" name="updatenote" rows="4" cols="50">{$updatenote|escape:'html'}</textarea>
-</td><td>
-
-<div style="float:left;font-size:0.7em;padding-left:5px;width:250px;">
-Please provide as much detail for the moderator 
-{if $user->user_id ne $image->user_id} and submitter{/if} about 
-any necessary change (even if you are unable to provide further
-detail, e.g. a corrected grid reference)
-</div>
-
-</td></tr></table>
-
-<br style="clear:both"/>
-</div>
-
-
 
 <p>
 <label for="grid_reference">Subject Grid Reference {if $moderated.grid_reference}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
@@ -270,7 +248,11 @@ detail, e.g. a corrected grid reference)
 <label for="comment">New Comment {if $moderated.comment}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.comment}<span class="formerror">{$error.comment}</span><br/>{/if}
 <textarea id="comment" name="comment" rows="3" cols="50">{$image->comment|escape:'html'}</textarea>
+<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
+to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 </p>
+
+
 
 {literal}
 <script type="text/javascript">
@@ -321,6 +303,29 @@ function onChangeImageclass()
 	{html_select_date prefix="imagetaken" time=`$image->imagetaken` start_year="-200" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" day_value_format="%02d" month_value_format="%m"}
 	<br/><small>(please provide as much detail as possible, if you only know the year or month then that's fine)</small></p>
 {/if}
+
+
+<div style="margin-top:20px;background:#dddddd;"><br/>
+<label for="updatenote">&nbsp;or <b>Tell us what's wrong...</b></label><br/>
+
+{if $error.updatenote}<br/><span class="formerror">{$error.updatenote}</span><br/>{/if}
+
+<table><tr><td>
+<textarea id="updatenote" name="updatenote" rows="4" cols="50">{$updatenote|escape:'html'}</textarea>
+</td><td>
+
+<div style="float:left;font-size:0.7em;padding-left:5px;width:250px;">
+Please provide as much detail for the moderator 
+{if $user->user_id ne $image->user_id} and submitter{/if} about 
+any necessary change (if you know the details e.g. a corrected grid reference,
+then please enter directly into the boxes above)
+</div>
+
+</td></tr></table>
+
+<br style="clear:both"/>
+</div>
+<br/>
 
 <input type="submit" name="save" value="Submit Changes"/>
 <input type="button" name="cancel" value="Cancel" onclick="document.location='/photo/{$image->gridimage_id}';"/>
