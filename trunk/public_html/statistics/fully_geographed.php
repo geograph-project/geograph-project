@@ -34,7 +34,7 @@ $template='statistics_fully_geographed.tpl';
 $cacheid='statistics|fully_geographed';
 
 $smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hr cache
+$smarty->cache_lifetime = 3600*6; //6hr cache
 
 if (!$smarty->is_cached($template, $cacheid))
 {
