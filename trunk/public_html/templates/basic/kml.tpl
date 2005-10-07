@@ -35,7 +35,7 @@
 		look for the the <a title="Google Earth Feed" href="/kml.php" class="xml-kml">KML</a> button.
 	{/if}</div>
 	
-	<p><input type="submit" name="submit" value="Download KML file..."> <span id="advtoggle"></span> </p>
+	<p><input type="submit" name="submit" value="Download KML file..."/> <span id="advtoggle"></span> </p>
 	
 	<div id="advanced">
 	{if $i && $engine->resultCount || !$i}	
@@ -43,14 +43,14 @@
 		<table border="1" cellpadding="3" cellspacing="0"> 
 		  <tr> 
 			 <td><input type="radio" name="type" value="static" id="type_static"
-				checked="checked"></td> 
+				checked="checked"/></td> 
 			 <td><b><label for="type_static">Simple</label></b><br/>
 			 View your search results in Google Earth.</td> 
 			 <td rowspan="2"><label for="page">Download Page</label><br/>
 				<input type="text" name="page" value="{$currentPage}" size="3" id="page"> of {if $engine->numberOfPages}{$engine->numberOfPages}{else}results{/if}.</td> 
 		  </tr> 
 		  <tr> 
-			 <td><input type="radio" name="type" value="time" id="type_time"></td> 
+			 <td><input type="radio" name="type" value="time" id="type_time"/></td> 
 			 <td><b><label for="type_time">Automatic Updates</label></b> <br/>
 			 Like 'Simple', but Google Earth will refresh the results <label>once every 
 				<select name="refresh" size="1"> 
@@ -62,7 +62,7 @@
 		  </tr> 
 		  {if $engine->islimited}
 		  <tr> 
-			 <td><input type="radio" name="type" value="view" id="type_view"></td> 
+			 <td><input type="radio" name="type" value="view" id="type_view"/></td> 
 			 <td colspan="2"><b><label for="type_view">Wide area</label></b><br>
 			 For a large result set covering a wide area, this option allows the Google Earth application
 			 to just show the photos within the area of view. As you scroll around, Google Earth will
