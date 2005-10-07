@@ -15,7 +15,7 @@
 	 
 	 </p>
 	 
-	<form method="post"> 
+	<form method="post" action="{$script_name}"> 
 	
 	{if $i} 
 		<div style="padding:5px;background:#dddddd;position:relative">
