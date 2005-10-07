@@ -27,7 +27,7 @@ top submitters this week.</p>
 
 <h2 style="margin-top:2em;margin-bottom:0">Overall Status</h2>
 <p>Here's a graph of photo submissions since we began...<br/>
-<img src="/img/submission_graph.png" width="480" height="161"/>
+<img src="/img/submission_graph.png" width="480" height="161" alt="submission graph"/>
 </p>
 
 

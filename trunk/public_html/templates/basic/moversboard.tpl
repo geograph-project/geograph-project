@@ -30,7 +30,7 @@ how much each person will climb when their pictures are moderated!</p>
 
 <h2 style="margin-top:2em;margin-bottom:0">Daily Submission Rate</h2>
 <p>Here's a graph of average daily submissions for the last few weeks...<br/>
-<img src="/img/rate.png" width="480" height="161"/>
+<img src="/img/rate.png" width="480" height="161" alt="daily submission rate graph"/>
 </p>
 
 
