@@ -70,6 +70,11 @@ if (isset($_POST['gridsquare']))
 	else 
 	{
 		$ok= $square->setGridPos($_POST['gridsquare'], $_POST['eastings'], $_POST['northings']);
+		if ($ok)
+		{
+			//preserve inputs in smarty
+			$smarty->assign('gridreference', $square->grid_reference);	
+		}
 	}
 	if ($ok)
 	{
