@@ -5,7 +5,7 @@
 
 <p>If you are new to the site, please have a look at our <a href="/help/guide">guide</a> 
 first which should help you get started. The information below provides a wider selection 
-of examples taken from the site to help you understand what does and what doesn’t constitute 
+of examples taken from the site to help you understand what does and what doesn't constitute 
 a geograph.
 </p>
 
@@ -47,7 +47,7 @@ and have introduced a competitive element in the form of geograph points and a l
 <p>We hope that as time goes by, most geographs will be taken specifically for this purpose 
 but realise that many people may also wish to contribute pictures from an existing collection.</p>
 
-<p>Don’t be disheartened if your image is not classed as a geograph, if your image has been 
+<p>Don't be disheartened if your image is not classed as a geograph, if your image has been 
 accepted as a supplemental it is still a valued contribution to the project. 
 Only a very tiny percentage of submissions are rejected!
 </p>
@@ -59,7 +59,7 @@ Whatever type of picture you submit, please try to include as much additional in
 possible in your description.
 </p>
 
-<h2>Small area images (<1 sq.km)</h2>
+<h2>Small area images (&lt;1 sq.km)</h2>
 <p>showing subjects within a given grid square 
 taken at close range from within the square</p>
 
@@ -71,7 +71,7 @@ with grid reference quoted to as many figures as accurately possible.</p>
 {gridimage id="13945" extra="GEOGRAPH: Shows in detail a particular feature of the physical geography of the square that is easily identifiable on the map"} 
 
 {gridimage id="13565" extra="SUPPLEMENTAL: A good subject and easy to locate on the map from the description but of borderline quality having been taken through dirty, wet glass! "} 
-{gridimage id="13252" extra="SUPPLEMENTAL: Doesn’t show a significant geographical feature"} 
+{gridimage id="13252" extra="SUPPLEMENTAL: Doesn't show a significant geographical feature"} 
 {gridimage id="26355" extra="SUPPLEMENTAL: Although the road is easily identifiable from the description the image is poorly composed with >50% of it showing grey sky. Better framing showing more of the road would have made a good geograph."} 
  
 <br style="clear:both"/>
@@ -82,7 +82,7 @@ with grid reference quoted to as many figures as accurately possible.</p>
 may or may not be within the square occupied by the photographer.</p>
 
 {gridimage id="41032" extra="GEOGRAPH"}
-{gridimage id="241" extra="SUPPLEMENTAL - because the subject is not shown in sufficient close up detail. Also, photographer’s position (NT5685) is neither stated nor easily determined"}
+{gridimage id="241" extra="SUPPLEMENTAL - because the subject is not shown in sufficient close up detail. Also, photographer's position (NT5685) is neither stated nor easily determined"}
 {gridimage id="48074" extra="GEOGRAPH - because it provides an excellent map interpretation of the area viewed from the referenced grid square. Thus, this image is logged against the PHOTOGRAPHER'S SQUARE - other images detailing the geography within the square would of course be welcomed"}
 
 
@@ -97,10 +97,10 @@ The viewpoint should be clearly stated.</p>
 
 <p>All panoramas should be logged against the photographer position</p>
 
-{gridimage id="30973" extra="GEOGRAPH : not only does it show some of the main geographical features of the square, it’s also an extremely good representation of what could be seen from the given location and would greatly aid map interpretation."}
-{gridimage id="51014" extra="SUPPLEMENTAL : The image shows a relatively large number of grid squares but the photographer’s position and direction of view have been clearly stated 
+{gridimage id="30973" extra="GEOGRAPH : not only does it show some of the main geographical features of the square, it's also an extremely good representation of what could be seen from the given location and would greatly aid map interpretation."}
+{gridimage id="51014" extra="SUPPLEMENTAL : The image shows a relatively large number of grid squares but the photographer's position and direction of view have been clearly stated 
 However this is an image created from a single frame and the distortion caused by the ultra wide angle lens has made accurate determination of the lay of the land impossible."}
-{gridimage id="40467" extra="GEOGRAPH : The photographer’s viewpoint has been accurately stated and details of what can be seen have been included in the description. It would be better if the compass directions had been stated in the description so as not to affect the display dimensions of the picture and despite being a little dark it is possible to make out the geographical lie of the land from the given viewpoint"}
+{gridimage id="40467" extra="GEOGRAPH : The photographer's viewpoint has been accurately stated and details of what can be seen have been included in the description. It would be better if the compass directions had been stated in the description so as not to affect the display dimensions of the picture and despite being a little dark it is possible to make out the geographical lie of the land from the given viewpoint"}
 
 
 <br style="clear:both"/>
@@ -137,7 +137,7 @@ Images taken specifically for geograph are unlikely to fall into this category.<
 
 {gridimage id="39921" extra="GEOGRAPH The image has been accurately located to within 100m and details of the physical geography of the beach and the human element (the groyne and a marker built on it) are clearly visible."}
 {gridimage id="24467" extra="SUPPLEMENTAL This image has been very accurately located and described but contains hardly any visual geographic detail. It is not really acceptable for the purposes of the site but has been classed as supplemental so that it remains on the site as an example for the purposes of the guide. "}
-{gridimage id="53412" extra="SUPPLEMENTAL Roughly 2/3 of this image is sky – it looks like it has been taken more for visual impact than as a geograph. The inclusion of so much sky has resulted in underexposure of the geographically interesting land area (or its been digitally altered to appear dark to enhance the aesthetic appeal) either way its not a geograph but as some information can be gleaned we’ve accepted it as a supplemental."}
+{gridimage id="53412" extra="SUPPLEMENTAL Roughly 2/3 of this image is sky – it looks like it has been taken more for visual impact than as a geograph. The inclusion of so much sky has resulted in underexposure of the geographically interesting land area (or its been digitally altered to appear dark to enhance the aesthetic appeal) either way its not a geograph but as some information can be gleaned we've accepted it as a supplemental."}
 
 <br style="clear:both"/>
 
@@ -146,7 +146,7 @@ Images taken specifically for geograph are unlikely to fall into this category.<
 <p>Snaps that have been taken mainly to show family members on holiday are not normally accepted.  </p>
 
 {gridimage id="53182" extra="REJECT : typical example of the type not normally accepted for the purposes of the site."}
-{gridimage id="53234" extra="GEOGRAPH : Here’s an example where the inclusion of a family member doesn’t detract significantly from the geographic value of the image."}
+{gridimage id="53234" extra="GEOGRAPH : Here's an example where the inclusion of a family member doesn't detract significantly from the geographic value of the image."}
 
 <br style="clear:both"/>
 
@@ -160,8 +160,8 @@ are unlikely to be of acceptable quality for the purposes of the site.</p>
 
 <h2>Telephoto Images</h2>
 <p>We prefer people to try to get themselves into grid squares and take images at close range.
-Taking a telephoto lens up a hill and taking a shot from 5 or 6 miles away isn’t really what the 
-site is about, it generally doesn’t result in the level of detail we are looking for and spoils the 
+Taking a telephoto lens up a hill and taking a shot from 5 or 6 miles away isn't really what the 
+site is about, it generally doesn't result in the level of detail we are looking for and spoils the 
 game for those members who like the challenge of getting into the less accessible areas
 </p>
 {gridimage id="53400" extra="REJECT : Typical example of the type not normally acceptable.."}

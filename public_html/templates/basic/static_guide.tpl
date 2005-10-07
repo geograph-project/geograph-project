@@ -18,7 +18,7 @@ Pocket PC or GPS equipped with mapping software (for example Memory Map).</p>
 <h3>Example</h3>
 
 <div style="float:right;width:400px;">
-<img src="/templates/basic/img/guide_map.png" width="400" height="400" alt="Map of SD5300"> 
+<img src="/templates/basic/img/guide_map.png" width="400" height="400" alt="Map of SD5300"/> 
 <div class="copyright">Image produced from the Ordnance Survey Get-a-map service. Image reproduced with 
 kind permission of Ordnance Survey and Ordnance Survey of Northern Ireland.</div>
 </div>
@@ -51,17 +51,17 @@ square.</p>
 <p>Examples of representative photographs for the above location:</p>
 
 <div class="photo66">
-<img src="/templates/basic/img/guide1.jpg" width="422" height="317" alt="Photo of SD5300"> 
+<img src="/templates/basic/img/guide1.jpg" width="422" height="317" alt="Photo of SD5300"/> 
 <div class="caption">B5207 junction with Wigan Road/Main Street showing the Parish Church of St Aidan</div>
 </div>
 
 
 <div class="photo66">
-<img src="/templates/basic/img/guide2.jpg" width="422" height="317" alt="Photo of SD5300"> 
+<img src="/templates/basic/img/guide2.jpg" width="422" height="317" alt="Photo of SD5300"/> 
 <div class="caption">entrance to St Aidans Junior and Infant school within the surrounding residential area</div>
 </div>
 <div class="photo66">
-<img src="/templates/basic/img/guide3.jpg" width="422" height="317" alt="Photo of SD5300"> 
+<img src="/templates/basic/img/guide3.jpg" width="422" height="317" alt="Photo of SD5300"/> 
 <div class="caption">open farmland to the East of the grid square looking South towards Blackley Hurst Hall Farm from the B5207</div>
 </div>
 
