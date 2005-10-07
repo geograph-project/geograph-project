@@ -1067,7 +1067,7 @@ class GridImage
 			{
 				//we can use strftime
 				$t=strtotime($this->imagetaken);
-				$date=strftime("%A, %d %B, %Y", $t);   //%e doesnt seem to work here? changed to %d ????
+				$date=strftime("%A, %e %B, %Y", $t);   //%e doesnt work on WINDOWS!  (could use %d)
 			}
 			else
 			{
