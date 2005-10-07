@@ -143,7 +143,7 @@ if ($grid_given)
 				$firstpost=$db->GetRow("select * from geobb_posts where topic_id={$topic['topic_id']} order by post_time");
 				$topics[$idx]['post_text']=GeographLinks(str_replace('<br>', '<br/>', $firstpost['post_text']));
 				$topics[$idx]['realname']=$firstpost['poster_name'];
-				$topics[$idx]['post_time']=$firstpost['post_time'];
+				$topics[$idx]['topic_time']=$firstpost['post_time'];
 				$totalcomments += $topics[$idx]['comments'] + 1;
 			}
 			$smarty->assign_by_ref('discuss', $topics);
