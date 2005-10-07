@@ -190,17 +190,21 @@ function checkGridReferences(that_form) {
 function checkGridReference(that,showmessage) {
 	GridRef = /\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/;
 	if (that.value.length > 0) {
-		myArray = GridRef.exec(that.value);
-		numbers = myArray[2]+myArray[3];
-		if (numbers.length == 0 || numbers.length % 2 != 0) {
-			if (!showmessage) 
+		myArray = GridRef.exec(that.value); 
+		if (myArray && myArray.length > 0) {
+			numbers = myArray[2]+myArray[3];
+			if (numbers.length == 0 || numbers.length % 2 != 0) {
+				if (!showmessage) 
+					return false;
+				if (that.name == 'gridreference') {
+					alert("please enter a valid subject grid reference");
+				} else {
+					alert("please enter a valid photographer grid reference");
+				}
+				that.focus();
 				return false;
-			if (that.name == 'gridreference') {
-				alert("please enter a valid subject grid reference");
-			} else {
-				alert("please enter a valid photographer grid reference");
 			}
-			that.focus();
+		} else {
 			return false;
 		}
 	}
