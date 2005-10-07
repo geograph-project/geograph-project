@@ -83,7 +83,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		group by tenk_square 
 		having geograph_count > 0 and percentage >=100
 		order by percentage desc,tenk_square 
-		limit 50");
+		");
 		
 		$i = 1;
 		$lastgeographs = -1;
