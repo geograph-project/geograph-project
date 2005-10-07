@@ -35,7 +35,7 @@ interpreting the map information including:</p>
 <li>Historical interest</li>
 </ul>
 
-<p>These can be photographically interpreted in many different ways – this is definitely 
+<p>These can be photographically interpreted in many different ways - this is definitely 
 not an exhaustive list! </p>
 
 <p>The success of the site depends on a high image submission rate as well as on their 
@@ -72,7 +72,7 @@ with grid reference quoted to as many figures as accurately possible.</p>
 
 {gridimage id="13565" extra="SUPPLEMENTAL: A good subject and easy to locate on the map from the description but of borderline quality having been taken through dirty, wet glass! "} 
 {gridimage id="13252" extra="SUPPLEMENTAL: Doesn't show a significant geographical feature"} 
-{gridimage id="26355" extra="SUPPLEMENTAL: Although the road is easily identifiable from the description the image is poorly composed with >50% of it showing grey sky. Better framing showing more of the road would have made a good geograph."} 
+{gridimage id="26355" extra="SUPPLEMENTAL: Although the road is easily identifiable from the description the image is poorly composed with &gt;50% of it showing grey sky. Better framing showing more of the road would have made a good geograph."} 
  
 <br style="clear:both"/>
 
@@ -113,10 +113,10 @@ complement the geographical information available for a given grid square.</p>
 {gridimage id="33916" extra="SUPPLEMENTAL A close up of the Maize growing in the field. Had the grid reference been given more accurately the image could have been classed as a geograph given that a reasonable length of the path is shown."}
 {gridimage id="19334" extra="SUPPLEMENTAL : A close up of a pea plant in a field in Billinge provides interesting additional information to complement the other photographs for the square."}
 {gridimage id="13185" extra="SUPPLEMENTAL : Interesting additional image with accurate location information."}
-{gridimage id="50063" extra="SUPPLEMENTAL : The wall of the bridge contains a date stone and an ordnance survey bench mark – accurately locatable to within 10m !"}
+{gridimage id="50063" extra="SUPPLEMENTAL : The wall of the bridge contains a date stone and an ordnance survey bench mark - accurately locatable to within 10m !"}
 {gridimage id="16070" extra="SUPPLEMENTAL : Images taken inside a building or underground will in most cases be classed as supplemental."}
 {gridimage id="1480" extra="SUPPLEMENTAL : detail image of a Liverbird and the clock towers on top of the Liver building in Liverpool.."}
-{gridimage id="39315" extra="SUPPLEMENTAL : A fantastic image showing examples of the dramatic insect life to be found in the area – if you look closely enough!"}
+{gridimage id="39315" extra="SUPPLEMENTAL : A fantastic image showing examples of the dramatic insect life to be found in the area - if you look closely enough!"}
 <br style="clear:both"/>
 
 
@@ -137,7 +137,7 @@ Images taken specifically for geograph are unlikely to fall into this category.<
 
 {gridimage id="39921" extra="GEOGRAPH The image has been accurately located to within 100m and details of the physical geography of the beach and the human element (the groyne and a marker built on it) are clearly visible."}
 {gridimage id="24467" extra="SUPPLEMENTAL This image has been very accurately located and described but contains hardly any visual geographic detail. It is not really acceptable for the purposes of the site but has been classed as supplemental so that it remains on the site as an example for the purposes of the guide. "}
-{gridimage id="53412" extra="SUPPLEMENTAL Roughly 2/3 of this image is sky – it looks like it has been taken more for visual impact than as a geograph. The inclusion of so much sky has resulted in underexposure of the geographically interesting land area (or its been digitally altered to appear dark to enhance the aesthetic appeal) either way its not a geograph but as some information can be gleaned we've accepted it as a supplemental."}
+{gridimage id="53412" extra="SUPPLEMENTAL Roughly 2/3 of this image is sky - it looks like it has been taken more for visual impact than as a geograph. The inclusion of so much sky has resulted in underexposure of the geographically interesting land area (or its been digitally altered to appear dark to enhance the aesthetic appeal) either way its not a geograph but as some information can be gleaned we've accepted it as a supplemental."}
 
 <br style="clear:both"/>
 
