@@ -913,8 +913,6 @@ class GridImage
 		require_once('geograph/event.class.php');
 		new Event(EVENT_MODERATEDPHOTO, $this->gridimage_id);
 		
-		//updated cached tables
-		$this->updateCachedTables();	
 		
 		if ( !($status == 'rejected' && $this->moderation_status == 'pending') ) {
 		
@@ -928,6 +926,9 @@ class GridImage
 		//ok, update the image
 		$this->moderation_status=$status;
 	
+		//updated cached tables
+		$this->updateCachedTables();	
+		
 		//finally, we update status information for the gridsquare
 		$this->grid_square->updateCounts();
 		
