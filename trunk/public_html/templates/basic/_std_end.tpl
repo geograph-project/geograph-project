@@ -27,8 +27,6 @@
   </ul>
   {/if}
   
-  
-  
 {if $discuss}
 
 {foreach from=$discuss item=newsitem}
@@ -39,13 +37,11 @@ Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> 
 <a href="/discuss/index.php?action=vthread&amp;topic={$newsitem.topic_id}">({$newsitem.comments} {if $newsitem.comments eq 1}comment{else}comments{/if})</a>
 </div>
 
-
 {/foreach}
 
-{/if}    
+{/if}
   {/dynamic}
 
-  
 {if $news}
 
 {foreach from=$news item=newsitem}
@@ -56,13 +52,10 @@ Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> 
 <a href="/discuss/index.php?action=vthread&amp;topic={$newsitem.topic_id}">({$newsitem.comments} {if $newsitem.comments eq 1}comment{else}comments{/if})</a>
 </div>
 
-
 {/foreach}
 
-{/if}  
-  
-  
-  
+{/if}
+
   </div>
 </div>
 
@@ -70,17 +63,17 @@ Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> 
   <div id="search">
     <div id="searchform">
     <form method="get" action="/search.php">
-    <input type="hidden" name="form" value="simple"/>
     <div id="searchfield"><label for="searchterm">Search</label> 
+    <input type="hidden" name="form" value="simple"/>
     {dynamic}<input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10" title="Enter a Postcode, Grid Reference, Placename or a text search"/>{/dynamic}
     <input id="searchbutton" type="submit" name="go" value="Find"/></div>
     </form>
     </div>
     
   </div>
-  
+
   <div id="login">
-  
+
   {dynamic}
   {if $user->registered}
   	  Logged in as {$user->realname|escape:'html'}
