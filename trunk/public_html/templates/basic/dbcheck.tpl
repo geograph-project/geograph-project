@@ -7,7 +7,11 @@
 db server level, and also perform some application level sanity checks</p>
 
 <form method="post" action="dbcheck.php">
-<input type="checkbox" checked="checked" name="fix" value="1" id="fix"/>
+<input type="checkbox" checked="checked" name="dbtables" value="1" id="dbtables"/>
+<label for="dbtables">Database tables</label><br/>
+<input type="checkbox" checked="checked" name="gridsquares" value="1" id="gridsquares"/>
+<label for="gridsquares">Gridsquare Integrity Check</label><br/>
+&nbsp;<input type="checkbox" checked="checked" name="fix" value="1" id="fix"/>
 <label for="fix">Fix problems if possible</label><br/>
 
 <input type="submit" name="check" value="Perform Database Check"/>
