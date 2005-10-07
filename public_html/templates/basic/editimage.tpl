@@ -11,8 +11,18 @@
 
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
-  <div class="img-shadow">{$image->getFull()}</div>
-  <div class="caption">{$image->title|escape:'html'}</div>
+  {if $thumb}
+  	{if $isadmin}
+  		<a href="/editimage.php?id={$image->gridimage_id}&amp;thumb=0" style="font-size:0.6em">Switch to full Image</a>
+  	{/if}
+  	<div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(213,160)}</a></div>
+  {else}
+  	{if $isadmin}
+  		<a href="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" style="font-size:0.6em">Switch to thumbnail Image</a>
+  	{/if}
+  	<div class="img-shadow">{$image->getFull()}</div>
+  {/if}
+  <div class="caption"><b>{$image->title|escape:'html'}</b></div>
   
   {if $image->comment}
   <div class="caption">{$image->comment|escape:'html'|geographlinks}</div>
@@ -44,7 +54,7 @@
 	
 	{if $opentickets}	
 	<p>All change requests for this image are listed below. 
-	<a href="/editimage.php?id={$image->gridimage_id}&alltickets=0">Just show open requests.</a></p>
+	<a href="/editimage.php?id={$image->gridimage_id}&amp;alltickets=0">Just show open requests.</a></p>
 	{else}
 	<p>There have been no change requests logged for this image</p>
 
@@ -59,7 +69,7 @@
 
 	<p>There are no open change requests for this image. 
 	{/if}
-	To see older, closed requests, <a href="/editimage.php?id={$image->gridimage_id}&alltickets=1">view all requests</a></p>
+	To see older, closed requests, <a href="/editimage.php?id={$image->gridimage_id}&amp;alltickets=1">view all requests</a></p>
 {/if}
 
 {if $opentickets}

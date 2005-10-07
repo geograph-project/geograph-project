@@ -63,6 +63,25 @@ $cacheid='';
 
 $image=new GridImage;
 
+	//should we display a thumb
+	$thumb=false;
+	if (isset($_GET['thumb']))
+	{
+		$thumb=(bool)$_GET['thumb'];
+		$_SESSION['thumb']=$thumb;
+		//ToDo - if logged in user, save this in profile
+	}
+	elseif (false) //if logged in user
+	{
+			//get setting from profile
+	}
+	elseif (isset($_SESSION['thumb']))
+	{
+		$thumb=$_SESSION['thumb'];
+
+	}
+	$smarty->assign('thumb', $thumb);	
+
 if (isset($_REQUEST['id']))
 {
 	$image->loadFromId($_REQUEST['id']);
