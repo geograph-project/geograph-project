@@ -80,7 +80,7 @@
 <td><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->grid_reference}</a></td>
 <td>{$image->title}</td>
 <td sortvalue="{$image->submitted}" class="nowrap">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
-<td>{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</td>
+<td>{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if} {if $image->ftf}(first){/if}</td>
 <td sortvalue="{if $image->open_tickets}{$image->open_tickets}{/if}">{if $image->open_tickets}<a title="Click to view open change requests" href="/editimage.php?id={$image->gridimage_id}"><img src="/templates/basic/img/alert.gif" width="11" height="10"></a>{/if}</td>
 </tr>
 		{/foreach}
