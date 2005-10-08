@@ -27,6 +27,12 @@
   {if $image->comment}
   <div class="caption">{$image->comment|escape:'html'|geographlinks}</div>
   {/if}
+  {if $isadmin}
+  <div class="statuscaption">status:
+   {if $image->ftf}first{/if}
+   {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
+  {/if}
+  
 </div>
 
 {if $thankyou eq 'pending'}
@@ -127,10 +133,10 @@
 			Change {$item.field} from
 
 			
-			{if $item.field eq "grid_reference"}
-			  {getamap gridref=$item.oldvalue}
+			{if $item.field eq "grid_reference" || $item.field eq "photographer_gridref"}
+			  {getamap gridref=$item.oldvalue|default:'blank'}
 			  to
-			  {getamap gridref=$item.newvalue}
+			  {getamap gridref=$item.newvalue|default:'blank'}
 			  
 			{elseif $item.field eq "comment"}
 			  <br/>
