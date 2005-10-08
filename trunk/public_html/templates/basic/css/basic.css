@@ -321,6 +321,13 @@ div.caption
 	clear:left;
 	font-size:0.8em;
 }
+div.statuscaption
+{
+	clear:left;
+	font-size:0.7em;
+	color:silver;
+}
+
 
 div.rastermap {
   border: 1px solid #a9a9a9;
