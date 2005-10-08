@@ -80,17 +80,13 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 		
 		  <div style="float:left;" class="photo33"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160)}</a>
 		  <div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
-		  
-		  {if $is_admin}
-			  <div class="caption">status: {$image->moderation_status}
-			  {if $image->ftf}(FTF){/if}
-			  </div>
-		  {/if}
-		  
-		  
+
+		  <div class="statuscaption">status:
+			{if $image->ftf}first{/if}
+			{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
+
 		  </div>
-		  
-		  
+
 		{/foreach}
 		
 		<br style="clear:left;"/>&nbsp;
