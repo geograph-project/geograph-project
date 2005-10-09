@@ -72,6 +72,31 @@ require_once('geograph/user.class.php');
 
 
 
+	list($usec, $sec) = explode(' ',microtime());
+	$starttime = ((float)$usec + (float)$sec);
+ 
+  function log_it()
+  {
+   global $starttime,$USER;
+   $filename = date("Ymd-H");
+   $time = date("i:s");
+   
+   list($usec, $sec) = explode(' ',microtime());
+	$endtime = ((float)$usec + (float)$sec);
+   
+   $timetaken = $endtime - $starttime;
+   
+   $string = "$time,$timetaken,{$_SERVER['SCRIPT_URL']},{$_SERVER['REQUEST_METHOD']},{$_SERVER['QUERY_STRING']},{$_SERVER['REMOTE_ADDR']},{$USER->user_id}\n";
+   
+   $h = fopen("/home/barry/sitelogs/$filename.log",'a');
+   fwrite($h,$string);
+   fclose($h);   
+  }
+  register_shutdown_function('log_it');
+
+
+
+
 /**
 * Smarty block handler 
 * Although it doesn't appear to do much, this is registered as a
