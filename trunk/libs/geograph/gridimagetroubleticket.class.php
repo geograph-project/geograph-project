@@ -631,7 +631,7 @@ class GridImageTroubleTicket
 		$comment=trim($comment);
 		$dbcomment=$comment;
 		if (strlen($dbcomment)) {
-			if (!preg_match("/\.$/",$dbcomment))
+			if (!preg_match("/[\.\!]$/",$dbcomment))
 				$dbcomment.=".";
 			$dbcomment.="\n ";
 		}
