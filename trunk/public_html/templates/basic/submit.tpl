@@ -160,7 +160,7 @@ geographing</a> first.</p>
 	{if $imagecount gt 0}
 	{foreach from=$images item=image}
 
-	  <div class="photo33" style="float:left;width:150px"><a title="view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(120,120)}</a>
+	  <div class="photo33" style="float:left;width:150px"><a title="{$image->title|escape:'html'} by {$image->realname} - click to view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(120,120,false,true)}</a>
 	  <div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->title|escape:'html'}</a></div>
 	  <div class="statuscaption">status:
 		{if $image->ftf}first{/if}

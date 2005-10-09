@@ -710,7 +710,7 @@ class GridImage
 	* handy helper for Smarty templates, for instance, given an instance of this
 	* class, you can use this {$image->getThumbnail(213,160)} to show a thumbnail
 	*/
-	function getThumbnail($maxw, $maxh,$urlonly = false)
+	function getThumbnail($maxw, $maxh,$urlonly = false,$fullalttag = false)
 	{
 		global $CONF;
 		//establish whether we have a cached thumbnail
@@ -828,7 +828,7 @@ class GridImage
 		}
 		else
 		{
-			$title=htmlentities($this->title);
+			$title=$this->grid_reference.' : '.htmlentities($this->title).' by '.$this->realname;
 			
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]} />";
@@ -867,6 +867,8 @@ class GridImage
 		
 		//we want to detect changes in ftf status...a pending image is always ftf 0
 		$original_ftf=$this->ftf;
+		
+		//todo: lock tables
 		
 		//you only get ftf if new status is 'geograph' and there are no other 
 		//geograph images
@@ -907,6 +909,8 @@ class GridImage
 			}
 
 		}
+		
+		//todo: unlock tables. 
 		
 		//fire an event (a lot of the stuff that follows should 
 		//really be done asynchronously by an event handler
