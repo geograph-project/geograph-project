@@ -22,7 +22,7 @@
   	{/if}
   	<div class="img-shadow">{$image->getFull()}</div>
   {/if}
-  <div class="caption"><b>{$image->title|escape:'html'}</b></div>
+  <div class="caption"><b>{$image->title|escape:'html'}</b> by {$image->realname}</div>
   
   {if $image->comment}
   <div class="caption">{$image->comment|escape:'html'|geographlinks}</div>
@@ -318,6 +318,9 @@ function onChangeImageclass()
 	<p><label>Date picture taken {if $moderated.imagetaken}<span class="moderatedlabel">(moderated)</span>{/if}</label> <br/>
 	{html_select_date prefix="imagetaken" time=`$image->imagetaken` start_year="-200" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" day_value_format="%02d" month_value_format="%m"}
 	<br/><small>(please provide as much detail as possible, if you only know the year or month then that's fine)</small></p>
+{else}
+<p><label>Date picture taken</label> <span class="moderatedlabel">(only changable by submitter)</span><br/>
+	{html_select_date prefix="imagetaken" time=`$image->imagetaken` start_year="-200" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" day_value_format="%02d" month_value_format="%m" all_extra="disabled"}</p>
 {/if}
 
 
