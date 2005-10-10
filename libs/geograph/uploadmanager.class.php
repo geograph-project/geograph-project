@@ -468,8 +468,9 @@ class UploadManager
 		$this->db->Query($sql);
 		
 		//increment image count
-		$this->db->Query("update gridsquare set imagecount=imagecount+1 ".
-			"where gridsquare_id={$this->square->gridsquare_id}");
+		//imagecount shouldnt any longer include the pending images!
+		//$this->db->Query("update gridsquare set imagecount=imagecount+1 ".
+		//	"where gridsquare_id={$this->square->gridsquare_id}");
 		
 		//invalidate any cached maps
 		//require_once('geograph/mapmosaic.class.php');
