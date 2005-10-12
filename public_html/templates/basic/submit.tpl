@@ -103,11 +103,11 @@ geographing</a> first.</p>
 	{/if}
 		{if $imagecount gt 0}
 			<p style="color:#440000">We already have 
-			{if $imagecount eq 1}an image{else}{$imagecount} images{/if} {if $totalimagecount} ({$totalimagecount} including hidden){/if} (shown below)
+			{if $imagecount eq 1}an image{else}{$imagecount} images{/if} {if $totalimagecount && $totalimagecount ne $imagecount} ({$totalimagecount} including hidden){/if} (shown below)
 			uploaded for <a title="View Images for {$gridref} (opens in new window)" href="/gridref/{$gridref}" target="_blank">{$gridref}</a>, but you are welcome to upload 
 			another one.</p>
 		{else}
-			<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}! {if $totalimagecount} (but you have {$totalimagecount} hidden){/if}</p>
+			<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}! {if $totalimagecount && $totalimagecount ne $imagecount} (but you have {$totalimagecount} hidden){/if}</p>
 		{/if}
 
 
