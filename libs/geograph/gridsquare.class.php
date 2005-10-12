@@ -614,7 +614,7 @@ class GridSquare
 		return $places;
 	}
 	
-	function &getImages()
+	function &getImages($inc_all_user = false)
 	{
 		$db=&$this->_getDB();
 		$images=array();
@@ -624,7 +624,8 @@ class GridSquare
 			"from gridimage ".
 			"inner join user using(user_id) ".
 			"where gridsquare_id={$this->gridsquare_id} ".
-			"and moderation_status in ('accepted', 'geograph')".
+			"and (moderation_status in ('accepted', 'geograph') ".
+			($inc_all_user?"or user.user_id = $inc_all_user":'').") ".
 			"order by moderation_status+0 desc,seq_no");
 		while (!$recordSet->EOF) 
 		{
