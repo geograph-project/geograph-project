@@ -109,13 +109,17 @@ if ($grid_given)
 		
 		}
 		
+		$images=$square->getImages($USER->user_id);
+		$square->totalimagecount = count($images);
+		
 		//otherwise, lets gether the info we need to display some thumbs
-		if ($square->imagecount)
+		if ($square->totalimagecount)
 		{
-			$images=$square->getImages();
 			$smarty->assign_by_ref('images', $images);
 		}
-
+		
+		$smarty->assign('totalimagecount', $square->totalimagecount);
+		
 		//geotag the page	
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;

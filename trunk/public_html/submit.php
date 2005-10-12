@@ -290,8 +290,11 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('lat', $lat);
 			$smarty->assign('long', $long);
 
-			if ($square->imagecount > 0) {
-				$images=$square->getImages();
+			$images=$square->getImages($USER->user_id);
+			$square->totalimagecount = count($images);
+			$smarty->assign('totalimagecount', $square->totalimagecount);
+				
+			if ($square->totalimagecount > 0) {
 				$smarty->assign_by_ref('images', $images);
 			}
 		}
