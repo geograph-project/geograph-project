@@ -103,11 +103,11 @@ geographing</a> first.</p>
 	{/if}
 		{if $imagecount gt 0}
 			<p style="color:#440000">We already have 
-			{if $imagecount eq 1}an image{else}{$imagecount} images{/if} (shown below)
+			{if $imagecount eq 1}an image{else}{$imagecount} images{/if} {if $totalimagecount} ({$totalimagecount} including hidden){/if} (shown below)
 			uploaded for <a title="View Images for {$gridref} (opens in new window)" href="/gridref/{$gridref}" target="_blank">{$gridref}</a>, but you are welcome to upload 
 			another one.</p>
 		{else}
-			<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}!</p>
+			<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}! {if $totalimagecount} (but you have {$totalimagecount} hidden){/if}</p>
 		{/if}
 
 
@@ -157,7 +157,7 @@ geographing</a> first.</p>
 	<input type="submit" name="goback" value="&lt; Back"/> <input type="submit" name="upload" value="Next &gt;" onclick="return checkGridReferences(this.form)"/>
 	<br style="clear:right"/>
 
-	{if $imagecount gt 0}
+	{if $totalimagecount gt 0}
 	{foreach from=$images item=image}
 
 	  <div class="photo33" style="float:left;width:150px"><a title="{$image->title|escape:'html'} by {$image->realname} - click to view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(120,120,false,true)}</a>
