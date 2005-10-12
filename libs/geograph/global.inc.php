@@ -71,7 +71,7 @@ require_once('smarty/libs/Smarty.class.php');
 require_once('geograph/user.class.php');
 
 
-
+if (0) {
 	list($usec, $sec) = explode(' ',microtime());
 	$starttime = ((float)$usec + (float)$sec);
  
@@ -93,7 +93,7 @@ require_once('geograph/user.class.php');
    fclose($h);   
   }
   register_shutdown_function('log_it');
-
+}
 
 
 
