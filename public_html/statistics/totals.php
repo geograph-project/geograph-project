@@ -30,9 +30,6 @@ $smarty = new GeographPage;
 $template='statistics_totals.tpl';
 $cacheid='statistics|totals';
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hr cache
-
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db=NewADOConnection($GLOBALS['DSN']);
@@ -59,10 +56,29 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$count['autologin__30dayusers']=$db->GetOne("select count(distinct user_id)-1 from autologin where created > date_sub(now(), interval 30 day)");
 	
+	$smarty->assign_by_ref("count", $count);
 	
 	
+function count_files($dir,$ext) {
+	$c = 0;
+	$dir = "../".$dir;
+	if (is_dir($dir) && $dh = opendir($dir)) {
+		while (($file = readdir($dh)) !== false) 
+			if (preg_match('/\.'.$ext.'$/',$file) )
+				$c++;
+		closedir($dh);
+	}
+	return $c;
+}
 	
-	$smarty->assign_by_ref("count", $count);		
+	$files['rss'] = count_files("rss/","...");
+	$files['memorymap'] = count_files("memorymap/","csv");
+	$files['tpraw'] = count_files("templates/basic/","tpl");
+	$files['tpcompiled'] = count_files("templates/basic/compiled/","php");
+	$files['tpcache'] = count_files("templates/basic/cache/","tpl");
+	
+	$smarty->assign_by_ref("files", $files);
+	
 		
 	$smarty->assign('generation_time', time());
 	
