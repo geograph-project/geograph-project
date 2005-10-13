@@ -263,11 +263,11 @@ function setdate(name,date,form) {
 			ele[i].selected = true;
 	ele = form.elements[name+'Month'].options;
 	for(i=0;i<ele.length;i++) 
-		if (ele[i].value == parts[1]) 
+		if (parseInt(ele[i].value) == parts[1]) 
 			ele[i].selected = true;
 	ele = form.elements[name+'Day'].options;
 	for(i=0;i<ele.length;i++) 
-		if (ele[i].value == parts[2]) 
+		if (parseInt(ele[i].value) == parts[2]) 
 			ele[i].selected = true;
 }
 
