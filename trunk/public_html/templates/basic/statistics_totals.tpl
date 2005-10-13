@@ -10,7 +10,6 @@
 <ul>
 <li><b>{$count.gridprefix}</b> Known 100x100km Grid Squares (<b>{$count.gridprefix__land}</b> on land)</li>
 <li><b>{$count.gridsquare}</b> Known 1x1km Grid Squares (<b>{$count.gridsquare__land}</b> on land)</li>
-<li><b>{$count.mapcache}</b> Rendered Map Tiles</li>
 <li><b>{$count.geobb_users}</b> Registered Users (<b>{$count.autologin__30dayusers}</b> active in last 30 days)</li>
 </ul>
 
@@ -35,7 +34,8 @@
 <li><b>{$count.queries}</b> searches preformed<ul>
 	<li>by <b>{$count.queries__users}</b> different users</li>
 </ul></li>
-<li><b>{$count.sessions}</b> recent visitors</li>
+<li><b>{$count.sessions}</b> visitors in the last 24 minutes</li>
+<li><b>{$count.apikeys}</b> sites using the geograph API</li>
 <li><b>{$count.loc_counties}</b> counties</li>
 <li><b>{$count.loc_postcodes}</b> sector level postcodes</li>
 <li><b>{$count.loc_placenames}</b> gazetteer features (<b>{$count.loc_dsg}</b> types)<ul>
@@ -43,7 +43,16 @@
 </ul></li>
 <li><b>{$count.loc_wikipedia}</b> wikipedia placenames for map plotting</li>
 <li><b>{$count.loc_towns}</b> important towns for map plotting</li>
-<li><b>{$count.apikeys}</b> sites using the geograph API</li>
+</ul>
+
+<p>Files Genetated:</p>
+
+<ul>
+<li><b>{$count.mapcache}</b> rendered map tiles</li>
+<li><b>{$files.rss}</b> syndicated feeds</li>
+<li><b>{$files.memorymap}</b> memorymap feeds</li>
+<li><b>{$files.tpcompiled}</b> templates (made of <b>{$files.tpraw}</b> components)</li>
+<li><b>{$files.tpcache}</b> rendered pages</li>
 </ul>
 
 <br style="clear:both"/>
