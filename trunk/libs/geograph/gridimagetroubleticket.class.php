@@ -262,12 +262,17 @@ class GridImageTroubleTicket
 			}
 			elseif ($fieldname=="photographer_gridref")
 			{
-				//neet to parse value for nat coords
+				//need to parse value for nat coords
 				$sq=new GridSquare;
 				if ($sq->setByFullGridRef($newvalue))
 				{
 					$img->viewpoint_eastings=$sq->getNatEastings();
 					$img->viewpoint_northings=$sq->getNatNorthings();
+					$this->commit_count++;
+				} elseif(empty($newvalue)) {
+					// we are setting to 'blank'
+					$img->viewpoint_eastings = 0;
+					$img->viewpoint_northings = 0;
 					$this->commit_count++;
 				}
 				
