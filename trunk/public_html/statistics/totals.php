@@ -51,11 +51,15 @@ if (!$smarty->is_cached($template, $cacheid))
 	$count['gridsquare__land']=$db->CacheGetOne(14*24*3600,"select count(*) from gridsquare where percent_land > 0");
 	$count['gridprefix__land']=$db->CacheGetOne(14*24*3600,"select count(*) from gridprefix where landcount > 0");
 	$count['geobb_posts__users']=$db->GetOne("select count(distinct poster_id) from geobb_posts");
+	$count['geobb_topics__views']=$db->GetOne("select sum(topic_views) from geobb_topics");
 	$count['gridimage_ticket__users']=$db->GetOne("select count(distinct user_id) from gridimage_ticket");
 	$count['gridimage__users']=$db->GetOne("select count(distinct user_id) from gridimage");
 	//-1 beucase will count all anon users as 1 user (user_id = 0)
 	$count['queries__users']=$db->GetOne("select count(distinct user_id)-1 from queries");
-		
+	
+	$count['autologin__30dayusers']=$db->GetOne("select count(distinct user_id)-1 from autologin where created > date_sub(now(), interval 30 day)");
+	
+	
 	
 	
 	$smarty->assign_by_ref("count", $count);		
