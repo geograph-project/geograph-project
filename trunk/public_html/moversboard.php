@@ -42,35 +42,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed'); 
 	
-	//get counts of geographs by user for last 7 days
-	$sql="select i.user_id,u.realname,count(*) as geographs,0 as pending from gridimage as i ".
-		"inner join user as u using(user_id) ".
-		"where i.submitted > date_sub(now(), interval 7 day) and ".
-		"i.ftf=1 and i.moderation_status='geograph' ".
-		"group by i.user_id,i.moderation_status ".
-		"order by geographs desc";
+	//we want to find all users with geographs/pending images 
+	$sql="select i.user_id,u.realname,sum(i.moderation_status='geograph') as geographs, sum(i.moderation_status='pending') as pending from gridimage as i ".
+			"left join user as u using(user_id) ".
+			"where i.submitted > date_sub(now(), interval 170 day) ".
+			"group by i.user_id ".
+			"order by geographs desc,pending desc";
 	$topusers=$db->GetAssoc($sql);
-	
-	//now we want to find all users with pending images and add them to this array
-	$sql="select i.user_id,u.realname,0 as geographs, count(*) as pending from gridimage as i ".
-			"inner join user as u using(user_id) ".
-			"where i.submitted > date_sub(now(), interval 7 day) and ".
-			"i.moderation_status='pending' ".
-			"group by i.user_id,i.moderation_status ".
-			"order by pending desc";
-	$pendingusers=$db->GetAssoc($sql);
-	foreach($pendingusers as $user_id=>$pending)
-	{
-		if (isset($topusers[$user_id]))
-		{
-			$topusers[$user_id]['pending']=$pending['pending'];
-		}
-		else
-		{
-			$topusers[$user_id]=$pending;
-		}
-	}
-	
+		
 	//assign an ordinal
 
 	$i++;
