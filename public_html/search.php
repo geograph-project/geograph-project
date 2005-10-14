@@ -34,9 +34,13 @@ $sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','submitted'
 #,'user_id'=>'Contributer ID'
 
 //available as a function, as doesn't come into effect if just re-using a smarty cache
-function dieUnderHighLoad() {
-	global $smarty;
+function dieUnderHighLoad($threshold = 2) {
+	global $smarty,$USER;
 	if (strpos($_ENV["OS"],'Windows') === FALSE) {
+		//lets give registered users a bit more leaway!
+		if ($USER->registered) {
+			$threshold *= 2;
+		}
 		//check load average, abort if too high
 		$buffer = "0 0 0";
 		$f = fopen("/proc/loadavg","r");
@@ -50,7 +54,7 @@ function dieUnderHighLoad() {
 		$loads = explode(" ",$buffer);
 		$load=(float)$loads[0];
 
-		if ($load>2)
+		if ($load>$threshold)
 		{
 			$smarty->assign('searchq',stripslashes($_GET['q']));	
 			$smarty->display('search_unavailable.tpl');	
@@ -188,7 +192,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	}
 
 } else if ($_GET['form'] == 'advanced') {
-	dieUnderHighLoad();
+	dieUnderHighLoad(1.5);
 	// -------------------------------
 	//  Advanced Form
 	// -------------------------------
@@ -302,7 +306,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	$cacheid="search|".$_GET['i'].".".$pg;
 	
 	if (!$smarty->is_cached($template, $cacheid)) {
-		dieUnderHighLoad();
+		dieUnderHighLoad(3);
 		
 		$smarty->assign('querytime', $engine->Execute($pg)); 
 		
