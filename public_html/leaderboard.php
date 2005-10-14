@@ -53,7 +53,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	"from gridimage_search where ftf=1 ".
 	"group by user_id order by imgcount desc limit 49,1");
 	
-	$topusers=$db->GetAll("select user.user_id,realname,count(*) as imgcount,max(submitted) as last  ".
+	$topusers=$db->GetAll("select user_id,realname,count(*) as imgcount,max(submitted) as last  ".
 	"from gridimage_search where ftf=1 ".
 	"group by user_id HAVING imgcount >= {$rank50[0]} order by imgcount desc,last asc ");
 	
