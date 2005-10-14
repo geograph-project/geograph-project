@@ -119,7 +119,7 @@ if ($template=='profile.tpl')
 		else
 			$statuses=array('accepted', 'geograph');
 		
- 		$images->getImagesByUser($uid, $statuses,'submitted desc',$limit);
+ 		$images->getImagesByUser($uid, $statuses,'gridimage_id desc',$limit);
 		$images->assignSmarty($smarty, 'userimages');
 		
 		if (count($images->images) == $limit) {
