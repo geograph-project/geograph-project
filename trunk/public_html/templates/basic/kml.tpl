@@ -47,7 +47,7 @@
 			 <td><b><label for="type_static">Simple</label></b><br/>
 			 View your search results in Google Earth.</td> 
 			 <td rowspan="2"><label for="page">Download Page</label><br/>
-				<input type="text" name="page" value="{$currentPage}" size="3" id="page"> of {if $engine->numberOfPages}{$engine->numberOfPages}{else}results{/if}.</td> 
+				<input type="text" name="page" value="{$currentPage}" size="3" id="page"/> of {if $engine->numberOfPages}{$engine->numberOfPages}{else}results{/if}.</td> 
 		  </tr> 
 		  <tr> 
 			 <td><input type="radio" name="type" value="time" id="type_time"/></td> 
