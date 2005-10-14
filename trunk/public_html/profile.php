@@ -97,9 +97,10 @@ if ($template=='profile.tpl')
 		$limit = 50000;
 	} else {
 		$limit = 100;
-		$cacheid=".$limit";
+		$cacheid.="_$limit";
 	}
 	
+
 	if (!$smarty->is_cached($template, $cacheid))
 	{
 		require_once('geograph/imagelist.class.php');
