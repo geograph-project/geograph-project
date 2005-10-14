@@ -43,14 +43,22 @@ div.r
 }
 
 
-div.t
+div.t1
+{
+	font-family:Arial,Verdana;
+	font-size:0.3em;
+	padding:0;
+	margin:0;
+	line-height:1.4em;
+}
+
+div.t2
 {
 	font-family:Arial,Verdana;
 	font-size:0.8em;
 	padding:0;
 	margin:0;
 	line-height:0.5em;
-	
 }
 
 div.zx 
@@ -71,8 +79,7 @@ div.zy
 
 
 <div style="position:absolute;padding:5px;left:0.2em;top:0.2em;width:10em;height:1em;font-size:4em;border:1px solid black;background:white;">
-<div style="font-size:12pt;font-family:Georgia;Arial;">Print this sheet and take it out with you to mark off the squares that you do, and avoid the squares that
-have already been done.<br/><div style="text-align:right; font-size:0.7em">Generated {$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</div></div>
+<div style="font-size:12pt;font-family:Georgia;Arial;">Print this sheet and take it out with you to mark off the squares that you do, squares with Geographs are marked with an X, supp marks squares with only supplemental images, and pend on squares with unmoderated images.<br/><div style="text-align:right; font-size:0.7em">Generated {$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</div></div>
 </div>
 
     
@@ -80,7 +87,7 @@ have already been done.<br/><div style="text-align:right; font-size:0.7em">Gener
 {*begin map square divs*}
 {foreach from=$grid key=x item=maprow}
 {foreach from=$maprow key=y item=mapcell}
-<div class="{if $mapcell.has_geographs}g2{else}g1{/if}{if substr($mapcell.grid_reference,3,1) == '0'} zx{/if}{if substr($mapcell.grid_reference,5,1) == '0'} zy{/if}" style="left:{$x+0.2}em;top:{$y+1.6}em;"><div class="t">{if $mapcell.has_geographs}x{else}&nbsp;{/if}</div><div class="r">{$mapcell.grid_reference}</div></div>
+<div class="{if $mapcell.has_geographs}g2{else}g1{/if}{if substr($mapcell.grid_reference,3,1) == '0'} zx{/if}{if substr($mapcell.grid_reference,5,1) == '0'} zy{/if}" style="left:{$x+0.2}em;top:{$y+1.6}em;"><div class="{if $mapcell.has_geographs}t2{else}t1{/if}">{if $mapcell.has_geographs}x{else}{if $mapcell.pending}pend{else}{if $mapcell.accepted}supp{else}&nbsp;{/if}{/if}{/if}</div><div class="r">{$mapcell.grid_reference}</div></div>
 {/foreach}
 {/foreach}
 
