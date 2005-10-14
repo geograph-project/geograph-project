@@ -144,6 +144,36 @@ class GridSquare
 		$this->errormsg=$msg;
 	}
 	
+	function assignDiscussionToSmarty(&$smarty) 
+	{
+		$db=&$this->_getDB();
+		
+		$sql='select t.topic_id,posts_count-1 as comments,CONCAT(\'Discussion on \',t.topic_title) as topic_title '.
+			'from gridsquare_topic as gt '.
+			'inner join geobb_topics as t using (topic_id)'.
+			'where '.
+			"gt.gridsquare_id = {$this->gridsquare_id} ".
+			'order by t.topic_time desc';
+		
+		$topics=$db->GetAll($sql);
+		if ($topics)
+		{
+			$news=array();
+
+			foreach($topics as $idx=>$topic)
+			{
+				$firstpost=$db->GetRow("select post_text,poster_name,post_time from geobb_posts where topic_id={$topic['topic_id']} order by post_time");
+				$topics[$idx]['post_text']=GeographLinks(str_replace('<br>', '<br/>', $firstpost['post_text']));
+				$topics[$idx]['realname']=$firstpost['poster_name'];
+				$topics[$idx]['topic_time']=$firstpost['post_time'];
+				$totalcomments += $topics[$idx]['comments'] + 1;
+			}
+			$smarty->assign_by_ref('discuss', $topics);
+			$smarty->assign('totalcomments', $totalcomments);	
+		}
+	}
+	
+	
 	/**
 	* Conveience function to get six figure GridRef
 	*/
@@ -166,8 +196,9 @@ class GridSquare
 			//after ordering by x,y - you'll get the bottom
 			//left gridprefix, and hence the origin
 			
+			//todo - use CONF instead of a db lookup
 			$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index={$this->reference_index} order by origin_x,origin_y limit 1");	
-			
+		
 			$square['origin_x'] -= $origin['origin_x'];
 			$square['origin_y'] -= $origin['origin_y'];
 			
