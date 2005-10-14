@@ -63,6 +63,12 @@
 {if $profile->stats.total gt 0}
 	<h3><a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1'>Photographs</a></h3>
 	<p>Click column headers to sort in a different order</p>
+	
+	{if $limit}
+
+		<p>Showing last {$limit} images, <a href="profile.php?u={$profile->user_id}&amp;all=1" rel="nofollow">click here to see all results</a></p>
+	{/if}
+	
 	<table class="report sortable" id="photolist" style="font-size:8pt;">
 	<thead><tr>
 		<td><img title="Any grid square discussions?" src="/templates/basic/img/discuss.gif" width="10" height="10"> ?</td>
@@ -85,6 +91,12 @@
 </tr>
 		{/foreach}
 </tbody></table>
+
+	{if $limit}
+		<p>Showing last {$limit} images, <a href="profile.php?u={$profile->user_id}&amp;all=1" rel="nofollow">click here to see all results</a></p>
+	{/if}
+		
+	
 {/if} 	
 
 
