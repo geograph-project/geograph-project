@@ -34,6 +34,8 @@ $template='view.tpl';
 
 $cacheid=0;
 
+$smarty->caching = 2; // lifetime is per cache
+$smarty->cache_lifetime = 3600*3; //3hour cache
 
 $image=new GridImage;
 
@@ -106,7 +108,7 @@ if ($image->isValid())
 		$smarty->assign('page_title', $image->title.":: OS grid {$image->grid_reference}");
 		$smarty->assign('meta_description', $image->comment);
 		$smarty->assign('image_taken', $taken);
-		$smarty->assign('ismoderator', $USER->hasPerm('moderator')?1:0);
+		$smarty->assign('ismoderator', $ismoderator);
 		$smarty->assign_by_ref('image', $image);
 
 		//get a token to show a suroudding geograph map
@@ -116,35 +118,13 @@ if ($image->isValid())
 
 
 		//find a possible place within 25km
-		$smarty->assign('place', $image->grid_square->findNearestPlace(135000));
+		$smarty->assign('place', $image->grid_square->findNearestPlace(25000));
 
 		//let's find posts in the gridref discussion forum
-		$db=NewADOConnection($GLOBALS['DSN']);
-		
-		$sql='select topic_id,posts_count-1 as comments,CONCAT(\'Discussion on \',t.topic_title) as topic_title '.
-			'from geobb_topics as t '.
-			'where t.forum_id=5 and '.
-			't.topic_title = \''.mysql_escape_string($image->grid_square->grid_reference).'\' '.
-			'order by t.topic_time desc';
-		$topics=$db->GetAll($sql);
-		if ($topics)
-		{
-			$news=array();
-			
-			foreach($topics as $idx=>$topic)
-			{
-				$firstpost=$db->GetRow("select * from geobb_posts where topic_id={$topic['topic_id']} order by post_time");
-				$topics[$idx]['post_text']=GeographLinks(str_replace('<br>', '<br/>', $firstpost['post_text']));
-				$topics[$idx]['realname']=$firstpost['poster_name'];
-				$topics[$idx]['topic_time']=$firstpost['post_time'];
-				$totalcomments += $topics[$idx]['comments'] + 1;
-			}
-			$smarty->assign_by_ref('discuss', $topics);
-			$smarty->assign('totalcomments', $totalcomments);	
-		}
+		$image->grid_square->assignDiscussionToSmarty($smarty);
 		
 		//count the number of photos in this square
-		$smarty->assign('square_count', $db->getOne("select count(*) from gridimage_search where grid_reference = '{$image->grid_reference}'"));
+		$smarty->assign('square_count', $image->grid_square->imagecount);
 
 		//lets add an overview map too
 		$overview=new GeographMapMosaic('overview');
