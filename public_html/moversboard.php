@@ -32,6 +32,9 @@ $smarty = new GeographPage;
 $template='moversboard.tpl';
 $cacheid='';
 
+if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
+	$smarty->clear_cache($template, $cacheid);
+
 if (!$smarty->is_cached($template, $cacheid))
 {
 	require_once('geograph/gridimage.class.php');
@@ -45,7 +48,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	//we want to find all users with geographs/pending images 
 	$sql="select i.user_id,u.realname,sum(i.moderation_status='geograph') as geographs, sum(i.moderation_status='pending') as pending from gridimage as i ".
 			"left join user as u using(user_id) ".
-			"where i.submitted > date_sub(now(), interval 170 day) ".
+			"where i.submitted > date_sub(now(), interval 7 day) ".
 			"group by i.user_id ".
 			"order by geographs desc,pending desc";
 	$topusers=$db->GetAssoc($sql);
