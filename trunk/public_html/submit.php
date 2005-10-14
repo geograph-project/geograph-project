@@ -244,7 +244,7 @@ if (isset($_POST['gridsquare']))
 		
 		if ($step == 3) {
 			//find a possible place within 25km
-			$smarty->assign('place', $square->findNearestPlace(135000));
+			$smarty->assign('place', $square->findNearestPlace(25000));
 			
 			
 			$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
