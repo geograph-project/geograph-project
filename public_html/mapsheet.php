@@ -59,7 +59,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	$grid=&$map->getGridArray();
 	$smarty->assign_by_ref('grid', $grid);
 	
+	$ri = $grid[0][0]['reference_index'];
 	
+	$letterlength = 3 - $ri; #todo should this be auto-realised by selecting a item from gridprefix? (or a grid_reference)
+
+	$smarty->assign('ofe', $letterlength + 1);
+	$smarty->assign('ofn', $letterlength + 3);
 	
 	//assign all the other useful stuff
 	$smarty->assign('gridref', $map->getGridRef(-1,-1));
