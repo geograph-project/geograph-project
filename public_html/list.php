@@ -35,6 +35,10 @@ $cacheid='list|'.substr($_GET['square'],0,2);
 if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
 	$smarty->clear_cache($template, 'list');
 
+
+$smarty->caching = 2; // lifetime is per cache
+$smarty->cache_lifetime = 3600*12; //12hr cache
+
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -51,46 +55,41 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$page_title='Photograph Listing';
 
-	$prefixes=$db->GetAll("select * from gridprefix where landcount>0");
+	$prefixes=$db->CacheGetAll(24*3600,"select 
+	LEFT(grid_reference,LENGTH(grid_reference)-4) as gi_prefix,
+	prefix,origin_x,width,origin_y,height,gridprefix.reference_index,gridprefix.title,
+	count(*) as imagecount
+	from gridimage_search
+	left join gridprefix on (LEFT(grid_reference,LENGTH(grid_reference)-4) = prefix)
+	where landcount>0
+	group by gi_prefix 
+	order by title");
 	foreach ($prefixes as $prefix)
 	{
-		$squares[$i]=$prefix;
-		$images=new ImageList;
-
 		//which method to use?
 		if ($_GET['square']==$prefix['prefix'])
 		{
-			$getImages="getImagesByArea";
 			$page_title='Photograph Listing ('.$prefix['title'].')';
-		}
-		else
-		{
-			$getImages="countImagesByArea";
-		}
 		
-
-		$count=$images->$getImages($prefix['origin_x'],$prefix['origin_x']+$prefix['width']-1,
+			$images=new ImageList;
+		
+			$count=$images->getImagesByArea($prefix['origin_x'],$prefix['origin_x']+$prefix['width']-1,
 			$prefix['origin_y']+$prefix['height']-1,$prefix['origin_y'], $prefix['reference_index']);
-		if ($count>0)
-		{
-			$squares[$i]['imagecount']=$count;
-			$squares[$i]['images']=$images->images;
-			
-			
-			
-			$i++;
+			if ($count>0)
+			{
+				$prefixes[$i]['images']=$images->images;
+			}
+			else
+			{
+				//forget about it
+				unset($images);
+			}
 		}
-		else
-		{
-			//forget about it
-			unset($squares[$i]);
-			unset($images);
-		}
-
+		$i++;
 	}
 
 	$smarty->assign_by_ref('page_title', $page_title);
-	$smarty->assign_by_ref('squares', $squares);
+	$smarty->assign_by_ref('squares', $prefixes);
 }
 
 $smarty->display($template, $cacheid);
