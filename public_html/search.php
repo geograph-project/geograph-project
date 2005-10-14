@@ -30,7 +30,7 @@ if ($_GET['i'])
 	$_GET['i']=intval(stripslashes($_GET['i']));
 
 $imagestatuses = array('geograph' => 'geograph only','geograph,accepted' => 'geographs &amp; supplemental','accepted' => 'supplemental only');
-$sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','submitted'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributer Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North');
+$sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributer Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North');
 #,'user_id'=>'Contributer ID'
 
 //available as a function, as doesn't come into effect if just re-using a smarty cache
@@ -268,6 +268,8 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		}
 		$smarty->assign('distance', $query['limit8']);
 		
+		$query['orderby'] = preg_replace('/^submitted/','gridimage_id',$query['orderby']);
+		
 		if (strpos($query['orderby'],' desc') > 0) {
 			$smarty->assign('orderby', preg_replace('/ desc$/','',$query['orderby']));
 			$smarty->assign('reverse_order_checked', 'checked="checked"');
@@ -344,8 +346,8 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 			if (!$db) die('Database connection failed');
 		}
 		//list of a few image classes 
-		$arr = $db->GetAssoc("select imageclass,concat(imageclass,' [',count(*),']') from gridimage ".
-			"where length(imageclass)>0 and moderation_status in ('accepted','geograph') ".
+		$arr = $db->GetAssoc("select imageclass,concat(imageclass,' [',count(*),']') from gridimage_search ".
+			"where length(imageclass)>0 ".
 			"group by imageclass order by rand() limit 5");
 		$smarty->assign_by_ref('imageclasslist',$arr);	
 	}
