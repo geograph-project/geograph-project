@@ -93,6 +93,12 @@ if ($template=='profile.tpl')
 
 	$cacheid="user{$uid}|{$isself}";
 	
+	if ($_GET['all']) {
+		$limit = 50000;
+	} else {
+		$limit = 100;
+		$cacheid=".$limit";
+	}
 	
 	if (!$smarty->is_cached($template, $cacheid))
 	{
@@ -113,11 +119,12 @@ if ($template=='profile.tpl')
 		else
 			$statuses=array('accepted', 'geograph');
 		
-		$images->getImagesByUser($uid, $statuses,'submitted desc');
+ 		$images->getImagesByUser($uid, $statuses,'submitted desc',$limit);
 		$images->assignSmarty($smarty, 'userimages');
 		
-		
-		
+		if (count($images->images) == $limit) {
+			$smarty->assign('limit',$limit);
+		}		
 	}
 }
 
