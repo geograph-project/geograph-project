@@ -1215,10 +1215,15 @@ END;
 		$scanbottom=$bottom-$overscan;
 		$scantop=$top+$overscan;
 		
-		$sql="select * from gridsquare where ".
-			"(x between $scanleft and $scanright) and ".
-			"(y between $scanbottom and $scantop) ".
-			"and percent_land<>0";
+		$sql="select gs.*, 
+			sum(moderation_status='accepted') as accepted, sum(moderation_status='pending') as pending
+			from gridsquare gs
+			left join gridimage gi using(gridsquare_id)
+			where 
+			(x between $scanleft and $scanright) and 
+			(y between $scanbottom and $scantop) 
+			and percent_land<>0
+			group by gs.grid_reference";
 
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
