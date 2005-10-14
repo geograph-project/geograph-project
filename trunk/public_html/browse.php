@@ -131,39 +131,12 @@ if ($grid_given)
 		$mosaic=new GeographMapMosaic;
 		$smarty->assign('map_token', $mosaic->getGridSquareToken($square));
 	
-		$db=NewADOConnection($GLOBALS['DSN']);
-		$sql='select topic_id,posts_count-1 as comments,CONCAT(\'Discussion on \',t.topic_title) as topic_title '.
-			'from geobb_topics as t '.
-			'where t.forum_id=5 and '.
-			't.topic_title = \''.mysql_escape_string($square->grid_reference).'\' '.
-			'order by t.topic_time desc';
-		$topics=$db->GetAll($sql);
-		if ($topics)
-		{
-			$news=array();
+		$square->assignDiscussionToSmarty($smarty);
 			
-			foreach($topics as $idx=>$topic)
-			{
-				$firstpost=$db->GetRow("select * from geobb_posts where topic_id={$topic['topic_id']} order by post_time");
-				$topics[$idx]['post_text']=GeographLinks(str_replace('<br>', '<br/>', $firstpost['post_text']));
-				$topics[$idx]['realname']=$firstpost['poster_name'];
-				$topics[$idx]['topic_time']=$firstpost['post_time'];
-				$totalcomments += $topics[$idx]['comments'] + 1;
-			}
-			$smarty->assign_by_ref('discuss', $topics);
-			$smarty->assign('totalcomments', $totalcomments);	
-		}
-		
-		
-	
-		
 	}
 	else
 	{
-		$smarty->assign('errormsg', $square->errormsg);
-		
-		
-		
+		$smarty->assign('errormsg', $square->errormsg);		
 	}
 }
 else
