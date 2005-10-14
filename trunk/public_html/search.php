@@ -411,8 +411,8 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 			$recordSet->Close(); 
 			$smarty->assign_by_ref('countylist', $countylist);
 
-			$arr = $db->CacheGetAssoc(24*3600,"select imageclass,concat(imageclass,' [',count(*),']') from gridimage ".
-				"where length(imageclass)>0 and moderation_status in ('accepted','geograph') ".
+			$arr = $db->CacheGetAssoc(24*3600,"select imageclass,concat(imageclass,' [',count(*),']') from gridimage_search ".
+				"where length(imageclass)>0 ".
 				"group by imageclass");
 			$smarty->assign_by_ref('imageclasslist',$arr);	
 
