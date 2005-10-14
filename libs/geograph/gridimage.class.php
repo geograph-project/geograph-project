@@ -902,7 +902,7 @@ class GridImage
 		{
 			$next_geograph= $db->GetOne("select gridimage_id from gridimage ".
 				"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' ".
-				"order by submitted");
+				"order by gridimage_id");
 			if ($next_geograph)
 			{
 				$db->Query("update gridimage set ftf=1 where gridimage_id={$next_geograph}");
@@ -988,7 +988,7 @@ class GridImage
 					$next_geograph= $db->GetOne("select gridimage_id from gridimage ".
 						"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' ".
 						"and gridimage_id<>{$this->gridimage_id} ".
-						"order by submitted");
+						"order by gridimage_id");
 					if ($next_geograph)
 					{
 						$db->Query("update gridimage set ftf=1 where gridimage_id={$next_geograph}");

@@ -93,14 +93,14 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 
 	//lets find some recent photos
 	$images=new ImageList();
-	$images->getImagesByUser($_GET['u'],array('accepted', 'geograph'), 'submitted desc', 15);
+	$images->getImagesByUser($_GET['u'],array('accepted', 'geograph'), 'gridimage_id desc', 15);
 } else {
 	$rss->description = 'Latest Images'; 
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=$format";
 
 
 	//lets find some recent photos
-	$images=new ImageList(array('accepted', 'geograph'), 'submitted desc', 15);
+	$images=new ImageList(array('accepted', 'geograph'), 'gridimage_id desc', 15);
 }
 #print "<PRE>";
 #	var_dump($images);
