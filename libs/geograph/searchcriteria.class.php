@@ -72,77 +72,78 @@ class SearchCriteria
 			if ($this->limit8) {
 				$d = $this->limit8;
 				if ($sql_where) {
-					$sql_where .= " and ";
+					$sql_where .= ' and ';
 				}
-				$sql_where .= sprintf("x BETWEEN %d and %d AND y BETWEEN %d and %d",$x-$d,$x+$d,$y-$d,$y+$d);
+				$sql_where .= sprintf('x BETWEEN %d and %d AND y BETWEEN %d and %d',$x-$d,$x+$d,$y-$d,$y+$d);
 				//shame cant use dist_sqd in the next line!
 				$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);
 			}
 			
 			//not using "power(gs.x -$x,2) * power( gs.y -$y,2)" beucause is testing could be upto 2 times slower!
 			$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
-			$sql_order = " dist_sqd ";
+			$sql_order = ' dist_sqd ';
 		} 
 		if ((($x == 0 && $y == 0 ) || $this->limit8) && $this->orderby) {
 			switch ($this->orderby) {
-				case "random":
-					$sql_order = " rand(".($this->crt_timestamp_ts).") ";
+				case 'random':
+					$sql_order = ' rand('.($this->crt_timestamp_ts).') ';
 					break;
-				case "dist_sqd":
+				case 'dist_sqd':
 					break;
 				default:
 					$sql_order = $this->orderby;
 			}
+			$sql_order = preg_replace('/^submitted/','gridimage_id',$sql_order);
 		}
 	
 		if (!empty($this->limit1)) {
 			if ($sql_where) {
-				$sql_where .= " and ";
+				$sql_where .= ' and ';
 			}
 			if (strpos($this->limit1,'!') === 0) {
-				$sql_where .= "gi.user_id != ".preg_replace('/^!/','',$this->limit1);
+				$sql_where .= 'gi.user_id != '.preg_replace('/^!/','',$this->limit1);
 			} else {
-				$sql_where .= "gi.user_id = ".($this->limit1);
+				$sql_where .= 'gi.user_id = '.($this->limit1);
 			}
 		} 
 		if (!empty($this->limit2)) {
 			if ($sql_where) {
-				$sql_where .= " and ";
+				$sql_where .= ' and ';
 			}
 			$statuslist="'".implode("','", explode(',',$this->limit2))."'";
 			$sql_where .= "moderation_status in ($statuslist) ";
 		} 
 		if (!empty($this->limit3)) {
 			if ($sql_where) {
-				$sql_where .= " and ";
+				$sql_where .= ' and ';
 			}
 			$sql_where .= "imageclass = '".addslashes(($this->limit3 == '-')?'':$this->limit3)."' ";
 		} 
 		if (!empty($this->limit4)) {
 			if ($sql_where) {
-				$sql_where .= " and ";
+				$sql_where .= ' and ';
 			}
-			$sql_where .= "gs.reference_index = ".($this->limit4)." ";
+			$sql_where .= 'gs.reference_index = '.($this->limit4).' ';
 		} 
 		if (!empty($this->limit5)) {
 			if ($sql_where) {
-				$sql_where .= " and ";
+				$sql_where .= ' and ';
 			}
 			
 			$db = $this->_getDB();
 			
-			$prefix = $db->GetRow("select * from gridprefix where prefix=".$db->Quote($this->limit5));	
+			$prefix = $db->GetRow('select * from gridprefix where prefix='.$db->Quote($this->limit5));	
 			
-			$sql_where .= sprintf("gs.x between %d and %d and gs.y between %d and %d",$prefix['origin_x'],$prefix['origin_x']+$prefix['width']-1,$prefix['origin_y'],
+			$sql_where .= sprintf('gs.x between %d and %d and gs.y between %d and %d',$prefix['origin_x'],$prefix['origin_x']+$prefix['width']-1,$prefix['origin_y'],
 			$prefix['origin_y']+$prefix['height']-1);
 			
 			if (empty($this->limit4))
-				$sql_where .= " and gs.reference_index = ".$prefix['reference_index']." ";
+				$sql_where .= ' and gs.reference_index = '.$prefix['reference_index'].' ';
 			
 		}
 		if (!empty($this->limit6)) {
 			if ($sql_where) {
-				$sql_where .= " and ";
+				$sql_where .= ' and ';
 			}
 			$dates = explode('^',$this->limit6);
 			
@@ -183,7 +184,7 @@ class SearchCriteria
 		}	
 		if (!empty($this->limit7)) {
 			if ($sql_where) {
-				$sql_where .= " and ";
+				$sql_where .= ' and ';
 			}
 			$dates = explode('^',$this->limit7);
 			
@@ -254,7 +255,7 @@ class SearchCriteria
 		$vars=get_object_vars($this);
 		foreach($vars as $name=>$val)
 		{
-			if ($name!="db")
+			if ($name!='db')
 				unset($this->$name);
 		}
 	}
@@ -315,7 +316,7 @@ class SearchCriteria_Special extends SearchCriteria
 	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) {
 		parent::getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
 		if ($sql_where) {
-			$sql_where .= " and ";
+			$sql_where .= ' and ';
 		}
 		$sql_where .= $this->searchq;
 	}
@@ -327,14 +328,14 @@ class SearchCriteria_Text extends SearchCriteria
 		parent::getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
 		$db = $this->_getDB();
 		if ($sql_where) {
-			$sql_where .= " and ";
+			$sql_where .= ' and ';
 		}
 		if (strpos($this->searchq,'^') === 0) {
 			$words = str_replace('^','',$this->searchq);
-			$sql_where .= " wordnet.title>0 AND words = ".$db->Quote($words);
-			$sql_from = " INNER JOIN wordnet ON(gi.gridimage_id=wordnet.gid) ";
+			$sql_where .= ' wordnet.title>0 AND words = '.$db->Quote($words);
+			$sql_from = ' INNER JOIN wordnet ON(gi.gridimage_id=wordnet.gid) ';
 		} else {
-			$sql_where .= " gi.title LIKE ".$db->Quote('%'.$this->searchq.'%');
+			$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$this->searchq.'%');
 		}
 	}
 }
@@ -450,9 +451,9 @@ class SearchCriteria_Postcode extends SearchCriteria
 	function setByPostcode($code) {
 		$db = $this->_getDB();
 		
-		$postcode = $db->GetRow("select e,n,reference_index from loc_postcodes where code=".$db->Quote($code));	
+		$postcode = $db->GetRow('select e,n,reference_index from loc_postcodes where code='.$db->Quote($code));	
 		if ($postcode['reference_index']) {
-			$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$postcode['reference_index']." order by origin_x,origin_y limit 1");	
+			$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$postcode['reference_index'].' order by origin_x,origin_y limit 1');	
 
 			$this->x = intval($postcode['e']/1000) + $origin['origin_x'];
 			$this->y = intval($postcode['n']/1000) + $origin['origin_y'];
@@ -466,13 +467,13 @@ class SearchCriteria_County extends SearchCriteria
 	function setByCounty($county_id) {
 		$db = $this->_getDB();
 		
-		$county = $db->GetRow("select e,n,name,reference_index from loc_counties where county_id=".$db->Quote($county_id));	
+		$county = $db->GetRow('select e,n,name,reference_index from loc_counties where county_id='.$db->Quote($county_id));	
 	
 		//get the first gridprefix with the required reference_index
 		//after ordering by x,y - you'll get the bottom
 		//left gridprefix, and hence the origin
 
-		$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$county['reference_index']." order by origin_x,origin_y limit 1");	
+		$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$county['reference_index'].' order by origin_x,origin_y limit 1');	
 
 		$this->x = intval($county['e']/1000) + $origin['origin_x'];
 		$this->y = intval($county['n']/1000) + $origin['origin_y'];
