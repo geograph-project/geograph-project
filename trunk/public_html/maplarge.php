@@ -93,7 +93,7 @@ FROM
 WHERE 
 	(x BETWEEN $left and $right) AND 
 	(y BETWEEN $bottom and $top) AND
-	percent_land<>0 AND
+	moderation_status IN ('accepted','geograph') AND
 	seq_no = 1
 GROUP BY user_id 
 ORDER BY count DESC,last_date DESC
