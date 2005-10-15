@@ -35,7 +35,5 @@
 <a style="color:#{$obj.color};font-size:{$obj.size}px;background-color:{cycle values="#f0f0f0,#e9e9e9"};text-decoration:none;" title="used {$obj.sum_title} times" href="{$script_name}?words={$words|replace:"&nbsp;":"+"}&amp;len={$len}">{$words}</a>
 {/foreach}
 </p>
-
-<p>Last generated at {$generation_time|date_format:"%H:%M"}.</p>
  		
 {include file="_std_end.tpl"}

@@ -123,7 +123,4 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
     {/dynamic}
     <input type="submit" value="Go"/></p></form>
  
-    
-   <p style="text-align:center"><i>This page was last updated {$generation_time|date_format:"%H:%M"}</i>.</p>
-
 {include file="_std_end.tpl"}

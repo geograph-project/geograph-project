@@ -75,7 +75,4 @@
 		<p><i>No Results to Display</i></p>
 	{/if}
 
-
-	<p align="center"><i>This page was last updated {$generation_time|date_format:"%H:%M"}</i>.</p>
-
 {include file="_std_end.tpl"}
