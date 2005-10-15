@@ -65,11 +65,23 @@ if (!$smarty->is_cached($template, $cacheid))
 				
 				$results[] = $gridimage;
 			}
+			else 
+			{
+				$sql="select * from gridsquare where x=$x and y=$y limit 1";
+				
+				$rec=$db->GetRow($sql);
+				if (count($rec)) 
+				{
+					$rec['county'] = $row['name'];
+					$unfilled[] = $rec;
+				}
+			}
 		}
 		
 	}
 
 	$smarty->assign_by_ref("results", $results);	
+	$smarty->assign_by_ref("unfilled", $unfilled);	
 }
 
 
