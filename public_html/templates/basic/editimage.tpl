@@ -1,3 +1,4 @@
+{assign var="page_title" value="Update Image Details"}
 {include file="_std_begin_dynamic.tpl"}
 {dynamic}
 
@@ -325,7 +326,7 @@ function onChangeImageclass()
 
 
 <div style="margin-top:20px;background:#dddddd;"><br/>
-<label for="updatenote">&nbsp;or <b>Tell us what's wrong...</b></label><br/>
+<label for="updatenote">&nbsp;<b>Please tell us what's wrong or briefly why you have made the changes above...</b></label><br/>
 
 {if $error.updatenote}<br/><span class="formerror">{$error.updatenote}</span><br/>{/if}
 
@@ -369,4 +370,4 @@ then please enter directly into the boxes above)
 {/if}
 
 {/dynamic}
-{include file="_std_end.tpl"}
+{include file="_std_end_dynamic.tpl"}

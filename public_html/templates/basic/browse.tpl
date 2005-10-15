@@ -130,4 +130,4 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 
 {/dynamic}
 
-{include file="_std_end.tpl"}
+{include file="_std_end_dynamic.tpl"}
