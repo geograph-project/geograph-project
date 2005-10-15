@@ -10,7 +10,4 @@
 </tr></table>
 
 
-    
-   <p style="text-align:center"><i>This page was last updated {$smarty.now|date_format:"%H:%M"}</i>.</p>
-
 {include file="_std_end.tpl"}

@@ -46,7 +46,5 @@
 </tbody></table>
 
 </div>
-
-<p>Last generated at {$generation_time|date_format:"%H:%M"}.</p>
  		
 {include file="_std_end.tpl"}

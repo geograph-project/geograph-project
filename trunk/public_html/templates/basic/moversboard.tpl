@@ -10,7 +10,7 @@ how much each person will climb when their pictures are moderated!</p>
 
 <p>The <a href="/leaderboard.php">all-time top 50 leaderboard</a> is also available</p>
 
-<p>Last generated at {$generation_time|date_format:"%H:%M"} and covers all submissions since
+<p>Last generated at {$smarty.now|date_format:"%H:%M"} and covers all submissions since
 {$cutoff_time|date_format:"%A, %d %b at %H:%M"}</p>
 
 <table class="report"> 
