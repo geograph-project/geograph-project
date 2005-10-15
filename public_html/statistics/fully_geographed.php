@@ -126,9 +126,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 
 	$smarty->assign("markers", $markers);	
-	
-	$smarty->assign('generation_time', time());
-	
 }
 
 

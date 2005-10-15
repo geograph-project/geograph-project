@@ -78,10 +78,6 @@ function count_files($dir,$ext) {
 	$files['tpcache'] = count_files("templates/basic/cache/","tpl");
 	
 	$smarty->assign_by_ref("files", $files);
-	
-		
-	$smarty->assign('generation_time', time());
-	
 }
 
 

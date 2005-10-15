@@ -204,8 +204,6 @@ $sql_order";
 
 	$smarty->assign_by_ref('total', $total);
 	$smarty->assign_by_ref('breakdown', $breakdown);
-		
-	$smarty->assign('generation_time', time());
 } else {
 	//bare minimum for the dynamic section
 	if ($u) {

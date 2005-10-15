@@ -122,10 +122,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (!$_GET['t'])
 		ksort($toplist);	
 	$smarty->assign_by_ref('toplist', $toplist);
-	
-	
-	$smarty->assign('generation_time', time());
-	
 }
 
 
