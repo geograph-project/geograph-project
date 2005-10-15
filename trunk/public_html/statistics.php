@@ -113,9 +113,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	foreach (array('both','1','2') as $name) {
 		$smarty->assign('percent_'.$name,sprintf("%.3f",$smarty->get_template_vars('squares_submitted_'.$name)/$smarty->get_template_vars('squares_total_'.$name)*100));
 	}
-		
-	$smarty->assign('generation_time', time());
-
 } 
 
 

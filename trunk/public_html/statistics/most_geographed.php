@@ -41,9 +41,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (!$db) die('Database connection failed');  
 	#$db->debug = true;
 
-$mosaic=new GeographMapMosaic;
-$mosaic->setScale(40);
-$mosaic->setMosaicFactor(2);
+	$mosaic=new GeographMapMosaic;
+	$mosaic->setScale(40);
+	$mosaic->setMosaicFactor(2);
 
 	
 	foreach (array(1,2) as $ri) {
@@ -127,10 +127,6 @@ $mosaic->setMosaicFactor(2);
 	}
 
 	$smarty->assign_by_ref("onekm", $onekm);		
-	
-	
-	$smarty->assign('generation_time', time());
-	
 }
 
 
