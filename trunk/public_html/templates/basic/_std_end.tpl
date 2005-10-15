@@ -99,7 +99,8 @@ Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> 
 	<div class="content2" id="footer_block">
 {/if}
   <div id="footer">
-    <p><a href="/help/credits" title="Who built this and how?">Credits</a>
+     <p style="color:#AAAABB;float:left">page last updated at {$smarty.now|date_format:"%H:%M"}</p>
+   <p><a href="/help/credits" title="Who built this and how?">Credits</a>
        <span class="sep">|</span>
        <a href="/help/terms" title="Terms and Conditions">Terms of use</a>
        <span class="sep">|</span>
