@@ -12,7 +12,7 @@
  
     <form action="contact.php" method="post">
     
-    <label for="from">Your email address</label><br/>
+    <p><label for="from">Your email address</label><br/>
 	<input id="from" name="from" value="{$from|escape:'html'}"/><span class="formerror">{$from_error}</span>
     
     <br /><br />
@@ -20,7 +20,7 @@
 	<textarea id="msg" name="msg" rows="10" cols="50">{$msg|escape:'html'}</textarea>
     	<br /><span class="formerror">{$msg_error}</span> 
     <br />
-    <input type="submit" name="send" value="Send"/>
+    <input type="submit" name="send" value="Send"/></p>
     </form>
 {/if} 
 {/dynamic}    
