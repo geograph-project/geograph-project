@@ -5,7 +5,7 @@
 
 
 ------------------------------------------------------------
-Forward abuse complaints to: editor@geocachingtoday.com
+Forward abuse complaints to: rogersgm@gmail.com
 {/dynamic}
  	
 
