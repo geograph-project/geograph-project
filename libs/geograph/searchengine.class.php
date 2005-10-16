@@ -565,12 +565,15 @@ class SearchEngine
 				$sql_where .= " and moderation_status in ('accepted','geograph')";
 		}
 		if (!$sql_order) {$sql_order = 'gs.grid_reference';}
-		$count_from = (strpos($sql_where,'gs.') !== FALSE)?"INNER JOIN gridsquare AS gs USING(gridsquare_id)":'';
-		$count_from .= (strpos($sql_where,'user.') !== FALSE)?" INNER JOIN user ON(gi.user_id=user.user_id)":'';
-		##$count_from = "INNER JOIN gridsquare AS gs USING(gridsquare_id)";
-	// construct the count query sql
-		if (preg_match("/group by ([\w\,\(\) ]+)/i",$sql_where,$matches)) {
-			$sql_where2 = preg_replace("/group by ([\w\,\(\) ]+)/i",'',$sql_where);
+		
+		if ($pg > 1 && !$this->countOnly) {
+		
+			$count_from = (strpos($sql_where,'gs.') !== FALSE)?"INNER JOIN gridsquare AS gs USING(gridsquare_id)":'';
+			$count_from .= (strpos($sql_where,'user.') !== FALSE)?" INNER JOIN user ON(gi.user_id=user.user_id)":'';
+			##$count_from = "INNER JOIN gridsquare AS gs USING(gridsquare_id)";
+			// construct the count query sql
+			if (preg_match("/group by ([\w\,\(\) ]+)/i",$sql_where,$matches)) {
+				$sql_where2 = preg_replace("/group by ([\w\,\(\) ]+)/i",'',$sql_where);
 $sql = <<<END
 	   SELECT count(DISTINCT {$matches[1]})
 		FROM gridimage AS gi $count_from
@@ -578,7 +581,7 @@ $sql = <<<END
 		WHERE 
 			$sql_where2
 END;
-		} else {
+			} else {
 $sql = <<<END
 	   SELECT count(*)
 		FROM gridimage AS gi $count_from
@@ -586,10 +589,11 @@ $sql = <<<END
 		WHERE 
 			$sql_where
 END;
-		}
-		$this->resultCount = $db->CacheGetOne(3600,$sql);
-		$this->numberOfPages = ceil($this->resultCount/$pgsize);
-		if ($this->countOnly)
+			}
+			$this->resultCount = $db->CacheGetOne(3600,$sql);
+			$this->numberOfPages = ceil($this->resultCount/$pgsize);
+		} 
+		if ($this->countOnly || !$this->resultCount)
 			return 0;
 	// construct the query sql
 $sql = <<<END
@@ -614,6 +618,15 @@ END;
 		$querytime_after = ((float)$usec + (float)$sec);
 						
 		$this->querytime =  $querytime_after - $querytime_before;
+
+		if ($pg == 1) {
+			$this->resultCount = $recordSet->RecordCount();
+			if ($this->resultCount == $pgsize) {
+				$this->numberOfPages = 2;
+			} else {
+				$this->numberOfPages = ceil($this->resultCount/$pgsize);
+			}
+		}
 
 		return $recordSet;
 	}
@@ -649,27 +662,35 @@ END;
 			$sql_where = str_replace('gs.','gi.',$sql_where);
 		}
 		$sql_fields = str_replace('gs.','gi.',$sql_fields);
-	// construct the count sql
-		if (preg_match("/group by ([\w\,\(\) ]+)/i",$sql_where,$matches)) {
-			$sql_where2 = preg_replace("/group by ([\w\,\(\) ]+)/i",'',$sql_where);
+		
+		if ($pg > 1 && !$this->countOnly) {
+			// construct the count sql
+			if (preg_match("/group by ([\w\,\(\) ]+)/i",$sql_where,$matches)) {
+				$sql_where2 = preg_replace("/group by ([\w\,\(\) ]+)/i",'',$sql_where);
 $sql = <<<END
 	   SELECT count(DISTINCT {$matches[1]})
 		FROM gridimage_search as gi
 			 $sql_from
 		$sql_where2
 END;
-		} else {
+			} else {
 $sql = <<<END
 	   SELECT count(*)
 		FROM gridimage_search as gi
 			 $sql_from
 		$sql_where
 END;
+			}
+			if ($_GET['debug'])
+				print "<BR><BR>$sql";
+
+
+			$this->resultCount = $db->CacheGetOne(3600,$sql);
+
+
+			$this->numberOfPages = ceil($this->resultCount/$pgsize);
 		}
-#print "<BR><BR>$sql";
-		$this->resultCount = $db->CacheGetOne(3600,$sql);
-		$this->numberOfPages = ceil($this->resultCount/$pgsize);
-		if ($this->countOnly)
+		if ($this->countOnly || ($pg > 1 && !$this->resultCount))
 			return 0;
 	// construct the query sql
 $sql = <<<END
@@ -681,8 +702,8 @@ $sql = <<<END
 		ORDER BY $sql_order
 		LIMIT $page,$pgsize
 END;
-if ($_GET['debug'])
-	print "<BR><BR>$sql";
+		if ($_GET['debug'])
+			print "<BR><BR>$sql";
 		
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_before = ((float)$usec + (float)$sec);
@@ -693,6 +714,17 @@ if ($_GET['debug'])
 		$querytime_after = ((float)$usec + (float)$sec);
 		
 		$this->querytime =  $querytime_after - $querytime_before;
+		
+		if ($pg == 1) {
+			$this->resultCount = $recordSet->RecordCount();
+			if ($this->resultCount == $pgsize) {
+				$this->numberOfPages = 1;
+				$this->pageOneOnly = 1;
+			} else {
+				$this->numberOfPages = ceil($this->resultCount/$pgsize);
+			}
+		}
+		
 		return $recordSet;
 	}
 	
@@ -718,36 +750,39 @@ if ($_GET['debug'])
 		if ($this->countOnly)
 			return 0;
 			
-			
-		$dist_format = ($this->criteria->searchclass == 'Postcode')?"Dist:%dkm %s":"Dist:%.1fkm %s";		
-		
-		$this->results=array();
-		$i=0;
-		
-		while (!$recordSet->EOF) 
-		{
-			$this->results[$i]=new GridImage;
-			$this->results[$i]->fastInit($recordSet->fields);
-			
-			if ($d = $recordSet->fields['dist_sqd']) {
-				$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
-				$this->results[$i]->dist_string = sprintf($dist_format,sqrt($d),$this->heading_string($angle));
+		if ($recordSet)	{
+			$dist_format = ($this->criteria->searchclass == 'Postcode')?"Dist:%dkm %s":"Dist:%.1fkm %s";		
+
+			$this->results=array();
+			$i=0;
+
+			while (!$recordSet->EOF) 
+			{
+				$this->results[$i]=new GridImage;
+				$this->results[$i]->fastInit($recordSet->fields);
+
+				if ($d = $recordSet->fields['dist_sqd']) {
+					$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
+					$this->results[$i]->dist_string = sprintf($dist_format,sqrt($d),$this->heading_string($angle));
+				}
+				if (empty($this->results[$i]->title))
+					$this->results[$i]->title="Untitled";
+
+				//if we searching on imageclass then theres no point displaying it...
+				if ($this->criteria->limit3) 
+					unset($this->results[$i]->imageclass);
+
+				//if we searching on taken date then display it...
+				if ($this->criteria->limit7 || $this->criteria->orderby == 'imagetaken') 
+					$this->results[$i]->imagetakenString = $this->results[$i]->getFormattedTakenDate();
+
+				$recordSet->MoveNext();
+				$i++;
 			}
-			if (empty($this->results[$i]->title))
-				$this->results[$i]->title="Untitled";
+			$recordSet->Close(); 
+		} else 
+			return 0;
 			
-			//if we searching on imageclass then theres no point displaying it...
-			if ($this->criteria->limit3) 
-				unset($this->results[$i]->imageclass);
-			
-			//if we searching on taken date then display it...
-			if ($this->criteria->limit7 || $this->criteria->orderby == 'imagetaken') 
-				$this->results[$i]->imagetakenString = $this->results[$i]->getFormattedTakenDate();
-						
-			$recordSet->MoveNext();
-			$i++;
-		}
-		$recordSet->Close(); 
 		return $this->querytime;
 	}
 	
@@ -795,7 +830,7 @@ if ($_GET['debug'])
 			$r .= "... <a href=\"/{$this->page}?i={$this->query_id}&amp;page=$index\">$index</a> ";
 		}
 			
-		if ($this->numberOfPages > $this->currentPage) 
+		if ($this->numberOfPages > $this->currentPage || $this->pageOneOnly) 
 			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage+1)."\">next &gt;&gt;</a> ";
 		return $r;	
 	}
