@@ -4,11 +4,13 @@
 <h2>Search Results</h2>
 
 <p>Your search for images<i>{$engine->criteria->searchdesc}</i>, returns 
-{if $engine->islimited}
-<b>{$engine->resultCount}</b> images
+{if $engine->pageOneOnly}
+	<i>many</i> images
+{else}{if $engine->islimited}
+	<b>{$engine->resultCount}</b> images
 {else}
-the following
-{/if}:
+	the following
+{/if}{/if}:
 {if $engine->resultCount}
 	<br/>( Page {$engine->pagesString()}) {if $engine->criteria->searchclass != 'Special'}[<a href="search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}
 	</p>
