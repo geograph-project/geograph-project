@@ -60,6 +60,9 @@ $CONF['imagemagick_path'] = '/usr/bin/';
 //the countries referenced in the reference index 
 $CONF['references'] = array(1 => 'Great Britain',2 => 'Ireland');
 
+//the radius for simple searches in km, set high to begin with but set low once number of submissions
+$CONF['default_search_distance'] = 30;
+
 //false origins for the internal grid
 $CONF['origins'] = array(1 => array(206,0),2 => array(10,149));
 
