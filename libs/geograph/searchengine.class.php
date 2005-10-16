@@ -212,11 +212,11 @@ class SearchEngine
 	{
 		global $CONF,$imagestatuses,$sortorders,$USER;
 		
-		if ($dataarray['distance']) {
-			$nearstring = sprintf("within %dkm of",$dataarray['distance']);
-		} else {
-			$nearstring = 'near';
+		if (!$dataarray['distance']) {
+			$dataarray['distance'] = $CONF['default_search_distance'];
 		}
+		$nearstring = sprintf("within %dkm of",$dataarray['distance']);
+		
 		
 		//check if we actully want to perform a textsearch (it comes through in the placename beucase of the way the multiple mathc page works)
 		if (strpos($dataarray['placename'],'text:') === 0) {
