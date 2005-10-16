@@ -29,7 +29,7 @@ init_session();
 $smarty = new GeographPage;
 
 if (!$_GET['type'])
-	$_GET['type'] = 'center';
+	$_GET['type'] = 'cities';
 
 $template='statistics_counties.tpl';
 $cacheid='statistics|counties'.$_GET['type'];
@@ -46,44 +46,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions;
 
-	if ($_GET['type'] == 'center') {
-		$smarty->assign("page_title", "County Center Points");
-		$smarty->assign("extra_info", "* this pages uses counties from 1995 and for some unknown reason Northern Ireland is just one entity.");
-		
-		$counties = $db->GetAll("select * from loc_counties where n > 0 order by reference_index,n");
-		
-		foreach ($counties as $i => $row) {
-			list($x,$y) = $conv->national_to_internal($row['e'],$row['n'],$row['reference_index']);
-			$sql="select * from gridimage_search where x=$x and y=$y ".
-				" order by moderation_status+0 desc,seq_no limit 1";
-
-			$rec=$db->GetRow($sql);
-			if (count($rec))
-			{
-				$gridimage=new GridImage;
-				$gridimage->fastInit($rec);
-				
-				$gridimage->county = $row['name'];
-				
-				$results[] = $gridimage;
-			}
-			else 
-			{
-				$sql="select grid_reference from gridsquare where x=$x and y=$y limit 1";
-				
-				$rec=$db->GetRow($sql);
-				if (count($rec)) 
-				{
-					$rec['county'] = $row['name'];
-					$unfilled[] = $rec;
-				}
-			}
-		}
-		
-	} elseif ($_GET['type'] == 'capital') {
-		$smarty->assign("page_title", "County Capital Towns");
-		$smarty->assign("extra_info", "* at the moment we dont actully store which county each capital is in");
-		$counties = $db->GetAll("SELECT * FROM `loc_towns` WHERE `s` = '2' AND `reference_index` = 2 ORDER BY n");
+	if ($_GET['type'] == 'cities') {
+		$smarty->assign("page_title", "Cities");
+		$smarty->assign("extra_info", "* These are just the cities Geograph knows about for map plotting purposes, it may not be a complete list! The square choosen is probably only an arbitary center point.");
+		$counties = $db->GetAll("SELECT * FROM `loc_towns` WHERE `s` = '1' ORDER BY n");
 		
 		foreach ($counties as $i => $row) {
 			list($x,$y) = $conv->national_to_internal($row['e'],$row['n'],$row['reference_index']);
