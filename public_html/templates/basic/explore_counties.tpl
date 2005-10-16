@@ -21,12 +21,16 @@
 	{/foreach}
 <br style="clear:both;"/>
 
-<h3>Counties without images yet</h3>
+<h3>Without images yet</h3>
 
 <ul>
     {foreach from=$unfilled item=result}
     <li> <a href="/gridref/{$result.grid_reference}">{$result.grid_reference}</a> {$result.county}</li>
     {/foreach}
 </ul>
+
+{if $extra_info}
+<p>{$extra_info}</p>
+{/if}
 
 {include file="_std_end.tpl"}
