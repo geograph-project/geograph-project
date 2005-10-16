@@ -19,6 +19,7 @@
 	
 	{if $i} 
 		<div style="padding:5px;background:#dddddd;position:relative">
+		<input type="hidden" name="i" value="{$i}"/>
 		Your search for images<i>{$engine->criteria->searchdesc}</i>, returns 
 		<b>{$engine->resultCount}</b> results.	
 		{if $engine->criteria->searchclass != 'Special'}[<a href="search.php?i={$i}&amp;form=advanced">refine</a>]{/if}
