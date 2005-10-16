@@ -91,7 +91,7 @@
 				  <option value=""> </option> 
 					{html_options options=$prefixes selected=$gridsquare}
 				</select></td> 
-			 <td>&nbsp;<input type="submit" value="Find"/></td> 
+			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="submitted_startDay">submitted</label></td> 
@@ -139,7 +139,7 @@
 				<select name="resultsperpage" id="resultsperpage" style="text-align:right" size="1"> 
 					{html_options values=$pagesizes output=$pagesizes selected=$resultsperpage}
 				</select> <label for="resultsperpage">results per page</label></td>
-			 <td>&nbsp;<input type="submit" value="Find"/></td>
+			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td>
 			 
 		  </tr> 
 		</table></form>

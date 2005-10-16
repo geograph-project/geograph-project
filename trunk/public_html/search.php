@@ -306,9 +306,15 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	
 	$template = 'search_results_'.$engine->getDisplayclass().'.tpl';
 	$cacheid="search|".$_GET['i'].".".$pg;
+	if ($_GET['count']) {
+		$engine->countOnly = 1;
+		$cacheid.=".";
+	}
 	
 	if (!$smarty->is_cached($template, $cacheid)) {
 		dieUnderHighLoad(3);
+		
+		
 		
 		$smarty->assign('querytime', $engine->Execute($pg)); 
 		
@@ -316,7 +322,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		$smarty->assign('currentPage', $pg);
 		$smarty->assign_by_ref('engine', $engine);
 
-		if ($pg == 1 && $engine->criteria->searchclass == 'GridRef' && strpos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
+		if (!$engine->countOnly && $pg == 1 && $engine->criteria->searchclass == 'GridRef' && strpos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
 			$smarty->assign('nofirstmatch', true);
 		}	
 	}
