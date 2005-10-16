@@ -483,8 +483,8 @@ class SearchEngine
 			$db->Execute($sql);
 
 			$i = $db->Insert_ID();
-			header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}");
-			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}\">Your Search Results</a>";
+			header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}".(($dataarray['submit'] == 'Count')?'&count=1':''));
+			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}".(($dataarray['submit'] == 'Count')?'&amp;count=1':'')."\">Your Search Results</a>";
 			exit;		
 		} else if ($criteria->is_multiple) {
 			if ($dataarray['user_id']) {
@@ -566,7 +566,7 @@ class SearchEngine
 		}
 		if (!$sql_order) {$sql_order = 'gs.grid_reference';}
 		
-		if ($pg > 1 && !$this->countOnly) {
+		if ($pg > 1 || $this->countOnly) {
 		
 			$count_from = (strpos($sql_where,'gs.') !== FALSE)?"INNER JOIN gridsquare AS gs USING(gridsquare_id)":'';
 			$count_from .= (strpos($sql_where,'user.') !== FALSE)?" INNER JOIN user ON(gi.user_id=user.user_id)":'';
@@ -663,7 +663,7 @@ END;
 		}
 		$sql_fields = str_replace('gs.','gi.',$sql_fields);
 		
-		if ($pg > 1 && !$this->countOnly) {
+		if ($pg > 1 || $this->countOnly) {
 			// construct the count sql
 			if (preg_match("/group by ([\w\,\(\) ]+)/i",$sql_where,$matches)) {
 				$sql_where2 = preg_replace("/group by ([\w\,\(\) ]+)/i",'',$sql_where);
@@ -820,7 +820,7 @@ END;
 			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=1\">1</a> ... ";
 
 		for($index = $start;$index<$endr;$index++) {
-			if ($index == $this->currentPage) 
+			if ($index == $this->currentPage && !$this->countOnly) 
 				$r .= "<b>$index</b> "; 
 			else
 				$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=$index\">$index</a> ";
@@ -830,7 +830,7 @@ END;
 			$r .= "... <a href=\"/{$this->page}?i={$this->query_id}&amp;page=$index\">$index</a> ";
 		}
 			
-		if ($this->numberOfPages > $this->currentPage || $this->pageOneOnly) 
+		if ( ($this->numberOfPages > $this->currentPage || $this->pageOneOnly ) && !$this->countOnly) 
 			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage+1)."\">next &gt;&gt;</a> ";
 		return $r;	
 	}

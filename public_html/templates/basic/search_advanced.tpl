@@ -34,7 +34,7 @@
 					{html_options options=$countylist selected=$county_id}				  
 				  
 				</select></td> 
-			 <td>&nbsp;<input type="submit" value="Find"/></td> 
+			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
 		  </tr>
 		  <tr> 
 			 <td colspan="3">&nbsp;</td> 
@@ -50,7 +50,7 @@
 		  <tr> 
 			 <td><label for="all_ind" id="l_all_ind">all images</label></td> 
 			 <td><input type="checkbox" name="all_ind" id="all_ind" {$all_checked} onclick="onlyone(this)" onblur="onlyone(this)"/></td> 
-			 <td>&nbsp;<input type="submit" value="Find"/></td> 
+			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
 		  </tr> 
 		  <tr> 
 			 <td colspan="3"><small>
@@ -120,7 +120,7 @@
 				  <option value=""> </option> 
 					{html_options options=$prefixes selected=$gridsquare}
 				</select></td> 
-			 <td>&nbsp;<input type="submit" value="Find"/></td> 
+			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="submitted_startDay">submitted</label></td> 
@@ -168,7 +168,7 @@
 				<select name="resultsperpage" id="resultsperpage" style="text-align:right" size="1"> 
 					{html_options values=$pagesizes output=$pagesizes selected=$resultsperpage}
 				</select> <label for="resultsperpage">results per page</label></td>
-			 <td>&nbsp;<input type="submit" value="Find"/></td>
+			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td>
 			 
 		  </tr> 
 		</table></form>
