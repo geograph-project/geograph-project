@@ -47,8 +47,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	$conv = new Conversions;
 
 	if ($_GET['type'] == 'cities') {
-		$smarty->assign("page_title", "Cities");
-		$smarty->assign("extra_info", "* These are just the cities Geograph knows about for map plotting purposes, it may not be a complete list! The square choosen is probably only an arbitary center point.");
+		$smarty->assign("page_title", "Notable Selection of Towns/Cities");
+		$smarty->assign("extra_info", "* These are just the main towns/cities Geograph knows about for map plotting purposes, it may not be a complete list! The square choosen is probably only an arbitary centre point.");
 		$counties = $db->GetAll("SELECT * FROM `loc_towns` WHERE `s` = '1' ORDER BY n");
 		
 		foreach ($counties as $i => $row) {
