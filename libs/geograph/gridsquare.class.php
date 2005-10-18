@@ -265,7 +265,7 @@ class GridSquare
 	/**
 	*
 	*/
-	function setByFullGridRef($gridreference)
+	function setByFullGridRef($gridreference,$setnatfor4fig = false)
 	{
 		$matches=array();
 		$isfour=false;
@@ -288,7 +288,7 @@ class GridSquare
 		{
 			$gridref=sprintf("%s%02d%02d", strtoupper($prefix), intval($e/1000), intval($n/1000));
 			$ok=$this->_setGridRef($gridref);
-			if ($ok && !$isfour)
+			if ($ok && (!$isfour || $setnatfor4fig))
 			{
 				//use this function to work out the major easting/northing then convert to our exact values
 				$eastings=$this->getNatEastings();
