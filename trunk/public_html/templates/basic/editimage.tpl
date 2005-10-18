@@ -141,13 +141,13 @@
 			  
 			{elseif $item.field eq "comment"}
 			  <br/>
-			  {$item.oldvalue|escape:'html'|default:'blank'}<br/>
+			  <span style="border:1px solid #dddddd">{$item.oldvalue|escape:'html'|default:'blank'}</span><br/>
 			  to<br/>
-			  {$item.newvalue|escape:'html'|default:'blank'}
+			  <span style="border:1px solid #dddddd">{$item.newvalue|escape:'html'|default:'blank'}</span>
 			{else}
-			  {$item.oldvalue|escape:'html'|default:'blank'}
+			  <span style="border:1px solid #dddddd">{$item.oldvalue|escape:'html'|default:'blank'}</span>
 			  to 
-			  {$item.newvalue|escape:'html'|default:'blank'}
+			  <span style="border:1px solid #dddddd">{$item.newvalue|escape:'html'|default:'blank'}</span>
 			{/if}
 			
 			</label>
