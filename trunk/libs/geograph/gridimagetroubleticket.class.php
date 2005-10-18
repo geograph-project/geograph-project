@@ -264,10 +264,10 @@ class GridImageTroubleTicket
 			{
 				//need to parse value for nat coords
 				$sq=new GridSquare;
-				if ($sq->setByFullGridRef($newvalue))
+				if ($sq->setByFullGridRef($newvalue,true))
 				{
-					$img->viewpoint_eastings=$sq->getNatEastings();
-					$img->viewpoint_northings=$sq->getNatNorthings();
+					$img->viewpoint_eastings=$sq->nateastings;
+					$img->viewpoint_northings=$sq->natnorthings;
 					$this->commit_count++;
 				} elseif(empty($newvalue)) {
 					// we are setting to 'blank'
