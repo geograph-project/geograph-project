@@ -426,9 +426,9 @@ class UploadManager
 		
 		if ($this->viewpoint_gridreference) {
 			$viewpoint = new GridSquare;
-			$ok= $viewpoint->setByFullGridRef($this->viewpoint_gridreference);
-			$viewpoint_eastings = $viewpoint->getNatEastings();
-			$viewpoint_northings = $viewpoint->getNatNorthings();
+			$ok= $viewpoint->setByFullGridRef($this->viewpoint_gridreference,true);
+			$viewpoint_eastings = $viewpoint->nateastings;
+			$viewpoint_northings = $viewpoint->natnorthings;
 		}
 		
 		
