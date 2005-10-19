@@ -488,13 +488,6 @@ class UploadManager
 		$image->loadFromId($gridimage_id);
 		$image->storeImage($src);
 		
-		//update cached tables
-		//$image->updateCachedTables();	
-			//-> cached table no longer contains pending images
-		
-		//update placename cached column
-		$image->updatePlaceNameId();
-		
 		$this->cleanUp();
 
 	}
