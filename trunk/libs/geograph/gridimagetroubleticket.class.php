@@ -279,6 +279,13 @@ class GridImageTroubleTicket
 			}
 			else
 			{
+				if ($fieldname=='title')
+				{
+					//fire an event (only title is relevent to update wordnet)
+					require_once('geograph/event.class.php');
+					new Event(EVENT_UPDATEDPHOTO, "{$img->gridimage_id},title");
+				}
+				
 				$img->$fieldname=$newvalue;
 				
 				//we'll do this commit later
