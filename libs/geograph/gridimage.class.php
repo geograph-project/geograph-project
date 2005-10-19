@@ -912,21 +912,15 @@ class GridImage
 		
 		//todo: unlock tables. 
 		
+		//invalidate any cached maps (on anything except rejecting a pending image)
+		$updatemaps = ( !($status == 'rejected' && $this->moderation_status == 'pending') );
+	
 		//fire an event (a lot of the stuff that follows should 
 		//really be done asynchronously by an event handler
 		require_once('geograph/event.class.php');
-		new Event(EVENT_MODERATEDPHOTO, $this->gridimage_id);
+		new Event(EVENT_MODERATEDPHOTO, "{$this->gridimage_id},$updatemaps");
 		
 		
-		if ( !($status == 'rejected' && $this->moderation_status == 'pending') ) {
-		
-			//invalidate any cached maps
-			require_once('geograph/mapmosaic.class.php');
-			$mosaic=new GeographMapMosaic;
-
-			$mosaic->expirePosition($this->grid_square->x,$this->grid_square->y);
-		}
-	
 		//ok, update the image
 		$this->moderation_status=$status;
 	
@@ -1033,15 +1027,14 @@ class GridImage
 
 
 				//invalidate any cached maps
-				require_once('geograph/mapmosaic.class.php');
-				$mosaic=new GeographMapMosaic;
-
-				$mosaic->expirePosition($this->grid_square->x,$this->grid_square->y);
-
-				$mosaic->expirePosition($newsq->x,$newsq->y);
+					//handled by the event above 
 			
 				//update placename cached column
-				$this->updatePlaceNameId($newsq);
+					//handled by the event above 
+			
+				//updated cached tables
+					//this isnt needed as reassignGridsquare is only called before commitChanges
+				//$this->updateCachedTables();	
 			
 			}
 			
@@ -1138,14 +1131,14 @@ class GridImage
 				"WHERE gridimage_id = '{$this->gridimage_id}'";
 			$db->Execute($sql);
 			$sql="DELETE FROM wordnet ".
-				"WHERE  gid  = '{$this->gridimage_id}'";
+				"WHERE gid = '{$this->gridimage_id}'";
 			$db->Execute($sql);
 		} elseif ($this->moderation_status) {
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
 			if (!$this->grid_square) 
 				die("ERROR: no square known in updateCachedTables");
-			if ($this->square->nateastings) {
+			if ($this->grid_square->nateastings) {
 				list($lat,$long) = $conv->national_to_wgs84($this->grid_square->nateastings,$this->grid_square->natnorthings,$this->grid_square->reference_index);
 			} else {
 				list($lat,$long) = $conv->internal_to_wgs84($this->grid_square->x,$this->grid_square->y,$this->square->reference_index);
@@ -1157,11 +1150,6 @@ class GridImage
 			INNER JOIN user ON(gi.user_id=user.user_id)
 			WHERE gridimage_id = '{$this->gridimage_id}'";
 			$db->Execute($sql);		
-			
-			require_once('geograph/wordnet.inc.php');
-					
-			updateWordnet($db,$this->title,'title',$this->gridimage_id);
-			
 		} else {
 			//fall back if we dont know the moduration status then lets load it and start again!
 			$this->loadFromId($this->gridimage_id);	
@@ -1186,7 +1174,7 @@ class GridImage
 
 		//to optimise the query, we scan a square centred on the
 		//the required point
-		$radius = 100000;
+		$radius = 30000;
 
 		$left=$gridsquare->nateastings-$radius;
 		$right=$gridsquare->nateastings+$radius;
