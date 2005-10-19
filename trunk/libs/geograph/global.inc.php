@@ -71,7 +71,7 @@ require_once('smarty/libs/Smarty.class.php');
 require_once('geograph/user.class.php');
 
 
-
+if ($CONF['write_useage_log']) {
 	list($usec, $sec) = explode(' ',microtime());
 	$starttime = ((float)$usec + (float)$sec);
  
@@ -88,12 +88,12 @@ require_once('geograph/user.class.php');
    
    $string = "$time,$timetaken,{$_SERVER['SCRIPT_URL']},{$_SERVER['REQUEST_METHOD']},{$_SERVER['QUERY_STRING']},{$_SERVER['REMOTE_ADDR']},{$USER->user_id}\n";
    
-   $h = fopen("/home/barry/sitelogs/$filename.log",'a');
+   $h = fopen($CONF['write_useage_log']."$filename.log",'a');
    fwrite($h,$string);
    fclose($h);   
   }
   register_shutdown_function('log_it');
-
+}
 
 
 
