@@ -38,6 +38,7 @@
 define('EVENT_NEWPHOTO', 'photo_submitted');
 define('EVENT_MODERATEDPHOTO', 'photo_moderated');
 define('EVENT_MOVEDPHOTO', 'photo_moved');
+define('EVENT_UPDATEDPHOTO', 'photo_updated');
 define('EVENT_NEWTOPIC', 'topic_new');
 define('EVENT_NEWREPLY', 'topic_reply');
 define('EVENT_DELTOPIC', 'topic_deleted');
