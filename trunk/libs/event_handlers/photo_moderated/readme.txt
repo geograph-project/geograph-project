@@ -18,7 +18,7 @@ class MyHandler extends EventHandler
 	function processEvent(&$event)
 	{
 		//perform actions
-		$gridimage_id = $event['event_param'];
+		list($gridimage_id,$updatemaps) = explode(',',$event['event_param']);
 		
 		//perform any necessary logging e.g.
 		//$this->processor->error("message");
