@@ -52,7 +52,8 @@ class MaintainRecentlyModeratedList extends EventHandler
 		$db=&$this->_getDB();
 		
 		//get moderation status of image
-		$gridimage_id = intval($event['event_param']);
+		list($gridimage_id,$updatemaps) = explode(',',$event['event_param']);
+		
 		$status=$db->GetOne("select moderation_status from gridimage where gridimage_id='$gridimage_id'");
 		if ($status == 'geograph')
 		{
