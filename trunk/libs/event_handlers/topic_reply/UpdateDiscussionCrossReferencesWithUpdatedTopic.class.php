@@ -52,6 +52,15 @@ class UpdateDiscussionCrossReferencesWithUpdatedTopic extends EventHandler
 			$db->Execute("update gridsquare_topic set last_post='{$post['post_time']}' where topic_id = '{$post['topic_id']}'");
 		}
 		
+		//delete any smarty caches for this square
+		$gridsquare_id = $db->getOne("select gridsquare_id from gridsquare_topic where topic_id = {$post['topic_id']}");
+		$images = $db->getCol("select gridimage_id from gridimage where gridsquare_id = $gridsquare_id")
+		$smarty = new GeographPage;
+		foreach ($images as $gridimage_id) {
+			//clear any caches involving this photo
+			$smarty->clear_cache(null, "img{$gridimage_id}");
+		}
+		
 		//return true to signal completed processing
 		//return false to have another attempt later
 		return true;
