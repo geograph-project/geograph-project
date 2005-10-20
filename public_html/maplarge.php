@@ -4,7 +4,7 @@
  * $Id$
  * 
  * GeoGraph geographic photo archive project
- * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
+ * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,7 +42,7 @@ $smarty->cache_lifetime = 3600*24*7; //7 day cache
 $mosaic=new GeographMapMosaic;
 $overview=new GeographMapMosaic('overview');
 
-if ($_GET['o'])
+if (isset($_GET['o']))
 	$overview->setToken($_GET['o']);
 	
 if (isset($_GET['t']))

@@ -51,7 +51,7 @@ $smarty = new GeographPage;
 $mosaic=new GeographMapMosaic;
 $overview=new GeographMapMosaic('overview');
 
-if ($_GET['o'])
+if (isset($_GET['o']))
 	$overview->setToken($_GET['o']);
 	
 if (isset($_GET['t']))
