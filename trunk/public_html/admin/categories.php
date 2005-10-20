@@ -35,11 +35,11 @@ if (!$db) die('Database connection failed');
 
 
 	
-	if ($_POST['submit']) {
+	if (isset($_POST['submit'])) {
 		$message = "<p>Making the following changes:</p>";
-		
+		$skip = array();
 		for ($c = 1; $c <= $_POST['highc']; $c++) {
-			if ($_POST['old'.$c] != $_POST['new'.$c] && !$skip[$_POST['old'.$c]]) {
+			if ($_POST['old'.$c] != $_POST['new'.$c] && empty($skip[$_POST['old'.$c]])) {
 				$isanother = false;
 				//check if this is actully a swap?
 				for($d = $c+1; $d <= $_POST['highc']; $d++) {

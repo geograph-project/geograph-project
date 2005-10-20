@@ -43,6 +43,7 @@ header("Content-Disposition: attachment; filename=\"geograph.csv\"");
 
 
 
+$sql_crit = '';
 
 echo "Id,Name,Grid Ref,Submitter,Image Class";
 if ($_GET['thumb']) {
@@ -59,20 +60,20 @@ if ($_GET['ll']) {
 }
 echo "\n";
 
-if ($_GET['ri'] && preg_match("/^\d$/",$_GET['ri']) ) {
+if (isset($_GET['ri']) && preg_match("/^\d$/",$_GET['ri']) ) {
 	$sql_crit .= " AND reference_index = {$_GET['ri']}";
 }
 
-if ($_GET['since'] && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
+if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 	$sql_crit .= " AND upd_timestamp >= '{$_GET['since']}'";
-} elseif ($_GET['last'] && preg_match("/^\d+ \w+$/",$_GET['last']) ) {
+} elseif (isset($_GET['last']) && preg_match("/^\d+ \w+$/",$_GET['last']) ) {
 	$_GET['last'] = preg_replace("/s$/",'',$_GET['last']);
 	$sql_crit .= " AND upd_timestamp > date_sub(now(), interval {$_GET['last']})";
-} elseif ($_GET['limit'] && preg_match("/^\d(,\d+)?$/",$_GET['limit'])) {
+} elseif (isset($_GET['limit']) && preg_match("/^\d(,\d+)?$/",$_GET['limit'])) {
 	$sql_crit .= " ORDER BY upd_timestamp DESC LIMIT {$_GET['limit']}";
 }
 
-if ($_GET['supp']) {
+if (isset($_GET['supp'])) {
 	$mod_sql = "moderation_status in ('accepted','geograph')";
 } else {
 	$mod_sql = "moderation_status = 'geograph'";
@@ -102,13 +103,14 @@ while (!$recordSet->EOF)
 		$image['imageclass'] = '"'.str_replace('"', '""', $image['imageclass']).'"';
 	}
 	echo "{$image['gridimage_id']},{$image['title']},{$image['grid_reference']},{$image['realname']},{$image['imageclass']}";
-	if ($_GET['thumb']) {
+	if (isset($_GET['thumb'])) {
 		$gridimage->fastInit($image);
 		echo ','.$gridimage->getThumbnail(120,120,true);
 	}
-	if ($image['nateastings'] && $_GET['en']) {
-		echo ",{$image['nateastings']},{$image['natnorthings']}";
-	} elseif ($_GET['ll']) {
+	if (isset($_GET['en'])) {
+		if ($image['nateastings'])
+			echo ",{$image['nateastings']},{$image['natnorthings']}";
+	} elseif (isset($_GET['ll'])) {
 		echo ",{$image['wgs84_lat']},{$image['wgs84_long']}";
 	}
 	echo "\n";

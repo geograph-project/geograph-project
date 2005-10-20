@@ -26,18 +26,14 @@ init_session();
 
 $smarty = new GeographPage;
 
-$len = intval($_GET['len']);
-if (!$len)
-	$len = 2;
+$len = (isset($_GET['len']) && is_numeric($_GET['len']))?intval($_GET['len']):2;
 
-if (preg_match('/^[\w ]+$/',$_GET['words']))
-	$words = $_GET['words'];
-	
-if ($_GET['t']) {
+$words = (isset($_GET['words']) && preg_match('/^[\w ]+$/',$_GET['words']))?$_GET['words']:'';
+		
+if (!empty($_GET['t'])) {
 	$template='statistics_wordnet_simple.tpl';
 	$cacheid='statistics|wordnet_simple.'.$len.".".str_replace(' ','.',$words);
 } else {	
-
 	$template='statistics_wordnet.tpl';
 	$cacheid='statistics|wordnet.'.$len.".".str_replace(' ','.',$words);
 }
@@ -48,11 +44,11 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
-	#$db->debug = true;
+	if (empty($db)) die('Database connection failed');  
 	
-	if ($_GET['words']) {
-		$ids = $db->GetAssoc("SELECT DISTINCT gid,title FROM `wordnet` WHERE title > 0 AND words = ".$db->Quote(trim($_GET['words'])) );
+	$sql_crit = '';
+	if (!empty($words)) {
+		$ids = $db->GetAssoc("SELECT DISTINCT gid,title FROM `wordnet` WHERE title > 0 AND words = ".$db->Quote(trim($words)) );
 		if (count($ids)) {
 			$sql_crit = " AND gid IN(".implode(',',array_keys($ids)).")";
 			$smarty->assign('words', trim($_GET['words']));
@@ -60,11 +56,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	$smarty->assign('len', $len);
 	
-	
+	$common = array();
 	$handle = fopen("common-words.dat", "r");
 	while ($handle && !feof($handle)) {
 		$buffer = strtolower(rtrim(fgets($handle, 4096)));
-		$common[$buffer]++;
+		$common[$buffer]=1;
 	}
 	
 
@@ -100,8 +96,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		$hex = dechex($count*100);
 		$wordlist[$words]['color'] = $hex.$hex.$hex;
 	}
-	if (!$_GET['t'])
-		ksort($wordlist);	
+	
+	if (empty($_GET['t']))
+		ksort($wordlist);
 	$smarty->assign_by_ref('wordlist', $wordlist);
 	
 	$size = $startsize;
@@ -111,7 +108,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	foreach($toplist as $words=>$obj) {
 		$count=0;
 		foreach (explode('&nbsp;',$words) as $word) {
-			if ($common[$word])
+			if (isset($common[$word]))
 				$count++;
 		}	
 
@@ -119,7 +116,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		$hex = dechex($count*100);
 		$toplist[$words]['color'] = $hex.$hex.$hex;
 	}
-	if (!$_GET['t'])
+	
+	if (empty($_GET['t']))
 		ksort($toplist);	
 	$smarty->assign_by_ref('toplist', $toplist);
 }

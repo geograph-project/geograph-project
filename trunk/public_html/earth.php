@@ -26,7 +26,7 @@ require_once('geograph/global.inc.php');
 if (!isset($_GET['BBOX'])) {
 	die("This page provides a feed for Google Earth"); 
 }
-if (!intval($_GET['i'])) {
+if (empty($_GET['i']) || !intval($_GET['i'])) {
 	$_GET['i'] = 1522;
 }
 

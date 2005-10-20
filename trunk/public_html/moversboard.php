@@ -55,7 +55,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 	//assign an ordinal
 
-	$i++;
+	$i=1;$lastgeographs = '?';
 	foreach($topusers as $user_id=>$entry)
 	{
 		if ($lastgeographs == $topusers[$user_id]['geographs'])

@@ -30,9 +30,9 @@ $smarty = new GeographPage;
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
-if ($_GET['ri']) {
-	if ($_GET['adm1']) {
-		if ($_GET['pid']) {
+if (!empty($_GET['ri'])) {
+	if (!empty($_GET['adm1'])) {
+		if (!empty($_GET['pid'])) {
 			$db=NewADOConnection($GLOBALS['DSN']);
 	
 			require_once('geograph/searchcriteria.class.php');
@@ -82,11 +82,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	
 	
-	if ($_GET['ri']) {
+	if (!empty($_GET['ri'])) {
 		$smarty->assign('ri', $_GET['ri']);
-		if ($_GET['adm1']) {
+		if (!empty($_GET['adm1'])) {
 			$smarty->assign('adm1', $_GET['adm1']);
-			if ($_GET['pid']) {
+			if (!empty($_GET['pid'])) {
 				//todo: error message?
 			} 
 			if ($_GET['ri'] == 2) {

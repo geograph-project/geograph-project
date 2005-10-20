@@ -26,29 +26,30 @@ init_session();
 
 $smarty = new GeographPage;
 
-if (isset($_GET['by']) && preg_match('/^\w+$/' , $_GET['by']))
-	$by = $_GET['by'];
-if (isset($_GET['ri']) && preg_match('/^[0-9]+$/' , $_GET['ri']))
-	$ri = intval($_GET['ri']);
-if (isset($_GET['u']) && preg_match('/^[0-9]+$/' , $_GET['u']))
-	$u = intval($_GET['u']);
-if (isset($_GET['order']) && preg_match('/^\w+$/' , $_GET['order']))
-	$order = $_GET['order'];
+$by = (isset($_GET['by']) && preg_match('/^\w+$/' , $_GET['by']))?$_GET['by']:'status';
+
+$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):1;
+
+$u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
+
+$order = (isset($_GET['order']) && preg_match('/^\w+$/' , $_GET['order']))?$_GET['order']:'';
 
 
 $template='statistics_breakdown.tpl';
 $cacheid='statistics|'.$by.'_'.$ri.'_'.$u.'_'.$order;
 
 
-if ($_GET['since'] && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
-	$sql_crit .= " AND upd_timestamp >= '{$_GET['since']}'";
+if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
+	$sql_crit = " AND upd_timestamp >= '{$_GET['since']}'";
 	$link .= "since={$_GET['since']}&amp;";
 	$cacheid.=md5($sql_crit);
-} elseif ($_GET['last'] && preg_match("/^\d+ \w+$/",$_GET['last']) ) {
+} elseif (isset($_GET['last']) && preg_match("/^\d+ \w+$/",$_GET['last']) ) {
 	$_GET['last'] = preg_replace("/s$/",'',$_GET['last']);
-	$sql_crit .= " AND upd_timestamp > date_sub(now(), interval {$_GET['last']})";
+	$sql_crit = " AND upd_timestamp > date_sub(now(), interval {$_GET['last']})";
 	$link .= "last={$_GET['last']}&amp;";
 	$cacheid.=md5($sql_crit);
+} else {
+	$sql_crit = '';
 }
 
 $smarty->caching = 2; // lifetime is per cache
@@ -64,13 +65,9 @@ $smarty->assign('by', $by);
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
+	if (empty($db)) die('Database connection failed');  
 	#$db->debug = true;
 	
-
-		
-	if (!$ri)
-		$ri = 1;
 	$smarty->assign('ri', $ri);
 	$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 
@@ -99,9 +96,8 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$smarty->assign('title', $bys[$by]);
 
-	$title = "Breakdown of Photos by ".$bys[$by];
-	$title .= " in ".$CONF['references'][$ri];
-	$link .= "by=$by&amp;ri=$ri";
+	$title = "Breakdown of Photos by ".$bys[$by]." in ".$CONF['references'][$ri];
+	$link = "by=$by&amp;ri=$ri";
 
 	if ($u) {
 		$user_crit = " and user_id = $u";
@@ -112,23 +108,27 @@ if (!$smarty->is_cached($template, $cacheid))
 		$profile=new GeographUser($u);
 		$smarty->assign_by_ref('profile', $profile);
 		$title .= " for ".($profile->realname);
-	} 
+	} else {
+		$user_crit = '';
+	}
 	$smarty->assign_by_ref('link', str_replace(' ','+',$link));
 	$smarty->assign_by_ref('h2title', $title);
 
 
 
 	if (strpos($order,'2') !== FALSE) {
-		$sql_dir = " DESC";
+		$sql_dir = ' DESC';
+		$no = '';
 	} else {
-		$no .= "2";
+		$sql_dir = '';
+		$no = '2';
 	}
 	$smarty->assign_by_ref('no', $no);
 
 	if (strpos($order,'c') !== FALSE) {
-		$sql_order = "ORDER BY c $sql_dir";
+		$sql_order = "ORDER BY c$sql_dir";
 	} else {
-		$sql_order = "ORDER BY field $sql_dir";
+		$sql_order = "ORDER BY field$sql_dir";
 	}
 	
 if (strpos($sql_fieldname,'ftf') !== FALSE) {
@@ -152,7 +152,7 @@ $sql_order";
 }
 		
 	$breakdown=$db->GetAll($sql);
-
+	$total = 0;
 	foreach($breakdown as $idx=>$entry) {
 		$total += $breakdown[$idx]['c'];
 	}

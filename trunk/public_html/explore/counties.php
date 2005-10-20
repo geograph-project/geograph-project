@@ -28,11 +28,10 @@ init_session();
 
 $smarty = new GeographPage;
 
-if (!$_GET['type'])
-	$_GET['type'] = 'center';
+$type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'center';
 
 $template='statistics_counties.tpl';
-$cacheid='statistics|counties'.$_GET['type'];
+$cacheid='statistics|counties'.$type;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
@@ -46,7 +45,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions;
 
-	if ($_GET['type'] == 'center') {
+	if ($type == 'center') {
 		$smarty->assign("page_title", "County Center Points");
 		$smarty->assign("extra_info", "* this pages uses counties from 1995 and for some unknown reason Northern Ireland is just one entity.");
 		
@@ -80,7 +79,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 		}
 		
-	} elseif ($_GET['type'] == 'capital') {
+	} elseif ($type == 'capital') {
 		$smarty->assign("page_title", "County Capital Towns");
 		$smarty->assign("extra_info", "* at the moment we dont actully store which county each capital is in");
 		$counties = $db->GetAll("SELECT * FROM `loc_towns` WHERE `s` = '2' AND `reference_index` = 2 ORDER BY n");
