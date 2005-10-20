@@ -65,6 +65,12 @@ class SearchEngine
 	
 	var $errormsg;
 	
+	//don't use the cached version of exercute
+	var $noCache = false;
+	
+	//only run the count section of exercute
+	var $countOnly = false;
+	
 	function SearchEngine($query_id)
 	{
 		if (is_numeric($query_id)) {
@@ -181,7 +187,7 @@ class SearchEngine
 			}
 		}
 
-		if ($searchclass) {
+		if (isset($searchclass)) {
 			$db=$this->_GetDB();
 
 			$sql = "INSERT INTO queries SET searchclass = '$searchclass',".
@@ -212,21 +218,22 @@ class SearchEngine
 	{
 		global $CONF,$imagestatuses,$sortorders,$USER;
 		
-		if (!$dataarray['distance']) {
+		if (empty($dataarray['distance'])) {
 			$dataarray['distance'] = $CONF['default_search_distance'];
 		}
 		$nearstring = sprintf("within %dkm of",$dataarray['distance']);
-		
-		
-		//check if we actully want to perform a textsearch (it comes through in the placename beucase of the way the multiple mathc page works)
-		if (strpos($dataarray['placename'],'text:') === 0) {
-			$dataarray['textsearch'] = preg_replace("/^text\:/",'',$dataarray['placename']);
-			unset($dataarray['placename']);
-		}
-		//check if we actully want to perform a user_search
-		if (strpos($dataarray['placename'],'user:') === 0) {
-			$dataarray['user_id'] = preg_replace("/^user\:/",'',$dataarray['placename']);
-			unset($dataarray['placename']);
+				
+		if (!empty($dataarray['placename'])) {
+			//check if we actully want to perform a textsearch (it comes through in the placename beucase of the way the multiple mathc page works)
+			if (strpos($dataarray['placename'],'text:') === 0) {
+				$dataarray['textsearch'] = preg_replace("/^text\:/",'',$dataarray['placename']);
+				unset($dataarray['placename']);
+			}
+			//check if we actully want to perform a user_search
+			if (strpos($dataarray['placename'],'user:') === 0) {
+				$dataarray['user_id'] = preg_replace("/^user\:/",'',$dataarray['placename']);
+				unset($dataarray['placename']);
+			}
 		}
 		
 		if (!empty($dataarray['postcode'])) {
@@ -263,7 +270,7 @@ class SearchEngine
 			} else {
 				$this->errormsg = "Does not appear to be a valid Grid Reference";
 			}
-		} else if ($dataarray['county_id']) {
+		} else if (!empty($dataarray['county_id'])) {
 			require_once('geograph/searchcriteria.class.php');
 			$criteria = new SearchCriteria_County();
 			$criteria->setByCounty($dataarray['county_id']);
@@ -276,7 +283,7 @@ class SearchEngine
 			} else {
 				$this->errormsg =  "Invalid County????";
 			}
-		} else if ($dataarray['placename']) {
+		} else if (!empty($dataarray['placename'])) {
 			$dataarray['placename'] = trim($dataarray['placename']);
 			require_once('geograph/searchcriteria.class.php');
 			$criteria = new SearchCriteria_Placename();
@@ -318,9 +325,9 @@ class SearchEngine
 			$searchclass = 'All';
 		} 
 
-		if ($searchclass) {
+		if (isset($searchclass)) {
 			$db=NewADOConnection($GLOBALS['DSN']);
-			if (!$db) die('Database connection failed'); 
+			if (empty($db)) die('Database connection failed'); 
 
 			
 			
@@ -486,7 +493,7 @@ class SearchEngine
 			header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}".(($dataarray['submit'] == 'Count')?'&count=1':''));
 			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}".(($dataarray['submit'] == 'Count')?'&amp;count=1':'')."\">Your Search Results</a>";
 			exit;		
-		} else if ($criteria->is_multiple) {
+		} else if (isset($criteria) && isset($criteria->is_multiple)) {
 			if ($dataarray['user_id']) {
 				$profile=new GeographUser($dataarray['user_id']);
 				$searchdesc .= ",".($dataarray['user_invert_ind']?' not':'')." by ".($profile->realname);
@@ -590,11 +597,14 @@ $sql = <<<END
 			$sql_where
 END;
 			}
+			if (!empty($_GET['debug']))
+				print "<BR><BR>$sql";
 			$this->resultCount = $db->CacheGetOne(3600,$sql);
 			$this->numberOfPages = ceil($this->resultCount/$pgsize);
 		} 
-		if ($this->countOnly || !$this->resultCount)
+		if ($this->countOnly || ($pg > 1 && !$this->resultCount))
 			return 0;
+		
 	// construct the query sql
 $sql = <<<END
 	   SELECT gi.*,x,y,gs.grid_reference,user.realname
@@ -607,7 +617,8 @@ $sql = <<<END
 		ORDER BY $sql_order
 		LIMIT $page,$pgsize
 END;
-#print "<BR><BR>$sql";
+		if (!empty($_GET['debug']))
+			print "<BR><BR>$sql";
 		
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_before = ((float)$usec + (float)$sec);
@@ -681,7 +692,7 @@ $sql = <<<END
 		$sql_where
 END;
 			}
-			if ($_GET['debug'])
+			if (!empty($_GET['debug']))
 				print "<BR><BR>$sql";
 
 
@@ -702,7 +713,7 @@ $sql = <<<END
 		ORDER BY $sql_order
 		LIMIT $page,$pgsize
 END;
-		if ($_GET['debug'])
+		if (!empty($_GET['debug']))
 			print "<BR><BR>$sql";
 		
 		list($usec, $sec) = explode(' ',microtime());
@@ -761,9 +772,9 @@ END;
 				$this->results[$i]=new GridImage;
 				$this->results[$i]->fastInit($recordSet->fields);
 
-				if ($d = $recordSet->fields['dist_sqd']) {
+				if (isset($recordSet->fields['dist_sqd'])) {
 					$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
-					$this->results[$i]->dist_string = sprintf($dist_format,sqrt($d),$this->heading_string($angle));
+					$this->results[$i]->dist_string = sprintf($dist_format,sqrt($recordSet->fields['dist_sqd']),$this->heading_string($angle));
 				}
 				if (empty($this->results[$i]->title))
 					$this->results[$i]->title="Untitled";
