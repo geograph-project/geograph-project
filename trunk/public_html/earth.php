@@ -71,7 +71,7 @@ require_once('geograph/imagelist.class.php');
 $format = 'KML';
 
 $rss = new UniversalFeedCreator(); 
-$rss->title = 'Geograph.co.uk'; 
+$rss->title = 'Geograph British Isles'; 
 $rss->link = "http://{$_SERVER['HTTP_HOST']}";
 
 

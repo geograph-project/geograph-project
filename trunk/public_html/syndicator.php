@@ -64,7 +64,7 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 
 $rss = new UniversalFeedCreator(); 
 $rss->useCached($rssfile); 
-$rss->title = 'Geograph.co.uk'; 
+$rss->title = 'Geograph British Isles'; 
 $rss->link = "http://{$_SERVER['HTTP_HOST']}";
  
 
