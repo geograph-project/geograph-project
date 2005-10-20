@@ -68,7 +68,7 @@ function freebsd_loadavg() {
 $param=array(
 	'dir'=>'/home/geograph',		//base installation dir
 
-	'config'=>'www.geograph.co.uk', //effective config
+	'config'=>'www.geograph.org.uk', //effective config
 
 	'timeout'=>14, //timeout in minutes
 	'sleep'=>10,	//sleep time in seconds
@@ -106,7 +106,7 @@ recreate_maps.php
 ---------------------------------------------------------------------
 php recreate_maps.php 
     --dir=<dir>         : base directory (/home/geograph)
-    --config=<domain>   : effective domain config (www.geograph.co.uk)
+    --config=<domain>   : effective domain config (www.geograph.org.uk)
     --timeout=<minutes> : maximum runtime of script (14)
     --sleep=<seconds>   : seconds to sleep if load average exceeded (10)
     --load=<loadavg>    : maximum load average (100)

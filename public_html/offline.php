@@ -4,7 +4,7 @@ $auto_redirect=false;
 
 if ($auto_redirect)
 {
-	$url="http://new.geograph.co.uk/".$_SERVER['REQUEST_URI'];
+	$url="http://new.geograph.org.uk/".$_SERVER['REQUEST_URI'];
 	header("Location:$url");
 	exit;
 }

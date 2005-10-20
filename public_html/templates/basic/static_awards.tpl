@@ -29,7 +29,7 @@
 
 
 
-<h2>Uses of images from Geograph.co.uk</h2>
+<h2>Uses of images from Geograph British Isles</h2>
 
 <!-- //todo store these in a database to make easy get a page title (and possibly the image and/or contributor) -->
 

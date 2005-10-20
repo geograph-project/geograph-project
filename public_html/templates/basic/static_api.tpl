@@ -24,7 +24,7 @@
 		  <li><a href="#finally">and finally...</a></li> 
 		</ul></div> 
 	 <p>Geograph's <b>Application Programming Interface</b> (API) allows third
-		party developers to create applications using data sourced from geograph.co.uk,
+		party developers to create applications using data sourced from Geograph,
 		in a friendly and polite way.</p> 
 	 <p>Chances are you have come to this page because you are a developer
 		looking to get access to some of the data, well you've come to the right place,
@@ -319,28 +319,28 @@
 			 <table border="1" cellpadding="3" cellspacing="0"> 
 				<tr> 
 				  <td><a
-					 href="http://www.geograph.co.uk/search.php?i=25654">25654</a></td> 
+					 href="/search.php?i=25654">25654</a></td> 
 				  <td>15 Random images, by users joined in the last week </td> 
 				</tr> 
 				<tr> 
 				  <td><a
-					 href="http://www.geograph.co.uk/search.php?i=29439">29439</a></td> 
+					 href="/search.php?i=29439">29439</a></td> 
 				  <td>50 Recently submitted images</td> 
 				</tr> 
 				<tr> 
 				  <td><a
-					 href="http://www.geograph.co.uk/search.php?i=25678">25678</a></td> 
+					 href="/search.php?i=25678">25678</a></td> 
 				  <td>15 Random images from 15 categories</td> 
 				</tr> 
 				<tr> 
 				  <td><a
-					 href="http://www.geograph.co.uk/search.php?i=26586">26586</a></td> 
+					 href="/search.php?i=26586">26586</a></td> 
 				  <td>15 Random first geographs for 15 squares</td> 
 				</tr>
 				<tr>
 				  <td><a
-					 href="http://www.geograph.co.uk/search.php?i=25666">25666</a></td>
-				  <td>15 Random images specified to a 10 figure grid refernce</td>
+					 href="/search.php?i=25666">25666</a></td>
+				  <td>15 Random images specified to a 10 figure grid reference</td>
 				</tr> 
 			 </table>{dynamic}{if $user->registered}or even run one of your <a href="/search.php?more=1">recent searches</a>{/if}{/dynamic} </td> 
 		</tr> 

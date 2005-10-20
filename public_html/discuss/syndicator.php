@@ -57,7 +57,7 @@ if ($_GET['topic'] && is_numeric($_GET['topic'])) {
 
 		$title = $db->GetOne("select topic_title from `geobb_topics` where `topic_id` = {$_GET['topic']}");
 	
-	$rss->title = "Geograph.co.uk Forum :: $title"; 
+	$rss->title = "Geograph.org.uk Forum :: $title"; 
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format&amp;topic=".$_GET['topic'];
 	
 $sql="SELECT * 
@@ -106,12 +106,12 @@ ORDER BY `post_time` ASC";
 	}
 	
 	if ($_GET['sortBy'] == 1) {
-		$rss->title = "Geograph.co.uk Forum $title :: Latest Topics"; 
+		$rss->title = "Geograph.org.uk Forum $title :: Latest Topics"; 
 		$rss->description = 'Latest Geograph Topics'; 
 		$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format&amp;sortBy=1".$synd;
 		$sql_order= "geobb_topics.topic_id DESC";
 	} else {
-		$rss->title = "Geograph.co.uk Forum $title :: Latest Discussions"; 
+		$rss->title = "Geograph.org.uk Forum $title :: Latest Discussions"; 
 		$rss->description = 'Latest Geograph Discussions'; 
 		$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format".$synd;
 		$sql_order= "`topic_last_post_id` DESC";

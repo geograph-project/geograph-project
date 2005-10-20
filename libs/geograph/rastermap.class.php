@@ -87,7 +87,7 @@ class RasterMap
 				$n1 = $nort - 500;
 				$n2 = $n1 + 2000;
 
-				//Use of this URL is not permitted outside of geograph.co.uk
+				//Use of this URL is not permitted outside of geograph.org.uk
 				$mapurl = "http://vision.edina.ac.uk/cgi-bin/wms-vision?version=1.1.0&request=getMap&layers=newpop%2Csmall_1920%2Cmed_1904&styles=&SRS=EPSG:27700&Format=image/png&width=$width&height=$width&bgcolor=cfd6e5&bbox=$e1,$n1,$e2,$n2&exception=application/vnd.ogc.se_inimage";
 				
 				if (0 && $this->nateastings - $east == 500 && $this->natnorthings - $nort == 500) {

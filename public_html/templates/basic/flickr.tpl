@@ -24,9 +24,9 @@ which have been tagged with a grid reference, see the info at the {external href
 
 <li>Hopefully this page will soon index images {external href="http://www.flickr.com/groups/mappingflickr/" text="geotagged"} with lat/long, and possibly even placenames!<br/><br/></li>
 
-<li><i>The images found by this page are not endorsed nor controlled by geograph.co.uk, please ensure you check the licence of the images before copying.</i><br/><br/></li>
+<li><i>The images found by this page are not endorsed nor controlled by Geograph.org.uk, please ensure you check the licence of the images before copying.</i><br/><br/></li>
 
-<li>Also <a href="/search.php">search</a> images uploaded to geograph.co.uk</p>
+<li>Also <a href="/search.php">search</a> images uploaded to Geograph.org.uk</p>
 
 </ul>
 

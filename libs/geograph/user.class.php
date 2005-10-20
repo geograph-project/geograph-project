@@ -233,11 +233,11 @@ class GeographUser
 					
 					$msg.="We hope you enjoy using and contributing to the site\n\n";
 					$msg.="Kind Regards,\n\n";
-					$msg.="The Geograph.co.uk Team";
+					$msg.="The Geograph.org.uk Team";
 					
 					
 					@mail($email, '[geograph] Confirm registration', $msg,
-						"From: Geograph Website <noreply@geograph.co.uk>");
+						"From: Geograph Website <noreply@geograph.org.uk>");
 				
 				}
 			}
@@ -335,7 +335,7 @@ class GeographUser
 				$msg.="Your password is: ".$arr['password']."\n\n";
 
 				@mail($email, 'Password Reminder for '.$_SERVER['HTTP_HOST'], $msg,
-				"From: Geograph Website <noreply@geograph.co.uk>");
+				"From: Geograph Website <noreply@geograph.org.uk>");
 
 				$ok=true;
 			}

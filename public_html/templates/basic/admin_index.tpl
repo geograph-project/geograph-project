@@ -47,7 +47,7 @@ corrected</li>
 <li><a title="Recreate Maps" href="/admin/recreatemaps.php">Recreate Maps</a> - 
    force recreation of the most urgent maps</li>
    
-<li><a title="Web Stats" href="http://www.geograph.co.uk/logs/">Web Stats</a> - 
+<li><a title="Web Stats" href="http://www.geograph.org.uk/logs/">Web Stats</a> - 
    check the apache activity logs</li>
 
 <li><a title="Server Stats" href="/admin/server.php">Server Stats</a> - 
