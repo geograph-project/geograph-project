@@ -19,3 +19,44 @@ create table recent_gridimage
 	added datetime,
 	primary key(gridimage_id)
 );
+
+
+INSERT INTO `loc_towns` VALUES (NULL, 'Donegal', 192000, 378000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Carrick-on-Shannon', 193000, 299000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Sligo', 168000, 336000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Castlebar', 114000, 290000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Roscommon', 187000, 264000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Longford', 213000, 274000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Cavan', 241000, 304000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Monaghan', 266000, 333000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Dundalk', 304000, 307000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Navan', 286000, 268000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Mullingar', 243000, 253000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Dublin', 314000, 234000, '1', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Naas', 289000, 219000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Tullamore', 233000, 225000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Galway', 130000, 226000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Ennis', 133000, 177000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Nenagh', 186000, 179000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Clonmel', 219000, 122000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Portlaoise', 246000, 198000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Kilkenny', 250000, 156000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Carlow', 272000, 176000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Wicklow', 331000, 193000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Wexford', 304000, 121000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Dungarvan', 225000, 93000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Waterford', 260000, 111000, '1', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Cork', 167000, 71000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Limerick', 157000, 157000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Tralee', 83000, 114000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Antrim', 315000, 387000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Ballymena', 310000, 403000, '1', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Derry/Londonderry', 243000, 417000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Omagh', 245000, 372000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Enniskillen', 224000, 344000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Armagh', 287000, 345000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Downpatrick', 348000, 344000, '2', 2, 0);
+INSERT INTO `loc_towns` VALUES (NULL, 'Belfast', 333000, 374000, '1', 2, 0);
+
+#update as per email report
+UPDATE `loc_towns` SET `name` = 'Lifford', `e` = 233551, `n` = 399281 WHERE  `name` = 'Donegal' and `e` = 192000;
