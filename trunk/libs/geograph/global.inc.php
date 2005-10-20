@@ -75,7 +75,7 @@ require_once('geograph/user.class.php');
 if (isset($CONF['log_script_timing']))
 {
 	list($usec, $sec) = explode(' ',microtime());
-	$GLOBAL['STARTTIME'] = ((float)$usec + (float)$sec);
+	$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
 	register_shutdown_function('log_script_timing');
 }
 
