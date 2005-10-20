@@ -100,7 +100,7 @@ Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> 
 {/if}
   <div id="footer">
    {dynamic}
-     <p style="color:#AAAABB;float:left">page last updated at {$smarty.now|date_format:"%H:%M"}</p>
+     <p style="color:#AAAABB;float:left">Page updated at {$smarty.now|date_format:"%H:%M"}</p>
    {/dynamic}
    <p><a href="/help/credits" title="Who built this and how?">Credits</a>
        <span class="sep">|</span>
