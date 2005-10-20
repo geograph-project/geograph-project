@@ -71,31 +71,54 @@ require_once('smarty/libs/Smarty.class.php');
 require_once('geograph/user.class.php');
 
 
-if ($CONF['write_useage_log']) {
+//remember start time of script for logging
+if (isset($CONF['log_script_timing']))
+{
 	list($usec, $sec) = explode(' ',microtime());
-	$starttime = ((float)$usec + (float)$sec);
- 
-  function log_it()
-  {
-   global $starttime,$USER;
-   $filename = date("Ymd-H");
-   $time = date("i:s");
-   
-   list($usec, $sec) = explode(' ',microtime());
-	$endtime = ((float)$usec + (float)$sec);
-   
-   $timetaken = $endtime - $starttime;
-   
-   $string = "$time,$timetaken,{$_SERVER['SCRIPT_URL']},{$_SERVER['REQUEST_METHOD']},{$_SERVER['QUERY_STRING']},{$_SERVER['REMOTE_ADDR']},{$USER->user_id}\n";
-   
-   $h = fopen($CONF['write_useage_log']."$filename.log",'a');
-   fwrite($h,$string);
-   fclose($h);   
-  }
-  register_shutdown_function('log_it');
+	$GLOBAL['STARTTIME'] = ((float)$usec + (float)$sec);
+	register_shutdown_function('log_script_timing');
 }
 
-
+/**
+* Logs execution time of script
+* if $CONF['log_script_timing'] isn't set, nothing happens
+* if $CONF['log_script_timing'] == 'file' timings are logged in the logs folder
+* if $CONF['log_script_timing'] == 'apache' timings are logged via apache
+*/
+function log_script_timing()
+{
+	global $STARTTIME,$USER,$CONF;
+	
+	list($usec, $sec) = explode(' ',microtime());
+	$endtime = ((float)$usec + (float)$sec);
+	$timetaken = sprintf('%0.4f', $endtime - $STARTTIME);
+			
+	if ($CONF['log_script_timing']=='file')
+	{
+		//%03.4f doesn't seem to work so we must add our own padding
+		//this makes the output file easily sortable
+		if ($timetaken<100)
+			$timetaken='0'.$timetaken;
+		if ($timetaken<10)
+			$timetaken='0'.$timetaken;
+		
+		$logfile=$_SERVER['DOCUMENT_ROOT'].'/../logs/phptime'.date("Ymd-H").".log";
+		$h = @fopen($logfile,'a');
+		if ($h)
+		{
+			$time = date("i:s");
+			$logline = "$timetaken,$time,{$_SERVER['SCRIPT_URL']},{$_SERVER['REQUEST_METHOD']},{$_SERVER['QUERY_STRING']},{$_SERVER['REMOTE_ADDR']},{$USER->user_id}\n";
+			
+			fwrite($h,$logline);
+			
+			fclose($h);   
+		}
+	}
+	elseif($CONF['log_script_timing']=='apache')
+	{
+		@apache_note('php_timing', $timetaken);
+	}
+}
 
 /**
 * Smarty block handler 
@@ -342,6 +365,9 @@ function init_session()
 	
 	//put user object into global scope
 	$GLOBALS['USER'] =& $_SESSION['user'];
+	
+	//tell apache our ID, handy for logs
+	@apache_note('user_id', $GLOBALS['USER']->user_id);
 }
 
 //replace geograph links
