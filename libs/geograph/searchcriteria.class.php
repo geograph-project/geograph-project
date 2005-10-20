@@ -56,11 +56,13 @@ class SearchCriteria
 	var $resultsperpage;
 	var $displayclass;
 	
+	var $is_multiple = false;
+	
 	
 	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) 
 	{
-		if ($_GET['BBOX']) {
-			$b = explode(',',$_GET['BBOX']);
+		if (!empty($_GET['BBOX'])) {
+			$b = explode(',',trim($_GET['BBOX']));
 			$sql_where = "(`wgs84_lat` BETWEEN {$b[1]} and {$b[3]}) and (`wgs84_long` BETWEEN {$b[0]} and {$b[2]})";
 		} else {
 			$sql_where = '';
@@ -366,7 +368,6 @@ class SearchCriteria_All extends SearchCriteria
 
 class SearchCriteria_Placename extends SearchCriteria
 {
-	var $is_multiple = false;
 	var $matches;
 	var $placename;
 	

@@ -34,6 +34,8 @@
 	
 class Conversions
 {		
+	var $db = null;
+	
 //use:	list($x,$y,$reference_index) = wgs84_to_internal($lat,$long);
 		//with reference_index deduced from the location and the approraite conversion used
 

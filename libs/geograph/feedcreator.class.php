@@ -600,8 +600,8 @@ class FeedCreator extends HtmlDescribable {
 	
 	function _createStylesheetReferences() {
 		$xml = "";
-		if ($this->cssStyleSheet) $xml .= "<?xml-stylesheet href=\"".$this->cssStyleSheet."\" type=\"text/css\"?>\n";
-		if ($this->xslStyleSheet) $xml .= "<?xml-stylesheet href=\"".$this->xslStyleSheet."\" type=\"text/xsl\"?>\n";
+		if (!empty($this->cssStyleSheet)) $xml .= "<?xml-stylesheet href=\"".$this->cssStyleSheet."\" type=\"text/css\"?>\n";
+		if (!empty($this->xslStyleSheet)) $xml .= "<?xml-stylesheet href=\"".$this->xslStyleSheet."\" type=\"text/xsl\"?>\n";
 		return $xml;
 	}
 	
@@ -823,8 +823,8 @@ class RSSCreator10 extends FeedCreator {
 	function createFeed() {     
 		$feed = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 		$feed.= $this->_createGeneratorComment();
-		if ($this->cssStyleSheet=="") {
-			$cssStyleSheet = "http://www.w3.org/2000/08/w3c-synd/style.css";
+		if (empty($this->cssStyleSheet)) {
+			$this->cssStyleSheet = "http://www.w3.org/2000/08/w3c-synd/style.css";
 		}
 		$feed.= $this->_createStylesheetReferences();
 		$feed.= "<rdf:RDF\n";
@@ -1060,7 +1060,7 @@ class KMLCreator extends FeedCreator {
 		$feed.= $this->_createStylesheetReferences();
 		$feed.= "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n"; 
 		$feed.= "<Document>\n";
-		if ($_GET['simple'] && count($this->items) > 0) {
+		if (!empty($_GET['simple']) && count($this->items) > 0) {
 		$feed.= "<Style id=\"defaultIcon\">
 	<IconStyle id=\"defaultIcon\">
 	</IconStyle>
