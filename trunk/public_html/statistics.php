@@ -43,6 +43,8 @@ $smarty->assign_by_ref('references',$CONF['references']);
 $bys = array('status' => 'Status','class' => 'Category','takenyear' => 'Date Taken','gridsq' => 'Grid Square');
 $smarty->assign_by_ref('bys',$bys);
 
+$u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
+
 	//bare minimum for the dynamic section
 	if ($u) {
 		$profile=new GeographUser($u);
