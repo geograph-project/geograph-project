@@ -104,7 +104,7 @@ if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || 
 		$smarty->assign('errormsg', $engine->errormsg);
 	}
 	
-	if (isset($engine->criteria->is_multiple)) {
+	if ($engine->criteria->is_multiple) {
 		//todo these shouldnt be hardcoded as there other possiblities for suggestions
 		$smarty->assign('multipletitle', "Placename");
 		$smarty->assign('multipleon', "placename");

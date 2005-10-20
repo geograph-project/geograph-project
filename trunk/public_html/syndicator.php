@@ -49,7 +49,7 @@ if (isset($_GET['q'])) {
 	$engine = new SearchEngine('#'); 
  	$_GET['i'] = $engine->buildSimpleQuery($_GET['q'],100,false,isset($_GET['u'])?$_GET['u']:0);
  	
- 	if (isset($engine->criteria->is_multiple)) {
+ 	if ($engine->criteria->is_multiple) {
  		die('unable identify a unique location');
  	}
 }
