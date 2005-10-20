@@ -29,6 +29,9 @@ init_session();
 
 $smarty = new GeographPage;
 
+$template='kml.tpl';
+$cacheid = '';
+
 if (isset($_GET['id']))  {
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/gridsquare.class.php');
@@ -65,7 +68,7 @@ if (isset($_GET['id']))  {
 	}
 }		
 
-$template='kml.tpl';
+
 	
 	if (isset($_REQUEST['i']) && $i = intval($_REQUEST['i'])) {
 		$pg = $_REQUEST['page'];
@@ -76,12 +79,12 @@ $template='kml.tpl';
 		
 		if (isset($_POST['submit'])) {
 			$simple = $_POST['simple'];
-			if ($_POST['type'] == 'view') {
+			if (isset($_POST['type']) && $_POST['type'] == 'view') {
 				$url = "http://{$_SERVER['HTTP_HOST']}/earth.php?i=$i&simple=$simple";
 			} else {
 				$url = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=KML&i=$i&simple=$simple&page=$pg";
 			}
-			if ($_POST['type'] == 'static') {
+			if (isset($_POST['type']) && $_POST['type'] == 'static') {
 				header("Status:302 Found");
 				header("Location:$url");
 				$url = str_replace('&','&amp;',$url);
@@ -92,7 +95,7 @@ $template='kml.tpl';
 				if ($_POST['type'] == 'time') {
 					$view = "<refreshMode>onInterval</refreshMode>\n<refreshInterval>{$_POST['refresh']}</refreshInterval>";
 				} else {
-					$view = "<viewRefreshMode>onStop</viewRefreshMode>\n<viewRefreshTime>4</viewRefreshTime>";
+					$view = "<viewRefreshMode>onStop</viewRefreshMode>\n<viewRefreshTime>4</viewRefreshTime><viewFormat>BBOX=[bboxWest],[bboxSouth],[bboxEast],[bboxNorth]&amp;LOOKAT=[lookatLon],[lookatLat],[lookatRange],[lookatTilt],[lookatHeading],[horizFov],[vertFov]</viewFormat>";
 				}
 				header("Content-type: application/vnd.google-earth.kml+xml");
 				header("Content-Disposition: attachment; filename=\"Geograph.kml\"");
