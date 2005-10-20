@@ -20,26 +20,14 @@ corrected</li>
 
 </ul>
 
-<h2>Basic Stats</h2>
-<ul>
-<li>Total registered users: {$users_total} ({$users_thisweek} new users in past 7 days)</li>
-<li>Users who have submitted: {$users_submitted}</li>
-<li>{$users_pending} registrations awaiting email address confirmation</li>
-<li>Total images: {$images_total} ({$images_thisweek} new images in past 7 days)</li>
-
-  <li>Breakdown:
-  {foreach key=key item=item from=$images_status}
-    {$item} {$key}
-  {/foreach}
-  </li>
-
-</ul>
+<h2>Load Average</h2>
+<img src="http://www.geograph.org.uk/img/cpuday.png" width="480" height="161"/>
 
 <h2>Total Submissions</h2>
-<img src="/img/submission_graph.png" width="480" height="161"/>
+<img src="http://www.geograph.org.uk/img/submission_graph.png" width="480" height="161"/>
 
 <h2>Daily Submission Rate</h2>
-<img src="/img/rate.png" width="480" height="161"/>
+<img src="http://www.geograph.org.uk/img/rate.png" width="480" height="161"/>
 
 <h2>Developer / Sysadmin Tools</h2>
 <ul>
