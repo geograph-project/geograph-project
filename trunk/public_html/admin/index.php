@@ -34,6 +34,7 @@ $cacheid='';
 if (!$smarty->is_cached($template, $cacheid))
 {
 	//lets get some stats
+	/* unnecessary and slow 
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 	
@@ -57,6 +58,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('images_total',  $images_total);
 	$smarty->assign('images_thisweek',  $images_thisweek);
 	$smarty->assign_by_ref('images_status',  $images_status);
+	*/
 }
 
 $smarty->display($template,$cacheid);
