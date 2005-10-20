@@ -75,10 +75,18 @@ $CONF['flickr_api_key'] = '';
 //copied to your local system on demand. Simply give the domain name
 //of the target system.
 //COMMENT THIS LINE OUT ON LIVE SYSTEMS!
-//$CONF['fetch_on_demand'] = 'www.geograph.co.uk';
+//$CONF['fetch_on_demand'] = 'www.geograph.org.uk';
 
 //does the map draw the more demanding placenames
 $CONF['enable_newmap'] = 1;
+
+
+//script timing logging options (comment out when not required)
+//to log to separate file (in docroot/../logs)
+//$CONF['log_script_timing'] = 'file';		
+//log to apache logfile (use %{php_timing}n in the LogFormat)
+//$CONF['log_script_timing'] = 'apache';	
+
 
 
 ?>
