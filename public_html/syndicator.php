@@ -37,9 +37,9 @@ if (isset($_GET['format']) && in_array($_GET['format'], $valid_formats))
 }
 
 if ($format == 'KML') {
-	$extension = ($_GET['simple'])?'simple.kml':"kml";
+	$extension = (empty($_GET['simple']))?'kml':'simple.kml';
 } else {
-	$extension = "xml";
+	$extension = 'xml';
 }
 
 if (isset($_GET['q'])) {
@@ -49,8 +49,8 @@ if (isset($_GET['q'])) {
 	$engine = new SearchEngine('#'); 
  	$_GET['i'] = $engine->buildSimpleQuery($_GET['q'],100,false,isset($_GET['u'])?$_GET['u']:0);
  	
- 	if ($engine->criteria->is_multiple) {
- 		die("unable identify a unique location");
+ 	if (isset($engine->criteria->is_multiple)) {
+ 		die('unable identify a unique location');
  	}
 }
 
@@ -123,7 +123,7 @@ for ($i=0; $i<$cnt; $i++)
 	$item = new FeedItem(); 
 	$item->title = $images->images[$i]->grid_reference." : ".$images->images[$i]->title; 
 	$item->link = "http://{$_SERVER['HTTP_HOST']}/photo/{$images->images[$i]->gridimage_id}";
-	if ($images->images[$i]->dist_string || $images->images[$i]->imagetakenString) {
+	if (isset($images->images[$i]->dist_string) || isset($images->images[$i]->imagetakenString)) {
 		$item->description = $images->images[$i]->dist_string.($images->images[$i]->imagetakenString?' Taken: '.$images->images[$i]->imagetakenString:'')."<br/>".$images->images[$i]->comment; 
 		$item->descriptionHtmlSyndicated = true;
 	} else {
