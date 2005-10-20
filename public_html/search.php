@@ -26,8 +26,8 @@ require_once('geograph/gridimage.class.php');
 init_session();
 
 $smarty = new GeographPage;
-if ($_GET['i'])
-	$_GET['i']=intval(stripslashes($_GET['i']));
+
+$i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
 $imagestatuses = array('geograph' => 'geograph only','geograph,accepted' => 'geographs &amp; supplemental','accepted' => 'supplemental only');
 $sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributer Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North');
@@ -63,7 +63,7 @@ function dieUnderHighLoad($threshold = 2) {
 	}
 }
 
-if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
+if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || !empty($_GET['gridsquare'])) {
 	dieUnderHighLoad();
 	// -------------------------------
 	//  special handler to build a advanced query from the link in stats or profile.  
@@ -71,7 +71,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 
-	if ($_GET['u'])
+	if (!empty($_GET['u']))
 		$_GET['user_id'] = $_GET['u']; 
 
 	$engine = new SearchEngine('#'); 
@@ -80,7 +80,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
  	//should never fail?? - but display form 'in case'
  	
  	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');
+	if (empty($db)) die('Database connection failed');
 
 	advanced_form($smarty,$db);
  	
@@ -93,7 +93,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 
-	if ($_POST['refine']) {
+	if (!empty($_POST['refine'])) {
 		//we could use the selected item but then have to check for numberic placenames
 		$_POST['placename'] = $_POST['old-placename'];
 	} else {
@@ -104,7 +104,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		$smarty->assign('errormsg', $engine->errormsg);
 	}
 	
-	if ($engine->criteria->is_multiple) {
+	if (isset($engine->criteria->is_multiple)) {
 		//todo these shouldnt be hardcoded as there other possiblities for suggestions
 		$smarty->assign('multipletitle', "Placename");
 		$smarty->assign('multipleon', "placename");
@@ -115,12 +115,11 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		$smarty->assign('searchdesc', $engine->searchdesc);
 		$smarty->display('search_multiple.tpl');
 	} else {
-		$smarty->assign('searchq', $q);
 		foreach ($_POST as $key=> $value) {
 			$smarty->assign($key, $value);
 		}
 		foreach (array('postcode','textsearch','gridref','county_id','placename','all_checked') as $key) {
-			if ($_POST[$key]) 
+			if (isset($_POST[$key])) 
 				$smarty->assign('elementused', $key);
 		}
 		
@@ -129,23 +128,26 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		$smarty->reassignPostedDate("taken_start");
 		$smarty->reassignPostedDate("taken_end");
 		
-		if ($_POST['all_ind'])
+		if (!empty($_POST['all_ind'])
 			$smarty->assign('all_checked', 'checked="checked"');
-		if ($_POST['user_invert_ind'])
+		if (!empty($_POST['user_invert_ind']))
 			$smarty->assign('user_invert_checked', 'checked="checked"');
-		if ($_POST['reverse_order_ind'])
+		if (!empty($_POST['reverse_order_ind']))
 			$smarty->assign('reverse_order_ind', 'checked="checked"');
 				
 		$db=NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');
+		if (empty($db)) die('Database connection failed');
 		
 		advanced_form($smarty,$db);
 	}
-} else if ($q=stripslashes($_GET['q'])) {
+} elseif (!empty($_GET['q'])) {
 	dieUnderHighLoad();
+	
 	// -------------------------------
 	//  Build a query from a single text string
 	// -------------------------------
+	
+	$q=trim($_GET['q']);
 	
 	//remember the query in the session
 	$_SESSION['searchq']=$q;
@@ -191,7 +193,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		$smarty->display('search.tpl');	
 	}
 
-} else if ($_GET['form'] == 'advanced') {
+} else if (isset($_GET['form']) && $_GET['form'] == 'advanced') {
 	dieUnderHighLoad(1.5);
 	// -------------------------------
 	//  Advanced Form
@@ -206,8 +208,8 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		$smarty->assign('taken_start', "0-0-0");
 		$smarty->assign('taken_end', "0-0-0");
 
-	if ($_GET['i']) {
-		$query = $db->GetRow("SELECT * FROM queries WHERE id = ".$_GET['i']);
+	if (is_int($i)) {
+		$query = $db->GetRow("SELECT * FROM queries WHERE id = $i");
 
 		$smarty->assign('searchclass', $query['searchclass']);
 		switch ($query['searchclass']) {
@@ -278,7 +280,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		}
 		$smarty->assign('displayclass', $query['displayclass']);
 		$smarty->assign('resultsperpage', $query['resultsperpage']);
-		$smarty->assign('i', $_GET['i']);
+		$smarty->assign('i', $i);
 		
 		advanced_form($smarty,$db);
 	} else {
@@ -291,7 +293,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	
 
 
-} else if ($_GET['i'] && !$_GET['form']) {
+} elseif (is_int($i) && empty($_GET['form'])) {
 	// -------------------------------
 	//  Search Results
 	// -------------------------------
@@ -300,18 +302,18 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/gridsquare.class.php');
 		
-		$pg = $_GET['page'];
-		if ($pg == '' or $pg < 1) {$pg = 1;}
+		$pg = (!empty($_GET['page']))?intval($_GET['page']):0;
+		if (empty($pg) || $pg < 1) {$pg = 1;}
 		
-	$engine = new SearchEngine($_GET['i']);
+	$engine = new SearchEngine($i);
 	
 	$template = 'search_results_'.$engine->getDisplayclass().'.tpl';
-	$cacheid="search|".$_GET['i'].".".$pg;
-	if ($_GET['count']) {
+	$cacheid="search|$i.$pg";
+	if (!empty($_GET['count'])) {
 		$engine->countOnly = 1;
 		$cacheid.=".";
 	}
-	
+
 	if (!$smarty->is_cached($template, $cacheid)) {
 		dieUnderHighLoad(3);
 		
@@ -319,7 +321,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 		
 		$smarty->assign('querytime', $engine->Execute($pg)); 
 		
-		$smarty->assign('i', $_GET['i']);
+		$smarty->assign('i', $i);
 		$smarty->assign('currentPage', $pg);
 		$smarty->assign_by_ref('engine', $engine);
 
@@ -339,18 +341,18 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	// -------------------------------
 	
 
-	if ($_GET['i']) {
+	if (is_int($i)) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
-		$query = $db->GetRow("SELECT searchq FROM queries WHERE id = ".$_GET['i']);
+		$query = $db->GetRow("SELECT searchq FROM queries WHERE id = $i");
 		$smarty->assign('searchq', $query['searchq']);
 	} else if ($_SESSION['searchq']) {
 		$smarty->assign('searchq', $_SESSION['searchq']);
 	}
 	if (!$smarty->is_cached('search.tpl')) {
-		if (!$db) {
+		if (!isset($db)) {
 			$db=NewADOConnection($GLOBALS['DSN']);
-			if (!$db) die('Database connection failed');
+			if (empty($db)) die('Database connection failed');
 		}
 		//list of a few image classes 
 		$arr = $db->GetAssoc("select imageclass,concat(imageclass,' [',count(*),']') from gridimage_search ".
@@ -363,7 +365,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 			$db=NewADOConnection($GLOBALS['DSN']);
 			if (!$db) die('Database connection failed');
 		}
-		if ($_GET['more']) {
+		if (isset($_GET['more'])) {
 			$limit = 30;
 			$smarty->assign('more',1);	
 		} else
@@ -388,7 +390,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 	function advanced_form(&$smarty,&$db,$is_cachable = false) {
 		global $CONF,$imagestatuses,$sortorders,$USER;
 		
-		if ($_GET['Special']) {
+		if (isset($_GET['Special'])) {
 			$USER->mustHavePerm("admin");
 			$template = 'search_admin_advanced.tpl';
 		} else {
@@ -401,7 +403,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 			$smarty->caching = 0; // NO caching
 		}
 		
-		if (!$is_cachable || !$smarty->is_cached($template, $cacheid)) {
+		if (!$is_cachable || !$smarty->is_cached($template, $is_cachable)) {
 			$smarty->assign('displayclasses', array('full' => 'full listing','text' => 'text description only','thumbs' => 'thumbnails only'));
 			$smarty->assign('pagesizes', array(5,10,15,20,30,50));
 			$smarty->assign('distances', array(1,5,10,20,30,50,100,250,500,1000,2000));
@@ -439,7 +441,7 @@ if ($_GET['do'] || $_GET['imageclass'] || $_GET['u'] || $_GET['gridsquare']) {
 			$smarty->assign_by_ref('references',$CONF['references']);
 		}
 		
-		$smarty->display($template, $cacheid);
+		$smarty->display($template, $is_cachable);
 	}
 
 	

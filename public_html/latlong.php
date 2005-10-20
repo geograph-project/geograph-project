@@ -39,8 +39,10 @@ $cacheid='';
 
 if (!isset($_GET['usehermert']))
 	$_GET['usehermert'] = 1;
+if (!isset($_GET['datum']))
+	$_GET['datum'] = '-';
 
-if ($_GET['To']) { //to lat/long
+if (!empty($_GET['To'])) { //to lat/long
 	if ($_GET['datum'] == 'osgb36') {
 		$latlong = $conv->osgb36_to_wgs84($_GET['e'],$_GET['n']);
 	} else if ($_GET['datum'] == 'irish') {
@@ -55,23 +57,23 @@ if ($_GET['To']) { //to lat/long
 		$smarty->assign('e', $_GET['e']);
 		$smarty->assign('n', $_GET['n']);
 	} 
-} else if ($_GET['From']) { //from lat/long
-	if ($_GET['multimap'] && preg_match_all("/\(([\+\-]*\d{1,3}\.\d+)\)/",$_GET['multimap'],$matchs) == 2) {
+} elseif (!empty($_GET['From'])) { //from lat/long
+	if (!empty($_GET['multimap']) && preg_match_all("/\(([\+\-]*\d{1,3}\.\d+)\)/",$_GET['multimap'],$matchs) == 2) {
 		list ($_GET['lat'],$_GET['long']) = $matchs[1];
 	}
 	
-		if ($_GET['latm'])
+		if (!empty($_GET['latm']))
 			$_GET['lat'] += $_GET['latm']/60;
-		if ($_GET['lats'])
+		if (!empty($_GET['lats']))
 			$_GET['lat'] += $_GET['lats']/3600;
-		if ($_GET['ns'] == 'S')
+		if (!empty($_GET['ns']) && $_GET['ns'] == 'S')
 			$_GET['lat'] *= -1;
 
-		if ($_GET['longm'])
+		if (!empty($_GET['longm']))
 			$_GET['long'] += $_GET['longm']/60;
-		if ($_GET['longs'])
+		if (!empty($_GET['longs']))
 			$_GET['long'] += $_GET['longs']/3600;
-		if ($_GET['ew'] == 'W')
+		if (!empty($_GET['ew']) && $_GET['ew'] == 'W')
 			$_GET['long'] *= -1;
 
 
@@ -90,7 +92,7 @@ if ($_GET['To']) { //to lat/long
 			$_GET['datum'] = "irish";
 		}
 	}
-	if (count($en)) {
+	if (isset($en) && count($en)) {
 		list ($gridref,$len) = $conv->national_to_gridref($en[0],$en[1],0,$reference_index);
 		
 		$square = new GridSquare;
@@ -125,7 +127,6 @@ if ($_GET['To']) { //to lat/long
 	$smarty->assign('long', $_GET['long']);
 	$conv->wgs84_to_friendly_smarty_parts($_GET['lat'],$_GET['long'],$smarty);
 }
-
 $smarty->assign('datum', $_GET['datum']);
 $smarty->assign('usehermert', $_GET['usehermert']);
 
