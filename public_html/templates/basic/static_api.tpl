@@ -1,7 +1,7 @@
 {assign var="page_title" value="API"}
 {include file="_std_begin.tpl"}
 
-	 <h2>Geograph API v0.4</h2> 
+	 <h2>Geograph API v0.6</h2> 
 	 <div
 	  style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;"><b>Contents</b><br/>
 		<ul style="margin-top:0;padding:0 0 0 1em;"> 
@@ -32,14 +32,17 @@
 	 <p>Please note that the API is still in its early stages, these are the possiblities that 
 	 	the developers needed, or felt would be useful, if you have any special requests then
 	 	don't be shy, just <a href="/contact.php">let us know</a>.</p>
-	 <h3><a name="api"></a>API-key</h3> 
+	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="api"></a>API-key</h3> 
 	 <p>If you haven't got one you will need to obtain a unique API-key, which
 		gives you access to the pages below, simply <a href="/contact.php">contact
 		us</a>, with a brief outline of your project, please include the URL so we can
 		take a look.</p> 
 	 <p>Once you have a API-key simply replace [apikey] in the examples below to
 		obtain your feed.</p> 
-	 <h3><a name="rss"></a>RSS-feeds</h3> 
+		
+	 <p style="border:1px solid red;background-color: #FF3300; padding:10px;"><b>Each of these Feeds includes the photographer credit, which under the CC licence MUST be displayed along any use of the image.</b><br/><br/>Ideally also you should link back to the main photo page, either with the link supplied or with <a href="http://{$http_host}/photo/[id]">http://{$http_host}/photo/[id]</a>.<br/><br/> Thank you for your attention in this matter.</p>
+		
+	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="rss"></a>RSS-feeds <a title="RSS Feed of Recent Images" href="/faq.php" class="xml-rss">RSS</a></h3> 
 	 <p>Really Simple Syndication allows you to obtain a details for a number of
 		images, (usually) in XML format, this makes it really easy for you to reuse
 		small section of information on your website or project. The feed lives at<br/><br/>
@@ -48,7 +51,7 @@
 	 and by default returns obtains an up-to-date listing of the 20 latest
 		geograph submissions, you can however return different results as below</p> 
 	 <h4><a name="rss_param"></a>Extra Parameters</h4> 
-	 <p>You should supply one of the following parameters to specify the type of
+	 <p>You should supply <b>one</b> of the following parameters to specify the type of
 		results you would like...</p> 
 	 <table cellpadding="3" cellspacing="0" border="1"> 
 		<tr> 
@@ -63,7 +66,14 @@
 		<tr> 
 		  <th rowspan="2">i=[searchid]</th> 
 		  <td>runs a predefined search, see <a href="#building">Building a Search
-			 Query</a> for more information on how to obtain a valid i number</td> 
+			 Query</a> for more information on how to obtain a valid i number. 
+			 accepts additonal paramater:</span>
+			 <table border="1" cellpadding="3" cellspacing="0"> 
+				<tr> 
+				  <th>page=[number]</th> 
+				  <td>return a specific page of results</td> 
+				</tr> 
+		 </table></td> 
 		</tr> 
 		<tr> 
 		  <td>
@@ -71,13 +81,28 @@
 			  href="http://{$http_host}/syndicator.php?key=[apikey]&i=12345">http://{$http_host}/syndicator.php?key=[apikey]&amp;i=12345</a></td>
 		</tr> 
 		<tr> 
-		  <th rowspan="2">gr=[gridref]</th> 
-		  <td><i><b>Coming Soon...</b></i></td> 
+		  <th rowspan="2">u=[user_id]</th> 
+		  <td>limit results to particular user</td> 
 		</tr> 
 		<tr> 
 		  <td>
 			 <a title="Geograph RSS feed"
-			  href="http://{$http_host}/syndicator.php?key=[apikey]&gr=TQ7054">http://{$http_host}/syndicator.php?key=[apikey]&amp;gr=TQ7054</a></td>
+			  href="http://{$http_host}/syndicator.php?key=[apikey]&u=3">http://{$http_host}/syndicator.php?key=[apikey]&amp;u=3</a></td>
+		</tr> 
+		<tr> 
+		  <th rowspan="2">q=[gridref or postcode]</th> 
+		  <td>Returns 15 or all within 30km (which ever is less) of the specified location (see also <a href="#building">Building a query</a> for pitfals of the q paramater) - Will in fact create a i query on the fly, so you can use that to get page 2 etc of the results. Accepts additonal paramater:</span>
+			 <table border="1" cellpadding="3" cellspacing="0"> 
+				<tr> 
+				  <th>u=[user_id]</th> 
+				  <td>limit results to particular user</td> 
+				</tr> 
+		 </table></td> 
+		</tr> 
+		<tr> 
+		  <td>
+			 <a title="Geograph RSS feed"
+			  href="http://{$http_host}/syndicator.php?key=[apikey]&q=TQ7054">http://{$http_host}/syndicator.php?key=[apikey]&amp;q=TQ7054</a></td>
 		</tr> 
 	 </table> 
 	 <h4><a name="rss_format"></a>Formats</h4> 
@@ -121,8 +146,24 @@
 			 src="http://{$http_host}/syndicator.php?key=[apikey]&key=[apikey]&amp;format=JS"
 			 type="text/javascript"&gt;&lt;/script&gt;</td> 
 		</tr> 
+		<tr> 
+		  <th>format=PHP</th> 
+		  <td><a title="Geograph PHP feed"
+			 href="http://{$http_host}/syndicator.php?key=[apikey]&format=PHP">PHP</a> - returns a valid php page, that builds a data-structure for use via include. (includes the thumbnail url)</td> 
+		</tr> 
+		<tr> 
+		  <th>format=KML</th> 
+		  <td><a title="Geograph Google Earth feed"
+			 href="http://{$http_host}/syndicator.php?key=[apikey]&format=KML">KML</a> - suitable for use directly in Google Earth (XML based - includes the thumb url and lat/long!)<br/>accepts additonal paramaters:</span>
+			 <table border="1" cellpadding="3" cellspacing="0"> 
+				<tr> 
+				  <th>simple=1</th> 
+				  <td>If present includes styling to hide the picture label until pointed at</td> 
+				</tr> 
+		 </table></td> 
+		</tr>
 	 </table> 
-	 <h3><a name="csv"></a>CSV Export</h3> 
+	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="csv"></a>CSV Export</h3> 
 	 <p>This is ideal for bulk downloads, or for keeping an offsite cache
 		up-to-date, it lives at:<br/><br/>
 	 <a title="Geograph RSS feed"
@@ -191,8 +232,9 @@
 		</tr> 
 		<tr> 
 		  <th rowspan="2">ri=[1|2]</th> 
-		  <td>Limit the results to a particular National Grid (can be combined
-			 with the above parameters)</td> 
+		  <td>Limit the results to a particular National Grid<br/>
+		  <span style="color:#990000;">(can be combined
+			 with the above parameters)</span></td> 
 		</tr> 
 		<tr> 
 		  <td>
@@ -204,9 +246,20 @@
 		</tr> 
 		<tr> 
 		  <th rowspan="2">i=[searchid]</th> 
-		  <td><i><b>Coming Soon...</b></i> runs a predefined search, see
+		  <td>runs a predefined search, see
 			 <a href="#building">Building a Search Query</a> for more information on how to
-			 obtain a valid i number</td> 
+			 obtain a valid i number.<br/>
+			<span style="color:#990000;">NOTE: can't be combined with any of the above paramaters, but accepts additonal paramaters:</span>
+			 <table border="1" cellpadding="3" cellspacing="0"> 
+				<tr> 
+				  <th>count=[number]</th> 
+				  <td>overrides the pagesize specified in the query,<br/> or -1 for unlimited</td> 
+				</tr> 
+				<tr> 
+				  <th>page=[number]</th> 
+				  <td>return a specific page of results<br/> (paginated with the modified 'count')</td> 
+				</tr> 
+		 </table></td> 
 		</tr> 
 		<tr> 
 		  <td>
@@ -251,6 +304,7 @@
 		</tr> 
 	 </table> 
 	 <h4><a name="extra"></a>Returning Extra Columns</h4> 
+	 <p style="color:#990000;">NOTE: You can only supply EITHER en OR ll, not both</p>
 	 <table border="1" cellpadding="3" cellspacing="0"> 
 		<tr> 
 		  <th colspan="2" ALIGN="LEFT" rowspan="2">en=1 </th> 
@@ -303,7 +357,7 @@
 			 </td> 
 		</tr> 
 	 </table> 
-	 <h3><a name="building"></a>Building a Search Query</h3> 
+	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="building"></a>Building a Search Query</h3> 
 	 <p>There are there main methods for obtaining some valid <b>i</b> numbers
 		for passing to the RSS or CSV feeds (or in fact directing the user to a search
 		results page!).</p> 
@@ -374,26 +428,37 @@
 		</tr> 
 	 </table> 
 	 <h4><a name="places"></a>Places to use an i number</h4> 
+	 <p>Each one accepts the <i>Page</i> paramater, to get the next page of results.</p>
 	 <table border="1" cellpadding="3" cellspacing="0"> 
 		<tr> 
-		  <td>HTML page for user</td> 
+		  <td>Results Webpage</td> 
 		  <td><a title="Geograph RSS feed"
 			 href="http://{$http_host}/search.php?i=12345">http://{$http_host}/search.php?i=12345</a></td>
 		</tr> 
 		<tr> 
-		  <td>XML/HTML feed</td> 
+		  <td>Google Earth Webpage</td> 
+		  <td><a title="Geograph KML/Google Earth feed"
+			 href="http://{$http_host}/kml.php?i=12345">http://{$http_host}/kml.php?i=12345</a> </td>
+		</tr> 
+		<tr> 
+		  <td>XML/HTML etc feed</td> 
 		  <td><a title="Geograph RSS feed"
 			 href="http://{$http_host}/syndicator.php?key=[apikey]&i=12345">http://{$http_host}/syndicator.php?key=[apikey]&amp;i=12345</a></td>
 		</tr> 
 		<tr> 
-		  <td>CSV feed <i><b>Coming Soon...</b></i></td> 
+		  <td>CSV feed</td> 
 		  <td><a title="Geograph RSS feed"
 			 href="http://{$http_host}/export.csv.php?key=[apikey]&i=12345">http://{$http_host}/export.csv.php?key=[apikey]&amp;i=12345</a></td>
 		</tr> 
+		<tr> 
+		  <td>Memory Map Feed</td> 
+		  <td><a title="Geograph MemoryMap feed"
+			 style="text-decoration: line-through">http://{$http_host}/memorymap.php?key=[apikey]&amp;i=12345</a> (Coming soon)</td>
+		</tr> 
 	 </table> 
-	 <h3><a name="finally"></a>Finally</h3> 
+	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="finally"></a>Finally</h3> 
 	 <p>We wish you luck in you project and look forward to seeing the results! If you have any 
-	 	problems using the API, then please do get in <a href="/contact.php">contact</a><./p>
+	 	problems using the API, then please do get in <a href="/contact.php">contact</a>.</p>
 {include file="_std_end.tpl"}
 
 
