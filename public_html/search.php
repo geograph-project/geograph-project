@@ -128,7 +128,7 @@ if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || 
 		$smarty->reassignPostedDate("taken_start");
 		$smarty->reassignPostedDate("taken_end");
 		
-		if (!empty($_POST['all_ind'])
+		if (!empty($_POST['all_ind']))
 			$smarty->assign('all_checked', 'checked="checked"');
 		if (!empty($_POST['user_invert_ind']))
 			$smarty->assign('user_invert_checked', 'checked="checked"');
