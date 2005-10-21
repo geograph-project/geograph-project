@@ -46,16 +46,16 @@ header("Content-Disposition: attachment; filename=\"geograph.csv\"");
 $sql_crit = '';
 
 echo "Id,Name,Grid Ref,Submitter,Image Class";
-if ($_GET['thumb']) {
+if (isset($_GET['thumb'])) {
 	require_once('geograph/gridimage.class.php');
 	$gridimage = new GridImage;
 	$sql_from = ',gi.user_id,x,y';
 	echo ",Thumb URL";
 }
-if ($_GET['ll']) {
+if (isset($_GET['ll'])) {
 	$sql_from = ',wgs84_lat,wgs84_long';
 	echo ",Lat,Long";
-} elseif ($_GET['en']) {
+} elseif (isset($_GET['en'])) {
 	echo ",Easting,Northing";
 }
 echo "\n";
@@ -80,9 +80,28 @@ if (isset($_GET['supp'])) {
 
 }
 
+$i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
-//todo run an i query
-if ($_GET['en']) {
+if ($i) {
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+	
+		$pg = (!empty($_GET['page']))?intval($_GET['page']):0;
+		if (empty($pg) || $pg < 1) {$pg = 1;}
+
+	$engine = new SearchEngine($i);
+	
+	if (isset($_GET['count']) && preg_match("/^\d+$/",$_GET['count'])) {
+		$this->criteria->resultsperpage = $_GET['count'];
+	} elseif (isset($_GET['count']) && $_GET['count'] == -1) {
+		$this->criteria->resultsperpage = 999999999;
+	}
+	
+	//return a recordset
+		//if want en then we HAVE to use the non cached version!
+	$recordSet = $engine->ReturnRecordset($pg,isset($_GET['en']));
+
+} elseif (isset($_GET['en'])) {
 	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,nateastings,natnorthings $sql_from ".
 	"from user ".
 	"inner join gridimage gi using(user_id) ".
