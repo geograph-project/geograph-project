@@ -115,7 +115,7 @@ class ImageList
 	/**
 	* get image list for particular user
 	*/
-	function getImagesByUser($user_id, $statuses, $sort = 'submitted', $count=null)
+	function getImagesByUser($user_id, $statuses, $sort = 'submitted', $count=null,$advanced = false)
 	{
 		$db=&$this->_getDB();
 
@@ -135,7 +135,8 @@ class ImageList
 			$limit="";
 		else
 			$limit="limit $count";
-
+		
+		if ($advanced || preg_match("/(pending|rejected)/",$statuslist)) {
 		$sql="select gi.*,grid_reference,user.realname, t.topic_id,t.forum_id,t.last_post, ".
 			"(select count(*) from gridimage_ticket where gridimage_id=gi.gridimage_id and status<3) as open_tickets ".
 			"from gridimage as gi ".
@@ -146,7 +147,13 @@ class ImageList
 			"where moderation_status in ($statuslist) and ".
 			"gi.user_id='$user_id' ".
 			"$orderby $limit";
-
+		} else {
+		$sql="select gi.* ".
+			"from gridimage_search as gi ".
+			"where moderation_status in ($statuslist) and ".
+			"gi.user_id='$user_id' ".
+			"$orderby $limit";
+		}
 		$this->images=array();
 		$i=0;
 		$recordSet = &$db->Execute($sql);
