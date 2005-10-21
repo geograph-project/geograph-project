@@ -33,7 +33,7 @@ $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
 $template='monthlyleader.tpl';
-$cacheid=$_GET['month'];
+$cacheid=isset($_GET['month']);
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -44,16 +44,17 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 
-	$length = $_GET['month']?10:7;
+	$length = isset($_GET['month'])?10:7;
 
 	$topusers=$db->GetAll("SELECT gridimage_id,SUBSTRING( submitted, 1, $length ) AS 
 submitted_month , user_id, realname, COUNT(*) as imgcount
 FROM `gridimage_search` 
-GROUP BY SUBSTRING( submitted, 1, $length ) , user_id");
-	
+GROUP BY SUBSTRING( submitted, 1, $length ) , user_id 
+ORDER BY submitted_month DESC");
+	$month = array();
 	foreach($topusers as $idx=>$entry)
 	{
-		if ($topusers[$idx]['imgcount'] > $month[$topusers[$idx]['submitted_month']]) {
+		if (!isset($month[$topusers[$idx]['submitted_month']]) || $topusers[$idx]['imgcount'] > $month[$topusers[$idx]['submitted_month']]) {
 			$month[$topusers[$idx]['submitted_month']] = $topusers[$idx]['imgcount'];
 		}
 	}
