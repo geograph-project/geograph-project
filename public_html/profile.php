@@ -93,7 +93,7 @@ if ($template=='profile.tpl')
 
 	$cacheid="user{$uid}|{$isself}";
 	
-	if ($_GET['all']) {
+	if (isset($_GET['all'])) {
 		$limit = 50000;
 	} else {
 		$limit = 100;
@@ -120,7 +120,7 @@ if ($template=='profile.tpl')
 		else
 			$statuses=array('accepted', 'geograph');
 		
- 		$images->getImagesByUser($uid, $statuses,'gridimage_id desc',$limit);
+ 		$images->getImagesByUser($uid, $statuses,'gridimage_id desc',$limit,true);
 		$images->assignSmarty($smarty, 'userimages');
 		
 		if (count($images->images) == $limit) {
