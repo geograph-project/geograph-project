@@ -27,13 +27,13 @@ init_session();
 
 $smarty = new GeographPage;
 
-$_GET['i']=intval(stripslashes($_GET['i']));
+$i=(!empty($_GET['i']))?intval(stripslashes($_GET['i'])):'';
 
 $sortorders = array('dist_sqd'=>'Distance','topic_time desc'=>'Topic Started','post_time desc'=>'Latest Post','grid_reference'=>'Grid Reference','x'=>'West-&gt;East','y'=>'South-&gt;North');
 #,'user_id'=>'Contributer ID'
 
 
-if ($_GET['gridsquare'] || $_GET['u']) {
+if (!empty($_GET['gridsquare']) || !empty($_GET['u'])) {
 	// -------------------------------
 	//  special handler to build a advanced query from the link in stats or profile.  
 	// -------------------------------
@@ -41,7 +41,7 @@ if ($_GET['gridsquare'] || $_GET['u']) {
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginediscuss.class.php');
 	
-	if ($_GET['u'])
+	if (!empty($_GET['u']))
 		$_GET['user_id'] = $_GET['u']; 
 
 	$engine = new SearchEngineDiscuss('#'); 
@@ -50,7 +50,7 @@ if ($_GET['gridsquare'] || $_GET['u']) {
  	//should never fail?? - but display form 'in case'
  	
  	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');
+	if (empty($db)) die('Database connection failed');
 
 	advanced_form($smarty,$db);
  	
@@ -85,13 +85,13 @@ if ($_GET['gridsquare'] || $_GET['u']) {
 		$smarty->assign('searchdesc', $engine->searchdesc);
 		$smarty->display('search_multiple.tpl');
 	} else {
-		if ($_GET['i']) {
+		if ($i) {
 			$db=NewADOConnection($GLOBALS['DSN']);
-			if (!$db) die('Database connection failed');
+			if (empty($db)) die('Database connection failed');
 		
-			$query = $db->GetRow("SELECT searchq FROM queries WHERE id = ".$_GET['i']);
+			$query = $db->GetRow("SELECT searchq FROM queries WHERE id = $i");
 			$smarty->assign('searchq', $query['searchq']);
-		} else if ($_SESSION['searchq']) {
+		} else if (isset($_SESSION['searchq'])) {
 			$smarty->assign('searchq', $_SESSION['searchq']);
 		}
 		require_once('geograph/imagelist.class.php');
@@ -100,10 +100,12 @@ if ($_GET['gridsquare'] || $_GET['u']) {
 		//lets find some recent photos
 		new RecentImageList($smarty);
 	}
-} else if ($q=stripslashes($_GET['q'])) {
+} elseif (!empty($_GET['q'])) {
 	// -------------------------------
 	//  Build a query from a single text string
 	// -------------------------------
+	
+	$q=trim(stripslashes($_GET['q']));
 	
 	//remember the query in the session
 	$_SESSION['searchq']=$q;
@@ -115,7 +117,6 @@ if ($_GET['gridsquare'] || $_GET['u']) {
  	$engine = new SearchEngineDiscuss('#'); 
  	
  	#$engine->buildSimpleQuery($q);
- 	$q = trim($q);
 	if (preg_match("/^([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9])([A-Z]{0,2})$/",strtoupper($q))) {
 		$dataarray['postcode'] = $q;
 	} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/",$q)) {
@@ -160,7 +161,7 @@ if ($_GET['gridsquare'] || $_GET['u']) {
 		new RecentImageList($smarty);
 	}
 
-} else if ($_GET['i'] && !$_GET['form']) {
+} elseif (is_int($i) && empty($_GET['form'])) {
 	// -------------------------------
 	//  Search Results
 	// -------------------------------
@@ -170,20 +171,15 @@ if ($_GET['gridsquare'] || $_GET['u']) {
 	require_once('geograph/searchenginediscuss.class.php');
 	require_once('geograph/gridsquare.class.php');
 		
-		$pg = $_GET['page'];
-		if ($pg == '' or $pg < 1) {$pg = 1;}
+		$pg = (!empty($_GET['page']))?intval($_GET['page']):0;
+		if (empty($pg) || $pg < 1) {$pg = 1;}
 		
-	$engine = new SearchEngineDiscuss($_GET['i']);
+	$engine = new SearchEngineDiscuss($i);
 	$engine->Execute($pg); 
 	
-	$smarty->assign('i', $_GET['i']);
+	$smarty->assign('i', $i);
 	$smarty->assign('currentPage', $pg);
 	$smarty->assign_by_ref('engine', $engine);
-	
-	if ($engine->criteria->searchclass == 'GridRef' && strpos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
-		$smarty->assign('nofirstmatch', true);
-	}	
-
 	
 	$smarty->display('discuss_results_'.$engine->getDisplayclass().'.tpl');
 
@@ -192,11 +188,11 @@ if ($_GET['gridsquare'] || $_GET['u']) {
 	//  Simple Form
 	// -------------------------------
 	
-	if ($_GET['i']) {
+	if (is_int($i)) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
 	
-		$query = $db->GetRow("SELECT searchq,orderby FROM queries WHERE id = ".$_GET['i']);
+		$query = $db->GetRow("SELECT searchq,orderby FROM queries WHERE id = $i");
 		$smarty->assign('searchq', $query['searchq']);
 		$smarty->assign('orderby', $query['orderby']);
 	} else if ($_SESSION['searchq']) {
