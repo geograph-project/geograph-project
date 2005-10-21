@@ -47,11 +47,24 @@ if (isset($_GET['q'])) {
 	require_once('geograph/searchengine.class.php');
 	
 	$engine = new SearchEngine('#'); 
- 	$_GET['i'] = $engine->buildSimpleQuery($_GET['q'],100,false,isset($_GET['u'])?$_GET['u']:0);
+ 	$_GET['i'] = $engine->buildSimpleQuery($_GET['q'],30,false,isset($_GET['u'])?$_GET['u']:0);
  	
- 	if ($engine->criteria->is_multiple) {
+ 	if (isset($engine->criteria) && $engine->criteria->is_multiple) {
  		die('unable identify a unique location');
  	}
+} elseif (false && !empty($_GET['u'])) {
+	//no need to use this now getImagesByUser works for lat/long
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+	
+	$_GET['user_id'] = $_GET['u']; 
+	$_GET['orderby'] = 'gridimage_id'; 
+	$_GET['reverse_order_ind'] = 1; 
+	$sortorders = array('gridimage_id'=>'Date Submitted');
+
+	
+	$engine = new SearchEngine('#'); 
+ 	$_GET['i'] = $engine->buildAdvancedQuery($_GET,false);
 }
 
 if (isset($_GET['i']) && is_numeric($_GET['i'])) {
@@ -73,8 +86,8 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 		
-		$pg = $_GET['page'];
-		if ($pg == '' or $pg < 1) {$pg = 1;}
+		$pg = (!empty($_GET['page']))?intval($_GET['page']):0;
+		if (empty($pg) || $pg < 1) {$pg = 1;}
 		
 	$images = new SearchEngine($_GET['i']);
 	
@@ -93,7 +106,7 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 
 	//lets find some recent photos
 	$images=new ImageList();
-	$images->getImagesByUser($_GET['u'],array('accepted', 'geograph'), 'gridimage_id desc', 15);
+	$images->getImagesByUser($_GET['u'],array('accepted', 'geograph'), 'gridimage_id desc', 15, false);
 } else {
 	$rss->description = 'Latest Images'; 
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=$format";
@@ -130,14 +143,14 @@ for ($i=0; $i<$cnt; $i++)
 		$item->description = $images->images[$i]->comment; 
 	}
 	$item->date = strtotime($images->images[$i]->submitted); 
-	$item->source = "http://{$_SERVER['HTTP_HOST']}/"; 
+	$item->source = "http://{$_SERVER['HTTP_HOST']}/profile.php?u=".$images->images[$i]->user_id; 
 	$item->author = $images->images[$i]->realname; 
 	     
 	     if ($format == 'KML') {
 	     	$item->lat = $images->images[$i]->wgs84_lat;
 	     	$item->long = $images->images[$i]->wgs84_long;
 	     	$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
-	     } else {
+	     } elseif ($format == 'PHP') {
 	     	$item->thumb = $images->images[$i]->getThumbnail(120,120,true); 
 	     }
 	     
