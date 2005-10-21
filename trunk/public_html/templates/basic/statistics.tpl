@@ -95,6 +95,8 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
     
    <p><a href="/statistics/most_geographed.php">Mostly</a> /<a href="/statistics/fully_geographed.php">Fully</a> Photographed 10<sup><small>km</small></sup>x10<sup><small>km</small></sup> Squares and <a href="/statistics/wordnet.php">Popular Words</a>.</p>
    
+   <p><a href="/moversboard.php">Weekly</a>/<a href="/leaderboard.php">All Time</a>/<a href="/monthlyleader.php">By Month</a> User leaderboards.</p>
+   
    <p>County <a href="/statistics/counties.php">Center Points</a>/<a href="/statistics/counties.php?type=capital">(Irish) Capitals</a>, <a href="/statistics/cities.php">Cities</a> photographed so far!</p>
 
     <form method="get" action="/statistics/breakdown.php">
