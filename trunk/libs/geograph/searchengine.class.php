@@ -198,7 +198,7 @@ class SearchEngine
 				$sql .= ",x = $searchx,y = $searchy,limit8 = $distance";
 			if ($limit1)
 				$sql .= ",limit1 = $limit1";
-			if ($USER->registered)
+			if (isset($USER) && $USER->registered)
 				$sql .= ",user_id = {$USER->user_id}";
 				
 			$db->Execute($sql);
@@ -214,7 +214,7 @@ class SearchEngine
 		} 
 	}
 
-	function buildAdvancedQuery(&$dataarray)
+	function buildAdvancedQuery(&$dataarray,$autoredirect='auto')
 	{
 		global $CONF,$imagestatuses,$sortorders,$USER;
 		
@@ -222,7 +222,8 @@ class SearchEngine
 			$dataarray['distance'] = $CONF['default_search_distance'];
 		}
 		$nearstring = sprintf("within %dkm of",$dataarray['distance']);
-				
+			
+		$searchdesc = '';
 		if (!empty($dataarray['placename'])) {
 			//check if we actully want to perform a textsearch (it comes through in the placename beucase of the way the multiple mathc page works)
 			if (strpos($dataarray['placename'],'text:') === 0) {
@@ -321,8 +322,10 @@ class SearchEngine
 			}
 		} else if (!empty($dataarray['all_ind'])) {
 			$searchclass = 'All';
+			$searchq = '';
 		} else {
 			$searchclass = 'All';
+			$searchq = '';
 		} 
 
 		if (isset($searchclass)) {
@@ -334,25 +337,25 @@ class SearchEngine
 			$sql = "INSERT INTO queries SET searchclass = '$searchclass',".
 			"searchuse = ".$db->Quote($this->searchuse).",".
 			"searchq = ".$db->Quote($searchq);
-			if ($dataarray['displayclass'])
+			if (isset($dataarray['displayclass']))
 				$sql .= ",displayclass = ".$db->Quote($dataarray['displayclass']);
-			if ($dataarray['resultsperpage'])
+			if (isset($dataarray['resultsperpage']))
 				$sql .= ",resultsperpage = ".$db->Quote(min(100,$dataarray['resultsperpage']));
-			if ($searchx > 0 && $searchy > 0)
+			if (isset($searchx) && $searchx > 0 && $searchy > 0)
 				$sql .= ",x = $searchx,y = $searchy";
-			if ($USER->registered)
+			if (isset($USER) && $USER->registered)
 				$sql .= ",user_id = {$USER->user_id}";
 
-			if ($dataarray['user_id']) {
-				$sql .= ",limit1 = ".$db->Quote(($dataarray['user_invert_ind']?'!':'').$dataarray['user_id']);
+			if (!empty($dataarray['user_id'])) {
+				$sql .= ",limit1 = ".$db->Quote((!empty($dataarray['user_invert_ind'])?'!':'').$dataarray['user_id']);
 				$profile=new GeographUser($dataarray['user_id']);
-				$searchdesc .= ",".($dataarray['user_invert_ind']?' not':'')." by ".($profile->realname);
+				$searchdesc .= ",".(!empty($dataarray['user_invert_ind'])?' not':'')." by ".($profile->realname);
 			}
-			if ($dataarray['moduration_status']) {
+			if (!empty($dataarray['moduration_status'])) {
 				$sql .= ",limit2 = ".$db->Quote($dataarray['moduration_status']);
 				$searchdesc .= ", showing ".$imagestatuses[$dataarray['moduration_status']]." images";
 			}
-			if ($dataarray['imageclass']) {
+			if (!empty($dataarray['imageclass'])) {
 				if ($dataarray['imageclass'] == '-') {
 					$sql .= ",limit3 = '-'";
 					$searchdesc .= ", unclassifed";
@@ -361,25 +364,25 @@ class SearchEngine
 					$searchdesc .= ", classifed as ".$dataarray['imageclass'];
 				}
 			}
-			if ($dataarray['reference_index']) {
+			if (!empty($dataarray['reference_index'])) {
 				$sql .= ",limit4 = ".$db->Quote($dataarray['reference_index']);
 				$searchdesc .= ", in ".$CONF['references'][$dataarray['reference_index']];
 			}
-			if ($dataarray['gridsquare']) {
+			if (!empty($dataarray['gridsquare'])) {
 				$sql .= ",limit5 = ".$db->Quote($dataarray['gridsquare']);
 				$searchdesc .= ", in ".$dataarray['gridsquare'];
 			}
 			
 			$this->builddate($dataarray,"submitted_start");
 			$this->builddate($dataarray,"submitted_end");
-			if ($dataarray['submitted_start'] || $dataarray['submitted_end']) {
+			if (!empty($dataarray['submitted_start']) || !empty($dataarray['submitted_end'])) {
 				
-				if ($dataarray['submitted_start']) {
+				if (!empty($dataarray['submitted_start'])) {
 					if (preg_match("/0{4}-(1?[1-9]+)-/",$dataarray['submitted_start']) > 0) {
 						//month only
 						$searchdesc .= ", submitted during ".$dataarray['submitted_startString'];
 						$dataarray['submitted_end'] = "";
-					} else if ($dataarray['submitted_end']) {
+					} else if (!empty($dataarray['submitted_end'])) {
 						if ($dataarray['submitted_end'] == $dataarray['submitted_start']) {
 							//both the same
 							$searchdesc .= ", submitted ".(is_numeric($dataarray['submitted_startString'])?'in ':'').$dataarray['submitted_startString'];
@@ -414,14 +417,14 @@ class SearchEngine
 			
 			$this->builddate($dataarray,"taken_start");
 			$this->builddate($dataarray,"taken_end");
-			if ($dataarray['taken_start'] || $dataarray['taken_end']) {
+			if (!empty($dataarray['taken_start']) || !empty($dataarray['taken_end'])) {
 				
-				if ($dataarray['taken_start']) {
+				if (!empty($dataarray['taken_start'])) {
 					if (preg_match("/0{4}-(1?[1-9]+)-/",$dataarray['taken_start']) > 0) {
 						//month only
 						$searchdesc .= ", taken during ".$dataarray['taken_startString'];
 						$dataarray['taken_end'] = "";
-					} else if ($dataarray['taken_end']) {
+					} else if (!empty($dataarray['taken_end'])) {
 						if ($dataarray['taken_end'] == $dataarray['taken_start']) {
 							//both the same
 							$searchdesc .= ", taken ".(is_numeric($dataarray['taken_startString'])?'in ':'').$dataarray['taken_startString'];
@@ -453,10 +456,11 @@ class SearchEngine
 			
 				$sql .= ",limit7 = '{$dataarray['taken_start']}^{$dataarray['taken_end']}'";
 			}
-			if ($dataarray['distance'] && $searchx > 0 && $searchy > 0) {
+			if (!empty($dataarray['distance']) && isset($searchx) && $searchx > 0 && $searchy > 0) {
 				$sql .= sprintf(",limit8 = %d",$dataarray['distance']);
 			}
-			
+			if (!isset($dataarray['orderby']))
+				$dataarray['orderby'] = '';
 			switch ($dataarray['orderby']) {
 				case "":
 					if ($searchclass == 'All') {
@@ -490,9 +494,13 @@ class SearchEngine
 			$db->Execute($sql);
 
 			$i = $db->Insert_ID();
-			header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}".(($dataarray['submit'] == 'Count')?'&count=1':''));
-			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}".(($dataarray['submit'] == 'Count')?'&amp;count=1':'')."\">Your Search Results</a>";
-			exit;		
+			if ($autoredirect != false) {
+				header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}".(($dataarray['submit'] == 'Count')?'&count=1':''));
+				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}".(($dataarray['submit'] == 'Count')?'&amp;count=1':'')."\">Your Search Results</a>";
+				exit;
+			} else {
+				return $i;
+			}
 		} else if (isset($criteria) && isset($criteria->is_multiple)) {
 			if ($dataarray['user_id']) {
 				$profile=new GeographUser($dataarray['user_id']);
@@ -532,13 +540,15 @@ class SearchEngine
 	}
 	
 	function builddate(&$dataarray,$which) {
-		$dataarray[$which] = sprintf("%04d-%02d-%02d",$dataarray[$which.'Year'],$dataarray[$which.'Month'],$dataarray[$which.'Day']);
-		if ($dataarray[$which] == '0000-00-00') {
-			$dataarray[$which] = ''; 
-		} else {
-			$image = new GridImage();
-			$image->imagetaken = $dataarray[$which];					
-			$dataarray[$which.'String'] = $image->getFormattedTakenDate();
+		if (isset($dataarray[$which.'Year'])) {
+			$dataarray[$which] = sprintf("%04d-%02d-%02d",$dataarray[$which.'Year'],$dataarray[$which.'Month'],$dataarray[$which.'Day']);
+			if ($dataarray[$which] == '0000-00-00') {
+				$dataarray[$which] = ''; 
+			} else {
+				$image = new GridImage();
+				$image->imagetaken = $dataarray[$which];					
+				$dataarray[$which.'String'] = $image->getFormattedTakenDate();
+			}
 		}
 	}	
 	
@@ -739,8 +749,8 @@ END;
 		return $recordSet;
 	}
 	
-	function ReturnRecordset($pg) {
-		if ($this->noCache || ($this->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\./',$this->criteria->searchq))) {
+	function ReturnRecordset($pg,$nocache = false) {
+		if ($nocache || $this->noCache || ($this->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\./',$this->criteria->searchq))) {
 			//a Special Search needs full access to GridImage/GridSquare/User
 			$recordSet =& $this->ExecuteReturnRecordset($pg);
 		} else {
