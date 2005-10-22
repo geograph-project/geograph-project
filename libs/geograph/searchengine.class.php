@@ -777,6 +777,8 @@ END;
 			$this->results=array();
 			$i=0;
 
+			$showtaken = ($this->criteria->limit7 || preg_match('/^imagetaken/',$this->criteria->orderby));
+
 			while (!$recordSet->EOF) 
 			{
 				$this->results[$i]=new GridImage;
@@ -794,7 +796,7 @@ END;
 					unset($this->results[$i]->imageclass);
 
 				//if we searching on taken date then display it...
-				if ($this->criteria->limit7 || $this->criteria->orderby == 'imagetaken') 
+				if ($showtaken) 
 					$this->results[$i]->imagetakenString = $this->results[$i]->getFormattedTakenDate();
 
 				$recordSet->MoveNext();
