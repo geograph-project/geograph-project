@@ -51,7 +51,7 @@ class UpdateWordnetWithNewTitle extends EventHandler
 		
 		require_once('geograph/wordnet.inc.php');
 			
-		$title = $db->getRow("select title from gridimage where gridimage_id = $gridimage_id");
+		$title = $db->getOne("select title from gridimage where gridimage_id = $gridimage_id");
 			
 			
 		updateWordnet($db,$title,'title',$gridimage_id);
