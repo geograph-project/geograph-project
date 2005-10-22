@@ -83,7 +83,7 @@
 		{foreach from=$userimages item=image}
 <tr>
 <td sortvalue="{$image->last_post}">{if $image->topic_id}<a title="View most recent discussion" href="/discuss/index.php?action=vthread&amp;forum={$image->forum_id}&amp;topic={$image->topic_id}"><img src="/templates/basic/img/discuss.gif" width="10" height="10"></a>{/if}</td>
-<td><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->grid_reference}</a></td>
+<td sortvalue="{$image->grid_reference}"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->grid_reference}</a></td>
 <td>{$image->title}</td>
 <td sortvalue="{$image->submitted}" class="nowrap">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
 <td class="nowrap">{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if} {if $image->ftf}(first){/if}</td>
