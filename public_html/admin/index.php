@@ -61,6 +61,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	*/
 }
 
+//but this is nice and quick...
+$uptime=`uptime`;
+$smarty->assign_by_ref('uptime', $uptime);
+
 $smarty->display($template,$cacheid);
 
 	
