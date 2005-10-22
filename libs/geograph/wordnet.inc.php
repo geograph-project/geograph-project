@@ -33,12 +33,12 @@
 
 function addTwoLetterPhrase($phrase) {
 	global $w2;
-	$w2[$phrase]++; 
+	$w2[$phrase] = (isset($w2[$phrase]))?($w2[$phrase]+1):1; 
 }
 
 function addThreeLetterPhrase($phrase) {
 	global $w3;
-	$w3[$phrase]++; 
+	$w3[$phrase] = (isset($w3[$phrase]))?($w3[$phrase]+1):1; 
 }
 	
 function updateWordnet(&$db,$text,$field,$id) {
@@ -59,7 +59,7 @@ function updateWordnet(&$db,$text,$field,$id) {
 	
 	//build a list of one word phrases
 	foreach ($words as $word) {
-		$w1[$word]++;
+		$w1[$word] = (isset($w1[$phrase]))?($w1[$phrase]+1):1; 
 	}
 	
 	//build a list of two word phrases
