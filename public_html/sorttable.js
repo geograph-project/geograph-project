@@ -103,8 +103,15 @@ function ts_resortTable(lnk) {
     if (itm.match(/^[£$]/)) sortfn = ts_sort_currency;
     if (itm.match(/^[\d\.]+$/)) sortfn = ts_sort_numeric;
     
-    if (table.rows[1].cells[column].getAttribute && table.rows[1].cells[column].getAttribute('sortvalue')!=null) sortfn=ts_sort_hidden;
-    
+    if (table.rows[1].cells[column].getAttribute && 
+    table.rows[1].cells[column].getAttribute('sortvalue')!=null) {
+    	itm = table.rows[1].cells[column].getAttribute('sortvalue');
+    	if (itm.match(/^[\d]+$/)) {
+    		sortfn=ts_sort_hidden_numeric;	
+    	} else {
+    		sortfn=ts_sort_hidden;
+    	}
+    }
     
     SORT_COLUMN_INDEX = column;
     var firstRow = new Array();
@@ -205,6 +212,19 @@ function ts_sort_default(a,b) {
 function ts_sort_hidden(a,b) {
     aa = a.cells[SORT_COLUMN_INDEX].getAttribute('sortvalue');
     bb = b.cells[SORT_COLUMN_INDEX].getAttribute('sortvalue');
+    if (aa==bb) return 0;
+    
+    //we treat empty as a very low priority value...
+    if (aa=="") return 1;
+    if (bb=="") return -1;
+    
+    if (aa<bb) return -1;
+    return 1;
+}
+
+function ts_sort_hidden_numeric(a,b) {
+    aa = parseInt(a.cells[SORT_COLUMN_INDEX].getAttribute('sortvalue'));
+    bb = parseInt(b.cells[SORT_COLUMN_INDEX].getAttribute('sortvalue'));
     if (aa==bb) return 0;
     
     //we treat empty as a very low priority value...
