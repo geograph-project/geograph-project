@@ -66,7 +66,7 @@ class UpdateDiscussionCrossReferencesWithNewTopic extends EventHandler
 					"values ($gridsquare_id, $topic_id, {$topic['forum_id']}, '{$topic['topic_time']}')");
 					
 				//delete any smarty caches for this square
-				$images = $db->getCol("select gridimage_id from gridimage where gridsquare_id = $gridsquare_id")
+				$images = $db->getCol("select gridimage_id from gridimage where gridsquare_id = $gridsquare_id");
 				$smarty = new GeographPage;
 				foreach ($images as $gridimage_id) {
 					//clear any caches involving this photo
