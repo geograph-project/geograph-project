@@ -46,18 +46,18 @@ class UpdateDiscussionCrossReferencesWithDeletedTopic extends EventHandler
 		
 		//delete any smarty caches for this square
 		$gridsquare_id = $db->getOne("select gridsquare_id from gridsquare_topic where topic_id = $topic_id");
-		
-		$images = $db->getCol("select gridimage_id from gridimage where gridsquare_id = $gridsquare_id")
-		$smarty = new GeographPage;
-		
-		foreach ($images as $gridimage_id) {
-			//clear any caches involving this photo
-			$smarty->clear_cache(null, "img{$gridimage_id}");
+		if ($gridsquare_id) {
+			$images = $db->getCol("select gridimage_id from gridimage where gridsquare_id = $gridsquare_id");
+			$smarty = new GeographPage;
+
+			foreach ($images as $gridimage_id) {
+				//clear any caches involving this photo
+				$smarty->clear_cache(null, "img{$gridimage_id}");
+			}
+
+			// -trash any mappings to this topic
+			$db->Execute("delete from gridsquare_topic where topic_id = $topic_id");
 		}
-		
-		// -trash any mappings to this topic
-		$db->Execute("delete from gridsquare_topic where topic_id = $topic_id");
-		
 		
 		//return true to signal completed processing
 		//return false to have another attempt later
