@@ -81,33 +81,11 @@ class SearchEngine
 
 			$query = $db->GetRow("SELECT *,crt_timestamp+0 as crt_timestamp_ts FROM queries WHERE id = $query_id");
 
-			//todo surely there a better way to do this in one line...
-				//			$this->criteria = new ${"SearchCriteria_".$row['searchclass']}();
-			switch ($query['searchclass']) {
-
-				case "Postcode":
-					$this->criteria = new SearchCriteria_Postcode($query['q']);
-					break;
-				case "GridRef":
-					$this->criteria = new SearchCriteria_GridRef($query['q']);
-					break;
-				case "County":
-					$this->criteria = new SearchCriteria_County($query['q']);
-					##$this->criteria->setByCounty($query['searchq']);
-					break;
-				case "Placename":
-					$this->criteria = new SearchCriteria_Placename($query['q']);
-					break;
-				case "All":
-					$this->criteria = new SearchCriteria_All($query['q']);
-					break;
-				case "Text":
-					$this->criteria = new SearchCriteria_Text($query['q']);
-					break;
-				case "Special":
-					$this->criteria = new SearchCriteria_Special($query['q']);
+			$classname = "SearchCriteria_".$query['searchclass'];
+			$this->criteria = new $classname($query['q']);
+			
+			if ($query['searchclass'] == "Special")	{
 					$query['searchq'] = stripslashes($query['searchq']);
-					break;
 			}
 
 			$this->criteria->_initFromArray($query);
