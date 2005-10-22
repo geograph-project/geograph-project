@@ -157,7 +157,7 @@ if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || 
 
  	$engine = new SearchEngine('#'); 
  	$engine->buildSimpleQuery($q,$CONF['default_search_distance'],(isset($_GET['form']) && $_GET['form'] == 'simple')?'simple':'auto');
- 	if ($engine->criteria->is_multiple) {
+ 	if (isset($engine->criteria) && $engine->criteria->is_multiple) {
  		if (empty($_GET['distance']))
  			$_GET['distance'] = $CONF['default_search_distance']; 
  	
