@@ -21,6 +21,13 @@ corrected</li>
 </ul>
 
 <h2>Load Average</h2>
+
+{dynamic}
+<ul>
+<li>{$uptime}</li>
+</ul>
+{/dynamic}
+
 <img src="http://www.geograph.org.uk/img/cpuday.png" width="480" height="161"/>
 
 <h2>Total Submissions</h2>
