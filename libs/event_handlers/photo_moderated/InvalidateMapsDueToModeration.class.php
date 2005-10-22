@@ -48,7 +48,8 @@ class InvalidateMapsDueToModeration extends EventHandler
 			require_once('geograph/mapmosaic.class.php');
 			$mosaic=new GeographMapMosaic;
 
-			list($x,$y) = $db->getRow("select x,y from gridimage_search where gridimage_id = $gridimage_id");
+			list($x,$y) = $db->getRow("select x,y from gridimage inner join gridsquare using (gridsquare_id) where gridimage_id = $gridimage_id");
+			
 			$mosaic->expirePosition($x,$y);
 		}
 		
