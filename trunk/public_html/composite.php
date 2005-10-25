@@ -45,7 +45,8 @@ $imgw = 400; $imgh=400; $pixels_per_km = 4;
 	$tune = ($_GET['t'])?$_GET['t']:0.75;
 	$ratio = $tune * $m;
 	for($i = 0;$i < $m; $i++) {
-		$o = 255- ( log($i) * $ratio);
+		$o = ( log($i) * $ratio);
+		if ($_GET['i']) $o = 255 - $o;
 		$o = max($o,0);
 		$col[$i]=imagecolorallocate ($img, $o,$o,$o);
 	#	$o-=(255/$m);
@@ -64,6 +65,6 @@ $imgw = 400; $imgh=400; $pixels_per_km = 4;
 		
 
 	}		
-	
+	header("Content-Type: image/png");
 	imagepng($img);
 ?>
