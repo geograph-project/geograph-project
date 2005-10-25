@@ -34,9 +34,11 @@ $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 
 $order = (isset($_GET['order']) && preg_match('/^\w+$/' , $_GET['order']))?$_GET['order']:'';
 
+$i=(!empty($_GET['i']))?intval($_GET['i']):'';
+
 
 $template='statistics_breakdown.tpl';
-$cacheid='statistics|'.$by.'_'.$ri.'_'.$u.'_'.$order;
+$cacheid='statistics|'.$i.$by.'_'.$ri.'_'.$u.'_'.$order;
 
 
 if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
@@ -57,7 +59,7 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 
 $smarty->assign_by_ref('references',$CONF['references']);	
 
-$bys = array('status' => 'Status','class' => 'Category','takenyear' => 'Date Taken (Year)','taken' => 'Date Taken (Month)','gridsq' => 'Grid Square');
+$bys = array('status' => 'Status','class' => 'Category','takenyear' => 'Date Taken (Year)','taken' => 'Date Taken (Month)','gridsq' => 'Grid Square','user' => 'Contributor');
 $smarty->assign_by_ref('bys',$bys);
 
 $smarty->assign('by', $by);
@@ -72,6 +74,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 
 	$andwhere = " and moderation_status <> 'rejected'";
+	$sql_fields = '';
 	if ($by == 'status') {
 		$sql_group = $sql_fieldname = "CONCAT(moderation_status,ELT(ftf+1, '',' (ftf)'))";
 	} else if ($by == 'class') {
@@ -86,6 +89,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	} else if ($by == 'takenyear') {
 		$smarty->assign('linkpro', 1);
 		$sql_group = $sql_fieldname = "SUBSTRING(imagetaken,1,4)";
+	} else if ($by == 'user') {
+		$smarty->assign('linkpro', 1);
+		$sql_group = $sql_fieldname = "realname";
+		$sql_fields = ',user_id';
 	} else if ($by == 'count') {
 		$sql_group = $sql_fieldname = "imagecount";
 	} else {
@@ -98,8 +105,40 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$title = "Breakdown of Photos by ".$bys[$by]." in ".$CONF['references'][$ri];
 	$link = "by=$by&amp;ri=$ri";
-
-	if ($u) {
+	$sql_from = '';
+	$user_crit = '';
+	if ($i) {
+		require_once('geograph/searchcriteria.class.php');
+		require_once('geograph/searchengine.class.php');
+		
+		$engine = new SearchEngine($i);
+		if (empty($engine->criteria)) {
+			print "Invalid search";
+			exit;
+		}
+		$sql_fields_dummy = ''; $sql_order_dummy = ''; 
+		$engine->criteria->getSQLParts($sql_fields_dummy,$sql_order_dummy,$user_crit,$sql_from);
+		
+		if (preg_match("/group by ([\w\,\(\) ]+)/i",$user_crit)) {
+			print "Unable to run on this search";
+			exit;
+		}
+		
+		if (!empty($user_crit)) {
+			$user_crit = "AND $user_crit";
+			$engine->islimited = true;
+		}
+		
+		if (strpos($user_crit,'gs') !== FALSE) {
+			$user_crit = str_replace('gs.','gi.',$user_crit);
+		}
+		#$sql_fields_dummy = str_replace('gs.','gi.',$sql_fields_dummy);
+		$title .= "<i>{$engine->criteria->searchdesc}</i>";
+		
+		//preserve input
+		$link .= "&amp;i=$i";
+		$smarty->assign('i', $i);
+	} elseif ($u) {
 		$user_crit = " and user_id = $u";
 		$link .= "&amp;u=$u";
 		$smarty->assign_by_ref('u', $u);
@@ -108,13 +147,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		$profile=new GeographUser($u);
 		$smarty->assign_by_ref('profile', $profile);
 		$title .= " for ".($profile->realname);
-	} else {
-		$user_crit = '';
 	}
 	$smarty->assign_by_ref('link', str_replace(' ','+',$link));
 	$smarty->assign_by_ref('h2title', $title);
-
-
 
 	if (strpos($order,'2') !== FALSE) {
 		$sql_dir = ' DESC';
@@ -131,26 +166,15 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_order = "ORDER BY field$sql_dir";
 	}
 	
-if (strpos($sql_fieldname,'ftf') !== FALSE) {
 $sql = "select 
 $sql_fieldname as field,
-count(distinct(gridimage_id)) as c 
-from gridimage inner join gridsquare using (gridsquare_id) 
+count(distinct(gridimage_id)) as c $sql_fields
+from gridimage_search as gi $sql_from
 where reference_index = $ri $user_crit
 $andwhere $sql_crit
 group by $sql_group 
 $sql_order";
-} else {
-$sql = "select 
-$sql_fieldname as field,
-count(distinct(gridimage_id)) as c 
-from gridimage_search 
-where reference_index = $ri $user_crit
-$andwhere $sql_crit
-group by $sql_group 
-$sql_order";
-}
-		
+
 	$breakdown=$db->GetAll($sql);
 	$total = 0;
 	foreach($breakdown as $idx=>$entry) {
@@ -169,6 +193,12 @@ $sql_order";
 			foreach($breakdown as $idx=>$entry) {
 				$breakdown[$idx]['field'] = $friendly[$breakdown[$idx]['field']];
 			}
+		} elseif ($by == 'user') {
+			foreach($breakdown as $idx=>$entry) {
+				$y = $breakdown[$idx]['field'];
+
+				$breakdown[$idx]['link'] = "/profile.php?u=".$breakdown[$idx]['user_id'];
+			}
 		} elseif ($by == 'takenyear') {
 			foreach($breakdown as $idx=>$entry) {
 				$y = $breakdown[$idx]['field'];
@@ -178,7 +208,7 @@ $sql_order";
 					$breakdown[$idx]['field'] = ''; //ie unspecified!
 				}
 			}
-		} else if ($by == 'taken') {
+		} elseif ($by == 'taken') {
 			foreach($breakdown as $idx=>$entry) {
 				list($y,$m)=explode('-', $breakdown[$idx]['field']);
 				
