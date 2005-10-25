@@ -32,6 +32,17 @@ init_session();
 	
 	$all = $db->cachegetAssoc(3600,"select right(grid_reference,4) as gr,count(*) as c from gridimage_search group by right(grid_reference,4)");
 
+	if ($_GET['u']) {
+		foreach (range(0,99) as $x) {
+			foreach (range(0,99) as $y) {
+				$gr = sprintf("%02d%02d",$x,$y);
+				if (empty($all[$gr]))
+					print "$gr<BR>";
+			}		
+		}
+		exit;
+	}
+
 	foreach ($all as $gr => $c) {
 		$m = max($m,$c);
 	}
