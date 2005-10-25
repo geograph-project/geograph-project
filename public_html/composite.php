@@ -42,14 +42,16 @@ $imgw = 400; $imgh=400; $pixels_per_km = 4;
 	$blue=imagecolorallocate ($img, 101,117,255);
 	imagefill($img,0,0,$blue);
 	$o = 255;
-	$ratio = 1.28 * $m;
+	$tune = ($_GET['t'])?$_GET['t']:0.75;
+	$ratio = $tune * $m;
 	for($i = 0;$i < $m; $i++) {
 		$o = 255- ( log($i) * $ratio);
+		$o = max($o,0);
 		$col[$i]=imagecolorallocate ($img, $o,$o,$o);
 	#	$o-=(255/$m);
-	#	print "$i $o<br>";
+	if ($_GET['debug']) print "$i $o<br>";
 	}
-	#exit;
+	if ($_GET['debug']) exit;
 	foreach ($all as $gr => $c) {
 		preg_match("/(\d{2})(\d{2})/",$gr,$m);
 		$imgx1 = $m[1] * $pixels_per_km;
