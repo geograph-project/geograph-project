@@ -8,7 +8,10 @@
     </select> in <select name="ri">
     	{html_options options=$references selected=$ri}
     </select> 
-    
+    {if $i}
+    	<input type="checkbox" name="i" value="{$i}" checked="checked" 
+    	id="i"/><label for="i">Limited to <a href="/search.php?i={$i}">Search</a></label>
+    {else}
     {dynamic}
     {if $user->registered}
 	<select name="u">
@@ -27,12 +30,16 @@
 	{/if}
     {/if}
     {/dynamic}
+    {/if}
     <input type="submit" value="Go"></p></form>
     
 
 	<h3>{$h2title}</h3>
 	{if $total > 0}
-	<p><small>Click a column header to change the sort order.</small></p>
+	<p><small>Click a column header to change the sort order.
+	{if $linkpro || $linkprefix}
+		Click a {$title} to run a search for just that all images within that {$title}.
+	{/if}</small></p>
 
 	<table class="report">
 	<thead><tr>
