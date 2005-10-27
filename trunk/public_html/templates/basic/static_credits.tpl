@@ -29,6 +29,9 @@ concept.</li>
     {external title="Trigtools Website" href="http://www.nearby.org.uk" text="www.nearby.org.uk"} lends his wide experience of working with 
     mapping technologies and was responsible for the site search, as well as 
     contributing many other enhancements.</li>
+    
+    <li>Ian Rutson contributed to the Memory Map export features.</li>
+    
     </ul>
     
     <h3>Mapping &amp; Location Data</h3>
