@@ -17,4 +17,6 @@ Disallow: /kml.php?
 Disallow: /editimage.php?
 
 
+User-agent: Mozilla/2.0 (compatible; Ask Jeeves/Teoma)
+Crawl-Delay: 60
 
