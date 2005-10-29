@@ -77,17 +77,17 @@
 	</div>
 {/foreach}
 {if $marker_1}
-<div style="position:absolute;top:{$marker_1->top-8}px;left:{$marker_1->left-8}px;"><img src="/templates/basic/img/crosshairs.gif" alt="Center for {$place_1.reference_name}" width="16" height="16"/></div>
+<div style="position:absolute;top:{$marker_1->top-8}px;left:{$marker_1->left-8}px;"><img src="/templates/basic/img/crosshairs.gif" alt="Centre for {$place_1.reference_name}" width="16" height="16"/></div>
 {/if}
 {if $marker_2}
-<div style="position:absolute;top:{$marker_2->top-8}px;left:{$marker_2->left-8}px;"><img src="/templates/basic/img/crosshairs.gif" alt="Center for {$place_2.reference_name}" width="16" height="16"/></div>
+<div style="position:absolute;top:{$marker_2->top-8}px;left:{$marker_2->left-8}px;"><img src="/templates/basic/img/crosshairs.gif" alt="Centre for {$place_2.reference_name}" width="16" height="16"/></div>
 {/if}
 </div>
 </div>
 </div>
 {/if}
 
-<p>The <acronym title="the center of 'gravity' for all images submitted so far">Geograph Center</acronym> for images in the {$references.1} is <a href="/gridref/{$centergr_1}" title="view square {$centergr_1}">{$centergr_1}</a>, {if $place_1.distance > 3}{$place_1.distance} km from{else}near to{/if} <b>{$place_1.full_name}</b><small><i>{if $place_1.adm1_name && $place_1.adm1_name != $place_1.reference_name}, {$place_1.adm1_name}{/if}</i></small>.
+<p>The <acronym title="the Centre of 'gravity' for all images submitted so far">Geograph Centre</acronym> for images in the {$references.1} is <a href="/gridref/{$centergr_1}" title="view square {$centergr_1}">{$centergr_1}</a>, {if $place_1.distance > 3}{$place_1.distance} km from{else}near to{/if} <b>{$place_1.full_name}</b><small><i>{if $place_1.adm1_name && $place_1.adm1_name != $place_1.reference_name}, {$place_1.adm1_name}{/if}</i></small>.
 
 And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {$centergr_2}">{$centergr_2}</a>, {if $place_2.distance > 3}{$place_2.distance} km from{else}near to{/if} <b>{$place_2.full_name}</b><small><i>{if $place_2.adm1_name && $place_2.adm1_name != $place_2.reference_name}, {$place_2.adm1_name}{/if}</i></small>.</p>    
     
@@ -97,7 +97,7 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
    
    <p><a href="/moversboard.php">Weekly</a>/<a href="/leaderboard.php">All Time</a>/<a href="/monthlyleader.php">By Month</a> User leaderboards.</p>
    
-   <p>County <a href="/statistics/counties.php">Center Points</a>/<a href="/statistics/counties.php?type=capital">(Irish) Capitals</a>, <a href="/statistics/cities.php">Cities</a> photographed so far!</p>
+   <p>County <a href="/statistics/counties.php">Centre Points</a>/<a href="/statistics/counties.php?type=capital">(Irish) Capitals</a>, <a href="/statistics/cities.php">Cities</a> photographed so far!</p>
 
     <form method="get" action="/statistics/breakdown.php">
     <p>View breakdown of images by 
