@@ -39,7 +39,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (!$db) die('Database connection failed');  
 	#$db->debug = true;
 
-	$beginday = date("Y-m-d",mktime(0,0,0,date('m'),date('d')-7,date('Y')));
+	$beginday = date("Y-m-d",mktime(0,0,0,date('m'),date('d')-8,date('Y')));
 	$today = date("Y-m-d");
 
 	$sql = "select substring(submitted,1,10) as d ,count(*) as c from gridimage where submitted > '$beginday' AND submitted < '$today' group by substring(submitted,1,10)";
