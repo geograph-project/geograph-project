@@ -18,7 +18,7 @@
 
 
 <h3>Users</h3>
-<p>We currently have {$users.count} users, therefore at the current rate of {$users.average_r} users signing up as day, we will reach {$users.next} in about {$users.days_r} days time!</p>
+<p>We currently have {$users.count} users, therefore at the current rate of {$users.average_r} users signing up a day, we will reach {$users.next} in about {$users.days_r} days time!</p>
 
 
 <h3>Forum Posts</h3>
