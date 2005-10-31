@@ -14,7 +14,7 @@ how much each person will climb when their pictures are moderated!</p>
 {$cutoff_time|date_format:"%A, %d %b at %H:%M"}</p>
 
 <table class="report"> 
-<thead><tr><td>Position</td><td>Contributor</td><td>New<br/>Geographs</td><td>Pending</td></tr></thead>
+<thead><tr><td>Position</td><td>Contributor</td><td>New<br/>Geograph<br/>Points</td><td>Pending</td></tr></thead>
 <tbody>
 
 {foreach from=$topusers key=topuser_id item=topuser}
