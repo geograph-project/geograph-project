@@ -102,8 +102,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($ok) {
 			$smarty->assign("centergr_$ri",$censquare->grid_reference);
 
-			//find a possible place within 135km
-			$smarty->assign("place_$ri", $censquare->findNearestPlace(135000));
+			//find a possible place within 35km
+			$smarty->assign("place_$ri", $censquare->findNearestPlace(35000));
 			$smarty->assign("marker_$ri", $overview->getSquarePoint($censquare));
 		} else {
 			$smarty->assign("centergr_$ri",'unknown');
