@@ -143,7 +143,9 @@ if ($image->isValid())
 		$smarty->assign('latdm', $latdm);
 		$smarty->assign('longdm', $longdm);
 
-
+		$smarty->assign('x', $image->grid_square->x);
+		$smarty->assign('y', $image->grid_square->y);
+		
 
 	}
 }
