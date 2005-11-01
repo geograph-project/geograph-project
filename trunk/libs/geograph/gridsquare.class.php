@@ -452,6 +452,9 @@ class GridSquare
 				//find nearest square for 100km
 				$this->findNearby($square['x'], $square['y'], 100);
 			}
+		} else {
+			$this->_error("This location seems to be all at sea! Please contact us if you think this is in error");
+
 		}
 		return $ok;
 	}
