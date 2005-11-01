@@ -588,6 +588,7 @@ END;
 			if (!empty($_GET['debug']))
 				print "<BR><BR>$sql";
 			$this->resultCount = $db->CacheGetOne(3600,$sql);
+			$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 			$this->numberOfPages = ceil($this->resultCount/$pgsize);
 		} 
 		if ($this->countOnly || ($pg > 1 && !$this->resultCount))
@@ -685,7 +686,7 @@ END;
 
 
 			$this->resultCount = $db->CacheGetOne(3600,$sql);
-
+			$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 
 			$this->numberOfPages = ceil($this->resultCount/$pgsize);
 		}
