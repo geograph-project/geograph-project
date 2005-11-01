@@ -55,7 +55,7 @@ title="customisable search options">advanced search</a></span><br/><br/>
 <li>And a list of your recent searches:
 <ul>
 {foreach from=$recentsearchs key=id item=obj}
-<li><a href="search.php?i={$id}" title="Re-Run search for images{$obj}">{$obj|regex_replace:"/^, /":""|regex_replace:"/(, in [\w ]+ order)/":'<small>$1</small>'}</a></li>
+<li><a href="search.php?i={$id}" title="Re-Run search for images{$obj.searchdesc}">{$obj.searchdesc|regex_replace:"/^, /":""|regex_replace:"/(, in [\w ]+ order)/":'<small>$1</small>'}</a>{if $obj.count} [{$obj.count}]{/if}</li>
 {/foreach}
 {if !$more}
 <li><a href="search.php?more=1" title="View More of your recent searches"><i>view more...</i></a></li>
