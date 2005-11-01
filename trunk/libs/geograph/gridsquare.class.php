@@ -424,7 +424,7 @@ class GridSquare
 	/**
 	* load square from internal coordinates
 	*/
-	function loadFromPosition($internalx, $internaly)
+	function loadFromPosition($internalx, $internaly, $findnearest = false)
 	{
 		$ok=false;
 		$db=&$this->_getDB();
@@ -445,6 +445,13 @@ class GridSquare
 			
 			//ensure we get exploded reference members too
 			$this->_storeGridRef($this->grid_reference);
+			
+			//square is good, how many pictures?
+			if ($findnearest && $this->imagecount==0)
+			{
+				//find nearest square for 100km
+				$this->findNearby($square['x'], $square['y'], 100);
+			}
 		}
 		return $ok;
 	}
@@ -562,8 +569,8 @@ class GridSquare
 			"order by distance asc limit 1";
 		
 		$square = $db->GetRow($sql);	
-		$distance = sqrt($square['distance']);
-		if (count($square) && ($distance <= $radius))
+		
+		if (count($square) && ($distance = sqrt($square['distance'])) && ($distance <= $radius))
 		{
 			//round off distance
 			$square['distance']=round($distance);
