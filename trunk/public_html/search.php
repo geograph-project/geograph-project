@@ -371,9 +371,10 @@ if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || 
 		} else
 			$limit = 8;
 		//list of a few image classes 
-		$recentsearchs = $db->GetAssoc("select id,searchdesc from queries ".
+		$recentsearchs = $db->GetAssoc("select queries.id,searchdesc,`count` from queries ".
+			"left join queries_count using (id) ".
 			"where user_id = ".$USER->user_id.
-			" group by searchdesc order by crt_timestamp desc limit $limit");
+			" group by searchdesc order by queries.id desc limit $limit");
 		$smarty->assign_by_ref('recentsearchs',$recentsearchs);	
 	}
 	
