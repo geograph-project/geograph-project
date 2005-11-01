@@ -60,3 +60,11 @@ INSERT INTO `loc_towns` VALUES (NULL, 'Belfast', 333000, 374000, '1', 2, 0);
 
 #update as per email report
 UPDATE `loc_towns` SET `name` = 'Lifford', `e` = 233551, `n` = 399281 WHERE  `name` = 'Donegal' and `e` = 192000;
+
+
+CREATE TABLE `queries_count` (
+  `id` int(10) unsigned NOT NULL default '0',
+  `count` int(10) unsigned NOT NULL default '0',
+  `ts` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`)
+);
