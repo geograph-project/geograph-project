@@ -62,7 +62,7 @@ class SearchCriteria
 	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) 
 	{
 		if (!empty($_GET['BBOX'])) {
-			$b = explode(',',trim($_GET['BBOX']));
+			$b = explode(',',trim(str_replace('e ','e+',$_GET['BBOX'])));
 			$sql_where = "(`wgs84_lat` BETWEEN {$b[1]} and {$b[3]}) and (`wgs84_long` BETWEEN {$b[0]} and {$b[2]})";
 		} else {
 			$sql_where = '';
