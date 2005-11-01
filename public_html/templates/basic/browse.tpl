@@ -11,7 +11,21 @@
 
     <h2>Browse</h2>
 
-{if !$showresult}     
+{if $showresult}
+<div style="float: right; position:relative;">
+<table border="1" cellspacing="0">
+<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}">NW</a></td>
+<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}">N</a></td>
+<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}">NE</a></td></tr>
+<tr><td><a href="/browse.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}">W</a></td>
+<td><b>Go</b></td>
+<td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}">E</a></td></tr>
+<tr><td><a href="/browse.php?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}">SW</a></td>
+<td align="center"><a href="/browse.php?p={math equation="900*(y-1)+900-(x)" x=$x y=$y}">S</a></td>
+<td><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}">NE</a></td></tr>
+</table>
+</div>
+{else}
 <p>You can view a particular grid square below - if the square hasn't been filled yet,
 we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Ordnance Survey Get-a-Map'} to help locate your grid square)</p>
 {/if}
