@@ -49,17 +49,25 @@ $grid_ok=false;
 
 
 //set by grid components?
-if (isset($_GET['setpos']))
+if (isset($_GET['p']))
+{	
+	$grid_given=true;
+	//p=900y + (900-x);
+	$p = intval($_GET['p']);
+	$x = ($p % 900);
+	$y = ($p - $x) / 900;
+	$x = 900 - $x;
+	$grid_ok=$square->loadFromPosition($x, $y, true);
+	$grid_given=true;
+	
+}
+
+//set by grid components?
+elseif (isset($_GET['setpos']))
 {	
 	$grid_given=true;
 	$grid_ok=$square->setGridPos($_GET['gridsquare'], $_GET['eastings'], $_GET['northings']);
 
-	//preserve inputs in smarty
-	$smarty->assign('gridsquare', $square->gridsquare);
-	$smarty->assign('eastings', $square->eastings);
-	$smarty->assign('northings', $square->northings);
-	$smarty->assign('gridref', $square->grid_reference);
-	
 }
 //set by grid ref?
 elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
@@ -71,11 +79,7 @@ elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 	
 	if ($grid_ok)
 	{
-		$smarty->assign('gridref', $square->grid_reference);
 		$smarty->assign('gridrefraw', stripslashes($_GET['gridref']));
-		$smarty->assign('gridsquare', $square->gridsquare);
-		$smarty->assign('eastings', $square->eastings);
-		$smarty->assign('northings', $square->northings);
 	}
 	else
 	{
@@ -97,6 +101,13 @@ if ($grid_given)
 	//now we see if the grid reference is actually available...
 	if ($grid_ok)
 	{
+		$smarty->assign('gridref', $square->grid_reference);
+		$smarty->assign('gridsquare', $square->gridsquare);
+		$smarty->assign('eastings', $square->eastings);
+		$smarty->assign('northings', $square->northings);
+		$smarty->assign('x', $square->x);
+		$smarty->assign('y', $square->y);
+		
 		//store details the browser manager has figured out
 		$smarty->assign('showresult', 1);
 		$smarty->assign('imagecount', $square->imagecount);
