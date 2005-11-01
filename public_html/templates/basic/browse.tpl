@@ -22,7 +22,7 @@
 <td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}">E</a></td></tr>
 <tr><td><a href="/browse.php?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}">SW</a></td>
 <td align="center"><a href="/browse.php?p={math equation="900*(y-1)+900-(x)" x=$x y=$y}">S</a></td>
-<td><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}">NE</a></td></tr>
+<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}">SE</a></td></tr>
 </table>
 </div>
 {else}
