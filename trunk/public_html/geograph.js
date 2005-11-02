@@ -18,6 +18,15 @@ function popupOSMap(gridref)
 	}
 }
 
+function autoDisable(that) {
+ 	that.value = "Submitting... Please wait...";
+ 	name = "document."+that.form.name+"."+that.name;
+  	
+ 	setTimeout(name+".disabled = true",100); //if we disable in the function then form wont submit
+ 	setTimeout(name+".value="+name+".defaultValue; "+name+".disabled = false",30000);
+ 	return true;
+}
+
 function di20(id, newSrc) {
     var theImage = FWFindImage(document, id, 0);
     if (theImage) {
