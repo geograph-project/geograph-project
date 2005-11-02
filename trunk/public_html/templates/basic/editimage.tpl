@@ -82,7 +82,7 @@
 {if $opentickets}
 
 {foreach from=$opentickets item=ticket}
-<form action="/editimage.php" method="post">
+<form action="/editimage.php" method="post" name="ticket{$ticket->gridimage_ticket_id}">
 <input type="hidden" name="gridimage_ticket_id" value="{$ticket->gridimage_ticket_id}"/>
 <input type="hidden" name="id" value="{$ticket->gridimage_id}"/>
 
@@ -188,11 +188,11 @@
 		
 			{if $ticket->changes}
 		
-			<input type="submit" name="accept" value="Accept ticked changes and close ticket"/>
+			<input type="submit" name="accept" value="Accept ticked changes and close ticket" onclick="autoDisable(this)"/>
 
 			{else}
 
-			<input type="submit" name="close" value="Close ticket"/>
+			<input type="submit" name="close" value="Close ticket" onclick="autoDisable(this)"/>
 
 			{/if}
 		{/if}
@@ -217,7 +217,7 @@
 <h2><span class="formerror">Changes not submitted - check and correct errors below...</span></h2>
 {/if}
 
-<form method="post" action="/editimage.php#form">
+<form method="post" action="/editimage.php#form" name="edit{$image->gridimage_id}">
 <input type="hidden" name="id" value="{$image->gridimage_id}"/>
 
 {if $moderated_count}
@@ -347,7 +347,7 @@ then please enter directly into the boxes above)
 </div>
 <br/>
 
-<input type="submit" name="save" value="Submit Changes"/>
+<input type="submit" name="save" value="Submit Changes" onclick="autoDisable(this)"/>
 <input type="button" name="cancel" value="Cancel" onclick="document.location='/photo/{$image->gridimage_id}';"/>
 
 

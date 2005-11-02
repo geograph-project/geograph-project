@@ -154,7 +154,7 @@ geographing</a> first.</p>
 	
 
 	<br/>
-	<input type="submit" name="goback" value="&lt; Back"/> <input type="submit" name="upload" value="Next &gt;" onclick="return checkGridReferences(this.form)"/>
+	<input type="submit" name="goback" value="&lt; Back"/> <input type="submit" name="upload" value="Next &gt;" onclick="{literal}if (checkGridReferences(this.form)) {return autoDisable(this);} else {return false}{/literal}"/>
 	<br style="clear:right"/>
 
 	{if $totalimagecount gt 0}
@@ -360,7 +360,7 @@ function setdate(name,date,form) {
 	<p>If you agree with these terms, click "I agree" and your image will be
 	stored in grid square {$gridref}.<br />
 	<input type="submit" name="goback3" value="&lt; Back"/>
-	<input style="width:200px" type="submit" name="finalise" value="I AGREE &gt;"/>
+	<input style="width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this)"/>
 	</p>
 	
 
