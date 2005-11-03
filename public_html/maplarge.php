@@ -45,8 +45,13 @@ $overview=new GeographMapMosaic('overview');
 if (isset($_GET['o']))
 	$overview->setToken($_GET['o']);
 	
-if (isset($_GET['t']))
-	$mosaic->setToken($_GET['t']);
+if (isset($_GET['t'])) {
+	$ok = $mosaic->setToken($_GET['t']);
+	if (!$ok)
+		die("Invalid Token");
+} else {
+	die("Missing Token");
+}
 
 if ($mosaic->pixels_per_km != 80)
 	die("Invalid Parameter");
