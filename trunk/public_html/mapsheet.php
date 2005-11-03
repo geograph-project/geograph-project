@@ -37,9 +37,16 @@ $smarty = new GeographPage;
 //initialise mosaic
 $map=new GeographMap;
 
-if (isset($_GET['t']))
-	$map->setToken($_GET['t']);
+if (isset($_GET['t'])) {
+	$ok = $map->setToken($_GET['t']);
+	if (!$ok)
+		die("Invalid Token");
+} else {
+	die("Missing Token");
+}
 
+if ($map->pixels_per_km != 40)
+	die("Invalid Parameter");
 
 
 //get token, we'll use it as a cache id
