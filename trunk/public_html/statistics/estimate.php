@@ -49,7 +49,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign("image",$image);
 	
 	
-	$sql = "select substring(submitted,1,10) as d ,count(*) as c from gridimage where moderation_status = 'geograph' and submitted > '$beginday' AND submitted < '$today' group by substring(submitted,1,10)";
+	$sql = "select substring(submitted,1,10) as d ,count(*) as c from gridimage_search where moderation_status = 'geograph' and submitted > '$beginday' AND submitted < '$today' group by substring(submitted,1,10)";
 	$sql2 = "select count(*) from gridimage_search where moderation_status = 'geograph'";
 		
 	$geograph = calc($sql,$sql2,10000);
@@ -74,16 +74,24 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign("users",$users);
 	
 	
-	$sql = "select substring(submitted,1,10) as d ,count(*) as c from gridimage where ftf = 1 and submitted > '$beginday' AND submitted < '$today' group by substring(submitted,1,10)";
-	$sql2 = "select count(*) from gridimage_search where ftf = 1";
+	$sql = "select substring(submitted,1,10) as d ,count(distinct grid_reference) as c from gridimage_search where ftf = 1 and submitted > '$beginday' AND submitted < '$today' group by substring(submitted,1,10)";
+	$sql2 = "select count(distinct grid_reference) from gridimage_search";
 			
 	$square = calc($sql,$sql2,10000);
 			
 	$smarty->assign("square",$square);
 
 
-	$total['average'] = $square['total']; 
-	$total['average_r'] = $square['total']; 
+	$sql = "select substring(submitted,1,10) as d ,count(*) as c from gridimage_search where ftf = 1 and submitted > '$beginday' AND submitted < '$today' group by substring(submitted,1,10)";
+	$sql2 = "select count(*) from gridimage_search where ftf = 1";
+			
+	$point = calc($sql,$sql2,10000);
+			
+	$smarty->assign("point",$point);
+
+
+	$total['average'] = $point['total']; 
+	$total['average_r'] = $point['total']; 
 	$total['next'] = $db->CacheGetOne(24*3600*7,"select count(*) from gridsquare where percent_land > 0");
 		
 	$total['dif'] = $total['next'] - $total['count'];
