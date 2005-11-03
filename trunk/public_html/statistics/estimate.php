@@ -30,7 +30,7 @@ $smarty = new GeographPage;
 $template='statistics_estimate.tpl';
 $cacheid='statistics|estimate';
 
-$smarty->caching = 2; // lifetime is per cache
+$smarty->caching = 1; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
 if (!$smarty->is_cached($template, $cacheid))
@@ -39,7 +39,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (!$db) die('Database connection failed');  
 	#$db->debug = true;
 
-	$beginday = date("Y-m-d",mktime(0,0,0,date('m'),date('d')-8,date('Y')));
+	$beginday = date("Y-m-d",mktime(0,0,0,date('m'),date('d')-7,date('Y')));
 	$today = date("Y-m-d");
 
 	$sql = "select substring(submitted,1,10) as d ,count(*) as c from gridimage_search where submitted > '$beginday' AND submitted < '$today' group by substring(submitted,1,10)";
@@ -84,7 +84,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$sql = "select substring(submitted,1,10) as d ,count(*) as c from gridimage_search where ftf = 1 and submitted > '$beginday' AND submitted < '$today' group by substring(submitted,1,10)";
 	$sql2 = "select count(*) from gridimage_search where ftf = 1";
-			
+			print $sql;
 	$point = calc($sql,$sql2,10000);
 			
 	$smarty->assign("point",$point);
