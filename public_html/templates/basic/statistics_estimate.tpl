@@ -14,7 +14,11 @@
 <h3>Squares</h3>
 <p>We currently have {$square.count} squares photographed, therefore at the current rate of {$square.average_r} squares as day, we will reach {$square.next} in about {$square.days_r} days time!</p>
 
-<p>Furthermore at the current rate of {$totall.average_r} squares as week, we will reach {$totall.next} (full coverage) in about {$totall.weeks_r} weeks time!</p>
+
+<h3>Points</h3>
+<p>We currently have {$point.count} points awarded, therefore at the current rate of {$point.average_r} points as day, we will reach {$point.next} in about {$point.days_r} days time!</p>
+
+<p>Furthermore at the current rate of {$totall.average_r} points as week, we will reach {$totall.next} (full coverage) in about {$totall.weeks_r} weeks time!</p>
 
 
 <h3>Users</h3>
