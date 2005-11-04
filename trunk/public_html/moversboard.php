@@ -50,7 +50,8 @@ if (!$smarty->is_cached($template, $cacheid))
 			"left join user as u using(user_id) ".
 			"where i.submitted > date_sub(now(), interval 7 day) ".
 			"group by i.user_id ".
-			"order by geographs desc,pending desc";
+			"having (geographs > 0 or pending > 1)".
+			"order by geographs desc,pending desc ";
 	$topusers=$db->GetAssoc($sql);
 		
 	//assign an ordinal
