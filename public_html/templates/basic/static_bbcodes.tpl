@@ -16,27 +16,42 @@
 <h4>Linking</h4>
 
 <ul>
-<li><tt style="color:green">[[TQ7506]]</tt> renders as <a href="/gridref/TQ7506">TQ7506</a><br/><br/></li>
-<li><tt style="color:green">[[5463]]</tt> renders as {literal}{<a href="/photo/5463" title="Geograph Image by Ben Gamble">TQ3328 : Ardingly Reservoir</a>}{/literal}<br/><br/></li>
-<li><tt style="color:green">[[[5463]]]</tt> renders as <a href="/photo/5463"><img alt="TQ3328 : Ardingly Reservoir" src="/photos/00/54/005463_ea60a493_120x120.jpg" width="120" height="90"/></a><br/><br/></li>
-<li><tt style="color:green">[url=http://www.example.com]Some text[/url]</tt> renders as <a href="http://www.example.com">Some text</a><br/><br/></li>
-<li><tt style="color:green">[email=email@example.com]contact me[/email]</tt> renders as <a href="mailto:email@example.com">contact me</a></li>
+<li><b style="font-size:0.7em">Link to by ID direct to an Image</b><br/>
+<div style="background-color:#eeeeee; padding:10px;"><tt style="color:green">[[5463]]</tt> renders as {literal}{<a href="/photo/5463" title="Geograph Image by Ben Gamble">TQ3328 : Ardingly Reservoir</a>}{/literal}</div><br/></li>
+
+<li><b style="font-size:0.7em">Include an Image Thumbnail by ID</b><br/>
+<div style="background-color:#eeeeee; padding:10px;"><tt style="color:green">[[[5463]]]</tt> renders as <a href="/photo/5463"><img alt="TQ3328 : Ardingly Reservoir" src="/photos/00/54/005463_ea60a493_120x120.jpg" width="120" height="90"/></a></div><br/></li>
+</ul>
+<p style="font-size:0.8em">Tip: Get the Image ID for use in building these links from the URL of the page for example, to insert a link to the picture at <a href="/photo/5463">http://{$http_host}/photo/5463</a> use <tt style="color:green">[[5463]]</tt></p>
+<ul>
+<li><b style="font-size:0.7em">Webpage/URL</b><br/>
+<div style="background-color:#eeeeee; padding:10px;"><tt style="color:green">[url=http://www.example.com]Some text[/url]</tt> renders as <a href="http://www.example.com">Some text</a></div><br/></li>
+</ul>
+<p style="font-size:0.8em">Links will be converted to a clickable link automatically.</p>
+<ul>
+<li><b style="font-size:0.7em">Link to Browse page for a Square</b><br/>
+<div style="background-color:#eeeeee; padding:10px;"><tt style="color:green">[[TQ7506]]</tt> renders as <a href="/gridref/TQ7506">TQ7506</a></div><br/></li>
 </ul>
 
-<p>Tip: Get the Image ID for use in building these links from the URL of the page for example, to insert a link to the picture at <a href="/photo/5463">http://{$http_host}/photo/5463</a> use <tt style="color:green">[[5463]]</tt></p>
-
-<p>Note: Plain links will be converted to a clickable link automatically, also where appropriate links to Images and Grid References will also be converted automatically. (To stop otherwise 'Grid Reference Looking Text' being converted, either use lowercase or prefix with a !. For example <span class="nowrap">!B4567</a> won't be linked but <a href="/gridref/B4567">B4567</a> would, the ! mark is not shown on the final page.)</p>
-
-<h4>Images</h4>
+<p style="font-size:0.8em">Grid References in the text are identified and linked to the browse page.<br/>
+To stop otherwise <i>Grid Reference Looking Text</i> being converted, either use lowercase or prefix with a !. For example <span class="nowrap">!B4567</a> won't be linked but <a href="/gridref/B4567">B4567</a> would, the ! mark is not shown on the final page.</p>
 
 <ul>
-<li><tt style="color:green">[img]http://www.someserver.com/images/image.gif[/img]</tt> renders as <img src="/photos/error.jpg" width="40" height="40"/></li>
+<li><b style="font-size:0.7em">Email Address</b><br/>
+<div style="background-color:#eeeeee; padding:10px;"><tt style="color:green">[email=email@example.com]contact me[/email]</tt> renders as <a href="mailto:email@example.com">contact me</a></div><br/></li>
+</ul>
+
+<h4>External Images</h4>
+
+<ul>
+<li><tt style="color:green">[img]http://www.domain.com/image.gif[/img]</tt> renders as <img src="/photos/error.jpg" width="40" height="40"/></li>
 </ul>
 <p>Advanced:</p>
-<p><img src="/photos/error.jpg" width="40" height="40" align="left" style="float:left; position:relative"/><tt style="color:green">[imgleft]http://www.someserver.com/images/image.gif[/img]</tt> will left align the image in the flow of text<br style="clear:left"/></p>
+<ul>
+<li><tt style="color:green">[imgleft]http://www.domain.com/image.gif[/img]</tt> will left align the image in the flow of text.</li>
 
-<p><img src="/photos/error.jpg" width="40" height="40" align="right" style="float:right; position:relative"/><tt style="color:green">[imgright]http://www.someserver.com/images/image.gif[/img]</tt> will right align the image in the flow of text</p>
-
+<li><tt style="color:green">[imgright]http://www.domain.com/image.gif[/img]</tt> will right align the image in the flow of text.</li>
+</ul>
 
 
 
