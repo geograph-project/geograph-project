@@ -283,8 +283,11 @@ class SearchEngine
 			$dataarray['textsearch'] = trim($dataarray['textsearch']);
 			$searchclass = 'Text';
 			$searchq = $dataarray['textsearch'];
-			
-			$searchdesc = ", containing '".str_replace('^','',$dataarray['textsearch'])."' ";	
+			if (preg_match('/\+$/',$dataarray['textsearch'])) {
+				$searchdesc = ", all about '".preg_replace('/\+$/','',$dataarray['textsearch'])."' ";
+			} else {
+				$searchdesc = ", containing '".str_replace('^','',$dataarray['textsearch'])."' ";	
+			}
 		} else if (!empty($dataarray['description']) && !empty($dataarray['searchq'])) {
 			$USER->mustHavePerm("admin");
 			$dataarray['description'] = trim($dataarray['description']);
@@ -625,6 +628,7 @@ END;
 				$this->numberOfPages = 2;
 			} else {
 				$this->numberOfPages = ceil($this->resultCount/$pgsize);
+				$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 			}
 		}
 
@@ -722,6 +726,7 @@ END;
 				$this->pageOneOnly = 1;
 			} else {
 				$this->numberOfPages = ceil($this->resultCount/$pgsize);
+				$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 			}
 		}
 		
