@@ -336,6 +336,9 @@ class SearchCriteria_Text extends SearchCriteria
 			$words = str_replace('^','',$this->searchq);
 			$sql_where .= ' wordnet.title>0 AND words = '.$db->Quote($words);
 			$sql_from = ' INNER JOIN wordnet ON(gi.gridimage_id=wordnet.gid) ';
+		} elseif (preg_match("/\+$/",$this->searchq)) {
+			$words = $db->Quote('%'.preg_replace("/\+$/",'',$this->searchq).'%');
+			$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';
 		} else {
 			$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$this->searchq.'%');
 		}
