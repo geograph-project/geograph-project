@@ -626,6 +626,7 @@ END;
 			$this->resultCount = $recordSet->RecordCount();
 			if ($this->resultCount == $pgsize) {
 				$this->numberOfPages = 2;
+				$this->pageOneOnly = 1;
 			} else {
 				$this->numberOfPages = ceil($this->resultCount/$pgsize);
 				$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
@@ -722,7 +723,7 @@ END;
 		if ($pg == 1) {
 			$this->resultCount = $recordSet->RecordCount();
 			if ($this->resultCount == $pgsize) {
-				$this->numberOfPages = 1;
+				$this->numberOfPages = 2;
 				$this->pageOneOnly = 1;
 			} else {
 				$this->numberOfPages = ceil($this->resultCount/$pgsize);
