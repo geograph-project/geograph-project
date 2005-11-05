@@ -325,7 +325,10 @@ if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || 
 		$smarty->assign('currentPage', $pg);
 		$smarty->assign_by_ref('engine', $engine);
 
-		if (!$engine->countOnly && $pg == 1 && $engine->criteria->searchclass == 'GridRef' && strpos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
+		if (!$engine->countOnly && $pg == 1 
+			&& $engine->criteria->searchclass == 'GridRef'
+			&& ( $engine->criteria->orderby == 'dist_sqd' || $engine->criteria->orderby == '' )
+			&& strpos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
 			$smarty->assign('nofirstmatch', true);
 		}	
 	}
