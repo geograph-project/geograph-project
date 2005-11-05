@@ -115,15 +115,54 @@ referring to <b>image {$image->gridimage_id}</b>
 
 
 <table class="infotable">
-<tr><td><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" src="http://creativecommons.org/images/public/somerights20.gif" /></a></td><td>
 
-&copy; Copyright <a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a> and  
-licenced for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.
-(find <a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap">nearby pictures by {$image->realname|escape:'html'}</a>) 
+<!-- Creative Commons Licence -->
+<tr><td><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
+alt="Creative Commons License" src="http://creativecommons.org/images/public/somerights20.gif" /></a></td>
+<td>&copy; Copyright <a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a> and  
+licenced for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</td>
+</tr>
+<!-- /Creative Commons Licence -->
 
+<!--
 
-</td>
+<rdf:RDF xmlns="http://web.resource.org/cc/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<Work rdf:about="">
+     <dc:title>{$image->title|escape:'html'}</dc:title>
+     <dc:creator><Agent>
+        <dc:title>{$image->realname|escape:'html'}</dc:title>
+     </Agent></dc:creator>
+     <dc:rights><Agent>
+        <dc:title>{$image->realname|escape:'html'}</dc:title>
+     </Agent></dc:rights>
+     <dc:date>{$image->submitted}</dc:date>
+     <dc:format>image/jpeg</dc:format>
+     <dc:publisher><Agent>
+        <dc:title>{$http_host}</dc:title>
+     </Agent></dc:publisher>
+{if $image->imageclass}
+     <dc:subject>{$image->imageclass}</dc:subject>
+{/if}
+     <license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
+</Work>
 
+<License rdf:about="http://creativecommons.org/licenses/by-sa/2.0/">
+   <permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+   <permits rdf:resource="http://web.resource.org/cc/Distribution" />
+   <requires rdf:resource="http://web.resource.org/cc/Notice" />
+   <requires rdf:resource="http://web.resource.org/cc/Attribution" />
+   <permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+   <requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+</License>
+
+</rdf:RDF>
+
+-->
+
+<tr><td></td>
+<td>(find <a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap">nearby pictures by {$image->realname|escape:'html'}</a>)</td>
 </tr>
 
 <tr><td>Image status</td><td>
@@ -228,32 +267,8 @@ WGS84: {$latdm} {$longdm}
 {/if}
 </p>
 
-<!--
 
-<rdf:RDF xmlns="http://web.resource.org/cc/"
-    xmlns:dc="http://purl.org/dc/elements/1.1/"
-    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-<Work rdf:about="">
-     <dc:date>{$image->submitted}</dc:date>
-     <dc:format>image/jpeg</dc:format>
-     <dc:title>{$image->title|escape:'html'}</dc:title>
-     <license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
-</Work>
 
-<License rdf:about="http://creativecommons.org/licenses/by-sa/2.0/">
-   <permits rdf:resource="http://web.resource.org/cc/Reproduction" />
-   <permits rdf:resource="http://web.resource.org/cc/Distribution" />
-   <requires rdf:resource="http://web.resource.org/cc/Notice" />
-   <requires rdf:resource="http://web.resource.org/cc/Attribution" />
-   <permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
-   <requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
-</License>
-
-</rdf:RDF>
-
--->
-
-<!--info block-->
 </div>
 
 
