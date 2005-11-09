@@ -410,7 +410,7 @@ function GeographLinks(&$posterText) {
 			}
 		}
 	}
-	if (preg_match_all('/(^| |<br\/?>)(http:\/\/[\w\.-]+\.[\w]{2,}\/?[^ <]*)( |<br\/?>|$)/',$posterText,$g_matches)) {
+	if (preg_match_all('/(^| |<br\/?>|\n|\r)(http:\/\/[\w\.-]+\.[\w]{2,}\/?[^ <]*)( |<br\/?>|\n|\r|$)/',$posterText,$g_matches)) {
 		foreach ($g_matches[2] as $i => $g_url) {
 			
 			$posterText = str_replace("$g_url",smarty_function_external(array('href'=>$g_url,'text'=>'{link}','title'=>$g_url)),$posterText);
