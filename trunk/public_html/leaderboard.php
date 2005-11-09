@@ -36,7 +36,7 @@ if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
 	$smarty->clear_cache($template, $cacheid);
 
 
-$smarty->caching = 0; // lifetime is per cache
+$smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*3; //3hour cache
 
 if (!$smarty->is_cached($template, $cacheid))
