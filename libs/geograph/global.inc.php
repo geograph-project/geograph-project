@@ -251,6 +251,18 @@ function smarty_function_thousends($input) {
 	return number_format($input);
 }
 
+function smarty_function_ordinal($i) {
+	$units=$i%10;
+	switch($units)
+	{
+		case 1:$end=($i==11)?'th':'st';break;
+		case 2:$end=($i==12)?'th':'nd';break;
+		case 3:$end=($i==13)?'th':'rd';break;
+		default: $end="th";	
+	}
+	return $i.$end;
+}
+
 /**
 * wrapper to GeographLinks
 */
@@ -305,6 +317,7 @@ class GeographPage extends Smarty
 
 
 		$this->register_modifier("geographlinks", "smarty_function_geographlinks");
+		$this->register_modifier("ordinal", "smarty_function_ordinal");
 
 		$this->register_modifier("thousends", "smarty_function_thousends");
 
