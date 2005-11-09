@@ -36,7 +36,7 @@ if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
 	$smarty->clear_cache($template, $cacheid);
 
 
-$smarty->caching = 2; // lifetime is per cache
+$smarty->caching = 0; // lifetime is per cache
 $smarty->cache_lifetime = 3600*3; //3hour cache
 
 if (!$smarty->is_cached($template, $cacheid))
@@ -48,32 +48,40 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 
-	//GetOne adds a LIMIT even when we already supply one!
-	$rank50 = $db->GetRow("select count(*) as imgcount ".
-	"from gridimage_search where ftf=1 ".
-	"group by user_id order by imgcount desc limit 49,1");
-	
 	$topusers=$db->GetAll("select user_id,realname,count(*) as imgcount,max(gridimage_id) as last  ".
 	"from gridimage_search where ftf=1 ".
-	"group by user_id HAVING imgcount >= {$rank50[0]} order by imgcount desc,last asc ");
-	
+	"group by user_id order by imgcount desc,last asc ");
+	$lastimgcount = 0;
+	$toriserank = 0;
 	foreach($topusers as $idx=>$entry)
 	{
 		$i=$idx+1;
-		if ($lastimgcount == $topusers[$idx]['imgcount'])
-			$topusers[$idx]['ordinal'] = '&nbsp;&nbsp;&nbsp;&quot;';
-		else {
-			$units=$i%10;
-			switch($units)
-			{
-				case 1:$end=($i==11)?'th':'st';break;
-				case 2:$end=($i==12)?'th':'nd';break;
-				case 3:$end=($i==13)?'th':'rd';break;
-				default: $end="th";	
+			
+		if ($lastimgcount == $entry['imgcount']) {
+			$db->query("UPDATE user SET rank = $lastrank,to_rise_rank = $toriserank WHERE user_id = {$entry['user_id']}");
+			if ($i > 50) {
+				unset($topusers[$idx]);
+			} else {
+				$topusers[$idx]['ordinal'] = '&nbsp;&nbsp;&nbsp;&quot;';
 			}
-
-			$topusers[$idx]['ordinal']=$i.$end;
-			$lastimgcount = $topusers[$idx]['imgcount'];
+		} else {
+			$toriserank = ($lastimgcount - $entry['imgcount']);
+			$db->query("UPDATE user SET rank = $i,to_rise_rank = $toriserank WHERE user_id = {$entry['user_id']}");
+			if ($i > 50) {
+				unset($topusers[$idx]);
+			} else {
+				$units=$i%10;
+				switch($units)
+				{
+					case 1:$end=($i==11)?'th':'st';break;
+					case 2:$end=($i==12)?'th':'nd';break;
+					case 3:$end=($i==13)?'th':'rd';break;
+					default: $end="th";	
+				}
+				$topusers[$idx]['ordinal']=$i.$end;
+			}
+			$lastimgcount = $entry['imgcount'];
+			$lastrank = $i;
 		}
 	}
 	
