@@ -3,7 +3,7 @@
 
 <h2>Administrative Tools</h2>
 <ul>
-<li><a href="/admin/moderation.php">Moderate</a> new photo submissions</li>
+<li><a href="/admin/moderation.php">Moderate</a> new photo submissions [{$images_pending}]</li>
 
 <li><a title="Trouble Tickets" href="/admin/tickets.php">Trouble Tickets</a> - 
    Deal with image problems</li>
