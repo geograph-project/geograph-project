@@ -44,7 +44,7 @@
  	{if $profile->stats.total gt 0}
 <h3><a href="/statistics/breakdown.php?by=status&u={$profile->user_id}">Statistics</a></h3>
 <ul>
- 	  <li><b>{$profile->stats.ftf}</b> Geograph points (see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>) Rank: <b>{$profile->rank|ordinal}</b> {if $profile->rank > 1}({$profile->to_rise_rank} more to get to {$profile->rank-1|ordinal}){/if}</li>
+ 	  <li><b>{$profile->stats.ftf}</b> Geograph points (see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>) Rank: <b>{$profile->rank|ordinal}</b> {if $profile->rank > 1}({$profile->to_rise_rank} more needed to get to {$profile->rank-1|ordinal}){/if}</li>
  	  <li><b>{$profile->stats.geosquares}</b> gridsquare{if $profile->stats.geosquares ne 1}s{/if} geographed</li>
  	  <li><b>{$profile->stats.total}</b> photograph{if $profile->stats.total ne 1}s{/if} submitted</li>
  	  {if $profile->stats.pending gt 0}
