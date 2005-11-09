@@ -373,7 +373,7 @@ if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || 
 			$smarty->assign('more',1);	
 		} else
 			$limit = 8;
-		//list of a few image classes 
+		
 		$recentsearchs = $db->GetAssoc("select queries.id,searchdesc,`count` from queries ".
 			"left join queries_count using (id) ".
 			"where user_id = ".$USER->user_id.
@@ -427,6 +427,7 @@ if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || 
 			$arr = $db->CacheGetAssoc(24*3600,"select imageclass,concat(imageclass,' [',count(*),']') from gridimage_search ".
 				"where length(imageclass)>0 ".
 				"group by imageclass");
+			$arr = array_merge(array('-'=>'-unclassified-'),$arr);
 			$smarty->assign_by_ref('imageclasslist',$arr);	
 
 			$topusers=$db->CacheGetAssoc(24*3600,"select user.user_id,concat(realname,' [',count(*),']')   ".
