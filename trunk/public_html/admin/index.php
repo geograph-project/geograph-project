@@ -34,9 +34,10 @@ $cacheid='';
 if (!$smarty->is_cached($template, $cacheid))
 {
 	//lets get some stats
-	/* unnecessary and slow 
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
+	
+	/* unnecessary and slow 
 	
 	$users_total=$db->GetOne("select count(*) from user where rights>0");
 	$users_thisweek=$db->GetOne("select count(*) from user where rights>0 and ".
@@ -59,6 +60,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('images_thisweek',  $images_thisweek);
 	$smarty->assign_by_ref('images_status',  $images_status);
 	*/
+	
+	$smarty->assign('images_pending', $db->GetOne("select count(*) from gridimage where moderation_status='pending'"));
+
+
+
 }
 
 //but this is nice and quick...
