@@ -16,7 +16,7 @@
     <li><b>Images</b>: these are all images on the site, regardless if they Geograph or supplemental</li>
     <li><b>Geographs</b>: these are all Geograph images, even if multiple for the same grid square</li>
     <li><b>Squares</b>: the number of different squares photographed (including supplemental)</li>
-    <li><b>Points</b>: these are Geographs with that are submitted first for a square (so similar to Squares but just showing geograph images)</li>
+    <li><b>Points</b>: these are Geographs with that are submitted first for a square</li>
     </ul>
     
     
