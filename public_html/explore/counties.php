@@ -46,8 +46,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	$conv = new Conversions;
 
 	if ($type == 'center') {
-		$smarty->assign("page_title", "County Center Points");
-		$smarty->assign("extra_info", "* this pages uses counties from 1995 and for some unknown reason Northern Ireland is just one entity.");
+		$smarty->assign("page_title", "County Centre Points*");
+		$smarty->assign("extra_info", "* this pages uses counties from 1995 (at a guess) and for some unknown reason Northern Ireland is just one entity. Furthermore only counties that happen to have their calculated 'centre of bounding box' on land will be included in this list (eg Cornwall doesn't, see blue triangles on this <a href=\"http://www.deformedweb.co.uk/trigs/map.cgi?w=600&amp;b=500&amp;e=400000&amp;n=400000&amp;x=d&amp;l=1&amp;hg=1\">map</a>.");
 		
 		$counties = $db->GetAll("select * from loc_counties where n > 0 order by reference_index,n");
 		
