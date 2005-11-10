@@ -1,20 +1,27 @@
 {assign var="page_title" value="Popular Phrases"}
 {include file="_std_begin.tpl"}
 
-<h2>Popular Phrases {if $words}related to <i>{$words}</i>{/if}</h2>
+<h2>Popular Phrases {if $words}related to <i>{$words}</i>
+<span style="font-size:0.7em">
+[<a href="{$script_name}?{$extra_link}">remove filter</a>]</span>
+{/if}</h2>
+
 {if $words}
-<p><a href="/search.php?textsearch=^{$words|escape:url}&amp;do=1">Search for images containing <b>{$words}</b></a></p>
+<p><a href="/search.php?textsearch=^{$words|escape:url}&amp;do=1{if $u}&amp;user_id={$u}{/if}">Search for images containing <b>{$words}</b></a></p>
 {/if}
+
+<ul style="font-size:0.7em">
+<li>Phrases get lighter the more common the words are, eg 'and the' will be light gray, but 'romney marsh' will be darker because not using common english words.</li>
+<li>You can also click a phrase to see common phrases from images using the selected phrase, and/or perform a search for all relevent images.</li>
+<li>Switch to <a href="wordnet.php?{if $words}words={$words|escape:url}{/if}{$extra_link}">tag style</a>.</li></ul>
+
 <p>Show for {section name=l loop=3 start=0}
 {if $len == $smarty.section.l.iteration}
-<b>{%l.iteration%} word phrases</b>
+<b>{if %l.iteration% == 1}single words{else}{%l.iteration%} word phrases{/if}</b>
 {else}
-<a href="{$script_name}?{if $words}words={$words|escape:url}&amp;{/if}t=1&amp;len={%l.iteration%}">{%l.iteration%} word phrases</a>
+<a href="{$script_name}?{if $words}words={$words|escape:url}{/if}{$extra_link}&amp;len={%l.iteration%}">{if %l.iteration% == 1}single words{else}{%l.iteration%} word phrases{/if}</a>
 {/if}
 {/section}
-{if $words}
-[<a href="{$script_name}?len={$len}&amp;t=1">remove filter</a>]
-{/if}
 </p>
 
 <div style="float:left;width:50%;position:relative">
@@ -27,7 +34,7 @@
 <tbody>
 {foreach from=$wordlist key=words item=obj}
 <tr><td align="right">{$obj.sum_title}</td>
-<td><a style="color:#{$obj.color};" href="{$script_name}?words={$words|replace:"&nbsp;":"+"}&amp;len={$len}&amp;t=1">{$words}</a></td></tr>
+<td><a style="color:#{$obj.color};" href="{$script_name}?words={$words|replace:"&nbsp;":"+"}&amp;t=1{$extra_link}">{$words}</a></td></tr>
 {/foreach}
 </tbody></table>
 
@@ -41,10 +48,12 @@
 <tbody>
 {foreach from=$toplist key=words item=obj}
 <tr><td align="right">{$obj.sum_title}</td>
-<td><a style="color:#{$obj.color};" href="{$script_name}?words={$words|replace:"&nbsp;":"+"}&amp;len={$len}&amp;t=1">{$words}</a></td></tr>
+<td><a style="color:#{$obj.color};" href="{$script_name}?words={$words|replace:"&nbsp;":"+"}&amp;t=1{$extra_link}">{$words}</a></td></tr>
 {/foreach}
 </tbody></table>
 
 </div>
- 		
+ 
+<br style="clear:both"/> 
+ 	
 {include file="_std_end.tpl"}
