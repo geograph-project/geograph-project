@@ -29,13 +29,22 @@ $smarty = new GeographPage;
 $len = (isset($_GET['len']) && is_numeric($_GET['len']))?intval($_GET['len']):2;
 
 $words = (isset($_GET['words']) && preg_match('/^[\w ]+$/',$_GET['words']))?$_GET['words']:'';
-		
+
+$u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
+
+//bare minimum for the dynamic section
+if ($u) {
+	$profile=new GeographUser($u);
+	$smarty->assign_by_ref('profile', $profile);
+	$smarty->assign_by_ref('u', $u);
+}	
+	
 if (!empty($_GET['t'])) {
 	$template='statistics_wordnet_simple.tpl';
-	$cacheid='statistics|wordnet_simple.'.$len.".".str_replace(' ','.',$words);
+	$cacheid="statistics|wordnet_simple$u.".$len.".".str_replace(' ','.',$words);
 } else {	
 	$template='statistics_wordnet.tpl';
-	$cacheid='statistics|wordnet.'.$len.".".str_replace(' ','.',$words);
+	$cacheid="statistics|wordnet$u.".$len.".".str_replace(' ','.',$words);
 }
 
 $smarty->caching = 2; // lifetime is per cache
@@ -47,6 +56,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (empty($db)) die('Database connection failed');  
 	
 	$sql_crit = '';
+	$extra_link = '&amp;len='.$len;
 	if (!empty($words)) {
 		$ids = $db->GetAssoc("SELECT DISTINCT gid,title FROM `wordnet` WHERE title > 0 AND words = ".$db->Quote(trim($words)) );
 		if (count($ids)) {
@@ -54,7 +64,12 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign('words', trim($_GET['words']));
 		}
 	}
-	$smarty->assign('len', $len);
+	$smarty->assign_by_ref('len', $len);
+	
+	if ($u) {
+		$sql_crit .= " AND user_id = $u";
+		$extra_link .= '&amp;u='.$u;
+	}
 	
 	$common = array();
 	$handle = fopen("common-words.dat", "r");
@@ -62,7 +77,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$buffer = strtolower(rtrim(fgets($handle, 4096)));
 		$common[$buffer]=1;
 	}
-	
+	$smarty->assign_by_ref('extra_link', $extra_link);
 
 	
 	if ($len == 1) { 
@@ -104,7 +119,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	$size = $startsize;
 	$sizedelta /= 2;
 	
-	$toplist = $db->GetAssoc("SELECT REPLACE(words,' ','&nbsp;'),len,SUM(title) as sum_title FROM `wordnet` WHERE title > 0 AND len = $len $sql_crit GROUP BY len,words $having_crit ORDER BY sum_title desc LIMIT 100");
+	if ($u) {
+	$sql_from = "INNER JOIN `gridimage` ON(gid = gridimage_id) ";
+	}
+	
+	$toplist = $db->GetAssoc("SELECT REPLACE(words,' ','&nbsp;'),len,SUM(wordnet.title) as sum_title FROM `wordnet` $sql_from
+	WHERE wordnet.title > 0 AND len = $len $sql_crit GROUP BY len,words $having_crit ORDER BY sum_title desc LIMIT 100");
 	foreach($toplist as $words=>$obj) {
 		$count=0;
 		foreach (explode('&nbsp;',$words) as $word) {
