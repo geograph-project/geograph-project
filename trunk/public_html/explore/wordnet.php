@@ -34,9 +34,17 @@ $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 
 //bare minimum for the dynamic section
 if ($u) {
-	$profile=new GeographUser($u);
-	$smarty->assign_by_ref('profile', $profile);
-	$smarty->assign_by_ref('u', $u);
+	if ($u == -1) {
+		if ($USER->registered)
+			$u = $USER->user_id;
+		else 
+			$u = 0;
+	}
+	if ($u) {
+		$profile=new GeographUser($u);
+		$smarty->assign_by_ref('profile', $profile);
+		$smarty->assign_by_ref('u', $u);
+	}
 }	
 	
 if (!empty($_GET['t'])) {
