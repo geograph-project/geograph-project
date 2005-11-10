@@ -6,6 +6,13 @@
 [<a href="{$script_name}?{$extra_link}">remove filter</a>]</span>
 {/if}</h2>
 
+{if $u}
+<ul>
+<li>from images by <a href="/profile.php?u={$u}">{$profile->realname}</a> <span style="font-size:0.7em">
+[<a href="{$script_name}?len={$len}{if $words}&amp;words={$words|escape:url}{/if}">remove filter</a>]</span></li>
+</ul>
+{/if}
+
 {if $words}
 <p><a href="/search.php?textsearch=^{$words|escape:url}&amp;do=1{if $u}&amp;user_id={$u}{/if}">Search for images containing <b>{$words}</b></a></p>
 {/if}
