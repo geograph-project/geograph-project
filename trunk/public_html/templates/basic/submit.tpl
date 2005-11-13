@@ -76,7 +76,7 @@ geographing</a> first.</p>
 		(e.g. from a GPS receiver, or from multimap site), then see our 
 		<a href="/latlong.php">Lat/Long to Grid Reference Convertor</a><br/><br/></li>
 		<li><b>For information on {external href="http://en.wikipedia.org/wiki/Grid_reference" text="Grid References"}</b> <br/>see 
-		{external title="Guide to the National Grid" text="Interactive Guide to the National Grid in Great Britain" href="http://www.ordnancesurvey.co.uk/oswebsite/freefun/nationalgrid/nghelp1.html"}.
+		{external title="Guide to the National Grid" text="Interactive Guide to the National Grid in Great Britain" href="http://www.ordnancesurvey.co.uk/oswebsite/gi/nationalgrid/nghelp1.html"}.
 		The {external href="http://en.wikipedia.org/wiki/Irish_national_grid_reference_system" text="Irish National Grid"} is very similar, but using a single letter prefix, 
 		see <a href="/mapbrowse.php">Overview Map</a> for the layout of the squares.
 		</li>
