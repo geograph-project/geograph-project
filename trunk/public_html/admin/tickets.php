@@ -55,8 +55,8 @@ $opentickets=$db->GetAll(
 	"order by t.updated");
 $smarty->assign_by_ref('opentickets', $opentickets);
 
-
-$smarty->display('admin_tickets.tpl');
+$template = ($_GET['sidebar'])?'admin_tickets_sidebar.tpl':'admin_tickets.tpl';
+$smarty->display($template);
 
 	
 ?>
