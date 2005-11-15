@@ -47,13 +47,13 @@
 	<td>{$geographs_submitted_both|thousends}</td>
 </tr>
 <tr>
-	<th>10km<sup>2</sup> Grid Squares</th>
+	<th>10km x 10km Squares</th>
 	<td><b>{$tenk_submitted_1|thousends}</b><br/>/{$tenk_total_1|thousends}</td>
 	<td><b>{$tenk_submitted_2|thousends}</b><br/>/{$tenk_total_2|thousends}</td>
 	<td valign="top">{$tenk_submitted_both|thousends}<br/>/{$tenk_total_both|thousends}</td>
 </tr>
 <tr>
-	<th>100km<sup>2</sup> Grid Squares</th>
+	<th>100km x 100km Squares</th>
 	<td><b>{$grid_submitted_1}</b><br/>/{$grid_total_1}</td>
 	<td><b>{$grid_submitted_2}</b><br/>/{$grid_total_2}</td>
 	<td>{$grid_submitted_1+$grid_submitted_2}<br/>/{$grid_total_1+$grid_total_2}</td>
@@ -93,7 +93,7 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
     
     <h3>More Statistics</h3>
     
-   <p><a href="/statistics/most_geographed.php">Mostly</a> /<a href="/statistics/fully_geographed.php">Fully</a> Photographed 10<sup><small>km</small></sup>x10<sup><small>km</small></sup> Squares and <a href="/statistics/wordnet.php">Popular Words</a>.</p>
+   <p><a href="/statistics/most_geographed.php">Mostly</a> /<a href="/statistics/fully_geographed.php">Fully</a> Photographed 10<small>km</small> x 10<small>km</small> Squares and <a href="/statistics/wordnet.php">Popular Words</a>.</p>
    
    <p><a href="/moversboard.php">Weekly</a>/<a href="/leaderboard.php">All Time</a>/<a href="/monthlyleader.php">By Month</a> User leaderboards. (<a href="/statistics.php?by=user&amp;ri=1">Contributor List</a>)</p>
    
@@ -126,5 +126,7 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
     {/if}
     {/dynamic}
     <input type="submit" value="Go"/></p></form>
+
+   <p>Technical Database Stats: <a href="/statistics/totals.php">Current Totals</a>, <a href="/statistics/estimate.php">Future Estimates</a>, <a href="/statistics/overtime.php">Activity Breakdown</a> (<a href="/statistics/overtime_forum.php">for Forum</a>)</p> 	
  
 {include file="_std_end.tpl"}
