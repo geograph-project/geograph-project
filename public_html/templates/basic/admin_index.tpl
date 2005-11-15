@@ -6,7 +6,7 @@
 <li><a href="/admin/moderation.php">Moderate</a> new photo submissions [{$images_pending}]</li>
 
 <li><a title="Trouble Tickets" href="/admin/tickets.php">Trouble Tickets</a> - 
-   Deal with image problems</li>
+   Deal with image problems (<a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search">Open in IE Sidebar</a>)</li>
 
 <li><a title="Map Fixer" href="/admin/mapfixer.php">Map Fixer</a> allows the land percentage
 for each 1km grid squares to be updated, which allows "that square is all at sea' to be 
