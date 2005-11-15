@@ -28,10 +28,10 @@
 	<div class="cnr"></div>
 	</div>
 <br/>
-<div style="float:left; width:{$overview_width+30}px; position:relative">
+<div style="float:left; width:{$overview_width+30}px; height:{$overview_height+30}px; position:relative">
 	{include file="_overview.tpl"}
 </div>
-<div style="height:{$overview_height+30}px;">
+<div>
 
 <table class="report"> 
 <thead><tr><td>Last Submission</td><td>Contributor</td><td>Photos</td></tr></thead>
