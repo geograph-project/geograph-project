@@ -137,7 +137,7 @@ class GeographMapMosaic
 		switch ($name)
 		{
 			case 'full':
-				$this->setOrigin(-210,-50);
+				$this->setOrigin(-210,-15);
 				$this->setMosaicSize(400,400);
 				$this->setScale(0.3);
 				$this->setMosaicFactor(3);
