@@ -1,7 +1,9 @@
 {include file="_std_begin.tpl"}
 
 <h2>{$page_title}</h2>   
-    
+{if $start_info}
+<p>{$start_info}</p>
+{/if}    
     
 	{foreach from=$results item=image}
 	 <div>
