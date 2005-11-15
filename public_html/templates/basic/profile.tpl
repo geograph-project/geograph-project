@@ -50,10 +50,9 @@
  	  {if $profile->stats.pending gt 0}
  	 	  ({$profile->stats.pending} awaiting moderation)
  	  {/if}
- 	  {if $profile->stats.squares ne $profile->stats.geosquares}
  	  <ul>
  	  	<li>Covering <b>{$profile->stats.squares}</b> gridsquare{if $profile->stats.squares ne 1}s{/if}</li>
- 	  </ul>{/if}
+ 	  </ul>
  	  </li>
 
  	  
