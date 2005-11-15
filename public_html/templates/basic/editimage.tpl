@@ -1,6 +1,6 @@
 {assign var="page_title" value="Update Image Details"}
-{include file="_std_begin_dynamic.tpl"}
 {dynamic}
+{include file="_std_begin.tpl"}
 
 {if $image}
 
@@ -369,5 +369,5 @@ then please enter directly into the boxes above)
 	if you have queries</p>
 {/if}
 
+{include file="_std_end.tpl"}
 {/dynamic}
-{include file="_std_end_dynamic.tpl"}

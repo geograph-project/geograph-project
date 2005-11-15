@@ -6,8 +6,8 @@
 {/if}
 {/dynamic}
 {assign var="right_block" value="_block_recent.tpl"}
-{include file="_std_begin_dynamic.tpl"}
 {dynamic}
+{include file="_std_begin.tpl"}
 
     <h2>Browse</h2>
 
@@ -142,6 +142,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
    
 {/if}
 
+{include file="_std_end.tpl"}
+
 {/dynamic}
 
-{include file="_std_end_dynamic.tpl"}
