@@ -26,7 +26,8 @@
      <li><a title="Server Stats" href="http://www.geograph.org.uk/logs/">Server Stats</a></li>
   </ul>
   {/if}
-  
+   {/dynamic}
+   
 {if $discuss}
 
 {foreach from=$discuss item=newsitem}
@@ -40,7 +41,7 @@ Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> 
 {/foreach}
 
 {/if}
-  {/dynamic}
+ 
 
 {if $news}
 
