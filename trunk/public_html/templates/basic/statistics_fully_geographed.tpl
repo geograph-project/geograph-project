@@ -1,12 +1,11 @@
-{assign var="page_title" value="Fully Photographed Squares"}
+{assign var="page_title" value="Fully Geographed Squares"}
 {include file="_std_begin.tpl"}
 
-<h2>Fully Photographed Squares</h2>
+<h2>Fully Geographed 10km x 10km Squares</h2>
 
 <p>These are the squares with full land coverage! See also <a href="/statistics/most_geographed.php">partially covered squares</a>.</p>
 
 <div style="float:left;position:relative;width:40%">
-<h3>10km x 10km Squares</h3>
 <h4>Great Britain</h4>
 <table class="report"> 
 <thead><tr><td>Square</td><td>Date Completed</td><td>#</td><td>Mosaic</td></tr></thead>
@@ -25,7 +24,6 @@
 </div>
 
 <div style="float:left;position:relative;width:40%">
-<h3>&nbsp;</h3>
 <h4>Ireland</h4>
 <table class="report"> 
 <thead><tr><td>Square</td><td>Date Completed</td><td>#</td><td>Mosaic</td></tr></thead>
