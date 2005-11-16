@@ -87,17 +87,23 @@
 </div>
 {/if}
 
-<p>The <acronym title="the Centre of 'gravity' for all images submitted so far">Geograph Centre</acronym> for images in the {$references.1} is <a href="/gridref/{$centergr_1}" title="view square {$centergr_1}">{$centergr_1}</a>, {if $place_1.distance > 3}{$place_1.distance} km from{else}near to{/if} <b>{$place_1.full_name}</b><small><i>{if $place_1.adm1_name && $place_1.adm1_name != $place_1.reference_name}, {$place_1.adm1_name}{/if}</i></small>.
+<p>The <acronym title="the Centre of 'gravity' for all images submitted so far" style="text-decoration:underline">Geograph Centre</acronym> for images in the {$references.1} is <a href="/gridref/{$centergr_1}" title="view square {$centergr_1}">{$centergr_1}</a>, {if $place_1.distance > 3}{$place_1.distance} km from{else}near to{/if} <b>{$place_1.full_name}</b><small><i>{if $place_1.adm1_name && $place_1.adm1_name != $place_1.reference_name}, {$place_1.adm1_name}{/if}</i></small>.
 
 And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {$centergr_2}">{$centergr_2}</a>, {if $place_2.distance > 3}{$place_2.distance} km from{else}near to{/if} <b>{$place_2.full_name}</b><small><i>{if $place_2.adm1_name && $place_2.adm1_name != $place_2.reference_name}, {$place_2.adm1_name}{/if}</i></small>.</p>    
     
     <h3>More Statistics</h3>
     
-   <p><a href="/statistics/most_geographed.php">Mostly</a> /<a href="/statistics/fully_geographed.php">Fully</a> Photographed 10<small>km</small> x 10<small>km</small> Squares and <a href="/statistics/wordnet.php">Popular Words</a>.</p>
    
-   <p><a href="/moversboard.php">Weekly</a>/<a href="/leaderboard.php">All Time</a>/<a href="/monthlyleader.php">By Month</a> User leaderboards. (<a href="/statistics.php?by=user&amp;ri=1">Contributor List</a>)</p>
+   <p>Most <a href="/statistics/wordnet.php">Popular Words</a> in the last 7 days and all time.</p>
    
-   <p>County <a href="/statistics/counties.php">Centre Points</a>/<a href="/statistics/counties.php?type=capital">(Irish) Capitals</a>, <a href="/statistics/cities.php">Cities</a> photographed so far!</p>
+   <p>User leaderboards: <a href="/moversboard.php">Weekly</a>, <a href="/leaderboard.php">All Time</a> and <a href="/monthlyleader.php">By Month</a>. (<a href="/statistics.php?by=user&amp;ri=1">Contributor List</a>)</p>
+
+   <p>Mostly Geographed: <a href="/statistics/most_geographed.php">Grid Squares</a>, 
+   <a href="/statistics/most_geographed.php">10<small>km</small> x 10<small>km</small> Squares</a>  and <a href="/statistics/most_geographed_myriad.php">100km x 100km</a> Squares.<br/>
+   Fully Geographed: <a href="/statistics/fully_geographed.php">10<small>km</small> x 10<small>km</small> Squares</a> (includes Large Mosaic!)</p>
+
+   
+   <p>Centre Points: <a href="/statistics/counties.php">Ceremonial Counties</a>, <a href="/statistics/counties.php?type=capital">(Irish) County Capitals</a> and <a href="/statistics/cities.php">Cities</a> photographed so far.</p>
 
     <form method="get" action="/statistics/breakdown.php">
     <p>View breakdown of images by 
