@@ -1,7 +1,7 @@
 <?php
 /***************************************************************************
 
-FeedCreator class v1.7.3(BH)
+FeedCreator class v1.7.5(BH)
 originally (c) Kai Blankenhorn
 www.bitfolge.de
 kaib@bitfolge.de
@@ -26,6 +26,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 Changelog:
+
+v1.7.5(BH)	16-11-05
+	added BASE Feed (Barry Hunter)
 
 v1.7.4(BH)	05-07-05
 	added KML Feed (Barry Hunter)
@@ -170,7 +173,7 @@ define("TIME_ZONE","");
 /**
  * Version string.
  **/
-define("FEEDCREATOR_VERSION", "FeedCreator 1.7.3(BH)");
+define("FEEDCREATOR_VERSION", "FeedCreator 1.7.5(BH)");
 
 
 
@@ -342,6 +345,8 @@ class UniversalFeedCreator extends FeedCreator {
 	function _setFormat($format) {
 		switch (strtoupper($format)) {
 			
+			case "BASE":
+				$this->format = $format;
 			case "2.0":
 				// fall through
 			case "RSS2.0":
@@ -922,8 +927,12 @@ class RSSCreator091 extends FeedCreator {
 		$feed = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 		$feed.= $this->_createGeneratorComment();
 		$feed.= $this->_createStylesheetReferences();
-		$feed.= "<rss version=\"".$this->RSSVersion."\">\n"; 
-		$feed.= "    <channel>\n";
+		$feed.= "<rss version=\"".$this->RSSVersion."\">\n";
+		if ($this->format == 'BASE') {
+			$feed.= "    <channel xmlns:g=\"http://base.google.com/ns/1.0\">\n";
+		} else {
+			$feed.= "    <channel>\n";
+		}
 		$feed.= "        <title>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</title>\n";
 		$this->descriptionTruncSize = 500;
 		$feed.= "        <description>".$this->getDescription()."</description>\n";
@@ -1011,6 +1020,9 @@ class RSSCreator091 extends FeedCreator {
 			}
 			if ($this->items[$i]->guid!="") {
 				$feed.= "            <guid>".htmlspecialchars($this->items[$i]->guid)."</guid>\n";
+			}
+			if ($this->items[$i]->thumb!="") {
+				$feed.= "            <g:image_link>".htmlspecialchars($this->items[$i]->thumb)."</g:image_link>\n";
 			}
 			$feed.= $this->_createAdditionalElements($this->items[$i]->additionalElements, "        ");
 			$feed.= "        </item>\n";
