@@ -114,8 +114,8 @@ if (!$smarty->is_cached($template, $cacheid))
 			$crit = substr($most[$id]['tenk_square'],0,3).'_'.substr($most[$id]['tenk_square'],3,1).'_';
 			
 			//todo: add back the year into the date_format, removed temporally for brevity
-			list($most[$id]['date'],$most[$id]['sort']) = $db->getRow(
-			"SELECT DATE_FORMAT(MAX(submitted),'%D %b'),MAX(submitted) as ms
+			list($most[$id]['date'],$most[$id]['dateraw'],$most[$id]['sort']) = $db->getRow(
+			"SELECT DATE_FORMAT(MAX(submitted),'%D %b %Y'),MAX(submitted),MAX(submitted) as ms
 			FROM gridimage_search
 			WHERE grid_reference LIKE '$crit' AND seq_no = 1");
 		}	
