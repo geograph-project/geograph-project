@@ -4,7 +4,7 @@
 <h2>Most Geographed Squares</h2>
 
 <p>These are the squares with the best coverage so far! See also <a href="/statistics/most_geographed_myriad.php">100km x 100km Squares</a>. <br/>Note that <a href="/statistics/fully_geographed.php">Fully covered 10km x 10km Squares</a> are now listed separately.</p>
-<p style="font-size:0.8em">The # number column is the number of squares with (at least) geograph, and the % column is the percentage of the total 'land' based squares with coverage.</p>
+<p style="font-size:0.8em">The # number column is the number of squares with (at least) a geograph, and the % column is the percentage of the total 'land' based squares with coverage.</p>
 
 <div style="float:left;position:relative;width:33%">
 <h3>10km x 10km Squares</h3>
