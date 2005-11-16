@@ -8,10 +8,10 @@
 		is a free desktop application
 	 allowing you view satellite images and geo-located information for the entire globe.
 	 </p>
-	 <p>Anywhere you see a <a title="Google Earth Feed" href="#" class="xml-kml">KML</a>
+	 <p>Anywhere you see a <a title="Google Earth Feed" href="/kml.php" class="xml-kml">KML</a>
 	 link on the Geograph website, you can click it to download images into Google Earth.
 	 For example, perform a <a href="/search.php">search</a> and you'll be able to open
-	 the results in Google Earth.
+	 the <acronym title="Results are downloaded in KML format for direct opening.">results</acronym> in Google Earth.
 	 
 	 </p>
 	 
@@ -45,14 +45,14 @@
 		  <tr> 
 			 <td><input type="radio" name="type" value="static" id="type_static"
 				checked="checked"/></td> 
-			 <td><b><label for="type_static">Simple</label></b><br/>
+			 <td><b><label for="type_static"><acronym title="Static One Off Download">Simple</acronym></label></b><br/>
 			 View your search results in Google Earth.</td> 
 			 <td rowspan="2"><label for="page">Download Page</label><br/>
 				<input type="text" name="page" value="{$currentPage}" size="3" id="page"/> of {if $engine->numberOfPages}{$engine->numberOfPages}{else}results{/if}.</td> 
 		  </tr> 
 		  <tr> 
 			 <td><input type="radio" name="type" value="time" id="type_time"/></td> 
-			 <td><b><label for="type_time">Automatic Updates</label></b> <br/>
+			 <td><b><label for="type_time"><acronym title="Time-Based Refresh">Automatic Updates</acronym></label></b> <br/>
 			 Like 'Simple', but Google Earth will refresh the results <label>once every 
 				<select name="refresh" size="1"> 
 				  <option value="3600">Hour</option> 
@@ -64,7 +64,7 @@
 		  {if $engine->islimited}
 		  <tr> 
 			 <td><input type="radio" name="type" value="view" id="type_view"/></td> 
-			 <td colspan="2"><b><label for="type_view">Wide area</label></b><br>
+			 <td colspan="2"><b><label for="type_view"><acronym title="View-Based Refresh">Wide area</acronym></label></b><br>
 			 For a large result set covering a wide area, this option allows the Google Earth application
 			 to just show the photos within the area of view. As you scroll around, Google Earth will
 			 automatically fetch other photos from the result set. Please note that you'll normally only see
