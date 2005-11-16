@@ -28,7 +28,7 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
 	
 	
-$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','KML');
+$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','KML','BASE');
 
 $format="RSS1.0";
 if (isset($_GET['format']) && in_array($_GET['format'], $valid_formats))
@@ -149,6 +149,8 @@ for ($i=0; $i<$cnt; $i++)
 	     if ($format == 'KML') {
 	     	$item->lat = $images->images[$i]->wgs84_lat;
 	     	$item->long = $images->images[$i]->wgs84_long;
+	     	$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
+	     } elseif ($format == 'BASE') {
 	     	$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
 	     } elseif ($format == 'PHP') {
 	     	$item->thumb = $images->images[$i]->getThumbnail(120,120,true); 
