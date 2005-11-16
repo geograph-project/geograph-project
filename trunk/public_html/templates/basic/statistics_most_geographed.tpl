@@ -1,10 +1,10 @@
-{assign var="page_title" value="Most Photographed Squares"}
+{assign var="page_title" value="Most Geographed Squares"}
 {include file="_std_begin.tpl"}
 
-<h2>Most Photographed Squares</h2>
+<h2>Most Geographed Squares</h2>
 
-<p>These are the squares with the best coverage so far! See also <a href="/statistics/breakdown.php?by=gridsq&ri=1&order=c2">100km x 100km Squares</a>. <br/>Note that <a href="/statistics/fully_geographed.php">Fully covered squares</a> are now listed separately.</p>
-<p style="font-size:0.8em">The # number column is the number of squares with a photo, and the % column is the percentage of the total 'land' based squares with coverage.</p>
+<p>These are the squares with the best coverage so far! See also <a href="/statistics/most_geographed_myriad.php">100km x 100km Squares</a>. <br/>Note that <a href="/statistics/fully_geographed.php">Fully covered 10km x 10km Squares</a> are now listed separately.</p>
+<p style="font-size:0.8em">The # number column is the number of squares with (at least) geograph, and the % column is the percentage of the total 'land' based squares with coverage.</p>
 
 <div style="float:left;position:relative;width:33%">
 <h3>10km x 10km Squares</h3>
@@ -24,8 +24,8 @@
 
 </div>
 
-<div style="float:left;position:relative;width:33%">
-<h3><small>[<a href="/statistics/fully_geographed.php">100% squares</a>]</small></h3>
+<div style="float:left;position:relative;width:30%">
+<h3><small>[See <a href="/statistics/fully_geographed.php">Full Squares</a>]</small></h3>
 <h4>Ireland</h4>
 <table class="report"> 
 <thead><tr><td>Rank</td><td>Square</td><td>#</td><td>%</td></tr></thead>
@@ -43,8 +43,8 @@
 </div>
 
 
-<div style="float:left;position:relative;width:33%">
-<h3>1km Squares</h3>
+<div style="float:left;position:relative;width:35%;background-color:#dddddd; padding:10px">
+<h3>1km Grid Squares</h3>
 <table class="report"> 
 <thead><tr><td>Rank</td><td>Square</td><td>Images</td></tr></thead>
 <tbody>
@@ -59,6 +59,7 @@
 </tbody>
 </table>
 </div>
+
 <br style="clear:both"/>
 
  		
