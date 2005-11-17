@@ -118,7 +118,7 @@ referring to <b>image {$image->gridimage_id}</b>
 
 <!-- Creative Commons Licence -->
 <tr><td><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-alt="Creative Commons Licence" src="http://creativecommons.org/images/public/somerights20.gif" /></a></td>
+alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a></td>
 <td>&copy; Copyright <a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a> and  
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</td>
 </tr>
