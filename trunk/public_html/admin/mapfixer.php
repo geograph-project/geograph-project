@@ -111,11 +111,21 @@ if (isset($_GET['gridref']))
 	
 }
 
-$unknowns=$db->GetAll("select * from gridsquare where percent_land=-1 order by reference_index asc,imagecount desc");
-$smarty->assign_by_ref('unknowns', $unknowns);
+if ($_GET['save']=='quick')
+{
+	//return nice XML result
+	$status=$smarty->get_template_vars('status');
+	
+	echo "Status: $status";
+}
+else
+{
 
-
-$smarty->display('admin_mapfixer.tpl');
-
+	$unknowns=$db->GetAll("select * from gridsquare where percent_land=-1 order by reference_index asc,imagecount desc");
+	$smarty->assign_by_ref('unknowns', $unknowns);
+	
+	
+	$smarty->display('admin_mapfixer.tpl');
+}
 	
 ?>
