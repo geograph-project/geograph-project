@@ -46,7 +46,7 @@
 
 	<br/><br/>
 
-	<label for="password1">Your password</label><br/>
+	<label for="password1">Choose a password</label><br/>
 	<input size="12" type="password" id="password1" name="password1" value="{$password1|escape:'html'}"/>
 	<span class="formerror">{$errors.password1}</span>
 
