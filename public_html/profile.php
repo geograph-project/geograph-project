@@ -88,10 +88,16 @@ if ($template=='profile.tpl')
 		//to reach here, user must be logged in...
 		$uid=$USER->user_id;
 	}
-
-	$isself=($uid==$USER->user_id)?1:0;
-
-	$cacheid="user{$uid}|{$isself}";
+	
+	if ($uid==$USER->user_id) {
+		$level = 1;
+	} elseif ($USER->hasPerm('moderator')) {
+		$level = 2;
+	} else {
+		$level = 0;
+	}
+	
+	$cacheid="user{$uid}|{$level}";
 	
 	if (isset($_GET['all'])) {
 		$limit = 50000;
@@ -115,7 +121,7 @@ if ($template=='profile.tpl')
 		
 		$images=new ImageList;
 		
-		if ($uid==$USER->user_id)
+		if ($uid==$USER->user_id || $USER->hasPerm('moderator'))
 			$statuses=array('rejected', 'pending', 'accepted', 'geograph');
 		else
 			$statuses=array('accepted', 'geograph');
