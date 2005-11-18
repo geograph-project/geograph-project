@@ -29,7 +29,7 @@ $USER->mustHavePerm("admin");
 $smarty = new GeographPage;
 
 $template='admin_index.tpl';
-$cacheid='';
+$cacheid=$USER->user_id;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -62,9 +62,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	*/
 	
 	$smarty->assign('images_pending', $db->GetOne("select count(*) from gridimage where moderation_status='pending'"));
+	$smarty->assign('tickets_new', $db->GetOne("select count(*) from gridimage_ticket where moderator_id=0 and status<>'closed'"));
+	$smarty->assign('tickets_yours', $db->GetOne("select count(*) from gridimage_ticket where moderator_id={$USER->user_id} and status<>'closed'"));
 
-
-
+	
+	$smarty->assign('gridsquares_sea', $db->GetOne("select count(*) from gridsquare where percent_land=-1"));
+	
+	
+	
 }
 
 //but this is nice and quick...
