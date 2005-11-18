@@ -5,12 +5,12 @@
 <ul>
 <li><a href="/admin/moderation.php">Moderate</a> new photo submissions [{$images_pending}]</li>
 
-<li><a title="Trouble Tickets" href="/admin/tickets.php">Trouble Tickets</a> - 
-   Deal with image problems (<a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search">Open in IE Sidebar</a>)</li>
+<li><a title="Trouble Tickets" href="/admin/tickets.php">Trouble Tickets</a> (<a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search">Open in Sidebar</a>) - 
+   Deal with image problems [{$tickets_new} New, {$tickets_yours} Open by You]</li>
 
 <li><a title="Map Fixer" href="/admin/mapfixer.php">Map Fixer</a> allows the land percentage
 for each 1km grid squares to be updated, which allows "that square is all at sea' to be 
-corrected</li>
+corrected [{$gridsquares_sea}]</li>
       
 <li><a title="Category Consolidation" href="/admin/categories.php">Category Consolidation</a> - 
    Organise the user submitted categories</li>
