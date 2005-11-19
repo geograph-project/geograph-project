@@ -74,3 +74,134 @@ CREATE TABLE `queries_count` (
 ALTER TABLE `user` ADD `rank` INT UNSIGNED NOT NULL ,
 ADD `to_rise_rank` MEDIUMINT UNSIGNED NOT NULL ;
 
+
+
+
+CREATE TABLE `loc_counties_pre74` (
+  `county_id` smallint(6) NOT NULL auto_increment,
+  `e` int(11) NOT NULL default '0',
+  `n` int(11) NOT NULL default '0',
+  `name` varchar(64) NOT NULL default '',
+  `reference_index` tinyint(4) NOT NULL default '0',
+  `wgs84_lat` decimal(10,6) NOT NULL default '0.000000',
+  `wgs84_long` decimal(10,6) NOT NULL default '0.000000',
+  PRIMARY KEY  (`county_id`)
+) ENGINE=MyISAM;
+
+-- 
+-- Dumping data for table `loc_counties_pre74`
+-- 
+
+INSERT INTO `loc_counties_pre74` VALUES (1, 53147, 805223, 'Inverness-shire (Barra)', 1, 57.007335, -7.716150);
+INSERT INTO `loc_counties_pre74` VALUES (2, 61942, 829470, 'Inverness-shire (South Uist)', 1, 57.230628, -7.604802);
+INSERT INTO `loc_counties_pre74` VALUES (3, 71075, 874990, 'Inverness-shire (North Uist)', 1, 57.644285, -7.515302);
+INSERT INTO `loc_counties_pre74` VALUES (4, 66931, 852052, 'Inverness-shire (Benbecula)', 1, 57.436180, -7.553023);
+INSERT INTO `loc_counties_pre74` VALUES (5, 86070, 746200, 'Argyllshire (Tiree)', 1, 56.502774, -7.104016);
+INSERT INTO `loc_counties_pre74` VALUES (6, 100541, 903863, 'Inverness-shire (Harris)', 1, 57.923164, -7.059755);
+INSERT INTO `loc_counties_pre74` VALUES (7, 121150, 937771, 'Ross and Cromarty (Lewis)', 1, 58.240034, -6.753341);
+INSERT INTO `loc_counties_pre74` VALUES (8, 114190, 761239, 'Argyllshire (Coll)', 1, 56.655353, -6.665354);
+INSERT INTO `loc_counties_pre74` VALUES (9, 133862, 839707, 'Inverness-shire (Skye)', 1, 57.369777, -6.428358);
+INSERT INTO `loc_counties_pre74` VALUES (10, 138557, 639925, 'Argyllshire (Islay)', 1, 55.582596, -6.150098);
+INSERT INTO `loc_counties_pre74` VALUES (11, 121652, 801515, 'Inverness-shire (Rum)', 1, 57.020514, -6.588024);
+INSERT INTO `loc_counties_pre74` VALUES (12, 148660, 752033, 'Argyllshire (Mull)', 1, 56.592644, -6.095667);
+INSERT INTO `loc_counties_pre74` VALUES (13, 125475, 701526, 'Argyllshire (Colonsay)', 1, 56.127254, -6.419336);
+INSERT INTO `loc_counties_pre74` VALUES (14, 161820, 672486, 'Argyllshire (Jura)', 1, 55.886445, -5.810288);
+INSERT INTO `loc_counties_pre74` VALUES (15, 163368, 798188, 'Inverness-shire (Eigg)', 1, 57.013974, -5.899508);
+INSERT INTO `loc_counties_pre74` VALUES (16, 186017, 55923, 'Cornwall', 1, 50.364213, -5.010094);
+INSERT INTO `loc_counties_pre74` VALUES (17, 210460, 876769, 'Ross and Cromarty', 1, 57.740512, -5.185882);
+INSERT INTO `loc_counties_pre74` VALUES (18, 190638, 218358, 'Pembrokeshire', 1, 51.824520, -5.039459);
+INSERT INTO `loc_counties_pre74` VALUES (19, 194279, 729160, 'Argyllshire', 1, 56.409731, -5.336099);
+INSERT INTO `loc_counties_pre74` VALUES (20, 185220, 633262, 'Bute (Arran)', 1, 55.545640, -5.406101);
+INSERT INTO `loc_counties_pre74` VALUES (21, 210850, 557273, 'Wigtownshire', 1, 54.874352, -4.949589);
+INSERT INTO `loc_counties_pre74` VALUES (22, 238180, 815874, 'Inverness-shire', 1, 57.204978, -4.680500);
+INSERT INTO `loc_counties_pre74` VALUES (23, 192813, 659434, 'Bute (Bute)', 1, 55.783697, -5.305725);
+INSERT INTO `loc_counties_pre74` VALUES (24, 251076, 939153, 'Sutherland', 1, 58.315602, -4.543863);
+INSERT INTO `loc_counties_pre74` VALUES (25, 228531, 626842, 'Ayrshire', 1, 55.505176, -4.716569);
+INSERT INTO `loc_counties_pre74` VALUES (26, 240830, 347521, 'Caernarvonshire', 1, 53.001294, -4.373389);
+INSERT INTO `loc_counties_pre74` VALUES (27, 241479, 224081, 'Carmarthenshire', 1, 51.892677, -4.305079);
+INSERT INTO `loc_counties_pre74` VALUES (28, 222795, 479912, 'Isle of Man', 1, 54.184293, -4.717119);
+INSERT INTO `loc_counties_pre74` VALUES (29, 250093, 266503, 'Cardiganshire', 1, 52.276183, -4.198653);
+INSERT INTO `loc_counties_pre74` VALUES (30, 229393, 693541, 'Dunbartonshire', 1, 56.104084, -4.744761);
+INSERT INTO `loc_counties_pre74` VALUES (31, 265257, 93063, 'Devon', 1, 50.721529, -3.910217);
+INSERT INTO `loc_counties_pre74` VALUES (32, 251279, 697611, 'Stirlingshire', 1, 56.147941, -4.395506);
+INSERT INTO `loc_counties_pre74` VALUES (33, 241435, 375888, 'Anglesey', 1, 53.256244, -4.378426);
+INSERT INTO `loc_counties_pre74` VALUES (34, 272301, 750014, 'Perth', 1, 56.624522, -4.082914);
+INSERT INTO `loc_counties_pre74` VALUES (35, 236931, 666224, 'Renfrewshire', 1, 55.861539, -4.607146);
+INSERT INTO `loc_counties_pre74` VALUES (36, 259500, 571793, 'Kirkcudbrightshire', 1, 55.020781, -4.199170);
+INSERT INTO `loc_counties_pre74` VALUES (37, 282277, 187469, 'Glamorgan', 1, 51.573767, -3.700118);
+INSERT INTO `loc_counties_pre74` VALUES (38, 266383, 328068, 'Merionethshire', 1, 52.833520, -3.984859);
+INSERT INTO `loc_counties_pre74` VALUES (39, 275081, 648262, 'Lanarkshire', 1, 55.711650, -3.989803);
+INSERT INTO `loc_counties_pre74` VALUES (40, 300445, 594700, 'Dumfries-shire', 1, 55.236429, -3.567085);
+INSERT INTO `loc_counties_pre74` VALUES (41, 294754, 304824, 'Montgomeryshire', 1, 52.630934, -3.556450);
+INSERT INTO `loc_counties_pre74` VALUES (42, 331817, 140824, 'Somerset', 1, 51.162588, -2.976449);
+INSERT INTO `loc_counties_pre74` VALUES (43, 310408, 951113, 'Caithness', 1, 58.439105, -3.536259);
+INSERT INTO `loc_counties_pre74` VALUES (44, 293246, 234470, 'Breconshire', 1, 51.998383, -3.556389);
+INSERT INTO `loc_counties_pre74` VALUES (45, 282282, 851570, 'Nairn', 1, 57.538896, -3.968070);
+INSERT INTO `loc_counties_pre74` VALUES (46, 279889, 703352, 'Clackmannanshire', 1, 56.207558, -3.937903);
+INSERT INTO `loc_counties_pre74` VALUES (47, 300005, 354879, 'Denbighshire', 1, 53.081742, -3.494283);
+INSERT INTO `loc_counties_pre74` VALUES (48, 287465, 678501, 'West Lothian', 1, 55.986246, -3.805369);
+INSERT INTO `loc_counties_pre74` VALUES (49, 304754, 266710, 'Radnorshire', 1, 52.290244, -3.397855);
+INSERT INTO `loc_counties_pre74` VALUES (50, 321601, 703998, 'Fife', 1, 56.222061, -3.265885);
+INSERT INTO `loc_counties_pre74` VALUES (51, 298921, 708451, 'Kinross-shire', 1, 56.257776, -3.633184);
+INSERT INTO `loc_counties_pre74` VALUES (52, 326240, 539741, 'Cumberland', 1, 54.747191, -3.147382);
+INSERT INTO `loc_counties_pre74` VALUES (53, 306383, 846775, 'Morayshire', 1, 57.501475, -3.563824);
+INSERT INTO `loc_counties_pre74` VALUES (54, 322804, 356963, 'Flintshire', 1, 53.104255, -3.154502);
+INSERT INTO `loc_counties_pre74` VALUES (55, 320451, 667164, 'Midlothian', 1, 55.891018, -3.273477);
+INSERT INTO `loc_counties_pre74` VALUES (56, 309228, 643998, 'Peebles-shire', 1, 55.680951, -3.445136);
+INSERT INTO `loc_counties_pre74` VALUES (57, 326605, 630712, 'Selkirkshire', 1, 55.564537, -3.165310);
+INSERT INTO `loc_counties_pre74` VALUES (58, 330214, 845925, 'Banffshire', 1, 57.498143, -3.166028);
+INSERT INTO `loc_counties_pre74` VALUES (59, 359999, 828971, 'Aberdeenshire', 1, 57.349480, -2.666345);
+INSERT INTO `loc_counties_pre74` VALUES (60, 328906, 472382, 'Lancashire (Furness)', 1, 54.142332, -3.089778);
+INSERT INTO `loc_counties_pre74` VALUES (61, 330302, 203829, 'Monmouthshire', 1, 51.728826, -3.010540);
+INSERT INTO `loc_counties_pre74` VALUES (62, 341093, 761688, 'Angus', 1, 56.743098, -2.964671);
+INSERT INTO `loc_counties_pre74` VALUES (63, 344741, 306222, 'Shropshire', 1, 52.650900, -2.818249);
+INSERT INTO `loc_counties_pre74` VALUES (64, 347790, 1022145, 'Orkney', 1, 59.083022, -2.912676);
+INSERT INTO `loc_counties_pre74` VALUES (65, 344222, 249385, 'Herefordshire', 1, 52.139937, -2.816430);
+INSERT INTO `loc_counties_pre74` VALUES (66, 352748, 416330, 'Lancashire', 1, 53.641338, -2.716184);
+INSERT INTO `loc_counties_pre74` VALUES (67, 368457, 500363, 'Westmorland', 1, 54.397761, -2.487332);
+INSERT INTO `loc_counties_pre74` VALUES (68, 353014, 621373, 'Roxburghshire', 1, 55.483895, -2.745019);
+INSERT INTO `loc_counties_pre74` VALUES (69, 365133, 372719, 'Cheshire', 1, 53.250335, -2.524010);
+INSERT INTO `loc_counties_pre74` VALUES (70, 371219, 97487, 'Dorset', 1, 50.776247, -2.409547);
+INSERT INTO `loc_counties_pre74` VALUES (71, 346570, 676676, 'East Lothian', 1, 55.980084, -2.857805);
+INSERT INTO `loc_counties_pre74` VALUES (72, 361842, 659704, 'Berwickshire', 1, 55.829063, -2.610686);
+INSERT INTO `loc_counties_pre74` VALUES (73, 381770, 210904, 'Gloucestershire', 1, 51.796489, -2.265738);
+INSERT INTO `loc_counties_pre74` VALUES (74, 371659, 790886, 'Kincardineshire', 1, 57.008251, -2.468251);
+INSERT INTO `loc_counties_pre74` VALUES (75, 390973, 599970, 'Northumberland', 1, 55.293768, -2.143686);
+INSERT INTO `loc_counties_pre74` VALUES (76, 416941, 439079, 'West Riding of Yorkshire', 1, 53.847680, -1.743971);
+INSERT INTO `loc_counties_pre74` VALUES (77, 384491, 263375, 'Worcestershire', 1, 52.268312, -2.228683);
+INSERT INTO `loc_counties_pre74` VALUES (78, 390496, 327635, 'Staffordshire', 1, 52.846140, -2.142554);
+INSERT INTO `loc_counties_pre74` VALUES (79, 415064, 542883, 'Co. Durham', 1, 54.780637, -1.767302);
+INSERT INTO `loc_counties_pre74` VALUES (80, 434699, 497121, 'North Riding of Yorkshire', 1, 54.368436, -1.467430);
+INSERT INTO `loc_counties_pre74` VALUES (81, 400631, 159693, 'Wiltshire', 1, 51.336330, -1.992315);
+INSERT INTO `loc_counties_pre74` VALUES (82, 422316, 360472, 'Derbyshire', 1, 53.140935, -1.667835);
+INSERT INTO `loc_counties_pre74` VALUES (83, 423204, 272191, 'Warwickshire', 1, 52.347305, -1.660778);
+INSERT INTO `loc_counties_pre74` VALUES (84, 443881, 125222, 'Hampshire', 1, 51.024707, -1.375695);
+INSERT INTO `loc_counties_pre74` VALUES (85, 442940, 216677, 'Oxfordshire', 1, 51.847053, -1.378052);
+INSERT INTO `loc_counties_pre74` VALUES (86, 455453, 178305, 'Berkshire', 1, 51.500972, -1.202499);
+INSERT INTO `loc_counties_pre74` VALUES (87, 453527, 311153, 'Leicestershire', 1, 52.695427, -1.209419);
+INSERT INTO `loc_counties_pre74` VALUES (88, 452256, 1169261, 'Shetland', 1, 60.403872, -1.053374);
+INSERT INTO `loc_counties_pre74` VALUES (89, 447317, 83952, 'Isle of Wight', 1, 50.653341, -1.332021);
+INSERT INTO `loc_counties_pre74` VALUES (90, 466886, 355199, 'Rutland', 1, 53.089828, -1.002736);
+INSERT INTO `loc_counties_pre74` VALUES (91, 459298, 263103, 'Northamptonshire', 1, 52.262904, -1.132568);
+INSERT INTO `loc_counties_pre74` VALUES (92, 480512, 214844, 'Buckinghamshire', 1, 51.826430, -0.833148);
+INSERT INTO `loc_counties_pre74` VALUES (93, 485962, 453807, 'East Riding of Yorkshire', 1, 53.973203, -0.690919);
+INSERT INTO `loc_counties_pre74` VALUES (94, 511447, 411773, 'Lincolnshire (Holland)', 1, 53.590704, -0.317727);
+INSERT INTO `loc_counties_pre74` VALUES (95, 503317, 113315, 'West Sussex', 1, 50.910076, -0.531825);
+INSERT INTO `loc_counties_pre74` VALUES (96, 515886, 383160, 'Lincolnshire (Lindsey)', 1, 53.332675, -0.261234);
+INSERT INTO `loc_counties_pre74` VALUES (97, 485074, 276252, 'Nottinghamshire', 1, 52.377718, -0.751646);
+INSERT INTO `loc_counties_pre74` VALUES (98, 500637, 342570, 'Lincolnshire (Kesteven)', 1, 52.971055, -0.502860);
+INSERT INTO `loc_counties_pre74` VALUES (99, 510594, 150307, 'Surrey', 1, 51.241233, -0.417050);
+INSERT INTO `loc_counties_pre74` VALUES (100, 503717, 244980, 'Bedfordshire', 1, 52.093460, -0.487455);
+INSERT INTO `loc_counties_pre74` VALUES (101, 519984, 218604, 'Hertfordshire', 1, 51.853144, -0.259328);
+INSERT INTO `loc_counties_pre74` VALUES (102, 517070, 284424, 'Huntingdonshire', 1, 52.445247, -0.278957);
+INSERT INTO `loc_counties_pre74` VALUES (103, 525066, 181736, 'Middlesex', 1, 51.520708, -0.198785);
+INSERT INTO `loc_counties_pre74` VALUES (104, 544959, 279654, 'Cambridgeshire', 1, 52.395724, 0.129025);
+INSERT INTO `loc_counties_pre74` VALUES (105, 557971, 114472, 'East Sussex', 1, 50.908108, 0.245533);
+INSERT INTO `loc_counties_pre74` VALUES (106, 573747, 214232, 'Essex', 1, 51.799746, 0.518386);
+INSERT INTO `loc_counties_pre74` VALUES (107, 587010, 150520, 'Kent', 1, 51.223244, 0.676742);
+INSERT INTO `loc_counties_pre74` VALUES (108, 597479, 312214, 'Norfolk', 1, 52.671648, 0.919311);
+INSERT INTO `loc_counties_pre74` VALUES (109, 584157, 264408, 'Suffolk (West Suffolk)', 1, 52.247041, 0.696156);
+INSERT INTO `loc_counties_pre74` VALUES (110, 625762, 261489, 'Suffolk (East Suffolk)', 1, 52.205362, 1.302647);
+        
+
+
