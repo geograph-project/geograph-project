@@ -51,39 +51,20 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		$counties = $db->GetAll("select * from loc_counties where n > 0 order by reference_index,n");
 		
-		foreach ($counties as $i => $row) {
-			list($x,$y) = $conv->national_to_internal($row['e'],$row['n'],$row['reference_index']);
-			$sql="select * from gridimage_search where x=$x and y=$y ".
-				" order by moderation_status+0 desc,seq_no limit 1";
-
-			$rec=$db->GetRow($sql);
-			if (count($rec))
-			{
-				$gridimage=new GridImage;
-				$gridimage->fastInit($rec);
+	} elseif ($type == 'pre74') {
+		$smarty->assign("page_title", "Pre 1974 County Centre Points");
+		$smarty->assign("start_info", "These are approximate centres for counties pre 1974 re-shuffle");
 				
-				$gridimage->county = $row['name'];
-				
-				$results[] = $gridimage;
-			}
-			else 
-			{
-				$sql="select grid_reference from gridsquare where x=$x and y=$y limit 1";
-				
-				$rec=$db->GetRow($sql);
-				if (count($rec)) 
-				{
-					$rec['county'] = $row['name'];
-					$unfilled[] = $rec;
-				}
-			}
-		}
+		$counties = $db->GetAll("select * from loc_counties_pre74 where n > 0 order by reference_index,n");
 		
 	} elseif ($type == 'capital') {
 		$smarty->assign("page_title", "County Capital Towns");
 		$smarty->assign("extra_info", "* at the moment we dont actully store which county each capital is in, this information is furthermore only available for Ireland so far.");
 		$counties = $db->GetAll("SELECT * FROM `loc_towns` WHERE `s` = '2' AND `reference_index` = 2 ORDER BY n");
-		
+	
+	}
+	
+	if ($counties) {
 		foreach ($counties as $i => $row) {
 			list($x,$y) = $conv->national_to_internal($row['e'],$row['n'],$row['reference_index']);
 			$sql="select * from gridimage_search where x=$x and y=$y ".
@@ -108,14 +89,16 @@ if (!$smarty->is_cached($template, $cacheid))
 				{
 					$rec['county'] = $row['name'];
 					$unfilled[] = $rec;
+				} else {
+					$nonland[] = array('county' => $row['name']);
 				}
 			}
 		}
-		
 	}
 
 	$smarty->assign_by_ref("results", $results);	
-	$smarty->assign_by_ref("unfilled", $unfilled);	
+	$smarty->assign_by_ref("unfilled", $unfilled);
+	$smarty->assign_by_ref("nonland", $nonland);
 }
 
 
