@@ -32,8 +32,8 @@
 </ul>
 
 {if $nonland}
-<h4>The following have center points not on land</h4>
-<p>We may in the future pick the closest land square</p>
+<h4>The following are not on land</h4>
+<p style="font-size: 0.7em">We may in the future pick the closest land square</p>
 
 <ul>
     {foreach from=$nonland item=result}
