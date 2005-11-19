@@ -76,19 +76,10 @@ function shownext()
 	{
 		
 		var gr4=new String(aTodo[current]);
-		var gr6=new String;
-		if (gr4.length==6)
-		{
-			gr6=gr4.substring(0,4)+"5"+gr4.substring(4,6)+"5";
-		}
-		else
-		{
-			gr6=gr4.substring(0,3)+"5"+gr4.substring(3,5)+"5";
-		}
-		
+				
 		gridref.innerHTML=gr4;
 		
-		popupOSMap(gr6);
+		popupOSMap(gr4);
 		
 		vote.style.display="";
 	}
