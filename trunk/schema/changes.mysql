@@ -203,5 +203,8 @@ INSERT INTO `loc_counties_pre74` VALUES (108, 597479, 312214, 'Norfolk', 1, 52.6
 INSERT INTO `loc_counties_pre74` VALUES (109, 584157, 264408, 'Suffolk (West Suffolk)', 1, 52.247041, 0.696156);
 INSERT INTO `loc_counties_pre74` VALUES (110, 625762, 261489, 'Suffolk (East Suffolk)', 1, 52.205362, 1.302647);
         
-
+#correction for county towns for Antrim as per email from member
+UPDATE `loc_towns` SET `name` = 'Ballymena',
+`e` = '308000',
+`n` = '402000' WHERE `id` = '1136' LIMIT 1 ;
 
