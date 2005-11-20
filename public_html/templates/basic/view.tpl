@@ -200,7 +200,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 {if $image->imageclass}
 	{$image->imageclass}
 
-	(<a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:html}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:url}">find more nearby</a>)
+	(<a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:'url'}">find more nearby</a>)
 {else}
 	<i>n/a</i>
 {/if}
@@ -214,9 +214,10 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 {getamap gridref=$image->grid_reference text="OS Get-a-Map"},
 
 {if $image->grid_square->reference_index eq 1}
-	{external href="http://www.streetmap.co.uk/streetmap.dll?Grid2Map?X=`$image->grid_square->nateastings`&amp;Y=`$image->grid_square->natnorthings`&amp;title=[`$image->title`]+from+geograph.org.uk&amp;back=Return+to+Geograph&amp;url=http://$http_host/photo/`$image->gridimage_id`&amp;nolocal=X&amp;bimage=background%3dhttp://$http_host/templates/basic/img/background.gif" text="streetmap.co.uk"}
+	{assign var="urltitle" value=$image->title|escape:'url'}
+	{external href="http://www.streetmap.co.uk/newmap.srf?x=`$image->grid_square->nateastings`&amp;y=`$image->grid_square->natnorthings`&amp;z=0&amp;sv=`$image->grid_square->nateastings`,`$image->grid_square->natnorthings`&amp;st=OSGrid&amp;lu=N&amp;tl=[$urltitle]+from+geograph.org.uk&amp;ar=y&amp;bi=background=http://$http_host/templates/basic/img/background.gif&amp;mapp=newmap.srf&amp;searchp=newsearch.srf" text="streetmap.co.uk"}
 	&amp; 
-	{external href="http://www.multimap.com/map/browse.cgi?GridE=`$image->grid_square->nateastings`&amp;GridN=`$image->grid_square->natnorthings`&amp;scale=25000&amp;title=[`$image->title`]+on+geograph.org.uk" text="multimap.com"}
+	{external href="http://www.multimap.com/map/browse.cgi?GridE=`$image->grid_square->nateastings`&amp;GridN=`$image->grid_square->natnorthings`&amp;scale=25000&amp;title=[`$urltitle`]+on+geograph.org.uk" text="multimap.com"}
 {else}
 	&amp;
 	{external href="http://www.multimap.com/p/browse.cgi?scale=25000&amp;lon=`$long`&amp;lat=`$lat`&amp;GridE=`$long`&amp;GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"}
