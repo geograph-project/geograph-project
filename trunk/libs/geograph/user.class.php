@@ -192,27 +192,51 @@ class GeographUser
 			}
 			else
 			{
-				//delete any existing attempt...
-				$db->Execute("delete from user where email=".$db->Quote($email)." and rights is null"); 
-				
-				//ok, user doesn't exist (or has no rights), lets go!
-				$sql = sprintf("insert into user (realname,email,password,signup_date) ".
-					"values (%s,%s,%s,now())",
-					$db->Quote($name),
-					$db->Quote($email),
-					$db->Quote($password1));
-					
-				if ($db->Execute($sql) === false) 
+				//we know there is no confirmed user with email address, so if we have
+				//an unconfirmed one, we can overwrite it with the new details
+				$arr = $db->GetRow("select * from user where email=".$db->Quote($email)." and rights is null");	
+				if (count($arr))
 				{
-					$errors['general']='error inserting: '.$db->ErrorMsg();
-					$ok=false;
+					//user already exists, but didn't respond to email - probably trying
+					//to send a fresh one so lets just refresh the existing record
+					$user_id=$arr['user_id'];	
+					
+					$sql = sprintf("update user set realname=%s,email=%s,password=%s,signup_date=now() where user_id=$user_id",
+						$db->Quote($name),
+						$db->Quote($email),
+						$db->Quote($password1),
+						$db->Quote($user_id));
+						
+					if ($db->Execute($sql) === false) 
+					{
+						$errors['general']='error updating: '.$db->ErrorMsg();
+						$ok=false;
+					}
+				
 				}
 				else
 				{
-					//hurrah - it's all good - send user an email so that
-					//pick up some basic rights
-					$user_id=$db->Insert_ID();
+					//ok, user doesn't exist, insert a new row
+					$sql = sprintf("insert into user (realname,email,password,signup_date) ".
+						"values (%s,%s,%s,now())",
+						$db->Quote($name),
+						$db->Quote($email),
+						$db->Quote($password1));
+				
 					
+					if ($db->Execute($sql) === false) 
+					{
+						$errors['general']='error inserting: '.$db->ErrorMsg();
+						$ok=false;
+					}
+					else
+					{
+						$user_id=$db->Insert_ID();	
+					}
+				}
+				
+				if ($ok)
+				{
 					//put the user_id into this user object
 					$this->user_id=$user_id;
 					
