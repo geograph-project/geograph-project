@@ -46,12 +46,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (!$db) die('Database connection failed'); 
 	
 	//we want to find all users with geographs/pending images 
-	$sql="select i.user_id,u.realname,sum(i.ftf=1 and i.moderation_status='geograph') as geographs, sum(i.moderation_status='pending') as pending from gridimage as i ".
-			"left join user as u using(user_id) ".
-			"where i.submitted > date_sub(now(), interval 7 day) ".
-			"group by i.user_id ".
-			"having (geographs > 0 or pending > 1)".
-			"order by geographs desc,pending desc ";
+$sql="select i.user_id,u.realname,sum(i.ftf=1 and i.moderation_status='geograph') as geographs, sum(i.moderation_status='pending') as pending from gridimage as i 
+left join user as u using(user_id) 
+where i.submitted > date_sub(now(), interval 7 day) 
+group by i.user_id 
+having (geographs > 0 or pending > 0)
+order by geographs desc,pending desc ";
 	$topusers=$db->GetAssoc($sql);
 		
 	//assign an ordinal
