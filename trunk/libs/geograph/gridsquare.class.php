@@ -162,9 +162,10 @@ class GridSquare
 
 			foreach($topics as $idx=>$topic)
 			{
-				$firstpost=$db->GetRow("select post_text,poster_name,post_time from geobb_posts where topic_id={$topic['topic_id']} order by post_time");
+				$firstpost=$db->GetRow("select post_text,poster_name,post_time,poster_id from geobb_posts where topic_id={$topic['topic_id']} order by post_time");
 				$topics[$idx]['post_text']=GeographLinks(str_replace('<br>', '<br/>', $firstpost['post_text']));
 				$topics[$idx]['realname']=$firstpost['poster_name'];
+				$topics[$idx]['user_id']=$firstpost['poster_id'];
 				$topics[$idx]['topic_time']=$firstpost['post_time'];
 				$totalcomments += $topics[$idx]['comments'] + 1;
 			}
