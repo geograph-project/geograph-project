@@ -4,7 +4,7 @@
 
 	<h2>Memory Map Export</h2>
 
-	<p>Use this page to download a CVS file to import into Memory Map, to show squares currently with Geograph Images.</p>
+	<p>Use this page to download a CSV file to import into Memory Map, to show squares currently with Geograph Images.</p>
 {dynamic}
 {if $errormsg}
 <p><b>{$errormsg}</b></p>
