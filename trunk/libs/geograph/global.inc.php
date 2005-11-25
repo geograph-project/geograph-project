@@ -102,7 +102,7 @@ function log_script_timing()
 		if ($timetaken<10)
 			$timetaken='0'.$timetaken;
 		
-		$logfile=$_SERVER['DOCUMENT_ROOT'].'/../logs/phptime'.date("Ymd-H").".log";
+		$logfile="/home/barry/sitelogs/".date("Ymd-H").".log";
 		$h = @fopen($logfile,'a');
 		if ($h)
 		{
