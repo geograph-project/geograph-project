@@ -63,7 +63,51 @@ function dieUnderHighLoad($threshold = 2) {
 	}
 }
 
-if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || !empty($_GET['gridsquare'])) {
+if (!empty($_GET['first']) ) {
+	dieUnderHighLoad();
+	// -------------------------------
+	//  special handler to build a special query for myriads/numberical squares.
+	// -------------------------------
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+	
+	$data = array();
+	
+	
+
+	//replace for myriads
+	$gr = preg_replace('/^([A-Z]{1,2})(\d)(\d)$/','$1$2_$3_',$_GET['first']);
+	
+
+	//replace for numberical squares
+	$gr = preg_replace('/\w*(\d{4})/','%$1',$gr);
+	
+
+	$name = preg_replace('/\w+(\d{4})/','$1',$_GET['first']);
+	
+	
+	$data['description'] = "first geographs in $name";
+
+	$data['searchq'] = "grid_reference LIKE '$gr' and ftf = 1";
+	
+	$data['orderby'] = 'gridimage_id';
+	if (!preg_match('/\w*(\d{4})/',$_GET['first']))
+		$data['reverse_order_ind'] = '1';
+	
+	if (!empty($_GET['u']))
+		$data['user_id'] = $_GET['u']; 
+
+	$engine = new SearchEngine('#'); 
+ 	$engine->buildAdvancedQuery($data);
+ 	
+ 	//should never fail?? - but display form 'in case'
+ 	
+ 	$db=NewADOConnection($GLOBALS['DSN']);
+	if (empty($db)) die('Database connection failed');
+
+	advanced_form($smarty,$db);
+ 	
+} else if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || !empty($_GET['gridsquare'])) {
 	dieUnderHighLoad();
 	// -------------------------------
 	//  special handler to build a advanced query from the link in stats or profile.  
