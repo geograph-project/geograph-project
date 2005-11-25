@@ -46,6 +46,7 @@
 </table>
 </div>
  
-<br style="clear:left"/>
+<p style="clear:both"/>View <a href="/search.php?first={$gridref2}">First Geographs for {$gridref2} in Reverse Date Submitted Order</a>.</p>
+ 
  
 {include file="_std_end.tpl"}
