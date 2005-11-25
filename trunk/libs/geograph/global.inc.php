@@ -107,7 +107,7 @@ function log_script_timing()
 		if ($h)
 		{
 			$time = date("i:s");
-			$logline = "$timetaken,$time,{$_SERVER['SCRIPT_URL']},{$_SERVER['REQUEST_METHOD']},{$_SERVER['QUERY_STRING']},{$_SERVER['REMOTE_ADDR']},{$USER->user_id}\n";
+			$logline = "$timetaken,$time,{$_SERVER['SCRIPT_URL']},{$_SERVER['REQUEST_METHOD']},{$_SERVER['QUERY_STRING']},{$_SERVER['REMOTE_ADDR']},{$USER->user_id},{$_SERVER['HTTP_REFERER']}\n";
 			
 			fwrite($h,$logline);
 			
