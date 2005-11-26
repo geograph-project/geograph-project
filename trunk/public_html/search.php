@@ -97,6 +97,8 @@ if (!empty($_GET['first']) ) {
 	if (!empty($_GET['u']))
 		$data['user_id'] = $_GET['u']; 
 
+	$data['adminoverride'] = 1;
+
 	$engine = new SearchEngine('#'); 
  	$engine->buildAdvancedQuery($data);
  	
@@ -118,6 +120,8 @@ if (!empty($_GET['first']) ) {
 	if (!empty($_GET['u']))
 		$_GET['user_id'] = $_GET['u']; 
 
+	$_GET['adminoverride'] = 0; //prevent overriding it
+		
 	$engine = new SearchEngine('#'); 
  	$engine->buildAdvancedQuery($_GET);
  	
@@ -141,6 +145,7 @@ if (!empty($_GET['first']) ) {
 		//we could use the selected item but then have to check for numberic placenames
 		$_POST['placename'] = $_POST['old-placename'];
 	} else {
+		$_POST['adminoverride'] = 0; //prevent overriding it
 		$engine = new SearchEngine('#'); 
 		$engine->buildAdvancedQuery($_POST);	
 		
