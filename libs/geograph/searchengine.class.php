@@ -289,7 +289,8 @@ class SearchEngine
 				$searchdesc = ", containing '".str_replace('^','',$dataarray['textsearch'])."' ";	
 			}
 		} else if (!empty($dataarray['description']) && !empty($dataarray['searchq'])) {
-			$USER->mustHavePerm("admin");
+			if (!$dataarray['adminoverride'])
+				$USER->mustHavePerm("admin");
 			$dataarray['description'] = trim($dataarray['description']);
 			$dataarray['searchq'] = trim($dataarray['searchq']);
 			$searchclass = 'Special';
@@ -564,11 +565,17 @@ class SearchEngine
 		}
 		if (!$sql_order) {$sql_order = 'gs.grid_reference';}
 		
+		if (preg_match("/^(left |inner |)join ([\w\,\(\) \.\'!=]+) where/i",$sql_where,$matches)) {
+			$sql_where = preg_replace("/^(left |inner |)join ([\w\,\(\) \.!=\']+) where/i",'',$sql_where);
+			$sql_from .= " {$matches[1]} join {$matches[2]}";
+		}
+
 		if ($pg > 1 || $this->countOnly) {
 		
 			$count_from = (strpos($sql_where,'gs.') !== FALSE)?"INNER JOIN gridsquare AS gs USING(gridsquare_id)":'';
 			$count_from .= (strpos($sql_where,'user.') !== FALSE)?" INNER JOIN user ON(gi.user_id=user.user_id)":'';
 			##$count_from = "INNER JOIN gridsquare AS gs USING(gridsquare_id)";
+			
 			// construct the count query sql
 			if (preg_match("/group by ([\w\,\(\) ]+)/i",$sql_where,$matches)) {
 				$sql_where2 = preg_replace("/group by ([\w\,\(\) ]+)/i",'',$sql_where);
@@ -668,6 +675,11 @@ END;
 		}
 		$sql_fields = str_replace('gs.','gi.',$sql_fields);
 		
+		if (preg_match("/^(left |inner |)join ([\w\,\(\) \.\'!=]+) where/i",$sql_where,$matches)) {
+			$sql_where = preg_replace("/^(left |inner |)join ([\w\,\(\) \.!=\']+) where/i",'',$sql_where);
+			$sql_from .= " {$matches[1]} join {$matches[2]}";
+		}
+
 		if ($pg > 1 || $this->countOnly) {
 			// construct the count sql
 			if (preg_match("/group by ([\w\,\(\) ]+)/i",$sql_where,$matches)) {
