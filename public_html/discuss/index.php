@@ -92,6 +92,10 @@ if(isset($_GET['topic'])) $topic=$_GET['topic']; elseif(isset($_POST['topic'])) 
 
 if (isset($_POST['action'])) $action=$_POST['action']; elseif (isset($_GET['action'])) $action=$_GET['action'];
 
+if ($forum == 6) {
+	$viewmaxreplys=10;
+}
+
 $forum+=0;
 $user_id+=0;
 $topic+=0;
