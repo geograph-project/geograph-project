@@ -84,9 +84,10 @@ return intval(($i-1)/$GLOBALS['viewmaxtopic']);
 else{
 $sign=(isset($GLOBALS['themeDesc'])&&in_array($GLOBALS['topic'],$GLOBALS['themeDesc'])?'>=':'<=');
 $i=db_simpleSelect(2,$GLOBALS['Tp'],'count(*)','topic_id','=',$GLOBALS['topic'],'','','post_id',$sign,$id);
-$pageAnchor[0]=intval(($i-1)/$GLOBALS['viewmaxreplys']);
-$a=$i-intval($i/$GLOBALS['viewmaxreplys'])*$GLOBALS['viewmaxreplys'];
-if($i>0&&$a==0) $a=$GLOBALS['viewmaxreplys'];
+$vmax = ($GLOBALS['forum'] == 6)?10:$GLOBALS['viewmaxreplys'];
+$pageAnchor[0]=intval(($i-1)/$vmax);
+$a=$i-intval($i/$vmax)*$vmax;
+if($i>0&&$a==0) $a=$vmax;
 $pageAnchor[1]='#'.$a;
 $GLOBALS['xtr']=$xtrT;
 return $pageAnchor;
