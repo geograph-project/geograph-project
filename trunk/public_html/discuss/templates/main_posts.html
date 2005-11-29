@@ -79,10 +79,18 @@ document.location='{$main_url}/{$indexphp}'+url;
 
 </table>
 
+<br/>
+<table class=forums>
+<tr>
+<td width=25 align=center class=caption3><img src="{$main_url}/img/forum_icons/{$forumIcon}" width=16 height=16 alt=""></td>
+<td width="100%" class=caption3><b><a title="Forum Listing" href="{$main_url}/{$indexphp}">{$sitename}</a></b> / <b><a title="Topic listing for {$forumName}" href="{$linkToForums}">{$forumName}</a></b> / <b>{$topic_reverse}{$topicName}</b></td>
+</tr>
+</table>
+
 <table class=tbTransparent>
 <tr><td class=tbTransparent><span class=txtSm><b>{$pageNav}</b></span></td></tr>
 </table>
-
+<br/>
 </div>
 
 <a name=newreply></a>
@@ -95,6 +103,8 @@ document.location='{$main_url}/{$indexphp}'+url;
 <td class=tbTransparent>{$closeTopic} {$moveTopic} {$deleteTopic} {$stickyTopic} {$subsTopic}&nbsp;</td>
 </tr>
 </table>
+
+
 
 <table class=forums>
 <tr>
