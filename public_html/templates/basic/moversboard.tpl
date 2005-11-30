@@ -24,6 +24,8 @@ how much each person will climb when their pictures are moderated!</p>
 </tr>
 {/foreach}
 
+
+<tr class="totalrow"><th>&nbsp;</th><th>Totals</th><th align="right">{$geographs}</th><th align="right" style="font-size:0.8em">({$pending} pending)</th></tr></thead>
 </tbody>
 </table>
 
