@@ -57,9 +57,11 @@ order by geographs desc,pending desc ";
 	//assign an ordinal
 
 	$i=1;$lastgeographs = '?';
+	$geographs = 0;
+	$pending = 0;
 	foreach($topusers as $user_id=>$entry)
 	{
-		if ($lastgeographs == $topusers[$user_id]['geographs'])
+		if ($lastgeographs == $entry['geographs'])
 			$topusers[$user_id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
 		else {
 			
@@ -73,11 +75,16 @@ order by geographs desc,pending desc ";
 			}
 
 			$topusers[$user_id]['ordinal']=$i.$end;
-			$lastgeographs = $topusers[$user_id]['geographs'];
+			$lastgeographs = $entry['geographs'];
 		}
 		$i++;
+		$geographs += $entry['geographs'];
+		$pending += $entry['pending'];
 	}	
 	
+	
+	$smarty->assign('geographs', $geographs);
+	$smarty->assign('pending', $pending);
 	
 	$smarty->assign_by_ref('topusers', $topusers);
 	$smarty->assign('cutoff_time', time()-86400*7);
