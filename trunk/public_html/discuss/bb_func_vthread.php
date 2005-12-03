@@ -146,6 +146,8 @@ if (preg_match_all("/\[\[(\[?)(\w*\d+)(\]?)\]\]/",$posterText,$g_matches)) {
 				$g_image=new GridImage;
 			}
 			$ok = $g_image->loadFromId($g_id);
+			if ($g_image->moderation_status == 'rejected' && !isset($userRanks[$cc]))
+				$ok = false;
 			if ($ok) {
 				if ($g_matches[1][$i]) {
 					$g_img = $g_image->getThumbnail(120,120,false,true);
