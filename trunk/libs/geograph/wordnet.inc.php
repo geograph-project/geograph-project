@@ -59,7 +59,7 @@ function updateWordnet(&$db,$text,$field,$id) {
 	
 	//build a list of one word phrases
 	foreach ($words as $word) {
-		$w1[$word] = (isset($w1[$phrase]))?($w1[$phrase]+1):1; 
+		$w1[$word] = (isset($w1[$word]))?($w1[$word]+1):1; 
 	}
 	
 	//build a list of two word phrases
