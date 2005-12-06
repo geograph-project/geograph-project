@@ -90,16 +90,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	$right=$left + floor($mosaic->image_w/$mosaic->pixels_per_km)-1;
 	$top=$bottom + floor($mosaic->image_h/$mosaic->pixels_per_km)-1;
 
-$sql="SELECT user.user_id,realname,COUNT(*) AS count,DATE_FORMAT(MAX(submitted),'%D %b %Y') as last_date
+$sql="SELECT user_id,realname,COUNT(*) AS count,DATE_FORMAT(MAX(submitted),'%D %b %Y') as last_date
 FROM 
-	gridsquare gs
-	INNER JOIN gridimage gi USING(gridsquare_id)
-	INNER JOIN user ON(gi.user_id=user.user_id)
+	gridimage_search
 WHERE 
 	(x BETWEEN $left and $right) AND 
 	(y BETWEEN $bottom and $top) AND
-	moderation_status IN ('accepted','geograph') AND
-	seq_no = 1
+	moderation_status = 'geograph' AND
+	ftf = 1
 GROUP BY user_id 
 ORDER BY count DESC,last_date DESC
 ";
