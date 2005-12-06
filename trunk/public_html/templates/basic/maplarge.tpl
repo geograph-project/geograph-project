@@ -44,6 +44,8 @@
 
 </tbody>
 </table>
+<br/>
+<small><small>* there is a known problem with this list, it might not add up to the correct total, apologies but we hope to resume normal service shortly...</small></small>
 </div>
  
 <p style="clear:both"/>View <a href="/search.php?first={$gridref2}">First Geographs for {$gridref2} in Reverse Date Submitted Order</a>.</p>
