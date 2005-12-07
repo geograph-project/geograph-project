@@ -3,7 +3,7 @@
 
 <h2>First to Numberical Squares</h2>
 
-<p>Listed below are the contributors being the first to claim a numberical square.</p>
+<p>Listed below are the contributors being the first to claim a <a href="/discuss/index.php?action=vthread&amp;forum=2&amp;topic=1235">numberical square</a>.</p>
 
 
 
