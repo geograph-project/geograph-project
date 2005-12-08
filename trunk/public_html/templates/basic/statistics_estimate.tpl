@@ -1,7 +1,7 @@
 {assign var="page_title" value="Geograph Database Statistics"}
 {include file="_std_begin.tpl"}
 
-<h2>Geograph Database Estimates</h2>
+<h2>Geograph Database Estimates{if $ri} for {$references.$ri}{/if}</h2>
 
 <h3>Images</h3>
 <p>We currently have {$image.count} images, therefore at the current rate of {$image.average_r} submissions as day, we will reach {$image.next} in about {$image.days_r} days time!</p>
