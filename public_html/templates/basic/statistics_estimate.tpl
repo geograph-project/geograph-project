@@ -18,7 +18,7 @@
 <h3>Points</h3>
 <p>We currently have {$point.count} points awarded, therefore at the current rate of {$point.average_r} points as day, we will reach {$point.next} in about {$point.days_r} days time!</p>
 
-<p>Furthermore at the current rate of {$totall.average_r} points as week, we will reach {$totall.next} (full coverage) in about {$totall.weeks_r} weeks time!</p>
+<p>Furthermore at the current rate of {$totall.average_r} points as week, we will reach {$totall.next} (full coverage) in about {$totall.weeks_r} weeks time, or {$totall.enddate}!</p>
 
 
 <h3>Users</h3>
