@@ -27,7 +27,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):1;
+$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
 
 $template='statistics_estimate.tpl';
