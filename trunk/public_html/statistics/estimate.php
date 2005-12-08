@@ -44,7 +44,8 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	if ($ri) {
 		$whereri = " where reference_index = $ri";
-		$andri = " and reference_index = $ri"; 
+		$andri = " and reference_index = $ri";
+		$smarty->assign('ri',$ri);
 	} else {
 		$whereri = "";
 		$andri = ""; 
@@ -85,7 +86,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign("users",$users);
 	
 	
-	$sql = "select substring(submitted,1,10) as d ,count(distinct grid_reference) as c from gridimage_search where ftf = 1 and submitted > '$beginday' AND submitted < '$today' group by substring(submitted,1,10)";
+	$sql = "select substring(submitted,1,10) as d ,count(distinct grid_reference) as c from gridimage_search where ftf = 1 and submitted > '$beginday' AND submitted < '$today' $andri group by substring(submitted,1,10)";
 	$sql2 = "select count(distinct grid_reference) from gridimage_search $whereri";
 			
 	$square = calc($sql,$sql2,10000);
@@ -111,11 +112,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	$total['weeks_r'] = floor($total['weeks']);
 
 	$total['endtime'] = time() + ($total['weeks'] * 3600 * 24 * 7);
-	
 	$total['enddate'] = date("F Y",$total['endtime']);
 
 
 	$smarty->assign("totall",$total);
+	$smarty->assign_by_ref('references',$CONF['references']);
 }
 
 $smarty->display($template, $cacheid);
