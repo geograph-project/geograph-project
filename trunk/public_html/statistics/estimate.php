@@ -99,6 +99,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	$total['weeks'] = $total['dif']/$total['average'];
 	$total['weeks_r'] = floor($total['weeks']);
 
+	$total['endtime'] = time() + ($total['weeks'] * 3600 * 24 * 7);
+	
+	$total['enddate'] = date("F Y",$total['endtime']);
 
 
 	$smarty->assign("totall",$total);
