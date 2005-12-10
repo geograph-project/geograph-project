@@ -126,8 +126,10 @@ geographing</a> first.</p>
 		<p><b>Grid References:</b> (optional)<br/><br/><label for="gridreference">Primary Photo Subject</label> <input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/crosshairs.gif" alt="Marks the Subject" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/></p>
 	
 		<p><label for="viewpoint_gridreference">Photographer Position</label> <input id="viewpoint_gridreference" type="text" name="viewpoint_gridreference" value="{$viewpoint_gridreference|escape:'html'}" size="14"  onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/camera.gif" alt="Marks the Photographer" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/><br/><small>Blank assumes very close to the subject</small></p>
+
+		{if $rastermap->enabled}
 		<p><small>TIP: drag the markers on the map<br/>to update these boxes</small></p>
-	
+		{/if}
 	</div>
 
 	{if $rastermap->enabled}
