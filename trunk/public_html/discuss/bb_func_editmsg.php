@@ -4,10 +4,10 @@ This file is part of miniBB. miniBB is free discussion forums/message board soft
 */
 if (!defined('INCLUDED776')) die ('Fatal error.');
 
-//can edit articles in forum 6 for 28 days 
+//can edit articles in forum 6 for 5 years 
 //nice hack huh? :(
 if ($_REQUEST['forum']==6)
-	$useredit=86400*28;
+	$useredit=86400*365*5;
 
 if(isset($_GET['post'])) $post=$_GET['post']; elseif(isset($_POST['post'])) $post=$_POST['post']; else $post=0;
 if(isset($_GET['anchor'])) $anchor=$_GET['anchor']; elseif(isset($_POST['anchor'])) $anchor=$_POST['anchor']; else $anchor=0;
