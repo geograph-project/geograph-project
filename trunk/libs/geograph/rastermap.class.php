@@ -98,7 +98,7 @@ class RasterMap
 				
 					$str = "<div style=\"position:relative;height:".($width+22)."\">";
 					
-					$str .= "<img src=\"$mapurl\" width=\"$width\" height=\"$width\" border=\"1\" alt=\"Historical Map &copy; VisionOfBritain.org.uk\">";
+					$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" width=\"$width\" height=\"$width\" border=\"1\" alt=\"Historical Map &copy; VisionOfBritain.org.uk\"></div>";
 					
 					$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&lt;- Drag to mark photographer position.</small></div>";
 					
