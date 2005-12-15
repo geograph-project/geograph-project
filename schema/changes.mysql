@@ -208,3 +208,15 @@ UPDATE `loc_towns` SET `name` = 'Ballymena',
 `e` = '308000',
 `n` = '402000' WHERE name = 'Antrim' and e = 315000 and n = 387000 and s = '2' and reference_index = 2 LIMIT 1 ;
 
+
+
+ALTER TABLE `loc_placenames` ADD `full_name_soundex` VARCHAR( 32 ) NOT NULL AFTER `full_name` ;
+
+UPDATE `loc_placenames` SET `full_name_soundex` = SOUNDEX( full_name ) ;
+
+
+
+ALTER TABLE `queries` ADD `use_timestamp` TIMESTAMP NOT NULL ,
+ADD `favorite` ENUM( 'Y', 'N' ) DEFAULT 'N' NOT NULL ;
+
+ALTER TABLE `queries` ADD INDEX ( `use_timestamp` , `favorite` ) ;
