@@ -99,8 +99,8 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
    <p>User leaderboards: <a href="/moversboard.php">Weekly</a>, <a href="/leaderboard.php">All Time</a> and <a href="/monthlyleader.php">By Month</a>. (<a href="/statistics.php?by=user&amp;ri=1">Contributor List</a>)</p>
 
    <p>Mostly Geographed: <a href="/statistics/most_geographed.php">Grid Squares</a>, 
-   <a href="/statistics/most_geographed.php">10<small>km</small> x 10<small>km</small> Squares</a>  and <a href="/statistics/most_geographed_myriad.php">100km x 100km</a> Squares.<br/>
-   Fully Geographed: <a href="/statistics/fully_geographed.php">10<small>km</small> x 10<small>km</small> Squares</a> (includes Large Mosaic!)</p>
+   <a href="/statistics/most_geographed.php">10<small>km</small> x 10<small>km</small> Squares</a>  and <a href="/statistics/most_geographed_myriad.php">100km x 100km</a> Squares.</p>
+   <p><b>Fully Geographed: <a href="/statistics/fully_geographed.php">10<small>km</small> x 10<small>km</small> Squares</a> (includes Large Mosaic!)</b></p>
 
    
    <p>Centre Points: <a href="/statistics/counties.php">Ceremonial Counties</a>, <a href="/statistics/counties.php?type=capital">(Irish) County Capitals</a> and <a href="/statistics/cities.php">Cities</a> photographed so far.</p>
