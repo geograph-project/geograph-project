@@ -18,7 +18,7 @@
 <small>Enter a Placename, Postcode, Grid Reference, or a text search</small></div>
 </form>
 {/dynamic} 
-<ul>
+<ul style="margin-left:0;padding:0 0 0 1em;">
 
 <li>Here are a couple of example searches:
 <div style="float:left; width:50%; position:relative">
@@ -51,24 +51,28 @@ title="customisable search options">advanced search</a></span><br/><br/>
 </li>
 
 {dynamic} 
-{if $user->registered && $recentsearchs}
-<li>And a list of your recent searches:
-<ul>
-{foreach from=$recentsearchs key=id item=obj}
-<li><a href="search.php?i={$id}" title="Re-Run search for images{$obj.searchdesc}">{$obj.searchdesc|regex_replace:"/^, /":""|regex_replace:"/(, in [\w ]+ order)/":'<small>$1</small>'}</a>{if $obj.count} [{$obj.count}]{/if}</li>
-{/foreach}
-{if !$more}
-<li><a href="search.php?more=1" title="View More of your recent searches"><i>view more...</i></a></li>
-{/if}
-</ul><br/>
-</li>
+{if $user->registered}
+	{if $recentsearchs}
+	<li>And a list of your recent searches:
+	<ul>
+	{foreach from=$recentsearchs key=id item=obj}
+	<li>{if $obj.favorite == 'Y'}<b>{/if}<a href="search.php?i={$id}" title="Re-Run search for images{$obj.searchdesc}{if $obj.use_timestamp != '0000-00-00 00:00:00'}, last used {$obj.use_timestamp}{/if}">{$obj.searchdesc|regex_replace:"/^, /":""|regex_replace:"/(, in [\w ]+ order)/":'<small>$1</small>'}</a>{if !is_null($obj.count)} [{$obj.count}]{/if}{if $obj.favorite == 'Y'}</b> <span style="font-size:0.7em">(<a href="/search.php?i={$id}&amp;fav=0">cancel favorite</a>)</span>{else} <span style="font-size:0.7em">(<a href="/search.php?i={$id}&amp;fav=1">make favorite</a>)</span>{/if}</li>
+	{/foreach}
+	{if !$more}
+	<li><a href="search.php?more=1" title="View More of your recent searches" rel="nofollow"><i>view more...</i></a></li>
+	{/if}
+	</ul><br/>
+	</li>
+	{/if}
+{else}
+	<li><i><a href="/login.php">Login</a> to see your recent and favorite searches.</i><br/><br/></li>
 {/if}
 {/dynamic} 
 <li>If you are unable to find your location in our search above try {getamap} and return here to enter the <acronym style="border-bottom: red dotted 1pt; text-decoration: none;" title="look for something like 'Grid reference at centre - NO 255 075 GB Grid">grid reference</acronym>.<br/><br/></li> 
 
 </ul>
 <div style="padding:5px;background:#dddddd;position:relative">
-<ul>
+<ul style="margin-left:0;padding:0 0 0 1em;">
 
 <li><b>If you have a WGS84 latitude &amp; longitude coordinate</b>
 		(e.g. from a GPS receiver, or from multimap site), then see our 
