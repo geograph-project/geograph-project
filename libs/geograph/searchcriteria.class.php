@@ -438,7 +438,7 @@ class SearchCriteria_Placename extends SearchCriteria
 				where
 					dsg != 'PPL' AND (
 					full_name LIKE ".$db->Quote('%'.$placename.'%')."
-					OR SOUNDEX(".$db->Quote($placename).") = SOUNDEX(full_name) )
+					OR SOUNDEX(".$db->Quote($placename).") = full_name_soundex )
 				LIMIT 20") );				
 			}	
 			if (count($places)) {
