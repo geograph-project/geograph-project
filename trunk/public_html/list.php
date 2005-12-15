@@ -92,6 +92,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign_by_ref('squares', $prefixes);
 }
 
+$smarty->assign('extra_meta','<meta name="robots" content="noindex,follow"/>');
+
 $smarty->display($template, $cacheid);
 
 	
