@@ -63,7 +63,18 @@ function dieUnderHighLoad($threshold = 2) {
 	}
 }
 
-if (!empty($_GET['first']) ) {
+if (isset($_GET['fav']) ) {
+	if (!$db) {
+		$db=NewADOConnection($GLOBALS['DSN']);
+		if (!$db) die('Database connection failed');
+	}
+	$fav = ($_GET['fav'])?'Y':'N';
+	$db->query("UPDATE queries SET favorite = '$fav' WHERE id = $i AND user_id = {$USER->user_id}");
+	
+	header("Location:/search.php");	
+	exit;
+	
+} else if (!empty($_GET['first']) ) {
 	dieUnderHighLoad();
 	// -------------------------------
 	//  special handler to build a special query for myriads/numberical squares.
@@ -382,6 +393,14 @@ if (!empty($_GET['first']) ) {
 		}	
 	}
 	
+	if ($engine->criteria->user_id == $USER->user_id) {
+		if (!$db) {
+			$db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) die('Database connection failed');
+		}
+		$db->query("UPDATE queries SET use_timestamp = null WHERE id = $i");
+	}
+	
 	$smarty->display($template, $cacheid);
 
 
@@ -417,16 +436,26 @@ if (!empty($_GET['first']) ) {
 			$db=NewADOConnection($GLOBALS['DSN']);
 			if (!$db) die('Database connection failed');
 		}
-		if (isset($_GET['more'])) {
+		if (isset($_GET['all'])) {
+			$limit = 999;
+			$smarty->assign('all',1);	
+		} if (isset($_GET['more'])) {
 			$limit = 30;
 			$smarty->assign('more',1);	
 		} else
 			$limit = 8;
 		
-		$recentsearchs = $db->GetAssoc("select queries.id,searchdesc,`count` from queries ".
-			"left join queries_count using (id) ".
-			"where user_id = ".$USER->user_id.
-			" group by searchdesc order by queries.id desc limit $limit");
+		$recentsearchs = $db->GetAssoc("
+			(select queries.id,favorite,searchdesc,`count`,use_timestamp from queries 
+			left join queries_count using (id) 
+			where user_id = {$USER->user_id} and favorite = 'N'
+			group by searchdesc limit $limit) 
+				UNION
+			(select queries.id,favorite,searchdesc,`count`,use_timestamp from queries 
+			left join queries_count using (id) 
+			where user_id = {$USER->user_id} and favorite = 'Y'
+			group by searchdesc limit $limit)
+			order by use_timestamp desc,id desc	");
 		$smarty->assign_by_ref('recentsearchs',$recentsearchs);	
 	}
 	
