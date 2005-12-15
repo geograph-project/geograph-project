@@ -51,7 +51,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$allsqaures=$db->GetAll("select user_id,realname ".
 	"from gridimage_search ".
-	"group by right(grid_reference,4)");
+	"group by right(grid_reference,4) order by null");
 	
 	$topusers = array();
 	foreach($allsqaures as $idx=>$entry)
