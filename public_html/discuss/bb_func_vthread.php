@@ -69,7 +69,7 @@ $topic_reverse="<img src=\"{$main_url}/img/topic_reverse.gif\" align=middle bord
 if($page==-1 and $topicDesc==0) $page=pageChk($page,$numRows,$viewmaxreplys);
 elseif($page==-1 and $topicDesc==1) $page=0;
 
-if(isset($mod_rewrite) and $mod_rewrite) $urlp="{$main_url}/{$forum}_{$topic}_"; else $urlp="{$main_url}/{$indexphp}action=vthread&amp;forum=$forum&amp;topic=$topic&amp;page=";
+if(isset($mod_rewrite) and $mod_rewrite) $urlp="{$main_url}/{$forum}_{$topic}_"; else $urlp="{$main_url}/{$indexphp}action=vthread&amp;forum=$forum&amp;topic=$topic&amp;dontcount=1&amp;page=";
 
 $pageNav=pageNav($page,$numRows,$urlp,$viewmaxreplys,FALSE);
 $makeLim=makeLim($page,$numRows,$viewmaxreplys);
@@ -82,7 +82,7 @@ if(isset($themeDesc) and in_array($topic,$themeDesc)) $srt='DESC'; else $srt='AS
 
 if($cols=db_simpleSelect(0,$Tp,'poster_id, poster_name, post_time, post_text, poster_ip, post_status, post_id','topic_id','=',$topic,'post_id '.$srt,$makeLim)){
 
-if($page==0 and isset($enableViews) and $enableViews) updateArray(array('topic_views'),$Tt,'topic_id',$topic);
+if(!isset($_GET['dontcount']) and isset($enableViews) and $enableViews) updateArray(array('topic_views'),$Tt,'topic_id',$topic);
 
 $tpl=makeUp('main_posts_cell');
 
