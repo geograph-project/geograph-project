@@ -41,17 +41,17 @@ $db = NewADOConnection($GLOBALS['DSN']);
 
 
 
-if (isset($_GET['reply_4_every_post']))
+if (isset($_GET['edit_4_linking_post']))
 {
 	
 	$smarty->display('_std_begin.tpl');
 	echo "<h3><a href=\"events.php\">&lt;&lt;</a> Firing Events...</h3>";
 	flush();
 	
-	$posts = $db->getCol("select post_id from geobb_posts");
+	$posts = $db->getCol("select post_id from geobb_posts where post_text LIKE '%[[%'");
 	
 	foreach ($posts as $post_id) {
-		new Event(EVENT_NEWREPLY, $post_id);
+		new Event('topic_edit', $post_id);
 	}
 	$smarty->display('_std_end.tpl');
 	exit;
