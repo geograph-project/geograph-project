@@ -231,3 +231,7 @@ CREATE TABLE `gridimage_post` (
   KEY `post_id` (`post_id`,`gridimage_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
+# we dont want on update current_timestamp
+ALTER TABLE `queries` CHANGE `crt_timestamp` `crt_timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ;
+
+
