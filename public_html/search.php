@@ -69,7 +69,7 @@ if (isset($_GET['fav']) ) {
 		if (!$db) die('Database connection failed');
 	}
 	$fav = ($_GET['fav'])?'Y':'N';
-	$db->query("UPDATE queries SET favorite = '$fav' WHERE id = $i  AND crt_timestamp = crt_timestamp AND user_id = {$USER->user_id}");
+	$db->query("UPDATE queries SET favorite = '$fav' WHERE id = $i AND user_id = {$USER->user_id}");
 	
 	header("Location:/search.php");	
 	exit;
@@ -398,7 +398,7 @@ if (isset($_GET['fav']) ) {
 			$db=NewADOConnection($GLOBALS['DSN']);
 			if (!$db) die('Database connection failed');
 		}
-		$db->query("UPDATE queries SET use_timestamp = null AND crt_timestamp = crt_timestamp WHERE id = $i");
+		$db->query("UPDATE queries SET use_timestamp = null WHERE id = $i");
 	}
 	
 	$smarty->display($template, $cacheid);
