@@ -449,12 +449,12 @@ if (isset($_GET['fav']) ) {
 			(select queries.id,favorite,searchdesc,`count`,use_timestamp from queries 
 			left join queries_count using (id) 
 			where user_id = {$USER->user_id} and favorite = 'N'
-			group by searchdesc limit $limit) 
+			group by searchdesc order by use_timestamp desc,id desc	limit $limit) 
 				UNION
 			(select queries.id,favorite,searchdesc,`count`,use_timestamp from queries 
 			left join queries_count using (id) 
 			where user_id = {$USER->user_id} and favorite = 'Y'
-			group by searchdesc limit $limit)
+			group by searchdesc order by use_timestamp desc,id desc	limit $limit)
 			order by use_timestamp desc,id desc	");
 		$smarty->assign_by_ref('recentsearchs',$recentsearchs);	
 	}
