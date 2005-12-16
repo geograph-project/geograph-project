@@ -1,9 +1,9 @@
-# www.geograph.co.uk robot exclusion file
+# www.geograph.org.uk robot exclusion file
 # * $Id$
 
 User-agent: *
 Disallow: /mapbrowse.php?
-Disallow: /largemap.php?
+Disallow: /maplarge.php?
 Disallow: /admin
 Disallow: /search.php?
 Disallow: /statistics/wordnet.php?words=
@@ -17,6 +17,7 @@ Disallow: /kml.php?
 Disallow: /editimage.php?
 Disallow: /browse.php?
 Disallow: /gridref/
+Disallow: /ecard.php?
 
 
 User-agent: Mozilla/2.0 (compatible; Ask Jeeves/Teoma)
