@@ -118,7 +118,7 @@ if (isset($_GET['prev']))
 	$offset=max(0, $offset-$count);
 
 
-$sql="select * from event $filter limit $offset,$count";
+$sql="select * from event $filter order by event_id desc limit $offset,$count";
 $events=$db->GetAll($sql);
 $smarty->assign_by_ref("events", $events);
 $smarty->assign("total", $total);
