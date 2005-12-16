@@ -72,6 +72,10 @@ $title.=$l_editPost;
 $correctErr="<a href=\"{$main_url}/{$indexphp}action=vthread&amp;forum=$forum&amp;topic=$topic&amp;page={$page}#{$anchor}\">$l_back</a>";
 }
 
+//fire an event
+	require_once('geograph/event.class.php');
+	new Event('topic_edit', $post);
+
 if ($user_id!=1 and $postRange!=0) {
 if($useSessions and !session_is_registered($cookiename.'Update')) { session_register($cookiename.'Update'); $_SESSION[$cookiename.'Update']=time()+$postRange;}
 setcookie($cookiename.'Update','',(time() - 2592000),$cookiepath,$cookiedomain,$cookiesecure);
