@@ -220,3 +220,14 @@ ALTER TABLE `queries` ADD `use_timestamp` TIMESTAMP NOT NULL ,
 ADD `favorite` ENUM( 'Y', 'N' ) DEFAULT 'N' NOT NULL ;
 
 ALTER TABLE `queries` ADD INDEX ( `use_timestamp` , `favorite` ) ;
+
+
+
+CREATE TABLE `gridimage_post` (
+  `post_id` int(10) unsigned NOT NULL default '0',
+  `gridimage_id` int(10) unsigned NOT NULL default '0',
+  `topic_id` int(10) unsigned NOT NULL default '0',
+  `type` enum('T','I') NOT NULL default 'T',
+  KEY `post_id` (`post_id`,`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
