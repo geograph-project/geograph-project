@@ -168,6 +168,9 @@ if (isset($_REQUEST['id']))
 		$smarty->assign_by_ref('classes', $classes);
 		$smarty->assign_by_ref('imageclassother', $imageclassother);
 
+		//let's find posts in the gridref discussion forum
+		$image->grid_square->assignDiscussionToSmarty($smarty);
+
 		//process a trouble ticket?
 		if (isset($_POST['gridimage_ticket_id']))
 		{
