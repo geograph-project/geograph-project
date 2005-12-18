@@ -21,7 +21,7 @@
   	{if $isadmin}
   		<a href="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" style="font-size:0.6em">Switch to thumbnail Image</a>
   	{/if}
-  	<div class="img-shadow">{$image->getFull()}</div>
+  	<div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getFull()}</a></div>
   {/if}
   <div class="caption"><b>{$image->title|escape:'html'}</b> by {$image->realname}</div>
   
@@ -96,8 +96,6 @@
 		
 		{if $ticket->user_id eq $image->user_id}
 		  (photo owner)
-		{else}
-		  (photo owned by {$image->realname})
 		{/if}
 		 
 	{/if} 
@@ -325,7 +323,8 @@ function onChangeImageclass()
 {/if}
 
 
-<div style="margin-top:20px;background:#dddddd;"><br/>
+<br/>
+<p>
 <label for="updatenote">&nbsp;<b>Please tell us what's wrong or briefly why you have made the changes above...</b></label><br/>
 
 {if $error.updatenote}<br/><span class="formerror">{$error.updatenote}</span><br/>{/if}
@@ -344,16 +343,9 @@ then please enter directly into the boxes above)
 </td></tr></table>
 
 <br style="clear:both"/>
-</div>
-<br/>
 
 <input type="submit" name="save" value="Submit Changes" onclick="autoDisable(this)"/>
 <input type="button" name="cancel" value="Cancel" onclick="document.location='/photo/{$image->gridimage_id}';"/>
-
-
-
-
-
 
 
 </form>
