@@ -67,7 +67,7 @@ solid"=20
     <TD style=3D"BORDER-RIGHT: black 1px solid; BORDER-TOP: black 1px =
 solid"=20
     align=3Dmiddle bgColor=3D#ffffff><BR><A=20
-      href=3D"http://{$http_host}/photo/{$image->gridimage_id}">{$image->getFull(true)|replace:'=':'=3D'|replace:'alt=':'border=0 alt='}</A></TD>
+      href=3D"http://{$http_host}/photo/{$image->gridimage_id}">{$image->getFull(true)|replace:'=':'=3D'|replace:'alt=':'border=3D0 alt='}</A></TD>
     <TD>&nbsp;</TD></TR>
   <TR>
     <TD>&nbsp;</TD>
