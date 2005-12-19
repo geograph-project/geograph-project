@@ -36,7 +36,6 @@ Content-Transfer-Encoding: quoted-printable
 charset=3Dwindows-1252"><BASE=20
 href=3D"http://{$http_host}/"\>
 <META content=3D"MSHTML 6.00.2900.2769" name=3DGENERATOR>
-<link rel="stylesheet" type="text/css" title="Monitor" href="http://{$http_host}/templates/basic/css/basic.css" media="screen" />
 </HEAD>
 <BODY bgColor=3D#eeeeff leftMargin=3D0 topMargin=3D0 MARGINHEIGHT=3D"0" =
 MARGINWIDTH=3D"0">
@@ -68,7 +67,7 @@ solid"=20
     <TD style=3D"BORDER-RIGHT: black 1px solid; BORDER-TOP: black 1px =
 solid"=20
     align=3Dmiddle bgColor=3D#ffffff><BR><A=20
-      href=3D"http://{$http_host}/photo/{$image->gridimage_id}">{$image->getFull(true)|replace:'=':'=3D'}</A></TD>
+      href=3D"http://{$http_host}/photo/{$image->gridimage_id}">{$image->getFull(true)|replace:'=':'=3D'|replace:'alt=':'border=0 alt='}</A></TD>
     <TD>&nbsp;</TD></TR>
   <TR>
     <TD>&nbsp;</TD>
