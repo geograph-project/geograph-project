@@ -1,5 +1,8 @@
 {dynamic}
-------=_NextPart_001_00E0_01C5EB66.9313FF40
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_00DF_01C5EB66.9313FF40
 Content-Type: text/plain;
 	charset="Windows-1252"
 Content-Transfer-Encoding: quoted-printable
@@ -22,7 +25,7 @@ http://creativecommons.org/licenses/by-sa/2.0/
 This message was sent to you by site visitor to Geograph British Isles,
 forward abuse complaints to: rogersgm@gmail.com
 
-------=_NextPart_001_00E0_01C5EB66.9313FF40
+------=_NextPart_000_00DF_01C5EB66.9313FF40
 Content-Type: text/html;
 	charset="Windows-1252"
 Content-Transfer-Encoding: quoted-printable
@@ -114,6 +117,6 @@ to you by site=20
 visitor to Geograph British Isles, <BR>forward abuse complaints to:=20
 rogersgm@gmail.com</FONT></P></BODY></HTML>
 
-------=_NextPart_001_00E0_01C5EB66.9313FF40--
+------=_NextPart_000_00DF_01C5EB66.9313FF40--
 
 {/dynamic}
