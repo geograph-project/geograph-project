@@ -109,6 +109,8 @@ referring to <b>image {$image->gridimage_id}</b>
   <div style="float:left; width:{$overview_width+30}px; position:relative">
   {include file="_overview.tpl"}
   <div style="text-align:center"><br/>
+  <a title="Send an Electronic Card" href="/ecard.php?image={$image->gridimage_id}">Send eCard</a>
+  
   <a title="Open in Google Earth" href="/kml.php?id={$image->gridimage_id}" class="xml-kml">KML</a></div>
   </div>
 {/if}
