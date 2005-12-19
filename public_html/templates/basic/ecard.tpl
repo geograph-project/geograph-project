@@ -8,7 +8,7 @@
 	{if $sent}
 		<h3>Thank you - your message has been sent</h3>
 	
-		<p>Return to the <a href="/photo/{$image->gridimage_id}"}Image</a> Page.</p>
+		<p>Return to the <a href="/photo/{$image->gridimage_id}">Image</a> Page.</p>
 	{else}
 		<form method="post" action="/ecard.php">
 	<input type="hidden" name="image" value="{$image->gridimage_id|escape:'html'}">
