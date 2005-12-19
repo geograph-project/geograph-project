@@ -31,32 +31,33 @@ $template='ecard.tpl';
 //you must be logged in to send e-cards
 $USER->mustHavePerm("basic");
 
-$db=NewADOConnection($GLOBALS['DSN']);
-if (empty($db)) die('Database connection failed');
-
-if ($db->getOne("select count(*) from throttle where ts > date_sub(now(), interval 1 hour) and user_id={$USER->user_id} AND feature = 'e'") > 8) {
-	print "<H3>This feature is busy, please try again later.</h3>";
-	exit;
-}		
-$db->query("insert into throttle set user_id={$USER->user_id},feature = 'e'");
-if (rand(1,10) > 5) {
-	$db->query("delete from throttle where ts < date_sub(now(), interval 48 hour)");
-}
-
 //gather what we need	
-$recipient=new GeographUser($_REQUEST['to']);
 $from_name=isset($_POST['from_name'])?stripslashes($_POST['from_name']):$USER->realname;
 $from_email=isset($_POST['from_email'])?stripslashes($_POST['from_email']):$USER->email;
 
 $to_name=isset($_POST['to_name'])?stripslashes($_POST['to_name']):'';
 $to_email=isset($_POST['to_email'])?stripslashes($_POST['to_email']):'';
 
-
 $smarty->assign_by_ref('from_name', $from_name);
 $smarty->assign_by_ref('from_email', $from_email);
 
 $smarty->assign_by_ref('to_name', $to_name);
 $smarty->assign_by_ref('to_email', $to_email);
+
+#not really any need to throttle images sent to themselfs
+if (! ($to_email == $from_email && $from_email == $USER->email) ) {
+	$db=NewADOConnection($GLOBALS['DSN']);
+	if (empty($db)) die('Database connection failed');
+
+	if ($db->getOne("select count(*) from throttle where ts > date_sub(now(), interval 1 hour) and user_id={$USER->user_id} AND feature = 'e'") > 8) {
+		print "<H3>This feature is busy, please try again later.</h3>";
+		exit;
+	}		
+	$db->query("insert into throttle set user_id={$USER->user_id},feature = 'e'");
+	if (rand(1,10) > 5) {
+		$db->query("delete from throttle where ts < date_sub(now(), interval 48 hour)");
+	}
+}
 
 if (isset($_REQUEST['image']))
 {
