@@ -6,8 +6,9 @@
     <h2>Send e-Card</h2>
     
 	{if $sent}
-		<p>Thankyou - your message has been sent</p>
+		<h3>Thank you - your message has been sent</h3>
 	
+		<p>Return to the <a href="/photo/{$image->gridimage_id}"}Image</a> Page.</p>
 	{else}
 		<form method="post" action="/ecard.php">
 	<input type="hidden" name="image" value="{$image->gridimage_id|escape:'html'}">
