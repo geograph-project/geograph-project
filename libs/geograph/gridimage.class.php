@@ -487,12 +487,16 @@ class GridImage
 	/**
 	* returns HTML img tag to display this image at full size
 	*/
-	function getFull()
+	function getFull($returntotalpath = false)
 	{
 		$fullpath=$this->_getFullpath();
 		$title=htmlentities($this->title);
 		
 		$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
+		
+		if ($returntotalpath)  
+			$fullpath="http://".$_SERVER['HTTP_HOST'].$fullpath;
+		
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
 			
 		return $html;
