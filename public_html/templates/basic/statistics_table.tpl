@@ -2,6 +2,7 @@
 {include file="_std_begin.tpl"}
 <script src="/sorttable.js"></script>
 
+{if !$nofilter}
     <form method="get" action="{$script_name}">
     <p>{if $references}In <select name="ri">
     	{html_options options=$references selected=$ri}
@@ -30,7 +31,7 @@
     {/dynamic}
     {/if}
     <input type="submit" value="Go"></p></form>
-    
+ {/if}  
 
 	<h3>{$h2title}</h3>
 {if $total > 0}
