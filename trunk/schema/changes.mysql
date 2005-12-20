@@ -249,6 +249,10 @@ CREATE TABLE `throttle` (
 
 
 #pauls suggestion to tidy up the throttle table:
-ALTER TABLE `throttle` CHANGE `ts` `used` TIMESTAMP DEFAULT 'CURRENT_TIMESTAMP',
-CHANGE `feature` `feature` ENUM( 'ecard' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
-
+DROP TABLE IF EXISTS `throttle`;
+CREATE TABLE `throttle` (
+  `used` timestamp NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `feature` enum('ecard') NOT NULL,
+  KEY `user_id` (`user_id`,`feature`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 ;
