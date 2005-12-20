@@ -4,7 +4,7 @@
  * $Id$
  * 
  * GeoGraph geographic photo archive project
- * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
+ * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -53,7 +53,7 @@ if (! ($to_email == $from_email && $from_email == $USER->email) ) {
 		print "<H3>This feature is busy, please try again later.</h3>";
 		exit;
 	}		
-	$db->query("insert into throttle set user_id={$USER->user_id},feature = 'e'");
+	
 	if (rand(1,10) > 5) {
 		$db->query("delete from throttle where ts < date_sub(now(), interval 48 hour)");
 	}
@@ -120,6 +120,8 @@ if (isset($_POST['msg']))
 	if ($ok)
 	{
 		//build message and send it...
+		
+		$db->query("insert into throttle set user_id={$USER->user_id},feature = 'e'");
 		
 		$smarty->assign_by_ref('htmlmsg', nl2br($msg));
 		
