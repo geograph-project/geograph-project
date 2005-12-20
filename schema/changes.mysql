@@ -246,3 +246,9 @@ CREATE TABLE `throttle` (
 `user_id` INT UNSIGNED NOT NULL ,
 `feature` VARCHAR( 1 ) NOT NULL 
 );
+
+
+#pauls suggestion to tidy up the throttle table:
+ALTER TABLE `throttle` CHANGE `ts` `used` TIMESTAMP DEFAULT 'CURRENT_TIMESTAMP',
+CHANGE `feature` `feature` ENUM( 'ecard' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+
