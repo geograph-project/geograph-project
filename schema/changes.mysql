@@ -235,3 +235,14 @@ CREATE TABLE `gridimage_post` (
 ALTER TABLE `queries` CHANGE `crt_timestamp` `crt_timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ;
 
 
+ALTER TABLE `queries` ADD `limit9` INT UNSIGNED NOT NULL AFTER `limit8` ;
+
+#purly to have something to sort on!
+ALTER TABLE `gridimage_post` ADD `seq_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST ;
+
+
+CREATE TABLE `throttle` (
+`ts` TIMESTAMP NOT NULL ,
+`user_id` INT UNSIGNED NOT NULL ,
+`feature` VARCHAR( 1 ) NOT NULL 
+);
