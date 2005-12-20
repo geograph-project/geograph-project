@@ -13,12 +13,14 @@ Content-Transfer-Encoding: quoted-printable
 
 --------------------------------
 
+http://{$http_host}/photo/{$image->gridimage_id}
+
 {$image->title|escape:'html'}
 {$image->comment|escape:'html'}
 
 View Online at http://{$http_host}/photo/{$image->gridimage_id}
 --------------------------------
-Image =A9 Copyright Barry Hunter and licensed for reuse under this Creative Commons Licence. 
+Image =A9 Copyright {$image->realname} and licensed for reuse under this Creative Commons Licence. 
 http://creativecommons.org/licenses/by-sa/2.0/
 --------------------------------
 
@@ -35,11 +37,13 @@ Content-Transfer-Encoding: quoted-printable
 <META http-equiv=3DContent-Type content=3D"text/html; =
 charset=3Dwindows-1252"><BASE=20
 href=3D"http://{$http_host}/"\>
-<META content=3D"MSHTML 6.00.2900.2769" name=3DGENERATOR>
+<META content=3D"Geograph User: {$user->user_id}" name=3DGENERATOR>
 </HEAD>
 <BODY bgColor=3D#eeeeff leftMargin=3D0 topMargin=3D0 MARGINHEIGHT=3D"0" =
 MARGINWIDTH=3D"0">
-<TABLE cellSpacing=3D0 cellPadding=3D2 width=3D"100%">
+<TABLE cellSpacing=3D0 cellPadding=3D6 width=3D"750" align=3Dcenter style=3D"width:750px;">
+<TBODY><TR><TD>
+<TABLE cellSpacing=3D0 cellPadding=3D4 width=3D"100%">
   <TBODY>
   <TR>
     <TD bgColor=3D#000066>&nbsp;</TD>
@@ -47,16 +51,18 @@ MARGINWIDTH=3D"0">
 height=3D74=20
       src=3D"http://{$http_host}/templates/basic/img/logo.gif" width=3D257 =
 border=3D0></A></TD>
-    <TD vAlign=3Dtop align=3Dright bgColor=3D#000066><A=20
+    <TD vAlign=3Dtop align=3Dcenter bgColor=3D#000066><A=20
       href=3D"http://{$http_host}/"><FONT face=3DGeorgia =
 color=3D#ffffff=20
-      size=3D+2>{$http_host}</FONT></A></TD>
+      size=3D+2>{$http_host}</FONT></A><BR><FONT face=3DGeorgia =
+color=3D#ffffff size=3D1 style=3D"font-size:0.7em"><I>The Geograph British Isles project aims to collect a geographically representative<BR> photograph for every square kilometre of the British Isles and you can be part of it.</I></FONT></TD>
     <TD bgColor=3D#000066>&nbsp;</TD></TR>
   <TR>
     <TD>&nbsp;</TD>
+    <TD COLSPAN="2" ALIGN="CENTER">
+      </TD>
     <TD>&nbsp;</TD>
-    <TD align=3Dmiddle>&nbsp;</TD>
-    <TD>&nbsp;</TD></TR>
+    </TR>
   <TR>
     <TD>&nbsp;</TD>
     <TD style=3D"BORDER-TOP: black 1px solid; BORDER-LEFT: black 1px =
@@ -88,8 +94,7 @@ solid; BORDER-BOTTOM: black 1px solid"=20
 face=3DGeorgia>View=20
       Online at <A=20
       =
-href=3D"http://{$http_host}/photo/{$image->gridimage_id}">http://{$http_host}=
-/photo/{$image->gridimage_id}</A></FONT></TD>
+href=3D"http://{$http_host}/photo/{$image->gridimage_id}">http://{$http_host}/photo/{$image->gridimage_id}</A></FONT></TD>
     <TD>&nbsp;</TD></TR>
   <TR>
     <TD>&nbsp;</TD>
@@ -104,17 +109,14 @@ title=3D"View profile"=20
 reuse under this=20
       <A class=3Dnowrap =
 href=3D"http://creativecommons.org/licenses/by-sa/2.0/"=20
-      rel=3Dlicense>Creative Commons Licence</A>.</FONT></TD>
+      rel=3Dlicense>Creative&nbsp;Commons&nbsp;Licence</A>.</FONT></TD>
     <TD>&nbsp;</TD></TR>
-  <TR>
-    <TD>&nbsp;</TD>
-    <TD vAlign=3Dtop>&nbsp;</TD>
-    <TD align=3Dmiddle>&nbsp;</TD>
-    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+</TBODY></TABLE>
+</TD></TR></TBODY></TABLE>
 <P align=3Dcenter><FONT face=3DGeorgia size=3D-1>This message was sent =
 to you by site=20
 visitor to Geograph British Isles, <BR>forward abuse complaints to:=20
-rogersgm@gmail.com</FONT></P></BODY></HTML>
+rogersgm@gmail.com</FONT><!-- {$user->user_id} --></P></BODY></HTML>
 
 ------=_NextPart_000_00DF_01C5EB66.9313FF40--
 
