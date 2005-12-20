@@ -90,6 +90,19 @@ if (isset($_REQUEST['id']))
 
 	if ($image->isValid())
 	{
+		if ($image->moderation_status=='rejected')
+		{
+			if ($isowner||$isadmin)
+			{
+				//ok, we'll let it lie...
+			}
+			else
+			{
+				header("Location: /photo/{$_REQUEST['id']}");
+				exit;
+			}
+		}
+
 
 		//get the photographer position
 		$image->getPhotographerGridref();
