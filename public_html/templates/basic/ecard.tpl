@@ -10,7 +10,7 @@
 	
 		<p>Return to the <a href="/photo/{$image->gridimage_id}">Image</a> Page.</p>
 	{else}
-		<form method="post" action="/ecard.php">
+		<form method="post" action="/ecard.php?image={$image->gridimage_id}">
 	<input type="hidden" name="image" value="{$image->gridimage_id|escape:'html'}">
 
 
