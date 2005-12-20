@@ -133,6 +133,7 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
     {/dynamic}
     <input type="submit" value="Go"/></p></form>
 
-   <p>Technical Database Stats: <a href="/statistics/totals.php">Current Totals</a>, <a href="/statistics/estimate.php">Future Estimates</a>, <a href="/statistics/overtime.php">Activity Breakdown</a> (<a href="/statistics/overtime_forum.php">for Forum</a>)</p> 	
+   <p>Technical Database Stats: <a href="/statistics/totals.php">Current Totals</a>, <a href="/statistics/estimate.php">Future Estimates</a>, <a href="/statistics/overtime.php">Activity Breakdown</a> (<a href="/statistics/overtime_forum.php">for Forum</a>),<br/>
+   <a href="/statistics/forum_image_breakdown.php">Breakdown of Thumbnails used in Forum Topics</a></p> 	
  
 {include file="_std_end.tpl"}
