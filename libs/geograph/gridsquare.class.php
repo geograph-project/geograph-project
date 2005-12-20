@@ -485,6 +485,12 @@ class GridSquare
 						
 			}
 			
+			if ($this->percent_land==0)
+			{
+				$this->_error("$gridref seems to be all at sea! Please contact us if you think this is in error");
+				$ok=false;
+
+			}
 			
 			//square is good, how many pictures?
 			if ($this->imagecount==0)
