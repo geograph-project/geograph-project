@@ -44,20 +44,23 @@ $smarty->assign_by_ref('from_email', $from_email);
 $smarty->assign_by_ref('to_name', $to_name);
 $smarty->assign_by_ref('to_email', $to_email);
 
-#not really any need to throttle images sent to themselfs
-if (! ($to_email == $from_email && $from_email == $USER->email) ) {
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (empty($db)) die('Database connection failed');
+$db=NewADOConnection($GLOBALS['DSN']);
+if (empty($db)) die('Database connection failed');
 
-	if ($db->getOne("select count(*) from throttle where ts > date_sub(now(), interval 1 hour) and user_id={$USER->user_id} AND feature = 'e'") > 8) {
-		print "<H3>This feature is busy, please try again later.</h3>";
-		exit;
-	}		
-	
-	if (rand(1,10) > 5) {
-		$db->query("delete from throttle where ts < date_sub(now(), interval 48 hour)");
-	}
+if ($db->getOne("select count(*) from throttle where used > date_sub(now(), interval 1 hour) and user_id={$USER->user_id} AND feature = 'ecard'") > 8) {
+	$smarty->assign('throttle',1);
+	$throttle = 1;
+} elseif ($db->getOne("select count(*) from throttle where used > date_sub(now(), interval 24 hour) and user_id={$USER->user_id} AND feature = 'ecard'") > 30) {
+	$smarty->assign('throttle',1);
+	$throttle = 1;
+} else {
+	$throttle = 0;
 }
+
+if (rand(1,10) > 5) {
+	$db->query("delete from throttle where used < date_sub(now(), interval 48 hour)");
+}
+
 
 if (isset($_REQUEST['image']))
 {
@@ -80,10 +83,10 @@ if (isset($_REQUEST['image']))
 }
 	
 //try and send?
-if (isset($_POST['msg']))
+if (!$throttle && isset($_POST['msg']))
 {
 	$ok=true;
-	$msg=trim(stripslashes($_POST['msg']));
+	$msg=htmlentities(trim(stripslashes($_POST['msg'])));
 	
 	$errors=array();
 	if (!isValidEmailAddress($from_email))
@@ -113,27 +116,55 @@ if (isset($_POST['msg']))
 	}
 	$smarty->assign_by_ref('errors', $errors);
 
-	$smarty->assign_by_ref('msg', $msg);
+	$smarty->assign_by_ref('msg', html_entity_decode($msg)); //will be re-htmlentities'ed when output
 
 	
 	//still ok?
-	if ($ok)
+	if ($ok && !isset($_POST['edit']))  
 	{
 		//build message and send it...
 		
-		$db->query("insert into throttle set user_id={$USER->user_id},feature = 'e'");
 		
 		$smarty->assign_by_ref('htmlmsg', nl2br($msg));
 		
 		$body=$smarty->fetch('email_ecard.tpl');
-		$subject="$from_name is sending you an e-Card from {$_SERVER['HTTP_HOST']}";
+		$subject="[{$_SERVER['HTTP_HOST']}] $from_name is sending you an e-Card";
 		
-		@mail("$to_name <$to_email>", $subject, $body, 
-			"From: $from_name <$from_email>\nContent-Type: multipart/alternative; boundary=\"----=_NextPart_000_00DF_01C5EB66.9313FF40\"");
-		
-		
-		
-		$smarty->assign('sent', 1);
+		if (isset($_POST['preview'])) {
+			preg_match_all('/(<!DOCTYPE.*<\/HTML>)/s',$body,$matches);
+	
+			print "<title>eCard Preview</title>";
+			print "<form method=\"post\">";
+			foreach ($_POST as $name => $value) {
+				if ($name != 'preview') {
+					print "<input type=\"hidden\" name=\"$name\" value=\"".htmlentities($value)."\">";
+				}
+			}
+			print "<p>Below is a preview of your message, ";
+			print "<input type=\"submit\" name=\"edit\" value=\"Edit\">";
+			print "<input type=\"submit\" name=\"send\" value=\"Send\"></p>";
+			print "</FORM>";
+			
+			print "<h3>Subject: $subject</h3>";
+			$html = preg_replace("/=[\n\r]+/s","\n",$matches[1][0]);
+			$html = preg_replace("/=(\w{2})/e",'chr(hexdec("$1"))',$html);
+			print $html;
+			exit;
+		} else {
+			$db->query("insert into throttle set user_id={$USER->user_id},feature = 'ecard'");
+					
+			$headers = array();
+			$headers[] = "From: $from_name <{$USER->email}>";
+			if ($from_email != $USER->email) 
+				$headers[] = "Reply-To: $from_name <$from_email>";
+			$headers[] = "X-GeographUserId:{$USER->user_id}";
+
+			$headers[] = "Content-Type: multipart/alternative; boundary=\"----=_NextPart_000_00DF_01C5EB66.9313FF40\"";
+
+			@mail("$to_name <$to_email>", $subject, $body, implode("\n",$headers));
+
+			$smarty->assign('sent', 1);
+		}
 	}
 }
 
