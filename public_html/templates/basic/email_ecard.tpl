@@ -41,7 +41,7 @@ href=3D"http://{$http_host}/"\>
 </HEAD>
 <BODY bgColor=3D#eeeeff leftMargin=3D0 topMargin=3D0 MARGINHEIGHT=3D"0" =
 MARGINWIDTH=3D"0">
-<TABLE cellSpacing=3D0 cellPadding=3D6 width=3D"750" align=3Dcenter style=3D"width:750px;">
+<TABLE cellSpacing=3D0 cellPadding=3D0 width=3D"750" align=3Dcenter style=3D"width:750px;">
 <TBODY><TR><TD>
 <TABLE cellSpacing=3D0 cellPadding=3D4 width=3D"100%">
   <TBODY>
@@ -55,7 +55,7 @@ border=3D0></A></TD>
       href=3D"http://{$http_host}/"><FONT face=3DGeorgia =
 color=3D#ffffff=20
       size=3D+2>{$http_host}</FONT></A><BR><FONT face=3DGeorgia =
-color=3D#ffffff size=3D1 style=3D"font-size:0.7em"><I>The Geograph British Isles project aims to collect a geographically representative<BR> photograph for every square kilometre of the British Isles and you can be part of it.</I></FONT></TD>
+color=3D#ffffff><I>The Geograph British Isles project aims to collect a geographically representative<BR> photograph for every square kilometre of the British Isles and you can be part of it.</I></FONT></TD>
     <TD bgColor=3D#000066>&nbsp;</TD></TR>
   <TR>
     <TD>&nbsp;</TD>
