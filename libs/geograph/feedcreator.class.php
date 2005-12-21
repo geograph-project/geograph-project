@@ -1076,18 +1076,14 @@ class KMLCreator extends FeedCreator {
 			$feed.= "<NetworkLinkControl>\n<minRefreshPeriod>3600</minRefreshPeriod>\n</NetworkLinkControl>\n";
 		if (!empty($_GET['simple']) && count($this->items) > 0) {
 		$feed.= "<Style id=\"defaultIcon\">
-	<IconStyle id=\"defaultIcon\">
-	</IconStyle>
 	<LabelStyle>
 		<scale>0</scale>
 	</LabelStyle>
 </Style>
 <Style id=\"hoverIcon\">
 	<IconStyle id=\"hoverIcon\">
-		<scale>1.3</scale>
+		<scale>2.1</scale>
 	</IconStyle>
-	<LabelStyle>
-	</LabelStyle>
 </Style>
 <StyleMap id=\"defaultStyle\">
 	<Pair>
