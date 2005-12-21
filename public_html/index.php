@@ -51,21 +51,20 @@ if (!$smarty->is_cached($template, $cacheid))
 	//let's find recent posts in the announcements forum made by
 	//administrators
 	$db=NewADOConnection($GLOBALS['DSN']);
-	$sql='select u.user_id,u.realname,t.topic_title,p.post_text,t.topic_id,t.topic_time '.
-		'from geobb_topics as t '.
-		'inner join geobb_posts as p on(t.topic_id=p.topic_id) '.
-		'inner join user as u on (p.poster_id=u.user_id) '.
-		'where find_in_set(\'admin\',u.rights)>0 and '.
-		't.topic_time=p.post_time and '.
-		't.forum_id=1 '.
-		'order by t.topic_time desc limit 3';
+	$sql="select u.user_id,u.realname,t.topic_title,p.post_text,t.topic_id,t.topic_time, posts_count - 1 as comments 
+		from geobb_topics as t
+		inner join geobb_posts as p on(t.topic_id=p.topic_id)
+		inner join user as u on (p.poster_id=u.user_id)
+		where find_in_set('admin',u.rights)>0 and
+		abs(unix_timestamp(t.topic_time) - unix_timestamp(p.post_time) ) < 10 and
+		t.forum_id=1
+		order by t.topic_time desc limit 3";
 	$news=$db->GetAll($sql);
 	if ($news) 
 	{
 		foreach($news as $idx=>$item)
 		{
 			$news[$idx]['post_text']=str_replace('<br>', '<br/>', $news[$idx]['post_text']);
-			$news[$idx]['comments']=$db->GetOne('select count(*)-1 as comments from geobb_posts where topic_id='.$item['topic_id']);
 		}
 	}
 	
