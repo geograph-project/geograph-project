@@ -140,12 +140,12 @@ if (!$throttle && isset($_POST['msg']))
 					print "<input type=\"hidden\" name=\"$name\" value=\"".htmlentities($value)."\">";
 				}
 			}
-			print "<p>Below is a preview of your message, ";
+			print "<br/><p align=\"center\"><font face=\"Georgia\">Below is a preview the card as will be sent to $to_email </font>";
 			print "<input type=\"submit\" name=\"edit\" value=\"Edit\">";
 			print "<input type=\"submit\" name=\"send\" value=\"Send\"></p>";
 			print "</FORM>";
 			
-			print "<h3>Subject: $subject</h3>";
+			print "<h3 align=center><font face=\"Georgia\">Subject: $subject</font></h3>";
 			$html = preg_replace("/=[\n\r]+/s","\n",$matches[1][0]);
 			$html = preg_replace("/=(\w{2})/e",'chr(hexdec("$1"))',$html);
 			print $html;
