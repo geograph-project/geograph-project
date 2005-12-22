@@ -25,12 +25,13 @@ require_once('geograph/global.inc.php');
 init_session();
 
 
+$type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'points';
 
 
 $smarty = new GeographPage;
 
 $template='leaderboard.tpl';
-$cacheid='leaderboard';
+$cacheid=$type;
 
 if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
 	$smarty->clear_cache($template, $cacheid);
@@ -48,9 +49,37 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 
-	$topusers=$db->GetAll("select user_id,realname,count(*) as imgcount,max(gridimage_id) as last  ".
-	"from gridimage_search where ftf=1 ".
-	"group by user_id order by imgcount desc,last asc ");
+	$sql_column = "count(*)";
+	if ($type == 'squares') {
+		$sql_column = "count(distinct grid_reference)";
+		$sql_where = "1";
+		$heading = "Squares<br/>Photographed";
+		$desc = "different squares photographed";
+	} elseif ($type == 'geosquares') {
+		$sql_column = "count(distinct grid_reference)";
+		$sql_where = "i.moderation_status='geograph'";
+		$heading = "Squares<br/>Geographed";
+		$desc = "different squares photographed";
+	} elseif ($type == 'geographs') {
+		$sql_where = "i.moderation_status='geograph'";
+		$heading = "Geograph Images";
+		$desc = "'geograph' images submitted";
+	} elseif ($type == 'images') {
+		$sql_where = "1";
+		$heading = "Images";
+		$desc = "images submitted";
+	} else { #if ($type == 'points') {
+		$sql_where = "i.ftf=1 and i.moderation_status='geograph'";
+		$heading = "Geograph<br/>Points";
+		$desc = "geograph points awarded";
+	} 
+	$smarty->assign('heading', $heading);
+	$smarty->assign('desc', $desc);
+	$smarty->assign('type', $type);
+
+	$topusers=$db->GetAll("select user_id,realname, $sql_column as imgcount,max(gridimage_id) as last
+	from gridimage_search i where $sql_where
+	group by user_id order by imgcount desc,last asc limit 100"); //may as well have a limit, whats the chance of > 50 in 50th position?
 	$lastimgcount = 0;
 	$toriserank = 0;
 	foreach($topusers as $idx=>$entry)
