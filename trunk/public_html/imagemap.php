@@ -36,14 +36,21 @@ init_session();
 	$map->enableCaching($CONF['smarty_caching']);
 
 
-		$map->setOrigin(-10,-30);
-		$map->setImageSize(1200,1700);
-		$map->setScale(1.3);
-		$map->type_or_user = -1;
+		$map->setOrigin(0,-10);
+		$map->setImageSize(1200/2,1700/2);
+		$map->setScale(1.3/2);
+		
+		if ($_GET['year'] == '2005') {
+			$map->type_or_user = -2005;
+		} elseif ($_GET['year'] == '2004') {
+			$map->type_or_user = -2004;
+		} else {
+			$map->type_or_user = -1;
+		}
 	
 			//force render of this map 
 			//$map->_renderRandomGeographMap();
-				//now donw with type_or_user = -1
+				//now done with type_or_user = -1
 	
 	$map->returnImage();
 	exit;
