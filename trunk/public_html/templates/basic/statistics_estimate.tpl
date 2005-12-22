@@ -3,8 +3,13 @@
 
 <h2>Geograph Database Estimates{if $ri} for {$references.$ri}{/if}</h2>
 
-<h3>Images</h3>
-<p>We currently have {$image.count} images, therefore at the current rate of {$image.average_r} submissions as day, we will reach {$image.next} in about {$image.days_r} days time!</p>
+<p>See <a title="Frequently Asked Questions" href="/help/stats_faq">FAQ</a> 
+for details of the various measures</p>
+
+<h3>Points</h3>
+<p>We currently have {$point.count} points awarded, therefore at the current rate of {$point.average_r} points as day, we will reach {$point.next} in about {$point.days_r} days time!</p>
+
+<p>Furthermore at the current rate of {$totall.average_r} points as week, we will reach {$totall.next} (full coverage) in about {$totall.weeks_r} weeks time, or {$totall.enddate}!</p>
 
 
 <h3>Geographs</h3>
@@ -15,14 +20,20 @@
 <p>We currently have {$square.count} squares photographed, therefore at the current rate of {$square.average_r} squares as day, we will reach {$square.next} in about {$square.days_r} days time!</p>
 
 
-<h3>Points</h3>
-<p>We currently have {$point.count} points awarded, therefore at the current rate of {$point.average_r} points as day, we will reach {$point.next} in about {$point.days_r} days time!</p>
+<h3>Images</h3>
+<p>We currently have {$image.count} images, therefore at the current rate of {$image.average_r} submissions as day, we will reach {$image.next} in about {$image.days_r} days time!</p>
 
-<p>Furthermore at the current rate of {$totall.average_r} points as week, we will reach {$totall.next} (full coverage) in about {$totall.weeks_r} weeks time, or {$totall.enddate}!</p>
 
+<hr/>
+
+{if $ri}<h2>Geograph Database Estimates</h2>{/if}
 
 <h3>Users</h3>
 <p>We currently have {$users.count} users, therefore at the current rate of {$users.average_r} users signing up a day, we will reach {$users.next} in about {$users.days_r} days time!</p>
+
+<p>We currently have {$cusers.count} contributing users, therefore at the current rate of {$cusers.average_r} users signing up a day (who later contribute), we will reach {$cusers.next} in about {$cusers.days_r} days time!</p>
+
+
 
 
 <h3>Forum Posts</h3>
