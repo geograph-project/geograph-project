@@ -131,6 +131,14 @@ if ($grid_given)
 		
 		$smarty->assign('totalimagecount', $square->totalimagecount);
 		
+		if ($square->totalimagecount < 30) {
+			$smarty->assign('thumbw',213);
+			$smarty->assign('thumbh',160);
+		} else {
+			$smarty->assign('thumbw',120);
+			$smarty->assign('thumbh',120);
+		}
+		
 		//geotag the page	
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
