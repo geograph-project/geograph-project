@@ -25,12 +25,13 @@ require_once('geograph/global.inc.php');
 init_session();
 
 
+$type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'points';
 
 
 $smarty = new GeographPage;
 
 $template='moversboard.tpl';
-$cacheid='';
+$cacheid=$type;
 
 if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
 	$smarty->clear_cache($template, $cacheid);
@@ -45,15 +46,74 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed'); 
 	
-	//we want to find all users with geographs/pending images 
-$sql="select i.user_id,u.realname,sum(i.ftf=1 and i.moderation_status='geograph') as geographs, sum(i.moderation_status='pending') as pending from gridimage as i 
-left join user as u using(user_id) 
-where i.submitted > date_sub(now(), interval 7 day) 
-group by i.user_id 
-having (geographs > 0 or pending > 0)
-order by geographs desc,pending desc ";
-	$topusers=$db->GetAssoc($sql);
-		
+	/////////////
+	// in the following code 'geographs' is used a column for legacy reasons, but dont always represent actual geographs....
+	
+	if ($type == 'squares' || $type == 'geosquares') {
+		if ($type == 'geosquares') {
+			$sql_where = " and i.moderation_status='geograph'";
+			$heading = "Squares<br/>Geographed";
+			$desc = "different squares geographed";
+		} else {
+			$sql_where = '';
+			$heading = "Squares<br/>Photographed";
+			$desc = "different squares photographed";
+		}
+		//squares has to use a count(distinct ...) meaning cant have pending in same query... possibly could do with a funky subquery but probably would lower performance...
+		$sql="select i.user_id,i.realname,
+		count(distinct grid_reference) as geographs
+		from gridimage_search as i 
+		where i.submitted > date_sub(now(), interval 7 day) $sql_where
+		group by i.user_id 
+		order by geographs desc";
+		$topusers=$db->GetAssoc($sql);
+	
+
+		//now we want to find all users with pending images and add them to this array
+		$sql="select i.user_id,u.realname,0 as geographs, count(*) as pending from gridimage as i
+		inner join user as u using(user_id)  
+		where i.submitted > date_sub(now(), interval 7 day) and
+		i.moderation_status='pending'
+		group by i.user_id
+		order by pending desc";
+		$pendingusers=$db->GetAssoc($sql);
+		foreach($pendingusers as $user_id=>$pending) {
+			if (isset($topusers[$user_id])) {
+				$topusers[$user_id]['pending']=$pending['pending'];
+			} else {
+				$topusers[$user_id]=$pending;
+			}
+		}
+		//no need to resort the combined array as should have imlicit ordering!
+	} elseif ($type == 'geographs') {
+		$sql_column = "sum(i.moderation_status='geograph')";
+		$heading = "New<br/>Geographs";
+		$desc = "'geograph' images submitted";
+	} elseif ($type == 'images') {
+		$sql_column = "sum(i.moderation_status in ('geograph','accepted'))";
+		$heading = "New<br/>Images";
+		$desc = "images submitted";
+	} else { #if ($type == 'points') {
+		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph')";
+		$heading = "New<br/>Geograph<br/>Points";
+		$desc = "geograph points awarded";
+	} 
+	$smarty->assign('heading', $heading);
+	$smarty->assign('desc', $desc);
+	$smarty->assign('type', $type);
+	
+	if (!count($topusers)) {
+		//we want to find all users with geographs/pending images 
+		$sql="select i.user_id,u.realname,
+		$sql_column as geographs, 
+		sum(i.moderation_status='pending') as pending from gridimage as i 
+		left join user as u using(user_id) 
+		where i.submitted > date_sub(now(), interval 7 day) 
+		group by i.user_id 
+		having (geographs > 0 or pending > 0)
+		order by geographs desc,pending desc ";
+		$topusers=$db->GetAssoc($sql);
+	}		
 	//assign an ordinal
 
 	$i=1;$lastgeographs = '?';
