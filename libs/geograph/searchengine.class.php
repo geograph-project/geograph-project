@@ -441,6 +441,12 @@ class SearchEngine
 			if (!empty($dataarray['distance']) && isset($searchx) && $searchx > 0 && $searchy > 0) {
 				$sql .= sprintf(",limit8 = %d",$dataarray['distance']);
 			}
+			if (!empty($dataarray['topic_id'])) {
+				$sql .= ",limit9 = ".$dataarray['topic_id'];
+				$topic_name=$db->getOne("SELECT topic_title FROM geobb_topics WHERE topic_id = ".$dataarray['topic_id']);
+				$searchdesc .= ", in topic ".$topic_name;
+			}
+			
 			if (!isset($dataarray['orderby']))
 				$dataarray['orderby'] = '';
 			switch ($dataarray['orderby']) {

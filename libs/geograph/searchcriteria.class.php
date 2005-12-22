@@ -226,6 +226,14 @@ class SearchCriteria
 			
 			
 		}	
+		
+		if (!empty($this->limit9)) {
+			if ($sql_where) {
+				$sql_where .= ' and ';
+			}
+			$sql_where .= "topic_id = {$this->limit9} ";
+			$sql_from .= " INNER JOIN gridimage_post gp ON(gi.gridimage_id=gp.gridimage_id) ";
+		} 
 	}
 	
 	
@@ -335,7 +343,7 @@ class SearchCriteria_Text extends SearchCriteria
 		if (strpos($this->searchq,'^') === 0) {
 			$words = str_replace('^','',$this->searchq);
 			$sql_where .= ' wordnet.title>0 AND words = '.$db->Quote($words);
-			$sql_from = ' INNER JOIN wordnet ON(gi.gridimage_id=wordnet.gid) ';
+			$sql_from .= ' INNER JOIN wordnet ON(gi.gridimage_id=wordnet.gid) ';
 		} elseif (preg_match("/\+$/",$this->searchq)) {
 			$words = $db->Quote('%'.preg_replace("/\+$/",'',$this->searchq).'%');
 			$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';
