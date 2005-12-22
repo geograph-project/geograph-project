@@ -88,7 +88,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$sql = "select substring(signup_date,1,10) as d ,count(*) as c from user where rights <> '' and signup_date > '$beginday' AND signup_date < '$today' and (select gridimage_id from gridimage_search gi where gi.user_id = user.user_id $andri limit 1) is not NULL group by substring(signup_date,1,10)";
 	
-	$sql2 = "select count(*) from gridimage_search $whereri group by user_id";
+	$sql2 = "select count(distinct user_id) from gridimage_search $whereri";
 
 	$cusers = calc($sql,$sql2,1000);
 				
