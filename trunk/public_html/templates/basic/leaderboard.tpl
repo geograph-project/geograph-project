@@ -1,19 +1,18 @@
-{assign var="page_title" value="Top 50 Leaderboard"}
+{assign var="page_title" value="Top 50 Leaderboard  :: $type"|capitalize}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
-<h2>Geograph Top 50 Leaderboard</h2>
+<h2>Top 50 Leaderboard :: {$type|capitalize}</h2>
 
 <p>Listed below are the top 50 contributors based on number of
-geograph points, earned by being the first to submit a geograph for
-a particular grid square (see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a> 
-for details)</p>
+{$desc}, (see <a title="Frequently Asked Questions" href="/help/stats_faq">FAQ</a> 
+for details).</p>
 
-<p>A <a href="/moversboard.php">weekly leaderboard</a> is also available showing the 
+<p>A <a href="/moversboard.php{if $type != 'points'}?type={$type}{/if}">weekly leaderboard</a> is also available showing the 
 top submitters this week.</p>
 
 <table class="report">
-<thead><tr><td>Position</td><td>Contributor</td><td>Points</td></tr></thead>
+<thead><tr><td>Position</td><td>Contributor</td><td>{$heading}</td></tr></thead>
 <tbody>
 
 {foreach from=$topusers item=topuser}

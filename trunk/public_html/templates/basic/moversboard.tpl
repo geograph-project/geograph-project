@@ -1,20 +1,21 @@
-{assign var="page_title" value="Weekly Leaderboard"}
+{assign var="page_title" value="Weekly Leaderboard :: $type"|capitalize}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
-<h2>Geograph Weekly Leaderboard</h2>
+<h2>Weekly Leaderboard :: {$type|capitalize}</h2>
 
 <p>Here is everyone who has contributed in the past 7 days, ordered by
-number of geograph points awards. The "pending" column gives some idea of 
+number of {$desc} (see <a title="Frequently Asked Questions" href="/help/stats_faq">FAQ</a> 
+for details). The "pending" column gives some idea of 
 how much each person will climb when their pictures are moderated!</p>
 
-<p>The <a href="/leaderboard.php">all-time top 50 leaderboard</a> is also available</p>
+<p>The <a href="/leaderboard.php{if $type != 'points'}?type={$type}{/if}">all-time top 50 leaderboard</a> is also available.</p>
 
 <p>Last generated at {$smarty.now|date_format:"%H:%M"} and covers all submissions since
 {$cutoff_time|date_format:"%A, %d %b at %H:%M"}</p>
 
 <table class="report"> 
-<thead><tr><td>Position</td><td>Contributor</td><td>New<br/>Geograph<br/>Points</td><td>Pending</td></tr></thead>
+<thead><tr><td>Position</td><td>Contributor</td><td>{$heading}</td><td>Pending</td></tr></thead>
 <tbody>
 
 {foreach from=$topusers key=topuser_id item=topuser}
