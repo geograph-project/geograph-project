@@ -13,10 +13,11 @@
 <a name="differ"></a> 
 <h3>Points/Squares etc seem pretty similar... How do they differ?</h3>
     <ul>
-    <li><b>Images</b>: these are all images on the site, regardless if they Geograph or supplemental</li>
-    <li><b>Geographs</b>: these are all Geograph images, even if multiple for the same grid square</li>
-    <li><b>Squares</b>: the number of different squares photographed (including supplemental)</li>
-    <li><b>Points</b>: these are Geographs with that are submitted first for a square</li>
+    <li><b>Points</b>: the first geograph submitted for a square earns a <a href="/faq.php#points">Geograph Point</a><br/><br/></li>
+    <li><b>Images</b>: these are all images on the site, regardless if they Geograph or supplemental<br/><br/></li>
+    <li><b>Geographs</b>: these are all Geograph images, even if multiple for the same grid square<br/><br/></li>
+    <li><b>Squares</b>: the number of different squares photographed (Geograph or supplemental)<br/><br/></li>
+    <li><b>GeoSquares</b>: the number of different squares Geographed (aka Personal Geograph Points)<br/><br/></li>
     </ul>
     
     
