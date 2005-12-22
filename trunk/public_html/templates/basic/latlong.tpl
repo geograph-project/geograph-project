@@ -117,7 +117,7 @@
 		</ul></li>
 		<li><a href="/submit.php?gridreference={$gridref}"><b>Submit</b> a Picture for {$gridref4} (using {$gridref} as the picture location)</a><br/><br/></li>
 		
-		<li>{external href="http://www.nearby.org.uk/coord.cgi?p=`$gridref`" title="More info from nearby.org.uk" text="More information about this location from nearby.org.uk"}</li>
+		<li>{external href="http://www.nearby.org.uk/coord.cgi?p=`$e`,`$n`" title="More info from nearby.org.uk" text="More information about this location from nearby.org.uk"}</li>
 		</ul>
 	{else}
 		<p>See also {external href="http://www.nearby.org.uk/coord-entry.html" text="nearby.org.uk"} which offers a similar converter.</p>
