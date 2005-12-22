@@ -266,7 +266,7 @@ class GeographMap
 		if (!is_dir($root.$dir))
 			mkdir($root.$dir);
 		
-		$extension = ($this->pixels_per_km > 40)?'jpg':'png';
+		$extension = ($this->pixels_per_km > 40 || $this->type_or_user < 0)?'jpg':'png';
 		
 		$file="detail_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}_{$this->type_or_user}.$extension";
 		
@@ -382,7 +382,7 @@ class GeographMap
 	* @access private
 	*/
 	function& _renderMap() {
-		if ($this->type_or_user == -1) {
+		if ($this->type_or_user < 1) {
 			$this->_renderRandomGeographMap();
 		} else if ($this->type_or_user > 0) {
 			//todo
@@ -707,7 +707,7 @@ class GeographMap
 		}				
 				
 		$target=$this->getImageFilename();
-		if ($this->pixels_per_km > 40) {
+		if (preg_match('/jpg/',$target)) {
 			imagejpeg($img, $root.$target);
 		} else {
 			imagepng($img, $root.$target);
@@ -737,6 +737,8 @@ class GeographMap
 			//we need to generate a basemap
 			$img=&$this->_createBasemap($root.$basemap);
 		}
+		
+		$target=$this->getImageFilename();
 		
 		$colMarker=imagecolorallocate($img, 255,0,0);
 		$colBorder=imagecolorallocate($img, 255,255,255);
@@ -773,12 +775,32 @@ class GeographMap
 		{
 			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
 		}
+		if ($this->type_or_user <  2000) {
+			$sql="select x,y,gi.gridimage_id from gridimage_search gi
+			where 
+			(x between $scanleft and $scanright) and 
+			(y between $scanbottom and $scantop) and imagetaken = '".($this->type_or_user * -1)."-12-25'
+			 order by rand()";
+			 
+			$imagemap = fopen( $root.$target.".html","w");
+			fwrite($imagemap,"<map name=\"imagemap\">\n");
+			 
+		} elseif (1) {
+			$sql="select x,y,gi.gridimage_id from gridimage_search gi
+			where 
+			(x between $scanleft and $scanright) and 
+			(y between $scanbottom and $scantop) 
+			and seq_no = 1 group by FLOOR(x/30),FLOOR(y/30) order by rand() limit 200";
+			#inner join gridimage_post gp on (gi.gridimage_id = gp.gridimage_id and gp.topic_id = 1006)
+			
+		} else {
 		
-		$sql="select x,y,gridsquare_id from gridsquare where ".
-			"(x between $scanleft and $scanright) and ".
-			"(y between $scanbottom and $scantop) ".
-			"and imagecount>0 order by rand() limit 500";
-
+		$sql="select x,y,grid_reference from gridsquare where 
+			(x between $scanleft and $scanright) and 
+			(y between $scanbottom and $scantop) 
+			and imagecount>0 group by FLOOR(x/30),FLOOR(y/30) order by rand() limit 500";
+		}
+		
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
@@ -797,9 +819,9 @@ class GeographMap
 			$imgy2=$imgy1 + $photopixels;
 				
 				
-			$gridsquare_id=$recordSet->fields[2];
+			$gridimage_id=$recordSet->fields[2];
 
-			$sql="select * from gridimage where gridsquare_id=$gridsquare_id ".
+			$sql="select * from gridimage_search where gridimage_id='$gridimage_id' ".
 				"and moderation_status<>'rejected' order by moderation_status+0 desc,seq_no limit 1";
 
 			//echo "$sql\n";	
@@ -818,11 +840,13 @@ class GeographMap
 					imagerectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $colBorder);
 				//	imagerectangle ($img, $imgx1+1, $imgy1+1, $imgx2-1, $imgy2-1, $colBorder);
 
-
+					if ($this->type_or_user <  2000) {
+						fwrite($imagemap,"<area shape=\"rect\" coords=\"$imgx1,$imgy1,$imgx2,$imgy2\" href=\"/photo/{$rec['gridimage_id']}\" ALT=\"{$rec['grid_reference']} : {$rec['title']} by {$rec['realname']}\">\n"); 
+					}
 
 				}
 
-
+				$usercount[$rec['realname']]++;
 			}
 
 			
@@ -833,10 +857,18 @@ class GeographMap
 		}
 		$recordSet->Close(); 
 
-	
-				
-		$target=$this->getImageFilename();
-		if ($this->pixels_per_km > 40) {
+		if ($this->type_or_user <  2000) {
+			fwrite($imagemap,"</map>\n");
+			fclose($imagemap);
+		} else {
+			$h = fopen("imagemap.csv",'w');
+			foreach ($usercount as $user => $uses) {
+				fwrite($h,"$user,$uses\n");
+			}
+			fclose($h);
+		}
+		
+		if (preg_match('/jpg/',$target)) {
 			imagejpeg($img, $root.$target);
 		} else {
 			imagepng($img, $root.$target);
