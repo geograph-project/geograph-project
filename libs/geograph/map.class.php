@@ -382,7 +382,7 @@ class GeographMap
 	* @access private
 	*/
 	function& _renderMap() {
-		if ($this->type_or_user < 1) {
+		if ($this->type_or_user < 0) {
 			$this->_renderRandomGeographMap();
 		} else if ($this->type_or_user > 0) {
 			//todo
