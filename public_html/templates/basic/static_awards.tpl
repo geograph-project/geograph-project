@@ -2,7 +2,7 @@
 
  <h2>Geograph Awards and Reviews</h2>
 
-
+<p align="center">NOTE: this page hasn't been updated since 18th July 2005...</p>
 
 
 <h3>June 2005</h3>
