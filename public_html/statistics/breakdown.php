@@ -168,7 +168,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 $sql = "select 
 $sql_fieldname as field,
-count(distinct(gridimage_id)) as c $sql_fields
+count(distinct(gi.gridimage_id)) as c $sql_fields
 from gridimage_search as gi $sql_from
 where reference_index = $ri $user_crit
 $andwhere $sql_crit
