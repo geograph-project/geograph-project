@@ -4,7 +4,7 @@
  * $Id$
  * 
  * GeoGraph geographic photo archive project
- * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
+ * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -439,7 +439,7 @@ if (isset($_GET['fav']) ) {
 		if (isset($_GET['all'])) {
 			$limit = 999;
 			$smarty->assign('all',1);	
-		} if (isset($_GET['more'])) {
+		} elseif (isset($_GET['more'])) {
 			$limit = 30;
 			$smarty->assign('more',1);	
 		} else
@@ -448,12 +448,12 @@ if (isset($_GET['fav']) ) {
 		$recentsearchs = $db->GetAssoc("
 			(select queries.id,favorite,searchdesc,`count`,use_timestamp from queries 
 			left join queries_count using (id) 
-			where user_id = {$USER->user_id} and favorite = 'N'
+			where user_id = {$USER->user_id} and favorite = 'N' and searchuse = 'search'
 			group by searchdesc order by use_timestamp desc,id desc	limit $limit) 
 				UNION
 			(select queries.id,favorite,searchdesc,`count`,use_timestamp from queries 
 			left join queries_count using (id) 
-			where user_id = {$USER->user_id} and favorite = 'Y'
+			where user_id = {$USER->user_id} and favorite = 'Y' and searchuse = 'search'
 			group by searchdesc order by use_timestamp desc,id desc	limit $limit)
 			order by use_timestamp desc,id desc	");
 		$smarty->assign_by_ref('recentsearchs',$recentsearchs);	
