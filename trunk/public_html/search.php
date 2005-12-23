@@ -446,15 +446,15 @@ if (isset($_GET['fav']) ) {
 			$limit = 8;
 		
 		$recentsearchs = $db->GetAssoc("
-			(select queries.id,favorite,searchdesc,`count`,use_timestamp from queries 
+			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass from queries 
 			left join queries_count using (id) 
 			where user_id = {$USER->user_id} and favorite = 'N' and searchuse = 'search'
-			group by searchdesc order by use_timestamp desc,id desc	limit $limit) 
+			group by searchdesc,searchq,displayclass,resultsperpage order by use_timestamp desc,id desc	limit $limit) 
 				UNION
-			(select queries.id,favorite,searchdesc,`count`,use_timestamp from queries 
+			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass from queries 
 			left join queries_count using (id) 
 			where user_id = {$USER->user_id} and favorite = 'Y' and searchuse = 'search'
-			group by searchdesc order by use_timestamp desc,id desc	limit $limit)
+			group by searchdesc,searchq,displayclass,resultsperpage order by use_timestamp desc,id desc	limit $limit)
 			order by use_timestamp desc,id desc	");
 		$smarty->assign_by_ref('recentsearchs',$recentsearchs);	
 	}
