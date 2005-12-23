@@ -20,7 +20,7 @@
 	{if $i} 
 		<div style="padding:5px;background:#dddddd;position:relative">
 		<input type="hidden" name="i" value="{$i}"/>
-		Your search for images<i>{$engine->criteria->searchdesc}</i>, returns 
+		Your <a href="/search.php?i={$i}">search</a> for images<i>{$engine->criteria->searchdesc}</i>, returns 
 		<b>{$engine->resultCount}</b> results.	
 		{if $engine->criteria->searchclass != 'Special'}[<a href="search.php?i={$i}&amp;form=advanced">refine</a>]{/if}
 		{if $engine->resultCount == 0} 
@@ -36,7 +36,7 @@
 		look for the the <a title="Google Earth Feed" href="/kml.php" class="xml-kml">KML</a> button.
 	{/if}</div>
 	
-	<p><input type="submit" name="submit" value="Download KML file..."/> <span id="advtoggle"></span> </p>
+	<p><input type="submit" name="submit" value="Download KML file ({$engine->criteria->resultsperpage} images)..."/> <span id="advtoggle"></span> </p>
 	
 	<div id="advanced">
 	{if $i && $engine->resultCount || !$i}	
