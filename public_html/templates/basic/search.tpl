@@ -22,7 +22,7 @@
 
 <li>Here are a couple of example searches:
 <div style="float:left; width:50%; position:relative">
-<ul>
+<ul style="margin-left:0;padding:0 0 0 1em;">
 <li><a href="search.php?i=1522" title="Show the most recent submissions">Recent Submissions</a></li>
 <li><a href="search.php?displayclass=thumbs&amp;do=1" title="Show a selection of random thumbnails">Random (Thumbnails)</a></li>
 {dynamic}
@@ -54,9 +54,9 @@ title="customisable search options">advanced search</a></span><br/><br/>
 {if $user->registered}
 	{if $recentsearchs}
 	<li>And a list of your recent searches:
-	<ul>
+	<ul style="margin-left:0;padding:0 0 0 1em;">
 	{foreach from=$recentsearchs key=id item=obj}
-	<li>{if $obj.favorite == 'Y'}<b>{/if}<a href="search.php?i={$id}" title="Re-Run search for images{$obj.searchdesc}{if $obj.use_timestamp != '0000-00-00 00:00:00'}, last used {$obj.use_timestamp}{/if}">{$obj.searchdesc|regex_replace:"/^, /":""|regex_replace:"/(, in [\w ]+ order)/":'<small>$1</small>'}</a>{if !is_null($obj.count)} [{$obj.count}]{/if}{if $obj.favorite == 'Y'}</b> <span style="font-size:0.7em">(<a href="/search.php?i={$id}&amp;fav=0">cancel favorite</a>)</span>{else} <span style="font-size:0.7em">(<a href="/search.php?i={$id}&amp;fav=1">make favorite</a>)</span>{/if}</li>
+	<li>{if $obj.favorite == 'Y'}<b>{/if}<a href="search.php?i={$id}" title="Re-Run search for images{$obj.searchdesc}{if $obj.use_timestamp != '0000-00-00 00:00:00'}, last used {$obj.use_timestamp}{/if}">{$obj.searchdesc|regex_replace:"/^, /":""|regex_replace:"/(, in [\w ]+ order)/":'</a><small>$1</small>'}</a>{if !is_null($obj.count)} [{$obj.count}]{/if}{if $obj.favorite == 'Y'}</b> <a href="/search.php?i={$id}&amp;fav=0" title="cancel favorite"><img src="/templates/basic/img/star-off.png" width="14" height="14" alt="cancel favorite"></a>{else} <a href="/search.php?i={$id}&amp;fav=1" title="make favorite"><img src="/templates/basic/img/star-on.png" width="14" height="14" alt="make favorite"></a>{/if}</li>
 	{/foreach}
 	{if !$more}
 	<li><a href="search.php?more=1" title="View More of your recent searches" rel="nofollow"><i>view more...</i></a></li>
