@@ -30,6 +30,7 @@ $smarty = new GeographPage;
 
 $template='admin_index.tpl';
 $cacheid=$USER->user_id;
+$smarty->caching=0;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -66,7 +67,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('tickets_yours', $db->GetOne("select count(*) from gridimage_ticket where moderator_id={$USER->user_id} and status<>'closed'"));
 
 	
-	$smarty->assign('gridsquares_sea', $db->GetOne("select count(*) from gridsquare where percent_land=-1"));
+	$smarty->assign('gridsquares_sea', $db->GetCol("select count(*) from gridsquare where percent_land=-1 group by reference_index"));
 	
 	
 	
