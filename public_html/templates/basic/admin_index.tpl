@@ -10,7 +10,7 @@
 
 <li><a title="Map Fixer" href="/admin/mapfixer.php">Map Fixer</a> allows the land percentage
 for each 1km grid squares to be updated, which allows "that square is all at sea' to be 
-corrected [{$gridsquares_sea}]</li>
+corrected [GB:{$gridsquares_sea.0},I:{$gridsquares_sea.1}]</li>
       
 <li><a title="Category Consolidation" href="/admin/categories.php">Category Consolidation</a> - 
    Organise the user submitted categories</li>
