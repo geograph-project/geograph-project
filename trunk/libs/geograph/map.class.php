@@ -775,7 +775,7 @@ class GeographMap
 		{
 			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
 		}
-		if ($this->type_or_user <  2000) {
+		if ($this->type_or_user < -2000) {
 			$sql="select x,y,gi.gridimage_id from gridimage_search gi
 			where 
 			(x between $scanleft and $scanright) and 
@@ -793,6 +793,9 @@ class GeographMap
 			and seq_no = 1 group by FLOOR(x/30),FLOOR(y/30) order by rand() limit 200";
 			#inner join gridimage_post gp on (gi.gridimage_id = gp.gridimage_id and gp.topic_id = 1006)
 			
+		} elseif (1) {
+			$sql="select x,y,gi.gridimage_id from gridimage_search gi
+			where gridimage_id in (80343,74737,74092,84274,80195,48940,46618,73778,47029,82007,39195,76043,57771,28998,18548,12818,7932,81438,16764,84846,73951,79510,15544,73752,86199,4437,87278,53119,29003,36991,74330,29732,16946,10613,87284,52195,41935,26237,30008,10252,62365,83753,67060,34453,20760,26759,59465,118,12449,4455,46898,12805,87014,401,36956,8098,44193,63206,42732,26145,86473,17469,3323,26989,3324,40212,63829,30948,165,41865,36605,25736,68318,26849,51771,30986,27174,37470,31098,65191,44406,82224,71627,22968,59008,35468,7507,53228,80854,10669,47604,75018,42649,9271,1658,11741,60793,78903,22198,7586,88164,12818,14981,21794,74790,3386,40974,72850,77652,47982,39894,38897,25041,81392,63186,81974,41373,86365,44388,80376,13506,42984,45159,14837,71377,35108,84318,84422,36640,2179,22317,5324,32506,20690,71588,85859,50813,19358,84848,18141,78772,21074,13903,39376,45795,88385,55327,907,37266,82510,78594,17708,84855,7175,85453,23513,18493,68120,26201,18508,32531,84327,88204,55537,41942,47117,22922,22315,46412,88542,46241,67475,63752,63511,98) order by rand()";
 		} else {
 		
 		$sql="select x,y,grid_reference from gridsquare where 
@@ -840,7 +843,7 @@ class GeographMap
 					imagerectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $colBorder);
 				//	imagerectangle ($img, $imgx1+1, $imgy1+1, $imgx2-1, $imgy2-1, $colBorder);
 
-					if ($this->type_or_user <  2000) {
+					if ($this->type_or_user < -2000) {
 						fwrite($imagemap,"<area shape=\"rect\" coords=\"$imgx1,$imgy1,$imgx2,$imgy2\" href=\"/photo/{$rec['gridimage_id']}\" ALT=\"{$rec['grid_reference']} : {$rec['title']} by {$rec['realname']}\">\n"); 
 					}
 
@@ -857,7 +860,7 @@ class GeographMap
 		}
 		$recordSet->Close(); 
 
-		if ($this->type_or_user <  2000) {
+		if ($this->type_or_user < -2000) {
 			fwrite($imagemap,"</map>\n");
 			fclose($imagemap);
 		} else {
