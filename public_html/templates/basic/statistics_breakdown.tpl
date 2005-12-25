@@ -71,12 +71,12 @@
 		{/if}
 	{/if}
 
+	</tbody>
 	
-	
-	<tr class="totalrow"><td>&nbsp;</td>
+	<tr class="totalrow"><td>({$breakdown_count} items)</td>
 	<th align=right>{$total}</th>
 	<th align=right>100%</th></tr>
-	</tbody>
+	
 	</table>
 	{else}
 		<p><i>No Results to Display</i></p>
