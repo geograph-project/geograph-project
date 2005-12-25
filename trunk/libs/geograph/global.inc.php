@@ -143,7 +143,7 @@ function smarty_function_getamap($params)
   	
   	//get params
   	$matches=array();
-  	$gridref4=$params['gridref'];
+  	$gridref4=pref_replace('/^([A-Z]{1,2})\s*(\d{2,5})\s*(\d{2,5})$/i','$1$2$3',$params['gridref']);
   	if (preg_match('/^document\./i', $gridref4))
   	{
 			return "<a title=\"Ordnance Survey Get-a-Map\" href=\"javascript:popupOSMap($gridref4)\">{$params['text']}</a>$icon";
@@ -153,7 +153,7 @@ function smarty_function_getamap($params)
 			if (!empty($params['text']))
 				$text=$params['text'];
 			else
-				$text=$gridref4;
+				$text=$params['gridref'];
 			
 			$gridref6="";
 			$coords=$matches[2];
@@ -161,9 +161,7 @@ function smarty_function_getamap($params)
 			switch ($l)
 			{
 				case 4: $gridref6=$matches[1].substr($coords,0,2)."5".substr($coords,2,2)."5"; break;
-				case 6: $gridref6=$gridref4; break;
-				case 8: $gridref6=$matches[1].substr($coords,0,3).substr($coords,4,3); break;
-				case 10: $gridref6=$matches[1].substr($coords,0,3).substr($coords,5,3); break;
+				default: $gridref6=$gridref4;
 			}
 			
 			return "<a title=\"Ordnance Survey Get-a-Map for $gridref4\" href=\"javascript:popupOSMap('$gridref6')\">$text</a>$icon";
