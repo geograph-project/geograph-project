@@ -28,7 +28,7 @@ $smarty = new GeographPage;
 
 $by = (isset($_GET['by']) && preg_match('/^\w+$/' , $_GET['by']))?$_GET['by']:'status';
 
-$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):1;
+$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 
@@ -57,7 +57,7 @@ if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
-$smarty->assign_by_ref('references',$CONF['references']);	
+$smarty->assign('references',array_merge(array(0=>'British Isles'),$CONF['references']));	
 
 $bys = array('status' => 'Status','class' => 'Category','takenyear' => 'Date Taken (Year)','taken' => 'Date Taken (Month)','gridsq' => 'Grid Square','user' => 'Contributor');
 $smarty->assign_by_ref('bys',$bys);
@@ -71,7 +71,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	#$db->debug = true;
 	
 	$smarty->assign('ri', $ri);
-	$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 
 	$andwhere = " and moderation_status <> 'rejected'";
 	$sql_fields = '';
@@ -82,7 +81,12 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;imageclass=");
 	} else if ($by == 'gridsq') {
 		$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."gridsquare=");
-		$sql_group = $sql_fieldname = "SUBSTRING(grid_reference,1,$letterlength)";
+		if ($ri) {
+			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
+			$sql_group = $sql_fieldname = "SUBSTRING(grid_reference,1,$letterlength)";
+		} else {
+			$sql_group = $sql_fieldname = "SUBSTRING(grid_reference,1,3 - reference_index)";
+		}
 	} else if ($by == 'taken') {
 		$smarty->assign('linkpro', 1);
 		$sql_group = $sql_fieldname = "SUBSTRING(imagetaken,1,7)";
@@ -103,7 +107,9 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$smarty->assign('title', $bys[$by]);
 
-	$title = "Breakdown of Photos by ".$bys[$by]." in ".$CONF['references'][$ri];
+	$title = "Breakdown of Photos by ".$bys[$by];
+	if ($ri)
+		$title .= " in ".$CONF['references'][$ri];
 	$link = "by=$by&amp;ri=$ri";
 	$sql_from = '';
 	$user_crit = '';
@@ -134,7 +140,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 		#$sql_fields_dummy = str_replace('gs.','gi.',$sql_fields_dummy);
 		
-		$engine->criteria->searchdesc = preg_replace("/(, in [\w ]+ order)/",'',$engine->criteria->searchdesc);
+		$engine->criteria->searchdesc = preg_replace("/(, in [\w ]* order)/",'',$engine->criteria->searchdesc);
 		
 		$title .= "<i>{$engine->criteria->searchdesc}</i>";
 		
@@ -169,11 +175,17 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_order = "ORDER BY field$sql_dir";
 	}
 	
+	if ($ri) {
+		$ri_crit = " reference_index = $ri";
+	} else {
+		$ri_crit = "1";
+	}
+	
 $sql = "select 
 $sql_fieldname as field,
 count(distinct(gi.gridimage_id)) as c $sql_fields
 from gridimage_search as gi $sql_from
-where reference_index = $ri $user_crit
+where $ri_crit $user_crit
 $andwhere $sql_crit
 group by $sql_group 
 $sql_order";
@@ -181,7 +193,7 @@ $sql_order";
 	$breakdown=$db->GetAll($sql);
 	$total = 0;
 	foreach($breakdown as $idx=>$entry) {
-		$total += $breakdown[$idx]['c'];
+		$total += $entry['c'];
 	}
 	if ($total > 0) {
 		$totalperc = 100 /$total;
@@ -194,17 +206,17 @@ $sql_order";
 		if ($by == 'status') {
 			$friendly = array('rejected' => 'Rejected', 'pending' => 'Pending', 'geograph (ftf)' => 'Geograph (First)', 'accepted' => 'Supplemental', 'geograph' => 'Geograph');
 			foreach($breakdown as $idx=>$entry) {
-				$breakdown[$idx]['field'] = $friendly[$breakdown[$idx]['field']];
+				$breakdown[$idx]['field'] = $friendly[$entry['field']];
 			}
 		} elseif ($by == 'user') {
 			foreach($breakdown as $idx=>$entry) {
 				$y = $breakdown[$idx]['field'];
 
-				$breakdown[$idx]['link'] = "/profile.php?u=".$breakdown[$idx]['user_id'];
+				$breakdown[$idx]['link'] = "/profile.php?u=".$entry['user_id'];
 			}
 		} elseif ($by == 'takenyear') {
 			foreach($breakdown as $idx=>$entry) {
-				$y = $breakdown[$idx]['field'];
+				$y = $entry['field'];
 
 				$breakdown[$idx]['link'] = "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;taken_endYear=$y&amp;taken_startYear=$y&amp;orderby=imagetaken&amp;do=1";
 				if ($y < 100) {
@@ -213,7 +225,7 @@ $sql_order";
 			}
 		} elseif ($by == 'taken') {
 			foreach($breakdown as $idx=>$entry) {
-				list($y,$m)=explode('-', $breakdown[$idx]['field']);
+				list($y,$m)=explode('-', $entry['field']);
 				
 				$breakdown[$idx]['link'] = "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;taken_endMonth=$m&amp;taken_endYear=$y&amp;taken_startMonth=$m&amp;taken_startYear=$y&amp;orderby=imagetaken&amp;do=1";
 			
