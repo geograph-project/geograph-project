@@ -143,7 +143,7 @@ function smarty_function_getamap($params)
   	
   	//get params
   	$matches=array();
-  	$gridref4=pref_replace('/^([A-Z]{1,2})\s*(\d{2,5})\s*(\d{2,5})$/i','$1$2$3',$params['gridref']);
+  	$gridref4=preg_replace('/^([A-Z]{1,2})\s*(\d{2,5})\s*(\d{2,5})$/i','$1$2$3',$params['gridref']);
   	if (preg_match('/^document\./i', $gridref4))
   	{
 			return "<a title=\"Ordnance Survey Get-a-Map\" href=\"javascript:popupOSMap($gridref4)\">{$params['text']}</a>$icon";
