@@ -4,7 +4,7 @@
  
  <div style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;margin-left:20px;">
  <b>Contents</b>
- <ul style="margin-top:0;padding:0 0 0 1em;">
+ <ul style="margin-top:0;margin-left:0;padding:0 0 0 1em;">
  <li><a href="#differ" style="text-decoration:none">Points/Squares etc seem pretty similar...<br/> How do they differ?</a></li>
  </ul></div>
  
