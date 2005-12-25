@@ -36,7 +36,7 @@
 		look for the the <a title="Google Earth Feed" href="/kml.php" class="xml-kml">KML</a> button.
 	{/if}</div>
 	
-	<p><input type="submit" name="submit" value="Download KML file ({$engine->criteria->resultsperpage} images)..."/> <span id="advtoggle"></span> </p>
+	<p><input type="submit" name="submit" value="Download KML file ({if $engine->resultCount > $engine->criteria->resultsperpage}{$engine->criteria->resultsperpage}{else}{$engine->resultCount}{/if} images)..."/> <span id="advtoggle"></span> </p>
 	
 	<div id="advanced">
 	{if $i && $engine->resultCount || !$i}	
