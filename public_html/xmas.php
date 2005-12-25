@@ -53,7 +53,7 @@ $smarty->cache_lifetime = 3600*7*24; //7 day cache (as search can be cached - an
 if ($_GET['refresh'] && $USER->hasPerm("admin")) {
 	unlink($target);
 	$map->_renderMap();
-	$smarty->caching = 0;
+	$smarty->clear_cache($template, $cacheid);
 }
 
 //regenerate?
