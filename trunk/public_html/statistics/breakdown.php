@@ -236,6 +236,7 @@ $sql_order";
 	}
 
 	$smarty->assign_by_ref('total', $total);
+	$smarty->assign('breakdown_count', count($breakdown));
 	$smarty->assign_by_ref('breakdown', $breakdown);
 } else {
 	//bare minimum for the dynamic section
