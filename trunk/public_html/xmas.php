@@ -77,9 +77,9 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$image->imagetaken = $data['taken_start'];					
 		$data['taken_startString'] = $image->getFormattedTakenDate();
 		
-		$data['orderby'] = 'imagetaken'; 
+		$data['orderby'] = 'gridimage_id'; 
 		$data['reverse_order_ind'] = 1; 
-		$sortorders = array('imagetaken'=>'Date Taken');
+		$sortorders = array('gridimage_id'=>'Date Submitted');
 
 
 		$engine = new SearchEngine('#'); 
