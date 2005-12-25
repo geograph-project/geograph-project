@@ -46,6 +46,10 @@ $target=$_SERVER['DOCUMENT_ROOT'].$map->getImageFilename();
 $template='xmas.tpl';
 $cacheid=$map->type_or_user * -1;
 
+$smarty->caching = 2; // lifetime is per cache
+$smarty->cache_lifetime = 3600*7*24; //7 day cache (as search can be cached - and we manually refreshed anyway
+
+
 if ($_GET['refresh'] && $USER->hasPerm("admin")) {
 	unlink($target);
 	$map->_renderMap();
@@ -62,7 +66,26 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	
 	$smarty->assign_by_ref("year",$cacheid);
 	
+    require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
 	
+	if ($cacheid == date('Y')) {
+		$data['taken_start'] = date('Y-m-d');
+		$data['taken_end'] = $data['taken_start'];
+		
+		$image = new GridImage();
+		$image->imagetaken = $data['taken_start'];					
+		$data['taken_startString'] = $image->getFormattedTakenDate();
+		
+		$data['orderby'] = 'imagetaken'; 
+		$data['reverse_order_ind'] = 1; 
+		$sortorders = array('imagetaken'=>'Date Taken');
+
+
+		$engine = new SearchEngine('#'); 
+		$i = $engine->buildAdvancedQuery($data,false);
+		$smarty->assign("i",$i);
+	}
 }
 
 
