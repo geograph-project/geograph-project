@@ -468,6 +468,39 @@ class GeographMapMosaic
 		return $out->getToken();
 	}
 	
+	
+	/**
+	* get big token
+	* @access public
+	*/
+	function getBigToken()
+	{
+		$out=new GeographMapMosaic;
+
+		
+		//start with same params
+		$out->setScale($this->pixels_per_km);
+		$out->setMosaicFactor($this->mosaic_factor*2);
+		$out->setMosaicSize($this->image_w*2, $this->image_h*2);
+
+		//figure out image size in km
+		$mapw=$this->image_w/$this->pixels_per_km;
+		$maph=$this->image_h/$this->pixels_per_km;
+
+		//figure out how many pixels to pan by
+		$panx=round($mapw/$this->mosaic_factor);
+		$pany=round($maph/$this->mosaic_factor);
+
+		$out->setAlignedOrigin(
+			$this->map_x - $panx,
+			$this->map_y - $pany,true);
+		
+		return $out->getToken();
+	}
+		
+		
+	
+	
 	/**
 	* get a url that will zoom us out one level of this mosaic
 	* @access public
