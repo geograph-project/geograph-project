@@ -133,6 +133,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			$user_crit = str_replace('gs.','gi.',$user_crit);
 		}
 		#$sql_fields_dummy = str_replace('gs.','gi.',$sql_fields_dummy);
+		
+		$engine->criteria->searchdesc = preg_replace("/(, in [\w ]+ order)/",'',$engine->criteria->searchdesc);
+		
 		$title .= "<i>{$engine->criteria->searchdesc}</i>";
 		
 		//preserve input
