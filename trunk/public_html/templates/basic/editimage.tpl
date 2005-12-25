@@ -253,7 +253,7 @@
 
 
 
-<p><label for="title">New Title {if $moderated.title}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
+<p><label for="title">New Title {if $moderated.title}<span class="moderatedlabel">(moderated)</span>{/if}</label> (<a href="/help/style" target="_blank">Open Style Guide</a>)<br/>
 {if $error.title}<span class="formerror">{$error.title}</span><br/>{/if}
 <input type="text" id="title" name="title" size="50" value="{$image->title|escape:'html'}"/>
 </p>

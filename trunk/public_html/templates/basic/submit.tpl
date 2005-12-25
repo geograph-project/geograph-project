@@ -220,7 +220,7 @@ criteria above!</p>
 
 <h3>Title and Comments</h3>
 <p>Please provide a short title for the image, and any other comments about where
-it was taken or other interesting geographical information.</p>
+it was taken or other interesting geographical information. (<a href="/help/style" target="_blank">Open Style Guide</a>)</p>
 
 <p><label for="title">Title</label> {if $error.title}
 	<br/><span class="formerror">{$error.title}</span>
