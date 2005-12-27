@@ -28,7 +28,6 @@ function slide_go(delta) {
 		document.getElementById("prevautobutton").disabled = (cs <= 1);
 		document.getElementById("nextautobutton").disabled = (cs >= resultcount);
 	}
-	window.status = cs;
 }
 
 function slide_stop() {
