@@ -49,11 +49,13 @@
 			 <td><label for="user_id">contributor</label></td> 
 			 <td colspan="2"> 
 				<select name="user_id" id="user_id" size="1" class="searchinput"> 
-				  <option value=""> </option> 
+				  <option value=""> </option>
+				  	{dynamic}
 					{if $user->registered}
 						<option value="{$user->user_id}">&nbsp; {$user->realname}</option>
 						<option value=""> </option> 
 					{/if}
+					{/dynamic}
 					{html_options options=$userlist selected=$user_id}				  
 				</select> <input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label></td> 
 		  </tr> 
@@ -72,6 +74,15 @@
 				<select name="imageclass" id="imageclass" size="1" class="searchinput"> 
 				  <option value=""> </option> 
 					{html_options options=$imageclasslist selected=$imageclass}				  
+				</select></td> 
+			 <td>&nbsp;</td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="topic_id">discuss topic</label></td> 
+			 <td> 
+				<select name="topic_id" id="topic_id" size="1" class="searchinput"> 
+				  <option value=""> </option> 
+					{html_options options=$topiclist selected=$topic_id}				  
 				</select></td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
