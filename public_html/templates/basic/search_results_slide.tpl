@@ -42,19 +42,19 @@
 		<div id="marker_start" style="display:none; text-align:center; background-color:#dddddd; padding:10px;">
 		You have reached the beginning of this page of results.
 		{if $engine->currentPage > 1}<br/><br/>
-		<a href="/search.php?i={$i}&amp;page={$engine->currentPage-1}">&lt; &lt; previous page of results</a>
+		<a href="/search.php?i={$i}&amp;page={$engine->currentPage-1}">&lt; &lt; previous page</a>
 		{/if}</div>
 		<div id="marker_end" style="display:none; text-align:center; background-color:#dddddd; padding:10px;">
 		You have reached the end of this page of results.
 		{if $engine->numberOfPages > $engine->currentPage}<br/><br/>
-		<a href="/search.php?i={$i}&amp;page={$engine->currentPage+1}">next page of results &gt; &gt;</a>
+		<a href="/search.php?i={$i}&amp;page={$engine->currentPage+1}">next page &gt; &gt;</a>
 		{/if}</div>
 <script>//<![CDATA[
 var resultcount = {$engine->numberofimages};
 setTimeout("document.images['image1'].src = document.images['image1'].lowsrc",300);
 setTimeout("document.images['image2'].src = document.images['image2'].lowsrc",600);
 {dynamic}
-var delayinsec = {$user->slideshow_delay};
+var delayinsec = {$user->slideshow_delay}+0;
 {/dynamic}
  //]]></script>
 	<p style="clear:both">Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
