@@ -26,7 +26,7 @@
 	 {$smarty.foreach.results.iteration}/{$engine->numberofimages}</div>
 	  	<div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a> by <a title="view user profile" href="/profile.php?u={$image->user_id}">{$image->realname}</a>, 
 		{if $image->moderation_status == 'geograph'}geograph{else}{if $image->moderation_status == 'pending'}pending{/if}{/if} for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
-		<i>{$image->dist_string}</i><br/>
+		<i class="nowrap">{$image->dist_string}</i><br/>
 		{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 		</div>
@@ -39,14 +39,14 @@
 	{/foreach}
 	{if $engine->results}
 	
-		<div id="marker_start" style="display:none; text-align:center; background-color:#dddddd;">
-		Start of Results
-		{if $engine->currentPage > 1}<br/>
+		<div id="marker_start" style="display:none; text-align:center; background-color:#dddddd; padding:10px;">
+		You have reached the beginning of this page of results.
+		{if $engine->currentPage > 1}<br/><br/>
 		<a href="/search.php?i={$i}&amp;page={$engine->currentPage-1}">&lt; &lt; previous page of results</a>
 		{/if}</div>
-		<div id="marker_end" style="display:none; text-align:center; background-color:#dddddd;">
-		End of Results
-		{if $engine->numberOfPages > $engine->currentPage}<br/>
+		<div id="marker_end" style="display:none; text-align:center; background-color:#dddddd; padding:10px;">
+		You have reached the end of this page of results.
+		{if $engine->numberOfPages > $engine->currentPage}<br/><br/>
 		<a href="/search.php?i={$i}&amp;page={$engine->currentPage+1}">next page of results &gt; &gt;</a>
 		{/if}</div>
 <script>//<![CDATA[
