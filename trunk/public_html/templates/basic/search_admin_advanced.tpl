@@ -18,7 +18,7 @@
 		  </tr> 
 		  <tr> 
 			 <td><label for="searchq">sql where</label></td> 
-			 <td>and <input type="text" name="searchq" id="searchq" value="{$searchq|escape:'html'}" class="searchinput"/></td> 
+			 <td>and <input type="text" name="searchq" id="searchq" value="{$searchq|escape:'html'}" class="searchinput" size="100"/></td> 
 			 <td></td> 
 		  </tr> 
 		  <tr> 
