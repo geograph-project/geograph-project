@@ -636,13 +636,19 @@ END;
 		$this->querytime =  $querytime_after - $querytime_before;
 
 		if ($pg == 1) {
-			$this->resultCount = $recordSet->RecordCount();
-			if ($this->resultCount == $pgsize) {
-				$this->numberOfPages = 2;
-				$this->pageOneOnly = 1;
-			} else {
+			$count = $db->getOne("select `count` from queries_count where id = {$this->query_id}");
+			if ($count) {
+				$this->resultCount = $count;
 				$this->numberOfPages = ceil($this->resultCount/$pgsize);
-				$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+			} else {
+				$this->resultCount = $recordSet->RecordCount();
+				if ($this->resultCount == $pgsize) {
+					$this->numberOfPages = 2;
+					$this->pageOneOnly = 1;
+				} else {
+					$this->numberOfPages = ceil($this->resultCount/$pgsize);
+					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+				}
 			}
 		}
 
@@ -739,13 +745,19 @@ END;
 		$this->querytime =  $querytime_after - $querytime_before;
 		
 		if ($pg == 1) {
-			$this->resultCount = $recordSet->RecordCount();
-			if ($this->resultCount == $pgsize) {
-				$this->numberOfPages = 2;
-				$this->pageOneOnly = 1;
-			} else {
+			$count = $db->getOne("select `count` from queries_count where id = {$this->query_id}");
+			if ($count) {
+				$this->resultCount = $count;
 				$this->numberOfPages = ceil($this->resultCount/$pgsize);
-				$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+			} else {
+				$this->resultCount = $recordSet->RecordCount();
+				if ($this->resultCount == $pgsize) {
+					$this->numberOfPages = 2;
+					$this->pageOneOnly = 1;
+				} else {
+					$this->numberOfPages = ceil($this->resultCount/$pgsize);
+					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+				}
 			}
 		}
 		
@@ -806,6 +818,7 @@ END;
 				$i++;
 			}
 			$recordSet->Close(); 
+			$this->numberofimages = $i;
 		} else 
 			return 0;
 			
