@@ -42,7 +42,9 @@
  	
  	
  	{if $profile->stats.total gt 0}
-<h3><a href="/statistics/breakdown.php?by=status&u={$profile->user_id}">Statistics</a></h3>
+ 	<div style="background-color:#dddddd; padding:10px;">
+<h3 style="margin-bottom:0px">Statistics</h3>
+<p style="margin-top:0px; font-size:0.7em">View Breakdown by <a href="/statistics/breakdown.php?by=status&u={$profile->user_id}" rel="nofollow">Status</a>, <a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}" rel="nofollow">Date Taken</a> or <a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}" rel="nofollow">Grid Square</a>.</p>
 <ul>
  	  <li><b>{$profile->stats.ftf}</b> Geograph points (see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)
  	  {if $profile->rank > 0}<ul><li>Rank: <b>{$profile->rank|ordinal}</b> {if $profile->rank > 1}({$profile->to_rise_rank} more needed to get to {$profile->rank-1|ordinal}){/if}</li></ul>{/if}
@@ -58,7 +60,7 @@
  	  </ul>
  	  </li>
 
- 	  
+ 	  </div>
         {else}
 <h3>Statistics</h3>
 <ul>
@@ -68,7 +70,9 @@
 </ul>
 
 {if $profile->stats.total gt 0}
-	<h3><a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1'>Photographs</a></h3>
+	<h3 style="margin-bottom:0px">Photographs</h3>
+	<p style="margin-top:0px; font-size:0.7em"><a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1'>Find images by {$profile->realname|escape:'html'}</a> (<a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs'>Thumbnail Only</a>, <a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide'>Slide Show Mode</a>)</p>
+	
 	<p>Click column headers to sort in a different order</p>
 	
 	{if $limit}
