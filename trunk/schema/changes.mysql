@@ -256,3 +256,9 @@ CREATE TABLE `throttle` (
   `feature` enum('ecard') NOT NULL,
   KEY `user_id` (`user_id`,`feature`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 ;
+
+
+ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full', 'text', 'thumbs', 'slide' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT 'full' NOT NULL;
+
+ALTER TABLE `user` ADD `slideshow_delay` TINYINT UNSIGNED DEFAULT '5' NOT NULL;
+
