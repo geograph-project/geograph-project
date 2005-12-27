@@ -329,7 +329,9 @@ if (isset($_GET['fav']) ) {
 				$smarty->assign('taken_end', $dates[1]);
 		}
 		$smarty->assign('distance', $query['limit8']);
-		
+	
+		$smarty->assign('topic_id', $query['limit9']);
+	
 		$query['orderby'] = preg_replace('/^submitted/','gridimage_id',$query['orderby']);
 		
 		if (strpos($query['orderby'],' desc') > 0) {
@@ -426,9 +428,9 @@ if (isset($_GET['fav']) ) {
 			if (empty($db)) die('Database connection failed');
 		}
 		//list of a few image classes 
-		$arr = $db->GetAssoc("select imageclass,concat(imageclass,' [',count(*),']') from gridimage_search ".
-			"where length(imageclass)>0 ".
-			"group by imageclass order by rand() limit 5");
+		$arr = $db->GetAssoc("select imageclass,concat(imageclass,' [',count(*),']') from gridimage_search 
+			where length(imageclass)>0 
+			group by imageclass order by rand() limit 5");
 		$smarty->assign_by_ref('imageclasslist',$arr);	
 	}
 	if ($USER->registered) {
@@ -486,7 +488,7 @@ if (isset($_GET['fav']) ) {
 		}
 		
 		if (!$is_cachable || !$smarty->is_cached($template, $is_cachable)) {
-			$smarty->assign('displayclasses', array('full' => 'full listing','text' => 'text description only','thumbs' => 'thumbnails only'));
+			$smarty->assign('displayclasses', array('full' => 'full listing','text' => 'text description only','thumbs' => 'thumbnails only','slide' => 'slide-show mode'));
 			$smarty->assign('pagesizes', array(5,10,15,20,30,50));
 			$smarty->assign('distances', array(1,5,10,20,30,50,100,250,500,1000,2000));
 
@@ -502,15 +504,22 @@ if (isset($_GET['fav']) ) {
 			$recordSet->Close(); 
 			$smarty->assign_by_ref('countylist', $countylist);
 
-			$arr = $db->CacheGetAssoc(24*3600,"select imageclass,concat(imageclass,' [',count(*),']') from gridimage_search ".
-				"where length(imageclass)>0 ".
-				"group by imageclass");
+			$arr = $db->CacheGetAssoc(24*3600,"select imageclass,concat(imageclass,' [',count(*),']') from gridimage_search
+				where length(imageclass)>0
+				group by imageclass");
 			$arr = array_merge(array('-'=>'-unclassified-'),$arr);
 			$smarty->assign_by_ref('imageclasslist',$arr);	
 
-			$topusers=$db->CacheGetAssoc(24*3600,"select user.user_id,concat(realname,' [',count(*),']')   ".
-				"from user inner join gridimage using(user_id) where ftf=1 ".
-				"group by user_id order by realname");
+			$topics = $db->GetAssoc("select gp.topic_id,concat(topic_title,' [',count(*),']') from gridimage_post gp
+				inner join geobb_topics using (topic_id)
+				group by gp.topic_id 
+				having count(*) > 5
+				order by topic_title");
+			$smarty->assign_by_ref('topiclist',$topics);	
+
+			$topusers=$db->CacheGetAssoc(24*3600,"select user.user_id,concat(realname,' [',count(*),']')
+				from user inner join gridimage using(user_id) where ftf=1
+				group by user_id order by realname");
 			$smarty->assign_by_ref('userlist',$topusers);
 
 			require_once('geograph/gridsquare.class.php');
