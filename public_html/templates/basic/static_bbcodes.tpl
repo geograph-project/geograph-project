@@ -8,9 +8,9 @@
 <h4>Formatting </h4>
 
 <ul>
-<li><tt style="color:green">[b]bold[/b]</tt> renders as <b>bold</b></li>
-<li><tt style="color:green">[i]italic[/i]</tt> renders as <i>italic</i></li>
-<li><tt style="color:green">[u]underlined[/u]</tt> renders as <u>underlined</u></li>
+<li><tt style="color:green">[b]some text here[/b]</tt> renders as <b>some text here</b></li>
+<li><tt style="color:green">[i]some text here[/i]</tt> renders as <i>some text here</i></li>
+<li><tt style="color:green">[u]some text here[/u]</tt> renders as <u>some text here</u></li>
 </ul>
 
 <h4>Linking</h4>
@@ -22,10 +22,11 @@
 <li><b style="font-size:0.7em">Include an Image Thumbnail by ID</b><br/>
 <div style="background-color:#eeeeee; padding:10px;"><tt style="color:green">[[[5463]]]</tt> renders as <a href="/photo/5463"><img alt="TQ3328 : Ardingly Reservoir" src="/photos/00/54/005463_ea60a493_120x120.jpg" width="120" height="90"/></a></div><br/></li>
 </ul>
-<p style="font-size:0.8em">Tip: Get the Image ID for use in building these links from the URL of the page for example, to insert a link to the picture at <a href="/photo/5463">http://{$http_host}/photo/5463</a> use <tt style="color:green">[[5463]]</tt></p>
+<p style="font-size:0.8em">Tip: Get the Image ID for use in building these links from the URL of the page (visible in the Address bar of your Browser) for example, to insert a link to the picture at <a href="/photo/5463">http://{$http_host}/photo/5463</a> use <tt style="color:green">[[5463]]</tt></p>
 <ul>
 <li><b style="font-size:0.7em">Webpage/URL</b><br/>
 <div style="background-color:#eeeeee; padding:10px;"><tt style="color:green">[url=http://www.example.com]Some text[/url]</tt> renders as <a href="http://www.example.com">Some text</a></div><br/></li>
+<div style="background-color:#eeeeee; padding:10px;"><tt style="color:green">http://www.example.com</tt> renders as <a href="http://www.example.com">http://www.example.com</a></div><br/></li>
 </ul>
 <p style="font-size:0.8em">Links will be converted to a clickable link automatically.</p>
 <ul>
@@ -38,7 +39,7 @@ To stop otherwise <i>Grid Reference Looking Text</i> being converted, either use
 
 <ul>
 <li><b style="font-size:0.7em">Email Address</b><br/>
-<div style="background-color:#eeeeee; padding:10px;"><tt style="color:green">[email=email@example.com]contact me[/email]</tt> renders as <a href="mailto:email@example.com">contact me</a></div><br/></li>
+<div style="background-color:#eeeeee; padding:10px;"><tt style="color:green">[email=address@example.com]contact me[/email]</tt> renders as <a href="mailto:address@example.com">contact me</a></div><br/></li>
 </ul>
 
 <h4>External Images</h4>
