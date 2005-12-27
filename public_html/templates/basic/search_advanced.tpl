@@ -105,6 +105,15 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
+			 <td><label for="topic_id">discuss topic</label></td> 
+			 <td> 
+				<select name="topic_id" id="topic_id" size="1" class="searchinput"> 
+				  <option value=""> </option> 
+					{html_options options=$topiclist selected=$topic_id}				  
+				</select></td> 
+			 <td>&nbsp;</td> 
+		  </tr> 
+		  <tr> 
 			 <td><label for="reference_index">country</label></td> 
 			 <td> 
 				<select name="reference_index" id="reference_index" size="1" class="searchinput"> 
