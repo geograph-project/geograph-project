@@ -24,8 +24,7 @@
 	 <div id="result{$smarty.foreach.results.iteration}"{if !$smarty.foreach.results.first} style="display:none;"{/if} class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
 	 <div style="float:right; position:relative;">
 	 {$smarty.foreach.results.iteration}/{$engine->numberofimages}</div>
-	  	<div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>{if strpos($engine->criteria->searchdesc,',by `$image->title`') !== FALSE }
-		by <a title="view user profile" href="/profile.php?u={$image->user_id}">{$image->realname}</a> {/if}, 
+	  	<div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a> by <a title="view user profile" href="/profile.php?u={$image->user_id}">{$image->realname}</a>, 
 		{if $image->moderation_status == 'geograph'}geograph{else}{if $image->moderation_status == 'pending'}pending{/if}{/if} for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
 		<i>{$image->dist_string}</i><br/>
 		{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
@@ -54,7 +53,9 @@
 var resultcount = {$engine->numberofimages};
 setTimeout("document.images['image1'].src = document.images['image1'].lowsrc",300);
 setTimeout("document.images['image2'].src = document.images['image2'].lowsrc",600);
+{dynamic}
 var delayinsec = {$user->slideshow_delay};
+{/dynamic}
  //]]></script>
 	<p style="clear:both">Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
 	{/if}
