@@ -70,7 +70,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	require_once('geograph/searchengine.class.php');
 	
 	if ($cacheid == date('Y')) {
-		$data['taken_start'] = date('Y-m-d');
+		$data['taken_start'] = "$cacheid-12-25";
 		$data['taken_end'] = $data['taken_start'];
 		
 		$image = new GridImage();
