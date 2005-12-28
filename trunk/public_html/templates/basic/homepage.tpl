@@ -21,16 +21,17 @@ and you can be part of it.</p>
 	<li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a></li>
 	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a></li>
 	<li><a title="Words used in Titles" href="/statistics/wordnet.php"><b>popular words</b> used in titles</a></li>
-	<li><a title="List of all images" href="/list.php">view the <b>full list</b> of images</a></li>
+	<li><a title="List of all pages" href="/help/sitemap">view the <b>full list</b> of pages</a></li>
 </ul>
     
 
 <h3>Interacting with other software...</h3>
 <ul>
 	<li><a title="Google Earth Export" href="/kml.php">view images in <b>Google Earth</b></a> <a title="Google Earth Feed" href="/kml.php" class="xml-kml">KML</a></li>
-  <li><a title="RSS Deeds" href="/faq.php#rss">get <b>RSS feeds</b> of images</a> <a title="RSS Feed of Recent Images" href="/syndicator.php" rel="RSS" class="xml-rss">RSS</a></li>
-  <li><a title="Memory Map Export" href="/memorymap.php">view squares in <b>Memory Map</b></a></li>
-</ul>    
+	<li><a title="RSS Deeds" href="/faq.php#rss">get <b>RSS feeds</b> of images</a> <a title="RSS Feed of Recent Images" href="/syndicator.php" rel="RSS" class="xml-rss">RSS</a></li>
+	<li><a title="Memory Map Export" href="/memorymap.php">view squares in <b>Memory Map</b></a></li>
+	<li><a title="GPX File Export" href="/memorymap.php">download squares in <b>GPX Format</b></a></li>
+</ul>
 
 </div>
 
