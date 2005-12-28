@@ -79,7 +79,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$topusers=$db->GetAll("select user_id,realname, $sql_column as imgcount,max(gridimage_id) as last
 	from gridimage_search i where $sql_where
-	group by user_id order by imgcount desc,last asc limit 100"); //may as well have a limit, whats the chance of > 50 in 50th position?
+	group by user_id order by imgcount desc,last asc"); 
 	$lastimgcount = 0;
 	$toriserank = 0;
 	foreach($topusers as $idx=>$entry)
@@ -87,7 +87,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		$i=$idx+1;
 			
 		if ($lastimgcount == $entry['imgcount']) {
-			$db->query("UPDATE user SET rank = $lastrank,to_rise_rank = $toriserank WHERE user_id = {$entry['user_id']}");
+			if ($type == 'points')
+				$db->query("UPDATE user SET rank = $lastrank,to_rise_rank = $toriserank WHERE user_id = {$entry['user_id']}");
 			if ($i > 50) {
 				unset($topusers[$idx]);
 			} else {
