@@ -21,6 +21,7 @@ function slide_go(delta) {
 		if (timer != false)
 			clearInterval(timer);
 		timer = false;
+		document.getElementById("stopbutton").disabled = true;
 	}
 	if (timer == false) {
 		document.getElementById("prevbutton").disabled = (cs <= 1);
