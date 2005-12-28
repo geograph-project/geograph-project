@@ -10,10 +10,10 @@ function slide_go(delta) {
 	if (document.getElementById("result"+csnext)) {
 		cs = cs + delta;
 		document.getElementById("result"+cs).style.display = '';
-		document.images['image'+cs].src = document.images['image'+cs].tmpsrc;
+		document.images['image'+cs].src = document.images['image'+cs].lowsrc;
 		csnext = cs + delta;
 		if (document.getElementById("result"+csnext)) 
-			document.images['image'+csnext].src = document.images['image'+csnext].tmpsrc
+			document.images['image'+csnext].src = document.images['image'+csnext].lowsrc
 	} else {
 		marker = (delta > 0)?'marker_end':'marker_start';
 		if (document.getElementById(marker))
