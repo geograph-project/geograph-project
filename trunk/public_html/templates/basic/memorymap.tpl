@@ -4,14 +4,14 @@
 
 	<h2>Memory Map Export</h2>
 
-	<p>Use this page to download a CSV file to import into Memory Map, to show squares currently with Geograph Images.</p>
+	<p>Use this page to download a CSV file to import into Memory Map, to show squares currently with Geograph Images. See also a <a href="/gpx.php">GPX</a> download, which offers a more location specific version.</p>
 {dynamic}
 {if $errormsg}
 <p><b>{$errormsg}</b></p>
 {/if}
 {/dynamic}
 	<form method="post" action="{$script_name}">
-		<p><label for="gridsquare">grid square</label> 
+		<p><label for="gridsquare">Myriad</label><a href="/help/squares">?</a>
 		<select name="gridsquare" id="gridsquare" size="1"> 
 			<option value="">Choose...</option>
 			{html_options options=$prefixes selected=$gridsquare}
