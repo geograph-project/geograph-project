@@ -3,9 +3,9 @@
 
 <h2>Title and Comments - Style Guide</h2>
 
-<p style="color:#990000;font-size:0.8em">Note: This is only a recommended guide, submitted via the <a href="/discuss/index.php?&action=vthread&forum=3&topic=1157">Forum</a>, the main thing we would like to avoid is fully CAPITALISED/lowercase titles.</p>
+<p style="color:#990000;font-size:0.8em">Note: This is only a recommended guide, submitted via the <a href="/discuss/index.php?&action=vthread&forum=3&topic=1157">Forum</a>.</p>
 
-<p>Sentence case is recommended for titles and comments, with only the first character capitalised. However, use capitals for proper nouns (names of people, organisations or places), postcodes or grid references.</p>
+<p>Sentence case is recommended for titles and comments, with only the first character capitalised. However, capitalise proper nouns (names of people, organisations or places), postcodes or grid references.</p>
 
 <p>Titles should not have a full stop. Comments should be fully punctuated.</p>
 
