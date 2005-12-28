@@ -73,7 +73,7 @@
 			 <a href="http://www.agarss.com.au/Data/Prices.htm">here</a>)</small></td> 
 		</tr> 
 		<tr> 
-		  <td>Offical Name</td> 
+		  <td>Official Name</td> 
 		  <td>&nbsp;</td> 
 		  <td>Hectad<br/><small>( from
 			 <a
