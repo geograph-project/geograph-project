@@ -9,7 +9,7 @@
 {if $errormsg}
 <p><b>{$errormsg}</b></p>
 {/if}
-	<form method="post" action="{$script_name}">
+	<form method="get" action="{$script_name}">
 		<p><label for="gridsquare">center grid square</label> 
 		<input id="gridref" type="text" name="gridref" value="{$gridref|escape:'html'}" size="8"/>
 		(Can use SH34 for SH3545)</p>
