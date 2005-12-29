@@ -82,6 +82,9 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 		{/if}</li>
 		<li><a href="/submit.php?gridreference={$gridrefraw}"><b>Submit</b> your own picture of {$gridref}</a>.</li>
 		<li><a href="/search.php?q={$gridref}"><b>Search</b> for other nearby images</a>.</li>
+		{if $totalimagecount > 5}
+		<li><a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1">View images in a <b>Slide Show</b></a>.</li>
+		{/if}
 		<li><a href="/mapbrowse.php?t={$map_token}">Geograph <b>map</b> for {$gridref}</a> (<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}">print check sheet</a>).</li>
 		
 		
