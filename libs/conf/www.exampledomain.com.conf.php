@@ -60,6 +60,10 @@ $CONF['imagemagick_path'] = '/usr/bin/';
 //the countries referenced in the reference index 
 $CONF['references'] = array(1 => 'Great Britain',2 => 'Ireland');
 
+//including the 'non filted version'
+$CONF['references_all'] = array_merge(array(0=>'British Isles'),$CONF['references']);
+
+
 //the radius for simple searches in km, set high to begin with but set low once number of submissions
 $CONF['default_search_distance'] = 30;
 
@@ -88,5 +92,7 @@ $CONF['enable_newmap'] = 1;
 //$CONF['log_script_timing'] = 'apache';	
 
 
+//during high load can disable thumbs display in the forum pages
+//$CONF['disable_discuss_thumbs'] = true;
 
 ?>
