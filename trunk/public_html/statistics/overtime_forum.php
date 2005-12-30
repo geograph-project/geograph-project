@@ -4,7 +4,7 @@
  * $Id$
  * 
  * GeoGraph geographic photo archive project
- * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
+ * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,7 +29,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-$smarty->caching = 0; // lifetime is per cache
+$smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
 $template='statistics_table.tpl';
