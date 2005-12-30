@@ -38,7 +38,7 @@ $cacheid='statistics|main';
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*3; //3hr cache
 
-$smarty->assign_by_ref('references',$CONF['references']);	
+$smarty->assign_by_ref('references',$CONF['references_all']);		
 
 $bys = array('status' => 'Status','class' => 'Category','takenyear' => 'Date Taken','gridsq' => 'Grid Square');
 $smarty->assign_by_ref('bys',$bys);
