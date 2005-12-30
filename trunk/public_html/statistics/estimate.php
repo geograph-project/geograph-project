@@ -126,7 +126,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 
 	$smarty->assign("totall",$total);
-	$smarty->assign_by_ref('references',$CONF['references']);
+	$smarty->assign_by_ref('references',$CONF['references_all']);
 }
 
 $smarty->display($template, $cacheid);
