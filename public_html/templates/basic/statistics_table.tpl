@@ -37,10 +37,10 @@
 {if $total > 0}
 	<p><small>Click a column header to change the sort order.</small></p>
 
-	<table class="report sortable" id="reportlist">
+	<table class="report sortable" id="reportlist" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5">
 	<thead><tr>
 	{foreach from=$table.0 key=name item=value}
-	<td>{$name}</td>
+	<td style="direction: rtl; writing-mode: tb-rl;">{$name}</td>
 	{/foreach}
 
 	</tr></thead>
