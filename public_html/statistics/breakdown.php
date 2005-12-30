@@ -57,7 +57,7 @@ if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
-$smarty->assign('references',array_merge(array(0=>'British Isles'),$CONF['references']));	
+$smarty->assign_by_ref('references',$CONF['references_all']);	
 
 $bys = array('status' => 'Status','class' => 'Category','takenyear' => 'Date Taken (Year)','taken' => 'Date Taken (Month)','gridsq' => 'Grid Square','user' => 'Contributor');
 $smarty->assign_by_ref('bys',$bys);
@@ -93,6 +93,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	} else if ($by == 'takenyear') {
 		$smarty->assign('linkpro', 1);
 		$sql_group = $sql_fieldname = "SUBSTRING(imagetaken,1,4)";
+	} else if ($by == 'takenday') {
+		$smarty->assign('linkpro', 1);
+		$sql_group = $sql_fieldname = "imagetaken";
 	} else if ($by == 'user') {
 		$smarty->assign('linkpro', 1);
 		$sql_group = $sql_fieldname = "realname";
@@ -109,7 +112,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$title = "Breakdown of Photos by ".$bys[$by];
 	if ($ri)
-		$title .= " in ".$CONF['references'][$ri];
+		$title .= " in ".$CONF['references_all'][$ri];
 	$link = "by=$by&amp;ri=$ri";
 	$sql_from = '';
 	$user_crit = '';
