@@ -93,6 +93,7 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
     
     <h3>More Statistics</h3>
     
+   <p>Graphs: <a href="/moversboard.php#rate_graph">Weekly Submissions</a> and <a href="/leaderboard.php#submission_graph">Overall Submissions</a>.</p> 
    
    <p>Most <a href="/statistics/wordnet.php">Popular Words</a> in the last 7 days and all time.</p>
    
