@@ -39,7 +39,7 @@ $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 
 
-$cacheid='overtime'.isset($_GET['month']).'.'.$ri.'.'.$u;
+$cacheid='overtime'.isset($_GET['month']).isset($_GET['week']).isset($_GET['taken']).'.'.$ri.'.'.$u;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -50,15 +50,37 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 
-	$length = isset($_GET['month'])?10:7;
+	$column = isset($_GET['taken'])?'imagetaken':'submitted';  
 	
-	$title = "Breakdown of Images over Time";
+	if (isset($_GET['week'])) {
+		$from_date = "date(min($column))";
+		$group_date = "week( $column )";
+	} else {
+		$length = isset($_GET['month'])?10:7;  //month=0 means daily ;-0
+
+		$from_date = "substring( $column, 1, $length )";
+		$group_date = "substring( $column, 1, $length )";
+	}
+	$title = isset($_GET['taken'])?'Taken':'Submitted'; 
+	$title = "Breakdown of Images by $title Date";
 	
 	$where = array();
 	if (!empty($ri)) {
 		$where[] = "reference_index=".$ri;
 		$smarty->assign('ri', $ri);
-	}
+	
+
+		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
+		$columns_sql .= ", count( DISTINCT SUBSTRING(grid_reference,1,$letterlength)) as `Different Myriads`";
+		
+		$columns_sql .= ", count( DISTINCT concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) ) as `Different Hectads`";
+		
+	} else {
+		$columns_sql .= ", count( DISTINCT SUBSTRING(grid_reference,1,3 - reference_index)) as `Different Myriads`";
+		$columns_sql .= ", count( DISTINCT concat(substring(grid_reference,1,3 - reference_index),substring(grid_reference,6 - reference_index,1)) ) as `Different Hectads`";
+	}	 
+	
+
 	if (!empty($u)) {
 		$where[] = "user_id=".$u;
 		$smarty->assign('u', $u);
@@ -67,22 +89,24 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign_by_ref('profile', $profile);
 		$title .= " for ".($profile->realname);
 	} else {
-		$columns_sql = ", count( DISTINCT user_id ) AS `Different Users`";
+		$columns_sql .= ", count( DISTINCT user_id ) AS `Different Users`";
 	}
 	if (count($where))
 		$where_sql = " WHERE ".join(' AND ',$where);
 		
+		
 	 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$table=$db->GetAll("SELECT 
-	substring( submitted, 1, $length ) AS `Date`, 
+	$from_date AS `Date`, 
 	count( * ) AS `Images`, 
 	sum( moderation_status = 'geograph' ) AS `Geographs`, 
 	sum( ftf =1 ) AS `Points Awarded`, 
-	count( DISTINCT grid_reference ) AS `Different Squares`, 
-	count( DISTINCT imageclass ) AS `Different Categories`
+	count( DISTINCT grid_reference ) AS `Different Gridsquares`
 	$columns_sql
+	, count( DISTINCT imageclass ) AS `Different Categories`
+	
 FROM `gridimage_search` $where_sql
-GROUP BY substring( submitted, 1, $length )" );
+GROUP BY $group_date" );
 	$iamge = new GridImage();
 	foreach($table as $idx=>$entry)
 	{
@@ -94,7 +118,7 @@ GROUP BY substring( submitted, 1, $length )" );
 	
 	$smarty->assign("h2title",$title);
 	$smarty->assign("total",count($table));
-	$smarty->assign('references',array_merge(array(0=>'British Isles'),$CONF['references']));	
+	$smarty->assign_by_ref('references',$CONF['references_all']);	
 	
 } else {
 	if ($u) {
