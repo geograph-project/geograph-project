@@ -119,35 +119,40 @@
 		<div class="ticketfields">
 		{foreach from=$ticket->changes item=item}
 			<div>
-
+			{assign var="editable" value=0}
 			{if ($ticket->status eq "closed") or ($item.status eq 'immediate')}
 				<input disabled="disabled" type="checkbox" {if ($item.status eq 'immediate') or ($item.status eq 'approved')}checked="checked"{/if}/>
 				
 			{else}
 				{if $isadmin}
 				<input type="checkbox" value="1" id="accept{$item.gridimage_ticket_item_id}" name="accepted[{$item.gridimage_ticket_item_id}]"/>
+				{assign var="editable" value=1}
 				{/if}
 			{/if}
 			<label for="accept{$item.gridimage_ticket_item_id}">
 			Change {$item.field} from
-
+			{assign var="field" value=$item.field}
 			
 			{if $item.field eq "grid_reference" || $item.field eq "photographer_gridref"}
+			{if $editable && $item.oldvalue != $image->$field}<span style="text-decoration: line-through">{else}<span>{/if}	
 			  {getamap gridref=$item.oldvalue|default:'blank'}
+			</span>
 			  to
 			  {getamap gridref=$item.newvalue|default:'blank'}
 			  
 			{elseif $item.field eq "comment"}
 			  <br/>
-			  <span style="border:1px solid #dddddd">{$item.oldvalue|escape:'html'|default:'blank'}</span><br/>
+			  <span style="border:1px solid #dddddd{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldvalue|escape:'html'|default:'blank'}</span><br/>
 			  to<br/>
 			  <span style="border:1px solid #dddddd">{$item.newvalue|escape:'html'|default:'blank'}</span>
 			{else}
-			  <span style="border:1px solid #dddddd">{$item.oldvalue|escape:'html'|default:'blank'}</span>
+			  <span style="border:1px solid #dddddd{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldvalue|escape:'html'|default:'blank'}</span>
 			  to 
 			  <span style="border:1px solid #dddddd">{$item.newvalue|escape:'html'|default:'blank'}</span>
 			{/if}
-			
+			{if $editable && $item.newvalue == $image->$field}
+				<b>Changes already applied</b>
+			{/if}
 			</label>
 			
 			</div>
