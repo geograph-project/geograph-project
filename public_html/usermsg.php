@@ -37,6 +37,24 @@ $smarty->assign_by_ref('recipient', $recipient);
 $smarty->assign_by_ref('from_name', $from_name);
 $smarty->assign_by_ref('from_email', $from_email);
 
+$db=NewADOConnection($GLOBALS['DSN']);
+if (empty($db)) die('Database connection failed');
+
+$user_id = "inet_aton('{$_SERVER['REMOTE_ADDR']}')";
+
+if ($db->getOne("select count(*) from throttle where used > date_sub(now(), interval 1 hour) and user_id=$user_id AND feature = 'usermsg'") > 5) {
+	$smarty->assign('throttle',1);
+	$throttle = 1;
+} elseif ($db->getOne("select count(*) from throttle where used > date_sub(now(), interval 24 hour) and user_id=$user_id AND feature = 'usermsg'") > 30) {
+	$smarty->assign('throttle',1);
+	$throttle = 1;
+} else {
+	$throttle = 0;
+}
+
+if (rand(1,10) > 5) {
+	$db->query("delete from throttle where used < date_sub(now(), interval 48 hour)");
+}
 	
 //try and send?
 if (isset($_POST['msg']))
@@ -76,6 +94,7 @@ if (isset($_POST['msg']))
 		@mail($recipient->email, $subject, $body, 
 			"From: $from_name <$from_email>");
 		
+			$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
 		
 		
 		$smarty->assign('sent', 1);
