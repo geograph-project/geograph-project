@@ -1,15 +1,17 @@
 {assign var="page_title" value="Send Message"}
 {include file="_std_begin.tpl"}
 {dynamic}
+{if $throttle}
+	<h2>Sorry</h2>
+	<p>Unable to send message - this service is currently busy</p>
+{else}
 
 {if $recipient->registered}
-    <h2>Send Message to {$recipient->realname|escape:'html'}</h2>
-    
+	<h2>Send Message to {$recipient->realname|escape:'html'}</h2>
+
 	{if $sent}
 		<p>Thankyou - your message has been sent</p>
-	
 	{else}
-
 		<form method="post" action="/usermsg.php">
 		<input type="hidden" name="to" value="{$recipient->user_id|escape:'html'}">
 
@@ -31,13 +33,12 @@
 		<br/>
 		<input type="submit" name="send" value="Send">
 		</form>
-    {/if}
-    
+	{/if}
 {else}
 	<h2>Sorry</h2>
 	<p>Unable to send message - target user not recognized</p>
 {/if}
- 	
+{/if}
 
-{/dynamic}    
+{/dynamic}
 {include file="_std_end.tpl"}
