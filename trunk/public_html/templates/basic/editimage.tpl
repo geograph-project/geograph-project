@@ -131,15 +131,21 @@
 			{/if}
 			<label for="accept{$item.gridimage_ticket_item_id}">
 			Change {$item.field} from
-			{assign var="field" value=$item.field}
-			
+
+			{if $item.field eq "grid_reference"}
+				{assign var="field" value="subject_gridref"}
+			{else}
+				{assign var="field" value=$item.field}
+			{/if}
+
 			{if $item.field eq "grid_reference" || $item.field eq "photographer_gridref"}
-			{if $editable && $item.oldvalue != $image->$field}<span style="text-decoration: line-through">{else}<span>{/if}	
-			  {getamap gridref=$item.oldvalue|default:'blank'}
-			</span>
-			  to
-			  {getamap gridref=$item.newvalue|default:'blank'}
-			  
+
+				<span{if $editable && $item.oldvalue != $image->$field} style="text-decoration: line-through"{/if}>
+					{getamap gridref=$item.oldvalue|default:'blank'}
+				</span>
+				to
+				{getamap gridref=$item.newvalue|default:'blank'}
+
 			{elseif $item.field eq "comment"}
 			  <br/>
 			  <span style="border:1px solid #dddddd{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldvalue|escape:'html'|default:'blank'}</span><br/>
@@ -150,9 +156,11 @@
 			  to 
 			  <span style="border:1px solid #dddddd">{$item.newvalue|escape:'html'|default:'blank'}</span>
 			{/if}
+
 			{if $editable && $item.newvalue == $image->$field}
 				<b>Changes already applied</b>
 			{/if}
+
 			</label>
 			
 			</div>
