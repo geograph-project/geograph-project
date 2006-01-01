@@ -52,6 +52,9 @@ $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 		$smarty->assign_by_ref('u', $u);
 	}
 
+if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
+	$smarty->clear_cache($template, $cacheid);
+
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db=NewADOConnection($GLOBALS['DSN']);
@@ -87,7 +90,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign("grid_total_$ri",  $db->CacheGetOne(24*3600,"select count(*) from gridprefix where reference_index = $ri and landcount > 0"));
 		$smarty->assign("grid_submitted_$ri",  $db->GetOne("select count(distinct substring(grid_reference,1,$letterlength)) from gridimage_search where reference_index = $ri"));
 
-		$smarty->assign("tenk_total_$ri",  $db->CacheGetOne(24*3600,"select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+2).",1))) from gridsquare where reference_index = $ri and percent_land > 0"));
+		$smarty->assign("tenk_total_$ri",  $db->CacheGetOne(24*3600,"select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) from gridsquare where reference_index = $ri and percent_land > 0"));
 
 		$smarty->assign("tenk_submitted_$ri",  $db->GetOne("select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) from gridimage_search where reference_index = $ri"));
 
