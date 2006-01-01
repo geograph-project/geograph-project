@@ -7,11 +7,19 @@ ensure the site remains responsive - please try again shortly.</p>
 
 <p>In the meantime, why not try using Google to search this site...</p>
 
+<form method="get" action="http://images.google.co.uk/images">
+<div>
+<input type="hidden" name="as_sitesearch" value="www.geograph.org.uk"/>
+<input type="text" name="as_q" value="{$searchq|escape:'html'}"/>
+<input type="submit" name="btnG" value="Search Geograph using Google Image Search"/></div>
+</form>
+
 <form method="get" action="http://www.google.co.uk/search">
 <div>
 <input type="hidden" name="as_sitesearch" value="www.geograph.org.uk"/>
 <input type="text" name="as_q" value="{$searchq|escape:'html'}"/>
-<input type="submit" name="btnG" value="Search Geograph using Google"/></div>
+<input type="submit" name="btnG" value="Search Geograph using Google Web Search"/></div>
 </form>
+
 {/dynamic}
 {include file="_std_end.tpl"}
