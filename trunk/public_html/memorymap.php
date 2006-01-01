@@ -119,9 +119,8 @@ function makefile($prefix='TQ') {
 		$long  = sprintf("%.6f",$image['wgs84_long']);
 
 		//avoid problems with stray commas
-		if (strpos($image['title'],',') !== FALSE)
-		{
-			$image['title'] = '"'.$image['title'].'"';
+		if (strpos($image['title'],',') !== FALSE || strpos($image['title'],'"') !== FALSE) {
+			$image['title'] = '"'.str_replace('"', '""', $image['title']).'"';
 		}
 
 		//WP04,Lat,Lon,Symbol,Name,Comment,File,Radius,Display,Unique,Visible,Locked,Category,Circle
