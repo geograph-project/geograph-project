@@ -7,7 +7,7 @@ xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/
 <email>support@{$http_host}</email>
 <url>http://{$http_host}/</url>
 <urlname>Geograph British Isles</urlname>
-<time>{$smarty.now|date_format:'%V'}</time>
+<time>{$smarty.now|date_format:'%Y-%m-%dT%H:%M:%S'}</time>
 <keywords>geograph, photo, photograph</keywords>
 
 {foreach from=$data item=row}
