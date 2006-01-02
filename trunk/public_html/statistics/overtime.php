@@ -29,7 +29,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-$smarty->caching = 0; // lifetime is per cache
+$smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
 $template='statistics_table.tpl';
@@ -38,8 +38,10 @@ $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 
+$date = (isset($_GET['date']) && ctype_lower($_GET['date']))?intval($_GET['date']):'submitted';
 
-$cacheid='overtime'.isset($_GET['month']).isset($_GET['week']).isset($_GET['taken']).'.'.$ri.'.'.$u;
+
+$cacheid='overtime'.isset($_GET['month']).isset($_GET['week']).$date.'.'.$ri.'.'.$u;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -50,7 +52,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 
-	$column = isset($_GET['taken'])?'imagetaken':'submitted';  
+	$column = ($date == 'taken')?'imagetaken':'submitted';  
 	
 	if (isset($_GET['week'])) {
 		$from_date = "date(min($column))";
@@ -61,10 +63,15 @@ if (!$smarty->is_cached($template, $cacheid))
 		$from_date = "substring( $column, 1, $length )";
 		$group_date = "substring( $column, 1, $length )";
 	}
-	$title = isset($_GET['taken'])?'Taken':'Submitted'; 
+	$title = ($date == 'taken')?'Taken':'Submitted'; 
 	$title = "Breakdown of Images by $title Date";
 	
 	$where = array();
+	
+	if ($date == 'taken') {
+		$where[] = "$column not like '%-00%'";
+	}
+	
 	if (!empty($ri)) {
 		$where[] = "reference_index=".$ri;
 		$smarty->assign('ri', $ri);
@@ -120,6 +127,13 @@ GROUP BY $group_date" );
 	$smarty->assign("total",count($table));
 	$smarty->assign_by_ref('references',$CONF['references_all']);	
 	
+	$extra = array();
+	foreach (array('month','week','date') as $key) {
+		if (isset($_GET[$key])) {
+			$extra[$key] = $_GET[$key];
+		}
+	}
+	$smarty->assign_by_ref('extra',$extra);	
 } else {
 	if ($u) {
 		$profile=new GeographUser($u);
@@ -127,6 +141,7 @@ GROUP BY $group_date" );
 		$smarty->assign_by_ref('u', $u);
 	}
 }
+$smarty->assign("filter",2);
 
 $smarty->display($template, $cacheid);
 
