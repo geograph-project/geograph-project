@@ -87,6 +87,14 @@ GROUP BY substring( post_time, 1, $length )" );
 	$smarty->assign("h2title",$title);
 	$smarty->assign("total",count($table));
 	
+	
+	$extra = array();
+	foreach (array('month') as $key) {
+		if (isset($_GET[$key])) {
+			$extra[$key] = $_GET[$key];
+		}
+	}
+	$smarty->assign_by_ref('extra',$extra);	
 } else {
 	if ($u) {
 		$profile=new GeographUser($u);
@@ -94,6 +102,7 @@ GROUP BY substring( post_time, 1, $length )" );
 		$smarty->assign_by_ref('u', $u);
 	}
 }
+$smarty->assign("filter",2);
 
 $smarty->display($template, $cacheid);
 
