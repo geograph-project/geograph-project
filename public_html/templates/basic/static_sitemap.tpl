@@ -61,6 +61,7 @@
 	<li><a href="/statistics.php?by=user&amp;ri=1">Great Britain Contributor List</a></li>
 	<li><a href="/statistics.php?by=user&amp;ri=2">Ireland Contributor List</a></li>
 	<li><a href="/first2square.php">Numberical Squares Leaderboard</a> (see <a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=2&topic=1235&page=0#19">forum</a>)</li>
+	<li><a href="/statistics/busyday.php?user=1">Most Taken in a Day Leaderboard</a></li>
 </ul>
 
 
@@ -90,11 +91,14 @@
 	
 	<li>Technical Database Stats: <ul>
 	   <li><a href="/statistics/totals.php">Database Statisitics</a></li>
-	   <li><a href="/statistics/estimate.php">Estimate for compleation of Milestones</a><ul>
+	   <li>Estimate for compleation of Milestones<ul>
 	   	<li><a href="/statistics/estimate.php?ri=1">Great Britain</a> or <a href="/statistics/estimate.php?ri=2">Ireland</a></li>
 	   	</ul></li>
 	   <li><a href="/statistics/overtime.php">Photo Submission Activity Breakdown</a></li>
+	   <li><a href="/statistics/overtime.php?date=taken">Photo Taken Activity Breakdown</a></li>
 	   <li><a href="/statistics/overtime_forum.php">Forum Posting Breakdown</a></li>
+	   <li><a href="statistics/busyday.php">Most taken in a day</a></li>
+	   <li><a href="statistics/busyday.php?date=submitted">Most  submitted in a day</a></li>
 	   <li><a href="/statistics/forum_image_breakdown.php">Breakdown of Thumbnails used in Forum Topics</a></li>
 	</ul>
 	</li>
