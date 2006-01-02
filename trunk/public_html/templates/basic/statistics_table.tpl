@@ -2,7 +2,7 @@
 {include file="_std_begin.tpl"}
 <script src="/sorttable.js"></script>
 
-{if !$nofilter}
+{if $filter}
     <form method="get" action="{$script_name}">
     <p>{if $references}In <select name="ri">
     	{html_options options=$references selected=$ri}
@@ -12,6 +12,7 @@
     	id="i"/><label for="i">Limited to <a href="/search.php?i={$i}">Search</a></label>
     {else}
     {dynamic}
+    {if $filter > 1}
     {if $user->registered}
 	<select name="u">
 		{if $u && $u != $user->user_id}
@@ -28,15 +29,21 @@
 	</select>
 	{/if}
     {/if}
+    {/if}
     {/dynamic}
     {/if}
-    <input type="submit" value="Go"></p></form>
+    {foreach from=$extra key=name item=value}
+    	<input type="hidden" name="{$name}" value="{$value}"/>
+    {/foreach}
+    <input type="submit" value="Go"/></p></form>
  {/if}  
 
 	<h3>{$h2title}</h3>
 {if $total > 0}
+	{if !$nosort}
 	<p><small>Click a column header to change the sort order.</small></p>
-
+	{/if}
+	
 	<table class="report sortable" id="reportlist" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5">
 	<thead><tr>
 	{foreach from=$table.0 key=name item=value}
