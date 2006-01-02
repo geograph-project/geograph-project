@@ -29,14 +29,15 @@ init_session();
 
 $smarty = new GeographPage;
 
-$smarty->caching = 0; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hr cache
+$smarty->caching = 2; // lifetime is per cache
+$smarty->cache_lifetime = 3600*3; //3hr cache
 
 $template='statistics_table.tpl';
 
+$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
 
-$cacheid='forum_image_breakdown';
+$cacheid='forum_image_breakdown'.$ri;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -47,9 +48,17 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 
-	$title = "Breakdown of Thumbnails used in Forum Topics";
+	$title = "Breakdown of Thumbnails";
 	
-
+	if ($ri) {
+		$whereri = " where reference_index = $ri";
+		$smarty->assign('ri',$ri);
+		
+		$title .= " in ".$CONF['references_all'][$ri];
+	} else {
+		$whereri = "";
+	}
+	$title .= " used in Forum Topics";	
 		
 	 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$table=$db->GetAll("SELECT 
@@ -60,6 +69,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	FROM gridimage_post gp
 	INNER JOIN `geobb_topics` gt ON (gp.topic_id = gt.topic_id)
 	INNER JOIN gridimage_search gi ON (gp.gridimage_id = gi.gridimage_id)
+	$whereri 
 	GROUP BY gp.topic_id 
 	HAVING `Images` > 4
 	ORDER BY `Images` DESC" );
@@ -68,10 +78,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign("h2title",$title);
 	$smarty->assign("total",count($table));
+	$smarty->assign_by_ref('references',$CONF['references_all']);	
 	
-	$smarty->assign("nofilter",1);
-
 }
+$smarty->assign("filter",1);
 
 $smarty->display($template, $cacheid);
 
