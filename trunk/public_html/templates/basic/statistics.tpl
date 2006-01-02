@@ -97,7 +97,7 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
    
    <p>Most <a href="/statistics/wordnet.php">Popular Words</a> in the last 7 days and all time.</p>
    
-   <p>User leaderboards: <a href="/moversboard.php">Weekly</a>, <a href="/leaderboard.php">All Time</a> and <a href="/monthlyleader.php">By Month</a>. (<a href="/statistics.php?by=user&amp;ri=1">Contributor List</a>)</p>
+   <p>User leaderboards: <a href="/moversboard.php">Weekly</a>, <a href="/leaderboard.php">All Time</a>, <a href="/monthlyleader.php">By Month</a> and <a href="/statistics/busyday.php?users=1">Most in One Day</a>. (<a href="/statistics.php?by=user&amp;ri=1">Contributor List</a>)</p>
 
    <p>Mostly Geographed: <a href="/statistics/most_geographed.php">Grid Squares</a>, 
    <a href="/statistics/most_geographed.php">10<small>km</small> x 10<small>km</small> Squares</a>  and <a href="/statistics/most_geographed_myriad.php">100km x 100km</a> Squares.</p>
@@ -134,7 +134,11 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
     {/dynamic}
     <input type="submit" value="Go"/></p></form>
 
-   <p>Technical Database Stats: <a href="/statistics/totals.php">Current Totals</a>, <a href="/statistics/estimate.php">Future Estimates</a>, <a href="/statistics/overtime.php">Activity Breakdown</a> (<a href="/statistics/overtime_forum.php">for Forum</a>),<br/>
-   <a href="/statistics/forum_image_breakdown.php">Breakdown of Thumbnails used in Forum Topics</a></p> 	
- 
+   <p>Technical Database Stats:<br/>
+   <a href="/statistics/totals.php">Current Totals</a>,
+   <a href="/statistics/estimate.php">Future Estimates</a>,
+   <a href="/statistics/overtime.php">Activity Breakdown</a> (<a href="/statistics/overtime.php?date=taken">by date taken</a>) (<a href="/statistics/overtime_forum.php">for Forum</a>),<br/>
+   <a href="statistics/busyday.php">Most taken in a day</a> (<a href="statistics/busyday.php?date=submitted">submitted</a>) and 
+   <a href="/statistics/forum_image_breakdown.php">Breakdown of Thumbnails used in Forum Topics</a>.</p>
+
 {include file="_std_end.tpl"}
