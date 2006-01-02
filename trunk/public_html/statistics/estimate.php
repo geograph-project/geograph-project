@@ -72,8 +72,15 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign("geograph",$geograph);
 	
 	
+	$sql = "select substring(crt_timestamp,1,10) as d ,count(*) as c from queries where crt_timestamp > '$beginday' AND crt_timestamp < '$today' group by substring(crt_timestamp,1,10)";
+	$sql2 = "select count(*) from queries";
+
+	$searches = calc($sql,$sql2,1000);
+				
+	$smarty->assign("searches",$searches);
 	
-	$sql = "select substring(post_time,1,10) as d ,count(*) as c from geobb_posts where  post_time > '$beginday' AND post_time < '$today' group by substring(post_time,1,10)";
+	
+	$sql = "select substring(post_time,1,10) as d ,count(*) as c from geobb_posts where post_time > '$beginday' AND post_time < '$today' group by substring(post_time,1,10)";
 	$sql2 = "select count(*) from geobb_posts";
 
 	$post = calc($sql,$sql2,1000);
