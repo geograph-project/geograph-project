@@ -16,8 +16,8 @@ $replacement[]="<a href=\"\\1\" target=\"_blank\">\\3</a>";
 $pattern[]="/\[email=([^<>(): \n]+?)\](.+?)\[\/email\]/i";
 $replacement[]="<a href=\"mailto:\\1\">\\2</a>";
 
-$pattern[]="/\[img(left|right)?\](http:\/\/([^<> \n]+?)\.(gif|jpg|jpeg|png))\[\/img\]/i";
-$replacement[]='<img src="\\2" border="0" align="\\1" alt="">';
+//$pattern[]="/\[img(left|right)?\](http:\/\/([^<> \n]+?)\.(gif|jpg|jpeg|png))\[\/img\]/i";
+//$replacement[]='<img src="\\2" border="0" align="\\1" alt="">';
 
 $pattern[]="/\[[bB]\](.+?)\[\/[bB]\]/s";
 $replacement[]='<b>\\1</b>';
