@@ -179,7 +179,7 @@ $fixExternalImages= <<<FUNC
 	{
 		\$url=\$matches[1].\$matches[2].\$matches[3];
 		//no external images allowed
-		return "<a href=\"".htmlentities(\$url)."\">".htmlentities(\$url)."</a>";	
+		return "<a title=\"Externally hosted image - caution advised\" href=\"".htmlentities(\$url)."\">".htmlentities(\$url)."</a>";	
 	}
 FUNC;
 
