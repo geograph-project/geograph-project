@@ -169,8 +169,7 @@ if (!isset($CONF['disable_discuss_thumbs']) && preg_match_all("/\[\[(\[?)(\w*\d+
 
 //no external images
 // the callback function
-function fixExternalImages($matches) 
-{
+$fixExternalImages= <<<FUNC
 	if (($matches[2] == 'www.geograph.org.uk') || ($matches[2] == 'www.geograph.co.uk'))
 	{
 		//this is fine
@@ -182,11 +181,15 @@ function fixExternalImages($matches)
 		//no external images allowed
 		return "<a href=\"".htmlentities($url)."\">".htmlentities($url)."</a>";	
 	}
-}
+FUNC;
 
 $posterText=preg_replace_callback(
              '/<img src="(http:\/\/)([^\/]*)([^"]*)"/i',
-             'fixExternalImages',
+             create_function(
+	             // single quotes are essential here,
+	             // or alternative escape all $ as \$
+	             '$matches',
+	             'return strtolower($matches[0]);'),
              $posterText);
              
 
