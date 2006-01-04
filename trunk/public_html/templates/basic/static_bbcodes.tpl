@@ -42,6 +42,7 @@ To stop otherwise <i>Grid Reference Looking Text</i> being converted, either use
 <div style="background-color:#eeeeee; padding:10px;"><tt style="color:green">[email=address@example.com]contact me[/email]</tt> renders as <a href="mailto:address@example.com">contact me</a></div><br/></li>
 </ul>
 
+<!--
 <h4>External Images</h4>
 
 <ul>
@@ -53,7 +54,7 @@ To stop otherwise <i>Grid Reference Looking Text</i> being converted, either use
 
 <li><tt style="color:green">[imgright]http://www.domain.com/image.gif[/img]</tt> will right align the image in the flow of text.</li>
 </ul>
-
+-->
 
 
 
