@@ -170,16 +170,16 @@ if (!isset($CONF['disable_discuss_thumbs']) && preg_match_all("/\[\[(\[?)(\w*\d+
 //no external images
 // the callback function
 $fixExternalImages= <<<FUNC
-	if (($matches[2] == 'www.geograph.org.uk') || ($matches[2] == 'www.geograph.co.uk'))
+	if ((\$matches[2] == 'www.geograph.org.uk') || (\$matches[2] == 'www.geograph.co.uk'))
 	{
 		//this is fine
-		return $matches[0];
+		return \$matches[0];
 	}
 	else
 	{
-		$url=$matches[1].$matches[2].$matches[3];
+		\$url=\$matches[1].\$matches[2].\$matches[3];
 		//no external images allowed
-		return "<a href=\"".htmlentities($url)."\">".htmlentities($url)."</a>";	
+		return "<a href=\"".htmlentities(\$url)."\">".htmlentities(\$url)."</a>";	
 	}
 FUNC;
 
