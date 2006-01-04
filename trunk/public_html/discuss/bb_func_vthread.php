@@ -184,7 +184,7 @@ function fixExternalImages($matches)
 	}
 }
 
-$posterText preg_replace_callback(
+$posterText=preg_replace_callback(
              '{<img src="([^:]+://)([^/]*)([^"]*)"}i',
              'fixExternalImages',
              $posterText);
