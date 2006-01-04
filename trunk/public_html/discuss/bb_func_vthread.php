@@ -185,10 +185,9 @@ function fixExternalImages($matches)
 }
 
 $posterText=preg_replace_callback(
-             '{<img src="([^:]+://)([^/]*)([^"]*)"}i',
+             '/<img src="(http:\/\/)([^\/]*)([^"]*)"/i',
              'fixExternalImages',
              $posterText);
-             
              
 
 $listPosts.=ParseTpl($tpl);
