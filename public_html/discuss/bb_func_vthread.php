@@ -184,12 +184,12 @@ $fixExternalImages= <<<FUNC
 FUNC;
 
 $posterText=preg_replace_callback(
-             '/<img src="(http:\/\/)([^\/]*)([^"]*)"/i',
+             '/<img src="(http:\/\/)([^\/]*)([^"]*)".*?>/i',
              create_function(
 	             // single quotes are essential here,
 	             // or alternative escape all $ as \$
 	             '$matches',
-	             'return strtolower($matches[0]);'),
+	             $fixExternalImages),
              $posterText);
              
 
