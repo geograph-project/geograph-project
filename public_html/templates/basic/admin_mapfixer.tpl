@@ -1,18 +1,25 @@
 {assign var="page_title" value="Map Fixer"}
 {include file="_std_begin.tpl"}
 
-<h2><a title="Admin home page" href="/admin/index.php">Admin</a> : Map Fixer</h2>
-
 {dynamic}
+<h2><a title="Admin home page" href="/admin/index.php">Admin</a> : {if $gridref_ok}<a href="/admin/mapfixer.php">{/if}Map Fixer</a></h2>
 
+{if !$gridref}
+{foreach from=$unknowns item=unknown}
+	{if strlen($unknown.grid_reference) == 6}
+		{assign var="gbtofix" value="1"}
+	{/if}
+{/foreach}
+{/if}
+{if $gridref_ok || $gbtofix}
 <div style="border:2px silver solid;background:#eeeeee;padding:10px;">
 
-<p>This instant map updater requires no screen refresh to work - simply
-check the OS map and vote on the land percentage and a new square will
-be opened up for processing</p>
+<div>This instant map updater requires no screen refresh to work - simply
+check the OS map and vote on the land percentage{if $gbtofix} and a new square will
+be opened up for processing{/if}.</div>
 
 <span id="landvote" style="display:none">
-Land percent for <span id="voteref"></span> is 
+Land percent for <span id="voteref"></span>&nbsp; is 
 <input type="button" value="00" onclick="setland(0)">
 <input type="button" value="01" onclick="setland(1)">
 <input type="button" value="05" onclick="setland(5)">
@@ -29,9 +36,15 @@ Land percent for <span id="voteref"></span> is
 <script language="javascript">
 
 var aTodo=new Array();
+{if $gridref}
+	aTodo[aTodo.length]='{$gridref}';
+{else}
 {foreach from=$unknowns item=unknown}
-aTodo[aTodo.length]='{$unknown.grid_reference}';
+	{if strlen($unknown.grid_reference) == 6}
+	aTodo[aTodo.length]='{$unknown.grid_reference}';
+	{/if}
 {/foreach}
+{/if}
 
 var current=-1;
 
@@ -85,7 +98,7 @@ function shownext()
 	}
 	else
 	{
-		div.innerHTML="no more squares to do";
+		voteinfo.innerHTML=voteinfo.innerHTML+"<br/>--no more squares to do--";
 		vote.style.display="none";
 	}
 	
@@ -124,7 +137,7 @@ shownext();
 
 {/literal}
 </script>
-
+{/if}
 <h3>Manual Update</h3>
 <p>To update a specific square, use this form...</p>
 <form method="get" action="mapfixer.php">
