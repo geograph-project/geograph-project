@@ -32,7 +32,7 @@ typical geography.</li>
 <li>Inappropriate content - any image containing material inappropriate for minors</li>
 </ul>
 <p>We keep rejected submissions on file for a short period, so if you think your
-image has been incorrectly rejected (and mistakes do happen!) please <a title="Contact us" href="contact.php">contact us</a>
+image has been incorrectly rejected (and mistakes do happen!) please <a title="Contact us" href="/contact.php">contact us</a>
 referring to <b>image {$image->gridimage_id}</b>
 </p>
 
