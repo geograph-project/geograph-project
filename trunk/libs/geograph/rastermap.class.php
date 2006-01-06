@@ -143,7 +143,7 @@ class RasterMap
 		switch ($this->service) {
 		
 			case 'vob': 
-				return "1940s OS New Popular Edition";
+				return "1940s OS New Popular Edition<span style=\"font-size:0.8em;color:red\"><br/><b>Please confirm positions on a modern map, as accuracy may be limited.</b></span>";
 		}
 	}
 	function getFootNote() 
