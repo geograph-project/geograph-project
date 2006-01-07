@@ -138,6 +138,31 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 		<li><a href="/mapbrowse.php?t={$map_token}">Geograph <b>map</b> for {$gridref}</a>. (<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}">print check sheet</a>)</li>
 		<li>Or <a href="/submit.php?gridreference={$gridrefraw}"><b>submit</b> your own picture of {$gridref}</a>.</li>
 		
+		<li><b>Maps</b>:
+		
+		{getamap gridref=$gridref text="OS Get-a-Map"},
+		
+		{if $square->reference_index eq 1}
+			{assign var="urltitle" value=$image->title|escape:'url'}
+			{external href="http://www.streetmap.co.uk/newmap.srf?x=`$square->nateastings`&amp;y=`$square->natnorthings`&amp;z=3&amp;sv=`$square->nateastings`,`$square->natnorthings`&amp;st=OSGrid&amp;lu=N&amp;tl=[$gridref]+from+geograph.org.uk&amp;ar=y&amp;bi=background=http://$http_host/templates/basic/img/background.gif&amp;mapp=newmap.srf&amp;searchp=newsearch.srf" text="streetmap.co.uk"}
+			&amp; 
+			{external href="http://www.multimap.com/map/browse.cgi?GridE=`$square->nateastings`&amp;GridN=`$square->natnorthings`&amp;scale=25000&amp;title=[`$gridref`]+from+geograph.org.uk" text="multimap.com"}
+		{else}
+			&amp;
+			{external href="http://www.multimap.com/p/browse.cgi?scale=25000&amp;lon=`$long`&amp;lat=`$lat`&amp;GridE=`$long`&amp;GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"}
+		{/if}</li>
+		
+		<li><b>What's nearby?</b> 
+		{if $square->reference_index eq 1}
+			{external title="Geocaches from geocaching.com, search by geocacheuk.com" href="http://stats.guk2.com/caches/search_parse.php?osgbe=`$square->nateastings`&amp;osgbn=`$square->natnorthings`" text="Geocaches"},
+			{external title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigtools/find.php?t=`$gridref`" text="Trigpoints"},
+			{external href="http://geourl.org/near?lat=`$lat`&amp;long=`$long`" text="geourl.org" title="search for webpages near this location"} &amp;
+		 	{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$square->nateastings`+`$square->natnorthings`" text="more..."}
+		{else}
+			{external href="http://www.geocaching.com/seek/nearest.aspx?lat=`$lat`&amp;lon=`$long`" text="geocaches" title="Geocaches from geocaching.com"},
+		 	{external href="http://geourl.org/near?lat=`$lat`&amp;long=`$long`" text="geourl.org" title="search for webpages near this location"}  &amp;
+		 	{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$square->nateastings`+`$square->natnorthings`+OSI" text="more from nearby.org.uk"}
+		{/if}</li>
 		</ul>
 
 	{/if}
