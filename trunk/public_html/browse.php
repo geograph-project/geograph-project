@@ -145,7 +145,8 @@ if ($grid_given)
 		list($lat,$long) = $conv->gridsquare_to_wgs84($square);
 		$smarty->assign('lat', $lat);
 		$smarty->assign('long', $long);
-	
+		$smarty->assign_by_ref('square', $square);
+		
 		//get a token to show a suroudding geograph map
 		$mosaic=new GeographMapMosaic;
 		$smarty->assign('map_token', $mosaic->getGridSquareToken($square));
