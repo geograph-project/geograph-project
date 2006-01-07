@@ -66,6 +66,10 @@
 
 	</tbody>
 	</table>
+	
+	{if $footnote}
+		{$footnote}
+	{/if}
 {else}
 	<p><i>No Results to Display</i></p>
 {/if}
