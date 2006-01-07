@@ -4,7 +4,7 @@
  * $Id$
  * 
  * GeoGraph geographic photo archive project
- * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
+ * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -126,6 +126,10 @@ GROUP BY $group_date" );
 	$smarty->assign("h2title",$title);
 	$smarty->assign("total",count($table));
 	$smarty->assign_by_ref('references',$CONF['references_all']);	
+	
+	if ($date == 'submitted') {
+		$smarty->assign("footnote","<p><a href=\"/img/static_submission_graph.png\" target=\"_blank\">Static Graph compiled from this data</a></p>");
+	}
 	
 	$extra = array();
 	foreach (array('month','week','date') as $key) {
