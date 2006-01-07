@@ -68,24 +68,15 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 
 	{if $totalimagecount}
 		<ul>
-		<li>		  
-		{if $discuss}
-			There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a 
-			<a href="/discuss/index.php?gridref={$gridref}">discussion about {$gridref}</a> (preview on the left)
-
-		{else}
-			{if $user->registered} 
-				<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a discussion about {$gridref}</a>
-			{else}
-				<a href="/login.php">login</a> to start a discussion about {$gridref} 
-			{/if}
-		{/if}</li>
-		<li><a href="/submit.php?gridreference={$gridrefraw}"><b>Submit</b> your own picture of {$gridref}</a>.</li>
-		<li><a href="/search.php?q={$gridref}"><b>Search</b> for other nearby images</a>.</li>
+		<li>{$gridref} : 
+		[<a href="/submit.php?gridreference={$gridrefraw}" title="Submit image for $gridref">submit</a>]
+		[<a href="/search.php?q={$gridref}" title="Search for other nearby images">search</a>]
+		[<a href="/discuss/index.php?gridref={$gridref}" title="discussion about $gridref">discuss</a>] 
 		{if $totalimagecount > 5}
-		<li><a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1">View images in a <b>Slide Show</b></a>.</li>
+		[<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show">slide Show</a>]
 		{/if}
-		<li><a href="/mapbrowse.php?t={$map_token}">Geograph <b>map</b> for {$gridref}</a> (<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}">print check sheet</a>).</li>
+		[<a href="/mapbrowse.php?t={$map_token}" title="Geograph map for {$gridref}">map</a>]
+		[<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}">check sheet</a>]<br/><br/></li>
 		
 		
 		<li><b>We have 
@@ -93,7 +84,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 		{if $totalimagecount && $totalimagecount ne $imagecount}
 			({$totalimagecount} including hidden)
 		{/if}
-		for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"}</b> - click for larger version.</li>
+		for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"}</b> <span style="font-size:0.8em;">- click for larger version</span></li>
 		</ul>
 		
 		{foreach from=$images item=image}
@@ -117,26 +108,26 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 		<p>We have no images for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"} yet,
 		
 		{if $nearest_distance}
-			</p><ul><li>The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away.<br/><br/></li>
+			</p><ul><li>The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away<br/><br/></li>
 		{else}
 			and have no pictures for any grid square within 100km either!</p>
 			<ul>
 		{/if}
-		<li>You can also <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}"><b>search</b> for nearby images</a>.</li>
-		<li>		  
+		<li>You can also <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}"><b>search</b> for nearby images</a></li>
+		<li>
 		{if $discuss}
 			There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a 
-			<a href="/discuss/index.php?gridref={$gridref}"><b>discussion</b> about {$gridref}</a>. (preview on the left)
+			<a href="/discuss/index.php?gridref={$gridref}"><b>discussion</b> about {$gridref}</a> (preview on the left)
 			
 		{else}
 			{if $user->registered} 
-				<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a <b>discussion</b> about {$gridref}</a>.
+				<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a <b>discussion</b> about {$gridref}</a>
 			{else}
-				<a href="/login.php">login</a> to start a <b>discussion</b> about {$gridref}.
+				<a href="/login.php">login</a> to start a <b>discussion</b> about {$gridref}
 			{/if}
 		{/if}</li>
-		<li><a href="/mapbrowse.php?t={$map_token}">Geograph <b>map</b> for {$gridref}</a>. (<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}">print check sheet</a>)</li>
-		<li>Or <a href="/submit.php?gridreference={$gridrefraw}"><b>submit</b> your own picture of {$gridref}</a>.</li>
+		<li><a href="/mapbrowse.php?t={$map_token}">Geograph <b>map</b> for {$gridref}</a> (<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}">print check sheet</a>)</li>
+		<li>Or <a href="/submit.php?gridreference={$gridrefraw}"><b>submit</b> your own picture of {$gridref}</a><br/><br/></li>
 		
 		<li><b>Maps</b>:
 		
