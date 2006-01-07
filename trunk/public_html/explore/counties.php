@@ -47,7 +47,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($type == 'center') {
 		$smarty->assign("page_title", "Ceremonial County Centre Points");
 		$smarty->assign("start_info", "See <a href=\"#notes\">bottom</a> of page for clarification of Ceremonial or Geographic Counties as used on this page");
-		$smarty->assign("extra_info", "<a name=\"notes\"/>* this pages uses counties from 1995, making them now known as  <a href=\"http://en.wikipedia.org/wiki/Ceremonial_counties_of_England\">Ceremonial or Geographic Counties</a> and for some unknown reason Northern Ireland is just one entity. Furthermore only counties that happen to have their calculated 'centre of bounding box' on land will be included in this list (eg Cornwall doesn't), see blue triangles on this <a href=\"http://www.deformedweb.co.uk/trigs/map.cgi?w=600&amp;b=500&amp;e=400000&amp;n=400000&amp;x=d&amp;l=1&amp;hg=1\">map</a>.");
+		$smarty->assign("extra_info", "<a name=\"notes\"/>* this pages uses counties from 1995, making them now known as  <a href=\"http://en.wikipedia.org/wiki/Ceremonial_counties_of_England\">Ceremonial or Geographic Counties</a> and for some unknown reason Northern Ireland is just one entity. Furthermore only counties that happen to have their calculated 'centre of bounding box' on land will be included in this list (eg Cornwall doesn't), see blue triangles on this <a href=\"http://www.deformedweb.co.uk/trigs/map.cgi?w=600&amp;b=500&amp;e=400000&amp;n=400000&amp;x=d&amp;l=0&amp;hg=1&amp;x=c\">map</a>.");
 		
 		$counties = $db->GetAll("select * from loc_counties where n > 0 order by reference_index,n");
 		
