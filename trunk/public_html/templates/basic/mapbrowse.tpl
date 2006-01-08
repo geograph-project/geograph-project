@@ -162,23 +162,25 @@
   </tr>
 
   <tr><!-- row 6 -->
-   <td colspan="4" style="background:#6476fc;">
+   <td colspan="4" style="background:#6476fc;font-size:0.8em;text-align:center;" align="center">
    
-   <p style="line-height:1em;font-size:0.8em;text-align:center">Grid Reference at centre
+   <div style="line-height:1em;padding-top:2px;">Grid Reference at centre
  {if $token_zoomout}
- <a style="color:white" href="/search.php?q={$gridref}" title="Search for images centered around {$gridref}">{$gridref}</a>
+ <a style="color:#000066" href="/search.php?q={$gridref}" title="Search for images centered around {$gridref}">{$gridref}</a>
  {else}
-
  {$gridref}
-
- {/if}</p>
+ {/if}</div>
  
-   <p style="line-height:1em;font-size:0.8em;text-align:center">Map width <b>{$mapwidth} km</b></p>
+  <div style="line-height:1em;padding-top:6px;">Map width <b>{$mapwidth}&nbsp;<small>km</small></b></div>
  
  {if $mapwidth == 10}
-  <p style="line-height:1em;font-size:0.8em;text-align:center"><a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$mosaic_token}" style="color:white">print check sheet</a></p>
+  <div style="line-height:1em;padding-top:6px;"><a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$mosaic_token}" style="color:#000066">print check sheet</a></div>
  {/if}
  
+ {if $token_big}
+  <div style="line-height:1em;padding-top:6px;"><a href="/maplarge.php?t={$token_big}" style="color:#000066">bigger map</a></div>
+ {/if}
+ <br/>
    </td>
    <td><img alt="" src="/templates/basic/mapnav/shim.gif" width="1" height="103"/></td>
   </tr>
@@ -218,6 +220,14 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 
  <br style="clear:both;"/>
  
+{if $token_zoomout}
+<div style="position:relative;">
+	<div style="position:absolute;left:395px;top:5px;">
+	NEW: <b><a title="right click and select&#13;&#10; [Copy Shortcut] or [Copy Link Location]" href="/mapbrowse.php?t={$mosaic_token}">Link to this Map</a></b>
+	</div>
+</div>
+{/if}
+<br/>
 <h2>Map Browsing (beta!)</h2>
 <p>Here's a few tips for using our map - we're still developing and testing this, so if you
 notice any problems, do let us know.</p>
