@@ -114,14 +114,14 @@ if (!$smarty->is_cached($template, $cacheid))
 		$done = array();
 		foreach ($rows as $id => $row) {
 			if ($last) {
-				$dist_sq = pow($row['x'] - $last['x'],2) + pow($row['x'] - $last['x'],2);
+				$dist_sq = pow($row['x'] - $last['x'],2) + pow($row['y'] - $last['y'],2);
 				$total += sqrt($dist_sq);
 			} else {
 				$last = $row;
 			}
 			foreach ($rows as $id2 => $row2) {
 				if ($id != $id2 && !isset($done["$id2.$id"])) {
-					$dist_sq = pow($row['x'] - $row2['x'],2) + pow($row['x'] - $row2['x'],2);
+					$dist_sq = pow($row['x'] - $row2['x'],2) + pow($row['y'] - $row2['y'],2);
 					if ($longest_sq < $dist_sq)
 						$longest_sq = $dist_sq;
 					$done["$id.$id2"]=1;
