@@ -70,11 +70,22 @@ if (!$smarty->is_cached($template, $cacheid))
 	} else {
 		$columns_sql = "CONCAT('<a href=\"/profile.php?u=',user_id,'\">',realname,'</a>') as User,";
 	}
+	
+	if ($ri) {
+		$where[] = "reference_index = $ri";
+		$where2 = "and reference_index = $ri";
+		$smarty->assign('ri',$ri);
+		$title .= " in ".$CONF['references_all'][$ri];
+	} else {
+		$where2 = "";
+	}
+	
 	if (!empty($date)) {
 		if (strlen($date)==10) {
 			$where[] = "imagetaken='$date'";
 		} else {
 			$where[] = "imagetaken LIKE '$date%'";
+			$where[] = "imagetaken not like '%-00%'";
 			$columns_sql .= 'imagetaken as `Date`,';
 		}
 		$smarty->assign('date', $date);
@@ -109,6 +120,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		and ftf =1 
 		and user_id = {$entry['user_id']}
 		and imagetaken = '{$entry['imagetaken']}'
+		$where2
 		ORDER BY gridimage_id");
 		
 		$last = false;
