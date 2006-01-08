@@ -43,6 +43,9 @@ $date = (isset($_GET['date']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET[
 
 $cacheid='distances'.$date.'.'.$ri.'.'.$u;
 
+if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
+	$smarty->clear_cache($template, $cacheid);
+
 if (!$smarty->is_cached($template, $cacheid))
 {
 	require_once('geograph/gridimage.class.php');
@@ -141,15 +144,17 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	uasort($table,"cmp");
 	
+	$i=0;
 	foreach($table as $idx=>$entry)
 	{
-		if ($idx > 100 || $entry['Distance Travelled (km)'] == 0) {
+		if ($i > 100 || $entry['Distance Travelled (km)'] == 0) {
 			unset($table[$idx]);		
 		} else {
 			if ($iamge->imagetaken = $entry['Date'])
 				$table[$idx]['Date'] = $iamge->getFormattedTakenDate();
 			unset($table[$idx]['user_id']);
 			unset($table[$idx]['imagetaken']);	
+			$i++;
 		}
 	}
 	$table = array_merge($table);
