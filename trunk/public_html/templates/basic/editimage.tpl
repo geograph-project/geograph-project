@@ -281,21 +281,12 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 </p>
 
 
-
+<script type="text/javascript" src="/categories.js.php"></script>
 {literal}
 <script type="text/javascript">
 <!--
-function onChangeImageclass()
-{
-	var sel=document.getElementById('imageclass');
-	var idx=sel.selectedIndex;
-	
-	var isOther=idx==sel.options.length-1
-	
-	var otherblock=document.getElementById('otherblock');
-	otherblock.style.display=isOther?'inline':'none';
-	
-}
+//rest loaded in geograph.js
+window.onload = populateImageclass;
 //-->
 </script>
 {/literal}
@@ -311,12 +302,14 @@ function onChangeImageclass()
 	
 	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()">
 		<option value="">--please select feature--</option>
-		{html_options options=$classes selected=$image->imageclass}
+		{if $image->imageclass}
+			<option value="{$image->imageclass}" selected="selected">{$image->imageclass}</option>
+		{/if}
 		<option value="Other">Other...</option>
 	</select>
 	
 	
-	<span id="otherblock" {if $image->imageclass ne 'Other'}style="display:none;"{else}style="display:inline;"{/if}>
+	<span id="otherblock" {if $image->imageclass ne 'Other'}style="display:none;"{/if}>
 	<label for="imageclassother">Please specify </label> 
 	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32"/></p>
 	</span>
