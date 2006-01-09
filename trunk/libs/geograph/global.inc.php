@@ -354,6 +354,11 @@ class GeographPage extends Smarty
 	}
 }
 
+function datetimeToTimestamp($datetime) {
+	$p = explode('-',$datetime);
+	return mktime(0, 0, 0, $p[1], $p[0], $p[2]);
+}
+
 //global page initialisation
 function init_session()
 {
