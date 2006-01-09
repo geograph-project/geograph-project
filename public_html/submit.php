@@ -172,7 +172,7 @@ if (isset($_POST['gridsquare']))
 					$ok=false;
 					$error['imageclass']="Please choose a geographical feature";	
 				} else {
-					$smarty->assign('imageclass', $imageclass);
+					$smarty->assign_by_ref('imageclass', $imageclass);
 				}
 				
 				$title=trim(stripslashes($_POST['title']));
@@ -236,9 +236,8 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('upload_id', $_POST['upload_id']);
 			$smarty->assign('title', stripslashes($_POST['title']));
 			$smarty->assign('comment', stripslashes($_POST['comment']));
-			#$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
 			$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
-
+			$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
 			$step = 3;
 		}
 		
@@ -252,13 +251,9 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('preview_width', $uploadmanager->upload_width);
 			$smarty->assign('preview_height', $uploadmanager->upload_height);
 			
-			$image = new GridImage;
-			$classes=&$image->getImageClasses();
-			$classes['Other']='Other...';
-			$smarty->assign_by_ref('classes', $classes);
-
-			if ($_POST['imageclass'] && $_POST['imageclass'] != '0000-00-00') {
-				$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
+		
+			if ($_POST['imagetaken'] && $_POST['imagetaken'] != '0000-00-00') {
+				$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
 			} elseif ($smarty->get_template_vars('imagetaken')) {
 				//already set
 			} elseif (isset($uploadmanager->exifdate)) {
