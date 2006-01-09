@@ -231,7 +231,7 @@ it was taken or other interesting geographical information. (<a href="/help/styl
  {/if}
 
 <p style="clear:both"><label for="comment">Comment</label><br/>
-<textarea id="comment" name="comment" rows="4" cols="80">{$comment|escape:'html'}</textarea><br/>
+<textarea id="comment" name="comment" rows="4" cols="80">{$comment|escape:'html'}</textarea></p>
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
 to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 
@@ -261,8 +261,8 @@ window.onload = populateImageclass;
 
 <span id="otherblock" {if $imageclass ne 'Other'}style="display:none;"{/if}>
 	<label for="imageclassother">Please specify </label> 
-	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32"/></p>
-	</span>
+	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32"/>
+	</span></p>
 	
 	
 	
@@ -287,20 +287,20 @@ window.onload = populateImageclass;
 	
 	<br/><br/><span style="font-size:0.7em">(please provide as much detail as possible, if you only know the year or month then that's fine)</span></p>
 
-<input type="hidden" name="upload_id" value="{$upload_id}">
 
-<br/>
-<input type="hidden" name="savedata" value="1">
+<p>
+<input type="hidden" name="upload_id" value="{$upload_id}"/>
+<input type="hidden" name="savedata" value="1"/>
 <input type="submit" name="goback" value="&lt; Back"/>
-<input type="submit" name="next" value="Next &gt;"/>
+<input type="submit" name="next" value="Next &gt;"/></p>
 {/if}
 
 {if $step eq 4}
-	<input type="hidden" name="upload_id" value="{$upload_id}">
-	<input type="hidden" name="title" value="{$title|escape:'html'}">
-	<input type="hidden" name="comment" value="{$comment|escape:'html'}">
-	<input type="hidden" name="imageclass" value="{$imageclass|escape:'html'}">
-	<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}">
+	<input type="hidden" name="upload_id" value="{$upload_id}"/>
+	<input type="hidden" name="title" value="{$title|escape:'html'}"/>
+	<input type="hidden" name="comment" value="{$comment|escape:'html'}"/>
+	<input type="hidden" name="imageclass" value="{$imageclass|escape:'html'}"/>
+	<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
 	
 	<h2>Submit Step 4 of 4 : Confirm image rights</h2>
 		
