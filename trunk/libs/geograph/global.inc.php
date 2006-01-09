@@ -356,7 +356,7 @@ class GeographPage extends Smarty
 
 function datetimeToTimestamp($datetime) {
 	$p = explode('-',$datetime);
-	return mktime(0, 0, 0, $p[1], $p[0], $p[2]);
+	return mktime(0, 0, 0, intval($p[1]), intval($p[2]), intval($p[0]));
 }
 
 //global page initialisation
