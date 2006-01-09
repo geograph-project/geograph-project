@@ -168,18 +168,8 @@ if (isset($_REQUEST['id']))
 		$smarty->assign('moderated_count', $moderated_count);
 		$smarty->assign('all_moderated', $moderated_count==count($moderated));
 
-
-		$classes=&$image->getImageClasses();
-
-		$imageclassother="";
-		if (strlen($image->imageclass) && !in_array($image->imageclass, $classes))
-		{
-			$imageclassother=$image->imageclass;
-			$image->imageclass="Other";
-		}
-
-		$smarty->assign_by_ref('classes', $classes);
-		$smarty->assign_by_ref('imageclassother', $imageclassother);
+		//when starting we dont use imageclassother
+		$smarty->assign('imageclassother', '');
 
 		//let's find posts in the gridref discussion forum
 		$image->grid_square->assignDiscussionToSmarty($smarty);
@@ -427,7 +417,6 @@ if (isset($_REQUEST['id']))
 				$image->title=$title;
 				$image->comment=$comment;
 				$image->imageclass=$imageclass;
-				$image->imageclassother=$imageclassother;
 				$image->imagetaken=$imagetaken;
 				$image->subject_gridref=$grid_reference;
 				$image->photographer_gridref=$photographer_gridref;
@@ -435,6 +424,9 @@ if (isset($_REQUEST['id']))
 				$smarty->assign_by_ref('updatenote', $updatenote);
 
 				$smarty->assign_by_ref('error', $error);
+				
+				$smarty->assign('imageclassother',$imageclassother);
+				
 			}
 
 
