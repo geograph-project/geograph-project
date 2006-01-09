@@ -4,7 +4,7 @@
  * $Id$
  * 
  * GeoGraph geographic photo archive project
- * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
+ * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -68,7 +68,8 @@ if (isset($_GET['q'])) {
 }
 
 if (isset($_GET['i']) && is_numeric($_GET['i'])) {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$format}.$extension";
+	$pg = (!empty($_GET['page']))?intval($_GET['page']):0;
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}.$extension";
 } elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/u{$_GET['u']}-{$format}.$extension";
 } else {
