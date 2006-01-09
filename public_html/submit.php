@@ -161,6 +161,9 @@ if (isset($_POST['gridsquare']))
 				{
 					$ok=false;
 					$error['imagetaken']="Please specify a date for when the photo was taken (even approximate)";
+				} elseif (datetimeToTimestamp($smarty->get_template_vars('imagetaken')) > datetimeToTimestamp(date("Y-m-d"))) {
+					$ok=false;
+					$error['imagetaken']="Time machines are not allowed on Planet Geograph";
 				}
 				
 				if (($_POST['imageclass'] == 'Other' || empty($_POST['imageclass'])) && !empty($_POST['imageclassother'])) {
