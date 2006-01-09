@@ -127,19 +127,18 @@ function populateImageclass()
 
 function setdate(name,date,form) {
 	parts = date.split('-');
-	parts[2] = parseInt(parts[2]);
-	parts[1] = parseInt(parts[1]);
-
+	parts[2] = parseFloat(parts[2]);
+	parts[1] = parseFloat(parts[1]);
 	ele = form.elements[name+'Year'].options;
 	for(i=0;i<ele.length;i++) 
 		if (ele[i].value == parts[0]) 
 			ele[i].selected = true;
 	ele = form.elements[name+'Month'].options;
 	for(i=0;i<ele.length;i++) 
-		if (parseInt(ele[i].value) == parts[1]) 
+		if (parseFloat(ele[i].value) == parts[1]) 
 			ele[i].selected = true;
 	ele = form.elements[name+'Day'].options;
 	for(i=0;i<ele.length;i++) 
-		if (parseInt(ele[i].value) == parts[2]) 
+		if (parseFloat(ele[i].value) == parts[2]) 
 			ele[i].selected = true;
 }
