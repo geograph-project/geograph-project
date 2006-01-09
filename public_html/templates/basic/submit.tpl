@@ -120,7 +120,7 @@ geographing</a> first.</p>
 		viewing the Modern {getamap gridref="document.theForm.gridreference.value" text="OS Map"}</p>
 
 		{if $reference_index == 2} 
-		New! {external href="http://www.multimap.com/p/browse.cgi?scale=25000&lon=`$long`&lat=`$lat`&GridE=`$long`&GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
+		{external href="http://www.multimap.com/p/browse.cgi?scale=25000&lon=`$long`&lat=`$lat`&GridE=`$long`&GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
 		{/if}
 		
 		<p><b>Grid References:</b> (optional)<br/><br/><label for="gridreference">Primary Photo Subject</label> <input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/crosshairs.gif" alt="Marks the Subject" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/></p>
@@ -238,41 +238,12 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 
 <h3>Further Information</h3>
 
+<script type="text/javascript" src="/categories.js.php"></script>
 {literal}
 <script type="text/javascript">
 <!--
-function onChangeImageclass()
-{
-	var sel=document.getElementById('imageclass');
-	var idx=sel.selectedIndex;
-	
-	var isOther=idx==sel.options.length-1
-
-	
-	var otherblock=document.getElementById('otherblock');
-	otherblock.style.display=isOther?'block':'none';
-	
-}
-
-function setdate(name,date,form) {
-	parts = date.split('-');
-	parts[2] = parseInt(parts[2]);
-	parts[1] = parseInt(parts[1]);
-	
-	ele = form.elements[name+'Year'].options;
-	for(i=0;i<ele.length;i++) 
-		if (ele[i].value == parts[0]) 
-			ele[i].selected = true;
-	ele = form.elements[name+'Month'].options;
-	for(i=0;i<ele.length;i++) 
-		if (parseInt(ele[i].value) == parts[1]) 
-			ele[i].selected = true;
-	ele = form.elements[name+'Day'].options;
-	for(i=0;i<ele.length;i++) 
-		if (parseInt(ele[i].value) == parts[2]) 
-			ele[i].selected = true;
-}
-
+//rest loaded in geograph.js
+window.onload = populateImageclass;
 //-->
 </script>
 {/literal}
@@ -282,11 +253,13 @@ function setdate(name,date,form) {
 	{/if}<br />	
 	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()">
 		<option value="">--please select feature--</option>
-		{html_options options=$classes selected=$imageclass}
+		{if $imageclass}
+			<option value="{$imageclass}" selected="selected">{$imageclass}</option>
+		{/if}
 		<option value="Other">Other...</option>
 	</select>
 
-<span id="otherblock" {if $imageclass ne 'Other'}style="display:none;"{else}style="display:inline;"{/if}>
+<span id="otherblock" {if $imageclass ne 'Other'}style="display:none;"{/if}>
 	<label for="imageclassother">Please specify </label> 
 	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32"/></p>
 	</span>
