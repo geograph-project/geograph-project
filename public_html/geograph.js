@@ -91,11 +91,9 @@ function populateImageclass()
 	last_opt.value =opt[opt.length-1].value;
 
 	//clear out the options
-	while(sel.hasChildNodes) {
-		try{ sel.removeChild(sel.lastChild); }
-		catch(e) { break; }
+	while (sel.options.length) {
+		sel.remove(0);
 	}
-
 	//re-add the first
 	opt.add(first_opt);
 	
