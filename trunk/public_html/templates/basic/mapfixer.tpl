@@ -6,6 +6,9 @@
 <p style="color:#990000;font-weight:bold;">{$gridref_error}</p>
 {else}
 <p>The square has been flagged and will be checked by a moderator.</p>
+
+<p>Return to <a href="/gridref/{$gridref}">{$gridref}</a> or </p>
+
 {/if}
 
 <!-- {$status} -->
