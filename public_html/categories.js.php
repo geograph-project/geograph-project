@@ -37,7 +37,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (empty($db)) die('Database connection failed');
 
-	$arr = $db->getCol("select imageclass from gridimage_search group by imageclass");
+	$arr = $db->getCol("select imageclass,count(*) as cnt from gridimage_search  group by imageclass  having cnt>5 and length(imageclass)>0;");
 	
 	$smarty->assign_by_ref('classes',$arr);
 	
@@ -45,6 +45,9 @@ if (!$smarty->is_cached($template, $cacheid))
 
 
 header("Content-type: text/javascript");
+
+//always turn off debugging, it will break the js
+$smarty->debugging=false;
 $smarty->display($template, $cacheid);
 
 	
