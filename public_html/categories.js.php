@@ -43,6 +43,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 }
 
+header("Cache-Control: Public");
+header("Expires: ".date("D, d M Y H:i:s",time()+3600*3 )." GMT");
 
 header("Content-type: text/javascript");
 
