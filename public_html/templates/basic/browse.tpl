@@ -158,9 +158,9 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 
 	{/if}
    
-   	{if $square->percent_land < 100}
+   	{if $square->percent_land < 50}
    		<form action="/mapfixer.php" method="get">
-   		<p align="right"><input type="submit" name="save" value="This square is All at Sea"/>
+   		<p align="right"><input type="submit" name="save" value="Request marking of this square as All at Sea"/>
    		<input type="hidden" name="gridref" value="{$gridref}"/>
    		</p>
    		</form>
