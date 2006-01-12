@@ -286,7 +286,11 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 <script type="text/javascript">
 <!--
 //rest loaded in geograph.js
-window.onload = populateImageclass;
+function prePopulateImageclass() {
+	setTimeout('populateImageclass()',500);
+}
+
+window.onload = prePopulateImageclass;
 //-->
 </script>
 {/literal}
@@ -309,7 +313,7 @@ window.onload = populateImageclass;
 	</select>
 	
 	
-	<span id="otherblock" {if $image->imageclass ne 'Other'}style="display:none;"{/if}>
+	<span id="otherblock">
 	<label for="imageclassother">Please specify </label> 
 	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32"/></p>
 	</span>
