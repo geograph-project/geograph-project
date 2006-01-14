@@ -1094,7 +1094,7 @@ END;
 			} else {
 				$gridcol=imagecolorallocate ($img, 109,186,178);
 			}
-			if ($this->pixels_per_km < 1) {
+			if ($this->pixels_per_km < 1 || $this->pixels_per_km >= 40) {
 				$text1=imagecolorallocate ($img, 255,255,255);
 				$text2=imagecolorallocate ($img, 0,64,0);
 			} else {
@@ -1197,8 +1197,9 @@ END;
 				$northings=$matches[3];
 				$gran = 10;
 				
-				$me = imagefontwidth(4);
-				$mn = floor(imagefontheight(4)/2);
+				$font = 3;
+				$me = imagefontwidth($font);
+				$mn = floor(imagefontheight($font)/2);
 				
 				$e5 = floor($eastings/$gran)*$gran; if ($e5 < $eastings) $e5 +=$gran;
 				$n5 = floor($northings/$gran)*$gran; if ($n5 < $northings) $n5 +=$gran;
@@ -1208,19 +1209,17 @@ END;
 				
 				$e = $eastings;
 				for($i=1-$me;$i<=$this->image_w;$i+=$this->pixels_per_km) {
-					imagestring($img,4,$i,$nd,$e,$gridcol);
+					imagestring($img,$font,$i+1,$nd+1,$e,$text2);
+					imagestring($img,$font,$i,$nd,$e,$text1);
 					$e=sprintf("%02d",($e+1)%100);
 				}
 				
 				$n = $northings;
 				for($j=$this->image_h-$mn;$j>=0-$mn;$j-=$this->pixels_per_km) {
-					imagestring($img,4,$ed,$j,$n,$gridcol);
+					imagestring($img,$font,$ed+1,$j+1,$n,$text2);
+					imagestring($img,$font,$ed,$j,$n,$text1);
 					$n=sprintf("%02d",($n+1)%100);
 				}
-				
-				#print "$gridref = $e5 = $n5 ".floor($this->image_h/$this->pixels_per_km);
-				#exit;
-				
 			}
 		}		
 	}
