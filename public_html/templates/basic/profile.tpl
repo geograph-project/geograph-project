@@ -93,7 +93,7 @@
 	<tbody>
 		{foreach from=$userimages item=image}
 <tr>
-<td sortvalue="{$image->last_post}">{if $image->topic_id}<a title="View most recent discussion" href="/discuss/index.php?action=vthread&amp;forum={$image->forum_id}&amp;topic={$image->topic_id}"><img src="/templates/basic/img/discuss.gif" width="10" height="10"></a>{/if}</td>
+<td sortvalue="{$image->last_post}">{if $image->topic_id}<a title="View most recent discussion" href="/discuss/index.php?action=vthread&amp;forum={$image->forum_id}&amp;topic={$image->topic_id}" title="Last post: {$image->last_post|date_format:"%a, %e %b %Y at %H:%M"}"><img src="/templates/basic/img/discuss.gif" width="10" height="10" alt="Last post: {$image->last_post|date_format:"%a, %e %b %Y at %H:%M"}"></a>{/if}</td>
 <td sortvalue="{$image->grid_reference}"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->grid_reference}</a></td>
 <td>{$image->title}</td>
 <td sortvalue="{$image->gridimage_id}" class="nowrap">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
