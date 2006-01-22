@@ -35,6 +35,9 @@ $cacheid='statistics|not_geographed';
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
+if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
+	$smarty->clear_cache($template, $cacheid);
+
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db=NewADOConnection($GLOBALS['DSN']);
@@ -42,7 +45,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	#$db->debug = true;
 
 	$mosaic=new GeographMapMosaic;
-	$mosaic->setScale(4);
+	$mosaic->setScale(40);
 	$mosaic->setMosaicFactor(2);
 
 	
