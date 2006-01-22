@@ -71,8 +71,8 @@ class SearchCriteria
 		$x = $this->x;
 		$y = $this->y;
 		if ($x > 0 && $y > 0) {
-			if ($this->limit8) {
-				$d = $this->limit8;
+			if ($this->limit8 && $this->limit8 < 2000) {//2000 is a special value for effectivly unlimted!
+				$d = intval($this->limit8);
 				if ($sql_where) {
 					$sql_where .= ' and ';
 				}
@@ -97,7 +97,7 @@ class SearchCriteria
 			}
 			$sql_order = preg_replace('/^submitted/','gridimage_id',$sql_order);
 		}
-	
+		$sql_order = 'null';
 		if (!empty($this->limit1)) {
 			if ($sql_where) {
 				$sql_where .= ' and ';
@@ -406,7 +406,7 @@ class SearchCriteria_Placename extends SearchCriteria
 			$places = $db->GetAll("select
 				id,
 				full_name,
-				dsg,
+				dsg,e,n,
 				'populated place' as dsg_name,
 				loc_placenames.reference_index,
 				loc_adm1.name as adm1_name
@@ -420,7 +420,7 @@ class SearchCriteria_Placename extends SearchCriteria
 			$places = array_merge($places,$db->GetAll("select
 				id,
 				full_name,
-				dsg,
+				dsg,e,n,
 				'populated place' as dsg_name,
 				loc_placenames.reference_index,
 				loc_adm1.name as adm1_name
@@ -435,7 +435,7 @@ class SearchCriteria_Placename extends SearchCriteria
 				$places = array_merge($places,$db->GetAll("select 
 					id, 
 					full_name,
-					dsg,
+					dsg,e,n,
 					loc_dsg.name as dsg_name,
 					loc_placenames.reference_index,
 					loc_adm1.name as adm1_name
@@ -450,6 +450,12 @@ class SearchCriteria_Placename extends SearchCriteria
 				LIMIT 20") );				
 			}	
 			if (count($places)) {
+				require_once('geograph/conversions.class.php');
+				$conv = new Conversions;
+				foreach($places as $id => $row) {
+					list($places[$id]['gridref'],) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
+				}
+			
 				$this->matches = $places;
 				$this->is_multiple = true;
 				$this->searchq = $placename;
