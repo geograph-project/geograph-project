@@ -64,7 +64,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	{
 		foreach($news as $idx=>$item)
 		{
-			$news[$idx]['post_text']=str_replace('<br>', '<br/>', $news[$idx]['post_text']);
+			$news[$idx]['post_text']=str_replace('<br>', '<br/>', GeographLinks($news[$idx]['post_text']));
 		}
 	}
 	
