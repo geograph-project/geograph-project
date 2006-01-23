@@ -56,7 +56,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	if (isset($_GET['week'])) {
 		$from_date = "date(min($column))";
-		$group_date = "week( $column )";
+		$group_date = "yearweek($column,1)";
 	} else {
 		$length = isset($_GET['month'])?10:7;  //month=0 means daily ;-0
 
