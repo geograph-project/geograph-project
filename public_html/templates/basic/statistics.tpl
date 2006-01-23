@@ -47,13 +47,13 @@
 	<td>{$geographs_submitted_both|thousends}</td>
 </tr>
 <tr>
-	<th>10km x 10km Squares</th>
+	<th>Hectads<a href="/help/squares">?</a><br/>10km x 10km Squares</th>
 	<td><b>{$tenk_submitted_1|thousends}</b><br/>/{$tenk_total_1|thousends}</td>
 	<td><b>{$tenk_submitted_2|thousends}</b><br/>/{$tenk_total_2|thousends}</td>
 	<td valign="top">{$tenk_submitted_both|thousends}<br/>/{$tenk_total_both|thousends}</td>
 </tr>
 <tr>
-	<th>100km x 100km Squares</th>
+	<th>Myriads<a href="/help/squares">?</a><br/>100km x 100km Squares</th>
 	<td><b>{$grid_submitted_1}</b><br/>/{$grid_total_1}</td>
 	<td><b>{$grid_submitted_2}</b><br/>/{$grid_total_2}</td>
 	<td>{$grid_submitted_1+$grid_submitted_2}<br/>/{$grid_total_1+$grid_total_2}</td>
@@ -95,19 +95,21 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
     
    <p>Graphs: <a href="/moversboard.php#rate_graph">Weekly Submissions</a> and <a href="/leaderboard.php#submission_graph">Overall Submissions</a>.</p> 
    
-   <p>Most <a href="/statistics/wordnet.php">Popular Words</a> in the last 7 days and all time.</p>
+   <p><b>Most <a href="/statistics/wordnet.php">Popular Words</a> in the last 7 days and all time.</b></p>
    
    <p>User leaderboards: <a href="/moversboard.php">Weekly</a>, <a href="/leaderboard.php">All Time</a>, <a href="/monthlyleader.php">By Month</a> and <a href="/statistics/busyday.php?users=1">Most in One Day</a>. (<a href="/statistics.php?by=user&amp;ri=1">Contributor List</a>)</p>
 
-   <p>Mostly Geographed: <a href="/statistics/most_geographed.php">Grid Squares</a>, 
-   <a href="/statistics/most_geographed.php">10<small>km</small> x 10<small>km</small> Squares</a>  and <a href="/statistics/most_geographed_myriad.php">100km x 100km</a> Squares.</p>
-   <p><b>Fully Geographed: <a href="/statistics/fully_geographed.php">10<small>km</small> x 10<small>km</small> Squares</a> (includes Large Mosaic!)</b></p>
+   <p><b>Not yet Geographed: <a href="/statistics/not_geographed.php">Hectads</a> (10<small>km</small> x 10<small>km</small> Squares) - strinking all the time!</b></p>
 
+   <p>Mostly Geographed: <a href="/statistics/most_geographed.php">Grid Squares</a>, 
+   <a href="/statistics/most_geographed.php">Hectads</a> <small>(10 x 10 Squares)</small> and <a href="/statistics/most_geographed_myriad.php">Myriads</a> <small>(100 x 100 Squares)</small>.</p>
+   
+   <p><b>Fully Geographed: <a href="/statistics/fully_geographed.php">Hectads</a> <small>(10 x 10 Squares)</small> - including Large Mosaic!</b></p>
    
    <p>Centre Points: <a href="/statistics/counties.php">Ceremonial Counties</a>, <a href="/statistics/counties.php?type=capital">(Irish) County Capitals</a> and <a href="/statistics/cities.php">Cities</a> photographed so far.</p>
 
     <form method="get" action="/statistics/breakdown.php">
-    <p>View breakdown of images by 
+    <p><b>View breakdown of images by</b> 
     <select name="by">
     	{html_options options=$bys selected=$by}
     </select> in <select name="ri">
