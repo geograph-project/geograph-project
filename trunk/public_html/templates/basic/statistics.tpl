@@ -99,7 +99,7 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
    
    <p>User leaderboards: <a href="/moversboard.php">Weekly</a>, <a href="/leaderboard.php">All Time</a>, <a href="/monthlyleader.php">By Month</a> and <a href="/statistics/busyday.php?users=1">Most in One Day</a>. (<a href="/statistics.php?by=user&amp;ri=1">Contributor List</a>)</p>
 
-   <p><b>Not yet Geographed: <a href="/statistics/not_geographed.php">Hectads</a> (10<small>km</small> x 10<small>km</small> Squares) - strinking all the time!</b></p>
+   <p><b>Not yet Geographed: <a href="/statistics/not_geographed.php">Hectads</a> (10<small>km</small> x 10<small>km</small> Squares) - shrinking all the time!</b></p>
 
    <p>Mostly Geographed: <a href="/statistics/most_geographed.php">Grid Squares</a>, 
    <a href="/statistics/most_geographed.php">Hectads</a> <small>(10 x 10 Squares)</small> and <a href="/statistics/most_geographed_myriad.php">Myriads</a> <small>(100 x 100 Squares)</small>.</p>
