@@ -97,7 +97,7 @@ class SearchCriteria
 			}
 			$sql_order = preg_replace('/^submitted/','gridimage_id',$sql_order);
 		}
-		$sql_order = 'null';
+		
 		if (!empty($this->limit1)) {
 			if ($sql_where) {
 				$sql_where .= ' and ';
