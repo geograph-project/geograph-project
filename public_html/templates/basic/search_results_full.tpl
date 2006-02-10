@@ -31,7 +31,7 @@
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 		
 		{if $image->comment}
-		<div class="caption" title="{$image->comment|escape:'html'}" style="border:1px solid lightgrey; font-size:0.7em;width:95%;">{$image->comment|escape:'html'|truncate:90|geographlinks}</div>
+		<div class="caption" title="{$image->comment|escape:'html'}" style="border:1px solid lightgrey; font-size:0.7em;width:95%;position:relative;">{$image->comment|escape:'html'|truncate:90|geographlinks}</div>
 		{/if}
 	  </div><br style="clear:both;"/>
 	 </div>
@@ -61,6 +61,6 @@
 {if $engine->criteria->searchclass != 'Special'}
 [<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}</p>
 	
-<p align=right>{if $engine->islimited}<a title="Breakdown for images{$engine->criteria->searchdesc}" href="/statistics/breakdown.php?i={$i}">Statistics</a> {/if}<a title="Google Earth Feed for images{$engine->criteria->searchdesc}" href="/kml.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}" class="xml-kml">KML</a> <a title="RSS Feed for images{$engine->criteria->searchdesc}" href="/syndicator.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}" class="xml-rss">RSS</a></p>	
+<p align="right">{if $engine->islimited}<a title="Breakdown for images{$engine->criteria->searchdesc}" href="/statistics/breakdown.php?i={$i}">Statistics</a> {/if}<a title="Google Earth Feed for images{$engine->criteria->searchdesc}" href="/kml.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}" class="xml-kml">KML</a> <a title="RSS Feed for images{$engine->criteria->searchdesc}" href="/syndicator.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}" class="xml-rss">RSS</a></p>
 	
 {include file="_std_end.tpl"}
