@@ -99,8 +99,6 @@ class SearchEngine
 		global $USER;
 		
 		$nearstring = ($distance)?sprintf("within %dkm of",$distance):'near';
-		
-		$limit1 = ($userlimit)?$userlimit:'';
 				
 		$q = trim($q);
 		if (preg_match("/^([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9])([A-Z]{0,2})$/",strtoupper($q),$pc)) {
@@ -132,6 +130,10 @@ class SearchEngine
 			} else {
 				$this->errormsg = $square->errormsg;
 			}
+		} elseif (isset($GLOBALS['text'])) {
+			$searchclass = 'Text';
+			$searchq = $q;
+			$searchdesc = ", containing '{$q}' ";
 		} else {
 			$criteria = new SearchCriteria_Placename();
 			$criteria->setByPlacename($q);
@@ -164,6 +166,13 @@ class SearchEngine
 				}
 			}
 		}
+		
+		$limit1 = ($userlimit)?$userlimit:'';
+		if ($userlimit) {
+		print $userlimit;exit;
+			$profile=new GeographUser($userlimit);
+			$searchdesc .= ", by ".($profile->realname);
+		}				
 
 		if (isset($searchclass)) {
 			$db=$this->_GetDB();
@@ -532,11 +541,12 @@ class SearchEngine
 			$dataarray[$which] = sprintf("%04d-%02d-%02d",$dataarray[$which.'Year'],$dataarray[$which.'Month'],$dataarray[$which.'Day']);
 			if ($dataarray[$which] == '0000-00-00') {
 				$dataarray[$which] = ''; 
-			} else {
-				$image = new GridImage();
-				$image->imagetaken = $dataarray[$which];					
-				$dataarray[$which.'String'] = $image->getFormattedTakenDate();
 			}
+		}
+		if (!empty($dataarray[$which])) {
+			$image = new GridImage();
+			$image->imagetaken = $dataarray[$which];					
+			$dataarray[$which.'String'] = $image->getFormattedTakenDate();
 		}
 	}	
 	
