@@ -42,7 +42,15 @@ if ($format == 'KML') {
 	$extension = 'xml';
 }
 
-if (isset($_GET['q'])) {
+if (isset($_GET['text'])) {
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+	
+	$GLOBALS['text'] = 1;
+	
+	$engine = new SearchEngine('#'); 
+ 	$_GET['i'] = $engine->buildSimpleQuery($_GET['text'],30,false,isset($_GET['u'])?$_GET['u']:0);
+} elseif (isset($_GET['q'])) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	
