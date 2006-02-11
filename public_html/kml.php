@@ -41,7 +41,7 @@ if (isset($_GET['id']))  {
 
 	if ($ok) {
 		header("Content-type: application/vnd.google-earth.kml+xml");
-		header("Content-Disposition: attachment; filename=\"Geograph.kml\"");
+		header("Content-Disposition: attachment; filename=\"Geograph{$image->gridimage_id}.kml\"");
 		header("Cache-Control: Public");
 		header("Expires: ".date("D, d M Y H:i:s",mktime(0,0,0,date('m'),date('d')+14,date('Y')) )." GMT");
 		
@@ -77,14 +77,14 @@ if (isset($_GET['id']))  {
 		$engine = new SearchEngine($_REQUEST['i']);
 		
 		
-		if (isset($_POST['submit'])) {
-			$simple = $_POST['simple'];
-			if (isset($_POST['type']) && $_POST['type'] == 'view') {
+		if (isset($_REQUEST['submit'])) {
+			$simple = $_REQUEST['simple'];
+			if (isset($_REQUEST['type']) && $_REQUEST['type'] == 'view') {
 				$url = "http://{$_SERVER['HTTP_HOST']}/earth.php?i=$i&simple=$simple";
 			} else {
 				$url = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=KML&i=$i&simple=$simple&page=$pg";
 			}
-			if (isset($_POST['type']) && $_POST['type'] == 'static') {
+			if (isset($_REQUEST['type']) && $_REQUEST['type'] == 'static') {
 				header("Status:302 Found");
 				header("Location:$url");
 				$url = str_replace('&','&amp;',$url);
@@ -92,8 +92,8 @@ if (isset($_GET['id']))  {
 				exit;
 			} else {
 				$url = str_replace('&','&amp;',$url);
-				if ($_POST['type'] == 'time') {
-					$view = "<refreshMode>onInterval</refreshMode>\n<refreshInterval>{$_POST['refresh']}</refreshInterval>";
+				if ($_REQUEST['type'] == 'time') {
+					$view = "<refreshMode>onInterval</refreshMode>\n<refreshInterval>{$_REQUEST['refresh']}</refreshInterval>";
 				} else {
 					$view = "<viewRefreshMode>onStop</viewRefreshMode>\n<viewRefreshTime>4</viewRefreshTime><viewFormat>BBOX=[bboxWest],[bboxSouth],[bboxEast],[bboxNorth]&amp;LOOKAT=[lookatLon],[lookatLat],[lookatRange],[lookatTilt],[lookatHeading],[horizFov],[vertFov]</viewFormat>";
 				}
