@@ -100,6 +100,16 @@
 		 </table></td> 
 		</tr> 
 		<tr> 
+		  <th rowspan="2">text=[text string]</th> 
+		  <td>Returns 15 results containing the text string in the image title (see also <a href="#building">Building a query</a> for pitfals of the q paramater) - Will in fact create a i query on the fly, so you can use that to get page 2 etc of the results. Accepts additonal paramater:</span>
+			 <table border="1" cellpadding="3" cellspacing="0"> 
+				<tr> 
+				  <th>u=[user_id]</th> 
+				  <td>limit results to particular user</td> 
+				</tr> 
+		 </table></td> 
+		</tr> 
+		<tr> 
 		  <td>
 			 <a title="Geograph RSS feed"
 			  href="http://{$http_host}/syndicator.php?key=[apikey]&q=TQ7054">http://{$http_host}/syndicator.php?key=[apikey]&amp;q=TQ7054</a></td>
