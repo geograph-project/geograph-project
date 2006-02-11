@@ -1108,7 +1108,8 @@ class KMLCreator extends FeedCreator {
 		
 		for ($i=0;$i<count($this->items);$i++) {
 			//added here beucase description gets auto surrounded by cdata
-			$this->items[$i]->description .= "<br/>by ".htmlspecialchars($this->items[$i]->author)."
+			$this->items[$i]->description = "<b>".$this->items[$i]->description."</b><br/>
+			&copy; Copyright <i class=\"attribution\">".htmlspecialchars($this->items[$i]->author)."</i> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a>
 				<br/><br/><a href=\"".htmlspecialchars($this->items[$i]->link)."\">View Online</a>";
 			
 			$feed.= "
