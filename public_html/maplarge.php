@@ -35,8 +35,38 @@ $template='maplarge.tpl';
 
 $smarty = new GeographPage;
 
+	if (strpos($_ENV["OS"],'Windows') === FALSE) {
+		$threshold = 2;
+	
+		//lets give registered users a bit more leaway!
+		if ($USER->registered) {
+			$threshold *= 2;
+		}
+		//check load average, abort if too high
+		$buffer = "0 0 0";
+		$f = fopen("/proc/loadavg","r");
+		if ($f)
+		{
+			if (!feof($f)) {
+				$buffer = fgets($f, 1024);
+			}
+			fclose($f);
+		}
+		$loads = explode(" ",$buffer);
+		$load=(float)$loads[0];
+
+		if ($load>$threshold)
+		{
+			$smarty->assign('searchq',stripslashes($_GET['q']));	
+			$smarty->display('search_unavailable.tpl');	
+			exit;
+		}
+	}
+
+
+
 $smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24*7; //7 day cache
+
 
 //initialise mosaic
 $mosaic=new GeographMapMosaic;
@@ -53,10 +83,13 @@ if (isset($_GET['t'])) {
 	die("Missing Token");
 }
 
-if ($mosaic->pixels_per_km != 80)
-	die("Invalid Parameter");
+if ($mosaic->pixels_per_km == 80) {
+	$smarty->cache_lifetime = 3600*24*7; //7 day cache
+} elseif ($mosaic->mosaic_factor == 4) {
 
-$mosaic->setMosaicSize(800,800);
+} else {
+	die("Invalid Parameter");
+}
 
 //get token, we'll use it as a cache id
 $token=$mosaic->getToken();
@@ -81,14 +114,16 @@ if (!$smarty->is_cached($template, $cacheid))
 	$gridref = $mosaic->getGridRef(-1,-1);
 	$smarty->assign('gridref', $gridref);
 	$smarty->assign('mapwidth', round($mosaic->image_w /$mosaic->pixels_per_km ) );
+	
+
 	preg_match("/([A-Z]+\d)\d(\d)\d/",$gridref,$matches);
 	$smarty->assign('gridref2',$matches[1].$matches[2] );
-	
-	
-	$left=$mosaic->map_x;
-	$bottom=$mosaic->map_y;
-	$right=$left + floor($mosaic->image_w/$mosaic->pixels_per_km)-1;
-	$top=$bottom + floor($mosaic->image_h/$mosaic->pixels_per_km)-1;
+
+	if ($mosaic->pixels_per_km >= 40) {
+		$left=$mosaic->map_x;
+		$bottom=$mosaic->map_y;
+		$right=$left + floor($mosaic->image_w/$mosaic->pixels_per_km)-1;
+		$top=$bottom + floor($mosaic->image_h/$mosaic->pixels_per_km)-1;
 
 $sql="SELECT user_id,realname,COUNT(*) AS count,DATE_FORMAT(MAX(submitted),'%D %b %Y') as last_date
 FROM 
@@ -101,11 +136,12 @@ WHERE
 GROUP BY user_id 
 ORDER BY count DESC,last_date DESC
 ";
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
+		$db=NewADOConnection($GLOBALS['DSN']);
+		if (!$db) die('Database connection failed');  
 
-	$users=&$db->GetAll($sql);
-	$smarty->assign_by_ref('users', $users);
+		$users=&$db->GetAll($sql);
+		$smarty->assign_by_ref('users', $users);
+	}
 }
 
 
