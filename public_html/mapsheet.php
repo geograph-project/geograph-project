@@ -29,7 +29,6 @@ require_once('geograph/map.class.php');
 require_once('geograph/mapmosaic.class.php');
 
 init_session();
-$template='mapsheet.tpl';
 
 $smarty = new GeographPage;
 
@@ -45,7 +44,11 @@ if (isset($_GET['t'])) {
 	die("Missing Token");
 }
 
-if ($map->pixels_per_km != 40)
+$template=($map->pixels_per_km == 4)?'mapsheet100k.tpl':'mapsheet.tpl';
+
+
+
+if ($map->pixels_per_km != 40 && $map->pixels_per_km != 4)
 	die("Invalid Parameter");
 
 
@@ -57,16 +60,22 @@ $token=$map->getToken();
 
 $cacheid='mapsheet|'.$token;
 
+if ($map->pixels_per_km == 4)
+	$smarty->cache_lifetime = 3600*24; //24hr cache
+
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
 	//assign main map to smarty
 	$smarty->assign_by_ref('map', $map);
 	
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$grid=&$map->getGridArray();
 	$smarty->assign_by_ref('grid', $grid);
 	
-	$ri = $grid[0][0]['reference_index'];
+	$first = current($grid);
+	$second = current($first);
+	$ri = $second['reference_index'];
 	
 	$letterlength = 3 - $ri; #todo should this be auto-realised by selecting a item from gridprefix? (or a grid_reference)
 
