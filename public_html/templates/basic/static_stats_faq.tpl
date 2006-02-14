@@ -17,7 +17,7 @@
     <li><b>Images</b>: these are all images on the site, regardless if they Geograph or supplemental<br/><br/></li>
     <li><b>Geographs</b>: these are all Geograph images, even if multiple for the same grid square<br/><br/></li>
     <li><b>Squares</b>: the number of different squares photographed (Geograph or supplemental)<br/><br/></li>
-    <li><b>GeoSquares</b>: the number of different squares Geographed (aka Personal Geograph Points)<br/><br/></li>
+    <li><b>GeoSquares</b>: the number of different squares Geographed (on the All Time Leaderboard is like Personal Geograph Points, doesn't apply on the Weekly Leaderboard)<br/><br/></li>
     </ul>
     
     
