@@ -1,7 +1,10 @@
 {assign var="page_title" value="Map Viewer :: $gridref"}
 {include file="_std_begin.tpl"}
-
+{if $mosaic->pixels_per_km > 40}
 <h2>Geograph Mosaic for {$gridref2}</h2>
+{else}
+<h2>Geograph Map for {$gridref}</h2>
+{/if}
 	<div class="map" style="height:{$mosaic_height+20}px;width:{$mosaic_width+20}px">
 	<div class="cnr"></div>
 	<div class="side" style="width:{$mosaic_width}px;">&nbsp;</div>
@@ -31,8 +34,8 @@
 <div style="float:left; width:{$overview_width+30}px; height:{$overview_height+30}px; position:relative">
 	{include file="_overview.tpl"}
 </div>
-<div>
 
+{if $users}
 <table class="report"> 
 <thead><tr><td>Last Submission</td><td>Contributor</td><td>Photos</td></tr></thead>
 <tbody>
@@ -46,9 +49,11 @@
 </table>
 <br/>
 <small><small>* there is a known problem with this list, it might not add up to the correct total, apologies but we hope to resume normal service shortly...</small></small>
-</div>
- 
+{if $mosaic->pixels_per_km > 40} 
 <p style="clear:both"/>View <a href="/search.php?first={$gridref2}">First Geographs for {$gridref2} in Reverse Date Submitted Order</a>.</p>
- 
+{/if}
+{else}
+<br style="clear:both"/>
+{/if} 
  
 {include file="_std_end.tpl"}
