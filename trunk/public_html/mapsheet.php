@@ -83,9 +83,21 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('ofn', $letterlength + 3);
 	
 	//assign all the other useful stuff
-	$smarty->assign('gridref', $map->getGridRef(-1,-1));
+	$gr = $map->getGridRef(-1,-1);
+	$smarty->assign('gridref', $gr);
 	
-	
+	if ($map->pixels_per_km == 4) {
+		$starte = substr($gr,$letterlength,2);
+		$starte = intval($starte) - 50;
+		if ($starte < 0)
+			$starte += 100;
+		$startn = substr($gr,$letterlength+2,2);
+		$startn = intval($startn) + 50;
+		if ($startn > 100)
+			$startn -= 100;
+		$smarty->assign('starte', $starte);
+		$smarty->assign('startn', $startn-1);
+	}
 }
 
 
