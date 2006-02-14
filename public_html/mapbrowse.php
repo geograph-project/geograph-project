@@ -34,6 +34,7 @@ if (isset($_GET['map']))
 					
 	//render and return a map with token $_GET['map'];
 	$map=new GeographMap;
+	//$map->caching=false;
 	$map->setToken($_GET['map']);
 	$map->returnImage();
 	exit;
@@ -126,8 +127,9 @@ $token=$mosaic->getToken();
 
 
 //regenerate html?
-$is_admin=$USER->hasPerm('admin')?1:0;
-$cacheid='mapbrowse|'.$token.'_'.$is_admin;
+$cacheid='mapbrowse|'.$token;
+
+$smarty->cache_lifetime = 3600*24; //24hr cache
 
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
@@ -187,8 +189,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('token_west', $mosaic->getPanToken(-1, 0));
 	$smarty->assign('token_east', $mosaic->getPanToken(1, 0));
 	
+	
+			
+	//no big unless you are zoomed in
+	if ($mosaic->pixels_per_km >=4)
+	{
+	#	$smarty->assign('token_big', $mosaic->getBigToken());
+	}
 }
-
 
 $smarty->display($template, $cacheid);
 
