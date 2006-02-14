@@ -3,7 +3,8 @@
 
 User-agent: *
 Disallow: /mapbrowse.php?
-Disallow: /maplarge.php?
+Disallow: /maplarge.php
+Disallow: /mapprint.php
 Disallow: /admin
 Disallow: /search.php?
 Disallow: /statistics/wordnet.php?words=
