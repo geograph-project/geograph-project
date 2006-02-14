@@ -14,32 +14,23 @@
 <style type="text/css">
 {literal}
 
-.r
+pre
 {
-	font-size:5pt;	
-
+	font-size:7pt;
+	position:relative;
 	font-family:monospace;
-	
-	background:#eeeeee;
-	border:1px solid silver;
-	position:absolute;
-	width:1em;
-	height:1em;
-	line-height:1em;
-	text-align:center;
+	line-height:0.9em;
 	cursor:hand;
+}
 
+.zx 
+{
+
+}
+
+.zy 
+{
 	
-}
-
-div.zx 
-{
-	border-left:1px solid black;
-}
-
-div.zy 
-{
-	border-bottom:1px solid black;
 }
 
 {/literal}
@@ -49,22 +40,34 @@ div.zy
 <body>
 
 
-<div style="position:absolute;padding:5px;left:0.2em;top:0.2em;width:10em;height:1em;font-size:4em;border:1px solid black;background:white;">
-<div style="font-size:8pt;font-family:Georgia;Arial;">Print this sheet and take it out with you to mark off the squares that you do. Squares with Geographs are marked with an X. A square with only supplemental images is marked by "s" along with their number, and "p" is shown on squares with just unmoderated images.<br/><div style="float:left; font-size:0.9em">From: <a href="http://{$http_host}/">{$http_host}</a></div><div style="text-align:right; font-size:0.9em">Generated {$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</div></div>
+<div style="position:absolute;padding:5px;left:0.2em;top:0.1em;width:10em;height:0.8em;font-size:4em;border:1px solid black;background:white;">
+<div style="font-size:8pt;font-family:Georgia;Arial;">Print this sheet centered on {$gridref} and take it out with you to mark off the squares that you do. Squares with Geographs are marked with an X. A square with only supplemental images is marked by "s", and "p" is shown on squares with just unmoderated images.<br/><div style="float:left; font-size:0.9em">From: <a href="http://{$http_host}/">{$http_host}</a></div><div style="text-align:right; font-size:0.9em">Generated {$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</div></div>
 </div>
  
-{*begin map square divs*}
-{foreach from=$grid key=x item=maprow}
-{foreach from=$maprow key=y item=mapcell}
-<div class="r{if substr($mapcell.grid_reference,$ofe,1) == '0'} zx{/if}{if substr($mapcell.grid_reference,$ofn,1) == '0'} zy{/if}" style="left:{$x+2}em;top:{$y+16}em;">{if $mapcell.has_geographs}X{else}{if $mapcell.pending}p{else}{if $mapcell.accepted}s{else}.{/if}{/if}{/if}</div>
-{/foreach}
-{/foreach}
+<pre style="position:absolute;left:2em;top:8em;">  {section loop=100 name=x start=0}
+{assign var="x" value=$smarty.section.x.index}
+{if $x%10 == 0} {/if}
+{$starte/10|string_format:"%1d"}{assign var="starte" value=$starte+1}{if $starte >= 100}{assign var="starte" value=$starte-100}{/if}
+{/section}
 
-{*end map square divs*}
+  {assign var="starte" value=$starte+100}{if $starte > 100}{assign var="starte" value=$starte-100}{/if}
+{section loop=100 name=x start=0}
+{assign var="x" value=$smarty.section.x.index}
+{if $x%10 == 0} {/if}
+{$starte%10|string_format:"%1d"}{assign var="starte" value=$starte+1}{if $starte > 100}{assign var="starte" value=$starte-100}{/if}
+{/section}
 
+{section loop=100 name=y start=0}
+{assign var="y" value=$smarty.section.y.index}
+{if $y%10 == 0}
 
+{/if}{$startn|string_format:"%02d"}{assign var="startn" value=$startn-1}{if $startn < 0}{assign var="startn" value=$startn+100}{/if}
+{section loop=100 name=x start=0}
+{assign var="x" value=$smarty.section.x.index}
+{if $x%10 == 0} {/if}{if $grid.$x.$y}{assign var="mapcell" value=$grid.$x.$y}{if $mapcell.has_geographs}X{else}{if $mapcell.pending}p{else}{if $mapcell.accepted}s{else}&middot;{/if}{/if}{/if}</span>{else}&nbsp;{/if}
+{/section}
 
-
+{/section}</pre>
 </body>
 </html>
 
