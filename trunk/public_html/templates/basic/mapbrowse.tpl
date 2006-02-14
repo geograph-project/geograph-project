@@ -180,6 +180,9 @@
  {if $token_big}
   <div style="line-height:1em;padding-top:6px;"><a href="/maplarge.php?t={$token_big}" style="color:#000066">bigger map</a></div>
  {/if}
+ 
+   <div style="line-height:1em;padding-top:6px;"><a href="/mapprint.php?t={$mosaic_token}" title="printable version" style="color:#000066">printable version</a></div>
+ 
  <br/>
    </td>
    <td><img alt="" src="/templates/basic/mapnav/shim.gif" width="1" height="103"/></td>
