@@ -59,7 +59,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_column = "count(distinct grid_reference)";
 		$sql_where = "i.moderation_status='geograph'";
 		$heading = "Squares<br/>Geographed";
-		$desc = "different squares photographed";
+		$desc = "different squares geographed (aka Personal Points)";
 	} elseif ($type == 'geographs') {
 		$sql_where = "i.moderation_status='geograph'";
 		$heading = "Geograph Images";
