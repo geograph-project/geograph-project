@@ -99,7 +99,9 @@ class SearchEngine
 		global $USER;
 		
 		$nearstring = ($distance)?sprintf("within %dkm of",$distance):'near';
-				
+		
+		$limit1 = '';
+		
 		$q = trim($q);
 		if (preg_match("/^([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9])([A-Z]{0,2})$/",strtoupper($q),$pc)) {
 			$searchq = $pc[1].$pc[2]." ".$pc[3];
@@ -139,7 +141,7 @@ class SearchEngine
 			$criteria->setByPlacename($q);
 			if ($criteria->is_multiple) {
 				//we've found multiple possible placenames
-				$searchdesc = ", $nearstring '".$q."'";
+				$searchdesc = ", $nearstring '{$q}'";
 				$this->searchdesc = $searchdesc;
 				$this->criteria = $criteria;
 			} else if (!empty($criteria->placename)) {
@@ -167,9 +169,8 @@ class SearchEngine
 			}
 		}
 		
-		$limit1 = ($userlimit)?$userlimit:'';
 		if ($userlimit) {
-		print $userlimit;exit;
+			$limit1 = $userlimit;
 			$profile=new GeographUser($userlimit);
 			$searchdesc .= ", by ".($profile->realname);
 		}				
