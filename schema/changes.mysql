@@ -264,3 +264,8 @@ ALTER TABLE `user` ADD `slideshow_delay` TINYINT UNSIGNED DEFAULT '5' NOT NULL;
 
 
 ALTER TABLE `throttle` CHANGE `feature` `feature` ENUM( 'ecard', 'usermsg' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT 'ecard' NOT NULL ;
+
+
+
+#this index should GREATLY speedup the moversboard generation...
+ALTER TABLE `gridimage` ADD INDEX ( `submitted` ) 
