@@ -60,6 +60,15 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 
 {if $errormsg}
 <p>{$errormsg}</p>
+
+	{if $square->percent_land < 50 && $square->percent_land != -1}
+	<form action="/mapfixer.php" method="get">
+		<p align="right"><input type="submit" name="save" value="Bring this square to the attention of a moderator"/>
+		<input type="hidden" name="gridref" value="{$gridref}"/>
+		</p>
+	</form>
+	{/if}
+
 {/if}
 {if $showresult}
 
