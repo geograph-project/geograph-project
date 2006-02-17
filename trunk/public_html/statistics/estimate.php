@@ -75,7 +75,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql = "select substring(crt_timestamp,1,10) as d ,count(*) as c from queries where crt_timestamp > '$beginday' AND crt_timestamp < '$today' group by substring(crt_timestamp,1,10)";
 	$sql2 = "select count(*) from queries";
 
-	$searches = calc($sql,$sql2,1000);
+	$searches = calc($sql,$sql2,10000);
 				
 	$smarty->assign("searches",$searches);
 	
