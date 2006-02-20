@@ -1,7 +1,7 @@
 {assign var="page_title" value="API"}
 {include file="_std_begin.tpl"}
 
-	 <h2>Geograph API v0.6</h2> 
+	 <h2>Geograph API v0.7</h2> 
 	 <div
 	  style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;"><b>Contents</b><br/>
 		<ul style="margin-top:0;padding:0 0 0 1em;"> 
@@ -21,6 +21,7 @@
 			 <ul> 
 				<li><a href="#places">Places to use an i number</a></li> 
 			 </ul></li> 
+		  <li><a href="#others">Other Places to get information</a> 
 		  <li><a href="#finally">and finally...</a></li> 
 		</ul></div> 
 	 <p>Geograph's <b>Application Programming Interface</b> (API) allows third
@@ -78,7 +79,7 @@
 		<tr> 
 		  <td>
 			 <a title="Geograph RSS feed"
-			  href="http://{$http_host}/syndicator.php?key=[apikey]&i=12345">http://{$http_host}/syndicator.php?key=[apikey]&amp;i=12345</a></td>
+			  href="http://{$http_host}/syndicator.php?key=[apikey]&amp;i=12345">http://{$http_host}/syndicator.php?key=[apikey]&amp;i=12345</a></td>
 		</tr> 
 		<tr> 
 		  <th rowspan="2">u=[user_id]</th> 
@@ -87,7 +88,7 @@
 		<tr> 
 		  <td>
 			 <a title="Geograph RSS feed"
-			  href="http://{$http_host}/syndicator.php?key=[apikey]&u=3">http://{$http_host}/syndicator.php?key=[apikey]&amp;u=3</a></td>
+			  href="http://{$http_host}/syndicator.php?key=[apikey]&amp;u=3">http://{$http_host}/syndicator.php?key=[apikey]&amp;u=3</a></td>
 		</tr> 
 		<tr> 
 		  <th rowspan="2">q=[gridref or postcode]</th> 
@@ -98,6 +99,11 @@
 				  <td>limit results to particular user</td> 
 				</tr> 
 		 </table></td> 
+		</tr> 
+		<tr> 
+		  <td>
+			 <a title="Geograph RSS feed"
+			  href="http://{$http_host}/syndicator.php?key=[apikey]&amp;q=TQ7054">http://{$http_host}/syndicator.php?key=[apikey]&amp;q=TQ7054</a></td>
 		</tr> 
 		<tr> 
 		  <th rowspan="2">text=[text string]</th> 
@@ -112,7 +118,7 @@
 		<tr> 
 		  <td>
 			 <a title="Geograph RSS feed"
-			  href="http://{$http_host}/syndicator.php?key=[apikey]&q=TQ7054">http://{$http_host}/syndicator.php?key=[apikey]&amp;q=TQ7054</a></td>
+			  href="http://{$http_host}/syndicator.php?key=[apikey]&amp;text=bridge">http://{$http_host}/syndicator.php?key=[apikey]&amp;text=bridge</a></td>
 		</tr> 
 	 </table> 
 	 <h4><a name="rss_format"></a>Formats</h4> 
@@ -133,6 +139,18 @@
 		  <th>format=RSS2.0</th> 
 		  <td><a title="Geograph RSS 2.0 feed"
 			 href="http://{$http_host}/syndicator.php?key=[apikey]&format=RSS2.0">RSS 2.0</a></td> 
+		</tr> 
+		<tr> 
+		  <th>format=GeoRSS</th> 
+		  <td><a title="Geograph GeoRSS feed"
+			 href="http://{$http_host}/syndicator.php?key=[apikey]&i=12345&format=GeoRSS">GeoRSS</a> - 
+			 Custom extension of RSS1.0 to include the lat/long, see {external href="http://www.georss.org/" text="georss.org"}</td> 
+		</tr> 
+		<tr> 
+		  <th>format=GeoPhotoRSS</th> 
+		  <td><a title="Geograph GeoPhotoRSS feed"
+			 href="http://{$http_host}/syndicator.php?key=[apikey]&i=12345&format=GeoPhotoRSS">GeoPhotoRSS</a> - 
+			 Further extension of GeoRSS to also include the thumbnail url, see {external href="http://www.pheed.com/pheed/rss_anatomy.html" text="pheed.com"}</td> 
 		</tr> 
 		<tr> 
 		  <th>format=OPML</th> 
@@ -168,7 +186,7 @@
 			 <table border="1" cellpadding="3" cellspacing="0"> 
 				<tr> 
 				  <th>simple=1</th> 
-				  <td>If present includes styling to hide the picture label until pointed at</td> 
+				  <td>If present includes styling to hide the picture label unless hovering over the photo (recommended!)</td> 
 				</tr> 
 		 </table></td> 
 		</tr>
@@ -200,7 +218,7 @@
 		</tr> 
 		<tr> 
 		  <td>
-			 <a title="Geograph RSS feed"
+			 <a 
 			  href="http://{$http_host}/export.csv.php?key=[apikey]&since=2005-07-01">http://{$http_host}/export.csv.php?key=[apikey]&amp;since=2005-07-01</a></td>
 		</tr> 
 		<tr> 
@@ -225,9 +243,9 @@
 		</tr> 
 		<tr> 
 		  <td>
-			 <a title="Geograph RSS feed"
+			 <a 
 			  href="http://{$http_host}/export.csv.php?key=[apikey]&last=7+day">http://{$http_host}/export.csv.php?key=[apikey]&amp;last=7+DAY</a><br/><a
-			 title="Geograph RSS feed"
+			 
 			 href="http://{$http_host}/export.csv.php?key=[apikey]&last=6+hour">http://{$http_host}/export.csv.php?key=[apikey]&amp;last=6+HOUR</a></td>
 		</tr> 
 		<tr> 
@@ -237,7 +255,7 @@
 		</tr> 
 		<tr> 
 		  <td>
-			 <a title="Geograph RSS feed"
+			 <a 
 			  href="http://{$http_host}/export.csv.php?key=[apikey]&limit=30">http://{$http_host}/export.csv.php?key=[apikey]&amp;limit=30</a></td>
 		</tr> 
 		<tr> 
@@ -248,9 +266,9 @@
 		</tr> 
 		<tr> 
 		  <td>
-			 <a title="Geograph RSS feed"
+			 <a 
 			  href="http://{$http_host}/export.csv.php?key=[apikey]&ri=1">http://{$http_host}/export.csv.php?key=[apikey]&amp;ri=<b>1</b></a>
-			 - <b>Great Britain</b><br/><a title="Geograph RSS feed"
+			 - <b>Great Britain</b><br/><a 
 			 href="http://{$http_host}/export.csv.php?key=[apikey]&ri=2">http://{$http_host}/export.csv.php?key=[apikey]&amp;ri=<b>2</b></a>
 			 - <b>Ireland</b></td> 
 		</tr> 
@@ -273,7 +291,7 @@
 		</tr> 
 		<tr> 
 		  <td>
-			 <a title="Geograph RSS feed"
+			 <a 
 			  href="http://{$http_host}/export.csv.php?key=[apikey]&i=12345">http://{$http_host}/export.csv.php?key=[apikey]&amp;i=12345</a></td>
 		</tr> 
 	 </table> 
@@ -288,7 +306,7 @@
 		<tr> 
 		  <th>Id</th> 
 		  <td><i>Unique</i> Numeric ID for the Picture, <br/>to be used to
-			 construct the URL to link back to the image<br/><a title="Geograph RSS feed"
+			 construct the URL to link back to the image<br/><a 
 			 href="http://{$http_host}/photo/2345">http://{$http_host}/photo/2345</a></td> 
 		  <td>2345</td> 
 		</tr> 
@@ -322,7 +340,7 @@
 			 </td> 
 		</tr> 
 		<tr> 
-		  <td colspan="2"><a title="Geograph RSS feed"
+		  <td colspan="2"><a 
 			 href="http://{$http_host}/export.csv.php?key=[apikey]&en=1">http://{$http_host}/export.csv.php?key=[apikey]&amp;en=1</a></td>
 		</tr> 
 		<tr> 
@@ -373,7 +391,7 @@
 		results page!).</p> 
 	 <p>TIP: where ever you pass a i parameter you can also pass a <i>page</i>
 		parameter to return another page of results. eg
-		<a title="Geograph RSS feed"
+		<a 
 		href="http://{$http_host}/syndicator.php?key=[apikey]&i=12345&page=2">http://{$http_host}/syndicator.php?key=[apikey]&amp;i=12345&amp;page=2</a></p>
 	 <table border="1" cellpadding="3" cellspacing="0"> 
 		<tr> 
@@ -412,12 +430,12 @@
 		  <td>Grid Reference or Postcode</td> 
 		  <td>Simply pass to search.php and the response from the server will
 			 include a brand new i number ready for use. <br/>For example
-			 <a title="Geograph RSS feed"
+			 <a 
 			 href="http://{$http_host}/search.php?q=SH3467">http://{$http_host}/search.php?q=SH3467</a>
 			 would return a <br/><TT style="border: 1px solid gray;">Location:
 			 http://{$http_host}/search.php?i=12345</TT><br/>header, just parse out that i
 			 number and pass it to the XML/CSV page.<br/>Also works with UK(inc NI)
-			 Postcodes, e.g.<br/><a title="Geograph RSS feed"
+			 Postcodes, e.g.<br/><a 
 			 href="http://{$http_host}/search.php?q=TN32+3DZ">http://{$http_host}/search.php?q=TN32+3DZ</a><br/>Technically
 			 this can also accept place-names or free text search, however due to there
 			 being no guarantee that it will only match one place-name (or none and run a
@@ -442,7 +460,7 @@
 	 <table border="1" cellpadding="3" cellspacing="0"> 
 		<tr> 
 		  <td>Results Webpage</td> 
-		  <td><a title="Geograph RSS feed"
+		  <td><a
 			 href="http://{$http_host}/search.php?i=12345">http://{$http_host}/search.php?i=12345</a></td>
 		</tr> 
 		<tr> 
@@ -451,24 +469,42 @@
 			 href="http://{$http_host}/kml.php?i=12345">http://{$http_host}/kml.php?i=12345</a> </td>
 		</tr> 
 		<tr> 
+		  <td>Statistics Webpage</td> 
+		  <td><a title="Statistical Breakdown"
+			 href="http://{$http_host}/statistics/breakdown.php?i=12345">http://{$http_host}/statistics/breakdown.php?i=12345</a> </td>
+		</tr> 
+		<tr> 
 		  <td>XML/HTML etc feed</td> 
 		  <td><a title="Geograph RSS feed"
 			 href="http://{$http_host}/syndicator.php?key=[apikey]&i=12345">http://{$http_host}/syndicator.php?key=[apikey]&amp;i=12345</a></td>
 		</tr> 
 		<tr> 
 		  <td>CSV feed</td> 
-		  <td><a title="Geograph RSS feed"
+		  <td><a 
 			 href="http://{$http_host}/export.csv.php?key=[apikey]&i=12345">http://{$http_host}/export.csv.php?key=[apikey]&amp;i=12345</a></td>
 		</tr> 
 		<tr> 
-		  <td>Memory Map Feed</td> 
+		  <td>MemoryMap feed</td> 
 		  <td><a title="Geograph MemoryMap feed"
 			 style="text-decoration: line-through">http://{$http_host}/memorymap.php?key=[apikey]&amp;i=12345</a> (Coming soon)</td>
 		</tr> 
+		<tr> 
+		  <td>GPX Export</td> 
+		  <td><a title="Geograph GPX Downloads"
+			 style="text-decoration: line-through">http://{$http_host}/gpx.php?key=[apikey]&amp;i=12345</a> (Coming soon)</td>
+		</tr> 
 	 </table> 
+	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="others"></a>Other Ways to download information</h3> 
+	 <ul>
+		<li><a href="/memorymap.php">MemoryMap Exports</a></li>
+		<li><a href="/gpx.php">GPX Exports</a></li>
+		<li>100x100km CheckSheets (<a href="http://www.geograph.org.uk/mapsheet.php?t=tolJ5oOXXJ0oOJFoOXXJfoMXbJqoOXXJL5405o4VZMlXwZblw4MMuX">example</a>) <small>- nice easy parseable listing, could be used for creating coverage maps</small></li>
+		<li>Please DON'T use the /list/ namespace as that's for Search Engines</li>
+		<li><a href="http://www.geourl.org/" style="text-decoration: line-through">geourl.org</a> (Coming soon)</li>
+	 </ul>
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="finally"></a>Finally</h3> 
 	 <p>We wish you luck in you project and look forward to seeing the results! If you have any 
-	 	problems using the API, then please do get in <a href="/contact.php">contact</a>.</p>
+		problems using the API, then please do get in <a href="/contact.php">contact</a>.</p>
 {include file="_std_end.tpl"}
 
 
