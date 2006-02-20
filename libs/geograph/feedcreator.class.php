@@ -27,6 +27,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 Changelog:
 
+v1.7.6(BH)	20-02-06
+	added GeoRSS Feed (Barry Hunter)
+
+
 v1.7.5(BH)	16-11-05
 	added BASE Feed (Barry Hunter)
 
@@ -173,7 +177,7 @@ define("TIME_ZONE","");
 /**
  * Version string.
  **/
-define("FEEDCREATOR_VERSION", "FeedCreator 1.7.5(BH)");
+define("FEEDCREATOR_VERSION", "FeedCreator 1.7.6(BH)");
 
 
 
@@ -353,6 +357,9 @@ class UniversalFeedCreator extends FeedCreator {
 				$this->_feed = new RSSCreator20();
 				break;
 			
+			case "GEOPHOTORSS":
+			case "GEORSS":
+				$this->format = $format;
 			case "1.0":
 				// fall through
 			case "RSS1.0":
@@ -836,6 +843,10 @@ class RSSCreator10 extends FeedCreator {
 		$feed.= "    xmlns=\"http://purl.org/rss/1.0/\"\n";
 		$feed.= "    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n"; 
 		$feed.= "    xmlns:slash=\"http://purl.org/rss/1.0/modules/slash/\"\n";
+		if ($this->items[0]->thumb!="")
+			$feed.= "    xmlns:photo=\"http://www.pheed.com/pheed/\"\n";
+		if ($this->items[0]->lat!="")
+			$feed.= "    xmlns:georss=\"http://www.georss.org/georss/\"\n";
 		$feed.= "    xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n";
 		$feed.= "    <channel rdf:about=\"".$this->syndicationURL."\">\n";
 		$feed.= "        <title>".htmlspecialchars($this->title)."</title>\n";
@@ -876,6 +887,12 @@ class RSSCreator10 extends FeedCreator {
 			}
 			if ($this->items[$i]->author!="") {
 				$feed.= "        <dc:creator>".htmlspecialchars($this->items[$i]->author)."</dc:creator>\n";
+			}
+			if ($this->items[$i]->lat!="") {
+				$feed.= "        <georss:point>".$this->items[$i]->lat." ".$this->items[$i]->long."</georss:point>\n";
+			}
+			if ($this->items[$i]->thumb!="") {
+				$feed.= "        <photo:thumbnail>".htmlspecialchars($this->items[$i]->thumb)."</photo:thumbnail>\n";
 			}
 			$feed.= "        <title>".htmlspecialchars(strip_tags(strtr($this->items[$i]->title,"\n\r","  ")))."</title>\n";
 			$feed.= "        <link>".htmlspecialchars($this->items[$i]->link)."</link>\n";
