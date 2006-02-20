@@ -28,7 +28,7 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
 	
 	
-$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','KML','BASE');
+$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','KML','BASE','GeoRSS','GeoPhotoRSS');
 
 $format="RSS1.0";
 if (isset($_GET['format']) && in_array($_GET['format'], $valid_formats))
@@ -85,7 +85,7 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 }
 
 $rss = new UniversalFeedCreator(); 
-$rss->useCached($rssfile); 
+$rss->useCached($format,$rssfile); 
 $rss->title = 'Geograph British Isles'; 
 $rss->link = "http://{$_SERVER['HTTP_HOST']}";
  
@@ -124,16 +124,6 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	//lets find some recent photos
 	$images=new ImageList(array('accepted', 'geograph'), 'gridimage_id desc', 15);
 }
-#print "<PRE>";
-#	var_dump($images);
-#	exit;
-
-#$image = new FeedImage(); 
-#$image->title = "dailyphp.net logo"; 
-#$image->url = "http://www.dailyphp.net/images/logo.gif"; 
-#$image->link = "http://www.dailyphp.net"; 
-#$image->description = "Feed provided by dailyphp.net. Click to visit."; 
-#$rss->image = $image; 
 
 
 $cnt=count($images->images);
@@ -155,10 +145,11 @@ for ($i=0; $i<$cnt; $i++)
 	$item->source = "http://{$_SERVER['HTTP_HOST']}/profile.php?u=".$images->images[$i]->user_id; 
 	$item->author = $images->images[$i]->realname; 
 	     
-	     if ($format == 'KML') {
+	     if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GeoPhotoRSS') {
 	     	$item->lat = $images->images[$i]->wgs84_lat;
 	     	$item->long = $images->images[$i]->wgs84_long;
-	     	$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
+	     	if ($format == 'GeoPhotoRSS')
+	     		$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
 	     } elseif ($format == 'BASE') {
 	     	$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
 	     } elseif ($format == 'PHP') {
