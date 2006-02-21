@@ -108,10 +108,14 @@ if ($i) {
 	"inner join gridsquare using(gridsquare_id) ".
 	"where $mod_sql $sql_crit");
 } else {
+	if (isset($_GET['supp'])) {
+		$mod_sql = 1; //no point checking what will always be 1 ;-)
+	}
 	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass $sql_from ".
 	"from gridimage_search gi ".
 	"where $mod_sql $sql_crit");
 }
+$counter = -1;
 while (!$recordSet->EOF) 
 {
 	$image = $recordSet->fields;
@@ -134,11 +138,16 @@ while (!$recordSet->EOF)
 	}
 	echo "\n";
 	$recordSet->MoveNext();
-	$i++;
+	$counter++;
 }
 $recordSet->Close();
 	
-$sql = "UPDATE apikeys SET accesses=accesses+1, records=records+$i,last_use = NOW() WHERE `apikey` = '{$_GET['key']}'";
+//todo
+//if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
+// or if (isset($_GET['last']) && preg_match("/^\d+ \w+$/",$_GET['last']) ) {
+// ... find all rejected (at first glance think only need ones submitted BEFORE but moderated AFTER, as ones submitted after wont be included!) - either way shouldnt harm to include them anyway!
+	
+$sql = "UPDATE apikeys SET accesses=accesses+1, records=records+$counter,last_use = NOW() WHERE `apikey` = '{$_GET['key']}'";
 
 $db->Execute($sql);	
 
