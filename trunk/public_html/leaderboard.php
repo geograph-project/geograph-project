@@ -27,11 +27,15 @@ init_session();
 
 $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'points';
 
+$date = (isset($_GET['date']) && ctype_lower($_GET['date']))?intval($_GET['date']):'submitted';
+
+$when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
+
 
 $smarty = new GeographPage;
 
 $template='leaderboard.tpl';
-$cacheid=$type;
+$cacheid=$type.$date.$when;
 
 if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
 	$smarty->clear_cache($template, $cacheid);
@@ -73,10 +77,22 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "Geograph<br/>Points";
 		$desc = "geograph points awarded";
 	} 
+	
+	if ($when) {
+
+		$column = ($date == 'taken')?'imagetaken':'submitted';  
+		$sql_where .= " and $column LIKE '$when%'";
+		$iamge = new GridImage();
+		$iamge->imagetaken = $when;
+		$title = ($date == 'taken')?'taken':'submitted'; 
+		$desc .= ", <b>for images $title during ".$iamge->getFormattedTakenDate()."</b>";
+	}
+	
 	$smarty->assign('heading', $heading);
 	$smarty->assign('desc', $desc);
 	$smarty->assign('type', $type);
 
+	
 	$topusers=$db->GetAll("select user_id,realname, $sql_column as imgcount,max(gridimage_id) as last
 	from gridimage_search i where $sql_where
 	group by user_id order by imgcount desc,last asc"); 
