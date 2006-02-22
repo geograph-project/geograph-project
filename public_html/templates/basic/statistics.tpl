@@ -92,24 +92,26 @@
 And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {$centergr_2}">{$centergr_2}</a>, {if $place_2.distance > 3}{$place_2.distance} km from{else}near to{/if} <b>{$place_2.full_name}</b><small><i>{if $place_2.adm1_name && $place_2.adm1_name != $place_2.reference_name}, {$place_2.adm1_name}{/if}</i></small>.</p>    
     
     <h3>More Statistics</h3>
-    
-   <p>Graphs: <a href="/moversboard.php#rate_graph">Weekly Submissions</a> and <a href="/leaderboard.php#submission_graph">Overall Submissions</a>.</p> 
-   
+
    <p><b>Most <a href="/statistics/wordnet.php">Popular Words</a> in the last 7 days and all time.</b></p>
-   
+
    <p>User leaderboards: <a href="/moversboard.php">Weekly</a>, <a href="/leaderboard.php">All Time</a>, <a href="/monthlyleader.php">By Month</a> and <a href="/statistics/busyday.php?users=1">Most in One Day</a>. (<a href="/statistics.php?by=user&amp;ri=1">Contributor List</a>)</p>
 
-   <p><b>Not yet Geographed: <a href="/statistics/not_geographed.php">Hectads</a> (10<small>km</small> x 10<small>km</small> Squares) - shrinking all the time!</b></p>
+   <p><b>Covering the squares</b><a href="/help/squares">?</a>:<br/>
+   None: <a href="/statistics/not_geographed.php">Hectads</a> (10<small>km</small> x 10<small>km</small> Squares) - shrinking all the time!<br/>
+   Mostly: <a href="/statistics/most_geographed.php">Grid Squares &amp; Hectads</a> <small>(10 x 10 Squares)</small> and <a href="/statistics/most_geographed_myriad.php">Myriads</a> <small>(100 x 100 Squares)</small>.<br/>
+   <b>Fully: <a href="/statistics/fully_geographed.php">Hectads</a> <small>(10 x 10 Squares)</small> - including Large Mosaic!</b></p>
 
-   <p>Mostly Geographed: <a href="/statistics/most_geographed.php">Grid Squares</a>, 
-   <a href="/statistics/most_geographed.php">Hectads</a> <small>(10 x 10 Squares)</small> and <a href="/statistics/most_geographed_myriad.php">Myriads</a> <small>(100 x 100 Squares)</small>.</p>
-   
-   <p><b>Fully Geographed: <a href="/statistics/fully_geographed.php">Hectads</a> <small>(10 x 10 Squares)</small> - including Large Mosaic!</b></p>
-   
    <p>Centre Points: <a href="/statistics/counties.php">Ceremonial Counties</a>, <a href="/statistics/counties.php?type=capital">(Irish) County Capitals</a> and <a href="/statistics/cities.php">Cities</a> photographed so far.</p>
 
+   <p><b>Past Activity:</b><br/>
+   Graphs: <a href="/moversboard.php#rate_graph">Weekly Submissions</a> and <a href="/leaderboard.php#submission_graph">Overall Submissions</a>.<br/>
+   Monthly Breakdown: <a href="/statistics/overtime.php" title="Monthly Breakdown of Images Submitted">Submissions</a>, <a href="/statistics/overtime.php?date=taken" title="Monthly Breakdown of Images Taken">Date Taken</a> and <a href="/statistics/overtime_forum.php" title="Monthly Breakdown for Forum Posts">Forum Posts</a>.<br/>
+   Hourly and Weekday Breakdown: <a href="/statistics/date_graphs.php" title="Hourly and Weekday Breakdown of Images Submitted">Submissions</a>, <a href="/statistics/date_graphs.php?date=taken" title="Hourly and Weekday Breakdown of Images Taken">Date Taken</a> and <a href="/statistics/date_forum_graphs.php" title="Hourly and Weekday Breakdown for Forum Posts">Forum Posts</a>.<br/>
+   Most in a day: <a href="statistics/busyday.php?date=submitted">Submissions</a>, <a href="statistics/busyday.php">Images Taken</a> and <a href="statistics/busyday_forum.php">Forum Posts</a></p>
+
     <form method="get" action="/statistics/breakdown.php">
-    <p><b>View breakdown of images by</b> 
+    <p>View breakdown of images by 
     <select name="by">
     	{html_options options=$bys selected=$by}
     </select> in <select name="ri">
@@ -136,11 +138,9 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
     {/dynamic}
     <input type="submit" value="Go"/></p></form>
 
-   <p>Technical Database Stats:<br/>
+   <p><b>More Technical Database Stats:</b><br/>
    <a href="/statistics/totals.php">Current Totals</a>,
-   <a href="/statistics/estimate.php">Future Estimates</a>,
-   <a href="/statistics/overtime.php">Activity Breakdown</a> (<a href="/statistics/overtime.php?date=taken">by date taken</a>) (<a href="/statistics/overtime_forum.php">for Forum</a>),<br/>
-   <a href="statistics/busyday.php">Most taken in a day</a> (<a href="statistics/busyday.php?date=submitted">submitted</a>) and 
+   <a href="/statistics/estimate.php">Future Estimates</a> and 
    <a href="/statistics/forum_image_breakdown.php">Breakdown of Thumbnails used in Forum Topics</a>.</p>
 
 {include file="_std_end.tpl"}
