@@ -456,6 +456,11 @@ class SearchEngine
 				$topic_name=$db->getOne("SELECT topic_title FROM geobb_topics WHERE topic_id = ".$dataarray['topic_id']);
 				$searchdesc .= ", in topic ".$topic_name;
 			}
+			if (!empty($dataarray['route_id'])) {
+				$sql .= ",limit10 = ".$dataarray['route_id'];
+				$topic_name=$db->getOne("SELECT name FROM route WHERE route_id = ".$dataarray['route_id']);
+				$searchdesc .= ", on route ".$topic_name;
+			}
 			
 			if (!isset($dataarray['orderby']))
 				$dataarray['orderby'] = '';
