@@ -17,7 +17,7 @@ top submitters this week.</p>
 
 {foreach from=$topusers item=topuser}
 <tr><td>{$topuser.ordinal}</td><td><a title="View profile" href="/profile.php?u={$topuser.user_id}">{$topuser.realname}</a></td>
-<td>{$topuser.imgcount}</td></tr>
+<td align="right">{$topuser.imgcount}</td></tr>
 {/foreach}
 
 </tbody>
