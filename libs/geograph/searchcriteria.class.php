@@ -234,6 +234,13 @@ class SearchCriteria
 			$sql_where .= "topic_id = {$this->limit9} ";
 			$sql_from .= " INNER JOIN gridimage_post gp ON(gi.gridimage_id=gp.gridimage_id) ";
 		} 
+		if (!empty($this->limit10)) {
+			if ($sql_where) {
+				$sql_where .= ' and ';
+			}
+			$sql_where .= "route_id = {$this->limit10} ";
+			$sql_from .= " INNER JOIN route_item r ON(grid_reference=r.gridref) ";
+		} 
 	}
 	
 	
