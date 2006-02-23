@@ -308,7 +308,7 @@ class UploadManager
 
 						//removed the unsharp as it makes some images worse - needs to be optional
 						// best fit found so far: -unsharp 0x1+0.8+0.1 -blur 0x.1
-						$cmd = sprintf ("\"%smogrify\" -filter Lanczos -sample %ldx%ld -quality 87 jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $pendingfile);
+						$cmd = sprintf ("\"%smogrify\" -resize %ldx%ld -quality 87 jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $pendingfile);
 
 						passthru ($cmd);
 						
