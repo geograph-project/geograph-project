@@ -97,8 +97,8 @@
 	   <li><a href="/statistics/overtime.php">Photo Submission Activity Breakdown</a></li>
 	   <li><a href="/statistics/overtime.php?date=taken">Photo Taken Activity Breakdown</a></li>
 	   <li><a href="/statistics/overtime_forum.php">Forum Posting Breakdown</a></li>
-	   <li><a href="statistics/busyday.php">Most taken in a day</a></li>
-	   <li><a href="statistics/busyday.php?date=submitted">Most  submitted in a day</a></li>
+	   <li><a href="/statistics/busyday.php">Most taken in a day</a></li>
+	   <li><a href="/statistics/busyday.php?date=submitted">Most submitted in a day</a></li>
 	   <li><a href="/statistics/forum_image_breakdown.php">Breakdown of Thumbnails used in Forum Topics</a></li>
 	</ul>
 	</li>
