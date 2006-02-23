@@ -352,7 +352,7 @@ class GridImage
 	}
 	
 	/**
-	* given a temporary file, transfer to final destination for the image
+	* get a list of tickers for this image
 	*/
 	function& getTroubleTickets($aStatus)
 	{
@@ -752,7 +752,7 @@ class GridImage
 						}
 					
 					
-						$cmd = sprintf ("\"%sconvert\" -thumbnail %ldx%ld -unsharp 0x1+1.4+0.1 -raise 2x2 -quality 87 jpg:%s jpg:%s", 
+						$cmd = sprintf ("\"%sconvert\" -thumbnail %ldx%ld -unsharp 0x1+0.8+0.1 -raise 2x2 -quality 87 jpg:%s jpg:%s", 
 							$CONF['imagemagick_path'],
 							$maxw, $maxh, 
 							$_SERVER['DOCUMENT_ROOT'].$fullpath,
