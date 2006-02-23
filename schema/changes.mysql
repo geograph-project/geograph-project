@@ -268,4 +268,236 @@ ALTER TABLE `throttle` CHANGE `feature` `feature` ENUM( 'ecard', 'usermsg' ) CHA
 
 
 #this index should GREATLY speedup the moversboard generation...
-ALTER TABLE `gridimage` ADD INDEX ( `submitted` ) 
+ALTER TABLE `gridimage` ADD INDEX ( `submitted` ) ;
+
+
+
+#for tentative support for routes...
+ALTER TABLE `queries` ADD `limit10` MEDIUMINT UNSIGNED NOT NULL AFTER `limit9` ;
+
+-- Table structure for table `route`
+CREATE TABLE `route` (
+  `route_id` mediumint(8) unsigned NOT NULL auto_increment,
+  `name` varchar(60) NOT NULL default '',
+  `crt_timestamp` timestamp NOT NULL,
+  PRIMARY KEY  (`route_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 ;
+
+-- Dumping data for table `route`
+INSERT INTO `route` VALUES (1, 'South Downs Way', 0x323030362d30322d32322032323a31313a3435);
+
+-- Table structure for table `route_item`
+CREATE TABLE `route_item` (
+  `gridref` varchar(6) NOT NULL default '',
+  `route_id` mediumint(8) unsigned NOT NULL default '1',
+  `routeitem_id` mediumint(8) unsigned NOT NULL auto_increment,
+  PRIMARY KEY  (`routeitem_id`),
+  KEY `route_id` (`route_id`),
+  KEY `gridref` (`gridref`)
+) ENGINE=MyISAM AUTO_INCREMENT=202 ;
+
+-- Dumping data for table `route_item`
+INSERT INTO `route_item` VALUES ('SU4829', 1, 1);
+INSERT INTO `route_item` VALUES ('SU4929', 1, 2);
+INSERT INTO `route_item` VALUES ('SU4828', 1, 3);
+INSERT INTO `route_item` VALUES ('SU4928', 1, 4);
+INSERT INTO `route_item` VALUES ('SU5028', 1, 5);
+INSERT INTO `route_item` VALUES ('SU5128', 1, 6);
+INSERT INTO `route_item` VALUES ('SU5228', 1, 7);
+INSERT INTO `route_item` VALUES ('SU5328', 1, 8);
+INSERT INTO `route_item` VALUES ('SU5428', 1, 9);
+INSERT INTO `route_item` VALUES ('SU5528', 1, 10);
+INSERT INTO `route_item` VALUES ('SU5127', 1, 11);
+INSERT INTO `route_item` VALUES ('SU5227', 1, 12);
+INSERT INTO `route_item` VALUES ('SU5327', 1, 13);
+INSERT INTO `route_item` VALUES ('SU5527', 1, 14);
+INSERT INTO `route_item` VALUES ('SU5627', 1, 15);
+INSERT INTO `route_item` VALUES ('SU5626', 1, 16);
+INSERT INTO `route_item` VALUES ('SU5625', 1, 17);
+INSERT INTO `route_item` VALUES ('SU5624', 1, 18);
+INSERT INTO `route_item` VALUES ('SU5724', 1, 19);
+INSERT INTO `route_item` VALUES ('SU5824', 1, 20);
+INSERT INTO `route_item` VALUES ('SU5823', 1, 21);
+INSERT INTO `route_item` VALUES ('SU5923', 1, 22);
+INSERT INTO `route_item` VALUES ('SU5922', 1, 23);
+INSERT INTO `route_item` VALUES ('SU6022', 1, 24);
+INSERT INTO `route_item` VALUES ('SU6021', 1, 25);
+INSERT INTO `route_item` VALUES ('SU6121', 1, 26);
+INSERT INTO `route_item` VALUES ('SU6221', 1, 27);
+INSERT INTO `route_item` VALUES ('SU6321', 1, 28);
+INSERT INTO `route_item` VALUES ('SU6421', 1, 29);
+INSERT INTO `route_item` VALUES ('SU6521', 1, 30);
+INSERT INTO `route_item` VALUES ('SU6621', 1, 31);
+INSERT INTO `route_item` VALUES ('SU6120', 1, 32);
+INSERT INTO `route_item` VALUES ('SU6320', 1, 33);
+INSERT INTO `route_item` VALUES ('SU6420', 1, 34);
+INSERT INTO `route_item` VALUES ('SU6620', 1, 35);
+INSERT INTO `route_item` VALUES ('SU6720', 1, 36);
+INSERT INTO `route_item` VALUES ('SU7120', 1, 37);
+INSERT INTO `route_item` VALUES ('SU6719', 1, 38);
+INSERT INTO `route_item` VALUES ('SU6819', 1, 39);
+INSERT INTO `route_item` VALUES ('SU6919', 1, 40);
+INSERT INTO `route_item` VALUES ('SU7019', 1, 41);
+INSERT INTO `route_item` VALUES ('SU7119', 1, 42);
+INSERT INTO `route_item` VALUES ('SU7219', 1, 43);
+INSERT INTO `route_item` VALUES ('SU7319', 1, 44);
+INSERT INTO `route_item` VALUES ('SU7419', 1, 45);
+INSERT INTO `route_item` VALUES ('SU7519', 1, 46);
+INSERT INTO `route_item` VALUES ('SU7619', 1, 47);
+INSERT INTO `route_item` VALUES ('SU7719', 1, 48);
+INSERT INTO `route_item` VALUES ('SU6818', 1, 49);
+INSERT INTO `route_item` VALUES ('SU7118', 1, 50);
+INSERT INTO `route_item` VALUES ('SU7218', 1, 51);
+INSERT INTO `route_item` VALUES ('SU7718', 1, 52);
+INSERT INTO `route_item` VALUES ('SU7818', 1, 53);
+INSERT INTO `route_item` VALUES ('SU7918', 1, 54);
+INSERT INTO `route_item` VALUES ('SU8018', 1, 55);
+INSERT INTO `route_item` VALUES ('SU8118', 1, 56);
+INSERT INTO `route_item` VALUES ('SU8017', 1, 57);
+INSERT INTO `route_item` VALUES ('SU8117', 1, 58);
+INSERT INTO `route_item` VALUES ('SU8217', 1, 59);
+INSERT INTO `route_item` VALUES ('SU8317', 1, 60);
+INSERT INTO `route_item` VALUES ('SU8417', 1, 61);
+INSERT INTO `route_item` VALUES ('SU8517', 1, 62);
+INSERT INTO `route_item` VALUES ('SU8216', 1, 63);
+INSERT INTO `route_item` VALUES ('SU8516', 1, 64);
+INSERT INTO `route_item` VALUES ('SU8616', 1, 65);
+INSERT INTO `route_item` VALUES ('SU8716', 1, 66);
+INSERT INTO `route_item` VALUES ('SU8816', 1, 67);
+INSERT INTO `route_item` VALUES ('SU8916', 1, 68);
+INSERT INTO `route_item` VALUES ('SU9016', 1, 69);
+INSERT INTO `route_item` VALUES ('SU9116', 1, 70);
+INSERT INTO `route_item` VALUES ('SU9216', 1, 71);
+INSERT INTO `route_item` VALUES ('SU9316', 1, 72);
+INSERT INTO `route_item` VALUES ('SU9315', 1, 73);
+INSERT INTO `route_item` VALUES ('SU9415', 1, 74);
+INSERT INTO `route_item` VALUES ('SU9414', 1, 75);
+INSERT INTO `route_item` VALUES ('SU9514', 1, 76);
+INSERT INTO `route_item` VALUES ('SU9513', 1, 77);
+INSERT INTO `route_item` VALUES ('SU9613', 1, 78);
+INSERT INTO `route_item` VALUES ('SU9713', 1, 79);
+INSERT INTO `route_item` VALUES ('SU9813', 1, 80);
+INSERT INTO `route_item` VALUES ('SU9913', 1, 81);
+INSERT INTO `route_item` VALUES ('TQ3013', 1, 82);
+INSERT INTO `route_item` VALUES ('TQ3113', 1, 83);
+INSERT INTO `route_item` VALUES ('TQ3213', 1, 84);
+INSERT INTO `route_item` VALUES ('TQ3313', 1, 85);
+INSERT INTO `route_item` VALUES ('SU9612', 1, 86);
+INSERT INTO `route_item` VALUES ('SU9712', 1, 87);
+INSERT INTO `route_item` VALUES ('SU9812', 1, 88);
+INSERT INTO `route_item` VALUES ('SU9912', 1, 89);
+INSERT INTO `route_item` VALUES ('TQ0012', 1, 90);
+INSERT INTO `route_item` VALUES ('TQ0112', 1, 91);
+INSERT INTO `route_item` VALUES ('TQ0212', 1, 92);
+INSERT INTO `route_item` VALUES ('TQ0312', 1, 93);
+INSERT INTO `route_item` VALUES ('TQ0412', 1, 94);
+INSERT INTO `route_item` VALUES ('TQ0512', 1, 95);
+INSERT INTO `route_item` VALUES ('TQ0612', 1, 96);
+INSERT INTO `route_item` VALUES ('TQ0712', 1, 97);
+INSERT INTO `route_item` VALUES ('TQ0812', 1, 98);
+INSERT INTO `route_item` VALUES ('TQ1112', 1, 99);
+INSERT INTO `route_item` VALUES ('TQ1212', 1, 100);
+INSERT INTO `route_item` VALUES ('TQ1312', 1, 101);
+INSERT INTO `route_item` VALUES ('TQ2812', 1, 102);
+INSERT INTO `route_item` VALUES ('TQ2912', 1, 103);
+INSERT INTO `route_item` VALUES ('TQ3012', 1, 104);
+INSERT INTO `route_item` VALUES ('TQ3112', 1, 105);
+INSERT INTO `route_item` VALUES ('TQ3312', 1, 106);
+INSERT INTO `route_item` VALUES ('TQ3412', 1, 107);
+INSERT INTO `route_item` VALUES ('TQ3512', 1, 108);
+INSERT INTO `route_item` VALUES ('TQ3612', 1, 109);
+INSERT INTO `route_item` VALUES ('TQ3712', 1, 110);
+INSERT INTO `route_item` VALUES ('TQ0011', 1, 111);
+INSERT INTO `route_item` VALUES ('TQ0111', 1, 112);
+INSERT INTO `route_item` VALUES ('TQ0811', 1, 113);
+INSERT INTO `route_item` VALUES ('TQ0911', 1, 114);
+INSERT INTO `route_item` VALUES ('TQ1011', 1, 115);
+INSERT INTO `route_item` VALUES ('TQ1111', 1, 116);
+INSERT INTO `route_item` VALUES ('TQ1211', 1, 117);
+INSERT INTO `route_item` VALUES ('TQ1311', 1, 118);
+INSERT INTO `route_item` VALUES ('TQ1411', 1, 119);
+INSERT INTO `route_item` VALUES ('TQ1511', 1, 120);
+INSERT INTO `route_item` VALUES ('TQ2311', 1, 121);
+INSERT INTO `route_item` VALUES ('TQ2611', 1, 122);
+INSERT INTO `route_item` VALUES ('TQ2711', 1, 123);
+INSERT INTO `route_item` VALUES ('TQ2811', 1, 124);
+INSERT INTO `route_item` VALUES ('TQ3611', 1, 125);
+INSERT INTO `route_item` VALUES ('TQ3711', 1, 126);
+INSERT INTO `route_item` VALUES ('TQ1510', 1, 127);
+INSERT INTO `route_item` VALUES ('TQ1610', 1, 128);
+INSERT INTO `route_item` VALUES ('TQ2110', 1, 129);
+INSERT INTO `route_item` VALUES ('TQ2210', 1, 130);
+INSERT INTO `route_item` VALUES ('TQ2310', 1, 131);
+INSERT INTO `route_item` VALUES ('TQ2410', 1, 132);
+INSERT INTO `route_item` VALUES ('TQ2510', 1, 133);
+INSERT INTO `route_item` VALUES ('TQ2610', 1, 134);
+INSERT INTO `route_item` VALUES ('TQ3710', 1, 135);
+INSERT INTO `route_item` VALUES ('TQ1609', 1, 136);
+INSERT INTO `route_item` VALUES ('TQ1709', 1, 137);
+INSERT INTO `route_item` VALUES ('TQ1809', 1, 138);
+INSERT INTO `route_item` VALUES ('TQ1909', 1, 139);
+INSERT INTO `route_item` VALUES ('TQ2009', 1, 140);
+INSERT INTO `route_item` VALUES ('TQ2109', 1, 141);
+INSERT INTO `route_item` VALUES ('TQ3609', 1, 142);
+INSERT INTO `route_item` VALUES ('TQ3709', 1, 143);
+INSERT INTO `route_item` VALUES ('TQ1608', 1, 144);
+INSERT INTO `route_item` VALUES ('TQ3608', 1, 145);
+INSERT INTO `route_item` VALUES ('TQ3708', 1, 146);
+INSERT INTO `route_item` VALUES ('TQ3607', 1, 147);
+INSERT INTO `route_item` VALUES ('TQ3707', 1, 148);
+INSERT INTO `route_item` VALUES ('TQ3807', 1, 149);
+INSERT INTO `route_item` VALUES ('TQ3907', 1, 150);
+INSERT INTO `route_item` VALUES ('TQ3906', 1, 151);
+INSERT INTO `route_item` VALUES ('TQ4006', 1, 152);
+INSERT INTO `route_item` VALUES ('TQ4005', 1, 153);
+INSERT INTO `route_item` VALUES ('TQ4105', 1, 154);
+INSERT INTO `route_item` VALUES ('TQ4205', 1, 155);
+INSERT INTO `route_item` VALUES ('TQ4305', 1, 156);
+INSERT INTO `route_item` VALUES ('TQ4405', 1, 157);
+INSERT INTO `route_item` VALUES ('TQ4505', 1, 158);
+INSERT INTO `route_item` VALUES ('TQ4605', 1, 159);
+INSERT INTO `route_item` VALUES ('TQ4705', 1, 160);
+INSERT INTO `route_item` VALUES ('TQ4805', 1, 161);
+INSERT INTO `route_item` VALUES ('TQ4905', 1, 162);
+INSERT INTO `route_item` VALUES ('TQ4104', 1, 163);
+INSERT INTO `route_item` VALUES ('TQ4904', 1, 164);
+INSERT INTO `route_item` VALUES ('TQ5004', 1, 165);
+INSERT INTO `route_item` VALUES ('TQ5003', 1, 166);
+INSERT INTO `route_item` VALUES ('TQ5103', 1, 167);
+INSERT INTO `route_item` VALUES ('TQ5203', 1, 168);
+INSERT INTO `route_item` VALUES ('TQ5303', 1, 169);
+INSERT INTO `route_item` VALUES ('TQ5403', 1, 170);
+INSERT INTO `route_item` VALUES ('TQ5102', 1, 171);
+INSERT INTO `route_item` VALUES ('TQ5202', 1, 172);
+INSERT INTO `route_item` VALUES ('TQ5402', 1, 173);
+INSERT INTO `route_item` VALUES ('TQ5502', 1, 174);
+INSERT INTO `route_item` VALUES ('TQ5201', 1, 175);
+INSERT INTO `route_item` VALUES ('TQ5501', 1, 176);
+INSERT INTO `route_item` VALUES ('TQ5601', 1, 177);
+INSERT INTO `route_item` VALUES ('TQ5701', 1, 178);
+INSERT INTO `route_item` VALUES ('TQ5200', 1, 179);
+INSERT INTO `route_item` VALUES ('TQ5700', 1, 180);
+INSERT INTO `route_item` VALUES ('TQ5800', 1, 181);
+INSERT INTO `route_item` VALUES ('TV5199', 1, 182);
+INSERT INTO `route_item` VALUES ('TV5299', 1, 183);
+INSERT INTO `route_item` VALUES ('TV5899', 1, 184);
+INSERT INTO `route_item` VALUES ('TV5198', 1, 185);
+INSERT INTO `route_item` VALUES ('TV5298', 1, 186);
+INSERT INTO `route_item` VALUES ('TV5898', 1, 187);
+INSERT INTO `route_item` VALUES ('TV5998', 1, 188);
+INSERT INTO `route_item` VALUES ('TV5297', 1, 189);
+INSERT INTO `route_item` VALUES ('TV5397', 1, 190);
+INSERT INTO `route_item` VALUES ('TV5997', 1, 191);
+INSERT INTO `route_item` VALUES ('TV6097', 1, 192);
+INSERT INTO `route_item` VALUES ('TV5396', 1, 193);
+INSERT INTO `route_item` VALUES ('TV5496', 1, 194);
+INSERT INTO `route_item` VALUES ('TV5596', 1, 195);
+INSERT INTO `route_item` VALUES ('TV5996', 1, 196);
+INSERT INTO `route_item` VALUES ('TV5595', 1, 197);
+INSERT INTO `route_item` VALUES ('TV5695', 1, 198);
+INSERT INTO `route_item` VALUES ('TV5795', 1, 199);
+INSERT INTO `route_item` VALUES ('TV5895', 1, 200);
+INSERT INTO `route_item` VALUES ('TV5995', 1, 201);
+        
+#to allow efficient joins with route - should help many other searches too
+ALTER TABLE `gridimage_search` ADD INDEX ( `grid_reference` ) ;
