@@ -26,7 +26,7 @@
 {if $pos_realname}
 <br/>
 <input type="radio" name="{$multipleon}" value="user:{$pos_user_id}" id="douser">
-<label for="douser"><i>Perform a search for pictures taken by '<a href="/profile.php?u={$pos_user_id}" title="profile for $pos_realname">{$pos_realname}</a>'</i></label> <br/>		
+<label for="douser"><i>Perform a search for pictures taken by '<a href="/profile.php?u={$pos_user_id}" title="profile for {$pos_realname}">{$pos_realname}</a>'</i></label> <br/>		
 {/if}
 
 <br/>
