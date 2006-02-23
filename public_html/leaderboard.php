@@ -103,7 +103,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$i=$idx+1;
 			
 		if ($lastimgcount == $entry['imgcount']) {
-			if ($type == 'points')
+			if ($type == 'points' && !$when)
 				$db->query("UPDATE user SET rank = $lastrank,to_rise_rank = $toriserank WHERE user_id = {$entry['user_id']}");
 			if ($i > 50) {
 				unset($topusers[$idx]);
@@ -112,7 +112,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 		} else {
 			$toriserank = ($lastimgcount - $entry['imgcount']);
-			if ($type == 'points')
+			if ($type == 'points' && !$when)
 				$db->query("UPDATE user SET rank = $i,to_rise_rank = $toriserank WHERE user_id = {$entry['user_id']}");
 			if ($i > 50) {
 				unset($topusers[$idx]);
