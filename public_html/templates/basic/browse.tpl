@@ -90,27 +90,58 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 		
 		<li><b>We have 
 		{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
-		{if $totalimagecount && $totalimagecount ne $imagecount}
+		{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}
 			({$totalimagecount} including hidden)
 		{/if}
-		for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"}</b> <span style="font-size:0.8em;">- click for larger version</span></li>
+		for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"}</b>
+		{if !$breakdown && !$breakdowns}
+		<span style="font-size:0.8em;">- click for larger version</span>
+		{/if}
+		</li>
 		</ul>
 		
-		{foreach from=$images item=image}
-		
-		  <div style="float:left;" class="photo33"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a>
-		  <div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
+		{if $breakdown}
+			<p>Because there are so many images for this square, please select images, by {$breakdown_title}:</p>
+			
+			<ul>
+			{foreach from=$breakdown item=b}
+				<li><a href="{$b.link}">{$b.name}</a> [{$b.count}]</li>
+			{/foreach}
+			
+			</ul>
+			
+		{else}
+			{if $breakdowns}
+				<p>Because there are so many images for this square, please select how you would like to view the images</p>
 
-		  <div class="statuscaption">status:
-			{if $image->ftf}first{/if}
-			{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
+				<ul>
+				{foreach from=$breakdowns item=b}
+					<li><a href="/gridref/{$gridref}?by={$b.type}">{$b.name}</a> [{$b.count}]</li>
+				{/foreach}
 
-		  </div>
+				<li style="margin-top:10px;">Or view all images in the <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;do=1" title="View images in {$gridref}">search interface</a>
 
-		{/foreach}
-		
-		<br style="clear:left;"/>&nbsp;
-		
+				</ul>
+
+			{else}
+			{if $filtered}
+				<p>{$totalimagecount} Images, {$filtered_title}... (<a href="/gridref/{$gridref}">Remove Filter</a>)</p>
+			{/if}
+			
+			{foreach from=$images item=image}
+
+				<div style="float:left;" class="photo33"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a>
+				<div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
+				<div class="statuscaption">status:
+				  {if $image->ftf}first{/if}
+				  {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
+				</div>
+
+			{/foreach}
+
+			<br style="clear:left;"/>&nbsp;
+			{/if}
+		{/if}
 
 	{else}
 
