@@ -98,7 +98,12 @@ class SearchEngine
 	{
 		global $USER;
 		
-		$nearstring = ($distance)?sprintf("within %dkm of",$distance):'near';
+		if ($distance == 1) {
+			$nearstring = 'in';
+		} else {
+			$nearstring = ($distance)?sprintf("within %dkm of",$distance):'near';
+		}
+		
 		
 		$limit1 = '';
 		
@@ -209,8 +214,12 @@ class SearchEngine
 		if (empty($dataarray['distance'])) {
 			$dataarray['distance'] = $CONF['default_search_distance'];
 		}
-		$nearstring = sprintf("within %dkm of",$dataarray['distance']);
-			
+		if ($dataarray['distance'] == 1) {
+			$nearstring = 'in';
+		} else {
+			$nearstring = sprintf("within %dkm of",$dataarray['distance']);
+		}
+		
 		$searchdesc = '';
 		if (!empty($dataarray['placename'])) {
 			//check if we actully want to perform a textsearch (it comes through in the placename beucase of the way the multiple mathc page works)
@@ -884,6 +893,9 @@ END;
 			$index = $this->numberOfPages;
 			$r .= "... <a href=\"/{$this->page}?i={$this->query_id}&amp;page=$index\">$index</a> ";
 		}
+		
+		if ($this->pageOneOnly) 
+			$r .= "... ";
 			
 		if ( ($this->numberOfPages > $this->currentPage || $this->pageOneOnly ) && !$this->countOnly) 
 			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage+1)."\">next &gt;&gt;</a> ";
