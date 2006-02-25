@@ -8,7 +8,7 @@
 
 
 <table class="report">
-<thead><tr><td>Position</td><td>Contributor</td><td>Points</td></tr></thead>
+<thead><tr><td>Position</td><td>Contributor</td><td>Numberical Squares</td></tr></thead>
 <tbody>
 
 {foreach from=$topusers item=topuser}
