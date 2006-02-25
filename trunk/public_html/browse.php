@@ -119,19 +119,194 @@ if ($grid_given)
 			$smarty->assign('nearest_gridref', $square->nearest->grid_reference);
 		
 		}
+		$custom_where = '';
+		if (!empty($_GET['user'])) {
+			$custom_where .= " and gi.user_id = ".$_GET['user'];
+			$profile=new GeographUser($_GET['user']);
+			$filtered_title = "by ".($profile->realname);
+		}
+		if (!empty($_GET['class'])) {
+			$custom_where .= " and imageclass = '".$_GET['class']."'";
+			$filtered_title = "categorised as '".$_GET['class']."'";
+		}
+		$iamge = new GridImage();
+		if (!empty($_GET['taken'])) {
+			$custom_where .= " and imagetaken LIKE '".$_GET['taken']."%'";
+			$iamge->imagetaken = $_GET['taken'];
+			$date = $iamge->getFormattedTakenDate();
+			$filtered_title = "Taken in $date";
+		}
+		if (!empty($_GET['takenyear'])) {
+			$custom_where .= " and imagetaken LIKE '".$_GET['takenyear']."%'";
+			$iamge->imagetaken = $_GET['takenyear'];
+			$date = $iamge->getFormattedTakenDate();
+			$filtered_title = "Taken in $date";
+		}
+		if (!empty($_GET['submitted'])) {
+			$custom_where .= " and submitted LIKE '".$_GET['submitted']."%'";
+			$iamge->imagetaken = $_GET['submitted'];
+			$date = $iamge->getFormattedTakenDate();
+			$filtered_title = "Submitted in $date";
+		}
+		if (!empty($_GET['submittedyear'])) {
+			$custom_where .= " and submitted LIKE '".$_GET['submittedyear']."%'";
+			$iamge->imagetaken = $_GET['submittedyear'];
+			$date = $iamge->getFormattedTakenDate();
+			$filtered_title = "Submitted in $date";
+		}
+		if (!empty($_GET['centi'])) {
+			if ($_GET['centi'] == 'unspecified') {
+				$custom_where .= " and nateastings = 0";
+			} else {
+				preg_match('/^[A-Z]{1,2}\d\d(\d)\d\d(\d)$/',$_GET['centi'],$matches);
+				$custom_where .= " and nateastings != 0";//to stop XX0XX0 matching 4fig GRs
+				$custom_where .= " and ((nateastings div 100) mod 10) = ".$matches[1];
+				$custom_where .= " and ((natnorthings div 100) mod 10) = ".$matches[2];
+			}
+			$filtered_title = "in {$_GET['centi']} centisquare";
+		}
+		if ($custom_where) {
+			$smarty->assign('filtered_title', $filtered_title);
+			$smarty->assign('filtered', 1);
+		}
+							
+			
+		if (($square->imagecount > 30 && !isset($_GET['by']) && !$custom_where) || (isset($_GET['by']) && $_GET['by'] == 1)) {
+			$square->totalimagecount = $square->imagecount;
+			
+			$db=NewADOConnection($GLOBALS['DSN']);
+			
+			$row = $db->getRow("SELECT 
+			count(distinct user_id) as user,
+			count(distinct imageclass) as class,
+			count(distinct SUBSTRING(imagetaken,1,7)) as taken,
+			count(distinct SUBSTRING(imagetaken,1,4)) as takenyear,
+			count(distinct SUBSTRING(submitted,1,7)) as submitted,
+			count(distinct SUBSTRING(submitted,1,4)) as submittedyear,
+			count(distinct nateastings DIV 100, natnorthings DIV 100) as centi,
+			sum(nateastings = 0) as centi_blank
+			FROM gridimage
+			WHERE gridsquare_id = '{$square->gridsquare_id}'");
+			
+			$breakdowns = array();
+			$breakdowns[] = array('type'=>'user','name'=>'Contributers','count'=>$row['user']);
+			$breakdowns[] = array('type'=>'class','name'=>'Categories','count'=>$row['class']);
+			$breakdowns[] = array('type'=>'taken','name'=>'Taken Months','count'=>$row['taken']);
+			$breakdowns[] = array('type'=>'takenyear','name'=>'Taken Years','count'=>$row['takenyear']);
+			$breakdowns[] = array('type'=>'submitted','name'=>'Submitted Months','count'=>$row['submitted']);
+			$breakdowns[] = array('type'=>'submittedyear','name'=>'Submitted Years','count'=>$row['submittedyear']);
+			$breakdowns[] = array('type'=>'centi','name'=>'Centi-Squares','count'=>$row['centi']-($row['centi_blank'] > 0));
+			$smarty->assign_by_ref('breakdowns', $breakdowns);
+			
+		} elseif (!empty($_GET['by'])) {
+			$square->totalimagecount = $square->imagecount;
+			
+			$db=NewADOConnection($GLOBALS['DSN']);
+			$old_ADODB_FETCH_MODE =  $ADODB_FETCH_MODE;
+			$ADODB_FETCH_MODE = ADODB_FETCH_NUM;
+			$breakdown = array();
+			$i = 0;				
+			if ($_GET['by'] == 'class') {
+				$breakdown_title = "Category";
+				$all = $db->getAll("SELECT imageclass,count(*),gridimage_id
+				FROM gridimage
+				WHERE gridsquare_id = '{$square->gridsquare_id}'
+				GROUP BY imageclass");
+				foreach ($all as $row) {
+					$breakdown[$i] = array('name'=>"in category <b>{$row[0]}</b>",'count'=>$row[1]);
+					if ($row[1] > 20) {
+						$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;imageclass=".urlencode($row[0])."&amp;do=1";
+					} elseif ($row[1] == 1) {
+						$breakdown[$i]['link']="/photo/{$row[2]}";
+					} else {
+						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?class=".urlencode($row[0]);
+					}
+					$i++;
+				}
+			} elseif ($_GET['by'] == 'user') {
+				$breakdown_title = "Contributer";
+				$all = $db->getAll("SELECT realname,count(*),gridimage_id,user_id
+				FROM gridimage_search
+				WHERE grid_reference = '{$square->grid_reference}'
+				GROUP BY user_id");
+				foreach ($all as $row) {
+					$breakdown[$i] = array('name'=>"contributed by <b>{$row[0]}</b>",'count'=>$row[1]);
+					if ($row[1] > 20) {
+						$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;user_id={$row[3]}&amp;do=1";
+					} elseif ($row[1] == 1) {
+						$breakdown[$i]['link']="/photo/{$row[2]}";
+					} else {
+						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?user={$row[3]}";
+					}
+					$i++;
+				}
+			} elseif ($_GET['by'] == 'centi') {
+				$breakdown_title = "Centisquare<a href=\"/help/squares\">?</a>";
+				$all = $db->getAll("SELECT (nateastings = 0),count(*),gridimage_id,nateastings DIV 100, natnorthings DIV 100
+				FROM gridimage
+				WHERE gridsquare_id = '{$square->gridsquare_id}'
+				GROUP BY nateastings DIV 100, natnorthings DIV 100,(nateastings = 0)");
+				foreach ($all as $row) {
+					if ($row[0]) {
+						$centi = "unspecified";
+					} else {
+						$centi=$square->gridsquare.$square->eastings.($row[3]%10).$square->northings.($row[4]%10);
+					}
+					$breakdown[$i] = array('name'=>"in <b>$centi</b> centisquare",'count'=>$row[1]);
+					if ($row[1] > 2000000) {
+						//todo
+						$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;user_id={$row[3]}&amp;do=1";
+					} elseif ($row[1] == 1) {
+						$breakdown[$i]['link']="/photo/{$row[2]}";
+					} else {
+						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?centi=$centi";
+					}
+					$i++;
+				}
+			} else { //must be a date (unless something has gone wrong!)
+				$length = (preg_match('/year$/',$_GET['by']))?4:7;
+				$column = (preg_match('/^taken/',$_GET['by']))?'imagetaken':'submitted';
+				$title = (preg_match('/^taken/',$_GET['by']))?'Taken':'Submitted';
+				$breakdown_title = "$title".(preg_match('/year$/',$_GET['by']))?'':' Month';
+				$all = $db->getAll("SELECT SUBSTRING($column,1,$length) as date,count(*),gridimage_id
+				FROM gridimage_search
+				WHERE grid_reference = '{$square->grid_reference}'
+				GROUP BY SUBSTRING($column,1,$length)");
+				foreach ($all as $row) {
+					$iamge->imagetaken = $row[0];
+					$date = $iamge->getFormattedTakenDate();
+					$breakdown[$i] = array('name'=>"$title <b>$date</b>",'count'=>$row[1]);
+					if ($row[1] > 20) {
+						$datel = $row[0].substr('-00-00',0, 10-$length);
+
+						$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;{$column}_start=$datel&amp;{$column}_end=$datel&amp;do=1";
+					} elseif ($row[1] == 1) {
+						$breakdown[$i]['link']="/photo/{$row[2]}";
+					} else {
+						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?{$_GET['by']}={$row[0]}";
+					}
+					$i++;
+				}
+			}
+			$ADODB_FETCH_MODE = $old_ADODB_FETCH_MODE;
+			if (!empty($breakdown_title))
+				$smarty->assign_by_ref('breakdown_title', $breakdown_title);
+			if (count($breakdown))
+				$smarty->assign_by_ref('breakdown', $breakdown);
+		} else {
+			$images=$square->getImages($USER->user_id,$custom_where);
+			$square->totalimagecount = count($images);
 		
-		$images=$square->getImages($USER->user_id);
-		$square->totalimagecount = count($images);
-		
-		//otherwise, lets gether the info we need to display some thumbs
-		if ($square->totalimagecount)
-		{
-			$smarty->assign_by_ref('images', $images);
+			//otherwise, lets gether the info we need to display some thumbs
+			if ($square->totalimagecount)
+			{
+				$smarty->assign_by_ref('images', $images);
+			}
 		}
 		
 		$smarty->assign('totalimagecount', $square->totalimagecount);
 		
-		if ($square->totalimagecount < 30) {
+		if ($square->totalimagecount < 10) {
 			$smarty->assign('thumbw',213);
 			$smarty->assign('thumbh',160);
 		} else {
