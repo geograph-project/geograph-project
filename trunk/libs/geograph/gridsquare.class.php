@@ -662,16 +662,16 @@ class GridSquare
 		return $places;
 	}
 	
-	function &getImages($inc_all_user = false)
+	function &getImages($inc_all_user = false,$custom_where_sql = '')
 	{
 		$db=&$this->_getDB();
 		$images=array();
 		
 		$i=0;
-		$recordSet = &$db->Execute("select gridimage.*,user.realname ".
-			"from gridimage ".
+		$recordSet = &$db->Execute("select gi.*,user.realname ".
+			"from gridimage gi ".
 			"inner join user using(user_id) ".
-			"where gridsquare_id={$this->gridsquare_id} ".
+			"where gridsquare_id={$this->gridsquare_id} $custom_where_sql ".
 			"and (moderation_status in ('accepted', 'geograph') ".
 			($inc_all_user?"or user.user_id = $inc_all_user":'').") ".
 			"order by moderation_status+0 desc,seq_no");
