@@ -308,7 +308,7 @@ if (isset($_GET['fav']) ) {
 		} else {
 			$smarty->assign('user_id', $query['limit1']);
 		}
-		$smarty->assign('moduration_status', $query['limit2']);
+		$smarty->assign('moderation_status', $query['limit2']);
 		$smarty->assign('imageclass', $query['limit3']);
 		$smarty->assign('reference_index', $query['limit4']);
 		$smarty->assign('gridsquare', $query['limit5']);

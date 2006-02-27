@@ -352,9 +352,9 @@ class SearchEngine
 				$profile=new GeographUser($dataarray['user_id']);
 				$searchdesc .= ",".(!empty($dataarray['user_invert_ind'])?' not':'')." by ".($profile->realname);
 			}
-			if (!empty($dataarray['moduration_status'])) {
-				$sql .= ",limit2 = ".$db->Quote($dataarray['moduration_status']);
-				$searchdesc .= ", showing ".$imagestatuses[$dataarray['moduration_status']]." images";
+			if (!empty($dataarray['moderation_status'])) {
+				$sql .= ",limit2 = ".$db->Quote($dataarray['moderation_status']);
+				$searchdesc .= ", showing ".$imagestatuses[$dataarray['moderation_status']]." images";
 			}
 			if (!empty($dataarray['imageclass'])) {
 				if ($dataarray['imageclass'] == '-') {
@@ -518,8 +518,8 @@ class SearchEngine
 				$profile=new GeographUser($dataarray['user_id']);
 				$searchdesc .= ",".($dataarray['user_invert_ind']?' not':'')." by ".($profile->realname);
 			}
-			if ($dataarray['moduration_status']) {
-				$searchdesc .= ", showing ".$imagestatuses[$dataarray['moduration_status']]." images";
+			if ($dataarray['moderation_status']) {
+				$searchdesc .= ", showing ".$imagestatuses[$dataarray['moderation_status']]." images";
 			}
 			if ($dataarray['imageclass']) {
 				$searchdesc .= ", classifed as ".$dataarray['imageclass'];
