@@ -125,6 +125,17 @@ if ($grid_given)
 			$profile=new GeographUser($_GET['user']);
 			$filtered_title = "by ".($profile->realname);
 		}
+		if (!empty($_GET['status'])) {
+			$filtered_title = "moderated as '".$_GET['status']."'";
+			if (preg_match('/^first /',$_GET['status'])) {
+				$_GET['status'] = preg_match('/^first /','',$_GET['status']);
+				$custom_where .= " and ftf = 1";
+			} else {
+				$custom_where .= " and ftf = 0";
+			}
+			$_GET['status'] = str_replace('supplemental','accepted',$_GET['status']);
+			$custom_where .= " and moderation_status = '".$_GET['status']."'";
+		}
 		if (!empty($_GET['class'])) {
 			$custom_where .= " and imageclass = '".$_GET['class']."'";
 			$filtered_title = "categorised as '".$_GET['class']."'";
@@ -169,7 +180,9 @@ if ($grid_given)
 			$smarty->assign('filtered_title', $filtered_title);
 			$smarty->assign('filtered', 1);
 		}
-							
+			
+		$user_crit = $USER->user_id?" or gridimage.user_id = {$USER->user_id}":'';
+				
 			
 		if (($square->imagecount > 30 && !isset($_GET['by']) && !$custom_where) || (isset($_GET['by']) && $_GET['by'] == 1)) {
 			$square->totalimagecount = $square->imagecount;
@@ -183,10 +196,12 @@ if ($grid_given)
 			count(distinct SUBSTRING(imagetaken,1,4)) as takenyear,
 			count(distinct SUBSTRING(submitted,1,7)) as submitted,
 			count(distinct SUBSTRING(submitted,1,4)) as submittedyear,
+			count(distinct CONCAT(ELT(ftf+1, '','first '),moderation_status)) as status,
 			count(distinct nateastings DIV 100, natnorthings DIV 100) as centi,
 			sum(nateastings = 0) as centi_blank
 			FROM gridimage
-			WHERE gridsquare_id = '{$square->gridsquare_id}'");
+			WHERE gridsquare_id = '{$square->gridsquare_id}'
+			AND (moderation_status in ('accepted', 'geograph') $user_crit)");
 			
 			$breakdowns = array();
 			$breakdowns[] = array('type'=>'user','name'=>'Contributers','count'=>$row['user']);
@@ -195,6 +210,7 @@ if ($grid_given)
 			$breakdowns[] = array('type'=>'takenyear','name'=>'Taken Years','count'=>$row['takenyear']);
 			$breakdowns[] = array('type'=>'submitted','name'=>'Submitted Months','count'=>$row['submitted']);
 			$breakdowns[] = array('type'=>'submittedyear','name'=>'Submitted Years','count'=>$row['submittedyear']);
+			$breakdowns[] = array('type'=>'status','name'=>'Status','count'=>$row['status']);
 			$breakdowns[] = array('type'=>'centi','name'=>'Centisquares','count'=>$row['centi']-($row['centi_blank'] > 0));
 			$smarty->assign_by_ref('breakdowns', $breakdowns);
 			
@@ -205,12 +221,14 @@ if ($grid_given)
 			$old_ADODB_FETCH_MODE =  $ADODB_FETCH_MODE;
 			$ADODB_FETCH_MODE = ADODB_FETCH_NUM;
 			$breakdown = array();
-			$i = 0;				
+			$i = 0;		
+			
 			if ($_GET['by'] == 'class') {
 				$breakdown_title = "Category";
 				$all = $db->getAll("SELECT imageclass,count(*),gridimage_id
 				FROM gridimage
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
+				AND (moderation_status in ('accepted', 'geograph') $user_crit )
 				GROUP BY imageclass");
 				foreach ($all as $row) {
 					$breakdown[$i] = array('name'=>"in category <b>{$row[0]}</b>",'count'=>$row[1]);
@@ -223,11 +241,38 @@ if ($grid_given)
 					}
 					$i++;
 				}
+			} elseif ($_GET['by'] == 'status') {
+				$breakdown_title = "Status";
+				$all = $db->getAll("SELECT CONCAT(ELT(ftf+1, '','first '),moderation_status),count(*),gridimage_id
+				FROM gridimage
+				WHERE gridsquare_id = '{$square->gridsquare_id}'
+				AND (moderation_status in ('accepted', 'geograph') $user_crit )
+				GROUP BY CONCAT(ELT(ftf+1, '','first '),moderation_status) 
+				ORDER BY ftf DESC,moderation_status+0 DESC");
+				foreach ($all as $row) {
+					$rowname = str_replace('accepted','supplemental',$row[0]);
+					$breakdown[$i] = array('name'=>"<b>{$rowname}</b>",'count'=>$row[1]);
+					if ($row[1] > 20) {
+						$row[0] = str_replace('first ','',$row[0]);//we have to ignore it for now!
+						if ($row[0] == 'pending' || $row[0] == 'rejected') {
+							$breakdown[$i]['link']="/profile.php?u={$USER->user_id}";
+						} else {
+							$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;moderation_status=".urlencode($row[0])."&amp;do=1";
+						}
+					} elseif ($row[1] == 1) {
+						$breakdown[$i]['link']="/photo/{$row[2]}";
+					} else {
+						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?status=".urlencode($row[0]);
+					}
+					$i++;
+				}
 			} elseif ($_GET['by'] == 'user') {
 				$breakdown_title = "Contributer";
-				$all = $db->getAll("SELECT realname,count(*),gridimage_id,user_id
-				FROM gridimage_search
-				WHERE grid_reference = '{$square->grid_reference}'
+				$all = $db->getAll("SELECT realname,count(*),gridimage_id,gridimage.user_id
+				FROM gridimage
+				INNER JOIN user USING(user_id)
+				WHERE gridsquare_id = '{$square->gridsquare_id}'
+				AND (moderation_status in ('accepted', 'geograph') $user_crit )
 				GROUP BY user_id");
 				foreach ($all as $row) {
 					$breakdown[$i] = array('name'=>"contributed by <b>{$row[0]}</b>",'count'=>$row[1]);
@@ -245,6 +290,7 @@ if ($grid_given)
 				$all = $db->getAll("SELECT (nateastings = 0),count(*),gridimage_id,nateastings DIV 100, natnorthings DIV 100
 				FROM gridimage
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
+				AND (moderation_status in ('accepted', 'geograph') $user_crit )
 				GROUP BY nateastings DIV 100, natnorthings DIV 100,(nateastings = 0)");
 				foreach ($all as $row) {
 					if ($row[0]) {
@@ -270,7 +316,8 @@ if ($grid_given)
 				$breakdown_title = "$title".(preg_match('/year$/',$_GET['by']))?'':' Month';
 				$all = $db->getAll("SELECT SUBSTRING($column,1,$length) as date,count(*),gridimage_id
 				FROM gridimage_search
-				WHERE grid_reference = '{$square->grid_reference}'
+				WHERE gridsquare_id = '{$square->gridsquare_id}'
+				AND (moderation_status in ('accepted', 'geograph') $user_crit )
 				GROUP BY SUBSTRING($column,1,$length)");
 				foreach ($all as $row) {
 					$iamge->imagetaken = $row[0];
