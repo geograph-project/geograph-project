@@ -37,12 +37,12 @@
 
 {if $users}
 <table class="report"> 
-<thead><tr><td>Last Submission</td><td>Contributor</td><td>Photos</td></tr></thead>
+<thead><tr><td>Contributor</td><td>Last Submission</td><td>First Geographs</td><td>Days</td><td>Categories</td></tr></thead>
 <tbody>
 
 {foreach from=$users key=id item=obj}
-<tr><td>{$obj.last_date}</td><td><a title="View map for {$obj.tenk_square}" href="/profile.php?u={$obj.user_id}">{$obj.realname}</a></td>
-<td align="right" >{$obj.count}</td></tr>
+<tr><td><a title="View profile for {$obj.realname}" href="/profile.php?u={$obj.user_id}">{$obj.realname}</a></td><td>{$obj.last_date}</td>
+<td align="right">{$obj.count}</td><td align="right">{$obj.days}</td><td align="right">{$obj.categories}</td></tr>
 {/foreach}
 
 </tbody>
@@ -51,9 +51,9 @@
 <small><small>* there is a known problem with this list, it might not add up to the correct total, apologies but we hope to resume normal service shortly...</small></small>
 {if $mosaic->pixels_per_km > 40} 
 <p style="clear:both"/>View <a href="/search.php?first={$gridref2}">First Geographs for {$gridref2} in Reverse Date Submitted Order</a>.</p>
-{/if}
 {else}
 <br style="clear:both"/>
+{/if}
 {/if} 
- 
+ <div><a href="/mapprint.php?t={$mosaic_token}">Printable version of this map</a></div>
 {include file="_std_end.tpl"}
