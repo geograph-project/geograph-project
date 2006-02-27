@@ -87,11 +87,11 @@
 				</select> <input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="moduration_status">status</label></td> 
+			 <td><label for="moderation_status">status</label></td> 
 			 <td> 
-				<select name="moduration_status" id="moduration_status" size="1" class="searchinput"> 
+				<select name="moderation_status" id="moderation_status" size="1" class="searchinput"> 
 				  <option value=""> </option> 
-					{html_options options=$imagestatuses selected=$moduration_status}				  
+					{html_options options=$imagestatuses selected=$moderation_status}				  
 				</select></td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
