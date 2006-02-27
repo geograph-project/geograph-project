@@ -163,7 +163,7 @@ if ($grid_given)
 				$custom_where .= " and ((nateastings div 100) mod 10) = ".$matches[1];
 				$custom_where .= " and ((natnorthings div 100) mod 10) = ".$matches[2];
 			}
-			$filtered_title = "in {$_GET['centi']} centisquare";
+			$filtered_title = "in {$_GET['centi']} Centisquare<a href=\"/help/squares\">?</a>";
 		}
 		if ($custom_where) {
 			$smarty->assign('filtered_title', $filtered_title);
@@ -195,7 +195,7 @@ if ($grid_given)
 			$breakdowns[] = array('type'=>'takenyear','name'=>'Taken Years','count'=>$row['takenyear']);
 			$breakdowns[] = array('type'=>'submitted','name'=>'Submitted Months','count'=>$row['submitted']);
 			$breakdowns[] = array('type'=>'submittedyear','name'=>'Submitted Years','count'=>$row['submittedyear']);
-			$breakdowns[] = array('type'=>'centi','name'=>'Centi-Squares','count'=>$row['centi']-($row['centi_blank'] > 0));
+			$breakdowns[] = array('type'=>'centi','name'=>'Centisquares','count'=>$row['centi']-($row['centi_blank'] > 0));
 			$smarty->assign_by_ref('breakdowns', $breakdowns);
 			
 		} elseif (!empty($_GET['by'])) {
@@ -331,7 +331,21 @@ if ($grid_given)
 	}
 	else
 	{
-		$smarty->assign('errormsg', $square->errormsg);		
+		$smarty->assign('errormsg', $square->errormsg);	
+		
+		//includes a closest match?
+		if (is_object($square->nearest))
+		{
+			$smarty->assign('nearest_distance', $square->nearest->distance);
+			$smarty->assign('nearest_gridref', $square->nearest->grid_reference);
+		
+			if (!empty($square->x) && !empty($square->y) && $square->nearest->distance < 15) {
+				//we where still able to work out the location, so
+				//get a token to show a suroudding geograph map
+				$mosaic=new GeographMapMosaic;
+				$smarty->assign('map_token', $mosaic->getGridSquareToken($square));
+			}
+		}
 	}
 }
 else
