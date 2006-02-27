@@ -125,7 +125,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		$right=$left + floor($mosaic->image_w/$mosaic->pixels_per_km)-1;
 		$top=$bottom + floor($mosaic->image_h/$mosaic->pixels_per_km)-1;
 
-$sql="SELECT user_id,realname,COUNT(*) AS count,DATE_FORMAT(MAX(submitted),'%D %b %Y') as last_date
+$sql="SELECT user_id,realname,
+COUNT(*) AS count,
+DATE_FORMAT(MAX(submitted),'%D %b %Y') as last_date,
+count(distinct imagetaken) as days,
+count(distinct imageclass) as categories
 FROM 
 	gridimage_search
 WHERE 
