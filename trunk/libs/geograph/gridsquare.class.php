@@ -666,7 +666,7 @@ class GridSquare
 		return $places;
 	}
 	
-	function &getImages($inc_all_user = false,$custom_where_sql = '')
+	function &getImages($inc_all_user = false,$custom_where_sql = '',$order_and_limit = 'order by moderation_status+0 desc,seq_no')
 	{
 		$db=&$this->_getDB();
 		$images=array();
@@ -678,7 +678,7 @@ class GridSquare
 			"where gridsquare_id={$this->gridsquare_id} $custom_where_sql ".
 			"and (moderation_status in ('accepted', 'geograph') ".
 			($inc_all_user?"or user.user_id = $inc_all_user":'').") ".
-			"order by moderation_status+0 desc,seq_no");
+			$order_and_limit);
 		while (!$recordSet->EOF) 
 		{
 			$images[$i]=new GridImage;
