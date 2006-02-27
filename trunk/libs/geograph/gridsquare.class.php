@@ -533,6 +533,10 @@ class GridSquare
 					
 					//ensure we initialise ourselves properly
 					$this->loadFromId($gridimage_id);
+				} else {
+					//as we calculated it might as well return it in case useful...
+					$this->x = $x;
+					$this->y = $y;
 				}
 			
 				//we know there are no images, so lets find some nearby squares...
