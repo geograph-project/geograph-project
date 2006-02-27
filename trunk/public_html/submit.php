@@ -288,7 +288,7 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('lat', $lat);
 			$smarty->assign('long', $long);
 
-			$images=$square->getImages($USER->user_id);
+			$images=$square->getImages($USER->user_id,'',"order by submitted desc limit 6");
 			$square->totalimagecount = count($images);
 			$smarty->assign('totalimagecount', $square->totalimagecount);
 				
