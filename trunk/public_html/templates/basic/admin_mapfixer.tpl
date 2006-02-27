@@ -6,16 +6,16 @@
 
 {if !$gridref}
 {foreach from=$unknowns item=unknown}
-	{if strlen($unknown.grid_reference) == 6}
-		{assign var="gbtofix" value="1"}
+	{if strlen($unknown.grid_reference) == 6 || $unknown.lat}
+		{assign var="tofix" value="1"}
 	{/if}
 {/foreach}
 {/if}
-{if $gridref_ok || $gbtofix}
+{if $gridref_ok || $tofix}
 <div style="border:2px silver solid;background:#eeeeee;padding:10px;">
 
 <div>This instant map updater requires no screen refresh to work - simply
-check the OS map and vote on the land percentage{if $gbtofix} and a new square will
+check the OS map and vote on the land percentage{if $tofix} and a new square will
 be opened up for processing{/if}.</div>
 
 <span id="landvote" style="display:none">
