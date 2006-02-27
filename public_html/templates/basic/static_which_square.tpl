@@ -9,7 +9,7 @@ unsure of which square to submit to.</p>
 
 <h3 style="background:#bbbbbb; padding:5px;">Closeup Shots</h3>
 
-<p style="background:#dddddd; padding:5px;font-weight:bold;">Photos of builings etc...</p>
+<p style="background:#dddddd; padding:5px;font-weight:bold;">Photos of buildings etc...</p>
 <ul>
 <li>Should be submitted for the subject location.</li>
 <li>If you can specify the photographer position then please do so (if
