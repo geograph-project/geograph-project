@@ -205,6 +205,17 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
    		</p>
    		</form>
    	{/if}
+{else}
+	<ul>
+	{if $nearest_distance}
+		<li>The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away<br/><br/></li>
+	{/if}
+		
+	{if $map_token}
+		<li>You may still be able to view the <a href="/mapbrowse.php?t={$map_token}" title="Geograph map for {$gridref}">Map</a> for this square.</li>
+	{/if}
+	</ul>
+	
 {/if}
 
 {/dynamic}
