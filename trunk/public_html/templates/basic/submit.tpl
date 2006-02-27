@@ -162,9 +162,8 @@ geographing</a> first.</p>
 	{if $totalimagecount gt 0}
 	<br/>
 	<div style="background-color:#eeeeee; padding:10px;">
-		{if $imagecount gt 5 || $totalimagecount == 5}
-			<div><b>Latest {$totalimagecount} images for this square...</b></div>
-		{/if}
+		<div><b>Latest {$totalimagecount} images for this square...</b></div>
+
 	{foreach from=$images item=image}
 
 	  <div class="photo33" style="float:left;width:150px; background-color:white"><a title="{$image->title|escape:'html'} by {$image->realname} - click to view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(120,120,false,true)}</a>
@@ -178,11 +177,11 @@ geographing</a> first.</p>
 	{/foreach}
 	<br style="clear:both"/>
 	
-	{if $imagecount gt 5 || $totalimagecount == 5}
+	{if $imagecount gt 6 || $totalimagecount == 6}
 		<div>See <a href="/gridref/{$gridref}" target="_blank">all {$imagecount} images for {$gridref}</a> (opens in new window)</div>
-	{/if}
+	{/if}&nbsp;
 	</div>
-	&nbsp;
+	
 	{/if}	
 {else}
 	<input type="hidden" name="viewpoint_gridreference" value="{$viewpoint_gridreference|escape:'html'}">
