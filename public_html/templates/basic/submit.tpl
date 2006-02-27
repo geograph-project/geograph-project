@@ -103,7 +103,7 @@ geographing</a> first.</p>
 	{/if}
 		{if $imagecount gt 0}
 			<p style="color:#440000">We already have 
-			{if $imagecount eq 1}an image{else}{$imagecount} images{/if} {if $totalimagecount && $totalimagecount ne $imagecount} ({$totalimagecount} including hidden){/if} (shown below)
+			{if $imagecount eq 1}an image{else}{$imagecount} images{/if} {if $totalimagecount && $totalimagecount > $imagecount} ({$totalimagecount} including hidden){/if} (preview shown below)
 			uploaded for <a title="View Images for {$gridref} (opens in new window)" href="/gridref/{$gridref}" target="_blank">{$gridref}</a>, but you are welcome to upload 
 			another one.</p>
 		{else}
@@ -160,19 +160,28 @@ geographing</a> first.</p>
 	<br style="clear:right"/>
 
 	{if $totalimagecount gt 0}
+	<br/>
+	<div style="background-color:#eeeeee; padding:10px;">
+		{if $imagecount gt 5 || $totalimagecount == 5}
+			<div><b>Latest {$totalimagecount} images for this square...</b></div>
+		{/if}
 	{foreach from=$images item=image}
 
-	  <div class="photo33" style="float:left;width:150px"><a title="{$image->title|escape:'html'} by {$image->realname} - click to view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(120,120,false,true)}</a>
+	  <div class="photo33" style="float:left;width:150px; background-color:white"><a title="{$image->title|escape:'html'} by {$image->realname} - click to view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(120,120,false,true)}</a>
 	  <div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->title|escape:'html'}</a></div>
 	  <div class="statuscaption">status:
 		{if $image->ftf}first{/if}
 		{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}
 	  </div>
-	  </div>
-		
+	  </div>		
 
 	{/foreach}
 	<br style="clear:both"/>
+	
+	{if $imagecount gt 5 || $totalimagecount == 5}
+		<div>See <a href="/gridref/{$gridref}" target="_blank">all {$imagecount} images for {$gridref}</a> (opens in new window)</div>
+	{/if}
+	</div>
 	&nbsp;
 	{/if}	
 {else}
