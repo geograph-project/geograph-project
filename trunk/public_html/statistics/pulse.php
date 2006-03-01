@@ -33,6 +33,9 @@ $cacheid='pulse';
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 600; //10min cache
 
+if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
+	$smarty->clear_cache($template, $cacheid);
+
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db=NewADOConnection($GLOBALS['DSN']);
@@ -74,10 +77,10 @@ if (!$smarty->is_cached($template, $cacheid))
 			if (!feof($f)) {
 				$buffer = fgets($f, 1024);
 				$loads = explode(" ",$buffer);
-				$load=sprintf("%d",$loads[0]*10);
+				$load = (float)$loads[0];
 				
 				$name = "Hamster's currently sweating*";
-				$table[] = array("Parameter"=>$name,"Value"=>$load);
+				$table[] = array("Parameter"=>$name,"Value"=>sprintf("%d",$load*10));
 				$smarty->assign("footnote","<p>* below 10 is good, above 20 is worse, above 40 is bad.</p>");
 			}
 			fclose($f);			
