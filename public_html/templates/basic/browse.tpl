@@ -91,7 +91,7 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 		<li><b>We have 
 		{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
 		{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}
-			({$totalimagecount} including hidden)
+			(and {$totalimagecount-$imagecount} hidden)
 		{/if}
 		for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"}</b>
 		{if !$breakdown && !$breakdowns}
