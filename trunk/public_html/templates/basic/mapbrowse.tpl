@@ -164,12 +164,16 @@
   <tr><!-- row 6 -->
    <td colspan="4" style="background:#6476fc;font-size:0.8em;text-align:center;" align="center">
    
-   <div style="line-height:1em;padding-top:2px;">Grid Reference at centre
+   <div style="line-height:1em;padding-top:2px;">
+   {if substr($gridref, -1, 1) == '5' && substr(substr($gridref, -3, 3), 0, 1) == '5'}</b>
+   Hectad<a href="/help/squares">?</a> <b>{$gridref|regex_replace:"/([A-Z]+\d)\d(\d)\d/":"\\1\\2"}</b>  
+   (<a style="color:#000066" href="/search.php?q={$gridref}" title="Search for images centered around {$gridref}">search</a>)
+   {else}Grid Reference at centre
  {if $token_zoomout}
  <a style="color:#000066" href="/search.php?q={$gridref}" title="Search for images centered around {$gridref}">{$gridref}</a>
  {else}
  {$gridref}
- {/if}</div>
+ {/if}{/if}</div>
  
   <div style="line-height:1em;padding-top:6px;">Map width <b>{$mapwidth}&nbsp;<small>km</small></b></div>
  
