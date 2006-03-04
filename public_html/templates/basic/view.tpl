@@ -213,7 +213,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <a href="/mapbrowse.php?t={$map_token}">Geograph Map</a>,
 
-{getamap gridref=$image->grid_reference text="OS Get-a-Map"},
+{getamap gridref=$image->subject_gridref text="OS Get-a-Map"},
 
 {if $image->grid_square->reference_index eq 1}
 	{assign var="urltitle" value=$image->title|escape:'url'}
