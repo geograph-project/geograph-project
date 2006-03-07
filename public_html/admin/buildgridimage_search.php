@@ -60,12 +60,13 @@ if (isset($_POST['recreate']))
 	
 	$db->Execute("TRUNCATE gridimage_search");
 	
+	
 	$db->Execute("INSERT INTO gridimage_search
 		SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, user.realname,reference_index,comment,0,0,ftf,seq_no
 		FROM gridimage AS gi
 		INNER JOIN gridsquare AS gs
-		USING ( gridsquare_id ) 
-		INNER JOIN user ON ( gi.user_id = user.user_id ) 
+		USING ( gridsquare_id )
+		INNER JOIN user ON ( gi.user_id = user.user_id )
 		WHERE moderation_status in ('accepted','geograph') ");
 	echo "<p>Rebuild completed</p>";
 	
@@ -73,16 +74,15 @@ if (isset($_POST['recreate']))
 
 if (isset($_POST['update']))
 {
-	
 	echo "<h3>Updating Lat/Long</h3>";
 	flush();
-	
+
 	$start = time();
 
-	$recordSet = &$db->Execute("select gridimage_id,x,y,reference_index,nateastings,natnorthings ". 
-		"from gridimage ".
-		"INNER JOIN gridsquare AS gs USING ( gridsquare_id ) ".
-		"where moderation_status != 'rejected'");
+	$recordSet = &$db->Execute("select gridimage_id,x,y,reference_index,nateastings,natnorthings
+		from gridimage
+		INNER JOIN gridsquare AS gs USING ( gridsquare_id )
+		where moderation_status != 'rejected'");
 	$count=0;
 	while (!$recordSet->EOF) 
 	{
