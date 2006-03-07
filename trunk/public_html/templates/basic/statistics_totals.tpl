@@ -45,14 +45,14 @@
 <li><b>{$count.loc_towns}</b> important towns for map plotting</li>
 </ul>
 
-<p>Files Genetated:</p>
+<p>Files Genetated: (each accessed many times)</p>
 
 <ul>
 <li><b>{$count.mapcache}</b> rendered map tiles</li>
-<li><b>{$files.rss}</b> syndicated feeds</li>
-<li><b>{$files.memorymap}</b> memorymap feeds</li>
+<li><b>{$files.rss}</b> different syndicated feeds</li>
+<li><b>{$files.memorymap}</b> different memorymap feeds</li>
 <li><b>{$files.tpcompiled}</b> page templates (made of <b>{$files.tpraw}</b> components)</li>
-<li><b>{$files.tpcache}</b> rendered pages</li>
+<li><b>{$files.tpcache}</b> different rendered pages</li>
 </ul>
 
 <br style="clear:both"/>
