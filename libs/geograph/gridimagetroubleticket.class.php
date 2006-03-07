@@ -255,7 +255,11 @@ class GridImageTroubleTicket
 			if ($fieldname=="grid_reference")
 			{
 				$ok=$img->reassignGridsquare($newvalue, $err);
-				if (!$ok)
+				if ($ok)
+				{
+					$this->commit_count++;
+				} 
+				else 
 				{
 					die("Sorry, wasn't expecting reassignGridsquare to fail ($err) please contact us for assistance");
 				}
