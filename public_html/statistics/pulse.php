@@ -57,10 +57,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	calc("Images Submitted in last 24 hours",$sql);
 
 	$sql = "select count(*) from sessions";
-	calc("Visitors in last 25 minutes",$sql);
+	calc("Visitors in last 24 minutes",$sql);
 	
 	$sql = "select count(distinct user_id)-1 from autologin where created > date_sub(now(), interval 1 hour)";
-	calc("Regular Users active in last hour",$sql);
+	calc("Regular Users visited in last hour",$sql);
 
 	$sql = "SELECT COUNT(*) FROM geobb_posts WHERE post_time > DATE_SUB(NOW() , interval 1 HOUR)";
 	calc("Forum Posts in last hour",$sql);
