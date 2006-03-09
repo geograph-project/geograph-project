@@ -12,29 +12,29 @@
     <h2>Browse</h2>
 
 {if $showresult}
-<div style="float: right; position:relative;">
-<table border="1" cellspacing="0">
-<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}">NW</a></td>
-<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}">N</a></td>
-<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}">NE</a></td></tr>
-<tr><td><a href="/browse.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}">W</a></td>
-<td><b>Go</b></td>
-<td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}">E</a></td></tr>
-<tr><td><a href="/browse.php?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}">SW</a></td>
-<td align="center"><a href="/browse.php?p={math equation="900*(y-1)+900-(x)" x=$x y=$y}">S</a></td>
-<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}">SE</a></td></tr>
-</table>
-</div>
+	<div style="float: right; position:relative;">
+	<table border="1" cellspacing="0">
+	<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}">NW</a></td>
+	<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}">N</a></td>
+	<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}">NE</a></td></tr>
+	<tr><td><a href="/browse.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}">W</a></td>
+	<td><b>Go</b></td>
+	<td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}">E</a></td></tr>
+	<tr><td><a href="/browse.php?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}">SW</a></td>
+	<td align="center"><a href="/browse.php?p={math equation="900*(y-1)+900-(x)" x=$x y=$y}">S</a></td>
+	<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}">SE</a></td></tr>
+	</table>
+	</div>
 {else}
-<p>You can view a particular grid square below - if the square hasn't been filled yet,
-we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Ordnance Survey Get-a-Map'} to help locate your grid square)</p>
+	<p>You can view a particular grid square below - if the square hasn't been filled yet,
+	we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Ordnance Survey Get-a-Map'} to help locate your grid square)</p>
 {/if}
 
 <form action="/browse.php" method="get">
 <div>
 
 	<label for="gridref">Enter grid reference (e.g. SY9582)</label>
-	<input id="gridref" type="text" name="gridref" value="{$gridref|escape:'html'}" size="8"/>
+	<input id="gridref" type="text" name="gridref" value="{$gridrefraw|escape:'html'}" size="8"/>
 	<input type="submit" name="setref" value="Show &gt;"/>
 
 	
@@ -71,48 +71,50 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 
 {/if}
 {if $showresult}
-
-
-
+	{* We have a valid GridRef *}
 
 	{if $totalimagecount}
+		{* There are some thumbnails to display *}
+		
 		<ul>
 		<li>{$gridref} : 
+		{if !$breakdown && !$breakdowns && !$filtered && $totalimagecount > 1}
+			[<a href="/gridref/{$gridref}?by=1">breakdown</a>]
+		{/if}
 		[<a href="/submit.php?gridreference={$gridrefraw}" title="Submit image for $gridref">submit</a>]
 		[<a href="/search.php?q={$gridref}" title="Search for other nearby images">search</a>]
 		[<a href="/discuss/index.php?gridref={$gridref}" title="discussion about $gridref">discuss</a>] 
 		{if $totalimagecount > 5}
-		[<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show">slide Show</a>]
+			[<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show">slide Show</a>]
 		{/if}
 		[<a href="/mapbrowse.php?t={$map_token}" title="Geograph map for {$gridref}">map</a>]
-		[<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}">check sheet</a>]<br/><br/></li>
+		[<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}">check sheet</a>]<br/><br/></li>
+		
 		
 		
 		<li><b>We have 
-		{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
-		{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}
-			(and {$totalimagecount-$imagecount} hidden)
-		{/if}
-		for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"}</b>
-		{if !$breakdown && !$breakdowns}
-		<span style="font-size:0.8em;">- click for larger version</span>
-		{/if}
+			{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
+			{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
+			for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"}</b>
+			{if !$breakdown && !$breakdowns}<span style="font-size:0.8em;">- click for larger version</span>{/if}
 		</li>
 		</ul>
 		
 		{if $breakdown}
-			<p>Because there are so many images for this square, please select images, by {$breakdown_title}:</p>
+			{* We want to display a breakdown list *}
+			
+			<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images, by {$breakdown_title}:</p>
 			
 			<ul>
 			{foreach from=$breakdown item=b}
 				<li><a href="{$b.link}">{$b.name}</a> [{$b.count}]</li>
-			{/foreach}
-			
-			</ul>
-			
+			{/foreach}			
+			</ul>	
 		{else}
 			{if $breakdowns}
-				<p>Because there are so many images for this square, please select how you would like to view the images</p>
+				{* We want to choose a breakdown criteria to show *}
+				
+				<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select how you would like to view the images</p>
 
 				<ul>
 				{foreach from=$breakdowns item=b}
@@ -122,29 +124,27 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 				<li style="margin-top:10px;">Or view all images in the <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;do=1" title="View images in {$gridref}">search interface</a>
 
 				</ul>
-
 			{else}
-			{if $filtered}
-				<p>{$totalimagecount} Images, {$filtered_title}... (<a href="/gridref/{$gridref}">Remove Filter</a>)</p>
-			{/if}
-			
-			{foreach from=$images item=image}
+				{* Display some actual thumbnails *}
+				
+				{if $filtered}
+					<p>{$totalimagecount} Images, {$filtered_title}... (<a href="/gridref/{$gridref}">Remove Filter</a>)</p>
+				{/if}
 
-				<div style="float:left;" class="photo33"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a>
-				<div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
-				<div class="statuscaption">status:
-				  {if $image->ftf}first{/if}
-				  {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
-				</div>
-
-			{/foreach}
-
-			<br style="clear:left;"/>&nbsp;
+				{foreach from=$images item=image}
+					<div style="float:left;" class="photo33"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a>
+					<div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
+					<div class="statuscaption">status:
+					  {if $image->ftf}first{/if}
+					  {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
+					</div>
+				{/foreach}
+				<br style="clear:left;"/>&nbsp;
 			{/if}
 		{/if}
-
 	{else}
-
+		{* There are no images in this square (yet) *}
+		
 		<p>We have no images for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"} yet,
 		
 		{if $nearest_distance}
@@ -158,7 +158,6 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 		{if $discuss}
 			There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a 
 			<a href="/discuss/index.php?gridref={$gridref}"><b>discussion</b> about {$gridref}</a> (preview on the left)
-			
 		{else}
 			{if $user->registered} 
 				<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a <b>discussion</b> about {$gridref}</a>
@@ -167,11 +166,11 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 			{/if}
 		{/if}</li>
 		<li><a href="/mapbrowse.php?t={$map_token}">Geograph <b>map</b> for {$gridref}</a> (<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}">print check sheet</a>)</li>
-		<li>Or <a href="/submit.php?gridreference={$gridrefraw}"><b>submit</b> your own picture of {$gridref}</a><br/><br/></li>
+		<li>Or <a href="/submit.php?gridreference={$gridrefraw}"><b>submit</b> your own picture at {$gridrefraw}</a><br/><br/></li>
 		
 		<li><b>Maps</b>:
 		
-		{getamap gridref=$gridref text="OS Get-a-Map"},
+		{getamap gridref=$gridrefraw text="OS Get-a-Map"},
 		
 		{if $square->reference_index eq 1}
 			{assign var="urltitle" value=$image->title|escape:'url'}
@@ -186,19 +185,21 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 		<li><b>What's nearby?</b> 
 		{if $square->reference_index eq 1}
 			{external title="Geocaches from geocaching.com, search by geocacheuk.com" href="http://stats.guk2.com/caches/search_parse.php?osgbe=`$square->nateastings`&amp;osgbn=`$square->natnorthings`" text="Geocaches"},
-			{external title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigtools/find.php?t=`$gridref`" text="Trigpoints"},
+			{external title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigtools/find.php?t=`$gridrefraw`" text="Trigpoints"},
 			{external href="http://geourl.org/near?lat=`$lat`&amp;long=`$long`" text="geourl.org" title="search for webpages near this location"} &amp;
 		 	{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$square->nateastings`+`$square->natnorthings`" text="more..."}
 		{else}
 			{external href="http://www.geocaching.com/seek/nearest.aspx?lat=`$lat`&amp;lon=`$long`" text="geocaches" title="Geocaches from geocaching.com"},
+			{external href="http://www.trigtools.co.uk/irish.cgi?gr=`$gridrefraw`&c=25" text="trigpoints" title="Trigpoints from trigtools.co.uk"},
 		 	{external href="http://geourl.org/near?lat=`$lat`&amp;long=`$long`" text="geourl.org" title="search for webpages near this location"}  &amp;
 		 	{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$square->nateastings`+`$square->natnorthings`+OSI" text="more from nearby.org.uk"}
 		{/if}</li>
 		</ul>
-
 	{/if}
    
-   	{if $square->percent_land < 50}
+   	{if $square->percent_land < 80}
+   		{* We on the coast so offer the option to request removal *}
+   		
    		<form action="/mapfixer.php" method="get">
    		<p align="right"><input type="submit" name="save" value="Request marking of this square as All at Sea"/>
    		<input type="hidden" name="gridref" value="{$gridref}"/>
@@ -206,6 +207,8 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
    		</form>
    	{/if}
 {else}
+	{* All at Sea Square! *}
+	
 	<ul>
 	{if $nearest_distance}
 		<li>The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away<br/><br/></li>
@@ -215,7 +218,6 @@ we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Or
 		<li>You may still be able to view the <a href="/mapbrowse.php?t={$map_token}" title="Geograph map for {$gridref}">Map</a> for this square.</li>
 	{/if}
 	</ul>
-	
 {/if}
 
 {/dynamic}
