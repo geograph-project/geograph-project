@@ -131,6 +131,7 @@
 				<li style="margin-top:10px;">Or view all images in the <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;do=1" title="View images in {$gridref}">search interface</a> (<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;&displayclass=thumbs&amp;do=1">thumbnails only</a>)</li>
 
 				</ul>
+				<br style="clear:both"/>
 			{else}
 				{* Display some actual thumbnails *}
 				
