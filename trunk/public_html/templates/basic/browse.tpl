@@ -83,15 +83,15 @@
 		{/if}
 		[<a href="/submit.php?gridreference={$gridrefraw}" title="Submit image for $gridref">submit</a>]
 		[<a href="/search.php?q={$gridref}" title="Search for other nearby images">search</a>]
-		[<a href="/discuss/index.php?gridref={$gridref}" title="discussion about $gridref">discuss</a>] 
+		[<a href="/discuss/index.php?gridref={$gridref}" title="discussion about {$gridref}">discuss</a>] 
 		{if $totalimagecount > 5}
 			[<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show">slide Show</a>]
 		{/if}
-		[<a href="/mapbrowse.php?t={$map_token}" title="Geograph map for {$gridref}">map</a>]
+		[<a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}" title="Geograph map for {$gridref}">map</a>]
 		[<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}">check sheet</a>]<br/><br/></li>
-		
-		
-		
+
+
+
 		<li><b>We have 
 			{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
 			{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
@@ -99,16 +99,16 @@
 			{if !$breakdown && !$breakdowns}<span style="font-size:0.8em;">- click for larger version</span>{/if}
 		</li>
 		</ul>
-		
+
 		{if $breakdown}
 			{* We want to display a breakdown list *}
 			
 			<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images, by {$breakdown_title}:</p>
-			
+
 			<ul>
 			{foreach from=$breakdown item=b}
 				<li><a href="{$b.link}">{$b.name}</a> [{$b.count}]</li>
-			{/foreach}			
+			{/foreach}
 			</ul>	
 		{else}
 			{if $breakdowns}
@@ -121,7 +121,7 @@
 					<li><a href="/gridref/{$gridref}?by={$b.type}">{$b.name}</a> [{$b.count}]</li>
 				{/foreach}
 
-				<li style="margin-top:10px;">Or view all images in the <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;do=1" title="View images in {$gridref}">search interface</a>
+				<li style="margin-top:10px;">Or view all images in the <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;do=1" title="View images in {$gridref}">search interface</a> (<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;&displayclass=thumbs&amp;do=1">thumbnails only</a>)</li>
 
 				</ul>
 			{else}
@@ -165,7 +165,7 @@
 				<a href="/login.php">login</a> to start a <b>discussion</b> about {$gridref}
 			{/if}
 		{/if}</li>
-		<li><a href="/mapbrowse.php?t={$map_token}">Geograph <b>map</b> for {$gridref}</a> (<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}">print check sheet</a>)</li>
+		<li><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph <b>map</b> for {$gridref}</a> (<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}">print check sheet</a>)</li>
 		<li>Or <a href="/submit.php?gridreference={$gridrefraw}"><b>submit</b> your own picture at {$gridrefraw}</a><br/><br/></li>
 		
 		<li><b>Maps</b>:
