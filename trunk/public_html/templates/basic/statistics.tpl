@@ -139,6 +139,7 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
     <input type="submit" value="Go"/></p></form>
 
    <p><b>More Technical Database Stats:</b><br/>
+   <a href="/statistics/pulse.php">Geograph Pulse</a>,
    <a href="/statistics/totals.php">Current Totals</a>,
    <a href="/statistics/estimate.php">Future Estimates</a> and 
    <a href="/statistics/forum_image_breakdown.php">Breakdown of Thumbnails used in Forum Topics</a>.</p>
