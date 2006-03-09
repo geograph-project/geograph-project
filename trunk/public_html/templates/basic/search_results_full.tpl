@@ -4,8 +4,8 @@
 <h2>Search Results</h2>
 
 <p>Your search for images<i>{$engine->criteria->searchdesc}</i>, returns 
-{if $engine->pageOneOnly}
-	<i>many</i> images
+{if $engine->pageOneOnly && $engine->resultCount == $engine->numberofimages}
+	<acronym title="to keep server load under control, we delay calculating the total">many</acronym> images
 {else}{if $engine->islimited}
 	<b>{$engine->resultCount}</b> images
 {else}
@@ -18,7 +18,7 @@
 	<p style="font-size:0.8em">[We have no images for {$engine->criteria->searchq}, <a href="/submit.php?gridreference={$engine->criteria->searchq}">Submit Yours Now</a>]</p>
 	{/if}
 	{foreach from=$engine->results item=image}
-	 <div>
+	 <div style="border-top: 1px solid lightgrey; padding-top:1px;">
 	  <div style="float:left; position:relative; width:130px; text-align:center">
 		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
 	  </div>
