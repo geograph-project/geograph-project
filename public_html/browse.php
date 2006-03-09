@@ -195,7 +195,7 @@ if ($grid_given)
 			count(distinct nateastings DIV 100, natnorthings DIV 100) as centi,
 			sum(nateastings = 0) as centi_blank
 			FROM gridimage
-			WHERE gridsquare_id = '{$square->gridsquare_id}'
+			WHERE gridsquare_id = {$square->gridsquare_id}
 			AND (moderation_status in ('accepted', 'geograph') $user_crit)");
 			
 			$breakdowns = array();
@@ -209,6 +209,16 @@ if ($grid_given)
 			$breakdowns[] = array('type'=>'centi','name'=>'Centisquares','count'=>$row['centi']-($row['centi_blank'] > 0));
 			$smarty->assign_by_ref('breakdowns', $breakdowns);
 			
+			$sql="select * from gridimage where gridsquare_id={$square->gridsquare_id} 
+			and moderation_status in ('accepted','geograph') order by moderation_status+0 desc,seq_no limit 1";
+
+			$rec=$db->GetRow($sql);
+			if (count($rec))
+			{
+				$image=new GridImage;
+				$image->fastInit($rec);
+				$smarty->assign_by_ref('image', $image);
+			}
 		} elseif (!empty($_GET['by'])) {
 			$square->totalimagecount = $square->imagecount;
 			
