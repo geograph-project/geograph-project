@@ -112,8 +112,8 @@ if ($grid_given)
 		{
 			$smarty->assign('nearest_distance', $square->nearest->distance);
 			$smarty->assign('nearest_gridref', $square->nearest->grid_reference);
-		
 		}
+		
 		$custom_where = '';
 		if (!empty($_GET['user'])) {
 			$custom_where .= " and gi.user_id = ".$_GET['user'];
@@ -199,7 +199,7 @@ if ($grid_given)
 			AND (moderation_status in ('accepted', 'geograph') $user_crit)");
 			
 			$breakdowns = array();
-			$breakdowns[] = array('type'=>'user','name'=>'Contributers','count'=>$row['user']);
+			$breakdowns[] = array('type'=>'user','name'=>'Contributors','count'=>$row['user']);
 			$breakdowns[] = array('type'=>'class','name'=>'Categories','count'=>$row['class']);
 			$breakdowns[] = array('type'=>'taken','name'=>'Taken Months','count'=>$row['taken']);
 			$breakdowns[] = array('type'=>'takenyear','name'=>'Taken Years','count'=>$row['takenyear']);
@@ -262,7 +262,7 @@ if ($grid_given)
 					$i++;
 				}
 			} elseif ($_GET['by'] == 'user') {
-				$breakdown_title = "Contributer";
+				$breakdown_title = "Contributor";
 				$all = $db->getAll("SELECT realname,count(*),gridimage_id,gridimage.user_id
 				FROM gridimage
 				INNER JOIN user USING(user_id)
