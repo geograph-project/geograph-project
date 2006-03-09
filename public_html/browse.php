@@ -47,7 +47,6 @@ $grid_given=false;
 $grid_ok=false;
 
 
-
 //set by grid components?
 if (isset($_GET['p']))
 {	
@@ -59,7 +58,7 @@ if (isset($_GET['p']))
 	$x = 900 - $x;
 	$grid_ok=$square->loadFromPosition($x, $y, true);
 	$grid_given=true;
-	
+	$smarty->assign('gridrefraw', $square->grid_reference);
 }
 
 //set by grid components?
@@ -67,16 +66,16 @@ elseif (isset($_GET['setpos']))
 {	
 	$grid_given=true;
 	$grid_ok=$square->setGridPos($_GET['gridsquare'], $_GET['eastings'], $_GET['northings']);
-
+	$smarty->assign('gridrefraw', $square->grid_reference);
 }
+
 //set by grid ref?
 elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 {
 	$grid_given=true;
 	$grid_ok=$square->setByFullGridRef($_GET['gridref']);
 	
-	//preserve inputs in smarty
-	
+	//preserve inputs in smarty	
 	if ($grid_ok)
 	{
 		$smarty->assign('gridrefraw', stripslashes($_GET['gridref']));
@@ -85,18 +84,14 @@ elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 	{
 		//preserve the input at least
 		$smarty->assign('gridref', stripslashes($_GET['gridref']));
-	
-	}
-	
+	}	
 }
+
 
 //process grid reference
 if ($grid_given)
 {
 	$square->rememberInSession();
-	
-
-	
 
 	//now we see if the grid reference is actually available...
 	if ($grid_ok)
@@ -184,7 +179,7 @@ if ($grid_given)
 		$user_crit = $USER->user_id?" or gridimage.user_id = {$USER->user_id}":'';
 				
 			
-		if (($square->imagecount > 30 && !isset($_GET['by']) && !$custom_where) || (isset($_GET['by']) && $_GET['by'] == 1)) {
+		if (($square->imagecount > 15 && !isset($_GET['by']) && !$custom_where) || (isset($_GET['by']) && $_GET['by'] == 1)) {
 			$square->totalimagecount = $square->imagecount;
 			
 			$db=NewADOConnection($GLOBALS['DSN']);
@@ -313,7 +308,7 @@ if ($grid_given)
 				$length = (preg_match('/year$/',$_GET['by']))?4:7;
 				$column = (preg_match('/^taken/',$_GET['by']))?'imagetaken':'submitted';
 				$title = (preg_match('/^taken/',$_GET['by']))?'Taken':'Submitted';
-				$breakdown_title = "$title".(preg_match('/year$/',$_GET['by']))?'':' Month';
+				$breakdown_title = "$title".((preg_match('/year$/',$_GET['by']))?'':' Month');
 				$all = $db->getAll("SELECT SUBSTRING($column,1,$length) as date,count(*),gridimage_id
 				FROM gridimage
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
