@@ -253,7 +253,7 @@ if ($grid_given)
 					$rowname = str_replace('accepted','supplemental',$row[0]);
 					$breakdown[$i] = array('name'=>"<b>{$rowname}</b>",'count'=>$row[1]);
 					if ($row[1] > 20) {
-						$row[0] = str_replace('first ','',$row[0]);//we have to ignore it for now!
+						$row[0] = str_replace('first ','',$row[0]);//we have to ignore it for now! ButButBut there should only ever be one first :)
 						if ($row[0] == 'pending' || $row[0] == 'rejected') {
 							$breakdown[$i]['link']="/profile.php?u={$USER->user_id}";
 						} else {
@@ -315,7 +315,7 @@ if ($grid_given)
 				$title = (preg_match('/^taken/',$_GET['by']))?'Taken':'Submitted';
 				$breakdown_title = "$title".(preg_match('/year$/',$_GET['by']))?'':' Month';
 				$all = $db->getAll("SELECT SUBSTRING($column,1,$length) as date,count(*),gridimage_id
-				FROM gridimage_search
+				FROM gridimage
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND (moderation_status in ('accepted', 'geograph') $user_crit )
 				GROUP BY SUBSTRING($column,1,$length)");
