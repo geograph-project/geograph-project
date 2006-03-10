@@ -107,7 +107,7 @@ this and other photo oriented sites the way everyone else can see them.</p>
     
     <p>If you use the {external title="Firefox Web Browser" href="http://www.mozilla.org/products/firefox/" text="Firefox"} web browser, 
     you should be able use our feeds as "live bookmarks" - simply
-    click the orange button in the bottom right of your browser window. </p>    
+    click the orange button in the address bar (or in the status bar on older versions). </p>    
 
     <p>* this feed requires entry of your Geograph email/nickname and password to access.</p>
 <a name="use"></a>
