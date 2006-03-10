@@ -52,7 +52,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
-
+	$sql_table = "gridimage_search i";
 	$sql_column = "count(*)";
 	if ($type == 'squares') {
 		$sql_column = "count(distinct grid_reference)";
@@ -72,6 +72,18 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_where = "1";
 		$heading = "Images";
 		$desc = "images submitted";
+	} elseif ($type == 'centi') {
+/*	SELECT COUNT(DISTINCT nateastings div 100, natnorthings div 100), COUNT(*) AS `_count_all`
+	FROM gridimage
+	WHERE  moderation_status in ('geograph','accepted') and nateastings div 1000 > 0
+	ORDER BY _count_all DESC
+	LIMIT 30; */
+		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
+		$sql_table = "gridimage i inner join user u using (user_id)";
+		$sql_column = "COUNT(DISTINCT nateastings div 100, natnorthings div 100)";
+		$sql_where = "i.moderation_status='geograph' and nateastings div 1000 > 0";
+		$heading = "Centigraph<br/>Points";
+		$desc = "centigraph points awarded";
 	} else { #if ($type == 'points') {
 		$sql_where = "i.ftf=1 and i.moderation_status='geograph'";
 		$heading = "Geograph<br/>Points";
@@ -92,9 +104,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('desc', $desc);
 	$smarty->assign('type', $type);
 
-	
-	$topusers=$db->GetAll("select user_id,realname, $sql_column as imgcount,max(gridimage_id) as last
-	from gridimage_search i where $sql_where
+	$topusers=$db->GetAll("select i.user_id,realname, $sql_column as imgcount,max(gridimage_id) as last
+	from $sql_table where $sql_where
 	group by user_id order by imgcount desc,last asc"); 
 	$lastimgcount = 0;
 	$toriserank = 0;
@@ -133,6 +144,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	
 	$smarty->assign_by_ref('topusers', $topusers);
+	
+	$smarty->assign('types', array('points','geosquares','geographs','squares','images'));
 	
 	//lets find some recent photos
 	new RecentImageList($smarty);
