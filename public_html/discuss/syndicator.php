@@ -44,12 +44,14 @@ if (!empty($_GET['format']) && in_array($_GET['format'], $valid_formats))
 	$format=$_GET['format'];
 
 
+$extension = ($format == 'KML')?'kml':'xml';
+
 if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-t{$_GET['topic']}-{$format}.xml";
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-t{$_GET['topic']}-{$format}.$extension";
 } elseif (!empty($_GET['forum']) && is_numeric($_GET['forum'])) {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-f{$_GET['forum']}-{$format}-".(($_GET['sortBy'] == 1)?1:0).".xml";
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-f{$_GET['forum']}-{$format}-".(($_GET['sortBy'] == 1)?1:0).".$extension";
 } else {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-{$format}-".((!empty($_GET['sortBy']) && $_GET['sortBy'] == 1)?1:0).".xml";
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-{$format}-".((!empty($_GET['sortBy']) && $_GET['sortBy'] == 1)?1:0).".$extension";
 }
 
 $rss = new UniversalFeedCreator();
