@@ -24,11 +24,15 @@
 require_once('geograph/global.inc.php');
 require_once('geograph/feedcreator.class.php');
 
+/*
+We'll let you see RSS summaries without logging in
+
 if ( (!empty($_GET['topic']) && is_numeric($_GET['topic'])) || (!empty($_GET['forum']) && is_numeric($_GET['forum']))) {
 	init_session();
 	$USER->basicAuthLogin();
 	//if got past must be logged in	
 }
+*/
 	
 $valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP');
 
@@ -93,8 +97,10 @@ ORDER BY `post_time` ASC";
 	}
 } else {
 	if (!empty($_GET['forum']) && is_numeric($_GET['forum'])) {
-		$USER->basicAuthLogin();
-		//if got past must be logged in
+		
+		//no need to login for RSS
+		//$USER->basicAuthLogin();
+		
 		$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vtopic&forum={$_GET['forum']}"; 
 		$synd = "&amp;forum={$_GET['forum']}";
 		$title = ' :: '.$db->GetOne("select forum_name from `geobb_forums` where `forum_id` = {$_GET['forum']}");
