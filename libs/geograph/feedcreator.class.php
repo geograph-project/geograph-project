@@ -1077,7 +1077,7 @@ class RSSCreator20 extends RSSCreator091 {
 class KMLCreator extends FeedCreator {
 	
 	function KMLCreator() {
-		$this->contentType = "application/octet-stream";
+		$this->contentType = "application/vnd.google-earth.kml+xml";
 		$this->encoding = "utf-8";
 	}
 
@@ -1097,10 +1097,11 @@ class KMLCreator extends FeedCreator {
 		<scale>0</scale>
 	</LabelStyle>
 </Style>
-<Style id=\"hoverIcon\">
+<Style id=\"hoverIcon\">".
+(($this->items[0]->thumb!="")?"
 	<IconStyle id=\"hoverIcon\">
 		<scale>2.1</scale>
-	</IconStyle>
+	</IconStyle>":'')."
 </Style>
 <StyleMap id=\"defaultStyle\">
 	<Pair>
@@ -1126,7 +1127,7 @@ class KMLCreator extends FeedCreator {
 		for ($i=0;$i<count($this->items);$i++) {
 			//added here beucase description gets auto surrounded by cdata
 			$this->items[$i]->description = "<b>".$this->items[$i]->description."</b><br/>
-			&copy; Copyright <i class=\"attribution\">".htmlspecialchars($this->items[$i]->author)."</i> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a>
+			".$this->items[$i]->licence."
 				<br/><br/><a href=\"".htmlspecialchars($this->items[$i]->link)."\">View Online</a>";
 			
 			$feed.= "
