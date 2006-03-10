@@ -156,18 +156,16 @@ for ($i=0; $i<$cnt; $i++)
 	     	$item->thumb = $images->images[$i]->getThumbnail(120,120,true); 
 	     }
 	     
+	//<license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
+	     
+	    $item->licence = "&copy; Copyright <i class=\"attribution\">".htmlspecialchars($images->images[$i]->realname)."</i> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a>";
+	     
+	
     $rss->addItem($item); 
 	
 
 }
 
-//now output the result
-if ($format == 'KML') {
-	header("Content-type: application/vnd.google-earth.kml+xml");
-	header("Content-Disposition: attachment; filename=\"geograph.kml\"");
-} else {
-	header("Content-Type:text/xml");
-} 
 
 header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past 
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); 
