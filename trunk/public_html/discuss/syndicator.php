@@ -95,12 +95,13 @@ LIMIT 15";
 		$title = preg_replace('/<[^>]+>/','',$title);
 		if (strlen($title) > 75)
 			$title = substr($title,0,72)."...";
+		$title = strip_tags(GeographLinks($title));
 
 		$item->title = $title;
 
 		//send description if more verbose than the snippet title
 		if ($title != $recordSet->fields['post_text'])
-			$item->description = $recordSet->fields['post_text'];
+			$item->description = GeographLinks($recordSet->fields['post_text']);
 
 		$item->date = strtotime($recordSet->fields['post_time']);
 		//$item->source = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vthread&amp;topic={$_GET['topic']}";
@@ -165,12 +166,13 @@ LIMIT 30";
 	{
 		$item = new FeedItem();
 		$item->title = $recordSet->fields['topic_title'];
+		
 		//htmlspecialchars is called on link so dont use &amp;
 		$item->link = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vthread&topic={$recordSet->fields['topic_id']}";
 		$description = preg_replace('/^<i>[^<]+<\/i>([\n\r]*<br>)?([\n\r]*<br>)?([\n\r]*<br>)?/','',$recordSet->fields['post_text']);
 		if (strlen($description) > 160)
 			$description = substr($description,0,157)."...";
-		$item->description = $description;
+		$item->description = GeographLinks($description);
 		$item->date = strtotime($recordSet->fields['post_time']);
 		//$item->source = "http://{$_SERVER['HTTP_HOST']}/discuss/";
 		$item->author = $recordSet->fields['poster_name'];
