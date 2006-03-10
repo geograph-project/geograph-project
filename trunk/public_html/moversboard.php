@@ -48,7 +48,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	/////////////
 	// in the following code 'geographs' is used a column for legacy reasons, but dont always represent actual geographs....
-	
+	$sql_column = '';
 	if ($type == 'squares' || $type == 'geosquares') {
 		if ($type == 'geosquares') {
 			$sql_where = " and i.moderation_status='geograph'";
@@ -102,7 +102,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('desc', $desc);
 	$smarty->assign('type', $type);
 	
-	if (!count($topusers)) {
+	if ($sql_column) {
 		//we want to find all users with geographs/pending images 
 		$sql="select i.user_id,u.realname,
 		$sql_column as geographs, 
@@ -148,6 +148,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign_by_ref('topusers', $topusers);
 	$smarty->assign('cutoff_time', time()-86400*7);
+	
+	$smarty->assign('types', array('points','geosquares','geographs','squares','images'));
 	
 	//lets find some recent photos
 	new RecentImageList($smarty);
