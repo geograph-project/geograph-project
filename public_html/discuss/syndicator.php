@@ -77,6 +77,10 @@ LIMIT 15";
 	{	
 		$item = new FeedItem(); 
 		
+		//htmlspecialchars is called on link so dont use &amp;
+		//we cant get the #12 as we dont know how many posts in total (or which page is on)
+		$item->link = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vthread&topic={$_GET['topic']}"; 
+		
 		//create a nice short snippet for title
 		$title = preg_replace('/^<i>[^<]+<\/i>([\n\r]*<br>)?([\n\r]*<br>)?([\n\r]*<br>)?/','',$recordSet->fields['post_text']); 
 		$title = preg_replace('/<br\\/?>.+$/s','',$title); 
@@ -147,6 +151,7 @@ LIMIT 30";
 	{	
 		$item = new FeedItem(); 
 		$item->title = $recordSet->fields['topic_title']; 
+		//htmlspecialchars is called on link so dont use &amp;
 		$item->link = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vthread&topic={$recordSet->fields['topic_id']}"; 
 		$description = preg_replace('/^<i>[^<]+<\/i>([\n\r]*<br>)?([\n\r]*<br>)?([\n\r]*<br>)?/','',$recordSet->fields['post_text']); 
 		if (strlen($description) > 160) 
