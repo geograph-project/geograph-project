@@ -35,12 +35,14 @@ if ( (!empty($_GET['topic']) && is_numeric($_GET['topic'])) || (!empty($_GET['fo
 */
 	
 $valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP');
+if (!empty($_GET['forum']) && $_GET['forum'] == 5 && empty($_GET['topic']) ) 
+	$valid_formats=array_merge($valid_formats,array('KML','GeoRSS'));
+
 
 $format="RSS1.0";
 if (!empty($_GET['format']) && in_array($_GET['format'], $valid_formats))
-{
 	$format=$_GET['format'];
-}
+
 
 if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-t{$_GET['topic']}-{$format}.xml";
@@ -51,23 +53,25 @@ if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
 }
 
 $rss = new UniversalFeedCreator(); 
-$rss->useCached($rssfile); 
+$rss->useCached($format,$rssfile); 
  
 $db=NewADOConnection($GLOBALS['DSN']);
 
 if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
 
-	$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/topic{$_GET['topic']}"; 
+	#$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/topic{$_GET['topic']}"; 
+	$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vthread&amp;topic={$_GET['topic']}"; 
 
 		$title = $db->GetOne("select topic_title from `geobb_topics` where `topic_id` = {$_GET['topic']}");
 	
-	$rss->title = "Geograph.org.uk Forum :: $title"; 
+	$rss->title = "Geograph.org.uk Forum :: $title :: Latest Posts"; 
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format&amp;topic=".$_GET['topic'];
 	
 $sql="SELECT * 
 FROM `geobb_posts` 
 WHERE `topic_id` = {$_GET['topic']}
-ORDER BY `post_time` ASC";
+ORDER BY `post_time` DESC
+LIMIT 15";
 	$recordSet = &$db->Execute($sql);
 	while (!$recordSet->EOF) 
 	{	
@@ -101,11 +105,17 @@ ORDER BY `post_time` ASC";
 		//no need to login for RSS
 		//$USER->basicAuthLogin();
 		
-		$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vtopic&forum={$_GET['forum']}"; 
+		$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vtopic&amp;forum={$_GET['forum']}"; 
 		$synd = "&amp;forum={$_GET['forum']}";
 		$title = ' :: '.$db->GetOne("select forum_name from `geobb_forums` where `forum_id` = {$_GET['forum']}");
 		
 		$sql_where = "WHERE geobb_topics.forum_id={$_GET['forum']}";
+		
+		if ($format == 'KML' || $format == 'GeoRSS') {
+			require_once('geograph/conversions.class.php');
+			require_once('geograph/gridsquare.class.php');
+			$conv = new Conversions;
+		}
 	} else {
 		$title = '';
 		$synd = '';
@@ -146,6 +156,14 @@ LIMIT 30";
 		//$item->source = "http://{$_SERVER['HTTP_HOST']}/discuss/"; 
 		$item->author = $recordSet->fields['poster_name']; 
 
+		if ($format == 'KML' || $format == 'GeoRSS') {
+			$gridsquare = new GridSquare;
+			$grid_ok=$gridsquare->setGridRef($recordSet->fields['topic_title']);
+
+			if ($grid_ok)
+				list($item->lat,$item->long) = $conv->gridsquare_to_wgs84($gridsquare);
+		}
+
 		$rss->addItem($item);
 		
 		$recordSet->MoveNext();
@@ -153,15 +171,12 @@ LIMIT 30";
 }
 
 
-//now output the result
-#header("Content-Type:text/xml");
-
 header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past 
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); 
                                                     // always modified 
 header("Cache-Control: no-store, no-cache, must-revalidate");  // HTTP/1.1 
 header("Cache-Control: post-check=0, pre-check=0", false); 
-header("Pragma: no-cache");          
+header("Pragma: no-cache");
 
 
 
