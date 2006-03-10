@@ -99,24 +99,26 @@ this and other photo oriented sites the way everyone else can see them.</p>
     <a title="Geograph RSS 0.91 feed" href="http://{$http_host}/syndicator.php?format=RSS0.91">RSS 0.91</a>,
     <a title="Geograph RSS 2.0 feed" href="http://{$http_host}/syndicator.php?format=RSS2.0">RSS 2.0</a>,
     <a title="Geograph OPML feed" href="http://{$http_host}/syndicator.php?format=OPML">OPML</a>,
-    <a title="Geograph HTML feed" href="http://{$http_host}/syndicator.php?format=HTML">HTML</a> and
-    <a title="Geograph JavaScript feed" href="http://{$http_host}/syndicator.php?format=JS">JavaScript</a>
+    <a title="Geograph HTML feed" href="http://{$http_host}/syndicator.php?format=HTML">HTML</a>,
+    <a title="Geograph JavaScript feed" href="http://{$http_host}/syndicator.php?format=JS">JavaScript</a>,
+    <a title="Geograph KML (Google Earth) feed" href="http://{$http_host}/syndicator.php?format=KML">KML</a>,
+    simple <a title="Geograph GeoRSS feed" href="http://{$http_host}/syndicator.php?format=GeoRSS">GeoRSS</a> and
+    <a title="Geograph PhotoRSS feed" href="http://{$http_host}/syndicator.php?format=GeoPhotoRSS">(Geo) PhotoRSS</a>
     formats.</p>
     
-    <p>We have recently added RSS feeds to other parts of the site. You will find an <a class="xml-rss">RSS</a> button at the bottom of search results, useful to keep updated on local images. Registered users can access RSS feed of the latest Topics in the Discussion Forum, and even subscribe to an individual Topic*, just look for the <a class="xml-rss">RSS</a> button! (they also accept the format parameter like the main feed)</p>
+    <p>We have recently added RSS feeds to other parts of the site. You will find an <a class="xml-rss">RSS</a> button at the bottom of search results, useful to keep updated on local images. Registered users can access RSS feed of the latest Topics in the Discussion Forum, and even subscribe to an individual Topic, just look for the <a class="xml-rss">RSS</a> button! (they also accept the format parameter like the main feed)</p>
     
     <p>If you use the {external title="Firefox Web Browser" href="http://www.mozilla.org/products/firefox/" text="Firefox"} web browser, 
     you should be able use our feeds as "live bookmarks" - simply
-    click the orange button in the address bar (or in the status bar on older versions). </p>    
+    click the orange button in the address bar (or in the status bar on older versions).</p>    
 
-    <p>* this feed requires entry of your Geograph email/nickname and password to access.</p>
 <a name="use"></a>
 <h3>I would be interested in using Geograph content, is that possible?</h3>
     <p>If you can think of an interesting use on your own site, or for a new idea, (beyond what's available via the RSS feeds above) 
     then we would be very interested to <a title="Contact Us" href="contact.php">hear from you</a>. 
     In all likelihood we can provide a feed to suit your requirements.</p>
     
-    <p>Images are licenced for re-use under a  <a href="#opensource">Creative Commons Licence</a>, see
+    <p>Images are licenced for re-use under a <a href="#opensource">Creative Commons Licence</a>, see
     licence details by viewing a full size image.</p>
     
 <a name="built"></a>
