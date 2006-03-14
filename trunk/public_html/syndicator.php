@@ -148,7 +148,7 @@ for ($i=0; $i<$cnt; $i++)
 	     if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GeoPhotoRSS') {
 	     	$item->lat = $images->images[$i]->wgs84_lat;
 	     	$item->long = $images->images[$i]->wgs84_long;
-	     	if ($format == 'GeoPhotoRSS')
+	     	if ($format == 'KML' || $format == 'GeoPhotoRSS')
 	     		$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
 	     } elseif ($format == 'BASE') {
 	     	$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
