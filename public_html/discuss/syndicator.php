@@ -79,8 +79,10 @@ if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
 $sql="SELECT *
 FROM `geobb_posts`
 WHERE `topic_id` = {$_GET['topic']}
-ORDER BY `post_time` DESC
-LIMIT 15";
+ORDER BY `post_time` DESC";
+if (!$_GET['nolimit']) {
+	$sql .= " LIMIT 15";
+}
 	$recordSet = &$db->Execute($sql);
 	while (!$recordSet->EOF)
 	{
