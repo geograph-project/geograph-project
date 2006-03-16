@@ -64,7 +64,7 @@ if (isset($_GET['edit_4_linking_post']))
 	echo "<h3><a href=\"events.php\">&lt;&lt;</a> Firing Events...</h3>";
 	flush();
 	
-	$posts = $db->getCol("select post_id from geobb_posts where topic_id = ".$_GET['topic_id']);
+	$posts = $db->getCol("select post_id from geobb_posts where topic_id = ".$_GET['topic_id']." order by post_id");
 	
 	foreach ($posts as $post_id) {
 		new Event('topic_edit', $post_id);
