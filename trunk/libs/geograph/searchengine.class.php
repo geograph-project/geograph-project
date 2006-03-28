@@ -462,8 +462,12 @@ class SearchEngine
 			}
 			if (!empty($dataarray['topic_id'])) {
 				$sql .= ",limit9 = ".$dataarray['topic_id'];
-				$topic_name=$db->getOne("SELECT topic_title FROM geobb_topics WHERE topic_id = ".$dataarray['topic_id']);
-				$searchdesc .= ", in topic ".$topic_name;
+				if ($dataarray['topic_id'] > 1) {
+					$topic_name=$db->getOne("SELECT topic_title FROM geobb_topics WHERE topic_id = ".$dataarray['topic_id']);
+					$searchdesc .= ", in topic ".$topic_name;
+				} else {
+					$searchdesc .= ", in any topic";
+				}
 			}
 			if (!empty($dataarray['route_id'])) {
 				$sql .= ",limit10 = ".$dataarray['route_id'];

@@ -98,6 +98,8 @@ class SearchCriteria
 			$sql_order = preg_replace('/^submitted/','gridimage_id',$sql_order);
 		}
 		
+		$sql_where_start = $sql_where;
+		
 		if (!empty($this->limit1)) {
 			if ($sql_where) {
 				$sql_where .= ' and ';
@@ -231,7 +233,8 @@ class SearchCriteria
 			if ($sql_where) {
 				$sql_where .= ' and ';
 			}
-			$sql_where .= "topic_id = {$this->limit9} ";
+			if ($this->limit9 > 1) 
+				$sql_where .= "topic_id = {$this->limit9} ";
 			$sql_from .= " INNER JOIN gridimage_post gp ON(gi.gridimage_id=gp.gridimage_id) ";
 		} 
 		if (!empty($this->limit10)) {
@@ -241,7 +244,11 @@ class SearchCriteria
 			$sql_where .= "route_id = {$this->limit10} ";
 			$sql_from .= " INNER JOIN route_item r ON(grid_reference=r.gridref) ";
 		} 
-	}
+		
+		if ($sql_where_start != $sql_where) {
+			$this->issubsetlimited = true;
+		}
+	} 
 	
 	
 	
