@@ -162,7 +162,7 @@ geographing</a> first.</p>
 	{if $totalimagecount gt 0}
 	<br/>
 	<div style="background-color:#eeeeee; padding:10px;">
-		<div><b>Latest {$totalimagecount} images for this square...</b></div>
+		<div><b>Latest {$shownimagecount} images for this square...</b></div>
 
 	{foreach from=$images item=image}
 
@@ -177,7 +177,7 @@ geographing</a> first.</p>
 	{/foreach}
 	<br style="clear:both"/>
 	
-	{if $imagecount gt 6 || $totalimagecount == 6}
+	{if $imagecount gt 6 || $shownimagecount == 6}
 		<div>See <a href="/gridref/{$gridref}" target="_blank">all {$imagecount} images for {$gridref}</a> (opens in new window)</div>
 	{/if}&nbsp;
 	</div>
