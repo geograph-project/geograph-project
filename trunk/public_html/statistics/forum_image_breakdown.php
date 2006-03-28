@@ -62,8 +62,10 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign_by_ref('profile', $profile);
 		$title .= " by ".($profile->realname);
 		$having_sql = '';
+		$columns_sql = '';
 	} else {
 		$having_sql = "HAVING `Images` > 4";
+		$columns_sql = ', count( DISTINCT user_id ) AS `Photographers`';
 	}
 	
 	if ($ri) {
@@ -82,16 +84,17 @@ if (!$smarty->is_cached($template, $cacheid))
 	 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$table=$db->GetAll("SELECT 
 	topic_title as `Topic`,
-	count( DISTINCT gp.gridimage_id ) AS `Images`, 
-	count( DISTINCT post_id ) AS `Posts`, 
-	count( DISTINCT user_id ) AS `Photographers`
+	count( * ) AS `Thumbnails`, 
+	count( DISTINCT gp.gridimage_id ) AS `Seperate Images`, 
+	count( DISTINCT post_id ) AS `Number of Posts`
+	$columns_sql
 	FROM gridimage_post gp
 	INNER JOIN `geobb_topics` gt ON (gp.topic_id = gt.topic_id)
 	INNER JOIN gridimage_search gi ON (gp.gridimage_id = gi.gridimage_id)
 	$where_sql 
 	GROUP BY gp.topic_id 
 	$having_sql
-	ORDER BY `Images` DESC" );
+	ORDER BY `Seperate Images` DESC" );
 	
 	$smarty->assign_by_ref('table', $table);
 	
