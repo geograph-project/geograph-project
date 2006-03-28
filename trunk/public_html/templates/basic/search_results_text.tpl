@@ -4,8 +4,8 @@
 <h2>Search Results</h2>
 
 <p>Your search for images<i>{$engine->criteria->searchdesc}</i>, returns 
-{if $engine->pageOneOnly}
-	<i>many</i> images
+{if $engine->pageOneOnly && $engine->resultCount == $engine->numberofimages}
+	<acronym title="to keep server load under control, we delay calculating the total">many</acronym> images
 {else}{if $engine->islimited}
 	<b>{$engine->resultCount}</b> images
 {else}
@@ -29,7 +29,7 @@
 	
 	{foreachelse}
 	 	{if $engine->resultCount}
-	 		<p style="background:#dddddd;padding:20px;"><a href="/search.php?i={$i}">continue to results &gt; &gt;</a></p>
+	 		<p style="background:#dddddd;padding:20px;"><a href="/search.php?i={$i}"><b>continue to results</b> &gt; &gt;</a></p>
 	 	{/if}
 	{/foreach}
 	</ul>
@@ -54,6 +54,6 @@
 {if $engine->criteria->searchclass != 'Special'}
 [<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}</p>
 	
-<p align=right>{if $engine->islimited}<a title="Breakdown for images{$engine->criteria->searchdesc}" href="/statistics/breakdown.php?i={$i}">Statistics</a> {/if}<a title="Google Earth Feed for images{$engine->criteria->searchdesc}" href="/kml.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}" class="xml-kml">KML</a> <a title="RSS Feed for images{$engine->criteria->searchdesc}" href="/syndicator.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}" class="xml-rss">RSS</a></p>	
+<p align="right">{if $engine->islimited}<a title="Breakdown for images{$engine->criteria->searchdesc}" href="/statistics/breakdown.php?i={$i}">Statistics</a> {/if}<a title="Google Earth Feed for images{$engine->criteria->searchdesc}" href="/kml.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}" class="xml-kml">KML</a> <a title="RSS Feed for images{$engine->criteria->searchdesc}" href="/syndicator.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}" class="xml-rss">RSS</a></p>
 	
 {include file="_std_end.tpl"}
