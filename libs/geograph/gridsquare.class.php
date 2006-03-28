@@ -691,6 +691,19 @@ class GridSquare
 		return $images;
 	}
 	
+	function &getImageCount($inc_all_user = false,$custom_where_sql = '')
+	{
+		$db=&$this->_getDB();
+		
+		$count = $db->getOne("select count(*) 
+			from gridimage gi 
+			where gridsquare_id={$this->gridsquare_id} $custom_where_sql 
+			and (moderation_status in ('accepted', 'geograph') ".
+			($inc_all_user?"or gi.user_id = $inc_all_user":'').") ");
+		
+		return $count;
+	}
+	
 	/**
 	* Updates the imagecount and has_geographs columns for a square - use this after making changes
 	*/
