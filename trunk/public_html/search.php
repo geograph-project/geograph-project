@@ -516,6 +516,8 @@ if (isset($_GET['fav']) ) {
 				group by gp.topic_id 
 				having count(*) > 5
 				order by topic_title");
+				
+			$topics=array("1"=>"Any Topic") + $topics; 	
 			$smarty->assign_by_ref('topiclist',$topics);	
 
 			$topusers=$db->CacheGetAssoc(24*3600,"select user.user_id,concat(realname,' [',count(*),']')
