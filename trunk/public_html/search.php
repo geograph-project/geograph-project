@@ -389,6 +389,7 @@ if (isset($_GET['fav']) ) {
 
 		if (!$engine->countOnly && $pg == 1 
 			&& $engine->criteria->searchclass == 'GridRef'
+			&& $engine->criteria->issubsetlimited == false
 			&& ( $engine->criteria->orderby == 'dist_sqd' || $engine->criteria->orderby == '' )
 			&& strpos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
 			$smarty->assign('nofirstmatch', true);
