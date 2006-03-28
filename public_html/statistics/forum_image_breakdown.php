@@ -36,8 +36,10 @@ $template='statistics_table.tpl';
 
 $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
+$u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 
-$cacheid='forum_image_breakdown'.$ri;
+
+$cacheid='forum_image_breakdown'.$ri.'.'.$u;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -48,16 +50,33 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 
-	$title = "Breakdown of Thumbnails";
+	$title = "Breakdown of Images";
+	
+	$where = array();
+
+	if (!empty($u)) {
+		$where[] = "user_id=".$u;
+		$smarty->assign('u', $u);
+
+		$profile=new GeographUser($u);
+		$smarty->assign_by_ref('profile', $profile);
+		$title .= " by ".($profile->realname);
+		$having_sql = '';
+	} else {
+		$having_sql = "HAVING `Images` > 4";
+	}
 	
 	if ($ri) {
-		$whereri = " where reference_index = $ri";
+		$where[] = "reference_index = $ri";
 		$smarty->assign('ri',$ri);
-		
+
 		$title .= " in ".$CONF['references_all'][$ri];
-	} else {
-		$whereri = "";
 	}
+	
+	$where_sql = '';
+	if (count($where))
+		$where_sql = " WHERE ".join(' AND ',$where);
+	
 	$title .= " used in Forum Topics";	
 		
 	 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
@@ -69,9 +88,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	FROM gridimage_post gp
 	INNER JOIN `geobb_topics` gt ON (gp.topic_id = gt.topic_id)
 	INNER JOIN gridimage_search gi ON (gp.gridimage_id = gi.gridimage_id)
-	$whereri 
+	$where_sql 
 	GROUP BY gp.topic_id 
-	HAVING `Images` > 4
+	$having_sql
 	ORDER BY `Images` DESC" );
 	
 	$smarty->assign_by_ref('table', $table);
@@ -80,8 +99,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign("total",count($table));
 	$smarty->assign_by_ref('references',$CONF['references_all']);	
 	
+} else {
+	if ($u) {
+		$profile=new GeographUser($u);
+		$smarty->assign_by_ref('profile', $profile);
+		$smarty->assign_by_ref('u', $u);
+	}
 }
-$smarty->assign("filter",1);
+$smarty->assign("filter",2);
 
 $smarty->display($template, $cacheid);
 
