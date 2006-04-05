@@ -4,18 +4,19 @@
 	 <h2>Geograph API v0.7</h2> 
 	 <div
 	  style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;"><b>Contents</b><br/>
-		<ul style="margin-top:0;padding:0 0 0 1em;"> 
+		<ul style="margin-top:0;margin-left:0;padding:0 0 0 1em;"> 
 		  <li><a href="#api">API-key</a></li> 
-		  <li><a href="#rss">RSS-feeds</a> 
+		  <li><a href="#rss">RSS feeds</a> 
 			 <ul> 
-				<li><a href="#rss_param">Parameters</a></li> 
-				<li><a href="#rss_format">Formats</a></li> 
+				<li><a href="#rss_param">Parameters</a>, <a href="#rss_format">Formats</a></li> 
+			 </ul></li> 
+		  <li><a href="#rest">REST interface</a> 
+			 <ul> 
+				<li><a href="#rest_services">Services</a></li> 
 			 </ul></li> 
 		  <li><a href="#csv">CSV Export</a> 
 			 <ul> 
-				<li><a href="#csv_param">Parameters</a></li> 
-				<li><a href="#columns">Columns</a></li> 
-				<li><a href="#extra">Returning Extra Columns</a></li> 
+				<li><a href="#csv_param">Parameters</a>, <a href="#columns">Columns</a>, <br/><a href="#extra">Returning Extra Columns</a></li> 
 			 </ul></li> 
 		  <li><a href="#building">Building a Search Query</a> 
 			 <ul> 
@@ -33,7 +34,7 @@
 	 <p>Please note that the API is still in its early stages, these are the possiblities that 
 	 	the developers needed, or felt would be useful, if you have any special requests then
 	 	don't be shy, just <a href="/contact.php">let us know</a>.</p>
-	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="api"></a>API-key</h3> 
+	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px; clear:both;margin-top:30px;"><a name="api"></a>API-key</h3> 
 	 <p>If you haven't got one you will need to obtain a unique API-key, which
 		gives you access to the pages below, simply <a href="/contact.php">contact
 		us</a>, with a brief outline of your project, please include the URL so we can
@@ -41,7 +42,7 @@
 	 <p>Once you have a API-key simply replace [apikey] in the examples below to
 		obtain your feed.</p> 
 		
-	 <p style="border:1px solid red;background-color: #FF3300; padding:10px;"><b>Each of these Feeds includes the photographer credit, which under the CC licence MUST be displayed along any use of the image.</b><br/><br/>Ideally also you should link back to the main photo page, either with the link supplied or with <a href="http://{$http_host}/photo/[id]">http://{$http_host}/photo/[id]</a>.<br/><br/> Thank you for your attention in this matter.</p>
+	 <p style="border:1px solid red;background-color: #FF3300; padding:10px;"><b>Each of these Feeds includes the photographer credit/name, which under the CC licence MUST be displayed along any use of the image.</b><br/><br/>Ideally also you could link back to the main photo page, either with the link supplied or with <a href="http://{$http_host}/photo/[id]">http://{$http_host}/photo/[id]</a>.<br/><br/> Thank you for your attention in this matter.</p>
 		
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="rss"></a>RSS-feeds <a title="RSS Feed of Recent Images" href="/faq.php" class="xml-rss">RSS</a></h3> 
 	 <p>Really Simple Syndication allows you to obtain a details for a number of
@@ -125,46 +126,46 @@
 	 <p>There is a number of standard formats the feed is available in</p> 
 	 <table cellpadding="3" cellspacing="0" border="1"> 
 		<tr> 
-		  <th>format=RSS0.91</th> 
+		  <td>format=<b>RSS0.91</b></td> 
 		  <td><a title="Geograph RSS 0.91 feed"
 			 href="http://{$http_host}/syndicator.php?key=[apikey]&format=RSS0.91">RSS 0.91</a> </td> 
 		</tr> 
 		<tr> 
-		  <th>format=RSS1.0</th> 
+		  <td>format=<b>RSS1.0</b></td> 
 		  <td><a title="Geograph RSS 0.91 feed"
 			 href="http://{$http_host}/syndicator.php?key=[apikey]&i=12345&format=RSS1.0">RSS 1.0</a> -<b><i>
 			 Default</i></b></td> 
 		</tr> 
 		<tr> 
-		  <th>format=RSS2.0</th> 
+		  <td>format=<b>RSS2.0</b></td> 
 		  <td><a title="Geograph RSS 2.0 feed"
 			 href="http://{$http_host}/syndicator.php?key=[apikey]&format=RSS2.0">RSS 2.0</a></td> 
 		</tr> 
 		<tr> 
-		  <th>format=GeoRSS</th> 
+		  <td>format=<b>GeoRSS</b></td> 
 		  <td><a title="Geograph GeoRSS feed"
 			 href="http://{$http_host}/syndicator.php?key=[apikey]&i=12345&format=GeoRSS">GeoRSS</a> - 
-			 Custom extension of RSS1.0 to include the lat/long, see {external href="http://www.georss.org/" text="georss.org"}</td> 
+			 Extension of RSS 1.0 to include the lat/long, see {external href="http://www.georss.org/" text="georss.org"}</td> 
 		</tr> 
 		<tr> 
-		  <th>format=GeoPhotoRSS</th> 
+		  <td>format=<b>GeoPhotoRSS</b></td> 
 		  <td><a title="Geograph GeoPhotoRSS feed"
 			 href="http://{$http_host}/syndicator.php?key=[apikey]&i=12345&format=GeoPhotoRSS">GeoPhotoRSS</a> - 
-			 Further extension of GeoRSS to also include the thumbnail url, see {external href="http://www.pheed.com/pheed/rss_anatomy.html" text="pheed.com"}</td> 
+			 Further custom extension of GeoRSS to also include the thumbnail url, see {external href="http://www.pheed.com/pheed/rss_anatomy.html" text="pheed.com"}</td> 
 		</tr> 
 		<tr> 
-		  <th>format=OPML</th> 
+		  <td>format=<b>OPML</b></td> 
 		  <td><a title="Geograph OPML feed"
 			 href="http://{$http_host}/syndicator.php?key=[apikey]&i=12345&format=OPML">OPML</a></td> 
 		</tr> 
 		<tr> 
-		  <th>format=HTML</th> 
+		  <td>format=<b>HTML</b></td> 
 		  <td><a title="Geograph HTML feed"
 			 href="http://{$http_host}/syndicator.php?key=[apikey]&format=HTML">HTML</a> - ideal to be
 			 output by a server side script or to be included in an IFRAME</td> 
 		</tr> 
 		<tr> 
-		  <th rowspan="2">format=JS</th> 
+		  <td rowspan="2">format=<b>JS</b></td> 
 		  <td><a title="Geograph JavaScript feed"
 			 href="http://{$http_host}/syndicator.php?key=[apikey]&format=JS">JavaScript</a> - ideal to
 			 output a simple table with a single &lt;SCRIPT&gt; tag</td> 
@@ -175,12 +176,12 @@
 			 type="text/javascript"&gt;&lt;/script&gt;</td> 
 		</tr> 
 		<tr> 
-		  <th>format=PHP</th> 
+		  <td>format=<b>PHP</b></td> 
 		  <td><a title="Geograph PHP feed"
 			 href="http://{$http_host}/syndicator.php?key=[apikey]&format=PHP">PHP</a> - returns a valid php page, that builds a data-structure for use via include. (includes the thumbnail url)</td> 
 		</tr> 
 		<tr> 
-		  <th>format=KML</th> 
+		  <td>format=<b>KML</b></td> 
 		  <td><a title="Geograph Google Earth feed"
 			 href="http://{$http_host}/syndicator.php?key=[apikey]&format=KML">KML</a> - suitable for use directly in Google Earth (XML based - includes the thumb url and lat/long!)<br/>accepts additonal paramaters:</span>
 			 <table border="1" cellpadding="3" cellspacing="0"> 
@@ -191,12 +192,38 @@
 		 </table></td> 
 		</tr>
 	 </table> 
+	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="rest"></a>REST interface</h3>
+	 <p>Provides a very simple interface for obtaining details about a particular image. Will later be extended to include contributors, tags, and grid-squares and possibly even hectads and myriads and some aggregate statistics. If looking for bulk downloads please consider one of the alternative means.</p>
+	 
+	 <h4><a name="rest_services"></a>Services</h4> 
+	 <table cellpadding="3" cellspacing="0" border="1"> 
+		<tr> 
+		  <th colspan="2"><a title="Geograph Google Earth feed"
+			 href="http://{$http_host}/api/photo/1234">http://{$http_host}/api/photo/[photo-id]</a></th> 
+		</tr> 
+		<tr> 
+		  <th>Photo Details</th> 
+		  <td>Returns an XML infoset about the particular photograph, currently returns:
+<pre style="font-size:0.7em;">
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt; 
+&lt;geograph&gt;
+  &lt;status state="ok" /&gt; 
+  &lt;title&gt;Bascote&lt;/title&gt; 
+  &lt;gridref&gt;SP4063&lt;/gridref&gt; 
+  &lt;user profile="http://www.geograph.org.uk/profile.php?u=120"&gt;David Stowell&lt;/user&gt; 
+  &lt;img src="http://www.geograph.org.uk/photos/00/34/003456_e10e23bc.jpg"
+     width="640" height="480" /&gt; 
+&lt;/geograph&gt;</pre>
+  </td> 
+		</tr> 
+	</table>
+	 
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="csv"></a>CSV Export</h3> 
 	 <p>This is ideal for bulk downloads, or for keeping an offsite cache
 		up-to-date, it lives at:<br/><br/>
 	 <a title="Geograph RSS feed"
 		href="http://{$http_host}/export.csv.php?key=[apikey]">http://{$http_host}/export.csv.php?key=[apikey]</a><br/><br/>
-	 but you will probably want to supply a limiting parameter as follows</p>
+	 but works best in combination with the parameters below.</p>
 	 <h4><a name="csv_param"></a>Parameters</h4> 
 	 <table cellpadding="3" cellspacing="0" border="1"> 
 		<tr> 
@@ -335,7 +362,7 @@
 	 <p style="color:#990000;">NOTE: You can only supply EITHER en OR ll, not both</p>
 	 <table border="1" cellpadding="3" cellspacing="0"> 
 		<tr> 
-		  <th colspan="2" ALIGN="LEFT" rowspan="2">en=1 </th> 
+		  <th colspan="2" ALIGN="LEFT" rowspan="2">&amp;en=1</th> 
 		  <td colspan="2">add this parameter to add the Eastings and Northings
 			 </td> 
 		</tr> 
@@ -344,7 +371,7 @@
 			 href="http://{$http_host}/export.csv.php?key=[apikey]&en=1">http://{$http_host}/export.csv.php?key=[apikey]&amp;en=1</a></td>
 		</tr> 
 		<tr> 
-		  <th rowspan="2"> &nbsp;</th> 
+		  <th rowspan="2">&nbsp;</th> 
 		  <th>Easting</th> 
 		  <td rowspan="2">Absolute position for the image in m from the Grid
 			 False origin. Use the <i>Grid Ref</i> column to deduce with Grid the location
@@ -357,12 +384,12 @@
 		  <td>234556</td> 
 		</tr> 
 		<tr> 
-		  <th colspan="2" ALIGN="LEFT">ll=1 </th> 
+		  <th colspan="2" ALIGN="LEFT">&amp;ll=1</th> 
 		  <td colspan="2">add this parameter to return the WGS84 Latitude and
 			 Longitude </td> 
 		</tr> 
 		<tr> 
-		  <th rowspan="2"> &nbsp;</th> 
+		  <th rowspan="2" &nbsp;</th> 
 		  <th>Lat</th> 
 		  <td rowspan="2">Position for the image in decimal degrees lat/long,
 			 negative Longitude is West, specified to as high as accuracy as possible.</td> 
@@ -373,13 +400,13 @@
 		  <td>-2.5466</td> 
 		</tr> 
 		<tr> 
-		  <th colspan="2" ALIGN="LEFT">thumb=1 </th> 
+		  <th colspan="2" ALIGN="LEFT">&amp;thumb=1</th> 
 		  <td colspan="2">add this parameter to return the full url to a 120x120
 			 pixel thumbnail </td> 
 		</tr> 
 		<tr> 
 		  <th>&nbsp;</th> 
-		  <th>Thumb URL </th> 
+		  <th>Thumb URL</th> 
 		  <td colspan="2"> Example:<br/><a
 			 href="http://{$http_host}/photos/01/76/017622_ed5d17d5_120x120.jpg">http://{$http_host}/photos/01/76/017622_ed5d17d5_120x120.jpg</a>
 			 </td> 
@@ -501,6 +528,7 @@
 		<li>100x100km CheckSheets (<a href="http://www.geograph.org.uk/mapsheet.php?t=tolJ5oOXXJ0oOJFoOXXJfoMXbJqoOXXJL5405o4VZMlXwZblw4MMuX">example</a>) <small>- nice easy parseable listing, could be used for creating coverage maps</small></li>
 		<li>Please DON'T use the /list/ namespace as that's for Search Engines</li>
 		<li><a href="http://www.geourl.org/" style="text-decoration: line-through">geourl.org</a> (Coming soon)</li>
+		<li>We can also create coverage csv's on demand, (listing squares currently with images)</li>
 	 </ul>
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="finally"></a>Finally</h3> 
 	 <p>We wish you luck in you project and look forward to seeing the results! If you have any 
