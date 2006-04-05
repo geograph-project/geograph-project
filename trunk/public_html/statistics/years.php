@@ -89,7 +89,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	SUBSTRING($column,1,4) as Year,
 	count(DISTINCT $column) as Days 
 	from gridimage_search 
-	where $column not like '%-00%' $where_sql 
+	where $column not like '00%' and $column not like '%-00%' $where_sql 
 	group by SUBSTRING($column,1,4)
 	order by Year desc;" );
 	
