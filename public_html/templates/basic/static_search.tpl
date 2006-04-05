@@ -8,23 +8,23 @@
 
 <ol>
  
-	<li><h3><i>default</i></h3>
-	<p>By default geograph search just searches for the exact text you enter anywhere in the title, matching part words.</p></li>
+	<li><h3><i>Default</i></h3>
+	<p>By default the geograph search just searches for the exact text you enter anywhere in the title, matching part words.</p></li>
 
 
-	<li><h3>Whole word matching</h3>
+	<li><h3>Whole Word Matching</h3>
 	<p>Enter a single word prefixed by caret: ^ to find images with that exact word in the title, example:</p>
 	<tt style="border:1px solid gray;padding:10px">^bridge</tt>
-	<p>would not match against Bridgewater.</p></li>
+	<p>would not match against Bridgewater. (can't be combined with boolean searches below)</p></li>
 
     
-	<li><h3>Searching the title, description and category</h3>
-	<p>end your search with a plus: + to search all three fields for the exact text you enter, example:</p>
+	<li><h3>Searching the Title, Description and Category</h3>
+	<p>end your search word with a plus: + to search all three fields, example:</p>
 	<tt style="border:1px solid gray;padding:10px">bridge+</tt>
 	<p>would match images with bridge in the title, in the comments, or in the 'Road Bridge' category (for example).</p></li>
 
     
-	<li><h3>Advanced Boolean searches</h3>
+	<li><h3>Advanced Boolean Searches</h3>
 	<p>Can use the commands <tt>AND</tt>, <tt>OR</tt>, <tt>NOT</tt> (case is important), probably easiest to demonstrate with a few examples:</p>
 	<ul>
     	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">bridge AND river</tt></li>
@@ -32,6 +32,8 @@
     	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">road AND NOT bridge</tt>
     	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">road OR motorway OR carrigeway</tt></li>
     	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">NOT bridge</tt></li>
+    	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">road OR motorway+</tt></li>
+    	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">road+ AND a OR motorway+</tt></li>
     	</ul>
    	</li>
 </ol> 

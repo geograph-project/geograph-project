@@ -357,38 +357,41 @@ class SearchCriteria_Text extends SearchCriteria
 			$words = str_replace('^','',$this->searchq);
 			$sql_where .= ' wordnet.title>0 AND words = '.$db->Quote($words);
 			$sql_from .= ' INNER JOIN wordnet ON(gi.gridimage_id=wordnet.gid) ';
-		} elseif (preg_match("/\+$/",$this->searchq)) {
+		} elseif (preg_match("/\b(AND|OR|NOT)\b/",$this->searchq)) {
+			$sql_where .= " (";
+			$terms = $prefix = '';
+			$tokens = preg_split('/\s+/',trim($this->searchq));
+			$number = count($tokens);
+			$c = 1;
+			$tokens[] = 'END';
+			foreach ($tokens as $token) {
+				switch ($token) {
+					case 'END': $token = '';
+					case 'AND':
+					case 'OR': 
+						if ($c != 1 && $c != $number) {
+							if (preg_match('/\+$/',$terms)) {
+								$words = $db->Quote('%'.preg_replace("/\+$/",'',$terms).'%');
+								$sql_where .= " $prefix (gi.title LIKE ".$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.") $token ";
+							} else {
+								$sql_where .= " gi.title $prefix LIKE ".$db->Quote('%'.$terms.'%')." $token ";
+							}
+							$terms = $prefix = '';
+						}
+						break;
+					case 'NOT': $prefix = 'NOT'; break;
+					default: 
+						if ($terms)	$terms .= " ";
+						$terms .= $token;							
+				}
+				$c++;
+			}
+			$sql_where .= ")";
+		} elseif (preg_match('/\+$/',$this->searchq)) {
 			$words = $db->Quote('%'.preg_replace("/\+$/",'',$this->searchq).'%');
 			$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';
 		} else {
-			if (preg_match("/\b(AND|OR|NOT)\b/",$this->searchq)) {
-				$sql_where .= " (";
-				$terms = $prefix = '';
-				$tokens = preg_split('/\s+/',trim($this->searchq));
-				$number = count($tokens);
-				$c = 1;
-				foreach ($tokens as $token) {
-					switch ($token) {
-						case 'AND':
-						case 'OR': 
-							if ($c != 1 && $c != $number) {
-								$sql_where .= " gi.title $prefix LIKE ".$db->Quote('%'.$terms.'%')." $token ";
-								$terms = $prefix = '';
-							}
-							break;
-						case 'NOT': $prefix = 'NOT'; break;
-						default: 
-							if ($terms)	$terms .= " ";
-							$terms .= $token;							
-					}
-					$c++;
-				}
-				if ($terms)
-					$sql_where .= " gi.title $prefix LIKE ".$db->Quote('%'.$terms.'%');
-				$sql_where .= ")";
-			} else {
-				$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$this->searchq.'%');
-			}
+			$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$this->searchq.'%');
 		}
 	}
 }
