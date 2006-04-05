@@ -90,8 +90,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%'
 		GROUP BY imagetaken" );
 		
-		print count($images);exit;
-		
 		$maximages=0;
 		foreach ($images as $day=>$arr) {
 			if ($maximages < $arr['images'])
@@ -132,7 +130,6 @@ if (!$smarty->is_cached($template, $cacheid))
 			$w++;
 		}
 
-		#print_rp($weeks,true);
 		$smarty->assign_by_ref("weeks",$weeks);
 	
 		$smarty->assign("month_name",strftime("%B", $timeStamp));
@@ -149,8 +146,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		FROM `gridimage_search`
 		WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%'
 		GROUP BY imagetaken" );
-		
-		print_rp($images);exit;
 		
 		$maximages=0;
 		foreach ($images as $day=>$arr) {
