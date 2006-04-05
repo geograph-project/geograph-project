@@ -69,7 +69,7 @@ if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 } elseif (isset($_GET['last']) && preg_match("/^\d+ \w+$/",$_GET['last']) ) {
 	$_GET['last'] = preg_replace("/s$/",'',$_GET['last']);
 	$sql_crit .= " AND upd_timestamp > date_sub(now(), interval {$_GET['last']})";
-} elseif (isset($_GET['limit']) && preg_match("/^\d(,\d+)?$/",$_GET['limit'])) {
+} elseif (isset($_GET['limit']) && preg_match("/^\d+(,\d+|)?$/",$_GET['limit'])) {
 	$sql_crit .= " ORDER BY upd_timestamp DESC LIMIT {$_GET['limit']}";
 }
 
