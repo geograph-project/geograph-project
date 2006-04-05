@@ -15,7 +15,7 @@
 <input id="searchgo" type="submit" name="go" value="Find"/> [<a href="/search.php?form=advanced">advanced search</a>]
 
 <br/><br/>
-<small>Enter a Placename, Postcode, Grid Reference, or a text search</small></div>
+<small>Enter a Placename, Postcode, Grid Reference, or a text search (<a href="/help/search">help</a>)</small></div>
 </form>
 {/dynamic} 
 <ul style="margin-left:0;padding:0 0 0 1em;">

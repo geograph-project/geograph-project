@@ -44,7 +44,8 @@
 		  </tr> 
 		  <tr> 
 			 <td><label for="textsearch" id="l_textsearch">containing text</label></td> 
-			 <td><input type="text" name="textsearch" id="textsearch" value="{$textsearch|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
+			 <td><input type="text" name="textsearch" id="textsearch" value="{$textsearch|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/><br/>
+			 <small>open <a href="/help/search" target="geo_help">text search help</a> in new window</small></td> 
 			 <td>eg Island</td> 
 		  </tr> 
 		  <tr> 
