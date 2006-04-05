@@ -1,6 +1,6 @@
 {include file="_std_begin.tpl"}
 
-<h2>Geograph Calender {$year}</h2>
+<h2>Geograph Calendar {$year}</h2>
 
 <form action="{$script_name}">
 <p>Date: {html_select_date display_days=false prefix="" time=`$date` start_year="-100" reverse_years=true  month_empty="-whole year-" all_extra="onchange='this.form.submit()'"}<noscript><input type="submit" value="Update"/></noscript></p> 

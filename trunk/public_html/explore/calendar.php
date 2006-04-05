@@ -33,7 +33,7 @@ $month=(!empty($_GET['Month']))?intval($_GET['Month']):'';
 $year=(!empty($_GET['Year']))?intval($_GET['Year']):date('Y');
 
 
-$template=($month)?'calender_month.tpl':'calender_year.tpl';
+$template=($month)?'calendar_month.tpl':'calendar_year.tpl';
 $cacheid="$year-$month";
 
 if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
@@ -87,8 +87,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		COUNT(*) AS images,
 		SUM(moderation_status = 'accepted') AS `supps`
 		FROM `gridimage_search`
-		WHERE imagetaken LIKE '$like%'
+		WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%'
 		GROUP BY imagetaken" );
+		
+		print count($images);exit;
+		
 		$maximages=0;
 		foreach ($images as $day=>$arr) {
 			if ($maximages < $arr['images'])
@@ -128,7 +131,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$weeks[] = $week;	
 			$w++;
 		}
-		
+
 		#print_rp($weeks,true);
 		$smarty->assign_by_ref("weeks",$weeks);
 	
@@ -144,8 +147,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		COUNT(*) AS images,
 		SUM(moderation_status = 'accepted') AS `supps`
 		FROM `gridimage_search`
-		WHERE imagetaken LIKE '$like%'
+		WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%'
 		GROUP BY imagetaken" );
+		
+		print_rp($images);exit;
+		
 		$maximages=0;
 		foreach ($images as $day=>$arr) {
 			if ($maximages < $arr['images'])
