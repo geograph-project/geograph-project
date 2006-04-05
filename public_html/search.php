@@ -74,7 +74,7 @@ if (isset($_GET['fav']) ) {
 	header("Location:/search.php");	
 	exit;
 	
-} else if (!empty($_GET['first']) ) {
+} else if (!empty($_GET['first']) || !empty($_GET['blank']) ) {
 	dieUnderHighLoad();
 	// -------------------------------
 	//  special handler to build a special query for myriads/numberical squares.
@@ -85,21 +85,25 @@ if (isset($_GET['fav']) ) {
 	$data = array();
 	
 	
+	if (!empty($_GET['first'])) {
+		//replace for myriads
+		$gr = preg_replace('/^([A-Z]{1,2})(\d)(\d)$/','$1$2_$3_',$_GET['first']);
 
-	//replace for myriads
-	$gr = preg_replace('/^([A-Z]{1,2})(\d)(\d)$/','$1$2_$3_',$_GET['first']);
-	
 
-	//replace for numberical squares
-	$gr = preg_replace('/\w*(\d{4})/','%$1',$gr);
-	
+		//replace for numberical squares
+		$gr = preg_replace('/\w*(\d{4})/','%$1',$gr);
 
-	$name = preg_replace('/\w+(\d{4})/','$1',$_GET['first']);
-	
-	
-	$data['description'] = "first geographs in $name";
 
-	$data['searchq'] = "grid_reference LIKE '$gr' and ftf = 1";
+		$name = preg_replace('/\w+(\d{4})/','$1',$_GET['first']);
+
+
+		$data['description'] = "first geographs in $name";
+
+		$data['searchq'] = "grid_reference LIKE '$gr' and ftf = 1";
+	} elseif (!empty($_GET['blank'])) {
+		$data['description'] = "with blank comment";
+		$data['searchq'] = "(comment = '' OR title='')";
+	}
 	
 	$data['orderby'] = 'gridimage_id';
 	if (!preg_match('/\w*(\d{4})/',$_GET['first']))
