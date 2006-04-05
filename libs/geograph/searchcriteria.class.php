@@ -361,7 +361,32 @@ class SearchCriteria_Text extends SearchCriteria
 			$words = $db->Quote('%'.preg_replace("/\+$/",'',$this->searchq).'%');
 			$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';
 		} else {
-			$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$this->searchq.'%');
+			if (preg_match("/\b(AND|OR|NOT)\b/",$this->searchq)) {
+				$terms = $prefix = '';
+				$tokens = preg_split('/\s+/',trim($this->searchq));
+				$number = count($tokens);
+				$c = 1;
+				foreach ($tokens as $token) {
+					switch ($token) {
+						case 'AND':
+						case 'OR': 
+							if ($c != 1 && $c != $number) {
+								$sql_where .= " gi.title $prefix LIKE ".$db->Quote('%'.$terms.'%')." $token ";
+								$terms = $prefix = '';
+							}
+							break;
+						case 'NOT': $prefix = 'NOT'; break;
+						default: 
+							if ($terms)	$terms .= " ";
+							$terms .= $token;							
+					}
+					$c++;
+				}
+				if ($terms)
+					$sql_where .= " gi.title $prefix LIKE ".$db->Quote('%'.$terms.'%');
+			} else {
+				$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$this->searchq.'%');
+			}
 		}
 	}
 }
