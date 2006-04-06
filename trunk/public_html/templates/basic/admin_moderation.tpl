@@ -28,10 +28,12 @@
 	  {/if}
 	  
 	  <br />
-	  <input class="accept" type="button" id="geograph" value="Geograph!" onClick="moderateImage({$image->gridimage_id}, 'geograph')">
-	  <input class="accept" type="button" id="accept" value="Accept" onClick="moderateImage({$image->gridimage_id}, 'accepted')">
-	  <input class="reject" type="button" id="reject" value="Reject" onClick="moderateImage({$image->gridimage_id}, 'rejected')">
-	  
+	  <input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey"{/if}/>
+	  <input class="accept" type="button" id="accept" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey"{/if}/>
+	  <input class="reject" type="button" id="reject" value="Reject" onClick="moderateImage({$image->gridimage_id}, 'rejected')"/>
+	  {if $image->user_status && $image->moderation_status != 'pending'}
+	  	<br/>Current Status: {$image->moderation_status}
+	  {/if}
 	  </div>
 	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
 	  
