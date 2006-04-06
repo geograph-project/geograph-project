@@ -894,6 +894,7 @@ class GridImage
 			"moderation_status='$status',".
 			"moderator_id='$moderator_id',".
 			"moderated=now(),".
+			"user_status='',".
 			"ftf={$this->ftf},".
 			"seq_no={$this->seq_no} ".
 			"where gridimage_id={$this->gridimage_id}";
