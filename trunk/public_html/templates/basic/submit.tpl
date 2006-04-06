@@ -130,6 +130,16 @@ geographing</a> first.</p>
 		{if $rastermap->enabled}
 		<p><small>TIP: drag the markers on the map<br/>to update these boxes</small></p>
 		{/if}
+		
+		<p><label for="view_direction">View Direction</label> <small>(photographer facing)</small><br/>
+		<select id="view_direction" name="view_direction" style="font-family:monospace">
+			{foreach from=$dirs key=key item=value}
+				<option value="{$key}"
+					{if $key%45!=0}style="color:gray"{/if}
+					{if $key==$view_direction}selected="selected"{/if}
+					>{$value}</option>
+			{/foreach}
+		</select></p>
 	</div>
 
 	{if $rastermap->enabled}
@@ -185,6 +195,7 @@ geographing</a> first.</p>
 	{/if}	
 {else}
 	<input type="hidden" name="viewpoint_gridreference" value="{$viewpoint_gridreference|escape:'html'}">
+	<input type="hidden" name="view_direction" value="{$view_direction|escape:'html'}">
 
 {/if}
 

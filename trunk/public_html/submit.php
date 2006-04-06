@@ -57,6 +57,11 @@ if (isset($_POST['gridsquare']))
 {
 	if (isset($_POST['viewpoint_gridreference']))
 		$smarty->assign('viewpoint_gridreference', $_POST['viewpoint_gridreference']);
+	if (isset($_POST['view_direction']) && strlen($_POST['view_direction'])) {
+		$smarty->assign('view_direction', $_POST['view_direction']);
+	} else {
+		$smarty->assign('view_direction', -1);
+	}
 		
 
 	//ensure the submitted reference is valid
@@ -208,6 +213,7 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->setTaken(stripslashes($_POST['imagetaken']));
 				$uploadmanager->setClass(stripslashes($_POST['imageclass']));
 				$uploadmanager->setViewpoint(stripslashes($_POST['viewpoint_gridreference']));
+				$uploadmanager->setDirection(stripslashes($_POST['view_direction']));
 				
 				$err = $uploadmanager->commit();
 				
@@ -302,6 +308,21 @@ if (isset($_POST['gridsquare']))
 			if ($square->totalimagecount > 0) {
 				$smarty->assign_by_ref('images', $images);
 			}
+			
+			require_once('geograph/searchengine.class.php');
+			$search = new SearchEngine('');
+			$dirs = array (-1 => '');
+			$jump = 360/16; $jump2 = 360/32;
+			for($q = 0; $q< 360; $q+=$jump) {
+				$s = ($q%90==0)?strtoupper($search->heading_string($q)):ucwords($search->heading_string($q));
+				$dirs[$q] = sprintf('%s : %03d deg (%03d > %03d)',
+					str_pad($s,16,' '),
+					$q,
+					($q == 0?$q+360-$jump2:$q-$jump2),
+					$q+$jump2);
+			}
+			$smarty->assign_by_ref('dirs', $dirs);
+			
 		}
 	}
 	else

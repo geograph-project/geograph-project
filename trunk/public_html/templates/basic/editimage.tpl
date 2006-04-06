@@ -265,15 +265,26 @@
 </p>
 
 
+<p><label for="view_direction">Edit View Direction  {if $moderated.view_direction}<span class="moderatedlabel">(moderated)</span>{/if}
+</label> <small>(photographer facing)</small><br/>
+<select id="view_direction" name="view_direction" style="font-family:monospace">
+	{foreach from=$dirs key=key item=value}
+		<option value="{$key}"
+			{if $key%45!=0}style="color:gray"{/if}
+			{if $key==$image->view_direction}selected="selected"{/if}
+			>{$value}</option>
+	{/foreach}
+</select></p>
 
-<p><label for="title">New Title {if $moderated.title}<span class="moderatedlabel">(moderated)</span>{/if}</label> (<a href="/help/style" target="_blank">Open Style Guide</a>)<br/>
+
+<p><label for="title">Edit the Title {if $moderated.title}<span class="moderatedlabel">(moderated)</span>{/if}</label> (<a href="/help/style" target="_blank">Open Style Guide</a>)<br/>
 {if $error.title}<span class="formerror">{$error.title}</span><br/>{/if}
 <input type="text" id="title" name="title" size="50" value="{$image->title|escape:'html'}"/>
 </p>
 
 
 <p>
-<label for="comment">New Comment {if $moderated.comment}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
+<label for="comment">Edit Comment {if $moderated.comment}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.comment}<span class="formerror">{$error.comment}</span><br/>{/if}
 <textarea id="comment" name="comment" rows="3" cols="50">{$image->comment|escape:'html'}</textarea>
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
@@ -295,7 +306,7 @@ window.onload = prePopulateImageclass;
 </script>
 {/literal}
 
-<p><label for="imageclass">New Category {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />	
+<p><label for="imageclass">Edit Category {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />	
 	{if $error.imageclass}
 	<span class="formerror">{$error.imageclass}</span><br/>
 	{/if}
@@ -324,7 +335,7 @@ window.onload = prePopulateImageclass;
 
 {if $user->user_id eq $image->user_id}
 
-	<p><label>Date picture taken {if $moderated.imagetaken}<span class="moderatedlabel">(moderated)</span>{/if}</label> <br/>
+	<p><label>Edit Date picture taken {if $moderated.imagetaken}<span class="moderatedlabel">(moderated)</span>{/if}</label> <br/>
 	{html_select_date prefix="imagetaken" time=`$image->imagetaken` start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" day_value_format="%02d" month_value_format="%m"}
 	<br/><small>(please provide as much detail as possible, if you only know the year or month then that's fine)</small></p>
 {else}

@@ -916,6 +916,16 @@ class GridImage
 		
 		//todo: unlock tables. 
 		
+		//update maps on moderation if:
+			//was pending
+				//not now rejected
+				//is now ftf or supp (cos might not be any ftf)
+					//or was ftf (cos new ftf should take place
+			//now rejected
+				//was ftf or supp (cos might not be any ftf)
+				
+		
+		
 		//invalidate any cached maps (on anything except rejecting a pending image)
 		$updatemaps = ( !($status == 'rejected' && $this->moderation_status == 'pending') );
 	
@@ -1112,6 +1122,7 @@ class GridImage
 			", imagetaken=".$db->Quote($this->imagetaken).
 			", viewpoint_northings=".$db->Quote($this->viewpoint_northings).
 			", viewpoint_eastings=".$db->Quote($this->viewpoint_eastings).
+			", view_direction=".$db->Quote($this->view_direction).
 			" where gridimage_id = '{$this->gridimage_id}'";
 		$db->Execute($sql);
 			
