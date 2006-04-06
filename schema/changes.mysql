@@ -501,3 +501,8 @@ INSERT INTO `route_item` VALUES ('TV5995', 1, 201);
         
 #to allow efficient joins with route - should help many other searches too
 ALTER TABLE `gridimage_search` ADD INDEX ( `grid_reference` ) ;
+
+
+ALTER TABLE `gridimage` ADD `view_direction` SMALLINT DEFAULT '-1' NOT NULL ;
+
+ALTER TABLE `gridimage` ADD `user_status` ENUM( '', 'accepted', 'rejected' ) NOT NULL;
