@@ -146,7 +146,11 @@ if ($image->isValid())
 		$smarty->assign('x', $image->grid_square->x);
 		$smarty->assign('y', $image->grid_square->y);
 		
-
+		if ($image->view_direction > -1) {
+			require_once('geograph/searchengine.class.php');
+			$search = new SearchEngine('');
+			$smarty->assign('view_direction', ($image->view_direction%90==0)?strtoupper($search->heading_string($image->view_direction)):ucwords($search->heading_string($image->view_direction)) );
+		}
 	}
 }
 
