@@ -353,14 +353,10 @@ class SearchCriteria_Text extends SearchCriteria
 		if ($sql_where) {
 			$sql_where .= ' and ';
 		}
-		if (strpos($this->searchq,'^') === 0) {
-			$words = str_replace('^','',$this->searchq);
-			$sql_where .= ' wordnet.title>0 AND words = '.$db->Quote($words);
-			$sql_from .= ' INNER JOIN wordnet ON(gi.gridimage_id=wordnet.gid) ';
-		} elseif (preg_match("/\b(AND|OR|NOT)\b/",$this->searchq)) {
+		if (preg_match("/\b(AND|OR|NOT)\b/",$this->searchq)) {
 			$sql_where .= " (";
-			$terms = $prefix = '';
-			$tokens = preg_split('/\s+/',trim($this->searchq));
+			$terms = $prefix = $postfix = '';
+			$tokens = preg_split('/\s+/',trim(preg_replace('/([\(\)])/',' $1 ',$this->searchq)));
 			$number = count($tokens);
 			$c = 1;
 			$tokens[] = 'END';
@@ -370,14 +366,26 @@ class SearchCriteria_Text extends SearchCriteria
 					case 'AND':
 					case 'OR': 
 						if ($c != 1 && $c != $number) {
-							if (preg_match('/\+$/',$terms)) {
-								$words = $db->Quote('%'.preg_replace("/\+$/",'',$terms).'%');
-								$sql_where .= " $prefix (gi.title LIKE ".$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.") $token ";
+							if (strpos($terms,'^') === 0) {
+								$words = 'REGEXP '.$db->Quote('[[:<:]]'.str_replace('^','',$terms).'[[:>:]]');
 							} else {
-								$sql_where .= " gi.title $prefix LIKE ".$db->Quote('%'.$terms.'%')." $token ";
+								$words = 'LIKE '.$db->Quote('%'.preg_replace('/\+$/','',$terms).'%');
 							}
-							$terms = $prefix = '';
+							
+							if (preg_match('/\+$/',$terms)) {								
+								$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.imageclass '.$words.')';
+							} else {
+								$sql_where .= " gi.title $prefix ".$words;
+							}
+							$sql_where .= " $postfix $token ";
+							$terms = $prefix = $postfix = '';
 						}
+						break;
+					case '(': 
+						$sql_where .= $token;
+						break;
+					case ')': 
+						$postfix = $token;
 						break;
 					case 'NOT': $prefix = 'NOT'; break;
 					default: 
@@ -387,6 +395,11 @@ class SearchCriteria_Text extends SearchCriteria
 				$c++;
 			}
 			$sql_where .= ")";
+		#	print $sql_where;exit;
+		} elseif (strpos($this->searchq,'^') === 0) {
+			$words = str_replace('^','',$this->searchq);
+			$sql_where .= ' wordnet.title>0 AND words = '.$db->Quote($words);
+			$sql_from .= ' INNER JOIN wordnet ON(gi.gridimage_id=wordnet.gid) ';
 		} elseif (preg_match('/\+$/',$this->searchq)) {
 			$words = $db->Quote('%'.preg_replace("/\+$/",'',$this->searchq).'%');
 			$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';
