@@ -858,15 +858,18 @@ class GridImage
 		if (!$this->isValid())
 			return "Invalid image";
 		
-		if ($status==$this->moderation_status)
-			return "No change, still {$this->moderation_status}";
+		$db=&$this->_getDB();
 		
+		if ($status==$this->moderation_status) {
+			$db->Query("update gridimage set user_status = '' where gridimage_id={$this->gridimage_id}");
+
+			return "No change, still {$this->moderation_status}";
+		}
 		if (!in_array($status, $valid_status))
 			return "Bad status $status";
 		
 		//to get this far, the image is valid, the status
 		//is valid, and it is a definite change of status
-		$db=&$this->_getDB();
 		
 		
 		//we want to detect changes in ftf status...a pending image is always ftf 0
