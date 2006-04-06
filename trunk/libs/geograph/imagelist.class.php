@@ -52,10 +52,10 @@ class ImageList
 	/**
 	* constructor - can be used to build a basic list (See getImages)
 	*/
-	function ImageList($statuses=null, $sort=null, $count=null,$advanced = false)
+	function ImageList($statuses=null, $sort=null, $count=null,$advanced = false,$includeUserStatus = false)
 	{
 		if (!is_null($statuses))
-			$this->getImages($statuses, $sort, $count,$advanced);
+			$this->getImages($statuses, $sort, $count,$advanced,$includeUserStatus);
 	}
 	
 	/**
@@ -63,8 +63,10 @@ class ImageList
 	* @param statuses - either an array of statuses or a single status (pending, rejected or accepted)
 	* @param sort - optional sort field and direction, e.g. submitted desc
 	* @param count - optional upper limit on images returned
+	* @param advanced - true to use real table, eg if need pending (default: false)
+	* @param includeUserStatus - include any that have been self moderated (default: false)
 	*/
-	function getImages($statuses, $sort=null, $count=null,$advanced = false)
+	function getImages($statuses, $sort=null, $count=null,$advanced = false,$includeUserStatus = false)
 	{
 		$db=&$this->_getDB();
 		
@@ -83,6 +85,10 @@ class ImageList
 			$limit="";
 		else
 			$limit="limit $count";
+		
+		if ($includeUserStatus) {
+			$orderby = "or user_status!='' ".$orderby;
+		}
 		
 		//lets find some recent photos
 		$this->images=array();
