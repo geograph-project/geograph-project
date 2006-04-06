@@ -255,6 +255,13 @@ WGS84: {$latdm} {$longdm}
 {if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {getamap gridref=$image->photographer_gridref text=$image->photographer_gridref}</td></tr>
 {/if}
 
+{if $view_direction}
+<tr><td>View Direction</td>
+
+<td style="font-family:verdana, arial, sans serif; font-size:0.8em">
+{$view_direction} (about {$image->view_direction} degrees)</td></tr>
+{/if}
+
 </table> 
 
 
