@@ -128,7 +128,7 @@ if (isset($_REQUEST['id']))
 		$moderated["imagetaken"]=true;
 		$moderated["grid_reference"]=true;
 		$moderated["photographer_gridref"]=true;
-
+		$moderated["view_direction"]=true;
 
 
 		//now make some exceptions
@@ -140,6 +140,7 @@ if (isset($_REQUEST['id']))
 			$moderated["imagetaken"]=false;
 			$moderated["grid_reference"]=false;
 			$moderated["photographer_gridref"]=false;
+			$moderated["view_direction"]=false;
 		}
 		elseif ($isowner)
 		{
@@ -152,7 +153,7 @@ if (isset($_REQUEST['id']))
 				$moderated["grid_reference"]=false;
 
 			$moderated["photographer_gridref"]=false;
-
+			$moderated["view_direction"]=false;
 		}
 
 
@@ -173,6 +174,22 @@ if (isset($_REQUEST['id']))
 
 		//let's find posts in the gridref discussion forum
 		$image->grid_square->assignDiscussionToSmarty($smarty);
+
+		//build a list of view directions
+		require_once('geograph/searchengine.class.php');
+		$search = new SearchEngine('');
+		$dirs = array (-1 => '');
+		$jump = 360/16; $jump2 = 360/32;
+		for($q = 0; $q< 360; $q+=$jump) {
+			$s = ($q%90==0)?strtoupper($search->heading_string($q)):ucwords($search->heading_string($q));
+			$dirs[$q] = sprintf('%s : %03d deg (%03d > %03d)',
+				str_pad($s,16,' '),
+				$q,
+				($q == 0?$q+360-$jump2:$q-$jump2),
+				$q+$jump2);
+		}
+		$smarty->assign_by_ref('dirs', $dirs);
+
 
 		//process a trouble ticket?
 		if (isset($_POST['gridimage_ticket_id']))
@@ -361,6 +378,7 @@ if (isset($_REQUEST['id']))
 				}
 			}
 
+			$view_direction=trim(stripslashes($_POST['view_direction']));
 
 
 			/////////////////////////////////////////////////////////////
@@ -387,6 +405,7 @@ if (isset($_REQUEST['id']))
 				$ticket->updateField("imagetaken", $image->imagetaken, $imagetaken, $moderated["imagetaken"]);
 				$ticket->updateField("grid_reference", $image->subject_gridref, $grid_reference, $moderated["grid_reference"]);
 				$ticket->updateField("photographer_gridref", $image->photographer_gridref, $photographer_gridref, $moderated["photographer_gridref"]);
+				$ticket->updateField("view_direction", $image->view_direction, $view_direction, $moderated["view_direction"]);
 
 				//finalise the change ticket
 				$status=$ticket->commit();
@@ -420,6 +439,7 @@ if (isset($_REQUEST['id']))
 				$image->imagetaken=$imagetaken;
 				$image->subject_gridref=$grid_reference;
 				$image->photographer_gridref=$photographer_gridref;
+				$image->view_direction=$view_direction;
 
 				$smarty->assign_by_ref('updatenote', $updatenote);
 
