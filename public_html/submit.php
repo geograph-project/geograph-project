@@ -194,6 +194,8 @@ if (isset($_POST['gridsquare']))
 				$smarty->assign('title', $title);
 				$smarty->assign('comment', stripslashes($_POST['comment']));
 
+				$smarty->assign('user_status', stripslashes($_POST['user_status']));
+
 				if ($ok) {
 					$step=4;
 				} else {
@@ -214,6 +216,7 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->setClass(stripslashes($_POST['imageclass']));
 				$uploadmanager->setViewpoint(stripslashes($_POST['viewpoint_gridreference']));
 				$uploadmanager->setDirection(stripslashes($_POST['view_direction']));
+				$uploadmanager->setUserStatus(stripslashes($_POST['user_status']));
 				
 				$err = $uploadmanager->commit();
 				
@@ -247,6 +250,7 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('comment', stripslashes($_POST['comment']));
 			$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
 			$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
+			$smarty->assign('user_status', stripslashes($_POST['user_status']));
 			$step = 3;
 		}
 		
