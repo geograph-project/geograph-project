@@ -28,12 +28,32 @@
   {if $image->comment}
   <div class="caption">{$image->comment|escape:'html'|geographlinks}</div>
   {/if}
-  {if $isadmin}
+  {if $isadmin || ($user->user_id eq $image->user_id)}
   <div class="statuscaption">status:
    {if $image->ftf}first{/if}
    {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
   {/if}
-  
+
+  	{if !$isadmin and ($user->user_id eq $image->user_id) and $image->moderation_status != 'rejected'}
+  	  <form action="/moderation.php" method="post">
+  	  <input type="hidden" name="gridimage_id" value="{$image->gridimage_id}"/>
+  	  <b>Self Moderation</b>
+  	  
+  	  {if $image->moderation_status == 'pending' && $image->user_status == 'accepted'}
+  	  <input class="accept" type="submit" id="geograph" name="user_status" value="Geograph"/>
+  	  {/if}
+  	  {if $image->moderation_status != 'accepted' && $image->user_status != 'accepted'}
+  	  <input class="accept" type="submit" id="accept" name="user_status" value="Supplemental"/>
+  	  {/if}
+  	  {if $image->user_status != 'rejected'}
+  	  <input class="reject" type="submit" id="reject" name="user_status" value="Reject"/>
+  	  {/if}
+  	  {if $image->user_status}
+	  <br/>[Currently: {if $image->user_status eq "accepted"}supplemental{else}{$image->user_status}{/if}]
+	  {/if}
+  	  
+  	  </form>
+	{/if}
 </div>
 
 {if $thankyou eq 'pending'}
