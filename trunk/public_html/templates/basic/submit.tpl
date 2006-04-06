@@ -214,7 +214,11 @@ Below is a full-size preview of the image we will store for grid reference
 <img src="{$preview_url}" width="{$preview_width}" height="{$preview_height}"/>
 <br/><br/>
 
+<div style="position:relative; background-color:#dddddd; padding-left:10px;padding-top:1px;padding-bottom:1px;">
 <h3>Is the image a &quot;geograph&quot;?</h3>
+
+<p><label for="user_status">Actually just make this image a supplemental:</label> <input type="checkbox" name="user_status" id="user_status" value="accepted" {if $user_status == "accepted"}checked="checked"{/if}/> (tick to apply)</p>
+
 <p>If you're the first to submit a proper &quot;geograph&quot; for {$gridref}
 you'll get a geograph point added to your profile and the warm glow that comes
 with it. So what makes an image a genuine geograph?</p>
@@ -227,6 +231,7 @@ with it. So what makes an image a genuine geograph?</p>
 <p>Good quality, visually appealing and historically relevant pictures (eg wide area views
 covering many square kilometers) may also be accepted as supplemental images 
 for {$gridref} provided they are accurately located, but may not qualify as geographs.</p>
+</div>
 
 <div style="float:right;position:relative;">
 <img src="{$preview_url}" width="{$preview_width*0.5|string_format:"%d"}" height="{$preview_height*0.5|string_format:"%d"}" alt="low resolution reminder image"/>	
@@ -325,6 +330,7 @@ window.onload = prePopulateImageclass;
 	<input type="hidden" name="comment" value="{$comment|escape:'html'}"/>
 	<input type="hidden" name="imageclass" value="{$imageclass|escape:'html'}"/>
 	<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
+	<input type="hidden" name="user_status" value="{$user_status|escape:'html'}"/>
 	
 	<h2>Submit Step 4 of 4 : Confirm image rights</h2>
 		
