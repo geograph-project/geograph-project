@@ -87,7 +87,7 @@ $USER->mustHavePerm('moderator');
 
 
 //lets find all unmoderated submissions
-$images=new ImageList('pending', 'submitted asc', 50,true);
+$images=new ImageList('pending', 'submitted asc', 50,true,true);
 $images->assignSmarty($smarty, 'unmoderated');
 
 
