@@ -34,7 +34,7 @@
    {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
   {/if}
 
-  	{if !$isadmin and ($user->user_id eq $image->user_id) and $image->moderation_status != 'rejected'}
+  	{if ($user->user_id eq $image->user_id) and $image->moderation_status != 'rejected'}
   	  <form action="/moderation.php" method="post">
   	  <input type="hidden" name="gridimage_id" value="{$image->gridimage_id}"/>
   	  <b>Self Moderation</b>
