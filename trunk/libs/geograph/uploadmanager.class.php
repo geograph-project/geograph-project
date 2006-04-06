@@ -159,7 +159,13 @@ class UploadManager
 	{
 		$this->view_direction=$view_direction;
 	}
-	
+	/**
+	* set user_status
+	*/
+	function setUserStatus($user_status)
+	{
+		$this->user_status=$user_status;
+	}	
 	/**
 	* outputs jpeg data for upload id $id and exits
 	*/
@@ -463,15 +469,15 @@ class UploadManager
 		$sql=sprintf("insert into gridimage(".
 			"gridsquare_id, seq_no, user_id, ftf,".
 			"moderation_status,title,comment,exif,nateastings,natnorthings,imageclass,imagetaken,".
-			"submitted,viewpoint_eastings,viewpoint_northings,view_direction) values ".
+			"submitted,viewpoint_eastings,viewpoint_northings,view_direction,user_status) values ".
 			"(%d,%d,%d,%d,".
 			"'pending',%s,%s,%s,%d,%d,%s,%s,".
-			"now(),%d,%d,%d)",
+			"now(),%d,%d,%d,%s)",
 			$this->square->gridsquare_id, $seq_no,$USER->user_id, $ftf,
 			$this->db->Quote($this->title), $this->db->Quote($this->comment), $this->db->Quote($exif),
 			$this->square->nateastings,$this->square->natnorthings,
 			$this->db->Quote($this->imageclass), $this->db->Quote($this->imagetaken),
-			$viewpoint_eastings,$viewpoint_northings,$this->view_direction);
+			$viewpoint_eastings,$viewpoint_northings,$this->view_direction,$this->db->Quote($this->user_status));
 		
 		$this->db->Query($sql);
 		
