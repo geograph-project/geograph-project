@@ -46,11 +46,11 @@ if (isset($_GET['preview']))
 
 $step=isset($_POST['step'])?intval($_POST['step']):1;
 
-
-//init smarty
-$smarty->assign('prefixes', $square->getGridPrefixes());
-$smarty->assign('kmlist', $square->getKMList());
-
+if ($step == 1) {
+	//init smarty
+	$smarty->assign('prefixes', $square->getGridPrefixes());
+	$smarty->assign('kmlist', $square->getKMList());
+}
 //for every stage after step 1, we expect to get a
 //grid reference posted...
 if (isset($_POST['gridsquare']))
