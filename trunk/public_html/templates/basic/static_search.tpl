@@ -15,7 +15,7 @@
 	<li><h3>^Whole Word Matching</h3>
 	<p>Enter a single word prefixed by caret: ^ to find images with that exact word in the title, example:</p>
 	<tt style="border:1px solid gray;padding:10px">^bridge</tt>
-	<p>would not match against Bridgewater. (can't be combined with boolean searches below)</p></li>
+	<p>would not match against Bridgewater.</p></li>
 
     
 	<li><h3>Searching the Title, Description and Category+</h3>
