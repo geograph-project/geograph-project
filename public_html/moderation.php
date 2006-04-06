@@ -52,6 +52,9 @@ if (isset($_POST['gridimage_id']))
 		{
 			if ($image->user_id == $USER->user_id)
 			{
+				if ($image->moderation_status == 'rejected')
+					die ("CANT EDIT REJECTED IMAGES");
+					
 				switch ($status) {
 					case 'Geograph':
 						$user_status = ''; break;
