@@ -153,6 +153,14 @@ class UploadManager
 	}
 	
 	/**
+	* set viewpoint_gridreference
+	*/
+	function setDirection($view_direction)
+	{
+		$this->view_direction=$view_direction;
+	}
+	
+	/**
 	* outputs jpeg data for upload id $id and exits
 	*/
 	function outputPreviewImage($id)
@@ -455,15 +463,15 @@ class UploadManager
 		$sql=sprintf("insert into gridimage(".
 			"gridsquare_id, seq_no, user_id, ftf,".
 			"moderation_status,title,comment,exif,nateastings,natnorthings,imageclass,imagetaken,".
-			"submitted,viewpoint_eastings,viewpoint_northings) values ".
+			"submitted,viewpoint_eastings,viewpoint_northings,view_direction) values ".
 			"(%d,%d,%d,%d,".
 			"'pending',%s,%s,%s,%d,%d,%s,%s,".
-			"now(),%d,%d)",
+			"now(),%d,%d,%d)",
 			$this->square->gridsquare_id, $seq_no,$USER->user_id, $ftf,
 			$this->db->Quote($this->title), $this->db->Quote($this->comment), $this->db->Quote($exif),
 			$this->square->nateastings,$this->square->natnorthings,
 			$this->db->Quote($this->imageclass), $this->db->Quote($this->imagetaken),
-			$viewpoint_eastings,$viewpoint_northings);
+			$viewpoint_eastings,$viewpoint_northings,$this->view_direction);
 		
 		$this->db->Query($sql);
 		
