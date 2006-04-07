@@ -39,7 +39,7 @@
   	  <input type="hidden" name="gridimage_id" value="{$image->gridimage_id}"/>
   	  <b>Self Moderation</b>
   	  
-  	  {if $image->moderation_status == 'pending' && $image->user_status == 'accepted'}
+  	  {if ($image->moderation_status == 'pending' || $image->moderation_status == 'geograph') && $image->user_status == 'accepted')}
   	  <input class="accept" type="submit" id="geograph" name="user_status" value="Geograph"/>
   	  {/if}
   	  {if $image->moderation_status != 'accepted' && $image->user_status != 'accepted'}
