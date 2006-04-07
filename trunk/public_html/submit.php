@@ -325,6 +325,7 @@ if (isset($_POST['gridsquare']))
 					($q == 0?$q+360-$jump2:$q-$jump2),
 					$q+$jump2);
 			}
+			$dirs['00'] = $dirs[0];
 			$smarty->assign_by_ref('dirs', $dirs);
 			
 		}
