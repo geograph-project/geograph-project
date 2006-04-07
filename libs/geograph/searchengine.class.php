@@ -71,7 +71,7 @@ class SearchEngine
 	//only run the count section of exercute
 	var $countOnly = false;
 	
-	function SearchEngine($query_id)
+	function SearchEngine($query_id = '')
 	{
 		if (is_numeric($query_id)) {
 	
@@ -191,9 +191,11 @@ class SearchEngine
 				$sql .= ",x = $searchx,y = $searchy,limit8 = $distance";
 			if ($limit1)
 				$sql .= ",limit1 = $limit1";
-			if (isset($USER) && $USER->registered)
+			if (isset($USER) && $USER->registered) {
 				$sql .= ",user_id = {$USER->user_id}";
-				
+				if (!empty($USER->search_results))
+					$sql .= ",resultsperpage = ".$db->Quote($USER->search_results);				
+			}	
 			$db->Execute($sql);
 
 			$i = $db->Insert_ID();
@@ -340,8 +342,11 @@ class SearchEngine
 			"searchq = ".$db->Quote($searchq);
 			if (isset($dataarray['displayclass']))
 				$sql .= ",displayclass = ".$db->Quote($dataarray['displayclass']);
-			if (isset($dataarray['resultsperpage']))
+			if (isset($dataarray['resultsperpage'])) {
 				$sql .= ",resultsperpage = ".$db->Quote(min(100,$dataarray['resultsperpage']));
+			} elseif (isset($USER) && !empty($USER->search_results)) {
+				$sql .= ",resultsperpage = ".$db->Quote($USER->search_results);				
+			}
 			if (isset($searchx) && $searchx > 0 && $searchy > 0)
 				$sql .= ",x = $searchx,y = $searchy";
 			if (isset($USER) && $USER->registered)
