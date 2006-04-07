@@ -63,6 +63,9 @@ if (isset($_REQUEST['edit']))
 			}
 		}
 	}
+	$smarty->assign('pagesizes', array(5,10,15,20,30,50));
+	$smarty->assign('delays', array(2,3,4,5,6,10,12));
+			
 	
 	$smarty->assign_by_ref('profile', $profile);
 }

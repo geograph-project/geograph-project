@@ -350,7 +350,7 @@ if (isset($_GET['fav']) ) {
 		
 		advanced_form($smarty,$db);
 	} else {
-		$smarty->assign('resultsperpage', 15);	
+		$smarty->assign('resultsperpage', $USER->search_results?$USER->search_results:15);	
 		$smarty->assign('distance', $CONF['default_search_distance']);	
 		
 		advanced_form($smarty,$db,true); //we can cache the blank form!
@@ -492,12 +492,11 @@ if (isset($_GET['fav']) ) {
 			$smarty->caching = 0; // NO caching
 		}
 		
+		$smarty->assign('pagesizes', array(5,10,15,20,30,50));
+		
 		if (!$is_cachable || !$smarty->is_cached($template, $is_cachable)) {
 			$smarty->assign('displayclasses', array('full' => 'full listing','text' => 'text description only','thumbs' => 'thumbnails only','slide' => 'slide-show mode'));
-			$smarty->assign('pagesizes', array(5,10,15,20,30,50));
 			$smarty->assign('distances', array(1,5,10,20,30,50,100,250,500,1000,2000));
-
-
 
 			$countylist = array();
 			$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0"); 

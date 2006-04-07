@@ -48,7 +48,18 @@
  </select></td>
  <td><div class="fieldnotes">The default order you will see recent discussions.</div></td></tr>
  
-
+ <tr><td><label for="search_results" class="nowrap">Search Results</label></td>
+  <td> <select name="search_results" id="search_results" style="text-align:right" size="1"> 
+	{html_options values=$pagesizes output=$pagesizes selected=$profile->search_results}
+	</select> per page</td>
+  <td><div class="fieldnotes">Default number of search results per page.</div></td></tr>
+  
+ <tr><td><label for="slideshow_delay" class="nowrap">Slide Show Delay</label></td>
+  <td> <select name="slideshow_delay" id="slideshow_delay" style="text-align:right" size="1"> 
+	{html_options values=$delays output=$delays selected=$profile->slideshow_delay}
+	</select> seconds</td>
+  <td><div class="fieldnotes">Number of seconds slides are shown for.</div></td></tr>
+  
 </table>
 
 <br/>

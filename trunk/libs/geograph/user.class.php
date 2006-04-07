@@ -444,12 +444,14 @@ class GeographUser
 		if ($ok)
 		{
 		
-			$sql = sprintf("update user set realname=%s,nickname=%s,website=%s,public_email=%d ".
+			$sql = sprintf("update user set realname=%s,nickname=%s,website=%s,public_email=%d,search_results=%d,slideshow_delay=%d ".
 				"where user_id=%d",
 				$db->Quote(stripslashes($profile['realname'])),
 				$db->Quote(stripslashes($profile['nickname'])),
 				$db->Quote(stripslashes($profile['website'])),
 				isset($profile['public_email'])?1:0,
+				$profile['search_results'],
+				$profile['slideshow_delay'],
 				$this->user_id
 				);
 
@@ -476,7 +478,9 @@ class GeographUser
 				$this->public_email=isset($profile['public_email'])?1:0;
 				if (isset($profile['sortBy'])) 
 					$this->sortBy=stripslashes($profile['sortBy']);
-				
+				$this->search_results=stripslashes($profile['search_results']);
+				$this->slideshow_delay=stripslashes($profile['slideshow_delay']);
+			
 				$this->_forumUpdateProfile();
 				
 			}
@@ -556,7 +560,7 @@ class GeographUser
 		{
 			$email=stripslashes(trim($_SERVER['PHP_AUTH_USER']));
 			$password=stripslashes(trim($_SERVER['PHP_AUTH_PW']));
-			#print "$email = $password";exit;
+			
 			$db = NewADOConnection($GLOBALS['DSN']);
 
 			$sql="";
