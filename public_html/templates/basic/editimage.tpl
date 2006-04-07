@@ -49,7 +49,7 @@
   	  <input class="reject" type="submit" id="reject" name="user_status" value="Reject"/>
   	  {/if}
   	  {if $image->user_status}
-	  <br/>[Currently: {if $image->user_status eq "accepted"}supplemental{else}{$image->user_status}{/if}]
+	  <br/><small>[Current suggestion: {if $image->user_status eq "accepted"}supplemental{else}{$image->user_status}{/if}</small>]
 	  {/if}
   	  
   	  </form>
