@@ -174,10 +174,10 @@
 		  </tr> 
 		  <tr> 
 			 <td>&nbsp;</td> 
-			 <td> 
+			 <td> {dynamic}
 				<select name="resultsperpage" id="resultsperpage" style="text-align:right" size="1"> 
 					{html_options values=$pagesizes output=$pagesizes selected=$resultsperpage}
-				</select> <label for="resultsperpage">results per page</label></td>
+				</select> <label for="resultsperpage">results per page</label>{/dynamic}</td>
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td>
 			 
 		  </tr> 
