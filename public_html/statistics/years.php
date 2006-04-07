@@ -87,6 +87,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$table=$db->GetAll("
 	select 
 	SUBSTRING($column,1,4) as Year,
+	count(*)/count(DISTINCT $column) as `Average Images Per Day`,
 	count(DISTINCT $column) as Days 
 	from gridimage_search 
 	where $column not like '00%' and $column not like '%-00%' $where_sql 
@@ -95,7 +96,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	foreach ($table as $id => $row) {
 		$days = 365 + (!($row['Year'] % 4) && (($row['Year'] % 100) || !($row['Year'] % 400)));
-		#$table[$id]['Days in Year'] = $days;
+		$table[$id]['Days in Year'] = $days;
 		$table[$id]['Percentage'] = sprintf('%.1f',$row['Days']/$days*100)."%";
 	}
 	
