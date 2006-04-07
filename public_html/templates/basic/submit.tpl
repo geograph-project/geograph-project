@@ -134,10 +134,7 @@ geographing</a> first.</p>
 		<p><label for="view_direction">View Direction</label> <small>(photographer facing)</small><br/>
 		<select id="view_direction" name="view_direction" style="font-family:monospace">
 			{foreach from=$dirs key=key item=value}
-				<option value="{$key}"
-					{if $key%45!=0}style="color:gray"{/if}
-					{if $key==$view_direction}selected="selected"{/if}
-					>{$value}</option>
+				<option value="{$key}"{if $key%45!=0} style="color:gray"{/if}{if $key==$view_direction} selected="selected"{/if}>{$value}</option>
 			{/foreach}
 		</select></p>
 	</div>
