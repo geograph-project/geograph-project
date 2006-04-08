@@ -353,7 +353,7 @@ class SearchCriteria_Text extends SearchCriteria
 		if ($sql_where) {
 			$sql_where .= ' and ';
 		}
-		if (preg_match("/\b(AND|OR|NOT)\b/",$this->searchq)) {
+		if (preg_match("/\b(AND|OR|NOT)\b/",$this->searchq) || preg_match('/^\^.*\+$/',$this->searchq)) {
 			$sql_where .= " (";
 			$terms = $prefix = $postfix = '';
 			$tokens = preg_split('/\s+/',trim(preg_replace('/([\(\)])/',' $1 ',$this->searchq)));
@@ -395,7 +395,6 @@ class SearchCriteria_Text extends SearchCriteria
 				$c++;
 			}
 			$sql_where .= ")";
-		#	print $sql_where;exit;
 		} elseif (strpos($this->searchq,'^') === 0) {
 			$words = str_replace('^','',$this->searchq);
 			$sql_where .= ' wordnet.title>0 AND words = '.$db->Quote($words);
