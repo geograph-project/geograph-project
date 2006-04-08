@@ -78,6 +78,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		$line['Subject'] = $image->getSubjectGridref();
 		
 		$promore4 = $image->photographer_gridref_accuracy < 1000;
+		
+		//mimic the behaviour doen by getNatEastings to place the location in the center of the 1km square
 		if (!$promore4) {
 			$image->viewpoint_eastings += 500;
 			$image->viewpoint_northings += 500;
@@ -100,7 +102,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		$jump = 360/16; $jump2 = 360/32;
 		
-		$q = intval($angle/$jump)*$jump;
+		$q = round($angle/$jump)*$jump;
 		
 		
 		require_once('geograph/searchengine.class.php');
