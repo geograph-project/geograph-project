@@ -195,6 +195,7 @@ class GridImage
 				$this->grid_square->reference_index);
 			
 			$this->photographer_gridref=$posgr;
+			$this->photographer_gridref_accuracy=pow(10,6-$len)/10;
 		}	
 		
 		return $this->photographer_gridref;
