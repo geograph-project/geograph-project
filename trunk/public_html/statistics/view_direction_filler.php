@@ -41,6 +41,9 @@ $cacheid='viewdirection.'.$u;
 
 $smarty->caching = 2;
 
+if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
+	$smarty->clear_cache($template, $cacheid);
+
 if (!$smarty->is_cached($template, $cacheid))
 {
 
