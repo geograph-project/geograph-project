@@ -147,7 +147,6 @@ geographing</a> first.</p>
 		</div>
 		
 		{$rastermap->getScriptTag()}
-		{if $viewpoint_gridreference}
 			{literal}
 			<script type="text/javascript">
 				window.onload = function () {
@@ -156,7 +155,7 @@ geographing</a> first.</p>
 				}
 			</script>
 			{/literal}
-		{/if}
+		
 	{else} 
 		<script type="text/javascript" src="/mapping.js"></script>
 	{/if}
