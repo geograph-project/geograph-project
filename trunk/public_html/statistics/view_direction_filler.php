@@ -37,7 +37,7 @@ $template='statistics_table.tpl';
 
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):$USER->user_id;
 
-$cacheid='view_direction.'.$u;
+$cacheid='viewdirection.'.$u;
 
 $smarty->caching = 2;
 
@@ -78,7 +78,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$line['Subject'] = $image->getSubjectGridref();
 		
 		$promore4 = $image->photographer_gridref_accuracy < 1000;
-		if (!$promore) {
+		if (!$promore4) {
 			$image->viewpoint_eastings += 500;
 			$image->viewpoint_northings += 500;
 		}
