@@ -304,10 +304,14 @@ class SearchEngine
 			$dataarray['textsearch'] = trim($dataarray['textsearch']);
 			$searchclass = 'Text';
 			$searchq = $dataarray['textsearch'];
-			if (preg_match('/\+$/',$dataarray['textsearch'])) {
+			if (preg_match('/^\^.*\+$/',$dataarray['textsearch']) || preg_match('/\b(OR|AND|NOT)\b/',$dataarray['textsearch'])) {
+				$searchdesc = ", matching '".$dataarray['textsearch']."' ";
+			} elseif (preg_match('/\+$/',$dataarray['textsearch'])) {
 				$searchdesc = ", all about '".preg_replace('/\+$/','',$dataarray['textsearch'])."' ";
+			} elseif (preg_match('/^\^/',$dataarray['textsearch'])) {
+				$searchdesc = ", matching whole word '".str_replace('^','',$dataarray['textsearch'])."' ";
 			} else {
-				$searchdesc = ", containing '".str_replace('^','',$dataarray['textsearch'])."' ";	
+				$searchdesc = ", containing '".$dataarray['textsearch']."' ";	
 			}
 		} else if (!empty($dataarray['description']) && !empty($dataarray['searchq'])) {
 			if (!$dataarray['adminoverride'])
