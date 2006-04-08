@@ -61,6 +61,12 @@ var rath = (mapb / h2) * 1000;
 
 var currentelement = null;
 
+var eastings1 = 0;
+var northings1 = 0;
+var eastings2 = 0;
+var northings2 = 0;
+
+
 function overlayMouseUp(e) {
 	if (currentelement != null) {
 		if (currentelement.id == 'marker1') {
@@ -159,8 +165,12 @@ function overlayMouseMove(e) {
 	if(cenXblock < 0 || cenYblock < 0 || cenXblock > 9 || cenYblock > 15) {
 		if (currentelement != null) {
 			if (currentelement.id == 'marker1') {
+				eastings1 = 0;
+				northings1 = 0;
 				document.theForm.gridreference.value = "-Invalid-";
 			} else if (currentelement.id == 'marker2') {
+				eastings2 = 0;
+				northings2 = 0;
 				document.theForm.viewpoint_gridreference.value = "-Invalid-";
 			}
 		}
@@ -169,13 +179,18 @@ function overlayMouseMove(e) {
 		grstr = GBGridLetters[cenXblock][cenYblock] + cenXhun + cenYhun;
 		if (currentelement != null) {
 			if (currentelement.id == 'marker1') {
+				eastings1 = easting;
+				northings1 = northing;
 				document.theForm.gridreference.value = grstr;
 			} else if (currentelement.id == 'marker2') {
+				eastings2 = easting;
+				northings2 = northing;
 				document.theForm.viewpoint_gridreference.value = grstr;
 			} 
 		}
 		document.images['map'].alt = grstr;
 	}
+	updateViewDirection();
 }
 
 function checkGridReferences(that_form) {
@@ -258,7 +273,13 @@ function updateMapMarker(that,showmessage) {
 					//we use parseFloat to avoid issues with 0 prefixed numbers!
 					easting = parseInt(cenXblock) + parseFloat(cenXhun);
 					northing = parseInt(cenYblock) + parseFloat(cenYhun);
-
+					
+					if (halve == 3) {
+					//	easting = easting + 50;
+					//	northing = northing + 50;
+					}
+					
+					
 					tempX = (easting - cene) / ratw;
 					tempY = (cenn - northing) / rath;
 
@@ -267,7 +288,21 @@ function updateMapMarker(that,showmessage) {
 					if (currentelement.id == 'marker2' && ( (tempX < 0) || (tempX > mapw) || (tempY < 0) || (tempY > maph) ) ) {
 						currentelement.style.left = 5+'px';
 						currentelement.style.top = (maph + 5)+'px';
+						eastings2 = easting;
+						northings2 = northing;
 					} else {
+						if (currentelement.id == 'marker1') {
+							eastings1 = easting;
+							northings1 = northing;
+							if (gr.length == 6 && easting%1000 == 0 && northing%1000 == 0) {
+								tempX = tempX + (mapw /4);
+								tempY = tempY - (maph /4);
+								
+							}
+						} else if (currentelement.id == 'marker2') {
+							eastings2 = easting;
+							northings2 = northing;
+						} 
 						currentelement.style.left = (tempX - 8)+'px';
 						currentelement.style.top = (tempY - 8)+'px';
 					}
@@ -276,4 +311,29 @@ function updateMapMarker(that,showmessage) {
 		}
 	}
 	currentelement = null;
+	updateViewDirection();
+}
+
+
+function updateViewDirection() {
+	if (eastings1 > 0 && eastings2 > 0) {
+		
+		distance = Math.sqrt( Math.pow(eastings1 - eastings2,2), Math.pow(northings1 - northings2,2) );
+	
+		if (distance > 0) {
+			realangle = Math.atan2( eastings1 - eastings2, northings1 - northings2 ) / (Math.PI/180);
+
+			if (realangle < 0)
+				realangle = realangle + 360.0;
+
+			jump = 360.0/16.0;
+
+			newangle = Math.floor(Math.round(realangle/jump)*jump);
+
+			var ele = document.theForm.view_direction;
+			for(q=0;q<ele.options.length;q++)
+				if (ele.options[q].value == newangle)
+					ele.selectedIndex = q;
+		}
+	}
 }
