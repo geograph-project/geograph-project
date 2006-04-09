@@ -21,7 +21,7 @@
 <ul style="font-size:0.7em"><li>The bigger the text the more common the phrase</li>
 <li>Phrases get lighter the more common the words are, eg 'and the' will be light gray, but 'romney marsh' will be darker because not using common english words.</li>
 <li>You can also click a phrase to see common phrases from images using the selected phrase, and/or perform a search for all relevent images.</li>
-<li>If you dont like all this multi size text then try the <a href="wordnet.php?t=1{if $words}&amp;words={$words|escape:url}{/if}{$extra_link}">simple version</a>.</li></ul>
+<li>Switch to <a href="wordnet.php?t=1{if $words}&amp;words={$words|escape:url}{/if}{$extra_link}">list version</a>.</li></ul>
 
 <p>Show for {section name=l loop=3 start=0}
 {if $len == $smarty.section.l.iteration}
@@ -33,16 +33,16 @@
 </p>
 
 <h3>Most Common in the last 7 days</h3>
-<p>
+<p> . 
 {foreach from=$wordlist key=words item=obj}
-<a style="color:#{$obj.color};font-size:{$obj.size}px;background-color:{cycle values="#f0f0f0,#e9e9e9"};text-decoration:none;" title="used {$obj.sum_title} times" href="{$script_name}?words={$words|replace:"&nbsp;":"+"}{$extra_link}">{$words}</a>
+<a style="color:#{$obj.color};font-size:{$obj.size}px;text-decoration:none;" title="used {$obj.sum_title} times" href="{$script_name}?words={$words|replace:"&nbsp;":"+"}{$extra_link}">{$words}</a> .
 {/foreach}
 </p>
 
 <h3>All Time Most Common</h3>
-<p>
+<p> . 
 {foreach from=$toplist key=words item=obj}
-<a style="color:#{$obj.color};font-size:{$obj.size}px;background-color:{cycle values="#f0f0f0,#e9e9e9"};text-decoration:none;" title="used {$obj.sum_title} times" href="{$script_name}?words={$words|replace:"&nbsp;":"+"}{$extra_link}">{$words}</a>
+<a style="color:#{$obj.color};font-size:{$obj.size}px;text-decoration:none;" title="used {$obj.sum_title} times" href="{$script_name}?words={$words|replace:"&nbsp;":"+"}{$extra_link}">{$words}</a> .
 {/foreach}
 </p>
  		
