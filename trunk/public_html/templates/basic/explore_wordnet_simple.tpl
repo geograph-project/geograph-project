@@ -20,7 +20,7 @@
 <ul style="font-size:0.7em">
 <li>Phrases get lighter the more common the words are, eg 'and the' will be light gray, but 'romney marsh' will be darker because not using common english words.</li>
 <li>You can also click a phrase to see common phrases from images using the selected phrase, and/or perform a search for all relevent images.</li>
-<li>Switch to <a href="wordnet.php?{if $words}words={$words|escape:url}{/if}{$extra_link}">tag style</a>.</li></ul>
+<li>Switch to <a href="wordnet.php?{if $words}words={$words|escape:url}{/if}{$extra_link}">cloud style</a>.</li></ul>
 
 <p>Show for {section name=l loop=3 start=0}
 {if $len == $smarty.section.l.iteration}
