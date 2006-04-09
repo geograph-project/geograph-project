@@ -93,20 +93,22 @@ this and other photo oriented sites the way everyone else can see them.</p>
     
     <p>We provide an RSS1.0 feed at 
     <a title="Geograph RSS feed" href="http://{$http_host}/syndicator.php">http://{$http_host}/syndicator.php</a>
-    which contains links to the latest 20 moderated images. 
+    which contains links to the latest 20 moderated images. </p>
     
-    The feed is also available in
+    <p>The feed is also available in
     <a title="Geograph RSS 0.91 feed" href="http://{$http_host}/syndicator.php?format=RSS0.91">RSS 0.91</a>,
     <a title="Geograph RSS 2.0 feed" href="http://{$http_host}/syndicator.php?format=RSS2.0">RSS 2.0</a>,
     <a title="Geograph OPML feed" href="http://{$http_host}/syndicator.php?format=OPML">OPML</a>,
     <a title="Geograph HTML feed" href="http://{$http_host}/syndicator.php?format=HTML">HTML</a>,
     <a title="Geograph JavaScript feed" href="http://{$http_host}/syndicator.php?format=JS">JavaScript</a>,
-    <a title="Geograph KML (Google Earth) feed" href="http://{$http_host}/syndicator.php?format=KML">KML</a>,
-    simple <a title="Geograph GeoRSS feed" href="http://{$http_host}/syndicator.php?format=GeoRSS">GeoRSS</a> and
+    <a title="Geograph KML (Google Earth) feed" href="http://{$http_host}/syndicator.php?format=KML">KML</a> 
+    <a class="xml-kml" title="Geograph KML (Google Earth) feed" href="http://{$http_host}/syndicator.php?format=KML">KML</a>,
+    simple <a title="Geograph GeoRSS feed" href="http://{$http_host}/syndicator.php?format=GeoRSS">GeoRSS</a>
+    <a class="xml-geo" title="Geograph GeoRSS feed" href="http://{$http_host}/syndicator.php?format=GeoRSS">GeoRSS</a> and
     <a title="Geograph PhotoRSS feed" href="http://{$http_host}/syndicator.php?format=GeoPhotoRSS">(Geo) PhotoRSS</a>
     formats.</p>
     
-    <p>We have recently added RSS feeds to other parts of the site. You will find an <a class="xml-rss">RSS</a> button at the bottom of search results, useful to keep updated on local images. Registered users can access RSS feed of the latest Topics in the Discussion Forum, and even subscribe to an individual Topic, just look for the <a class="xml-rss">RSS</a> button! (they also accept the format parameter like the main feed)</p>
+    <p>We have recently added RSS feeds to other parts of the site. You will find an <a class="xml-rss">RSS</a> button at the bottom of search results, useful to keep updated on local images. Registered users can access RSS feed of the latest Topics in the Discussion Forum, and even subscribe to an individual Topic, just look for the <a class="xml-rss">RSS</a> button! (they also accept the format parameter like the main feed, the Grid Square Discussions even supports <a class="xml-geo" title="Geograph Grid Square Discussions" href="http://{$http_host}/discuss/syndicator.php?forum=5&amp;format=GeoRSS">GeoRSS</a>.)</p>
     
     <p>If you use the {external title="Firefox Web Browser" href="http://www.mozilla.org/products/firefox/" text="Firefox"} web browser, 
     you should be able use our feeds as "live bookmarks" - simply
