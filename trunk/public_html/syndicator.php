@@ -28,7 +28,7 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
 	
 	
-$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','KML','BASE','GeoRSS','GeoPhotoRSS');
+$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','KML','BASE','GeoRSS','GeoPhotoRSS','GPX');
 
 $format="RSS1.0";
 if (isset($_GET['format']) && in_array($_GET['format'], $valid_formats))
@@ -38,6 +38,8 @@ if (isset($_GET['format']) && in_array($_GET['format'], $valid_formats))
 
 if ($format == 'KML') {
 	$extension = (empty($_GET['simple']))?'kml':'simple.kml';
+} elseif ($format == 'GPX') {
+	$extension = 'gpx';
 } else {
 	$extension = 'xml';
 }
@@ -145,7 +147,7 @@ for ($i=0; $i<$cnt; $i++)
 	$item->source = "http://{$_SERVER['HTTP_HOST']}/profile.php?u=".$images->images[$i]->user_id; 
 	$item->author = $images->images[$i]->realname; 
 	     
-	     if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GeoPhotoRSS') {
+	     if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GeoPhotoRSS' || $format == 'GPX') {
 	     	$item->lat = $images->images[$i]->wgs84_lat;
 	     	$item->long = $images->images[$i]->wgs84_long;
 	     	if ($format == 'KML' || $format == 'GeoPhotoRSS')
