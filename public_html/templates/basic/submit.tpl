@@ -214,8 +214,6 @@ Below is a full-size preview of the image we will store for grid reference
 <div style="position:relative; background-color:#dddddd; padding-left:10px;padding-top:1px;padding-bottom:1px;">
 <h3>Is the image a &quot;geograph&quot;?</h3>
 
-<p><label for="user_status">Actually just make this image a supplemental:</label> <input type="checkbox" name="user_status" id="user_status" value="accepted" {if $user_status == "accepted"}checked="checked"{/if}/> (tick to apply)</p>
-
 <p>If you're the first to submit a proper &quot;geograph&quot; for {$gridref}
 you'll get a geograph point added to your profile and the warm glow that comes
 with it. So what makes an image a genuine geograph?</p>
@@ -313,6 +311,9 @@ window.onload = prePopulateImageclass;
 	
 	<br/><br/><span style="font-size:0.7em">(please provide as much detail as possible, if you only know the year or month then that's fine)</span></p>
 
+<h3>Image Status</h3>
+
+<p><label for="user_status">I wish to suggest this image become a supplemental:</label> <input type="checkbox" name="user_status" id="user_status" value="accepted" {if $user_status == "accepted"}checked="checked"{/if}/> (tick to apply)</p>
 
 <p>
 <input type="hidden" name="upload_id" value="{$upload_id}"/>
