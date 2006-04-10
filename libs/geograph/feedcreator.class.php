@@ -1,7 +1,7 @@
 <?php
 /***************************************************************************
 
-FeedCreator class v1.7.5(BH)
+FeedCreator class v1.7.7(BH)
 originally (c) Kai Blankenhorn
 www.bitfolge.de
 kaib@bitfolge.de
@@ -26,6 +26,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 Changelog:
+
+v1.7.7(BH)	28-03-06
+	added GPX Feed (Barry Hunter)
+
 
 v1.7.6(BH)	20-02-06
 	added GeoRSS Feed (Barry Hunter)
@@ -358,6 +362,7 @@ class UniversalFeedCreator extends FeedCreator {
 				break;
 			
 			case "GEOPHOTORSS":
+			case "PHOTORSS":
 			case "GEORSS":
 				$this->format = $format;
 			case "1.0":
@@ -397,6 +402,9 @@ class UniversalFeedCreator extends FeedCreator {
 			
 			case "PHP":
 				$this->_feed = new PHPCreator();
+				break;
+			case "GPX":
+				$this->_feed = new GPXCreator();
 				break;
 			case "KML":
 				$this->_feed = new KMLCreator();
@@ -1163,6 +1171,47 @@ class KMLCreator extends FeedCreator {
 		return substr($fileInfo["basename"],0,-(strlen($fileInfo["extension"])+1)).".kml";
 	}
 }
+
+/**
+ * GPXCreator is a FeedCreator that implements a GPX output, suitable for a GIS packages
+ *
+ * @since 1.7.6
+ * @author Barry Hunter <geo@barryhunter.co.uk>
+ */
+class GPXCreator extends FeedCreator {
+	
+	function GPXCreator() {
+		$this->contentType = "text/xml";
+		$this->encoding = "utf-8";
+	}
+
+function createFeed() {
+		$feed = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
+		$feed.= $this->_createStylesheetReferences();
+		$feed.= "<gpx xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.0\"
+creator=\"".FEEDCREATOR_VERSION."\"
+xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\" xmlns=\"http://www.topografix.com/GPX/1/0\">\n"; 
+
+		$now = new FeedDate();
+		$feed.= "<desc>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</desc>
+<author>{$http_host}</author>
+<url>".htmlspecialchars($this->link)."</url>
+<time>".htmlspecialchars($now->iso8601())."</time>
+\n";
+			
+		for ($i=0;$i<count($this->items);$i++) {
+			$feed.= "<wpt lat=\"".$this->items[$i]->lat."\" lon=\"".$this->items[$i]->long."\">
+				<name>".substr(htmlspecialchars(strip_tags($this->items[$i]->title)),0,6)."</name>
+				<desc>".htmlspecialchars(strip_tags($this->items[$i]->title))."</desc>
+				<src>".htmlspecialchars($this->items[$i]->author)."</src>
+				<url>".htmlspecialchars($this->items[$i]->link)."</url>
+			</wpt>\n";
+		}
+		$feed .= "</gpx>\n";
+		return $feed;
+	}
+}
+
 
 
 /**
