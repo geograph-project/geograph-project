@@ -95,4 +95,8 @@ $CONF['enable_newmap'] = 1;
 //during high load can disable thumbs display in the forum pages
 //$CONF['disable_discuss_thumbs'] = true;
 
+//use the smaller towns database for the 'near...' lines rather than placenames
+$CONF['use_towns_gaz'] = true;
+
+
 ?>
