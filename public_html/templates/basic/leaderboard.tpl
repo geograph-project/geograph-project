@@ -5,7 +5,7 @@
 <h2>Top 50 Leaderboard :: {$type|capitalize}</h2>
 
 <p>Variation: {foreach from=$types item=t}
-[{if $t == $type}<b>{$type}</b>{else}<a href="moversboard.php?type={$t}">{$t}</a>{/if}]
+[{if $t == $type}<b>{$type}</b>{else}<a href="leaderboard.php?type={$t}">{$t}</a>{/if}]
 {/foreach}</p>
 
 <p>Listed below are the top 50 contributors based on number of
