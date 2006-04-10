@@ -118,7 +118,7 @@ if ($image->isValid())
 
 
 		//find a possible place within 25km
-		$smarty->assign('place', $image->grid_square->findNearestPlace(25000));
+		$smarty->assign('place', $image->grid_square->findNearestPlace(75000));
 
 		//let's find posts in the gridref discussion forum
 		$image->grid_square->assignDiscussionToSmarty($smarty);
