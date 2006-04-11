@@ -50,7 +50,7 @@ $ADODB_CACHE_DIR =& $CONF['adodb_cache_dir'];
 $DSN = $CONF['db_driver'].'://'.
 	$CONF['db_user'].':'.$CONF['db_pwd'].
 	'@'.$CONF['db_connect'].
-	'/'.$CONF['db_db'];#.'?persist'
+	'/'.$CONF['db_db'].$CONF['db_persist'];
 
 
 //adodb session configuration - we use same database
