@@ -53,6 +53,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$count['gridimage__users']=$db->GetOne("select count(distinct user_id) from gridimage");
 	//-1 beucase will count all anon users as 1 user (user_id = 0)
 	$count['queries__users']=$db->GetOne("select count(distinct user_id)-1 from queries");
+	$count['apikeys']=$db->GetOne("select count(*) from apikeys where enabled = 'Y'");
 	
 	$count['autologin__30dayusers']=$db->GetOne("select count(distinct user_id)-1 from autologin where created > date_sub(now(), interval 30 day)");
 	
