@@ -1,7 +1,7 @@
 {assign var="page_title" value="API"}
 {include file="_std_begin.tpl"}
 
-	 <h2>Geograph API v0.7</h2> 
+	 <h2>Geograph API v0.75</h2> 
 	 <div
 	  style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;"><b>Contents</b><br/>
 		<ul style="margin-top:0;margin-left:0;padding:0 0 0 1em;"> 
@@ -152,6 +152,12 @@
 		  <td><a title="Geograph GeoPhotoRSS feed"
 			 href="http://{$http_host}/syndicator.php?key=[apikey]&i=12345&format=GeoPhotoRSS">GeoPhotoRSS</a> - 
 			 Further custom extension of GeoRSS to also include the thumbnail url, see {external href="http://www.pheed.com/pheed/rss_anatomy.html" text="pheed.com"}</td> 
+		</tr> 
+		<tr> 
+		  <td>format=<b>GPX</b></td> 
+		  <td><a title="Geograph GPX feed"
+			 href="http://{$http_host}/syndicator.php?key=[apikey]&i=12345&format=GPX">GPX 1.0</a> - 
+			 the GPS Exchange Format, see {external href="http://www.topografix.com/gpx.asp" text="topografix.com"}</td> 
 		</tr> 
 		<tr> 
 		  <td>format=<b>OPML</b></td> 
@@ -518,7 +524,7 @@
 		<tr> 
 		  <td>GPX Export</td> 
 		  <td><a title="Geograph GPX Downloads"
-			 style="text-decoration: line-through">http://{$http_host}/gpx.php?key=[apikey]&amp;i=12345</a> (Coming soon)</td>
+		  	href="http://{$http_host}/syndicator.php?key=[apikey]&amp;format=GPX&amp;i=12345">http://{$http_host}/syndicator.php?key=[apikey]&amp;format=GPX&amp;i=12345</a></td>
 		</tr> 
 	 </table> 
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="others"></a>Other Ways to download information</h3> 

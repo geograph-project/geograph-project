@@ -104,8 +104,8 @@ this and other photo oriented sites the way everyone else can see them.</p>
     <a title="Geograph KML (Google Earth) feed" href="http://{$http_host}/syndicator.php?format=KML">KML</a> 
     <a class="xml-kml" title="Geograph KML (Google Earth) feed" href="http://{$http_host}/syndicator.php?format=KML">KML</a>,
     simple <a title="Geograph GeoRSS feed" href="http://{$http_host}/syndicator.php?format=GeoRSS">GeoRSS</a>
-    <a class="xml-geo" title="Geograph GeoRSS feed" href="http://{$http_host}/syndicator.php?format=GeoRSS">GeoRSS</a> and
-    <a title="Geograph PhotoRSS feed" href="http://{$http_host}/syndicator.php?format=GeoPhotoRSS">(Geo) PhotoRSS</a>
+    <a class="xml-geo" title="Geograph GeoRSS feed" href="http://{$http_host}/syndicator.php?format=GeoRSS">GeoRSS</a>,
+    <a title="Geograph PhotoRSS feed" href="http://{$http_host}/syndicator.php?format=GeoPhotoRSS">(Geo) PhotoRSS</a> and <a title="Geograph GPX feed" href="http://{$http_host}/syndicator.php?format=GPX">GPX 1.0</a> 
     formats.</p>
     
     <p>We have recently added RSS feeds to other parts of the site. You will find an <a class="xml-rss">RSS</a> button at the bottom of search results, useful to keep updated on local images. Registered users can access RSS feed of the latest Topics in the Discussion Forum, and even subscribe to an individual Topic, just look for the <a class="xml-rss">RSS</a> button! (they also accept the format parameter like the main feed, the Grid Square Discussions even supports <a class="xml-geo" title="Geograph Grid Square Discussions" href="http://{$http_host}/discuss/syndicator.php?forum=5&amp;format=GeoRSS">GeoRSS</a>.)</p>
