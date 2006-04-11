@@ -50,7 +50,7 @@ $ADODB_CACHE_DIR =& $CONF['adodb_cache_dir'];
 $DSN = $CONF['db_driver'].'://'.
 	$CONF['db_user'].':'.$CONF['db_pwd'].
 	'@'.$CONF['db_connect'].
-	'/'.$CONF['db_db'].'?persist';
+	'/'.$CONF['db_db'];#.'?persist'
 
 
 //adodb session configuration - we use same database
@@ -341,6 +341,14 @@ class GeographPage extends Smarty
 		
 		}
 		
+	}
+	
+	function is_cached($template, $cacheid) 
+	{
+		global $USER;
+		if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
+			$this->clear_cache($template, $cacheid);
+		parent::is_cached($template, $cacheid);
 	}
 	
 	function templateExists($file)
