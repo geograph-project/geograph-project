@@ -74,7 +74,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			
 		$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=$ri order by origin_x,origin_y limit 1");
 		
-			
+		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;	
 		$most = $db->GetAll("select 
 		grid_reference,x,y,
 		concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,
@@ -85,8 +85,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		where reference_index = $ri 
 		group by tenk_square 
 		having geograph_count > 0 and percentage >=100
-		order by percentage desc,tenk_square 
-		");
+		order by percentage desc,tenk_square");
 		
 		$i = 1;
 		$lastgeographs = -1;
