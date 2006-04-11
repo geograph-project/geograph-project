@@ -64,7 +64,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$having_sql = '';
 		$columns_sql = '';
 	} else {
-		$having_sql = "HAVING `Images` > 4";
+		$having_sql = "HAVING `Seperate Images` > 4";
 		$columns_sql = ', count( DISTINCT user_id ) AS `Photographers`';
 	}
 	
