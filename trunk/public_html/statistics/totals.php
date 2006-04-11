@@ -44,7 +44,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	
 	$count['loc_placenames__ppl']=$db->CacheGetOne(14*24*3600,"select count(*) from loc_placenames where dsg = 'PPL'");
-	$count['loc_placenames__ppl']=$db->CacheGetOne(14*24*3600,"select count(*) from loc_placenames where dsg = 'PPL'");
+	
+
 	$count['gridsquare__land']=$db->CacheGetOne(14*24*3600,"select count(*) from gridsquare where percent_land > 0");
 	$count['gridprefix__land']=$db->CacheGetOne(14*24*3600,"select count(*) from gridprefix where landcount > 0");
 	$count['geobb_posts__users']=$db->GetOne("select count(distinct poster_id) from geobb_posts");
