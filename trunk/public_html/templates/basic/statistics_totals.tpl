@@ -3,7 +3,7 @@
 
 <h2>Geograph Database Statistics</h2>
 
-<p style="color:red">Note: that stats on this page are only approximate,<br/>  as they represent total entries in each database table,<br/> but some/many entries might not be actully usable on the site!</p>
+<p style="color:red">Note: that stats on this page are only approximate,<br/>  as they represent total entries in each database table,<br/> but some/many entries might not be actually usable on the site!</p>
 
 <p>This website has:</p>
 
@@ -35,22 +35,23 @@
 	<li>by <b>{$count.queries__users}</b> different users</li>
 </ul></li>
 <li><b>{$count.sessions}</b> visitors in the last 24 minutes</li>
-<li><b>{$count.apikeys}</b> sites using the geograph API</li>
+<li><b>{$count.apikeys}</b> sites using the Geograph API</li>
 <li><b>{$count.loc_counties}</b> counties</li>
 <li><b>{$count.loc_postcodes}</b> sector level postcodes</li>
 <li><b>{$count.loc_placenames}</b> gazetteer features (<b>{$count.loc_dsg}</b> types)<ul>
 	<li>of which <b>{$count.loc_placenames__ppl}</b> are placenames</li>
+<li><b>{$count.loc_ppl}</b> v2 gazetteer placenames</li>
 </ul></li>
 <li><b>{$count.loc_wikipedia}</b> wikipedia placenames for map plotting</li>
 <li><b>{$count.loc_towns}</b> important towns for map plotting</li>
 </ul>
 
-<p>Files Genetated: (each accessed many times)</p>
+<p>Files Generated: (each accessed many times)</p>
 
 <ul>
 <li><b>{$count.mapcache}</b> rendered map tiles</li>
 <li><b>{$files.rss}</b> different syndicated feeds</li>
-<li><b>{$files.memorymap}</b> different memorymap feeds</li>
+<li><b>{$files.memorymap}</b> different Memory-Map feeds</li>
 <li><b>{$files.tpcompiled}</b> page templates (made of <b>{$files.tpraw}</b> components)</li>
 <li><b>{$files.tpcache}</b> different rendered pages</li>
 </ul>
