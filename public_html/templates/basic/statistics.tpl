@@ -97,7 +97,7 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
 
    <p><b><a href="/calendar.php">Geograph Calendar</a>, view images by date taken.</b></p>
 
-   <p>User leaderboards: <a href="/moversboard.php">Weekly</a>, <a href="/leaderboard.php">All Time</a>, <a href="/monthlyleader.php">By Month</a> and <a href="/statistics/busyday.php?users=1">Most in One Day</a>. (<a href="/statistics.php?by=user&amp;ri=1">Contributor List</a>)</p>
+   <p>User leaderboards: <a href="/moversboard.php">Weekly</a>, <a href="/leaderboard.php">All Time</a>, <a href="/monthlyleader.php">By Month</a>, <a href="/leaderhectad.php">Hectads</a> and <a href="/statistics/busyday.php?users=1">Most in One Day</a>. (<a href="/statistics.php?by=user&amp;ri=1">Contributor List</a>)</p>
 
    <p><b>Covering the squares</b><a href="/help/squares">?</a>:<br/>
    None: <a href="/statistics/not_geographed.php">Hectads</a> (10<small>km</small> x 10<small>km</small> Squares) - shrinking all the time!<br/>
