@@ -91,12 +91,13 @@ $images=new ImageList('pending', 'submitted asc', 50,true,true);
 
 foreach ($images->images as $i => $image) {
 	if ($image->viewpoint_eastings) {
+		//note $image DOESNT work non php4, must use $images->images[$i]
 		$images->images[$i]->getSubjectGridref();
 		$images->images[$i]->distance = sprintf("%0.3f",
-			sqrt(pow($image->grid_square->nateastings-$image->viewpoint_eastings,2)+pow($image->grid_square->natnorthings-$image->viewpoint_northings,2))/1000);
+			sqrt(pow($images->images[$i]->grid_square->nateastings-$images->images[$i]->viewpoint_eastings,2)+pow($images->images[$i]->grid_square->natnorthings-$images->images[$i]->viewpoint_northings,2))/1000);
 			
-		if (intval($image->grid_square->nateastings/1000) != intval($image->viewpoint_easting/1000)
-			&& intval($image->grid_square->natnorthings/1000) != intval($image->viewpoint_northings/1000) ) {
+		if (intval($images->images[$i]->grid_square->nateastings/1000) != intval($images->images[$i]->viewpoint_easting/1000)
+			&& intval($images->images[$i]->grid_square->natnorthings/1000) != intval($images->images[$i]->viewpoint_northings/1000) ) {
 			$images->images[$i]->different_square = true;
 		}
 	}	
