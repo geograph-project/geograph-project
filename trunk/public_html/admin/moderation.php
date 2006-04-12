@@ -88,20 +88,22 @@ $USER->mustHavePerm('moderator');
 
 //lets find all unmoderated submissions
 $images=new ImageList('pending', 'submitted asc', 50,true,true);
-$images->assignSmarty($smarty, 'unmoderated');
-#print "<pre>";print_r($images);exit;
+
 foreach ($images->images as $i => $image) {
 	if ($image->viewpoint_eastings) {
-		$image->getSubjectGridref();
-		$image->distance = sprintf("%0.3f",
+		$images->images[$i]->getSubjectGridref();
+		$images->images[$i]->distance = sprintf("%0.3f",
 			sqrt(pow($image->grid_square->nateastings-$image->viewpoint_eastings,2)+pow($image->grid_square->natnorthings-$image->viewpoint_northings,2))/1000);
 			
 		if (intval($image->grid_square->nateastings/1000) != intval($image->viewpoint_easting/1000)
 			&& intval($image->grid_square->natnorthings/1000) != intval($image->viewpoint_northings/1000) ) {
-			$image->different_square = true;
+			$images->images[$i]->different_square = true;
 		}
 	}	
 }
+
+$images->assignSmarty($smarty, 'unmoderated');
+
 		
 $smarty->display('admin_moderation.tpl');
 
