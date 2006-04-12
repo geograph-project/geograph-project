@@ -50,6 +50,7 @@
 	  {/if}
 	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
 	  </div>
+	  <br style="clear:both"/>
 	  </div>
 
 
