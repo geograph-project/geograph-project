@@ -317,7 +317,7 @@ window.onload = prePopulateImageclass;
 
 <p><label for="user_status">I wish to suggest this image become a supplemental:</label> <input type="checkbox" name="user_status" id="user_status" value="accepted" {if $user_status == "accepted"}checked="checked"{/if}/> (tick to apply)</p>
 
-<p>Remembering the points <a href="#geograph">above</a> about what makes a geograph, <span class="nowrap">more information can be found <a href="/help/geograph_guide">here</a> (opens in new window).</span></p>
+<p>Remembering the points <a href="#geograph">above</a> about what makes a geograph, <span class="nowrap">more information can be found <a href="/help/geograph_guide" target="_blank">here</a> (opens in new window).</span></p>
 </div>
 
 <p>
