@@ -210,6 +210,16 @@ class GridImage
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
 	
+		if (empty($this->grid_square) && $this->gridsquare_id) {
+			$this->grid_square=new GridSquare;
+			$this->grid_square->loadFromId($this->gridsquare_id);
+			$this->grid_reference=$this->grid_square->grid_reference;
+			if ($this->nateastings) {
+				$this->grid_square->nateastings=$this->nateastings;
+				$this->grid_square->natnorthings=$this->natnorthings;
+			}	
+		}
+	
 		//if this image doesnt have an exact position then we need to remove 
 		//the move to the center of the square
 		//must be before getNatEastings is called
