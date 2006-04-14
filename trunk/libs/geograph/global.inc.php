@@ -348,7 +348,7 @@ class GeographPage extends Smarty
 		global $USER;
 		if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
 			$this->clear_cache($template, $cacheid);
-		parent::is_cached($template, $cacheid);
+		return parent::is_cached($template, $cacheid);
 	}
 	
 	function templateExists($file)
