@@ -16,7 +16,7 @@
 	</div>
 {/foreach}
 {foreach from=$markers key=i item=marker}
-<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><img src="/templates/basic/img/crosshairs.gif" alt="{$marker->tenk_square}" width="16" height="16"/></div>
+<div style="position:absolute;top:{$marker->top-5}px;left:{$marker->left-5}px;"><img src="/templates/basic/img/crosshairs-small.gif" alt="{$marker->tenk_square}" width="10" height="10"/></div>
 {/foreach}
 </div>
 </div>
