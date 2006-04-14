@@ -28,13 +28,8 @@ init_session();
 
 $smarty = new GeographPage;
 
-
-
 $template='statistics_fully_geographed.tpl';
 $cacheid='statistics|fully_geographed';
-
-if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
-	$smarty->clear_cache($template, $cacheid);
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*6; //6hr cache
