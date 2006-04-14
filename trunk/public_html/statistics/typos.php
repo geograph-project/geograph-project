@@ -30,14 +30,16 @@ $smarty = new GeographPage;
 
 $template='statistics_table.tpl';
 
-$l = (isset($_GET['l']) && strlen($_GET['l']) == 1)?$_GET['l']:'a';
+$l = (isset($_GET['l']) && preg_match('/^\w+$/',$_GET['l']))?$_GET['l']:'a';
 
-$cacheid='typo.'.$l;
+$m = (isset($_GET['m']) && preg_match('/^\w+$/',$_GET['m']))?$_GET['m']:$l;
+
+
+
+$cacheid='typo.'.$l.'.'.$m;
 
 $smarty->caching = 2;
 
-if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
-	$smarty->clear_cache($template, $cacheid);
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -52,7 +54,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	from wordnet w 
 	inner join wordnet x 
 		on (w.len = 1 and x.len = 1 
-		and w.words LIKE '$l%' and x.words LIKE '$l%' 
+		and w.words LIKE '$l%' and x.words LIKE '$m%' 
 		and w.words != x.words 
 		and LENGTH(w.words) > 5 and LENGTH(x.words) > 5
 		AND SOUNDEX(w.words) = SOUNDEX(x.words)) 
@@ -69,7 +71,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign("h2title","POSSIBLE typos beginning with '$l'");
 	$smarty->assign("total",count($table));
 
-$smarty->assign("footnote","<p>Finds words in the title that are similar, based on the premise that one might be a typo. Will return lots of false positives!</p>");
+	$smarty->assign("headnote","<form><p>Start1:<input name=\"l\" value=\"$l\"/> Start2(optional):<input name=\"m\" value=\"$m\"/><input type=\"submit\"></p></form>");
+
+	$smarty->assign("footnote","<p>Finds words in the title that are similar, based on the premise that one might be a typo. Will return lots of false positives!</p>");
 	
 }
 
