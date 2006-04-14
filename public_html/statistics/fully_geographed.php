@@ -63,9 +63,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	$markers = array();
 	
 	function cmp($a,$b) {
-		if ($a['sort'] == $b['sort'])
+		if ($a['sort'] == $b['dateraw'])
 			return 0;
-		return ($a['sort'] > $b['sort'])?-1:1;
+		return ($a['dateraw'] > $b['dateraw'])?-1:1;
 	}
 
 			
@@ -86,6 +86,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		group by tenk_square 
 		having geograph_count > 0 and percentage >=100
 		order by percentage desc,tenk_square");
+		$ADODB_FETCH_MODE = ADODB_FETCH_NUM;
 		
 		$i = 1;
 		$lastgeographs = -1;
@@ -114,9 +115,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			$i++;
 			
 			$crit = substr($most[$id]['tenk_square'],0,3).'_'.substr($most[$id]['tenk_square'],3,1).'_';
-			
-			list($most[$id]['date'],$most[$id]['dateraw'],$most[$id]['sort']) = $db->getRow(
-			"SELECT DATE_FORMAT(MAX(submitted),'%D %b %Y'),MAX(submitted),MAX(submitted) as ms
+
+			list($most[$id]['date'],$most[$id]['dateraw']) = $db->getRow(
+			"SELECT DATE_FORMAT(MAX(submitted),'%D %b %Y'),MAX(submitted)
 			FROM gridimage_search
 			WHERE grid_reference LIKE '$crit' AND moderation_status = 'geograph' AND ftf = 1");
 		}	
