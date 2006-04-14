@@ -119,6 +119,17 @@ if (isset($_GET['fav']) ) {
  	
  	//should never fail?? - but display form 'in case'
  	
+ 	//if we get this far then theres a problem...
+	$smarty->assign('errormsg', $engine->errormsg);
+  	
+   	foreach ($data as $key=> $value) {
+		$smarty->assign($key, $value);
+	}
+	$smarty->reassignPostedDate("submitted_start");
+	$smarty->reassignPostedDate("submitted_end");
+	$smarty->reassignPostedDate("taken_start");
+	$smarty->reassignPostedDate("taken_end");
+	
  	$db=NewADOConnection($GLOBALS['DSN']);
 	if (empty($db)) die('Database connection failed');
 
@@ -141,6 +152,17 @@ if (isset($_GET['fav']) ) {
  	$engine->buildAdvancedQuery($_GET);
  	
  	//should never fail?? - but display form 'in case'
+ 	
+ 	//if we get this far then theres a problem...
+	$smarty->assign('errormsg', $engine->errormsg);
+ 	
+ 	foreach ($_GET as $key=> $value) {
+		$smarty->assign($key, $value);
+	}
+	$smarty->reassignPostedDate("submitted_start");
+	$smarty->reassignPostedDate("submitted_end");
+	$smarty->reassignPostedDate("taken_start");
+	$smarty->reassignPostedDate("taken_end");
  	
  	$db=NewADOConnection($GLOBALS['DSN']);
 	if (empty($db)) die('Database connection failed');
