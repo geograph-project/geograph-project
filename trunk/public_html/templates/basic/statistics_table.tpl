@@ -39,6 +39,11 @@
  {/if}  
 
 	<h3>{$h2title}</h3>
+	
+	{if $headnote}
+		{$headnote}
+	{/if}
+	
 {if $total > 0}
 	{if !$nosort}
 	<p><small>Click a column header to change the sort order.</small></p>
