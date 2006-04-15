@@ -209,9 +209,9 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <tr><td>Maps</td><td>
 
-<a href="/mapbrowse.php?t={$map_token}">Geograph Map</a>,
+<a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$image->grid_reference}">Geograph Map</a>,
 
-{getamap gridref=$image->subject_gridref text="OS Get-a-Map"},
+{getamap gridref=$image->subject_gridref text="OS Get-a-map&trade;"},
 
 {if $image->grid_square->reference_index eq 1}
 	{assign var="urltitle" value=$image->title|escape:'url'}

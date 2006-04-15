@@ -178,7 +178,7 @@
   <div style="line-height:1em;padding-top:6px;">Map width <b>{$mapwidth}&nbsp;<small>km</small></b></div>
  
  {if $mapwidth == 10 || $mapwidth == 100}
-  <div style="line-height:1em;padding-top:6px;"><a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$mosaic_token}" style="color:#000066">print check sheet</a></div>
+  <div style="line-height:1em;padding-top:6px;"><a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}" style="color:#000066">print check sheet</a></div>
  {/if}
  
  {if $token_big}

@@ -63,6 +63,11 @@ $cacheid='mapsheet|'.$token;
 if ($map->pixels_per_km == 4)
 	$smarty->cache_lifetime = 3600*24; //24hr cache
 
+if (isset($_GET['gridref_from']) && preg_match('/^[a-zA-Z]{1,2}\d{4}$/',$_GET['gridref_from'])) {
+	$smarty->assign('gridref_from', $_GET['gridref_from']);
+	$cacheid.='.'.$_GET['gridref_from'];
+}
+
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
