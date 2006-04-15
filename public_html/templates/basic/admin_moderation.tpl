@@ -20,7 +20,7 @@
 	  <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160)}</a>
 	  </div>
 	  
-	  <div style="float:left;font-size:0.8em; width:400px; padding-left:10px; text-align:left;">
+	  <div style="float:left;font-size:0.8em; padding-left:10px; text-align:left;">
 	  
 	  Square: <b><a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></b> ({$image->imagecount} current images)<br/>
 	  by: <b><a title="view user profile" href="/profile.php?u={$image->user_id}">{$image->realname}</a></b><br/>
