@@ -109,7 +109,7 @@
 <ul>
    <li>Centre Points: (really just arbituary lists of Grid References!)<ul>
 	   <li><a href="/statistics/counties.php">Ceremonial (Pre 1994) Counties</a></li>
-	   <li><a href="/statistics/counties.php">Pre 1974 Countyies</a></li>
+	   <li><a href="/statistics/counties.php?type=pre74">Pre 1974 Counties</a></li>
 	   <li><a href="/statistics/counties.php?type=capital">(Irish) County Capitals</a></li>
 	   <li><a href="/statistics/cities.php">Cities and Large Towns</a></li>
         </ul>
