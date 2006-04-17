@@ -91,7 +91,7 @@
 
 And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {$centergr_2}">{$centergr_2}</a>, {if $place_2.distance > 3}{$place_2.distance} km from{else}near to{/if} <b>{$place_2.full_name}</b><small><i>{if $place_2.adm1_name && $place_2.adm1_name != $place_2.reference_name}, {$place_2.adm1_name}{/if}</i></small>.</p>    
     
-    <h3>More Statistics</h3>
+    <h3><a name="more"></a>More Statistics</h3>
 
    <p>User leaderboards: <a href="/moversboard.php">Weekly</a>, <a href="/leaderboard.php">All Time</a>, <a href="/monthlyleader.php">By Month</a>, <a href="/leaderhectad.php">Hectads</a> and <a href="/statistics/busyday.php?users=1">Most in One Day</a>. (<a href="/statistics.php?by=user&amp;ri=1">Contributor List</a>)</p>
 
