@@ -313,10 +313,12 @@ span.formerror
 
 div.copyright
 {
-	font-size:0.8em;
+	font-size:0.7em; 
 	color: silver;
-
+	text-align:center;
+	font-variation:italic;
 }
+
 div.caption
 {
 	clear:left;
