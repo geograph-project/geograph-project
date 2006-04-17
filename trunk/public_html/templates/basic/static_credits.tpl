@@ -52,7 +52,9 @@ concept.</li>
     <li>County centre points compiled by {mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}.</li>
     <li>{external href="http://www.osni.gov.uk" text="OSNI"} generously donated a complete set of
     1:50000 paper maps for Northern Ireland, aiding photo moderation in the absence of suitable online maps.</li>
-
+    <li>County centre points compiled by {mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}.</li>
+    <li>National Trail routes compiled with the help of {external href="http://www.magic.gov.uk/" text="magic.gov.uk"} and contributor <a href="http://geograph.local/profile.php?u=1324">Tony Atkin</a>! (subject to Copyright)</li>
+    <li>National Cycle routes provided by {external href="http://www.systrans.org.uk/" text="sustrans.org.uk"}. (subject to Copyright, used with permission)</li>
     </ul>
     
     <h3>Hosting</h3>
