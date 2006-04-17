@@ -343,7 +343,7 @@ class GeographPage extends Smarty
 		
 	}
 	
-	function is_cached($template, $cacheid) 
+	function is_cached($template, $cacheid = '') 
 	{
 		global $USER;
 		if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
