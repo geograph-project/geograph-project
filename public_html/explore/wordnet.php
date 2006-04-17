@@ -51,8 +51,8 @@ if (!empty($_GET['t'])) {
 	$template='explore_wordnet_simple.tpl';
 	$cacheid="explore|wordnet_simple$u.".$len.".".str_replace(' ','.',$words);
 } else {	
-	$template='statistics_wordnet.tpl';
-	$cacheid="statistics|wordnet$u.".$len.".".str_replace(' ','.',$words);
+	$template='explore_wordnet.tpl';
+	$cacheid="explore|wordnet$u.".$len.".".str_replace(' ','.',$words);
 }
 
 $smarty->caching = 2; // lifetime is per cache
