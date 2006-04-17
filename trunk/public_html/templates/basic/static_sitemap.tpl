@@ -57,7 +57,7 @@
 	<li><a href="/profile.php">Your Profile</a> (for registered users only)</li>
 </ul>
 
-<h3>Contributers...</h3>
+<h3><a name="users"></a>Contributors...</h3>
 <ul>
 	<li><a href="/moversboard.php"><b>Weekly</b> Leaderboard</a></li>
 	<li><a href="/leaderboard.php"><b>All Time</b> Leaderboard</a></li>
@@ -65,7 +65,7 @@
 	<li><a href="/statistics.php?by=user&amp;ri=1"><b>Great Britain Contributor</b> List</a></li>
 	<li><a href="/statistics.php?by=user&amp;ri=2"><b>Ireland Contributor</b> List</a></li>
 	<li><a href="/first2square.php"><b>Numberical Squares</b> Leaderboard</a> (see <a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=2&topic=1235&page=0#19">forum</a>)</li>
-	<li><a href="/statistics/busyday.php?user=1">Most <b>Taken in a Day</b> Leaderboard</a></li>
+	<li><a href="/statistics/busyday.php?users=1">Most <b>Taken in a Day</b> Leaderboard</a></li>
 	<li><a href="/leaderhectad.php"><b>Hectad</b> Leaderboard</a></li>
 </ul>
 
