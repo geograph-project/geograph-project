@@ -1,4 +1,4 @@
-{assign var="page_title" value="Statistics:: $h2title"}
+{assign var="page_title" value="$h2title :: Explore"}
 {include file="_std_begin.tpl"}
 <script src="/sorttable.js"></script>
 
