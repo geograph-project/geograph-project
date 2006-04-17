@@ -75,7 +75,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			moderation_status = 'geograph' AND
 			ftf = 1
 		GROUP BY user_id 
-		ORDER BY NULL");
+		ORDER BY last_date DESC");
 		
 		$best_user = array();
 		if ($type == 'first') {
