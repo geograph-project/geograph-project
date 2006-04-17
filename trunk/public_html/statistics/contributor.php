@@ -89,18 +89,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql = "select count(distinct grid_reference) from gridimage_search $wherewhere";
 	calc("Squares",$sql);
 		
+	$table[] = array();
+	$table[] = array();
+
 	
 	$sql = "select count(*) from geobb_topics $ftpwherewhere";
 	calc("Forum Topics Started",$sql);
-		
-	$sql = "select count(*)
-		from  
-			geobb_posts as p
-			left join geobb_topics as t 
-				on(t.topic_id=p.topic_id)
-		where 
-			abs(unix_timestamp(t.topic_time) - unix_timestamp(p.post_time) ) > 10 $fandwhere";
-	calc("Forum Replies",$sql);	
 		
 	$sql = "select count(DISTINCT p.topic_id)
 		from  
@@ -111,11 +105,33 @@ if (!$smarty->is_cached($template, $cacheid))
 			abs(unix_timestamp(t.topic_time) - unix_timestamp(p.post_time) ) > 10 $fandwhere";
 	calc("Forum Topics Replied To",$sql);
 	
+
+	$sql = "select count(*)
+		from  
+			geobb_posts as p
+			left join geobb_topics as t 
+				on(t.topic_id=p.topic_id)
+		where 
+			abs(unix_timestamp(t.topic_time) - unix_timestamp(p.post_time) ) > 10 $fandwhere";
+	calc("Forum Replies",$sql);	
+		
+	$table[] = array();
+	
 	$forums = $db->getAll("select forum_id,forum_name from geobb_forums order by forum_id");
 	foreach ($forums as $c => $forum) {
 		$sql = "select count(*) from geobb_topics where forum_id = {$forum['forum_id']} $ftpandwhere";
 		calc("Forum '{$forum['forum_name']}' Topics",$sql);
 
+		$sql = "select count(DISTINCT p.topic_id)
+			from  
+				geobb_posts as p
+				left join geobb_topics as t 
+					on(t.topic_id=p.topic_id)
+			where 
+				p.forum_id = {$forum['forum_id']} and
+				abs(unix_timestamp(t.topic_time) - unix_timestamp(p.post_time) ) > 10 $fandwhere";
+		calc("Forum '{$forum['forum_name']}' Topics Replied To",$sql);
+		
 		$sql = "select count(*)
 			from  
 				geobb_posts as p
@@ -126,16 +142,11 @@ if (!$smarty->is_cached($template, $cacheid))
 				abs(unix_timestamp(t.topic_time) - unix_timestamp(p.post_time) ) > 10 $fandwhere";
 		calc("Forum '{$forum['forum_name']}' Replies",$sql);	
 		
-		$sql = "select count(DISTINCT p.topic_id)
-			from  
-				geobb_posts as p
-				left join geobb_topics as t 
-					on(t.topic_id=p.topic_id)
-			where 
-				p.forum_id = {$forum['forum_id']} and
-				abs(unix_timestamp(t.topic_time) - unix_timestamp(p.post_time) ) > 10 $fandwhere";
-		calc("Forum '{$forum['forum_name']}' Topics Replied To",$sql);	
+		$table[] = array();
 	}
+	
+
+	$table[] = array();
 	
 	if ($ismod) {
 			$sql = "select count(*) from gridimage where moderator_id=".$u;
@@ -152,6 +163,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql = "select count(*) from gridimage_ticket where moderator_id=".$u;
 			calc("Touble Tickets Moderated",$sql);
 	}
+	
+
+	$table[] = array();
 	
 	$sql = "select count(*) from queries $wherewhere";
 	calc("Searches Performed",$sql);
@@ -175,28 +189,28 @@ function calc($name,$sql) {
 	} else {
 		$val = $db->CacheGetOne(3600,$sql);	
 	}
-	if (!$val) return;
+	#if (!$val) return;
 	if ($u2) {
 		$sql2 = preg_replace('/\w+ \w+=\d+$/','',$sql);
 		$val2 = $db->CacheGetOne(3600,$sql2);	
 
-		$perc = sprintf('%.3f',$val/$val2*100);
+		$perc = sprintf('%.2f',$val/$val2*100);
 	
 		$sql3 = preg_replace('/\d+$/',$u2,$sql);		
 		$val3 = $db->getOne($sql3);	
 
-		$perc3 = sprintf('%.3f',$val3/$val2*100);
+		$perc3 = sprintf('%.2f',$val3/$val2*100);
 		
-		$table[] = array("Quality"=>$name,"Count"=>$val,"Percent"=>$perc,"Count2"=>$val3,"Percent2"=>$perc3,"Overall"=>$val2);
+		$table[] = array("Quality"=>$name,"Overall"=>number_format($val2),"Count"=>'<b>'.number_format($val).'</b>',"Percent"=>$perc.'%',"Count2"=>number_format($val3),"Percent2"=>$perc3.'%');
 	} elseif ($u) {
 		$sql2 = preg_replace('/\w+ \w+=\d+$/','',$sql);
 		$val2 = $db->CacheGetOne(3600,$sql2);	
 
-		$perc = sprintf('%.3f',$val/$val2*100);
+		$perc = sprintf('%.2f',$val/$val2*100);
 
-		$table[] = array("Quality"=>$name,"Count"=>$val,"Percent"=>$perc,"Overall"=>$val2);
+		$table[] = array("Quality"=>$name,"Overall"=>number_format($val2),"Count"=>'<b>'.number_format($val).'</b>',"Percent"=>$perc.'%');
 	} else {
-		$table[] = array("Quality"=>$name,"Count"=>$val);
+		$table[] = array("Quality"=>$name,"Overall"=>number_format($val));
 	}
 }
 	
