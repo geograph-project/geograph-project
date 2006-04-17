@@ -1,9 +1,10 @@
-{assign var="page_title" value="Statistics:: $h2title"}
+{assign var="page_title" value="$h2title :: Statistics"}
 {include file="_std_begin.tpl"}
 {literal}
 <style type="text/css">
 .graphcell {
 background-color:red;
+height:15px;
 }
 </style>
 {/literal}
@@ -60,7 +61,7 @@ background-color:red;
 		<tr>
 			<td width="90">{$row.title}</td>
 			<td width="70" align="right">{$row.value|number_format}</td>
-			<td><div class="graphcell" style="width:{$row.value/$graph.max*97|number_format}%"></div></td>
+			<td><div class="graphcell" style="width:{$row.value/$graph.max*99|number_format}%;"></div></td>
 		</tr>
 		{/foreach}		
 
