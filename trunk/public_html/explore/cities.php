@@ -31,8 +31,8 @@ $smarty = new GeographPage;
 $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'cities';
 	
 
-$template='statistics_counties.tpl';
-$cacheid='statistics|counties'.$type;
+$template='explore_counties.tpl';
+$cacheid='explore|counties'.$type;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
