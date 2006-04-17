@@ -108,5 +108,9 @@
 	</script>
 	
 	</form>
-{/dynamic}    
+{/dynamic} 
+
+
+<p style="background-color:lightgreen;padding:10px;">Alternatively you can load the <a href="/gpx.php">GPX</a> files into Google Earth, to produce coverage maps. (rather than loading the individual images).</p>
+
 {include file="_std_end.tpl"}
