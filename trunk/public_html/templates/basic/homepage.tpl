@@ -20,7 +20,7 @@ and you can be part of it.</p>
 <ul>
 	<li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a></li>
 	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a></li>
-	<li><a title="Words used in Titles" href="/statistics/wordnet.php"><b>popular words</b> used in titles</a></li>
+	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
 	<li><a title="List of all pages" href="/help/sitemap">view the <b>full list</b> of pages</a></li>
 </ul>
     

@@ -31,7 +31,7 @@
 <ul>
 	<li><a title="Browse by Grid Reference" href="/browse.php">browse by <b>grid square</b></a></li>
 	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a> (<a href="#stats">more below</a>)</li>
-	<li><a title="Words used in Titles" href="/statistics/wordnet.php"><b>popular words</b> used in titles</a></li>
+	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
 	<li><a title="List of all images" href="/list.php">view the <b>full list</b> of images</a></li>
 </ul>
  
@@ -104,14 +104,14 @@
 	</li>
 </ul>
 
-<h3>Special Features...</h3>
+<h3>Explore Images...</h3>
 
 <ul>
    <li>Centre Points: (really just arbituary lists of Grid References!)<ul>
-	   <li><a href="/statistics/counties.php">Ceremonial (Pre 1994) Counties</a></li>
-	   <li><a href="/statistics/counties.php?type=pre74">Pre 1974 Counties</a></li>
-	   <li><a href="/statistics/counties.php?type=capital">(Irish) County Capitals</a></li>
-	   <li><a href="/statistics/cities.php">Cities and Large Towns</a></li>
+	   <li><a href="/explore/counties.php">Ceremonial (Pre 1994) Counties</a></li>
+	   <li><a href="/explore/counties.php?type=pre74">Pre 1974 Counties</a></li>
+	   <li><a href="/explore/counties.php?type=capital">(Irish) County Capitals</a></li>
+	   <li><a href="/explore/cities.php">Cities and Large Towns</a></li>
         </ul>
     </li>
 </ul>
