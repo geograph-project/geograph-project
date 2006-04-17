@@ -20,4 +20,8 @@
 
 	<p>You will also need the Geograph Icon: <a href="{$script_name}?getbmp=1">geograph.bmp</a></p>
 
+<p style="background-color:yellow;padding:10px;">Alternatively you can load the <a href="/gpx.php">GPX</a> files, which you can download smaller site centered files. (rather than loading the individual images).</p>
+
+
+
 {include file="_std_end.tpl"}
