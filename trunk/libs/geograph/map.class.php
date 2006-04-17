@@ -531,7 +531,7 @@ class GeographMap
 		}
 		
 		$colMarker=imagecolorallocate($img, 255,0,0);
-		$colSuppMarker=imagecolorallocate($img,255,128,0);
+		$colSuppMarker=imagecolorallocate($img,236,206,64);
 		$colBorder=imagecolorallocate($img, 255,255,255);
 		$colAlias=imagecolorallocate($img, 182,163,57);
 		
