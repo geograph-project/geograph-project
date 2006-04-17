@@ -33,7 +33,7 @@ $month=(!empty($_GET['Month']))?intval($_GET['Month']):'';
 $year=(!empty($_GET['Year']))?intval($_GET['Year']):date('Y');
 
 
-$template=($month)?'calendar_month.tpl':'calendar_year.tpl';
+$template=($month)?'explore_calendar_month.tpl':'explore_calendar_year.tpl';
 $cacheid="$year-$month";
 
 if (isset($_GET['refresh']) && $USER->hasPerm('admin'))

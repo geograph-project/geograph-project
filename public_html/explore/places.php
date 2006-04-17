@@ -59,14 +59,14 @@ if (!empty($_GET['ri'])) {
 			
 			//should never return!
 		}
-		$template='places_adm1.tpl';
+		$template='explore_places_adm1.tpl';
 		$cacheid='places|'.$_GET['ri'].'.'.$_GET['adm1'];
 	} else {
-		$template='places_ri.tpl';
+		$template='explore_places_ri.tpl';
 		$cacheid='places|'.$_GET['ri'];
 	}
 } else {
-	$template='places.tpl';
+	$template='explore_places.tpl';
 	$cacheid='places';
 }
 if (isset($_GET['refresh']) && $USER->hasPerm('admin'))

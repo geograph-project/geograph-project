@@ -93,10 +93,6 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
     
     <h3>More Statistics</h3>
 
-   <p><b>Most <a href="/statistics/wordnet.php">Popular Words</a> in the last 7 days and all time.</b></p>
-
-   <p><b><a href="/calendar.php">Geograph Calendar</a>, view images by date taken.</b></p>
-
    <p>User leaderboards: <a href="/moversboard.php">Weekly</a>, <a href="/leaderboard.php">All Time</a>, <a href="/monthlyleader.php">By Month</a>, <a href="/leaderhectad.php">Hectads</a> and <a href="/statistics/busyday.php?users=1">Most in One Day</a>. (<a href="/statistics.php?by=user&amp;ri=1">Contributor List</a>)</p>
 
    <p><b>Covering the squares</b><a href="/help/squares">?</a>:<br/>
@@ -104,8 +100,6 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
    Mostly: <a href="/statistics/most_geographed.php">Grid Squares &amp; Hectads</a> <small>(10 x 10 Squares)</small> and <a href="/statistics/most_geographed_myriad.php">Myriads</a> <small>(100 x 100 Squares)</small>.<br/>
    <b>Fully: <a href="/statistics/fully_geographed.php">Hectads</a> <small>(10 x 10 Squares)</small> - including Large Mosaic!</b><br/>
    Graph: <a href="/statistics/hectads.php">Hectad Coverage</a></p>
-
-   <p>Centre Points: <a href="/statistics/counties.php">Ceremonial Counties</a>, <a href="/statistics/counties.php?type=capital">(Irish) County Capitals</a> and <a href="/statistics/cities.php">Cities</a> photographed so far.</p>
 
    <p><b>Past Activity:</b><br/>
    Graphs: <a href="/moversboard.php#rate_graph">Weekly Submissions</a>, <a href="/leaderboard.php#submission_graph">Overall Submissions</a> and as a <a href="/statistics/images.php">table</a>.<br/>
