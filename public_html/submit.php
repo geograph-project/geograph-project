@@ -120,11 +120,18 @@ if (isset($_POST['gridsquare']))
 				switch($_FILES['jpeg']['error'])
 				{
 					case 0:
-						if ($uploadmanager->processUpload($_FILES['jpeg']['tmp_name']))
+						if (!filesize($_FILES['jpeg']['tmp_name'])) 
+						{
+							$smarty->assign('error', 'Sorry, no file was received - please try again');
+						} 
+						elseif ($uploadmanager->processUpload($_FILES['jpeg']['tmp_name']))
 						{
 							$smarty->assign('upload_id', $uploadmanager->upload_id);
 							//we ok to continue
 							$step=3;
+						} else {
+							$smarty->assign('error', $uploadmanager->errormsg);
+							$uploadmanager->errormsg = '';
 						}
 						break;
 					case UPLOAD_ERR_INI_SIZE:
