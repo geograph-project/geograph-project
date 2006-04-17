@@ -1,7 +1,7 @@
-{assign var="page_title" value="Explore Geograph"}
+{assign var="page_title" value="Explore Geograph Themes"}
 {include file="_std_begin.tpl"}
 
-<h2>Explore Images by various themes</h2>
+<h2>Explore Images by various Themes</h2>
 
 <ul>
 	<li><form method="get" action="/search.php">
@@ -18,10 +18,12 @@
 
 
 
-	<li>Explore <a href="/mapbrowse.php">a zoomeable <b>map</b></a>.<br/><br/></li>
+	<li>Explore <a href="/mapbrowse.php">a Zoomable <b>Map</b></a>.<br/><br/></li>
 
 	<li><b><a href="/statistics/fully_geographed.php">Fully Geographed Hectads</a></b> <small>(10 x 10 Gridsquares)</small> - include Image Mosaics!<br/><br/></li>
 
+
+	<li><div style="background-color:#dddddd; padding:10px;"><a href="/explore/routes.php">Follow National <b>Routes</b></a>. NEW!</div><br/></li>
 
 
 	<li><a href="/statistics/breakdown.php?by=class">Breakdown by <b>Category</b></a>, (soon to be replaced by tags).<br/><br/></li>
@@ -33,7 +35,7 @@
 
 	<li><a href="/explore/calendar.php">Geograph <b>Calendar</b></a>, view images by date taken.<br/><br/></li>
 
-	<li>Explore  <a href="/help/sitemap#users">by contributor</a>.<br/><br/></li>
+	<li>Explore  <a href="/help/sitemap#users">by <b>Contributor</b></a>.<br/><br/></li>
 
 	<li><b>Centre Points</b>: (really just arbituary lists of Grid References!)<ul>
 		<li><a href="/explore/counties.php">Ceremonial (Pre 1994) Counties</a></li>
