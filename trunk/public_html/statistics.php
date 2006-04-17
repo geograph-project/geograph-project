@@ -21,16 +21,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (isset($_GET['by']) && preg_match('/^\w+$/' , $_GET['by'])) {
+	header("Location:http://{$_SERVER['HTTP_HOST']}/statistics/breakdown.php?".$_SERVER['QUERY_STRING']);
+	exit;
+}
+
 require_once('geograph/global.inc.php');
 require_once('geograph/mapmosaic.class.php');
 init_session();
 
 $smarty = new GeographPage;
-
-if (isset($_GET['by']) && preg_match('/^\w+$/' , $_GET['by'])) {
-	header("Location:http://{$_SERVER['HTTP_HOST']}/statistics/breakdown.php?".$_SERVER['QUERY_STRING']);
-	exit;
-}
 
 $template='statistics.tpl';
 $cacheid='statistics|main';
@@ -51,9 +51,6 @@ $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 		$smarty->assign_by_ref('profile', $profile);
 		$smarty->assign_by_ref('u', $u);
 	}
-
-if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
-	$smarty->clear_cache($template, $cacheid);
 
 if (!$smarty->is_cached($template, $cacheid))
 {
