@@ -240,7 +240,7 @@ class SearchCriteria
 		if (!empty($this->limit10)) {
 			if ($sql_where)
 				$sql_where .= ' and ';
-			$sql_where .= "route_id = {$this->limit10} ";
+			$sql_where .= "route_id = {$this->limit10} and ftf=1 ";
 			$sql_from .= " INNER JOIN route_item r ON(grid_reference=r.gridref) ";
 		} 
 		
