@@ -145,7 +145,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign_by_ref('topusers', $topusers);
 	
-	$smarty->assign('types', array('points','geosquares','geographs','squares','images'));
+	#$smarty->assign('types', array('points','geosquares','geographs','squares','images'));
+	$smarty->assign('types', array('points','geosquares','images'));
 	
 	//lets find some recent photos
 	new RecentImageList($smarty);
