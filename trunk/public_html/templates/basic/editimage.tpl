@@ -37,7 +37,7 @@
   	{if ($user->user_id eq $image->user_id) and $image->moderation_status != 'rejected'}
   	  <form action="/moderation.php" method="post">
   	  <input type="hidden" name="gridimage_id" value="{$image->gridimage_id}"/>
-  	  <b>Self Moderation</b>
+  	  <b>Image Self Moderation</b>
   	  
   	  {if ($image->moderation_status == 'pending' || $image->moderation_status == 'geograph') && $image->user_status == 'accepted'}
   	  <input class="accept" type="submit" id="geograph" name="user_status" value="Geograph"/>
@@ -45,7 +45,7 @@
   	  {if $image->moderation_status != 'accepted' && $image->user_status != 'accepted'}
   	  <input class="accept" type="submit" id="accept" name="user_status" value="Supplemental"/>
   	  {/if}
-  	  {if $image->user_status != 'rejected'}
+  	  {if $image->moderation_status == 'pending' && $image->user_status != 'rejected'}
   	  <input class="reject" type="submit" id="reject" name="user_status" value="Reject"/>
   	  {/if}
   	  {if $image->user_status}
@@ -55,6 +55,10 @@
   	  </form>
 	{/if}
 </div>
+
+<br/>
+<br/>
+<hr/>
 
 {if $thankyou eq 'pending'}
 	<a name="form"></a>
@@ -240,7 +244,9 @@
 {/if}
 
 
-
+<br/>
+<br/>
+<hr/>
 
 <h2>Report Problem / Change Image Details <small><a href="/help/changes">[help]</a></small></h2>
 {if $error}
@@ -270,7 +276,7 @@
 <label for="grid_reference">Subject Grid Reference {if $moderated.grid_reference}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.grid_reference}<span class="formerror">{$error.grid_reference}</span><br/>{/if}
 <input type="text" id="grid_reference" name="grid_reference" size="8" value="{$image->subject_gridref|escape:'html'}"/>
-{getamap gridref=$image->subject_gridref text="OS Get-a-Map for `$image->subject_gridref`"}
+{getamap gridref=$image->subject_gridref text="Get-a-map&trade; for `$image->subject_gridref`"}
 </p>
 
 <p>
@@ -278,9 +284,9 @@
 {if $error.photographer_gridref}<span class="formerror">{$error.photographer_gridref}</span><br/>{/if}
 <input type="text" id="photographer_gridref" name="photographer_gridref" size="8" value="{$image->photographer_gridref|escape:'html'}"/>
 {if $image->photographer_gridref}
-  {getamap gridref=$image->photographer_gridref text="OS Get-a-Map for `$image->photographer_gridref`"}
+  {getamap gridref=$image->photographer_gridref text="Get-a-map&trade; for `$image->photographer_gridref`"}
 {else}
-  {getamap text="OS Get-a-Map"}
+  {getamap text="Get-a-map&trade;"}
 {/if}
 </p>
 
