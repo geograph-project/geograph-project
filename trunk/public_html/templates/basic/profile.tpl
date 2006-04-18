@@ -43,20 +43,21 @@
  	
  	{if $profile->stats.total gt 0}
  	<div style="background-color:#dddddd; padding:10px;">
-<h3 style="margin-bottom:0px">Statistics</h3>
-<p style="margin-top:0px; font-size:0.7em">View Breakdown by <a href="/statistics/breakdown.php?by=status&u={$profile->user_id}" rel="nofollow">Status</a>, <a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}" rel="nofollow">Date Taken</a> or <a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}" rel="nofollow">Grid Square</a>.</p>
+<h3 style="margin-top:0px;margin-bottom:0px">Statistics</h3>
+<p style="margin-top:0px; font-size:0.7em">View Breakdown by <a href="/statistics/breakdown.php?by=status&u={$profile->user_id}" rel="nofollow">Status</a>, <a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}" rel="nofollow">Date Taken</a> or <a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}" rel="nofollow">Myriad</a>(<a href="/help/squares" title="What is a Myriad?">?</a>).</p>
 <ul>
- 	  <li><b>{$profile->stats.ftf}</b> Geograph points (see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)
- 	  {if $profile->rank > 0}<ul><li>Rank: <b>{$profile->rank|ordinal}</b> {if $profile->rank > 1}({$profile->to_rise_rank} more needed to get to {$profile->rank-1|ordinal}){/if}</li></ul>{/if}
- 	  
+ 	  <li><b>{$profile->stats.ftf}</b> Geograph points (see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)<ul>
+ 	  {if $profile->rank > 0}<li>Overall Rank: <b>{$profile->rank|ordinal}</b> {if $profile->rank > 1}({$profile->to_rise_rank} more needed to reach {$profile->rank-1|ordinal} position){/if}</li>{/if}
+ 	  <li><b>{$profile->stats.geosquares}</b> gridsquare{if $profile->stats.geosquares ne 1}s{/if} <i>geographed</i></li>
+ 	  </ul>
  	  </li>
- 	  <li><b>{$profile->stats.geosquares}</b> gridsquare{if $profile->stats.geosquares ne 1}s{/if} geographed</li>
  	  <li><b>{$profile->stats.total}</b> photograph{if $profile->stats.total ne 1}s{/if} submitted</li>
  	  {if $profile->stats.pending gt 0}
  	 	  ({$profile->stats.pending} awaiting moderation)
- 	  {/if}
- 	  <ul>
- 	  	<li>Covering <b>{$profile->stats.squares}</b> gridsquare{if $profile->stats.squares ne 1}s{/if}</li>
+ 	  {/if}<ul>
+ 	  	<li><b>{$profile->stats.squares}</b> gridsquare{if $profile->stats.squares ne 1}s{/if} <i>photographed</i>,
+ 	  	giving a depth score of <b>{$profile->stats.total/$profile->stats.squares|string_format:"%.2f"}</b> (see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)
+ 	  	</li>
  	  </ul>
  	  </li>
 
