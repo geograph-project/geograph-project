@@ -93,6 +93,10 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_column = "sum(i.moderation_status in ('geograph','accepted'))";
 		$heading = "New<br/>Images";
 		$desc = "images submitted";
+	} elseif ($type == 'depth') {
+		$sql_column = "count(*)/count(distinct gridsquare_id)";
+		$heading = "Depth";
+		$desc = "depth score";
 	} else { #if ($type == 'points') {
 		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph')";
 		$heading = "New<br/>Geograph<br/>Points";
