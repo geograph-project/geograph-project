@@ -40,7 +40,7 @@ $smarty->cache_lifetime = 3600*3; //3hr cache
 
 $smarty->assign_by_ref('references',$CONF['references_all']);		
 
-$bys = array('status' => 'Status','class' => 'Category','takenyear' => 'Date Taken','gridsq' => 'Grid Square');
+$bys = array('status' => 'Status','class' => 'Category','takenyear' => 'Date Taken','gridsq' => 'Myriad');
 $smarty->assign_by_ref('bys',$bys);
 
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;

@@ -59,7 +59,7 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 
 $smarty->assign_by_ref('references',$CONF['references_all']);	
 
-$bys = array('status' => 'Status','class' => 'Category','takenyear' => 'Date Taken (Year)','taken' => 'Date Taken (Month)','gridsq' => 'Grid Square','user' => 'Contributor');
+$bys = array('status' => 'Status','class' => 'Category','takenyear' => 'Date Taken (Year)','taken' => 'Date Taken (Month)','gridsq' => 'Myriad','user' => 'Contributor');
 $smarty->assign_by_ref('bys',$bys);
 
 $smarty->assign('by', $by);
