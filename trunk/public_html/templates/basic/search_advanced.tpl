@@ -124,7 +124,7 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="gridsquare">grid square</label></td> 
+			 <td><label for="gridsquare">myriad (<a href="/help/squares" title="What is a Myriad? (opens in new window)" target="_blank">?</a>)</label></td> 
 			 <td> 
 				<select name="gridsquare" id="gridsquare" size="1" class="searchinput"> 
 				  <option value=""> </option> 
