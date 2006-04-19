@@ -39,8 +39,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 	
-	$title = "Interesting Routes";
-	
 	$where = array('enabled = 1');
 	if ($ri) {
 		$where[] = "reference_index = $ri";
@@ -58,6 +56,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		route.route_id,
 		name,
 		count(*) as `count`,
+		count(distinct substring(gridref,1,3 - reference_index)) as myriads,
 		orderby,
 		route_group
 	from
@@ -69,28 +68,42 @@ if (!$smarty->is_cached($template, $cacheid))
 	order by 
 		route_group,name");
 	
-	$table = array();
+	
+	$sortorders = array('routeitem_id'=>'Route',''=>'Random','random'=>'Random','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North');
+	
+	$tables = array();
+	$last = '';
 	foreach ($routes as $i => $row) {
 		if ($last != $row['route_group']) {
-			$table[] = array('Route Name'=>"<b>{$row['route_group']}</b>",'Number of<br/> Gridsquares'=>'<hr/>'); 
+			if (count($onetable)) {
+				$table['table'] = $onetable;
+				$table['total'] = count($onetable);
+				$tables[] = $table;
+			}
+			
+			$onetable = array();
+			$table = array('title'=>$row['route_group']); 
 		}
-		$line = array();
-		$extra = ($row['orderby'])?"&amp;orderby={$row['orderby']}":'';
-		$line['Route Name'] = "<a href=\"/search.php?route_id={$row['route_id']}$extra&amp;do=1\">{$row['name']}</a>";
-		$line['Number of Gridsquares'] = number_format($row['count']);
-		$table[] = $line; 
+			
+		$row['order'] = $sortorders[$row['orderby']];
+
+		$onetable[] = $row; 
+		
 		$last = $row['route_group'];
 	}
+	if (count($onetable)) {
+		$table['table'] = $onetable;
+		$table['total'] = count($onetable);
+		$tables[] = $table;
+	}
 	
-	$smarty->assign_by_ref('table',$table);
-	
-	$smarty->assign("h2title",$title);
-	$smarty->assign("total",count($table));
+	$smarty->assign_by_ref('tables',$tables);
+		
+
 	$smarty->assign_by_ref('references',$CONF['references_all']);
 
 } 
 
-$smarty->assign("filter",1);
 $smarty->display($template, $cacheid);
 
 	
