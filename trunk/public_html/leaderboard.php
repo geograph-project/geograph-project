@@ -37,10 +37,6 @@ $smarty = new GeographPage;
 $template='leaderboard.tpl';
 $cacheid=$type.$date.$when;
 
-if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
-	$smarty->clear_cache($template, $cacheid);
-
-
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*3; //3hour cache
 
@@ -54,6 +50,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (!$db) die('Database connection failed');  
 	$sql_table = "gridimage_search i";
 	$sql_column = "count(*)";
+	$sql_having_having = '';
 	if ($type == 'squares') {
 		$sql_column = "count(distinct grid_reference)";
 		$sql_where = "1";
@@ -75,8 +72,24 @@ if (!$smarty->is_cached($template, $cacheid))
 	} elseif ($type == 'depth') {
 		$sql_column = "count(*)/count(distinct grid_reference)";
 		$sql_where = "1";
+		$sql_having_having = "having count(*) > 25";
 		$heading = "Depth";
-		$desc = "depth score";
+		$desc = "the depth score, and having submitted over 25 images";
+	} elseif ($type == 'myriads') {
+		$sql_column = "count(distinct substring(grid_reference,1,3 - reference_index))";
+		$sql_where = "1";
+		$heading = "Myriads";
+		$desc = "different myriads";
+	} elseif ($type == 'days') {
+		$sql_column = "count(distinct imagetaken)";
+		$sql_where = "1";
+		$heading = "Days";
+		$desc = "different days";
+	} elseif ($type == 'classes') {
+		$sql_column = "count(distinct imageclass)";
+		$sql_where = "1";
+		$heading = "Categories";
+		$desc = "different categories";
 	} elseif ($type == 'centi') {
 /*	SELECT COUNT(DISTINCT nateastings div 100, natnorthings div 100), COUNT(*) AS `_count_all`
 	FROM gridimage
@@ -93,6 +106,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_where = "i.ftf=1 and i.moderation_status='geograph'";
 		$heading = "Geograph<br/>Points";
 		$desc = "geograph points awarded";
+		$type = 'points';
 	} 
 	
 	if ($when) {
@@ -109,9 +123,13 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('desc', $desc);
 	$smarty->assign('type', $type);
 
-	$topusers=$db->GetAll("select i.user_id,realname, $sql_column as imgcount,max(gridimage_id) as last
-	from $sql_table where $sql_where
-	group by user_id order by imgcount desc,last asc"); 
+	$topusers=$db->GetAll("select 
+	i.user_id,realname, $sql_column as imgcount,max(gridimage_id) as last
+	from $sql_table 
+	where $sql_where
+	group by user_id 
+	$sql_having_having
+	order by imgcount desc,last asc"); 
 	$lastimgcount = 0;
 	$toriserank = 0;
 	foreach($topusers as $idx=>$entry)
@@ -150,8 +168,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign_by_ref('topusers', $topusers);
 	
-	#$smarty->assign('types', array('points','geosquares','geographs','squares','images'));
-	$smarty->assign('types', array('points','geosquares','images'));
+	$smarty->assign('types', array('points','geosquares','images','depth'));
 	
 	//lets find some recent photos
 	new RecentImageList($smarty);

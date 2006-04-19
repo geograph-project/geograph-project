@@ -33,9 +33,6 @@ $smarty = new GeographPage;
 $template='moversboard.tpl';
 $cacheid=$type;
 
-if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
-	$smarty->clear_cache($template, $cacheid);
-
 if (!$smarty->is_cached($template, $cacheid))
 {
 	require_once('geograph/gridimage.class.php');
@@ -97,10 +94,23 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_column = "count(*)/count(distinct gridsquare_id)";
 		$heading = "Depth";
 		$desc = "depth score";
+	} elseif (false && $type == 'myriads') {//we dont have access to grid_reference - possibly join with grid_prefix
+		$sql_column = "count(distinct substring(grid_reference,1,3 - reference_index))";
+		$heading = "Myriads";
+		$desc = "different myriads";
+	} elseif ($type == 'days') {
+		$sql_column = "count(distinct imagetaken)";
+		$heading = "Days";
+		$desc = "different days";
+	} elseif ($type == 'classes') {
+		$sql_column = "count(distinct imageclass)";
+		$heading = "Categories";
+		$desc = "different categories";
 	} else { #if ($type == 'points') {
 		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph')";
 		$heading = "New<br/>Geograph<br/>Points";
 		$desc = "geograph points awarded";
+		$type = 'points';
 	} 
 	$smarty->assign('heading', $heading);
 	$smarty->assign('desc', $desc);
@@ -153,8 +163,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign_by_ref('topusers', $topusers);
 	$smarty->assign('cutoff_time', time()-86400*7);
 	
-	#$smarty->assign('types', array('points','geosquares','geographs','squares','images'));
-	$smarty->assign('types', array('points','geosquares','images'));
+	$smarty->assign('types', array('points','geosquares','images','depth'));
 	
 	//lets find some recent photos
 	new RecentImageList($smarty);
