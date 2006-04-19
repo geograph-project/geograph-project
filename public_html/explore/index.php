@@ -28,6 +28,38 @@ init_session();
 
 
 $smarty = new GeographPage;
+
+//regenerate?
+if (!$smarty->is_cached('explore.tpl'))
+{
+	if (!$db) {
+		$db=NewADOConnection($GLOBALS['DSN']);
+		if (!$db) die('Database connection failed');
+	}
+
+	$countylist = array();
+	$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0"); 
+	while (!$recordSet->EOF) 
+	{
+		$countylist[$CONF['references'][$recordSet->fields[0]]][$recordSet->fields[1]] = $recordSet->fields[2];
+		$recordSet->MoveNext();
+	}
+	$recordSet->Close(); 
+	$smarty->assign_by_ref('countylist', $countylist);
+
+	$topics = $db->GetAssoc("select gp.topic_id,concat(topic_title,' [',count(*),']') from gridimage_post gp
+		inner join geobb_topics using (topic_id)
+		group by gp.topic_id 
+		having count(*) > 5
+		order by topic_title");
+
+	$topics=array("1"=>"Any Topic") + $topics; 	
+	$smarty->assign_by_ref('topiclist',$topics);	
+}
+
+
+
+
 $smarty->display('explore.tpl');
 
 	
