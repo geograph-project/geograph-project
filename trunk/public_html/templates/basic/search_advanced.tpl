@@ -1,3 +1,4 @@
+{assign var="page_title" value="Advanced Search"}
 {include file="_std_begin.tpl"}
 
 <h2>Advanced Search <small>[<a href="/search.php?i={$i}&amp;form=simple">simple form</a>]</small></h2>
@@ -98,10 +99,29 @@
 		  </tr> 
 		  <tr> 
 			 <td><label for="imageclass">category</label></td> 
-			 <td> 
+			 <td>
+			 
+<script type="text/javascript" src="/categories.js.php?full=1"></script>
+{literal}
+<script type="text/javascript">
+<!--
+//rest loaded in geograph.js
+function prePopulateImageclass() {
+	setTimeout('populateImageclass()',500);
+}
+
+window.onload = prePopulateImageclass;
+//-->
+</script>
+{/literal}
+			 
+			 
 				<select name="imageclass" id="imageclass" size="1" class="searchinput"> 
-				  <option value=""> </option> 
-					{html_options options=$imageclasslist selected=$imageclass}				  
+					<option value=""></option>
+					{if $imageclass}
+						<option value="{$imageclass}" selected="selected">{$imageclass}</option>
+					{/if}
+					<option value="Other"></option>				  
 				</select></td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
