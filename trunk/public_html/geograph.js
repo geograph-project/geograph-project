@@ -94,6 +94,21 @@ function onChangeImageclass()
 
 }
 
+function unescapeHTML_function() {
+	var div = document.createElement('div');
+	div.innerHTML = this;
+	return div.childNodes[0] ? div.childNodes[0].nodeValue : '';
+}
+function fakeUnescapeHTML_function() {
+	return this;
+}
+
+if (document.getElementById) {
+	String.prototype.unescapeHTML = unescapeHTML_function;
+} else {
+	String.prototype.unescapeHTML = fakeUnescapeHTML_function;
+}
+
 function populateImageclass() 
 {
 	var sel=document.getElementById('imageclass');
@@ -117,9 +132,10 @@ function populateImageclass()
 	//add the whole list
 	for(i=0; i < catList.length; i++) {
 		if (catList[i].length > 0) {
-			var newoption = new Option(catList[i],catList[i]);
+			act = catList[i].unescapeHTML();
+			var newoption = new Option(act,act);
 			opt[opt.length] = newoption;
-			if (idx_value == catList[i])
+			if (idx_value == act)
 				newoption.selected = true;
 		}
 	}
