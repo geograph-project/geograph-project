@@ -37,7 +37,7 @@
 
 		{foreach from=$table.table item=row}
 		<tr>
-			<td><a href="/search.php?route_id={$row.route_id}{if $row.orderby}&amp;orderby={$orderby}{/if}&amp;do=1">{$row.name}</a></td>
+			<td><a href="/search.php?route_id={$row.route_id}{if $row.orderby}&amp;orderby={$row.orderby}{/if}&amp;do=1">{$row.name}</a></td>
 			<td align="right" sortvalue="{$row.count}">{$row.count|thousends} <small style="color:gray">[{$row.myriads}]</small></td>
 			<td>{$row.order}</td>
 			<td style="font-size:0.6em;">
