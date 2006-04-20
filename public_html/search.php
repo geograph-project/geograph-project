@@ -469,22 +469,22 @@ if (isset($_GET['fav']) ) {
 			$limit = 999;
 			$smarty->assign('all',1);	
 		} elseif (isset($_GET['more'])) {
-			$limit = 30;
+			$limit = 40;
 			$smarty->assign('more',1);	
 		} else
-			$limit = 8;
+			$limit = 12;
 		
 		$recentsearchs = $db->GetAssoc("
 			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass from queries 
 			left join queries_count using (id) 
 			where user_id = {$USER->user_id} and favorite = 'N' and searchuse = 'search'
-			group by searchdesc,searchq,displayclass,resultsperpage order by use_timestamp desc,id desc	limit $limit) 
-				UNION
+			order by use_timestamp desc,id desc	limit $limit) 
+		UNION
 			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass from queries 
 			left join queries_count using (id) 
 			where user_id = {$USER->user_id} and favorite = 'Y' and searchuse = 'search'
-			group by searchdesc,searchq,displayclass,resultsperpage order by use_timestamp desc,id desc	limit $limit)
-			order by use_timestamp desc,id desc	");
+			order by use_timestamp desc,id desc	limit $limit)
+		order by use_timestamp desc,id desc	");
 		$smarty->assign_by_ref('recentsearchs',$recentsearchs);	
 	}
 	
