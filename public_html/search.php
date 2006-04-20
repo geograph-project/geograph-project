@@ -474,17 +474,29 @@ if (isset($_GET['fav']) ) {
 		} else
 			$limit = 12;
 		
+		#group by searchdesc,searchq,displayclass,resultsperpage
 		$recentsearchs = $db->GetAssoc("
-			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass from queries 
+			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass ,searchq,displayclass,resultsperpage from queries 
 			left join queries_count using (id) 
 			where user_id = {$USER->user_id} and favorite = 'N' and searchuse = 'search'
 			order by use_timestamp desc,id desc	limit $limit) 
 		UNION
-			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass from queries 
+			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass ,searchq,displayclass,resultsperpage from queries 
 			left join queries_count using (id) 
 			where user_id = {$USER->user_id} and favorite = 'Y' and searchuse = 'search'
 			order by use_timestamp desc,id desc	limit $limit)
 		order by use_timestamp desc,id desc	");
+		
+		$a = array();
+		foreach ($recentsearchs as $i => $row) {
+			if ($a["{$row['searchdesc']},{$row['searchq']},{$row['displayclass']},{$row['resultsperpage']}"]) {
+				unset($recentsearchs[$i]);
+			} else {
+				$a["{$row['searchdesc']},{$row['searchq']},{$row['displayclass']},{$row['resultsperpage']}"] = 1;
+			}
+		}
+		unset($a);
+		
 		$smarty->assign_by_ref('recentsearchs',$recentsearchs);	
 	}
 	
