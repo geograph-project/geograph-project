@@ -30,14 +30,17 @@ init_session();
 $smarty = new GeographPage;
 
 $template = 'js_categories.tpl';
-$cacheid = '';
+$cacheid = isset($_GET['full']);
 
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (empty($db)) die('Database connection failed');
 
-	$arr = $db->getCol("select imageclass,count(*) as cnt from gridimage_search  group by imageclass  having cnt>5 and length(imageclass)>0;");
+	
+	$having = isset($_GET['full'])?'':'cnt>5 and';
+
+	$arr = $db->getCol("select imageclass,count(*) as cnt  from gridimage_search  group by imageclass   having $having length(imageclass)>0;");
 	
 	$smarty->assign_by_ref('classes',$arr);
 	
