@@ -84,14 +84,15 @@ function setdate(name,date,form) {
 
 function onChangeImageclass()
 {
-	var sel=document.getElementById('imageclass');
-	var idx=sel.selectedIndex;
+	if (document.getElementById('otherblock')) {
+		var sel=document.getElementById('imageclass');
+		var idx=sel.selectedIndex;
 
-	var isOther=idx==sel.options.length-1
+		var isOther=idx==sel.options.length-1
 
-	var otherblock=document.getElementById('otherblock');
-	otherblock.style.display=isOther?'':'none';
-
+		var otherblock=document.getElementById('otherblock');
+		otherblock.style.display=isOther?'':'none';
+	}
 }
 
 function unescapeHTML_function() {
