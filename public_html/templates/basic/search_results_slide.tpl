@@ -59,7 +59,8 @@ setTimeout("document.images['image2'].src = document.images['image2'].lowsrc",60
 var delayinsec = {$user->slideshow_delay|default:5};
 {/dynamic}
  //]]></script>
-	<p style="clear:both">Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
+ 	<br style="clear:both"/>
+	<p>Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
 	{/if}
 {else}
 	{if $nofirstmatch}
