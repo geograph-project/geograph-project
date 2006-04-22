@@ -106,11 +106,23 @@
 <script type="text/javascript">
 <!--
 //rest loaded in geograph.js
+var hasloaded = false;
 function prePopulateImageclass() {
-	setTimeout('populateImageclass()',500);
+	if (!hasloaded) {
+		var sel=document.getElementById('imageclass');
+		sel.disabled = true;
+		var oldText = sel.options[0].text;
+		sel.options[0].text = "please wait...";
+		
+		populateImageclass();
+		
+		hasloaded = true;
+		sel.options[0].text = oldText;
+		sel.disabled = false;
+	}
 }
 
-window.onload = prePopulateImageclass;
+window.onload = onChangeImageclass;
 //-->
 </script>
 {/literal}
