@@ -121,14 +121,12 @@ function prePopulateImageclass() {
 		sel.disabled = false;
 	}
 }
-
-window.onload = onChangeImageclass;
 //-->
 </script>
 {/literal}
 			 
 			 
-				<select name="imageclass" id="imageclass" size="1" class="searchinput"> 
+				<select name="imageclass" id="imageclass" size="1" class="searchinput"  onmouseover="prePopulateImageclass()" onfocus="prePopulateImageclass()"> 
 					<option value=""></option>
 					{if $imageclass}
 						<option value="{$imageclass}" selected="selected">{$imageclass}</option>
