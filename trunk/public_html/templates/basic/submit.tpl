@@ -263,11 +263,23 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 <!--
 //rest loaded in geograph.js
 
+var hasloaded = false;
 function prePopulateImageclass() {
-	setTimeout('populateImageclass()',500);
+	if (!hasloaded) {
+		var sel=document.getElementById('imageclass');
+		sel.disabled = true;
+		var oldText = sel.options[0].text;
+		sel.options[0].text = "please wait...";
+		
+		populateImageclass();
+		
+		hasloaded = true;
+		sel.options[0].text = oldText;
+		sel.disabled = false;
+	}
 }
 
-window.onload = prePopulateImageclass;
+window.onload = onChangeImageclass;
 //-->
 </script>
 {/literal}
@@ -275,7 +287,7 @@ window.onload = prePopulateImageclass;
 <p><label for="imageclass">Primary geographical category</label> {if $error.imageclass}
 	<br/><span class="formerror">{$error.imageclass}</span>
 	{/if}<br />	
-	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()">
+	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onmouseover="prePopulateImageclass()" onfocus="prePopulateImageclass()">
 		<option value="">--please select feature--</option>
 		{if $imageclass}
 			<option value="{$imageclass}" selected="selected">{$imageclass}</option>
