@@ -688,6 +688,7 @@ class GridImage
 					imagecopyresampled($img, $fullimg, 0, 0, $srcx, $srcy, 
 								$size,$size, $srcw, $srch);
 
+					require_once('geograph/image.inc.php');
 					UnsharpMask($img,200,0.5,3);
 
 					imagedestroy($fullimg);
