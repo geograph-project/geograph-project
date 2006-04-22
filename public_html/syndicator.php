@@ -28,7 +28,7 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
 	
 	
-$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','KML','BASE','GeoRSS','GeoPhotoRSS','GPX');
+$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','KML','BASE','GeoRSS','GeoPhotoRSS','GPX','TOOLBAR');
 
 $format="RSS1.0";
 if (isset($_GET['format']) && in_array($_GET['format'], $valid_formats))
@@ -156,6 +156,11 @@ for ($i=0; $i<$cnt; $i++)
 	     	$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
 	     } elseif ($format == 'PHP') {
 	     	$item->thumb = $images->images[$i]->getThumbnail(120,120,true); 
+	     } elseif ($format == 'TOOLBAR') {
+	     	ob_start();
+	     	imagejpeg($images->images[$i]->getSquareThumb(16));
+	     	$item->thumbdata = ob_get_contents();
+	     	ob_end_clean();
 	     }
 	     
 	//<license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />

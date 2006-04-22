@@ -389,6 +389,8 @@ class UniversalFeedCreator extends FeedCreator {
 				$this->_feed = new OPMLCreator();
 				break;
 				
+			case "TOOLBAR":
+				$this->format = $format;
 			case "ATOM":
 				// fall through: always the latest ATOM version
 				
@@ -1337,6 +1339,9 @@ class AtomCreator03 extends FeedCreator {
 		$feed.= $this->_createGeneratorComment();
 		$feed.= $this->_createStylesheetReferences();
 		$feed.= "<feed version=\"0.3\" xmlns=\"http://purl.org/atom/ns#\"";
+		if ($this->format=='TOOLBAR') {
+			$feed.= " xmlns:gtb=\"http://toolbar.google.com/custombuttons/\"";
+		}
 		if ($this->language!="") {
 			$feed.= " xml:lang=\"".$this->language."\"";
 		}
@@ -1377,6 +1382,11 @@ class AtomCreator03 extends FeedCreator {
 			}
 			if ($this->items[$i]->description!="") {
 				$feed.= "        <summary>".htmlspecialchars($this->items[$i]->description)."</summary>\n";
+			}
+			if ($this->items[$i]->thumbdata) {
+				$feed.= "        <gtb:icon mode=\"base64\" type=\"image/jpeg\">\n";
+				$feed.= chunk_split(base64_encode($this->items[$i]->thumbdata))."\n";
+				$feed.= "        </gtb:icon>\n";
 			}
 			$feed.= "    </entry>\n";
 		}
