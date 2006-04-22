@@ -23,7 +23,7 @@
 	<option value="cy">Welsh</option>
 	<option value="gd">Scotish</option>
 	<option value="fr">French</option>
-	<option value="cy">English: British</option>
+	<option value="gb">English: British</option>
 	<option value="us">English: American</option>
 	<option value="ot">Other... (please let us know)</option>
 	</select></td>
@@ -47,7 +47,7 @@
 	<th>Language:</th>
 	<td><select name="tran_lang">
 	<option value="">... choose ...</option>
-	<option value="cy" selected="selected">English: British</option>
+	<option value="gb" selected="selected">English: British</option>
 	<option value="us">English: American</option>
 	<option value="ga">Irish</option>
 	<option value="cy">Welsh</option>
