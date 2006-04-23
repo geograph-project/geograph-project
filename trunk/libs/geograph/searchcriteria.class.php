@@ -414,7 +414,7 @@ class SearchCriteria_All extends SearchCriteria
 		parent::getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
 		
 		if (!$this->orderby)
-			$sql_order .= " rand('{$this->crt_timestamp}') ";
+			$sql_order .= " rand('{$this->crt_timestamp_ts}') ";
 	}
 	
 	/*
