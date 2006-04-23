@@ -197,11 +197,8 @@ class GridSquare
 			//after ordering by x,y - you'll get the bottom
 			//left gridprefix, and hence the origin
 			
-			//todo - use CONF instead of a db lookup
-			$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index={$this->reference_index} order by origin_x,origin_y limit 1");	
-		
-			$square['origin_x'] -= $origin['origin_x'];
-			$square['origin_y'] -= $origin['origin_y'];
+			$square['origin_x'] -= $CONF['origins'][$this->reference_index][0];
+			$square['origin_y'] -= $CONF['origins'][$this->reference_index][0];
 			
 			$this->nateastings = sprintf("%d%05d",intval($square['origin_x']/100),$this->eastings * 1000 + 500);
 			$this->natnorthings = sprintf("%d%05d",intval($square['origin_y']/100),$this->northings * 1000 +500);
