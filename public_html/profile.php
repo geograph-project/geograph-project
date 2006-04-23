@@ -125,7 +125,7 @@ if ($template=='profile.tpl')
 		$images=new ImageList;
 		
 		if ($uid==$USER->user_id || $USER->hasPerm('moderator'))
-			$statuses=array('rejected', 'pending', 'accepted', 'geograph');
+			$statuses='';
 		else
 			$statuses=array('accepted', 'geograph');
 		
