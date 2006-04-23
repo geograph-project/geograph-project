@@ -87,7 +87,7 @@ $USER->mustHavePerm('moderator');
 
 
 //lets find all unmoderated submissions
-$images=new ImageList('pending', 'submitted asc', 50,true,true);
+$images=new ImageList(2, 'gridimage_id asc', 50,true,true); //use the numberical for pending - quicker!
 
 foreach ($images->images as $i => $image) {
 	if ($image->viewpoint_eastings) {
