@@ -6,8 +6,8 @@
 {/if}
 {/dynamic}
 {assign var="right_block" value="_block_recent.tpl"}
-{include file="_std_begin_dynamic.tpl"}
 {dynamic}
+{include file="_std_begin.tpl"}
 
     <h2>Browse</h2>
 
@@ -27,7 +27,7 @@
 	</div>
 {else}
 	<p>You can view a particular grid square below - if the square hasn't been filled yet,
-	we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Ordnance Survey Get-a-Map'} to help locate your grid square)</p>
+	we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Get-a-map&trade;'} to help locate your grid square)</p>
 {/if}
 
 <form action="/browse.php" method="get">
@@ -95,7 +95,7 @@
 		<li><b>We have 
 			{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
 			{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
-			for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"}</b>
+			for {getamap gridref=$gridref text=$gridref title="Get-a-map&trade; for $gridref"}</b>
 			{if !$breakdown && !$breakdowns}<span style="font-size:0.8em;">- click for larger version</span>{/if}
 		</li>
 		</ul>
@@ -153,7 +153,7 @@
 	{else}
 		{* There are no images in this square (yet) *}
 		
-		<p>We have no images for {getamap gridref=$gridref text=$gridref title="OS Get-a-Map for $gridref"} yet,
+		<p>We have no images for {getamap gridref=$gridref text=$gridref title="Get-a-map&trade; for $gridref"} yet,
 		
 		{if $nearest_distance}
 			</p><ul><li>The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away<br/><br/></li>
@@ -178,7 +178,7 @@
 		
 		<li><b>Maps</b>:
 		
-		{getamap gridref=$gridrefraw text="OS Get-a-Map"},
+		{getamap gridref=$gridrefraw text="Get-a-Map&trade;"},
 		
 		{if $square->reference_index eq 1}
 			{assign var="urltitle" value=$image->title|escape:'url'}
@@ -227,7 +227,5 @@
 	{/if}
 	</ul>
 {/if}
-
+{include file="_std_end.tpl"}
 {/dynamic}
-
-{include file="_std_end_dynamic.tpl"}
