@@ -102,29 +102,6 @@
 			 <td>
 			 
 <script type="text/javascript" src="/categories.js.php?full=1"></script>
-{literal}
-<script type="text/javascript">
-<!--
-//rest loaded in geograph.js
-var hasloaded = false;
-function prePopulateImageclass() {
-	if (!hasloaded) {
-		var sel=document.getElementById('imageclass');
-		sel.disabled = true;
-		var oldText = sel.options[0].text;
-		sel.options[0].text = "please wait...";
-		
-		populateImageclass();
-		
-		hasloaded = true;
-		sel.options[0].text = oldText;
-		sel.disabled = false;
-	}
-}
-//-->
-</script>
-{/literal}
-			 
 			 
 				<select name="imageclass" id="imageclass" size="1" class="searchinput"  onmouseover="prePopulateImageclass()" onfocus="prePopulateImageclass()"> 
 					<option value=""></option>

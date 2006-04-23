@@ -130,22 +130,27 @@ function populateImageclass()
 	//re-add the first
 	opt[0] = first_opt;
 
+	newselected = -1;
 	//add the whole list
 	for(i=0; i < catList.length; i++) {
 		if (catList[i].length > 0) {
 			act = catList[i].unescapeHTML();
 			var newoption = new Option(act,act);
-			opt[opt.length] = newoption;
-			if (idx_value == act)
+			if (idx_value == act) {
 				newoption.selected = true;
+				newselected = opt.length;
+			}
+			opt[opt.length] = newoption;
 		}
 	}
 
 	//if our value is not found then use other textbox!
-	if (sel.selectedIndex < 1 && idx_value != null) {
+	if (newselected < 1 && idx_value != null) {
 		var selother=document.getElementById('imageclassother');
 		selother.value = idx_value;
 		idx_value = 'Other';
+	} else {
+		sel.selectedIndex = newselected;
 	}
 
 	//re add the other option
@@ -154,4 +159,20 @@ function populateImageclass()
 		sel.selectedIndex=opt.length-1;
 
 	onChangeImageclass();
+}
+
+var hasloaded = false;
+function prePopulateImageclass() {
+	if (!hasloaded) {
+		var sel=document.getElementById('imageclass');
+		//sel.disabled = true;
+		var oldText = sel.options[0].text;
+		sel.options[0].text = "please wait...";
+		
+		populateImageclass();
+		
+		hasloaded = true;
+		sel.options[0].text = oldText;
+		//sel.disabled = false;
+	}
 }
