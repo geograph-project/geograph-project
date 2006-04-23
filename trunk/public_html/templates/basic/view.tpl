@@ -39,7 +39,21 @@ referring to <b>image {$image->gridimage_id}</b>
 {/if}
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
-  <div class="img-shadow">{$image->getFull()}</div>
+  <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
+  
+  {literal}
+  <script language="JavaScript">
+  
+  function redrawMainImage() {
+  	el = document.getElementById('mainphoto');
+  	el.style.display = 'none';
+  	el.style.display = '';
+  }
+  window.onload = redrawMainImage;
+  
+  </script>
+  {/literal}
+  
   <div class="caption"><b>{$image->title|escape:'html'}</b></div>
 
   {if $image->comment}
