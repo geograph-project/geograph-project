@@ -321,22 +321,6 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 <!--
 //rest loaded in geograph.js
 
-var hasloaded = false;
-function prePopulateImageclass() {
-	if (!hasloaded) {
-		var sel=document.getElementById('imageclass');
-		sel.disabled = true;
-		var oldText = sel.options[0].text;
-		sel.options[0].text = "please wait...";
-		
-		populateImageclass();
-		
-		hasloaded = true;
-		sel.options[0].text = oldText;
-		sel.disabled = false;
-	}
-}
-
 window.onload = onChangeImageclass;
 //-->
 </script>
