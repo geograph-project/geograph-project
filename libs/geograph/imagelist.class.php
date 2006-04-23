@@ -72,11 +72,11 @@ class ImageList
 		
 		//we accept an array or a single status...
 		if (is_array($statuses))
-			$statuslist="where moderation_status in ('".implode("','", $statuses)."') and ";
+			$statuslist="where moderation_status in ('".implode("','", $statuses)."') ";
 		elseif (is_int($statuses)) 
-			$statuslist="where moderation_status = $statuses and ";
+			$statuslist="where moderation_status = $statuses ";
 		elseif ($statuses)
-			$statuslist="where moderation_status = '$statuses' and ";
+			$statuslist="where moderation_status = '$statuses' ";
 		
 		if (is_null($sort))
 			$orderby="";
