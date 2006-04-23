@@ -4,9 +4,7 @@
 {else}
 	{assign var="page_title" value="Browse"}
 {/if}
-{/dynamic}
 {assign var="right_block" value="_block_recent.tpl"}
-{dynamic}
 {include file="_std_begin.tpl"}
 
     <h2>Browse</h2>
