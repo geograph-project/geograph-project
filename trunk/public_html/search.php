@@ -542,12 +542,6 @@ if (isset($_GET['fav']) ) {
 			$recordSet->Close(); 
 			$smarty->assign_by_ref('countylist', $countylist);
 
-			$arr = $db->CacheGetAssoc(24*3600,"select imageclass,concat(imageclass,' [',count(*),']') from gridimage_search
-				where length(imageclass)>0
-				group by imageclass");
-			$arr = array_merge(array('-'=>'-unclassified-'),$arr);
-			$smarty->assign_by_ref('imageclasslist',$arr);	
-
 			$topics = $db->GetAssoc("select gp.topic_id,concat(topic_title,' [',count(*),']') from gridimage_post gp
 				inner join geobb_topics using (topic_id)
 				group by gp.topic_id 
