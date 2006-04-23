@@ -188,6 +188,7 @@ class GridSquare
 	*/
 	function getNatEastings()
 	{
+		global $CONF;
 		if (!isset($this->nateastings)) {
 			$db=&$this->_getDB();
 			
