@@ -112,12 +112,12 @@ class GeographUser
 		
 		$this->stats=array();
 		
-		$this->stats['ftf']=$db->GetOne("select count(*) from gridimage_search where user_id='{$this->user_id}' and moderation_status='geograph' and ftf=1");
+
 		$this->stats['total']=$db->GetOne("select count(*) from gridimage where user_id='{$this->user_id}' and moderation_status<>'rejected'");
 		$this->stats['pending']=$db->GetOne("select count(*) from gridimage where user_id='{$this->user_id}' and moderation_status='pending'");
 		$this->stats['squares']=$db->GetOne("select count(distinct grid_reference) from gridimage_search where user_id='{$this->user_id}'");
-		$this->stats['geosquares']=$db->GetOne("select count(distinct grid_reference) from gridimage_search where user_id='{$this->user_id}' and moderation_status='geograph'");
 		
+		$this->stats += $db->GetRow("select sum(ftf=1) as ftf,count(distinct grid_reference) as geosquares from gridimage_search where user_id='{$this->user_id}' and moderation_status='geograph'");
 
 	}
 	
