@@ -319,3 +319,31 @@ CREATE TABLE `route` (
 
 ##### route data is copywrite so is not included here!
 TRUNCATE TABLE `route_item`;
+
+
+
+CREATE TABLE `glossary` (
+  `glossary_id` mediumint(8) unsigned NOT NULL auto_increment,
+  `source_lang` char(2) NOT NULL default '',
+  `source_dialect` varchar(30) NOT NULL default '',
+  `source_word` varchar(64) NOT NULL default '',
+  `tran_lang` char(2) NOT NULL default '',
+  `tran_dialect` varchar(30) NOT NULL default '',
+  `tran_word` varchar(64) NOT NULL default '',
+  `tran_definition` varchar(255) NOT NULL default '',
+  `created` timestamp NOT NULL,
+  `created_by` mediumint(8) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`glossery_id`)
+) ENGINE=MyISAM;
+
+
+
+#regious use of adodb debuging, my own trysql and explain:
+
+ALTER TABLE `loc_towns` ADD INDEX `gis` ( `e` , `n` , `reference_index` ) ;
+
+ALTER TABLE `gridsquare` ADD INDEX ( `reference_index` ) 
+
+
+
+
