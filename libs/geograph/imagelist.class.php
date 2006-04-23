@@ -72,11 +72,11 @@ class ImageList
 		
 		//we accept an array or a single status...
 		if (is_array($statuses))
-			$statuslist=" moderation_status in ('".implode("','", $statuses)."') and ";
+			$statuslist="where moderation_status in ('".implode("','", $statuses)."') and ";
 		elseif (is_int($statuses)) 
-			$statuslist=" moderation_status = $statuses and ";
+			$statuslist="where moderation_status = $statuses and ";
 		elseif ($statuses)
-			$statuslist=" moderation_status = '$statuses' and ";
+			$statuslist="where moderation_status = '$statuses' and ";
 		
 		if (is_null($sort))
 			$orderby="";
@@ -100,14 +100,14 @@ class ImageList
 				"from gridimage as gi ".
 				"inner join gridsquare as gs using(gridsquare_id) ".
 				"inner join user on(gi.user_id=user.user_id) ".
-				"where $statuslist ".
+				" $statuslist ".
 				"$orderby $limit";
 		} else {
 			if (strpos($statuslist,'geograph') !== FALSE && strpos($statuslist,'accepted') !== FALSE)
 				$statuslist = '';
 			$sql = "select * ".
 				"from gridimage_search ".
-				"where $statuslist ".
+				" $statuslist ".
 				"$orderby $limit";
 		}
 		$recordSet = &$db->Execute($sql);
