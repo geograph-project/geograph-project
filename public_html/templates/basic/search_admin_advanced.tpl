@@ -1,3 +1,4 @@
+{assign var="page_title" value="Special Search"}
 {include file="_std_begin.tpl"}
 
 <h2>Advanced Search Builder</h2>
@@ -70,10 +71,16 @@
 		  </tr> 
 		  <tr> 
 			 <td><label for="imageclass">category</label></td> 
-			 <td> 
-				<select name="imageclass" id="imageclass" size="1" class="searchinput"> 
-				  <option value=""> </option> 
-					{html_options options=$imageclasslist selected=$imageclass}				  
+			 <td>
+			 
+<script type="text/javascript" src="/categories.js.php?full=1"></script>
+			 
+				<select name="imageclass" id="imageclass" size="1" class="searchinput"  onmouseover="prePopulateImageclass()" onfocus="prePopulateImageclass()"> 
+					<option value=""></option>
+					{if $imageclass}
+						<option value="{$imageclass}" selected="selected">{$imageclass}</option>
+					{/if}
+					<option value="Other"></option>				  
 				</select></td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
@@ -96,7 +103,7 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="gridsquare">grid square</label></td> 
+			 <td><label for="gridsquare">myriad (<a href="/help/squares" title="What is a Myriad? (opens in new window)" target="_blank">?</a>)</label></td> 
 			 <td> 
 				<select name="gridsquare" id="gridsquare" size="1" class="searchinput"> 
 				  <option value=""> </option> 
@@ -146,10 +153,10 @@
 		  </tr> 
 		  <tr> 
 			 <td>&nbsp;</td> 
-			 <td> 
+			 <td> {dynamic}
 				<select name="resultsperpage" id="resultsperpage" style="text-align:right" size="1"> 
 					{html_options values=$pagesizes output=$pagesizes selected=$resultsperpage}
-				</select> <label for="resultsperpage">results per page</label></td>
+				</select> <label for="resultsperpage">results per page</label>{/dynamic}</td>
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td>
 			 
 		  </tr> 
