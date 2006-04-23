@@ -199,7 +199,7 @@ class GridSquare
 			//left gridprefix, and hence the origin
 			
 			$square['origin_x'] -= $CONF['origins'][$this->reference_index][0];
-			$square['origin_y'] -= $CONF['origins'][$this->reference_index][0];
+			$square['origin_y'] -= $CONF['origins'][$this->reference_index][1];
 			
 			$this->nateastings = sprintf("%d%05d",intval($square['origin_x']/100),$this->eastings * 1000 + 500);
 			$this->natnorthings = sprintf("%d%05d",intval($square['origin_y']/100),$this->northings * 1000 +500);
