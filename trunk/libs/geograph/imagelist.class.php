@@ -72,9 +72,11 @@ class ImageList
 		
 		//we accept an array or a single status...
 		if (is_array($statuses))
-			$statuslist="'".implode("','", $statuses)."'";
-		else
-			$statuslist="'$statuses'";
+			$statuslist=" moderation_status in ('".implode("','", $statuses)."') and ";
+		elseif (is_int($statuses)) 
+			$statuslist=" moderation_status = $statuses and ";
+		elseif ($statuses)
+			$statuslist=" moderation_status = '$statuses' and ";
 		
 		if (is_null($sort))
 			$orderby="";
@@ -94,18 +96,21 @@ class ImageList
 		$this->images=array();
 		$i=0;
 		if ($advanced) {
-			$recordSet = &$db->Execute("select gi.*,grid_reference,user.realname,imagecount ".
+			$sql = "select gi.*,grid_reference,user.realname,imagecount ".
 				"from gridimage as gi ".
 				"inner join gridsquare as gs using(gridsquare_id) ".
 				"inner join user on(gi.user_id=user.user_id) ".
-				"where moderation_status in ($statuslist) ".
-				"$orderby $limit");
+				"where $statuslist ".
+				"$orderby $limit";
 		} else {
-			$recordSet = &$db->Execute("select * ".
+			if (strpos($statuslist,'geograph') !== FALSE && strpos($statuslist,'accepted') !== FALSE)
+				$statuslist = '';
+			$sql = "select * ".
 				"from gridimage_search ".
-				"where moderation_status in ($statuslist) ".
-				"$orderby $limit");
+				"where $statuslist ".
+				"$orderby $limit";
 		}
+		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$this->images[$i]=new GridImage;
@@ -127,9 +132,11 @@ class ImageList
 
 		//we accept an array or a single status...
 		if (is_array($statuses))
-			$statuslist="'".implode("','", $statuses)."'";
-		else
-			$statuslist="'$statuses'";
+			$statuslist=" moderation_status in ('".implode("','", $statuses)."') and ";
+		elseif (is_int($statuses)) 
+			$statuslist=" moderation_status = $statuses and ";
+		elseif ($statuses)
+			$statuslist=" moderation_status = '$statuses' and ";
 				
 		$user_id=intval($user_id);		
 				
@@ -150,16 +157,19 @@ class ImageList
 			"inner join user on(gi.user_id=user.user_id) ".
 			"left join gridsquare_topic as t on(gi.gridsquare_id=t.gridsquare_id and ".
 			"t.last_post=(select max(last_post) from gridsquare_topic where gridsquare_id=gi.gridsquare_id)) ".
-			"where moderation_status in ($statuslist) and ".
+			"where $statuslist ".
 			"gi.user_id='$user_id' ".
 			"$orderby $limit";
 		} else {
-		$sql="select gi.* ".
-			"from gridimage_search as gi ".
-			"where moderation_status in ($statuslist) and ".
-			"gi.user_id='$user_id' ".
-			"$orderby $limit";
+			if (strpos($statuslist,'geograph') !== FALSE && strpos($statuslist,'accepted') !== FALSE)
+				$statuslist = '';
+			$sql="select gi.* ".
+				"from gridimage_search as gi ".
+				"where $statuslist ".
+				"gi.user_id='$user_id' ".
+				"$orderby $limit";
 		}
+		
 		$this->images=array();
 		$i=0;
 		$recordSet = &$db->Execute($sql);
@@ -187,8 +197,7 @@ class ImageList
 	{
 		$db=&$this->_getDB();
 
-		$statuslist="'accepted','geograph'";
-		#$orderby="order by x,y desc";
+		
 		$limit="";
 		
 		//ensure correct order
@@ -206,10 +215,10 @@ class ImageList
 		
 		$sql="select $cols ".
 			"from gridimage_search ".
-			"where moderation_status in ($statuslist) and ".
+			"where ".
 			"x between $l and $r and ".
 			"y between $t and $b ".
-			"$rfilter $orderby $limit";
+			"$rfilter $limit";
 		
 		$this->images=array();
 		if ($count_only)
