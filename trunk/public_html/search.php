@@ -82,7 +82,7 @@ if (isset($_GET['fav']) ) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	
-	$data = array();
+	$data = $_GET;
 	
 	
 	if (!empty($_GET['first'])) {
