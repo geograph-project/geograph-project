@@ -85,8 +85,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		$lastgeographs = -1;
 		foreach($most as $id=>$entry) 
 		{
-			$most[$id]['x'] = ( round(($most[$id]['x'] - $CONF['origins'][$ri][0])/10)*10 ) +  $CONF['origins'][$ri][0];
-			$most[$id]['y'] = ( round(($most[$id]['y'] - $CONF['origins'][$ri][1])/10)*10 ) +  $CONF['origins'][$ri][1];
+			$most[$id]['x'] = ( intval(($most[$id]['x'] - $CONF['origins'][$ri][0])/10)*10 ) +  $CONF['origins'][$ri][0];
+			$most[$id]['y'] = ( intval(($most[$id]['y'] - $CONF['origins'][$ri][1])/10)*10 ) +  $CONF['origins'][$ri][1];
 
 			//get a token to show a suroudding geograph map
 			$mosaic->setOrigin($most[$id]['x'],$most[$id]['y']);
