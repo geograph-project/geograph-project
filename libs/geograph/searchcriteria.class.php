@@ -382,7 +382,8 @@ class SearchCriteria_Text extends SearchCriteria
 						}
 						break;
 					case '(': 
-						$sql_where .= $token;
+						$sql_where .= " $prefix $token";
+						$prefix = '';
 						break;
 					case ')': 
 						$postfix = $token;
