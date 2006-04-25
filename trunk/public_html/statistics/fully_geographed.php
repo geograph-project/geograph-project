@@ -66,8 +66,6 @@ if (!$smarty->is_cached($template, $cacheid))
 			
 	foreach (array(1,2) as $ri) {
 		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
-			
-		$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=$ri order by origin_x,origin_y limit 1");
 		
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;	
 		$most = $db->GetAll("select 
@@ -87,8 +85,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		$lastgeographs = -1;
 		foreach($most as $id=>$entry) 
 		{
-			$most[$id]['x'] = ( intval(($most[$id]['x'] - $origin['origin_x'])/10)*10 ) +  $origin['origin_x'];
-			$most[$id]['y'] = ( intval(($most[$id]['y'] - $origin['origin_y'])/10)*10 ) +  $origin['origin_y'];
+			$most[$id]['x'] = ( round(($most[$id]['x'] - $CONF['origins'][$ri][0])/10)*10 ) +  $CONF['origins'][$ri][0];
+			$most[$id]['y'] = ( round(($most[$id]['y'] - $CONF['origins'][$ri][1])/10)*10 ) +  $CONF['origins'][$ri][1];
 
 			//get a token to show a suroudding geograph map
 			$mosaic->setOrigin($most[$id]['x'],$most[$id]['y']);
