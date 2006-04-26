@@ -18,6 +18,7 @@ function popupOSMap(gridref)
 	}
 }
 
+
 function autoDisable(that) {
  	that.value = "Submitting... Please wait...";
  	name = "document."+that.form.name+"."+that.name;
@@ -175,4 +176,98 @@ function prePopulateImageclass() {
 		sel.options[0].text = oldText;
 		//sel.disabled = false;
 	}
+}
+
+
+
+function markImage(image) {
+	current = readCookie('markedImages');
+	if (current) {
+		newCookie = current + ',' + image;
+	} else {
+		newCookie = image.toString();
+	}
+	
+	createCookie('markedImages',newCookie,10);
+	
+	ele = document.getElementById('mark'+image);
+	if(document.all) {
+	    ele.innerText = 'marked';
+	} else {
+	    ele.textContent = 'marked';
+	}
+}
+
+function displayMarkedImages() {
+	current = readCookie('markedImages');
+	if (current) {
+		splited = current.split(',');
+		newstring = '[[['+splited.join(']]] [[[')+']]]';
+		prompt("Copy and Paste the following into the forum",newstring);
+	} else {
+		alert("You haven't marked any images yet. Or cookies are disabled");
+	}
+}
+
+function showMarkedImages() {
+	current = readCookie('markedImages');
+	if (current) {
+		splited = current.split(',');
+		
+		for(i=0; i < splited.length; i++) 
+			if (document.getElementById('mark'+splited[i])) {
+				ele = document.getElementById('mark'+splited[i])
+				if(document.all) {
+				    ele.innerText = 'marked';
+				} else {
+				    ele.textContent = 'marked';
+				}
+			}
+	} 
+}
+
+
+function clearMarkedImages() {
+	current = readCookie('markedImages');
+	if (current) {
+		splited = current.split(',');
+		
+		for(i=0; i < splited.length; i++) 
+			if (document.getElementById('mark'+splited[i])) {
+				ele = document.getElementById('mark'+splited[i])
+				if(document.all) {
+				    ele.innerText = 'Mark';
+				} else {
+				    ele.textContent = 'Mark';
+				}
+			}
+	} 
+	eraseCookie('markedImages');
+	alert('All images removed from your list');
+}
+
+
+function createCookie(name,value,days) {
+	if (days) {
+		var date = new Date();
+		date.setTime(date.getTime()+(days*24*60*60*1000));
+		var expires = "; expires="+date.toGMTString();
+	}
+	else var expires = "";
+	document.cookie = name+"="+value+expires+"; path=/";
+}
+
+function readCookie(name) {
+	var ca = document.cookie.split(';');
+	for(var i=0;i < ca.length;i++) {
+		var pair = ca[i].split('=');
+		var c = pair[0];
+		while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		if (c == name) return pair[1];
+	}
+	return false;
+}
+
+function eraseCookie(name) {
+	createCookie(name,"",-1);
 }
