@@ -529,7 +529,7 @@ if (isset($_GET['fav']) ) {
 		$smarty->assign('pagesizes', array(5,10,15,20,30,50));
 		
 		if (!$is_cachable || !$smarty->is_cached($template, $is_cachable)) {
-			$smarty->assign('displayclasses', array('full' => 'full listing','text' => 'text description only','thumbs' => 'thumbnails only','slide' => 'slide-show mode'));
+			$smarty->assign('displayclasses', array('full' => 'full listing','text' => 'text description only','thumbs' => 'thumbnails only','slide' => 'slide-show mode','more' => 'extra direct links'));
 			$smarty->assign('distances', array(1,5,10,20,30,50,100,250,500,1000,2000));
 
 			$countylist = array();
