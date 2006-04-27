@@ -4,7 +4,7 @@
  * $Id$
  * 
  * GeoGraph geographic photo archive project
- * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
+ * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -45,10 +45,6 @@ $cacheid='busyday'.isset($_GET['users']).$date.'.'.$ri.'.'.$u;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	require_once('geograph/gridimage.class.php');
-	require_once('geograph/gridsquare.class.php');
-	require_once('geograph/imagelist.class.php');
-
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 
