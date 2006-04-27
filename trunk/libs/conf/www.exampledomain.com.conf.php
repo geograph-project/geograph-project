@@ -8,6 +8,7 @@ $CONF['db_connect']='localhost';
 $CONF['db_user']='geograph';
 $CONF['db_pwd']='banjo';
 $CONF['db_db']='geograph';
+$CONF['db_persist']='?persist'; //options: ''|'?persist'
 
 //choose UI template
 $CONF['template']='basic';
@@ -98,5 +99,8 @@ $CONF['enable_newmap'] = 1;
 //use the smaller towns database for the 'near...' lines rather than placenames
 $CONF['use_towns_gaz'] = true;
 
+
+//increment to force reloadling of geograph.js 
+$CONF['javascript_version'] = 1.1;
 
 ?>
