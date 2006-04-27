@@ -29,14 +29,14 @@ init_session();
 
 $smarty = new GeographPage;
 
-$smarty->caching = 0; // lifetime is per cache
+$smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
 $template='statistics_table.tpl';
 
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 
-$cacheid='busyday_forumn'.isset($_GET['users']).$u;
+$cacheid='busyday_forum'.isset($_GET['users']).$u.'.'.isset($_GET['threads']);
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -63,6 +63,13 @@ if (!$smarty->is_cached($template, $cacheid))
 	} elseif (isset($_GET['users'])) {
 		$group_sql = 'poster_id,';
 		$column_sql = "CONCAT('<a href=\"/profile.php?u=',poster_id,'\">',poster_name,'</a>') as User,";
+		$title .= " by user";
+	}
+	if (isset($_GET['threads'])) {
+		$join_sql .= ' inner join geobb_topics using(topic_id)';
+		$group_sql .= 'geobb_posts.topic_id,';
+		$column_sql .= "CONCAT('<a href=\"/discuss/?action=vthread&amp;topic=',geobb_posts.topic_id,'\">',topic_title,'</a>') as Topic,";
+		$title .= " by topic";
 	}
 	
 	if (count($where))
@@ -75,7 +82,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$column_sql
 	DATE_FORMAT($column,'%d/%m/%Y') as Date,
 	count(*) as Posts 
-	from geobb_posts 
+	from geobb_posts $join_sql
 	where 1 $where_sql
 	group by $group_sql date($column) 
 	order by Posts desc limit 50;" );
@@ -89,7 +96,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$extra = array();
 
-	foreach (array('users','date') as $key) {
+	foreach (array('users','threads') as $key) {
 		if (isset($_GET[$key])) {
 			$extra[$key] = $_GET[$key];
 		}
