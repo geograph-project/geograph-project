@@ -17,7 +17,7 @@
 {else}
 <link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/syndicator.php"/>
 {/if}
-<script type="text/javascript" src="/geograph.js?v=2"></script>
+<script type="text/javascript" src="/geograph.js?v={$javascript_version}"></script>
 </head>
 
 <body>
