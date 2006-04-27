@@ -102,11 +102,13 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
    Graph: <a href="/statistics/hectads.php">Hectad Coverage</a></p>
 
    <p><b>Past Activity:</b><br/>
-   Graphs: <a href="/moversboard.php#rate_graph">Weekly Submissions</a>, <a href="/leaderboard.php#submission_graph">Overall Submissions</a> and as a <a href="/statistics/images.php">table</a>.<br/>
+   Graphs: <a href="/moversboard.php#rate_graph">Weekly Submissions</a>, <a href="/leaderboard.php#submission_graph">Overall Submissions</a>.<br/>
    Monthly Breakdown: <a href="/statistics/overtime.php" title="Monthly Breakdown of Images Submitted">Submissions</a>, <a href="/statistics/overtime.php?date=taken" title="Monthly Breakdown of Images Taken">Date Taken</a>, <a href="/statistics/overtime_users.php" title="Monthly Breakdown new User Signups">User Signups</a> and <a href="/statistics/overtime_forum.php" title="Monthly Breakdown for Forum Posts">Forum Posts</a>.<br/>
    Hourly and Weekday Breakdown: <a href="/statistics/date_graphs.php" title="Hourly and Weekday Breakdown of Images Submitted">Submissions</a>, <a href="/statistics/date_graphs.php?date=taken" title="Hourly and Weekday Breakdown of Images Taken">Date Taken</a>, <a href="/statistics/date_users_graphs.php" title="Hourly and Weekday Breakdown of User Signups">User Signups</a> and <a href="/statistics/date_forum_graphs.php" title="Hourly and Weekday Breakdown for Forum Posts">Forum Posts</a>.<br/>
-   Most in a day: <a href="/statistics/busyday.php?date=submitted">Submissions</a>, <a href="/statistics/busyday.php">Images Taken</a> and <a href="/statistics/busyday_forum.php">Forum Posts</a>.<br/>
-   Yearly Saturation: <a href="/statistics/years.php?date=submitted">Submissions</a>, <a href="/statistics/years.php">Images Taken</a> and <a href="/statistics/years_forum.php">Forum Posts</a>.</p>
+   Most in a day: <a href="/statistics/busyday.php?date=submitted">Submissions</a>, <a href="/statistics/busyday.php">Images Taken</a>, <a href="/statistics/busyday_users.php">Users</a> and <a href="/statistics/busyday_forum.php">Forum Posts</a> (<a href="/statistics/busyday_forum.php?users=1" title="Most in a day by user">Users</a>,<a href="/statistics/busyday_forum.php?threads=1" title="Most in a day by topic">Topics</a>).<br/>
+   Yearly Saturation: <a href="/statistics/years.php?date=submitted">Submissions</a>, <a href="/statistics/years.php">Images Taken</a> and <a href="/statistics/years_forum.php">Forum Posts</a>.<br/>
+   Forum Topic Leaderboards: <a href="/statistics/leaderthread_forum.php">Most Popular Threads</a> and
+   <a href="/statistics/forum_image_breakdown.php">By Thumbnails Used</a></p>
 
     <form method="get" action="/statistics/breakdown.php">
     <p>View breakdown of images by 
@@ -138,8 +140,13 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
 
    <p><b>More Technical Database Stats:</b><br/>
    <a href="/statistics/pulse.php">Geograph Pulse</a>,
-   <a href="/statistics/totals.php">Current Totals</a>,
-   <a href="/statistics/estimate.php">Future Estimates</a> and 
-   <a href="/statistics/forum_image_breakdown.php">Breakdown of Thumbnails used in Forum Topics</a>.</p>
+   <a href="/statistics/totals.php">Current Totals</a>, 
+   {dynamic}
+    {if $user->registered}
+     <a href="/statistics/contributor.php?u={$user->user_id}">Your Totals</a>, 
+    {/if}
+   {/dynamic}
+   <a href="/statistics/images.php">Status Breakdown</a> and
+   <a href="/statistics/estimate.php">Future Estimates</a>.</p>
 
 {include file="_std_end.tpl"}
