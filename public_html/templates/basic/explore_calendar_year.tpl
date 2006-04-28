@@ -43,5 +43,7 @@
 </div>
 {/foreach}
 <br style="clear:both"/>
-&nbsp;
+<ul>
+	<li><a href="/leaderboard.php?when={$year}&amp;date=taken">User leaderboard for {$year}</a> {if $year >= 2005}(<a href="/leaderboard.php?when={$year}">Submitted</a>){/if}</li>
+</ul>
 {include file="_std_end.tpl"}
