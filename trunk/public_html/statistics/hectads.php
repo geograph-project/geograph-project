@@ -37,10 +37,6 @@ $smarty->cache_lifetime = 3600*24; //24hour cache
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	require_once('geograph/gridimage.class.php');
-	require_once('geograph/gridsquare.class.php');
-	require_once('geograph/imagelist.class.php');
-
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 	
