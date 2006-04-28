@@ -72,7 +72,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign('ri', $ri);
 
-	$andwhere = " and moderation_status <> 'rejected'";
 	$sql_fields = '';
 	if ($by == 'status') {
 		$sql_group = $sql_fieldname = "CONCAT(moderation_status,ELT(ftf+1, '',' (ftf)'))";
@@ -105,7 +104,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	} else {
 		$by = 'status';
 		$sql_group = $sql_fieldname = 'moderation_status';
-		$andwhere = ''; #do want to see rejected in this query!
 	}
 
 	$smarty->assign('title', $bys[$by]);
@@ -189,7 +187,7 @@ $sql_fieldname as field,
 count(distinct(gi.gridimage_id)) as c $sql_fields
 from gridimage_search as gi $sql_from
 where $ri_crit $user_crit
-$andwhere $sql_crit
+ $sql_crit
 group by $sql_group 
 $sql_order";
 
