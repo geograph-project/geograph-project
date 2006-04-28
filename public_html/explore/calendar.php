@@ -200,7 +200,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	for($i=1; $i<=7; $i++)
 		$days[] = date('D',mktime(0,0,0,8,$i,2005));//just a month that happens to start on a monday 
 	$smarty->assign_by_ref("days",$days);
-	
+	$month = sprintf("%02d",$month);
 	$smarty->assign("month",$month);
 	$smarty->assign("year",$year);
 	$smarty->assign("date","$year-$month-00");
