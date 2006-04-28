@@ -67,6 +67,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	foreach (array(1,2) as $ri) {
 		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 		
+		$prev_fetch_mode = $ADODB_FETCH_MODE;
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;	
 		$most = $db->GetAll("select 
 		grid_reference,x,y,
@@ -79,7 +80,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		group by tenk_square 
 		having geograph_count > 0 and percentage >=100
 		order by percentage desc,tenk_square");
-		$ADODB_FETCH_MODE = ADODB_FETCH_NUM;
+		$ADODB_FETCH_MODE = $prev_fetch_mode;
 		
 		$i = 1;
 		$lastgeographs = -1;
