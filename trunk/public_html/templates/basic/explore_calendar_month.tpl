@@ -1,3 +1,4 @@
+{assign var="page_title" value="$month_name $year :: Calendar"}
 {include file="_std_begin.tpl"}
 
 <h2>Geograph Calendar {$month_name} {$year}</h2>
@@ -45,5 +46,8 @@
 
 </tbody>
 </table>
- 		
+ 	
+<ul>
+	<li><a href="/leaderboard.php?when={$year}-{$month}&amp;date=taken">User leaderboard for {$month_name} {$year}</a> {if $year >= 2005}(<a href="/leaderboard.php?when={$year}-{$month}">Submitted</a>){/if}</li>
+</ul>
 {include file="_std_end.tpl"}
