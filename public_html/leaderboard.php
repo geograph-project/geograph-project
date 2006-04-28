@@ -170,6 +170,19 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign('types', array('points','geosquares','images','depth'));
 	
+	
+	$extra = array();
+	$extralink = '';
+	
+	foreach (array('when','date') as $key) {
+		if (isset($_GET[$key])) {
+			$extra[$key] = $_GET[$key];
+			$extralink .= "&amp;$key={$_GET[$key]}";
+		}
+	}
+	$smarty->assign_by_ref('extra',$extra);	
+	$smarty->assign_by_ref('extralink',$extralink);	
+	
 	//lets find some recent photos
 	new RecentImageList($smarty);
 }

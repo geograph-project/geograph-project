@@ -5,7 +5,7 @@
 <h2>Top 50 Leaderboard :: {$type|capitalize}</h2>
 
 <p>Variation: {foreach from=$types item=t}
-[{if $t == $type}<b>{$type}</b>{else}<a href="leaderboard.php?type={$t}">{$t}</a>{/if}]
+[{if $t == $type}<b>{$type}</b>{else}<a href="leaderboard.php?type={$t}{$extralink}">{$t}</a>{/if}]
 {/foreach}</p>
 
 <p>Listed below are the top 50 contributors based on number of
@@ -16,12 +16,16 @@ for details).</p>
 top submitters this week.</p>
 
 <table class="report">
-<thead><tr><td>Position</td><td>Contributor</td><td>{$heading}</td></tr></thead>
+<thead><tr><td>Position</td><td>Contributor</td><td>{$heading}</td>{if $topusers[0].depth}<td>Depth</td>{/if}</tr></thead>
 <tbody>
 
 {foreach from=$topusers item=topuser}
 <tr><td>{$topuser.ordinal}</td><td><a title="View profile" href="/profile.php?u={$topuser.user_id}">{$topuser.realname}</a></td>
-<td align="right">{$topuser.imgcount}</td></tr>
+<td align="right">{$topuser.imgcount}</td>
+{if $topuser.depth}
+<td align="right">{$topuser.depth}</td>
+{/if}
+</tr>
 {/foreach}
 
 </tbody>
