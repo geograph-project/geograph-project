@@ -4,9 +4,8 @@
 <h2>Welcome to Geograph British Isles</h2>
 
 <div style="width:60%;float:left;padding-right:5px;position:relative">
-<p>The Geograph British Isles project aims to collect a geographically
-representative photograph for every square kilometre of the 
-<acronym title="Great Britain, Ireland and smaller adjacent islands">British Isles</acronym>
+<p>The Geograph British Isles project aims to collect geographically
+representative photographs and information for every square kilometre of the UK and Eire,
 and you can be part of it.</p>
 
 <h3>Getting started...</h3>
