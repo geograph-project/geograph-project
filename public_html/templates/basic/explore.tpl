@@ -5,6 +5,7 @@
 
 ul.explore li {
 	border:1px dotted #dddddd;
+	background-color:#eeeeee;
 	padding:10px;
 }
 
@@ -26,6 +27,37 @@ ul.explore li ul li {
 {/literal}
 <h2>Themed Browsing</h2>
 
+<h3>Outstanding archivement...</h3>
+<ul class="explore">
+
+	<li><a href="/statistics/fully_geographed.php">List <b>Fully Geographed Hectads</b></a> <small>(10 x 10 Gridsquares)</small> - include Image Mosaics!</li>
+
+</ul>
+<h3>Specialist locations...</h3>
+<ul class="explore">
+
+	<li><a href="/explore/routes.php">Follow <b>National Routes</b></a>. NEW!</li>
+
+	<li>View Photographs at <b>Centre Points</b>: <ul>
+		<li><a href="/explore/counties.php">Ceremonial (Pre 1994) Counties</a>, <a href="/explore/counties.php?type=pre74">Pre 1974 Counties</a></li>
+		<li><a href="/explore/counties.php?type=capital">(Irish) County Capitals</a>, <a href="/explore/cities.php">Cities and Large Towns</a></li>
+	</ul></li>
+
+</ul>
+<h3>Breakdowns...</h3>
+<ul class="explore">
+
+	<li><a href="/explore/calendar.php">Geograph <b>Calendar</b></a>, view images by date taken.</li>
+
+	<li><a href="/statistics/breakdown.php?by=class">Breakdown by <b>Category</b></a>, (soon to be replaced by tags).</li>
+
+	<li><a href="/explore/wordnet.php">By Popular <b>Title Words</b></a> in the last 7 days and all time.<ul>
+		<li><a href="/explore/wordnet.php">Cloud Style</a> or <a href="/explore/wordnet.php?t=1">List Style</a></li>
+	</ul></li>
+
+	<li><a href="/help/sitemap#users">Explore by <b>Contributor</b></a>.</li>
+
+</ul>
 <h3>Go anywhere...</h3>
 <ul class="explore">
 
@@ -42,25 +74,6 @@ ul.explore li ul li {
 	<input id="searchq" type="text" name="q" value="{$searchq|escape:'html'}" size="30"/>
 	<input id="searchgo" type="submit" name="go" value="Find"/> [<a href="/help/search">help</a>, <a href="/search.php?form=advanced">advanced search</a>]
 	</form></li>
-
-</ul>
-<h3>Outstanding archivement...</h3>
-<ul class="explore">
-
-	<li><a href="/statistics/fully_geographed.php">List <b>Fully Geographed Hectads</b></a> <small>(10 x 10 Gridsquares)</small> - include Image Mosaics!</li>
-
-</ul>
-<h3>Specialist locations...</h3>
-<ul class="explore">
-
-	<li><a href="/explore/routes.php">Follow <b>National Routes</b></a>. NEW!</li>
-
-	<li>View Photographs at <b>Centre Points</b>: <ul>
-		<li><a href="/explore/counties.php">Ceremonial (Pre 1994) Counties</a></li>
-		<li><a href="/explore/counties.php?type=pre74">Pre 1974 Counties</a></li>
-		<li><a href="/explore/counties.php?type=capital">(Irish) County Capitals</a></li>
-		<li><a href="/explore/cities.php">Cities and Large Towns</a></li>
-	</ul></li>
 
 	<li><form method="get" action="/search.php" style="display:inline">
 	<label for="county_id">Search by centre of <b>Ceremonial County</b></label>: 
@@ -79,20 +92,6 @@ ul.explore li ul li {
 		{html_options options=$topiclist selected=$topic_id}
 	</select> <input id="searchgo" type="submit" name="go" value="Find"/>
 	</form></li>
-
-</ul>
-<h3>Breakdowns...</h3>
-<ul class="explore">
-
-	<li><a href="/statistics/breakdown.php?by=class">Breakdown by <b>Category</b></a>, (soon to be replaced by tags).</li>
-
-	<li><a href="/explore/wordnet.php">By Popular <b>Title Words</b></a> in the last 7 days and all time.<ul>
-		<li><a href="/explore/wordnet.php">Cloud Style</a> or <a href="/explore/wordnet.php?t=1">List Style</a></li>
-	</ul></li>
-
-	<li><a href="/explore/calendar.php">Geograph <b>Calendar</b></a>, view images by date taken.</li>
-
-	<li><a href="/help/sitemap#users">Explore by <b>Contributor</b></a>.</li>
 
 </ul>
 
