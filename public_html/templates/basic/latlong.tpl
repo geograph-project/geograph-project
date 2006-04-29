@@ -112,12 +112,13 @@
 		<li><a href="/gridref/{$gridref4}"><b>Browse</b> Pictures of {$gridref4}</a></li>
 		<li><a href="/search.php?q={$gridref}"><b>Search</b> for Pictures around this location</a></li>
 		<li>{if $map_token}<a href="/mapbrowse.php?t={$map_token}">Geograph <b>Map</b> around this location</a>{/if}<ul>
-			<li>{getamap gridref=$gridref text="OS Get-a-Map"}</li>
+			<li>{getamap gridref=$gridref text="Get-a-map&trade;"}</li>
 			<li>{external href="http://www.multimap.com/p/browse.cgi?scale=25000&lon=`$long`&lat=`$lat`&GridE=`$long`&GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"}</li>
 		</ul></li>
-		<li><a href="/submit.php?gridreference={$gridref}"><b>Submit</b> a Picture for {$gridref4} (using {$gridref} as the picture location)</a><br/><br/></li>
+		<li><a href="/submit.php?gridreference={$gridref}"><b>Submit</b> a Picture for {$gridref4} (using {$gridref} as the picture location)</a></li>
+		<li><a href="/gpx.php?gridref={$gridref}">download <b>GPX</b> for this area</a><br/><br/></li>
 		
-		<li>{external href="http://www.nearby.org.uk/coord.cgi?p=`$e`,`$n`" title="More info from nearby.org.uk" text="More information about this location from nearby.org.uk"}</li>
+		<li>{external href="http://www.nearby.org.uk/coord.cgi?p=`$e`,`$n` `$datum`" title="More info from nearby.org.uk" text="More information about this location from nearby.org.uk"}</li>
 		</ul>
 	{else}
 		<p>See also {external href="http://www.nearby.org.uk/coord-entry.html" text="nearby.org.uk"} which offers a similar converter.</p>
