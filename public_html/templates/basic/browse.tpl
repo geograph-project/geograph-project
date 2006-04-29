@@ -86,6 +86,7 @@
 			[<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show">slide Show</a>]
 		{/if}
 		[<a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}" title="Geograph map for {$gridref}">map</a>]
+		[<a href="/gpx.php?gridref={$gridref}" title="Download GPX around {$gridref}">GPX</a>]		
 		[<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}">check sheet</a>]<br/><br/></li>
 
 
@@ -171,7 +172,7 @@
 				<a href="/login.php">login</a> to start a <b>discussion</b> about {$gridref}
 			{/if}
 		{/if}</li>
-		<li><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph <b>map</b> for {$gridref}</a> (<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}">print check sheet</a>)</li>
+		<li><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph <b>map</b> for {$gridref}</a> (<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}">print check sheet</a>, <a title="Download GPX" href="/gpx.php?gridref={$gridref}">GPX</a>)</li>
 		<li>Or <a href="/submit.php?gridreference={$gridrefraw}"><b>submit</b> your own picture at {$gridrefraw}</a><br/><br/></li>
 		
 		<li><b>Maps</b>:
