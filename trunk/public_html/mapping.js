@@ -318,7 +318,7 @@ function updateMapMarker(that,showmessage) {
 function updateViewDirection() {
 	if (eastings1 > 0 && eastings2 > 0) {
 		
-		distance = Math.sqrt( Math.pow(eastings1 - eastings2,2), Math.pow(northings1 - northings2,2) );
+		distance = Math.sqrt( Math.pow(eastings1 - eastings2,2) + Math.pow(northings1 - northings2,2) );
 	
 		if (distance > 0) {
 			realangle = Math.atan2( eastings1 - eastings2, northings1 - northings2 ) / (Math.PI/180);
