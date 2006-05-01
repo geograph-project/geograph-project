@@ -47,6 +47,8 @@ a Img
 	background-image: url('/templates/basic/img/logo.gif');
 	height:74px;
 	width:257px;
+	cursor:pointer;
+	cursor:hand;
 }
 
 #header h1 a
