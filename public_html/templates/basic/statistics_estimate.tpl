@@ -10,7 +10,9 @@
     <input type="submit" value="Go"></p></form>
 
 <p>See <a title="Frequently Asked Questions" href="/help/stats_faq">FAQ</a> 
-for details of the various measures.</p>
+for details of the various measures. Will me more accurate when limited to one country.</p>
+
+<hr/>
 
 <h3>Points</h3>
 <p>We currently have {$point.count|thousends} points awarded, therefore at the current rate of {$point.average_r} points a day, we will reach {$point.next|thousends} in about {$point.days_r} days time!</p>
@@ -48,7 +50,32 @@ for details of the various measures.</p>
 <p>Visitors have performed {$searches.count|thousends} searches, therefore at the current rate of {$searches.average_r} searches a day, we will reach {$searches.next|thousends} in about {$searches.days_r} days time!</p>
 
 
+<hr/>
 
 <p style="font-size:0.8em">* current rate is based on the average for the past 7 days.</p>
+
+<hr/>
+
+<h3>Raw Data used in above calculations</h3>
+
+	<table class="report sortable" id="reportlist" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5">
+	<thead><tr>
+	{foreach from=$table.0 key=name item=value}
+	<td style="direction: rtl; writing-mode: tb-rl;">{$name}</td>
+	{/foreach}
+
+	</tr></thead>
+	<tbody>
+
+	{foreach from=$table item=row}
+	<tr>
+		{foreach from=$row key=name item=value}
+			<td align="right">{$value}</td>
+		{/foreach}
+	</tr>
+	{/foreach}	
+
+	</tbody>
+	</table>
 
 {include file="_std_end.tpl"}
