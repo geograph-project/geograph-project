@@ -57,7 +57,7 @@ referring to <b>image {$image->gridimage_id}</b>
   <div class="caption"><b>{$image->title|escape:'html'}</b></div>
 
   {if $image->comment}
-  <div class="caption">{$image->comment|escape:'html'|geographlinks}</div>
+  <div class="caption">{$image->comment|escape:'html'|nl2br|geographlinks}</div>
   {/if}
 
  
