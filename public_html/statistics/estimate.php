@@ -54,12 +54,14 @@ if (!$smarty->is_cached($template, $cacheid))
 		$andri = ""; 
 	}
 
+	$table = array();
+
 	$beginday = date("Y-m-d",mktime(0,0,0,date('m'),date('d')-7,date('Y')));
 	$today = date("Y-m-d");
 
 	$sql = "select substring(submitted,1,10) as d ,count(*) as c from gridimage_search where submitted > '$beginday' AND submitted < '$today' $andri group by substring(submitted,1,10)";
 	$sql2 = "select count(*) from gridimage_search $whereri ";
-	$image = calc($sql,$sql2,10000);
+	$image = calc($sql,$sql2,10000,'Images');
 	
 	$smarty->assign("image",$image);
 	
@@ -67,7 +69,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql = "select substring(submitted,1,10) as d ,count(*) as c from gridimage_search where moderation_status = 'geograph' and submitted > '$beginday' AND submitted < '$today' $andri group by substring(submitted,1,10)";
 	$sql2 = "select count(*) from gridimage_search where moderation_status = 'geograph' $andri";
 		
-	$geograph = calc($sql,$sql2,10000);
+	$geograph = calc($sql,$sql2,10000,'Geographs');
 		
 	$smarty->assign("geograph",$geograph);
 	
@@ -75,7 +77,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql = "select substring(crt_timestamp,1,10) as d ,count(*) as c from queries where crt_timestamp > '$beginday' AND crt_timestamp < '$today' group by substring(crt_timestamp,1,10)";
 	$sql2 = "select count(*) from queries";
 
-	$searches = calc($sql,$sql2,10000);
+	$searches = calc($sql,$sql2,10000,'Searches');
 				
 	$smarty->assign("searches",$searches);
 	
@@ -83,7 +85,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql = "select substring(post_time,1,10) as d ,count(*) as c from geobb_posts where post_time > '$beginday' AND post_time < '$today' group by substring(post_time,1,10)";
 	$sql2 = "select count(*) from geobb_posts";
 
-	$post = calc($sql,$sql2,1000);
+	$post = calc($sql,$sql2,1000,'Posts');
 			
 	$smarty->assign("post",$post);
 
@@ -91,7 +93,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql = "select substring(signup_date,1,10) as d ,count(*) as c from user where rights <> '' and signup_date > '$beginday' AND signup_date < '$today' group by substring(signup_date,1,10)";
 	$sql2 = "select count(*) from user where rights <> ''";
 
-	$users = calc($sql,$sql2,1000);
+	$users = calc($sql,$sql2,1000,'Users');
 			
 	$smarty->assign("users",$users);
 	
@@ -100,7 +102,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$sql2 = "select count(distinct user_id) from gridimage_search $whereri";
 
-	$cusers = calc($sql,$sql2,1000);
+	$cusers = calc($sql,$sql2,1000,'Contributing Users');
 				
 	$smarty->assign("cusers",$cusers);
 	
@@ -109,7 +111,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql = "select substring(submitted,1,10) as d ,count(distinct grid_reference) as c from gridimage_search where ftf = 1 and submitted > '$beginday' AND submitted < '$today' $andri group by substring(submitted,1,10)";
 	$sql2 = "select count(distinct grid_reference) from gridimage_search $whereri";
 			
-	$square = calc($sql,$sql2,10000);
+	$square = calc($sql,$sql2,10000,'Squares');
 			
 	$smarty->assign("square",$square);
 
@@ -117,7 +119,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql = "select substring(submitted,1,10) as d ,count(*) as c from gridimage_search where ftf = 1 and submitted > '$beginday' AND submitted < '$today' $andri group by substring(submitted,1,10)";
 	$sql2 = "select count(*) from gridimage_search where ftf = 1 $andri";
 
-	$point = calc($sql,$sql2,10000);
+	$point = calc($sql,$sql2,10000,'Points');
 			
 	$smarty->assign("point",$point);
 
@@ -137,24 +139,54 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$smarty->assign("totall",$total);
 	$smarty->assign_by_ref('references',$CONF['references_all']);
+	
+	//little bodge to rename the first item to have key '0'
+	$keys = array_keys($table);
+	$key1 = $keys[0];
+	$first = $table[$key1];
+	unset($table[$key1]);
+	array_unshift($table,$first);
+
+	$smarty->assign_by_ref('table', $table);
+		
+	$smarty->assign("total",count($table));
 }
 
 $smarty->display($template, $cacheid);
 
-function calc($sql,$sql2,$mult) {
-	global $db;
+function calc($sql,$sql2,$mult,$title) {
+	global $db,$table;
 	
-	$array = $db->cachegetAll(3600 * 24,$sql);
+	$array = $db->cacheGetAssoc(3600 * 24,$sql);
 	
 	$total = 0;
-	foreach ($array as $i => $r) {
-		$total += $r['c'];
-	}
+	if (count($table)) {
+		foreach ($table as $key => $value) {
+			$total += $array[$key];
+			if ($title) {
+				$table[$key]['Date'] = $key;
+				$table[$key][$title] = $array[$key];
+			}
+		}
+	} else {
 	
+		foreach ($array as $key => $value) {
+			$total += $value;
+			if ($title) {
+				$table[$key]['Date'] = $key;
+				$table[$key][$title] = $value;
+			}
+		}
+	}
 	$image['total'] = $total;
 	
-	$image['average'] = $total / count($array);
+	$image['average'] = $total / 7;
 	$image['average_r'] = floor($image['average']);
+	
+	if ($title) {
+		$table['Average']['Date'] = 'Average';
+		$table['Average'][$title] = $image['average_r'];
+	}
 	
 	$image['count'] = $db->getOne($sql2);
 	
