@@ -422,16 +422,11 @@ function GeographLinks(&$posterText) {
 			}
 		}
 	}
-	if (preg_match_all('/(^| |<br\/?>|\n|\r)(https?:\/\/[\w\.-]+\.\w{2,}\/?[a-zA-Z0-9\~\-\.\?\,=\'\/\\\+&%\$#_\(\)\;]*)( |<br\/?>|\n|\r|$)/',$posterText,$g_matches)) {
-		foreach ($g_matches[2] as $i => $g_url) {
-			$posterText = str_replace($g_matches[1][$i].$g_url.$g_matches[3][$i],$g_matches[1][$i].smarty_function_external(array('href'=>$g_url,'text'=>'Link','title'=>$g_url)).$g_matches[3][$i],$posterText);
-		}
-	}
-	if (preg_match_all('/(^| |<br\/?>|\n|\r)(www\.[\w\.-]+\.\w{2,}\/?[a-zA-Z0-9\~\-\.\?\,=\'\/\\\+&%\$#_\(\)\;]*)( |<br\/?>|\n|\r|$)/i',$posterText,$g_matches)) {
-		foreach ($g_matches[2] as $i => $g_url) {
-			$posterText = str_replace($g_matches[1][$i].$g_url.$g_matches[3][$i],$g_matches[1][$i].smarty_function_external(array('href'=>"http://".$g_url,'text'=>'Link','title'=>$g_url)).$g_matches[3][$i],$posterText);
-		}
-	}
+	
+	$posterText = preg_replace('/(?<!href=["\'])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"\$1\",'text'=>'Link','title'=>\"\$1\"))",$posterText);
+	
+	$posterText = preg_replace('/(?<![\/])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"http://\$1\",'text'=>'Link','title'=>\"\$1\"))",$posterText);
+		
 	return $posterText;
 }
 
@@ -439,8 +434,8 @@ function GeographLinks(&$posterText) {
 //this is a bit cheeky - if the xhtml validator calls, turn off the automatic
 //session id insertion, as it uses & instead of &amp; in urls
 //we also turn it off for bots, as session ids can bugger it up
-if (($_SERVER['HTTP_USER_AGENT']=='W3C_Validator/1.305.2.148 libwww-perl/5.803')||
-    (strpos($_SERVER['HTTP_USER_AGENT'], 'bot')>0))
+if ( (strpos($_SERVER['HTTP_USER_AGENT'], 'W3C_Validator')!==FALSE) ||
+    (strpos($_SERVER['HTTP_USER_AGENT'], 'bot')>0) )
 {
 	ini_set ('url_rewriter.tags', '');
 }
