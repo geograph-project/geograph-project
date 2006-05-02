@@ -422,9 +422,14 @@ function GeographLinks(&$posterText) {
 			}
 		}
 	}
-	if (preg_match_all('/(^| |<br\/?>|\n|\r)(http:\/\/[\w\.-]+\.[\w]{2,}\/?[^ <]*)( |<br\/?>|\n|\r|$)/',$posterText,$g_matches)) {
+	if (preg_match_all('/(^| |<br\/?>|\n|\r)(https?:\/\/[\w\.-]+\.\w{2,}\/?[a-zA-Z0-9\~\-\.\?\,=\'\/\\\+&%\$#_\(\)\;]*)( |<br\/?>|\n|\r|$)/',$posterText,$g_matches)) {
 		foreach ($g_matches[2] as $i => $g_url) {
 			$posterText = str_replace($g_matches[1][$i].$g_url.$g_matches[3][$i],$g_matches[1][$i].smarty_function_external(array('href'=>$g_url,'text'=>'Link','title'=>$g_url)).$g_matches[3][$i],$posterText);
+		}
+	}
+	if (preg_match_all('/(^| |<br\/?>|\n|\r)(www\.[\w\.-]+\.\w{2,}\/?[a-zA-Z0-9\~\-\.\?\,=\'\/\\\+&%\$#_\(\)\;]*)( |<br\/?>|\n|\r|$)/i',$posterText,$g_matches)) {
+		foreach ($g_matches[2] as $i => $g_url) {
+			$posterText = str_replace($g_matches[1][$i].$g_url.$g_matches[3][$i],$g_matches[1][$i].smarty_function_external(array('href'=>"http://".$g_url,'text'=>'Link','title'=>$g_url)).$g_matches[3][$i],$posterText);
 		}
 	}
 	return $posterText;
