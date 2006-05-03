@@ -321,6 +321,17 @@ div.copyright
 	font-style:italic;
 }
 
+p.wordnet a
+{
+	white-space:nowrap;
+	text-decoration: none;
+}
+
+p.wordnet a:hover
+{
+	text-decoration: underline;
+}
+
 div.caption
 {
 	clear:left;
@@ -675,4 +686,8 @@ div.map div.inner img
 .xml-geo {font: bold 10px Verdana, sans-serif; padding: 0 0.5em; border: 1px solid;
   text-decoration: none;
   background: #009900; color: #FFF; border-color: #FFC8A4 #7D3302 #3F1A01 #FF9A57;}
+
+.xml-gpx {font: bold 10px Verdana, sans-serif; padding: 0 0.5em; border: 1px solid;
+  text-decoration: none;
+  background: #000099; color: #FFF; border-color: #FFC8A4 #7D3302 #3F1A01 #FF9A57;}
 
