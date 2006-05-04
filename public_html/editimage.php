@@ -265,7 +265,7 @@ if (isset($_REQUEST['id']))
 
 
 		//save changes?
-		if (isset($_POST['title']))
+		if (isset($_POST['title']) && !isset($_POST['create']))
 		{
 			$ok=true;
 			$error=array();
@@ -452,7 +452,17 @@ if (isset($_REQUEST['id']))
 
 
 		}
+		if (isset($_POST['title']) && isset($_POST['create']))
+		{
+			$title=trim(stripslashes($_POST['title']));
+			$title=strip_tags($title);
 
+			$comment=trim(stripslashes($_POST['comment']));
+			$comment=strip_tags($comment);
+			
+			$image->title=$title;
+			$image->comment=$comment;
+		}
 		//strip out zeros from date
 		#$image->imagetaken=str_replace('0000-', '-', $image->imagetaken);
 		#$image->imagetaken=str_replace('-00', '-', $image->imagetaken);
