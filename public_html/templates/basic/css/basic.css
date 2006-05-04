@@ -220,8 +220,49 @@ body>#nav_block {width:128px;}
 	padding-left:10px;
 	font-weight:normal;
 	color:silver;
-
 }
+
+
+
+.content_photogray
+{
+	background:gray;
+	position:relative;
+	width:auto;
+	min-width:120px;
+	margin:4px 10px 0px 170px;
+	
+	border:2px solid black;
+	z-index:3;
+	color:silver;
+}
+
+.content_photogray h2
+{
+	color:lightgrey;
+	padding-left:10px;
+	padding-top:10px;
+	margin-bottom:0;
+}
+
+.content_photogray h3
+{
+	margin-top:0;
+	padding-left:10px;
+	font-weight:normal;
+	color:silver;
+}
+
+.content_photogray .searchresults a
+{
+	color:silver;
+}
+
+.content_photogray .searchresults a:visited
+{
+	color:#999999;
+}
+
 
 
 .content_photowhite
