@@ -283,11 +283,23 @@ WGS84: {$latdm} {$longdm}
 
 
 <p align="center">
+<span style="border:1px solid gray; padding:10px;margin:10px">Background for photo viewing:
 {if $maincontentclass eq "content_photowhite"}
-	<a href="/photo/{$image->gridimage_id}?style=black">Prefer a black background for photo viewing?</a>
+	<b>white</b>
 {else}
-	<a href="/photo/{$image->gridimage_id}?style=white">Prefer a white background for photo viewing?</a>
+	<a href="/photo/{$image->gridimage_id}?style=white">White</a>
+{/if}/
+{if $maincontentclass eq "content_photoblack"}
+	<b>black</b>
+{else}
+	<a href="/photo/{$image->gridimage_id}?style=black">Black</a>
+{/if}/
+{if $maincontentclass eq "content_photogray"}
+	<b>gray</b>
+{else}
+	<a href="/photo/{$image->gridimage_id}?style=gray">Gray</a>
 {/if}
+</span>
 </p>
 
 
