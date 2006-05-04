@@ -884,34 +884,34 @@ END;
 		return $this->criteria->displayclass;
 	}
 	
-	function pagesString() {
+	function pagesString($postfix = '') {
 		static $r;
 		if (!empty($r))
 			return($r);
 		if ($this->currentPage > 1) 
-			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage-1)."\">&lt; &lt; prev</a> ";
+			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage-1)."$postfix\">&lt; &lt; prev</a> ";
 		$start = max(1,$this->currentPage-5);
 		$endr = min($this->numberOfPages+1,$this->currentPage+8);
 		
 		if ($start > 1)
-			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=1\">1</a> ... ";
+			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=1$postfix\">1</a> ... ";
 
 		for($index = $start;$index<$endr;$index++) {
 			if ($index == $this->currentPage && !$this->countOnly) 
 				$r .= "<b>$index</b> "; 
 			else
-				$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=$index\">$index</a> ";
+				$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=$index$postfix\">$index</a> ";
 		}
 		if ($endr < $this->numberOfPages+1) {
 			$index = $this->numberOfPages;
-			$r .= "... <a href=\"/{$this->page}?i={$this->query_id}&amp;page=$index\">$index</a> ";
+			$r .= "... <a href=\"/{$this->page}?i={$this->query_id}&amp;page=$index$postfix\">$index</a> ";
 		}
 		
 		if ($this->pageOneOnly) 
 			$r .= "... ";
 			
 		if ( ($this->numberOfPages > $this->currentPage || $this->pageOneOnly ) && !$this->countOnly) 
-			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage+1)."\">next &gt;&gt;</a> ";
+			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage+1)."$postfix\">next &gt;&gt;</a> ";
 		return $r;	
 	}
 	
