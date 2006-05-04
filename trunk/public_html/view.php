@@ -75,7 +75,7 @@ if ($image->isValid())
 
 	//what style should we use?
 	$style='white';
-	$valid_style=array('white', 'black');
+	$valid_style=array('white', 'black','gray');
 	if (isset($_GET['style']) && in_array($_GET['style'], $valid_style))
 	{
 		$style=$_GET['style'];
