@@ -395,17 +395,42 @@ if (isset($_GET['fav']) ) {
 		
 	$engine = new SearchEngine($i);
 	
-	$template = 'search_results_'.$engine->getDisplayclass().'.tpl';
+	$display = $engine->getDisplayclass();
+	if (isset($_GET['displayclass']) && preg_match('/^\w+$/',$_GET['displayclass']))
+		$display = $_GET['displayclass'];
+	$template = 'search_results_'.$display.'.tpl';
 	$cacheid="search|$i.$pg";
 	if (!empty($_GET['count'])) {
 		$engine->countOnly = 1;
 		$cacheid.=".";
 	}
 
+	//what style should we use?
+	$style='white';
+	$valid_style=array('white', 'black','gray');
+	if (isset($_GET['style']) && in_array($_GET['style'], $valid_style))
+	{
+		$style=$_GET['style'];
+		$_SESSION['style']=$style;
+
+		//ToDo - if logged in user, save this in profile
+	}
+	elseif (false) //if logged in user
+	{
+			//get setting from profile
+	}
+	elseif (isset($_SESSION['style']))
+	{
+		$style=$_SESSION['style'];
+
+	}
+	$cacheid.=$style;
+
 	if (!$smarty->is_cached($template, $cacheid)) {
 		dieUnderHighLoad(3);
 		
-		
+		$smarty->assign('maincontentclass', 'content_photo'.$style);
+
 		
 		$smarty->assign('querytime', $engine->Execute($pg)); 
 		
