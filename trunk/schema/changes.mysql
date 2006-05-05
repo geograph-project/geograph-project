@@ -348,3 +348,8 @@ ALTER TABLE `gridsquare` ADD INDEX ( `reference_index` )
 
 ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full', 'text', 'thumbs', 'slide', 'more' ) DEFAULT 'full' NOT NULL ;
 
+
+
+ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full', 'text', 'thumbs', 'slide', 'more','spelling' ) DEFAULT 'full' NOT NULL ;
+
+
