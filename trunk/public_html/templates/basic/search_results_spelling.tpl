@@ -13,15 +13,15 @@
 		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
 	  </div>
 	  <div style="float:left; position:relative">
-		<a name="{$image->gridimage_id}"><input type="text" name="title" size="50" value="{$image->title|escape:'html'}"/></a>
-		by <a title="view user profile" href="/profile.php?u={$image->user_id}">{$image->realname}</a><br/>
-		{if $image->moderation_status == 'geograph'}geograph{else}{if $image->moderation_status == 'pending'}pending{/if}{/if} for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
+		<a name="{$image->gridimage_id}"><input type="text" name="title" size="80" value="{$image->title|escape:'html'}"/></a>
+		<br/>
+		for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> by <a title="view user profile" href="/profile.php?u={$image->user_id}">{$image->realname}</a>
 		<i>{$image->dist_string}</i><br/>
 		{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 		
 		
-		<div>{if $image->comment}<textarea name="comment" style="font-size:0.8em;" rows="3" cols="60">{$image->comment|escape:'html'}</textarea>{/if}<input type="submit" name="create" value="create ticket"/></div>
+		<div>{if $image->comment}<textarea name="comment" style="font-size:0.9em;" rows="4" cols="70">{$image->comment|escape:'html'}</textarea>{/if}<input type="submit" name="create" value="create ticket"/></div>
 
 	  </div><br style="clear:both;"/>
 	  </form><br/>
