@@ -4,7 +4,7 @@
 
 {if $image}
 
- <h2><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->title}</h2>
+ <h2><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->current_title}</h2>
  
 {if $error}
 <h2><span class="formerror">Changes not submitted - check and correct errors below...</span></h2>
@@ -23,10 +23,10 @@
   	{/if}
   	<div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getFull()}</a></div>
   {/if}
-  <div class="caption"><b>{$image->title|escape:'html'}</b> by {$image->realname}</div>
+  <div class="caption"><b>{$image->current_title|escape:'html'}</b> by {$image->realname}</div>
   
   {if $image->comment}
-  <div class="caption">{$image->comment|escape:'html'|geographlinks}</div>
+  <div class="caption">{$image->current_comment|escape:'html'|geographlinks}</div>
   {/if}
   {if $isadmin || ($user->user_id eq $image->user_id)}
   <div class="statuscaption">status:
@@ -302,14 +302,14 @@
 
 <p><label for="title">Edit the Title {if $moderated.title}<span class="moderatedlabel">(moderated)</span>{/if}</label> (<a href="/help/style" target="_blank">Open Style Guide</a>)<br/>
 {if $error.title}<span class="formerror">{$error.title}</span><br/>{/if}
-<input type="text" id="title" name="title" size="50" value="{$image->title|escape:'html'}"/>
+<input type="text" id="title" name="title" size="50" value="{$image->title|escape:'html'}" title="Original: {$image->current_title|escape:'html'}"/>
 </p>
 
 
 <p>
 <label for="comment">Edit Comment {if $moderated.comment}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.comment}<span class="formerror">{$error.comment}</span><br/>{/if}
-<textarea id="comment" name="comment" rows="3" cols="50">{$image->comment|escape:'html'}</textarea>
+<textarea id="comment" name="comment" rows="3" cols="50" title="Original: {$image->current_comment|escape:'html'}">{$image->comment|escape:'html'}</textarea>
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
 to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 </p>
