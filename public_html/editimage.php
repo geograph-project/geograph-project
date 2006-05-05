@@ -107,6 +107,11 @@ if (isset($_REQUEST['id']))
 		//get the photographer position
 		$image->getPhotographerGridref();
 		$image->getSubjectGridref();
+		
+		//save these so can be used as title etc on the main image (when following link from search results, and redoing changes etc)
+		$image->current_title=$image->title;
+		$image->current_comment=$image->comment;
+		
 
 		//do our thing!
 		$smarty->assign('page_title', $image->grid_reference);
