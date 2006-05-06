@@ -102,7 +102,7 @@ if ($i) {
 	$recordSet = $engine->ReturnRecordset($pg,isset($_GET['en']));
 
 } elseif (isset($_GET['en'])) {
-	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,nateastings,natnorthings $sql_from ".
+	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,nateastings,natnorthings,gi.user_id $sql_from ".
 	"from user ".
 	"inner join gridimage gi using(user_id) ".
 	"inner join gridsquare using(gridsquare_id) ".
@@ -111,7 +111,7 @@ if ($i) {
 	if (isset($_GET['supp'])) {
 		$mod_sql = 1; //no point checking what will always be 1 ;-)
 	}
-	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass $sql_from ".
+	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,user_id $sql_from ".
 	"from gridimage_search gi ".
 	"where $mod_sql $sql_crit");
 }
