@@ -133,8 +133,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	$total['weeks'] = $total['dif']/$total['average'];
 	$total['weeks_r'] = floor($total['weeks']);
 
-	$total['endtime'] = time() + ($total['weeks'] * 3600 * 24 * 7);
-	$total['enddate'] = date("F Y",$total['endtime']);
+	if ($total['weeks'] < 1040) { //20years
+		$total['endtime'] = strtotime("+{$total['weeks']} weeks");
+		$total['enddate'] = "about ".date("F Y",$total['endtime']);
+	} else {
+		$total['enddate'] = "sometime in ".(date("Y")+round($total['weeks']/52));
+	}
 
 
 	$smarty->assign("totall",$total);
