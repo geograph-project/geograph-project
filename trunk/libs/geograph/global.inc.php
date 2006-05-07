@@ -344,12 +344,44 @@ class GeographPage extends Smarty
 		
 	}
 	
-	function is_cached($template, $cacheid = '') 
+	function is_cached($template, $cache_id = null, $compile_id = null) 
 	{
 		global $USER;
-		if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
-			$this->clear_cache($template, $cacheid);
-		return parent::is_cached($template, $cacheid);
+		$filename = str_replace("|","___","{$this->cache_dir}/lock_$template-$cache_id.tmp");
+		if (isset($_GET['refresh']) && $USER->hasPerm('admin')) {
+			$this->clear_cache($template, $cache_id, $compile_id);
+		} else {
+			//check if there is a generation already in progress
+			if (file_exists($filename)) {
+				//we have a lock file
+				if (filemtime($filename) > (time() - 60*5)) {
+					//its recent so lets extend caching to use the current file (IF there is one!)
+					$this->cache_lifetime = $this->cache_lifetime+(3600*2); //+2hr 
+				} else {
+					//the lock is now old, so lets remove it and try again
+					unlink($filename);
+				}
+			}
+		}
+		 
+		$isCached = parent::is_cached($template, $cache_id, $compile_id);
+		if (!$isCached) {
+			//we don't have a cache so lets write the lock file 
+			file_put_contents ($filename, ".");
+			$this->wroteLock = $filename;
+		}
+		return $isCached;
+	}
+	
+	function display($template, $cache_id = null, $compile_id = null) 
+	{
+		$ret = parent::display($template, $cache_id, $compile_id);
+		
+		//we finished so remove the lock file
+		if (!empty($this->wroteLock))
+			unlink($this->wroteLock);
+			
+		return $ret;
 	}
 	
 	function templateExists($file)
