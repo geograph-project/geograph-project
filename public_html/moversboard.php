@@ -106,6 +106,10 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_column = "count(distinct imageclass)";
 		$heading = "Categories";
 		$desc = "different categories";
+	} elseif ($type == 'category_depth') {
+		$sql_column = "count(*)/count(distinct imageclass)";
+		$heading = "Category Depth";
+		$desc = "the category depth score";
 	} else { #if ($type == 'points') {
 		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph')";
 		$heading = "New<br/>Geograph<br/>Points";
