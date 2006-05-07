@@ -13,17 +13,17 @@
 {if $maincontentclass eq "content_photowhite"}
 	<b>white</b>
 {else}
-	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=white">White</a>
+	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=white" rel="nofollow" class="robots-nofollow robots-noindex">White</a>
 {/if}/
 {if $maincontentclass eq "content_photoblack"}
 	<b>black</b>
 {else}
-	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=black">Black</a>
+	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=black" rel="nofollow" class="robots-nofollow robots-noindex">Black</a>
 {/if}/
 {if $maincontentclass eq "content_photogray"}
 	<b>gray</b>
 {else}
-	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=gray">Gray</a>
+	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=gray" rel="nofollow" class="robots-nofollow robots-noindex">Gray</a>
 {/if}
 </span>
 </p>

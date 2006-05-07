@@ -283,21 +283,21 @@ WGS84: {$latdm} {$longdm}
 
 
 <p align="center">
-<span style="border:1px solid gray; padding:10px;margin:10px">Background for photo viewing:
+<span style="background-color:#e9e9e9; padding:10px;margin:10px">Background for photo viewing:
 {if $maincontentclass eq "content_photowhite"}
 	<b>white</b>
 {else}
-	<a href="/photo/{$image->gridimage_id}?style=white">White</a>
+	<a href="/photo/{$image->gridimage_id}?style=white" rel="nofollow" class="robots-nofollow robots-noindex">White</a>
 {/if}/
 {if $maincontentclass eq "content_photoblack"}
 	<b>black</b>
 {else}
-	<a href="/photo/{$image->gridimage_id}?style=black">Black</a>
+	<a href="/photo/{$image->gridimage_id}?style=black" rel="nofollow" class="robots-nofollow robots-noindex">Black</a>
 {/if}/
 {if $maincontentclass eq "content_photogray"}
 	<b>gray</b>
 {else}
-	<a href="/photo/{$image->gridimage_id}?style=gray">Gray</a>
+	<a href="/photo/{$image->gridimage_id}?style=gray" rel="nofollow" class="robots-nofollow robots-noindex">Gray</a>
 {/if}
 </span>
 </p>
