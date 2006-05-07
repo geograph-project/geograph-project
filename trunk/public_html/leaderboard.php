@@ -90,6 +90,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_where = "1";
 		$heading = "Categories";
 		$desc = "different categories";
+	} elseif ($type == 'category_depth') {
+		$sql_column = "count(*)/count(distinct imageclass)";
+		$sql_where = "1";
+		$heading = "Category Depth";
+		$desc = "the category depth score";
 	} elseif ($type == 'centi') {
 /*	SELECT COUNT(DISTINCT nateastings div 100, natnorthings div 100), COUNT(*) AS `_count_all`
 	FROM gridimage
