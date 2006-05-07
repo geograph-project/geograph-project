@@ -367,7 +367,9 @@ class GeographPage extends Smarty
 		$isCached = parent::is_cached($template, $cache_id, $compile_id);
 		if (!$isCached) {
 			//we don't have a cache so lets write the lock file 
-			file_put_contents ($filename, ".");
+			$h = fopen($filename, "w");
+			fwrite($h,".");
+			fclose($h);
 			$this->wroteLock = $filename;
 		}
 		return $isCached;
