@@ -86,8 +86,12 @@
 			[<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show">slide Show</a>]
 		{/if}
 		[<a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}" title="Geograph map for {$gridref}">map</a>]
-		[<a href="/gpx.php?gridref={$gridref}" title="Download GPX around {$gridref}">GPX</a>]		
-		[<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}">check sheet</a>]<br/><br/></li>
+		[<a href="/gpx.php?gridref={$gridref}" title="Download GPX coverage around {$gridref}">gpx</a>]		
+		[<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}">check sheet</a>]
+		{if strlen($gridrefraw) < 5}
+			[<a title="First Geographs within hectad {$gridrefraw}" href="/search.php?first={$gridrefraw}">hectad</a>]
+		{/if}
+		<br/><br/></li>
 
 
 
@@ -160,20 +164,25 @@
 			and have no pictures for any grid square within 100km either!</p>
 			<ul>
 		{/if}
-		<li>You can also <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}"><b>search</b> for nearby images</a></li>
+		<li>You can also <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}"><b>search</b> for nearby images</a>,</li>
 		<li>
 		{if $discuss}
 			There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a 
-			<a href="/discuss/index.php?gridref={$gridref}"><b>discussion</b> about {$gridref}</a> (preview on the left)
+			<a href="/discuss/index.php?gridref={$gridref}"><b>discussion</b> about {$gridref}</a> (preview on the left),
 		{else}
 			{if $user->registered} 
-				<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a <b>discussion</b> about {$gridref}</a>
+				<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a <b>discussion</b> about {$gridref}</a>,
 			{else}
-				<a href="/login.php">login</a> to start a <b>discussion</b> about {$gridref}
+				<a href="/login.php">login</a> to start a <b>discussion</b> about {$gridref}</a>,
 			{/if}
 		{/if}</li>
-		<li><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph <b>map</b> for {$gridref}</a> (<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}">print check sheet</a>, <a title="Download GPX" href="/gpx.php?gridref={$gridref}">GPX</a>)</li>
-		<li>Or <a href="/submit.php?gridreference={$gridrefraw}"><b>submit</b> your own picture at {$gridrefraw}</a><br/><br/></li>
+		<li><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph <b>map</b> for {if strlen($gridrefraw) < 5}{$gridrefraw}{else}{$gridref}{/if}</a>,</li>
+		<li><a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}">View a <b>printable check sheet</b> for {if strlen($gridrefraw) < 5}{$gridrefraw}{else}{$gridref}{/if}</a>,</li>
+		<li><a title="Download GPX" href="/gpx.php?gridref={$gridref}">Download a <b>GPX coverage</b> file around {$gridref}</a>,</li>
+		{if strlen($gridrefraw) < 5}
+			<li><a title="First Geographs within {$gridrefraw}" href="/search.php?first={$gridrefraw}">Find <b>first geographs for hectad</b> {$gridrefraw}</a>,</li>
+		{/if}
+		<li>Or <a href="/submit.php?gridreference={$gridrefraw}"><b>submit</b> your own picture for {$gridref}</a>.<br/><br/></li>
 		
 		<li><b>Maps</b>:
 		
