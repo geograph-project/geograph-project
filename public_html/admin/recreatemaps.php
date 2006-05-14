@@ -74,8 +74,41 @@ if (isset($_GET['expireAll']) && $USER->hasPerm('admin'))
 $db = NewADOConnection($GLOBALS['DSN']);
 
 
+if (isset($_GET['coast_GB_40'])) {
+	//invalidate coast'ish' GB squares at thumbnail level!
+	$prefixes = $db->GetAll("select * 
+	from gridprefix 
+	where reference_index = 1 
+	and landcount < 9500 
+	and landcount > 0");	
+	foreach($prefixes as $idx=>$prefix)
+	{
 
-if (isset($_POST['inv']))
+		$minx=$prefix['origin_x'];
+		$maxx=$prefix['origin_x']+$prefix['width']-1;
+		$miny=$prefix['origin_y'];
+		$maxy=$prefix['origin_y']+$prefix['height']-1;
+
+		if ($_GET['do']) {
+			$db->Execute("update mapcache set age=age+1 where ".
+				"map_x between $minx and $maxx and ".
+				"map_y between $miny and $maxy and ".
+				"pixels_per_km >= 40");
+			$count = mysql_affected_rows();	
+		} else {
+			$count=$db->GetOne("select count(*) from mapcache where ".
+				"map_x between $minx and $maxx and ".
+				"map_y between $miny and $maxy and ".
+				"pixels_per_km >= 40");
+		}
+
+		$total += $count;
+		print "{$prefix['prefix']} = $count<BR>";
+
+	}
+	print "<h2>$total</h2>";
+	exit;
+} elseif (isset($_POST['inv']))
 {
 
 	$square=new GridSquare;
