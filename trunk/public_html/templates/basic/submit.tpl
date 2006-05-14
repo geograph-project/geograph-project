@@ -185,7 +185,7 @@ geographing</a> first.</p>
 	<br style="clear:both"/>
 	
 	{if $imagecount gt 6 || $shownimagecount == 6}
-		<div>See <a href="/gridref/{$gridref}" target="_blank">all {$imagecount} images for {$gridref}</a> (opens in new window)</div>
+		<div>See <a href="/gridref/{$gridref}" target="_blank">all {$imagecount} live image{if $imagecount!=1}s{/if} for {$gridref}</a> plus any images you have hidden (opens in new window)</div>
 	{/if}&nbsp;
 	</div>
 	
