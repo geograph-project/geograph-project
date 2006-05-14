@@ -109,9 +109,9 @@
 
 <p style="font-size:10pt; text-align:center">Printed from <a href="http://{$http_host}/">{$http_host}</a>, {$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</p>
 
-<p style="font-size:8pt; text-align:center"><i>Great Britain outline reproduced from Ordnance Survey map data<br/> by 
-    permission of the Ordnance Survey &copy; Crown copyright 2001.</i></p> 
-
+<div style="font-size:10pt; text-align:center" class="copyright">Maps on this page, &copy; Copyright Geograph Project Ltd and  
+licensed for reuse under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">Creative Commons Licence</a> (CC-BY-SA).<br>
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">http://creativecommons.org/licenses/by-sa/2.5/</a></div> 
 </div>
 
 </body>
