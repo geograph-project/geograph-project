@@ -81,7 +81,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	select 
 	$column_sql
 	DATE_FORMAT($column,'%d/%m/%Y') as Date,
-	count(*) as Posts 
+	count(*) as Posts,
+	count(distinct poster_id) as Users
 	from geobb_posts $join_sql
 	where 1 $where_sql
 	group by $group_sql date($column) 
