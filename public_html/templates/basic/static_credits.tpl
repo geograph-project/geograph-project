@@ -38,10 +38,7 @@ concept.</li>
     <ul>
     <li>Historical Maps from the mid 20<sup>th</sup> century kindly made available by 
     {external href="http://www.visionofbritain.org.uk/" title="a Vision of Britain" text="VisionOfBritain.org.uk"}.</li>
-    <li>Great Britain outline reproduced from {external title="Ordnance Survey Outline Maps" 
-    href="http://www.ordnancesurvey.co.uk/oswebsite/freefun/outlinemaps/" text="Ordnance Survey map data"} by 
-    permission of the Ordnance Survey &copy; Crown copyright 2001. </li>
-    <li>Ireland outline reproduced from 1990 World Vector Shoreline dataset by 
+    <li>GB &amp; Ireland outline reproduced from 1990 World Vector Shoreline dataset by 
     {external href="http://www.nima.mil/" title="U.S. National Imagery and Mapping Agency" text="MIMA"}, 
     not subject to copyright protection under 17 U.S.C. 403.</li> 
     <li>Placename/Toponymic information is based on the Geographic Names Data Base, containing official 

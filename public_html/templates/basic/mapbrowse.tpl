@@ -245,10 +245,5 @@ and - buttons to zoom in and out, or the keyboard shortcuts Alt+Q to zoom out an
 You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the map</li>
 <li>You can also pan the map by clicking the smaller overview map</li>
 </ul>
-
- 
-<div class="copyright">Great Britain outline reproduced from Ordnance Survey map data<br/> by 
-    permission of the Ordnance Survey &copy; Crown copyright 2001.</div> 
-
  
 {include file="_std_end.tpl"}
