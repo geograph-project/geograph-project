@@ -353,10 +353,10 @@ class SearchCriteria_Text extends SearchCriteria
 		if ($sql_where) {
 			$sql_where .= ' and ';
 		}
-		if (preg_match("/\b(AND|OR|NOT)\b/",$this->searchq) || preg_match('/^\^.*\+$/',$this->searchq)) {
+		if (preg_match("/\b(AND|OR|NOT)\b/",$this->searchq) || preg_match('/^\^.*\+$/',$this->searchq) || preg_match('/(^|\s+)-([\w^]+)/',$this->searchq)) {
 			$sql_where .= " (";
 			$terms = $prefix = $postfix = '';
-			$tokens = preg_split('/\s+/',trim(preg_replace('/([\(\)])/',' $1 ',$this->searchq)));
+			$tokens = preg_split('/\s+/',trim(preg_replace('/([\(\)])/',' $1 ',preg_replace('/(^|\s+)-([\w^]+)/e','("$1"?"$1AND ":"")."NOT $2"',$this->searchq))));
 			$number = count($tokens);
 			$c = 1;
 			$tokens[] = 'END';
