@@ -141,6 +141,10 @@ class SearchEngine
 			$searchclass = 'Text';
 			$searchq = $q;
 			$searchdesc = ", containing '{$q}' ";
+		} elseif (preg_match('/^\^.*\+$/',$q) || preg_match('/\b(OR|AND|NOT)\b/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q)) {
+			$searchclass = 'Text';
+			$searchq = $q;
+			$searchdesc = ", matching '".$q."' ";
 		} else {
 			$criteria = new SearchCriteria_Placename();
 			$criteria->setByPlacename($q);
@@ -304,7 +308,7 @@ class SearchEngine
 			$dataarray['textsearch'] = trim($dataarray['textsearch']);
 			$searchclass = 'Text';
 			$searchq = $dataarray['textsearch'];
-			if (preg_match('/^\^.*\+$/',$dataarray['textsearch']) || preg_match('/\b(OR|AND|NOT)\b/',$dataarray['textsearch'])) {
+			if (preg_match('/^\^.*\+$/',$dataarray['textsearch']) || preg_match('/\b(OR|AND|NOT)\b/',$dataarray['textsearch']) || preg_match('/(^|\s+)-([\w^]+)/',$dataarray['textsearch'])) {
 				$searchdesc = ", matching '".$dataarray['textsearch']."' ";
 			} elseif (preg_match('/\+$/',$dataarray['textsearch'])) {
 				$searchdesc = ", all about '".preg_replace('/\+$/','',$dataarray['textsearch'])."' ";
