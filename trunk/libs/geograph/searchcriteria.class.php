@@ -367,7 +367,7 @@ class SearchCriteria_Text extends SearchCriteria
 					case 'OR': 
 						if ($c != 1 && $c != $number) {
 							if (strpos($terms,'^') === 0) {
-								$words = 'REGEXP '.$db->Quote('[[:<:]]'.str_replace('^','',$terms).'[[:>:]]');
+								$words = 'REGEXP '.$db->Quote('[[:<:]]'.str_replace('^','',preg_replace('/\+$/','',$terms)).'[[:>:]]');
 							} else {
 								$words = 'LIKE '.$db->Quote('%'.preg_replace('/\+$/','',$terms).'%');
 							}
