@@ -134,7 +134,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$total['weeks_r'] = floor($total['weeks']);
 
 	if ($total['weeks'] < 1040) { //20years
-		$total['endtime'] = strtotime("+{$total['weeks']} weeks");
+		$total['endtime'] = strtotime("+{$total['weeks_r']} weeks");
 		$total['enddate'] = "about ".date("F Y",$total['endtime']);
 	} else {
 		$total['enddate'] = "sometime in ".(date("Y")+round($total['weeks']/52));
