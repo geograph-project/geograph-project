@@ -155,7 +155,7 @@ geographing</a> first.</p>
 			{/literal}
 		
 	{else} 
-		<script type="text/javascript" src="/mapping.js"></script>
+		<script type="text/javascript" src="/mapping.js?v={$javascript_version}"></script>
 	{/if}
 
 	
