@@ -246,6 +246,9 @@ You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the
 <li>You can also pan the map by clicking the smaller overview map</li>
 </ul>
 
+{if $mosaic_updated}
+	<p align="center" style="font-size:0.8em">{$mosaic_updated}</p>
+{/if}
  
 <div class="copyright">Maps on this page, &copy; Copyright Geograph Project Ltd and  
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">Creative Commons Licence</a>.</div> 

@@ -198,6 +198,7 @@ class GeographMapMosaic
 		$smarty->assign($basename.'_width', $this->image_w);
 		$smarty->assign($basename.'_height', $this->image_h);
 		$smarty->assign($basename.'_token', $this->getToken());
+		$smarty->assign($basename.'_updated', $this->getUpdateDateString());
 	
 	}
 		
@@ -382,8 +383,38 @@ class GeographMapMosaic
 			}
 		
 		}
-		
+		$this->imagearray =& $images;
 		return $images;
+	}
+
+	/**
+	* get information on when the maps where last updated
+	* @access public
+	*/
+	function getUpdateDateString()
+	{
+		$root=&$_SERVER['DOCUMENT_ROOT'];
+		
+		if (empty($this->imagearray))
+			$this->getImageArray();
+			
+		$recent = 0;	
+		$oldest = 999999999999;	
+		foreach ($this->imagearray as $j => $row)
+			foreach ($row as $i => $map) {
+				$filename = $root.$map->getImageFilename();
+				if (file_exists($filename) && ($date = filemtime($filename)) != FALSE) {
+					$recent = max($recent,$date);
+					$oldest = min($oldest,$date);
+				}
+			}
+		if ($recent) {
+			if ( abs($recent-$oldest) < 1000 ) {
+				return "Maps last updated at: ".strftime("%A, %d %b at %H:%M",$recent);
+			} else {
+				return "Maps updated between: ".strftime("%A, %d %b at %H:%M",$oldest)." and ".strftime("%A, %d %b at %H:%M",$recent);
+			}
+		}
 	}
 
 	/**
@@ -722,7 +753,7 @@ class GeographMapMosaic
 			$square=new GridSquare;
 			if ($square->loadFromPosition($clickx, $clicky))
 			{
-				$images=$square->getImages();
+				$images=$square->getImages(false,'','order by moderation_status+0 desc,seq_no limit 2');
 				
 				//if the image count is 1, we'll go straight to the image
 				if (count($images)==1)
