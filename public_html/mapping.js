@@ -190,7 +190,9 @@ function overlayMouseMove(e) {
 		}
 		document.images['map'].alt = grstr;
 	}
-	updateViewDirection();
+	if (currentelement != null) {
+		updateViewDirection();
+	}
 }
 
 function checkGridReferences(that_form) {
