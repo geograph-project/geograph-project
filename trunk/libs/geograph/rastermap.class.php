@@ -117,6 +117,8 @@ class RasterMap
 	
 	function getScriptTag()
 	{
+		global $CONF;
+		
 		switch ($this->service) {
 		
 			case 'vob': 
@@ -130,7 +132,7 @@ class RasterMap
 			var mapw = 300;
 			var mapb = 1;
 			</script>
-		<script type=\"text/javascript\" src=\"/mapping.js\"></script>
+		<script type=\"text/javascript\" src=\"/mapping.js?v={$CONF['javascript_version']}\"></script>
 		<script type=\"text/javascript\">document.images['map'].onmousemove = overlayMouseMove;
 		document.images['map'].onmouseup = overlayMouseUp;
 		document.images['map'].onmousedown = overlayMouseDown;
