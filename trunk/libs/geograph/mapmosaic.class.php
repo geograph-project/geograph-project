@@ -409,7 +409,7 @@ class GeographMapMosaic
 				}
 			}
 		if ($recent) {
-			if ( abs($recent-$oldest) < 1000 ) {
+			if ( abs($recent-$oldest) < 1000 || $oldest < (time() - 60*60*24*60) ) {
 				return "Maps last updated at: ".strftime("%A, %d %b at %H:%M",$recent);
 			} else {
 				return "Maps updated between: ".strftime("%A, %d %b at %H:%M",$oldest)." and ".strftime("%A, %d %b at %H:%M",$recent);
