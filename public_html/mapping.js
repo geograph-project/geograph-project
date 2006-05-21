@@ -294,12 +294,14 @@ function updateMapMarker(that,showmessage) {
 						northings2 = northing;
 					} else {
 						if (currentelement.id == 'marker1') {
-							eastings1 = easting;
-							northings1 = northing;
-							if (gr.length == 6 && easting%1000 == 0 && northing%1000 == 0) {
+							if (numbers.length == 4 && easting%1000 == 0 && northing%1000 == 0) {
 								tempX = tempX + (mapw /4);
 								tempY = tempY - (maph /4);
-								
+								eastings1 = easting + 500;
+								northings1 = northing + 500;
+							} else {
+								eastings1 = easting;
+								northings1 = northing;
 							}
 						} else if (currentelement.id == 'marker2') {
 							eastings2 = easting;
