@@ -108,7 +108,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	
 	
-	$sql = "select substring(submitted,1,10) as d ,count(distinct grid_reference) as c from gridimage_search where ftf = 1 and submitted > '$beginday' AND submitted < '$today' $andri group by substring(submitted,1,10)";
+	$sql = "select substring(submitted,1,10) as d ,count(distinct grid_reference) as c from gridimage_search where submitted > '$beginday' AND submitted < '$today' $andri group by substring(submitted,1,10)";
 	$sql2 = "select count(distinct grid_reference) from gridimage_search $whereri";
 			
 	$square = calc($sql,$sql2,10000,'Squares');
