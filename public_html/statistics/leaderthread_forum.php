@@ -70,8 +70,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	count(*) as Posts,
 	count(distinct poster_id) as Posters,
 	topic_views as Views,
-	datediff(max(post_time),min(post_time)) as `Days Active For`,
-	count(distinct substring(post_time,1,10)) as `Different Days`
+	datediff(max(post_time),min(post_time))+1 as `Days Active For`,
+	count(distinct substring(post_time,1,10)) as `Different Days`,
+	count(*)/count(distinct substring(post_time,1,10)) as `Average Posts per Day`
 	from geobb_posts inner join geobb_topics using(topic_id)
 	where 1 $where_sql
 	group by geobb_posts.topic_id 
