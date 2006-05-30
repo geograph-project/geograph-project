@@ -78,7 +78,34 @@ class GeographUser
 			
 			
 						
-			$arr =& $db->GetRow("select * from user where user_id='$uid'");	
+			$arr =& $db->GetRow("select * from user where user_id=$uid limit 1");	
+			if (count($arr))
+			{
+				$this->registered=strlen($arr['rights'])>0;
+				foreach($arr as $name=>$value)
+				{
+					if (!is_numeric($name))
+						$this->$name=$value;
+
+				}
+			}
+		}
+	}
+	
+	function loadByNickname($nickname=0)
+	{
+		if (!empty($nickname))
+		{
+			$db = NewADOConnection($GLOBALS['DSN']);
+			if (!$db) die('Database connection failed');   
+
+			$nickname = $db->Quote($nickname);
+			
+			$arr =& $db->GetRow("select * from user where nickname = $nickname limit 1");
+			
+			
+			//todo check seperate table
+			
 			if (count($arr))
 			{
 				$this->registered=strlen($arr['rights'])>0;
@@ -430,6 +457,7 @@ class GeographUser
 				$ok=false;
 				$errors['nickname']='Sorry, this nickname is already taken by another user';
 			}
+			//todo check seperate table
 		}
 		else
 		{
@@ -443,7 +471,8 @@ class GeographUser
 		
 		if ($ok)
 		{
-		
+			//todo if nickname changed, add old one to seperate table
+			
 			$sql = sprintf("update user set realname=%s,nickname=%s,website=%s,public_email=%d,search_results=%d,slideshow_delay=%d ".
 				"where user_id=%d",
 				$db->Quote(stripslashes($profile['realname'])),
@@ -688,7 +717,7 @@ class GeographUser
 									$this->nickname=str_replace(" ", "", $this->realname);
 
 								//give user a remember me cookie?
-								if (isset($remember_me))
+								if ($remember_me)
 								{
 									$token = md5(uniqid(rand(),1)); 
 									$db->query("insert into autologin(user_id,token) values ('{$this->user_id}', '$token')");
