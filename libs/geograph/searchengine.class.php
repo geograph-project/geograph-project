@@ -204,8 +204,10 @@ class SearchEngine
 
 			$i = $db->Insert_ID();
 			if ($autoredirect != false) {
-				header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}");
-				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}\">Your Search Results</a>";
+				if (isset($_GET['page']))
+					$extra = "&page=".intval($_GET['page']);
+				header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}".$extra);
+				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra\">Your Search Results</a>";
 				exit;		
 			} else {
 				return $i;
@@ -524,8 +526,10 @@ class SearchEngine
 
 			$i = $db->Insert_ID();
 			if ($autoredirect != false) {
-				header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}".(($dataarray['submit'] == 'Count')?'&count=1':''));
-				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}".(($dataarray['submit'] == 'Count')?'&amp;count=1':'')."\">Your Search Results</a>";
+				if (isset($_GET['page']))
+					$extra = "&page=".intval($_GET['page']);
+				header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra".(($dataarray['submit'] == 'Count')?'&count=1':''));
+				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra".(($dataarray['submit'] == 'Count')?'&amp;count=1':'')."\">Your Search Results</a>";
 				exit;
 			} else {
 				return $i;
