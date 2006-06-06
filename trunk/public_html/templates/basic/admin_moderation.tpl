@@ -14,7 +14,7 @@
 	
 	{foreach from=$unmoderated item=image}
 
-	  <div class="photoguide" {if $image->user_status && $image->moderation_status != 'pending'}style="background-color:#eeeeee"{/if}>
+	  <div class="photoguide" {if $image->user_status && $image->moderation_status != 'pending'}style="background-color:#eeeeee"{/if} style="width:730px;">
 	  
 	  <div style="float:left;width:213px">
 	  <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160)}</a>
