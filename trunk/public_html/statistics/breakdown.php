@@ -97,7 +97,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_group = $sql_fieldname = "imagetaken";
 	} else if ($by == 'user') {
 		$smarty->assign('linkpro', 1);
-		$sql_group = $sql_fieldname = "realname";
+		$sql_group = "user_id";
+		$sql_fieldname = "realname";
 		$sql_fields = ',user_id';
 	} else if ($by == 'count') {
 		$sql_group = $sql_fieldname = "imagecount";
@@ -184,13 +185,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 $sql = "select 
 $sql_fieldname as field,
-count(distinct(gi.gridimage_id)) as c $sql_fields
+count(*) as c $sql_fields
 from gridimage_search as gi $sql_from
 where $ri_crit $user_crit
  $sql_crit
 group by $sql_group 
 $sql_order";
-
+	if ($_GET['debug'])
+		print $sql;
 	$breakdown=$db->GetAll($sql);
 	$total = 0;
 	foreach($breakdown as $idx=>$entry) {
