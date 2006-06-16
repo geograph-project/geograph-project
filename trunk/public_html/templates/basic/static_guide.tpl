@@ -12,12 +12,12 @@ grid square.
 and physical geographical information they contain.</p>
 
 <p>You can plan your Geograph using a hardcopy map or by visiting the 
-{external title="Ordnance Survey Get-a-Map" href="http://www.ordnancesurvey.co.uk/oswebsite/getamap/" text="Ordnance Survey Get-a-Map"} website or for really high tech geographing, you could use a 
+{external title="Get-a-map&trade;" href="http://www.ordnancesurvey.co.uk/oswebsite/getamap/" text="Get-a-map&trade;"} website or for really high tech geographing, you could use a 
 Pocket PC or GPS equipped with mapping software (for example Memory Map).</p>
 
 <h3>Example</h3>
 
-<div style="float:right;width:400px;">
+<div style="float:right;width:400px;position:relative">
 <img src="/templates/basic/img/guide_map.png" width="400" height="400" alt="Map of SD5300"/> 
 <div class="copyright">Image produced from the Ordnance Survey Get-a-map service. Image reproduced with 
 kind permission of Ordnance Survey and Ordnance Survey of Northern Ireland.</div>
@@ -25,7 +25,7 @@ kind permission of Ordnance Survey and Ordnance Survey of Northern Ireland.</div
 
 <p>
 I entered my home village of Billinge in the search box on the 
-{getamap gridref='SD5300' text='OS Get-a-Map page'}
+{getamap gridref='SD5300' text='Get-a-map'} page
 and the result was this map (The purple spot indicates the centre of the 
 SD5300 grid square).</p>
 
