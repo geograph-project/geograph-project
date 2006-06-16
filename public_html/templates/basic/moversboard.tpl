@@ -10,8 +10,8 @@
 
 <p>Here is a list of contributors in the past 7 days, ordered by
 number of {$desc} (see <a title="Frequently Asked Questions" href="/help/stats_faq">FAQ</a> 
-for details). The "pending" column gives some idea of 
-how much each person will climb when their pictures are moderated!</p>
+for details). {if $pending}The "pending" column gives some idea of 
+how much each person will climb when their pictures are moderated!{/if}</p>
 
 <p>The <a href="/leaderboard.php{if $type != 'points'}?type={$type}{/if}">all-time top 50 leaderboard</a> is also available.</p>
 
@@ -19,7 +19,7 @@ how much each person will climb when their pictures are moderated!</p>
 {$cutoff_time|date_format:"%A, %d %b at %H:%M"}</p>
 
 <table class="report"> 
-<thead><tr><td>Position</td><td>Contributor</td><td>{$heading}</td><td>Pending</td></tr></thead>
+<thead><tr><td>Position</td><td>Contributor</td><td>{$heading}</td>{if $pending}<td>Pending</td>{/if}</tr></thead>
 <tbody>
 
 {foreach from=$topusers key=topuser_id item=topuser}
@@ -30,7 +30,7 @@ how much each person will climb when their pictures are moderated!</p>
 {/foreach}
 
 
-<tr class="totalrow"><th>&nbsp;</th><th>Totals</th><th align="right">{$geographs}</th><th align="right" style="font-size:0.8em">({$pending} pending)</th></tr></thead>
+<tr class="totalrow"><th>&nbsp;</th><th>Totals</th><th align="right">{$geographs}</th>{if $pending}<th align="right" style="font-size:0.8em">({$pending} pending)</th>{/if}</tr></thead>
 </tbody>
 </table>
 
