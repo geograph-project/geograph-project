@@ -46,6 +46,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	/////////////
 	// in the following code 'geographs' is used a column for legacy reasons, but dont always represent actual geographs....
 	$sql_column = '';
+	$sql_table = " gridimage as i left join user as u using(user_id) ";
 	if ($type == 'squares' || $type == 'geosquares') {
 		if ($type == 'geosquares') {
 			$sql_where = " and i.moderation_status='geograph'";
@@ -92,22 +93,28 @@ if (!$smarty->is_cached($template, $cacheid))
 		$desc = "images submitted";
 	} elseif ($type == 'depth') {
 		$sql_column = "count(*)/count(distinct gridsquare_id)";
+		$sql_table = " gridimage_search i ";
 		$heading = "Depth";
 		$desc = "depth score";
-	} elseif (false && $type == 'myriads') {//we dont have access to grid_reference - possibly join with grid_prefix
+	} elseif ($type == 'myriads') {
+		//we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
 		$sql_column = "count(distinct substring(grid_reference,1,3 - reference_index))";
+		$sql_table = " gridimage_search i ";
 		$heading = "Myriads";
 		$desc = "different myriads";
 	} elseif ($type == 'days') {
 		$sql_column = "count(distinct imagetaken)";
+		$sql_table = " gridimage_search i ";
 		$heading = "Days";
 		$desc = "different days";
 	} elseif ($type == 'classes') {
 		$sql_column = "count(distinct imageclass)";
+		$sql_table = " gridimage_search i ";
 		$heading = "Categories";
 		$desc = "different categories";
 	} elseif ($type == 'category_depth') {
 		$sql_column = "count(*)/count(distinct imageclass)";
+		$sql_table = " gridimage_search i ";
 		$heading = "Category Depth";
 		$desc = "the category depth score";
 	} else { #if ($type == 'points') {
@@ -122,11 +129,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	if ($sql_column) {
 		//we want to find all users with geographs/pending images 
-		$sql="select i.user_id,u.realname,
+		$sql="select i.user_id,realname,
 		$sql_column as geographs, 
-		sum(i.moderation_status='pending') as pending from gridimage as i 
-		left join user as u using(user_id) 
-		where i.submitted > date_sub(now(), interval 7 day) 
+		sum(i.moderation_status='pending') as pending from $sql_table
+		where i.submitted > date_sub(now(), interval 7 day)
 		group by i.user_id 
 		having (geographs > 0 or pending > 0)
 		order by geographs desc,pending desc ";
