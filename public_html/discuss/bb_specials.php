@@ -9,8 +9,7 @@ $roForums=array();
 $poForums=array();
 $regUsrForums=array();
 
-$userRanks=array(1=>'Moderator', 2=>'Developer', 3=>'Developer');
-
+$userRanks=array(1=>'Moderator', 2=>'Developer', 3=>'Developer',2407 => 'Developer');
 $mods=array();
 
 ?>
