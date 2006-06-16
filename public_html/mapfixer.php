@@ -95,6 +95,8 @@ if (isset($_GET['gridref']))
 
 					$smarty->assign('status', "New gridsquare $gridref created with new land percentage of $percent %");
 						
+				} else {
+					$smarty->assign('gridref_error', "Error, please try again later");
 				}
 			}
 			
@@ -105,24 +107,14 @@ if (isset($_GET['gridref']))
 	else
 	{
 		$smarty->assign_by_ref('gridref', strip_tags($_GET['gridref']));
-		$smarty->assign('gridref_error', "Bad grid reference");
+		$smarty->assign('gridref_error', "Bad or unknown grid reference");
 	}
 	
 	$smarty->assign('gridref_ok', $ok?1:0);
 	
 }
 
-if ($_GET['save']=='quick')
-{
-	//return nice XML result
-	$status=$smarty->get_template_vars('status');
-	
-	echo "Status: $status";
-}
-else
-{
+$smarty->display('mapfixer.tpl');
 
-	$smarty->display('mapfixer.tpl');
-}
 	
 ?>
