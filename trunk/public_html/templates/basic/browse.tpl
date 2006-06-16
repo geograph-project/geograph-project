@@ -213,15 +213,15 @@
 		</ul>
 	{/if}
    
-   	{if $square->percent_land < 80}
+   	{* if $square->percent_land < 100 *}
    		{* We on the coast so offer the option to request removal *}
    		
    		<form action="/mapfixer.php" method="get">
-   		<p align="right"><input type="submit" name="save" value="Request marking of this square as All at Sea"/>
+   		<p align="right"><input type="submit" name="save" value="Request check of land status for this square" style="font-size:0.7em;"/>
    		<input type="hidden" name="gridref" value="{$gridref}"/>
    		</p>
    		</form>
-   	{/if}
+   	{* /if *}
 {else}
 	{* All at Sea Square! *}
 	
