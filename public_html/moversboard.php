@@ -92,7 +92,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "New<br/>Images";
 		$desc = "images submitted";
 	} elseif ($type == 'depth') {
-		$sql_column = "count(*)/count(distinct gridsquare_id)";
+		$sql_column = "count(*)/count(distinct grid_reference)";
 		$sql_table = " gridimage_search i ";
 		$heading = "Depth";
 		$desc = "depth score";
@@ -136,6 +136,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		group by i.user_id 
 		having (geographs > 0 or pending > 0)
 		order by geographs desc,pending desc ";
+		if ($_GET['debug'])
+			print $sql;
 		$topusers=$db->GetAssoc($sql);
 	}		
 	//assign an ordinal
