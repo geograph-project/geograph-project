@@ -1136,9 +1136,13 @@ class KMLCreator extends FeedCreator {
 		
 		for ($i=0;$i<count($this->items);$i++) {
 			//added here beucase description gets auto surrounded by cdata
-			$this->items[$i]->description = "<b>".$this->items[$i]->description."</b><br/>
+			if ($this->items[$i]->thumb!="") {
+				$this->items[$i]->description = "<a href=\"".htmlspecialchars($this->items[$i]->link)."\"><img src=\"".$this->items[$i]->thumb."\"/></a><br/>".$this->items[$i]->description;
+			}
+			
+			$this->items[$i]->description = "<p align=\"center\"><b>".$this->items[$i]->description."</b><br/>
 			".$this->items[$i]->licence."
-				<br/><br/><a href=\"".htmlspecialchars($this->items[$i]->link)."\">View Online</a>";
+				<br/><br/><a href=\"".htmlspecialchars($this->items[$i]->link)."\">View Online</a></b>";
 			
 			$feed.= "
 		<Placemark>
