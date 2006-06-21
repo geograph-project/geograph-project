@@ -71,6 +71,8 @@ if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 	$sql_crit .= " AND upd_timestamp > date_sub(now(), interval {$_GET['last']})";
 } elseif (isset($_GET['limit']) && preg_match("/^\d+(,\d+|)?$/",$_GET['limit'])) {
 	$sql_crit .= " ORDER BY upd_timestamp DESC LIMIT {$_GET['limit']}";
+} else {
+	die("ERROR: whole db export disabled. contact support at geograph dot co dot uk");
 }
 
 if (isset($_GET['supp'])) {
