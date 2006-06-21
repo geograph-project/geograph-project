@@ -1136,8 +1136,8 @@ class KMLCreator extends FeedCreator {
 		
 		for ($i=0;$i<count($this->items);$i++) {
 			//added here beucase description gets auto surrounded by cdata
-			if ($this->items[$i]->thumb!="") {
-				$this->items[$i]->description = "<a href=\"".htmlspecialchars($this->items[$i]->link)."\"><img src=\"".$this->items[$i]->thumb."\"/></a><br/>".$this->items[$i]->description;
+			if ($this->items[$i]->thumbTag!="") {
+				$this->items[$i]->description = "<a href=\"".htmlspecialchars($this->items[$i]->link)."\">".$this->items[$i]->thumbTag."</a><br/>".$this->items[$i]->description;
 			}
 			
 			$this->items[$i]->description = "<p align=\"center\"><b>".$this->items[$i]->description."</b><br/>
