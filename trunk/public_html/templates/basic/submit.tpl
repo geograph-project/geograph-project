@@ -219,10 +219,11 @@ with it. So what makes an image a genuine geograph? (not just the first)</p>
 <li>The image subject must be within grid square {getamap gridref=$gridref}, and ideally the photographer should be too.</li>
 <li>You must clearly show at close range one of the main geographical features within the square</li>
 <li>You should include a short description relating the image to the map square</li>
+<li>The image should be a natural image as a human would see it, please avoid digitally altering the image to add dates, texts etc, or creating montages, similarly turn off date stamping performed by a camera. A little tweaking of brightness/contrast and/or cropping is fine and encouraged. </li>
 </ul>
 
 <p>Good quality, visually appealing and historically relevant pictures (eg wide area views
-covering many square kilometers) may also be accepted as supplemental images 
+covering many square kilometres) may also be accepted as supplemental images 
 for {$gridref} provided they are accurately located, but may not qualify as geographs.</p>
 </div>
 
