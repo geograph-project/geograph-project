@@ -37,6 +37,8 @@ if (isset($_GET['format']) && in_array($_GET['format'], $valid_formats))
 }
 
 if ($format == 'KML') {
+	if (!isset($_GET['simple']))
+		$_GET['simple']) = 1; //default to on
 	$extension = (empty($_GET['simple']))?'kml':'simple.kml';
 } elseif ($format == 'GPX') {
 	$extension = 'gpx';
