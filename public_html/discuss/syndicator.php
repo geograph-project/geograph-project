@@ -176,7 +176,7 @@ LIMIT 30";
 		$description = preg_replace('/^<i>[^<]+<\/i>([\n\r]*<br>)?([\n\r]*<br>)?([\n\r]*<br>)?/','',$recordSet->fields['post_text']);
 		if (strlen($description) > 160)
 			$description = substr($description,0,157)."...";
-		$item->description = GeographLinks($description);
+		$item->description = GeographLinks(htmlentities($description));
 		$item->date = strtotime($recordSet->fields['post_time']);
 		//$item->source = "http://{$_SERVER['HTTP_HOST']}/discuss/";
 		$item->author = $recordSet->fields['poster_name'];
