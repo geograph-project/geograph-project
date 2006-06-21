@@ -152,7 +152,10 @@ for ($i=0; $i<$cnt; $i++)
 	     if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GeoPhotoRSS' || $format == 'GPX') {
 	     	$item->lat = $images->images[$i]->wgs84_lat;
 	     	$item->long = $images->images[$i]->wgs84_long;
-	     	if ($format == 'KML' || $format == 'GeoPhotoRSS')
+	     	if ($format == 'KML') {
+	     		$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
+	     		$item->thumbTag = preg_replace('/\/photos\/.*\.jpg/',$item->thumb,$images->images[$i]->getThumbnail(120,120)); 
+	       	} elseif ($format == 'GeoPhotoRSS')
 	     		$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
 	     } elseif ($format == 'BASE') {
 	     	$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
