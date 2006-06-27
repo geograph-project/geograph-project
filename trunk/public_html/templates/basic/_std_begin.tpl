@@ -26,6 +26,9 @@
   <div id="header">
     <h1 onclick="document.location='/';"><a title="Geograph home page" href="/">GeoGraph - photograph every grid square</a></h1>
   </div>
+  <div id="header_sponsor">
+    <h1><a title="Geograph sponsored by Ordnance Survay">sponsored by Ordnance Survay</a></h1>
+  </div>
 </div>
 
 {if $right_block}

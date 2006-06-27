@@ -60,7 +60,9 @@ we hope you'll enjoy being a part of this great project
 </div>
 
 <br style="clear:both"/>
-&nbsp;
+
+<div style="text-align:center; border:1px solid silver; padding-top:25px;">Geograph British Isles is proudly sponsored by <br/>
+<a title="Geograph sponsored by Ordnance Survay" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="/templates/basic/img/sponsor_big.gif" width="240" height="59" alt="Ordnance Survey" align="center" vspace="25" hspace="25"/></a></div>
 
 
 
