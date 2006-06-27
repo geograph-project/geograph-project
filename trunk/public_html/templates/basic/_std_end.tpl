@@ -27,11 +27,15 @@
   </ul>
   {/if}
    {/dynamic}
+
+<div style="text-align:center; padding-top:15px; border-top: 2px solid black; margin-top: 15px;">sponsored by <br/> <br/>
+<a title="Geograph sponsored by Ordnance Survay" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey" align="center" vspace="4" hspace="4"/></a></div>
+
    
 {if $discuss}
 
 {foreach from=$discuss item=newsitem}
-<h3 class="newstitle">{$newsitem.topic_title}</h3>
+<h3 class="newstitle" style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;">{$newsitem.topic_title}</h3>
 <div class="newsbody">{$newsitem.post_text}</div>
 <div class="newsfooter">
 Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> on {$newsitem.topic_time|date_format:"%a, %e %b"}
@@ -46,7 +50,7 @@ Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> 
 {if $news}
 
 {foreach from=$news item=newsitem}
-<h3 class="newstitle">{$newsitem.topic_title}</h3>
+<h3 class="newstitle" style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;">{$newsitem.topic_title}</h3>
 <div class="newsbody">{$newsitem.post_text}</div>
 <div class="newsfooter">
 Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> on {$newsitem.topic_time|date_format:"%a, %e %b"}
@@ -79,7 +83,7 @@ Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> 
   {if $user->registered}
   	  Logged in as {$user->realname|escape:'html'}
   	  <span class="sep">|</span>
-  	  <a title="Profile" href="/profile.php?u={$user->user_id}">profile</a>
+  	  <a title="Profile" href="{if $user->nickname}/user/{$user->nickname|escape:'url'}/{else}/profile.php?u={$user->user_id}{/if}">profile</a>
   	  <span class="sep">|</span>
   	  <a title="Log out" href="/logout.php">logout</a>
   {else}
