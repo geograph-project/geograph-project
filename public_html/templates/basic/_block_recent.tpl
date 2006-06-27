@@ -26,7 +26,7 @@
 
  {if $recentcount}
   
-  	<h3>Recent Photos</h3>
+  	<h3 {if $overview} style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;"{/if}>Recent Photos</h3>
   	
   	{foreach from=$recent item=image}
   
