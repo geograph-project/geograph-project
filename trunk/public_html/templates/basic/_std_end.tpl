@@ -29,7 +29,7 @@
    {/dynamic}
 
 <div style="text-align:center; padding-top:15px; border-top: 2px solid black; margin-top: 15px;">sponsored by <br/> <br/>
-<a title="Geograph sponsored by Ordnance Survay" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey" align="center" vspace="4" hspace="4"/></a></div>
+<a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey" align="center" vspace="4" hspace="4"/></a></div>
 
    
 {if $discuss}
