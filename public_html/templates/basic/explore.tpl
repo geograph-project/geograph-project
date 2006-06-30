@@ -75,6 +75,8 @@ ul.explore li ul li {
 	<input id="searchgo" type="submit" value="Go"/>
 	</form></li>
 
+	<li><a href="/browse-random.php">Jump to a <b>Random</b> Gridsquare</a>.</li>
+
 	<li><a href="/mapbrowse.php">Explore a Zoomable <b>Map</b></a>.</li>
 
 	<li><form method="get" action="/search.php" style="display:inline">
