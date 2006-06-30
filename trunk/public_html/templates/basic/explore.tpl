@@ -25,7 +25,15 @@ ul.explore li ul li {
 
 </style>
 {/literal}
+
+	<div style="padding:5px;background:#dddddd;position:relative; float:right;"><form method="get" action="/browse.php" style="display:inline">
+	<label for="gridref1">Jump</label> to <b>Grid Reference</b>: <br/>
+	<input id="gridref1" type="text" name="gridref" value="ST8751" size="15" style="color:gray" onfocus="{literal}if (this.value=='ST8751') { this.value='';this.style.color='';}{/literal}"/>
+	<input id="searchgo1" type="submit" value="Go"/>
+	</form></div>
+
 <h2>Themed Browsing</h2>
+
 
 <h3>Outstanding archivement...</h3>
 <ul class="explore">
