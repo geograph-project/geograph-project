@@ -24,7 +24,7 @@
     
 <a name="question"></a>
 <h3>I have a question, what should I do?</h3>
-    <p>Please <a title="Contact Us" href="contact.php">Contact Us</a></p>
+    <p>Please see the <a href="/faq.php">General Questions</a> or <a title="Contact Us" href="contact.php">Contact Us</a>, alternativly pop into the <a href="/discuss/">Discussion Forum</a>.</p>
     
     
 {include file="_std_end.tpl"}
