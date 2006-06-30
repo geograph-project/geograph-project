@@ -66,7 +66,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	#$smarty->assign('users_total',  $db->GetOne("select count(*) from user where rights>0"));
 	$smarty->assign('users_thisweek',  $db->GetOne("select count(*) from user where rights>0 and (unix_timestamp(now())-unix_timestamp(signup_date))<604800"));
 
-	$smarty->assign("images_ftf",  $db->GetOne("select count(*) from gridimage where ftf = 1"));
+	$smarty->assign("images_ftf",  $db->GetOne("select count(*) from gridimage where ftf = 1 and moderation_status = 'geograph'"));
 
 
 	//lets add an overview map too
