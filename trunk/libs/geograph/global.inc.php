@@ -264,8 +264,8 @@ function smarty_function_ordinal($i) {
 /**
 * wrapper to GeographLinks
 */
-function smarty_function_geographlinks($input) {
-	return GeographLinks($input);
+function smarty_function_geographlinks($input,$thumbs = false) {
+	return GeographLinks($input,$thumbs);
 }
 
 
@@ -430,7 +430,7 @@ function init_session()
 }
 
 //replace geograph links
-function GeographLinks(&$posterText) {
+function GeographLinks(&$posterText,$thumbs = false) {
 	//look for [[gridref_or_photoid]] and [[[gridref_or_photoid]]]
 	if (preg_match_all('/\[\[(\[?)(\w{0,2}\d+)(\]?)\]\]/',$posterText,$g_matches)) {
 		foreach ($g_matches[2] as $i => $g_id) {
@@ -442,12 +442,23 @@ function GeographLinks(&$posterText) {
 					$g_image=new GridImage;
 				}
 				$ok = $g_image->loadFromId($g_id);
+				if ($g_image->moderation_status == 'rejected')
+					$ok = false;
 				if ($ok) {
+					$g_title=$g_image->grid_reference.' : '.htmlentities($g_image->title);
 					if ($g_matches[1][$i]) {
-						//we don't place thumbnails in non forum links
-						$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">{$g_image->grid_reference} : {$g_image->title}</a>",$posterText);
+						if ($thumbs) {
+							$g_title.=' by '.htmlentities($g_image->realname);
+							$g_img = $g_image->getThumbnail(120,120,false,true);
+							
+							$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
+					
+						} else {
+							//we don't place thumbnails in non forum links
+							$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_title</a>",$posterText);
+						}
 					} else {
-						$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">{$g_image->grid_reference} : {$g_image->title}</a>",$posterText);
+						$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_title</a>",$posterText);
 					}
 				}			
 			} else {
