@@ -41,13 +41,45 @@ if (isset($_GET['id']))  {
 	$ok = $image->loadFromId($_GET['id'],true);
 
 	if ($ok) {
+		//todo non functionional!
+		$template='gpx_download_gpx.tpl';
+		$cacheid = $image->gridimage_id;
+		
+		//regenerate?
+		if (!$smarty->is_cached($template, $cacheid))
+		{
+			$searchdesc = "squares within {$d}km of {$square->grid_reference} ".(($_REQUEST['type'] == 'with')?'with':'without')." photographs";
+
+
+			$sql = "SELECT grid_reference,x,y,imagecount $sql_fields
+			FROM gridsquare gs
+			WHERE $sql_where
+			ORDER BY $sql_order";
+
+			$db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) die('Database connection failed');  
+
+			$data = $db->getAll($sql);
+
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;				
+			foreach ($data as $q => $row) {
+				list($data[$q]['lat'],$data[$q]['long']) = $conv->internal_to_wgs84($row['x'],$row['y']);
+			}
+
+			$smarty->assign_by_ref('data', $data);
+			$smarty->assign_by_ref('searchdesc', $searchdesc);
+
+		}
+
 		header("Content-type: application/octet-stream");
 		header("Content-Disposition: attachment; filename=\"Geograph{$image->gridimage_id}.gpx\"");
 		header("Cache-Control: Public");
 		header("Expires: ".date("D, d M Y H:i:s",mktime(0,0,0,date('m'),date('d')+14,date('Y')) )." GMT");
+
+		$smarty->display($template, $cacheid);
+		exit;
 		
-		//todo output gpx
-		$cacheid = $image->gridimage_id;
 		
 		exit;
 	} else {
