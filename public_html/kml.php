@@ -82,13 +82,21 @@ if (isset($_GET['id']))  {
 			if (isset($_REQUEST['type']) && $_REQUEST['type'] == 'view') {
 				$url = "http://{$_SERVER['HTTP_HOST']}/earth.php?i=$i&simple=$simple";
 			} else {
-				$url = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=KML&i=$i&simple=$simple&page=$pg";
+				if ($pg > 1)
+					$page = $pg;
+				$url = "http://{$_SERVER['HTTP_HOST']}/feed/results$page/$i/KML";
 			}
 			if (isset($_REQUEST['type']) && $_REQUEST['type'] == 'static') {
 				header("Status:302 Found");
 				header("Location:$url");
 				$url = str_replace('&','&amp;',$url);
 				print "<a href=\"$url\">Open KML</a>";
+				exit;
+			} elseif (isset($_REQUEST['type']) && $_REQUEST['type'] == 'maps') {
+				header("Status:302 Found");
+				$url = "http://maps.google.co.uk/maps?q=$url"; //no need to urlencode as we using rest style url
+				header("Location:$url");
+				print "<a href=\"$url\">Open Google Maps</a>";
 				exit;
 			} else {
 				$url = str_replace('&','&amp;',$url);
