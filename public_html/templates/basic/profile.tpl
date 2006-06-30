@@ -18,7 +18,7 @@
 
 <li>Website: 
 {if $profile->website}
-	<a href="{$profile->website|escape:'html'}">{$profile->website|escape:'html'}</a>
+	{external href=$profile->website}
 {else}
 	<i>n/a</i>
 {/if}
@@ -34,8 +34,16 @@
 
 </ul>
 
+{if $profile->about_yourself && $profile->public_about}
+<div class="caption" style="background-color:#dddddd; padding:10px;">
+<h3 style="margin-top:0px;margin-bottom:0px">About Myself</h3>
+{$profile->about_yourself|nl2br|GeographLinks:true}</div>
+{/if}
+
 {if $user->user_id eq $profile->user_id}
  <p><a href="/profile.php?edit=1">Edit your profile</a> if there's anything you'd like to change.</p> 	
+{else}
+ <br/><br/>
 {/if}
 
 
@@ -43,8 +51,8 @@
  	
  	{if $profile->stats.total gt 0}
  	<div style="background-color:#dddddd; padding:10px;">
+<div style="float:right; position:relative; margin-top:0px; font-size:0.7em">View Breakdown by <a href="/statistics/breakdown.php?by=status&u={$profile->user_id}" rel="nofollow">Status</a>, <a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}" rel="nofollow">Date Taken</a> or <a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}" rel="nofollow">Myriad</a>(<a href="/help/squares" title="What is a Myriad?">?</a>).</div>
 <h3 style="margin-top:0px;margin-bottom:0px">Statistics</h3>
-<p style="margin-top:0px; font-size:0.7em">View Breakdown by <a href="/statistics/breakdown.php?by=status&u={$profile->user_id}" rel="nofollow">Status</a>, <a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}" rel="nofollow">Date Taken</a> or <a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}" rel="nofollow">Myriad</a>(<a href="/help/squares" title="What is a Myriad?">?</a>).</p>
 <ul>
  	  <li><b>{$profile->stats.ftf}</b> Geograph points (see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)<ul>
  	  {if $profile->rank > 0}<li>Overall Rank: <b>{$profile->rank|ordinal}</b> {if $profile->rank > 1}({$profile->to_rise_rank} more needed to reach {$profile->rank-1|ordinal} position){/if}</li>{/if}
@@ -71,10 +79,10 @@
 </ul>
 
 {if $profile->stats.total gt 0}
+	<div style="float:right; position:relative; margin-top:0px; font-size:0.7em"><a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1'>Find images by {$profile->realname|escape:'html'}</a> (<a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs'>Thumbnail Only</a>, <a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide'>Slide Show Mode</a>)</div>
 	<h3 style="margin-bottom:0px">Photographs</h3>
-	<p style="margin-top:0px; font-size:0.7em"><a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1'>Find images by {$profile->realname|escape:'html'}</a> (<a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs'>Thumbnail Only</a>, <a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide'>Slide Show Mode</a>)</p>
 	
-	<p>Click column headers to sort in a different order</p>
+	<p style="font-size:0.7em">Click column headers to sort in a different order</p>
 	
 	{if $limit}
 
