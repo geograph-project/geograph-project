@@ -473,17 +473,32 @@ class GeographUser
 		{
 			//todo if nickname changed, add old one to seperate table
 			
-			$sql = sprintf("update user set realname=%s,nickname=%s,website=%s,public_email=%d,search_results=%d,slideshow_delay=%d ".
-				"where user_id=%d",
-				$db->Quote(stripslashes($profile['realname'])),
-				$db->Quote(stripslashes($profile['nickname'])),
-				$db->Quote(stripslashes($profile['website'])),
-				isset($profile['public_email'])?1:0,
+			$sql = sprintf("update user set 
+				realname=%s,
+				nickname=%s,
+				website=%s,
+				public_email=%d,
+				search_results=%d,
+				slideshow_delay=%d,
+				about_yourself=%s,
+				public_about=%d,
+				age_group=%d,
+				use_age_group=%d
+			where user_id=%d",
+				$db->Quote($profile['realname']),
+				$db->Quote($profile['nickname']),
+				$db->Quote($profile['website']),
+				empty($profile['public_email'])?0:1,
 				$profile['search_results'],
 				$profile['slideshow_delay'],
+				$db->Quote(stripslashes($profile['about_yourself'])),
+				empty($profile['public_about'])?0:1,
+				$profile['age_group'],
+				empty($profile['use_age_group'])?0:1,
+				
 				$this->user_id
 				);
-
+print "{$this->user_id} .. $sql";
 			if ($db->Execute($sql) === false) 
 			{
 				$errors['general']='error updating: '.$db->ErrorMsg();
@@ -501,14 +516,18 @@ class GeographUser
 				}
 				
 				
-				$this->realname=stripslashes($profile['realname']);
-				$this->nickname=stripslashes($profile['nickname']);
-				$this->website=stripslashes($profile['website']);
+				$this->realname=$profile['realname'];
+				$this->nickname=$profile['nickname'];
+				$this->website=$profile['website'];
 				$this->public_email=isset($profile['public_email'])?1:0;
 				if (isset($profile['sortBy'])) 
 					$this->sortBy=stripslashes($profile['sortBy']);
 				$this->search_results=stripslashes($profile['search_results']);
 				$this->slideshow_delay=stripslashes($profile['slideshow_delay']);
+				$this->about_yourself=stripslashes($profile['about_yourself']);
+				$this->public_about=stripslashes($profile['public_about']);
+				$this->age_group=stripslashes($profile['age_group']);
+				$this->use_age_group=stripslashes($profile['use_age_group']);
 			
 				$this->_forumUpdateProfile();
 				
