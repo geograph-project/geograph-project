@@ -80,6 +80,23 @@ if ($template=='profile.tpl')
 	if (isset($_GET['u']) && preg_match('/^[0-9]+$/' , $_GET['u']))
 	{
 		$uid=$_GET['u'];
+	} 
+	elseif (isset($_GET['user']) && isValidRealName($_GET['user']))
+	{
+		if ($_GET['user'] == $USER->nickname)
+		{
+			$uid=$USER->user_id;
+		} 
+		else 
+		{
+			$profile=new GeographUser();
+			$profile->loadByNickname($_GET['user']);
+			$uid=$profile->user_id;
+		}
+		if ($uid==0)
+		{
+			$uid = 9999999999999;
+		}
 	}
 
 	if ($uid==0)
@@ -116,7 +133,8 @@ if ($template=='profile.tpl')
 		require_once('geograph/gridimage.class.php');
 		require_once('geograph/gridsquare.class.php');
 
-		$profile=new GeographUser($uid);
+		if (!$profile)
+			$profile=new GeographUser($uid);
 		$profile->getStats();
 
 		$smarty->assign('page_title', 'Profile for '.$profile->realname);
