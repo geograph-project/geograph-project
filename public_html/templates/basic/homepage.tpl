@@ -8,6 +8,8 @@
 representative photographs and information for every square kilometre of the UK and Eire,
 and you can be part of it.</p>
 
+<div style="font-size:0.7em; text-align:center; border: 1px solid silver; padding:5px">Quick Statisitics: <b>{$stats.users|thousends} users</b> have contributed <b>{$stats.images|thousends} images</b>, covering <b>{$stats.squares|thousends} grid squares</b>, and been awarded <b>{$stats.points|thousends} points</b>. <a href="/help/stats_faq">FAQ</a></div><br/>
+
 <h3>Getting started...</h3>
 <ul>
 	<li><a title="Browse by Map" href="/mapbrowse.php">browse images on a <b>map</b></a></li>
@@ -26,7 +28,7 @@ and you can be part of it.</p>
 
 <h3>Interacting with other software...</h3>
 <ul>
-	<li><a title="Google Earth Export" href="/kml.php">view images in <b>Google Earth</b></a> <a title="Recent Images in Google Earth" href="/syndicator.php?format=KML" class="xml-kml">KML</a></li>
+	<li><a title="Google Earth Export" href="/kml.php">view images in <b>Google Earth</b> or <b>Maps</b></a> <a title="Recent Images in Google Earth" href="/syndicator.php?format=KML" class="xml-kml">KML</a></li>
 	<li><a title="RSS Deeds" href="/faq.php#rss">get <b>RSS feeds</b> of images</a> <a title="RSS Feed of Recent Images" href="/syndicator.php" rel="RSS" class="xml-rss">RSS</a></li>
 	<li><a title="Memory Map Export" href="/memorymap.php">view squares in <b>Memory Map</b></a></li>
 	<li><a title="GPX File Export" href="/gpx.php">download squares in <b>GPX Format</b></a> <a title="GPX File of Recent Images" href="/syndicator.php?format=GPX" rel="RSS" class="xml-gpx">GPX</a></li>
