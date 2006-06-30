@@ -71,6 +71,9 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$smarty->assign_by_ref('news', $news);
 	
+	
+	$stats= $db->cacheGetRow(3600,"select count(*) as images,count(distinct grid_reference) as squares,count(distinct user_id) as users ,sum(ftf=1 and moderation_status = 'geograph') as points from gridimage_search");
+	$smarty->assign_by_ref('stats', $stats);
 }
 
 
