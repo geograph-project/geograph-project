@@ -10,7 +10,7 @@
     <input type="submit" value="Go"></p></form>
 
 <p>See <a title="Frequently Asked Questions" href="/help/stats_faq">FAQ</a> 
-for details of the various measures. Will me more accurate when limited to one country.</p>
+for details of the various measures. Will be more accurate when limited to one country.</p>
 
 <hr/>
 
