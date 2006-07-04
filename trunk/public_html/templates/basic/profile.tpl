@@ -79,14 +79,14 @@
 </ul>
 
 {if $profile->stats.total gt 0}
-	<div style="float:right; position:relative; margin-top:0px; font-size:0.7em"><a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1'>Find images by {$profile->realname|escape:'html'}</a> (<a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs'>Thumbnail Only</a>, <a href='/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide'>Slide Show Mode</a>)</div>
+	<div style="float:right; position:relative; margin-top:0px; font-size:0.7em"><a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Find images by {$profile->realname|escape:'html'}</a> (<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs">Thumbnail Only</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide">Slide Show Mode</a>)</div>
 	<h3 style="margin-bottom:0px">Photographs</h3>
 	
 	<p style="font-size:0.7em">Click column headers to sort in a different order</p>
 	
 	{if $limit}
 
-		<p>Showing last {$limit} images, <a href="profile.php?u={$profile->user_id}&amp;all=1" rel="nofollow">click here to see all results</a></p>
+		<p>Showing last {$limit} images, <a href="{if $profile->nickname}/user/{$profile->nickname|escape:'url'}/all{else}/profile.php?u={$profile->user_id}&amp;all=1{/if}" rel="nofollow">click here to see all results</a></p>
 	{/if}
 	
 	<table class="report sortable" id="photolist" style="font-size:8pt;">
@@ -113,7 +113,7 @@
 </tbody></table>
 
 	{if $limit}
-		<p>Showing last {$limit} images, <a href="profile.php?u={$profile->user_id}&amp;all=1" rel="nofollow">click here to see all results</a></p>
+		<p>Showing last {$limit} images, <a href="{if $profile->nickname}/user/{$profile->nickname|escape:'url'}/all{else}/profile.php?u={$profile->user_id}&amp;all=1{/if}" rel="nofollow">click here to see all results</a></p>
 	{/if}
 		
 	
