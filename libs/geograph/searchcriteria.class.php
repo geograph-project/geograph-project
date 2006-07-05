@@ -136,7 +136,7 @@ class SearchCriteria
 			
 			$db = $this->_getDB();
 			
-			$prefix = $db->GetRow('select * from gridprefix where prefix='.$db->Quote($this->limit5));	
+			$prefix = $db->GetRow('select * from gridprefix where prefix='.$db->Quote($this->limit5).' limit 1');	
 			
 			$sql_where .= sprintf('gs.x between %d and %d and gs.y between %d and %d',$prefix['origin_x'],$prefix['origin_x']+$prefix['width']-1,$prefix['origin_y'],
 			$prefix['origin_y']+$prefix['height']-1);
@@ -525,7 +525,7 @@ class SearchCriteria_Postcode extends SearchCriteria
 	function setByPostcode($code) {
 		$db = $this->_getDB();
 		
-		$postcode = $db->GetRow('select e,n,reference_index from loc_postcodes where code='.$db->Quote($code));	
+		$postcode = $db->GetRow('select e,n,reference_index from loc_postcodes where code='.$db->Quote($code).' limit 1');	
 		if ($postcode['reference_index']) {
 			$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$postcode['reference_index'].' order by origin_x,origin_y limit 1');	
 
@@ -541,7 +541,7 @@ class SearchCriteria_County extends SearchCriteria
 	function setByCounty($county_id) {
 		$db = $this->_getDB();
 		
-		$county = $db->GetRow('select e,n,name,reference_index from loc_counties where county_id='.$db->Quote($county_id));	
+		$county = $db->GetRow('select e,n,name,reference_index from loc_counties where county_id='.$db->Quote($county_id).' limit 1');	
 	
 		//get the first gridprefix with the required reference_index
 		//after ordering by x,y - you'll get the bottom
