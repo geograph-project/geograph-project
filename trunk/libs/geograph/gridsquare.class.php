@@ -162,7 +162,7 @@ class GridSquare
 
 			foreach($topics as $idx=>$topic)
 			{
-				$firstpost=$db->GetRow("select post_text,poster_name,post_time,poster_id from geobb_posts where topic_id={$topic['topic_id']} order by post_time");
+				$firstpost=$db->GetRow("select post_text,poster_name,post_time,poster_id from geobb_posts where topic_id={$topic['topic_id']} order by post_time limit 1");
 				$topics[$idx]['post_text']=GeographLinks(str_replace('<br>', '<br/>', $firstpost['post_text']));
 				$topics[$idx]['realname']=$firstpost['poster_name'];
 				$topics[$idx]['user_id']=$firstpost['poster_id'];
@@ -192,7 +192,7 @@ class GridSquare
 		if (!isset($this->nateastings)) {
 			$db=&$this->_getDB();
 			
-			$square = $db->GetRow("select origin_x,origin_y from gridprefix where prefix=".$db->Quote($this->gridsquare));	
+			$square = $db->GetRow('select origin_x,origin_y from gridprefix where prefix='.$db->Quote($this->gridsquare).' limit 1');	
 			
 			//get the first gridprefix with the required reference_index
 			//after ordering by x,y - you'll get the bottom
@@ -402,7 +402,7 @@ class GridSquare
 	function loadFromId($gridsquare_id)
 	{
 		$db=&$this->_getDB();
-		$square = $db->GetRow("select * from gridsquare where gridsquare_id=".$db->Quote($gridsquare_id));	
+		$square = $db->GetRow('select * from gridsquare where gridsquare_id='.$db->Quote($gridsquare_id).' limit 1');	
 		if (count($square))
 		{		
 			//store cols as members
@@ -427,9 +427,7 @@ class GridSquare
 	{
 		$ok=false;
 		$db=&$this->_getDB();
-		$square = $db->GetRow("select * from gridsquare where ".
-			"x=".$db->Quote($internalx).
-			" and y=".$db->Quote($internaly));	
+		$square = $db->GetRow('select * from gridsquare where x='.$db->Quote($internalx).' and y='.$db->Quote($internaly).' limit 1');	
 		if (count($square))
 		{		
 			$ok=true;
@@ -472,7 +470,7 @@ class GridSquare
 			
 		//check the square exists in database
 		$count=0;
-		$square = $db->GetRow("select * from gridsquare where grid_reference=".$db->Quote($gridref));	
+		$square = $db->GetRow('select * from gridsquare where grid_reference='.$db->Quote($gridref).' limit 1');	
 		if (count($square))
 		{		
 			//store cols as members
@@ -505,7 +503,7 @@ class GridSquare
 			//we don't have a square for given gridref, so first we
 			//must figure out what the internal coords are for it
 			
-			$sql="select * from gridprefix where prefix='{$this->gridsquare}'";
+			$sql="select * from gridprefix where prefix='{$this->gridsquare}' limit 1";
 			$prefix=$db->GetRow($sql);
 			if (count($prefix))
 			{

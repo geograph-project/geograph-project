@@ -110,6 +110,8 @@ class ImageList
 				" $statuslist ".
 				"$orderby $limit";
 		}
+		if ($_GET['debug'])
+			print $sql;
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
@@ -301,7 +303,7 @@ class ImageList
 
 		$db=&$this->_getDB();
 
-		$data=$db->GetRow("select * from gridprefix where prefix='".$prefix."'");
+		$data=$db->GetRow("select * from gridprefix where prefix='".$prefix."' limit 1");
 
 		return $this->getRecordSetByArea($data['origin_x'],$data['origin_x']+$data['width']-1,
 			$data['origin_y']+$data['height']-1,$data['origin_y'], $data['reference_index'], false);

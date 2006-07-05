@@ -210,7 +210,7 @@ class GeographUser
 			if (!$db) die('Database connection failed');   
 
 			# no need to call connect/pconnect!
-			$arr = $db->GetRow("select * from user where email=".$db->Quote($email)." and rights is not null");	
+			$arr = $db->GetRow('select * from user where email='.$db->Quote($email).' and rights is not null limit 1');	
 			if (count($arr))
 			{
 				//email address already exists in database
@@ -221,7 +221,7 @@ class GeographUser
 			{
 				//we know there is no confirmed user with email address, so if we have
 				//an unconfirmed one, we can overwrite it with the new details
-				$arr = $db->GetRow("select * from user where email=".$db->Quote($email)." and rights is null");	
+				$arr = $db->GetRow('select * from user where email='.$db->Quote($email).' and rights is null limit 1');	
 				if (count($arr))
 				{
 					//user already exists, but didn't respond to email - probably trying
@@ -319,7 +319,7 @@ class GeographUser
 			$db = NewADOConnection($GLOBALS['DSN']);
 			
 			
-			$arr = $db->GetRow("select * from user where user_id=".$db->Quote($user_id));	
+			$arr = $db->GetRow('select * from user where user_id='.$db->Quote($user_id).' limit 1');	
 			if (strlen($arr['rights']))
 			{
 				$status="alreadycomplete";
@@ -335,7 +335,7 @@ class GeographUser
 				$this->user_id=$user_id;
 				$this->registered=true;
 
-				$arr = $db->GetRow("select * from user where user_id=".$db->Quote($user_id));	
+				$arr = $db->GetRow('select * from user where user_id='.$db->Quote($user_id).' limit 1');	
 				foreach($arr as $name=>$value)
 				{
 					if (!is_numeric($name))
@@ -380,7 +380,7 @@ class GeographUser
 			$db = NewADOConnection($GLOBALS['DSN']);
 
 			//user registered?
-			$arr = $db->GetRow("select * from user where email=".$db->Quote($email));	
+			$arr = $db->GetRow('select * from user where email='.$db->Quote($email).' limit 1');	
 			if (count($arr))
 			{
 				$msg="Someone, probably you, requested a password reminder for ".$_SERVER['HTTP_HOST']."\n\n";
@@ -448,9 +448,7 @@ class GeographUser
 		if (isValidRealName($profile['nickname']))
 		{
 			//lets be sure it's unique
-			$sql="select * from user where nickname=".
-				$db->Quote(stripslashes($profile['nickname'])).
-				" and user_id<>{$this->user_id}";
+			$sql='select * from user where nickname='.$db->Quote(stripslashes($profile['nickname']))." and user_id<>{$this->user_id} limit 1";
 			$r=$db->GetRow($sql);
 			if (count($r))
 			{
@@ -613,9 +611,9 @@ print "{$this->user_id} .. $sql";
 
 			$sql="";
 			if (isValidEmailAddress($email))
-				$sql="select * from user where email=".$db->Quote($email);
+				$sql='select * from user where email='.$db->Quote($email).' limit 1';
 			elseif (isValidRealName($email))
-				$sql="select * from user where nickname=".$db->Quote($email);
+				$sql='select * from user where nickname='.$db->Quote($email)' limit 1';
 
 
 			if (strlen($sql))
@@ -706,9 +704,9 @@ print "{$this->user_id} .. $sql";
 
 				$sql="";
 				if (isValidEmailAddress($email))
-					$sql="select * from user where email=".$db->Quote($email);
+					$sql='select * from user where email='.$db->Quote($email).' limit 1';
 				elseif (isValidRealName($email))
-					$sql="select * from user where nickname=".$db->Quote($email);
+					$sql='select * from user where nickname='.$db->Quote($email).' limit 1';
 				
 				
 				if (strlen($sql))
@@ -822,11 +820,11 @@ print "{$this->user_id} .. $sql";
 			    preg_match('/^[a-f0-9]{32}$/' , $bits[1]))
 			{
 				$clause="user_id='{$bits[0]}' and token='{$bits[1]}'";
-				$row=$db->GetRow("select * from autologin where $clause");
+				$row=$db->GetRow("select * from autologin where $clause limit 1");
 				if (count($row))
 				{
 					//log the user in
-					$sql="select * from user where user_id=".$db->Quote($bits[0]);
+					$sql='select * from user where user_id='.$db->Quote($bits[0]).' limit 1';
 					
 					$user = $db->GetRow($sql);	
 					if (count($user))
@@ -889,7 +887,7 @@ print "{$this->user_id} .. $sql";
 	
 		
 		//do we have a forum user?
-		$existing=$db->GetRow("select * from geobb_users where user_id='{$this->user_id}'");
+		$existing=$db->GetRow("select * from geobb_users where user_id='{$this->user_id}' limit 1");
 		if (count($existing))
 		{
 			//update profile
