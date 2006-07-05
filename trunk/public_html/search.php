@@ -295,7 +295,7 @@ if (isset($_GET['fav']) ) {
 		$smarty->assign('taken_end', "0-0-0");
 
 	if (is_int($i)) {
-		$query = $db->GetRow("SELECT * FROM queries WHERE id = $i");
+		$query = $db->GetRow("SELECT * FROM queries WHERE id = $i LIMIT 1");
 
 		$smarty->assign('searchclass', $query['searchclass']);
 		switch ($query['searchclass']) {
@@ -469,7 +469,7 @@ if (isset($_GET['fav']) ) {
 	if (is_int($i)) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
-		$query = $db->GetRow("SELECT searchq FROM queries WHERE id = $i");
+		$query = $db->GetRow("SELECT searchq FROM queries WHERE id = $i LIMIT 1");
 		$smarty->assign('searchq', $query['searchq']);
 	} else if ($_SESSION['searchq']) {
 		$smarty->assign('searchq', $_SESSION['searchq']);

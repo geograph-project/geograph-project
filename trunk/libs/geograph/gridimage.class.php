@@ -335,14 +335,9 @@ class GridImage
 		if (preg_match('/^\d+$/', $gridimage_id))
 		{
 			if ($usesearch) {
-				$row = &$db->GetRow("select * ".
-					"from gridimage_search ".
-					"where gridimage_id={$gridimage_id}");
+				$row = &$db->GetRow("select * from gridimage_search where gridimage_id={$gridimage_id} limit 1");
 			} else {
-				$row = &$db->GetRow("select gridimage.*,user.realname ".
-					"from gridimage ".
-					"inner join user using(user_id) ".
-					"where gridimage_id={$gridimage_id}");
+				$row = &$db->GetRow("select gridimage.*,user.realname,user.nickname from gridimage inner join user using(user_id) where gridimage_id={$gridimage_id} limit 1");
 			}
 			if (is_array($row))
 			{
