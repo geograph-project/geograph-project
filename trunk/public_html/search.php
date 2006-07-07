@@ -279,7 +279,7 @@ if (isset($_GET['fav']) ) {
 		$smarty->display('search.tpl');	
 	}
 
-} else if (isset($_GET['form']) && $_GET['form'] == 'advanced') {
+} else if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'first')) {
 	dieUnderHighLoad(1.5);
 	// -------------------------------
 	//  Advanced Form
@@ -538,7 +538,9 @@ if (isset($_GET['fav']) ) {
 	function advanced_form(&$smarty,&$db,$is_cachable = false) {
 		global $CONF,$imagestatuses,$sortorders,$USER;
 		
-		if (isset($_GET['Special'])) {
+		if ($_GET['form'] == 'first') {
+			$template = 'search_first.tpl';
+		} elseif (isset($_GET['Special'])) {
 			$USER->mustHavePerm("admin");
 			$template = 'search_admin_advanced.tpl';
 		} else {
