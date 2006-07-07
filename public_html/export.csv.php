@@ -58,6 +58,19 @@ if (isset($_GET['ll'])) {
 } elseif (isset($_GET['en'])) {
 	echo ",Easting,Northing";
 }
+
+if (isset($_GET['taken'])) {
+	echo ",Date Taken";
+	$sql_from .= ",imagetaken";
+}
+if (isset($_GET['ppos'])) {
+	echo ",Photographer Eastings, Photographer Northings";
+	$sql_from .= ",viewpoint_eastings,viewpoint_northings";
+}
+if (isset($_GET['dir'])) {
+	echo ",View Direction";
+	$sql_from .= ",view_direction";
+}
 echo "\n";
 
 if (isset($_GET['ri']) && preg_match("/^\d$/",$_GET['ri']) ) {
@@ -71,7 +84,7 @@ if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 	$sql_crit .= " AND upd_timestamp > date_sub(now(), interval {$_GET['last']})";
 } elseif (isset($_GET['limit']) && preg_match("/^\d+(,\d+|)?$/",$_GET['limit'])) {
 	$sql_crit .= " ORDER BY upd_timestamp DESC LIMIT {$_GET['limit']}";
-} else {
+} elseif (empty($_GET['i'])) {
 	die("ERROR: whole db export disabled. contact support at geograph dot co dot uk");
 }
 
@@ -93,10 +106,12 @@ if ($i) {
 
 	$engine = new SearchEngine($i);
 	
-	if (isset($_GET['count']) && preg_match("/^\d+$/",$_GET['count'])) {
-		$this->criteria->resultsperpage = $_GET['count'];
-	} elseif (isset($_GET['count']) && $_GET['count'] == -1) {
-		$this->criteria->resultsperpage = 999999999;
+	if (isset($_GET['count'])) {
+		if (preg_match("/^\d+$/",$_GET['count'])) {
+			$engine->criteria->resultsperpage = $_GET['count'];
+		} elseif ($_GET['count'] == -1) {
+			$engine->criteria->resultsperpage = 999999999;
+		}
 	}
 	
 	//return a recordset
@@ -138,6 +153,16 @@ while (!$recordSet->EOF)
 	} elseif (isset($_GET['ll'])) {
 		echo ",{$image['wgs84_lat']},{$image['wgs84_long']}";
 	}
+	if (isset($_GET['taken'])) {
+		echo ",{$image['imagetaken']}";
+	}
+	if (isset($_GET['ppos'])) {
+		echo ",{$image['viewpoint_eastings']},{$image['viewpoint_northings']}";
+	}
+	if (isset($_GET['dir'])) {
+		echo ",{$image['view_direction']}";
+	}
+
 	echo "\n";
 	$recordSet->MoveNext();
 	$counter++;
