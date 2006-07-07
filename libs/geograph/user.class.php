@@ -613,7 +613,7 @@ print "{$this->user_id} .. $sql";
 			if (isValidEmailAddress($email))
 				$sql='select * from user where email='.$db->Quote($email).' limit 1';
 			elseif (isValidRealName($email))
-				$sql='select * from user where nickname='.$db->Quote($email)' limit 1';
+				$sql='select * from user where nickname='.$db->Quote($email).' limit 1';
 
 
 			if (strlen($sql))
