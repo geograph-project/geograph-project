@@ -83,48 +83,61 @@ if (isset($_GET['fav']) ) {
 	require_once('geograph/searchengine.class.php');
 	
 	$data = $_GET;
-	
+	$error = false;
 	
 	if (!empty($_GET['first'])) {
-		//replace for myriads
-		$gr = preg_replace('/^([A-Z]{1,2})(\d)(\d)$/','$1$2_$3_',$_GET['first']);
+		$_GET['first'] = strtoupper(preg_replace('/\s+/','',$_GET['first']));
+		
+		if (preg_match('/^[A-Z_%]{0,2}[\d_%]{2,4}$/',$_GET['first']) ) {
+			
+			//replace for myriads
+			$gr = preg_replace('/^([A-Z]{1,2})(\d)(\d)$/','$1$2_$3_',$_GET['first']);
 
 
-		//replace for numberical squares
-		$gr = preg_replace('/\w*(\d{4})/','%$1',$gr);
+			//replace for numberical squares
+			$gr = preg_replace('/\w*(\d{4})/','%$1',$gr);
 
 
-		$name = preg_replace('/\w+(\d{4})/','$1',$_GET['first']);
+			$name = preg_replace('/\w+(\d{4})/','$1',$_GET['first']);
 
 
-		$data['description'] = "first geographs in $name";
+			$data['description'] = "first geographs in $name";
 
-		$data['searchq'] = "grid_reference LIKE '$gr' and ftf = 1";
+			$data['searchq'] = "grid_reference LIKE '$gr' and ftf = 1";
+		} else {
+			$error = "Unable to understand Location String";
+			$_GET['form'] = 'first';
+		}
 	} elseif (!empty($_GET['blank'])) {
 		$data['description'] = "with blank comment";
 		$data['searchq'] = "(comment = '' OR title='')";
 	}
 	
-	$data['orderby'] = 'gridimage_id';
-	if (!preg_match('/\w*(\d{4})/',$_GET['first']))
-		$data['reverse_order_ind'] = '1';
-	
-	if (!empty($_GET['u']))
-		$data['user_id'] = $_GET['u']; 
+	if (!$error) {
+		$data['orderby'] = 'gridimage_id';
+		if (!preg_match('/\w*(\d{4})/',$_GET['first']))
+			$data['reverse_order_ind'] = '1';
 
-	$data['adminoverride'] = 1;
+		if (!empty($_GET['u']))
+			$data['user_id'] = $_GET['u']; 
 
-	$engine = new SearchEngine('#'); 
- 	$engine->buildAdvancedQuery($data);
- 	
- 	//should never fail?? - but display form 'in case'
- 	
- 	//if we get this far then theres a problem...
-	$smarty->assign('errormsg', $engine->errormsg);
+		$data['adminoverride'] = 1;
+
+		$engine = new SearchEngine('#'); 
+		$engine->buildAdvancedQuery($data);
+
+		//should never fail?? - but display form 'in case'
+
+		//if we get this far then theres a problem...
+		$smarty->assign('errormsg', $engine->errormsg);
+	} else {
+		$smarty->assign('errormsg', $error);
+	}
   	
    	foreach ($data as $key=> $value) {
 		$smarty->assign($key, $value);
 	}
+	$_POST = $data;
 	$smarty->reassignPostedDate("submitted_start");
 	$smarty->reassignPostedDate("submitted_end");
 	$smarty->reassignPostedDate("taken_start");
