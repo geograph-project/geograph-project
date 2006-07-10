@@ -23,6 +23,7 @@
 
 require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
+require_once('geograph/imagelist.class.php');
 require_once('geograph/gridsquare.class.php');
 
 
@@ -61,9 +62,6 @@ class RestAPI
 		{
 			if ($image->moderation_status=='geograph' || $image->moderation_status=='accepted')
 			{
-				//echo"<pre>";
-				//var_dump($image);
-				
 				$this->beginResponse();
 		
 				echo '<status state="ok"/>';
@@ -87,10 +85,44 @@ class RestAPI
 		{
 			$this->error("Invalid image id $gridimage_id");	
 		}
-		
-		
-		
+	}
+	
+	function handleUserTimeline()
+	{
+		$db=NewADOConnection($GLOBALS['DSN']);
 
+		$uid=intval($this->params[0]);
+
+		$profile=new GeographUser($uid);
+		if ($profile->realname)
+		{
+			header("Content-Type:text/xml");
+					
+			echo "<data>\n";
+			$images=new ImageList;
+					
+			$images->getImagesByUser($uid, array('accepted', 'geograph'),'RAND()',200);
+		
+			foreach ($images->images as $i => $image) {
+				if (!preg_match('/00(-|$)/',$image->imagetaken)) {
+					$bits = explode('-',$image->imagetaken);
+					$date = mktime(0,0,0,$bits[1],$bits[2],$bits[0]);
+					printf("	<event start=\"%s\" title=\"%s\">%s &lt;b&gt;%s&lt;/b&gt;&lt;br/&gt; %s</event>\n",
+						date('M d Y 00:00:00',$date).' GMT',
+						htmlentities($image->title),
+						htmlentities($image->getThumbnail(120,120)),
+						$image->grid_reference,
+						htmlentities(GeographLinks($image->comment))
+					);
+				}
+			}
+			
+			echo "</data>\n";
+		}
+		else
+		{
+			$this->error("Invalid User id $uid");	
+		}
 	}
 	
 	function beginResponse()
@@ -129,9 +161,11 @@ class RestAPI
 	*/
 	function dispatch()
 	{
-		
-		$this->params=explode('/', $_SERVER["SCRIPT_NAME"]);
-		
+		if ($_SERVER["PATH_INFO"]) {
+			$this->params=explode('/', $_SERVER["PATH_INFO"]);		
+		} else {
+			$this->params=explode('/', $_SERVER["SCRIPT_NAME"]);
+		}
 		//eat params we don't need - empty initial param and 'api'
 		if (strlen($this->params[0])==0)
 			array_shift($this->params);
@@ -141,6 +175,7 @@ class RestAPI
 		$method=preg_replace('/[^a-z_]/i', '', $method);
 		
 		$handler="handle".ucfirst($method);
+		
 		if (method_exists($this,$handler))
 		{
 			$this->$handler();	
