@@ -18,8 +18,8 @@
 			 <td></td> 
 		  </tr> 
 		  <tr> 
-			 <td colspan="3" style="font-size:0.7em">Enter either a <i>Hectad Reference</i> like <b>SH56</b> or
-			 <i>Numberical Square</i> like <b>5546</b>, which will match on those numbers within any Myriad.</td> 
+			 <td colspan="3" style="font-size:0.7em">Enter either 1) a <i>Hectad Reference</i> like <b>SH56</b> or 2)
+			 <i>Numberical Square</i> like <b>5546</b>, or a wildcard search like <b>SH6_56</b> where _ matches any digit, can also use % to match any (or 0) charactors useful for matching GB or Irish Grids.</td> 
 		  </tr> 
 		  <tr> 
 			 <td colspan="3">&nbsp;</td> 
@@ -40,15 +40,6 @@
 					{/dynamic}
 					{html_options options=$userlist selected=$user_id}				  
 				</select> <input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label></td> 
-		  </tr> 
-		  <tr> 
-			 <td><label for="moderation_status">status</label></td> 
-			 <td> 
-				<select name="moderation_status" id="moderation_status" size="1" class="searchinput"> 
-				  <option value=""> </option> 
-					{html_options options=$imagestatuses selected=$moderation_status}				  
-				</select></td> 
-			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="imageclass">category</label></td> 
