@@ -74,7 +74,7 @@ title="customisable search options">advanced search</a></span><br/><br/>
 <div style="padding:5px;background:#dddddd;position:relative">
 <ul style="margin-left:0;padding:0 0 0 1em;">
 
-<li>A (experimental) <a title="Special Partial GR Search Form" href="/search.php?form=first">First Geographs with Partial Grid References</a> is available.<br/><br/></li> 
+<li>An (experimental) <a title="Special Partial GR Search Form" href="/search.php?form=first">First Geographs with Partial Grid References</a> form is available.<br/><br/></li> 
 
 <li><b>If you have a WGS84 latitude &amp; longitude coordinate</b>
 		(e.g. from a GPS receiver, or from multimap site), then see our 
