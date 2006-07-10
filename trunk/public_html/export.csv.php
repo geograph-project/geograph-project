@@ -25,16 +25,20 @@ require_once('geograph/global.inc.php');
 
 $db=NewADOConnection($GLOBALS['DSN']);
 
-if (!$_GET['key'] || preg_match("/[^\w]/",$_GET['key']))
-	die("ERROR: no api key");
+if (empty($_GET['key']) || preg_match("/[^\w\.@]/",$_GET['key']))
+	die("ERROR: no api key or email address");
 	
 $sql = "SELECT * FROM `apikeys` WHERE `apikey` = '{$_GET['key']}' AND (`ip` = INET_ATON('{$_SERVER['REMOTE_ADDR']}') OR `ip` = 0) AND `enabled` = 'Y'";
 
 $profile = $db->GetRow($sql);
 
-if (!$profile['apikey'])
-	die("ERROR: invalid api key. contact support at geograph dot co dot uk");
-
+if ($profile['apikey']) {
+	$sql_hardlimit = $hardlimit = '';
+} else {
+	#die("ERROR: invalid api key. contact support at geograph dot co dot uk");
+	$hardlimit = 250;
+	$sql_hardlimit = " LIMIT $hardlimit";
+} 
 
 # let the browser know what's coming
 header("Content-type: application/octet-stream");
@@ -78,14 +82,22 @@ if (isset($_GET['ri']) && preg_match("/^\d$/",$_GET['ri']) ) {
 }
 
 if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
-	$sql_crit .= " AND upd_timestamp >= '{$_GET['since']}'";
+	$sql_crit .= " AND upd_timestamp >= '{$_GET['since']}' $sql_hardlimit";
 } elseif (isset($_GET['last']) && preg_match("/^\d+ \w+$/",$_GET['last']) ) {
 	$_GET['last'] = preg_replace("/s$/",'',$_GET['last']);
-	$sql_crit .= " AND upd_timestamp > date_sub(now(), interval {$_GET['last']})";
+	$sql_crit .= " AND upd_timestamp > date_sub(now(), interval {$_GET['last']}) $sql_hardlimit";
 } elseif (isset($_GET['limit']) && preg_match("/^\d+(,\d+|)?$/",$_GET['limit'])) {
+	if ($hardlimit) {
+		if (preg_match("/^(\d+),(\d+)?$/",$_GET['limit'],$m)) {
+			$_GET['limit'] = "{$m[1]},$hardlimit";
+		} else {
+			$_GET['limit'] = min($_GET['limit'],$hardlimit);
+		}
+	}
 	$sql_crit .= " ORDER BY upd_timestamp DESC LIMIT {$_GET['limit']}";
 } elseif (empty($_GET['i'])) {
 	die("ERROR: whole db export disabled. contact support at geograph dot co dot uk");
+	$sql_crit .= " $sql_hardlimit";
 }
 
 if (isset($_GET['supp'])) {
@@ -112,6 +124,9 @@ if ($i) {
 		} elseif ($_GET['count'] == -1) {
 			$engine->criteria->resultsperpage = 999999999;
 		}
+		if ($hardlimit) {
+			$engine->criteria->resultsperpage = min($engine->criteria->resultsperpage,$hardlimit);
+		}
 	}
 	
 	//return a recordset
@@ -119,18 +134,24 @@ if ($i) {
 	$recordSet = $engine->ReturnRecordset($pg,isset($_GET['en']));
 
 } elseif (isset($_GET['en'])) {
-	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,nateastings,natnorthings,gi.user_id $sql_from ".
-	"from user ".
-	"inner join gridimage gi using(user_id) ".
-	"inner join gridsquare using(gridsquare_id) ".
-	"where $mod_sql $sql_crit");
+	if (isset($_GET['ftf'])) {
+		$mod_sql .= " and ftf = 1"; 
+	}
+	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,nateastings,natnorthings,gi.user_id $sql_from 
+	from user 
+	inner join gridimage gi using(user_id) 
+	inner join gridsquare using(gridsquare_id) 
+	where $mod_sql $sql_crit");
 } else {
 	if (isset($_GET['supp'])) {
 		$mod_sql = 1; //no point checking what will always be 1 ;-)
 	}
-	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,user_id $sql_from ".
-	"from gridimage_search gi ".
-	"where $mod_sql $sql_crit");
+	if (isset($_GET['ftf'])) {
+		$mod_sql .= " and ftf = 1"; 
+	}
+	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,user_id $sql_from 
+	from gridimage_search gi 
+	where $mod_sql $sql_crit");
 }
 $counter = -1;
 while (!$recordSet->EOF) 
