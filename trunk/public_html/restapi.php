@@ -110,7 +110,7 @@ class RestAPI
 					printf("	<event start=\"%s\" title=\"%s\">%s &lt;b&gt;%s&lt;/b&gt;&lt;br/&gt; %s</event>\n",
 						date('M d Y 00:00:00',$date).' GMT',
 						htmlentities($image->title),
-						htmlentities($image->getThumbnail(120,120)),
+						htmlentities("<a href=\"/photo/{$image->gridimage_id}\">".$image->getThumbnail(120,120))."</a>",
 						$image->grid_reference,
 						htmlentities(GeographLinks($image->comment))
 					);
