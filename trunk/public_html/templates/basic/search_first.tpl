@@ -18,8 +18,8 @@
 			 <td></td> 
 		  </tr> 
 		  <tr> 
-			 <td colspan="3" style="font-size:0.7em">Enter either 1) a <i>Hectad Reference</i> like <b>SH56</b> or 2)
-			 <i>Numberical Square</i> like <b>5546</b>, or a wildcard search like <b>SH6_56</b> where _ matches any digit, can also use % to match any (or 0) charactors useful for matching GB or Irish Grids.</td> 
+			 <td colspan="3" style="font-size:0.7em">Enter either<br/> A) <i>Hectad Reference</i> like <b>SH56</b>, to find images within that Hectad<a href="/help/squares">?</a><br/> B)
+			 <i>Numberical Square</i><a href="/discuss/index.php?action=vthread&amp;forum=2&amp;topic=1235">?</a> like <b>5546</b>, which matches those numbers in any Myriad or<br/> C) <i>Wildcard Search</i> like <b>SH6_56</b> where _ matches any digit, can also use % to match any (or 0) charactors useful for matching GB or Irish Grids.</td> 
 		  </tr> 
 		  <tr> 
 			 <td colspan="3">&nbsp;</td> 
