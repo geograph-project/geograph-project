@@ -353,3 +353,11 @@ ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full', 'text',
 ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full', 'text', 'thumbs', 'slide', 'more','spelling' ) DEFAULT 'full' NOT NULL ;
 
 
+ALTER TABLE `gridimage` ADD INDEX ( `moderation_status` , `user_status` );
+
+
+
+ALTER TABLE `user` ADD `about_yourself` TEXT NOT NULL ,
+ADD `public_about` TINYINT UNSIGNED DEFAULT '1' NOT NULL ,
+ADD `age_group` TINYINT UNSIGNED DEFAULT '0' NOT NULL ,
+ADD `use_age_group` TINYINT UNSIGNED DEFAULT '0' NOT NULL ;
