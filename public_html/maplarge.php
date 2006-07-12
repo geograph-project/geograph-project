@@ -57,8 +57,7 @@ $smarty = new GeographPage;
 
 		if ($load>$threshold)
 		{
-			$smarty->assign('searchq',stripslashes($_GET['q']));	
-			$smarty->display('search_unavailable.tpl');	
+			$smarty->display('function_unavailable.tpl');	
 			exit;
 		}
 	}
