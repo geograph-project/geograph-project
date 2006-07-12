@@ -24,10 +24,6 @@ for details of the various measures. Will be more accurate when limited to one c
 <p>We currently have {$geograph.count|thousends} geographs, therefore at the current rate of {$geograph.average_r} geographs a day, we will reach {$geograph.next|thousends} in about {$geograph.days_r} days time!</p>
 
 
-<h3>Squares</h3>
-<p>We currently have {$square.count|thousends} squares photographed, therefore at the current rate of {$square.average_r} squares a day, we will reach {$square.next|thousends} in about {$square.days_r} days time!</p>
-
-
 <h3>Images</h3>
 <p>We currently have {$image.count|thousends} images, therefore at the current rate of {$image.average_r} submissions a day, we will reach {$image.next|thousends} in about {$image.days_r} days time!</p>
 

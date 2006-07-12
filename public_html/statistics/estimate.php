@@ -106,15 +106,6 @@ if (!$smarty->is_cached($template, $cacheid))
 				
 	$smarty->assign("cusers",$cusers);
 	
-	
-	
-	$sql = "select substring(submitted,1,10) as d ,count(distinct grid_reference) as c from gridimage_search where submitted > '$beginday' AND submitted < '$today' $andri group by substring(submitted,1,10)";
-	$sql2 = "select count(distinct grid_reference) from gridimage_search $whereri";
-			
-	$square = calc($sql,$sql2,10000,'Squares');
-			
-	$smarty->assign("square",$square);
-
 
 	$sql = "select substring(submitted,1,10) as d ,count(*) as c from gridimage_search where ftf = 1 and submitted > '$beginday' AND submitted < '$today' $andri group by substring(submitted,1,10)";
 	$sql2 = "select count(*) from gridimage_search where ftf = 1 $andri";
@@ -199,7 +190,7 @@ function calc($sql,$sql2,$mult,$title) {
 	$image['dif'] = $image['next'] - $image['count'];
 	
 	$image['days'] = $image['dif']/$image['average'];
-	$image['days_r'] = floor($image['days']);
+	$image['days_r'] = ceil($image['days']);
 	return $image;
 }
 	
