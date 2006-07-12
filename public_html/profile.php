@@ -25,6 +25,35 @@ require_once('geograph/global.inc.php');
 	
 init_session();
 
+function dieUnderHighLoad($threshold = 2) {
+	global $smarty,$USER;
+	if (strpos($_ENV["OS"],'Windows') === FALSE) {
+		//lets give registered users a bit more leaway!
+		if ($USER->registered) {
+			$threshold *= 2;
+		}
+		//check load average, abort if too high
+		$buffer = "0 0 0";
+		$f = fopen("/proc/loadavg","r");
+		if ($f)
+		{
+			if (!feof($f)) {
+				$buffer = fgets($f, 1024);
+			}
+			fclose($f);
+		}
+		$loads = explode(" ",$buffer);
+		$load=(float)$loads[0];
+
+		if ($load>$threshold)
+		{
+			$smarty->assign('searchq',stripslashes($_GET['q']));	
+			$smarty->display('function_unavailable.tpl');	
+			exit;
+		}
+	}
+}
+
 $smarty = new GeographPage;
 $template='profile.tpl';	
 $cacheid='';
@@ -129,6 +158,10 @@ if ($template=='profile.tpl')
 
 	if (!$smarty->is_cached($template, $cacheid))
 	{
+		if (isset($_GET['all'])) {
+			dieUnderHighLoad();
+		}
+		
 		require_once('geograph/imagelist.class.php');
 		require_once('geograph/gridimage.class.php');
 		require_once('geograph/gridsquare.class.php');
