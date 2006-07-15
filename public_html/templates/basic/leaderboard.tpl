@@ -1,14 +1,14 @@
-{assign var="page_title" value="Top 50 Leaderboard  :: $type"|capitalize}
+{assign var="page_title" value="Top $limit Leaderboard  :: $type"|capitalize}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
-<h2>Top 50 Leaderboard :: {$type|capitalize}</h2>
+<h2>Top {$limit} Leaderboard :: {$type|capitalize}</h2>
 
 <p>Variation: {foreach from=$types item=t}
 [{if $t == $type}<b>{$type}</b>{else}<a href="leaderboard.php?type={$t}{$extralink}">{$t}</a>{/if}]
 {/foreach}</p>
 
-<p>Listed below are the top 50 contributors based on number of
+<p>Listed below are the top {$limit} contributors based on number of
 {$desc}, (see <a title="Frequently Asked Questions" href="/help/stats_faq">FAQ</a> 
 for details).</p>
 
@@ -16,12 +16,13 @@ for details).</p>
 top submitters this week.</p>
 
 <table class="report">
-<thead><tr><td>Position</td><td>Contributor</td><td>{$heading}</td>{if $topusers[0].depth}<td>Depth</td>{/if}</tr></thead>
+<thead><tr><td>Position</td><td>Contributor</td><td>{$heading}</td>{if $points}<td>Points</td>{/if}{if $topusers[0].depth}<td>Depth</td>{/if}</tr></thead>
 <tbody>
 
 {foreach from=$topusers item=topuser}
 <tr><td>{$topuser.ordinal}</td><td><a title="View profile" href="/profile.php?u={$topuser.user_id}">{$topuser.realname}</a></td>
 <td align="right">{$topuser.imgcount}</td>
+{if $points}<td align="right">{$topuser.points}</td>{/if}
 {if $topuser.depth}
 <td align="right">{$topuser.depth}</td>
 {/if}
