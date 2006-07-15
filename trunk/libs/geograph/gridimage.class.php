@@ -744,20 +744,6 @@ class GridImage
 					list($width, $height, $type, $attr) = getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
 
 					if (($width>$maxw) || ($height>$maxh)) {
-						//figure out size of image we'll keep
-						if ($width>$height)
-						{
-							//landscape
-							$destw=$maxw;
-							$desth=round(($destw * $height)/$width);
-						}
-						else
-						{
-							//portrait
-							$desth=$maxh;
-							$destw=round(($desth * $width)/$height);
-						}
-					
 					
 						$cmd = sprintf ("\"%sconvert\" -thumbnail %ldx%ld -unsharp 0x1+0.8+0.1 -raise 2x2 -quality 87 jpg:%s jpg:%s", 
 							$CONF['imagemagick_path'],
@@ -1007,7 +993,7 @@ class GridImage
 					$next_geograph= $db->GetOne("select gridimage_id from gridimage ".
 						"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' ".
 						"and gridimage_id<>{$this->gridimage_id} ".
-						"order by gridimage_id");
+						"order by gridimage_id limit 1");
 					if ($next_geograph)
 					{
 						$db->Query("update gridimage set ftf=1 where gridimage_id={$next_geograph}");
