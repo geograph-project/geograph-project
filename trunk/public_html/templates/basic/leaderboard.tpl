@@ -12,7 +12,7 @@
 {$desc}, (see <a title="Frequently Asked Questions" href="/help/stats_faq">FAQ</a> 
 for details).</p>
 
-<p>A <a href="/moversboard.php{if $type != 'points'}?type={$type}{/if}">weekly leaderboard</a> is also available showing the 
+<p>A <a href="/moversboard.php?type={$type}">weekly leaderboard</a> is also available showing the 
 top submitters this week.</p>
 
 <table class="report">
