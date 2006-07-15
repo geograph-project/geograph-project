@@ -31,11 +31,13 @@ $date = (isset($_GET['date']) && ctype_lower($_GET['date']))?intval($_GET['date'
 
 $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
 
+$limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(250,intval($_GET['limit'])):50;
+
 
 $smarty = new GeographPage;
 
 $template='leaderboard.tpl';
-$cacheid=$type.$date.$when;
+$cacheid=$type.$date.$when.$limit;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*3; //3hour cache
@@ -66,6 +68,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "Geograph Images";
 		$desc = "'geograph' images submitted";
 	} elseif ($type == 'images') {
+		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph') as points, count(*)";
 		$sql_where = "1";
 		$heading = "Images";
 		$desc = "images submitted";
@@ -137,6 +140,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	order by imgcount desc,last asc"); 
 	$lastimgcount = 0;
 	$toriserank = 0;
+	$points = 0;
 	foreach($topusers as $idx=>$entry)
 	{
 		$i=$idx+1;
@@ -144,7 +148,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($lastimgcount == $entry['imgcount']) {
 			if ($type == 'points' && !$when)
 				$db->query("UPDATE user SET rank = $lastrank,to_rise_rank = $toriserank WHERE user_id = {$entry['user_id']}");
-			if ($i > 50) {
+			if ($i > $limit) {
 				unset($topusers[$idx]);
 			} else {
 				$topusers[$idx]['ordinal'] = '&nbsp;&nbsp;&nbsp;&quot;';
@@ -153,7 +157,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$toriserank = ($lastimgcount - $entry['imgcount']);
 			if ($type == 'points' && !$when)
 				$db->query("UPDATE user SET rank = $i,to_rise_rank = $toriserank WHERE user_id = {$entry['user_id']}");
-			if ($i > 50) {
+			if ($i > $limit) {
 				unset($topusers[$idx]);
 			} else {
 				$units=$i%10;
@@ -168,10 +172,14 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 			$lastimgcount = $entry['imgcount'];
 			$lastrank = $i;
+			$points += $entry['points'];
+			if ($points && empty($entry['points'])) $topusers[$user_id]['points'] = '';
+	
 		}
 	}
 	
 	$smarty->assign_by_ref('topusers', $topusers);
+	$smarty->assign('points', $points);
 	
 	$smarty->assign('types', array('points','geosquares','images','depth'));
 	
@@ -187,6 +195,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	$smarty->assign_by_ref('extra',$extra);	
 	$smarty->assign_by_ref('extralink',$extralink);	
+	$smarty->assign_by_ref('limit',$limit);	
 	
 	//lets find some recent photos
 	new RecentImageList($smarty);
