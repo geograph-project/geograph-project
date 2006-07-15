@@ -114,7 +114,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$total['average'] = $point['total']; 
 	$total['average_r'] = $point['total']; 
-	$total['next'] = $db->CacheGetOne(24*3600*7,"select count(*) from gridsquare where percent_land > 0 $andri");
+	$total['next'] = $db->getOne("select count(*) from gridsquare where percent_land > 0 $andri");
 		
 	$total['dif'] = $total['next'] - $total['count'];
 		
@@ -149,7 +149,7 @@ $smarty->display($template, $cacheid);
 function calc($sql,$sql2,$mult,$title) {
 	global $db,$table;
 	
-	$array = $db->cacheGetAssoc(3600 * 24,$sql);
+	$array = $db->getAssoc($sql);
 	
 	$total = 0;
 	if (count($table)) {
