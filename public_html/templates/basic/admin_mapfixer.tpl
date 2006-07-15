@@ -4,14 +4,7 @@
 {dynamic}
 <h2><a title="Admin home page" href="/admin/index.php">Admin</a> : {if $gridref_ok}<a href="/admin/mapfixer.php">{/if}Map Fixer</a></h2>
 
-{if !$gridref}
-{foreach from=$unknowns item=unknown}
-	{if strlen($unknown.grid_reference) == 6 || $unknown.lat}
-		{assign var="tofix" value="1"}
-	{/if}
-{/foreach}
-{/if}
-{if $gridref_ok || $tofix}
+{if $gridref_ok || count($unknowns)}
 <div style="border:2px silver solid;background:#eeeeee;padding:10px;">
 
 <div>This instant map updater requires no screen refresh to work - simply
