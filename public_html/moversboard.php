@@ -88,7 +88,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "New<br/>Geographs";
 		$desc = "'geograph' images submitted";
 	} elseif ($type == 'images') {
-		$sql_column = "sum(i.moderation_status in ('geograph','accepted'))";
+		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph') as points, sum(i.moderation_status in ('geograph','accepted'))";
 		$heading = "New<br/>Images";
 		$desc = "images submitted";
 	} elseif ($type == 'depth') {
@@ -145,6 +145,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$i=1;$lastgeographs = '?';
 	$geographs = 0;
 	$pending = 0;
+	$points = 0;
 	foreach($topusers as $user_id=>$entry)
 	{
 		if ($lastgeographs == $entry['geographs'])
@@ -166,11 +167,14 @@ if (!$smarty->is_cached($template, $cacheid))
 		$i++;
 		$geographs += $entry['geographs'];
 		$pending += $entry['pending'];
+		$points += $entry['points'];
+		if (empty($entry['points'])) $topusers[$user_id]['points'] = '';
 	}	
 	
 	
 	$smarty->assign('geographs', $geographs);
 	$smarty->assign('pending', $pending);
+	$smarty->assign('points', $points);
 	
 	$smarty->assign_by_ref('topusers', $topusers);
 	$smarty->assign('cutoff_time', time()-86400*7);
