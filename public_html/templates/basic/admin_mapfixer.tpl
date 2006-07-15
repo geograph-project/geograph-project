@@ -15,7 +15,7 @@
 <div style="border:2px silver solid;background:#eeeeee;padding:10px;">
 
 <div>This instant map updater requires no screen refresh to work - simply
-check the OS map and vote on the land percentage{if $tofix} and a new square will
+check the OS Map/Google Earth and vote on the land percentage{if $tofix} and a new square will
 be opened up for processing{/if}.</div>
 
 <span id="landvote" style="display:none">
@@ -98,9 +98,13 @@ function shownext()
 		gridref.innerHTML=gr4;
 
 		if (aTodoLat[current] > 0) {
-			window.open('http://www.multimap.com/p/browse.cgi?scale=25000&lon='+aTodoLong[current]+'&lat='+aTodoLat[current]+'&GridE='+aTodoLong[current]+'&GridN='+aTodoLat[current],'multimap');
+			gr6 = gr4.substr(0,gr4.length-2)+'5'+gr4.substr(gr4.length-2,2)+'5';
+		
+			window.open('http://www.nearby.org.uk/flyto.php?p='+gr6,'multimap');
+		//	window.open('http://maps.google.co.uk/maps?q='+aTodoLat[current]+','+aTodoLong[current]+'&output=kml','multimap');
+		//	window.open('http://www.multimap.com/p/browse.cgi?scale=25000&lon='+aTodoLong[current]+'&lat='+aTodoLat[current]+'&GridE='+aTodoLong[current]+'&GridN='+aTodoLat[current],'multimap');
 		} else {
-			popupOSMap(gr4);
+			//popupOSMap(gr4);
 		}
 
 		vote.style.display="";
