@@ -36,9 +36,6 @@ $cacheid='statistics|estimate'.$ri;
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
-if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
-	$smarty->clear_cache($template, $cacheid);
-
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db=NewADOConnection($GLOBALS['DSN']);
@@ -56,7 +53,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$table = array();
 
-	$beginday = date("Y-m-d",mktime(0,0,0,date('m'),date('d')-7,date('Y')));
+	$beginday = date("Y-m-d",mktime(0,0,0,date('m'),date('d')-8,date('Y')));
 	$today = date("Y-m-d");
 
 	$sql = "select substring(submitted,1,10) as d ,count(*) as c from gridimage_search where submitted > '$beginday' AND submitted < '$today' $andri group by substring(submitted,1,10)";
@@ -93,7 +90,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql = "select substring(signup_date,1,10) as d ,count(*) as c from user where rights <> '' and signup_date > '$beginday' AND signup_date < '$today' group by substring(signup_date,1,10)";
 	$sql2 = "select count(*) from user where rights <> ''";
 
-	$users = calc($sql,$sql2,1000,'Users');
+	$users = calc($sql,$sql2,500,'Users');
 			
 	$smarty->assign("users",$users);
 	
@@ -102,7 +99,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$sql2 = "select count(distinct user_id) from gridimage_search $whereri";
 
-	$cusers = calc($sql,$sql2,1000,'Contributing Users');
+	$cusers = calc($sql,$sql2,100,'Contributing Users');
 				
 	$smarty->assign("cusers",$cusers);
 	
