@@ -122,17 +122,7 @@ else
 {
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$unknowns=$db->GetAll("select * from gridsquare where percent_land=-1 order by reference_index asc,imagecount desc");
-	require_once('geograph/conversions.class.php');
-	$conv = new Conversions;
-	foreach ($unknowns as $i => $unknown) {
-
-		//we can use multimap for NI but need lat/long
-		if (strlen($unknown['grid_reference']) ==5 && preg_match('/^[CDHJ]{1}/',$unknown['grid_reference']) ) {
-			list($unknowns[$i]['lat'],$unknowns[$i]['long']) = $conv->internal_to_wgs84($unknown['x'],$unknown['y'],$unknown['reference_index']);
-		}
-	}
 	
-
 	$smarty->assign_by_ref('unknowns', $unknowns);
 	
 	

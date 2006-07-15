@@ -37,19 +37,11 @@ Land percent for <span id="voteref"></span>&nbsp; is
 <script language="javascript">
 
 var aTodo=new Array();
-var aTodoLat=new Array();
-var aTodoLong=new Array();
 {if $gridref}
 	aTodo[aTodo.length]='{$gridref}';
 {else}
 {foreach from=$unknowns item=unknown}
-	{if strlen($unknown.grid_reference) == 6 || $unknown.lat}
-		{if $unknown.lat}
-			aTodoLat[aTodo.length] = {$unknown.lat};
-			aTodoLong[aTodo.length] = {$unknown.long};
-		{/if}
-		aTodo[aTodo.length]='{$unknown.grid_reference}';
-	{/if}
+	aTodo[aTodo.length]='{$unknown.grid_reference}';
 {/foreach}
 {/if}
 
@@ -97,14 +89,11 @@ function shownext()
 		var gr4=new String(aTodo[current]);
 		gridref.innerHTML=gr4;
 
-		if (aTodoLat[current] > 0) {
+		if (gr4.length == 5) {
 			gr6 = gr4.substr(0,gr4.length-2)+'5'+gr4.substr(gr4.length-2,2)+'5';
-		
 			window.open('http://www.nearby.org.uk/flyto.php?p='+gr6,'multimap');
-		//	window.open('http://maps.google.co.uk/maps?q='+aTodoLat[current]+','+aTodoLong[current]+'&output=kml','multimap');
-		//	window.open('http://www.multimap.com/p/browse.cgi?scale=25000&lon='+aTodoLong[current]+'&lat='+aTodoLat[current]+'&GridE='+aTodoLong[current]+'&GridN='+aTodoLat[current],'multimap');
 		} else {
-			//popupOSMap(gr4);
+			popupOSMap(gr4);
 		}
 
 		vote.style.display="";
