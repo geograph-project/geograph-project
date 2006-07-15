@@ -53,7 +53,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$table = array();
 
-	$beginday = date("Y-m-d",mktime(0,0,0,date('m'),date('d')-8,date('Y')));
+	$beginday = date("Y-m-d",mktime(0,0,0,date('m'),date('d')-7,date('Y')));
 	$today = date("Y-m-d");
 
 	$sql = "select substring(submitted,1,10) as d ,count(*) as c from gridimage_search where submitted > '$beginday' AND submitted < '$today' $andri group by substring(submitted,1,10)";
