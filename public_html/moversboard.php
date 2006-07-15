@@ -25,7 +25,7 @@ require_once('geograph/global.inc.php');
 init_session();
 
 
-$type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'points';
+$type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'images';
 
 
 $smarty = new GeographPage;
