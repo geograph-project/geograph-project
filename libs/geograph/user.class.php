@@ -496,7 +496,7 @@ class GeographUser
 				
 				$this->user_id
 				);
-print "{$this->user_id} .. $sql";
+
 			if ($db->Execute($sql) === false) 
 			{
 				$errors['general']='error updating: '.$db->ErrorMsg();
