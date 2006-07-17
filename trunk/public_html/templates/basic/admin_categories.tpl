@@ -6,7 +6,7 @@
 <p>Use this page to correct and consolidate the user submitted image 'categories'. 
 Use each text box to rename the categories.
 You can merge multiple categories by setting them all to the new name.
-Changed values are highlighted in gray. </p>
+Changed values are highlighted in grey. </p>
     
 {if $message}
 	<div style="border:1px solid red; padding:10px;">{$message}</div>
