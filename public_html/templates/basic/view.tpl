@@ -296,9 +296,9 @@ WGS84: {$latdm} {$longdm}
 	<a href="/photo/{$image->gridimage_id}?style=black" rel="nofollow" class="robots-nofollow robots-noindex">Black</a>
 {/if}/
 {if $maincontentclass eq "content_photogray"}
-	<b>gray</b>
+	<b>grey</b>
 {else}
-	<a href="/photo/{$image->gridimage_id}?style=gray" rel="nofollow" class="robots-nofollow robots-noindex">Gray</a>
+	<a href="/photo/{$image->gridimage_id}?style=gray" rel="nofollow" class="robots-nofollow robots-noindex">Grey</a>
 {/if}
 </span>
 </p>
