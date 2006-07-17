@@ -51,6 +51,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 	$sql_table = "gridimage_search i";
+	$sql_orderby = '';
 	$sql_column = "count(*)";
 	$sql_having_having = '';
 	if ($type == 'squares') {
@@ -68,6 +69,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "Geograph Images";
 		$desc = "'geograph' images submitted";
 	} elseif ($type == 'images') {
+		$sql_orderby = ',points desc';
 		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph') as points, count(*)";
 		$sql_where = "1";
 		$heading = "Images";
@@ -137,7 +139,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	where $sql_where
 	group by user_id 
 	$sql_having_having
-	order by imgcount desc,last asc"); 
+	order by imgcount desc $sql_orderby,last asc"); 
 	$lastimgcount = 0;
 	$toriserank = 0;
 	$points = 0;

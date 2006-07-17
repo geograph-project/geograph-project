@@ -46,6 +46,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	/////////////
 	// in the following code 'geographs' is used a column for legacy reasons, but dont always represent actual geographs....
 	$sql_column = '';
+	$sql_orderby = '';
 	$sql_table = " gridimage as i left join user as u using(user_id) ";
 	if ($type == 'squares' || $type == 'geosquares') {
 		if ($type == 'geosquares') {
@@ -88,6 +89,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "New<br/>Geographs";
 		$desc = "'geograph' images submitted";
 	} elseif ($type == 'images') {
+		$sql_orderby = ',points desc';
 		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph') as points, sum(i.moderation_status in ('geograph','accepted'))";
 		$heading = "New<br/>Images";
 		$desc = "images submitted";
@@ -135,7 +137,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		where i.submitted > date_sub(now(), interval 7 day)
 		group by i.user_id 
 		having (geographs > 0 or pending > 0)
-		order by geographs desc,pending desc ";
+		order by geographs desc $sql_orderby, pending desc ";
 		if ($_GET['debug'])
 			print $sql;
 		$topusers=$db->GetAssoc($sql);
