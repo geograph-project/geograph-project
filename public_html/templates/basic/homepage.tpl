@@ -8,7 +8,7 @@
 representative photographs and information for every square kilometre of the UK and Eire,
 and you can be part of it.</p>
 
-<div style="font-size:0.7em; text-align:center; border: 1px solid silver; padding:5px">Quick Statisitics: <b>{$stats.users|thousends} users</b> have contributed <b>{$stats.images|thousends} images</b>, covering <b>{$stats.squares|thousends} grid squares</b>, and been awarded <b>{$stats.points|thousends} points</b>. <a href="/help/stats_faq">FAQ</a></div><br/>
+<div style="font-size:0.7em; text-align:center; border: 1px solid silver; padding:5px">Quick Statistics: <b>{$stats.users|thousends} users</b> have contributed <b>{$stats.images|thousends} images</b>, covering <b>{$stats.squares|thousends} grid squares</b>, and been awarded <b>{$stats.points|thousends} points</b>. <a href="/help/stats_faq">FAQ</a></div><br/>
 
 <h3>Getting started...</h3>
 <ul>

@@ -144,15 +144,15 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$heading = "Hectads";
 	if ($type == 'first') {
-		$desc = "compleated hectads geographed first";
+		$desc = "completed hectads geographed first";
 	} elseif ($type == 'most') {
-		$desc = "compleated hectads where they the largest contributed";
+		$desc = "completed hectads where they are the largest contributor";
 	} elseif ($type == 'last') {
 		$desc = "hectads finished";
 	} elseif ($type == 'only') {
-		$desc = "compleated hectads where they the ONLY contributer";
+		$desc = "completed hectads where they are the ONLY contributor";
 	} elseif ($type == 'all') {
-		$desc = "compleated hectads contributed to";
+		$desc = "completed hectads contributed to";
 	} 
 	
 	$lastimgcount = 0;
