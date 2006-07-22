@@ -2,7 +2,9 @@
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" id="geograph">
 <head>
-<title>Geograph sheet centred on {$gridref}</title>
+<title>Geograph sheet {if substr($gridref, -1, 1) == '5' && substr(substr($gridref, -3, 3), 0, 1) == '5'}
+   for Hectad {$gridref|regex_replace:"/([A-Z]+\d)\d(\d)\d/":"\\1\\2"} 
+   {else} centred on {$gridref}{/if}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/basic.css" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
@@ -15,7 +17,9 @@
 
 <div style="position:relative;width:{$mosaic_width+250}px; padding:20px;"> 
 
-<h2>Geograph Map centred on {$gridref}</h2>
+<h2>Geograph Map {if substr($gridref, -1, 1) == '5' && substr(substr($gridref, -3, 3), 0, 1) == '5'}
+   for Hectad {$gridref|regex_replace:"/([A-Z]+\d)\d(\d)\d/":"\\1\\2"} 
+   {else} centred on {$gridref}{/if}</h2>
 
  
 {*begin containing div for main map*}
