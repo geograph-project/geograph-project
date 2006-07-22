@@ -394,7 +394,7 @@ class SearchEngine
 			if (!empty($dataarray['submitted_start']) || !empty($dataarray['submitted_end'])) {
 				
 				if (!empty($dataarray['submitted_start'])) {
-					if (preg_match("/0{4}-(1?[1-9]+)-/",$dataarray['submitted_start']) > 0) {
+					if (preg_match("/0{4}-([01]?[1-9]+)-/",$dataarray['submitted_start']) > 0) {
 						//month only
 						$searchdesc .= ", submitted during ".$dataarray['submitted_startString'];
 						$dataarray['submitted_end'] = "";
@@ -436,7 +436,7 @@ class SearchEngine
 			if (!empty($dataarray['taken_start']) || !empty($dataarray['taken_end'])) {
 				
 				if (!empty($dataarray['taken_start'])) {
-					if (preg_match("/0{4}-(1?[1-9]+)-/",$dataarray['taken_start']) > 0) {
+					if (preg_match("/0{4}-([01]?[1-9]+)-/",$dataarray['taken_start']) > 0) {
 						//month only
 						$searchdesc .= ", taken during ".$dataarray['taken_startString'];
 						$dataarray['taken_end'] = "";
