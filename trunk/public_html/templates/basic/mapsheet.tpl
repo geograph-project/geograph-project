@@ -2,7 +2,9 @@
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" id="geograph">
 <head>
-<title>Geograph sheet centred on {$gridref}</title>
+<title>Geograph sheet {if substr($gridref, -1, 1) == '5' && substr(substr($gridref, -3, 3), 0, 1) == '5'}
+   for Hectad {$gridref|regex_replace:"/([A-Z]+\d)\d(\d)\d/":"\\1\\2"} 
+   {else} centred on {$gridref}{/if}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 {if $meta_description}<meta name="description" content="{$meta_description|escape:'html'}" />
 {else}<meta name="description" content="Geograph British Isles is a web based project to collect and reference geographically representative images of every square kilometer of the British Isles."/>{/if}
