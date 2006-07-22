@@ -163,7 +163,7 @@ class SearchCriteria
 			}
 			
 			if ($dates[0]) {
-				if (preg_match("/0{4}-(1?[1-9]+)-/",$dates[0]) > 0) {
+				if (preg_match("/0{4}-([01]?[1-9]+)-/",$dates[0]) > 0) {
 						//month only
 						list($y,$m,$d) = explode('-',$dates[0]);
 						$sql_where .= "MONTH(submitted) = $m ";
@@ -205,7 +205,7 @@ class SearchCriteria
 			
 			
 			if ($dates[0]) {
-				if (preg_match("/0{4}-(1?[1-9]+)-/",$dates[0]) > 0) {
+				if (preg_match("/0{4}-([01]?[1-9]+)-/",$dates[0]) > 0) {
 					//month only
 					list($y,$m,$d) = explode('-',$dates[0]);
 					$sql_where .= "MONTH(imagetaken) = $m ";
