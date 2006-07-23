@@ -47,7 +47,7 @@
     
 <a name="question"></a>
 <h3>I have a question, what should I do?</h3>
-    <p>Please <a title="Contact Us" href="contact.php">Contact Us</a></p>
+    <p>Please <a title="Contact Us" href="/contact.php">Contact Us</a></p>
     
     
 {include file="_std_end.tpl"}
