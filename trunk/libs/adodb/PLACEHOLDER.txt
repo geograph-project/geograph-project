@@ -1,2 +1,0 @@
-grab the latest adodb release and untar it here
-http://adodb.sourceforge.net
