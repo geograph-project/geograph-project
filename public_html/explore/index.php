@@ -50,7 +50,7 @@ if (!$smarty->is_cached('explore.tpl'))
 	$topics = $db->GetAssoc("select gp.topic_id,concat(topic_title,' [',count(*),']') from gridimage_post gp
 		inner join geobb_topics using (topic_id)
 		group by gp.topic_id 
-		having count(*) > 5
+		having count(*) > 4
 		order by topic_title");
 
 	$topics=array("1"=>"Any Topic") + $topics; 	
