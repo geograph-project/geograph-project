@@ -59,7 +59,7 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 
 $smarty->assign_by_ref('references',$CONF['references_all']);	
 
-$bys = array('status' => 'Status','class' => 'Category','takenyear' => 'Date Taken (Year)','taken' => 'Date Taken (Month)','gridsq' => 'Myriad','user' => 'Contributor');
+$bys = array('status' => 'Status','class' => 'Category','takenyear' => 'Date Taken (Year)','taken' => 'Date Taken (Month)','myriad' => 'Myriad','user' => 'Contributor');
 $smarty->assign_by_ref('bys',$bys);
 
 $smarty->assign('by', $by);
@@ -78,13 +78,24 @@ if (!$smarty->is_cached($template, $cacheid))
 	} else if ($by == 'class') {
 		$sql_group = $sql_fieldname = 'imageclass';
 		$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;imageclass=");
-	} else if ($by == 'gridsq') {
+	} else if ($by == 'myriad' || $by == 'gridsq') {
+		$by = 'myriad';
 		$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."gridsquare=");
 		if ($ri) {
 			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 			$sql_group = $sql_fieldname = "SUBSTRING(grid_reference,1,$letterlength)";
 		} else {
 			$sql_group = $sql_fieldname = "SUBSTRING(grid_reference,1,3 - reference_index)";
+		}
+	} else if ($by == 'hectad') {
+		$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."first=");
+		if ($ri) {
+			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
+			$ll1 = $letterlength+1;
+			$ll3 = $letterlength+3;
+			$sql_group = $sql_fieldname = "concat(substring(grid_reference,1,$ll1),substring(grid_reference,$ll3,1))";
+		} else {
+			$sql_group = $sql_fieldname = "concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1))";
 		}
 	} else if ($by == 'taken') {
 		$smarty->assign('linkpro', 1);
