@@ -139,15 +139,17 @@ class ImageList
 			$statuslist=" moderation_status = $statuses and ";
 		elseif ($statuses)
 			$statuslist=" moderation_status = '$statuses' and ";
+		else
+			$statuslist=1;
 				
 		$user_id=intval($user_id);		
 				
 		if (is_null($sort))
-			$orderby="";
+			$orderby='';
 		else
 			$orderby="order by $sort";
 		if (is_null($count))
-			$limit="";
+			$limit='';
 		else
 			$limit="limit $count";
 		
