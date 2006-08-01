@@ -38,10 +38,12 @@ $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 
-$date = (isset($_GET['date']) && ctype_lower($_GET['date']))?intval($_GET['date']):'submitted';
+$date = (isset($_GET['date']) && ctype_lower($_GET['date']))?$_GET['date']:'submitted';
+
+$myriad = (isset($_GET['myriad']) && ctype_upper($_GET['myriad']))?$_GET['myriad']:'';
 
 
-$cacheid='overtime'.isset($_GET['month']).isset($_GET['week']).$date.'.'.$ri.'.'.$u;
+$cacheid='overtime'.isset($_GET['month']).isset($_GET['week']).$date.'.'.$ri.'.'.$u.'.'.$myriad;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -70,6 +72,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	if ($date == 'taken') {
 		$where[] = "$column not like '%-00%'";
+	}
+	
+	if ($myriad) {
+		$where[] = "grid_reference like '$myriad%'";
+		$title = "in myriad '$myriad'";
 	}
 	
 	if (!empty($ri)) {
