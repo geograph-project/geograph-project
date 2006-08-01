@@ -39,6 +39,9 @@ $CONF['adodb_debugging']=1;
 //path to adodb cache dir
 $CONF['adodb_cache_dir']=$_SERVER['DOCUMENT_ROOT'].'/../adodbcache/';
 
+//path to temp folder for photo uploads - on cluster setups should be a shared folder.
+$CONF['photo_upload_dir'] = '/tmp';
+
 //you get minibb admin privilege by using a geograph admin login - these
 //settings are no longer used, but you can initialise them "just in case"
 $CONF['minibb_admin_user']='admin';
@@ -82,6 +85,7 @@ $CONF['flickr_api_key'] = '';
 //COMMENT THIS LINE OUT ON LIVE SYSTEMS!
 //$CONF['fetch_on_demand'] = 'www.geograph.org.uk';
 
+
 //does the map draw the more demanding placenames
 $CONF['enable_newmap'] = 1;
 
@@ -92,6 +96,7 @@ $CONF['enable_newmap'] = 1;
 //log to apache logfile (use %{php_timing}n in the LogFormat)
 //$CONF['log_script_timing'] = 'apache';	
 
+//$CONF['log_script_folder'] = '/var/logs/geograph';	
 
 //during high load can disable thumbs display in the forum pages
 //$CONF['disable_discuss_thumbs'] = true;
