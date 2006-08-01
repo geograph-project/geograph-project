@@ -140,7 +140,7 @@ class ImageList
 		elseif ($statuses)
 			$statuslist=" moderation_status = '$statuses' and ";
 		else
-			$statuslist=1;
+			$statuslist='';
 				
 		$user_id=intval($user_id);		
 				
