@@ -287,6 +287,11 @@ if (!is_writable($CONF['adodb_cache_dir']))
 if (!is_writable($CONF['photo_upload_dir']))
 	fail('$CONF[\'photo_upload_dir\'] ('.$CONF['photo_upload_dir'].') not writable - REQUIRED');
 
+if ($CONF['log_script_timing']=='file') {
+	#if (!is_writable($CONF['log_script_folder']))
+		fail('$CONF[\'log_script_folder\'] ('.$CONF['log_script_folder'].') not writable - REQUIRED or disable Script Timing Logging');
+}
+
 /////////////////////////////////////////////////////////////
 // other required software
 
@@ -339,6 +344,25 @@ if (!check_http('/feed/recent/GeoRSS/', '/http:\/\/www\.georss\.org\/georss\//',
 	fail("mod_rewrite rule for /feed/recent/<em>format</em> doesn't cope with bad clients ($httperr) - REQUIRED");
 
 
+/////////////////////////////////////////////////////////////
+// server setup
+
+if (strpos($_ENV["OS"],'Windows') === FALSE) {
+	$f = fopen("/proc/loadavg","r");
+	if ($f)
+	{
+		$buffer = '';
+		if (!feof($f)) {
+			$buffer = fgets($f, 1024);
+		}
+		fclose($f);
+		$loads = explode(" ",$buffer);
+		if (strlen($buffer) == 0 || $loads <= 0) //how likly is it to be 0
+			fail("unable to read loadavg value - REQUIRED on non windows systems");
+	} else {
+		fail("loadavg check failed - REQUIRED on non windows systems");
+	}
+}
 
 //////////////////////////////////////////////////////////////////
 // END OF TESTING
