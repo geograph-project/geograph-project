@@ -324,7 +324,7 @@ if (!check_http('/photo/999999', '/image not available/',$httperr))
 	fail("mod_rewrite rule for /photo/<em>id</em> failed ($httperr) - REQUIRED");
 
 status("checking /list rewrite rules...");
-if (!check_http('/list/HQ', '/Photograph Listing ([^)]*HQ)/',$httperr))
+if (!check_http('/list/HQ', '/Photograph Listing/',$httperr))
 	fail("mod_rewrite rule for /list/<em>myriad</em> failed ($httperr) - REQUIRED");
 
 
