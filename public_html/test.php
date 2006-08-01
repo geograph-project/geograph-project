@@ -246,7 +246,11 @@ foreach($example as $name=>$value)
 {
 	if (!isset($CONF[$name]))
 	{
-		fail("Your domain configuration file has no \$CONF['$name'] entry - see www.exampledomain.com.conf.php for an example");
+		if ($name == 'db_persist') {
+			warn("Your domain configuration file has no \$CONF['$name'] entry - Recommended, but is not required");
+		} else {
+			fail("Your domain configuration file has no \$CONF['$name'] entry - see www.exampledomain.com.conf.php for an example");
+		}
 	}
 }
 
@@ -265,6 +269,12 @@ if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/photos'))
 if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/rss'))
 	fail('public_html/rss not writable - REQUIRED');
 
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/memorymap'))
+	fail('public_html/memorymap not writable - REQUIRED');
+
+if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/memorymap/geograph.bmp'))
+	fail('public_html/memorymap/geograph.bmp missing - REQUIRED');
+
 if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/basic/compiled'))
 	fail('public_html/templates/basic/compiled not writable - REQUIRED');
 
@@ -274,12 +284,15 @@ if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/basic/cache'))
 if (!is_writable($CONF['adodb_cache_dir']))
 	fail('$CONF[\'adodb_cache_dir\'] ('.$CONF['adodb_cache_dir'].') not writable - REQUIRED');
 
+if (!is_writable($CONF['photo_upload_dir']))
+	fail('$CONF[\'photo_upload_dir\'] ('.$CONF['photo_upload_dir'].') not writable - REQUIRED');
+
 /////////////////////////////////////////////////////////////
 // other required software
 
 if (strlen($CONF['imagemagick_path']))
 {
-	if (!file_exists($CONF['imagemagick_path'].'mogrify'))
+	if (!file_exists($CONF['imagemagick_path'].'mogrify') && !file_exists(str_replace('"','',$CONF['imagemagick_path']).'mogrify.exe'))
 		fail('$CONF[\'imagemagick_path\'] ('.$CONF['imagemagick_path'].') not valid (mogrify not found) - clear this configuration variable if ImageMagick is not available');
 }
 else
@@ -299,6 +312,8 @@ if (!check_http('/gridref/HP0000', '/HP0000 seems to be all at sea/',$httperr))
 status("checking /help rewrite rules...");
 if (!check_http('/help/credits', '/This project relies on the following open-source technologies/',$httperr))
 	fail("mod_rewrite rule for /help/<em>page</em> failed ($httperr) - REQUIRED");
+if (!check_http('/help/credits/', '/This project relies on the following open-source technologies/',$httperr))
+	fail("mod_rewrite rule for /help/<em>page</em>/ doesn't cope with bad browsers ($httperr) - REQUIRED");
 
 status("checking /reg rewrite rules...");
 if (!check_http('/reg/123/abcdef1234567890', '/there was a problem confirming your registration/',$httperr))
@@ -317,9 +332,12 @@ status("checking /mapbrowse.php rewrite rules...");
 if (!check_http('/mapbrowse.php?t=dummy&i=2&j=2&zoomin=1?43,72', '/TM0000/',$httperr))
 	fail("mod_rewrite rule for mapbrowse.php image maps failed ($httperr) - REQUIRED");
 
-status("checking /places rewrite rules...");
-if (!check_http('/places/1/A/', '/This page was last updated/',$httperr))
-	fail("mod_rewrite rule for /places/<em>reference_index</em> failed ($httperr) - REQUIRED");
+status("checking /feed/recent rewrite rules...");
+if (!check_http('/feed/recent', '/http:\/\/purl\.org\/rss\/1\.0\//',$httperr))
+	fail("mod_rewrite rule for /feed/recent failed ($httperr) - REQUIRED");
+if (!check_http('/feed/recent/GeoRSS/', '/http:\/\/www\.georss\.org\/georss\//',$httperr))
+	fail("mod_rewrite rule for /feed/recent/<em>format</em> doesn't cope with bad clients ($httperr) - REQUIRED");
+
 
 
 //////////////////////////////////////////////////////////////////
