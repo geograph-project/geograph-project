@@ -324,8 +324,8 @@ if (!check_http('/photo/999999', '/image not available/',$httperr))
 	fail("mod_rewrite rule for /photo/<em>id</em> failed ($httperr) - REQUIRED");
 
 status("checking /list rewrite rules...");
-if (!check_http('/list/TQ', '/view full size image/',$httperr))
-	fail("mod_rewrite rule for /list/<em>square</em> failed ($httperr) - REQUIRED");
+if (!check_http('/list/HQ', '/Photograph Listing ([^)]*HQ)/',$httperr))
+	fail("mod_rewrite rule for /list/<em>myriad</em> failed ($httperr) - REQUIRED");
 
 
 status("checking /mapbrowse.php rewrite rules...");
