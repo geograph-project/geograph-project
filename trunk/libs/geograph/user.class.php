@@ -40,6 +40,11 @@
 *
 * @package Geograph
 */
+
+
+require_once('geograph/gridsquare.class.php');
+
+
 class GeographUser
 {
 	/**
@@ -88,6 +93,14 @@ class GeographUser
 						$this->$name=$value;
 
 				}
+
+				// get user homesquare
+				if (isset($this->home_gridsquare)) {
+					$gs = new GridSquare();
+					$gs->loadFromId($this->home_gridsquare);
+					$this->grid_reference = $gs->grid_reference;
+				}
+
 			}
 		}
 	}
@@ -114,6 +127,13 @@ class GeographUser
 					if (!is_numeric($name))
 						$this->$name=$value;
 
+				}
+
+				// get user homesquare
+				if (isset($this->home_gridsquare)) {
+					$gs = new GridSquare();
+					$gs->loadFromId($this->home_gridsquare);
+					$this->grid_reference = $gs->grid_reference;
 				}
 			}
 		}
@@ -421,6 +441,21 @@ class GeographUser
 		$profile['realname']=stripslashes($profile['realname']);
 		$profile['nickname']=stripslashes($profile['nickname']);
 		$profile['website']=stripslashes($profile['website']);
+
+		// valid homesquare?
+		$profile['grid_reference']=stripslashes($profile['grid_reference']);
+		$gridreference='';
+		$gs=new GridSquare();
+		if (strlen($profile['grid_reference']))
+		{
+			$gsok=$gs->setByFullGridRef($profile['grid_reference']);
+			if (!$gsok)
+			{
+				$ok=false;
+				$errors['grid_reference']=$gs->errormsg;
+			}
+		}
+
 			
 		if (strlen($profile['realname']))
 		{
@@ -481,8 +516,9 @@ class GeographUser
 				about_yourself=%s,
 				public_about=%d,
 				age_group=%d,
-				use_age_group=%d
-			where user_id=%d",
+				use_age_group=%d,
+				home_gridsquare=%s
+				where user_id=%d",
 				$db->Quote($profile['realname']),
 				$db->Quote($profile['nickname']),
 				$db->Quote($profile['website']),
@@ -493,7 +529,7 @@ class GeographUser
 				empty($profile['public_about'])?0:1,
 				$profile['age_group'],
 				empty($profile['use_age_group'])?0:1,
-				
+				$gs->gridsquare_id,
 				$this->user_id
 				);
 
@@ -526,7 +562,7 @@ class GeographUser
 				$this->public_about=stripslashes($profile['public_about']);
 				$this->age_group=stripslashes($profile['age_group']);
 				$this->use_age_group=stripslashes($profile['use_age_group']);
-			
+				$this->grid_reference=$gs->grid_reference;	
 				$this->_forumUpdateProfile();
 				
 			}
