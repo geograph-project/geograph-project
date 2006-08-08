@@ -51,6 +51,14 @@
   your address, site visitors can still send messages to you through the site.</div><br/></td>
  </tr>
 
+ <tr><td><label>Home grid square:</label></td>
+ <td><input type="text" id="grid_reference" name="grid_reference" value="{$profile->grid_reference|escape:'html'}" size="6" />
+ {if $errors.grid_reference}<br /><span class="formerror">{$errors.grid_reference}</span>{/if}</td>
+ </tr>
+ <tr><td colspan="3"><div class="fieldnotes">If you wish, tell us the OS grid reference of your home.</div><br /></td>
+ </tr>
+
+
  <tr><td><label for="age_group">Age Group:</label></td>
  <td><select name="age_group" id="age_group"> 
 	<option value=""></option>

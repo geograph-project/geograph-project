@@ -32,6 +32,12 @@
 	{/if}
 {/if}
 
+
+
+{if $profile->grid_reference}
+	<li>Home grid reference: 
+	<a href="/gridref/{$profile->grid_reference|escape:'html'}">{$profile->grid_reference|escape:'html'}</a>
+{/if}
 </ul>
 
 {if $profile->about_yourself && $profile->public_about}
