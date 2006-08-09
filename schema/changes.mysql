@@ -362,4 +362,4 @@ ADD `public_about` TINYINT UNSIGNED DEFAULT '1' NOT NULL ,
 ADD `age_group` TINYINT UNSIGNED DEFAULT '0' NOT NULL ,
 ADD `use_age_group` TINYINT UNSIGNED DEFAULT '0' NOT NULL ;
 
-ALTER TABLE `user` ADD `home_gridsquare` TEXT NOT NULL;
+ALTER TABLE `user` ADD `home_gridsquare` mediumint unsigned;
