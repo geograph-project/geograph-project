@@ -265,7 +265,7 @@ if (isset($_GET['fav']) ) {
 	}
 
 } else if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'first')) {
-	dieUnderHighLoad(1.5,'search_unavailable.tpl';
+	dieUnderHighLoad(1.5,'search_unavailable.tpl');
 	// -------------------------------
 	//  Advanced Form
 	// -------------------------------
