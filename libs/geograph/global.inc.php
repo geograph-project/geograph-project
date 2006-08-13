@@ -441,7 +441,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 					require_once('geograph/gridsquare.class.php');
 					$g_image=new GridImage;
 				}
-				$ok = $g_image->loadFromId($g_id);
+				$ok = $g_image->loadFromId($g_id,true);
 				if ($g_image->moderation_status == 'rejected')
 					$ok = false;
 				if ($ok) {
@@ -475,6 +475,36 @@ function GeographLinks(&$posterText,$thumbs = false) {
 	return $posterText;
 }
 
+
+//available as a function, as doesn't come into effect if just re-using a smarty cache
+function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl') {
+	global $smarty,$USER;
+	if (!isset($_ENV["OS"]) || strpos($_ENV["OS"],'Windows') === FALSE) {
+		//lets give registered users a bit more leaway!
+		if ($USER->registered) {
+			$threshold *= 2;
+		}
+		//check load average, abort if too high
+		$buffer = "0 0 0";
+		$f = fopen("/proc/loadavg","r");
+		if ($f)
+		{
+			if (!feof($f)) {
+				$buffer = fgets($f, 1024);
+			}
+			fclose($f);
+		}
+		$loads = explode(" ",$buffer);
+		$load=(float)$loads[0];
+
+		if ($load>$threshold)
+		{
+			$smarty->assign('searchq',stripslashes($_GET['q']));	
+			$smarty->display($template);	
+			exit;
+		}
+	}
+}
 
 //this is a bit cheeky - if the xhtml validator calls, turn off the automatic
 //session id insertion, as it uses & instead of &amp; in urls
