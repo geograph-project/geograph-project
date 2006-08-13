@@ -26,6 +26,10 @@ init_session();
 
 $smarty = new GeographPage;
 
+//this page isnt actully heavy, but the searches generated could be!
+dieUnderHighLoad();
+
+
 $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
 $template='explore_routes.tpl';
