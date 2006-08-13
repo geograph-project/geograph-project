@@ -48,13 +48,13 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql_column = '';
 	$sql_orderby = '';
 	$sql_table = " gridimage as i left join user as u using(user_id) ";
+	$sql_where = '';
 	if ($type == 'squares' || $type == 'geosquares') {
 		if ($type == 'geosquares') {
 			$sql_where = " and i.moderation_status='geograph'";
 			$heading = "Squares<br/>Geographed";
 			$desc = "different squares geographed";
 		} else {
-			$sql_where = '';
 			$heading = "Squares<br/>Photographed";
 			$desc = "different squares photographed";
 		}
@@ -88,6 +88,14 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_column = "sum(i.moderation_status='geograph')";
 		$heading = "New<br/>Geographs";
 		$desc = "'geograph' images submitted";
+	} elseif ($type == 'additional') {
+		$sql_column = "sum(i.moderation_status='geograph' and ftf = 0)";
+		$heading = "Non-First<br/>Geographs";
+		$desc = "non first 'geograph' images submitted";
+	} elseif ($type == 'supps') {
+		$sql_column = "sum(i.moderation_status='accepted')";
+		$heading = "New<br/>Supplemental";
+		$desc = "'supplemental' images submitted";
 	} elseif ($type == 'images') {
 		$sql_orderby = ',points desc';
 		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph') as points, sum(i.moderation_status in ('geograph','accepted'))";
@@ -119,6 +127,17 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_table = " gridimage_search i ";
 		$heading = "Category Depth";
 		$desc = "the category depth score";
+	} elseif ($type == 'centi') {
+/*	SELECT COUNT(DISTINCT nateastings div 100, natnorthings div 100), COUNT(*) AS `_count_all`
+	FROM gridimage
+	WHERE  moderation_status in ('geograph','accepted') and nateastings div 1000 > 0
+	ORDER BY _count_all DESC
+	LIMIT 30; */
+		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
+		$sql_column = "COUNT(DISTINCT nateastings div 100, natnorthings div 100)";
+		$sql_where = "and i.moderation_status='geograph' and nateastings div 1000 > 0";
+		$heading = "Centigraph<br/>Points";
+		$desc = "centigraph points awarded";
 	} else { #if ($type == 'points') {
 		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph')";
 		$heading = "New<br/>Geograph<br/>Points";
@@ -133,8 +152,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		//we want to find all users with geographs/pending images 
 		$sql="select i.user_id,realname,
 		$sql_column as geographs, 
-		sum(i.moderation_status='pending') as pending from $sql_table
-		where i.submitted > date_sub(now(), interval 7 day)
+		sum(i.moderation_status='pending') as pending
+		from $sql_table
+		where i.submitted > date_sub(now(), interval 7 day) $sql_where
 		group by i.user_id 
 		having (geographs > 0 or pending > 0)
 		order by geographs desc $sql_orderby, pending desc ";
