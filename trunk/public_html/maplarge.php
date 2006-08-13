@@ -35,35 +35,6 @@ $template='maplarge.tpl';
 
 $smarty = new GeographPage;
 
-	if (strpos($_ENV["OS"],'Windows') === FALSE) {
-		$threshold = 2;
-	
-		//lets give registered users a bit more leaway!
-		if ($USER->registered) {
-			$threshold *= 2;
-		}
-		//check load average, abort if too high
-		$buffer = "0 0 0";
-		$f = fopen("/proc/loadavg","r");
-		if ($f)
-		{
-			if (!feof($f)) {
-				$buffer = fgets($f, 1024);
-			}
-			fclose($f);
-		}
-		$loads = explode(" ",$buffer);
-		$load=(float)$loads[0];
-
-		if ($load>$threshold)
-		{
-			$smarty->display('function_unavailable.tpl');	
-			exit;
-		}
-	}
-
-
-
 $smarty->caching = 2; // lifetime is per cache
 
 
@@ -101,6 +72,8 @@ $cacheid='maplarge|'.$token;
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
+	dieUnderHighLoad();
+
 	//assign overview to smarty
 	$overview->assignToSmarty($smarty, 'overview');
 	$smarty->assign('marker', $overview->getBoundingBox($mosaic));

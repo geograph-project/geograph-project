@@ -23,6 +23,9 @@
 
 require_once('geograph/global.inc.php');
 
+  $smarty = new GeographPage;
+  dieUnderHighLoad();
+
 $db=NewADOConnection($GLOBALS['DSN']);
 
 if (empty($_GET['key']) || preg_match("/[^\w\.@]/",$_GET['key']))
