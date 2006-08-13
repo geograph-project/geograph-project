@@ -95,7 +95,7 @@ if (isset($_GET['id']))  {
 		
 		if ($grid_ok)
 		{
-			$d = intval(stripslashes($_REQUEST['distance']));
+			$d = min(100,intval(stripslashes($_REQUEST['distance'])));
 				
 			$template='gpx_download_gpx.tpl';
 			$cacheid = $square->grid_reference.'-'.($_REQUEST['type'] == 'with').'-'.($d);
@@ -167,7 +167,7 @@ if (isset($_GET['id']))  {
 			$smarty->assign('gridref', stripslashes($_REQUEST['gridref']));
 		}
 	}
-	$smarty->assign('distances', array(1,3,5,10,15,20));
+	$smarty->assign('distances', array(1,3,5,10,15,20,30,50,75,100));
 		
 //lets find some recent photos
 new RecentImageList($smarty);
