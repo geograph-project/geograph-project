@@ -68,6 +68,14 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_where = "i.moderation_status='geograph'";
 		$heading = "Geograph Images";
 		$desc = "'geograph' images submitted";
+	} elseif ($type == 'additional') {
+		$sql_where = "i.moderation_status='geograph' and ftf = 0";
+		$heading = "Non-First Geograph Images";
+		$desc = "non first 'geograph' images submitted";
+	} elseif ($type == 'supps') {
+		$sql_where = "i.moderation_status='accepted'";
+		$heading = "Supplemental Images";
+		$desc = "'supplemental' images submitted";
 	} elseif ($type == 'images') {
 		$sql_orderby = ',points desc';
 		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph') as points, count(*)";
