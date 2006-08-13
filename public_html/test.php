@@ -348,6 +348,7 @@ if (!check_http('/feed/recent/GeoRSS/', '/http:\/\/www\.georss\.org\/georss\//',
 // server setup
 
 if (strpos($_ENV["OS"],'Windows') === FALSE) {
+	status("checking server setup...");
 	$f = fopen("/proc/loadavg","r");
 	if ($f)
 	{
@@ -362,6 +363,8 @@ if (strpos($_ENV["OS"],'Windows') === FALSE) {
 	} else {
 		fail("loadavg check failed - REQUIRED on non windows systems");
 	}
+} else {
+	warn("possible windows system detected: site will skip loadavg check - NOT RECOMMENDED");
 }
 
 //////////////////////////////////////////////////////////////////
