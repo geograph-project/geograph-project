@@ -35,6 +35,8 @@ if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+	dieUnderHighLoad();
+	
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed'); 	
 
@@ -47,7 +49,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql = "SELECT 
 	CONCAT(ELT(ftf+1, '','first '),moderation_status) as `Status`, 
 	SUM(submitted > DATE_SUB(NOW() , interval 1 HOUR)) as `In last Hour`,
-	SUM(submitted > DATE_SUB(NOW() , interval 1 DAY)) as `In last 25 Hours`,
+	SUM(submitted > DATE_SUB(NOW() , interval 1 DAY)) as `In last 24 Hours`,
 	SUM(submitted > DATE_SUB(NOW() , interval 7 DAY)) as `In last 7 Days`,
 	SUM(submitted > DATE_SUB(NOW() , interval 1 MONTH)) as `In last 7 Days`,
 	SUM(submitted > DATE_SUB(NOW() , interval 1 YEAR)) as `In last Year`,

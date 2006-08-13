@@ -32,29 +32,58 @@ $forumName=$row[0]; $forumIcon=$row[1];
 
 /* actual */
 
-if ($gridref || ($forum == 5 && $gridref = $topicName)) {
-	
-	
-	require_once('geograph/gridimage.class.php');
-	require_once('geograph/gridsquare.class.php');
 
-	$smarty = new GeographPage;
-	$square=new GridSquare;
 
-	$grid_ok=$square->setGridRef($gridref);
+        if (!isset($_ENV["OS"]) || strpos($_ENV["OS"],'Windows') === FALSE) {
+                $threshold = 3;
+
+                //lets give registered users a bit more leaway!
+                if ($USER->registered) {
+                        $threshold *= 2;
+                }
+                //check load average, abort if too high
+                $buffer = "0 0 0";
+                $f = fopen("/proc/loadavg","r");
+                if ($f)
+                {
+                        if (!feof($f)) {
+                                $buffer = fgets($f, 1024);
+                        }
+                        fclose($f);
+                }
+                $loads = explode(" ",$buffer);
+                $load=(float)$loads[0];
+
+                if ($load>$threshold)
+                {
+                        $CONF['disable_discuss_thumbs'] = true;
+                }
+        }
+
+
+if (isset($CONF['disable_discuss_thumbs'])) {
+	$gridThumbs = "<h4 style=\"color:red\">During times of heavy load we limit the display of thumbnails in the posts.<br/>Sorry for the loss of this feature.</h4>";
+} else {
+	if ($gridref || ($forum == 5 && $gridref = $topicName)) {
 	
-	if ($grid_ok) {
-		if ($square->imagecount)
-		{
-			$images=$square->getImages();
-			$smarty->assign_by_ref('images', $images);
+		require_once('geograph/gridimage.class.php');
+		require_once('geograph/gridsquare.class.php');
 
-			$gridThumbs = $smarty->fetch("_discuss_gridref_cell.tpl");
+		$smarty = new GeographPage;
+		$square=new GridSquare;
+
+		$grid_ok=$square->setGridRef($gridref);
+
+		if ($grid_ok) {
+			if ($square->imagecount)
+			{
+				$images=$square->getImages();
+				$smarty->assign_by_ref('images', $images);
+
+				$gridThumbs = $smarty->fetch("_discuss_gridref_cell.tpl");
+			}
 		}
 	}
-}
-if (isset($CONF['disable_discuss_thumbs'])) {
-	$gridThumbs .= "<h4 style=\"color:red\">During times of heavy load we limit the display of thumbnails in the posts.<br/>Sorry for the loss of this feature.</h4>";
 }
 
 
