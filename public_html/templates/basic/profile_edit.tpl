@@ -43,7 +43,7 @@
  <td><tt>{$profile->email|escape:'html'}</tt></td>
  <td><select name="public_email" id="public_email">
  <option value="">Don't Show</option>
- <option value="1" {if $profile->public_email} selected="selected"{/if}>Show Publically</option>
+ <option value="1" {if $profile->public_email} selected="selected"{/if}>Show Publicly</option>
  </select></td>
  </tr>
  <tr>
@@ -83,7 +83,7 @@
 to a Grid Square or another Image.</div></td>
  <td><select name="public_about" id="public_about">
  <option value="">Don't Show</option>
- <option value="1" {if $profile->public_about} selected="selected"{/if}>Show Publically</option>
+ <option value="1" {if $profile->public_about} selected="selected"{/if}>Show Publicly</option>
  </select></td>
  </tr>
  <tr>
