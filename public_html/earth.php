@@ -30,38 +30,7 @@ if (empty($_GET['i']) || !intval($_GET['i'])) {
 	$_GET['i'] = 1522;
 }
 
-	if (strpos($_ENV["OS"],'Windows') === FALSE) {
-		//check load average, abort if too high
-		$buffer = "0 0 0";
-		$f = fopen("/proc/loadavg","r");
-		if ($f)
-		{
-			if (!feof($f)) {
-				$buffer = fgets($f, 1024);
-			}
-			fclose($f);
-		}
-		$loads = explode(" ",$buffer);
-		$load=(float)$loads[0];
-
-		if ($load>2)
-		{
-			header("Content-type: application/vnd.google-earth.kml+xml");
-			
-			print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-?><kml xmlns="http://earth.google.com/kml/2.0">
-<Document>
-<Folder>
-<name>Geograph NetworkLink</name>
-<description>During busy periods we limit the availability of search to ensure the site remains responsive - please try again shortly.</description>
-<open>0</open>
-<visibility>1</visibility>
-</Folder>
-</Document>
-</kml><?
-			exit;
-		}
-	}
+dieUnderHighLoad(2,'earth_unavailable.tpl');
 
 require_once('geograph/feedcreator.class.php');
 require_once('geograph/gridimage.class.php');

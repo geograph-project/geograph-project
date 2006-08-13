@@ -42,6 +42,8 @@ $smarty->cache_lifetime = 3600*12; //12hr cache
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
+	dieUnderHighLoad();
+	
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');

@@ -71,6 +71,8 @@ if (isset($_GET['gridref_from']) && preg_match('/^[a-zA-Z]{1,2}\d{4}$/',$_GET['g
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
+	dieUnderHighLoad();
+	
 	//assign main map to smarty
 	$smarty->assign_by_ref('map', $map);
 	

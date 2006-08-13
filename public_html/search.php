@@ -33,35 +33,7 @@ $imagestatuses = array('geograph' => 'geograph only','geograph,accepted' => 'geo
 $sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North');
 #,'user_id'=>'Contributer ID'
 
-//available as a function, as doesn't come into effect if just re-using a smarty cache
-function dieUnderHighLoad($threshold = 2) {
-	global $smarty,$USER;
-	if (strpos($_ENV["OS"],'Windows') === FALSE) {
-		//lets give registered users a bit more leaway!
-		if ($USER->registered) {
-			$threshold *= 2;
-		}
-		//check load average, abort if too high
-		$buffer = "0 0 0";
-		$f = fopen("/proc/loadavg","r");
-		if ($f)
-		{
-			if (!feof($f)) {
-				$buffer = fgets($f, 1024);
-			}
-			fclose($f);
-		}
-		$loads = explode(" ",$buffer);
-		$load=(float)$loads[0];
 
-		if ($load>$threshold)
-		{
-			$smarty->assign('searchq',stripslashes($_GET['q']));	
-			$smarty->display('search_unavailable.tpl');	
-			exit;
-		}
-	}
-}
 
 if (isset($_GET['fav']) ) {
 	if (!$db) {
@@ -75,7 +47,7 @@ if (isset($_GET['fav']) ) {
 	exit;
 	
 } else if (!empty($_GET['first']) || !empty($_GET['blank']) ) {
-	dieUnderHighLoad();
+	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
 	//  special handler to build a special query for myriads/numberical squares.
 	// -------------------------------
@@ -149,7 +121,7 @@ if (isset($_GET['fav']) ) {
 	advanced_form($smarty,$db);
  	
 } else if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || !empty($_GET['gridsquare'])) {
-	dieUnderHighLoad();
+	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
 	//  special handler to build a advanced query from the link in stats or profile.  
 	// -------------------------------
@@ -183,7 +155,7 @@ if (isset($_GET['fav']) ) {
 	advanced_form($smarty,$db);
  	
 } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-	dieUnderHighLoad();
+	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
 	//  Build advacned query 
 	// -------------------------------
@@ -240,7 +212,7 @@ if (isset($_GET['fav']) ) {
 		advanced_form($smarty,$db);
 	}
 } elseif (!empty($_GET['q'])) {
-	dieUnderHighLoad();
+	dieUnderHighLoad(2,'search_unavailable.tpl');
 	
 	// -------------------------------
 	//  Build a query from a single text string
@@ -293,7 +265,7 @@ if (isset($_GET['fav']) ) {
 	}
 
 } else if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'first')) {
-	dieUnderHighLoad(1.5);
+	dieUnderHighLoad(1.5,'search_unavailable.tpl';
 	// -------------------------------
 	//  Advanced Form
 	// -------------------------------
@@ -440,7 +412,7 @@ if (isset($_GET['fav']) ) {
 	$cacheid.=$style;
 
 	if (!$smarty->is_cached($template, $cacheid)) {
-		dieUnderHighLoad(3);
+		dieUnderHighLoad(3,'search_unavailable.tpl');
 		
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
 
@@ -473,7 +445,7 @@ if (isset($_GET['fav']) ) {
 
 
 } else {
-	dieUnderHighLoad();
+	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
 	//  Simple Form
 	// -------------------------------
