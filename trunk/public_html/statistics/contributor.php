@@ -43,6 +43,8 @@ $cacheid='contributer'.$u.'.'.$u2;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+	dieUnderHighLoad();
+	
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');

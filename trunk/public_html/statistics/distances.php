@@ -48,6 +48,8 @@ if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+	dieUnderHighLoad();
+	
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');
@@ -114,7 +116,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	foreach($table as $idx=>$entry)
 	{
 		$rows =$db->getAll("SELECT
-		x,y 
+		x,y,gridimage_id
 		FROM gridimage_search
 		WHERE moderation_status = 'geograph' 
 		and ftf =1 
@@ -137,13 +139,16 @@ if (!$smarty->is_cached($template, $cacheid))
 			foreach ($rows as $id2 => $row2) {
 				if ($id != $id2 && !isset($done["$id2.$id"])) {
 					$dist_sq = pow($row['x'] - $row2['x'],2) + pow($row['y'] - $row2['y'],2);
-					if ($longest_sq < $dist_sq)
+					if ($longest_sq < $dist_sq) {
 						$longest_sq = $dist_sq;
+						$longest_ids = array($row['gridimage_id'],$row2['gridimage_id']);
+					}
 					$done["$id.$id2"]=1;
 				}
 			}
 		}
 		$table[$idx]['Greatest Seperation (km)'] = number_format(sqrt($longest_sq));
+		$table[$idx]['Greatest Seperation Images'] = "<a href=\"/photo/".implode("\">.</a> <a href=\"/photo/",$longest_ids)."\">.</a>";
 		$table[$idx]['Distance Travelled (km)'] = number_format($total);
 		
 

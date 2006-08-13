@@ -38,6 +38,8 @@ if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+	dieUnderHighLoad(5);
+	
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed'); 	
 
