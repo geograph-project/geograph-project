@@ -31,10 +31,10 @@ require_once('geograph/mapmosaic.class.php');
 init_session();
 
 
-
-
 $smarty = new GeographPage;
-//$browser=new GridBrowser;
+
+dieUnderHighLoad(4);
+
 $square=new GridSquare;
 
 $smarty->assign('prefixes', $square->getGridPrefixes());
@@ -87,6 +87,14 @@ elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 	}	
 }
 
+$template='browse.tpl';
+$cacheid='';
+#not ready for primetime yet, the user_id SHOULD to be replaced by visitor/has pending-or-rejects/mod switch 
+# when ready to go live, should change the tpl file to remove most of the dynamic tags!
+#$cacheid=($square->gridsquare_id).'.'.md5($_SERVER['QUERY_STRING']).'.'.($USER->user_id);
+
+#if (!$smarty->is_cached($template, $cacheid))
+#{
 
 //process grid reference
 if ($grid_given)
@@ -418,9 +426,9 @@ $overview->assignToSmarty($smarty, 'overview');
 if ($grid_ok)
 	$smarty->assign('marker', $overview->getSquarePoint($square));
 
+#}
 
-
-$smarty->display('browse.tpl');
+$smarty->display($template,$cacheid);
 
 	
 ?>
