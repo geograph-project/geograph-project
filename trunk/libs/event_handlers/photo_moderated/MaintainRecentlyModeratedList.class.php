@@ -61,7 +61,7 @@ class MaintainRecentlyModeratedList extends EventHandler
 			$db->Execute("replace into recent_gridimage(gridimage_id, added) values ('$gridimage_id', now())");
 			
 			//get the date for the 100th image
-			$oldest=$db->GetRow("select * from recent_gridimage order by added desc limit 100,1");
+			$oldest=$db->GetRow("select * from recent_gridimage order by added desc limit 250,1");
 			if ($oldest)
 			{
 				//delete anything older
