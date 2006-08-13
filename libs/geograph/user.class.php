@@ -849,6 +849,7 @@ class GeographUser
 		{
 			$db = NewADOConnection($GLOBALS['DSN']);
 			
+			$errorNumber = -1;
 			$valid=false;
 			$bits=explode('_', $_COOKIE['autologin']);
 			if ((count($bits)==2) &&
@@ -857,12 +858,19 @@ class GeographUser
 			{
 				$clause="user_id='{$bits[0]}' and token='{$bits[1]}'";
 				$row=$db->GetRow("select * from autologin where $clause limit 1");
+				
+				//log the errornumber (we use in case the db lookup failed)
+				$errorNumber = $db->ErrorNo();
+					
 				if (count($row))
 				{
 					//log the user in
 					$sql='select * from user where user_id='.$db->Quote($bits[0]).' limit 1';
+					$user = $db->GetRow($sql);
 					
-					$user = $db->GetRow($sql);	
+					//log the errornumber (we use in case the db lookup failed) 
+					$errorNumber = $db->ErrorNo();
+					
 					if (count($user))
 					{
 						$valid=true;
@@ -873,39 +881,39 @@ class GeographUser
 								$this->$name=$value;
 						}
 
-							
 						//temporary nickname fix for beta accounts
 						if (strlen($this->nickname)==0)
 							$this->nickname=str_replace(" ", "", $this->realname);
-	
+
 						//we're changing privilege state, so we should
 						//generate a new session id to avoid fixation attacks
 						session_regenerate_id(); 
 
 						$this->registered=true;
 						$this->autologin=true;
-						
+
 						//log into forum
 						$this->_forumLogin();
-						
+
 						//delete the autologin, we've used it
 						$db->query("delete from autologin where $clause");
 
 						//given the user a new one
 						$token = md5(uniqid(rand(),1)); 
 						$db->query("insert into autologin(user_id,token) values ('{$this->user_id}', '$token')");
-						setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365,'/');  
-					
+						setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365,'/');
 					}
-								
 				}
 			}
-		
+			if ($errorNumber != 0) {
+				die("Server Error, please wait 10 seconds then press F5, and click Yes if asked to confirm. This measure is to hopefully perserve what you are working on. If you still get this message after repeated tries then there is nothing for it but to click back and try again.");
+				exit;
+			}
+
 			//clear the cookie?
 			if (!$valid)
 			{
-				setcookie('autologin', '', time()-3600*24*365,'/');  
-					
+				setcookie('autologin', '', time()-3600*24*365,'/');
 			}
 		}
 	}
