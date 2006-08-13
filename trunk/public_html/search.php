@@ -476,25 +476,28 @@ if (isset($_GET['fav']) ) {
 			if (!$db) die('Database connection failed');
 		}
 		if (isset($_GET['all'])) {
-			$limit = 999;
+			$flimit = "";
+			$nlimit = "";
 			$smarty->assign('all',1);	
 		} elseif (isset($_GET['more'])) {
-			$limit = 40;
+			$flimit = "";
+			$nlimit = "limit 40";
 			$smarty->assign('more',1);	
-		} else
-			$limit = 12;
-		
+		} else {
+			$flimit = "limit 12";
+			$nlimit = "limit 12";
+		}
 		#group by searchdesc,searchq,displayclass,resultsperpage
 		$recentsearchs = $db->GetAssoc("
 			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass ,searchq,displayclass,resultsperpage from queries 
 			left join queries_count using (id) 
 			where user_id = {$USER->user_id} and favorite = 'N' and searchuse = 'search'
-			order by use_timestamp desc,id desc	limit $limit) 
+			order by use_timestamp desc,id desc	$nlimit) 
 		UNION
 			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass ,searchq,displayclass,resultsperpage from queries 
 			left join queries_count using (id) 
 			where user_id = {$USER->user_id} and favorite = 'Y' and searchuse = 'search'
-			order by use_timestamp desc,id desc	limit $limit)
+			order by use_timestamp desc,id desc	$flimit)
 		order by use_timestamp desc,id desc	");
 		
 		$a = array();
