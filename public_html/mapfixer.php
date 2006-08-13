@@ -55,7 +55,7 @@ if (isset($_GET['gridref']))
 
 	
 		//can we find a square?
-		$sq=$db->GetRow("select * from gridsquare where grid_reference='{$gridref}'");
+		$sq=$db->GetRow("select * from gridsquare where grid_reference='{$gridref}' limit 1");
 		if (count($sq))
 		{
 			$smarty->assign('percent_land', $sq['percent_land']);
@@ -81,7 +81,7 @@ if (isset($_GET['gridref']))
 				$eastings=$matches[2];
 				$northings=$matches[3];
 			
-				$sql="select * from gridprefix where prefix='{$gridsquare}'";
+				$sql="select * from gridprefix where prefix='{$gridsquare}' limit 1";
 				$prefix=$db->GetRow($sql);
 				if (count($prefix))
 				{
