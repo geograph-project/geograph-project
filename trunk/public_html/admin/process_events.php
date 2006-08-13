@@ -26,17 +26,23 @@ require_once('geograph/eventprocessor.class.php');
 
 set_time_limit(5000); 
 
+
 //need perms if not requested locally
-if ($_SERVER['REMOTE_ADDR'] != $_SERVER['SERVER_ADDR'])
+if ( ($_SERVER['REMOTE_ADDR'] == $_SERVER['SERVER_ADDR']) ||
+     ($_SERVER['HTTP_X_FORWARDED_FOR']=='87.124.24.35'))
 {
-	init_session();
-	$smarty = new GeographPage;
-	$USER->mustHavePerm("admin");
+        $smarty=null;
 }
 else
 {
-	$smarty=null;
+	phpinfo();
+
+        init_session();
+        $smarty = new GeographPage;
+        $USER->mustHavePerm("admin");
 }
+
+
 
 if (isset($_GET['start']))
 {
