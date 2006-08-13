@@ -275,14 +275,14 @@
 <p>
 <label for="grid_reference">Subject Grid Reference {if $moderated.grid_reference}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.grid_reference}<span class="formerror">{$error.grid_reference}</span><br/>{/if}
-<input type="text" id="grid_reference" name="grid_reference" size="8" value="{$image->subject_gridref|escape:'html'}"/>
+<input type="text" id="grid_reference" name="grid_reference" size="14" value="{$image->subject_gridref|escape:'html'}"/>
 {getamap gridref=$image->subject_gridref text="Get-a-map&trade; for `$image->subject_gridref`"}
 </p>
 
 <p>
 <label for="photographer_gridref">Optional Photographer Grid Reference {if $moderated.photographer_gridref}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.photographer_gridref}<span class="formerror">{$error.photographer_gridref}</span><br/>{/if}
-<input type="text" id="photographer_gridref" name="photographer_gridref" size="8" value="{$image->photographer_gridref|escape:'html'}"/>
+<input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$image->photographer_gridref|escape:'html'}"/>
 {if $image->photographer_gridref}
   {getamap gridref=$image->photographer_gridref text="Get-a-map&trade; for `$image->photographer_gridref`"}
 {else}
