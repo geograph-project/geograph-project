@@ -56,27 +56,6 @@ a Img
 	display:none;
 }
 
-/* header content interior */
-#header_sponsor
-{
-	position:absolute;
-	top:0px;
-	left:257px;
-}
-
-#header_sponsor h1
-{
-	margin:0px;
-	background-image: url('/templates/basic/img/sponsor.gif');
-	height:74px;
-	width:257px;
-}
-
-#header_sponsor h1 a
-{
-	display:none;
-}
-
 /*---------------------------------------------------------------*
  * search block (incorporates login/register links)
  *---------------------------------------------------------------*/
