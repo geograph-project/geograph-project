@@ -58,7 +58,7 @@ title="customisable search options">advanced search</a></span><br/><br/>
 	{foreach from=$recentsearchs key=id item=obj}
 	<li>{if $obj.favorite == 'Y'}<b>{/if}{if $obj.searchclass == 'Special'}<i>{/if}<a href="search.php?i={$id}" title="Re-Run search for images{$obj.searchdesc}{if $obj.use_timestamp != '0000-00-00 00:00:00'}, last used {$obj.use_timestamp}{/if} (Display: {$obj.displayclass})">{$obj.searchdesc|regex_replace:"/^, /":""|regex_replace:"/(, in [\w ]+ order)/":'</a><small>$1</small>'}</a>{if !is_null($obj.count)} [{$obj.count}]{/if}{if $obj.searchclass == 'Special'}</i>{/if}{if $obj.favorite == 'Y'}</b> <a href="/search.php?i={$id}&amp;fav=0" title="cancel favorite"><img src="/templates/basic/img/star-off.png" width="14" height="14" alt="cancel favorite"></a>{else} <a href="/search.php?i={$id}&amp;fav=1" title="make favorite"><img src="/templates/basic/img/star-on.png" width="14" height="14" alt="make favorite"></a>{/if}</li>
 	{/foreach}
-	{if !$more}
+	{if !$more && !$all}
 	<li><a href="search.php?more=1" title="View More of your recent searches" rel="nofollow"><i>view more...</i></a></li>
 	{/if}
 	</ul><br/>
