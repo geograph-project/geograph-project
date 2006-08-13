@@ -59,8 +59,9 @@
 
 <h3><a name="users"></a>Contributors...</h3>
 <ul>
-	<li><a href="/moversboard.php"><b>Weekly</b> Leaderboard</a></li>
-	<li><a href="/leaderboard.php"><b>All Time</b> Leaderboard</a></li>
+	<li><a href="/moversboard.php"><b>Weekly</b> Leaderboard</a> (for <a href="/moversboard.php?type=supps">Supplementals</a>, <a href="/moversboard.php?type=additional">Additional Geographs</a>)</li>
+	</li>
+	<li><a href="/leaderboard.php"><b>All Time</b> Leaderboard</a> (for <a href="/leaderboard.php?type=supps">Supplementals</a>, <a href="/leaderboard.php?type=additional">Additional Geographs</a>)</li>
 	<li><a href="/monthlyleader.php">By Month</b> Leaderboard</a></li>
 	<li><a href="/statistics.php?by=user&amp;ri=1"><b>Great Britain Contributor</b> List</a></li>
 	<li><a href="/statistics.php?by=user&amp;ri=2"><b>Ireland Contributor</b> List</a></li>
