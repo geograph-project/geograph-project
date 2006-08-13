@@ -26,34 +26,6 @@ init_session();
 
 $smarty = new GeographPage;
 
-	if (strpos($_ENV["OS"],'Windows') === FALSE) {
-		$threshold = 2;
-	
-		//lets give registered users a bit more leaway!
-		if ($USER->registered) {
-			$threshold *= 2;
-		}
-		//check load average, abort if too high
-		$buffer = "0 0 0";
-		$f = fopen("/proc/loadavg","r");
-		if ($f)
-		{
-			if (!feof($f)) {
-				$buffer = fgets($f, 1024);
-			}
-			fclose($f);
-		}
-		$loads = explode(" ",$buffer);
-		$load=(float)$loads[0];
-
-		if ($load>$threshold)
-		{
-			$smarty->assign('searchq',stripslashes($_GET['q']));	
-			$smarty->display('search_unavailable.tpl');	
-			exit;
-		}
-	}
-
 
 $len = (isset($_GET['len']) && is_numeric($_GET['len']))?intval($_GET['len']):2;
 
@@ -89,6 +61,8 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+	dieUnderHighLoad();
+	
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (empty($db)) die('Database connection failed');  
 	
