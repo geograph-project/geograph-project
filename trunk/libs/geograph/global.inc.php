@@ -441,7 +441,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 					require_once('geograph/gridsquare.class.php');
 					$g_image=new GridImage;
 				}
-				$ok = $g_image->loadFromId($g_id,true);
+				$ok = $g_image->loadFromId($g_id);
 				if ($g_image->moderation_status == 'rejected')
 					$ok = false;
 				if ($ok) {
