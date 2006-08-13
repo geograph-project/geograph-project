@@ -95,10 +95,8 @@ function makefile($prefix='TQ') {
 	}
 
 	//OK, file must be too old, or not exist, let's make a shiny new one
-	$images=new ImageList;
-
-	$recordSet=& $images->getRecordSetbyPrefix($prefix);
 	
+
 	if(file_exists($csvfilename))
 		if(!@unlink($csvfilename))
 			return "Something is wrong, could not delete $csvfile.".
@@ -107,6 +105,10 @@ function makefile($prefix='TQ') {
 	if(!$csvfile=fopen($csvfilename,'w'))
 		return "Something is wrong, could not open $csvfile for writing.";
 
+	$images=new ImageList;
+
+	$recordSet=& $images->getRecordSetbyPrefix($prefix);
+	
 	//Memory Map header, define geograph.bmp as icon #800
 	fwrite($csvfile, "IC01,800,\"geograph.bmp\"\n");
 
