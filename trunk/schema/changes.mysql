@@ -363,3 +363,21 @@ ADD `age_group` TINYINT UNSIGNED DEFAULT '0' NOT NULL ,
 ADD `use_age_group` TINYINT UNSIGNED DEFAULT '0' NOT NULL ;
 
 ALTER TABLE `user` ADD `home_gridsquare` mediumint unsigned;
+
+
+CREATE TABLE `article` (
+  `article_id` int(10) unsigned NOT NULL auto_increment,
+  `article_cat_id` smallint(5) unsigned NOT NULL default '0',
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `url` varchar(64) NOT NULL default '',
+  `title` varchar(64) NOT NULL default '',
+  `content` longtext NOT NULL,
+  `licence` enum('none','pd','cc-by-sa/2.0','copyright') NOT NULL default 'copyright',
+  `approved` tinyint(4) NOT NULL default '1',
+  `update_time` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `create_time` timestamp NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`article_id`),
+  UNIQUE KEY `title` (`title`),
+  UNIQUE KEY `url` (`url`),
+  KEY `article_cat_id` (`article_cat_id`,`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 PACK_KEYS=0 AUTO_INCREMENT=2 ;
