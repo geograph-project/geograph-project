@@ -58,7 +58,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql = "SELECT COUNT(*) FROM gridimage WHERE submitted > DATE_SUB(NOW() , interval 24 HOUR)";
 	calc("Images Submitted in last 24 hours",$sql);
 
-	$sql = "select count(*) from sessions";
+	$sql = "SELECT COUNT(*) FROM sessions WHERE EXPIRY > UNIX_TIMESTAMP(DATE_SUB(NOW(),INTERVAL 24 MINUTE))";
 	calc("Visitors in last 24 minutes",$sql);
 	
 	$sql = "select count(distinct user_id)-1 from autologin where created > date_sub(now(), interval 1 hour)";
