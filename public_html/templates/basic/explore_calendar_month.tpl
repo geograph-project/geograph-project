@@ -7,7 +7,9 @@
 <p>Date: {html_select_date display_days=false prefix="" time=`$date` start_year="-100" reverse_years=true  month_empty="-whole year-" all_extra="onchange='this.form.submit()'"}<noscript><input type="submit" value="Update"/></noscript></p> 
 </form>
 
-<p>Showing one example image from each day, click a more link to list all images taken that day.<br/> Key: <span style="font-family:arial;color:green;">G: Geograph Images, <small style="color:blue">(S: Supplemental)</small></span>.</p>
+<p>Showing one example image from each day, click a more link to list all images taken that day. 
+<br/><a href="/search.php?taken_endMonth={$month}&amp;taken_endYear={$year}&amp;taken_startMonth={$month}&amp;taken_startYear={$year}&amp;orderby=imagetaken&amp;do=1">Search all images taken {$month_name} {$year}</a>		
+&nbsp;&nbsp;&nbsp;&nbsp; Key: <span style="font-family:arial;color:green;">G: Geograph Images, <small style="color:blue">(S: Supplemental)</small></span>.</p>
 
 <table class="report" bordercolor="#eeeeee" border="1" cellspacing="0">
 <thead><tr>{foreach from=$days item=day}
