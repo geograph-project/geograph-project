@@ -110,6 +110,7 @@ if ($_GET['gridsquare']) {
 
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
 	require_once('geograph/searchengineflickr.class.php');
 	
  	$engine = new SearchEngineFlickr('#'); 

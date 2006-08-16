@@ -112,6 +112,7 @@ if (!empty($_GET['gridsquare']) || !empty($_GET['u'])) {
 
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
 	require_once('geograph/searchenginediscuss.class.php');
 	
  	$engine = new SearchEngineDiscuss('#'); 

@@ -37,7 +37,8 @@ if (!empty($_GET['ri'])) {
 	
 			require_once('geograph/searchcriteria.class.php');
 			require_once('geograph/searchengine.class.php');
-
+			require_once('geograph/searchenginebuilder.class.php');
+	
 			$sql = "SELECT full_name,e,n FROM loc_placenames WHERE id = {$_GET['pid']}";
 			$placename = $db->GetRow($sql);
 
@@ -54,7 +55,7 @@ if (!empty($_GET['ri'])) {
 			#$this->placename = $places[0]['full_name'];
 			$dataarray['reference_index'] = $_GET['ri'];
 			
-			$engine = new SearchEngine('#'); 
+			$engine = new SearchEngineBuilder('#'); 
 			$engine->buildAdvancedQuery($dataarray);
 			
 			//should never return!
