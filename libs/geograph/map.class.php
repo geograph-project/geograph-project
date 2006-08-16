@@ -1258,14 +1258,13 @@ END;
 		
 		$sql="select gs.*, 
 			sum(moderation_status='accepted') as accepted, sum(moderation_status='pending') as pending,
-			DATE_FORMAT(MAX(imagetaken),'%d/%m/%y') as last_date
+			DATE_FORMAT(MAX(if(moderation_status!='rejected',imagetaken,null)),'%d/%m/%y') as last_date
 			from gridsquare gs
 			left join gridimage gi using(gridsquare_id)
 			where 
 			(x between $scanleft and $scanright) and 
 			(y between $scanbottom and $scantop) 
 			and percent_land<>0 
-			and moderation_status != 'rejected'
 			group by gs.grid_reference order by y,x";
 
 		$recordSet = &$db->Execute($sql);
