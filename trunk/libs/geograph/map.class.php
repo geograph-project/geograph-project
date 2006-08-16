@@ -1264,7 +1264,8 @@ END;
 			where 
 			(x between $scanleft and $scanright) and 
 			(y between $scanbottom and $scantop) 
-			and percent_land<>0
+			and percent_land<>0 
+			and moderation_status != 'rejected'
 			group by gs.grid_reference order by y,x";
 
 		$recordSet = &$db->Execute($sql);
