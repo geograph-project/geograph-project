@@ -40,10 +40,8 @@ class Conversions
 		//with reference_index deduced from the location and the approraite conversion used
 
 function wgs84_to_internal($lat,$long) {
-	require_once('geograph/conversionslatlong.class.php');
-	$conv = new ConversionsLatLong;
-
-	//todo
+	list($e,$n,$reference_index) = $this->wgs84_to_national($lat,$long);
+	return $this->national_to_internal($e,$n,$reference_index);
 }
 
 
