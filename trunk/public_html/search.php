@@ -53,7 +53,7 @@ if (isset($_GET['fav']) ) {
 	// -------------------------------
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
-	require_once('geograph/searchengineflickr.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
 	
 	
 	$data = $_GET;
@@ -129,7 +129,7 @@ if (isset($_GET['fav']) ) {
 	// -------------------------------
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
-	require_once('geograph/searchengineflickr.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
 	
 
 	if (!empty($_GET['u']))
@@ -166,7 +166,7 @@ if (isset($_GET['fav']) ) {
 	
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
-	require_once('geograph/searchengineflickr.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
 	
 
 	if (!empty($_POST['refine'])) {
