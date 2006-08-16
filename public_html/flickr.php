@@ -39,6 +39,7 @@ if ($_GET['gridsquare']) {
 	// -------------------------------
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
 	require_once('geograph/searchengineflickr.class.php');
 	
 	if ($_GET['u'])
@@ -61,6 +62,7 @@ if ($_GET['gridsquare']) {
 	
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
 	require_once('geograph/searchengineflickr.class.php');
 	
 	if ($_POST['refine']) {
@@ -155,6 +157,7 @@ if ($_GET['gridsquare']) {
 	
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
 	require_once('geograph/searchengineflickr.class.php');
 	require_once('geograph/gridsquare.class.php');
 		
