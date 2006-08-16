@@ -49,16 +49,18 @@ if ($format == 'KML') {
 if (isset($_GET['text'])) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
 	
 	$GLOBALS['text'] = 1;
 	
-	$engine = new SearchEngine('#'); 
+	$engine = new SearchEngineBuilder('#'); 
  	$_GET['i'] = $engine->buildSimpleQuery($_GET['text'],30,false,isset($_GET['u'])?$_GET['u']:0);
 } elseif (isset($_GET['q'])) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
 	
-	$engine = new SearchEngine('#'); 
+	$engine = new SearchEngineBuilder('#'); 
  	$_GET['i'] = $engine->buildSimpleQuery($_GET['q'],30,false,isset($_GET['u'])?$_GET['u']:0);
  	
  	if (isset($engine->criteria) && $engine->criteria->is_multiple) {
@@ -68,6 +70,7 @@ if (isset($_GET['text'])) {
 	//no need to use this now getImagesByUser works for lat/long
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
 	
 	$_GET['user_id'] = $_GET['u']; 
 	$_GET['orderby'] = 'gridimage_id'; 
@@ -75,7 +78,7 @@ if (isset($_GET['text'])) {
 	$sortorders = array('gridimage_id'=>'Date Submitted');
 
 	
-	$engine = new SearchEngine('#'); 
+	$engine = new SearchEngineBuilder('#'); 
  	$_GET['i'] = $engine->buildAdvancedQuery($_GET,false);
 }
 

@@ -53,6 +53,8 @@ if (isset($_GET['fav']) ) {
 	// -------------------------------
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchengineflickr.class.php');
+	
 	
 	$data = $_GET;
 	$error = false;
@@ -95,7 +97,7 @@ if (isset($_GET['fav']) ) {
 
 		$data['adminoverride'] = 1;
 
-		$engine = new SearchEngine('#'); 
+		$engine = new SearchEngineBuilder('#'); 
 		$engine->buildAdvancedQuery($data);
 
 		//should never fail?? - but display form 'in case'
@@ -127,13 +129,15 @@ if (isset($_GET['fav']) ) {
 	// -------------------------------
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchengineflickr.class.php');
+	
 
 	if (!empty($_GET['u']))
 		$_GET['user_id'] = $_GET['u']; 
 
 	$_GET['adminoverride'] = 0; //prevent overriding it
 		
-	$engine = new SearchEngine('#'); 
+	$engine = new SearchEngineBuilder('#'); 
  	$engine->buildAdvancedQuery($_GET);
  	
  	//should never fail?? - but display form 'in case'
@@ -162,13 +166,15 @@ if (isset($_GET['fav']) ) {
 	
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchengineflickr.class.php');
+	
 
 	if (!empty($_POST['refine'])) {
 		//we could use the selected item but then have to check for numberic placenames
 		$_POST['placename'] = $_POST['old-placename'];
 	} else {
 		$_POST['adminoverride'] = 0; //prevent overriding it
-		$engine = new SearchEngine('#'); 
+		$engine = new SearchEngineBuilder('#'); 
 		$engine->buildAdvancedQuery($_POST);	
 		
 		//if we get this far then theres a problem...
@@ -225,8 +231,9 @@ if (isset($_GET['fav']) ) {
 
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
 
- 	$engine = new SearchEngine('#'); 
+ 	$engine = new SearchEngineBuilder('#'); 
  	$engine->buildSimpleQuery($q,$CONF['default_search_distance'],(isset($_GET['form']) && $_GET['form'] == 'simple')?'simple':'auto');
  	if (isset($engine->criteria) && $engine->criteria->is_multiple) {
  		if (empty($_GET['distance']))
