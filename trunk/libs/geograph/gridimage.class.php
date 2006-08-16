@@ -224,11 +224,14 @@ class GridImage
 		//the move to the center of the square
 		//must be before getNatEastings is called
 		$correction = ($this->nateastings)?0:500;
+		
+		//we need a special case for centisquare 0,0
+		$gr_len = ($this->nateastings && $this->nateastings%1000 == 0&& $this->natnorthings%1000 == 0)?6:0;
 
 		list($gr,$len) = $conv->national_to_gridref(
 			$this->grid_square->getNatEastings()-$correction,
 			$this->grid_square->getNatNorthings()-$correction,
-			0,
+			$gr_len,
 			$this->grid_square->reference_index);
 		
 		$this->subject_gridref=$gr;
