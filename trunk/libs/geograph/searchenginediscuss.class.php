@@ -38,7 +38,7 @@
 * 
 * @package Geograph
 */
-class SearchEngineDiscuss extends SearchEngine
+class SearchEngineDiscuss extends SearchEngineBuilder
 {
 	var $page = "discuss/search.php";
 	var $searchuse = "discuss";

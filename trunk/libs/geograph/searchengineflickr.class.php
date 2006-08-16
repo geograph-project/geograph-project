@@ -38,7 +38,7 @@
 * 
 * @package Geograph
 */
-class SearchEngineFlickr extends SearchEngine
+class SearchEngineFlickr extends SearchEngineBuilder
 {
 	var $page = "flickr.php";
 	var $searchuse = "flickr";
