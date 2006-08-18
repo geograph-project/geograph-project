@@ -381,3 +381,20 @@ CREATE TABLE `article` (
   UNIQUE KEY `url` (`url`),
   KEY `article_cat_id` (`article_cat_id`,`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 PACK_KEYS=0 AUTO_INCREMENT=2 ;
+
+
+ALTER TABLE `gridimage_search` ADD INDEX ( `title` , `comment` ( 500 ) , `imageclass` );
+
+
+
+
+
+CREATE TABLE `gridimage_exif` (
+`gridimage_id` INT UNSIGNED NOT NULL ,
+`exif` TEXT NOT NULL ,
+PRIMARY KEY ( `gridimage_id` ) 
+);
+
+INSERT INTO gridimage_exif SELECT gridimage_id, exif FROM `gridimage` ;
+
+ALTER TABLE `gridimage` DROP `exif`, DROP INDEX `submitted_2`;
