@@ -464,37 +464,32 @@ class UploadManager
 			$exif = fread ($f, filesize($exiffile)); 
 			fclose($f);
 		}
-		#$this->db->debug = true;
+		
 		//create record
 		// nateasting/natnorthings will only have values if getNatEastings has been called (in this case because setByFullGridRef has been called IF an exact location is specifed)
 		$sql=sprintf("insert into gridimage(".
 			"gridsquare_id, seq_no, user_id, ftf,".
-			"moderation_status,title,comment,exif,nateastings,natnorthings,imageclass,imagetaken,".
+			"moderation_status,title,comment,nateastings,natnorthings,imageclass,imagetaken,".
 			"submitted,viewpoint_eastings,viewpoint_northings,view_direction,user_status) values ".
 			"(%d,%d,%d,%d,".
-			"'pending',%s,%s,%s,%d,%d,%s,%s,".
+			"'pending',%s,%s,%d,%d,%s,%s,".
 			"now(),%d,%d,%d,%s)",
 			$this->square->gridsquare_id, $seq_no,$USER->user_id, $ftf,
-			$this->db->Quote($this->title), $this->db->Quote($this->comment), $this->db->Quote($exif),
+			$this->db->Quote($this->title), $this->db->Quote($this->comment), 
 			$this->square->nateastings,$this->square->natnorthings,
 			$this->db->Quote($this->imageclass), $this->db->Quote($this->imagetaken),
 			$viewpoint_eastings,$viewpoint_northings,$this->view_direction,$this->db->Quote($this->user_status));
 		
 		$this->db->Query($sql);
 		
-		//increment image count
-		//imagecount shouldnt any longer include the pending images!
-		//$this->db->Query("update gridsquare set imagecount=imagecount+1 ".
-		//	"where gridsquare_id={$this->square->gridsquare_id}");
-		
-		//invalidate any cached maps
-		//require_once('geograph/mapmosaic.class.php');
-		//$mosaic=new GeographMapMosaic;
-		//$mosaic->expirePosition($this->square->x,$this->square->y);
-			//-> map no longer contains pending images will be invalidated when mod'ed
-		
 		//get the id
 		$gridimage_id=$this->db->Insert_ID();
+		
+		//save the exif
+		$sql=sprintf("insert into gridimage_exif (".
+			"gridimage_id,exif) values ".
+			"(%d,%s)",$gridimage_id,$this->db->Quote($exif));
+		$this->db->Query($sql);
 		
 		//copy image to correct area
 		$src=$this->_pendingJPEG($this->upload_id);
