@@ -187,7 +187,7 @@ if (!isset($CONF['disable_discuss_thumbs']) && preg_match_all("/\[\[(\[?)(\w*\d+
 					$g_title=$g_image->grid_reference.' : '.htmlentities($g_image->title).' by '.$g_image->realname;
 					$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
 				} else {
-					$posterText = str_replace("[[$g_id]]","{<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\">{$g_image->grid_reference} : {$g_image->title}</a>}",$posterText);
+					$posterText = preg_replace("/(?<!\[)\[\[$g_id\]\]/","{<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\">{$g_image->grid_reference} : {$g_image->title}</a>}",$posterText);
 				}
 			}			
 		} else {
