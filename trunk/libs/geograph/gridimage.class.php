@@ -543,7 +543,7 @@ class GridImage
 		{
 			//get path to fullsize image, but don't fallback to error image..
 			$fullpath=$this->_getFullpath(false);
-			if (file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
+			if ($fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			{
 				//generate resized image
 				$fullimg = @imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$fullpath); 
@@ -590,6 +590,13 @@ class GridImage
 						imagejpeg ($resized, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
 						imagedestroy($resized);
 					}
+					elseif ($srcw == 0 && $srch == 0)
+					{
+						//couldn't read image!
+						$thumbpath="/photos/error.jpg";
+
+						imagedestroy($fullimg);
+					} 
 					else
 					{
 						//requested thumb is larger than original - stick with original
@@ -648,7 +655,7 @@ class GridImage
 			//get path to fullsize image, but don't fallback to error image..
 			$fullpath=$this->_getFullpath(false);
 			
-			if (file_exists($base.$fullpath))
+			if ($fullpath != '/photos/error.jpg' && file_exists($base.$fullpath))
 			{
 				
 		
@@ -659,41 +666,48 @@ class GridImage
 					$srcw=imagesx($fullimg);
 					$srch=imagesy($fullimg);
 					
-					//crop percentage is how much of the
-					//image to keep in the thumbnail
-					$crop=0.75;
-					
-					//figure out size of image we'll keep
-					if ($srcw>$srch)
+					if ($srcw == 0 && $srch == 0)
 					{
-						//landscape
-						$s=$srch*$crop;
-						
-						
+						//couldn't read image!
+						$img=null;
+
+						imagedestroy($fullimg);
+					} else {
+						//crop percentage is how much of the
+						//image to keep in the thumbnail
+						$crop=0.75;
+
+						//figure out size of image we'll keep
+						if ($srcw>$srch)
+						{
+							//landscape
+							$s=$srch*$crop;
+
+
+						}
+						else
+						{
+							//portrait
+							$s=$srcw*$crop;
+						}
+
+						$srcx = round(($srcw-$s)/2);
+						$srcy = round(($srch-$s)/2);
+						$srcw = $s;
+						$srch=$s;
+
+						$img = imagecreatetruecolor($size, $size);
+						imagecopyresampled($img, $fullimg, 0, 0, $srcx, $srcy, 
+									$size,$size, $srcw, $srch);
+
+						require_once('geograph/image.inc.php');
+						UnsharpMask($img,200,0.5,3);
+
+						imagedestroy($fullimg);
+
+						//save the thumbnail
+						imagegd($img, $base.$thumbpath);
 					}
-					else
-					{
-						//portrait
-						$s=$srcw*$crop;
-					}
-
-					$srcx = round(($srcw-$s)/2);
-					$srcy = round(($srch-$s)/2);
-					$srcw = $s;
-					$srch=$s;
-					
-					$img = imagecreatetruecolor($size, $size);
-					imagecopyresampled($img, $fullimg, 0, 0, $srcx, $srcy, 
-								$size,$size, $srcw, $srch);
-
-					require_once('geograph/image.inc.php');
-					UnsharpMask($img,200,0.5,3);
-
-					imagedestroy($fullimg);
-
-					//save the thumbnail
-					imagegd($img, $base.$thumbpath);
-						
 					
 				}
 				else
@@ -740,25 +754,30 @@ class GridImage
 			//get path to fullsize image, but don't fallback to error image..
 			$fullpath=$this->_getFullpath(false);
 			
-			if (file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
+			if ($fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			{
 				if (strlen($CONF['imagemagick_path'])) {
-								
-					list($width, $height, $type, $attr) = getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
-
-					if (($width>$maxw) || ($height>$maxh)) {
 					
-						$cmd = sprintf ("\"%sconvert\" -thumbnail %ldx%ld -unsharp 0x1+0.8+0.1 -raise 2x2 -quality 87 jpg:%s jpg:%s", 
-							$CONF['imagemagick_path'],
-							$maxw, $maxh, 
-							$_SERVER['DOCUMENT_ROOT'].$fullpath,
-							$_SERVER['DOCUMENT_ROOT'].$thumbpath);
-						passthru ($cmd);
-
+					if (($info = getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath)) === FALSE) {
+						//couldn't read image!
+						$thumbpath="/photos/error.jpg";
 					} else {
-						//requested thumb is larger than original - stick with original
-						copy($_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
-					}											
+						list($width, $height, $type, $attr) = $info;
+						
+						if (($width>$maxw) || ($height>$maxh)) {
+
+							$cmd = sprintf ("\"%sconvert\" -thumbnail %ldx%ld -unsharp 0x1+0.8+0.1 -raise 2x2 -quality 87 jpg:%s jpg:%s", 
+								$CONF['imagemagick_path'],
+								$maxw, $maxh, 
+								$_SERVER['DOCUMENT_ROOT'].$fullpath,
+								$_SERVER['DOCUMENT_ROOT'].$thumbpath);
+							passthru ($cmd);
+
+						} else {
+							//requested thumb is larger than original - stick with original
+							copy($_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
+						}	
+					}
 				} else {
 					//generate resized image
 					$fullimg = @imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$fullpath); 
@@ -798,6 +817,13 @@ class GridImage
 							imagejpeg ($resized, $_SERVER['DOCUMENT_ROOT'].$thumbpath,85);
 							imagedestroy($resized);
 						}
+						elseif ($srcw == 0 && $srch == 0)
+						{
+							//couldn't read image!
+							$thumbpath="/photos/error.jpg";
+							
+							imagedestroy($fullimg);
+						} 
 						else
 						{
 							//requested thumb is larger than original - stick with original
