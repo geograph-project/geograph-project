@@ -182,8 +182,14 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign_by_ref('imgmap', $rect);
 	}
 	
-	
-	$smarty->assign('gridref', $mosaic->getGridRef(-1,-1));
+	if ($gridref = $mosaic->getGridRef(-1,-1)) {
+		$smarty->assign('gridref', $gridref);
+		if ($mosaic->pixels_per_km == 40 && preg_match('/(\w+\d)5(\d)5/',$gridref,$m)) {
+			$smarty->assign('hectad', $hectad = $m[1].$m[2]);
+			$db=NewADOConnection($GLOBALS['DSN']);
+			$smarty->assign_by_ref('hectad_row',$db->getRow("select * from hectad_complete where hectad_ref = '$hectad' limit 1"));
+		}
+	}
 	$smarty->assign('mapwidth', round($mosaic->image_w /$mosaic->pixels_per_km ) );
 	
 	$smarty->assign('token_zoomin', $mosaic->getZoomInToken());
