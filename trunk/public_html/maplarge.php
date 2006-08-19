@@ -88,7 +88,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('mapwidth', round($mosaic->image_w /$mosaic->pixels_per_km ) );
 	
 
-	preg_match("/([A-Z]+\d)\d(\d)\d/",$gridref,$matches);
+	preg_match("/([A-Z]+\d)5(\d)5$/",$gridref,$matches);
 	$smarty->assign('gridref2',$matches[1].$matches[2] );
 
 	if ($mosaic->pixels_per_km >= 40) {
