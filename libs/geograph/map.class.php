@@ -726,9 +726,9 @@ class GeographMap
 			
 			$target=$this->getImageFilename();
 			if (preg_match('/jpg/',$target)) {
-				imagejpeg($img, $root.$target);
+				$ok = (imagejpeg($img, $root.$target) && $ok);
 			} else {
-				imagepng($img, $root.$target);
+				$ok = (imagepng($img, $root.$target) && $ok);
 			}
 
 			imagedestroy($img);

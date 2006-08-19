@@ -63,7 +63,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		return ($a['dateraw'] > $b['dateraw'])?-1:1;
 	}
 
-			
+	$db->Execute("TRUNCATE hectad_complete");
+		
+	$i = 1;
 	foreach (array(1,2) as $ri) {
 		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 		
@@ -82,7 +84,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		order by percentage desc,tenk_square");
 		$ADODB_FETCH_MODE = $prev_fetch_mode;
 		
-		$i = 1;
 		$lastgeographs = -1;
 		foreach($most as $id=>$entry) 
 		{
@@ -114,6 +115,20 @@ if (!$smarty->is_cached($template, $cacheid))
 			"SELECT DATE_FORMAT(MAX(submitted),'%D %b %Y'),MAX(submitted)
 			FROM gridimage_search
 			WHERE grid_reference LIKE '$crit' AND moderation_status = 'geograph' AND ftf = 1");
+			
+			$db->Execute(sprintf("INSERT IGNORE INTO hectad_complete SET
+				hectad_ref = %s,
+				completed = %s,
+				landcount = %d,
+				reference_index = %d,
+				largemap_token = %s",
+				$db->Quote($most[$id]['tenk_square']),
+				$db->Quote($most[$id]['dateraw']),
+				intval($most[$id]['land_count']),
+				intval($ri),
+				$db->Quote($most[$id]['largemap_token']) ) );
+			
+			
 		}	
 		
 		uasort($most,"cmp");

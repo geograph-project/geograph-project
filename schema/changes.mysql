@@ -398,3 +398,13 @@ PRIMARY KEY ( `gridimage_id` )
 INSERT INTO gridimage_exif SELECT gridimage_id, exif FROM `gridimage` ;
 
 ALTER TABLE `gridimage` DROP `exif`, DROP INDEX `submitted_2`;
+
+CREATE TABLE `hectad_complete` (
+  `hectad_ref` varchar(6) NOT NULL default '',
+  `completed` date NOT NULL default '0000-00-00',
+  `landcount` tinyint(3) unsigned NOT NULL default '0',
+  `reference_index` tinyint(3) unsigned NOT NULL default '0',
+  `largemap_token` varchar(128) NOT NULL default '',
+  PRIMARY KEY  (`hectad_ref`),
+  KEY `completed` (`completed`)
+) ENGINE=MyISAM;

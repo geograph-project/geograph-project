@@ -71,6 +71,11 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$smarty->assign_by_ref('news', $news);
 	
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+	$hectads= $db->getAll("select * from hectad_complete order by completed desc limit 5");
+	$smarty->assign_by_ref('hectads', $hectads);
+	#print "<pre>";
+	#print_r($hectads);
 	
 	$stats= $db->cacheGetRow(3600,"select count(*) as images,count(distinct grid_reference) as squares,count(distinct user_id) as users ,sum(ftf=1 and moderation_status = 'geograph') as points from gridimage_search");
 	$smarty->assign_by_ref('stats', $stats);
