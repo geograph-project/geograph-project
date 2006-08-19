@@ -1,6 +1,7 @@
 {assign var="page_title" value="Map Viewer :: $gridref"}
 {include file="_std_begin.tpl"}
-{if $mosaic->pixels_per_km > 40}
+
+{if $gridref2}
 <h2>Geograph Mosaic for {$gridref2}</h2>
 {else}
 <h2>Geograph Map for {$gridref}</h2>

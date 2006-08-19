@@ -121,6 +121,11 @@ if (isset($_GET['recenter']))
 	
 }
 
+if ($mosaic->pixels_per_km > 40) {
+	$mosaic->pixels_per_km = 40;
+	$mosaic->image_w /= 2;
+	$mosaic->image_h /= 2;
+}
 
 //get token, we'll use it as a cache id
 $token=$mosaic->getToken();
@@ -184,7 +189,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	if ($gridref = $mosaic->getGridRef(-1,-1)) {
 		$smarty->assign('gridref', $gridref);
-		if ($mosaic->pixels_per_km == 40 && preg_match('/(\w+\d)5(\d)5/',$gridref,$m)) {
+		if ($mosaic->pixels_per_km == 40 && preg_match('/([A-Z]+\d)5(\d)5$/',$gridref,$m)) {
 			$smarty->assign('hectad', $hectad = $m[1].$m[2]);
 			$db=NewADOConnection($GLOBALS['DSN']);
 			$smarty->assign_by_ref('hectad_row',$db->getRow("select * from hectad_complete where hectad_ref = '$hectad' limit 1"));
