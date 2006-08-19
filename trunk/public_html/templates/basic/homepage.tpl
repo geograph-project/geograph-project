@@ -3,12 +3,22 @@
 
 <h2>Welcome to Geograph British Isles</h2>
 
+<div style="font-size:0.7em; text-align:center; border: 1px solid silver; padding:5px">Quick Statistics: <b class="nowrap">{$stats.users|thousends} users</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b>, covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, and been awarded <b class="nowrap">{$stats.points|thousends} points</b>. <a href="/help/stats_faq">FAQ</a><br/>
+
+Recently completed hectads: 
+{foreach from=$hectads key=id item=obj}
+<a title="View Mosaic for {$obj.hectad_ref}, completed {$obj.completed}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad_ref}</a>,
+{/foreach}
+<a href="/statistics/fully_geographed.php" title="Compleated 10km x 10km squares">more...</a>
+
+</div><br/>
+
 <div style="width:60%;float:left;padding-right:5px;position:relative">
 <p>The Geograph British Isles project aims to collect geographically
 representative photographs and information for every square kilometre of the UK and Eire,
 and you can be part of it.</p>
 
-<div style="font-size:0.7em; text-align:center; border: 1px solid silver; padding:5px">Quick Statistics: <b>{$stats.users|thousends} users</b> have contributed <b>{$stats.images|thousends} images</b>, covering <b>{$stats.squares|thousends} grid squares</b>, and been awarded <b>{$stats.points|thousends} points</b>. <a href="/help/stats_faq">FAQ</a></div><br/>
+
 
 <h3>Getting started...</h3>
 <ul>
