@@ -383,19 +383,21 @@ class GeographMap
 	*/
 	function& _renderMap() {
 		if ($this->type_or_user < 0) {
-			$this->_renderRandomGeographMap();
+			$ok = $this->_renderRandomGeographMap();
 		} else if ($this->type_or_user > 0) {
 			//todo
 			//$this->_renderUserMap();
 		} else {
-			$this->_renderImage();
+			$ok = $this->_renderImage();
 		}
 
-		$db=&$this->_getDB();
+		if ($ok) {
+			$db=&$this->_getDB();
 
-		$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%f,type_or_user=%d",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user);
+			$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%f,type_or_user=%d",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user);
 
-		$db->Execute($sql);
+			$db->Execute($sql);
+		}
 	}
 	
 	/**
@@ -516,6 +518,8 @@ class GeographMap
 		global $CONF;
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 		
+		$ok = true;
+		
 		//first of all, generate or pull in a cached based map
 		$basemap=$this->getBaseMapFilename();
 		if ($this->caching && @file_exists($root.$basemap))
@@ -528,6 +532,10 @@ class GeographMap
 		{
 			//we need to generate a basemap
 			$img=&$this->_createBasemap($root.$basemap);
+		}
+		
+		if (!$img) {
+			return false;
 		}
 		
 		$colMarker=imagecolorallocate($img, 255,0,0);
@@ -687,6 +695,8 @@ class GeographMap
 							imagefilledrectangle ($img, $imgx1+2, $imgy1-4, $imgx1+8, $imgy1-6, $colSuppMarker);
 							imagefilledrectangle ($img, $imgx1+4, $imgy1-2, $imgx1+6, $imgy1-8, $colSuppMarker);
 						}
+					} else {
+						$ok = false;
 					}
 
 
@@ -700,26 +710,32 @@ class GeographMap
 		}
 		$recordSet->Close(); 
 
-		//plot grid square?
-		if ($this->pixels_per_km>=0)
-		{
-			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
-		}
+		if ($img) {
+			//ok being false isnt fatal, as we can create a tile, however we should use it to try again later!
 			
-		if ($this->pixels_per_km>=1  && $this->pixels_per_km<=40 && isset($CONF['enable_newmap']))
-		{
-			$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
-		}				
-				
-		$target=$this->getImageFilename();
-		if (preg_match('/jpg/',$target)) {
-			imagejpeg($img, $root.$target);
+			//plot grid square?
+			if ($this->pixels_per_km>=0)
+			{
+				$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
+			}
+
+			if ($this->pixels_per_km>=1  && $this->pixels_per_km<=40 && isset($CONF['enable_newmap']))
+			{
+				$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
+			}				
+			
+			$target=$this->getImageFilename();
+			if (preg_match('/jpg/',$target)) {
+				imagejpeg($img, $root.$target);
+			} else {
+				imagepng($img, $root.$target);
+			}
+
+			imagedestroy($img);
+			return $ok;
 		} else {
-			imagepng($img, $root.$target);
+			return false;
 		}
-		
-		imagedestroy($img);
-		
 	}	
 	
 	/**
