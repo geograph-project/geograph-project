@@ -23,16 +23,17 @@
 
 </div>
 
-<h2>Fully Geographed 10km x 10km Squares</h2>
+<h2>Fully Geographed Hectads</h2>
 
-<p>These are the squares with full land coverage! See also <a href="/statistics/most_geographed.php">partially covered squares</a>.</p>
+<p>These are the 10km x 10km squares or hectads<a href="/help/squares">?</a> with full land coverage!
+<br/> See also <a href="/statistics/most_geographed.php">partially covered squares</a>.</p>
 
 <p style="font-size:0.8em">The # number column is the number of squares with (at least) a geograph, Click Mosaic for a large Map. Click a column header to change sort order.</p>
 
 <div style="float:left;position:relative;width:50%">
 <h4 style="padding-left:10px">Great Britain</h4>
 <table class="report sortable" id="table1"> 
-<thead><tr><td>Square</td><td sorted="desc">Date Completed</td><td>#</td><td>Mosaic</td></tr></thead>
+<thead><tr><td>Hectad</td><td sorted="desc">Date Completed</td><td>#</td><td>Mosaic</td></tr></thead>
 <tbody>
 
 {foreach from=$most1 key=id item=obj}
@@ -50,7 +51,7 @@
 <div style="float:left;position:relative;width:50%">
 <h4 style="padding-left:10px">Ireland</h4>
 <table class="report sortable" id="table2"> 
-<thead><tr><td>Square</td><td sorted="desc">Date Completed</td><td>#</td><td>Mosaic</td></tr></thead>
+<thead><tr><td>Hectad</td><td sorted="desc">Date Completed</td><td>#</td><td>Mosaic</td></tr></thead>
 <tbody>
 
 {foreach from=$most2 key=id item=obj}
