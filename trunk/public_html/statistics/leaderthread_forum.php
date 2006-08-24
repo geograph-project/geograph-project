@@ -66,7 +66,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$table=$db->GetAll("
 	select 
-	topic_title as `Topic Title`,
+	CONCAT('<a href=\"/discuss/?action=vthread&amp;topic=',geobb_posts.topic_id,'\">',topic_title,'</a>') as `Topic Title`,
 	count(*) as Posts,
 	count(distinct poster_id) as Posters,
 	topic_views as Views,
