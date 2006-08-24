@@ -176,6 +176,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign_by_ref('table', $table);
 	
 	$smarty->assign("h2title",$title);
+	$smarty->assign("nosort",1);
 	$smarty->assign("total",count($table));
 	
 
