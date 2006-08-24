@@ -83,7 +83,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 	 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$table=$db->GetAll("SELECT 
-	topic_title as `Topic`,
+	CONCAT('<a href=\"/discuss/?action=vthread&amp;topic=',gp.topic_id,'\">',topic_title,'</a>') as Topic,	
 	count( * ) AS `Thumbnails`, 
 	count( DISTINCT gp.gridimage_id ) AS `Seperate Images`, 
 	count( DISTINCT post_id ) AS `Number of Posts`
