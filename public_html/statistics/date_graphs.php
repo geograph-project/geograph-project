@@ -117,11 +117,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$graph2 = array();
 	
-	$title = "Breakdown of Images by $title1 Day of Week";
+	$title = "Average Images $title1 for each Day of Week";
 	
 	$table=$db->GetAll("SELECT 
 	DAYNAME($column) AS `title`, 
-	count( * ) AS `value`
+	count( * ) div count(distinct YEARWEEK($column)) AS `value`
 	FROM `gridimage` $where_sql
 	GROUP BY WEEKDAY($column)" );
 
@@ -140,11 +140,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$graph3 = array();
 
-	$title = "Breakdown of Images by $title1 Month";
+	$title = "Average Images $title1 each Month";
 
 	$table=$db->GetAll("SELECT 
 	MONTHNAME($column) AS `title`, 
-	count( * ) AS `value`
+	count( * ) div count(distinct YEAR($column)) AS `value`
 	FROM `gridimage` $where_sql
 	GROUP BY MONTH($column)" );
 
