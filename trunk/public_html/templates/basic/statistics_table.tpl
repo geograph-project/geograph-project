@@ -1,6 +1,8 @@
 {assign var="page_title" value="Statistics:: $h2title"}
 {include file="_std_begin.tpl"}
+{if !$nosort}
 <script src="/sorttable.js"></script>
+{/if}
 
 {if $filter}
     <form method="get" action="{$script_name}">
