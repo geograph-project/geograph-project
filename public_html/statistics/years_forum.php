@@ -81,8 +81,15 @@ if (!$smarty->is_cached($template, $cacheid))
 	group by SUBSTRING($column,1,4)
 	order by Year desc;" );
 	
+	$thisyear = date('Y');
 	foreach ($table as $id => $row) {
-		$days = 365 + (!($row['Year'] % 4) && (($row['Year'] % 100) || !($row['Year'] % 400)));
+		if ($row['Year'] == 2005) {
+			$days = 284; //as the forum launced on Mar 21st
+		} elseif ($row['Year'] == $thisyear) {
+			$days = date('z')+1;
+		} else {
+			$days = 365 + (!($row['Year'] % 4) && (($row['Year'] % 100) || !($row['Year'] % 400)));
+		}
 		$table[$id]['Days in Year'] = $days;
 		$table[$id]['Percentage'] = sprintf('%.1f',$row['Days']/$days*100)."%";
 	}
