@@ -98,11 +98,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$graph2 = array();
 	
-	$title = "Forum Posts by Day of Week";
+	$title = "Average Forum Posts for each Day of Week";
 	
 	$table=$db->GetAll("SELECT 
 	DAYNAME($column) AS `title`, 
-	count( * ) AS `value`
+	count( * ) div count(distinct YEARWEEK($column)) AS `value`
 	FROM `geobb_posts` $where_sql
 	GROUP BY WEEKDAY($column)" );
 
@@ -121,11 +121,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$graph3 = array();
 
-	$title = "Forum Posts by Month";
+	$title = "Average Forum Posts by Month";
 
 	$table=$db->GetAll("SELECT 
 	MONTHNAME($column) AS `title`, 
-	count( * ) AS `value`
+	count( * ) div count(distinct YEAR($column)) AS `value`
 	FROM `geobb_posts` $where_sql
 	GROUP BY MONTH($column)" );
 

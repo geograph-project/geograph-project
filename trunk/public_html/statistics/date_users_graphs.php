@@ -104,11 +104,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$graph3 = array();
 
-	$title = "User Signups by Month";
+	$title = "Average User Signups each Month";
 
 	$table=$db->GetAll("SELECT 
 	MONTHNAME($column) AS `title`, 
-	count( * ) AS `value`
+	count( * ) div count(distinct YEAR($column)) AS `value`
 	FROM `user` $where_sql
 	GROUP BY MONTH($column)" );
 
