@@ -31,6 +31,7 @@
 * @version $Revision$
 */
 
+require_once("geograph/eventhandler.class.php");
 
 /**
 * Event processor class
