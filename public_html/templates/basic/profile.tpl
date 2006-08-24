@@ -65,7 +65,7 @@
  	  <li><b>{$profile->stats.geosquares}</b> gridsquare{if $profile->stats.geosquares ne 1}s{/if} <i>geographed</i></li>
  	  </ul>
  	  </li>
- 	  <li><b>{$profile->stats.total}</b> photograph{if $profile->stats.total ne 1}s{/if} submitted</li>
+ 	  <li><b>{$profile->stats.total}</b> photograph{if $profile->stats.total ne 1}s{/if} submitted
  	  {if $profile->stats.pending gt 0}
  	 	  ({$profile->stats.pending} awaiting moderation)
  	  {/if}
