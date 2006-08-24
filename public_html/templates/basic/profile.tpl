@@ -68,11 +68,12 @@
  	  <li><b>{$profile->stats.total}</b> photograph{if $profile->stats.total ne 1}s{/if} submitted</li>
  	  {if $profile->stats.pending gt 0}
  	 	  ({$profile->stats.pending} awaiting moderation)
- 	  {/if}<ul>
+ 	  {/if}
+ 	  {if $profile->stats.squares gt 0}<ul>
  	  	<li><b>{$profile->stats.squares}</b> gridsquare{if $profile->stats.squares ne 1}s{/if} <i>photographed</i>,
  	  	giving a depth score of <b>{$profile->stats.total/$profile->stats.squares|string_format:"%.2f"}</b> (see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)
  	  	</li>
- 	  </ul>
+ 	  </ul>{/if}
  	  </li>
 
  	  </div>
