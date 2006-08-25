@@ -7,6 +7,7 @@
  <ul style="margin-top:0;padding:0 0 0 1em;">
  <li><a href="#points" style="text-decoration:none">How do I get a geograph point for my image?<br/> What makes a good geograph?</a></li>
  <li><a href="#supplemental" style="text-decoration:none">What is a supplemental image?</a></li>
+ <li><a href="#multiple" style="text-decoration:none">Do you accept multiple images per square</a></li>
  <li><a href="#resize" style="text-decoration:none">Do I need to resize my photos? Are there size limits?</a></li>
  <li><a href="#change" style="text-decoration:none">I disagree with the location or title of an image - what can I do?</a></li>
  <li><a href="#legal" style="text-decoration:none">What are my legal rights when taking photographs?</a></li>
@@ -46,6 +47,13 @@
     title="geograph and supplemental guide" href="/help/geograph_guide">What is a geograph?</a> 
     for details of how photos are moderated.
     </p>
+<a name="multiple"></a>
+<h3>Do you accept multiple images per square?</h3>
+    Certainly - the points system is there to encourage people to make that extra effort 
+    to capture squares we don't have photos for yet - but we welcome additional 
+    images, perhaps showing a different subject, or a different time of year. Everyone sees 
+    things differently - feel free to give us your take on any square. Some squares have 
+    been done in considerable <a href="/statistics/most_geographed.php" title="squares with good overage">detail</a> - helping to more fully document and add <a href="/moversboard.php?type=depth" title="Depth Weekly Leaderboard">depth</a> to a square.</p>
 <a name="resize"></a>
 <h3>Do I need to resize my photos? Are there size limits?</h3>
     <p>You can upload images of any size, portrait or landscape, but we do resize them so their
