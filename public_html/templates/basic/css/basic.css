@@ -732,7 +732,11 @@ div.map div.inner img
   text-decoration: none;
   background: #000099; color: #FFF; border-color: #FFC8A4 #7D3302 #3F1A01 #FF9A57;}
 
-
+.navCell {
+	white-space:nowrap;
+	text-align:right;
+	float:right;
+}
 
 .pageNav {
 	background-color:#DDDDDD;
