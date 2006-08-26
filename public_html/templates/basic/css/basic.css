@@ -732,3 +732,24 @@ div.map div.inner img
   text-decoration: none;
   background: #000099; color: #FFF; border-color: #FFC8A4 #7D3302 #3F1A01 #FF9A57;}
 
+
+
+.pageNav {
+	background-color:#DDDDDD;
+	padding: 5px;
+	font-size: 1.2em;
+	border: 1px solid gray;
+	margin: 2px;
+}
+
+.navCell .pageNav {
+	background-color:#DDDDDD;
+	padding: 2px;
+	font-size: 1em;
+	border: none;
+	margin: 0px;
+}
+
+.pageNavSelected {
+	background-color: darkgray;
+}
