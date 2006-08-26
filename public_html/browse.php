@@ -217,7 +217,7 @@ if ($grid_given)
 			$breakdowns[] = array('type'=>'centi','name'=>'Centisquares','count'=>$row['centi']-($row['centi_blank'] > 0));
 			$smarty->assign_by_ref('breakdowns', $breakdowns);
 			
-			$sql="select * from gridimage where gridsquare_id={$square->gridsquare_id} 
+			$sql="select gridimage.*,user.realname,user.nickname from gridimage  inner join user using(user_id) where gridsquare_id={$square->gridsquare_id} 
 			and moderation_status in ('accepted','geograph') order by moderation_status+0 desc,seq_no limit 1";
 
 			$rec=$db->GetRow($sql);
