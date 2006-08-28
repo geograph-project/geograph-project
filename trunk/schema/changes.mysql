@@ -407,4 +407,32 @@ CREATE TABLE `hectad_complete` (
   `largemap_token` varchar(128) NOT NULL default '',
   PRIMARY KEY  (`hectad_ref`),
   KEY `completed` (`completed`)
-) ENGINE=MyISAM;
+);
+
+
+
+-- --------------------------------------------------------
+
+DROP TABLE `wordnet`;
+
+CREATE TABLE `wordnet1` (
+  `gid` int(11) NOT NULL default '0',
+  `words` varchar(64) NOT NULL default '',
+  `title` smallint(6) NOT NULL default '0',
+  KEY `gid_2` (`gid`,`words`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE `wordnet2` (
+  `gid` int(11) NOT NULL default '0',
+  `words` varchar(64) NOT NULL default '',
+  `title` smallint(6) NOT NULL default '0',
+  KEY `gid_2` (`gid`,`words`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE `wordnet3` (
+  `gid` int(11) NOT NULL default '0',
+  `words` varchar(64) NOT NULL default '',
+  `title` smallint(6) NOT NULL default '0',
+  KEY `gid_2` (`gid`,`words`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+        
