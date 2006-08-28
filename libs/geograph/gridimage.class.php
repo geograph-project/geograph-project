@@ -900,9 +900,9 @@ class GridImage
 		//todo: lock tables
 		
 		//you only get ftf if new status is 'geograph' and there are no other 
-		//geograph images
+		//first geograph images
 		$geographs= $db->GetOne("select count(*) from gridimage ".
-					"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph'");
+					"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' and ftf = 1");
 		$this->ftf=0;
 		if (($status=='geograph') && ($geographs==0))
 		{
@@ -1022,7 +1022,7 @@ class GridImage
 					$next_geograph= $db->GetOne("select gridimage_id from gridimage ".
 						"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' ".
 						"and gridimage_id<>{$this->gridimage_id} ".
-						"order by gridimage_id limit 1");
+						"order by gridimage_id");
 					if ($next_geograph)
 					{
 						$db->Query("update gridimage set ftf=1 where gridimage_id={$next_geograph}");
@@ -1034,7 +1034,7 @@ class GridImage
 				if ($this->moderation_status=='geograph')
 				{
 					$geographs= $db->GetOne("select count(*) from gridimage ".
-						"where gridsquare_id={$newsq->gridsquare_id} and moderation_status='geograph'");
+						"where gridsquare_id={$newsq->gridsquare_id} and moderation_status='geograph' and ftf = 1");
 					if ($geographs==0)
 						$this->ftf=1;
 				}
