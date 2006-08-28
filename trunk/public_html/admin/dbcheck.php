@@ -129,6 +129,26 @@ if (isset($_POST['check']))
 		$recordSet->Close(); 
 		echo "<script language=\"javascript\">completed.innerHTML='Completed';</script>\n";
 	}		
+	if (isset($_POST['geographs']))
+	{
+		echo "<h3>Geographs Per Square</h3><table class=\"report\">";
+		flush();
+		echo "<thead><tr><td>Square</td><td>Number of Geographs</td><td>Number of Firsts</td></tr></thead><tbody>";
+		$squares=$db->getAll("select
+		gs.grid_reference,count(gridimage_id) as geographs,sum(ftf = 1) as firsts
+		from gridsquare as gs
+			inner join gridimage_search as gi
+				using (grid_reference)
+		where moderation_status = 'geograph'
+		group by gi.grid_reference
+		having firsts != 1");
+		foreach ($squares as $id => $square)
+		{
+			echo "<tr><td><a href=\"/gridref/{$square['grid_reference']}\">{$square['grid_reference']}</a></td><td>{$square['geographs']}</td><td>{$square['firsts']}</td></tr>\n";
+		}
+		echo "</tbody></table>\n";
+		flush();
+	}
 	
 	
 	$smarty->display('_std_end.tpl');
@@ -137,7 +157,7 @@ if (isset($_POST['check']))
 
 
 
-$smarty->display('dbcheck.tpl');
+$smarty->display('admin_dbcheck.tpl');
 
 	
 ?>
