@@ -369,10 +369,12 @@ class SearchCriteria_Text extends SearchCriteria
 							if (strpos($terms,'^') === 0) {
 								$words = 'REGEXP '.$db->Quote('[[:<:]]'.str_replace('^','',preg_replace('/\+$/','',$terms)).'[[:>:]]');
 							} else {
-								$words = 'LIKE '.$db->Quote('%'.preg_replace('/\+$/','',$terms).'%');
+								$words = 'LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$terms).'%');
 							}
 							
-							if (preg_match('/\+$/',$terms)) {								
+							if (preg_match('/\~$/',$terms)) {								
+								$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.')';
+							} elseif (preg_match('/\+$/',$terms)) {								
 								$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.imageclass '.$words.')';
 							} else {
 								$sql_where .= " gi.title $prefix ".$words;
@@ -398,8 +400,13 @@ class SearchCriteria_Text extends SearchCriteria
 			$sql_where .= ")";
 		} elseif (strpos($this->searchq,'^') === 0) {
 			$words = str_replace('^','',$this->searchq);
-			$sql_where .= ' wordnet.title>0 AND words = '.$db->Quote($words);
-			$sql_from .= ' INNER JOIN wordnet ON(gi.gridimage_id=wordnet.gid) ';
+			$len = substr_count($words,' ')+1;
+			if ($len >= 1 && $len <= 3) {
+				$sql_where .= " wordnet$len.title>0 AND words = ".$db->Quote($words);
+				$sql_from .= " INNER JOIN wordnet$len ON(gi.gridimage_id=wordnet$len.gid) ";
+			} else {
+				$sql_where .= ' title REGEXP '.$db->Quote('[[:<:]]'.preg_replace('/\+$/','',$words).'[[:>:]]');
+			}
 		} elseif (preg_match('/\+$/',$this->searchq)) {
 			$words = $db->Quote('%'.preg_replace("/\+$/",'',$this->searchq).'%');
 			$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';

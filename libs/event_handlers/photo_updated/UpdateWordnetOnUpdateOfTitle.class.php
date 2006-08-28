@@ -40,16 +40,17 @@ class UpdateWordnetOnUpdateOfTitle extends EventHandler
 {
 	function processEvent(&$event)
 	{
-		$db=&$this->_getDB();
 		
 		list ($gridimage_id,$field) = explode(',', $event['event_param']);
 		
 		if ($field == 'title')
 		{
-			$sql="DELETE FROM wordnet ".
-				"WHERE gid = $gridimage_id";
-			$db->Execute($sql);
-			
+			$db=&$this->_getDB();
+		
+			$db->Execute("DELETE FROM wordnet1 WHERE gid = $gridimage_id");
+			$db->Execute("DELETE FROM wordnet2 WHERE gid = $gridimage_id");
+			$db->Execute("DELETE FROM wordnet3 WHERE gid = $gridimage_id");
+		
 			require_once('geograph/wordnet.inc.php');
 
 			$title = $db->getOne("select title from gridimage where gridimage_id = $gridimage_id");

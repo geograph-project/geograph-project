@@ -45,9 +45,9 @@ class UpdateWordnetWithNewTitle extends EventHandler
 		list($gridimage_id,$updatemaps) = explode(',',$event['event_param']);
 		
 		
-		$sql="DELETE FROM wordnet ".
-			"WHERE gid = $gridimage_id";
-		$db->Execute($sql);
+		$db->Execute("DELETE FROM wordnet1 WHERE gid = $gridimage_id");
+		$db->Execute("DELETE FROM wordnet2 WHERE gid = $gridimage_id");
+		$db->Execute("DELETE FROM wordnet3 WHERE gid = $gridimage_id");
 		
 		require_once('geograph/wordnet.inc.php');
 			

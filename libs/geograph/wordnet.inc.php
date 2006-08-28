@@ -82,13 +82,13 @@ function updateWordnet(&$db,$text,$field,$id) {
 	
 	
 	foreach ($w1 as $word=>$count) {
-		$db->Execute("insert into wordnet set gid = $id,`len` = 1,words = '$word',$field = $count");// ON DUPLICATE KEY UPDATE $field=$field+$count");
+		$db->Execute("insert into wordnet1 set gid = $id,words = '$word',$field = $count");// ON DUPLICATE KEY UPDATE $field=$field+$count");
 	}
 	foreach ($w2 as $word=>$count) {
-		$db->Execute("insert into wordnet set gid = $id,`len` = 2,words = '$word',$field = $count");
+		$db->Execute("insert into wordnet2 set gid = $id,words = '$word',$field = $count");
 	}	
 	foreach ($w3 as $word=>$count) {
-		$db->Execute("insert into wordnet set gid = $id,`len` = 3,words = '$word',$field = $count");
+		$db->Execute("insert into wordnet3 set gid = $id,words = '$word',$field = $count");
 	}	
 }
 
