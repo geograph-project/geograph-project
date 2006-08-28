@@ -344,7 +344,7 @@ if (isset($_REQUEST['id']))
 			$grid_reference=trim(stripslashes($_POST['grid_reference']));
 			if (strlen($grid_reference))
 			{
-				if ($sq->setByFullGridRef($grid_reference))
+				if ($sq->setByFullGridRef($grid_reference,false,true))
 				{
 					//grid reference in $sq->grid_reference is OK, but might
 					//be different to what we entered...
