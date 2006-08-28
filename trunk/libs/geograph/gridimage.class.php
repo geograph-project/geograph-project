@@ -1168,12 +1168,13 @@ class GridImage
 			die("no gridimage_id supplied to updateCachedTables");	
 	
 		if ($this->moderation_status == 'rejected' || $this->moderation_status == 'pending') {
-			$sql="DELETE FROM gridimage_search ".
-				"WHERE gridimage_id = '{$this->gridimage_id}'";
+			$sql="DELETE FROM gridimage_search WHERE gridimage_id = '{$this->gridimage_id}'";
 			$db->Execute($sql);
-			$sql="DELETE FROM wordnet ".
-				"WHERE gid = '{$this->gridimage_id}'";
-			$db->Execute($sql);
+			
+			$db->Execute("DELETE FROM wordnet1 WHERE gid = {$this->gridimage_id}");
+			$db->Execute("DELETE FROM wordnet2 WHERE gid = {$this->gridimage_id}");
+			$db->Execute("DELETE FROM wordnet3 WHERE gid = {$this->gridimage_id}");
+		
 		} elseif ($this->moderation_status) {
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
