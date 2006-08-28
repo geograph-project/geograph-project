@@ -264,7 +264,7 @@ class GridSquare
 	/**
 	*
 	*/
-	function setByFullGridRef($gridreference,$setnatfor4fig = false)
+	function setByFullGridRef($gridreference,$setnatfor4fig = false,$allowzeropercent = false)
 	{
 		$matches=array();
 		$isfour=false;
@@ -286,7 +286,7 @@ class GridSquare
 		if (!empty($prefix))
 		{
 			$gridref=sprintf("%s%02d%02d", strtoupper($prefix), intval($e/1000), intval($n/1000));
-			$ok=$this->_setGridRef($gridref);
+			$ok=$this->_setGridRef($gridref,$allowzeropercent);
 			if ($ok && (!$isfour || $setnatfor4fig))
 			{
 				//use this function to work out the major easting/northing then convert to our exact values
@@ -459,7 +459,7 @@ class GridSquare
 	/**
 	* set up and validate grid square selection
 	*/
-	function _setGridRef($gridref)
+	function _setGridRef($gridref,$allowzeropercent = false)
 	{
 		$ok=true;
 
@@ -481,7 +481,7 @@ class GridSquare
 						
 			}
 			
-			if ($this->percent_land==0)
+			if ($this->percent_land==0 && !$allowzeropercent)
 			{
 				$this->_error("$gridref seems to be all at sea! Please contact us if you think this is in error");
 				$ok=false;
