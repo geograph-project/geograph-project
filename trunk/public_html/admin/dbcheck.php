@@ -134,13 +134,21 @@ if (isset($_POST['check']))
 		echo "<h3>Geographs Per Square</h3><table class=\"report\">";
 		flush();
 		echo "<thead><tr><td>Square</td><td>Number of Geographs</td><td>Number of Firsts</td></tr></thead><tbody>";
+		
+		if ($_POST['table'] == 'gridimage_search') {
+			$table = "inner join gridimage_search as gi using (grid_reference)";
+			$group = "grid_reference";
+		} else {
+			$table = "inner join gridimage as gi using (gridsquare_id)";
+			$group = "gridsquare_id";			
+		}
+		
 		$squares=$db->getAll("select
 		gs.grid_reference,count(gridimage_id) as geographs,sum(ftf = 1) as firsts
 		from gridsquare as gs
-			inner join gridimage_search as gi
-				using (grid_reference)
+			$table
 		where moderation_status = 'geograph'
-		group by gi.grid_reference
+		group by gi.$group
 		having firsts != 1");
 		foreach ($squares as $id => $square)
 		{
