@@ -481,7 +481,7 @@ class GridSquare
 						
 			}
 			
-			if ($this->percent_land==0 && !$allowzeropercent)
+			if ($this->percent_land==0 && (!$allowzeropercent || $this->has_geographs==0) )
 			{
 				$this->_error("$gridref seems to be all at sea! Please contact us if you think this is in error");
 				$ok=false;
