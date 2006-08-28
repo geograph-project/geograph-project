@@ -27,7 +27,7 @@ init_session();
 $smarty = new GeographPage;
 
 
-$len = (isset($_GET['len']) && is_numeric($_GET['len']))?intval($_GET['len']):2;
+$len = (isset($_GET['len']) && is_numeric($_GET['len']))?max(0,min(3,intval($_GET['len']))):2;
 
 $words = (isset($_GET['words']) && preg_match('/^[\w ]+$/',$_GET['words']))?$_GET['words']:'';
 
@@ -69,7 +69,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql_crit = '';
 	$extra_link = '&amp;len='.$len;
 	if (!empty($words)) {
-		$ids = $db->GetAssoc("SELECT DISTINCT gid,title FROM `wordnet` WHERE title > 0 AND words = ".$db->Quote(trim($words)) );
+		$ids = $db->GetAssoc("SELECT gid,title FROM `wordnet$len` WHERE title > 0 AND words = ".$db->Quote(trim($words)) );
 		if (count($ids)) {
 			$sql_crit = " AND gid IN(".implode(',',array_keys($ids)).")";
 			$smarty->assign('words', trim($_GET['words']));
@@ -104,11 +104,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$having_crit = ($words)?'':'HAVING sum_title > 1';
 	 	
-	$wordlist = $db->GetAssoc("SELECT REPLACE(words,' ','&nbsp;'),len,SUM(wordnet.title) as sum_title FROM `wordnet` INNER JOIN `gridimage` ON(gid = gridimage_id) WHERE wordnet.title > 0 AND len = $len AND submitted > date_sub(now(), interval 7 day) $sql_crit GROUP BY len,words $having_crit ORDER BY sum_title desc LIMIT 50");
-	#foreach($wordlist as $words=>$obj) {
-	#	$total += $obj['sum_title'];
-	#}
-	#$avg = $total/count($wordlist);
+	$wordlist = $db->GetAssoc("SELECT REPLACE(words,' ','&nbsp;'),COUNT(*) as sum_title,'size' FROM `wordnet$len` as wordnet INNER JOIN `gridimage` ON(gid = gridimage_id) WHERE submitted > date_sub(now(), interval 7 day) $sql_crit GROUP BY words $having_crit ORDER BY sum_title desc LIMIT 50");
 	foreach($wordlist as $words=>$obj) {
 		$count=0;
 		foreach (explode('&nbsp;',$words) as $word) {
@@ -131,11 +127,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sizedelta /= 2;
 	
 	if ($u) {
-	$sql_from = "INNER JOIN `gridimage` ON(gid = gridimage_id) ";
+		$sql_from = "INNER JOIN `gridimage` ON(gid = gridimage_id) ";
 	}
 	
-	$toplist = $db->GetAssoc("SELECT REPLACE(words,' ','&nbsp;'),len,SUM(wordnet.title) as sum_title FROM `wordnet` $sql_from
-	WHERE wordnet.title > 0 AND len = $len $sql_crit GROUP BY len,words $having_crit ORDER BY sum_title desc LIMIT 100");
+	$toplist = $db->GetAssoc("SELECT REPLACE(words,' ','&nbsp;'),COUNT(*) as sum_title,'size' FROM `wordnet$len` as wordnet $sql_from WHERE 1 $sql_crit GROUP BY words $having_crit ORDER BY sum_title desc LIMIT 100");
+	
 	foreach($toplist as $words=>$obj) {
 		$count=0;
 		foreach (explode('&nbsp;',$words) as $word) {
