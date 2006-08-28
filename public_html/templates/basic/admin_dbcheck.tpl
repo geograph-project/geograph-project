@@ -15,6 +15,9 @@ db server level, and also perform some application level sanity checks</p>
 	<label for="fix">Fix problems if possible</label><br/>
 <input type="checkbox" checked="checked" name="geographs" value="1" id="geographs"/>
 	<label for="geographs">check 1 geograph per square</label><br/>
+	&nbsp;Table: <input type="radio" checked="checked" name="table" value="gridimage_search" id="table_gis"/>
+	<label for="table_gis">gridimage_search</label> /<input type="radio" name="table" value="gridimage" id="table_gi"/>
+	<label for="table_gi">gridimage</label><br/>
 
 <input type="submit" name="check" value="Perform Database Check"/>
 </form>
