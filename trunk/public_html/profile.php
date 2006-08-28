@@ -28,6 +28,7 @@ init_session();
 $smarty = new GeographPage;
 $template='profile.tpl';	
 $cacheid='';
+$profile = array();
 
 //this script works in two modes - editing the currently logged in users profile
 //or viewing any users profile in read-only fashion - here we decide which to do
@@ -37,7 +38,6 @@ if (isset($_REQUEST['edit']))
 	$USER->login();
 	
 	$template='profile_edit.tpl';
-	$profile=new GeographUser($USER->user_id);
 	
 	//save changes?
 	if (isset($_POST['savechanges']))
@@ -52,9 +52,13 @@ if (isset($_REQUEST['edit']))
 			
 			//clear anything with a cache id userxyz|
 			$smarty->clear_cache(null, "user{$USER->user_id}");
+			
+			$profile =& $USER;
 		}
 		else
 		{
+			$profile=new GeographUser($USER->user_id);
+			
 			$smarty->assign('errors', $errors);
 			//ensure we keep submission intact
 			foreach($_POST as $name=>$value)
@@ -62,6 +66,10 @@ if (isset($_REQUEST['edit']))
 				$profile->$name=stripslashes($value);
 			}
 		}
+	} 
+	else
+	{
+		$profile=new GeographUser($USER->user_id);
 	}
 	$smarty->assign('pagesizes', array(5,10,15,20,30,50));
 	$smarty->assign('delays', array(2,3,4,5,6,10,12));
