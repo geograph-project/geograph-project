@@ -33,11 +33,12 @@ $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET[
 
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(250,intval($_GET['limit'])):50;
 
+$minimum = (isset($_GET['minimum']) && is_numeric($_GET['minimum']))?intval($_GET['minimum']):25;
 
 $smarty = new GeographPage;
 
 $template='leaderboard.tpl';
-$cacheid=$type.$date.$when.$limit;
+$cacheid=$minimum.$type.$date.$when.$limit;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*3; //3hour cache
@@ -85,9 +86,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	} elseif ($type == 'depth') {
 		$sql_column = "count(*)/count(distinct grid_reference)";
 		$sql_where = "1";
-		$sql_having_having = "having count(*) > 25";
+		$sql_having_having = "having count(*) > $minimum";
 		$heading = "Depth";
-		$desc = "the depth score, and having submitted over 25 images";
+		$desc = "the depth score, and having submitted over $minimum images";
 	} elseif ($type == 'myriads') {
 		$sql_column = "count(distinct substring(grid_reference,1,3 - reference_index))";
 		$sql_where = "1";
