@@ -46,14 +46,14 @@ $db = NewADOConnection($GLOBALS['DSN']);
 	$db->Execute("truncate wordnet1");
 	$db->Execute("truncate wordnet2");
 	$db->Execute("truncate wordnet3");
-	$db->Execute("LOCK TABLES wordnet1 WRITE,wordnet2 WRITE,wordnet3 WRITE,gridimage READ");
+	$db->Execute("LOCK TABLES wordnet1 WRITE,wordnet2 WRITE,wordnet3 WRITE");
 	$db->Execute("ALTER TABLE wordnet1 DISABLE KEYS");
 	$db->Execute("ALTER TABLE wordnet2 DISABLE KEYS");
 	$db->Execute("ALTER TABLE wordnet3 DISABLE KEYS");
 	
 	 
 	
-	$recordSet = &$db->Execute("select gridimage_id,title,comment from gridimage where moderation_status != 'rejected'");
+	$recordSet = &$db->Execute("select gridimage_id,title from gridimage where moderation_status != 'rejected'");
 	while (!$recordSet->EOF) 
 	{
 		updateWordnet($db,$recordSet->fields['title'],'title',$recordSet->fields['gridimage_id']);
