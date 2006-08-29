@@ -43,9 +43,13 @@ $db = NewADOConnection($GLOBALS['DSN']);
 
 
 	$tim = time();
-	$db->Execute("delete from wordnet");
-	#$db->Execute("LOCK TABLES wordnet WRITE");
-	#$db->Execute("ALTER TABLE wordnet DISABLE KEYS");
+	$db->Execute("truncate wordnet1");
+	$db->Execute("truncate wordnet2");
+	$db->Execute("truncate wordnet3");
+	$db->Execute("LOCK TABLES wordnet1 WRITE,wordnet2 WRITE,wordnet3 WRITE,gridimage READ");
+	$db->Execute("ALTER TABLE wordnet1 DISABLE KEYS");
+	$db->Execute("ALTER TABLE wordnet2 DISABLE KEYS");
+	$db->Execute("ALTER TABLE wordnet3 DISABLE KEYS");
 	
 	 
 	
@@ -54,17 +58,19 @@ $db = NewADOConnection($GLOBALS['DSN']);
 	{
 		updateWordnet($db,$recordSet->fields['title'],'title',$recordSet->fields['gridimage_id']);
 		//the comments arent searched yet anyway...
-		if ($_GET['comments']) 
-			updateWordnet($db,$recordSet->fields['comment'],'comment',$recordSet->fields['gridimage_id']);
-		if ($recordSet->fields['gridimage_id']%100==0)
+		//if ($_GET['comments']) 
+		//	updateWordnet($db,$recordSet->fields['comment'],'comment',$recordSet->fields['gridimage_id']);
+		if ($recordSet->fields['gridimage_id']%5000==0)
 			printf("done %d at <b>%d</b> seconds<BR>",$recordSet->fields['gridimage_id'],time()-$tim);
 	
 		$recordSet->MoveNext();
 	}
 	$recordSet->Close(); 
 
-	#$db->Execute("ALTER TABLE wordnet ENABLE KEYS ");
-	#$db->Execute("UNLOCK TABLES");
+	$db->Execute("ALTER TABLE wordnet1 ENABLE KEYS ");
+	$db->Execute("ALTER TABLE wordnet2 ENABLE KEYS ");
+	$db->Execute("ALTER TABLE wordnet3 ENABLE KEYS ");
+	$db->Execute("UNLOCK TABLES");
 	$smarty->display('_std_end.tpl');
 	exit;
 	
