@@ -82,9 +82,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$table = array();
 	$max = 0;
-	foreach (array_reverse($percents) as $p) {
+	foreach ($percents as $p) {
+		#if ($p == 1000 || $p == 50) {
+		#	$table[] = array();
+		#}
 		$line = array();
-		$line['title'] = $p;
+		$line['title'] = "&lt; $p";
 		$line['value'] = $count[$p];
 		$table[] = $line;
 		$max = max($max,$count[$p]);
