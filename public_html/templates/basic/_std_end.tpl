@@ -28,8 +28,8 @@
   {/if}
    {/dynamic}
 
-<div style="text-align:center; padding-top:15px; border-top: 2px solid black; margin-top: 15px;">sponsored by <br/> <br/>
-<a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey" align="center" vspace="4" hspace="4"/></a></div>
+<div style="text-align:center; padding-top:15px; border-top: 2px solid black; margin-top: 15px;" align="center">sponsored by <br/> <br/>
+<a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey" vspace="4" hspace="4"/></a></div>
 
    
 {if $discuss}
@@ -115,8 +115,8 @@ Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> 
        <span class="sep">|</span>
        <a href="http://bobby.watchfire.com/bobby/bobbyServlet?URL=http%3A%2F%2F{$http_host}%2F&amp;output=Submit&amp;gl=sec508" title="check our accessibility standards compliance">Accessibility</a>
     </p>
-    <p style="color:#777788;">Hosting generously supported by 
-    {external title="click to visit the Fubra website" href="http://www.fubra.com/" text="The Fubra Group"}
+    <p style="color:#777788;">Hosting supported by 
+    {external title="click to visit the Fubra website" href="http://www.fubra.com/" text="Fubra"}
     </p>
   </div>
 </div>
