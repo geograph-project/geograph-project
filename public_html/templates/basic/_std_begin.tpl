@@ -10,7 +10,7 @@
 {if $lat && $long}<meta name="ICBM" content="{$lat}, {$long}"/>{/if}
 <meta name="DC.title" content="Geograph:: {$page_title|escape:'html'}"/>
 {$extra_meta}
-<link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/basic.css" media="screen" />
+<link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/basic.css?v={$javascript_version}" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
 {if $engine && $engine->resultCount}
 <link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/syndicator.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}"/>
