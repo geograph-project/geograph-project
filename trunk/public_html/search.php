@@ -62,7 +62,7 @@ if (isset($_GET['fav']) ) {
 	if (!empty($_GET['first'])) {
 		$_GET['first'] = strtoupper(preg_replace('/\s+/','',$_GET['first']));
 		
-		if (preg_match('/^[A-Z_%]{0,2}[\d_%]{2,4}$/',$_GET['first']) ) {
+		if (preg_match('/^[A-Z_%]{0,2}[\d_%]{1,4}$/',$_GET['first']) ) {
 			
 			//replace for myriads
 			$gr = preg_replace('/^([A-Z]{1,2})(\d)(\d)$/','$1$2_$3_',$_GET['first']);
@@ -88,10 +88,12 @@ if (isset($_GET['fav']) ) {
 	}
 	
 	if (!$error) {
-		$data['orderby'] = 'gridimage_id';
-		if (!preg_match('/\w*(\d{4})/',$_GET['first']))
-			$data['reverse_order_ind'] = '1';
-
+		if (empty($data['orderby'])) {
+			$data['orderby'] = 'gridimage_id';
+			if (!preg_match('/\w*(\d{4})/',$_GET['first']))
+				$data['reverse_order_ind'] = '1';
+		}
+		
 		if (!empty($_GET['u']))
 			$data['user_id'] = $_GET['u']; 
 
