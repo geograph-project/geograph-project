@@ -96,6 +96,7 @@ class SearchEngine
 	
 	function ExecuteReturnRecordset($pg,$extra_fields = '') 
 	{
+		global $CONF;
 		$db=$this->_getDB();
 		
 		
@@ -130,7 +131,7 @@ class SearchEngine
 			$sql_from .= " {$matches[1]} join {$matches[2]}";
 		}
 
-		if ($pg > 1 || $this->countOnly) {
+		if ($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly) {
 		
 			$count_from = (strpos($sql_where,'gs.') !== FALSE)?"INNER JOIN gridsquare AS gs USING(gridsquare_id)":'';
 			$count_from .= (strpos($sql_where,'user.') !== FALSE)?" INNER JOIN user ON(gi.user_id=user.user_id)":'';
@@ -161,7 +162,7 @@ END;
 			$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 			$this->numberOfPages = ceil($this->resultCount/$pgsize);
 		} 
-		if ($this->countOnly || ($pg > 1 && !$this->resultCount))
+		if ($this->countOnly || ( ($pg > 1 || $CONF['search_count_first_page']) && !$this->resultCount))
 			return 0;
 		
 	// construct the query sql
@@ -189,7 +190,7 @@ END;
 						
 		$this->querytime =  $querytime_after - $querytime_before;
 
-		if ($pg == 1) {
+		if ($pg == 1 && !$CONF['search_count_first_page']) {
 			$count = $db->getOne("select `count` from queries_count where id = {$this->query_id}");
 			if ($count) {
 				$this->resultCount = $count;
@@ -211,6 +212,7 @@ END;
 
 	function ExecuteCachedReturnRecordset($pg) 
 	{
+		global $CONF;
 		$db=$this->_getDB();
 		
 		
@@ -246,7 +248,7 @@ END;
 			$sql_from .= " {$matches[1]} join {$matches[2]}";
 		}
 
-		if ($pg > 1 || $this->countOnly) {
+		if ($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly) {
 			// construct the count sql
 			if (preg_match("/group by ([\w\,\(\) ]+)/i",$sql_where,$matches)) {
 				$sql_where2 = preg_replace("/group by ([\w\,\(\) ]+)/i",'',$sql_where);
@@ -273,7 +275,7 @@ END;
 
 			$this->numberOfPages = ceil($this->resultCount/$pgsize);
 		}
-		if ($this->countOnly || ($pg > 1 && !$this->resultCount))
+		if ($this->countOnly || ( ($pg > 1 || $CONF['search_count_first_page']) && !$this->resultCount))
 			return 0;
 	// construct the query sql
 $sql = <<<END
@@ -298,7 +300,7 @@ END;
 		
 		$this->querytime =  $querytime_after - $querytime_before;
 		
-		if ($pg == 1) {
+		if ($pg == 1 && !$CONF['search_count_first_page']) {
 			$count = $db->getOne("select `count` from queries_count where id = {$this->query_id}");
 			if ($count) {
 				$this->resultCount = $count;

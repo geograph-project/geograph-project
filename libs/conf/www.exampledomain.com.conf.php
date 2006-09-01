@@ -104,6 +104,9 @@ $CONF['enable_newmap'] = 1;
 //use the smaller towns database for the 'near...' lines rather than placenames
 $CONF['use_towns_gaz'] = true;
 
+//if you have capacity problems true to false, to skip checking count on page 1 of results. 
+$CONF['search_count_first_page'] = true; //true/false
+
 
 //increment to force reloadling of geograph.js 
 $CONF['javascript_version'] = 1.1;
