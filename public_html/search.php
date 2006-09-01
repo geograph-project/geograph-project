@@ -217,14 +217,18 @@ if (isset($_GET['fav']) ) {
 		
 		advanced_form($smarty,$db);
 	}
-} elseif (!empty($_GET['q'])) {
+} elseif (!empty($_GET['q']) || !empty($_GET['text'])) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	
 	// -------------------------------
 	//  Build a query from a single text string
 	// -------------------------------
-	
-	$q=trim($_GET['q']);
+	if (!empty($_GET['text'])) {
+		$q=trim($_GET['text']);
+		$GLOBALS['text'] = 1;
+	} else {
+		$q=trim($_GET['q']);
+	}
 	
 	//remember the query in the session
 	$_SESSION['searchq']=$q;
