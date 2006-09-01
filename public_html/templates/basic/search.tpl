@@ -10,12 +10,22 @@
 {/if}
 
 <form method="get" action="/search.php">
-<div style="padding:5px;background:#dddddd;position:relative"><label for="searchterm">Search</label> 
-<input id="searchq" type="text" name="q" value="{$searchq|escape:'html'}" size="30"/>
-<input id="searchgo" type="submit" name="go" value="Find"/> [<a href="/search.php?form=advanced">advanced search</a>]
-
-<br/><br/>
-<small>Enter a Placename, Postcode, Grid Reference, or a text search (<a href="/help/search">help</a>)</small></div>
+<div class="tabHolder">
+	<span class="tabSelected">Simple Search</span>
+	<a href="/search.php?form=advanced" class="tab">advanced search</a>
+	<a href="/search.php?form=first" class="tab">first geographs</a>
+</div>
+<div class="interestBox">
+	<div>
+	<label for="searchterm">Enter a Placename, Postcode, Grid Reference:</label><br/>
+	&nbsp;&nbsp;&nbsp;<input id="searchq" type="text" name="q" value="{$searchq|escape:'html'}" size="30"/>
+	<input id="searchgo" type="submit" name="go" value="Find"/></div>
+	<div>
+	<label for="searchtext">or a Text Search:</label> <small>(<a href="/help/search">help &amp; tips</a>)</small><br/>
+	&nbsp;&nbsp;&nbsp;<input id="searchtext" type="text" name="text" value="{$searchtext|escape:'html'}" size="30"/>
+	<input id="searchgo2" type="submit" name="go" value="Find"/>
+	</div>
+</div>
 </form>
 {/dynamic} 
 <ul style="margin-left:0;padding:0 0 0 1em;">
@@ -54,9 +64,10 @@ title="customisable search options">advanced search</a></span><br/><br/>
 {if $user->registered}
 	{if $recentsearchs}
 	<li>And a list of your recent searches:
-	<ul style="margin-left:0;padding:0 0 0 1em;">
+	<ul style="margin-left:0;
+	padding:0 0 0 0em; list-style-type:none">
 	{foreach from=$recentsearchs key=id item=obj}
-	<li>{if $obj.favorite == 'Y'}<b>{/if}{if $obj.searchclass == 'Special'}<i>{/if}<a href="search.php?i={$id}" title="Re-Run search for images{$obj.searchdesc}{if $obj.use_timestamp != '0000-00-00 00:00:00'}, last used {$obj.use_timestamp}{/if} (Display: {$obj.displayclass})">{$obj.searchdesc|regex_replace:"/^, /":""|regex_replace:"/(, in [\w ]+ order)/":'</a><small>$1</small>'}</a>{if !is_null($obj.count)} [{$obj.count}]{/if}{if $obj.searchclass == 'Special'}</i>{/if}{if $obj.favorite == 'Y'}</b> <a href="/search.php?i={$id}&amp;fav=0" title="cancel favorite"><img src="/templates/basic/img/star-off.png" width="14" height="14" alt="cancel favorite"></a>{else} <a href="/search.php?i={$id}&amp;fav=1" title="make favorite"><img src="/templates/basic/img/star-on.png" width="14" height="14" alt="make favorite"></a>{/if}</li>
+	<li>{if $obj.favorite == 'Y'}<a href="/search.php?i={$id}&amp;fav=0" title="remove favorite flag"><img src="/templates/basic/img/star-on.png" width="14" height="14" alt="remove favorite flag" onmouseover="this.src='/templates/basic/img/star-light.png'" onmouseout="this.src='/templates/basic/img/star-on.png'"></a> <b>{else}<a href="/search.php?i={$id}&amp;fav=1" title="make favorite"><img src="/templates/basic/img/star-light.png" width="14" height="14" alt="make favorite" onmouseover="this.src='/templates/basic/img/star-on.png'" onmouseout="this.src='/templates/basic/img/star-light.png'"></a> {/if}{if $obj.searchclass == 'Special'}<i>{/if}<a href="search.php?i={$id}" title="Re-Run search for images{$obj.searchdesc}{if $obj.use_timestamp != '0000-00-00 00:00:00'}, last used {$obj.use_timestamp}{/if} (Display: {$obj.displayclass})">{$obj.searchdesc|regex_replace:"/^, /":""|regex_replace:"/(, in [\w ]+ order)/":'</a><small>$1</small>'}</a>{if !is_null($obj.count)} [{$obj.count}]{/if}{if $obj.searchclass == 'Special'}</i>{/if}{if $obj.favorite == 'Y'}</b>{/if}</li>
 	{/foreach}
 	{if !$more && !$all}
 	<li><a href="search.php?more=1" title="View More of your recent searches" rel="nofollow"><i>view more...</i></a></li>
@@ -71,8 +82,8 @@ title="customisable search options">advanced search</a></span><br/><br/>
 <li>If you are unable to find your location in our search above try {getamap} and return here to enter the <acronym style="border-bottom: red dotted 1pt; text-decoration: none;" title="look for something like 'Grid reference at centre - NO 255 075 GB Grid">grid reference</acronym>.<br/><br/></li> 
 
 </ul>
-<div style="padding:5px;background:#dddddd;position:relative">
-<ul style="margin-left:0;padding:0 0 0 1em;">
+<div class="interestBox">
+<ul class="lessIndent">
 
 <li>An (experimental) <a title="Special Partial GR Search Form" href="/search.php?form=first">First Geographs with Partial Grid References</a> form is available.<br/><br/></li> 
 

@@ -1,17 +1,24 @@
 {assign var="page_title" value="Advanced Search"}
 {include file="_std_begin.tpl"}
 
-<h2>Advanced Search <small>[<a href="/search.php?i={$i}&amp;form=simple">simple form</a>]</small></h2>
+<h2>Photograph Search</h2>
 
 {if $errormsg}
 <p style="color:red"><b>{$errormsg}</b></p>
 {/if}
 <form action="/search.php" method="post" name="theForm">
-	<p><b>Use the following options to customise your search</b>.<br/> </p>
+	
+	<div class="tabHolder">
+		<a href="/search.php?form=simple" class="tab">simple search</a>
+		<span class="tabSelected">Advanced Search</span>
+		<a href="/search.php?form=first" class="tab">first geographs</a>
+	</div>
+	<div class="interestBox">
+		<b>centre results on:</b>
+	</div>
+	
+	
 		<table cellpadding="3" cellspacing="0"> 
-		  <tr> 
-			 <td colspan="3" style="background:#dddddd;"><b>centre results on:</b></td> 
-		  </tr> 
 		  <tr> 
 			 <td><label for="gridref" id="l_gridref">grid reference</label></td> 
 			 <td><input type="text" name="gridref" id="gridref" value="{$gridref|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
