@@ -106,14 +106,14 @@ class SearchEngineBuilder extends SearchEngine
 			} else {
 				$this->errormsg = "unable to parse lat/long";
 			}
+		} elseif (preg_match('/(^\^|\+$)/',$q) || preg_match('/\b(OR|AND|NOT)\b/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q)) {
+			$searchclass = 'Text';
+			$searchq = $q;
+			$searchdesc = ", matching '".$q."' ";
 		} elseif (isset($GLOBALS['text'])) {
 			$searchclass = 'Text';
 			$searchq = $q;
 			$searchdesc = ", containing '{$q}' ";
-		} elseif (preg_match('/^\^.*\+$/',$q) || preg_match('/\b(OR|AND|NOT)\b/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q)) {
-			$searchclass = 'Text';
-			$searchq = $q;
-			$searchdesc = ", matching '".$q."' ";
 		} else {
 			$criteria = new SearchCriteria_Placename();
 			$criteria->setByPlacename($q);
