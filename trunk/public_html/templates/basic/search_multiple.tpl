@@ -31,7 +31,11 @@
 
 <br/>
 <input type="radio" name="{$multipleon}" value="text:{$criteria->searchq}" id="dotext">
-<label for="dotext"><i>Perform a text search for '{$criteria->searchq}'</i></label> <br/>		
+<label for="dotext"><i>Perform a title search for '{$criteria->searchq}'</i></label> <br/>	
+{if !preg_match('/\+$/',$criteria->searchq)}
+<input type="radio" name="{$multipleon}" value="text:{$criteria->searchq}+" id="dotext">
+<label for="dotext"><i>Perform a text search for '{$criteria->searchq}' in title and description</i></label> <br/>		
+{/if}
 {/dynamic}
 <p><input type="submit" name="refine" value="Refine"> <input type="submit" value="Find &gt;"></p>
 
