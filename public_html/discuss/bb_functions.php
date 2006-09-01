@@ -157,7 +157,7 @@ return $pageNav;
 function sendMail($email, $subject, $msg, $from_email, $errors_email) {
 // Function sends mail with return-path (if incorrect email TO specifed. Reply-To: and Errors-To: need contain equal addresses!
 if (!isset($GLOBALS['genEmailDisable']) or $GLOBALS['genEmailDisable']!=1){
-#$msg=str_replace("\r\n", "\n", $msg);
+$msg=preg_replace("/(?<!\r)\n/", "\r\n", $msg);
 $php_version=phpversion();
 $from_email="From: $from_email\r\nReply-To: $errors_email\r\nErrors-To: $errors_email\r\nX-Mailer: PHP ver. $php_version";
 mail($email, $subject, $msg, $from_email);
