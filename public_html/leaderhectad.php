@@ -33,9 +33,6 @@ $smarty = new GeographPage;
 $template='leaderhectad.tpl';
 $cacheid=$type;
 
-if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
-	$smarty->clear_cache($template, $cacheid);
-
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hour cache
@@ -54,6 +51,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$hectads = $db->CacheGetAll(3600,"select 
 	concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) as tenk_square,
 	sum(has_geographs) as geograph_count,
+	sum(percent_land >0) as land_count,
 	(sum(has_geographs) * 100 / sum(percent_land >0)) as percentage
 	from gridsquare 
 	group by tenk_square 
@@ -110,11 +108,11 @@ if (!$smarty->is_cached($template, $cacheid))
 			foreach ($users as $i => $user) {
 				if (isset($topusers[$user['user_id']])) {
 					$topusers[$user['user_id']]['imgcount']++;
-					array_push($topusers[$user['user_id']]['squares'],$hectad['tenk_square']);
+					array_push($topusers[$user['user_id']]['squares'],$hectad['tenk_square']."[".$hectad['land_count']."]");
 				} else {
 					$topusers[$user['user_id']] = $user;
 					$topusers[$user['user_id']]['imgcount'] = 1;
-					$topusers[$user['user_id']]['squares'] = array($hectad['tenk_square']);
+					$topusers[$user['user_id']]['squares'] = array($hectad['tenk_square']."[".$hectad['land_count']."]");
 				}
 			}
 		}
@@ -122,11 +120,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		if (count($best_user)) {
 			if (isset($topusers[$best_user['user_id']])) {
 				$topusers[$best_user['user_id']]['imgcount']++;
-				array_push($topusers[$best_user['user_id']]['squares'],$hectad['tenk_square']);
+				array_push($topusers[$best_user['user_id']]['squares'],$hectad['tenk_square']."[".$hectad['land_count']."]");
 			} else {
 				$topusers[$best_user['user_id']] = $best_user;
 				$topusers[$best_user['user_id']]['imgcount'] = 1;
-				$topusers[$best_user['user_id']]['squares'] = array($hectad['tenk_square']);
+				$topusers[$best_user['user_id']]['squares'] = array($hectad['tenk_square']."[".$hectad['land_count']."]");
 			}
 		}
 	}
