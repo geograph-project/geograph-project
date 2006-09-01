@@ -7,11 +7,16 @@
 <p style="color:red"><b>{$errormsg}</b></p>
 {/if}
 <form action="/search.php" method="get" name="theForm">
-	<p><b>Use the following options to customise your search</b>.<br/> </p>
-		<table cellpadding="3" cellspacing="0"> 
-		  <tr> 
-			 <td colspan="3" style="background:#dddddd;"><b>Find First Geographs matching:</b></td> 
-		  </tr> 
+	<div class="tabHolder">
+		<a href="/search.php?form=simple" class="tab">simple search</a>
+		<a href="/search.php?form=advanced" class="tab">advanced search</a>
+		<span class="tabSelected">First Geographs</span>
+	</div>
+	<div class="interestBox">
+		<b>Find First Geographs matching:</b>
+	</div>
+	
+	<table cellpadding="3" cellspacing="0"> 
 		  <tr> 
 			 <td><label for="first">Location</label></td> 
 			 <td><input type="text" name="first" id="first" value="{$searchq|escape:'html'}" class="searchinput" size="6"/></td> 
