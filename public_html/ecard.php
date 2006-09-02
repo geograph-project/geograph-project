@@ -159,8 +159,7 @@ if (!$throttle && isset($_POST['msg']))
 				$headers[] = "Reply-To: $from_name <$from_email>";
 			$headers[] = "X-GeographUserId:{$USER->user_id}";
 
-			$headers[] = "Content-Type: multipart/alternative;
-	boundary=\"----=_NextPart_000_00DF_01C5EB66.9313FF40\"";
+			$headers[] = "Content-Type: multipart/alternative;\r\n	boundary=\"----=_NextPart_000_00DF_01C5EB66.9313FF40\"";
 
 			@mail("$to_name <$to_email>", $subject, $body, implode("\r\n",$headers));
 
