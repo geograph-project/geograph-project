@@ -56,7 +56,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	from gridsquare 
 	group by tenk_square 
 	having geograph_count > 0 and percentage >=100
-	order by percentage desc,tenk_square");
+	order by percentage desc,land_count desc,tenk_square");
 	
 	
 	foreach ($hectads as $i => $hectad) {
@@ -108,10 +108,12 @@ if (!$smarty->is_cached($template, $cacheid))
 			foreach ($users as $i => $user) {
 				if (isset($topusers[$user['user_id']])) {
 					$topusers[$user['user_id']]['imgcount']++;
+					$topusers[$best_user['user_id']]['bigesthectad'] = max($topusers[$best_user['user_id']]['bigesthectad'],$hectad['land_count']);
 					array_push($topusers[$user['user_id']]['squares'],$hectad['tenk_square']."[".$hectad['land_count']."]");
 				} else {
 					$topusers[$user['user_id']] = $user;
 					$topusers[$user['user_id']]['imgcount'] = 1;
+					$topusers[$best_user['user_id']]['bigesthectad'] = $hectad['land_count'];
 					$topusers[$user['user_id']]['squares'] = array($hectad['tenk_square']."[".$hectad['land_count']."]");
 				}
 			}
@@ -120,10 +122,12 @@ if (!$smarty->is_cached($template, $cacheid))
 		if (count($best_user)) {
 			if (isset($topusers[$best_user['user_id']])) {
 				$topusers[$best_user['user_id']]['imgcount']++;
+				$topusers[$best_user['user_id']]['bigesthectad'] = max($topusers[$best_user['user_id']]['bigesthectad'],$hectad['land_count']);
 				array_push($topusers[$best_user['user_id']]['squares'],$hectad['tenk_square']."[".$hectad['land_count']."]");
 			} else {
 				$topusers[$best_user['user_id']] = $best_user;
 				$topusers[$best_user['user_id']]['imgcount'] = 1;
+				$topusers[$best_user['user_id']]['bigesthectad'] = $hectad['land_count'];
 				$topusers[$best_user['user_id']]['squares'] = array($hectad['tenk_square']."[".$hectad['land_count']."]");
 			}
 		}
@@ -131,11 +135,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	function cmp(&$a, &$b) 
 	{
-	   global $topusers;
-	   if ($a['sqcount'] == $b['imgcount']) {
-		   return 0;
-	   }
-	   return ($a['imgcount'] > $b['imgcount']) ? -1 : 1;
+		global $topusers;
+		if ($a['imgcount'] == $b['imgcount']) {
+			if ($a['bigesthectad'] == $b['bigesthectad']) {
+				return 0;
+			}
+			return ($a['bigesthectad'] > $b['bigesthectad']) ? -1 : 1;
+		}
+		return ($a['imgcount'] > $b['imgcount']) ? -1 : 1;
 	}
 
 	uasort($topusers, "cmp");
