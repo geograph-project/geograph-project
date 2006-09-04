@@ -52,6 +52,7 @@ concept.</li>
     <li>County centre points compiled by {mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}.</li>
     <li>National Trail routes compiled with the help of {external href="http://www.magic.gov.uk/" text="magic.gov.uk"} and contributor <a href="http://geograph.local/profile.php?u=1324">Tony Atkin</a>! (subject to Copyright)</li>
     <li>National Cycle routes provided by {external href="http://www.systrans.org.uk/" text="sustrans.org.uk"}. (subject to Copyright, used with permission)</li>
+    <li>Great Britain Gazetteer based upon Ordnance Survey&reg 1:50 000 Scale Gazetteer, &copy; Crown copyright. Educational licence 100045616.</li>
     </ul>
     
     <h3>Hosting</h3>
