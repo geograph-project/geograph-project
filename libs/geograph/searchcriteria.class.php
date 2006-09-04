@@ -167,7 +167,11 @@ class SearchCriteria
 						//month only
 						list($y,$m,$d) = explode('-',$dates[0]);
 						$sql_where .= "MONTH(submitted) = $m ";
-				} else if ($dates[1]) {
+				} elseif (preg_match("/0{4}-0{2}-([01]?[1-9]+|10)/",$dates[0]) > 0) {
+						//day only ;)
+						list($y,$m,$d) = explode('-',$dates[0]);
+						$sql_where .= "submitted > DATE_SUB(NOW(),INTERVAL $d DAY)";
+				} elseif ($dates[1]) {
 					if ($dates[0] == $dates[1]) {
 						//both the same
 						$sql_where .= "submitted LIKE '".$dates[0]."%' ";
@@ -181,7 +185,7 @@ class SearchCriteria
 				}
 			} else {
 				//to
-				$sql_where .= "submitted > '0000-00-00' AND submitted <= '".$dates[1]."' ";
+				$sql_where .= "submitted <= '".$dates[1]."' ";
 			}
 			
 			
@@ -209,7 +213,11 @@ class SearchCriteria
 					//month only
 					list($y,$m,$d) = explode('-',$dates[0]);
 					$sql_where .= "MONTH(imagetaken) = $m ";
-				} else if ($dates[1]) {
+				} elseif (preg_match("/0{4}-0{2}-([01]?[1-9]+|10)/",$dates[0]) > 0) {
+						//day only ;)
+						list($y,$m,$d) = explode('-',$dates[0]);
+						$sql_where .= "imagetaken > DATE_SUB(NOW(),INTERVAL $d DAY)";
+				} elseif ($dates[1]) {
 					if ($dates[0] == $dates[1]) {
 						//both the same
 						$sql_where .= "imagetaken = '".$dates[0]."' ";
@@ -450,13 +458,19 @@ class SearchCriteria_Placename extends SearchCriteria
 		$db = $this->_getDB();
 		
 		if (is_numeric($placename)) {
-			$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where id=".$db->Quote($placename));	
-		
+			if ($placename > 1000000) {
+				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where seq=".$db->Quote($placename-1000000));
+			} else {
+				$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where id=".$db->Quote($placename));
+			}
 		} else {
-			$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where full_name=".$db->Quote($placename));	
+			$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where def_nam=".$db->Quote($placename));
+			if (count($places) == 0) {
+				$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where full_name=".$db->Quote($placename));
+			}
 		}
 		
-		
+		$placename = str_replace('?','',$placename);
 		
 		if (count($places) == 1) {
 			$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$places[0]['reference_index']." order by origin_x,origin_y limit 1");	
@@ -466,57 +480,71 @@ class SearchCriteria_Placename extends SearchCriteria
 			$this->placename = $places[0]['full_name'];
 			$this->searchq = $places[0]['full_name'];
 		} else {
-			$places = $db->GetAll("select
-				id,
-				full_name,
-				dsg,e,n,
+			$places = $db->GetAll("
+			(select
+				(SEQ + 1000000) as id,
+				`def_nam` as full_name,
+				'PPL' as dsg,`east` as e,`north` as n,
 				'populated place' as dsg_name,
-				loc_placenames.reference_index,
-				loc_adm1.name as adm1_name
+				1 as reference_index,
+				`full_county` as adm1_name,
+				km_ref as gridref
 			from 
-				loc_placenames
-				left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
+				os_gaz
 			where
-				dsg = 'PPL' AND 
-				full_name LIKE ".$db->Quote('%'.$placename.'%')."
-			limit 20");		
-			$places = array_merge($places,$db->GetAll("select
-				id,
-				full_name,
-				dsg,e,n,
+				f_code IN ('C','T','O') AND
+				`def_nam` LIKE ".$db->Quote('%'.$placename.'%')."
+			limit 20) UNION
+			(select
+				(SEQ + 1000000) as id,
+				`def_nam` as full_name,
+				'PPL' as dsg,`east` as e,`north` as n,
 				'populated place' as dsg_name,
-				loc_placenames.reference_index,
-				loc_adm1.name as adm1_name
+				1 as reference_index,
+				`full_county` as adm1_name,
+				km_ref as gridref
 			from 
-				loc_placenames
-				left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
+				os_gaz
 			where
-				dsg = 'PPL' AND 
-				SOUNDEX(".$db->Quote($placename).") = SOUNDEX(full_name) 
-			limit 20"));		
+				f_code IN ('C','T','O') AND
+				SOUNDEX(`def_nam`) = SOUNDEX(".$db->Quote($placename).")
+			limit 20)
+			");
 			if (count($places) < 10) {
-				$places = array_merge($places,$db->GetAll("select 
+				$places2 = $db->GetAll("select 
 					id, 
 					full_name,
 					dsg,e,n,
 					loc_dsg.name as dsg_name,
 					loc_placenames.reference_index,
-					loc_adm1.name as adm1_name
+					loc_adm1.name as adm1_name,
+					'' as gridref
 				from 
 					loc_placenames
 					inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) 
 					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
 				where
-					dsg != 'PPL' AND (
 					full_name LIKE ".$db->Quote('%'.$placename.'%')."
-					OR SOUNDEX(".$db->Quote($placename).") = full_name_soundex )
-				LIMIT 20") );				
+					OR full_name_soundex = SOUNDEX(".$db->Quote($placename).")
+				LIMIT 20");
+				foreach ($places2 as $i2 => $place2) {
+					$found = 0; $look = str_replace("-",' ',$place2['full_name']);
+					foreach ($places as $i => $place) {
+						if ($place['full_name'] == $look && $place['reference_index'] == $place2['reference_index']) {
+							$found = 1; break;
+						}
+					}
+					if (!$found) 
+						array_push($places,$place2);
+				}
 			}	
 			if (count($places)) {
 				require_once('geograph/conversions.class.php');
 				$conv = new Conversions;
 				foreach($places as $id => $row) {
-					list($places[$id]['gridref'],) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
+					if (empty($row['gridref'])) {
+						list($places[$id]['gridref'],) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
+					}
 				}
 			
 				$this->matches = $places;

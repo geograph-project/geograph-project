@@ -355,7 +355,7 @@ END;
 				$this->results[$i]=new GridImage;
 				$this->results[$i]->fastInit($recordSet->fields);
 
-				if (isset($recordSet->fields['dist_sqd'])) {
+				if (!empty($recordSet->fields['dist_sqd'])) {
 					$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
 					$this->results[$i]->dist_string = sprintf($dist_format,sqrt($recordSet->fields['dist_sqd']),$this->heading_string($angle));
 				}
