@@ -684,9 +684,8 @@ class GridSquare
 				$places['full_name'] = preg_replace('/\,([^\,]+)$/',' and $1',$places['full_name']);
 			}
 		}
-			
 		if ($places['distance'])
-			$places['distance'] = round(sqrt($places['distance'])/1000);
+			$places['distance'] = round(sqrt($places['distance'])/1000)+0.01;
 		$places['reference_name'] = $CONF['references'][$places['reference_index']];
 	
 		return $places;
