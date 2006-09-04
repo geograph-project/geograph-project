@@ -559,15 +559,17 @@ class SearchCriteria_Placename extends SearchCriteria
 					full_name LIKE ".$db->Quote('%'.$placename.'%')."
 					OR full_name_soundex = SOUNDEX(".$db->Quote($placename).")
 				LIMIT 20)");
-				foreach ($places2 as $i2 => $place2) {
-					$found = 0; $look = str_replace("-",' ',$place2['full_name']);
-					foreach ($places as $i => $place) {
-						if ($place['full_name'] == $look && $place['reference_index'] == $place2['reference_index']) {
-							$found = 1; break;
+				if (count($places2) && count($places)) {
+					foreach ($places2 as $i2 => $place2) {
+						$found = 0; $look = str_replace("-",' ',$place2['full_name']);
+						foreach ($places as $i => $place) {
+							if ($place['full_name'] == $look && $place['reference_index'] == $place2['reference_index']) {
+								$found = 1; break;
+							}
 						}
+						if (!$found) 
+							array_push($places,$place2);
 					}
-					if (!$found) 
-						array_push($places,$place2);
 				}
 			}	
 			if (count($places)) {
