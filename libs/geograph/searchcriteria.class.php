@@ -541,7 +541,7 @@ class SearchCriteria_Placename extends SearchCriteria
 				where
 					f_code NOT IN ('C','T','O') AND
 					( `def_nam` LIKE ".$db->Quote('%'.$placename.'%')."
-					OR def_name_soundex = SOUNDEX(".$db->Quote($placename).") )
+					OR def_nam_soundex = SOUNDEX(".$db->Quote($placename).") )
 				limit 20) UNION
 				(select 
 					id, 
