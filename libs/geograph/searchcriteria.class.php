@@ -507,11 +507,27 @@ class SearchCriteria_Placename extends SearchCriteria
 				os_gaz
 			where
 				f_code IN ('C','T','O') AND
-				SOUNDEX(`def_nam`) = SOUNDEX(".$db->Quote($placename).")
+				def_nam_soundex = SOUNDEX(".$db->Quote($placename).")
 			limit 20)
 			");
 			if (count($places) < 10) {
-				$places2 = $db->GetAll("select 
+				$places2 = $db->GetAll("
+				(select
+					(SEQ + 1000000) as id,
+					`def_nam` as full_name,
+					'PPL' as dsg,`east` as e,`north` as n,
+					'populated place' as dsg_name,
+					1 as reference_index,
+					`full_county` as adm1_name,
+					km_ref as gridref
+				from 
+					os_gaz
+				where
+					f_code NOT IN ('C','T','O') AND
+					( `def_nam` LIKE ".$db->Quote('%'.$placename.'%')."
+					OR def_name_soundex = SOUNDEX(".$db->Quote($placename).") )
+				limit 20) UNION
+				(select 
 					id, 
 					full_name,
 					dsg,e,n,
@@ -526,7 +542,7 @@ class SearchCriteria_Placename extends SearchCriteria
 				where
 					full_name LIKE ".$db->Quote('%'.$placename.'%')."
 					OR full_name_soundex = SOUNDEX(".$db->Quote($placename).")
-				LIMIT 20");
+				LIMIT 20)");
 				foreach ($places2 as $i2 => $place2) {
 					$found = 0; $look = str_replace("-",' ',$place2['full_name']);
 					foreach ($places as $i => $place) {
