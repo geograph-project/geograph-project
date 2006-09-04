@@ -480,6 +480,7 @@ class SearchCriteria_Placename extends SearchCriteria
 			$this->placename = $places[0]['full_name'];
 			$this->searchq = $places[0]['full_name'];
 		} else {
+			$limit = (strlen($placename) > 3)?40:20;
 			$places = $db->GetAll("
 			(select
 				(SEQ + 1000000) as id,
@@ -493,7 +494,22 @@ class SearchCriteria_Placename extends SearchCriteria
 				os_gaz
 			where
 				f_code IN ('C','T','O') AND
-				`def_nam` LIKE ".$db->Quote('%'.$placename.'%')."
+				`def_nam` LIKE ".$db->Quote($placename.'%')."
+			limit $limit) UNION
+			(select
+				(SEQ + 1000000) as id,
+				`def_nam` as full_name,
+				'PPL' as dsg,`east` as e,`north` as n,
+				'populated place' as dsg_name,
+				1 as reference_index,
+				`full_county` as adm1_name,
+				km_ref as gridref
+			from 
+				os_gaz
+			where
+				f_code IN ('C','T','O') AND
+				`def_nam` LIKE ".$db->Quote('%'.$placename.'%')." AND
+				`def_nam` NOT LIKE ".$db->Quote($placename.'%')."
 			limit 20) UNION
 			(select
 				(SEQ + 1000000) as id,
