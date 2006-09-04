@@ -40,4 +40,8 @@
 <p><input type="submit" name="refine" value="Refine"> <input type="submit" value="Find &gt;"></p>
 
 </form>	
+
+<div class="copyright">Great Britain locations based upon Ordnance Survey&reg 1:50 000 Scale Gazetteer with the permission of Ordnance Survey on behalf of The Controller of Her Majesty's Stationery Office, &copy; Crown copyright. Educational licence 100045616.</div>
+
+
 {include file="_std_end.tpl"}
