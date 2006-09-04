@@ -368,11 +368,15 @@ class SearchEngineBuilder extends SearchEngine
 			if (!empty($dataarray['submitted_start']) || !empty($dataarray['submitted_end'])) {
 				
 				if (!empty($dataarray['submitted_start'])) {
-					if (preg_match("/0{4}-([01]?[1-9]+)-/",$dataarray['submitted_start']) > 0) {
+					if (preg_match("/0{4}-([01]?[1-9]+|10)-/",$dataarray['submitted_start']) > 0) {
 						//month only
 						$searchdesc .= ", submitted during ".$dataarray['submitted_startString'];
 						$dataarray['submitted_end'] = "";
-					} else if (!empty($dataarray['submitted_end'])) {
+					} elseif (preg_match("/0{4}-0{2}-([0-3]?[1-9]+|10|20|30)/",$dataarray['submitted_start']) > 0) {
+						//day only
+						$searchdesc .= ", submitted in the last ".$dataarray['submitted_startDay']." days";
+						$dataarray['submitted_end'] = "";
+					} elseif (!empty($dataarray['submitted_end'])) {
 						if ($dataarray['submitted_end'] == $dataarray['submitted_start']) {
 							//both the same
 							$searchdesc .= ", submitted ".(is_numeric($dataarray['submitted_startString'])?'in ':'').$dataarray['submitted_startString'];
@@ -410,11 +414,15 @@ class SearchEngineBuilder extends SearchEngine
 			if (!empty($dataarray['taken_start']) || !empty($dataarray['taken_end'])) {
 				
 				if (!empty($dataarray['taken_start'])) {
-					if (preg_match("/0{4}-([01]?[1-9]+)-/",$dataarray['taken_start']) > 0) {
+					if (preg_match("/0{4}-([01]?[1-9]+|10)-/",$dataarray['taken_start']) > 0) {
 						//month only
 						$searchdesc .= ", taken during ".$dataarray['taken_startString'];
 						$dataarray['taken_end'] = "";
-					} else if (!empty($dataarray['taken_end'])) {
+					} elseif (preg_match("/0{4}-0{2}-([0-3]?[1-9]+|10|20|30)/",$dataarray['taken_start']) > 0) {
+						//day only
+						$searchdesc .= ", taken in the last ".$dataarray['taken_startDay']." days";
+						$dataarray['submitted_end'] = "";
+					} elseif (!empty($dataarray['taken_end'])) {
 						if ($dataarray['taken_end'] == $dataarray['taken_start']) {
 							//both the same
 							$searchdesc .= ", taken ".(is_numeric($dataarray['taken_startString'])?'in ':'').$dataarray['taken_startString'];
