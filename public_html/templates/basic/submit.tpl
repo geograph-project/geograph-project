@@ -245,7 +245,7 @@ it was taken or other interesting geographical information. (<a href="/help/styl
 	{/if}<br/>
 <input size="50" id="title" name="title" value="{$title|escape:'html'}" /></p>
  {if $place.distance}
- <p style="font-size:0.7em">Gazetteer info as will appear:<br/> <span style="color:silver;">{if $place.distance > 3}{$place.distance} km from{else}near to{/if} <b>{$place.full_name}</b><small><i>{if $place.adm1_name && $place.adm1_name != $place.reference_name}, {$place.adm1_name}{/if}, {$place.reference_name}</i></small></span></p>
+ <p style="font-size:0.7em">Gazetteer info as will appear:<br/> <span style="color:silver;">{if $place.distance > 3}{$place.distance-0.01} km from{else}near to{/if} <b>{$place.full_name}</b><small><i>{if $place.adm1_name && $place.adm1_name != $place.reference_name}, {$place.adm1_name}{/if}, {$place.reference_name}</i></small></span></p>
  {/if}
 
 <p style="clear:both"><label for="comment">Comment</label><br/>
