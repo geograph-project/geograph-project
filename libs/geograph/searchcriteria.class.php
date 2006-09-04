@@ -486,28 +486,30 @@ class SearchCriteria_Placename extends SearchCriteria
 				(SEQ + 1000000) as id,
 				`def_nam` as full_name,
 				'PPL' as dsg,`east` as e,`north` as n,
-				'populated place' as dsg_name,
+				code_name as dsg_name,
 				1 as reference_index,
 				`full_county` as adm1_name,
 				km_ref as gridref
 			from 
 				os_gaz
+				inner join os_gaz_code using (f_code)
 			where
-				f_code IN ('C','T','O') AND
+				os_gaz.f_code IN ('C','T','O') AND
 				`def_nam` LIKE ".$db->Quote($placename.'%')."
 			limit $limit) UNION
 			(select
 				(SEQ + 1000000) as id,
 				`def_nam` as full_name,
 				'PPL' as dsg,`east` as e,`north` as n,
-				'populated place' as dsg_name,
+				code_name as dsg_name,
 				1 as reference_index,
 				`full_county` as adm1_name,
 				km_ref as gridref
 			from 
 				os_gaz
+				inner join os_gaz_code using (f_code)
 			where
-				f_code IN ('C','T','O') AND
+				os_gaz.f_code IN ('C','T','O') AND
 				`def_nam` LIKE ".$db->Quote('%'.$placename.'%')." AND
 				`def_nam` NOT LIKE ".$db->Quote($placename.'%')."
 			limit 20) UNION
@@ -515,14 +517,15 @@ class SearchCriteria_Placename extends SearchCriteria
 				(SEQ + 1000000) as id,
 				`def_nam` as full_name,
 				'PPL' as dsg,`east` as e,`north` as n,
-				'populated place' as dsg_name,
+				code_name as dsg_name,
 				1 as reference_index,
 				`full_county` as adm1_name,
 				km_ref as gridref
 			from 
 				os_gaz
+				inner join os_gaz_code using (f_code)
 			where
-				f_code IN ('C','T','O') AND
+				os_gaz.f_code IN ('C','T','O') AND
 				def_nam_soundex = SOUNDEX(".$db->Quote($placename).")
 			limit 20)
 			");
@@ -532,14 +535,15 @@ class SearchCriteria_Placename extends SearchCriteria
 					(SEQ + 1000000) as id,
 					`def_nam` as full_name,
 					'PPL' as dsg,`east` as e,`north` as n,
-					'populated place' as dsg_name,
+					code_name as dsg_name,
 					1 as reference_index,
 					`full_county` as adm1_name,
 					km_ref as gridref
 				from 
 					os_gaz
+					inner join os_gaz_code using (f_code)
 				where
-					f_code NOT IN ('C','T','O') AND
+					os_gaz.f_code NOT IN ('C','T','O') AND
 					( `def_nam` LIKE ".$db->Quote('%'.$placename.'%')."
 					OR def_nam_soundex = SOUNDEX(".$db->Quote($placename).") )
 				limit 20) UNION
