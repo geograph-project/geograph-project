@@ -617,7 +617,21 @@ class GridSquare
 		$top=$this->natnorthings-$radius;
 		$bottom=$this->natnorthings+$radius;
 	
-		if (isset($CONF['use_towns_gaz'])) {
+		if ($CONF['use_gazetteer'] == 'OS' && $this->reference_index == 1) {
+			$places = $db->GetRow("select
+					`def_nam` as full_name,
+					'PPL' as dsg,
+					1 as reference_index,
+					`full_county` as adm1_name,
+					power(`east`-{$this->nateastings},2)+power(`north`-{$this->natnorthings},2) as distance
+				from 
+					os_gaz
+				where
+					`east` between $left and $right and 
+					`north` between $top and $bottom and
+					f_code in ('C','T','O')
+				order by distance asc,f_code+0 asc limit 1");
+		} else if ($CONF['use_gazetteer'] == 'towns' && $this->reference_index == 1) {
 			$places = $db->GetRow("select
 					name as full_name,
 					'PPL' as dsg,
