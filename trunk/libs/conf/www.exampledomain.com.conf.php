@@ -102,7 +102,7 @@ $CONF['enable_newmap'] = 1;
 //$CONF['disable_discuss_thumbs'] = true;
 
 //use the smaller towns database for the 'near...' lines rather than placenames
-$CONF['use_towns_gaz'] = true;
+$CONF['use_gazetteer'] = 'towns'; //OS/towns/default
 
 //if you have capacity problems true to false, to skip checking count on page 1 of results. 
 $CONF['search_count_first_page'] = true; //true/false
