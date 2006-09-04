@@ -104,7 +104,7 @@
 		<p><b>Grid Reference</b>: {$gridref}</p>
 		</div>
 		 {if $place.distance}
-		 <div style="color:silver">&nbsp;{if $place.distance > 3}{$place.distance} km from{else}near to{/if} <b>{$place.full_name}</b><small><i>{if $place.adm1_name && $place.adm1_name != $place.reference_name}, {$place.adm1_name}{/if}, {$place.reference_name}</i></small></div>{/if}
+		 <div style="color:silver">&nbsp;{if $place.distance > 3}{$place.distance-0.01} km from{else}near to{/if} <b>{$place.full_name}</b><small><i>{if $place.adm1_name && $place.adm1_name != $place.reference_name}, {$place.adm1_name}{/if}, {$place.reference_name}</i></small></div>{/if}
 
 		
 		<p>Where to next?</p>
