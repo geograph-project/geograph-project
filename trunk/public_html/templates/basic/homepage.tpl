@@ -9,8 +9,8 @@ Recently completed hectads:
 {foreach from=$hectads key=id item=obj}
 <a title="View Mosaic for {$obj.hectad_ref}, completed {$obj.completed}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad_ref}</a>,
 {/foreach}
-<a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">more...</a>
-
+<a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">more...</a><br/>
+<b class="nowrap">{$stats.fewphotos|thousends} squares still with less than 4 photos</b>, add yours now!
 </div><br/>
 
 <div style="width:60%;float:left;padding-right:5px;position:relative">
