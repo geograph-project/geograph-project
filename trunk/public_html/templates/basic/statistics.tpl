@@ -97,12 +97,12 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
 
    <p><b>Covering the squares</b><a href="/help/squares">?</a>:<br/>
    None: <a href="/statistics/not_geographed.php">Hectads</a> (10<small>km</small> x 10<small>km</small> Squares) - shrinking all the time!<br/>
-   Mostly: <a href="/statistics/most_geographed.php">Grid Squares &amp; Hectads</a> <small>(10 x 10 Squares)</small> and <a href="/statistics/most_geographed_myriad.php">Myriads</a> <small>(100 x 100 Squares)</small>.<br/>
+   Mostly: <a href="/statistics/most_geographed.php">Grid Squares &amp; Hectads</a> and <a href="/statistics/most_geographed_myriad.php">Myriads</a> <small>(100 x 100 Squares)</small>.<br/>
    <b>Fully: <a href="/statistics/fully_geographed.php">Hectads</a> <small>(10 x 10 Squares)</small> - including Large Mosaic!</b><br/>
-   Graph: <a href="/statistics/hectads.php">Hectad Coverage</a></p>
+   Graph: <a href="/statistics/photos_per_square.php">Gridsquares</a> and <a href="/statistics/hectads.php">Hectad </a> Coverage</p>
 
    <p><b>Past Activity:</b><br/>
-   Graphs: <a href="/moversboard.php#rate_graph">Weekly Submissions</a>, <a href="/leaderboard.php#submission_graph">Overall Submissions</a>.<br/>
+   Graphs: <a href="/moversboard.php#rate_graph">Weekly Submissions</a>, <a href="/leaderboard.php#submission_graph">Overall Submissions</a>, <a href="/statistics/contributors.php">Contributor Graphs</a>.<br/>
    Monthly Breakdown: <a href="/statistics/overtime.php" title="Monthly Breakdown of Images Submitted">Submissions</a>, <a href="/statistics/overtime.php?date=taken" title="Monthly Breakdown of Images Taken">Date Taken</a>, <a href="/statistics/overtime_users.php" title="Monthly Breakdown new User Signups">User Signups</a> and <a href="/statistics/overtime_forum.php" title="Monthly Breakdown for Forum Posts">Forum Posts</a>.<br/>
    Hourly and Weekday Breakdown: <a href="/statistics/date_graphs.php" title="Hourly and Weekday Breakdown of Images Submitted">Submissions</a>, <a href="/statistics/date_graphs.php?date=taken" title="Hourly and Weekday Breakdown of Images Taken">Date Taken</a>, <a href="/statistics/date_users_graphs.php" title="Hourly and Weekday Breakdown of User Signups">User Signups</a> and <a href="/statistics/date_forum_graphs.php" title="Hourly and Weekday Breakdown for Forum Posts">Forum Posts</a>.<br/>
    Most in a day: <a href="/statistics/busyday.php?date=submitted">Submissions</a>, <a href="/statistics/busyday.php">Images Taken</a>, <a href="/statistics/busyday_users.php">Users</a> and <a href="/statistics/busyday_forum.php">Forum Posts</a> (<a href="/statistics/busyday_forum.php?users=1" title="Most in a day by user">Users</a>,<a href="/statistics/busyday_forum.php?threads=1" title="Most in a day by topic">Topics</a>).<br/>
