@@ -78,6 +78,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	#print_r($hectads);
 	
 	$stats= $db->cacheGetRow(3600,"select count(*) as images,count(distinct grid_reference) as squares,count(distinct user_id) as users ,sum(ftf=1 and moderation_status = 'geograph') as points from gridimage_search");
+	$stats['fewphotos'] = $db->cacheGetOne(3600,"select count(*) from gridsquare where percent_land > 0 and imagecount in (1,2,3)");
 	$smarty->assign_by_ref('stats', $stats);
 }
 
