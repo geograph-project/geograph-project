@@ -5,10 +5,6 @@ MAILTO=""
 #is the max load average the script is create maps, if over it sleeps and chech again later. 
 
 
-0 3 * * * /usr/bin/php /home/geograph/scripts/update_wordnet.php 3 > /dev/null
-#argument is the number of days to look for updated images for - a few days is best incase the cron hasnt run for a few days
-
-
 #fire time based events
 1 * * * * GET "http://geograph.elphin/admin/fire_event.php?event=every_hour&priority=75&param="
 30 3 * * * GET "http://geograph.elphin/admin/fire_event.php?event=every_day&priority=80&param="
