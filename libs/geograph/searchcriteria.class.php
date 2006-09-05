@@ -455,7 +455,12 @@ class SearchCriteria_Placename extends SearchCriteria
 	
 	function setByPlacename($placename) {
 		global $places; //only way to get the array into the compare functions
+		global $USER;
 		$db = $this->_getDB();
+
+		$ismore = 0;
+		$placename = str_replace('?','',$placename,$ismore);
+		$this->ismore = $ismore;
 		
 		if (is_numeric($placename)) {
 			if ($placename > 1000000) {
@@ -463,14 +468,12 @@ class SearchCriteria_Placename extends SearchCriteria
 			} else {
 				$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where id=".$db->Quote($placename));
 			}
-		} else {
+		} elseif (!$ismore) {
 			$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where def_nam=".$db->Quote($placename));
 			if (count($places) == 0) {
 				$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where full_name=".$db->Quote($placename));
 			}
 		}
-		
-		$placename = str_replace('?','',$placename);
 		
 		if (count($places) == 1) {
 			$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$places[0]['reference_index']." order by origin_x,origin_y limit 1");	
@@ -480,7 +483,14 @@ class SearchCriteria_Placename extends SearchCriteria
 			$this->placename = $places[0]['full_name'];
 			$this->searchq = $places[0]['full_name'];
 		} else {
-			$limit = (strlen($placename) > 3)?40:20;
+			$limit = (strlen($placename) > 3)?20:10;
+			$limi2 = 10;
+			if ($USER->registered) {
+				$limit *= 2;
+				$limi2 *= 2;
+			}
+			
+			//starts with (both gaz's)
 			$places = $db->GetAll("
 			(select
 				(SEQ + 1000000) as id,
@@ -497,39 +507,66 @@ class SearchCriteria_Placename extends SearchCriteria
 				os_gaz.f_code IN ('C','T','O') AND
 				`def_nam` LIKE ".$db->Quote($placename.'%')."
 			limit $limit) UNION
-			(select
-				(SEQ + 1000000) as id,
-				`def_nam` as full_name,
-				'PPL' as dsg,`east` as e,`north` as n,
-				code_name as dsg_name,
-				1 as reference_index,
-				`full_county` as adm1_name,
-				km_ref as gridref
+			(select 
+				id, 
+				full_name,
+				dsg,e,n,
+				loc_dsg.name as dsg_name,
+				loc_placenames.reference_index,
+				loc_adm1.name as adm1_name,
+				'' as gridref
 			from 
-				os_gaz
-				inner join os_gaz_code using (f_code)
+				loc_placenames
+				inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) 
+				left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
 			where
-				os_gaz.f_code IN ('C','T','O') AND
-				`def_nam` LIKE ".$db->Quote('%'.$placename.'%')." AND
-				`def_nam` NOT LIKE ".$db->Quote($placename.'%')."
-			limit 20) UNION
-			(select
-				(SEQ + 1000000) as id,
-				`def_nam` as full_name,
-				'PPL' as dsg,`east` as e,`north` as n,
-				code_name as dsg_name,
-				1 as reference_index,
-				`full_county` as adm1_name,
-				km_ref as gridref
-			from 
-				os_gaz
-				inner join os_gaz_code using (f_code)
-			where
-				os_gaz.f_code IN ('C','T','O') AND
-				def_nam_soundex = SOUNDEX(".$db->Quote($placename).")
-			limit 20)
-			");
-			if (count($places) < 10) {
+				dsg = 'PPL' AND
+				full_name LIKE ".$db->Quote($placename.'%')."
+			LIMIT 20)");
+			if (count($places) < 10 || $ismore) {
+				//sounds like (OS)
+				$places = array_merge($places,$db->GetAll("
+				select
+					(SEQ + 1000000) as id,
+					`def_nam` as full_name,
+					'PPL' as dsg,`east` as e,`north` as n,
+					code_name as dsg_name,
+					1 as reference_index,
+					`full_county` as adm1_name,
+					km_ref as gridref
+				from 
+					os_gaz
+					inner join os_gaz_code using (f_code)
+				where
+					os_gaz.f_code IN ('C','T','O') AND
+					def_nam_soundex = SOUNDEX(".$db->Quote($placename).") AND
+					def_nam NOT LIKE ".$db->Quote($placename.'%')."
+				limit $limi2"));
+			}
+			
+			if (count($places) < 10 || $ismore) {
+				//contains (OS)
+				$places = array_merge($places,$db->GetAll("
+				select
+					(SEQ + 1000000) as id,
+					`def_nam` as full_name,
+					'PPL' as dsg,`east` as e,`north` as n,
+					code_name as dsg_name,
+					1 as reference_index,
+					`full_county` as adm1_name,
+					km_ref as gridref
+				from 
+					os_gaz
+					inner join os_gaz_code using (f_code)
+				where
+					os_gaz.f_code IN ('C','T','O') AND
+					`def_nam` LIKE ".$db->Quote('%'.$placename.'%')." AND
+					`def_nam` NOT LIKE ".$db->Quote($placename.'%')."
+				limit $limi2"));
+			}
+			
+			if (count($places) < 10 || $ismore) {
+				//search the widest possible
 				$places2 = $db->GetAll("
 				(select
 					(SEQ + 1000000) as id,
@@ -546,7 +583,7 @@ class SearchCriteria_Placename extends SearchCriteria
 					os_gaz.f_code NOT IN ('C','T','O') AND
 					( `def_nam` LIKE ".$db->Quote('%'.$placename.'%')."
 					OR def_nam_soundex = SOUNDEX(".$db->Quote($placename).") )
-				limit 20) UNION
+				limit $limi2) UNION
 				(select 
 					id, 
 					full_name,
