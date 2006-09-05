@@ -108,12 +108,12 @@ if (!$smarty->is_cached($template, $cacheid))
 			foreach ($users as $i => $user) {
 				if (isset($topusers[$user['user_id']])) {
 					$topusers[$user['user_id']]['imgcount']++;
-					$topusers[$best_user['user_id']]['bigesthectad'] = max($topusers[$best_user['user_id']]['bigesthectad'],$hectad['land_count']);
+					$topusers[$best['user_id']]['bigesthectad'] = max($topusers[$user['user_id']]['bigesthectad'],$hectad['land_count']);
 					array_push($topusers[$user['user_id']]['squares'],$hectad['tenk_square']."[".$hectad['land_count']."]");
 				} else {
 					$topusers[$user['user_id']] = $user;
 					$topusers[$user['user_id']]['imgcount'] = 1;
-					$topusers[$best_user['user_id']]['bigesthectad'] = $hectad['land_count'];
+					$topusers[$best['user_id']]['bigesthectad'] = $hectad['land_count'];
 					$topusers[$user['user_id']]['squares'] = array($hectad['tenk_square']."[".$hectad['land_count']."]");
 				}
 			}
