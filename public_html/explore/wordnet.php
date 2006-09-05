@@ -69,7 +69,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql_crit = '';
 	$extra_link = '&amp;len='.$len;
 	if (!empty($words)) {
-		$ids = $db->GetAssoc("SELECT gid,title FROM `wordnet$len` WHERE title > 0 AND words = ".$db->Quote(trim($words)) );
+		$ids = $db->cachegetAssoc(3600,"SELECT gid,title FROM `wordnet$len` WHERE title > 0 AND words = ".$db->Quote(trim($words)) );
 		if (count($ids)) {
 			$sql_crit = " AND gid IN(".implode(',',array_keys($ids)).")";
 			$smarty->assign('words', trim($_GET['words']));
@@ -104,7 +104,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$having_crit = ($words)?'':'HAVING sum_title > 1';
 	 	
-	$wordlist = $db->GetAssoc("SELECT REPLACE(words,' ','&nbsp;'),COUNT(*) as sum_title,'size' FROM `wordnet$len` as wordnet INNER JOIN `gridimage` ON(gid = gridimage_id) WHERE submitted > date_sub(now(), interval 7 day) $sql_crit GROUP BY words $having_crit ORDER BY sum_title desc LIMIT 50");
+	$wordlist = $db->cachegetAssoc(3600,"SELECT REPLACE(words,' ','&nbsp;'),COUNT(*) as sum_title,'size' FROM `wordnet$len` as wordnet INNER JOIN `gridimage` ON(gid = gridimage_id) WHERE submitted > date_sub(now(), interval 7 day) $sql_crit GROUP BY words $having_crit ORDER BY sum_title desc LIMIT 50");
 	foreach($wordlist as $words=>$obj) {
 		$count=0;
 		foreach (explode('&nbsp;',$words) as $word) {
@@ -130,7 +130,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_from = "INNER JOIN `gridimage` ON(gid = gridimage_id) ";
 	}
 	
-	$toplist = $db->GetAssoc("SELECT REPLACE(words,' ','&nbsp;'),COUNT(*) as sum_title,'size' FROM `wordnet$len` as wordnet $sql_from WHERE 1 $sql_crit GROUP BY words $having_crit ORDER BY sum_title desc LIMIT 100");
+	$toplist = $db->cachegetAssoc(3600,"SELECT REPLACE(words,' ','&nbsp;'),COUNT(*) as sum_title,'size' FROM `wordnet$len` as wordnet $sql_from WHERE 1 $sql_crit GROUP BY words $having_crit ORDER BY sum_title desc LIMIT 100");
 	
 	foreach($toplist as $words=>$obj) {
 		$count=0;
