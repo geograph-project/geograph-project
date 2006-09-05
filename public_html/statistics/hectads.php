@@ -68,10 +68,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	foreach ($hectads as $i => $row) {
 		if ($row['percentage'] == 0) {
 			$count[0]++;
-		} elseif ($row['percentage'] < 5) {
-			$count[1]++;
+		} elseif ($row['percentage'] == 100) {
+			$count[101]++;
 		} else {
-			$count[min(100,intval($row['percentage']/5)*5)]++;
+			$count[min(100,intval($row['percentage']/5)*5+5)]++;
 		}
 	}
 	
@@ -82,7 +82,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$max = 0;
 	foreach (array_reverse($percents) as $p) {
 		$line = array();
-		$line['title'] = $p;
+		$line['title'] = ($p > 0 && $p < 101?"&lt; ":'').($p > 100?($p - 1):$p);
 		$line['value'] = $count[$p];
 		$table[] = $line;
 		$max = max($max,$count[$p]);
