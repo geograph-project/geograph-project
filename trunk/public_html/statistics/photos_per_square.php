@@ -30,7 +30,7 @@ $smarty = new GeographPage;
 $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
 $template='statistics_graph.tpl';
-$cacheid='users'.$ri;
+$cacheid='photos'.$ri;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hour cache
@@ -40,10 +40,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 	
-	$title = "User Submissions";
-	
-	$column = "count(*)";
-
+	$title = "Photos Per Square";
 	
 	if ($ri) {
 		$where[] = "reference_index = $ri";
@@ -53,29 +50,27 @@ if (!$smarty->is_cached($template, $cacheid))
 	} 
 
 	if (count($where))
-		$where_sql = " WHERE ".join(' AND ',$where);
+		$where_sql = " AND ".join(' AND ',$where);
 
-	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$hectads = $db->CacheGetAll(3600,"select 
-	$column as count
-	from gridimage_search 
-	$where_sql
-	group by user_id
+	$images = $db->CacheGetAll(3600,"select 
+	imagecount,count(*) as count
+	from gridsquare 
+	where percent_land >0
+		$where_sql
+	group by imagecount 
 	order by null");
 	
 	$count = array();
-	foreach ($hectads as $i => $row) {
-		if ($row['count'] == 0) {
-			$count[0]++;
-		} elseif ($row['count'] < 50) {
-			$count[intval($row['count']/5)*5+5]++;
-		} elseif ($row['count'] < 200) {
-			$count[intval($row['count']/10)*10+10]++;
-		} elseif ($row['count'] < 1000) {
-			$count[intval($row['count']/50)*50+50]++;
+	foreach ($images as $i => $row) {
+		if ($row['imagecount'] == 0) {
+			$count[0]+=$row['count'];
+		} elseif ($row['imagecount'] <= 10) {
+			$count[$row['imagecount']]+=$row['count'];
+		} elseif ($row['imagecount'] < 100) {
+			$count[intval($row['imagecount']/10)*10+10]+=$row['count'];
 		} else {
-			$count[intval($row['count']/500)*500+500]++;
+			$count[intval($row['imagecount']/100)*100+100]+=$row['count'];
 		}
 	}
 	
@@ -85,11 +80,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	$table = array();
 	$max = 0;
 	foreach ($percents as $p) {
-		#if ($p == 1000 || $p == 50) {
-		#	$table[] = array();
-		#}
 		$line = array();
-		$line['title'] = "&lt; $p";
+		$line['title'] = ($p > 10?"&lt; ":'').$p;
 		$line['value'] = $count[$p];
 		$table[] = $line;
 		$max = max($max,$count[$p]);
@@ -99,7 +91,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$graph = array();
 	
 	$graph['table'] = &$table;
-	$graph['title'] = 'Images Submitted by Number of Contributors';
+	$graph['title'] = 'Number of photos by number of land squares';
 	$graph['max'] = $max;
 	
 	$graphs[] = &$graph;
