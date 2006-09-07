@@ -216,32 +216,32 @@ class GeographMap
 		$x_km=$this->map_x + floor($x/$this->pixels_per_km);
 		$y_km=$this->map_y + floor($y/$this->pixels_per_km);
 		
-		
-		//this could be done in one query, but it's a funky join for something so simple
-		$reference_index=$db->GetOne("select reference_index from gridsquare where x=$x_km and y=$y_km");
-				
-		//But what to do when the square is not on land??
+		$row=$db->GetRow("select reference_index,grid_reference from gridsquare where CONTAINS( GeomFromText('POINT($x $y)'),point_xy )");
 			
-		if ($reference_index) {
-			$where_crit =  "and reference_index=$reference_index";
+		if (!empty($row['reference_index'])) {
+			$this->gridref = $row['grid_reference'];
+			$this->reference_index = $row['reference_index'];
 		} else {
+			//But what to do when the square is not on land??
+		
 			//when not on land just try any square!
 			// but favour the _smaller_ grid - works better, but still not quite right where the two grids almost overlap
 			$where_crit =  "order by reference_index desc";
-		}
 				
-		$sql="select prefix,origin_x,origin_y,reference_index from gridprefix ".
-			"where $x_km between origin_x and (origin_x+width-1) and ".
-			"$y_km between origin_y and (origin_y+height-1) $where_crit limit 1";
-		$prefix=$db->GetRow($sql);
-		if ($prefix['prefix']) { 
-			$n=$y_km-$prefix['origin_y'];
-			$e=$x_km-$prefix['origin_x'];
-			$this->gridref = sprintf('%s%02d%02d', $prefix['prefix'], $e, $n);
-			$this->reference_index = $prefix['reference_index'];
-		} else {
-			$this->gridref = "unknown";
+			$sql="select prefix,origin_x,origin_y,reference_index from gridprefix ".
+				"where $x_km between origin_x and (origin_x+width-1) and ".
+				"$y_km between origin_y and (origin_y+height-1) $where_crit limit 1";
+			$prefix=$db->GetRow($sql);
+			if ($prefix['prefix']) { 
+				$n=$y_km-$prefix['origin_y'];
+				$e=$x_km-$prefix['origin_x'];
+				$this->gridref = sprintf('%s%02d%02d', $prefix['prefix'], $e, $n);
+				$this->reference_index = $prefix['reference_index'];
+			} else {
+				$this->gridref = "unknown";
+			}
 		}
+		
 		return $this->gridref;
 	}
 
