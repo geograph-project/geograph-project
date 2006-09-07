@@ -631,7 +631,7 @@ class GridSquare
 					'PPL' as dsg,
 					1 as reference_index,
 					`full_county` as adm1_name,
-					power(e-{$this->nateastings},2)+power(n-{$this->natnorthings},2) as distance
+					( (east-{$this->nateastings})*(east-{$this->nateastings})+(north-{$this->natnorthings})*(north-{$this->natnorthings}) ) as distance
 				from
 					os_gaz
 				where
