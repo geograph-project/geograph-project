@@ -76,11 +76,20 @@ class SearchCriteria
 				if ($sql_where) {
 					$sql_where .= ' and ';
 				}
-				$sql_where .= sprintf('x BETWEEN %d and %d AND y BETWEEN %d and %d',$x-$d,$x+$d,$y-$d,$y+$d);
+
+				$left=$x-$d;
+				$right=$x+$d;
+				$top=$y+$d;
+				$bottom=$y-$d;
+
+				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
+				$sql_where .= "CONTAINS(GeomFromText($rectangle),point_xy)";
+
 				//shame cant use dist_sqd in the next line!
 				$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);
 			}
-			
+
 			//not using "power(gs.x -$x,2) * power( gs.y -$y,2)" beucause is testing could be upto 2 times slower!
 			$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
 			$sql_order = ' dist_sqd ';
@@ -138,8 +147,14 @@ class SearchCriteria
 			
 			$prefix = $db->GetRow('select * from gridprefix where prefix='.$db->Quote($this->limit5).' limit 1');	
 			
-			$sql_where .= sprintf('gs.x between %d and %d and gs.y between %d and %d',$prefix['origin_x'],$prefix['origin_x']+$prefix['width']-1,$prefix['origin_y'],
-			$prefix['origin_y']+$prefix['height']-1);
+			$left=$prefix['origin_x'];
+			$right=$prefix['origin_x']+$prefix['width']-1;
+			$top=$prefix['origin_y']+$prefix['height']-1;
+			$bottom=$prefix['origin_y'];
+			
+			$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
+			$sql_where .= "CONTAINS(GeomFromText($rectangle),point_xy)";
 			
 			if (empty($this->limit4))
 				$sql_where .= ' and gs.reference_index = '.$prefix['reference_index'].' ';
@@ -493,7 +508,7 @@ class SearchCriteria_Placename extends SearchCriteria
 			//starts with (both gaz's)
 			$places = $db->GetAll("
 			(select
-				(SEQ + 1000000) as id,
+				(seq + 1000000) as id,
 				`def_nam` as full_name,
 				'PPL' as dsg,`east` as e,`north` as n,
 				code_name as dsg_name,
@@ -527,7 +542,7 @@ class SearchCriteria_Placename extends SearchCriteria
 				//sounds like (OS)
 				$places = array_merge($places,$db->GetAll("
 				select
-					(SEQ + 1000000) as id,
+					(seq + 1000000) as id,
 					`def_nam` as full_name,
 					'PPL' as dsg,`east` as e,`north` as n,
 					code_name as dsg_name,
@@ -548,7 +563,7 @@ class SearchCriteria_Placename extends SearchCriteria
 				//contains (OS)
 				$places = array_merge($places,$db->GetAll("
 				select
-					(SEQ + 1000000) as id,
+					(seq + 1000000) as id,
 					`def_nam` as full_name,
 					'PPL' as dsg,`east` as e,`north` as n,
 					code_name as dsg_name,
@@ -569,7 +584,7 @@ class SearchCriteria_Placename extends SearchCriteria
 				//search the widest possible (but exclude PPL's in GB)
 				$places2 = $db->GetAll("
 				(select
-					(SEQ + 1000000) as id,
+					(seq + 1000000) as id,
 					`def_nam` as full_name,
 					'PPL' as dsg,`east` as e,`north` as n,
 					code_name as dsg_name,
