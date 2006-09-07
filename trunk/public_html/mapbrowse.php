@@ -34,7 +34,8 @@ if (isset($_GET['map']))
 					
 	//render and return a map with token $_GET['map'];
 	$map=new GeographMap;
-	//$map->caching=false;
+	if (isset($_GET['refresh']) && (init_session() || true) && $USER->hasPerm('admin'))
+		$map->caching=false;
 	$map->setToken($_GET['map']);
 	$map->returnImage();
 	exit;
@@ -144,6 +145,14 @@ if (isset($_GET['gridref_from']) && preg_match('/^[a-zA-Z]{1,2}\d{4}$/',$_GET['g
 if (!$smarty->is_cached($template, $cacheid))
 {
 	//assign overview to smarty
+	
+	if ($mosaic->pixels_per_km == 40) { 
+		$overview->setScale(1);
+		list ($x,$y) = $mosaic->getCentre();
+		$overview->setCentre($x,$y); //does call setAlignedOrigin
+	}
+	
+	
 	$overview->assignToSmarty($smarty, 'overview');
 	$smarty->assign('marker', $overview->getBoundingBox($mosaic));
 	
