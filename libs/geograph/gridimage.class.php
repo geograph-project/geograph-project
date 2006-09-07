@@ -1187,7 +1187,7 @@ class GridImage
 			}
 	
 			$sql="REPLACE INTO gridimage_search
-			SELECT gridimage_id,gi.user_id,moderation_status,title,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,user.realname,reference_index,comment,$lat,$long,ftf,seq_no
+			SELECT gridimage_id,gi.user_id,moderation_status,title,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,user.realname,reference_index,comment,$lat,$long,ftf,seq_no,point_xy
 			FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 			INNER JOIN user ON(gi.user_id=user.user_id)
 			WHERE gridimage_id = '{$this->gridimage_id}'";
@@ -1206,6 +1206,7 @@ class GridImage
 	*/
 	function updatePlaceNameId($gridsquare = null)
 	{
+		global $CONF;
 		$db=&$this->_getDB();
 		
 		if (!$gridsquare) 
@@ -1222,19 +1223,47 @@ class GridImage
 		$right=$gridsquare->nateastings+$radius;
 		$top=$gridsquare->natnorthings-$radius;
 		$bottom=$gridsquare->natnorthings+$radius;
+
+		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 		
-		$places = $db->GetRow("select
-			loc_placenames.id as pid,
-			power(e-{$gridsquare->nateastings},2)+power(n-{$gridsquare->natnorthings},2) as distance
-		from 
-			loc_placenames
-			left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
-		where
-			dsg = 'PPL' AND 
-			e between $left and $right and 
-			n between $top and $bottom and
-			loc_placenames.reference_index = {$gridsquare->reference_index}
-		order by distance asc limit 1");
+		if ($CONF['use_gazetteer'] == 'OS' && $gridsquare->reference_index == 1) {
+			$places = $db->GetRow("select
+					(seq + 1000000) as id,
+					power(e-{$gridsquare->nateastings},2)+power(n-{$gridsquare->natnorthings},2) as distance
+				from
+					os_gaz
+				where
+					CONTAINS( 	
+						GeomFromText($rectangle),
+						point_en) AND
+					f_code in ('C','T','O')
+				order by distance asc,f_code+0 asc limit 1");
+		} else if ($CONF['use_gazetteer'] == 'towns' && $gridsquare->reference_index == 1) {
+			$places = $db->GetRow("select
+					(id + 900000) as id,
+					power(e-{$gridsquare->nateastings},2)+power(n-{$gridsquare->natnorthings},2) as distance
+				from 
+					loc_towns
+				where
+					CONTAINS( 	
+						GeomFromText($rectangle),
+						point_en) AND
+					reference_index = {$gridsquare->reference_index}
+				order by distance asc limit 1");
+		} else {
+			$places = $db->GetRow("select
+					loc_placenames.id as pid,
+					power(e-{$gridsquare->nateastings},2)+power(n-{$gridsquare->natnorthings},2) as distance
+				from 
+					loc_placenames
+				where
+					dsg = 'PPL' AND 
+					CONTAINS( 	
+						GeomFromText($rectangle),
+						point_en) AND
+					loc_placenames.reference_index = {$gridsquare->reference_index}
+				order by distance asc limit 1");
+		}
 		
 		$db->Execute("update gridimage set placename_id = '{$places['pid']}',upd_timestamp = '{$this->upd_timestamp}' where gridimage_id = {$this->gridimage_id}");
 	}	

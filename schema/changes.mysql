@@ -420,19 +420,122 @@ CREATE TABLE `wordnet1` (
   `words` varchar(64) NOT NULL default '',
   `title` smallint(6) NOT NULL default '0',
   KEY `gid_2` (`gid`,`words`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM;
 
 CREATE TABLE `wordnet2` (
   `gid` int(11) NOT NULL default '0',
   `words` varchar(64) NOT NULL default '',
   `title` smallint(6) NOT NULL default '0',
   KEY `gid_2` (`gid`,`words`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM;
 
 CREATE TABLE `wordnet3` (
   `gid` int(11) NOT NULL default '0',
   `words` varchar(64) NOT NULL default '',
   `title` smallint(6) NOT NULL default '0',
   KEY `gid_2` (`gid`,`words`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM;
         
+
+create table `os_gaz` (
+  `seq` int(11) not null default '0',
+  `km_ref` varchar(6) not null default '',
+  `def_nam` varchar(60) not null default '',
+  `tile_ref` varchar(4) not null default '',
+  `lat_deg` tinyint(4) not null default '0',
+  `lat_min` double(3,1) not null default '0.0',
+  `long_deg` tinyint(4) not null default '0',
+  `long_min` double(3,1) not null default '0.0',
+  `north` mediumint(9) not null default '0',
+  `east` mediumint(9) not null default '0',
+  `gmt` char(1) not null default '',
+  `co_code` char(2) not null default '',
+  `county` varchar(20) not null default '',
+  `full_county` varchar(60) not null default '',
+  `f_code` char(3) not null default '',
+  `e_date` varchar(11) not null default '',
+  `update_co` char(1) not null default '',
+  `sheet_1` smallint(6) not null default '0',
+  `sheet_2` smallint(6) not null default '0',
+  `sheet_3` smallint(6) not null default '0'
+);
+
+
+
+ALTER TABLE `os_gaz` CHANGE `f_code` `f_code` ENUM( 'C', 'T', 'O', 'A', 'F', 'FM', 'H', 'R', 'W', 'X' ) NOT NULL;
+
+ALTER TABLE `os_gaz` ADD INDEX ( `east` , `north` , `f_code` );
+
+ALTER TABLE `os_gaz` ADD PRIMARY KEY ( `seq` ) ;
+
+ALTER TABLE `os_gaz` ADD `def_nam_soundex` VARCHAR( 32 ) NOT NULL ;
+UPDATE `os_gaz` SET def_nam_soundex = SOUNDEX(def_nam);
+ALTER TABLE `os_gaz` ADD INDEX ( `def_nam_soundex` , `f_code` );
+
+
+ALTER TABLE `user` ADD `ticket_option` ENUM( 'all', 'major', 'digest', 'none' ) DEFAULT 'all' NOT NULL ;
+
+CREATE TABLE `gridsquare_moderation_lock` (
+`gridsquare_id` INT UNSIGNED NOT NULL ,
+`user_id` INT UNSIGNED NOT NULL ,
+`lock_obtained` TIMESTAMP NOT NULL ,
+PRIMARY KEY ( `gridsquare_id` ) 
+);
+
+
+ALTER TABLE `os_gaz` ADD `point_en` POINT NOT NULL ;
+
+#need to repeat this after populating the table :)
+UPDATE os_gaz SET point_en = GeomFromText(CONCAT('POINT(',east,' ',north,')'));
+
+ALTER TABLE `os_gaz` ADD SPATIAL KEY(point_en);
+
+
+ALTER TABLE `loc_placenames` ADD `point_en` POINT NOT NULL ;
+
+UPDATE loc_placenames SET point_en = GeomFromText(CONCAT('POINT(',e,' ',n,')'));
+
+ALTER TABLE `loc_placenames` ADD SPATIAL KEY(point_en);
+
+
+
+ALTER TABLE `loc_towns` ADD `point_en` POINT NOT NULL ;
+
+UPDATE loc_towns SET point_en = GeomFromText(CONCAT('POINT(',e,' ',n,')'));
+
+ALTER TABLE `loc_towns` ADD SPATIAL KEY(point_en);
+
+
+
+ALTER TABLE `loc_counties` ADD `point_en` POINT NOT NULL ;
+
+UPDATE loc_counties SET point_en = GeomFromText(CONCAT('POINT(',e,' ',n,')'));
+
+ALTER TABLE `loc_counties` ADD SPATIAL KEY(point_en);
+
+
+
+ALTER TABLE `loc_counties_pre74` ADD `point_en` POINT NOT NULL ;
+
+UPDATE loc_counties_pre74 SET point_en = GeomFromText(CONCAT('POINT(',e,' ',n,')'));
+
+ALTER TABLE `loc_counties_pre74` ADD SPATIAL KEY(point_en);
+
+
+ALTER TABLE `gridsquare` ADD `point_xy` POINT NOT NULL ;
+
+UPDATE gridsquare SET point_xy = GeomFromText(CONCAT('POINT(',x,' ',y,')'));
+
+ALTER TABLE `gridsquare` ADD SPATIAL KEY(point_xy);
+
+
+ALTER TABLE `gridimage_search` ADD `point_xy` POINT NOT NULL ;
+
+UPDATE gridimage_search SET point_xy = GeomFromText(CONCAT('POINT(',x,' ',y,')'));
+
+ALTER TABLE `gridimage_search` ADD SPATIAL KEY(point_xy);
+ 
+ 
+ 
+
+

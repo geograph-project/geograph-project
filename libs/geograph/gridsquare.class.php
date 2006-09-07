@@ -522,8 +522,8 @@ class GridSquare
 					//need to create the square - we give it a land_percent of -1
 					//to indicate it needs review, and also to prevent it being
 					//used in further findNearby calls
-					$sql="insert into gridsquare(x,y,percent_land,grid_reference,reference_index) ".
-						"values($x,$y,-1,'$gridref',{$prefix['reference_index']})";
+					$sql="insert into gridsquare(x,y,percent_land,grid_reference,reference_index,point_xy) 
+						values($x,$y,-1,'$gridref',{$prefix['reference_index']},GeomFromText('POINT($x $y)') )";
 					$db->Execute($sql);
 					$gridimage_id=$db->Insert_ID();
 					
@@ -557,29 +557,32 @@ class GridSquare
 	function findNearby($x, $y, $radius, $occupied=true)
 	{
 		$db=&$this->_getDB();
-		
+
 		//to optimise the query, we scan a square centred on the
 		//the required point
 		$left=$x-$radius;
 		$right=$x+$radius;
 		$top=$y-$radius;
 		$bottom=$y+$radius;
-		
+
 		if ($occupied)
 			$ofilter=" and imagecount>0 ";
 		else
 			$ofilter=" and percent_land>0 ";
-			
-		$sql="select *, ".
-			"power(x-$x,2)+power(y-$y,2) as distance ".
-			"from gridsquare where ".
-			"x between $left and $right and ".
-			"y between $top and $bottom ".
-			$ofilter.
-			"order by distance asc limit 1";
 		
-		$square = $db->GetRow($sql);	
+		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
+		$sql="select *,
+			power(x-$x,2)+power(y-$y,2) as distance
+			from gridsquare where
+			CONTAINS( 	
+				GeomFromText($rectangle),
+				point_xy)
+			$ofilter
+			order by distance asc limit 1";
 		
+		$square = $db->GetRow($sql);
+
 		if (count($square) && ($distance = sqrt($square['distance'])) && ($distance <= $radius))
 		{
 			//round off distance
@@ -591,7 +594,6 @@ class GridSquare
 			{
 				if (!is_numeric($name))
 					$this->nearest->$name=$value;
-									
 			}
 			
 			return true;
@@ -600,7 +602,6 @@ class GridSquare
 		{
 			return false;
 		}
-			
 	}
 	
 	
@@ -616,19 +617,27 @@ class GridSquare
 		$right=$this->nateastings+$radius;
 		$top=$this->natnorthings-$radius;
 		$bottom=$this->natnorthings+$radius;
-	
+
+		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
+			//this is actully slower: 0.029 vs 0.025 (how to do it without a Distance() function)
+			//$point = "'POINT({$this->nateastings} {$this->natnorthings})'";
+			//$sql = 	ROUND(GLength(LineStringFromWKB(LineString(AsBinary(point_en),
+			//				AsBinary(GeomFromText($point))  )))) as distance
+
 		if ($CONF['use_gazetteer'] == 'OS' && $this->reference_index == 1) {
 			$places = $db->GetRow("select
 					`def_nam` as full_name,
 					'PPL' as dsg,
 					1 as reference_index,
 					`full_county` as adm1_name,
-					power(`east`-{$this->nateastings},2)+power(`north`-{$this->natnorthings},2) as distance
-				from 
+					power(e-{$this->nateastings},2)+power(n-{$this->natnorthings},2) as distance
+				from
 					os_gaz
 				where
-					`east` between $left and $right and 
-					`north` between $top and $bottom and
+					CONTAINS( 	
+						GeomFromText($rectangle),
+						point_en) AND
 					f_code in ('C','T','O')
 				order by distance asc,f_code+0 asc limit 1");
 		} else if ($CONF['use_gazetteer'] == 'towns' && $this->reference_index == 1) {
@@ -641,8 +650,9 @@ class GridSquare
 				from 
 					loc_towns
 				where
-					e between $left and $right and 
-					n between $top and $bottom and
+					CONTAINS( 	
+						GeomFromText($rectangle),
+						point_en) AND
 					reference_index = {$this->reference_index}
 				order by distance asc limit 1");
 		} else {
@@ -657,8 +667,9 @@ class GridSquare
 					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
 				where
 					dsg = 'PPL' AND 
-					e between $left and $right and 
-					n between $top and $bottom and
+					CONTAINS( 	
+						GeomFromText($rectangle),
+						point_en) AND
 					loc_placenames.reference_index = {$this->reference_index}
 				order by distance asc limit 1");
 
@@ -672,8 +683,9 @@ class GridSquare
 					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
 				where
 					dsg = 'PPL' AND 
-					e between $left and $right and 
-					n between $top and $bottom and
+					CONTAINS( 	
+						GeomFromText($rectangle),
+						point_en) AND
 					loc_placenames.reference_index = {$this->reference_index} and
 					power(e-{$this->nateastings},2)+power(n-{$this->natnorthings},2) < $d
 				order by distance asc limit 5");
@@ -687,7 +699,7 @@ class GridSquare
 		if (isset($places['distance']))
 			$places['distance'] = round(sqrt($places['distance'])/1000)+0.01;
 		$places['reference_name'] = $CONF['references'][$places['reference_index']];
-	
+
 		return $places;
 	}
 	

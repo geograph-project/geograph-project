@@ -66,7 +66,7 @@ if (isset($_POST['recreate']))
 		$db->Execute("create table tmpimg select gridimage_id,moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp,comment,ftf,seq_no,user_id,gridsquare_id from gridimage where moderation_status in ('accepted','geograph');");
 
 		echo "<p>Creating gridsquare copy...</p>";flush();
-		$db->Execute("create table tmpsq select gridsquare_id,grid_reference,x, y,reference_index from gridsquare;");
+		$db->Execute("create table tmpsq select gridsquare_id,grid_reference,x, y,reference_index,point_xy from gridsquare;");
 
 		echo "<p>Creating user copy...</p>";flush();
 		$db->Execute("create table tmpus select user_id,realname from user;");
@@ -84,7 +84,7 @@ if (isset($_POST['recreate']))
 
 		echo "<p>Rebuilding gridimage_search...</p>";flush();
 		$db->Execute("INSERT INTO gridimage_search
-			SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, user.realname,reference_index,comment,0,0,ftf,seq_no
+			SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, user.realname,reference_index,comment,0,0,ftf,seq_no,point_xy
 			FROM tmpimg AS gi
 			INNER JOIN tmpsq AS gs
 			USING ( gridsquare_id )
@@ -106,7 +106,7 @@ if (isset($_POST['recreate']))
 
 
 		$db->Execute("INSERT INTO gridimage_search
-			SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, user.realname,reference_index,comment,0,0,ftf,seq_no
+			SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, user.realname,reference_index,comment,0,0,ftf,seq_no,point_xy
 			FROM gridimage AS gi
 			INNER JOIN gridsquare AS gs
 			USING ( gridsquare_id )
