@@ -159,7 +159,7 @@ function internal_to_national($x,$y,$reference_index = 0) {
 	if (!$reference_index) {
 		$db = $this->_getDB();
 		
-		$reference_index=$db->GetOne("select reference_index from gridsquare where x=$x and y=$y");
+		$reference_index=$db->GetOne("select reference_index from gridsquare where CONTAINS( GeomFromText('POINT($x $y)'),point_xy )");
 		
 		//But what to do when the square is not on land??
 		

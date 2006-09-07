@@ -427,7 +427,7 @@ class GridSquare
 	{
 		$ok=false;
 		$db=&$this->_getDB();
-		$square = $db->GetRow('select * from gridsquare where x='.$db->Quote($internalx).' and y='.$db->Quote($internaly).' limit 1');	
+		$square = $db->GetRow("select * from gridsquare where CONTAINS( GeomFromText('POINT($internalx $internaly)'),point_xy ) limit 1");
 		if (count($square))
 		{		
 			$ok=true;
@@ -437,7 +437,6 @@ class GridSquare
 			{
 				if (!is_numeric($name))
 					$this->$name=$value;
-								
 			}
 			
 			//ensure we get exploded reference members too
@@ -451,7 +450,6 @@ class GridSquare
 			}
 		} else {
 			$this->_error("This location seems to be all at sea! Please contact us if you think this is in error");
-
 		}
 		return $ok;
 	}
