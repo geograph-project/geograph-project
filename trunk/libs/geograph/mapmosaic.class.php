@@ -154,6 +154,12 @@ class GeographMapMosaic
 				$this->setScale(0.13);
 				$this->setMosaicFactor(1);
 				break;
+			case 'largeoverview':
+				$this->setOrigin(0,-10);//will get recented
+				$this->setMosaicSize(120,170);
+				$this->setScale(1);
+				$this->setMosaicFactor(1);
+				break;
 			default:
 				trigger_error("GeographMapMosaic::setPreset unknown preset $name", E_USER_ERROR);
 				break;
