@@ -436,8 +436,6 @@ class GeographMapMosaic
 		$x_km=$this->map_x + floor($x/$this->pixels_per_km);
 		$y_km=$this->map_y + floor($y/$this->pixels_per_km);
 		
-		
-		//this could be done in one query, but it's a funky join for something so simple
 		$reference_index=$db->GetOne("select reference_index from gridsquare where x=$x_km and y=$y_km");
 				
 		//But what to do when the square is not on land??
@@ -728,8 +726,18 @@ class GeographMapMosaic
 			intval($y - ($this->image_h / $this->pixels_per_km)/2), $ispantoken);
 	}
 	
+	/**
+	* Get center of map in internal coordinates
+	* @access public
+	*/
+	function getCentre()
+	{
+		return array($this->map_x + intval(($this->image_w / 2) / $this->pixels_per_km),
+					 $this->map_y + intval(($this->image_h / 2) / $this->pixels_per_km));
+	}
+		
 	
-	
+		
 	
 	/**
 	* Given index of a mosaic image, and a pixel position on that image handle a zoom
