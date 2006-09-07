@@ -78,7 +78,7 @@
 	{foreach from=$overview key=y item=maprow}
 		<div style="position:absolute;top:0px;left:0px;">
 		{foreach from=$maprow key=x item=mapcell}
-		<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;recenter=1"><img 
+		<a href="/mapbrowse.php?t={$mosaic_token}&amp;{if !$token_zoomin}o={$overview_token}&amp;{/if}i={$x}&amp;j={$y}&amp;recenter=1"><img 
 		ismap="ismap" alt="Clickable map" title="Click to pan main map" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 		{/foreach}
 		</div>
