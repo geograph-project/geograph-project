@@ -75,6 +75,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	dieUnderHighLoad();
 
 	//assign overview to smarty
+	if ($mosaic->pixels_per_km >= 40) { 
+		//largeoverview
+		$overview->setScale(1);
+		list ($x,$y) = $mosaic->getCentre();
+		$overview->setCentre($x,$y); //does call setAlignedOrigin
+	}
 	$overview->assignToSmarty($smarty, 'overview');
 	$smarty->assign('marker', $overview->getBoundingBox($mosaic));
 	

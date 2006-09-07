@@ -421,10 +421,14 @@ else
 new RecentImageList($smarty);
 
 //lets add an overview map too
-$overview=new GeographMapMosaic('overview');
-$overview->assignToSmarty($smarty, 'overview');
-if ($grid_ok)
+if ($grid_ok) {
+	$overview=new GeographMapMosaic('largeoverview');
+	$overview->setCentre($square->x,$square->y); //does call setAlignedOrigin
 	$smarty->assign('marker', $overview->getSquarePoint($square));
+} else {
+	$overview=new GeographMapMosaic('overview');	
+}
+$overview->assignToSmarty($smarty, 'overview');
 
 #}
 

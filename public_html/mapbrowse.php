@@ -34,7 +34,7 @@ if (isset($_GET['map']))
 					
 	//render and return a map with token $_GET['map'];
 	$map=new GeographMap;
-	if (isset($_GET['refresh']) && (init_session() || true) && $USER->hasPerm('admin'))
+	if (isset($_GET['refresh']) && $_GET['refresh'] == 2 && (init_session() || true) && $USER->hasPerm('admin'))
 		$map->caching=false;
 	$map->setToken($_GET['map']);
 	$map->returnImage();
@@ -99,7 +99,10 @@ if (isset($_GET['center']))
 	
 	//get click coordinate on overview, use it to centre the main map
 	list($intx, $inty)=$overview->getClickCoordinates($i, $j, $x, $y);	
-	$mosaic->setScale($mosaic->scales[1]);
+	
+	$zoomindex = array_search($overview->pixels_per_km,$overview->scales);
+	$scale = $overview->scales[$zoomindex+1];
+	$mosaic->setScale($scale);
 	$mosaic->setMosaicFactor(2);
 	$mosaic->setCentre($intx, $inty);	
 	
@@ -147,9 +150,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	//assign overview to smarty
 	
 	if ($mosaic->pixels_per_km == 40) { 
+		//largeoverview
 		$overview->setScale(1);
 		list ($x,$y) = $mosaic->getCentre();
 		$overview->setCentre($x,$y); //does call setAlignedOrigin
+	} else {
+		//set it back incase we come from a largeoverview
+		$overview->setScale(0.13);
+		$overview->setOrigin(0,-10);		
 	}
 	
 	

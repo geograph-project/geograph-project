@@ -101,7 +101,9 @@ if (!empty($_GET['To'])) { //to lat/long
 			$smarty->assign('place', $square->findNearestPlace(135000));	
 
 			//lets add an overview map too
-			$overview=new GeographMapMosaic('overview');
+			$overview=new GeographMapMosaic('largeoverview');
+			$overview->setCentre($square->x,$square->y); //does call setAlignedOrigin
+			
 			$overview->assignToSmarty($smarty, 'overview');
 			$smarty->assign('marker', $overview->getSquarePoint($square));
 
