@@ -127,7 +127,8 @@ if ($image->isValid())
 		$smarty->assign('square_count', $image->grid_square->imagecount);
 
 		//lets add an overview map too
-		$overview=new GeographMapMosaic('overview');
+		$overview=new GeographMapMosaic('largeoverview');
+		$overview->setCentre($image->grid_square->x,$image->grid_square->y); //does call setAlignedOrigin
 		$overview->assignToSmarty($smarty, 'overview');
 		$smarty->assign('marker', $overview->getSquarePoint($image->grid_square));
 
