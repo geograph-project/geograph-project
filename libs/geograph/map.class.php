@@ -457,10 +457,11 @@ class GeographMap
 		//paint the land
 		$db=&$this->_getDB();
 			
+		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+		
 		//now plot all squares in the desired area
-		$sql="select x,y,percent_land,reference_index from gridsquare where ".
-			"(x between $left and $right) and ".
-			"(y between $bottom and $top)";
+		$sql="select x,y,percent_land,reference_index from gridsquare where 
+			CONTAINS( GeomFromText($rectangle),	point_xy)";
 
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
@@ -620,10 +621,11 @@ class GeographMap
 		$scanbottom=$bottom-$overscan;
 		$scantop=$top+$overscan;
 		
-		$sql="select x,y,gridsquare_id,has_geographs from gridsquare where ".
-			"(x between $scanleft and $scanright) and ".
-			"(y between $scanbottom and $scantop) ".
-			"and imagecount>0";
+		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
+				
+		$sql="select x,y,gridsquare_id,has_geographs from gridsquare where 
+			CONTAINS( GeomFromText($rectangle),	point_xy)
+			and imagecount>0";
 
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
@@ -800,18 +802,18 @@ class GeographMap
 		$imagemap = fopen( $root.$target.".html","w");
 		fwrite($imagemap,"<map name=\"imagemap\">\n");
 		
+		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
+				
 		if ($this->type_or_user < -2000) {
 			$sql="select x,y,gi.gridimage_id from gridimage_search gi
 			where 
-			(x between $scanleft and $scanright) and 
-			(y between $scanbottom and $scantop) and imagetaken = '".($this->type_or_user * -1)."-12-25'
+			CONTAINS( GeomFromText($rectangle),	point_xy) and imagetaken = '".($this->type_or_user * -1)."-12-25'
 			 order by rand()";
 			 	 
 		} elseif (1) {
 			$sql="select x,y,gi.gridimage_id from gridimage_search gi
 			where 
-			(x between $scanleft and $scanright) and 
-			(y between $scanbottom and $scantop) 
+			CONTAINS( GeomFromText($rectangle),	point_xy)
 			and seq_no = 1 group by FLOOR(x/10),FLOOR(y/10) order by rand() limit 600";
 			#inner join gridimage_post gp on (gi.gridimage_id = gp.gridimage_id and gp.topic_id = 1006)
 			
@@ -823,8 +825,7 @@ class GeographMap
 		} else {
 		
 		$sql="select x,y,grid_reference from gridsquare where 
-			(x between $scanleft and $scanright) and 
-			(y between $scanbottom and $scantop) 
+			CONTAINS( GeomFromText($rectangle),	point_xy)
 			and imagecount>0 group by FLOOR(x/30),FLOOR(y/30) order by rand() limit 500";
 		}
 		
@@ -944,6 +945,9 @@ sleep(5);
 			$cityfont = 3;
 		}
 
+		$rectangle = "'POLYGON(($natleft $natbottom,$natright $natbottom,$natright $nattop,$natleft $nattop,$natleft $natbottom))'";
+		
+
 if ($reference_index == 1 || ($reference_index == 2 && $this->pixels_per_km == 1 )) {
 	//$countries = "'EN','WA','SC'";
 $sql = <<<END
@@ -951,8 +955,7 @@ SELECT name,e,n,s,quad
 FROM loc_towns
 WHERE 
 reference_index = $reference_index AND $crit
-e BETWEEN $natleft and $natright AND 
-n BETWEEN $natbottom and $nattop 
+CONTAINS( GeomFromText($rectangle),	point_en) 
 ORDER BY s
 END;
 #GROUP BY FLOOR(e/$div),FLOOR(n/$div)
@@ -967,8 +970,7 @@ INNER JOIN `loc_wikipedia` ON ( full_name = text )
 WHERE dsg = 'PPL' AND
 reference_index = $reference_index AND
 country IN ($countries) AND $crit2
-e BETWEEN $natleft and $natright AND 
-n BETWEEN $natbottom and $nattop 
+CONTAINS( GeomFromText($rectangle),	point_en) 
 ORDER BY RAND()
 END;
 }
@@ -1127,7 +1129,7 @@ END;
 		}
 		
 		$db=&$this->_getDB();
-		
+
 		$sql="select * from gridprefix where ".
 			"origin_x between $scanleft-width and $scanright and ".
 			"origin_y between $scanbottom-height and $scantop ".
@@ -1272,14 +1274,15 @@ END;
 		$scanbottom=$bottom-$overscan;
 		$scantop=$top+$overscan;
 		
+		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
+				
 		$sql="select gs.*, 
 			sum(moderation_status='accepted') as accepted, sum(moderation_status='pending') as pending,
 			DATE_FORMAT(MAX(if(moderation_status!='rejected',imagetaken,null)),'%d/%m/%y') as last_date
 			from gridsquare gs
 			left join gridimage gi using(gridsquare_id)
 			where 
-			(x between $scanleft and $scanright) and 
-			(y between $scanbottom and $scantop) 
+			CONTAINS( GeomFromText($rectangle),	point_xy)
 			and percent_land<>0 
 			group by gs.grid_reference order by y,x";
 
