@@ -68,8 +68,6 @@ class ImageList
 	*/
 	function getImages($statuses, $sort=null, $count=null,$advanced = false,$includeUserStatus = false)
 	{
-		$db=&$this->_getDB();
-		
 		//we accept an array or a single status...
 		if (is_array($statuses))
 			$statuslist="where moderation_status in ('".implode("','", $statuses)."') ";
@@ -92,9 +90,6 @@ class ImageList
 			$orderby = "or user_status!='' ".$orderby;
 		}
 		
-		//lets find some recent photos
-		$this->images=array();
-		$i=0;
 		if ($advanced) {
 			$sql = "select gi.*,grid_reference,user.realname,imagecount ".
 				"from gridimage as gi ".
@@ -110,19 +105,8 @@ class ImageList
 				" $statuslist ".
 				"$orderby $limit";
 		}
-		if ($_GET['debug'])
-			print $sql;
-		$recordSet = &$db->Execute($sql);
-		while (!$recordSet->EOF) 
-		{
-			$this->images[$i]=new GridImage;
-			$this->images[$i]->fastInit($recordSet->fields);
-			$recordSet->MoveNext();
-			$i++;
-		}
-		$recordSet->Close(); 
 		
-		return $i;
+		return $this->_getImagesBySql($sql);
 	}
 
 	/**
@@ -130,8 +114,6 @@ class ImageList
 	*/
 	function getImagesByUser($user_id, $statuses, $sort = 'submitted', $count=null,$advanced = false)
 	{
-		$db=&$this->_getDB();
-
 		//we accept an array or a single status...
 		if (is_array($statuses))
 			$statuslist=" moderation_status in ('".implode("','", $statuses)."') and ";
@@ -173,7 +155,17 @@ class ImageList
 				"gi.user_id='$user_id' ".
 				"$orderby $limit";
 		}
-		
+
+		return $this->_getImagesBySql($sql);
+	}
+	
+	/**
+	* get image list based on supplied sql...
+	* @access private
+	*/
+	function _getImagesBySql($sql) {
+		if ($_GET['debug'])
+			print $sql;
 		$this->images=array();
 		$i=0;
 		$recordSet = &$db->Execute($sql);
@@ -185,12 +177,8 @@ class ImageList
 			$i++;
 		}
 		$recordSet->Close(); 
-
-	
-
 		return $i;
 	}
-	
 	
 	
 	/**
@@ -199,9 +187,6 @@ class ImageList
 	*/
 	function _getImagesByArea($left,$right,$top,$bottom,$reference_index=null, $count_only=true)
 	{
-		$db=&$this->_getDB();
-
-		
 		$limit="";
 		
 		//ensure correct order
@@ -217,30 +202,26 @@ class ImageList
 		
 		$cols=$count_only?"count(*) as cnt":"*";
 		
-		$sql="select $cols ".
-			"from gridimage_search ".
-			"where ".
-			"x between $l and $r and ".
-			"y between $t and $b ".
-			"$rfilter $limit";
+		$rectangle = "'POLYGON(($l $b,$r $b,$r $t,$l $t,$l $b))'";
+		
+		$sql="select $cols 
+			from gridimage_search 
+			where 
+			CONTAINS( 	
+				GeomFromText($rectangle),
+				point_xy)
+			$rfilter $limit";
 		
 		$this->images=array();
 		if ($count_only)
 		{
+			$db=&$this->_getDB();
+			
 			$count=$db->GetOne($sql);
 		}
 		else
 		{
-			$count=0;
-			$recordSet = &$db->Execute($sql);
-			while (!$recordSet->EOF) 
-			{
-				$this->images[$count]=new GridImage;
-				$this->images[$count]->fastInit($recordSet->fields);
-				$recordSet->MoveNext();
-				$count++;
-			}
-			$recordSet->Close(); 
+			$count= $this->_getImagesBySql($sql);
 		}
 		
 		return $count;
@@ -270,12 +251,15 @@ class ImageList
 		
 		$cols=$count_only?"count(*) as cnt":"*";
 		
-		$sql="select $cols ".
-			"from gridimage_search ".
-			"where moderation_status = 'geograph' and ftf = 1 $rfilter and ".
-			"x between $l and $r and ".
-			"y between $t and $b ".
-			"$orderby $limit";
+		$rectangle = "'POLYGON(($l $b,$r $b,$r $t,$l $t,$l $b))'";
+		
+		$sql="select $cols 
+			from gridimage_search 
+			where moderation_status = 'geograph' and ftf = 1 $rfilter and 
+			CONTAINS( 	
+				GeomFromText($rectangle),
+				point_xy)
+			$orderby $limit";
 
 		$recordSet = &$db->Execute($sql);
 
