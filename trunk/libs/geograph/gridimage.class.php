@@ -1074,8 +1074,10 @@ class GridImage
 			
 				//updated cached tables
 					//this isnt needed as reassignGridsquare is only called before commitChanges
-				//$this->updateCachedTables();	
-			
+				//$this->updateCachedTables();
+				
+				//updateCachedTables needs to know the new gridref for the lat/long calc!
+				$this->newsq =& $newsq;
 			}
 			
 			
@@ -1178,12 +1180,17 @@ class GridImage
 		} elseif ($this->moderation_status) {
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
-			if (!$this->grid_square) 
-				die("ERROR: no square known in updateCachedTables");
-			if ($this->grid_square->nateastings) {
-				list($lat,$long) = $conv->national_to_wgs84($this->grid_square->nateastings,$this->grid_square->natnorthings,$this->grid_square->reference_index);
+			if (isset($this->newsq)) {
+				$square = $this->newsq;
 			} else {
-				list($lat,$long) = $conv->internal_to_wgs84($this->grid_square->x,$this->grid_square->y,$this->square->reference_index);
+				$square = $this->grid_square;
+			}
+			if (!$square) 
+				die("ERROR: no square known in updateCachedTables");
+			if ($square->nateastings) {
+				list($lat,$long) = $conv->national_to_wgs84($square->nateastings,$square->natnorthings,$square->reference_index);
+			} else {
+				list($lat,$long) = $conv->internal_to_wgs84($square->x,$square->y,$square->reference_index);
 			}
 	
 			$sql="REPLACE INTO gridimage_search
