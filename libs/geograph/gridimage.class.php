@@ -1194,7 +1194,7 @@ class GridImage
 			}
 	
 			$sql="REPLACE INTO gridimage_search
-			SELECT gridimage_id,gi.user_id,moderation_status,title,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,user.realname,reference_index,comment,$lat,$long,ftf,seq_no,point_xy
+			SELECT gridimage_id,gi.user_id,moderation_status,title,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,user.realname,reference_index,comment,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)')
 			FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 			INNER JOIN user ON(gi.user_id=user.user_id)
 			WHERE gridimage_id = '{$this->gridimage_id}'";
