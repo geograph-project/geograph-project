@@ -910,10 +910,6 @@ class GridImage
 			$geographs=1;
 		}
 					
-			
-			
-	
-
 		//update image status and ftf flag
 		$sql="update gridimage set ".
 			"moderation_status='$status',".
@@ -936,6 +932,7 @@ class GridImage
 			if ($next_geograph)
 			{
 				$db->Query("update gridimage set ftf=1 where gridimage_id={$next_geograph}");
+				$db->Query("update gridimage_search set ftf=1 where gridimage_id={$next_geograph}");
 			}
 
 		}
@@ -1026,6 +1023,7 @@ class GridImage
 					if ($next_geograph)
 					{
 						$db->Query("update gridimage set ftf=1 where gridimage_id={$next_geograph}");
+						$db->Query("update gridimage_search set ftf=1 where gridimage_id={$next_geograph}");
 					}
 
 				}
