@@ -164,6 +164,7 @@ class ImageList
 	* @access private
 	*/
 	function _getImagesBySql($sql) {
+		$db=&$this->_getDB();
 		if ($_GET['debug'])
 			print $sql;
 		$this->images=array();
