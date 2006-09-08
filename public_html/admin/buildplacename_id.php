@@ -44,6 +44,7 @@ $conv = new Conversions();
 <h2>gridimage.placename_id Rebuild Tool</h2>
 <form action="buildplacename_id.php" method="post">
 <input type="checkbox" name="firsts"/> Only do firsts<br/>
+<input type="checkbox" name="gb"/> Only GB firsts not done yet<br/>
 Start: <input type="text" name="start"/> <br/>
 <input type="submit" name="go" value="Start">
 </form>
@@ -65,7 +66,9 @@ if (isset($_POST['go']))
 		$limit = " LIMIT {$_POST['start']},99999999";
 	} 
 	
-	if (isset($_POST['firsts'])) {
+	if (isset($_POST['gb'])) {
+		$recordSet = &$db->Execute("select * from gridimage inner join gridsquare using(gridsquare_id) where moderation_status = 'geograph' and ftf = 1 and reference_index = 1 and placename_id < 1000000 $limit");
+	} elseif (isset($_POST['firsts'])) {
 		$recordSet = &$db->Execute("select * from gridimage where moderation_status = 'geograph' and ftf = 1 $limit");
 	} else {
 		$recordSet = &$db->Execute("select * from gridimage $limit");
@@ -93,7 +96,7 @@ if (isset($_POST['go']))
 		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 		
 		if ($CONF['use_gazetteer'] == 'OS' && $square->reference_index == 1) {
-			$places = $db->GetRow("select
+			$places =& $db->GetRow("select
 					(seq + 1000000) as pid,
 					power(east-{$square->nateastings},2)+power(north-{$square->natnorthings},2) as distance
 				from
@@ -105,7 +108,7 @@ if (isset($_POST['go']))
 					f_code in ('C','T')
 				order by distance asc,f_code+0 asc limit 1");
 		} else if ($CONF['use_gazetteer'] == 'towns' && $square->reference_index == 1) {
-			$places = $db->GetRow("select
+			$places =& $db->GetRow("select
 					(id + 900000) as pid,
 					power(e-{$square->nateastings},2)+power(n-{$square->natnorthings},2) as distance
 				from 
@@ -117,7 +120,7 @@ if (isset($_POST['go']))
 					reference_index = {$square->reference_index}
 				order by distance asc limit 1");
 		} else {
-			$places = $db->GetRow("select
+			$places =& $db->GetRow("select
 					loc_placenames.id as pid,
 					power(e-{$square->nateastings},2)+power(n-{$square->natnorthings},2) as distance
 				from 
