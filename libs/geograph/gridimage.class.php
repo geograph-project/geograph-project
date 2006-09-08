@@ -1228,19 +1228,19 @@ class GridImage
 		
 		if ($CONF['use_gazetteer'] == 'OS' && $gridsquare->reference_index == 1) {
 			$places = $db->GetRow("select
-					(seq + 1000000) as id,
-					power(e-{$gridsquare->nateastings},2)+power(n-{$gridsquare->natnorthings},2) as distance
+					(seq + 1000000) as pid,
+					power(east-{$gridsquare->nateastings},2)+power(north-{$gridsquare->natnorthings},2) as distance
 				from
 					os_gaz
 				where
 					CONTAINS( 	
 						GeomFromText($rectangle),
 						point_en) AND
-					f_code in ('C','T','O')
+					f_code in ('C','T')
 				order by distance asc,f_code+0 asc limit 1");
 		} else if ($CONF['use_gazetteer'] == 'towns' && $gridsquare->reference_index == 1) {
 			$places = $db->GetRow("select
-					(id + 900000) as id,
+					(id + 900000) as pid,
 					power(e-{$gridsquare->nateastings},2)+power(n-{$gridsquare->natnorthings},2) as distance
 				from 
 					loc_towns
