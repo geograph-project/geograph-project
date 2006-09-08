@@ -148,6 +148,14 @@ class GeographUser
 		return $this->sortBy;
 	}
 	
+	function setDefaultStyle($style) {
+		$db = NewADOConnection($GLOBALS['DSN']);
+		if (!$db) die('Database connection failed');  
+
+		$db->Execute("update user set default_style = '$style' where user_id='{$this->user_id}'");
+		$this->default_style = $style;
+	}
+	
 	/**
 	* get stats for user represented by this instance - 
 	* all stats are stored in
@@ -517,7 +525,8 @@ class GeographUser
 				public_about=%d,
 				age_group=%d,
 				use_age_group=%d,
-				home_gridsquare=%s
+				home_gridsquare=%s,
+				ticket_option=%s
 				where user_id=%d",
 				$db->Quote($profile['realname']),
 				$db->Quote($profile['nickname']),
@@ -530,6 +539,7 @@ class GeographUser
 				$profile['age_group'],
 				empty($profile['use_age_group'])?0:1,
 				$gs->gridsquare_id,
+				$db->Quote($profile['ticket_option']),
 				$this->user_id
 				);
 
@@ -563,6 +573,7 @@ class GeographUser
 				$this->age_group=stripslashes($profile['age_group']);
 				$this->use_age_group=stripslashes($profile['use_age_group']);
 				$this->grid_reference=$gs->grid_reference;	
+				$this->ticket_option=stripslashes($profile['ticket_option']);
 				$this->_forumUpdateProfile();
 				
 			}
