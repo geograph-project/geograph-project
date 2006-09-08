@@ -39,12 +39,18 @@ if (!empty($_GET['ri'])) {
 			require_once('geograph/searchengine.class.php');
 			require_once('geograph/searchenginebuilder.class.php');
 	
-			$sql = "SELECT full_name,e,n FROM loc_placenames WHERE id = {$_GET['pid']}";
-			$placename = $db->GetRow($sql);
+			if ($_GET['pid'] > 1000000) {
+				$sql = "SELECT def_nam as full_name,east as e,north as n,full_county as adm1_name FROM os_gaz WHERE seq = ".($_GET['pid']-1000000);
+				$placename = $db->GetRow($sql);
+				$adm1_name = ", ".$placename['adm1_name'];
+			} else {
+				$sql = "SELECT full_name,e,n FROM loc_placenames WHERE id = {$_GET['pid']}";
+				$placename = $db->GetRow($sql);
 
-			if ($_GET['ri'] == 2) {
-				$sql = "SELECT name FROM loc_adm1 WHERE reference_index = {$_GET['ri']} AND adm1 = {$_GET['adm1']}";
-				$adm1_name = ", ".$db->GetOne($sql);
+				if ($_GET['ri'] == 2) {
+					$sql = "SELECT name FROM loc_adm1 WHERE reference_index = {$_GET['ri']} AND adm1 = {$_GET['adm1']}";
+					$adm1_name = ", ".$db->GetOne($sql);
+				}
 			}
 			$dataarray['description'] = "around {$placename['full_name']}$adm1_name";
 			$dataarray['searchq'] = " gi.placename_id = {$_GET['pid']} ";
@@ -96,29 +102,39 @@ if (!$smarty->is_cached($template, $cacheid))
 				$smarty->assign_by_ref('adm1_name', $db->GetOne($sql));
 				$smarty->assign('parttitle', "in County");
 				$sql_where = "AND loc_placenames.adm1 = {$_GET['adm1']}";
+				$sql = "SELECT placename_id,full_name,count(*) as c,gridimage_id 
+				FROM gridimage INNER JOIN loc_placenames ON(placename_id = loc_placenames.id)
+				WHERE moderation_status <> 'rejected' 
+					AND loc_placenames.reference_index = {$_GET['ri']}
+					$sql_where
+				GROUP BY placename_id";
 			} else {
-				$smarty->assign_by_ref('adm1_name', $_GET['adm1']);
-				$smarty->assign('parttitle', "beginning with ");
-				$sql_where = "AND SUBSTRING(loc_placenames.full_name,1,1) = '{$_GET['adm1']}'";
+				//adm1 is actullu just an example placename!
+				$sql = "SELECT co_code,full_county as adm1_name FROM os_gaz WHERE seq = ".$_GET['adm1'];
+				$placename = $db->GetRow($sql);
+				
+				$smarty->assign_by_ref('adm1_name', $placename['adm1_name']);
+				$smarty->assign('parttitle', "in County");
+				$sql_where = "AND co_code = '{$placename['co_code']}'";
+				
+				$sql = "SELECT placename_id,def_nam as full_name,count(*) as c,gridimage_id 
+				FROM gridimage INNER JOIN os_gaz ON(placename_id-1000000 = os_gaz.seq)
+				WHERE moderation_status <> 'rejected' AND placename_id > 1000000
+					$sql_where
+				GROUP BY placename_id";
 			}
 
 
-			$sql = "SELECT placename_id,full_name,count(*) as c,gridimage_id 
-			FROM gridimage INNER JOIN loc_placenames ON(placename_id = loc_placenames.id)
-			WHERE moderation_status <> 'rejected' 
-				AND loc_placenames.reference_index = {$_GET['ri']}
-				$sql_where
-			GROUP BY placename_id";
 			$counts = $db->GetAssoc($sql);
 			$smarty->assign_by_ref('counts', $counts);
 			
 		} elseif ($_GET['ri'] == 1) {
-			$sql = "SELECT SUBSTRING(loc_placenames.full_name,1,1) as adm1,
-			SUBSTRING(loc_placenames.full_name,1,1) as name,
-			count(*) as images,count(distinct (placename_id)) as places 
-			FROM gridimage INNER JOIN loc_placenames ON(placename_id = loc_placenames.id)
-			WHERE moderation_status <> 'rejected' AND loc_placenames.reference_index = {$_GET['ri']}
-			GROUP BY SUBSTRING(loc_placenames.full_name,1,1)";
+			$sql = "SELECT seq as adm1,
+			full_county as name,
+			count(*) as images,count(distinct (seq)) as places 
+			FROM gridimage INNER JOIN os_gaz ON(placename_id-1000000 = os_gaz.seq)
+			WHERE moderation_status <> 'rejected' AND placename_id > 1000000
+			GROUP BY full_county";
 			$counts = $db->GetAssoc($sql);
 			$smarty->assign_by_ref('counts', $counts);
 		} else {
@@ -134,8 +150,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 	} else {
 		$sql = "SELECT reference_index,count(*) as c 
-		FROM gridimage INNER JOIN loc_placenames ON(placename_id = loc_placenames.id)
-		WHERE moderation_status <> 'rejected'
+		FROM gridimage_search
 		GROUP BY reference_index";
 		$counts = $db->GetAssoc($sql);
 		$smarty->assign_by_ref('counts', $counts);
