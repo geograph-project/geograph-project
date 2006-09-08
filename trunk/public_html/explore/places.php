@@ -55,6 +55,7 @@ if (!empty($_GET['ri'])) {
 			$dataarray['description'] = "around {$placename['full_name']}$adm1_name";
 			$dataarray['searchq'] = " gi.placename_id = {$_GET['pid']} ";
 			
+			$dataarray['adminoverride'] = 1;
 			
 			$dataarray['x'] = intval($placename['e']/1000) + $CONF['origins'][$_GET['ri']][0];
 			$dataarray['y'] = intval($placename['n']/1000) + $CONF['origins'][$_GET['ri']][1];
