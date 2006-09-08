@@ -411,11 +411,12 @@ if (isset($_GET['fav']) ) {
 		$style=$_GET['style'];
 		$_SESSION['style']=$style;
 
-		//ToDo - if logged in user, save this in profile
+		if ($USER->registered) 
+			$USER->setDefaultStyle($style);
 	}
-	elseif (false) //if logged in user
+	elseif ($USER->registered) 
 	{
-			//get setting from profile
+		$style=$USER->default_style;
 	}
 	elseif (isset($_SESSION['style']))
 	{
