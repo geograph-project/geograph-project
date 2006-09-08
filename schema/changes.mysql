@@ -536,6 +536,21 @@ UPDATE gridimage_search SET point_xy = GeomFromText(CONCAT('POINT(',x,' ',y,')')
 ALTER TABLE `gridimage_search` ADD SPATIAL KEY(point_xy);
  
  
- 
+ALTER TABLE `gridprefix` ADD `point_xy` POINT NOT NULL ;
+
+UPDATE gridprefix SET point_xy = GeomFromText(CONCAT('POINT(',origin_x,' ',origin_y,')'));
+
+ALTER TABLE `gridprefix` ADD SPATIAL KEY(point_xy);
+  
 
 
+ALTER TABLE `os_gaz` ADD INDEX ( `co_code` ) ;
+
+ALTER TABLE `user` ADD `default_style` ENUM( 'white', 'black', 'gray' ) DEFAULT 'white' NOT NULL ;
+
+
+ALTER TABLE `gridimage_search` ADD `point_ll` POINT NOT NULL ;
+
+UPDATE gridimage_search SET point_ll = GeomFromText(CONCAT('POINT(',wgs84_long,' ',wgs84_lat,')'));
+
+ALTER TABLE `gridimage_search` ADD SPATIAL KEY(point_ll);
