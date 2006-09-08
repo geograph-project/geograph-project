@@ -102,17 +102,18 @@ if ($image->isValid())
 
 	//what style should we use?
 	$style='white';
-	$valid_style=array('white', 'black','gray');
+	$valid_style=array('white','black','gray');
 	if (isset($_GET['style']) && in_array($_GET['style'], $valid_style))
 	{
 		$style=$_GET['style'];
 		$_SESSION['style']=$style;
 
-		//ToDo - if logged in user, save this in profile
+		if ($USER->registered) 
+			$USER->setDefaultStyle($style);
 	}
-	elseif (false) //if logged in user
+	elseif ($USER->registered) 
 	{
-			//get setting from profile
+		$style=$USER->default_style;
 	}
 	elseif (isset($_SESSION['style']))
 	{
