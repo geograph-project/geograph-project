@@ -44,6 +44,7 @@ $conv = new Conversions();
 <h2>gridimage.placename_id Rebuild Tool</h2>
 <form action="buildplacename_id.php" method="post">
 <input type="checkbox" name="firsts"/> Only do firsts<br/>
+Start: <input type="text" name="start"/> <br/>
 <input type="submit" name="go" value="Start">
 </form>
 
@@ -60,10 +61,14 @@ if (isset($_POST['go']))
 		 
 	$count=0;
 	
+	if (!empty($_POST['start'])) {
+		$limit = " LIMIT {$_POST['start']},99999999";
+	} 
+	
 	if (isset($_POST['firsts'])) {
-		$recordSet = &$db->Execute("select * from gridimage where moderation_status = 'geograph' and ftf = 1");
+		$recordSet = &$db->Execute("select * from gridimage where moderation_status = 'geograph' and ftf = 1 $limit");
 	} else {
-		$recordSet = &$db->Execute("select * from gridimage");
+		$recordSet = &$db->Execute("select * from gridimage $limit");
 	}
 	
 	while (!$recordSet->EOF) 
@@ -129,7 +134,7 @@ if (isset($_POST['go']))
 		$pid = $places['pid'];
 			
 		if ($pid)
-			$db->Execute("update gridimage set placename_id = $pid,upd_timestamp = '{$recordSet->fields['upd_timestamp']}' where gridimage_id = $gid");
+			$db->Execute("update LOW_PRIORITY gridimage set placename_id = $pid,upd_timestamp = '{$recordSet->fields['upd_timestamp']}' where gridimage_id = $gid");
 				
 		if (++$count%500==0) {
 			printf("done %d at <b>%d</b> seconds<BR>",$count,time()-$tim);
