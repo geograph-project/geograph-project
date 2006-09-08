@@ -3,11 +3,11 @@
  
     <h2>Geograph British Isles</h2>
 
-<p>Use the links below to browse images by the village or town they are closest to.</p>
+<p>Use the links below to browse images by the city or town they are closest to.</p>
 
 <ul>
 {foreach from=$counts key=ri item=count}
-<li><a href="/places/{$ri}/"><b>{$references.$ri}</b></a> [{$count} places]</li>
+<li><a href="/explore/places/{$ri}/"><b>{$references.$ri}</b></a> [{$count} images]</li>
 {/foreach}
 </ul>
 
