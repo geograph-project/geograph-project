@@ -109,8 +109,16 @@ if (isset($_GET['id']))  {
 				$y = $square->y;
 				
 				$sql_where = "imagecount ".(($_REQUEST['type'] == 'with')?'>':'=')." 0 and ";
+
+				$left=$x-$d;
+				$right=$x+$d;
+				$top=$y+$d;
+				$bottom=$y-$d;
+
+				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
+				$sql_where .= "CONTAINS(GeomFromText($rectangle),point_xy)";
 				
-				$sql_where .= sprintf('x BETWEEN %d and %d AND y BETWEEN %d and %d',$x-$d,$x+$d,$y-$d,$y+$d);
 				//shame cant use dist_sqd in the next line!
 				$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);
 
