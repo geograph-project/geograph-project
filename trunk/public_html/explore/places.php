@@ -38,11 +38,14 @@ if (!empty($_GET['ri'])) {
 			require_once('geograph/searchcriteria.class.php');
 			require_once('geograph/searchengine.class.php');
 			require_once('geograph/searchenginebuilder.class.php');
+			
+			$dataarray = array();
 	
 			if ($_GET['pid'] > 1000000) {
 				$sql = "SELECT def_nam as full_name,east as e,north as n,full_county as adm1_name FROM os_gaz WHERE seq = ".($_GET['pid']-1000000);
 				$placename = $db->GetRow($sql);
-				$adm1_name = ", ".$placename['adm1_name'];
+				if ($placename['full_name'] != $placename['adm1_name'])
+					$adm1_name = ", ".$placename['adm1_name'];
 			} else {
 				$sql = "SELECT full_name,e,n FROM loc_placenames WHERE id = {$_GET['pid']}";
 				$placename = $db->GetRow($sql);
@@ -131,7 +134,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			
 		} elseif ($_GET['ri'] == 1) {
 			$sql = "SELECT seq as adm1,
-			full_county as name,
+			full_county as name,placename_id,def_nam as full_name,
 			count(*) as images,count(distinct (seq)) as places 
 			FROM gridimage INNER JOIN os_gaz ON(placename_id-1000000 = os_gaz.seq)
 			WHERE moderation_status <> 'rejected' AND placename_id > 1000000
@@ -140,6 +143,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign_by_ref('counts', $counts);
 		} else {
 			$sql = "SELECT loc_placenames.adm1,loc_adm1.name,
+			placename_id,full_name,
 			count(*) as images,count(distinct (placename_id)) as places 
 			FROM gridimage INNER JOIN loc_placenames ON(placename_id = loc_placenames.id)
 			INNER JOIN loc_adm1 ON(loc_adm1.adm1 = loc_placenames.adm1 AND loc_adm1.reference_index = {$_GET['ri']})
