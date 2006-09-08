@@ -43,7 +43,7 @@ $conv = new Conversions();
 ?>
 <h2>gridimage.placename_id Rebuild Tool</h2>
 <form action="buildplacename_id.php" method="post">
-
+<input type="checkbox" name="firsts"/> Only do firsts<br/>
 <input type="submit" name="go" value="Start">
 </form>
 
@@ -59,7 +59,13 @@ if (isset($_POST['go']))
 	$tim = time();
 		 
 	$count=0;
-	$recordSet = &$db->Execute("select * from gridimage");
+	
+	if (isset($_POST['firsts'])) {
+		$recordSet = &$db->Execute("select * from gridimage where moderation_status = 'geograph' and ftf = 1");
+	} else {
+		$recordSet = &$db->Execute("select * from gridimage");
+	}
+	
 	while (!$recordSet->EOF) 
 	{
 		$image=new GridImage;
@@ -78,25 +84,57 @@ if (isset($_POST['go']))
 		$right=$square->nateastings+$radius;
 		$top=$square->natnorthings-$radius;
 		$bottom=$square->natnorthings+$radius;
-		$places = $db->GetRow("select
-			loc_placenames.id as pid,
-			power(e-{$square->nateastings},2)+power(n-{$square->natnorthings},2) as distance
-		from 
-			loc_placenames
-			left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
-		where
-			dsg = 'PPL' AND 
-			e between $left and $right and 
-			n between $top and $bottom and
-			loc_placenames.reference_index = {$square->reference_index}
-		order by distance asc limit 1");
+		
+		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+		
+		if ($CONF['use_gazetteer'] == 'OS' && $square->reference_index == 1) {
+			$places = $db->GetRow("select
+					(seq + 1000000) as pid,
+					power(east-{$square->nateastings},2)+power(north-{$square->natnorthings},2) as distance
+				from
+					os_gaz
+				where
+					CONTAINS( 	
+						GeomFromText($rectangle),
+						point_en) AND
+					f_code in ('C','T')
+				order by distance asc,f_code+0 asc limit 1");
+		} else if ($CONF['use_gazetteer'] == 'towns' && $square->reference_index == 1) {
+			$places = $db->GetRow("select
+					(id + 900000) as pid,
+					power(e-{$square->nateastings},2)+power(n-{$square->natnorthings},2) as distance
+				from 
+					loc_towns
+				where
+					CONTAINS( 	
+						GeomFromText($rectangle),
+						point_en) AND
+					reference_index = {$square->reference_index}
+				order by distance asc limit 1");
+		} else {
+			$places = $db->GetRow("select
+					loc_placenames.id as pid,
+					power(e-{$square->nateastings},2)+power(n-{$square->natnorthings},2) as distance
+				from 
+					loc_placenames
+				where
+					dsg = 'PPL' AND 
+					CONTAINS( 	
+						GeomFromText($rectangle),
+						point_en) AND
+					loc_placenames.reference_index = {$square->reference_index}
+				order by distance asc limit 1");
+		}
+
 		$pid = $places['pid'];
+			
+		if ($pid)
+			$db->Execute("update gridimage set placename_id = $pid,upd_timestamp = '{$recordSet->fields['upd_timestamp']}' where gridimage_id = $gid");
 				
-		$db->Execute("update gridimage set placename_id = $pid,upd_timestamp = '{$recordSet->fields['upd_timestamp']}' where gridimage_id = $gid");
-				
-		if (++$count%100==0) {
+		if (++$count%500==0) {
 			printf("done %d at <b>%d</b> seconds<BR>",$count,time()-$tim);
 			flush();
+			sleep(2);
 		}
 		
 		$recordSet->MoveNext();
