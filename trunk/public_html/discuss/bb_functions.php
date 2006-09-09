@@ -143,7 +143,7 @@ if($i==$page&&!$navCell) $pageNav.=' <b class="pageNav pageNavSelected">'.($i+1)
 else {
 	$pageNav.=' <a href="'.$url.$i.$mr.'" class="pageNav" title="Page '.($i+1).'">'.($i+1).'</a> ';
 	if ($i>=$end&&$i==$iVal)
-		$pageNav.=' <a href="'.$url.$i.$mr.'" class="pageNav" title="Page '.($i+1).'">Last</a> ';
+		$pageNav.=' - <a href="'.$url.$i.$mr.'" class="pageNav" title="Page '.($i+1).'">Last</a> ';
 	}
 }
 if((($navCell&&$iVal>4)||($iVal>9&&$start<$iVal-10))){
@@ -152,7 +152,7 @@ for($n=$iVal-1;$n<=$iVal;$n++){
 if($n>=$i) {
 	$pageNav.=' <a href="'.$url.$n.$mr.'" class="pageNav" title="Page '.($n+1).'">'.($n+1).'</a> ';
 	if ($n==$iVal)
-		$pageNav.=' <a href="'.$url.$n.$mr.'" class="pageNav" title="Page '.($n+1).'">Last</a> ';
+		$pageNav.=' - <a href="'.$url.$n.$mr.'" class="pageNav" title="Page '.($n+1).'">Last</a> ';
 }
 }
 }
