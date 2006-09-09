@@ -140,12 +140,20 @@ $pageNav.=' <a href="'.$url.'0'.$mr.'" class="pageNav">1</a> ...';
 else $pageNav.=' ';
 for($i=$start;$i<=$end;$i++){
 if($i==$page&&!$navCell) $pageNav.=' <b class="pageNav pageNavSelected">'.($i+1).'</b> ';
-else $pageNav.=' <a href="'.$url.$i.$mr.'" class="pageNav" title="Page '.($i+1).'">'.(($i<$end||$i<$iVal)?$i+1:'Last').'</a> ';
+else {
+	$pageNav.=' <a href="'.$url.$i.$mr.'" class="pageNav" title="Page '.($i+1).'">'.($i+1).'</a> ';
+	if ($i>=$end&&$i==$iVal)
+		$pageNav.=' <a href="'.$url.$i.$mr.'" class="pageNav" title="Page '.($i+1).'">Last</a> ';
+	}
 }
 if((($navCell&&$iVal>4)||($iVal>9&&$start<$iVal-10))){
 if($navCell&&$iVal<6); else $pageNav.='..';
 for($n=$iVal-1;$n<=$iVal;$n++){
-if($n>=$i) $pageNav.=' <a href="'.$url.$n.$mr.'" class="pageNav" title="Page '.($n+1).'">'.($n<$iVal?$n+1:'Last').'</a> ';
+if($n>=$i) {
+	$pageNav.=' <a href="'.$url.$n.$mr.'" class="pageNav" title="Page '.($n+1).'">'.($n+1).'</a> ';
+	if ($n==$iVal)
+		$pageNav.=' <a href="'.$url.$n.$mr.'" class="pageNav" title="Page '.($n+1).'">Last</a> ';
+}
 }
 }
 if($page<$iVal&&!$navCell) $pageNav.=' <a href="'.$url.($page+1).$mr.'" class="pageNav">Next &gt;&gt;</a>';
