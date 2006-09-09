@@ -15,6 +15,7 @@
 	<div class="side" style="height:{$mosaic_height}px;"><a accesskey="A" title="Pan map west (Alt+A)" href="/mapbrowse.php?t={$token_west}"><img style="padding-top:{$mosaic_height/2 - 4}px" src="/templates/basic/img/arrow_w.gif" alt="West" width="8" height="13"></a></div>
 
 	<div class="inner" style="width:{$mosaic_width}px;height:{$mosaic_height}px;">
+	{if $token_zoomin}
 	{foreach from=$mosaic key=y item=maprow}
 		<div>
 		{foreach from=$maprow key=x item=mapcell}
@@ -23,7 +24,23 @@
 		{/foreach}
 		</div>
 	{/foreach}
-	</div>
+	{else}
+	{foreach from=$mosaic key=y item=maprow}
+		<div>
+		{foreach from=$maprow key=x item=mapcell}
+			<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img 
+			alt="Clickable map" usemap="#map_{$x}_{$y}" title="Click to zoom in or view image" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+			<map name="map_{$x}_{$y}">
+			{foreach from=$mapcell->getGridArray(true) key=gx item=gridrow}
+				{foreach from=$gridrow key=gy item=gridcell}
+					<area shape="rect" coords="{$gx*$mapcell->pixels_per_km},{$gy*$mapcell->pixels_per_km},{$gx*$mapcell->pixels_per_km+$mapcell->pixels_per_km},{$gy*$mapcell->pixels_per_km+$mapcell->pixels_per_km}" {if $gridcell.gridimage_id} href="/photo/{$gridcell.gridimage_id}" alt="{$gridcell.grid_reference} : {$gridcell.title} by {$gridcell.realname} {if $gridcell.imagecount > 1}&#13;&#10;({$gridcell.imagecount} images in this square){/if}"{else} href="/gridref/{$gridcell.grid_reference}" alt="{$gridcell.grid_reference}"{/if}/> 
+				{/foreach}
+			{/foreach}
+			</map>
+		{/foreach}
+		</div>
+	{/foreach}
+	{/if}</div>
 
 	<div class="side" style="height:{$mosaic_height}px;"><a accesskey="D" title="Pan map east (Alt+D)" href="/mapbrowse.php?t={$token_east}"><img style="padding-top:{$mosaic_height/2 - 4}px" src="/templates/basic/img/arrow_e.gif" alt="East" width="8" height="13"></a></div>
 
@@ -231,16 +248,18 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
  
 {if $token_zoomout}
 <div style="position:relative;">
-	<div style="position:absolute;left:395px;top:5px;">
-	NEW: <b><a title="right click and select&#13;&#10; [Copy Shortcut] or [Copy Link Location]" href="/mapbrowse.php?t={$mosaic_token}">Link to this Map</a></b>
+	<div style="position:absolute;left:445px;top:5px;">
+	<b><a title="right click and select&#13;&#10; [Copy Shortcut] or [Copy Link Location]" href="/map/{$mosaic_token}">Link to this Map</a></b>
 	</div>
 </div>
 {/if}
 <br/>
+
 <h2>Map Browsing (beta!)</h2>
 <p>Here's a few tips for using our map - we're still developing and testing this, so if you
 notice any problems, do let us know.</p>
 <ul>
+<li style="color:blue">NEW! On the thumbnail maps you can now however over a thumbnail for a description. Also right-click open in new window/tab should function.</li>
 <li>Click on the large map to zoom in on an area of interest. You can also use the +
 and - buttons to zoom in and out, or the keyboard shortcuts Alt+Q to zoom out and Alt+S to zoom in</li>
 <li>Pan the map using the links at the edges of the map, or the N,E,S,W buttons.
