@@ -33,7 +33,7 @@
 			<map name="map_{$x}_{$y}">
 			{foreach from=$mapcell->getGridArray(true) key=gx item=gridrow}
 				{foreach from=$gridrow key=gy item=gridcell}
-					<area shape="rect" coords="{$gx*$mapcell->pixels_per_km},{$gy*$mapcell->pixels_per_km},{$gx*$mapcell->pixels_per_km+$mapcell->pixels_per_km},{$gy*$mapcell->pixels_per_km+$mapcell->pixels_per_km}" {if $gridcell.gridimage_id} href="/photo/{$gridcell.gridimage_id}" alt="{$gridcell.grid_reference} : {$gridcell.title} by {$gridcell.realname} {if $gridcell.imagecount > 1}&#13;&#10;({$gridcell.imagecount} images in this square){/if}"{else} href="/gridref/{$gridcell.grid_reference}" alt="{$gridcell.grid_reference}"{/if}/> 
+					<area shape="rect" coords="{$gx*$mapcell->pixels_per_km},{$gy*$mapcell->pixels_per_km},{$gx*$mapcell->pixels_per_km+$mapcell->pixels_per_km},{$gy*$mapcell->pixels_per_km+$mapcell->pixels_per_km}" {if $gridcell.gridimage_id} href="/photo/{$gridcell.gridimage_id}" title="{$gridcell.grid_reference} : {$gridcell.title} by {$gridcell.realname} {if $gridcell.imagecount > 1}&#13;&#10;({$gridcell.imagecount} images in this square){/if}"{else} href="/gridref/{$gridcell.grid_reference}" alt="{$gridcell.grid_reference}"{/if}/> 
 				{/foreach}
 			{/foreach}
 			</map>
