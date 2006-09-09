@@ -103,6 +103,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		$right=$left + floor($mosaic->image_w/$mosaic->pixels_per_km)-1;
 		$top=$bottom + floor($mosaic->image_h/$mosaic->pixels_per_km)-1;
 
+		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
 $sql="SELECT user_id,realname,
 COUNT(*) AS count,
 DATE_FORMAT(MAX(submitted),'%D %b %Y') as last_date,
@@ -111,8 +113,7 @@ count(distinct imageclass) as categories
 FROM 
 	gridimage_search
 WHERE 
-	(x BETWEEN $left and $right) AND 
-	(y BETWEEN $bottom and $top) AND
+	CONTAINS(GeomFromText($rectangle),point_xy) AND
 	moderation_status = 'geograph' AND
 	ftf = 1
 GROUP BY user_id 
