@@ -1255,7 +1255,7 @@ END;
 	* return a sparse 2d array for every grid on the map
 	* @access private
 	*/
-	function& getGridArray()
+	function& getGridArray($isimgmap = false)
 	{
 		//figure out what we're mapping in internal coords
 		$db=&$this->_getDB();
@@ -1275,17 +1275,27 @@ END;
 		$scantop=$top+$overscan;
 		
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
-				
-		$sql="select gs.*, 
-			sum(moderation_status='accepted') as accepted, sum(moderation_status='pending') as pending,
-			DATE_FORMAT(MAX(if(moderation_status!='rejected',imagetaken,null)),'%d/%m/%y') as last_date
-			from gridsquare gs
-			left join gridimage gi using(gridsquare_id)
-			where 
-			CONTAINS( GeomFromText($rectangle),	point_xy)
-			and percent_land<>0 
-			group by gs.grid_reference order by y,x";
-
+		if ($isimgmap) {
+			//todo we just use the image given us by group by, which isnt nesserially the right one!
+			$sql="select gs.*,gridimage_id,realname,title 
+				from gridsquare gs
+				left join gridimage gi using(gridsquare_id)
+				left join user using(user_id)
+				where 
+				CONTAINS( GeomFromText($rectangle),	point_xy)
+				and percent_land<>0 
+				group by gs.grid_reference order by y,x";
+		} else {
+			$sql="select gs.*, 
+				sum(moderation_status='accepted') as accepted, sum(moderation_status='pending') as pending,
+				DATE_FORMAT(MAX(if(moderation_status!='rejected',imagetaken,null)),'%d/%m/%y') as last_date
+				from gridsquare gs
+				left join gridimage gi using(gridsquare_id)
+				where 
+				CONTAINS( GeomFromText($rectangle),	point_xy)
+				and percent_land<>0 
+				group by gs.grid_reference order by y,x";
+		}
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
@@ -1297,19 +1307,11 @@ END;
 			
 			$grid[$posx][$posy]=$recordSet->fields;
 			
-			#if ($posx == 0) {
-			#	$grid[$posx][$posy]['grid_reference'] = preg_replace("/(\w+)(\d{2})(\d{2})/",'$1$2<b>$3</b>',$grid[$posx][$posy]['grid_reference']);
-			#}
-			#if ($posy == 0) {
-			#	$grid[$posx][$posy]['grid_reference'] = preg_replace("/(\w+)(\d{2})(\d{2})/",'$1<b>$2</b>$3',$grid[$posx][$posy]['grid_reference']);
-			#}
-			
 			$recordSet->MoveNext();
 		}
 		$recordSet->Close(); 
 
-		return $grid;
-		
+		return $grid;	
 	}	
 	
 	
