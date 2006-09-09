@@ -29,7 +29,7 @@
 		<div>
 		{foreach from=$maprow key=x item=mapcell}
 			<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img 
-			alt="Clickable map" usemap="#map_{$x}_{$y}" title="Click to zoom in or view image" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+			alt="Clickable map" ismap="ismap" usemap="#map_{$x}_{$y}" title="Click to zoom in or view image" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 			<map name="map_{$x}_{$y}">
 			{foreach from=$mapcell->getGridArray(true) key=gx item=gridrow}
 				{foreach from=$gridrow key=gy item=gridcell}
