@@ -259,7 +259,7 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 <p>Here's a few tips for using our map - we're still developing and testing this, so if you
 notice any problems, do let us know.</p>
 <ul>
-<li style="color:blue">NEW! On the thumbnail maps you can now however over a thumbnail for a description. Also right-click open in new window/tab should function.</li>
+<li style="color:blue">NEW! On the thumbnail (10km width) maps you can now hover over a image for a description. Also right-click "open in new window"/tab should function at this scale.</li>
 <li>Click on the large map to zoom in on an area of interest. You can also use the +
 and - buttons to zoom in and out, or the keyboard shortcuts Alt+Q to zoom out and Alt+S to zoom in</li>
 <li>Pan the map using the links at the edges of the map, or the N,E,S,W buttons.
