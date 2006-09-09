@@ -18,8 +18,15 @@
 	{foreach from=$mosaic key=y item=maprow}
 		<div>
 		{foreach from=$maprow key=x item=mapcell}
-		<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img 
-		alt="Clickable map" ismap="ismap" title="Click to zoom in or view image" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+			<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img 
+			alt="Clickable map" usemap="#map_{$x}_{$y}" title="Click to zoom in or view image" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+			<map name="map_{$x}_{$y}">
+			{foreach from=$mapcell->getGridArray(true) key=gx item=gridrow}
+				{foreach from=$gridrow key=gy item=gridcell}
+					<area shape="rect" coords="{$gx*$mapcell->pixels_per_km},{$gy*$mapcell->pixels_per_km},{$gx*$mapcell->pixels_per_km+$mapcell->pixels_per_km},{$gy*$mapcell->pixels_per_km+$mapcell->pixels_per_km}" {if $gridcell.gridimage_id} href="/photo/{$gridcell.gridimage_id}" alt="{$gridcell.grid_reference} : {$gridcell.title} by {$gridcell.realname} {if $gridcell.imagecount > 1}&#13;&#10;({$gridcell.imagecount} images in this square){/if}"{else} href="/gridref/{$gridcell.grid_reference}" alt="{$gridcell.grid_reference}"{/if}/> 
+				{/foreach}
+			{/foreach}
+			</map>
 		{/foreach}
 		</div>
 	{/foreach}
