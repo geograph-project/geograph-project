@@ -450,13 +450,21 @@ class GeographMapMosaic
 		} else {
 			//But what to do when the square is not on land??
 		
-			//when not on land just try any square!
-			// but favour the _smaller_ grid - works better, but still not quite right where the two grids almost overlap
-			$where_crit =  "order by reference_index desc";
-				
-			$sql="select prefix,origin_x,origin_y,reference_index from gridprefix ".
-				"where $x_km between origin_x and (origin_x+width-1) and ".
-				"$y_km between origin_y and (origin_y+height-1) $where_crit limit 1";
+			if (isset($this->old_centrex)) {
+				//if zooming out use the old grid!
+				//or in then use the click point grid
+				$where_crit =  "order by reference_index desc";
+				$sql="select prefix,origin_x,origin_y,reference_index from gridprefix ".
+					"where {$this->old_centrex} between origin_x and (origin_x+width-1) and ".
+					"{$this->old_centrey} between origin_y and (origin_y+height-1) $where_crit limit 1";
+			} else {
+				//when not on land just try any square!
+				// but favour the _smaller_ grid - works better, but still not quite right where the two grids almost overlap
+				$where_crit =  "order by reference_index desc";
+				$sql="select prefix,origin_x,origin_y,reference_index from gridprefix ".
+					"where $x_km between origin_x and (origin_x+width-1) and ".
+					"$y_km between origin_y and (origin_y+height-1) $where_crit limit 1";
+			}
 			$prefix=$db->GetRow($sql);
 			if ($prefix['prefix']) { 
 				$n=$y_km-$prefix['origin_y'];
@@ -565,7 +573,11 @@ class GeographMapMosaic
 				//figure out central point
 				$centrex=$this->map_x + ($this->image_w / $this->pixels_per_km)/2;
 				$centrey=$this->map_y + ($this->image_h / $this->pixels_per_km)/2;
-
+				
+				//store the current center xy - as can be useful figuring out the the ri 
+				$out->old_centrex = $centrex;
+				$out->old_centrey = $centrey;
+				
 				$scale = $this->scales[$zoomindex];
 			
 				$out->setScale($scale);
@@ -798,6 +810,9 @@ class GeographMapMosaic
 			$scale = $this->scales[$zoomindex];
 		}
 
+		//store the clicked position to make a better estimate at the required grid
+		$this->old_centrex = $clickx;
+		$this->old_centrey = $clicky;
 		
 		//size of new map in km
 		$mapw=$this->image_w/$scale;
