@@ -8,7 +8,10 @@ Disallow: /mapprint.php
 Disallow: /admin
 Disallow: /search.php?
 Disallow: /statistics/wordnet.php?words=
+Disallow: /explore/wordnet.php?words=
+Disallow: /explore/wordnet.php?t=1&words=
 Disallow: /places.php?
+Disallow: /explore/places.php?
 Disallow: /usermsg.php?to=
 Disallow: /statistics/breakdown.php?by=status&u=
 Disallow: /statistics/breakdown.php?by=takenyear&u=
