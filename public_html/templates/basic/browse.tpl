@@ -91,14 +91,24 @@
 		{if strlen($gridrefraw) < 5}
 			[<a title="First Geographs within hectad {$gridrefraw}" href="/search.php?first={$gridrefraw}">hectad</a>]
 		{/if}
-		<br/><br/></li>
+		<small style="line-height:0.3em"><br/><br/></small></li>
 
-
+		<li>Maps:
+		
+		{getamap gridref=$gridrefraw text="Get-a-Map&trade;"}{if $square->reference_index eq 1},
+			{assign var="urltitle" value=$image->title|escape:'url'}
+			{external href="http://www.streetmap.co.uk/newmap.srf?x=`$square->nateastings`&amp;y=`$square->natnorthings`&amp;z=3&amp;sv=`$square->nateastings`,`$square->natnorthings`&amp;st=OSGrid&amp;lu=N&amp;tl=[$gridref]+from+geograph.org.uk&amp;ar=y&amp;bi=background=http://$http_host/templates/basic/img/background.gif&amp;mapp=newmap.srf&amp;searchp=newsearch.srf" text="streetmap.co.uk"}
+			&amp; 
+			{external href="http://www.multimap.com/map/browse.cgi?GridE=`$square->nateastings`&amp;GridN=`$square->natnorthings`&amp;scale=25000&amp;title=[`$gridref`]+from+geograph.org.uk" text="multimap.com"}
+		{else}
+			&amp;
+			{external href="http://www.multimap.com/p/browse.cgi?scale=25000&amp;lon=`$long`&amp;lat=`$lat`&amp;GridE=`$long`&amp;GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"}
+		{/if}<small style="line-height:0.3em"><br/><br/></small></li>
 
 		<li><b>We have 
 			{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
 			{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
-			for {getamap gridref=$gridref text=$gridref title="Get-a-map&trade; for $gridref"}</b>
+			for {$gridref}</b>
 			{if !$breakdown && !$breakdowns}<span style="font-size:0.8em;">- click for larger version</span>{/if}
 		</li>
 		</ul>
@@ -156,7 +166,7 @@
 	{else}
 		{* There are no images in this square (yet) *}
 		
-		<p>We have no images for {getamap gridref=$gridref text=$gridref title="Get-a-map&trade; for $gridref"} yet,
+		<p>We have no images for <b>{$gridref}</b> yet,
 		
 		{if $nearest_distance}
 			</p><ul><li>The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away<br/><br/></li>
@@ -186,9 +196,7 @@
 		
 		<li><b>Maps</b>:
 		
-		{getamap gridref=$gridrefraw text="Get-a-Map&trade;"},
-		
-		{if $square->reference_index eq 1}
+		{getamap gridref=$gridrefraw text="Get-a-Map&trade;"}{if $square->reference_index eq 1},
 			{assign var="urltitle" value=$image->title|escape:'url'}
 			{external href="http://www.streetmap.co.uk/newmap.srf?x=`$square->nateastings`&amp;y=`$square->natnorthings`&amp;z=3&amp;sv=`$square->nateastings`,`$square->natnorthings`&amp;st=OSGrid&amp;lu=N&amp;tl=[$gridref]+from+geograph.org.uk&amp;ar=y&amp;bi=background=http://$http_host/templates/basic/img/background.gif&amp;mapp=newmap.srf&amp;searchp=newsearch.srf" text="streetmap.co.uk"}
 			&amp; 
