@@ -599,13 +599,6 @@ class GeographMap
 		$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
 		$top=$bottom + floor($this->image_h/$this->pixels_per_km)-1;
 
-		//plot grid square?
-		if ($this->pixels_per_km>=0)
-		{
-			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left,true);
-		}
-
-
 		//size of a marker in pixels
 		$markerpixels=$this->pixels_per_km;
 		
@@ -620,6 +613,10 @@ class GeographMap
 		$scanright=$right+$overscan;
 		$scanbottom=$bottom-$overscan;
 		$scantop=$top+$overscan;
+		
+		//setup ready to plot squares
+		$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left,true);
+		
 		
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 				
@@ -1276,10 +1273,14 @@ END;
 		
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 		if ($isimgmap) {
-			//todo we just use the image given us by group by, which isnt nesserially the right one!
+			//yes I know the imagecount is possibly strange in the join, but does speeds it up, having it twice speeds it up even more! (by preference have the second one, speed wise!), also keeping the join on gridsquare_id really does help too for some reason! 
 			$sql="select gs.*,gridimage_id,realname,title 
 				from gridsquare gs
-				left join gridimage gi using(gridsquare_id)
+				left join gridimage gi ON 
+				(imagecount > 0 AND gi.gridsquare_id = gs.gridsquare_id AND imagecount > 0 AND gridimage_id = 
+					(select gridimage_id from gridimage gi2 where gi2.gridsquare_id=gs.gridsquare_id 
+					and moderation_status in ('accepted','geograph') order by moderation_status+0 desc,seq_no limit 1)
+				) 
 				left join user using(user_id)
 				where 
 				CONTAINS( GeomFromText($rectangle),	point_xy)
