@@ -74,11 +74,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$hectads= $db->getAll("select * from hectad_complete order by completed desc limit 5");
 	$smarty->assign_by_ref('hectads', $hectads);
-	#print "<pre>";
-	#print_r($hectads);
 	
-	$stats= $db->cacheGetRow(3600,"select count(*) as images,count(distinct grid_reference) as squares,count(distinct user_id) as users ,sum(ftf=1 and moderation_status = 'geograph') as points from gridimage_search");
-	$stats['fewphotos'] = $db->cacheGetOne(3600,"select count(*) from gridsquare where percent_land > 0 and imagecount in (1,2,3)");
+	$stats= $db->cacheGetRow(3600,"select count(*) as images,count(distinct grid_reference) as squares,count(distinct user_id) as users from gridimage_search");
+	$stats += $db->cacheGetRow(3600,"select sum(imagecount=0) as nophotos,sum(imagecount in (1,2,3)) as fewphotos from gridsquare where percent_land > 0");
 	$smarty->assign_by_ref('stats', $stats);
 }
 
