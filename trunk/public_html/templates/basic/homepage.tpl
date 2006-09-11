@@ -3,14 +3,15 @@
 
 <h2>Welcome to Geograph British Isles</h2>
 
-<div style="font-size:0.7em; text-align:center; border: 1px solid silver; padding:5px">Quick Statistics: <b class="nowrap">{$stats.users|thousends} users</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b>, covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, and been awarded <b class="nowrap">{$stats.points|thousends} points</b>. <a href="/help/stats_faq">FAQ</a><br/>
+<div style="font-size:0.7em; text-align:center; border: 1px solid silver; padding:5px">Quick Statistics: <b class="nowrap">{$stats.users|thousends} users</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> which cover <b class="nowrap">{$stats.squares|thousends} grid squares</b>.<br/>
+
+<b class="nowrap">{$stats.fewphotos|thousends} photographed squares with fewer than 4 photos</b>, add yours now!<br/>
 
 Recently completed hectads: 
 {foreach from=$hectads key=id item=obj}
 <a title="View Mosaic for {$obj.hectad_ref}, completed {$obj.completed}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad_ref}</a>,
 {/foreach}
-<a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">more...</a><br/>
-<b class="nowrap">{$stats.fewphotos|thousends} squares still with fewer than 4 photos</b>, add yours now!
+<a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">more...</a>
 </div><br/>
 
 <div style="width:60%;float:left;padding-right:5px;position:relative">
