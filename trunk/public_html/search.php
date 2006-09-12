@@ -414,7 +414,7 @@ if (isset($_GET['fav']) ) {
 		if ($USER->registered) 
 			$USER->setDefaultStyle($style);
 	}
-	elseif ($USER->registered) 
+	elseif ($USER->registered && in_array($USER->default_style, $valid_style)) 
 	{
 		$style=$USER->default_style;
 	}
@@ -580,8 +580,8 @@ if (isset($_GET['fav']) ) {
 			$topics=array("1"=>"Any Topic") + $topics; 	
 			$smarty->assign_by_ref('topiclist',$topics);	
 
-			$topusers=$db->CacheGetAssoc(24*3600,"select user.user_id,concat(realname,' [',count(*),']')
-				from user inner join gridimage using(user_id) where ftf=1
+			$topusers=$db->CacheGetAssoc(24*3600,"select user_id,concat(realname,' [',count(*),']')
+				from gridimage_search 
 				group by user_id order by realname");
 			$smarty->assign_by_ref('userlist',$topusers);
 
