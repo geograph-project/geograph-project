@@ -148,6 +148,10 @@ for ($i=0; $i<$cnt; $i++)
 	} else {
 		$item->description = $images->images[$i]->comment; 
 	}
+	if (!empty($images->images[$i]->imagetaken) && strpos($images->images[$i]->imagetaken,'-00') === FALSE) {
+		$item->imageTaken = $images->images[$i]->imagetaken;
+	}
+	
 	$item->date = strtotime($images->images[$i]->submitted); 
 	$item->source = "http://{$_SERVER['HTTP_HOST']}/profile.php?u=".$images->images[$i]->user_id; 
 	$item->author = $images->images[$i]->realname; 
