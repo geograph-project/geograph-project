@@ -1097,7 +1097,7 @@ class KMLCreator extends FeedCreator {
 	function createFeed() {
 		$feed = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 		$feed.= $this->_createStylesheetReferences();
-		$feed.= "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n"; 
+		$feed.= "<kml xmlns=\"http://earth.google.com/kml/2.1\">\n"; 
 		$feed.= "<Document>\n";
 		if ($_GET['LinkControl'])
 			$feed.= "<NetworkLinkControl>\n<minRefreshPeriod>3600</minRefreshPeriod>\n</NetworkLinkControl>\n";
@@ -1152,12 +1152,18 @@ class KMLCreator extends FeedCreator {
 			<Point>
 				<coordinates>".$this->items[$i]->long.",".$this->items[$i]->lat.",25</coordinates>
 			</Point>";
-			if ($this->items[$i]->thumb!="") {
+			if ($this->items[$i]->thumb) {
 				$feed.= "
 			<styleUrl>$style</styleUrl>
 			<Style>
 				<icon>".htmlspecialchars($this->items[$i]->thumb)."</icon>
 			</Style>";
+			}
+			if ($this->items[$i]->imageTaken) {
+				$feed.= "
+			<TimeStamp>
+				<when>".str_replace('-00','',$this->items[$i]->imageTaken)."</when>
+			</TimeStamp>";
 			}
 			$feed.= "
 		</Placemark>\n";
