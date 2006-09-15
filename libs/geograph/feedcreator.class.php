@@ -1103,13 +1103,13 @@ class KMLCreator extends FeedCreator {
 			$feed.= "<NetworkLinkControl>\n<minRefreshPeriod>3600</minRefreshPeriod>\n</NetworkLinkControl>\n";
 		if (!empty($_GET['simple']) && count($this->items) > 0) {
 		$feed.= "<Style id=\"defaultIcon\">
-	<LabelStyle>
+	<LabelStyle id=\"defaultIconStyle\">
 		<scale>0</scale>
 	</LabelStyle>
 </Style>
 <Style id=\"hoverIcon\">".
 (($this->items[0]->thumb!="")?"
-	<IconStyle>
+	<IconStyle id=\"hoverIconStyle\">
 		<scale>2.1</scale>
 	</IconStyle>":'')."
 </Style>
@@ -1156,7 +1156,9 @@ class KMLCreator extends FeedCreator {
 				$feed.= "
 			<styleUrl>$style</styleUrl>
 			<Style>
-				<icon>".htmlspecialchars($this->items[$i]->thumb)."</icon>
+				<iconStyle>
+					<icon>".htmlspecialchars($this->items[$i]->thumb)."</icon>
+				</iconStyle>
 			</Style>";
 			}
 			if ($this->items[$i]->imageTaken) {
