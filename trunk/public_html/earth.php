@@ -63,20 +63,27 @@ foreach ($images->results as $img)
 	$item = new FeedItem();
 	$item->title = $img->grid_reference." : ".$img->title;
 	$item->link = "http://{$_SERVER['HTTP_HOST']}/photo/{$img->gridimage_id}";
-	if ($img->dist_string || $img->imagetakenString) {
-		$item->description = $img->dist_string.($img->imagetakenString?' Taken: '.$img->imagetakenString:'')."<br/>".$img->comment; 
+	if (!empty($img->dist_string) || !empty($img->imagetakenString)) {
+		$item->description = $img->dist_string.((!empty($img->imagetakenString))?' Taken: '.$img->imagetakenString:'')."<br/>".$img->comment; 
 		$item->descriptionHtmlSyndicated = true;
 	} else {
 		$item->description = $img->comment;
 	}
+	if (!empty($img->imagetaken) && strpos($img->imagetaken,'-00') === FALSE) {
+		$item->imageTaken = $img->imagetaken;
+	}
+
 	$item->date = strtotime($img->submitted);
 	$item->source = "http://{$_SERVER['HTTP_HOST']}/";
 	$item->author = $img->realname;
-	     
+
 	$item->lat = $img->wgs84_lat;
 	$item->long = $img->wgs84_long;
 	$item->thumb = "http://".$_SERVER['HTTP_HOST'].$img->getThumbnail(120,120,true);
-	
+	$item->thumbTag = preg_replace('/\/photos\/.*\.jpg/',$item->thumb,$img->getThumbnail(120,120)); 
+
+	$item->licence = "&copy; Copyright <i class=\"attribution\">".htmlspecialchars($img->realname)."</i> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a>";
+		       
 	$rss->addItem($item);
 }
 
