@@ -1109,7 +1109,7 @@ class KMLCreator extends FeedCreator {
 </Style>
 <Style id=\"hoverIcon\">".
 (($this->items[0]->thumb!="")?"
-	<IconStyle id=\"hoverIcon\">
+	<IconStyle>
 		<scale>2.1</scale>
 	</IconStyle>":'')."
 </Style>
