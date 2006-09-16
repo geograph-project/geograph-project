@@ -107,7 +107,7 @@
 		
 	{/if}
 	</div>
-	
+	{if !$adv} 
 	<script type="text/javascript">
 	{literal}
 	var advanced=document.getElementById('advanced');
@@ -125,7 +125,7 @@
 	}
 	{/literal}
 	</script>
-	
+	{/if}
 	</form>
 {/dynamic} 
 
