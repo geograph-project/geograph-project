@@ -559,7 +559,7 @@ if (isset($_GET['fav']) ) {
 		
 		if (!$is_cachable || !$smarty->is_cached($template, $is_cachable)) {
 			$smarty->assign('displayclasses', array('full' => 'full listing','text' => 'text description only','thumbs' => 'thumbnails only','slide' => 'slide-show mode','more' => 'extra direct links','spelling' => 'spelling utility'));
-			$smarty->assign('distances', array(1,5,10,20,30,50,100,250,500,1000,2000));
+			$smarty->assign('distances', array(1,2,3,4,5,10,20,30,40,50,100,200,300,400,500,1000,2000));
 
 			$countylist = array();
 			$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0"); 
