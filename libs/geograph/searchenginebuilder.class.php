@@ -48,7 +48,7 @@ class SearchEngineBuilder extends SearchEngine
 	
 	function buildSimpleQuery($q = '',$distance = 100,$autoredirect='auto',$userlimit = 0)
 	{
-		global $USER;
+		global $USER,$CONF;
 		
 		if ($distance == 1) {
 			$nearstring = 'in';
@@ -85,7 +85,8 @@ class SearchEngineBuilder extends SearchEngine
 				$searchclass = 'GridRef';
 				$searchdesc = ", $nearstring grid reference ".$square->grid_reference;
 				$searchx = $square->x;
-				$searchy = $square->y;			
+				$searchy = $square->y;	
+				$criteria->reference_index = $square->reference_index;
 			} else {
 				$this->errormsg = $square->errormsg;
 			}
@@ -103,6 +104,7 @@ class SearchEngineBuilder extends SearchEngine
 				$searchq = $q = $square->grid_reference;
 				$searchx = $x;
 				$searchy = $y;			
+				$criteria->reference_index = $square->reference_index;	
 			} else {
 				$this->errormsg = "unable to parse lat/long";
 			}
@@ -145,6 +147,11 @@ class SearchEngineBuilder extends SearchEngine
 					$searchdesc = ", containing '{$q}' ";
 				}
 			}
+		}
+		
+		if ($criteria->reference_index == 2 && $CONF['default_search_distance_2'] && $distance == $CONF['default_search_distance']) {
+			$searchdesc = str_replace(" ".$CONF['default_search_distance']."km "," ".$CONF['default_search_distance_2']."km ",$searchdesc);
+			$distance = $CONF['default_search_distance_2'];
 		}
 		
 		if ($userlimit) {
