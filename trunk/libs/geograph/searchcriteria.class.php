@@ -62,7 +62,7 @@ class SearchCriteria
 	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) 
 	{
 		if (!empty($_GET['BBOX'])) {
-			list($bottom,$left,$top,$right) = explode(',',trim(str_replace('e ','e+',$_GET['BBOX'])));
+			list($left,$bottom,$right,$top) = explode(',',trim(str_replace('e ','e+',$_GET['BBOX'])));
 			
 			$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
