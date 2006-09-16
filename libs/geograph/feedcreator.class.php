@@ -1135,10 +1135,11 @@ class KMLCreator extends FeedCreator {
 </Style>";
 			$style = "#defaultIcon";
 		}
-		$feed.= "<Folder>\n";
-		$feed.= "  <name>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</name>
+		if (!isset($_GET['BBOX'])) {
+			$feed.= "<Folder>\n  <name>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</name>
   <description>".$this->getDescription()."</description>
   <visibility>1</visibility>\n";
+		}
 		$this->truncSize = 500;
 		
 		for ($i=0;$i<count($this->items);$i++) {
@@ -1175,7 +1176,9 @@ class KMLCreator extends FeedCreator {
 			$feed.= "
 		</Placemark>\n";
 		}
-		$feed .= "</Folder>\n</Document>\n</kml>\n";
+		if (!isset($_GET['BBOX']))
+			$feed .= "</Folder>\n";
+		$feed .= "</Document>\n</kml>\n";
 		return $feed;
 	}
 	
