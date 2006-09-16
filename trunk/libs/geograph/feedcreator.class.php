@@ -1097,7 +1097,7 @@ class KMLCreator extends FeedCreator {
 	function createFeed() {
 		$feed = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 		$feed.= $this->_createStylesheetReferences();
-		$feed.= "<kml xmlns=\"http://earth.google.com/kml/2.1\">\n"; 
+		$feed.= "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n"; 
 		$feed.= "<Document>\n";
 		if ($_GET['LinkControl'])
 			$feed.= "<NetworkLinkControl>\n<minRefreshPeriod>3600</minRefreshPeriod>\n</NetworkLinkControl>\n";
@@ -1109,7 +1109,7 @@ class KMLCreator extends FeedCreator {
 </Style>
 <Style id=\"hoverIcon\">".
 (($this->items[0]->thumb!="")?"
-	<IconStyle id=\"hoverIcon\">
+	<IconStyle>
 		<scale>2.1</scale>
 	</IconStyle>":'')."
 </Style>
@@ -1126,7 +1126,14 @@ class KMLCreator extends FeedCreator {
 ";
 		  $style = "#defaultStyle";
 		} else {
-		  $style = "root://styleMaps#default?iconId=0x307";
+		$feed.= "<Style id=\"defaultIcon\">
+	<IconStyle>
+		<Icon>
+			<href>http://maps.google.com/mapfiles/kml/icon46.png</href>
+		</Icon>
+	</IconStyle>
+</Style>";
+			$style = "#defaultIcon";
 		}
 		$feed.= "<Folder>\n";
 		$feed.= "  <name>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</name>
