@@ -500,6 +500,7 @@ class SearchCriteria_Placename extends SearchCriteria
 			$this->y = intval($places[0]['n']/1000) + $origin['origin_y'];
 			$this->placename = $places[0]['full_name'];
 			$this->searchq = $places[0]['full_name'];
+			$this->reference_index = $places[0]['reference_index'];
 		} else {
 			$limit = (strlen($placename) > 3)?20:10;
 			$limi2 = 10;
@@ -660,6 +661,7 @@ class SearchCriteria_Postcode extends SearchCriteria
 
 			$this->x = intval($postcode['e']/1000) + $origin['origin_x'];
 			$this->y = intval($postcode['n']/1000) + $origin['origin_y'];
+			$this->reference_index = $postcode['reference_index'];
 		}
 	}
 }
@@ -681,6 +683,7 @@ class SearchCriteria_County extends SearchCriteria
 		$this->x = intval($county['e']/1000) + $origin['origin_x'];
 		$this->y = intval($county['n']/1000) + $origin['origin_y'];
 		$this->county_name = $county['name'];
+		$this->reference_index = $county['reference_index'];
 	}
 }
 
