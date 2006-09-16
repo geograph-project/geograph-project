@@ -69,7 +69,10 @@ $CONF['references_all'] = array_merge(array(0=>'British Isles'),$CONF['reference
 
 
 //the radius for simple searches in km, set high to begin with but set low once number of submissions
-$CONF['default_search_distance'] = 30;
+$CONF['default_search_distance'] = 10;
+
+//for ri 2 we might want a difference number
+$CONF['default_search_distance_2'] = 30;
 
 //false origins for the internal grid
 $CONF['origins'] = array(1 => array(206,0),2 => array(10,149));
