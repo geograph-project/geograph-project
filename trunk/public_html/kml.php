@@ -62,7 +62,7 @@ if (isset($_GET['id']))  {
 		</Style>
 		<? if (!empty($image->imagetaken) && strpos($image->imagetaken,'-00') === FALSE) { ?>
 		<TimeStamp>
-			<when><? echo str_replace('-00','',$image]->imageTaken); ?></when>
+			<when><? echo str_replace('-00','',$image->imageTaken); ?></when>
 		</TimeStamp>
 		<? } ?>
 	</Placemark>
@@ -157,7 +157,7 @@ if (isset($_GET['id']))  {
 	}
 		
 
-
+$smarty->assign('adv', $_GET['adv']);
 
 
 $smarty->display($template, $cacheid);
