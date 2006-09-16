@@ -60,6 +60,11 @@ if (isset($_GET['id']))  {
 		<Style>
 			<icon><? echo "http://".$_SERVER['HTTP_HOST'].$image->getThumbnail(120,120,true); ?></icon>
 		</Style>
+		<? if (!empty($image->imagetaken) && strpos($image->imagetaken,'-00') === FALSE) { ?>
+		<TimeStamp>
+			<when><? echo str_replace('-00','',$image]->imageTaken); ?></when>
+		</TimeStamp>
+		<? } ?>
 	</Placemark>
 </kml><?		
 		exit;
