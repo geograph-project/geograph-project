@@ -21,7 +21,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-	
 if ($_SERVER["PATH_INFO"]) {
 	$filename = $_SERVER["PATH_INFO"];
 } else {
@@ -32,7 +31,7 @@ $path = "/{$_SERVER['HTTP_HOST']}/";
 if (preg_match('/\/(\d{6})/',$filename,$m))
 	$path .= "photo/".$m[1];
 
-$img=imagecreatetruecolor(250,100);
+$img=imagecreate(250,100);
 
 $blue=imagecolorallocate ($img, 101,117,255);
 imagefill($img,0,0,$blue);
@@ -50,7 +49,9 @@ imageline($img, 10, 58, 44+strlen($path)*imagefontwidth(2), 58, $black);
 imagestring($img, 2, 15, 70, "To prevent this message take a copy.", $black);
 imagestring($img, 2, 10, 84, "All images a Creative Commons Licenced", $black);
 
+
+header("Status: 403 Forbidden");
 header("Content-Type: image/png");
-imagepng($img,NULL,50);
+imagepng($img);
 
 ?>
