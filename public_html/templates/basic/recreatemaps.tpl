@@ -11,7 +11,7 @@
 	<p>There are currently <b>0</b> tiles in the process queue.</p>
 {/if}
 
-<p>If the number above is high (say above 100), then the site is busy, maps will be processed in due time, please bare with us!</p> 
+<p>If the number above is high (say above 100), then the site is busy, maps will be processed in due time, please be patient!</p> 
 
 <p>Otherwise if showing a low number (or 0) then its possible that your map has been missed, it would probably be worth submitting the Grid-Reference below, thanks!</p>
 
