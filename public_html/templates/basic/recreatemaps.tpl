@@ -22,7 +22,7 @@
 
 	<p>You can use the following form to request an update for a particular square.</p>
 
-	<p>* Only submit a square here if the queue is relevatly empty (say below 20), and the map still hasnt updated (after at least 3 hours).</p>
+	<p>* Only submit a square here if the queue is relatively empty (say below 20), and the map still hasn't updated (after at least 3 hours).</p>
 
 	<p>{$errormsg}</p>
 
@@ -32,7 +32,7 @@
 
 	</form>
 
-	<p>* Submitting the same square more than once will not help (but it doenst matter if you do)</p>
+	<p>* Submitting the same square more than once will not help (but it doesn't matter if you do)</p>
 {else}
 	<p>The queue is quite full at the moment, if a map still hasn't updated later then please return.</p>
 {/if}
