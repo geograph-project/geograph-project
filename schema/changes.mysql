@@ -549,8 +549,38 @@ ALTER TABLE `os_gaz` ADD INDEX ( `co_code` ) ;
 ALTER TABLE `user` ADD `default_style` ENUM( 'white', 'black', 'gray' ) DEFAULT 'white' NOT NULL ;
 
 
-ALTER TABLE `gridimage_search` ADD `point_ll` POINT NOT NULL ;
+ALTER TABLE `gridimage_search` ADD `point_ll` POINT NOT NULL;
 
 UPDATE gridimage_search SET point_ll = GeomFromText(CONCAT('POINT(',wgs84_long,' ',wgs84_lat,')'));
 
 ALTER TABLE `gridimage_search` ADD SPATIAL KEY(point_ll);
+
+
+ALTER TABLE `os_gaz` ADD INDEX ( `km_ref` ) ;
+
+
+ALTER TABLE `os_gaz` ADD INDEX ( `tile_ref` ) ;
+
+
+UPDATE `gridsquare` set places = (SELECT count(*) from os_gaz where km_ref = grid_reference) WHERE reference_index = 1 and land_percent > 0 ;
+
+
+ALTER TABLE `gridprefix` ADD `geometry_boundary` GEOMETRY NOT NULL ;
+
+# populate with /admin/buildgisindex.php 
+#(BEFORE running next command!)
+
+ALTER TABLE `gridprefix` ADD SPATIAL KEY(geometry_boundary);
+
+
+ALTER TABLE `gridprefix` DROP INDEX `point_xy`;
+
+ALTER TABLE `gridprefix` DROP `point_xy` ;
+
+
+ALTER TABLE `gridprefix` ADD `point_origin_xy` POINT NOT NULL ;
+
+UPDATE gridprefix SET point_origin_xy = GeomFromText(CONCAT('POINT(',origin_x,' ',origin_y,')'));
+
+ALTER TABLE `gridprefix` ADD SPATIAL KEY(point_origin_xy);
+
