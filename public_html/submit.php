@@ -233,6 +233,9 @@ if (isset($_POST['gridsquare']))
 				
 				//clear user profile
 				$smarty->clear_cache(null, "user{$USER->user_id}");
+				
+				if (!$err)
+					$smarty->assign('gridimage_id', $uploadmanager->gridimage_id);
 			}
 			
 			$step=($err)?7:5;
