@@ -475,11 +475,24 @@ class GeographMapMosaic
 			$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
 				where CONTAINS(geometry_boundary, GeomFromText($point))
 				order by landcount desc, reference_index desc limit 1";
-
-
 			
-			$prefix=$db->GetRow($sql);
-			if ($prefix['prefix']) { 
+			if (empty($prefix['prefix'])) { 
+				//if fails try a less restrictive search
+				if (isset($this->old_centrex)) {
+					$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
+						where {$this->old_centrex} between origin_x and (origin_x+width-1) and 
+						{$this->old_centrey} between origin_y and (origin_y+height-1)
+						order by landcount desc, reference_index limit 1";
+				} else {
+					$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
+						where $x_km between origin_x and (origin_x+width-1) and 
+						$y_km between origin_y and (origin_y+height-1)
+						order by landcount desc, reference_index limit 1";
+				}
+				$prefix=$db->GetRow($sql);
+			}
+							
+			if (!empty($prefix['prefix'])) { 
 				$n=$y_km-$prefix['origin_y'];
 				$e=$x_km-$prefix['origin_x'];
 				$this->gridref = sprintf('%s%02d%02d', $prefix['prefix'], $e, $n);

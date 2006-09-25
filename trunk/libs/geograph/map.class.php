@@ -226,14 +226,23 @@ class GeographMap
 		
 			//when not on land just try any square!
 			// but favour the _smaller_ grid - works better, now use SPATIAL index
-			$where_crit =  "order by reference_index desc";
 				
 			$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
 				where CONTAINS( geometry_boundary,	GeomFromText('POINT($x_km $y_km)'))
-				$where_crit limit 1";
+				order by landcount desc, reference_index limit 1";
 	
 			$prefix=$db->GetRow($sql);
-			if ($prefix['prefix']) { 
+			
+			if (empty($prefix['prefix'])) { 
+				//if fails try a less restrictive search
+				$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
+					where $x_km between origin_x and (origin_x+width-1) and 
+					$y_km between origin_y and (origin_y+height-1)
+					order by landcount desc, reference_index limit 1";
+				$prefix=$db->GetRow($sql);
+			}
+				
+			if (!empty($prefix['prefix'])) { 
 				$n=$y_km-$prefix['origin_y'];
 				$e=$x_km-$prefix['origin_x'];
 				$this->gridref = sprintf('%s%02d%02d', $prefix['prefix'], $e, $n);
