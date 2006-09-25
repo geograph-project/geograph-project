@@ -499,7 +499,7 @@ class UploadManager
 		$image->storeImage($src);
 		
 		$this->cleanUp();
-
+		$this->gridimage_id = $gridimage_id;
 	}
 	
 	/**
