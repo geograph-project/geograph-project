@@ -1,5 +1,8 @@
 
 {dynamic}
+ {if $place.distance}
+ <h3 style="text-align:left; margin-top:0; padding-left:10px; font-weight:normal; color:silver;">{if $place.distance > 3}{$place.distance-0.01} km from{else}near to{/if} <b>{$place.full_name}</b><small><i>{if $place.adm1_name && $place.adm1_name != $place.reference_name}, {$place.adm1_name}{/if}, {$place.reference_name}</i></small></h3>
+ {/if}
 
   
 		
