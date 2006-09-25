@@ -75,6 +75,9 @@ if (isset($CONF['disable_discuss_thumbs'])) {
 		$grid_ok=$square->setGridRef($gridref);
 
 		if ($grid_ok) {
+			//find a possible place within 25km
+			$smarty->assign('place', $square->findNearestPlace(75000));
+			
 			if ($square->imagecount)
 			{
 				$images=$square->getImages();
