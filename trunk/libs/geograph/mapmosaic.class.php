@@ -372,7 +372,7 @@ class GeographMapMosaic
 			//left to right
 			for ($i=0; $i<$this->mosaic_factor; $i++)
 			{
-				$images[$j][$i]=new GeographMap;	
+				$images[$j][$i]=new GeographMap;
 				
 				$images[$j][$i]->enableCaching($this->caching);
 				
@@ -391,6 +391,19 @@ class GeographMapMosaic
 		}
 		$this->imagearray =& $images;
 		return $images;
+	}
+
+	/**
+	* @access public
+	*/
+	function fillGridMap($isimgmap = false)
+	{
+		if (empty($this->imagearray))
+			$this->getImageArray();
+
+		foreach ($this->imagearray as $j => $row)
+			foreach ($row as $i => $map)
+				$this->imagearray[$j][$i]->grid = $map->getGridArray($isimgmap);
 	}
 
 	/**
@@ -450,21 +463,21 @@ class GeographMapMosaic
 		} else {
 			//But what to do when the square is not on land??
 		
+			//when not on land just try any square, but why not use land to decide if the square is in use? (works well with the spatial index)
+			// but favour the _smaller_ grid 
 			if (isset($this->old_centrex)) {
 				//if zooming out use the old grid!
 				//or in then use the click point grid
-				$where_crit =  "order by reference_index desc";
-				$sql="select prefix,origin_x,origin_y,reference_index from gridprefix ".
-					"where {$this->old_centrex} between origin_x and (origin_x+width-1) and ".
-					"{$this->old_centrey} between origin_y and (origin_y+height-1) $where_crit limit 1";
+				$point = "'POINT({$this->old_centrex} {$this->old_centrey})'";
 			} else {
-				//when not on land just try any square!
-				// but favour the _smaller_ grid - works better, but still not quite right where the two grids almost overlap
-				$where_crit =  "order by reference_index desc";
-				$sql="select prefix,origin_x,origin_y,reference_index from gridprefix ".
-					"where $x_km between origin_x and (origin_x+width-1) and ".
-					"$y_km between origin_y and (origin_y+height-1) $where_crit limit 1";
+				$point = "'POINT($x_km $y_km)'";
 			}
+			$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
+				where CONTAINS(geometry_boundary, GeomFromText($point))
+				order by landcount desc, reference_index desc limit 1";
+
+
+			
 			$prefix=$db->GetRow($sql);
 			if ($prefix['prefix']) { 
 				$n=$y_km-$prefix['origin_y'];

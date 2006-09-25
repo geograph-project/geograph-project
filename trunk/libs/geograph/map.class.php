@@ -225,12 +225,13 @@ class GeographMap
 			//But what to do when the square is not on land??
 		
 			//when not on land just try any square!
-			// but favour the _smaller_ grid - works better, but still not quite right where the two grids almost overlap
+			// but favour the _smaller_ grid - works better, now use SPATIAL index
 			$where_crit =  "order by reference_index desc";
 				
-			$sql="select prefix,origin_x,origin_y,reference_index from gridprefix ".
-				"where $x_km between origin_x and (origin_x+width-1) and ".
-				"$y_km between origin_y and (origin_y+height-1) $where_crit limit 1";
+			$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
+				where CONTAINS( geometry_boundary,	GeomFromText('POINT($x_km $y_km)'))
+				$where_crit limit 1";
+	
 			$prefix=$db->GetRow($sql);
 			if ($prefix['prefix']) { 
 				$n=$y_km-$prefix['origin_y'];
