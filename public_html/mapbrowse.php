@@ -154,6 +154,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		$overview->setScale(1);
 		list ($x,$y) = $mosaic->getCentre();
 		$overview->setCentre($x,$y); //does call setAlignedOrigin
+		
+		#$mosaic->fillGridMap(true); //true = for imagemap
+		
 	} else {
 		//set it back incase we come from a largeoverview
 		$overview->setScale(0.13);
@@ -164,46 +167,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	$overview->assignToSmarty($smarty, 'overview');
 	$smarty->assign('marker', $overview->getBoundingBox($mosaic));
 	
-	//assign main map to smarty
-
-	$mosaic->assignToSmarty($smarty, 'mosaic');
 	
 	//assign all the other useful stuff
-	
-	//build template image map
-	//experimental - for use with alternative template 
-	if (false)
-
-	{
-		$template='mapbrowse2.tpl';
-		$rect=array();
-
-		$mapgranulatity=10;
-
-		$mapsize=$mosaic->image_w/$mapgranulatity;
-		$tilegranulatity=$mapgranulatity/$mosaic->mosaic_factor;
-
-
-
-		for($x=0;$x<$tilegranulatity;$x++)
-		{
-			for($y=0;$y<$tilegranulatity;$y++)
-			{
-				$x1=$x*$mapsize;
-				$y1=$y*$mapsize;
-
-				$x2=$x1+$mapsize;
-				$y2=$y1+$mapsize;
-
-				$clickx=$x1+$mapsize/2;
-				$clicky=$y1+$mapsize/2;
-
-				$rect[$x][$y]=array($x1,$y1,$x2,$y2,$clickx,$clicky);		
-			}
-		}
-		$smarty->assign_by_ref('imgmap', $rect);
-	}
-	
+		
 	if ($gridref = $mosaic->getGridRef(-1,-1)) {
 		$smarty->assign('gridref', $gridref);
 		if ($mosaic->pixels_per_km == 40 && preg_match('/([A-Z]+\d)5(\d)5$/',$gridref,$m)) {
@@ -212,6 +178,12 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign_by_ref('hectad_row',$db->getRow("select * from hectad_complete where hectad_ref = '$hectad' limit 1"));
 		}
 	}
+	
+	//assign main map to smarty
+	
+	$mosaic->assignToSmarty($smarty, 'mosaic');
+	
+	
 	$smarty->assign('mapwidth', round($mosaic->image_w /$mosaic->pixels_per_km ) );
 	
 	$smarty->assign('token_zoomin', $mosaic->getZoomInToken());
