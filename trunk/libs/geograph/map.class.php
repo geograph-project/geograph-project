@@ -222,26 +222,37 @@ class GeographMap
 			$this->gridref = $row['grid_reference'];
 			$this->reference_index = $row['reference_index'];
 		} else {
-			//But what to do when the square is not on land??
-		
-			//when not on land just try any square!
-			// but favour the _smaller_ grid - works better, now use SPATIAL index
-				
-			$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
-				where CONTAINS( geometry_boundary,	GeomFromText('POINT($x_km $y_km)'))
-				order by landcount desc, reference_index limit 1";
-	
-			$prefix=$db->GetRow($sql);
-			
-			if (empty($prefix['prefix'])) { 
-				//if fails try a less restrictive search
+			if ($this->reference_index) {
+				//so it can be set from above (mapmosaic!)
 				$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
 					where $x_km between origin_x and (origin_x+width-1) and 
 					$y_km between origin_y and (origin_y+height-1)
-					order by landcount desc, reference_index limit 1";
+					order by ({$this->reference_index} == 1) desc, landcount desc, reference_index limit 1";
 				$prefix=$db->GetRow($sql);
+			} else {
+				//But what to do when the square is not on land??
+
+				//when not on land just try any square!
+				// but favour the _smaller_ grid - works better, now use SPATIAL index
+
+				$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
+					where CONTAINS( geometry_boundary,	GeomFromText('POINT($x_km $y_km)'))
+					order by landcount desc, reference_index limit 1";
+
+				$prefix=$db->GetRow($sql);
+
+				if (empty($prefix['prefix'])) { 
+					//if fails try a less restrictive search
+					$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
+						where $x_km between origin_x and (origin_x+width-1) and 
+						$y_km between origin_y and (origin_y+height-1)
+						order by landcount desc, reference_index limit 1";
+					$prefix=$db->GetRow($sql);
+				}
 			}
-				
+				print_r($this);
+				print_r($prefix);
+			exit;
 			if (!empty($prefix['prefix'])) { 
 				$n=$y_km-$prefix['origin_y'];
 				$e=$x_km-$prefix['origin_x'];
@@ -276,7 +287,7 @@ class GeographMap
 		if (!is_dir($root.$dir))
 			mkdir($root.$dir);
 		
-		$extension = ($this->pixels_per_km > 40 || $this->type_or_user < 0)?'jpg':'png';
+		$extension = ($this->pixels_per_km > 40 || $this->type_or_user < -20)?'jpg':'png';
 		
 		$file="detail_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}_{$this->type_or_user}.$extension";
 		
@@ -392,14 +403,20 @@ class GeographMap
 	* @access private
 	*/
 	function& _renderMap() {
-		if ($this->type_or_user < 0) {
-			$ok = $this->_renderRandomGeographMap();
+		if ($this->type_or_user == 0) {
+			$ok = $this->_renderImage();
+		} else if ($this->type_or_user < 0) {
+			if ($this->type_or_user == -1) {
+				$ok = $this->_renderDepthImage();
+			} elseif ($this->type_or_user == -2) {
+				$ok = $this->_renderDateImage();
+			} else  {
+				$ok = $this->_renderRandomGeographMap();
+			}
 		} else if ($this->type_or_user > 0) {
 			//todo
 			//$this->_renderUserMap();
-		} else {
-			$ok = $this->_renderImage();
-		}
+		} 
 
 		if ($ok) {
 			$db=&$this->_getDB();
@@ -746,9 +763,268 @@ class GeographMap
 			return false;
 		}
 	}	
+
+	/**
+	* render the image to cached file if not already available
+	* @access private
+	*/
+	function _renderDepthImage()
+	{
+		global $CONF;
+		$root=&$_SERVER['DOCUMENT_ROOT'];
+		$ok = true;
+		
+		$basemap=$this->getBaseMapFilename();
+		if ($this->caching && @file_exists($root.$basemap))	{
+			$img=imagecreatefromgd($root.$basemap);
+		} else {
+			$img=&$this->_createBasemap($root.$basemap);
+		}
+		
+		if (!$img) {
+			return false;
+		}
+		
+		$colMarker=imagecolorallocate($img, 255,0,0);
+		$colSuppMarker=imagecolorallocate($img,236,206,64);
+		$colBorder=imagecolorallocate($img, 255,255,255);
+		$colAlias=imagecolorallocate($img, 182,163,57);
+		
+		$db=&$this->_getDB();
+				
+		$sql="select imagecount from gridsquare group by imagecount";
+		$counts = $db->getCol($sql);
+		
+#$imgkey=imagecreatetruecolor(50,count($counts)*8);	
+
+#$green=imagecolorallocate ($imgkey, 117,255,101);
+#imagefill($imgkey,0,0,$green);
+
+		//we need some colours for depth
+		if (true) {
+			//we want a range of aliases from 255,0,0 to 159,33,33
+			$rmin=225;
+			$gmin=225;
+			$bmin=225;
+			$rmax=0;
+			$gmax=0;
+			$bmax=0;
+			
+			$colour=array();
+			for ($p=0; $p<count($counts); $p++)
+			{
+				if ($p > 20) {
+					$colour[$counts[$p]] = $last;
+				} else {
+				$scale=$p/20;
+				
+				$r=round($rmin + ($rmax-$rmin)*$scale);
+				$g=round($gmin + ($gmax-$gmin)*$scale);
+				$b=round($bmin + ($bmax-$bmin)*$scale);
+				$last = $colour[$counts[$p]]=imagecolorallocate($img, $r,$g,$b);
+#$colour[$counts[$p]]=imagecolorallocate($imgkey, $r,$g,$b);
+
+#imagestring($imgkey, 2, 3, $p*8, $counts[$p], $colour[$counts[$p]]);
+				}
+			}
+			$colour[0]=imagecolorallocate($img, 255,255,255);
+		}
+#header("Content-Type: image/png");
+#imagepng($imgkey);
+#exit;
+		
+		//figure out what we're mapping in internal coords
+		$left=$this->map_x;
+		$bottom=$this->map_y;
+		$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
+		$top=$bottom + floor($this->image_h/$this->pixels_per_km)-1;
+
+		
+		//size of a marker in pixels
+		$markerpixels=$this->pixels_per_km;
+		
+		//size of marker in km
+		$markerkm=ceil($markerpixels/$this->pixels_per_km);
+		
+		//we scan for images a little over the edges so that if
+		//an image lies on a mosaic edge, we still plot the point
+		//on both mosaics
+		$overscan=$markerkm;
+		$scanleft=$left-$overscan;
+		$scanright=$right+$overscan;
+		$scanbottom=$bottom-$overscan;
+		$scantop=$top+$overscan;
+		
+		$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left,true);
+				
+		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
+				
+		$sql="select x,y,gridsquare_id,imagecount from gridsquare where 
+			CONTAINS( GeomFromText($rectangle),	point_xy)
+			and percent_land != 0";
+
+		$recordSet = &$db->Execute($sql);
+		while (!$recordSet->EOF) 
+		{
+			$gridx=$recordSet->fields[0];
+			$gridy=$recordSet->fields[1];
+
+			$imgx1=round(($gridx-$left) * $this->pixels_per_km);
+			$imgy1=round(($this->image_h-($gridy-$bottom+1)* $this->pixels_per_km));
+	
+			$color = $colour[$recordSet->fields[3]];	
+##				print $color."<BR>";
+			if ($this->pixels_per_km==1) {
+				imagesetpixel($img,$imgx1, $imgy1,$color);
+			} else {
+				$imgx2=$imgx1 + $this->pixels_per_km;
+				$imgy2=$imgy1 + $this->pixels_per_km;
+				imagefilledrectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $color);
+			}
+	
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close(); 
+#exit;
+		if ($img) {
+			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
+			
+			if ($this->pixels_per_km>=1  && $this->pixels_per_km<40 && isset($CONF['enable_newmap'])) {
+				$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
+			}				
+			
+			$target=$this->getImageFilename();
+			if (preg_match('/jpg/',$target)) {
+				$ok = (imagejpeg($img, $root.$target) && $ok);
+			} else {
+				$ok = (imagepng($img, $root.$target) && $ok);
+			}
+
+			imagedestroy($img);
+			return $ok;
+		} else {
+			return false;
+		}
+	}
 	
 	/**
 	* render the image to cached file if not already available
+	* @access private
+	*/
+	function _renderDateImage()
+	{
+		global $CONF;
+		global $mapDateStart;
+		global $mapDateCrit;
+		$root=&$_SERVER['DOCUMENT_ROOT'];
+		$ok = true;
+		
+		$basemap=$this->getBaseMapFilename();
+		if ($this->caching && @file_exists($root.$basemap))	{
+			$img=imagecreatefromgd($root.$basemap);
+		} else {
+			$img=&$this->_createBasemap($root.$basemap);
+		}
+		
+		if (!$img) {
+			return false;
+		}
+		
+		$colMarker=imagecolorallocate($img, 255,0,0);
+		$colSuppMarker=imagecolorallocate($img,236,206,64);
+		$colBorder=imagecolorallocate($img, 255,255,255);
+		$colAlias=imagecolorallocate($img, 182,163,57);
+			$black = imagecolorallocate ($img, 70, 70, 0);
+		
+		$db=&$this->_getDB();
+				
+		$sql="select imagecount from gridsquare group by imagecount";
+		$counts = $db->getCol($sql);
+		
+		//figure out what we're mapping in internal coords
+		$left=$this->map_x;
+		$bottom=$this->map_y;
+		$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
+		$top=$bottom + floor($this->image_h/$this->pixels_per_km)-1;
+
+		
+		//size of a marker in pixels
+		$markerpixels=$this->pixels_per_km;
+		
+		//size of marker in km
+		$markerkm=ceil($markerpixels/$this->pixels_per_km);
+		
+		//we scan for images a little over the edges so that if
+		//an image lies on a mosaic edge, we still plot the point
+		//on both mosaics
+		$overscan=$markerkm;
+		$scanleft=$left-$overscan;
+		$scanright=$right+$overscan;
+		$scanbottom=$bottom-$overscan;
+		$scantop=$top+$overscan;
+		
+		$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left,true);
+				
+		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
+				
+		$sql="select x,y,sum(submitted > '$mapDateCrit')
+			from 
+			gridsquare gs 
+			inner join gridimage gi using(gridsquare_id)
+			where 
+			submitted < '$mapDateStart'
+			group by gi.gridsquare_id ";
+#CONTAINS( GeomFromText($rectangle),	point_xy) and
+			
+		$recordSet = &$db->Execute($sql);
+		while (!$recordSet->EOF) 
+		{
+			$gridx=$recordSet->fields[0];
+			$gridy=$recordSet->fields[1];
+
+			$imgx1=round(($gridx-$left) * $this->pixels_per_km);
+			$imgy1=round(($this->image_h-($gridy-$bottom+1)* $this->pixels_per_km));
+	
+			$color = ($recordSet->fields[2])?$colSuppMarker:$colMarker;	
+
+			if ($this->pixels_per_km==1) {
+				imagesetpixel($img,$imgx1, $imgy1,$color);
+			} else {
+				$imgx2=$imgx1 + $this->pixels_per_km;
+				$imgy2=$imgy1 + $this->pixels_per_km;
+				imagefilledrectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $color);
+			}
+	
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close(); 
+#exit;
+		if ($img) {
+			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
+			
+			imagestring($img, 5, 3, $this->image_h-30, $mapDateStart, $black);
+			
+			if ($this->pixels_per_km>=1  && $this->pixels_per_km<40 && isset($CONF['enable_newmap'])) {
+				$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
+			}				
+			
+			$target=$this->getImageFilename();
+			$target=preg_replace('/\./',"-$mapDateStart.",$target);
+			if (preg_match('/jpg/',$target)) {
+				$ok = (imagejpeg($img, $root.$target) && $ok);
+			} else {
+				$ok = (imagepng($img, $root.$target) && $ok);
+			}
+
+			imagedestroy($img);
+			return $ok;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	* render the the special Random Thumbnail Map (in its many variations)
 	* @access private
 	*/
 	function _renderRandomGeographMap()
@@ -958,10 +1234,10 @@ sleep(5);
 if ($reference_index == 1 || ($reference_index == 2 && $this->pixels_per_km == 1 )) {
 	//$countries = "'EN','WA','SC'";
 $sql = <<<END
-SELECT name,e,n,s,quad 
+SELECT name,e,n,s,quad,reference_index
 FROM loc_towns
 WHERE 
-reference_index = $reference_index AND $crit
+ $crit
 CONTAINS( GeomFromText($rectangle),	point_en) 
 ORDER BY s
 END;
@@ -971,11 +1247,10 @@ END;
 	$div *= 1.5; //becuase the irish data is more dence
 
 $sql = <<<END
-SELECT e,n,full_name as name
+SELECT e,n,full_name as name,reference_index
 FROM loc_placenames
 INNER JOIN `loc_wikipedia` ON ( full_name = text ) 
 WHERE dsg = 'PPL' AND
-reference_index = $reference_index AND
 country IN ($countries) AND $crit2
 CONTAINS( GeomFromText($rectangle),	point_en) 
 ORDER BY RAND()
@@ -994,7 +1269,7 @@ END;
 			if (!$squares[$str]) {// || $recordSet->fields['s'] ==1) {
 				$squares[$str]++;
 			
-				list($x,$y) = $conv->national_to_internal($e,$n,$reference_index );
+				list($x,$y) = $conv->national_to_internal($e,$n,$recordSet->fields['reference_index'] );
 
 				$imgx1=($x-$left) * $this->pixels_per_km;
 				$imgy1=($this->image_h-($y-$bottom+1)* $this->pixels_per_km);
