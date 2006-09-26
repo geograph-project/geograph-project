@@ -148,6 +148,9 @@ if (isset($_GET['gridref_from']) && preg_match('/^[a-zA-Z]{1,2}\d{4}$/',$_GET['g
 if (!$smarty->is_cached($template, $cacheid))
 {
 	//assign overview to smarty
+	if ($mosaic->type_or_user > 0) {
+		$overview->type_or_user = $mosaic->type_or_user;
+	}
 	
 	if ($mosaic->pixels_per_km == 40) { 
 		//largeoverview
