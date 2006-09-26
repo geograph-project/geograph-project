@@ -637,6 +637,7 @@ class GeographMapMosaic
 			}
 		} else {
 			$out->setMosaicFactor(3);
+			$out->type_or_user = $this->type_or_user;
 		}
 		return $out->getToken();
 	}
