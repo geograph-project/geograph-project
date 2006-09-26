@@ -163,7 +163,7 @@ class GeographMap
 		if (!empty($this->type_or_user))
 			$token->setValue("t",  $this->type_or_user);
 		if (isset($this->reference_index))
-			$token->setValue("r",  $this->reference_index);			
+			$token->setValue("r",  $this->reference_index);
 		return $token->getToken();
 	}
 
@@ -761,7 +761,7 @@ class GeographMap
 				if (!empty($this->type_or_user)) {
 					$grid_reference=$recordSet->fields[2];
 			
-					$sql="select * from gridimage_search where grid_reference=$grid_reference 
+					$sql="select * from gridimage_search where grid_reference='$grid_reference' 
 					and user_id = {$this->type_or_user} order by moderation_status+0 desc,seq_no limit 1";
 				} else {
 					$gridsquare_id=$recordSet->fields[2];
@@ -942,8 +942,8 @@ class GeographMap
 			$imgx1=round(($gridx-$left) * $this->pixels_per_km);
 			$imgy1=round(($this->image_h-($gridy-$bottom+1)* $this->pixels_per_km));
 	
-			$color = $colour[$recordSet->fields[3]];	
-##				print $color."<BR>";
+			$color = $colour[$recordSet->fields[3]];
+
 			if ($this->pixels_per_km==1) {
 				imagesetpixel($img,$imgx1, $imgy1,$color);
 			} else {
