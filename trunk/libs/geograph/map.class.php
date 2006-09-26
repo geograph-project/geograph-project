@@ -160,7 +160,8 @@ class GeographMap
 		$token->setValue("w",  $this->image_w);
 		$token->setValue("h",  $this->image_h);
 		$token->setValue("s",  $this->pixels_per_km);
-		$token->setValue("t",  $this->type_or_user);
+		if (!empty($this->type_or_user))
+			$token->setValue("t",  $this->type_or_user);
 		if (isset($this->reference_index))
 			$token->setValue("r",  $this->reference_index);			
 		return $token->getToken();
@@ -362,7 +363,7 @@ class GeographMap
 		$full=$_SERVER['DOCUMENT_ROOT'].$file;
 		if (!$this->caching || !@file_exists($full))
 		{
-			$this->_renderMap();			
+			$this->_renderMap();
 		}
 		
 		if (!@file_exists($full))
@@ -407,12 +408,15 @@ class GeographMap
 				$ok = $this->_renderDepthImage();
 			} elseif ($this->type_or_user == -2) {
 				$ok = $this->_renderDateImage();
+			} elseif ($this->type_or_user == -10) {
+				//normal render image, understands type_or_user = -10 and just draws empty tile
+				$ok = $this->_renderImage();
 			} else  {
 				$ok = $this->_renderRandomGeographMap();
 			}
 		} else if ($this->type_or_user > 0) {
-			//todo
-			//$this->_renderUserMap();
+			//normal render image, understands type_or_user > 0!
+			$ok = $this->_renderImage();
 		} 
 
 		if ($ok) {
@@ -535,6 +539,50 @@ class GeographMap
 	}
 	
 	/**
+	* checks if specified user has any images on map, (so can use standard blank tile otherwise) 
+	* @access private
+	*/
+	function needUserTile($user_id)
+	{
+		global $CONF;
+		
+		//figure out what we're mapping in internal coords
+		$db=&$this->_getDB();
+		
+		$dbImg=NewADOConnection($GLOBALS['DSN']);
+
+		$left=$this->map_x;
+		$bottom=$this->map_y;
+		$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
+		$top=$bottom + floor($this->image_h/$this->pixels_per_km)-1;
+
+		//size of a marker in pixels
+		$markerpixels=$this->pixels_per_km;
+		
+		//size of marker in km
+		$markerkm=ceil($markerpixels/$this->pixels_per_km);
+		
+		//we scan for images a little over the edges so that if
+		//an image lies on a mosaic edge, we still plot the point
+		//on both mosaics
+		$overscan=$markerkm;
+		$scanleft=$left-$overscan;
+		$scanright=$right+$overscan;
+		$scanbottom=$bottom-$overscan;
+		$scantop=$top+$overscan;
+
+		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
+
+		//because we are only interested if any photos on tile, use limit 1 (added by getOne) rather than a count(*)
+		$sql="select gridimage_id from gridimage_search where 
+				CONTAINS( GeomFromText($rectangle),	point_xy) and
+				user_id = $user_id";
+		$id = $db->getOne($sql);
+		
+		return !empty($id);
+	}
+
+	/**
 	* render the image to cached file if not already available
 	* @access private
 	*/
@@ -570,14 +618,14 @@ class GeographMap
 		
 		//if we operating at less than 1 pixel per km,
 		//we need some colours for aliasing
-		if ($this->pixels_per_km < 1)
+		if ($this->pixels_per_km < 1 && $this->type_or_user != -10)
 		{
 			//we want a range of aliases from 117,255,101 to 255,0,0
 			$rmin=117;
-			$rmax=255;
 			$gmin=255;
-			$gmax=0;
 			$bmin=101;
+			$rmax=255;
+			$gmax=0;
 			$bmax=0;
 			
 			//we can use the scale to figure out how many square a single image
@@ -585,8 +633,13 @@ class GeographMap
 			$alias_count = ceil(1/$this->pixels_per_km);
 			
 			//seems to help
-			if ($this->pixels_per_km<=0.13)
-				$alias_count*=2;
+			if ($this->type_or_user > 0)
+				$alias_count/=2;
+			elseif ($this->pixels_per_km<=0.13)
+				$alias_count*=7;
+			elseif ($this->pixels_per_km==0.3)
+				$alias_count*=3;
+			
 			
 			$colAliasedMarker=array();
 			for ($p=0; $p<$alias_count; $p++)
@@ -644,9 +697,20 @@ class GeographMap
 		
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 				
-		$sql="select x,y,gridsquare_id,has_geographs from gridsquare where 
-			CONTAINS( GeomFromText($rectangle),	point_xy)
-			and imagecount>0";
+		if (!empty($this->type_or_user)) {
+			if ($this->type_or_user == -10) {
+				//we want a blank map!
+				$sql = "select 0 limit 0";
+			} else {
+				$sql="select x,y,grid_reference,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where 
+					CONTAINS( GeomFromText($rectangle),	point_xy) and
+					user_id = {$this->type_or_user} group by grid_reference";
+			}
+		} else {
+			$sql="select x,y,gridsquare_id,has_geographs from gridsquare where 
+				CONTAINS( GeomFromText($rectangle),	point_xy)
+				and imagecount>0";
+		}
 
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
@@ -693,11 +757,20 @@ class GeographMap
 			}
 			else
 			{
-				$gridsquare_id=$recordSet->fields[2];
-
-				$sql="select * from gridimage where gridsquare_id=$gridsquare_id 
-				and moderation_status in ('accepted','geograph') order by moderation_status+0 desc,seq_no limit 1";
-
+				
+				if (!empty($this->type_or_user)) {
+					$grid_reference=$recordSet->fields[2];
+			
+					$sql="select * from gridimage_search where grid_reference=$grid_reference 
+					and user_id = {$this->type_or_user} order by moderation_status+0 desc,seq_no limit 1";
+				} else {
+					$gridsquare_id=$recordSet->fields[2];
+			
+					$sql="select * from gridimage where gridsquare_id=$gridsquare_id 
+					and moderation_status in ('accepted','geograph') order by moderation_status+0 desc,seq_no limit 1";
+				
+				}
+				
 				//echo "$sql\n";	
 				$rec=$dbImg->GetRow($sql);
 				if (count($rec))

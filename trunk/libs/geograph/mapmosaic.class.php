@@ -304,6 +304,8 @@ class GeographMapMosaic
 		$token->setValue("h",  $this->image_h);
 		$token->setValue("s",  $this->pixels_per_km);
 		$token->setValue("f",  $this->mosaic_factor);
+		if (!empty($this->type_or_user))
+			$token->setValue("t",  $this->type_or_user);
 		return $token->getToken();
 	}
 
@@ -330,6 +332,7 @@ class GeographMapMosaic
 				$this->setMosaicSize($token->getValue("w"), $token->getValue("h"));
 				$this->setScale($token->getValue("s"));
 				$this->setMosaicFactor($token->getValue("f"));
+				$this->type_or_user = ($token->hasValue("t"))?$token->getValue("t"):0;
 			}
 			else
 			{
@@ -388,6 +391,13 @@ class GeographMapMosaic
 		
 				if (isset($this->reference_index))
 					$images[$j][$i]->reference_index = $this->reference_index;
+				if (!empty($this->type_or_user)) {
+					if ($this->type_or_user > 0) {
+						$images[$j][$i]->type_or_user = $images[$j][$i]->needUserTile($this->type_or_user)?$this->type_or_user:-10;
+					} else {
+						$images[$j][$i]->type_or_user = $this->type_or_user;
+					}
+				}
 			}
 		
 		}
@@ -524,6 +534,7 @@ class GeographMapMosaic
 			$out->setScale($this->pixels_per_km);
 			$out->setMosaicFactor($this->mosaic_factor);
 			$out->setMosaicSize($this->image_w, $this->image_h);
+			$out->type_or_user = $this->type_or_user;
 
 			//pan half a map
 			//figure out image size in km
@@ -555,6 +566,7 @@ class GeographMapMosaic
 		$out->setScale($this->pixels_per_km);
 		$out->setMosaicFactor($this->mosaic_factor*2);
 		$out->setMosaicSize($this->image_w*2, $this->image_h*2);
+		$out->type_or_user = $this->type_or_user;
 
 		//figure out image size in km
 		$mapw=$this->image_w/$this->pixels_per_km;
@@ -612,6 +624,7 @@ class GeographMapMosaic
 
 				//stick with current mosaic factor
 				$out->setMosaicFactor($this->mosaic_factor);
+				$out->type_or_user = $this->type_or_user;
 
 				//figure out what the perfect origin would be
 				$mapw=$this->image_w/$scale;
@@ -652,6 +665,7 @@ class GeographMapMosaic
 			$out->setScale($scale);
 
 			$out->setMosaicFactor(2);
+			$out->type_or_user = $this->type_or_user;
 
 			//figure out what the perfect origin would be
 			$mapw=$this->image_w/$scale;
