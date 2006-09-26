@@ -161,6 +161,8 @@ class GeographMap
 		$token->setValue("h",  $this->image_h);
 		$token->setValue("s",  $this->pixels_per_km);
 		$token->setValue("t",  $this->type_or_user);
+		if (isset($this->reference_index))
+			$token->setValue("r",  $this->reference_index);			
 		return $token->getToken();
 	}
 
@@ -186,11 +188,9 @@ class GeographMap
 				$this->setImageSize($token->getValue("w"), $token->getValue("h"));
 				$this->setScale($token->getValue("s"));
 				$this->type_or_user = ($token->hasValue("t"))?$token->getValue("t"):0;
+				if ($token->hasValue("r")) 
+					$this->reference_index = $token->getValue("r");
 			}
-		}
-		else
-		{
-		
 		}
 		
 		return $ok;
@@ -227,7 +227,7 @@ class GeographMap
 				$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
 					where $x_km between origin_x and (origin_x+width-1) and 
 					$y_km between origin_y and (origin_y+height-1)
-					order by ({$this->reference_index} == 1) desc, landcount desc, reference_index limit 1";
+					order by ({$this->reference_index} = reference_index) desc, landcount desc, reference_index limit 1";
 				$prefix=$db->GetRow($sql);
 			} else {
 				//But what to do when the square is not on land??
@@ -250,9 +250,6 @@ class GeographMap
 					$prefix=$db->GetRow($sql);
 				}
 			}
-				print_r($this);
-				print_r($prefix);
-			exit;
 			if (!empty($prefix['prefix'])) { 
 				$n=$y_km-$prefix['origin_y'];
 				$e=$x_km-$prefix['origin_x'];

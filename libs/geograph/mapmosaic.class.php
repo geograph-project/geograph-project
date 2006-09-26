@@ -386,6 +386,8 @@ class GeographMapMosaic
 				
 				$images[$j][$i]->setScale($this->pixels_per_km);
 		
+				if (isset($this->reference_index))
+					$images[$j][$i]->reference_index = $this->reference_index;
 			}
 		
 		}
