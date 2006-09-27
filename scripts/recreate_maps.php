@@ -142,12 +142,12 @@ $map=new GeographMap;
 			
 while (1) {
 
-	$invalid_maps = $db->GetOne("select count(*) from mapcache where age > 0 && type_or_user = 0");
+	$invalid_maps = $db->GetOne("select count(*) from mapcache where age > 0 and type_or_user >= 0");
 
 	if ($invalid_maps) {
-		//done many small select statements to allow new maps to be processed 
-		$recordSet = &$db->Execute("select * from mapcache where age > 0 ".
-			"order by pixels_per_km desc, age desc limit 10;");
+		//done as many small select statements to allow new maps to be processed 
+		$recordSet = &$db->Execute("select * from mapcache where age > 0 and type_or_user >= 0
+			order by pixels_per_km desc, age desc limit 10");
 		while (!$recordSet->EOF) 
 		{
 			//sleep until calm if we've specified a load average

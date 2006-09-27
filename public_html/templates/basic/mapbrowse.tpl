@@ -183,13 +183,13 @@
    
    <div style="line-height:1em;padding-top:2px;">
    {if $hectad}</b>
-   Hectad<a href="/help/squares">?</a> <b><a style="color:#000066" href="/search.php?q={$gridref}" title="Search for images centered around {$gridref}">{$hectad}</a></b>  
+   Hectad<a href="/help/squares">?</a> <b><a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Search for images centered around {$gridref}">{$hectad}</a></b>  
    {if $hectad_row}
    <a title="View Mosaic for {$hectad_row.hectad_ref}, completed {$hectad_row.completed}" href="/maplarge.php?t={$hectad_row.largemap_token}">view large map</a>
    {/if}
    {else}Grid Reference at centre
  {if $token_zoomout}
- <a style="color:#000066" href="/search.php?q={$gridref}" title="Search for images centered around {$gridref}">{$gridref}</a>
+ <a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Search for images centered around {$gridref}">{$gridref}</a>
  {else}
  {$gridref}
  {/if}{/if}</div>
@@ -255,14 +255,14 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 {/if}
 <br/>
 
-<h2>Map Browsing (beta!)</h2>
-<p>Here's a few tips for using our map - we're still developing and testing this, so if you
+<h2>Map{if $realname}, for <a title="view user profile" href="/profile.php?u={$user_id}">{$realname}</a>  <small style="font-size:0.4em; font-weight:normal">[ <a title="Remove User Filter" href="/map/{$mosaic_token}?u=0">Remove User Filter</a> ]</small>{else} Browsing (beta!){/if}</h2>
+<p>Here are a few tips for using our map - we're still developing and testing this, so if you
 notice any problems, do let us know.</p>
 <ul>
-<li style="color:blue">NEW! On the thumbnail (10km width) maps you can now hover over a image for a description. Also right-click "open in new window"/tab should function at this scale.</li>
+<li style="color:blue">NEW! On the thumbnail (10km width) maps you can now hover over an image for a description. Also right-click "open in new window"/tab should function at this scale.</li>
 <li>Click on the large map to zoom in on an area of interest. You can also use the +
 and - buttons to zoom in and out, or the keyboard shortcuts Alt+Q to zoom out and Alt+S to zoom in</li>
-<li>Pan the map using the links at the edges of the map, or the N,E,S,W buttons.
+<li>Pan the map using the links at the edges of the map, or the 'N' 'E' 'S' 'W' buttons.
 You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the map</li>
 <li>You can also pan the map by clicking the smaller overview map</li>
 </ul>

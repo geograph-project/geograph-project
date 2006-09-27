@@ -73,6 +73,12 @@ if (!$smarty->is_cached($template, $cacheid))
 {
 	dieUnderHighLoad();
 	
+	if ($map->type_or_user > 0) {
+		$profile=new GeographUser($map->type_or_user);
+		$smarty->assign('realname', $profile->realname);
+		$smarty->assign('user_id', $map->type_or_user);
+	}
+	
 	//assign main map to smarty
 	$smarty->assign_by_ref('map', $map);
 	

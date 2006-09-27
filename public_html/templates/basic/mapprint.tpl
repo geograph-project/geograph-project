@@ -19,7 +19,7 @@
 
 <h2>Geograph Map {if substr($gridref, -1, 1) == '5' && substr(substr($gridref, -3, 3), 0, 1) == '5'}
    for Hectad {$gridref|regex_replace:"/([A-Z]+\d)\d(\d)\d/":"\\1\\2"} 
-   {else} centred on {$gridref}{/if}</h2>
+   {else} centred on {$gridref}{/if}{if $realname}, for <a title="view user profile" class="nowrap" href="/profile.php?u={$user_id}">{$realname}</a>{/if}</h2>
 
  
 {*begin containing div for main map*}
@@ -84,7 +84,7 @@
    <div style="position:relative;width:{$overview_width}px;">
    <div style="line-height:1em;padding-top:2px;">Grid Reference at centre
  {if $token_zoomout}
- <a style="color:#000066" href="/search.php?q={$gridref}" title="Search for images centered around {$gridref}">{$gridref}</a>
+ <a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Search for images centered around {$gridref}">{$gridref}</a>
  {else}
  {$gridref}
  {/if}</div>
