@@ -875,12 +875,17 @@ class GeographMapMosaic
 	* This should really be static
 	* @access public
 	*/
-	function expirePosition($x,$y)
+	function expirePosition($x,$y,$user_id = 0)
 	{
 		$db=&$this->_getDB();
-		$sql="update mapcache set age=age+1 ".
-			"where $x between map_x and (map_x+image_w/pixels_per_km-1) and ".
-			"$y between map_y and (map_y+image_h/pixels_per_km-1)";
+		
+		if ($user_id > 0) {
+			$and_crit = " and type_or_user = $user_id or type_or_user = 0";
+		}
+		
+		$sql="update mapcache set age=age+1 
+			where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
+			$y between map_y and (map_y+image_h/pixels_per_km-1) $and_crit";
 		$db->Execute($sql);
 	}
 	

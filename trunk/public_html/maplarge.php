@@ -75,6 +75,13 @@ if (!$smarty->is_cached($template, $cacheid))
 	dieUnderHighLoad();
 
 	//assign overview to smarty
+	if ($mosaic->type_or_user > 0) {
+		$overview->type_or_user = $mosaic->type_or_user;
+		$profile=new GeographUser($mosaic->type_or_user);
+		$smarty->assign('realname', $profile->realname);
+		$smarty->assign('user_id', $mosaic->type_or_user);
+	}
+	
 	if ($mosaic->pixels_per_km >= 40) { 
 		//largeoverview
 		$overview->setScale(1);

@@ -64,7 +64,11 @@ if (preg_match('/\?([0-9]+),([0-9]+)$/',$_SERVER['QUERY_STRING'],$matchs)) {
 	$_GET['y']=$matchs[2];
 }
 
-
+if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
+	$mosaic->type_or_user = $USER->user_id;
+} elseif (isset($_GET['u'])) {
+	$mosaic->type_or_user = 0;
+}
 
 
 //are we zooming in on an image map? we'll have a url like this
@@ -150,6 +154,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	//assign overview to smarty
 	if ($mosaic->type_or_user > 0) {
 		$overview->type_or_user = $mosaic->type_or_user;
+		$profile=new GeographUser($mosaic->type_or_user);
+		$smarty->assign('realname', $profile->realname);
+		$smarty->assign('user_id', $mosaic->type_or_user);
 	}
 	
 	if ($mosaic->pixels_per_km == 40) { 

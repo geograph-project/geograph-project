@@ -750,14 +750,12 @@ class GeographMap
 			}
 			elseif ($this->pixels_per_km<=4)
 			{
-				imagefilledrectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $color);
 				//nice large marker
-				#imagefilledrectangle ($img, $imgx1-1, $imgy1, $imgx2+1, $imgy2, $colMarker);
-				#imagefilledrectangle ($img, $imgx1, $imgy1-1, $imgx2, $imgy2+1, $colMarker);
+				imagefilledrectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $color);
 			}
 			else
 			{
-				
+				//thumbnail
 				if (!empty($this->type_or_user)) {
 					$grid_reference=$recordSet->fields[2];
 			
@@ -1627,34 +1625,35 @@ END;
 		$scantop=$top+$overscan;
 		
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
+		if (!empty($this->type_or_user)) {
+			$where_crit = " and gi2.user_id = {$this->type_or_user}";
+			$where_crit2 = " and gi.user_id = {$this->type_or_user}";
+			$columns = ", sum(moderation_status='geograph') as has_geographs, sum(moderation_status IN ('accepted','geograph')) as imagecount";
+		} else {
+			$where_crit = '';
+			$where_crit2 = '';
+			$columns = '';
+		}
 		if ($isimgmap) {
-			if (!empty($this->type_or_user)) {
-				$where_crit = " and gi2.user_id = {$this->type_or_user}";
-				$where_crit2 = " and gi.user_id = {$this->type_or_user}";
-			} else {
-				$where_crit = '';
-				$where_crit2 = '';
-			}
-				
 			//yes I know the imagecount is possibly strange in the join, but does speeds it up, having it twice speeds it up even more! (by preference have the second one, speed wise!), also keeping the join on gridsquare_id really does help too for some reason! 
 			$sql="select gs.*,gridimage_id,realname,title 
 				from gridsquare gs
 				left join gridimage gi ON 
-				(imagecount > 0 AND gi.gridsquare_id = gs.gridsquare_id AND imagecount > 0 AND gridimage_id = 
+				(imagecount > 0 AND gi.gridsquare_id = gs.gridsquare_id $where_crit2 AND imagecount > 0 AND gridimage_id = 
 					(select gridimage_id from gridimage_search gi2 where gi2.grid_reference=gs.grid_reference 
 					 $where_crit order by moderation_status+0 desc,seq_no limit 1)
 				) 
 				left join user using(user_id)
 				where 
 				CONTAINS( GeomFromText($rectangle),	point_xy)
-				and percent_land<>0 $where_crit2 
+				and percent_land<>0 
 				group by gs.grid_reference order by y,x";
 		} else {
-			$sql="select gs.*, 
+			$sql="select gs.* $columns,
 				sum(moderation_status='accepted') as accepted, sum(moderation_status='pending') as pending,
 				DATE_FORMAT(MAX(if(moderation_status!='rejected',imagetaken,null)),'%d/%m/%y') as last_date
 				from gridsquare gs
-				left join gridimage gi using(gridsquare_id)
+				left join gridimage gi on(gi.gridsquare_id = gs.gridsquare_id $where_crit2 )
 				where 
 				CONTAINS( GeomFromText($rectangle),	point_xy)
 				and percent_land<>0 
