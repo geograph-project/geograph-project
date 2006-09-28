@@ -43,7 +43,7 @@ class Gazetteer
 	var $db=null;
 	
 	function findBySquare($square,$radius = 25000,$f_codes = null) {
-			return $this->findByNational($square->reference_index,$square->nateastings,$square->nateastings,$radius,$f_codes);		
+			return $this->findByNational($square->reference_index,$square->nateastings,$square->natnorthings,$radius,$f_codes);		
 	}
 	
 	
