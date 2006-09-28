@@ -602,103 +602,15 @@ class GridSquare
 		}
 	}
 	
-	
 	function findNearestPlace($radius) {
-		global $CONF;
-		$db=&$this->_getDB();
-
+		#require_once('geograph/gazetteer.class.php');
+		
 		if (!isset($this->nateastings))
 			$this->getNatEastings();
-		//to optimise the query, we scan a square centred on the
-		//the required point
-		$left=$this->nateastings-$radius;
-		$right=$this->nateastings+$radius;
-		$top=$this->natnorthings-$radius;
-		$bottom=$this->natnorthings+$radius;
-
-		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
-
-			//this is actully slower: 0.029 vs 0.025 (how to do it without a Distance() function)
-			//$point = "'POINT({$this->nateastings} {$this->natnorthings})'";
-			//$sql = 	ROUND(GLength(LineStringFromWKB(LineString(AsBinary(point_en),
-			//				AsBinary(GeomFromText($point))  )))) as distance
-
-		if ($CONF['use_gazetteer'] == 'OS' && $this->reference_index == 1) {
-			$places = $db->GetRow("select
-					`def_nam` as full_name,
-					'PPL' as dsg,
-					1 as reference_index,
-					`full_county` as adm1_name,
-					( (east-{$this->nateastings})*(east-{$this->nateastings})+(north-{$this->natnorthings})*(north-{$this->natnorthings}) ) as distance
-				from
-					os_gaz
-				where
-					CONTAINS( 	
-						GeomFromText($rectangle),
-						point_en) AND
-					f_code in ('C','T','O')
-				order by distance asc,f_code+0 asc limit 1");
-		} else if ($CONF['use_gazetteer'] == 'towns' && $this->reference_index == 1) {
-			$places = $db->GetRow("select
-					name as full_name,
-					'PPL' as dsg,
-					reference_index,
-					'' as adm1_name,
-					power(e-{$this->nateastings},2)+power(n-{$this->natnorthings},2) as distance
-				from 
-					loc_towns
-				where
-					CONTAINS( 	
-						GeomFromText($rectangle),
-						point_en) AND
-					reference_index = {$this->reference_index}
-				order by distance asc limit 1");
-		} else {
-			$places = $db->GetRow("select
-					full_name,
-					dsg,
-					loc_placenames.reference_index,
-					loc_adm1.name as adm1_name,
-					power(e-{$this->nateastings},2)+power(n-{$this->natnorthings},2) as distance
-				from 
-					loc_placenames
-					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
-				where
-					dsg = 'PPL' AND 
-					CONTAINS( 	
-						GeomFromText($rectangle),
-						point_en) AND
-					loc_placenames.reference_index = {$this->reference_index}
-				order by distance asc limit 1");
-
-			$d = 2500*2500;	
-			if ($places['distance'] < $d) {
-				$nearest = $db->GetAll("select
-					distinct full_name,
-					power(e-{$this->nateastings},2)+power(n-{$this->natnorthings},2) as distance
-				from 
-					loc_placenames
-					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
-				where
-					dsg = 'PPL' AND 
-					CONTAINS( 	
-						GeomFromText($rectangle),
-						point_en) AND
-					loc_placenames.reference_index = {$this->reference_index} and
-					power(e-{$this->nateastings},2)+power(n-{$this->natnorthings},2) < $d
-				order by distance asc limit 5");
-				foreach ($nearest as $id => $value) {
-					$values[] = $value['full_name'];
-				}
-				$places['full_name'] = implode(', ',$values);
-				$places['full_name'] = preg_replace('/\,([^\,]+)$/',' and $1',$places['full_name']);
-			}
-		}
-		if (isset($places['distance']))
-			$places['distance'] = round(sqrt($places['distance'])/1000)+0.01;
-		$places['reference_name'] = $CONF['references'][$places['reference_index']];
-
-		return $places;
+			
+		$gaz = new Gazetteer();
+		
+		return $gaz->findBySquare($this,$radius);	
 	}
 	
 	function &getImages($inc_all_user = false,$custom_where_sql = '',$order_and_limit = 'order by moderation_status+0 desc,seq_no')
