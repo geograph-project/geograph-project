@@ -71,6 +71,12 @@ require_once('smarty/libs/Smarty.class.php');
 require_once('geograph/user.class.php');
 
 
+//function to replace having to have loads of require_once's
+// PHP5 ONLY
+function __autoload($class_name) {
+	require_once('geograph/'.strtolower($class_name).'.class.php');
+}
+
 //remember start time of script for logging
 if (isset($CONF['log_script_timing']))
 {
@@ -219,8 +225,6 @@ function smarty_function_external($params)
 */
 function smarty_function_gridimage($params)
 {
-	require_once("geograph/gridsquare.class.php");
-	require_once("geograph/gridimage.class.php");
 	$image=new GridImage;
 	$image->loadFromId($params['id']);
 	
@@ -437,8 +441,6 @@ function GeographLinks(&$posterText,$thumbs = false) {
 			//photo id?
 			if (is_numeric($g_id)) {
 				if (!isset($g_image)) {
-					require_once('geograph/gridimage.class.php');
-					require_once('geograph/gridsquare.class.php');
 					$g_image=new GridImage;
 				}
 				$ok = $g_image->loadFromId($g_id);
