@@ -1220,55 +1220,13 @@ class GridImage
 		if (!isset($gridsquare->nateastings))
 			$gridsquare->getNatEastings();
 
+		$gaz = new Gazetteer();
+		
 		//to optimise the query, we scan a square centred on the
 		//the required point
 		$radius = 30000;
 
-		$left=$gridsquare->nateastings-$radius;
-		$right=$gridsquare->nateastings+$radius;
-		$top=$gridsquare->natnorthings-$radius;
-		$bottom=$gridsquare->natnorthings+$radius;
-
-		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
-		
-		if ($CONF['use_gazetteer'] == 'OS' && $gridsquare->reference_index == 1) {
-			$places = $db->GetRow("select
-					(seq + 1000000) as pid,
-					power(east-{$gridsquare->nateastings},2)+power(north-{$gridsquare->natnorthings},2) as distance
-				from
-					os_gaz
-				where
-					CONTAINS( 	
-						GeomFromText($rectangle),
-						point_en) AND
-					f_code in ('C','T')
-				order by distance asc,f_code+0 asc limit 1");
-		} else if ($CONF['use_gazetteer'] == 'towns' && $gridsquare->reference_index == 1) {
-			$places = $db->GetRow("select
-					(id + 900000) as pid,
-					power(e-{$gridsquare->nateastings},2)+power(n-{$gridsquare->natnorthings},2) as distance
-				from 
-					loc_towns
-				where
-					CONTAINS( 	
-						GeomFromText($rectangle),
-						point_en) AND
-					reference_index = {$gridsquare->reference_index}
-				order by distance asc limit 1");
-		} else {
-			$places = $db->GetRow("select
-					loc_placenames.id as pid,
-					power(e-{$gridsquare->nateastings},2)+power(n-{$gridsquare->natnorthings},2) as distance
-				from 
-					loc_placenames
-				where
-					dsg = 'PPL' AND 
-					CONTAINS( 	
-						GeomFromText($rectangle),
-						point_en) AND
-					loc_placenames.reference_index = {$gridsquare->reference_index}
-				order by distance asc limit 1");
-		}
+		$places['pid'] = $gaz->findBySquare($gridsquare,$radius,array('C','T'));	
 		
 		$db->Execute("update gridimage set placename_id = '{$places['pid']}',upd_timestamp = '{$this->upd_timestamp}' where gridimage_id = {$this->gridimage_id}");
 	}	
