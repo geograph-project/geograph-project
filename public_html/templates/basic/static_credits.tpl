@@ -46,13 +46,16 @@ concept.</li>
     Geospatial-Intelligence Agency. More information is available at the Products and Services link at 
     {external href="http://www.nga.mil/" text="www.nga.mil"}. </li>
     <li>Low Resolution postcode data from {external href="http://sourceforge.net/projects/geocode" text="Sourceforge Geocode.Service project"}.</li>
-    <li>County centre points compiled by {mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}.</li>
+    <li>Administrative County centre points compiled by {mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}.</li>
     <li>{external href="http://www.osni.gov.uk" text="OSNI"} generously donated a complete set of
     1:50000 paper maps for Northern Ireland, aiding photo moderation in the absence of suitable online maps.</li>
-    <li>County centre points compiled by {mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}.</li>
+    <li>Historic County centre points compiled by {mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}.</li>
     <li>National Trail routes compiled with the help of {external href="http://www.magic.gov.uk/" text="magic.gov.uk"} and contributor <a href="http://geograph.local/profile.php?u=1324">Tony Atkin</a>! (subject to Copyright)</li>
     <li>National Cycle routes provided by {external href="http://www.systrans.org.uk/" text="sustrans.org.uk"}. (subject to Copyright, used with permission)</li>
-    <li>Great Britain Gazetteer based upon Ordnance Survey&reg 1:50 000 Scale Gazetteer, &copy; Crown copyright. Educational licence 100045616.</li>
+    <li>Great Britain Gazetteer based upon Ordnance Survey&reg 1:50 000 Scale Gazetteer, &copy; Crown copyright. Educational licence 100045616.<ul>
+    	<li>and enhanced with the Gazetteer of British Place Names, &copy; {external href="http://www.abcounties.co.uk/" text="Association of British Counties"}, used with permission.</li>
+    </ul>
+    </li>
     </ul>
     
     <h3>Hosting</h3>
