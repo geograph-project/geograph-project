@@ -584,3 +584,14 @@ UPDATE gridprefix SET point_origin_xy = GeomFromText(CONCAT('POINT(',origin_x,' 
 
 ALTER TABLE `gridprefix` ADD SPATIAL KEY(point_origin_xy);
 
+
+# import loc_abgaz.sql
+
+ALTER TABLE `loc_abgaz` ADD `point_en` POINT NOT NULL ;
+
+UPDATE loc_abgaz SET point_en = GeomFromText(CONCAT('POINT(',e,' ',n,')'));
+
+ALTER TABLE `loc_abgaz` ADD SPATIAL KEY(point_en);
+
+
+ALTER TABLE `os_gaz` ADD `hcounty` VARCHAR(64);
