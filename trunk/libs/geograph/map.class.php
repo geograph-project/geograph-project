@@ -217,7 +217,7 @@ class GeographMap
 		$x_km=$this->map_x + floor($x/$this->pixels_per_km);
 		$y_km=$this->map_y + floor($y/$this->pixels_per_km);
 		
-		$row=$db->GetRow("select reference_index,grid_reference from gridsquare where CONTAINS( GeomFromText('POINT($x $y)'),point_xy )");
+		$row=$db->GetRow("select reference_index,grid_reference from gridsquare where CONTAINS( GeomFromText('POINT($x_km $y_km)'),point_xy )");
 			
 		if (!empty($row['reference_index'])) {
 			$this->gridref = $row['grid_reference'];
@@ -986,42 +986,40 @@ class GeographMap
 		global $mapDateCrit;
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 		$ok = true;
-		
+
 		$basemap=$this->getBaseMapFilename();
 		if ($this->caching && @file_exists($root.$basemap))	{
 			$img=imagecreatefromgd($root.$basemap);
 		} else {
 			$img=&$this->_createBasemap($root.$basemap);
 		}
-		
-		if (!$img) {
+
+		if (!$img) 
 			return false;
-		}
-		
+
 		$colMarker=imagecolorallocate($img, 255,0,0);
 		$colSuppMarker=imagecolorallocate($img,236,206,64);
 		$colBorder=imagecolorallocate($img, 255,255,255);
 		$colAlias=imagecolorallocate($img, 182,163,57);
-			$black = imagecolorallocate ($img, 70, 70, 0);
-		
+		$black = imagecolorallocate ($img, 70, 70, 0);
+
 		$db=&$this->_getDB();
-				
+
 		$sql="select imagecount from gridsquare group by imagecount";
 		$counts = $db->getCol($sql);
-		
+
 		//figure out what we're mapping in internal coords
 		$left=$this->map_x;
 		$bottom=$this->map_y;
 		$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
 		$top=$bottom + floor($this->image_h/$this->pixels_per_km)-1;
 
-		
 		//size of a marker in pixels
 		$markerpixels=$this->pixels_per_km;
-		
+
 		//size of marker in km
 		$markerkm=ceil($markerpixels/$this->pixels_per_km);
-		
+
 		//we scan for images a little over the edges so that if
 		//an image lies on a mosaic edge, we still plot the point
 		//on both mosaics
@@ -1030,20 +1028,19 @@ class GeographMap
 		$scanright=$right+$overscan;
 		$scanbottom=$bottom-$overscan;
 		$scantop=$top+$overscan;
-		
+
 		$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left,true);
-				
+
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
-				
+
 		$sql="select x,y,sum(submitted > '$mapDateCrit')
 			from 
 			gridsquare gs 
 			inner join gridimage gi using(gridsquare_id)
-			where 
+			where CONTAINS( GeomFromText($rectangle),	point_xy) and
 			submitted < '$mapDateStart'
 			group by gi.gridsquare_id ";
-#CONTAINS( GeomFromText($rectangle),	point_xy) and
-			
+
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
@@ -1062,20 +1059,19 @@ class GeographMap
 				$imgy2=$imgy1 + $this->pixels_per_km;
 				imagefilledrectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $color);
 			}
-	
+
 			$recordSet->MoveNext();
 		}
 		$recordSet->Close(); 
-#exit;
+
 		if ($img) {
 			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
-			
+
 			imagestring($img, 5, 3, $this->image_h-30, $mapDateStart, $black);
-			
-			if ($this->pixels_per_km>=1  && $this->pixels_per_km<40 && isset($CONF['enable_newmap'])) {
+
+			if ($this->pixels_per_km>=1  && $this->pixels_per_km<40 && isset($CONF['enable_newmap']))
 				$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
-			}				
-			
+
 			$target=$this->getImageFilename();
 			$target=preg_replace('/\./',"-$mapDateStart.",$target);
 			if (preg_match('/jpg/',$target)) {
@@ -1324,8 +1320,6 @@ CONTAINS( GeomFromText($rectangle),	point_en)
 ORDER BY RAND()
 END;
 }
-#print "$sql"; exit;
-		
 
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
