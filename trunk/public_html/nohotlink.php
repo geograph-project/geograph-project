@@ -28,7 +28,7 @@ if ($_SERVER["PATH_INFO"]) {
 }
 
 $path = "/{$_SERVER['HTTP_HOST']}/";
-if (preg_match('/\/(\d{6})/',$filename,$m))
+if (preg_match('/(\d{1,6})/',$filename,$m))
 	$path .= "photo/".$m[1];
 
 $img=imagecreate(250,100);
@@ -46,8 +46,8 @@ imagestring($img, 2, 10, 45, "http:/", $black);
 imagestring($img, 2, 44, 45, $path, $black);
 imageline($img, 10, 58, 44+strlen($path)*imagefontwidth(2), 58, $black);
 
-imagestring($img, 2, 15, 70, "To prevent this message take a copy.", $black);
-imagestring($img, 2, 10, 84, "All images a Creative Commons Licenced", $black);
+imagestring($img, 2, 17, 70, "To prevent this message take a copy.", $black);
+imagestring($img, 2, 5, 84, "All images are Creative Commons Licensed", $black);
 
 
 header("Status: 403 Forbidden");
