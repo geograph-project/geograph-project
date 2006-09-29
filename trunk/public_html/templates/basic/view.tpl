@@ -16,7 +16,7 @@
 </div>
  <h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} total images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->title}</h2>
  {if $place.distance}
- <h3{if $place.hist_county} title="{$place.full_name} is in the Historic County of {$place.hist_county}{if $place.hist_county == $place.adm1_name}, and is also in the modern Ceremonial County of the same name{else}, where as it is the modern Ceremonial County of {$place.adm1_name}{/if}"{/if}>{if $place.distance > 3}{$place.distance-0.01} km from{else}near to{/if} <b>{$place.full_name}</b><small><i>{if $place.adm1_name && ($place.adm1_name != $place.reference_name || $place.hist_county)}, {$place.adm1_name}{/if}, {$place.reference_name}</i></small></h3>
+ <h3{if $place.hist_county} title="{$place.full_name} is in the Historic County of {$place.hist_county}{if $place.hist_county == $place.adm1_name}, and is also in the modern Ceremonial County of the same name{else}, where as it is the modern Ceremonial County of {$place.adm1_name}{/if}"{/if}>{if $place.distance > 3}{$place.distance-0.01} km from{else}near to{/if} <b>{$place.full_name}</b><small><i>{if $place.adm1_name && $place.adm1_name != $place.reference_name && $place.adm1_name != $place.full_name}, {$place.adm1_name}{else}{if $place.hist_county}, {$place.hist_county}{/if}{/if}, {$place.reference_name}</i></small></h3>
  {/if}
 
 {if $image->moderation_status eq 'rejected'}
