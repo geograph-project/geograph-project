@@ -153,10 +153,17 @@ if (!$smarty->is_cached($template, $cacheid))
 {
 	//assign overview to smarty
 	if ($mosaic->type_or_user > 0) {
-		$overview->type_or_user = $mosaic->type_or_user;
 		$profile=new GeographUser($mosaic->type_or_user);
-		$smarty->assign('realname', $profile->realname);
-		$smarty->assign('user_id', $mosaic->type_or_user);
+		
+		//the map is only useful for people with images!
+		if ($profile->rank>0) {
+			$smarty->assign('realname', $profile->realname);
+			$smarty->assign('user_id', $mosaic->type_or_user);
+		
+			$overview->type_or_user = $mosaic->type_or_user;
+		} else {
+			$mosaic->type_or_user = 0;
+		}
 	}
 	
 	if ($mosaic->pixels_per_km == 40) { 
