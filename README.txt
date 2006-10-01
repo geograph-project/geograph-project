@@ -2,21 +2,15 @@
                              GEOGRAPH README
 =======================================================================
 
-A) History
-B) Introduction
-C) Directory Structure
-D) Installation
-E) Getting Started
-F) Adapting for other countries
+A) Introduction
+B) Directory Structure
+C) Installation
+D) Getting Started
+E) Adapting for other countries
 
 
-A) History
------------------------------------------------------------------------
-v0.10 - 17 Mar 2005 - first working beta, basically a CVS snapshot with 
-                      code still in development removed.
 
-
-B) Introduction
+A) Introduction
 -----------------------------------------------------------------------
 
 GeoGraph is web based project to collect and reference geographically
@@ -24,17 +18,14 @@ representative images of every square kilometer of the British Isles, but
 the software is being designed to allow it to be adapted for similar
 projects in other countries
 
-For more info about the GeoGraph software project, 
-visit http://geograph.sourceforge.net/
-
 For more info about the UK GeoGraph project
-visit http://www.geograph.co.uk/
+visit http://www.geograph.org.uk/
 
 The GeoGraph software is licenced using the GNU General Public Licence,
 see LICENCE.txt for details.
 
 
-C) Directory Structure
+B) Directory Structure
 -----------------------------------------------------------------------
 
 apache/
@@ -64,7 +55,7 @@ schema/
   mysql database schema
   
   
-D) Installation
+C) Installation
 -----------------------------------------------------------------------
 This software requires PHP 4.3 or higher, and was designed to run on
 apache webservers using the php4 module. Y
@@ -85,6 +76,59 @@ apache webservers using the php4 module. Y
 
     ErrorDocument 404 /staticpage.php?page=404
    </VirtualHost>
+   
+   
+   
+  <VirtualHost *>
+
+  DocumentRoot <**basedir**>/public_html
+    ServerName <**yourdomain**>
+    
+    #php config
+    php_value include_path .:<**basedir**>/libs/
+    php_value register_globals Off
+    php_value upload_max_filesize 8M
+    php_value arg_separator.output &amp;
+    php_value session.use_trans_sid  1
+    
+    #turn off indexes
+    <Directory <**basedir**>/public_html>      
+        Options -Indexes
+    </Directory>
+    
+    RewriteEngine on
+    
+    RewriteRule /help/([^/]*) /staticpage.php?page=$1 [qsa]
+    RewriteRule /gridref/(.*) /browse.php?gridref=$1 [qsa]
+    RewriteRule /api/.* /restapi.php [qsa]
+    RewriteRule /reg/([^/]+)/(.*) /register.php?u=$1&confirm=$2 [qsa]
+    RewriteRule /photo/([0-9]+) /view.php?id=$1 [qsa]
+    RewriteRule /list/([A-Z]{2}) /list.php?square=$1 [qsa]
+    RewriteRule /explore/places/([0-9]?)/?(\w*)/?$ /explore/places.php?ri=$1&adm1=$2 [qsa,r]
+    RewriteRule /map/(.*) /mapbrowse.php?t=$1 [qsa]
+
+    RewriteRule /user/([^\/]*)/all/? /profile.php?user=$1&all=1
+    RewriteRule /user/([^\/]*)/? /profile.php?user=$1
+
+    RewriteRule /feed/recent/?([^/]*) /syndicator.php?format=$1 [qsa]
+    RewriteRule /feed/results([0-9]*)/([0-9]+)/?([^/]*)/? /syndicator.php?page=$1&i=$2&format=$3 [qsa]
+
+    RewriteRule /discuss/topic([0-9]+) /discuss/?action=vthread&topic=$1 [qsa,r]
+    RewriteRule /discuss/forum([0-9]+) /discuss/?action=vtopic&forum=$1 [qsa,r]
+    RewriteRule /discuss/feed/recent/?([^/]*) /discuss/syndicator.php?format=$1 [qsa]
+    RewriteRule /discuss/feed/forum([0-9]+)/?([^/]*) /discuss/syndicator.php?forum=$1&format=$2 [qsa]    
+    
+    
+    #rewrite imagemap clicks as regular urls - must do this otherwise
+    #php's use_trans_sid will break the urls
+    RewriteCond %{QUERY_STRING} (.+)\?([0-9]+),([0-9]+)$
+    RewriteRule /mapbrowse.php /mapbrowse.php?x=%2&y=%3&%1 
+
+
+    ErrorDocument 404 /staticpage.php?page=404
+
+  </VirtualHost>
+
 
 3. create a new mysql database and create a user with all privileges on it.
 
@@ -105,7 +149,7 @@ apache webservers using the php4 module. Y
 8. Once test.php reports success, you're good to go!
 
 
-E) Getting Started
+D) Getting Started
 -----------------------------------------------------------------------
 
 Register as a user then use the mysql command line to grant that user 
@@ -123,7 +167,7 @@ admin/gridbuilder.php script to perform this task.
 Once that is done, the system is ready to accept photographs.
 
 
-F) Adapting for other countries
+E) Adapting for other countries
 -----------------------------------------------------------------------
 
 The code as supplied is ready for the British Isles, and we're happy to
