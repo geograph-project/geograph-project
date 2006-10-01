@@ -333,7 +333,7 @@ window.onload = onChangeImageclass;
 	<h2>Submit Step 4 of 4 : Confirm image rights</h2>
 		
 	<p>
-	Because we are an open project we want to ensure our content is licenced
+	Because we are an open project we want to ensure our content is licensed
 	as openly as possible and so we ask that you adopt a {external title="Learn more about Creative Commons" href="http://creativecommons.org" text="Creative Commons"  target="_blank"}
 	licence for your image.</p>
 	

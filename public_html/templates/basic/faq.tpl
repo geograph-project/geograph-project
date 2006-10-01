@@ -128,7 +128,7 @@ this and other photo oriented sites the way everyone else can see them.</p>
     then we would be very interested to <a title="Contact Us" href="contact.php">hear from you</a>. 
     In all likelihood we can provide a feed to suit your requirements.</p>
     
-    <p>Images are licenced for re-use under a <a href="#opensource">Creative Commons Licence</a>, see
+    <p>Images are licensed for re-use under a <a href="#opensource">Creative Commons Licence</a>, see
     licence details by viewing a full size image.</p>
     
 <a name="built"></a>

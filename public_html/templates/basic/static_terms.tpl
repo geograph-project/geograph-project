@@ -101,7 +101,7 @@ boilerplate...</p>
 
  <p>The site source code is copyrighted by the site developers and available
  under the terms of the GNU General Public Licence. All photo submissions
- are copyright their respective owners and licenced under a Creative Commons licence.
+ are copyright their respective owners and licensed under a Creative Commons licence.
  All rights not expressly granted by these licences and this Agreement are reserved
  by The Geograph.org.uk Collective or by the respective
  owners of the intellectual property rights. The Geograph.org.uk Collective reserves
