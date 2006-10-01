@@ -19,7 +19,7 @@ the non-profit Geograph Project Ltd to improve and maintain the www.geograph.org
 further develop its educational potential.</p>
 
 <p>Since the Geograph website went live in April 2005, it has collected over 160,000 
-Creative-Commons licenced photographs of the British Isles. In addition, it has created 
+Creative-Commons licensed photographs of the British Isles. In addition, it has created 
 a vibrant and friendly community of contributors dedicated to the goal of building 
 an archive of photographs covering every square kilometre of the British Isles. The
 site recently celebrated filling its 100,000th grid square.</p>

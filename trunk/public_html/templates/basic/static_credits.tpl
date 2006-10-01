@@ -20,7 +20,7 @@ concept.</li>
     <h3>Software</h3>
     <ul>
     <li>{mailto address="paul@elphin.com" text="Paul Dixon" encode="javascript"} managed the
-    software development as an open-source, GPL licenced project, and was responsible for 
+    software development as an open-source, GPL licensed project, and was responsible for 
     much of the coding / design. Paul can be contracted through his company
     {external href="http://www.elphin.com/" title="Elphin Limited" text="Elphin Limited"}.</li>
     

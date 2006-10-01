@@ -15,7 +15,7 @@ who help create it or use it. To bring that about:</p>
 <ul>
 <li>The source code for the website is open source and
 licenced under the GNU General Public Licence (GPL).</li>
-<li>All photographic submissions are licenced by the original submitter under
+<li>All photographic submissions are licensed by the original submitter under
 a Creative Commons licence granting everyone the rights to use the image
 for any purpose (including commercial uses), as long as credit is given 
 to the copyright holder.</li>
