@@ -242,6 +242,8 @@ class GridImageTroubleTicket
 	*/
 	function updateField($fieldname, $oldvalue, $newvalue, $moderated)
 	{
+		$ok=true;
+		
 		//no change?
 		if ($oldvalue==$newvalue)
 			return $ok;
