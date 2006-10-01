@@ -31,7 +31,7 @@
 * @version $Revision$
 */
 
-/**
+/** 
 
 moderated changes system 
 
@@ -244,6 +244,7 @@ class GridImageTroubleTicket
 	{
 		$ok=true;
 		
+		
 		//no change?
 		if ($oldvalue==$newvalue)
 			return $ok;
@@ -256,6 +257,7 @@ class GridImageTroubleTicket
 			
 			if ($fieldname=="grid_reference")
 			{
+				$err="";
 				$ok=$img->reassignGridsquare($newvalue, $err);
 				if ($ok)
 				{
