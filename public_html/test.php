@@ -161,23 +161,26 @@ status("checking php version...");
 
 $version=phpversion();
 $v=explode('.', $version);
-if ($v[0]<4)
+if ($v[0]<5)
 {
-	fail('You need PHP 4.3 or higher, you have '.$version);
+	fail('You need PHP 5 or higher, you have '.$version);
 }
-elseif ($v[0]==4)
+elseif ($v[0]==5)
 {
-	//hurrah, php4, that's the ticket
+	//hurrah, php5, that's the ticket
 
+	//no sub-version test necessary at the moment
+	/*
 	if ($v[1]<3)
 	{
 		fail('You need PHP 4.3 or higher, you have '.$version);
 	}
+	*/
 	
 }
 else
 {
-	//5 might work...
+	//6 might work...?
 
 	warn("Software is untested on php $version");
 }
