@@ -318,7 +318,7 @@ status("checking /help rewrite rules...");
 if (!check_http('/help/credits', '/This project relies on the following open-source technologies/',$httperr))
 	fail("mod_rewrite rule for /help/<em>page</em> failed ($httperr) - REQUIRED");
 if (!check_http('/help/credits/', '/This project relies on the following open-source technologies/',$httperr))
-	fail("mod_rewrite rule for /help/<em>page</em>/ doesn't cope with bad browsers ($httperr) - REQUIRED");
+	fail("mod_rewrite rule for /help/<em>page</em>/ doesn't cope with trailing slash on request ($httperr) - REQUIRED");
 
 status("checking /reg rewrite rules...");
 if (!check_http('/reg/123/abcdef1234567890', '/there was a problem confirming your registration/',$httperr))
@@ -334,7 +334,7 @@ if (!check_http('/list/HQ', '/Photograph Listing/',$httperr))
 
 
 status("checking /mapbrowse.php rewrite rules...");
-if (!check_http('/mapbrowse.php?t=dummy&i=2&j=2&zoomin=1?43,72', '/TM0000/',$httperr))
+if (!check_http('/mapbrowse.php?t=dummy&i=2&j=2&zoomin=1?43,72', '/TR00100/',$httperr))
 	fail("mod_rewrite rule for mapbrowse.php image maps failed ($httperr) - REQUIRED");
 
 status("checking /feed/recent rewrite rules...");
