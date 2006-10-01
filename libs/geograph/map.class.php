@@ -879,6 +879,7 @@ class GeographMap
 			$bmax=0;
 			
 			$colour=array();
+			$last=null;
 			for ($p=0; $p<count($counts); $p++)
 			{
 				if ($p > 20) {
@@ -1176,6 +1177,7 @@ class GeographMap
 			and imagecount>0 group by FLOOR(x/30),FLOOR(y/30) order by rand() limit 500";
 		}
 		
+		$usercount=array();
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
@@ -1320,7 +1322,7 @@ CONTAINS( GeomFromText($rectangle),	point_en)
 ORDER BY RAND()
 END;
 }
-
+		$squares=array();
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
