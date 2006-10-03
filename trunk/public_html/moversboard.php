@@ -128,11 +128,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "Category Depth";
 		$desc = "the category depth score";
 	} elseif ($type == 'centi') {
-/*	SELECT COUNT(DISTINCT nateastings div 100, natnorthings div 100), COUNT(*) AS `_count_all`
-	FROM gridimage
-	WHERE  moderation_status in ('geograph','accepted') and nateastings div 1000 > 0
-	ORDER BY _count_all DESC
-	LIMIT 30; */
 		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
 		$sql_column = "COUNT(DISTINCT nateastings div 100, natnorthings div 100)";
 		$sql_where = "and i.moderation_status='geograph' and nateastings div 1000 > 0";
