@@ -56,6 +56,7 @@ while (!$recordSet->EOF)
 	print $image['gridimage_id']." ";
 	file_get_contents("http://geourl.org/ping/?p=http://".$_SERVER['HTTP_HOST']."/photo/".$image['gridimage_id']);
 	sleep(1);
+	flush();
 	$recordSet->MoveNext();
 }
 	
