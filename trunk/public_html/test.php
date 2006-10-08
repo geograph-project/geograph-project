@@ -383,5 +383,6 @@ if (!$ok)
 else
 {
 	echo "<li style=\"color:green;font-weight:bold;\">Server is correctly configured to run Geograph!</li>";
+	phpinfo();
 }
 ?>
