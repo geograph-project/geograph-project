@@ -880,7 +880,7 @@ class GeographMapMosaic
 		$db=&$this->_getDB();
 		
 		if ($user_id > 0) {
-			$and_crit = " and type_or_user = $user_id or type_or_user = 0";
+			$and_crit = " and (type_or_user = $user_id or type_or_user = 0)";
 		} else {
 			$and_crit = " and type_or_user = 0";
 		}
