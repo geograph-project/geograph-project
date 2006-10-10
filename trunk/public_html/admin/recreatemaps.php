@@ -181,7 +181,6 @@ if (isset($_GET['coast_GB_40'])) {
 	
 	$map=new GeographMap;
 	
-	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;	
 	$recordSet = &$db->Execute("select * from mapcache where age > 0 order by pixels_per_km desc, age desc limit $limit");
 	while (!$recordSet->EOF) 
 	{
