@@ -159,8 +159,8 @@ if (isset($_GET['coast_GB_40'])) {
 //do some processing?
 } else if (isset($_POST['go']))
 {
-	if (isset($_GET['limit']) && preg_match("/^\d+(,\d+|)?$/",$_GET['limit'])) {
-		$limit = $_GET['limit'];
+	if (isset($_POST['limit']) && preg_match("/^\d+(,\d+|)?$/",$_POST['limit'])) {
+		$limit = $_POST['limit'];
 	} else {
 		$limit = 10;
 	}
