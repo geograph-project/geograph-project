@@ -108,9 +108,8 @@ if (isset($_GET['coast_GB_40'])) {
 	}
 	print "<h2>$total</h2>";
 	exit;
-} elseif (isset($_POST['inv']))
-{
-
+	
+} elseif (isset($_POST['inv'])) {
 	$square=new GridSquare;
 	require_once('geograph/mapmosaic.class.php');
 	$mosaic = new GeographMapMosaic;
@@ -120,6 +119,16 @@ if (isset($_GET['coast_GB_40'])) {
 	flush();
 	
 	$squares = explode(",",$_POST['gridref']);
+	
+	$user_id = intval($_POST['user_id']);
+	
+	if ($user_id > 0) {
+		$and_crit = " and (type_or_user = $user_id or type_or_user = 0)";
+	} else {
+		$and_crit = " and type_or_user = 0";
+	}
+	
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	
 	foreach ($squares as $gridref) {
 		$grid_ok=$square->setGridRef($gridref);
@@ -138,20 +147,20 @@ if (isset($_GET['coast_GB_40'])) {
 
 		print "<h3>$gridref</h3>";
 		if (count($squares) < 5) {
-				$sql="select * from mapcache ".
-							"where $x between map_x and (map_x+image_w/pixels_per_km-1) and ".
-							"$y between map_y and (map_y+image_h/pixels_per_km-1)";
-				$db->Execute($sql);
+			$sql="select * from mapcache 
+					where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
+					$y between map_y and (map_y+image_h/pixels_per_km-1) $and_crit";
+			
 			$recordSet = &$db->Execute("$sql");
 			while (!$recordSet->EOF) 
 			{
-				print implode(',',array_values($recordSet->fields))."<br/>";
+				print implode(', ',array_values($recordSet->fields))."<br/>";
 				$recordSet->MoveNext();
 			}
 			$recordSet->Close(); 
 		}
 
-		$mosaic->expirePosition($x,$y);
+		$mosaic->expirePosition($x,$y,$user_id);
 	}
 	$smarty->display('_std_end.tpl');
 	exit;
@@ -171,7 +180,8 @@ if (isset($_GET['coast_GB_40'])) {
 	flush();
 	
 	$map=new GeographMap;
-		
+	
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;	
 	$recordSet = &$db->Execute("select * from mapcache where age > 0 order by pixels_per_km desc, age desc limit $limit");
 	while (!$recordSet->EOF) 
 	{
