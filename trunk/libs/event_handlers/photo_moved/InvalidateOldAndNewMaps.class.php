@@ -48,11 +48,13 @@ class InvalidateOldAndNewMaps extends EventHandler
 		require_once('geograph/mapmosaic.class.php');
 		$mosaic=new GeographMapMosaic;
 
-		list($x,$y) = $db->getRow("select x,y from gridsquare where grid_reference = '$old_grid_reference'");
-		$mosaic->expirePosition($x,$y);
+		$user_id = $db->getOne("select user_id from gridimage where gridimage_id = $gridimage_id");
 
-		list($x,$y) = $db->getRow("select x,y from gridsquare where grid_reference = '$new_grid_reference'");
-		$mosaic->expirePosition($x,$y);
+		list($x,$y,$user_id) = $db->getRow("select x,y from gridsquare where grid_reference = '$old_grid_reference'");
+		$mosaic->expirePosition($x,$y,$user_id);
+
+		list($x,$y,$user_id) = $db->getRow("select x,y from gridsquare where grid_reference = '$new_grid_reference'");
+		$mosaic->expirePosition($x,$y,$user_id);
 
 
 		//update placename cached column

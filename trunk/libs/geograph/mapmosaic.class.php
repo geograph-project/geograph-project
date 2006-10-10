@@ -467,7 +467,7 @@ class GeographMapMosaic
 		$x_km=$this->map_x + floor($x/$this->pixels_per_km);
 		$y_km=$this->map_y + floor($y/$this->pixels_per_km);
 		
-		$row=$db->GetRow("select reference_index,grid_reference from gridsquare where CONTAINS( GeomFromText('POINT($x $y)'),point_xy )");
+		$row=$db->GetRow("select reference_index,grid_reference from gridsquare where CONTAINS( GeomFromText('POINT($x_km $y_km)'),point_xy )");
 			
 		if (!empty($row['reference_index'])) {
 			$this->gridref = $row['grid_reference'];
@@ -881,6 +881,8 @@ class GeographMapMosaic
 		
 		if ($user_id > 0) {
 			$and_crit = " and type_or_user = $user_id or type_or_user = 0";
+		} else {
+			$and_crit = " and type_or_user = 0";
 		}
 		
 		$sql="update mapcache set age=age+1 
