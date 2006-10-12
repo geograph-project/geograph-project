@@ -28,14 +28,30 @@ init_session();
 
 
 $smarty = new GeographPage;
+$template='register.tpl';
 
 if (isset($_GET['confirm']))
 {
-	$confirmation_status = $USER->verifyRegistration($_GET['u'], $_GET['confirm']);
-	if ($confirmation_status=="ok")
-		$smarty->assign("user", $GLOBALS['USER']);
-	
-	$smarty->assign('confirmation_status', $confirmation_status);
+	if (substr($_GET['u'],0,1)=='m')
+	{
+		$template='profile_emailupdate.tpl';
+				
+		//we are confirming an email address change...
+		$confirmation_status = $USER->verifyEmailChange($_GET['u'], $_GET['confirm']);
+		if ($confirmation_status=="ok")
+			$smarty->assign("user", $GLOBALS['USER']);
+			
+		$smarty->assign('confirmation_status', $confirmation_status);
+		
+	}
+	else
+	{
+		$confirmation_status = $USER->verifyRegistration($_GET['u'], $_GET['confirm']);
+		if ($confirmation_status=="ok")
+			$smarty->assign("user", $GLOBALS['USER']);
+		
+		$smarty->assign('confirmation_status', $confirmation_status);
+	}
 	
 }
 elseif (isset($_POST['name']))
@@ -56,6 +72,6 @@ elseif (isset($_POST['name']))
 }
 
 
-$smarty->display('register.tpl');
+$smarty->display($template);
 
 ?>

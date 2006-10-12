@@ -30,6 +30,11 @@
 	{else}
 		<li><a title="Contact {$profile->realname|escape:'html'}" href="/usermsg.php?to={$profile->user_id}">Send message to {$profile->realname|escape:'html'}</a></li> 	
 	{/if}
+	
+{else}
+	<li>Email: {mailto address=$profile->email encode="javascript"}
+	{if $profile->public_email ne 1} <em>(not displayed to other users)</em>{/if}
+	</li>
 {/if}
 
 
@@ -42,7 +47,7 @@
 
 {if $profile->about_yourself && $profile->public_about}
 <div class="caption" style="background-color:#dddddd; padding:10px;">
-<h3 style="margin-top:0px;margin-bottom:0px">About Myself</h3>
+<h3 style="margin-top:0px;margin-bottom:0px">More about me...</h3>
 {$profile->about_yourself|nl2br|GeographLinks:true}</div>
 {/if}
 

@@ -433,6 +433,84 @@ class GeographUser
 	}
 	
 	/**
+	* verify registration from given hash
+	* can only do this once, returns ok, fail or alreadycomplete
+	*/
+	function verifyEmailChange($change_id, $hash)
+	{
+		global $CONF;
+		$ok=true;
+		$status="ok";
+		
+		//validate inputs, they came from outside
+		$ok=$ok && preg_match('/m\d+/', $change_id);
+		$ok=$ok && preg_match('/[0-9a-f]+/', $hash);
+		
+		//validate hash
+		$ok=$ok && ($hash==substr(md5($change_id.$CONF['register_confirmation_secret']),0,16));
+		if ($ok)
+		{
+			$db = NewADOConnection($GLOBALS['DSN']);
+			
+			$user_emailchange_id=substr($change_id,1);
+			
+			$arr = $db->GetRow('select * from user_emailchange where user_emailchange_id='.$db->Quote($user_emailchange_id));	
+			if ($arr['status']=='completed')
+			{
+				$status="alreadycomplete";
+			}
+			elseif(isset($arr['user_emailchange_id']))
+			{
+			
+				//change email address
+				$sql="update user set email=".$db->Quote($arr['newemail'])." where user_id=".$db->Quote($arr['user_id']);
+				$db->Execute($sql);
+
+				$sql="update user_emailchange set completed=now(), status='completed' where user_emailchange_id=$user_emailchange_id";
+				$db->Execute($sql);
+
+
+				$this->user_id=$arr['user_id'];
+				$this->registered=true;
+
+				$arr = $db->GetRow('select * from user where user_id='.$db->Quote($this->user_id).' limit 1');	
+				foreach($arr as $name=>$value)
+				{
+					if (!is_numeric($name))
+						$this->$name=$value;
+
+				}
+
+				//temporary nickname fix for beta accounts
+				if (strlen($this->nickname)==0)
+					$this->nickname=str_replace(" ", "", $this->realname);
+
+
+				//setup forum user
+				$this->_forumUpdateProfile();
+
+				//log into forum too
+				$this->_forumLogin();
+				
+				$status="ok";
+			}
+			else
+			{
+				//deleted change request?
+				$status="fail";
+			}
+				
+		}
+		else
+		{
+			//hash mismatch or param problem
+			$status="fail";
+		}
+		
+		return $status;
+	}
+	
+	/**
 	* update user profile
 	* profile array should contain website, nickname, realname flag. A
 	* public_email entry, if present, will cause the public_email flag
@@ -441,6 +519,7 @@ class GeographUser
 	*/
 	function updateProfile(&$profile, &$errors)
 	{
+		global $CONF;
 		$db = NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');   
 		
@@ -482,8 +561,16 @@ class GeographUser
 		
 		if (strlen($profile['website']) && !isValidURL($profile['website']))
 		{
-			$ok=false;
-			$errors['website']='This doesn\'t appear to be a valid URL';
+			//can we fix it?
+			if (isValidURL("http://".$profile['website']))
+			{
+				$profile['website']="http://".$profile['website'];
+			}
+			else
+			{
+				$ok=false;
+				$errors['website']='This doesn\'t appear to be a valid URL';
+			}
 		}
 		
 		
@@ -509,9 +596,63 @@ class GeographUser
 				$errors['nickname']='Please enter a nickname for use on the forums';
 		}
 
+		//attempting to change email address?
+		if ($profile['email']!=$this->email)
+		{
+			if (isValidEmailAddress($profile['email']))
+			{
+				$errors['general']='To change your email address, '.
+				'we\'ve sent an email to '.$profile['email'].' which contains '.
+				'instructions on how to confirm the change.';
+				$ok=false;
+				
+				
+				//we need to send the user an email with a confirmation link
+				//so we put the information into a table
+				
+				$db->Execute("insert into user_emailchange ".
+					"(user_id, oldemail,newemail,requested,status)".
+					"values(?,?,?,now(), 'pending')",
+					array($this->user_id, $this->email, $profile['email']));
+					
+				$id=$db->Insert_ID();
+				
+				$url="http://".
+					$_SERVER['HTTP_HOST'].'/reg/m'.$id.
+					'/'.substr(md5('m'.$id.$CONF['register_confirmation_secret']),0,16);
+						
+				$msg="You recently requested the email address ".
+				"for your account at ".$_SERVER['HTTP_HOST']." be changed to {$profile['email']}.\n\n".
+				
+				"To confirm, please click this link:\n\n".
+				
+				"$url\n\n".
+				
+				"If you do not wish to change your address, simply disregard this message";
+				
+				@mail($profile['email'], 'Please confirm your email address change', $msg,
+				"From: Geograph Website <noreply@geograph.org.uk>");
+				
+				
+			}
+			else
+			{
+				$errors['email']='Invalid email address';
+				$ok=false;
+			}
+			
+		}
+
 		
 		if ($ok)
 		{
+			//about box is always public - col to be removed
+			$profile['public_about']=1;
+			$profile['use_age_group']=0;
+			
+			//age info is useless to others, nice for us, no need
+			//to give use a public option
+			
 			//todo if nickname changed, add old one to seperate table
 			
 			$sql = sprintf("update user set 
@@ -535,9 +676,9 @@ class GeographUser
 				$profile['search_results'],
 				$profile['slideshow_delay'],
 				$db->Quote(stripslashes($profile['about_yourself'])),
-				empty($profile['public_about'])?0:1,
+				$profile['public_about']?1:0,
 				$profile['age_group'],
-				empty($profile['use_age_group'])?0:1,
+				$profile['use_age_group']?1:0,
 				$gs->gridsquare_id,
 				$db->Quote($profile['ticket_option']),
 				$this->user_id

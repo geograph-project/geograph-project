@@ -595,3 +595,23 @@ ALTER TABLE `loc_abgaz` ADD SPATIAL KEY(point_en);
 
 
 ALTER TABLE `os_gaz` ADD `hcounty` VARCHAR(64);
+
+
+create table user_emailchange
+(
+	user_emailchange_id int not null auto_increment,
+	user_id int,
+	oldemail varchar(128),
+	newemail varchar(128),
+	requested datetime,
+	completed datetime,
+	status enum('pending', 'completed'),
+	
+	primary key(user_emailchange_id),
+	key(user_id)
+);
+
+
+
+
+
