@@ -28,14 +28,16 @@ require_once('geograph/global.inc.php');
 
 $db=NewADOConnection($GLOBALS['DSN']);
 
-if (empty($_GET['key']) || preg_match("/[^\w\.@]/",$_GET['key']))
+if ((empty($_GET['key']) || preg_match("/[^\w\.@]/",$_GET['key'])) && empty($_GET['u']))
 	die("ERROR: no api key or email address");
 	
-$sql = "SELECT * FROM `apikeys` WHERE `apikey` = '{$_GET['key']}' AND (`ip` = INET_ATON('{$_SERVER['REMOTE_ADDR']}') OR `ip` = 0) AND `enabled` = 'Y'";
+$sql = "SELECT * FROM `apikeys` WHERE `apikey` = ".$db->Quote($_GET['key'])." AND (`ip` = INET_ATON('{$_SERVER['REMOTE_ADDR']}') OR `ip` = 0) AND `enabled` = 'Y'";
 
 $profile = $db->GetRow($sql);
 
 if ($profile['apikey']) {
+	$sql_hardlimit = $hardlimit = '';
+} elseif (!empty($_GET['u']) && preg_match("/^\d$/",$_GET['u']) && (init_session() || true) && $USER->hasPerm('basic')) {
 	$sql_hardlimit = $hardlimit = '';
 } else {
 	#die("ERROR: invalid api key. contact support at geograph dot co dot uk");
@@ -84,6 +86,10 @@ if (isset($_GET['ri']) && preg_match("/^\d$/",$_GET['ri']) ) {
 	$sql_crit .= " AND reference_index = {$_GET['ri']}";
 }
 
+if (!empty($_GET['u']) && preg_match("/^\d$/",$_GET['u'])) {
+	$sql_crit .= " AND gi.user_id = {$_GET['u']}";
+}
+
 if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 	$sql_crit .= " AND upd_timestamp >= '{$_GET['since']}' $sql_hardlimit";
 } elseif (isset($_GET['last']) && preg_match("/^\d+ \w+$/",$_GET['last']) ) {
@@ -98,12 +104,12 @@ if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 		}
 	}
 	$sql_crit .= " ORDER BY upd_timestamp DESC LIMIT {$_GET['limit']}";
-} elseif (empty($_GET['i'])) {
+} elseif (empty($_GET['i']) && empty($_GET['u'])) {
 	die("ERROR: whole db export disabled. contact support at geograph dot co dot uk");
 	$sql_crit .= " $sql_hardlimit";
 }
 
-if (isset($_GET['supp'])) {
+if (isset($_GET['supp']) xor empty($_GET['u'])) {
 	$mod_sql = "moderation_status in ('accepted','geograph')";
 } else {
 	$mod_sql = "moderation_status = 'geograph'";
