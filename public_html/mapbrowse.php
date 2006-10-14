@@ -67,7 +67,11 @@ if (preg_match('/\?([0-9]+),([0-9]+)$/',$_SERVER['QUERY_STRING'],$matchs)) {
 if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
 	$mosaic->type_or_user = $USER->user_id;
 } elseif (isset($_GET['u'])) {
-	$mosaic->type_or_user = 0;
+	if (!empty($_GET['u']) && $USER->hasPerm("basic")) {
+		$mosaic->type_or_user = intval($_GET['u']);
+	} else {
+		$mosaic->type_or_user = 0;
+	}
 }
 
 
