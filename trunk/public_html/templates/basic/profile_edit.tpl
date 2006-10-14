@@ -168,6 +168,17 @@
  
 
 <div class="field"> 
+	<label for="ticket_option" class="nowrap">Trouble Ticket Emails</label>
+	
+	<select name="ticket_option" id="ticket_option" style="text-align:right" size="1"> 
+		{html_options options=$ticket_options selected=$profile->ticket_option}
+	</select>
+	 
+	<div class="fieldnotes">Change the amount of automated emails you receive in relation to trouble tickets on your images.</div>
+</div>
+
+
+<div class="field"> 
 	<label for="sortBy" class="nowrap">Forum Sort Order</label>
 	
 	<select name="sortBy" id="sortBy" size="1">
