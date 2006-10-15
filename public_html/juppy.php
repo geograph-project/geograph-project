@@ -34,7 +34,7 @@ between servers
  </information>
 
  <security>
-  <!-- <all-permissions /> -->
+  <all-permissions />
   <!-- ...which means the jar has to be signed -->
  </security>
 
