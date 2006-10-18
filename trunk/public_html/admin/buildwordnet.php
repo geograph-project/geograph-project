@@ -62,8 +62,10 @@ $db = NewADOConnection($GLOBALS['DSN']);
 		//the comments arent searched yet anyway...
 		//if ($_GET['comments']) 
 		//	updateWordnet($db,$recordSet->fields['comment'],'comment',$recordSet->fields['gridimage_id']);
-		if ($recordSet->fields['gridimage_id']%5000==0)
+		if ($recordSet->fields['gridimage_id']%5000==0) {
 			printf("done %d at <b>%d</b> seconds<BR>",$recordSet->fields['gridimage_id'],time()-$tim);
+			flush();
+		}
 	
 		$recordSet->MoveNext();
 	}
