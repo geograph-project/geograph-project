@@ -56,8 +56,13 @@ $overview=new GeographMapMosaic('overview');
 if (isset($_GET['o']))
 	$overview->setToken($_GET['o']);
 	
-if (isset($_GET['t']))
+if (isset($_GET['t'])) {
 	$mosaic->setToken($_GET['t']);
+} else {
+	if ($overview->type_or_user) {
+		$mosaic->type_or_user = $overview->type_or_user;
+	}
+}
 
 if (preg_match('/\?([0-9]+),([0-9]+)$/',$_SERVER['QUERY_STRING'],$matchs)) {
 	$_GET['x']=$matchs[1];
