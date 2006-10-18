@@ -29,13 +29,15 @@ $smarty = new GeographPage;
 $template = 'article.tpl';
 $cacheid = '';
 
+$isadmin=$USER->hasPerm('moderator')?1:0;
+$smarty->assign_by_ref('isadmin', $isadmin);
 
 if (!$smarty->is_cached($template, $cacheid))
 {
 	
 	$db=NewADOConnection($GLOBALS['DSN']);
 
-	$list = $db->getAll("select * from article where licence != 'none' order by create_time desc");
+	$list = $db->getAll("select * from article where licence != 'none' and approved = 1 order by create_time desc");
 	
 	$smarty->assign_by_ref('list', $list);
 
