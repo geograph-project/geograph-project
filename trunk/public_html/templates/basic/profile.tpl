@@ -4,9 +4,6 @@
 {if $overview}
   <div style="float:right; width:{$overview_width+30}px; position:relative">
   {include file="_overview.tpl"}
-  <div style="text-align:center; font-size:0.8em"><br/>
-    <a href="/map/?u={$profile->user_id}">Personalised<br/>Geograph Map</a>
-  </div>
   </div>
 {/if}
 
@@ -52,19 +49,6 @@
 	<a href="/gridref/{$profile->grid_reference|escape:'html'}">{$profile->grid_reference|escape:'html'}</a>
 {/if}
 </ul>
-
-<h3 style="margin-bottom:0px">Explore My Images</h3>
-	
-<ul>
-
-	<li><b>Maps</b>: as <a href="/map/?u={$profile->user_id}">Personalised Geograph Map</a> or on <a href="http://maps.google.co.uk/maps?q=http://{$http_host}/syndicator.php%3Fu%3D{$profile->user_id}%26format%3DKML&ie=UTF8&om=1">Google Maps</a></li>
-	<li><b>Follow with</b>: <a title="RSS Feed for images by {$profile->realname}" href="/syndicator.php?u={$profile->user_id}&amp;format=GeoRSS" class="xml-rss">RSS</a> or <a title="GPX file for images by {$profile->realname}" href="/syndicator.php?u={$profile->user_id}&amp;format=GPX" class="xml-gpx">GPX</a></li>
-	{dynamic}{if $user->registered}
-	<li><b>Download</b>: <a title="CSV file for images by {$profile->realname}" href="/export.csv.php?u={$profile->user_id}&amp;format=GPX">CSV of all images</a></li>
-	{/if}{/dynamic}
-</ul>
-
-
 
 {if $profile->about_yourself && $profile->public_about}
 <div class="caption" style="background-color:#dddddd; padding:10px;">
@@ -144,11 +128,25 @@
 	{if $limit}
 		<p>Showing the latest {$limit} images, see <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=text&amp;resultsperpage=100">More</a></p>
 	{/if}
-		
+
+{/if} 
+
+<h3 style="margin-bottom:0px">Explore My Images</h3>
+
+<ul>
+
+	<li><b>Maps</b>: as <a href="/map/?u={$profile->user_id}">Personalised Geograph Map</a> or Recent Photos on <a href="http://maps.google.co.uk/maps?q=http://{$http_host}/syndicator.php%3Fu%3D{$profile->user_id}%26format%3DKML&ie=UTF8&om=1">Google Maps</a></li>
+	<li><b>Follow with</b>: <a title="RSS Feed for images by {$profile->realname}" href="/syndicator.php?u={$profile->user_id}&amp;format=GeoRSS" class="xml-rss">RSS</a> or <a title="GPX file for images by {$profile->realname}" href="/syndicator.php?u={$profile->user_id}&amp;format=GPX" class="xml-gpx">GPX</a></li>
+	{dynamic}{if $user->registered}
+	<li><b>Download</b>: <a title="CSV file for images by {$profile->realname}" href="/export.csv.php?u={$profile->user_id}">CSV of all images</a></li>
 	
-{/if} 	
-
-
+	{if $user->user_id eq $profile->user_id}
+		<li><b>Change Requests</b>: <a href="/tickets.php">View Open</a></li>
+	{/if}
+	
+	
+	{/if}{/dynamic}
+</ul>
 
 
 <div align="right"><a href="#top">Back to Top</a></div>
