@@ -79,7 +79,7 @@
 		{if !$breakdown && !$breakdowns && !$filtered && $totalimagecount > 1}
 			[<a href="/gridref/{$gridref}?by=1">breakdown</a>]
 		{/if}
-		[<a href="/submit.php?gridreference={$gridrefraw}" title="Submit image for $gridref">submit</a>]
+		[<a href="/submit.php?gridreference={$gridrefraw}" title="Submit image for {$gridref}">submit</a>]
 		[<a href="/search.php?q={$gridref}" title="Search for other nearby images">search</a>]
 		[<a href="/discuss/index.php?gridref={$gridref}" title="discussion about {$gridref}">discuss</a>] 
 		{if $totalimagecount > 5}
