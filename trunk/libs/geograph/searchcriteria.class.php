@@ -195,7 +195,7 @@ class SearchCriteria
 						$sql_where .= "submitted LIKE '".$dates[0]."%' ";
 					} else {
 						//between
-						$sql_where .= "submitted BETWEEN '".$dates[0]."' AND '".$dates[1]."' ";
+						$sql_where .= "submitted BETWEEN '".$dates[0]."' AND DATE_ADD('".$dates[1]."',INTERVAL 1 DAY) ";
 					}
 				} else {
 					//from
