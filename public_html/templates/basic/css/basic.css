@@ -824,7 +824,7 @@ form.simpleform fieldset legend {
   font-size: 150%;
   font-weight: normal;
   color: #000000;
-  margin: 0 0 0 0;
+  margin: 0 0 10px 0;
   padding: 0 5px;
 }
 
