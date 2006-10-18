@@ -82,12 +82,51 @@ if (isset($_GET['gridimage_id']))
 // moderator only!
 $USER->mustHavePerm('moderator');
 
+$db=NewADOConnection($GLOBALS['DSN']);
+
+//lock the table so nothing can happen in between! (leave others as WRITE so they dont get totally locked)
+$db->Execute("LOCK TABLES gridsquare_moderation_lock WRITE,gridsquare WRITE,gridsquare gs WRITE,gridimage gi WRITE,user WRITE,gridprefix WRITE");
+
+$sql = "select distinct gridsquare_id 
+from 
+	gridimage as gi
+	left join gridsquare_moderation_lock as l
+		on(gi.gridsquare_id=l.gridsquare_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) )
+where
+	moderation_status = 2 and
+	user_id = {$USER->user_id}
+order by null";
 
 
+$images=new ImageList(); 
 
+if (isset($_GET['moderator_id'])) {
 
-//lets find all unmoderated submissions
-$images=new ImageList(2, 'gridimage_id asc', 50,true,true); //use the numberical for pending - quicker!
+} else {
+	$sql = "select gi.*,grid_reference,user.realname,imagecount 
+	from 
+		gridimage as gi
+		inner join gridsquare as gs
+			using(gridsquare_id)
+		left join gridsquare_moderation_lock as l
+			on(gi.gridsquare_id=l.gridsquare_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) )
+		inner join user
+			on(gi.user_id=user.user_id)
+	where
+		(moderation_status = 2 or user_status!='')
+		and (l.gridsquare_id is null OR 
+				(l.user_id = {$USER->user_id} AND lock_type = 'modding') OR
+				(l.user_id != {$USER->user_id} AND lock_type = 'cantmod')
+			)
+	order by
+		gridimage_id asc
+	limit 50";
+	//implied: and user_id != {$USER->user_id}
+	// -> because squares with users images are locked
+}
+
+$c = $images->_getImagesBySql($sql);
+
 
 foreach ($images->images as $i => $image) {
 	if ($image->viewpoint_eastings) {
@@ -102,7 +141,12 @@ foreach ($images->images as $i => $image) {
 			$images->images[$i]->different_square = true;
 		}
 	}	
+	$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$image->gridsquare_id}");
+
 }
+
+$db->Execute("UNLOCK TABLES");
+
 
 $images->assignSmarty($smarty, 'unmoderated');
 
