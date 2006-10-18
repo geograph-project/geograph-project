@@ -611,6 +611,11 @@ create table user_emailchange
 	key(user_id)
 );
 
+update os_gaz set def_nam = replace(def_nam,'?w','&#373;') where def_nam like '%?w%';
+update os_gaz set def_nam = replace(def_nam,'?y','&#375;') where def_nam like '%?y%';
+update os_gaz set def_nam = replace(def_nam,'o?','ô') where def_nam like '%o?%';
+update os_gaz set def_nam = replace(def_nam,'y?','&#375;') where def_nam like '%y?%';
+update os_gaz set def_nam = replace(def_nam,'?ry','y&#375;') where def_nam like '%?ry%';
 
 
 
