@@ -12,10 +12,14 @@
 {$extra_meta}
 <link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/basic.css?v={$javascript_version}" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
-{if $engine && $engine->resultCount}
-<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/syndicator.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}"/>
+{if $profile && $profile->user_id}
+<link rel="alternate" type="application/rss+xml" title="Geograph RSS for {$profile->realname}" href="/syndicator.php?u={$profile->user_id}"/>
 {else}
-<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/syndicator.php"/>
+	{if $engine && $engine->resultCount}
+	<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/syndicator.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}"/>
+	{else}
+	<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/syndicator.php"/>
+	{/if}
 {/if}
 <script type="text/javascript" src="/geograph.js?v={$javascript_version}"></script>
 </head>
