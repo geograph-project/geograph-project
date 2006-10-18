@@ -136,9 +136,10 @@ class ImageList
 			$limit="limit $count";
 		
 		if ($advanced || preg_match("/(pending|rejected)/",$statuslist)) {
-		$sql="select gi.*,grid_reference,user.realname, t.topic_id,t.forum_id,t.last_post, ".
-			"(select count(*) from gridimage_ticket where gridimage_id=gi.gridimage_id and status<3) as open_tickets ".
-			"from gridimage as gi ".
+		$sql="select gi.*,grid_reference,user.realname, t.topic_id,t.forum_id,t.last_post ";
+		if ($advanced == 2)
+			$sql.=", (select count(*) from gridimage_ticket where gridimage_id=gi.gridimage_id and status<3) as open_tickets ";
+		$sql.="from gridimage as gi ".
 			"inner join gridsquare as gs using(gridsquare_id) ".
 			"inner join user on(gi.user_id=user.user_id) ".
 			"left join gridsquare_topic as t on(gi.gridsquare_id=t.gridsquare_id and ".
