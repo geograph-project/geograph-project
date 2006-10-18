@@ -1,10 +1,10 @@
-{assign var="page_title" value="Trouble Tickets"}
+{assign var="page_title" value="Change Request Tickets"}
 {include file="_std_begin.tpl"}
 
 <script src="/sorttable.js"></script>
 
-<h2>Trouble Tickets</h2>
 {dynamic}
+<h2>Change Request Tickets for {$user->realname}</h2>
 
 <h3>New Tickets</h3>
 
