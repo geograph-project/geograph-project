@@ -22,6 +22,8 @@
  */
 
 require_once('geograph/global.inc.php');
+require_once('geograph/map.class.php');
+require_once('geograph/mapmosaic.class.php');
 	
 init_session();
 
@@ -169,7 +171,17 @@ if ($template=='profile.tpl')
 		
 		if (count($images->images) == $limit) {
 			$smarty->assign('limit',$limit);
-		}		
+		}	
+		
+		if (count($images->images)) {
+			$overview=new GeographMapMosaic('overview');
+			$overview->type_or_user = $uid;
+			$overview->assignToSmarty($smarty, 'overview');
+		}
+	} else {
+		$profile=new GeographUser();
+		$profile->user_id = $uid;
+		$smarty->assign_by_ref('profile', $profile);
 	}
 }
 
