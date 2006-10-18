@@ -18,11 +18,11 @@
 <div class="interestBox">
 	<div>
 	<label for="searchterm">Enter a Placename, Postcode, Grid Reference:</label><br/>
-	&nbsp;&nbsp;&nbsp;<input id="searchq" type="text" name="q" value="{$searchq|escape:'html'}" size="30"/>
+	&nbsp;&nbsp;&nbsp;<input id="searchq" type="text" name="q" value="" size="30"/>
 	<input id="searchgo" type="submit" name="go" value="Find"/></div>
 	<div>
 	<label for="searchtext">or a Text Search:</label> <small>(<a href="/help/search">help &amp; tips</a>)</small><br/>
-	&nbsp;&nbsp;&nbsp;<input id="searchtext" type="text" name="text" value="{$searchtext|escape:'html'}" size="30"/>
+	&nbsp;&nbsp;&nbsp;<input id="searchtext" type="text" name="text" value="" size="30"/>
 	<input id="searchgo2" type="submit" name="go" value="Find"/>
 	</div>
 </div>
