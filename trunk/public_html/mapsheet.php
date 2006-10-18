@@ -110,6 +110,12 @@ if (!$smarty->is_cached($template, $cacheid))
 			$startn -= 100;
 		$smarty->assign('starte', $starte);
 		$smarty->assign('startn', $startn-1);
+	} else {
+		$smarty->assign('token_north', $map->getPanToken(0, 1));
+		$smarty->assign('token_south', $map->getPanToken(0, -1));
+		$smarty->assign('token_west', $map->getPanToken(-1, 0));
+		$smarty->assign('token_east', $map->getPanToken(1, 0));
+	
 	}
 }
 

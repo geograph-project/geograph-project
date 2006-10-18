@@ -199,6 +199,40 @@ class GeographMap
 
 
 	/**
+	* get pan url, if possible - return empty string if limit is hit
+	* @param xdir = amount of left/right panning, e.g. -1 to pan left
+	* @param ydir = amount of up/down panning, e.g. 1 to pan up
+	* @access public
+	*/
+	function getPanToken($xdir,$ydir)
+	{
+		$out=new GeographMap;
+		
+		//no panning unless you are zoomed in
+		if ($this->pixels_per_km >=1)
+		{
+			//start with same params
+			$out->setScale($this->pixels_per_km);
+			$out->setImageSize($this->image_w, $this->image_h);
+			$out->type_or_user = $this->type_or_user;
+
+			//pan half a map
+			//figure out image size in km
+			$mapw=$out->image_w/$out->pixels_per_km;
+			$maph=$out->image_h/$out->pixels_per_km;
+
+			//figure out how many pixels to pan by
+			$panx=round($mapw/2);
+			$pany=round($maph/2);
+
+			$out->setOrigin(
+				$this->map_x + $panx*$xdir,
+				$this->map_y + $pany*$ydir,true);
+		}
+		return $out->getToken();
+	}
+
+	/**
 	* get grid reference for pixel position on image
 	* @access public
 	*/
