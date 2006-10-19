@@ -335,18 +335,18 @@ window.onload = onChangeImageclass;
 	<p>
 	Because we are an open project we want to ensure our content is licensed
 	as openly as possible and so we ask that you adopt a {external title="Learn more about Creative Commons" href="http://creativecommons.org" text="Creative Commons"  target="_blank"}
-	licence for your image.</p>
+	licence for your image and accompanying metadata.</p>
 	
 	<p>With a Creative Commons licence, you <b>keep your copyright</b> but allow 
 	people to copy and distribute your work provided they <b>give you credit</b></p>
 	
-	<p>Since we want to ensure we can use your image to fund the running costs of
+	<p>Since we want to ensure we can use your work to fund the running costs of
 	this site, and allow us to create montages of grid images, we ask that you
 	allow the following</p>
 	
 	<ul>
-	<li>The right to use the image commercially</li>
-	<li>The right to modify the image to create derivative works</li>
+	<li>The right to use the work commercially</li>
+	<li>The right to modify the work to create derivative works</li>
 	</ul>
 	
 	<p>{external title="View licence" href="http://creativecommons.org/licenses/by-sa/2.0/" text="Here is the Commons Deed outlining the licence terms" target="_blank"}</p>
