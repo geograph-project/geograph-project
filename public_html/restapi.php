@@ -87,6 +87,56 @@ class RestAPI
 		}
 	}
 	
+	function handleGridref()
+	{
+		$db=NewADOConnection($GLOBALS['DSN']);
+		
+		$square=new GridSquare;
+		$grid_given=true;
+		$grid_ok=$square->setByFullGridRef($this->params[0]);
+		
+		$image=new GridImage;
+		if ($grid_ok)
+		{
+			$this->beginResponse();
+
+			if ($square->imagecount)
+			{
+				$images=$square->getImages(false,'',"order by null");
+				$count = count($images);
+			
+				echo '<status state="ok" count="'.$count.'"/>';
+
+				foreach ($images as $i => $image) {
+					if ($image->moderation_status=='geograph' || $image->moderation_status=='accepted')
+					{
+						echo " <image url=\"http://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\">";
+
+						echo ' <title>'.htmlentities($image->title).'</title>';
+						echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}/profile.php?u={$image->user_id}\">".htmlentities($image->realname).'</user>';
+
+						$url=$image->getThumbnail(120,120,true);
+						$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$url);
+						echo " <img src=\"http://{$_SERVER['HTTP_HOST']}{$url}\" width=\"{$size[0]}\" height=\"{$size[1]}\" />";
+
+						echo ' <location grid="'.($square->reference_index).'" eastings="'.($image->nateastings).'" northings="'.($image->natnorthings).'"/>';
+						echo '</image>';
+					}
+				}
+			} 
+			else 
+			{
+				echo '<status state="ok" count="0"/>';
+			}
+			$this->endResponse();
+		}
+		else
+		{
+			$this->error("Invalid grid reference ".$this->params[0]);	
+		}
+		
+	}
+	
 	function handleUserTimeline()
 	{
 		$db=NewADOConnection($GLOBALS['DSN']);
