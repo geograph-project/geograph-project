@@ -270,7 +270,8 @@
 </div>
 {/if}
 
-
+  <div style="float:right;  position:relative">
+  <a title="Open in Google Earth" href="/kml.php?id={$image->gridimage_id}" class="xml-kml">KML</a></div>
 
 <p>
 <label for="grid_reference">Subject Grid Reference {if $moderated.grid_reference}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
