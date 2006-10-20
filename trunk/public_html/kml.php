@@ -37,7 +37,7 @@ if (isset($_GET['id']))  {
 	require_once('geograph/gridsquare.class.php');
 	$image=new GridImage;
 	
-	$ok = $image->loadFromId($_GET['id'],true);
+	$ok = $image->loadFromId($_GET['id']);
 
 	if ($ok) {
 		header("Content-type: application/vnd.google-earth.kml+xml");
@@ -45,8 +45,24 @@ if (isset($_GET['id']))  {
 		header("Cache-Control: Public");
 		header("Expires: ".date("D, d M Y H:i:s",mktime(0,0,0,date('m'),date('d')+14,date('Y')) )." GMT");
 		
+		require_once('geograph/conversions.class.php');
+		$conv = new Conversions;
+		
+		//because we not loading from the search cache need to recalculate this
+		list($image->wgs84_lat,$image->wgs84_long) = $conv->gridsquare_to_wgs84($image->grid_square);
+		
+		$phpos = false;
+		if ($image->viewpoint_eastings) {
+			list($line['eLat'],$line['eLong']) = $conv->national_to_wgs84($image->viewpoint_eastings,$image->viewpoint_northings,$image->grid_square->reference_index);
+			$phpos = true;
+		}
+			
 		print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 ?><kml xmlns="http://earth.google.com/kml/2.0">
+<? if ($phpos) { ?>   
+<Folder>
+	<name><![CDATA[<? echo $image->grid_reference." : ".$image->title; ?>]]></name>
+<? } ?>   
 	<Placemark>
 		<name><![CDATA[<? echo $image->grid_reference." : ".$image->title; ?>]]></name>
 		<description><![CDATA[<? echo GeographLinks($image->comment).
@@ -60,13 +76,47 @@ if (isset($_GET['id']))  {
 		<Style>
 			<icon><? echo "http://".$_SERVER['HTTP_HOST'].$image->getThumbnail(120,120,true); ?></icon>
 		</Style>
-		<? if (!empty($image->imagetaken) && strpos($image->imagetaken,'-00') === FALSE) { ?>
+		<? if (!empty($image->imagetaken) && strpos($image->imagetaken,'-00') === FALSE) { ?>   
 		<TimeStamp>
 			<when><? echo str_replace('-00','',$image->imageTaken); ?></when>
 		</TimeStamp>
-		<? } ?>
+		<? } ?>   
 	</Placemark>
-</kml><?		
+<? if ($phpos) { ?>   
+	<Placemark>
+		<name>Photographer</name>
+		<Style>
+			<IconStyle>
+				<scale>0.7</scale>
+				<Icon>
+					<href>root://icons/palette-4.png</href>
+					<x>192</x>
+					<y>64</y>
+					<w>32</w>
+					<h>32</h>
+				</Icon>
+			</IconStyle>
+			<LabelStyle>
+				<scale>0</scale>
+			</LabelStyle>
+		</Style>
+		<MultiGeometry>
+			<Point>
+				<coordinates><? echo $line['eLong'].",".$line['eLat']; ?>,25</coordinates>
+			</Point>
+			<LineString>
+				<altitudeMode>clampedToGround</altitudeMode>
+				<tessellate>1</tessellate>
+				<coordinates>
+					<? echo $image->wgs84_long.",".$image->wgs84_lat.",25
+					{$line['eLong']},{$line['eLat']},25"; ?>   
+				</coordinates>
+			</LineString>
+		</MultiGeometry>
+	</Placemark>
+</Folder>
+<? } ?>   
+</kml><?
 		exit;
 	} else {
 		
