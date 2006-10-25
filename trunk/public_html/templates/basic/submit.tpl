@@ -331,7 +331,11 @@ window.onload = onChangeImageclass;
 	<input type="hidden" name="user_status" value="{$user_status|escape:'html'}"/>
 	
 	<h2>Submit Step 4 of 4 : Confirm image rights</h2>
-		
+	{if $user->rank && $user->rank < 250 && $last_imagetaken}
+
+	<p>I've read this already, <input style="width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this)"/></p>
+	{/if}
+	
 	<p>
 	Because we are an open project we want to ensure our content is licensed
 	as openly as possible and so we ask that you adopt a {external title="Learn more about Creative Commons" href="http://creativecommons.org" text="Creative Commons"  target="_blank"}
