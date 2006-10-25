@@ -291,6 +291,11 @@ if (isset($_POST['gridsquare']))
 			}
 			$smarty->assign('today_imagetaken', date("Y-m-d"));
 		}
+		if ($step == 4) {
+			if (isset($_SESSION['last_imagetaken'])) {
+				$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
+			}
+		}
 		if ($step == 2) {
 			require_once('geograph/rastermap.class.php');
 
