@@ -51,10 +51,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	select DISTINCT 
 		w.words as word1,
 		x.words as word2 
-	from wordnet w 
-	inner join wordnet x 
-		on (w.len = 1 and x.len = 1 
-		and w.words LIKE '$l%' and x.words LIKE '$m%' 
+	from wordnet1 w 
+	inner join wordnet1 x 
+		on (w.words LIKE '$l%' and x.words LIKE '$m%' 
 		and w.words != x.words 
 		and LENGTH(w.words) > 5 and LENGTH(x.words) > 5
 		AND SOUNDEX(w.words) = SOUNDEX(x.words)) 
@@ -71,7 +70,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign("h2title","POSSIBLE typos beginning with '$l'");
 	$smarty->assign("total",count($table));
 
-	$smarty->assign("headnote","<form><p>Start1:<input name=\"l\" value=\"$l\"/> Start2(optional):<input name=\"m\" value=\"$m\"/><input type=\"submit\"></p></form>");
+	$smarty->assign("headnote","<form><p>Start1:<input name=\"l\" value=\"$l\"/> Start2(optional):<input name=\"m\" value=\"".(($m==$l)?'':$m)."\"/><input type=\"submit\"></p></form>");
 
 	$smarty->assign("footnote","<p>Finds words in the title that are similar, based on the premise that one might be a typo. Will return lots of false positives!</p>");
 	
