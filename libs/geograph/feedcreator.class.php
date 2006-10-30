@@ -1143,6 +1143,8 @@ class KMLCreator extends FeedCreator {
 		$this->truncSize = 500;
 		
 		for ($i=0;$i<count($this->items);$i++) {
+			$snippet = striptags($this->items[$i]->description);
+		
 			//added here beucase description gets auto surrounded by cdata
 			if ($this->items[$i]->thumbTag!="") {
 				$this->items[$i]->description = "<a href=\"".htmlspecialchars($this->items[$i]->link)."\">".$this->items[$i]->thumbTag."</a><br/>".$this->items[$i]->description;
@@ -1155,10 +1157,12 @@ class KMLCreator extends FeedCreator {
 			$feed.= "
 		<Placemark>
 			<description>".$this->items[$i]->getDescription(true)."</description>
+			<Snippet maxlines=\"2\">".$snippet."</Snippet>
 			<name>".FeedCreator::iTrunc(htmlspecialchars(strip_tags($this->items[$i]->title)),100)."</name>
 			<visibility>1</visibility>
 			<Point>
-				<coordinates>".$this->items[$i]->long.",".$this->items[$i]->lat.",25</coordinates>
+				<extrude>1</extrude><altitudeMode>relativeToGround</altitudeMode>
+				<coordinates>".$this->items[$i]->long.",".$this->items[$i]->lat.",125</coordinates>
 			</Point>";
 			if ($this->items[$i]->thumb) {
 				$feed.= "
