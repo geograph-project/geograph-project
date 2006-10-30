@@ -92,8 +92,8 @@
 			  href="http://{$http_host}/syndicator.php?key=[apikey]&amp;u=3">http://{$http_host}/syndicator.php?key=[apikey]&amp;u=3</a></td>
 		</tr> 
 		<tr> 
-		  <th rowspan="2">q=[gridref or postcode]</th> 
-		  <td>Returns 15 or all within 30km (which ever is less) of the specified location (see also <a href="#building">Building a query</a> for pitfals of the q paramater) - Will in fact create a i query on the fly, so you can use that to get page 2 etc of the results. Accepts additonal paramater:</span>
+		  <th rowspan="2">q=[location]</th> 
+		  <td>Returns 15 or all within 30km (which ever is less) of the specified location (Grid Reference, Postcode or Decimal Lat/Long) (see also <a href="#building">Building a query</a> for pitfals of the q paramater) - Will in fact create a i query on the fly, so you can use that to get page 2 etc of the results. Accepts additonal paramater:</span>
 			 <table border="1" cellpadding="3" cellspacing="0"> 
 				<tr> 
 				  <th>u=[user_id]</th> 
@@ -108,7 +108,7 @@
 		</tr> 
 		<tr> 
 		  <th rowspan="2">text=[text string]</th> 
-		  <td>Returns 15 results containing the text string in the image title (see also <a href="#building">Building a query</a> for pitfals of the q paramater) - Will in fact create a i query on the fly, so you can use that to get page 2 etc of the results. Accepts additonal paramater:</span>
+		  <td>Returns 15 results containing the text string in the image title - Will in fact create a i query on the fly, so you can use that to get page 2 etc of the results. Accepts additonal paramater:</span>
 			 <table border="1" cellpadding="3" cellspacing="0"> 
 				<tr> 
 				  <th>u=[user_id]</th> 
@@ -460,20 +460,27 @@
 			 </table>{dynamic}{if $user->registered}or even run one of your <a href="/search.php?more=1">recent searches</a>{/if}{/dynamic} </td> 
 		</tr> 
 		<tr> 
-		  <td>Grid Reference or Postcode</td> 
+		  <td>Location String (Postcode, Grid Reference or Lat/Long)</td> 
 		  <td>Simply pass to search.php and the response from the server will
-			 include a brand new i number ready for use. <br/>For example
+			 include a brand new i number ready for use. <br/><br/>For example
 			 <a 
 			 href="http://{$http_host}/search.php?q=SH3467">http://{$http_host}/search.php?q=SH3467</a>
 			 would return a <br/><TT style="border: 1px solid gray;">Location:
 			 http://{$http_host}/search.php?i=12345</TT><br/>header, just parse out that i
-			 number and pass it to the XML/CSV page.<br/>Also works with UK(inc NI)
+			 number and pass it to the XML/CSV page.<br/><br/>
+			 
+			 UK(inc NI)
 			 Postcodes, e.g.<br/><a 
-			 href="http://{$http_host}/search.php?q=TN32+3DZ">http://{$http_host}/search.php?q=TN32+3DZ</a><br/>Technically
+			 href="http://{$http_host}/search.php?q=TN32+3DZ">http://{$http_host}/search.php?q=TN32+3DZ</a><br/><br/>
+			 
+			 Lat/Long (Decimal Degrees only), example <a 
+			 href="http://{$http_host}/search.php?q=52.332,-2.2345">http://{$http_host}/search.php?q=52.332,-2.2345</a><br/><br/>
+			 
+			 Technically
 			 this can also accept place-names or free text search, however due to there
 			 being no guarantee that it will only match one place-name (or none and run a
 			 text search), if its not sure the it returns a page asking the user to confirm
-			 their meaning. <br/><i>However its possible to pass a numeric place-name id,
+			 their meaning. <br/><br/><i>However its possible to pass a numeric place-name id,
 			 please <a href="/contact.php">contact us</a> if you would be interested in a
 			 copy of the dataset that we use.</i></td> 
 		</tr> 

@@ -129,8 +129,24 @@ if (isset($_GET['id']))  {
 		$pg = $_REQUEST['page'];
 		if ($pg == '' or $pg < 1) {$pg = 1;}
 
-		$engine = new SearchEngine($_REQUEST['i']);
+		if ($i < 1) {
+			if ($USER->registered) {
+				$data = array();
+				$data['user_id'] = $USER->user_id; 
+				$data['orderby'] = 'gridimage_id'; 
+				$data['reverse_order_ind'] = 1; 
+				$sortorders = array('gridimage_id'=>'Date Submitted');
+
+				$data['adminoverride'] = 0; //prevent overriding it
+				
+				$engine = new SearchEngineBuilder('#'); 
+				$i = $engine->buildAdvancedQuery($data,false);
+			} else {
+				$i = 1522;
+			}
+		}
 		
+		$engine = new SearchEngine($i);
 		
 		if (isset($_REQUEST['submit'])) {
 			$simple = $_REQUEST['simple'];

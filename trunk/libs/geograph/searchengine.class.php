@@ -138,8 +138,8 @@ class SearchEngine
 			##$count_from = "INNER JOIN gridsquare AS gs USING(gridsquare_id)";
 			
 			// construct the count query sql
-			if (preg_match("/group by ([\w\,\(\) ]+)/i",$sql_where,$matches)) {
-				$sql_where2 = preg_replace("/group by ([\w\,\(\) ]+)/i",'',$sql_where);
+			if (preg_match("/group by ([\w\,\(\)\/ ]+)/i",$sql_where,$matches)) {
+				$sql_where2 = preg_replace("/group by ([\w\,\(\)\/ ]+)/i",'',$sql_where);
 $sql = <<<END
 	   SELECT count(DISTINCT {$matches[1]})
 		FROM gridimage AS gi $count_from
@@ -250,8 +250,8 @@ END;
 
 		if ($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly) {
 			// construct the count sql
-			if (preg_match("/group by ([\w\,\(\) ]+)/i",$sql_where,$matches)) {
-				$sql_where2 = preg_replace("/group by ([\w\,\(\) ]+)/i",'',$sql_where);
+			if (preg_match("/group by ([\w\,\(\)\/ ]+)/i",$sql_where,$matches)) {
+				$sql_where2 = preg_replace("/group by ([\w\,\(\)\/ ]+)/i",'',$sql_where);
 $sql = <<<END
 	   SELECT count(DISTINCT {$matches[1]})
 		FROM gridimage_search as gi
