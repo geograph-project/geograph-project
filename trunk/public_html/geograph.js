@@ -166,7 +166,7 @@ var hasloaded = false;
 function prePopulateImageclass() {
 	if (!hasloaded) {
 		var sel=document.getElementById('imageclass');
-		//sel.disabled = true;
+		sel.disabled = false;
 		var oldText = sel.options[0].text;
 		sel.options[0].text = "please wait...";
 		
@@ -174,7 +174,8 @@ function prePopulateImageclass() {
 		
 		hasloaded = true;
 		sel.options[0].text = oldText;
-		//sel.disabled = false;
+		if (document.getElementById('imageclass_enable_button'))
+			document.getElementById('imageclass_enable_button').disabled = true;
 	}
 }
 

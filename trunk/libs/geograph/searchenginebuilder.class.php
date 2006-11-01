@@ -343,7 +343,15 @@ class SearchEngineBuilder extends SearchEngine
 			if (isset($USER) && $USER->registered)
 				$sql .= ",user_id = {$USER->user_id}";
 
-			if (!empty($dataarray['user_id'])) {
+			if (!empty($dataarray['user_name'])) {
+				$usercriteria = new SearchCriteria_All();
+				$usercriteria->setByUsername($dataarray['user_name']);
+				if (!empty($usercriteria->realname)) {
+					$sql .= ",limit1 = ".$db->Quote((!empty($dataarray['user_invert_ind'])?'!':'').$usercriteria->user_id);
+					$searchdesc .= ",".(!empty($dataarray['user_invert_ind'])?' not':'')." by ".($usercriteria->realname);
+					$dataarray['user_id'] = $usercriteria->user_id;
+				}
+			} elseif (!empty($dataarray['user_id'])) {
 				$sql .= ",limit1 = ".$db->Quote((!empty($dataarray['user_invert_ind'])?'!':'').$dataarray['user_id']);
 				$profile=new GeographUser($dataarray['user_id']);
 				$searchdesc .= ",".(!empty($dataarray['user_invert_ind'])?' not':'')." by ".($profile->realname);
