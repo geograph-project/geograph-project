@@ -35,7 +35,7 @@ $sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','gridimage_
 
 
 
-if (isset($_GET['fav']) ) {
+if (isset($_GET['fav']) && $i) {
 	if (!$db) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
@@ -325,12 +325,16 @@ if (isset($_GET['fav']) ) {
 				$smarty->assign('elementused', 'all_ind');
 				break;
 		}
-	
-		if (strpos($query['limit1'],'!') === 0) {
-			$smarty->assign('user_id', preg_replace('/^!/','',$query['limit1']));
-			$smarty->assign('user_invert_checked', 'checked="checked"');
-		} else {
-			$smarty->assign('user_id', $query['limit1']);
+		if (!empty($query['limit1'])) {
+			$user_id = $query['limit1'];
+			if (strpos($user_id,'!') === 0) {
+				$user_id = preg_replace('/^!/','',$user_id);
+				$smarty->assign('user_invert_checked', 'checked="checked"');
+			} 			
+			$smarty->assign('user_id', $user_id);
+			
+			$profile=new GeographUser($user_id);
+			$smarty->assign('user_name', "$user_id:{$profile->realname}");
 		}
 		$smarty->assign('moderation_status', $query['limit2']);
 		$smarty->assign('imageclass', $query['limit3']);
@@ -579,11 +583,6 @@ if (isset($_GET['fav']) ) {
 				
 			$topics=array("1"=>"Any Topic") + $topics; 	
 			$smarty->assign_by_ref('topiclist',$topics);	
-
-			$topusers=$db->CacheGetAssoc(24*3600,"select user_id,concat(realname,' [',count(*),']')
-				from gridimage_search 
-				group by user_id order by realname");
-			$smarty->assign_by_ref('userlist',$topusers);
 
 			require_once('geograph/gridsquare.class.php');
 			$square=new GridSquare;
