@@ -3,7 +3,7 @@
 
 {dynamic}
 
-    <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm">
+    <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;">
 
 {if $step eq 1}	
 
@@ -270,13 +270,13 @@ window.onload = onChangeImageclass;
 <p><label for="imageclass">Primary geographical category</label> {if $error.imageclass}
 	<br/><span class="formerror">{$error.imageclass}</span>
 	{/if}<br />	
-	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onmouseover="prePopulateImageclass()" onfocus="prePopulateImageclass()">
+	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onfocus="prePopulateImageclass()" disabled="disabled">
 		<option value="">--please select feature--</option>
 		{if $imageclass}
 			<option value="{$imageclass}" selected="selected">{$imageclass}</option>
 		{/if}
 		<option value="Other">Other...</option>
-	</select>
+	</select><input type="button" name="imageclass_enable_button" value="enable" onclick="prePopulateImageclass()"/>
 
 <span id="otherblock">
 	<label for="imageclassother">Please specify </label> 

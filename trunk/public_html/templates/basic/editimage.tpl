@@ -254,7 +254,7 @@
 <h2><span class="formerror">Changes not submitted - check and correct errors below...</span></h2>
 {/if}
 
-<form method="post" action="/editimage.php#form" name="edit{$image->gridimage_id}">
+<form method="post" action="/editimage.php#form" name="edit{$image->gridimage_id}" onsubmit="this.imageclass.disabled=false">
 <input type="hidden" name="id" value="{$image->gridimage_id}"/>
 
 {if $moderated_count}
@@ -336,13 +336,13 @@ window.onload = onChangeImageclass;
 	<span class="formerror">{$error.imageclassother}</span><br/>
 	{/if}
 	
-	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onmouseover="prePopulateImageclass()" onfocus="prePopulateImageclass()">
+	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onmouseover="prePopulateImageclass()" disabled="disabled">
 		<option value="">--please select feature--</option>
 		{if $image->imageclass}
 			<option value="{$image->imageclass}" selected="selected">{$image->imageclass}</option>
 		{/if}
 		<option value="Other">Other...</option>
-	</select>
+	</select><input type="button" name="imageclass_enable_button" value="enable" onclick="prePopulateImageclass()"/>
 	
 	
 	<span id="otherblock">
