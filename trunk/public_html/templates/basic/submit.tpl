@@ -261,6 +261,26 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 <script type="text/javascript">
 <!--
 //rest loaded in geograph.js
+function mouseOverImageClass() {
+	if (!hasloaded) {
+		setTimeout("prePopulateImageclass2()",100);
+	}
+	hasloaded = true;
+}
+
+function prePopulateImageclass2() {
+	var sel=document.getElementById('imageclass');
+	sel.disabled = false;
+	var oldText = sel.options[0].text;
+	sel.options[0].text = "please wait...";
+
+	populateImageclass();
+
+	hasloaded = true;
+	sel.options[0].text = oldText;
+	if (document.getElementById('imageclass_enable_button'))
+		document.getElementById('imageclass_enable_button').disabled = true;
+}
 
 window.onload = onChangeImageclass;
 //-->
@@ -270,13 +290,13 @@ window.onload = onChangeImageclass;
 <p><label for="imageclass">Primary geographical category</label> {if $error.imageclass}
 	<br/><span class="formerror">{$error.imageclass}</span>
 	{/if}<br />	
-	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onfocus="prePopulateImageclass()" disabled="disabled">
+	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onfocus="prePopulateImageclass()" onmouseover="mouseOverImageClass()">
 		<option value="">--please select feature--</option>
 		{if $imageclass}
 			<option value="{$imageclass}" selected="selected">{$imageclass}</option>
 		{/if}
 		<option value="Other">Other...</option>
-	</select><input type="button" name="imageclass_enable_button" value="enable" onclick="prePopulateImageclass()"/>
+	</select>
 
 <span id="otherblock">
 	<label for="imageclassother">Please specify </label> 
