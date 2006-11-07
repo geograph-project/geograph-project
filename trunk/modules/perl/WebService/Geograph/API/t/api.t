@@ -12,13 +12,14 @@ isa_ok ($api, 'WebService::Geograph::API' );
 my $noapi = WebService::Geograph::API->new() ;
 is ($noapi, undef, 'Did not create API without a key.') ;
 
-my $rh_valid_modes = {
-	'csv'    => 'CSV',
-	'search' => 'custom searching',
+my $rh_invalid_modes = {
+	'non-existant'    => 'XXX',
+	'not-defined' => undef 
 } ;
 
-foreach (keys %$rh_valid_modes) {
-	my $lookup = $api->lookup( $_ , { 'q' => '123' } ) ;
-	ok ($lookup, 'lookup works') ;
+foreach (keys %$rh_invalid_modes) {
+	my $mode = $rh_invalid_modes->{$_} ;
+	my $l = $api->lookup($mode, { } ) ;
+	is ($l, undef, "$_ not recognized as a valid mode.") ;
 		
 }
