@@ -20,12 +20,13 @@ sub new {
 	unless (defined ($rh_options->{key}) and ($rh_options->{key})) {
 		warn "You must obtain a valid key before using the Geograph API service.\n" .
 		     "Visit http://www.geograph.org.uk/help/api for more information.\n" ;
-		exit(0) ;
+		return undef ;
 	}	
 	
 	# Please do not change the following parameter. 
 	# It does not provide geograph.co.uk with any personal information
-	# but helps then track usage of this module.	
+	# but helps then track usage of this module.
+		
 	my %options = ( 'agent' => 'WebService::Geograph::API' ) ;
 	my $self = new LWP::UserAgent ( %options );
 	$self->{key} = $rh_options->{key} ;
@@ -150,7 +151,5 @@ perl(1).
 
 #################### main pod documentation end ###################
 
-
 1;
-# The preceding line will help the module return a true value
 
