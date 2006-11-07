@@ -4,4 +4,6 @@ LICENSE
 Changes
 Makefile.PL
 lib/WebService/Geograph/API.pm
+lib/WebService/Geograph/Response.pm
+lib/WebService/Geograph/Request.pm
 t/001_load.t
