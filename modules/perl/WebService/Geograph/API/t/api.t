@@ -20,6 +20,7 @@ my $rh_invalid_modes = {
 foreach (keys %$rh_invalid_modes) {
 	my $mode = $rh_invalid_modes->{$_} ;
 	my $l = $api->lookup($mode, { } ) ;
-	is ($l, undef, "$_ not recognized as a valid mode.") ;
+	is ($l, undef, "$_ was not recognized as a valid mode.") ;
 		
 }
+
