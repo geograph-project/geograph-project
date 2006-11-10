@@ -112,7 +112,7 @@ $enableProfileUpdate=true;
 
 $indexphp='index.php?';
 $useSessions=true;
-$usersEditTopicTitle=false;
+$usersEditTopicTitle=true;
 $pathToFiles='./';
 //$includeHeader='header.php';
 //$includeFooter='footer.php';

@@ -303,14 +303,14 @@
 
 <p><label for="title">Edit the Title {if $moderated.title}<span class="moderatedlabel">(moderated)</span>{/if}</label> (<a href="/help/style" target="_blank">Open Style Guide</a>)<br/>
 {if $error.title}<span class="formerror">{$error.title}</span><br/>{/if}
-<input type="text" id="title" name="title" size="50" value="{$image->title|escape:'html'}" title="Original: {$image->current_title|escape:'html'}"/>
+<input type="text" id="title" name="title" size="50" value="{$image->title|escape:'html'}" title="Original: {$image->current_title|escape:'html'}" spellcheck="true"/>
 </p>
 
 
 <p>
 <label for="comment">Edit Comment {if $moderated.comment}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.comment}<span class="formerror">{$error.comment}</span><br/>{/if}
-<textarea id="comment" name="comment" rows="3" cols="50" title="Original: {$image->current_comment|escape:'html'}">{$image->comment|escape:'html'}</textarea>
+<textarea id="comment" name="comment" rows="3" cols="50" title="Original: {$image->current_comment|escape:'html'}" spellcheck="true">{$image->comment|escape:'html'}</textarea>
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
 to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 </p>
@@ -347,7 +347,7 @@ window.onload = onChangeImageclass;
 	
 	<span id="otherblock">
 	<label for="imageclassother">Please specify </label> 
-	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32"/></p>
+	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/></p>
 	</span>
 	
 

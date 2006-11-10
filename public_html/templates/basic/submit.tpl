@@ -243,13 +243,13 @@ it was taken or other interesting geographical information. (<a href="/help/styl
 <p><label for="title">Title</label> {if $error.title}
 	<br/><span class="formerror">{$error.title}</span>
 	{/if}<br/>
-<input size="50" id="title" name="title" value="{$title|escape:'html'}" /></p>
+<input size="50" id="title" name="title" value="{$title|escape:'html'}" spellcheck="true"/></p>
  {if $place.distance}
  <p style="font-size:0.7em">Gazetteer info as will appear:<br/> <span style="color:silver;">{if $place.distance > 3}{$place.distance-0.01} km from{else}near to{/if} <b>{$place.full_name}</b><small><i>{if $place.adm1_name && ($place.adm1_name != $place.reference_name || $place.hist_county)}, <span{if $place.hist_county} title="Historic County: {$place.hist_county}"{/if}>{$place.adm1_name}</span>{/if}, {$place.reference_name}</i></small></span></p>
  {/if}
 
 <p style="clear:both"><label for="comment">Comment</label><br/>
-<textarea id="comment" name="comment" rows="4" cols="80">{$comment|escape:'html'}</textarea></p>
+<textarea id="comment" name="comment" rows="4" cols="80" spellcheck="true">{$comment|escape:'html'}</textarea></p>
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
 to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 
@@ -300,7 +300,7 @@ window.onload = onChangeImageclass;
 
 <span id="otherblock">
 	<label for="imageclassother">Please specify </label> 
-	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32"/>
+	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/>
 	</span></p>
 	
 	
