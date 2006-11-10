@@ -1255,7 +1255,7 @@ class PHPCreator extends FeedCreator {
     
 	function createFeed() {
 		$feed = "<?php\n";
-		$feed.= "class FeedItem {}\n";
+		$feed.= "if (!class_exists(\"FeedItem\")) class FeedItem {}\n";
 		$feed.= "  \$feedTitle='".addslashes(FeedCreator::iTrunc(htmlspecialchars($this->title),100))."';\n";
 		$this->truncSize = 500;
 		$feed.= "  \$feedDescription='".addslashes($this->getDescription())."';\n";
