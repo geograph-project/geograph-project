@@ -27,7 +27,7 @@ sub new {
 	
 	if (not defined $uri) {
 		warn "Invalid/Unsupported mode selected: $mode\nPlease look at the documentation for supported modes.\n" ;
-		exit(0) ;
+		return undef ;
 	}		
 	
     $self->{uri} = $uri;
