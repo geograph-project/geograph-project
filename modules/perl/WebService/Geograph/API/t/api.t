@@ -1,7 +1,6 @@
 # -*- perl -*-
 # t/001_load.t - check module loading and create testing directory
 
-use lib "../lib" ; # FIXME: remove later on.
 use Test::More 'no_plan' ;
 
 use WebService::Geograph::API ;
@@ -21,6 +20,5 @@ foreach (keys %$rh_invalid_modes) {
 	my $mode = $rh_invalid_modes->{$_} ;
 	my $l = $api->lookup($mode, { } ) ;
 	is ($l, undef, "$_ was not recognized as a valid mode.") ;
-		
 }
 
