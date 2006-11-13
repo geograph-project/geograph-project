@@ -11,6 +11,56 @@ use Data::Dumper ;
 our @ISA = qw (HTTP::Request) ;
 our $VERSION = '0.01' ;
 
+=head1 NAME
+
+WebService::Geograph::Request - A request object to the Geograph API
+
+=head1 SYNOPSIS
+
+  use WebService::Geograph::API;
+  
+  my $api = new WebService::Geograph::API ( { 'key' => 'your_api_key_here'} ) ;
+
+  my $rv = $api->lookup ( 'csv', { 'i'     => 12345,
+                                   'll'    => 1,
+                                   'thumb' => 1,
+                                 }) ;
+
+  my $data = $rd->{results} ;
+
+=head1 DESCRIPTION
+
+This object encapsulates a single request and its parameters 
+the user specified to the Geograph API sevice.
+
+The C<WebService::GeoGraph::Request> object is essentially a subclass of C<HTTP::Request> so you can
+actually edit its usual parameters as much as you want.
+
+=cut
+
+=head1 AUTHOR
+
+    Spiros Denaxas
+    CPAN ID: SDEN
+    Lokku Ltd ( http://www.nestoria.co.uk )
+    s [dot] denaxas [@] gmail [dot]com
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute
+it and/or modify it under the same terms as Perl itself.
+
+The full text of the license can be found in the
+LICENSE file included with this module.
+
+=cut 
+
+=head1 SEE ALSO
+
+L<WebService::Geograph::API>, L<WebService::Geograph::Response>, L<http://www.geograph.co.uk>, L<http://www.geograph.org.uk/help/api#api>
+
+=cut
+
 sub new {
 	my $class = shift ;
 	my $self = new HTTP::Request ;

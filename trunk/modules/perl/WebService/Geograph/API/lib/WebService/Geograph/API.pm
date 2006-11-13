@@ -136,6 +136,10 @@ Obtaining a key is free. See : http://www.geograph.org.uk/help/api#api for more 
 Creates a new C<WebService::Geograph::Request> object and executes it.
 
 	my $rv = $api->lookup ( 'csv', { 'i' => 12345, 'll' => 1, } ) ;
+	
+	or
+	
+	my $rv = $api->lookup ( 'search ', { q = 'W12 8JL' } ) ;
 
 Valid modes at the moment include I<csv> for exporting CSV and I<search> for creating custom searches
 and obtaining their 'i' number. A very good and detailed overview of the various parameters they
