@@ -475,6 +475,7 @@ class SearchCriteria_Placename extends SearchCriteria
 	var $matches;
 	var $placename;
 	
+	//todo need to be moved to gazetteer class...
 	function setByPlacename($placename) {
 		global $places; //only way to get the array into the compare functions
 		global $USER;
@@ -491,9 +492,19 @@ class SearchCriteria_Placename extends SearchCriteria
 				$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where id=".$db->Quote($placename));
 			}
 		} elseif (!$ismore) {
-			$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where def_nam=".$db->Quote($placename));
-			if (count($places) == 0) {
-				$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where full_name=".$db->Quote($placename));
+			list($placename,$county) = preg_split('/\s*,\s*/',$placename);
+			
+			if (!empty($county)) {
+				$qcount = $db->Quote($county);
+				
+				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where def_nam=".$db->Quote($placename)." and (full_county = $qcount OR hcounty = $qcount)");
+			} else {
+			
+				//todo need to 'union'  with other gazetterr! (as if one match in each then will no work!) 
+				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where def_nam=".$db->Quote($placename));
+				if (count($places) == 0) {
+					$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where full_name=".$db->Quote($placename));
+				}				
 			}
 		}
 		
@@ -502,8 +513,8 @@ class SearchCriteria_Placename extends SearchCriteria
 
 			$this->x = intval($places[0]['e']/1000) + $origin['origin_x'];
 			$this->y = intval($places[0]['n']/1000) + $origin['origin_y'];
-			$this->placename = $places[0]['full_name'];
-			$this->searchq = $places[0]['full_name'];
+			$this->placename = $places[0]['full_name'].($county&&$places[0]['adm1_name']?", {$places[0]['adm1_name']}":'');
+			$this->searchq = $places[0]['full_name'].($county&&$places[0]['adm1_name']?", {$places[0]['adm1_name']}":'');
 			$this->reference_index = $places[0]['reference_index'];
 		} else {
 			$limit = (strlen($placename) > 3)?20:10;
@@ -658,8 +669,12 @@ class SearchCriteria_Postcode extends SearchCriteria
 {
 	function setByPostcode($code) {
 		$db = $this->_getDB();
-		
-		$postcode = $db->GetRow('select e,n,reference_index from loc_postcodes where code='.$db->Quote($code).' limit 1');	
+		if (strpos($code,' ') === FALSE) {
+			//yes know avg(reference_index) is always same as reference_index, but get round restriction in mysql
+			$postcode = $db->GetRow('select avg(e) as e,avg(n) as n,avg(reference_index) as reference_index from loc_postcodes where code like'.$db->Quote("$code _").'');			
+		} else {
+			$postcode = $db->GetRow('select e,n,reference_index from loc_postcodes where code='.$db->Quote($code).' limit 1');	
+		}
 		if ($postcode['reference_index']) {
 			$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$postcode['reference_index'].' order by origin_x,origin_y limit 1');	
 

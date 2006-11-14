@@ -60,8 +60,8 @@ class SearchEngineBuilder extends SearchEngine
 		$limit1 = '';
 		
 		$q = trim($q);
-		if (preg_match("/^([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9])([A-Z]{0,2})$/",strtoupper($q),$pc)) {
-			$searchq = $pc[1].$pc[2]." ".$pc[3];
+		if (preg_match("/^([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})$/",strtoupper($q),$pc)) {
+			$searchq = $pc[1].$pc[2].($pc[3]?" ".$pc[3]:'');
 			$criteria = new SearchCriteria_Postcode();
 			$criteria->setByPostcode($searchq);
 			if ($criteria->y != 0) {
@@ -90,7 +90,7 @@ class SearchEngineBuilder extends SearchEngine
 			} else {
 				$this->errormsg = $square->errormsg;
 			}
-		} elseif (preg_match("/^(-?\d+\.?\d*),(-?\d+\.?\d*)$/",$q,$ll)) {
+		} elseif (preg_match("/^\s*(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$q,$ll)) {
 			require_once('geograph/conversions.class.php');
 			require_once('geograph/gridsquare.class.php');
 			$square=new GridSquare;
