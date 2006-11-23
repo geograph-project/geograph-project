@@ -34,6 +34,27 @@
 	 <p>Please note that the API is still in its early stages, these are the possiblities that 
 	 	the developers needed, or felt would be useful, if you have any special requests then
 	 	don't be shy, just <a href="/contact.php">let us know</a>.</p>
+
+	<form action="http://groups-beta.google.com/group/geograph-api-users/boxsubscribe">
+		<table border=0 style="background-color: #fff; border:1px solid green; padding: 5px;" cellspacing=2>
+			<tr>
+				<td rowspan="2">
+					<img src="http://groups-beta.google.com/groups/img/3/groups_bar.gif" height="26" width="132" alt="Google Groups Beta"/>
+				</td>
+				<td style="padding-left: 5px">
+					<b>Subscribe to <a href="http://groups-beta.google.com/group/geograph-api-users">Geograph-API-Users</a></b>
+				</td>
+			</tr>
+			<tr>
+				<td style="padding-left: 5px;"> Email: <input type=text name=email>
+					<input type=submit name="sub" value="Subscribe">
+				</td>
+			</tr>
+		</table>
+	</form>
+	
+	 <p style="border:1px solid red;background-color: #FF3300; padding:10px;"><b>Each of these Feeds includes the photographer credit/name, which under the CC licence MUST be displayed along any use of the image.</b><br/><br/>Ideally also you could link back to the main photo page, either with the link supplied or with <a href="http://{$http_host}/photo/[id]">http://{$http_host}/photo/[id]</a>.<br/><br/> Thank you for your attention in this matter.</p>
+		
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px; clear:both;margin-top:30px;"><a name="api"></a>API-key</h3> 
 	 <p>If you haven't got one you will need to obtain a unique API-key, which
 		gives you access to the pages below, simply <a href="/contact.php">contact
@@ -41,8 +62,6 @@
 		take a look.</p> 
 	 <p>Once you have a API-key simply replace [apikey] in the examples below to
 		obtain your feed.</p> 
-		
-	 <p style="border:1px solid red;background-color: #FF3300; padding:10px;"><b>Each of these Feeds includes the photographer credit/name, which under the CC licence MUST be displayed along any use of the image.</b><br/><br/>Ideally also you could link back to the main photo page, either with the link supplied or with <a href="http://{$http_host}/photo/[id]">http://{$http_host}/photo/[id]</a>.<br/><br/> Thank you for your attention in this matter.</p>
 		
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="rss"></a>RSS-feeds <a title="RSS Feed of Recent Images" href="/faq.php" class="xml-rss">RSS</a></h3> 
 	 <p>Really Simple Syndication allows you to obtain a details for a number of
@@ -199,13 +218,13 @@
 		</tr>
 	 </table> 
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="rest"></a>REST interface</h3>
-	 <p>Provides a very simple interface for obtaining details about a particular image. Will later be extended to include contributors, tags, and grid-squares and possibly even hectads and myriads and some aggregate statistics. If looking for bulk downloads please consider one of the alternative means.</p>
+	 <p>Provides a very simple interface for obtaining details about a particular image or grid square. Will later be extended to include contributors, and tags, and possibly even hectads and myriads and some aggregate statistics. If looking for bulk downloads please consider one of the alternative means.</p>
 	 
 	 <h4><a name="rest_services"></a>Services</h4> 
 	 <table cellpadding="3" cellspacing="0" border="1"> 
 		<tr> 
-		  <th colspan="2"><a title="Geograph Google Earth feed"
-			 href="http://{$http_host}/api/photo/1234">http://{$http_host}/api/photo/[photo-id]</a></th> 
+		  <th colspan="2"><a title="Example REST Request"
+			 href="http://{$http_host}/api/photo/1234/[apikey]">http://{$http_host}/api/photo/[photo-id]/[apikey]</a></th> 
 		</tr> 
 		<tr> 
 		  <th>Photo Details</th> 
@@ -219,6 +238,26 @@
   &lt;user profile="http://www.geograph.org.uk/profile.php?u=120"&gt;David Stowell&lt;/user&gt; 
   &lt;img src="http://www.geograph.org.uk/photos/00/34/003456_e10e23bc.jpg"
      width="640" height="480" /&gt; 
+&lt;/geograph&gt;</pre>
+  </td> 
+		</tr> 
+		<tr> 
+		  <th colspan="2"><a title="Example REST Request"
+			 href="http://{$http_host}/api/Gridref/SD1234/[apikey]">http://{$http_host}/api/<b>G</b>ridref/[4fig gridref]/[apikey]</a></th> 
+		</tr> 
+		<tr> 
+		  <th>Grid Square Details</th> 
+		  <td>Returns an XML infoset about the particular square, currently returns:
+<pre style="font-size:0.7em;">
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt; 
+&lt;geograph&gt;
+  &lt;status state="ok" count="1" /&gt; 
+  &lt;image url="http://{$http_host}/photo/64854"&gt;
+    &lt;title&gt;Afon Cynfal&lt;/title&gt; 
+    &lt;user profile="http://{$http_host}/profile.php?u=3"&gt;Barry Hunter&lt;/user&gt; 
+    &lt;img src="http://{$http_host}/photos/06/48/064854_d68e7342_120x120.jpg" width="90" height="120" /&gt; 
+    &lt;location grid="1" eastings="270500" northings="341100" /&gt; 
+  &lt;/image&gt;
 &lt;/geograph&gt;</pre>
   </td> 
 		</tr> 
@@ -540,12 +579,13 @@
 		<li><a href="/gpx.php">GPX Exports</a></li>
 		<li>100x100km CheckSheets (<a href="http://www.geograph.org.uk/mapsheet.php?t=tolJ5oOXXJ0oOJFoOXXJfoMXbJqoOXXJL5405o4VZMlXwZblw4MMuX">example</a>) <small>- nice easy parseable listing, could be used for creating coverage maps</small></li>
 		<li>Please DON'T use the /list/ namespace as that's for Search Engines</li>
+		<li><a href="/sitemap.xml">sitemap.xml</a> - see {external href="http://www.sitemaps.org"}</li>
 		<li><a href="http://www.geourl.org/" style="text-decoration: line-through">geourl.org</a> (Coming soon)</li>
 		<li>We can also create coverage csv's on demand, (listing squares currently with images)</li>
 	 </ul>
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="finally"></a>Finally</h3> 
 	 <p>We wish you luck in you project and look forward to seeing the results! If you have any 
-		problems using the API, then please do get in <a href="/contact.php">contact</a>.</p>
+		problems using the API, then please do get in <a href="/contact.php">contact</a>, or join the <a href="http://groups-beta.google.com/group/geograph-api-users">Geograph-API-Users</a> Google Discussion Group.</p>
 {include file="_std_end.tpl"}
 
 
