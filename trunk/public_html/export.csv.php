@@ -55,34 +55,34 @@ header("Content-Disposition: attachment; filename=\"geograph.csv\"");
 $sql_crit = '';
 
 echo "Id,Name,Grid Ref,Submitter,Image Class";
-if (isset($_GET['thumb'])) {
+if (!empty($_GET['thumb'])) {
 	require_once('geograph/gridimage.class.php');
 	$gridimage = new GridImage;
 	$sql_from = ',gi.user_id,x,y';
 	echo ",Thumb URL";
 }
-if (isset($_GET['ll'])) {
+if (!empty($_GET['ll'])) {
 	$sql_from = ',wgs84_lat,wgs84_long';
 	echo ",Lat,Long";
-} elseif (isset($_GET['en'])) {
+} elseif (!empty($_GET['en'])) {
 	echo ",Easting,Northing";
 }
 
-if (isset($_GET['taken'])) {
+if (!empty($_GET['taken'])) {
 	echo ",Date Taken";
 	$sql_from .= ",imagetaken";
 }
-if (isset($_GET['ppos'])) {
+if (!empty($_GET['ppos'])) {
 	echo ",Photographer Eastings, Photographer Northings";
 	$sql_from .= ",viewpoint_eastings,viewpoint_northings";
 }
-if (isset($_GET['dir'])) {
+if (!empty($_GET['dir'])) {
 	echo ",View Direction";
 	$sql_from .= ",view_direction";
 }
 echo "\n";
 
-if (isset($_GET['ri']) && preg_match("/^\d$/",$_GET['ri']) ) {
+if (!empty($_GET['ri']) && preg_match("/^\d$/",$_GET['ri']) ) {
 	$sql_crit .= " AND reference_index = {$_GET['ri']}";
 }
 
@@ -90,12 +90,12 @@ if (!empty($_GET['u']) && preg_match("/^\d$/",$_GET['u'])) {
 	$sql_crit .= " AND gi.user_id = {$_GET['u']}";
 }
 
-if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
+if (!empty($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 	$sql_crit .= " AND upd_timestamp >= '{$_GET['since']}' $sql_hardlimit";
-} elseif (isset($_GET['last']) && preg_match("/^\d+ \w+$/",$_GET['last']) ) {
+} elseif (!empty($_GET['last']) && preg_match("/^\d+ \w+$/",$_GET['last']) ) {
 	$_GET['last'] = preg_replace("/s$/",'',$_GET['last']);
 	$sql_crit .= " AND upd_timestamp > date_sub(now(), interval {$_GET['last']}) $sql_hardlimit";
-} elseif (isset($_GET['limit']) && preg_match("/^\d+(,\d+|)?$/",$_GET['limit'])) {
+} elseif (!empty($_GET['limit']) && preg_match("/^\d+(,\d+|)?$/",$_GET['limit'])) {
 	if ($hardlimit) {
 		if (preg_match("/^(\d+),(\d+)?$/",$_GET['limit'],$m)) {
 			$_GET['limit'] = "{$m[1]},$hardlimit";
@@ -109,7 +109,7 @@ if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 	$sql_crit .= " $sql_hardlimit";
 }
 
-if (isset($_GET['supp']) xor empty($_GET['u'])) {
+if (!empty($_GET['supp']) xor empty($_GET['u'])) {
 	$mod_sql = "moderation_status in ('accepted','geograph')";
 } else {
 	$mod_sql = "moderation_status = 'geograph'";
@@ -127,7 +127,7 @@ if ($i) {
 
 	$engine = new SearchEngine($i);
 	
-	if (isset($_GET['count'])) {
+	if (!empty($_GET['count'])) {
 		if (preg_match("/^\d+$/",$_GET['count'])) {
 			$engine->criteria->resultsperpage = $_GET['count'];
 		} elseif ($_GET['count'] == -1) {
@@ -142,8 +142,8 @@ if ($i) {
 		//if want en then we HAVE to use the non cached version!
 	$recordSet = $engine->ReturnRecordset($pg,isset($_GET['en']));
 
-} elseif (isset($_GET['en'])) {
-	if (isset($_GET['ftf'])) {
+} elseif (!empty($_GET['en'])) {
+	if (!empty($_GET['ftf'])) {
 		$mod_sql .= " and ftf = 1"; 
 	}
 	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,nateastings,natnorthings,gi.user_id $sql_from 
@@ -152,10 +152,10 @@ if ($i) {
 	inner join gridsquare using(gridsquare_id) 
 	where $mod_sql $sql_crit");
 } else {
-	if (isset($_GET['supp'])) {
+	if (!empty($_GET['supp'])) {
 		$mod_sql = 1; //no point checking what will always be 1 ;-)
 	}
-	if (isset($_GET['ftf'])) {
+	if (!empty($_GET['ftf'])) {
 		$mod_sql .= " and ftf = 1"; 
 	}
 	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,user_id $sql_from 
@@ -173,23 +173,23 @@ while (!$recordSet->EOF)
 		$image['imageclass'] = '"'.str_replace('"', '""', $image['imageclass']).'"';
 	}
 	echo "{$image['gridimage_id']},{$image['title']},{$image['grid_reference']},{$image['realname']},{$image['imageclass']}";
-	if (isset($_GET['thumb'])) {
+	if (!empty($_GET['thumb'])) {
 		$gridimage->fastInit($image);
 		echo ','.$gridimage->getThumbnail(120,120,true);
 	}
-	if (isset($_GET['en'])) {
+	if (!empty($_GET['en'])) {
 		if ($image['nateastings'])
 			echo ",{$image['nateastings']},{$image['natnorthings']}";
-	} elseif (isset($_GET['ll'])) {
+	} elseif (!empty($_GET['ll'])) {
 		echo ",{$image['wgs84_lat']},{$image['wgs84_long']}";
 	}
-	if (isset($_GET['taken'])) {
+	if (!empty($_GET['taken'])) {
 		echo ",{$image['imagetaken']}";
 	}
-	if (isset($_GET['ppos'])) {
+	if (!empty($_GET['ppos'])) {
 		echo ",{$image['viewpoint_eastings']},{$image['viewpoint_northings']}";
 	}
-	if (isset($_GET['dir'])) {
+	if (!empty($_GET['dir'])) {
 		echo ",{$image['view_direction']}";
 	}
 
