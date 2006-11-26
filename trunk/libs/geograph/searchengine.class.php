@@ -402,6 +402,16 @@ END;
 		return $this->criteria->displayclass;
 	}
 	
+	function setDisplayclass($di) {
+		global $USER;
+		$db=$this->_getDB();
+		
+		if ($this->query_id) {
+			$db->Execute("update queries set displayclass = ".$db->Quote($di)." where id = {$this->query_id} and user_id = {$USER->user_id}");
+			$this->criteria->displayclass = $di;
+		}
+	}
+	
 	function pagesString($postfix = '') {
 		static $r;
 		if (!empty($r))

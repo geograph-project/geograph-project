@@ -32,7 +32,15 @@ $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 $imagestatuses = array('geograph' => 'geograph only','geograph,accepted' => 'geographs &amp; supplemental','accepted' => 'supplemental only');
 $sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North');
 #,'user_id'=>'Contributer ID'
-
+$displayclasses =  array(
+			'full' => 'full listing',
+			'text' => 'text description only',
+			'thumbs' => 'thumbnails only',
+			'thumbsmore' => 'thumbnails + links',
+			'slide' => 'slide-show mode',
+			'more' => 'extra direct links',
+			'spelling' => 'spelling utility');
+$smarty->assign_by_ref('displayclasses',$displayclasses);		
 
 
 if (isset($_GET['fav']) && $i) {
@@ -465,6 +473,11 @@ if (isset($_GET['fav']) && $i) {
 	$display = $engine->getDisplayclass();
 	if (isset($_GET['displayclass']) && preg_match('/^\w+$/',$_GET['displayclass']))
 		$display = $_GET['displayclass'];
+		
+	if (isset($_GET['new_displayclass']) && preg_match('/^\w+$/',$_GET['new_displayclass']) && $USER->registered && $USER->user_id == $engine->criteria->user_id) {
+		$display = $_GET['new_displayclass'];
+		$engine->setDisplayclass($_GET['new_displayclass']);
+	}
 	$template = 'search_results_'.$display.'.tpl';
 	$cacheid="search|$i.$pg";
 	if (!empty($_GET['count'])) {
@@ -513,6 +526,7 @@ if (isset($_GET['fav']) && $i) {
 			&& strpos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
 			$smarty->assign('nofirstmatch', true);
 		}	
+		$smarty->assign_by_ref('displayclasses',$displayclasses);
 	}
 	
 	if ($engine->criteria->user_id == $USER->user_id) {
@@ -627,14 +641,7 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign('pagesizes', array(5,10,15,20,30,50));
 		
 		if (!$is_cachable || !$smarty->is_cached($template, $is_cachable)) {
-			$smarty->assign('displayclasses', array(
-			'full' => 'full listing',
-			'text' => 'text description only',
-			'thumbs' => 'thumbnails only',
-			'thumbsmore' => 'thumbnails + links',
-			'slide' => 'slide-show mode',
-			'more' => 'extra direct links',
-			'spelling' => 'spelling utility'));
+			$smarty->assign_by_ref('displayclasses',$displayclasses);
 			$smarty->assign('distances', array(1,2,3,4,5,10,20,30,40,50,100,200,300,400,500,1000,2000));
 
 			$countylist = array();

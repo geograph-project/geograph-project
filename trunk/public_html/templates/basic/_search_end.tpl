@@ -8,8 +8,21 @@
 
 <br style="clear:both"/>
 
-<p align="center">
-<span style="border:1px solid red; padding:10px;margin:10px">Background for photo viewing:
+<div style="border:1px solid red; padding:10px; margin:10px; text-align:center">
+{if $user->registered && $engine->criteria->user_id == $user->user_id}
+<form action="/search.php" method="get" style="display:inline">
+<input type="hidden" name="i" value="{$i}"/>
+{if $engine->currentPage > 1}<input type="hidden" name="i" value="{$engine->currentPage}"/>{/if}
+<label for="displayclass">Display Format:</label>
+<select name="new_displayclass" id="displayclass" size="1" onchange="this.form.submit()"> 
+	{html_options options=$displayclasses selected=$engine->criteria->displayclass}
+</select>
+<noscript>
+<input type="submit" value="Update"/>
+</noscript>
+</form> &nbsp;&nbsp;
+{/if}
+Background Color:
 {if $maincontentclass eq "content_photowhite"}
 	<b>white</b>
 {else}
@@ -25,7 +38,6 @@
 {else}
 	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=gray" rel="nofollow" class="robots-nofollow robots-noindex">Grey</a>
 {/if}
-</span>
-</p>
+</div>
 
 {include file="_std_end.tpl"}
