@@ -51,6 +51,15 @@ $template=($map->pixels_per_km == 4)?'mapsheet100k.tpl':'mapsheet.tpl';
 if ($map->pixels_per_km != 40 && $map->pixels_per_km != 4)
 	die("Invalid Parameter");
 
+if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
+	$mosaic->type_or_user = $USER->user_id;
+} elseif (isset($_GET['u'])) {
+	if (!empty($_GET['u']) && $USER->hasPerm("basic")) {
+		$mosaic->type_or_user = intval($_GET['u']);
+	} else {
+		$mosaic->type_or_user = 0;
+	}
+}
 
 //get token, we'll use it as a cache id
 $token=$map->getToken();
