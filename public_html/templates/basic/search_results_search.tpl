@@ -30,7 +30,7 @@
 	the following
 {/if}{/if}:
 {if $engine->resultCount}
-	<br/>( Page {$engine->pagesString('&amp;displayclass=search')})</small>
+	<br/>( Page {$engine->pagesString()})</small>
 	</p>
 
 	<div>
