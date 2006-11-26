@@ -183,8 +183,18 @@ function prePopulateImageclass() {
 
 function markImage(image) {
 	current = readCookie('markedImages');
+	newtext = 'marked';
 	if (current) {
-		newCookie = current + ',' + image;
+		re = new RegExp("([,]?)"+image+"([,]?)");
+		if (current.search(re) > -1) {
+			newCookie = current.replace(re,',');
+			newCookie = newCookie.replace(/,,/g,',');
+			newCookie = newCookie.replace(/^,/,'');
+			newCookie = newCookie.replace(/,$/,'');
+			newtext = 'Mark';
+		} else {
+			newCookie = current + ',' + image;
+		}
 	} else {
 		newCookie = image.toString();
 	}
@@ -193,9 +203,9 @@ function markImage(image) {
 	
 	ele = document.getElementById('mark'+image);
 	if(document.all) {
-	    ele.innerText = 'marked';
+	    ele.innerText = newtext;
 	} else {
-	    ele.textContent = 'marked';
+	    ele.textContent = newtext;
 	}
 }
 

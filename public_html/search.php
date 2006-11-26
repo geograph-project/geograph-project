@@ -124,6 +124,71 @@ if (isset($_GET['fav']) && $i) {
 
 	advanced_form($smarty,$db);
  	
+} else if (!empty($_GET['marked']) && isset($_COOKIE['markedImages'])) { //
+	dieUnderHighLoad(2,'search_unavailable.tpl');
+	// -------------------------------
+	//  special handler to build a special query for marke list.
+	// -------------------------------
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
+	
+	$data = $_GET;
+	$error = false;
+	
+	$db=NewADOConnection($GLOBALS['DSN']);
+	if (empty($db)) die('Database connection failed');
+
+	
+	
+	$data['description'] = (($USER->registered)?"on {$USER->realname}'s ":'on ')."Marked List at ".strftime("%A, %e %B, %Y");
+	$data['searchq'] = "1"; //temporally
+	
+	if (!$error) {
+		if (!empty($_GET['u']))
+			$data['user_id'] = $_GET['u']; 
+
+		$data['adminoverride'] = 1;
+
+		$engine = new SearchEngineBuilder('#'); 
+		
+		if ($i = $engine->buildAdvancedQuery($data,false)) {
+
+			if (!empty($_COOKIE['markedImages'])) {
+				foreach (explode(',',$_COOKIE['markedImages']) as $id) {
+					$db->Execute("INSERT INTO gridimage_query SET query_id = $i, gridimage_id = ".$db->Quote($id));
+				}
+				$data['searchq'] = "gridimage_id IN (SELECT gridimage_id FROM gridimage_query WHERE query_id = $i)";
+				
+				$db->Execute("UPDATE queries SET searchq = '{$data['searchq']}' WHERE id = $i");
+				
+			}
+			
+			header("Location:http://{$_SERVER['HTTP_HOST']}/{$engine->page}?i={$i}$extra".(($dataarray['submit'] == 'Count')?'&count=1':''));
+			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$engine->page}?i={$i}$extra".(($dataarray['submit'] == 'Count')?'&amp;count=1':'')."\">Your Search Results</a>";
+			exit;
+		}
+		
+		//should never fail?? - but display form 'in case'
+
+		//if we get this far then theres a problem...
+		$smarty->assign('errormsg', $engine->errormsg);
+	} else {
+		$smarty->assign('errormsg', $error);
+	}
+  	
+   	foreach ($data as $key=> $value) {
+		$smarty->assign($key, $value);
+	}
+	$_POST = $data;
+	$smarty->reassignPostedDate("submitted_start");
+	$smarty->reassignPostedDate("submitted_end");
+	$smarty->reassignPostedDate("taken_start");
+	$smarty->reassignPostedDate("taken_end");
+	
+ 	
+	advanced_form($smarty,$db);
+ 	
 } else if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || !empty($_GET['gridsquare'])) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------

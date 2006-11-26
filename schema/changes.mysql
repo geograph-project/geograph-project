@@ -620,3 +620,13 @@ update os_gaz set def_nam = replace(def_nam,'?ry','y&#375;') where def_nam like 
 
 
 
+ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full', 'text', 'thumbs', 'slide', 'more', 'spelling', 'thumbsmore' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT 'full' NOT NULL;
+
+
+CREATE TABLE `gridimage_query` (
+`query_id` INT UNSIGNED NOT NULL ,
+`gridimage_id` INT UNSIGNED NOT NULL ,
+INDEX (
+`gridimage_query_id` 
+)
+);

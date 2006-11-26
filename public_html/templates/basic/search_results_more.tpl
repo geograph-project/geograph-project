@@ -34,7 +34,8 @@
 	{/foreach}
 	
 	<div style="position:relative">
-	<small><a href="javascript:void(displayMarkedImages())">Display Marked Images</a> (<a href="javascript:void(clearMarkedImages())">Clear List</a>)</small></div>
+	<br/><br/>
+	<small><a href="javascript:void(displayMarkedImages())">Display Marked Images</a> <a href="/search.php?marked=1&amp;displayclass={$engine->criteria->displayclass}">New Search with just Marked Images</a> (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear List</a>)</small></div>
 	<script>
 	window.onload = showMarkedImages;
 	</script>
