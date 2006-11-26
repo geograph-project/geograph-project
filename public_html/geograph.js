@@ -230,9 +230,9 @@ function showMarkedImages() {
 
 function clearMarkedImages() {
 	current = readCookie('markedImages');
-	if (current) {
+	if (current && confirm('Are you sure?')) {
 		splited = current.split(',');
-		
+
 		for(i=0; i < splited.length; i++) 
 			if (document.getElementById('mark'+splited[i])) {
 				ele = document.getElementById('mark'+splited[i])
@@ -242,9 +242,9 @@ function clearMarkedImages() {
 				    ele.textContent = 'Mark';
 				}
 			}
+		eraseCookie('markedImages');
+		alert('All images removed from your list');
 	} 
-	eraseCookie('markedImages');
-	alert('All images removed from your list');
 }
 
 
