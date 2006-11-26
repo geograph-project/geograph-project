@@ -416,6 +416,9 @@ END;
 		static $r;
 		if (!empty($r))
 			return($r);
+		if (isset($this->temp_displayclass)) {
+			$postfix .= "&amp;displayclass=".$this->temp_displayclass;
+		}
 		if ($this->currentPage > 1) 
 			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage-1)."$postfix\">&lt; &lt; prev</a> ";
 		$start = max(1,$this->currentPage-5);

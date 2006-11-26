@@ -471,10 +471,10 @@ if (isset($_GET['fav']) && $i) {
 	$engine = new SearchEngine($i);
 	
 	$display = $engine->getDisplayclass();
-	if (isset($_GET['displayclass']) && preg_match('/^\w+$/',$_GET['displayclass']))
+	if (isset($_GET['displayclass']) && preg_match('/^\w+$/',$_GET['displayclass'])) {
 		$display = $_GET['displayclass'];
-		
-	if (isset($_GET['new_displayclass']) && preg_match('/^\w+$/',$_GET['new_displayclass']) && $USER->registered && $USER->user_id == $engine->criteria->user_id) {
+		$engine->temp_displayclass = $display;
+	} elseif (isset($_GET['new_displayclass']) && preg_match('/^\w+$/',$_GET['new_displayclass']) && $USER->registered && $USER->user_id == $engine->criteria->user_id) {
 		$display = $_GET['new_displayclass'];
 		$engine->setDisplayclass($_GET['new_displayclass']);
 	}
