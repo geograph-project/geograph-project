@@ -627,6 +627,7 @@ CREATE TABLE `gridimage_query` (
 `query_id` INT UNSIGNED NOT NULL ,
 `gridimage_id` INT UNSIGNED NOT NULL ,
 INDEX (
-`gridimage_query_id` 
+`query_id`,`gridimage_id`
 )
 );
+
