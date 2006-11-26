@@ -141,7 +141,7 @@ if (isset($_GET['fav']) && $i) {
 
 	
 	
-	$data['description'] = (($USER->registered)?"on {$USER->realname}'s ":'on ')."Marked List at ".strftime("%A, %e %B, %Y");
+	$data['description'] = (($USER->registered)?"on {$USER->realname}'s ":'on ')."Marked List at ".strftime("%A, %e %B, %Y. %H:%M");
 	$data['searchq'] = "1"; //temporally
 	
 	if (!$error) {
