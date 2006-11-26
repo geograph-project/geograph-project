@@ -51,6 +51,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$count['geobb_posts__users']=$db->GetOne("select count(distinct poster_id) from geobb_posts");
 	$count['geobb_topics__views']=$db->GetOne("select sum(topic_views) from geobb_topics");
 	$count['gridimage_ticket__users']=$db->GetOne("select count(distinct user_id) from gridimage_ticket");
+	$count['gridimage_ticket__users_others']=$db->GetOne("select count(distinct gi.user_id) from gridimage_ticket gi inner join gridimage g on (gi.gridimage_id = g.gridimage_id and gi.user_id != g.user_id)");
 	$count['gridimage__users']=$db->GetOne("select count(distinct user_id) from gridimage");
 	//-1 beucase will count all anon users as 1 user (user_id = 0)
 	$count['queries__users']=$db->GetOne("select count(distinct user_id)-1 from queries");

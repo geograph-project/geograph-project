@@ -23,7 +23,7 @@
 	<li>by <b>{$count.geobb_posts__users|thousends}</b> different users, with <b>{$count.geobb_topics__views|thousends}</b> total topic page views</li>
 </ul></li>
 <li><b>{$count.gridimage_ticket|thousends}</b> Change Requests (<b>{$count.gridimage_ticket_item|thousends}</b> individual changes)<ul>
-	<li>by <b>{$count.gridimage_ticket__users|thousends}</b> different users</li>
+	<li>by <b>{$count.gridimage_ticket__users|thousends}</b> different users (<b>{$count.gridimage_ticket__users_others|thousends}</b> only counting tickets on other's images)</li>
 </ul></li>
 <li><b>{$count.wordnet|thousends}</b> different Title words and phrases</li>
 </ul>

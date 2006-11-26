@@ -66,10 +66,16 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$sql = "SELECT COUNT(*) FROM geobb_posts WHERE post_time > DATE_SUB(NOW() , interval 1 HOUR)";
 	calc("Forum Posts in last hour",$sql);
+
+	$sql = "SELECT COUNT(DISTINCT poster_id) FROM geobb_posts WHERE post_time > DATE_SUB(NOW() , interval 1 HOUR)";
+	calc("Forum Posters in last hour",$sql);
+
 	
 	$sql = "SELECT COUNT(*) FROM geobb_posts WHERE post_time > DATE_SUB(NOW() , interval 24 HOUR)";
 	calc("Forum Posts in last 24 hours",$sql);
 
+	$sql = "SELECT COUNT(DISTINCT poster_id) FROM geobb_posts WHERE post_time > DATE_SUB(NOW() , interval 24 HOUR)";
+	calc("Forum Posters in last 24 hours",$sql);
 	
 	if (strpos($_ENV["OS"],'Windows') === FALSE) {
 		//check load average
