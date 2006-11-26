@@ -35,7 +35,7 @@
 	
 	<div style="position:relative">
 	<br/><br/>
-	<small><a href="javascript:void(displayMarkedImages())">Display Marked Images</a> <a href="/search.php?marked=1&amp;displayclass={$engine->criteria->displayclass}">New Search with just Marked Images</a> (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear List</a>)</small></div>
+	<small style="padding:10px; background-color:#eeeeee;">Marked Images: <a href="javascript:void(displayMarkedImages())"><b>Display</b>/Export</a> &nbsp; <a href="/search.php?marked=1&amp;displayclass={$engine->criteria->displayclass}">View as Search Results</a> &nbsp; <a href="javascript:void(importToMarkedImages())">Import to List</a> &nbsp; (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear List</a>)</small></div>
 	<script>
 	window.onload = showMarkedImages;
 	</script>
