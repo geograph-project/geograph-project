@@ -215,16 +215,18 @@ function importToMarkedImages() {
 	list = prompt('Paste your current list, either comma or space seperated\n or just surrounded with [[[ ]]] ','');
 	if (list != '') {
 		splited = list.split(/[^\d]+/);
-				
+		count=0;	
 		for(i=0; i < splited.length; i++) {
 			image = splited[i];
 			if (image != '')
-				if (newCookie.search(new RegExp("([,]?)"+image+"([,]?)")) == -1)
+				if (newCookie.search(new RegExp("([,]?)"+image+"([,]?)")) == -1) {
 					newCookie = newCookie + ',' + image;
-			alert(image);
+					count=count+1;
+				}
 		}
 		createCookie('markedImages',newCookie,10);
 		showMarkedImages();
+		alert("Added "+count+" image(s) to your list");
 	}
 }
 
