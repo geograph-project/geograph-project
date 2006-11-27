@@ -34,11 +34,11 @@ $sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','gridimage_
 #,'user_id'=>'Contributer ID'
 $displayclasses =  array(
 			'full' => 'full listing',
-			'text' => 'text description only',
+			'more' => 'full listing + links',
 			'thumbs' => 'thumbnails only',
 			'thumbsmore' => 'thumbnails + links',
 			'slide' => 'slide-show mode',
-			'more' => 'extra direct links',
+			'text' => 'text only',
 			'spelling' => 'spelling utility');
 $smarty->assign_by_ref('displayclasses',$displayclasses);		
 
