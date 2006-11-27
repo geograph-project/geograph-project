@@ -526,7 +526,6 @@ if (isset($_GET['fav']) && $i) {
 			&& strpos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
 			$smarty->assign('nofirstmatch', true);
 		}	
-		$smarty->assign_by_ref('displayclasses',$displayclasses);
 	}
 	
 	if ($engine->criteria->user_id == $USER->user_id) {
@@ -641,7 +640,6 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign('pagesizes', array(5,10,15,20,30,50));
 		
 		if (!$is_cachable || !$smarty->is_cached($template, $is_cachable)) {
-			$smarty->assign_by_ref('displayclasses',$displayclasses);
 			$smarty->assign('distances', array(1,2,3,4,5,10,20,30,40,50,100,200,300,400,500,1000,2000));
 
 			$countylist = array();

@@ -47,18 +47,17 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="user_id">contributor</label></td> 
+			 <td><label for="user_name">contributor</label></td> 
 			 <td colspan="2"> 
-				<select name="user_id" id="user_id" size="1" class="searchinput"> 
-				  <option value=""> </option>
-				  	{dynamic}
-					{if $user->registered}
-						<option value="{$user->user_id}">&nbsp; {$user->realname}</option>
-						<option value=""> </option> 
-					{/if}
-					{/dynamic}
-					{html_options options=$userlist selected=$user_id}				  
-				</select> <input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label></td> 
+			 	<input type="text" name="user_name" id="user_name" value="{$user_name|escape:'html'}" class="searchinput" style="width:200px"
+			 	title="enter the nickname of a contributor, the full name should work too. if you know it you can enter the users ID followed by a colon"/>
+				{dynamic}
+				{if $user->registered}
+					<input type="button" value="you!" onclick="this.form.user_name.value='{$user->user_id}:{$user->realname|escape:"html"}'">
+				{/if}
+				{/dynamic}
+				<input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label><br/>
+				<small>open <a href="/statistics.php?by=user" target="_blank">Contributor List</a> in new window</small></td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="moderation_status">status</label></td> 
@@ -75,13 +74,13 @@
 			 
 <script type="text/javascript" src="/categories.js.php?full=1"></script>
 			 
-				<select name="imageclass" id="imageclass" size="1" class="searchinput"  onmouseover="prePopulateImageclass()" onfocus="prePopulateImageclass()"> 
+				<select name="imageclass" id="imageclass" size="1" class="searchinput"  onfocus="prePopulateImageclass()" disabled="disabled"> 
 					<option value=""></option>
 					{if $imageclass}
 						<option value="{$imageclass}" selected="selected">{$imageclass}</option>
 					{/if}
 					<option value="Other"></option>				  
-				</select></td> 
+				</select><input type="button" name="imageclass_enable_button" value="enable" onclick="prePopulateImageclass()"/></td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
