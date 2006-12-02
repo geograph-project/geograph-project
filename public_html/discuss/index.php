@@ -338,6 +338,12 @@ elseif($action==''){
 if(db_simpleSelect(0,$Tf,'forum_id') and $countRes>0){
 if ($viewTopicsIfOnlyOneForum!=1) {
 	if (isset($_GET['forums']) && empty($_GET['forums'])) {
+		if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_icon')){
+			do{
+				$fIcon[$cols[0]]=$cols[1];
+			}
+			while($cols=db_simpleSelect(1));
+		}
 		$title=$sitename;
 		echo load_header();
 	} else {
