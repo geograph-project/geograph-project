@@ -337,8 +337,15 @@ if(isset($metaLocation)) { $meta_relocate="{$main_url}/{$indexphp}"; echo ParseT
 elseif($action==''){
 if(db_simpleSelect(0,$Tf,'forum_id') and $countRes>0){
 if ($viewTopicsIfOnlyOneForum!=1) {
-require($pathToFiles.'bb_func_vforum.php');
+	if (isset($_GET['forums']) && empty($_GET['forums'])) {
+		$title=$sitename;
+		echo load_header();
+	} else {
+		require($pathToFiles.'bb_func_vforum.php');
+	}
 if ($viewlastdiscussions!=0) {
+	if (!empty($_GET['latest']))
+		$viewlastdiscussions = intval($_GET['latest']);
 require($pathToFiles.'bb_func_ldisc.php');
 $listTopics=$list_topics;
 if($list_topics!='') echo ParseTpl(makeUp('main_last_discussions'));
