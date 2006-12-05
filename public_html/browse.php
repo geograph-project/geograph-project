@@ -366,7 +366,7 @@ if ($grid_given)
 		
 		$smarty->assign('totalimagecount', $square->totalimagecount);
 		
-		if ($square->totalimagecount < 10) {
+		if ($square->totalimagecount < 10 || ($USER->registered && !empty($_GET['big']))) {
 			$smarty->assign('thumbw',213);
 			$smarty->assign('thumbh',160);
 		} else {
