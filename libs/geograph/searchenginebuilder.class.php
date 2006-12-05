@@ -224,9 +224,9 @@ class SearchEngineBuilder extends SearchEngine
 		}
 		
 		if (!empty($dataarray['postcode'])) {
-			if (preg_match("/^ *([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9])([A-Z]{0,2}) *$/",strtoupper($dataarray['postcode']),$pc)) {
+			if (preg_match("/^\s*([A-Z]{1,2})([0-9]{1,2}[A-Z]?)\s*([0-9]?)([A-Z]{0,2})\s*$/",strtoupper($dataarray['postcode']),$pc)) {
 				require_once('geograph/searchcriteria.class.php');
-				$searchq = $pc[1].$pc[2]." ".$pc[3];
+				$searchq = $pc[1].$pc[2].($pc[3]?" ".$pc[3]:'');
 				$criteria = new SearchCriteria_Postcode();
 				$criteria->setByPostcode($searchq);
 				if ($criteria->y != 0) {
