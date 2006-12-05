@@ -104,6 +104,12 @@ class SearchCriteria
 					break;
 				case 'dist_sqd':
 					break;
+				case 'imagetaken':
+					if ($sql_where) {
+						$sql_where .= ' and ';
+					}
+					$sql_where .= "imagetaken != '0000-00-00'";
+					//falls though...
 				default:
 					$sql_order = $this->orderby;
 			}
