@@ -108,7 +108,7 @@ class SearchCriteria
 					if ($sql_where) {
 						$sql_where .= ' and ';
 					}
-					$sql_where .= "imagetaken != '0000-00-00'";
+					$sql_where .= "imagetaken NOT LIKE '0000-%'";
 					//falls though...
 				default:
 					$sql_order = $this->orderby;
