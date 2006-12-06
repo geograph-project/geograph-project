@@ -12,7 +12,7 @@
 
 <form action="/search.php" method="get" style="display:inline">
 <input type="hidden" name="i" value="{$i}"/>
-{if $engine->currentPage > 1}<input type="hidden" name="i" value="{$engine->currentPage}"/>{/if}
+{if $engine->currentPage > 1}<input type="hidden" name="page" value="{$engine->currentPage}"/>{/if}
 <label for="displayclass">Display Format:</label>
 <select name="{if $user->registered && $engine->criteria->user_id == $user->user_id}new_displayclass{else}displayclass{/if}" id="displayclass" size="1" onchange="this.form.submit()"> 
 	{html_options options=$displayclasses selected=$engine->criteria->displayclass}
