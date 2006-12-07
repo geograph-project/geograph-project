@@ -124,7 +124,7 @@ geographing</a> first.</p>
 		{external href="http://www.multimap.com/p/browse.cgi?scale=25000&lon=`$long`&lat=`$lat`&GridE=`$long`&GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
 		{/if}
 		
-		<p><b>Grid References:</b> (recommended)<br/><br/><label for="gridreference">Primary Photo Subject</label> <input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/crosshairs.gif" alt="Marks the Subject" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/></p>
+		<p><b>Grid References:</b> (recommended)<br/><br/><label for="gridreference">Primary Photo Subject</label> <input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/crosshairs.gif" alt="Marks the Subject" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/> <a href="javascript:void(document.theForm.viewpoint_gridreference.value = document.theForm.gridreference.value);void(updateMapMarker(document.theForm.viewpoint_gridreference,false));" style="font-size:0.8em">Duplicate</a></p>
 	
 		<p><label for="viewpoint_gridreference">Photographer Position</label> <input id="viewpoint_gridreference" type="text" name="viewpoint_gridreference" value="{$viewpoint_gridreference|escape:'html'}" size="14"  onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/camera.gif" alt="Marks the Photographer" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/><br/><small>Blank assumes very close to the subject</small></p>
 		
@@ -249,7 +249,7 @@ it was taken or other interesting geographical information. (<a href="/help/styl
  {/if}
 
 <p style="clear:both"><label for="comment">Comment</label><br/>
-<textarea id="comment" name="comment" rows="4" cols="80" spellcheck="true">{$comment|escape:'html'}</textarea></p>
+<textarea id="comment" name="comment" rows="7" cols="80" spellcheck="true">{$comment|escape:'html'}</textarea></p>
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
 to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 
