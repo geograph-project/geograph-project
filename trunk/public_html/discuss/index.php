@@ -351,7 +351,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 	}
 if ($viewlastdiscussions!=0) {
 	if (!empty($_GET['latest']))
-		$viewlastdiscussions = intval($_GET['latest']);
+		$viewlastdiscussions = min(intval($_GET['latest']),120);
 require($pathToFiles.'bb_func_ldisc.php');
 $listTopics=$list_topics;
 if($list_topics!='') echo ParseTpl(makeUp('main_last_discussions'));
