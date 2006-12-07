@@ -474,7 +474,7 @@ if (isset($_GET['fav']) && $i) {
 	if (isset($_GET['displayclass']) && preg_match('/^\w+$/',$_GET['displayclass'])) {
 		$display = $_GET['displayclass'];
 		if ($USER->registered && $USER->user_id == $engine->criteria->user_id) {
-			$engine->setDisplayclass($_GET['new_displayclass']);
+			$engine->setDisplayclass($_GET['displayclass']);
 		} else {
 			$engine->temp_displayclass = $display;
 		}
