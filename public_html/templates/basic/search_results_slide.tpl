@@ -25,7 +25,7 @@
 	 </div>
 	{foreachelse}
 	 	{if $engine->resultCount}
-	 		<p style="background:#dddddd;padding:20px;"><a href="/search.php?i={$i}"><b>continue to results</b> &gt; &gt;</a></p>
+	 		<p style="background:#dddddd;padding:20px;"><a href="/search.php?i={$i}{if $engine->temp_displayclass}&amp;displayclass={$engine->temp_displayclass}{/if}"><b>continue to results</b> &gt; &gt;</a></p>
 	 	{/if}
 	{/foreach}
 	{if $engine->results}
@@ -33,12 +33,12 @@
 		<div id="marker_start" style="display:none; text-align:center; background-color:#dddddd; padding:10px;">
 		You have reached the beginning of this page of results.
 		{if $engine->currentPage > 1}<br/><br/>
-		<a href="/search.php?i={$i}&amp;page={$engine->currentPage-1}">&lt; &lt; previous page</a>
+		<a href="/search.php?i={$i}&amp;page={$engine->currentPage-1}{if $engine->temp_displayclass}&amp;displayclass={$engine->temp_displayclass}{/if}">&lt; &lt; previous page</a>
 		{/if}</div>
 		<div id="marker_end" style="display:none; text-align:center; background-color:#dddddd; padding:10px;">
 		You have reached the end of this page of results.
 		{if $engine->numberOfPages > $engine->currentPage}<br/><br/>
-		<a href="/search.php?i={$i}&amp;page={$engine->currentPage+1}">next page &gt; &gt;</a>
+		<a href="/search.php?i={$i}&amp;page={$engine->currentPage+1}{if $engine->temp_displayclass}&amp;displayclass={$engine->temp_displayclass}{/if}">next page &gt; &gt;</a>
 		{/if}</div>
 <script>//<![CDATA[
 var resultcount = {$engine->numberofimages};

@@ -26,7 +26,7 @@
 	 </div>
 	{foreachelse}
 	 	{if $engine->resultCount}
-	 		<p style="background:#dddddd;padding:20px;"><a href="/search.php?i={$i}"><b>continue to results</b> &gt; &gt;</a></p>
+	 		<p style="background:#dddddd;padding:20px;"><a href="/search.php?i={$i}{if $engine->temp_displayclass}&amp;displayclass={$engine->temp_displayclass}{/if}"><b>continue to results</b> &gt; &gt;</a></p>
 	 	{/if}
 	{/foreach}
 	{if $engine->results}
