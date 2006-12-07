@@ -115,8 +115,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign("point",$point);
 
 
-	$total['average'] = $point['total']; 
-	$total['average_r'] = $point['total']; 
+	$total['average'] = $total['average_r'] = $point['total'] / ($days/7); 
 	$total['next'] = $db->getOne("select count(*) from gridsquare where percent_land > 0 $andri");
 		
 	$total['dif'] = $total['next'] - $total['count'];
