@@ -29,9 +29,12 @@ $smarty = new GeographPage;
 
 $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
+$days = (isset($_GET['days']) && is_numeric($_GET['days']))?intval($_GET['days']):7;
+
+
 
 $template='statistics_estimate.tpl';
-$cacheid='statistics|estimate'.$ri;
+$cacheid='statistics|estimate'.$ri.'.'.$days;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
@@ -53,7 +56,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$table = array();
 
-	$beginday = date("Y-m-d",mktime(0,0,0,date('m'),date('d')-7,date('Y')));
+	$beginday = date("Y-m-d",mktime(0,0,0,date('m'),date('d')-$days,date('Y')));
 	$today = date("Y-m-d");
 
 	$sql = "select substring(submitted,1,10) as d ,count(*) as c from gridimage_search where submitted > '$beginday' AND submitted < '$today' $andri group by substring(submitted,1,10)";
@@ -147,7 +150,7 @@ if (!$smarty->is_cached($template, $cacheid))
 $smarty->display($template, $cacheid);
 
 function calc($sql,$sql2,$mult,$title) {
-	global $db,$table;
+	global $db,$table,$days;
 	
 	$array = $db->getAssoc($sql);
 	
@@ -172,7 +175,7 @@ function calc($sql,$sql2,$mult,$title) {
 	}
 	$image['total'] = $total;
 	
-	$image['average'] = $total / 7;
+	$image['average'] = $total / $days;
 	$image['average_r'] = floor($image['average']);
 	
 	if ($title) {
