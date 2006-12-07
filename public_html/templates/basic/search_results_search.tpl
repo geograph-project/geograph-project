@@ -30,7 +30,7 @@
 	the following
 {/if}{/if}:
 {if $engine->resultCount}
-	<br/>( Page {$engine->pagesString()})</small>
+	<br/>( Page {$engine->pagesString('',' target="_self"')})</small>
 	</p>
 
 	<div>
@@ -49,7 +49,7 @@
 	<br style="clear:both"/>
 	</div>
 	{if $engine->results}
-		<p><small>Search took {$querytime|string_format:"%.2f"} secs, <br/>( Page {$engine->pagesString()})</small>
+		<p><small>Search took {$querytime|string_format:"%.2f"} secs, <br/>( Page {$engine->pagesString('',' target="_self"')})</small>
 	{/if}
 {/if}
 
