@@ -1168,7 +1168,11 @@ class KMLCreator extends FeedCreator {
 				$feed.= "
 			<styleUrl>$style</styleUrl>
 			<Style>
-				<icon>".htmlspecialchars($this->items[$i]->thumb)."</icon>
+				<IconStyle>
+					<Icon>
+						<href>".htmlspecialchars($this->items[$i]->thumb)."</href>
+					</Icon>
+				</IconStyle>
 			</Style>";
 			}
 			if ($this->items[$i]->imageTaken) {
