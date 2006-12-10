@@ -174,7 +174,7 @@
 		{html_options options=$ticket_options selected=$profile->ticket_option}
 	</select>
 	 
-	<div class="fieldnotes">Change the amount of automated emails you receive in relation to trouble tickets on your images.</div>
+	<div class="fieldnotes">Change the amount of automated emails you receive in relation to trouble tickets on your images. (more options to be added later)</div>
 </div>
 
 

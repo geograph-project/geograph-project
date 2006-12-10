@@ -33,7 +33,7 @@ init_session();
 
 	$map=new GeographMap;
 	
-	$map->enableCaching($CONF['smarty_caching']);
+	$map->enableCaching(empty($_GET['refresh']) && $CONF['smarty_caching']);
 
 
 		$map->setOrigin(0,-10);
@@ -44,15 +44,60 @@ init_session();
 			$map->type_or_user = -2005;
 		} elseif ($_GET['year'] == '2004') {
 			$map->type_or_user = -2004;
-		} else {
+		} elseif ($_GET['depth']) {
+			$map->setOrigin(0,-10);
+			$map->setImageSize(900,1300);
+			$map->setScale(1);
+			
+			#$map->setOrigin(400,200);
+			#$map->setImageSize(600,600);
+			#$map->setScale(2);
+			unset($CONF['enable_newmap']);
+			
 			$map->type_or_user = -1;
+		} elseif ($_GET['big']) {
+			$map->setOrigin(0,-10);
+			$map->setImageSize(1200,1700);
+			$map->setScale(1.3);
+			
+			$map->type_or_user = -10;
+		} elseif ($_GET['date']) {
+			$map->setOrigin(0,-10);
+			$map->setImageSize(900,1300);
+			$map->setScale(1);
+			
+			$mapDateStart = "2005-06-07";
+			$mapDateCrit = "2005-06-01";
+			
+			$map->type_or_user = -2;
+		} elseif ($_GET['dates']) {
+			$map->setOrigin(0,-10);
+			$map->setImageSize(900,1300);
+			$map->setScale(1);
+			$map->type_or_user = -2;
+			
+			$root=&$_SERVER['DOCUMENT_ROOT'];
+			$n = time()-(60*60*24*7);
+			for($t=strtotime("10 March 2005"); $t<$n; $t+=(60*60*24) ) {
+				$mapDateStart = date('Y-m-d',$t);
+				$mapDateCrit = date('Y-m-d',$t-(60*60*24*7));
+			
+				$target=$map->getImageFilename();
+				$target=preg_replace('/\./',"-$mapDateStart.",$target);
+				
+				if (!file_exists($root.$target)) {
+					$map->_renderMap();	
+				}
+			}
+			exit;
 		}
 	
 			//force render of this map 
 			//$map->_renderRandomGeographMap();
 				//now done with type_or_user = -1
 	
-	$map->returnImage();
+	if (count($_GET))
+		$map->returnImage();
 	exit;
 
 

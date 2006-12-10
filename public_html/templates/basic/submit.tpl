@@ -334,7 +334,7 @@ window.onload = onChangeImageclass;
 
 <p>Only use this tickbox if you beleive the subject matter is not quite a 'geograph', there can be many geograph images per square.</p>
 
-<p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found <a href="/help/geograph_guide" target="_blank">here</a> (opens in new window).</span></p>
+<p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in the <a href="/help/geograph_guide" target="_blank">geograph guide</a> (opens in new window).</span></p>
 </div>
 
 <p>

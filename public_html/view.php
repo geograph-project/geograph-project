@@ -111,7 +111,7 @@ if ($image->isValid())
 		if ($USER->registered) 
 			$USER->setDefaultStyle($style);
 	}
-	elseif ($USER->registered) 
+	elseif ($USER->registered && in_array($USER->default_style, $valid_style)) 
 	{
 		$style=$USER->default_style;
 	}

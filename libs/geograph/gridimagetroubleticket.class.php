@@ -445,7 +445,8 @@ class GridImageTroubleTicket
 						"if further information is required. If you wish, you can review and comment on these ".
 						"changes by following the links in this message. ");
 					$submitter=new GeographUser($img->user_id);
-					$this->_sendMail($submitter->email, $msg);
+					if ($submitter->ticket_option != 'none')
+						$this->_sendMail($submitter->email, $msg);
 				}
 			}
 			elseif ($this->status=="closed")
@@ -461,7 +462,8 @@ class GridImageTroubleTicket
 						
 					$msg =& $this->_buildEmail($comment);
 					$submitter=new GeographUser($img->user_id);
-					$this->_sendMail($submitter->email, $msg);
+					if ($submitter->ticket_option != 'none')
+						$this->_sendMail($submitter->email, $msg);
 				
 				}
 				
