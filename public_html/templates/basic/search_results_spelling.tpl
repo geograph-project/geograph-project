@@ -6,6 +6,9 @@
 	{if $nofirstmatch}
 	<p style="font-size:0.8em">[We have no images for {$engine->criteria->searchq}, <a href="/submit.php?gridreference={$engine->criteria->searchq}">Submit Yours Now</a>]</p>
 	{/if}
+	{if $singlesquares}
+	<p style="font-size:0.8em">[{$singlesquares} squares within {$singlesquare_radius}km have no or only one photo - can you <a href="/submit.php">add more</a>?]</p>
+	{/if}
 	{foreach from=$engine->results item=image}
 	 <div style="border-top: 1px solid lightgrey; padding-top:1px;">
 	  <form action="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" target="editor" style="display:inline">
