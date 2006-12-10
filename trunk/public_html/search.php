@@ -520,12 +520,16 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign('currentPage', $pg);
 		$smarty->assign_by_ref('engine', $engine);
 
-		if (!$engine->countOnly && $pg == 1 
-			&& $engine->criteria->searchclass == 'GridRef'
-			&& $engine->criteria->issubsetlimited == false
-			&& ( $engine->criteria->orderby == 'dist_sqd' || $engine->criteria->orderby == '' )
-			&& strpos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
-			$smarty->assign('nofirstmatch', true);
+		if (!$engine->countOnly && $pg == 1 && $engine->criteria->issubsetlimited == false
+				&& ( $engine->criteria->orderby == 'dist_sqd' || $engine->criteria->orderby == '' ) ) {
+			if ($engine->criteria->searchclass == 'GridRef'
+					&& strpos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
+				$smarty->assign('nofirstmatch', true);
+			}
+			if ($engine->criteria->x && $engine->criteria->y) {
+				$smarty->assign('singlesquares', $engine->criteria->countSingleSquares());
+				$smarty->assign('singlesquare_radius', $CONF['search_prompt_radius']);
+			}
 		}	
 	}
 	

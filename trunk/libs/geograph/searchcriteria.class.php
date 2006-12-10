@@ -281,7 +281,32 @@ class SearchCriteria
 		}
 	} 
 	
-	
+	function countSingleSquares() {
+		global $CONF;
+		$db = $this->_getDB();
+		
+		$x = $this->x;
+		$y = $this->y;
+		$radius = $CONF['search_prompt_radius'];
+		
+		$left=$x-$radius;
+		$right=$x+$radius;
+		$top=$y-$radius;
+		$bottom=$y+$radius;
+
+		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
+		$sql="select count(*) 
+			from gridsquare where
+			CONTAINS( 	
+				GeomFromText($rectangle),
+				point_xy)
+			AND imagecount<2
+			AND power(x-$x,2)+power(y-$y,2) <= ($radius*$radius)
+			AND percent_land>0";
+		
+		return $db->getOne($sql);
+	}
 	
 	/**
 	* return true if instance references a valid search
