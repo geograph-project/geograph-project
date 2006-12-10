@@ -102,10 +102,9 @@ geographing</a> first.</p>
 		<div>
 	{/if}
 		{if $imagecount gt 0}
-			<p style="color:#440000">We already have 
+			<p style="color:#440000">We currently have 
 			{if $imagecount eq 1}an image{else}{$imagecount} images{/if} {if $totalimagecount && $totalimagecount > $imagecount} ({$totalimagecount} including hidden){/if} (preview shown below)
-			uploaded for <a title="View Images for {$gridref} (opens in new window)" href="/gridref/{$gridref}" target="_blank">{$gridref}</a>, but you are welcome to upload 
-			another one.</p>
+			uploaded for <a title="View Images for {$gridref} (opens in new window)" href="/gridref/{$gridref}" target="_blank">{$gridref}</a>, add yours now!</p>
 		{else}
 			<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}! {if $totalimagecount && $totalimagecount ne $imagecount} (but you have {$totalimagecount} hidden){/if}</p>
 		{/if}
@@ -171,7 +170,7 @@ geographing</a> first.</p>
 
 	{foreach from=$images item=image}
 
-	  <div class="photo33" style="float:left;width:150px; background-color:white"><a title="{$image->title|escape:'html'} by {$image->realname} - click to view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(120,120,false,true)}</a>
+	  <div class="photo33" style="float:left;width:150px; height:170px; background-color:white"><a title="{$image->title|escape:'html'} by {$image->realname} - click to view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(120,120,false,true)}</a>
 	  <div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->title|escape:'html'}</a></div>
 	  <div class="statuscaption">status:
 		{if $image->ftf}first{/if}
@@ -214,7 +213,8 @@ Below is a full-size preview of the image we will store for grid reference
 
 <p>If you're the first to submit a proper &quot;geograph&quot; for {$gridref}
 you'll get a geograph point added to your profile and the warm glow that comes
-with it. So what makes an image a genuine geograph? (not just the first)</p>
+with it.</p>
+<p>So what makes an image a genuine geograph? (there can be many geograph images per square)</p>
 <ul>
 <li>The image subject must be within grid square {getamap gridref=$gridref}, and ideally the photographer should be too.</li>
 <li>You must clearly show at close range one of the main geographical features within the square</li>
@@ -332,7 +332,9 @@ window.onload = onChangeImageclass;
 
 <p><label for="user_status">I wish to suggest this image become a supplemental:</label> <input type="checkbox" name="user_status" id="user_status" value="accepted" {if $user_status == "accepted"}checked="checked"{/if}/> (tick to apply)</p>
 
-<p>Remembering the points <a href="#geograph">above</a> about what makes a geograph, <span class="nowrap">more information can be found <a href="/help/geograph_guide" target="_blank">here</a> (opens in new window).</span></p>
+<p>Only use this tickbox if you beleive the subject matter is not quite a 'geograph', there can be many geograph images per square.</p>
+
+<p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found <a href="/help/geograph_guide" target="_blank">here</a> (opens in new window).</span></p>
 </div>
 
 <p>

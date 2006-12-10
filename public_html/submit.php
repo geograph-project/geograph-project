@@ -27,13 +27,9 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/uploadmanager.class.php');
 
 init_session();
-$USER->mustHavePerm("basic");
 
 
 $uploadmanager=new UploadManager;
-$square=new GridSquare;
-$smarty = new GeographPage;
-
 
 //display preview image?
 if (isset($_GET['preview']))
@@ -42,7 +38,13 @@ if (isset($_GET['preview']))
 	exit;
 }
 
+$square=new GridSquare;
+$smarty = new GeographPage;
 
+if (!$USER->hasPerm("basic")) {
+	$smarty->display('submit_intro.tpl');
+	exit;
+}
 
 $step=isset($_POST['step'])?intval($_POST['step']):1;
 

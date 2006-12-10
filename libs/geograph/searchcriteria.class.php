@@ -281,13 +281,12 @@ class SearchCriteria
 		}
 	} 
 	
-	function countSingleSquares() {
+	function countSingleSquares($radius = 4) {
 		global $CONF;
 		$db = $this->_getDB();
 		
 		$x = $this->x;
 		$y = $this->y;
-		$radius = $CONF['search_prompt_radius'];
 		
 		$left=$x-$radius;
 		$right=$x+$radius;
