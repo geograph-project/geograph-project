@@ -79,7 +79,6 @@
 				  <option value="604800">7 Days</option> 
 				</select></label></td> 
 		  </tr> 
-		  {if $engine->islimited}
 		  <tr> 
 			 <td><input type="radio" name="type" value="view" id="type_view"/></td> 
 			 <td colspan="2"><b><label for="type_view"><big><acronym title="View-Based Refresh">Wide area</acronym></big></label></b><br>
@@ -89,7 +88,6 @@
 			 {if $i && $engine->resultCount}{$engine->criteria->resultsperpage}{else}around 15{/if} photos at a time with this option.
 			 </td> 
 		  </tr> 
-		  {/if}
 		</table> 
 		
 		<input type="hidden" name="simple" value="1"/>
