@@ -71,7 +71,6 @@
 <h3 style="margin-top:0px;margin-bottom:0px">My Statistics</h3>
 <ul>
  	  <li><b>{$profile->stats.ftf}</b> Geograph points (see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)<ul>
- 	  {if $profile->rank > 0}<li>Overall Rank: <b>{$profile->rank|ordinal}</b> {if $profile->rank > 1}({$profile->to_rise_rank} more needed to reach {$profile->rank-1|ordinal} position){/if}</li>{/if}
  	  <li><b>{$profile->stats.geosquares}</b> gridsquare{if $profile->stats.geosquares ne 1}s{/if} <i>geographed</i></li>
  	  </ul>
  	  </li>

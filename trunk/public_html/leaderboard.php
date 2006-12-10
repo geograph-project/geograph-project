@@ -89,6 +89,12 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_having_having = "having count(*) > $minimum";
 		$heading = "Depth";
 		$desc = "the depth score, and having submitted over $minimum images";
+	} elseif ($type == 'depth2') {
+		$sql_column = "count(*)/count(distinct grid_reference)";
+		$sql_where = "1";
+		$sql_having_having = "having count(*) > $minimum";
+		$heading = "High Depth";
+		$desc = "the high depth score, and having submitted over $minimum images";
 	} elseif ($type == 'myriads') {
 		$sql_column = "count(distinct substring(grid_reference,1,3 - reference_index))";
 		$sql_where = "1";

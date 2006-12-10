@@ -14,7 +14,7 @@ $l_months='Jan:Feb:Mar:Apr:May:Jun:Jul:Aug:Sep:Oct:Nov:Dec';
 
 $l_admin='Admin';
 $l_about='About user';
-$l_forum='Forum &nbsp; (<a href="?forums=0" style="color:white;font-weight:normal">Hide this list</a>)';
+$l_forum='Forum &nbsp; (<a href="?forums=0" style="color:white;font-weight:normal" title="Just show the recent Discussions. TIP: bookmark the resultant page">Hide this list</a>)';
 $l_num_topics='Topics';
 $l_topic='Topic';
 $l_replies='Replies';
