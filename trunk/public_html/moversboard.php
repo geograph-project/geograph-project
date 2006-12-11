@@ -112,6 +112,12 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_table = " gridimage_search i ";
 		$heading = "Myriads";
 		$desc = "different myriads";
+	} elseif ($type == 'hectads') {
+		//we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
+		$sql_column = "count( concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )";
+		$sql_table = " gridimage_search i ";
+		$heading = "Hectads";
+		$desc = "different hectads";
 	} elseif ($type == 'days') {
 		$sql_column = "count(distinct imagetaken)";
 		$sql_table = " gridimage_search i ";
