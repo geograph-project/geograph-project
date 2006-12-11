@@ -101,7 +101,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "Myriads";
 		$desc = "different myriads";
 	} elseif ($type == 'hectads') {
-		$sql_column = "count( concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )";
+		$sql_column = "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )";
 		$sql_where = "1";
 		$heading = "Hectads";
 		$desc = "different hectads";
