@@ -332,7 +332,7 @@ window.onload = onChangeImageclass;
 
 <p><label for="user_status">I wish to suggest this image become a supplemental:</label> <input type="checkbox" name="user_status" id="user_status" value="accepted" {if $user_status == "accepted"}checked="checked"{/if}/> (tick to apply)</p>
 
-<p>Only use this tickbox if you beleive the subject matter is not quite a 'geograph', there can be many geograph images per square.</p>
+<p>Only use this tick box if you believe the subject matter is not quite a 'geograph', there can be many geograph images per square.</p>
 
 <p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in the <a href="/help/geograph_guide" target="_blank">geograph guide</a> (opens in new window).</span></p>
 </div>
