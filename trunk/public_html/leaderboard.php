@@ -84,7 +84,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "Images";
 		$desc = "images submitted";
 	} elseif ($type == 'test_points') {
-		$sql_orderby = ',points desc';
 		$sql_column = "sum((i.moderation_status = 'geograph') + ftf + 1)";
 		$sql_where = "1";
 		$heading = "G-Points";
