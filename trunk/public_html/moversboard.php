@@ -101,6 +101,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph') as points, sum(i.moderation_status in ('geograph','accepted'))";
 		$heading = "New<br/>Images";
 		$desc = "images submitted";
+	} elseif ($type == 'test_points') {
+		$sql_orderby = ',points desc';
+		$sql_column = "sum((i.moderation_status = 'geograph') + ftf + 1)";
+		$heading = "G-Points";
+		$desc = "test points";
 	} elseif ($type == 'depth') {
 		$sql_column = "count(*)/count(distinct grid_reference)";
 		$sql_table = " gridimage_search i ";
