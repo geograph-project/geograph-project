@@ -51,7 +51,7 @@
 <h3>Do you accept multiple images per square?</h3>
     Certainly - the points system is there to encourage people to make that extra effort 
     to capture squares we don't have photos for yet - but we welcome additional 
-    images, perhaps showing a different subject, or a different time of year. Everyone sees 
+    geograph or supplemental images, perhaps showing a different subject, or a different time of year. Everyone sees 
     things differently - feel free to give us your take on any square. Some squares have 
     been done in considerable <a href="/statistics/most_geographed.php" title="squares with good overage">detail</a> - helping to more fully document and add <a href="/moversboard.php?type=depth" title="Depth Weekly Leaderboard">depth</a> to a square.</p>
 <a name="resize"></a>
