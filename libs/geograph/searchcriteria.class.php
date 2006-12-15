@@ -63,7 +63,7 @@ class SearchCriteria
 	{
 		if (!empty($_GET['BBOX'])) {
 			
-			if ($_GET['LOOKAT']) {
+			if (!empty($_GET['LOOKAT'])) {
 			
 				list($west,$south,$east,$north) = explode(',',trim(str_replace('e ','e+',$_GET['BBOX'])));
 		
@@ -119,7 +119,7 @@ class SearchCriteria
 					$west = $nlong - $dif;
 					$east = $nlong + $dif;
 				}
-			
+			}
 			
 			$rectangle = "'POLYGON(($west $south,$east $south,$east $north,$west $north,$west $south))'";
 
