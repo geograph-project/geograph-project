@@ -42,7 +42,7 @@ if (empty($db)) die('Database connection failed');
 
 $user_id = "inet_aton('{$_SERVER['REMOTE_ADDR']}')";
 
-if (empty($CONF['usermsg_spam_trap']) {
+if (empty($CONF['usermsg_spam_trap'])) {
 	$throttle = 0;
 } elseif ($db->getOne("select count(*) from throttle where used > date_sub(now(), interval 1 hour) and user_id=$user_id AND feature = 'usermsg'") > 5) {
 	$smarty->assign('throttle',1);
