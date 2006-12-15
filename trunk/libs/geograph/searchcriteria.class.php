@@ -62,9 +62,66 @@ class SearchCriteria
 	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) 
 	{
 		if (!empty($_GET['BBOX'])) {
-			list($left,$bottom,$right,$top) = explode(',',trim(str_replace('e ','e+',$_GET['BBOX'])));
 			
-			$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+			if ($_GET['LOOKAT']) {
+			
+				list($west,$south,$east,$north) = explode(',',trim(str_replace('e ','e+',$_GET['BBOX'])));
+		
+			
+				// calculate the approx center of the view -- note that this is innaccurate if the user is not looking straight down
+				$clong = (($east - $west)/2) + $west;
+				$clat = (($north - $south)/2) + $south;
+			
+				list($long,$lat) = preg_split('/,|\s/', str_replace('e ','e+',$_GET['LOOKAT']));
+							
+				
+				$uplat = ($clat + $north) / 2.0;
+				$lolat = ($south + $clat) / 2.0;
+			
+				//is the lookat point outside the central square of the BBOX (hence large tilt)
+				if ($lat > $uplat) {
+					$diflat = ($north - $lat);
+				} elseif ($lat < $lolat) {
+					$diflat = ($lat - $south);		
+				}
+				
+				$uplong = ($clong + $east) / 2.0;
+				$lolong = ($west + $clong) / 2.0;
+			
+				if ($long > $uplong) {
+					$diflong = ($east - $long);
+				} elseif ($long < $lolong) {
+					$diflong = ($long - $west);
+				}
+				
+				//find a suitable 'distance' from an edge
+				$dif = abs(max($diflat,$diflong));
+				
+				//if we have an off center view create a new square and recenter it 'in the foreground' 
+				if ($dif) {
+					function interpolate_part($one,$two,$fraction) {
+						$big = $two - $one;
+						$small = $fraction * $big;
+						return $one + $small;
+					}
+			
+					$linelength = sqrt(pow($lat - $clat,2) + pow($long - $clong,2));
+					$fraction = $dif / $linelength;
+			
+					//find the point on the line between the lookat and the center point
+					$nlat = interpolate_part($lat,$clat, $fraction);
+					$nlong = interpolate_part($long,$clong, $fraction);
+			
+					//and recenter the 'square' on that new point
+					$south = $nlat - $dif;
+					$north = $nlat + $dif;
+			
+					$west = $nlong - $dif;
+					$east = $nlong + $dif;
+				}
+			
+			
+			$rectangle = "'POLYGON(($west $south,$east $south,$east $north,$west $north,$west $south))'";
 
 			$sql_where = "CONTAINS(GeomFromText($rectangle),point_ll)";
 		} else {
