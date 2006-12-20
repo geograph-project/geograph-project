@@ -83,12 +83,14 @@ class RasterMapOS {
 		global $CONF;
 		
 		$limit = (!empty($_GET['limit']))?intval($_GET['limit']):5;
+		$skip = (!empty($_GET['skip']))?intval($_GET['skip']):0;
 		
 	#	$CONF['os50ktilepath'].$ll.'/'.$tile.'.TIF';
 		
 		$root = $CONF['os50ktilepath'];
 		$lldh = opendir($root);
 		$c = 1;
+		$cs = 0;
 		while (($llfile = readdir($lldh)) !== false) {
 			if (is_dir($root.$llfile) && strpos($llfile,'.') !== 0) {
 				$folder = $llfile.'/';
@@ -96,20 +98,25 @@ class RasterMapOS {
 						
 				while (($tilefile = readdir($tiledh)) !== false) {
 					if (is_file($root.$folder.$tilefile) && strpos($tilefile,'.TIF') !== FALSE) {
+						if ($skip && $cs < $skip) {
+							$cs++;
+							break;
+						}
 						$tile = str_replace(".TIF",'',$tilefile);
 						print "TILE=$tile<BR>";
-					
+						$r = true;
 						if ($_GET['processTile']) {
 							$this->processTile($tile,100,100);
 							$this->processTile($tile,300,100);
 							$this->processTile($tile,300,300);
-							$this->processTile($tile,100,300);
+							$r = $this->processTile($tile,100,300);
 						}
 					
 						if ($_GET['processSingleTile'])
-							$this->processSingleTile($tile);
+							$r = $this->processSingleTile($tile);
 						
-						$c++;
+						if ($r)
+							$c++;
 						if ($c > $limit) {
 							print "<pre>Terminated<pre>";
 							exit;
@@ -203,7 +210,8 @@ class RasterMapOS {
 
 			$path = $this->getOSGBStorePath('pngs-2k-250/');
 
-			$cmd = sprintf ('"%smontage" -geometry +0+0 %s +page -crop %ldx%ld+%ld+%ld +repage -thumbnail %ldx%ld -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 6,230 155,243 3,3" -fill "#000066" -pointsize 10 -draw "text 10,240 \'© Crown Copyright %s\'" png:%s', 
+			$cmd = sprintf ('%s"%smontage" -geometry +0+0 %s +page -crop %ldx%ld+%ld+%ld +repage -thumbnail %ldx%ld -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 6,230 155,243 3,3" -fill "#000066" -pointsize 10 -draw "text 10,240 \'© Crown Copyright %s\'" png:%s', 
+				isset($_GET['nice'])?'nice ':'',
 				$CONF['imagemagick_path'],
 				implode(' ',$tilelist),
 			#	$this->width*1.5, $this->width*1.5, 
@@ -252,7 +260,7 @@ class RasterMapOS {
 		$newpath = $this->getOSGBStorePath('pngs-1k-'.$this->width.'/',$e,$n);
 		if (file_exists($newpath)) {
 			print "already done processSingleTile($tile,$width)<br>";
-			return;
+			return false;
 		}
 	
 	
@@ -260,7 +268,8 @@ class RasterMapOS {
 		
 #/usr/bin/convert tiff:/var/www/geograph_live/rastermaps/OS-50k/tiffs/SH/SH64.TIF -gravity SouthWest -crop 3600x3600+100+100 +repage -crop 400x400 +repage -thumbnail 250x250 -colors 128 -font /usr/share/fonts/truetype/freefont/FreeSans.ttf -fill "#eeeeff" -draw "roundRectangle 8,230 153,243 3,3" -fill "#000066" -pointsize 10 -draw "text 10,240 '© Crown Copyright 100045616'" png:/var/www/geograph_live/rastermaps/OS-50k/pngs-2k-250/27/34/SH64.png
 
-			$cmd = sprintf ('"%sconvert" tiff:%s -gravity SouthWest +repage -crop %ldx%ld +repage -thumbnail %ldx%ld -colors 128 png:%s', 
+			$cmd = sprintf ('%s"%sconvert" tiff:%s -gravity SouthWest +repage -crop %ldx%ld +repage -thumbnail %ldx%ld -colors 128 png:%s', 
+				isset($_GET['nice'])?'nice ':'',
 				$CONF['imagemagick_path'],
 				$this->getOSGBTilePath($ll,$tile),
 				TIFF_PX_PER_KM, TIFF_PX_PER_KM, 
@@ -295,6 +304,7 @@ class RasterMapOS {
 			//generate resized image
 			die("gd not implemented!");
 		}
+		return true;
 	}
 	
 //take a 20k tile and create 81 2km tiles	
@@ -322,7 +332,7 @@ class RasterMapOS {
 		$newpath = $this->getOSGBStorePath('pngs-2k-250/',$e,$n);
 		if (file_exists($newpath)) {
 			print "already done processTile($tile,$offsetX,$offsetY)<br>";
-			return;
+			return false;
 		}
 	
 		if (strlen($CONF['imagemagick_path'])) {
@@ -369,6 +379,7 @@ class RasterMapOS {
 			//generate resized image
 			die("gd not implemented!");
 		}
+		return true;
 	}
 
 //create a single 2km tile out of a 20k tile (no longer working?)
