@@ -67,18 +67,18 @@ function isSpam($msg)
 {
 	//some spam features url and entity encoding to hide
 	//the real content from filters. Bugger off!
-	$str=html_entity_decode(urldecode($str)); 
-	$str=strtolower($str);
+	$msg=html_entity_decode(urldecode($msg)); 
+	$msg=strtolower($msg);
 	
 	//no legitimate use for html or bbedit tags
-	if (strstr($str, '[url')!==false)
+	if (strstr($msg, '[url')!==false)
 		return true;
-	if (strstr($str, 'href')!==false)
+	if (strstr($msg, 'href')!==false)
 		return true;
 		
 	//how many times does http appear?
 	//$matches=array();
-	//preg_match_all("{http}", $str, $matches);
+	//preg_match_all("{http}", $msg, $matches);
 	//$count=count($matches[0]);
 	//if ($count>5)
 	//	return true;
@@ -87,4 +87,24 @@ function isSpam($msg)
 	
 	return false;
 }	
+
+/**
+ * Return IP address of user
+ * 
+ */
+function getRemoteIP()
+{
+	//get IP address of user
+	if (strlen($_SERVER['HTTP_X_FORWARDED_FOR']))
+	{
+		$ips=explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+		$ip=trim($ips[count($ips)-1]);
+	}
+	else
+	{
+		$ip=$_SERVER['REMOTE_ADDR'];
+	}
+	return $ip;
+}
+
 ?>
