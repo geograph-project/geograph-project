@@ -42,8 +42,12 @@ $USER->mustHavePerm("admin");
 $m = new RasterMapOS();
 
 
-if ($_GET['listTiles'])
+if ($_GET['listTiles']) {
 	$m->listTiles();
+	
+	print "DDONE";
+	exit;
+}
 
 if ($_GET['fakeSetup'])
 	$m->fakeSetup($gr);
@@ -78,11 +82,13 @@ class RasterMapOS {
 	function listTiles() {
 		global $CONF;
 		
+		$limit = (!empty($_GET['limit']))?intval($_GET['limit']):5;
+		
 	#	$CONF['os50ktilepath'].$ll.'/'.$tile.'.TIF';
 		
 		$root = $CONF['os50ktilepath'];
 		$lldh = opendir($root);
-			
+		$c = 1;
 		while (($llfile = readdir($lldh)) !== false) {
 			if (is_dir($root.$llfile) && strpos($llfile,'.') !== 0) {
 				$folder = $llfile.'/';
@@ -93,6 +99,21 @@ class RasterMapOS {
 						$tile = str_replace(".TIF",'',$tilefile);
 						print "TILE=$tile<BR>";
 					
+						if ($_GET['processTile']) {
+							$m->processTile($tile,100,100);
+							$m->processTile($tile,300,100);
+							$m->processTile($tile,300,300);
+							$m->processTile($tile,100,300);
+						}
+					
+						if ($_GET['processSingleTile'])
+							$m->processSingleTile($tile);
+						
+						$c++;
+						if ($c > $limit) {
+							print "<pre>Terminated<pre>";
+							exit;
+						}
 					}
 				}
 			}
@@ -195,7 +216,8 @@ class RasterMapOS {
 				
 			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) 
 				$cmd = str_replace('/','\\',$cmd);
-			#passthru ($cmd);
+			if (isset($_GET['run']))
+				passthru ($cmd);
 			print "<pre>$cmd</pre>";
 			 
 
@@ -237,7 +259,8 @@ class RasterMapOS {
 				
 			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) 
 				$cmd = str_replace('/','\\',$cmd);
-			#passthru ($cmd);
+			if (isset($_GET['run']))
+				passthru ($cmd);
 			print "<pre>$cmd</pre>";
 			 
 			$c = 0;
@@ -308,7 +331,8 @@ class RasterMapOS {
 				$path    );
 			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) 
 				$cmd = str_replace('/','\\',$cmd);
-			passthru ($cmd);
+			if (isset($_GET['run']))
+				passthru ($cmd);
 			print "<pre>$cmd</pre>";
 			
 			$c = 0;
@@ -385,7 +409,8 @@ class RasterMapOS {
 				
 			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) 
 				$cmd = str_replace('/','\\',$cmd);
-			#passthru ($cmd);
+			if (isset($_GET['run']))
+				passthru ($cmd);
 			print "<pre>$cmd</pre>";
 		} else {
 			//generate resized image
