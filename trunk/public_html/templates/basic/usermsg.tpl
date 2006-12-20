@@ -3,7 +3,9 @@
 {dynamic}
 {if $throttle}
 	<h2>Sorry</h2>
-	<p>Unable to send message - this service is currently busy</p>
+	<p>In order to prevent abuses of the contact page by spammers, we limit
+	the number of messages you can send in any hour - please try again later.</p>
+
 {else}
 
 {if $recipient->registered}
