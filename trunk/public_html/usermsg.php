@@ -40,14 +40,20 @@ $smarty->assign_by_ref('from_email', $from_email);
 $db=NewADOConnection($GLOBALS['DSN']);
 if (empty($db)) die('Database connection failed');
 
-$user_id = "inet_aton('{$_SERVER['REMOTE_ADDR']}')";
+$ip=getRemoteIP();
+
+$user_id = "inet_aton('{$ip}')";
 
 if (empty($CONF['usermsg_spam_trap'])) {
 	$throttle = 0;
-} elseif ($db->getOne("select count(*) from throttle where used > date_sub(now(), interval 1 hour) and user_id=$user_id AND feature = 'usermsg'") > 5) {
+} elseif ($db->getOne("select count(*) from throttle ".
+		"where used > date_sub(now(), interval 1 hour) and ".
+		"user_id=$user_id AND feature = 'usermsg'") > 5) {
 	$smarty->assign('throttle',1);
 	$throttle = 1;
-} elseif ($db->getOne("select count(*) from throttle where used > date_sub(now(), interval 24 hour) and user_id=$user_id AND feature = 'usermsg'") > 30) {
+} elseif ($db->getOne("select count(*) from throttle " .
+		"where used > date_sub(now(), interval 24 hour) and " .
+		"user_id=$user_id AND feature = 'usermsg'") > 30) {
 	$smarty->assign('throttle',1);
 	$throttle = 1;
 } else {
@@ -84,6 +90,12 @@ if (isset($_POST['msg']) && !$throttle)
 
 	$smarty->assign_by_ref('msg', $msg);
 
+
+	if (isSpam($msg))
+	{
+		$ok=false;
+		$errors['msg']="Sorry, this looks like spam";
+	}
 	
 	//still ok?
 	if ($ok)
@@ -91,10 +103,11 @@ if (isset($_POST['msg']) && !$throttle)
 		//build message and send it...
 		
 		$body=$smarty->fetch('email_usermsg.tpl');
-		$subject="[Geograph] $from_name contacting you from {$_SERVER['HTTP_HOST']}";
+		$subject="[Geograph] $from_name contacting you via {$_SERVER['HTTP_HOST']}";
 		
-		@mail($recipient->email, $subject, $body, 
-			"From: $from_name <$from_email>");
+		
+		
+		//@mail($recipient->email, $subject, $body, "From: $from_name <$from_email>");
 		
 			$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
 		
