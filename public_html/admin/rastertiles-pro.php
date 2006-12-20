@@ -246,6 +246,16 @@ class RasterMapOS {
 
 		$path = $CONF['os50kimgpath'].$tile.'.png';
 	
+	
+		$n = $this->natnorthings; 
+		$e = $this->nateastings; 
+		$newpath = $this->getOSGBStorePath('pngs-1k-'.$this->width.'/',$e,$n);
+		if (file_exists($newpath)) {
+			print "already done processSingleTile($tile,$width)<br>";
+			return;
+		}
+	
+	
 		if (strlen($CONF['imagemagick_path'])) {
 		
 #/usr/bin/convert tiff:/var/www/geograph_live/rastermaps/OS-50k/tiffs/SH/SH64.TIF -gravity SouthWest -crop 3600x3600+100+100 +repage -crop 400x400 +repage -thumbnail 250x250 -colors 128 -font /usr/share/fonts/truetype/freefont/FreeSans.ttf -fill "#eeeeff" -draw "roundRectangle 8,230 153,243 3,3" -fill "#000066" -pointsize 10 -draw "text 10,240 '© Crown Copyright 100045616'" png:/var/www/geograph_live/rastermaps/OS-50k/pngs-2k-250/27/34/SH64.png
