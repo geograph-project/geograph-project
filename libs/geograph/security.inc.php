@@ -58,5 +58,33 @@ function isValidURL($url)
 {
 	return preg_match('{^http(s?)\:\/\/[a-zA-Z0-9\-\._]+(\.[a-zA-Z0-9\-\._]+){1,}(\/?)([a-zA-Z0-9\~\-\.\?\,=\'\/\\\+&%\$#_]*)?$}' , $url)?true:false; 
 }
+
+/**
+ * Heuristic spam check intended for email message checking
+ * 
+ */
+function isSpam($msg)
+{
+	//some spam features url and entity encoding to hide
+	//the real content from filters. Bugger off!
+	$str=html_entity_decode(urldecode($str)); 
+	$str=strtolower($str);
 	
+	//no legitimate use for html or bbedit tags
+	if (strstr($str, '[url')!==false)
+		return true;
+	if (strstr($str, 'href')!==false)
+		return true;
+		
+	//how many times does http appear?
+	//$matches=array();
+	//preg_match_all("{http}", $str, $matches);
+	//$count=count($matches[0]);
+	//if ($count>5)
+	//	return true;
+
+	
+	
+	return false;
+}	
 ?>
