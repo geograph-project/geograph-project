@@ -283,23 +283,29 @@ class RasterMapOS {
 			print "<pre>$cmd</pre>";
 			 
 			$c = 0;
-			print "<table cellspacing=0 cellpadding=0 border=1>";
+			if (isset($_GET['print']))
+				print "<table cellspacing=0 cellpadding=0 border=1>";
 			foreach(range(	$this->natnorthings+19000 ,
 							$this->natnorthings ,
 							-1000 ) as $n) {
-				print "<tr>";
+				if (isset($_GET['print']))
+					print "<tr>";
 				foreach(range(	$this->nateastings ,
 								$this->nateastings+19000 ,
 								1000 ) as $e) {
 					$oldpath = preg_replace("/\./","-$c.",$path);
 					$newpath = $this->getOSGBStorePath('pngs-1k-'.$this->width.'/',$e,$n);
 					rename($oldpath,$newpath);
-					print "<td>$c =<br> <B>$e</B>,<br> $n</td>";
+					if (isset($_GET['print']))
+						print "<td>$c =<br> <B>$e</B>,<br> $n</td>";
 					$c++;
 				}
-				print "</tr>";
+				if (isset($_GET['print']))
+					print "</tr>";
 			}
-			print "</table>";
+			if (isset($_GET['print']))
+				print "</table>";
+			print "done renaming in processSingleTile($tile);<BR>";
 		} else {
 			//generate resized image
 			die("gd not implemented!");
