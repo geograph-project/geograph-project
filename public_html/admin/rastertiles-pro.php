@@ -100,14 +100,14 @@ class RasterMapOS {
 						print "TILE=$tile<BR>";
 					
 						if ($_GET['processTile']) {
-							$m->processTile($tile,100,100);
-							$m->processTile($tile,300,100);
-							$m->processTile($tile,300,300);
-							$m->processTile($tile,100,300);
+							$this->processTile($tile,100,100);
+							$this->processTile($tile,300,100);
+							$this->processTile($tile,300,300);
+							$this->processTile($tile,100,300);
 						}
 					
 						if ($_GET['processSingleTile'])
-							$m->processSingleTile($tile);
+							$this->processSingleTile($tile);
 						
 						$c++;
 						if ($c > $limit) {
