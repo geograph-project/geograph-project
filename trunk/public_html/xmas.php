@@ -35,10 +35,11 @@ $map=new GeographMap;
 $map->setOrigin(0,-10);
 $map->setImageSize(1200/2,1700/2);
 $map->setScale(1.3/2);
-if ($_GET['year'] == '2005') {
-	$map->type_or_user = -2005;
-} else {
-	$map->type_or_user = -2004;
+
+$year = !empty($_GET['year'])?intval($_GET['year']):date('Y');
+
+if ($year >= 2004 && $year <= date('Y')) {
+	$map->type_or_user = -1 * $year;
 } 
 $target=$_SERVER['DOCUMENT_ROOT'].$map->getImageFilename();
 
