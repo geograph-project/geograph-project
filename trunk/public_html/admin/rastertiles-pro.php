@@ -99,10 +99,10 @@ class RasterMapOS {
 				while (($tilefile = readdir($tiledh)) !== false) {
 					if (is_file($root.$folder.$tilefile) && strpos($tilefile,'.TIF') !== FALSE) {
 						$tile = str_replace(".TIF",'',$tilefile);
-						if ($skip && $cs < $skip) {
+						if (($skip > 0) && ($cs < $skip)) {
 							$cs++;
 							print "skip $tile<BR>";
-							break;
+							continue;
 						}
 						print "TILE=$tile<BR>";
 						$r = true;
