@@ -284,6 +284,7 @@ class RasterMapOS {
 		$newpath = $this->getOSGBStorePath('pngs-2k-250/',$e,$n);
 		if (file_exists($newpath)) {
 			print "already done processTile($tile,$offsetX,$offsetY)<br>";
+			flush();
 			return false;
 		}
 	
@@ -306,13 +307,16 @@ class RasterMapOS {
 			if (isset($_GET['run']))
 				passthru ($cmd);
 			print "<pre>$cmd</pre>";
+			flush();
 			
 			$c = 0;
-			print "<table cellspacing=0 cellpadding=0 border=1>";
+			if (isset($_GET['print']))
+				print "<table cellspacing=0 cellpadding=0 border=1>";
 			foreach(range(	$this->natnorthings+(8*2000)+$kmoffsetY ,
 							$this->natnorthings+$kmoffsetY ,
 							-2000 ) as $n) {
-				print "<tr>";
+				if (isset($_GET['print']))
+					print "<tr>";
 				foreach(range(	$this->nateastings+$kmoffsetX ,
 								$this->nateastings+(8*2000)+$kmoffsetX ,
 								2000 ) as $e) {
@@ -321,12 +325,16 @@ class RasterMapOS {
 				#	print "<hr/><pre>Rename $oldpath\nTo $newpath</pre>";
 				#	rename($newpath,$oldpath);
 					rename($oldpath,$newpath);
-					print "<td>$c =<br> <B>$e</B>,<br> $n</td>";
+					if (isset($_GET['print']))
+						print "<td>$c =<br> <B>$e</B>,<br> $n</td>";
+					print "$c ";flush();
 					$c++;
 				}
-				print "</tr>";
+				if (isset($_GET['print']))
+					print "</tr>";
 			}
-			print "</table>";
+			if (isset($_GET['print']))
+				print "</table>";
 		} else {
 			//generate resized image
 			die("gd not implemented!");
