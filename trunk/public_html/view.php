@@ -52,6 +52,7 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.or
 require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/mapmosaic.class.php');
+require_once('geograph/rastermap.class.php');
 
 init_session();
 
@@ -160,6 +161,9 @@ if ($image->isValid())
 		$overview->assignToSmarty($smarty, 'overview');
 		$smarty->assign('marker', $overview->getSquarePoint($image->grid_square));
 
+		//lets add an rastermap too
+		$rastermap = new RasterMap($image->grid_square,false);
+		$smarty->assign_by_ref('rastermap', $rastermap);
 
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;

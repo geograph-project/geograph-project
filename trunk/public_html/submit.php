@@ -301,7 +301,7 @@ if (isset($_POST['gridsquare']))
 		if ($step == 2) {
 			require_once('geograph/rastermap.class.php');
 
-			$rastermap = new RasterMap($square);
+			$rastermap = new RasterMap($square,true);
 			$smarty->assign_by_ref('rastermap', $rastermap);
 
 			$smarty->assign_by_ref('square', $square);

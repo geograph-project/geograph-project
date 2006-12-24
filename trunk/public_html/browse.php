@@ -27,6 +27,7 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
 require_once('geograph/map.class.php');
 require_once('geograph/mapmosaic.class.php');
+require_once('geograph/rastermap.class.php');
 
 init_session();
 
@@ -120,8 +121,7 @@ $cacheid.=$style;
 #if (!$smarty->is_cached($template, $cacheid))
 #{
 
-//this for some reason breaks the template...
-//	$smarty->assign('maincontentclass', 'content_photo'.$style);
+	$smarty->assign('maincontentclass', 'content_photo'.$style);
 
 
 
@@ -454,6 +454,11 @@ if ($grid_ok) {
 	$overview=new GeographMapMosaic('largeoverview');
 	$overview->setCentre($square->x,$square->y); //does call setAlignedOrigin
 	$smarty->assign('marker', $overview->getSquarePoint($square));
+	
+	//lets add an rastermap too
+	$rastermap = new RasterMap($square,false);
+	$smarty->assign_by_ref('rastermap', $rastermap);
+	
 } else {
 	$overview=new GeographMapMosaic('overview');	
 }
