@@ -110,7 +110,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <table style="width:100%"><tr>
 
-<td style="width:50px"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img align="left" src="/templates/basic/img/icon_discuss.gif" alt="Discuss"/></a></td>
+<td style="width:50px"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img src="/templates/basic/img/icon_discuss.gif" alt="Discuss"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
 {if $discuss}
 	There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a
@@ -121,7 +121,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 {/if}
 </td>
 
-<td style="width:50px"><a href="/editimage.php?id={$image->gridimage_id}"><img align="left" src="/templates/basic/img/icon_alert.gif" discuss="Modify"/></a></td>
+<td style="width:50px"><a href="/editimage.php?id={$image->gridimage_id}"><img src="/templates/basic/img/icon_alert.gif" alt="Modify"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
   
   {if ($user->user_id eq $image->user_id) or ($ismoderator)}
@@ -131,7 +131,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
   {/if}
 </td>
 
-<td style="width:50px"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img align="left" src="/templates/basic/img/icon_email.gif" alt="Email"/></a></td>
+<td style="width:50px"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="/templates/basic/img/icon_email.gif" alt="Email"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
   
   <a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the photographer</a>
@@ -275,7 +275,7 @@ WGS84: {$latdm} {$longdm}
   
 
 
-<p align="center">
+<p style="text-align:center">
 <span style="background-color:#e9e9e9; padding:10px;margin:10px">Background for photo viewing:
 {if $maincontentclass eq "content_photowhite"}
 	<b>white</b>
