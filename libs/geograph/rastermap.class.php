@@ -78,7 +78,7 @@ class RasterMap
 					$this->width = 250;
 				} elseif(in_array('vob',$services)) {
 					$this->service = 'vob';
-					$this->width = 300;
+					$this->width = ($issubmit)?300:250;
 				} 
 				$this->enabled = true;
 			}
@@ -101,26 +101,7 @@ class RasterMap
 				
 				$mapurl = "/tile.php?r=".$this->getToken();
 				
-				
-				$extra = ($this->issubmit)?22:0;
-				
-				$str = "<div style=\"position:relative;height:".($width+$extra)."\">";
-
-				$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" width=\"$width\" height=\"$width\" border=\"1\" alt=\"1:50,000 Modern Day Landranger(TM) Map &copy; Crown Copyright\"></div>";
-
-				if ($this->issubmit)
-					$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&lt;- Drag to mark photographer position.</small></div>";
-
-				$str .= "<div style=\"position:absolute;top:".($width+5)."px;left:5px;".((($this->issubmit)?'':'display:none'))."\" id=\"marker2\"><img src=\"/templates/basic/img/camera.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
-
-				$left = ($width/4) + ( ($this->nateastings - $east) * ($width/2) / 1000 ) - 8;
-				$top = $width - ( ($width/4) + ( ($this->natnorthings - $nort) * ($width/2) / 1000 ) ) - 8;
-				$str .= "<div style=\"position:absolute;top:{$top}px;left:{$left}px;".((($this->issubmit || $exactPosition)?'':'display:none'))."\" id=\"marker1\"><img src=\"/templates/basic/img/crosshairs.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
-
-				$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" width=\"$width\" height=\"".($width+$extra)."\" border=\"1\" alt=\"1:50,000 Modern Day Landranger(TM) Map &copy; Crown Copyright\" name=\"map\" galleryimg=\"no\"></div>";
-
-				return "$str</div>";
-				
+				$title = "1:50,000 Modern Day Landranger(TM) Map &copy; Crown Copyright";	
 				break;
 			case 'vob': 
 				$e1 = $east - 500;
@@ -132,27 +113,29 @@ class RasterMap
 				//Use of this URL is not permitted outside of geograph.org.uk
 				$mapurl = "http://vision.edina.ac.uk/cgi-bin/wms-vision?version=1.1.0&request=getMap&layers=newpop%2Csmall_1920%2Cmed_1904&styles=&SRS=EPSG:27700&Format=image/png&width=$width&height=$width&bgcolor=cfd6e5&bbox=$e1,$n1,$e2,$n2&exception=application/vnd.ogc.se_inimage";
 				
-				if (0 && $exactPosition) {
-					return "<img src=\"$mapurl\" width=\"$width\" height=\"$width\" border=\"1\" alt=\"Historical Map &copy; VisionOfBritain.org.uk\">";
-				} else {
-					$left = ($width/4) + ( ($this->nateastings - $east) * ($width/2) / 1000 ) - 8;
-					$top = $width - ( ($width/4) + ( ($this->natnorthings - $nort) * ($width/2) / 1000 ) ) - 8;
-				
-					$str = "<div style=\"position:relative;height:".($width+22)."\">";
-					
-					$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" width=\"$width\" height=\"$width\" border=\"1\" alt=\"Historical Map &copy; VisionOfBritain.org.uk\"></div>";
-					
-					$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&lt;- Drag to mark photographer position.</small></div>";
-					
-					$str .= "<div style=\"position:absolute;top:".($width+5)."px;left:5px;\" id=\"marker2\"><img src=\"/templates/basic/img/camera.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
-					
-					$str .= "<div style=\"position:absolute;top:{$top}px;left:{$left}px;\" id=\"marker1\"><img src=\"/templates/basic/img/crosshairs.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
-					
-					$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" width=\"$width\" height=\"".($width+22)."\" border=\"1\" alt=\"OVERLAY Historical Map &copy; VisionOfBritain.org.uk\" title=\"1940s OS New Popular Edition Historical Map &copy; VisionOfBritain.org.uk\" name=\"map\" galleryimg=\"no\"></div>";
-					
-					return "$str</div>";
-				}
+				$title = "1940s OS New Popular Edition Historical Map &copy; VisionOfBritain.org.uk";
 				break;
+		}
+		
+		if (isset($title)) {
+			$extra = ($this->issubmit)?22:0;
+						
+			$str = "<div style=\"position:relative;height:".($width+$extra)."\">";
+
+			$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" width=\"$width\" height=\"$width\" border=\"1\" alt=\"$title\"></div>";
+
+			if ($this->issubmit)
+				$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&lt;- Drag to mark photographer position.</small></div>";
+
+			$str .= "<div style=\"position:absolute;top:".($width+5)."px;left:5px;".((($this->issubmit)?'':'display:none'))."\" id=\"marker2\"><img src=\"/templates/basic/img/camera.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
+
+			$left = ($width/4) + ( ($this->nateastings - $east) * ($width/2) / 1000 ) - 8;
+			$top = $width - ( ($width/4) + ( ($this->natnorthings - $nort) * ($width/2) / 1000 ) ) - 8;
+			$str .= "<div style=\"position:absolute;top:{$top}px;left:{$left}px;".((($this->issubmit || $exactPosition)?'':'display:none'))."\" id=\"marker1\"><img src=\"/templates/basic/img/crosshairs.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
+
+			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" width=\"$width\" height=\"".($width+$extra)."\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"></div>";
+
+			return "$str</div>";
 		}
 	}
 	

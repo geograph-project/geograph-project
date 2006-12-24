@@ -116,7 +116,7 @@ class RasterMapOS {
 //take number of 1km tiles and create a 2km tile
 	function combineTiles($gr) {
 		global $CONF;
-		if (
+
 		$square=new GridSquare;
 
 		if (!$square->setByFullGridRef($gr)) {
