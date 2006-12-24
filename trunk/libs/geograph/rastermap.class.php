@@ -229,13 +229,18 @@ class RasterMap
 						$found = 1;
 					} else {
 						$tilelist[] = 'null';
+						if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
+							print "$newpath not found<br/>\n";
 					}
 					$c++;
 				}
 			}
 			
-			if (!$found)
+			if (!$found) {
+				if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
+					print "No content tiles found<br/>\n";
 				return false;
+			}
 			
 			if (!$path) 
 				$path = $this->getOSGBStorePath('pngs-2k-250/',$east,$nort,true);
@@ -256,7 +261,7 @@ class RasterMap
 				$cmd = str_replace('/','\\',$cmd);
 
 			exec ($cmd);
-			if ($_GET['debug'] && $USER->hasPerm('admin'))
+			if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 				print "<pre>$cmd</pre>";
 			
 			if (file_exists($path)) {
