@@ -385,6 +385,22 @@ div.statuscaption
 	color:silver;
 }
 
+dl.browselist
+{
+	
+}
+
+dl.browselist dt
+{
+	font-weight:bold;
+	border-bottom:1px solid #dddddd;
+}
+
+dl.browselist dd
+{
+	margin-left:5px;
+	padding-bottom:15px;
+}
 
 div.rastermap {
   border: 1px solid #a9a9a9;
@@ -395,6 +411,17 @@ div.rastermap {
 
 }
 
+div.ccmessage
+{
+	width:inherit;
+	text-align:center;
+	padding-bottom:3px;
+}
+
+div.ccmessage img
+{
+	vertical-align: middle
+}
 
 /* styling for a full size portrait photo*/
 div.photoportrait
@@ -441,7 +468,7 @@ div.photo66
 /* styling for a 33% resized photo*/
 div.photo33
 {
-	width:233px;
+	width:230px;
 	padding:10px;
 	border: silver 1px solid;
 	text-align:center;
@@ -557,6 +584,23 @@ div.picinfo
 div.picinfo td
 {
 	vertical-align:top;
+}
+
+dl.picinfo
+{
+	padding-left:15px;
+}
+
+dl.picinfo dt
+{
+	font-weight:bold;
+	border-bottom:1px solid #dddddd;
+}
+
+dl.picinfo dd
+{
+	margin-left:25px;
+	padding-bottom:10px;
 }
 
 /*---------------------------------------------------------------*

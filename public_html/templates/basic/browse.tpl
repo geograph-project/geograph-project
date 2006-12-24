@@ -4,13 +4,15 @@
 {else}
 	{assign var="page_title" value="Browse"}
 {/if}
-{assign var="right_block" value="_block_recent.tpl"}
+
 {include file="_std_begin.tpl"}
 
     <h2>Browse</h2>
+<div style="margin-left:10px;">
+<div style="position:relative;float:left;width:530px">
 
 {if $showresult}
-	<div style="float: right; position:relative;">
+	<div style="float: right; position:relative; margin-right:10px">
 	<table border="1" cellspacing="0">
 	<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}">NW</a></td>
 	<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}">N</a></td>
@@ -27,6 +29,8 @@
 	<p>You can view a particular grid square below - if the square hasn't been filled yet,
 	we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Get-a-map&trade;'} to help locate your grid square)</p>
 {/if}
+
+
 
 <form action="/browse.php" method="get">
 <div>
@@ -71,98 +75,45 @@
 {if $showresult}
 	{* We have a valid GridRef *}
 
+	{if $overview}
+	<br style="clear:both;"/>
+	  <div style="float:right; text-align:center; width:{$overview_width+30}px; position:relative; margin-right:20px">
+		{include file="_overview.tpl"}
+	  </div>
+	{/if}
+
 	{if $totalimagecount}
 		{* There are some thumbnails to display *}
 		
-		<ul>
-		<li>{$gridref} : 
-		{if !$breakdown && !$breakdowns && !$filtered && $totalimagecount > 1}
-			[<a href="/gridref/{$gridref}?by=1">breakdown</a>]
-		{/if}
-		[<a href="/submit.php?gridreference={$gridrefraw}" title="Submit image for {$gridref}">submit</a>]
-		[<a href="/search.php?q={$gridref}" title="Search for other nearby images">search</a>]
-		[<a href="/discuss/index.php?gridref={$gridref}" title="discussion about {$gridref}">discuss</a>] 
-		{if $totalimagecount > 5}
-			[<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show">slide Show</a>]
-		{/if}
-		[<a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}" title="Geograph map for {$gridref}">map</a>]
-		[<a href="/gpx.php?gridref={$gridref}" title="Download GPX coverage around {$gridref}">gpx</a>]		
-		[<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}">check sheet</a>]
-		{if strlen($gridrefraw) < 5}
-			[<a title="First Geographs within hectad {$gridrefraw}" href="/search.php?first={$gridrefraw}">hectad</a>]
-		{/if}
-		<small style="line-height:0.3em"><br/><br/></small></li>
-
-		<li>Maps:
-		
-		{getamap gridref=$gridrefraw text="Get-a-Map&trade;"}{if $square->reference_index eq 1},
-			{assign var="urltitle" value=$image->title|escape:'url'}
-			{external href="http://www.streetmap.co.uk/newmap.srf?x=`$square->nateastings`&amp;y=`$square->natnorthings`&amp;z=3&amp;sv=`$square->nateastings`,`$square->natnorthings`&amp;st=OSGrid&amp;lu=N&amp;tl=[$gridref]+from+geograph.org.uk&amp;ar=y&amp;bi=background=http://$http_host/templates/basic/img/background.gif&amp;mapp=newmap.srf&amp;searchp=newsearch.srf" text="streetmap.co.uk"}
-			&amp; 
-			{external href="http://www.multimap.com/map/browse.cgi?GridE=`$square->nateastings`&amp;GridN=`$square->natnorthings`&amp;scale=25000&amp;title=[`$gridref`]+from+geograph.org.uk" text="multimap.com"}
-		{else}
-			&amp;
-			{external href="http://www.multimap.com/p/browse.cgi?scale=25000&amp;lon=`$long`&amp;lat=`$lat`&amp;GridE=`$long`&amp;GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"}
-		{/if}<small style="line-height:0.3em"><br/><br/></small></li>
-
-		<li><b>We have 
-			{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
-			{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
-			for {$gridref}</b>
-			{if !$breakdown && !$breakdowns}<span style="font-size:0.8em;">- click for larger version</span>{/if}
-		</li>
-		</ul>
-
-		{if $breakdown}
-			{* We want to display a breakdown list *}
-			
-			<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images, by {$breakdown_title}:</p>
-
-			<ul>
-			{foreach from=$breakdown item=b}
-				<li><a href="{$b.link}">{$b.name}</a> [{$b.count}]</li>
-			{/foreach}
-			</ul>	
-		{else}
-			{if $breakdowns}
-				{* We want to choose a breakdown criteria to show *}
-				
-				<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select how you would like to view the images</p>
-
-				<div style="float:right;" class="photo33"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160,false,true)}</a>
-				<div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
-				<div class="statuscaption">status:
-				  {if $image->ftf}first{/if}
-				  {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
-				</div>
-
-				<ul>
-				{foreach from=$breakdowns item=b}
-					<li><a href="/gridref/{$gridref}?by={$b.type}">{$b.name}</a> [{$b.count}]</li>
-				{/foreach}
-
-				<li style="margin-top:10px;">Or view all images in the <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1" title="View images in {$gridref}">search interface</a> (<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;&displayclass=thumbs&amp;do=1">thumbnails only</a>)</li>
-
-				</ul>
-				<br style="clear:both"/>
-			{else}
-				{* Display some actual thumbnails *}
-				
-				{if $filtered}
-					<p>{$totalimagecount} Images, {$filtered_title}... (<a href="/gridref/{$gridref}">Remove Filter</a>)</p>
-				{/if}
-
-				{foreach from=$images item=image}
-					<div style="float:left;" class="photo33"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a>
-					<div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
-					<div class="statuscaption">status:
-					  {if $image->ftf}first{/if}
-					  {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
-					</div>
-				{/foreach}
-				<br style="clear:left;"/>&nbsp;
+		<dl class="browselist">
+			<dt>Links for {$gridref}:</dt>
+			<dd>{if !$breakdown && !$breakdowns && !$filtered && $totalimagecount > 1}
+				&middot;&nbsp;<a href="/gridref/{$gridref}?by=1">view breakdown</a>
 			{/if}
-		{/if}
+			&middot;&nbsp;<a href="/submit.php?gridreference={$gridrefraw}" title="Submit image for {$gridref}" class="nowrap">submit your own</a>
+			&middot;&nbsp;<a href="/search.php?q={$gridref}" title="Search for other nearby images" class="nowrap">search nearby</a>
+			&middot;&nbsp;<a href="/discuss/index.php?gridref={$gridref}" title="discussion about {$gridref}" class="nowrap">discuss {$gridref}</a>
+			{if $totalimagecount > 5}
+				&middot;&nbsp;<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show" class="nowrap">view slide show</a>
+			{/if}
+			&middot;&nbsp;<a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}" title="Geograph map for {$gridref}" class="nowrap">view map</a>
+			&middot;&nbsp;<a href="/gpx.php?gridref={$gridref}" title="Download GPX coverage around {$gridref}" class="nowrap">download gpx</a>
+			&middot;&nbsp;<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}" class="nowrap">print check sheet</a>
+			{if strlen($gridrefraw) < 5}
+				&middot;&nbsp;<a title="First Geographs within hectad {$gridrefraw}" href="/search.php?first={$gridrefraw}" class="nowrap">search hectad</a>
+			{/if}</dd>
+
+			<dt>Online Maps:</dt>
+			<dd>
+			&middot;&nbsp;{getamap gridref=$gridrefraw text="Get-a-Map&trade;"}
+			{if $square->reference_index eq 1}
+				{assign var="urltitle" value=$image->title|escape:'url'}
+				&middot;&nbsp;{external href="http://www.streetmap.co.uk/newmap.srf?x=`$square->nateastings`&amp;y=`$square->natnorthings`&amp;z=3&amp;sv=`$square->nateastings`,`$square->natnorthings`&amp;st=OSGrid&amp;lu=N&amp;tl=[$gridref]+from+geograph.org.uk&amp;ar=y&amp;bi=background=http://$http_host/templates/basic/img/background.gif&amp;mapp=newmap.srf&amp;searchp=newsearch.srf" text="streetmap.co.uk"}
+				&middot;&nbsp;{external href="http://www.multimap.com/map/browse.cgi?GridE=`$square->nateastings`&amp;GridN=`$square->natnorthings`&amp;scale=25000&amp;title=[`$gridref`]+from+geograph.org.uk" text="multimap.com"}
+			{else}
+				&middot;&nbsp;{external href="http://www.multimap.com/p/browse.cgi?scale=25000&amp;lon=`$long`&amp;lat=`$lat`&amp;GridE=`$long`&amp;GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"}
+			{/if}</dd>
+		</dl>
 	{else}
 		{* There are no images in this square (yet) *}
 		
@@ -220,7 +171,81 @@
 		{/if}</li>
 		</ul>
 	{/if}
-   
+{/if}
+
+</div>
+{if $rastermap->enabled}
+	<div class="rastermap" style="width:{$rastermap->width}px;position:relative">
+	{$rastermap->getImageTag()}
+	<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
+
+	</div>
+{/if}
+
+<br style="clear:both"/>
+</div>
+
+{if $showresult}
+	{* We have a valid GridRef *}
+	
+	<div class="interestBox" style="position:relative; margin-left:10px">We have 
+	{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
+	{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
+	for {$gridref}</b>
+	{if !$breakdown && !$breakdowns}<span style="font-size:0.8em;">- click for larger version</span>{/if}</div>
+
+	{if $breakdown}
+		{* We want to display a breakdown list *}
+
+		<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images, by {$breakdown_title}:</p>
+
+		<ul>
+		{foreach from=$breakdown item=b}
+			<li><a href="{$b.link}">{$b.name}</a> [{$b.count}]</li>
+		{/foreach}
+		</ul>	
+	{else}
+		{if $breakdowns}
+			{* We want to choose a breakdown criteria to show *}
+
+			<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select how you would like to view the images</p>
+
+			<div style="float:right;" class="photo33"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160,false,true)}</a>
+			<div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
+			<div class="statuscaption">status:
+			  {if $image->ftf}first{/if}
+			  {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
+			</div>
+
+			<ul>
+			{foreach from=$breakdowns item=b}
+				<li><a href="/gridref/{$gridref}?by={$b.type}">{$b.name}</a> [{$b.count}]</li>
+			{/foreach}
+
+			<li style="margin-top:10px;">Or view all images in the <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1" title="View images in {$gridref}">search interface</a> (<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;&displayclass=thumbs&amp;do=1">thumbnails only</a>)</li>
+
+			</ul>
+			<br style="clear:both"/>
+		{else}
+			{* Display some actual thumbnails *}
+			
+			
+			{if $filtered}
+				<p>{$totalimagecount} Images, {$filtered_title}... (<a href="/gridref/{$gridref}">Remove Filter</a>)</p>
+			{/if}
+
+			{foreach from=$images item=image}
+				<div style="float:left;" class="photo33"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a>
+				<div class="caption" style="height:2.5em"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
+				<div class="statuscaption">status:
+				  {if $image->ftf}first{/if}
+				  {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
+				</div>
+			{/foreach}
+			<br style="clear:left;"/>&nbsp;
+		{/if}
+	{/if}
+
    	{if $square->percent_land < 100 ||  $user->registered}
    		{* We on the coast so offer the option to request removal *}
    		

@@ -60,23 +60,51 @@ referring to <b>image {$image->gridimage_id}</b>
   <div class="caption">{$image->comment|escape:'html'|nl2br|geographlinks}</div>
   {/if}
 
- 
-  
-  {if $ismoderator}
-	  <form method="post">
-	  <script type="text/javascript" src="/admin/moderation.js"></script>
-	  <b>Moderation</b>
-	  <input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey"{/if}/>
-	  <input class="accept" type="button" id="accept" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey"{/if}/>
-	  <input class="reject" type="button" id="reject" value="Reject" onclick="moderateImage({$image->gridimage_id}, 'rejected')"/>
-	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
-	  </form>
-  {/if}
-
 </div>
 
 
+<!-- Creative Commons Licence -->
+<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
+alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &copy; Copyright <a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a> and  
+licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
+<!-- /Creative Commons Licence -->
 
+<!--
+
+<rdf:RDF xmlns="http://web.resource.org/cc/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<Work rdf:about="">
+     <dc:title>{$image->title|escape:'html'}</dc:title>
+     <dc:creator><Agent>
+        <dc:title>{$image->realname|escape:'html'}</dc:title>
+     </Agent></dc:creator>
+     <dc:rights><Agent>
+        <dc:title>{$image->realname|escape:'html'}</dc:title>
+     </Agent></dc:rights>
+     <dc:date>{$image->submitted}</dc:date>
+     <dc:format>image/jpeg</dc:format>
+     <dc:publisher><Agent>
+        <dc:title>{$http_host}</dc:title>
+     </Agent></dc:publisher>
+{if $image->imageclass}
+     <dc:subject>{$image->imageclass}</dc:subject>
+{/if}
+     <license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
+</Work>
+
+<License rdf:about="http://creativecommons.org/licenses/by-sa/2.0/">
+   <permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+   <permits rdf:resource="http://web.resource.org/cc/Distribution" />
+   <requires rdf:resource="http://web.resource.org/cc/Notice" />
+   <requires rdf:resource="http://web.resource.org/cc/Attribution" />
+   <permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+   <requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+</License>
+
+</rdf:RDF>
+
+-->
 
 <div style="background:#bbbbbb;color:black;">
 
@@ -119,71 +147,31 @@ referring to <b>image {$image->gridimage_id}</b>
 
 <div class="picinfo">
 
-{if $overview}
-  <div style="float:left; width:{$overview_width+30}px; position:relative">
-  {include file="_overview.tpl"}
-  <div style="text-align:center"><br/>
-  <a title="Send an Electronic Card" href="/ecard.php?image={$image->gridimage_id}">Send eCard</a>
-  
-  <a title="Open in Google Earth" href="/kml.php?id={$image->gridimage_id}" class="xml-kml">KML</a></div>
-  </div>
+{if $rastermap->enabled}
+	<div class="rastermap" style="width:{$rastermap->width}px;position:relative">
+	{$rastermap->getImageTag()}
+	<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
+
+	</div>
+
+	{$rastermap->getScriptTag()}
+
 {/if}
 
+<div style="float:left;position:relative"><dl class="picinfo">
 
-<table class="infotable">
 
-<!-- Creative Commons Licence -->
-<tr><td><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a></td>
-<td>&copy; Copyright <a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a> and  
-licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</td>
-</tr>
-<!-- /Creative Commons Licence -->
 
-<!--
+<dt>Grid Square</dt>
+ <dd><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> {if $square_count gt 1}, {$square_count} total images{/if} &nbsp; (<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">find images nearby</a>) 
+</dd>
 
-<rdf:RDF xmlns="http://web.resource.org/cc/"
-    xmlns:dc="http://purl.org/dc/elements/1.1/"
-    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-<Work rdf:about="">
-     <dc:title>{$image->title|escape:'html'}</dc:title>
-     <dc:creator><Agent>
-        <dc:title>{$image->realname|escape:'html'}</dc:title>
-     </Agent></dc:creator>
-     <dc:rights><Agent>
-        <dc:title>{$image->realname|escape:'html'}</dc:title>
-     </Agent></dc:rights>
-     <dc:date>{$image->submitted}</dc:date>
-     <dc:format>image/jpeg</dc:format>
-     <dc:publisher><Agent>
-        <dc:title>{$http_host}</dc:title>
-     </Agent></dc:publisher>
-{if $image->imageclass}
-     <dc:subject>{$image->imageclass}</dc:subject>
-{/if}
-     <license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
-</Work>
+<dt>Photographer</dt>
+ <dd><a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap">find more nearby</a>)</dd>
 
-<License rdf:about="http://creativecommons.org/licenses/by-sa/2.0/">
-   <permits rdf:resource="http://web.resource.org/cc/Reproduction" />
-   <permits rdf:resource="http://web.resource.org/cc/Distribution" />
-   <requires rdf:resource="http://web.resource.org/cc/Notice" />
-   <requires rdf:resource="http://web.resource.org/cc/Attribution" />
-   <permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
-   <requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
-</License>
-
-</rdf:RDF>
-
--->
-
-<tr><td></td>
-<td>(find <a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap">nearby pictures by {$image->realname|escape:'html'}</a>)</td>
-</tr>
-
-<tr><td>Image status</td><td>
-{if $image->ftf}
-	First geograph for {getamap gridref=$image->grid_reference}!
+<dt>Image status</dt>
+<dd>{if $image->ftf}
+	First geograph for {$image->grid_reference}}
 {else}
 	{if $image->moderation_status eq "rejected"}
 	Rejected
@@ -197,90 +185,96 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 	{if $image->moderation_status eq "accepted"}
 	Supplemental image
 	{/if}
-	 for {getamap gridref=$image->grid_reference}
-{/if}
-</td></tr>
+{/if}</dd>
 
 
 {if $image_taken}
-<tr><td>Date Taken</td><td colspan="2">{$image_taken}
- (submitted {$image->submitted|date_format:"%A, %e %B, %Y"})</td></tr>
-{else}
-<tr><td>Submitted</td><td colspan="2">{$image->submitted|date_format:"%A, %e %B, %Y"}</td></tr>
+<dt>Date Taken</dt>
+ <dd>{$image_taken}</dd>
 {/if}
+<dt>Submitted</dt>
+	<dd>{$image->submitted|date_format:"%A, %e %B, %Y"}</dd>
 
-<tr><td>Category</td><td>
+<dt>Category</dt>
 
-{if $image->imageclass}
-	{$image->imageclass}
-
-	(<a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:'url'}">find more nearby</a>)
+<dd>{if $image->imageclass}
+	{$image->imageclass} &nbsp; (<a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:'url'}">find more nearby</a>)
 {else}
 	<i>n/a</i>
-{/if}
+{/if}</dd>
 
 </td></tr>
 
-<tr><td>Maps</td><td>
+<dt>Subject Location</dt>
+<dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
+{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {getamap gridref=$image->subject_gridref text=$image->subject_gridref} [Accurate to ~{$image->subject_gridref_accuracy}m]<br/>
+WGS84: {$latdm} {$longdm}
+[{$lat|string_format:"%.5f"},{$long|string_format:"%.5f"}]</dd>
 
-<a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$image->grid_reference}">Geograph Map</a>,
+{if $image->photographer_gridref}
+<dt>Photographer Location</dt>
+
+<dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
+{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {getamap gridref=$image->photographer_gridref text=$image->photographer_gridref}</dd>
+{/if}
+
+{if $view_direction}
+<dt>View Direction</dt>
+
+<dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
+{$view_direction} (about {$image->view_direction} degrees)</dd>
+{/if}
+
+</dl>
+
+</div>
+
+{if $overview}
+  <div style="float:left; text-align:center; width:{$overview_width+30}px; position:relative">
+	{include file="_overview.tpl"}
+	<div style="width:inherit;margin-left:20px;"><br/>
+
+	<a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$image->grid_reference}">Geograph Map</a><br/><br/>
+
+	<div style="padding:3px;border:1px solid yellow;"><a title="Send an Electronic Card" href="/ecard.php?image={$image->gridimage_id}">Send Picture<br/> by Email &gt;</a></div>
+
+	</div>
+  </div>
+{/if}
+
+<br style="clear:both"/>
+<div class="interestBox" style="text-align:center">View this location: 
+
+<a title="Open in Google Earth" href="/kml.php?id={$image->gridimage_id}">Google Earth</a>
+<a title="Open in Google Earth" href="/kml.php?id={$image->gridimage_id}" class="xml-kml">KML</a>, 
 
 {getamap gridref=$image->subject_gridref text="OS Get-a-map&trade;"},
 
 {if $image->grid_square->reference_index eq 1}
 	{assign var="urltitle" value=$image->title|escape:'url'}
 	{external href="http://www.streetmap.co.uk/newmap.srf?x=`$image->grid_square->nateastings`&amp;y=`$image->grid_square->natnorthings`&amp;z=3&amp;sv=`$image->grid_square->nateastings`,`$image->grid_square->natnorthings`&amp;st=OSGrid&amp;lu=N&amp;tl=[$urltitle]+from+geograph.org.uk&amp;ar=y&amp;bi=background=http://$http_host/templates/basic/img/background.gif&amp;mapp=newmap.srf&amp;searchp=newsearch.srf" text="streetmap.co.uk"},
-	{external href="http://www.multimap.com/map/browse.cgi?GridE=`$image->grid_square->nateastings`&amp;GridN=`$image->grid_square->natnorthings`&amp;scale=25000&amp;title=[`$urltitle`]+on+geograph.org.uk" text="multimap.com"}
-	&amp; 
-	{external href="http://local.live.com/default.aspx?v=2&amp;cp=`$lat`~`$long`&amp;style=h&amp;lvl=14&amp;rtp=~pos.`$lat`_`$long`_`$urltitle`" text="local.live.com" title="detailed aerial photography from getmapping.com"}
+	{external href="http://www.multimap.com/map/browse.cgi?GridE=`$image->grid_square->nateastings`&amp;GridN=`$image->grid_square->natnorthings`&amp;scale=25000&amp;title=[`$urltitle`]+on+geograph.org.uk" text="multimap.com"},
+	{external href="http://local.live.com/default.aspx?v=2&amp;cp=`$lat`~`$long`&amp;style=h&amp;lvl=14&amp;rtp=~pos.`$lat`_`$long`_`$urltitle`" text="local.live.com" title="detailed aerial photography from getmapping.com"},
 {else}
-	&amp;
-	{external href="http://www.multimap.com/p/browse.cgi?scale=25000&amp;lon=`$long`&amp;lat=`$lat`&amp;GridE=`$long`&amp;GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"}
+	{external href="http://www.multimap.com/p/browse.cgi?scale=25000&amp;lon=`$long`&amp;lat=`$lat`&amp;GridE=`$long`&amp;GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"},
 {/if}
-
-</td></tr>
-
-<tr><td>What's nearby?</td><td>
-<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">Geograph Images</a>, 
+<br/>
 {if $image->grid_square->reference_index eq 1}
 	{external title="Geocaches from geocaching.com, search by geocacheuk.com" href="http://stats.guk2.com/caches/search_parse.php?osgbe=`$image->grid_square->nateastings`&amp;osgbn=`$image->grid_square->natnorthings`" text="Geocaches"},
 	{external title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigtools/find.php?t=`$image->subject_gridref`" text="Trigpoints"},
 	{external href="http://geourl.org/near?lat=`$lat`&amp;long=`$long`" text="geourl.org" title="search for webpages near this location"} &amp;
-	{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$image->grid_square->nateastings`+`$image->grid_square->natnorthings`" text="more..."}
+	{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$image->grid_square->nateastings`+`$image->grid_square->natnorthings`" text="more local links from nearby.org.uk"}
 {else}
 	{external href="http://www.geocaching.com/seek/nearest.aspx?lat=`$lat`&amp;lon=`$long`" text="geocaches" title="Geocaches from geocaching.com"},
 	{external href="http://www.trigtools.co.uk/irish.cgi?gr=`$image->subject_gridref`&c=25" text="trigpoints" title="Trigpoints from trigtools.co.uk"},
 	{external href="http://geourl.org/near?lat=`$lat`&amp;long=`$long`" text="geourl.org" title="search for webpages near this location"} &amp;
-	{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$image->grid_square->nateastings`+`$image->grid_square->natnorthings`+OSI" text="more from nearby.org.uk"}
+	{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$image->grid_square->nateastings`+`$image->grid_square->natnorthings`+OSI" text="more local links from nearby.org.uk"}
 {/if}
 
-</td></tr>
+</div>
 
-
-<tr><td>Subject Location</td>
-<td style="font-family:verdana, arial, sans serif; font-size:0.8em">
-{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {getamap gridref=$image->subject_gridref text=$image->subject_gridref} [Accurate to ~{$image->subject_gridref_accuracy}m]<br/>
-WGS84: {$latdm} {$longdm}
-[{$lat|string_format:"%.5f"},{$long|string_format:"%.5f"}]</td></tr>
-
-{if $image->photographer_gridref}
-<tr><td>Photographer Location</td>
-
-<td style="font-family:verdana, arial, sans serif; font-size:0.8em">
-{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {getamap gridref=$image->photographer_gridref text=$image->photographer_gridref}</td></tr>
-{/if}
-
-{if $view_direction}
-<tr><td>View Direction</td>
-
-<td style="font-family:verdana, arial, sans serif; font-size:0.8em">
-{$view_direction} (about {$image->view_direction} degrees)</td></tr>
-{/if}
-
-</table> 
-
-
-<br style="clear:both"/>
+  
+  
 
 
 <p align="center">
@@ -307,7 +301,16 @@ WGS84: {$latdm} {$longdm}
 
 </div>
 
-
+  {if $ismoderator}
+	  <form method="post">
+	  <script type="text/javascript" src="/admin/moderation.js"></script>
+	  <p><b>Moderation</b>
+	  <input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey"{/if}/>
+	  <input class="accept" type="button" id="accept" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey"{/if}/>
+	  <input class="reject" type="button" id="reject" value="Reject" onclick="moderateImage({$image->gridimage_id}, 'rejected')"/></p>
+	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
+	  </form>
+  {/if}
 
 {else}
 <h2>Sorry, image not available</h2>
