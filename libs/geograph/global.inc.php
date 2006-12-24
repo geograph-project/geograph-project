@@ -170,7 +170,7 @@ function smarty_function_getamap($params)
 				default: $gridref6=$gridref4;
 			}
 			
-			return "<a title=\"Ordnance Survey Get-a-Map for $gridref4\" href=\"http://getamap.ordnancesurvey.co.uk/getamap/frames.htm?mapAction=gaz&gazName=g&gazString=$gridref6\" onclick=\"popupOSMap('$gridref6'); return false;\">$text</a>$icon";
+			return "<a title=\"Ordnance Survey Get-a-Map for $gridref4\" href=\"http://getamap.ordnancesurvey.co.uk/getamap/frames.htm?mapAction=gaz&amp;gazName=g&&amp;gazString=$gridref6\" onclick=\"popupOSMap('$gridref6'); return false;\">$text</a>$icon";
   	}
   	else if (empty($gridref4)) 
   	{

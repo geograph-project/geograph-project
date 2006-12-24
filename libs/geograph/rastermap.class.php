@@ -122,7 +122,7 @@ class RasterMap
 						
 			$str = "<div style=\"position:relative;height:".($width+$extra)."\">";
 
-			$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" width=\"$width\" height=\"$width\" border=\"1\" alt=\"$title\"></div>";
+			$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" width=\"$width\" height=\"$width\" border=\"1\" alt=\"$title\"/></div>";
 
 			if ($this->issubmit)
 				$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&lt;- Drag to mark photographer position.</small></div>";
@@ -133,7 +133,7 @@ class RasterMap
 			$top = $width - ( ($width/4) + ( ($this->natnorthings - $nort) * ($width/2) / 1000 ) ) - 8;
 			$str .= "<div style=\"position:absolute;top:{$top}px;left:{$left}px;".((($this->issubmit || $exactPosition)?'':'display:none'))."\" id=\"marker1\"><img src=\"/templates/basic/img/crosshairs.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
 
-			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" width=\"$width\" height=\"".($width+$extra)."\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"></div>";
+			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" width=\"$width\" height=\"".($width+$extra)."\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/></div>";
 
 			return "$str</div>";
 		}
@@ -149,7 +149,7 @@ class RasterMap
 				$east = (floor($this->nateastings/1000) * 1000) + 500;
 				$nort = (floor($this->natnorthings/1000) * 1000) + 500;
 				return "
-		<script type=\"text/javascript\">
+		<script type=\"text/javascript\" language=\"JavaScript\">
 			var cene = {$east};
 			var cenn = {$nort};
 			var maph = {$this->width};
@@ -192,7 +192,7 @@ class RasterMap
 
 	//take number of 1km tiles and create a 2km tile
 	function combineTiles(&$gr,$path = false) {
-		global $CONF;
+		global $CONF,$USER;
 		if (is_string($gr)) {
 			$square=new GridSquare;
 
@@ -256,7 +256,8 @@ class RasterMap
 				$cmd = str_replace('/','\\',$cmd);
 
 			exec ($cmd);
-			print "<pre>$cmd</pre>";
+			if ($_GET['debug'] && $USER->hasPerm('admin'))
+				print "<pre>$cmd</pre>";
 			
 			if (file_exists($path)) {
 				return true;
