@@ -42,7 +42,7 @@ referring to <b>image {$image->gridimage_id}</b>
   <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
   
   {literal}
-  <script language="JavaScript">
+  <script language="JavaScript" type="text/javascript">
   
   function redrawMainImage() {
   	el = document.getElementById('mainphoto');
@@ -108,10 +108,10 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <div style="background:#bbbbbb;color:black;">
 
-<table width="100%"><tr>
+<table style="width:100%"><tr>
 
-<td width="50"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img align="left" src="/templates/basic/img/icon_discuss.gif"/></a></td>
-<td valign="middle" style="font-size:0.7em;">
+<td style="width:50px"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img align="left" src="/templates/basic/img/icon_discuss.gif" alt="Discuss"/></a></td>
+<td style="font-size:0.7em;vertical-align:middle">
 {if $discuss}
 	There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a
 	<a href="/discuss/index.php?gridref={$image->grid_reference}">discussion<br/>on {$image->grid_reference}</a> (preview on the left)
@@ -121,8 +121,8 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 {/if}
 </td>
 
-<td width="50"><a href="/editimage.php?id={$image->gridimage_id}"><img align="left" src="/templates/basic/img/icon_alert.gif"/></a></td>
-<td valign="middle" style="font-size:0.7em;">
+<td style="width:50px"><a href="/editimage.php?id={$image->gridimage_id}"><img align="left" src="/templates/basic/img/icon_alert.gif" discuss="Modify"/></a></td>
+<td style="font-size:0.7em;vertical-align:middle">
   
   {if ($user->user_id eq $image->user_id) or ($ismoderator)}
   	<a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">Edit picture information</a>
@@ -131,8 +131,8 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
   {/if}
 </td>
 
-<td width="50"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img align="left" src="/templates/basic/img/icon_email.gif"/></a></td>
-<td valign="middle" style="font-size:0.7em;">
+<td style="width:50px"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img align="left" src="/templates/basic/img/icon_email.gif" alt="Email"/></a></td>
+<td style="font-size:0.7em;vertical-align:middle">
   
   <a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the photographer</a>
 </td>
@@ -202,8 +202,6 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 {else}
 	<i>n/a</i>
 {/if}</dd>
-
-</td></tr>
 
 <dt>Subject Location</dt>
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
