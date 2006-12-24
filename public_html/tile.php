@@ -45,6 +45,8 @@ if (isset($_GET['map']))
 	require_once('geograph/rastermap.class.php');
 	$square = false;				
 	$rastermap = new RasterMap($square);
+	if (isset($_GET['debug']))
+		init_session();
 	if($rastermap->setToken($_GET['r']))	
 		$rastermap->returnImage();
 	exit;	
