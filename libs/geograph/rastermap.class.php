@@ -308,8 +308,8 @@ class RasterMap
 	function getToken()
 	{
 		$token=new Token;
-		$token->setValue("e", $this->nateastings /1000);
-		$token->setValue("n", $this->natnorthings /1000);
+		$token->setValue("e", floor($this->nateastings /1000));
+		$token->setValue("n", floor($this->natnorthings /1000));
 		$token->setValue("w", $this->width);
 		$token->setValue("s", $this->service);
 		return $token->getToken();
