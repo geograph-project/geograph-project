@@ -32,10 +32,10 @@ init_session();
 
 $gr = "SH7042";
 if (!empty($_GET['gr'])) 
-	$gr = $_GET['gr']
+	$gr = $_GET['gr'];
 $tile = "SH64";
 if (!empty($_GET['tile'])) 
-	$tile = $_GET['tile']
+	$tile = $_GET['tile'];
 
 		define('TIFF_W',4000); 
 		define('TIFF_KMW',20);
