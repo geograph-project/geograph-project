@@ -155,7 +155,11 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 	</div>
 
 	{$rastermap->getScriptTag()}
-
+{else}
+	<div class="rastermap" style="width:{$rastermap->width}px;height:{$rastermap->width}px;position:relative">
+		Map Coming Soon...
+	
+	</div>
 {/if}
 
 <div style="float:left;position:relative"><dl class="picinfo">
