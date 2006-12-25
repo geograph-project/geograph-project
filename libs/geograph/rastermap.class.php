@@ -180,6 +180,8 @@ class RasterMap
 	{
 		switch ($this->service) {
 
+			case 'OS50k': 
+				return "<br/>OS Maps are still in testing, some maps might display incorrectly, please visit forum for more info.";
 			case 'vob': 
 				return "<br/>Historical Map provided by <a href=\"http://www.visionofbritain.org.uk/\" title=\"Vision of Britain\">VisionOfBritain.org.uk</a>";
 		}
