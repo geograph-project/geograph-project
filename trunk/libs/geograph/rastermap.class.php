@@ -228,7 +228,7 @@ class RasterMap
 						$tilelist[] = $newpath;
 						$found = 1;
 					} else {
-						$tilelist[] = 'null';
+						$tilelist[] = 'null:';
 						if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 							print "$newpath not found<br/>\n";
 					}
