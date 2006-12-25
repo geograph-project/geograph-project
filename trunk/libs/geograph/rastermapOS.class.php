@@ -59,7 +59,7 @@ class RasterMapOS {
 						}
 					
 						if ($_GET['processSingleTile'])
-							$r = $this->processSingleTile($tile);
+							$r = $this->processSingleTile($tile,$_GET['processSingleTile']);
 						
 						if ($r)
 							$c++;
@@ -209,6 +209,7 @@ class RasterMapOS {
 		$newpath = $this->getOSGBStorePath('pngs-1k-'.$this->width.'/',$e,$n);
 		if (file_exists($newpath)) {
 			print "already done processSingleTile($tile,$width)<br>";
+			flush();
 			return false;
 		}
 	
@@ -230,6 +231,7 @@ class RasterMapOS {
 			if (isset($_GET['run']))
 				passthru ($cmd);
 			print "<pre>$cmd</pre>";
+			flush();
 			 
 			$c = 0;
 			if (isset($_GET['print']))
@@ -247,6 +249,7 @@ class RasterMapOS {
 					rename($oldpath,$newpath);
 					if (isset($_GET['print']))
 						print "<td>$c =<br> <B>$e</B>,<br> $n</td>";
+					print "$c ";flush();
 					$c++;
 				}
 				if (isset($_GET['print']))
@@ -255,6 +258,7 @@ class RasterMapOS {
 			if (isset($_GET['print']))
 				print "</table>";
 			print "done renaming in processSingleTile($tile);<BR>";
+			flush();
 		} else {
 			//generate resized image
 			die("gd not implemented!");

@@ -206,7 +206,7 @@ class RasterMap
 		$ll = $square->gridsquare;
 		
 		//$this->width = 250;
-		$this->tilewidth = 200;
+		$this->tilewidth = 125;
 
 		//this isn't STRICTLY needed as getOSGBStorePath does the same floor, but do so in case we do exact calculations
 		$east = floor($this->nateastings/1000) * 1000;
