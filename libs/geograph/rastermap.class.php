@@ -73,14 +73,18 @@ class RasterMap
 			$this->issubmit = $issubmit;
 			$services = explode(',',$CONF['raster_service']);
 			if ($square->reference_index == 1) {
+				$this->enabled = true;
 				if (in_array('OS50k',$services) && $issubmit == false) {
 					$this->service = 'OS50k';
 					$this->width = 250;
+					
+					//temp solution, to not show map if dont have it generated
+					if (!$this->getOS50kMapPath(false))
+						$this->enabled = false;
 				} elseif(in_array('vob',$services)) {
 					$this->service = 'vob';
 					$this->width = ($issubmit)?300:250;
 				} 
-				$this->enabled = true;
 			}
 		}
 	} 
@@ -181,9 +185,9 @@ class RasterMap
 		}
 	}
 
-	function getOS50kMapPath() {
+	function getOS50kMapPath($create = true) {
 		$path = $this->getOSGBStorePath('pngs-2k-'.$this->width.'/',0,0,true);
-		if (file_exists($path) || $this->combineTiles($this->square,$path)) {
+		if (file_exists($path) || ($create && $this->combineTiles($this->square,$path)) ) {
 			return $path;
 		} else {
 			return false;
