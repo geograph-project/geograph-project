@@ -207,7 +207,7 @@ class RasterMapOS {
 		$n = $this->natnorthings; 
 		$e = $this->nateastings; 
 		$newpath = $this->getOSGBStorePath('pngs-1k-'.$this->width.'/',$e,$n);
-		if (file_exists($newpath)) {
+		if (file_exists($newpath) && empty($_GET['force'])) {
 			print "already done processSingleTile($tile,$width)<br>";
 			flush();
 			return false;
@@ -246,6 +246,10 @@ class RasterMapOS {
 								1000 ) as $e) {
 					$oldpath = preg_replace("/\./","-$c.",$path);
 					$newpath = $this->getOSGBStorePath('pngs-1k-'.$this->width.'/',$e,$n);
+					
+					if (!empty($_GET['force'])) 
+						@unlink($newpath);
+				
 					rename($oldpath,$newpath);
 					if (isset($_GET['print']))
 						print "<td>$c =<br> <B>$e</B>,<br> $n</td>";
@@ -289,7 +293,7 @@ class RasterMapOS {
 		$n = $this->natnorthings+$kmoffsetY; 
 		$e = $this->nateastings+$kmoffsetX; 
 		$newpath = $this->getOSGBStorePath('pngs-2k-250/',$e,$n);
-		if (file_exists($newpath)) {
+		if (file_exists($newpath) && empty($_GET['force'])) {
 			print "already done processTile($tile,$offsetX,$offsetY)<br>";
 			flush();
 			return false;
@@ -330,7 +334,10 @@ class RasterMapOS {
 					$oldpath = preg_replace("/\./","-$c.",$path);
 					$newpath = $this->getOSGBStorePath('pngs-2k-250/',$e,$n);
 				#	print "<hr/><pre>Rename $oldpath\nTo $newpath</pre>";
-				#	rename($newpath,$oldpath);
+			
+					if (!empty($_GET['force'])) 
+						@unlink($newpath);
+				
 					rename($oldpath,$newpath);
 					if (isset($_GET['print']))
 						print "<td>$c =<br> <B>$e</B>,<br> $n</td>";
