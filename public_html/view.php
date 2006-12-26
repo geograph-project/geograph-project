@@ -163,6 +163,9 @@ if ($image->isValid())
 
 		//lets add an rastermap too
 		$rastermap = new RasterMap($image->grid_square,false);
+		if (!empty($image->viewpoint_northings)) {
+			$rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings);
+		}
 		$smarty->assign_by_ref('rastermap', $rastermap);
 
 		require_once('geograph/conversions.class.php');
