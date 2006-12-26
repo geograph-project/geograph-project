@@ -222,7 +222,18 @@ body>#nav_block {width:128px;}
 	color:silver;
 }
 
+.content_photoblack .interestBox {
+	background-color:#333333;
+	color:#bbbbbb;
+}
 
+.content_photoblack div.ccmessage {
+	background-color:#333333;
+}
+
+.content_photoblack div.ccmessage a {
+	color:white;
+}
 
 .content_photogray
 {
@@ -263,7 +274,14 @@ body>#nav_block {width:128px;}
 	color:#999999;
 }
 
+.content_photogray .interestBox {
+	background-color:#cccccc;
+	color:#444444;
+}
 
+.content_photogray div.ccmessage {
+	background-color:#555555;
+}
 
 .content_photowhite
 {
@@ -415,7 +433,9 @@ div.ccmessage
 {
 	width:inherit;
 	text-align:center;
-	padding-bottom:3px;
+	padding:3px;
+	font-size:0.9em;
+	background-color: lightgrey;
 }
 
 div.ccmessage img
@@ -829,6 +849,7 @@ div.map div.inner img
 	padding:5px;
 	background:#dddddd;
 	position:relative;
+	color:black;
 }
 
 .innerInterestBox {

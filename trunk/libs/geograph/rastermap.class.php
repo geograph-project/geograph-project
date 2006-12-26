@@ -89,6 +89,11 @@ class RasterMap
 		}
 	} 
 	
+	function addViewpoint($viewpoint_eastings,$viewpoint_northings) {
+		$this->viewpoint_eastings = $viewpoint_eastings;
+		$this->viewpoint_northings = $viewpoint_northings;
+	}
+	
 	function getImageTag() 
 	{
 		$east = floor($this->nateastings/1000) * 1000;
@@ -130,11 +135,43 @@ class RasterMap
 
 			if ($this->issubmit)
 				$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&lt;- Drag to mark photographer position.</small></div>";
+			
+			$widthby2 = ($width/2);
+			
+			if (!empty($this->viewpoint_northings)) {
+				$e = $this->viewpoint_eastings;	$n = $this->viewpoint_northings;
+				if ($e%100 == 0 && $n%100 == 0) {
+					$e +=50; $n += 50;
+				} 
+				$left = ($width/4) + ( ($e - $east) * $widthby2 / 1000 ) - 8;
+				$top = $width - ( ($width/4) + ( ($n - $nort) * $widthby2 / 1000 ) ) - 8;
+				
+				if ( ($left < -16) || ($left > ($width+16)) || ($top < 0) || ($top > ($width+16)) ) {
+					//interpolate between centerpoint and real position 
+					
+					$realangle = atan2( $widthby2 - $left, $widthby2 - $top );
+					
+					if ( abs($widthby2 - $left) > abs($widthby2 - $top) ) {
+						//top/bottom edge
+						
+					} else {
+						//left/right edge
+					}
+				}
+				
+			} else {
+				$left = 5;
+				$top = $width+5;
+			}
+			$str .= "<div style=\"position:absolute;top:{$top}px;left:{$left}px;".((($this->issubmit || !empty($this->viewpoint_northings))?'':'display:none'))."\" id=\"marker2\"><img src=\"/templates/basic/img/camera.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
 
-			$str .= "<div style=\"position:absolute;top:".($width+5)."px;left:5px;".((($this->issubmit)?'':'display:none'))."\" id=\"marker2\"><img src=\"/templates/basic/img/camera.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
-
-			$left = ($width/4) + ( ($this->nateastings - $east) * ($width/2) / 1000 ) - 8;
-			$top = $width - ( ($width/4) + ( ($this->natnorthings - $nort) * ($width/2) / 1000 ) ) - 8;
+			$e = $this->nateastings;	$n = $this->natnorthings;
+			if ($e%100 == 0 && $n%100 == 0) {
+				$e +=50; $n += 50;
+			} 
+			$left = ($width/4) + ( ($e - $east) * $widthby2 / 1000 ) - 8;
+			$top = $width - ( ($width/4) + ( ($n - $nort) * $widthby2 / 1000 ) ) - 8;
+	
 			$str .= "<div style=\"position:absolute;top:{$top}px;left:{$left}px;".((($this->issubmit || $exactPosition)?'':'display:none'))."\" id=\"marker1\"><img src=\"/templates/basic/img/crosshairs.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
 
 			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" width=\"$width\" height=\"".($width+$extra)."\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/></div>";

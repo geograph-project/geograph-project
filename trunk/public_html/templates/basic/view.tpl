@@ -175,7 +175,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <dt>Image status</dt>
 <dd>{if $image->ftf}
-	First geograph for {$image->grid_reference}}
+	First geograph for {$image->grid_reference}
 {else}
 	{if $image->moderation_status eq "rejected"}
 	Rejected
