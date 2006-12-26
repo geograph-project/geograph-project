@@ -227,6 +227,10 @@ body>#nav_block {width:128px;}
 	color:#bbbbbb;
 }
 
+.content_photoblack .interestBox a {
+	color:white;
+}
+
 .content_photoblack div.ccmessage {
 	background-color:#333333;
 }
@@ -281,6 +285,10 @@ body>#nav_block {width:128px;}
 
 .content_photogray div.ccmessage {
 	background-color:#555555;
+}
+
+.content_photogray div.ccmessage a {
+	color:#cccccc;
 }
 
 .content_photowhite
@@ -595,10 +603,8 @@ table.formtable div.fieldnotes
 
 div.picinfo
 {
-	background:#f0f0f0;
-	font-size:0.7em;
+	font-size:0.8em;
 	padding:5px;
-	color:black;
 }
 
 div.picinfo td
