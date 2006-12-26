@@ -37,7 +37,7 @@ $profile = $db->GetRow($sql);
 
 if ($profile['apikey']) {
 	$sql_hardlimit = $hardlimit = '';
-} elseif (!empty($_GET['u']) && preg_match("/^\d$/",$_GET['u']) && (init_session() || true) && $USER->hasPerm('basic')) {
+} elseif (!empty($_GET['u']) && preg_match("/^\d+$/",$_GET['u']) && (init_session() || true) && $USER->hasPerm('basic')) {
 	$sql_hardlimit = $hardlimit = '';
 } else {
 	#die("ERROR: invalid api key. contact support at geograph dot co dot uk");
@@ -85,9 +85,10 @@ echo "\n";
 if (!empty($_GET['ri']) && preg_match("/^\d$/",$_GET['ri']) ) {
 	$sql_crit .= " AND reference_index = {$_GET['ri']}";
 }
-
-if (!empty($_GET['u']) && preg_match("/^\d$/",$_GET['u'])) {
+$user_crit = 0;
+if (!empty($_GET['u']) && preg_match("/^\d+$/",$_GET['u'])) {
 	$sql_crit .= " AND gi.user_id = {$_GET['u']}";
+	$user_crit = 1;
 }
 
 if (!empty($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
@@ -118,7 +119,7 @@ if (!empty($_GET['supp']) xor empty($_GET['u'])) {
 
 $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
-if ($i) {
+if ($i && !$user_crit ) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	
