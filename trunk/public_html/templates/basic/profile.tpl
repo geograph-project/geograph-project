@@ -31,11 +31,9 @@
  	
 {if $user->user_id ne $profile->user_id}
 	{if $profile->public_email eq 1}
-		<li><b>Email</b>: {mailto address=$profile->email encode="javascript"}</li> 	
-	{else}
-		<li><a title="Contact {$profile->realname|escape:'html'}" href="/usermsg.php?to={$profile->user_id}">Send message to {$profile->realname|escape:'html'}</a></li> 	
+		<li><b>Email</b>: {mailto address=$profile->email encode="javascript"}</li>
 	{/if}
-	
+	<li><a title="Contact {$profile->realname|escape:'html'}" href="/usermsg.php?to={$profile->user_id}">Send message to {$profile->realname|escape:'html'}</a></li>
 {else}
 	<li><b>Email</b>: {mailto address=$profile->email encode="javascript"}
 	{if $profile->public_email ne 1} <em>(not displayed to other users)</em>{/if}

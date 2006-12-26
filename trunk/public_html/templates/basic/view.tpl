@@ -65,7 +65,7 @@ referring to <b>image {$image->gridimage_id}</b>
 
 <!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &copy; Copyright <a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a> and  
+alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="/profile.php?u={$image->user_id}">{$image->realname|escape:'html'}</a> and  
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 <!-- /Creative Commons Licence -->
 
@@ -280,7 +280,7 @@ WGS84: {$latdm} {$longdm}
 
 
 <p style="text-align:center">
-<span style="background-color:#e9e9e9; padding:10px;margin:10px">Background for photo viewing:
+<span class="interestBox">Background for photo viewing:
 {if $maincontentclass eq "content_photowhite"}
 	<b>white</b>
 {else}
