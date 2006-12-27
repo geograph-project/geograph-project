@@ -631,3 +631,43 @@ INDEX (
 )
 );
 
+
+
+CREATE TABLE `geograph_live`.`_gridimage_ticket` (
+`gridimage_ticket_id` int( 11 ) NOT NULL AUTO_INCREMENT ,
+`gridimage_id` int( 11 ) default NULL ,
+`suggested` datetime default NULL ,
+`user_id` int( 11 ) default NULL ,
+`moderator_id` int( 11 ) default NULL ,
+`updated` datetime default NULL ,
+`status` enum( 'pending', 'open', 'closed' ) default NULL ,
+`notes` text,
+PRIMARY KEY ( `gridimage_ticket_id` ) ,
+KEY `gridimage_id` ( `gridimage_id` ) 
+) ENGINE = MYISAM DEFAULT CHARSET = latin1;
+
+INSERT INTO `geograph_live`.`_gridimage_ticket` 
+SELECT * 
+FROM `geograph_live`.`gridimage_ticket` ;
+
+
+CREATE TABLE `geograph_live`.`_gridimage_ticket_comment` (
+`gridimage_ticket_comment_id` int( 11 ) NOT NULL AUTO_INCREMENT ,
+`gridimage_ticket_id` int( 11 ) NOT NULL default '0',
+`user_id` int( 11 ) default NULL ,
+`comment` text,
+`added` datetime default NULL ,
+PRIMARY KEY ( `gridimage_ticket_comment_id` ) ,
+KEY `gridimage_ticket_id` ( `gridimage_ticket_id` ) 
+) ENGINE = MYISAM DEFAULT CHARSET = latin1;
+
+INSERT INTO `geograph_live`.`_gridimage_ticket_comment` 
+SELECT * 
+FROM `geograph_live`.`gridimage_ticket_comment` ;
+
+
+update gridimage_ticket as t
+ left join gridimage_ticket_comment as c on (t.gridimage_ticket_id=c.gridimage_ticket_id)
+set t.moderator_id = c.user_id
+ where t.status='closed' and t.moderator_id = 0
+and c.comment like '%Ticket is now closed'

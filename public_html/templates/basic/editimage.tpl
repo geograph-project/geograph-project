@@ -33,12 +33,12 @@
    {if $image->ftf}first{/if}
    {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
   {/if}
-
+</div>
   	{if ($user->user_id eq $image->user_id) and $image->moderation_status != 'rejected'}
   	  <form action="/moderation.php" method="post">
   	  <input type="hidden" name="gridimage_id" value="{$image->gridimage_id}"/>
-  	  <b>Image Self Moderation</b>
-  	  
+  	  <h2 class="titlebar">Image Self Moderation</h2>
+  	  I suggest this image should become:
   	  {if ($image->moderation_status == 'pending' || $image->moderation_status == 'geograph') && $image->user_status == 'accepted'}
   	  <input class="accept" type="submit" id="geograph" name="user_status" value="Geograph"/>
   	  {/if}
@@ -54,11 +54,10 @@
   	  
   	  </form>
 	{/if}
-</div>
+
 
 <br/>
 <br/>
-<hr/>
 
 {if $thankyou eq 'pending'}
 	<a name="form"></a>
@@ -79,9 +78,11 @@
 
 
 {if $show_all_tickets eq 1}
-	<h2>
+	<h2 class="titlebar">
 	{if $isadmin}<a href="/admin/tickets.php" title="Ticket Admin Listing">&lt;&lt;&lt;</a>{/if}
-	All Change Requests</h2>
+	All Change Requests
+	{if $isowner}<small>(<a href="/tickets.php" title="Ticket Listing">back to listing</a>)</small>{/if}
+	</h2>
 	
 	{if $opentickets}	
 	<p>All change requests for this image are listed below. 
@@ -91,9 +92,11 @@
 
 	{/if}
 {else}
-	<h2>
+	<h2 class="titlebar">
 	{if $isadmin}<a href="/admin/tickets.php" title="Ticket Admin Listing">&lt;&lt;&lt;</a>{/if}
-	Open Change Requests</h2>
+	Open Change Requests
+	{if $isowner}<small>(<a href="/tickets.php" title="Ticket Listing">back to listing</a>)</small>{/if}
+	</h2>
 	{if $opentickets}	
 	<p>Any open change requests are listed below. 
 	{else}
@@ -246,9 +249,9 @@
 
 <br/>
 <br/>
-<hr/>
 
-<h2>Report Problem / Change Image Details <small><a href="/help/changes">[help]</a></small></h2>
+
+<h2 class="titlebar">Report Problem / Change Image Details <small><a href="/help/changes">[help]</a></small></h2>
 {if $error}
 <a name="form"></a>
 <h2><span class="formerror">Changes not submitted - check and correct errors below...</span></h2>
