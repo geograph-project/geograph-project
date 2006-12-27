@@ -89,7 +89,7 @@
 </tbody>
 </table>
 {else}
-  <p>You have no closed tickets.</p>
+  <p>You have no closed tickets in the last 30 days.</p>
 {/if}
 
 
