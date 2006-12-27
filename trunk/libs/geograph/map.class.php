@@ -1232,8 +1232,7 @@ class GeographMap
 				
 			$gridimage_id=$recordSet->fields[2];
 
-			$sql="select * from gridimage_search where gridimage_id='$gridimage_id' ".
-				"and moderation_status<>'rejected' order by moderation_status+0 desc,seq_no limit 1";
+			$sql="select * from gridimage_search where gridimage_id='$gridimage_id' and moderation_status<>'rejected' order by moderation_status+0 desc,seq_no limit 1";
 
 			//echo "$sql\n";	
 			$rec=$dbImg->GetRow($sql);
@@ -1251,10 +1250,9 @@ class GeographMap
 					imagerectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $colBorder);
 				//	imagerectangle ($img, $imgx1+1, $imgy1+1, $imgx2-1, $imgy2-1, $colBorder);
 
-					fwrite($imagemap,"<area shape=\"rect\" coords=\"$imgx1,$imgy1,$imgx2,$imgy2\" href=\"/photo/{$rec['gridimage_id']}\" ALT=\"{$rec['grid_reference']} : {$rec['title']} by {$rec['realname']}\">\n"); 
+					fwrite($imagemap,"<area shape=\"rect\" coords=\"$imgx1,$imgy1,$imgx2,$imgy2\" href=\"/photo/{$rec['gridimage_id']}\" ALT=\"".htmlentities("{$rec['grid_reference']} : {$rec['title']} by {$rec['realname']}")."\">\n"); 
 
 				}
-sleep(5);
 				$usercount[$rec['realname']]++;
 			}
 

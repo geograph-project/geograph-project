@@ -209,7 +209,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <dt>Subject Location</dt>
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
-{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {getamap gridref=$image->subject_gridref text=$image->subject_gridref} [Accurate to ~{$image->subject_gridref_accuracy}m]<br/>
+{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {getamap gridref=$image->subject_gridref text=$image->subject_gridref} [{$image->subject_gridref_accuracy}m precision]<br/>
 WGS84: {$latdm} {$longdm}
 [{$lat|string_format:"%.5f"},{$long|string_format:"%.5f"}]</dd>
 
