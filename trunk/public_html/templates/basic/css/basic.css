@@ -852,6 +852,11 @@ div.map div.inner img
 	padding:0 0 0 1em;
 }
 
+h2.titlebar {
+	background-color:lightgrey;
+	padding:5px;
+}
+
 /*---------------------------------------------------------------*
  * Form layout
  *---------------------------------------------------------------*/

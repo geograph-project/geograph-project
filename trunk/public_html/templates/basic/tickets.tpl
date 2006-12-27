@@ -41,7 +41,7 @@
 <p>These tickets have seen some activity...</p>
 <table class="report sortable" id="opentickets" style="font-size:8pt;">
 <thead><tr>
-	<td>Moderator</td>
+	<td>Moderator?</td>
 	<td>Title</td>
 	<td>Problem</td>
 	<td style="width:150px">Updated</td>
@@ -70,6 +70,7 @@
 <p>These tickets have been closed in the last 30 days...</p>
 <table class="report sortable" id="opentickets" style="font-size:8pt;">
 <thead><tr>
+	<td>Moderator</td>
 	<td>Title</td>
 	<td>Problem</td>
 	<td style="width:150px">Updated</td>
@@ -79,6 +80,7 @@
 {foreach from=$closedtickets item=ticket}
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}">
+<td>{$ticket.moderator}</td>
 <td><a href="/editimage.php?id={$ticket.gridimage_id}&amp;alltickets=1">{$ticket.title|default:'Untitled'}</a></td>
 <td>{$ticket.notes}</td>
 <td style="width:150px">{$ticket.updated}</td>
