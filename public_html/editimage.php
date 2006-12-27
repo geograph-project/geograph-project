@@ -223,6 +223,7 @@ if (isset($_REQUEST['id']))
 				}
 				elseif (isset($_POST['accept']))
 				{
+					$ticket->setModerator($USER->user_id); 
 					$ticket->closeTicket($USER->user_id,$comment, isset($_POST['accepted'])?$_POST['accepted']:null);
 
 					//reload the image
@@ -231,6 +232,7 @@ if (isset($_REQUEST['id']))
 				}
 				elseif (isset($_POST['close']))
 				{
+					$ticket->setModerator($USER->user_id); 
 					$ticket->closeTicket($USER->user_id,$comment);
 				}
 			}

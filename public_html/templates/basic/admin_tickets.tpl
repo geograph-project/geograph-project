@@ -22,7 +22,8 @@
 <tbody>
 
 {foreach from=$newtickets item=ticket}
-<tr>
+{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
+<tr bgcolor="{$bgcolor}">
 <td>{$ticket.submitter}</td>
 <td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
 <td>{$ticket.notes}</td>
@@ -54,7 +55,8 @@
 <tbody>
 
 {foreach from=$opentickets item=ticket}
-<tr>
+{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
+<tr bgcolor="{$bgcolor}">
 <td>{$ticket.moderator}</td>
 <td>{$ticket.submitter}</td>
 <td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
