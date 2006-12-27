@@ -351,6 +351,9 @@ if (isset($_REQUEST['id']))
 					if (strlen($sq->grid_reference) > strlen($grid_reference))
 						$grid_reference=$sq->grid_reference;
 
+					if ($isowner && $sq->gridsquare_id == $image->gridsquare_id) {
+						$moderated["grid_reference"]=false;
+					}
 				}
 				else
 				{
