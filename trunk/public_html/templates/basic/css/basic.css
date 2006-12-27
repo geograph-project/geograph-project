@@ -231,13 +231,6 @@ body>#nav_block {width:128px;}
 	color:white;
 }
 
-.content_photoblack div.ccmessage {
-	background-color:#333333;
-}
-
-.content_photoblack div.ccmessage a {
-	color:white;
-}
 
 .content_photogray
 {
@@ -281,14 +274,6 @@ body>#nav_block {width:128px;}
 .content_photogray .interestBox {
 	background-color:#cccccc;
 	color:#444444;
-}
-
-.content_photogray div.ccmessage {
-	background-color:#555555;
-}
-
-.content_photogray div.ccmessage a {
-	color:#cccccc;
 }
 
 .content_photowhite
@@ -443,7 +428,6 @@ div.ccmessage
 	text-align:center;
 	padding:3px;
 	font-size:0.9em;
-	background-color: lightgrey;
 }
 
 div.ccmessage img

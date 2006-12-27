@@ -33,27 +33,41 @@ $db = NewADOConnection($GLOBALS['DSN']);
 
 
 $newtickets=$db->GetAll(
-	"select t.*, i.title ".
-	"from gridimage_ticket as t ".
-	"inner join gridimage as i on (t.gridimage_id=i.gridimage_id) ".
-	"left join gridimage_ticket_comment as c on (t.gridimage_ticket_id=c.gridimage_ticket_id) ".
-	"where i.user_id = {$USER->user_id} and t.moderator_id=0 ". 
-	"and c.gridimage_ticket_id IS NULL and t.status<>'closed' ".
-	"order by t.suggested");
+	"select t.*, i.title
+	from gridimage_ticket as t
+	inner join gridimage as i on (t.gridimage_id=i.gridimage_id)
+	left join gridimage_ticket_comment as c on (t.gridimage_ticket_id=c.gridimage_ticket_id)
+	where i.user_id = {$USER->user_id} and t.moderator_id=0
+	and c.gridimage_ticket_id IS NULL and t.status<>'closed'
+	order by t.suggested");
 $smarty->assign_by_ref('newtickets', $newtickets);
 
 
 $opentickets=$db->GetAll(
-	"select t.*, i.title, ".
-	"moderator.realname as moderator ".
-	"from gridimage_ticket as t ".
-	"inner join gridimage as i on (t.gridimage_id=i.gridimage_id) ".
-	"left join gridimage_ticket_comment as c on (t.gridimage_ticket_id=c.gridimage_ticket_id) ".
-	"inner join user as moderator on (moderator.user_id=t.moderator_id) ".
-	"where i.user_id = {$USER->user_id} and t.status<>'closed' ".
-	"and (t.moderator_id>0 or c.gridimage_ticket_id IS NOT NULL) ".
-	"order by t.updated");
+	"select t.*, i.title,
+	moderator.realname as moderator
+	from gridimage_ticket as t
+	inner join gridimage as i on (t.gridimage_id=i.gridimage_id)
+	left join gridimage_ticket_comment as c on (t.gridimage_ticket_id=c.gridimage_ticket_id)
+	left join user as moderator on (moderator.user_id=t.moderator_id)
+	where i.user_id = {$USER->user_id} and t.status<>'closed'
+	and (t.moderator_id>0 or c.gridimage_ticket_id IS NOT NULL)
+	order by t.updated");
 $smarty->assign_by_ref('opentickets', $opentickets);
+
+
+$closedtickets=$db->GetAll(
+	"select t.*, i.title,
+	moderator.realname as moderator
+	from gridimage_ticket as t
+	inner join gridimage as i on (t.gridimage_id=i.gridimage_id)
+	left join gridimage_ticket_comment as c on (t.gridimage_ticket_id=c.gridimage_ticket_id)
+	left join user as moderator on (moderator.user_id=t.moderator_id)
+	where i.user_id = {$USER->user_id} and t.status='closed'
+	and t.updated > date_sub(now(),interval 30 day)
+	order by t.updated");
+$smarty->assign_by_ref('closedtickets', $closedtickets);
+
 
 $template = ($_GET['sidebar'])?'tickets_sidebar.tpl':'tickets.tpl';
 $smarty->display($template);

@@ -15,15 +15,16 @@
 <thead><tr>
 	<td>Title</td>
 	<td>Problem</td>
-	<td>Submitted</td>
+	<td style="width:150px">Submitted</td>
 </tr></thead>
 <tbody>
 
 {foreach from=$newtickets item=ticket}
-<tr>
+{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
+<tr bgcolor="{$bgcolor}">
 <td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
 <td>{$ticket.notes}</td>
-<td>{$ticket.suggested}</td>
+<td style="width:150px">{$ticket.suggested}</td>
 </tr>
 {/foreach}
 </tbody>
@@ -43,16 +44,17 @@
 	<td>Moderator</td>
 	<td>Title</td>
 	<td>Problem</td>
-	<td>Updated</td>
+	<td style="width:150px">Updated</td>
 </tr></thead>
 <tbody>
 
 {foreach from=$opentickets item=ticket}
-<tr>
+{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
+<tr bgcolor="{$bgcolor}">
 <td>{$ticket.moderator}</td>
-<td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
+<td><a href="/editimage.php?id={$ticket.gridimage_id}&amp;alltickets=1">{$ticket.title|default:'Untitled'}</a></td>
 <td>{$ticket.notes}</td>
-<td>{$ticket.updated}</td>
+<td style="width:150px">{$ticket.updated}</td>
 </tr>
 {/foreach}
 </tbody>
@@ -61,6 +63,32 @@
   <p>You have no open tickets.</p>
 {/if}
 
+<h3>Closed Tickets</h3>
+
+{if $closedtickets}
+
+<p>These tickets have been closed in the last 30 days...</p>
+<table class="report sortable" id="opentickets" style="font-size:8pt;">
+<thead><tr>
+	<td>Title</td>
+	<td>Problem</td>
+	<td style="width:150px">Updated</td>
+</tr></thead>
+<tbody>
+
+{foreach from=$closedtickets item=ticket}
+{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
+<tr bgcolor="{$bgcolor}">
+<td><a href="/editimage.php?id={$ticket.gridimage_id}&amp;alltickets=1">{$ticket.title|default:'Untitled'}</a></td>
+<td>{$ticket.notes}</td>
+<td style="width:150px">{$ticket.updated}</td>
+</tr>
+{/foreach}
+</tbody>
+</table>
+{else}
+  <p>You have no closed tickets.</p>
+{/if}
 
 
 {/dynamic}    
