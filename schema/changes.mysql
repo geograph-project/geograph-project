@@ -670,4 +670,18 @@ update gridimage_ticket as t
  left join gridimage_ticket_comment as c on (t.gridimage_ticket_id=c.gridimage_ticket_id)
 set t.moderator_id = c.user_id
  where t.status='closed' and t.moderator_id = 0
-and c.comment like '%Ticket is now closed'
+and c.comment like '%Ticket is now closed';
+
+
+
+CREATE TABLE `moderation_log` (
+  `moderation_log_id` int(10) unsigned NOT NULL auto_increment,
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `gridimage_id` int(10) unsigned NOT NULL default '0',
+  `new_status` enum('rejected','pending','accepted','geograph') NOT NULL default 'rejected',
+  `old_status` enum('rejected','pending','accepted','geograph') NOT NULL default 'rejected',
+  `created` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`moderation_log_id`),
+  UNIQUE KEY `user_id` (`user_id`,`gridimage_id`)
+);
+

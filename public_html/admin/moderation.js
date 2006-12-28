@@ -17,6 +17,7 @@
 var last_id=-1;
 var create_new_xmlhttp=true;
 var xmlhttp=false;
+var remoderate = false;
 
 function getXMLRequestObject()
 {
@@ -60,7 +61,9 @@ function onModerationCompleted()
 function moderateImage(gridimage_id, status)
 {
 	var url="/admin/moderation.php?gridimage_id="+gridimage_id+"&status="+status;
-	
+	if (remoderate)
+		url=url+"&remoderate=1";
+
 	//make the request
 	var req=getXMLRequestObject();
 	

@@ -32,10 +32,6 @@ $smarty = new GeographPage;
 $template='first2square.tpl';
 $cacheid='first2square';
 
-if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
-	$smarty->clear_cache($template, $cacheid);
-
-
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*3*24; //3day cache
 

@@ -16,17 +16,15 @@
   </ul>
   
   {dynamic}
-  {if $is_admin}
+  {if $is_mod}
   <h3>Admin</h3>
   <ul>
      <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
      <li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
      <li><a title="Trouble Tickets" href="/admin/tickets.php">Tickets</a></li>
-     <li><a title="Events" href="/admin/events.php">Events</a></li>
-     <li><a title="Server Stats" href="http://www.geograph.org.uk/logs/">Server Stats</a></li>
   </ul>
   {/if}
-   {/dynamic}
+  {/dynamic}
 
 <div style="text-align:center; padding-top:15px; border-top: 2px solid black; margin-top: 15px;">sponsored by <br/> <br/>
 <a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey" style="padding:4px;"/></a></div>

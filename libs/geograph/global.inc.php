@@ -339,11 +339,15 @@ class GeographPage extends Smarty
 		
 		
 		//show more links in template?
-		if (isset($GLOBALS['USER']) && $GLOBALS['USER']->hasPerm('admin'))
-		{
-			$this->assign('is_admin', true);
-		
-		
+		if (isset($GLOBALS['USER'])) {
+			if ($GLOBALS['USER']->hasPerm('admin'))
+			{
+				$this->assign('is_admin', true);
+			}
+			if ($GLOBALS['USER']->hasPerm('moderator'))
+			{
+				$this->assign('is_mod', true);
+			}
 		}
 		
 	}

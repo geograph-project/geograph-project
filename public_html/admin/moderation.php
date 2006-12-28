@@ -46,27 +46,37 @@ if (isset($_GET['gridimage_id']))
 		$gridimage_id=intval($_GET['gridimage_id']);
 		$status=$_GET['status'];
 
-
 		$image=new GridImage;
 		if ($image->loadFromId($gridimage_id))
 		{
-			$info=$image->setModerationStatus($status, $USER->user_id);
-			echo $info;
-			
-			//clear caches involving the image
-			$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_0");
-			$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_1");
-			$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_0");
-			$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_1");
-		
-			//clear the users profile cache
-			$smarty->clear_cache('profile.tpl', "{$image->user_id}_0");
-			$smarty->clear_cache('profile.tpl', "{$image->user_id}_1");
+			if (isset($_GET['remoderate'])) 
+			{
+				$status = $db->Quote($status);
+				$db->Execute("REPLACE INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status, old_status='{$image->moderation_status}',created=now()");
+				print "status $status recorded";
+			} 
+			else
+			{
+				$info=$image->setModerationStatus($status, $USER->user_id);
+				echo $info;
+
+				//clear caches involving the image
+				$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_0");
+				$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_1");
+				$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_0");
+				$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_1");
+
+				//clear the users profile cache
+				$smarty->clear_cache('profile.tpl', "{$image->user_id}_0");
+				$smarty->clear_cache('profile.tpl', "{$image->user_id}_1");
+			}
 		}
 		else
 		{
 			echo "FAIL";
 		}
+	
+		
 	}
 	else
 	{
@@ -82,48 +92,107 @@ if (isset($_GET['gridimage_id']))
 // moderator only!
 $USER->mustHavePerm('moderator');
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(100,intval($_GET['limit'])):50;
+
+#############################
 
 //lock the table so nothing can happen in between! (leave others as WRITE so they dont get totally locked)
-$db->Execute("LOCK TABLES gridsquare_moderation_lock WRITE,gridsquare WRITE,gridsquare gs WRITE,gridimage gi WRITE,user WRITE,gridprefix WRITE");
+$db->Execute("LOCK TABLES 
+gridsquare_moderation_lock WRITE, 
+gridsquare_moderation_lock l WRITE,
+moderation_log WRITE,
+gridsquare WRITE,
+gridsquare gs WRITE,
+gridimage gi WRITE,
+user WRITE,
+gridprefix WRITE");
+
+#############################
+# find the list of squares with self pending images, and exclude them...
 
 $sql = "select distinct gridsquare_id 
 from 
 	gridimage as gi
-	left join gridsquare_moderation_lock as l
-		on(gi.gridsquare_id=l.gridsquare_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) )
 where
-	moderation_status = 2 and
-	user_id = {$USER->user_id}
+	(moderation_status = 2 or user_status!='') and
+	gi.user_id = {$USER->user_id}
 order by null";
 
+$recordSet = &$db->Execute($sql);
+while (!$recordSet->EOF) 
+{
+	$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$recordSet->fields['gridsquare_id']},lock_type = 'cantmod'");
+
+	$recordSet->MoveNext();
+}
+$recordSet->Close(); 
+
+#############################
+# define the images to moderate
+
+if (!isset($_GET['moderator']) && !isset($_GET['remoderate'])) {
+
+	$count = $db->getRow("select count(*) as total,sum(created > date_sub(now(),interval 60 day)) as recent from moderation_log WHERE user_id = {$USER->user_id}");
+	if ($count['total'] == 0) {
+		$_GET['remoderate'] = 1;
+	} elseif ($count['recent'] < 5) {
+		$_GET['remoderate'] = 1;
+		$limit = 10;
+	}
+}
+
+$sql_columns = $sql_from = '';
+if (isset($_GET['moderator'])) {
+	
+	if (isset($_GET['verify'])) {
+		$sql_columns = ", new_status";
+		$sql_from = " inner join moderation_log on(moderation_log.gridimage_id=gi.gridimage_id)";
+		$sql_where = "moderation_log.user_id = ".intval($_GET['moderator']);
+		$sql_order = "gridimage_id desc";
+	} else {
+		$sql_where = "(moderation_status != 2) and moderator_id = ".intval($_GET['moderator']);
+		$sql_order = "gridimage_id desc";
+	}
+	$smarty->assign('moderator', 1);
+	
+} elseif (isset($_GET['remoderate'])) {
+	$sql_where = "moderation_status != 2 and moderator_id != {$USER->user_id}";
+	$sql_order = "gridimage_id desc";
+	$smarty->assign('remoderate', 1);
+} else {
+	$sql_where = "(moderation_status = 2 or user_status!='')";
+	$sql_order = "gridimage_id asc";
+}
+
+
+$sql = "select gi.*,grid_reference,user.realname,imagecount $sql_columns
+from 
+	gridimage as gi
+	inner join gridsquare as gs
+		using(gridsquare_id)
+	$sql_from
+	left join gridsquare_moderation_lock as l
+		on(gi.gridsquare_id=l.gridsquare_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) )
+	inner join user
+		on(gi.user_id=user.user_id)
+where
+	$sql_where
+	and (l.gridsquare_id is null OR 
+			(l.user_id = {$USER->user_id} AND lock_type = 'modding') OR
+			(l.user_id != {$USER->user_id} AND lock_type = 'cantmod')
+		)
+order by
+	$sql_order
+limit $limit";
+//implied: and user_id != {$USER->user_id}
+// -> because squares with users images are locked
+
+
+
+#############################
+# fetch the list of images...
 
 $images=new ImageList(); 
-
-if (isset($_GET['moderator_id'])) {
-
-} else {
-	$sql = "select gi.*,grid_reference,user.realname,imagecount 
-	from 
-		gridimage as gi
-		inner join gridsquare as gs
-			using(gridsquare_id)
-		left join gridsquare_moderation_lock as l
-			on(gi.gridsquare_id=l.gridsquare_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) )
-		inner join user
-			on(gi.user_id=user.user_id)
-	where
-		(moderation_status = 2 or user_status!='')
-		and (l.gridsquare_id is null OR 
-				(l.user_id = {$USER->user_id} AND lock_type = 'modding') OR
-				(l.user_id != {$USER->user_id} AND lock_type = 'cantmod')
-			)
-	order by
-		gridimage_id asc
-	limit 50";
-	//implied: and user_id != {$USER->user_id}
-	// -> because squares with users images are locked
-}
 
 $c = $images->_getImagesBySql($sql);
 
@@ -145,13 +214,14 @@ foreach ($images->images as $i => $image) {
 
 }
 
+#############################
+
 $db->Execute("UNLOCK TABLES");
 
+#############################
 
 $images->assignSmarty($smarty, 'unmoderated');
-
 		
 $smarty->display('admin_moderation.tpl');
-
 	
 ?>

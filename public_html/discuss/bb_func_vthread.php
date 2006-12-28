@@ -61,7 +61,7 @@ $forumName=$row[0]; $forumIcon=$row[1];
         }
 
 
-if (isset($CONF['disable_discuss_thumbs'])) {
+if (!empty($CONF['disable_discuss_thumbs'])) {
 	$gridThumbs = "<h4 style=\"color:red\">During times of heavy load we limit the display of thumbnails in the posts.<br/>Sorry for the loss of this feature.</h4>";
 } else {
 	if ($gridref || ($forum == 5 && $gridref = $topicName)) {
@@ -172,7 +172,7 @@ $posterName=$cols[1];
 $posterText=$cols[3];
 
 
-if (!isset($CONF['disable_discuss_thumbs']) && preg_match_all("/\[\[(\[?)(\w*\d+)(\]?)\]\]/",$posterText,$g_matches)) {
+if (empty($CONF['disable_discuss_thumbs']) && preg_match_all("/\[\[(\[?)(\w*\d+)(\]?)\]\]/",$posterText,$g_matches)) {
 	foreach ($g_matches[2] as $i => $g_id) {
 		if (is_numeric($g_id)) {
 			if (!isset($g_image)) {
