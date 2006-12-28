@@ -192,7 +192,7 @@
 	{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
 	{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
 	for <b>{$gridref}</b>
-	{if !$breakdown && !$breakdowns}<span style="font-size:0.8em;">- click for larger version</span>{/if}</div>
+	{if !$breakdown && !$breakdowns && $totalimagecount > 0}<span style="font-size:0.8em;">- click for larger version</span>{/if}</div>
 
 	{if $breakdown}
 		{* We want to display a breakdown list *}

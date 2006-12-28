@@ -33,6 +33,10 @@
 {/foreach}
 </tbody>
 </table>
+<br/>
+<div class="interestBox" style="padding-left:100px"><a href="/admin/tickets.php">&gt; Next page &gt;</a> 
+		or <a href="/admin/moderation.php?abandon=1">Abandon</a> the current moderation session</div>
+
 {else}
   <p>There are no new tickets</p>
 {/if}

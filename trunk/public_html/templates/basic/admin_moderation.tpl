@@ -14,7 +14,7 @@
 
 {if $unmoderatedcount}
 
-	<p>{if moderator}
+	<p>{if $moderator}
 		The following images have been recently moderated by the selected moderator.
 
 	{else}
@@ -56,14 +56,14 @@
 	  <br/>
 	  
 	  <br/>
-	  <input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey"{else}{if $image->different_square} style="color:lightgrey"{/if}{/if}/>
-	  <input class="accept" type="button" id="accept" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey"{/if}/>
-	  <input class="reject" type="button" id="reject" value="Reject" onClick="moderateImage({$image->gridimage_id}, 'rejected')"/>
+	  <input class="accept" type="button" id="geograph{$image->gridimage_id}" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey"{else}{if $image->different_square} style="color:lightgrey"{/if}{/if}/>
+	  <input class="accept" type="button" id="accept{$image->gridimage_id}" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey"{/if}/>
+	  <input class="reject" type="button" id="reject{$image->gridimage_id}" value="Reject" onClick="moderateImage({$image->gridimage_id}, 'rejected')"/>
 	  {if (!$remoderate && $image->user_status && $image->moderation_status != 'pending') || $moderator}
 	  	<br/>Current Status: {$image->moderation_status}
 	  {/if}
 	  {if $image->new_status}
-	  	<br/><span{if $image->new_status != $image->moderation_status} style="background-color:red"{/if}>Suggested Status: {$image->new_status}</span>
+	  	<br/><span{if $image->new_status != $image->moderation_status} style="background-color:red"{/if}>Suggested Status: {$image->new_status} {if $image->ml_realname}, by {$image->ml_realname}{/if}</span>
 	  {/if}
 	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
 	  </div>
@@ -74,8 +74,11 @@
 	{/foreach}
 
 	<br style="clear:left;"/>&nbsp;
-		
-	<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php">Next page &gt;</a></div>
+	
+	{if !$moderator && !$remoderate}		
+		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php">&gt; Next page &gt;</a>
+		or <a href="/admin/moderation.php?abandon=1">Abandon</a> the current moderation session</div>
+	{/if}
 {else}
 
 	<p>There are no images awaiting moderation!</p>

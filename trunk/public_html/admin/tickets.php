@@ -31,31 +31,65 @@ $smarty = new GeographPage;
 
 $db = NewADOConnection($GLOBALS['DSN']);
 
+#############################
+
+$db->Execute("LOCK TABLES 
+gridimage_moderation_lock WRITE, 
+gridimage_moderation_lock l WRITE, 
+gridimage_ticket t READ, 
+user suggester READ,
+gridimage i  READ,
+user as submitter READ");
+
+#############################
+
+$limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(100,intval($_GET['limit'])):50;
+
 
 $newtickets=$db->GetAll(
-	"select t.*,suggester.realname as suggester,submitter.realname as submitter, i.title ".
-	"from gridimage_ticket as t ".
-	"inner join user as suggester on (suggester.user_id=t.user_id) ".
-	"inner join gridimage as i on (t.gridimage_id=i.gridimage_id) ".
-	"inner join user as submitter on (submitter.user_id=i.user_id) ".
-	"where t.moderator_id=0 and t.status<>'closed'".
-	"order by t.suggested");
+	"select t.*,suggester.realname as suggester,submitter.realname as submitter, i.title
+	from gridimage_ticket as t
+	inner join user as suggester on (suggester.user_id=t.user_id)
+	inner join gridimage as i on (t.gridimage_id=i.gridimage_id)
+	inner join user as submitter on (submitter.user_id=i.user_id)
+	left join gridimage_moderation_lock as l
+		on(i.gridimage_id=l.gridimage_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) )
+	where t.moderator_id=0 and t.status<>'closed'
+		and (l.gridimage_id is null OR 
+				(l.user_id = {$USER->user_id} AND lock_type = 'modding') OR
+				(l.user_id != {$USER->user_id} AND lock_type = 'cantmod')
+		)
+	order by t.suggested
+	limit $limit");
 $smarty->assign_by_ref('newtickets', $newtickets);
 
+foreach ($newtickets as $i => $row) {
+	$db->Execute("REPLACE INTO gridimage_moderation_lock SET user_id = {$USER->user_id}, gridimage_id = {$row['gridimage_id']}");
+}
 
-$opentickets=$db->GetAll(
-	"select t.*,suggester.realname as suggester,submitter.realname as submitter, i.title, ".
-	"moderator.realname as moderator ".
-	"from gridimage_ticket as t ".
-	"inner join user as suggester on (suggester.user_id=t.user_id) ".
-	"inner join gridimage as i on (t.gridimage_id=i.gridimage_id) ".
-	"inner join user as submitter on (submitter.user_id=i.user_id) ".
-	"inner join user as moderator on (moderator.user_id=t.moderator_id) ".
-	"where t.moderator_id>0 and t.status<>'closed' ".
-	"order by t.updated");
-$smarty->assign_by_ref('opentickets', $opentickets);
+#############################
 
-$template = ($_GET['sidebar'])?'admin_tickets_sidebar.tpl':'admin_tickets.tpl';
+$db->Execute("UNLOCK TABLES");
+
+#############################
+
+if (empty($_GET['sidebar'])) {
+	$opentickets=$db->GetAll(
+		"select t.*,suggester.realname as suggester,submitter.realname as submitter, i.title,
+		moderator.realname as moderator
+		from gridimage_ticket as t
+		inner join user as suggester on (suggester.user_id=t.user_id)
+		inner join gridimage as i on (t.gridimage_id=i.gridimage_id)
+		inner join user as submitter on (submitter.user_id=i.user_id)
+		inner join user as moderator on (moderator.user_id=t.moderator_id)
+		where t.moderator_id>0 and t.status<>'closed'
+		order by t.updated");
+	$smarty->assign_by_ref('opentickets', $opentickets);
+}
+
+#############################
+
+$template = (!empty($_GET['sidebar']))?'admin_tickets_sidebar.tpl':'admin_tickets.tpl';
 $smarty->display($template);
 
 	

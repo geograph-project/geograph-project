@@ -77,7 +77,7 @@ if (isset($_REQUEST['edit']))
 	$smarty->assign('delays', array(2,3,4,5,6,10,12));
 	$smarty->assign('ticket_options', array(
 	'all' => 'Emails for all changes' ,
-	//'major' => 'Only Major changes', 
+	'major' => 'Only Major changes', 
 	//'digest' => 'Receive Digest emails Once per Day',
 	'none' => 'No Email - access online only' ));
 			
