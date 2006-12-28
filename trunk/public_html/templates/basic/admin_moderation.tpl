@@ -6,11 +6,25 @@
 <h2><a title="Admin home page" href="/admin/index.php">Admin</a> : Moderation</h2>
 
 {dynamic}
+{if $remoderate}{literal}
+<script type="text/javascript">
+	remoderate = true;
+</script>
+{/literal}{/if}
 
 {if $unmoderatedcount}
 
-	<p>The following images have been submitted recently. Click an image to 
-	view fullsize</p>
+	<p>{if moderator}
+		The following images have been recently moderated by the selected moderator.
+
+	{else}
+		{if $remoderate}
+			As a quick spotcheck you are asked to make a suggestion for these recently moderated images.
+		{else}
+			The following images have been submitted recently.
+		{/if}
+	{/if}
+	Click an image to view fullsize.</p>
 	
 	{foreach from=$unmoderated item=image}
 
@@ -45,8 +59,11 @@
 	  <input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey"{else}{if $image->different_square} style="color:lightgrey"{/if}{/if}/>
 	  <input class="accept" type="button" id="accept" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey"{/if}/>
 	  <input class="reject" type="button" id="reject" value="Reject" onClick="moderateImage({$image->gridimage_id}, 'rejected')"/>
-	  {if $image->user_status && $image->moderation_status != 'pending'}
+	  {if (!$remoderate && $image->user_status && $image->moderation_status != 'pending') || $moderator}
 	  	<br/>Current Status: {$image->moderation_status}
+	  {/if}
+	  {if $image->new_status}
+	  	<br/><span{if $image->new_status != $image->moderation_status} style="background-color:red"{/if}>Suggested Status: {$image->new_status}</span>
 	  {/if}
 	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
 	  </div>
@@ -58,7 +75,7 @@
 
 	<br style="clear:left;"/>&nbsp;
 		
-
+	<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php">Next page &gt;</a></div>
 {else}
 
 	<p>There are no images awaiting moderation!</p>

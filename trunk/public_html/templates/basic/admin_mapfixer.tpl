@@ -13,19 +13,20 @@ be opened up for processing{/if}.</div>
 
 <span id="landvote" style="display:none">
 Land percent for <span id="voteref"></span>&nbsp; is 
-<input type="button" value="00" onclick="setland(0)">
-<input type="button" value="01" onclick="setland(1)">
-<input type="button" value="05" onclick="setland(5)">
-<input type="button" value="10" onclick="setland(10)">
-<input type="button" value="25" onclick="setland(25)">
-<input type="button" value="50" onclick="setland(50)">
-<input type="button" value="75" onclick="setland(75)">
-<input type="button" value="100" onclick="setland(100)">
-<input type="button" value="skip" onclick="shownext()">
+<input type="button" value="00" onclick="setland(0)" style="padding:5px">
+<input type="button" value="01" onclick="setland(1)" style="padding:5px">
+<input type="button" value="05" onclick="setland(5)" style="padding:5px">
+<input type="button" value="10" onclick="setland(10)" style="padding:5px">
+<input type="button" value="25" onclick="setland(25)" style="padding:5px">
+<input type="button" value="50" onclick="setland(50)" style="padding:5px">
+<input type="button" value="75" onclick="setland(75)" style="padding:5px">
+<input type="button" value="100" onclick="setland(100)" style="padding:5px">
+<input type="button" value="skip" onclick="shownext()" style="padding:5px">
 </span>
 <div id="voteinfo"></div>
 
 </div>
+<div style="font-size:0.7em">When checking Ireland Squares in Google Earth, please open {external href="http://www.nearby.org.uk/google/Gridlines.kml.pl" text="Gridlines Layer"}.</div>
 
 <script language="javascript">
 

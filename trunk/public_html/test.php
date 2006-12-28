@@ -257,7 +257,14 @@ foreach($example as $name=>$value)
 	}
 }
 
-
+//the following is only useful on develoment domains
+foreach($CONF as $name=>$value)
+{
+	if (!isset($example[$name]))
+	{
+		warn("The Example configuration file has no \$example['$name'] entry - see please define its use");
+	}
+}
 
 //////////////////////////////////////////////////////////////////
 // directory permissions
@@ -291,7 +298,7 @@ if (!is_writable($CONF['photo_upload_dir']))
 	fail('$CONF[\'photo_upload_dir\'] ('.$CONF['photo_upload_dir'].') not writable - REQUIRED');
 
 if ($CONF['log_script_timing']=='file') {
-	#if (!is_writable($CONF['log_script_folder']))
+	if (!is_writable($CONF['log_script_folder']))
 		fail('$CONF[\'log_script_folder\'] ('.$CONF['log_script_folder'].') not writable - REQUIRED or disable Script Timing Logging');
 }
 
