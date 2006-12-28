@@ -372,7 +372,7 @@ class GridImageTroubleTicket
 		if ($newticket)
 		{
 			//new ticket
-			$sql=sprintf("insert into gridimage_ticket(gridimage_id, suggested, updated,user_id, moderator_id,status, notes) ".
+			$sql=sprintf("insert into gridimage_ticket(gridimage_id, suggested, updated,user_id, moderator_id, status, type, notes) ".
 				"values(%d, '%s', '%s', %d, %d, '%s', '%s', %s)",
 				$this->gridimage_id,
 				$this->suggested,
