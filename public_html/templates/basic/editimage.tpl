@@ -397,8 +397,8 @@ then please enter directly into the boxes above)
 </td></tr></table>
 
 <div>
-{if $isadmin}<input type="checkbox" name="mod" value="apply" id="mod_apply"/> <label for="mod_mod">Apply changes immediately</label><br/>{/if}
-{if !$isowner}<input type="checkbox" name="type" value="minor" id="type_minor"/> <label for="type_minor">I certify that this change is minor, eg only spelling and grammer</label>{/if}
+{if $isadmin}<input type="checkbox" name="mod" value="apply" id="mod_apply"/> <label for="mod_mod">Apply changes immediately. (Don't create ticket)</label><br/>{/if}
+{if !$isowner}<input type="checkbox" name="type" value="minor" id="type_minor"/> <label for="type_minor">I certify that this change is minor, e.g. only spelling and grammer.</label>{/if}
 </div>
 
 <br style="clear:both"/>
