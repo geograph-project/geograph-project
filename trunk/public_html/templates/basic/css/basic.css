@@ -24,6 +24,20 @@ a Img
 	white-space:nowrap;
 }
 
+/* credit to http://www.greywyvern.com/code/min-height-hack.html */
+
+.minheightprop {
+	width:1px;
+	float:right;
+	position:relative;
+}
+
+.minheightclear {
+	clear:both;
+	height:1px;
+	overflow:hidden;
+}
+
 /*---------------------------------------------------------------*
  * title header
  *---------------------------------------------------------------*/
