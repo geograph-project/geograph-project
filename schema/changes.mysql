@@ -685,3 +685,28 @@ CREATE TABLE `moderation_log` (
   UNIQUE KEY `user_id` (`user_id`,`gridimage_id`)
 );
 
+
+create table goty_nomination_posts SELECT min(post_id) as post_id FROM `geobb_topics` t INNER JOIN geobb_posts p USING ( topic_id ) WHERE t.forum_id =7 AND topic_title LIKE 'goty %eek%' GROUP BY `t`.`topic_id`;
+
+
+
+ALTER TABLE `gridimage_ticket` ADD `type` ENUM( 'normal', 'minor' ) DEFAULT 'normal' NOT NULL ;
+
+
+CREATE TABLE `gridimage_moderation_lock` (
+`gridimage_id` int( 10 ) unsigned NOT NULL default '0',
+`user_id` int( 10 ) unsigned NOT NULL default '0',
+`lock_obtained` timestamp NOT NULL default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
+`lock_type` enum( 'modding', 'cantmod' ) NOT NULL default 'modding',
+PRIMARY KEY ( `gridimage_id` ) 
+);
+
+DROP TABLE IF EXISTS gridsquare_moderation_lock;
+
+CREATE TABLE `gridsquare_moderation_lock` (
+`gridsquare_id` int( 10 ) unsigned NOT NULL default '0',
+`user_id` int( 10 ) unsigned NOT NULL default '0',
+`lock_obtained` timestamp NOT NULL default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
+`lock_type` enum( 'modding', 'cantmod' ) NOT NULL default 'modding',
+PRIMARY KEY ( `gridimage_id`,'user_id' ) 
+);

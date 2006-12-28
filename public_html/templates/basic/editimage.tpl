@@ -38,7 +38,7 @@
   	  <form action="/moderation.php" method="post">
   	  <input type="hidden" name="gridimage_id" value="{$image->gridimage_id}"/>
   	  <h2 class="titlebar">Image Self Moderation</h2>
-  	  I suggest this image should become:
+  	  <p>I suggest this image should become:
   	  {if ($image->moderation_status == 'pending' || $image->moderation_status == 'geograph') && $image->user_status == 'accepted'}
   	  <input class="accept" type="submit" id="geograph" name="user_status" value="Geograph"/>
   	  {/if}
@@ -50,14 +50,23 @@
   	  {/if}
   	  {if $image->user_status}
 	  <br/><small>[Current suggestion: {if $image->user_status eq "accepted"}supplemental{else}{$image->user_status}{/if}</small>]
-	  {/if}
+	  {/if}</p>
   	  
   	  </form>
 	{/if}
-
-
 <br/>
 <br/>
+  {if $isadmin}
+	  <form method="post">
+	  <script type="text/javascript" src="/admin/moderation.js"></script>
+	  <h2 class="titlebar">Moderation</h2>
+	  <p><input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey"{/if}/>
+	  <input class="accept" type="button" id="accept" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey"{/if}/>
+	  <input class="reject" type="button" id="reject" value="Reject" onclick="moderateImage({$image->gridimage_id}, 'rejected')"/>
+	  <span class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</span></p>
+	  </form>
+  {/if}
+
 
 {if $thankyou eq 'pending'}
 	<a name="form"></a>
@@ -386,6 +395,11 @@ then please enter directly into the boxes above)
 </div>
 
 </td></tr></table>
+
+<div>
+{if $isadmin}<input type="checkbox" name="mod" value="apply" id="mod_apply"/> <label for="mod_mod">Apply changes immediately</label><br/>{/if}
+{if !$isowner}<input type="checkbox" name="type" value="minor" id="type_minor"/> <label for="type_minor">I certify that this change is minor, eg only spelling and grammer</label>{/if}
+</div>
 
 <br style="clear:both"/>
 

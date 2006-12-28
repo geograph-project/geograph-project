@@ -92,20 +92,26 @@ if (isset($_GET['gridimage_id']))
 // moderator only!
 $USER->mustHavePerm('moderator');
 
+if (!empty($_GET['abandon'])) {
+	$db->Execute("DELETE FROM gridsquare_moderation_lock WHERE user_id = {$USER->user_id}");
+	header("Location: /admin/");
+	exit;
+}
+
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(100,intval($_GET['limit'])):50;
 
 #############################
 
-//lock the table so nothing can happen in between! (leave others as WRITE so they dont get totally locked)
+//lock the table so nothing can happen in between! (leave others as READ so they dont get totally locked)
 $db->Execute("LOCK TABLES 
 gridsquare_moderation_lock WRITE, 
 gridsquare_moderation_lock l WRITE,
 moderation_log WRITE,
-gridsquare WRITE,
-gridsquare gs WRITE,
-gridimage gi WRITE,
-user WRITE,
-gridprefix WRITE");
+gridsquare READ,
+gridsquare gs READ,
+gridimage gi READ,
+user READ,
+gridprefix READ");
 
 #############################
 # find the list of squares with self pending images, and exclude them...
@@ -140,23 +146,30 @@ if (!isset($_GET['moderator']) && !isset($_GET['remoderate'])) {
 		$limit = 10;
 	}
 }
-
+$sql_where2 = "
+	and (l.gridsquare_id is null OR 
+			(l.user_id = {$USER->user_id} AND lock_type = 'modding') OR
+			(l.user_id != {$USER->user_id} AND lock_type = 'cantmod')
+		)";
 $sql_columns = $sql_from = '';
 if (isset($_GET['moderator'])) {
-	
-	if (isset($_GET['verify'])) {
-		$sql_columns = ", new_status";
-		$sql_from = " inner join moderation_log on(moderation_log.gridimage_id=gi.gridimage_id)";
-		$sql_where = "moderation_log.user_id = ".intval($_GET['moderator']);
-		$sql_order = "gridimage_id desc";
+	$mid = intval($_GET['moderator']);
 		
-		//todo also show images originally moderated by this user, and verified by someone else, will require displaying who the verifier moderator is
+	if (isset($_GET['verify'])) {
+		$sql_columns = ", new_status,moderation_log.user_id as ml_user_id";
+		$sql_from = " inner join moderation_log on(moderation_log.gridimage_id=gi.gridimage_id)";
+		if ($_GET['verify'] == 2) {
+			$sql_where = "(moderation_log.user_id = $mid and moderation_status != new_status)";
+		} else {
+			$sql_where = "(moderation_log.user_id = $mid or gi.moderator_id = $mid)";
+		}
+		$sql_order = "gridimage_id desc";
 	} else {
-		$sql_where = "(moderation_status != 2) and moderator_id = ".intval($_GET['moderator']);
+		$sql_where = "(moderation_status != 2) and moderator_id = $mid";
 		$sql_order = "gridimage_id desc";
 	}
 	$smarty->assign('moderator', 1);
-	
+	$sql_where2 = '';
 } elseif (isset($_GET['remoderate'])) {
 	$sql_where = "moderation_status != 2 and moderator_id != {$USER->user_id}";
 	$sql_order = "gridimage_id desc";
@@ -179,16 +192,12 @@ from
 		on(gi.user_id=user.user_id)
 where
 	$sql_where
-	and (l.gridsquare_id is null OR 
-			(l.user_id = {$USER->user_id} AND lock_type = 'modding') OR
-			(l.user_id != {$USER->user_id} AND lock_type = 'cantmod')
-		)
+	$sql_where2
 order by
 	$sql_order
 limit $limit";
 //implied: and user_id != {$USER->user_id}
 // -> because squares with users images are locked
-
 
 
 #############################
@@ -198,7 +207,7 @@ $images=new ImageList();
 
 $c = $images->_getImagesBySql($sql);
 
-
+$realname = array();
 foreach ($images->images as $i => $image) {
 	if ($image->viewpoint_eastings) {
 		//note $image DOESNT work non php4, must use $images->images[$i]
@@ -212,6 +221,9 @@ foreach ($images->images as $i => $image) {
 			$images->images[$i]->different_square = true;
 		}
 	}	
+	if (!empty($image->ml_user_id) && $image->ml_user_id != $USER->user_id) {
+		$image->ml_realname = (!empty($realname[$image->ml_user_id]))?$realname[$image->ml_user_id]:($realname[$image->ml_user_id] = $db->getOne("select realname from user where user_id = {$image->ml_user_id}"));
+	}
 	$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$image->gridsquare_id}");
 
 }

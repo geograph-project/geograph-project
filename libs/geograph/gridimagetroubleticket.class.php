@@ -57,6 +57,7 @@ create table gridimage_ticket
 
 	updated datetime,
 	status enum('pending', 'open', 'closed'),
+	type enum('normal', 'minor') default 'normal',
 	
 	notes text,
 	
@@ -113,6 +114,11 @@ class GridImageTroubleTicket
 	* associated image
 	*/
 	var $gridimage_id;
+
+	/**
+	* type
+	*/
+	var $type;
 
 	/**
 	* suggested time
@@ -194,7 +200,7 @@ class GridImageTroubleTicket
 	 	$this->updated=$this->suggested;
 	 	$this->status="pending";
 	 	$this->notes="";
-	 	
+	 	$this->type='normal';
 	 	
 	}
 
@@ -223,6 +229,15 @@ class GridImageTroubleTicket
 	function setImage($gridimage_id)
 	{
 		$this->gridimage_id=intval($gridimage_id);
+	}
+	
+	/**
+	* set ticket type
+	* @access public
+	*/
+	function setType($type)
+	{
+		$this->type=$type;
 	}
 	
 	/**
@@ -358,14 +373,15 @@ class GridImageTroubleTicket
 		{
 			//new ticket
 			$sql=sprintf("insert into gridimage_ticket(gridimage_id, suggested, updated,user_id, moderator_id,status, notes) ".
-				"values(%d, '%s', '%s', %d, %d, '%s', '%s')",
+				"values(%d, '%s', '%s', %d, %d, '%s', '%s', %s)",
 				$this->gridimage_id,
 				$this->suggested,
 				$this->updated,
 				$this->user_id,
 				$this->moderator_id,
 				"pending",
-				mysql_escape_string($this->notes));
+				$this->type,
+				$db->Quote($this->notes));
 			$db->Execute($sql);
 			$this->gridimage_ticket_id=$db->Insert_ID();
 		}
@@ -445,7 +461,9 @@ class GridImageTroubleTicket
 						"if further information is required. If you wish, you can review and comment on these ".
 						"changes by following the links in this message. ");
 					$submitter=new GeographUser($img->user_id);
-					if ($submitter->ticket_option != 'none')
+					if ( ($submitter->ticket_option == 'all') || 
+							( ($type=='normal') && $submitter->ticket_option == 'major')
+						)
 						$this->_sendMail($submitter->email, $msg);
 				}
 			}
@@ -462,7 +480,9 @@ class GridImageTroubleTicket
 						
 					$msg =& $this->_buildEmail($comment);
 					$submitter=new GeographUser($img->user_id);
-					if ($submitter->ticket_option != 'none')
+					if ( ($submitter->ticket_option == 'all') || 
+							( ($type=='normal') && $submitter->ticket_option == 'major')
+						)
 						$this->_sendMail($submitter->email, $msg);
 				
 				}

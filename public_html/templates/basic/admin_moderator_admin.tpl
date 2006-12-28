@@ -46,6 +46,7 @@
 {/if}
 {if strpos($userrow.rights,'moderator') > 0}
 	<a href="/admin/moderation.php?moderator={$userrow.user_id}&amp;verify=1">Verify</a>
+	(<a href="/admin/moderation.php?moderator={$userrow.user_id}&amp;verify=1">Mis</a>)
 	<a href="/admin/moderation.php?moderator={$userrow.user_id}">Review</a>
 	<a href="/admin/moderator_admin.php?revoke={$userrow.user_id}">Revoke</a>
 {else}
@@ -71,6 +72,7 @@
 <div class="interestBox">
 <b>Stats</b> - View moderation statistics for this user<br/>
 <b>Verify</b> - View suggested moderations<br/>
+(<b>Mis</b>) - mismatches only<br/>
 <b>Review</b> - View recent moderations<br/>
 <b>Revoke</b> - Remove moderation rights (moderations already done are not affected)<br/>
 <b>Grant</b> - Add moderation rights to this user (requires the user to re-login)

@@ -137,7 +137,7 @@ if (isset($_REQUEST['id']))
 
 
 		//now make some exceptions
-		if ($isadmin)
+		if ($isadmin && !empty($_REQUEST['mod']))
 		{
 			$moderated["title"]=false;
 			$moderated["comment"]=false;
@@ -177,24 +177,7 @@ if (isset($_REQUEST['id']))
 		//when starting we dont use imageclassother
 		$smarty->assign('imageclassother', '');
 
-		//let's find posts in the gridref discussion forum
-		$image->grid_square->assignDiscussionToSmarty($smarty);
 
-		//build a list of view directions
-		require_once('geograph/searchengine.class.php');
-		$search = new SearchEngine('');
-		$dirs = array (-1 => '');
-		$jump = 360/16; $jump2 = 360/32;
-		for($q = 0; $q< 360; $q+=$jump) {
-			$s = ($q%90==0)?strtoupper($search->heading_string($q)):ucwords($search->heading_string($q));
-			$dirs[$q] = sprintf('%s : %03d deg (%03d > %03d)',
-				str_pad($s,16,' '),
-				$q,
-				($q == 0?$q+360-$jump2:$q-$jump2),
-				$q+$jump2);
-		}
-		$dirs['00'] = $dirs[0];
-		$smarty->assign_by_ref('dirs', $dirs);
 
 
 		//process a trouble ticket?
@@ -256,7 +239,26 @@ if (isset($_REQUEST['id']))
 		}
 
 
+		//let's find posts in the gridref discussion forum
+		$image->grid_square->assignDiscussionToSmarty($smarty);
 
+		//build a list of view directions
+		require_once('geograph/searchengine.class.php');
+		$search = new SearchEngine('');
+		$dirs = array (-1 => '');
+		$jump = 360/16; $jump2 = 360/32;
+		for($q = 0; $q< 360; $q+=$jump) {
+			$s = ($q%90==0)?strtoupper($search->heading_string($q)):ucwords($search->heading_string($q));
+			$dirs[$q] = sprintf('%s : %03d deg (%03d > %03d)',
+				str_pad($s,16,' '),
+				$q,
+				($q == 0?$q+360-$jump2:$q-$jump2),
+				$q+$jump2);
+		}
+		$dirs['00'] = $dirs[0];
+		$smarty->assign_by_ref('dirs', $dirs);
+		
+		
 		//get trouble tickets
 		$show_all_tickets = isset($_REQUEST['alltickets']) && $_REQUEST['alltickets']==1;
 		$smarty->assign('show_all_tickets', $show_all_tickets);
@@ -400,9 +402,11 @@ if (isset($_REQUEST['id']))
 				//create new change control object
 				$ticket=new GridImageTroubleTicket();
 				$ticket->setSuggester($USER->user_id);
-				if ($isadmin)
+				if ($isadmin && !empty($_REQUEST['mod']))
 					$ticket->setModerator($USER->user_id);
 
+				if (!empty($_REQUEST['type'])) 
+					$ticket->setType($_REQUEST['type']);
 				$ticket->setImage($_REQUEST['id']);
 				$ticket->setNotes($updatenote);
 

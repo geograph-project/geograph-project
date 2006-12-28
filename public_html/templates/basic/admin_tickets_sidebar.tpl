@@ -34,6 +34,10 @@
 {/foreach}
 </tbody>
 </table>
+<br/>
+<div class="interestBox"><a href="/admin/tickets.php?sidebar=1" target="_self">Next page &gt;</a><br/><br/>
+		or <a href="/admin/moderation.php?abandon=1" onclick="alert('Please now close the sidebar.');" target="_main">Abandon</a> </div>
+<br/>
 {else}
   <p>There are no new tickets</p>
 {/if}
