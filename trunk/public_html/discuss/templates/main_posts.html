@@ -119,3 +119,25 @@ document.location='{$main_url}/{$indexphp}'+url;
 
 </div>
 <p align=right><a title="RSS Feed for this Topic" href="/discuss/syndicator.php?topic={$topic}" class="xml-rss">RSS</a></p>
+
+<script language="JavaScript">
+function prevThis(){
+var pT,tT,cT;
+pT=document.forms['postMsg'].elements['postText'].value;
+if(document.forms['postMsg'].elements['topicTitle']) tT=document.forms['postMsg'].elements['topicTitle'].value;
+else if(document.forms['postMsg'].elements['postTopic']) tT=document.forms['postMsg'].elements['postTopic'].value;
+else tT='';
+if(document.forms['postMsg'].elements['disbbcode'].checked) cT=1; else cT=0;
+window.open('', 'cWin2', 'resizable=yes, scrollbars=yes, width=750, height=300, top=0, left=100');
+document.forms['postMsgPrev'].elements['topicTitle'].value=tT;
+document.forms['postMsgPrev'].elements['postText'].value=pT;
+document.forms['postMsgPrev'].elements['disbbcode'].value=cT;
+document.forms['postMsgPrev'].submit();
+}
+</script>
+<form action="{$indexphp}" name=postMsgPrev method=post target="cWin2">
+<input type=hidden name=postText>
+<input type=hidden name=topicTitle>
+<input type=hidden name=disbbcode>
+<input type=hidden name=prevForm value=1>
+</form>

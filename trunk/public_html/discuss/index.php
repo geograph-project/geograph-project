@@ -319,6 +319,8 @@ elseif($action=='editprefs' and $enableProfileUpdate) {$step=1;require($pathToFi
 
 elseif($action=='unsubscribe') require($pathToFiles.'bb_func_unsub.php');
 
+elseif($action=='subscribe') require($pathToFiles.'bb_func_sub.php');
+
 elseif($action=='sticky') {$status=9;require($pathToFiles.'bb_func_sticky.php');}
 
 elseif($action=='unsticky') {$status=0;require($pathToFiles.'bb_func_sticky.php');}
