@@ -26,6 +26,8 @@ init_session();
 
 $USER->mustHavePerm("moderator");
 
+$_SESSION['thumb'] = true;
+
 $smarty = new GeographPage;
 
 $template='admin_index.tpl';

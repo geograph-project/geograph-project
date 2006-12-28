@@ -708,5 +708,5 @@ CREATE TABLE `gridsquare_moderation_lock` (
 `user_id` int( 10 ) unsigned NOT NULL default '0',
 `lock_obtained` timestamp NOT NULL default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
 `lock_type` enum( 'modding', 'cantmod' ) NOT NULL default 'modding',
-PRIMARY KEY ( `gridimage_id`,'user_id' ) 
+PRIMARY KEY ( `gridsquare_id`,`user_id` ) 
 );
