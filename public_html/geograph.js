@@ -241,6 +241,17 @@ function displayMarkedImages() {
 	}
 }
 
+function returnMarkedImages() {
+	current = readCookie('markedImages');
+	if (current) {
+		splited = current.split(',');
+		return '[[['+splited.join(']]] [[[')+']]]';
+	} else {
+		alert("You haven't marked any images yet. Or cookies are disabled");
+		return '';
+	}
+}
+
 function showMarkedImages() {
 	current = readCookie('markedImages');
 	if (current) {
