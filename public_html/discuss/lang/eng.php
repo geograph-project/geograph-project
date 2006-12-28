@@ -315,6 +315,7 @@ $l_warnEncoding='Before posting non-english message, check your browser`s encodi
 /* Language variables miniBB v1.1 */
 
 $l_unsubscribeinfo='You will receive email notifications of new posts to this topic -';
+$l_subscribe='or Subscribe without posting';
 $l_unsubscribe='Unsubscribe';
 $l_member='Member';
 
