@@ -126,8 +126,8 @@ class SearchEngine
 		}
 		if (!$sql_order) {$sql_order = 'gs.grid_reference';}
 		
-		if (preg_match("/^(left |inner |)join ([\w\,\(\) \.\'!=]+) where/i",$sql_where,$matches)) {
-			$sql_where = preg_replace("/^(left |inner |)join ([\w\,\(\) \.!=\']+) where/i",'',$sql_where);
+		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=]+) where/i",$sql_where,$matches)) {
+			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\']+) where/i",'',$sql_where);
 			$sql_from .= " {$matches[1]} join {$matches[2]}";
 		}
 
@@ -242,12 +242,12 @@ END;
 			$sql_where = str_replace('gs.','gi.',$sql_where);
 		}
 		$sql_fields = str_replace('gs.','gi.',$sql_fields);
-		
-		if (preg_match("/^(left |inner |)join ([\w\,\(\) \.\'!=]+) where/i",$sql_where,$matches)) {
-			$sql_where = preg_replace("/^(left |inner |)join ([\w\,\(\) \.!=\']+) where/i",'',$sql_where);
+	
+		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=]+) where/i",$sql_where,$matches)) {
+			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\']+) where/i",'',$sql_where);
 			$sql_from .= " {$matches[1]} join {$matches[2]}";
 		}
-
+		
 		if ($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly) {
 			// construct the count sql
 			if (preg_match("/group by ([\w\,\(\)\/ ]+)/i",$sql_where,$matches)) {
