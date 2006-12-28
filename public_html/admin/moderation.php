@@ -149,6 +149,8 @@ if (isset($_GET['moderator'])) {
 		$sql_from = " inner join moderation_log on(moderation_log.gridimage_id=gi.gridimage_id)";
 		$sql_where = "moderation_log.user_id = ".intval($_GET['moderator']);
 		$sql_order = "gridimage_id desc";
+		
+		//todo also show images originally moderated by this user, and verified by someone else, will require displaying who the verifier moderator is
 	} else {
 		$sql_where = "(moderation_status != 2) and moderator_id = ".intval($_GET['moderator']);
 		$sql_order = "gridimage_id desc";
