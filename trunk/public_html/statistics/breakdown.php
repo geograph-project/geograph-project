@@ -138,6 +138,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_fields_dummy = ''; $sql_order_dummy = ''; 
 		$engine->criteria->getSQLParts($sql_fields_dummy,$sql_order_dummy,$user_crit,$sql_from);
 		
+		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=]+) where/i",$user_crit,$matches)) {
+			$user_crit = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\']+) where/i",'',$user_crit);
+			$sql_from .= " {$matches[1]} join {$matches[2]}";
+		}
+		
 		if (preg_match("/group by ([\w\,\(\) ]+)/i",$user_crit)) {
 			print "Unable to run on this search";
 			exit;
