@@ -15,7 +15,7 @@ return this
 }
 
 function paste_strinL(strinL,isQuote){
-if(strinL=='') alert('First highlight the text you wish to quote, then click the \'quote\' link');
+if(strinL=='' && isQuote==1) alert('First highlight the text you wish to quote, then click the \'quote\' link');
 else{
 if (isQuote==1) {
 strinL='[i]'+strinL+'[/i]'+'\n';
