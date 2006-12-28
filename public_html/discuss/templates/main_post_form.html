@@ -18,8 +18,11 @@
 
 <script type="text/javascript" src="/geograph.js"></script>
 
-<span style="width:90px; text-align:center; border: 1px solid lightgrey;"><a title="Insert marked image list" href="JavaScript:paste_strinL(returnMarkedImages(),0)" onMouseOver="window.status='Insert marked image list'; return true" onMouseOut="window.status=''; return true">Insert<br/>Marked Images</a></span>&nbsp;
-
+<script type="text/javascript">
+if (readCookie('markedImages')) {
+document.write('<span style="width:90px; text-align:center; border: 1px solid lightgrey;">Marked Images<br/><a title="Insert marked image list" href="JavaScript:paste_strinL(returnMarkedImages(),0)" onMouseOver="window.status=\'Insert marked image list\'; return true" onMouseOut="window.status=\'\'; return true"><b>Insert</b></a> (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear</a>)</span>&nbsp;');
+}
+</script>
 
 <input type="checkbox" name="disbbcode" id="disbbcode" value="on"><label for="disbbcode">{$l_disableBbCode}</label>
 
