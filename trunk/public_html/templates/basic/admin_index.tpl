@@ -7,8 +7,12 @@
 <ul>
 <li><a href="/admin/moderation.php">Moderate</a> new photo submissions<br/> [{$images_pending} Pending]</li>
 
+{dynamic}
+{if $is_tickmod} 
 <li><a title="Trouble Tickets" href="/admin/tickets.php">Trouble Tickets</a> (<a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search">Open in Sidebar</a>) - 
    Deal with image problems<br/> [{$tickets_new} New, {$tickets_yours} Open by You]</li>
+{/if}
+{/dynamic}
 
 <li><a title="Map Fixer" href="/admin/mapfixer.php">Map Fixer</a> allows the land percentage
 for each 1km grid squares to be updated, which allows "square is all at sea" to be 

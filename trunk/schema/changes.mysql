@@ -710,3 +710,5 @@ CREATE TABLE `gridsquare_moderation_lock` (
 `lock_type` enum( 'modding', 'cantmod' ) NOT NULL default 'modding',
 PRIMARY KEY ( `gridsquare_id`,`user_id` ) 
 );
+
+ALTER TABLE `user` CHANGE `rights` `rights` SET( 'basic', 'moderator', 'admin', 'ticketmod' );

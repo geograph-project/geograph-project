@@ -141,6 +141,7 @@ if (!isset($_GET['moderator']) && !isset($_GET['remoderate'])) {
 	$count = $db->getRow("select count(*) as total,sum(created > date_sub(now(),interval 60 day)) as recent from moderation_log WHERE user_id = {$USER->user_id}");
 	if ($count['total'] == 0) {
 		$_GET['remoderate'] = 1;
+		$limit = 25;
 	} elseif ($count['recent'] < 5) {
 		$_GET['remoderate'] = 1;
 		$limit = 10;

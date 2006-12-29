@@ -16,12 +16,14 @@
   </ul>
   
   {dynamic}
-  {if $is_mod}
+  {if $is_mod || $is_admin}
   <h3>Admin</h3>
   <ul>
      <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
      <li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
-     <li><a title="Trouble Tickets" href="/admin/tickets.php">Tickets</a> (<a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search">S</a>)</li>
+     {if $is_tickmod}
+     	<li><a title="Trouble Tickets" href="/admin/tickets.php">Tickets</a> (<a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search">S</a>)</li>
+     {/if}
   </ul>
   {/if}
   {/dynamic}

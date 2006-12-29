@@ -34,15 +34,17 @@ if (!$db) die('Database connection failed');
 if (isset($_GET['revoke'])) {
 	$u = new GeographUser(intval($_GET['revoke']));
 	if ($u->registered) {
-		if ($db->Execute("UPDATE user SET rights = REPLACE(rights,'moderator','') WHERE user_id = {$u->user_id}")) {
-			$smarty->assign('message', "Moderator Rights removed from ".$u->realname);
+		$right = !empty($_GET['right'])?$_GET['right']:'moderator';
+		if ($db->Execute("UPDATE user SET rights = REPLACE(rights,'$right','') WHERE user_id = {$u->user_id}")) {
+			$smarty->assign('message', "$right rights removed from ".$u->realname);
 		}
 	}
 } elseif (isset($_GET['grant'])) {
 	$u = new GeographUser(intval($_GET['grant']));
 	if ($u->registered) {
-		if ($db->Execute("UPDATE user SET rights = CONCAT(rights,',moderator') WHERE user_id = {$u->user_id}")) {
-			$smarty->assign('message', "Moderator Rights added for ".$u->realname);
+		$right = !empty($_GET['right'])?$_GET['right']:'moderator';
+		if ($db->Execute("UPDATE user SET rights = CONCAT(rights,',$right') WHERE user_id = {$u->user_id}")) {
+			$smarty->assign('message', "$right rights added for ".$u->realname);
 		}
 	}
 }
@@ -58,7 +60,7 @@ if (!empty($_GET['q']) && trim($_GET['q'])) {
 $moderators = $db->GetAssoc("
 select user.user_id,user.realname,user.nickname,user.rights
 from user 
-where rights LIKE '%moderator%' $sql_where
+where (rights LIKE '%moderator%' OR rights LIKE '%ticketmod%' OR rights LIKE '%admin%') $sql_where
 group by user.user_id");
 
 

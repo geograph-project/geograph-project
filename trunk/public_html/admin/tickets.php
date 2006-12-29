@@ -25,7 +25,7 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-$USER->mustHavePerm("moderator");
+$USER->mustHavePerm("ticketmod");
 
 $smarty = new GeographPage;
 
@@ -38,7 +38,7 @@ gridimage_moderation_lock WRITE,
 gridimage_moderation_lock l WRITE, 
 gridimage_ticket t READ, 
 user suggester READ,
-gridimage i  READ,
+gridimage i READ,
 user as submitter READ");
 
 #############################
