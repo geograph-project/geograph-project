@@ -37,7 +37,7 @@
 {if $stats}
 	<td>{$userrow.photo_count}</td>
 	<td>{$userrow.count}</td>
-	<td>{$userrow.loc_count}</td>
+	<td>{$userrow.log_count}</td>
 	<td>{$userrow.ticket_count}</td>
 	<td>{$userrow.post_count}</td>
 {/if}
