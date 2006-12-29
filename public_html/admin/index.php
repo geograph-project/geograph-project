@@ -69,11 +69,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('tickets_yours', $db->GetOne("select count(*) from gridimage_ticket where moderator_id={$USER->user_id} and status<>'closed'"));
 
 	
-	$smarty->assign('gridsquares_sea', $db->GetCol("select count(*) from gridsquare where percent_land=-1 group by reference_index"));
+	$smarty->assign('gridsquares_sea', $db->GetAssoc("select reference_index,count(*) from gridsquare where percent_land=-1 group by reference_index"));
 	
 	
 	
 }
+
+$smarty->assign('gridsquares_sea_test', $db->GetOne("select count(*) from mapfix_log where old_percent_land=-1 and created > date_sub(now(),interval 30 minute) and user_id != {$USER->user_id}"));
+
 
 //but this is nice and quick...
 $uptime=`uptime`;

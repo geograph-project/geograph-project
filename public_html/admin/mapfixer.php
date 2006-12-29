@@ -69,6 +69,9 @@ if (isset($_GET['gridref']))
 				//update existing square
 				$db->Execute("update gridsquare set percent_land='{$percent}' where gridsquare_id='{$sq['gridsquare_id']}'");
 				$smarty->assign('status', "Existing gridsquare $gridref updated with new land percentage of $percent %");
+				
+				$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$sq['gridsquare_id']}, new_percent_land='{$percent}', old_percent_land='{$sq['percent_land']}',created=now()");
+				
 			}
 			else
 			{
@@ -90,10 +93,12 @@ if (isset($_GET['gridref']))
 					$sql="insert into gridsquare(x,y,percent_land,grid_reference,reference_index,point_xy) 
 						values($x,$y,-1,'$gridref',{$prefix['reference_index']},GeomFromText('POINT($x $y)') )";
 					$db->Execute($sql);
-					$gridimage_id=$db->Insert_ID();
+					$gridsquare_id=$db->Insert_ID();
 
 					$smarty->assign('status', "New gridsquare $gridref created with new land percentage of $percent %");
-						
+					
+					$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$gridsquare_id}, new_percent_land='{$percent}', old_percent_land='{$sq['percent_land']}',created=now()");
+					
 				}
 			}
 			
