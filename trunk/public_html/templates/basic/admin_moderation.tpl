@@ -15,7 +15,7 @@
 {if $unmoderatedcount}
 
 	<p>{if $apply}
-		To get a feel for the moderation process, please make your suggestion for the images below. This is a dummy run, no actual moderations are taking place. 
+		To get a feel for the moderation process, please make your suggestion for the images below. This is a dummy run, no actual moderations are taking place. Make sure you click the 'Finish my application' when finished!<br/><br/>
 	{else}
 		{if $moderator}
 			The following images have been recently moderated by the selected moderator.
