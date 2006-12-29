@@ -7,6 +7,11 @@
 </head>
 <body bgcolor="#ffffff">
 <h2>Trouble&nbsp;Tickets</h2>
+
+{literal}<script type="text/javascript">
+	setTimeout('window.location.href="/admin/";',1000*60*45);
+</script>{/literal}
+
 {dynamic}
 
 {if $newtickets}
