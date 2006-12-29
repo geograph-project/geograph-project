@@ -574,6 +574,8 @@ class GridImageTroubleTicket
 	*/
 	function _sendModeratorMail(&$msg)
 	{
+		global $CONF;
+		
 		//if moderator_id is set, just send there, otherwise 
 		//we send to all users with moderator status
 		$mods=array();
@@ -584,9 +586,15 @@ class GridImageTroubleTicket
 		}
 		else
 		{
-			//no moderator has handled this ticket yet, so lets forward to message to all of them
-			$db=&$this->_getDB();
-			$mods=$db->GetCol("select email from user where FIND_IN_SET('ticketmod',rights)>0;");
+			if (isset($CONF['tickets_notify_all'])) {
+			
+				//no moderator has handled this ticket yet, so lets forward to message to all of them
+				$db=&$this->_getDB();
+				$mods=$db->GetCol("select email from user where FIND_IN_SET('ticketmod',rights)>0;");
+			} else {
+				//lets not send the email!
+				return;
+			}
 		}
 		
 		

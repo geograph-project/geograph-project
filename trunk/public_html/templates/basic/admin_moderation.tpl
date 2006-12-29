@@ -15,7 +15,7 @@
 {if $unmoderatedcount}
 
 	<p>{if $apply}
-		To get a feel for the moderation process, please make your suggestion for the images below. This is a dummy run, no actual moderations are taking place. Make sure you click the 'Finish my application' when finished!<br/><br/>
+		To get a feel for the moderation process, please make your suggestion for the images below. This is a dummy run, no actual moderations are taking place. Any tickets you create outside of this page are created as normal. Make sure you click the 'Finish my application' when finished!<br/><br/>
 	{else}
 		{if $moderator}
 			The following images have been recently moderated by the selected moderator. There is no need to do anything, but if you beleive the original moderation was wrong just use the moderation buttons as normal. 
