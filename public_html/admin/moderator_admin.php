@@ -37,6 +37,8 @@ if (isset($_GET['revoke'])) {
 		$right = !empty($_GET['right'])?$_GET['right']:'moderator';
 		if ($db->Execute("UPDATE user SET rights = REPLACE(rights,'$right','') WHERE user_id = {$u->user_id}")) {
 			$smarty->assign('message', "$right rights removed from ".$u->realname);
+			if ($USER->user_id == $u->user_id) 
+				$_SESSION['user'] =& new GeographUser($USER->user_id);
 		}
 	}
 } elseif (isset($_GET['grant'])) {
@@ -45,6 +47,8 @@ if (isset($_GET['revoke'])) {
 		$right = !empty($_GET['right'])?$_GET['right']:'moderator';
 		if ($db->Execute("UPDATE user SET rights = CONCAT(rights,',$right') WHERE user_id = {$u->user_id}")) {
 			$smarty->assign('message', "$right rights added for ".$u->realname);
+			if ($USER->user_id == $u->user_id) 
+				$_SESSION['user'] =& new GeographUser($USER->user_id);
 		}
 	}
 }
