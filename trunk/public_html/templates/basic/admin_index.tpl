@@ -7,31 +7,37 @@
 <ul>
 <li><a href="/admin/moderation.php">Moderate</a> new photo submissions<br/> [{$images_pending} Pending]</li>
 
-{dynamic}
+
 {if $is_tickmod} 
 <li><a title="Trouble Tickets" href="/admin/tickets.php">Trouble Tickets</a> (<a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search">Open in Sidebar</a>) - 
    Deal with image problems<br/> [{$tickets_new} New, {$tickets_yours} Open by You]</li>
 {/if}
-{/dynamic}
 
-<li><a title="Map Fixer" href="/admin/mapfixer.php">Map Fixer</a> allows the land percentage
+
+{dynamic}
+<li{if $gridsquares_sea_test > 0} style="color:lightgrey">
+<b>Map-fixing in Progress</b> - please come back later.<br/>
+{else}>{/if}
+{/dynamic}
+<a title="Map Fixer" href="/admin/mapfixer.php">Map Fixer</a> allows the land percentage
 for each 1km grid squares to be updated, which allows "square is all at sea" to be 
-corrected<br/> [GB:{$gridsquares_sea.0},I:{$gridsquares_sea.1} in Queue] - <a href="/mapfixer.php">add to queue</a></li>
+corrected<br/> [GB:{$gridsquares_sea.1},I:{$gridsquares_sea.2} in Queue] - <a href="/mapfixer.php">add to queue</a><br/>
+</li>
 
 <li><a title="Recreate Maps" href="/recreatemaps.php">Recreate Maps</a> - 
    request update for map tiles</li>
       
 </ul>
 
-{dynamic}
 {if $is_admin} 
 <h2>Load Average</h2>
 <ul>
+{dynamic}
 <li>{$uptime}</li>
+{/dynamic}
 </ul>
 <img src="http://www.geograph.org.uk/img/cpuday.png" width="480" height="161"/>
 {/if}
-{/dynamic}
 
 <h2>Total Submissions</h2>
 <img src="http://www.geograph.org.uk/img/submission_graph.png" width="480" height="161"/>

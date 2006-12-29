@@ -717,3 +717,14 @@ ALTER TABLE `user` CHANGE `rights` `rights` SET( 'basic', 'moderator', 'admin', 
 
 
 ALTER TABLE `user` ADD INDEX ( `rights` );
+
+
+CREATE TABLE `mapfix_log` (
+  `mapfix_log_id` int(10) unsigned NOT NULL auto_increment,
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `gridsquare_id` int(10) unsigned NOT NULL default '0',
+  `new_percent_land` tinyint(4),
+  `old_percent_land` tinyint(4),
+  `created` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`mapfix_log_id`)
+);
