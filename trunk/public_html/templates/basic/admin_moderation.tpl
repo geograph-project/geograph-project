@@ -2,6 +2,9 @@
 {include file="_std_begin.tpl"}
 <script type="text/javascript" src="/admin/moderation.js"></script>
 
+{literal}<script type="text/javascript">
+	setTimeout('window.location.href="/admin/";',1000*60*45);
+</script>{/literal}
 
 <h2>{if $is_admin || $is_mod}<a title="Admin home page" href="/admin/index.php">Admin</a> : {/if}Moderation</h2>
 
@@ -15,7 +18,7 @@
 {if $unmoderatedcount}
 
 	<p>{if $apply}
-		To get a feel for the moderation process, please make your suggestion for the images below. This is a dummy run, no actual moderations are taking place. Any tickets you create outside of this page are created as normal. Make sure you click the 'Finish my application' when finished!<br/><br/>
+		To get a feel for the moderation process, please make your suggestion for the images below. This is a dummy run, no actual moderations are taking place. Any change requests are created as normal. Make sure you click the 'Finish my application' when finished!<br/><br/>
 	{else}
 		{if $moderator}
 			The following images have been recently moderated by the selected moderator. There is no need to do anything, but if you beleive the original moderation was wrong just use the moderation buttons as normal. 
@@ -23,14 +26,15 @@
 			{if $remoderate}
 				As a quick spotcheck you are asked to make a suggestion for these recently moderated images.
 			{else}
-				The following images have been submitted recently.
+				The following images have been submitted recently. 
 			{/if}
 		{/if}
 	{/if} 
 	{if !$moderator}
-	Simply look at each image in turn and click the relevent button. The result of the action is displayed just below the button. Please wait for result before moving onto the next button. 
-	{/if}
-	Click an image to view fullsize.</p>
+	Simply look at each image in turn and click the relevent button. The result of the action is displayed just below the button. Please wait for result before moving onto the next button. <br/><br/>
+	
+	Sometimes a button is grayed out, this is at the suggestion of the submitter themselves, and/or the system. Please moderate as you normally would, but you can take the suggestion into account. 
+	{/if}</p>
 	
 	{foreach from=$unmoderated item=image}
 

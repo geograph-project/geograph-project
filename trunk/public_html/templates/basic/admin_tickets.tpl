@@ -3,6 +3,10 @@
 
 <script src="/sorttable.js"></script>
 
+{literal}<script type="text/javascript">
+	setTimeout('window.location.href="/admin/";',1000*60*45);
+</script>{/literal}
+
 <h2><a title="Admin home page" href="/admin/index.php">Admin</a> : Trouble Tickets</h2>
 {dynamic}
 
