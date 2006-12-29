@@ -203,7 +203,7 @@ $sql_where2 = "
 			(l.user_id = {$USER->user_id} AND lock_type = 'modding') OR
 			(l.user_id != {$USER->user_id} AND lock_type = 'cantmod')
 		)";
-$sql_columns = $sql_from = $sql_group = '';
+$sql_columns = $sql_from = '';
 if (isset($_GET['moderator'])) {
 	$mid = intval($_GET['moderator']);
 		
@@ -217,7 +217,6 @@ if (isset($_GET['moderator'])) {
 			$sql_where = "($sql_where and moderation_status != new_status)";
 		}
 		$sql_order = "gridimage_id desc";
-		$sql_group = "group by gridimage_id";
 	} else {
 		$sql_where = "(moderation_status != 2) and moderator_id = $mid";
 		$sql_order = "gridimage_id desc";
@@ -247,7 +246,7 @@ from
 where
 	$sql_where
 	$sql_where2
-$sql_group
+group by gridimage_id
 order by
 	$sql_order
 limit $limit";
