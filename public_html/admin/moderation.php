@@ -40,7 +40,7 @@ if (isset($_GET['gridimage_id']))
 {
 	//user may have an expired session, or playing silly buggers,
 	//either way, we want to check for admin status on the session
-	if ($USER->hasPerm('moderator'))
+	if ($USER->hasPerm('moderator') || isset($_GET['remoderate']))
 	{
 	
 		$gridimage_id=intval($_GET['gridimage_id']);
@@ -51,9 +51,15 @@ if (isset($_GET['gridimage_id']))
 		{
 			if (isset($_GET['remoderate'])) 
 			{
-				$status = $db->Quote($status);
-				$db->Execute("REPLACE INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status, old_status='{$image->moderation_status}',created=now()");
-				print "status $status recorded";
+				if ($USER->hasPerm('basic')) {
+					$status = $db->Quote($status);
+					$db->Execute("REPLACE INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status, old_status='{$image->moderation_status}',created=now()");
+					print "status $status recorded";
+				}
+				else
+				{
+					echo "NOT LOGGED IN";
+				}	
 			} 
 			else
 			{
@@ -88,9 +94,54 @@ if (isset($_GET['gridimage_id']))
 	exit;
 }
 
-///////////////////////////////
-// moderator only!
-$USER->mustHavePerm('moderator');
+
+if (!empty($_GET['relinqush'])) {
+	$USER->mustHavePerm('basic');
+	$db->Execute("UPDATE user SET rights = REPLACE(rights,'moderator','') WHERE user_id = {$USER->user_id}");
+	
+	//reload the user object
+	$_SESSION['user'] =& new GeographUser($USER->user_id);
+	
+	header("Location: /profile.php");
+
+} elseif (!empty($_GET['apply'])) {
+	$USER->mustHavePerm('basic');
+	
+	if ($_GET['apply'] == 2) {
+	
+		$db->Execute("UPDATE user SET rights = CONCAT(rights,',traineemod') WHERE user_id = {$USER->user_id}");
+		
+		$mods=$db->GetCol("select email from user where FIND_IN_SET('admin',rights)>0;");			
+		
+		$url = $_SERVER['HTTP_HOST'].'/admin/moderator_admin.php?stats='.$USER->user_id;
+		
+		mail(implode(',',$mods), "[Geograph] Moderator Application ({$USER->user_id})", 
+"Dear Admin, 
+
+I have just completed verification and request moderator rights, 
+click the following link to review the application:	
+
+$url
+
+Regards, 
+
+{$USER->realname}".($USER->nickname?" (aka {$USER->nickname})":''),
+				"From: {$USER->realname} <{$USER->email}>");
+				
+		header("Location: /profile.php");
+		exit;
+	} 
+	
+	//make sure they only do verifications
+	$_GET['remoderate'] = 1;
+	
+	$smarty->assign('apply', 1);
+	
+} else {
+	///////////////////////////////
+	// moderator only!
+	$USER->mustHavePerm('moderator');
+}
 
 if (!empty($_GET['abandon'])) {
 	$db->Execute("DELETE FROM gridsquare_moderation_lock WHERE user_id = {$USER->user_id}");

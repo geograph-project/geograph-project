@@ -3,7 +3,7 @@
 <script type="text/javascript" src="/admin/moderation.js"></script>
 
 
-<h2><a title="Admin home page" href="/admin/index.php">Admin</a> : Moderation</h2>
+<h2>{if $is_admin || $is_mod}<a title="Admin home page" href="/admin/index.php">Admin</a> : {/if}Moderation</h2>
 
 {dynamic}
 {if $remoderate}{literal}
@@ -14,17 +14,20 @@
 
 {if $unmoderatedcount}
 
-	<p>{if $moderator}
-		The following images have been recently moderated by the selected moderator.
-
+	<p>{if $apply}
+		To get a feel for the moderation process, please make your suggestion for the images below. This is a dummy run, no actual moderations are taking place. 
 	{else}
-		{if $remoderate}
-			As a quick spotcheck you are asked to make a suggestion for these recently moderated images.
+		{if $moderator}
+			The following images have been recently moderated by the selected moderator.
 		{else}
-			The following images have been submitted recently.
+			{if $remoderate}
+				As a quick spotcheck you are asked to make a suggestion for these recently moderated images.
+			{else}
+				The following images have been submitted recently.
+			{/if}
 		{/if}
-	{/if}
-	Click an image to view fullsize.</p>
+	{/if} 
+	Simply look at each image in turn and click the relevent button. The result of the action is displayed just below the button. Please wait for result before moving onto the next button. Click an image to view fullsize.</p>
 	
 	{foreach from=$unmoderated item=image}
 
@@ -75,6 +78,9 @@
 
 	<br style="clear:left;"/>&nbsp;
 	
+	{if $apply} 
+		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php?apply=2">Finish my application</a> - we will contact you.</div>
+	{/if}
 	{if !$moderator && !$remoderate}		
 		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php">&gt; Next page &gt;</a>
 		or <a href="/admin/moderation.php?abandon=1">Abandon</a> the current moderation session</div>
