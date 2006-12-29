@@ -714,3 +714,6 @@ PRIMARY KEY ( `gridsquare_id`,`user_id` )
 ALTER TABLE `user` CHANGE `rights` `rights` SET( 'basic', 'moderator', 'admin', 'ticketmod' );
 
 ALTER TABLE `user` CHANGE `rights` `rights` SET( 'basic', 'moderator', 'admin', 'ticketmod','traineemod' );
+
+
+ALTER TABLE `user` ADD INDEX ( `rights` );
