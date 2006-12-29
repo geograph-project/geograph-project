@@ -11,7 +11,7 @@
 {if $message}
 	<p class="error">{$message|escape:'html'}</p>
 {else}
-	<p>Click Grant to make a user a moderator, you can also check their dummy moderations using the Verify link.</p>
+	<p>Click Grant to make a user a moderator, you can also check the verification moderations using the Verify link.</p>
 {/if}
 
 {if $moderators}
@@ -20,7 +20,8 @@
 <thead><tr>
 	<td>Name/Profile<br/>Nickname</td>
 	<td>Verifications</td>
-	<td style="width:165px">Last Verification</td>
+	<td>Last Verification</td>
+	<td>Signup Date</td>
 	{if $stats}
 		<td>Photos</td>
 		<td>Moderations</td>
@@ -38,6 +39,7 @@
 	<td><a href="/profile.php?u={$userrow.user_id}">{$userrow.realname}</a><br/>{$userrow.nickname}</td>
 	<td>{$userrow.log_count}</td>
 	<td>{$userrow.last_log}</td>
+	<td>{$userrow.signup_date}</td>
 	{if $stats}
 		<td>{$userrow.photo_count}</td>
 		<td>{$userrow.count}</td>
