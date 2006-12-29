@@ -58,6 +58,8 @@
 	  
 	  {if $image->nateastings}
 	  	subject: <b>{getamap gridref=$image->getSubjectGridref()}</b>
+	  {else}
+	  	map: <b>{getamap gridref=$image->grid_reference}</b>
 	  {/if}
 	  {if $image->viewpoint_eastings}
 	  	photographer: <b>{getamap gridref=$image->getPhotographerGridref()}</b>

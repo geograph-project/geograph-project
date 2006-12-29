@@ -189,7 +189,9 @@ $true3b=($GLOBALS['user_id']!=1 and !$isInDb);
 $true3=($true3a or $true3b);
 
 if ($true0 and $true1 and $true2 and $true3) {
-$checkEmail="<input type=\"checkbox\" id=\"CheckSendMail\" name=\"CheckSendMail\"><label for=\"CheckSendMail\">{$GLOBALS['l_emailNotify']}</label> <a title=\"{$GLOBALS['l_subscribe']}\" href=\"{$GLOBALS['indexphp']}action=subscribe&amp;topic={$GLOBALS['topic']}&amp;usrid={$GLOBALS['user_id']}\">{$GLOBALS['l_subscribe']}</a>";
+$checkEmail="<input type=\"checkbox\" id=\"CheckSendMail\" name=\"CheckSendMail\"><label for=\"CheckSendMail\">{$GLOBALS['l_emailNotify']}</label>";
+if ($GLOBALS['topic']) { $checkEmail.="<a title=\"{$GLOBALS['l_subscribe']}\" href=\"{$GLOBALS['indexphp']}action=subscribe&amp;topic={$GLOBALS['topic']}&amp;usrid={$GLOBALS['user_id']}\">{$GLOBALS['l_subscribe']}</a>";
+}
 }
 elseif($isInDb) $checkEmail="<!--U-->{$GLOBALS['l_unsubscribeinfo']}<a title=\"{$GLOBALS['l_unsubscribe']}\" href=\"{$GLOBALS['indexphp']}action=unsubscribe&amp;topic={$GLOBALS['topic']}&amp;usrid={$GLOBALS['user_id']}\">{$GLOBALS['l_unsubscribe']}</a>";
 }
