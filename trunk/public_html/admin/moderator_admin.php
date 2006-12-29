@@ -58,10 +58,15 @@ if (!empty($_GET['q']) && trim($_GET['q'])) {
 }
 
 $moderators = $db->GetAssoc("
-select user.user_id,user.realname,user.nickname,user.rights
+select 
+	user.user_id,user.realname,user.nickname,user.rights,
+	count(distinct moderation_log_id) as log_count,
+	max(ml.created) as last_log
 from user 
-where (rights LIKE '%moderator%' OR rights LIKE '%ticketmod%' OR rights LIKE '%admin%') $sql_where
-group by user.user_id");
+	left join moderation_log ml on (ml.user_id = user.user_id)
+where length(rights) > 0 AND (rights != 'basic') $sql_where
+group by user.user_id
+order by last_log");
 
 
 if (isset($_GET['stats'])) { 
@@ -71,7 +76,6 @@ if (isset($_GET['stats'])) {
 	(select count(*) from gridimage gi2 where gi2.user_id = user.user_id) as photo_count,
 	(select count(*) from geobb_posts p where p.poster_id = user.user_id) as post_count,
 	(select count(*) from gridimage gi where gi.moderator_id = user.user_id) as count,
-	(select count(*) from moderation_log ml where ml.user_id = user.user_id) as log_count,
 	(select count(*) from gridimage_ticket t where t.moderator_id = user.user_id) as ticket_count
 	from user 
 	where user.user_id = $user");

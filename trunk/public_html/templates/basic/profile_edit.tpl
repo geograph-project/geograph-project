@@ -219,6 +219,31 @@
  	<input type="submit" name="cancel" value="Cancel"/>
 
 
+<br/><br/><br/><br/><br/><br/>
+<fieldset>
+<legend>User Roles</legend>
+ 
+  
+<div class="field"> 
+  
+	<label for="moderator" class="nowrap">Moderator</label>
+	{if strpos($profile->rights,'moderator') > 0}
+		<input type="button" value="Relinqush moderator rights" onclick="location.href = '/admin/moderation.php?relinqush=1';"/>
+
+		<div class="fieldnotes">If you are no longer able to help out with moderation then click the button above. (you will have to reapply)</div>  
+	{else}
+		<input type="button" value="Apply to become a moderator" onclick="location.href = '/admin/moderation.php?apply=1';"/>
+		{if strpos($profile->rights,'traineemod') > 0}
+			(already done)
+		{/if}
+
+		<div class="fieldnotes">If you have an interest in helping out with moderation, then click the button above and follow the prompts.</div>  
+	{/if}
+</div>
+
+
+</fieldset>
+
 </div>
 
  </form>	
