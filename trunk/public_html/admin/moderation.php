@@ -113,7 +113,7 @@ if (!empty($_GET['relinqush'])) {
 		
 		$mods=$db->GetCol("select email from user where FIND_IN_SET('admin',rights)>0;");			
 		
-		$url = $_SERVER['HTTP_HOST'].'/admin/moderator_admin.php?stats='.$USER->user_id;
+		$url = 'http://'.$_SERVER['HTTP_HOST'].'/admin/moderator_admin.php?stats='.$USER->user_id;
 		
 		mail(implode(',',$mods), "[Geograph] Moderator Application ({$USER->user_id})", 
 "Dear Admin, 
