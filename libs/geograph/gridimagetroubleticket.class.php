@@ -586,7 +586,7 @@ class GridImageTroubleTicket
 		{
 			//no moderator has handled this ticket yet, so lets forward to message to all of them
 			$db=&$this->_getDB();
-			$mods=$db->GetCol("select email from user where FIND_IN_SET('moderator',rights)>0;");
+			$mods=$db->GetCol("select email from user where FIND_IN_SET('ticketmod',rights)>0;");
 		}
 		
 		
@@ -852,7 +852,7 @@ class GridImageTroubleTicket
 		if ($this->isValid())
 		{
 			$this->comments=$db->GetAll("select c.*,u.realname , ".
-				"FIND_IN_SET('moderator',u.rights)>0 as moderator ".
+				"FIND_IN_SET('ticketmod',u.rights)>0 as moderator ".
 				"from gridimage_ticket_comment as c inner join user as u using(user_id) ".
 				"where gridimage_ticket_id={$this->gridimage_ticket_id} order by c.added");
 		}
