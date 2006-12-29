@@ -131,7 +131,7 @@ class RasterMap
 						
 			$str = "<div style=\"position:relative;height:".($width+$extra)."\">";
 
-			$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" width=\"$width\" height=\"$width\" border=\"1\" alt=\"$title\"/></div>";
+			$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" width=\"$width\" height=\"$width\" border=\"1\" name=\"tile\" alt=\"$title\"/></div>";
 
 			if ($this->issubmit)
 				$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&lt;- Drag to mark photographer position.</small></div>";
