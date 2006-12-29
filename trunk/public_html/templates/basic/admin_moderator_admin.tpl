@@ -45,7 +45,7 @@
 <td>{if $stats != $userrow.user_id}
 	<a href="/admin/moderator_admin.php?stats={$userrow.user_id}">Stats</a>
 {/if}
-{$userrow.log_count}
+{if $userrow.log_count}
 	<a href="/admin/moderation.php?moderator={$userrow.user_id}&amp;verify=1">Verify</a>
 	(<a href="/admin/moderation.php?moderator={$userrow.user_id}&amp;verify=1">Mis</a>)
 {/if}
