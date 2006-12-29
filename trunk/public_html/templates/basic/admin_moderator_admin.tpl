@@ -49,7 +49,7 @@
 			<a href="/admin/moderator_admin.php?stats={$userrow.user_id}">Stats</a>
 		{/if}
 		{if $userrow.log_count}
-			<a href="/admin/moderation.php?moderator={$userrow.user_id}&amp;verify=1">Verify</a>(<a href="/admin/moderation.php?moderator={$userrow.user_id}&amp;verify=1">Mis</a>)
+			<a href="/admin/moderation.php?moderator={$userrow.user_id}&amp;verify=1">Verify</a>(<a href="/admin/moderation.php?moderator={$userrow.user_id}&amp;verify=2">Mis</a>)
 		{/if}
 		{if strpos($userrow.rights,'moderator') > 0}
 			<a href="/admin/moderation.php?moderator={$userrow.user_id}">Review</a>
