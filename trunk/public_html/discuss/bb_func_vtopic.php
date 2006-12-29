@@ -127,7 +127,7 @@ if ($gridref) {
 }
 else
 	$l_messageABC=$l_message;
-
+$topic=0;
 $emailCheckBox=emailCheckBox();
 
 $mainPostForm=ParseTpl(makeUp('main_post_form'));
