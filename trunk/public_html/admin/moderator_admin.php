@@ -59,9 +59,9 @@ if (!empty($_GET['q']) && trim($_GET['q'])) {
 
 $moderators = $db->GetAssoc("
 select 
-	user.user_id,user.realname,user.nickname,user.rights,
+	user.user_id,user.realname,user.nickname,user.rights,substring(user.signup_date,1,10) as signup_date,
 	count(distinct moderation_log_id) as log_count,
-	max(ml.created) as last_log
+	substring(max(ml.created),1,10) as last_log
 from user 
 	left join moderation_log ml on (ml.user_id = user.user_id)
 where length(rights) > 0 AND (rights != 'basic') $sql_where
