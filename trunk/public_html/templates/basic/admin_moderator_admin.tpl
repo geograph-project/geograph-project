@@ -10,6 +10,8 @@
 
 {if $message}
 	<p class="error">{$message|escape:'html'}</p>
+{else}
+	<p>Click Grant to make a user a moderator, you can also check their dummy moderations using the Verify link.</p>
 {/if}
 
 {if $moderators}
@@ -33,39 +35,38 @@
 {foreach from=$moderators item=userrow}
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}">
-<td><a href="/profile.php?u={$userrow.user_id}">{$userrow.realname}</a><br/>{$userrow.nickname}</td>
+	<td><a href="/profile.php?u={$userrow.user_id}">{$userrow.realname}</a><br/>{$userrow.nickname}</td>
 	<td>{$userrow.log_count}</td>
 	<td>{$userrow.last_log}</td>
-{if $stats}
-	<td>{$userrow.photo_count}</td>
-	<td>{$userrow.count}</td>
-	<td>{$userrow.ticket_count}</td>
-	<td>{$userrow.post_count}</td>
-{/if}
-<td>{if $stats != $userrow.user_id}
-	<a href="/admin/moderator_admin.php?stats={$userrow.user_id}">Stats</a>
-{/if}
-{if $userrow.log_count}
-	<a href="/admin/moderation.php?moderator={$userrow.user_id}&amp;verify=1">Verify</a>
-	(<a href="/admin/moderation.php?moderator={$userrow.user_id}&amp;verify=1">Mis</a>)
-{/if}
-{if strpos($userrow.rights,'moderator') > 0}
-	<a href="/admin/moderation.php?moderator={$userrow.user_id}">Review</a>
-	<a href="/admin/moderator_admin.php?revoke={$userrow.user_id}">Revoke</a>
-{else}
-	<a href="/admin/moderator_admin.php?grant={$userrow.user_id}">Grant</a>
-{/if}
-</td>
-<td>{if $stats != $userrow.user_id}
-	<a href="/admin/moderator_admin.php?stats={$userrow.user_id}">Stats</a>
-{/if}
-{if strpos($userrow.rights,'ticketmod') > 0}
-	<a href="/admin/tickets.php?moderator={$userrow.user_id}">Review</a>
-	<a href="/admin/moderator_admin.php?revoke={$userrow.user_id}&amp;right=ticketmod">Revoke</a>
-{else}
-	<a href="/admin/moderator_admin.php?grant={$userrow.user_id}&amp;right=ticketmod">Grant</a>
-{/if}
-</td></tr>
+	{if $stats}
+		<td>{$userrow.photo_count}</td>
+		<td>{$userrow.count}</td>
+		<td>{$userrow.ticket_count}</td>
+		<td>{$userrow.post_count}</td>
+	{/if}
+	<td>
+		{if $stats != $userrow.user_id}
+			<a href="/admin/moderator_admin.php?stats={$userrow.user_id}">Stats</a>
+		{/if}
+		{if $userrow.log_count}
+			<a href="/admin/moderation.php?moderator={$userrow.user_id}&amp;verify=1">Verify</a>(<a href="/admin/moderation.php?moderator={$userrow.user_id}&amp;verify=1">Mis</a>)
+		{/if}
+		{if strpos($userrow.rights,'moderator') > 0}
+			<a href="/admin/moderation.php?moderator={$userrow.user_id}">Review</a>
+			<a href="/admin/moderator_admin.php?revoke={$userrow.user_id}">Revoke</a>
+		{else}
+			<a href="/admin/moderator_admin.php?grant={$userrow.user_id}">Grant</a>
+		{/if}
+	</td>
+	<td>
+		{if strpos($userrow.rights,'ticketmod') > 0}
+			<a href="/admin/tickets.php?moderator={$userrow.user_id}">Review</a>
+			<a href="/admin/moderator_admin.php?revoke={$userrow.user_id}&amp;right=ticketmod">Revoke</a>
+		{else}
+			<a href="/admin/moderator_admin.php?grant={$userrow.user_id}&amp;right=ticketmod">Grant</a>
+		{/if}
+	</td>
+</tr>
 {/foreach}
 </tbody>
 </table>
@@ -82,12 +83,16 @@
 </form>
 
 <div class="interestBox">
-<b>Stats</b> - View moderation statistics for this user<br/>
-<b>Verify</b> - View suggested moderations<br/>
-(<b>Mis</b>) - mismatches only<br/>
-<b>Review</b> - View recent moderations<br/>
-<b>Revoke</b> - Remove moderation rights (moderations already done are not affected)<br/>
-<b>Grant</b> - Add moderation rights to this user (requires the user to re-login)
+<div>As soon as a user is marked as a moderator, they can make real moderations, 
+admin's can use these links occasionally to spot check a particular moderator.</div><br/>
+
+<i>Key:</i><br/>
+<b>Stats</b> - View moderation statistics for this user.<br/>
+<b>Verify</b> - View dummy verification moderations, done before becoming a moderator<br/>
+(<b>Mis</b>) - only show mismatches.<br/>
+<b>Review</b> - View recent real moderations/tickets.<br/>
+<b>Revoke</b> - Remove moderation rights (moderations already done are not affected).<br/>
+<b>Grant</b> - Add moderation rights to this user. (requires the user to re-login)
 </div>
 
 {/dynamic}    

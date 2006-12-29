@@ -137,9 +137,9 @@ Regards,
 	
 	$smarty->assign('apply', 1);
 	
+} elseif (isset($_GET['moderator'])) {
+	$USER->mustHavePerm('admin');
 } else {
-	///////////////////////////////
-	// moderator only!
 	$USER->mustHavePerm('moderator');
 }
 
