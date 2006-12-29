@@ -18,10 +18,10 @@
 
 <table class="report sortable" id="newtickets" style="font-size:8pt;">
 <thead><tr>
-	<td>Name/Profile<br/>Nickname</td>
-	<td>Verifications</td>
-	<td>Last Verification</td>
+	<td>Name/Profile</td>
+	<td>Nickname</td>
 	<td>Signup Date</td>
+	<td>Last Verification</td>
 	{if $stats}
 		<td>Photos</td>
 		<td>Moderations</td>
@@ -36,10 +36,10 @@
 {foreach from=$moderators item=userrow}
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}">
-	<td><a href="/profile.php?u={$userrow.user_id}">{$userrow.realname}</a><br/>{$userrow.nickname}</td>
-	<td>{$userrow.log_count}</td>
-	<td>{$userrow.last_log}</td>
+	<td{if strpos($userrow.rights,'admin') > 0} style="font-weight:bold"{/if}><a href="/profile.php?u={$userrow.user_id}">{$userrow.realname}</a></td>
+	<td>{$userrow.nickname}</td>
 	<td>{$userrow.signup_date}</td>
+	<td>{$userrow.last_log} ({$userrow.log_count})</td>
 	{if $stats}
 		<td>{$userrow.photo_count}</td>
 		<td>{$userrow.count}</td>

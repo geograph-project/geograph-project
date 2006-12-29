@@ -66,7 +66,7 @@ from user
 	left join moderation_log ml on (ml.user_id = user.user_id)
 where length(rights) > 0 AND (rights != 'basic') $sql_where
 group by user.user_id
-order by last_log");
+order by last_log desc");
 
 
 if (isset($_GET['stats'])) { 
