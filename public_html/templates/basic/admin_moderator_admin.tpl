@@ -39,7 +39,7 @@
 	<td{if strpos($userrow.rights,'admin') > 0} style="font-weight:bold"{/if}><a href="/profile.php?u={$userrow.user_id}">{$userrow.realname}</a></td>
 	<td>{$userrow.nickname}</td>
 	<td>{$userrow.signup_date}</td>
-	<td>{$userrow.last_log} ({$userrow.log_count})</td>
+	<td title="{$userrow.last_log_time}">{$userrow.last_log} ({$userrow.log_count})</td>
 	{if $stats}
 		<td>{$userrow.photo_count}</td>
 		<td>{$userrow.count}</td>

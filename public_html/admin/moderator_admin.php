@@ -61,12 +61,13 @@ $moderators = $db->GetAssoc("
 select 
 	user.user_id,user.realname,user.nickname,user.rights,substring(user.signup_date,1,10) as signup_date,
 	count(distinct moderation_log_id) as log_count,
-	substring(max(ml.created),1,10) as last_log
+	substring(max(ml.created),1,10) as last_log,
+	max(ml.created) as last_log_time
 from user 
 	left join moderation_log ml on (ml.user_id = user.user_id)
 where length(rights) > 0 AND (rights != 'basic') $sql_where
 group by user.user_id
-order by last_log desc");
+order by last_log_time desc");
 
 
 if (isset($_GET['stats'])) { 
