@@ -55,7 +55,7 @@ if (isset($_GET['revoke'])) {
 
 if (!empty($_GET['q']) && trim($_GET['q'])) {
 	$q=$db->Quote('%'.$_GET['q'].'%');
-	$sql_where = " or (user_id LIKE $q) or (realname LIKE $q) or (nickname LIKE $q)";
+	$sql_where = " or (user.user_id LIKE $q) or (realname LIKE $q) or (nickname LIKE $q)";
 	$smarty->assign('q', $_GET['q']);
 } else {
 	$sql_where = '';
