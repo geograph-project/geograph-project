@@ -66,7 +66,7 @@
 	  	<br/>Current Status: {$image->moderation_status}
 	  {/if}
 	  {if $image->new_status}
-	  	<br/><span{if $image->new_status != $image->moderation_status} style="background-color:red"{/if}>Suggested Status: {$image->new_status} {if $image->ml_realname}, by {$image->ml_realname}{/if}</span>
+	  	<br/><span{if $image->new_status != $image->moderation_status} style="border:1px solid red; padding:5px;"{/if}>Suggested Status: {$image->new_status} {if $image->ml_realname}, by {$image->ml_realname}{/if}</span>
 	  {/if}
 	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
 	  </div>

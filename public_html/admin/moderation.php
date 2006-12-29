@@ -203,19 +203,21 @@ $sql_where2 = "
 			(l.user_id = {$USER->user_id} AND lock_type = 'modding') OR
 			(l.user_id != {$USER->user_id} AND lock_type = 'cantmod')
 		)";
-$sql_columns = $sql_from = '';
+$sql_columns = $sql_from = $sql_group = '';
 if (isset($_GET['moderator'])) {
 	$mid = intval($_GET['moderator']);
 		
 	if (isset($_GET['verify'])) {
 		$sql_columns = ", new_status,moderation_log.user_id as ml_user_id";
 		$sql_from = " inner join moderation_log on(moderation_log.gridimage_id=gi.gridimage_id)";
+		
+		$sql_where = "(moderation_log.user_id = $mid or gi.moderator_id = $mid)";
+		
 		if ($_GET['verify'] == 2) {
-			$sql_where = "(moderation_log.user_id = $mid and moderation_status != new_status)";
-		} else {
-			$sql_where = "(moderation_log.user_id = $mid or gi.moderator_id = $mid)";
+			$sql_where = "($sql_where and moderation_status != new_status)";
 		}
 		$sql_order = "gridimage_id desc";
+		$sql_group = "group by gridimage_id";
 	} else {
 		$sql_where = "(moderation_status != 2) and moderator_id = $mid";
 		$sql_order = "gridimage_id desc";
@@ -245,6 +247,7 @@ from
 where
 	$sql_where
 	$sql_where2
+$sql_group
 order by
 	$sql_order
 limit $limit";
