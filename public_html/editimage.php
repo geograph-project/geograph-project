@@ -86,7 +86,7 @@ if (isset($_REQUEST['id']))
 {
 	$image->loadFromId($_REQUEST['id']);
 	$isowner=($image->user_id==$USER->user_id)?1:0;
-	$isadmin=$USER->hasPerm('moderator')?1:0;
+	$isadmin=$USER->hasPerm('ticketmod')?1:0;
 
 	if ($image->isValid())
 	{

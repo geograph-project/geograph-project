@@ -22,10 +22,11 @@
 		<td>Photos</td>
 		<td>Moderations</td>
 		<td>Verifications</td>
-		<td>Tickets</td>
+		<td>Tickets Moderated</td>
 		<td>Forum Posts</td>
 	{/if}
-	<td>Actions (see below)</td>
+	<td>Moderator Actions (see below)</td>
+	<td>Ticket Actions (see below)</td>
 </tr></thead>
 <tbody>
 
@@ -53,7 +54,16 @@
 	<a href="/admin/moderator_admin.php?grant={$userrow.user_id}">Grant</a>
 {/if}
 </td>
-</tr>
+<td>{if $stats != $userrow.user_id}
+	<a href="/admin/moderator_admin.php?stats={$userrow.user_id}">Stats</a>
+{/if}
+{if strpos($userrow.rights,'ticketmod') > 0}
+	<a href="/admin/tickets.php?moderator={$userrow.user_id}">Review</a>
+	<a href="/admin/moderator_admin.php?revoke={$userrow.user_id}&amp;right=ticketmod">Revoke</a>
+{else}
+	<a href="/admin/moderator_admin.php?grant={$userrow.user_id}&amp;right=ticketmod">Grant</a>
+{/if}
+</td></tr>
 {/foreach}
 </tbody>
 </table>
