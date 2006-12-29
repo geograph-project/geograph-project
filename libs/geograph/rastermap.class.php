@@ -142,8 +142,8 @@ class RasterMap
 			if ($e%100 == 0 && $n%100 == 0) {
 				$e +=50; $n += 50;
 			} 
-			$left = ($width/4) + ( ($e - $east) * $widthby2 / 1000 ) - 8;
-			$top = $width - ( ($width/4) + ( ($n - $nort) * $widthby2 / 1000 ) ) - 8;
+			$left = ($width/4) + ( ($e - $east) * $widthby2 / 1000 );
+			$top = $width - ( ($width/4) + ( ($n - $nort) * $widthby2 / 1000 ) );
 				
 			
 			
@@ -152,10 +152,10 @@ class RasterMap
 				if ($e%100 == 0 && $n%100 == 0) {
 					$e +=50; $n += 50;
 				} 
-				$vleft = ($width/4) + ( ($e - $east) * $widthby2 / 1000 ) - 8;
-				$vtop = $width - ( ($width/4) + ( ($n - $nort) * $widthby2 / 1000 ) ) - 8;
+				$vleft = ($width/4) + ( ($e - $east) * $widthby2 / 1000 );
+				$vtop = $width - ( ($width/4) + ( ($n - $nort) * $widthby2 / 1000 ) );
 				
-				if ( ($vleft < -16) || ($vleft > ($width+16)) || ($vtop < 0) || ($vtop > ($width+16)) ) {
+				if ( ($vleft < -8) || ($vleft > ($width+8)) || ($vtop < -8) || ($vtop > ($width+8)) ) {
 					//interpolate between centerpoint and real position 
 					
 					if ( abs($left - $vleft) < abs($top - $vtop) ) {
@@ -163,7 +163,7 @@ class RasterMap
 						
 						$realangle = atan2( $left - $vleft, $top - $vtop );
 						
-						$vtop = ($top < $vtop)?($width+8):-24;
+						$vtop = ($top < $vtop)?($width+16):-16;
 					
 						$vleft = ( tan($realangle)*($top - $vtop)*-1 ) + $left;
 					} else {
@@ -171,19 +171,24 @@ class RasterMap
 						
 						$realangle = atan2( $top - $vtop, $left - $vleft );
 						
-						$vleft = ($left < $vleft)?($width+8):-24;
+						$vleft = ($left < $vleft)?($width+16):-16;
 						
 						$vtop = ( tan($realangle)*($left - $vleft)*-1 ) + $top;
 					}
 				}
 				
 			} else {
-				$vleft = 5;
-				$vtop = $width+5;
+				$vleft = 13;
+				$vtop = $width+13;
 			}
-			$str .= "<div style=\"position:absolute;top:{$vtop}px;left:{$vleft}px;".((($this->issubmit || !empty($this->viewpoint_northings))?'':'display:none'))."\" id=\"marker2\"><img src=\"/templates/basic/img/camera.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
-
-			$str .= "<div style=\"position:absolute;top:{$top}px;left:{$left}px;".((($this->issubmit || $exactPosition)?'':'display:none'))."\" id=\"marker1\"><img src=\"/templates/basic/img/crosshairs.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
+			
+			$str .= "<div style=\"position:absolute;top:".($vtop-8)."px;left:".($vleft-8)."px;".( ($this->issubmit || (!empty($this->viewpoint_northings) && ($vleft != $left) && ($vtop != $top)) )?'':'display:none')."\" id=\"marker2\"><img src=\"/templates/basic/img/camera.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
+			
+			if ($this->issubmit) {
+				$str .= "<div style=\"position:absolute;top:".($top-8)."px;left:".($left-8)."px;\" id=\"marker1\"><img src=\"/templates/basic/img/crosshairs.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
+			} else {
+				$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;".((($exactPosition)?'':'display:none'))."\" id=\"marker1\"><img src=\"/templates/basic/img/circle.png\" alt=\"+\" width=\"29\" height=\"29\"/></div>";
+			}
 
 			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" width=\"$width\" height=\"".($width+$extra)."\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/></div>";
 
