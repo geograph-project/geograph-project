@@ -89,13 +89,21 @@ class RasterMap
 					$this->service = 'vob';
 					$this->width = ($issubmit)?300:250;
 				} 
-			} elseif(in_array('Google',$services)) {
-				$this->enabled = true;
+			} elseif($this->exactPosition && in_array('Google',$services)) {
+				//$this->enabled = true;
 				$this->service = 'Google';
 				$this->width = ($issubmit)?300:250;
 			} 
 		}
 	} 
+	
+	function addLatLong($lat,$long) {
+		if ($this->service == 'Google') {
+			$this->enabled = true;
+		}
+		$this->lat = floatval($lat);
+		$this->long = floatval($long);
+	}
 	
 	function addViewpoint($viewpoint_eastings,$viewpoint_northings) {
 		$this->viewpoint_eastings = $viewpoint_eastings;
@@ -207,11 +215,6 @@ class RasterMap
 		}
 	}
 	
-	function addLatLong($lat,$long) {
-		$this->lat = floatval($lat);
-		$this->long = floatval($long);
-	}
-	
 	function getScriptTag()
 	{
 		global $CONF;
@@ -239,7 +242,7 @@ class RasterMap
 					window.onunload = GUnload;
 				//]]>
 	    	</script>";
-		} elseif ($this->isSubmit) {
+		} elseif ($this->issubmit) {
 			$east = (floor($this->nateastings/1000) * 1000) + 500;
 			$nort = (floor($this->natnorthings/1000) * 1000) + 500;
 			return "
