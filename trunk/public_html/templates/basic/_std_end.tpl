@@ -9,6 +9,7 @@
     <li><a title="View map of all submissions" href="/mapbrowse.php">Map Viewer</a></li>
     <li><a title="Submit" href="/submit.php">Submit</a></li>
     <li><a title="Discuss" href="/discuss/">Discuss</a></li>
+    <li><a title="Submitted Articles" href="/article/">Articles</a> <small style="color:red">:: New!</small></li>
     <li><a title="Statistics" href="/statistics.php">Statistics</a></li>
     <li><a title="Leaderboard" href="/moversboard.php">Leaderboard</a></li>
     <li><a title="FAQ" href="/faq.php">FAQ</a></li>

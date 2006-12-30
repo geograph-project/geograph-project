@@ -2,11 +2,17 @@
 {assign var="page_title" value="Edit::$title"}
 
 {include file="_std_begin.tpl"}
-<form>
+
+{if $error}
+	<div><span class="formerror">{$error}</span></div>
+{/if}
+
+<form action="/article/edit.php" method="post">
+<input type="hidden" name="article_id" value="{$article_id|escape:"html"}"/>
 <table><tr><td>
 {if $title != 'New Article'}
 URL: <br/>
-<input type="text" name="url" value="{$url|escape:"html"}" maxlength="64" size="40"/><br/>{/if}
+http://{$http_host}/article/<input type="text" name="url" value="{$url|escape:"html"}" maxlength="64" size="40"/><br/>{/if}
 Title: <br/>
 <input type="text" name="title" value="{$title|escape:"html"}" style="font-size:1.3em" maxlength="64" size="40"/>
 </td></tr><tr><td>
@@ -19,9 +25,7 @@ Title: <br/>
 </td></tr></table>
 <hr>
 Content: <br/>
-<textarea rows="40" cols="80" name="content">
-{$content|escape:"html"}
-</textarea></p>
+<textarea rows="40" cols="80" name="content">{$content|escape:"html"}</textarea></p>
 
 <div style="padding:5px; border: 1px solid gray; background-color:silver; font-family: monospace; font-size:0.8em">
 Quick Reference: 
@@ -42,6 +46,7 @@ Quick Reference:
 <p>
 <input type="reset" name="reset" value="Undo Changes" onclick="return confirm('Are you sure? Changes will be lost!');"/>
 <input type="submit" name="submit" value="Save Changes..."/> {if $title == 'New Article'}<br/>(Articles will only show on the site once they have been approved}{/if}</p>
+</form>
 
 {include file="_std_end.tpl"}
 {/dynamic}

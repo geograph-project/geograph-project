@@ -975,4 +975,27 @@ form.simpleform textarea
 	width:30em;
 }
   
+/*---------------------------------------------------------------*
+ * Explore Style Bullet List
+ *---------------------------------------------------------------*/
   
+  
+ul.explore li {
+	border:1px dotted #dddddd;
+	background-color:#eeeeee;
+	padding:10px;
+}
+
+ul.explore {
+	list-style-image:url('/templates/basic/img/cameraicon.gif');
+}
+
+ul.explore li ul {
+	list-style-type:dot;
+	list-style-image:none;
+}
+
+ul.explore li ul li {
+	border:none;
+	padding:2px;
+}

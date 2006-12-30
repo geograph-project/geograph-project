@@ -1,30 +1,5 @@
 {assign var="page_title" value="Explore Geograph Themes"}
 {include file="_std_begin.tpl"}
-{literal}
-<style type="text/css">
-
-ul.explore li {
-	border:1px dotted #dddddd;
-	background-color:#eeeeee;
-	padding:10px;
-}
-
-ul.explore {
-	list-style-image:url('/templates/basic/img/cameraicon.gif');
-}
-
-ul.explore li ul {
-	list-style-type:dot;
-	list-style-image:none;
-}
-
-ul.explore li ul li {
-	border:none;
-	padding:2px;
-}
-
-</style>
-{/literal}
 
 	<div style="padding:5px;background:#dddddd;position:relative; float:right;"><form method="get" action="/browse.php" style="display:inline">
 	<label for="gridref1">Jump</label> to <b>Grid Reference</b>: <br/>
