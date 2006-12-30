@@ -104,14 +104,19 @@ class GridImage
 	var $photographer_gridref;
 	
 	/**
+	* photographer grid reference precision (in metres)
+	*/
+	var $photographer_gridref_precision;
+	
+	/**
 	* subject grid reference
 	*/
 	var $subject_gridref;
 	
 	/**
-	* subject grid reference accuracy (in metres)
+	* subject grid reference precision (in metres)
 	*/
-	var $subject_gridref_accuracy;
+	var $subject_gridref_precision;
 	
 	/**
 	* constructor
@@ -195,7 +200,7 @@ class GridImage
 				$this->grid_square->reference_index);
 			
 			$this->photographer_gridref=$posgr;
-			$this->photographer_gridref_accuracy=pow(10,6-$len)/10;
+			$this->photographer_gridref_precision=pow(10,6-$len)/10;
 		}	
 		
 		return $this->photographer_gridref;
@@ -235,7 +240,7 @@ class GridImage
 			$this->grid_square->reference_index);
 		
 		$this->subject_gridref=$gr;
-		$this->subject_gridref_accuracy=pow(10,6-$len)/10;
+		$this->subject_gridref_precision=pow(10,6-$len)/10;
 		
 		return $this->subject_gridref;
 	}

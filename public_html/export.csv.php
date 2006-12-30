@@ -50,7 +50,7 @@ header("Content-type: application/octet-stream");
 header("Content-Disposition: attachment; filename=\"geograph.csv\"");
 
 
-
+#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
 $sql_crit = '';
 
@@ -61,26 +61,29 @@ if (!empty($_GET['thumb'])) {
 	$sql_from = ',gi.user_id,x,y';
 	echo ",Thumb URL";
 }
-if (!empty($_GET['ll'])) {
+if (!empty($_GET['en'])) {
+	echo ",Easting,Northing";
+	if (!empty($_GET['ppos'])) {
+		echo ",Photographer Eastings,Photographer Northings";
+		$sql_from .= ",viewpoint_eastings,viewpoint_northings";
+	}
+} elseif (!empty($_GET['ll'])) {
 	$sql_from = ',wgs84_lat,wgs84_long';
 	echo ",Lat,Long";
-} elseif (!empty($_GET['en'])) {
-	echo ",Easting,Northing";
 }
 
 if (!empty($_GET['taken'])) {
 	echo ",Date Taken";
 	$sql_from .= ",imagetaken";
 }
-if (!empty($_GET['ppos'])) {
-	echo ",Photographer Eastings, Photographer Northings";
-	$sql_from .= ",viewpoint_eastings,viewpoint_northings";
-}
+
 if (!empty($_GET['dir'])) {
 	echo ",View Direction";
 	$sql_from .= ",view_direction";
 }
 echo "\n";
+
+#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
 if (!empty($_GET['ri']) && preg_match("/^\d$/",$_GET['ri']) ) {
 	$sql_crit .= " AND reference_index = {$_GET['ri']}";
@@ -114,8 +117,10 @@ if (!empty($_GET['supp']) xor empty($_GET['u'])) {
 	$mod_sql = "moderation_status in ('accepted','geograph')";
 } else {
 	$mod_sql = "moderation_status = 'geograph'";
-
 }
+
+#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
+
 
 $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
@@ -143,7 +148,7 @@ if ($i && !$user_crit ) {
 		//if want en then we HAVE to use the non cached version!
 	$recordSet = $engine->ReturnRecordset($pg,isset($_GET['en']));
 
-} elseif (!empty($_GET['en'])) {
+} elseif (!empty($_GET['en']) || !empty($_GET['ppos'])) {
 	if (!empty($_GET['ftf'])) {
 		$mod_sql .= " and ftf = 1"; 
 	}
@@ -163,16 +168,17 @@ if ($i && !$user_crit ) {
 	from gridimage_search gi 
 	where $mod_sql $sql_crit");
 }
+
+#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
+
 $counter = -1;
 while (!$recordSet->EOF) 
 {
 	$image = $recordSet->fields;
-	if (strpos($image['title'],',') !== FALSE || strpos($image['title'],'"') !== FALSE) {
+	if (strpos($image['title'],',') !== FALSE || strpos($image['title'],'"') !== FALSE)
 		$image['title'] = '"'.str_replace('"', '""', $image['title']).'"';
-	}
-	if (strpos($image['imageclass'],',') !== FALSE || strpos($image['imageclass'],'"') !== FALSE) {
+	if (strpos($image['imageclass'],',') !== FALSE || strpos($image['imageclass'],'"') !== FALSE)
 		$image['imageclass'] = '"'.str_replace('"', '""', $image['imageclass']).'"';
-	}
 	echo "{$image['gridimage_id']},{$image['title']},{$image['grid_reference']},{$image['realname']},{$image['imageclass']}";
 	if (!empty($_GET['thumb'])) {
 		$gridimage->fastInit($image);
@@ -181,24 +187,22 @@ while (!$recordSet->EOF)
 	if (!empty($_GET['en'])) {
 		if ($image['nateastings'])
 			echo ",{$image['nateastings']},{$image['natnorthings']}";
-	} elseif (!empty($_GET['ll'])) {
+		if (!empty($_GET['ppos']))
+			echo ",{$image['viewpoint_eastings']},{$image['viewpoint_northings']}";
+	} elseif (!empty($_GET['ll']))
 		echo ",{$image['wgs84_lat']},{$image['wgs84_long']}";
-	}
-	if (!empty($_GET['taken'])) {
+	if (!empty($_GET['taken']))
 		echo ",{$image['imagetaken']}";
-	}
-	if (!empty($_GET['ppos'])) {
-		echo ",{$image['viewpoint_eastings']},{$image['viewpoint_northings']}";
-	}
-	if (!empty($_GET['dir'])) {
+	if (!empty($_GET['dir']))
 		echo ",{$image['view_direction']}";
-	}
 
 	echo "\n";
 	$recordSet->MoveNext();
 	$counter++;
 }
 $recordSet->Close();
+
+#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 	
 //todo
 //if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {

@@ -57,13 +57,13 @@
 	  <br/>
 	  
 	  {if $image->nateastings}
-	  	subject: <b>{getamap gridref=$image->getSubjectGridref()}</b>
+	  	subject: <b>{getamap gridref=$image->getSubjectGridref() title="(`$image->subject_gridref_precision`m percision)"}</b>
 	  {else}
-	  	map: <b>{getamap gridref=$image->grid_reference}</b>
+	  	map: <b>{getamap gridref=$image->grid_reference title="(`$image->subject_gridref_precision`m percision)"}</b>
 	  {/if}
 	  {if $image->viewpoint_eastings}
-	  	photographer: <b>{getamap gridref=$image->getPhotographerGridref()}</b>
-	  	<span{if $image->different_square} style="background-color:yellow"{/if}>distance: <b>{$image->distance}</b>km</span>
+	  	| photographer: <b>{getamap gridref=$image->getPhotographerGridref() title="(`$image->photographer_gridref_precision`m percision)"}</b>{if $image->different_square_true}(diff){/if}
+	  	| <span{if $image->different_square} style="background-color:yellow"{/if}>distance: <b>{$image->distance}</b>km</span>
 	  {/if}
 	  <br/>
 	  
@@ -96,7 +96,7 @@
 	{/if}
 {else}
 
-	<p>There are no images awaiting moderation!</p>
+	<p>There are no images available to moderate at this time, please try again later.</p>
 
 {/if}
 	
