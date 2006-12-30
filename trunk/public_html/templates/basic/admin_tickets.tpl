@@ -42,7 +42,7 @@
 		or <a href="/admin/moderation.php?abandon=1">Abandon</a> the current moderation session</div>
 
 {else}
-  <p>There are no new tickets</p>
+  <p>There are no tickets available to moderate at this time, please try again later.</p>
 {/if}
 
 

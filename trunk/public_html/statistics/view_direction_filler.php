@@ -80,7 +80,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$line['Photographer'] = $image->getPhotographerGridref();
 		$line['Subject'] = $image->getSubjectGridref();
 		
-		$promore4 = $image->photographer_gridref_accuracy < 1000;
+		$promore4 = $image->photographer_gridref_precision < 1000;
 		
 		//mimic the behaviour doen by getNatEastings to place the location in the center of the 1km square
 		if (!$promore4) {
