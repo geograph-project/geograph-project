@@ -153,7 +153,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	}
 } 
 
-	$smarty->assign('licences', array('none' => '(Temporally) Not Published','pd' => 'Public Domain','cc-by-sa/2.0' => 'Creative Commons BY-SA/2.0' ,'copyright' => 'Copyright'));
+	$smarty->assign('licences', array('none' => '(Temporarily) Not Published','pd' => 'Public Domain','cc-by-sa/2.0' => 'Creative Commons BY-SA/2.0' ,'copyright' => 'Copyright'));
 
 
 
