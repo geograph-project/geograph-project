@@ -67,9 +67,13 @@ class RasterMap
 		$this->enabled = false;
 		if (!empty($square) && isset($square->grid_reference)) {
 			$this->square &= $square;
+			
+			$this->exactPosition = ($square->nateastings>0);
+			
 			//just in case we passed an exact location
 			$this->nateastings = $square->getNatEastings();
 			$this->natnorthings = $square->getNatNorthings();
+			
 			$this->issubmit = $issubmit;
 			$services = explode(',',$CONF['raster_service']);
 			if ($square->reference_index == 1) {
@@ -98,8 +102,6 @@ class RasterMap
 	{
 		$east = floor($this->nateastings/1000) * 1000;
 		$nort = floor($this->natnorthings/1000) * 1000;
-		
-		$exactPosition = ($this->nateastings - $east != 500 || $this->natnorthings - $nort != 500);
 		
 		$width = $this->width;
 		
@@ -187,7 +189,7 @@ class RasterMap
 			if ($this->issubmit) {
 				$str .= "<div style=\"position:absolute;top:".($top-8)."px;left:".($left-8)."px;\" id=\"marker1\"><img src=\"/templates/basic/img/crosshairs.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
 			} else {
-				$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;".((($exactPosition)?'':'display:none'))."\" id=\"marker1\"><img src=\"/templates/basic/img/circle.png\" alt=\"+\" width=\"29\" height=\"29\"/></div>";
+				$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;".((($this->exactPosition)?'':'display:none'))."\" id=\"marker1\"><img src=\"/templates/basic/img/circle.png\" alt=\"+\" width=\"29\" height=\"29\"/></div>";
 			}
 
 			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" width=\"$width\" height=\"".($width+$extra)."\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/></div>";
