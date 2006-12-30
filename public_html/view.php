@@ -161,12 +161,6 @@ if ($image->isValid())
 		$overview->assignToSmarty($smarty, 'overview');
 		$smarty->assign('marker', $overview->getSquarePoint($image->grid_square));
 
-		//lets add an rastermap too
-		$rastermap = new RasterMap($image->grid_square,false);
-		if (!empty($image->viewpoint_northings)) {
-			$rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings);
-		}
-		$smarty->assign_by_ref('rastermap', $rastermap);
 
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
@@ -178,6 +172,15 @@ if ($image->isValid())
 		list($latdm,$longdm) = $conv->wgs84_to_friendly($lat,$long);
 		$smarty->assign('latdm', $latdm);
 		$smarty->assign('longdm', $longdm);
+
+		//lets add an rastermap too
+		$rastermap = new RasterMap($image->grid_square,false);
+		$rastermap->addLatLong($lat,$long);
+		if (!empty($image->viewpoint_northings)) {
+			$rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings);
+		}
+		$smarty->assign_by_ref('rastermap', $rastermap);
+
 
 		$smarty->assign('x', $image->grid_square->x);
 		$smarty->assign('y', $image->grid_square->y);

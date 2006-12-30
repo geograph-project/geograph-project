@@ -89,7 +89,11 @@ class RasterMap
 					$this->service = 'vob';
 					$this->width = ($issubmit)?300:250;
 				} 
-			}
+			} elseif(in_array('Google',$services)) {
+				$this->enabled = true;
+				$this->service = 'Google';
+				$this->width = ($issubmit)?300:250;
+			} 
 		}
 	} 
 	
@@ -107,6 +111,9 @@ class RasterMap
 		
 		switch ($this->service) {
 		
+			case 'Google': 
+				return "<div id=\"map\" style=\"width: {$this->width}px; height: {$this->width}px\"></div>";
+				break;
 			case 'OS50k': 
 				#$mappath = $this->getOS50kMapPath();
 				
@@ -183,12 +190,14 @@ class RasterMap
 				$vleft = 13;
 				$vtop = $width+13;
 			}
-			
-			$str .= "<div style=\"position:absolute;top:".($vtop-8)."px;left:".($vleft-8)."px;".( ($this->issubmit || (!empty($this->viewpoint_northings) && ($vleft != $left) && ($vtop != $top)) )?'':'display:none')."\" id=\"marker2\"><img src=\"/templates/basic/img/camera.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
+			$this->displayMarker2 = ($this->issubmit || (!empty($this->viewpoint_northings) && ($vleft != $left) && ($vtop != $top)))?1:0;
+			$str .= "<div style=\"position:absolute;top:".($vtop-8)."px;left:".($vleft-8)."px;".( $this->displayMarker2 ?'':'display:none')."\" id=\"marker2\"><img src=\"/templates/basic/img/camera.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
 			
 			if ($this->issubmit) {
+				$this->displayMarker1 = 1;
 				$str .= "<div style=\"position:absolute;top:".($top-8)."px;left:".($left-8)."px;\" id=\"marker1\"><img src=\"/templates/basic/img/crosshairs.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
 			} else {
+				$this->displayMarker1 = ($this->exactPosition)?1:0;
 				$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;".((($this->exactPosition)?'':'display:none'))."\" id=\"marker1\"><img src=\"/templates/basic/img/circle.png\" alt=\"+\" width=\"29\" height=\"29\"/></div>";
 			}
 
@@ -198,16 +207,42 @@ class RasterMap
 		}
 	}
 	
+	function addLatLong($lat,$long) {
+		$this->lat = floatval($lat);
+		$this->long = floatval($long);
+	}
+	
 	function getScriptTag()
 	{
 		global $CONF;
-		
-		switch ($this->service) {
-		
-			case 'vob': 
-				$east = (floor($this->nateastings/1000) * 1000) + 500;
-				$nort = (floor($this->natnorthings/1000) * 1000) + 500;
-				return "
+		if ($this->service == 'Google') {
+			return "
+				<script src=\"http://maps.google.com/maps?file=api&amp;v=2&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>
+				<script type=\"text/javascript\">
+				//<![CDATA[
+					function createMarker(point) {
+						var marker = new GMarker(point);
+						return marker;
+					}
+					function loadmap() {
+						if (GBrowserIsCompatible()) {
+							var map = new GMap2(document.getElementById(\"map\"));
+							map.addControl(new GSmallZoomControl());
+							map.addControl(new GMapTypeControl(true));
+							map.disableDragging();
+							var point = new GLatLng({$this->lat},{$this->long});
+							map.setCenter(point, 9);
+							map.addOverlay(createMarker(point));
+						}
+					}
+					window.onload = loadmap;
+					window.onunload = GUnload;
+				//]]>
+	    	</script>";
+		} elseif ($this->isSubmit) {
+			$east = (floor($this->nateastings/1000) * 1000) + 500;
+			$nort = (floor($this->natnorthings/1000) * 1000) + 500;
+			return "
 		<script type=\"text/javascript\" language=\"JavaScript\">
 			var cene = {$east};
 			var cenn = {$nort};
@@ -216,9 +251,18 @@ class RasterMap
 			var mapb = 1;
 			</script>
 		<script type=\"text/javascript\" src=\"/mapping.js?v={$CONF['javascript_version']}\"></script>
-		<script type=\"text/javascript\">document.images['map'].onmousemove = overlayMouseMove;
-		document.images['map'].onmouseup = overlayMouseUp;
-		document.images['map'].onmousedown = overlayMouseDown;
+		<script type=\"text/javascript\">
+			document.images['map'].onmousemove = overlayMouseMove;
+			document.images['map'].onmouseup = overlayMouseUp;
+			document.images['map'].onmousedown = overlayMouseDown;
+		</script>";
+		} else {
+			return "
+		<script type=\"text/javascript\" src=\"/mapping.js?v={$CONF['javascript_version']}\"></script>
+		<script type=\"text/javascript\">
+			var displayMarker1 = {$this->displayMarker1};
+			var displayMarker2 = {$this->displayMarker2};
+			document.images['map'].onmousemove = overlayHideMarkers;
 		</script>";
 		}
 	}

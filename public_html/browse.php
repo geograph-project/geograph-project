@@ -457,6 +457,7 @@ if ($grid_ok) {
 	
 	//lets add an rastermap too
 	$rastermap = new RasterMap($square,false,false);
+	$rastermap->addLatLong($lat,$long);
 	$smarty->assign_by_ref('rastermap', $rastermap);
 	
 } else {

@@ -84,6 +84,40 @@ function overlayMouseUp(e) {
 	currentelement = null;
 }
 
+function overlayHideMarkers(e) {
+	if (IE) {
+		tempX = event.offsetX;
+		tempY = event.offsetY;
+	} else {
+		tempX = e.layerX
+		tempY = e.layerY
+	}
+	
+	var m1 = document.getElementById('marker1');
+	
+	m1left = parseInt(m1.style.left)+14;
+	m1top = parseInt(m1.style.top)+14;
+	found = false;
+	if (Math.abs(tempX - m1left) < 10 && Math.abs(tempY - m1top) < 10) {
+		m1.style.display = 'none';
+	} else {
+		m1.style.display = displayMarker1?'':'none';
+	}
+	
+	var m2 = document.getElementById('marker2');
+
+	m2left = parseInt(m2.style.left)+8;
+	m2top = parseInt(m2.style.top)+8;
+
+	if (Math.abs(tempX - m2left) < 10 && Math.abs(tempY - m2top) < 10) {
+		m2.style.display = 'none';
+	} else {
+		m2.style.display = displayMarker2?'':'none';
+	}
+	
+	return false;
+}
+
 function overlayMouseDown(e) {
 	if (currentelement != null) {
 		//huh why we here?
