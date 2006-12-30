@@ -61,14 +61,14 @@ class RasterMap
 	/**
 	* setup the values
 	*/
-	function RasterMap(&$square,$issubmit = false)
+	function RasterMap(&$square,$issubmit = false, $useExact = true)
 	{
 		global $CONF;
 		$this->enabled = false;
 		if (!empty($square) && isset($square->grid_reference)) {
 			$this->square &= $square;
 			
-			$this->exactPosition = ($square->nateastings>0);
+			$this->exactPosition = $useExact && ($square->nateastings>0);
 			
 			//just in case we passed an exact location
 			$this->nateastings = $square->getNatEastings();
@@ -141,7 +141,7 @@ class RasterMap
 			$widthby2 = ($width/2);
 			
 			$e = $this->nateastings;	$n = $this->natnorthings;
-			if ($e%100 == 0 && $n%100 == 0) {
+			if ($e%100 == 0 && $n%100 == 0 && $this->exactPosition) {
 				$e +=50; $n += 50;
 			} 
 			$left = ($width/4) + ( ($e - $east) * $widthby2 / 1000 );
