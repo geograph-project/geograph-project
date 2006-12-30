@@ -146,7 +146,7 @@ class RasterMap
 		if (isset($title)) {
 			$extra = ($this->issubmit)?22:0;
 						
-			$str = "<div style=\"position:relative;height:".($width+$extra)."\">";
+			$str = "<div style=\"position:relative;height:".($width+$extra)."px\">";
 
 			$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" width=\"$width\" height=\"$width\" border=\"1\" name=\"tile\" alt=\"$title\"/></div>";
 
@@ -243,6 +243,8 @@ class RasterMap
 				//]]>
 	    	</script>";
 		} else {
+			$east = floor($this->nateastings/1000) * 1000;
+			$nort = floor($this->natnorthings/1000) * 1000;
 			$str = "
 			<script type=\"text/javascript\" language=\"JavaScript\">
 				var cene = {$east};
@@ -250,7 +252,7 @@ class RasterMap
 				var maph = {$this->width};
 				var mapw = {$this->width};
 				var mapb = 1;
-				</script>
+			</script>
 			<script type=\"text/javascript\" src=\"/mapping.js?v={$CONF['javascript_version']}\"></script>";
 
 			if ($this->issubmit) {
