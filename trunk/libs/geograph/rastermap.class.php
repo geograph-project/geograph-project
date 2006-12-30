@@ -242,31 +242,32 @@ class RasterMap
 					window.onunload = GUnload;
 				//]]>
 	    	</script>";
-		} elseif ($this->issubmit) {
-			$east = (floor($this->nateastings/1000) * 1000) + 500;
-			$nort = (floor($this->natnorthings/1000) * 1000) + 500;
-			return "
-		<script type=\"text/javascript\" language=\"JavaScript\">
-			var cene = {$east};
-			var cenn = {$nort};
-			var maph = {$this->width};
-			var mapw = {$this->width};
-			var mapb = 1;
-			</script>
-		<script type=\"text/javascript\" src=\"/mapping.js?v={$CONF['javascript_version']}\"></script>
-		<script type=\"text/javascript\">
-			document.images['map'].onmousemove = overlayMouseMove;
-			document.images['map'].onmouseup = overlayMouseUp;
-			document.images['map'].onmousedown = overlayMouseDown;
-		</script>";
 		} else {
-			return "
-		<script type=\"text/javascript\" src=\"/mapping.js?v={$CONF['javascript_version']}\"></script>
-		<script type=\"text/javascript\">
-			var displayMarker1 = {$this->displayMarker1};
-			var displayMarker2 = {$this->displayMarker2};
-			document.images['map'].onmousemove = overlayHideMarkers;
-		</script>";
+			$str = "
+			<script type=\"text/javascript\" language=\"JavaScript\">
+				var cene = {$east};
+				var cenn = {$nort};
+				var maph = {$this->width};
+				var mapw = {$this->width};
+				var mapb = 1;
+				</script>
+			<script type=\"text/javascript\" src=\"/mapping.js?v={$CONF['javascript_version']}\"></script>";
+
+			if ($this->issubmit) {
+				return "$str
+			<script type=\"text/javascript\">
+				document.images['map'].onmousemove = overlayMouseMove;
+				document.images['map'].onmouseup = overlayMouseUp;
+				document.images['map'].onmousedown = overlayMouseDown;
+			</script>";
+			} else {
+				return "$str
+			<script type=\"text/javascript\">
+				var displayMarker1 = {$this->displayMarker1};
+				var displayMarker2 = {$this->displayMarker2};
+				document.images['map'].onmousemove = overlayHideMarkers;
+			</script>";
+			}
 		}
 	}
 	
