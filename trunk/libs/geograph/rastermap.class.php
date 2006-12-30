@@ -73,6 +73,7 @@ class RasterMap
 			//just in case we passed an exact location
 			$this->nateastings = $square->getNatEastings();
 			$this->natnorthings = $square->getNatNorthings();
+			$this->reference_index = $square->reference_index;
 			
 			$this->issubmit = $issubmit;
 			$services = explode(',',$CONF['raster_service']);
@@ -89,7 +90,7 @@ class RasterMap
 					$this->service = 'vob';
 					$this->width = ($issubmit)?300:250;
 				} 
-			} elseif($this->exactPosition && in_array('Google',$services)) {
+			} elseif(($this->exactPosition || in_array('Grid',$services)) && in_array('Google',$services)) {
 				//$this->enabled = true;
 				$this->service = 'Google';
 				$this->width = ($issubmit)?300:250;
@@ -215,16 +216,67 @@ class RasterMap
 		}
 	}
 	
+	function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2) {
+		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
+		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
+		return "			var polyline = new GPolyline([
+				new GLatLng($lat1,$long1),
+				new GLatLng($lat2,$long2)
+			], \"#0000FF\", 1);
+			map.addOverlay(polyline);\n";
+	}
+	
 	function getScriptTag()
 	{
 		global $CONF;
 		if ($this->service == 'Google') {
+			if (strpos($CONF['raster_service'],'Grid') !== FALSE) {
+				$e = floor($this->nateastings/1000) * 1000;
+				$n = floor($this->natnorthings/1000) * 1000;
+				
+				require_once('geograph/conversions.class.php');
+				$conv = new Conversions;
+			
+				$block = $this->getPolyLineBlock($conv,$e-1000,$n,$e+2000,$n);
+				$block .= $this->getPolyLineBlock($conv,$e-1000,$n+1000,$e+2000,$n+1000);
+				$block .= $this->getPolyLineBlock($conv,$e,$n-1000,$e,$n+2000);
+				$block .= $this->getPolyLineBlock($conv,$e+1000,$n-1000,$e+1000,$n+2000);
+				
+				if (!empty($this->viewpoint_northings)) {
+					list($lat,$long) = $conv->national_to_wgs84($this->viewpoint_eastings,$this->viewpoint_northings,$this->reference_index);
+					$block .= "
+					var ppoint = new GLatLng({$lat},{$long});
+					map.addOverlay(createPMarker(ppoint));\n";
+				}
+			} else {
+				$block = '';
+			}
+			if ($this->exactPosition) {
+				$block.= "map.addOverlay(createMarker(point));";
+			}
 			return "
 				<script src=\"http://maps.google.com/maps?file=api&amp;v=2&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>
 				<script type=\"text/javascript\">
 				//<![CDATA[
 					function createMarker(point) {
-						var marker = new GMarker(point);
+						var marker = new GMarker(point, {draggable: true});
+						GEvent.addListener(marker, \"dragend\", function() {
+								marker.setPoint(point);
+							});
+						return marker;
+					}
+					
+					function createPMarker(ppoint) {
+						var picon = new GIcon();
+						picon.image =\"/templates/basic/img/camicon.png\";
+						picon.shadow = \"http://labs.google.com/ridefinder/images/mm_20_shadow.png\";
+						picon.iconSize = new GSize(12, 20);
+						picon.shadowSize = new GSize(22, 20);
+						picon.iconAnchor = new GPoint(6, 20);
+						var marker = new GMarker(ppoint,{draggable: true, icon:picon});
+						GEvent.addListener(marker, \"dragend\", function() {
+								marker.setPoint(ppoint);
+							});
 						return marker;
 					}
 					function loadmap() {
@@ -234,8 +286,8 @@ class RasterMap
 							map.addControl(new GMapTypeControl(true));
 							map.disableDragging();
 							var point = new GLatLng({$this->lat},{$this->long});
-							map.setCenter(point, 9);
-							map.addOverlay(createMarker(point));
+							map.setCenter(point, 13);
+							$block 
 						}
 					}
 					window.onload = loadmap;
