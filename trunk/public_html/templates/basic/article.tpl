@@ -32,7 +32,7 @@
 
 <div class="interestBox">
 {if $user->registered} 
-	<a href="/article/edit.php?page=new">Summit a new Article</a> (Registered Users Only)
+	<a href="/article/edit.php?page=new">Submit a new Article</a> (Registered Users Only)
 {else}
 	<a href="/login.php">Login</a> to Submit your own article!
 {/if}
