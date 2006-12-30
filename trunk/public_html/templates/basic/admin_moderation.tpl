@@ -46,7 +46,7 @@
 	  
 	  <div style="float:left;font-size:0.8em; padding-left:10px; text-align:left;">
 	  
-	  Square: <b><a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></b> ({$image->imagecount} current images)<br/>
+	  square: <b><a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></b> ({$image->imagecount} images) &nbsp;&nbsp; category: <b style="color:blue">{$image->imageclass}</b><br/>
 	  by: <b><a title="view user profile" href="/profile.php?u={$image->user_id}">{$image->realname}</a></b><br/>
 	  title: <b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></b> (<a href="/editimage.php?id={$image->gridimage_id}">edit</a>)<br/>
 	  
@@ -57,13 +57,13 @@
 	  <br/>
 	  
 	  {if $image->nateastings}
-	  	subject: <b>{getamap gridref=$image->getSubjectGridref() title="(`$image->subject_gridref_precision`m percision)"}</b>
+	  	subject: <b>{getamap gridref=$image->getSubjectGridref() title="(`$image->subject_gridref_precision`m precision)"}</b>
 	  {else}
-	  	map: <b>{getamap gridref=$image->grid_reference title="(`$image->subject_gridref_precision`m percision)"}</b>
+	  	map: <b>{getamap gridref=$image->grid_reference title="(1000m precision)"}</b>
 	  {/if}
 	  {if $image->viewpoint_eastings}
-	  	| photographer: <b>{getamap gridref=$image->getPhotographerGridref() title="(`$image->photographer_gridref_precision`m percision)"}</b>{if $image->different_square_true}(diff){/if}
-	  	| <span{if $image->different_square} style="background-color:yellow"{/if}>distance: <b>{$image->distance}</b>km</span>
+	  	| photographer: <b>{getamap gridref=$image->getPhotographerGridref() title="(`$image->photographer_gridref_precision`m precision)"}</b>{if $image->different_square_true}(diff){/if}
+	  	| <span{if $image->different_square} style="background-color:yellow"{/if}>distance: <b style="color:blue">{$image->distance}</b>km</span>
 	  {/if}
 	  <br/>
 	  
