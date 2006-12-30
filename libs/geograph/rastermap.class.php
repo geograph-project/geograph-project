@@ -243,8 +243,8 @@ class RasterMap
 				//]]>
 	    	</script>";
 		} else {
-			$east = floor($this->nateastings/1000) * 1000;
-			$nort = floor($this->natnorthings/1000) * 1000;
+				$east = (floor($this->nateastings/1000) * 1000) + 500;
+				$nort = (floor($this->natnorthings/1000) * 1000) + 500;
 			$str = "
 			<script type=\"text/javascript\" language=\"JavaScript\">
 				var cene = {$east};
