@@ -31,13 +31,54 @@ if (empty($_GET['page']) || preg_match('/[^\w-\.]/',$_GET['page'])) {
 	exit;
 }
 
+$isadmin=$USER->hasPerm('moderator')?1:0;
 
 $template = 'article_article.tpl';
 $cacheid = $_GET['page'];
+$cacheid .= "|".$USER->hasPerm('moderator')?1:0;
+$cacheid .= "--".(isset($_SESSION['article_urls']) && in_array($_GET['page'],$_SESSION['article_urls'])?1:0);
 
+
+function article_make_table($input) {
+	$rows = explode("\n",$input);
+	$output = "<table class=\"report\">";
+	$c = 1;
+	foreach ($rows as $row) {
+		$head = 0;
+		if (strpos($row,'*') === 0) {
+			$row = preg_replace('/^\*/','',$row);
+			$output .= "<thead>";
+			$head = 1;
+		} elseif ($c ==1) {
+			$output .= "<tbody>";
+		}
+		$output .= "<tr>";
+		
+		$row = preg_replace('/^\| | \|$/','',$row);
+		$cells = explode(' | ',$row);
+		
+		foreach ($cells as $cell) {
+			$output .= "<td>$cell</td>";
+		}
+		
+		$output .= "</tr>";
+		if ($head) {
+			$output .= "</thead>";
+			$output .= "<tbody>";
+		}
+		$c++;
+	}
+	return $output."</tbody></table>";
+}
 
 function smarty_function_articletext($input) {
 	$output = preg_replace('/\{image id=(\d+) text=([^\}]+)\}/e',"smarty_function_gridimage(array(id => '\$1',extra => '\$2'))",str_replace("\r",'',$input));
+
+	$output = preg_replace('/\[img=([^\]]+)\]/',"<img src=\"\$1\"/>",$output);
+
+
+	$output = preg_replace('/(-{7,})\n(.*?)(-{7,})/es',"article_make_table('\$2')",$output);
+
 
 	$output = str_replace(
 		array('[b]','[/b]','[big]','[/big]','[i]','[/i]','[h2]','[/h2]','[h3]','[/h3]'),
@@ -61,7 +102,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	select article.*,realname
 	from article 
 		left join user using (user_id)
-	where licence != 'none' 
+	where ( (licence != 'none' and approved = 1) 
+		or user.user_id = {$USER->user_id}
+		or $isadmin )
 		and url = ".$db->Quote($_GET['page']).'
 	limit 1');
 	if (count($page)) {

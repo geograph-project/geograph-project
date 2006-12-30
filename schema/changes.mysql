@@ -728,3 +728,42 @@ CREATE TABLE `mapfix_log` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`mapfix_log_id`)
 );
+
+
+
+CREATE TABLE `article` (
+  `article_id` int(10) unsigned NOT NULL auto_increment,
+  `article_cat_id` smallint(5) unsigned NOT NULL default '0',
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `url` varchar(64) NOT NULL default '',
+  `title` varchar(64) NOT NULL default '',
+  `content` longtext NOT NULL,
+  `licence` enum('none','pd','cc-by-sa/2.0','copyright') NOT NULL default 'none',
+  `publish_date` date NOT NULL default '0000-00-00',
+  `approved` tinyint(4) NOT NULL default '0',
+  `update_time` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `create_time` timestamp NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`article_id`),
+  UNIQUE KEY `title` (`title`),
+  UNIQUE KEY `url` (`url`),
+  KEY `article_cat_id` (`article_cat_id`,`user_id`)
+) ;
+
+
+
+CREATE TABLE `article_revisions` (
+  `article_id` int(10) unsigned NOT NULL default '0',
+  `article_cat_id` smallint(5) unsigned NOT NULL default '0',
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `url` varchar(64) NOT NULL default '',
+  `title` varchar(64) NOT NULL default '',
+  `content` longtext NOT NULL,
+  `licence` enum('none','pd','cc-by-sa/2.0','copyright') NOT NULL default 'none',
+  `publish_date` date NOT NULL default '0000-00-00',
+  `approved` tinyint(4) NOT NULL default '1',
+  `update_time` datetime default '0000-00-00 00:00:00',
+  `create_time` datetime default '0000-00-00 00:00:00',
+  `article_revision_id` int(10) unsigned NOT NULL auto_increment,
+  PRIMARY KEY  (`article_revision_id`)
+) ;
+        
