@@ -766,4 +766,6 @@ CREATE TABLE `article_revisions` (
   `article_revision_id` int(10) unsigned NOT NULL auto_increment,
   PRIMARY KEY  (`article_revision_id`)
 ) ;
-        
+
+
+ALTER TABLE `article_revisions` ADD `modifier` INT UNSIGNED NOT NULL ;
