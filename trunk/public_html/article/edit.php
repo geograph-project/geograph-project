@@ -142,7 +142,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 			$_REQUEST['article_id'] = $db->Insert_ID();
 		}
 		//and back it up
-		$sql = "INSERT INTO article_revisions SELECT *,NULL FROM article WHERE article_id = ".$db->Quote($_REQUEST['article_id']);
+		$sql = "INSERT INTO article_revisions SELECT *,NULL,{$USER->user_id} FROM article WHERE article_id = ".$db->Quote($_REQUEST['article_id']);
 		$db->Execute($sql);
 
 		$smarty->clear_cache('article_article.tpl', $_POST['url']);
