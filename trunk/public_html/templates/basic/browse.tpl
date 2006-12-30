@@ -178,7 +178,7 @@
 	<div class="rastermap" style="width:{$rastermap->width}px;position:relative">
 	{$rastermap->getImageTag()}
 	<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
-
+	{$rastermap->getScriptTag()}	
 	</div>
 {/if}
 

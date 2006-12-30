@@ -81,6 +81,9 @@ $CONF['raster_service']='';
 //valid values (comma seperated list):
 // 'vob' - VisionOfBritain Historical Maps - Permission MUST be sought from the visionofbritain.org.uk webmaster before enableing this feature!
 // 'OS50k' - OSGB 50k Mapping - Licence Required (see next)
+// 'Google' - Use Google Mapping (api key required below)
+
+$CONF['google_maps_api_key'] = 'ABQIAAAAw3BrxANqPQrDF3i-BIABYxSP0GH9nE7OiOmK3TkvNtmcPkN-wBQOr_lS5w700jdE2EnoDZsA9U5VzQ';
 
 $CONF['OS_licence'] = '100045616';
 
