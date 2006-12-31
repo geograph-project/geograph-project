@@ -162,7 +162,9 @@ gridsquare READ,
 gridsquare gs READ,
 gridimage gi READ,
 user READ,
-gridprefix READ");
+gridprefix READ,
+user v READ,
+user m READ");
 
 #############################
 # find the list of squares with self pending images, and exclude them...
@@ -208,8 +210,9 @@ if (isset($_GET['moderator'])) {
 	$mid = intval($_GET['moderator']);
 		
 	if (isset($_GET['verify'])) {
-		$sql_columns = ", new_status,moderation_log.user_id as ml_user_id";
-		$sql_from = " inner join moderation_log on(moderation_log.gridimage_id=gi.gridimage_id)";
+		$sql_columns = ", new_status,moderation_log.user_id as ml_user_id,v.realname as ml_realname";
+		$sql_from = " inner join moderation_log on(moderation_log.gridimage_id=gi.gridimage_id)
+					inner join user v on(moderation_log.user_id=v.user_id)";
 		
 		$sql_where = "(moderation_log.user_id = $mid or gi.moderator_id = $mid)";
 		
@@ -217,10 +220,27 @@ if (isset($_GET['moderator'])) {
 			$sql_where = "($sql_where and moderation_status != new_status)";
 		}
 		$sql_order = "gridimage_id desc";
+	} elseif ($mid == 0) {
+		$sql_columns = ", m.realname as mod_realname";
+		$sql_where = "(moderation_status != 2) and moderator_id != {$USER->user_id}";
+		$sql_from = " inner join user m on(moderator_id=m.user_id)";
+		$sql_order = "gridimage_id desc";
 	} else {
 		$sql_where = "(moderation_status != 2) and moderator_id = $mid";
 		$sql_order = "gridimage_id desc";
 	}
+	
+	if (isset($_GET['status']) && ($statuses = $_GET['status']) ) {
+		if (is_array($statuses))
+			$sql_where.=" and moderation_status in ('".implode("','", $statuses)."') ";
+		elseif (strpos($statuses,',') !== FALSE)
+			$sql_where.=" and moderation_status in ('".implode("','", explode(',',$statuses))."') ";
+		elseif (is_int($statuses)) 
+			$sql_where.=" and moderation_status = $statuses ";
+		else
+			$sql_where.=" and moderation_status = '$statuses' ";
+	}
+	
 	$smarty->assign('moderator', 1);
 	$sql_where2 = '';
 } elseif (isset($_GET['remoderate'])) {
@@ -279,9 +299,6 @@ foreach ($images->images as $i => $image) {
 		if ($images->images[$i]->different_square_true && $images->images[$i]->distance > 0.2)
 			$images->images[$i]->different_square = true;
 	}	
-	if (!empty($image->ml_user_id) && $image->ml_user_id != $USER->user_id) {
-		$image->ml_realname = (!empty($realname[$image->ml_user_id]))?$realname[$image->ml_user_id]:($realname[$image->ml_user_id] = $db->getOne("select realname from user where user_id = {$image->ml_user_id}"));
-	}
 	$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$image->gridsquare_id}");
 
 }
