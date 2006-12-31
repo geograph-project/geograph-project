@@ -126,7 +126,9 @@
 	
 
 	<div class="ticketbasics">
-
+	{if $ticket->type == 'minor'}
+		<u>Minor Changes</u>, 
+	{/if}
 	{if $isadmin}
 		Submitted by {$ticket->suggester_name} 
 		
