@@ -415,7 +415,7 @@ class RasterMap
 		if (strlen($CONF['imagemagick_path'])) {
 			$tilelist = array();
 			$c = 0;
-			$found = 0;
+			$found = 1;
 			foreach(range(	$nort+1000 ,
 							$nort-1000 ,
 							-1000 ) as $n) {
