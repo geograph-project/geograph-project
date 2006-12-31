@@ -313,8 +313,9 @@ WGS84: {$latdm} {$longdm}
 	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
 	  </form>
   {/if}
-
-{else}
+{if $rastermap->enabled}
+	{$rastermap->getFooterTag()}
+{/if}
 <h2>Sorry, image not available</h2>
 <p>The image you requested is not available. This maybe due to software error, or possibly because
 the image was rejected after submission - please <a title="Contact Us" href="/contact.php">contact us</a>

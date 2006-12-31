@@ -77,23 +77,25 @@ class RasterMap
 			
 			$this->issubmit = $issubmit;
 			$services = explode(',',$CONF['raster_service']);
+			$this->width = 250;
+
 			if ($square->reference_index == 1) {
 				$this->enabled = true;
-				if (in_array('OS50k',$services) && $issubmit == false) {
+				if (in_array('OS50k',$services)) {
 					$this->service = 'OS50k';
-					$this->width = 250;
 					
-					//temp solution, to not show map if dont have it generated
-					if (!$this->getOS50kMapPath(false))
-						$this->enabled = false;
-				} elseif(in_array('vob',$services)) {
-					$this->service = 'vob';
-					$this->width = ($issubmit)?300:250;
+				#	//temp solution, to not show map if dont have it generated
+				#	if (!$this->getOS50kMapPath(false))
+				#		$this->enabled = false;
+					if ($this->issubmit && in_array('VoB',$services)) {
+						$this->service2 = 'VoB';
+					}
+				} elseif(in_array('VoB',$services)) {
+					$this->service = 'VoB';
 				} 
 			} elseif(($this->exactPosition || in_array('Grid',$services)) && in_array('Google',$services)) {
 				//$this->enabled = true;
 				$this->service = 'Google';
-				$this->width = ($issubmit)?300:250;
 			} 
 		}
 	} 
@@ -118,41 +120,42 @@ class RasterMap
 		
 		$width = $this->width;
 		
-		switch ($this->service) {
-		
-			case 'Google': 
-				return "<div id=\"map\" style=\"width: {$this->width}px; height: {$this->width}px\"></div>";
-				break;
-			case 'OS50k': 
-				#$mappath = $this->getOS50kMapPath();
-				
-				$mapurl = "/tile.php?r=".$this->getToken();
-				
-				$title = "1:50,000 Modern Day Landranger(TM) Map &copy; Crown Copyright";	
-				break;
-			case 'vob': 
-				$e1 = $east - 500;
-				$e2 = $e1 + 2000;
+		if ($this->service == 'Google') {
+			return "<div id=\"map\" style=\"width:{$this->width}px; height:{$this->width}px\">Loading map...</div>";
+		} elseif ($this->service == 'OS50k') {
+			#$mappath = $this->getOS50kMapPath();
 
-				$n1 = $nort - 500;
-				$n2 = $n1 + 2000;
+			$mapurl = "/tile.php?r=".$this->getToken();
 
-				//Use of this URL is not permitted outside of geograph.org.uk
-				$mapurl = "http://vision.edina.ac.uk/cgi-bin/wms-vision?version=1.1.0&request=getMap&layers=newpop%2Csmall_1920%2Cmed_1904&styles=&SRS=EPSG:27700&Format=image/png&width=$width&height=$width&bgcolor=cfd6e5&bbox=$e1,$n1,$e2,$n2&exception=application/vnd.ogc.se_inimage";
-				
-				$title = "1940s OS New Popular Edition Historical Map &copy; VisionOfBritain.org.uk";
-				break;
+			$title = "1:50,000 Modern Day Landranger(TM) Map &copy; Crown Copyright";
+		}
+		if ($this->service == 'VoB' || $this->service2 == 'VoB' ) {
+			$e1 = $east - 500;
+			$e2 = $e1 + 2000;
+
+			$n1 = $nort - 500;
+			$n2 = $n1 + 2000;
+
+			//Use of this URL is not permitted outside of geograph.org.uk
+			$mapurl2 = "http://vision.edina.ac.uk/cgi-bin/wms-vision?version=1.1.0&request=getMap&layers=newpop%2Csmall_1920%2Cmed_1904&styles=&SRS=EPSG:27700&Format=image/png&width=$width&height=$width&bgcolor=cfd6e5&bbox=$e1,$n1,$e2,$n2&exception=application/vnd.ogc.se_inimage";
+
+			$title2 = "1940s OS New Popular Edition Historical Map &copy; VisionOfBritain.org.uk";
+			
+			if ($this->service == 'VoB') {
+				$title = $title2;
+				$mapurl = $mapurl2;
+			}
 		}
 		
 		if (isset($title)) {
 			$extra = ($this->issubmit)?22:0;
 						
-			$str = "<div style=\"position:relative;height:".($width+$extra)."px\">";
+			$str = "<div style=\"position:relative;height:".($width+$extra)."px;width:{$this->width}px;\">";
 
 			$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" width=\"$width\" height=\"$width\" border=\"1\" name=\"tile\" alt=\"$title\"/></div>";
 
 			if ($this->issubmit)
-				$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&lt;- Drag to mark photographer position.</small></div>";
+				$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px; font-size:0.8em;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&lt;- Drag to mark photographer position.</small></div>";
 			
 			$widthby2 = ($width/2);
 			
@@ -212,10 +215,52 @@ class RasterMap
 
 			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" width=\"$width\" height=\"".($width+$extra)."\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/></div>";
 
-			return "$str</div>";
+			$str .= "</div>";
+			
+			if ($this->service2) {
+				return "$str
+				<br/>
+				<div id=\"mapSwitcherOS50k\" style=\"font-size:0.8em\" class=\"interestBox\">Switch to <a href=\"javascript:switchTo(2);\">Historic Map</a></div>
+				<div id=\"mapSwitcherVoB\" style=\"display:none; font-size:0.8em\" class=\"interestBox\">Switch to <a href=\"javascript:switchTo(1);\">Modern Map</a></div>
+				<script type=\"text/javascript\">
+				function switchTo(too) {
+					showOS50k = (too == 1)?'':'none';
+					showVoB = (too == 2)?'':'none';
+					
+					document.getElementById('mapSwitcherOS50k').style.display = showOS50k;
+					document.getElementById('mapTitleOS50k').style.display = showOS50k;
+					document.getElementById('mapFootNoteOS50k').style.display = showOS50k;
+					
+					document.getElementById('mapSwitcherVoB').style.display = showVoB;
+					document.getElementById('mapTitleVoB').style.display = showVoB;
+					document.getElementById('mapFootNoteVoB').style.display = showVoB;
+					
+					if (too == 1) {
+						document.images['tile'].src = '$mapurl';
+						document.images['map'].title = '$title';
+					} else {
+						document.images['tile'].src = '/img/blank.gif';
+						document.images['tile'].src = '$mapurl2';
+						document.images['map'].title = '$title2';
+					}
+				}
+				
+				</script>";
+			} else {
+				return $str;
+			}
 		}
 	}
 	
+	function getFooterTag()
+	{
+		global $CONF;
+		//defer the tag to the last minute, to help prevent the page pausing mid load
+		if ($this->service == 'Google') {
+			return "<script src=\"http://maps.google.com/maps?file=api&amp;v=2&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
+		}
+	}
+
 	function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2) {
 		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
 		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
@@ -255,7 +300,6 @@ class RasterMap
 				$block.= "map.addOverlay(createMarker(point));";
 			}
 			return "
-				<script src=\"http://maps.google.com/maps?file=api&amp;v=2&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>
 				<script type=\"text/javascript\">
 				//<![CDATA[
 					function createMarker(point) {
@@ -324,24 +368,17 @@ class RasterMap
 			}
 		}
 	}
-	
+
 	function getTitle($gridref) 
 	{
-		switch ($this->service) {
-		
-			case 'vob': 
-				return "1940s OS New Popular Edition".(($this->issubmit)?"<span style=\"font-size:0.8em;color:red\"><br/><b>Please confirm positions on a modern map, as accuracy may be limited.</b></span>":'');
-		}
+		return "<span id=\"mapTitleOS50k\"".($this->service == 'OS50k'?'':' style="display:none"').">1:50,000 Modern Day Landranger&trade; Map".(($this->issubmit)?"<br/><br/>":'')."</span>".
+		"<span id=\"mapTitleVoB\"".($this->service == 'VoB'?'':' style="display:none"').">1940s OS New Popular Edition".(($this->issubmit)?"<span style=\"font-size:0.8em;color:red\"><br/><b>Please confirm positions on the modern map, as accuracy may be limited.</b></span>":'')."</span>";
 	}
+
 	function getFootNote() 
 	{
-		switch ($this->service) {
-
-			case 'OS50k': 
-				return "<br/>OS Maps are still in testing, some maps might display incorrectly, please visit forum for more info.";
-			case 'vob': 
-				return "<br/>Historical Map provided by <a href=\"http://www.visionofbritain.org.uk/\" title=\"Vision of Britain\">VisionOfBritain.org.uk</a>";
-		}
+		return "<span id=\"mapFootNoteOS50k\"".($this->service == 'OS50k'?'':' style="display:none"')."><br/>OS Maps are still in testing, some maps might display incorrectly, please visit forum for more info.</span>".
+		"<span id=\"mapFootNoteVoB\"".($this->service == 'VoB'?'':' style="display:none"')."><br/>Historical Map provided by <a href=\"http://www.visionofbritain.org.uk/\" title=\"Vision of Britain\">VisionOfBritain.org.uk</a></span>";
 	}
 
 	function getOS50kMapPath($create = true) {
@@ -369,7 +406,7 @@ class RasterMap
 		$ll = $square->gridsquare;
 		
 		//$this->width = 250;
-		$this->tilewidth = 125;
+		$this->tilewidth = 200;
 
 		//this isn't STRICTLY needed as getOSGBStorePath does the same floor, but do so in case we do exact calculations
 		$east = floor($this->nateastings/1000) * 1000;
@@ -389,11 +426,11 @@ class RasterMap
 					
 					if (file_exists($newpath)) {
 						$tilelist[] = $newpath;
-						$found = 1;
 					} else {
 						$tilelist[] = 'null:';
 						if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 							print "$newpath not found<br/>\n";
+						$found = 0;
 					}
 					$c++;
 				}

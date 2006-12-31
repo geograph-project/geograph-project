@@ -255,6 +255,9 @@
    		</p>
    		</form>
    	{/if}
+   	{if $rastermap->enabled}
+		{$rastermap->getFooterTag()}
+	{/if}
 {else}
 	{* All at Sea Square! *}
 	
