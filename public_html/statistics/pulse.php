@@ -49,33 +49,56 @@ if (!$smarty->is_cached($template, $cacheid))
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$table = array();
 
-	$sql = "SELECT COUNT(*) FROM gridimage WHERE submitted > DATE_SUB(NOW() , interval 10 MINUTE)";
+	$sql = "SELECT COUNT(*) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 10 MINUTE)";
 	calc("Images Submitted in last 10 minutes",$sql);
 	
-	$sql = "SELECT COUNT(*) FROM gridimage WHERE submitted > DATE_SUB(NOW() , interval 1 HOUR)";
+	$sql = "SELECT COUNT(*) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 1 HOUR)";
 	calc("Images Submitted in last hour",$sql);
+
+$table[] = array("Parameter"=>'',"Value"=>'');
 	
-	$sql = "SELECT COUNT(*) FROM gridimage WHERE submitted > DATE_SUB(NOW() , interval 24 HOUR)";
+	$sql = "SELECT COUNT(*) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
 	calc("Images Submitted in last 24 hours",$sql);
+
+	$sql = "SELECT COUNT(DISTINCT user_id) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
+	calc("Image Contributors in last 24 hours",$sql);
+
+	$sql = "SELECT COUNT(DISTINCT moderator_id) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
+	calc("Active Moderators in last 24 hours",$sql);
+
+$table[] = array("Parameter"=>'',"Value"=>'');
+
+	$sql = "SELECT COUNT(*) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 7 DAY)";
+	calc("Images Submitted in last 7 days",$sql);
+
+	$sql = "SELECT COUNT(DISTINCT user_id) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 7 DAY)";
+	calc("Image Contributors in last 7 days",$sql);
+
+$table[] = array("Parameter"=>'',"Value"=>'');
 
 	$sql = "SELECT COUNT(*) FROM sessions WHERE EXPIRY > UNIX_TIMESTAMP(DATE_SUB(NOW(),INTERVAL 24 MINUTE))";
 	calc("Visitors in last 24 minutes",$sql);
 	
-	$sql = "select count(distinct user_id)-1 from autologin where created > date_sub(now(), interval 1 hour)";
+	$sql = "SELECT COUNT(DISTINCT user_id)-1 FROM autologin WHERE created > DATE_SUB(NOW(), INTERVAL 1 HOUR)";
 	calc("Regular Users visited in last hour",$sql);
 
-	$sql = "SELECT COUNT(*) FROM geobb_posts WHERE post_time > DATE_SUB(NOW() , interval 1 HOUR)";
+$table[] = array("Parameter"=>'',"Value"=>'');
+
+	$sql = "SELECT COUNT(*) FROM geobb_posts WHERE post_time > DATE_SUB(NOW() , INTERVAL 1 HOUR)";
 	calc("Forum Posts in last hour",$sql);
 
-	$sql = "SELECT COUNT(DISTINCT poster_id) FROM geobb_posts WHERE post_time > DATE_SUB(NOW() , interval 1 HOUR)";
+	$sql = "SELECT COUNT(DISTINCT poster_id) FROM geobb_posts WHERE post_time > DATE_SUB(NOW() , INTERVAL 1 HOUR)";
 	calc("Forum Posters in last hour",$sql);
 
+$table[] = array("Parameter"=>'',"Value"=>'');
 	
-	$sql = "SELECT COUNT(*) FROM geobb_posts WHERE post_time > DATE_SUB(NOW() , interval 24 HOUR)";
+	$sql = "SELECT COUNT(*) FROM geobb_posts WHERE post_time > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
 	calc("Forum Posts in last 24 hours",$sql);
 
-	$sql = "SELECT COUNT(DISTINCT poster_id) FROM geobb_posts WHERE post_time > DATE_SUB(NOW() , interval 24 HOUR)";
+	$sql = "SELECT COUNT(DISTINCT poster_id) FROM geobb_posts WHERE post_time > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
 	calc("Forum Posters in last 24 hours",$sql);
+
+$table[] = array("Parameter"=>'',"Value"=>'');
 	
 	if (strpos($_ENV["OS"],'Windows') === FALSE) {
 		//check load average
@@ -90,15 +113,16 @@ if (!$smarty->is_cached($template, $cacheid))
 				$name = "Hamster's currently sweating*";
 				$table[] = array("Parameter"=>$name,"Value"=>sprintf("%d",$load*10));
 				$smarty->assign("footnote","<p>* below 10 is good, above 20 is worse, above 40 is bad.</p>");
+				$table[] = array("Parameter"=>'',"Value"=>'');
 			}
 			fclose($f);			
 		}
 	}
 	
-	$sql = "select count(*) from event where status='pending'";
+	$sql = "SELECT count(*) FROM event WHERE status='pending'";
 	calc("Pending Hamster Tasks",$sql);
 	
-	$sql = "select count(*) from mapcache where age > 0";
+	$sql = "SELECT COUNT(*) FROM mapcache WHERE age > 0";
 	calc("Map tiles to redraw",$sql);
 	
 	
