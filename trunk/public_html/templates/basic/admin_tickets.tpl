@@ -10,11 +10,20 @@
 <h2><a title="Admin home page" href="/admin/index.php">Admin</a> : Trouble Tickets</h2>
 {dynamic}
 
+{if $moderator}
+<h3>Close Tickets</h3>
+{else}
 <h3>New Tickets</h3>
+{/if}
 
 {if $newtickets}
 
+{if $moderator}
+<p>These tickets have been recently been closed by the selected moderator</p>
+{else}
 <p>These tickets haven't seen any moderator activity yet...go on, sort one out</p>
+{/if}
+
 <table class="report sortable" id="newtickets" style="font-size:8pt;">
 <thead><tr>
 	<td>Photographer</td>
@@ -29,7 +38,7 @@
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}">
 <td>{$ticket.submitter}</td>
-<td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
+<td><a href="/editimage.php?id={$ticket.gridimage_id}{if $moderator}&amp;alltickets=1{/if}">{$ticket.title|default:'Untitled'}</a></td>
 <td>{$ticket.notes}</td>
 <td>{$ticket.suggester}</td>
 <td>{$ticket.suggested}</td>
@@ -67,7 +76,7 @@
 <tr bgcolor="{$bgcolor}">
 <td>{$ticket.moderator}</td>
 <td>{$ticket.submitter}</td>
-<td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
+<td><a href="/editimage.php?id={$ticket.gridimage_id}&amp;alltickets=1">{$ticket.title|default:'Untitled'}</a></td>
 <td>{$ticket.notes}</td>
 <td>{$ticket.suggester}</td>
 <td>{$ticket.updated}</td>

@@ -45,6 +45,21 @@ user as submitter READ");
 
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(100,intval($_GET['limit'])):50;
 
+if (isset($_GET['moderator'])) {
+	$USER->mustHavePerm('admin');
+	
+	$mid = intval($_GET['moderator']);
+	
+	$sql_where .= " t.status='closed'";
+	
+	if ($mid != 0) {
+		$sql_where .= " and t.moderator_id=$mid";
+	}
+	
+	$smarty->assign('moderator', 1);
+} else {
+	$sql_where = " t.moderator_id=0 and t.status<>'closed'";
+}
 
 $newtickets=$db->GetAll(
 	"select t.*,suggester.realname as suggester,submitter.realname as submitter, i.title
@@ -54,7 +69,7 @@ $newtickets=$db->GetAll(
 	inner join user as submitter on (submitter.user_id=i.user_id)
 	left join gridimage_moderation_lock as l
 		on(i.gridimage_id=l.gridimage_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) )
-	where t.moderator_id=0 and t.status<>'closed'
+	where $sql_where
 		and (l.gridimage_id is null OR 
 				(l.user_id = {$USER->user_id} AND lock_type = 'modding') OR
 				(l.user_id != {$USER->user_id} AND lock_type = 'cantmod')
