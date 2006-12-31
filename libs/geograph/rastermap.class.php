@@ -415,7 +415,7 @@ class RasterMap
 		if (strlen($CONF['imagemagick_path'])) {
 			$tilelist = array();
 			$c = 0;
-			$found = 1;
+			$found = 0;
 			foreach(range(	$nort+1000 ,
 							$nort-1000 ,
 							-1000 ) as $n) {
@@ -426,11 +426,11 @@ class RasterMap
 					
 					if (file_exists($newpath)) {
 						$tilelist[] = $newpath;
+						$found = 1;
 					} else {
-						$tilelist[] = 'null:';
+						$tilelist[] = $CONF['os50kimgpath']."blank{$this->tilewidth}.png";
 						if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 							print "$newpath not found<br/>\n";
-						$found = 0;
 					}
 					$c++;
 				}
