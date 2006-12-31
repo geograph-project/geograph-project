@@ -43,11 +43,11 @@ GBGridLetters[8] = ["TY", "TT", "TO", "TJ", "TD", "OY", "OT", "OO", "OJ", "OD", 
 GBGridLetters[9] = ["TZ", "TU", "TP", "TK", "TE", "OZ", "OU", "OP", "OK", "OE", "JZ", "JU", "JP", "JK", "JE"];
 
 //if (mapb > 100) {
-	grlen = 3;
-	mult = 100;
+//	grlen = 3;
+//	mult = 100;
 //} else if (mapb > 50) {
-//	grlen = 4;
-//	mult = 10;
+	grlen = 4;
+	mult = 10;
 //} else {
 //	grlen = 5;
 //	mult = 1;
