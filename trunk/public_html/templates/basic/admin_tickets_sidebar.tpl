@@ -34,7 +34,7 @@
 <td>{$ticket.submitter}</td>
 </tr>
 <tr bgcolor="{$bgcolor}">
-<td colspan="4">{$ticket.notes}</td>
+<td colspan="4">{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes}</td>
 </tr>
 {/foreach}
 </tbody>

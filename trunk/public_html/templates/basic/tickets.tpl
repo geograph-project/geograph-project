@@ -53,7 +53,7 @@
 <tr bgcolor="{$bgcolor}">
 <td>{$ticket.moderator}</td>
 <td><a href="/editimage.php?id={$ticket.gridimage_id}&amp;alltickets=1">{$ticket.title|default:'Untitled'}</a></td>
-<td>{$ticket.notes}</td>
+<td>{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes}</td>
 <td style="width:150px">{$ticket.updated}</td>
 </tr>
 {/foreach}

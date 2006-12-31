@@ -39,7 +39,7 @@
 <tr bgcolor="{$bgcolor}">
 <td>{$ticket.submitter}</td>
 <td><a href="/editimage.php?id={$ticket.gridimage_id}{if $moderator}&amp;alltickets=1{/if}">{$ticket.title|default:'Untitled'}</a></td>
-<td>{$ticket.notes}</td>
+<td>{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes}</td>
 <td>{$ticket.suggester}</td>
 <td>{$ticket.suggested}</td>
 </tr>

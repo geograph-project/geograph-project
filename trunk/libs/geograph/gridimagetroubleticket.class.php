@@ -449,14 +449,16 @@ class GridImageTroubleTicket
 
 			if ($this->status=="pending")
 			{
+				$ttype = ($this->type == 'minor')?' Minor':'';
+					
 				//email alert to moderators
-				$msg =& $this->_buildEmail("A new change request has been submitted.\n\n".$this->notes);
+				$msg =& $this->_buildEmail("A new$ttype change request has been submitted.\n\n".$this->notes);
 				$this->_sendModeratorMail($msg);
 
 				//if suggester isn't the owner of the image, alert the owner too
 				if ($this->user_id != $img->user_id)
 				{
-					$msg =& $this->_buildEmail("A visitor to the site has suggested changes to this photo submission. ".
+					$msg =& $this->_buildEmail("A visitor to the site has suggested$ttype changes to this photo submission. ".
 						"The changes will be reviewed by site moderators, who may need to contact you ".
 						"if further information is required. If you wish, you can review and comment on these ".
 						"changes by following the links in this message. ");
@@ -473,8 +475,13 @@ class GridImageTroubleTicket
 				//then we should alert them to changes that have been made
 				if ($this->user_id != $img->user_id)
 				{
-					$comment="A site moderator has just modified this photo submission. ".
-						"You can review these changes by following the links in this message. ";
+					if ($this->type == 'minor') {
+						$comment="A site moderator has made minor modifications to this photo submission. ".
+							"You can review these changes by following the links in this message. ";
+					} else {
+						$comment="A site moderator has just modified this photo submission. ".
+							"You can review these changes by following the links in this message. ";
+					}
 					if (strlen($this->notes))
 						$comment.="\n\nModerator Comment: {$this->notes}";
 						
@@ -540,8 +547,8 @@ class GridImageTroubleTicket
 		
 		$image=& $this->_getImage();
 		
-		
-		$msg['subject']="[Geograph] Changes to {$image->grid_reference} {$image->title} [#{$this->gridimage_ticket_id}]";
+		$ttype = ($this->type == 'minor')?' Minor':'';
+		$msg['subject']="[Geograph]$ttype Changes to {$image->grid_reference} {$image->title} [#{$this->gridimage_ticket_id}]";
 		
 		$msg['body']="Re: {$image->grid_reference} {$image->title}\n";
 		$msg['body'].="http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$this->gridimage_id}\n";
