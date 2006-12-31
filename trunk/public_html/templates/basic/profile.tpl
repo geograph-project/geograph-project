@@ -140,7 +140,6 @@
 		<p>Showing the latest {$limit} images, see <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=text&amp;resultsperpage=100">More</a></p>
 	{/if}
 
-{/if} 
 
 <h3 style="margin-bottom:0px">Explore My Images</h3>
 
@@ -158,6 +157,7 @@
 	
 	{/if}{/dynamic}
 </ul>
+{/if} 
 
 
 <div align="right"><a href="#top">Back to Top</a></div>
