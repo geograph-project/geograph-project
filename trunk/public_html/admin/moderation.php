@@ -213,8 +213,11 @@ if (isset($_GET['moderator'])) {
 		$sql_columns = ", new_status,moderation_log.user_id as ml_user_id,v.realname as ml_realname";
 		$sql_from = " inner join moderation_log on(moderation_log.gridimage_id=gi.gridimage_id)
 					inner join user v on(moderation_log.user_id=v.user_id)";
-		
-		$sql_where = "(moderation_log.user_id = $mid or gi.moderator_id = $mid)";
+		if ($mid == 0) {
+			$sql_where = "1";
+		} else {
+			$sql_where = "(moderation_log.user_id = $mid or gi.moderator_id = $mid)";
+		}
 		
 		if ($_GET['verify'] == 2) {
 			$sql_where = "($sql_where and moderation_status != new_status)";
