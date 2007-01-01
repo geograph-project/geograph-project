@@ -230,7 +230,7 @@ class GridImage
 		//if this image doesnt have an exact position then we need to remove 
 		//the move to the center of the square
 		//must be before getNatEastings is called
-		$correction = (!empty(($this->natspecified))?0:500;
+		$correction = (!empty($this->natspecified))?0:500;
 		
 		//we need a special case for centisquare 0,0
 		$gr_len = ($this->nateastings && $this->nateastings%1000 == 0&& $this->natnorthings%1000 == 0)?6:0;
