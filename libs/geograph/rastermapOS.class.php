@@ -54,7 +54,7 @@ class RasterMapOS {
 						if ($_GET['checkTiles']) {
 							$square=new GridSquare;
 							$grid_ok=$square->setByFullGridRef($tile);
-							if ($square->reference_index) {
+							if (!$square->reference_index) {
 								print "BROKEN: $tile<BR>";
 					
 								if ($done[$tile]) {
