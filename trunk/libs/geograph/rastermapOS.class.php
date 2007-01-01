@@ -51,37 +51,92 @@ class RasterMapOS {
 						}
 						print "TILE=$tile<BR>";
 						$r = true;
-						if ($_GET['processTile']) {
-							$this->processTile($tile,100,100);
-							$this->processTile($tile,300,100);
-							$this->processTile($tile,300,300);
-							$r = $this->processTile($tile,100,300);
-						}
-					
-						if ($_GET['processSingleTile'])
-							$r = $this->processSingleTile($tile,$_GET['processSingleTile']);
-						
 						if ($_GET['checkTiles']) {
 							$square=new GridSquare;
 							$grid_ok=$square->setByFullGridRef($tile);
-							if (!$square->reference_index) {
+							if ($square->reference_index) {
 								print "BROKEN: $tile<BR>";
+					
+								if ($done[$tile]) {
+									print "DONE: $tile<BR>";
+								} else {
+									if ($_GET['processTile']) {
+										$this->processTile($tile,100,100);
+										$this->processTile($tile,300,100);
+										$this->processTile($tile,300,300);
+										$r = $this->processTile($tile,100,300);
+									}
+
+									if ($_GET['processSingleTile'])
+										$r = $this->processSingleTile($tile,$_GET['processSingleTile']);
+									$done[$tile] = 1;
+								}
 								
 								foreach (array(200,300) as $delta) {
 									$s=new GridSquare;
 									$s->loadFromPosition($square->x+$delta, $square->y,false);
+									if (!$s->reference_index) {
+										print "WELL: {$s->errormsg}<BR>";
+										
+										require_once('geograph/conversions.class.php');
+										$conv = new Conversions;
+										
+										list($e,$n,$reference_index) = $conv->internal_to_national($square->x+$delta,$square->y,1);
+										
+										list($gr,$len) =  $conv->national_to_gridref($e,$n,4,1);
+										print ">> $gr<BR>";
+										$s->setByFullGridRef($gr);
+										$s->reference_index = 1;
+									} 
 									
-									$ll = $s->gridsquare;
-									$le = $s->eastings;
-									$ln = $s->northings;							
-							
-									$te = floor($le / TIFF_KMW) * TIFF_KMW_BY10;
-									$tn = floor($ln / TIFF_KMW) * TIFF_KMW_BY10;
-							
-									$tile = sprintf("%s%01d%01d",$ll,$te,$tn);
-									print "TOFIX: $tile<BR>";
+									if ($s->reference_index) {
+										$ll = $s->gridsquare;
+										$le = $s->eastings;
+										$ln = $s->northings;							
+
+										$te = floor($le / TIFF_KMW) * TIFF_KMW_BY10;
+										$tn = floor($ln / TIFF_KMW) * TIFF_KMW_BY10;
+
+										$tile = sprintf("%s%01d%01d",$ll,$te,$tn);
+										print "FIX?: $tile<BR>";
+
+										$path = $this->getOSGBTilePath('',$tile);
+										if (file_exists($path)) {
+											print "TOFIX: $tile<BR>";
+											
+											if ($done[$tile]) {
+												print "DONE: $tile<BR>";
+											} else {
+												$r = true;
+												if ($_GET['processTile']) {
+													$this->processTile($tile,100,100);
+													$this->processTile($tile,300,100);
+													$this->processTile($tile,300,300);
+													$r = $this->processTile($tile,100,300);
+												}
+
+												if ($_GET['processSingleTile'])
+													$r = $this->processSingleTile($tile,$_GET['processSingleTile']);
+												$done[$tile] = 1;
+											}
+
+										} else {
+											print "NONE: $tile<BR>";
+										}
+									}
+									
 								}
 							}
+						} else {
+							if ($_GET['processTile']) {
+								$this->processTile($tile,100,100);
+								$this->processTile($tile,300,100);
+								$this->processTile($tile,300,300);
+								$r = $this->processTile($tile,100,300);
+							}
+
+							if ($_GET['processSingleTile'])
+								$r = $this->processSingleTile($tile,$_GET['processSingleTile']);
 						}
 						
 						if ($r)
@@ -452,6 +507,8 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 
 	function getOSGBTilePath($ll,$tile) {
 		global $CONF;
+		if (!$ll) 
+			$ll = substr($tile,0,2);
 		return $CONF['os50ktilepath'].$ll.'/'.$tile.'.TIF';
 	}
 
