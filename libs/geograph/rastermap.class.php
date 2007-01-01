@@ -80,17 +80,15 @@ class RasterMap
 			$this->width = 250;
 
 			if ($square->reference_index == 1) {
-				$this->enabled = true;
-				if (in_array('OS50k',$services)) {
+				if (in_array('OS50k',$services) && $this->getOS50kMapPath(false)) {
+					$this->enabled = true;
 					$this->service = 'OS50k';
 					
-				#	//temp solution, to not show map if dont have it generated
-				#	if (!$this->getOS50kMapPath(false))
-				#		$this->enabled = false;
 					if ($this->issubmit && in_array('VoB',$services)) {
 						$this->service2 = 'VoB';
 					}
-				} elseif(in_array('VoB',$services)) {
+				} elseif($this->issubmit && in_array('VoB',$services)) {
+					$this->enabled = true;
 					$this->service = 'VoB';
 				} 
 			} elseif(($this->exactPosition || in_array('Grid',$services)) && in_array('Google',$services)) {
