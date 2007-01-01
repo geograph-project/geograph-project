@@ -9,7 +9,7 @@
 
 <div>This instant map updater requires no screen refresh to work - simply
 check the OS Map/Google Earth and vote on the land percentage{if $tofix} and a new square will
-be opened up for processing{/if}.</div>
+be opened up for processing{/if}. Note: When the square is substantial Mud-flats, please halve the estimate.</div>
 
 <span id="landvote" style="display:none">
 Land percent for <span id="voteref"></span>&nbsp; is 
