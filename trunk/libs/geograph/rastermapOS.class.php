@@ -81,6 +81,9 @@ class RasterMapOS {
 
 		$grid_ok=$square->setByFullGridRef($tile);
 
+$square->reference_index = 1; #if that x5x5 square is at sea then our detection fails!
+
+
 		$ll = $square->gridsquare;
 		
 		$this->width = 250;
@@ -122,6 +125,9 @@ class RasterMapOS {
 		if (!$square->setByFullGridRef($gr)) {
 			return false;
 		}
+
+$square->reference_index = 1; #if that x5x5 square is at sea then our detection fails!
+
 
 		$ll = $square->gridsquare;
 		
@@ -192,6 +198,8 @@ class RasterMapOS {
 		$square=new GridSquare;
 
 		$grid_ok=$square->setByFullGridRef($tile);
+
+$square->reference_index = 1; #if that x5x5 square is at sea then our detection fails!
 
 		$ll = $square->gridsquare;
 		
@@ -276,6 +284,8 @@ class RasterMapOS {
 		$square=new GridSquare;
 
 		$grid_ok=$square->setByFullGridRef($tile);
+
+$square->reference_index = 1; #if that x5x5 square is at sea then our detection fails!
 
 		$ll = $square->gridsquare;
 		
@@ -362,6 +372,9 @@ class RasterMapOS {
 		$square=new GridSquare;
 
 		$grid_ok=$square->setByFullGridRef($gr);
+
+$square->reference_index = 1; #if that x5x5 square is at sea then our detection fails!
+
 
 		$gr = $square->grid_reference;
 		$ll = $square->gridsquare;
