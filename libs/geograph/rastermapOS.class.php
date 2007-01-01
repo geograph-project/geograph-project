@@ -61,6 +61,29 @@ class RasterMapOS {
 						if ($_GET['processSingleTile'])
 							$r = $this->processSingleTile($tile,$_GET['processSingleTile']);
 						
+						if ($_GET['checkTiles']) {
+							$square=new GridSquare;
+							$grid_ok=$square->setByFullGridRef($tile);
+							if (!$square->reference_index) {
+								print "BROKEN: $tile<BR>";
+								
+								foreach (array(200,300) as $delta) {
+									$s=new GridSquare;
+									$s->loadFromPosition($square->x+$delta, $square->y,false);
+									
+									$ll = $s->gridsquare;
+									$le = $s->eastings;
+									$ln = $s->northings;							
+							
+									$te = floor($le / TIFF_KMW) * TIFF_KMW_BY10;
+									$tn = floor($ln / TIFF_KMW) * TIFF_KMW_BY10;
+							
+									$tile = sprintf("%s%01d%01d",$ll,$te,$tn);
+									print "TOFIX: $tile<BR>";
+								}
+							}
+						}
+						
 						if ($r)
 							$c++;
 						if ($c > $limit) {
