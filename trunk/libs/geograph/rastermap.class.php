@@ -68,7 +68,7 @@ class RasterMap
 		if (!empty($square) && isset($square->grid_reference)) {
 			$this->square &= $square;
 			
-			$this->exactPosition = $useExact && ($square->nateastings>0);
+			$this->exactPosition = $useExact && !empty($square->natspecified);
 			
 			//just in case we passed an exact location
 			$this->nateastings = $square->getNatEastings();
