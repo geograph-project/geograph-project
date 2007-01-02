@@ -76,13 +76,11 @@ function smarty_function_articletext($input) {
 
 	$output = preg_replace('/\[img=([^\]]+)\]/',"<img src=\"\$1\"/>",$output);
 
-
 	$output = preg_replace('/(-{7,})\n(.*?)(-{7,})/es',"article_make_table('\$2')",$output);
 
-
 	$output = str_replace(
-		array('[b]','[/b]','[big]','[/big]','[i]','[/i]','[h2]','[/h2]','[h3]','[/h3]'),
-		array('<b>','</b>','<big>','</big>','<i>','</i>','<h3>','</h3>','<h4>','</h4>'),
+		array('[b]','[/b]','[big]','[/big]','[i]','[/i]','[h2]','[/h2]','[h3]','[/h3]','[h4]','[/h4]'),
+		array('<b>','</b>','<big>','</big>','<i>','</i>','<h2>','</h2>','<h3>','</h3>','<h4>','</h4>'),
 		$output);
 		
 	$output = preg_replace('/\n\* ([^\n]+)/','<ul style="margin-bottom:0px;margin-top:0px"><li>$1</li></ul>',$output);
