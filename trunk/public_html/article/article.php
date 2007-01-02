@@ -89,7 +89,7 @@ function smarty_function_articletext($input) {
 	
 	$output = preg_replace('/\[img=([^\]]+)\]/',"<img src=\"\$1\"/>",$output);
 
-	return output;
+	return $output;
 }
 
 $smarty->register_modifier("articletext", "smarty_function_articletext");
