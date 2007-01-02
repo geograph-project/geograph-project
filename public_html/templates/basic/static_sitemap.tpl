@@ -146,7 +146,16 @@
 
 <ul>
 	<li><a href="http://geograph.sf.net/">Developers Homepage</a></li>
-	<li>Developer Barry Hunter's <i>unoffical</i> <a href="http://www.nearby.org.uk/geograph/">GeographTools</a> extensions</li>
+</ul>
+
+<h3>Developers...</h3>
+
+<ul>
+	<li>Paul Dixon's {external href="http://blog.dixo.net/category/geograph/" text="Blog" title="read Geograph related posts on Pauls blog"}</li>
+	<li>Barry Hunters {external href="http://www.nearby.org.uk/blog/category/geograph/" text="Blog" title="read Geograph related posts on Barrys blog"}, and <i>unoffical</i> {external href="http://www.nearby.org.uk/geograph/" text="GeographTools"} extensions</li>
+	<li>David Morris's {external href="http://www.brassedoff.net/wp/index.php?s=geograph" text="Blog" title="read Geograph related posts on Davids blog"}</li>
+	
+	
 </ul>
 
     
