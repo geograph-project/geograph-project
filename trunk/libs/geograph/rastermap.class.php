@@ -80,7 +80,7 @@ class RasterMap
 			$this->width = 250;
 
 			if ($square->reference_index == 1) {
-				if (in_array('OS50k',$services) && ($this->getOS50kMapPath(false))) {
+				if (in_array('OS50k',$services)) {
 					$this->enabled = true;
 					$this->service = 'OS50k';
 					
