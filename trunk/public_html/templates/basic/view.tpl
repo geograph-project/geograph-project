@@ -316,6 +316,7 @@ WGS84: {$latdm} {$longdm}
 {if $rastermap->enabled}
 	{$rastermap->getFooterTag()}
 {/if}
+{else}
 <h2>Sorry, image not available</h2>
 <p>The image you requested is not available. This maybe due to software error, or possibly because
 the image was rejected after submission - please <a title="Contact Us" href="/contact.php">contact us</a>
