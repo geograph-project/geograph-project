@@ -44,7 +44,7 @@ if ($isadmin) {
 		$db->Execute($sql);
 
 		//and back it up
-		$sql = "INSERT INTO article_revisions SELECT *,NULL,{$USER->user_id} FROM article WHERE article_id = ".$db->Quote($_REQUEST['article_id']);
+		$sql = "INSERT INTO article_revisions SELECT *,NULL,{$USER->user_id} FROM article WHERE url = ".$db->Quote($_GET['page']);
 		$db->Execute($sql);
 		
 		$smarty->clear_cache($template, $cacheid);
