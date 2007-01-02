@@ -233,7 +233,7 @@ class GridImage
 		$correction = (!empty($this->natspecified))?0:500;
 		
 		//we need a special case for centisquare 0,0
-		$gr_len = ($this->nateastings && $this->nateastings%1000 == 0&& $this->natnorthings%1000 == 0)?6:0;
+		$gr_len = ($this->natspecified && $this->nateastings%1000 == 0&& $this->natnorthings%1000 == 0)?6:0;
 
 		list($gr,$len) = $conv->national_to_gridref(
 			$this->grid_square->getNatEastings()-$correction,
