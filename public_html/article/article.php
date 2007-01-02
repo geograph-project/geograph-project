@@ -74,8 +74,6 @@ function article_make_table($input) {
 function smarty_function_articletext($input) {
 	$output = preg_replace('/\{image id=(\d+) text=([^\}]+)\}/e',"smarty_function_gridimage(array(id => '\$1',extra => '\$2'))",str_replace("\r",'',$input));
 
-	$output = preg_replace('/\[img=([^\]]+)\]/',"<img src=\"\$1\"/>",$output);
-
 	$output = preg_replace('/(-{7,})\n(.*?)(-{7,})/es',"article_make_table('\$2')",$output);
 
 	$output = str_replace(
@@ -87,7 +85,11 @@ function smarty_function_articletext($input) {
 		
 	$output = preg_replace("/\n\n/",'<br/><br/>',$output);
 	
-	return GeographLinks($output,true);
+	$output = GeographLinks($output,true);
+	
+	$output = preg_replace('/\[img=([^\]]+)\]/',"<img src=\"\$1\"/>",$output);
+
+	return output;
 }
 
 $smarty->register_modifier("articletext", "smarty_function_articletext");

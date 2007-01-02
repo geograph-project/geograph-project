@@ -35,7 +35,7 @@ $isadmin=$USER->hasPerm('moderator')?1:0;
 $smarty->assign_by_ref('isadmin', $isadmin);
 
 if ($isadmin) {
-	if (!empty($_GET['page']) && !preg_match('/[^\w-\.]/',$_GET['page'])) {
+	if (!empty($_GET['page']) && !preg_match('/[^\w-]/',$_GET['page'])) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		
 		$a = intval($_GET['approve']);	
