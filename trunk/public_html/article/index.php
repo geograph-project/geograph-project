@@ -27,6 +27,7 @@ init_session();
 $smarty = new GeographPage;
 
 $template = 'article.tpl';
+$smarty->caching = 0; //dont cache!
 
 $cacheid = $USER->hasPerm('basic')?$USER->user_id:0;
 
