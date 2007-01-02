@@ -292,7 +292,7 @@ foreach ($images->images as $i => $image) {
 		$images->images[$i]->distance = sprintf("%0.2f",
 			sqrt(pow($images->images[$i]->grid_square->nateastings-$images->images[$i]->viewpoint_eastings,2)+pow($images->images[$i]->grid_square->natnorthings-$images->images[$i]->viewpoint_northings,2))/1000);
 		
-		if (intval($images->images[$i]->grid_square->nateastings/1000) != intval($images->images[$i]->viewpoint_easting/1000)
+		if (intval($images->images[$i]->grid_square->nateastings/1000) != intval($images->images[$i]->viewpoint_eastings/1000)
 			&& intval($images->images[$i]->grid_square->natnorthings/1000) != intval($images->images[$i]->viewpoint_northings/1000))
 			$images->images[$i]->different_square_true = true;
 		
