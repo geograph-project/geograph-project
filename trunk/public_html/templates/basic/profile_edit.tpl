@@ -237,10 +237,18 @@
 			(already done)
 		{/if}
 
-		<div class="fieldnotes">If you have an interest in helping out with moderation, then click the button above and follow the prompts.</div>  
+		<div class="fieldnotes">If you have an interest in helping out with moderation, then click the button above to try a dummy moderation run. There is no commitment to complete the whole application.</div>  
 	{/if}
 </div>
+	
+{if strpos($profile->rights,'ticketmod') > 0}
+<div class="field"> 
+  
+	<label for="moderator" class="nowrap">Tickets</label>
+		<input type="button" value="Relinqush ticket moderator rights" onclick="location.href = '/admin/tickets.php?relinqush=1';"/>
 
+</div>
+{/if}
 
 </fieldset>
 
