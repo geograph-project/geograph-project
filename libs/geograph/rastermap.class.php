@@ -150,7 +150,7 @@ class RasterMap
 						
 			$str = "<div style=\"position:relative;height:".($width+$extra)."px;width:{$this->width}px;\">";
 
-			$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" width=\"$width\" height=\"$width\" border=\"1\" name=\"tile\" alt=\"$title\"/></div>";
+			$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" style=\"width:{$width}px;height:{$width}px\" border=\"1\" name=\"tile\" alt=\"$title\"/></div>";
 
 			if ($this->issubmit)
 				$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px; font-size:0.8em;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&lt;- Drag to mark photographer position.</small></div>";
@@ -211,15 +211,14 @@ class RasterMap
 				$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;".((($this->exactPosition)?'':'display:none'))."\" id=\"marker1\"><img src=\"/templates/basic/img/circle.png\" alt=\"+\" width=\"29\" height=\"29\"/></div>";
 			}
 
-			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" width=\"$width\" height=\"".($width+$extra)."\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/></div>";
+			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/></div>";
 
 			$str .= "</div>";
 			
 			if ($this->service2) {
 				return "$str
 				<br/>
-				<div id=\"mapSwitcherOS50k\" style=\"font-size:0.8em\" class=\"interestBox\">Switch to <a href=\"javascript:switchTo(2);\">Historic Map</a></div>
-				<div id=\"mapSwitcherVoB\" style=\"display:none; font-size:0.8em\" class=\"interestBox\">Switch to <a href=\"javascript:switchTo(1);\">Modern Map</a></div>
+				<div class=\"interestBox\" style=\"font-size:0.8em\">Switch to <a href=\"javascript:switchTo(2);\"  id=\"mapSwitcherOS50k\">Historic Map</a><a href=\"javascript:switchTo(1);\" id=\"mapSwitcherVoB\" style=\"display:none\">Modern Map</a>, <small>create <span id=\"fig6\"><a href=\"javascript:useGR(6);\">6</a>/<b>8</b></span><span id=\"fig8\" style=\"display:none\"><b>6</b>/<a href=\"javascript:useGR(8);\">8</a></span> figure grid references</small></div>
 				<script type=\"text/javascript\">
 				function switchTo(too) {
 					showOS50k = (too == 1)?'':'none';
@@ -240,6 +239,20 @@ class RasterMap
 						document.images['tile'].src = '/img/blank.gif';
 						document.images['tile'].src = '$mapurl2';
 						document.images['map'].title = '$title2';
+					}
+				}
+				
+				function useGR(too) {
+					if (too == 8) {
+						void(grlen = 4);
+						void(mult = 10);
+						document.getElementById('fig6').style.display = '';
+						document.getElementById('fig8').style.display = 'none';
+					} else {
+						void(grlen = 3);
+						void(mult = 100);
+						document.getElementById('fig6').style.display = 'none';
+						document.getElementById('fig8').style.display = '';
 					}
 				}
 				

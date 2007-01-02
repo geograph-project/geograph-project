@@ -102,7 +102,7 @@ if (!empty($_GET['relinqush'])) {
 	//reload the user object
 	$_SESSION['user'] =& new GeographUser($USER->user_id);
 	
-	header("Location: /profile.php");
+	header("Location: /profile.php?edit=1");
 
 } elseif (!empty($_GET['apply'])) {
 	$USER->mustHavePerm('basic');

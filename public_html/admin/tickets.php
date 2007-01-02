@@ -31,6 +31,16 @@ $smarty = new GeographPage;
 
 $db = NewADOConnection($GLOBALS['DSN']);
 
+if (!empty($_GET['relinqush'])) {
+	$db->Execute("UPDATE user SET rights = REPLACE(rights,'ticketmod','') WHERE user_id = {$USER->user_id}");
+	
+	//reload the user object
+	$_SESSION['user'] =& new GeographUser($USER->user_id);
+	
+	header("Location: /profile.php?edit=1");
+
+} 
+
 #############################
 
 $db->Execute("LOCK TABLES 
