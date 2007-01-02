@@ -242,6 +242,14 @@ if (isset($_REQUEST['id']))
 		//let's find posts in the gridref discussion forum
 		$image->grid_square->assignDiscussionToSmarty($smarty);
 
+		require_once('geograph/rastermap.class.php');
+
+		$rastermap = new RasterMap($image->grid_square,true);
+		if (!empty($image->viewpoint_northings)) {
+			$rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings);
+		}
+		$smarty->assign_by_ref('rastermap', $rastermap);
+
 		//build a list of view directions
 		require_once('geograph/searchengine.class.php');
 		$search = new SearchEngine('');

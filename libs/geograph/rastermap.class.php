@@ -369,13 +369,13 @@ class RasterMap
 
 	function getTitle($gridref) 
 	{
-		return "<span id=\"mapTitleOS50k\"".($this->service == 'OS50k'?'':' style="display:none"').">1:50,000 Modern Day Landranger&trade; Map".(($this->issubmit)?"<br/><br/>":'')."</span>".
+		return "<span id=\"mapTitleOS50k\"".($this->service == 'OS50k'?'':' style="display:none"').">1:50,000 Modern Day Landranger&trade; Map<span style=\"font-size:0.8em;color:red\"><br/>OS Maps are still in testing, please visit forum for more info.</span></span>".
 		"<span id=\"mapTitleVoB\"".($this->service == 'VoB'?'':' style="display:none"').">1940s OS New Popular Edition".(($this->issubmit)?"<span style=\"font-size:0.8em;color:red\"><br/><b>Please confirm positions on the modern map, as accuracy may be limited.</b></span>":'')."</span>";
 	}
 
 	function getFootNote() 
 	{
-		return "<span id=\"mapFootNoteOS50k\"".($this->service == 'OS50k'?'':' style="display:none"')."><br/>OS Maps are still in testing, some maps might display incorrectly, please visit forum for more info.</span>".
+		return "<span id=\"mapFootNoteOS50k\"".($this->service == 'OS50k'?'':' style="display:none"')."><br/>OS Maps are still in testing, please visit forum for more info.</span>".
 		"<span id=\"mapFootNoteVoB\"".($this->service == 'VoB'?'':' style="display:none"')."><br/>Historical Map provided by <a href=\"http://www.visionofbritain.org.uk/\" title=\"Vision of Britain\">VisionOfBritain.org.uk</a></span>";
 	}
 

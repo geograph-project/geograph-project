@@ -36,12 +36,12 @@ geographing</a> first.</p>
 	<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, if you wish you can specify a photographer location in the next step.</p>
 
 	
-	<p><label for="gridreference">Enter an exact grid reference 
+	<p><label for="grid_reference">Enter an exact grid reference 
 	(<u title="e.g. TQ4364 or TQ 43 64">4</u>,
 	<u title="e.g. TQ435646 or TQ 435 646">6</u>,
 	<u title="e.g. TQ43526467 or TQ 4352 6467">8</u> or 
 	<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure) for the picture subject</label><br />
-	<input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="14"/>
+	<input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14"/>
 	<input type="submit" name="setpos" value="Next &gt;"/><br/>
 	</p>
 		
@@ -90,7 +90,7 @@ geographing</a> first.</p>
 	
 {/if}
 {if $step > 2}
-	<input type="hidden" name="gridreference" value="{$gridreference|escape:'html'}">
+	<input type="hidden" name="grid_reference" value="{$grid_reference|escape:'html'}">
 {/if}
 
 {if $step eq 2}
@@ -117,15 +117,15 @@ geographing</a> first.</p>
 		{if $error}<br /><p style="color:#990000;font-weight:bold;">{$error}</p>{/if}
 		<br />
 		<p>You might like to check you've selected the correct square<br/> by
-		viewing the Modern {getamap gridref="document.theForm.gridreference.value" text="OS Get-a-map&trade;"}</p>
+		viewing the Modern {getamap gridref="document.theForm.grid_reference.value" text="OS Get-a-map&trade;"}</p>
 
 		{if $reference_index == 2} 
 		{external href="http://www.multimap.com/p/browse.cgi?scale=25000&lon=`$long`&lat=`$lat`&GridE=`$long`&GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
 		{/if}
 		
-		<p><b>Grid References:</b> (recommended)<br/><br/><label for="gridreference">Primary Photo Subject</label> <input id="gridreference" type="text" name="gridreference" value="{$gridreference|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/crosshairs.gif" alt="Marks the Subject" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/> <a href="javascript:void(document.theForm.viewpoint_gridreference.value = document.theForm.gridreference.value);void(updateMapMarker(document.theForm.viewpoint_gridreference,false));" style="font-size:0.8em">Duplicate</a></p>
+		<p><b>Grid References:</b> (recommended)<br/><br/><label for="grid_reference">Primary Photo Subject</label> <input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/crosshairs.gif" alt="Marks the Subject" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/> <a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Duplicate</a></p>
 	
-		<p><label for="viewpoint_gridreference">Photographer Position</label> <input id="viewpoint_gridreference" type="text" name="viewpoint_gridreference" value="{$viewpoint_gridreference|escape:'html'}" size="14"  onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/camera.gif" alt="Marks the Photographer" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/><br/><small>Blank assumes very close to the subject</small></p>
+		<p><label for="photographer_gridref">Photographer Position</label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14"  onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/camera.gif" alt="Marks the Photographer" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/><br/><small>Blank assumes very close to the subject</small></p>
 		
 		<p><label for="view_direction">View Direction</label> <small>(photographer facing)</small><br/>
 		<select id="view_direction" name="view_direction" style="font-family:monospace">
@@ -147,8 +147,8 @@ geographing</a> first.</p>
 			{literal}
 			<script type="text/javascript">
 				window.onload = function () {
-					updateMapMarker(document.theForm.gridreference,false);
-					updateMapMarker(document.theForm.viewpoint_gridreference,false);
+					updateMapMarker(document.theForm.grid_reference,false);
+					updateMapMarker(document.theForm.photographer_gridref,false);
 				}
 			</script>
 			{/literal}
@@ -188,7 +188,7 @@ geographing</a> first.</p>
 	
 	{/if}	
 {else}
-	<input type="hidden" name="viewpoint_gridreference" value="{$viewpoint_gridreference|escape:'html'}">
+	<input type="hidden" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}">
 	<input type="hidden" name="view_direction" value="{$view_direction|escape:'html'}">
 
 {/if}
