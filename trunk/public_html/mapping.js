@@ -70,12 +70,12 @@ var northings2 = 0;
 function overlayMouseUp(e) {
 	if (currentelement != null) {
 		if (currentelement.id == 'marker1') {
-			if (document.theForm.gridreference.value == "") {
+			if (document.theForm.grid_reference.value == "") {
 				currentelement.style.left = w2+'px';
 				currentelement.style.top = h2+'px';
 			}
 		} else if (currentelement.id == 'marker2') {
-			if (document.theForm.viewpoint_gridreference.value == "") {
+			if (document.theForm.photographer_gridref.value == "") {
 				currentelement.style.left = 5+'px';
 				currentelement.style.top = (maph + 5)+'px';
 			}
@@ -171,11 +171,11 @@ function overlayMouseMove(e) {
 	if (tempY > maph) {
 		if (currentelement != null) {
 			if (currentelement.id == 'marker1') {
-				if (document.theForm.gridreference)
-					document.theForm.gridreference.value = "";
+				if (document.theForm.grid_reference)
+					document.theForm.grid_reference.value = "";
 			} else if (currentelement.id == 'marker2') {
-				if (document.theForm.viewpoint_gridreference)
-					document.theForm.viewpoint_gridreference.value = "";
+				if (document.theForm.photographer_gridref)
+					document.theForm.photographer_gridref.value = "";
 			}
 		}
 		document.images['map'].alt = "";
@@ -201,11 +201,11 @@ function overlayMouseMove(e) {
 			if (currentelement.id == 'marker1') {
 				eastings1 = 0;
 				northings1 = 0;
-				document.theForm.gridreference.value = "-Invalid-";
+				document.theForm.grid_reference.value = "-Invalid-";
 			} else if (currentelement.id == 'marker2') {
 				eastings2 = 0;
 				northings2 = 0;
-				document.theForm.viewpoint_gridreference.value = "-Invalid-";
+				document.theForm.photographer_gridref.value = "-Invalid-";
 			}
 		}
 		document.images['map'].alt = "-Invalid Grid Ref-"
@@ -215,11 +215,11 @@ function overlayMouseMove(e) {
 			if (currentelement.id == 'marker1') {
 				eastings1 = easting;
 				northings1 = northing;
-				document.theForm.gridreference.value = grstr;
+				document.theForm.grid_reference.value = grstr;
 			} else if (currentelement.id == 'marker2') {
 				eastings2 = easting;
 				northings2 = northing;
-				document.theForm.viewpoint_gridreference.value = grstr;
+				document.theForm.photographer_gridref.value = grstr;
 			} 
 		}
 		document.images['map'].alt = grstr;
@@ -230,9 +230,9 @@ function overlayMouseMove(e) {
 }
 
 function checkGridReferences(that_form) {
-	if (!checkGridReference(that_form.gridreference,true)) 
+	if (!checkGridReference(that_form.grid_reference,true)) 
 		return false;
-	if (!checkGridReference(that_form.viewpoint_gridreference,true)) 
+	if (!checkGridReference(that_form.photographer_gridref,true)) 
 		return false;
 	return true;
 
@@ -253,7 +253,7 @@ function checkGridReference(that,showmessage) {
 		}
 	}
 	if (ok == false && showmessage) {
-		if (that.name == 'gridreference') {
+		if (that.name == 'grid_reference') {
 			alert("please enter a valid subject grid reference");
 		} else {
 			alert("please enter a valid photographer grid reference");
@@ -273,7 +273,7 @@ function updateMapMarker(that,showmessage) {
 	}
 
 	if (document.getElementById) {
-		if (that.name == 'viewpoint_gridreference') {
+		if (that.name == 'photographer_gridref') {
 			currentelement = document.getElementById('marker2');
 		} else {
 			currentelement = document.getElementById('marker1');

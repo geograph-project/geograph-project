@@ -57,8 +57,8 @@ if ($step == 1) {
 //grid reference posted...
 if (isset($_POST['gridsquare']))
 {
-	if (isset($_POST['viewpoint_gridreference']))
-		$smarty->assign('viewpoint_gridreference', $_POST['viewpoint_gridreference']);
+	if (isset($_POST['photographer_gridref']))
+		$smarty->assign('photographer_gridref', $_POST['photographer_gridref']);
 	if (isset($_POST['view_direction']) && strlen($_POST['view_direction'])) {
 		$smarty->assign('view_direction', $_POST['view_direction']);
 	} else {
@@ -67,12 +67,12 @@ if (isset($_POST['gridsquare']))
 		
 
 	//ensure the submitted reference is valid
-	if (!empty($_POST['gridreference'])) 
+	if (!empty($_POST['grid_reference'])) 
 	{
-		$ok= $square->setByFullGridRef($_POST['gridreference']);
+		$ok= $square->setByFullGridRef($_POST['grid_reference']);
 		
 		//preserve inputs in smarty
-		$smarty->assign('gridreference', $_POST['gridreference']);	
+		$smarty->assign('grid_reference', $_POST['grid_reference']);	
 	} 
 	else 
 	{
@@ -80,7 +80,7 @@ if (isset($_POST['gridsquare']))
 		if ($ok)
 		{
 			//preserve inputs in smarty
-			$smarty->assign('gridreference', $square->grid_reference);	
+			$smarty->assign('grid_reference', $square->grid_reference);	
 		}
 	}
 	if ($ok)
@@ -223,7 +223,7 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->setComment(stripslashes($_POST['comment']));
 				$uploadmanager->setTaken(stripslashes($_POST['imagetaken']));
 				$uploadmanager->setClass(stripslashes($_POST['imageclass']));
-				$uploadmanager->setViewpoint(stripslashes($_POST['viewpoint_gridreference']));
+				$uploadmanager->setViewpoint(stripslashes($_POST['photographer_gridref']));
 				$uploadmanager->setDirection(stripslashes($_POST['view_direction']));
 				$uploadmanager->setUserStatus(stripslashes($_POST['user_status']));
 				
@@ -369,11 +369,14 @@ else
 	$smarty->assign('gridsquare', $_SESSION['gridsquare']);
 	$smarty->assign('eastings', $_SESSION['eastings']);
 	$smarty->assign('northings', $_SESSION['northings']);
-	if ($_GET['gridreference']) {
-		$ok= $square->setByFullGridRef($_GET['gridreference']);
+	if (!empty($_GET['gridreference']) && empty($_GET['grid_reference'])) {
+		$_GET['grid_reference'] = $_GET['gridreference'];
+	}
+	if (!empty($_GET['grid_reference'])) {
+		$ok= $square->setByFullGridRef($_GET['grid_reference']);
 		
 		//preserve inputs in smarty
-		$smarty->assign('gridreference', $_GET['gridreference']);	
+		$smarty->assign('grid_reference', $_GET['grid_reference']);	
 	
 		if ($ok) {
 			$smarty->assign('gridsquare', $square->gridsquare);

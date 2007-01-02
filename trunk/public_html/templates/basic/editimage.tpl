@@ -268,7 +268,34 @@
 <h2><span class="formerror">Changes not submitted - check and correct errors below...</span></h2>
 {/if}
 
-<form method="post" action="/editimage.php#form" name="edit{$image->gridimage_id}" onsubmit="this.imageclass.disabled=false">
+	{if $rastermap->enabled}
+		<div class="rastermap" style="float:right;  width:45%;position:relative">
+		
+		<b>{$rastermap->getTitle($gridref)}</b><br/><br/>
+		{$rastermap->getImageTag()}<br/>
+		<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
+		 
+		</div>
+		
+		{$rastermap->getScriptTag()}
+			{literal}
+			<script type="text/javascript">
+				window.onload = function () {
+					updateMapMarker(document.theForm.grid_reference,false);
+					updateMapMarker(document.theForm.photographer_gridref,false);
+					onChangeImageclass();
+				}
+			</script>
+			{/literal}
+		
+	{else} 
+		<script type="text/javascript" src="/mapping.js?v={$javascript_version}"></script>
+	{/if}
+	
+ 		
+
+
+<form method="post" action="/editimage.php#form" name="theForm" onsubmit="this.imageclass.disabled=false">
 <input type="hidden" name="id" value="{$image->gridimage_id}"/>
 
 {if $moderated_count}
@@ -290,14 +317,14 @@
 <p>
 <label for="grid_reference">Subject Grid Reference {if $moderated.grid_reference}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.grid_reference}<span class="formerror">{$error.grid_reference}</span><br/>{/if}
-<input type="text" id="grid_reference" name="grid_reference" size="14" value="{$image->subject_gridref|escape:'html'}"/>
+<input type="text" id="grid_reference" name="grid_reference" size="14" value="{$image->subject_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false)"/>
 {getamap gridref=$image->subject_gridref text="Get-a-map&trade; for `$image->subject_gridref`"}
 </p>
 
 <p>
 <label for="photographer_gridref">Optional Photographer Grid Reference {if $moderated.photographer_gridref}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.photographer_gridref}<span class="formerror">{$error.photographer_gridref}</span><br/>{/if}
-<input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$image->photographer_gridref|escape:'html'}"/>
+<input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$image->photographer_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false)"/>
 {if $image->photographer_gridref}
   {getamap gridref=$image->photographer_gridref text="Get-a-map&trade; for `$image->photographer_gridref`"}
 {else}
@@ -321,16 +348,11 @@
 </p>
 
 
-<p>
-<label for="comment">Edit Comment {if $moderated.comment}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
-{if $error.comment}<span class="formerror">{$error.comment}</span><br/>{/if}
-<textarea id="comment" name="comment" rows="7" cols="80" title="Original: {$image->current_comment|escape:'html'}" spellcheck="true">{$image->comment|escape:'html'}</textarea>
-<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
-to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
-</p>
+
 
 
 <script type="text/javascript" src="/categories.js.php"></script>
+{if !$rastermap->enabled}
 {literal}
 <script type="text/javascript">
 <!--
@@ -340,7 +362,7 @@ window.onload = onChangeImageclass;
 //-->
 </script>
 {/literal}
-
+{/if}
 <p><label for="imageclass">Edit Category {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />	
 	{if $error.imageclass}
 	<span class="formerror">{$error.imageclass}</span><br/>
@@ -378,6 +400,14 @@ window.onload = onChangeImageclass;
 	{html_select_date prefix="imagetaken" time=`$image->imagetaken` reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" day_value_format="%02d" month_value_format="%m" all_extra="disabled"}</p>
 {/if}
 
+
+<p>
+<label for="comment">Edit Image Comment {if $moderated.comment}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
+{if $error.comment}<span class="formerror">{$error.comment}</span><br/>{/if}
+<textarea id="comment" name="comment" rows="7" cols="80" title="Original: {$image->current_comment|escape:'html'}" spellcheck="true">{$image->comment|escape:'html'}</textarea>
+<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
+to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
+</p>
 
 <br/>
 <p>
