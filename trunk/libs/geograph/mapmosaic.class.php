@@ -313,7 +313,7 @@ class GeographMapMosaic
 	* Initialise class from a token
 	* @access public
 	*/
-	function setToken($tokenstr)
+	function setToken($tokenstr,$allowWithoutMosaic = false)
 	{
 		$ok=false;
 		
@@ -325,13 +325,13 @@ class GeographMapMosaic
 				$token->hasValue("w") &&
 				$token->hasValue("h") &&
 				$token->hasValue("s") &&
-				$token->hasValue("f");
+				($allowWithoutMosaic || $token->hasValue("f") );
 			if ($ok)
 			{
 				$this->setOrigin($token->getValue("x"), $token->getValue("y"));
 				$this->setMosaicSize($token->getValue("w"), $token->getValue("h"));
 				$this->setScale($token->getValue("s"));
-				$this->setMosaicFactor($token->getValue("f"));
+				$this->setMosaicFactor(($token->hasValue("f"))?$token->getValue("f"):2);
 				$this->type_or_user = ($token->hasValue("t"))?$token->getValue("t"):0;
 			}
 			else

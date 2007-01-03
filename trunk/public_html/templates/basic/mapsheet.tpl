@@ -98,13 +98,15 @@ div.hl {
 
 <div class="no_print" style="position:absolute;padding:5px;left:11em;top:0.2em;width:1.5em;height:1em;font-size:4em;border:1px solid black;background:#eeeeee;"><div style="font-size:8pt;font-family:Georgia;Arial;text-align:center">
 <b>Navigation</b><br/>
-<a accesskey="W" title="Pan map north (Alt+W)" href="/mapsheet.php?t={$token_north}">North</a>
+<a accesskey="W" title="Pan map north (Alt+W)" href="/mapsheet.php?t={$token_north}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">North</a>
 <br/>
-<a accesskey="A" title="Pan map west (Alt+A)" href="/mapsheet.php?t={$token_west}">West</a>
+<a accesskey="A" title="Pan map west (Alt+A)" href="/mapsheet.php?t={$token_west}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">West</a>
 &middot;
-<a accesskey="D" title="Pan map east (Alt+D)" href="/mapsheet.php?t={$token_east}">East</a>
+<a accesskey="D" title="Pan map east (Alt+D)" href="/mapsheet.php?t={$token_east}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">East</a>
 <br/>
-<a accesskey="X" title="Pan map south (Alt+X)" href="/mapsheet.php?t={$token_south}">South</a>
+<a accesskey="X" title="Pan map south (Alt+X)" href="/mapsheet.php?t={$token_south}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">South</a><br/>
+<br/>
+(<a title="return to the map" href="/mapbrowse.php?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">view map</a>)
 </div></div>
 
 <div style="position:absolute;padding:5px;left:0.2em;top:0.2em;width:10em;height:1em;font-size:4em;border:1px solid black;background:white;">
