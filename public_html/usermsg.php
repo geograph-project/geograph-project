@@ -107,12 +107,26 @@ if (isset($_POST['msg']) && !$throttle)
 		
 		
 		
-		@mail($recipient->email, $subject, $body, "From: $from_name <$from_email>");
-		
+		if (@mail($recipient->email, $subject, $body, "From: $from_name <$from_email>")) 
+		{
 			$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
 		
 		
-		$smarty->assign('sent', 1);
+			$smarty->assign('sent', 1);
+		}
+		else 
+		{
+			@mail($CONF['contact_email'], 
+				'Mail Error Report from '.$_SERVER['HTTP_HOST'],
+				"Original Subject: $subject\n".
+				"Original To: {$recipient->email}\n".
+				"Original From: $from_name <$from_email>\n".
+				"Original Subject:\n\n$body",
+				'From:webserver@'.$_SERVER['HTTP_HOST']);	
+
+
+			$smarty->assign('error', "<a href=\"/contact.php\">Please let us know</a>");
+		}
 	}
 }
 elseif (isset($_POST['init']))
