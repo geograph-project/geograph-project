@@ -10,7 +10,7 @@ $postip=(isset($_GET['postip'])?$_GET['postip']:'');
 $avMods=array();
 foreach($mods as $k=>$v) if(is_array($v)) foreach($v as $vv) if(!in_array($vv,$avMods)) $avMods[]=$vv;
 
-if ($user_id==1 or in_array($user_id,$avMods)) {
+if ($logged_admin==1 or in_array($user_id,$avMods)) {
 $listUsers='';
 $l_usersIPs=$l_usersIPs." ".$postip;
 
