@@ -110,7 +110,7 @@ function internal_to_gridref($x,$y,$gr_length,$reference_index = 0) {
 
 //use:    list($gr,$len) = national_to_gridref($e,$n,$gr_length,$reference_index);
 
-function national_to_gridref($e,$n,$gr_length,$reference_index) {
+function national_to_gridref($e,$n,$gr_length,$reference_index,$spaced = false) {
 	list($x,$y) = $this->national_to_internal($e,$n,$reference_index );
 
 	$db = $this->_getDB();
@@ -135,7 +135,11 @@ function national_to_gridref($e,$n,$gr_length,$reference_index) {
 	
 	$eastings = substr($eastings,0,$len);
 	$northings = substr($northings,0,$len);
-	return array($prefix.$eastings.$northings,$len);
+	if ($spaced) {
+		return array("$prefix $eastings $northings",$len);
+	} else {
+		return array($prefix.$eastings.$northings,$len);
+	}
 }
 
 //use:    list($x,$y) = national_to_internal($e,$n,$reference_index );

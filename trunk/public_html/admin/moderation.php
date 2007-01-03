@@ -288,7 +288,7 @@ $realname = array();
 foreach ($images->images as $i => $image) {
 	if ($image->viewpoint_eastings) {
 		//note $image DOESNT work non php4, must use $images->images[$i]
-		$images->images[$i]->getSubjectGridref();
+		$images->images[$i]->getSubjectGridref(true);
 		$images->images[$i]->distance = sprintf("%0.2f",
 			sqrt(pow($images->images[$i]->grid_square->nateastings-$images->images[$i]->viewpoint_eastings,2)+pow($images->images[$i]->grid_square->natnorthings-$images->images[$i]->viewpoint_northings,2))/1000);
 		

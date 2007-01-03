@@ -181,7 +181,7 @@ class GridImage
 	* Returns grid reference of photographer if available
 	* Data is additionally stored as member data
 	*/
-	function getPhotographerGridref()
+	function getPhotographerGridref($spaced = false)
 	{
 		//already calculated?
 		if (strlen($this->photographer_gridref))	
@@ -197,7 +197,7 @@ class GridImage
 				$this->viewpoint_eastings,
 				$this->viewpoint_northings,
 				0,
-				$this->grid_square->reference_index);
+				$this->grid_square->reference_index,$spaced);
 			
 			$this->photographer_gridref=$posgr;
 			$this->photographer_gridref_precision=pow(10,6-$len)/10;
@@ -206,7 +206,7 @@ class GridImage
 		return $this->photographer_gridref;
 	}
 	
-	function getSubjectGridref()
+	function getSubjectGridref($spaced = false)
 	{
 		//already calculated?
 		if (strlen($this->subject_gridref))	
@@ -239,7 +239,7 @@ class GridImage
 			$this->grid_square->getNatEastings()-$correction,
 			$this->grid_square->getNatNorthings()-$correction,
 			$gr_len,
-			$this->grid_square->reference_index);
+			$this->grid_square->reference_index,$spaced);
 		
 		$this->subject_gridref=$gr;
 		$this->subject_gridref_precision=pow(10,6-$len)/10;

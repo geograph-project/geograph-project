@@ -47,8 +47,8 @@
 </tbody>
 </table>
 <br/>
-<div class="interestBox" style="padding-left:100px"><a href="/admin/tickets.php">&gt; Next page &gt;</a> 
-		or <a href="/admin/moderation.php?abandon=1">Abandon</a> the current moderation session</div>
+<div class="interestBox" style="padding-left:100px"><a href="/admin/tickets.php">Continue &gt;</a> 
+		or <a href="/admin/moderation.php?abandon=1">Finish</a> the current moderation session</div>
 
 {else}
   <p>There are no tickets available to moderate at this time, please try again later.</p>

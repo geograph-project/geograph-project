@@ -55,16 +55,17 @@
 	  {/if}
 	  
 	  <br/>
-	  
+	  <span style="font-family:verdana, arial, sans serif; font-size:0.9em">
 	  {if $image->nateastings}
-	  	subject: <b>{getamap gridref=$image->getSubjectGridref() title="(`$image->subject_gridref_precision`m precision)"}</b>
+	  	subject: <b>{getamap gridref=$image->getSubjectGridref(true) title="(`$image->subject_gridref_precision`m precision)"}</b>
 	  {else}
 	  	map: <b>{getamap gridref=$image->grid_reference title="(1000m precision)"}</b>
 	  {/if}
 	  {if $image->viewpoint_eastings}
-	  	| photographer: <b>{getamap gridref=$image->getPhotographerGridref() title="(`$image->photographer_gridref_precision`m precision)"}</b>{if $image->different_square_true}(diff){/if}
+	  	| photographer: <b>{getamap gridref=$image->getPhotographerGridref(true) title="(`$image->photographer_gridref_precision`m precision)"}</b>{if $image->different_square_true}(diff){/if}
 	  	| <span{if $image->different_square} style="background-color:yellow"{/if}>distance: <b style="color:blue">{$image->distance}</b>km</span>
 	  {/if}
+	  </span>
 	  <br/>
 	  
 	  <br/>
@@ -91,8 +92,8 @@
 		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php?apply=2">Finish my application</a> - we will contact you.</div>
 	{/if}
 	{if !$moderator && !$remoderate}		
-		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php">&gt; Next page &gt;</a>
-		or <a href="/admin/moderation.php?abandon=1">Abandon</a> the current moderation session</div>
+		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php">Continue &gt;</a>
+		or <a href="/admin/moderation.php?abandon=1">Finish</a> the current moderation session</div>
 	{/if}
 {else}
 

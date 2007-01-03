@@ -97,8 +97,8 @@ if ($image->isValid())
 	$taken=$image->getFormattedTakenDate();
 
 	//get the photographer position
-	$image->getPhotographerGridref();
-	$image->getSubjectGridref();
+	$image->getPhotographerGridref(true);
+	$image->getSubjectGridref(true);
 
 
 	//what style should we use?
