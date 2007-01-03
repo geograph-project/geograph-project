@@ -107,7 +107,7 @@ if (isset($_POST['msg']) && !$throttle)
 		
 		
 		
-		//@mail($recipient->email, $subject, $body, "From: $from_name <$from_email>");
+		@mail($recipient->email, $subject, $body, "From: $from_name <$from_email>");
 		
 			$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
 		
