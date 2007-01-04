@@ -263,7 +263,7 @@ function checkGridReference(that,showmessage) {
 	return ok;
 }
 
-function updateMapMarker(that,showmessage) {
+function updateMapMarker(that,showmessage,dontcalcdirection) {
 	if (!checkGridReference(that,showmessage)) {
 		return false;
 	}
@@ -349,7 +349,8 @@ function updateMapMarker(that,showmessage) {
 		}
 	}
 	currentelement = null;
-	updateViewDirection();
+	if (!dontcalcdirection)
+		updateViewDirection();
 }
 
 
