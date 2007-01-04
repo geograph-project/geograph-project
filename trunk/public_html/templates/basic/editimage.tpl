@@ -281,8 +281,8 @@
 			{literal}
 			<script type="text/javascript">
 				window.onload = function () {
-					updateMapMarker(document.theForm.grid_reference,false);
-					updateMapMarker(document.theForm.photographer_gridref,false);
+					updateMapMarker(document.theForm.grid_reference,false,true);
+					updateMapMarker(document.theForm.photographer_gridref,false,true);
 					onChangeImageclass();
 				}
 			</script>

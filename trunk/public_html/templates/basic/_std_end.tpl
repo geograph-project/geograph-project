@@ -106,7 +106,9 @@ Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> 
 {/if}
   <div id="footer">
      <p style="color:#AAAABB;float:left">Page updated at {$smarty.now|date_format:"%H:%M"}</p>
-   <p><a href="/help/credits" title="Who built this and how?">Credits</a>
+   <p><a href="/help/sitemap" title="Listing of site pages">Sitemap</a>
+       <span class="sep">|</span>
+       <a href="/help/credits" title="Who built this and how?">Credits</a>
        <span class="sep">|</span>
        <a href="/help/terms" title="Terms and Conditions">Terms of use</a>
        <span class="sep">|</span>
