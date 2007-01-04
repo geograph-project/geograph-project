@@ -145,6 +145,9 @@ Regards,
 
 if (!empty($_GET['abandon'])) {
 	$db->Execute("DELETE FROM gridsquare_moderation_lock WHERE user_id = {$USER->user_id}");
+	
+	$db->Execute("DELETE FROM gridimage_moderation_lock WHERE user_id = {$USER->user_id}");
+	
 	header("Location: /admin/");
 	exit;
 }

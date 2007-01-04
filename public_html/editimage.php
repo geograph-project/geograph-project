@@ -238,6 +238,11 @@ if (isset($_REQUEST['id']))
 
 		}
 
+		if ($moderator = $image->isImageLocked($USER->user_id)) {
+			$smarty->assign("locked_by_moderator", $moderator);
+		} else {
+			$image->lockThisImage($USER->user_id);
+		}
 
 		//let's find posts in the gridref discussion forum
 		$image->grid_square->assignDiscussionToSmarty($smarty);

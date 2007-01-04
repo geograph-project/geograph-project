@@ -115,6 +115,12 @@
 	To see older, closed requests, <a href="/editimage.php?id={$image->gridimage_id}&amp;alltickets=1">view all requests</a></p>
 {/if}
 
+{if $isadmin && $locked_by_moderator}
+	<p style="position:relative;padding:10px;border:1px solid pink; color:white; background-color:red">
+	<b>This image is currently open by {$locked_by_moderator}</b>, please come back later.
+	</p>
+{/if}
+
 {if $opentickets}
 
 {foreach from=$opentickets item=ticket}
