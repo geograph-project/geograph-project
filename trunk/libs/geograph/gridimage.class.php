@@ -875,6 +875,35 @@ class GridImage
 	}
 	
 	/**
+	* Locks this image so its now shown to other moderators
+	*/
+	function lockThisImage($mid)
+	{	
+		$db=&$this->_getDB();
+		
+		$db->Execute("REPLACE INTO gridimage_moderation_lock SET user_id = $mid, gridimage_id = {$this->gridimage_id}");
+	}
+	
+	/**
+	* Check if this image is locked by another moderator
+	*/
+	function isImageLocked($mid = 0)
+	{	
+		$db=&$this->_getDB();
+
+		return $db->getOne("
+			select 
+				m.realname
+			from
+				gridimage_moderation_lock as l
+				inner join user as m on (m.user_id=l.user_id)
+			where
+				gridimage_id = {$this->gridimage_id}
+				and m.user_id != $mid
+				and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR)");
+	}
+	
+	/**
 	* Sets the moderation status for the image, intelligently updating user stats appropriately
 	* status must either 'accepted' or 'rejected'
 	* returns a textual describing the action taken

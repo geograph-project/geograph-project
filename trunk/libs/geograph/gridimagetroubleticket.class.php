@@ -755,6 +755,9 @@ class GridImageTroubleTicket
 		$msg =& $this->_buildEmail($owner_msg);
 		$owner=new GeographUser($image->user_id);
 		$this->_sendMail($owner->email, $msg);
+		
+		$db->Execute("DELETE FROM gridimage_moderation_lock WHERE user_id = {$this->moderator_id} AND gridimage_id = {$this->gridimage_id}");
+
 	}
 
 	/**

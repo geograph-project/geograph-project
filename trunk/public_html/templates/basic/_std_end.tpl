@@ -25,6 +25,7 @@
      {if $is_tickmod}
      	<li><a title="Trouble Tickets" href="/admin/tickets.php">Tickets</a> (<a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search">S</a>)</li>
      {/if}
+     <li><a title="Finish Moderation for this session" href="/admin/moderation.php?abandon=1">Finish</a></li>
   </ul>
   {/if}
   {/dynamic}
