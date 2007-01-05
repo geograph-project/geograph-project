@@ -172,7 +172,7 @@ $posterName=$cols[1];
 $posterText=$cols[3];
 
 
-if (empty($CONF['disable_discuss_thumbs']) && preg_match_all("/\[\[(\[?)(\w*\d+)(\]?)\]\]/",$posterText,$g_matches)) {
+if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
 	foreach ($g_matches[2] as $i => $g_id) {
 		if (is_numeric($g_id)) {
 			if (!isset($g_image)) {
@@ -194,7 +194,7 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all("/\[\[(\[?)(\w*\d+)
 				}
 			}			
 		} else {
-			$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/$g_id\" target=\"_blank\">$g_id</a>",$posterText);
+			$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/".str_replace(' ','+',$g_id)."\" target=\"_blank\">$g_id</a>",$posterText);
 		}
 	}
 }

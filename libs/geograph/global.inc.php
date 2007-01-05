@@ -449,7 +449,7 @@ function init_session()
 //replace geograph links
 function GeographLinks(&$posterText,$thumbs = false) {
 	//look for [[gridref_or_photoid]] and [[[gridref_or_photoid]]]
-	if (preg_match_all('/\[\[(\[?)(\w{0,2}\d+)(\]?)\]\]/',$posterText,$g_matches)) {
+	if (preg_match_all('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
 		foreach ($g_matches[2] as $i => $g_id) {
 			//photo id?
 			if (is_numeric($g_id)) {
@@ -478,7 +478,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 				}			
 			} else {
 				//link to grid ref
-				$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/$g_id\">$g_id</a>",$posterText);
+				$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/$g_id\">".str_replace(' ','+',$g_id)."</a>",$posterText);
 			}
 		}
 	}
