@@ -74,19 +74,32 @@ function article_make_table($input) {
 function smarty_function_articletext($input) {
 	$output = preg_replace('/\{image id=(\d+) text=([^\}]+)\}/e',"smarty_function_gridimage(array(id => '\$1',extra => '\$2'))",str_replace("\r",'',$input));
 
-	$output = preg_replace('/\[img=([^\] ]+)(| [^\]]+)\]/',"<img src=\"\$1\" alt=\"$2\" title=\"$2\"/>",$output);
-
 	$output = preg_replace('/(-{7,})\n(.*?)(-{7,})/es',"article_make_table('\$2')",$output);
 
 	$output = str_replace(
 		array('[b]','[/b]','[big]','[/big]','[i]','[/i]','[h2]','[/h2]','[h3]','[/h3]','[h4]','[/h4]'),
 		array('<b>','</b>','<big>','</big>','<i>','</i>','<h2>','</h2>','<h3>','</h3>','<h4>','</h4>'),
 		$output);
-		
-	$output = preg_replace('/\n\* ([^\n]+)/','<ul style="margin-bottom:0px;margin-top:0px"><li>$1</li></ul>',$output);
-		
-	$output = preg_replace("/\n\n/",'<br/><br/>',$output);
-	
+
+	$pattern=array(); $replacement=array();
+
+	$pattern[]="/\[url[=]?\](.+?)\[\/url\]/i";
+	$replacement[]="<a href=\"\\1\" target=\"_blank\" ref=\"nofollow\">\\1</a>";
+
+	$pattern[]="/\[url=((f|ht)tp[s]?:\/\/[^<> \n]+?)\](.+?)\[\/url\]/i";
+	$replacement[]="<a href=\"\\1\" target=\"_blank\">\\3</a>";
+
+	$pattern[]='/\[img=([^\] ]+)(| [^\]]+)\]/';
+	$replacement[]="<img src=\"\$1\" alt=\"$2\" title=\"$2\"/>";
+
+	$pattern[]='/\n\* ([^\n]+)/';
+	$replacement[]='<ul style="margin-bottom:0px;margin-top:0px"><li>$1</li></ul>';
+
+	$pattern[]="/\n\n/";
+	$replacement[]='<br/><br/>';
+
+	$output=preg_replace($pattern, $replacement, $output);
+
 	return GeographLinks($output,true);
 }
 
