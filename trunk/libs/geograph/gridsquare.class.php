@@ -94,6 +94,7 @@ class GridSquare
 	*/
 	var $nateastings;
   	var $natnorthings;
+  	var $natspecified = false;
   	
   	/**
 	* GridSquare instance of nearest square to this one with an image
@@ -271,10 +272,13 @@ class GridSquare
 		
 		if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{5})[ \.]?(\d{5})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],$matches[2],$matches[3]);
+			$this->natspecified = 1;
 		} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{4})[ \.]?(\d{4})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],"$matches[2]0","$matches[3]0");
+			$this->natspecified = 1;
 		} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{3})[ \.]*(\d{3})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],"$matches[2]00","$matches[3]00");
+			$this->natspecified = 1;
 		} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{2})[ \.]?(\d{2})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],"$matches[2]000","$matches[3]000");
 			$isfour = true;

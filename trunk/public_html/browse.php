@@ -456,7 +456,7 @@ if ($grid_ok) {
 	$smarty->assign('marker', $overview->getSquarePoint($square));
 	
 	//lets add an rastermap too
-	$rastermap = new RasterMap($square,false,false);
+	$rastermap = new RasterMap($square,false,$square->natspecified);
 	$rastermap->addLatLong($lat,$long);
 	$smarty->assign_by_ref('rastermap', $rastermap);
 	
