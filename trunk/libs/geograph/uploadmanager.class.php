@@ -316,7 +316,7 @@ class UploadManager
 				$max_dimension=640;
 				
 				if (strlen($CONF['imagemagick_path'])) {
-				
+					//try imagemagick first
 					list($width, $height, $type, $attr) = getimagesize($pendingfile);
 				
 					if ($width > $max_dimension || $height > $max_dimension) {
@@ -330,13 +330,18 @@ class UploadManager
 						list($width, $height, $type, $attr) = getimagesize($pendingfile);
 					}
 					
-					//remember useful stuff
-					$this->upload_id=$upload_id;
-					$this->upload_width=$width;
-					$this->upload_height=$height;
-					$ok=true;
+					if ($width && $height && $width <= $max_dimension && $height <= $max_dimension) {
+						//check it did actully work
 					
-				} else {
+						//remember useful stuff
+						$this->upload_id=$upload_id;
+						$this->upload_width=$width;
+						$this->upload_height=$height;
+						$ok=true;
+					}
+				} 
+				
+				if (!$ok) {
 					//generate a resized image
 					$uploadimg = @imagecreatefromjpeg ($pendingfile); 
 					if ($uploadimg)
@@ -366,14 +371,14 @@ class UploadManager
 							imagecopyresampled($resized, $uploadimg, 0, 0, 0, 0, 
 										$destw,$desth, $srcw, $srch);
 
-							require_once('geograph/image.inc.php');
+							#require_once('geograph/image.inc.php');
 
-							UnsharpMask($resized,100,0.5,3);
+							#UnsharpMask($resized,100,0.5,3);
 
 							imagedestroy($uploadimg);
 
 							//overwrite the upload
-							imagejpeg ($resized, $pendingfile, 85);
+							imagejpeg ($resized, $pendingfile, 87);
 							imagedestroy($resized);
 
 						}
