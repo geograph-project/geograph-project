@@ -73,7 +73,7 @@ class GridShader
 	/**
 	* adds or updates squares
 	*/
-	function process($imgfile, $x_offset, $y_offset, $reference_index, $clearexisting)
+	function process($imgfile, $x_offset, $y_offset, $reference_index, $clearexisting,$updategridprefix = true,$expiremaps=true)
 	{
 		if (file_exists($imgfile))
 		{
@@ -94,6 +94,7 @@ class GridShader
 				$updated=0;
 				$untouched=0;
 				$skipped=0;
+				$zeroed=0;
 				
 				$lastpercent=-1;
 				for ($imgy=0; $imgy<$imgh; $imgy++)
@@ -129,8 +130,8 @@ class GridShader
 						
 						if (is_array($square) && count($square))
 						{
-							if (($square['percent_land']!=$percent_land) &&
-							    ($clearexisting || ($square['percent_land']==0)))
+							if (($square['percent_land']!=$percent_land) ||
+							    ($clearexisting && ($square['percent_land']==0)))
 							{
 								
 								$sql="update gridsquare set grid_reference='{$gridref}', ".
@@ -139,6 +140,8 @@ class GridShader
 									"where gridsquare_id={$square['gridsquare_id']}";
 								$this->db->Execute($sql);
 								$updated++;
+								if ($percent_land==0)
+									$zeroed++;
 							}
 							else
 							{
@@ -168,37 +171,87 @@ class GridShader
 				}
 				imagedestroy($img);
 				
-				$this->_trace("Setting land flags for gridprefixes");
-				$prefixes = $this->db->GetAll("select * from gridprefix");	
-				foreach($prefixes as $idx=>$prefix)
-				{
-					
-					$minx=$prefix['origin_x'];
-					$maxx=$prefix['origin_x']+$prefix['width']-1;
-					$miny=$prefix['origin_y'];
-					$maxy=$prefix['origin_y']+$prefix['height']-1;
-					
-					
-					$count=$this->db->GetOne("select count(*) from gridsquare where ".
-						"x between $minx and $maxx and ".
-						"y between $miny and $maxy and ".
-						"reference_index={$prefix['reference_index']} and ".
-						"percent_land>0");
+				if ($updategridprefix) {
+					$this->_trace("Setting land flags for gridprefixes");
+					$prefixes = $this->db->GetAll("select * from gridprefix");	
+					foreach($prefixes as $idx=>$prefix)
+					{
 
-					//$this->_trace("{$prefix['prefix']} $minx,$miny to $maxx,$maxy has $count");
-					
-					$this->db->query("update gridprefix set landcount=$count where ".
-						"reference_index={$prefix['reference_index']} and ".
-						"prefix='{$prefix['prefix']}'");
+						$minx=$prefix['origin_x'];
+						$maxx=$prefix['origin_x']+$prefix['width']-1;
+						$miny=$prefix['origin_y'];
+						$maxy=$prefix['origin_y']+$prefix['height']-1;
+
+
+						$count=$this->db->GetOne("select count(*) from gridsquare where ".
+							"x between $minx and $maxx and ".
+							"y between $miny and $maxy and ".
+							"reference_index={$prefix['reference_index']} and ".
+							"percent_land>0");
+
+						//$this->_trace("{$prefix['prefix']} $minx,$miny to $maxx,$maxy has $count");
+
+						$this->db->query("update gridprefix set landcount=$count where ".
+							"reference_index={$prefix['reference_index']} and ".
+							"prefix='{$prefix['prefix']}'");
+					}
 				}
-				
 				
 				$this->_trace("$created new squares created");
 				$this->_trace("$updated squares updated with new land percentage");
+				$this->_trace("$zeroed squares set to zero");
 				$this->_trace("$untouched squares examined but left untouched");
 				$this->_trace("$skipped squares were all water and not created");
 
 				
+				
+				if ($expiremaps) {
+					$root=&$_SERVER['DOCUMENT_ROOT'];
+				
+					$lastpercent=-1;
+					for ($imgy=0; $imgy<$imgh; $imgy+=2)
+					{
+						//output some progress
+						$percent=round(($imgy*100)/$imgh);
+						$percent=round($percent/5)*5;
+						if ($percent!=$lastpercent)
+						{
+							$this->_trace("{$percent}% completed...");
+							$lastpercent=$percent;
+						}
+					
+						for ($imgx=0; $imgx<$imgw; $imgx+=2)
+						{
+				
+							//now lets figure out the internal grid ref
+							$gridx=$x_offset + $imgx;
+							$gridy=$y_offset + ($imgh-$imgy-1);
+
+							$sql="select * from mapcache 
+							where $gridx between map_x and (map_x+image_w/pixels_per_km-1) and 
+							$gridy between map_y and (map_y+image_h/pixels_per_km-1)";
+						
+							
+							$recordSet = &$this->db->Execute($sql);
+							while (!$recordSet->EOF) 
+							{
+
+								$file = $this->getBaseMapFilename($recordSet->fields);
+								if (file_exists($root.$file)) {
+									unlink($root.$file);
+								} 
+								$recordSet->MoveNext();
+							}
+							$recordSet->Close();
+
+							$sql="update mapcache set age=age+1 
+								where $gridx between map_x and (map_x+image_w/pixels_per_km-1) and 
+								$gridy between map_y and (map_y+image_h/pixels_per_km-1) $and_crit";
+							$this->db->Execute($sql);
+						}
+				
+					}
+				}
 				
 			}
 			else
@@ -211,6 +264,22 @@ class GridShader
 				$this->_err("$imgfile doesn't exist"); 
 		}
 	}
+
+	function getBaseMapFilename($row)
+	{
+		
+		$dir="/maps/base/";
+		
+		$dir.="{$row['map_x']}/";
+		
+		$dir.="{$row['map_y']}/";
+		
+		$file="base_{$row['map_x']}_{$row['map_y']}_{$row['image_w']}_{$row['image_h']}_{$row['pixels_per_km']}.gd";
+		
+		
+		return $dir.$file;
+	}
+
 	function _trace($msg)
 	{
 		echo "$msg<br/>";

@@ -23,6 +23,12 @@ if it doesn't already exist, and assign a land percentage to that square.</p>
 <input type="checkbox" name="clearexisting" id="clearexisting" value="1" {if $clearexisting}checked{/if}>
 <label for="clearexisting">Clear existing land squares if marked as sea in this image</label><br />
 
+<input type="checkbox" name="skipupdategridprefix" id="skipupdategridprefix" value="1" {if $skipupdategridprefix}checked{/if}>
+<label for="updategridprefix">Skip Updating GridPrefix Table</label><br />
+
+<input type="checkbox" name="redrawmaps" id="redrawmaps" value="1" {if $redrawmaps}checked{/if}>
+<label for="redrawmaps">Redraw maps (base and detail)</label><br />
+
 <input type="submit" name="shader" value="Build Grid">
 
 
