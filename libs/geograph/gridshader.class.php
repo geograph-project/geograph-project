@@ -206,6 +206,8 @@ class GridShader
 				
 				
 				if ($expiremaps) {
+					$deleted = 0;
+					$checked = 0;
 					$root=&$_SERVER['DOCUMENT_ROOT'];
 				
 					$lastpercent=-1;
@@ -239,7 +241,9 @@ class GridShader
 								$file = $this->getBaseMapFilename($recordSet->fields);
 								if (file_exists($root.$file)) {
 									unlink($root.$file);
+									$deleted++;
 								} 
+								$checked++;
 								$recordSet->MoveNext();
 							}
 							$recordSet->Close();
@@ -251,6 +255,9 @@ class GridShader
 						}
 				
 					}
+					$this->_trace("$checked tiles checked (tiles checked multiple times)");
+					$this->_trace("$deleted tiles deleted");
+
 				}
 				
 			}
