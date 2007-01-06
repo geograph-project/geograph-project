@@ -45,7 +45,10 @@ if (isset($_GET['redo_basemap']) && preg_match('/^[\w]+$/',$_GET['redo_basemap']
 {
 	require_once('geograph/mapmosaic.class.php');
 	$mosaic = new GeographMapMosaic;
-		 
+	
+	print "<h2>Starting ...</h2>";
+	flush();
+	
 	$sql="select l.x,l.y from gridsquare l left join {$_GET['redo_basemap']}.gridsquare s using (gridsquare_id) where s.percent_land != l.percent_land";
 
 	$tiles = $count = 0;
@@ -53,13 +56,16 @@ if (isset($_GET['redo_basemap']) && preg_match('/^[\w]+$/',$_GET['redo_basemap']
 	while (!$recordSet->EOF) 
 	{
 		$tiles += $mosaic->expirePosition($recordSet->fields['x'],$recordSet->fields['y'],0,true);
+		print "tiles = $tiles<br/>";
+		flush();
 		$count++;
 		$recordSet->MoveNext();
 	}
 	$recordSet->Close();
-
+	print "<h2>All Done</h2>";
 	print "Squares done = $count<br/>";
 	print "Tiles deleted = $tiles";
+	flush();
 	exit;
 } 
 elseif (isset($_GET['gridref']))
