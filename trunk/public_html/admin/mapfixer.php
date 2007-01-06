@@ -41,7 +41,28 @@ $smarty = new GeographPage;
 
 $db = NewADOConnection($GLOBALS['DSN']);
 
-if (isset($_GET['gridref']))
+if (isset($_GET['redo_basemap']) && preg_match('/^[\w]+$/',$_GET['redo_basemap'])) 
+{
+	require_once('geograph/mapmosaic.class.php');
+	$mosaic = new GeographMapMosaic;
+		 
+	$sql="select l.x,l.y from gridsquare l left join {$_GET['redo_basemap']}.gridsquare s using (gridsquare_id) where s.percent_land != l.percent_land";
+
+	$tiles = $count = 0;
+	$recordSet = &$db->Execute($sql);
+	while (!$recordSet->EOF) 
+	{
+		$tiles += $mosaic->expirePosition($recordSet->fields['x'],$recordSet->fields['y'],0,true);
+		$count++;
+		$recordSet->MoveNext();
+	}
+	$recordSet->Close();
+
+	print "Squares done = $count<br/>";
+	print "Tiles deleted = $tiles";
+	exit;
+} 
+elseif (isset($_GET['gridref']))
 {
 	$square=new GridSquare;
 	
@@ -72,6 +93,10 @@ if (isset($_GET['gridref']))
 				
 				$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$sq['gridsquare_id']}, new_percent_land='{$percent}', old_percent_land='{$sq['percent_land']}',created=now()");
 				
+				require_once('geograph/mapmosaic.class.php');
+				$mosaic = new GeographMapMosaic;
+				$mosaic->expirePosition($sq['x'],$sq['y'],0,true);
+				
 			}
 			else
 			{
@@ -98,6 +123,10 @@ if (isset($_GET['gridref']))
 					$smarty->assign('status', "New gridsquare $gridref created with new land percentage of $percent %");
 					
 					$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$gridsquare_id}, new_percent_land='{$percent}', old_percent_land='{$sq['percent_land']}',created=now()");
+					
+					require_once('geograph/mapmosaic.class.php');
+					$mosaic = new GeographMapMosaic;
+					$mosaic->expirePosition($x,$y,0,true);
 					
 				}
 			}

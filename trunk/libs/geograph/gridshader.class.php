@@ -139,9 +139,10 @@ class GridShader
 									"percent_land='$percent_land' ".
 									"where gridsquare_id={$square['gridsquare_id']}";
 								$this->db->Execute($sql);
-								$updated++;
 								if ($percent_land==0)
 									$zeroed++;
+								else
+									$updated++;
 							}
 							else
 							{
