@@ -73,7 +73,7 @@ class GridShader
 	/**
 	* adds or updates squares
 	*/
-	function process($imgfile, $x_offset, $y_offset, $reference_index, $clearexisting,$updategridprefix = true,$expiremaps=true)
+	function process($imgfile, $x_offset, $y_offset, $reference_index, $clearexisting,$updategridprefix = true,$expiremaps=true,$ignore100=false)
 	{
 		if (file_exists($imgfile))
 		{
@@ -95,6 +95,7 @@ class GridShader
 				$untouched=0;
 				$skipped=0;
 				$zeroed=0;
+				$skipped100=0;
 				
 				$lastpercent=-1;
 				for ($imgy=0; $imgy<$imgh; $imgy++)
@@ -115,6 +116,13 @@ class GridShader
 						//000=black, 100% land
 						$col=imagecolorat ($img, $imgx, $imgy);
 						$percent_land=round(((255-$col)*100)/255);
+						
+						if ($ignore100 && ($percent_land == 100))
+						{
+							$skipped100++;
+							continue;
+						}
+						
 						
 						//now lets figure out the internal grid ref
 						$gridx=$x_offset + $imgx;
@@ -201,6 +209,10 @@ class GridShader
 				$this->_trace("$created new squares created");
 				$this->_trace("$updated squares updated with new land percentage");
 				$this->_trace("$zeroed squares set to zero");
+				
+				if ($ignore100)
+					$this->_trace("$skipped100 squares ignored because at 100% in source");
+				
 				$this->_trace("$untouched squares examined but left untouched");
 				$this->_trace("$skipped squares were all water and not created");
 

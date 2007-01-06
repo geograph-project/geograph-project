@@ -40,6 +40,7 @@ $reference_index=isset($_POST['reference_index'])?$_POST['reference_index']:1;
 $clearexisting=isset($_POST['clearexisting'])?true:false;
 $skipupdategridprefix=isset($_POST['skipupdategridprefix'])?true:false;
 $redrawmaps=isset($_POST['redrawmaps'])?true:false;
+$ignore100=isset($_POST['ignore100'])?true:false;
 
 /*
 ireland image is 
@@ -70,7 +71,7 @@ if (isset($_POST['shader']))
 	$imgfile=$_SERVER['DOCUMENT_ROOT'].'/'.$shader_image;
 	$shader=new GridShader;
 
-	$shader->process($imgfile, $shader_x, $shader_y, $reference_index, $clearexisting, !$skipupdategridprefix,$redrawmaps);
+	$shader->process($imgfile, $shader_x, $shader_y, $reference_index, $clearexisting, !$skipupdategridprefix,$redrawmaps,$ignore100);
 	
 
 	//close output and exit (we don't want to output a page twice)
@@ -86,6 +87,7 @@ $smarty->assign('shader_y', $shader_y);
 $smarty->assign('clearexisting', $clearexisting);
 $smarty->assign('skipupdategridprefix', $skipupdategridprefix);
 $smarty->assign('redrawmaps', $redrawmaps);
+$smarty->assign('ignore100', $ignore100);
 $smarty->assign('reference_index', $reference_index);
 
 $smarty->display('gridbuilder.tpl');

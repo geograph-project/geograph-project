@@ -47,7 +47,11 @@ if (isset($_GET['map']))
 	$rastermap = new RasterMap($square);
 	if (isset($_GET['debug']))
 		init_session();
-	if($rastermap->setToken($_GET['r']))	
+	if($rastermap->setToken($_GET['r'])) {
+		if (isset($_GET['debug']))
+				print $rastermap->getOSGBStorePath('pngs-2k-'.$rastermap->width.'/',0,0,true);
+	
 		$rastermap->returnImage();
+	}
 	exit;	
 }
