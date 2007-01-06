@@ -40,10 +40,11 @@ Geograph User ID: <input type="text" name="user_id" value="" size="5"/>
 
 <h3>Clear all Maps (seldom used)</h3>
 
-<p><a href="recreatemaps.php?deleteInvalidateAll=1" rel="nofollow">Delete & Invalidate All Maps</a>
-<a href="recreatemaps.php?invalidateAll=1" rel="nofollow">Invalidate All Maps</a>
-<a href="recreatemaps.php?expireAll=0" rel="nofollow">Clear Cache</a>
-<a href="recreatemaps.php?expireAll=1" rel="nofollow">(clear basemaps too)</a></p>
+<p>Delete & Invalidate All Maps <tt>?deleteInvalidateAll=1</tt><br/>
+Invalidate All Maps <tt>?invalidateAll=1</tt><br/>
+Clear Cache <tt>?expireAll=0</tt><br/>
+(clear basemaps too) <tt>?expireAll=1</tt></p>
 
+<p>Non clickable to help prevent accidental clicking.</p>
 
 {include file="_std_end.tpl"}
