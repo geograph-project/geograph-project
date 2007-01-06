@@ -45,7 +45,8 @@ if (isset($_GET['redo_basemap']) && preg_match('/^[\w]+$/',$_GET['redo_basemap']
 {
 	require_once('geograph/mapmosaic.class.php');
 	$mosaic = new GeographMapMosaic;
-	
+	set_time_limit(3600*24);
+		
 	print "<h2>Starting ...</h2>";
 	flush();
 	
