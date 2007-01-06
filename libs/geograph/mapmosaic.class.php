@@ -875,7 +875,7 @@ class GeographMapMosaic
 	* This should really be static
 	* @access public
 	*/
-	function expirePosition($x,$y,$user_id = 0)
+	function expirePosition($x,$y,$user_id = 0,$expire_basemaps=false)
 	{
 		$db=&$this->_getDB();
 		
@@ -889,7 +889,43 @@ class GeographMapMosaic
 			where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
 			$y between map_y and (map_y+image_h/pixels_per_km-1) $and_crit";
 		$db->Execute($sql);
+		
+		if ($expire_basemaps) {
+			$root=&$_SERVER['DOCUMENT_ROOT'];
+		
+			$sql="select * from mapcache 
+			where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
+			$y between map_y and (map_y+image_h/pixels_per_km-1)";
+			$deleted = 0;
+			$recordSet = &$this->db->Execute($sql);
+			while (!$recordSet->EOF) 
+			{
+				$file = $this->getBaseMapFilename($recordSet->fields);
+				if (file_exists($root.$file)) {
+					unlink($root.$file);
+					$deleted++;
+				} 
+				$recordSet->MoveNext();
+			}
+			$recordSet->Close();
+			return $deleted;
+		}
+		
+		
 	}
+	
+	function getBaseMapFilename($row)
+	{
+		$dir="/maps/base/";
+		
+		$dir.="{$row['map_x']}/";
+		
+		$dir.="{$row['map_y']}/";
+		
+		$file="base_{$row['map_x']}_{$row['map_y']}_{$row['image_w']}_{$row['image_h']}_{$row['pixels_per_km']}.gd";
+		
+		return $dir.$file;
+	}	
 	
 	/**
 	* Invalidates all cached maps - recommended above expireAll as the recreation will be handled by the deamon
