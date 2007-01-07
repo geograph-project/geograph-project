@@ -87,7 +87,6 @@ geographing</a> first.</p>
 	<input type="hidden" name="gridsquare" value="{$gridsquare|escape:'html'}">
 	<input type="hidden" name="eastings" value="{$eastings|escape:'html'}">
 	<input type="hidden" name="northings" value="{$northings|escape:'html'}">
-	
 {/if}
 {if $step > 2}
 	<input type="hidden" name="grid_reference" value="{$grid_reference|escape:'html'}">
@@ -125,8 +124,12 @@ geographing</a> first.</p>
 		
 		<p><b>Grid References:</b> (recommended)<br/><br/><label for="grid_reference">Primary Photo Subject</label> <input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/crosshairs.gif" alt="Marks the Subject" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/> <a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Duplicate</a></p>
 	
-		<p><label for="photographer_gridref">Photographer Position</label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14"  onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/camera.gif" alt="Marks the Photographer" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/><br/><small>Blank assumes very close to the subject</small></p>
-		
+		<p><label for="photographer_gridref">Photographer Position</label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14"  onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/camera.gif" alt="Marks the Photographer" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/><br/><small style="color:gray;"><i>Blank assumes very close to the subject</i></small>
+		{if $rastermap->enabled}
+			<br/><input type="checkbox" name="use6fig" id="use6fig" {if $use6fig} checked{/if}/> <label for="use6fig">Only display 6 figure grid reference (<a href="/help/map_precision" target="_blank">Explanation</a>)</label>
+		{/if}
+		</p>
+	
 		<p><label for="view_direction">View Direction</label> <small>(photographer facing)</small><br/>
 		<select id="view_direction" name="view_direction" style="font-family:monospace" onchange="updateCamIcon(this);">
 			{foreach from=$dirs key=key item=value}
@@ -190,6 +193,7 @@ geographing</a> first.</p>
 {else}
 	<input type="hidden" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}">
 	<input type="hidden" name="view_direction" value="{$view_direction|escape:'html'}">
+	<input type="hidden" name="use6fig" value="{$use6fig|escape:'html'}">
 
 {/if}
 

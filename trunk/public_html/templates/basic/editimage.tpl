@@ -336,6 +336,9 @@
 {else}
   {getamap text="Get-a-map&trade;"}
 {/if}
+{if $rastermap->enabled}
+	<br/><input type="checkbox" name="use6fig" id="use6fig" {if $use6fig} checked{/if}/> <label for="use6fig">Only display 6 figure grid reference (<a href="/help/map_precision" target="_blank">Explanation</a>)</label>
+{/if}
 </p>
 
 
