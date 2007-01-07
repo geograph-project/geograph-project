@@ -277,6 +277,12 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('preview_width', $uploadmanager->upload_width);
 			$smarty->assign('preview_height', $uploadmanager->upload_height);
 			
+			$token=new Token;
+			$token->setValue("g", $_POST['grid_reference']);
+			$token->setValue("p", $_POST['photographer_gridref']);
+			$token->setValue("v", $_POST['view_direction']);
+			$smarty->assign('reopenmaptoken', $token->getToken());
+		
 		
 			if ($_POST['imagetaken'] && $_POST['imagetaken'] != '0000-00-00') {
 				$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));

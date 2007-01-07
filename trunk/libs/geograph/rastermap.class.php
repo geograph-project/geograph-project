@@ -221,7 +221,6 @@ class RasterMap
 			$this->displayMarker2 = ($this->issubmit || (!empty($this->viewpoint_northings) && (($vleft != $left) || ($vtop != $top))))?1:0;
 			$str .= "<div style=\"position:absolute;top:".($vtop-20)."px;left:".($vleft-9)."px;".( $this->displayMarker2 ?'':'display:none')."\" id=\"marker2\"><img src=\"/templates/basic/img/$iconfile\" alt=\"+\" width=\"20\" height=\"31\" name=\"camicon\"/></div>";
 
-
 	//overlay (for dragging)
 			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/></div>";
 
@@ -231,7 +230,7 @@ class RasterMap
 			if ($this->service2) {
 				return "$str
 				<br/>
-				<div class=\"interestBox\" style=\"font-size:0.8em\">Switch to <a href=\"javascript:switchTo(2);\"  id=\"mapSwitcherOS50k\">Historic Map</a><a href=\"javascript:switchTo(1);\" id=\"mapSwitcherVoB\" style=\"display:none\">Modern Map</a>, <small>create <span id=\"fig6\"><a href=\"javascript:useGR(6);\">6</a>/<b>8</b></span><span id=\"fig8\" style=\"display:none\"><b>6</b>/<a href=\"javascript:useGR(8);\">8</a></span> figure grid references</small></div>
+				<div class=\"interestBox\" style=\"font-size:0.8em\">Switch to <a href=\"javascript:switchTo(2);\"  id=\"mapSwitcherOS50k\">Historic Map</a><a href=\"javascript:switchTo(1);\" id=\"mapSwitcherVoB\" style=\"display:none\">Modern Map</a>.</div>
 				<script type=\"text/javascript\">
 				function switchTo(too) {
 					showOS50k = (too == 1)?'':'none';
@@ -254,21 +253,6 @@ class RasterMap
 						document.images['map'].title = '$title2';
 					}
 				}
-				
-				function useGR(too) {
-					if (too == 8) {
-						void(grlen = 4);
-						void(mult = 10);
-						document.getElementById('fig6').style.display = '';
-						document.getElementById('fig8').style.display = 'none';
-					} else {
-						void(grlen = 3);
-						void(mult = 100);
-						document.getElementById('fig6').style.display = 'none';
-						document.getElementById('fig8').style.display = '';
-					}
-				}
-				
 				</script>";
 			} else {
 				return $str;
