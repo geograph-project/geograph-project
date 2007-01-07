@@ -53,6 +53,13 @@ GBGridLetters[9] = ["TZ", "TU", "TP", "TK", "TE", "OZ", "OU", "OP", "OK", "OE", 
 //	mult = 1;
 //}
 
+var marker1left = 14;
+var marker1top = 14;
+
+var marker2left = 9;
+var marker2top = 20;
+
+
 var w2 = mapw / 2;
 var h2 = maph / 2;
 
@@ -71,13 +78,13 @@ function overlayMouseUp(e) {
 	if (currentelement != null) {
 		if (currentelement.id == 'marker1') {
 			if (document.theForm.grid_reference.value == "") {
-				currentelement.style.left = w2+'px';
-				currentelement.style.top = h2+'px';
+				currentelement.style.left = (w2-marker1left)+'px';
+				currentelement.style.top = (h2-marker1top)+'px';
 			}
 		} else if (currentelement.id == 'marker2') {
 			if (document.theForm.photographer_gridref.value == "") {
-				currentelement.style.left = 5+'px';
-				currentelement.style.top = (maph + 5)+'px';
+				currentelement.style.left = (15 -marker2left) +'px';
+				currentelement.style.top = (maph + 15 - marker2top)+'px';
 			}
 		}
 	}
@@ -95,10 +102,10 @@ function overlayHideMarkers(e) {
 	
 	var m1 = document.getElementById('marker1');
 	
-	m1left = parseInt(m1.style.left)+14;
-	m1top = parseInt(m1.style.top)+14;
+	m1left = parseInt(m1.style.left)+marker1left;
+	m1top = parseInt(m1.style.top)+marker1top;
 	found = false;
-	if (Math.abs(tempX - m1left) < 10 && Math.abs(tempY - m1top) < 10) {
+	if (Math.abs(tempX - m1left) < marker1left && Math.abs(tempY - m1top) < marker1top) {
 		m1.style.display = 'none';
 	} else {
 		m1.style.display = displayMarker1?'':'none';
@@ -106,10 +113,10 @@ function overlayHideMarkers(e) {
 	
 	var m2 = document.getElementById('marker2');
 
-	m2left = parseInt(m2.style.left)+8;
-	m2top = parseInt(m2.style.top)+8;
+	m2left = parseInt(m2.style.left)+marker2left;
+	m2top = parseInt(m2.style.top)+marker2top;
 
-	if (Math.abs(tempX - m2left) < 10 && Math.abs(tempY - m2top) < 10) {
+	if (Math.abs(tempX - m2left) < marker2left && Math.abs(tempY - m2top) < marker2top) {
 		m2.style.display = 'none';
 	} else {
 		m2.style.display = displayMarker2?'':'none';
@@ -134,18 +141,18 @@ function overlayMouseDown(e) {
 	
 	var m1 = document.getElementById('marker1');
 	
-	m1left = parseInt(m1.style.left)+8;
-	m1top = parseInt(m1.style.top)+8;
+	m1left = parseInt(m1.style.left)+marker1left;
+	m1top = parseInt(m1.style.top)+marker1top;
 	
-	if (Math.abs(tempX - m1left) < 10 && Math.abs(tempY - m1top) < 10) {
+	if (Math.abs(tempX - m1left) < marker1left && Math.abs(tempY - m1top) < marker1top) {
 		currentelement = m1;
 	} else {
 		var m2 = document.getElementById('marker2');
 
-		m2left = parseInt(m2.style.left)+8;
-		m2top = parseInt(m2.style.top)+8;
+		m2left = parseInt(m2.style.left)+marker2left;
+		m2top = parseInt(m2.style.top)+marker2top;
 
-		if (Math.abs(tempX - m2left) < 10 && Math.abs(tempY - m2top) < 10) {
+		if (Math.abs(tempX - m2left) < marker2left && Math.abs(tempY - m2top) < marker2top) {
 			currentelement = m2;
 		}
 	}
@@ -163,8 +170,13 @@ function overlayMouseMove(e) {
 	}
 	if (currentelement != null) {
 		if (document.getElementById) {
-			currentelement.style.left = (tempX - 8)+'px';
-			currentelement.style.top = (tempY - 8)+'px';
+			if (currentelement.id == 'marker1') {
+				currentelement.style.left = (tempX - marker1left)+'px';
+				currentelement.style.top = (tempY - marker1top)+'px';
+			} else {
+				currentelement.style.left = (tempX - marker2left)+'px';
+				currentelement.style.top = (tempY - marker2top)+'px';
+			}
 		}
 	}
 
@@ -333,16 +345,30 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 								tempY = tempY - (maph /4);
 								eastings1 = easting + 500;
 								northings1 = northing + 500;
+							} else if (numbers.length == 6 && easting%100 == 0 && northing%100 == 0) {
+								tempX = tempX + (mapw /40);
+								tempY = tempY - (maph /40);
+								eastings1 = easting + 50;
+								northings1 = northing + 50;
 							} else {
 								eastings1 = easting;
 								northings1 = northing;
 							}
+							currentelement.style.left = (tempX - marker1left)+'px';
+							currentelement.style.top = (tempY - marker1top)+'px';
 						} else if (currentelement.id == 'marker2') {
-							eastings2 = easting;
-							northings2 = northing;
+							if (numbers.length == 6 && easting%100 == 0 && northing%100 == 0) {
+								tempX = tempX + (mapw /40);
+								tempY = tempY - (maph /40);
+								eastings2 = easting + 50;
+								northings2 = northing + 50;
+							} else {
+								eastings2 = easting;
+								northings2 = northing;
+							}
+							currentelement.style.left = (tempX - marker2left)+'px';
+							currentelement.style.top = (tempY - marker2top)+'px';
 						} 
-						currentelement.style.left = (tempX - 8)+'px';
-						currentelement.style.top = (tempY - 8)+'px';
 					}
 				}
 			}
@@ -368,11 +394,34 @@ function updateViewDirection() {
 			jump = 360.0/16.0;
 
 			newangle = Math.floor(Math.round(realangle/jump)*jump);
+			if (newangle == 360)
+				newangle = 0;
 
 			var ele = document.theForm.view_direction;
 			for(q=0;q<ele.options.length;q++)
 				if (ele.options[q].value == newangle)
 					ele.selectedIndex = q;
+
+			document.images['camicon'].src = "/templates/basic/img/camicon-"+newangle+".png";
+
 		}
+	}
+}
+
+function updateCamIcon() {
+	if (!document.images['map']) {
+		//we have no map!
+		return;
+	}
+	ele = document.theForm.view_direction;
+	realangle = ele.options[ele.selectedIndex].value;
+	if (realangle == -1) {
+		document.images['camicon'].src = "/templates/basic/img/camicon--1.png";
+	} else {
+		jump = 360.0/16.0;
+		newangle = Math.floor(Math.round(realangle/jump)*jump);
+		if (newangle == 360)
+			newangle = 0;
+		document.images['camicon'].src = "/templates/basic/img/camicon-"+newangle+".png";
 	}
 }

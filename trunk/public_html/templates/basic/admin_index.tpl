@@ -19,6 +19,16 @@
 <b>Map-fixing in Progress</b> - please come back later.<br/>
 {else}>{/if}
 {/dynamic}
+
+<div style="position:relative;float:right; border:1px solid silver">
+<form method="get" action="mapfixer.php" style="display:inline">
+<label for="gridref">Grid Reference:</label><br/>
+<input type="text" size="6" name="gridref" id="gridref" value="{$gridref|escape:'html'}">
+<span class="formerror">{$gridref_error}</span>
+<input type="submit" name="show" value="Check">
+</form>
+</div>
+
 <a title="Map Fixer" href="/admin/mapfixer.php">Map Fixer</a> allows the land percentage
 for each 1km grid squares to be updated, which allows "square is all at sea" to be 
 corrected<br/> [GB:{$gridsquares_sea.1},I:{$gridsquares_sea.2} in Queue] - <a href="/mapfixer.php">add to queue</a><br/>

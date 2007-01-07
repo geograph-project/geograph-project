@@ -128,7 +128,7 @@ geographing</a> first.</p>
 		<p><label for="photographer_gridref">Photographer Position</label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14"  onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/camera.gif" alt="Marks the Photographer" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/><br/><small>Blank assumes very close to the subject</small></p>
 		
 		<p><label for="view_direction">View Direction</label> <small>(photographer facing)</small><br/>
-		<select id="view_direction" name="view_direction" style="font-family:monospace">
+		<select id="view_direction" name="view_direction" style="font-family:monospace" onchange="updateCamIcon(this);">
 			{foreach from=$dirs key=key item=value}
 				<option value="{$key}"{if $key%45!=0} style="color:gray"{/if}{if $key==$view_direction} selected="selected"{/if}>{$value}</option>
 			{/foreach}
@@ -176,7 +176,7 @@ geographing</a> first.</p>
 		{if $image->ftf}first{/if}
 		{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}
 	  </div>
-	  </div>		
+	  </div>
 
 	{/foreach}
 	<br style="clear:both"/>
@@ -186,7 +186,7 @@ geographing</a> first.</p>
 	{/if}&nbsp;
 	</div>
 	
-	{/if}	
+	{/if}
 {else}
 	<input type="hidden" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}">
 	<input type="hidden" name="view_direction" value="{$view_direction|escape:'html'}">
