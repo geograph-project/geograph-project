@@ -126,7 +126,7 @@ geographing</a> first.</p>
 	
 		<p><label for="photographer_gridref">Photographer Position</label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14"  onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/camera.gif" alt="Marks the Photographer" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/><br/><small style="color:gray;"><i>Blank assumes very close to the subject</i></small>
 		{if $rastermap->enabled}
-			<br/><input type="checkbox" name="use6fig" id="use6fig" {if $use6fig} checked{/if}/> <label for="use6fig">Only display 6 figure grid reference (<a href="/help/map_precision" target="_blank">Explanation</a>)</label>
+			<br/><input type="checkbox" name="use6fig" id="use6fig" {if $use6fig} checked{/if} value="1"/> <label for="use6fig">Only display 6 figure grid reference (<a href="/help/map_precision" target="_blank">Explanation</a>)</label>
 		{/if}
 		</p>
 	
@@ -239,6 +239,7 @@ for {$gridref} provided they are accurately located, but may not qualify as geog
 can be edited at any time) but to activate a square you need to be first to meet the
 criteria above!</p>
 
+<a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> (and view list of placenames)
 
 <h3>Title and Comments</h3>
 <p>Please provide a short title for the image, and any other comments about where

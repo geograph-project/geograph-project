@@ -202,7 +202,7 @@ class GridImage
 			list($posgr,$len) = $conv->national_to_gridref(
 				$this->viewpoint_eastings,
 				$this->viewpoint_northings,
-				($this->use6fig)?6:$gr_len,
+				($this->use6fig && $spaced)?6:$gr_len,
 				$this->grid_square->reference_index,$spaced);
 			
 			$this->photographer_gridref=$posgr;
@@ -244,7 +244,7 @@ class GridImage
 		list($gr,$len) = $conv->national_to_gridref(
 			$this->grid_square->getNatEastings()-$correction,
 			$this->grid_square->getNatNorthings()-$correction,
-			($this->use6fig)?6:$gr_len,
+			($this->use6fig && $spaced)?6:$gr_len,
 			$this->grid_square->reference_index,$spaced);
 		
 		$this->subject_gridref=$gr;

@@ -46,6 +46,61 @@ class Gazetteer
 			return $this->findByNational($square->reference_index,$square->nateastings,$square->natnorthings,$radius,$f_codes);		
 	}
 	
+
+	function findListByNational($reference_index,$e,$n,$radius = 2000) {
+		global $CONF;
+		$db=&$this->_getDB();
+		
+		//to optimise the query, we scan a square centred on the
+		//the required point
+		$left=$e-$radius;
+		$right=$e+$radius;
+		$top=$n-$radius;
+		$bottom=$n+$radius;
+
+		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
+		if ($CONF['use_gazetteer'] == 'OS' && $reference_index == 1) {
+			$places = $db->GetAll("select
+					`def_nam` as full_name,
+					'PPL' as dsg,
+					1 as reference_index,
+					`full_county` as adm1_name,
+					`hcounty` as hist_county,
+					(seq + 1000000) as pid,
+					f_code,
+					( (east-{$e})*(east-{$e})+(north-{$n})*(north-{$n}) ) as distance
+				from
+					os_gaz
+				where
+					CONTAINS( 	
+						GeomFromText($rectangle),
+						point_en)
+				order by distance asc,f_code+0,def_nam");
+		} else {
+			$places = $db->GetAll("select
+					full_name,
+					dsg,
+					loc_placenames.reference_index,
+					loc_adm1.name as adm1_name,
+					loc_placenames.id as pid,
+					power(e-{$e},2)+power(n-{$n},2) as distance
+				from 
+					loc_placenames
+					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
+				where
+					dsg = 'PPL' AND 
+					CONTAINS( 	
+						GeomFromText($rectangle),
+						point_en) AND
+					loc_placenames.reference_index = {$reference_index}
+				order by distance asc");
+
+
+		}
+
+		return $places;
+	}
 	
 	function findByNational($reference_index,$e,$n,$radius = 25000,$f_codes = null) {
 		global $CONF;
