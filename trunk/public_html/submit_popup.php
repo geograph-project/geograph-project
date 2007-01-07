@@ -103,7 +103,7 @@ if ($grid_ok) {
 	$smarty->assign_by_ref('square', $square);
 	
 	//lets add an rastermap too
-	$rastermap = new RasterMap($square,false,$square->natspecified);
+	$rastermap = new RasterMap($square,false,$square->natspecified,true);
 	$rastermap->addLatLong($lat,$long);
 	
 	$smarty->assign_by_ref('gridref', $gridref);
