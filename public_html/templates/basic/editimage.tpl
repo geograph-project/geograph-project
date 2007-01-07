@@ -341,7 +341,7 @@
 
 <p><label for="view_direction">Edit View Direction  {if $moderated.view_direction}<span class="moderatedlabel">(moderated)</span>{/if}
 </label> <small>(photographer facing)</small><br/>
-<select id="view_direction" name="view_direction" style="font-family:monospace">
+<select id="view_direction" name="view_direction" style="font-family:monospace" onchange="updateCamIcon(this);">
 	{foreach from=$dirs key=key item=value}
 		<option value="{$key}"{if $key%45!=0} style="color:gray"{/if}{if $key==$image->view_direction} selected="selected"{/if}>{$value}</option>
 	{/foreach}

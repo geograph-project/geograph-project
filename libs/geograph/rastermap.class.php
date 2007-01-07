@@ -106,18 +106,22 @@ class RasterMap
 		$this->long = floatval($long);
 	}
 	
-	function addViewpoint($viewpoint_eastings,$viewpoint_northings) {
+	function addViewpoint($viewpoint_eastings,$viewpoint_northings,$view_direction = -1) {
 		$this->viewpoint_eastings = $viewpoint_eastings;
 		$this->viewpoint_northings = $viewpoint_northings;
+		$this->view_direction = $view_direction;
+	}
+	function addViewDirection($view_direction = -1) {
+		$this->view_direction = $view_direction;
 	}
 	
 	function getImageTag() 
 	{
 		$east = floor($this->nateastings/1000) * 1000;
 		$nort = floor($this->natnorthings/1000) * 1000;
-		
+
 		$width = $this->width;
-		
+
 		if ($this->service == 'Google') {
 			return "<div id=\"map\" style=\"width:{$this->width}px; height:{$this->width}px\">Loading map...</div>";
 		} elseif ($this->service == 'OS50k') {
@@ -138,83 +142,92 @@ class RasterMap
 			$mapurl2 = "http://vision.edina.ac.uk/cgi-bin/wms-vision?version=1.1.0&request=getMap&layers=newpop%2Csmall_1920%2Cmed_1904&styles=&SRS=EPSG:27700&Format=image/png&width=$width&height=$width&bgcolor=cfd6e5&bbox=$e1,$n1,$e2,$n2&exception=application/vnd.ogc.se_inimage";
 
 			$title2 = "1940s OS New Popular Edition Historical Map &copy; VisionOfBritain.org.uk";
-			
+
 			if ($this->service == 'VoB') {
 				$title = $title2;
 				$mapurl = $mapurl2;
 			}
 		}
-		
+
 		if (isset($title)) {
 			$extra = ($this->issubmit)?22:0;
-						
+
+	//container
 			$str = "<div style=\"position:relative;height:".($width+$extra)."px;width:{$this->width}px;\">";
 
+	//map image
 			$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" style=\"width:{$width}px;height:{$width}px\" border=\"1\" name=\"tile\" alt=\"$title\"/></div>";
 
+	//drag prompt
 			if ($this->issubmit)
 				$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px; font-size:0.8em;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&lt;- Drag to mark photographer position.</small></div>";
-			
+
 			$widthby2 = ($width/2);
-			
+
+	//calculate subject position
 			$e = $this->nateastings;	$n = $this->natnorthings;
 			if ($e%100 == 0 && $n%100 == 0 && $this->exactPosition) {
 				$e +=50; $n += 50;
-			} 
+			}
 			$left = ($width/4) + ( ($e - $east) * $widthby2 / 1000 );
 			$top = $width - ( ($width/4) + ( ($n - $nort) * $widthby2 / 1000 ) );
-				
-			
-			
-			if (!empty($this->viewpoint_northings)) {
+
+	//choose photographer icon
+			if ($this->view_direction && $this->view_direction != -1)
+				$iconfile = "camicon-{$this->view_direction}.png";
+			else
+				$iconfile = "camicon--1.png";
+	//calculate photographer position
+			if (!$this->issubmit && !empty($this->viewpoint_northings)) {
 				$e = $this->viewpoint_eastings;	$n = $this->viewpoint_northings;
 				if ($e%100 == 0 && $n%100 == 0) {
 					$e +=50; $n += 50;
-				} 
+				}
 				$vleft = ($width/4) + ( ($e - $east) * $widthby2 / 1000 );
 				$vtop = $width - ( ($width/4) + ( ($n - $nort) * $widthby2 / 1000 ) );
-				
+
 				if ( ($vleft < -8) || ($vleft > ($width+8)) || ($vtop < -8) || ($vtop > ($width+8)) ) {
-					//interpolate between centerpoint and real position 
-					
+		//if outside the map extents clamp to an edge
 					if ( abs($left - $vleft) < abs($top - $vtop) ) {
 						// top/bottom edge
-						
+
 						$realangle = atan2( $left - $vleft, $top - $vtop );
-						
+
 						$vtop = ($top < $vtop)?($width+16):-16;
-					
+
 						$vleft = ( tan($realangle)*($top - $vtop)*-1 ) + $left;
 					} else {
 						// left/right edge
-						
+
 						$realangle = atan2( $top - $vtop, $left - $vleft );
-						
+
 						$vleft = ($left < $vleft)?($width+16):-16;
-						
+
 						$vtop = ( tan($realangle)*($left - $vleft)*-1 ) + $top;
 					}
+					$iconfile = "camera.png";
 				}
-				
 			} else {
+		//ready to drag position
 				$vleft = 13;
-				$vtop = $width+13;
-			}
-			$this->displayMarker2 = ($this->issubmit || (!empty($this->viewpoint_northings) && ($vleft != $left) && ($vtop != $top)))?1:0;
-			$str .= "<div style=\"position:absolute;top:".($vtop-8)."px;left:".($vleft-8)."px;".( $this->displayMarker2 ?'':'display:none')."\" id=\"marker2\"><img src=\"/templates/basic/img/camera.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
-			
-			if ($this->issubmit) {
-				$this->displayMarker1 = 1;
-				$str .= "<div style=\"position:absolute;top:".($top-8)."px;left:".($left-8)."px;\" id=\"marker1\"><img src=\"/templates/basic/img/crosshairs.gif\" alt=\"+\" width=\"16\" height=\"16\"/></div>";
-			} else {
-				$this->displayMarker1 = ($this->exactPosition)?1:0;
-				$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;".((($this->exactPosition)?'':'display:none'))."\" id=\"marker1\"><img src=\"/templates/basic/img/circle.png\" alt=\"+\" width=\"29\" height=\"29\"/></div>";
+				$vtop = $width+20;
 			}
 
+	//subject icon
+			$this->displayMarker1 = ($this->issubmit || $this->exactPosition)?1:0;
+			$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;".( $this->displayMarker1 ?'':'display:none')."\" id=\"marker1\"><img src=\"/templates/basic/img/circle.png\" alt=\"+\" width=\"29\" height=\"29\"/></div>";
+
+	//photographer icon
+			$this->displayMarker2 = ($this->issubmit || (!empty($this->viewpoint_northings) && (($vleft != $left) || ($vtop != $top))))?1:0;
+			$str .= "<div style=\"position:absolute;top:".($vtop-20)."px;left:".($vleft-9)."px;".( $this->displayMarker2 ?'':'display:none')."\" id=\"marker2\"><img src=\"/templates/basic/img/$iconfile\" alt=\"+\" width=\"20\" height=\"31\" name=\"camicon\"/></div>";
+
+
+	//overlay (for dragging)
 			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/></div>";
 
 			$str .= "</div>";
-			
+
+	//map switcher
 			if ($this->service2) {
 				return "$str
 				<br/>
@@ -260,9 +273,10 @@ class RasterMap
 			} else {
 				return $str;
 			}
+	//end
 		}
 	}
-	
+
 	function getFooterTag()
 	{
 		global $CONF;
