@@ -233,6 +233,8 @@ function overlayMouseMove(e) {
 				northings2 = northing;
 				document.theForm.photographer_gridref.value = grstr;
 			} 
+			if (document.theForm.use6fig && grlen == 4)
+				document.theForm.use6fig.checked = true;
 		}
 		document.images['map'].alt = grstr;
 	}

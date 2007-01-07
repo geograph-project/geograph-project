@@ -96,11 +96,10 @@ if ($image->isValid())
 {
 	$taken=$image->getFormattedTakenDate();
 
-	//get the photographer position
-	$image->getPhotographerGridref(true);
+	//get the grid references
 	$image->getSubjectGridref(true);
-
-
+	$image->getPhotographerGridref(true);
+	
 	//what style should we use?
 	$style='white';
 	$valid_style=array('white','black','gray');

@@ -154,12 +154,21 @@ class UploadManager
 	}
 	
 	/**
-	* set viewpoint_gridreference
+	* set view_direction
 	*/
 	function setDirection($view_direction)
 	{
 		$this->view_direction=$view_direction;
 	}
+	/**
+	* set use6fig
+	*/
+	function setUse6fig($use6fig)
+	{
+		$this->use6fig=$use6fig;
+	}
+	
+	
 	/**
 	* set user_status
 	*/
@@ -475,15 +484,15 @@ class UploadManager
 		$sql=sprintf("insert into gridimage(".
 			"gridsquare_id, seq_no, user_id, ftf,".
 			"moderation_status,title,comment,nateastings,natnorthings,imageclass,imagetaken,".
-			"submitted,viewpoint_eastings,viewpoint_northings,view_direction,user_status) values ".
+			"submitted,viewpoint_eastings,viewpoint_northings,view_direction,use6fig,user_status) values ".
 			"(%d,%d,%d,%d,".
 			"'pending',%s,%s,%d,%d,%s,%s,".
-			"now(),%d,%d,%d,%s)",
+			"now(),%d,%d,%d,%d,%s)",
 			$this->square->gridsquare_id, $seq_no,$USER->user_id, $ftf,
 			$this->db->Quote($this->title), $this->db->Quote($this->comment), 
 			$this->square->nateastings,$this->square->natnorthings,
 			$this->db->Quote($this->imageclass), $this->db->Quote($this->imagetaken),
-			$viewpoint_eastings,$viewpoint_northings,$this->view_direction,$this->db->Quote($this->user_status));
+			$viewpoint_eastings,$viewpoint_northings,$this->view_direction,$this->use6fig,$this->db->Quote($this->user_status));
 		
 		$this->db->Query($sql);
 		

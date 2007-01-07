@@ -769,3 +769,5 @@ CREATE TABLE `article_revisions` (
 
 
 ALTER TABLE `article_revisions` ADD `modifier` INT UNSIGNED NOT NULL ;
+
+ALTER TABLE `gridimage` ADD `use6fig` TINYINT UNSIGNED DEFAULT '0' NOT NULL AFTER `view_direction` ;

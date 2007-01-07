@@ -192,11 +192,17 @@ class GridImage
 		{
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
-	
+			
+			//we need a special case for centisquare 0,0
+			$same_square_true = (intval($this->nateastings/1000) == intval($this->viewpoint_eastings/1000)
+						&& intval($this->natnorthings/1000) == intval($this->viewpoint_northings/1000));
+			
+			$gr_len = ($same_square_true && $this->viewpoint_eastings%1000 == 0 && $this->viewpoint_northings%1000 == 0)?6:0;
+			
 			list($posgr,$len) = $conv->national_to_gridref(
 				$this->viewpoint_eastings,
 				$this->viewpoint_northings,
-				0,
+				($this->use6fig)?6:$gr_len,
 				$this->grid_square->reference_index,$spaced);
 			
 			$this->photographer_gridref=$posgr;
@@ -238,7 +244,7 @@ class GridImage
 		list($gr,$len) = $conv->national_to_gridref(
 			$this->grid_square->getNatEastings()-$correction,
 			$this->grid_square->getNatNorthings()-$correction,
-			$gr_len,
+			($this->use6fig)?6:$gr_len,
 			$this->grid_square->reference_index,$spaced);
 		
 		$this->subject_gridref=$gr;
@@ -1187,6 +1193,7 @@ class GridImage
 			", viewpoint_northings=".$db->Quote($this->viewpoint_northings).
 			", viewpoint_eastings=".$db->Quote($this->viewpoint_eastings).
 			", view_direction=".$db->Quote($this->view_direction).
+			", use6fig=".$db->Quote($this->use6fig).
 			" where gridimage_id = '{$this->gridimage_id}'";
 		$db->Execute($sql);
 			

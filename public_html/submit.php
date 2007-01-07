@@ -59,12 +59,12 @@ if (isset($_POST['gridsquare']))
 {
 	if (isset($_POST['photographer_gridref']))
 		$smarty->assign('photographer_gridref', $_POST['photographer_gridref']);
-	if (isset($_POST['view_direction']) && strlen($_POST['view_direction'])) {
+	if (!empty($_POST['view_direction']))
 		$smarty->assign('view_direction', $_POST['view_direction']);
-	} else {
+	else
 		$smarty->assign('view_direction', -1);
-	}
-		
+	if (!empty($_POST['use6fig']))
+		$smarty->assign('use6fig', $_POST['use6fig']);
 
 	//ensure the submitted reference is valid
 	if (!empty($_POST['grid_reference'])) 
@@ -225,6 +225,7 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->setClass(stripslashes($_POST['imageclass']));
 				$uploadmanager->setViewpoint(stripslashes($_POST['photographer_gridref']));
 				$uploadmanager->setDirection(stripslashes($_POST['view_direction']));
+				$uploadmanager->setUse6fig(stripslashes($_POST['use6fig']));
 				$uploadmanager->setUserStatus(stripslashes($_POST['user_status']));
 				
 				$err = $uploadmanager->commit();

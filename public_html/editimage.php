@@ -104,9 +104,9 @@ if (isset($_REQUEST['id']))
 		}
 
 
-		//get the photographer position
-		$image->getPhotographerGridref();
+		//get the grid references
 		$image->getSubjectGridref();
+		$image->getPhotographerGridref();
 		
 		//save these so can be used as title etc on the main image (when following link from search results, and redoing changes etc)
 		$image->current_title=$image->title;
@@ -134,6 +134,7 @@ if (isset($_REQUEST['id']))
 		$moderated["grid_reference"]=true;
 		$moderated["photographer_gridref"]=true;
 		$moderated["view_direction"]=true;
+		$moderated["use6fig"]=true;
 
 
 		//now make some exceptions
@@ -146,6 +147,7 @@ if (isset($_REQUEST['id']))
 			$moderated["grid_reference"]=false;
 			$moderated["photographer_gridref"]=false;
 			$moderated["view_direction"]=false;
+			$moderated["use6fig"]=false;
 		}
 		elseif ($isowner)
 		{
@@ -159,6 +161,7 @@ if (isset($_REQUEST['id']))
 
 			$moderated["photographer_gridref"]=false;
 			$moderated["view_direction"]=false;
+			$moderated["use6fig"]=false;
 		}
 
 
@@ -407,6 +410,7 @@ if (isset($_REQUEST['id']))
 			}
 
 			$view_direction=trim(stripslashes($_POST['view_direction']));
+			$use6fig=trim(stripslashes($_POST['use6fig']));
 
 
 			/////////////////////////////////////////////////////////////
@@ -436,6 +440,7 @@ if (isset($_REQUEST['id']))
 				$ticket->updateField("grid_reference", $image->subject_gridref, $grid_reference, $moderated["grid_reference"]);
 				$ticket->updateField("photographer_gridref", $image->photographer_gridref, $photographer_gridref, $moderated["photographer_gridref"]);
 				$ticket->updateField("view_direction", $image->view_direction, $view_direction, $moderated["view_direction"]);
+				$ticket->updateField("use6fig", $image->use6fig, $use6fig, $moderated["use6fig"]);
 
 				//finalise the change ticket
 				$status=$ticket->commit();
@@ -470,6 +475,7 @@ if (isset($_REQUEST['id']))
 				$image->subject_gridref=$grid_reference;
 				$image->photographer_gridref=$photographer_gridref;
 				$image->view_direction=$view_direction;
+				$image->use6fig=$use6fig;
 
 				$smarty->assign_by_ref('updatenote', $updatenote);
 
