@@ -15,23 +15,24 @@
 <body>
 {dynamic}
 	{if $rastermap->enabled}
-		<div class="rastermap" style="float:left; position:relative; width: 350px">
-	<p><b>{$gridref}{if $photographer_gridref} and {$photographer_gridref}{/if}</b></p>
+		<div style="float:left; position:relative; width: 350px">
+		<div class="interestBox">Grid Reference: <b>{$gridref}</b></div>
 	
-		<b>{$rastermap->getTitle($gridref)}</b><br/><br/>
-		{$rastermap->getImageTag()}<br/>
-		<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
-		 
-		</div>
-		
-		{$rastermap->getScriptTag()}
+		<div class="rastermap">
+			<b>{$rastermap->getTitle($gridref)}</b><br/><br/>
+			{$rastermap->getImageTag()}<br/>
+			<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
 
+			</div>
+
+			{$rastermap->getScriptTag()}
+		</div>
 		
 	{else} 
 		<script type="text/javascript" src="/mapping.js?v={$javascript_version}"></script>
 	{/if}
 <div style="float:left; position:relative; font-size:0.8em;" class="interestBox">
-Placenames featured on this map:
+<i>Placenames featured on this map:</i>
 <ul>
 {foreach from=$places item=place}
 	<li>{$place.full_name}</li>

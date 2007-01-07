@@ -61,7 +61,7 @@ class RasterMap
 	/**
 	* setup the values
 	*/
-	function RasterMap(&$square,$issubmit = false, $useExact = true)
+	function RasterMap(&$square,$issubmit = false, $useExact = true,$includeSecondService = false)
 	{
 		global $CONF;
 		$this->enabled = false;
@@ -84,7 +84,7 @@ class RasterMap
 					$this->enabled = true;
 					$this->service = 'OS50k';
 					
-					if ($this->issubmit && in_array('VoB',$services)) {
+					if (($this->issubmit || $includeSecondService) && in_array('VoB',$services)) {
 						$this->service2 = 'VoB';
 					}
 				} elseif($this->issubmit && in_array('VoB',$services)) {
