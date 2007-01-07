@@ -146,9 +146,11 @@
 <ul>
 
 	<li><b>Maps</b>: as <a href="/map/?u={$profile->user_id}">Personalised Geograph Map</a> or Recent Photos on <a href="http://maps.google.co.uk/maps?q=http://{$http_host}/syndicator.php%3Fu%3D{$profile->user_id}%26format%3DKML&ie=UTF8&om=1">Google Maps</a></li>
-	<li><b>Follow with</b>: <a title="RSS Feed for images by {$profile->realname}" href="/syndicator.php?u={$profile->user_id}&amp;format=GeoRSS" class="xml-rss">RSS</a> or <a title="GPX file for images by {$profile->realname}" href="/syndicator.php?u={$profile->user_id}&amp;format=GPX" class="xml-gpx">GPX</a></li>
+	<li><b>Recent Images</b>: <a title="RSS Feed for images by {$profile->realname}" href="/syndicator.php?u={$profile->user_id}&amp;format=GeoRSS" class="xml-rss">RSS</a> or <a title="GPX file for images by {$profile->realname}" href="/syndicator.php?u={$profile->user_id}&amp;format=GPX" class="xml-gpx">GPX</a></li>
 	{dynamic}{if $user->registered}
-	<li><b>Download</b>: <a title="Comma Seperated Values - file for images by {$profile->realname}" href="/export.csv.php?u={$profile->user_id}&amp;supp=1{if $user->user_id eq $profile->user_id}&amp;taken=1{/if}">CSV of all images</a></li>
+	<li><b>Download</b>: <a title="Comma Seperated Values - file for images by {$profile->realname}" href="/export.csv.php?u={$profile->user_id}&amp;supp=1{if $user->user_id eq $profile->user_id}&amp;taken=1{/if}">CSV</a>{if $user->user_id eq $profile->user_id},
+		<a title="Comma Seperated Values - file for images by {$profile->realname}" href="/export.excel.xml.php?u={$profile->user_id}&amp;supp=1{if $user->user_id eq $profile->user_id}&amp;taken=1{/if}">XML<small> for Excel <b>2003</b></small></a>
+	{/if}  of all images</li>
 	
 	{if $user->user_id eq $profile->user_id}
 		<li><b>Change Requests</b>: <a href="/tickets.php">View Recent Tickets</a></li>
