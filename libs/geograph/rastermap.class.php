@@ -150,7 +150,7 @@ class RasterMap
 		}
 
 		if (isset($title)) {
-			$extra = ($this->issubmit)?22:0;
+			$extra = ($this->issubmit)?44:0;
 
 	//container
 			$str = "<div style=\"position:relative;height:".($width+$extra)."px;width:{$this->width}px;\">";
@@ -160,23 +160,29 @@ class RasterMap
 
 	//drag prompt
 			if ($this->issubmit)
-				$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px; font-size:0.8em;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&lt;- Drag to mark photographer position.</small></div>";
+				$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px; font-size:0.8em;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&lt;- Drag to mark subject position.</small></div><div style=\"position:absolute;top:".($width+22)."px;left:0px; font-size:0.8em;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&lt;- Drag to mark photographer position.</small></div>";
 
 			$widthby2 = ($width/2);
 
 	//calculate subject position
-			$e = $this->nateastings;	$n = $this->natnorthings;
-			if ($e%100 == 0 && $n%100 == 0 && $this->exactPosition) {
-				$e +=50; $n += 50;
+			if ($this->issubmit && !$this->exactPosition) {
+			//ready to drag position
+				$left = 13;
+				$top = $width+20;
+			} else {
+				$e = $this->nateastings;	$n = $this->natnorthings;
+				if ($e%100 == 0 && $n%100 == 0 && $this->exactPosition) {
+					$e +=50; $n += 50;
+				}
+				$left = ($width/4) + ( ($e - $east) * $widthby2 / 1000 );
+				$top = $width - ( ($width/4) + ( ($n - $nort) * $widthby2 / 1000 ) );
 			}
-			$left = ($width/4) + ( ($e - $east) * $widthby2 / 1000 );
-			$top = $width - ( ($width/4) + ( ($n - $nort) * $widthby2 / 1000 ) );
-
 	//choose photographer icon
 			if ($this->view_direction && $this->view_direction != -1)
 				$iconfile = "camicon-{$this->view_direction}.png";
 			else
 				$iconfile = "camicon--1.png";
+
 	//calculate photographer position
 			if (!$this->issubmit && !empty($this->viewpoint_northings)) {
 				$e = $this->viewpoint_eastings;	$n = $this->viewpoint_northings;
@@ -210,7 +216,7 @@ class RasterMap
 			} else {
 		//ready to drag position
 				$vleft = 13;
-				$vtop = $width+20;
+				$vtop = $width+40;
 			}
 
 	//subject icon

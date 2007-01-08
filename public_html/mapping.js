@@ -78,13 +78,15 @@ function overlayMouseUp(e) {
 	if (currentelement != null) {
 		if (currentelement.id == 'marker1') {
 			if (document.theForm.grid_reference.value == "") {
-				currentelement.style.left = (w2-marker1left)+'px';
-				currentelement.style.top = (h2-marker1top)+'px';
+				currentelement.style.left = (15-marker1left)+'px';
+				currentelement.style.top = (maph + 15 -marker1top)+'px';
+				eastings1 = 0;
 			}
 		} else if (currentelement.id == 'marker2') {
 			if (document.theForm.photographer_gridref.value == "") {
-				currentelement.style.left = (15 -marker2left) +'px';
-				currentelement.style.top = (maph + 15 - marker2top)+'px';
+				currentelement.style.left = (15 -marker1left) +'px';
+				currentelement.style.top = (maph + 35 - marker2top)+'px';
+				eastings2 = 0;
 			}
 		}
 	}
@@ -336,17 +338,17 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 					tempX = tempX + w2;
 					tempY = tempY + h2;
 					if (currentelement.id == 'marker2' && ( (tempX < 0) || (tempX > mapw) || (tempY < 0) || (tempY > maph) ) ) {
-						currentelement.style.left = 5+'px';
-						currentelement.style.top = (maph + 5)+'px';
+						currentelement.style.left = (15 -marker1left) +'px';
+						currentelement.style.top = (maph + 35 - marker2top)+'px';
 						eastings2 = easting;
 						northings2 = northing;
 					} else {
 						if (currentelement.id == 'marker1') {
 							if (numbers.length == 4 && easting%1000 == 0 && northing%1000 == 0) {
-								tempX = tempX + (mapw /4);
-								tempY = tempY - (maph /4);
-								eastings1 = easting + 500;
-								northings1 = northing + 500;
+								tempX = 15;
+								tempY = maph + marker1top;
+								eastings1 = 0;
+								northings1 = 0;
 							} else if (numbers.length == 6 && easting%100 == 0 && northing%100 == 0) {
 								tempX = tempX + (mapw /40);
 								tempY = tempY - (maph /40);
@@ -359,7 +361,12 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 							currentelement.style.left = (tempX - marker1left)+'px';
 							currentelement.style.top = (tempY - marker1top)+'px';
 						} else if (currentelement.id == 'marker2') {
-							if (numbers.length == 6 && easting%100 == 0 && northing%100 == 0) {
+							if (numbers.length == 4 && easting%1000 == 0 && northing%1000 == 0) {
+								tempX = 15;
+								tempY = maph + 35;
+								eastings2 = 0;
+								northings2 = 0;
+							} else if (numbers.length == 6 && easting%100 == 0 && northing%100 == 0) {
 								tempX = tempX + (mapw /40);
 								tempY = tempY - (maph /40);
 								eastings2 = easting + 50;

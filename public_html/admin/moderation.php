@@ -307,6 +307,10 @@ foreach ($images->images as $i => $image) {
 	}	
 	$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$image->gridsquare_id}");
 
+	$fullpath=$images->images[$i]->_getFullpath();
+	list($width, $height, $type, $attr)=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
+	if (max($width,$height) < 400)
+		$images->images[$i]->sizestr = $attr;
 }
 
 #############################

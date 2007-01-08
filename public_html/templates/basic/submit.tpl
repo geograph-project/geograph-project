@@ -205,6 +205,10 @@ geographing</a> first.</p>
 <p style="color:#990000;font-weight:bold;">{$errormsg}</p>
 {/if}
 
+  {if $smallimage}
+	<div style="background-color:red; color:white; border:1px solid pink; padding:10px;">We notice the image is quite small, you can continue, but we would welcome a bigger image. Note, small images are usually rejected unless there is something unique about the image.</div>
+  {/if}
+
 <p>
 Below is a full-size preview of the image we will store for grid reference 
 {$gridref}.<br/><br/>
