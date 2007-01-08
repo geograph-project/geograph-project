@@ -24,7 +24,7 @@
 
 
 /**
-* Provides the Gazetteer class
+* Provides the Gazetteer class (Optimised for British Isles Use)
 *
 * @package Geograph
 * @author Barry Hunter <geo@barryhunter.co.uk>
@@ -102,7 +102,7 @@ class Gazetteer
 		return $places;
 	}
 	
-	function findByNational($reference_index,$e,$n,$radius = 25000,$f_codes = null) {
+	function findByNational($reference_index,$e,$n,$radius = 25005,$f_codes = null) {
 		global $CONF;
 		$db=&$this->_getDB();
 		
@@ -121,9 +121,14 @@ class Gazetteer
 			//				AsBinary(GeomFromText($point))  )))) as distance
 
 		if ($CONF['use_gazetteer'] == 'OS' && $reference_index == 1) {
+			
+			$e = (floor($e/1000) * 1000) + 500;
+			$n = (floor($n/1000) * 1000) + 500;
+		
 			$places = array();
 			if (!$f_codes) {
-				$radius2 = 2000;
+		//first try looking up a big city/town for 'in'
+				$radius2 = 2005;
 				$left=$e-$radius2;
 				$right=$e+$radius2;
 				$top=$n-$radius2;
@@ -162,6 +167,7 @@ class Gazetteer
 				} else {
 					$codes = "'C','T','O'";
 				}
+		//otherwise lookup a nearby settlement
 				$places = $db->GetRow("select
 						`def_nam` as full_name,
 						'PPL' as dsg,
@@ -179,10 +185,11 @@ class Gazetteer
 						f_code in ($codes)
 					order by distance asc,f_code+0 asc limit 1");
 
-				$placeradius = 5000;
+				$placeradius = 4005;
 				if (sqrt($places['distance']) > $placeradius) {
-
-					//can reduce the size of the 
+		//if nothing near try finding a feature
+		
+					//can reduce the size of the search
 
 					$left=$e-$placeradius;
 					$right=$e+$placeradius;
@@ -247,6 +254,7 @@ class Gazetteer
 					reference_index = {$reference_index}
 				order by distance asc limit 1");
 		} else {
+	//lookup a nearby settlement
 			$places = $db->GetRow("select
 					full_name,
 					dsg,
@@ -265,6 +273,7 @@ class Gazetteer
 					loc_placenames.reference_index = {$reference_index}
 				order by distance asc limit 1");
 
+	//if found very close then lookup mutliple
 			$d = 2500*2500;	
 			if ($places['distance'] < $d) {
 				$nearest = $db->GetAll("select
