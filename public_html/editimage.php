@@ -409,8 +409,8 @@ if (isset($_REQUEST['id']))
 				}
 			}
 
-			$view_direction=trim(stripslashes($_POST['view_direction']));
-			$use6fig=trim(stripslashes($_POST['use6fig']));
+			$view_direction=intval(trim(stripslashes($_POST['view_direction'])));
+			$use6fig=intval(trim(stripslashes($_POST['use6fig'])));
 
 
 			/////////////////////////////////////////////////////////////
