@@ -75,9 +75,8 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$data['taken_start'] = "$cacheid-12-25";
 		$data['taken_end'] = $data['taken_start'];
 		
-		$image = new GridImage();
 		$image->imagetaken = $data['taken_start'];					
-		$data['taken_startString'] = $image->getFormattedTakenDate();
+		$data['taken_startString'] = getFormattedDate($data['taken_start']);
 		
 		$data['orderby'] = 'gridimage_id'; 
 		$data['reverse_order_ind'] = 1; 

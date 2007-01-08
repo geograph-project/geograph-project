@@ -198,7 +198,7 @@ class SearchEngineBuilder extends SearchEngine
 	
 	function buildAdvancedQuery(&$dataarray,$autoredirect='auto')
 	{
-		global $CONF,$imagestatuses,$sortorders,$USER;
+		global $CONF,$imagestatuses,$breakdowns,$sortorders,$USER;
 		
 		if (empty($dataarray['distance'])) {
 			$dataarray['distance'] = $CONF['default_search_distance'];
@@ -516,6 +516,10 @@ class SearchEngineBuilder extends SearchEngine
 					}
 			}
 			
+			if (!empty($dataarray['breakby'])) {
+				$sql .= ",breakby = ".$db->Quote($dataarray['breakby']);
+				$searchdesc .= ", by ".($breakdowns[$dataarray['breakby']]);
+			}			
 
 			$sql .= ",searchdesc = ".$db->Quote($searchdesc);
 
@@ -532,22 +536,18 @@ class SearchEngineBuilder extends SearchEngine
 				return $i;
 			}
 		} else if (isset($criteria) && isset($criteria->is_multiple)) {
-			if ($dataarray['user_id']) {
+			if (!empty($dataarray['user_id'])) {
 				$profile=new GeographUser($dataarray['user_id']);
 				$searchdesc .= ",".($dataarray['user_invert_ind']?' not':'')." by ".($profile->realname);
 			}
-			if ($dataarray['moderation_status']) {
+			if (!empty($dataarray['moderation_status']))
 				$searchdesc .= ", showing ".$imagestatuses[$dataarray['moderation_status']]." images";
-			}
-			if ($dataarray['imageclass']) {
+			if (!empty($dataarray['imageclass']))
 				$searchdesc .= ", classifed as ".$dataarray['imageclass'];
-			}
-			if ($dataarray['reference_index']) {
+			if (!empty($dataarray['reference_index']))
 				$searchdesc .= ", in ".$CONF['references'][$dataarray['reference_index']];
-			}
-			if ($dataarray['gridsquare']) {
+			if (!empty($dataarray['gridsquare'])) 
 				$searchdesc .= ", in ".$dataarray['gridsquare'];
-			}
 			
 			if (!empty($dataarray['orderby'])) {
 				switch ($dataarray['orderby']) {
@@ -563,6 +563,9 @@ class SearchEngineBuilder extends SearchEngine
 				}
 			}
 	
+			if (!empty($dataarray['breakby']))
+				$searchdesc .= ", by ".($breakdowns[$dataarray['breakby']]);
+	
 			$this->searchdesc = $searchdesc;
 			$this->criteria = $criteria;
 	
@@ -577,9 +580,7 @@ class SearchEngineBuilder extends SearchEngine
 			}
 		}
 		if (!empty($dataarray[$which])) {
-			$image = new GridImage();
-			$image->imagetaken = $dataarray[$which];					
-			$dataarray[$which.'String'] = $image->getFormattedTakenDate();
+			$dataarray[$which.'String'] = getFormattedDate($dataarray[$which]);
 		}
 	}	
 

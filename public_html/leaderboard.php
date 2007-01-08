@@ -148,10 +148,8 @@ if (!$smarty->is_cached($template, $cacheid))
 
 		$column = ($date == 'taken')?'imagetaken':'submitted';  
 		$sql_where .= " and $column LIKE '$when%'";
-		$iamge = new GridImage();
-		$iamge->imagetaken = $when;
 		$title = ($date == 'taken')?'taken':'submitted'; 
-		$desc .= ", <b>for images $title during ".$iamge->getFormattedTakenDate()."</b>";
+		$desc .= ", <b>for images $title during ".getFormattedDate($when)."</b>";
 	}
 	
 	$smarty->assign('heading', $heading);

@@ -172,29 +172,24 @@ if ($grid_given)
 			$custom_where .= " and imageclass = '".$_GET['class']."'";
 			$filtered_title = "categorised as '".$_GET['class']."'";
 		}
-		$iamge = new GridImage();
 		if (!empty($_GET['taken'])) {
 			$custom_where .= " and imagetaken LIKE '".$_GET['taken']."%'";
-			$iamge->imagetaken = $_GET['taken'];
-			$date = $iamge->getFormattedTakenDate();
+			$date = getFormattedDate($_GET['taken']);
 			$filtered_title = "Taken in $date";
 		}
 		if (!empty($_GET['takenyear'])) {
 			$custom_where .= " and imagetaken LIKE '".$_GET['takenyear']."%'";
-			$iamge->imagetaken = $_GET['takenyear'];
-			$date = $iamge->getFormattedTakenDate();
+			$date = getFormattedDate($_GET['takenyear']);
 			$filtered_title = "Taken in $date";
 		}
 		if (!empty($_GET['submitted'])) {
 			$custom_where .= " and submitted LIKE '".$_GET['submitted']."%'";
-			$iamge->imagetaken = $_GET['submitted'];
-			$date = $iamge->getFormattedTakenDate();
+			$date = getFormattedDate($_GET['submitted']);
 			$filtered_title = "Submitted in $date";
 		}
 		if (!empty($_GET['submittedyear'])) {
 			$custom_where .= " and submitted LIKE '".$_GET['submittedyear']."%'";
-			$iamge->imagetaken = $_GET['submittedyear'];
-			$date = $iamge->getFormattedTakenDate();
+			$date = getFormattedDate($_GET['submittedyear']);
 			$filtered_title = "Submitted in $date";
 		}
 		if (!empty($_GET['centi'])) {
@@ -362,8 +357,7 @@ if ($grid_given)
 				AND (moderation_status in ('accepted', 'geograph') $user_crit )
 				GROUP BY SUBSTRING($column,1,$length)");
 				foreach ($all as $row) {
-					$iamge->imagetaken = $row[0];
-					$date = $iamge->getFormattedTakenDate();
+					$date = getFormattedDate($row[0]);
 					$breakdown[$i] = array('name'=>"$title <b>$date</b>",'count'=>$row[1]);
 					if ($row[1] > 20) {
 						$datel = $row[0].substr('-00-00',0, 10-$length);
