@@ -47,9 +47,12 @@ class Gazetteer
 	}
 	
 
-	function findListByNational($reference_index,$e,$n,$radius = 2000) {
+	function findListByNational($reference_index,$e,$n,$radius = 1005) {
 		global $CONF;
 		$db=&$this->_getDB();
+		
+		$e = (floor($e/1000) * 1000) + 500;
+		$n = (floor($n/1000) * 1000) + 500;
 		
 		//to optimise the query, we scan a square centred on the
 		//the required point
