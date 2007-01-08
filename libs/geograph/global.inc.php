@@ -554,13 +554,13 @@ function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl')
 	}
 }
 
-function getFormattedDate($date) {
-	list($y,$m,$d)=explode('-', $date);
+function getFormattedDate($input) {
+	list($y,$m,$d)=explode('-', $input);
 	$date="";
 	if ($d>0) {
 		if ($y>1970) {
 			//we can use strftime
-			$t=strtotime($date." 0:0:0");//stop a warning
+			$t=strtotime($input." 0:0:0");//stop a warning
 			$date=strftime("%A, %e %B, %Y", $t);   //%e doesnt work on WINDOWS!  (could use %d)
 		} else {
 			//oh my!
