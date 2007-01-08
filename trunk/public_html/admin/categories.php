@@ -82,24 +82,8 @@ if (!$db) die('Database connection failed');
 		$message .= "<p>All values updated</p>";
 		$smarty->assign('message',  $message);
 	}
-	$arr = $db->GetAssoc("select imageclass,count(*) from gridimage ".
-			"group by imageclass");
+	$arr = $db->GetAssoc("select imageclass,count(*) from gridimage group by imageclass");
 	
-	foreach(array('Urban Landscape',
-		'Urban Landmark',
-		'Open Countryside',
-		'Farmland',
-		'Woodland',
-		'Water Bodies - Lakes and Rivers',
-		'Mountains',
-		'Marshland',
-		'Coastline/Beaches') as $val) {
-			if(!isset($arr[$val])) 
-				$arr[$val]=0;
-	}
-	
-	ksort($arr);
-
 	$smarty->assign('arr',  $arr);
 
 
