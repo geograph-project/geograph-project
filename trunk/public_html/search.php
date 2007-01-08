@@ -31,7 +31,8 @@ $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
 $imagestatuses = array('geograph' => 'geograph only','geograph,accepted' => 'geographs &amp; supplemental','accepted' => 'supplemental only');
 $sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North');
-#,'user_id'=>'Contributer ID'
+$breakdowns = array(''=>'','imagetaken_month'=>'Month Taken','imagetaken_year'=>'Year Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted',);
+
 $displayclasses =  array(
 			'full' => 'full listing',
 			'more' => 'full listing + links',
@@ -441,6 +442,7 @@ if (isset($_GET['fav']) && $i) {
 		} else {
 			$smarty->assign('orderby', $query['orderby']);
 		}
+		$smarty->assign('breakby', $query['breakby']);
 		$smarty->assign('displayclass', $query['displayclass']);
 		$smarty->assign('resultsperpage', $query['resultsperpage']);
 		$smarty->assign('i', $i);
@@ -510,7 +512,9 @@ if (isset($_GET['fav']) && $i) {
 
 	if (!$smarty->is_cached($template, $cacheid)) {
 		dieUnderHighLoad(3,'search_unavailable.tpl');
-		
+	
+		$smarty->register_function("searchbreak", "smarty_function_searchbreak");
+	
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
 
 		
@@ -625,7 +629,7 @@ if (isset($_GET['fav']) && $i) {
 }
 
 	function advanced_form(&$smarty,&$db,$is_cachable = false) {
-		global $CONF,$imagestatuses,$sortorders,$USER;
+		global $CONF,$imagestatuses,$sortorders,$breakdowns,$USER;
 		
 		if ($_GET['form'] == 'first') {
 			$template = 'search_first.tpl';
@@ -673,6 +677,8 @@ if (isset($_GET['fav']) && $i) {
 			$smarty->assign_by_ref('imagestatuses', $imagestatuses);
 
 			$smarty->assign_by_ref('sortorders', $sortorders);
+			$smarty->assign_by_ref('breakdowns', $breakdowns);
+			
 
 			$smarty->assign_by_ref('references',$CONF['references']);
 		}
@@ -680,5 +686,66 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->display($template, $is_cachable);
 	}
 
+function smarty_function_searchbreak($params) {
+	global $engine;
 	
+	if (!$engine->criteria->breakby)
+		return;
+	
+	$last = $engine->breaklast;
+	$image = &$params['image'];
+	$b = 0;
+	switch ($engine->criteria->breakby) {
+		case 'imagetaken':
+			if ($last != $image->imagetaken)
+				$b = $image->imagetakenString?$image->imagetakenString:getFormattedDate($image->imagetaken);
+			$last = $image->imagetaken;
+			break;
+		case 'imagetaken_month':
+			$s = substr($image->imagetaken,0,7);
+			if ($last != $s)
+				$b = getFormattedDate($s);
+			$last = $s;
+			break;
+		case 'imagetaken_year':
+			$s = substr($image->imagetaken,0,4);
+			if ($last != $s)
+				$b = getFormattedDate($s);
+			$last = $s;
+			break;
+		case 'submitted':
+			if ($last != $image->submitted)
+				$b = getFormattedDate($image->submitted);
+			$last = $image->imagetaken;
+			break;
+		case 'isubmitted_month':
+			$s = substr($image->submitted,0,7);
+			if ($last != $s)
+				$b = getFormattedDate($s);
+			$last = $s;
+			break;
+		case 'submitted_year':
+			$s = substr($image->submitted,0,4);
+			if ($last != $s)
+				$b = getFormattedDate($s);
+			$last = $s;
+			break;
+		default:
+			$name = $engine->criteria->breakby;
+			if ($last != $image->{$name})
+				$b = $image->{$name};
+			$last = $image->{$name};
+			break;
+	}
+	
+	if ($b) {
+		if (isset($params['extra']))
+			print "</ul>";
+		print "<div style=\"clear:both;margin-left:0px;padding:2px;\"><b>$b</b></div>";
+		if (isset($params['extra']))
+			print "<ul>";
+	}
+	$engine->breaklast = $last;
+}
+
 ?>

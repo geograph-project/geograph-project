@@ -1140,43 +1140,7 @@ class GridImage
 	*/
 	function getFormattedTakenDate()
 	{
-		list($y,$m,$d)=explode('-', $this->imagetaken);
-		$date="";
-		if ($d>0)
-		{
-			if ($y>1970)
-			{
-				//we can use strftime
-				$t=strtotime($this->imagetaken);
-				$date=strftime("%A, %e %B, %Y", $t);   //%e doesnt work on WINDOWS!  (could use %d)
-			}
-			else
-			{
-				//oh my!
-				$t=strtotime("2000-$m-$d");
-				$date=strftime("%e %B", $t)." $y";
-			}
-			
-		}
-		elseif ($m>0)
-		{
-			//well, it saves having an array of months...
-			$t=strtotime("2000-$m-01");
-			if ($y > 0) {
-				$date=strftime("%B", $t)." $y";
-			} else {
-				$date=strftime("%B", $t);
-			}
-		}
-		elseif ($y>0)
-		{
-			$date=$y;
-		}
-		
-		
-		
-		
-		return $date;
+		return getFormattedDate($this->imagetaken);
 	}
 	
 	/**

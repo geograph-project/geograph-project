@@ -11,7 +11,7 @@
 	{/if}
 	<div>
 	{foreach from=$engine->results item=image}
-	
+	{searchbreak image=$image}
 	  <div style="float:left;position:relative; width:130px; height:160px">
 	  <div align="center">
 	  <a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,true)}</a></div>

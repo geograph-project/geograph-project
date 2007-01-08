@@ -368,7 +368,7 @@ END;
 
 				//if we searching on taken date then display it...
 				if ($showtaken) 
-					$this->results[$i]->imagetakenString = $this->results[$i]->getFormattedTakenDate();
+					$this->results[$i]->imagetakenString = getFormattedDate($this->results[$i]->imagetaken);
 
 				$recordSet->MoveNext();
 				$i++;

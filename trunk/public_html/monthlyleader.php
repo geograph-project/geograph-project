@@ -58,14 +58,12 @@ ORDER BY submitted_month DESC");
 			$month[$topusers[$idx]['submitted_month']] = $topusers[$idx]['imgcount'];
 		}
 	}
-	$iamge = new GridImage;
 	foreach($topusers as $idx=>$entry)
 	{
 		if ($topusers[$idx]['imgcount'] < $month[$topusers[$idx]['submitted_month']]) {
 			unset ($topusers[$idx]);
 		} else {
-			$iamge->imagetaken = $topusers[$idx]['submitted_month'];
-			$topusers[$idx]['month'] = $iamge->getFormattedTakenDate();
+			$topusers[$idx]['month'] = getFormattedDate($topusers[$idx]['submitted_month']);
 		}
 	}
 	
