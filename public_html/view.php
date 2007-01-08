@@ -94,7 +94,7 @@ if (isset($_GET['id']))
 //do we have a valid image?
 if ($image->isValid())
 {
-	$taken=getFormattedDate($image->imagetaken);
+	$taken=$image->getFormattedTakenDate();
 
 	//get the grid references
 	$image->getSubjectGridref(true);
