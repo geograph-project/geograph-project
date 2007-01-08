@@ -251,6 +251,36 @@ function smarty_function_gridimage($params)
 		  
 }
 
+function smarty_function_place($params) {
+
+	$place = $params['place'];
+	$t = '';
+	if ($place['distance'] > 3)
+		$t .= ($place['distance']-0.01)." km from ";
+	elseif (!$place['isin'])
+		$t .= "near to ";
+
+	$t .= "<b>{$place['full_name']}</b><small><i>";
+	if ($place['adm1_name'] && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'])
+		$t .= ", {$place['adm1_name']}";
+	elseif ($place['hist_county'])
+		$t .= ", {$place['hist_county']}";
+	$t .= ", {$place['reference_name']}</i></small>";
+	if ($params['h3']) {
+	 	$t2 = "<h3";
+	 	if ($place['hist_county']) {
+	 		$t2 .= " title=\"".substr($place['full_name'],0,10).": Historic County - {$place['hist_county']}";
+	 		if ($place['hist_county'] == $place['adm1_name'])
+	 			$t2 .= ", and modern Administrative Area of the same name";
+	 		else
+	 			$t2 .= ", modern Administrative Area - {$place['adm1_name']}";
+	 		$t2 .= "\"";
+	 	}
+	 	$t = $t2.">".$t."</h3>";
+	}
+	return $t;
+}
+
 /**
 * adds commas to thousendise a number
 */
@@ -321,6 +351,9 @@ class GeographPage extends Smarty
 
 		//gridimage
 		$this->register_function("gridimage", "smarty_function_gridimage");
+
+		//gridimage
+		$this->register_function("place", "smarty_function_place");
 
 
 		$this->register_modifier("geographlinks", "smarty_function_geographlinks");

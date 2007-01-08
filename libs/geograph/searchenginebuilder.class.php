@@ -70,7 +70,7 @@ class SearchEngineBuilder extends SearchEngine
 				$searchx = $criteria->x;
 				$searchy = $criteria->y;	
 			} else {
-				$this->errormsg = "Invalid Postcode";
+				$this->errormsg = "Invalid Postcode or a newer Postcode not in our database, please try a different search method.";
 			}
 		} elseif (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/",$q,$gr)) {
 			require_once('geograph/gridsquare.class.php');
@@ -235,7 +235,7 @@ class SearchEngineBuilder extends SearchEngine
 					$searchx = $criteria->x;
 					$searchy = $criteria->y;	
 				} else {
-					$this->errormsg = "Postcode Not Found...";
+					$this->errormsg = "Invalid Postcode or a newer Postcode not in our database, please try a different search method.";
 				}
 			} else {
 				$this->errormsg = "Does not appear to be a valid Postcode";
