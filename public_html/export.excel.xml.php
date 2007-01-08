@@ -89,8 +89,12 @@ while (!$recordSet->EOF)
 		print "<Cell><Data ss:Type=\"Number\">{$image['wgs84_lat']}</Data></Cell>\n";
 		print "<Cell><Data ss:Type=\"Number\">{$image['wgs84_long']}</Data></Cell>\n";
 	}
-	if (!empty($_GET['taken']))
-		print "<Cell ss:StyleID=\"sDt\"><Data ss:Type=\"DateTime\">{$image['imagetaken']}T00:00:00.000</Data></Cell>\n";
+	if (!empty($_GET['taken'])) {
+		if (strpos($image['imagetaken'],'-00') === FALSE) 
+			print "<Cell ss:StyleID=\"sDt\"><Data ss:Type=\"DateTime\">{$image['imagetaken']}T00:00:00.000</Data></Cell>\n";
+		else 
+			print "<Cell><Data ss:Type=\"String\">{$image['imagetaken']}</Data></Cell>\n";
+	}
 	if (!empty($_GET['dir']))
 		print "<Cell><Data ss:Type=\"Number\">{$image['view_direction']}</Data></Cell>\n";
 	
