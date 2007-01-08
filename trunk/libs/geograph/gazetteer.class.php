@@ -129,6 +129,8 @@ class Gazetteer
 				$top=$n-$radius2;
 				$bottom=$n+$radius2;
 
+				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
 				$places = $db->GetRow("select
 						`def_nam` as full_name,
 						'PPL' as dsg,
@@ -152,7 +154,9 @@ class Gazetteer
 				$right=$e+$radius;
 				$top=$n-$radius;
 				$bottom=$n+$radius;
-
+				
+				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+				
 				if (is_array($f_codes) && count($f_codes)) {
 					$codes = "'".implode("','",$f_codes)."'";
 				} else {
