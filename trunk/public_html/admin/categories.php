@@ -82,7 +82,7 @@ if (!$db) die('Database connection failed');
 		$message .= "<p>All values updated</p>";
 		$smarty->assign('message',  $message);
 	}
-	$arr = $db->GetAssoc("select imageclass,count(*) from gridimage group by imageclass");
+	$arr = $db->GetAssoc("select imageclass,count(*) from gridimage where moderation_status != 'rejected' group by imageclass");
 	
 	$smarty->assign('arr',  $arr);
 
