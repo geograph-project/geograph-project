@@ -121,40 +121,72 @@ class Gazetteer
 			//				AsBinary(GeomFromText($point))  )))) as distance
 
 		if ($CONF['use_gazetteer'] == 'OS' && $reference_index == 1) {
-			if (is_array($f_codes) && count($f_codes)) {
-				$codes = "'".implode("','",$f_codes)."'";
-			} else {
-				$codes = "'C','T','O'";
+			$places = array();
+			if (!$f_codes) {
+				$radius2 = 2000;
+				$left=$e-$radius2;
+				$right=$e+$radius2;
+				$top=$n-$radius2;
+				$bottom=$n+$radius2;
+
+				$places = $db->GetRow("select
+						`def_nam` as full_name,
+						'PPL' as dsg,
+						1 as reference_index,
+						`full_county` as adm1_name,
+						`hcounty` as hist_county,
+						(seq + 1000000) as pid,
+						( (east-{$e})*(east-{$e})+(north-{$n})*(north-{$n}) ) as distance,
+						1 as isin
+					from
+						os_gaz
+					where
+						CONTAINS( 	
+							GeomFromText($rectangle),
+							point_en) AND
+						f_code in ('C','T')
+						order by f_code+0 asc,distance asc limit 1");
 			}
-			$places = $db->GetRow("select
-					`def_nam` as full_name,
-					'PPL' as dsg,
-					1 as reference_index,
-					`full_county` as adm1_name,
-					`hcounty` as hist_county,
-					(seq + 1000000) as pid,
-					( (east-{$e})*(east-{$e})+(north-{$n})*(north-{$n}) ) as distance
-				from
-					os_gaz
-				where
-					CONTAINS( 	
-						GeomFromText($rectangle),
-						point_en) AND
-					f_code in ($codes)
-				order by distance asc,f_code+0 asc limit 1");
-				
+			if (count($places) == 0) {
+				$left=$e-$radius;
+				$right=$e+$radius;
+				$top=$n-$radius;
+				$bottom=$n+$radius;
+
+				if (is_array($f_codes) && count($f_codes)) {
+					$codes = "'".implode("','",$f_codes)."'";
+				} else {
+					$codes = "'C','T','O'";
+				}
+				$places = $db->GetRow("select
+						`def_nam` as full_name,
+						'PPL' as dsg,
+						1 as reference_index,
+						`full_county` as adm1_name,
+						`hcounty` as hist_county,
+						(seq + 1000000) as pid,
+						( (east-{$e})*(east-{$e})+(north-{$n})*(north-{$n}) ) as distance
+					from
+						os_gaz
+					where
+						CONTAINS( 	
+							GeomFromText($rectangle),
+							point_en) AND
+						f_code in ($codes)
+					order by distance asc,f_code+0 asc limit 1");
+
 				$placeradius = 5000;
 				if (sqrt($places['distance']) > $placeradius) {
-				
+
 					//can reduce the size of the 
-					
+
 					$left=$e-$placeradius;
 					$right=$e+$placeradius;
 					$top=$n-$placeradius;
 					$bottom=$n+$placeradius;
 
 					$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
-				
+
 					$places2 = $db->GetRow("select
 							`def_nam` as full_name,
 							'PPL' as dsg,
@@ -177,7 +209,7 @@ class Gazetteer
 						$places['full_name'] .= ' ['.$db->getOne("select code_name from os_gaz_code where f_code = '".$places['f_code']."'")."]";
 					}
 				}
-				
+			}
 		} else if ($CONF['use_gazetteer'] == 'hist' && $reference_index == 1) {
 			$places = $db->GetRow("select
 					full_name,
