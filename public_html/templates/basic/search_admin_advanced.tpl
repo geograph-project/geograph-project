@@ -186,6 +186,7 @@ function updateBreakBy(that) {
 
 updateBreakBy(document.theForm.orderby);
 
+{/literal}
 //--></script>
 
 
