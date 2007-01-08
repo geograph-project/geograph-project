@@ -277,6 +277,9 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('preview_width', $uploadmanager->upload_width);
 			$smarty->assign('preview_height', $uploadmanager->upload_height);
 			
+			if (max($uploadmanager->upload_width,$uploadmanager->upload_height) < 500) 
+				$smarty->assign('smallimage', 1);
+				
 			$token=new Token;
 			$token->setValue("g", $_POST['grid_reference']);
 			$token->setValue("p", $_POST['photographer_gridref']);

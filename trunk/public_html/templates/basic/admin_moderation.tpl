@@ -69,6 +69,10 @@
 	  <br/>
 	  
 	  <br/>
+	  {if $image->sizestr}
+	  	<div style="float:right; background-color:red; color:white; border:1px solid pink; padding:6px;">{$image->sizestr}</div>
+	  {/if}
+	  
 	  <input class="accept" type="button" id="geograph{$image->gridimage_id}" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey"{else}{if $image->different_square} style="color:lightgrey"{/if}{/if}/>
 	  <input class="accept" type="button" id="accept{$image->gridimage_id}" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey"{/if}/>
 	  <input class="reject" type="button" id="reject{$image->gridimage_id}" value="Reject" onClick="moderateImage({$image->gridimage_id}, 'rejected')"/>
