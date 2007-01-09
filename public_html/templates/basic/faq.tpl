@@ -112,7 +112,7 @@ ul.contents li.last { padding-bottom:2px; border-bottom: 1px solid lightgrey; }
 		<dt>Ceremonial Counties (sometimes known as Geographic)</dt>
 		<dd>These where introduced in 1974 primarily as a way to define areas for County Councils, despite these possibly been the most recognized 'counties' for the current generation, we don't attempt to use these, as getting a dataset to do so is very costly.</dd>
 
-		<dt>Administrative Counties (sometimes known as Unitary Authorities</dt>
+		<dt>Administrative Counties (also known as District/Unitary Authorities)</dt>
 		<dd>These are the modern 'counties' in use by the current government (since 1997). This is the best dataset we have available, so we display it prominently in the gazetteer line, it is also useful for identifying the council responsible for the area. However for large towns/cities, for example Sheffield, which are in their own Authority (therefore the 'county' of Sheffield), we attempt to be clever and display the Historic County instead.</dd>
 	</dl>
 
