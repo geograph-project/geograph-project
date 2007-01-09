@@ -170,7 +170,7 @@
 <div class="field"> 
 	<label for="ticket_option" class="nowrap">Trouble Ticket Emails</label>
 	
-	<select name="ticket_option" id="ticket_option" style="text-align:right" size="1"> 
+	<select name="ticket_option" id="ticket_option" size="1"> 
 		{html_options options=$ticket_options selected=$profile->ticket_option}
 	</select>
 	 
