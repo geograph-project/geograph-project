@@ -247,50 +247,6 @@ if (isset($_REQUEST['id']))
 			$image->lockThisImage($USER->user_id);
 		}
 
-		//let's find posts in the gridref discussion forum
-		$image->grid_square->assignDiscussionToSmarty($smarty);
-
-		require_once('geograph/rastermap.class.php');
-
-		$rastermap = new RasterMap($image->grid_square,true);
-		if (!empty($image->viewpoint_northings)) {
-			$rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings,$image->view_direction);
-		} elseif (!empty($image->view_direction) && $image->view_direction != -1) {
-			$rastermap->addViewDirection($image->view_direction);
-		}
-		$smarty->assign_by_ref('rastermap', $rastermap);
-
-		//build a list of view directions
-		require_once('geograph/searchengine.class.php');
-		$search = new SearchEngine('');
-		$dirs = array (-1 => '');
-		$jump = 360/16; $jump2 = 360/32;
-		for($q = 0; $q< 360; $q+=$jump) {
-			$s = ($q%90==0)?strtoupper($search->heading_string($q)):ucwords($search->heading_string($q));
-			$dirs[$q] = sprintf('%s : %03d deg (%03d > %03d)',
-				str_pad($s,16,' '),
-				$q,
-				($q == 0?$q+360-$jump2:$q-$jump2),
-				$q+$jump2);
-		}
-		$dirs['00'] = $dirs[0];
-		$smarty->assign_by_ref('dirs', $dirs);
-		
-		
-		//get trouble tickets
-		$show_all_tickets = isset($_REQUEST['alltickets']) && $_REQUEST['alltickets']==1;
-		$smarty->assign('show_all_tickets', $show_all_tickets);
-
-		$statuses=array('pending', 'open');
-		if ($show_all_tickets)
-			$statuses[]='closed';
-
-		$openTickets=&$image->getTroubleTickets($statuses);
-
-		if (count($openTickets))
-			$smarty->assign_by_ref('opentickets', $openTickets);
-
-
 		//save changes?
 		if (isset($_POST['title']) && !isset($_POST['create']))
 		{
@@ -320,13 +276,6 @@ if (isset($_REQUEST['id']))
 			$comment=trim(stripslashes($_POST['comment']));
 			$comment=strip_tags($comment);
 
-			/*
-			if (strlen($comment)==0)
-			{
-				$ok=false;
-				$error['comment']="Please provide a few comments about the image";
-			}
-			*/
 			$imageclass=trim(stripslashes($_POST['imageclass']));
 			$imageclass=strip_tags($imageclass);
 
@@ -487,6 +436,53 @@ if (isset($_REQUEST['id']))
 
 
 		}
+
+
+		//let's find posts in the gridref discussion forum
+		$image->grid_square->assignDiscussionToSmarty($smarty);
+
+		require_once('geograph/rastermap.class.php');
+
+		$rastermap = new RasterMap($image->grid_square,true);
+		if (!empty($image->viewpoint_northings)) {
+			$rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings,$image->view_direction);
+		} elseif (!empty($image->view_direction) && $image->view_direction != -1) {
+			$rastermap->addViewDirection($image->view_direction);
+		}
+		$smarty->assign_by_ref('rastermap', $rastermap);
+
+		//build a list of view directions
+		require_once('geograph/searchengine.class.php');
+		$search = new SearchEngine('');
+		$dirs = array (-1 => '');
+		$jump = 360/16; $jump2 = 360/32;
+		for($q = 0; $q< 360; $q+=$jump) {
+			$s = ($q%90==0)?strtoupper($search->heading_string($q)):ucwords($search->heading_string($q));
+			$dirs[$q] = sprintf('%s : %03d deg (%03d > %03d)',
+				str_pad($s,16,' '),
+				$q,
+				($q == 0?$q+360-$jump2:$q-$jump2),
+				$q+$jump2);
+		}
+		$dirs['00'] = $dirs[0];
+		$smarty->assign_by_ref('dirs', $dirs);
+		
+		
+		//get trouble tickets
+		$show_all_tickets = isset($_REQUEST['alltickets']) && $_REQUEST['alltickets']==1;
+		$smarty->assign('show_all_tickets', $show_all_tickets);
+
+		$statuses=array('pending', 'open');
+		if ($show_all_tickets)
+			$statuses[]='closed';
+
+		$openTickets=&$image->getTroubleTickets($statuses);
+
+		if (count($openTickets))
+			$smarty->assign_by_ref('opentickets', $openTickets);
+
+		$image->lookupModerator();
+
 		if (isset($_POST['title']) && isset($_POST['create']))
 		{
 			$title=trim(stripslashes($_POST['title']));
