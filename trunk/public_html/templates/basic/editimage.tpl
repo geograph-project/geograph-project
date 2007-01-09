@@ -63,7 +63,7 @@
 	  <p><input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey"{/if}/>
 	  <input class="accept" type="button" id="accept" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey"{/if}/>
 	  <input class="reject" type="button" id="reject" value="Reject" onclick="moderateImage({$image->gridimage_id}, 'rejected')"/>
-	  <span class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</span></p>
+	  <span class="caption" id="modinfo{$image->gridimage_id}">Current Status: {$image->moderation_status} {if $image->mod_realname}, by {$image->mod_realname}{/if}</span></p>
 	  </form>
   {/if}
 
