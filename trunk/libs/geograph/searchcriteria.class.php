@@ -620,6 +620,7 @@ class SearchCriteria_Placename extends SearchCriteria
 				code_name as dsg_name,
 				1 as reference_index,
 				`full_county` as adm1_name,
+				`hcounty` as hist_county,
 				km_ref as gridref
 			from 
 				os_gaz
@@ -635,6 +636,7 @@ class SearchCriteria_Placename extends SearchCriteria
 				loc_dsg.name as dsg_name,
 				loc_placenames.reference_index,
 				loc_adm1.name as adm1_name,
+				'' as hist_county,
 				'' as gridref
 			from 
 				loc_placenames
@@ -654,6 +656,7 @@ class SearchCriteria_Placename extends SearchCriteria
 					code_name as dsg_name,
 					1 as reference_index,
 					`full_county` as adm1_name,
+					`hcounty` as hist_county,
 					km_ref as gridref
 				from 
 					os_gaz
@@ -675,6 +678,7 @@ class SearchCriteria_Placename extends SearchCriteria
 					code_name as dsg_name,
 					1 as reference_index,
 					`full_county` as adm1_name,
+					`hcounty` as hist_county,
 					km_ref as gridref
 				from 
 					os_gaz
@@ -687,7 +691,7 @@ class SearchCriteria_Placename extends SearchCriteria
 			}
 			
 			if (count($places) < 10 || $ismore) {
-				//search the widest possible (but exclude PPL's in GB)
+				//search the widest possible
 				$places2 = $db->GetAll("
 				(select
 					(seq + 1000000) as id,
@@ -696,6 +700,7 @@ class SearchCriteria_Placename extends SearchCriteria
 					code_name as dsg_name,
 					1 as reference_index,
 					`full_county` as adm1_name,
+					`hcounty` as hist_county,
 					km_ref as gridref
 				from 
 					os_gaz
@@ -712,13 +717,13 @@ class SearchCriteria_Placename extends SearchCriteria
 					loc_dsg.name as dsg_name,
 					loc_placenames.reference_index,
 					loc_adm1.name as adm1_name,
+					'' as hist_county,
 					'' as gridref
 				from 
 					loc_placenames
 					inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) 
 					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
 				where
-					(loc_placenames.reference_index != 1 || dsg != 'PPL') AND
 					full_name LIKE ".$db->Quote('%'.$placename.'%')."
 					OR full_name_soundex = SOUNDEX(".$db->Quote($placename).")
 				LIMIT 20)");
