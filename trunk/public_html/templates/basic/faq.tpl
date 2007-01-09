@@ -102,23 +102,24 @@ ul.contents li.last { padding-bottom:2px; border-bottom: 1px solid lightgrey; }
 
 <a name="counties"></a>
 <h3>Counties, I'm confused, which do you display?</h3>
-	<p>For Geograph purposes the primary use of county information is in display of a gazetteer or nearby line to help in placement of the image, we do however also make use of this in the explore section to show lists of counties, also in the search to help recognize the correct placename.</p> 
-	<p>For Ireland, its simple we just use the traditional counties. However the situation in Great Britain is far from simple, there has in fact been 3 <i>major</i> country structures;
+	<p>We use county information to aid recognition of place names on photo pages and other areas of the site, like helping to disambiguate search terms (e.g. a search for "Gillingham")</p>
+	
+	<p>For Ireland, it's simple; we just use the traditional counties. Great Britain isn't so easy, which has seen three <i>major</i> county structures;</p>
 
 	<dl class="picinfo">
-		<dt>Historic Counties</dt>
-		<dd>These are the counties that have evolved over many hundreds of years and where in active use until 1974. Where possible we attempt to display historic counties as popup information on the gazetteer line, as these are often well understood.</dd>
-
 		<dt>Ceremonial Counties (sometimes known as Geographic)</dt>
-		<dd>These where introduced in 1974 primarily as a way to define areas for County Councils, despite these possibly been the most recognized 'counties' for the current generation, we don't attempt to use these, as getting a dataset to do so is very costly.</dd>
+		<dd>These were introduced in 1974 primarily as a way to define areas for County Councils. Although these are possibly what most people recognize as counties, a suitable dataset to allow us to use these counties would be too costly for us to bear. So we must compromise a little...</dd>
 
 		<dt>Administrative Counties (also known as District/Unitary Authorities)</dt>
-		<dd>These are the modern 'counties' in use by the current government (since 1997). This is the best dataset we have available, so we display it prominently in the gazetteer line, it is also useful for identifying the council responsible for the area. However for large towns/cities, for example Sheffield, which are in their own Authority (therefore the 'county' of Sheffield), we attempt to be clever and display the Historic County instead.</dd>
+		<dd>These are the modern 'counties' in use by the current government (since 1997). This is the best dataset we have available, so we display it prominently in the gazetteer line on photo pages. It is also useful for identifying the council responsible for the area. However for large towns/cities, for example Sheffield, which are in their own Authority (therefore the 'county' of Sheffield), we attempt to be clever and display the Historic County instead.</dd>
+
+		<dt>Historic Counties</dt>
+		<dd>These are the counties that have evolved over many hundreds of years and were in active use until 1974. We use this data as a fallback - where we've opted to display the administrative country on a photo page, you can often find the historic county by hovering over this title.</dd>
 	</dl>
 
-	<p>For a more in depth explanation, see {external href="http://www.abcounties.org.uk/" text="abcounties.org.uk"}. (however beware that site doesn't use the exact same terms, the ones used above are drawn from a verity of sources, so to extent possible are the most widely used)</p>
+	<p>For a more in depth explanation, see {external href="http://www.abcounties.org.uk/" text="abcounties.org.uk"}. <span class="nowrap">(however beware that the site doesn't use the exact same terms)</span></p>
 	
-	<p>And to see lists of counties in each section see the <a href="/explore/#counties">Explore Section</a>.</p>
+	<p>To see lists of counties in each structure see the <a href="/explore/#counties">Explore Section</a>.</p>
 
 <a name="rss"></a>
 <h3>Do you have an RSS feed?</h3>
