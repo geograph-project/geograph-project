@@ -28,7 +28,7 @@
 {foreach from=$newtickets item=ticket}
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}">
-<td><b><a href="/editimage.php?id={$ticket.gridimage_id}&amp;alltickets=1" target="_main">{$ticket.title|default:'Untitled'}</a></b></td>
+<td><b><a href="/editimage.php?id={$ticket.gridimage_id}" target="_main">{$ticket.title|default:'Untitled'}</a></b></td>
 <td>{$ticket.suggester}</td>
 <td>{$ticket.suggested}</td>
 <td>{$ticket.submitter}</td>

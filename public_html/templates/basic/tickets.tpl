@@ -52,7 +52,7 @@
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}">
 <td>{$ticket.moderator}</td>
-<td><a href="/editimage.php?id={$ticket.gridimage_id}&amp;alltickets=1">{$ticket.title|default:'Untitled'}</a></td>
+<td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
 <td>{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes}</td>
 <td style="width:150px">{$ticket.updated}</td>
 </tr>
@@ -81,7 +81,7 @@
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}">
 <td>{$ticket.moderator}</td>
-<td><a href="/editimage.php?id={$ticket.gridimage_id}&amp;alltickets=1">{$ticket.title|default:'Untitled'}</a></td>
+<td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
 <td>{$ticket.notes}</td>
 <td style="width:150px">{$ticket.updated}</td>
 </tr>

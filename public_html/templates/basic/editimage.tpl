@@ -63,7 +63,7 @@
 	  <p><input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey"{/if}/>
 	  <input class="accept" type="button" id="accept" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey"{/if}/>
 	  <input class="reject" type="button" id="reject" value="Reject" onclick="moderateImage({$image->gridimage_id}, 'rejected')"/>
-	  <span class="caption" id="modinfo{$image->gridimage_id}">Current Status: {$image->moderation_status} {if $image->mod_realname}, by {$image->mod_realname}{/if}</span></p>
+	  <span class="caption" id="modinfo{$image->gridimage_id}">Current Status: {$image->moderation_status} {if $image->mod_realname}, by  <a href="/usermsg.php?to={$image->moderator_id}&amp;image={$image->gridimage_id}">{$image->mod_realname}</a>{/if}</span></p>
 	  </form>
   {/if}
 
@@ -360,7 +360,6 @@
 
 
 
-<script type="text/javascript" src="/categories.js.php"></script>
 {if !$rastermap->enabled}
 {literal}
 <script type="text/javascript">
@@ -438,11 +437,19 @@ then please enter directly into the boxes above)
 </td></tr></table>
 
 <div>
-{if $isadmin}<input type="checkbox" name="mod" value="apply" id="mod_apply"/> <label for="mod_mod">Apply changes immediately. (Photographer is notified)</label><br/>{/if}
 <input type="checkbox" name="type" value="minor" id="type_minor"/> <label for="type_minor">I certify that this change is minor, e.g. only spelling and grammar.</label>
 </div>
 
 <br style="clear:both"/>
+
+{if $isadmin}
+<div>
+<input type="radio" name="mod" value="" id="mod_blank" checked="checked"/> <label for="mod_blank">Create a new ticket to be moderated by someone else.</label><br/>
+<input type="radio" name="mod" value="assign" id="mod_assign"/> <label for="mod_assign">Create an open ticket and assign to myself. (give the Contributor a chance to respond)</label><br/>
+<input type="radio" name="mod" value="apply" id="mod_apply"/> <label for="mod_mod">Create a closed ticket, by applying the changes immediately. (Contributor is notified)</label></div>
+
+<br style="clear:both"/>
+{/if}
 
 <input type="submit" name="save" value="Submit Changes" onclick="autoDisable(this)"/>
 <input type="button" name="cancel" value="Cancel" onclick="document.location='/photo/{$image->gridimage_id}';"/>
@@ -451,6 +458,7 @@ then please enter directly into the boxes above)
 </form>
 
 
+<script type="text/javascript" src="/categories.js.php"></script>
 
 {else}
 	<h2>Sorry, image not available</h2>
