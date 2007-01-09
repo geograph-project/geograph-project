@@ -138,7 +138,7 @@ if (isset($_REQUEST['id']))
 
 
 		//now make some exceptions
-		if ($isadmin && !empty($_REQUEST['mod']))
+		if ($isadmin && (!empty($_REQUEST['mod']) && $_REQUEST['mod'] == 'apply') )
 		{
 			$moderated["title"]=false;
 			$moderated["comment"]=false;
@@ -469,7 +469,7 @@ if (isset($_REQUEST['id']))
 		
 		
 		//get trouble tickets
-		$show_all_tickets = isset($_REQUEST['alltickets']) && $_REQUEST['alltickets']==1;
+		$show_all_tickets = isset($_REQUEST['alltickets'])?intval($_REQUEST['alltickets']):1;
 		$smarty->assign('show_all_tickets', $show_all_tickets);
 
 		$statuses=array('pending', 'open');
