@@ -123,8 +123,9 @@
    <li><a href="/explore/calendar.php">Geograph <b>Calendar</b></a>, view images by date taken.<br/><br/></li>
 
    <li><b>Centre Points</b>: (really just arbituary lists of Grid References!)<ul>
+	   <li><a href="/explore/counties.php?type=modern">Modern Administrative Counties</a></li>
 	   <li><a href="/explore/counties.php">Ceremonial (Pre 1994) Counties</a></li>
-	   <li><a href="/explore/counties.php?type=pre74">Pre 1974 Counties</a></li>
+	   <li><a href="/explore/counties.php?type=pre74">Historic (Pre 1974) Counties</a></li>
 	   <li><a href="/explore/counties.php?type=capital">(Irish) County Capitals</a></li>
 	   <li><a href="/explore/cities.php">Cities and Large Towns</a></li>
         </ul>

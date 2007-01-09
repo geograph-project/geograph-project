@@ -52,13 +52,20 @@ if (!$smarty->is_cached($template, $cacheid))
 		$counties = $db->GetAll("select * from loc_counties where n > 0 order by reference_index,n");
 		
 	} elseif ($type == 'pre74') {
-		$smarty->assign("page_title", "Pre 1974 County Centre Points");
+		$smarty->assign("page_title", "Historic County (Pre 1974) Centre Points");
 		$smarty->assign("start_info", "These are approximate centres for counties pre 1974 re-shuffle");
 				
 		$counties = $db->GetAll("select * from loc_counties_pre74 where n > 0 order by reference_index,n");
-		
+	
+	} elseif ($type == 'modern') {
+		$smarty->assign("page_title", "Modern Administrative County Centre Points");
+		$smarty->assign("start_info", "These are approximate centres for modern administrative counties.");
+		$smarty->assign("extra_info", "<div class=\"copyright\">Great Britain locations based upon Ordnance Survey&reg 1:50 000 Scale Gazetteer with the permission of Ordnance Survey on behalf of The Controller of Her Majesty's Stationery Office, &copy; Crown copyright. Educational licence 100045616.</div>");
+				
+		$counties = $db->GetAll("select * from os_gaz_county where n > 0 and name not like 'XX%' order by reference_index,n");
+		 
 	} elseif ($type == 'capital') {
-		$smarty->assign("page_title", "County Capital Towns");
+		$smarty->assign("page_title", "Ireland County Capital Towns");
 		$smarty->assign("extra_info", "* at the moment we dont actully store which county each capital is in, this information is furthermore only available for Ireland so far.");
 		$counties = $db->GetAll("SELECT * FROM `loc_towns` WHERE `s` = '2' AND `reference_index` = 2 ORDER BY n");
 	
@@ -67,8 +74,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($counties) {
 		foreach ($counties as $i => $row) {
 			list($x,$y) = $conv->national_to_internal($row['e'],$row['n'],$row['reference_index']);
-			$sql="select * from gridimage_search where x=$x and y=$y ".
-				" order by moderation_status+0 desc,seq_no limit 1";
+			$sql="select * from gridimage_search where x=$x and y=$y order by moderation_status+0 desc,seq_no limit 1";
 
 			$rec=$db->GetRow($sql);
 			if (count($rec))

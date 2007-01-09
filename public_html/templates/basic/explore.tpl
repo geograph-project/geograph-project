@@ -22,7 +22,9 @@
 	<li><a href="/explore/routes.php">Follow <b>National Routes</b></a>. NEW!</li>
 
 	<li>View Photographs at <b>Centre Points</b>: <ul>
-		<li><a href="/explore/counties.php">Ceremonial (Pre 1994) Counties</a>, <a href="/explore/counties.php?type=pre74">Pre 1974 Counties</a></li>
+		<li><a href="/explore/counties.php?type=modern">Modern Administrative Counties</a>,
+		<a href="/explore/counties.php">Ceremonial (Pre 1994) Counties</a>,
+		<a href="/explore/counties.php?type=pre74">Historic (Pre 1974) Counties</a></li>
 		<li><a href="/explore/counties.php?type=capital">(Irish) County Capitals</a>, <a href="/explore/cities.php">Cities and Large Towns</a></li>
 	</ul></li>
 

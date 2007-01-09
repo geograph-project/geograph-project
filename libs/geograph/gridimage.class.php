@@ -910,6 +910,17 @@ class GridImage
 	}
 	
 	/**
+	* find the moderator for the image
+	*/
+	function lookupModerator() 
+	{
+		$db=&$this->_getDB();
+		if (empty($this->moderator_id))
+			return;
+		return $this->mod_realname = $db->getOne("select realname from user where user_id = {$this->moderator_id}");	
+	}
+	
+	/**
 	* Sets the moderation status for the image, intelligently updating user stats appropriately
 	* status must either 'accepted' or 'rejected'
 	* returns a textual describing the action taken
