@@ -31,7 +31,7 @@
 		{/if}
 	{/if} 
 	{if !$moderator}
-	Simply look at each image in turn and click the relevent button. The result of the action is displayed just below the button. Please wait for result before moving onto the next button. <br/><br/>
+	Simply look at each image in turn and click the relevant button. The result of the action is displayed just below the button. Please wait for result before moving onto the next button. <br/><br/>
 	
 	Sometimes a button is grayed out, this is at the suggestion of the submitter themselves, and/or the system. Please moderate as you normally would, but you can take the suggestion into account. 
 	{/if}</p>
