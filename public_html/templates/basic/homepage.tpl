@@ -49,6 +49,15 @@ the Republic of Ireland, and you can be part of it.</p>
 
 </div>
 
+
+<div style="width:35%;float:left;font-size:0.8em;margin-bottom:10px;padding:5px;background:#ffdddd;position:relative">
+<h3>Yahoo Find of the Year</h3>
+<p>Geograph has been judged as Yahoo's Find of the Year 2006 in the <a href="http://uk.promotions.yahoo.com/finds2006/travel/">"Travel"</a> category
+- now
+you can vote for it in the "People's Choice" category. Only a few days left to vote!</p>
+<p><a href="http://uk.promotions.yahoo.com/finds2006/peoples-choice/">Visit the Yahoo People's Choice Voting Page</a></p>
+</div>
+
 <div style="width:35%;float:left;font-size:0.8em;padding:5px;background:#dddddd;position:relative">
 <h3 style="margin-bottom:0;">What is Geographing?</h3>
 <ul style="margin-top:0;margin-left:0;padding:0 0 0 1em;">
@@ -73,6 +82,8 @@ we hope you'll enjoy being a part of this great project
 
 
 </div>
+
+
 
 <br style="clear:both"/>
 &nbsp;
