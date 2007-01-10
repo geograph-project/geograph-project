@@ -143,7 +143,7 @@
 </ul>
 
 
-<h3>Other relevent Sites...</h3>
+<h3>Other relevant Sites...</h3>
 
 <ul>
 	<li><a href="http://geograph.sf.net/">Developers Homepage</a></li>
