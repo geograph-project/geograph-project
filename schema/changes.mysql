@@ -775,4 +775,10 @@ ALTER TABLE `gridimage` ADD `use6fig` TINYINT UNSIGNED DEFAULT '0' NOT NULL AFTE
 
 ALTER TABLE `queries` ADD `breakby` VARCHAR( 32 ) NOT NULL AFTER `orderby` ;
 
+ALTER TABLE `article` ADD `gridsquare_id` INT UNSIGNED NOT NULL AFTER `content` ,
+ADD `extract` VARCHAR( 255 ) NOT NULL AFTER `gridsquare_id` ;
+
+ALTER TABLE `article_revisions` ADD `gridsquare_id` INT UNSIGNED NOT NULL AFTER `content` ,
+ADD `extract` VARCHAR( 255 ) NOT NULL AFTER `gridsquare_id` ;
+
 

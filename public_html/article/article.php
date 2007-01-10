@@ -110,9 +110,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 
 	$page = $db->getRow("
-	select article.*,realname
+	select article.*,realname,gs.grid_reference
 	from article 
 		left join user using (user_id)
+		left join gridsquare gs on (article.gridsquare_id = gs.gridsquare_id)
 	where ( (licence != 'none' and approved = 1) 
 		or user.user_id = {$USER->user_id}
 		or $isadmin )

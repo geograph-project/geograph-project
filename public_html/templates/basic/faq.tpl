@@ -7,7 +7,7 @@ ul.contents li { border-top: 1px solid lightgrey; padding-top:2px; margin-top:2p
 ul.contents li.last { padding-bottom:2px; border-bottom: 1px solid lightgrey; }
 </style>{/literal}
  
-    <h2>FAQ</h2>
+    <h2>FAQ - Frequently Asked Questions</h2>
  
  <div style="padding:5px;background:#dddddd;position:relative; ">
  <h4>Contents</h4>

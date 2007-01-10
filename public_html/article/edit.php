@@ -55,9 +55,10 @@ $template = 'article_edit.tpl';
 		$prev_fetch_mode = $ADODB_FETCH_MODE;
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;	
 		$page = $db->getRow("
-		select article.*,realname
+		select article.*,realname,gs.grid_reference
 		from article 
 			left join user using (user_id)
+			left join gridsquare gs on (article.gridsquare_id = gs.gridsquare_id)
 		where $sql_where
 		limit 1");
 		$ADODB_FETCH_MODE = $prev_fetch_mode;
@@ -73,7 +74,7 @@ $template = 'article_edit.tpl';
 
 
 if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
-	$error = 0;
+	$errors = array();
 	
 
 	$_POST['publish_date']=sprintf("%04d-%02d-%02d",$_POST['publish_dateYear'],$_POST['publish_dateMonth'],$_POST['publish_dateDay']);
@@ -84,18 +85,27 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	$_POST['url'] = preg_replace('/ /','-',trim($_POST['url']));
 	$_POST['url'] = preg_replace('/[^\w-\.]+/','',$_POST['url']);
 	
-	if ($_POST['title'] == "New Article") {
-		$smarty->assign('error', "Please give a meaningful title");
-		$error =1;
+	if ($_POST['title'] == "New Article")
+		$errors['title'] = "Please give a meaningful title";
+	
+	$gs=new GridSquare();
+	if (!empty($_POST['grid_reference'])) {
+		if ($gs->setByFullGridRef($_POST['grid_reference'])) {
+			$_POST['gridsquare_id'] = $gs->gridsquare_id;
+		} else 
+			$errors['grid_reference'] = $gs->errormsg;
 	}
 	
 	//the most basic protection
 	$_POST['content'] = strip_tags($_POST['content']);
-	
 	$_POST['content'] = preg_replace('/[“”]/','',$_POST['content']);
+
+	$_POST['extract'] = strip_tags($_POST['extract']);
+	$_POST['extract'] = preg_replace('/[“”]/','',$_POST['extract']);
+
 	
 	$updates = array();
-	foreach (array('url','title','licence','content','publish_date') as $key) {
+	foreach (array('url','title','licence','content','publish_date','gridsquare_id','extract') as $key) {
 		if ($page[$key] != $_POST[$key]) {
 			$updates[] = "`$key` = ".$db->Quote($_POST[$key]); 
 			$smarty->assign($key, $_POST[$key]);
@@ -104,19 +114,15 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 				if (!empty($_REQUEST['article_id'])) {
 					$sql .=  " and article_id != ".$db->Quote($_REQUEST['article_id']);
 				}
-				if ($db->getOne($sql)) {
-					$smarty->assign('error', "$key (".$db->Quote($_POST[$key]).') is already in use');
-					$error =1;
-				}
+				if ($db->getOne($sql)) 
+					$errors[$key] = "(".$db->Quote($_POST[$key]).') is already in use';				
 			}
-		} elseif (empty($_POST[$key])) {
-			$smarty->assign('error', "$key is missing");
-			$error =1;
-		}
+		} elseif (empty($_POST[$key]) && $key != 'gridsquare_id') 
+			$errors[$key] = "missing required info";		
 	}
 	if (!count($updates)) {
 		$smarty->assign('error', "No Changes to Save");
-		$error =1;
+		$errors[1] =1;
 	}
 	if ($_REQUEST['page'] == 'new' || $_REQUEST['article_id'] == 'new') {
 	
@@ -126,16 +132,10 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		$updates[] = "`create_time` = NOW()";
 		$sql = "INSERT INTO article SET ".implode(',',$updates);
 	} else {
-		//todo check has url and that its unique!
-		foreach (array('title','url') as $key) { 
-			if ($page[$key] != $_POST[$key]) {
-				
-			}
-		}
-	
+		
 		$sql = "UPDATE article SET ".implode(',',$updates)." WHERE article_id = ".$db->Quote($_REQUEST['article_id']);
 	}
-	if (!$error && count($updates)) {
+	if (!count($errors) && count($updates)) {
 		
 		$db->Execute($sql);
 		if ($_REQUEST['page'] == 'new' || $_REQUEST['article_id'] == 'new') {
@@ -150,6 +150,10 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 
 		header("Location: /article/");
 		exit;
+	} else {
+		if ($errors[1] != 1)
+			$smarty->assign('error', "Please see messages below...");
+		$smarty->assign_by_ref('errors',$errors);
 	}
 } 
 
