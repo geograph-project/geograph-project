@@ -70,6 +70,8 @@ ul.contents li.last { padding-bottom:2px; border-bottom: 1px solid lightgrey; }
 	longest dimension is 640 pixels. We do not keep your original print quality image,
 	only our resized screen-quality version.</p>
 
+	<p>Ideally images shouldn't have the longest dimension less than 480 pixels, while we might accept such images if they hold particular interest, we would really prefer a larger image.</p>
+
 	<p>We do preserve the EXIF headers from your original image, so it is
 	advantageous to upload your original camera image if you want this information
 	to be kept.</p>
