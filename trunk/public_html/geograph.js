@@ -1,5 +1,7 @@
-function popupOSMap(gridref)
+function popupOSMap(gridref,gridref2)
 {
+	if (!gridref && gridref2.length)
+		gridref = gridref2;
         var wWidth = 740;
         var wHeight = 520;
         var wLeft = Math.round(0.5 * (screen.availWidth - wWidth));
