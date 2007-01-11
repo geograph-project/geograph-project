@@ -144,19 +144,19 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
+			 <td><label for="orderby" id="l_breakby">break by</label></td> 
+			 <td colspan="2"> 
+				<select name="breakby" id="breakby" size="1"> 
+					{html_options options=$breakdowns selected=$breakby}
+				</select></td> 
+		  </tr>
+		  <tr> 
 			 <td><label for="orderby" id="l_orderby">order</label></td> 
 			 <td colspan="2"> 
 				<select name="orderby" id="orderby" size="1" onchange="updateBreakBy(this);"> 
 					{html_options options=$sortorders selected=$orderby}
 				</select> <input type="checkbox" name="reverse_order_ind" id="reverse_order_ind" {$reverse_order_checked}/> <label for="reverse_order_ind" id="l_reverse_order_ind">reverse order</label></td> 
 		  </tr> 
-		  <tr> 
-			 <td>&nbsp;<label for="orderby" id="l_breakby">break by</label></td> 
-			 <td colspan="2"> 
-				&nbsp;<select name="breakby" id="breakby" size="1"> 
-					{html_options options=$breakdowns selected=$breakby}
-				</select></td> 
-		  </tr>
 		  <tr> 
 			 <td>&nbsp;</td> 
 			 <td> {dynamic}
