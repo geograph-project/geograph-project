@@ -144,18 +144,20 @@ function smarty_block_dynamic($param, $content, &$smarty)
 */
 function smarty_function_getamap($params)
 {
-  	
-  	$icon="<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in popup window\" src=\"/img/external.png\" width=\"10\" height=\"10\"/>";
-  	
-  	//get params
-  	$matches=array();
-  	$gridref4=preg_replace('/^([A-Z]{1,2})\s*(\d{2,5})\s*(\d{2,5})$/i','$1$2$3',$params['gridref']);
-  	if (preg_match('/^document\./i', $gridref4))
-  	{
+	
+	$icon="<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in popup window\" src=\"/img/external.png\" width=\"10\" height=\"10\"/>";
+	
+	//get params
+	$matches=array();
+	$gridref4=preg_replace('/^([A-Z]{1,2})\s*(\d{2,5})\s*(\d{2,5})$/i','$1$2$3',$params['gridref']);
+	if (preg_match('/^document\./i', $gridref4))
+	{
+		if (!empty($params['gridref2']))
+			$gridref4 .= ",'{$params['gridref2']}'";
 		return "<a title=\"Ordnance Survey Get-a-Map\" href=\"javascript:popupOSMap($gridref4)\">{$params['text']}</a>$icon";
-  	}
-  	else if (preg_match('/^([A-Z]{1,2})(\d{4,10})$/i', $gridref4, $matches))
-  	{
+	}
+	else if (preg_match('/^([A-Z]{1,2})(\d{4,10})$/i', $gridref4, $matches))
+	{
 		if (!empty($params['text']))
 			$text=$params['text'];
 		else
@@ -174,22 +176,22 @@ function smarty_function_getamap($params)
 			$title=$params['title'];
 		else
 			$title="Ordnance Survey Get-a-Map for $gridref4";
-  	
+
 		return "<a title=\"$title\" href=\"http://getamap.ordnancesurvey.co.uk/getamap/frames.htm?mapAction=gaz&amp;gazName=g&amp;gazString=$gridref6\" onclick=\"popupOSMap('$gridref6'); return false;\">$text</a>$icon";
-  	}
-  	else if (empty($gridref4)) 
-  	{
-  		if (!empty($params['text']))
+	}
+	else if (empty($gridref4)) 
+	{
+		if (!empty($params['text']))
 			$text=$params['text'];
 		else
 			$text='OS Get-A-Map';
-  		return "<a title=\"Ordnance Survey Get-a-Map\" href=\"http://getamap.ordnancesurvey.co.uk/getamap/frames.htm\" onclick=\"popupOSMap(''); return false;\">$text</a>$icon";
-  	} 
-  	else
-  	{
-  		//error
-  		return $gridref4;
-  	}
+		return "<a title=\"Ordnance Survey Get-a-Map\" href=\"http://getamap.ordnancesurvey.co.uk/getamap/frames.htm\" onclick=\"popupOSMap(''); return false;\">$text</a>$icon";
+	} 
+	else
+	{
+		//error
+		return $gridref4;
+	}
 }
 
 
