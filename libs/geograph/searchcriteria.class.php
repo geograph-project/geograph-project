@@ -173,7 +173,7 @@ class SearchCriteria
 			$sql_order = preg_replace('/^submitted/','gridimage_id',$sql_order);
 		}
 		if ($this->breakby) {
-			$breakby = preg_replace('/_(year|month)$/','',$this->breakby);			
+			$breakby = preg_replace('/_(year|month|decade)$/','',$this->breakby);			
 			$breakby = preg_replace('/^submitted/','gridimage_id',$breakby);
 			if (strpos($sql_order,' desc') !== FALSE)
 				$breakby .= ' desc';
