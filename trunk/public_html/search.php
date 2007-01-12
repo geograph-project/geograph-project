@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id$
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -31,7 +31,7 @@ $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
 $imagestatuses = array('geograph' => 'geograph only','geograph,accepted' => 'geographs &amp; supplemental','accepted' => 'supplemental only');
 $sortorders = array(''=>'','random'=>'Random','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North');
-$breakdowns = array(''=>'','imagetaken_month'=>'Month Taken','imagetaken_year'=>'Year Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted',);
+$breakdowns = array(''=>'','imagetaken_month'=>'Month Taken','imagetaken_year'=>'Year Taken','imagetaken_decade'=>'Decade Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted',);
 
 $displayclasses =  array(
 			'full' => 'full listing',
@@ -41,7 +41,7 @@ $displayclasses =  array(
 			'slide' => 'slide-show mode',
 			'text' => 'text only',
 			'spelling' => 'spelling utility');
-$smarty->assign_by_ref('displayclasses',$displayclasses);		
+$smarty->assign_by_ref('displayclasses',$displayclasses);
 
 
 if (isset($_GET['fav']) && $i) {
@@ -51,10 +51,10 @@ if (isset($_GET['fav']) && $i) {
 	}
 	$fav = ($_GET['fav'])?'Y':'N';
 	$db->query("UPDATE queries SET favorite = '$fav' WHERE id = $i AND user_id = {$USER->user_id}");
-	
-	header("Location:/search.php");	
+
+	header("Location:/search.php");
 	exit;
-	
+
 } else if (!empty($_GET['first']) || !empty($_GET['blank']) ) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
@@ -63,16 +63,16 @@ if (isset($_GET['fav']) && $i) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
-	
-	
+
+
 	$data = $_GET;
 	$error = false;
-	
+
 	if (!empty($_GET['first'])) {
 		$_GET['first'] = strtoupper(preg_replace('/\s+/','',$_GET['first']));
-		
+
 		if (preg_match('/^[A-Z_%]{0,2}[\d_%]{1,4}$/',$_GET['first']) ) {
-			
+
 			//replace for myriads
 			$gr = preg_replace('/^([A-Z]{1,2})(\d)(\d)$/','$1$2_$3_',$_GET['first']);
 
@@ -95,20 +95,20 @@ if (isset($_GET['fav']) && $i) {
 		$data['description'] = "with blank comment";
 		$data['searchq'] = "(comment = '' OR title='')";
 	}
-	
+
 	if (!$error) {
 		if (empty($data['orderby'])) {
 			$data['orderby'] = 'gridimage_id';
 			if (!preg_match('/\w*(\d{4})/',$_GET['first']))
 				$data['reverse_order_ind'] = '1';
 		}
-		
+
 		if (!empty($_GET['u']))
-			$data['user_id'] = $_GET['u']; 
+			$data['user_id'] = $_GET['u'];
 
 		$data['adminoverride'] = 1;
 
-		$engine = new SearchEngineBuilder('#'); 
+		$engine = new SearchEngineBuilder('#');
 		$engine->buildAdvancedQuery($data);
 
 		//should never fail?? - but display form 'in case'
@@ -118,7 +118,7 @@ if (isset($_GET['fav']) && $i) {
 	} else {
 		$smarty->assign('errormsg', $error);
 	}
-  	
+
    	foreach ($data as $key=> $value) {
 		$smarty->assign($key, $value);
 	}
@@ -127,12 +127,12 @@ if (isset($_GET['fav']) && $i) {
 	$smarty->reassignPostedDate("submitted_end");
 	$smarty->reassignPostedDate("taken_start");
 	$smarty->reassignPostedDate("taken_end");
-	
+
  	$db=NewADOConnection($GLOBALS['DSN']);
 	if (empty($db)) die('Database connection failed');
 
 	advanced_form($smarty,$db);
- 	
+
 } else if (!empty($_GET['marked']) && isset($_COOKIE['markedImages'])) { //
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
@@ -141,26 +141,26 @@ if (isset($_GET['fav']) && $i) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
-	
+
 	$data = $_GET;
 	$error = false;
-	
+
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (empty($db)) die('Database connection failed');
 
-	
-	
+
+
 	$data['description'] = (($USER->registered)?"on {$USER->realname}'s ":'on ')."Marked List at ".strftime("%A, %e %B, %Y. %H:%M");
 	$data['searchq'] = "1"; //temporally
-	
+
 	if (!$error) {
 		if (!empty($_GET['u']))
-			$data['user_id'] = $_GET['u']; 
+			$data['user_id'] = $_GET['u'];
 
 		$data['adminoverride'] = 1;
 
-		$engine = new SearchEngineBuilder('#'); 
-		
+		$engine = new SearchEngineBuilder('#');
+
 		if ($i = $engine->buildAdvancedQuery($data,false)) {
 
 			if (!empty($_COOKIE['markedImages'])) {
@@ -168,16 +168,16 @@ if (isset($_GET['fav']) && $i) {
 					$db->Execute("INSERT INTO gridimage_query SET query_id = $i, gridimage_id = ".$db->Quote($id));
 				}
 				$data['searchq'] = "gridimage_id IN (SELECT gridimage_id FROM gridimage_query WHERE query_id = $i)";
-				
+
 				$db->Execute("UPDATE queries SET searchq = '{$data['searchq']}' WHERE id = $i");
-				
+
 			}
-			
+
 			header("Location:http://{$_SERVER['HTTP_HOST']}/{$engine->page}?i={$i}$extra".(($dataarray['submit'] == 'Count')?'&count=1':''));
 			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$engine->page}?i={$i}$extra".(($dataarray['submit'] == 'Count')?'&amp;count=1':'')."\">Your Search Results</a>";
 			exit;
 		}
-		
+
 		//should never fail?? - but display form 'in case'
 
 		//if we get this far then theres a problem...
@@ -185,7 +185,7 @@ if (isset($_GET['fav']) && $i) {
 	} else {
 		$smarty->assign('errormsg', $error);
 	}
-  	
+
    	foreach ($data as $key=> $value) {
 		$smarty->assign($key, $value);
 	}
@@ -194,33 +194,33 @@ if (isset($_GET['fav']) && $i) {
 	$smarty->reassignPostedDate("submitted_end");
 	$smarty->reassignPostedDate("taken_start");
 	$smarty->reassignPostedDate("taken_end");
-	
- 	
+
+
 	advanced_form($smarty,$db);
- 	
+
 } else if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || !empty($_GET['gridsquare'])) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
-	//  special handler to build a advanced query from the link in stats or profile.  
+	//  special handler to build a advanced query from the link in stats or profile.
 	// -------------------------------
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
-	
+
 
 	if (!empty($_GET['u']))
-		$_GET['user_id'] = $_GET['u']; 
+		$_GET['user_id'] = $_GET['u'];
 
 	$_GET['adminoverride'] = 0; //prevent overriding it
-		
-	$engine = new SearchEngineBuilder('#'); 
+
+	$engine = new SearchEngineBuilder('#');
  	$engine->buildAdvancedQuery($_GET);
- 	
+
  	//should never fail?? - but display form 'in case'
- 	
+
  	//if we get this far then theres a problem...
 	$smarty->assign('errormsg', $engine->errormsg);
- 	
+
  	foreach ($_GET as $key=> $value) {
 		$smarty->assign($key, $value);
 	}
@@ -228,43 +228,43 @@ if (isset($_GET['fav']) && $i) {
 	$smarty->reassignPostedDate("submitted_end");
 	$smarty->reassignPostedDate("taken_start");
 	$smarty->reassignPostedDate("taken_end");
- 	
+
  	$db=NewADOConnection($GLOBALS['DSN']);
 	if (empty($db)) die('Database connection failed');
 
 	advanced_form($smarty,$db);
- 	
+
 } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
-	//  Build advacned query 
+	//  Build advacned query
 	// -------------------------------
-	
+
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
-	
+
 
 	if (!empty($_POST['refine'])) {
 		//we could use the selected item but then have to check for numberic placenames
 		$_POST['placename'] = $_POST['old-placename'];
 	} else {
 		$_POST['adminoverride'] = 0; //prevent overriding it
-		$engine = new SearchEngineBuilder('#'); 
-		$engine->buildAdvancedQuery($_POST);	
-		
+		$engine = new SearchEngineBuilder('#');
+		$engine->buildAdvancedQuery($_POST);
+
 		//if we get this far then theres a problem...
 		$smarty->assign('errormsg', $engine->errormsg);
 	}
-	
+
 	if ($engine->criteria->is_multiple) {
 		//todo these shouldnt be hardcoded as there other possiblities for suggestions
 		$smarty->assign('multipletitle', "Placename");
 		$smarty->assign('multipleon', "placename");
-		
+
 		$smarty->assign_by_ref('criteria', $engine->criteria);
 		$smarty->assign_by_ref('post', $_POST);
-		$smarty->assign_by_ref('references',$CONF['references']);	
+		$smarty->assign_by_ref('references',$CONF['references']);
 		$smarty->assign('searchdesc', $engine->searchdesc);
 		$smarty->display('search_multiple.tpl');
 	} else {
@@ -272,30 +272,30 @@ if (isset($_GET['fav']) && $i) {
 			$smarty->assign($key, $value);
 		}
 		foreach (array('postcode','textsearch','gridref','county_id','placename','all_checked') as $key) {
-			if (isset($_POST[$key])) 
+			if (isset($_POST[$key]))
 				$smarty->assign('elementused', $key);
 		}
-		
+
 		$smarty->reassignPostedDate("submitted_start");
 		$smarty->reassignPostedDate("submitted_end");
 		$smarty->reassignPostedDate("taken_start");
 		$smarty->reassignPostedDate("taken_end");
-		
+
 		if (!empty($_POST['all_ind']))
 			$smarty->assign('all_checked', 'checked="checked"');
 		if (!empty($_POST['user_invert_ind']))
 			$smarty->assign('user_invert_checked', 'checked="checked"');
 		if (!empty($_POST['reverse_order_ind']))
 			$smarty->assign('reverse_order_ind', 'checked="checked"');
-				
+
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (empty($db)) die('Database connection failed');
-		
+
 		advanced_form($smarty,$db);
 	}
 } elseif (!empty($_GET['q']) || !empty($_GET['text'])) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
-	
+
 	// -------------------------------
 	//  Build a query from a single text string
 	// -------------------------------
@@ -305,7 +305,7 @@ if (isset($_GET['fav']) && $i) {
 	} else {
 		$q=trim($_GET['q']);
 	}
-	
+
 	//remember the query in the session
 	$_SESSION['searchq']=$q;
 
@@ -313,12 +313,12 @@ if (isset($_GET['fav']) && $i) {
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
 
- 	$engine = new SearchEngineBuilder('#'); 
+ 	$engine = new SearchEngineBuilder('#');
  	$engine->buildSimpleQuery($q,$CONF['default_search_distance'],(isset($_GET['form']) && $_GET['form'] == 'simple')?'simple':'auto');
  	if (isset($engine->criteria) && $engine->criteria->is_multiple) {
  		if (empty($_GET['distance']))
- 			$_GET['distance'] = $CONF['default_search_distance']; 
- 	
+ 			$_GET['distance'] = $CONF['default_search_distance'];
+
 		//todo these shouldnt be hardcoded as there other possiblities for suggestions
 		$smarty->assign('multipletitle', "Placename");
 		$smarty->assign('multipleon', "placename");
@@ -333,22 +333,22 @@ if (isset($_GET['fav']) && $i) {
 
 		$smarty->assign_by_ref('criteria', $engine->criteria);
 		$smarty->assign_by_ref('post', $_GET);
-		$smarty->assign_by_ref('references',$CONF['references']);	
+		$smarty->assign_by_ref('references',$CONF['references']);
 		$smarty->assign('searchdesc', $engine->searchdesc);
 		$smarty->display('search_multiple.tpl');
 	} else {
- 	
+
 		$smarty->assign('errormsg', $engine->errormsg);
-		
+
 		$smarty->assign('searchq', $q);
-		
-		
+
+
 		require_once('geograph/imagelist.class.php');
 		require_once('geograph/gridimage.class.php');
 		require_once('geograph/gridsquare.class.php');
 		//lets find some recent photos
 		new RecentImageList($smarty);
-		$smarty->display('search.tpl');	
+		$smarty->display('search.tpl');
 	}
 
 } else if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'first')) {
@@ -404,9 +404,9 @@ if (isset($_GET['fav']) && $i) {
 			if (strpos($user_id,'!') === 0) {
 				$user_id = preg_replace('/^!/','',$user_id);
 				$smarty->assign('user_invert_checked', 'checked="checked"');
-			} 			
+			}
 			$smarty->assign('user_id', $user_id);
-			
+
 			$profile=new GeographUser($user_id);
 			$smarty->assign('user_name', "$user_id:{$profile->realname}");
 		}
@@ -414,28 +414,28 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign('imageclass', $query['limit3']);
 		$smarty->assign('reference_index', $query['limit4']);
 		$smarty->assign('gridsquare', $query['limit5']);
-		
-		
+
+
 		if (!empty($query['limit6'])) {
 			$dates = explode('^',$query['limit6']);
-			if ($dates[0]) 
+			if ($dates[0])
 				$smarty->assign('submitted_start', $dates[0]);
-			if ($dates[1]) 
+			if ($dates[1])
 				$smarty->assign('submitted_end', $dates[1]);
 		}
 		if (!empty($query['limit7'])) {
 			$dates = explode('^',$query['limit7']);
-			if ($dates[0]) 
+			if ($dates[0])
 				$smarty->assign('taken_start', $dates[0]);
-			if ($dates[1]) 
+			if ($dates[1])
 				$smarty->assign('taken_end', $dates[1]);
 		}
 		$smarty->assign('distance', $query['limit8']);
-	
+
 		$smarty->assign('topic_id', $query['limit9']);
-	
+
 		$query['orderby'] = preg_replace('/^submitted/','gridimage_id',$query['orderby']);
-		
+
 		if (strpos($query['orderby'],' desc') > 0) {
 			$smarty->assign('orderby', preg_replace('/ desc$/','',$query['orderby']));
 			$smarty->assign('reverse_order_checked', 'checked="checked"');
@@ -446,32 +446,32 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign('displayclass', $query['displayclass']);
 		$smarty->assign('resultsperpage', $query['resultsperpage']);
 		$smarty->assign('i', $i);
-		
+
 		advanced_form($smarty,$db);
 	} else {
-		$smarty->assign('resultsperpage', $USER->search_results?$USER->search_results:15);	
-		$smarty->assign('distance', $CONF['default_search_distance']);	
-		
+		$smarty->assign('resultsperpage', $USER->search_results?$USER->search_results:15);
+		$smarty->assign('distance', $CONF['default_search_distance']);
+
 		advanced_form($smarty,$db,true); //we can cache the blank form!
 	}
 
-	
+
 
 
 } elseif (is_int($i) && empty($_GET['form'])) {
 	// -------------------------------
 	//  Search Results
 	// -------------------------------
-	
+
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/gridsquare.class.php');
-		
+
 		$pg = (!empty($_GET['page']))?intval($_GET['page']):0;
 		if (empty($pg) || $pg < 1) {$pg = 1;}
-		
+
 	$engine = new SearchEngine($i);
-	
+
 	$display = $engine->getDisplayclass();
 	if (isset($_GET['displayclass']) && preg_match('/^\w+$/',$_GET['displayclass'])) {
 		$display = $_GET['displayclass'];
@@ -496,10 +496,10 @@ if (isset($_GET['fav']) && $i) {
 		$style=$_GET['style'];
 		$_SESSION['style']=$style;
 
-		if ($USER->registered) 
+		if ($USER->registered)
 			$USER->setDefaultStyle($style);
 	}
-	elseif ($USER->registered && in_array($USER->default_style, $valid_style)) 
+	elseif ($USER->registered && in_array($USER->default_style, $valid_style))
 	{
 		$style=$USER->default_style;
 	}
@@ -512,14 +512,14 @@ if (isset($_GET['fav']) && $i) {
 
 	if (!$smarty->is_cached($template, $cacheid)) {
 		dieUnderHighLoad(3,'search_unavailable.tpl');
-	
+
 		$smarty->register_function("searchbreak", "smarty_function_searchbreak");
-	
+
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
 
-		
-		$smarty->assign('querytime', $engine->Execute($pg)); 
-		
+
+		$smarty->assign('querytime', $engine->Execute($pg));
+
 		$smarty->assign('i', $i);
 		$smarty->assign('currentPage', $pg);
 		$smarty->assign_by_ref('engine', $engine);
@@ -534,9 +534,9 @@ if (isset($_GET['fav']) && $i) {
 				$smarty->assign('singlesquares', $engine->criteria->countSingleSquares($CONF['search_prompt_radius']));
 				$smarty->assign('singlesquare_radius', $CONF['search_prompt_radius']);
 			}
-		}	
+		}
 	}
-	
+
 	if ($engine->criteria->user_id == $USER->user_id) {
 		if (!$db) {
 			$db=NewADOConnection($GLOBALS['DSN']);
@@ -544,7 +544,7 @@ if (isset($_GET['fav']) && $i) {
 		}
 		$db->query("UPDATE queries SET use_timestamp = null WHERE id = $i");
 	}
-	
+
 	$smarty->display($template, $cacheid);
 
 
@@ -554,7 +554,7 @@ if (isset($_GET['fav']) && $i) {
 	// -------------------------------
 	//  Simple Form
 	// -------------------------------
-	
+
 
 	if (is_int($i)) {
 		$db=NewADOConnection($GLOBALS['DSN']);
@@ -569,11 +569,11 @@ if (isset($_GET['fav']) && $i) {
 			$db=NewADOConnection($GLOBALS['DSN']);
 			if (empty($db)) die('Database connection failed');
 		}
-		//list of a few image classes 
-		$arr = $db->GetAssoc("select imageclass,concat(imageclass,' [',count(*),']') from gridimage_search 
-			where length(imageclass)>0 
+		//list of a few image classes
+		$arr = $db->GetAssoc("select imageclass,concat(imageclass,' [',count(*),']') from gridimage_search
+			where length(imageclass)>0
 			group by imageclass order by rand() limit 5");
-		$smarty->assign_by_ref('imageclasslist',$arr);	
+		$smarty->assign_by_ref('imageclasslist',$arr);
 	}
 	if ($USER->registered) {
 		if (!$db) {
@@ -583,28 +583,28 @@ if (isset($_GET['fav']) && $i) {
 		if (isset($_GET['all'])) {
 			$flimit = "";
 			$nlimit = "";
-			$smarty->assign('all',1);	
+			$smarty->assign('all',1);
 		} elseif (isset($_GET['more'])) {
 			$flimit = "";
 			$nlimit = "limit 40";
-			$smarty->assign('more',1);	
+			$smarty->assign('more',1);
 		} else {
 			$flimit = "limit 12";
 			$nlimit = "limit 12";
 		}
 		#group by searchdesc,searchq,displayclass,resultsperpage
 		$recentsearchs = $db->GetAssoc("
-			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass ,searchq,displayclass,resultsperpage from queries 
-			left join queries_count using (id) 
+			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass ,searchq,displayclass,resultsperpage from queries
+			left join queries_count using (id)
 			where user_id = {$USER->user_id} and favorite = 'N' and searchuse = 'search'
-			order by use_timestamp desc,id desc	$nlimit) 
+			order by use_timestamp desc,id desc	$nlimit)
 		UNION
-			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass ,searchq,displayclass,resultsperpage from queries 
-			left join queries_count using (id) 
+			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass ,searchq,displayclass,resultsperpage from queries
+			left join queries_count using (id)
 			where user_id = {$USER->user_id} and favorite = 'Y' and searchuse = 'search'
 			order by use_timestamp desc,id desc	$flimit)
 		order by use_timestamp desc,id desc	");
-		
+
 		$a = array();
 		foreach ($recentsearchs as $i => $row) {
 			if ($a["{$row['searchdesc']},{$row['searchq']},{$row['displayclass']},{$row['resultsperpage']}"]) {
@@ -614,23 +614,23 @@ if (isset($_GET['fav']) && $i) {
 			}
 		}
 		unset($a);
-		
-		$smarty->assign_by_ref('recentsearchs',$recentsearchs);	
+
+		$smarty->assign_by_ref('recentsearchs',$recentsearchs);
 	}
-	
+
 	require_once('geograph/imagelist.class.php');
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/gridsquare.class.php');
 	//lets find some recent photos
 	new RecentImageList($smarty);
-	
+
 
 	$smarty->display('search.tpl');
 }
 
 	function advanced_form(&$smarty,&$db,$is_cachable = false) {
 		global $CONF,$imagestatuses,$sortorders,$breakdowns,$USER;
-		
+
 		if ($_GET['form'] == 'first') {
 			$template = 'search_first.tpl';
 		} elseif (isset($_GET['Special'])) {
@@ -645,30 +645,30 @@ if (isset($_GET['fav']) && $i) {
 		} else {
 			$smarty->caching = 0; // NO caching
 		}
-		
+
 		$smarty->assign('pagesizes', array(5,10,15,20,30,50));
-		
+
 		if (!$is_cachable || !$smarty->is_cached($template, $is_cachable)) {
 			$smarty->assign('distances', array(1,2,3,4,5,10,20,30,40,50,100,200,300,400,500,1000,2000));
 
 			$countylist = array();
-			$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0"); 
-			while (!$recordSet->EOF) 
+			$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0");
+			while (!$recordSet->EOF)
 			{
 				$countylist[$CONF['references'][$recordSet->fields[0]]][$recordSet->fields[1]] = $recordSet->fields[2];
 				$recordSet->MoveNext();
 			}
-			$recordSet->Close(); 
+			$recordSet->Close();
 			$smarty->assign_by_ref('countylist', $countylist);
 
 			$topics = $db->GetAssoc("select gp.topic_id,concat(topic_title,' [',count(*),']') from gridimage_post gp
 				inner join geobb_topics using (topic_id)
-				group by gp.topic_id 
+				group by gp.topic_id
 				having count(*) > 5
 				order by topic_title");
-				
-			$topics=array("1"=>"Any Topic") + $topics; 	
-			$smarty->assign_by_ref('topiclist',$topics);	
+
+			$topics=array("1"=>"Any Topic") + $topics;
+			$smarty->assign_by_ref('topiclist',$topics);
 
 			require_once('geograph/gridsquare.class.php');
 			$square=new GridSquare;
@@ -678,20 +678,20 @@ if (isset($_GET['fav']) && $i) {
 
 			$smarty->assign_by_ref('sortorders', $sortorders);
 			$smarty->assign_by_ref('breakdowns', $breakdowns);
-			
+
 
 			$smarty->assign_by_ref('references',$CONF['references']);
 		}
-		
+
 		$smarty->display($template, $is_cachable);
 	}
 
 function smarty_function_searchbreak($params) {
 	global $engine;
-	
+
 	if (!$engine->criteria->breakby)
 		return;
-	
+
 	$last = $engine->breaklast;
 	$image = &$params['image'];
 	$b = 0;
@@ -743,7 +743,7 @@ function smarty_function_searchbreak($params) {
 			$last = $image->{$name};
 			break;
 	}
-	
+
 	if ($b) {
 		if (isset($params['extra']))
 			print "</ul>";
