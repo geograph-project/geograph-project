@@ -713,6 +713,12 @@ function smarty_function_searchbreak($params) {
 				$b = getFormattedDate($s);
 			$last = $s;
 			break;
+		case 'imagetaken_decade':
+			$s = substr($image->imagetaken,0,3);
+			if ($last != $s)
+				$b = $s."0's";
+			$last = $s;
+			break;
 		case 'submitted':
 			if ($last != $image->submitted)
 				$b = getFormattedDate($image->submitted);
