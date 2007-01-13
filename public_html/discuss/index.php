@@ -274,6 +274,8 @@ header("Location: {$main_url}/{$indexphp}action=vthread&forum=$forum&topic=$topi
 }
 }
 
+elseif($action=='vpost') { $pageAnchor=db_searchDeSlice(false,intval($_GET['post'])); header("Location: {$indexphp}action=vthread&forum={$forum}&topic={$topic}&page={$pageAnchor[0]}{$pageAnchor[1]}"); exit;}
+
 elseif($action=='search') {if($reqTxt!=1)require($pathToFiles.'bb_func_txt.php');require($pathToFiles.'bb_func_search.php');}
 
 elseif($action=='deltopic') require($pathToFiles.'bb_func_deltopic.php');
