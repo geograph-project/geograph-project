@@ -125,7 +125,7 @@ function smarty_function_getamap($params)
 		else
 			$title="Ordnance Survey Get-a-Map for $gridref4";
 
-		return "<a title=\"$title\" href=\"http://getamap.ordnancesurvey.co.uk/getamap/frames.htm?mapAction=gaz&amp;gazName=g&amp;gazString=$gridref6\" onclick=\"popupOSMap('$gridref6'); return false;\">$text</a>$icon";
+		return "<a title=\"$title\" href=\"http://getamap.ordnancesurvey.co.uk/getamap/frames.htm?mapAction=gaz&amp;gazName=g&amp;gazString=$gridref6\" onclick=\"popupOSMap('$gridref6',''); return false;\">$text</a>$icon";
 	}
 	else if (empty($gridref4))
 	{
@@ -133,7 +133,7 @@ function smarty_function_getamap($params)
 			$text=$params['text'];
 		else
 			$text='OS Get-A-Map';
-		return "<a title=\"Ordnance Survey Get-a-Map\" href=\"http://getamap.ordnancesurvey.co.uk/getamap/frames.htm\" onclick=\"popupOSMap(''); return false;\">$text</a>$icon";
+		return "<a title=\"Ordnance Survey Get-a-Map\" href=\"http://getamap.ordnancesurvey.co.uk/getamap/frames.htm\" onclick=\"popupOSMap('',''); return false;\">$text</a>$icon";
 	}
 	else
 	{

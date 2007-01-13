@@ -170,7 +170,7 @@ else $viewReg='';
 
 $posterName=$cols[1];
 $posterText=$cols[3];
-
+$postID = $cols[6];
 
 if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
 	foreach ($g_matches[2] as $i => $g_id) {
@@ -232,6 +232,13 @@ if($ii==0) $ii++;
 $anchor++;
 }
 while($cols=db_simpleSelect(1));
+
+if ($USER->user_id) {
+
+$myRes=mysql_query("insert into geobb_lastviewed set topic_id=$topic,user_id={$USER->user_id},last_post_id = $postID on duplicate key update last_post_id = if(last_post_id < $postID,$postID,last_post_id)") or die('<p>'.mysql_error().'. Please, try another name or value.');
+
+}
+
 unset($result);unset($countRes);
 
 $l_messageABC=$l_sub_answer;

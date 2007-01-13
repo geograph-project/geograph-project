@@ -87,7 +87,7 @@ function shownext()
 			gr6 = gr4.substr(0,gr4.length-2)+'5'+gr4.substr(gr4.length-2,2)+'5';
 			window.open('http://www.nearby.org.uk/flyto.php?p='+gr6+'&range=3000','multimap');
 		} else {
-			popupOSMap(gr4);
+			popupOSMap(gr4,'');
 		}
 
 		vote.style.display="";
