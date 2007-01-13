@@ -45,6 +45,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign_by_ref('team', $team);
 }
 
-$smarty->display('admin_team.tpl');
+$smarty->display($template, $cacheid);
 	
 ?>
