@@ -29,6 +29,8 @@
   <p>There are no moderators !?!</p>
 {/if}
 
+<p>... see also the <a href="/help/credits">Credits Page</a></p>
+
 {dynamic}
 {if $user->registered}
 	<p>If you are interested in helping out with moderation then please visit your <a href="/profile.php?edit=1">profile update page</a>, there you will find a button to get a feel for the moderation process. Please note that we however have a long waiting list!</p>
