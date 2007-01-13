@@ -39,7 +39,7 @@
 <tr bgcolor="{$bgcolor}">
 	<td{if strpos($userrow.rights,'admin') > 0} style="font-weight:bold"{/if}><a href="/profile.php?u={$userrow.user_id}">{$userrow.realname}</a></td>
 	<td>{$userrow.nickname}</td>
-	<td>{if $userrow.role}{$userrow.role}{else}{if strpos($userrow.rights,'admin') > 0}Developer{else}{if strpos($userrow.rights,'moderator') > 0}Moderator{else}{/if}{/if}&nbsp;<a href="javascript:assignRole({$userrow.user_id},'{$userrow.role}');">e</a></td>
+	<td>{if $userrow.role}{$userrow.role}{else}{if strpos($userrow.rights,'admin') > 0}Developer{else}{if strpos($userrow.rights,'moderator') > 0}Moderator{/if}{/if}&nbsp;<a href="javascript:assignRole({$userrow.user_id},'{$userrow.role}');">e</a></td>
 	<td>{$userrow.signup_date}</td>
 	<td title="{$userrow.last_log_time}">{$userrow.last_log} ({$userrow.log_count})</td>
 	{if $stats}
