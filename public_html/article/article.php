@@ -98,6 +98,13 @@ function smarty_function_articletext($input) {
 
 	$pattern[]='/\n\* ?([^\n]+)(\n{2})?/e';
 	$replacement[]="'<ul style=\"margin-bottom:0px;margin-top:0px\"><li>\$1</li></ul>'.('$2'?'\n':'')";
+	$pattern[]='/<\/ul>\n?<ul style=\"margin-bottom:0px;margin-top:0px\">/';
+	$replacement[]="\n";
+
+	$pattern[]='/\n(<h\d>)?\#([\w]{1,2})? ([^\n]+)(<\/h\d>)?(\n{2})?/e';
+	$replacement[]="'<ol style=\"margin-bottom:0px;'.('\$1'?'':'margin-top:0px').'\"'.('\$2'?' start=\"\$2\"':'').'><li>\$1\$3\$4</li></ol>'.('\$5'?'\n':'')";
+	$pattern[]='/<\/ol>\n?<ol style=\"margin-bottom:0px;margin-top:0px\">/';
+	$replacement[]="\n";
 
 	$pattern[]="/\n/";
 	$replacement[]="<br/>\n";
