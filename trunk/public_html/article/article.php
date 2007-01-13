@@ -72,9 +72,7 @@ function article_make_table($input) {
 }
 
 function smarty_function_articletext($input) {
-	$output = preg_replace('/\{image id=(\d+) text=([^\}]+)\}/e',"smarty_function_gridimage(array(id => '\$1',extra => '\$2'))",str_replace("\r",'',$input));
-
-	$output = preg_replace('/(-{7,})\n(.*?)(-{7,})/es',"article_make_table('\$2')",$output);
+	$output = preg_replace('/(-{7,})\n(.*?)(-{7,})/es',"article_make_table('\$2')",str_replace("\r",'',$input));
 
 	$output = str_replace(
 		array('[b]','[/b]','[big]','[/big]','[i]','[/i]','[h2]','[/h2]','[h3]','[/h3]','[h4]','[/h4]'),
@@ -83,20 +81,26 @@ function smarty_function_articletext($input) {
 
 	$pattern=array(); $replacement=array();
 
-	$pattern[]="/\[url[=]?\](.+?)\[\/url\]/i";
-	$replacement[]="<a href=\"\\1\" target=\"_blank\" ref=\"nofollow\">\\1</a>";
+	$pattern[]='/\{image id=(\d+) text=([^\}]+)\}/e';
+	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '\$2'))";
 
-	$pattern[]="/\[url=((f|ht)tp[s]?:\/\/[^<> \n]+?)\](.+?)\[\/url\]/i";
-	$replacement[]="<a href=\"\\1\" target=\"_blank\">\\3</a>";
+	$pattern[]="/\[url[=]?\](.+?)\[\/url\]/i";
+	$replacement[]='\1';
+
+	$pattern[]="/\[url=((f|ht)tp[s]?:\/\/[^<> \n]+?)\](.+?)\[\/url\]/ie";
+	$replacement[]="smarty_function_external(array('href'=>\"\$1\",'text'=>'\$3','title'=>\"\$1\"))";
+
+	$pattern[]='/(?<!["\'\[\/\!\w])([STNH]?[A-Z]{1}\d{4,10})(?!["\'\]\/\!\w])/';
+	$replacement[]="<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/\\1\" target=\"_blank\">\\1</a>";
 
 	$pattern[]='/\[img=([^\] ]+)(| [^\]]+)\]/';
-	$replacement[]="<img src=\"\$1\" alt=\"$2\" title=\"$2\"/>";
+	$replacement[]='<img src="\1" alt="\2" title="\2"/>';
 
-	$pattern[]='/\n\* ([^\n]+)/';
-	$replacement[]='<ul style="margin-bottom:0px;margin-top:0px"><li>$1</li></ul>';
+	$pattern[]='/\n\* ?([^\n]+)(\n{2})?/e';
+	$replacement[]="'<ul style=\"margin-bottom:0px;margin-top:0px\"><li>\$1</li></ul>'.('$2'?'\n':'')";
 
-	$pattern[]="/\n\n/";
-	$replacement[]='<br/><br/>';
+	$pattern[]="/\n/";
+	$replacement[]="<br/>\n";
 
 	$output=preg_replace($pattern, $replacement, $output);
 
