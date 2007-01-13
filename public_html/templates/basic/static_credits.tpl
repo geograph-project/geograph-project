@@ -40,7 +40,7 @@
     
     <h3>Moderators</h3>
     <ul>
-    <li>View <a href="/admin/team">the Geograph Team</a> page</li>
+    <li>View <a href="/admin/team.php">the Geograph Team</a> page</li>
     </ul>
     
     <h3>Mapping &amp; Location Data</h3>
