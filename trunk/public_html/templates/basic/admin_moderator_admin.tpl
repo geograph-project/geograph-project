@@ -20,6 +20,7 @@
 <thead><tr>
 	<td>Name/Profile</td>
 	<td>Nickname</td>
+	<td>Role</td>
 	<td>Signup Date</td>
 	<td>Last Verification</td>
 	{if $stats}
@@ -38,6 +39,7 @@
 <tr bgcolor="{$bgcolor}">
 	<td{if strpos($userrow.rights,'admin') > 0} style="font-weight:bold"{/if}><a href="/profile.php?u={$userrow.user_id}">{$userrow.realname}</a></td>
 	<td>{$userrow.nickname}</td>
+	<td>{if $userrow.role}{$userrow.role}{else}{if strpos($userrow.rights,'admin') > 0}Developer{else}Moderator{/if}{/if}&nbsp;<a href="javascript:assignRole({$userrow.user_id},'{$userrow.role}');">e</a></td>
 	<td>{$userrow.signup_date}</td>
 	<td title="{$userrow.last_log_time}">{$userrow.last_log} ({$userrow.log_count})</td>
 	{if $stats}
@@ -83,6 +85,16 @@
 	<input type="submit" value="Next &gt;"/></p>
 	<p style="font-size:0.7em">* Search by name, nickname or user-id</p>
 </form>
+{/dynamic}   
+
+{literal}
+<script type="text/javascript">
+function assignRole(user_id,role) {
+	name = prompt("Please amend Role as required:",role);
+	location.href= "/admin/moderator_admin.php?user_id="+user_id+"&role="+escape(name);
+}
+</script>
+{/literal}
 
 <div class="interestBox">
 <div>As soon as a user is marked as a moderator, they can make real moderations, 
@@ -97,5 +109,5 @@ admin's can use these links occasionally to spot check a particular moderator.</
 <b>Grant</b> - Add moderation rights to this user. (requires the user to re-login)
 </div>
 
-{/dynamic}    
+ 
 {include file="_std_end.tpl"}

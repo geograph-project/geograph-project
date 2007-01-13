@@ -17,8 +17,8 @@
  <li><a href="/help/stats_faq">Statistics FAQ</a><br/><br/></li>
  <li><a href="/help/bbcodes">Forum BBcodes Help</a><br/><br/></li>
  <li><a href="/help/terms">Terms &amp; Conditions</a><br/><br/></li>
- <li><a href="/contact.php">Contact Us</a></li>
- <li><a href="/help/credits">Credits</a></li>
+ <li><a href="/contact.php">Contact Us</a><br/><br/></li>
+ <li><a href="/admin/team">Team</a> &amp; <a href="/help/credits">Credits</a></li>
  </ul></div>
  
  

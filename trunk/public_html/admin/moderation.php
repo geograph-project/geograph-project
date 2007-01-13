@@ -97,7 +97,7 @@ if (isset($_GET['gridimage_id']))
 
 if (!empty($_GET['relinqush'])) {
 	$USER->mustHavePerm('basic');
-	$db->Execute("UPDATE user SET rights = REPLACE(rights,'moderator','') WHERE user_id = {$USER->user_id}");
+	$db->Execute("UPDATE user SET rights = REPLACE(REPLACE(rights,'traineemod',''),'moderator','') WHERE user_id = {$USER->user_id}");
 	
 	//reload the user object
 	$_SESSION['user'] =& new GeographUser($USER->user_id);

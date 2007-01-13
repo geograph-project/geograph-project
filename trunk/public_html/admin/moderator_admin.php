@@ -51,6 +51,16 @@ if (isset($_GET['revoke'])) {
 				$_SESSION['user'] =& new GeographUser($USER->user_id);
 		}
 	}
+} elseif (isset($_GET['role'])) {
+	$u = new GeographUser(intval($_GET['user_id']));
+	if ($u->registered) {
+		$role = $db->Quote($_GET['role']);
+		if ($db->Execute("UPDATE user SET role = $role WHERE user_id = {$u->user_id}")) {
+			$smarty->assign('message', $u->realname." assigned the role of $role");
+			if ($USER->user_id == $u->user_id) 
+				$_SESSION['user'] =& new GeographUser($USER->user_id);
+		}
+	}
 }
 
 if (!empty($_GET['q']) && trim($_GET['q'])) {
@@ -63,13 +73,13 @@ if (!empty($_GET['q']) && trim($_GET['q'])) {
 
 $moderators = $db->GetAssoc("
 select 
-	user.user_id,user.realname,user.nickname,user.rights,substring(user.signup_date,1,10) as signup_date,
+	user.user_id,user.realname,user.nickname,user.rights,role,substring(user.signup_date,1,10) as signup_date,
 	count(distinct moderation_log_id) as log_count,
 	substring(max(ml.created),1,10) as last_log,
 	max(ml.created) as last_log_time
 from user 
 	left join moderation_log ml on (ml.user_id = user.user_id)
-where length(rights) > 0 AND (rights != 'basic') $sql_where
+where length(rights) > 0 AND (rights != 'basic' OR role != '') $sql_where
 group by user.user_id
 order by last_log_time desc,user.user_id");
 

@@ -9,10 +9,17 @@ $roForums=array();
 $poForums=array();
 $regUsrForums=array();
 
-$userRanks=array(1=>'Administrator', 2=>'Developer', 3=>'Developer',2407=>'Developer',2466=>'GotY Coordinator');
+$userRanks=array();
 
-if($cols=db_simpleSelect(0,'user','user_id','rights',' LIKE ','%moderator%')) {
-do isset($userRanks[$cols[0]]) || ($userRanks[$cols[0]]='Moderator'); while($cols=db_simpleSelect(1));
+if($cols=db_simpleSelect(0,'user','user_id,rights,role','role != \'\' OR rights LIKE \'%admin%\' OR rights',' LIKE ','%moderator%')) {
+	do {
+		if ($cols[2])
+			$userRanks[$cols[0]]=$cols[2];
+		elseif (strpos($cols[1],'admin') !== FALSE)
+			$userRanks[$cols[0]]='Developer';
+		elseif (strpos($cols[1],'moderator') !== FALSE)
+			$userRanks[$cols[0]]='Moderator';
+	} while($cols=db_simpleSelect(1));
 }
 
 $mods=array();

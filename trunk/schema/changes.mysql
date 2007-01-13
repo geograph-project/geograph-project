@@ -787,4 +787,10 @@ CREATE TABLE `geobb_lastviewed` (
   `last_post_id` int(10) unsigned NOT NULL default '0',
   `ts` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`user_id`,`topic_id`)
-)
+);
+
+
+ALTER TABLE `user` ADD `role` VARCHAR( 32 ) NOT NULL ;
+
+ALTER TABLE `user` DROP INDEX `rights` ,
+ADD INDEX `rights` ( `rights` , `role` ) ;
