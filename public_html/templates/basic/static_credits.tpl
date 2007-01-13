@@ -5,15 +5,14 @@
 
     <h2>Credits</h2>
  
-    Here's all the people and technologies that have made this site possible...
+    Here's all the people and technologies that make this site possible...
     
     <h3>Original Idea</h3>
     <ul>
-    <li>{mailto address="rogersgm@gmail.com" text="Gary Rogers" encode="javascript"} came up with original 
-concept.</li>
+    <li>{mailto address="rogersgm@gmail.com" text="Gary Rogers" encode="javascript"} came up with original concept.</li>
     </ul>
 
-	<h3>Photographs</h3>
+    <h3>Photographs</h3>
     <ul>
     <li>Copyright on all photographs is retained by the original submitters, but all are 
     published under a {external title="Creative Commons website" href="http://creativecommons.org" text="Creative Commons"} licence -
@@ -37,6 +36,11 @@ concept.</li>
     
     <li>David Morris has helped with the profile features and is currently working on a bulk standalone upload application.</li>
     
+    </ul>
+    
+    <h3>Moderators</h3>
+    <ul>
+    <li>View <a href="/admin/team">the Geograph Team</a> page</li>
     </ul>
     
     <h3>Mapping &amp; Location Data</h3>

@@ -164,7 +164,7 @@ ul.contents li.last { padding-bottom:2px; border-bottom: 1px solid lightgrey; }
 <a name="built"></a>
 <h3>Who built this marvellous site?</h3>
 	<p>Please see the <a href="/help/credits" title="Credits Page">Credits Page</a> for
-	information on all the people who made this site possible.</p>
+	information on all the <a href="/admin/team">people</a> who make this site possible.</p>
 
 <a name="opensource"></a>
 <h3>Open source? Creative Commons? What's that all about?</h3>

@@ -9,18 +9,14 @@
 
 <h2><a name="top"></a>Profile for {$profile->realname|escape:'html'}</h2>
 
-{if $profile->user_id == 1}
-	<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Geograph Role</b>: Administrator</div>
+{if $profile->role}
+	<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Geograph Role</b>: {$profile->role}</div>
 {else}
 	{if strpos($profile->rights,'admin') > 0}
 		<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Geograph Role</b>: Developer</div>
 	{else}
 		{if strpos($profile->rights,'moderator') > 0}
 			<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Geograph Role</b>: Moderator</div>
-		{else}
-			{if $profile->user_id == 2466}
-				<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Geograph Role</b>: GotY Coordinator</div>
-			{/if}
 		{/if}
 	{/if}
 {/if}

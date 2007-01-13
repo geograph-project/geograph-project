@@ -232,12 +232,18 @@
 
 		<div class="fieldnotes">If you are no longer able to help out with moderation then click the button above. (you will have to reapply)</div>  
 	{else}
-		<input type="button" value="Apply to become a moderator" onclick="location.href = '/admin/moderation.php?apply=1';"/>
 		{if strpos($profile->rights,'traineemod') > 0}
-			(already done)
+			<input type="button" value="Try Moderation Process again" onclick="location.href = '/admin/moderation.php?apply=1';"/>
+		{else}
+			<input type="button" value="Apply to become a moderator" onclick="location.href = '/admin/moderation.php?apply=1';"/>
 		{/if}
 
-		<div class="fieldnotes">If you have an interest in helping out with moderation, then click the button above to try a dummy moderation run. There is no commitment to complete the whole application.</div>  
+		<div class="fieldnotes">
+		{if strpos($profile->rights,'traineemod') > 0}
+			or <input type="button" value="Cancel Application" onclick="location.href = '/admin/moderation.php?relinqush=1';"/><br/><br/>
+		{/if}
+		
+		If you have an interest in helping out with moderation, then click the button above to try a dummy moderation run. There is no commitment to complete the whole application.</div>  
 	{/if}
 </div>
 	
