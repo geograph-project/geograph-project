@@ -83,11 +83,10 @@ sum(imagetaken LIKE CONCAT(substring(submitted,1,7),'%')) as `Submitted and Take
 from gridimage_search $where_sql 
 group by substring(submitted,1,7); " );
 	
-	$iamge = new GridImage;
 	foreach($table as $idx=>$entry)
 	{
-		if ($iamge->imagetaken = $entry['Month'].'-00')
-			$table[$idx]['Month'] = $iamge->getFormattedTakenDate();
+		if ($entry['Month'].'-00')
+			$table[$idx]['Month'] = getFormattedDate($entry['Month'].'-00');
 		$table[$idx]['Percentage'] = number_format($entry['Submitted and Taken'] / $entry['Submitted'] * 100);
 	}
 	

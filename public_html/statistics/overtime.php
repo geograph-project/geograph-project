@@ -121,11 +121,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 FROM `gridimage_search` $where_sql
 GROUP BY $group_date" );
-	$iamge = new GridImage();
 	foreach($table as $idx=>$entry)
 	{
-		$iamge->imagetaken = $table[$idx]['Date'];
-		$table[$idx]['Date'] = $iamge->getFormattedTakenDate();
+		$table[$idx]['Date'] = getFormattedDate($table[$idx]['Date']);
 	}
 	
 	$smarty->assign_by_ref('table', $table);

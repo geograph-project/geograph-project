@@ -71,11 +71,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	from autologin 
 	group by $group_date
 	" );
-	$iamge = new GridImage();
 	foreach($table as $idx=>$entry)
 	{
-		$iamge->imagetaken = $table[$idx]['Date'];
-		$table[$idx]['Date'] = $iamge->getFormattedTakenDate();
+		$table[$idx]['Date'] = getFormattedDate($table[$idx]['Date']);
 	}
 	
 	$smarty->assign_by_ref('table', $table);

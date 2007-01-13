@@ -56,7 +56,6 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
-	$iamge = new GridImage();
 	
 	$title = "Distances Travelled in a Day";
 
@@ -91,8 +90,8 @@ if (!$smarty->is_cached($template, $cacheid))
 			$columns_sql .= 'imagetaken as `Date`,';
 		}
 		$smarty->assign('date', $date);
-		if ($iamge->imagetaken = $date)
-			$title .= (strlen($date)==10?' on ':' in '). $iamge->getFormattedTakenDate();
+		if ($date)
+			$title .= (strlen($date)==10?' on ':' in ').getFormattedDate($date);
 	} else {
 		$where[] = "imagetaken not like '%-00%'";
 		$columns_sql .= 'imagetaken as `Date`,';
@@ -167,8 +166,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($i > 100 || $entry['Distance Travelled (km)'] == 0) {
 			unset($table[$idx]);		
 		} else {
-			if ($iamge->imagetaken = $entry['Date'])
-				$table[$idx]['Date'] = $iamge->getFormattedTakenDate();
+			if ($entry['Date'])
+				$table[$idx]['Date'] = getFormattedDate($entry['Date']);
 			unset($table[$idx]['user_id']);
 			unset($table[$idx]['imagetaken']);	
 			$i++;
