@@ -75,11 +75,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	$columns_sql
 FROM `geobb_posts` $where_sql
 GROUP BY substring( post_time, 1, $length )" );
-	$iamge = new GridImage();
 	foreach($table as $idx=>$entry)
 	{
-		$iamge->imagetaken = $table[$idx]['Date'];
-		$table[$idx]['Date'] = $iamge->getFormattedTakenDate();
+		$table[$idx]['Date'] = getFormattedDate($table[$idx]['Date']);
 	}
 	
 	$smarty->assign_by_ref('table', $table);
