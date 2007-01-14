@@ -8,7 +8,7 @@
 		<div style="position:relative;height:220px;">
 		{foreach from=$images item=image name=i}
 
-			<div class="photo33" style="float:left;width:200px;height:220px;padding:3px"><a title="{$image->title|escape:'html'} by {$image->realname} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,true,'class="ithumb" longdesc')}</a>
+			<div class="photo33" style="float:left;width:200px;height:220px;padding:3px"><a title="{$image->title|escape:'html'} by {$image->realname} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,true,'class="ithumb" lowsrc')}</a>
 				<div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
 
 				{if $is_admin}
@@ -35,9 +35,9 @@ function showThumbnails(that) {
 	i = document.images;
 	c = 0; r = 0; p = 0; show = (Math.abs(t-p) < 520);
 	for(q=0;q<i.length;q++) {
-		if (typeof i[q].longdesc != 'undefined' && i[q].className == 'ithumb') {
+		if (typeof i[q].lowsrc != 'undefined' && i[q].className == 'ithumb') {
 			if (show && (i[q].src == ''))
-				i[q].src = i[q].longdesc;
+				i[q].src = i[q].lowsrc;
 			
 			c=c+1;
 			if (c%3==0) {
