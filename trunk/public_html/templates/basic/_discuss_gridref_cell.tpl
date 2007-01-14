@@ -4,7 +4,7 @@
 		{place place=$place h3=' style="text-align:left; margin-top:0; padding-left:10px; font-weight:normal; color:silver;"'}
 	{/if}
 
-	<div style="{if count($images) > 6}height:440px; overflow:auto; {/if}position:relative; background-color:{$backgroundcolor}" onscroll="return showThumbnails(this);" id="scrollDiv">
+	<div style="height:520px; overflow:auto; position:relative; background-color:{$backgroundcolor}" onscroll="return showThumbnails(this);" id="scrollDiv">
 		<div style="position:relative;height:220px;">
 		{foreach from=$images item=image name=i}
 
@@ -27,6 +27,8 @@
 		<br style="clear:both"/>
 		</div>
 	</div>
+	<br style="clear:both"/>
+
 {/dynamic}
 {literal}
 <script type="text/javascript">
