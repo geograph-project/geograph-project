@@ -5,7 +5,7 @@
 	{/if}
 
 	<div style="{if count($images) > 3}height:520px; overflow:auto; {/if}position:relative; background-color:{$backgroundcolor}" onscroll="return showThumbnails(this);" id="scrollDiv">
-		<div style="position:relative;height:220px;">
+		<div style="position:relative;height:250px;">
 		{foreach from=$images item=image name=i}
 
 			<div class="photo33" style="float:left;width:200px;height:220px;padding:3px"><a title="{$image->title|escape:'html'} by {$image->realname} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,true,'class="ithumb" lowsrc')}</a>
@@ -20,7 +20,7 @@
 
 		{if $smarty.foreach.i.iteration%3 == 0 && $smarty.foreach.i.iteration < count($images)}
 			<br style="clear:both"/>
-			</div><div style="position:relative;height:220px;">
+			</div><div style="position:relative;height:250px;">
 		{/if}
 
 		{/foreach}
