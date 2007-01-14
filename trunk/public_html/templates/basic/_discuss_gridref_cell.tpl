@@ -18,7 +18,7 @@
 				<div style="font-size:0.7em"><br/>Insert: <a href="javascript:paste_strinL('[[[{$image->gridimage_id}]]]',0)">Thumbnail</a> or <a href="javascript:paste_strinL('[[{$image->gridimage_id}]]',0)">Text Link</a></div>
 			</div>
 
-		{if $smarty.foreach.i.iteration%3 == 0}
+		{if $smarty.foreach.i.iteration%3 == 0 && $smarty.foreach.i.iteration < count($images)}
 			<br style="clear:both"/>
 			</div><div style="position:relative;height:220px;">
 		{/if}
