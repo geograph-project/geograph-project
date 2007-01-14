@@ -753,7 +753,7 @@ class GridImage
 	* handy helper for Smarty templates, for instance, given an instance of this
 	* class, you can use this {$image->getThumbnail(213,160)} to show a thumbnail
 	*/
-	function getThumbnail($maxw, $maxh,$urlonly = false,$fullalttag = false)
+	function getThumbnail($maxw, $maxh,$urlonly = false,$fullalttag = false,$attribname = 'src')
 	{
 		global $CONF;
 		//establish whether we have a cached thumbnail
@@ -865,14 +865,14 @@ class GridImage
 		} 
 		elseif ($thumbpath=='/photos/error.jpg')
 		{
-			$html="<img src=\"$thumbpath\" width=\"$maxw\" height=\"$maxh\" />";
+			$html="<img $attribname=\"$thumbpath\" width=\"$maxw\" height=\"$maxh\" />";
 		}
 		else
 		{
 			$title=$this->grid_reference.' : '.htmlentities($this->title).' by '.$this->realname;
 			
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
-			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]} />";
+			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 		}
 		
 		
