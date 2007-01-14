@@ -10,7 +10,7 @@
 
 
 {if $is_tickmod} 
-<li><a title="Trouble Tickets" href="/admin/tickets.php">Trouble Tickets</a> (<a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search" rel="sidebar" title="Tickets">Open in Sidebar</a>) - 
+<li><a title="Trouble Tickets" href="/admin/tickets.php">Trouble Tickets</a> <small>(Sidebar: <a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search">IE &amp; Firefox</a>, <a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" rel="sidebar" title="Tickets">Opera</a>)</small> - 
    Deal with image problems<br/> <b>[{$tickets_new} New, {$tickets_yours} Open by You]</b></li>
 {/if}
 

@@ -3,7 +3,7 @@
 
 <div style="padding:10px;" class="searchresults">
 {if $engine->resultCount}
-<div style="float:right;position:relative"><a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=search" target="_search" rel="sidebar" title="Results">Open in Sidebar</a></div>
+<div style="float:right;position:relative">Sidebar: <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=search" target="_search" rel="nofollow">IE &amp; Firefox</a>, <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=search" rel="sidebar" rel="nofollow" title="Results">Opera</a></div>
 {/if}
 
 <h2>Search Results</h2>
