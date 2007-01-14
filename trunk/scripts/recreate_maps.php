@@ -190,18 +190,9 @@ while (1) {
 		exit;
 	}
 	
-	//sleep until calm if we've specified a load average
-	if ($param['load']<100)
-	{
-		while (get_loadavg() > $param['load'])
-		{
-			sleep($param['sleep']);
-			if (time()>$end_time) 
-				exit;	
-
-		}
-	}
-			
+	//sleep anyway for a bit
+	sleep($param['sleep']*3);
+					
 	if (time()>$end_time) {
 		//retreat and let the next recruit take the strain
 		exit;	
