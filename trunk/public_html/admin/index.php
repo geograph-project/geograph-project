@@ -39,41 +39,16 @@ if (!$smarty->is_cached($template, $cacheid))
 	//lets get some stats
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
-	
-	/* unnecessary and slow 
-	
-	$users_total=$db->GetOne("select count(*) from user where rights>0");
-	$users_thisweek=$db->GetOne("select count(*) from user where rights>0 and ".
-		"(unix_timestamp(now())-unix_timestamp(signup_date))<604800");
-	$users_submitted=$db->GetOne("select count(distinct user_id) from gridimage"); 
-	$users_pending=$db->GetOne("select count(*) from user where rights is null");
-	
-	$images_total=$db->GetOne("select count(*) from gridimage where moderation_status<>'rejected'");
-	$images_thisweek=$db->GetOne("select count(*) from gridimage where moderation_status<>'rejected' and ".
-		"(unix_timestamp(now())-unix_timestamp(submitted))<604800");
-	
-	$images_status=$db->GetAssoc("select moderation_status,count(*) from gridimage group by moderation_status");
-	
-	$smarty->assign('users_total',  $users_total);
-	$smarty->assign('users_submitted',  $users_submitted);
-	$smarty->assign('users_thisweek',  $users_thisweek);
-	$smarty->assign('users_pending',  $users_pending);
-	
-	$smarty->assign('images_total',  $images_total);
-	$smarty->assign('images_thisweek',  $images_thisweek);
-	$smarty->assign_by_ref('images_status',  $images_status);
-	*/
-	
+		
 	$smarty->assign('images_pending', $db->GetOne("select count(*) from gridimage where moderation_status='pending'"));
 	$smarty->assign('tickets_new', $db->GetOne("select count(*) from gridimage_ticket where moderator_id=0 and status<>'closed'"));
 	$smarty->assign('tickets_yours', $db->GetOne("select count(*) from gridimage_ticket where moderator_id={$USER->user_id} and status<>'closed'"));
 
 	
 	$smarty->assign('gridsquares_sea', $db->GetAssoc("select reference_index,count(*) from gridsquare where percent_land=-1 group by reference_index"));
-	
-	
-	
 }
+
+$smarty->assign('images_pending_available', $db->GetOne("select count(distinct gridimage_id) from gridimage as gi left join gridsquare_moderation_lock as l on(gi.gridsquare_id=l.gridsquare_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) ) where submitted > date_sub(now(), interval 7 day) and (moderation_status = 2 or user_status!='') and (l.gridsquare_id is null OR (l.user_id = {$USER->user_id} AND lock_type = 'modding') OR (l.user_id != {$USER->user_id} AND lock_type = 'cantmod') )"));
 
 $smarty->assign('gridsquares_sea_test', $db->GetOne("select count(*) from mapfix_log where old_percent_land=-1 and created > date_sub(now(),interval 30 minute) and user_id != {$USER->user_id}"));
 

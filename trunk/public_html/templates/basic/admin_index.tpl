@@ -5,12 +5,13 @@
 
 <h2>Administrative Tools</h2>
 <ul>
-<li><a href="/admin/moderation.php">Moderate</a> new photo submissions<br/> [{$images_pending} Pending]</li>
+<li><a href="/admin/moderation.php">Moderate</a> new photo submissions<br/>
+<b>[{$images_pending} Pending, {dynamic}{$images_pending_available}{/dynamic} available to moderate]</b></li>
 
 
 {if $is_tickmod} 
 <li><a title="Trouble Tickets" href="/admin/tickets.php">Trouble Tickets</a> (<a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search" rel="sidebar" title="Tickets">Open in Sidebar</a>) - 
-   Deal with image problems<br/> [{$tickets_new} New, {$tickets_yours} Open by You]</li>
+   Deal with image problems<br/> <b>[{$tickets_new} New, {$tickets_yours} Open by You]</b></li>
 {/if}
 
 
@@ -31,7 +32,7 @@
 
 <a title="Map Fixer" href="/admin/mapfixer.php">Map Fixer</a> allows the land percentage
 for each 1km grid squares to be updated, which allows "square is all at sea" to be 
-corrected<br/> [GB:{$gridsquares_sea.1},I:{$gridsquares_sea.2} in Queue] - <a href="/mapfixer.php">add to queue</a><br/>
+corrected<br/> <b>[GB:{$gridsquares_sea.1},I:{$gridsquares_sea.2} in Queue]</b> - <a href="/mapfixer.php">add to queue</a><br/>
 </li>
 
 <li><a title="Recreate Maps" href="/recreatemaps.php">Recreate Maps</a> - 
