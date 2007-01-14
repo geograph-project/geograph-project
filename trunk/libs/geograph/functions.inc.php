@@ -216,8 +216,10 @@ function smarty_function_place($params) {
 	elseif ($place['hist_county'])
 		$t .= ", {$place['hist_county']}";
 	$t .= ", {$place['reference_name']}</i></small>";
-	if ($params['h3']) {
+	if (isset($params['h3'])) {
 	 	$t2 = "<h3";
+	 	if (!empty($params['h3']))
+	 		$t2 .= $params['h3'];
 	 	if ($place['hist_county']) {
 	 		$t2 .= " title=\"".substr($place['full_name'],0,10).": Historic County - {$place['hist_county']}";
 	 		if ($place['hist_county'] == $place['adm1_name'])

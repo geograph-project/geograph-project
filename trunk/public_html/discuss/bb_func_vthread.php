@@ -80,6 +80,11 @@ if (!empty($CONF['disable_discuss_thumbs'])) {
 			
 			if ($square->imagecount)
 			{
+				//what style should we use?
+				$style = $USER->getStyle();
+				$smarty->assign('maincontentclass', 'content_photo'.$style);	
+				$smarty->assign('backgroundcolor', $style);	
+				
 				$images=$square->getImages();
 				$smarty->assign_by_ref('images', $images);
 

@@ -156,6 +156,28 @@ class GeographUser
 		$this->default_style = $style;
 	}
 	
+	function getStyle($style='white') {
+		$valid_style=array('white', 'black','gray');
+		if (isset($_GET['style']) && in_array($_GET['style'], $valid_style))
+		{
+			$style=$_GET['style'];
+			$_SESSION['style']=$style;
+
+			if ($this->registered) 
+				$this->setDefaultStyle($style);
+		}
+		elseif ($this->registered && in_array($this->default_style, $valid_style)) 
+		{
+			$style=$this->default_style;
+		}
+		elseif (isset($_SESSION['style']))
+		{
+			$style=$_SESSION['style'];
+		}
+		return $style;
+	}
+	
+	
 	/**
 	* get stats for user represented by this instance - 
 	* all stats are stored in
