@@ -101,25 +101,7 @@ if ($image->isValid())
 	$image->getPhotographerGridref(true);
 	
 	//what style should we use?
-	$style='white';
-	$valid_style=array('white','black','gray');
-	if (isset($_GET['style']) && in_array($_GET['style'], $valid_style))
-	{
-		$style=$_GET['style'];
-		$_SESSION['style']=$style;
-
-		if ($USER->registered) 
-			$USER->setDefaultStyle($style);
-	}
-	elseif ($USER->registered && in_array($USER->default_style, $valid_style)) 
-	{
-		$style=$USER->default_style;
-	}
-	elseif (isset($_SESSION['style']))
-	{
-		$style=$_SESSION['style'];
-
-	}
+	$style = $USER->getStyle();
 	$cacheid.=$style;
 
 	if (!$smarty->is_cached($template, $cacheid))
