@@ -36,13 +36,13 @@ function showThumbnails(that) {
 	c = 0; r = 0; p = 0;
 	for(q=0;q<i.length;q++) {
 		if (typeof i[q].lowsrc != 'undefined') {
-			if (Math.abs(t-p) < 400) {
+			if (Math.abs(t-p) < 440) {
 				i[q].src = i[q].lowsrc;
 			}
 			c=c+1;
 			if (c%3==0) {
 				r=r+1;
-				p = r * 230;
+				p = r * 260;
 			}
 		}
 	}
