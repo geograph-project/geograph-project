@@ -120,13 +120,19 @@ if (!$smarty->is_cached($template, $cacheid))
 		$angle = sprintf('%.1f',$angle);
 		if (!$dist) {
 			$line['Direction'] = "<small style=\"color:gray\">Same Location</small>";
+			$q = '-';
 		} elseif ($dist >= 1000) {
 			$line['Direction'] = "<b>$s</b> <nobr>[$angle]</nobr>"; #"Wide:".$angle."<br>".
+			$q = floor($q);
 		} elseif ($promore4 && $submore4) {
 			$line['Direction'] = "<b>$s</b> <nobr>[$angle]</nobr>"; #"Detailed:".$angle."<br>".
+			$q = floor($q);
 		} else {
 			$line['Direction'] = "<small style=\"color:gray\">".(($submore4)?'Photographer':'Subject').' Location Not Accurate Enough</small>';
+			$q = '-';
 		}
+		
+		$line['Result'] = $q;
 		$line['Manually Specified'] = ($image->view_direction> -1)?$image->view_direction:'-';
 		$table[] = $line;
 	}
