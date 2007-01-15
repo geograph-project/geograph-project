@@ -102,7 +102,7 @@ if (isset($_GET['fav']) && $i) {
 							( (in_array('pg',$_GET['check']) === FALSE)?
 								"viewpoint_eastings>0 AND ":'').
 							 "gi.viewpoint_eastings%1000=0 AND viewpoint_northings%1000=0"; 
-							 $l[] = ( (in_array('pg',$_GET['check']) === FALSE)?
+							 $l[] = ( (in_array('pg',$_GET['check']) !== FALSE)?
 								'B ':'').'C'; break;
 				case 'dir': $sql[] = "gi.view_direction=-1"; $l[] = 'D'; break;
 				case 'dat': $sql[] = "imagetaken LIKE'%-00%' OR imagetaken LIKE'0%'"; $l[] = 'E'; break;
