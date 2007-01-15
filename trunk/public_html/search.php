@@ -673,7 +673,7 @@ if (isset($_GET['fav']) && $i) {
 			unset($displayclasses['thumbs']);
 			unset($displayclasses['slide']);
 			unset($displayclasses['text']);
-			$displayclasses['searchtext'] = "Text-based Sidebar (Firefox &amp; IE Only)";
+			$displayclasses['searchtext'] = "Text-based Sidebar (IE Only)";
 			
 			
 		} elseif (isset($_GET['Special'])) {
