@@ -44,7 +44,7 @@ if ($year >= 2004 && $year <= date('Y')) {
 $target=$_SERVER['DOCUMENT_ROOT'].$map->getImageFilename();
 
 
-$template='xmas.tpl';
+$template='stuff_xmas.tpl';
 $cacheid=$map->type_or_user * -1;
 
 $smarty->caching = 2; // lifetime is per cache
