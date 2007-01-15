@@ -29,6 +29,9 @@ $USER->mustHavePerm("basic");
 
 $smarty = new GeographPage;
 
+if (isset($_SESSION['editpage_options']))
+	unset($_SESSION['editpage_options']);
+
 $db = NewADOConnection($GLOBALS['DSN']);
 
 
