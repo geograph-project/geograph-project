@@ -228,17 +228,22 @@ if (isset($_REQUEST['id']))
 				if (isset($_POST['addcomment']))
 				{
 					$ticket->addOwnerComment($USER->user_id, $comment);
-					$smarty->assign("thankyou", "comment");
+					#$smarty->assign("thankyou", "comment");
 				}
 			}
 			else
 			{
 				die("naughty naughty. only moderators and image owners can update tickets.");
 			}
-
+			
+			if (isset($_SESSION['editpage_options']) && in_array('small_redirect',$_SESSION['editpage_options'])) {
+				header("Location: http://{$_SERVER['HTTP_HOST']}/thankyou.php#thankyou=done&id={$_REQUEST['id']}");
+				exit;
+			}
+			
 			//refresh this page so you're less likely to repost
 			header("Location: http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$image->gridimage_id}");
-
+			exit;
 		}
 
 		if ($moderator = $image->isImageLocked($USER->user_id)) {
@@ -400,7 +405,12 @@ if (isset($_REQUEST['id']))
 
 				//clear user specific stuff like profile page
 				$smarty->clear_cache(null, "user{$image->user_id}");
-
+				
+				if (isset($_SESSION['editpage_options']) && in_array('small_redirect',$_SESSION['editpage_options'])) {
+					header("Location: http://{$_SERVER['HTTP_HOST']}/thankyou.php#thankyou=$status&id={$_REQUEST['id']}");
+					exit;
+				}
+				
 				//return to this edit screen with a thankyou
 				if ($status=="pending")
 				{
@@ -412,6 +422,7 @@ if (isset($_REQUEST['id']))
 					//all edits are complete, so lets show the user the result of their handiwork
 					header("Location: http://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}");
 				}
+				exit;
 			}
 			else
 			{
@@ -437,10 +448,14 @@ if (isset($_REQUEST['id']))
 
 		}
 
-
-		//let's find posts in the gridref discussion forum
-		$image->grid_square->assignDiscussionToSmarty($smarty);
-
+		if (!isset($_SESSION['editpage_options']) || !in_array('simple',$_SESSION['editpage_options'])) {
+			
+			$smarty->assign('showfull', 1);
+			
+			//let's find posts in the gridref discussion forum
+			$image->grid_square->assignDiscussionToSmarty($smarty);
+		}
+		
 		require_once('geograph/rastermap.class.php');
 
 		$rastermap = new RasterMap($image->grid_square,true);
@@ -467,21 +482,24 @@ if (isset($_REQUEST['id']))
 		$dirs['00'] = $dirs[0];
 		$smarty->assign_by_ref('dirs', $dirs);
 		
+		if (!isset($_SESSION['editpage_options']) || !in_array('simple',$_SESSION['editpage_options'])) {
 		
-		//get trouble tickets
-		$show_all_tickets = isset($_REQUEST['alltickets'])?intval($_REQUEST['alltickets']):1;
-		$smarty->assign('show_all_tickets', $show_all_tickets);
+			//get trouble tickets
+			$show_all_tickets = isset($_REQUEST['alltickets'])?intval($_REQUEST['alltickets']):1;
+			$smarty->assign('show_all_tickets', $show_all_tickets);
 
-		$statuses=array('pending', 'open');
-		if ($show_all_tickets)
-			$statuses[]='closed';
+			$statuses=array('pending', 'open');
+			if ($show_all_tickets)
+				$statuses[]='closed';
 
-		$openTickets=&$image->getTroubleTickets($statuses);
+			$openTickets=&$image->getTroubleTickets($statuses);
 
-		if (count($openTickets))
-			$smarty->assign_by_ref('opentickets', $openTickets);
-
-		$image->lookupModerator();
+			if (count($openTickets))
+				$smarty->assign_by_ref('opentickets', $openTickets);
+			
+			if ($isadmin)
+				$image->lookupModerator();
+		}
 
 		if (isset($_POST['title']) && isset($_POST['create']))
 		{
