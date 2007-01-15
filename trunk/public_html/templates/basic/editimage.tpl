@@ -269,14 +269,14 @@
 <br/>
 {/if}
 
-<h2 class="titlebar">Report Problem / Change Image Details <small><a href="/help/changes">[help]</a></small></h2>
+<h2 class="titlebar" style="margin-bottom:0px">Report Problem / Change Image Details <small><a href="/help/changes">[help]</a></small></h2>
 {if $error}
 <a name="form"></a>
 <h2><span class="formerror">Changes not submitted - check and correct errors below...</span></h2>
 {/if}
 
 	{if $rastermap->enabled}
-		<div class="rastermap" style="float:right;  width:45%;position:relative">
+		<div class="rastermap" style="float:right;  width:350px;position:relative">
 		
 		<b>{$rastermap->getTitle($gridref)}</b><br/><br/>
 		{$rastermap->getImageTag()}<br/>
@@ -302,7 +302,7 @@
  		
 
 
-<form method="post" action="/editimage.php#form" name="theForm" onsubmit="this.imageclass.disabled=false">
+<form method="post" action="/editimage.php#form" name="theForm" onsubmit="this.imageclass.disabled=false" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0; border-top:none">
 <input type="hidden" name="id" value="{$image->gridimage_id}"/>
 
 {if $moderated_count}
@@ -322,28 +322,27 @@
   <a title="Open in Google Earth" href="/kml.php?id={$image->gridimage_id}" class="xml-kml">KML</a></div>
 
 <p>
-<label for="grid_reference">Subject Grid Reference {if $moderated.grid_reference}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
+<label for="grid_reference"><b>Subject Grid Reference</b> {if $moderated.grid_reference}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.grid_reference}<span class="formerror">{$error.grid_reference}</span><br/>{/if}
-<input type="text" id="grid_reference" name="grid_reference" size="14" value="{$image->subject_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false)"/>
-{getamap gridref=$image->subject_gridref text="Get-a-map&trade; for `$image->subject_gridref`"}
-</p>
+<input type="text" id="grid_reference" name="grid_reference" size="14" value="{$image->subject_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false,false)"/> 
+{getamap gridref="document.theForm.grid_reference.value" gridref2=$image->subject_gridref text="OS Get-a-map&trade;"}
+
 
 <p>
-<label for="photographer_gridref">Optional Photographer Grid Reference {if $moderated.photographer_gridref}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
+<label for="photographer_gridref"><b>Photographer Grid Reference</b> - Optional {if $moderated.photographer_gridref}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.photographer_gridref}<span class="formerror">{$error.photographer_gridref}</span><br/>{/if}
 <input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$image->photographer_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false)"/>
-{if $image->photographer_gridref}
-  {getamap gridref=$image->photographer_gridref text="Get-a-map&trade; for `$image->photographer_gridref`"}
-{else}
-  {getamap text="Get-a-map&trade;"}
-{/if}
+{getamap gridref="document.theForm.photographer_gridref.value" gridref2=$image->photographer_gridref text="OS Get-a-map&trade;"}<br/>
+<span style="font-size:0.7em">
+<a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Copy from Subject</a><br/></span>
+
 {if $rastermap->enabled}
 	<br/><input type="checkbox" name="use6fig" id="use6fig" {if $image->use6fig} checked{/if} value="1"/> <label for="use6fig">Only display 6 figure grid reference (<a href="/help/map_precision" target="_blank">Explanation</a>)</label>
 {/if}
 </p>
 
 
-<p><label for="view_direction">Edit View Direction  {if $moderated.view_direction}<span class="moderatedlabel">(moderated)</span>{/if}
+<p><label for="view_direction"><b>View Direction</b>  {if $moderated.view_direction}<span class="moderatedlabel">(moderated)</span>{/if}
 </label> <small>(photographer facing)</small><br/>
 <select id="view_direction" name="view_direction" style="font-family:monospace" onchange="updateCamIcon(this);">
 	{foreach from=$dirs key=key item=value}
@@ -352,7 +351,7 @@
 </select></p>
 
 
-<p><label for="title">Edit the Title {if $moderated.title}<span class="moderatedlabel">(moderated)</span>{/if}</label> (<a href="/help/style" target="_blank">Open Style Guide</a>)<br/>
+<p><label for="title"><b>Title</b> {if $moderated.title}<span class="moderatedlabel">(moderated)</span>{/if}</label> (<a href="/help/style" target="_blank">Open Style Guide</a>)<br/>
 {if $error.title}<span class="formerror">{$error.title}</span><br/>{/if}
 <input type="text" id="title" name="title" size="50" value="{$image->title|escape:'html'}" title="Original: {$image->current_title|escape:'html'}" spellcheck="true"/>
 </p>
@@ -372,7 +371,7 @@ window.onload = onChangeImageclass;
 </script>
 {/literal}
 {/if}
-<p><label for="imageclass">Edit Category {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />	
+<p><label for="imageclass"><b>Image Category</b> {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />	
 	{if $error.imageclass}
 	<span class="formerror">{$error.imageclass}</span><br/>
 	{/if}
@@ -387,31 +386,26 @@ window.onload = onChangeImageclass;
 			<option value="{$image->imageclass}" selected="selected">{$image->imageclass}</option>
 		{/if}
 		<option value="Other">Other...</option>
-	</select><input type="button" name="imageclass_enable_button" value="enable" onclick="prePopulateImageclass()"/>
+	</select><input type="button" name="imageclass_enable_button" value="change" onclick="prePopulateImageclass()"/>
 	
 	
-	<span id="otherblock">
+	<span id="otherblock"><br/>
 	<label for="imageclassother">Please specify </label> 
 	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/></p>
 	</span>
-	
-
-	
 </p>	
 
 {if $user->user_id eq $image->user_id}
-
-	<p><label>Edit Date picture taken {if $moderated.imagetaken}<span class="moderatedlabel">(moderated)</span>{/if}</label> <br/>
+	<p><label><b>Date picture taken</b> {if $moderated.imagetaken}<span class="moderatedlabel">(moderated)</span>{/if}</label> <br/>
 	{html_select_date prefix="imagetaken" time=`$image->imagetaken` start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" day_value_format="%02d" month_value_format="%m"}
 	<br/><small>(please provide as much detail as possible, if you only know the year or month then that's fine)</small></p>
 {else}
-<p><label>Date picture taken</label> <span class="moderatedlabel">(only changable by submitter)</span><br/>
+	<p><label><b>Date picture taken</b></label> <span class="moderatedlabel">(only changable by submitter)</span><br/>
 	{html_select_date prefix="imagetaken" time=`$image->imagetaken` reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" day_value_format="%02d" month_value_format="%m" all_extra="disabled"}</p>
 {/if}
 
 
-<p>
-<label for="comment">Edit Image Comment {if $moderated.comment}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
+<p><label for="comment"><b>Description</b> {if $moderated.comment}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.comment}<span class="formerror">{$error.comment}</span><br/>{/if}
 <textarea id="comment" name="comment" rows="7" cols="80" title="Original: {$image->current_comment|escape:'html'}" spellcheck="true">{$image->comment|escape:'html'}</textarea>
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
