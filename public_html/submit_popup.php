@@ -35,8 +35,6 @@ $smarty = new GeographPage;
 $square=new GridSquare;
 
 if (!$USER->hasPerm("basic") || empty($_GET['t']) || (!$_SESSION['gridsquare'] && !$USER->hasPerm("moderator"))) {
-	print "h";
-
 	$smarty->display('no_permission.tpl');
 	
 	exit;
@@ -85,6 +83,7 @@ if (!empty($gridref))
 	}	
 } else {
 	$smarty->display('no_permission.tpl');
+	exit;
 }
 
 
