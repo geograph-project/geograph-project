@@ -50,6 +50,6 @@
 </table>
  	
 <ul>
-	<li><a href="/leaderboard.php?when={$year}-{$month}&amp;date=taken">User leaderboard for {$month_name} {$year}</a> {if $year >= 2005}(<a href="/leaderboard.php?when={$year}-{$month}">Submitted</a>){/if}</li>
+	<li><a href="/statistics/leaderboard.php?when={$year}-{$month}&amp;date=taken">User leaderboard for {$month_name} {$year}</a> {if $year >= 2005}(<a href="/leaderboard.php?when={$year}-{$month}">Submitted</a>){/if}</li>
 </ul>
 {include file="_std_end.tpl"}

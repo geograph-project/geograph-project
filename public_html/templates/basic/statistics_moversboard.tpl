@@ -5,7 +5,7 @@
 <h2>Weekly Leaderboard :: {$type|capitalize}</h2>
 	
 <p><i>Variation</i>: {foreach from=$types item=t}
-[{if $t == $type}<b>{$type}</b>{else}<a href="moversboard.php?type={$t}">{$t}</a>{/if}]
+[{if $t == $type}<b>{$type}</b>{else}<a href="/statistics/moversboard.php?type={$t}">{$t}</a>{/if}]
 {/foreach}</p>
 
 <p>Here is a list of contributors in the past 7 days, ordered by
@@ -13,7 +13,7 @@ number of {$desc} (see <a title="Frequently Asked Questions" href="/help/stats_f
 for details). {if $pending}The "pending" column gives some idea of 
 how much each person will climb when their pictures are moderated!{/if}</p>
 
-<p>The <a href="/leaderboard.php{if $type != 'points'}?type={$type}{/if}">all-time top 50 leaderboard</a> is also available.</p>
+<p>The <a href="/statistics/leaderboard.php{if $type != 'points'}?type={$type}{/if}">all-time top 50 leaderboard</a> is also available.</p>
 
 <p>Last generated at {$smarty.now|date_format:"%H:%M"} and covers all submissions since
 {$cutoff_time|date_format:"%A, %d %b at %H:%M"}</p>

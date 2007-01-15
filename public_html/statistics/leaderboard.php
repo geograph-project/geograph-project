@@ -37,7 +37,7 @@ $minimum = (isset($_GET['minimum']) && is_numeric($_GET['minimum']))?intval($_GE
 
 $smarty = new GeographPage;
 
-$template='leaderboard.tpl';
+$template='statistics_leaderboard.tpl';
 $cacheid=$minimum.$type.$date.$when.$limit;
 
 $smarty->caching = 2; // lifetime is per cache

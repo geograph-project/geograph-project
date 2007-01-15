@@ -5,14 +5,14 @@
 <h2>Top {$limit} Leaderboard :: {$type|capitalize}</h2>
 
 <p>Variation: {foreach from=$types item=t}
-[{if $t == $type}<b>{$type}</b>{else}<a href="leaderboard.php?type={$t}{$extralink}">{$t}</a>{/if}]
+[{if $t == $type}<b>{$type}</b>{else}<a href="/statistics/leaderboard.php?type={$t}{$extralink}">{$t}</a>{/if}]
 {/foreach}</p>
 
 <p>Listed below are the top {$limit} contributors based on number of
 {$desc}, (see <a title="Frequently Asked Questions" href="/help/stats_faq">FAQ</a> 
 for details).</p>
 
-<p>A <a href="/moversboard.php?type={$type}">weekly leaderboard</a> is also available showing the 
+<p>A <a href="/statistics/moversboard.php?type={$type}">weekly leaderboard</a> is also available showing the 
 top submitters this week.</p>
 
 <table class="report">
