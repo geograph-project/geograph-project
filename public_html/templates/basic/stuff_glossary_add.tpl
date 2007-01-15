@@ -1,7 +1,7 @@
 {assign var="page_title" value="Add Word to Regional Glossery"}
 {include file="_std_begin.tpl"}
 
-<h2>Add Word to Regional Glossery</h2>
+<h2>Add Word to Regional Glossary</h2>
 
 
 	<p style="font-size:0.8em">Add the details of the word below...</p>

@@ -31,7 +31,7 @@ $conv = new ConversionsLatLong;
 
 $smarty = new GeographPage;
 
-$template='conversion.tpl';
+$template='stuff_conversion.tpl';
 $cacheid='';
 
 

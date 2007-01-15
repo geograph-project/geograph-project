@@ -28,8 +28,8 @@ init_session();
 
 $smarty = new GeographPage;
 
-$template=((isset($_GET['add']) && $USER->hasPerm("basic"))?'glossery_add':((isset($_GET['test']))?'glossery_test':'statistics_table')).'.tpl';
-$cacheid='glossery';
+$template=((isset($_GET['add']) && $USER->hasPerm("basic"))?'stuff_glossary_add':((isset($_GET['test']))?'stuff_glossary_test':'statistics_table')).'.tpl';
+$cacheid='glossary';
 function print_rp(&$in,$exit = false) {
 	print "<pre>";
 	print_r($in);
@@ -51,7 +51,7 @@ if ($_POST['add']) {
 	$updates['created_by'] = $USER->user_id;
 	
 
-	$sql = "INSERT INTO `glossery` (`".
+	$sql = "INSERT INTO `glossary` (`".
 	implode('`,`',array_keys($updates)).
 	"`) VALUES (".
 	implode(',',array_values($updates)).
@@ -63,7 +63,7 @@ if ($_POST['add']) {
 	$smarty->clear_cache($template, $cacheid);
 }
 
-function smarty_modifier_glossery($input) {
+function smarty_modifier_glossary($input) {
 	$plain = strtolower(preg_replace('/[^a-zA-Z0-9]+/',' ',str_replace("'",'',strip_tags($input))));
 	$words = preg_split('/ +/',$plain);
 	
@@ -82,7 +82,7 @@ function smarty_modifier_glossery($input) {
 	group_concat(tran_definition) as tran_definition,
 	group_concat(source_lang) as source_lang,
 	group_concat(source_dialect) as source_dialect
-	from glossery
+	from glossary
 	group by source_word");
 
 	foreach ($all as $word => $row) {
@@ -111,7 +111,7 @@ function smarty_modifier_glossery($input) {
 	return $input;
 }
 
-$smarty->register_modifier("glossery", "smarty_modifier_glossery");
+$smarty->register_modifier("glossary", "smarty_modifier_glossary");
 
 
 if (!$smarty->is_cached($template, $cacheid))
@@ -135,13 +135,13 @@ if (!$smarty->is_cached($template, $cacheid))
 		,`tran_lang` as 'Language'
 		,`tran_dialect` as 'Dialect'
 		,CONCAT('<small>',`tran_definition`,'</small>') as 'Definition'
-		FROM glossery 
+		FROM glossary 
 		ORDER BY source_word";
 
 		$table = $db->getAll($sql);	
 
 		$smarty->assign_by_ref('table', $table);
-		$smarty->assign("h2title","Regional Glossery");
+		$smarty->assign("h2title","Regional Glossary");
 		$smarty->assign("total",count($table));
 	
 	}

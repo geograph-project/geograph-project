@@ -797,3 +797,5 @@ ALTER TABLE `user` ADD INDEX `rights` ( `rights` , `role` ) ;
 
 
 ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext') DEFAULT 'full' NOT NULL;
+
+ALTER TABLE `glossery` RENAME `glossary` ;
