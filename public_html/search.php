@@ -95,20 +95,28 @@ if (isset($_GET['fav']) && $i) {
 		foreach ($_GET['check'] as $check) {
 			switch ($check) {
 				case 'gr': $sql[] = "gi.nateastings=0"; $l[] = 'A'; break;
-				case 'pg': $sql[] = "gi.viewpoint_eastings=0"; $l[] = 'B'; break;
+				case 'pg': if (in_array('p6',$_GET['check']) === FALSE) {
+								$sql[] = "gi.viewpoint_eastings=0"; $l[] = 'B'; 
+							} break;
 				case 'p6': $sql[] = "gi.viewpoint_eastings%1000=0 AND viewpoint_northings%1000=0"; $l[] = 'C'; break;
 				case 'dir': $sql[] = "gi.view_direction=-1"; $l[] = 'D'; break;
 				case 'dat': $sql[] = "imagetaken LIKE'%-00%' OR imagetaken LIKE'0%'"; $l[] = 'E'; break;
-				case 'com': $sql[] = "comment=''"; $l[] = 'F'; break;
+				case 'com': if (in_array('sho',$_GET['check']) === FALSE) {
+								$sql[] = "comment=''"; $l[] = 'F';
+							} break;
 				case 'sho': $sql[] = "comment!='' AND substring_index(comment,' ',10) = comment"; $l[] = 'G'; break;
 				case 'dup': $sql[] = "comment=title"; $l[] = 'H'; break;
 			}
 		}
 		if (count($sql)) {
-			$glue = (isset($_GET['glue']) && $_GET['glue'] == 'and')?'all':'any';
-			$data['description'] = "with incomplete data ($glue of ".join(' ',$l).")";
+			$glued = (isset($_GET['glue']) && $_GET['glue'] == 'and')?'all':'any';
 			$glue = (isset($_GET['glue']) && $_GET['glue'] == 'and')?'AND':'OR';
-			$data['searchq'] = '(('.join(")$glue(",$sql).'))';
+			//arrg, might have to trim some...
+			while (strlen($data['searchq'] = '(('.join(")$glue(",$sql).'))') > 255) {
+				array_pop($sql);
+				array_pop($l);
+			}			
+			$data['description'] = "with incomplete data (matches $glued of ".join(' ',$l).")";
 		} else {
 			$data['description'] = "";
 			$data['searchq'] = '1';
