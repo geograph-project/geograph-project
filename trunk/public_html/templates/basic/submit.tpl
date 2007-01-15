@@ -3,7 +3,7 @@
 
 {dynamic}
 
-    <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;">
+    <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
 {if $step eq 1}	
 
@@ -110,7 +110,7 @@ geographing</a> first.</p>
 
 
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
-		<label for="jpeg">JPEG Image File</label>
+		<label for="jpeg"><b>JPEG Image File</b></label>
 		<input id="jpeg" name="jpeg" type="file" />
 		<div><small><small style="color:gray"><i>If your image is over 640 pixels in either direction, it will be resized. If you have presized please aim to have the filesize under 100kb and in anycase under 200kb, thanks!</i></small></small></div>
 		{if $error}<br /><p style="color:#990000;font-weight:bold;">{$error}</p>{/if}
@@ -122,15 +122,19 @@ geographing</a> first.</p>
 		{external href="http://www.multimap.com/p/browse.cgi?scale=25000&lon=`$long`&lat=`$lat`&GridE=`$long`&GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
 		{/if}
 		
-		<p><b>Grid References:</b> (recommended)<br/><br/><label for="grid_reference">Primary Photo Subject</label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/crosshairs.gif" alt="Marks the Subject" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/> <a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Duplicate</a></p>
+		<h4><b>Grid References:</b> (recommended)</h4>
+		<p><label for="grid_reference"><b>Primary Photo Subject</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/crosshairs.gif" alt="Marks the Subject" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/></p>
 	
-		<p><label for="photographer_gridref">Photographer Position</label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14"  onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/camera.gif" alt="Marks the Photographer" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/><br/><small style="color:gray;"><i>Blank assumes very close to the subject</i></small>
+		<p><label for="photographer_gridref"><b>Photographer Position</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14"  onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/camera.gif" alt="Marks the Photographer" width="16" height="16" style="opacity: .5; filter: alpha(opacity=50);"/>
+		
+		<span style="font-size:0.8em"><br/><a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Copy from Subject</a></span>
+		
 		{if $rastermap->enabled}
-			<br/><input type="checkbox" name="use6fig" id="use6fig" {if $use6fig} checked{/if} value="1"/> <label for="use6fig">Only display 6 figure grid reference (<a href="/help/map_precision" target="_blank">Explanation</a>)</label>
+			<br/><br/><input type="checkbox" name="use6fig" id="use6fig" {if $use6fig} checked{/if} value="1"/> <label for="use6fig">Only display 6 figure grid reference (<a href="/help/map_precision" target="_blank">Explanation</a>)</label>
 		{/if}
 		</p>
 	
-		<p><label for="view_direction">View Direction</label> <small>(photographer facing)</small><br/>
+		<p><label for="view_direction"><b>View Direction</b></label> <small>(photographer facing)</small><br/>
 		<select id="view_direction" name="view_direction" style="font-family:monospace" onchange="updateCamIcon(this);">
 			{foreach from=$dirs key=key item=value}
 				<option value="{$key}"{if $key%45!=0} style="color:gray"{/if}{if $key==$view_direction} selected="selected"{/if}>{$value}</option>
@@ -168,7 +172,7 @@ geographing</a> first.</p>
 
 	{if $totalimagecount gt 0}
 	<br/>
-	<div style="background-color:#eeeeee; padding:10px;">
+	<div class="interestBox">
 		<div><b>Latest {$shownimagecount} images for this square...</b></div>
 
 	{foreach from=$images item=image}
@@ -243,13 +247,13 @@ for {$gridref} provided they are accurately located, but may not qualify as geog
 can be edited at any time) but to activate a square you need to be first to meet the
 criteria above!</p>
 
-<a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> (and view list of placenames)
+<div class="interestBox"><a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> (and view list of placenames)</div>
 
 <h3>Title and Comments</h3>
 <p>Please provide a short title for the image, and any other comments about where
 it was taken or other interesting geographical information. (<a href="/help/style" target="_blank">Open Style Guide</a>)</p>
 
-<p><label for="title">Title</label> {if $error.title}
+<p><label for="title"><b>Title</b></label> {if $error.title}
 	<br/><span class="formerror">{$error.title}</span>
 	{/if}<br/>
 <input size="50" id="title" name="title" value="{$title|escape:'html'}" spellcheck="true"/></p>
@@ -257,7 +261,7 @@ it was taken or other interesting geographical information. (<a href="/help/styl
  <p style="font-size:0.7em">Gazetteer info as will appear:<br/> <span style="color:silver;">{place place=$place}</span></p>
  {/if}
 
-<p style="clear:both"><label for="comment">Comment</label><br/>
+<p style="clear:both"><label for="comment"><b>Comment</b></label><br/>
 <textarea id="comment" name="comment" rows="7" cols="80" spellcheck="true">{$comment|escape:'html'}</textarea></p>
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
 to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
@@ -296,7 +300,7 @@ window.onload = onChangeImageclass;
 </script>
 {/literal}
 
-<p><label for="imageclass">Primary geographical category</label> {if $error.imageclass}
+<p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
 	<br/><span class="formerror">{$error.imageclass}</span>
 	{/if}<br />	
 	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onfocus="prePopulateImageclass()" onmouseover="mouseOverImageClass()">
@@ -307,7 +311,7 @@ window.onload = onChangeImageclass;
 		<option value="Other">Other...</option>
 	</select>
 
-<span id="otherblock">
+	<span id="otherblock">
 	<label for="imageclassother">Please specify </label> 
 	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/>
 	</span></p>
@@ -315,7 +319,7 @@ window.onload = onChangeImageclass;
 	
 	
 	
-<p><label>Date photo taken</label> {if $error.imagetaken}
+<p><label><b>Date photo taken</b></label> {if $error.imagetaken}
 	<br/><span class="formerror">{$error.imagetaken}</span>
 	{/if}<br/>
 	{html_select_date prefix="imagetaken" time=$imagetaken start_year="-200" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}

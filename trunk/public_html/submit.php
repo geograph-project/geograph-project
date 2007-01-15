@@ -281,7 +281,7 @@ if (isset($_POST['gridsquare']))
 				$smarty->assign('smallimage', 1);
 				
 			$token=new Token;
-			$token->setValue("g", $_POST['grid_reference']);
+			$token->setValue("g", !empty($_POST['grid_reference'])?$_POST['grid_reference']:$square->grid_reference);
 			$token->setValue("p", $_POST['photographer_gridref']);
 			$token->setValue("v", $_POST['view_direction']);
 			$smarty->assign('reopenmaptoken', $token->getToken());
