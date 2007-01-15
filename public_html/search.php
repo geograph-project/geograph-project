@@ -641,7 +641,7 @@ if (isset($_GET['fav']) && $i) {
 			if (!$_GET['i']) {
 				$smarty->assign('user_name', "{$USER->user_id}:{$USER->realname}");
 				$smarty->assign('glue', 'or');
-				$smarty->assign('displayclass', 'searchtext');
+				$smarty->assign('displayclass', 'spelling');
 				$smarty->assign('seditpage_options', array('simple','small_redirect'));
 			}
 			$checks = array(

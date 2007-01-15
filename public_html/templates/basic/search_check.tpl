@@ -6,7 +6,7 @@
 {if $errormsg}
 <p style="color:red"><b>{$errormsg}</b></p>
 {/if}
-<form action="/search.php" method="get" name="theForm" target="_search">
+<form action="/search.php" method="get" name="theForm">
 	<div class="tabHolder">
 		<a href="/search.php?form=advanced" class="tab">advanced search</a>
 		<a href="/search.php?form=simple" class="tab">simple search</a>
