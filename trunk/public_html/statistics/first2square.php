@@ -29,7 +29,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-$template='first2square.tpl';
+$template='statistics_first2square.tpl';
 $cacheid='first2square';
 
 $smarty->caching = 2; // lifetime is per cache

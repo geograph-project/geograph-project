@@ -30,7 +30,7 @@ $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['t
 
 $smarty = new GeographPage;
 
-$template='leaderhectad.tpl';
+$template='statistics_leaderhectad.tpl';
 $cacheid=$type;
 
 

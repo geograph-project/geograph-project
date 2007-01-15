@@ -6,7 +6,7 @@
 
 <p>Listed below are the top contributors, by the number of photographs submited per month.</p>
 
-<p>See also <a href="/leaderboard.php">all-time top 50 leaderboard</a> and <a href="/moversboard.php">weekly leaderboard</a>.</p>
+<p>See also <a href="/statistics/leaderboard.php">all-time top 50 leaderboard</a> and <a href="/statistics/moversboard.php">weekly leaderboard</a>.</p>
 
 <table class="report">
 <thead><tr><td>Month</td><td>Contributor</td><td>Photos</td></tr></thead>

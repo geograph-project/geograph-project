@@ -32,7 +32,7 @@ $smarty = new GeographPage;
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
-$template='monthlyleader.tpl';
+$template='statistics_monthlyleader.tpl';
 $cacheid=isset($_GET['month']);
 
 if (!$smarty->is_cached($template, $cacheid))

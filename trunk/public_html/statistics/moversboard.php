@@ -30,7 +30,7 @@ $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['t
 
 $smarty = new GeographPage;
 
-$template='moversboard.tpl';
+$template='statistics_moversboard.tpl';
 $cacheid=$type;
 
 if (!$smarty->is_cached($template, $cacheid))
