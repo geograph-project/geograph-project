@@ -792,5 +792,8 @@ CREATE TABLE `geobb_lastviewed` (
 
 ALTER TABLE `user` ADD `role` VARCHAR( 32 ) NOT NULL ;
 
-ALTER TABLE `user` DROP INDEX `rights` ,
-ADD INDEX `rights` ( `rights` , `role` ) ;
+ALTER TABLE `user` ADD INDEX `rights` ( `rights` , `role` ) ;
+
+
+
+ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext') DEFAULT 'full' NOT NULL;

@@ -34,6 +34,7 @@
    {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
   {/if}
 </div>
+{if $showfull}
   	{if ($user->user_id eq $image->user_id) and $image->moderation_status != 'rejected'}
   	  <form action="/moderation.php" method="post">
   	  <input type="hidden" name="gridimage_id" value="{$image->gridimage_id}"/>
@@ -266,7 +267,7 @@
 
 <br/>
 <br/>
-
+{/if}
 
 <h2 class="titlebar">Report Problem / Change Image Details <small><a href="/help/changes">[help]</a></small></h2>
 {if $error}
@@ -446,7 +447,7 @@ then please enter directly into the boxes above)
 <div>
 <input type="radio" name="mod" value="" id="mod_blank" checked="checked"/> <label for="mod_blank">Create a new ticket to be moderated by someone else.</label><br/>
 <input type="radio" name="mod" value="assign" id="mod_assign"/> <label for="mod_assign">Create an open ticket and assign to myself. (give the Contributor a chance to respond)</label><br/>
-<input type="radio" name="mod" value="apply" id="mod_apply"/> <label for="mod_mod">Create a closed ticket, by applying the changes immediately. (Contributor is notified)</label></div>
+<input type="radio" name="mod" value="apply" id="mod_apply"/> <label for="mod_mod">Apply the changes immediately, and close the ticket. (Contributor is notified)</label></div>
 
 <br style="clear:both"/>
 {/if}

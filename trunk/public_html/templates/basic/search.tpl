@@ -14,6 +14,9 @@
 	<span class="tabSelected">Simple Search</span>
 	<a href="/search.php?form=advanced" class="tab">advanced search</a>
 	<a href="/search.php?form=first" class="tab">first geographs</a>
+	{if $user->registered}
+		<a href="/search.php?form=check" class="tab">check submissions</a>
+	{/if}	
 </div>
 <div class="interestBox">
 	<div>

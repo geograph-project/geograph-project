@@ -55,7 +55,7 @@ if (isset($_GET['fav']) && $i) {
 	header("Location:/search.php");
 	exit;
 
-} else if (!empty($_GET['first']) || !empty($_GET['blank']) ) {
+} else if (!empty($_GET['first']) || !empty($_GET['blank']) || !empty($_GET['glue']) ) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
 	//  special handler to build a special query for myriads/numberical squares.
@@ -63,7 +63,6 @@ if (isset($_GET['fav']) && $i) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
-
 
 	$data = $_GET;
 	$error = false;
@@ -76,13 +75,10 @@ if (isset($_GET['fav']) && $i) {
 			//replace for myriads
 			$gr = preg_replace('/^([A-Z]{1,2})(\d)(\d)$/','$1$2_$3_',$_GET['first']);
 
-
 			//replace for numberical squares
 			$gr = preg_replace('/\w*(\d{4})/','%$1',$gr);
 
-
 			$name = preg_replace('/\w+(\d{4})/','$1',$_GET['first']);
-
 
 			$data['description'] = "first geographs in $name";
 
@@ -94,6 +90,31 @@ if (isset($_GET['fav']) && $i) {
 	} elseif (!empty($_GET['blank'])) {
 		$data['description'] = "with blank comment";
 		$data['searchq'] = "(comment = '' OR title='')";
+	} elseif (!empty($_GET['glue'])) {
+		$sql = $l = array();
+		foreach ($_GET['check'] as $check) {
+			switch ($check) {
+				case 'gr': $sql[] = "gi.nateastings=0"; $l[] = 'A'; break;
+				case 'pg': $sql[] = "gi.viewpoint_eastings=0"; $l[] = 'B'; break;
+				case 'p6': $sql[] = "gi.viewpoint_eastings%1000=0 AND viewpoint_northings%1000=0"; $l[] = 'C'; break;
+				case 'dir': $sql[] = "gi.view_direction=-1"; $l[] = 'D'; break;
+				case 'dat': $sql[] = "imagetaken LIKE'%-00%' OR imagetaken LIKE'0%'"; $l[] = 'E'; break;
+				case 'com': $sql[] = "comment=''"; $l[] = 'F'; break;
+				case 'sho': $sql[] = "comment!='' AND substring_index(comment,' ',10) = comment"; $l[] = 'G'; break;
+				case 'dup': $sql[] = "comment=title"; $l[] = 'H'; break;
+			}
+		}
+		if (count($sql)) {
+			$glue = (isset($_GET['glue']) && $_GET['glue'] == 'and')?'all':'any';
+			$data['description'] = "with incomplete data ($glue of ".join(' ',$l).")";
+			$glue = (isset($_GET['glue']) && $_GET['glue'] == 'and')?'AND':'OR';
+			$data['searchq'] = '(('.join(")$glue(",$sql).'))';
+		} else {
+			$data['description'] = "";
+			$data['searchq'] = '1';
+		}
+		$_SESSION['editpage_options'] = $_GET['editpage_options'];
+
 	}
 
 	if (!$error) {
@@ -351,7 +372,7 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->display('search.tpl');
 	}
 
-} else if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'first')) {
+} else if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'first' || $_GET['form'] == 'check')) {
 	dieUnderHighLoad(1.5,'search_unavailable.tpl');
 	// -------------------------------
 	//  Advanced Form
@@ -475,7 +496,7 @@ if (isset($_GET['fav']) && $i) {
 	$display = $engine->getDisplayclass();
 	if (isset($_GET['displayclass']) && preg_match('/^\w+$/',$_GET['displayclass'])) {
 		$display = $_GET['displayclass'];
-		if ($USER->registered && $USER->user_id == $engine->criteria->user_id && $_GET['displayclass'] != 'search') {//don't store search override permently
+		if ($USER->registered && $USER->user_id == $engine->criteria->user_id && $_GET['displayclass'] != 'search' && $_GET['displayclass'] != 'searchtext') {//don't store search override permently
 			$engine->setDisplayclass($_GET['displayclass']);
 		} else {
 			$engine->temp_displayclass = $display;
@@ -615,6 +636,46 @@ if (isset($_GET['fav']) && $i) {
 
 		if ($_GET['form'] == 'first') {
 			$template = 'search_first.tpl';
+		} elseif ($_GET['form'] == 'check') {
+			$template = 'search_check.tpl';
+			if (!$_GET['i']) {
+				$smarty->assign('user_name', "{$USER->user_id}:{$USER->realname}");
+				$smarty->assign('glue', 'or');
+				$smarty->assign('displayclass', 'searchtext');
+				$smarty->assign('seditpage_options', array('simple','small_redirect'));
+			}
+			$checks = array(
+				'gr' => ' A. No Subject Grid Reference',
+				'pg' => ' B. No Photographer Grid Reference',
+				'p6' => ' C. Photographer Grid Reference less than 6 figure',
+				'dir' => ' D. No View Direction Specified',
+				'dat' => ' E. Incomplete Taken Date',
+				'com' => ' F. No Description',
+				'sho' => ' G. Description less than 10 words',
+				'dup' => ' H. Description same as Title',
+			);			
+			$smarty->assign_by_ref('checks',$checks);
+			
+			$editpage_options = array(
+				'simple' => ' Simplifed Edit Image Page',
+				'small_redirect' => ' Simplified Success Page',
+			);			
+			$smarty->assign_by_ref('editpage_options',$editpage_options);
+			
+			$glues = array(
+				'or' => 'Any',
+				'and' => 'All',
+			);			
+			$smarty->assign_by_ref('glues',$glues);
+				
+			global $displayclasses;
+			unset($displayclasses['full']);
+			unset($displayclasses['thumbs']);
+			unset($displayclasses['slide']);
+			unset($displayclasses['text']);
+			$displayclasses['searchtext'] = "Text-based Sidebar (Firefox &amp; IE Only)";
+			
+			
 		} elseif (isset($_GET['Special'])) {
 			$USER->mustHavePerm("admin");
 			$template = 'search_admin_advanced.tpl';
