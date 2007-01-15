@@ -98,13 +98,16 @@ if (isset($_GET['fav']) && $i) {
 				case 'pg': if (in_array('p6',$_GET['check']) === FALSE) {
 								$sql[] = "gi.viewpoint_eastings=0"; $l[] = 'B'; 
 							} break;
-				case 'p6': $sql[] = "gi.viewpoint_eastings%1000=0 AND viewpoint_northings%1000=0"; $l[] = 'C'; break;
+				case 'p6': $sql[] =
+							( (in_array('pg',$_GET['check']) === FALSE)?
+								$sql[] = "viewpoint_eastings>0 AND ":'').
+							 "gi.viewpoint_eastings%1000=0 AND viewpoint_northings%1000=0"; $l[] = 'C'; break;
 				case 'dir': $sql[] = "gi.view_direction=-1"; $l[] = 'D'; break;
 				case 'dat': $sql[] = "imagetaken LIKE'%-00%' OR imagetaken LIKE'0%'"; $l[] = 'E'; break;
 				case 'com': if (in_array('sho',$_GET['check']) === FALSE) {
 								$sql[] = "comment=''"; $l[] = 'F';
 							} break;
-				case 'sho': $sql[] = "comment!='' AND substring_index(comment,' ',10) = comment"; $l[] = 'G'; break;
+				case 'sho': $sql[] = "comment!='' AND substring_index(comment,' ',9) = comment"; $l[] = 'G'; break;
 				case 'dup': $sql[] = "comment=title"; $l[] = 'H'; break;
 			}
 		}
@@ -653,13 +656,13 @@ if (isset($_GET['fav']) && $i) {
 				$smarty->assign('seditpage_options', array('simple','small_redirect'));
 			}
 			$checks = array(
-				'gr' => ' A. No Subject Grid Reference',
+				'gr' => ' A. 4-figure Subject Grid Reference',
 				'pg' => ' B. No Photographer Grid Reference',
-				'p6' => ' C. Photographer Grid Reference less than 6 figure',
-				'dir' => ' D. No View Direction Specified',
+				'p6' => ' C. 4-figure Photographer Grid Reference', #Photographer Grid Reference less than 6 figure (but because works with B it ca be a check for anything less)
+				'dir' => ' D. No View Direction',
 				'dat' => ' E. Incomplete Taken Date',
 				'com' => ' F. No Description',
-				'sho' => ' G. Description less than 10 words',
+				'sho' => ' G. Description fewer than 10 words',
 				'dup' => ' H. Description same as Title',
 			);			
 			$smarty->assign_by_ref('checks',$checks);
