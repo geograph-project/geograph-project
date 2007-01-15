@@ -26,6 +26,8 @@ init_session();
 
 $USER->hasPerm("admin") || $USER->mustHavePerm("moderator");
 
+if (isset($_SESSION['editpage_options']))
+	unset($_SESSION['editpage_options']);
 $_SESSION['thumb'] = true;
 
 $smarty = new GeographPage;
