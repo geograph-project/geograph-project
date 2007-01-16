@@ -356,7 +356,7 @@ class RecentImageList extends ImageList {
 		$i=0;
 		
 		$recordSet = &$db->Execute("select * ".
-			"from recent_gridimage natural join gridimage_search ".
+			"from recent_gridimage inner join gridimage_search using (gridimage_id) ".
 			"$orderby $limit");
 		while (!$recordSet->EOF) 
 		{
