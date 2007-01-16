@@ -593,12 +593,21 @@ class SearchCriteria_Placename extends SearchCriteria
 				
 				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where def_nam=".$db->Quote($placename)." and (full_county = $qcount OR hcounty = $qcount)");
 			} else {
-			
+				$qplacename = $db->Quote($placename);
+				$sql_where  = '';
+				if (strpos($placename,' ') !== FALSE) {
+					$county = $db->getOne("select `name` from os_gaz_county where $qplacename LIKE CONCAT('%',name)");
+					$qcount = $db->Quote($county);
+					$sql_where = " and full_county = $qcount";
+					
+					$placename = preg_replace("/\s+$county/i",'',$placename);
+					$qplacename = $db->Quote($placename);
+				} 
 				//todo need to 'union'  with other gazetterr! (as if one match in each then will no work!) 
-				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where def_nam=".$db->Quote($placename));
+				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where def_nam=$qplacename $sql_where");
 				if (count($places) == 0) {
-					$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where full_name=".$db->Quote($placename));
-				}				
+					$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where full_name=$qplacename");
+				}
 			}
 		}
 		
