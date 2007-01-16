@@ -233,7 +233,7 @@
 		<div class="fieldnotes">If you are no longer able to help out with moderation then click the button above. (you will have to reapply)</div>  
 	{else}
 		{if strpos($profile->rights,'traineemod') > 0}
-			<input type="button" value="Try Moderation Process again" onclick="location.href = '/admin/moderation.php?apply=1';"/>
+			<input type="button" value="Visit Demo Moderation Page" onclick="location.href = '/admin/moderation.php?apply=1';"/>
 		{else}
 			<input type="button" value="Apply to become a moderator" onclick="location.href = '/admin/moderation.php?apply=1';"/>
 		{/if}
