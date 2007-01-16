@@ -31,7 +31,7 @@
 <td><b><a href="/editimage.php?id={$ticket.gridimage_id}" target="_main">{$ticket.title|default:'Untitled'}</a></b></td>
 <td>{$ticket.suggester}</td>
 <td>{$ticket.suggested}</td>
-<td>{$ticket.submitter}{if $ticket.owner_comments}<img src="/templates/basic/img/star-light.png" width="14" height="14" title="Comment Left By Photographer"/>{/if}</td>
+<td>{$ticket.submitter}{if $ticket.submitter_comments}<img src="/templates/basic/img/star-light.png" width="14" height="14" title="Comment: {$ticket.submitter_comment}"/>{/if}</td>
 </tr>
 <tr bgcolor="{$bgcolor}">
 <td colspan="4">{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes}</td>

@@ -73,7 +73,10 @@ if (isset($_GET['moderator'])) {
 }
 
 $newtickets=$db->GetAll(
-	"select t.*,suggester.realname as suggester,submitter.realname as submitter, i.title, count(c.gridimage_ticket_comment_id) as owner_comments
+	"select t.*,suggester.realname as suggester,
+		submitter.realname as submitter, i.title, 
+		count(c.gridimage_ticket_comment_id) as submitter_comments,
+		c.comment as submitter_comment
 	from gridimage_ticket as t
 	inner join user as suggester on (suggester.user_id=t.user_id)
 	inner join gridimage as i on (t.gridimage_id=i.gridimage_id)
@@ -105,13 +108,18 @@ $db->Execute("UNLOCK TABLES");
 if (empty($_GET['sidebar'])) {
 	$opentickets=$db->GetAll(
 		"select t.*,suggester.realname as suggester,submitter.realname as submitter, i.title,
-		moderator.realname as moderator
+		moderator.realname as moderator,
+		count(c.gridimage_ticket_comment_id) as submitter_comments,
+		c.comment as submitter_comment
 		from gridimage_ticket as t
 		inner join user as suggester on (suggester.user_id=t.user_id)
 		inner join gridimage as i on (t.gridimage_id=i.gridimage_id)
 		inner join user as submitter on (submitter.user_id=i.user_id)
 		inner join user as moderator on (moderator.user_id=t.moderator_id)
+		left join gridimage_ticket_comment as c
+			on(c.gridimage_ticket_id=t.gridimage_ticket_id and c.user_id=i.user_id )
 		where t.moderator_id>0 and t.status<>'closed'
+		group by t.gridimage_ticket_id
 		order by t.updated");
 	$smarty->assign_by_ref('opentickets', $opentickets);
 }
