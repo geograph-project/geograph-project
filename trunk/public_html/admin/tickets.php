@@ -46,6 +46,7 @@ if (!empty($_GET['relinqush'])) {
 $db->Execute("LOCK TABLES 
 gridimage_moderation_lock WRITE, 
 gridimage_moderation_lock l WRITE, 
+gridimage_ticket_comment as c WRITE, 
 gridimage_ticket t READ, 
 user suggester READ,
 gridimage i READ,
@@ -72,18 +73,21 @@ if (isset($_GET['moderator'])) {
 }
 
 $newtickets=$db->GetAll(
-	"select t.*,suggester.realname as suggester,submitter.realname as submitter, i.title
+	"select t.*,suggester.realname as suggester,submitter.realname as submitter, i.title, count(c.gridimage_ticket_comment_id) as owner_comments
 	from gridimage_ticket as t
 	inner join user as suggester on (suggester.user_id=t.user_id)
 	inner join gridimage as i on (t.gridimage_id=i.gridimage_id)
 	inner join user as submitter on (submitter.user_id=i.user_id)
 	left join gridimage_moderation_lock as l
 		on(i.gridimage_id=l.gridimage_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) )
+	left join gridimage_ticket_comment as c
+		on(c.gridimage_ticket_id=t.gridimage_ticket_id and c.user_id=i.user_id )
 	where $sql_where
 		and (l.gridimage_id is null OR 
 				(l.user_id = {$USER->user_id} AND lock_type = 'modding') OR
 				(l.user_id != {$USER->user_id} AND lock_type = 'cantmod')
 		)
+	group by t.gridimage_ticket_id
 	order by t.suggested
 	limit $limit");
 $smarty->assign_by_ref('newtickets', $newtickets);
