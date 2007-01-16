@@ -37,7 +37,7 @@
 {foreach from=$newtickets item=ticket}
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}">
-<td>{$ticket.submitter}{if $ticket.owner_comments}<img src="/templates/basic/img/star-light.png" width="14" height="14" title="Comment Left By Photographer"/>{/if}</td>
+<td>{$ticket.submitter}{if $ticket.submitter_comments}<img src="/templates/basic/img/star-light.png" width="14" height="14" title="Comment: {$ticket.submitter_comment}"/>{/if}</td>
 <td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
 <td>{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes}</td>
 <td>{$ticket.suggester}</td>
@@ -75,7 +75,7 @@
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}">
 <td>{$ticket.moderator}</td>
-<td>{$ticket.submitter}</td>
+<td>{$ticket.submitter}{if $ticket.submitter_comments}<img src="/templates/basic/img/star-light.png" width="14" height="14" title="Comment: {$ticket.submitter_comment}"/>{/if}</td>
 <td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
 <td>{$ticket.notes}</td>
 <td>{$ticket.suggester}</td>
