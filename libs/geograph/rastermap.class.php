@@ -160,7 +160,7 @@ class RasterMap
 
 	//drag prompt
 			if ($this->issubmit)
-				$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px; font-size:0.8em;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&lt;- Drag to mark subject position.</small></div><div style=\"position:absolute;top:".($width+22)."px;left:0px; font-size:0.8em;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&lt;- Drag to mark photographer position.</small></div>";
+				$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px; font-size:0.8em;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small style=\"color:#0018F8\">&lt;- Drag to mark subject position.</small></div><div style=\"position:absolute;top:".($width+22)."px;left:0px; font-size:0.8em;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small style=\"color:#002E73\">&lt;- Drag to mark photographer position.</small></div>";
 
 			$widthby2 = ($width/2);
 
@@ -168,7 +168,7 @@ class RasterMap
 			if ($this->issubmit && !$this->exactPosition) {
 			//ready to drag position
 				$left = 13;
-				$top = $width+20;
+				$top = $width+10;
 			} else {
 				$e = $this->nateastings;	$n = $this->natnorthings;
 				if ($e%100 == 0 && $n%100 == 0 && $this->exactPosition) {
@@ -177,11 +177,13 @@ class RasterMap
 				$left = ($width/4) + ( ($e - $east) * $widthby2 / 1000 );
 				$top = $width - ( ($width/4) + ( ($n - $nort) * $widthby2 / 1000 ) );
 			}
+
 	//choose photographer icon
+			$prefix = $this->issubmit?'viewc':'camicon';
 			if ($this->view_direction && $this->view_direction != -1)
-				$iconfile = "camicon-{$this->view_direction}.png";
+				$iconfile = "$prefix-{$this->view_direction}.png";
 			else
-				$iconfile = "camicon--1.png";
+				$iconfile = "$prefix--1.png";
 
 	//calculate photographer position
 			if (!$this->issubmit && !empty($this->viewpoint_northings)) {
@@ -216,16 +218,20 @@ class RasterMap
 			} else {
 		//ready to drag position
 				$vleft = 13;
-				$vtop = $width+40;
+				$vtop = $width+32;
 			}
-
+			
 	//subject icon
 			$this->displayMarker1 = ($this->issubmit || $this->exactPosition)?1:0;
 			$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;".( $this->displayMarker1 ?'':'display:none')."\" id=\"marker1\"><img src=\"/templates/basic/img/circle.png\" alt=\"+\" width=\"29\" height=\"29\"/></div>";
 
 	//photographer icon
 			$this->displayMarker2 = ($this->issubmit || (!empty($this->viewpoint_northings) && (($vleft != $left) || ($vtop != $top))))?1:0;
-			$str .= "<div style=\"position:absolute;top:".($vtop-20)."px;left:".($vleft-9)."px;".( $this->displayMarker2 ?'':'display:none')."\" id=\"marker2\"><img src=\"/templates/basic/img/$iconfile\" alt=\"+\" width=\"20\" height=\"31\" name=\"camicon\"/></div>";
+			if ($this->issubmit) {
+				$str .= "<div style=\"position:absolute;top:".($vtop-14)."px;left:".($vleft-14)."px;".( $this->displayMarker2 ?'':'display:none')."\" id=\"marker2\"><img src=\"/templates/basic/img/$iconfile\" alt=\"+\" width=\"29\" height=\"29\" name=\"camicon\"/></div>";
+			} else {
+				$str .= "<div style=\"position:absolute;top:".($vtop-20)."px;left:".($vleft-9)."px;".( $this->displayMarker2 ?'':'display:none')."\" id=\"marker2\"><img src=\"/templates/basic/img/$iconfile\" alt=\"+\" width=\"20\" height=\"31\" name=\"camicon\"/></div>";
+			}
 
 	//overlay (for dragging)
 			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/></div>";

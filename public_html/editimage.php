@@ -447,7 +447,15 @@ if (isset($_REQUEST['id']))
 
 
 		}
-
+		if (isset($_GET['simple'])) {
+			if (empty($_GET['simple'])) {
+				if (($i = array_search('simple',$_SESSION['editpage_options']))!==FALSE) {
+					unset($_SESSION['editpage_options'][$i]);
+				}
+			} else {
+				$_SESSION['editpage_options'][] = 'simple';
+			}
+		}
 		if (!isset($_SESSION['editpage_options']) || !in_array('simple',$_SESSION['editpage_options'])) {
 			
 			$smarty->assign('showfull', 1);

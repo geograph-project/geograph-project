@@ -56,8 +56,8 @@ GBGridLetters[9] = ["TZ", "TU", "TP", "TK", "TE", "OZ", "OU", "OP", "OK", "OE", 
 var marker1left = 14;
 var marker1top = 14;
 
-var marker2left = 9;
-var marker2top = 20;
+var marker2left = 14;
+var marker2top = 14;
 
 
 var w2 = mapw / 2;
@@ -79,13 +79,13 @@ function overlayMouseUp(e) {
 		if (currentelement.id == 'marker1') {
 			if (document.theForm.grid_reference.value == "") {
 				currentelement.style.left = (15-marker1left)+'px';
-				currentelement.style.top = (maph + 15 -marker1top)+'px';
+				currentelement.style.top = (maph + 5 -marker1top)+'px';
 				eastings1 = 0;
 			}
 		} else if (currentelement.id == 'marker2') {
 			if (document.theForm.photographer_gridref.value == "") {
-				currentelement.style.left = (15 -marker1left) +'px';
-				currentelement.style.top = (maph + 35 - marker2top)+'px';
+				currentelement.style.left = (15-marker2left) +'px';
+				currentelement.style.top = (maph + 25 - marker2top)+'px';
 				eastings2 = 0;
 			}
 		}
@@ -338,8 +338,8 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 					tempX = tempX + w2;
 					tempY = tempY + h2;
 					if (currentelement.id == 'marker2' && ( (tempX < 0) || (tempX > mapw) || (tempY < 0) || (tempY > maph) ) ) {
-						currentelement.style.left = (15 -marker1left) +'px';
-						currentelement.style.top = (maph + 35 - marker2top)+'px';
+						currentelement.style.left = (15 -marker2left) +'px';
+						currentelement.style.top = (maph + 25 - marker2top)+'px';
 						eastings2 = easting;
 						northings2 = northing;
 					} else {
@@ -363,7 +363,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 						} else if (currentelement.id == 'marker2') {
 							if (numbers.length == 4 && easting%1000 == 0 && northing%1000 == 0) {
 								tempX = 15;
-								tempY = maph + 35;
+								tempY = maph + 25;
 								eastings2 = 0;
 								northings2 = 0;
 							} else if (numbers.length == 6 && easting%100 == 0 && northing%100 == 0) {
@@ -411,7 +411,7 @@ function updateViewDirection() {
 				if (ele.options[q].value == newangle)
 					ele.selectedIndex = q;
 
-			document.images['camicon'].src = "/templates/basic/img/camicon-"+newangle+".png";
+			document.images['camicon'].src = "/templates/basic/img/viewc-"+newangle+".png";
 
 		}
 	}
@@ -425,12 +425,12 @@ function updateCamIcon() {
 	ele = document.theForm.view_direction;
 	realangle = ele.options[ele.selectedIndex].value;
 	if (realangle == -1) {
-		document.images['camicon'].src = "/templates/basic/img/camicon--1.png";
+		document.images['camicon'].src = "/templates/basic/img/viewc--1.png";
 	} else {
 		jump = 360.0/16.0;
 		newangle = Math.floor(Math.round(realangle/jump)*jump);
 		if (newangle == 360)
 			newangle = 0;
-		document.images['camicon'].src = "/templates/basic/img/camicon-"+newangle+".png";
+		document.images['camicon'].src = "/templates/basic/img/viewc-"+newangle+".png";
 	}
 }
