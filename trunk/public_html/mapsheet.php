@@ -54,8 +54,8 @@ if ($map->pixels_per_km != 40 && $map->pixels_per_km != 4)
 if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
 	$mosaic->type_or_user = $USER->user_id;
 } elseif (isset($_GET['u'])) {
-	if (!empty($_GET['u']) && $USER->hasPerm("basic")) {
-		$mosaic->type_or_user = intval($_GET['u']);
+	if (!empty($_GET['u'])) {
+		$mosaic->type_or_user = max(0,intval($_GET['u']));
 	} else {
 		$mosaic->type_or_user = 0;
 	}
