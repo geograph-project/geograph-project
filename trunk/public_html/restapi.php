@@ -119,7 +119,7 @@ class RestAPI
 						$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$url);
 						echo " <img src=\"http://{$_SERVER['HTTP_HOST']}{$url}\" width=\"{$size[0]}\" height=\"{$size[1]}\" />";
 
-						echo ' <location grid="'.($square->reference_index).'" eastings="'.($image->nateastings).'" northings="'.($image->natnorthings).'"/>';
+						echo ' <location grid="'.($square->reference_index).'" eastings="'.($image->nateastings).'" northings="'.($image->natnorthings).'" figures="'.($image->natgrlen).'"/>';
 						echo '</image>';
 					}
 				}

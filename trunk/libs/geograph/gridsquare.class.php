@@ -92,8 +92,9 @@ class GridSquare
   	/**
 	* national easting/northing (ie not internal)
 	*/
-	var $nateastings;
-  	var $natnorthings;
+	var $nateastings = 0;
+  	var $natnorthings = 0;
+  	var $natgrlen = 0;
   	var $natspecified = false;
   	
   	/**
@@ -204,7 +205,7 @@ class GridSquare
 			
 			$this->nateastings = sprintf("%d%05d",intval($square['origin_x']/100),$this->eastings * 1000 + 500);
 			$this->natnorthings = sprintf("%d%05d",intval($square['origin_y']/100),$this->northings * 1000 +500);
-			
+			$this->natgrlen = 4;
 		} 
 		return $this->nateastings;
 	}
@@ -273,19 +274,25 @@ class GridSquare
 		if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{5})[ \.]?(\d{5})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],$matches[2],$matches[3]);
 			$this->natspecified = 1;
+			$this->natgrlen = 10;
 		} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{4})[ \.]?(\d{4})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],"$matches[2]0","$matches[3]0");
 			$this->natspecified = 1;
+			$this->natgrlen = 8;
 		} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{3})[ \.]*(\d{3})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],"$matches[2]00","$matches[3]00");
 			$this->natspecified = 1;
+			$this->natgrlen = 6;
 		} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{2})[ \.]?(\d{2})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],"$matches[2]000","$matches[3]000");
 			$isfour = true;
+			$this->natgrlen = 4;
 		} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1})[ \.]*(\d{1})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],"$matches[2]5000","$matches[3]5000");
+			$this->natgrlen = 2;
 		} else if (preg_match("/\b([a-zA-Z]{1,2})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],"50000","50000");
+			$this->natgrlen = 0;
 		} 		
 		if (!empty($prefix))
 		{

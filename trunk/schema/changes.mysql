@@ -799,3 +799,22 @@ ALTER TABLE `user` ADD INDEX `rights` ( `rights` , `role` ) ;
 ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext') DEFAULT 'full' NOT NULL;
 
 ALTER TABLE `glossery` RENAME `glossary` ;
+
+
+ALTER TABLE `gridimage` ADD `natgrlen` ENUM( '10', '8', '6', '4', '2' ) DEFAULT '4' NOT NULL AFTER `natnorthings` ;
+
+UPDATE gridimage SET `natgrlen` = '10' WHERE nateastings > 0;
+UPDATE gridimage SET `natgrlen` = '8' WHERE nateastings > 0 AND nateastings mod 10 = 0 AND natnorthings MOD 10 = 0;
+UPDATE gridimage SET `natgrlen` = '6' WHERE nateastings > 0 AND nateastings mod 100 = 0 AND natnorthings MOD 100 = 0;
+
+SELECT `natgrlen` , nateastings, natnorthings, count(*) FROM gridimage GROUP BY `natgrlen`;
+
+
+ALTER TABLE `gridimage` ADD `viewpoint_grlen` ENUM( '10', '8', '6', '4', '2', '0' ) DEFAULT '0' NOT NULL AFTER `viewpoint_northings` ;
+
+UPDATE gridimage SET `viewpoint_grlen` = '10' WHERE viewpoint_eastings > 0;
+UPDATE gridimage SET `viewpoint_grlen` = '8' WHERE viewpoint_eastings > 0 AND viewpoint_eastings mod 10 = 0 AND viewpoint_northings MOD 10 = 0;
+UPDATE gridimage SET `viewpoint_grlen` = '6' WHERE viewpoint_eastings > 0 AND viewpoint_eastings mod 100 = 0 AND viewpoint_northings MOD 100 = 0;
+UPDATE gridimage SET `viewpoint_grlen` = '4' WHERE viewpoint_eastings > 0 AND viewpoint_eastings mod 1000 = 0 AND viewpoint_northings MOD 1000 = 0;
+
+SELECT `viewpoint_grlen` , viewpoint_eastings, viewpoint_northings, count(*) FROM gridimage GROUP BY `viewpoint_grlen`;

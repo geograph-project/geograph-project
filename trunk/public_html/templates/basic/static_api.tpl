@@ -408,7 +408,7 @@
 	 <table border="1" cellpadding="3" cellspacing="0"> 
 		<tr> 
 		  <th colspan="2" ALIGN="LEFT" rowspan="2">&amp;en=1</th> 
-		  <td colspan="2">add this parameter to add the Eastings and Northings
+		  <td colspan="2">add this parameter to add the Eastings, Northings and Precision
 			 </td> 
 		</tr> 
 		<tr> 
@@ -416,9 +416,9 @@
 			 href="http://{$http_host}/export.csv.php?key=[apikey]&en=1">http://{$http_host}/export.csv.php?key=[apikey]&amp;en=1</a></td>
 		</tr> 
 		<tr> 
-		  <th rowspan="2">&nbsp;</th> 
+		  <th rowspan="3">&nbsp;</th> 
 		  <th>Easting</th> 
-		  <td rowspan="2">Absolute position for the image in m from the Grid
+		  <td rowspan="3">Absolute position for the image in m from the Grid
 			 False origin. Use the <i>Grid Ref</i> column to deduce with Grid the location
 			 refers to.<b> These columns will be 0 when the image isn't positioned with more
 			 than a 4 figure Grid Reference</b></td> 
@@ -427,6 +427,10 @@
 		<tr> 
 		  <th>Northing</th> 
 		  <td>234556</td> 
+		</tr> 
+		<tr> 
+		  <th>Figures</th> 
+		  <td>10</td> 
 		</tr> 
 		<tr> 
 		  <th colspan="2" ALIGN="LEFT">&amp;ll=1</th> 
@@ -455,6 +459,31 @@
 		  <td colspan="2"> Example:<br/><a
 			 href="http://{$http_host}/photos/01/76/017622_ed5d17d5_120x120.jpg">http://{$http_host}/photos/01/76/017622_ed5d17d5_120x120.jpg</a>
 			 </td> 
+		</tr> 
+		<tr> 
+		  <th colspan="2" ALIGN="LEFT" rowspan="2">&amp;ppos=1</th> 
+		  <td colspan="2">add this parameter to add the Eastings, Northings and Precision of the Photographer Position
+			 </td> 
+		</tr> 
+		<tr> 
+		  <td colspan="2"><a 
+			 href="http://{$http_host}/export.csv.php?key=[apikey]&en=1">http://{$http_host}/export.csv.php?key=[apikey]&amp;ppos=1</a></td>
+		</tr> 
+		<tr> 
+		  <th rowspan="3">&nbsp;</th> 
+		  <th>Easting</th> 
+		  <td rowspan="3">Absolute position for the photographer in m from the Grid
+			 False origin. Use the <i>Grid Ref</i> column to deduce with Grid the location
+			 refers to.<b> These columns will be 0 when the image doesnt include a Photographer Grid Reference</b></td> 
+		  <td>545667</td> 
+		</tr> 
+		<tr> 
+		  <th>Northing</th> 
+		  <td>234556</td> 
+		</tr> 
+		<tr> 
+		  <th>Figures</th> 
+		  <td>10</td> 
 		</tr> 
 	 </table> 
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="building"></a>Building a Search Query</h3> 
