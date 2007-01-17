@@ -490,7 +490,7 @@ class UploadManager
 			$this->db->Quote($this->title), $this->db->Quote($this->comment), 
 			$this->square->nateastings,$this->square->natnorthings,$this->square->natgrlen,
 			$this->db->Quote($this->imageclass), $this->db->Quote($this->imagetaken),
-			$viewpoint->square->nateastings,$viewpoint->square->natnorthings,$viewpoint->square->natgrlen,$this->view_direction,$this->use6fig,$this->db->Quote($this->user_status));
+			$viewpoint->nateastings,$viewpoint->natnorthings,$viewpoint->natgrlen,$this->view_direction,$this->use6fig,$this->db->Quote($this->user_status));
 		
 		$this->db->Query($sql);
 		
