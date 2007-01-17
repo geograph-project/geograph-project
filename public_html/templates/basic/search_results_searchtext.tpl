@@ -15,11 +15,9 @@
 {if $maincontentclass eq "content_photogray"}
 	text="#CCCCCC"
 {/if}
-
-
 >
 
-<h2>Search Results</h2>
+<h2 class="nowrap">Search Results</h2>
 
 <p><small>Your <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}" target="_main">search</a> for images<i class="nowrap">{$engine->criteria->searchdesc}</i>, returns 
 {if $engine->pageOneOnly && $engine->resultCount == $engine->numberofimages}

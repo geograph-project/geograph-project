@@ -327,14 +327,14 @@
 <p>
 <label for="grid_reference"><b style="color:#0018F8">Subject Grid Reference</b> {if $moderated.grid_reference}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.grid_reference}<span class="formerror">{$error.grid_reference}</span><br/>{/if}
-<input type="text" id="grid_reference" name="grid_reference" size="14" value="{$image->subject_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false,false)"/><img src="/templates/basic/img/circle.png" alt="Marks the Subject" width="29" height="29" align="middle" style="opacity: .5; filter: alpha(opacity=50);"/> 
+<input type="text" id="grid_reference" name="grid_reference" size="14" value="{$image->subject_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false,false)"/><img src="/templates/basic/img/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/> 
 {getamap gridref="document.theForm.grid_reference.value" gridref2=$image->subject_gridref text="OS Get-a-map&trade;"}
 
 
 <p>
 <label for="photographer_gridref"><b style="color:#002E73">Photographer Grid Reference</b> - Optional {if $moderated.photographer_gridref}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.photographer_gridref}<span class="formerror">{$error.photographer_gridref}</span><br/>{/if}
-<input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$image->photographer_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle" style="opacity: .5; filter: alpha(opacity=50);"/>
+<input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$image->photographer_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>
 {getamap gridref="document.theForm.photographer_gridref.value" gridref2=$image->photographer_gridref text="OS Get-a-map&trade;"}<br/>
 <span style="font-size:0.7em">
 <a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Copy from Subject</a><br/></span>
