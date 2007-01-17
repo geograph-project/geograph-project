@@ -236,7 +236,7 @@ class GridImage
 		list($gr,$len) = $conv->national_to_gridref(
 			$this->grid_square->getNatEastings()-$correction,
 			$this->grid_square->getNatNorthings()-$correction,
-			($this->use6fig && $spaced)?6:max(4,$this->natgrlen),
+			($this->use6fig && $spaced)?min(6,$this->natgrlen):max(4,$this->natgrlen),
 			$this->grid_square->reference_index,$spaced);
 		
 		$this->subject_gridref=$gr;
