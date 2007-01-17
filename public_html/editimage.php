@@ -468,7 +468,7 @@ if (isset($_REQUEST['id']))
 
 		$rastermap = new RasterMap($image->grid_square,true);
 		if (!empty($image->viewpoint_northings)) {
-			$rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings,$image->view_direction);
+			$rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings,$image->viewpoint_grlen,$image->view_direction);
 		} elseif (!empty($image->view_direction) && $image->view_direction != -1) {
 			$rastermap->addViewDirection($image->view_direction);
 		}

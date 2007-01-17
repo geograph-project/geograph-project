@@ -92,8 +92,8 @@ class GridSquare
   	/**
 	* national easting/northing (ie not internal)
 	*/
-	var $nateastings = 0;
-  	var $natnorthings = 0;
+	var $nateastings;
+  	var $natnorthings;
   	var $natgrlen = 0;
   	var $natspecified = false;
   	
@@ -205,7 +205,6 @@ class GridSquare
 			
 			$this->nateastings = sprintf("%d%05d",intval($square['origin_x']/100),$this->eastings * 1000 + 500);
 			$this->natnorthings = sprintf("%d%05d",intval($square['origin_y']/100),$this->northings * 1000 +500);
-			$this->natgrlen = 4;
 		} 
 		return $this->nateastings;
 	}

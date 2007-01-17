@@ -73,6 +73,7 @@ class RasterMap
 			//just in case we passed an exact location
 			$this->nateastings = $square->getNatEastings();
 			$this->natnorthings = $square->getNatNorthings();
+			$this->natgrlen = $square->natgrlen;
 			$this->reference_index = $square->reference_index;
 			
 			$this->issubmit = $issubmit;
@@ -106,9 +107,10 @@ class RasterMap
 		$this->long = floatval($long);
 	}
 	
-	function addViewpoint($viewpoint_eastings,$viewpoint_northings,$view_direction = -1) {
+	function addViewpoint($viewpoint_eastings,$viewpoint_northings,$viewpoint_grlen,$view_direction = -1) {
 		$this->viewpoint_eastings = $viewpoint_eastings;
 		$this->viewpoint_northings = $viewpoint_northings;
+		$this->viewpoint_grlen = $viewpoint_grlen;
 		$this->view_direction = $view_direction;
 	}
 	function addViewDirection($view_direction = -1) {
@@ -171,7 +173,7 @@ class RasterMap
 				$top = $width+10;
 			} else {
 				$e = $this->nateastings;	$n = $this->natnorthings;
-				if ($e%100 == 0 && $n%100 == 0 && $this->exactPosition) {
+				if ($this->natgrlen == '6' && $this->exactPosition) {
 					$e +=50; $n += 50;
 				}
 				$left = ($width/4) + ( ($e - $east) * $widthby2 / 1000 );
@@ -185,16 +187,24 @@ class RasterMap
 			else
 				$iconfile = "$prefix--1.png";
 
+			$different_square_true = (intval($this->nateastings/1000) != intval($this->viewpoint_eastings/1000)
+						|| intval($this->natnorthings/1000) != intval($this->viewpoint_northings/1000));
+	
+			$show_viewpoint = (intval($this->viewpoint_grlen) > 4) || ($different_square_true && ($this->viewpoint_grlen == '4'));
+
 	//calculate photographer position
-			if (!$this->issubmit && !empty($this->viewpoint_northings)) {
+			if (!$this->issubmit && $show_viewpoint) {
 				$e = $this->viewpoint_eastings;	$n = $this->viewpoint_northings;
-				if ($e%100 == 0 && $n%100 == 0) {
+				if ($this->viewpoint_grlen == '4') {
+					$e +=500; $n += 500;
+				}
+				if ($this->viewpoint_grlen == '6') {
 					$e +=50; $n += 50;
 				}
 				$vleft = ($width/4) + ( ($e - $east) * $widthby2 / 1000 );
 				$vtop = $width - ( ($width/4) + ( ($n - $nort) * $widthby2 / 1000 ) );
 
-				if ( ($vleft < -8) || ($vleft > ($width+8)) || ($vtop < -8) || ($vtop > ($width+8)) ) {
+				if ( ($vleft < -8) || ($vleft > ($width+8)) || ($vtop < -8) || ($vtop > ($width+8)) || ($different_square_true && $this->viewpoint_grlen == '4') ) {
 		//if outside the map extents clamp to an edge
 					if ( abs($left - $vleft) < abs($top - $vtop) ) {
 						// top/bottom edge
@@ -226,7 +236,7 @@ class RasterMap
 			$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;".( $this->displayMarker1 ?'':'display:none')."\" id=\"marker1\"><img src=\"/templates/basic/img/circle.png\" alt=\"+\" width=\"29\" height=\"29\"/></div>";
 
 	//photographer icon
-			$this->displayMarker2 = ($this->issubmit || (!empty($this->viewpoint_northings) && (($vleft != $left) || ($vtop != $top))))?1:0;
+			$this->displayMarker2 = ($this->issubmit || ( $show_viewpoint && (($vleft != $left) || ($vtop != $top)) ) )?1:0;
 			if ($this->issubmit) {
 				$str .= "<div style=\"position:absolute;top:".($vtop-14)."px;left:".($vleft-14)."px;".( $this->displayMarker2 ?'':'display:none')."\" id=\"marker2\"><img src=\"/templates/basic/img/$iconfile\" alt=\"+\" width=\"29\" height=\"29\" name=\"camicon\"/></div>";
 			} else {
@@ -319,6 +329,11 @@ class RasterMap
 			}
 			if ($this->exactPosition) {
 				$block.= "map.addOverlay(createMarker(point));";
+			}
+			if (empty($this->lat)) {
+				require_once('geograph/conversions.class.php');
+				$conv = new Conversions;
+				list($this->lat,$this->long) = $conv->national_to_wgs84($this->nateastings,$this->natnorthings,$this->reference_index);
 			}
 			return "
 				<script type=\"text/javascript\">

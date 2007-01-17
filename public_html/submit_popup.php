@@ -113,7 +113,7 @@ if ($grid_ok) {
 		$pgrid_given=true;
 		$pgrid_ok=$psquare->setByFullGridRef($photographer_gridref,true);
 		if (!empty($psquare->nateastings)) {
-				$rastermap->addViewpoint($psquare->nateastings,$psquare->natnorthings);
+				$rastermap->addViewpoint($psquare->nateastings,$psquare->natnorthings,$psquare->natgrlen);
 			$smarty->assign_by_ref('photographer_gridref', $photographer_gridref);
 		} 
 		if (!empty($view_direction) && $view_direction != -1) {

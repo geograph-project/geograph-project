@@ -196,7 +196,7 @@ class GridImage
 			list($posgr,$len) = $conv->national_to_gridref(
 				$this->viewpoint_eastings,
 				$this->viewpoint_northings,
-				($this->use6fig && $spaced)?6:$this->viewpoint_grlen,
+				($this->use6fig && $spaced)?min(6,$this->viewpoint_grlen):max(2,$this->viewpoint_grlen),
 				$this->grid_square->reference_index,$spaced);
 			
 			$this->photographer_gridref=$posgr;
@@ -236,7 +236,7 @@ class GridImage
 		list($gr,$len) = $conv->national_to_gridref(
 			$this->grid_square->getNatEastings()-$correction,
 			$this->grid_square->getNatNorthings()-$correction,
-			($this->use6fig && $spaced)?6:$this->natgrlen,
+			($this->use6fig && $spaced)?6:max(4,$this->natgrlen),
 			$this->grid_square->reference_index,$spaced);
 		
 		$this->subject_gridref=$gr;
@@ -1096,7 +1096,7 @@ class GridImage
 
 			//reassign image
 			$db->Execute("update gridimage set $sql_set ".
-				"nateastings=$east,natnorthings=$north,natgrlen={$newsq->natgrlen} ".
+				"nateastings=$east,natnorthings=$north,natgrlen='{$newsq->natgrlen}' ".
 				"where gridimage_id='$this->gridimage_id'");
 			
 			//ensure this is a real change
@@ -1158,8 +1158,9 @@ class GridImage
 			", comment=".$db->Quote($this->comment).
 			", imageclass=".$db->Quote($this->imageclass).
 			", imagetaken=".$db->Quote($this->imagetaken).
-			", viewpoint_northings=".$db->Quote($this->viewpoint_northings).
 			", viewpoint_eastings=".$db->Quote($this->viewpoint_eastings).
+			", viewpoint_northings=".$db->Quote($this->viewpoint_northings).
+			", viewpoint_grlen='{$this->viewpoint_grlen}'".					
 			", view_direction=".$db->Quote($this->view_direction).
 			", use6fig=".$db->Quote($this->use6fig).
 			" where gridimage_id = '{$this->gridimage_id}'";
