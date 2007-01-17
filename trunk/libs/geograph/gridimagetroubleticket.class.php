@@ -291,11 +291,13 @@ class GridImageTroubleTicket
 				{
 					$img->viewpoint_eastings=$sq->nateastings;
 					$img->viewpoint_northings=$sq->natnorthings;
+					$img->viewpoint_grlen=$sq->natgrlen;
 					$this->commit_count++;
 				} elseif(empty($newvalue)) {
 					// we are setting to 'blank'
 					$img->viewpoint_eastings = 0;
 					$img->viewpoint_northings = 0;
+					$img->viewpoint_grlen=0;
 					$this->commit_count++;
 				}
 				

@@ -444,7 +444,7 @@ then please enter directly into the boxes above)
 <div>
 <input type="radio" name="mod" value="" id="mod_blank" checked="checked"/> <label for="mod_blank">Create a new ticket to be moderated by someone else.</label><br/>
 <input type="radio" name="mod" value="assign" id="mod_assign"/> <label for="mod_assign">Create an open ticket and assign to myself. (give the Contributor a chance to respond)</label><br/>
-<input type="radio" name="mod" value="apply" id="mod_apply"/> <label for="mod_mod">Apply the changes immediately, and close the ticket. (Contributor is notified)</label></div>
+<input type="radio" name="mod" value="apply" id="mod_apply"/> <label for="mod_apply">Apply the changes immediately, and close the ticket. (Contributor is notified)</label></div>
 
 <br style="clear:both"/>
 {/if}
