@@ -164,8 +164,15 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($mosaic->type_or_user > 0) {
 		$profile=new GeographUser($mosaic->type_or_user);
 		
+		if (count($profile->stats) == 0) {
+			$db = NewADOConnection($GLOBALS['DSN']);
+			if (!$db) die('Database connection failed');   
+
+			$profile->stats['has_image']=$db->GetOne("select gridimage_id from gridimage_search where user_id='{$profile->user_id}'")?1:0; //limit 1 is implied
+		}
+		
 		//the map is only useful for people with images!
-		if ($profile->rank>0) {
+		if ( !empty($profile->stats['total']) || !empty($profile->stats['has_image']) ) {
 			$smarty->assign('realname', $profile->realname);
 			$smarty->assign('user_id', $mosaic->type_or_user);
 		
