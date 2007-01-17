@@ -453,11 +453,9 @@ class UploadManager
 		}
 		
 		
+		$viewpoint = new GridSquare;
 		if ($this->viewpoint_gridreference) {
-			$viewpoint = new GridSquare;
 			$ok= $viewpoint->setByFullGridRef($this->viewpoint_gridreference,true);
-			$viewpoint_eastings = $viewpoint->nateastings;
-			$viewpoint_northings = $viewpoint->natnorthings;
 		}
 		
 		
@@ -483,16 +481,16 @@ class UploadManager
 		// nateasting/natnorthings will only have values if getNatEastings has been called (in this case because setByFullGridRef has been called IF an exact location is specifed)
 		$sql=sprintf("insert into gridimage(".
 			"gridsquare_id, seq_no, user_id, ftf,".
-			"moderation_status,title,comment,nateastings,natnorthings,imageclass,imagetaken,".
-			"submitted,viewpoint_eastings,viewpoint_northings,view_direction,use6fig,user_status) values ".
+			"moderation_status,title,comment,nateastings,natnorthings,natgrlen,imageclass,imagetaken,".
+			"submitted,viewpoint_eastings,viewpoint_northings,viewpoint_grlen,view_direction,use6fig,user_status) values ".
 			"(%d,%d,%d,%d,".
-			"'pending',%s,%s,%d,%d,%s,%s,".
-			"now(),%d,%d,%d,%d,%s)",
+			"'pending',%s,%s,%d,%d,'%d',%s,%s,".
+			"now(),%d,%d,'%d',%d,%d,%s)",
 			$this->square->gridsquare_id, $seq_no,$USER->user_id, $ftf,
 			$this->db->Quote($this->title), $this->db->Quote($this->comment), 
-			$this->square->nateastings,$this->square->natnorthings,
+			$this->square->nateastings,$this->square->natnorthings,$this->square->natgrlen,
 			$this->db->Quote($this->imageclass), $this->db->Quote($this->imagetaken),
-			$viewpoint_eastings,$viewpoint_northings,$this->view_direction,$this->use6fig,$this->db->Quote($this->user_status));
+			$viewpoint->square->nateastings,$viewpoint->square->natnorthings,$viewpoint->square->natgrlen,$this->view_direction,$this->use6fig,$this->db->Quote($this->user_status));
 		
 		$this->db->Query($sql);
 		

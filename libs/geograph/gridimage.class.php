@@ -193,16 +193,10 @@ class GridImage
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
 			
-			//we need a special case for centisquare 0,0
-			$same_square_true = (intval($this->nateastings/1000) == intval($this->viewpoint_eastings/1000)
-						&& intval($this->natnorthings/1000) == intval($this->viewpoint_northings/1000));
-			
-			$gr_len = ($same_square_true && $this->viewpoint_eastings%1000 == 0 && $this->viewpoint_northings%1000 == 0)?6:0;
-			
 			list($posgr,$len) = $conv->national_to_gridref(
 				$this->viewpoint_eastings,
 				$this->viewpoint_northings,
-				($this->use6fig && $spaced)?6:$gr_len,
+				($this->use6fig && $spaced)?6:$this->viewpoint_grlen,
 				$this->grid_square->reference_index,$spaced);
 			
 			$this->photographer_gridref=$posgr;
@@ -228,6 +222,7 @@ class GridImage
 			if ($this->nateastings) {
 				$this->natspecified = 1;
 				$this->grid_square->natspecified = 1;
+				$this->grid_square->natgrlen=$this->natgrlen;
 				$this->grid_square->nateastings=$this->nateastings;
 				$this->grid_square->natnorthings=$this->natnorthings;
 			}	
@@ -236,15 +231,12 @@ class GridImage
 		//if this image doesnt have an exact position then we need to remove 
 		//the move to the center of the square
 		//must be before getNatEastings is called
-		$correction = (!empty($this->natspecified))?0:500;
+		$correction = ($this->natgrlen > 4)?0:500;
 		
-		//we need a special case for centisquare 0,0
-		$gr_len = ($this->natspecified && $this->nateastings%1000 == 0&& $this->natnorthings%1000 == 0)?6:0;
-
 		list($gr,$len) = $conv->national_to_gridref(
 			$this->grid_square->getNatEastings()-$correction,
 			$this->grid_square->getNatNorthings()-$correction,
-			($this->use6fig && $spaced)?6:$gr_len,
+			($this->use6fig && $spaced)?6:$this->natgrlen,
 			$this->grid_square->reference_index,$spaced);
 		
 		$this->subject_gridref=$gr;
@@ -285,6 +277,7 @@ class GridImage
 			if ($this->nateastings) {
 				$this->natspecified = 1;
 				$this->grid_square->natspecified = 1;
+				$this->grid_square->natgrlen=$this->natgrlen;
 				$this->grid_square->nateastings=$this->nateastings;
 				$this->grid_square->natnorthings=$this->natnorthings;
 			}
@@ -1103,7 +1096,7 @@ class GridImage
 
 			//reassign image
 			$db->Execute("update gridimage set $sql_set ".
-				"nateastings=$east,natnorthings=$north ".
+				"nateastings=$east,natnorthings=$north,natgrlen={$newsq->natgrlen} ".
 				"where gridimage_id='$this->gridimage_id'");
 			
 			//ensure this is a real change
