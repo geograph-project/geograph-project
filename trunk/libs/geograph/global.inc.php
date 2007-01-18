@@ -64,7 +64,7 @@ require_once('adodb/session/adodb-session.php');
 //global security routines
 require_once('geograph/security.inc.php');
 
-//global security routines
+//global routines
 require_once('geograph/functions.inc.php');
 
 //smarty needed everywhere too
