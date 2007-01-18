@@ -268,7 +268,6 @@ class GridImageTroubleTicket
 		{
 			//make the changes right away...
 			$img=&$this->_getImage();
-			$img->$fieldname=$newvalue;
 			
 			if ($fieldname=="grid_reference")
 			{
@@ -304,6 +303,7 @@ class GridImageTroubleTicket
 			}
 			else
 			{
+				$img->$fieldname=$newvalue;
 				if ($fieldname=='title')
 				{
 					//fire an event (only title is relevent to update wordnet)
