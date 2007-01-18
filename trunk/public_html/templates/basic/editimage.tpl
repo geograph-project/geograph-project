@@ -153,7 +153,7 @@
 
 	Suggested {$ticket->suggested|date_format:"%a, %e %b %Y at %H:%M"} 
 	
-
+	<i>({$ticket->status})</i>
 	</div>
 	
 
@@ -217,18 +217,24 @@
 		<div class="ticketnote">{$ticket->notes|escape:'html'|geographlinks}</div>
 	
 		
-		{if $ticket->comments and ($isadmin or $isowner)}
+		{if $ticket->comments}
+			{if $isadmin or $isowner}
+				{foreach from=$ticket->comments item=comment}
+				<div class="ticketnote">
+					<div class="ticketnotehdr">{$comment.realname} {if $comment.moderator}(Moderator){/if} wrote on {$comment.added|date_format:"%a, %e %b %Y at %H:%M"}</div>
+					{$comment.comment|escape:'html'|geographlinks}
 
+				</div>
+				{/foreach}
+			{else}
+				{if ($user->user_id eq $ticket->user_id) and ($ticket->status eq "closed") && $ticket->lastcomment.moderator}
+				<div class="ticketnote">
+					<div class="ticketnotehdr">{$ticket->lastcomment.realname} {if $ticket->lastcomment.moderator}(Moderator){/if} wrote on {$ticket->lastcomment.added|date_format:"%a, %e %b %Y at %H:%M"}</div>
+					{$ticket->lastcomment.comment|escape:'html'|geographlinks}
 
-			{foreach from=$ticket->comments item=comment}
-			<div class="ticketnote">
-				<div class="ticketnotehdr">{$comment.realname} {if $comment.moderator}(Moderator){/if} wrote on {$comment.added|date_format:"%a, %e %b %Y at %H:%M"}</div>
-				{$comment.comment|escape:'html'|geographlinks}
-
-
-			</div>
-			{/foreach}
-
+				</div>
+				{/if}
+			{/if}
 		{/if}
 		
 	
