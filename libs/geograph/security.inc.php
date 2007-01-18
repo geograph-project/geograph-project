@@ -35,6 +35,15 @@
 * @version $Revision$
 */
 
+function inEmptyRequestInt($key,$def = 0) {
+	return (!empty($_REQUEST[$key]))?intval($_REQUEST[$key]):$def;
+}
+
+function inSetRequestInt($key,$def = 0) {
+	return (!isset($_REQUEST[$key]))?intval($_REQUEST[$key]):$def;
+}
+
+
 /**
 * basic email address check
 */

@@ -731,12 +731,16 @@ class GridImageTroubleTicket
 		//message to suggester (if not the owner)
 		if ($this->user_id != $image->user_id)
 		{
-			$suggester_msg="Many thanks for your feedback on this photo, ".
-				"we've now closed this issue.";
-			if (strlen($changes))
+			$suggester_msg="Many thanks for your feedback on this photo, we've now closed this issue.";
+			if (!empty($changes))
 			{
 				$suggester_msg.=" The following changes were made:\n\n";
 				$suggester_msg.=$changes;
+			}
+			if (!empty($dbcomment) && $dbcomment != "Ticket is now closed")
+			{
+				$suggester_msg.="\n Moderators Comment:\n\n";
+				$suggester_msg.=$dbcomment;
 			}
 
 			$msg =& $this->_buildEmail($suggester_msg);
@@ -749,10 +753,15 @@ class GridImageTroubleTicket
 
 		//message to owner
 		$owner_msg="We've now closed this issue. ";
-		if (strlen($changes))
+		if (!empty($changes))
 		{
 			$owner_msg.=" The following changes were made:\n\n";
 			$owner_msg.=$changes;
+		}
+		if (!empty($dbcomment) && $dbcomment != "Ticket is now closed")
+		{
+			$owner_msg.="\n Moderators Comment:\n\n";
+			$owner_msg.=$dbcomment;
 		}
 		$msg =& $this->_buildEmail($owner_msg);
 		$owner=new GeographUser($image->user_id);

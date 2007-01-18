@@ -81,9 +81,11 @@ while (!$recordSet->EOF)
 	if (!empty($_GET['en'])) {
 		print "<Cell><Data ss:Type=\"Number\">{$image['nateastings']}</Data></Cell>\n";
 		print "<Cell><Data ss:Type=\"Number\">{$image['natnorthings']}</Data></Cell>\n";
+  		print "<Cell><Data ss:Type=\"Number\">{$image['natgrlen']}</Data></Cell>\n";
   		if (!empty($_GET['ppos'])) {
 		  	print "<Cell><Data ss:Type=\"Number\">{$image['viewpoint_eastings']}</Data></Cell>\n";
   	  		print "<Cell><Data ss:Type=\"Number\">{$image['viewpoint_northings']}</Data></Cell>\n";
+  			print "<Cell><Data ss:Type=\"Number\">{$image['viewpoint_grlen']}</Data></Cell>\n";
   		}
 	} elseif (!empty($_GET['ll'])) {
 		print "<Cell><Data ss:Type=\"Number\">{$image['wgs84_lat']}</Data></Cell>\n";

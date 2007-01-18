@@ -52,9 +52,9 @@ while (!$recordSet->EOF)
 		echo ','.$gridimage->getThumbnail(120,120,true);
 	}
 	if (!empty($_GET['en'])) {
-		echo ",{$image['nateastings']},{$image['natnorthings']}";
+		echo ",{$image['nateastings']},{$image['natnorthings']},{$image['natgrlen']}";
 		if (!empty($_GET['ppos']))
-			echo ",{$image['viewpoint_eastings']},{$image['viewpoint_northings']}";
+			echo ",{$image['viewpoint_eastings']},{$image['viewpoint_northings']},{$image['viewpoint_grlen']}";
 	} elseif (!empty($_GET['ll']))
 		echo ",{$image['wgs84_lat']},{$image['wgs84_long']}";
 	if (!empty($_GET['taken']))
