@@ -466,7 +466,7 @@ class GridImageTroubleTicket
 						"changes by following the links in this message. ");
 					$submitter=new GeographUser($img->user_id);
 					if ( ($submitter->ticket_option == 'all') || 
-							( ($type=='normal') && $submitter->ticket_option == 'major')
+							( ($this->type=='normal') && $submitter->ticket_option == 'major')
 						)
 						$this->_sendMail($submitter->email, $msg);
 				}
@@ -490,7 +490,7 @@ class GridImageTroubleTicket
 					$msg =& $this->_buildEmail($comment);
 					$submitter=new GeographUser($img->user_id);
 					if ( ($submitter->ticket_option == 'all') || 
-							( ($type=='normal') && $submitter->ticket_option == 'major')
+							( ($this->type=='normal') && $submitter->ticket_option == 'major')
 						)
 						$this->_sendMail($submitter->email, $msg);
 				
