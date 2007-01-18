@@ -884,6 +884,8 @@ class GridImageTroubleTicket
 				"FIND_IN_SET('ticketmod',u.rights)>0 as moderator ".
 				"from gridimage_ticket_comment as c inner join user as u using(user_id) ".
 				"where gridimage_ticket_id={$this->gridimage_ticket_id} order by c.added");
+			if ($n = count($this->comments))
+				$this->lastcomment =& $this->comments[$n-1];
 		}
 		
 	}
