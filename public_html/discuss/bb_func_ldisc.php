@@ -38,7 +38,9 @@ if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_i
     $tpl=makeUp('main_last_discuss_cell');
     
     do{
-        $topic=$cols[0];
+        $forum=$cols[5];
+      
+      	$topic=$cols[0];
         $topic_views=$cols[8];
         $topic_reverse='';
         if(isset($themeDesc) and in_array($topic,$themeDesc)) $topic_reverse="<img src=\"{$main_url}/img/topic_reverse.gif\" align=middle border=0 alt=\"\">&nbsp;";
@@ -57,7 +59,6 @@ if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_i
         if($cols[3]=='') $cols[3]=$l_anonymous;
         $topicAuthor=$cols[3];
         
-        $forum=$cols[5];
         $numReplies=$cols[6]; if($numReplies>=1) $numReplies-=1;
         
         if($topic_title=='') $topic_title=$l_emptyTopic;
