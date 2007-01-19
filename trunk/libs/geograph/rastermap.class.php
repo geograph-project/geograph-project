@@ -182,7 +182,7 @@ class RasterMap
 
 	//choose photographer icon
 			$prefix = $this->issubmit?'viewc':'camicon';
-			if ($this->view_direction && $this->view_direction != -1)
+			if (isset($this->view_direction) && $this->view_direction != -1)
 				$iconfile = "$prefix-{$this->view_direction}.png";
 			else
 				$iconfile = "$prefix--1.png";
