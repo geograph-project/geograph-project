@@ -207,7 +207,7 @@ if (isset($_GET['coast_GB_40'])) {
 
 	
 } else {
-	$smarty->assign('invalid_maps',  $db->GetOne("select count(*) from mapcache where age > 0"));
+	$smarty->assign('invalid_maps',  $db->GetOne("select count(*) from mapcache where age > 0 and type_or_user >= 0"));
 }
 
 

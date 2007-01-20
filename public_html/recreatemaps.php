@@ -53,7 +53,7 @@ if (isset($_POST['inv']))
 	}
 } 
 	
-$smarty->assign('invalid_maps',  $db->GetOne("select count(*) from mapcache where age > 0"));
+$smarty->assign('invalid_maps',  $db->GetOne("select count(*) from mapcache where age > 0 and type_or_user >= 0"));
 
 $smarty->display('recreatemaps.tpl');
 
