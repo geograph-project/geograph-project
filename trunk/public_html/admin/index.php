@@ -55,6 +55,9 @@ $smarty->assign('images_pending_available', $db->GetOne("select count(distinct g
 $smarty->assign('gridsquares_sea_test', $db->GetOne("select count(*) from mapfix_log where old_percent_land=-1 and created > date_sub(now(),interval 30 minute) and user_id != {$USER->user_id}"));
 
 
+$smarty->assign('articles_ready', $db->getOne("select count(*) from article where licence != 'none' and approved = 0"));
+	
+
 //but this is nice and quick...
 $uptime=`uptime`;
 $smarty->assign_by_ref('uptime', $uptime);

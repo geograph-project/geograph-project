@@ -6,16 +6,22 @@
 <h2>Administrative Tools</h2>
 <ul>
 <li><a href="/admin/moderation.php">Moderate</a> new photo submissions<br/>
-<b>[{$images_pending} Pending, {dynamic}{$images_pending_available}{/dynamic} available to moderate]</b></li>
+<b>[{$images_pending} pending, {dynamic}{$images_pending_available}{/dynamic} available to moderate]</b></li>
 
 
 {if $is_tickmod} 
 <li><a title="Trouble Tickets" href="/admin/tickets.php">Trouble Tickets</a> <small>(Sidebar: <a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search">IE &amp; Firefox</a>, <a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" rel="sidebar" title="Tickets">Opera</a>)</small> - 
-   Deal with image problems<br/> <b>[{$tickets_new} New, {$tickets_yours} Open by You]</b></li>
+   Deal with image problems<br/> <b>[{$tickets_new} new, {$tickets_yours} open by you]</b></li>
 {/if}
 
 
 {dynamic}
+
+{if $articles_ready}
+<li><a href="/article/">Articles</a><br/>
+<b>[{$articles_ready} ready to be approved]</b></li>
+{/if}
+
 <li{if $gridsquares_sea_test > 0} style="color:lightgrey">
 <b>Map-fixing in Progress</b> - please come back later.<br/>
 {else}>{/if}
@@ -32,7 +38,7 @@
 
 <a title="Map Fixer" href="/admin/mapfixer.php">Map Fixer</a> allows the land percentage
 for each 1km grid squares to be updated, which allows "square is all at sea" to be 
-corrected<br/> <b>[GB:{$gridsquares_sea.1},I:{$gridsquares_sea.2} in Queue]</b> - <a href="/mapfixer.php">add to queue</a><br/>
+corrected<br/> <b>{if $gridsquares_sea.1 || $gridsquares_sea.2}[GB:{$gridsquares_sea.1},I:{$gridsquares_sea.2} in queue]{/if}</b> - <a href="/mapfixer.php">add to queue</a><br/>
 </li>
 
 <li><a title="Recreate Maps" href="/recreatemaps.php">Recreate Maps</a> - 
