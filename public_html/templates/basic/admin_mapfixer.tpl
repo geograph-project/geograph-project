@@ -40,6 +40,7 @@ var aTodo=new Array();
 {/if}
 
 var current=-1;
+var currentgr;
 
 {literal}
 
@@ -82,6 +83,7 @@ function shownext()
 	{
 		var gr4=new String(aTodo[current]);
 		gridref.innerHTML=gr4;
+		currentgr = gr4;
 
 		if (gr4.length == 5) {
 			gr6 = gr4.substr(0,gr4.length-2)+'5'+gr4.substr(gr4.length-2,2)+'5';
@@ -107,7 +109,8 @@ function onMapUpdateComplete()
 	{
 		var voteinfo=document.getElementById('voteinfo');
 		voteinfo.innerHTML=xmlhttp.responseText;
-		
+		if (currentgr)
+			document.getElementById('a'+currentgr).style.color = '#dddddd';
 		shownext();
 	}
 }
@@ -164,7 +167,7 @@ quicker process though!</p>
 {if $unknowns}
 <ul>
 {foreach from=$unknowns item=unknown}
-<li><a href="mapfixer.php?gridref={$unknown.grid_reference}">{$unknown.grid_reference} ({$unknown.imagecount} images)</li>
+<li><a href="mapfixer.php?gridref={$unknown.grid_reference}" id="a{$unknown.grid_reference}">{$unknown.grid_reference} ({$unknown.imagecount} images)</li>
 {/foreach}
 </ul>
 {else}
