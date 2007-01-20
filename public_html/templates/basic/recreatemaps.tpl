@@ -17,12 +17,12 @@
 
 <hr> 
 	
-{if $invalid_maps < 100}
+{if ($invalid_maps < 150) || ($is_mod && ($invalid_maps < 1000))}
 	<form method="post" action="recreatemaps.php">
 
 	<p>You can use the following form to request an update for a particular square.</p>
 
-	<p>* Only submit a square here if the queue is relatively empty (say below 20), and the map still hasn't updated (after at least 3 hours).</p>
+	<p>* Only submit a square here if the queue is relatively empty (say below 150), and the map still hasn't updated (after at least 3 hours).</p>
 
 	<p>{$errormsg}</p>
 
