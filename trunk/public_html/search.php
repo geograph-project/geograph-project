@@ -772,7 +772,7 @@ function smarty_function_searchbreak($params) {
 		case 'imagetaken_decade':
 			$s = substr($image->imagetaken,0,3);
 			if ($last != $s)
-				$b = $s."0's";
+				$b = $s."0 s";
 			$last = $s;
 			break;
 		case 'submitted':
@@ -780,7 +780,7 @@ function smarty_function_searchbreak($params) {
 				$b = getFormattedDate($image->submitted);
 			$last = $image->imagetaken;
 			break;
-		case 'isubmitted_month':
+		case 'submitted_month':
 			$s = substr($image->submitted,0,7);
 			if ($last != $s)
 				$b = getFormattedDate($s);
