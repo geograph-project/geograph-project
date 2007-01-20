@@ -751,6 +751,13 @@ class GeographUser
 	*/
 	function logout()
 	{
+		$db = NewADOConnection($GLOBALS['DSN']);
+		if (!$db) die('Database connection failed');  
+
+		//clear any moderation locks
+		$db->Execute("DELETE FROM gridsquare_moderation_lock WHERE user_id = {$this->user_id}");
+		$db->Execute("DELETE FROM gridimage_moderation_lock WHERE user_id = {$this->user_id}");
+		
 		//clear member vars
 		$vars=get_object_vars($this);
 		foreach($vars as $name=>$val)

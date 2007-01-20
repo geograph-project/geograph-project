@@ -5,7 +5,13 @@
 {if $image}
 
  <h2><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->current_title}</h2>
- 
+
+{if $isadmin && $locked_by_moderator}
+	<p style="position:relative;padding:10px;border:1px solid pink; color:white; background-color:red">
+	<b>This image is currently open by {$locked_by_moderator}</b>, please come back later.
+	</p>
+{/if}
+
 {if $error}
 <h2><span class="formerror">Changes not submitted - check and correct errors below...</span></h2>
 {/if}
