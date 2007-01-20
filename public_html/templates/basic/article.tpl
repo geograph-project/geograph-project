@@ -17,7 +17,7 @@
 			{if $item.approved}
 				[<a href="/article/?page={$item.url}&amp;approve=0">Disapprove</a>]
 			{else}
-				[<a href="/article/?page={$item.url}&amp;approve=1">Approve</a>]
+				[<a href="/article/?page={$item.url}&amp;approve=1">Approve</a>{if $item.licence != 'none'} <b>Ready to be Approved</b>{/if}]
 			{/if}
 		{/if}
 		{if $isadmin || $item.user_id == $user->user_id}
