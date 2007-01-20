@@ -53,13 +53,15 @@
 {else}
   <p>There are no tickets available to moderate at this time, please try again later.</p>
 {/if}
-
-
+<br/><br/>
+<div class="interestBox">
 <h3>Open Tickets</h3>
 
 {if $opentickets}
 
-<p>These tickets have seen some moderator activity - make sure they get closed eventually!</p>
+<p>These tickets have seen some moderator activity - make sure they get closed eventually! 
+However please only close tickets when certain the issue has been dealt with.</p>
+
 <table class="report sortable" id="opentickets" style="font-size:8pt;">
 <thead><tr>
 	<td>Moderator</td>
@@ -87,7 +89,7 @@
 {else}
   <p>There are no open tickets! Well done!</p>
 {/if}
-
+</div>
 
 
 {/dynamic}    

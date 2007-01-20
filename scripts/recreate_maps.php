@@ -168,9 +168,9 @@ while (1) {
 					$map->$name=$value;
 			}
 
-			$map->_renderMap();
-
-			echo "re-rendered ".$map->getImageFilename()."\n";
+			$ok = $map->_renderMap();
+				
+			echo (($ok?'re-rendered ':'FAILED: ').$map->getImageFilename()."\n");
 			flush();
 			
 			

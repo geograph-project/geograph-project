@@ -460,6 +460,7 @@ class GeographMap
 
 			$db->Execute($sql);
 		}
+		return $ok;
 	}
 	
 	/**
