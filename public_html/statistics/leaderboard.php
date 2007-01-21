@@ -136,7 +136,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_column = "COUNT(DISTINCT nateastings div 100, natnorthings div 100)";
 		$sql_where = "i.moderation_status='geograph' and nateastings div 1000 > 0";
 		$heading = "Centigraph<br/>Points";
-		$desc = "centigraph points awarded";
+		$desc = "centigraph points awarded (centisquares photographed)";
 	} else { #if ($type == 'points') {
 		$sql_where = "i.ftf=1 and i.moderation_status='geograph'";
 		$heading = "Geograph<br/>Points";

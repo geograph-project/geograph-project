@@ -47,7 +47,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	// in the following code 'geographs' is used a column for legacy reasons, but dont always represent actual geographs....
 	$sql_column = '';
 	$sql_orderby = '';
-	$sql_table = " gridimage as i left join user as u using(user_id) ";
+	$sql_c = " gridimage as i left join user as u using(user_id) ";
 	$sql_where = '';
 	if ($type == 'squares' || $type == 'geosquares') {
 		if ($type == 'geosquares') {
@@ -142,7 +142,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_column = "COUNT(DISTINCT nateastings div 100, natnorthings div 100)";
 		$sql_where = "and i.moderation_status='geograph' and nateastings div 1000 > 0";
 		$heading = "Centigraph<br/>Points";
-		$desc = "centigraph points awarded";
+		$desc = "centisquares photographed";
 	} else { #if ($type == 'points') {
 		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph')";
 		$heading = "New<br/>Geograph<br/>Points";
