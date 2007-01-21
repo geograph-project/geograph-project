@@ -1,7 +1,7 @@
 {assign var="page_title" value="FAQ"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
-h3 { padding-top:30px; border-top: 1px solid lightgrey; }
+maincontent h3 { padding-top:30px; border-top: 1px solid lightgrey; }
 ul.contents {margin-top:0;padding:0 0 0 1em; }
 ul.contents li { border-top: 1px solid lightgrey; padding-top:2px; margin-top:2px; }
 ul.contents li.last { padding-bottom:2px; border-bottom: 1px solid lightgrey; }
