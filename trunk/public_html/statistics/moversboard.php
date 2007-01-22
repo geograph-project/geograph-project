@@ -47,7 +47,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	// in the following code 'geographs' is used a column for legacy reasons, but dont always represent actual geographs....
 	$sql_column = '';
 	$sql_orderby = '';
-	$sql_c = " gridimage as i left join user as u using(user_id) ";
+	$sql_table = " gridimage as i left join user as u using(user_id) ";
 	$sql_where = '';
 	if ($type == 'squares' || $type == 'geosquares') {
 		if ($type == 'geosquares') {
@@ -103,6 +103,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$desc = "images submitted";
 	} elseif ($type == 'test_points') {
 		$sql_column = "sum((i.moderation_status = 'geograph') + ftf + 1)";
+		$sql_table = " gridimage_search i ";
 		$heading = "G-Points";
 		$desc = "test points";
 	} elseif ($type == 'depth') {
@@ -154,10 +155,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('type', $type);
 	
 	if ($sql_column) {
+		$sql_pending = (strpos($sql_table,'_search') === FALSE)?"sum(i.moderation_status='pending')":'0';
 		//we want to find all users with geographs/pending images 
 		$sql="select i.user_id,realname,
 		$sql_column as geographs, 
-		sum(i.moderation_status='pending') as pending
+		$sql_pending as pending
 		from $sql_table
 		where i.submitted > date_sub(now(), interval 7 day) $sql_where
 		group by i.user_id 
