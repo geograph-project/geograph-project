@@ -1,3 +1,4 @@
+{assign var="page_title" value="Geograph Admin"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
 #maincontent li { padding-bottom:10px;}
