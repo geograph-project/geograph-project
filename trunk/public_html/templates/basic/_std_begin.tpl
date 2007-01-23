@@ -21,6 +21,8 @@
 	<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/syndicator.php"/>
 	{/if}
 {/if}
+<link rel="search" type="application/opensearchdescription+xml" 
+title="Geograph British Isles search" href="/stuff/osd.xml" />
 <script type="text/javascript" src="/geograph.js?v={$javascript_version}"></script>
 </head>
 
