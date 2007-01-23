@@ -108,7 +108,9 @@ if (isset($_GET['id']))  {
 				$x = $square->x;
 				$y = $square->y;
 				
-				$sql_where = "imagecount ".(($_REQUEST['type'] == 'with')?'>':'=')." 0 and ";
+				$sql_where = 'imagecount '.(($_REQUEST['type'] == 'with')?'>':'=').' 0 and ';
+				if ($_REQUEST['type'] != 'with')
+					$sql_where .= 'percent_land > 0 and ';
 
 				$left=$x-$d;
 				$right=$x+$d;
