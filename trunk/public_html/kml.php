@@ -62,11 +62,15 @@ if (isset($_GET['id']))  {
 <? if ($phpos) { ?>   
 <Folder>
 	<name><![CDATA[<? echo $image->grid_reference." : ".$image->title; ?>]]></name>
-<? } ?>   
+<? } 
+	$linkTag = "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id."\">";
+	$thumb = "http://".$_SERVER['HTTP_HOST'].$image->getThumbnail(120,120,true); 
+	$thumbTag = preg_replace('/\/photos\/.*\.jpg/',$thumb,$image->getThumbnail(120,120)); 
+?>   
 	<Placemark>
 		<name><![CDATA[<? echo $image->grid_reference." : ".$image->title; ?>]]></name>
-		<description><![CDATA[<? echo GeographLinks($image->comment).
-		" (<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id."\">view online</a>)".
+		<description><![CDATA[<? echo $linkTag.$thumbTag."</a><br/>".GeographLinks($image->comment).
+		" (".$linkTag."view online</a>)".
 		"<br/>by <a title=\"view user profile\" href=\"http://{$_SERVER['HTTP_HOST']}/profile.php?u=".$image->user_id."\">".$image->realname."</a><br/><br/>"; ?>]]></description>
 		<visibility>1</visibility>
 		<Point>
@@ -74,7 +78,11 @@ if (isset($_GET['id']))  {
 		</Point>
 		<styleUrl>root://styleMaps#default?iconId=0x307</styleUrl>
 		<Style>
-			<icon><? echo "http://".$_SERVER['HTTP_HOST'].$image->getThumbnail(120,120,true); ?></icon>
+			<IconStyle>
+				<Icon>
+					<href><? echo $thumb; ?></href>
+				</Icon>
+			</IconStyle>
 		</Style>
 		<? if (!empty($image->imagetaken) && strpos($image->imagetaken,'-00') === FALSE) { ?>   
 		<TimeStamp>
