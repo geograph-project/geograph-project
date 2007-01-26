@@ -302,7 +302,7 @@ foreach ($images->images as $i => $image) {
 		if ($images->images[$i]->different_square_true && $images->images[$i]->subject_gridref_precision==1000)
 			$images->images[$i]->distance -= 0.5;
 		
-		if ($images->images[$i]->different_square_true && $images->images[$i]->distance > 0.2)
+		if ($images->images[$i]->different_square_true && $images->images[$i]->distance > 0.1)
 			$images->images[$i]->different_square = true;
 	}	
 	$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$image->gridsquare_id}");
