@@ -5,7 +5,7 @@
 	position:relative; width:100%; background-color:#75FF65; border:1px solid blue; margin-bottom:10px; 
 }
 .redbar {
-	position:relative; float:left; background-color:#FF0000; border-right:1px solid blue
+	position:relative; float:left; background-color:#FF0000; border-right:1px solid blue; 
 }
 .righttextbox {
 	position:relative; float:right; text-align:right; color:#000066; padding-right: 5px; padding-top:10px; padding-bottom:10px
@@ -15,6 +15,9 @@
 }
 .lefttextbox {
 	position:relative; float:left; color:#000066; padding-left: 5px; padding-top:10px; padding-bottom:10px; 
+	background-image: url('/templates/basic/img/numbers-arrow.gif');
+	background-position: center left;
+	background-repeat: no-repeat;
 }
 .statsbox {
 	position:relative; width:70%; float:left
@@ -33,9 +36,17 @@
 	position:relative; width:45%; float:left; padding:3px;
 }
 .finalbox {
-	position:relative; width:100%; background-color:#000066; color:white; float:left; text-align:center; padding-top:10px; padding-bottom:10px; line-height:1.5em; font-size:1.1em;
+	position:relative; background-color:#000066; color:white; float:left; text-align:center; padding-top:10px; padding-bottom:10px; line-height:1.5em; font-size:1.1em;
+	border-left:1px solid #000066; border-top:1px solid #000066; border-bottom:1px solid #000066; margin:-1px;
+	background-image: url('/templates/basic/img/numbers-arrow-down.gif');
+	background-position: center right;
+	background-repeat: no-repeat;
 }
-.finalbox A {
+.finalbox2 {
+	position:relative; color:#000066; background-color:white; float:left; text-align:center; padding-top:10px; padding-bottom:10px; line-height:1.5em; font-size:1.1em; 
+	border-right:1px solid #000066; border-top:1px solid #000066; border-bottom:1px solid #000066; margin:-1px;
+}
+.finalbox2 A {
 	color: red;
 }
 .linksbox {
@@ -110,16 +121,19 @@
 	</div>
 </div>
 
-<br style="clear:both"/><br/>
+<small><br style="clear:both"/><br/></small>
 <div style="position:relative; width:100%">
-	<div class="finalbox"> 
+	<div class="finalbox" style="width:{$stats.fewpercentage}%;">
 		<b class="nowrap">{$stats.fewphotos|thousends}</b>
-		 photographed squares</b> <br/> with
-		 <b>fewer than 4 photos, <a href="/submit.php">add yours now!</a></b>
+		 photographed squares</b>... <br/> 
+	</div>
+	<div class="finalbox2" style="width:{$stats.negfewpercentage}%;">
+		... with <b>fewer than 4 photos,<br/>
+		<a href="/submit.php">add yours now!</a></b>
 	</div>
 </div>
 
-<br style="clear:both;"/><br/>
+<small><br style="clear:both"/><br/></small>
 <div class="linksbox">
 <h3>Further Statistics</h3>
 | <b><a href="/statistics.php">More Numbers...</a></b> | <a href="/statistics.php#more">More Pages...</a> | 
