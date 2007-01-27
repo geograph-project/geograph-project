@@ -1066,6 +1066,7 @@ update loc_adm1 set country='N' where name='Omagh';
 update loc_adm1 set country='N' where name='Strabane';
 
 
+
 SELECT country, count( * ) c
 FROM gridimage gi
 INNER JOIN os_gaz g ON ( seq +1000000 = placename_id ) 
@@ -1075,10 +1076,14 @@ GROUP BY country;
 
 SELECT country, count( * ) c
 FROM gridimage gi
-INNER JOIN loc_placenames p ON ( p.id +1000000 = placename_id ) 
+INNER JOIN loc_placenames p ON ( p.id = placename_id ) 
 INNER JOIN loc_adm1 a ON ( a.adm1 = p.adm1 ) 
 WHERE placename_id >0 
 AND placename_id <900000 
 GROUP BY country;
+
+
+update loc_adm1 set reference_index = 2 where country = 'N';
+
 
 
