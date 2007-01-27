@@ -38,14 +38,15 @@ $conv = new Conversions();
 
 	//this takes a long time, so we output a header first of all
 	$smarty->display('_std_begin.tpl');
-	
-	
+	if (isset($_POST['crit']))
+		$crit = $_POST['crit'];
+	else 
+		$crit = "placename_id < 1000000";
 ?>
 <h2>gridimage.placename_id Rebuild Tool</h2>
 <form action="buildplacename_id.php" method="post">
-<input type="checkbox" name="firsts"/> Only do firsts<br/>
-<input type="checkbox" name="gb"/> Only GB firsts not done yet<br/>
-Start: <input type="text" name="start"/> <br/>
+select * from gridimage gi where <input type="text" name="crit" size="60" value="<? echo $crit; ?>"/><br/>
+(if reference gs will join gridsquare gs)<br/>
 <input type="submit" name="go" value="Start">
 </form>
 
@@ -62,17 +63,19 @@ if (isset($_POST['go']))
 		 
 	$count=0;
 	
-	if (!empty($_POST['start'])) {
+	$limit  = '';
+	if (!empty($_POST['start']))
 		$limit = " LIMIT {$_POST['start']},99999999";
-	} 
+
+	$join = '';
+	if (preg_match('/\bgs\b/',$_POST['crit']))
+		$join .= " inner join gridsquare gs using (gridsquare_id)";
+	if (preg_match('/\bu\b/',$_POST['crit']))
+		$join .= " inner join user u using (user_id)";
 	
-	if (isset($_POST['gb'])) {
-		$recordSet = &$db->Execute("select * from gridimage inner join gridsquare using(gridsquare_id) where moderation_status = 'geograph' and ftf = 1 and reference_index = 1 and placename_id < 1000000 $limit");
-	} elseif (isset($_POST['firsts'])) {
-		$recordSet = &$db->Execute("select * from gridimage where moderation_status = 'geograph' and ftf = 1 $limit");
-	} else {
-		$recordSet = &$db->Execute("select * from gridimage $limit");
-	}
+
+	$recordSet = &$db->Execute("select * from gridimage $join where {$_POST['crit']} $limit");
+	
 	
 	while (!$recordSet->EOF) 
 	{
@@ -96,6 +99,16 @@ if (isset($_POST['go']))
 		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 		
 		if ($CONF['use_gazetteer'] == 'OS' && $square->reference_index == 1) {
+			$e2 = (floor($square->nateastings/1000) * 1000) + 500;
+			$n2 = (floor($square->natnorthings/1000) * 1000) + 500;
+		
+			$left=$e2-$radius;
+			$right=$e2+$radius;
+			$top=$n2-$radius;
+			$bottom=$n2+$radius;
+
+			$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+			
 			$places =& $db->GetRow("select
 					(seq + 1000000) as pid,
 					power(east-{$square->nateastings},2)+power(north-{$square->natnorthings},2) as distance

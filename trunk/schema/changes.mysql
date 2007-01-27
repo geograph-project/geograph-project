@@ -818,3 +818,267 @@ UPDATE gridimage SET `viewpoint_grlen` = '6' WHERE viewpoint_eastings > 0 AND vi
 UPDATE gridimage SET `viewpoint_grlen` = '4' WHERE viewpoint_eastings > 0 AND viewpoint_eastings mod 1000 = 0 AND viewpoint_northings MOD 1000 = 0;
 
 SELECT `viewpoint_grlen` , viewpoint_eastings, viewpoint_northings, count(*) FROM gridimage GROUP BY `viewpoint_grlen`;
+
+
+ALTER TABLE `os_gaz_county` ADD `country` VARCHAR( 1 ) NOT NULL ;
+ALTER TABLE `os_gaz_county` ADD PRIMARY KEY ( `name` );
+
+
+update os_gaz_county set country='E' where name='Isles of Scilly';
+update os_gaz_county set country='E' where name='City of Plymouth';
+update os_gaz_county set country='E' where name='Cornwall';
+update os_gaz_county set country='E' where name='Torbay';
+update os_gaz_county set country='E' where name='Isle of Wight';
+update os_gaz_county set country='E' where name='Bournemouth';
+update os_gaz_county set country='E' where name='Poole';
+update os_gaz_county set country='E' where name='Devon';
+update os_gaz_county set country='E' where name='Dorset';
+update os_gaz_county set country='E' where name='City of Portsmouth';
+update os_gaz_county set country='E' where name='City of Brighton and Hove';
+update os_gaz_county set country='E' where name='City of Southampton';
+update os_gaz_county set country='E' where name='East Sussex';
+update os_gaz_county set country='E' where name='West Sussex';
+update os_gaz_county set country='E' where name='Hampshire';
+update os_gaz_county set country='E' where name='Somerset';
+update os_gaz_county set country='E' where name='Surrey';
+update os_gaz_county set country='E' where name='Kent';
+update os_gaz_county set country='E' where name='Wiltshire';
+update os_gaz_county set country='E' where name='Bath and North East Somerset';
+update os_gaz_county set country='E' where name='Croydon';
+update os_gaz_county set country='E' where name='Sutton';
+update os_gaz_county set country='E' where name='Bromley';
+update os_gaz_county set country='E' where name='North Somerset';
+update os_gaz_county set country='E' where name='Kingston upon Thames';
+update os_gaz_county set country='E' where name='Bracknell Forest';
+update os_gaz_county set country='E' where name='Merton';
+update os_gaz_county set country='E' where name='Wokingham';
+update os_gaz_county set country='E' where name='Medway';
+update os_gaz_county set country='E' where name='West Berkshire';
+update os_gaz_county set country='W' where name='The Vale of Glamorgan';
+update os_gaz_county set country='E' where name='Richmond upon Thames';
+update os_gaz_county set country='E' where name='Reading';
+update os_gaz_county set country='E' where name='Lewisham';
+update os_gaz_county set country='E' where name='City of Bristol';
+update os_gaz_county set country='E' where name='Lambeth';
+update os_gaz_county set country='E' where name='Wandsworth';
+update os_gaz_county set country='E' where name='Bexley';
+update os_gaz_county set country='E' where name='Hounslow';
+update os_gaz_county set country='E' where name='Windsor and Maidenhead';
+update os_gaz_county set country='E' where name='Greenwich';
+update os_gaz_county set country='E' where name='Southwark';
+update os_gaz_county set country='E' where name='Hammersmith &Fulham';
+update os_gaz_county set country='W' where name='Cardiff';
+update os_gaz_county set country='E' where name='Royal Borough of Kensington & Chelsea';
+update os_gaz_county set country='E' where name='Slough';
+update os_gaz_county set country='E' where name='City of Westminster';
+update os_gaz_county set country='E' where name='City of London';
+update os_gaz_county set country='E' where name='Tower Hamlets';
+update os_gaz_county set country='E' where name='Ealing';
+update os_gaz_county set country='E' where name='Thurrock';
+update os_gaz_county set country='E' where name='Newham';
+update os_gaz_county set country='E' where name='South Gloucestershire';
+update os_gaz_county set country='E' where name='Islington';
+update os_gaz_county set country='E' where name='Camden';
+update os_gaz_county set country='E' where name='Hillingdon';
+update os_gaz_county set country='W' where name='Bridgend';
+update os_gaz_county set country='E' where name='Southend-on-Sea';
+update os_gaz_county set country='E' where name='Hackney';
+update os_gaz_county set country='E' where name='Brent';
+update os_gaz_county set country='E' where name='Swindon';
+update os_gaz_county set country='E' where name='Barking & Dagenham';
+update os_gaz_county set country='E' where name='Havering';
+update os_gaz_county set country='W' where name='Newport';
+update os_gaz_county set country='E' where name='Haringey';
+update os_gaz_county set country='E' where name='Redbridge';
+update os_gaz_county set country='E' where name='Harrow';
+update os_gaz_county set country='E' where name='Waltham Forest';
+update os_gaz_county set country='E' where name='Barnet';
+update os_gaz_county set country='W' where name='Rhondda,Cynon,Taff';
+update os_gaz_county set country='W' where name='Swansea';
+update os_gaz_county set country='W' where name='Caerphilly';
+update os_gaz_county set country='E' where name='Enfield';
+update os_gaz_county set country='W' where name='Neath Port Talbot';
+update os_gaz_county set country='W' where name='Torfaen';
+update os_gaz_county set country='W' where name='Merthyr Tydfil';
+update os_gaz_county set country='E' where name='Oxfordshire';
+update os_gaz_county set country='W' where name='Monmouthshire';
+update os_gaz_county set country='W' where name='Blaenau Gwent';
+update os_gaz_county set country='E' where name='Buckinghamshire';
+update os_gaz_county set country='E' where name='Gloucestershire';
+update os_gaz_county set country='E' where name='Hertfordshire';
+update os_gaz_county set country='E' where name='Essex';
+update os_gaz_county set country='W' where name='Pembrokeshire';
+update os_gaz_county set country='E' where name='Luton';
+update os_gaz_county set country='W' where name='Carmarthenshire';
+update os_gaz_county set country='E' where name='Bedfordshire';
+update os_gaz_county set country='E' where name='Milton Keynes';
+update os_gaz_county set country='E' where name='Herefordshire';
+update os_gaz_county set country='E' where name='Worcestershire';
+update os_gaz_county set country='E' where name='Suffolk';
+update os_gaz_county set country='W' where name='Ceredigion';
+update os_gaz_county set country='E' where name='Northamptonshire';
+update os_gaz_county set country='E' where name='Warwickshire';
+update os_gaz_county set country='W' where name='Powys';
+update os_gaz_county set country='E' where name='Cambridgeshire';
+update os_gaz_county set country='E' where name='Solihull';
+update os_gaz_county set country='E' where name='Coventry';
+update os_gaz_county set country='E' where name='Dudley';
+update os_gaz_county set country='E' where name='Birmingham';
+update os_gaz_county set country='E' where name='Sandwell';
+update os_gaz_county set country='E' where name='City of Wolverhampton';
+update os_gaz_county set country='E' where name='Walsall';
+update os_gaz_county set country='E' where name='City of Peterborough';
+update os_gaz_county set country='E' where name='Shropshire';
+update os_gaz_county set country='E' where name='City of Leicester';
+update os_gaz_county set country='E' where name='Rutland';
+update os_gaz_county set country='E' where name='Leicestershire';
+update os_gaz_county set country='E' where name='Norfolk';
+update os_gaz_county set country='E' where name='Telford and Wrekin';
+update os_gaz_county set country='E' where name='Staffordshire';
+update os_gaz_county set country='W' where name='Gwynedd';
+update os_gaz_county set country='E' where name='City of Derby';
+update os_gaz_county set country='E' where name='City of Nottingham';
+update os_gaz_county set country='W' where name='Wrexham';
+update os_gaz_county set country='E' where name='City of Stoke-on-Trent';
+update os_gaz_county set country='W' where name='Denbighshire';
+update os_gaz_county set country='E' where name='Nottinghamshire';
+update os_gaz_county set country='E' where name='Lincolnshire';
+update os_gaz_county set country='W' where name='Conwy';
+update os_gaz_county set country='E' where name='Derbyshire';
+update os_gaz_county set country='E' where name='Cheshire';
+update os_gaz_county set country='W' where name='Flintshire';
+update os_gaz_county set country='E' where name='Halton';
+update os_gaz_county set country='W' where name='Isle of Anglesey';
+update os_gaz_county set country='E' where name='Wirral';
+update os_gaz_county set country='E' where name='Stockport';
+update os_gaz_county set country='E' where name='Warrington';
+update os_gaz_county set country='E' where name='Liverpool';
+update os_gaz_county set country='E' where name='Sheffield';
+update os_gaz_county set country='E' where name='Rotherham';
+update os_gaz_county set country='E' where name='Trafford';
+update os_gaz_county set country='E' where name='Knowsley';
+update os_gaz_county set country='E' where name='St Helens';
+update os_gaz_county set country='E' where name='Manchester';
+update os_gaz_county set country='E' where name='Tameside';
+update os_gaz_county set country='E' where name='Salford';
+update os_gaz_county set country='E' where name='Wigan';
+update os_gaz_county set country='E' where name='Barnsley';
+update os_gaz_county set country='E' where name='Doncaster';
+update os_gaz_county set country='E' where name='North East Lincolnshire';
+update os_gaz_county set country='E' where name='Oldham';
+update os_gaz_county set country='E' where name='Sefton';
+update os_gaz_county set country='X' where name='XXXXXXXX';
+update os_gaz_county set country='E' where name='Bolton';
+update os_gaz_county set country='E' where name='Bury';
+update os_gaz_county set country='E' where name='North Lincolnshire';
+update os_gaz_county set country='E' where name='Rochdale';
+update os_gaz_county set country='E' where name='Kirklees';
+update os_gaz_county set country='E' where name='Wakefield';
+update os_gaz_county set country='E' where name='Blackburn with Darwen';
+update os_gaz_county set country='E' where name='Calderdale';
+update os_gaz_county set country='E' where name='City of Kingston upon Hull';
+update os_gaz_county set country='E' where name='Blackpool';
+update os_gaz_county set country='E' where name='Leeds';
+update os_gaz_county set country='E' where name='Bradford';
+update os_gaz_county set country='E' where name='Lancashire';
+update os_gaz_county set country='E' where name='East Riding of Yorkshire';
+update os_gaz_county set country='E' where name='York';
+update os_gaz_county set country='E' where name='North Yorkshire';
+update os_gaz_county set country='M' where name='Isle of Man';
+update os_gaz_county set country='E' where name='Middlesbrough';
+update os_gaz_county set country='E' where name='Darlington';
+update os_gaz_county set country='E' where name='Stockton on Tees';
+update os_gaz_county set country='E' where name='Redcar & Cleveland';
+update os_gaz_county set country='E' where name='Cumbria';
+update os_gaz_county set country='E' where name='Hartlepool';
+update os_gaz_county set country='E' where name='Durham';
+update os_gaz_county set country='E' where name='Sunderland';
+update os_gaz_county set country='E' where name='Gateshead';
+update os_gaz_county set country='E' where name='South Tyneside';
+update os_gaz_county set country='E' where name='Newcastle upon Tyne';
+update os_gaz_county set country='E' where name='North Tyneside';
+update os_gaz_county set country='S' where name='Dumfries and Galloway';
+update os_gaz_county set country='E' where name='Northumberland';
+update os_gaz_county set country='S' where name='South Ayrshire';
+update os_gaz_county set country='S' where name='East Ayrshire';
+update os_gaz_county set country='S' where name='Scottish Borders';
+update os_gaz_county set country='S' where name='South Lanarkshire';
+update os_gaz_county set country='S' where name='North Ayrshire';
+update os_gaz_county set country='S' where name='East Renfrewshire';
+update os_gaz_county set country='S' where name='Midlothian';
+update os_gaz_county set country='S' where name='Renfrewshire';
+update os_gaz_county set country='S' where name='Glasgow City';
+update os_gaz_county set country='S' where name='North Lanarkshire';
+update os_gaz_county set country='S' where name='West Lothian';
+update os_gaz_county set country='S' where name='Inverclyde';
+update os_gaz_county set country='S' where name='City of Edinburgh';
+update os_gaz_county set country='S' where name='East Lothian';
+update os_gaz_county set country='S' where name='East Dunbartonshire';
+update os_gaz_county set country='S' where name='Falkirk';
+update os_gaz_county set country='S' where name='West Dunbartonshire';
+update os_gaz_county set country='S' where name='Clackmannanshire';
+update os_gaz_county set country='S' where name='Argyll and Bute';
+update os_gaz_county set country='S' where name='Fife';
+update os_gaz_county set country='S' where name='Stirling';
+update os_gaz_county set country='S' where name='Dundee City';
+update os_gaz_county set country='S' where name='Perth and Kinross';
+update os_gaz_county set country='S' where name='Angus';
+update os_gaz_county set country='S' where name='Aberdeen City';
+update os_gaz_county set country='S' where name='Aberdeenshire';
+update os_gaz_county set country='S' where name='Moray';
+update os_gaz_county set country='S' where name='Highland';
+update os_gaz_county set country='S' where name='Na h-Eileanan an Iar';
+update os_gaz_county set country='S' where name='Orkney Islands';
+update os_gaz_county set country='S' where name='Shetland Islands';
+
+
+
+ALTER TABLE `loc_adm1` ADD `country` VARCHAR( 1 ) NOT NULL ;
+
+update loc_adm1 set country='G' where reference_index = 1;
+update loc_adm1 set country='I' where reference_index = 2;
+
+update loc_adm1 set country='N' where name='Antrim';
+update loc_adm1 set country='N' where name='Ards';
+update loc_adm1 set country='N' where name='Armagh';
+update loc_adm1 set country='N' where name='Ballymena';
+update loc_adm1 set country='N' where name='Ballymoney';
+update loc_adm1 set country='N' where name='Banbridge';
+update loc_adm1 set country='N' where name='Belfast';
+update loc_adm1 set country='N' where name='Carrickfergus';
+update loc_adm1 set country='N' where name='Castlereagh';
+update loc_adm1 set country='N' where name='Coleraine';
+update loc_adm1 set country='N' where name='Cookstown';
+update loc_adm1 set country='N' where name='Craigavon';
+update loc_adm1 set country='N' where name='Derry';
+update loc_adm1 set country='N' where name='Down';
+update loc_adm1 set country='N' where name='Dungannon';
+update loc_adm1 set country='N' where name='Fermanagh';
+update loc_adm1 set country='N' where name='Larne';
+update loc_adm1 set country='N' where name='Limavady';
+update loc_adm1 set country='N' where name='Lisburn';
+update loc_adm1 set country='N' where name='Magherafelt';
+update loc_adm1 set country='N' where name='Moyle';
+update loc_adm1 set country='N' where name='Newry and Mourne';
+update loc_adm1 set country='N' where name='Newtownabbey';
+update loc_adm1 set country='N' where name='North Down';
+update loc_adm1 set country='N' where name='Omagh';
+update loc_adm1 set country='N' where name='Strabane';
+
+
+SELECT country, count( * ) c
+FROM gridimage gi
+INNER JOIN os_gaz g ON ( seq +1000000 = placename_id ) 
+INNER JOIN os_gaz_county c ON ( c.name = full_county ) 
+WHERE placename_id >1000000
+GROUP BY country;
+
+SELECT country, count( * ) c
+FROM gridimage gi
+INNER JOIN loc_placenames p ON ( p.id +1000000 = placename_id ) 
+INNER JOIN loc_adm1 a ON ( a.adm1 = p.adm1 ) 
+WHERE placename_id >0 
+AND placename_id <900000 
+GROUP BY country;
+
+
