@@ -8,13 +8,11 @@
 	position:relative; float:left; background-color:#FF0000; border-right:1px solid blue
 }
 .righttextbox {
-	position:relative; float:right; text-align:right; color:#000066; padding-right: 5px; padding-top:10px; padding-bottom:10px; 
+	position:relative; float:right; text-align:right; color:#000066; padding-right: 5px; padding-top:10px; padding-bottom:10px
 }
-
 .greenbar .redbar .righttextbox {
 	color: white;
 }
-
 .lefttextbox {
 	position:relative; float:left; color:#000066; padding-left: 5px; padding-top:10px; padding-bottom:10px; 
 }
@@ -23,51 +21,28 @@
 }
 
 .statsbox div {
-	position:relative; width:150px; background-color:#000066; color:white; float:left; padding:10px;
-	margin-right:20px; margin-bottom:20px; text-align:center
+	position:relative; width:150px; background-color:#000066; color:white; float:left; padding:10px; margin-right:20px; margin-bottom:20px; text-align:center
 }
-
 .recentbox {
-	position:relative; width:25%; float:left; background-color:#dddddd;
-	padding:10px;
+	position:relative; width:25%; float:left; background-color:#dddddd; padding:10px;
 }
-
 .recentbox h4 {
-	font-size:0.9em; 
-	text-align: center;
-	margin-bottom:0px;
+	font-size:0.9em; text-align: center; margin-bottom:0px; margin-top:0px; 
 }
-
 .recentbox .halvebox {
 	position:relative; width:45%; float:left; padding:3px;
 }
-
 .finalbox {
-	position:relative; width:100%; background-color:#000066; color:white; float:left;
-	text-align:center; 
-	padding-top:10px;
-	padding-bottom:10px;
-	line-height:1.5em;
-	font-size:1.1em;
+	position:relative; width:100%; background-color:#000066; color:white; float:left; text-align:center; padding-top:10px; padding-bottom:10px; line-height:1.5em; font-size:1.1em;
 }
-
 .finalbox A {
 	color: red;
 }
-
 .linksbox {
-	position:relative; width:100%; background-color:yellow;
-	float:left;
-	text-align:center; 
-
-	padding-top:10px;
-	padding-bottom:10px;
+	position:relative; width:100%; background-color:yellow; float:left; text-align:center; padding-top:10px; padding-bottom:10px;
 }
-
 .linksbox h3 {
-	margin-top:0px;
-	text-align: center;
-	margin-bottom:0px;
+	margin-top:0px; text-align: center; margin-bottom:0px;
 }
 </style>{/literal}
 
@@ -104,23 +79,19 @@
 			<b class="nowrap">{$stats.users|thousends}</b><br/>
 			contributors
 		</div>
-
 		<div> 
 			<b class="nowrap">{$stats.images|thousends}</b><br/>
 			images
 		</div>
-
 		<div> 
 			<b class="nowrap">{$stats.points|thousends}</b><br/>
 			points awarded
 		</div>
-
 		<div> 
 			<b class="nowrap">{$stats.persquare}</b><br/>
 			average images<br/>
 			per square
 		</div>
-
 		<br style="clear:both"/>
 	</div>
 
