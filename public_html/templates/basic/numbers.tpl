@@ -1,3 +1,4 @@
+{assign var="page_title" value="Progress So far..."}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
@@ -125,7 +126,7 @@
 <div style="position:relative; width:100%">
 	<div class="finalbox" style="width:{$stats.fewpercentage}%;">
 		<b class="nowrap">{$stats.fewphotos|thousends}</b>
-		 photographed squares</b>... <br/> 
+		 photographed<br/> squares</b>... <br/> 
 	</div>
 	<div class="finalbox2" style="width:{$stats.negfewpercentage}%;">
 		... with <b>fewer than 4 photos,<br/>
