@@ -54,6 +54,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	$stats += $db->cacheGetRow(3600,"select count(*) as points from gridimage where ftf = 1 and moderation_status = 'geograph'");
 	
 	$stats['percentage'] = sprintf("%.1f",$stats['squares']/$stats['total']*100);
+	$stats['fewpercentage'] = sprintf("%.1f",$stats['fewphotos']/$stats['total']*100);
+	$stats['negfewpercentage'] = sprintf("%.1f",100-$stats['fewpercentage']);
 	$stats['persquare'] = sprintf("%.1f",$stats['images']/$stats['squares']);
 	$stats['peruser'] = sprintf("%.1f",$stats['images']/$stats['users']);
 	
