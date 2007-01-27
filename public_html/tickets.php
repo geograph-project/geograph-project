@@ -72,7 +72,7 @@ $closedtickets=$db->GetAll(
 $smarty->assign_by_ref('closedtickets', $closedtickets);
 
 
-$template = ($_GET['sidebar'])?'tickets_sidebar.tpl':'tickets.tpl';
+$template = (!empty($_GET['sidebar']))?'tickets_sidebar.tpl':'tickets.tpl';
 $smarty->display($template);
 
 	
