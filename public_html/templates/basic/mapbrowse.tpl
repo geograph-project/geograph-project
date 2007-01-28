@@ -1,6 +1,20 @@
 {assign var="page_title" value="Map Browsing :: $gridref"}
 {include file="_std_begin.tpl"}
-
+{literal}<style type="text/css">
+table.navtable {
+	margin-top:5px; line-height:0px
+}
+.navtable img, .navtable a {
+	display:block;
+}
+.navtable td.textcell {
+	background:#6476fc; font-size:0.8em; text-align:center;
+}
+.navtable td.textcell a {
+	display: inline;
+}
+</style>{/literal}
+ 
     
  
 {*begin containing div for main map*}
@@ -130,7 +144,7 @@
 </div>
 
 
-<table style="margin-top:5px;line-height:0px" border="0" cellpadding="0" cellspacing="0" width="143">
+<table class="navtable" border="0" cellpadding="0" cellspacing="0" width="143">
 
   <tr><!-- Shim row, height 1. -->
    <td><img alt="" src="/templates/basic/mapnav/shim.gif" width="12" height="1"/></td>
@@ -179,7 +193,7 @@
   </tr>
 
   <tr><!-- row 6 -->
-   <td colspan="4" style="background:#6476fc;font-size:0.8em;text-align:center;" align="center">
+   <td colspan="4" class="textcell" align="center">
    
    <div style="line-height:1em;padding-top:2px;">
    {if $hectad}</b>
