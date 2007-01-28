@@ -29,11 +29,11 @@
 {/dynamic}
 
 <div style="position:relative;float:right; border:1px solid silver">
-<form method="get" action="mapfixer.php" style="display:inline">
+<form method="get" action="/admin/mapfixer.php" style="display:inline">
 <label for="gridref">Grid Reference:</label><br/>
-<input type="text" size="6" name="gridref" id="gridref" value="{$gridref|escape:'html'}">
+<input type="text" size="6" name="gridref" id="gridref" value="{$gridref|escape:'html'}"/>
 <span class="formerror">{$gridref_error}</span>
-<input type="submit" name="show" value="Check">
+<input type="submit" name="show" value="Check"/>
 </form>
 </div>
 
@@ -62,6 +62,22 @@ corrected<br/> <b>{if $gridsquares_sea.1 || $gridsquares_sea.2}[GB:{$gridsquares
 
 <h2>Daily Submission Rate</h2>
 <img src="http://www.geograph.org.uk/img/rate.png" width="480" height="161"/>
+
+
+<div style="position:relative;border:1px solid silver">
+<form method="get" action="/search.php" style="display:inline">
+<b>Remoderate a Square</b><br/>
+<label for="gridref">Grid Reference:</label><br/>
+<input type="text" size="6" name="gridref" id="gridref" value="{$gridref|escape:'html'}"/>
+<span class="formerror">{$gridref_error}</span>
+<input type="hidden" name="distance" value="1"/>
+<input type="hidden" name="orderby" value="submitted"/>
+<input type="hidden" name="displayclass" value="moremod"/>
+<input type="hidden" name="resultsperpage" value="100"/>
+<input type="submit" name="do" value="Moderate"/>
+</form>
+</div>
+
 
 {if $is_admin}
 <br/><br/>
