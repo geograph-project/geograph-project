@@ -31,7 +31,6 @@
 		<small style="font-size:0.7em;border-top:1px solid lightgrey; background-color:#eeeeee; margin-top:7px;width:500px;">Links: <a href="/kml.php?id={$image->gridimage_id}">Google Earth</a> <a href="/ecard.php?image={$image->gridimage_id}">eCard</a> <a href="/discuss/index.php?gridref={$image->grid_reference}">Discuss</a> <a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact Photographer</a> <a href="/editimage.php?id={$image->gridimage_id}">Edit</a> [<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>]</small>
 		  {if $is_mod}
 			  <form method="post">
-			  <h2 class="titlebar">Moderation</h2>
 			  <p><input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey"{/if}/>
 			  <input class="accept" type="button" id="accept" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey"{/if}/>
 			  <input class="reject" type="button" id="reject" value="Reject" onclick="moderateImage({$image->gridimage_id}, 'rejected')"/>
