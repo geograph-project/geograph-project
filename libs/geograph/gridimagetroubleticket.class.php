@@ -396,7 +396,7 @@ class GridImageTroubleTicket
 		
 		//write the change records
 		$statuscount=array("pending"=>0, "immediate"=>0);
-		if (count($this->changes) 
+		if (count($this->changes)) 
 			foreach($this->changes as $change)
 			{
 				if ($change['gridimage_ticket_item_id'])
