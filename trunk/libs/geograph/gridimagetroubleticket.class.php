@@ -396,34 +396,35 @@ class GridImageTroubleTicket
 		
 		//write the change records
 		$statuscount=array("pending"=>0, "immediate"=>0);
-		foreach($this->changes as $change)
-		{
-			if ($change['gridimage_ticket_item_id'])
+		if (count($this->changes) 
+			foreach($this->changes as $change)
 			{
-				//we're updating	
-				$sql=sprintf("update gridimage_ticket_item set status='%s', approver_id='%d' where gridimage_ticket_item_id=%d",
-					$change["status"],
-					$change["approver_id"],
-					$change['gridimage_ticket_item_id']);
-					
-					
+				if ($change['gridimage_ticket_item_id'])
+				{
+					//we're updating	
+					$sql=sprintf("update gridimage_ticket_item set status='%s', approver_id='%d' where gridimage_ticket_item_id=%d",
+						$change["status"],
+						$change["approver_id"],
+						$change['gridimage_ticket_item_id']);
+
+
+				}
+				else
+				{
+					$sql=sprintf("insert into gridimage_ticket_item(gridimage_ticket_id, field, oldvalue, newvalue, status, approver_id) ".
+						"values(%d, '%s', '%s', '%s', '%s', '%d')",
+						$this->gridimage_ticket_id,
+						$change["field"],
+						mysql_escape_string($change["oldvalue"]),
+						mysql_escape_string($change["newvalue"]),
+						$change["status"],
+						$change["approver_id"]);
+				}
+
+				$db->Execute($sql);
+
+				$statuscount[$change["status"]]++;
 			}
-			else
-			{
-				$sql=sprintf("insert into gridimage_ticket_item(gridimage_ticket_id, field, oldvalue, newvalue, status, approver_id) ".
-					"values(%d, '%s', '%s', '%s', '%s', '%d')",
-					$this->gridimage_ticket_id,
-					$change["field"],
-					mysql_escape_string($change["oldvalue"]),
-					mysql_escape_string($change["newvalue"]),
-					$change["status"],
-					$change["approver_id"]);
-			}
-			
-			$db->Execute($sql);
-			
-			$statuscount[$change["status"]]++;
-		}
 		
 		//should we close the ticket?
 		if (is_null($ticket_status))

@@ -25,6 +25,7 @@ require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
+require_once('geograph/gridimagetroubleticket.class.php');
 
 init_session();
 
@@ -69,15 +70,12 @@ if (isset($_POST['gridimage_id']))
 				
 				$db->Query("update gridimage set user_status = '$user_status' where gridimage_id={$gridimage_id}");
 
-				//clear caches involving the image
-				$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_0");
-				$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_1");
-				$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_0");
-				$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_1");
 
-				//clear the users profile cache
-				#$smarty->clear_cache('profile.tpl', "{$image->user_id}_0");
-				#$smarty->clear_cache('profile.tpl', "{$image->user_id}_1");
+				$ticket=new GridImageTroubleTicket();
+				$ticket->setSuggester($USER->user_id);				
+				$ticket->setImage($gridimage_id);
+				$ticket->setNotes("Auto-generated ticket, as a result of Self Moderation. Please leave a comment to explain the reason for suggesting '$status'.");
+				$status=$ticket->commit('pending');
 				
 				
 				header("Location:/editimage.php?id={$gridimage_id}");
