@@ -121,6 +121,11 @@ class GridImageTroubleTicket
 	var $type;
 
 	/**
+	* notify
+	*/
+	var $notify;
+
+	/**
 	* suggested time
 	*/
 	var $suggested;
@@ -201,6 +206,7 @@ class GridImageTroubleTicket
 	 	$this->status="pending";
 	 	$this->notes="";
 	 	$this->type='normal';
+	 	$this->notify='suggestor';
 	 	
 	}
 
@@ -240,6 +246,16 @@ class GridImageTroubleTicket
 		$this->type=$type;
 	}
 	
+	
+	/**
+	* set notify setting
+	* @access public
+	*/
+	function setNotify($notify)
+	{
+		$this->notify=$notify;
+	}
+
 	/**
 	* set moderator notes
 	* @access public
@@ -632,7 +648,7 @@ class GridImageTroubleTicket
 		
 		//associate this moderator with the ticket
 		$this->moderator_id=$user_id;
-		$db->Execute("update gridimage_ticket set status='open', moderator_id={$user_id} where gridimage_ticket_id={$this->gridimage_ticket_id}");
+		$db->Execute("update gridimage_ticket set status='open', moderator_id={$user_id},notify = '{$this->notify}' where gridimage_ticket_id={$this->gridimage_ticket_id}");
 		
 		$moderator=new GeographUser($user_id);
 		$comment.="\n\n".$moderator->realname."\nGeograph Moderator\n";
@@ -643,7 +659,14 @@ class GridImageTroubleTicket
 		$submitter=new GeographUser($image->user_id);
 		
 		$this->_sendMail($submitter->email, $msg);
-			
+		
+		if ($this->notify == 'suggestor' && $image->user_id != $this->user_id) {
+			//email comment to suggestor
+			$suggestor=new GeographUser($this->user_id);
+				
+			$this->_sendMail($suggestor->email, $msg);
+		}
+		
 	}
 	
 	/**
@@ -669,6 +692,15 @@ class GridImageTroubleTicket
 		//email comment to moderators
 		$msg =& $this->_buildEmail($comment);
 		$this->_sendModeratorMail($msg);
+	
+		if ($this->notify == 'suggestor' && $image->user_id != $this->user_id) {
+			$db->Execute("update gridimage_ticket set notify = '{$this->notify}' where gridimage_ticket_id={$this->gridimage_ticket_id}");
+			
+			//email comment to suggestor
+			$suggestor=new GeographUser($this->user_id);
+				
+			$this->_sendMail($suggestor->email, $msg);
+		}
 	}
 	
 	

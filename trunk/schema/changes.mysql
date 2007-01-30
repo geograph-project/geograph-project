@@ -1086,4 +1086,10 @@ GROUP BY country;
 update loc_adm1 set reference_index = 2 where country = 'N';
 
 
+ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','moremod') DEFAULT 'full' NOT NULL;
 
+
+
+ALTER TABLE `gridimage_ticket` ADD `notify` ENUM( '', 'suggestor' ) NOT NULL DEFAULT 'suggestor';
+#update current tickets to use the old default
+UPDATE `gridimage_ticket` SET notify = '';

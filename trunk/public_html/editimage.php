@@ -198,7 +198,10 @@ if (isset($_REQUEST['id']))
 			//definitely for this image?
 			if ($ticket->gridimage_id != $image->gridimage_id)
 				die("ticket/image mismatch");
-
+			
+			$ticket->setNotify((!empty($_POST['notify']))?preg_replace('/[^\w]+/','',$_POST['notify']):'');
+			
+			
 			//now lets do our thing depending on your permission level..
 			$comment=stripslashes($_POST['comment']);
 			if ($isadmin)
