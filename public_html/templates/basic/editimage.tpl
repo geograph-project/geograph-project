@@ -157,6 +157,10 @@
 	Updated {$ticket->updated|date_format:"%a, %e %b %Y at %H:%M"} | 
 	{/if}
 
+	{if $ticket->user_id eq $user->user_id}
+		You
+	{/if}
+	
 	Suggested {$ticket->suggested|date_format:"%a, %e %b %Y at %H:%M"} 
 	
 	<i>({$ticket->status})</i>
@@ -224,7 +228,7 @@
 	
 		
 		{if $ticket->comments}
-			{if $isadmin or $isowner}
+			{if $isadmin or $isowner or ($user->user_id eq $ticket->user_id && $ticket->notify eq 'suggestor')}
 				{foreach from=$ticket->comments item=comment}
 				<div class="ticketnote">
 					<div class="ticketnotehdr">{$comment.realname} {if $comment.moderator}(Moderator){/if} wrote on {$comment.added|date_format:"%a, %e %b %Y at %H:%M"}</div>
@@ -249,9 +253,13 @@
 	
 	{if ($isadmin or $isowner) and ($ticket->status ne "closed")}
 	<div class="ticketactions">
-		<textarea name="comment" rows="2" cols="50"></textarea><br/>
+		<textarea name="comment" rows="4" cols="70"></textarea><br/>
 		
 		<input type="submit" name="addcomment" value="Add comment"/>
+		{if $ticket->user_id ne $image->user_id}
+			<input type="checkbox" name="notify" value="suggestor" id="notify_suggestor" {if $ticket->notify=='suggestor'}checked{/if}/> <label for="notify_suggestor">Send {if $isadmin}{$ticket->suggester_name}{else}ticket suggestor{/if} this comment.</label>
+			&nbsp;&nbsp;&nbsp;
+		{/if}
 		{if $isadmin}
 		
 			{if $ticket->changes}
@@ -262,7 +270,7 @@
 
 			<input type="submit" name="close" value="Close ticket" onclick="autoDisable(this)"/>
 
-			{/if}
+			{/if} {$ticket->suggester_name} is notified.
 		{/if}
 		
 	</div>
@@ -434,14 +442,21 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 {if $error.updatenote}<br/><span class="formerror">{$error.updatenote}</span><br/>{/if}
 
 <table><tr><td>
-<textarea id="updatenote" name="updatenote" rows="4" cols="50">{$updatenote|escape:'html'}</textarea>
+<textarea id="updatenote" name="updatenote" rows="5" cols="60">{$updatenote|escape:'html'}</textarea>
 </td><td>
 
 <div style="float:left;font-size:0.7em;padding-left:5px;width:250px;">
-Please provide as much detail for the moderator 
-{if $user->user_id ne $image->user_id} and submitter{/if} about 
-any necessary change (if you know the details e.g. a corrected grid reference,
-then please enter directly into the boxes above)
+{if $user->user_id eq $image->user_id}
+	<b><span style="color:red">Please note</span>: A moderator will only 
+	see this comment if you are changing the subject gridsquare or if no 
+	changes are made. Otherwise the change(s) will be applied automatically 
+	and the ticket closed. (this comment is for later reference)</b>
+{else}
+	Please provide as much detail for the moderator 
+	{if $user->user_id ne $image->user_id} and submitter{/if} about 
+	any necessary change (if you know the details e.g. a corrected grid reference,
+	then please enter directly into the boxes above)
+{/if}
 </div>
 
 </td></tr></table>
