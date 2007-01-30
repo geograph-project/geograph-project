@@ -693,9 +693,9 @@ class GridImageTroubleTicket
 		$msg =& $this->_buildEmail($comment);
 		$this->_sendModeratorMail($msg);
 	
-		if ($this->notify == 'suggestor' && $image->user_id != $this->user_id) {
-			$db->Execute("update gridimage_ticket set notify = '{$this->notify}' where gridimage_ticket_id={$this->gridimage_ticket_id}");
+		$db->Execute("update gridimage_ticket set notify = '{$this->notify}' where gridimage_ticket_id={$this->gridimage_ticket_id}");
 			
+		if ($this->notify == 'suggestor' && $image->user_id != $this->user_id) {
 			//email comment to suggestor
 			$suggestor=new GeographUser($this->user_id);
 				
