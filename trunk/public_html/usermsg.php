@@ -131,8 +131,8 @@ if (isset($_POST['msg']) && !$throttle)
 			$smarty->assign('error', "<a href=\"/contact.php\">Please let us know</a>");
 		}
 		
-		if ($sendcopy)
-			if (!@mail($from_email, $subject, "Copy of message sent to {$recipient->realname}\n----------------------\n\n".$body, "From: $from_name <$from_email>")) 
+		if ($sendcopy) {
+			if (!@mail($from_email, $subject, "Copy of message sent to {$recipient->realname}\n----------------------\n\n".$body, "From: $from_name <$from_email>")) {
 				@mail($CONF['contact_email'], 
 					'Mail Error Report from '.$_SERVER['HTTP_HOST'],
 					"Original Subject: $subject\n".
