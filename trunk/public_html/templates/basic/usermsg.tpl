@@ -31,7 +31,10 @@
 		<label for="from_email">Your Email</label><br />
 		<input type="text" name="from_email" id="from_email" value="{$from_email|escape:'html'}"/>
 		<span class="formerror">{$errors.from_email}</span>
-
+		{if $user->registered}
+			&nbsp;&nbsp;&nbsp;<input type="checkbox" name="sendcopy" id="sendcopy" value="on" {if $sendcopy} checked="checked"{/if}/> <label for="sendcopy">Send myself a copy</label>
+		{/if}
+		
 		<br/><br/>
 		<label for="msg">Message</label><br />
 		<textarea rows="10" cols="60" name="msg" id="msg">{$msg|escape:'html'}</textarea>
