@@ -5,7 +5,7 @@
 
 <p>If you view an image and feel the coordinates or picture information
 is incorrect, you can suggest changes simply by clicking the 
-"report a problem" link when viewing the full size image.</p>
+"Suggest an update to picture details"/"Edit picture information" link when viewing the full size image.</p>
 
 <p>Read on for more details about what happens when you suggest a change</p>
 
