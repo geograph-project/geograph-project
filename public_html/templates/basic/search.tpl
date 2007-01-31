@@ -46,7 +46,7 @@
 {/if}
 {/dynamic}
 <li><a href="search.php?taken_endYear=1980&amp;do=1" title="View Historic Pictures">Taken Before 1980</a></li>
-<li><a href="search.php?i=342" title="Images in TQ Grid Square">Gridsquare TQ</a></li>
+<li><a href="search.php?i=199" title="Recent Images in Community Showcase">Community Showcase</a></li>
 <li><a href="search.php?reference_index=2&amp;do=1" title="Irish Pictures">Pictures of Ireland</a></li>
 </ul>
 </div>

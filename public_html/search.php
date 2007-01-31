@@ -588,7 +588,7 @@ if (isset($_GET['fav']) && $i) {
 		//list of a few image classes
 		$arr = $db->GetAssoc("select imageclass,concat(imageclass,' [',count(*),']') from gridimage_search
 			where length(imageclass)>0
-			group by imageclass order by rand() limit 5");
+			group by imageclass having count(*) > 15 order by rand() limit 5");
 		$smarty->assign_by_ref('imageclasslist',$arr);
 	}
 	if ($USER->registered) {
