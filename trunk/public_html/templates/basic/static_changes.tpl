@@ -19,7 +19,7 @@ take effect right away, with the exception of changing the grid reference.</p>
 and a moderator will be notified.
 When the moderator closes the ticket, you will receive an email.</p>
 
-<p>Similarly if you leave a comment to the moderators <i>without making any changes</i>, a "change ticket" is raised
+<p>Similarly if you leave a message to the moderators <i>without making any changes</i>, a ticket is raised
 and a moderator will be notified.</p>
 
 <p>In certain cases you can use the 'Image Self Moderation' section to suggest a status for an image, 
