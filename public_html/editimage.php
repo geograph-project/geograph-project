@@ -400,7 +400,7 @@ if (isset($_REQUEST['id']))
 				$ticket->updateField("use6fig", $image->use6fig, $use6fig, $moderated["use6fig"]);
 
 				//finalise the change ticket
-				$status=$ticket->commit();
+				$status=$ticket->commit((!empty($_REQUEST['mod']) && $_REQUEST['mod'] == 'pending')?'pending':null);
 
 
 				//clear any caches involving this photo

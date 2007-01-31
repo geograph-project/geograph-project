@@ -41,10 +41,10 @@
   {/if}
 </div>
 {if $showfull}
-  	{if ($user->user_id eq $image->user_id) and $image->moderation_status != 'rejected'}
+  	{if $isowner and $image->moderation_status eq 'pending'}
   	  <form action="/moderation.php" method="post">
   	  <input type="hidden" name="gridimage_id" value="{$image->gridimage_id}"/>
-  	  <h2 class="titlebar">Image Self Moderation</h2>
+  	  <h2 class="titlebar">Moderation Suggestion</h2>
   	  <p>I suggest this image should become:
   	  {if ($image->moderation_status == 'pending' || $image->moderation_status == 'geograph') && $image->user_status == 'accepted'}
   	  <input class="accept" type="submit" id="geograph" name="user_status" value="Geograph"/>
@@ -58,7 +58,7 @@
   	  {if $image->user_status}
 	  <br/><small>[Current suggestion: {if $image->user_status eq "accepted"}supplemental{else}{$image->user_status}{/if}</small>]
 	  {/if}</p>
-  	  
+  	  <p style="font-size:0.8em">(Click one of these buttons to leave a hint to the moderator when they moderate your image)</p>
   	  </form>
 	{/if}
 <br/>
@@ -446,17 +446,10 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 </td><td>
 
 <div style="float:left;font-size:0.7em;padding-left:5px;width:250px;">
-{if $user->user_id eq $image->user_id}
-	<b><span style="color:red">Please note</span>: A moderator will only 
-	see this comment if you are changing the subject gridsquare or if no 
-	changes are made. Otherwise the change(s) will be applied automatically 
-	and the ticket closed. (this comment is for later reference)</b>
-{else}
 	Please provide as much detail for the moderator 
-	{if $user->user_id ne $image->user_id} and submitter{/if} about 
+	{if !$isowner} and submitter{/if} about 
 	any necessary change (if you know the details e.g. a corrected grid reference,
 	then please enter directly into the boxes above)
-{/if}
 </div>
 
 </td></tr></table>
@@ -474,6 +467,12 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 <input type="radio" name="mod" value="apply" id="mod_apply"/> <label for="mod_apply">Apply the changes immediately, and close the ticket. (Contributor is notified)</label></div>
 
 <br style="clear:both"/>
+{else}
+	{if $isowner} 
+	<div>
+		<input type="checkbox" name="mod" value="pending" id="mod_pending"/> <label for="mod_pending">Bring this issue to the attention of a moderator (regardless of changes made).</label><br/><br/>
+	</div>
+	{/if}
 {/if}
 
 <input type="submit" name="save" value="Submit Changes" onclick="autoDisable(this)"/>
