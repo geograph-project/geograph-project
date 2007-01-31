@@ -597,11 +597,13 @@ class SearchCriteria_Placename extends SearchCriteria
 				$sql_where  = '';
 				if (strpos($placename,' ') !== FALSE) {
 					$county = $db->getOne("select `name` from os_gaz_county where $qplacename LIKE CONCAT('%',name)");
-					$qcount = $db->Quote($county);
-					$sql_where = " and full_county = $qcount";
-					
-					$placename = preg_replace("/\s+$county/i",'',$placename);
-					$qplacename = $db->Quote($placename);
+					if (!empty($county)) {
+						$qcount = $db->Quote($county);
+						$sql_where = " and full_county = $qcount";
+
+						$placename = preg_replace("/\s+$county/i",'',$placename);
+						$qplacename = $db->Quote($placename);
+					}
 				} 
 				//todo need to 'union'  with other gazetterr! (as if one match in each then will no work!) 
 				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where def_nam=$qplacename $sql_where");
