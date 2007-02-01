@@ -116,8 +116,6 @@ Posted by <a href="/profile.php?u={$newsitem.user_id}">{$newsitem.realname}</a> 
        <a href="http://validator.w3.org/check/referer" title="check our xhtml standards compliance">XHTML</a>
        <span class="sep">|</span>
        <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://{$http_host}/templates/basic/css/basic.css" title="check our css standards compliance">CSS</a>
-       <span class="sep">|</span>
-       <a href="http://bobby.watchfire.com/bobby/bobbyServlet?URL=http%3A%2F%2F{$http_host}%2F&amp;output=Submit&amp;gl=sec508" title="check our accessibility standards compliance">Accessibility</a>
     </p>
     <p style="color:#777788;">Hosting supported by 
     {external title="click to visit the Fubra website" href="http://www.fubra.com/" text="Fubra"}

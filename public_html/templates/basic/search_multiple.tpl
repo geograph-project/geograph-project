@@ -26,7 +26,7 @@
 {if !$criteria->ismore}
 <br/>
 <input type="radio" name="{$multipleon}" value="{$criteria->searchq}?" id="domore">
-<label for="domore"><b>Place looking for not listed above? Try a more wider search.</b></label> <br/>		
+<label for="domore"><b>Place looking for not listed above? Try a wider search.</b></label> <br/>		
 {/if}
 
 {if $pos_realname}
