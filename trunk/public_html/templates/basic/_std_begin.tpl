@@ -8,7 +8,7 @@
 {if $meta_description}<meta name="description" content="{$meta_description|escape:'html'}" />
 {else}<meta name="description" content="Geograph British Isles is a web based project to collect and reference geographically representative images of every square kilometre of the British Isles."/>{/if}
 {if $lat && $long}<meta name="ICBM" content="{$lat}, {$long}"/>{/if}
-<meta name="DC.title" content="Geograph:: {$page_title|escape:'html'}"/>
+<meta name="DC.title" content="Geograph{if $page_title}:: {$page_title|escape:'html'}{/if}"/>
 {$extra_meta}
 <link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/basic.css?v={$javascript_version}" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
