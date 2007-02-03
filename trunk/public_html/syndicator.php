@@ -63,8 +63,11 @@ if (isset($_GET['text'])) {
 	$engine = new SearchEngineBuilder('#'); 
  	$_GET['i'] = $engine->buildSimpleQuery($_GET['q'],30,false,isset($_GET['u'])?$_GET['u']:0);
  	
+ 	if (!empty($engine->errormsg) && !empty($_GET['fatal'])) {
+ 		die('error: '.$engine->errormsg);
+ 	}
  	if (isset($engine->criteria) && $engine->criteria->is_multiple) {
- 		die('unable identify a unique location');
+ 		die('error: unable to identify a unique location');
  	}
 } elseif (false && !empty($_GET['u'])) {
 	//no need to use this now getImagesByUser works for lat/long
