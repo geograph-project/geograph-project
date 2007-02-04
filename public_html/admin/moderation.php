@@ -297,7 +297,7 @@ foreach ($images->images as $i => $image) {
 		//note $image DOESNT work non php4, must use $images->images[$i]
 		$images->images[$i]->getSubjectGridref(true);
 		//move the photographer into the center to match the same done for the subject
-		$correction = ($this-> viewpoint_grlen > 4)?0:500;
+		$correction = ($images->images[$i]->viewpoint_grlen > 4)?0:500;
 		$images->images[$i]->distance = sprintf("%0.2f",
 			sqrt(pow($images->images[$i]->grid_square->nateastings-$images->images[$i]->viewpoint_eastings-$correction,2)+pow($images->images[$i]->grid_square->natnorthings-$images->images[$i]->viewpoint_northings-$correction,2))/1000);
 		
