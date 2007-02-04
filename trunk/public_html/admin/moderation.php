@@ -249,6 +249,10 @@ if (isset($_GET['moderator'])) {
 	
 	$smarty->assign('moderator', 1);
 	$sql_where2 = '';
+} elseif (isset($_GET['user_id'])) {
+	$sql_where = "gi.user_id = ".intval($_GET['user_id']);
+	$sql_order = "gridimage_id desc";
+	$smarty->assign('remoderate', 1);
 } elseif (isset($_GET['remoderate'])) {
 	$sql_where = "moderation_status != 2 and moderator_id != {$USER->user_id}";
 	$sql_order = "gridimage_id desc";
