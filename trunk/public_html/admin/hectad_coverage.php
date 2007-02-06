@@ -38,7 +38,7 @@ set_time_limit(3600);
 $hectads = array();
 
 
-$filename = $_SERVER['DOCUMENT_ROOT']."/rss/hectads-$type".($when?"-$when":'')".kml";
+$filename = $_SERVER['DOCUMENT_ROOT']."/rss/hectads-$type".($when?"-$when":'').".kml";
 
 if (file_exists($filename) && empty($_GET['over']))
 	die("done");
