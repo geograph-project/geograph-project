@@ -78,6 +78,7 @@ $hectads = array();
 		$hectads = array_merge($hectads,$most);
 	}
 
+	if (isset($_GET['stat'])) {
 		$statt = array();
 		foreach($hectads as $id=>$entry) {
 			$statt[$entry['image_count']]++;
@@ -89,7 +90,7 @@ $hectads = array();
 		print "$totla<pre>";
 		print_r($statt);
 		exit;
-
+	}
 
 
 #header("Content-type: application/vnd.google-earth.kml");
