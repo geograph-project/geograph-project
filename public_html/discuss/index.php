@@ -362,17 +362,27 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 	} else {
 		require($pathToFiles.'bb_func_vforum.php');
 	}
-if ($viewlastdiscussions!=0) {
 	if (isset($_GET['latest']) ) {
 		$viewlastdiscussions=min(abs(intval($_GET['latest'])),120);
 		$_SESSION['viewlastdiscussions']=$viewlastdiscussions;
 	} elseif (isset($_SESSION['viewlastdiscussions'])) {
 		$viewlastdiscussions=$_SESSION['viewlastdiscussions'];
 	} 
-require($pathToFiles.'bb_func_ldisc.php');
-$listTopics=$list_topics;
-if($list_topics!='') echo ParseTpl(makeUp('main_last_discussions'));
-}
+	
+	if ($viewlastdiscussions!=0) {
+		require($pathToFiles.'bb_func_ldisc.php');
+		$listTopics=$list_topics;
+		if($list_topics!='') echo ParseTpl(makeUp('main_last_discussions'));
+		print "<div style=\"text-align:center\">Show: ";
+		foreach (array(5,10,20,30,40,80,100) as $n) {
+			if ($viewlastdiscussions == $n) {
+				print "<b>$n</b> ";
+			} else {
+				print "<a href=\"index.php?latest=$n\">$n</a> ";
+			}
+		}
+		print " Latest Discussions</div>";
+	}
 }
 else require($pathToFiles.'bb_func_vtopic.php');
 }
