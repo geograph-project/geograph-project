@@ -1,0 +1,192 @@
+<?php
+/**
+ * $Project: GeoGraph $
+ * $Id: most_geographed.php,v 1.12 2005/11/03 16:07:41 barryhunter Exp $
+ * 
+ * GeoGraph geographic photo archive project
+ * This file copyright (C) 2007 Barry Hunter (geo@barryhunter.co.uk)
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+require_once('geograph/global.inc.php');
+init_session();
+
+require_once('geograph/conversions.class.php');
+$conv = new Conversions;
+
+$db = NewADOConnection($GLOBALS['DSN']);
+
+$type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'points';
+
+
+$hectads = array();
+	
+	foreach (array(1,2) as $ri) {
+		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
+			
+		$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=$ri order by origin_x,origin_y limit 1");
+		
+		if ($type == 'points') {
+			$most = $db->GetAll("select 
+			x,y,
+			concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,
+			sum(has_geographs) as image_count,
+			sum(percent_land >0) as land_count
+			from gridsquare 
+			where reference_index = $ri 
+			group by tenk_square 
+			having land_count > 0
+			order by null");
+		} else {
+			if ($type == 'images') {
+				$sql_column = "count(*)"; //as gridimage_search
+				$heading = "Images";
+			} elseif ($type == 'geographs') {
+				$sql_column = "sum(moderation_status='geograph')";
+				$heading = "New<br/>Geographs";
+				$desc = "'geograph' images submitted";
+			} 
+			$most = $db->GetAll("select 
+			x,y,
+			concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,
+			$sql_column as image_count
+			from gridimage_search
+			where reference_index = $ri 
+			group by tenk_square
+			order by null");
+		}
+		
+		foreach($most as $id=>$entry) 
+		{
+			$most[$id]['x'] = ( intval(($most[$id]['x'] - $origin['origin_x'])/10)*10 ) +  $origin['origin_x'];
+			$most[$id]['y'] = ( intval(($most[$id]['y'] - $origin['origin_y'])/10)*10 ) +  $origin['origin_y'];
+			$most[$id]['reference_index'] = $ri;
+		}	
+		$hectads = array_merge($hectads,$most);
+	}
+
+		$statt = array();
+		foreach($hectads as $id=>$entry) {
+			$statt[$entry['image_count']]++;
+			if ($entry['image_count'] && $entry['image_count'] < 10)
+				$totla++;
+		}
+		ksort($statt);
+		
+		print "$totla<pre>";
+		print_r($statt);
+		exit;
+
+
+
+#header("Content-type: application/vnd.google-earth.kml");
+ob_start();
+	print "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
+?>
+<kml xmlns="http://earth.google.com/kml/2.0">
+<Document>
+<Style id="Style1">
+	<IconStyle>
+		<scale>0</scale>
+	</IconStyle>
+</Style>
+<Folder>
+<name>Labels</name>
+<visibility>0</visibility>
+
+<?
+	foreach ($hectads as $square) {
+	
+		list($lat,$long) = $conv->internal_to_wgs84($square['x']+5,$square['y']+5,$square['reference_index']);
+		
+		$height = $square['image_count'] * 200;
+?>
+  <Placemark>
+  	<name><? echo $square['tenk_square']; ?></name>
+    <visibility>0</visibility>
+    <styleUrl>#Style1</styleUrl>
+	<Point>
+		<coordinates><? echo "$long,$lat,$height"; ?></coordinates>
+		<altitudeMode>relativeToGround</altitudeMode>
+	</Point>
+  </Placemark>
+<?
+	}
+?>
+</Folder>
+<Placemark>
+<name>Bars</name>
+<visibility>0</visibility>
+<MultiGeometry>
+<?
+
+	$done = array();
+	function getll($x,$y,$ri) {
+		global $done,$conv;
+		$bit = array();
+		if ($done["$x-$y"]) {
+			$bit = $done["$x-$y"];
+		} else {
+			list($bit['lat'],$bit['long']) = $conv->internal_to_wgs84($x,$y,$ri);
+		}
+		return $bit;
+	}
+
+	foreach ($hectads as $square) {
+	
+		$bits = array();
+		
+		$bits[] = getll($square['x'],$square['y'],$square['reference_index']);
+		$bits[] = getll($square['x']+10,$square['y'],$square['reference_index']);
+		$bits[] = getll($square['x']+10,$square['y']+10,$square['reference_index']);
+		$bits[] = getll($square['x'],$square['y']+10,$square['reference_index']);
+		
+		$height = $square['image_count'] * 200;
+  ?>
+		<Polygon>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<extrude>1</extrude>
+			<tessellate>1</tessellate>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					<? 
+					foreach ($bits as $bit) {
+						echo "{$bit['long']},{$bit['lat']},$height ";
+					}
+					$bit = $bits[0];
+					echo "{$bit['long']},{$bit['lat']},$height "; 
+					?>
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+  <?
+  	}
+?>
+</MultiGeometry>
+</Placemark>
+</Document></kml><?	
+		
+$filedata = ob_get_contents();
+ob_end_clean();
+
+file_put_contents ( $_SERVER['DOCUMENT_ROOT']."/rss/hectads-$type.kml", $filedata); 
+
+print "wrote ".strlen($filedata);
+print "<br/><br/><a href=\"/rss/hectads-$type.kml\">Download</a>";
+
+?>
