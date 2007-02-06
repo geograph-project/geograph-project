@@ -31,15 +31,24 @@ $db = NewADOConnection($GLOBALS['DSN']);
 
 $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'points';
 
+$when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
+
+set_time_limit(3600);
 
 $hectads = array();
+
+
+$filename = $_SERVER['DOCUMENT_ROOT']."/rss/hectads-$type".($when?"-$when":'')".kml";
+
+if (file_exists($filename) && empty($_GET['over']))
+	die("done");
 	
 	foreach (array(1,2) as $ri) {
 		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 			
 		$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=$ri order by origin_x,origin_y limit 1");
 		
-		if ($type == 'points') {
+		if ($type == 'points' && !$when) {
 			$most = $db->GetAll("select 
 			x,y,
 			concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,
@@ -51,7 +60,10 @@ $hectads = array();
 			having land_count > 0
 			order by null");
 		} else {
-			if ($type == 'images') {
+			if ($type == 'points') {
+				$sql_column = "sum(moderation_status='geograph' and ftf=1)"; //as gridimage_search
+				$heading = "Images";	
+			} elseif ($type == 'images') {
 				$sql_column = "count(*)"; //as gridimage_search
 				$heading = "Images";
 			} elseif ($type == 'geographs') {
@@ -59,12 +71,25 @@ $hectads = array();
 				$heading = "New<br/>Geographs";
 				$desc = "'geograph' images submitted";
 			} 
+			$andwhere = '';
+			if ($when) {
+				if (strlen($when) == 7) {
+					$andwhere = " and submitted < DATE_ADD('$when-01',interval 1 month)";
+					$whenb = $db->getOne("select SUBSTRING(DATE_SUB('$when-01',interval 1 month),1,7)");
+				} elseif (strlen($when) == 4) {
+					$whenb = $when - 1;
+					$andwhere = " and submitted < DATE_ADD('$when-01-01',interval 1 year)";
+				} else {
+					$whenb = $when;
+					$andwhere = " and submitted < '$when'";
+				}
+			}
 			$most = $db->GetAll("select 
 			x,y,
 			concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,
 			$sql_column as image_count
 			from gridimage_search
-			where reference_index = $ri 
+			where reference_index = $ri $andwhere
 			group by tenk_square
 			order by null");
 		}
@@ -99,6 +124,7 @@ ob_start();
 ?>
 <kml xmlns="http://earth.google.com/kml/2.0">
 <Document>
+<name>Geograph Hectads - <? echo $type; if ($when) echo " - upto $when"; ?></name>
 <Style id="Style1">
 	<IconStyle>
 		<scale>0</scale>
@@ -127,10 +153,22 @@ ob_start();
 <?
 	}
 ?>
+<? if ($when) { ?>
+	<TimeSpan>
+	  <begin><? echo $whenb; ?></begin>
+	  <end><? echo $when; ?></end>
+	</TimeSpan>
+<? } ?>
 </Folder>
 <Placemark>
 <name>Bars</name>
-<visibility>0</visibility>
+<visibility>1</visibility>
+<? if ($when) { ?>
+	<TimeSpan>
+	  <begin><? echo $whenb; ?></begin>
+	  <end><? echo $when; ?></end>
+	</TimeSpan>
+<? } ?>
 <MultiGeometry>
 <?
 
@@ -185,7 +223,7 @@ ob_start();
 $filedata = ob_get_contents();
 ob_end_clean();
 
-file_put_contents ( $_SERVER['DOCUMENT_ROOT']."/rss/hectads-$type.kml", $filedata); 
+file_put_contents ( $filename, $filedata); 
 
 print "wrote ".strlen($filedata);
 print "<br/><br/><a href=\"/rss/hectads-$type.kml\">Download</a>";
