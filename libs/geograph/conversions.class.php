@@ -45,14 +45,50 @@ function wgs84_to_internal($lat,$long) {
 }
 
 
+// see solution 1 at http://astronomy.swin.edu.au/~pbourke/geometry/insidepoly/
+function pointInside($p,&$points) {
+	$c = 0;
+	$p1 = $points[0];
+	$n = count($points);
+	for ($i=1; $i<=$n; $i++) {
+		$p2 = $points[$i % $n];
+		if ($p[1] > min($p1[1], $p2[1]) 
+				&& $p[1] <= max($p1[1], $p2[1]) 
+				&& $p[0] <= max($p1[0], $p2[0]) 
+				&& $p1[1] != $p2[1]) {
+			$xinters = ($p[1] - $p1[1]) * ($p2[0] - $p1[0]) / ($p2[1] - $p1[1]) + $p1[0];
+			if ($p1[0] == $p2[0] || $p[0] <= $xinters)
+				$c++;
+		}
+		$p1 = $p2;
+	}
+	// if the number of edges we passed through is even, then it’s not in the poly.
+	return $c%2!=0;
+}
+		
+
 //use:	list($e,$n,$reference_index) = wgs84_to_national($lat,$long);
 		//with reference_index deduced from the location and the approraite conversion used
-
 function wgs84_to_national($lat,$long,$usehermert = true) {
 	require_once('geograph/conversionslatlong.class.php');
 	$conv = new ConversionsLatLong;
 	$ire = ($lat > 51.2 && $lat < 55.73 && $long > -12.2 && $long < -4.8);
 	$uk = ($lat > 49 && $lat < 62 && $long > -9.5 && $long < 2.3);
+	
+	if ($uk && $ire) {
+		//rough border for ireland
+		$ireland = array(
+			array(-12.19,50.38),
+			array( -6.39,50.94),
+			array( -5.07,53.71),
+			array( -5.25,54.71),
+			array( -6.13,55.42),
+			array(-10.65,56.15),
+			array(-12.19,50.38) );
+		$ire = $this->pointInside(array($long,$lat),$ireland);
+		$uk = 1 - $ire;
+	} 
+	
 	if ($ire) {
 		return array_merge($conv->wgs84_to_irish($lat,$long,$usehermert),array(2));
 	} else if ($uk) {
