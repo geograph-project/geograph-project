@@ -413,8 +413,12 @@ class RasterMap
 
 	function getFootNote() 
 	{
-		return "<span id=\"mapFootNoteOS50k\"".(($this->service == 'OS50k' && $this->issubmit)?'':' style="display:none"')."><br/>Centre the blue circle on the subject and mark the photographer position with the black circle. The red arrow will then show view direction.</span>".
-		"<span id=\"mapFootNoteVoB\"".($this->service == 'VoB'?'':' style="display:none"')."><br/>Historical Map provided by <a href=\"http://www.visionofbritain.org.uk/\" title=\"Vision of Britain\">VisionOfBritain.org.uk</a></span>";
+		if ($this->issubmit) {
+			return "<span id=\"mapFootNoteOS50k\"".(($this->service == 'OS50k' && $this->issubmit)?'':' style="display:none"')."><br/>Centre the blue circle on the subject and mark the photographer position with the black circle. The red arrow will then show view direction.</span>".
+			"<span id=\"mapFootNoteVoB\"".($this->service == 'VoB'?'':' style="display:none"')."><br/>Historical Map provided by <a href=\"http://www.visionofbritain.org.uk/\" title=\"Vision of Britain\">VisionOfBritain.org.uk</a></span>";
+		} elseif ($this->service == 'OS50k') {
+			return "<span id=\"mapFootNoteOS50k\">TIP: Hover over the icons to hide</span>";
+		}
 	}
 
 	function getOS50kMapPath($create = true) {
