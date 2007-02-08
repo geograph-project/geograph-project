@@ -40,11 +40,11 @@
  
 <h3><a name="software"></a>Interacting with other software...</h3>
 <ul>
-	<li><a title="Google Earth Export" href="/kml.php">view images in <b>Google Earth</b></a> <a title="Google Earth Feed" href="/kml.php" class="xml-kml">KML</a></li>
-	<li><a title="Geograph Feed" href="/faq.php#rss">get <b>RSS feeds</b> of images</a> <a title="RSS Feed of Recent Images" href="/syndicator.php" rel="RSS" class="xml-rss">RSS</a></li>
+	<li><a title="Google Earth Export" href="/kml.php">view images in <b>Google Earth</b></a> <a title="Google Earth Feed" href="/feed/recent.kml" class="xml-kml">KML</a></li>
+	<li><a title="Geograph Feed" href="/faq.php#rss">get <b>RSS feeds</b> of images</a> <a title="RSS Feed of Recent Images" href="/feed/recent.rss" rel="RSS" class="xml-rss">RSS</a></li>
 	<li><a title="Memory Map Export" href="/memorymap.php">view squares in <b>Memory Map</b></a></li>
 	<li><a title="GPX File Export" href="/gpx.php">download squares in <b>GPX Format</b></a></li>
-	<li><a title="GeoRSS Geograph Feed" href="/syndicator.php?format=GeoRSS">latest images in <b>GeoRSS</b> format</a> <a title="RSS Feed of Recent Images" href="/syndicator.php" rel="RSS" class="xml-geo">GeoRSS</a></li>
+	<li><a title="GeoRSS Geograph Feed" href="/feed/recent.georss">latest images in <b>GeoRSS</b> format</a> <a title="RSS Feed of Recent Images" href="/feed/recent.georss" rel="RSS" class="xml-geo">GeoRSS</a></li>
 	<li><a title="Developer API" href="/help/api">developer information on the <b>Geograph API</b></a></li>
 </ul>
 

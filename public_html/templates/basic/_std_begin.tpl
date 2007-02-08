@@ -16,9 +16,9 @@
 <link rel="alternate" type="application/rss+xml" title="Geograph RSS for {$profile->realname}" href="/syndicator.php?u={$profile->user_id}"/>
 {else}
 	{if $engine && $engine->resultCount}
-	<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/syndicator.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}"/>
+	<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.rss"/>
 	{else}
-	<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/syndicator.php"/>
+	<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/feed/recent.rss"/>
 	{/if}
 {/if}
 <link rel="search" type="application/opensearchdescription+xml" 

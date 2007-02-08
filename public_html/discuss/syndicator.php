@@ -36,11 +36,13 @@ if ( (!empty($_GET['topic']) && is_numeric($_GET['topic'])) || (!empty($_GET['fo
 
 $valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP');
 if (!empty($_GET['forum']) && $_GET['forum'] == 5 && empty($_GET['topic']) )
-	$valid_formats=array_merge($valid_formats,array('KML','GeoRSS'));
+	$valid_formats=array_merge($valid_formats,array('KML','GeoRSS','GPX'));
 
 if (isset($_GET['extension']) && !isset($_GET['format']))
 {
 	$_GET['format'] = strtoupper($_GET['extension']);
+	$_GET['format'] = str_replace('GEO','Geo',$_GET['format']);
+	$_GET['format'] = str_replace('PHOTO','Photo',$_GET['format']);
 }
 
 $format="RSS1.0";
@@ -139,7 +141,7 @@ if (!$_GET['nolimit']) {
 
 		$sql_where = "WHERE geobb_topics.forum_id={$_GET['forum']}";
 
-		if ($format == 'KML' || $format == 'GeoRSS') {
+		if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 			require_once('geograph/conversions.class.php');
 			require_once('geograph/gridsquare.class.php');
 			$conv = new Conversions;
@@ -186,7 +188,7 @@ LIMIT 30";
 		//$item->source = "http://{$_SERVER['HTTP_HOST']}/discuss/";
 		$item->author = $recordSet->fields['poster_name'];
 
-		if ($format == 'KML' || $format == 'GeoRSS') {
+		if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 			$gridsquare = new GridSquare;
 			$grid_ok=$gridsquare->setGridRef($recordSet->fields['topic_title']);
 

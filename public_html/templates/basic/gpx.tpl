@@ -38,6 +38,6 @@
 
 <p style="background-color:lightgreen;padding:10px;">Loading these GPX files into Google Earth will produce coverage maps. You can also load in actual images into Google Earth, using <a href="/kml.php">KML files</a>.</p>
 
-<p style="background-color:lightblue;padding:10px;">You can also download the images from a set of search results (Just add <tt>&amp;format=GPX</tt> to the end of the RSS link, on the results page) and/or the <a title="Latest Images in GPX format" href="/syndicator.php?format=GPX">latest uploads</a> in GPX format. </p>
+<p style="background-color:lightblue;padding:10px;">You can also download the images from a set of search results and/or the <a title="Latest Images in GPX format" href="/feed/recent.gpx">latest uploads</a> in GPX format. </p>
 
 {include file="_std_end.tpl"}
