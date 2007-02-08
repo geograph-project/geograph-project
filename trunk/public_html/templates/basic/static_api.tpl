@@ -235,8 +235,8 @@
   &lt;status state="ok" /&gt; 
   &lt;title&gt;Bascote&lt;/title&gt; 
   &lt;gridref&gt;SP4063&lt;/gridref&gt; 
-  &lt;user profile="http://www.geograph.org.uk/profile.php?u=120"&gt;David Stowell&lt;/user&gt; 
-  &lt;img src="http://www.geograph.org.uk/photos/00/34/003456_e10e23bc.jpg"
+  &lt;user profile="http://{$http_host}/profile.php?u=120"&gt;David Stowell&lt;/user&gt; 
+  &lt;img src="http://{$http_host}/photos/00/34/003456_e10e23bc.jpg"
      width="640" height="480" /&gt; 
 &lt;/geograph&gt;</pre>
   </td> 
@@ -606,7 +606,7 @@
 	 <ul>
 		<li><a href="/memorymap.php">MemoryMap Exports</a></li>
 		<li><a href="/gpx.php">GPX Exports</a></li>
-		<li>100x100km CheckSheets (<a href="http://www.geograph.org.uk/mapsheet.php?t=tolJ5oOXXJ0oOJFoOXXJfoMXbJqoOXXJL5405o4VZMlXwZblw4MMuX">example</a>) <small>- nice easy parseable listing, could be used for creating coverage maps</small></li>
+		<li>100x100km CheckSheets (<a href="http://{$http_host}/mapsheet.php?t=tolJ5oOXXJ0oOJFoOXXJfoMXbJqoOXXJL5405o4VZMlXwZblw4MMuX">example</a>) <small>- nice easy parseable listing, could be used for creating coverage maps</small></li>
 		<li>Please DON'T use the /list/ namespace as that's for Search Engines</li>
 		<li><a href="/sitemap.xml">sitemap.xml</a> - see {external href="http://www.sitemaps.org"}</li>
 		<li><a href="http://www.geourl.org/" style="text-decoration: line-through">geourl.org</a> (Coming soon)</li>

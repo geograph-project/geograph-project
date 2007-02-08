@@ -247,8 +247,9 @@ WGS84: {$latdm} {$longdm}
 <br style="clear:both"/>
 <div class="interestBox" style="text-align:center">View this location: 
 
-<a title="Open in Google Earth" href="/kml.php?id={$image->gridimage_id}">Google Earth</a>
-<a title="Open in Google Earth" href="/kml.php?id={$image->gridimage_id}" class="xml-kml">KML</a>, 
+<a title="Open in Google Earth" href="/photo/{$image->gridimage_id}.kml">Google Earth</a>
+<a title="Open in Google Earth" href="/photo/{$image->gridimage_id}.kml" class="xml-kml">KML</a>, 
+<a title="Open in Google Earth" href="http://maps.google.co.uk/maps?q=http://{$http_host}/photo/{$image->gridimage_id}.kml">Google Maps</a>, 
 
 {getamap gridref=$image->subject_gridref text="OS Get-a-map&trade;"},
 

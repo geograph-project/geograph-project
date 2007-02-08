@@ -30,6 +30,11 @@ require_once('geograph/imagelist.class.php');
 	
 $valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','KML','BASE','GeoRSS','GeoPhotoRSS','GPX','TOOLBAR');
 
+if (isset($_GET['extension']) && !isset($_GET['format']))
+{
+	$_GET['format'] = strtoupper($_GET['extension']);
+}
+
 $format="RSS1.0";
 if (isset($_GET['format']) && in_array($_GET['format'], $valid_formats))
 {
@@ -55,13 +60,24 @@ if (isset($_GET['text'])) {
 	
 	$engine = new SearchEngineBuilder('#'); 
  	$_GET['i'] = $engine->buildSimpleQuery($_GET['text'],30,false,isset($_GET['u'])?$_GET['u']:0);
-} elseif (isset($_GET['q'])) {
+} elseif (isset($_GET['q']) || !empty($_GET['location'])) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
 	
+	if (!empty($_GET['location'])) {
+		if (!empty($_GET['q'])) {
+			$q=trim($_GET['q']).' near '.trim($_GET['location']);
+		} else {
+			$q=trim($_GET['q']);
+		}
+	} else {
+		$q=trim($_GET['q']);
+	}
+	
+	
 	$engine = new SearchEngineBuilder('#'); 
- 	$_GET['i'] = $engine->buildSimpleQuery($_GET['q'],30,false,isset($_GET['u'])?$_GET['u']:0);
+ 	$_GET['i'] = $engine->buildSimpleQuery($q,30,false,isset($_GET['u'])?$_GET['u']:0);
  	
  	if (!empty($engine->errormsg) && !empty($_GET['fatal'])) {
  		die('error: '.$engine->errormsg);
@@ -86,7 +102,7 @@ if (isset($_GET['text'])) {
 }
 
 if (isset($_GET['i']) && is_numeric($_GET['i'])) {
-	$pg = (!empty($_GET['page']))?intval($_GET['page']):0;
+	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}.$extension";
 } elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/u{$_GET['u']}-{$format}.$extension";
@@ -105,7 +121,7 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 		
-		$pg = (!empty($_GET['page']))?intval($_GET['page']):0;
+		$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 		if (empty($pg) || $pg < 1) {$pg = 1;}
 		
 	$images = new SearchEngine($_GET['i']);

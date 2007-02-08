@@ -4,12 +4,12 @@
 	<div style="padding:5px;background:#dddddd;position:relative; float:right; font-size:0.8em">
 	Quick links:<br/><br/>
 	<b>Recent Images</b>: <br/>
-	&nbsp;&nbsp;&nbsp;<a href="/feed/recent/KML">Google Earth</a><br/>
-	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=http://www.geograph.org.uk/feed/recent/KML" text="Google Maps"}<br/>
+	&nbsp;&nbsp;&nbsp;<a href="/feed/recent.kml">Google Earth</a><br/>
+	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=http://$http_host/feed/recent.kml" text="Google Maps"}<br/>
 	{if $user->registered}<br/> 
 	<b>Recent Discussions</b>:<br/> 
-	&nbsp;&nbsp;&nbsp;<a href="/discuss/feed/forum5/KML">Google Earth</a><br/>
-	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=http://www.geograph.org.uk/discuss/feed/forum5/KML" text="Google Maps"}<br/>
+	&nbsp;&nbsp;&nbsp;<a href="/discuss/feed/forum5.kml">Google Earth</a><br/>
+	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=http://$http_host/discuss/feed/forum5.kml" text="Google Maps"}<br/>
 	{/if}
 	</div>
 
