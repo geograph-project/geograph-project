@@ -38,11 +38,16 @@ $valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3',
 if (!empty($_GET['forum']) && $_GET['forum'] == 5 && empty($_GET['topic']) )
 	$valid_formats=array_merge($valid_formats,array('KML','GeoRSS'));
 
+if (isset($_GET['extension']) && !isset($_GET['format']))
+{
+	$_GET['format'] = strtoupper($_GET['extension']);
+}
 
 $format="RSS1.0";
 if (!empty($_GET['format']) && in_array($_GET['format'], $valid_formats))
+{
 	$format=$_GET['format'];
-
+}
 
 $extension = ($format == 'KML')?'kml':'xml';
 
