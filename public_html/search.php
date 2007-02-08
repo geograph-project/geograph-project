@@ -201,7 +201,7 @@ if (isset($_GET['fav']) && $i) {
 				foreach (explode(',',$_COOKIE['markedImages']) as $id) {
 					$db->Execute("INSERT INTO gridimage_query SET query_id = $i, gridimage_id = ".$db->Quote($id));
 				}
-				$data['searchq'] = "gridimage_id IN (SELECT gridimage_id FROM gridimage_query WHERE query_id = $i)";
+				$data['searchq'] = "inner join gridimage_query using (gridimage_id) where query_id = $i";
 
 				$db->Execute("UPDATE queries SET searchq = '{$data['searchq']}' WHERE id = $i");
 
@@ -327,15 +327,26 @@ if (isset($_GET['fav']) && $i) {
 
 		advanced_form($smarty,$db);
 	}
-} elseif (!empty($_GET['q']) || !empty($_GET['text'])) {
+} elseif ((!empty($_GET['q']) && $_GET['q'] != '(anything)') || !empty($_GET['text']) || (!empty($_GET['location']) && $_GET['location'] != '(anywhere)')) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 
 	// -------------------------------
-	//  Build a query from a single text string
+	//  Build a query from simple text 
 	// -------------------------------
+	if (!empty($_GET['location']) && $_GET['location'] == '(anywhere)') {
+		$_GET['location'] = '';
+	}
+	if (!empty($_GET['q']) && $_GET['q'] == '(anything)') {
+		$_GET['q'] = '';
+	}
 	if (!empty($_GET['text'])) {
 		$q=trim($_GET['text']);
-		$GLOBALS['text'] = 1;
+	} elseif (!empty($_GET['location'])) {
+		if (!empty($_GET['q'])) {
+			$q=trim($_GET['q']).' near '.trim($_GET['location']);
+		} else {
+			$q=trim($_GET['q']);
+		}
 	} else {
 		$q=trim($_GET['q']);
 	}
@@ -373,7 +384,8 @@ if (isset($_GET['fav']) && $i) {
 	} else {
 
 		$smarty->assign('errormsg', $engine->errormsg);
-
+		list($q,$loc) = explode(' near ',$q,2);
+		$smarty->assign('searchlocation', $loc);
 		$smarty->assign('searchq', $q);
 
 
@@ -501,7 +513,7 @@ if (isset($_GET['fav']) && $i) {
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/gridsquare.class.php');
 
-		$pg = (!empty($_GET['page']))?intval($_GET['page']):0;
+		$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 		if (empty($pg) || $pg < 1) {$pg = 1;}
 
 	$engine = new SearchEngine($i);
@@ -578,7 +590,9 @@ if (isset($_GET['fav']) && $i) {
 		$query = $db->GetRow("SELECT searchq FROM queries WHERE id = $i LIMIT 1");
 		$smarty->assign('searchq', $query['searchq']);
 	} else if ($_SESSION['searchq']) {
-		$smarty->assign('searchq', $_SESSION['searchq']);
+		list($q,$loc) = explode(' near ',$_SESSION['searchq'],2);
+		$smarty->assign('searchlocation', $loc);
+		$smarty->assign('searchq', $q);
 	}
 	if (!$smarty->is_cached('search.tpl')) {
 		if (!isset($db)) {
