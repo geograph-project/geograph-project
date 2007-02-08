@@ -132,14 +132,16 @@ class SearchEngine
 		}
 
 		if ($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly) {
-		
-			$count_from = (strpos($sql_where,'gs.') !== FALSE)?"INNER JOIN gridsquare AS gs USING(gridsquare_id)":'';
-			$count_from .= (strpos($sql_where,'user.') !== FALSE)?" INNER JOIN user ON(gi.user_id=user.user_id)":'';
-			##$count_from = "INNER JOIN gridsquare AS gs USING(gridsquare_id)";
-			
-			// construct the count query sql
-			if (preg_match("/group by ([\w\,\(\)\/ ]+)/i",$sql_where,$matches)) {
-				$sql_where2 = preg_replace("/group by ([\w\,\(\)\/ ]+)/i",'',$sql_where);
+			$resultCount = $db->Execute("select `count` from queries_count where id = {$this->query_id}");
+			if ($resultCount) {
+				$this->resultCount = $resultCount;
+			} else {
+				$count_from = (strpos($sql_where,'gs.') !== FALSE)?"INNER JOIN gridsquare AS gs USING(gridsquare_id)":'';
+				$count_from .= (strpos($sql_where,'user.') !== FALSE)?" INNER JOIN user ON(gi.user_id=user.user_id)":'';
+
+				// construct the count query sql
+				if (preg_match("/group by ([\w\,\(\)\/ ]+)/i",$sql_where,$matches)) {
+					$sql_where2 = preg_replace("/group by ([\w\,\(\)\/ ]+)/i",'',$sql_where);
 $sql = <<<END
 	   SELECT count(DISTINCT {$matches[1]})
 		FROM gridimage AS gi $count_from
@@ -155,11 +157,13 @@ $sql = <<<END
 		WHERE 
 			$sql_where
 END;
+				}
+				if (!empty($_GET['debug']))
+					print "<BR><BR>$sql";
+
+				$this->resultCount = $db->CacheGetOne(3600,$sql);
+				$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 			}
-			if (!empty($_GET['debug']))
-				print "<BR><BR>$sql";
-			$this->resultCount = $db->CacheGetOne(3600,$sql);
-			$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 			$this->numberOfPages = ceil($this->resultCount/$pgsize);
 		} 
 		if ($this->countOnly || ( ($pg > 1 || $CONF['search_count_first_page']) && !$this->resultCount))
@@ -249,9 +253,13 @@ END;
 		}
 		
 		if ($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly) {
-			// construct the count sql
-			if (preg_match("/group by ([\w\,\(\)\/ ]+)/i",$sql_where,$matches)) {
-				$sql_where2 = preg_replace("/group by ([\w\,\(\)\/ ]+)/i",'',$sql_where);
+			$resultCount = $db->Execute("select `count` from queries_count where id = {$this->query_id}");
+			if ($resultCount) {
+				$this->resultCount = $resultCount;
+			} else {
+				// construct the count sql
+				if (preg_match("/group by ([\w\,\(\)\/ ]+)/i",$sql_where,$matches)) {
+					$sql_where2 = preg_replace("/group by ([\w\,\(\)\/ ]+)/i",'',$sql_where);
 $sql = <<<END
 	   SELECT count(DISTINCT {$matches[1]})
 		FROM gridimage_search as gi
@@ -265,14 +273,13 @@ $sql = <<<END
 			 $sql_from
 		$sql_where
 END;
+				}
+				if (!empty($_GET['debug']))
+					print "<BR><BR>$sql";
+
+				$this->resultCount = $db->CacheGetOne(3600,$sql);
+				$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 			}
-			if (!empty($_GET['debug']))
-				print "<BR><BR>$sql";
-
-
-			$this->resultCount = $db->CacheGetOne(3600,$sql);
-			$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
-
 			$this->numberOfPages = ceil($this->resultCount/$pgsize);
 		}
 		if ($this->countOnly || ( ($pg > 1 || $CONF['search_count_first_page']) && !$this->resultCount))
