@@ -11,7 +11,7 @@
 <meta name="DC.title" content="Geograph:: {$page_title|escape:'html'}">
 <link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/basic.css" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
-<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/syndicator.php"/>
+<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/feed/recent.rss"/>
 <script type="text/javascript" src="/geograph.js"></script>
 <style type="text/css">
 {literal}

@@ -33,6 +33,8 @@ $valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3',
 if (isset($_GET['extension']) && !isset($_GET['format']))
 {
 	$_GET['format'] = strtoupper($_GET['extension']);
+	$_GET['format'] = str_replace('GEO','Geo',$_GET['format']);
+	$_GET['format'] = str_replace('PHOTO','Photo',$_GET['format']);
 }
 
 $format="RSS1.0";
