@@ -132,7 +132,7 @@ class SearchEngine
 		}
 
 		if ($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly) {
-			$resultCount = $db->Execute("select `count` from queries_count where id = {$this->query_id}");
+			$resultCount = $db->getOne("select `count` from queries_count where id = {$this->query_id}");
 			if ($resultCount) {
 				$this->resultCount = $resultCount;
 			} else {
@@ -253,7 +253,7 @@ END;
 		}
 		
 		if ($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly) {
-			$resultCount = $db->Execute("select `count` from queries_count where id = {$this->query_id}");
+			$resultCount = $db->getOne("select `count` from queries_count where id = {$this->query_id}");
 			if ($resultCount) {
 				$this->resultCount = $resultCount;
 			} else {
