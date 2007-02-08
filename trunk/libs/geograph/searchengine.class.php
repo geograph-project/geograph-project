@@ -126,8 +126,8 @@ class SearchEngine
 		}
 		if (!$sql_order) {$sql_order = 'gs.grid_reference';}
 		
-		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=]+) where/i",$sql_where,$matches)) {
-			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\']+) where/i",'',$sql_where);
+		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=`]+) where/i",$sql_where,$matches)) {
+			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\'`]+) where/i",'',$sql_where);
 			$sql_from .= " {$matches[1]} join {$matches[2]}";
 		}
 
@@ -142,21 +142,9 @@ class SearchEngine
 				// construct the count query sql
 				if (preg_match("/group by ([\w\,\(\)\/ ]+)/i",$sql_where,$matches)) {
 					$sql_where2 = preg_replace("/group by ([\w\,\(\)\/ ]+)/i",'',$sql_where);
-$sql = <<<END
-	   SELECT count(DISTINCT {$matches[1]})
-		FROM gridimage AS gi $count_from
-			 $sql_from
-		WHERE 
-			$sql_where2
-END;
-			} else {
-$sql = <<<END
-	   SELECT count(*)
-		FROM gridimage AS gi $count_from
-			 $sql_from
-		WHERE 
-			$sql_where
-END;
+					$sql = "SELECT count(DISTINCT {$matches[1]}) FROM gridimage AS gi $count_from $sql_from WHERE $sql_where2";
+				} else {
+					$sql = "SELECT count(*) FROM gridimage AS gi $count_from $sql_from WHERE $sql_where";
 				}
 				if (!empty($_GET['debug']))
 					print "<BR><BR>$sql";
@@ -171,15 +159,13 @@ END;
 		
 	// construct the query sql
 $sql = <<<END
-	   SELECT gi.*,x,y,gs.grid_reference,user.realname
-			$sql_fields $extra_fields
-		FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
-		INNER JOIN user ON(gi.user_id=user.user_id)
-			 $sql_from
-		WHERE 
-			$sql_where
-		ORDER BY $sql_order
-		LIMIT $page,$pgsize
+SELECT gi.*,x,y,gs.grid_reference,user.realname $sql_fields $extra_fields
+FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
+	INNER JOIN user ON(gi.user_id=user.user_id)
+	$sql_from
+WHERE $sql_where
+ORDER BY $sql_order
+LIMIT $page,$pgsize
 END;
 		if (!empty($_GET['debug']))
 			print "<BR><BR>$sql";
@@ -247,8 +233,8 @@ END;
 		}
 		$sql_fields = str_replace('gs.','gi.',$sql_fields);
 	
-		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=]+) where/i",$sql_where,$matches)) {
-			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\']+) where/i",'',$sql_where);
+		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=`]+) where/i",$sql_where,$matches)) {
+			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\'`]+) where/i",'',$sql_where);
 			$sql_from .= " {$matches[1]} join {$matches[2]}";
 		}
 		
@@ -260,19 +246,9 @@ END;
 				// construct the count sql
 				if (preg_match("/group by ([\w\,\(\)\/ ]+)/i",$sql_where,$matches)) {
 					$sql_where2 = preg_replace("/group by ([\w\,\(\)\/ ]+)/i",'',$sql_where);
-$sql = <<<END
-	   SELECT count(DISTINCT {$matches[1]})
-		FROM gridimage_search as gi
-			 $sql_from
-		$sql_where2
-END;
-			} else {
-$sql = <<<END
-	   SELECT count(*)
-		FROM gridimage_search as gi
-			 $sql_from
-		$sql_where
-END;
+					$sql = "SELECT count(DISTINCT {$matches[1]}) FROM gridimage_search as gi $sql_from $sql_where2";
+				} else {
+					$sql = "SELECT count(*) FROM gridimage_search as gi $sql_from $sql_where";
 				}
 				if (!empty($_GET['debug']))
 					print "<BR><BR>$sql";
@@ -286,13 +262,11 @@ END;
 			return 0;
 	// construct the query sql
 $sql = <<<END
-		SELECT gi.*
-			$sql_fields
-		FROM gridimage_search as gi
-			 $sql_from
-		$sql_where
-		ORDER BY $sql_order
-		LIMIT $page,$pgsize
+SELECT gi.* $sql_fields
+FROM gridimage_search as gi $sql_from
+$sql_where
+ORDER BY $sql_order
+LIMIT $page,$pgsize
 END;
 		if (!empty($_GET['debug']))
 			print "<BR><BR>$sql";
