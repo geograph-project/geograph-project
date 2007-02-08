@@ -25,13 +25,13 @@
 }
 
 .statsbox div {
-	position:relative; width:150px; background-color:#000066; color:white; float:left; padding:10px; margin-right:20px; margin-bottom:20px; text-align:center
+	position:relative; width:150px; background-color:#dddddd; float:left; padding:10px; margin-right:20px; margin-bottom:20px; text-align:center
 }
 .recentbox {
 	position:relative; width:25%; float:left; background-color:#dddddd; padding:10px;
 }
 .recentbox h4 {
-	font-size:0.9em; text-align: center; margin-bottom:0px; margin-top:0px; 
+	font-size:0.9em; text-align: center; margin-bottom:3px; margin-top:0px; 
 }
 .recentbox .halvebox {
 	position:relative; width:45%; float:left; padding:3px;
@@ -108,7 +108,7 @@
 	</div>
 
 	<div class="recentbox">
-		<h4>Recently completed hectads</h4>
+		<h4>Recently completed<br/> hectads (<a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">list all ...</a>)</h4>
 		<div class="halvebox">
 			{foreach from=$hectads key=id item=obj name="hectads"}
 				<a title="View Mosaic for {$obj.hectad_ref}, completed {$obj.completed}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad_ref}</a><br/>
@@ -117,8 +117,7 @@
 				{/if}
 			{/foreach}
 		</div>
-		<br style="clear:both"/><br/>
-		<h4><a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">list all ...</a></h4>
+		<br style="clear:both"/>
 	</div>
 </div>
 
