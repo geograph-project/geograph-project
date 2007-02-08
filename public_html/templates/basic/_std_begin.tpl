@@ -13,7 +13,7 @@
 <link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/basic.css?v={$javascript_version}" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
 {if $profile && $profile->user_id}
-<link rel="alternate" type="application/rss+xml" title="Geograph RSS for {$profile->realname}" href="/syndicator.php?u={$profile->user_id}"/>
+<link rel="alternate" type="application/rss+xml" title="Geograph RSS for {$profile->realname}" href="/feed/userid/{$profile->user_id}.rss"/>
 {else}
 	{if $engine && $engine->resultCount}
 	<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.rss"/>
