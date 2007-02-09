@@ -14,6 +14,9 @@
 <td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}">SE</a></td></tr>
 </table>
 </div>
+<div style="float:right">
+ [<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}" title="Add this image to your site marked list">Mark</a>]&nbsp;
+</div>
  <h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} total images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->title}</h2>
  {if $place.distance}
  {place place=$place h3=true}
@@ -48,6 +51,8 @@ referring to <b>image {$image->gridimage_id}</b>
   	el = document.getElementById('mainphoto');
   	el.style.display = 'none';
   	el.style.display = '';
+  	
+  	showMarkedImages();
   }
   window.onload = redrawMainImage;
   
