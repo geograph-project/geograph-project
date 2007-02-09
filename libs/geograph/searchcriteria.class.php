@@ -63,10 +63,10 @@ class SearchCriteria
 	{
 		if (!empty($_GET['BBOX'])) {
 			
+			list($west,$south,$east,$north) = explode(',',trim(str_replace('e ','e+',$_GET['BBOX'])));
+		
 			if (!empty($_GET['LOOKAT'])) {
 			
-				list($west,$south,$east,$north) = explode(',',trim(str_replace('e ','e+',$_GET['BBOX'])));
-		
 			
 				// calculate the approx center of the view -- note that this is innaccurate if the user is not looking straight down
 				$clong = (($east - $west)/2) + $west;
@@ -182,6 +182,9 @@ class SearchCriteria
 		
 		$sql_where_start = $sql_where;
 		
+		//todo, emulate SearchCriteria_Text from searchtext
+		
+		
 		if (!empty($this->limit1)) {
 			if ($sql_where) {
 				$sql_where .= ' and ';
@@ -204,6 +207,7 @@ class SearchCriteria
 				$sql_where .= ' and ';
 			}
 			$sql_where .= "imageclass = '".addslashes(($this->limit3 == '-')?'':$this->limit3)."' ";
+			//todo tags tags tags
 		} 
 		if (!empty($this->limit4)) {
 			if ($sql_where) {
@@ -470,6 +474,10 @@ class SearchCriteria_Text extends SearchCriteria
 	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) {
 		parent::getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
 		$db = $this->_getDB();
+		
+		//todo: port to getSQLCritFromText($q,&$sql_where,&$sql_from)
+		//todo, do keyword as opposed to phrase? and possibly make + the default.
+		
 		if ($sql_where) {
 			$sql_where .= ' and ';
 		}
