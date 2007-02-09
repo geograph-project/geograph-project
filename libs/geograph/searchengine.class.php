@@ -365,6 +365,8 @@ END;
 				$lastPage = ($this->resultCount -1)* $pgsize;
 			
 				if ($this->currentPage < $lastPage) {
+					$db=$this->_getDB();
+					
 					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = 0");
 					$this->resultCount = 0;
 				}
