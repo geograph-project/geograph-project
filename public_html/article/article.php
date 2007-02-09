@@ -116,8 +116,31 @@ function smarty_function_articletext($input) {
 	$pattern[]="/\n/";
 	$replacement[]="<br/>\n";
 
-	$output=preg_replace($pattern, $replacement, $output);
+	if (preg_match_all('/\[smallmap ([STNH]?[A-Z]{1}\d{4,10})\]/',$output,$m)) {
+		foreach ($m[0] as $i => $full) {
+			//lets add an rastermap too
+			$square = new Gridsquare;
+			$square->setByFullGridRef($m[1][$i],true);
+			$square->grid_reference_full = 	$m[1][$i];
 
+			$rastermap = new RasterMap($square,false);
+			if ($rastermap->service == 'OS50k') {
+				$rastermap->service = 'OS50k-small';
+				$rastermap->width = 125;
+				
+				$pattern[] = "/".preg_quote($full)."/";
+				$replacement[] = $rastermap->getImageTag();
+				
+			}
+		}
+	}
+	
+	$output=preg_replace($pattern, $replacement, $output);
+	
+	if (count($m)) {
+		$output .= '<div class="copyright">Great Britain Ordnance Survey&reg; 1:50 000 Scale Colour Raster Mapping Extracts &copy; Crown copyright. Educational licence 100045616.</div>';
+	}
+	
 	return GeographLinks($output,true);
 }
 

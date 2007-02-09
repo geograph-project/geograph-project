@@ -49,7 +49,7 @@ if (isset($_GET['map']))
 		init_session();
 	if($rastermap->setToken($_GET['r'])) {
 		if (isset($_GET['debug']))
-				print $rastermap->getOSGBStorePath('pngs-2k-'.$rastermap->width.'/',0,0,true);
+			print $rastermap->getOSGBStorePath($rastermap->service,0,0,false);
 	
 		$rastermap->returnImage();
 	}
