@@ -58,6 +58,10 @@ class RasterMap
 	*/	
 	var $enabled = false;
 	
+	var $folders = array('tile-source'=>'pngs-1k-200/','OS50k'=>'pngs-2k-250/','OS50k-small'=>'pngs-1k-125/',);
+	var $tilewidth=array('tile-source'=>200,           'OS50k'=>250,           'OS50k-small'=>125,  'VoB'=>250,'Google'=>250);
+	var $divisor = array('tile-source'=>1000,          'OS50k'=>1000,          'OS50k-small'=>100);
+	
 	/**
 	* setup the values
 	*/
@@ -66,7 +70,7 @@ class RasterMap
 		global $CONF;
 		$this->enabled = false;
 		if (!empty($square) && isset($square->grid_reference)) {
-			$this->square &= $square;
+			$this->square =& $square;
 			
 			$this->exactPosition = $useExact && !empty($square->natspecified);
 			
@@ -78,7 +82,6 @@ class RasterMap
 			
 			$this->issubmit = $issubmit;
 			$services = explode(',',$CONF['raster_service']);
-			$this->width = 250;
 
 			if ($square->reference_index == 1) {
 				if (in_array('OS50k',$services)) {
@@ -96,6 +99,8 @@ class RasterMap
 				//$this->enabled = true;
 				$this->service = 'Google';
 			} 
+			if (isset($this->tilewidth[$service]));
+				$this->width = $this->tilewidth[$service];
 		}
 	} 
 	
@@ -125,9 +130,16 @@ class RasterMap
 		$width = $this->width;
 
 		if ($this->service == 'Google') {
-			return "<div id=\"map\" style=\"width:{$this->width}px; height:{$this->width}px\">Loading map...</div>";
+			return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\">Loading map...</div>";
+		} elseif ($this->service == 'OS50k-small') {
+			$mapurl = "/tile.php?r=".$this->getToken();
+			
+			$gr= !empty($this->square->grid_reference_full)?$this->square->grid_reference_full:$this->square->grid_reference;
+			
+			$title = "1:50,000 Modern Day Landranger(TM) Map &copy; Crown Copyright";
+			
+			return "<a href=\"/gridref/$gr\" title=\"$title\"><img src=\"$mapurl\" width=\"$width\" height=\"$width\" alt=\"$title\"/></a>";
 		} elseif ($this->service == 'OS50k') {
-			#$mappath = $this->getOS50kMapPath();
 
 			$mapurl = "/tile.php?r=".$this->getToken();
 
@@ -421,9 +433,20 @@ class RasterMap
 		}
 	}
 
-	function getOS50kMapPath($create = true) {
-		$path = $this->getOSGBStorePath('pngs-2k-'.$this->width.'/',0,0,true);
-		if (file_exists($path) || ($create && $this->combineTiles($this->square,$path)) ) {
+	function createTile($service,$path = null) {
+		if ($service == 'OS50k') {
+			return $this->combineTiles($this->square,$path);
+		} elseif ($service == 'OS50k-small') {
+			if ($sourcepath = $this->getMapPath('OS50k',true)) {
+				return $this->createSmallExtract($sourcepath,$path);
+			} 
+		}
+		return false;
+	}
+	
+	function getMapPath($service,$create = true) {
+		$path = $this->getOSGBStorePath($service);
+		if (file_exists($path) || ($create && $this->createTile($service,$path)) ) {
 			return $path;
 		} else {
 			return false;
@@ -445,8 +468,9 @@ class RasterMap
 
 		$ll = $square->gridsquare;
 		
-		//$this->width = 250;
-		$this->tilewidth = 200;
+		
+		$service = 'tile-source';
+		$tilewidth = $this->tilewidth[$service];
 
 		//this isn't STRICTLY needed as getOSGBStorePath does the same floor, but do so in case we do exact calculations
 		$east = floor($this->nateastings/1000) * 1000;
@@ -462,13 +486,13 @@ class RasterMap
 				foreach(range(	$east-1000 ,
 								$east+1000 ,
 								1000 ) as $e) {
-					$newpath = $this->getOSGBStorePath('pngs-1k-'.$this->tilewidth.'/',$e,$n);
+					$newpath = $this->getOSGBStorePath($service,$e,$n);
 					
 					if (file_exists($newpath)) {
 						$tilelist[] = $newpath;
 						$found = 1;
 					} else {
-						$tilelist[] = $CONF['os50kimgpath']."blank{$this->tilewidth}.png";
+						$tilelist[] = $CONF['os50kimgpath']."blank{$tilewidth}.png";
 						if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 							print "$newpath not found<br/>\n";
 					}
@@ -483,15 +507,15 @@ class RasterMap
 			}
 			
 			if (!$path) 
-				$path = $this->getOSGBStorePath('pngs-2k-250/',$east,$nort,true);
+				$path = $this->getOSGBStorePath('OS50k',$east,$nort,true);
 
 			$cmd = sprintf('%s"%smontage" -geometry +0+0 %s -tile 3x3 png:- | "%sconvert" - -crop %ldx%ld+%ld+%ld +repage -thumbnail %ldx%ld -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 6,230 155,243 3,3" -fill "#000066" -pointsize 10 -draw "text 10,240 \'© Crown Copyright %s\'" -colors 128 -depth 8 -type Palette png:%s', 
 				isset($_GET['nice'])?'nice ':'',
 				$CONF['imagemagick_path'],
 				implode(' ',$tilelist),
 				$CONF['imagemagick_path'],
-				$this->tilewidth*2, $this->tilewidth*2, 
-				$this->tilewidth/2, $this->tilewidth/2,
+				$tilewidth*2, $tilewidth*2, 
+				$tilewidth/2, $tilewidth/2,
 				$this->width, $this->width, 
 				$CONF['imagemagick_font'],
 				$CONF['OS_licence'],
@@ -515,13 +539,45 @@ class RasterMap
 		}
 	}
 
+	function createSmallExtract($input,$output) {
+		global $CONF,$USER;
+		
+		$east = floor($this->nateastings/100)%10/10;
+		$nort = floor($this->natnorthings/100)%10/10;
+		
+		$by20 = $this->width/20; //to center on the centisquare
+				
+		$cmd = sprintf('%s"%sconvert" -gravity SouthWest -crop %ldx%ld+%ld+%ld +repage -thumbnail %ldx%ld -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 6,105 105,118 3,3" -fill "#000066" -pointsize 10 -draw "text 10,115 \'Crown © %s\'" -colors 128 -depth 8 -type Palette png:%s png:%s', 
+			isset($_GET['nice'])?'nice ':'',
+			$CONF['imagemagick_path'],
+			$this->width, $this->width, 
+			($this->width*$east)+$by20, ($this->width*$nort)+$by20, 
+			$this->width, $this->width, 
+			$CONF['imagemagick_font'],
+			$CONF['OS_licence'],
+			$input,$output);
+		
+		if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) 
+			$cmd = str_replace('/','\\',$cmd);
+
+		exec ($cmd);
+		if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
+			print "<pre>$cmd</pre>";
+
+		if (file_exists($path)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	/**
 	* returns an image with appropriate headers
 	* @access public
 	*/
 	function returnImage()
 	{
-		$mappath = $this->getOS50kMapPath();
+		$mappath = $this->getMapPath($this->service);
 
 		if (!file_exists($mappath))
 			$mappath=$_SERVER['DOCUMENT_ROOT']."/maps/errortile.png";
@@ -544,9 +600,8 @@ class RasterMap
 	function getToken()
 	{
 		$token=new Token;
-		$token->setValue("e", floor($this->nateastings /1000));
-		$token->setValue("n", floor($this->natnorthings /1000));
-		$token->setValue("w", $this->width);
+		$token->setValue("e", floor($this->nateastings /$this->divisor[$this->service]));
+		$token->setValue("n", floor($this->natnorthings /$this->divisor[$this->service]));
 		$token->setValue("s", $this->service);
 		return $token->getToken();
 	}
@@ -563,32 +618,32 @@ class RasterMap
 		{
 			$ok=$token->hasValue("e") &&
 				$token->hasValue("n") &&
-				$token->hasValue("w") &&
 				$token->hasValue("s");
 			if ($ok)
 			{
-				$this->nateastings = $token->getValue("e") * 1000;
-				$this->natnorthings = $token->getValue("n") * 1000;
-				$this->width = $token->getValue("w");
 				$this->service = $token->getValue("s");
+				$this->nateastings = $token->getValue("e") * $this->divisor[$this->service];
+				$this->natnorthings = $token->getValue("n") * $this->divisor[$this->service];
+				$this->width = $this->tilewidth[$this->service];
 			}
 		}
 		return $ok;
 	}
 
-	function getOSGBStorePath($folder = 'pngs-2k-250/',$e = 0,$n = 0,$create = false) {
+	function getOSGBStorePath($service,$e = 0,$n = 0,$create = true) {
 		global $CONF;
-
+		
+		$folder = $this->folders[$service];
 		if ($e && $n) {
 			$e2 = floor($e /10000);
 			$n2 = floor($n /10000);
-			$e3 = floor($e /1000);
-			$n3 = floor($n /1000);
+			$e3 = floor($e /$this->divisor[$service]);
+			$n3 = floor($n /$this->divisor[$service]);
 		} else {
 			$e2 = floor($this->nateastings /10000);
 			$n2 = floor($this->natnorthings /10000);
-			$e3 = floor($this->nateastings /1000);
-			$n3 = floor($this->natnorthings /1000);
+			$e3 = floor($this->nateastings /$this->divisor[$service]);
+			$n3 = floor($this->natnorthings /$this->divisor[$service]);
 		}
 
 		$dir=$CONF['os50kimgpath'].$folder;
