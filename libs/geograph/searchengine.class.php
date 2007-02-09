@@ -324,7 +324,7 @@ END;
 			return 0;
 			
 		if ($recordSet)	{
-			$dist_format = ($this->criteria->searchclass == 'Postcode')?"Dist:%dkm %s":"Dist:%.1fkm %s";		
+			$dist_format = ($this->criteria->searchclass == 'Postcode')?"Dist:%dkm %s":"Dist:%.1fkm %s";
 
 			$this->results=array();
 			$i=0;
@@ -356,6 +356,19 @@ END;
 			}
 			$recordSet->Close(); 
 			$this->numberofimages = $i;
+			
+			if (!$i && $this->resultCount) {
+				$pgsize = $this->criteria->resultsperpage;
+
+				if (!$pgsize) {$pgsize = 15;}
+				
+				$lastPage = ($this->resultCount -1)* $pgsize;
+			
+				if ($this->currentPage < $lastPage) {
+					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = 0");
+					$this->resultCount = 0;
+				}
+			}
 		} else 
 			return 0;
 			
