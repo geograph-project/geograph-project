@@ -109,6 +109,39 @@ if (isset($_GET['coast_GB_40'])) {
 	print "<h2>$total</h2>";
 	exit;
 	
+} elseif (isset($_GET['nonalign'])) {
+	require_once('geograph/mapmosaic.class.php');
+	$mosaic = new GeographMapMosaic;
+	
+	$basemap = isset($_GET['base']);
+	$dummy = !isset($_GET['do']);
+	
+	$prefixes = $db->GetAll("select * from gridprefix");	
+	foreach($prefixes as $idx=>$prefix)
+	{
+		print "<h3>{$prefix['prefix']}</h3>";flush();
+
+		$minx=$prefix['origin_x'];
+		$maxx=$prefix['origin_x']+$prefix['width']-1;
+		$miny=$prefix['origin_y'];
+		$maxy=$prefix['origin_y']+$prefix['height']-1;
+
+		
+		$crit = "map_x between $minx and $maxx and ".
+			"map_y between $miny and $maxy and ".
+			"pixels_per_km >= 40 and ".
+			"((map_x-{$prefix['origin_x']}) mod 5) != 0 and ".
+			"((map_y-{$prefix['origin_y']}) mod 5) != 0";
+			
+		$count = $mosaic->deleteBySql($crit,$dummy,$basemap);
+		print "Deleted $count<br>";
+
+		$total += $count;
+	
+	}
+	print "<h2>Total: $total</h2>";
+	exit;
+	
 } elseif (isset($_POST['inv'])) {
 	$square=new GridSquare;
 	require_once('geograph/mapmosaic.class.php');
@@ -129,7 +162,7 @@ if (isset($_GET['coast_GB_40'])) {
 	}
 	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	
+	$basemap = isset($_POST['base']);
 	foreach ($squares as $gridref) {
 		$grid_ok=$square->setGridRef($gridref);
 
@@ -160,7 +193,7 @@ if (isset($_GET['coast_GB_40'])) {
 			$recordSet->Close(); 
 		}
 
-		$mosaic->expirePosition($x,$y,$user_id);
+		$mosaic->expirePosition($x,$y,$user_id,$basemap);
 	}
 	$smarty->display('_std_end.tpl');
 	exit;

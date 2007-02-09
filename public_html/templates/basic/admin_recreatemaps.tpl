@@ -31,6 +31,7 @@ Number of Maps to Process: <input type="text" name="limit" value="10" size="12"/
 
 Invalidate Grid Square(s): <input type="text" name="gridref" value="" size="30"/><br/>
 Geograph User ID: <input type="text" name="user_id" value="" size="5"/>
+Inc Basemap: <input type="checkbox" name="base" value="on"/>
 
 <input type="submit" name="inv" value="Invalidate"/>
 

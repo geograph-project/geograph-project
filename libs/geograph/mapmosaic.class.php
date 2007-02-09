@@ -733,7 +733,7 @@ class GeographMapMosaic
 			$halign=round($halign/2);
 		}
 		
-		//range check the bestorigin - we've got some hard coded
+		//range check the bestorigin - we've got some hard coded //todo
 		//values here
 		$bestoriginx=max($bestoriginx, 0);
 		$bestoriginx=min($bestoriginx, 860);
@@ -914,6 +914,45 @@ class GeographMapMosaic
 		
 	}
 	
+	
+	/**
+	* Given a sql criteria against mapcache, this ensures that any cached map images are deleted!
+	* This should really be static
+	* @access public
+	*/
+	function deleteBySql($crit,$dummy=false,$expire_basemaps=false)
+	{
+		$db=&$this->_getDB();
+		
+		$root=&$_SERVER['DOCUMENT_ROOT'];
+
+		$sql="select * from mapcache where $crit";
+		$deleted = 0;
+		$recordSet = &$this->db->Execute($sql);
+		while (!$recordSet->EOF) 
+		{
+			$file = $this->getImageFilename($recordSet->fields);
+			if (file_exists($root.$file)) {
+				if (!$dummy)
+					unlink($root.$file);
+				$deleted++;
+			} 
+			if (!$dummy && $expire_basemaps) {
+				$file = $this->getBaseMapFilename($recordSet->fields);
+				if (file_exists($root.$file)) {
+					unlink($root.$file);
+				} 
+				$recordSet->MoveNext();
+			}
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close();
+		$sql="delete from mapcache where $crit";
+		if (!$dummy)
+			$db->Execute($sql);	
+		return $deleted;
+	}
+	
 	function getBaseMapFilename($row)
 	{
 		$dir="/maps/base/";
@@ -925,7 +964,21 @@ class GeographMapMosaic
 		$file="base_{$row['map_x']}_{$row['map_y']}_{$row['image_w']}_{$row['image_h']}_{$row['pixels_per_km']}.gd";
 		
 		return $dir.$file;
-	}	
+	}
+	function getImageFilename($row)
+	{
+		$dir="/maps/detail/";
+		
+		$dir.="{$row['map_x']}/";
+		
+		$dir.="{$row['map_y']}/";
+		
+		$extension = ($row['pixels_per_km'] > 40 || $row['type_or_user'] < -20)?'jpg':'png';
+
+		$file="detail_{$row['map_x']}_{$row['map_y']}_{$row['image_w']}_{$row['image_h']}_{$row['pixels_per_km']}_{$row['type_or_user']}.$extension";
+
+		return $dir.$file;
+	}
 	
 	/**
 	* Invalidates all cached maps - recommended above expireAll as the recreation will be handled by the deamon
