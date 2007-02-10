@@ -75,8 +75,8 @@ function smarty_function_articletext($input) {
 	$output = preg_replace('/(-{7,})\n(.*?)(-{7,})/es',"article_make_table('\$2')",str_replace("\r",'',$input));
 
 	$output = str_replace(
-		array('[b]','[/b]','[big]','[/big]','[i]','[/i]','[h2]','[/h2]','[h3]','[/h3]','[h4]','[/h4]'),
-		array('<b>','</b>','<big>','</big>','<i>','</i>','<h2>','</h2>','<h3>','</h3>','<h4>','</h4>'),
+		array('[b]','[/b]','[big]','[/big]','[i]','[/i]','[h2]','[/h2]','[h3]','[/h3]','[h4]','[/h4]','[float]','[/float]','[br/]'),
+		array('<b>','</b>','<big>','</big>','<i>','</i>','<h2>','</h2>','<h3>','</h3>','<h4>','</h4>','<div style="float:left">','</div>','<br style="clear:both"/>'),
 		$output);
 
 	$pattern=array(); $replacement=array();
@@ -138,7 +138,7 @@ function smarty_function_articletext($input) {
 	$output=preg_replace($pattern, $replacement, $output);
 	
 	if (count($m)) {
-		$output .= '<div class="copyright">Great Britain Ordnance Survey&reg; 1:50 000 Scale Colour Raster Mapping Extracts &copy; Crown copyright. Educational licence 100045616.</div>';
+		$output .= '<div class="copyright">Great Britain 1:50 000 Scale Colour Raster Mapping Extracts &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.</div>';
 	}
 	
 	return GeographLinks($output,true);
