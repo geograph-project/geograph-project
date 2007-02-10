@@ -99,8 +99,8 @@ class RasterMap
 				//$this->enabled = true;
 				$this->service = 'Google';
 			} 
-			if (isset($this->tilewidth[$service]));
-				$this->width = $this->tilewidth[$service];
+			if (isset($this->tilewidth[$this->service]));
+				$this->width = $this->tilewidth[$this->service];
 		}
 	} 
 	
