@@ -47,7 +47,7 @@
 
 </form>	
 
-<div class="copyright">Great Britain locations based upon Ordnance Survey&reg 1:50 000 Scale Gazetteer with the permission of Ordnance Survey on behalf of The Controller of Her Majesty's Stationery Office, &copy; Crown copyright. Educational licence 100045616.<br/>
+<div class="copyright">Great Britain locations based upon 1:50 000 Scale Gazetteer with the permission of Ordnance Survey on behalf of The Controller of Her Majesty's Stationery Office, &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.<br/>
 <br/>
 and enhanced with the Gazetteer of British Place Names, &copy; Association of British Counties, used with permission.</div>
 

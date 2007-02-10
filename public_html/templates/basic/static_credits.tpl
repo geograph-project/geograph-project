@@ -61,11 +61,11 @@
     <li>Historic County centre points compiled by {mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}.</li>
     <li>National Trail routes compiled with the help of {external href="http://www.magic.gov.uk/" text="magic.gov.uk"} and contributor <a href="http://geograph.local/profile.php?u=1324">Tony Atkin</a>! (subject to Copyright, used under licence)</li>
     <li>National Cycle routes provided by {external href="http://www.systrans.org.uk/" text="sustrans.org.uk"}. (subject to Copyright, used with permission)</li>
-    <li>Great Britain Gazetteer based upon {external href="http://www.ordnancesurvey.co.uk/" text="Ordnance Survey&reg;"} 1:50 000 Scale Gazetteer, &copy; Crown copyright. Educational licence 100045616.<ul>
+    <li>Great Britain Gazetteer based upon {external href="http://www.ordnancesurvey.co.uk/" text="Ordnance Survey&reg;"} 1:50 000 Scale Gazetteer, &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.<ul>
     	<li>and enhanced with the Gazetteer of British Place Names, &copy; {external href="http://www.abcounties.co.uk/" text="Association of British Counties"}, used with permission.</li>
     </ul>
     </li>
-    <li>Great Britain {external href="http://www.ordnancesurvey.co.uk/" text="Ordnance Survey&reg;"} 1:50 000 Scale Colour Raster Mapping (Same as paper based Landranger&trade; product). &copy; Crown copyright. Educational licence 100045616. Provided as part of Sponsorship deal.</li>
+    <li>Great Britain 1:50 000 Scale Colour Raster Mapping (Same as paper based Landranger&trade; product). &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616. Provided as part of Sponsorship deal.</li>
     </ul>
     
     <h3>Hosting</h3>

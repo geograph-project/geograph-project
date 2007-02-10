@@ -132,13 +132,35 @@ class RasterMap
 		if ($this->service == 'Google') {
 			return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\">Loading map...</div>";
 		} elseif ($this->service == 'OS50k-small') {
+			static $idcounter = 1;
 			$mapurl = "/tile.php?r=".$this->getToken();
 			
 			$gr= !empty($this->square->grid_reference_full)?$this->square->grid_reference_full:$this->square->grid_reference;
 			
 			$title = "1:50,000 Modern Day Landranger(TM) Map &copy; Crown Copyright";
 			
-			return "<a href=\"/gridref/$gr\" title=\"$title\"><img src=\"$mapurl\" width=\"$width\" height=\"$width\" alt=\"$title\"/></a>";
+	//container
+			$str = "<div style=\"position:relative;height:{$width}px;width:{$width}px;\">";
+			
+	//map image
+			$str .= "<div style=\"position:absolute;top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" width=\"$width\" height=\"$width\" alt=\"$title\"/></div>";
+			
+	//subject icon
+			$this->displayMarker1 = $this->exactPosition;
+			$top=$width/2;
+			$left=$width/2;
+			$display = $this->displayMarker1 ?'':'none';
+			$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;display:$display\" id=\"marker$idcounter\"><img src=\"/templates/basic/img/circle.png\" alt=\"+\" width=\"29\" height=\"29\"/></div>";
+	
+	//overlay (for marker)
+			$str .= "<div style=\"position:absolute;top:0px;left:0px;border:1px solid gray\"><a href=\"/gridref/$gr\" title=\"$title\" onmouseover=\"document.getElementById('marker$idcounter').style.display='none'\" onmouseout=\"document.getElementById('marker$idcounter').style.display='$display'\"><img src=\"/img/blank.gif\" style=\"width:{$width}px;height:{$width}px;display:block;\" border=\"1\" alt=\"$title\" name=\"map\" galleryimg=\"no\"/></a></div>";
+
+			$str .= "</div>";
+			
+			$idcounter++;
+			
+			return $str;
+		
 		} elseif ($this->service == 'OS50k') {
 
 			$mapurl = "/tile.php?r=".$this->getToken();
@@ -547,15 +569,17 @@ class RasterMap
 		
 		$by20 = $this->width/20; //to center on the centisquare
 				
-		$cmd = sprintf('%s"%sconvert" -gravity SouthWest -crop %ldx%ld+%ld+%ld +repage -thumbnail %ldx%ld -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 6,105 105,118 3,3" -fill "#000066" -pointsize 10 -draw "text 10,115 \'Crown © %s\'" -colors 128 -depth 8 -type Palette png:%s png:%s', 
+		$cmd = sprintf('%s"%sconvert" png:%s -gravity SouthWest -crop %ldx%ld+%ld+%ld +repage -crop %ldx%ld +repage -thumbnail %ldx%ld +repage -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 1,110 123,123 3,3" -fill "#000066" -pointsize 10 -draw "text 3,121 \'Crown © %s\'" -colors 128 -depth 8 -type Palette png:%s', 
 			isset($_GET['nice'])?'nice ':'',
 			$CONF['imagemagick_path'],
+			$input,
 			$this->width, $this->width, 
 			($this->width*$east)+$by20, ($this->width*$nort)+$by20, 
 			$this->width, $this->width, 
+			$this->width, $this->width, 
 			$CONF['imagemagick_font'],
 			$CONF['OS_licence'],
-			$input,$output);
+			$output);
 		
 		if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) 
 			$cmd = str_replace('/','\\',$cmd);
