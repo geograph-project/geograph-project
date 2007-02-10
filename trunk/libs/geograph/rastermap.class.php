@@ -153,7 +153,7 @@ class RasterMap
 			$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;display:$display\" id=\"marker$idcounter\"><img src=\"/templates/basic/img/circle.png\" alt=\"+\" width=\"29\" height=\"29\"/></div>";
 	
 	//overlay (for marker)
-			$str .= "<div style=\"position:absolute;top:0px;left:0px;border:1px solid gray\"><a href=\"/gridref/$gr\" title=\"$title\" onmouseover=\"document.getElementById('marker$idcounter').style.display='none'\" onmouseout=\"document.getElementById('marker$idcounter').style.display='$display'\"><img src=\"/img/blank.gif\" style=\"width:{$width}px;height:{$width}px;display:block;\" border=\"1\" alt=\"$title\" name=\"map\" galleryimg=\"no\"/></a></div>";
+			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><a href=\"/gridref/$gr\" title=\"$title\" onmouseover=\"document.getElementById('marker$idcounter').style.display='none'\" onmouseout=\"document.getElementById('marker$idcounter').style.display='$display'\"><img src=\"/img/blank.gif\" style=\"width:{$width}px;height:{$width}px;display:block;\" border=\"1\" alt=\"$title\" name=\"map\" galleryimg=\"no\"/></a></div>";
 
 			$str .= "</div>";
 			
@@ -569,7 +569,7 @@ class RasterMap
 		
 		$by20 = $this->width/20; //to center on the centisquare
 				
-		$cmd = sprintf('%s"%sconvert" png:%s -gravity SouthWest -crop %ldx%ld+%ld+%ld +repage -crop %ldx%ld +repage -thumbnail %ldx%ld +repage -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 1,110 123,123 3,3" -fill "#000066" -pointsize 10 -draw "text 3,121 \'Crown © %s\'" -colors 128 -depth 8 -type Palette png:%s', 
+		$cmd = sprintf('%s"%sconvert" png:%s -gravity SouthWest -crop %ldx%ld+%ld+%ld +repage -crop %ldx%ld +repage -thumbnail %ldx%ld +repage -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 13,114 112,130 3,3" -fill "#000066" -pointsize 10 -draw "text 14,123 \'© OSGB %s\'" -colors 128 -depth 8 -type Palette png:%s', 
 			isset($_GET['nice'])?'nice ':'',
 			$CONF['imagemagick_path'],
 			$input,
