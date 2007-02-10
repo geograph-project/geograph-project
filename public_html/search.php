@@ -341,6 +341,7 @@ if (isset($_GET['fav']) && $i) {
 	}
 	if (!empty($_GET['text'])) {
 		$q=trim($_GET['text']);
+		$GLOBALS['text'] = 1;
 	} elseif (!empty($_GET['location'])) {
 		if (!empty($_GET['q'])) {
 			$q=trim($_GET['q']).' near '.trim($_GET['location']);
