@@ -370,6 +370,11 @@ class RasterMap
 				list($this->lat,$this->long) = $conv->national_to_wgs84($this->nateastings,$this->natnorthings,$this->reference_index);
 			}
 			return "
+				<style type=\"text/css\">
+				v\:* {
+					behavior:url(#default#VML);
+				}
+				</style>
 				<script type=\"text/javascript\">
 				//<![CDATA[
 					function createMarker(point) {
