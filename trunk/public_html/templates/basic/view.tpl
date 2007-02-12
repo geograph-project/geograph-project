@@ -51,10 +51,9 @@ referring to <b>image {$image->gridimage_id}</b>
   	el = document.getElementById('mainphoto');
   	el.style.display = 'none';
   	el.style.display = '';
-  	
-  	showMarkedImages();
   }
-  window.onload = redrawMainImage;
+  AttachEvent(window,'load',redrawMainImage,false);
+  AttachEvent(window,'load',showMarkedImages,false);
   
   </script>
   {/literal}

@@ -153,10 +153,11 @@ geographing</a> first.</p>
 		{$rastermap->getScriptTag()}
 			{literal}
 			<script type="text/javascript">
-				window.onload = function () {
+				function updateMapMarkers() {
 					updateMapMarker(document.theForm.grid_reference,false,true);
 					updateMapMarker(document.theForm.photographer_gridref,false,true);
 				}
+				AttachEvent(window,'load',updateMapMarkers,false);
 			</script>
 			{/literal}
 		
@@ -294,8 +295,7 @@ function prePopulateImageclass2() {
 	if (document.getElementById('imageclass_enable_button'))
 		document.getElementById('imageclass_enable_button').disabled = true;
 }
-
-window.onload = onChangeImageclass;
+AttachEvent(window,'load',onChangeImageclass,false);
 //-->
 </script>
 {/literal}

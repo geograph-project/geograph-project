@@ -49,7 +49,7 @@
 	<br/><br/>
 	<small style="padding:10px; background-color:#eeeeee;">Marked Images: <a href="javascript:void(displayMarkedImages())"><b>Display</b>/Export</a> &nbsp; <a href="/search.php?marked=1&amp;displayclass={if $engine->temp_displayclass}{$engine->temp_displayclass}{else}{$engine->criteria->displayclass}{/if}">View as Search Results</a> &nbsp; <a href="javascript:void(importToMarkedImages())">Import to List</a> &nbsp; (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear List</a>)</small></div>
 	<script>
-	window.onload = showMarkedImages;
+	AttachEvent(window,'load',showMarkedImages,false);
 	</script>
 	
 	{if $engine->results}

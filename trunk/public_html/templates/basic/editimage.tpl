@@ -310,11 +310,12 @@
 		{$rastermap->getScriptTag()}
 			{literal}
 			<script type="text/javascript">
-				window.onload = function () {
+				function updateMapMarkers() {
 					updateMapMarker(document.theForm.grid_reference,false,true);
 					updateMapMarker(document.theForm.photographer_gridref,false,true);
-					onChangeImageclass();
 				}
+				AttachEvent(window,'load',updateMapMarkers,false);
+				AttachEvent(window,'load',onChangeImageclass,false);
 			</script>
 			{/literal}
 		
@@ -388,8 +389,8 @@
 <script type="text/javascript">
 <!--
 //rest loaded in geograph.js
+AttachEvent(window,'load',onChangeImageclass,false);
 
-window.onload = onChangeImageclass;
 //-->
 </script>
 {/literal}
