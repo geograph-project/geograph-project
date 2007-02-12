@@ -9,7 +9,6 @@
 {else}
 
 {if $recipient->registered}
-	<p style="border:1px solid pink; padding:10px"><span style="color:red">Note</span>: Messages sent though this facility between 20th Dec and 3rd Jan 2007 will have <b>not</b> been sent and have been lost. We sincerely apologise for any inconvenience this may have caused.</p>
 	<h2>Send Message to {$recipient->realname|escape:'html'}</h2>
 
 	{if $error}
