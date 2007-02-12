@@ -137,7 +137,7 @@ function smarty_function_articletext($input) {
 	
 	$output=preg_replace($pattern, $replacement, $output);
 	
-	if (count($m)) {
+	if (count($m[0])) {
 		$output .= '<div class="copyright">Great Britain 1:50 000 Scale Colour Raster Mapping Extracts &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.</div>';
 	}
 	
