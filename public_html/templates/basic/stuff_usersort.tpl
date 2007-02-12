@@ -71,8 +71,9 @@ function startVotes() {
 		ele.style.display = '';
 	}
 }
+	
 
-window.onload = startVotes;
+AttachEvent(window,'load',startVotes,false);
 
 </script>
 {/literal}

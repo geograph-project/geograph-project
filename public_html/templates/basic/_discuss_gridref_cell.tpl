@@ -53,7 +53,7 @@ function showThumbnails(that) {
 function pageLoad() {
 	showThumbnails(document.getElementById('scrollDiv'));
 }
-window.onload = pageLoad;
+AttachEvent(window,'load',pageLoad,false);
 </script>
 {/literal}
 

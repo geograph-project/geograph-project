@@ -45,9 +45,8 @@ function onResize() {
         }, 500);
     }
 }
-
-window.onload = onLoad;
-window.onresize = onResize;
+AttachEvent(window,'load',onLoad,false);
+AttachEvent(window,'resize',onResize,false);
 
 {/literal}</script>
 

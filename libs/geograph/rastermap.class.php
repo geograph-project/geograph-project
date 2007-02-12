@@ -402,10 +402,11 @@ class RasterMap
 							var point = new GLatLng({$this->lat},{$this->long});
 							map.setCenter(point, 13);
 							$block 
+							
+							AttachEvent(window,'unload',GUnload,false);
 						}
 					}
-					window.onload = loadmap;
-					window.onunload = GUnload;
+					AttachEvent(window,'load',loadmap,false);
 				//]]>
 	    	</script>";
 		} else {
