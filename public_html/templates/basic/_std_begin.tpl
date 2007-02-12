@@ -24,15 +24,6 @@
 <link rel="search" type="application/opensearchdescription+xml" 
 title="Geograph British Isles search" href="/stuff/osd.xml" />
 <script type="text/javascript" src="/geograph.js?v={$javascript_version}"></script>
-{if $rastermap->service == 'Google'}
-{literal}
-<style type="text/css">
-v\:* {
-behavior:url(#default#VML);
-}
-</style>
-{/literal}
-{/if}
 </head>
 
 <body>
