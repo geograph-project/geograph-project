@@ -21,6 +21,8 @@ $admin_usr=$CONF['minibb_admin_user'];
 $admin_pwd=$CONF['minibb_admin_pwd'];
 $admin_email=$CONF['minibb_admin_email'];
 
+$GLOBALS['javascript_version'] = $CONF['javascript_version'];
+
 $bb_admin='bb_admin.php?';
 
 $lang='eng';
