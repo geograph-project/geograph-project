@@ -1,7 +1,7 @@
 <?php
 /***************************************************************************
 
-FeedCreator class v1.7.7(BH)
+FeedCreator class v1.7.71(BH)
 originally (c) Kai Blankenhorn
 www.bitfolge.de
 kaib@bitfolge.de
@@ -26,6 +26,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 Changelog:
+
+v1.7.71(BH)	13-02-07
+	correct georss namespace (Barry Hunter)
 
 v1.7.7(BH)	28-03-06
 	added GPX Feed (Barry Hunter)
@@ -181,7 +184,7 @@ define("TIME_ZONE","");
 /**
  * Version string.
  **/
-define("FEEDCREATOR_VERSION", "FeedCreator 1.7.6(BH)");
+define("FEEDCREATOR_VERSION", "FeedCreator 1.7.71(BH)");
 
 
 
@@ -856,7 +859,7 @@ class RSSCreator10 extends FeedCreator {
 		if ($this->items[0]->thumb!="")
 			$feed.= "    xmlns:photo=\"http://www.pheed.com/pheed/\"\n";
 		if ($this->items[0]->lat!="")
-			$feed.= "    xmlns:georss=\"http://www.georss.org/georss/\"\n";
+			$feed.= "    xmlns:georss=\"http://www.georss.org/georss\"\n";
 		$feed.= "    xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n";
 		$feed.= "    <channel rdf:about=\"".$this->syndicationURL."\">\n";
 		$feed.= "        <title>".htmlspecialchars($this->title)."</title>\n";
