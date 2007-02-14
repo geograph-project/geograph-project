@@ -186,9 +186,9 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,2}
 				$g_image=new GridImage;
 			}
 			$ok = $g_image->loadFromId($g_id);
-			if ($g_image->moderation_status == 'rejected' && !isset($userRanks[$cc]))
-				$ok = false;
-			if ($ok) {
+			if ($ok && $g_image->moderation_status == 'rejected' && !isset($userRanks[$cc])) {
+				$posterText = str_replace("[[[$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
+			} elseif ($ok) {
 				if ($g_matches[1][$i]) {
 					$g_img = $g_image->getThumbnail(120,120,false,true);
 					#$g_img = preg_replace('/alt="(.*?)"/','alt="'.$g_image->grid_reference.' : \1 by '.$g_image->realname.'"',$g_img);
