@@ -273,9 +273,9 @@ function GeographLinks(&$posterText,$thumbs = false) {
 					$g_image=new GridImage;
 				}
 				$ok = $g_image->loadFromId($g_id);
-				if ($g_image->moderation_status == 'rejected')
-					$ok = false;
-				if ($ok) {
+				if ($g_image->moderation_status == 'rejected') {
+					$posterText = str_replace("[[[$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
+				} elseif ($ok) {
 					$g_title=$g_image->grid_reference.' : '.htmlentities($g_image->title);
 					if ($g_matches[1][$i]) {
 						if ($thumbs) {
