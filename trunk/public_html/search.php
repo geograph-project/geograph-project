@@ -791,9 +791,10 @@ function smarty_function_searchbreak($params) {
 			$last = $s;
 			break;
 		case 'submitted':
-			if ($last != $image->submitted)
+			$s = substr($image->submitted,0,10);
+			if ($last != $s)
 				$b = getFormattedDate($image->submitted);
-			$last = $image->imagetaken;
+			$last = $s;
 			break;
 		case 'submitted_month':
 			$s = substr($image->submitted,0,7);
