@@ -68,6 +68,18 @@ if (isset($_GET['moderator'])) {
 	}
 	
 	$smarty->assign('moderator', 1);
+} elseif (isset($_GET['user_id'])) {
+	$USER->mustHavePerm('admin');
+	
+	$mid = intval($_GET['user_id']);
+	
+	$sql_where .= " t.status='closed'";
+	
+	if ($mid != 0) {
+		$sql_where .= " and i.user_id=$mid";
+	}
+	
+	$smarty->assign('moderator', 1);
 } else {
 	$sql_where = " t.moderator_id=0 and t.status<>'closed'";
 }
