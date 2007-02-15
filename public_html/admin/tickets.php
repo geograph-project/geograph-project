@@ -84,6 +84,8 @@ if (isset($_GET['moderator'])) {
 	$sql_where = " t.moderator_id=0 and t.status<>'closed'";
 }
 
+$rev = (isset($_GET['rev']))?'desc':'';
+
 $newtickets=$db->GetAll(
 	"select t.*,suggester.realname as suggester,
 		submitter.realname as submitter, i.title, 
@@ -103,7 +105,7 @@ $newtickets=$db->GetAll(
 				(l.user_id != {$USER->user_id} AND lock_type = 'cantmod')
 		)
 	group by t.gridimage_ticket_id
-	order by t.suggested
+	order by t.suggested $rev
 	limit $limit");
 $smarty->assign_by_ref('newtickets', $newtickets);
 
