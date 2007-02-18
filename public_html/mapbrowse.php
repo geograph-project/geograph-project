@@ -71,6 +71,17 @@ if (preg_match('/\?([0-9]+),([0-9]+)$/',$_SERVER['QUERY_STRING'],$matchs)) {
 
 if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
 	$mosaic->type_or_user = $USER->user_id;
+} elseif (isset($_GET['user']) && isValidRealName($_GET['user'])) {
+	if ($_GET['user'] == $USER->nickname) {
+		$uid=$USER->user_id;
+	} else {
+		$profile=new GeographUser();
+		$profile->loadByNickname($_GET['user']);
+		$uid=$profile->user_id;
+	}
+	if ($uid) {
+		$mosaic->type_or_user = $uid;
+	}
 } elseif (isset($_GET['u'])) {
 	if (!empty($_GET['u'])) {
 		$mosaic->type_or_user = max(0,intval($_GET['u']));
@@ -174,6 +185,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		//the map is only useful for people with images!
 		if ( !empty($profile->stats['total']) || !empty($profile->stats['has_image']) ) {
 			$smarty->assign('realname', $profile->realname);
+			$smarty->assign('nickname', $profile->nickname);
 			$smarty->assign('user_id', $mosaic->type_or_user);
 		
 			$overview->type_or_user = $mosaic->type_or_user;

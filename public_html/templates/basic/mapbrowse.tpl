@@ -260,10 +260,10 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 
  <br style="clear:both;"/>
  
-{if $token_zoomout}
+{if $token_zoomout || $realname}
 <div style="position:relative;">
 	<div style="position:absolute;left:445px;top:5px;">
-	<b><a title="right click and select&#13;&#10; [Copy Shortcut] or [Copy Link Location]" href="/map/{$mosaic_token}">Link to this Map</a></b>
+	<b><a title="right click and select&#13;&#10; [Copy Shortcut] or [Copy Link Location]" href="/map/{if $token_zoomout}{$mosaic_token}{else}{if $profile->nickname}/user/{$profile->nickname|escape:'url'}/map/{else}/map/?u={$user_id}{/if}{/if}">Link to this Map</a></b>
 	</div>
 </div>
 {/if}
