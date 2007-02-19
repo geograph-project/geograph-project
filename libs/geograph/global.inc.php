@@ -53,6 +53,10 @@ $DSN = $CONF['db_driver'].'://'.
 	'/'.$CONF['db_db'].$CONF['db_persist'];
 
 
+//global security routines
+require_once('geograph/security.inc.php');
+
+
 //adodb session configuration - we use same database
 $ADODB_SESSION_DRIVER=$CONF['db_driver'];
 $ADODB_SESSION_CONNECT=$CONF['db_connect'];
@@ -61,8 +65,6 @@ $ADODB_SESSION_PWD =$CONF['db_pwd'];
 $ADODB_SESSION_DB =$CONF['db_db'];
 require_once('adodb/session/adodb-session.php');
 
-//global security routines
-require_once('geograph/security.inc.php');
 
 //global routines
 require_once('geograph/functions.inc.php');

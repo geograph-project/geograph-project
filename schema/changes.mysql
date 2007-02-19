@@ -1093,3 +1093,6 @@ ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full','text','
 ALTER TABLE `gridimage_ticket` ADD `notify` ENUM( '', 'suggestor' ) NOT NULL DEFAULT 'suggestor';
 #update current tickets to use the old default
 UPDATE `gridimage_ticket` SET notify = '';
+
+
+ALTER TABLE `sessions` ADD `ipaddr` VARCHAR(20) NOT NULL DEFAULT '';
