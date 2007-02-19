@@ -717,10 +717,13 @@ class ADODB_Session {
 			$expiryref = $conn->qstr($arr['expireref']);
 			// do we insert or update? => as for sesskey
 			$rs =& $conn->Execute("SELECT COUNT(*) AS cnt FROM $table WHERE $binary sesskey = $qkey");
+			
+			$ipaddr = getRemoteIP();
+			
 			if ($rs && reset($rs->fields) > 0) {
-				$sql = "UPDATE $table SET expiry = $expiry, $data = $lob_value, expireref=$expiryref WHERE  sesskey = $qkey";
+				$sql = "UPDATE $table SET expiry = $expiry, $data = $lob_value, expireref=$expiryref,ipaddr = '$ipaddr' WHERE  sesskey = $qkey";
 			} else {
-				$sql = "INSERT INTO $table (expiry, $data, sesskey,expireref) VALUES ($expiry, $lob_value, $qkey,$expiryref)";
+				$sql = "INSERT INTO $table (expiry, $data, sesskey,expireref,ipaddr) VALUES ($expiry, $lob_value, $qkey,$expiryref,'$ipaddr')";
 			}
 			if ($rs) {
 				$rs->Close();
