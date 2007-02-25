@@ -57,15 +57,18 @@ if ($step == 1) {
 //grid reference posted...
 if (isset($_POST['gridsquare']))
 {
-	if (isset($_POST['photographer_gridref']))
+	if (isset($_POST['photographer_gridref'])) {
 		$smarty->assign('photographer_gridref', $_POST['photographer_gridref']);
+	}
 	if (isset($_POST['view_direction']) && strlen($_POST['view_direction'])) {
 		$smarty->assign('view_direction', $_POST['view_direction']);
-	else
+	} else {
 		$smarty->assign('view_direction', -1);
-	if (!empty($_POST['use6fig']))
+	}
+	if (!empty($_POST['use6fig'])) {
 		$smarty->assign('use6fig', $_POST['use6fig']);
-
+	}
+	
 	//ensure the submitted reference is valid
 	if (!empty($_POST['grid_reference'])) 
 	{
