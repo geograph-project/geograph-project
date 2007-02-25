@@ -188,9 +188,9 @@
 			Change {$item.field} from
 
 			{if $item.field eq "grid_reference"}
-				{assign var="field" value="subject_gridref"}
+				{assign var="field" value="current_subject_gridref"}
 			{else}
-				{assign var="field" value=$item.field}
+				{assign var="field" value="current_`$item.field`"}
 			{/if}
 
 			{if $item.field eq "grid_reference" || $item.field eq "photographer_gridref"}
