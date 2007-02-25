@@ -36,9 +36,11 @@ $order = (isset($_GET['order']) && preg_match('/^\w+$/' , $_GET['order']))?$_GET
 
 $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
+$when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
+
 
 $template='statistics_breakdown.tpl';
-$cacheid='statistics|'.$i.$by.'_'.$ri.'_'.$u.'_'.$order;
+$cacheid='statistics|'.$i.$by.'_'.$ri.'_'.$u.'_'.$order.$when;
 
 
 if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
@@ -50,8 +52,24 @@ if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 	$sql_crit = " AND upd_timestamp > date_sub(now(), interval {$_GET['last']})";
 	$link .= "last={$_GET['last']}&amp;";
 	$cacheid.=md5($sql_crit);
+} elseif ($when) {
+	if (strlen($when) == 7) {
+		$sql_crit = " and submitted < DATE_ADD('$when-01',interval 1 month)";
+	} elseif (strlen($when) == 4) {
+		$sql_crit = " and submitted < DATE_ADD('$when-01-01',interval 1 year)";
+	} else {
+		$sql_crit = " and submitted < '$when'";
+	}
+	$link .= "when=$when&amp;";
+	$smarty->assign_by_ref('when',$when);
+	$smarty->assign('whenname',getFormattedDate($when));
 } else {
 	$sql_crit = '';
+}
+
+if ($ri) {
+	$sql_crit .= " AND reference_index = $ri";
+	$link .= "ri=$ri&amp;";
 }
 
 $smarty->caching = 2; // lifetime is per cache
@@ -121,9 +139,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('title', $bys[$by]);
 
 	$title = "Breakdown of Photos by ".$bys[$by];
+	if ($when)
+		$title .= ", March 2005 though ".getFormattedDate($when);
 	if ($ri)
 		$title .= " in ".$CONF['references_all'][$ri];
-	$link = "by=$by&amp;ri=$ri";
+	$link = "by=$by";
 	$sql_from = '';
 	$user_crit = '';
 	if ($i) {
@@ -193,17 +213,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_order = "ORDER BY field$sql_dir";
 	}
 	
-	if ($ri) {
-		$ri_crit = " reference_index = $ri";
-	} else {
-		$ri_crit = "1";
-	}
-	
 $sql = "select 
 $sql_fieldname as field,
 count(*) as c $sql_fields
 from gridimage_search as gi $sql_from
-where $ri_crit $user_crit
+where 1 $user_crit
  $sql_crit
 group by $sql_group 
 $sql_order";

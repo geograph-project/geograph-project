@@ -59,6 +59,7 @@
 
 <h3><a name="users"></a>Contributors...</h3>
 <ul>
+	<li><a href="/credits/"><b>Contributor Listing</b></a></li>
 	<li><a href="/statistics/moversboard.php"><b>Weekly</b> Leaderboard</a> (for <a href="/statistics/moversboard.php?type=supps">Supplementals</a>, <a href="/statistics/moversboard.php?type=additional">Additional Geographs</a>)</li>
 	</li>
 	<li><a href="/statistics/leaderboard.php"><b>All Time</b> Leaderboard</a> (for <a href="/statistics/leaderboard.php?type=supps">Supplementals</a>, <a href="/statistics/leaderboard.php?type=additional">Additional Geographs</a>)</li>
