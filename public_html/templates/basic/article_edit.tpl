@@ -78,7 +78,7 @@
 	<label for="extract">Short Description:</label>
 	<input type="text" name="extract" value="{$extract|escape:"html"}" maxlength="255" size="90" style="width:58em"/>
 	
-	<div class="fieldnotes">Please provide a meaningful shot description for the content.</div>
+	<div class="fieldnotes">Please provide a meaningful short description for the content.</div>
 	
 	{if $errors.extract}</div>{/if}
 </div>
