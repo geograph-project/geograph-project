@@ -14,9 +14,10 @@
 
     <h3>Photographs</h3>
     <ul>
-    <li>Copyright on all photographs is retained by the original submitters, but all are 
+    <li>Copyright on all photographs is retained by the original contributor, but all are 
     published under a {external title="Creative Commons website" href="http://creativecommons.org" text="Creative Commons"} licence -
     each individual photograph on the site details the original photographer and their precise licence terms.</li>
+    <li>View the <a href="/credits/">Photograph Contributor Listing</a>.</li>
     </ul>
     
     <h3>Software</h3>
