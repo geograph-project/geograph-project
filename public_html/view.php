@@ -159,7 +159,7 @@ if ($image->isValid())
 		$rastermap->addLatLong($lat,$long);
 		if (!empty($image->viewpoint_northings)) {
 			$rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings,$image->viewpoint_grlen,$image->view_direction);
-		} elseif (!empty($image->view_direction) && $image->view_direction != -1) {
+		} elseif (isset($image->view_direction) && strlen($image->view_direction) && $image->view_direction != -1) {
 			$rastermap->addViewDirection($image->view_direction);
 		}
 		$smarty->assign_by_ref('rastermap', $rastermap);
