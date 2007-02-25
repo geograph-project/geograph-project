@@ -224,7 +224,7 @@ WGS84: {$latdm} {$longdm}
 {if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: {getamap gridref=$image->photographer_gridref text=$image->photographer_gridref}</dd>
 {/if}
 
-{if $view_direction}
+{if $view_direction != -1}
 <dt>View Direction</dt>
 
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
