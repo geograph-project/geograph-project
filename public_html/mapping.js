@@ -256,7 +256,7 @@ function checkFormSubmission(that_form,mapenabled) {
 			message = message + "* View Direction\n";
 		if (message.length > 0) {
 			message = "We notice that the following fields have been left blank:\n\n" + message;
-			message = message + "\nWhile you can continue without providing this information we would appreciate including as much detail as possible as it will make plotting the photo a map much easier.\n\n";
+			message = message + "\nWhile you can continue without providing this information we would appreciate including as much detail as possible as it will make plotting the photo on a map much easier.\n\n";
 			if (mapenabled) {
 				message = message + "Adding the missing information should be very quick by dragging the icons on the map.\n\n";
 			}
