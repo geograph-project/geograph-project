@@ -146,6 +146,18 @@ if (isset($_POST['gridsquare']))
 					case UPLOAD_ERR_PARTIAL:
 						$smarty->assign('error', 'Your file was only partially uploaded - please try again');
 						break;
+					case UPLOAD_ERR_NO_FILE:
+						$smarty->assign('error', 'No file was uploaded - please try again');
+						break;
+					case UPLOAD_ERR_NO_TMP_DIR:
+						$smarty->assign('error', 'System Error: Folder missing - please let us know');
+						break;
+					case UPLOAD_ERR_CANT_WRITE:
+						$smarty->assign('error', 'System Error: Can not write file - please let us know');
+						break;
+					case UPLOAD_ERR_EXTENSION:
+						$smarty->assign('error', 'System Error: Upload Blocked - please let us know');
+						break;
 					default:
 						$smarty->assign('error', 'We were unable to process your upload - please try again');
 						break;
