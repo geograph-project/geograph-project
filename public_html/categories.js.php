@@ -22,7 +22,9 @@
  */
 
 require_once('geograph/global.inc.php');
-init_session();
+
+#this seems to break some sessions, and is NOT needed anyway
+#init_session();
 
 
 

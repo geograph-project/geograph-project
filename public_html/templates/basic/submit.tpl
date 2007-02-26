@@ -165,10 +165,8 @@ geographing</a> first.</p>
 		<script type="text/javascript" src="/mapping.js?v={$javascript_version}"></script>
 	{/if}
 
-	
-
 	<br/>
-	<input type="submit" name="goback" value="&lt; Back"/> <input type="submit" name="upload" value="Next &gt;" onclick="{literal}if (checkGridReferences(this.form)) {return autoDisable(this);} else {return false}{/literal}"/>
+	<input type="submit" name="goback" value="&lt; Back"/> <input type="submit" name="upload" value="Next &gt;" onclick="{literal}if (checkFormSubmission(this.form)) {return autoDisable(this);} else {return false}{/literal}"/>
 	<br style="clear:right"/>
 
 	{if $totalimagecount gt 0}
@@ -368,7 +366,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<h2>Submit Step 4 of 4 : Confirm image rights</h2>
 	{if $user->rank && $user->rank < 250 && $last_imagetaken}
 
-	<p>I've read this already, <input style="width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this)"/></p>
+	<div style="border:1px solid gray; padding:10px">I've read this already, <input style="width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);autoDisable(this.form.finalise[1]);"/> (saves scrolling to the bottom)</div>
 	{/if}
 	
 	<p>
@@ -402,7 +400,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<p>If you agree with these terms, click "I agree" and your image will be
 	stored in grid square {$gridref}.<br />
 	<input type="submit" name="goback3" value="&lt; Back"/>
-	<input style="width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this)"/>
+	<input style="width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);{if $user->rank && $user->rank < 250 && $last_imagetaken}autoDisable(this.form.finalise[0]);{/if}"/>
 	</p>
 	
 
