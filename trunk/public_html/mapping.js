@@ -245,6 +245,30 @@ function overlayMouseMove(e) {
 	}
 }
 
+function checkFormSubmission(that_form) {
+	if (checkGridReferences(that_form)) {
+		message = '';
+		if (that_form.grid_reference.value == '') 
+			message = message + "* Subject Grid Reference\n";
+		if (that_form.photographer_gridref.value == '') 
+			message = message + "* Photographer Grid Reference\n";
+		if (that_form.view_direction.selectedIndex == 0) 
+			message = message + "* View Direction\n";
+		if (message.length > 0) {
+			message = "We notice that the following fields have been left blank:\n\n" + message;
+			message = message + "\nWhile you can continue without providing this information we would appreciate including as much detail as possible as it will make plotting the photo a map much easier.\n\n";
+			if ({/literal}{if $rastermap->enabled}true{else}false{/if}{literal}) {
+				message = message + "Adding the missing information should be very quick by dragging the icons on the map.\n\n";
+			}
+			message = message + "Click OK to add the information, or Cancel to continue anyway.";
+			return !confirm(message);
+		}
+		return true;
+	} else {
+		return false;
+	}
+}
+
 function checkGridReferences(that_form) {
 	if (!checkGridReference(that_form.grid_reference,true)) 
 		return false;
