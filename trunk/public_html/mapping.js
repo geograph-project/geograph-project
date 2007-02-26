@@ -245,7 +245,7 @@ function overlayMouseMove(e) {
 	}
 }
 
-function checkFormSubmission(that_form) {
+function checkFormSubmission(that_form,mapenabled) {
 	if (checkGridReferences(that_form)) {
 		message = '';
 		if (that_form.grid_reference.value == '') 
@@ -257,7 +257,7 @@ function checkFormSubmission(that_form) {
 		if (message.length > 0) {
 			message = "We notice that the following fields have been left blank:\n\n" + message;
 			message = message + "\nWhile you can continue without providing this information we would appreciate including as much detail as possible as it will make plotting the photo a map much easier.\n\n";
-			if ({/literal}{if $rastermap->enabled}true{else}false{/if}{literal}) {
+			if (mapenabled) {
 				message = message + "Adding the missing information should be very quick by dragging the icons on the map.\n\n";
 			}
 			message = message + "Click OK to add the information, or Cancel to continue anyway.";
