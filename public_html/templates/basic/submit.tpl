@@ -166,7 +166,7 @@ geographing</a> first.</p>
 	{/if}
 
 	<br/>
-	<input type="submit" name="goback" value="&lt; Back"/> <input type="submit" name="upload" value="Next &gt;" onclick="{literal}if (checkFormSubmission(this.form)) {return autoDisable(this);} else {return false}{/literal}"/>
+	<input type="submit" name="goback" value="&lt; Back"/> <input type="submit" name="upload" value="Next &gt;" onclick="if (checkFormSubmission(this.form,{if $rastermap->enabled}true{else}false{/if}{literal})) {return autoDisable(this);} else {return false}{/literal}"/>
 	<br style="clear:right"/>
 
 	{if $totalimagecount gt 0}
