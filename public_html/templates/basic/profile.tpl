@@ -87,7 +87,7 @@
 				{/if}
 				{if $profile->stats.squares gt 0}<ul>
 					<li><b>{$profile->stats.squares}</b> gridsquare{if $profile->stats.squares ne 1}s{/if} <i>photographed</i>,
-					giving a depth score of <b>{$profile->stats.total/$profile->stats.squares|string_format:"%.2f"}</b> (see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)
+					giving a depth score of <b>{math equation="(t-p)/s" assign="depth" t=$profile->stats.total p=$profile->stats.pending s=$profile->stats.squares}{$depth|string_format:"%.2f"}</b> (see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)
 					</li>
 				</ul>{/if}
 			</li>
