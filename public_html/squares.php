@@ -36,7 +36,12 @@ $cacheid = '';
 
 $d=(!empty($_REQUEST['distance']))?min(30,intval(stripslashes($_REQUEST['distance']))):5;
 		
-$type=(isset($_REQUEST['type']))?stripslashes($_REQUEST['type']):'without';
+$type=(isset($_REQUEST['type']))?stripslashes($_REQUEST['type']):'few';
+switch($type) {
+	case 'with': $typename = 'with'; $crit = 'imagecount>0'; break;
+	case 'few': $typename = 'with few'; $crit = 'imagecount<2 and (percent_land > 0 || imagecount>1)'; break;
+	default: $type = $typename = 'without'; $crit = 'imagecount=0 and percent_land > 0'; break;
+}
 	
 $smarty->assign('d', $d);
 $smarty->assign('type', $type);
@@ -66,14 +71,12 @@ if ($grid_ok)
 	//regenerate?
 	if (!$smarty->is_cached($template, $cacheid))
 	{
-		$searchdesc = "squares within {$d}km of {$square->grid_reference} ".(($type == 'with')?'with':'without')." photographs";
+		$searchdesc = "squares within {$d}km of {$square->grid_reference} $typename photographs";
 
 		$x = $square->x;
 		$y = $square->y;
 
-		$sql_where = 'imagecount '.(($type == 'with')?'>':'=').' 0 and ';
-		if ($type != 'with')
-			$sql_where .= 'percent_land > 0 and ';
+		$sql_where = $crit.' and ';
 
 		$left=$x-$d;
 		$right=$x+$d;

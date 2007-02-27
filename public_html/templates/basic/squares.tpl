@@ -16,7 +16,7 @@
 
 <ul>
 {foreach from=$data item=row}
-	<li><a href="/gridref/{$row.grid_reference}">{$row.grid_reference}</a> {if $row.place}{place place=$row.place}{/if}</li>
+	<li><a href="/gridref/{$row.grid_reference}">{$row.grid_reference}</a><small>[{$row.imagecount}]</small> {if $row.place}{place place=$row.place}{/if}</li>
 {/foreach}
 </ul>
  
