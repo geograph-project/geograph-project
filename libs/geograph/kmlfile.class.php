@@ -30,15 +30,15 @@
 
 class kmlPrimative {
 
-	public $name = '';
+	public $tag = '';
 	public $id = '';
 
 	public $items = array();
 
 	public $children = array();
 
-	public function __construct($name,$id = '') {
-		$this->name = $name;
+	public function __construct($tag,$id = '') {
+		$this->tag = $tag;
 		if (!empty($id)) {
 			$this->id = $id;
 		}
@@ -46,10 +46,20 @@ class kmlPrimative {
 
 	public function setItem($name,$value) {
 		$this->items[$name] = $value;
+		return $this;
+	}
+
+	public function setItemCDATA($name,$value) {
+		$this->items[$name] = "<![CDATA[$value]]>";
+		return $this;
 	}
 
 	public function getItem($name) {
 		return $this->items[$name];
+	}
+
+	public function issetItem($name) {
+		return isset($this->items[$name]);
 	}
 
 	public function addChild($obj = null,$id = '',$ref = '') {
@@ -73,8 +83,13 @@ class kmlPrimative {
 		return $this->children[$ref];
 	}
 
+	public function setTimeStamp($when) {
+		$this->addChild('TimeStamp','','TimeStamp')->setItem('when',$when);
+		return $this;
+	}
+
 	public function toString($indent = 0) {
-		$s = str_repeat("\t",$indent)."<{$this->name}";
+		$s = str_repeat("\t",$indent)."<{$this->tag}";
 		if (!empty($this->id)) {
 			$s .= " id=\"{$this->id}\"";
 		}
@@ -89,7 +104,7 @@ class kmlPrimative {
 				$s .= $obj->toString($indent+1);
 			}
 		}
-		return $s.str_repeat("\t",$indent)."</{$this->name}>\n";
+		return $s.str_repeat("\t",$indent)."</{$this->tag}>\n";
 	}
 
 }
@@ -163,6 +178,10 @@ class kmlFile extends kmlPrimative {
 
 class kmlDocument extends kmlPrimative {
 
+	public function __construct($id = '') {
+		parent::__construct('Document',$id);
+	}
+
 	public function addHoverStyle($expandicon = true) {
 		$Style = $this->addChild('Style','defaultIcon');
 		$LabelStyle = $Style->addChild('LabelStyle');
@@ -183,11 +202,7 @@ class kmlDocument extends kmlPrimative {
 		$Pair2->setItem('key','highlight');
 		$Pair2->setItem('styleUrl','#hoverIcon');
 
-
-	}
-
-	public function __construct($id = '') {
-		parent::__construct('Document',$id);
+		return $this;
 	}
 }
 
@@ -198,9 +213,11 @@ class kmlDocument extends kmlPrimative {
 
 class kmlPlacemark extends kmlPrimative {
 
-	public function __construct($id,$itemname,$kmlPoint = null) {
+	public function __construct($id,$itemname = '',$kmlPoint = null) {
 		parent::__construct('Placemark',$id);
-		$this->setItem('name',$itemname);
+		if (!empty($itemname)) {
+			$this->setItemCDATA('name',$itemname);
+		}
 		if (is_object($kmlPoint)) {
 			$this->addChild($kmlPoint,$id,'Point');
 		}
@@ -231,9 +248,11 @@ class kmlPlacemark extends kmlPrimative {
 
 class kmlNetworkLink extends kmlPrimative {
 
-	public function __construct($id,$itemname,$url = null) {
+	public function __construct($id,$itemname = '',$url = null) {
 		parent::__construct('NetworkLink',$id);
-		$this->setItem('name',$itemname);
+		if (!empty($itemname)) {
+			$this->setItem('name',$itemname);
+		}
 		if (!empty($url)) {
 			$this->useUrl($url);
 		}
@@ -241,9 +260,9 @@ class kmlNetworkLink extends kmlPrimative {
 
 
 	public function useUrl($url) {
-		$Url = $this->addChild('Url');
+		$Url = $this->addChild('Url','','Url');
 		$Url->setItem('href',htmlspecialchars($url));
-		return $this;
+		return $Url;
 	}
 }
 
@@ -266,12 +285,24 @@ class kmlPoint extends kmlPrimative {
  		$this->setItem('extrude',1);
  		$this->setItem('altitudeMode','relativeToGround');
  		$this->alt = 125;
+ 		return $this;
 	}
 
 	public function toString($indent = 0) {
 		//make sure coordinates are uptodate
 		$this->setItem('coordinates',"{$this->lon},{$this->lat},{$this->alt}");
 		return parent::toString($indent);
+	}
+
+	function calcHeadingToPoint($p2) {
+		$p2lon = deg2rad($p2->lon);
+		$p2lat = deg2rad($p2->lat);
+		$p1lon = deg2rad($this->lon);
+		$p1lat = deg2rad($this->lat);
+
+		$y = sin($p2lon-$p1lon) * cos($p2lat);
+		$x = cos($p1lat)*sin($p2lat) - sin($p1lat)*cos($p2lat)*cos($p2lon-$p1lon);
+		return rad2deg(atan2($y, $x));
 	}
 }
 
