@@ -25,6 +25,8 @@ require_once('geograph/global.inc.php');
 require_once('geograph/searchcriteria.class.php');
 require_once('geograph/searchengine.class.php');
 require_once('geograph/gridsquare.class.php');
+require_once('geograph/kmlfile.class.php');
+require_once('geograph/kmlfile2.class.php');
 init_session();
 
 $smarty = new GeographPage;
@@ -40,8 +42,6 @@ if (isset($_GET['id']))  {
 	$ok = $image->loadFromId($_GET['id']);
 
 	if ($ok) {
-		header("Content-type: application/vnd.google-earth.kml+xml");
-		header("Content-Disposition: attachment; filename=\"Geograph{$image->gridimage_id}.kml\"");
 		header("Cache-Control: Public");
 		header("Expires: ".date("D, d M Y H:i:s",mktime(0,0,0,date('m'),date('d')+14,date('Y')) )." GMT");
 		
@@ -51,88 +51,49 @@ if (isset($_GET['id']))  {
 		//because we not loading from the search cache need to recalculate this
 		list($image->wgs84_lat,$image->wgs84_long) = $conv->gridsquare_to_wgs84($image->grid_square);
 		
-		$phpos = false;
+		$kml = new kmlFile($image->gridimage_id);
+		$kml->filename = "Geograph".$image->gridimage_id.".kml";
+
+		$point = new kmlPoint($image->wgs84_lat,$image->wgs84_long);
+
+		$placemark = $kml->addChild(new kmlPlacemark_Photo('id'.$image->gridimage_id,$image->grid_reference." : ".$image->title,$point));
+
+		$linkTag = "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id."\">";
+		$thumb = "http://".$_SERVER['HTTP_HOST'].$image->getThumbnail(120,120,true); 
+		$thumbTag = preg_replace('/\/photos\/.*\.jpg/',$thumb,$image->getThumbnail(120,120)); 
+
+		$description = $linkTag.$thumbTag."</a><br/>".GeographLinks($image->comment)." (".$linkTag."view online</a>)"."<br/>by <a title=\"view user profile\" href=\"http://{$_SERVER['HTTP_HOST']}/profile.php?u=".$image->user_id."\">".$image->realname."</a><br/><br/>";
+		
+		$placemark->setItemCDATA('description',$description);
+
+		//yes that is uppercase S!
+		$placemark->setItemCDATA('Snippet',strip_tags($description));
+
+		$placemark->setItem('visibility',1);
+
+		$placemark->useImageAsIcon($thumb);
+
+		if (!empty($image->imagetaken) && strpos($image->imagetaken,'-00') === FALSE) {
+			$placemark->setTimeStamp(str_replace('-00','',$image->imagetaken));
+		}
+
 		if ($image->viewpoint_eastings) {
 			list($line['eLat'],$line['eLong']) = $conv->national_to_wgs84($image->viewpoint_eastings,$image->viewpoint_northings,$image->grid_square->reference_index);
-			$phpos = true;
+
+			$point2 = new kmlPoint($line['eLat'],$line['eLong']);
+
+			$placemark->addPhotographerPoint($point2,$image->view_direction,$image->realname);
+		} elseif (isset($image->view_direction) && strlen($image->view_direction) && $image->view_direction != -1) {
+			$placemark->addViewDirection($image->view_direction);
 		}
-			
-		print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-?><kml xmlns="http://earth.google.com/kml/2.0">
-<? if ($phpos) { ?>   
-<Folder>
-	<name><![CDATA[<? echo $image->grid_reference." : ".$image->title; ?>]]></name>
-<? } 
-	$linkTag = "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id."\">";
-	$thumb = "http://".$_SERVER['HTTP_HOST'].$image->getThumbnail(120,120,true); 
-	$thumbTag = preg_replace('/\/photos\/.*\.jpg/',$thumb,$image->getThumbnail(120,120)); 
-?>   
-	<Placemark>
-		<name><![CDATA[<? echo $image->grid_reference." : ".$image->title; ?>]]></name>
-		<description><![CDATA[<? echo $linkTag.$thumbTag."</a><br/>".GeographLinks($image->comment).
-		" (".$linkTag."view online</a>)".
-		"<br/>by <a title=\"view user profile\" href=\"http://{$_SERVER['HTTP_HOST']}/profile.php?u=".$image->user_id."\">".$image->realname."</a><br/><br/>"; ?>]]></description>
-		<visibility>1</visibility>
-		<Point>
-			<coordinates><? echo $image->wgs84_long.",".$image->wgs84_lat; ?>,25</coordinates>
-		</Point>
-		<styleUrl>root://styleMaps#default?iconId=0x307</styleUrl>
-		<Style>
-			<IconStyle>
-				<Icon>
-					<href><? echo $thumb; ?></href>
-				</Icon>
-			</IconStyle>
-		</Style>
-		<? if (!empty($image->imagetaken) && strpos($image->imagetaken,'-00') === FALSE) { ?>   
-		<TimeStamp>
-			<when><? echo str_replace('-00','',$image->imageTaken); ?></when>
-		</TimeStamp>
-		<? } ?>   
-	</Placemark>
-<? if ($phpos) { ?>   
-	<Placemark>
-		<name>Photographer</name>
-		<Style>
-			<IconStyle>
-				<scale>0.7</scale>
-				<Icon>
-					<href>root://icons/palette-4.png</href>
-					<x>192</x>
-					<y>64</y>
-					<w>32</w>
-					<h>32</h>
-				</Icon>
-			</IconStyle>
-			<LabelStyle>
-				<scale>0</scale>
-			</LabelStyle>
-		</Style>
-		<MultiGeometry>
-			<Point>
-				<coordinates><? echo $line['eLong'].",".$line['eLat']; ?>,25</coordinates>
-			</Point>
-			<LineString>
-				<altitudeMode>clampedToGround</altitudeMode>
-				<tessellate>1</tessellate>
-				<coordinates>
-					<? echo $image->wgs84_long.",".$image->wgs84_lat.",25
-					{$line['eLong']},{$line['eLat']},25"; ?>   
-				</coordinates>
-			</LineString>
-		</MultiGeometry>
-	</Placemark>
-</Folder>
-<? } ?>   
-</kml><?
+
+		$kml->outputKML();
 		exit;
 	} else {
 		
 	}
-}		
+}
 
-
-	
 	if (isset($_REQUEST['i']) && $i = intval($_REQUEST['i'])) {
 		$pg = $_REQUEST['page'];
 		if ($pg == '' or $pg < 1) {$pg = 1;}
@@ -161,9 +122,7 @@ if (isset($_GET['id']))  {
 			if (isset($_REQUEST['type']) && $_REQUEST['type'] == 'view') {
 				$url = "http://{$_SERVER['HTTP_HOST']}/earth.php?i=$i&simple=$simple";
 			} else {
-				if ($pg > 1)
-					$page = $pg;
-				$url = "http://{$_SERVER['HTTP_HOST']}/feed/results$page/$i/KML";
+				$url = "http://{$_SERVER['HTTP_HOST']}/feed/results/$i/$pg.kml";
 			}
 			if (isset($_REQUEST['type']) && $_REQUEST['type'] == 'static') {
 				header("Status:302 Found");
@@ -178,33 +137,31 @@ if (isset($_GET['id']))  {
 				print "<a href=\"$url\">Open Google Maps</a>";
 				exit;
 			} else {
-				$url = str_replace('&','&amp;',$url);
-				if ($_REQUEST['type'] == 'time') {
-					$view = "<refreshMode>onInterval</refreshMode>\n<refreshInterval>{$_REQUEST['refresh']}</refreshInterval>";
-				} else {
-					$view = "<viewRefreshMode>onStop</viewRefreshMode>\n<viewRefreshTime>4</viewRefreshTime><viewFormat>BBOX=[bboxWest],[bboxSouth],[bboxEast],[bboxNorth]&amp;LOOKAT=[lookatLon],[lookatLat],[lookatRange],[lookatTilt],[lookatHeading],[horizFov],[vertFov]</viewFormat>";
-				}
-				header("Content-type: application/vnd.google-earth.kml+xml");
-				header("Content-Disposition: attachment; filename=\"Geograph.kml\"");
 				header("Cache-Control: Public");
 				header("Expires: ".date("D, d M Y H:i:s",mktime(0,0,0,date('m'),date('d')+14,date('Y')) )." GMT");
-		
 
-				print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-?><kml xmlns="http://earth.google.com/kml/2.0">
-<NetworkLink>
-<name>Geograph NetworkLink</name>
-<description><![CDATA[Images<i><? echo $engine->criteria->searchdesc; ?></i>]]></description>
-<open>0</open>
-<Url>
-<href><? echo $url; ?></href>
-<? echo $view; ?>
-</Url>
-<visibility>0</visibility>
-</NetworkLink>
-</kml><?		
+				$kml = new kmlFile();
+				$kml->filename = "Geograph.kml";
+
+				$NetworkLink = $kml->addChild('NetworkLink');
+				$NetworkLink->setItem('name','Geograph NetworkLink');
+				$NetworkLink->setItemCDATA('description',"Images<i>{$engine->criteria->searchdesc}</i>");
+				$NetworkLink->setItem('open',0);
+				$UrlTag = $NetworkLink->useUrl($url);
+				$NetworkLink->setItem('visibility',0);
+
+				if ($_REQUEST['type'] == 'time') {
+					$UrlTag->setItem('refreshMode','onInterval');
+					$UrlTag->setItem('refreshInterval',intval($_REQUEST['refresh']));
+				} else {
+					$UrlTag->setItem('viewRefreshMode','onStop');
+					$UrlTag->setItem('viewRefreshTime',4);
+					$UrlTag->setItem('viewFormat','BBOX=[bboxWest],[bboxSouth],[bboxEast],[bboxNorth]&amp;LOOKAT=[lookatLon],[lookatLat],[lookatRange],[lookatTilt],[lookatHeading],[horizFov],[vertFov]');
+				}
+
+				$kml->outputKML();
 				exit;
-			}		
+			}
 		} else {
 			$engine->countOnly = true;
 			$smarty->assign('querytime', $engine->Execute($pg)); 

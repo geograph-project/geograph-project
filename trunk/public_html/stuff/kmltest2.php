@@ -23,32 +23,27 @@
 
 require_once('geograph/global.inc.php');
 require_once('geograph/kmlfile.class.php');
+require_once('geograph/kmlfile2.class.php');
 
 init_session();
 
 $kml = new kmlFile();
 $document = $kml->addChild('Document');
-$document->setItem('name','geotest');
-$document->addHoverStyle();
 
-$folder = $document->addChild('Folder');
-$folder->setItem('name','geotest');
 
-foreach (range(1,2) as $i) {
-	$point = new kmlPoint(rand(-9000,9000)/100,rand(-18000,18000)/100);
-	$placemark = $folder->addChild(new kmlPlacemark(null,'test'.$i,$point));
-	$placemark->makeFloating();
-	$placemark->useHoverStyle();
-	$placemark->setTimeStamp(date('Y-m-d'));
-	#$placemark->useImageAsIcon('bla.png');
-	#or $placemark->makeFloating()->useHoverStyle()->useImageAsIcon('bla.png');
-}
+$point = new kmlPoint(rand(5900,6000)/100,rand(100,200)/100);
 
-if (!isset($_GET['nolinks'])) {
-	foreach (range(3,4) as $i) {
-		$networklink = $folder->addChild(new kmlNetworkLink(null,'test'.$i,$_SERVER['SCRIPT_URI']."?download&nolinks"));
-	}
-}
+$placemark = $document->addChild(new kmlPlacemark_Photo(null,'test',$point));
+
+$placemark->setTimeStamp(date('Y-m-d'));
+	
+$placemark->useImageAsIcon("http://".$_SERVER['HTTP_HOST']."/templates/basic/img/guide1.jpg");
+
+$point2 = new kmlPoint(rand(5900,6000)/100,rand(100,200)/100);
+
+$placemark->addPhotographerPoint($point2);
+
+
 
 if (isset($_GET['download'])) {
 	$kml->outputKML();
@@ -56,7 +51,7 @@ if (isset($_GET['download'])) {
 } 
 
 print "<a href=?download>Open in Google Earth</a><br/>";
-print "<textarea rows=30 style=width:100%>";
+print "<textarea rows=35 style=width:100%>";
 print $kml->returnKML();
 print "</textarea>";
 
