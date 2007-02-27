@@ -77,7 +77,12 @@ if (isset($_GET['id']))  {
 			$placemark->setTimeStamp(str_replace('-00','',$image->imagetaken));
 		}
 
-		if ($image->viewpoint_eastings) {
+			$different_square_true = (intval($image->nateastings/1000) != intval($image->viewpoint_eastings/1000)
+						|| intval($image->natnorthings/1000) != intval($image->viewpoint_northings/1000));
+	
+			$show_viewpoint = (intval($image->viewpoint_grlen) > 4) || ($different_square_true && ($image->viewpoint_grlen == '4'));
+
+		if ($image->viewpoint_eastings && $show_viewpoint) {
 			list($line['eLat'],$line['eLong']) = $conv->national_to_wgs84($image->viewpoint_eastings,$image->viewpoint_northings,$image->grid_square->reference_index);
 
 			$point2 = new kmlPoint($line['eLat'],$line['eLong']);
