@@ -62,8 +62,8 @@ if (isset($_GET['id']))  {
 		$thumb = "http://".$_SERVER['HTTP_HOST'].$image->getThumbnail(120,120,true); 
 		$thumbTag = preg_replace('/\/photos\/.*\.jpg/',$thumb,$image->getThumbnail(120,120)); 
 
-		$description = $linkTag.$thumbTag."</a><br/>".GeographLinks($image->comment)." (".$linkTag."view online</a>)"."<br/>by <a title=\"view user profile\" href=\"http://{$_SERVER['HTTP_HOST']}/profile.php?u=".$image->user_id."\">".$image->realname."</a><br/><br/>";
-		
+		$description = $linkTag.$thumbTag."</a><br/>".GeographLinks($image->comment)." (".$linkTag."view full size</a>)"."<br/><br/> &copy; Copyright <a title=\"view user profile\" href=\"http://{$_SERVER['HTTP_HOST']}/profile.php?u=".$image->user_id."\">".$image->realname."</a> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a><br/><br/>";
+
 		$placemark->setItemCDATA('description',$description);
 
 		//yes that is uppercase S!
@@ -79,7 +79,7 @@ if (isset($_GET['id']))  {
 
 			$different_square_true = (intval($image->nateastings/1000) != intval($image->viewpoint_eastings/1000)
 						|| intval($image->natnorthings/1000) != intval($image->viewpoint_northings/1000));
-	
+
 			$show_viewpoint = (intval($image->viewpoint_grlen) > 4) || ($different_square_true && ($image->viewpoint_grlen == '4'));
 
 		if ($image->viewpoint_eastings && $show_viewpoint) {
