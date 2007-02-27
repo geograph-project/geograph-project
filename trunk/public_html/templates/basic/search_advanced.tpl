@@ -14,7 +14,7 @@
 		<a href="/search.php?form=first" class="tab">first geographs</a>
 	</div>
 	<div class="interestBox">
-		<b>centre results on:</b>
+		<b>centre results on (one of):</b>
 	</div>
 	
 	
@@ -45,29 +45,14 @@
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
 		  </tr>
 		  <tr> 
-			 <td colspan="3">&nbsp;</td> 
-		  </tr> 
-		  <tr> 
-			 <td colspan="3" style="background:#eeeeee;"><b>or show: </b></td> 
-		  </tr> 
-		  <tr> 
-			 <td><label for="textsearch" id="l_textsearch">containing text</label></td> 
-			 <td><input type="text" name="textsearch" id="textsearch" value="{$textsearch|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/><br/>
-			 <small>open <a href="/help/search" target="geo_help">text search help</a> in new window</small></td> 
-			 <td>eg Island</td> 
-		  </tr> 
-		  <tr> 
-			 <td><label for="all_ind" id="l_all_ind">all images</label></td> 
+			 <td><label for="all_ind" id="l_all_ind">nationwide search</label></td> 
 			 <td><input type="checkbox" name="all_ind" id="all_ind" {$all_checked} onclick="onlyone(this)" onblur="onlyone(this)"/></td> 
-			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
+			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td colspan="3"><small>
-			 Once you have selected one option the others will become unavailable, to choose a different search just clear your current selection. If you don't select anything you will be shown all images.</small>
+			 <td colspan="3"><small><small>
+			 Once you have selected one option the others will become unavailable, to choose a different search just clear your current selection. If you don't select anything you will be shown all images (matching filters below).</small></small>
 			 </td> 
-		  </tr> 
-		  <tr> 
-			 <td colspan="3">&nbsp;</td> 
 		  </tr> 
 		  <tr> 
 		 	 <td colspan="3" style="background:#dddddd;"><b>you can optionally limit to results to: </b></td> 
@@ -79,7 +64,13 @@
 				  <option value=""> </option> 
 					{html_options values=$distances output=$distances selected=$distance}
 				</select>km</td> 
-			 <td>&nbsp;</td> 
+			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="textsearch" id="l_textsearch"><b>containing text</b></label></td> 
+			 <td><input type="text" name="textsearch" id="textsearch" value="{$textsearch|escape:'html'}" class="searchinput"/><br/>
+			 <small>open <a href="/help/search" target="geo_help">text search help</a> in new window</small></td> 
+			 <td>eg Bridge</td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="user_name">contributor</label></td> 
@@ -250,10 +241,6 @@ function onlyone(that) {
 	if (that.name != 'county_id') {
 		f.county_id.disabled = isvalue;
 		document.getElementById('l_county_id').className = classname;
-	}
-	if (that.name != 'textsearch') {
-		f.textsearch.disabled = isvalue;
-		document.getElementById('l_textsearch').className = classname;
 	}
 	if (that.name != 'all_ind') {
 		f.all_ind.disabled = isvalue;

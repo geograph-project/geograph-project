@@ -43,7 +43,7 @@ class Gazetteer
 	var $db=null;
 	
 	function findBySquare($square,$radius = 25000,$f_codes = null) {
-			return $this->findByNational($square->reference_index,$square->nateastings,$square->natnorthings,$radius,$f_codes);		
+		return $this->findByNational($square->reference_index,$square->nateastings,$square->natnorthings,$radius,$f_codes);		
 	}
 	
 
@@ -66,6 +66,7 @@ class Gazetteer
 		if ($CONF['use_gazetteer'] == 'OS' && $reference_index == 1) {
 			$places = $db->GetAll("select
 					`def_nam` as full_name,
+					km_ref as grid_reference,
 					'PPL' as dsg,
 					1 as reference_index,
 					`full_county` as adm1_name,
@@ -107,6 +108,14 @@ class Gazetteer
 	
 	function findByNational($reference_index,$e,$n,$radius = 25005,$f_codes = null) {
 		global $CONF;
+		/*global $CONF,$memcache;
+		
+		$mkey = "$reference_index,$e,$n,$radius,$f_codes";
+		//fails quickly if not using memcached!
+		$places =& $memcache->name_get('g',$mkey);
+		if ($places)
+			return $places;*/
+		
 		$db=&$this->_getDB();
 		
 		//to optimise the query, we scan a square centred on the
@@ -304,7 +313,10 @@ class Gazetteer
 		if (isset($places['distance']))
 			$places['distance'] = round(sqrt($places['distance'])/1000)+0.01;
 		$places['reference_name'] = $CONF['references'][$places['reference_index']];
-
+		
+		//fails quickly if not using memcached!
+		//$memcache->name_set('g',$mkey,$places,$memcache->compress,$memcache->period_long);
+		
 		return $places;
 	}
 
