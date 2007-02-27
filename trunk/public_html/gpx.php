@@ -90,27 +90,33 @@ if (isset($_GET['id']))  {
 
 	
 	if (isset($_REQUEST['submit'])) {
+		$d=(!empty($_REQUEST['distance']))?min(100,intval(stripslashes($_REQUEST['distance']))):5;
+				
+		$type=(isset($_REQUEST['type']))?stripslashes($_REQUEST['type']):'few';
+		switch($type) {
+			case 'with': $typename = 'with'; $crit = 'imagecount>0'; break;
+			case 'few': $typename = 'with few'; $crit = 'imagecount<2 and (percent_land > 0 || imagecount>1)'; break;
+			default: $type = $typename = 'without'; $crit = 'imagecount=0 and percent_land > 0'; break;
+		}
+	
 		$square=new GridSquare;
 		$grid_ok=$square->setByFullGridRef($_REQUEST['gridref']);
 		
 		if ($grid_ok)
 		{
-			$d = min(100,intval(stripslashes($_REQUEST['distance'])));
 				
 			$template='gpx_download_gpx.tpl';
-			$cacheid = $square->grid_reference.'-'.($_REQUEST['type'] == 'with').'-'.($d);
+			$cacheid = $square->grid_reference.'-'.($type).'-'.($d);
 		
 			//regenerate?
 			if (!$smarty->is_cached($template, $cacheid))
 			{
-				$searchdesc = "squares within {$d}km of {$square->grid_reference} ".(($_REQUEST['type'] == 'with')?'with':'without')." photographs";
+				$searchdesc = "squares within {$d}km of {$square->grid_reference} $typename photographs";
 				
 				$x = $square->x;
 				$y = $square->y;
 				
-				$sql_where = 'imagecount '.(($_REQUEST['type'] == 'with')?'>':'=').' 0 and ';
-				if ($_REQUEST['type'] != 'with')
-					$sql_where .= 'percent_land > 0 and ';
+				$sql_where = $crit.' and ';
 
 				$left=$x-$d;
 				$right=$x+$d;
@@ -161,8 +167,8 @@ if (isset($_GET['id']))  {
 		{
 			//preserve the input at least
 			$smarty->assign('gridref', stripslashes($_REQUEST['gridref']));
-			$smarty->assign('distance', stripslashes($_REQUEST['distance']));
-			$smarty->assign('type', stripslashes($_REQUEST['type']));
+			$smarty->assign('distance', $d);
+			$smarty->assign('type', $type);
 		
 			$smarty->assign('errormsg', $square->errormsg);	
 		}
