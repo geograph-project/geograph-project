@@ -35,8 +35,11 @@ $isadmin=$USER->hasPerm('moderator')?1:0;
 
 $template = 'article_article.tpl';
 $cacheid = $_GET['page'];
-$cacheid .= "|".$USER->hasPerm('moderator')?1:0;
-$cacheid .= "--".(isset($_SESSION['article_urls']) && in_array($_GET['page'],$_SESSION['article_urls'])?1:0);
+$cacheid .= '|'.$USER->hasPerm('moderator')?1:0;
+$cacheid .= '-'.(isset($_SESSION['article_urls']) && in_array($_GET['page'],$_SESSION['article_urls'])?1:0);
+if (isset($_SESSION[$_GET['page']])) {
+	$cacheid .= '-'.$_SESSION[$_GET['page']];
+}
 
 
 function article_make_table($input) {

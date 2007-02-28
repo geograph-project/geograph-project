@@ -4,7 +4,7 @@
 
 	<h2>GPX Export</h2>
 
-	<p>Use this page to download a {external href="http://en.wikipedia.org/wiki/GPX" text="GPX"} file to load into your mapping program and/or GPS receiver. This is ideal for creating a high tech version of the Printable Check sheet for when you go paperless.</p>
+	<p>Use this page to download a {external href="http://www.topografix.com/gpx.asp" text="GPX"} file to load into your mapping program and/or GPS receiver. This is ideal for creating a high tech version of the Printable Check sheet for when you go paperless.</p>
 {dynamic}
 {if $errormsg}
 <p><b>{$errormsg}</b></p>

@@ -147,6 +147,8 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 
 		$smarty->clear_cache('article_article.tpl', $_POST['url']);
 		$smarty->clear_cache('article.tpl');
+		
+		$_SESSION[$_POST['url']] = $db->Insert_ID();
 
 		header("Location: /article/");
 		exit;
