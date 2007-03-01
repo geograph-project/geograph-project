@@ -149,8 +149,18 @@ class RasterMap
 			$this->displayMarker1 = $this->exactPosition;
 			$top=$width/2;
 			$left=$width/2;
+			if ($this->natgrlen > 6) {
+				$widthby20 = ($width/20); //remove the automatic 50m centering
+				$top += $widthby20;
+				$left -= $widthby20;
+
+				$widthby10 = ($width/10); //assubuing 1km width
+				#100m = 1 unit
+				$left += intval($this->nateastings%100 /100 * $widthby10);
+				$top -= intval($this->natnorthings%100 /100 * $widthby10);
+			} 
 			$display = $this->displayMarker1 ?'':'none';
-			$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;display:$display\" id=\"marker$idcounter\"><img src=\"/templates/basic/img/circle.png\" alt=\"+\" width=\"29\" height=\"29\"/></div>";
+			$str .= "<div style=\"position:absolute;top:".intval($top-14)."px;left:".intval($left-14)."px;display:$display\" id=\"marker$idcounter\"><img src=\"/templates/basic/img/circle.png\" alt=\"+\" width=\"29\" height=\"29\"/></div>";
 	
 	//overlay (for marker)
 			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><a href=\"/gridref/$gr\" title=\"$title\" onmouseover=\"document.getElementById('marker$idcounter').style.display='none'\" onmouseout=\"document.getElementById('marker$idcounter').style.display='$display'\"><img src=\"/img/blank.gif\" style=\"width:{$width}px;height:{$width}px;display:block;\" border=\"1\" alt=\"$title\" name=\"map\" galleryimg=\"no\"/></a></div>";
