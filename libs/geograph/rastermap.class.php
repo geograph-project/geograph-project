@@ -265,12 +265,23 @@ class RasterMap
 				$vtop = $width+32;
 			}
 			
-	//subject icon
 			$this->displayMarker1 = ($this->issubmit || $this->exactPosition)?1:0;
-			$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;".( $this->displayMarker1 ?'':'display:none')."\" id=\"marker1\"><img src=\"/templates/basic/img/circle.png\" alt=\"+\" width=\"29\" height=\"29\"/></div>";
+			$this->displayMarker2 = ($this->issubmit || ( $show_viewpoint && (($vleft != $left) || ($vtop != $top)) ) )?1:0;
+			
+			if ((!$this->displayMarker2 || $iconfile == "camera.png") && !$this->issubmit) {
+				$prefix = 'subc';
+				if (isset($this->view_direction) && strlen($this->view_direction) && $this->view_direction != -1)
+					$subfile = "$prefix-{$this->view_direction}.png";
+				else
+					$subfile = "$prefix--1.png";
+			} else {
+				$subfile = 'circle.png';
+			}
+			
+	//subject icon
+			$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;".( $this->displayMarker1 ?'':'display:none')."\" id=\"marker1\"><img src=\"/templates/basic/img/$subfile\" alt=\"+\" width=\"29\" height=\"29\" name=\"subicon\"/></div>";
 
 	//photographer icon
-			$this->displayMarker2 = ($this->issubmit || ( $show_viewpoint && (($vleft != $left) || ($vtop != $top)) ) )?1:0;
 			if ($this->issubmit) {
 				$str .= "<div style=\"position:absolute;top:".($vtop-14)."px;left:".($vleft-14)."px;".( $this->displayMarker2 ?'':'display:none')."\" id=\"marker2\"><img src=\"/templates/basic/img/$iconfile\" alt=\"+\" width=\"29\" height=\"29\" name=\"camicon\"/></div>";
 			} else {
