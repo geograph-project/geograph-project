@@ -609,10 +609,10 @@ if (isset($_GET['fav']) && $i) {
 		if (!$db) die('Database connection failed');
 		$query = $db->GetRow("SELECT searchq FROM queries WHERE id = $i LIMIT 1");
 		$smarty->assign('searchq', $query['searchq']);
-	} else if ($_SESSION['searchq']) {
+	} else if (isset($_SESSION['searchq'])) {
 		list($q,$loc) = preg_split('/\s*near\s+/',$_SESSION['searchq'],2);
 		$smarty->assign('searchlocation', $loc);
-		$smarty->assign('searchq', $q);
+		$smarty->assign('searchtext', $q);
 	}
 	if (!$smarty->is_cached('search.tpl')) {
 		if (!isset($db)) {
