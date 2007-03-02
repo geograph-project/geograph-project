@@ -91,6 +91,9 @@ $CONF['OS_licence'] = '100045616';
 $CONF['os50ktilepath']='c:/home/geograph/rastermaps/OS-50k/tiffs/';
 $CONF['os50kimgpath']='c:/home/geograph/rastermaps/OS-50k/';
 
+//Username/Passowrd for the metacarta webservices api
+//http://developers.metacarta.com/register/
+#$CONF['metacarta_auth'] = 'user@domain.com:password';
 
 //does the map draw the more demanding placenames
 $CONF['enable_newmap'] = 1;

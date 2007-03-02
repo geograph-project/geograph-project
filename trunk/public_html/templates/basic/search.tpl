@@ -113,4 +113,7 @@ title="customisable search options">advanced search</a></span><br/><br/>
 </ul>
 </div>
    
+   <br/><br/>
+<div class="copyright">Natural Language Query Parsing by {external href="http://developers.metacarta.com/" text="MetaCarta Web Services"}, Copyright MetaCarta 2006</div>
+   
 {include file="_std_end.tpl"}

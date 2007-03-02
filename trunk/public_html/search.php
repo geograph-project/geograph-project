@@ -333,15 +333,11 @@ if (isset($_GET['fav']) && $i) {
 	// -------------------------------
 	//  Build a query from simple text 
 	// -------------------------------
-	if (!empty($_GET['location']) && $_GET['location'] == '(anywhere)') {
-		$_GET['location'] = '';
-	}
 	if (!empty($_GET['q']) && $_GET['q'] == '(anything)') {
 		$_GET['q'] = '';
 	}
 	if (!empty($_GET['text'])) {
-		$q=trim($_GET['text']);
-		$GLOBALS['text'] = 1;
+		$q=trim($_GET['text']).' near (anywhere)';
 	} elseif (!empty($_GET['location'])) {
 		if (!empty($_GET['q'])) {
 			$q=trim($_GET['q']).' near '.trim($_GET['location']);
@@ -350,6 +346,26 @@ if (isset($_GET['fav']) && $i) {
 		}
 	} else {
 		$q=trim($_GET['q']);
+	}
+	
+	if (!isset($_GET['location']) && !empty($CONF['metacarta_auth']) && strpos($q,'near ') === FALSE && substr_count($q,' ') >= 1) {
+		$urlHandle = connectToURL('developers.metacarta.com',80,"/webservices/QueryParser/JSON/basic?version=1.0.0&bbox=-14.1707,48.9235,6.9506,61.7519&query=".rawurlencode($q),$CONF['metacarta_auth']);
+		if ($urlHandle) {
+			$r = '';
+			while (!feof($urlHandle)) {
+				$r .= fgets($urlHandle);
+			}
+			fclose($urlHandle);
+			#$r = '{"Styles": {"loc": {"DefaultSymbol": {"URL": "http://developers.metacarta.com/img/symbols/LocationMarker.png", "Width": 30, "Height": 30}}}, "Warnings": [], "MinConfidence": 0.0, "Locations": [{"Confidence": 0.451807, "Name": "Skellingthorpe, United Kingdom", "Style": "loc", "Centroid": {"Latitude": 53.2333, "X": -0.616666, "Y": 53.2333, "Longitude": -0.616666}, "RemainingQuery": "mitchel close", "Path": ["Skellingthorpe", "United Kingdom"], "ViewBox": {"MaxX": -0.589905177287, "MaxY": 53.2600950873, "MaxLongitude": -0.589905177287, "MinY": 53.2065720927, "MinLatitude": 53.2065720927, "MinX": -0.643428171913, "MaxLatitude": 53.2600950873, "MinLongitude": -0.643428171913}}], "SRS": "epsg:4326", "SystemVersion": "MetaCarta GTS v3.7.0, JSON Query Parser API v1.0.0", "BBox": {"MaxX": 180.0, "MaxY": 90.0, "MaxLongitude": 180.0, "MinY": -90.0, "MinLongitude": -180.0, "MinX": -180.0, "MaxLatitude": 90.0, "MinLatitude": -90.0}, "Query": "mitchel close Skellingthorpe", "ResultsCreationTime": "Fri Mar 02 13:40:19 2007 UTC"}';
+
+			if (preg_match('/"RemainingQuery": "(.*?)"/',$r,$m)) {
+				$q = $m[1];
+			}
+			if (preg_match('/"Path": \["(.*?)"/',$r,$m)) {
+				$q .= ' near '.$m[1];
+			}
+		}
+		
 	}
 
 	//remember the query in the session
@@ -588,14 +604,13 @@ if (isset($_GET['fav']) && $i) {
 	//  Simple Form
 	// -------------------------------
 
-
 	if (is_int($i)) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
 		$query = $db->GetRow("SELECT searchq FROM queries WHERE id = $i LIMIT 1");
 		$smarty->assign('searchq', $query['searchq']);
 	} else if ($_SESSION['searchq']) {
-		list($q,$loc) = explode(' near ',$_SESSION['searchq'],2);
+		list($q,$loc) = preg_split('/\s*near\s+/',$_SESSION['searchq'],2);
 		$smarty->assign('searchlocation', $loc);
 		$smarty->assign('searchq', $q);
 	}

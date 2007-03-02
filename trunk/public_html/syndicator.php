@@ -58,10 +58,8 @@ if (isset($_GET['text'])) {
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
 	
-	$GLOBALS['text'] = 1;
-	
 	$engine = new SearchEngineBuilder('#'); 
- 	$_GET['i'] = $engine->buildSimpleQuery($_GET['text'],30,false,isset($_GET['u'])?$_GET['u']:0);
+ 	$_GET['i'] = $engine->buildSimpleQuery($_GET['text'].' near (anywhere)',30,false,isset($_GET['u'])?$_GET['u']:0);
 } elseif (isset($_GET['q']) || !empty($_GET['location'])) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');

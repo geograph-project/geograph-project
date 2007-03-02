@@ -370,6 +370,36 @@ function getFormattedDate($input) {
 	return $date;
 }
 
-
+//credit: http://www.php.net/fsockopen
+function connectToURL($addr, $port, $path, $userpass="", $timeout="30") {
+	$urlHandle = fsockopen($addr, $port, $errno, $errstr, $timeout);
+	if ($urlHandle)	{
+		socket_set_timeout($urlHandle, $timeout);
+		if ($path) {
+			$urlString = "GET $path HTTP/1.1\r\nHost: $addr\r\nConnection: keep-alive\r\nUser-Agent: www.geograph.org.uk\r\n";
+			if ($userpass)
+				$urlString .= "Authorization: Basic ".base64_encode("$userpass")."\r\n";
+			$urlString .= "\r\n";
+			fputs($urlHandle, $urlString);
+			$response = fgets($urlHandle);
+			if (substr_count($response, "200 OK") > 0) {	// Check the status of the link
+				$endHeader = false;			// Strip initial header information
+				while ( !$endHeader) {
+					if (fgets($urlHandle) == "\r\n")
+						$endHeader = true;
+				}
+				return $urlHandle;			// All OK, return the file handle
+			} else if (strlen($response) < 15) {		// Cope with wierd non standard responses
+				fclose($urlHandle);
+				return -1;
+			} else {					// Cope with a standard error response
+				fclose($urlHandle);
+				return substr($response,9,3);
+			}
+		}
+		return $urlHandle;
+	} else
+		return 0;
+}
 
 ?>
