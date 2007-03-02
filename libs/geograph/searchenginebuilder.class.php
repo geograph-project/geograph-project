@@ -118,38 +118,38 @@ class SearchEngineBuilder extends SearchEngine
 		$q = preg_replace('/ near\s*$/','',$q);
 		$q = trim(preg_replace('/\s+/',' ',$q));
 		
-		if (preg_match('/(^\^|\+$)/',$q) || preg_match('/\b(OR|AND|NOT)\b/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q)) {
-			$searchtext = $q;
-			$searchdesc = ", matching '".$q."' ".$searchdesc;
-		} elseif (isset($GLOBALS['text'])) {
-			$searchtext = $q;
-			$searchdesc = ", containing '{$q}' ".$searchdesc;
-		} else {
 			
-			list($q,$placename) = preg_split('/\s*near\s+/',$q);
+		list($q,$placename) = preg_split('/\s*near\s+/',$q);
 
-			$criteria = new SearchCriteria_Placename();
-			
-			if ($placename) {
+		$criteria = new SearchCriteria_Placename();
+
+		if ($placename != '(anywhere)') {
+			if (!empty($placename)) {
 				$criteria->setByPlacename($placename);
 			} elseif (!$location) {
 				$criteria->setByPlacename($q);
 			}
-			if ($criteria->is_multiple) {
-				//we've found multiple possible placenames
-				$searchdesc = ", $nearstring '".($placename?$placename:$q)."' ";
-				$this->searchdesc = $searchdesc;
-				$this->criteria = $criteria;
-			} else if (!empty($criteria->placename)) {
-				//if one placename then search on that
-				$searchclass = 'Placename';
-				$searchq = $criteria->placename;
-				$searchdesc = ", $nearstring ".$criteria->placename;
-				$searchx = $criteria->x;
-				$searchy = $criteria->y;
-				$location = $criteria->placename;
-			} 
-			if (($q) && ((!$criteria->is_multiple && empty($criteria->placename) ) || $placename) ) {
+		}
+		if ($criteria->is_multiple) {
+			//we've found multiple possible placenames
+			$searchdesc = ", $nearstring '".($placename?$placename:$q)."' ";
+			$this->searchdesc = $searchdesc;
+			$this->criteria = $criteria;
+		} else if (!empty($criteria->placename)) {
+			//if one placename then search on that
+			$searchclass = 'Placename';
+			$searchq = $criteria->placename;
+			$searchdesc = ", $nearstring ".$criteria->placename;
+			$searchx = $criteria->x;
+			$searchy = $criteria->y;
+			$location = $criteria->placename;
+		} 
+		if (($q) && ((!$criteria->is_multiple && empty($criteria->placename) ) || $placename) ) {
+			if (preg_match('/(^\^|\+$)/',$q) || preg_match('/\b(OR|AND|NOT)\b/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q)) {
+				$searchtext = $q;
+				$searchdesc = ", matching '".$q."' ".$searchdesc;
+			} else {
+		
 				//check if this is a user 
 				$criteria2 = new SearchCriteria_All();
 				$criteria2->setByUsername($q);
@@ -164,6 +164,7 @@ class SearchEngineBuilder extends SearchEngine
 				}
 			}
 		}
+		
 		if (($searchtext || $limit1) && !$searchclass) {
 			$searchclass = 'All';
 		}

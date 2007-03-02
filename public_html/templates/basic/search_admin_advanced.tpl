@@ -47,6 +47,12 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
+			 <td><label for="searchtext" id="l_searchtext"><b>containing text</b></label></td> 
+			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput"/><br/>
+			 <small>open <a href="/help/search" target="geo_help">text search help</a> in new window</small></td> 
+			 <td>eg Bridge</td> 
+		  </tr> 
+		  <tr> 
 			 <td><label for="user_name">contributor</label></td> 
 			 <td colspan="2"> 
 			 	<input type="text" name="user_name" id="user_name" value="{$user_name|escape:'html'}" class="searchinput" style="width:200px"
