@@ -36,11 +36,19 @@
 {/if}
 
 <br/>
+{if preg_match('/near\s+/',$post.q)}
+<input type="radio" name="{$multipleon}" value="text:{$post.q|replace:'near ':'AND '}" id="dotext">
+<label for="dotext"><i>Perform a title search for '{$post.q|replace:'near ':'AND '}'</i></label> <br/>
+{if !preg_match('/\+$/',$criteria->searchq)}
+<input type="radio" name="{$multipleon}" value="text:{$post.q|replace:' near ':'+ AND '}+" id="dotext2">
+&nbsp;<label for="dotext2"><i>Perform a text search for '{$post.q|replace:'near ':'AND '}' in title and description</i></label> <br/>		
+{/if}
+{/if}
 <input type="radio" name="{$multipleon}" value="text:{$criteria->searchq}" id="dotext">
 <label for="dotext"><i>Perform a title search for '{$criteria->searchq}'</i></label> <br/>	
 {if !preg_match('/\+$/',$criteria->searchq)}
 <input type="radio" name="{$multipleon}" value="text:{$criteria->searchq}+" id="dotext2">
-<label for="dotext2"><i>Perform a text search for '{$criteria->searchq}' in title and description</i></label> <br/>		
+&nbsp;<label for="dotext2"><i>Perform a text search for '{$criteria->searchq}' in title and description</i></label> <br/>		
 {/if}
 {/dynamic}
 <p><input type="submit" name="refine" value="Refine"> <input type="submit" value="Find &gt;"></p>

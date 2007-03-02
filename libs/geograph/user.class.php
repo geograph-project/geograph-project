@@ -78,10 +78,7 @@ class GeographUser
 	{
 		if (($uid>0) && preg_match('/^[0-9]+$/' , $uid))
 		{
-			$db = NewADOConnection($GLOBALS['DSN']);
-			if (!$db) die('Database connection failed');   
-			
-			
+			$db = $this->_getDB();
 						
 			$arr =& $db->GetRow("select * from user where user_id=$uid limit 1");	
 			if (count($arr))
@@ -109,8 +106,7 @@ class GeographUser
 	{
 		if (!empty($nickname))
 		{
-			$db = NewADOConnection($GLOBALS['DSN']);
-			if (!$db) die('Database connection failed');   
+			$db = $this->_getDB();
 
 			$nickname = $db->Quote($nickname);
 			
@@ -141,16 +137,14 @@ class GeographUser
 	
 	
 	function getForumSortOrder() {
-		$db = NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');  
+		$db = $this->_getDB();
 	
 		$this->sortBy =& $db->getOne("select user_sorttopics from geobb_users where user_id='{$this->user_id}'");
 		return $this->sortBy;
 	}
 	
 	function setDefaultStyle($style) {
-		$db = NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');  
+		$db = $this->_getDB();
 
 		$db->Execute("update user set default_style = '$style' where user_id='{$this->user_id}'");
 		$this->default_style = $style;
@@ -184,11 +178,9 @@ class GeographUser
 	*/
 	function getStats()
 	{
-		$db = NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');   
+		$db = $this->_getDB();
 		
 		$this->stats=array();
-		
 
 		$this->stats['total']=$db->GetOne("select count(*) from gridimage where user_id='{$this->user_id}' and moderation_status<>'rejected'");
 		$this->stats['pending']=$db->GetOne("select count(*) from gridimage where user_id='{$this->user_id}' and moderation_status='pending'");
@@ -256,8 +248,7 @@ class GeographUser
 		//already registered...
 		if ($ok)
 		{
-			$db = NewADOConnection($GLOBALS['DSN']);
-			if (!$db) die('Database connection failed');   
+			$db = $this->_getDB();
 
 			# no need to call connect/pconnect!
 			$arr = $db->GetRow('select * from user where email='.$db->Quote($email).' and rights is not null limit 1');	
@@ -366,7 +357,7 @@ class GeographUser
 		$ok=$ok && ($hash==substr(md5($user_id.$CONF['register_confirmation_secret']),0,16));
 		if ($ok)
 		{
-			$db = NewADOConnection($GLOBALS['DSN']);
+			$db = $this->_getDB();
 			
 			
 			$arr = $db->GetRow('select * from user where user_id='.$db->Quote($user_id).' limit 1');	
@@ -427,7 +418,7 @@ class GeographUser
 		
 		if (isValidEmailAddress($email))
 		{
-			$db = NewADOConnection($GLOBALS['DSN']);
+			$db = $this->_getDB();
 
 			//user registered?
 			$arr = $db->GetRow('select * from user where email='.$db->Quote($email).' limit 1');	
@@ -472,7 +463,7 @@ class GeographUser
 		$ok=$ok && ($hash==substr(md5($change_id.$CONF['register_confirmation_secret']),0,16));
 		if ($ok)
 		{
-			$db = NewADOConnection($GLOBALS['DSN']);
+			$db = $this->_getDB();
 			
 			$user_emailchange_id=substr($change_id,1);
 			
@@ -542,8 +533,7 @@ class GeographUser
 	function updateProfile(&$profile, &$errors)
 	{
 		global $CONF;
-		$db = NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');   
+		$db = $this->_getDB();
 		
 		$ok=true;
 		
@@ -751,8 +741,7 @@ class GeographUser
 	*/
 	function logout()
 	{
-		$db = NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');  
+		$db = $this->_getDB();
 
 		//clear any moderation locks
 		$db->Execute("DELETE FROM gridsquare_moderation_lock WHERE user_id = {$this->user_id}");
@@ -824,7 +813,7 @@ class GeographUser
 			$email=stripslashes(trim($_SERVER['PHP_AUTH_USER']));
 			$password=stripslashes(trim($_SERVER['PHP_AUTH_PW']));
 			
-			$db = NewADOConnection($GLOBALS['DSN']);
+			$db = $this->_getDB();
 
 			$sql="";
 			if (isValidEmailAddress($email))
@@ -917,7 +906,7 @@ class GeographUser
 				$remember_me=isset($_POST['remember_me'])?1:0;
 				
 				
-				$db = NewADOConnection($GLOBALS['DSN']);
+				$db = $this->_getDB();
 
 				$sql="";
 				if (isValidEmailAddress($email))
@@ -1028,7 +1017,7 @@ class GeographUser
 	{
 		if(isset($_COOKIE['autologin']))
 		{
-			$db = NewADOConnection($GLOBALS['DSN']);
+			$db = $this->_getDB();
 			
 			$errorNumber = -1;
 			$valid=false;
@@ -1104,8 +1093,7 @@ class GeographUser
 	*/
 	function _forumUpdateProfile()
 	{
-		$db = NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');   
+		$db = $this->_getDB();
 	
 		//we maintain a direct user_id to user_id mapping with the minibb 
 		//forum software....
@@ -1176,6 +1164,27 @@ class GeographUser
 		unset($_SESSION['minimalistBBSession']);
 	}
 	
+	/**
+	 * get stored db object, creating if necessary
+	 * @access private
+	 */
+	function &_getDB()
+	{
+		if (!is_object($this->db))
+			$this->db=NewADOConnection($GLOBALS['DSN']);
+		if (!$this->db) die('Database connection failed'); 
+		return $this->db;
+	}	
 	
+	/**
+	 * remove the stored db object ready to serialize
+	 * @access private
+	 */
+	function __sleep() {
+		if (is_object($this->db)) {
+			#$this->db->Close();
+			unset($this->db);
+		}
+	}
 }
 ?>
