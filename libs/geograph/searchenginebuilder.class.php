@@ -126,8 +126,8 @@ class SearchEngineBuilder extends SearchEngine
 			$searchdesc = ", containing '{$q}' ".$searchdesc;
 		} else {
 			
-			list($q,$placename) = preg_split('/\s+near\s+/',$q);
-			
+			list($q,$placename) = preg_split('/\s*near\s+/',$q);
+
 			$criteria = new SearchCriteria_Placename();
 			
 			if ($placename) {
@@ -146,9 +146,10 @@ class SearchEngineBuilder extends SearchEngine
 				$searchq = $criteria->placename;
 				$searchdesc = ", $nearstring ".$criteria->placename;
 				$searchx = $criteria->x;
-				$searchy = $criteria->y;	
+				$searchy = $criteria->y;
+				$location = $criteria->placename;
 			} 
-			if ((!$criteria->is_multiple && empty($criteria->placename) ) || $placename) {
+			if (($q) && ((!$criteria->is_multiple && empty($criteria->placename) ) || $placename) ) {
 				//check if this is a user 
 				$criteria2 = new SearchCriteria_All();
 				$criteria2->setByUsername($q);
@@ -241,6 +242,11 @@ class SearchEngineBuilder extends SearchEngine
 				$dataarray['searchtext'] = $q;
 				if (empty($dataarray['placename'])) {
 					$dataarray['placename'] = $placename;				
+				}
+			} elseif (!empty($dataarray['location'])) {
+				$dataarray['searchtext'] = $q;
+				if (empty($dataarray['placename'])) {
+					$dataarray['placename'] = $dataarray['location'];
 				}
 			}
 		}
