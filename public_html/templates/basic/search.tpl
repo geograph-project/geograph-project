@@ -18,16 +18,17 @@
 		<a href="/search.php?form=check" class="tab">check submissions</a>
 	{/if}	
 </div>
-<div class="interestBox">
-	<div>
-	<label for="searchterm">Enter a Placename, Postcode, Grid Reference:</label><br/>
-	&nbsp;&nbsp;&nbsp;<input id="searchq" type="text" name="q" value="" size="30"/>
-	<input id="searchgo" type="submit" name="go" value="Find"/></div>
-	<div>
-	<label for="searchtext">or a Text Search:</label> <small>(<a href="/help/search">help &amp; tips</a>)</small><br/>
-	&nbsp;&nbsp;&nbsp;<input id="searchtext" type="text" name="text" value="" size="30"/>
-	<input id="searchgo2" type="submit" name="go" value="Find"/>
+<div style="position:relative;height:40px;" class="interestBox">
+	<div style="position:relative;float:left;width:240px;">
+		<label for="searchq"><b>Search For</b>:</label> <small>(<a href="/help/search">help &amp; tips</a>)</small><br/>
+		&nbsp;&nbsp;&nbsp;<input id="searchq" type="text" name="q" value="{$searchq|default:"(anything)"}" size="30" onfocus="if (this.value=='(anything)') this.value=''" onblur="if (this.value=='') this.value='(anything)'"/>
 	</div>
+	<div style="position:relative;float:left;width:430px;">
+		<label for="searchlocation">and/or a <b>Placename, Postcode, Grid Reference</b>:</label><br/>
+		&nbsp;&nbsp;&nbsp;near <input id="searchlocation" type="text" name="location" value="{$searchlocation|default:"(anywhere)"}" size="30" onfocus="if (this.value=='(anywhere)') this.value=''" onblur="if (this.value=='') this.value='(anywhere)'"/>
+		<input id="searchgo" type="submit" name="go" value="Search..."/>
+	</div>
+	<br style="clear:both"/>
 </div>
 </form>
 {/dynamic} 

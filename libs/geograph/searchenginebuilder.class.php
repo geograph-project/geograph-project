@@ -56,12 +56,12 @@ class SearchEngineBuilder extends SearchEngine
 			$nearstring = ($distance)?sprintf("within %dkm of",$distance):'near';
 		}
 		
-		
+		$searchclass = '';
 		$limit1 = '';
-		
+		$location = '';
 		$q = trim($q);
-		if (preg_match("/^([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})$/",strtoupper($q),$pc)) {
-			$searchq = $pc[1].$pc[2].($pc[3]?" ".$pc[3]:'');
+		if (preg_match("/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$q,$pc)) {
+			$searchq = strtoupper($pc[1].$pc[2].($pc[3]?" ".$pc[3]:''));
 			$criteria = new SearchCriteria_Postcode();
 			$criteria->setByPostcode($searchq);
 			if ($criteria->y != 0) {
@@ -69,13 +69,14 @@ class SearchEngineBuilder extends SearchEngine
 				$searchdesc = ", $nearstring postcode ".$searchq;
 				$searchx = $criteria->x;
 				$searchy = $criteria->y;	
+				$location = $pc[0];
 			} else {
 				$this->errormsg = "Invalid Postcode or a newer Postcode not in our database, please try a different search method.";
 			}
 		} elseif (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/",$q,$gr)) {
 			require_once('geograph/gridsquare.class.php');
 			$square=new GridSquare;
-			$grid_ok=$square->setByFullGridRef($q);
+			$grid_ok=$square->setByFullGridRef($gr[1].$gr[2].$gr[3]);
 			if ($grid_ok) {
 				if ($square->imagecount && $autoredirect == 'simple') {
 					header("Location:http://{$_SERVER['HTTP_HOST']}/gridref/{$q}");
@@ -87,10 +88,11 @@ class SearchEngineBuilder extends SearchEngine
 				$searchx = $square->x;
 				$searchy = $square->y;	
 				$criteria->reference_index = $square->reference_index;
+				$location = $gr[0];
 			} else {
 				$this->errormsg = $square->errormsg;
 			}
-		} elseif (preg_match("/^\s*(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$q,$ll)) {
+		} elseif (preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$q,$ll)) {
 			require_once('geograph/conversions.class.php');
 			require_once('geograph/gridsquare.class.php');
 			$square=new GridSquare;
@@ -101,27 +103,41 @@ class SearchEngineBuilder extends SearchEngine
 				$searchclass = 'GridRef';
 				list($latdm,$longdm) = $conv->wgs84_to_friendly($ll[1],$ll[2]);
 				$searchdesc = ", $nearstring $latdm, $longdm";
-				$searchq = $q = $square->grid_reference;
 				$searchx = $x;
 				$searchy = $y;			
 				$criteria->reference_index = $square->reference_index;	
+				$location = $ll[0];
 			} else {
 				$this->errormsg = "unable to parse lat/long";
 			}
-		} elseif (preg_match('/(^\^|\+$)/',$q) || preg_match('/\b(OR|AND|NOT)\b/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q)) {
-			$searchclass = 'Text';
-			$searchq = $q;
-			$searchdesc = ", matching '".$q."' ";
+		} 
+		//todo else { parse placenames (and EWSI etc) off the end!)}
+		
+		if ($location)
+			$q = str_replace($location,'',$q);
+		$q = preg_replace('/ near\s*$/','',$q);
+		$q = trim(preg_replace('/\s+/',' ',$q));
+		
+		if (preg_match('/(^\^|\+$)/',$q) || preg_match('/\b(OR|AND|NOT)\b/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q)) {
+			$searchtext = $q;
+			$searchdesc = ", matching '".$q."' ".$searchdesc;
 		} elseif (isset($GLOBALS['text'])) {
-			$searchclass = 'Text';
-			$searchq = $q;
-			$searchdesc = ", containing '{$q}' ";
+			$searchtext = $q;
+			$searchdesc = ", containing '{$q}' ".$searchdesc;
 		} else {
+			
+			list($q,$placename) = preg_split('/\s+near\s+/',$q);
+			
 			$criteria = new SearchCriteria_Placename();
-			$criteria->setByPlacename($q);
+			
+			if ($placename) {
+				$criteria->setByPlacename($placename);
+			} elseif (!$location) {
+				$criteria->setByPlacename($q);
+			}
 			if ($criteria->is_multiple) {
 				//we've found multiple possible placenames
-				$searchdesc = ", $nearstring '{$q}'";
+				$searchdesc = ", $nearstring '".($placename?$placename:$q)."' ";
 				$this->searchdesc = $searchdesc;
 				$this->criteria = $criteria;
 			} else if (!empty($criteria->placename)) {
@@ -131,22 +147,28 @@ class SearchEngineBuilder extends SearchEngine
 				$searchdesc = ", $nearstring ".$criteria->placename;
 				$searchx = $criteria->x;
 				$searchy = $criteria->y;	
-			} else {
+			} 
+			if ((!$criteria->is_multiple && empty($criteria->placename) ) || $placename) {
 				//check if this is a user 
-				$criteria = new SearchCriteria_All();
-				$criteria->setByUsername($q);
-				if (!empty($criteria->realname)) {
-					$searchclass = 'All';
-					$searchq = '';
-					$limit1 = $criteria->user_id;
-					$searchdesc = ", by '{$criteria->realname}' ";
+				$criteria2 = new SearchCriteria_All();
+				$criteria2->setByUsername($q);
+				if (!empty($criteria2->realname)) {
+					$searchq = $criteria2->realname;
+					$limit1 = $criteria2->user_id;
+					$searchdesc .= ", by '{$criteria2->realname}' ";
 				} else {
 					//asuume a text search
-					$searchclass = 'Text';
-					$searchq = $q;
-					$searchdesc = ", containing '{$q}' ";
+					$searchtext = $q;
+					$searchdesc = ", containing '{$q}' ".$searchdesc;
 				}
 			}
+		}
+		if (($searchtext || $limit1) && !$searchclass) {
+			$searchclass = 'All';
+		}
+			
+		if ($searchclass != 'All' && $location) {
+			$q = $location;
 		}
 		
 		if ($criteria->reference_index == 2 && $CONF['default_search_distance_2'] && $distance == $CONF['default_search_distance']) {
@@ -160,10 +182,11 @@ class SearchEngineBuilder extends SearchEngine
 			$searchdesc .= ", by ".($profile->realname);
 		}				
 
-		if (isset($searchclass)) {
+		if (isset($searchclass) && empty($criteria->is_multiple)) {
 			$db=$this->_GetDB();
 
 			$sql = "INSERT INTO queries SET searchclass = '$searchclass',".
+			"searchtext = ".$db->Quote($searchtext).",".
 			"searchdesc = ".$db->Quote($searchdesc).",".
 			"searchuse = ".$db->Quote($this->searchuse).",".
 			"searchq = ".$db->Quote($q);
@@ -175,7 +198,7 @@ class SearchEngineBuilder extends SearchEngine
 				$sql .= ",user_id = {$USER->user_id}";
 				if (!empty($USER->search_results))
 					$sql .= ",resultsperpage = ".$db->Quote($USER->search_results);				
-			}	
+			}
 			$db->Execute($sql);
 
 			$i = $db->Insert_ID();
@@ -189,6 +212,7 @@ class SearchEngineBuilder extends SearchEngine
 				return $i;
 			}
 		} 
+		$this->searchdesc = $searchdesc;
 	}
 
 
@@ -210,10 +234,20 @@ class SearchEngineBuilder extends SearchEngine
 		}
 		
 		$searchdesc = '';
+		if (!empty($dataarray['q'])) {
+			//we coming from multiple - which means there might be a text search stored in a q
+			list($q,$placename) = preg_split('/\s+near\s+/',$dataarray['q']);
+			if ($placename && empty($dataarray['searchtext'])) {
+				$dataarray['searchtext'] = $q;
+				if (empty($dataarray['placename'])) {
+					$dataarray['placename'] = $placename;				
+				}
+			}
+		}
 		if (!empty($dataarray['placename'])) {
 			//check if we actully want to perform a textsearch (it comes through in the placename beucase of the way the multiple mathc page works)
 			if (strpos($dataarray['placename'],'text:') === 0) {
-				$dataarray['textsearch'] = preg_replace("/^text\:/",'',$dataarray['placename']);
+				$dataarray['searchtext'] = preg_replace("/^text\:/",'',$dataarray['placename']);
 				unset($dataarray['placename']);
 			}
 			//check if we actully want to perform a user_search
@@ -287,19 +321,6 @@ class SearchEngineBuilder extends SearchEngine
 			} else {
 				$this->errormsg = "Place not found, you might like to try a placename search";
 			}
-		} else if (!empty($dataarray['textsearch'])) {
-			$dataarray['textsearch'] = trim($dataarray['textsearch']);
-			$searchclass = 'Text';
-			$searchq = $dataarray['textsearch'];
-			if (preg_match('/^\^.*\+$/',$dataarray['textsearch']) || preg_match('/\b(OR|AND|NOT)\b/',$dataarray['textsearch']) || preg_match('/(^|\s+)-([\w^]+)/',$dataarray['textsearch'])) {
-				$searchdesc = ", matching '".$dataarray['textsearch']."' ";
-			} elseif (preg_match('/\+$/',$dataarray['textsearch'])) {
-				$searchdesc = ", all about '".preg_replace('/\+$/','',$dataarray['textsearch'])."' ";
-			} elseif (preg_match('/^\^/',$dataarray['textsearch'])) {
-				$searchdesc = ", matching whole word '".str_replace('^','',$dataarray['textsearch'])."' ";
-			} else {
-				$searchdesc = ", containing '".$dataarray['textsearch']."' ";	
-			}
 		} else if (!empty($dataarray['description']) && !empty($dataarray['searchq'])) {
 			if (!$dataarray['adminoverride'])
 				$USER->mustHavePerm("admin");
@@ -322,6 +343,20 @@ class SearchEngineBuilder extends SearchEngine
 			$searchq = '';
 		} 
 
+		if (!empty($dataarray['searchtext'])) {
+			$dataarray['searchtext'] = trim($dataarray['searchtext']);
+			$searchtext = $dataarray['searchtext'];
+			if (preg_match('/^\^.*\+$/',$dataarray['searchtext']) || preg_match('/\b(OR|AND|NOT)\b/',$dataarray['searchtext']) || preg_match('/(^|\s+)-([\w^]+)/',$dataarray['searchtext'])) {
+				$searchdesc = ", matching '".$dataarray['searchtext']."' ".$searchdesc;
+			} elseif (preg_match('/\+$/',$dataarray['searchtext'])) {
+				$searchdesc = ", all about '".preg_replace('/\+$/','',$dataarray['searchtext'])."' ".$searchdesc;
+			} elseif (preg_match('/^\^/',$dataarray['searchtext'])) {
+				$searchdesc = ", matching whole word '".str_replace('^','',$dataarray['searchtext'])."' ".$searchdesc;
+			} else {
+				$searchdesc = ", containing '".$dataarray['searchtext']."' ".$searchdesc;	
+			}
+		} 
+
 		if (isset($searchclass)) {
 			$db=NewADOConnection($GLOBALS['DSN']);
 			if (empty($db)) die('Database connection failed'); 
@@ -329,8 +364,10 @@ class SearchEngineBuilder extends SearchEngine
 			
 			
 			$sql = "INSERT INTO queries SET searchclass = '$searchclass',".
-			"searchuse = ".$db->Quote($this->searchuse).",".
-			"searchq = ".$db->Quote($searchq);
+				"searchuse = ".$db->Quote($this->searchuse).",".
+				"searchq = ".$db->Quote($searchq);
+			if (isset($dataarray['searchtext']))
+				$sql .= ",searchtext = ".$db->Quote($dataarray['searchtext']);
 			if (isset($dataarray['displayclass']))
 				$sql .= ",displayclass = ".$db->Quote($dataarray['displayclass']);
 			if (isset($dataarray['resultsperpage'])) {

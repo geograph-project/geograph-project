@@ -1096,3 +1096,9 @@ UPDATE `gridimage_ticket` SET notify = '';
 
 
 ALTER TABLE `sessions` ADD `ipaddr` VARCHAR(20) NOT NULL DEFAULT '';
+
+
+
+ALTER TABLE `queries` ADD `searchtext` VARCHAR( 255 ) NOT NULL AFTER `searchq` ;
+
+UPDATE `os_gaz_code` SET `f_code` = 'FM' WHERE CONVERT( `os_gaz_code`.`f_code` USING utf8 ) = '00' LIMIT 1 ;
