@@ -18,18 +18,16 @@
 		<a href="/search.php?form=check" class="tab">check submissions</a>
 	{/if}	
 </div>
-<div style="position:relative;height:40px;" class="interestBox">
+<div style="position:relative;" class="interestBox">
 	<div style="position:relative;float:left;width:240px;">
-		<label for="searchq"><b>Search For</b>:</label> <small>(<a href="/help/search">help &amp; tips</a>)</small><br/>
+		<label for="searchq" style="line-height:1.8em"><b>Search For</b>:</label> <small>(<a href="/help/search">help &amp; tips</a>)</small><br/>
 		&nbsp;&nbsp;&nbsp;<input id="searchq" type="text" name="q" value="{$searchq|default:"(anything)"}" size="30" onfocus="if (this.value=='(anything)') this.value=''" onblur="if (this.value=='') this.value='(anything)'"/>
 	</div>
 	<div style="position:relative;float:left;width:430px;">
-		<label for="searchlocation">and/or a <b>Placename, Postcode, Grid Reference</b>:</label><br/>
-		&nbsp;&nbsp;&nbsp;near <input id="searchlocation" type="text" name="location" value="{$searchlocation|default:"(anywhere)"}" size="30" onfocus="if (this.value=='(anywhere)') this.value=''" onblur="if (this.value=='') this.value='(anywhere)'"/>
+		<label for="searchlocation" style="line-height:1.8em">and/or a <b>Placename, Postcode, Grid Reference</b>:</label><br/>
+		&nbsp;&nbsp;&nbsp;<i>near</i> <input id="searchlocation" type="text" name="location" value="{$searchlocation|default:"(anywhere)"}" size="30" onfocus="if (this.value=='(anywhere)') this.value=''" onblur="if (this.value=='') this.value='(anywhere)'"/>
 		<input id="searchgo" type="submit" name="go" value="Search..."/>
-	</div>
-	<br style="clear:both"/>
-</div>
+	</div><span style="line-height:0.1em; font-size:0.1em"><br style="clear:both"/>&nbsp;</span></div>
 </form>
 {/dynamic} 
 <ul style="margin-left:0;padding:0 0 0 1em;">
