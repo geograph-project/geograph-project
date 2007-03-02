@@ -115,7 +115,7 @@ class SearchEngineBuilder extends SearchEngine
 		
 		if ($location)
 			$q = str_replace($location,'',$q);
-		$q = preg_replace('/ near\s*$/','',$q);
+		$q = preg_replace('/\s*near\s*$/','',$q);
 		$q = trim(preg_replace('/\s+/',' ',$q));
 		
 			
