@@ -182,7 +182,8 @@ class SearchCriteria
 		
 		$sql_where_start = $sql_where;
 		
-		//todo, emulate SearchCriteria_Text from searchtext
+		
+		$this->getSQLPartsFromText($this->searchtext,$sql_where,$sql_from);
 		
 		
 		if (!empty($this->limit1)) {
@@ -349,6 +350,76 @@ class SearchCriteria
 		}
 	} 
 	
+	function getSQLPartsFromText($q,&$sql_where,&$sql_from) {
+		$db = $this->_getDB();
+		
+		//todo, do keyword as opposed to phrase? and possibly make + the default.
+
+		if ($sql_where) {
+			$sql_where .= ' and ';
+		}
+		if (preg_match("/\b(AND|OR|NOT)\b/",$q) || preg_match('/^\^.*\+$/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q)) {
+			$sql_where .= " (";
+			$terms = $prefix = $postfix = '';
+			$tokens = preg_split('/\s+/',trim(preg_replace('/([\(\)])/',' $1 ',preg_replace('/(^|\s+)-([\w^]+)/e','("$1"?"$1AND ":"")."NOT $2"',$q))));
+			$number = count($tokens);
+			$c = 1;
+			$tokens[] = 'END';
+			foreach ($tokens as $token) {
+				switch ($token) {
+					case 'END': $token = '';
+					case 'AND':
+					case 'OR': 
+						if ($c != 1 && $c != $number) {
+							if (strpos($terms,'^') === 0) {
+								$words = 'REGEXP '.$db->Quote('[[:<:]]'.str_replace('^','',preg_replace('/\+$/','',$terms)).'[[:>:]]');
+							} else {
+								$words = 'LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$terms).'%');
+							}
+							
+							if (preg_match('/\~$/',$terms)) {								
+								$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.')';
+							} elseif (preg_match('/\+$/',$terms)) {								
+								$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.imageclass '.$words.')';
+							} else {
+								$sql_where .= " gi.title $prefix ".$words;
+							}
+							$sql_where .= " $postfix $token ";
+							$terms = $prefix = $postfix = '';
+						}
+						break;
+					case '(': 
+						$sql_where .= " $prefix $token";
+						$prefix = '';
+						break;
+					case ')': 
+						$postfix = $token;
+						break;
+					case 'NOT': $prefix = 'NOT'; break;
+					default: 
+						if ($terms)	$terms .= " ";
+						$terms .= $token;							
+				}
+				$c++;
+			}
+			$sql_where .= ")";
+		} elseif (strpos($q,'^') === 0) {
+			$words = str_replace('^','',$q);
+			$len = substr_count($words,' ')+1;
+			if ($len >= 1 && $len <= 3) {
+				$sql_where .= " wordnet$len.title>0 AND words = ".$db->Quote($words);
+				$sql_from .= " INNER JOIN wordnet$len ON(gi.gridimage_id=wordnet$len.gid) ";
+			} else {
+				$sql_where .= ' title REGEXP '.$db->Quote('[[:<:]]'.preg_replace('/\+$/','',$words).'[[:>:]]');
+			}
+		} elseif (preg_match('/\+$/',$q)) {
+			$words = $db->Quote('%'.preg_replace("/\+$/",'',$q).'%');
+			$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';
+		} else {
+			$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$q.'%');
+		}
+	}
+	
 	function countSingleSquares($radius = 4) {
 		global $CONF;
 		$db = $this->_getDB();
@@ -473,74 +544,8 @@ class SearchCriteria_Text extends SearchCriteria
 {
 	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) {
 		parent::getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
-		$db = $this->_getDB();
 		
-		//todo: port to getSQLCritFromText($q,&$sql_where,&$sql_from)
-		//todo, do keyword as opposed to phrase? and possibly make + the default.
-		
-		if ($sql_where) {
-			$sql_where .= ' and ';
-		}
-		if (preg_match("/\b(AND|OR|NOT)\b/",$this->searchq) || preg_match('/^\^.*\+$/',$this->searchq) || preg_match('/(^|\s+)-([\w^]+)/',$this->searchq)) {
-			$sql_where .= " (";
-			$terms = $prefix = $postfix = '';
-			$tokens = preg_split('/\s+/',trim(preg_replace('/([\(\)])/',' $1 ',preg_replace('/(^|\s+)-([\w^]+)/e','("$1"?"$1AND ":"")."NOT $2"',$this->searchq))));
-			$number = count($tokens);
-			$c = 1;
-			$tokens[] = 'END';
-			foreach ($tokens as $token) {
-				switch ($token) {
-					case 'END': $token = '';
-					case 'AND':
-					case 'OR': 
-						if ($c != 1 && $c != $number) {
-							if (strpos($terms,'^') === 0) {
-								$words = 'REGEXP '.$db->Quote('[[:<:]]'.str_replace('^','',preg_replace('/\+$/','',$terms)).'[[:>:]]');
-							} else {
-								$words = 'LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$terms).'%');
-							}
-							
-							if (preg_match('/\~$/',$terms)) {								
-								$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.')';
-							} elseif (preg_match('/\+$/',$terms)) {								
-								$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.imageclass '.$words.')';
-							} else {
-								$sql_where .= " gi.title $prefix ".$words;
-							}
-							$sql_where .= " $postfix $token ";
-							$terms = $prefix = $postfix = '';
-						}
-						break;
-					case '(': 
-						$sql_where .= " $prefix $token";
-						$prefix = '';
-						break;
-					case ')': 
-						$postfix = $token;
-						break;
-					case 'NOT': $prefix = 'NOT'; break;
-					default: 
-						if ($terms)	$terms .= " ";
-						$terms .= $token;							
-				}
-				$c++;
-			}
-			$sql_where .= ")";
-		} elseif (strpos($this->searchq,'^') === 0) {
-			$words = str_replace('^','',$this->searchq);
-			$len = substr_count($words,' ')+1;
-			if ($len >= 1 && $len <= 3) {
-				$sql_where .= " wordnet$len.title>0 AND words = ".$db->Quote($words);
-				$sql_from .= " INNER JOIN wordnet$len ON(gi.gridimage_id=wordnet$len.gid) ";
-			} else {
-				$sql_where .= ' title REGEXP '.$db->Quote('[[:<:]]'.preg_replace('/\+$/','',$words).'[[:>:]]');
-			}
-		} elseif (preg_match('/\+$/',$this->searchq)) {
-			$words = $db->Quote('%'.preg_replace("/\+$/",'',$this->searchq).'%');
-			$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';
-		} else {
-			$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$this->searchq.'%');
-		}
+		$this->getSQLPartsFromText($this->searchq,&$sql_where,&$sql_from);
 	}
 }
 
@@ -577,51 +582,15 @@ class SearchCriteria_Placename extends SearchCriteria
 	var $matches;
 	var $placename;
 	
-	//todo need to be moved to gazetteer class...
 	function setByPlacename($placename) {
-		global $places; //only way to get the array into the compare functions
-		global $USER;
-		$db = $this->_getDB();
-
-		$ismore = 0;
-		$placename = str_replace('?','',$placename,$ismore);
-		$this->ismore = $ismore;
+		$gaz = new Gazetteer();
 		
-		if (is_numeric($placename)) {
-			if ($placename > 1000000) {
-				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where seq=".$db->Quote($placename-1000000));
-			} else {
-				$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where id=".$db->Quote($placename));
-			}
-		} elseif (!$ismore) {
-			list($placename,$county) = preg_split('/\s*,\s*/',$placename);
-			
-			if (!empty($county)) {
-				$qcount = $db->Quote($county);
-				
-				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where def_nam=".$db->Quote($placename)." and (full_county = $qcount OR hcounty = $qcount)");
-			} else {
-				$qplacename = $db->Quote($placename);
-				$sql_where  = '';
-				if (strpos($placename,' ') !== FALSE) {
-					$county = $db->getOne("select `name` from os_gaz_county where $qplacename LIKE CONCAT('%',name)");
-					if (!empty($county)) {
-						$qcount = $db->Quote($county);
-						$sql_where = " and full_county = $qcount";
-
-						$placename = preg_replace("/\s+$county/i",'',$placename);
-						$qplacename = $db->Quote($placename);
-					}
-				} 
-				//todo need to 'union'  with other gazetterr! (as if one match in each then will no work!) 
-				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where def_nam=$qplacename $sql_where");
-				if (count($places) == 0) {
-					$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where full_name=$qplacename");
-				}
-			}
-		}
+		$this->ismore = (strpos($placename,'?') !== FALSE);
+		
+		$places = $gaz->findPlacename($placename);
 		
 		if (count($places) == 1) {
+			$db = $this->_getDB();
 			$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$places[0]['reference_index']." order by origin_x,origin_y limit 1");	
 
 			$this->x = intval($places[0]['e']/1000) + $origin['origin_x'];
@@ -629,156 +598,10 @@ class SearchCriteria_Placename extends SearchCriteria
 			$this->placename = $places[0]['full_name'].($county&&$places[0]['adm1_name']?", {$places[0]['adm1_name']}":'');
 			$this->searchq = $places[0]['full_name'].($county&&$places[0]['adm1_name']?", {$places[0]['adm1_name']}":'');
 			$this->reference_index = $places[0]['reference_index'];
-		} else {
-			$limit = (strlen($placename) > 3)?20:10;
-			$limi2 = 10;
-			if ($USER->registered) {
-				$limit *= 2;
-				$limi2 *= 2;
-			}
-			
-			//starts with (both gaz's)
-			$places = $db->GetAll("
-			(select
-				(seq + 1000000) as id,
-				`def_nam` as full_name,
-				'PPL' as dsg,`east` as e,`north` as n,
-				code_name as dsg_name,
-				1 as reference_index,
-				`full_county` as adm1_name,
-				`hcounty` as hist_county,
-				km_ref as gridref
-			from 
-				os_gaz
-				inner join os_gaz_code using (f_code)
-			where
-				os_gaz.f_code IN ('C','T','O') AND
-				`def_nam` LIKE ".$db->Quote($placename.'%')."
-			limit $limit) UNION
-			(select 
-				id, 
-				full_name,
-				dsg,e,n,
-				loc_dsg.name as dsg_name,
-				loc_placenames.reference_index,
-				loc_adm1.name as adm1_name,
-				'' as hist_county,
-				'' as gridref
-			from 
-				loc_placenames
-				inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) 
-				left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
-			where
-				dsg = 'PPL' AND loc_placenames.reference_index != 1 AND
-				full_name LIKE ".$db->Quote($placename.'%')."
-			LIMIT 20)");
-			if (count($places) < 10 || $ismore) {
-				//sounds like (OS)
-				$places = array_merge($places,$db->GetAll("
-				select
-					(seq + 1000000) as id,
-					`def_nam` as full_name,
-					'PPL' as dsg,`east` as e,`north` as n,
-					code_name as dsg_name,
-					1 as reference_index,
-					`full_county` as adm1_name,
-					`hcounty` as hist_county,
-					km_ref as gridref
-				from 
-					os_gaz
-					inner join os_gaz_code using (f_code)
-				where
-					os_gaz.f_code IN ('C','T','O') AND
-					def_nam_soundex = SOUNDEX(".$db->Quote($placename).") AND
-					def_nam NOT LIKE ".$db->Quote($placename.'%')."
-				limit $limi2"));
-			}
-			
-			if (count($places) < 10 || $ismore) {
-				//contains (OS)
-				$places = array_merge($places,$db->GetAll("
-				select
-					(seq + 1000000) as id,
-					`def_nam` as full_name,
-					'PPL' as dsg,`east` as e,`north` as n,
-					code_name as dsg_name,
-					1 as reference_index,
-					`full_county` as adm1_name,
-					`hcounty` as hist_county,
-					km_ref as gridref
-				from 
-					os_gaz
-					inner join os_gaz_code using (f_code)
-				where
-					os_gaz.f_code IN ('C','T','O') AND
-					`def_nam` LIKE ".$db->Quote('%'.$placename.'%')." AND
-					`def_nam` NOT LIKE ".$db->Quote($placename.'%')."
-				limit $limi2"));
-			}
-			
-			if (count($places) < 10 || $ismore) {
-				//search the widest possible
-				$places2 = $db->GetAll("
-				(select
-					(seq + 1000000) as id,
-					`def_nam` as full_name,
-					'PPL' as dsg,`east` as e,`north` as n,
-					code_name as dsg_name,
-					1 as reference_index,
-					`full_county` as adm1_name,
-					`hcounty` as hist_county,
-					km_ref as gridref
-				from 
-					os_gaz
-					inner join os_gaz_code using (f_code)
-				where
-					os_gaz.f_code NOT IN ('C','T','O') AND
-					( `def_nam` LIKE ".$db->Quote('%'.$placename.'%')."
-					OR def_nam_soundex = SOUNDEX(".$db->Quote($placename).") )
-				limit $limi2) UNION
-				(select 
-					id, 
-					full_name,
-					dsg,e,n,
-					loc_dsg.name as dsg_name,
-					loc_placenames.reference_index,
-					loc_adm1.name as adm1_name,
-					'' as hist_county,
-					'' as gridref
-				from 
-					loc_placenames
-					inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) 
-					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
-				where
-					full_name LIKE ".$db->Quote('%'.$placename.'%')."
-					OR full_name_soundex = SOUNDEX(".$db->Quote($placename).")
-				LIMIT 20)");
-				if (count($places2) && count($places)) {
-					foreach ($places2 as $i2 => $place2) {
-						$found = 0; $look = str_replace("-",' ',$place2['full_name']);
-						foreach ($places as $i => $place) {
-							if ($place['full_name'] == $look && $place['reference_index'] == $place2['reference_index']) {
-								$found = 1; break;
-							}
-						}
-						if (!$found) 
-							array_push($places,$place2);
-					}
-				}
-			}	
-			if (count($places)) {
-				require_once('geograph/conversions.class.php');
-				$conv = new Conversions;
-				foreach($places as $id => $row) {
-					if (empty($row['gridref'])) {
-						list($places[$id]['gridref'],) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
-					}
-				}
-			
-				$this->matches = $places;
-				$this->is_multiple = true;
-				$this->searchq = $placename;
-			}
+		} elseif (count($places)) {
+			$this->matches = $places;
+			$this->is_multiple = true;
+			$this->searchq = $placename;
 		}
 	}
 }

@@ -305,7 +305,7 @@ if (isset($_GET['fav']) && $i) {
 		foreach ($_POST as $key=> $value) {
 			$smarty->assign($key, $value);
 		}
-		foreach (array('postcode','textsearch','gridref','county_id','placename','all_checked') as $key) {
+		foreach (array('postcode','searchtext','gridref','county_id','placename','all_checked') as $key) {
 			if (isset($_POST[$key]))
 				$smarty->assign('elementused', $key);
 		}
@@ -426,8 +426,8 @@ if (isset($_GET['fav']) && $i) {
 				$smarty->assign('elementused', 'postcode');
 				break;
 			case "Text":
-				$smarty->assign('textsearch', $query['searchq']);
-				$smarty->assign('elementused', 'textsearch');
+				$smarty->assign('searchtext', $query['searchq']);
+				$smarty->assign('elementused', 'searchtext');
 				break;
 			case "GridRef":
 				$smarty->assign('gridref', $query['searchq']);
@@ -446,6 +446,9 @@ if (isset($_GET['fav']) && $i) {
 				$smarty->assign('elementused', 'all_ind');
 				break;
 		}
+		if (!empty($query['searchtext']))
+			$smarty->assign('searchtext', $query['searchtext']);
+				
 		if (!empty($query['limit1'])) {
 			$user_id = $query['limit1'];
 			if (strpos($user_id,'!') === 0) {
@@ -492,6 +495,7 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign('breakby', $query['breakby']);
 		$smarty->assign('displayclass', $query['displayclass']);
 		$smarty->assign('resultsperpage', $query['resultsperpage']);
+		$smarty->assign('searchdesc', $query['searchdesc']);
 		$smarty->assign('i', $i);
 
 		advanced_form($smarty,$db);

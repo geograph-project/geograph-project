@@ -143,7 +143,7 @@ class RasterMap
 			$str = "<div style=\"position:relative;height:{$width}px;width:{$width}px;\">";
 			
 	//map image
-			$str .= "<div style=\"position:absolute;top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" width=\"$width\" height=\"$width\" alt=\"$title\"/></div>";
+			$str .= "<div style=\"position:absolute;top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" style=\"width:{$width}px;height:{$width}px;\" alt=\"$title\"/></div>";
 			
 	//subject icon
 			$this->displayMarker1 = $this->exactPosition;

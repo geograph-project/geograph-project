@@ -6,6 +6,9 @@
 {if $errormsg}
 <p style="color:red"><b>{$errormsg}</b></p>
 {/if}
+{if $i}
+<p>Original Search: images{$searchdesc}</p>
+{/if}
 <form action="/search.php" method="post" name="theForm" onsubmit="this.imageclass.disabled=false">
 	
 	<div class="tabHolder">
@@ -45,7 +48,7 @@
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
 		  </tr>
 		  <tr> 
-			 <td><label for="all_ind" id="l_all_ind">nationwide search</label></td> 
+			 <td><label for="all_ind" id="l_all_ind">all images</label></td> 
 			 <td><input type="checkbox" name="all_ind" id="all_ind" {$all_checked} onclick="onlyone(this)" onblur="onlyone(this)"/></td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
@@ -67,8 +70,8 @@
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="textsearch" id="l_textsearch"><b>containing text</b></label></td> 
-			 <td><input type="text" name="textsearch" id="textsearch" value="{$textsearch|escape:'html'}" class="searchinput"/><br/>
+			 <td><label for="searchtext" id="l_searchtext"><b>containing text</b></label></td> 
+			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput"/><br/>
 			 <small>open <a href="/help/search" target="geo_help">text search help</a> in new window</small></td> 
 			 <td>eg Bridge</td> 
 		  </tr> 

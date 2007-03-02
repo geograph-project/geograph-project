@@ -321,6 +321,208 @@ class Gazetteer
 	}
 
 
+	function findPlacename($placename) {
+		global $places; //only way to get the array into the compare functions
+		global $USER;
+		$db = $this->_getDB();
+
+		$ismore = 0;
+		$placename = str_replace('?','',$placename,$ismore);
+		
+		if (is_numeric($placename)) {
+			if ($placename > 1000000) {
+				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where seq=".$db->Quote($placename-1000000));
+			} else {
+				$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where id=".$db->Quote($placename));
+			}
+		} elseif (!$ismore) {
+			list($placename,$county) = preg_split('/\s*,\s*/',$placename);
+			
+			if (!empty($county)) {
+				$qcount = $db->Quote($county);
+				
+				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where def_nam=".$db->Quote($placename)." and (full_county = $qcount OR hcounty = $qcount)");
+			} else {
+				$qplacename = $db->Quote($placename);
+				$sql_where  = '';
+				if (strpos($placename,' ') !== FALSE) {
+					$county = $db->getOne("select `name` from os_gaz_county where $qplacename LIKE CONCAT('%',name)");
+					if (!empty($county)) {
+						$qcount = $db->Quote($county);
+						$sql_where = " and full_county = $qcount";
+
+						$placename = preg_replace("/\s+$county/i",'',$placename);
+						$qplacename = $db->Quote($placename);
+					}
+				} 
+				//todo need to 'union'  with other gazetterr! (as if one match in each then will no work!) 
+				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where def_nam=$qplacename $sql_where");
+				if (count($places) == 0) {
+					$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where full_name=$qplacename");
+				}
+			}
+		}
+		
+		if (count($places) == 1) {
+			#we done!
+		} else {
+			$limit = (strlen($placename) > 3)?20:10;
+			$limi2 = 10;
+			if ($USER->registered) {
+				$limit *= 2;
+				$limi2 *= 2;
+			}
+			
+			//starts with (both gaz's)
+			$places = $db->GetAll("
+			(select
+				(seq + 1000000) as id,
+				`def_nam` as full_name,
+				'PPL' as dsg,`east` as e,`north` as n,
+				code_name as dsg_name,
+				1 as reference_index,
+				`full_county` as adm1_name,
+				`hcounty` as hist_county,
+				km_ref as gridref
+			from 
+				os_gaz
+				inner join os_gaz_code using (f_code)
+			where
+				os_gaz.f_code IN ('C','T','O') AND
+				`def_nam` LIKE ".$db->Quote($placename.'%')."
+			limit $limit) UNION
+			(select 
+				id, 
+				full_name,
+				dsg,e,n,
+				loc_dsg.name as dsg_name,
+				loc_placenames.reference_index,
+				loc_adm1.name as adm1_name,
+				'' as hist_county,
+				'' as gridref
+			from 
+				loc_placenames
+				inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) 
+				left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
+			where
+				dsg = 'PPL' AND loc_placenames.reference_index != 1 AND
+				full_name LIKE ".$db->Quote($placename.'%')."
+			LIMIT 20)");
+			if (count($places) < 10 || $ismore) {
+				//sounds like (OS)
+				$places = array_merge($places,$db->GetAll("
+				select
+					(seq + 1000000) as id,
+					`def_nam` as full_name,
+					'PPL' as dsg,`east` as e,`north` as n,
+					code_name as dsg_name,
+					1 as reference_index,
+					`full_county` as adm1_name,
+					`hcounty` as hist_county,
+					km_ref as gridref
+				from 
+					os_gaz
+					inner join os_gaz_code using (f_code)
+				where
+					os_gaz.f_code IN ('C','T','O') AND
+					def_nam_soundex = SOUNDEX(".$db->Quote($placename).") AND
+					def_nam NOT LIKE ".$db->Quote($placename.'%')."
+				limit $limi2"));
+			}
+			
+			if (count($places) < 10 || $ismore) {
+				//contains (OS)
+				$places = array_merge($places,$db->GetAll("
+				select
+					(seq + 1000000) as id,
+					`def_nam` as full_name,
+					'PPL' as dsg,`east` as e,`north` as n,
+					code_name as dsg_name,
+					1 as reference_index,
+					`full_county` as adm1_name,
+					`hcounty` as hist_county,
+					km_ref as gridref
+				from 
+					os_gaz
+					inner join os_gaz_code using (f_code)
+				where
+					os_gaz.f_code IN ('C','T','O') AND
+					`def_nam` LIKE ".$db->Quote('%'.$placename.'%')." AND
+					`def_nam` NOT LIKE ".$db->Quote($placename.'%')."
+				limit $limi2"));
+			}
+			
+			if (count($places) < 10 || $ismore) {
+				//search the widest possible
+				$places2 = $db->GetAll("
+				(select
+					(seq + 1000000) as id,
+					`def_nam` as full_name,
+					'PPL' as dsg,`east` as e,`north` as n,
+					code_name as dsg_name,
+					1 as reference_index,
+					`full_county` as adm1_name,
+					`hcounty` as hist_county,
+					km_ref as gridref
+				from 
+					os_gaz
+					inner join os_gaz_code using (f_code)
+				where
+					os_gaz.f_code NOT IN ('C','T','O') AND
+					( `def_nam` LIKE ".$db->Quote('%'.$placename.'%')."
+					OR def_nam_soundex = SOUNDEX(".$db->Quote($placename).") )
+				limit $limi2) UNION
+				(select 
+					id, 
+					full_name,
+					dsg,e,n,
+					loc_dsg.name as dsg_name,
+					loc_placenames.reference_index,
+					loc_adm1.name as adm1_name,
+					'' as hist_county,
+					'' as gridref
+				from 
+					loc_placenames
+					inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) 
+					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
+				where
+					full_name LIKE ".$db->Quote('%'.$placename.'%')."
+					OR full_name_soundex = SOUNDEX(".$db->Quote($placename).")
+				LIMIT 20)");
+				if (count($places2) && count($places)) {
+					foreach ($places2 as $i2 => $place2) {
+						$found = 0; $look = str_replace("-",' ',$place2['full_name']);
+						foreach ($places as $i => $place) {
+							if ($place['full_name'] == $look && $place['reference_index'] == $place2['reference_index']) {
+								$found = 1; break;
+							}
+						}
+						if (!$found) 
+							array_push($places,$place2);
+					}
+				}
+			}	
+			if ($c = count($places)) {
+				require_once('geograph/conversions.class.php');
+				$conv = new Conversions;
+				foreach($places as $id => $row) {
+					if (empty($row['gridref'])) {
+						list($places[$id]['gridref'],) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
+					}
+				}
+				if ($c > 20) {
+					foreach($places as $id => $row) {
+						if (stripos($row['full_name'],$placename) === FALSE && levenshtein($row['full_name'],$placename) > strlen($row['full_name'])/2) {
+							unset($places[$id]);
+						}
+					}
+				}
+			}
+		}
+		return $places;
+	}
+
+
 	/**
 	 * get stored db object, creating if necessary
 	 * @access private
