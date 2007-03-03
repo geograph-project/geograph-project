@@ -220,6 +220,9 @@
 			
 			</div>
 		{/foreach}
+		{if $ticket->reopenmaptoken}
+			<div style="text-align:right"><a href="/submit_popup.php?t={$ticket->reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Open Map for these <i>new</i> values</a>&nbsp;&nbsp;&nbsp;</div>
+		{/if}
 		</div>
 	{/if}
 	
