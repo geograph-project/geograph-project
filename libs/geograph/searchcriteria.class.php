@@ -351,6 +351,8 @@ class SearchCriteria
 	} 
 	
 	function getSQLPartsFromText($q,&$sql_where,&$sql_from) {
+		if (empty($q)) 
+			return;
 		$db = $this->_getDB();
 		
 		//todo, do keyword as opposed to phrase? and possibly make + the default.
