@@ -900,6 +900,22 @@ class GridImageTroubleTicket
 		if ($this->isValid())
 		{
 			$this->changes=$db->GetAll("select * from gridimage_ticket_item where gridimage_ticket_id={$this->gridimage_ticket_id}");
+
+			if (count($this->changes)) {
+				$token=new Token;
+				foreach ($this->changes as $i => $row) {
+					if (!empty($row['newvalue']) && $row['newvalue'] != -1) {
+						switch($row['field']) {
+							case 'grid_reference':		$token->setValue("g", $row['newvalue']); break;
+							case 'photographer_gridref':	$token->setValue("p", $row['newvalue']); break;
+							case 'view_direction':		$token->setValue("v", $row['newvalue']); break;
+						}
+					}
+				}
+				if (count($token->data)) {
+					$this->reopenmaptoken = $token->getToken();
+				}
+			}
 		}
 		
 	}
