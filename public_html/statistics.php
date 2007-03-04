@@ -80,19 +80,16 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign("images_thisweek_$ri",  $db->GetOne("select count(*) from gridimage_search where reference_index = $ri and (unix_timestamp(now())-unix_timestamp(submitted))<604800"));
 
 		$smarty->assign("squares_total_$ri",  $db->CacheGetOne(24*3600,"select count(*) from gridsquare where reference_index = $ri and percent_land > 0"));
-		$smarty->assign("squares_submitted_$ri",  $db->GetOne("select count(*) from gridsquare where reference_index = $ri and imagecount > 0"));
+		$smarty->assign("squares_submitted_$ri",  $db->GetOne("select count(*) from gridsquare where reference_index = $ri and imagecount > 0 and percent_land > 0"));
 
-		$smarty->assign("geographs_submitted_$ri",  $db->GetOne("select count(*) from gridsquare where reference_index = $ri and has_geographs > 0"));
+		$smarty->assign("geographs_submitted_$ri",  $db->GetOne("select count(*) from gridsquare where reference_index = $ri and has_geographs > 0 and percent_land > 0"));
 
 		$smarty->assign("grid_total_$ri",  $db->CacheGetOne(24*3600,"select count(*) from gridprefix where reference_index = $ri and landcount > 0"));
 		$smarty->assign("grid_submitted_$ri",  $db->GetOne("select count(distinct substring(grid_reference,1,$letterlength)) from gridimage_search where reference_index = $ri"));
 
 		$smarty->assign("tenk_total_$ri",  $db->CacheGetOne(24*3600,"select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) from gridsquare where reference_index = $ri and percent_land > 0"));
 
-		$smarty->assign("tenk_submitted_$ri",  $db->GetOne("select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) from gridimage_search where reference_index = $ri and moderation_status = 'geograph' and ftf=1"));
-
-		//this would be the ideal query but seems to look up mysql!?! //todo?
-		#$center = $db->GetRow("SELECT sum( x ) , sum( y ) FROM `gridimage` INNER JOIN gridsquare ON ( gridimage_id ) WHERE moderation_status != 'rejected' AND reference_index = $ri");
+		$smarty->assign("tenk_submitted_$ri",  $db->GetOne("select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) from gridsquare reference_index = $ri and has_geographs > 0 and percent_land > 0"));
 
 		$center = $db->GetRow("SELECT avg( x ) , avg( y ) FROM `gridsquare` WHERE imagecount >0 AND reference_index = $ri");
 
