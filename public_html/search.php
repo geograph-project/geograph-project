@@ -349,7 +349,7 @@ if (isset($_GET['fav']) && $i) {
 	}
 	
 	if (!isset($_GET['location']) && !empty($CONF['metacarta_auth']) && strpos($q,'near ') === FALSE && substr_count($q,' ') >= 1) {
-		$urlHandle = connectToURL('developers.metacarta.com',80,"/webservices/QueryParser/JSON/basic?version=1.0.0&bbox=-14.1707,48.9235,6.9506,61.7519&query=".rawurlencode($q),$CONF['metacarta_auth']);
+		$urlHandle = connectToURL('developers.metacarta.com',80,"/webservices/QueryParser/JSON/basic?version=1.0.0&bbox=-14.1707,48.9235,6.9506,61.7519&query=".rawurlencode($q),$CONF['metacarta_auth'],6);
 		if ($urlHandle) {
 			$r = '';
 			while (!feof($urlHandle)) {

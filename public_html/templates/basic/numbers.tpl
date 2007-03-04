@@ -15,11 +15,15 @@
 	color: white;
 }
 .lefttextbox {
-	position:relative; float:left; color:#000066; padding-left: 5px; padding-top:10px; padding-bottom:10px; 
+	position:relative; float:left; color:yellow; padding-left: 5px; padding-top:10px; padding-bottom:10px; 
 	background-image: url('/templates/basic/img/numbers-arrow.gif');
 	background-position: center left;
 	background-repeat: no-repeat;
 }
+.innerlefttextbox {
+	position:absolute; top:1px; left:1px; color:#000066; padding-left: 5px; padding-top:10px; padding-bottom:10px; 
+}
+
 .statsbox {
 	position:relative; width:70%; float:left
 }
@@ -78,6 +82,10 @@
 		<br style="clear:both"/>
 	</div>
 	<div class="lefttextbox">
+		<div class="innerlefttextbox">
+		<br/>
+		<b class="nowrap">{$stats.percentage}%</b>
+		</div>
 		<br/>
 		<b class="nowrap">{$stats.percentage}%</b><br/>
 	</div>
