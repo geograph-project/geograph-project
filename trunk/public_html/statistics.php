@@ -89,7 +89,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 		$smarty->assign("tenk_total_$ri",  $db->CacheGetOne(24*3600,"select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) from gridsquare where reference_index = $ri and percent_land > 0"));
 
-		$smarty->assign("tenk_submitted_$ri",  $db->GetOne("select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) from gridsquare reference_index = $ri and has_geographs > 0 and percent_land > 0"));
+		$smarty->assign("tenk_submitted_$ri",  $db->GetOne("select count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) from gridsquare where reference_index = $ri and has_geographs > 0 and percent_land > 0"));
 
 		$center = $db->GetRow("SELECT avg( x ) , avg( y ) FROM `gridsquare` WHERE imagecount >0 AND reference_index = $ri");
 
