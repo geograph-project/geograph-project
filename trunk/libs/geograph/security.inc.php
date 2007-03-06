@@ -86,11 +86,18 @@ function isSpam($msg)
 		return true;
 		
 	//how many times does http appear?
-	//$matches=array();
-	//preg_match_all("{http}", $msg, $matches);
-	//$count=count($matches[0]);
-	//if ($count>5)
-	//	return true;
+	$matches=array();
+	preg_match_all("{http}", $msg, $matches);
+	$count=count($matches[0]);
+
+	preg_match_all("{http://www.geograph.org.uk}", $msg, $matches);
+	$legit=count($matches[0]);
+	
+	//we'll let you off for using geograph links...
+	$count-=$legit;
+
+	if ($count>3)
+		return true;
 
 	
 	
