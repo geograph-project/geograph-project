@@ -112,7 +112,7 @@ if (isset($_POST['msg']) && !$throttle)
 		$received="Received: from [{$ip}]".
 			" by {$hostname}.geograph.org.uk ".
 			"with HTTP;".
-			strftime("%d %b %Y %H:%M:%S -0000", time())."\r\n";
+			strftime("%d %b %Y %H:%M:%S -0000", time())."\n";
 
 		if (@mail($recipient->email, $subject, $body, $received."From: $from_name <$from_email>")) 
 		{
