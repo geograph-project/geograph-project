@@ -32,7 +32,7 @@ class kmlPlacemark_Photo extends kmlPlacemark {
 
 
 
-	public function addPhotographerPoint($kmlPoint,$view_direction,$photographer = '') {
+	public function addPhotographerPoint($kmlPoint,$view_direction=-1,$photographer = '') {
 		
 		//take a copy of the placemark
 		$subjectPlacemark = clone $this;
