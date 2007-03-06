@@ -108,9 +108,16 @@ if (isset($_POST['msg']) && !$throttle)
 		$body=$smarty->fetch('email_usermsg.tpl');
 		$subject="[Geograph] $from_name contacting you via {$_SERVER['HTTP_HOST']}";
 		
+		$hostname=`hostname`;
+		$received="Received: from [{$_SERVER['REMOTE_ADDR']}]".
+			" by {$hostname}.geograph.org.uk ".
+			"with HTTP;".
+			strftime("%d %b %Y %H:%M:%S -0000", time())."\r\n";
+
+		//until we get the remote addr sorted, we should clear the above
+		$received="";
 		
-		
-		if (@mail($recipient->email, $subject, $body, "From: $from_name <$from_email>")) 
+		if (@mail($recipient->email, $subject, $body, $received."From: $from_name <$from_email>")) 
 		{
 			$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
 		
