@@ -311,6 +311,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl') {
 	global $smarty,$USER;
 	if (!isset($_ENV["OS"]) || strpos($_ENV["OS"],'Windows') === FALSE) {
+		$threshold *= 1.5;
 		//lets give registered users a bit more leaway!
 		if ($USER->registered) {
 			$threshold *= 2;
