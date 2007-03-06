@@ -2,6 +2,10 @@
 //domain specific configuration file
 $CONF=array();
 
+//main server (the server that fires cron jobs etc)
+$CONF['server_ip'] = '127.0.0.1';
+
+
 ##database configuration
 
 $CONF['db_driver']='mysql';
@@ -94,6 +98,7 @@ $CONF['os50kimgpath']='c:/home/geograph/rastermaps/OS-50k/';
 //Username/Passowrd for the metacarta webservices api
 //http://developers.metacarta.com/register/
 #$CONF['metacarta_auth'] = 'user@domain.com:password';
+$CONF['metacarta_auth'] = '';
 
 //does the map draw the more demanding placenames
 $CONF['enable_newmap'] = 1;
@@ -154,7 +159,8 @@ $CONF['flickr_api_key'] = '';
 
 
 
-
+//this can be different to your main hostname if want to seperate out the hosting of the Google Earth Superlayer. 
+$CONF['KML_HOST'] = $_SERVER['HTTP_HOST'];
 
 
 

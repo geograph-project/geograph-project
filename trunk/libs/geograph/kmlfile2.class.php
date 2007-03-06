@@ -112,6 +112,109 @@ class kmlPlacemark_Photo extends kmlPlacemark {
 	}
 }
 
+class kmlPlacemark_Circle extends kmlPlacemark {
+	public function __construct($id,$itemname = '',$kmlPoint = null,$d = 10000) {
+		parent::__construct($id,$itemname,$kmlPoint);
+		
+		if (is_object($kmlPoint)) {
+			$this->addCircle($kmlPoint,$d);
+		}
+	}
+
+	public function addCircle($kmlPoint,$d) {
+		if ($sbjPoint = $this->unsetChild('Point')) {
+			$MultiGeometry = $this->addChild('MultiGeometry');
+			$MultiGeometry->addChild($sbjPoint);
+			$LineString = $MultiGeometry->addChild('LineString');
+		} else {
+			$LineString = $this->addChild('LineString');
+		}
+		$coordinates = array();
+		
+		// convert coordinates to radians
+		$lat1 = deg2rad($kmlPoint->lat);
+		$long1 = deg2rad($kmlPoint->lon);
+		
+		//d in meters;
+		$d_rad = $d/6378137;
+		
+		// loop through the array and write path linestrings
+		for($i=0; $i<360; $i+=12) {
+			$radial = deg2rad($i);
+			$lat_rad = asin(sin($lat1)*cos($d_rad) + cos($lat1)*sin($d_rad)*cos($radial));
+			$dlon_rad = atan2(sin($radial)*sin($d_rad)*cos($lat1), cos($d_rad)-sin($lat1)*sin($lat_rad));
+			$lon_rad = fmod(($long1+$dlon_rad + M_PI), 2*M_PI) - M_PI;
+			$coordinates[] = sprintf('%.6f,%.6f,0',rad2deg($lon_rad),rad2deg($lat_rad));
+		}
+		$coordinates[] = $coordinates[0];//join it back up by reusing the first point
+
+		$LineString->setItem('coordinates',join(' ',$coordinates));
+	}
+	
+}
+
+
+
+
+function getKmlFilepath($extension,$level,$square = null,$gr='') {
+	if (is_object($square)) {
+		$s = $square->gridsquare;
+		if ($level > 2) {
+			$n = sprintf("%d%d",intval($square->eastings/20)*2,intval($square->northings/20)*2);
+		}
+		
+	} elseif (!empty($gr)) {
+		preg_match('/^([A-Z]{1,2})([\d_]*)$/',strtoupper($gr),$m);
+		$s = $m[1];
+		if ($level > 2) {
+			$numbers = $m[2];
+			$numlen = strlen($m[2]);
+			$c = $numlen/2;
+			
+			$n = sprintf("%d%d",intval($numbers{0}/2)*2,intval($numbers{$c}/2)*2);
+		}
+	}
+	
+	$base=$_SERVER['DOCUMENT_ROOT'].'/kml';
+	if (!is_dir("$base/$s"))
+		mkdir("$base/$s");
+	if ($n && !is_dir("$base/$s/$n"))
+		mkdir("$base/$s/$n");
+	
+	if ($level == 3) {
+		return "/kml/$s/$n.$extension";
+	} elseif ($level == 2) {
+		return "/kml/$s.$extension";
+	} elseif ($level == 1) {
+		return '/kml/geograph.'.$extension;
+	} else {
+		if ($n && !is_dir("$base/$s/$n/$level"))
+			mkdir("$base/$s/$n/$level");
+		return "/kml/$s/$n/$level/$gr.$extension";
+	}
+
+}
+
+function kmlPageFooter(&$kml,&$square,$gr,$self,$level) {
+	global $db;
+	
+	if (isset($_GET['debug'])) {
+		print "<a href=?download>Open in Google Earth</a><br/>";
+		print "<textarea rows=35 style=width:100%>";
+		print $kml->returnKML();
+		print "</textarea>";
+	} elseif (isset($_GET['download'])) {
+		$kml->outputKML();
+		exit;
+	} else {
+		$file = getKmlFilepath($kml->extension,$level,$square,$gr);
+		
+		$db->Execute("replace into kmlcache set `url` = '$self?gr=$gr',filename='$file',`level` = $level,`rendered` = 1");
+
+		$base=$_SERVER['DOCUMENT_ROOT'];
+		$kml->outputFile('kmz',false,$base.$file);
+	}
+}
 
 
 ?>

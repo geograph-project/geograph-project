@@ -83,6 +83,14 @@ class kmlPrimative {
 		return $this->children[$ref];
 	}
 
+	public function unsetChild($ref) {
+		if (isset($this->children[$ref])) {
+			$d = $this->children[$ref];
+			unset($this->children[$ref]);
+			return $d;
+		}
+	}
+
 	public function setTimeStamp($when) {
 		$this->addChild('TimeStamp','','TimeStamp')->setItem('when',$when);
 		return $this;
@@ -114,14 +122,27 @@ class kmlPrimative {
 ******/
 
 class kmlFile extends kmlPrimative {
-
+	var $extension = 'kmz';
+	
 	public function __construct($id = '') {
 		$this->contentType = "application/vnd.google-earth.kml+xml";
 		$this->encoding = "utf-8";
 		parent::__construct('kml',$id);
 	}
+	
+	public function outputFile($extension='',$sendheaders = true,$diskfile = '') {
+		if (!empty($extension)) {
+			$this->extension = $extension;
+		}
+		if ($this->extension == 'kml') {
+			return $this->outputKML($sendheaders,$diskfile);
+		} else {
+			return $this->outputKMZ($sendheaders,$diskfile);
+		}
+	}
 
-	public function outputKML($sendheaders = true) {
+	
+	public function outputKML($sendheaders = true,$diskfile = '') {
 		if (empty($this->id)) {
 			$this->id = uniqid();
 		}
@@ -132,12 +153,15 @@ class kmlFile extends kmlPrimative {
 			Header("Content-Type: ".$this->contentType."; charset=".$this->encoding."; filename=".basename($this->filename));
 			Header("Content-Disposition: attachment; filename=".basename($this->filename));
 		}
-
-		echo $this->returnKML();
+		if (empty($diskfile)) {
+			echo $this->returnKML();
+		} else {
+			file_put_contents($diskfile,$this->returnKML());
+		}
 		return $this->filename;
 	}
 
-	function outputKMZ ($sendheaders = true) {
+	function outputKMZ($sendheaders = true,$diskfile = '') {
 		$this->contentType = "application/vnd.google-earth.kmz+xml";
 
 		if (empty($this->id)) {
@@ -152,10 +176,21 @@ class kmlFile extends kmlPrimative {
 		}
 
 		$content = $this->returnKML();
-		//todo zip it up
-		echo $content;
 
-		return $$this->filename;
+		include("zip.class.php");
+		
+		$zipfile = new zipfile();   
+		
+		// add the binary data stored in the string 'content' 
+		$zipfile -> addFile($content, "doc.kml");   
+		
+		if (empty($diskfile)) {
+			echo $zipfile->file();
+		} else {
+			file_put_contents($diskfile,$zipfile->file());
+		}
+		
+		return $this->filename;
 	}
 
 	public function returnKML() {
@@ -182,30 +217,51 @@ class kmlDocument extends kmlPrimative {
 		parent::__construct('Document',$id);
 	}
 
-	public function addHoverStyle($expandicon = true) {
-		$Style = $this->addChild('Style','defaultIcon');
-		$LabelStyle = $Style->addChild('LabelStyle');
-		$LabelStyle->setItem('scale',0);
-
-		$Style2 = $this->addChild('Style','hoverIcon');
-		if ($expandicon) {
-			$IconStyle = $Style2->addChild('IconStyle');
-			$IconStyle->setItem('scale',2.1);
+	public function addHoverStyle($id='def',$iconScale = 1,$hoverScale=2.1,$icons='') {
+		if ($icons) {
+			switch ($icons) {
+				case 'photo': $normal = 'pal4/icon46.png';$hover = 'pal4/icon38.png'; break;
+				case 'multi': $normal = 'pal3/icon40.png';$hover = 'pal3/icon32.png'; break;
+			}
 		}
 
-		$StyleMap = $this->addChild('StyleMap','defaultStyle');
+
+		$Style = $this->addChild('Style','n'.$id);
+		$Style->addChild('LabelStyle')->setItem('scale',0);
+		$IconStyle = $Style->addChild('IconStyle');
+		if ($iconScale != 1)
+			$IconStyle->setItem('scale',$iconScale);
+		if ($normal)
+			$IconStyle->addChild('Icon')->setItem('href','http://maps.google.com/mapfiles/kml/'.$normal);
+
+
+		$Style2 = $this->addChild('Style','h'.$id);
+		$IconStyle2 = $Style2->addChild('IconStyle');
+		if ($iconScale != 1 || $hoverScale) 
+			$IconStyle2->setItem('scale',$hoverScale*$iconScale);
+		if ($hover)
+			$IconStyle2->addChild('Icon')->setItem('href','http://maps.google.com/mapfiles/kml/'.$hover);
+
+
+		$StyleMap = $this->addChild('StyleMap',$id);
 		$Pair = $StyleMap->addChild('Pair');
 		$Pair->setItem('key','normal');
-		$Pair->setItem('styleUrl','#defaultIcon');
+		$Pair->setItem('styleUrl','#n'.$id);
 
 		$Pair2 = $StyleMap->addChild('Pair');
 		$Pair2->setItem('key','highlight');
-		$Pair2->setItem('styleUrl','#hoverIcon');
+		$Pair2->setItem('styleUrl','#h'.$id);
 
 		return $this;
 	}
 }
 
+class kmlFolder extends kmlDocument {
+	public function __construct($id = '') {
+		parent::__construct($id);
+		$this->tag = 'Folder';
+	}
+}
 
 /**************************************************
 *
@@ -224,7 +280,12 @@ class kmlPlacemark extends kmlPrimative {
 	}
 
 	public function useHoverStyle() {
-		$this->setItem('styleUrl','#defaultStyle');
+		$this->setItem('styleUrl','#def');
+		return $this;
+	}
+
+	public function usePhotoStyle($prefix='') {
+		$this->setItem('styleUrl','#pho'.$prefix);
 		return $this;
 	}
 
@@ -306,5 +367,44 @@ class kmlPoint extends kmlPrimative {
 	}
 }
 
+
+/**************************************************
+*
+******/
+
+class kmlRegion extends kmlPrimative {
+
+	public function __construct() {
+		parent::__construct('Region');
+	}
+
+	public function setBoundary($north,$south,$east,$west) {
+		$LatLonAltBox = $this->addChild('LatLonAltBox','','LatLonAltBox');
+		$LatLonAltBox->setItem('north',$north);
+		$LatLonAltBox->setItem('south',$south);
+		$LatLonAltBox->setItem('east',$east);
+		$LatLonAltBox->setItem('west',$west);
+	}
+
+	public function setPoint($kmlPoint,$d = 0.0001) {
+		$LatLonAltBox = $this->addChild('LatLonAltBox','','LatLonAltBox');
+		$LatLonAltBox->setItem('north',$kmlPoint->lat+$d);
+		$LatLonAltBox->setItem('south',$kmlPoint->lat-$d);
+		$LatLonAltBox->setItem('east',$kmlPoint->lon+$d);
+		$LatLonAltBox->setItem('west',$kmlPoint->lon-$d);
+	}
+
+	public function setLod($min,$max) {
+		$Lod = $this->addChild('Lod','','Lod');
+		$Lod->setItem('minLodPixels',$min);
+		$Lod->setItem('maxLodPixels',$max);
+	}
+
+	public function setFadeExtent($min,$max) {
+		$Lod = $this->getChild('Lod');
+		$Lod->setItem('minFadeExtent',$min);
+		$Lod->setItem('maxFadeExtent',$max);
+	}
+}
 
 ?>
