@@ -228,20 +228,22 @@ class kmlDocument extends kmlPrimative {
 
 		$Style = $this->addChild('Style','n'.$id);
 		$Style->addChild('LabelStyle')->setItem('scale',0);
-		$IconStyle = $Style->addChild('IconStyle');
-		if ($iconScale != 1)
-			$IconStyle->setItem('scale',$iconScale);
-		if ($normal)
-			$IconStyle->addChild('Icon')->setItem('href','http://maps.google.com/mapfiles/kml/'.$normal);
-
+		if ($iconScale != 1 || $normal) {
+			$IconStyle = $Style->addChild('IconStyle');
+			if ($iconScale != 1)
+				$IconStyle->setItem('scale',$iconScale);
+			if ($normal)
+				$IconStyle->addChild('Icon')->setItem('href','http://maps.google.com/mapfiles/kml/'.$normal);
+		}
 
 		$Style2 = $this->addChild('Style','h'.$id);
 		$IconStyle2 = $Style2->addChild('IconStyle');
-		if ($iconScale != 1 || $hoverScale) 
-			$IconStyle2->setItem('scale',$hoverScale*$iconScale);
-		if ($hover)
-			$IconStyle2->addChild('Icon')->setItem('href','http://maps.google.com/mapfiles/kml/'.$hover);
-
+		if ($iconScale != 1 || $hoverScale || $hover) {
+			if ($iconScale != 1 || $hoverScale) 
+				$IconStyle2->setItem('scale',$hoverScale*$iconScale);
+			if ($hover)
+				$IconStyle2->addChild('Icon')->setItem('href','http://maps.google.com/mapfiles/kml/'.$hover);
+		}
 
 		$StyleMap = $this->addChild('StyleMap',$id);
 		$Pair = $StyleMap->addChild('Pair');
