@@ -109,14 +109,11 @@ if (isset($_POST['msg']) && !$throttle)
 		$subject="[Geograph] $from_name contacting you via {$_SERVER['HTTP_HOST']}";
 		
 		$hostname=`hostname`;
-		$received="Received: from [{$_SERVER['REMOTE_ADDR']}]".
+		$received="Received: from [{$ip}]".
 			" by {$hostname}.geograph.org.uk ".
 			"with HTTP;".
 			strftime("%d %b %Y %H:%M:%S -0000", time())."\r\n";
 
-		//until we get the remote addr sorted, we should clear the above
-		$received="";
-		
 		if (@mail($recipient->email, $subject, $body, $received."From: $from_name <$from_email>")) 
 		{
 			$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
