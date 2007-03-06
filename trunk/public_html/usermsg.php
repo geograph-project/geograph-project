@@ -108,7 +108,7 @@ if (isset($_POST['msg']) && !$throttle)
 		$body=$smarty->fetch('email_usermsg.tpl');
 		$subject="[Geograph] $from_name contacting you via {$_SERVER['HTTP_HOST']}";
 		
-		$hostname=`hostname`;
+		$hostname=trim(`hostname`);
 		$received="Received: from [{$ip}]".
 			" by {$hostname}.geograph.org.uk ".
 			"with HTTP;".
