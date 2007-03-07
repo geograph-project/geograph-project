@@ -140,7 +140,7 @@ foreach($most as $id=>$entry)
 	$file = getKmlFilepath($kml->extension,4,$square,$entry['hunk_square']);
 	$UrlTag = $networklink->useUrl("http://".$CONF['KML_HOST'].$file);
 	if (!isset($_GET['debug']))
-		$db->Execute("replace into kmlcache set `url` = 'hected.php?gr={$entry['hunk_square']}',filename='$file',`level` = 4,`rendered` = 0");
+		$db->Execute("replace into kmlcache set `url` = 'hectad.php?gr={$entry['hunk_square']}',filename='$file',`level` = 4,`rendered` = 0");
 	
 	$UrlTag->setItem('viewRefreshMode','onRegion');
 	$links->addChild($networklink);
