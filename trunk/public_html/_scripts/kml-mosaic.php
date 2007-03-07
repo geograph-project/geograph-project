@@ -146,9 +146,14 @@ foreach($photos as $id=>$entry)
 		$networklink = new kmlNetworkLink(null,$entry['grid_reference']);
 		$file = getKmlFilepath($kml->extension,6,$square,$entry['grid_reference']);
 		$UrlTag = $networklink->useUrl("http://".$CONF['KML_HOST'].$file);
-		if (!isset($_GET['debug']))
-			$db->Execute("replace into kmlcache set `url` = 'square.php?gr={$entry['grid_reference']}',filename='$file',`level` = 6,`rendered` = 0");
-		
+		if (!isset($_GET['debug'])) {
+			if (isset($_GET['newonly'])) {
+				$db->Execute("insert ignore into kmlcache set `url` = 'square.php?gr={$entry['grid_reference']}',filename='$file',`level` = 6,`rendered` = 0");
+			} else {
+				$db->Execute("replace into kmlcache set `url` = 'square.php?gr={$entry['grid_reference']}',filename='$file',`level` = 6,`rendered` = 0");
+			}
+		}
+
 		$UrlTag->setItem('viewRefreshMode','onRegion');
 		$links->addChild($networklink);
 

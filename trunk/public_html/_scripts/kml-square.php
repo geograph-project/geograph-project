@@ -120,18 +120,22 @@ if ($square->imagecount > 20) {
 		$networklink = new kmlNetworkLink(null,$name);
 		$file = getKmlFilepath($kml->extension,7,$square,$entry['hunk_square']);
 		$UrlTag = $networklink->useUrl("http://".$CONF['KML_HOST'].$file);
-		if (!isset($_GET['debug']))
-			$db->Execute("replace into kmlcache set `url` = 'centisquare.php?gr={$entry['hunk_square']}',filename='$file',`level` = 7,`rendered` = 0");
-		
+		if (!isset($_GET['debug'])) {
+			if (isset($_GET['newonly'])) {
+				$db->Execute("insert ignore into kmlcache set `url` = 'centisquare.php?gr={$entry['hunk_square']}',filename='$file',`level` = 7,`rendered` = 0");
+			} else {
+				$db->Execute("replace into kmlcache set `url` = 'centisquare.php?gr={$entry['hunk_square']}',filename='$file',`level` = 7,`rendered` = 0");
+			}
+		}
+
 		$UrlTag->setItem('viewRefreshMode','onRegion');
 		$links->addChild($networklink);
 
-		$Region2 = clone $Region;	
+		$Region2 = clone $Region;
 		$Region2->setLod(550,1200);
-		$Region2->setFadeExtent(100,100);		
+		$Region2->setFadeExtent(100,100);
 		$networklink->addChild($Region2);
-		
-	}	
+	}
 
 	$folder->addChild($links);
 

@@ -139,9 +139,14 @@ foreach($most as $id=>$entry)
 	$networklink = new kmlNetworkLink(null,$entry['hunk_square']);
 	$file = getKmlFilepath($kml->extension,4,$square,$entry['hunk_square']);
 	$UrlTag = $networklink->useUrl("http://".$CONF['KML_HOST'].$file);
-	if (!isset($_GET['debug']))
-		$db->Execute("replace into kmlcache set `url` = 'hectad.php?gr={$entry['hunk_square']}',filename='$file',`level` = 4,`rendered` = 0");
-	
+	if (!isset($_GET['debug'])) {
+		if (isset($_GET['newonly'])) {
+			$db->Execute("insert ignore into kmlcache set `url` = 'hectad.php?gr={$entry['hunk_square']}',filename='$file',`level` = 4,`rendered` = 0");
+		} else {
+			$db->Execute("replace into kmlcache set `url` = 'hectad.php?gr={$entry['hunk_square']}',filename='$file',`level` = 4,`rendered` = 0");
+		}
+	}
+
 	$UrlTag->setItem('viewRefreshMode','onRegion');
 	$links->addChild($networklink);
 
@@ -149,12 +154,10 @@ foreach($most as $id=>$entry)
 	$Region2->setBoundary($north,$south,$east,$west);
 	$Region2->setLod(450,1200);
 	$Region2->setFadeExtent(100,100);
-}	
+}
 
 $folder->addChild($links);
 
- 
 kmlPageFooter($kml,$square,$gr,'tile.php',3);
-
 
 ?>
