@@ -82,12 +82,11 @@ require_once('geograph/global.inc.php');
 $db = NewADOConnection($GLOBALS['DSN']);
 
 //this upper limit is set by google
-$urls_per_sitemap=50000;
+$urls_per_sitemap=500;
 
 //how many sitemap files must we write?
 printf("Counting images...\r");
-$images=$db->GetOne("select count(*) from gridimage ".
-	"where moderation_status in ('accepted', 'geograph')");
+$images=$db->GetOne("select count(*) from kmlcache where rendered = 1 and filename != ''");
 $sitemaps=ceil($images / $urls_per_sitemap);
 
 //go through each sitemap file...
@@ -98,7 +97,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	//prepare output file and query
 	printf("Preparing sitemap %d of %d, %d%% complete...\r", $sitemap, $sitemaps,$percent);
 		
-	$filename=sprintf('%s/public_html/sitemap%04d.xml', $param['dir'], $sitemap); 
+	$filename=sprintf('%s/public_html/kml/sitemap%04d.xml', $param['dir'], $sitemap); 
 	$fh=fopen($filename, "w");
 	
 	fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
@@ -109,33 +108,26 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	
 	$offset=($sitemap-1)*$urls_per_sitemap;
 	$recordSet = &$db->Execute(
-		"select i.gridimage_id,date(i.moderated) as moddate,".
-			"date(max(t.updated)) as ticketdate ".
-		"from gridimage as i ".
-		"left join gridimage_ticket as t ".
-			"on (i.gridimage_id=t.gridimage_id and t.status='closed')".
-		"where i.moderation_status in ('accepted', 'geograph') ".
-		"group by i.gridimage_id ".
-		"order by i.gridimage_id ".
+		"select filename,ts ".
+		"from kmlcache ".
+		"where rendered = 1 and filename != '' ".
 		"limit $offset,$urls_per_sitemap");
 	
 	//write one <url> line per result...
 	while (!$recordSet->EOF) 
 	{
 		//figure out most recent update
-		$date=$recordSet->fields['moddate'];
-		if (!is_null($recordSet->fields['ticketdate']))
-			$date=$recordSet->fields['ticketdate'];
+		$date=$recordSet->fields['ts'];
 		
 		if (strcmp($date,$maxdate)>0)
 			$maxdate=$date;
 		
 		fprintf($fh,"<url>".
-			"<loc>http://www.geograph.org.uk/photo/%d</loc>".
+			"<loc>%s</loc>".
 			"<lastmod>%s</lastmod>".
 			"<changefreq>monthly</changefreq>".
 			"</url>\n",
-			$recordSet->fields['gridimage_id'],
+			"http://".$CONF['KML_HOST'].$recordSet->fields['filename'],
 			$date
 			);
 			
@@ -165,25 +157,23 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	`gzip $filename`;
 }
 
-//now we write an index file pointing to our hand edited sitemap sitemap0000.xml)
-//and our generated ones above
-$filename=sprintf('%s/public_html/sitemap.xml', $param['dir']); 
+//now we write an index file pointing to our generated ones above
+$filename=sprintf('%s/public_html/kml/sitemap.xml', $param['dir']); 
 $fh=fopen($filename, "w");
 
 fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
 fprintf($fh, '<sitemapindex xmlns="http://www.google.com/schemas/sitemap/0.84">'."\n");
 
-for ($s=0; $s<=$sitemaps; $s++)
+for ($s=1; $s<=$sitemaps; $s++)
 {
 	fprintf($fh, "<sitemap>");
 	
-	//first file is not compressed...
-	$fname=($s==0)?"sitemap0000.xml":sprintf("sitemap%04d.xml.gz", $s);
+	$fname=sprintf("sitemap%04d.xml.gz", $s);
 	
-	$mtime=filemtime($param['dir']."/public_html/".$fname);
+	$mtime=filemtime($param['dir']."/public_html/kml/".$fname);
 	$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);
 	
-	fprintf($fh, "<loc>http://www.geograph.org.uk/%s</loc>", $fname);
+	fprintf($fh, "<loc>http://{$CONF['KML_HOST']}/kml/%s</loc>", $fname);
 	fprintf($fh, "<lastmod>$mtimestr</lastmod>", $fname);
 	fprintf($fh, "</sitemap>\n");
 }
