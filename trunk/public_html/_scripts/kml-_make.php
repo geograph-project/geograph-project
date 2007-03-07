@@ -76,7 +76,7 @@ from
 		on (gi.gridimage_id = g2.gridimage_id)
 order by 
 	imagecount desc,
-	(nat_grlen != '4') desc,
+	(natgrlen != '4') desc,
 	(gi.moderation_status = 'geograph') desc,
 	rand()");
 
