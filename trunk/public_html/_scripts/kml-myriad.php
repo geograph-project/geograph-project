@@ -152,7 +152,7 @@ foreach($most as $id=>$entry)
 $folder->addChild($links);
 
 
-kmlPageFooter($kml,$square,$gr,'muriad.php',2);
+kmlPageFooter($kml,$square,$gr,'myriad.php',2);
 
 
 ?>
