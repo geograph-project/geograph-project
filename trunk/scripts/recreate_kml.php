@@ -26,6 +26,9 @@
 */
 function get_loadavg() 
 {
+	if (!function_exists('posix_uname')) {
+		return -1;
+	}
 	$uname = posix_uname();
 	switch ($uname['sysname']) {
 		case 'Linux':
@@ -71,8 +74,10 @@ $param=array(
 	'config'=>'www.geograph.org.uk', //effective config
 
 	'timeout'=>14, //timeout in minutes
+	'number'=>10,	//number to do each time
+	'offset'=>0,	//so can also process the middle
 	'sleep'=>10,	//sleep time in seconds
-	'load'=>100,	//maximum load average
+	'load'=>4,	//maximum load average
 	'help'=>0,		//show script help?
 );
 
@@ -109,7 +114,9 @@ php recreate_maps.php
     --config=<domain>   : effective domain config (www.geograph.org.uk)
     --timeout=<minutes> : maximum runtime of script (14)
     --sleep=<seconds>   : seconds to sleep if load average exceeded (10)
-    --load=<loadavg>    : maximum load average (100)
+    --number=<number>   : number of items to process in each batch (10)
+    --offset=<number>   : non-zero to process part of the dataset (0)
+    --load=<loadavg>    : maximum load average (4)
     --help              : show this message	
 ---------------------------------------------------------------------
 	
@@ -146,7 +153,7 @@ while (1) {
 
 	if ($invalid_maps) {
 		//done as many small select statements to allow new maps to be processed 
-		$recordSet = &$db->Execute("select url,filename from kmlcache where rendered = 0 order by level limit 10");
+		$recordSet = &$db->Execute("select url,filename from kmlcache where rendered = 0 order by level limit {$param['offset']},{$param['number']}");
 		while (!$recordSet->EOF) 
 		{
 			//sleep until calm if we've specified a load average
