@@ -51,13 +51,13 @@ if (!isset($_GET['nolinks'])) {
 }
 
 if (isset($_GET['download'])) {
-	$kml->outputKML();
+	$kml->outputKML(empty($_GET['simple']));
 	exit;
 } 
 
 print "<a href=?download>Open in Google Earth</a><br/>";
 print "<textarea rows=30 style=width:100%>";
-print $kml->returnKML();
+print $kml->returnKML(empty($_GET['simple']));
 print "</textarea>";
 
 

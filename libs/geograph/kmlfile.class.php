@@ -96,23 +96,42 @@ class kmlPrimative {
 		return $this;
 	}
 
-	public function toString($indent = 0) {
-		$s = str_repeat("\t",$indent)."<{$this->tag}";
-		if (!empty($this->id)) {
-			$s .= " id=\"{$this->id}\"";
-		}
-		$s .= ">\n";
-		if (count($this->items)) {
-			foreach ($this->items as $name => $value) {
-				$s .= str_repeat("\t",$indent+1)."<$name>$value</$name>\n";
+	public function toString($indent = 0,$prettyprint = true) {
+		if ($prettyprint) {
+			$s = str_repeat("\t",$indent)."<{$this->tag}";
+			if (!empty($this->id)) {
+				$s .= " id=\"{$this->id}\"";
 			}
-		}
-		if (count($this->children)) {
-			foreach ($this->children as $id => $obj) {
-				$s .= $obj->toString($indent+1);
+			$s .= ">\n";
+			if (count($this->items)) {
+				foreach ($this->items as $name => $value) {
+					$s .= str_repeat("\t",$indent+1)."<$name>$value</$name>\n";
+				}
 			}
+			if (count($this->children)) {
+				foreach ($this->children as $id => $obj) {
+					$s .= $obj->toString($indent+1);
+				}
+			}
+			return $s.str_repeat("\t",$indent)."</{$this->tag}>\n";
+		} else {
+			$s = "<{$this->tag}";
+			if (!empty($this->id)) {
+				$s .= " id=\"{$this->id}\"";
+			}
+			$s .= ">";
+			if (count($this->items)) {
+				foreach ($this->items as $name => $value) {
+					$s .= "<$name>$value</$name>";
+				}
+			}
+			if (count($this->children)) {
+				foreach ($this->children as $id => $obj) {
+					$s .= $obj->toString($indent+1,$prettyprint);
+				}
+			}
+			return $s."</{$this->tag}>";
 		}
-		return $s.str_repeat("\t",$indent)."</{$this->tag}>\n";
 	}
 
 }
@@ -175,7 +194,7 @@ class kmlFile extends kmlPrimative {
 			Header("Content-Disposition: attachment; filename=".basename($this->filename));
 		}
 
-		$content = $this->returnKML();
+		$content = $this->returnKML(false);
 
 		include("zip.class.php");
 		
@@ -193,7 +212,7 @@ class kmlFile extends kmlPrimative {
 		return $this->filename;
 	}
 
-	public function returnKML() {
+	public function returnKML($prettyprint = true) {
 		if (empty($this->id)) {
 			$this->id = uniqid();
 		}
@@ -202,7 +221,7 @@ class kmlFile extends kmlPrimative {
 
 		$this->id .= "\" xmlns=\"http://earth.google.com/kml/2.0";
 
-		return $s.parent::toString();
+		return $s.parent::toString(0,$prettyprint);
 	}
 
 }
@@ -351,10 +370,10 @@ class kmlPoint extends kmlPrimative {
  		return $this;
 	}
 
-	public function toString($indent = 0) {
+	public function toString($indent = 0,$prettyprint = true) {
 		//make sure coordinates are uptodate
 		$this->setItem('coordinates',"{$this->lon},{$this->lat},{$this->alt}");
-		return parent::toString($indent);
+		return parent::toString($indent,$prettyprint);
 	}
 
 	function calcHeadingToPoint($p2) {

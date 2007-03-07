@@ -119,7 +119,6 @@ exit;
 	
 //set up  suitable environment
 ini_set('include_path', $param['dir'].'/libs/');
-print  $param['dir'].'/libs/';
 $_SERVER['DOCUMENT_ROOT'] = $param['dir'].'/public_html/'; 
 $_SERVER['HTTP_HOST'] = $param['config'];
 
@@ -166,9 +165,9 @@ while (1) {
 			
 			flush();
 			
-			print "...Fetching: http://{$_SERVER['HTTP_HOST']}/explore/kml-{$recordSet->fields['url']}\n";
+			print "...Fetching: http://{$_SERVER['HTTP_HOST']}/scripts/kml-{$recordSet->fields['url']}\n";
 			
-			file_get_contents("http://{$_SERVER['HTTP_HOST']}/explore/kml-{$recordSet->fields['url']}");
+			file_get_contents("http://{$_SERVER['HTTP_HOST']}/scripts/kml-{$recordSet->fields['url']}");
 			
 			print "...Done\n";
 			
