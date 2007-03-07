@@ -165,9 +165,9 @@ while (1) {
 			
 			flush();
 			
-			print "...Fetching: http://{$_SERVER['HTTP_HOST']}/scripts/kml-{$recordSet->fields['url']}\n";
+			print "...Fetching: http://{$_SERVER['HTTP_HOST']}/_scripts/kml-{$recordSet->fields['url']}\n";
 			
-			file_get_contents("http://{$_SERVER['HTTP_HOST']}/scripts/kml-{$recordSet->fields['url']}");
+			file_get_contents("http://{$_SERVER['HTTP_HOST']}/_scripts/kml-{$recordSet->fields['url']}");
 			
 			print "...Done\n";
 			
