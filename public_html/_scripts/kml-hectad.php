@@ -159,8 +159,13 @@ foreach($most as $id=>$entry)
 	$networklink = new kmlNetworkLink(null,$entry['hunk_square']);
 	$file = getKmlFilepath($kml->extension,5,$square,$entry['hunk_square']);
 	$UrlTag = $networklink->useUrl("http://".$CONF['KML_HOST'].$file);
-	if (!isset($_GET['debug']))
-		$db->Execute("replace into kmlcache set `url` = 'mosaic.php?gr={$entry['hunk_square']}',filename='$file',`level` = 5,`rendered` = 0");
+	if (!isset($_GET['debug'])) {
+		if (isset($_GET['newonly'])) {
+			$db->Execute("insert ignore into kmlcache set `url` = 'mosaic.php?gr={$entry['hunk_square']}',filename='$file',`level` = 5,`rendered` = 0");
+		} else {
+			$db->Execute("replace into kmlcache set `url` = 'mosaic.php?gr={$entry['hunk_square']}',filename='$file',`level` = 5,`rendered` = 0");
+		}
+	}
 	
 	$UrlTag->setItem('viewRefreshMode','onRegion');
 	$links->addChild($networklink);

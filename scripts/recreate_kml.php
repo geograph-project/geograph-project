@@ -149,11 +149,11 @@ $map=new GeographMap;
 			
 while (1) {
 
-	$invalid_maps = $db->GetOne("select count(*) from kmlcache where rendered = 0");
+	$invalid_maps = $db->GetOne("select count(*) from kmlcache where rendered != 1");
 
 	if ($invalid_maps) {
 		//done as many small select statements to allow new maps to be processed 
-		$recordSet = &$db->Execute("select url,filename from kmlcache where rendered = 0 order by level limit {$param['offset']},{$param['number']}");
+		$recordSet = &$db->Execute("select url,filename,rendered from kmlcache where rendered != 1 order by level limit {$param['offset']},{$param['number']}");
 		while (!$recordSet->EOF) 
 		{
 			//sleep until calm if we've specified a load average
@@ -172,9 +172,11 @@ while (1) {
 			
 			flush();
 			
-			print "...Fetching: http://{$_SERVER['HTTP_HOST']}/_scripts/kml-{$recordSet->fields['url']}\n";
+			$postfix = ($recordSet->fields['rendered'] == 2)?'&newonly=1':'';
 			
-			file_get_contents("http://{$_SERVER['HTTP_HOST']}/_scripts/kml-{$recordSet->fields['url']}");
+			print "...Fetching: http://{$_SERVER['HTTP_HOST']}/_scripts/kml-{$recordSet->fields['url']}$postfix\n";
+			
+			file_get_contents("http://{$_SERVER['HTTP_HOST']}/_scripts/kml-{$recordSet->fields['url']}$postfix");
 			
 			print "...Done\n";
 			
