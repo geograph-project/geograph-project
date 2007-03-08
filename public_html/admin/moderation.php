@@ -176,7 +176,7 @@ $sql = "select distinct gridsquare_id
 from 
 	gridimage as gi
 where
-	(moderation_status = 2 or user_status!='') and
+	(moderation_status = 2) and
 	gi.user_id = {$USER->user_id}
 order by null";
 
@@ -258,7 +258,7 @@ if (isset($_GET['moderator'])) {
 	$sql_order = "gridimage_id desc";
 	$smarty->assign('remoderate', 1);
 } else {
-	$sql_where = "(moderation_status = 2 or user_status!='')";
+	$sql_where = "(moderation_status = 2)";
 	$sql_order = "gridimage_id asc";
 }
 

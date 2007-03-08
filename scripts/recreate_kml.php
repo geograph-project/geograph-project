@@ -146,7 +146,7 @@ $start_time = time();
 $end_time = $start_time + (60*$param['timeout']);
 
 $map=new GeographMap;
-			
+
 while (1) {
 
 	$invalid_maps = $db->GetOne("select count(*) from kmlcache where rendered != 1");
@@ -183,29 +183,26 @@ while (1) {
 			if (time()>$end_time) {
 				$recordSet->Close(); 
 				//well come to the end of the scripts useful life
-				exit;	
+				exit;
 			}
 
 			$recordSet->MoveNext();
 
 		}
-		
 	} else {
 		//nothing more to do here
 
 		exit;
 	}
-	
+
 	//sleep anyway for a bit
 	sleep($param['sleep']*3);
-					
+
 	if (time()>$end_time) {
 		//retreat and let the next recruit take the strain
-		exit;	
+		exit;
 	}
-}	
+}
 
- 
 
-	
 ?>

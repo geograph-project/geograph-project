@@ -60,6 +60,9 @@
 	  {/if}</p>
   	  <p style="font-size:0.8em">(Click one of these buttons to leave a hint to the moderator when they moderate your image)</p>
   	  </form>
+  	{elseif $isadmin and $image->user_status}
+  	  <h2 class="titlebar">Moderation Suggestion</h2>
+  	   Suggestion: {if $image->user_status eq "accepted"}supplemental{else}{$image->user_status}{/if}
 	{/if}
 <br/>
 <br/>

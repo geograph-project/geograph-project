@@ -52,10 +52,10 @@ class ImageList
 	/**
 	* constructor - can be used to build a basic list (See getImages)
 	*/
-	function ImageList($statuses=null, $sort=null, $count=null,$advanced = false,$includeUserStatus = false)
+	function ImageList($statuses=null, $sort=null, $count=null,$advanced = false)
 	{
 		if (!is_null($statuses))
-			$this->getImages($statuses, $sort, $count,$advanced,$includeUserStatus);
+			$this->getImages($statuses, $sort, $count,$advanced);
 	}
 	
 	/**
@@ -66,7 +66,7 @@ class ImageList
 	* @param advanced - true to use real table, eg if need pending (default: false)
 	* @param includeUserStatus - include any that have been self moderated (default: false)
 	*/
-	function getImages($statuses, $sort=null, $count=null,$advanced = false,$includeUserStatus = false)
+	function getImages($statuses, $sort=null, $count=null,$advanced = false)
 	{
 		//we accept an array or a single status...
 		if (is_array($statuses))
@@ -85,10 +85,6 @@ class ImageList
 			$limit="";
 		else
 			$limit="limit $count";
-		
-		if ($includeUserStatus) {
-			$orderby = "or user_status!='' ".$orderby;
-		}
 		
 		if ($advanced) {
 			$sql = "select gi.*,grid_reference,user.realname,imagecount ".
