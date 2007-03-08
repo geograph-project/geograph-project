@@ -85,7 +85,7 @@ $sql_where = "CONTAINS(GeomFromText($rectangle),point_xy)";
 
 
 $photos = $db->GetAll("select 
-gridimage_id,grid_reference,title,imagecount,user_id,x,y,view_direction,
+gridimage_id,grid_reference,title,imagecount,user_id,realname,x,y,view_direction,
 wgs84_lat,wgs84_long
 from gridimage_kml 
 where $sql_where
