@@ -82,11 +82,11 @@ require_once('geograph/global.inc.php');
 $db = NewADOConnection($GLOBALS['DSN']);
 
 //this upper limit is set by google
-$urls_per_sitemap=500;
+$urls_per_sitemap=50000;
 
 //how many sitemap files must we write?
 printf("Counting images...\r");
-$images=$db->GetOne("select count(*) from kmlcache where rendered = 1 and filename != ''");
+$images=$db->GetOne("select count(*) from kmlcache where rendered = 1 and filename != '' and level in (1,5,6,7)");
 $sitemaps=ceil($images / $urls_per_sitemap);
 
 //go through each sitemap file...
@@ -110,7 +110,8 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	$recordSet = &$db->Execute(
 		"select filename,ts ".
 		"from kmlcache ".
-		"where rendered = 1 and filename != '' ".
+		"where rendered = 1 and filename != '' and level in (1,5,6,7) ".
+		"order by level ".
 		"limit $offset,$urls_per_sitemap");
 	
 	//write one <url> line per result...
