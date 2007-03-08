@@ -108,7 +108,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	
 	$offset=($sitemap-1)*$urls_per_sitemap;
 	$recordSet = &$db->Execute(
-		"select filename,ts ".
+		"select filename,date(ts) as ts_date ".
 		"from kmlcache ".
 		"where rendered = 1 and filename != '' and level in (1,5,6,7) ".
 		"order by level ".
@@ -118,7 +118,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	while (!$recordSet->EOF) 
 	{
 		//figure out most recent update
-		$date=$recordSet->fields['ts'];
+		$date=$recordSet->fields['ts_date'];
 		
 		if (strcmp($date,$maxdate)>0)
 			$maxdate=$date;

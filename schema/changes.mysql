@@ -1113,3 +1113,7 @@ CREATE TABLE `kmlcache` (
   `rendered` tinyint(3) unsigned NOT NULL default '0',
   PRIMARY KEY  (`url`)
 ) ENGINE=MyISAM;
+
+
+ALTER TABLE `gridimage` DROP INDEX `moderation_status_2`;
+
