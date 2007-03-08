@@ -931,8 +931,6 @@ class GridImage
 		$db=&$this->_getDB();
 		
 		if ($status==$this->moderation_status) {
-			$db->Query("update gridimage set user_status = '' where gridimage_id={$this->gridimage_id}");
-
 			return "No change, still {$this->moderation_status}";
 		}
 		if (!in_array($status, $valid_status))
@@ -963,7 +961,6 @@ class GridImage
 			"moderation_status='$status',".
 			"moderator_id='$moderator_id',".
 			"moderated=now(),".
-			"user_status='',".
 			"ftf={$this->ftf},".
 			"seq_no={$this->seq_no} ".
 			"where gridimage_id={$this->gridimage_id}";
