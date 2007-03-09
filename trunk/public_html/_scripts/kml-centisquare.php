@@ -87,7 +87,7 @@ $folder->setItem('name',"$gr :: Geograph SuperLayer");
 		}
 		$point = new kmlPoint($wgs84_lat,$wgs84_long);			
 
-		$placemark = new kmlPlacemark(null,$square->grid_reference.' :: '.$entry['title'],$point);
+		$placemark = new kmlPlacemark_photo(null,$square->grid_reference.' :: '.$entry['title'],$point);
 		$placemark->useHoverStyle();
 
 		$image=new GridImage;
