@@ -444,9 +444,9 @@ function updateViewDirection() {
 				if (ele.options[q].value == newangle)
 					ele.selectedIndex = q;
 
-			document.images['camicon'].src = "/templates/basic/img/viewc-"+newangle+".png";
+			document.images['camicon'].src = "/templates/basic/img/viewc-"+parseInt(newangle,10)+".png";
 			if (document.theForm.photographer_gridref.value == '')
-				document.images['subicon'].src = "/templates/basic/img/subc-"+newangle+".png";
+				document.images['subicon'].src = "/templates/basic/img/subc-"+parseInt(newangle,10)+".png";
 			else 
 				document.images['subicon'].src = "/templates/basic/img/circle.png";
 		}
@@ -468,9 +468,9 @@ function updateCamIcon() {
 		newangle = Math.floor(Math.round(realangle/jump)*jump);
 		if (newangle == 360)
 			newangle = 0;
-		document.images['camicon'].src = "/templates/basic/img/viewc-"+newangle+".png";
+		document.images['camicon'].src = "/templates/basic/img/viewc-"+parseInt(newangle,10)+".png";
 		if (document.theForm.photographer_gridref.value == '')
-			document.images['subicon'].src = "/templates/basic/img/subc-"+newangle+".png";
+			document.images['subicon'].src = "/templates/basic/img/subc-"+parseInt(newangle,10)+".png";
 		else 
 			document.images['subicon'].src = "/templates/basic/img/circle.png";
 	}
