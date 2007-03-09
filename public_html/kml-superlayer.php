@@ -30,7 +30,7 @@ preg_match('/kh_\w+\/\w+(\d).(\d)/',$_SERVER['USER_AGENT'],$m);
 $kml = new kmlFile();
 $kml->filename = "Geograph-Layer.kml";
 
-if ($m[2] == 3) { //GE 3
+if ($m[1] == 3) { //GE 3
 	$NetworkLink = $kml->addChild('NetworkLink');
 	$NetworkLink->setItem('name','Geograph NetworkLink');
 	$NetworkLink->setItemCDATA('description',"Please upgrade to Google Earth Version 4 to take advantage latest Superlayer");
@@ -43,7 +43,7 @@ if ($m[2] == 3) { //GE 3
 	$UrlTag->setItem('viewRefreshTime',4);
 	$UrlTag->setItem('viewFormat','BBOX=[bboxWest],[bboxSouth],[bboxEast],[bboxNorth]&amp;LOOKAT=[lookatLon],[lookatLat],[lookatRange],[lookatTilt],[lookatHeading],[horizFov],[vertFov]');
 
-} elseif ($m[2] == 4 || isset($_GET['download'])) { 
+} elseif ($m[1] == 4 || isset($_GET['download'])) { 
 	Header("Content-Type: application/vnd.google-earth.kmz+xml; charset=utf-8; filename=geograph.kmz");
 	Header("Content-Disposition: attachment; filename=\"geograph.kmz\"");
 	
