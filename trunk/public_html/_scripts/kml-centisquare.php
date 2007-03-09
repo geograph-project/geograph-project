@@ -67,7 +67,7 @@ $folder->setItem('name',"$gr :: Geograph SuperLayer");
 	
 
 	$photos = $db->GetAll($sql = "select 
-	gridimage_id,title,realname,user_id,comment,nateastings,natnorthings,natgrlen,view_direction
+	gridimage_id,title,realname,user.user_id,comment,nateastings,natnorthings,natgrlen,view_direction
 	from gridimage
 		 inner join user using(user_id)
 	where $sql_where

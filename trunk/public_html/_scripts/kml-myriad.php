@@ -129,8 +129,8 @@ foreach($most as $id=>$entry)
 
 	$Region = $placemark->addChild('Region');
 	$Region->setBoundary($north,$south,$east,$west);
-	$Region->setLod(100,600);
-	$Region->setFadeExtent(50,200);
+	$Region->setLod(100,650);
+	$Region->setFadeExtent(50,150);
 
 
 

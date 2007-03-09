@@ -52,7 +52,7 @@ $folder->setItemCDATA('description',<<<END_HTML
 
 <p><i>The Geograph British Isles project aims to collect geographically representative photographs and information for every square kilometre of the UK and the Republic of Ireland, and you can be part of it.</i></p>
 
-<p>This SuperLayer allows full access to the thousends of images contributed to Geograph since March 2005, the view starts depicting a course overview of the current courage, zooming in reveals more detail until pictures themselves become visible.</p>
+<p>This SuperLayer allows full access to the thousends of images contributed to Geograph since March 2005, the view starts depicting a coarse overview of the current courage, zooming in reveals more detail until pictures themselves become visible.</p>
 
 <p>Click on the Camera Icon or Thumbnails to view a bigger image, and follow the link to view the full resolution image on the geograph website.</p>
 
