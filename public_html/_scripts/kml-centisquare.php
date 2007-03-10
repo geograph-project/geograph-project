@@ -43,8 +43,22 @@ $conv = new Conversions;
 
 $gr = $_GET['gr'];
 
+
+preg_match('/^([A-Z]{1,2})(\d\d)(\d|_)(\d\d)(\d|_)$/',strtoupper($gr),$matches);
+if ($matches[3] == '_') {
+	$sql_where = " and nateastings = 0";
+	$gr2 = $matches[1].$matches[2].$matches[4];
+} else {
+	$sql_where = " and nateastings != 0";//to stop XX0XX0 matching 4fig GRs
+	$sql_where .= " and ((nateastings div 100) mod 10) = ".$matches[3];
+	$sql_where .= " and ((natnorthings div 100) mod 10) = ".$matches[5];
+	
+	$gr2 = $gr;
+}
+	
+
 $square=new GridSquare;
-$grid_ok=$square->setByFullGridRef($gr);
+$grid_ok=$square->setByFullGridRef($gr2);
 
 
 $kml = new kmlFile();
@@ -54,16 +68,8 @@ $folder->setItem('name',"$gr :: Geograph SuperLayer");
 	
 	$folder->addHoverStyle();
 	
-	$sql_where = "gridsquare_id={$square->gridsquare_id}";
+	$sql_where = "gridsquare_id={$square->gridsquare_id}".$sql_where;
 	
-	preg_match('/^[A-Z]{1,2}\d\d(\d|_)\d\d(\d|_)$/',strtoupper($gr),$matches);
-	if ($matches[1] == '_') {
-		$sql_where .= " and nateastings = 0";
-	} else {
-		$sql_where .= " and nateastings != 0";//to stop XX0XX0 matching 4fig GRs
-		$sql_where .= " and ((nateastings div 100) mod 10) = ".$matches[1];
-		$sql_where .= " and ((natnorthings div 100) mod 10) = ".$matches[2];
-	}
 	
 
 	$photos = $db->GetAll($sql = "select 
