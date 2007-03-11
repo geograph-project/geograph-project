@@ -11,6 +11,10 @@
 	follow the link contained in the email to confirm your 
 	registration</p>
 
+        <p><b>Hotmail users please note:</b> Check your "Junk E-Mail" folder as we've found
+	Hotmail sometimes treats the confirmation mail as spam.</p>
+
+
 {elseif $confirmation_status eq "ok"}
 	<p>Congratulations - your registration is complete. We 
 	hope you'll enjoy contributing!</p>
