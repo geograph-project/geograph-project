@@ -52,13 +52,13 @@ foreach (range(2005,date('Y')) as $year) {
 			$when  = sprintf("%04d-%02d",$year,$month);
 	
 			if (isset($_GET['build'])) {
-				$url = "http://".$_SERVER['HTTP_HOST']."/admin/hectad_coverage.php?type=$type&when=$when".($thismonth?'&over=1':'');
+				$url = "http://".$_SERVER['HTTP_HOST']."/_stripts/kml-hectad_coverage.php?type=$type&when=$when".($thismonth?'&over=1':'');
 				$files[] = $url; 
 				if (!isset($_GET['d'])) {
 					file_get_contents($url);
 				}
 			}
-			$url = "http://".$_SERVER['HTTP_HOST']."/rss/hectads-$type-$when.kmz";
+			$url = "http://".$_SERVER['HTTP_HOST']."/kml/hectads-$type-$when.kmz";
 		
 		
 ?>
@@ -89,9 +89,9 @@ ob_end_clean();
 	print_r($files);
 	print "</pre>";
 
-file_put_contents ( $_SERVER['DOCUMENT_ROOT']."/rss/hectads-$type-animation.kml", $filedata); 
+file_put_contents ( $_SERVER['DOCUMENT_ROOT']."/kml/hectads-$type-animation.kml", $filedata); 
 
 print "wrote ".strlen($filedata);
-print "<br/><br/><a href=\"/rss/hectads-$type-animation.kml\">Download</a>";
+print "<br/><br/><a href=\"/kml/hectads-$type-animation.kml\">Download</a>";
 
 ?>
