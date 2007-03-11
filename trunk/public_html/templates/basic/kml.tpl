@@ -1,8 +1,11 @@
-{assign var="page_title" value="KML Export"}
+{assign var="page_title" value="Google Earth or Google Maps :: KML Export"}
 {include file="_std_begin.tpl"}
 {dynamic}
 	<div style="padding:5px;background:#dddddd;position:relative; float:right; font-size:0.8em">
 	Quick links:<br/><br/>
+	<b>All Geograph Images</b>: <br/>
+	&nbsp;&nbsp;&nbsp;<a href="/kml-superlayer.php">Google Earth <b>Version 4</b></a><br/>
+	<br/> 
 	<b>Recent Images</b>: <br/>
 	&nbsp;&nbsp;&nbsp;<a href="/feed/recent.kml">Google Earth</a><br/>
 	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=http://$http_host/feed/recent.kml" text="Google Maps"}<br/>
@@ -11,15 +14,32 @@
 	&nbsp;&nbsp;&nbsp;<a href="/discuss/feed/forum5.kml">Google Earth</a><br/>
 	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=http://$http_host/discuss/feed/forum5.kml" text="Google Maps"}<br/>
 	{/if}
+	<br/> 
+	<b><a href="/help/squares">Hectad</a> 3D Coverage Graph</b>:<br/> 
+	&nbsp;&nbsp;&nbsp;<a href="/kml/hectads-points.kmz">Google Earth</a> (~200kb KMZ)<br/>
+	{if $user->registered}
+	&nbsp;&nbsp;&nbsp;<a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=2&topic=4415"><i>More <small>including time animation</small></i></a><br/>
+	{/if}
+	<small><small><i>Last updated: {$coverage_updated}</i></small></small>
 	</div>
 
-	 <h2>Use Geograph with Google Earth or Google Maps</h2> 
-	 <p>
+	 <h2>Geograph Images in Google Earth or Google Maps</h2> 
+	 <p>&middot;
 	 {external href="http://earth.google.com/" text="Google Earth"}
 		is a free desktop application
 	 allowing you view satellite images and geo-located information for the entire globe.
 	 </p>
-	 <p>
+	
+	 <div class="interestBox" style="width:550px;background-color:yellow">
+	 <span style="color:red">New!!</span> <a href="/kml-superlayer.php"><b>Geograph SuperLayer</b></a> (Google Earth Version 4+ REQUIRED)
+	{if $i}<br/><i><b>- displays all images - not the selection as per requested search</b></i>{/if}
+	<small><br/><br/>This SuperLayer allows full access to the thousends of images contributed to Geograph, the view starts depicting a coarse overview of the current coverage, zooming in reveals more detail until pictures themselves become visible. (Broadband Recommended) 
+	 <br/><small><i>Last updated: {$superlayer_updated}</i></small></small>
+	 </div>
+	
+	 
+	 
+	 <p>&middot;
 	 {external href="http://maps.google.co.uk/" text="Google Maps"}
 		provides zoomable street-maps and satellite imagery in an online interface.
 	 </p>
@@ -27,7 +47,9 @@
 	<form method="post" action="{$script_name}"> 
 	
 	{if $i} 
-		<div style="padding:5px;background:#dddddd;position:relative">
+	
+	<div class="interestBox">
+	
 		<input type="hidden" name="i" value="{$i}"/>
 		Your <a href="/search.php?i={$i}">search</a> for images<i>{$engine->criteria->searchdesc}</i>, returns 
 		<b>{$engine->resultCount}</b> results.	
@@ -37,18 +59,20 @@
 		{/if}
 	{else} 
 	 <p>Anywhere you see a <a title="Google Earth Feed" href="/kml.php" class="xml-kml">KML</a>
-	 link on the Geograph website, click to download images into Google Earth or Maps.</p>
+	 link on the Geograph website, (for example on a photo page, or on search results) click to download images into Google Earth or Maps.</p>
 
-		<div style="padding:5px;background:#dddddd;position:relative">
+	<div class="interestBox">
+		
 		Show <select name="i" id="i">
 		{html_options options=$is}
 		</select><br/>
 		
-		Or perform a normal <a href="/search.php">search</a> and 
-		look for the the <a title="Google Earth Feed" href="/kml.php" class="xml-kml">KML</a> button.
-	{/if}</div>
+		Or perform a <a href="/search.php">search</a> and 
+		look for the the <a title="Google Earth Feed" href="/kml.php" class="xml-kml">KML</a> button on the results page.
+	{/if}
+	<br/><br/>
+	<input type="submit" name="submit" value="Download KML file ({if $engine->resultCount > $engine->criteria->resultsperpage}{$engine->criteria->resultsperpage}{else}{$engine->resultCount}{/if} images)..."/> <span id="advtoggle"></span>
 	
-	<p><input type="submit" name="submit" value="Download KML file ({if $engine->resultCount > $engine->criteria->resultsperpage}{$engine->criteria->resultsperpage}{else}{$engine->resultCount}{/if} images)..."/> <span id="advtoggle"></span> </p>
 	
 	<div id="advanced">
 	{if $i && $engine->resultCount || !$i}	
@@ -85,7 +109,7 @@
 			 For a large result set covering a wide area, this option allows the <b>Google Earth</b> application
 			 to just show the photos within the area of view. As you scroll around, Google Earth will
 			 automatically fetch other photos from the result set. Please note that you'll normally only see
-			 {if $i && $engine->resultCount}{$engine->criteria->resultsperpage}{else}around 15{/if} photos at a time with this option.
+			 {if $i && $engine->resultCount}{$engine->criteria->resultsperpage}{else}around 15{/if} photos at a time with this option. (if you have GE4+ it is recommended to use the <a href="/kml.php">superlayer</a>, however you will not get the filtering of the results, and will see all images)
 			 </td> 
 		  </tr> 
 		</table> 
@@ -104,6 +128,9 @@
 		<br style="clear:both"/>
 		
 	{/if}
+	
+	</div>	
+	
 	</div>
 	{if !$adv} 
 	<script type="text/javascript">
@@ -112,7 +139,7 @@
 	advanced.style.display='none';
 	
 	var advtoggle=document.getElementById('advtoggle');
-	advtoggle.innerHTML=' <a href="#" onclick="showAdvanced()">[open advanced options (and Google Maps)...]</a>';
+	advtoggle.innerHTML=' <a href="#" onclick="showAdvanced()">[<b>open advanced options</b> (including opening results in Google Maps)...]</a>';
 	
 	function showAdvanced()
 	{

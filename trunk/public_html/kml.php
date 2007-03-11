@@ -190,6 +190,10 @@ if (isset($_GET['id']))  {
 		);
 		$smarty->assign_by_ref('is', $is);
 		$smarty->assign('currentPage', 1);
+		
+		$smarty->assign('superlayer_updated', strftime("%A, %d %b at %H:%M",filemtime("kml/geograph.kmz")));
+		$smarty->assign('coverage_updated', strftime("%A, %d %b at %H:%M",filemtime("kml/hectads-points.kmz")));
+		
 	}
 		
 
