@@ -88,7 +88,7 @@ class RasterMap
 					$this->enabled = true;
 					$this->service = 'OS50k';
 					
-					if (($this->issubmit || $includeSecondService) && in_array('VoB',$services)) {
+					if (($this->issubmit === true || $includeSecondService) && in_array('VoB',$services)) {
 						$this->service2 = 'VoB';
 					}
 				} elseif($this->issubmit && in_array('VoB',$services)) {
@@ -139,17 +139,20 @@ class RasterMap
 			
 			$title = "1:50,000 Modern Day Landranger(TM) Map &copy; Crown Copyright";
 			
-	//container
-			$str = "<div style=\"position:relative;height:{$width}px;width:{$width}px;\">";
-			
-	//map image
-			$str .= "<div style=\"position:absolute;top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" style=\"width:{$width}px;height:{$width}px;\" alt=\"$title\"/></div>";
-			
-	//subject icon
 			$this->displayMarker1 = $this->exactPosition;
-			$top=$width/2;
-			$left=$width/2;
-			if ($this->natgrlen > 6) {
+			
+			if ($this->displayMarker1 && !($this->natgrlen > 6) ) {
+				//nice central marker
+
+				$padding = intval(($width-29)/2);
+				$str .= "<a href=\"/gridref/$gr\" title=\"$title\" onmouseover=\"document.getElementById('marker$idcounter').src='/img/blank.gif'\" onmouseout=\"document.getElementById('marker$idcounter').src='/templates/basic/img/circle.png'\"><img src=\"/templates/basic/img/circle.png\" style=\"padding:{$padding}px;width:29px;height:29px;background-image:url($mapurl);\" border=\"1\" alt=\"$title\" galleryimg=\"no\" id=\"marker$idcounter\"/></a>";
+
+			} elseif ($this->displayMarker1) {
+				//need to manipualte the marker position
+
+				$top=$width/2;
+				$left=$width/2;
+
 				$widthby20 = ($width/20); //remove the automatic 50m centering
 				$top += $widthby20;
 				$left -= $widthby20;
@@ -158,15 +161,32 @@ class RasterMap
 				#100m = 1 unit
 				$left += intval($this->nateastings%100 /100 * $widthby10);
 				$top -= intval($this->natnorthings%100 /100 * $widthby10);
-			} 
-			$display = $this->displayMarker1 ?'':'none';
-			$str .= "<div style=\"position:absolute;top:".intval($top-14)."px;left:".intval($left-14)."px;display:$display\" id=\"marker$idcounter\"><img src=\"/templates/basic/img/circle.png\" alt=\"+\" width=\"29\" height=\"29\"/></div>";
-	
-	//overlay (for marker)
-			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><a href=\"/gridref/$gr\" title=\"$title\" onmouseover=\"document.getElementById('marker$idcounter').style.display='none'\" onmouseout=\"document.getElementById('marker$idcounter').style.display='$display'\"><img src=\"/img/blank.gif\" style=\"width:{$width}px;height:{$width}px;display:block;\" border=\"1\" alt=\"$title\" name=\"map\" galleryimg=\"no\"/></a></div>";
 
-			$str .= "</div>";
-			
+				//top,left contain center point
+				$widthby2 = ($width/2);
+
+				$movedown = intval($top - $widthby2);
+				$movetoright = intval($left - $widthby2);
+
+				$padding = intval(($width-29)/2);
+
+				$ptop = $padding + $movedown;
+				$pbottom = $padding - $movedown;
+
+				$pleft = $padding + $movetoright;
+				$pright = $padding - $movetoright;
+
+
+				$padding = "padding:{$ptop}px {$pright}px {$pbottom}px {$pleft}px";
+
+				$str .= "<a href=\"/gridref/$gr\" title=\"$title\" onmouseover=\"document.getElementById('marker$idcounter').src='/img/blank.gif'\" onmouseout=\"document.getElementById('marker$idcounter').src='/templates/basic/img/circle.png'\"><img src=\"/templates/basic/img/circle.png\" style=\"{$padding};width:29px;height:29px;background-image:url($mapurl);\" border=\"1\" alt=\"$title\" galleryimg=\"no\" id=\"marker$idcounter\"/></a>";
+
+			} else {
+				//no marker
+
+				$str .= "<a href=\"/gridref/$gr\" title=\"$title\"><img src=\"/img/blank.gif\" style=\"width:{$width}px;height:{$width}px;background-image:url($mapurl);\" border=\"1\" alt=\"$title\" galleryimg=\"no\" id=\"marker$idcounter\"/></a>";
+			}
+		
 			$idcounter++;
 			
 			return $str;
@@ -196,7 +216,7 @@ class RasterMap
 		}
 
 		if (isset($title)) {
-			$extra = ($this->issubmit)?44:0;
+			$extra = ($this->issubmit === true)?44:(($this->issubmit)?22:0);
 
 	//container
 			$str = "<div style=\"position:relative;height:".($width+$extra)."px;width:{$this->width}px;\">";
@@ -206,7 +226,9 @@ class RasterMap
 
 	//drag prompt
 			if ($this->issubmit)
-				$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px; font-size:0.8em;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small style=\"color:#0018F8\">&lt;- Drag to mark subject position.</small></div><div style=\"position:absolute;top:".($width+22)."px;left:0px; font-size:0.8em;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small style=\"color:#002E73\">&lt;- Drag to mark photographer position.</small></div>";
+				$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px; font-size:0.8em;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small style=\"color:#0018F8\">&lt;- Drag to mark subject position.</small></div>";
+			if ($this->issubmit === true)
+				$str .= "<div style=\"position:absolute;top:".($width+22)."px;left:0px; font-size:0.8em;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small style=\"color:#002E73\">&lt;- Drag to mark photographer position.</small></div>";
 
 			$widthby2 = ($width/2);
 
@@ -276,7 +298,7 @@ class RasterMap
 			}
 			
 			$this->displayMarker1 = ($this->issubmit || $this->exactPosition)?1:0;
-			$this->displayMarker2 = ($this->issubmit || ( $show_viewpoint && (($vleft != $left) || ($vtop != $top)) ) )?1:0;
+			$this->displayMarker2 = ($this->issubmit === true || ( $show_viewpoint && (($vleft != $left) || ($vtop != $top)) ) )?1:0;
 			
 			if ((!$this->displayMarker2 || $iconfile == "camera.png") && !$this->issubmit) {
 				$prefix = 'subc';
