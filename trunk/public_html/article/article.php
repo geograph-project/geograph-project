@@ -75,6 +75,8 @@ function article_make_table($input) {
 }
 
 function smarty_function_articletext($input) {
+	global $imageCredits,$smarty;
+	
 	$output = preg_replace('/(-{7,})\n(.*?)(-{7,})/es',"article_make_table('\$2')",str_replace("\r",'',$input));
 
 	$output = str_replace(
@@ -141,10 +143,22 @@ function smarty_function_articletext($input) {
 	$output=preg_replace($pattern, $replacement, $output);
 	
 	if (count($m[0])) {
-		$output .= '<div class="copyright">Great Britain 1:50 000 Scale Colour Raster Mapping Extracts &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.</div>';
+		$smarty->assign("copyright", '<div class="copyright">Great Britain 1:50 000 Scale Colour Raster Mapping Extracts &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.</div>');
 	}
 	
-	return GeographLinks($output,true);
+	$output = GeographLinks($output,true);
+	
+	if (count($imageCredits)) {
+		arsort($imageCredits);
+
+		$imageCreditsStr = implode(', ',array_keys($imageCredits));
+
+		$imageCreditsStr = preg_replace('/, ([^,]+)$/',' and $1',$imageCreditsStr);
+
+		$smarty->assign("imageCredits", $imageCreditsStr);
+	}
+	
+	return $output;
 }
 
 $smarty->register_modifier("articletext", "smarty_function_articletext");
