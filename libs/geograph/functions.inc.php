@@ -264,6 +264,7 @@ function smarty_function_geographlinks($input,$thumbs = false) {
 
 //replace geograph links
 function GeographLinks(&$posterText,$thumbs = false) {
+	global $imageCredits;
 	//look for [[gridref_or_photoid]] and [[[gridref_or_photoid]]]
 	if (preg_match_all('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
 		foreach ($g_matches[2] as $i => $g_id) {
@@ -283,7 +284,11 @@ function GeographLinks(&$posterText,$thumbs = false) {
 							$g_img = $g_image->getThumbnail(120,120,false,true);
 
 							$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
-
+							if (isset($imageCredits[$g_image->realname])) {
+								$imageCredits[$g_image->realname]++;
+							} else {
+								$imageCredits[$g_image->realname]=1;
+							}
 						} else {
 							//we don't place thumbnails in non forum links
 							$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_title</a>",$posterText);
