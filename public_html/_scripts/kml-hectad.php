@@ -49,8 +49,12 @@ $grid_ok=$square->setByFullGridRef($gr);
 
 $kml = new kmlFile();
 $folder = $kml->addChild('Document');
-$folder->addHoverStyle('phoM',0.7,1.1,'multi');
-$folder->addHoverStyle('pho',0.7,1.1,'photo');
+$folder->addHoverStyle('p1',1,1.1,'cam1.png;cam1h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
+$folder->addHoverStyle('p2',1,1.1,'cam2.png;cam2h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
+$folder->addHoverStyle('p3',1,1.1,'cam3.png;cam3h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
+$folder->addHoverStyle('p4',1,1.1,'cam4.png;cam4h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
+$folder->addHoverStyle('p10',1,1.1,'cam10.png;cam10h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
+$folder->addHoverStyle('p20',1,1.1,'cam20.png;cam20h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
 $folder->setItem('name',"$gr :: Geograph SuperLayer");
 
 
@@ -100,8 +104,8 @@ foreach($photos as $id=>$entry)
 	if ($entry['imagecount']==1) {
 		$placemark = new kmlPlacemark(null,$entry['grid_reference'].' :: '.$entry['title'],$point);
 		$placemark->setItem('description',"http://{$_SERVER['HTTP_HOST']}/photo/{$entry['gridimage_id']}");
-		$placemark->usePhotoStyle();
-
+		$placemark->useHoverStyle('p1');
+		
 		if ($entry['view_direction'] != -1) {
 			$Style = $placemark->addChild('Style');
 			$IconStyle = $Style->addChild('IconStyle');
@@ -110,7 +114,8 @@ foreach($photos as $id=>$entry)
 	} else {
 		$placemark = new kmlPlacemark(null,$entry['grid_reference'].' :: '.$entry['imagecount'].' images e.g. '.$entry['title'],$point);
 		$placemark->setItem('description',"http://{$_SERVER['HTTP_HOST']}/gridref/{$entry['grid_reference']}");
-		$placemark->usePhotoStyle('M');
+		$c = ($entry['imagecount']>20)?20:(($entry['imagecount']>4)?10:$entry['imagecount']);
+		$placemark->useHoverStyle('p'.$c);
 	}
 	
 	$Region = $placemark->addChild('Region');
