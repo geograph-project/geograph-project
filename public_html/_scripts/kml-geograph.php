@@ -39,7 +39,7 @@ require_once('geograph/conversions.class.php');
 $conv = new Conversions;
 
 $kml = new kmlFile();
-$stylefile = "http://{$CONF['KML_HOST']}/kml/style.kml";
+$stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
 
 $folder = $kml->addChild('Document');
 $folder->setItem('name','Geograph SuperLayer');
