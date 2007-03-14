@@ -62,11 +62,11 @@ $grid_ok=$square->setByFullGridRef($gr2);
 
 
 $kml = new kmlFile();
+$stylefile = "http://{$CONF['KML_HOST']}/kml/style.kml";
+
 $folder = $kml->addChild('Document');
 $folder->setItem('name',"$gr :: Geograph SuperLayer");
 
-	
-	$folder->addHoverStyle();
 	
 	$sql_where = "gridsquare_id={$square->gridsquare_id}".$sql_where;
 	

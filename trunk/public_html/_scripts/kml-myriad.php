@@ -44,15 +44,10 @@ $conv = new Conversions;
 $gr = $_GET['gr'];
 
 $kml = new kmlFile();
+$stylefile = "http://{$CONF['KML_HOST']}/kml/style.kml";
+
 $folder = $kml->addChild('Document');
 $folder->setItem('name',"$gr :: Geograph SuperLayer");
-
-$Style = $folder->addChild('Style','circleStyle');
-$IconStyle = $Style->addChild('IconStyle');
-$IconStyle->setItem('scale',0);
-
-$LabelStyle = $Style->addChild('LabelStyle');
-$LabelStyle->setItem('color','ff00aaff');
 
 $links = new kmlPrimative('Folder');
 $links->setItem('name','Next Level...');
@@ -117,7 +112,7 @@ foreach($most as $id=>$entry)
 
 	$placemark = new kmlPlacemark_Circle(null,$entry['hunk_square'],$point,$radius);
 	$placemark->setItem('description',$entry['percentage'].'%');
-	$placemark->setItem('styleUrl','#circleStyle');
+	$placemark->useHoverStyle('c2');
 	$folder->addChild($placemark);
 
 

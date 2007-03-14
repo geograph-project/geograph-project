@@ -39,6 +39,7 @@ require_once('geograph/conversions.class.php');
 $conv = new Conversions;
 
 $kml = new kmlFile();
+$stylefile = "http://{$CONF['KML_HOST']}/kml/style.kml";
 
 $folder = $kml->addChild('Document');
 $folder->setItem('name','Geograph SuperLayer');
@@ -65,13 +66,6 @@ $folder->setItemCDATA('description',<<<END_HTML
 END_HTML
 );
 $folder->setItem('Snippet','move...scroll...rotate...tilt, to view the Geograph Archive...');
-
-$Style = $folder->addChild('Style','circleStyle');
-$IconStyle = $Style->addChild('IconStyle');
-$IconStyle->setItem('scale',0);
-
-$LabelStyle = $Style->addChild('LabelStyle');
-$LabelStyle->setItem('color','ff0000ff');
 
 $links = new kmlPrimative('Folder');
 $links->setItem('name','Next Level...');
@@ -130,7 +124,7 @@ foreach (array(1,2) as $ri) {
 
 		$placemark = new kmlPlacemark_Circle(null,$entry['hunk_square'],$point,$radius);
 		$placemark->setItem('description',$entry['percentage'].'%');
-		$placemark->setItem('styleUrl','#circleStyle');
+		$placemark->useHoverStyle('c1');		
 		$folder->addChild($placemark);
 
 

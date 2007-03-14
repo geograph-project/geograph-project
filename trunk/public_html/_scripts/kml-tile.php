@@ -48,14 +48,9 @@ $grid_ok=$square->setByFullGridRef($gr);
 
 
 $kml = new kmlFile();
+$stylefile = "http://{$CONF['KML_HOST']}/kml/style.kml";
+
 $folder = $kml->addChild('Document');
-$folder->addHoverStyle('p1',1,1.1,'cam1.png;cam1h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
-$folder->addHoverStyle('p1d',1,1.1,'cam1d.png;cam1dh.png',"http://".$CONF['KML_HOST'].'/kml/images/');
-$folder->addHoverStyle('p2',1,1.1,'cam2.png;cam2h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
-$folder->addHoverStyle('p3',1,1.1,'cam3.png;cam3h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
-$folder->addHoverStyle('p4',1,1.1,'cam4.png;cam4h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
-$folder->addHoverStyle('p10',1,1.1,'cam10.png;cam10h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
-$folder->addHoverStyle('p20',1,1.1,'cam20.png;cam20h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
 $folder->setItem('name',"$gr :: Geograph SuperLayer");
 
 
@@ -76,7 +71,7 @@ $sql_where = "CONTAINS(GeomFromText($rectangle),point_xy)";
 
 
 $photos = $db->GetAll("select 
-gridimage_id,grid_reference,title,imagecount,view_direction,
+gridimage_id,grid_reference,title,imagecount,view_direction,natgrlen,
 wgs84_lat,wgs84_long
 from gridimage_kml 
 where $sql_where and tile = 1
@@ -91,13 +86,14 @@ foreach($photos as $id=>$entry)
 		$placemark = new kmlPlacemark(null,$entry['grid_reference'].' :: '.$entry['title'],$point);
 		$placemark->setItem('description',"http://{$_SERVER['HTTP_HOST']}/photo/{$entry['gridimage_id']}");
 
+		$r = ($entry['natgrlen'] > 4)?'':'r';
 		if ($entry['view_direction'] != -1) {
-			$placemark->useHoverStyle('p1d');
+			$placemark->useHoverStyle('p1d'.$r);
 			$Style = $placemark->addChild('Style');
 			$IconStyle = $Style->addChild('IconStyle');
 			$IconStyle->setItem('heading',$entry['view_direction']);
 		} else {
-			$placemark->useHoverStyle('p1');
+			$placemark->useHoverStyle('p1'.$r);
 		}
 	} else {
 		$placemark = new kmlPlacemark(null,$entry['grid_reference'].' :: '.$entry['imagecount'].' images e.g. '.$entry['title'],$point);

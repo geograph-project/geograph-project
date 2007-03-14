@@ -64,6 +64,7 @@ select
 	gi.user_id,
 	gi.wgs84_lat,
 	gi.wgs84_long,
+	g2.natgrlen,
 	g2.view_direction,
 	gi.point_xy,
 	0 as `tile`,
