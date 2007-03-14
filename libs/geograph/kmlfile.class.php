@@ -302,7 +302,9 @@ class kmlPlacemark extends kmlPrimative {
 	}
 
 	public function useHoverStyle($id='def') {
-		$this->setItem('styleUrl','#'.$id);
+		//todo a bodge - but can't think of a better way
+		$prefix = empty($GLOBALS['stylefile'])?'':$GLOBALS['stylefile'];
+		$this->setItem('styleUrl',$prefix.'#'.$id);
 		return $this;
 	}
 

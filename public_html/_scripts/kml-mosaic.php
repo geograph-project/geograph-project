@@ -48,28 +48,15 @@ $grid_ok=$square->setByFullGridRef($gr);
 
 
 $kml = new kmlFile();
+$stylefile = "http://{$CONF['KML_HOST']}/kml/style.kml";
+
 $folder = $kml->addChild('Document');
-$folder->addHoverStyle();
 $folder->setItem('name',"$gr :: Geograph SuperLayer");
 
 
 $links = new kmlPrimative('Folder');
 $links->setItem('name','Next Level...');
-
 	
-/*
-list($wgs84_lat,$wgs84_long) = $conv->gridsquare_to_wgs84($square);
-
-$point = new kmlPoint($wgs84_lat,$wgs84_long);			
-
-$placemark = new kmlPlacemark(null,$square->grid_reference,$point);
-$placemark->useHoverStyle();
-$folder->addChild($placemark);	
-	
-if (!isset($_GET['debug'])) {
-	$kml->outputKML();
-	exit;
-} */	
 
 	
 $prefix = $db->GetRow('select * from gridprefix where prefix='.$db->Quote($square->gridsquare).' limit 1');	

@@ -48,6 +48,8 @@ $grid_ok=$square->setByFullGridRef($gr);
 
 
 $kml = new kmlFile();
+$stylefile = "http://{$CONF['KML_HOST']}/kml/style.kml";
+
 $folder = $kml->addChild('Document');
 $folder->setItem('name',"$gr :: Geograph SuperLayer");
 
@@ -55,8 +57,6 @@ if ($square->imagecount > 20) {
 	$sql_where = "gridsquare_id={$square->gridsquare_id}";
 	$ri = $square->reference_index;
 	
-	$folder->addHoverStyle('def',0.6,1,'multi');
-
 
 	$links = new kmlPrimative('Folder');
 	$links->setItem('name','Next Level...');
@@ -95,14 +95,13 @@ if ($square->imagecount > 20) {
 		}
 		
 		
-		$radius = $entry['c'] * 20;
-		
+		$c = ($entry['c']>20)?20:(($entry['c']>4)?10:$entry['c']);
 		
 		$point = new kmlPoint($wgs84_lat,$wgs84_long);			
 
-		$placemark = new kmlPlacemark_Circle(null,$name,$point,$radius);
+		$placemark = new kmlPlacemark(null,$name,$point);
 		
-		$placemark->useHoverStyle();
+		$placemark->useHoverStyle('p'.$c);
 		$folder->addChild($placemark);
 		
 		
@@ -140,8 +139,6 @@ if ($square->imagecount > 20) {
 	$folder->addChild($links);
 
 } else {
-	$folder->addHoverStyle();
-	
 	$point_xy = "'POINT({$square->x} {$square->y})'";
 
 	$sql_where = "x={$square->x} and y={$square->y}";
