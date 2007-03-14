@@ -44,7 +44,7 @@ $conv = new Conversions;
 $gr = $_GET['gr'];
 
 $kml = new kmlFile();
-$stylefile = "http://{$CONF['KML_HOST']}/kml/style.kml";
+$stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
 
 $folder = $kml->addChild('Document');
 $folder->setItem('name',"$gr :: Geograph SuperLayer");
