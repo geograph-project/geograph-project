@@ -102,8 +102,8 @@ foreach($photos as $id=>$entry)
 	$Region->setPoint($point,0.01);
 	
 	$delta = $entry['gridimage_id']%30;
-	$Region->setLod(50+$delta,1200+($delta*$delta));
-	#$Region->setFadeExtent(50,100);
+	$Region->setLod(50+$delta,1300+($delta*$delta));
+	$Region->setFadeExtent(10,100);
 	$folder->addChild($placemark);
 }
 
@@ -152,7 +152,7 @@ foreach($most as $id=>$entry)
 
 	$Region2 = $networklink->addChild('Region');
 	$Region2->setBoundary($north,$south,$east,$west);
-	$Region2->setLod(450,1200);
+	$Region2->setLod(450,1500);
 	$Region2->setFadeExtent(100,100);
 }
 

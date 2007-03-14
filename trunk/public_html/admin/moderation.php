@@ -94,6 +94,8 @@ if (isset($_GET['gridimage_id']))
 	exit;
 }
 
+$limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(100,intval($_GET['limit'])):50;
+
 
 if (!empty($_GET['relinqush'])) {
 	$USER->mustHavePerm('basic');
@@ -132,6 +134,11 @@ Regards,
 		exit;
 	} 
 	
+	$count = $db->getRow("select count(*) as total,sum(created > date_sub(now(),interval 60 day)) as recent from moderation_log WHERE user_id = {$USER->user_id}");
+	if ($count['total'] > 0) {
+		$limit = 10;
+	}
+	
 	//make sure they only do verifications
 	$_GET['remoderate'] = 1;
 	
@@ -152,7 +159,6 @@ if (!empty($_GET['abandon'])) {
 	exit;
 }
 
-$limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(100,intval($_GET['limit'])):50;
 
 #############################
 

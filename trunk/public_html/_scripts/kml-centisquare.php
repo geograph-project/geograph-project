@@ -120,7 +120,8 @@ $folder->setItem('name',"$gr :: Geograph SuperLayer");
 		$Region->setPoint($point,0.01);
 
 		$delta = $entry['gridimage_id']%30;
-		$Region->setLod(900+($delta*$delta),1200000);
+		$Region->setLod(1200+($delta*$delta),-1);
+		$Region->setFadeExtent(100,0);
 
 		$folder->addChild($placemark);
 	}

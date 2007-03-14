@@ -149,7 +149,7 @@ foreach($most as $id=>$entry)
 	$links->addChild($networklink);
 
 	$Region2 = clone $Region;
-	$Region2->setLod(450,1200);
+	$Region2->setLod(450,1500);
 	$Region2->setFadeExtent(10,100);
 	$networklink->addChild($Region2);
 }	
