@@ -50,6 +50,7 @@ $grid_ok=$square->setByFullGridRef($gr);
 $kml = new kmlFile();
 $folder = $kml->addChild('Document');
 $folder->addHoverStyle('p1',1,1.1,'cam1.png;cam1h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
+$folder->addHoverStyle('p1d',1,1.1,'cam1d.png;cam1dh.png',"http://".$CONF['KML_HOST'].'/kml/images/');
 $folder->addHoverStyle('p2',1,1.1,'cam2.png;cam2h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
 $folder->addHoverStyle('p3',1,1.1,'cam3.png;cam3h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
 $folder->addHoverStyle('p4',1,1.1,'cam4.png;cam4h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
@@ -89,12 +90,14 @@ foreach($photos as $id=>$entry)
 	if ($entry['imagecount']==1) {
 		$placemark = new kmlPlacemark(null,$entry['grid_reference'].' :: '.$entry['title'],$point);
 		$placemark->setItem('description',"http://{$_SERVER['HTTP_HOST']}/photo/{$entry['gridimage_id']}");
-		$placemark->useHoverStyle('p1');
 
 		if ($entry['view_direction'] != -1) {
+			$placemark->useHoverStyle('p1d');
 			$Style = $placemark->addChild('Style');
 			$IconStyle = $Style->addChild('IconStyle');
 			$IconStyle->setItem('heading',$entry['view_direction']);
+		} else {
+			$placemark->useHoverStyle('p1');
 		}
 	} else {
 		$placemark = new kmlPlacemark(null,$entry['grid_reference'].' :: '.$entry['imagecount'].' images e.g. '.$entry['title'],$point);
