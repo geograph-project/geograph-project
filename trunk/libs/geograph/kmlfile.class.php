@@ -301,13 +301,8 @@ class kmlPlacemark extends kmlPrimative {
 		}
 	}
 
-	public function useHoverStyle() {
-		$this->setItem('styleUrl','#def');
-		return $this;
-	}
-
-	public function usePhotoStyle($prefix='') {
-		$this->setItem('styleUrl','#pho'.$prefix);
+	public function useHoverStyle($id='def') {
+		$this->setItem('styleUrl','#'.$id);
 		return $this;
 	}
 
