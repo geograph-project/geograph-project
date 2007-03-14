@@ -132,7 +132,7 @@ if ($square->imagecount > 20) {
 		$links->addChild($networklink);
 
 		$Region2 = clone $Region;
-		$Region2->setLod(550,1200);
+		$Region2->setLod(500,1500);
 		$Region2->setFadeExtent(100,100);
 		$networklink->addChild($Region2);
 	}
@@ -194,8 +194,9 @@ if ($square->imagecount > 20) {
 		$Region->setPoint($point,0.01);
 
 		$delta = $entry['gridimage_id']%30;
-		$Region->setLod(800+($delta*$delta),1200000);
-
+		$Region->setLod(1200+($delta*$delta),-1);
+		$Region->setFadeExtent(100,0);
+		
 		$folder->addChild($placemark);
 	}
 

@@ -236,11 +236,12 @@ class kmlDocument extends kmlPrimative {
 		parent::__construct('Document',$id);
 	}
 
-	public function addHoverStyle($id='def',$iconScale = 1,$hoverScale=2.1,$icons='') {
+	public function addHoverStyle($id='def',$iconScale = 1,$hoverScale=2.1,$icons='',$iconprefix = 'http://maps.google.com/mapfiles/kml/') {
 		if ($icons) {
 			switch ($icons) {
 				case 'photo': $normal = 'pal4/icon46.png';$hover = 'pal4/icon38.png'; break;
 				case 'multi': $normal = 'pal3/icon40.png';$hover = 'pal3/icon32.png'; break;
+				default: list($normal,$hover) = explode(';',$icons); break;
 			}
 		}
 
@@ -252,7 +253,7 @@ class kmlDocument extends kmlPrimative {
 			if ($iconScale != 1)
 				$IconStyle->setItem('scale',$iconScale);
 			if ($normal)
-				$IconStyle->addChild('Icon')->setItem('href','http://maps.google.com/mapfiles/kml/'.$normal);
+				$IconStyle->addChild('Icon')->setItem('href',$iconprefix.$normal);
 		}
 
 		$Style2 = $this->addChild('Style','h'.$id);
@@ -261,7 +262,7 @@ class kmlDocument extends kmlPrimative {
 			if ($iconScale != 1 || $hoverScale) 
 				$IconStyle2->setItem('scale',$hoverScale*$iconScale);
 			if ($hover)
-				$IconStyle2->addChild('Icon')->setItem('href','http://maps.google.com/mapfiles/kml/'.$hover);
+				$IconStyle2->addChild('Icon')->setItem('href',$iconprefix.$hover);
 		}
 
 		$StyleMap = $this->addChild('StyleMap',$id);
@@ -417,14 +418,18 @@ class kmlRegion extends kmlPrimative {
 
 	public function setLod($min,$max) {
 		$Lod = $this->addChild('Lod','','Lod');
-		$Lod->setItem('minLodPixels',$min);
-		$Lod->setItem('maxLodPixels',$max);
+		if ($min != 0)
+			$Lod->setItem('minLodPixels',$min);
+		if ($max != -1)
+			$Lod->setItem('maxLodPixels',$max);
 	}
 
 	public function setFadeExtent($min,$max) {
 		$Lod = $this->getChild('Lod');
-		$Lod->setItem('minFadeExtent',$min);
-		$Lod->setItem('maxFadeExtent',$max);
+		if ($min != 0)
+			$Lod->setItem('minFadeExtent',$min);
+		if ($max != 0)
+			$Lod->setItem('maxFadeExtent',$max);
 	}
 }
 
