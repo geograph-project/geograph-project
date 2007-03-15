@@ -31,10 +31,11 @@
 	 </p>
 	
 	 <div class="interestBox" style="width:550px;background-color:yellow">
-	 <span style="color:red">New!!</span> <a href="/kml-superlayer.php"><b>Geograph SuperLayer</b></a> (Google Earth Version 4+ REQUIRED)
+	 <img src="/kml/images/cam1-small.gif" width="24" height="24"/> <a href="/kml-superlayer.php"><b>Geograph SuperLayer</b></a> (Google Earth Version 4+ REQUIRED)
 	{if $i}<br/><i><b>- displays all images - not the selection as per requested search</b></i>{/if}
 	<small><br/><br/>This SuperLayer allows full access to the thousends of images contributed to Geograph, the view starts depicting a coarse overview of the current coverage, zooming in reveals more detail until pictures themselves become visible. (Broadband Recommended) 
-	 <br/><small><i>Last updated: {$superlayer_updated}</i></small></small>
+	 <br/><small><i>Last updated: {$superlayer_updated}</i></small>
+	 <a href="/help/superlayer">View Icon Key</a></small>
 	 </div>
 	
 	 

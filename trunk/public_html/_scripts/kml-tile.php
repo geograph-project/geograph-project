@@ -156,8 +156,8 @@ foreach($most as $id=>$entry)
 
 	$Region2 = $networklink->addChild('Region');
 	$Region2->setBoundary($north,$south,$east,$west);
-	$Region2->setLod(450,1500);
-	$Region2->setFadeExtent(100,100);
+	$Region2->setLod(450,-1);
+	$Region2->setFadeExtent(100,0);
 }
 
 $folder->addChild($links);

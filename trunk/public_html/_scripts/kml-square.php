@@ -131,8 +131,8 @@ if ($square->imagecount > 20) {
 		$links->addChild($networklink);
 
 		$Region2 = clone $Region;
-		$Region2->setLod(500,1500);
-		$Region2->setFadeExtent(100,100);
+		$Region2->setLod(500,-1);
+		$Region2->setFadeExtent(100,0);
 		$networklink->addChild($Region2);
 	}
 
