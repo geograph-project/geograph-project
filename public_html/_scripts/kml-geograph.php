@@ -155,8 +155,8 @@ foreach (array(1,2) as $ri) {
 		$links->addChild($networklink);
 
 		$Region2 = clone $Region;
-		$Region2->setLod(450,1500);
-		$Region2->setFadeExtent(100,100);
+		$Region2->setLod(450,-1);
+		$Region2->setFadeExtent(100,0);
 		$networklink->addChild($Region2);
 	}	
 }
