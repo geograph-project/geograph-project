@@ -67,6 +67,9 @@ END_HTML
 );
 $folder->setItem('Snippet','move...scroll...rotate...tilt, to view the Geograph Archive...');
 
+$circles = new kmlPrimative('Folder');
+$circles->setItem('name','Myriad Coverages');
+
 $links = new kmlPrimative('Folder');
 $links->setItem('name','Next Level...');
 
@@ -125,7 +128,7 @@ foreach (array(1,2) as $ri) {
 		$placemark = new kmlPlacemark_Circle(null,$entry['hunk_square'],$point,$radius);
 		$placemark->setItem('description',$entry['percentage'].'%');
 		$placemark->useHoverStyle('c1');		
-		$folder->addChild($placemark);
+		$circles->addChild($placemark);
 
 
 		$x = ( intval(($entry['x'] - $origin['origin_x'])/100)*100 ) +  $origin['origin_x'];
@@ -161,6 +164,7 @@ foreach (array(1,2) as $ri) {
 	}	
 }
 
+$folder->addChild($circles);
 $folder->addChild($links);
 
 
