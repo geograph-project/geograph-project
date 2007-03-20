@@ -32,11 +32,15 @@ init_session();
 
 $smarty = new GeographPage;
 
+$template='submit_popup.tpl';
+$cacheid='';
+
+
 $square=new GridSquare;
 
-if (!$USER->hasPerm("basic") || empty($_GET['t']) || (!$_SESSION['gridsquare'] && !$USER->hasPerm("moderator"))) {
-	$smarty->display('no_permission.tpl');
-	
+if (!$USER->hasPerm("basic") || empty($_GET['t']) || (!isset($_SESSION['gridsquare']) && !$USER->hasPerm("moderator"))) {
+	$smarty->assign('error', "unable to access page");
+	$smarty->display($template,$cacheid);
 	exit;
 }
 
@@ -47,17 +51,15 @@ if ($token->parse($_GET['t']))
 	if ($token->hasValue("g"))
 	{
 		$gridref = $token->getValue("g");
-		
-		if ($token->hasValue("p"))
-		{
-			$photographer_gridref = $token->getValue("p");
-		}
-		
-		if ($token->hasValue("v"))
-		{
-			$view_direction = $token->getValue("v");
-		}
-		
+	}	
+	if ($token->hasValue("p"))
+	{
+		$photographer_gridref = $token->getValue("p");
+	}
+
+	if ($token->hasValue("v"))
+	{
+		$view_direction = $token->getValue("v");
 	}
 }
 
@@ -74,7 +76,7 @@ if (!empty($gridref))
 	//preserve inputs in smarty	
 	if ($grid_ok)
 	{
-		$smarty->assign('gridrefraw', stripslashes($gridref));
+		$smarty->assign('gridref', stripslashes($gridref));
 	}
 	else
 	{
@@ -82,14 +84,28 @@ if (!empty($gridref))
 		$smarty->assign('gridref', stripslashes($gridref));
 	}	
 } else {
-	$smarty->display('no_permission.tpl');
-	exit;
+	if (!empty($photographer_gridref)) {
+		$grid_ok=$square->setByFullGridRef($photographer_gridref,true);
+		if ($grid_ok) {
+			$square->natspecified = false;
+			$square->nateastings = intval($square->nateastings/1000)*1000;
+			$square->natnorthings = intval($square->natnorthings/1000)*1000;
+			$square->natgrlen = '4';
+			$gridref = $square->grid_reference;
+		} else {
+			$smarty->assign('error', $square->errormsg);
+			$smarty->display($template,$cacheid);
+			exit;
+		}
+	} else {
+		$smarty->assign('error', "No Grid Reference Found");
+		$smarty->display($template,$cacheid);
+		exit;
+	}
 }
 
 
 
-$template='submit_popup.tpl';
-$cacheid='';
 
 if ($grid_ok) {
 	

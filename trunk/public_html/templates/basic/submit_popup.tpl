@@ -14,6 +14,9 @@
 
 <body>
 {dynamic}
+{if $error} 
+	<p>ERROR: {$error}</p>
+{else}
 	{if $rastermap->enabled}
 		<div style="float:left; position:relative; width: 350px">
 		<div class="interestBox">Grid Reference: <b>{$gridref}</b></div>
@@ -43,6 +46,7 @@
 <br style="clear:both"/>
 {if $rastermap->enabled}
 	{$rastermap->getFooterTag()}
+{/if}
 {/if}
 {/dynamic}
 </body>
