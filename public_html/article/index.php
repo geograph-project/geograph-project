@@ -56,7 +56,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	
 	$list = $db->getAll("
-	select article_id,article_cat_id,user_id,url,title,extract,licence,publish_date,approved,update_time,create_time,realname
+	select article_id,article_cat_id,article.user_id,url,title,extract,licence,publish_date,approved,update_time,create_time,realname
 	from article 
 		inner join user using (user_id)
 	where (licence != 'none' and approved = 1) 
