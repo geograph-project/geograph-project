@@ -35,7 +35,7 @@
 //include domain specific configuration - if your install fails on
 //this line, copy and adapt one of the existing configuration
 //files in /libs/conf
-require_once('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
+require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
 
 //adodb configuration
 require_once('adodb/adodb.inc.php');
@@ -53,17 +53,82 @@ $DSN = $CONF['db_driver'].'://'.
 	'/'.$CONF['db_db'].$CONF['db_persist'];
 
 
+if (!empty($CONF['memcache']['app'])) {
+	
+	if (!function_exists('memcache_pconnect')) {
+		die(" Memcache module PECL extension not found!<br>\n");
+		return;
+	}
+
+	$memcache = new MultiServerMemcache($CONF['memcache']['app']);
+} else {
+	//need lightweight fake object that does nothing!
+	$memcache = new Object();
+	$memcache->valid = false;
+}
+
 //global security routines
 require_once('geograph/security.inc.php');
 
 
-//adodb session configuration - we use same database
-$ADODB_SESSION_DRIVER=$CONF['db_driver'];
-$ADODB_SESSION_CONNECT=$CONF['db_connect'];
-$ADODB_SESSION_USER =$CONF['db_user'];
-$ADODB_SESSION_PWD =$CONF['db_pwd'];
-$ADODB_SESSION_DB =$CONF['db_db'];
-require_once('adodb/session/adodb-session.php');
+//fixme - dont enable this as will break as adodb needs upgrading
+if (!empty($CONF['memcache']['adodb'])) {
+	if ($CONF['memcache']['adodb'] != $CONF['memcache']['app']) {
+		$memcacheadodb = new MultiServerMemcache($CONF['memcache']['adodb']);
+	} elseif (isset($memcache)) {
+		$memcacheadodb =& $memcache;
+	}
+	
+	if ($memcacheadodb->valid) {
+		#rename_function('NewADOConnection','_NewADOConnection');
+
+		function &NewADOConnection($db='')
+		{
+			$tmp =& ADONewConnection($db);
+			if ($tmp) {
+				$tmp->memCache = true; /// should we use memCache instead of caching in files
+				$tmp->memCacheHost =& $GLOBALS['memcacheadodb']; /// memCache host or object
+				$tmp->memCacheCompress = false;
+			}
+			return $tmp;
+		}
+	} else {
+		function &NewADOConnection($db='')
+		{
+			$tmp =& ADONewConnection($db);
+			return $tmp;
+		}
+	}
+} else {
+	//fixme - current breaks as adodb (correctly) defines this!
+	#function &NewADOConnection($db='')
+	#{
+	#	$tmp =& ADONewConnection($db);
+	#	return $tmp;
+	#}
+}
+
+
+if (!empty($CONF['memcache']['sessions'])) {
+
+	if ($CONF['memcache']['sessions'] != $CONF['memcache']['app']) {
+		$memcachesession = new MultiServerMemcache($CONF['memcache']['sessions']);
+	} elseif (isset($memcache)) {
+		$memcachesession =& $memcache;
+	}
+	require('geograph/memcachesessions.inc.php');
+	
+	$memcachesession->period = ini_get("session.gc_maxlifetime");
+} else {
+	//adodb session configuration - we use same database
+	$ADODB_SESSION_DRIVER=$CONF['db_driver'];
+	$ADODB_SESSION_CONNECT=$CONF['db_connect'];
+	$ADODB_SESSION_USER =$CONF['db_user'];
+	$ADODB_SESSION_PWD =$CONF['db_pwd'];
+	$ADODB_SESSION_DB =$CONF['db_db'];
+	require_once('adodb/session/adodb-session.php');
+}
+
 
 
 //global routines
@@ -143,7 +208,18 @@ class GeographPage extends Smarty
 		$this->template_dir=$_SERVER['DOCUMENT_ROOT'].'/templates/'.$CONF['template'];
 		$this->compile_dir=$this->template_dir."/compiled";
 		$this->config_dir=$this->template_dir."/configs";
-		$this->cache_dir=$this->template_dir."/cache";
+		if (!empty($CONF['memcache']['smarty'])) {
+			if ($CONF['memcache']['smarty'] != $CONF['memcache']['app']) {
+				$memcached_res = new MultiServerMemcache($CONF['memcache']['smarty']);
+			} elseif (isset($memcache)) {
+				$memcached_res =& $memcache;
+			}
+			
+			require('geograph/memcache_cache_handler.inc.php');
+			$this->cache_handler_func = 'memcache_cache_handler';
+		} else {
+			$this->cache_dir=$this->template_dir."/cache";
+		}
 
 		//setup optimisations
 		$this->compile_check = $CONF['smarty_compile_check'];
