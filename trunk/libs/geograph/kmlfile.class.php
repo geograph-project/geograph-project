@@ -413,7 +413,7 @@ class kmlRegion extends kmlPrimative {
 		$LatLonAltBox->setItem('west',$kmlPoint->lon-$d);
 	}
 
-	public function setLod($min,$max) {
+	public function setLod($min,$max = -1) {
 		$Lod = $this->addChild('Lod','','Lod');
 		if ($min != 0)
 			$Lod->setItem('minLodPixels',$min);
@@ -421,7 +421,7 @@ class kmlRegion extends kmlPrimative {
 			$Lod->setItem('maxLodPixels',$max);
 	}
 
-	public function setFadeExtent($min,$max) {
+	public function setFadeExtent($min,$max = 0) {
 		$Lod = $this->getChild('Lod');
 		if ($min != 0)
 			$Lod->setItem('minFadeExtent',$min);

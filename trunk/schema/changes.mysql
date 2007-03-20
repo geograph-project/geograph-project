@@ -1117,3 +1117,16 @@ CREATE TABLE `kmlcache` (
 
 ALTER TABLE `gridimage` DROP INDEX `moderation_status_2`;
 
+
+CREATE TABLE `game_score` (
+  `game_score_id` int(10) unsigned NOT NULL auto_increment,
+  `game_id` tinyint(4) NOT NULL,
+  `score` mediumint(9) NOT NULL,
+  `games` mediumint(8) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `username` varchar(64) NOT NULL,
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`game_score_id`),
+  KEY `game_id` (`game_id`)
+) ENGINE=MyISAM;
+

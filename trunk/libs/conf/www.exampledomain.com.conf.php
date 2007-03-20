@@ -15,6 +15,28 @@ $CONF['db_pwd']='banjo';
 $CONF['db_db']='geograph';
 $CONF['db_persist']='?persist'; //options: ''|'?persist'
 
+
+##optional memcache
+
+#$CONF['memcache'] = array(
+#	'app' => array(
+#		'host' => '127.0.0.1',
+#		'port' => 11211,
+#		#'host2' => 'localhost',
+#		#'port2' => 11212,
+#		'p' => 'l'
+#		),
+#	);
+#
+#$CONF['memcache']['sessions'] =& $CONF['memcache']['app'];
+#
+//not yet functional (with current adodb)
+##$CONF['memcache']['adodb'] =& $CONF['memcache']['app'];
+#
+//not yet implemented:
+##$CONF['memcache']['smarty'] =& $CONF['memcache']['app'];
+
+
 //choose UI template
 $CONF['template']='basic';
 
