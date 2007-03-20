@@ -85,6 +85,21 @@ function smarty_function_articletext($input) {
 		$output);
 
 	$pattern=array(); $replacement=array();
+	
+	if (preg_match_all('/<h(\d)>([^<]+)<\/h(\d)>/',$output,$matches)) {
+		$list = array();
+		foreach ($matches[1] as $i => $level) {
+			$list[] = "<li class=\"h$level\"><a href=\"#p$i\">{$matches[2][$i]}</a></li>";
+			$pattern[]='/<h('.$level.')>('.preg_quote($matches[2][$i], '/').')<\/h('.$level.')>/';
+			$replacement[]='<h$1><a name="p'.$i.'"></a>$2</h$3>';
+		}
+		$list = implode("\n",$list);
+		$smarty->assign("tableContents", $list);
+	}
+	
+	$pattern[]='/<\/h(\d)><br\/>$/';
+	$replacement[]='</h$1>';
+
 
 	$pattern[]='/\{image id=(\d+) text=([^\}]+)\}/e';
 	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '\$2'))";
@@ -133,7 +148,7 @@ function smarty_function_articletext($input) {
 				$rastermap->service = 'OS50k-small';
 				$rastermap->width = 125;
 				
-				$pattern[] = "/".preg_quote($full)."/";
+				$pattern[] = "/".preg_quote($full, '/')."/";
 				$replacement[] = $rastermap->getImageTag();
 				
 			}
