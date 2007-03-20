@@ -132,10 +132,10 @@ if ($grid_ok) {
 				$rastermap->addViewpoint($psquare->nateastings,$psquare->natnorthings,$psquare->natgrlen);
 			$smarty->assign_by_ref('photographer_gridref', $photographer_gridref);
 		} 
-		if (isset($view_direction) && strlen($view_direction) && $view_direction != -1) {
-			$rastermap->addViewDirection(intval($view_direction));
-			$smarty->assign_by_ref('view_direction', $view_direction);
-		}	
+	}	
+	if (isset($view_direction) && strlen($view_direction) && $view_direction != -1) {
+		$rastermap->addViewDirection(intval($view_direction));
+		$smarty->assign_by_ref('view_direction', $view_direction);
 	}	
 	
 	$smarty->assign_by_ref('rastermap', $rastermap);
