@@ -196,6 +196,15 @@ class Token
 	}
 	
 	/** 
+	* Get named data value from a token that was saved with setValueBinary, or null if not defined
+	* @access public
+	*/
+	function getValueBinary($name, $default=null)
+	{
+		return base64_decode($this->getValue($name, $default));
+	}
+	
+	/** 
 	* Find out if a token value has been set
 	* @access public
 	*/
@@ -205,13 +214,25 @@ class Token
 	}
 	
 	/** 
-	* Get named data value from a token, or null if not defined
+	* Save this value in the token
+	* WARNING: non-alphanumberic chars are not safe (eg $); use setValueBinary  
 	* @access public
 	*/
 	function setValue($name, $value)
 	{
 		$this->data[$name]=$value;
 	}
+	
+	/** 
+	* Save binary value in the token
+	* @access public
+	*/
+	function setValueBinary($name, $value)
+	{
+		$this->data[$name]=base64_encode($value);
+	}
+	
+	
 	
 	
 	/** 
@@ -222,7 +243,7 @@ class Token
 	{
 		//decode from base 64
 		$decoded=$this->_decipher($token);
-		
+	#	var_dump( $decoded);
 		//build member array of values
 		$this->data=array();
 		parse_str($decoded, $this->data); 
@@ -274,7 +295,6 @@ class Token
 		
 		//append the hash to the query string
 		$encoded.=$sep.'thash='.substr(md5($validation),0,$this->hashlength);
-		
 		
 		//now just make it more opaque as a parameter
 		return $this->_encipher($encoded);
