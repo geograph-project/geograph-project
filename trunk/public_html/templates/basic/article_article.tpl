@@ -1,12 +1,24 @@
 {assign var="page_title" value=$title}
 
 {assign var="content_articletext" value=$content|articletext}
+{literal}<style type="text/css">
+#maincontent h1 { padding: 5px; margin-top:0px; background-color: black; color:white}
+#maincontent h2 { padding: 5px; background-color: lightgrey}
+#maincontent h3 { padding: 5px; margin-top:20px; border: 1px solid lightgrey; background-color: #eeeeee}
+#maincontent h4 { padding: 5px; margin-top:20px; border: 1px dashed lightgrey; background-color: #eeeeee}
 
+#contents_table {  border: 1px solid lightgrey; background-color: #eeeeee; padding: 10px } 
+#contents_table .title { font-weight:bolder;  padding:3px; border-bottom:1px solid black; margin-bottom:5px; }
+#contents_table ul { margin-top:0;padding:0 0 0 1em; border-bottom:1px solid black; padding-bottom: 8px; margin-bottom:5px; }
+#contents_table .h2 { font-weight:bold; }
+#contents_table .h3 { padding-left: 3px; }
+#contents_table .h4 { padding-left: 10px; font-size: 0.7em}
+
+</style>{/literal}
 {include file="_std_begin.tpl"}
 
-<table><tr><td>
-<h2 style="display:inline">{$title}</h2>
-</td></tr><tr><td>
+<h1>{$title}</h1>
+
 <div style="text-align:right">
 {if $licence == 'copyright'}
 	<small>&copy;</small> <a href="/profile.php?u={$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>, {$publish_date|date_format:" %B, %Y"}
@@ -21,9 +33,17 @@
 {/if}
 
 </div> 
-</td></tr></table>
+
 {if $copyright}{$copyright}{/if}
-<hr>
+<hr/><br/>
+{if $tableContents}
+	<div style="float:right; width:250px" id="contents_table">
+	<div class="title">Contents</div>
+	<ul>
+		{$tableContents}
+	</ul>
+	</div>
+{/if}
 {$content_articletext}
 
 {if $imageCredits}
