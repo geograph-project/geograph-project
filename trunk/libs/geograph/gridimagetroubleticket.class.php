@@ -912,7 +912,8 @@ class GridImageTroubleTicket
 						}
 					}
 				}
-				if (count($token->data)) {
+				$count = count($token->data);
+				if ($count > 0 && !($count == 1 && $token->hasValue('v')) ) {
 					$this->reopenmaptoken = $token->getToken();
 				}
 			}
