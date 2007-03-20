@@ -63,7 +63,7 @@ if ($square->imagecount > 20) {
 
 
 	$most = $db->GetAll("select 
-	nateastings,natnorthings,count(*) as c
+	gridimage_id,nateastings,natnorthings,count(*) as c
 	from gridimage 
 	where $sql_where
 	group by nateastings div 100,natnorthings div 100 
@@ -109,10 +109,11 @@ if ($square->imagecount > 20) {
 		list($south,$west) = $conv->national_to_wgs84($e,$n,$ri);
 		list($north,$east) = $conv->national_to_wgs84($e+100,$n+100,$ri);
 		
-
+		$delta = $entry['gridimage_id']%10;
+		
 		$Region = $placemark->addChild('Region');
 		$Region->setBoundary($north,$south,$east,$west);
-		$Region->setLod(10,600);
+		$Region->setLod(10+$delta,600);
 		$Region->setFadeExtent(50,200);
 		
 

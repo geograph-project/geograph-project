@@ -84,8 +84,8 @@ foreach($photos as $id=>$entry)
 	if ($entry['imagecount'] == 1) {
 		$point = new kmlPoint($entry['wgs84_lat'],$entry['wgs84_long']);			
 
-		$placemark = new kmlPlacemark(null,$entry['grid_reference'].' :: '.$entry['title'],$point);
-		#$placemark->setItem('description',"http://{$_SERVER['HTTP_HOST']}/photo/{$entry['gridimage_id']}");
+		$placemark = new kmlPlacemark_Photo(null,$entry['grid_reference'].' :: '.$entry['title'],$point);
+		
 		$placemark->useHoverStyle();
 
 		$image=new GridImage;
@@ -106,12 +106,7 @@ foreach($photos as $id=>$entry)
 			
 			
 		if (strlen($entry['view_direction']) && $entry['view_direction'] != -1) {
-			$LookAt = $placemark->addChild('LookAt');
-			$LookAt->setItem('longitude',$point->lon);
-			$LookAt->setItem('latitude',$point->lat);
-			$LookAt->setItem('tilt',70);
-			$LookAt->setItem('range',1000);
-			$LookAt->setItem('heading',$entry['view_direction']);
+			$placemark->addViewDirection(entry['view_direction']);
 		} 
 		
 			

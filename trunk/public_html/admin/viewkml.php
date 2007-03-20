@@ -30,7 +30,7 @@ $smarty = new GeographPage;
 
 $db = NewADOConnection($GLOBALS['DSN']);
 
-dump_sql_table('select rendered,level,url,filename,count(*),min(ts),max(ts) from kmlcache group by  rendered,level order by level','KML - Superlayer Rendering Progress');
+dump_sql_table('select rendered,level,url,filename,count(*),min(ts),max(ts) from kmlcache group by  rendered,level order by level,rendered','KML - Superlayer Rendering Progress');
 
 dump_sql_table('select now()','');
 

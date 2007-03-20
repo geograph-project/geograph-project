@@ -44,10 +44,43 @@ if ($m[2] == 3) { //GE 3
 	$UrlTag->setItem('viewFormat','BBOX=[bboxWest],[bboxSouth],[bboxEast],[bboxNorth]&amp;LOOKAT=[lookatLon],[lookatLat],[lookatRange],[lookatTilt],[lookatHeading],[horizFov],[vertFov]');
 
 } elseif ($m[2] == 4 || isset($_GET['download'])) { 
+	
+	$cache_file = "kml/geograph.kmz";
+	
+	$mtime = filemtime($cache_file);
+
+	// Send Etag hash
+	$hash = $mtime.'-'.md5($cache_file);
+	header ("Etag: \"$hash\""); 
+
+	if(isset($_SERVER['HTTP_IF_NONE_MATCH'])) { // check ETag
+		if($_SERVER['HTTP_IF_NONE_MATCH'] == $hash ) {
+			header("HTTP/1.0 304 Not Modified");
+			header('Content-Length: 0'); 
+			exit;
+		}
+	}	
+	
+	$gmdate_mod = gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
+	
+	if (!empty($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+		$if_modified_since = preg_replace('/;.*$/', '', $_SERVER['HTTP_IF_MODIFIED_SINCE']);
+		
+		if ($if_modified_since == $gmdate_mod) {
+			header("HTTP/1.0 304 Not Modified");
+			header('Content-Length: 0'); 
+			exit;
+		}
+	}
+
+
 	Header("Content-Type: application/vnd.google-earth.kmz+xml; charset=utf-8; filename=geograph.kmz");
 	Header("Content-Disposition: attachment; filename=\"geograph.kmz\"");
 	
-	readfile("kml/geograph.kmz");
+	header("Last-Modified: $gmdate_mod");
+	header('Content-length: '.filesize($cache_file));
+
+	readfile($cache_file);
 	exit;
 
 } else { 
