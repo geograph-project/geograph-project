@@ -21,14 +21,14 @@
 
 <div style="text-align:right">
 {if $licence == 'copyright'}
-	<small>&copy;</small> <a href="/profile.php?u={$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>, {$publish_date|date_format:" %B, %Y"}
+	text <small>&copy;</small> <a href="/profile.php?u={$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>, {$publish_date|date_format:" %B, %Y"}
 {else}
 	{if $licence == 'cc-by-sa/2.0'}
 		<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
 		alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; Text &copy; Copyright {$publish_date|date_format:" %B, %Y"}, <a href="/profile.php?u={$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>; {if $imageCredits}text and images{/if}
 	licensed for reuse under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 	{else}
-		by <a href="/profile.php?u={$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>, {$publish_date|date_format:" %B, %Y"}
+		text by <a href="/profile.php?u={$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>, {$publish_date|date_format:" %B, %Y"} (Public Domain)
 	{/if}
 {/if}
 
