@@ -56,7 +56,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	
 	$list = $db->getAll("
-	select article.*,realname
+	select article_id,article_cat_id,user_id,url,title,extract,licence,publish_date,approved,update_time,create_time,realname
 	from article 
 		inner join user using (user_id)
 	where (licence != 'none' and approved = 1) 
@@ -67,6 +67,18 @@ if (!$smarty->is_cached($template, $cacheid))
 	$urls = array();
 	foreach ($list as $i => $row) {
 		$urls[] = $row['url'];
+		if ($isadmin) {
+			$list[$i]['version'] = $db->getOne("
+				select count(*)
+				from article_revisions
+				where article_id = {$row['article_id']}
+				group by article_id");
+			$list[$i] += $db->getRow("
+				select modifier as modifier_id,realname as modifier_realname
+				from article_revisions
+					left join user on (article_revisions.modifier = user.user_id)
+				where article_id = {$row['article_id']} and update_time = '{$row['update_time']}'");
+		}
 	}
 	$_SESSION['article_urls'] = $urls;
 	
