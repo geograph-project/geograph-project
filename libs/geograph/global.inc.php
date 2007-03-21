@@ -63,7 +63,9 @@ if (!empty($CONF['memcache']['app'])) {
 	$memcache = new MultiServerMemcache($CONF['memcache']['app']);
 } else {
 	//need lightweight fake object that does nothing!
-	$memcache = new Object();
+	class fakeObject {}
+	
+	$memcache = new fakeObject();
 	$memcache->valid = false;
 }
 
