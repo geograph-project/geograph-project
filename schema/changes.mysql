@@ -1130,3 +1130,20 @@ CREATE TABLE `game_score` (
   KEY `game_id` (`game_id`)
 ) ENGINE=MyISAM;
 
+
+CREATE TABLE `game_rate` (
+  `game_rate_id` int(10) unsigned NOT NULL auto_increment,
+  `game_id` tinyint(4) NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL default '0',
+  `queries_id` int(10) unsigned NOT NULL default '0',
+  `rating` tinyint(4) NOT NULL default -2,
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`game_rate_id`),
+  KEY `game_id` (`game_id`)
+) ENGINE=MyISAM;
+
+
+DROP TABLE IF EXISTS game_image_rate;
+CREATE TABLE game_image_rate SELECT gridimage_id,game_id,round(avg(rating)) as rating from game_rate where rating > 0 group by gridimage_id,game_id; 
+ALTER TABLE `game_image_rate` ADD PRIMARY KEY (`gridimage_id` , `game_id`);

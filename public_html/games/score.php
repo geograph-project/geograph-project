@@ -30,15 +30,11 @@ init_session();
 
 $smarty = new GeographPage;
 
-
-
 if (isset($_REQUEST['login']) && !$USER->hasPerm('basic')) {
 	$USER->login(false);
 }
 
-
 $game = new Game();
-
 
 if (isset($_REQUEST['token'])) {
 	$game->setToken($_REQUEST['token']);
@@ -51,22 +47,14 @@ if (!empty($game->rastermap)) {
 	unset($game->rastermap);
 }
 
-#print "<pre>";
-#print_r($game);
-#exit;
-
 if (!empty($_REQUEST['save'])) {
-	$game->saveScore($_REQUEST['save'],isset($_REQUEST['username'])?$_REQUEST['username']:'');
-	header("Location: /games/moversboard.php");
+	$game->saveScore($_REQUEST['save'],!empty($_REQUEST['username'])?$_REQUEST['username']:'');
+	header("Location: /games/moversboard.php?more");
 	exit;
 }
 
-
-
-
 $smarty->assign_by_ref('game',$game);
-
 	
-$smarty->display('game_score.tpl');
+$smarty->display('games_score.tpl');
 
 ?>
