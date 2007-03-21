@@ -62,7 +62,7 @@
 	 {$game->image->comment|escape:'html'}
 	</div>
 	<div id="anticaption">
-		<input type="button" value="show caption" onclick="return showCaption(this.form)"/> (forfeit halve of points)
+		<input type="button" value="show caption" onclick="return showCaption(this.form)"/> (cost: one pineapple)
 	</div>
 	
 	
@@ -77,6 +77,7 @@
 			<option value="5">5 - Very Hard</option>
 			<option value="-1">Not Suitable</option>
 		</select></p>
+		<input type="hidden" name="rater" value="1"/>
 	{/if}
 	
 	<br style="clear:both"/>

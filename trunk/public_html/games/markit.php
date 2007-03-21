@@ -30,9 +30,9 @@ init_session();
 
 
 
-$v=inEmptyRequestInt('v',0);
 $rater=inEmptyRequestInt('rater',0);
 $i=inEmptyRequestInt('i',0);
+$l=inEmptyRequestInt('l',0);
 
 
 $game = new Game();
@@ -80,6 +80,7 @@ if (isset($_GET['check'])) {
 	}
 	
 	die('unknown error');
+
 } elseif (isset($_REQUEST['next']) || isset($_REQUEST['save'])) {
 	
 	if (empty($_REQUEST['grid_reference'])) {
@@ -97,18 +98,16 @@ if (isset($_GET['check'])) {
 			$game->storeScore(0);
 		}
 	}
+
 	$params = array();
 	$params[] = "token=".$game->getToken();
 	if (isset($_REQUEST['rater'])) {
 		$params[] = "rater=1";
-		
-		$game->saveRate($_REQUEST['rate']);
-		
-		
+		$game->saveRate($_REQUEST['rate']);		
 	}
+	
 	if (isset($_REQUEST['next'])) {
 		header("Location: /games/markit.php?".implode('&',$params));
-	
 	} else {
 		header("Location: /games/score.php?".implode('&',$params));
 	}
@@ -119,8 +118,13 @@ if (isset($_GET['check'])) {
 if ($i) {
 	$game->getImagesBySearch($i);
 	$game->i = $i;
-} elseif (!empty($i)) {
+} elseif (!empty($game->i)) {
 	$game->getImagesBySearch($game->i);
+} elseif ($l) {
+	$game->getImagesByRating($l);
+	$game->l = $l;
+} elseif (!empty($game->l)) {
+	$game->getImagesByRating($game->l);
 } else {
 
 	die('no images');
@@ -145,9 +149,8 @@ if ($game->numberofimages > 0) {
 	die('no images left');
 }
 
-
 $smarty->assign_by_ref('game',$game);
 
-$smarty->display('game_markit.tpl');
+$smarty->display('games_markit.tpl');
 
 ?>

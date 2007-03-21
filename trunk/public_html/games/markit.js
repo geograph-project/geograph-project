@@ -1,6 +1,8 @@
 function showCaption(thatForm) {
 	oldscore = parseInt(thatForm.points.value,10)
-	score = Math.round(oldscore/2);
+	score = oldscore-1;
+	if (score < 0)
+		score = 0;
 	
 	
 	for(q=0;q<oldscore;q++) {
