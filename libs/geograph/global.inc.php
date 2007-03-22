@@ -257,6 +257,7 @@ class GeographPage extends Smarty
 		$this->assign_by_ref('script_uri', $_SERVER['REQUEST_URI']);
 		$this->assign_by_ref('searchq', $_SESSION['searchq']);
 		$this->assign_by_ref('javascript_version', $CONF['javascript_version']);
+		$this->assign_by_ref('google_maps_api_key', $CONF['google_maps_api_key']);
 
 
 
