@@ -573,7 +573,9 @@ if (isset($_GET['fav']) && $i) {
 
 	if (!$smarty->is_cached($template, $cacheid)) {
 		dieUnderHighLoad(3,'search_unavailable.tpl');
-
+		
+		$smarty->assign_by_ref('google_maps_api_key', $CONF['google_maps_api_key']);
+		
 		$smarty->register_function("searchbreak", "smarty_function_searchbreak");
 
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
