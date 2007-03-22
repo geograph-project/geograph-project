@@ -45,7 +45,7 @@
 	{if $engine->results}
 	<p style="clear:both">Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
 	
-	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>
+	<script src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key={$google_maps_api_key}" type="text/javascript"></script>
 	{/if}
 {else}
 	{include file="_search_noresults.tpl"}
