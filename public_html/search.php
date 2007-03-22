@@ -25,6 +25,18 @@ require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 init_session();
 
+if (!empty($_GET['style'])) {
+	$USER->getStyle();
+	if (!empty($_SERVER['QUERY_STRING'])) {
+		$query = preg_replace('/style=(\w+)/','',$_SERVER['QUERY_STRING']);
+		header("Status: 301 Moved Permanently");
+		header("Location: /search.php?".$query);
+		exit;
+	}
+	header("Location: /search.php");
+	exit;
+}
+
 $smarty = new GeographPage;
 
 $i=(!empty($_GET['i']))?intval($_GET['i']):'';
