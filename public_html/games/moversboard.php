@@ -45,7 +45,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	/////////////
 
 		
-	$sql="select game_score_id,username,gs.user_id,realname,sum(score) as score
+	$sql="select game_score_id,username,gs.user_id,realname,sum(score) as score,sum(games) as games
 	from game_score gs
 		left join user using(user_id)
 	where gs.created > date_sub(now(), interval 240 hour)
@@ -58,7 +58,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	//assign an ordinal
 
 	$i=1;$lastscore = '?';
-	$score = 0;
+	$games = $score = 0;
 	foreach($topusers as $id=>$entry)
 	{
 		if ($lastscore == $entry['score'])
@@ -79,10 +79,12 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 		$i++;
 		$score += $entry['score'];
+		$games += $entry['games'];
 	}	
 	
 	
 	$smarty->assign('score', $score);
+	$smarty->assign('games', $games);
 	
 	$smarty->assign_by_ref('topusers', $topusers);
 	
