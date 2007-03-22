@@ -34,6 +34,22 @@ $rater=inEmptyRequestInt('rater',0);
 $i=inEmptyRequestInt('i',0);
 $l=inEmptyRequestInt('l',0);
 
+if (isset($_REQUEST['t'])) {
+	$ok=false;
+	$token=new Token;
+
+	if ($token->parse($_REQUEST['t']))
+	{
+		if ($token->hasValue("i")) {
+			$i = $token->getValue("i");
+		}
+	}
+} elseif (isset($_REQUEST['debug']) && $USER->hasPerm("admin")) {
+	$token=new Token;
+
+	$token->setValue("i", $i);
+	print $token->getToken(); 
+}
 
 $game = new Game();
 
@@ -84,7 +100,7 @@ if (isset($_GET['check'])) {
 } elseif (isset($_REQUEST['next']) || isset($_REQUEST['save'])) {
 	
 	if (empty($_REQUEST['grid_reference'])) {
-		die('Drag the Icon from user the map to mark photo subject.');
+
 	} else {
 		$square=new GridSquare;
 		$grid_ok=$square->setByFullGridRef($_REQUEST['grid_reference'],true);
@@ -100,11 +116,17 @@ if (isset($_GET['check'])) {
 	}
 
 	$params = array();
-	$params[] = "token=".$game->getToken();
 	if (isset($_REQUEST['rater'])) {
 		$params[] = "rater=1";
-		$game->saveRate($_REQUEST['rate']);		
+		$game->saveRate($_REQUEST['rate']);
+		if ($_REQUEST['rate'] == -1) {
+			if (isset($game->image->gridimage_id)) {
+				$game->done[] = $game->image->gridimage_id;
+				
+			}
+		}
 	}
+	$params[] = "token=".$game->getToken();
 	
 	if (isset($_REQUEST['next'])) {
 		header("Location: /games/markit.php?".implode('&',$params));
@@ -146,7 +168,13 @@ if ($game->numberofimages > 0) {
 	}
 
 } else {
-	die('no images left');
+	$smarty->assign('message','no images left');
+	if (!empty($game->image)) {
+		unset($game->image);
+	}
+	if (!empty($game->rastermap)) {
+		unset($game->rastermap);
+	}
 }
 
 $smarty->assign_by_ref('game',$game);

@@ -19,6 +19,8 @@
 
 	<h2>Game - Mark-It!</h2>
 	
+	<p>Drag the circle to mark the subject shown in the image. Get within 100m to win the remaining pineapples, loose one pineapple for every miss. Once you think you are close, click the check button to see how you did! If unsure you can reveal the caption of the image which may or may not make it easier!</p> 
+	
 	{if $message}
 		<p style="color:#990000;font-weight:bold;">{$message}</p>
 	{/if}
@@ -42,7 +44,7 @@
 	
 
 	<div class="photo_box">
-		<a href="#" onclick="return showDesc({$game->image->gridimage_id})"><img src="{$game->image->getThumbnail(213,160,true)}"></a>
+		<img src="{$game->image->getThumbnail(213,160,true)}">
 		
 		
 		<p><label for="grid_reference"><b style="color:#0018F8">Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)"/> <input type="button" value="check..." onclick="return game_check(this.form)"/></p>
@@ -69,7 +71,7 @@
 	{if $rater} 
 		<p>
 		Please rate this<br/> particular image:<br/>
-		<select name="rate" size="6">
+		<select name="rate" size="6" onchange="rateUpdate(this)">
 			<option value="1">1 - Very Easy</option>
 			<option value="2">2 - Easy</option>
 			<option value="3">3 - Medium</option>
@@ -93,6 +95,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 {else}
 	<p>There are no images available at the moment, thanks for your interest, and please check back tomorrow.</p>
+	{if $game->score}<p>Don't forget to <a href="/games/score.php?token={$game->getToken()}">save your score</a>!</a></p>{/if}
 {/if}
 {/dynamic}
 
