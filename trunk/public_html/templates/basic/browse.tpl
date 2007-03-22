@@ -12,8 +12,8 @@
 <div style="position:relative;float:left;width:530px">
 
 {if $showresult}
-	<div style="float: right; position:relative; margin-right:10px">
-	<table border="1" cellspacing="0">
+	<div class="interestBox" style="float: right; position:relative; padding:2px; margin-right:25px">
+	<table border="0" cellspacing="0" cellpadding="2">
 	<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}">NW</a></td>
 	<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}">N</a></td>
 	<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}">NE</a></td></tr>

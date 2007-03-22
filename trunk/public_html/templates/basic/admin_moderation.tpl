@@ -73,8 +73,8 @@
 	  	<div style="float:right; background-color:red; color:white; border:1px solid pink; padding:6px;">{$image->sizestr}</div>
 	  {/if}
 	  
-	  <input class="accept" type="button" id="geograph{$image->gridimage_id}" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey;font-size:0.8em"{else}{if $image->different_square} style="color:lightgrey;font-size:0.7em"{/if}{/if}/>
-	  <input class="accept" type="button" id="accept{$image->gridimage_id}" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey; font-size:0.8em"{/if}/>
+	  <input class="accept" type="button" id="geograph{$image->gridimage_id}" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey;"{else}{if $image->different_square} style="color:lightgrey;"{/if}{/if}/>
+	  <input class="accept" type="button" id="accept{$image->gridimage_id}" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey;"{/if}/>
 	  <input class="reject" type="button" id="reject{$image->gridimage_id}" value="Reject" onClick="moderateImage({$image->gridimage_id}, 'rejected')"/>
 	  {if (!$remoderate && $image->user_status && $image->moderation_status != 'pending') || $moderator}
 	  	<br/>Current Status: {$image->moderation_status} {if $image->mod_realname}, by {$image->mod_realname}{/if}
@@ -82,7 +82,7 @@
 	  {if $image->new_status}
 	  	<br/><span{if $image->new_status != $image->moderation_status} style="border:1px solid red; padding:5px; line-height:3em;"{/if}>Suggested Status: {$image->new_status} {if $image->ml_realname}, by {$image->ml_realname}{/if}</span>
 	  {/if}
-	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
+	  <div class="caption" id="modinfo{$image->gridimage_id}">{if $image->user_status}User: suggest {$image->user_status}{else}{if $image->different_square}System: suggest Accept{else}&nbsp;{/if}{/if}</div>
 	  </div>
 	  <br style="clear:both"/>
 	  </div>
