@@ -56,6 +56,17 @@ require_once('geograph/rastermap.class.php');
 
 init_session();
 
+if (isset($_GET['style'])) {
+	$USER->getStyle();
+	if (isset($_GET['id'])) {
+		header("Status: 301 Moved Permanently");
+		header("Location: /photo/".intval($_GET['id']));
+		exit;
+	}
+	header("Location: /");
+	exit;
+}
+
 $smarty = new GeographPage;
 
 $template='view.tpl';
