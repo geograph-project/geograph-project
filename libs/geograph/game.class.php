@@ -235,7 +235,7 @@ class game {
 		if (!empty($this->l)) {
 			$token->setValue("l", $this->l);
 		}
-		if (!empty($this->rastermap)) {
+		if (!empty($this->rastermap) && $this->rastermap->enabled) {
 			$token->setValueBinary("r", $this->rastermap->getToken());
 			$token->setValue("e", $this->rastermap->exactPosition);
 		}

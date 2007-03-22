@@ -157,9 +157,21 @@ $smarty = new GeographPage;
 
 
 if ($game->numberofimages > 0) {
-	
-	$game->useImage(0,true,true);
-	
+	$index = 0;
+	while ($index < $game->numberofimages) {
+		$game->useImage($index,true,true);
+		$index++;
+		if (!empty($game->rastermap) && $game->rastermap->enabled && $game->image->gridimage_id) {
+			//it worked!
+			break;
+		} 
+		if (!empty($game->image)) {
+			unset($game->image);
+		}
+		if (!empty($game->rastermap)) {
+			unset($game->rastermap);
+		}
+	}
 	
 	$game->points = 5;
 	
