@@ -40,6 +40,10 @@ if (isset($_REQUEST['token'])) {
 	$game->setToken($_REQUEST['token']);
 }
 
+if (isset($_REQUEST['debug']) && $USER->hasPerm('admin')) {
+	print_r($game);
+}
+
 if (!empty($game->image)) {
 	unset($game->image);
 }
