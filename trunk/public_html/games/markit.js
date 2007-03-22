@@ -75,7 +75,14 @@ function onCheckCompleted()
 	}
 }
 
-
+function rateUpdate(that) {
+	if (that.options[that.selectedIndex].value == -1) {
+		that.form.next.disabled= false;
+		that.form.next.style.backgroundColor = 'lightgreen';
+		that.form.next.style.fontSize = '1.3em';
+		that.form.grid_reference.value = '';
+	}
+}
 
 
 

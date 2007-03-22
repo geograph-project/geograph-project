@@ -40,7 +40,7 @@ if (isset($_REQUEST['token'])) {
 	$game->setToken($_REQUEST['token']);
 }
 
-if (empty($game->image)) {
+if (!empty($game->image)) {
 	unset($game->image);
 }
 if (!empty($game->rastermap)) {
