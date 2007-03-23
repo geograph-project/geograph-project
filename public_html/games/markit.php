@@ -63,7 +63,8 @@ if (isset($_GET['check'])) {
 	if (empty($_GET['grid_reference'])) {
 		die('<span style="color:red">Drag the Icon from under the map to mark photo subject.</span>');
 	} elseif (empty($_GET['points'])) {
-		die('<span style="background-color:red; color:white">Oh dear, no points left!</span>^set:'.$game->image->getSubjectGridref(true));
+		$game->image->use6fig = false;
+		die('<span style="background-color:red; color:white">Oh dear, no points left!</span>^set:'.$game->image->getSubjectGridref(false));
 	} else {
 		$square=new GridSquare;
 		$grid_ok=$square->setByFullGridRef($_GET['grid_reference'],true);
@@ -79,7 +80,8 @@ if (isset($_GET['check'])) {
 		$prefix = "<span style=\"color:blue;background-color:pink; padding:10px;\">";
 		$postfix .= "</span>";
 		if ($distance < 100) {
-			echo "<span style=\"color:blue;background-color:lightgreen; padding:10px; font-weight:bold;\">Well done, you where within 100m, collect {$_GET['points']} pineapples</span>^1";
+			$game->image->use6fig = false;
+			echo "<span style=\"color:blue;background-color:lightgreen; padding:10px; font-weight:bold;\">Well done, you where within 100m, collect {$_GET['points']} pineapples</span>^1^set:".$game->image->getSubjectGridref(false);
 			exit;
 		} elseif ($distance < 200) {
 			$prefix = str_replace('pink','yellow',$prefix);
