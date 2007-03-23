@@ -175,13 +175,13 @@ class game {
 				$page = 0;
 			}
 		} 
-		$game->ipage = intval($page);
+		$this->ipage = intval($page);
 	}
 	
 	public function getImagesBySearch($i) {
 		
 		
-		$pg = (!empty($game->ipage))?intval($game->ipage):1;
+		$pg = (!empty($this->ipage))?intval($this->ipage):1;
 		if (empty($pg) || $pg < 1) {$pg = 1;}
 
 		if (empty($this->engine)) {
