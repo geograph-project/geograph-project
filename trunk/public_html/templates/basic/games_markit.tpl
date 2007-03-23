@@ -44,7 +44,7 @@
 	
 
 	<div class="photo_box">
-		<img src="{$game->image->getThumbnail(213,160,true)}">
+		<a href="{$game->image->_getFullpath()}" target="gameimag"><img src="{$game->image->getThumbnail(213,160,true)}"></a>
 		
 		
 		<p><label for="grid_reference"><b style="color:#0018F8">Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)"/> <input type="button" value="check..." onclick="return game_check(this.form)"/></p>
