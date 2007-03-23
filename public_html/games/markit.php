@@ -61,9 +61,9 @@ $game->game_id = 1;
 
 if (isset($_GET['check'])) {
 	if (empty($_GET['grid_reference'])) {
-		die('Drag the Icon from user the map to mark photo subject.');
+		die('<span style="color:red">Drag the Icon from under the map to mark photo subject.</span>');
 	} elseif (empty($_GET['points'])) {
-		die('Oh dear, no points left!^set:'.$game->image->getSubjectGridref(true));
+		die('<span style="background-color:red; color:white">Oh dear, no points left!</span>^set:'.$game->image->getSubjectGridref(true));
 	} else {
 		$square=new GridSquare;
 		$grid_ok=$square->setByFullGridRef($_GET['grid_reference'],true);
@@ -76,18 +76,33 @@ if (isset($_GET['check'])) {
 		} else {
 			$postfix = "try again...";
 		}
-
+		$prefix = "<span style=\"color:blue;background-color:pink; padding:10px;\">";
+		$postfix .= "</span>";
 		if ($distance < 100) {
-			echo "Well done, you where within 100m, collect {$_GET['points']} pineapples^1";
+			echo "<span style=\"color:blue;background-color:lightgreen; padding:10px; font-weight:bold;\">Well done, you where within 100m, collect {$_GET['points']} pineapples</span>^1";
 			exit;
 		} elseif ($distance < 200) {
-			echo "Close, within 200m... $postfix^-1";
+			$prefix = str_replace('pink','yellow',$prefix);
+			switch(rand(1,3)) {
+				case '1' : echo $prefix."Close, within 200m!... $postfix^-1"; break;
+				case '2' : echo $prefix."Somewhere between 100m and 200m... $postfix^-1"; break;
+				case '3' : echo $prefix."Almost but not quite, only another 100m to go... $postfix^-1"; break;
+			}
 			exit;
 		} elseif ($distance < 500) {
-			echo "Well... within 500m... $postfix^-1";
+			$prefix = str_replace('pink','orange',$prefix);
+			switch(rand(1,3)) {
+				case '1' : echo $prefix."Within 500m, but could do better... $postfix^-1"; break;
+				case '2' : echo $prefix."Somewhere between 200m and 500m... $postfix^-1"; break;
+				case '3' : echo $prefix."Couldn't do better than 200m, huh?... $postfix^-1"; break;
+			}
 			exit;
 		} else {
-			echo "Not even within 500m... $postfix^-1";
+			switch(rand(1,3)) {
+				case '1' : echo $prefix."Not even within 500m... $postfix^-1"; break;
+				case '2' : echo $prefix."Sorry, over 500m away... $postfix^-1"; break;
+				case '3' : echo $prefix."Couldn't do better than 500m, huh?... $postfix^-1"; break;
+			}
 			exit;
 		}		
 
