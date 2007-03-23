@@ -219,7 +219,7 @@ class RasterMap
 			$extra = ($this->issubmit === true)?44:(($this->issubmit)?22:0);
 
 	//container
-			$str = "<div style=\"position:relative;height:".($width+$extra)."px;width:{$this->width}px;\">";
+			$str = "<div style=\"position:relative;height:".($width+$extra)."px;width:{$this->width}px;\" id=\"rastermap\">";
 
 	//map image
 			$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img src=\"$mapurl\" style=\"width:{$width}px;height:{$width}px\" border=\"1\" name=\"tile\" alt=\"$title\"/></div>";

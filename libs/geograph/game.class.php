@@ -42,6 +42,7 @@ class game {
 	}
 
 	public function storeScore($points) {
+		global $USER;
 		if (isset($this->score)) {
 			$this->score+= $points;
 		} else {
@@ -57,6 +58,20 @@ class game {
 		if (isset($this->image->gridimage_id)) {
 			$this->done[] = $this->image->gridimage_id;
 		}
+	
+		$updates = array();
+		
+		if (!empty($USER->user_id)) {
+			$updates['user_id'] = $USER->user_id;
+		}
+		if (!empty($this->image)) {
+			$updates['gridimage_id'] = $this->image->gridimage_id;
+		}
+		
+		$updates['game_id'] = $this->game_id;
+		$updates['score'] = $points;
+		
+		$this->_getDB()->Execute('INSERT INTO game_image_score SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 	}
 	
 	public function saveScore($where = 'user',$username = '') {
@@ -170,7 +185,7 @@ class game {
 			$db = $this->_getDB();
 			
 			$db->Execute("DROP TABLE IF EXISTS game_image_rate");
-			$db->Execute("CREATE TABLE game_image_rate SELECT gridimage_id,game_id,round(avg(rating)) as rating from game_rate where rating > 0 group by gridimage_id,game_id");
+			$db->Execute("CREATE TABLE game_image_rate SELECT gridimage_id,game_id,round(avg(rating)) as rating,count(*) as ratings from game_rate where rating > 0 group by gridimage_id,game_id");
 			$db->Execute("ALTER TABLE `game_image_rate` ADD PRIMARY KEY (`gridimage_id` , `game_id`)");
 		}
 		
