@@ -187,7 +187,7 @@ class game {
 		if (empty($this->engine)) {
 			$this->engine = new SearchEngine($i);
 		}
-		$recordSet = $this->engine->ReturnRecordset($pg);
+		$recordSet = $this->engine->ReturnRecordset($pg,true);
 		
 		
 		$this->images=array();
