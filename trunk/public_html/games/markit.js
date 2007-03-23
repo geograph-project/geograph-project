@@ -82,6 +82,12 @@ function onCheckCompleted()
 				thatForm.next.style.backgroundColor = 'lightgreen';
 				thatForm.next.style.fontSize = '1.3em';
 			}
+			l = bits.length-1;
+			if (bits[l].indexOf('set') == 0) {
+				parts = bits[l].split(':');
+				thatForm.grid_reference.value = parts[1];
+				updateMapMarker(thatForm.grid_reference,false)
+			}
 		}
 	}
 }
