@@ -204,7 +204,7 @@ class game {
 			$this->numberofimages = $index;
 			$this->sanitiseImages(true);
 		} else {
-			this->numberofimages = 0;
+			$this->numberofimages = 0;
 		}
 	}
 
