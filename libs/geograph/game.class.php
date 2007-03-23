@@ -155,14 +155,39 @@ class game {
 		}
 	}
 	
+	public function setSearchPage($i,$page) {
+		
+		if ($page =='x') {
+			$db = $this->_getDB();
+		
+			$count = $db->getOne("select `count` from queries_count where id = ".intval($i));
+			if ($count) {
+				$this->engine = new SearchEngine($i);
+				$this->engine->resultCount = $count;
+				$pgsize = $this->engine->criteria->resultsperpage;
+				
+				if (!$pgsize) {$pgsize = 15;}
+				$this->engine->numberOfPages = ceil($this->engine->resultCount/$pgsize);
+				
+				$page = rand(1,$this->engine->numberOfPages);
+				
+			} else {
+				$page = 0;
+			}
+		} 
+		$game->ipage = intval($page);
+	}
+	
 	public function getImagesBySearch($i) {
 		
 		
-		$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
+		$pg = (!empty($game->ipage))?intval($game->ipage):1;
 		if (empty($pg) || $pg < 1) {$pg = 1;}
 
-		$engine = new SearchEngine($i);
-		$recordSet = $engine->ReturnRecordset($pg);
+		if (empty($this->engine)) {
+			$this->engine = new SearchEngine($i);
+		}
+		$recordSet = $this->engine->ReturnRecordset($pg);
 		
 		
 		$this->images=array();
@@ -203,7 +228,6 @@ class game {
 	}
 	
 	public function sanitiseImages($issearch = false) {
-		//todo remove images from ->done and also from game_rate
 		
 		$ids = $this->done;
 		
@@ -215,7 +239,7 @@ class game {
 		} 
 		
 		foreach ($this->images as $index => $image) {
-			if (in_array($image->gridimage_id,$ids)) {
+			if (in_array($image->gridimage_id,$ids) || !($image->natgrlen == '8' && $image->use6fig=1) ) {
 				unset($this->images[$index]);
 				$this->numberofimages--;
 			}
@@ -246,6 +270,9 @@ class game {
 		}
 		if (!empty($this->i)) {
 			$token->setValue("i", $this->i);
+		}
+		if (!empty($this->ipage)) {
+			$token->setValue("p", $this->ipage);
 		}
 		if (!empty($this->l)) {
 			$token->setValue("l", $this->l);
@@ -288,6 +315,9 @@ class game {
 			}
 			if ($token->hasValue("i")) {
 				$this->i = $token->getValue("i");
+			}
+			if ($token->hasValue("p")) {
+				$this->ipage = $token->getValue("p");
 			}
 			if ($token->hasValue("l")) {
 				$this->l = $token->getValue("l");
