@@ -187,22 +187,25 @@ class game {
 		if (empty($this->engine)) {
 			$this->engine = new SearchEngine($i);
 		}
-		$recordSet = $this->engine->ReturnRecordset($pg,true);
+		$recordSet =& $this->engine->ReturnRecordset($pg,true);
 		
-		
-		$this->images=array();
-		$index=0;
+		if ($recordSet)	{		
+			$this->images=array();
+			$index=0;
 
-		while (!$recordSet->EOF) 
-		{
-			$this->images[$index]=new GridImage;
-			$this->images[$index]->fastInit($recordSet->fields);
-			$recordSet->MoveNext();
-			$index++;
+			while (!$recordSet->EOF) 
+			{
+				$this->images[$index]=new GridImage;
+				$this->images[$index]->fastInit($recordSet->fields);
+				$recordSet->MoveNext();
+				$index++;
+			}
+			$recordSet->Close(); 
+			$this->numberofimages = $index;
+			$this->sanitiseImages(true);
+		} else {
+			this->numberofimages = 0;
 		}
-		$recordSet->Close(); 
-		$this->numberofimages = $index;
-		$this->sanitiseImages(true);
 	}
 
 	public function getImagesByRating($rating) {

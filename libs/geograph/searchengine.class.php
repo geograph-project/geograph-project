@@ -130,7 +130,9 @@ class SearchEngine
 			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\'`]+) where/i",'',$sql_where);
 			$sql_from .= " {$matches[1]} join {$matches[2]}";
 		}
-
+		
+		$sql_from = str_replace('gridimage_query using (gridimage_id)','gridimage_query on (gi.gridimage_id = gridimage_query.gridimage_id)',$sql_from);
+		
 		if ($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly) {
 			$resultCount = $db->getOne("select `count` from queries_count where id = {$this->query_id}");
 			if ($resultCount) {
