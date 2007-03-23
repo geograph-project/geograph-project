@@ -19,7 +19,7 @@
 
 	<h2>Game - Mark-It!</h2>
 	
-	<p>Drag the circle to mark the subject shown in the image. Get within 100m to win the remaining pineapples, loose one pineapple for every miss. Once you think you are close, click the check button to see how you did! If unsure you can reveal the caption of the image which may or may not make it easier!</p> 
+	<p>Drag the circle to mark the subject shown in the image. Get within 100m to win the remaining pineapples, lose one pineapple for every miss. Once you think you are close, click the check button to see how you did! If unsure you can reveal the caption of the image which may or may not make it easier!</p> 
 	
 	{if $message}
 		<p style="color:#990000;font-weight:bold;">{$message}</p>

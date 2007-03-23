@@ -43,11 +43,18 @@ if (isset($_REQUEST['t'])) {
 		if ($token->hasValue("i")) {
 			$i = $token->getValue("i");
 		}
+		if ($token->hasValue("p")) {
+			$_GET['page'] = $token->getValue("p");
+		}
 	}
-} elseif (isset($_REQUEST['debug']) && $USER->hasPerm("admin")) {
+} 
+if (isset($_REQUEST['debug']) && $USER->hasPerm("admin")) {
 	$token=new Token;
 
 	$token->setValue("i", $i);
+	if (!empty($_GET['page'])){ 
+		$token->setValue("p", $_GET['page']);
+	}
 	print $token->getToken(); 
 }
 
@@ -155,6 +162,10 @@ if (isset($_GET['check'])) {
 
 
 if ($i) {
+	if (!empty($_GET['page'])){ 
+		$game->setSearchPage($i,$_GET['page']);
+	}
+
 	$game->getImagesBySearch($i);
 	$game->i = $i;
 } elseif (!empty($game->i)) {
