@@ -27,12 +27,7 @@ require_once('geograph/searchengine.class.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/kmlfile.class.php');
 require_once('geograph/kmlfile2.class.php');
-init_session();
 
-$smarty = new GeographPage;
-
-$template='kml.tpl';
-$cacheid = '';
 
 if (isset($_GET['id']))  {
 	require_once('geograph/gridimage.class.php');
@@ -43,7 +38,14 @@ if (isset($_GET['id']))  {
 
 	if ($ok) {
 		header("Cache-Control: Public");
-		header("Expires: ".date("D, d M Y H:i:s",mktime(0,0,0,date('m'),date('d')+14,date('Y')) )." GMT");
+		
+		//when this image was modified
+		$mtime = strtotime($image->upd_timestamp);
+
+		customCacheControl($mtime,$image->gridimage_id);	
+		
+		
+		header("Expires: ".date("D, d M Y H:i:s",mktime(0,0,0,date('m'),date('d')+48,date('Y')) )." GMT");
 		
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
@@ -98,6 +100,13 @@ if (isset($_GET['id']))  {
 		
 	}
 }
+
+init_session();
+
+$smarty = new GeographPage;
+
+$template='kml.tpl';
+$cacheid = '';
 
 	if (isset($_REQUEST['i']) && $i = intval($_REQUEST['i'])) {
 		$pg = $_REQUEST['page'];
