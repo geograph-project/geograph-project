@@ -37,7 +37,7 @@
 {if $copyright}{$copyright}{/if}
 <hr/><br/>
 {if $tableContents}
-	<div style="float:right; width:250px" id="contents_table">
+	<div style="float:right; width:250px; position:relative;" id="contents_table">
 	<div class="title">Contents</div>
 	<ul>
 		{$tableContents}
