@@ -86,8 +86,7 @@ $urls_per_sitemap=50000;
 
 //how many sitemap files must we write?
 printf("Counting images...\r");
-$images=$db->GetOne("select count(*) from gridimage ".
-	"where moderation_status in ('accepted', 'geograph')");
+$images=$db->GetOne("select count(*) from gridimage_search");
 $sitemaps=ceil($images / $urls_per_sitemap);
 
 //go through each sitemap file...
@@ -109,13 +108,9 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	
 	$offset=($sitemap-1)*$urls_per_sitemap;
 	$recordSet = &$db->Execute(
-		"select i.gridimage_id,date(i.moderated) as moddate,".
-			"date(max(t.updated)) as ticketdate ".
+		"select i.gridimage_id,date(upd_timestamp) as moddate ".
 		"from gridimage as i ".
-		"left join gridimage_ticket as t ".
-			"on (i.gridimage_id=t.gridimage_id and t.status='closed')".
 		"where i.moderation_status in ('accepted', 'geograph') ".
-		"group by i.gridimage_id ".
 		"order by i.gridimage_id ".
 		"limit $offset,$urls_per_sitemap");
 	
@@ -123,15 +118,13 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	while (!$recordSet->EOF) 
 	{
 		//figure out most recent update
-		$date=$recordSet->fields['moddate'];
-		if (!is_null($recordSet->fields['ticketdate']))
-			$date=$recordSet->fields['ticketdate'];
+		$date=$recordSet->fields['upd_timestamp'];
 		
 		if (strcmp($date,$maxdate)>0)
 			$maxdate=$date;
 		
 		fprintf($fh,"<url>".
-			"<loc>http://www.geograph.org.uk/photo/%d</loc>".
+			"<loc>http://{$param['config']}/photo/%d</loc>".
 			"<lastmod>%s</lastmod>".
 			"<changefreq>monthly</changefreq>".
 			"</url>\n",
@@ -183,7 +176,7 @@ for ($s=0; $s<=$sitemaps; $s++)
 	$mtime=filemtime($param['dir']."/public_html/".$fname);
 	$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);
 	
-	fprintf($fh, "<loc>http://www.geograph.org.uk/%s</loc>", $fname);
+	fprintf($fh, "<loc>http://{$param['config']}/%s</loc>", $fname);
 	fprintf($fh, "<lastmod>$mtimestr</lastmod>", $fname);
 	fprintf($fh, "</sitemap>\n");
 }
