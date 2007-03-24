@@ -179,7 +179,7 @@ class RasterMap
 
 				$padding = "padding:{$ptop}px {$pright}px {$pbottom}px {$pleft}px";
 
-				$str .= "<a href=\"/gridref/$gr\" title=\"$title\" onmouseover=\"document.getElementById('marker$idcounter').src='/img/blank.gif'\" onmouseout=\"document.getElementById('marker$idcounter').src='/templates/basic/img/circle.png'\"><img src=\"/templates/basic/img/circle.png\" style=\"{$padding};width:29px;height:29px;background-image:url($mapurl);\" border=\"1\" alt=\"$title\" galleryimg=\"no\" id=\"marker$idcounter\"/></a>";
+				$str .= "<a href=\"/gridref/$gr\" title=\"$title\" onmouseover=\"document.getElementById('marker$idcounter').src='/img/blank.gif'\" onmouseout=\"document.getElementById('marker$idcounter').src='/templates/basic/img/circle.png'\"><img src=\"/templates/basic/img/circle.png\" style=\"{$padding};width:29px;height:29px;background-image:url($mapurl);\" border=\"0\" alt=\"$title\" galleryimg=\"no\" id=\"marker$idcounter\"/></a>";
 
 			} else {
 				//no marker
