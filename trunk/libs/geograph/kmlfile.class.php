@@ -168,14 +168,16 @@ class kmlFile extends kmlPrimative {
 		if (empty($this->filename)) {
 			$this->filename = $this->id.".kml";
 		}
+		$content =& $this->returnKML();
 		if ($sendheaders && !headers_sent()) {
 			Header("Content-Type: ".$this->contentType."; charset=".$this->encoding."; filename=".basename($this->filename));
 			Header("Content-Disposition: attachment; filename=".basename($this->filename));
+			header("Content-Length: ".strlen($content));
 		}
 		if (empty($diskfile)) {
-			echo $this->returnKML();
+			echo $content;
 		} else {
-			file_put_contents($diskfile,$this->returnKML());
+			file_put_contents($diskfile,$content);
 		}
 		return $this->filename;
 	}
@@ -189,11 +191,7 @@ class kmlFile extends kmlPrimative {
 		if (empty($this->filename)) {
 			$this->filename = $this->id.".kmz";
 		}
-		if ($sendheaders && !headers_sent()) {
-			Header("Content-Type: ".$this->contentType."; charset=".$this->encoding."; filename=".basename($this->filename));
-			Header("Content-Disposition: attachment; filename=".basename($this->filename));
-		}
-
+		
 		$content = $this->returnKML(false);
 
 		include("zip.class.php");
@@ -203,10 +201,18 @@ class kmlFile extends kmlPrimative {
 		// add the binary data stored in the string 'content' 
 		$zipfile -> addFile($content, "doc.kml");   
 		
+		$content =& $zipfile->file();
+		
+		if ($sendheaders && !headers_sent()) {
+			Header("Content-Type: ".$this->contentType."; charset=".$this->encoding."; filename=".basename($this->filename));
+			Header("Content-Disposition: attachment; filename=".basename($this->filename));
+			header("Content-Length: ".strlen($content));
+		}
+		
 		if (empty($diskfile)) {
-			echo $zipfile->file();
+			echo $content;
 		} else {
-			file_put_contents($diskfile,$zipfile->file());
+			file_put_contents($diskfile,$content);
 		}
 		
 		return $this->filename;
