@@ -261,7 +261,7 @@ body>#nav_block {width:128px;}
 
 .content_photogray h2
 {
-	color:lightgrey;
+	color:#D3D3D3;
 	padding-left:10px;
 	padding-top:10px;
 	margin-bottom:0;
@@ -825,7 +825,7 @@ div.map div.inner img
 }
 
 .pageNavSelected {
-	background-color: darkgray;
+	background-color: #A9A9A9;
 }
 
 .tabHolder {
@@ -867,7 +867,7 @@ div.map div.inner img
 }
 
 h2.titlebar {
-	background-color:lightgrey;
+	background-color:#D3D3D3;
 	padding:5px;
 }
 
@@ -991,7 +991,7 @@ ul.explore {
 }
 
 ul.explore li ul {
-	list-style-type:dot;
+	list-style-type:disc;
 	list-style-image:none;
 }
 
