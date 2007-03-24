@@ -105,19 +105,28 @@ if (isset($_GET['id']))
 //do we have a valid image?
 if ($image->isValid())
 {
-	$taken=$image->getFormattedTakenDate();
-
-	//get the grid references
-	$image->getSubjectGridref(true);
-	$image->getPhotographerGridref(true);
-	
 	//what style should we use?
 	$style = $USER->getStyle();
 	$cacheid.=$style;
 
+
+	//when this image was modified
+	$mtime = strtotime($image->upd_timestamp);
+	
+	//page is unqiue per user (the profile and links) 
+	$hash = $cacheid.'.'.$USER->user_id;
+	
+	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
+	customCacheControl($mtime,$hash,($USER->user_id == 0));
+	
 	if (!$smarty->is_cached($template, $cacheid))
 	{
+		$taken=$image->getFormattedTakenDate();
 
+		//get the grid references
+		$image->getSubjectGridref(true);
+		$image->getPhotographerGridref(true);
+	
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
 
 

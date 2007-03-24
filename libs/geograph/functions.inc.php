@@ -408,4 +408,33 @@ function connectToURL($addr, $port, $path, $userpass="", $timeout="30") {
 		return 0;
 }
 
+function customCacheControl($mtime,$hash,$useifmod = true,$gmdate_mod = 0) {
+	$hash = $mtime.'-'.md5($hash);
+
+	header ("Etag: \"$hash\""); 
+
+	if(isset($_SERVER['HTTP_IF_NONE_MATCH'])) { // check ETag
+		if($_SERVER['HTTP_IF_NONE_MATCH'] == $hash ) {
+			header("HTTP/1.0 304 Not Modified");
+			header('Content-Length: 0'); 
+			exit;
+		}
+	}	
+
+	if (!$gmdate_mod)
+		$gmdate_mod = gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
+
+	if ($useifmod && !empty($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+		$if_modified_since = preg_replace('/;.*$/', '', $_SERVER['HTTP_IF_MODIFIED_SINCE']);
+
+		if ($if_modified_since == $gmdate_mod) {
+			header("HTTP/1.0 304 Not Modified");
+			header('Content-Length: 0'); 
+			exit;
+		}
+	}
+
+	header("Last-Modified: $gmdate_mod");
+}
+
 ?>
