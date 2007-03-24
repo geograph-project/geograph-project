@@ -1,6 +1,9 @@
 {assign var="page_title" value=$title}
 
 {assign var="content_articletext" value=$content|articletext}
+
+{include file="_std_begin.tpl"}
+
 {literal}<style type="text/css">
 #maincontent h1 { padding: 5px; margin-top:0px; background-color: black; color:white}
 #maincontent h2 { padding: 5px; background-color: lightgrey}
@@ -15,7 +18,6 @@
 #contents_table .h4 { padding-left: 10px; font-size: 0.7em}
 
 </style>{/literal}
-{include file="_std_begin.tpl"}
 
 <h1>{$title}</h1>
 
