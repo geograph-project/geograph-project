@@ -654,11 +654,21 @@ class RasterMap
 
 		if (!file_exists($mappath))
 			$mappath=$_SERVER['DOCUMENT_ROOT']."/maps/errortile.png";
+		
+		//Last-Modified: Sun, 20 Mar 2005 18:19:58 GMT
+		$t=filemtime($mappath);
+		$lastmod=strftime("%a, %d %b %Y %H:%M:%S GMT", $t);
+		
+		//use the filename as a hash (md5'ed)
+		//can use if-last-mod as file is not unique per user
+		//we have already calculated a header version of the modification date so forward that
+		customCacheControl($t,$mappath,true,$lastmod);	
 
 		header("Content-Type: image/png");
 		
 		$size=filesize($mappath);		
 		header("Content-Size: $size");
+		header("Content-Length: $size");
 
 		$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", time()+604800);
 		header("Expires: $expires");
