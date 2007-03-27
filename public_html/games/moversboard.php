@@ -45,12 +45,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	/////////////
 
 		
-	$sql="select game_score_id,username,gs.user_id,realname,sum(score) as score,sum(games) as games
+	$sql="select game_score_id,username,gs.user_id,realname,sum(score) as score,sum(games) as games,sum(score)/sum(games) as average
 	from game_score gs
 		left join user using(user_id)
-	where gs.created > date_sub(now(), interval 240 hour)
+	where gs.created > date_sub(now(), interval 24 hour)
 	group by username,gs.user_id 
-	order by score desc, games desc,username,realname ";
+	order by average desc,score desc, games desc,username,realname ";
 	if ($_GET['debug'])
 		print $sql;
 	$topusers=$db->GetAssoc($sql);
@@ -58,10 +58,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	//assign an ordinal
 
 	$i=1;$lastscore = '?';
-	$games = $score = 0;
+	$average = $games = $score = 0;
 	foreach($topusers as $id=>$entry)
 	{
-		if ($lastscore == $entry['score'])
+		if ($lastscore == $entry['average'])
 			$topusers[$id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
 		else {
 			
@@ -75,14 +75,20 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 
 			$topusers[$id]['ordinal']=$i.$end;
-			$lastscore = $entry['score'];
+			$lastscore = $entry['average'];
 		}
 		$i++;
+		$average += $entry['average'];
 		$score += $entry['score'];
 		$games += $entry['games'];
 	}	
 	
 	
+	if ($i > 1) {
+		$smarty->assign('average', $average/($i-1));
+	} else {
+		$smarty->assign('average', 0);
+	}
 	$smarty->assign('score', $score);
 	$smarty->assign('games', $games);
 	
