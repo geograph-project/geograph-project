@@ -48,7 +48,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql="select game_score_id,username,gs.user_id,realname,sum(score) as score,sum(games) as games,sum(score)/sum(games) as average
 	from game_score gs
 		left join user using(user_id)
-	where gs.created > date_sub(now(), interval 24 hour)
+	where gs.created > date_sub(now(), interval 48 hour)
 	group by username,gs.user_id 
 	order by average desc,score desc, games desc,username,realname ";
 	if ($_GET['debug'])
@@ -85,7 +85,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	
 	if ($i > 1) {
-		$smarty->assign('average', $average/($i-1));
+		$smarty->assign('average', sprintf("%.2f",$average/($i-1)));
 	} else {
 		$smarty->assign('average', 0);
 	}
