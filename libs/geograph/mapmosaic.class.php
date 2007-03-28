@@ -433,14 +433,16 @@ class GeographMapMosaic
 		$oldest = 999999999999;	
 		foreach ($this->imagearray as $j => $row)
 			foreach ($row as $i => $map) {
-				$filename = $root.$map->getImageFilename();
-				if (file_exists($filename) && ($date = filemtime($filename)) != FALSE) {
-					$recent = max($recent,$date);
-					$oldest = min($oldest,$date);
+				if ($map->type_or_user != -10) {
+					$filename = $root.$map->getImageFilename();
+					if (file_exists($filename) && ($date = filemtime($filename)) != FALSE) {
+						$recent = max($recent,$date);
+						$oldest = min($oldest,$date);
+					}
 				}
 			}
 		if ($recent) {
-			if ( abs($recent-$oldest) < 1000 || $oldest < (time() - 60*60*24*60) ) {
+			if ( abs($recent-$oldest) < 1000) {
 				return "Maps last updated at: ".strftime("%A, %d %b at %H:%M",$recent);
 			} else {
 				return "Maps updated between: ".strftime("%A, %d %b at %H:%M",$oldest)." and ".strftime("%A, %d %b at %H:%M",$recent);
