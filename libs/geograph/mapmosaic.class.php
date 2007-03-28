@@ -941,8 +941,7 @@ class GeographMapMosaic
 				$file = $this->getBaseMapFilename($recordSet->fields);
 				if (file_exists($root.$file)) {
 					unlink($root.$file);
-				} 
-				$recordSet->MoveNext();
+				}
 			}
 			$recordSet->MoveNext();
 		}
