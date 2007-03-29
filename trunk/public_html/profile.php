@@ -152,8 +152,15 @@ if ($template=='profile.tpl')
 		require_once('geograph/gridimage.class.php');
 		require_once('geograph/gridsquare.class.php');
 
-		if (!$profile)
+		if (!$profile) {
 			$profile=new GeographUser($uid);
+			
+			if (!isset($_GET['user']) && !empty($profile->nickname)) {
+				header("Status: 301 Moved Permanently");
+				header("Location: /user/".urlencode($profile->nickname).(isset($_GET['all'])?'/all':''));
+				exit;
+			}
+		}
 		$profile->getStats();
 
 		$smarty->assign('page_title', 'Profile for '.$profile->realname);
