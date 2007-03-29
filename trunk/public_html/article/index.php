@@ -56,13 +56,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	
 	$list = $db->getAll("
-	select article_id,article_cat_id,article.user_id,url,title,extract,licence,publish_date,approved,update_time,create_time,realname
+	select article_id,article.article_cat_id,category_name,article.user_id,url,title,extract,licence,publish_date,approved,update_time,create_time,realname
 	from article 
 		inner join user using (user_id)
+		left join article_cat using (article_cat_id)
 	where (licence != 'none' and approved = 1) 
 		or user.user_id = {$USER->user_id}
 		or ($isadmin and approved != -1)
-	order by create_time desc");
+	order by sort_order,article.article_cat_id,create_time desc");
 	
 	$urls = array();
 	foreach ($list as $i => $row) {

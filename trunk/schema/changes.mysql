@@ -1159,3 +1159,19 @@ CREATE TABLE `game_image_score` (
   PRIMARY KEY  (`game_image_score_id`),
   KEY `game_id` (`game_id`)
 ) ENGINE=MyISAM;
+
+
+
+CREATE TABLE `article_cat` (
+  `article_cat_id` smallint(5) unsigned NOT NULL auto_increment,
+  `category_name` varchar(64) NOT NULL,
+  `sort_order` tinyint(4) NOT NULL,
+  PRIMARY KEY  (`article_cat_id`)
+) ENGINE=MyISAM  ;
+
+
+INSERT INTO `article_cat` (`article_cat_id`, `category_name`, `sort_order`) VALUES 
+(1, 'OS Map Symbols', 0),
+(2, 'Exploring the Community', 0),
+(3, 'In the pursuit of Geographing', 0),
+(4, 'Just for Fun', 0);
