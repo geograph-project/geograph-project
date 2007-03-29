@@ -4,18 +4,23 @@
 {dynamic}
 {if $message_sent}
 	<h2>Thanks!</h2>
-	<p>Your message has been sent.</p>
+	<p>Your message has been sent - you should hear back from us soon.</p>
 {else}
     <h2>Contact Us</h2>
  
- 	<p>Got something to tell us? Then fire away...</p>
+ 	<p>Got something to tell us? Then fire away - we try to respond within 24 hours, often much quicker.</p>
  
     <form action="contact.php" method="post">
-    
+    <input type="hidden" name="referring_page" value="{$referring_page|escape:'html'}"/>
     <p><label for="from">Your email address</label><br/>
-	<input id="from" name="from" value="{$from|escape:'html'}"/><span class="formerror">{$from_error}</span>
+	<input size="40" id="from" name="from" value="{$from|escape:'html'}"/><span class="formerror">{$from_error}</span>
     
     <br /><br />
+    
+    <label for="subject">Subject</label><br/>
+	<input size="40" id="subject" name="subject" value="{$subject|escape:'html'}"/>
+	<br /><br />
+    
     <label for="msg">Your message</label><br/>
 	<textarea id="msg" name="msg" rows="10" cols="50">{$msg|escape:'html'}</textarea>
     	<br /><span class="formerror">{$msg_error}</span> 
