@@ -28,7 +28,7 @@ init_session();
 $smarty = new GeographPage;
 
 
-var_dump($_SESSION['user']);
+
 
 if (isset($_POST['msg']))
 {
