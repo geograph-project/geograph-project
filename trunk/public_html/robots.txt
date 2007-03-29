@@ -26,6 +26,7 @@ Disallow: /gridref/
 Disallow: /ecard.php?
 Disallow: /export.
 Disallow: /tile.php
+Disallow: /feed/userid/
 
 
 User-agent: Mozilla/2.0 (compatible; Ask Jeeves/Teoma)

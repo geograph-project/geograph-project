@@ -20,6 +20,7 @@ Shots don't have to be sweeping landscapes, but must provide a reasonable idea o
 typical geography.</li>
 <li>Family snap - while people can be in the photo, they must not <i>be</i> the photo</li>
 <li>Inappropriate content - any image containing material inappropriate for minors</li>
+<li>Image too small - minimum is 480 pixels on longer side, 640 is preferred.</li>
 </ul>
 <p>We keep rejected submissions on file for a short period, so if you think your
 image has been incorrectly rejected (and mistakes do happen!) please <a title="Contact us" href="/contact.php">contact us</a>
@@ -241,7 +242,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 <a title="Open in Google Earth" href="/photo/{$image->gridimage_id}.kml">Google Earth</a>
 <a title="Open in Google Earth" href="/photo/{$image->gridimage_id}.kml" class="xml-kml">KML</a>, 
-<a title="Open in Google Earth" href="http://maps.google.co.uk/maps?q=http://{$http_host}/photo/{$image->gridimage_id}.kml">Google Maps</a>, 
+<a title="Open in Google Maps" href="http://maps.google.co.uk/maps?q=http://{$http_host}/photo/{$image->gridimage_id}.kml">Google Maps</a>, 
 
 {getamap gridref=$image->subject_gridref text="OS Get-a-map&trade;"},
 

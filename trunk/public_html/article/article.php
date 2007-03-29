@@ -178,23 +178,39 @@ function smarty_function_articletext($input) {
 
 $smarty->register_modifier("articletext", "smarty_function_articletext");
 
+$db=NewADOConnection($GLOBALS['DSN']);
+
+$page = $db->getRow("
+select article.*,realname,gs.grid_reference
+from article 
+	left join user using (user_id)
+	left join gridsquare gs on (article.gridsquare_id = gs.gridsquare_id)
+where ( (licence != 'none' and approved = 1) 
+	or user.user_id = {$USER->user_id}
+	or $isadmin )
+	and url = ".$db->Quote($_GET['page']).'
+limit 1');
+if (count($page)) {
+
+	//when this page was modified
+	$mtime = strtotime($page['update_time']);
+	
+	//page is unqiue per user (the profile and links) 
+	$hash = $cacheid.'.'.$USER->user_id;
+	
+	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
+	customCacheControl($mtime,$hash,($USER->user_id == 0));
+
+}
+
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db=NewADOConnection($GLOBALS['DSN']);
-
-	$page = $db->getRow("
-	select article.*,realname,gs.grid_reference
-	from article 
-		left join user using (user_id)
-		left join gridsquare gs on (article.gridsquare_id = gs.gridsquare_id)
-	where ( (licence != 'none' and approved = 1) 
-		or user.user_id = {$USER->user_id}
-		or $isadmin )
-		and url = ".$db->Quote($_GET['page']).'
-	limit 1');
 	if (count($page)) {
 		foreach ($page as $key => $value) {
 			$smarty->assign($key, $value);
+		}
+		if (!empty($page['extract'])) {
+			$smarty->assign('meta_description', $page['extract']);
 		}
 	} else {
 		$template = 'static_404.tpl';
