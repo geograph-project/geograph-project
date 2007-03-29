@@ -46,6 +46,10 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.or
 		print "<title>Image no longer available</title>";
 	}
 	exit;
+} elseif (strpos($_SERVER["REQUEST_URI"],'/photo/') === FALSE && isset($_GET['id'])) {
+	header("Status: 301 Moved Permanently");
+	header("Location: /photo/".intval($_GET['id']));
+	exit;
 }
 
 
