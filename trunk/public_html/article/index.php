@@ -59,7 +59,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	select article_id,article.article_cat_id,category_name,article.user_id,url,title,extract,licence,publish_date,approved,update_time,create_time,realname
 	from article 
 		inner join user using (user_id)
-		left join article_cat using (article_cat_id)
+		left join article_cat on (article.article_cat_id = article_cat.article_cat_id)
 	where (licence != 'none' and approved = 1) 
 		or user.user_id = {$USER->user_id}
 		or ($isadmin and approved != -1)
