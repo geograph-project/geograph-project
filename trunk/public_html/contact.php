@@ -27,22 +27,36 @@ init_session();
 
 $smarty = new GeographPage;
 
+
+var_dump($_SESSION['user']);
+
 if (isset($_POST['msg']))
 {
 	//get the inputs
 	$msg=stripslashes(trim($_POST['msg']));
 	$from=stripslashes(trim($_POST['from']));
+	$subject=stripslashes(trim($_POST['subject']));
 	
 	$smarty->assign('msg', $msg);
 	$smarty->assign('from', $from);
+	$smarty->assign('subject', $subject);
 	
 	//ensure we only got one from line
 	if (isValidEmailAddress($from))
 	{
 		if (strlen($msg))
 		{
+			if (strlen($subject)==0)
+				$subject='Re: '.$_SERVER['HTTP_HOST'];
+			
+			$msg.="\n\n-------------------------------\n";
+			$msg.="Referring page: ".$_POST['referring_page']."\n";
+			if ($_SESSION['user']->user_id)
+				$msg.="User profile: http://{$_SERVER['HTTP_HOST']}/profile.php?u={$_SESSION['user']->user_id}\n";
+			$msg.="Browser: ".$_SERVER['HTTP_USER_AGENT']."\n";
+			
 			mail($CONF['contact_email'], 
-				'Message from '.$_SERVER['HTTP_HOST'],
+				'[Geograph] '.$subject,
 				$msg,
 				'From:'.$from);	
 
@@ -65,6 +79,15 @@ else
 		$smarty->assign('from', $USER->email);
 }
 
+//get referring page from form if submitted, otherwise pick it up from server
+$referring_page="n/a";
+if (isset($_REQUEST['referring_page']))
+	$referring_page=$_REQUEST['referring_page'];
+elseif (isset($_SERVER['HTTP_REFERER']))
+	$referring_page=$_SERVER['HTTP_REFERER'];
+	
+$smarty->assign('referring_page',$referring_page);
+	
 $smarty->display('contact.tpl');
 
 	
