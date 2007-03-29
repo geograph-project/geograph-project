@@ -82,7 +82,8 @@ require_once('geograph/global.inc.php');
 $db = NewADOConnection($GLOBALS['DSN']);
 
 //this upper limit is set by google
-$urls_per_sitemap=50000;
+//divided by two as we about to produce two links
+$urls_per_sitemap=25000;
 
 //how many sitemap files must we write?
 printf("Counting images...\r");
@@ -118,7 +119,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	while (!$recordSet->EOF) 
 	{
 		//figure out most recent update
-		$date=$recordSet->fields['upd_timestamp'];
+		$date=$recordSet->fields['moddate'];
 		
 		if (strcmp($date,$maxdate)>0)
 			$maxdate=$date;
@@ -126,8 +127,15 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 		fprintf($fh,"<url>".
 			"<loc>http://{$param['config']}/photo/%d</loc>".
 			"<lastmod>%s</lastmod>".
-			"<changefreq>monthly</changefreq>".
+			"<changefreq>monthly</changefreq><priority>0.8</priority>".
+			"</url>\n".
+			"<url>".
+			"<loc>http://{$param['config']}/photo/%d.kml</loc>".
+			"<lastmod>%s</lastmod>".
+			"<changefreq>monthly</changefreq><priority>0.5</priority>".
 			"</url>\n",
+			$recordSet->fields['gridimage_id'],
+			$date,
 			$recordSet->fields['gridimage_id'],
 			$date
 			);
@@ -157,6 +165,85 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	//gzip it
 	`gzip $filename`;
 }
+
+$urls_per_sitemap=50000;
+
+//how many sitemap files must we write?
+printf("Counting users...\r");
+$images=$db->GetOne("select count(*) from user where rank > 0");
+$sitemaps2=ceil($images / $urls_per_sitemap);
+
+//go through each sitemap file...
+$last_percent=0;
+$count=0;
+for ($sitemap=$sitemaps+1; $sitemap<=$sitemaps+$sitemaps2; $sitemap++)
+{
+	//prepare output file and query
+	printf("Preparing user sitemap %d of %d, %d%% complete...\r", $sitemap, $sitemaps,$percent);
+		
+	$filename=sprintf('%s/public_html/sitemap%04d.xml', $param['dir'], $sitemap); 
+	$fh=fopen($filename, "w");
+	
+	fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
+	fprintf($fh, '<urlset xmlns="http://www.google.com/schemas/sitemap/0.84">'."\n");
+	
+	
+	$maxdate="";
+	
+	$offset=($sitemap-1-$sitemaps)*$urls_per_sitemap;
+	$recordSet = &$db->Execute(
+		"select u.user_id,nickname,date(max(upd_timestamp)) as moddate ".
+		"from user u ".
+		"inner join gridimage_search gi using(user_id) ".
+		"where rank > 0 ".
+		"group by u.user_id ".
+		"order by u.user_id ".
+		"limit $offset,$urls_per_sitemap");
+	
+	//write one <url> line per result...
+	while (!$recordSet->EOF) 
+	{
+		//figure out most recent update
+		$date=$recordSet->fields['moddate'];
+		
+		if (strcmp($date,$maxdate)>0)
+			$maxdate=$date;
+		
+		fprintf($fh,"<url>".
+			"<loc>http://{$param['config']}/%s</loc>".
+			"<lastmod>%s</lastmod>".
+			"<changefreq>monthly</changefreq><priority>0.7</priority>".
+			"</url>\n",
+			empty($recordSet->fields['nickname'])?'profile.php?u='.$recordSet->fields['user_id']:'user/'.urlencode($recordSet->fields['nickname']),
+			$date
+			);
+			
+		$count++;	
+		$percent=round(($count*100)/$images);
+		if ($percent!=$last_percent)
+		{
+			$last_percent=$percent;
+			printf("Writing user sitemap %d of %d, %d%% complete...\r", $sitemap, $sitemaps,$percent);
+		}	
+	
+		
+		$recordSet->MoveNext();
+	}
+			
+	$recordSet->Close();
+	
+	//finalise file
+	fprintf($fh, '</urlset>');
+	fclose($fh); 
+	
+	//set datestamp on file
+	$unixtime=strtotime($maxdate);
+	touch($filename,$unixtime);
+	
+	//gzip it
+	`gzip $filename`;
+}
+$sitemaps+=$sitemaps2;
 
 //now we write an index file pointing to our hand edited sitemap sitemap0000.xml)
 //and our generated ones above
