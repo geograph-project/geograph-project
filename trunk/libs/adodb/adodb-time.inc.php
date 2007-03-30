@@ -712,8 +712,8 @@ function adodb_validdate($y,$m,$d)
 {
 global $_month_table_normal,$_month_table_leaf;
 
-	if (_adodb_is_leap_year($y)) $marr =& $_month_table_leaf;
-	else $marr =& $_month_table_normal;
+	if (_adodb_is_leap_year($y)) $marr = $_month_table_leaf;
+	else $marr = $_month_table_normal;
 	
 	if ($m > 12 || $m < 1) return false;
 	
