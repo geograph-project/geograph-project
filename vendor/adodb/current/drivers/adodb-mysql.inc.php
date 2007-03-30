@@ -1,6 +1,6 @@
 <?php
 /*
-V4.90 8 June 2006  (c) 2000-2006 John Lim (jlim#natsoft.com.my). All rights reserved.
+V5.00 05 Feb 2007   (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence.
@@ -24,7 +24,7 @@ class ADODB_mysql extends ADOConnection {
 	var $hasInsertID = true;
 	var $hasAffectedRows = true;	
 	var $metaTablesSQL = "SHOW TABLES";	
-	var $metaColumnsSQL = "SHOW COLUMNS FROM %s";
+	var $metaColumnsSQL = "SHOW COLUMNS FROM `%s`";
 	var $fmtTimeStamp = "'Y-m-d H:i:s'";
 	var $hasLimit = true;
 	var $hasMoveFirst = true;
@@ -58,7 +58,7 @@ class ADODB_mysql extends ADOConnection {
 	}
 	
 	
-	function &MetaTables($ttype=false,$showSchema=false,$mask=false) 
+	function MetaTables($ttype=false,$showSchema=false,$mask=false) 
 	{	
 		$save = $this->metaTablesSQL;
 		if ($showSchema && is_string($showSchema)) {
@@ -69,14 +69,14 @@ class ADODB_mysql extends ADOConnection {
 			$mask = $this->qstr($mask);
 			$this->metaTablesSQL .= " like $mask";
 		}
-		$ret =& ADOConnection::MetaTables($ttype,$showSchema);
+		$ret = ADOConnection::MetaTables($ttype,$showSchema);
 		
 		$this->metaTablesSQL = $save;
 		return $ret;
 	}
 	
 	
-	function &MetaIndexes ($table, $primary = FALSE, $owner=false)
+	function MetaIndexes ($table, $primary = FALSE, $owner=false)
 	{
         // save old fetch mode
         global $ADODB_FETCH_MODE;
@@ -158,7 +158,7 @@ class ADODB_mysql extends ADOConnection {
 	function GetOne($sql,$inputarr=false)
 	{
 		if ($this->compat323 == false && strncasecmp($sql,'sele',4) == 0) {
-			$rs =& $this->SelectLimit($sql,1,-1,$inputarr);
+			$rs = $this->SelectLimit($sql,1,-1,$inputarr);
 			if ($rs) {
 				$rs->Close();
 				if ($rs->EOF) return false;
@@ -223,7 +223,7 @@ class ADODB_mysql extends ADOConnection {
 		return $this->genID;
 	}
 	
-  	function &MetaDatabases()
+  	function MetaDatabases()
 	{
 		$qid = mysql_list_dbs($this->_connectionID);
 		$arr = array();
@@ -341,8 +341,11 @@ class ADODB_mysql extends ADOConnection {
 	function OffsetDate($dayFraction,$date=false)
 	{		
 		if (!$date) $date = $this->sysDate;
+		
 		$fraction = $dayFraction * 24 * 3600;
-		return "from_unixtime(unix_timestamp($date)+$fraction)";
+		return $date . ' + INTERVAL ' .	 $fraction.' SECOND';
+		
+//		return "from_unixtime(unix_timestamp($date)+$fraction)";
 	}
 	
 	// returns true or false
@@ -385,7 +388,7 @@ class ADODB_mysql extends ADOConnection {
 		return $this->_connect($argHostname, $argUsername, $argPassword, $argDatabasename);
 	}
 	
- 	function &MetaColumns($table) 
+ 	function MetaColumns($table) 
 	{
 		$this->_findschema($table,$schema);
 		if ($schema) {
@@ -475,16 +478,16 @@ class ADODB_mysql extends ADOConnection {
 	}
 	
 	// parameters use PostgreSQL convention, not MySQL
-	function &SelectLimit($sql,$nrows=-1,$offset=-1,$inputarr=false,$secs=0)
+	function SelectLimit($sql,$nrows=-1,$offset=-1,$inputarr=false,$secs=0)
 	{
 		$offsetStr =($offset>=0) ? ((integer)$offset)."," : '';
 		// jason judge, see http://phplens.com/lens/lensforum/msgs.php?id=9220
 		if ($nrows < 0) $nrows = '18446744073709551615'; 
 		
 		if ($secs)
-			$rs =& $this->CacheExecute($secs,$sql." LIMIT $offsetStr".((integer)$nrows),$inputarr);
+			$rs = $this->CacheExecute($secs,$sql." LIMIT $offsetStr".((integer)$nrows),$inputarr);
 		else
-			$rs =& $this->Execute($sql." LIMIT $offsetStr".((integer)$nrows),$inputarr);
+			$rs = $this->Execute($sql." LIMIT $offsetStr".((integer)$nrows),$inputarr);
 		return $rs;
 	}
 	
@@ -620,28 +623,28 @@ class ADORecordSet_mysql extends ADORecordSet{
 		$this->_numOfFields = @mysql_num_fields($this->_queryID);
 	}
 	
-	function &FetchField($fieldOffset = -1) 
+	function FetchField($fieldOffset = -1) 
 	{	
 		if ($fieldOffset != -1) {
 			$o = @mysql_fetch_field($this->_queryID, $fieldOffset);
 			$f = @mysql_field_flags($this->_queryID,$fieldOffset);
-			$o->max_length = @mysql_field_len($this->_queryID,$fieldOffset); // suggested by: Jim Nicholson (jnich@att.com)
+			$o->max_length = @mysql_field_len($this->_queryID,$fieldOffset); // suggested by: Jim Nicholson (jnich#att.com)
 			//$o->max_length = -1; // mysql returns the max length less spaces -- so it is unrealiable
 			$o->binary = (strpos($f,'binary')!== false);
 		}
 		else if ($fieldOffset == -1) {	/*	The $fieldOffset argument is not provided thus its -1 	*/
 			$o = @mysql_fetch_field($this->_queryID);
-		$o->max_length = @mysql_field_len($this->_queryID); // suggested by: Jim Nicholson (jnich@att.com)
+		$o->max_length = @mysql_field_len($this->_queryID); // suggested by: Jim Nicholson (jnich#att.com)
 		//$o->max_length = -1; // mysql returns the max length less spaces -- so it is unrealiable
 		}
 			
 		return $o;
 	}
 
-	function &GetRowAssoc($upper=true)
+	function GetRowAssoc($upper=true)
 	{
 		if ($this->fetchMode == MYSQL_ASSOC && !$upper) $row = $this->fields;
-		else $row =& ADORecordSet::GetRowAssoc($upper);
+		else $row = ADORecordSet::GetRowAssoc($upper);
 		return $row;
 	}
 	

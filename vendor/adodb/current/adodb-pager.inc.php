@@ -1,7 +1,7 @@
 <?php
 
 /*
-	V4.90 8 June 2006  (c) 2000-2006 John Lim (jlim#natsoft.com.my). All rights reserved.
+	V5.00 05 Feb 2007   (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
 	  Released under both BSD license and Lesser GPL library license. 
 	  Whenever there is any discrepancy between the two licenses, 
 	  the BSD license will take precedence. 
@@ -247,12 +247,12 @@ class ADODB_Pager {
 		$savec = $ADODB_COUNTRECS;
 		if ($this->db->pageExecuteCountRows) $ADODB_COUNTRECS = true;
 		if ($this->cache)
-			$rs = &$this->db->CachePageExecute($this->cache,$this->sql,$rows,$this->curr_page);
+			$rs = $this->db->CachePageExecute($this->cache,$this->sql,$rows,$this->curr_page);
 		else
-			$rs = &$this->db->PageExecute($this->sql,$rows,$this->curr_page);
+			$rs = $this->db->PageExecute($this->sql,$rows,$this->curr_page);
 		$ADODB_COUNTRECS = $savec;
 		
-		$this->rs = &$rs;
+		$this->rs = $rs;
 		if (!$rs) {
 			print "<h3>Query failed: $this->sql</h3>";
 			return;

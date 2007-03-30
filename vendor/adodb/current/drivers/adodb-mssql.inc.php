@@ -1,6 +1,6 @@
 <?php
 /* 
-V4.90 8 June 2006  (c) 2000-2006 John Lim (jlim#natsoft.com.my). All rights reserved.
+V5.00 05 Feb 2007   (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. 
@@ -112,19 +112,21 @@ class ADODB_mssql extends ADOConnection {
 	{
 	global $ADODB_FETCH_MODE;
 	
-		$stmt = $this->PrepareSP('sp_server_info');
-		$val = 2;
+	
 		if ($this->fetchMode === false) {
 			$savem = $ADODB_FETCH_MODE;
 			$ADODB_FETCH_MODE = ADODB_FETCH_NUM;
 		} else 
 			$savem = $this->SetFetchMode(ADODB_FETCH_NUM);
+				
+		if (0) {
+			$stmt = $this->PrepareSP('sp_server_info');
+			$val = 2;
+			$this->Parameter($stmt,$val,'attribute_id');
+			$row = $this->GetRow($stmt);
+		}
 		
-		
-		$this->Parameter($stmt,$val,'attribute_id');
-		$row = $this->GetRow($stmt);
-		
-		//$row = $this->GetRow("execute sp_server_info 2");
+		$row = $this->GetRow("execute sp_server_info 2");
 		
 		
 		if ($this->fetchMode === false) {
@@ -198,14 +200,14 @@ class ADODB_mssql extends ADOConnection {
 	}
 	
 
-	function &SelectLimit($sql,$nrows=-1,$offset=-1, $inputarr=false,$secs2cache=0)
+	function SelectLimit($sql,$nrows=-1,$offset=-1, $inputarr=false,$secs2cache=0)
 	{
 		if ($nrows > 0 && $offset <= 0) {
 			$sql = preg_replace(
 				'/(^\s*select\s+(distinctrow|distinct)?)/i','\\1 '.$this->hasTop." $nrows ",$sql);
-			$rs =& $this->Execute($sql,$inputarr);
+			$rs = $this->Execute($sql,$inputarr);
 		} else
-			$rs =& ADOConnection::SelectLimit($sql,$nrows,$offset,$inputarr,$secs2cache);
+			$rs = ADOConnection::SelectLimit($sql,$nrows,$offset,$inputarr,$secs2cache);
 	
 		return $rs;
 	}
@@ -326,7 +328,7 @@ class ADODB_mssql extends ADOConnection {
 	}
 	
 	
-	function &MetaIndexes($table,$primary=false)
+	function MetaIndexes($table,$primary=false)
 	{
 		$table = $this->qstr($table);
 
@@ -383,7 +385,7 @@ from sysforeignkeys
 where upper(object_name(fkeyid)) = $table
 order by constraint_name, referenced_table_name, keyno";
 		
-		$constraints =& $this->GetArray($sql);
+		$constraints = $this->GetArray($sql);
 		
 		$ADODB_FETCH_MODE = $save;
 		
@@ -410,7 +412,7 @@ order by constraint_name, referenced_table_name, keyno";
 	{ 
 		if(@mssql_select_db("master")) { 
 				 $qry=$this->metaDatabasesSQL; 
-				 if($rs=@mssql_query($qry)){ 
+				 if($rs=@mssql_query($qry,$this->_connectionID)){ 
 						 $tmpAr=$ar=array(); 
 						 while($tmpAr=@mssql_fetch_row($rs)) 
 								 $ar[]=$tmpAr[0]; 
@@ -429,7 +431,7 @@ order by constraint_name, referenced_table_name, keyno";
 
 	// "Stein-Aksel Basma" <basma@accelero.no>
 	// tested with MSSQL 2000
-	function &MetaPrimaryKeys($table)
+	function MetaPrimaryKeys($table)
 	{
 	global $ADODB_FETCH_MODE;
 	
@@ -454,14 +456,14 @@ order by constraint_name, referenced_table_name, keyno";
 	}
 
 	
-	function &MetaTables($ttype=false,$showSchema=false,$mask=false) 
+	function MetaTables($ttype=false,$showSchema=false,$mask=false) 
 	{
 		if ($mask) {
 			$save = $this->metaTablesSQL;
 			$mask = $this->qstr(($mask));
 			$this->metaTablesSQL .= " AND name like $mask";
 		}
-		$ret =& ADOConnection::MetaTables($ttype,$showSchema);
+		$ret = ADOConnection::MetaTables($ttype,$showSchema);
 		
 		if ($mask) {
 			$this->metaTablesSQL = $save;
@@ -698,7 +700,7 @@ order by constraint_name, referenced_table_name, keyno";
 			}
 			$decl = $this->qstr($decl);
 			if ($this->debug) ADOConnection::outp("<font size=-1>sp_executesql N{$sql[1]},N$decl,$params</font>");
-			$rez = mssql_query("sp_executesql N{$sql[1]},N$decl,$params");
+			$rez = mssql_query("sp_executesql N{$sql[1]},N$decl,$params", $this->_connectionID);
 			
 		} else if (is_array($sql)) {
 			# PrepareSP()
@@ -797,7 +799,7 @@ class ADORecordset_mssql extends ADORecordSet {
 		fields in a certain query result. If the field offset isn't specified, the next field that wasn't yet retrieved by
 		fetchField() is retrieved.	*/
 
-	function &FetchField($fieldOffset = -1) 
+	function FetchField($fieldOffset = -1) 
 	{
 		if ($fieldOffset != -1) {
 			$f = @mssql_fetch_field($this->_queryID, $fieldOffset);
