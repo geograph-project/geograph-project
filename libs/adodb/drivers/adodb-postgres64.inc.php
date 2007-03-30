@@ -1,6 +1,6 @@
 <?php
 /*
- V4.90 8 June 2006  (c) 2000-2006 John Lim (jlim#natsoft.com.my). All rights reserved.
+ V5.00 05 Feb 2007   (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence.
@@ -201,7 +201,7 @@ a different OID if a database must be reloaded. */
 		return @pg_Exec($this->_connectionID, "rollback");
 	}
 	
-	function &MetaTables($ttype=false,$showSchema=false,$mask=false) 
+	function MetaTables($ttype=false,$showSchema=false,$mask=false) 
 	{
 		$info = $this->ServerInfo();
 		if ($info['version'] >= 7.3) {
@@ -224,7 +224,7 @@ select tablename,'T' from pg_tables where tablename like $mask
  union 
 select viewname,'V' from pg_views where viewname like $mask";
 		}
-		$ret =& ADOConnection::MetaTables($ttype,$showSchema);
+		$ret = ADOConnection::MetaTables($ttype,$showSchema);
 		
 		if ($mask) {
 			$this->metaTablesSQL = $save;
@@ -237,6 +237,9 @@ select viewname,'V' from pg_views where viewname like $mask";
 	function qstr($s,$magic_quotes=false)
 	{
 		if (!$magic_quotes) {
+			if (ADODB_PHPVER >= 0x5200) {
+				return  "'".pg_escape_string($this->_connectionID,$s)."'";
+			} 
 			if (ADODB_PHPVER >= 0x4200) {
 				return  "'".pg_escape_string($s)."'";
 			}
@@ -424,6 +427,7 @@ select viewname,'V' from pg_views where viewname like $mask";
 	*/
 	function BlobEncode($blob)
 	{
+		if (ADODB_PHPVER >= 0x5200) return pg_escape_bytea($this->_connectionID, $blob);
 		if (ADODB_PHPVER >= 0x4200) return pg_escape_bytea($blob);
 		
 		/*92=backslash, 0=null, 39=single-quote*/
@@ -460,7 +464,7 @@ select viewname,'V' from pg_views where viewname like $mask";
 	// for schema support, pass in the $table param "$schema.$tabname".
 	// converts field names to lowercase, $upper is ignored
 	// see http://phplens.com/lens/lensforum/msgs.php?id=14018 for more info
-	function &MetaColumns($table,$normalize=true) 
+	function MetaColumns($table,$normalize=true) 
 	{
 	global $ADODB_FETCH_MODE;
 	
@@ -474,8 +478,8 @@ select viewname,'V' from pg_views where viewname like $mask";
 		$ADODB_FETCH_MODE = ADODB_FETCH_NUM;
 		if ($this->fetchMode !== false) $savem = $this->SetFetchMode(false);
 		
-		if ($schema) $rs =& $this->Execute(sprintf($this->metaColumnsSQL1,$table,$table,$schema));
-		else $rs =& $this->Execute(sprintf($this->metaColumnsSQL,$table,$table));
+		if ($schema) $rs = $this->Execute(sprintf($this->metaColumnsSQL1,$table,$table,$schema));
+		else $rs = $this->Execute(sprintf($this->metaColumnsSQL,$table,$table));
 		if (isset($savem)) $this->SetFetchMode($savem);
 		$ADODB_FETCH_MODE = $save;
 		
@@ -492,7 +496,7 @@ select viewname,'V' from pg_views where viewname like $mask";
 			
 			$rskey = $this->Execute(sprintf($this->metaKeySQL,($table)));
 			// fetch all result in once for performance.
-			$keys =& $rskey->GetArray();
+			$keys = $rskey->GetArray();
 			if (isset($savem)) $this->SetFetchMode($savem);
 			$ADODB_FETCH_MODE = $save;
 			
@@ -574,7 +578,7 @@ select viewname,'V' from pg_views where viewname like $mask";
 		
 	}
 
-	  function &MetaIndexes ($table, $primary = FALSE)
+	  function MetaIndexes ($table, $primary = FALSE)
       {
          global $ADODB_FETCH_MODE;
                 
@@ -657,7 +661,7 @@ WHERE (c2.relname=\'%s\' or c2.relname=lower(\'%s\'))';
 		   	if ($str)  {
 			 	$host = split(":", $str);
 				if ($host[0]) $str = "host=".adodb_addslashes($host[0]);
-				else $str = 'host=localhost';
+				else $str = '';
 				if (isset($host[1])) $str .= " port=$host[1]";
 				else if (!empty($this->port)) $str .= " port=".$this->port;
 			}
@@ -683,6 +687,12 @@ WHERE (c2.relname=\'%s\' or c2.relname=lower(\'%s\'))';
 		}
 		if ($this->_connectionID === false) return false;
 		$this->Execute("set datestyle='ISO'");
+		
+		$info = $this->ServerInfo();
+		$this->pgVersion = (float) substr($info['version'],0,3);
+		if ($this->pgVersion >= 7.1) { // good till version 999
+			$this->_nestedSQL = true;
+		}
 		return true;
 	}
 	
@@ -760,11 +770,11 @@ WHERE (c2.relname=\'%s\' or c2.relname=lower(\'%s\'))';
 				}
 				$s = "PREPARE $plan ($params) AS ".substr($sql,0,strlen($sql)-2);		
 				//adodb_pr($s);
-				pg_exec($this->_connectionID,$s);
+				$rez = pg_exec($this->_connectionID,$s);
 				//echo $this->ErrorMsg();
 			}
-			
-			$rez = pg_exec($this->_connectionID,$exsql);
+			if ($rez)
+				$rez = pg_exec($this->_connectionID,$exsql);
 		} else {
 			//adodb_backtrace();
 			$rez = pg_exec($this->_connectionID,$sql);
@@ -876,10 +886,10 @@ class ADORecordSet_postgres64 extends ADORecordSet{
 		$this->ADORecordSet($queryID);
 	}
 	
-	function &GetRowAssoc($upper=true)
+	function GetRowAssoc($upper=true)
 	{
 		if ($this->fetchMode == PGSQL_ASSOC && !$upper) return $this->fields;
-		$row =& ADORecordSet::GetRowAssoc($upper);
+		$row = ADORecordSet::GetRowAssoc($upper);
 		return $row;
 	}
 
@@ -915,7 +925,7 @@ class ADORecordSet_postgres64 extends ADORecordSet{
 		 return $this->fields[$this->bind[strtoupper($colname)]];
 	}
 
-	function &FetchField($off = 0) 
+	function FetchField($off = 0) 
 	{
 		// offsets begin at 0
 		

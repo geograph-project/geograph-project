@@ -1,6 +1,6 @@
 <?php
 /*
-  V4.90 8 June 2006  (c) 2000-2006 John Lim (jlim#natsoft.com.my). All rights reserved.
+  V5.00 05 Feb 2007   (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
    Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence.
@@ -311,7 +311,7 @@ class ADORecordSet_ldap extends ADORecordSet{
     /*
     Return whole recordset as a multi-dimensional associative array
 	*/
-	function &GetAssoc($force_array = false, $first2cols = false) 
+	function GetAssoc($force_array = false, $first2cols = false) 
 	{
 		$records = $this->_numOfRows;
         $results = array();
@@ -331,7 +331,7 @@ class ADORecordSet_ldap extends ADORecordSet{
 		return $results; 
 	}
     
-    function &GetRowAssoc()
+    function GetRowAssoc()
 	{
         $results = array();
         foreach ( $this->fields as $k=>$v ) {

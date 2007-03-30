@@ -1,6 +1,6 @@
 <?php
 /* 
-V4.90 8 June 2006  (c) 2000-2006 John Lim (jlim#natsoft.com.my). All rights reserved.
+V5.00 05 Feb 2007   (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. See License.txt. 
@@ -167,7 +167,7 @@ having count(*) > 100)",'These are sql statements that should be using bind vari
 		$savelog = $conn->LogSQL(false);	
 		$this->version = $conn->ServerInfo();
 		$conn->LogSQL($savelog);	
-		$this->conn =& $conn;
+		$this->conn = $conn;
 	}
 	
 	function WarnPageCost($val)
@@ -211,7 +211,7 @@ having count(*) > 100)",'These are sql statements that should be using bind vari
 	function Explain($sql,$partial=false) 
 	{
 		$savelog = $this->conn->LogSQL(false);
-		$rs =& $this->conn->SelectLimit("select ID FROM PLAN_TABLE");
+		$rs = $this->conn->SelectLimit("select ID FROM PLAN_TABLE");
 		if (!$rs) {
 			echo "<p><b>Missing PLAN_TABLE</b></p>
 <pre>
@@ -264,7 +264,7 @@ CREATE TABLE PLAN_TABLE (
 		$this->conn->BeginTrans();
 		$id = "ADODB ".microtime();
 
-		$rs =& $this->conn->Execute("EXPLAIN PLAN SET STATEMENT_ID='$id' FOR $sql");
+		$rs = $this->conn->Execute("EXPLAIN PLAN SET STATEMENT_ID='$id' FOR $sql");
 		$m = $this->conn->ErrorMsg();
 		if ($m) {
 			$this->conn->RollbackTrans();
@@ -272,7 +272,7 @@ CREATE TABLE PLAN_TABLE (
 			$s .= "<p>$m</p>";
 			return $s;
 		}
-		$rs =& $this->conn->Execute("
+		$rs = $this->conn->Execute("
 		select 
   '<pre>'||lpad('--', (level-1)*2,'-') || trim(operation) || ' ' || trim(options)||'</pre>'  as Operation, 
   object_name,COST,CARDINALITY,bytes
@@ -292,7 +292,7 @@ CONNECT BY prior id=parent_id and statement_id='$id'");
 	{
 		if ($this->version['version'] < 9) return 'Oracle 9i or later required';
 		
-		 $rs =& $this->conn->Execute("
+		 $rs = $this->conn->Execute("
 select  a.size_for_estimate as cache_mb_estimate,
 	case when a.size_factor=1 then 
    		'&lt;&lt;= current'
@@ -420,7 +420,7 @@ order by
 		if ($this->conn->fetchMode !== false) $savem = $this->conn->SetFetchMode(false);
 		
 		$savelog = $this->conn->LogSQL(false);
-		$rs =& $this->conn->SelectLimit($sql);
+		$rs = $this->conn->SelectLimit($sql);
 		$this->conn->LogSQL($savelog);
 		
 		if (isset($savem)) $this->conn->SetFetchMode($savem);
@@ -491,7 +491,7 @@ order by
 		if ($this->conn->fetchMode !== false) $savem = $this->conn->SetFetchMode(false);
 		
 		$savelog = $this->conn->LogSQL(false);
-		$rs =& $this->conn->Execute($sql);
+		$rs = $this->conn->Execute($sql);
 		$this->conn->LogSQL($savelog);
 		
 		if (isset($savem)) $this->conn->SetFetchMode($savem);

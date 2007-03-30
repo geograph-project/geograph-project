@@ -1,6 +1,6 @@
 <?php
 /*
-V4.90 8 June 2006  (c) 2000-2006 John Lim (jlim#natsoft.com.my). All rights reserved.
+V5.00 05 Feb 2007   (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence.
@@ -14,7 +14,7 @@ Based on adodb 3.40
 */ 
 
 // security - hide paths
-//if (!defined('ADODB_DIR')) die();
+if (!defined('ADODB_DIR')) die();
 
 if (! defined("_ADODB_MYSQLI_LAYER")) {
  define("_ADODB_MYSQLI_LAYER", 1 );
@@ -32,7 +32,7 @@ class ADODB_mysqli extends ADOConnection {
 	var $hasInsertID = true;
 	var $hasAffectedRows = true;	
 	var $metaTablesSQL = "SHOW TABLES";	
-	var $metaColumnsSQL = "SHOW COLUMNS FROM %s";
+	var $metaColumnsSQL = "SHOW COLUMNS FROM `%s`";
 	var $fmtTimeStamp = "'Y-m-d H:i:s'";
 	var $hasLimit = true;
 	var $hasMoveFirst = true;
@@ -138,6 +138,18 @@ class ADODB_mysqli extends ADOConnection {
 		return " IFNULL($field, $ifNull) "; // if MySQL
 	}
 	
+	// do not use $ADODB_COUNTRECS
+	function GetOne($sql,$inputarr=false)
+	{
+		$ret = false;
+		$rs = $this->Execute($sql,$inputarr);
+		if ($rs) {	
+			if (!$rs->EOF) $ret = reset($rs->fields);
+			$rs->Close();
+		}
+		return $ret;
+	}
+	
 	function ServerInfo()
 	{
 		$arr['description'] = $this->GetOne("select version()");
@@ -150,7 +162,9 @@ class ADODB_mysqli extends ADOConnection {
 	{	  
 		if ($this->transOff) return true;
 		$this->transCnt += 1;
-		$this->Execute('SET AUTOCOMMIT=0');
+		
+		//$this->Execute('SET AUTOCOMMIT=0');
+		mysqli_autocommit($this->_connectionID, false);
 		$this->Execute('BEGIN');
 		return true;
 	}
@@ -162,7 +176,9 @@ class ADODB_mysqli extends ADOConnection {
 		
 		if ($this->transCnt) $this->transCnt -= 1;
 		$this->Execute('COMMIT');
-		$this->Execute('SET AUTOCOMMIT=1');
+		
+		//$this->Execute('SET AUTOCOMMIT=1');
+		mysqli_autocommit($this->_connectionID, true);
 		return true;
 	}
 	
@@ -171,7 +187,8 @@ class ADODB_mysqli extends ADOConnection {
 		if ($this->transOff) return true;
 		if ($this->transCnt) $this->transCnt -= 1;
 		$this->Execute('ROLLBACK');
-		$this->Execute('SET AUTOCOMMIT=1');
+		//$this->Execute('SET AUTOCOMMIT=1');
+		mysqli_autocommit($this->_connectionID, true);
 		return true;
 	}
 	
@@ -179,7 +196,7 @@ class ADODB_mysqli extends ADOConnection {
 	{
 		if ($this->transCnt==0) $this->BeginTrans();
 		if ($where) $where = ' where '.$where;
-		$rs =& $this->Execute("select $flds from $tables $where for update");
+		$rs = $this->Execute("select $flds from $tables $where for update");
 		return !empty($rs); 
 	}
 	
@@ -266,10 +283,10 @@ class ADODB_mysqli extends ADOConnection {
 		return $this->genID;
 	}
 	
-  	function &MetaDatabases()
+  	function MetaDatabases()
 	{
 		$query = "SHOW DATABASES";
-		$ret =& $this->Execute($query);
+		$ret = $this->Execute($query);
 		if ($ret && is_object($ret)){
 		   $arr = array();
 			while (!$ret->EOF){
@@ -283,7 +300,7 @@ class ADODB_mysqli extends ADOConnection {
 	}
 
 	  
-	function &MetaIndexes ($table, $primary = FALSE)
+	function MetaIndexes ($table, $primary = FALSE)
 	{
 		// save old fetch mode
 		global $ADODB_FETCH_MODE;
@@ -430,12 +447,15 @@ class ADODB_mysqli extends ADOConnection {
 	// dayFraction is a day in floating point
 	function OffsetDate($dayFraction,$date=false)
 	{		
-		if (!$date) 
-		  $date = $this->sysDate;
-		return "from_unixtime(unix_timestamp($date)+($dayFraction)*24*3600)";
+		if (!$date) $date = $this->sysDate;
+		
+		$fraction = $dayFraction * 24 * 3600;
+		return $date . ' + INTERVAL ' .	 $fraction.' SECOND';
+		
+//		return "from_unixtime(unix_timestamp($date)+$fraction)";
 	}
 	
-	function &MetaTables($ttype=false,$showSchema=false,$mask=false) 
+	function MetaTables($ttype=false,$showSchema=false,$mask=false) 
 	{	
 		$save = $this->metaTablesSQL;
 		if ($showSchema && is_string($showSchema)) {
@@ -446,7 +466,7 @@ class ADODB_mysqli extends ADOConnection {
 			$mask = $this->qstr($mask);
 			$this->metaTablesSQL .= " like $mask";
 		}
-		$ret =& ADOConnection::MetaTables($ttype,$showSchema);
+		$ret = ADOConnection::MetaTables($ttype,$showSchema);
 		
 		$this->metaTablesSQL = $save;
 		return $ret;
@@ -494,7 +514,7 @@ class ADODB_mysqli extends ADOConnection {
 	    return  $foreign_keys;
 	}
 	
- 	function &MetaColumns($table) 
+ 	function MetaColumns($table) 
 	{
 		$false = false;
 		if (!$this->metaColumnsSQL)
@@ -580,7 +600,7 @@ class ADODB_mysqli extends ADOConnection {
 	}
 	
 	// parameters use PostgreSQL convention, not MySQL
-	function &SelectLimit($sql,
+	function SelectLimit($sql,
 			      $nrows = -1,
 			      $offset = -1,
 			      $inputarr = false, 
@@ -591,9 +611,9 @@ class ADODB_mysqli extends ADOConnection {
 		if ($nrows < 0) $nrows = '18446744073709551615';
 		
 		if ($secs)
-			$rs =& $this->CacheExecute($secs, $sql . " LIMIT $offsetStr$nrows" , $inputarr , $arg3);
+			$rs = $this->CacheExecute($secs, $sql . " LIMIT $offsetStr$nrows" , $inputarr , $arg3);
 		else
-			$rs =& $this->Execute($sql . " LIMIT $offsetStr$nrows" , $inputarr , $arg3);
+			$rs = $this->Execute($sql . " LIMIT $offsetStr$nrows" , $inputarr , $arg3);
 			
 		return $rs;
 	}
@@ -787,7 +807,7 @@ class ADORecordSet_mysqli extends ADORecordSet{
 131072 = MYSQLI_BINCMP_FLAG
 */
 
-	function &FetchField($fieldOffset = -1) 
+	function FetchField($fieldOffset = -1) 
 	{	
 		$fieldnr = $fieldOffset;
 		if ($fieldOffset != -1) {
@@ -805,11 +825,11 @@ class ADORecordSet_mysqli extends ADORecordSet{
 		return $o;
 	}
 
-	function &GetRowAssoc($upper = true)
+	function GetRowAssoc($upper = true)
 	{
 		if ($this->fetchMode == MYSQLI_ASSOC && !$upper) 
 		  return $this->fields;
-		$row =& ADORecordSet::GetRowAssoc($upper);
+		$row = ADORecordSet::GetRowAssoc($upper);
 		return $row;
 	}
 	
