@@ -1,0 +1,8 @@
+ExtendedStatus On
+
+<Location /apachestat>
+    SetHandler server-status
+    Order allow,deny
+    Deny from none
+    Allow from all
+</Location>
