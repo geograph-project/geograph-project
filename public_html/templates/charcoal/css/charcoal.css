@@ -28,6 +28,11 @@ banner div covers the entire top navigation area
 	margin-bottom:15px;
 }
 
+#banner h1
+{
+	display:none;
+}
+
 #banner a
 {
 	color:white;
@@ -162,6 +167,28 @@ http://www.simplebits.com/notebook/2003/09/30/accessible_imagetab_rollovers.html
 	width: 79px;
 	background: url(t_hel.gif) top left no-repeat;
 	}
+
+/*
+main content
+*/
+
+#content
+{
+	width:759px;
+}
+
+#content h1
+{
+	font-family:Georgia,"Times New Roman",serif;
+}
+#content h2
+{
+	font-family:Georgia,"Times New Roman",serif;
+}
+#content h3
+{
+	font-family:Georgia,"Times New Roman",serif;
+}
 
 /*
 footer
@@ -336,3 +363,53 @@ color:white;
 	text-align:center;
 	margin-top:0.5em;
 }
+
+
+
+/*---------------------------------------------------------------*
+ * buttons for map nav
+ *---------------------------------------------------------------*/
+
+div.map div.cnr
+{
+	float:left;
+	width:10px;
+	height:10px;
+	background:#000066;
+	font-size:0;
+}
+
+div.map div.side
+{
+	float:left;
+	height:10px;
+	width:10px;
+	background:#000066;
+	line-height:0;
+	text-align:center;
+}
+
+
+div.map div.side a
+{
+	display:block;
+	height:100%;
+}
+
+div.map div.side a:hover
+{
+	background-color:#660066;
+}
+
+div.map div.inner
+{
+	float:left;
+	background:#6574FF;
+}
+
+div.map div.inner img
+{
+	float:left;
+}
+
+
