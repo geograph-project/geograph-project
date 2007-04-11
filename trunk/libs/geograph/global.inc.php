@@ -186,6 +186,7 @@ function init_session()
 }
 
 
+
 /**
 * Smarty derivation for Geograph
 *
@@ -222,6 +223,14 @@ class GeographPage extends Smarty
 		} else {
 			$this->cache_dir=$this->template_dir."/cache";
 		}
+
+		//if we're not using the basic template,install this default template
+		//loader which aids template development by loading missing tpl files
+		//from basic
+		// set the default handler
+		if ($CONF['template']!='basic')
+			$this->default_template_handler_func = array('GeographPage', 'basicTemplateLoader');
+		
 
 		//setup optimisations
 		$this->compile_check = $CONF['smarty_compile_check'];
@@ -333,6 +342,36 @@ class GeographPage extends Smarty
 	{
 		$this->assign($which, sprintf("%04d-%02d-%02d",$_POST[$which.'Year'],$_POST[$which.'Month'],$_POST[$which.'Day']));
 	}
+	
+	/**
+	 * default template resource loader, used by this class for new templates, it
+	 * will load any missing tpl from the basic template folder
+	 */
+	static function basicTemplateLoader($resource_type, $resource_name, &$template_source, &$template_timestamp,&$smarty_obj)
+	{
+	    if( $resource_type == 'file' ) 
+	    {
+	        $basic=$_SERVER['DOCUMENT_ROOT'].'/templates/basic/'.$resource_name;
+			if (is_readable($basic))
+			{
+				 $template_source=file_get_contents($basic);
+				 $template_timestamp=filemtime($basic);
+				 return true;
+			}
+	        else
+	        {
+	        	//no such template
+	        	return false;
+	        }
+	        
+	    } 
+	    else
+	    {
+	        // not a file
+	        return false;
+    	}
+	}
+
 }
 
 
