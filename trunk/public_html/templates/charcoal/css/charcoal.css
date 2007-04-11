@@ -1,0 +1,282 @@
+/*
+Geograph "Charcoal" Layout
+Designed by Paul Dixon for Geograph Project Ltd
+*/
+
+
+/*
+Global styles
+*/
+body
+{
+	font-family:Arial,Helvetica,sans-serif;
+}
+
+/*
+banner div covers the entire top navigation area
+*/
+#banner
+{
+	width:759px;
+	height:84px;
+	background-image:url('banner.gif');
+	margin-bottom:15px;
+}
+
+#banner a
+{
+	color:white;
+}
+
+
+/*
+quick search styling
+*/
+#search
+{
+	height:27px;
+}
+
+#searchbar
+{
+	font-family:Arial;
+	float:right;
+	font-size:8pt;
+	color:white;
+	margin-right:5px;
+}
+
+#q
+{
+	font-size:8pt;
+	border-top:1px silver solid;
+
+	border-left:1px silver solid;
+
+	border-bottom:0;
+	border-right:0;
+	margin:0;
+
+}
+
+#b_sea
+{
+	border:0;
+	width:65px;
+	height:19px;
+	background-image:url('b_sea.gif');
+}
+
+/*
+profile bar - that strip of the banner with login, profile links etc
+*/
+#profile
+{
+	height:28px;
+
+}
+
+#profilebar
+{
+	font-family:Arial;
+	float:right;
+	font-size:8pt;
+	color:white;
+	margin-top:3px;
+	margin-right:5px;
+}
+
+/*
+tab div contains all the tabs - nicely positioned by just
+floating it to the right underneath the profile and search divs
+*/
+#tabs
+{
+	height:29px;
+	float:right;
+	margin-right:5px;
+}
+
+/*
+Tab technique borrowed from 
+http://www.simplebits.com/notebook/2003/09/30/accessible_imagetab_rollovers.html
+*/
+#nav {
+	margin: 0;
+	padding: 0;
+	height: 29px;
+	list-style: none;
+	display: inline;
+	overflow: hidden;
+	}
+
+#nav li {
+	margin: 0;
+	padding: 0;
+    list-style: none;
+	display: inline;
+	}
+
+#nav a {
+	float: left;
+	padding: 29px 0 0 0;
+	overflow: hidden;
+	height: 0px !important;
+	height /**/:29px; /* for IE5/Win only */
+	}
+
+#nav a:hover {
+	background-position: 0 -29px;
+	}
+
+#nav a:active, #nav a.selected {
+	background-position: 0 -58px;
+	}
+
+#t_hom a  {
+	width: 79px;
+	background: url(t_hom.gif) top left no-repeat;
+	}
+#t_map a  {
+	width: 79px;
+	background: url(t_map.gif) top left no-repeat;
+	}
+#t_sub a  {
+	width: 79px;
+	background: url(t_sub.gif) top left no-repeat;
+	}
+#t_dis a  {
+	width: 79px;
+	background: url(t_dis.gif) top left no-repeat;
+	}
+#t_sta a  {
+	width: 79px;
+	background: url(t_sta.gif) top left no-repeat;
+	}
+#t_hel a  {
+	width: 79px;
+	background: url(t_hel.gif) top left no-repeat;
+	}
+
+/*
+footer
+*/
+
+#footer
+{
+font-size:0.8em;
+width:759px;
+}
+
+#footer a
+{
+	color:white;
+	text-decoration:none;
+}
+#footer a:hover
+{
+	text-decoration:underline;
+}
+
+#footer_right
+{
+float:right;
+margin-right:2em;
+}
+
+#footer_left
+{
+float:left;
+margin-left:2em;
+}
+
+#footer span.unimportant
+{
+color:silver;
+}
+
+/*
+Adaptation of rounded box technique from 
+http://kalsey.com/2003/07/rounded_corners_in_css/
+*/
+div.round000 {
+	background-color: #000;
+	color: #fff;
+}
+
+div.round000 div.roundtl {
+	background: url(b000_tl.gif) no-repeat top right;
+	width:12px;
+	height:12px;
+}
+
+div.round000 div.roundbl {
+	background: url(b000_bl.gif) no-repeat top right;
+	width:12px;
+	height:12px;
+}
+
+
+div.round000 div.roundtop {
+	background: url(b000_tr.gif) no-repeat top right;
+}
+
+div.round000  div.roundbottom {
+	background: url(b000_br.gif) no-repeat top right;
+}
+
+
+
+
+div.round333 {
+	background-color: #333;
+	color: #fff;
+}
+
+div.round333 div.roundtl {
+	background: url(b333_tl.gif) no-repeat top right;
+	width:12px;
+	height:12px;
+}
+
+div.round333 div.roundbl {
+	background: url(b333_bl.gif) no-repeat top right;
+	width:12px;
+	height:12px;
+}
+
+
+div.round333 div.roundtop {
+	background: url(b333_tr.gif) no-repeat top right;
+}
+
+div.round333  div.roundbottom {
+	background: url(b333_br.gif) no-repeat top right;
+}
+
+
+div.round666 {
+	background-color: #666;
+	color: #fff;
+}
+
+div.round666 div.roundtl {
+	background: url(b666_tl.gif) no-repeat top right;
+	width:12px;
+	height:12px;
+}
+
+div.round666 div.roundbl {
+	background: url(b666_bl.gif) no-repeat top right;
+	width:12px;
+	height:12px;
+}
+
+
+div.round666 div.roundtop {
+	background: url(b666_tr.gif) no-repeat top right;
+}
+
+div.round666  div.roundbottom {
+	background: url(b666_br.gif) no-repeat top right;
+}
