@@ -65,8 +65,11 @@ function bodyOnLoad()
 
 	<div id="search">
 		<div id="searchbar">
-		Search <input id="q" type="text" name="q" value=""/>
-		<input id="b_sea" type="submit" name="search" value=""/>
+			<form method="get" action="/search.php">
+			<input type="hidden" name="form" value="simple"/>
+			Search <input id="q" type="text" name="q" value="{$searchq|escape:'html'}"/>
+			<input id="b_sea" type="submit" name="search" value=""/>
+			</form>
 		</div>
 	</div>
 
