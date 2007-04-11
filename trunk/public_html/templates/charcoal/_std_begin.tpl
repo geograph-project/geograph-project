@@ -90,16 +90,4 @@ function bodyOnLoad()
 
 <div id="content">
 
-{box colour="333" style="width:160px;float:left;margin-right:15px;"}
-Hey, this is nice
-{/box}
 
-{box colour="000" style="width:409px;float:left;margin-right:15px;"}
-Hey, this is nice
-{/box}
-
-{box colour="333" style="width:160px;float:left;"}
-Hey, this is nice
-{/box}
-
-<br style="clear:both">
