@@ -43,7 +43,7 @@ function bodyOnLoad()
 <body onload="bodyOnLoad()">
 
 <div id="banner">
-
+	<h1>Geograph - photograph every grid square</h1>
 	<div id="profile">
 		<div id="profilebar">
 		{dynamic}
