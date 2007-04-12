@@ -1185,6 +1185,9 @@ class GeographUser
 			#$this->db->Close();
 			unset($this->db);
 		}
+		
+		$vars =& get_object_vars($this);
+		return array_keys($vars);
 	}
 }
 ?>
