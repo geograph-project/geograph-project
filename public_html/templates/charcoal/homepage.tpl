@@ -26,7 +26,7 @@
 {/box}
 
 {box colour="000" style="width:409px;float:left;margin-right:12px;"}
-<div class="infobox">
+<div class="infobox"> 
 <h1>Picture of the day</h1>
 <p>Not yet implemented!</p>
 </div>
