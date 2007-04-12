@@ -38,12 +38,20 @@ function smarty_block_box($params, $content, &$smarty, &$repeat)
         {
             $style=isset($params['style'])?" style=\"{$params['style']}\"":"";
             $colour=isset($params['colour'])?$params['colour']:"333";
-            
+   
+   			global $CONF;
+   			$imgdir="/templates/{$CONF['template']}/css/";
+          
             $out="<div class=\"round{$colour}\"{$style}>";
-            $out.='<div class="roundtop"><div class="roundtl"></div></div>';
+            $out.='<div class="roundtop">';
+            $out.="<img src=\"{$imgdir}b{$colour}_tl.gif\" width=\"12\" height=\"12\" class=\"corner\" style=\"display:none\">";
+            $out.='</div>';
             $out.=$content;
-            $out.='<div class="roundbottom"><div class="roundbl"></div></div>';
-			$out.='</div>';
+            $out.='<div class="roundbottom">';
+			$out.="<img src=\"{$imgdir}b{$colour}_bl.gif\" width=\"12\" height=\"12\" class=\"corner\" style=\"display:none\">";
+            $out.='</div>';
+           
+           $out.='</div>';
             
             return $out;
         }

@@ -243,6 +243,16 @@ color:silver;
 Adaptation of rounded box technique from 
 http://kalsey.com/2003/07/rounded_corners_in_css/
 */
+
+img.corner {
+   width: 12px;
+   height: 12px;
+   border: none;
+   display: block !important;
+}
+
+
+
 div.round000 {
 	background-color: #000;
 	color: #fff;
