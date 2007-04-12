@@ -63,7 +63,7 @@
 </style>{/literal}
 
 <div style="position:relative; float:right">
-	&lt; <a href="/statistics.php">Old Statistics Page</a> &gt;
+	&lt; <a href="/statistics.php">More Statistics</a> | <a href="/statistics/moversboard.php">Leaderboard</a> &gt;
 </div>
 
 <h2>Geograph British Isles</h2>
@@ -145,6 +145,7 @@
 <div class="linksbox">
 <h3>Further Statistics</h3>
 | <b><a href="/statistics.php">More Numbers...</a></b> | <a href="/statistics.php#more">More Pages...</a> | 
+<a href="/statistics/moversboard.php">Leaderboard</a> |
 <a href="/statistics/pulse.php">Geograph Pulse</a> |
 <a href="/statistics/estimate.php">Future Estimates</a> |
    

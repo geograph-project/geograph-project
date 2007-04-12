@@ -17,14 +17,24 @@
     <li><b>Images</b>: these are all images on the site, regardless if they Geograph or supplemental<br/><br/></li>
     <li><b>Geographs</b>: these are all Geograph images, even if multiple for the same grid square<br/><br/></li>
     <li><b>Squares</b>: the number of different squares photographed (Geograph or supplemental)<br/><br/></li>
-    <li><b>GeoSquares</b>: the number of different squares Geographed (on the All Time Leaderboard is like Personal Geograph Points, doesn't apply on the Weekly Leaderboard)<br/><br/>There also is:<br/><br/></li>
+    <li><b>GeoSquares</b>: the number of different squares Geographed (on the All Time Leaderboard is like Personal Geograph Points, doesn't apply on the Weekly Leaderboard)<br/><br/></li>
+    <li><b>Additional Geographs</b>: these are Geograph images, excluding the First Geographs<br/><br/></li>
+    <li><b>Supplementals</b>: the number of Supplemental images submitted<br/><br/>
+    
+    also:<br/><br/></li>
     <li><b>Depth</b>: number of Images divided by the number of Squares. Higher numbers mean a tendency to photograph a small number of squares very well. (opposite to points/coverage)<br/><br/></li>
+    <li><b>Centisquares</b>: number of different centisquares<a href="/help/squares">?</a> images submitted to</li>
+    <li><b>Hectads</b>: number of different hectads<a href="/help/squares">?</a> images submitted to</li>
+    <li><b>Myriads</b>: number of different myriads<a href="/help/squares">?</a> images submitted to</li>
+    <li><b>Categories</b>: number of different image categories submitted</li>
+    <li><b>Days</b>: number of different days images submitted</li>
     </ul>
     
-    
+ <br/>
+
 <a name="question"></a>
 <h3>I have a question, what should I do?</h3>
-    <p>Please see the <a href="/faq.php">General Questions</a> or <a title="Contact Us" href="contact.php">Contact Us</a>, alternativly pop into the <a href="/discuss/">Discussion Forum</a>.</p>
+    <p>Please see the <a href="/faq.php">General Questions</a> or <a title="Contact Us" href="contact.php">Contact Us</a>, alternatively pop into the <a href="/discuss/">Discussion Forum</a>.</p>
     
     
 {include file="_std_end.tpl"}

@@ -6,7 +6,7 @@
 
 <p>Variation: {foreach from=$types item=t}
 [{if $t == $type}<b>{$type}</b>{else}<a href="/statistics/leaderboard.php?type={$t}{$extralink}">{$t}</a>{/if}]
-{/foreach}</p>
+{/foreach} <a href="/help/sitemap#users">more...</a></p>
 
 <p>Listed below are the top {$limit} contributors based on number of
 {$desc}, (see <a title="Frequently Asked Questions" href="/help/stats_faq">FAQ</a> 
