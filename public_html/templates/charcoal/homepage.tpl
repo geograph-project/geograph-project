@@ -1,7 +1,28 @@
 {include file="_std_begin.tpl"}
 
 {box colour="333" style="width:160px;float:left;margin-right:15px;"}
-Hey, this is nice
+<div class="infobox">
+<h1>Photo Map</h1>
+<p>Click the map to start browsing photos of the British Isles</p>
+
+<div class="map" style=height:{$overview_height}px;width:{$overview_width}px">
+<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
+
+{foreach from=$overview key=y item=maprow}
+	<div>
+	{foreach from=$maprow key=x item=mapcell}
+	<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img 
+	alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+	{/foreach}
+	</div>
+{/foreach}
+</div>
+</div>
+
+
+<div id="sponsor">sponsored by</div>
+<a href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="/templates/charcoal/css/oslogo.gif"/></a>
+</div>
 {/box}
 
 {box colour="000" style="width:409px;float:left;margin-right:15px;"}

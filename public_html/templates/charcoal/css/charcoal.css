@@ -364,6 +364,16 @@ color:white;
 	margin-top:0.5em;
 }
 
+/* 
+OS guidelines state we must place the "sponsored by" words
+at least half the logo height away
+*/
+#sponsor
+{
+font-size:0.7em;
+margin-top:15px;
+margin-bottom:15px;
+}
 
 
 /*---------------------------------------------------------------*
