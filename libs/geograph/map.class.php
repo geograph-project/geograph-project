@@ -94,6 +94,16 @@ class GeographMap
 	*/
 	var $labels = array();
 	
+	/*
+	 * palette index, see setPalette for documentation
+	 */
+	var $palette=0;
+	
+	/*
+	 * array of colour values, initialised by setPalette
+	 */
+	var $colour=array();
+	
 	/**
 	* Constructor
 	*/
@@ -102,6 +112,7 @@ class GeographMap
 		$this->setOrigin(0,0);
 		$this->setImageSize(400,400);
 		$this->setScale(0.3);
+		$this->setPalette(0);
 		$this->type_or_user = 0;
 	}
 
@@ -164,6 +175,8 @@ class GeographMap
 			$token->setValue("t",  $this->type_or_user);
 		if (isset($this->reference_index))
 			$token->setValue("r",  $this->reference_index);
+		if ($this->palette)
+			$token->setValue("p",  $this->palette);
 		return $token->getToken();
 	}
 
@@ -191,12 +204,48 @@ class GeographMap
 				$this->type_or_user = ($token->hasValue("t"))?$token->getValue("t"):0;
 				if ($token->hasValue("r")) 
 					$this->reference_index = $token->getValue("r");
+				if ($token->hasValue("p")) 
+					$this->setPalette($token->getValue("p"));
 			}
+			
 		}
 		
 		return $ok;
 	}
 
+	/*
+	 * Sets the colour palette to use when rendering the map
+	 * 0 = basic: pale blue sea, green land, red dots
+	 * 1 = charcoal: dark grey sea, green land, red dots
+	 */
+	function setPalette($idx)
+	{
+		$this->palette=$idx;
+		
+		$this->colour=array();
+		
+		//common to all
+		$this->colour['marker']=array(255,0,0);
+		$this->colour['suppmarker']=array(236,206,64);
+		$this->colour['border']=array(255,255,255);
+		$this->colour['land']=array(117,255,101);
+		
+		//specific to a palette...
+		switch ($idx)
+		{
+			case 1:
+				//charcoal
+				$this->colour['sea']=array(51,51,51);
+				break;
+				
+			case 0:
+			default:
+				//basic
+				$this->colour['sea']=array(101,117,255);
+				break;
+		}
+		
+	}
 
 	/**
 	* get pan url, if possible - return empty string if limit is hit
@@ -319,9 +368,14 @@ class GeographMap
 		if (!is_dir($root.$dir))
 			mkdir($root.$dir);
 		
+		//for palette 0 we use the older, palette free filename
+		$palette="";
+		if ($this->palette>0)
+			$palette="_".$this->palette;
+			
 		$extension = ($this->pixels_per_km > 40 || $this->type_or_user < -20)?'jpg':'png';
 		
-		$file="detail_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}_{$this->type_or_user}.$extension";
+		$file="detail_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}_{$this->type_or_user}{$palette}.$extension";
 		
 		
 		return $dir.$file;
@@ -347,7 +401,12 @@ class GeographMap
 		if (!is_dir($root.$dir))
 			mkdir($root.$dir);
 		
-		$file="base_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}.gd";
+		//for palette 0 we use the older, palette free filename
+		$palette="";
+		if ($this->palette>0)
+			$palette="_".$this->palette;
+		
+		$file="base_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}{$palette}.gd";
 		
 		
 		return $dir.$file;
@@ -499,15 +558,15 @@ class GeographMap
 		$img=imagecreatetruecolor($imgw,$imgh);
 		
 		//fill in with sea
-		$blue=imagecolorallocate ($img, 101,117,255);
+		$blue=imagecolorallocate ($img, $this->colour['sea'][0],$this->colour['sea'][1],$this->colour['sea'][2]);
 		imagefill($img,0,0,$blue);
 		
-		$rmin=117;
-		$rmax=117;
-		$gmin=101;
-		$gmax=255;
-		$bmin=255;
-		$bmax=101;
+		$rmin=$this->colour['sea'][0];
+		$rmax=$this->colour['land'][0];
+		$gmin=$this->colour['sea'][1];
+		$gmax=$this->colour['land'][1];
+		$bmin=$this->colour['sea'][2];
+		$bmax=$this->colour['land'][2];
 		
 		//set greens to use for percentages
 		$land=array();
@@ -652,22 +711,21 @@ class GeographMap
 			return false;
 		}
 		
-		$colMarker=imagecolorallocate($img, 255,0,0);
-		$colSuppMarker=imagecolorallocate($img,236,206,64);
-		$colBorder=imagecolorallocate($img, 255,255,255);
-		$colAlias=imagecolorallocate($img, 182,163,57);
+		$colMarker=imagecolorallocate($img, $this->colour['marker'][0],$this->colour['marker'][1],$this->colour['marker'][2]);
+		$colSuppMarker=imagecolorallocate($img, $this->colour['suppmarker'][0],$this->colour['suppmarker'][1],$this->colour['suppmarker'][2]);
+		$colBorder=imagecolorallocate($img, $this->colour['border'][0],$this->colour['border'][1],$this->colour['border'][2]);
 		
 		//if we operating at less than 1 pixel per km,
 		//we need some colours for aliasing
 		if ($this->pixels_per_km < 1 && $this->type_or_user != -10)
 		{
 			//we want a range of aliases from 117,255,101 to 255,0,0
-			$rmin=117;
-			$gmin=255;
-			$bmin=101;
-			$rmax=255;
-			$gmax=0;
-			$bmax=0;
+			$rmin=$this->colour['land'][0];
+			$gmin=$this->colour['land'][1];
+			$bmin=$this->colour['land'][2];
+			$rmax=$this->colour['marker'][0];
+			$gmax=$this->colour['marker'][1];
+			$bmax=$this->colour['marker'][2];
 			
 			//we can use the scale to figure out how many square a single image
 			//pixel accounts for
@@ -676,7 +734,7 @@ class GeographMap
 			//seems to help
 			if ($this->type_or_user > 0)
 				$alias_count/=2;
-			elseif ($this->pixels_per_km<=0.13)
+			elseif ($this->pixels_per_km<=0.18)
 				$alias_count*=7;
 			elseif ($this->pixels_per_km==0.3)
 				$alias_count*=3;
@@ -897,7 +955,6 @@ class GeographMap
 		$colMarker=imagecolorallocate($img, 255,0,0);
 		$colSuppMarker=imagecolorallocate($img,236,206,64);
 		$colBorder=imagecolorallocate($img, 255,255,255);
-		$colAlias=imagecolorallocate($img, 182,163,57);
 		
 		$db=&$this->_getDB();
 				
@@ -1042,7 +1099,6 @@ class GeographMap
 		$colMarker=imagecolorallocate($img, 255,0,0);
 		$colSuppMarker=imagecolorallocate($img,236,206,64);
 		$colBorder=imagecolorallocate($img, 255,255,255);
-		$colAlias=imagecolorallocate($img, 182,163,57);
 		$black = imagecolorallocate ($img, 70, 70, 0);
 
 		$db=&$this->_getDB();
@@ -1154,7 +1210,6 @@ class GeographMap
 		
 		$colMarker=imagecolorallocate($img, 255,0,0);
 		$colBorder=imagecolorallocate($img, 255,255,255);
-		$colAlias=imagecolorallocate($img, 182,163,57);
 		
 		//figure out what we're mapping in internal coords
 		$db=&$this->_getDB();
