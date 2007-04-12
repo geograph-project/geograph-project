@@ -73,41 +73,12 @@ if (!empty($CONF['memcache']['app'])) {
 require_once('geograph/security.inc.php');
 
 
-//fixme - dont enable this as will break as adodb needs upgrading
 if (!empty($CONF['memcache']['adodb'])) {
 	if ($CONF['memcache']['adodb'] != $CONF['memcache']['app']) {
-		$memcacheadodb = new MultiServerMemcache($CONF['memcache']['adodb']);
+		$ADODB_MEMCACHE_OBJECT = new MultiServerMemcache($CONF['memcache']['adodb']);
 	} elseif (isset($memcache)) {
-		$memcacheadodb =& $memcache;
+		$ADODB_MEMCACHE_OBJECT =& $memcache;
 	}
-	
-	if ($memcacheadodb->valid) {
-		#rename_function('NewADOConnection','_NewADOConnection');
-
-		function &NewADOConnection($db='')
-		{
-			$tmp =& ADONewConnection($db);
-			if ($tmp) {
-				$tmp->memCache = true; /// should we use memCache instead of caching in files
-				$tmp->memCacheHost =& $GLOBALS['memcacheadodb']; /// memCache host or object
-				$tmp->memCacheCompress = false;
-			}
-			return $tmp;
-		}
-	} else {
-		function &NewADOConnection($db='')
-		{
-			$tmp =& ADONewConnection($db);
-			return $tmp;
-		}
-	}
-} else {
-	//fixme - current breaks as adodb (correctly) defines this!
-	#function &NewADOConnection($db='')
-	#{
-	#	$tmp =& ADONewConnection($db);
-	#	return $tmp;
-	#}
 }
 
 
