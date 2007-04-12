@@ -117,6 +117,11 @@ class GeographMapMosaic
 	var $debug=true;
 	
 	/**
+	 * palette index, see GeographMap::setPalette for documentation
+	 */
+	var $palette=0; 
+	 
+	/**
 	* Constructor - pass true to get a small overview map, otherwise you get a full map
 	* @access public
 	*/
@@ -154,6 +159,13 @@ class GeographMapMosaic
 				$this->setScale(0.13);
 				$this->setMosaicFactor(1);
 				break;
+			case 'overview_charcoal':
+				$this->setOrigin(0,-10);
+				$this->setMosaicSize(144,210);
+				$this->setScale(0.16);
+				$this->setMosaicFactor(1);
+				$this->setPalette(1);
+				break;
 			case 'largeoverview':
 				$this->setOrigin(0,-10);//will get recented
 				$this->setMosaicSize(120,170);
@@ -166,6 +178,11 @@ class GeographMapMosaic
 			
 		}
 		
+	}
+	
+	function setPalette($idx)
+	{
+		$this->palette=$idx;
 	}
 	
 	function _trace($msg)
@@ -304,6 +321,10 @@ class GeographMapMosaic
 		$token->setValue("h",  $this->image_h);
 		$token->setValue("s",  $this->pixels_per_km);
 		$token->setValue("f",  $this->mosaic_factor);
+		
+		if ($this->palette)
+			$token->setValue("p",  $this->palette);
+		
 		if (!empty($this->type_or_user))
 			$token->setValue("t",  $this->type_or_user);
 		return $token->getToken();
@@ -333,6 +354,7 @@ class GeographMapMosaic
 				$this->setScale($token->getValue("s"));
 				$this->setMosaicFactor(($token->hasValue("f"))?$token->getValue("f"):2);
 				$this->type_or_user = ($token->hasValue("t"))?$token->getValue("t"):0;
+				$this->palette = ($token->hasValue("p"))?$token->getValue("p"):0;
 			}
 			else
 			{
@@ -388,6 +410,9 @@ class GeographMapMosaic
 					$this->image_h/$this->mosaic_factor);
 				
 				$images[$j][$i]->setScale($this->pixels_per_km);
+		
+				$images[$j][$i]->setPalette($this->palette);
+		
 		
 				if (isset($this->reference_index))
 					$images[$j][$i]->reference_index = $this->reference_index;
