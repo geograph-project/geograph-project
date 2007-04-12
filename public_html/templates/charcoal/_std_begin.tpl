@@ -79,7 +79,7 @@ function bodyOnLoad()
 		<li id="t_hom"><a href="/" class="selected">Home</a></li>
 		<li id="t_map"><a href="/mapbrowse.php">Map</a></li>
 		<li id="t_sub"><a href="/submit.php">Submit</a></li>
-		<li id="t_dis"><a href="/discuss/">Discuss</a></li>
+		{if $enable_forums}<li id="t_dis"><a href="/discuss/">Discuss</a></li>{/if}
 		<li id="t_sta"><a href="/numbers.php">Stats</a></li>
 		<li id="t_hel"><a href="/faq.php">Help</a></li>
 		</ul>
