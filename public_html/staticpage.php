@@ -21,6 +21,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (isset($_SERVER['REDIRECT_SCRIPT_URL']) && preg_match('/120_(ie|ff).gif$/',$_SERVER['REDIRECT_SCRIPT_URL'])) {
+	//you can just go away - Gmaps seem to lookup these urls via GGeoXML for somereason...
+	header('Content-Length: 0');
+	exit;
+}
+
 require_once('geograph/global.inc.php');
 init_session();
 
