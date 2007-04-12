@@ -307,7 +307,8 @@ class GeographPage extends Smarty
 
 	function templateExists($file)
 	{
-		return file_exists($this->template_dir.'/'.$file);
+		$basic=$_SERVER['DOCUMENT_ROOT'].'/templates/basic/'.$file;
+		return file_exists($this->template_dir.'/'.$file) || file_exists($basic);
 	}
 
 	function reassignPostedDate($which)
@@ -321,27 +322,26 @@ class GeographPage extends Smarty
 	 */
 	static function basicTemplateLoader($resource_type, $resource_name, &$template_source, &$template_timestamp,&$smarty_obj)
 	{
-	    if( $resource_type == 'file' ) 
-	    {
-	        $basic=$_SERVER['DOCUMENT_ROOT'].'/templates/basic/'.$resource_name;
+		if($resource_type == 'file')
+		{
+			$basic=$_SERVER['DOCUMENT_ROOT'].'/templates/basic/'.$resource_name;
 			if (is_readable($basic))
 			{
 				 $template_source=file_get_contents($basic);
 				 $template_timestamp=filemtime($basic);
 				 return true;
 			}
-	        else
-	        {
-	        	//no such template
-	        	return false;
-	        }
-	        
-	    } 
-	    else
-	    {
-	        // not a file
-	        return false;
-    	}
+			else
+			{
+				//no such template
+				return false;
+			}
+		} 
+		else
+		{
+			// not a file
+			return false;
+		}
 	}
 
 }

@@ -27,7 +27,11 @@ init_session();
 
 $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'points';
 
-$date = (isset($_GET['date']) && ctype_lower($_GET['date']))?intval($_GET['date']):'submitted';
+$date = (isset($_GET['date']) && ctype_lower($_GET['date']))?$_GET['date']:'submitted';
+
+if (isset($_GET['whenYear'])) {
+	$_GET['when'] = sprintf("%04d-%02d",$_GET['whenYear'],$_GET['whenMonth']);
+}
 
 $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
 

@@ -6,7 +6,7 @@
 	
 <p><i>Variation</i>: {foreach from=$types item=t}
 [{if $t == $type}<b>{$type}</b>{else}<a href="/statistics/moversboard.php?type={$t}">{$t}</a>{/if}]
-{/foreach}</p>
+{/foreach} <a href="/help/sitemap#users">more...</a></p>
 
 <p>Here is a list of contributors in the past 7 days, ordered by
 number of {$desc} (see <a title="Frequently Asked Questions" href="/help/stats_faq">FAQ</a> 

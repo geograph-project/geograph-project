@@ -40,7 +40,7 @@
  
 <h3><a name="software"></a>Interacting with other software...</h3>
 <ul>
-	<li><a title="Google Earth Export" href="/kml.php">view images in <b>Google Earth</b></a> <a title="Google Earth Feed" href="/feed/recent.kml" class="xml-kml">KML</a></li>
+	<li><a title="Google Earth Export" href="/kml.php">view images in <b>Google Earth</b> and <b>Google Maps</b></a> <a title="Google Earth Feed" href="/feed/recent.kml" class="xml-kml">KML</a></li>
 	<li><a title="Geograph Feed" href="/faq.php#rss">get <b>RSS feeds</b> of images</a> <a title="RSS Feed of Recent Images" href="/feed/recent.rss" rel="RSS" class="xml-rss">RSS</a></li>
 	<li><a title="Memory Map Export" href="/memorymap.php">view squares in <b>Memory Map</b></a></li>
 	<li><a title="GPX File Export" href="/gpx.php">download squares in <b>GPX Format</b></a></li>
@@ -60,9 +60,56 @@
 <h3><a name="users"></a>Contributors...</h3>
 <ul>
 	<li><a href="/credits/"><b>Contributor Listing</b></a></li>
-	<li><a href="/statistics/moversboard.php"><b>Weekly</b> Leaderboard</a> (for <a href="/statistics/moversboard.php?type=supps">Supplementals</a>, <a href="/statistics/moversboard.php?type=additional">Additional Geographs</a>)</li>
-	</li>
-	<li><a href="/statistics/leaderboard.php"><b>All Time</b> Leaderboard</a> (for <a href="/statistics/leaderboard.php?type=supps">Supplementals</a>, <a href="/statistics/leaderboard.php?type=additional">Additional Geographs</a>)</li>
+	<li><a href="/statistics/moversboard.php"><b>Weekly</b> Leaderboard</a><ul>
+
+<li><form action="/statistics/moversboard.php" style="display:inline">
+Refine:
+<select name="type">
+<option value="points">Points</option> 
+<option value="geosquares">GeoSquares</option>
+<option value="geographs">Geographs</option>
+<option value="squares">Squares</option>
+<option value="images">Images</option>
+<option value="depth">Depth Score</option>
+<option value="myriads">Myriads</option>
+<option value="hectads">Hectads</option>
+<option value="days">Days</option>
+<option value="classes">Categories</option>
+<option value="additional">Additional Geographs</option>
+<option value="supps">Supplementals</option>
+<option value="centi">Centisquares</option>
+</select>
+ <input type="submit" value="Go"/>
+</form></li></ul></li>
+
+	<li><a href="/statistics/leaderboard.php"><b>All Time</b> Leaderboard</a><ul>
+
+<li><form action="/statistics/leaderboard.php" style="display:inline">
+Refine:
+<select name="type">
+<option value="points">Points</option> 
+<option value="geosquares">GeoSquares</option>
+<option value="geographs">Geographs</option>
+<option value="squares">Squares</option>
+<option value="images">Images</option>
+<option value="depth">Depth Score</option>
+<option value="myriads">Myriads</option>
+<option value="hectads">Hectads</option>
+<option value="days">Days</option>
+<option value="classes">Categories</option>
+<option value="additional">Additional Geographs</option>
+<option value="supps">Supplementals</option>
+<option value="centi">Centisquares</option>
+</select>
+
+<select name="date">
+<option value="submitted">Submitted</option> 
+<option value="taken">Taken</option>
+</select> during
+
+ {html_select_date display_days=false prefix="when" time="0000-00-00" start_year="-100" reverse_years=true  month_empty="" year_empty=""} <input type="submit" value="Go"/>
+</form></li></ul></li>
+
 	<li><a href="/statistics/monthlyleader.php">By Month</b> Leaderboard</a></li>
 	<li><a href="/statistics.php?by=user&amp;ri=1"><b>Great Britain Contributor</b> List</a></li>
 	<li><a href="/statistics.php?by=user&amp;ri=2"><b>Ireland Contributor</b> List</a></li>
@@ -70,6 +117,7 @@
 	<li><a href="/statistics/busyday.php?users=1">Most <b>Taken in a Day</b> Leaderboard</a></li>
 	<li><a href="/statistics/leaderhectad.php"><b>Hectad</b> Leaderboard</a></li>
 </ul>
+<i>{external href="http://www.nearby.org.uk/geograph/leaderboards.html" text="Rough and ready page giving a few more examples"}</i>
 
 
 <h3><a name="stats"></a>More Statistics...</h3>
