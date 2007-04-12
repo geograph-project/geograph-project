@@ -27,6 +27,8 @@ require_once('geograph/kmlfile.class.php');
 init_session();
 
 $kml = new kmlFile();
+$kml->filename = "Geograph-Layer-Collection.kml";
+
 
 $folder = $kml->addChild('Folder');
 $folder->setItem('name','Geograph in Google Earth');
@@ -77,7 +79,7 @@ $folder->addChild($networklink);
 
 $NetworkLink = $folder->addChild('NetworkLink');
 $NetworkLink->setItem('name','Geograph NetworkLink');
-$NetworkLink->setItemCDATA('description',"View-Based NetworkLink to view many images, SuperLayer recommended in Google Earth Version 4");
+$NetworkLink->setItemCDATA('description',"View-Based NetworkLink to view many images - always show recent images, for Google Earth Version 4+ the SuperLayer recommended instead");
 $NetworkLink->setItem('open',0);
 $NetworkLink->setItem('visibility',0);
 $UrlTag = $NetworkLink->useUrl("http://www.geograph.org.uk/earth.php?simple=1");

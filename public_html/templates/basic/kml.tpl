@@ -23,6 +23,11 @@
 	<small><small><i>Last updated: {$coverage_updated}</i></small></small>
 	</div>
 
+	{if !$i}<div class="interestBox" style="width:550px;background-color:pink;padding:2px">
+	 NEW! <a href="/kml"><b>Geograph Layer Collection</b> for Google Earth!</a><br/>
+	- includes access to nearly all the features on this page and more! </div>
+	 {/if}
+	 
 	 <h2>Geograph Images in Google Earth or Google Maps</h2> 
 	 <p>&middot;
 	 {external href="http://earth.google.com/" text="Google Earth"}
@@ -30,7 +35,7 @@
 	 allowing you view satellite images and geo-located information for the entire globe.
 	 </p>
 	
-	 <div class="interestBox" style="width:550px;background-color:yellow">
+	 <div class="interestBox" style="width:550px;background-color:yellow;padding:2px;">
 	 <img src="/kml/images/cam1-small.gif" width="24" height="24"/> <a href="/kml-superlayer.php"><b>Geograph SuperLayer</b></a> (Google Earth Version 4+ REQUIRED)
 	{if $i}<br/><i><b>- displays all images - not the selection as per requested search</b></i>{/if}
 	<small><br/><br/>This SuperLayer allows full access to the thousends of images contributed to Geograph, the view starts depicting a coarse overview of the current coverage, zooming in reveals more detail until pictures themselves become visible. (Broadband Recommended) 
