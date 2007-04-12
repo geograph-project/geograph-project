@@ -10,7 +10,7 @@
 	<li><a href="/mapbrowse.php" title="View the coverage Map">Explore these isles with our <b>map</b></a></li>
 	<li><a href="/search.php" title=""><b>Search</b> for places or features</a></li>
 	<li><a href="/explore/" title="">Try browsing by <b>theme</b></a></li>
-	<li><a href="/articles/" title="">Read <b>articles</b> submitted by members</b></a></li>
+	<li><a href="/article/" title="">Read <b>articles</b> submitted by members</b></a></li>
 </ul>
 
 
@@ -28,7 +28,7 @@
 <ul class="explore">
 
 	<li><a href="/submit.php" title="">Add <b>your own pictures</b></a></li>
-	<li><a href="/articles/edit.php" title="">Write an <b>article</b></a></li>
+	<li><a href="/article/edit.php" title="">Write an <b>article</b></a></li>
 	<li><a href="/discuss/" title=""><b>Discuss</b> the project on our forums</a></li>
 	<li><a href="/help/guide" title="">view our <b>submission criteria</b></a></li>
 	
