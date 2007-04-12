@@ -26,7 +26,10 @@
 {/box}
 
 {box colour="000" style="width:409px;float:left;margin-right:15px;"}
-Hey, this is nice
+<div class="infobox">
+<h1>Picture of the day</h1>
+<p>Not yet implemented!</p>
+</div>
 {/box}
 
 {box colour="333" style="width:160px;float:left;"}
