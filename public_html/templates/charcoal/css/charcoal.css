@@ -208,6 +208,7 @@ footer
 
 #footer
 {
+margin-top:8px;
 font-size:0.8em;
 width:759px;
 }
@@ -397,6 +398,269 @@ margin-top:15px;
 margin-bottom:15px;
 }
 
+/*---------------------------------------------------------------*
+ * Misc styles used in page
+ *---------------------------------------------------------------*/
+.nowrap 
+{
+
+	white-space:nowrap;
+}
+/* main content interior */
+#content
+{
+
+}
+
+#content h2
+{
+	margin-top:0px;
+}
+
+/* form styles */
+#content form label
+{
+	font-size:0.8em;
+}
+
+span.formerror
+{
+	font-size:0.8em;
+	color:red;
+}
+
+div.copyright
+{
+	font-size:0.7em; 
+	color: gray;
+	text-align:center;
+	font-style:italic;
+}
+
+p.wordnet a
+{
+	white-space:nowrap;
+	text-decoration: none;
+}
+
+p.wordnet a:hover
+{
+	text-decoration: underline;
+}
+
+div.caption
+{
+	clear:left;
+	font-size:0.8em;
+}
+div.statuscaption
+{
+	clear:left;
+	font-size:0.7em;
+	color:silver;
+}
+
+dl.browselist
+{
+	
+}
+
+dl.browselist dt
+{
+	font-weight:bold;
+	border-bottom:1px solid #dddddd;
+}
+
+dl.browselist dd
+{
+	margin-left:5px;
+	padding-bottom:15px;
+}
+
+div.rastermap {
+  border: 1px solid #a9a9a9;
+  padding: 4px;
+  float:left;
+  z-index:5;
+  padding:10px;
+
+}
+
+div.ccmessage
+{
+	width:inherit;
+	text-align:center;
+	padding:3px;
+	font-size:0.9em;
+}
+
+div.ccmessage img
+{
+	vertical-align: middle
+}
+
+
+/*---------------------------------------------------------------*
+ * report table
+ *---------------------------------------------------------------*/
+
+table.report thead tr
+{
+	background:black;
+}
+table.report thead tr td
+{
+	color:white;
+	padding:0.2em;
+	font-weight:bold;
+}
+
+table.report thead tr td a
+{
+	color:white;
+}
+
+table.report tbody tr td
+{
+	padding-left:0.2em;
+	padding-right:0.2em;
+}
+
+table.report tbody tr.totalrow
+{
+	background: silver;
+}
+
+table.report tbody tr.totalrow th
+{
+	border-top: 1px solid black;
+}
+
+/*---------------------------------------------------------------*
+ * form table
+ *---------------------------------------------------------------*/
+
+table.formtable td
+{
+	vertical-align:top;
+}
+
+
+
+table.formtable div.fieldnotes
+{
+	font-size:0.8em;
+	color:#777799;
+}
+
+/*---------------------------------------------------------------*
+ * picture info
+ *---------------------------------------------------------------*/
+
+div.picinfo
+{
+	font-size:0.8em;
+	padding:5px;
+}
+
+div.picinfo td
+{
+	vertical-align:top;
+}
+
+dl.picinfo
+{
+	padding-left:15px;
+}
+
+dl.picinfo dt
+{
+	font-weight:bold;
+	border-bottom:1px solid #dddddd;
+}
+
+dl.picinfo dd
+{
+	margin-left:25px;
+	padding-bottom:10px;
+}
+
+/*---------------------------------------------------------------*
+ * tickets
+ *---------------------------------------------------------------*/
+
+div.ticket
+{
+	background:#f0f0f0;
+	margin-bottom:10px;
+	border:1px solid #d0d0d0;
+	font-size:0.7em;
+}
+
+div.ticket div.ticketbasics
+{
+	background:#d0d0d0;
+	padding-left:5px;
+}
+
+div.ticket div.ticketactions input
+{
+	font-size:0.8em
+}
+
+div.ticket div.ticketnotes
+{
+	padding-left:5px;
+	font-style:italic;
+}
+
+div.ticket div.ticketnote
+{
+	margin-bottom:10px;
+}
+
+div.ticket div.ticketfields
+{
+	padding-left:5px;
+}
+
+div.ticket div.ticketnotehdr
+{
+	font-style:normal;
+}
+/*---------------------------------------------------------------*
+ * accept/reject buttons
+ *---------------------------------------------------------------*/
+
+input.accept
+{
+	font-size:0.7em;
+	background:#88aa88;
+}
+
+input.reject
+{
+	font-size:0.7em;
+	background:#aa8888;
+}
+
+.moderatedlabel
+{
+	color:#449944;
+	font-weight:normal;
+	font-size:0.7em;
+}
+
+/*---------------------------------------------------------------*
+ * statisitics area
+ *---------------------------------------------------------------*/
+
+table.statstable td
+{
+	text-align:right;
+}
+
+
 
 /*---------------------------------------------------------------*
  * buttons for map nav
@@ -445,3 +709,222 @@ div.map div.inner img
 }
 
 
+/*---------------------------------------------------------------*
+ * Search Results
+ *---------------------------------------------------------------*/
+
+.xml-kml {font: bold 10px Verdana, sans-serif; padding: 0 0.5em; border: 1px solid;
+  text-decoration: none;
+  background: #6AC23E; color: #FFF; border-color: #CAEABA #356020 #1B3010 #9CD77F;}
+
+.xml-rss {font: bold 10px Verdana, sans-serif; padding: 0 0.5em; border: 1px solid;
+  text-decoration: none;
+  background: #F60; color: #FFF; border-color: #FFC8A4 #7D3302 #3F1A01 #FF9A57;}
+  
+.xml-geo {font: bold 10px Verdana, sans-serif; padding: 0 0.5em; border: 1px solid;
+  text-decoration: none;
+  background: #009900; color: #FFF; border-color: #FFC8A4 #7D3302 #3F1A01 #FF9A57;}
+
+.xml-gpx {font: bold 10px Verdana, sans-serif; padding: 0 0.5em; border: 1px solid;
+  text-decoration: none;
+  background: #000099; color: #FFF; border-color: #FFC8A4 #7D3302 #3F1A01 #FF9A57;}
+
+
+
+.navCell {
+	white-space:nowrap;
+	text-align:right;
+	float:right;
+}
+
+.pageNav {
+	background-color:#DDDDDD;
+	padding: 5px;
+	font-size: 1.1em;
+	margin: 2px;
+}
+
+.navCell .pageNav {
+	background-color:#E3E3E3;
+	padding: 2px;
+	font-size: 1em;
+	margin: 0px;
+	width: 1.6em;
+	text-align: center;
+}
+
+.pageNavSelected {
+	background-color: #A9A9A9;
+}
+
+.tabHolder {
+	line-height:1.4em;
+}
+
+.tabSelected {
+	background-color:#dddddd;
+	border-top: 1px solid #dddddd;
+	border-left: 1px solid #dddddd;
+	border-right: 1px solid #dddddd;
+	padding:3px;
+	font-weight:bold;
+}
+
+.tab {
+	background-color:#eeeeee;
+	border-top: 1px solid gray;
+	border-left: 1px solid gray;
+	border-right: 1px solid gray;
+	padding:3px;
+}
+
+.interestBox {
+	padding:5px;
+	background:#dddddd;
+	position:relative;
+	color:black;
+}
+
+.innerInterestBox {
+	float:left;
+	position:relative;
+}
+
+.lessIndent {
+	margin-left:0;
+	padding:0 0 0 1em;
+}
+
+h2.titlebar {
+	background-color:#D3D3D3;
+	padding:5px;
+}
+
+/*---------------------------------------------------------------*
+ * Form layout
+ *---------------------------------------------------------------*/
+
+form.simpleform {
+  margin: 0;
+  padding: 0;
+  font-size: 100%;
+  min-width: 560px;
+  max-width: 620px;
+  width: 590px;
+}
+
+form.simpleform fieldset {
+  clear: both;
+  font-size: 100%;
+  border-color: #000000;
+  border-width: 1px 0 0 0;
+  border-style: solid none none none;
+  padding: 10px;
+  margin: 0 0 0 0;
+}
+
+form.simpleform fieldset legend {
+  font-size: 150%;
+  font-weight: normal;
+  color: #000000;
+  margin: 0 0 10px 0;
+  padding: 0 5px;
+}
+
+form.simpleform label {
+  font-size: 100%;
+  
+  width:10em;
+  display:block;
+  float:left;
+}
+
+form.simpleform div.field {
+ margin-bottom:16px;
+}
+
+form.simpleform div.fieldnotes {
+
+  background-repeat: no-repeat;
+  background-position: top left;
+  padding: 5px 5px 5px 5px;
+  
+  background-color: #ffffe1;
+  color:#666666;
+ 
+   margin-left:10em;
+  
+ font-size:0.8em;
+}
+
+form.simpleform div.formerror
+{
+   border:2px red solid;
+   padding:5px;
+   
+}
+
+form.simpleform p.error
+{
+	color:#880000;
+	margin-top:0;
+	font-weight:bold;
+}
+
+
+form.simpleform div fieldset {
+  clear: none;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #666666;
+  margin: 0 0 0 8em;
+  padding: 0 5px 5px 5px;
+  width: 20em;
+}
+
+form.simpleform div fieldset legend {
+  font-size: 100%;
+}
+
+form.simpleform div.required fieldset legend {
+  font-weight: bold;
+}
+
+form.simpleform fieldset fieldset label {
+  font-size: 100%;
+  
+  width:auto;
+  display:inline;
+  float:none;
+}
+
+form.simpleform textarea
+{
+	display:inline;
+	width:30em;
+}
+  
+/*---------------------------------------------------------------*
+ * Explore Style Bullet List
+ *---------------------------------------------------------------*/
+  
+  
+ul.explore li {
+	border:1px dotted #dddddd;
+	background-color:#eeeeee;
+	padding:10px;
+}
+
+ul.explore {
+	list-style-image:url('/templates/basic/img/cameraicon.gif');
+}
+
+ul.explore li ul {
+	list-style-type:disc;
+	list-style-image:none;
+}
+
+ul.explore li ul li {
+	border:none;
+	padding:2px;
+}
