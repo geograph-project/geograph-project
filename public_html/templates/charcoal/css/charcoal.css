@@ -25,7 +25,6 @@ banner div covers the entire top navigation area
 	width:759px;
 	height:84px;
 	background-image:url('banner.gif');
-	margin-bottom:15px;
 }
 
 #banner h1
@@ -38,6 +37,19 @@ banner div covers the entire top navigation area
 	color:white;
 }
 
+#banner form
+{
+	margin:0;
+	padding:0;
+}
+
+/*
+breadcrumb area
+*/
+#breadcrumbs
+{
+	height:15px;
+}
 
 /*
 quick search styling

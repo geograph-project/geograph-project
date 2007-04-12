@@ -88,6 +88,9 @@ function bodyOnLoad()
 
 </div>
 
+<div id="breadcrumbs">
+</div>
+
 <div id="content">
 
 
