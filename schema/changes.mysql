@@ -1175,3 +1175,5 @@ INSERT INTO `article_cat` (`article_cat_id`, `category_name`, `sort_order`) VALU
 (2, 'Exploring the Community', 0),
 (3, 'In the pursuit of Geographing', 0),
 (4, 'Just for Fun', 0);
+
+ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','moremod','gmap') DEFAULT 'full' NOT NULL;

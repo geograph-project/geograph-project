@@ -50,6 +50,7 @@ $displayclasses =  array(
 			'more' => 'full listing + links',
 			'thumbs' => 'thumbnails only',
 			'thumbsmore' => 'thumbnails + links',
+			'gmap' => 'on a Google Map',
 			'slide' => 'slide-show mode',
 			'text' => 'text only',
 			'spelling' => 'spelling utility');
@@ -554,9 +555,10 @@ if (isset($_GET['fav']) && $i) {
 	$display = $engine->getDisplayclass();
 	if (isset($_GET['displayclass']) && preg_match('/^\w+$/',$_GET['displayclass'])) {
 		$display = $_GET['displayclass'];
-		if ($USER->registered && $USER->user_id == $engine->criteria->user_id && $_GET['displayclass'] != 'search' && $_GET['displayclass'] != 'searchtext') {//don't store search override permently
+		if ($USER->registered && $USER->user_id == $engine->criteria->user_id && $_GET['displayclass'] != 'search' && $_GET['displayclass'] != 'searchtext') {
 			$engine->setDisplayclass($_GET['displayclass']);
 		} else {
+			//don't store search override permently
 			$engine->temp_displayclass = $display;
 		}
 	}
