@@ -41,7 +41,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/map.class.php');
 	require_once('geograph/mapmosaic.class.php');
 
-	$overview=new GeographMapMosaic('overview');
+	$preset=($CONF['template']=='charcoal')?'overview_charcoal':'overview';
+	$overview=new GeographMapMosaic($preset);
 	$overview->assignToSmarty($smarty, 'overview');
 	
 	
