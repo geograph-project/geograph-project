@@ -40,6 +40,10 @@ $CONF['db_persist']='?persist'; //options: ''|'?persist'
 //choose UI template
 $CONF['template']='basic';
 
+//enable forums?
+$CONF['forums']=false;
+
+
 ##smarty setup
 
 //turn compile check off on stable site for a small boost
