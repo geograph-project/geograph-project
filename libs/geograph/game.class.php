@@ -239,12 +239,19 @@ class game {
 			
 			$ids += $db->getCol("select gridimage_id from game_rate where game_id = {$this->game_id} and gridimage_id > 0 and rating = -2");
 			
-		} 
 		
-		foreach ($this->images as $index => $image) {
-			if (in_array($image->gridimage_id,$ids) || !($image->natgrlen == '8' && $image->use6fig=1) ) {
-				unset($this->images[$index]);
-				$this->numberofimages--;
+			foreach ($this->images as $index => $image) {
+				if (in_array($image->gridimage_id,$ids) || !($image->natgrlen == '8' && $image->use6fig=1) ) {
+					unset($this->images[$index]);
+					$this->numberofimages--;
+				}
+			}
+		} else {
+			foreach ($this->images as $index => $image) {
+				if (in_array($image->gridimage_id,$ids)) {
+					unset($this->images[$index]);
+					$this->numberofimages--;
+				}
 			}
 		}
 		
