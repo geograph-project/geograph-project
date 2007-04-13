@@ -99,7 +99,9 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 
 	<li><a href="/submit.php" title="">Add <b>your own pictures</b></a></li>
 	<li><a href="/article/edit.php" title="">Write an <b>article</b></a></li>
+	{if $enable_forums}
 	<li><a href="/discuss/" title=""><b>Discuss</b> the project on our forums</a></li>
+	{/if}
 	<li><a href="/help/guide" title="">view our <b>submission criteria</b></a></li>
 	
 </ul>
@@ -108,7 +110,7 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 <h2>Statistics Junkie?</h2>
 <ul>
 
-	<li><a href="/numbers.php" title="">View a <b>summery</b></a></li>
+	<li><a href="/numbers.php" title="">View a <b>summary</b></a></li>
 	<li><a href="/statistics.php" title="">More <b>in-depth Statistics</b></a></li>
 	<li><a href="/help/sitemap#stats" title="">Further Statistics</a></li>
 	<li><a href="/statistics/moversboard.php" title="">View the current <b>leaderboard</b></a></li>
