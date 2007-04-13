@@ -391,6 +391,40 @@ div.infobox a
 color:white;
 }
 
+
+
+div.infobox_alt
+{
+margin-left:8px;
+margin-right:8px;
+}
+
+div.infobox_alt h1
+{
+	font-family:Georgia,"Times New Roman",serif;
+	margin-top:0;
+	font-size:1.2em;
+	font-weight:normal;
+}
+
+div.infobox_alt h2
+{
+	font-family:Georgia,"Times New Roman",serif;
+	margin-top:0;
+	font-size:1.2em;
+	font-weight:normal;
+}
+
+div.infobox_alt li
+{
+font-size:0.8em;
+}
+div.infobox_alt a
+{
+color:blue;
+}
+
+
 div.titlebox
 {
 margin-left:8px;

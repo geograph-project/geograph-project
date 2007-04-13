@@ -46,7 +46,7 @@ title="Click to see full size photo"
 geographically representative photograph for every square 
 kilometre of the British Isles and you can be part of it.</p>
 
-<p><a href="/faq.php"><img src="/templates/charcoal/css/find_out_more.gif"/></a></p>
+<p><a href="/help/more_pages"><img src="/templates/charcoal/css/find_out_more.gif"/></a></p>
 
 <div id="photocount">{$stats.images|thousends}</div>
 <div id="photocount_title">photographs</div>
@@ -72,31 +72,58 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 {/box}
 
 {box colour="f4f4f4"}
-
-<h3>Getting started...</h3>
+<div class="infobox_alt">
+<h2>Explore...</h2>
 <ul>
-	<li><a title="Browse by Map" href="/mapbrowse.php">browse images on a <b>map</b></a></li>
-	<li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a></li>
-	<li><a title="Discussion forums" href="/discuss/"><b>discuss the site</b> on our forums</a></li>
+
+	<li><a href="/mapbrowse.php" title="View the coverage Map">Explore these isles with our <b>map</b></a></li>
+	<li><a href="/search.php" title=""><b>Search</b> for places or features</a></li>
+	<li><a href="/explore/" title="">Try browsing by <b>theme</b></a></li>
+	<li><a href="/article/" title="">Read <b>articles</b> submitted by members</b></a></li>
+	<li><a href="/help/sitemap">View a complete site map</a></li>
 </ul>
 
-<h3>Exploring in more depth...</h3>
-<ul>
-	<li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a></li>
-	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a></li>
-	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
-	<li><a title="List of all pages" href="/help/sitemap">view the <b>full list</b> of pages</a></li>
-</ul>
-    
 
-<h3>Interacting with other software...</h3>
+<h2>Use and re-use our images!</h2>
 <ul>
-	<li><a title="Google Earth Export" href="/kml.php">view images in <b>Google Earth</b> or <b>Maps</b></a> <a title="Recent Images in Google Earth" href="/feed/recent.kml" class="xml-kml">KML</a></li>
-	<li><a title="RSS Deeds" href="/faq.php#rss">get <b>RSS feeds</b> of images</a> <a title="RSS Feed of Recent Images" href="/feed/recent.rss" rel="RSS" class="xml-rss">RSS</a></li>
-	<li><a title="Memory Map Export" href="/memorymap.php">view squares in <b>Memory Map</b></a></li>
-	<li><a title="GPX File Export" href="/gpx.php">download squares in <b>GPX Format</b></a> <a title="GPX File of Recent Images" href="/feed/recent.gpx" rel="RSS" class="xml-gpx">GPX</a></li>
+
+	<li>All photos are licenced for reuse under a <b>{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Licence"}</b>. <a href="/help/freedom" title="">Find out more</a><br/><br/></li>
+	<li><a href="/kml.php" title="">Geograph with <b>Google Earth</b> and <b>Google Maps</b></a></li>
+	<li><a href="/help/sitemap#software" title=""><b>Other ways</b> to can use this faboulous resource</a></li>
+
 </ul>
 
+
+<h2>Join In...</h2>
+<ul>
+
+	<li><a href="/submit.php" title="">Add <b>your own pictures</b></a></li>
+	<li><a href="/article/edit.php" title="">Write an <b>article</b></a></li>
+	<li><a href="/discuss/" title=""><b>Discuss</b> the project on our forums</a></li>
+	<li><a href="/help/guide" title="">view our <b>submission criteria</b></a></li>
+	
+</ul>
+
+
+<h2>Statistics Junkie?</h2>
+<ul>
+
+	<li><a href="/numbers.php" title="">View a <b>summery</b></a></li>
+	<li><a href="/statistics.php" title="">More <b>in-depth Statistics</b></a></li>
+	<li><a href="/help/sitemap#stats" title="">Further Statistics</a></li>
+	<li><a href="/statistics/moversboard.php" title="">View the current <b>leaderboard</b></a></li>
+</ul>
+
+
+<h2>Need Help?</h2>
+<ul>
+
+	<li><a href="/faq.php" title="">View our Frequently Asked Questions</a></li>
+	<li><a href="/help/credits" title="">Who runs the site</a></li>
+	<li><a href="/contact.php" title="">Contact Us</a></li>
+
+</ul>
+</div>
 {/box}
 
 </div>
@@ -110,8 +137,9 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 	{/box}
 	
 	{box colour="f4f4f4"}
+	<div class="infobox_alt">
 	
-	<h3>Excuse our dust!</h3>
+	<h2>Excuse our dust!</h2>
 	<p>We are still developing our new look which 
 	we hope will make Geograph easier and more fun
 	to use</p>
@@ -123,7 +151,7 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 	<p>Kind regards</p>
 	
 	<p>The Geograph Team</p>
-	
+	</div>
 	
 	{/box}
 </div>
