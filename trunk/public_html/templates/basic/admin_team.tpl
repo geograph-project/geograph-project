@@ -15,6 +15,7 @@
 <tbody>
 
 {foreach from=$team item=userrow}
+{if $userrow.role ne 'Member'}
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}"{if strpos($userrow.rights,'admin') > 0} style="font-weight:bold"{/if}>
 	<td>{$userrow.realname}</td>
@@ -22,14 +23,40 @@
 	<td>{if $userrow.role}{$userrow.role}{else}{if strpos($userrow.rights,'admin') > 0}Developer{else}Moderator{/if}{/if}</td>
 	<td><a href="/profile.php?u={$userrow.user_id}">Profile</a>/<a href="/usermsg.php?to={$userrow.user_id}">Contact</a></td>
 </tr>
+{/if}
 {/foreach}
 </tbody>
 </table>
+
+<p>The following members have also helped out in various capacities previouslly...</p>
+
+<table class="report">
+<thead><tr>
+	<td>Name</td>
+	<td>Nickname</td>
+	<td>Profile/Contact</td>
+</tr></thead>
+<tbody>
+
+{foreach from=$team item=userrow}
+{if $userrow.role eq 'Member'}
+{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
+<tr bgcolor="{$bgcolor}"{if strpos($userrow.rights,'admin') > 0} style="font-weight:bold"{/if}>
+	<td>{$userrow.realname}</td>
+	<td>{$userrow.nickname}</td>
+	<td><a href="/profile.php?u={$userrow.user_id}">Profile</a>/<a href="/usermsg.php?to={$userrow.user_id}">Contact</a></td>
+</tr>
+{/if}
+{/foreach}
+</tbody>
+</table>
+
 {else}
   <p>There are no moderators !?!</p>
 {/if}
 
-<p>... see also the <a href="/help/credits">Credits Page</a></p>
+<br/>
+<div class="interestBox">... see also the <a href="/help/credits">Credits Page</a></div>
 
 {dynamic}
 {if $user->registered}
