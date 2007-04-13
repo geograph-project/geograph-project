@@ -102,7 +102,7 @@ if (!$smarty->is_cached($template, $cacheid))
 					$assigned=$db->GetRow("select showday from gridimage_daily where gridimage_id=$gridimage_id");
 					
 					
-					if (is_array($assigned))
+					if (is_array($assigned) && count($assigned))
 					{
 						if (is_null($assigned['showday']))
 						{
