@@ -48,7 +48,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql="select game_score_id,username,gs.user_id,realname,sum(score) as score,sum(games) as games,sum(score)/sum(games) as average
 	from game_score gs
 		left join user using(user_id)
-	where gs.created > date_sub(now(), interval 48 hour)
+	where gs.created > date_sub(now(), interval 7 day)
 	group by username,gs.user_id 
 	order by average desc,score desc, games desc,username,realname ";
 	if ($_GET['debug'])
@@ -94,7 +94,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign_by_ref('topusers', $topusers);
 	
-	$smarty->assign('cutoff_time', time()-86400*2);
+	$smarty->assign('cutoff_time', time()-86400*7);
 }
 
 $smarty->display($template, $cacheid);
