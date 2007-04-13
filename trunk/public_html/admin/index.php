@@ -58,9 +58,6 @@ $smarty->assign('gridsquares_sea_test', $db->GetOne("select count(*) from mapfix
 $smarty->assign('articles_ready', $db->getOne("select count(*) from article where licence != 'none' and approved = 0"));
 	
 
-//but this is nice and quick...
-$uptime=`uptime`;
-$smarty->assign_by_ref('uptime', $uptime);
 
 $smarty->display($template,$cacheid);
 

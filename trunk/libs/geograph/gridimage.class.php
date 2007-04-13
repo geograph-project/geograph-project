@@ -741,15 +741,36 @@ class GridImage
 		return $img;
 	}
 	
-
 	/**
-	* returns HTML img tag to display a thumbnail that would fit the given dimensions
-	* If the required thumbnail doesn't exist, it is created. This method is really
-	* handy helper for Smarty templates, for instance, given an instance of this
-	* class, you can use this {$image->getThumbnail(213,160)} to show a thumbnail
+	* general purpose internal method for creating resized images - accepts
+	* a variety of options. Use this to build specific methods for public
+	* consumption
+	* 
+	* maxw : maximum width of image (default '100')
+	* maxh : maximum height of image (default '100')
+	* bestfit : show entire image inside max width/height. If false
+	*           then the image is cropped to match the aspect ratio of
+	*           of the target area first (default 'true')
+	* attribname : attribute name of img tag which holds url (default 'src')
+	* bevel : give image a raised edge (default true)
+	* unsharp : do an unsharp mask on the image
+	* 
+	* returns an association array containing 'html' element, which contains
+	* a fragment to load the image, and 'path' containg relative url to image
 	*/
-	function getThumbnail($maxw, $maxh,$urlonly = false,$fullalttag = false,$attribname = 'src')
+	function _getResized($params)
 	{
+		//unpack known params and set defaults
+		$maxw=isset($params['maxw'])?$params['maxw']:100;
+		$maxh=isset($params['maxh'])?$params['maxh']:100;
+		$attribname=isset($params['attribname'])?$params['attribname']:'src';
+		$bestfit=isset($params['bestfit'])?$params['bestfit']:true;
+		$bevel=isset($params['bevel'])?$params['bevel']:true;
+		$unsharp=isset($params['unsharp'])?$params['unsharp']:true;
+		
+		
+		
+		
 		global $CONF;
 		//establish whether we have a cached thumbnail
 		$ab=sprintf("%02d", floor($this->gridimage_id/10000));
@@ -776,12 +797,63 @@ class GridImage
 						
 						if (($width>$maxw) || ($height>$maxh)) {
 
-							$cmd = sprintf ("\"%sconvert\" -thumbnail %ldx%ld -unsharp 0x1+0.8+0.1 -raise 2x2 -quality 87 jpg:%s jpg:%s", 
+							$unsharpen=$unsharp?"-unsharp 0x1+0.8+0.1":"";
+							
+							$raised=$bevel?"-raise 2x2":"";
+							if ($bestfit)
+							{
+								$cmd = sprintf ("\"%sconvert\" -resize %ldx%ld  $unsharpen $raised -quality 87 jpg:%s jpg:%s", 
 								$CONF['imagemagick_path'],
 								$maxw, $maxh, 
 								$_SERVER['DOCUMENT_ROOT'].$fullpath,
 								$_SERVER['DOCUMENT_ROOT'].$thumbpath);
-							passthru ($cmd);
+								
+								
+								passthru ($cmd);
+							}
+							else
+							{
+								$aspect_src=$width/$height;
+								$aspect_dest=$maxw/$maxh;
+								
+								if ($aspect_src > $aspect_dest)
+								{
+									//src image is relatively wider - we'll trim the sides
+									$optimum_width=round($height*$aspect_dest);
+									$offset=round(($width-$optimum_width)/2);
+									
+									$crop="-crop {$optimum_width}x{$height}+$offset+0";
+									
+								}
+								else
+								{
+									//src image is relatively taller - we'll trim the top/bottom
+									$optimum_height=round($width/$aspect_dest);
+									$offset=round(($height-$optimum_height)/2);
+									
+									$crop="-crop {$width}x{$optimum_height}+0+$offset";
+								
+								}
+								
+								$cmd = sprintf ("\"%sconvert\" $crop -quality 87 jpg:%s jpg:%s", 
+								$CONF['imagemagick_path'],
+								$_SERVER['DOCUMENT_ROOT'].$fullpath,
+								$_SERVER['DOCUMENT_ROOT'].$thumbpath);
+								
+								
+								passthru ($cmd);
+								
+								//now resize
+								$cmd = sprintf ("\"%smogrify\" -resize %ldx%ld $unsharpen $raised -quality 87 jpg:%s", 
+								$CONF['imagemagick_path'],
+								$maxw, $maxh, 
+								$_SERVER['DOCUMENT_ROOT'].$thumbpath);
+								
+								
+								passthru ($cmd);
+							}
+							
+							
 
 						} else {
 							//requested thumb is larger than original - stick with original
@@ -854,26 +926,64 @@ class GridImage
 		
 			}
 		}
-		if ($urlonly)
-		{
-			$html = $thumbpath;	
-		} 
-		elseif ($thumbpath=='/photos/error.jpg')
+		
+		$return=array();
+		$return['url']=$thumbpath;
+		
+		if ($thumbpath=='/photos/error.jpg')
 		{
 			$html="<img $attribname=\"$thumbpath\" width=\"$maxw\" height=\"$maxh\" />";
 		}
 		else
 		{
 			$title=$this->grid_reference.' : '.htmlentities($this->title).' by '.$this->realname;
-			
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 		}
 		
+		$return['html']=$html;
 		
-		
-		return $html;
+		return $return;
 	}
+	
+	/**
+	* returns HTML img tag to display a thumbnail that would fit the given dimensions
+	* If the required thumbnail doesn't exist, it is created. This method is really
+	* handy helper for Smarty templates, for instance, given an instance of this
+	* class, you can use this {$image->getThumbnail(213,160)} to show a thumbnail
+	*/
+	function getThumbnail($maxw, $maxh,$urlonly = false,$fullalttag = false,$attribname = 'src')
+	{
+		$params['maxw']=$maxw;
+		$params['maxh']=$maxh;
+		$params['attribname']=$attribname;
+		$resized=$this->_getResized($params);
+		
+		if ($urlonly)
+			return $resized['url'];
+		else
+			return $resized['html'];
+	}	
+	
+	/**
+	* returns HTML img tag to display a thumbnail that would EXACTLY fit the given dimensions
+	* If the required thumbnail doesn't exist, it is created. This method is really
+	* handy helper for Smarty templates, for instance, given an instance of this
+	* class, you can use this {$image->getFixedThumbnail(213,160)} to show a thumbnail
+	* 
+	* Compare with getThumbnail, which is for getting a "best fit"
+	*/
+	function getFixedThumbnail($maxw, $maxh)
+	{
+		$params['maxw']=$maxw;
+		$params['maxh']=$maxh;
+		$params['bestfit']=false;
+		$params['bevel']=false;
+		$params['unsharp']=false;
+		$resized=$this->_getResized($params);
+		
+		return $resized['html'];
+	}	
 	
 	/**
 	* Locks this image so its now shown to other moderators

@@ -208,7 +208,7 @@ footer
 
 #footer
 {
-margin-top:8px;
+margin-top:2em;
 font-size:0.8em;
 width:759px;
 }
@@ -385,6 +385,14 @@ color:white;
 	font-size:0.7em;
 	text-align:center;
 	margin-top:0.5em;
+}
+
+div.potdtitle
+{
+font-size:0.8em;
+color:silver;
+text-align:right;
+margin-top:1em;
 }
 
 /* 

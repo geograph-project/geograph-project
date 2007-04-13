@@ -44,18 +44,11 @@ corrected<br/> <b>{if $gridsquares_sea.1 || $gridsquares_sea.2}[GB:{$gridsquares
 
 <li><a title="Recreate Maps" href="/recreatemaps.php">Recreate Maps</a> - 
    request update for map tiles</li>
-      
-</ul>
 
-{if $is_admin} 
-<h2>Load Average</h2>
-<ul>
-{dynamic}
-<li>{$uptime}</li>
-{/dynamic}
+<li><a title="Picture of the day" href="/admin/pictureoftheday.php">Picture of the Day</a> - 
+   choose daily picture selections</li>
+         
 </ul>
-<img src="http://www.geograph.org.uk/img/cpuday.png" width="480" height="161"/>
-{/if}
 
 <h2>Total Submissions</h2>
 <img src="http://www.geograph.org.uk/img/submission_graph.png" width="480" height="161"/>

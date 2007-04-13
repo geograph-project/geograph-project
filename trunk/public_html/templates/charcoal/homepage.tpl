@@ -1,7 +1,7 @@
 {include file="_std_begin.tpl"}
 
 {box colour="333" style="width:160px;float:left;margin-right:15px;"}
-<div class="infobox">
+<div class="infobox" style="height:389px">
 <h1>Photo Map</h1>
 <p>Click the map to start browsing photos of the British Isles</p>
 
@@ -26,15 +26,21 @@
 {/box}
 
 {box colour="000" style="width:409px;float:left;margin-right:12px;"}
-<div class="infobox"> 
+<div class="infobox" style="height:389px"> 
 <h1>Picture of the day</h1>
-<p>Not yet implemented!</p>
+
+<a href="/photo/{$pictureoftheday.gridimage_id}"
+title="Click to see full size photo"
+>{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
+<div class="potdtitle"><a href="/photo/{$pictureoftheday.gridimage_id}"
+title="Click to see full size photo"
+>{$pictureoftheday.image->title}</a> by {$pictureoftheday.image->realname}</div>
 </div>
 {/box}
 
 {box colour="333" style="width:160px;float:left;"}
 
-<div class="infobox">
+<div class="infobox" style="height:389px">
 <h1>Welcome</h1>
 <p>The Geograph British Isles project aims to collect a 
 geographically representative photograph for every square 
