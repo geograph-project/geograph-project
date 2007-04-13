@@ -60,10 +60,18 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 
 {/box}
 
-<br style="clear:both">
+<br style="clear:both"/>
+<br style="clear:both"/>
 
+<div style="width:370px;float:left;margin-right:14px;">
 
- 
+{box colour="333" style="margin-bottom:12px;"}
+<div class="titlebox">
+<h1>Site Guide</h1>
+</div>
+{/box}
+
+{box colour="f4f4f4"}
 
 <h3>Getting started...</h3>
 <ul>
@@ -89,41 +97,36 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 	<li><a title="GPX File Export" href="/gpx.php">download squares in <b>GPX Format</b></a> <a title="GPX File of Recent Images" href="/feed/recent.gpx" rel="RSS" class="xml-gpx">GPX</a></li>
 </ul>
 
-</div>
-
-<div style="width:35%;float:left;font-size:0.8em;position:relative">
-
-<div style="padding:5px;background:#dddddd;position:relative">
-<h3 style="margin-bottom:0;">What is Geographing?</h3>
-<ul style="margin-top:0;margin-left:0;padding:0 0 0 1em;">
-<li>It's a game - how many grid squares will you contribute?</li>
-<li>It's a geography project for the people</li>
-<li>It's a national photography project</li>
-<li>It's a good excuse to get out more!</li>
-<li>It's a free and open online community project for all</li>
-</ul>
-
-
-<h3 style="margin-bottom:0;">How do I get started?</h3>
-
-
-<p style="margin-top:0;"><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how 
-many grid squares you can claim first! 
-
-Read the <a title="Frequently Asked Questions" href="/faq.php">FAQ</a>, then get submitting -
-we hope you'll enjoy being a part of this great project
-</p>
+{/box}
 
 </div>
 
-<div style="margin-top:10px;padding:5px;background:#ffdddd;position:relative">
-<h3>Yahoo Find of the Year</h3>
-<p>Geograph has been judged as Yahoo's Find of the Year 2006 in the <a href="http://uk.promotions.yahoo.com/finds2006/travel/">"Travel"</a> category.</p>
+<div style="width:370px;float:left;">
+
+	{box colour="333" style="margin-bottom:12px;"}
+	<div class="titlebox">
+	<h1>Welcome to the new look!</h1>
+	</div>
+	{/box}
+	
+	{box colour="f4f4f4"}
+	
+	<h3>Excuse our dust!</h3>
+	<p>We are still developing our new look which 
+	we hope will make Geograph easier and more fun
+	to use</p>
+	
+	<p>While we make the transition, this beta site
+	may show some pages with elements a little out of
+	kilter, but we still welcome any feedback</p>
+	
+	<p>Kind regards</p>
+	
+	<p>The Geograph Team</p>
+	
+	
+	{/box}
 </div>
-
-</div>
-
-
 
 <br style="clear:both"/>
 &nbsp;

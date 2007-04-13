@@ -336,6 +336,34 @@ div.round666  div.roundbottom {
 	background: url(b666_br.gif) no-repeat top right;
 }
 
+
+
+div.roundf4f4f4 {
+	background-color: #f4f4f4;
+	color: black;
+}
+
+div.roundf4f4f4 div.roundtl {
+	background: url(bf4f4f4_tl.gif) no-repeat top right;
+	width:12px;
+	height:12px;
+}
+
+div.roundf4f4f4 div.roundbl {
+	background: url(bf4f4f4_bl.gif) no-repeat top right;
+	width:12px;
+	height:12px;
+}
+
+
+div.roundf4f4f4 div.roundtop {
+	background: url(bf4f4f4_tr.gif) no-repeat top right;
+}
+
+div.roundf4f4f4  div.roundbottom {
+	background: url(bf4f4f4_br.gif) no-repeat top right;
+}
+
 /*
 styling for box innards
 */
@@ -363,6 +391,20 @@ div.infobox a
 color:white;
 }
 
+div.titlebox
+{
+margin-left:8px;
+margin-right:8px;
+}
+div.titlebox h1
+{
+	font-family:Georgia,"Times New Roman",serif;
+	margin-top:0;
+	margin-bottom:0;
+	font-size:1.2em;
+	font-weight:normal;
+}
+ 
 
 #photocount
 {
