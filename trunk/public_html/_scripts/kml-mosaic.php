@@ -106,7 +106,7 @@ foreach($photos as $id=>$entry)
 			
 			
 		if (strlen($entry['view_direction']) && $entry['view_direction'] != -1) {
-			$placemark->addViewDirection(entry['view_direction']);
+			$placemark->addViewDirection($entry['view_direction']);
 		} 
 		
 			
