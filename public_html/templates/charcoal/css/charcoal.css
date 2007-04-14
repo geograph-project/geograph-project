@@ -481,6 +481,10 @@ font-size:0.7em;
 margin-top:15px;
 margin-bottom:15px;
 }
+#sponsorlink
+{
+margin:10px;
+}
 
 /*---------------------------------------------------------------*
  * Misc styles used in page
