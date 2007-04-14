@@ -1177,3 +1177,11 @@ INSERT INTO `article_cat` (`article_cat_id`, `category_name`, `sort_order`) VALU
 (4, 'Just for Fun', 0);
 
 ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','moremod','gmap') DEFAULT 'full' NOT NULL;
+
+
+CREATE TABLE `gridimage_daily` (
+  `gridimage_id` int(11) NOT NULL default '0',
+  `showday` date default NULL,
+  PRIMARY KEY  (`gridimage_id`),
+  KEY `showday` (`showday`)
+) ENGINE=MyISAM;

@@ -21,20 +21,20 @@
 
 
 <div id="sponsor">sponsored by</div>
-<a href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="/templates/charcoal/css/oslogo.gif"/></a>
+<span id="sponsorlink"><a href="http://www.ordnancesurvey.co.uk/oswebsite/education/" title="Geograph British Isles sponsored by Ordnance Survey"><img src="/templates/charcoal/css/oslogo.gif" width="127" height="35" alt="Ordnance Survey Logo"/></a></span>
 </div>
 {/box}
 
 {box colour="000" style="width:409px;float:left;margin-right:12px;"}
 <div class="infobox" style="height:389px"> 
-<h1>Picture of the day</h1>
+<h1>Photograph of the day</h1>
 
 <a href="/photo/{$pictureoftheday.gridimage_id}"
 title="Click to see full size photo"
 >{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 <div class="potdtitle"><a href="/photo/{$pictureoftheday.gridimage_id}"
 title="Click to see full size photo"
->{$pictureoftheday.image->title}</a> by {$pictureoftheday.image->realname}</div>
+>{$pictureoftheday.image->title}</a> by <a title="Profile" href="{if $pictureoftheday.image->nickname}/user/{$pictureoftheday.image->nickname|escape:'url'}/{else}/profile.php?u={$pictureoftheday.image->user_id}{/if}">{$pictureoftheday.image->realname}</a></div>
 </div>
 {/box}
 
@@ -144,15 +144,15 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 	<h2>Excuse our dust!</h2>
 	<p>We are still developing our new look which 
 	we hope will make Geograph easier and more fun
-	to use</p>
+	to use!</p>
 	
 	<p>While we make the transition, this beta site
 	may show some pages with elements a little out of
-	kilter, but we still welcome any feedback</p>
+	kilter, but we still welcome any <a href="/contact.php">feedback</a>.</p>
 	
 	<p>Kind regards</p>
 	
-	<p>The Geograph Team</p>
+	<p>The Geograph Team.</p>
 	</div>
 	
 	{/box}
