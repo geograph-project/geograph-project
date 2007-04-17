@@ -1,4 +1,8 @@
-{assign var="page_title" value="Map Browsing :: $gridref"}
+{if $token_zoomout}
+        {assign var="page_title" value="Map Browsing :: $gridref"}
+{else}
+        {assign var="page_title" value="Map Browsing :: British Isles"}
+{/if}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
 table.navtable {
