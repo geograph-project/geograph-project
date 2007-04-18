@@ -1185,3 +1185,27 @@ CREATE TABLE `gridimage_daily` (
   PRIMARY KEY  (`gridimage_id`),
   KEY `showday` (`showday`)
 ) ENGINE=MyISAM;
+
+
+
+
+DROP TABLE IF EXISTS `loc_placenames`;
+CREATE TABLE `loc_placenames` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `dsg` enum('ADM1','ADMD','ANCH','ANS','AREA','BAR','BAY','BCH','BDG','BLDG','BNK','BOG','BRKS','BRKW','CAPE','CARN','CAVE','CH','CHN','CHNM','CLF','CMP','CNFL','CNL','COVE','CRKT','CSTL','DCK','DCKB','DCKY','DPR','EST','ESTY','FLD','FLLS','FLTT','FORD','FRM','FRST','FSR','FT','GAP','GASF','GRGE','GRVE','HBR','HDLD','HLL','HLLS','HMCK','HSE','HSEC','HSP','HTL','INDS','INLT','ISL','ISLS','ISLT','LCTY','LGN','LK','LKS','MDW','MN','MNMT','MOOR','MRSH','MSTY','MT','MTS','MUS','NRWS','OBPT','OILR','PASS','PCLI','PEN','PIER','PK','PLDR','PLN','PND','POOL','PPL','PPLA','PPLC','PPLL','PPLX','PRK','PRN','PRSH','PRT','PS','PT','QUAY','RD','RDGE','RDST','RF','RGN','RJCT','RK','RKS','RNGA','RPDS','RSTN','RSTP','RSV','RUIN','SAND','SCH','SCHC','SD','SEA','SHOL','SLP','SPIT','SPNG','SPUR','STM','STMA','STMM','STNE','STRT','TMB','TOWR','TRL','TRMO','VAL','WEIR','WLL','WTRW','ZZZZZ') NOT NULL default 'ADM1',
+  `adm1` char(2) NOT NULL default '',
+  `full_name` varchar(64) NOT NULL default '',
+  `full_name_soundex` varchar(32) NOT NULL default '',
+  `gns_ufi` int(11) NOT NULL,
+  `gns_uni` int(11) NOT NULL,
+  `nametype` char(1) NOT NULL,
+  `e` int(11) NOT NULL default '0',
+  `n` int(11) NOT NULL default '0',
+  `reference_index` tinyint(4) NOT NULL default '1',
+  `country` enum('uk','ie') NOT NULL,
+  `point_en` point NOT NULL default '',
+  PRIMARY KEY  (`id`),
+  KEY `full_name` (`full_name`),
+  SPATIAL KEY `point_en` (`point_en`(32))
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+##get the new content in a new file!
