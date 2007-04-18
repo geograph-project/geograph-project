@@ -189,11 +189,11 @@ function smarty_function_gridimage($params)
 		$html.='<a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
 		$html.=$image->getThumbnail(213,160);
 		$html.='</a><div class="caption"><a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
-		$html.=htmlentities($image->title).'</a></div>';
+		$html.=htmlentities2($image->title).'</a></div>';
 	$html.='</div>';
 
 	if (isset($params['extra']))
-		$html.='<div style="float:left;padding-left:20px; width:400px;">'.htmlentities($params['extra']).'</div>';
+		$html.='<div style="float:left;padding-left:20px; width:400px;">'.htmlentities2($params['extra']).'</div>';
 
 	$html.='<br style="clear:both"/></div>';
 
@@ -277,7 +277,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 				if ($g_image->moderation_status == 'rejected') {
 					$posterText = str_replace("[[[$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
 				} elseif ($ok) {
-					$g_title=$g_image->grid_reference.' : '.htmlentities($g_image->title);
+					$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title);
 					if ($g_matches[1][$i]) {
 						if ($thumbs) {
 							$g_title.=' by '.htmlentities($g_image->realname);

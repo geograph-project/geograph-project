@@ -192,7 +192,7 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,2}
 				if ($g_matches[1][$i]) {
 					$g_img = $g_image->getThumbnail(120,120,false,true);
 					#$g_img = preg_replace('/alt="(.*?)"/','alt="'.$g_image->grid_reference.' : \1 by '.$g_image->realname.'"',$g_img);
-					$g_title=$g_image->grid_reference.' : '.htmlentities($g_image->title).' by '.$g_image->realname;
+					$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title).' by '.$g_image->realname;
 					$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
 				} else {
 					$posterText = preg_replace("/(?<!\[)\[\[$g_id\]\]/","{<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\">{$g_image->grid_reference} : {$g_image->title}</a>}",$posterText);
