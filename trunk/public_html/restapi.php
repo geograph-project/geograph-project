@@ -66,7 +66,7 @@ class RestAPI
 		
 				echo '<status state="ok"/>';
 				
-				echo '<title>'.htmlentities($image->title).'</title>';
+				echo '<title>'.htmlentities2($image->title).'</title>';
 				echo '<gridref>'.htmlentities($image->grid_reference).'</gridref>';
 				echo "<user profile=\"http://{$_SERVER['HTTP_HOST']}/profile.php?u={$image->user_id}\">".htmlentities($image->realname).'</user>';
 				
