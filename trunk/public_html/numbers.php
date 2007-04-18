@@ -27,9 +27,10 @@ init_session();
 
 $smarty = new GeographPage;
 
+$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
 $template='numbers.tpl';
-$cacheid='';
+$cacheid=$ri;
 
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
@@ -44,6 +45,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$db=NewADOConnection($GLOBALS['DSN']);
 	
+	if ($ri) {
+		$wherewhere = "where reference_index=$ri";
+		$andwhere = "and reference_index=$ri";
+	} else {
+		$wherewhere = $andwhere = '';
+	}
 	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$hectads= $db->getAll("select * from hectad_complete order by completed desc limit 10");
@@ -53,13 +60,15 @@ if (!$smarty->is_cached($template, $cacheid))
 		count(*) as images,
 		count(distinct user_id) as users,
 		sum(ftf = 1 and moderation_status = 'geograph') as points
-	from gridimage_search");
+	from gridimage_search 
+		$wherewhere");
 	$stats += $db->cacheGetRow(3600,"select 
 		count(*) as total,
 		sum(imagecount>0) as squares,
 		sum(imagecount in (1,2,3)) as fewphotos
 	from gridsquare 
-	where percent_land > 0");	
+	where percent_land > 0
+		$andwhere");	
 	
 	$stats['nophotos'] = $stats['total'] - $stats['squares'];
 	
