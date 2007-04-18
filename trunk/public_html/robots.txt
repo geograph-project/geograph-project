@@ -34,3 +34,5 @@ Crawl-Delay: 60
 
 User-agent: Fasterfox
 Disallow: /
+
+Sitemap: http://www.geograph.org.uk/sitemap.xml
