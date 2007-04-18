@@ -19,14 +19,26 @@
  * @param html|htmlall|url|quotes|hex|hexentity|javascript
  * @return string
  */
+ 
+function htmlspecialchars2( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
+{
+    return preg_replace( "/&amp;([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,4};|#x[0-9a-fA-F]{2,4};)/", '&$1' ,htmlspecialchars($myHTML,$quotes,$char_set));
+} 
+ 
+function htmlentities2( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
+{
+    return preg_replace( "/&amp;([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,4};|#x[0-9a-fA-F]{2,4};)/", '&$1' ,htmlentities($myHTML,$quotes,$char_set));
+} 
+  
+ 
 function smarty_modifier_escape($string, $esc_type = 'html', $char_set = 'ISO-8859-1')
 {
     switch ($esc_type) {
         case 'html':
-            return htmlspecialchars($string, ENT_QUOTES, $char_set);
+            return htmlspecialchars2($string, ENT_QUOTES, $char_set);
 
         case 'htmlall':
-            return htmlentities($string, ENT_QUOTES, $char_set);
+            return htmlentities2($string, ENT_QUOTES, $char_set);
 
         case 'url':
             return rawurlencode($string);
