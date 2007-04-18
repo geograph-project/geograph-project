@@ -98,6 +98,7 @@ class Gazetteer
 						GeomFromText($rectangle),
 						point_en) AND
 					loc_placenames.reference_index = {$reference_index}
+				group by gns_ufi
 				order by distance asc");
 
 
@@ -302,6 +303,7 @@ class Gazetteer
 						point_en) AND
 					loc_placenames.reference_index = {$reference_index} and
 					power(e-{$e},2)+power(n-{$n},2) < $d
+				group by gns_ufi
 				order by distance asc limit 5");
 				foreach ($nearest as $id => $value) {
 					$values[] = $value['full_name'];
@@ -407,6 +409,7 @@ class Gazetteer
 			where
 				dsg = 'PPL' AND loc_placenames.reference_index != 1 AND
 				full_name LIKE ".$db->Quote($placename.'%')."
+			group by gns_ufi
 			LIMIT 20)");
 			if (count($places) < 10 || $ismore) {
 				//sounds like (OS)
@@ -488,17 +491,22 @@ class Gazetteer
 				where
 					full_name LIKE ".$db->Quote('%'.$placename.'%')."
 					OR full_name_soundex = SOUNDEX(".$db->Quote($placename).")
+				group by gns_ufi
 				LIMIT 20)");
-				if (count($places2) && count($places)) {
-					foreach ($places2 as $i2 => $place2) {
-						$found = 0; $look = str_replace("-",' ',$place2['full_name']);
-						foreach ($places as $i => $place) {
-							if ($place['full_name'] == $look && $place['reference_index'] == $place2['reference_index']) {
-								$found = 1; break;
+				if (count($places2)) {
+					if (count($places)) {
+						foreach ($places2 as $i2 => $place2) {
+							$found = 0; $look = str_replace("-",' ',$place2['full_name']);
+							foreach ($places as $i => $place) {
+								if ($place['full_name'] == $look && $place['reference_index'] == $place2['reference_index']) {
+									$found = 1; break;
+								}
 							}
+							if (!$found) 
+								array_push($places,$place2);
 						}
-						if (!$found) 
-							array_push($places,$place2);
+					} else {
+						$places =& $place2;
 					}
 				}
 			}	
