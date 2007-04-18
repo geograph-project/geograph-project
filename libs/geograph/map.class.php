@@ -1413,6 +1413,7 @@ INNER JOIN `loc_wikipedia` ON ( full_name = text )
 WHERE dsg = 'PPL' AND
 country IN ($countries) AND $crit2
 CONTAINS( GeomFromText($rectangle),	point_en) 
+GROUP BY gns_ufi
 ORDER BY RAND()
 END;
 }
