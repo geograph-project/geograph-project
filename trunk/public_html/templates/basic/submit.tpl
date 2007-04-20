@@ -123,9 +123,9 @@ geographing</a> first.</p>
 		{/if}
 		
 		<h4><b>Grid References:</b> (recommended)</h4>
-		<p><label for="grid_reference"><b style="color:#0018F8">Primary Photo Subject</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)"/><img src="/templates/basic/img/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/></p>
+		<p><label for="grid_reference"><b style="color:#0018F8">Primary Photo Subject</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/></p>
 	
-		<p><label for="photographer_gridref"><b style="color:#002E73">Photographer Position</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)"/><img src="/templates/basic/img/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>
+		<p><label for="photographer_gridref"><b style="color:#002E73">Photographer Position</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)"/><img src="/templates/basic/img/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>
 		
 		<span style="font-size:0.8em"><br/><a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Copy from Subject</a></span>
 		
