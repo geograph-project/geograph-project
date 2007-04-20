@@ -48,7 +48,7 @@ if($groupBy!='') $groupBy='group by '.$groupBy;
 $xtr=(!isset($GLOBALS['xtr'])?'':$GLOBALS['xtr']);
 $sql='SELECT '.$fields.' FROM '.$table.$where.' '.$xtr.' '.$groupBy.' '.$orderby.' '.$limit;
 
-$result=mysql_query($sql);
+$result=mysql_query($sql) or die("<pre style=\"border:1px solid red; padding:10px;\">$sql</pre> ".mysql_error());
 if($result) {
 $GLOBALS['countRes']=mysql_num_rows($result);
 $GLOBALS['result']=$result;

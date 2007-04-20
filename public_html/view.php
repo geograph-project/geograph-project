@@ -46,12 +46,13 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.or
 		print "<title>Image no longer available</title>";
 	}
 	exit;
-} elseif (strpos($_SERVER["REQUEST_URI"],'/photo/') === FALSE && isset($_GET['id'])) {
+} elseif ((strpos($_SERVER["REQUEST_URI"],'/photo/') === FALSE && isset($_GET['id'])) || strlen($_GET['id']) !== strlen(intval($_GET['id']))) {
+	//keep urls nice and clean - esp. for search engines!
 	header("Status: 301 Moved Permanently");
 	header("Location: /photo/".intval($_GET['id']));
+	print "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".intval($_GET['id'])."\">View image page</a>";
 	exit;
 }
-
 
 require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');

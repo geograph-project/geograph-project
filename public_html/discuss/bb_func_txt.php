@@ -3,52 +3,52 @@
 This file is part of miniBB. miniBB is free discussion forums/message board software, without any warranty. See COPYING file for more details. Copyright (C) 2004 Paul Puzyrev, Sergei Larionov. www.minibb.net
 */
 function wrapText($wrap,$text){
-$exploded=explode(' ',$text);
+	$exploded=explode(' ',$text);
 
-for($i=0;$i<sizeof($exploded);$i++) {
-if(!isset($foundTag)) $foundTag=0;
-$str=$exploded[$i];
+	for($i=0;$i<sizeof($exploded);$i++) {
+		if(!isset($foundTag)) $foundTag=0;
+		$str=$exploded[$i];
 
-if (substr_count($str, '<')>0) $foundTag=1;
+		if (substr_count($str, '<')>0) $foundTag=1;
 
-if(substr_count($str, '&#')>0 or substr_count($str, '&quot;')>0 or substr_count($str, '&amp;')>0 or substr_count($str, '&lt;')>0 or substr_count($str, '&gt;')>0 or substr_count($str, "\n")>0) $fnAmp=1; else $fnAmp=0;
+		if(substr_count($str, '&#')>0 or substr_count($str, '&quot;')>0 or substr_count($str, '&amp;')>0 or substr_count($str, '&lt;')>0 or substr_count($str, '&gt;')>0 or substr_count($str, "\n")>0) $fnAmp=1; else $fnAmp=0;
 
-if(strlen($str)>$wrap and ($foundTag==1 or $fnAmp==1)) {
+		if(strlen($str)>$wrap and ($foundTag==1 or $fnAmp==1)) {
 
-$chkPhr=''; $symbol=0;
-$foundAmp=0;
+			$chkPhr=''; $symbol=0;
+			$foundAmp=0;
 
-for ($a=0; $a<strlen($str); $a++) {
+			for ($a=0; $a<strlen($str); $a++) {
 
-if($foundTag==0 and $foundAmp==0) $symbol++;
+				if($foundTag==0 and $foundAmp==0) $symbol++;
 
-if ($str[$a]=='<') { $foundTag=1; }
-if ($str[$a]=='>' and $foundTag==1) { $foundTag=0;}
+				if ($str[$a]=='<') { $foundTag=1; }
+				if ($str[$a]=='>' and $foundTag==1) { $foundTag=0;}
 
-if ($str[$a]=='&') { $foundAmp=1; }
-if ($str[$a]==';' and $foundAmp==1) { $foundAmp=0; }
+				if ($str[$a]=='&') { $foundAmp=1; }
+				if ($str[$a]==';' and $foundAmp==1) { $foundAmp=0; }
 
-if($str[$a]==' ' or $str[$a]=="\n") {$symbol=0;}
-if($symbol>=$wrap and $foundTag==0 and $foundAmp==0 and isset($str[$symbol+1])) { $chkPhr.=$str[$a].' '; $symbol=0; }
-else $chkPhr.=$str[$a];
+				if($str[$a]==' ' or $str[$a]=="\n") {$symbol=0;}
+				if($symbol>=$wrap and $foundTag==0 and $foundAmp==0 and isset($str[$symbol+1])) { $chkPhr.=$str[$a].' '; $symbol=0; }
+				else $chkPhr.=$str[$a];
 
-}//a cycle
+			}//a cycle
 
-if (strlen($chkPhr)>0) $exploded[$i]=$chkPhr;
+			if (strlen($chkPhr)>0) $exploded[$i]=$chkPhr;
 
-}
-elseif (strlen($str)>$wrap) $exploded[$i]=chunk_split($exploded[$i],$wrap,' ');
-else{
-if (substr_count($str, '<')>0 or substr_count($str, '>')>0) {
-for ($a=strlen($str)-1;$a>=0;$a--){
-if($str[$a]=='>') {$foundTag=0;break;}
-elseif($str[$a]=='<') {$foundTag=1;break;}
-}
-}
-}
-} //i cycle
+		}
+		elseif (strlen($str)>$wrap) $exploded[$i]=chunk_split($exploded[$i],$wrap,' ');
+		else{
+			if (substr_count($str, '<')>0 or substr_count($str, '>')>0) {
+				for ($a=strlen($str)-1;$a>=0;$a--){
+					if($str[$a]=='>') {$foundTag=0;break;}
+					elseif($str[$a]=='<') {$foundTag=1;break;}
+				}
+			}
+		}
+	} //i cycle
 
-return implode(' ',$exploded);
+	return implode(' ',$exploded);
 }
 
 //--------------->

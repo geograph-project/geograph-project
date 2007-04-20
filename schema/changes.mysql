@@ -1209,3 +1209,13 @@ CREATE TABLE `loc_placenames` (
   SPATIAL KEY `point_en` (`point_en`(32))
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 ##get the new content in a new file!
+
+
+
+ALTER TABLE `loc_placenames` ADD INDEX ( `dsg` , `reference_index` ) ;
+
+ALTER TABLE `loc_dsg` ADD INDEX ( `code` ) ;
+
+ALTER TABLE `loc_placenames` ADD INDEX ( `gns_ufi` ) ;
+
+
