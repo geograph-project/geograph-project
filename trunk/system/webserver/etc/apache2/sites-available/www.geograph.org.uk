@@ -42,8 +42,12 @@
     RewriteCond %{HTTP_HOST}   !^$
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]   
 
+    RewriteCond %{HTTP_HOST}   ^kml\.geograph\.org\.uk [NC]
+    RewriteCond %{REQUEST_URI} !^/kml
+    RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
-    #the following includes a fix as some useragents auto add a / to what it things is a folder
+
+    #the following includes a fix as some useragents auto add a / to what it thinks is a folder
 
 
     RewriteRule /api/.* /restapi.php [qsa]
