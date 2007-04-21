@@ -54,4 +54,38 @@ if (isset($_GET['map']))
 		$rastermap->returnImage();
 	}
 	exit;	
+} elseif (isset($_GET['p'])) {
+	require_once('geograph/conversions.class.php');
+	
+	$p = intval($_GET['p']);
+	$x = ($p % 900);
+	$y = ($p - $x) / 900;
+	$x = 900 - $x;
+
+
+	$conv = new Conversions();
+	
+	list($e,$n,$reference_index) = $conv->internal_to_national($x,$y);
+	
+	if ($reference_index == 1) {
+		require_once('geograph/rastermap.class.php');
+		$square = false;				
+		$rastermap = new RasterMap($square);
+		if (isset($_GET['debug']))
+			init_session();
+		
+		$rastermap->service = 'OS50k-mapper';
+		$rastermap->nateastings = $e;
+		$rastermap->natnorthings = $n;
+		$rastermap->width = $rastermap->tilewidth[$rastermap->service];
+
+		if (isset($_GET['debug']))
+			print $rastermap->getOSGBStorePath($rastermap->service,0,0,false);
+
+		$rastermap->returnImage();
+		
+		exit;
+	} 
 }
+
+?>
