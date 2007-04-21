@@ -31,11 +31,11 @@ $smarty = new GeographPage;
 
 $db = NewADOConnection($GLOBALS['DSN']);
 
-$default_x1=$db->GetOne("select min(x) from gridsquare");
-$default_y1=$db->GetOne("select min(y) from gridsquare");
+$default_x1=$db->GetOne("select min(x) from gridsquare where percent_land > 0");
+$default_y1=$db->GetOne("select min(y) from gridsquare where percent_land > 0");
 
-$default_x2=$db->GetOne("select max(x) from gridsquare");
-$default_y2=$db->GetOne("select max(y) from gridsquare");
+$default_x2=$db->GetOne("select max(x) from gridsquare where percent_land > 0");
+$default_y2=$db->GetOne("select max(y) from gridsquare where percent_land > 0");
 
 //gather inputs
 $x1=isset($_POST['x1'])?$_POST['x1']:$default_x1;

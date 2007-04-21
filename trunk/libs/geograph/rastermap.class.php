@@ -58,9 +58,26 @@ class RasterMap
 	*/	
 	var $enabled = false;
 	
-	var $folders = array('tile-source'=>'pngs-1k-200/','OS50k'=>'pngs-2k-250/','OS50k-small'=>'pngs-1k-125/',);
-	var $tilewidth=array('tile-source'=>200,           'OS50k'=>250,           'OS50k-small'=>125,  'VoB'=>250,'Google'=>250);
-	var $divisor = array('tile-source'=>1000,          'OS50k'=>1000,          'OS50k-small'=>100);
+	var $folders = array(
+			'tile-source'=>'pngs-1k-200/',
+			'OS50k'=>'pngs-2k-250/',
+			'OS50k-mapper'=>'pngs-2k-125/',
+			'OS50k-small'=>'pngs-1k-125/'
+		);
+	var $tilewidth=array(
+			'tile-source'=>200,
+			'OS50k'=>250,
+			'OS50k-mapper'=>125,
+			'OS50k-small'=>125,
+			'VoB'=>250,
+			'Google'=>250
+		);
+	var $divisor = array(
+			'tile-source'=>1000,
+			'OS50k'=>1000,
+			'OS50k-mapper'=>1000,
+			'OS50k-small'=>100
+		);
 	
 	/**
 	* setup the values
@@ -507,6 +524,8 @@ class RasterMap
 	function createTile($service,$path = null) {
 		if ($service == 'OS50k') {
 			return $this->combineTiles($this->square,$path);
+		} elseif ($service == 'OS50k-mapper') {
+			return $this->combineTilesMapper($this->square,$path);
 		} elseif ($service == 'OS50k-small') {
 			if ($sourcepath = $this->getMapPath('OS50k',true)) {
 				return $this->createSmallExtract($sourcepath,$path);
@@ -524,7 +543,90 @@ class RasterMap
 		}
 	}
 
-	//take number of 1km tiles and create a 2km tile
+	//take four 1km tiles and create a 2km tile
+	function combineTilesMapper(&$gr,$path = false) {
+		global $CONF,$USER;
+		if (is_string($gr)) {
+			$square=new GridSquare;
+
+			if (!$square->setByFullGridRef($gr)) {
+				return false;
+			}
+		} else {//already a gridsquare object
+			$square &= $gr;
+		}
+
+		$ll = $square->gridsquare;
+		
+		
+		$service = 'tile-source';
+		$tilewidth = $this->tilewidth[$service];
+
+		//this isn't STRICTLY needed as getOSGBStorePath does the same floor, but do so in case we do exact calculations
+		$east = floor($this->nateastings/1000) * 1000;
+		$nort = floor($this->natnorthings/1000) * 1000;
+
+		if (strlen($CONF['imagemagick_path'])) {
+			$tilelist = array();
+			$c = 0;
+			$found = 0;
+			foreach(range(	$nort+1000 ,
+							$nort ,
+							-1000 ) as $n) {
+				foreach(range(	$east ,
+								$east+1000 ,
+								1000 ) as $e) {
+					$newpath = $this->getOSGBStorePath($service,$e,$n);
+					
+					if (file_exists($newpath)) {
+						$tilelist[] = $newpath;
+						$found = 1;
+					} else {
+						$tilelist[] = $CONF['os50kimgpath']."blank{$tilewidth}.png";
+						if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
+							print "$newpath not found<br/>\n";
+					}
+					$c++;
+				}
+			}
+			
+			if (!$found) {
+				if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
+					print "No content tiles found<br/>\n";
+				return false;
+			}
+			
+			if (!$path) 
+				$path = $this->getOSGBStorePath('OS50k',$east,$nort,true);
+
+			$cmd = sprintf('%s"%smontage" -geometry +0+0 %s -tile 2x2 png:- | "%sconvert" - -thumbnail %ldx%ld -colors 128 -depth 8 -type Palette png:%s &1>1 &2>1', 
+				isset($_GET['nice'])?'nice ':'',
+				$CONF['imagemagick_path'],
+				implode(' ',$tilelist),
+				$CONF['imagemagick_path'],
+				$this->width, $this->width, 
+				$path);
+
+			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) 
+				$cmd = str_replace('/','\\',$cmd);
+			
+			print exec ($cmd);
+			
+			if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
+				print "<pre>$cmd</pre>";
+			
+			if (file_exists($path)) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			//generate resized image
+			die("gd not implemented!");
+		}
+	}
+
+	//take nine 1km tiles and create a 2km tile
 	function combineTiles(&$gr,$path = false) {
 		global $CONF,$USER;
 		if (is_string($gr)) {
@@ -654,19 +756,19 @@ class RasterMap
 
 		if (!file_exists($mappath))
 			$mappath=$_SERVER['DOCUMENT_ROOT']."/maps/errortile.png";
-		
+
 		//Last-Modified: Sun, 20 Mar 2005 18:19:58 GMT
 		$t=filemtime($mappath);
 		$lastmod=strftime("%a, %d %b %Y %H:%M:%S GMT", $t);
-		
+
 		//use the filename as a hash (md5'ed)
 		//can use if-last-mod as file is not unique per user
 		//we have already calculated a header version of the modification date so forward that
-		customCacheControl($t,$mappath,true,$lastmod);	
+		customCacheControl($t,$mappath,true,$lastmod);
 
 		header("Content-Type: image/png");
 		
-		$size=filesize($mappath);		
+		$size=filesize($mappath);
 		header("Content-Size: $size");
 		header("Content-Length: $size");
 
