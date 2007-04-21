@@ -99,7 +99,7 @@ function initializeGraphic(e) {
 			initialPan: { 'x' : <?= $x_ratio ?>, 'y' : <?= $y_ratio ?>},
 			blankTile: 'assets/gfx/blank.gif',
 			loadingTile: 'assets/gfx/progress.gif',
-			tileUrlProvider:  new myTileUrlProvider("http://geograph.mobile/tile.php")
+			tileUrlProvider:  new myTileUrlProvider("http://<?= $_SERVER['HTTP_HOST']; ?>/tile.php")
 		});
 		viewerBean.init();
 	}
