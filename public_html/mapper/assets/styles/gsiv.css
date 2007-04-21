@@ -75,6 +75,12 @@
 	vertical-align: middle;
 	font-weight: bold;
 	z-index: 30;
+	
+	    filter:alpha(opacity=60);   
+	    -moz-opacity: 0.6;   
+	    opacity: 0.6;   
+
+	
 }
 #viewer .controls a
 {
