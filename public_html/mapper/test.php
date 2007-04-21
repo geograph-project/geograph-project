@@ -130,13 +130,13 @@ body {
 		</style>
 	</head>
 	<body>
-<? print "X,Y:  $x : $y "; ?>
 		<div id="header">
-		<h1>Giant Scalable Image Viewer (GSIV) 1.0 - TEST TEST TEST</h1>
+		<h1>Geograph Slippery Overview Map - TEST TEST TEST</h1>
 		</div>
 		<div id="viewer">
 			<div class="well"><!-- --></div>
 			<div class="surface"><!-- --></div>
+			<div class="copyright">&copy; Crown Copyright <?= $CONF['OS_licence'] ?></div>
 		</div>
 
 	</body>

@@ -5,6 +5,7 @@
 	/* NOTE: the size and width should be set dynamically when initialized */
 	width: 0;
 	height: 0;
+	border: 10px solid #000066;
 }
 #viewer .well, #viewer .surface {
 	margin: 0;
@@ -55,6 +56,24 @@
 	vertical-align: middle;
 	font-weight: bold;
 	border: 1px solid #000000;
+	z-index: 30;
+}
+#viewer .copyright        
+{
+	background-color: #eeeeff;
+	color:#000066;
+	position: absolute;
+	/* NOTE: the right and bottom can be adjusted when initialized */
+	left: 0;
+	bottom: 0;
+	width: 300;
+	height: 20px;
+	margin: 0;
+	padding: 0 4px 0 4px;
+	font-size: 12px;
+	line-height: 20px;
+	vertical-align: middle;
+	font-weight: bold;
 	z-index: 30;
 }
 #viewer .controls a
