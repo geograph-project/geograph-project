@@ -82,9 +82,72 @@ if (isset($_GET['map']))
 		if (isset($_GET['debug']))
 			print $rastermap->getOSGBStorePath($rastermap->service,0,0,false);
 
-		$rastermap->returnImage();
+		#$rastermap->returnImage();
 		
-		exit;
+		header("Content-Type: image/png");
+		
+		
+		$mappath = $rastermap->getMapPath($rastermap->service);
+		
+		if (!file_exists($mappath)) {
+			$mappath=$_SERVER['DOCUMENT_ROOT']."/maps/errortile.png";
+			readfile($mappath);
+		} else {
+		
+		
+				
+		
+		
+			
+			$db=NewADOConnection($GLOBALS['DSN']);
+			
+			$scanleft=$x;
+			$scanright=$x+1;
+			$scanbottom=$y;
+			$scantop=$y+1;
+
+			$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
+		
+			
+			$sql="select x,y,grid_reference,imagecount from gridsquare where 
+				CONTAINS( GeomFromText($rectangle),	point_xy)
+				and imagecount>0 ";
+			
+			$arr = $db->getAll($sql);
+			
+			
+			if (count($arr)) {
+				$part = $rastermap->tilewidth[$rastermap->service] /4;
+				$xd = imagefontwidth(5)/2;
+				$yd = imagefontheight(5)/2;
+				$s = imagefontwidth(5)*2.1;
+				
+				$img=imagecreatefrompng($mappath);
+				$colMarker=imagecolorallocate($img, 255,255,255);
+				$colBack=imagecolorallocate($img, 0,0,170);
+				
+				foreach ($arr as $i => $row) {
+					$x1 = $row['x'] - $x;
+					$y1 = 1 - ($row['y'] - $y);
+					
+					$x2 = $part + ($x1 * $part * 2);
+					$y2 = $part + ($y1 * $part * 2);
+					
+					imagefilledellipse ($img,$x2,$y2,$s,$s,$colBack);
+					
+					imagestring($img, 5, $x2-$xd, $y2-$yd, $row['imagecount'], $colMarker);	
+
+					
+				}
+				imagepng($img);
+
+			} else {
+				readfile($mappath);
+			}
+
+			exit;
+		} 
+
 	} 
 }
 
