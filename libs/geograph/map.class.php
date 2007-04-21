@@ -1411,7 +1411,7 @@ SELECT e,n,full_name as name,reference_index
 FROM loc_placenames
 INNER JOIN `loc_wikipedia` ON ( full_name = text ) 
 WHERE dsg = 'PPL' AND
-country IN ($countries) AND $crit2
+loc_wikipedia.country IN ($countries) AND 
 CONTAINS( GeomFromText($rectangle),	point_en) 
 GROUP BY gns_ufi
 ORDER BY RAND()
