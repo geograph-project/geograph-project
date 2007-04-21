@@ -124,10 +124,10 @@ if (isset($_GET['map']))
 				
 				$img=imagecreatefrompng($mappath);
 				$colMarker=imagecolorallocate($img, 255,255,255);
-				$colBack=imagecolorallocatealpha($img, 0,0,170,100);
+				$colBack=imagecolorallocate($img, 0,0,240);
 				
 				foreach ($arr as $i => $row) {
-					$row['imagecount']+=$c;
+					
 					$x1 = $row['x'] - $x;
 					$y1 = 1 - ($row['y'] - $y);
 					
@@ -138,7 +138,6 @@ if (isset($_GET['map']))
 					
 					imagestring($img, 5, $x2-2-$xd*strlen($row['imagecount'])/2, $y2-$yd, $row['imagecount'], $colMarker);	
 
-					$c+=10;
 				}
 				imagepng($img);
 
