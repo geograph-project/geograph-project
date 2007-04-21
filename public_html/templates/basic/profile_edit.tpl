@@ -218,46 +218,46 @@
  	<input type="submit" name="savechanges" value="Save Changes"/>
  	<input type="submit" name="cancel" value="Cancel"/>
 
+{if ($profile->rank && $profile->rank < 500) || ($profile->rights && $profile->rights ne 'basic')}
+	<br/><br/><br/><br/><br/><br/>
+	<fieldset>
+	<legend>User Roles</legend>
 
-<br/><br/><br/><br/><br/><br/>
-<fieldset>
-<legend>User Roles</legend>
- 
-  
-<div class="field"> 
-  
-	<label for="moderator" class="nowrap">Moderator</label>
-	{if strpos($profile->rights,'moderator') > 0}
-		<input type="button" value="Relinqush moderator rights" onclick="location.href = '/admin/moderation.php?relinqush=1';"/>
 
-		<div class="fieldnotes">If you are no longer able to help out with moderation then click the button above. (you will have to reapply)</div>  
-	{else}
-		{if strpos($profile->rights,'traineemod') > 0}
-			<input type="button" value="Visit Demo Moderation Page" onclick="location.href = '/admin/moderation.php?apply=1';"/>
+	<div class="field"> 
+
+		<label for="moderator" class="nowrap">Moderator</label>
+		{if strpos($profile->rights,'moderator') > 0}
+			<input type="button" value="Relinqush moderator rights" onclick="location.href = '/admin/moderation.php?relinqush=1';"/>
+
+			<div class="fieldnotes">If you are no longer able to help out with moderation then click the button above. (you will have to reapply)</div>  
 		{else}
-			<input type="button" value="Apply to become a moderator" onclick="location.href = '/admin/moderation.php?apply=1';"/>
-		{/if}
+			{if strpos($profile->rights,'traineemod') > 0}
+				<input type="button" value="Visit Demo Moderation Page" onclick="location.href = '/admin/moderation.php?apply=1';"/>
+			{else}
+				<input type="button" value="Apply to become a moderator" onclick="location.href = '/admin/moderation.php?apply=1';"/>
+			{/if}
 
-		<div class="fieldnotes">
-		{if strpos($profile->rights,'traineemod') > 0}
-			or <input type="button" value="Cancel Application" onclick="location.href = '/admin/moderation.php?relinqush=1';"/><br/><br/>
+			<div class="fieldnotes">
+			{if strpos($profile->rights,'traineemod') > 0}
+				or <input type="button" value="Cancel Application" onclick="location.href = '/admin/moderation.php?relinqush=1';"/><br/><br/>
+			{/if}
+
+			If you have an interest in helping out with moderation, then click the button above to try a dummy moderation run. There is no commitment to complete the whole application.</div>  
 		{/if}
-		
-		If you have an interest in helping out with moderation, then click the button above to try a dummy moderation run. There is no commitment to complete the whole application.</div>  
+	</div>
+
+	{if strpos($profile->rights,'ticketmod') > 0}
+	<div class="field"> 
+
+		<label for="moderator" class="nowrap">Tickets</label>
+			<input type="button" value="Relinqush ticket moderator rights" onclick="location.href = '/admin/tickets.php?relinqush=1';"/>
+
+	</div>
 	{/if}
-</div>
-	
-{if strpos($profile->rights,'ticketmod') > 0}
-<div class="field"> 
-  
-	<label for="moderator" class="nowrap">Tickets</label>
-		<input type="button" value="Relinqush ticket moderator rights" onclick="location.href = '/admin/tickets.php?relinqush=1';"/>
 
-</div>
+	</fieldset>
 {/if}
-
-</fieldset>
-
 </div>
 
  </form>	
