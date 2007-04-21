@@ -93,7 +93,7 @@
 	<br style="clear:left;"/>&nbsp;
 	
 	{if $apply} 
-		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php?apply=2">Finish my application</a> - we will contact you.</div>
+		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php?apply=2">Finish my application</a> - we will contact you if a vacancy arrises. Please note that we however have a long waiting list!</div>
 	{/if}
 	{if !$moderator && !$remoderate}		
 		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php">Continue &gt;</a>
