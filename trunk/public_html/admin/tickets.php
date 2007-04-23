@@ -138,6 +138,13 @@ if ($type == 'open') {
 
 	$where_crit = "t.moderator_id>0 and t.status<>'closed'";
 	
+	if (!empty($_GET['defer'])) {		
+		$smarty->assign('defer', 1);
+	} else {
+		//exclude deferred
+		$sql_where .= " and deferred < date_sub(NOW(),INTERVAL 24 HOUR)";
+	}
+
 } elseif ($type == 'closed') {
 	$columns .= ",moderator.realname as moderator";
 	$tables .= " left join user as moderator on (moderator.user_id=t.moderator_id)";
