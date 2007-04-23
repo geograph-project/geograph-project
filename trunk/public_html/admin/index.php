@@ -43,7 +43,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (!$db) die('Database connection failed');  
 		
 	$smarty->assign('images_pending', $db->GetOne("select count(*) from gridimage where moderation_status='pending'"));
-	$smarty->assign('tickets_new', $db->GetOne("select count(*) from gridimage_ticket where moderator_id=0 and status<>'closed'"));
+	$smarty->assign('tickets_new', $db->GetOne("select count(*) from gridimage_ticket where moderator_id=0 and status<>'closed' and deferred < date_sub(NOW(),INTERVAL 24 HOUR)"));
 	$smarty->assign('tickets_yours', $db->GetOne("select count(*) from gridimage_ticket where moderator_id={$USER->user_id} and status<>'closed'"));
 
 	

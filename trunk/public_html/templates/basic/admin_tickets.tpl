@@ -10,22 +10,28 @@
 <h2><a title="Admin home page" href="/admin/index.php">Admin</a> : Trouble Tickets</h2>
 {dynamic}
 
-{if $moderator}
-<h3>Close Tickets</h3>
-{else}
-<h3>New Tickets</h3>
-{/if}
+<h3>{$title}</h3>
+
+    <form method="get" action="{$script_name}">
+    <p>Type: 
+    <select name="modifer">
+    	{html_options options=$modifers selected=$modifer}
+    </select> 
+    <select name="type">
+    	{html_options options=$types selected=$type}
+    </select> &nbsp;
+    <label for="defer">Include Deferred?</label><input type="checkbox" name="defer" id="defer" {if $defer} checked{/if}/> &nbsp;
+    <input type="submit" value="Go"/></p></form>
 
 {if $newtickets}
 
 {if $moderator}
-<p>These tickets have been recently been closed by the selected moderator</p>
-{else}
-<p>These tickets haven't seen any moderator activity yet...go on, sort one out</p>
+<p>These tickets have been recently been touched by the selected moderator</p>
 {/if}
 
 <table class="report sortable" id="newtickets" style="font-size:8pt;">
 <thead><tr>
+	{if $col_moderator}<td>Moderator</td>{/if}
 	<td>Photographer</td>
 	<td>Title</td>
 	<td>Problem</td>
@@ -37,6 +43,7 @@
 {foreach from=$newtickets item=ticket}
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}">
+{if $col_moderator}<td>{$ticket.moderator}</td>{/if}
 <td>{$ticket.submitter}{if $ticket.submitter_comments}<img src="/templates/basic/img/star-light.png" width="14" height="14" title="Comment: {$ticket.submitter_comment}"/>{/if}</td>
 <td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
 <td>{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes}</td>
@@ -47,49 +54,12 @@
 </tbody>
 </table>
 <br/>
-<div class="interestBox" style="padding-left:100px"><a href="/admin/tickets.php">Continue &gt;</a> 
+<div class="interestBox" style="padding-left:100px"><a href="/admin/tickets.php?{$query_string}">Continue &gt;</a> 
 		or <a href="/admin/moderation.php?abandon=1">Finish</a> the current moderation session</div>
 
 {else}
   <p>There are no tickets available to moderate at this time, please try again later.</p>
 {/if}
-<br/><br/>
-<div class="interestBox">
-<h3>Open Tickets</h3>
-
-{if $opentickets}
-
-<p>These tickets have seen some moderator activity - make sure they get closed eventually! 
-However please only close tickets when certain the issue has been dealt with.</p>
-
-<table class="report sortable" id="opentickets" style="font-size:8pt;">
-<thead><tr>
-	<td>Moderator</td>
-	<td>Photographer</td>
-	<td>Title</td>
-	<td>Problem</td>
-	<td>Suggested by</td>
-	<td>Updated</td>
-</tr></thead>
-<tbody>
-
-{foreach from=$opentickets item=ticket}
-{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
-<tr bgcolor="{$bgcolor}">
-<td>{$ticket.moderator}</td>
-<td>{$ticket.submitter}{if $ticket.submitter_comments}<img src="/templates/basic/img/star-light.png" width="14" height="14" title="Comment: {$ticket.submitter_comment}"/>{/if}</td>
-<td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
-<td>{$ticket.notes}</td>
-<td>{$ticket.suggester}</td>
-<td>{$ticket.updated}</td>
-</tr>
-{/foreach}
-</tbody>
-</table>
-{else}
-  <p>There are no open tickets! Well done!</p>
-{/if}
-</div>
 
 
 {/dynamic}    

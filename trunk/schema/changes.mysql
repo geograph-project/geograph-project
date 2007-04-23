@@ -1219,3 +1219,5 @@ ALTER TABLE `loc_dsg` ADD INDEX ( `code` ) ;
 ALTER TABLE `loc_placenames` ADD INDEX ( `gns_ufi` ) ;
 
 
+
+ALTER TABLE `gridimage_ticket` ADD `deferred` DATETIME NOT NULL ;
