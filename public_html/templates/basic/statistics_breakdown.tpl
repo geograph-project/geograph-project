@@ -31,7 +31,7 @@
     {/if}
     {/dynamic}
     {/if}
-    <input type="submit" value="Go"></p></form>
+    <input type="submit" value="Go"/></p></form>
     
 
 	<h3>{$h2title}</h3>

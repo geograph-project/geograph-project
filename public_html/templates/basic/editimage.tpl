@@ -68,7 +68,7 @@
 <br/>
   {if $isadmin}
 	  <form method="post">
-	  <script type="text/javascript" src="/admin/moderation.js"></script>
+	  <script type="text/javascript" src="/admin/moderation.js?v={$javascript_version}"></script>
 	  <h2 class="titlebar">Moderation</h2>
 	  <p><input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey"{/if}/>
 	  <input class="accept" type="button" id="accept" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey"{/if}/>
@@ -277,6 +277,9 @@
 			<input type="submit" name="close" value="Close ticket" onclick="autoDisable(this)"/>
 
 			{/if} {$ticket->suggester_name} is notified.
+			
+			<input class="accept" type="button" id="defer" value="Defer" onclick="deferTicket({$ticket->gridimage_ticket_id})"/>
+	 		<span class="caption" id="modinfo{$ticket->gridimage_ticket_id}"></span>
 		{/if}
 		
 	</div>

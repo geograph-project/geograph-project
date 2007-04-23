@@ -76,3 +76,19 @@ function moderateImage(gridimage_id, status)
 
 }
 
+function deferTicket(gridimage_ticket_id, status)
+{
+	var url="/admin/tickets.php?gridimage_ticket_id="+gridimage_ticket_id+"&defer=do";
+	
+	//make the request
+	var req=getXMLRequestObject();
+	
+	last_id=gridimage_ticket_id;
+	
+	req.onreadystatechange=onModerationCompleted;
+	req.open("GET", url,true);
+	req.send(null)
+
+
+}
+

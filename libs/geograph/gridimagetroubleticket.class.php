@@ -266,6 +266,16 @@ class GridImageTroubleTicket
 	}
 	
 	/**
+	* set moderator notes
+	* @access public
+	*/
+	function setDefer($when = 'NOW()') {
+		$db=&$this->_getDB();
+		$sql="update gridimage_ticket set updated='{$this->updated}', deferred=$when where gridimage_ticket_id={$this->gridimage_ticket_id}";
+		$db->Execute($sql);
+	}
+	
+	/**
 	* Updates a given field of the image, holding it for moderation if necessary
 	* A series of calls to this function should be followed up with a call
 	* to commit(), which persist the ticket and any unmoderated changes
