@@ -68,7 +68,7 @@ if (rand(1,10) > 5) {
 }
 	
 //try and send?
-if (isset($_POST['msg']) && !$throttle)
+if (isset($_POST['msg']))
 {
 	$ok=true;
 	$msg=trim(stripslashes($_POST['msg']));
@@ -98,6 +98,43 @@ if (isset($_POST['msg']) && !$throttle)
 	{
 		$ok=false;
 		$errors['msg']="Sorry, this looks like spam";
+	}
+	
+	//if not logged in or they been busy - lets ask them if a person! (plus jump though a few hoops to make it harder to program a bot)
+	if ($ok && ($USER->user_id == 0 || $throttle )) {
+	
+		$verification = md5($CONF['register_confirmation_secret'].$msg.$from_email.$from_name);
+		
+		
+		if (!isset($_POST['verify']) || empty($_POST['verification']) || $_POST['verification'] != $verification || empty($_SESSION['verification'])  || $_SESSION['verification'] != $verification) {
+			$ok = false;
+			$smarty->assign('verification', $verification);
+		} else {
+			define('CHECK_CAPTCHA',true);
+
+			require("stuff/captcha.jpg.php");
+
+			$ok = $ok && CAPTCHA_RESULT;
+			
+			if ($ok) {
+				$_SESSION['verCount'] = (isset($_SESSION['verCount']))?$_SESSION['verCount']-2:-2;
+
+			} else {
+				if (isset($_SESSION['verCount']) && $_SESSION['verCount'] > 3) {
+					$smarty->assign('error', "Too many failures please try again later");
+				} else {
+					$smarty->assign('verification', $verification);
+					$smarty->assign('error', "Please Try again");
+				}
+				$ok = false;
+				$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
+				
+				$_SESSION['verCount'] = (isset($_SESSION['verCount']))?$_SESSION['verCount'] +1:1;
+			} 
+		}
+		
+		$_SESSION['verification'] = $verification;
+		
 	}
 	
 	//still ok?
