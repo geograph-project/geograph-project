@@ -7,21 +7,28 @@
 	setTimeout('window.location.href="/admin/";',1000*60*45);
 </script>{/literal}
 
-<h2><a title="Admin home page" href="/admin/index.php">Admin</a> : Trouble Tickets</h2>
 {dynamic}
 
-<h3>{$title}</h3>
+<h2><a title="Admin home page" href="/admin/index.php">Admin</a> :: Trouble Tickets, <small>{$title}</small></h2>
 
     <form method="get" action="{$script_name}">
-    <p>Type: 
-    <select name="modifer">
+    <p> 
+   <!-- When:<select name="modifer">
     	{html_options options=$modifers selected=$modifer}
-    </select> 
-    <select name="type">
+    </select> <br/-->
+    Type:<select name="type">
     	{html_options options=$types selected=$type}
-    </select> &nbsp;
+    </select> <br/>
+    Your:<select name="theme">
+    	{html_options options=$themes selected=$theme}
+    </select> <br/>
+    Photographer:<select name="variation">
+    	{html_options options=$variations selected=$variation}
+    </select><br/>
     <label for="defer">Include Deferred?</label><input type="checkbox" name="defer" id="defer" {if $defer} checked{/if}/> &nbsp;
-    <input type="submit" value="Go"/></p></form>
+     <label for="minor">Minor</label><input type="checkbox" name="i" id="minor" {if $minor} checked{/if}/> &nbsp;
+     <label for="major">Major</label><input type="checkbox" name="a" id="major" {if $major} checked{/if}/> &nbsp;
+    <input type="submit" name="Submit" value="Go"/></p></form>
 
 {if $newtickets}
 
@@ -46,7 +53,7 @@
 {if $col_moderator}<td>{$ticket.moderator}</td>{/if}
 <td>{$ticket.submitter}{if $ticket.submitter_comments}<img src="/templates/basic/img/star-light.png" width="14" height="14" title="Comment: {$ticket.submitter_comment}"/>{/if}</td>
 <td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
-<td>{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes}</td>
+<td>{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes|escape:'html'|geographlinks}</td>
 <td>{$ticket.suggester}</td>
 <td>{$ticket.suggested}</td>
 </tr>

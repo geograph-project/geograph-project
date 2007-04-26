@@ -25,6 +25,8 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+$defertime = 24; //hour
+
 $USER->mustHavePerm("ticketmod");
 
 $smarty = new GeographPage;
@@ -55,13 +57,22 @@ if (isset($_GET['gridimage_ticket_id']))
 	if ($ticket->isValid())
 	{
 		$ticket->setDefer('NOW()');
-		echo "Ticket Deferred for 24 hours";		
+		echo "Ticket Deferred for $defertime hours";		
 	}
 	else
 	{
 		echo "FAIL";
 	}
 	
+	exit;
+}
+
+if (!empty($_GET['Submit'])) {
+	//if changing state, release locks
+	
+	$db->Execute("DELETE FROM gridimage_moderation_lock WHERE user_id = {$USER->user_id}");
+	
+	header("Location: /admin/tickets.php?".str_replace('Submit='.$_GET['Submit'],'',$_SERVER['QUERY_STRING']));
 	exit;
 }
 
@@ -75,6 +86,15 @@ $rev = (isset($_GET['rev']))?'desc':'';
 
 $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'pending';
 $modifer = (isset($_GET['modifer']) && preg_match('/^\w+$/' , $_GET['modifer']))?$_GET['modifer']:'recent';
+$theme = (isset($_GET['theme']) && preg_match('/^\w+$/' , $_GET['theme']))?$_GET['theme']:'any';
+$variation = (isset($_GET['variation']) && preg_match('/^\w+$/' , $_GET['variation']))?$_GET['variation']:'any';
+
+$major = (isset($_GET['a']))?1:0;
+$minor = (isset($_GET['i']))?1:0;
+if (empty($major) && empty($minor)) {
+	$major = 1;$minor = 1;
+}
+$defer = (isset($_GET['defer']))?1:0;
 
 
 #############################
@@ -124,7 +144,9 @@ if (isset($_GET['moderator'])) {
 # available values
 
 $types = array('pending'=>'New Tickets','open'=>"Open Tickets",'closed'=>"Closed Tickets");
-$modifers = array('recent'=>'Recent','24'=>"over 24 hours old",'7'=>"over 7 days old");
+$modifers = array('recent'=>'All','24'=>"over 24 hours old",'7'=>"over 7 days old");
+$themes = array('any'=>'Any','mod'=>"on images I moderated",'comment'=>"tickets I have commented on",'suggest'=>"tickets I suggested");
+$variations = array('any'=>'Any','own'=>"suggested on own images",'comment'=>"has left comment");
 
 #################
 # setup type
@@ -142,7 +164,7 @@ if ($type == 'open') {
 		$smarty->assign('defer', 1);
 	} else {
 		//exclude deferred
-		$sql_where .= " and deferred < date_sub(NOW(),INTERVAL 24 HOUR)";
+		$sql_where .= " and deferred < date_sub(NOW(),INTERVAL $defertime HOUR)";
 	}
 
 } elseif ($type == 'closed') {
@@ -157,14 +179,14 @@ if ($type == 'open') {
 } else {
 	$type = 'pending';
 	
-	if (!empty($_GET['defer'])) {		
-		$smarty->assign('defer', 1);
-	} else {
+	if (!$defer) {		
 		//exclude deferred
 		$sql_where .= " and deferred < date_sub(NOW(),INTERVAL 24 HOUR)";
 	}
 	
 }
+
+#################
 
 if ($modifer == '24') {
 	$sql_where .= " and suggested < date_sub(NOW(),INTERVAL 24 HOUR)";
@@ -176,9 +198,44 @@ if ($modifer == '24') {
 	$modifer = 'recent';
 }
 
+#################
+
+if ($theme == 'mod') {
+	$sql_where .= " and i.moderator_id = {$USER->user_id}";
+
+} elseif ($theme == 'comment') {
+	$sql_where .= " and c.user_id = {$USER->user_id}";
+
+} elseif ($theme == 'suggest') {
+	$sql_where .= " and t.user_id = {$USER->user_id}";
+
+} else {
+	$theme = 'any';
+}
+
+#################
+
+if ($variation == 'own') {
+	$sql_where .= " and t.user_id = i.user_id";
+
+} elseif ($variation == 'comment') {
+	$sql_where .= " and c.user_id = i.user_id";
+
+} else {
+	$variation = 'any';
+}
+
+if (empty($major)) {
+	$sql_where .= " and type = 'minor'";
+} elseif(empty($minor)) {
+	$sql_where .= " and type = 'normal'";
+}
+
+#################
+
 $title = "Showing: ".$modifers[$modifer].", ".$types[$type];
-if (!empty($_GET['defer'])) {		
-	$title .= ", included Deferred";
+if ($defer) {		
+	$title .= ", including Deferred";
 }
 
 #################
@@ -187,12 +244,27 @@ if (!empty($_GET['defer'])) {
 if (!empty($_GET['debug']))
 	print "$where_crit $sql_where";
 
-$smarty->assign('type', $type);
-$smarty->assign('modifer', $modifer);
 $smarty->assign('title', $title);
 
-$smarty->assign_by_ref('modifers', $modifers);
+$info = $db->getAssoc("select moderator_id>0,count(*) as c from gridimage_ticket where status<>'closed' and deferred < date_sub(NOW(),INTERVAL $defertime HOUR) group by moderator_id=0");
+
+$types['pending'] .= " [{$info['0']}]";
+$types['open'] .= " [{$info['1']}]";
+
+
+
+$smarty->assign('type', $type);
+$smarty->assign('modifer', $modifer);
+$smarty->assign('theme', $theme);
+$smarty->assign('variation', $variation);
+$smarty->assign('minor', $minor);
+$smarty->assign('major', $major);
+$smarty->assign('defer', $defer);
+
 $smarty->assign_by_ref('types', $types);
+$smarty->assign_by_ref('modifers', $modifers);
+$smarty->assign_by_ref('themes', $themes);
+$smarty->assign_by_ref('variations', $variations);
 
 $smarty->assign('query_string', $_SERVER['QUERY_STRING']);
 
