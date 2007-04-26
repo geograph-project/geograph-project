@@ -16,16 +16,23 @@
 
 <h3>{$title}</h3>
 
-    <form method="get" action="{$script_name}" target="_self">
-    <p>Type: 
-    <select name="modifer">
-    	{html_options options=$modifers selected=$modifer}
-    </select> 
-    <select name="type">
+    <form method="get" action="{$script_name}">
+    <p> 
+    <input type="hidden" name="sidebar" value="1"/>
+    Type:<select name="type">
     	{html_options options=$types selected=$type}
-    </select> &nbsp;
+    </select> <br/>
+    Your:<select name="theme">
+    	{html_options options=$themes selected=$theme}
+    </select> <br/>
+    Photographer:<select name="variation">
+    	{html_options options=$variations selected=$variation}
+    </select><br/>
     <label for="defer">Include Deferred?</label><input type="checkbox" name="defer" id="defer" {if $defer} checked{/if}/> &nbsp;
-    <input type="submit" value="Go"/></p></form>
+     <label for="minor">Minor</label><input type="checkbox" name="i" id="minor" {if $minor} checked{/if}/> &nbsp;
+     <label for="major">Major</label><input type="checkbox" name="a" id="major" {if $major} checked{/if}/> &nbsp;
+    <input type="submit" name="Submit" value="Go"/></p></form>
+
 {if $newtickets}
 
 <table class="report sortable" id="newtickets" style="font-size:8pt;">
@@ -48,7 +55,7 @@
 <td>{$ticket.submitter}{if $ticket.submitter_comments}<img src="/templates/basic/img/star-light.png" width="14" height="14" title="Comment: {$ticket.submitter_comment}"/>{/if}</td>
 </tr>
 <tr bgcolor="{$bgcolor}">
-<td colspan="4">{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes}</td>
+<td colspan="4">{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes|escape:'html'|geographlinks}</td>
 </tr>
 {/foreach}
 </tbody>
