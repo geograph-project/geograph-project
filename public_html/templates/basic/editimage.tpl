@@ -263,8 +263,8 @@
 		
 		<input type="submit" name="addcomment" value="Add comment"/>
 		
-		{if $isadmin and $ticket->moderator_id > 0}
-			<input type="checkbox" name="claim" value="on" id="claim" checked/> <label for="claim">Claim Ticket</label>
+		{if $isadmin and $ticket->moderator_id > 0 and $ticket->moderator_id != $user->user_id}
+			<input type="checkbox" name="claim" value="on" id="claim" checked/> <label for="claim" title="Claim this ticket to be moderated by me">Claim Ticket</label>
 			&nbsp;&nbsp;&nbsp;
 		{elseif $isadmin}
 			<input type="hidden" name="claim" value="on"/>
