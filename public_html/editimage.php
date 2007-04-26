@@ -211,7 +211,7 @@ if (isset($_REQUEST['id']))
 			{
 				if (isset($_POST['addcomment']))
 				{
-					$ticket->addModeratorComment($USER->user_id, $comment);
+					$ticket->addModeratorComment($USER->user_id, $comment, !empty($_POST['claim']));
 				}
 				elseif (isset($_POST['accept']))
 				{

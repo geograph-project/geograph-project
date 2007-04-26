@@ -643,7 +643,7 @@ class GridImageTroubleTicket
 	 * moderator comment is added to ticket and emailed to photo submitter
 	 * @access public
 	 */
-	function addModeratorComment($user_id, $comment)
+	function addModeratorComment($user_id, $comment, $claim = true)
 	{
 		$db=&$this->_getDB();
 		if (!$this->isValid())
@@ -656,9 +656,14 @@ class GridImageTroubleTicket
 		//add database comment
 		$this->_addComment($user_id, $comment);
 		
-		//associate this moderator with the ticket
-		$this->moderator_id=$user_id;
-		$db->Execute("update gridimage_ticket set status='open', moderator_id={$user_id},notify = '{$this->notify}' where gridimage_ticket_id={$this->gridimage_ticket_id}");
+		if ($claim || empty($this->moderator_id)) {
+			//associate this moderator with the ticket
+			$this->moderator_id=$user_id;
+			$sets = ", moderator_id={$user_id}";
+		} else {
+			$sets = '';
+		}
+		$db->Execute("update gridimage_ticket set status='open', notify = '{$this->notify}' $sets where gridimage_ticket_id={$this->gridimage_ticket_id}");
 		
 		$moderator=new GeographUser($user_id);
 		$comment.="\n\n".$moderator->realname."\nGeograph Moderator\n";
