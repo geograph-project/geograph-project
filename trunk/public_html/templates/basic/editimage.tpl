@@ -262,6 +262,14 @@
 		<textarea name="comment" rows="4" cols="70"></textarea><br/>
 		
 		<input type="submit" name="addcomment" value="Add comment"/>
+		
+		{if $isadmin and $ticket->moderator_id > 0}
+			<input type="checkbox" name="claim" value="on" id="claim" checked/> <label for="claim">Claim Ticket</label>
+			&nbsp;&nbsp;&nbsp;
+		{elseif $isadmin}
+			<input type="hidden" name="claim" value="on"/>
+		{/if}
+		
 		{if $ticket->user_id ne $image->user_id}
 			<input type="checkbox" name="notify" value="suggestor" id="notify_suggestor" {if $ticket->notify=='suggestor'}checked{/if}/> <label for="notify_suggestor">Send {if $isadmin}{$ticket->suggester_name}{else}ticket suggestor{/if} this comment.</label>
 			&nbsp;&nbsp;&nbsp;
