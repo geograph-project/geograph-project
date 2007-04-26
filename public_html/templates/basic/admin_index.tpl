@@ -48,6 +48,8 @@ corrected<br/> <b>{if $gridsquares_sea.1 || $gridsquares_sea.2}[GB:{$gridsquares
 <li><a title="Picture of the day" href="/admin/pictureoftheday.php">Picture of the Day</a> - 
    choose daily picture selections</li>
          
+<li>Stats: <a href="/statistics/admin_turnaround.php">Turn Around</a> - 
+   how amazingly quick moderation is</li>
 </ul>
 
 <h2>Total Submissions</h2>
