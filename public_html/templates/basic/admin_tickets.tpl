@@ -25,9 +25,9 @@
     Photographer:<select name="variation">
     	{html_options options=$variations selected=$variation}
     </select><br/>
-    <label for="defer">Include Deferred?</label><input type="checkbox" name="defer" id="defer" {if $defer} checked{/if}/> &nbsp;
-     <label for="minor">Minor</label><input type="checkbox" name="i" id="minor" {if $minor} checked{/if}/> &nbsp;
-     <label for="major">Major</label><input type="checkbox" name="a" id="major" {if $major} checked{/if}/> &nbsp;
+    <label for="defer">Include Deferred?</label><input type="checkbox" name="defer" id="defer" {if $defer} checked="checked"{/if}/> &nbsp;
+     <label for="minor">Minor</label><input type="checkbox" name="i" id="minor" {if $minor} checked="checked"{/if}/> &nbsp;
+     <label for="major">Major</label><input type="checkbox" name="a" id="major" {if $major} checked="checked"{/if}/> &nbsp;
     <input type="submit" name="Submit" value="Go"/></p></form>
 
 {if $newtickets}
