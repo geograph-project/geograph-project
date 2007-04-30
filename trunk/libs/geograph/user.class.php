@@ -171,6 +171,41 @@ class GeographUser
 		return $style;
 	}
 	
+	function setDefaultForumOption($name,$value) {
+		$db = $this->_getDB();
+
+		$db->Execute("update geobb_users set user_$name = '$value' where user_id='{$this->user_id}'");
+		$this->default_style = $style;
+	}
+	
+	function getForumOption($name,$def = '',$save = true) {
+		$value = $def;
+		if (isset($_GET[$name]))
+		{
+			$value=$_GET[$name];
+			$_SESSION[$name]=$value;
+
+			if ($save && $this->registered) 
+				$this->setDefaultForumOption($name,$value);
+		}
+		elseif ($this->registered)
+		{
+			if (isset($this->$name)) {
+				$value=$this->$name;
+			} else {
+				$db = $this->_getDB();
+				
+				$value = $db->getOne("select user_$name from geobb_users where user_id='{$this->user_id}'");
+				$this->$name = $value;
+			}
+			$_SESSION[$name]=$value;
+		}
+		elseif (isset($_SESSION[$name]))
+		{
+			$value=$_SESSION[$name];
+		}
+		return $value;
+	}
 	
 	/**
 	* get stats for user represented by this instance - 

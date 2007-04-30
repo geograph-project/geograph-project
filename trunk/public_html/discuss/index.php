@@ -341,14 +341,8 @@ if(isset($metaLocation)) { $meta_relocate="{$main_url}/{$indexphp}"; echo ParseT
 elseif($action==''){
 if(db_simpleSelect(0,$Tf,'forum_id') and $countRes>0){
 if ($viewTopicsIfOnlyOneForum!=1) {
-	if (isset($_GET['forums']) ) {
-		$showforums=intval($_GET['forums']);
-		$_SESSION['showforums']=$showforums;
-	} elseif (isset($_SESSION['showforums'])) {
-		$showforums=$_SESSION['showforums'];
-	} else {
-		$showforums = 1;
-	}
+	$showforums = $USER->getForumOption('forums',1);
+	
 	if (!$showforums) {
 		if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_icon')){
 			do{
@@ -362,13 +356,13 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 	} else {
 		require($pathToFiles.'bb_func_vforum.php');
 	}
+	$save=true;
 	if (isset($_GET['latest']) ) {
-		$viewlastdiscussions=min(abs(intval($_GET['latest'])),120);
-		$_SESSION['viewlastdiscussions']=$viewlastdiscussions;
-	} elseif (isset($_SESSION['viewlastdiscussions'])) {
-		$viewlastdiscussions=$_SESSION['viewlastdiscussions'];
-	} 
-	
+		$_GET['latest']=min(abs(intval($_GET['latest'])),120);
+		if ($_GET['latest'] > 40)
+			$save = false;
+	}
+	$viewlastdiscussions = $USER->getForumOption('latest',$viewlastdiscussions,$save);
 	if ($viewlastdiscussions!=0) {
 		require($pathToFiles.'bb_func_ldisc.php');
 		$listTopics=$list_topics;
