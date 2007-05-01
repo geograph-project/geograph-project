@@ -608,7 +608,7 @@
 		<li><a href="/gpx.php">GPX Exports</a></li>
 		<li>100x100km CheckSheets (<a href="http://{$http_host}/mapsheet.php?t=tolJ5oOXXJ0oOJFoOXXJfoMXbJqoOXXJL5405o4VZMlXwZblw4MMuX">example</a>) <small>- nice easy parseable listing, could be used for creating coverage maps</small></li>
 		<li>Please DON'T use the /list/ namespace as that's for Search Engines</li>
-		<li><a href="/sitemap.xml">sitemap.xml</a> - see {external href="http://www.sitemaps.org"}</li>
+		<li>sitemap.xml - see {external href="http://www.sitemaps.org"}</li>
 		<li><a href="http://www.geourl.org/" style="text-decoration: line-through">geourl.org</a> (Coming soon)</li>
 		<li>We can also create coverage csv's on demand, (listing squares currently with images)</li>
 	 </ul>
