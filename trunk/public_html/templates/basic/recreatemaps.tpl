@@ -17,7 +17,7 @@
 
 <hr> 
 	
-{if ($invalid_maps < 150) || ($is_mod && ($invalid_maps < 1000))}
+{if ($invalid_maps < 500) || ($is_mod && ($invalid_maps < 2500))}
 	<form method="post" action="recreatemaps.php">
 
 	<p>You can use the following form to request an update for a particular square.</p>
