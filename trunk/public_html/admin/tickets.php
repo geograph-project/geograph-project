@@ -244,9 +244,6 @@ if ($defer) {
 #################
 # put it all together...
 
-if (!empty($_GET['debug']))
-	print "$where_crit $sql_where";
-
 $smarty->assign('title', $title);
 
 $info = $db->getAssoc("select moderator_id>0,count(*) as c from gridimage_ticket where status<>'closed' and deferred < date_sub(NOW(),INTERVAL $defertime HOUR) group by moderator_id=0");
@@ -276,11 +273,11 @@ $smarty->assign('query_string', $_SERVER['QUERY_STRING']);
 
 $db->Execute("LOCK TABLES ".implode(',',$locks));
 
-$newtickets=$db->GetAll(
+$newtickets=$db->GetAll($sql = 
 	"select t.*,suggester.realname as suggester,
 		submitter.realname as submitter, i.title, 
-		count(c.gridimage_ticket_comment_id) as submitter_comments,
-		c.comment as submitter_comment
+		sum(c.user_id=i.user_id) as submitter_comments,
+		group_concat(if(c.user_id=i.user_id,c.comment,null)) as submitter_comment
 		$columns
 	from gridimage_ticket as t
 	inner join user as suggester on (suggester.user_id=t.user_id)
@@ -290,7 +287,7 @@ $newtickets=$db->GetAll(
 	left join gridimage_moderation_lock as l
 		on(i.gridimage_id=l.gridimage_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) )
 	left join gridimage_ticket_comment as c
-		on(c.gridimage_ticket_id=t.gridimage_ticket_id and c.user_id=i.user_id )
+		on(c.gridimage_ticket_id=t.gridimage_ticket_id)
 	where $where_crit $sql_where
 		and (l.gridimage_id is null OR 
 				(l.user_id = {$USER->user_id} AND lock_type = 'modding') OR
@@ -299,7 +296,8 @@ $newtickets=$db->GetAll(
 	group by t.gridimage_ticket_id
 	order by t.suggested $rev
 	limit $limit");
-
+if (!empty($_GET['debug']))
+	print $sql;
 $smarty->assign_by_ref('newtickets', $newtickets);
 
 #################
