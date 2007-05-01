@@ -145,7 +145,7 @@ if (isset($_GET['moderator'])) {
 
 $types = array('pending'=>'New Tickets','open'=>"Open Tickets",'closed'=>"Closed Tickets");
 $modifers = array('recent'=>'All','24'=>"over 24 hours old",'7'=>"over 7 days old");
-$themes = array('any'=>'Any','mod'=>"on images I moderated",'comment'=>"tickets I have commented on",'suggest'=>"tickets I suggested");
+$themes = array('any'=>'Any','tmod'=>"on ticket I moderating/ed",'mod'=>"on images I moderated",'comment'=>"tickets I have commented on",'suggest'=>"tickets I suggested");
 $variations = array('any'=>'Any','own'=>"suggested on own images",'comment'=>"has left comment");
 
 #################
@@ -202,6 +202,9 @@ if ($modifer == '24') {
 
 if ($theme == 'mod') {
 	$sql_where .= " and i.moderator_id = {$USER->user_id}";
+
+} elseif ($theme == 'tmod') {
+	$sql_where .= " and t.moderator_id = {$USER->user_id}";
 
 } elseif ($theme == 'comment') {
 	$sql_where .= " and c.user_id = {$USER->user_id}";
