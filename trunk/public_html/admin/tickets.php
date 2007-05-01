@@ -176,6 +176,8 @@ if ($type == 'open') {
 
 	$where_crit = "t.status='closed'";
 	
+	$rev = ($rev)?'':'desc';
+	
 } else {
 	$type = 'pending';
 	
