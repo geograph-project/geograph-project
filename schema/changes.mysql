@@ -1226,7 +1226,7 @@ ALTER TABLE `gridimage_ticket` ADD `deferred` DATETIME NOT NULL ;
 
 
 ALTER TABLE `geobb_users` ADD `user_forums` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '1' AFTER `user_sorttopics` ,
-ADD `user_latest` ENUM( '5', '10', '20', '30', '40' ) NOT NULL DEFAULT '30' AFTER `user_showforums` ;
+ADD `user_latest` ENUM( '5', '10', '20', '30', '40' ) NOT NULL DEFAULT '30' AFTER `user_forums` ;
 
 
 
