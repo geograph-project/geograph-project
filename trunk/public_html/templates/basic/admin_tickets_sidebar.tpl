@@ -19,6 +19,9 @@
     <form method="get" action="{$script_name}">
     <p> 
     <input type="hidden" name="sidebar" value="1"/>
+   When:<select name="modifer">
+    	{html_options options=$modifers selected=$modifer}
+    </select> <br/>
     Type:<select name="type">
     	{html_options options=$types selected=$type}
     </select> <br/>

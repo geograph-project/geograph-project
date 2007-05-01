@@ -13,9 +13,9 @@
 
     <form method="get" action="{$script_name}">
     <p> 
-   <!-- When:<select name="modifer">
+   When:<select name="modifer">
     	{html_options options=$modifers selected=$modifer}
-    </select> <br/-->
+    </select> <br/>
     Type:<select name="type">
     	{html_options options=$types selected=$type}
     </select> <br/>
