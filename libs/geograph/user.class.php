@@ -188,6 +188,10 @@ class GeographUser
 			if ($save && $this->registered) 
 				$this->setDefaultForumOption($name,$value);
 		}
+		elseif (isset($_SESSION[$name]))
+		{
+			$value=$_SESSION[$name];
+		}
 		elseif ($this->registered)
 		{
 			if (isset($this->$name)) {
@@ -199,10 +203,6 @@ class GeographUser
 				$this->$name = $value;
 			}
 			$_SESSION[$name]=$value;
-		}
-		elseif (isset($_SESSION[$name]))
-		{
-			$value=$_SESSION[$name];
 		}
 		return $value;
 	}
