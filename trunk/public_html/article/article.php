@@ -136,7 +136,7 @@ function smarty_function_articletext($input) {
 	$pattern[]="/\n/";
 	$replacement[]="<br/>\n";
 
-	if (preg_match_all('/\[smallmap ([STNH]?[A-Z]{1}\d{4,10})\]/',$output,$m)) {
+	if (preg_match_all('/\[smallmap *([STNH]?[A-Z]{1}[ \.]*\d{2,5}[ \.]*\d{2,5})\]/',$output,$m)) {
 		foreach ($m[0] as $i => $full) {
 			//lets add an rastermap too
 			$square = new Gridsquare;
