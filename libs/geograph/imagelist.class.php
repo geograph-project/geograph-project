@@ -349,7 +349,7 @@ class RecentImageList extends ImageList {
 		$this->images=array();
 		$i=0;
 		
-		$recordSet = &$db->Execute("select * from recent_gridimage inner join gridimage_search using (gridimage_id) $limit");
+		$recordSet = &$db->Execute("select * from gridimage_search inner join (select gridimage_id from recent_gridimage $limit) as t2 using (gridimage_id)");
 		while (!$recordSet->EOF) 
 		{
 			$this->images[$i]=new GridImage;
