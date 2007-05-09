@@ -181,7 +181,7 @@ class Gazetteer
 					$codes = "'C','T','O'";
 				}
 		//otherwise lookup a nearby settlement
-				$places = $db->GetRow("select
+				$places = $db->GetRow($sql = "select
 						`def_nam` as full_name,
 						'PPL' as dsg,
 						1 as reference_index,
@@ -197,7 +197,7 @@ class Gazetteer
 							point_en) AND
 						f_code in ($codes)
 					order by distance asc,f_code+0 asc limit 1");
-
+print $sql;
 				$placeradius = 4005;
 				if (sqrt($places['distance']) > $placeradius) {
 		//if nothing near try finding a feature

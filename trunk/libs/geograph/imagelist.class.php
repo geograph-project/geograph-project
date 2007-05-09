@@ -343,17 +343,13 @@ class RecentImageList extends ImageList {
 		
 		$db=&$this->_getDB();
 		
-		$orderby="order by rand()";
-		
-		$limit="limit 5";
+		$limit="limit ".rand(0,245).",5";
 		
 		//lets find some recent photos
 		$this->images=array();
 		$i=0;
 		
-		$recordSet = &$db->Execute("select * ".
-			"from recent_gridimage inner join gridimage_search using (gridimage_id) ".
-			"$orderby $limit");
+		$recordSet = &$db->Execute("select * from recent_gridimage inner join gridimage_search using (gridimage_id) $limit");
 		while (!$recordSet->EOF) 
 		{
 			$this->images[$i]=new GridImage;
