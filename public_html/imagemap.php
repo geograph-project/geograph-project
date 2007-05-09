@@ -33,8 +33,9 @@ init_session();
 
 	$map=new GeographMap;
 	
-	$map->enableCaching(empty($_GET['refresh']) && $CONF['smarty_caching']);
-
+	if (isset($_GET['refresh']) && $_GET['refresh'] == 2 && $USER->hasPerm('admin'))
+		$map->caching=false;
+	
 
 		$map->setOrigin(0,-10);
 		$map->setImageSize(1200/2,1700/2);
@@ -42,7 +43,7 @@ init_session();
 
 		$year = !empty($_GET['year'])?intval($_GET['year']):date('Y');
 
-		if ($year >= 2004 && $year <= date('Y')) {
+		if ((!isset($_GET['year']) || !empty($_GET['year'])) && $year >= 2004 && $year <= date('Y')) {
 			$map->type_or_user = -1 * $year;
 		} elseif (isset($_GET['depth'])) {
 			$map->setOrigin(0,-10);
