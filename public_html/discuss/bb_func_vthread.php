@@ -178,18 +178,18 @@ $posterText=$cols[3];
 $postID = $cols[6];
 
 if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
-	foreach ($g_matches[2] as $i => $g_id) {
+	foreach ($g_matches[2] as $g_i => $g_id) {
 		if (is_numeric($g_id)) {
 			if (!isset($g_image)) {
 				require_once('geograph/gridimage.class.php');
 				require_once('geograph/gridsquare.class.php');
 				$g_image=new GridImage;
 			}
-			$ok = $g_image->loadFromId($g_id);
-			if ($ok && $g_image->moderation_status == 'rejected' && !isset($userRanks[$cc])) {
+			$g_ok = $g_image->loadFromId($g_id);
+			if ($g_ok && $g_image->moderation_status == 'rejected' && !isset($userRanks[$cc])) {
 				$posterText = str_replace("[[[$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
-			} elseif ($ok) {
-				if ($g_matches[1][$i]) {
+			} elseif ($g_ok) {
+				if ($g_matches[1][$g_i]) {
 					$g_img = $g_image->getThumbnail(120,120,false,true);
 					#$g_img = preg_replace('/alt="(.*?)"/','alt="'.$g_image->grid_reference.' : \1 by '.$g_image->realname.'"',$g_img);
 					$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title).' by '.$g_image->realname;
