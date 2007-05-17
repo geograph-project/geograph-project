@@ -24,7 +24,7 @@
 		  </tr> 
 		  <tr> 
 			 <td colspan="3" style="font-size:0.7em">Enter either<br/> A) <i>Hectad Reference</i> like <b>SH56</b>, to find images within that Hectad<a href="/help/squares">?</a><br/> B)
-			 <i>Numerical Square</i><a href="/discuss/index.php?action=vthread&amp;forum=2&amp;topic=1235">?</a> like <b>5546</b>, which matches those numbers in any Myriad or<br/> C) <i>Wildcard Search</i> like <b>SH6_56</b> where _ matches any digit, can also use % to match any (or 0) characters useful for matching GB or Irish Grids.</td> 
+			 <i>Numerical Square</i><a href="/discuss/index.php?action=vthread&amp;forum=2&amp;topic=1235">?</a> like <b>5546</b>, which matches those numbers in any Myriad or<br/> C) <i>4fig GR - Wildcard Search</i> like <b>SH6_56</b> where _ matches any digit, can also use % to match zero or more characters (useful for matching GB or Irish Grids).<br/> D) <i>Hectad - Wildcard Search</i> like <b>SH6_</b> where _ matches any digit</td> 
 		  </tr> 
 		  <tr> 
 			 <td colspan="3">&nbsp;</td> 
@@ -90,6 +90,15 @@
 				<select name="reference_index" id="reference_index" size="1" class="searchinput"> 
 				  <option value=""> </option> 
 					{html_options options=$references selected=$reference_index} 
+				</select></td> 
+			 <td>&nbsp;</td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="gridsquare">myriad (<a href="/help/squares" title="What is a Myriad? (opens in new window)" target="_blank">?</a>)</label></td> 
+			 <td> 
+				<select name="gridsquare" id="gridsquare" size="1" class="searchinput"> 
+				  <option value=""> </option> 
+					{html_options options=$prefixes selected=$gridsquare}
 				</select></td> 
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
 		  </tr> 
