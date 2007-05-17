@@ -51,7 +51,7 @@ if (isset($_GET['map']))
 		if (isset($_GET['debug']))
 			print $rastermap->getOSGBStorePath($rastermap->service,0,0,false);
 		if (isset($_GET['refresh']) && $_GET['refresh'] == 2 && $USER->hasPerm('admin'))
-			$map->caching=false;
+			$rastermap->caching=false;
 	
 		$rastermap->returnImage();
 	}
