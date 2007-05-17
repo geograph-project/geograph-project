@@ -58,6 +58,8 @@ class RasterMap
 	*/	
 	var $enabled = false;
 	
+	var $caching = true;
+	
 	var $folders = array(
 			'tile-source'=>'pngs-1k-200/',
 			'OS50k'=>'pngs-2k-250/',
@@ -536,7 +538,7 @@ class RasterMap
 	
 	function getMapPath($service,$create = true) {
 		$path = $this->getOSGBStorePath($service);
-		if (file_exists($path) || ($create && $this->createTile($service,$path)) ) {
+		if (($this->caching && file_exists($path)) || ($create && $this->createTile($service,$path)) ) {
 			return $path;
 		} else {
 			return false;
