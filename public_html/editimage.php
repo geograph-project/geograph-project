@@ -86,7 +86,7 @@ if (isset($_REQUEST['id']))
 {
 	$image->loadFromId($_REQUEST['id']);
 	$isowner=($image->user_id==$USER->user_id)?1:0;
-	$isadmin=$USER->hasPerm('ticketmod')?1:0;
+	$isadmin=(!$isowner && $USER->hasPerm('ticketmod'))?1:0;
 
 	if ($image->isValid())
 	{
@@ -278,9 +278,11 @@ if (isset($_REQUEST['id']))
 
 			$updatenote=trim(stripslashes($_POST['updatenote']));
 			$updatenote=strip_tags($updatenote);
-			if ($moderated_count && (strlen($updatenote)==0))
+			if (($moderated_count || (!empty($_REQUEST['mod']) && $_REQUEST['mod'] == 'pending')) && (strlen($updatenote)==0))
 			{
 				$ok=false;
+				if (!empty($_REQUEST['mod']) && $_REQUEST['mod'] == 'pending')
+					$smarty->assign('mod_pending',1);
 				$error['updatenote']="Please provide a brief comment about why the change is required";
 			}
 
