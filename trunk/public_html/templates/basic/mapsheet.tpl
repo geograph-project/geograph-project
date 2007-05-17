@@ -29,6 +29,7 @@ div.g1 {
 	height:1em;
 	line-height:0.5em;
 	text-align:center;
+	cursor:pointer;
 	cursor:hand;
 }
 
@@ -41,6 +42,7 @@ div.g2 {
 	height:1em;
 	line-height:0.5em;
 	text-align:center;
+	cursor:pointer;
 	cursor:hand;
 }
 
@@ -55,13 +57,13 @@ div.d {
 }
 
 span.s {
-	font-size:0.2em;
+	font-size:0.6em;
 	line-height:0px;
 }
 
 div.t1 {
 	font-family:Arial,Verdana;
-	font-size:0.3em;
+	font-size:0.25em;
 	padding:0;
 	margin:0;
 	line-height:1.4em;
@@ -69,10 +71,11 @@ div.t1 {
 
 div.t2 {
 	font-family:Arial,Verdana;
-	font-size:0.8em;
+	font-size:0.4em;
 	padding:0;
 	margin:0;
-	line-height:0.5em;
+	padding-top:5px;
+	line-height:0.7em;
 }
 
 div.zx {
@@ -109,13 +112,13 @@ div.hl {
 </div></div>
 
 <div style="position:absolute;padding:5px;left:0.2em;top:0.2em;width:10em;height:1em;font-size:4em;border:1px solid black;background:white;">
-<div style="font-size:8pt;font-family:Georgia;Arial;">Print this sheet and take it out with you to mark off the squares that you do. Squares with Geographs are marked with an X, multiple geographs include the number in brackets, or 6+4 for 6 geographs and 4 supplementals. Squares with only supplemental images are marked by "sup" and the number, and "pend" is shown on squares with just unmoderated images. The taken date of the last photo in the square is also shown. <br/><div style="float:left; font-size:0.9em">From: <a href="http://{$http_host}/">{$http_host}</a></div><div style="text-align:right; font-size:0.9em">Generated {$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</div></div>
+<div style="font-size:8pt;font-family:Georgia;Arial;">Print this sheet and take it out with you to mark off the squares that you do. Squares with Geographs are marked with an number or X and number of geographs in brackets, or 6(+4) for 6 geographs and 4 supplementals. Squares with only supplemental images are marked by "sup" and the number, and "pend" is shown on squares with just unmoderated images. The taken date of the last photo in the square is also shown. <br/><div style="float:left; font-size:0.9em">From: <a href="http://{$http_host}/">{$http_host}</a></div><div style="text-align:right; font-size:0.9em">Generated {$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</div></div>
 </div>
  
 {*begin map square divs*}
 {foreach from=$grid key=x item=maprow}
 {foreach from=$maprow key=y item=mapcell}
-<div class="{if $mapcell.has_geographs}g2{else}g1{/if}{if substr($mapcell.grid_reference,$ofe,1) == '0'} zx{/if}{if substr($mapcell.grid_reference,$ofn,1) == '0'} zy{/if}{if $mapcell.grid_reference == $gridref_from} hl{/if}" style="left:{$x+0.2}em;top:{$y+1.6}em;" onclick="window.location='/gridref/{$mapcell.grid_reference}';"><div class="{if $mapcell.has_geographs}t2{else}t1{/if} nowrap">{if $mapcell.has_geographs}x{else}{if $mapcell.pending}pend{else}{if $mapcell.accepted}sup{else}&nbsp;{/if}{/if}{/if}{if $mapcell.imagecount > 1}<span class="s">({if $mapcell.imagecount !=$mapcell.accepted}{$mapcell.imagecount-$mapcell.accepted}{if $mapcell.accepted}+{$mapcell.accepted}{/if}{else}{$mapcell.imagecount}{/if})</span>{/if}</div><div class="r">{$mapcell.grid_reference}</div>{if $mapcell.last_date && $mapcell.last_date != '00/00/00'}<div class="d">{$mapcell.last_date}</div>{/if}</div>
+<div class="{if $mapcell.has_geographs}g2{else}g1{/if}{if substr($mapcell.grid_reference,$ofe,1) == '0'} zx{/if}{if substr($mapcell.grid_reference,$ofn,1) == '0'} zy{/if}{if $mapcell.grid_reference == $gridref_from} hl{/if}" style="left:{$x+0.2}em;top:{$y+1.6}em;" onclick="window.location='/gridref/{$mapcell.grid_reference}';"><div class="{if $mapcell.has_geographs}t2{else}t1{/if} nowrap">{if $mapcell.has_geographs}{if $mapcell.geographs < 10}{$mapcell.geographs}{else}x{/if}{else}{if $mapcell.pending}pend{else}{if $mapcell.accepted}sup{else}&nbsp;{/if}{/if}{/if}{if $mapcell.imagecount > 1 && $mapcell.imagecount !=$mapcell.geographs}<span class="s">({if $mapcell.imagecount !=$mapcell.accepted}{if $mapcell.geographs >9}{$mapcell.geographs}{/if}{if $mapcell.accepted}+{$mapcell.accepted}{/if}{else}{$mapcell.imagecount}{/if})</span>{/if}</div><div class="r">{$mapcell.grid_reference}</div>{if $mapcell.last_date && $mapcell.last_date != '00/00/00'}<div class="d">{$mapcell.last_date}</div>{/if}</div>
 {/foreach}
 {/foreach}
 
