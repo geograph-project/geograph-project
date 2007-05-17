@@ -181,6 +181,8 @@ if ($type == 'open') {
 } else {
 	$type = 'pending';
 	
+	$sql_where .= " and i.user_id != {$USER->user_id}";
+	
 	if (!$defer) {		
 		//exclude deferred
 		$sql_where .= " and deferred < date_sub(NOW(),INTERVAL 24 HOUR)";
