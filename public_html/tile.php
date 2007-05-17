@@ -45,11 +45,13 @@ if (isset($_GET['map']))
 	require_once('geograph/rastermap.class.php');
 	$square = false;				
 	$rastermap = new RasterMap($square);
-	if (isset($_GET['debug']))
+	if (isset($_GET['debug']) || isset($_GET['refresh']))
 		init_session();
 	if($rastermap->setToken($_GET['r'])) {
 		if (isset($_GET['debug']))
 			print $rastermap->getOSGBStorePath($rastermap->service,0,0,false);
+		if (isset($_GET['refresh']) && $_GET['refresh'] == 2 && $USER->hasPerm('admin'))
+			$map->caching=false;
 	
 		$rastermap->returnImage();
 	}
