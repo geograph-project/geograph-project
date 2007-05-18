@@ -11,8 +11,8 @@
 <li>You can also click a nickname to see the users profile.</li></ul>
 
 <p class="wordnet" align="justify"> 
-{foreach from=$users key=nick item=obj}
-<a style="font-size:{$obj.size}px;" title="{$obj.realname},{$obj.images} images" href="/user/{$nick|escape:url}/">{$nick|replace:' ':'&middot;'}</a>
+{foreach from=$users key=nickkey item=obj}
+<a style="font-size:{$obj.size}px;" title="{$obj.realname},{$obj.images} images" href="/user/{$obj.nickname|escape:url}/">{$obj.nickname|replace:' ':'&middot;'}</a>
 {/foreach}
 </p>
  		

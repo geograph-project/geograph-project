@@ -4,7 +4,7 @@
 <div style="float:right; position:relative; width:5em; height:4em;"></div>
 <div style="float:right; position:relative; width:2.5em; height:1em;"></div>
 
- <h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} total images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->title}</h2>
+ <h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} total images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->title|escape:'html'}</h2>
  {if $place.distance}
  {place place=$place h3=true}
 {/if}
@@ -117,7 +117,8 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 <td style="font-size:0.7em;vertical-align:middle">
   
   {if ($user->user_id eq $image->user_id) or ($ismoderator)}
-  	<a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">Edit picture information</a>
+  	<a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">Edit picture information</a><br/>
+  	<a title="Edit licence" href="/licence.php?id={$image->gridimage_id}">Change photographer details</a>
   {else}
   	<a href="/editimage.php?id={$image->gridimage_id}">Suggest an update to picture details</a>
   {/if}
