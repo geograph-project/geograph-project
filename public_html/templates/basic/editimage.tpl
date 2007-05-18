@@ -4,7 +4,7 @@
 
 {if $image}
 
- <h2><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->current_title}</h2>
+ <h2><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->current_title|escape:'html'}</h2>
 
 {if $isadmin && $locked_by_moderator}
 	<p style="position:relative;padding:10px;border:1px solid pink; color:white; background-color:red">
@@ -264,14 +264,14 @@
 		<input type="submit" name="addcomment" value="Add comment"/>
 		
 		{if $isadmin and $ticket->moderator_id > 0 and $ticket->moderator_id != $user->user_id}
-			<input type="checkbox" name="claim" value="on" id="claim" checked/> <label for="claim" title="Claim this ticket to be moderated by me">Claim Ticket</label>
+			<input type="checkbox" name="claim" value="on" id="claim" checked="checked"/> <label for="claim" title="Claim this ticket to be moderated by me">Claim Ticket</label>
 			&nbsp;&nbsp;&nbsp;
 		{elseif $isadmin}
 			<input type="hidden" name="claim" value="on"/>
 		{/if}
 		
 		{if $ticket->user_id ne $image->user_id}
-			<input type="checkbox" name="notify" value="suggestor" id="notify_suggestor" {if $ticket->notify=='suggestor'}checked{/if}/> <label for="notify_suggestor">Send {if $isadmin}{$ticket->suggester_name}{else}ticket suggestor{/if} this comment.</label>
+			<input type="checkbox" name="notify" value="suggestor" id="notify_suggestor" {if $ticket->notify=='suggestor'}checked="checked"{/if}/> <label for="notify_suggestor">Send {if $isadmin}{$ticket->suggester_name}{else}ticket suggestor{/if} this comment.</label>
 			&nbsp;&nbsp;&nbsp;
 		{/if}
 		{if $isadmin}
@@ -378,7 +378,7 @@
 <a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Copy from Subject</a><br/></span>
 
 {if $rastermap->enabled}
-	<br/><input type="checkbox" name="use6fig" id="use6fig" {if $image->use6fig} checked{/if} value="1"/> <label for="use6fig">Only display 6 figure grid reference (<a href="/help/map_precision" target="_blank">Explanation</a>)</label>
+	<br/><input type="checkbox" name="use6fig" id="use6fig" {if $image->use6fig} checked="checked"{/if} value="1"/> <label for="use6fig">Only display 6 figure grid reference (<a href="/help/map_precision" target="_blank">Explanation</a>)</label>
 {/if}
 </p>
 
@@ -488,7 +488,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 {else}
 	{if $isowner} 
 	<div>
-		<input type="checkbox" name="mod" value="pending" id="mod_pending"/> <label for="mod_pending">Bring this issue to the attention of a moderator (regardless of changes made).</label><br/><br/>
+		<input type="checkbox" name="mod" value="pending" id="mod_pending"{if $mod_pending} checked="checked"{/if}/> <label for="mod_pending">Bring this issue to the attention of a moderator (regardless of changes made).</label><br/><br/>
 	</div>
 	{/if}
 {/if}
