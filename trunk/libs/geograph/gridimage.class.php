@@ -350,7 +350,7 @@ class GridImage
 			if ($usesearch) {
 				$row = &$db->GetRow("select * from gridimage_search where gridimage_id={$gridimage_id} limit 1");
 			} else {
-				$row = &$db->GetRow("select gridimage.*,user.realname,user.nickname from gridimage inner join user using(user_id) where gridimage_id={$gridimage_id} limit 1");
+				$row = &$db->GetRow("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.nickname from gridimage gi inner join user using(user_id) where gridimage_id={$gridimage_id} limit 1");
 			}
 			if (is_array($row))
 			{
@@ -1025,6 +1025,18 @@ class GridImage
 		return $this->mod_realname = $db->getOne("select realname from user where user_id = {$this->moderator_id}");	
 	}
 	
+	function setCredit($realname) {
+		if (!$this->isValid())
+			return "Invalid image";
+		
+		$db = $this->_getDB();
+
+		$db->Execute(sprintf("update gridimage set realname = %s where gridimage_id=%d",$db->Quote($realname),$this->gridimage_id));
+		$this->realname = $realname;
+		
+		$this->updateCachedTables();
+	}
+	
 	/**
 	* Sets the moderation status for the image, intelligently updating user stats appropriately
 	* status must either 'accepted' or 'rejected'
@@ -1315,7 +1327,7 @@ class GridImage
 			}
 	
 			$sql="REPLACE INTO gridimage_search
-			SELECT gridimage_id,gi.user_id,moderation_status,title,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,user.realname,reference_index,comment,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)')
+			SELECT gridimage_id,gi.user_id,moderation_status,title,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)')
 			FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 			INNER JOIN user ON(gi.user_id=user.user_id)
 			WHERE gridimage_id = '{$this->gridimage_id}'";

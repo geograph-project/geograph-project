@@ -3,7 +3,7 @@
 
 <div style="float:right">Switch to <a href="/credits/?cloud{if $whenname}&amp;when={$when}{/if}">cloud version</a> or <a href="/statistics/breakdown.php?by=user{if $whenname}&amp;when={$when}{/if}">statistics version</a>.</div>
 
-<h2>Geograph British Isles Contributors <small>[{$user_count}]</small></h2>
+<h2>Geograph British Isles Photographers <small>[{$user_count}]</small></h2>
 {if $whenname}
 	<h3>Submitting images March 2005 though {$whenname}</h3>
 {/if}

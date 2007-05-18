@@ -1230,3 +1230,7 @@ ADD `user_latest` ENUM( '5', '10', '20', '30', '40' ) NOT NULL DEFAULT '30' AFTE
 
 
 
+ALTER TABLE `gridimage` ADD `realname` VARCHAR( 128 ) NOT NULL AFTER `user_id` ;
+
+ALTER TABLE `user` ADD `credit_realname` VARCHAR( 128 ) NOT NULL AFTER `realname` ;
+
