@@ -15,14 +15,11 @@
 
 
 var last_id=-1;
-var create_new_xmlhttp=true;
-var xmlhttp=false;
 var remoderate = false;
 
 function getXMLRequestObject()
 {
-	if (create_new_xmlhttp==false)
-		return xmlhttp;
+	var xmlhttp=false;
 		
 	/*@cc_on @*/
 	/*@if (@_jscript_version >= 5)
@@ -45,17 +42,6 @@ function getXMLRequestObject()
 	return xmlhttp;
 }
 
-var last_id=0;
-
-function onModerationCompleted()
-{
-	if (xmlhttp.readyState==4) 
-	{
-		//alert(xmlhttp.responseText);
-		var divInfo=document.getElementById('modinfo'+last_id);
-		divInfo.innerHTML=xmlhttp.responseText;
-	}
-}
 
 
 function moderateImage(gridimage_id, status)
@@ -67,9 +53,21 @@ function moderateImage(gridimage_id, status)
 	//make the request
 	var req=getXMLRequestObject();
 	
-	last_id=gridimage_id;
+	req.last_id=gridimage_id;
 	
-	req.onreadystatechange=onModerationCompleted;
+	//need to exploit function closure
+	req.onreadystatechange = function()
+	{
+		if (req.readyState==4) 
+		{
+			var divInfo=document.getElementById('modinfo'+req.last_id);
+			divInfo.innerHTML=req.responseText;
+
+			//patch the memory leak?
+		//	last_id = null;
+		//	req = null;
+		}
+	}
 	req.open("GET", url,true);
 	req.send(null)
 
@@ -83,9 +81,18 @@ function deferTicket(gridimage_ticket_id, status)
 	//make the request
 	var req=getXMLRequestObject();
 	
-	last_id=gridimage_ticket_id;
+	req.last_id=gridimage_ticket_id;
 	
-	req.onreadystatechange=onModerationCompleted;
+	
+	//need to exploit function closure
+	req.onreadystatechange = function()
+	{
+		if (req.readyState==4) 
+		{
+			var divInfo=document.getElementById('modinfo'+req.last_id);
+			divInfo.innerHTML=req.responseText;
+		}
+	}
 	req.open("GET", url,true);
 	req.send(null)
 

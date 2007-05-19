@@ -63,6 +63,10 @@ if (isset($_GET['gridimage_id']))
 			} 
 			else
 			{
+				//we really need this not be interupted
+				ignore_user_abort(TRUE);
+				set_time_limit(3600);
+
 				$info=$image->setModerationStatus($status, $USER->user_id);
 				echo $info;
 
