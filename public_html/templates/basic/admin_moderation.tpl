@@ -82,7 +82,8 @@
 	  {if $image->new_status}
 	  	<br/><span{if $image->new_status != $image->moderation_status} style="border:1px solid red; padding:5px; line-height:3em;"{/if}>Suggested Status: {$image->new_status} {if $image->ml_realname}, by {$image->ml_realname}{/if}</span>
 	  {/if}
-	  <div class="caption" id="modinfo{$image->gridimage_id}">{if $image->user_status}User: suggest {$image->user_status}{else}{if $image->different_square}System: suggest Accept{else}&nbsp;{/if}{/if}</div>
+	  {if $image->user_status}<div class="caption">User: suggest {$image->user_status}</div>{else}{if $image->different_square}<div class="caption">System: suggest Accept</div>{/if}{/if}
+	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
 	  </div>
 	  <br style="clear:both"/>
 	  </div>
