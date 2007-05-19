@@ -189,6 +189,11 @@ if (isset($_REQUEST['id']))
 		//process a trouble ticket?
 		if (isset($_POST['gridimage_ticket_id']))
 		{
+			//we really need this not be interupted
+			ignore_user_abort(TRUE);
+			set_time_limit(3600);
+
+			
 			//ok, we're processing a ticket update, but lets
 			//exercise some healty paranoia..
 			$gridimage_ticket_id=intval($_POST['gridimage_ticket_id']);
@@ -380,6 +385,10 @@ if (isset($_REQUEST['id']))
 
 			if ($ok)
 			{
+				//we really need this not be interupted
+				ignore_user_abort(TRUE);
+				set_time_limit(3600);
+
 				//create new change control object
 				$ticket=new GridImageTroubleTicket();
 				$ticket->setSuggester($USER->user_id);
