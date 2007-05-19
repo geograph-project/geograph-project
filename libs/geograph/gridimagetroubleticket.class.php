@@ -768,8 +768,9 @@ class GridImageTroubleTicket
 					$changes.="{$item['field']} changed from \"{$item['oldvalue']}\" to \"{$item['newvalue']}\"\n";
 				}
 			}
-			else
+			elseif ($this->changes[$idx]['status'] != 'immediate')
 			{
+				//if it hasn't already been aplied reject it
 				$this->changes[$idx]['status']='rejected';
 				$this->changes[$idx]['approver_id']=$user_id;
 			}
