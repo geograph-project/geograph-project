@@ -1,6 +1,6 @@
 {assign var="page_title" value="Moderation"}
 {include file="_std_begin.tpl"}
-<script type="text/javascript" src="/admin/moderation.js"></script>
+<script type="text/javascript" src="/admin/moderation.js?v={$javascript_version}"></script>
 
 {literal}<script type="text/javascript">
 	setTimeout('window.location.href="/admin/";',1000*60*45);
