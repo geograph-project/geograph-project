@@ -144,6 +144,8 @@ $loginLogout=ParseTpl(makeUp('user_logged_in'));
 $user_logging=$loginLogout;
 }
 else {
+$USER->mustHavePerm("admin");
+
 if($sdef==0) $user_sort=$sortingTopics; else $user_sort=$sortBy;
 $loginLogout=ParseTpl(makeUp('user_login_form'));
 if(!in_array($action,array('registernew','register','sendpass','sendpass2'))) $user_logging=ParseTpl(makeUp('user_login_only_form')); else $user_logging='';
