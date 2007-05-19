@@ -24,7 +24,7 @@
 			The following images have been recently moderated by the selected moderator. There is no need to do anything, but if you beleive the original moderation was wrong just use the moderation buttons as normal. 
 		{else}
 			{if $remoderate}
-				As a quick spotcheck you are asked to make a suggestion for these recently moderated images.
+				<div style="font-weight:bold; border:1px solid red; background-color:yellow; padding:10px">As a quick spotcheck you are asked to make a suggestion for these recently moderated images.</div><br/><br/>
 			{else}
 				The following images have been submitted recently. 
 			{/if}
