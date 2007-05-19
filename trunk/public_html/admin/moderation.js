@@ -13,8 +13,6 @@
  *
  */
 
-
-var last_id=-1;
 var remoderate = false;
 
 function getXMLRequestObject()
@@ -53,19 +51,16 @@ function moderateImage(gridimage_id, status)
 	//make the request
 	var req=getXMLRequestObject();
 	
-	req.last_id=gridimage_id;
-	
 	//need to exploit function closure
 	req.onreadystatechange = function()
 	{
 		if (req.readyState==4) 
 		{
-			var divInfo=document.getElementById('modinfo'+req.last_id);
+			var divInfo=document.getElementById('modinfo'+gridimage_id);
 			divInfo.innerHTML=req.responseText;
 
-			//patch the memory leak?
-		//	last_id = null;
-		//	req = null;
+			//patch the memory leak
+			req.onreadystatechange = function() {};
 		}
 	}
 	req.open("GET", url,true);
@@ -80,17 +75,17 @@ function deferTicket(gridimage_ticket_id, status)
 	
 	//make the request
 	var req=getXMLRequestObject();
-	
-	req.last_id=gridimage_ticket_id;
-	
-	
+		
 	//need to exploit function closure
 	req.onreadystatechange = function()
 	{
 		if (req.readyState==4) 
 		{
-			var divInfo=document.getElementById('modinfo'+req.last_id);
+			var divInfo=document.getElementById('modinfo'+gridimage_ticket_id);
 			divInfo.innerHTML=req.responseText;
+		
+			//patch the memory leak
+			req.onreadystatechange = function() {};
 		}
 	}
 	req.open("GET", url,true);
