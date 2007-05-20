@@ -298,6 +298,48 @@ class UploadManager
 			 $this->exifdate = implode('-',$dates);
 		}
 	}
+
+	function processURL($url)
+	{
+		global $USER,$CONF;
+		$ok=false;
+		
+		//generate a unique "upload id" - we use this to hold the image until
+		//they've confirmed they want to submit
+		$upload_id=md5(uniqid('upload'));
+			
+		$pendingfile = $this->_pendingJPEG($upload_id);
+	
+			function fetch_remote_file($url,$filename) {
+				$data = file_get_contents($url);
+				if (strlen($data) > 0) {
+					file_put_contents($filename,$data);
+					return true;
+				}
+				return false;
+			}
+
+		if (fetch_remote_file($url, $pendingfile)) 
+		{	
+			if ($this->_isJpeg($pendingfile))
+			{
+				$ok = $this->_processFile($upload_id,$pendingfile);
+			}
+			else
+			{
+				$this->error("We only accept JPEG images - your upload did not appear to be a valid JPEG file");
+			}
+		}
+		else
+		{
+			//playing silly buggers?
+			$this->error("There were problems processing your upload - please contact us");
+		}
+					
+		return $ok;
+	}
+
+
 	
 	function processUpload($upload_file)
 	{
@@ -311,9 +353,29 @@ class UploadManager
 			$upload_id=md5(uniqid('upload'));
 
 			$pendingfile = $this->_pendingJPEG($upload_id);
-
+			
 			if (move_uploaded_file($upload_file, $pendingfile)) 
 			{
+				$ok = $this->_processFile($upload_id,$pendingfile);
+			}
+			else
+			{
+				//playing silly buggers?
+				$this->error("There were problems processing your upload - please contact us");
+			}
+		}
+		else
+		{
+			$this->error("We only accept JPEG images - your upload did not appear to be a valid JPEG file");
+		}
+				
+		return $ok;
+	}
+			
+
+	function _processFile($upload_id,$pendingfile) {
+		global $USER,$CONF;
+		$ok = false;
 				//save the exif data for the loaded image
 				$exif = @exif_read_data($pendingfile,0,true); 
 				
@@ -418,18 +480,6 @@ class UploadManager
 						$this->error("Unable to load image - we can only accept valid JPEG images");
 					}
 				}
-			}
-			else
-			{
-				//playing silly buggers?
-				$this->error("There were problems processing your upload - please contact us");
-			}
-		}
-		else
-		{
-			$this->error("We only accept JPEG images - your upload did not appear to be a valid JPEG file");
-		}
-		
 		return $ok;
 	}
 	
