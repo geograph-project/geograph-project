@@ -42,7 +42,7 @@ geographing</a> first.</p>
 	<u title="e.g. TQ43526467 or TQ 4352 6467">8</u> or 
 	<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure) for the picture subject</label><br />
 	<input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14"/>
-	<input type="submit" name="setpos" value="Next &gt;"/><br/>
+	<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}or <input type="submit" name="picnik" value="Upload via Picnik &gt;"/><span style="color:red">New!</span>{/if}<br/>
 	</p>
 		
 	
@@ -108,10 +108,17 @@ geographing</a> first.</p>
 			<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}! {if $totalimagecount && $totalimagecount ne $imagecount} (but you have {$totalimagecount} hidden){/if}</p>
 		{/if}
 
-
+		{if $jpeg_url}
+		<label for="jpeg_url"><b>JPEG Image URL</b></label>
+		<input id="jpeg_url" name="jpeg_url" type="text" size="40" value="{$jpeg_url|escape:"html"}"/>
+		{else}
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
 		<label for="jpeg"><b>JPEG Image File</b></label>
 		<input id="jpeg" name="jpeg" type="file" />
+		
+		{if $picnik_api_key}<br/>or <input type="submit" name="picnik" value="Upload Image via Picnik.com"/><span style="color:red">New!</span>{/if}
+		
+		{/if}
 		<div><small><small style="color:gray"><i>If your image is over 640 pixels in either direction, it will be resized. If you have presized please aim to have the filesize under 100kb and in anycase under 200kb, thanks!</i></small></small></div>
 		{if $error}<br /><p style="color:#990000;font-weight:bold;">{$error}</p>{/if}
 		<br />

@@ -75,7 +75,7 @@ if (isset($_POST['gridsquare']))
 		$ok= $square->setByFullGridRef($_POST['grid_reference']);
 		
 		//preserve inputs in smarty
-		$smarty->assign('grid_reference', $_POST['grid_reference']);	
+		$smarty->assign('grid_reference', $grid_reference = $_POST['grid_reference']);
 	} 
 	else 
 	{
@@ -83,7 +83,7 @@ if (isset($_POST['gridsquare']))
 		if ($ok)
 		{
 			//preserve inputs in smarty
-			$smarty->assign('grid_reference', $square->grid_reference);	
+			$smarty->assign('grid_reference', $grid_reference = $square->grid_reference);
 		}
 	}
 	if ($ok)
@@ -91,7 +91,36 @@ if (isset($_POST['gridsquare']))
 		$uploadmanager->setSquare($square);
 		
 		$square->rememberInSession();
-			
+
+		if (isset($_POST['picnik'])) {
+			$q = array();
+			$q['_apikey'] = $CONF['picnik_api_key'];
+			$q['_page'] = '/in/upload';
+			$q['_export'] = "http://{$_SERVER['HTTP_HOST']}/submit.php";
+			$q['_export_field'] = 'jpeg_url';
+			$q['_export_agent'] = 'browser';
+			$q['_export_method'] = 'POST';
+			$q['_userid'] = md5($USER->user_id.$CONF['register_confirmation_secret']);
+			$q['_export_title'] = 'Continue';
+			$q['_host_name'] = 'Geograph';
+			$q['setpos'] = 1;
+			$q['grid_reference'] = $grid_reference;
+			$q['gridsquare'] = $square->gridsquare;
+			if (isset($_POST['photographer_gridref'])) {
+				$q['photographer_gridref'] = $_POST['photographer_gridref'];
+			}
+			if (isset($_POST['view_direction']) && strlen($_POST['view_direction'])) {
+				$q['view_direction'] = $_POST['view_direction'];
+			} 
+			if ($CONF['picnik_method'] == 'inabox') { 
+				$smarty->assign('picnik_url','http://www.picnik.com/service?'.http_build_query($q));
+				$smarty->display('submit_picnik.tpl');
+			} else {
+				header('Location: http://www.picnik.com/service?'.http_build_query($q));
+			}
+			exit;
+		}
+
 		//preserve inputs in smarty
 		$smarty->assign('gridsquare', $square->gridsquare);
 		$smarty->assign('eastings', $square->eastings);
@@ -106,62 +135,77 @@ if (isset($_POST['gridsquare']))
 		{
 			//Submit Step 1...
 
+			if (isset($_POST['jpeg_url'])) {
+				$smarty->assign('jpeg_url', $_POST['jpeg_url']);
+			}
+
 			$step=2;
+		}
+		elseif (isset($_POST['goback']))
+		{
+			$step=1;
+		}			
+		//see if we have an url to process?
+		elseif (isset($_POST['jpeg_url']))
+		{
+			//Submit Step 2..
+
+			$step=2;
+			if ($uploadmanager->processURL($_POST['jpeg_url']))
+			{
+				$smarty->assign('upload_id', $uploadmanager->upload_id);
+				//we ok to continue
+				$step=3;
+			} else {
+				$smarty->assign('error', $uploadmanager->errormsg);
+				$uploadmanager->errormsg = '';
+			}
 		}
 		//see if we have an upload to process?
 		elseif (isset($_FILES['jpeg']))
 		{
 			//Submit Step 2..
-			
-			if (isset($_POST['goback']))
-			{
-				$step=1;
-			}
-			else
-			{
-				//assume step 2
-				$step=2;
 
-				switch($_FILES['jpeg']['error'])
-				{
-					case 0:
-						if (!filesize($_FILES['jpeg']['tmp_name'])) 
-						{
-							$smarty->assign('error', 'Sorry, no file was received - please try again');
-						} 
-						elseif ($uploadmanager->processUpload($_FILES['jpeg']['tmp_name']))
-						{
-							$smarty->assign('upload_id', $uploadmanager->upload_id);
-							//we ok to continue
-							$step=3;
-						} else {
-							$smarty->assign('error', $uploadmanager->errormsg);
-							$uploadmanager->errormsg = '';
-						}
-						break;
-					case UPLOAD_ERR_INI_SIZE:
-					case UPLOAD_ERR_FORM_SIZE:
-						$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 8Mb - please resize the image and try again');
-						break;
-					case UPLOAD_ERR_PARTIAL:
-						$smarty->assign('error', 'Your file was only partially uploaded - please try again');
-						break;
-					case UPLOAD_ERR_NO_FILE:
-						$smarty->assign('error', 'No file was uploaded - please try again');
-						break;
-					case UPLOAD_ERR_NO_TMP_DIR:
-						$smarty->assign('error', 'System Error: Folder missing - please let us know');
-						break;
-					case UPLOAD_ERR_CANT_WRITE:
-						$smarty->assign('error', 'System Error: Can not write file - please let us know');
-						break;
-					case UPLOAD_ERR_EXTENSION:
-						$smarty->assign('error', 'System Error: Upload Blocked - please let us know');
-						break;
-					default:
-						$smarty->assign('error', 'We were unable to process your upload - please try again');
-						break;
-				}
+			$step=2;
+			switch($_FILES['jpeg']['error'])
+			{
+				case 0:
+					if (!filesize($_FILES['jpeg']['tmp_name'])) 
+					{
+						$smarty->assign('error', 'Sorry, no file was received - please try again');
+					} 
+					elseif ($uploadmanager->processUpload($_FILES['jpeg']['tmp_name']))
+					{
+						$smarty->assign('upload_id', $uploadmanager->upload_id);
+						//we ok to continue
+						$step=3;
+					} else {
+						$smarty->assign('error', $uploadmanager->errormsg);
+						$uploadmanager->errormsg = '';
+					}
+					break;
+				case UPLOAD_ERR_INI_SIZE:
+				case UPLOAD_ERR_FORM_SIZE:
+					$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 8Mb - please resize the image and try again');
+					break;
+				case UPLOAD_ERR_PARTIAL:
+					$smarty->assign('error', 'Your file was only partially uploaded - please try again');
+					break;
+				case UPLOAD_ERR_NO_FILE:
+					$smarty->assign('error', 'No file was uploaded - please try again');
+					break;
+				case UPLOAD_ERR_NO_TMP_DIR:
+					$smarty->assign('error', 'System Error: Folder missing - please let us know');
+					break;
+				case UPLOAD_ERR_CANT_WRITE:
+					$smarty->assign('error', 'System Error: Can not write file - please let us know');
+					break;
+				case UPLOAD_ERR_EXTENSION:
+					$smarty->assign('error', 'System Error: Upload Blocked - please let us know');
+					break;
+				default:
+					$smarty->assign('error', 'We were unable to process your upload - please try again');
+					break;
 			}
 		}
 		//user likes the image, lets have them agree to our terms
@@ -426,6 +470,7 @@ else
 	}
 }
 
+$smarty->assign('picnik_api_key', $CONF['picnik_api_key']);
 
 if (strlen($uploadmanager->errormsg))
 {

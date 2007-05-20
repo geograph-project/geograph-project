@@ -165,6 +165,15 @@ $CONF['search_count_first_page'] = true; //true/false
 //    http://flickr.com/services/api/misc.api_keys.html
 $CONF['flickr_api_key'] = '';
 
+//to use the picnik service for upload will need to obtain a api key
+//   http://www.picnik.com/keys/request
+$CONF['picnik_api_key'] = '';
+
+//method to use for picnik, see 
+//http://www.picnik.com/info/api
+$CONF['picnik_method'] = 'inabox'; //'inabox'|'redirect'
+
+
 //domain from which pictures can be pulled on demand
 //only for use on development systems to allow 'real' pictures to be
 //copied to your local system on demand. Simply give the domain name
