@@ -35,7 +35,12 @@
 			var mypbox = new picnikbox(el);
 			mypbox.activate();
 		}
-		AttachEvent(window,'load',openPicnik,false);
+		
+		function openPicnikStarter() {
+			setTimeout("openPicnik()",100);
+		}
+		
+		AttachEvent(window,'load',openPicnikStarter,false);
 
 	</script>
 	{/literal}
