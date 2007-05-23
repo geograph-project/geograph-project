@@ -76,14 +76,14 @@ if (isset($_REQUEST['id']))
 			{
 				$smarty->assign('error', "There were problems processing your upload - please contact us");
 			} 
-			elseif (empty($_POST['comment']))
+			elseif (empty($_POST['updatenote']))
 			{
 				$smarty->assign('error', "Please supply a comment");
 			} 
 			elseif ($uploadmanager->processURL($_POST['jpeg_url']))
 			{
 				$uid = $uploadmanager->upload_id;
-				$comment=stripslashes($_POST['comment']);
+				$comment=stripslashes($_POST['updatenote']);
 				
 				$ticket=new GridImageTroubleTicket();
 				$ticket->setSuggester($USER->user_id);				
