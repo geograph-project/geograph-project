@@ -108,10 +108,9 @@ if (isset($_POST['gridsquare']))
 			$q['_export_agent'] = 'browser';
 			$q['_export_method'] = 'POST';
 			$q['_userid'] = md5($USER->user_id.$CONF['register_confirmation_secret']);
-			$q['_export_title'] = 'Continue';
+			$q['_export_title'] = 'Send to Geograph';
 			$q['_host_name'] = 'Geograph';
 			$q['setpos'] = 1;
-			$q['picnik'] = 'return';
 			$q['grid_reference'] = $grid_reference;
 			$q['gridsquare'] = $square->gridsquare;
 			if (isset($_POST['photographer_gridref'])) {
@@ -120,7 +119,8 @@ if (isset($_POST['gridsquare']))
 			if (isset($_POST['view_direction']) && strlen($_POST['view_direction'])) {
 				$q['view_direction'] = $_POST['view_direction'];
 			} 
-			if ($CONF['picnik_method'] == 'inabox') { 
+			if ($CONF['picnik_method'] == 'inabox' && !preg_match('/safari/i',$_SERVER['HTTP_USER_AGENT'])) { 
+				$q['picnik'] = 'return';
 				$smarty->assign('picnik_url','http://www.picnik.com/service?'.http_build_query($q));
 				$smarty->display('submit_picnik.tpl');
 			} else {
