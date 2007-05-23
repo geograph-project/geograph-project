@@ -319,23 +319,31 @@ class UploadManager
 				return false;
 			}
 
-		if (fetch_remote_file($url, $pendingfile)) 
+		if (preg_match('/^http:\/\/[\w\.]+\/[\w\.\/]+\.jpg$/',$url)) 
 		{	
-			if ($this->_isJpeg($pendingfile))
-			{
-				$ok = $this->_processFile($upload_id,$pendingfile);
+			if (fetch_remote_file($url, $pendingfile)) 
+			{	
+				if ($this->_isJpeg($pendingfile))
+				{
+					$ok = $this->_processFile($upload_id,$pendingfile);
+				}
+				else
+				{
+					$this->error("We only accept JPEG images - your upload did not appear to be a valid JPEG file");
+				}
 			}
 			else
 			{
-				$this->error("We only accept JPEG images - your upload did not appear to be a valid JPEG file");
+				//playing silly buggers?
+				$this->error("There were problems processing your upload - please contact us");
 			}
 		}
 		else
 		{
 			//playing silly buggers?
-			$this->error("There were problems processing your upload - please contact us");
+			$this->error("We where unable to fetch that image - please contact us");
 		}
-					
+								
 		return $ok;
 	}
 
