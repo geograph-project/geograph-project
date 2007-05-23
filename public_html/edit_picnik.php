@@ -98,7 +98,7 @@ if (isset($_REQUEST['id']))
 					$db->Quote($image->gridimage_id),
 					$db->Quote($uploadmanager->upload_id),
 					$db->Quote($USER->user_id),
-					$db->Quote($this->gridimage_ticket_id));
+					$db->Quote($ticket->gridimage_ticket_id));
 					
 				if ($db->Execute($sql) === false) 
 				{
