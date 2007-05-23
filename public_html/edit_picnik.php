@@ -88,10 +88,11 @@ if (isset($_REQUEST['id']))
 				$ticket=new GridImageTroubleTicket();
 				$ticket->setSuggester($USER->user_id);				
 				$ticket->setImage($image->gridimage_id);
-				$ticket->setNotes("Auto-generated ticket as a result of Image Edit. Comment: $comment");
+				$ticket->setNotes("Auto-generated ticket as a result of Image Edit.\n Reason: $comment");
 				$status=$ticket->commit('pending');
 				
-				
+				$db = NewADOConnection($GLOBALS['DSN']);
+
 				$sql = sprintf("insert into gridimage_pending (gridimage_id,upload_id,user_id,gridimage_ticket_id,suggested) ".
 					"values (%s,%s,%s,%s,now())",
 					$db->Quote($image->gridimage_id),
