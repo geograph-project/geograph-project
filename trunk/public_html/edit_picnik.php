@@ -26,8 +26,18 @@ require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/gridimagetroubleticket.class.php');
+require_once('geograph/uploadmanager.class.php');
+
 
 init_session();
+
+$uploadmanager=new UploadManager;
+//display preview image?
+if (isset($_GET['preview']))
+{
+	$uploadmanager->outputPreviewImage($_GET['preview']);
+	exit;
+}			
 
 $smarty = new GeographPage;
 
@@ -59,6 +69,57 @@ if (isset($_REQUEST['id']))
 			exit;
 		}
 		
+		if (isset($_POST['save'])) {
+			
+			
+			if ($_POST['conf'] != md5($image->gridimage_id.$CONF['register_confirmation_secret']))
+			{
+				$smarty->assign('error', "There were problems processing your upload - please contact us");
+			} 
+			elseif (empty($_POST['comment']))
+			{
+				$smarty->assign('error', "Please supply a comment");
+			} 
+			elseif ($uploadmanager->processURL($_POST['jpeg_url']))
+			{
+				$uid = $uploadmanager->upload_id;
+				$comment=stripslashes($_POST['comment']);
+				
+				$ticket=new GridImageTroubleTicket();
+				$ticket->setSuggester($USER->user_id);				
+				$ticket->setImage($image->gridimage_id);
+				$ticket->setNotes("Auto-generated ticket as a result of Image Edit. Comment: $comment");
+				$status=$ticket->commit('pending');
+				
+				
+				$sql = sprintf("insert into gridimage_pending (gridimage_id,upload_id,user_id,gridimage_ticket_id,suggested) ".
+					"values (%s,%s,%s,%s,now())",
+					$db->Quote($image->gridimage_id),
+					$db->Quote($uploadmanager->upload_id),
+					$db->Quote($USER->user_id),
+					$db->Quote($this->gridimage_ticket_id));
+					
+				if ($db->Execute($sql) === false) 
+				{
+					$smarty->assign('error', 'error inserting: '.$db->ErrorMsg());
+					$ok=false;
+				}
+				
+				
+				header("Location: /photo/{$_REQUEST['id']}");
+				exit;
+			} else {
+				$smarty->assign('error', $uploadmanager->errormsg);
+			
+			}
+			
+			
+			unset($_POST['comment']);
+			$smarty->assign('_post',$_POST);
+			$smarty->display('edit_picnik.tpl');			
+			exit;
+		}
+		
 		
 		if (isset($_POST['picnik']) && $_POST['picnik'] == 'return') {
 			unset($_POST['picnik']);
@@ -69,7 +130,7 @@ if (isset($_REQUEST['id']))
 
 		$q = array();
 		$q['_apikey'] = $CONF['picnik_api_key'];
-		$q['_page'] = '/in/upload';
+		$q['_page'] = '/edit';
 		$q['_export'] = "http://{$_SERVER['HTTP_HOST']}/edit_picnik.php";
 		$q['_export_field'] = 'jpeg_url';
 		$q['_export_agent'] = 'browser';

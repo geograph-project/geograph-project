@@ -1,29 +1,42 @@
 {assign var="page_title" value="Edit with Picnik"}
 {include file="_std_begin.tpl"}
-	<h2>Submit Image via Picnik</h2>
+	
 
 {dynamic}
 {if $_post}
+<h2>Save from Picnik</h2>
 	<form action="{$script_name}" method="post" name="theForm" target="_top">
 		{foreach from=$_post key=key item=value}
 			<input type="hidden" name="{$key}" value="{$value|escape:"html"}"/>
 		{/foreach}
-		<p>If you do not continue automatically then <input type="submit" value="click here"/></p>
+
+{if $error}
+<h2><span class="formerror">Changes not submitted - check and correct errors below...<br/>{$error}</span></h2>
+{/if}
+
+<table><tr><td>
+<textarea id="updatenote" name="updatenote" rows="5" cols="60">{$updatenote|escape:'html'}</textarea>
+</td><td>
+
+<div style="float:left;font-size:0.7em;padding-left:5px;width:250px;">
+	Please provide a brief note why you have updated this image.
+</div>
+
+</td></tr></table>
+
+
+
+<input type="submit" name="save" value="Submit Changes" onclick="autoDisable(this)"/>
+<input type="button" name="cancel" value="Cancel" onclick="document.location='/photo/{$image->gridimage_id}';"/>
+
+
 	</form>
 	
-	{literal}
-	<script language="JavaScript" type="text/javascript">
 
-		function closePicnik() {
-			document.theForm.submit();
-		}
-		AttachEvent(window,'load',closePicnik,false);
-
-	</script>
-	{/literal}{else}
+{else}
  <link rel="stylesheet" href="http://www.picnik.com/css/picnikbox.css" media="screen" type="text/css" />
  <script type="text/javascript" src="http://www.picnik.com/js/picnikbox.js"></script>
-
+<h2>Edit with Picnik</h2>
 	
 		<p>If picnik does not open automatically then <a class="pbox" href="{$picnik_url}" id="plink">click here</a></p>
 	
