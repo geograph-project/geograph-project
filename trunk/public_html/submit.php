@@ -93,6 +93,13 @@ if (isset($_POST['gridsquare']))
 		$square->rememberInSession();
 
 		if (isset($_POST['picnik'])) {
+			if ($_POST['picnik'] == 'return') {
+				unset($_POST['picnik']);
+				$smarty->assign('_post',$_POST);
+				$smarty->display('submit_picnik.tpl');			
+				exit;
+			}
+		
 			$q = array();
 			$q['_apikey'] = $CONF['picnik_api_key'];
 			$q['_page'] = '/in/upload';
@@ -104,6 +111,7 @@ if (isset($_POST['gridsquare']))
 			$q['_export_title'] = 'Continue';
 			$q['_host_name'] = 'Geograph';
 			$q['setpos'] = 1;
+			$q['picnik'] = 'return';
 			$q['grid_reference'] = $grid_reference;
 			$q['gridsquare'] = $square->gridsquare;
 			if (isset($_POST['photographer_gridref'])) {
