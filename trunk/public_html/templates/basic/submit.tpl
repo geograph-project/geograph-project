@@ -378,11 +378,11 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	
 	<p>
 	Because we are an open project we want to ensure our content is licensed
-	as openly as possible and so we ask that all images are released under a {external title="Learn more about Creative Commons" href="http://creativecommons.org" text="Creative Commons" target="_blank"}
-	licence, including accompanying metadata.</p>
+	as openly as possible and so we ask that you adopt a {external title="Learn more about Creative Commons" href="http://creativecommons.org" text="Creative Commons"  target="_blank"}
+	licence for your image and accompanying metadata.</p>
 	
-	<p>With a Creative Commons licence, the photographer <b>keeps the copyright</b> but allows 
-	people to copy and distribute the work provided they <b>give credit</b>.</p>
+	<p>With a Creative Commons licence, you <b>keep your copyright</b> but allow 
+	people to copy and distribute your work provided they <b>give you credit</b></p>
 	
 	<p>Since we want to ensure we can use your work to fund the running costs of
 	this site, and allow us to create montages of grid images, we ask that you
@@ -394,10 +394,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	</ul>
 	
 	<p>{external title="View licence" href="http://creativecommons.org/licenses/by-sa/2.0/" text="Here is the Commons Deed outlining the licence terms" target="_blank"}</p>
-
-{assign var="credit" value=$user->credit_realname}
-{assign var="credit_default" value=1}
-{include file="_submit_licence.tpl"}
+	
 	
 	<p>If you do
 	not agree with these terms, click "I do not agree" and your upload will
