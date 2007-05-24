@@ -119,7 +119,7 @@ if (isset($_POST['gridsquare']))
 			if (isset($_POST['view_direction']) && strlen($_POST['view_direction'])) {
 				$q['view_direction'] = $_POST['view_direction'];
 			} 
-			if ($CONF['picnik_method'] == 'inabox' && !preg_match('/safari/i',$_SERVER['HTTP_USER_AGENT'])) { 
+			if ($CONF['picnik_method'] == 'inabox' && !preg_match('/safari|msie 6/i',$_SERVER['HTTP_USER_AGENT'])) { 
 				$q['picnik'] = 'return';
 				$smarty->assign('picnik_url','http://www.picnik.com/service?'.http_build_query($q));
 				$smarty->display('submit_picnik.tpl');
