@@ -147,7 +147,7 @@ if (isset($_REQUEST['id']))
 		$fullpath=$image->_getFullpath();
 		$q['_import'] = "http://".$_SERVER['HTTP_HOST'].$fullpath;
 		
-		if ($CONF['picnik_method'] == 'inabox' && !preg_match('/safari/i',$_SERVER['HTTP_USER_AGENT'])) { 
+		if ($CONF['picnik_method'] == 'inabox' && !preg_match('/safari|msie 6/i',$_SERVER['HTTP_USER_AGENT'])) { 
 			$q['picnik'] = 'return';
 			$smarty->assign('picnik_url','http://www.picnik.com/service?'.http_build_query($q));
 			$smarty->display('edit_picnik.tpl');
