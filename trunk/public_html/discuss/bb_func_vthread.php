@@ -101,9 +101,11 @@ $numRows=$topicData[5];
 
 $topicDesc=0;
 $topic_reverse='';
+$srt='ASC';
 if(isset($themeDesc) and in_array($topic,$themeDesc)) {
 $topicDesc=1;
 $topic_reverse="<img src=\"{$main_url}/img/topic_reverse.gif\" align=middle border=0 alt=\"\">&nbsp;";
+$srt='DESC';
 }
 
 if($page==-1 and $topicDesc==0) $page=pageChk($page,$numRows,$viewmaxreplys);
@@ -117,8 +119,6 @@ $makeLim=makeLim($page,$numRows,$viewmaxreplys);
 $anchor=1;
 $i=1;
 $ii=0;
-
-if(isset($themeDesc) and in_array($topic,$themeDesc)) $srt='DESC'; else $srt='ASC';
 
 if($cols=db_simpleSelect(0,$Tp,'poster_id, poster_name, post_time, post_text, poster_ip, post_status, post_id','topic_id','=',$topic,'post_id '.$srt,$makeLim)){
 
@@ -175,7 +175,8 @@ else $viewReg='';
 
 $posterName=$cols[1];
 $posterText=$cols[3];
-$postID = $cols[6];
+if (($topicDesc && !$postID) || !$topicDesc)
+	$postID = $cols[6];
 
 if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
 	foreach ($g_matches[2] as $g_i => $g_id) {
