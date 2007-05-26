@@ -437,7 +437,43 @@ function customCacheControl($mtime,$hash,$useifmod = true,$gmdate_mod = 0) {
 	header("Last-Modified: $gmdate_mod");
 }
 
+function customGZipHandlerStart() {
+	global $encoding;
+	if (!empty($_SERVER['HTTP_ACCEPT_ENCODING'])) {
+		$gzip = strstr($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip');
+		$deflate = strstr($_SERVER['HTTP_ACCEPT_ENCODING'], 'deflate');
 
+		$encoding = $gzip ? 'gzip' : ($deflate ? 'deflate' : 'none');
+	
+		if (!strstr($_SERVER['HTTP_USER_AGENT'], 'Opera') && 
+				preg_match('/^Mozilla\/4\.0 \(compatible; MSIE ([0-9]\.[0-9])/i', $_SERVER['HTTP_USER_AGENT'], $matches)) {
+			$version = floatval($matches[1]);
+
+			if ($version < 6)
+				$encoding = 'none';
+
+			if ($version == 6 && !strstr($_SERVER['HTTP_USER_AGENT'], 'EV1')) 
+				$encoding = 'none';
+		}
+	} else {
+		$encoding = 'none';
+	}
+	ob_start();
+	register_shutdown_function('customGZipHandlerEnd');
+}
+
+function customGZipHandlerEnd() {
+	global $encoding;
+	
+	$contents =& ob_get_clean();
+	
+	if (isset($encoding) && $encoding != 'none') {
+		// Send compressed contents
+		$contents = gzencode($contents, 9,  ($encoding == 'gzip') ? FORCE_GZIP : FORCE_DEFLATE);
+		header ('Content-Encoding: '.$encoding);
+	}
+	echo $contents;
+}
  
 function htmlspecialchars2( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
 {
