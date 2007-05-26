@@ -55,6 +55,9 @@
 	  {/if}
 	  
 	  <br/>
+		{if $image->reopenmaptoken}
+			<div style="float:right;position:relative"><a href="/submit_popup.php?t={$image->reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;" class="xml-geo">Map</a>&nbsp;</div>
+		{/if}
 	  <span style="font-family:verdana, arial, sans serif; font-size:0.9em">
 	  {if $image->nateastings}
 	  	subject: <b>{getamap gridref=$image->getSubjectGridref(true) title="(`$image->subject_gridref_precision`m precision)"}</b>

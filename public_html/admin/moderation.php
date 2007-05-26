@@ -28,7 +28,7 @@ require_once('geograph/imagelist.class.php');
 
 init_session();
 
-
+ob_start("ob_gxhandler");
 
 $db = NewADOConnection($GLOBALS['DSN']);
 if (!$db) die('Database connection failed');   
@@ -303,9 +303,10 @@ $c = $images->_getImagesBySql($sql);
 
 $realname = array();
 foreach ($images->images as $i => $image) {
+	$token=new Token;
+	$token->setValue("g", $images->images[$i]->getSubjectGridref(true));
 	if ($image->viewpoint_eastings) {
 		//note $image DOESNT work non php4, must use $images->images[$i]
-		$images->images[$i]->getSubjectGridref(true);
 		//move the photographer into the center to match the same done for the subject
 		$correction = ($images->images[$i]->viewpoint_grlen > 4)?0:500;
 		$images->images[$i]->distance = sprintf("%0.2f",
@@ -320,7 +321,14 @@ foreach ($images->images as $i => $image) {
 		
 		if ($images->images[$i]->different_square_true && $images->images[$i]->distance > 0.1)
 			$images->images[$i]->different_square = true;
+	
+		$token->setValue("p", $images->images[$i]->getPhotographerGridref(true));
 	}	
+	if (isset($image->view_direction) && strlen($image->view_direction) && $image->view_direction != -1) {
+		$token->setValue("v", $image->view_direction);
+	}
+	$images->images[$i]->reopenmaptoken = $token->getToken();
+	
 	$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$image->gridsquare_id}");
 
 	$fullpath=$images->images[$i]->_getFullpath();
