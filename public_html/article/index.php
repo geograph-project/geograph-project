@@ -26,13 +26,14 @@ init_session();
 
 $smarty = new GeographPage;
 
-$template = 'article.tpl';
 $smarty->caching = 0; //dont cache!
 
 $cacheid = $USER->hasPerm('basic')?$USER->user_id:0;
 
 $isadmin=$USER->hasPerm('moderator')?1:0;
 $smarty->assign_by_ref('isadmin', $isadmin);
+
+$template = ($isadmin)?'article_admin.tpl':'article.tpl';
 
 if ($isadmin) {
 	if (!empty($_GET['page']) && !preg_match('/[^\w-]/',$_GET['page'])) {
