@@ -31,7 +31,7 @@ $password = isset($_GET['password']) ? $_GET['password'] : "";
 $xml = "";
 $db = NewADOConnection($GLOBALS['DSN']);
 if (empty($db)) {
-	$xml['status'] = 'Error connecting to database';
+	$xml['status'] = 'Server Error: Unable to connect to database';
 	returnXML();
 }
 
@@ -50,11 +50,28 @@ case "upload":
 }
 
 function UploadPicture() {
-	global $_POST;
-	global $_FILES;
+	global $CONF;
 	global $xml;
 	global $USER;
 
+	if (empty($_POST['userid']) || !intval($_POST['userid'])) {
+		$xml['status'] = 'Not Logged In';
+		returnXML();
+	} else {
+		$USER = new GeographUser(intval($_POST['userid']));
+		
+		//TODO: check validation hash?
+		//if($_POST['validation'] != md5($_POST['userid'].'#'.$CONF['register_confirmation_secret'])) {
+		//	$xml['status'] = 'User not verified';
+		//	returnXML();
+		//}
+		
+		if (!$USER->user_id || !$USER->hasPerm('basic')) {
+			$xml['status'] = 'Not authorised to post';
+			returnXML();
+		}
+	}
+	
 	$tmpfile = $_FILES['uploadfile']['tmp_name'];
 
 	$um = new UploadManager();
@@ -90,10 +107,6 @@ function UploadPicture() {
 	$um->setClass($_POST['feature']);
 	$um->setUserStatus($_POST['supplemental']);
 
-	// TODO: at some point, we need to make sure $USER is set
-
-	$USER->user_id = $_POST['userid']; 
-
 	$um->processUpload($tmpfile);
 
 	// where there any errors back from the image processing?
@@ -117,8 +130,10 @@ function UploadPicture() {
 function AuthenticateUser() {
 	global $db, $xml;
 	global $username, $password;
+	global $CONF;
 
-	$sql = "select password,realname,rights,user_id from user where nickname = '$username' LIMIT 1";
+	$dbusername = $db->Quote($username);
+	$sql = "select password,realname,rights,user_id from user where nickname = $dbusername OR email = $dbusername LIMIT 1";
 	
 	if ($rs = &$db->Execute($sql)) {
 		if ($password != $rs->fields[0]) {
@@ -141,6 +156,10 @@ function AuthenticateUser() {
 		$xml['status'] = 'OK';
 		$xml['realname'] = $rs->fields[1];
 		$xml['user_id'] = $rs->fields[3];
+		
+		//TODO: send validation hash?
+		//$xml['validation'] = md5($rs->fields[3].'#'.$CONF['register_confirmation_secret']);
+		
 		returnXML();
 	}
 }
