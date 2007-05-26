@@ -28,7 +28,7 @@ require_once('geograph/imagelist.class.php');
 
 init_session();
 
-ob_start("ob_gxhandler");
+customGZipHandlerStart();
 
 $db = NewADOConnection($GLOBALS['DSN']);
 if (!$db) die('Database connection failed');   
