@@ -273,7 +273,7 @@ if (isset($_GET['moderator'])) {
 }
 
 
-$sql = "select gi.*,grid_reference,gi.realname as credit_realname,user.realname,user.rank,imagecount $sql_columns
+$sql = "select gi.*,grid_reference,user.realname,user.rank,imagecount $sql_columns
 from 
 	gridimage as gi
 	inner join gridsquare as gs
