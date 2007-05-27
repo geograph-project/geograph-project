@@ -131,7 +131,7 @@ if (isset($_REQUEST['id']))
 
 		$q = array();
 		$q['_apikey'] = $CONF['picnik_api_key'];
-		$q['_page'] = '/edit';
+		$q['_page'] = '/in/upload';
 		$q['_export'] = "http://{$_SERVER['HTTP_HOST']}/edit_picnik.php";
 		$q['_export_field'] = 'jpeg_url';
 		$q['_export_agent'] = 'browser';
@@ -146,6 +146,8 @@ if (isset($_REQUEST['id']))
 		
 		$fullpath=$image->_getFullpath();
 		$q['_import'] = "http://".$_SERVER['HTTP_HOST'].$fullpath;
+		$fullpath=$image->getThumbnail(213,160,true);
+		$q['_original_thumb'] = "http://".$_SERVER['HTTP_HOST'].$fullpath;
 		
 		if ($CONF['picnik_method'] == 'inabox' && !preg_match('/safari|msie 6/i',$_SERVER['HTTP_USER_AGENT'])) { 
 			$q['picnik'] = 'return';
