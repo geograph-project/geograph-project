@@ -167,13 +167,6 @@ class UploadManager
 	{
 		$this->use6fig=$use6fig;
 	}
-	/**
-	* set realname
-	*/
-	function setCredit($realname)
-	{
-		$this->realname=$realname;
-	}
 	
 	
 	/**

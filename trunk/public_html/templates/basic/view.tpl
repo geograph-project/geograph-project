@@ -117,8 +117,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 <td style="font-size:0.7em;vertical-align:middle">
   
   {if ($user->user_id eq $image->user_id) or ($ismoderator)}
-  	<a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">Edit picture information</a><br/>
-  	<a title="Edit licence" href="/licence.php?id={$image->gridimage_id}">Change photographer details</a>
+  	<a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">Edit picture information</a>
   {else}
   	<a href="/editimage.php?id={$image->gridimage_id}">Suggest an update to picture details</a>
   {/if}
