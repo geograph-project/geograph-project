@@ -889,10 +889,10 @@ class GridImage
 							imagecopyresampled($resized, $fullimg, 0, 0, 0, 0, 
 										$destw,$desth, $srcw, $srch);
 	
-
-							require_once('geograph/image.inc.php');
-							UnsharpMask($resized,100,0.5,3);
-
+							if ($unsharp) {
+								require_once('geograph/image.inc.php');
+								UnsharpMask($resized,100,0.5,3);
+							}
 							imagedestroy($fullimg);
 
 							//save the thumbnail
@@ -936,7 +936,7 @@ class GridImage
 		}
 		else
 		{
-			$title=$this->grid_reference.' : '.htmlentities($this->title).' by '.$this->realname;
+			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 		}

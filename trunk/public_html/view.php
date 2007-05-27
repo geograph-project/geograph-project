@@ -73,6 +73,8 @@ if (isset($_GET['style'])) {
 	exit;
 }
 
+customGZipHandlerStart();
+
 $smarty = new GeographPage;
 
 $template='view.tpl';
