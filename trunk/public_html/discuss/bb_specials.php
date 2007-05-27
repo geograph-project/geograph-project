@@ -24,6 +24,6 @@ if($cols=db_simpleSelect(0,'user','user_id,rights,role','role != \'\' OR rights 
 
 $mods=array();
 
-#$themeDesc = array(1);
+$themeDesc = array(3798);
 
 ?>
