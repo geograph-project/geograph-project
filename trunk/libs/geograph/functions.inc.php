@@ -472,6 +472,7 @@ function customGZipHandlerEnd() {
 		$contents = gzencode($contents, 9,  ($encoding == 'gzip') ? FORCE_GZIP : FORCE_DEFLATE);
 		header ('Content-Encoding: '.$encoding);
 	}
+	header('Content-length: '.strlen($contents));
 	echo $contents;
 }
  
