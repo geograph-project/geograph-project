@@ -371,18 +371,18 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<input type="hidden" name="user_status" value="{$user_status|escape:'html'}"/>
 	
 	<h2>Submit Step 4 of 4 : Confirm image rights</h2>
+	{if $user->rank && $user->rank < 250 && $last_imagetaken}
 
-<div style="float:right;position:relative;">
-<img src="{$preview_url}" width="{$preview_width*0.3|string_format:"%d"}" height="{$preview_height*0.3|string_format:"%d"}" alt="low resolution reminder image"/>	
-</div>
+	<div style="border:1px solid gray; padding:10px">I've read this already, <input style="width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);autoDisable(this.form.finalise[1]);"/> (saves scrolling to the bottom)</div>
+	{/if}
 	
 	<p>
 	Because we are an open project we want to ensure our content is licensed
-	as openly as possible and so we ask that you adopt a {external title="Learn more about Creative Commons" href="http://creativecommons.org" text="Creative Commons"  target="_blank"}
-	licence for your image and accompanying metadata.</p>
+	as openly as possible and so we ask that all images are released under a {external title="Learn more about Creative Commons" href="http://creativecommons.org" text="Creative Commons" target="_blank"}
+	licence, including accompanying metadata.</p>
 	
-	<p>With a Creative Commons licence, you <b>keep your copyright</b> but allow 
-	people to copy and distribute your work provided they <b>give you credit</b></p>
+	<p>With a Creative Commons licence, the photographer <b>keeps the copyright</b> but allows 
+	people to copy and distribute the work provided they <b>give credit</b>.</p>
 	
 	<p>Since we want to ensure we can use your work to fund the running costs of
 	this site, and allow us to create montages of grid images, we ask that you
@@ -404,10 +404,10 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	</p>
 
 
-	<p>If you agree with these terms, click "I agree" and this image will be
+	<p>If you agree with these terms, click "I agree" and your image will be
 	stored in grid square {$gridref}.<br />
 	<input type="submit" name="goback3" value="&lt; Back"/>
-	<input style="width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);"/>
+	<input style="width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);{if $user->rank && $user->rank < 250 && $last_imagetaken}autoDisable(this.form.finalise[0]);{/if}"/>
 	</p>
 	
 

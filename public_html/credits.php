@@ -60,11 +60,11 @@ if (!$smarty->is_cached($template,$cacheid))
 	
 	if (isset($_GET['cloud'])) {
 		$users = $db->GetAssoc("select
-			concat(nickname,gi.realname),nickname,user.user_id,if(gi.realname!='',gi.realname,user.realname) as realname,user.user_id,count(*) as images
+			nickname,user.user_id,user.realname,user.user_id,count(*) as images
 			from user
 				inner join gridimage_search gi using (user_id)
 			where nickname != '' $andwhere
-			group by gi.user_id,gi.realname
+			group by gi.user_id
 			order by images desc");
 
 
@@ -88,11 +88,11 @@ if (!$smarty->is_cached($template,$cacheid))
 		uksort($users, "cmp");
 	} else {
 		$users = $db->GetAssoc("select
-			user.user_id,nickname,if(gi.realname!='',gi.realname,user.realname) as realname,user.user_id,count(*) as images
+			user.user_id,nickname,user.realname,user.user_id,count(*) as images
 			from user
 				inner join gridimage_search gi using (user_id)
 			where 1 $andwhere
-			group by gi.user_id,gi.realname
+			group by gi.user_id
 			order by realname");
 	}
 

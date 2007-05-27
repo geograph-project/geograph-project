@@ -150,16 +150,6 @@ class GeographUser
 		$this->default_style = $style;
 	}
 	
-	
-	
-	function setCreditDefault($realname) {
-		$db = $this->_getDB();
-
-		$db->Execute(sprintf("update user set credit_realname = %s where user_id=%d",$db->Quote($realname),$this->user_id));
-		$this->credit_realname = $realname;
-	}
-	
-	
 	function getStyle($style='white') {
 		$valid_style=array('white', 'black','gray');
 		if (isset($_GET['style']) && in_array($_GET['style'], $valid_style))
