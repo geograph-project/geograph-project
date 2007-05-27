@@ -36,8 +36,8 @@
   {/if}
   {if $isadmin || ($user->user_id eq $image->user_id)}
   <div class="statuscaption">status:
-   {if $image->ftf}first{/if}
    {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
+   {if $image->ftf}(first){/if}
   {/if}
 </div>
 {if $showfull}
