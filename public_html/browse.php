@@ -36,6 +36,8 @@ $smarty = new GeographPage;
 
 dieUnderHighLoad(4);
 
+customGZipHandlerStart();
+
 $square=new GridSquare;
 
 $smarty->assign('prefixes', $square->getGridPrefixes());
