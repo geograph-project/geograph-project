@@ -186,8 +186,8 @@ geographing</a> first.</p>
 	  <div class="photo33" style="float:left;width:150px; height:170px; background-color:white"><a title="{$image->title|escape:'html'} by {$image->realname} - click to view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(120,120,false,true)}</a>
 	  <div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->title|escape:'html'}</a></div>
 	  <div class="statuscaption">status:
-		{if $image->ftf}first{/if}
 		{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}
+		{if $image->ftf}(first){/if}
 	  </div>
 	  </div>
 
