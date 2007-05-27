@@ -1,0 +1,19 @@
+{assign var="page_title" value="Geograph Contributors"}
+{include file="_std_begin.tpl"}
+
+<div style="float:right">Switch to <a href="/credits/{if $whenname}{$when}/{/if}">list version</a> or <a href="/statistics/breakdown.php?by=user{if $whenname}&amp;when={$when}{/if}">statistics version</a>.</div>
+
+<h2>Geograph British Isles Nicknames</h2>
+{if $whenname}
+	<h3>Submitting images March 2005 though {$whenname}</h3>
+{/if}
+<ul style="font-size:0.7em"><li>The bigger the text the more images contributed</li>
+<li>You can also click a nickname to see the users profile.</li></ul>
+
+<p class="wordnet" align="justify"> 
+{foreach from=$users key=nickkey item=obj}
+<a style="font-size:{$obj.size}px;" title="{$obj.realname},{$obj.images} images" href="/user/{$obj.nickname|escape:url}/">{$obj.nickname|replace:' ':'&middot;'}</a>
+{/foreach}
+</p>
+ 		
+{include file="_std_end.tpl"}

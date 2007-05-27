@@ -1,0 +1,99 @@
+<VirtualHost *>
+    DocumentRoot /var/www/geograph_live/public_html
+    ServerName www.geograph.org.uk
+    ServerAlias new.geograph.co.uk
+    ServerAlias geograph.co.uk
+    ServerAlias geograph.org.uk
+    ServerAlias kml.geograph.org.uk
+    ServerAlias cluster1.geograph.org.uk
+    ServerAlias www.geograph.co.uk
+	ServerAlias schools.geograph.org.uk
+
+    #create logformat like combined but with our user id and script timing
+    LogFormat "%{X-Forwarded-For}i %l %{user_id}n %t \"%r\" \"%v\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{php_timing}n" geograph
+
+    #don't log heartbeat requests
+    SetEnvIf Request_Method "OPTIONS" dontlog
+
+    #only log if we haven't tripped our dontlog switch
+    CustomLog /var/www/geograph_live/logs/access_log geograph env=!dontlog
+    ErrorLog /var/www/geograph_live/logs/error_log
+
+    php_value include_path .:/var/www/geograph_live/libs/
+    php_value register_globals Off
+    php_value upload_max_filesize 8M
+    php_value memory_limit  32M
+    
+    <Directory /var/www/geograph_live/public_html/>
+	DirectoryIndex index.php
+        Options -Indexes
+        Options FollowSymLinks
+        AllowOverride None
+        AddType application/vnd.google-earth.kml+xml kml
+        AddType application/vnd.google-earth.kmz kmz 
+    </Directory>    
+    
+    RewriteEngine on
+
+    RewriteCond %{HTTP_HOST}   !^www\.geograph\.org\.uk [NC]                 
+    RewriteCond %{HTTP_HOST}   !^kml\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !^cluster1\.geograph\.org\.uk [NC]                 
+    RewriteCond %{HTTP_HOST}   !^schools\.geograph\.org\.uk [NC]                 
+    RewriteCond %{HTTP_HOST}   !^$
+    RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]   
+
+    RewriteCond %{HTTP_HOST}   ^kml\.geograph\.org\.uk [NC]
+    RewriteCond %{REQUEST_URI} !^/kml
+    RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
+
+
+    #the following includes a fix as some useragents auto add a / to what it thinks is a folder
+
+
+    RewriteRule /api/.* /restapi.php [qsa]
+    RewriteRule /photo/([0-9]+)\.kml /kml.php?id=$1 [qsa]
+    RewriteRule /photo/([0-9]+) /view.php?id=$1 [qsa]
+    RewriteRule /gridref/(.*) /browse.php?gridref=$1 [qsa]
+
+    RewriteRule /help/([^/]*) /staticpage.php?page=$1 [qsa]
+
+    RewriteRule /feed/userid/([0-9]+)(|/[0-9]+)\.([\w]+) /syndicator.php?page=$2&u=$1&extension=$3 [qsa]
+    RewriteRule /user/([^\/]+)/map/?(.*)$ /mapbrowse.php?user=$1&t=$2
+    RewriteRule /user/([^\/]+)/all/?$ /profile.php?user=$1&all=1
+    RewriteRule /user/([^\/]+)/?$ /profile.php?user=$1
+
+    RewriteRule /map/(.*) /mapbrowse.php?t=$1 [qsa]
+    RewriteRule /article/([\w-]+)/?$ /article/article.php?page=$1 [qsa]
+    RewriteRule /explore/places/([0-9]?)/?(\w*)/? /explore/places.php?ri=$1&adm1=$2 [qsa]
+
+    RewriteRule /reg/([^/]+)/(.*) /register.php?u=$1&confirm=$2 [qsa]
+    RewriteRule /list/([A-Z]{1,2}) /list.php?square=$1 [qsa]
+
+
+    RewriteRule /credits/?([\d-]*)/?$ /credits.php?when=$1
+
+    RewriteRule /feed/recent\.([\w]+) /syndicator.php?extension=$1 [qsa]
+    RewriteRule /feed/recent/?([^/]*)/? /syndicator.php?format=$1 [qsa]
+
+    RewriteRule /feed/results/([0-9]+)(|/[0-9]+)\.([\w]+) /syndicator.php?page=$2&i=$1&extension=$3 [qsa]
+    RewriteRule /feed/results([0-9]*)/([0-9]+)/?([^/]*)/? /syndicator.php?page=$1&i=$2&format=$3 [qsa]
+
+    RewriteRule /results/([0-9]+)(/[0-9]+|)\.?([\w]*)$ /search.php?page=$2&i=$1&extension=$3 [qsa]
+
+
+    RewriteRule /discuss/topic([0-9]+) /discuss/?action=vthread&topic=$1 [qsa,r]
+    RewriteRule /discuss/forum([0-9]+) /discuss/?action=vtopic&forum=$1 [qsa,r]
+    RewriteRule /discuss/feed/recent\.([\w]+) /discuss/syndicator.php?extension=$1 [qsa]
+    RewriteRule /discuss/feed/recent/?([^/]*) /discuss/syndicator.php?format=$1 [qsa]
+    RewriteRule /discuss/feed/forum([0-9]+)\.([\w]+) /discuss/syndicator.php?forum=$1&extension=$2 [qsa]
+    RewriteRule /discuss/feed/forum([0-9]+)/?([^/]*) /discuss/syndicator.php?forum=$1&format=$2 [qsa]
+
+    #rewrite imagemap clicks as regular urls - must do this otherwise
+    #php's use_trans_sid will break the urls
+    RewriteCond %{QUERY_STRING} (.+)\?([0-9]+),([0-9]+)$
+    RewriteRule /mapbrowse.php /mapbrowse.php?x=%2&y=%3&%1 
+
+
+    ErrorDocument 404 /staticpage.php?page=404
+
+</VirtualHost>
