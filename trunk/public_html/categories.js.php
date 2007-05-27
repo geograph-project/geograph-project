@@ -53,6 +53,8 @@ header("Expires: ".date("D, d M Y H:i:s",time()+3600*3 )." GMT");
 
 header("Content-type: text/javascript");
 
+customGZipHandlerStart();
+
 //always turn off debugging, it will break the js
 $smarty->debugging=false;
 $smarty->display($template, $cacheid);

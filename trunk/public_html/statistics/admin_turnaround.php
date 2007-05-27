@@ -66,8 +66,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 		$table['title'] = "Ticket Moderating";
 
+		$table['headnote'] = "Excludes tickets deferred at some point";
+
 		$table['table']=$db->GetAll("
-		select date(updated) as `Date Closed`,count(*) as `Tickets`,count(distinct moderator_id) as `Moderators`, min(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as Shortest,avg(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as `Average Hours`,(avg(unix_timestamp(updated)-unix_timestamp(suggested))+stddev(unix_timestamp(updated)-unix_timestamp(suggested))*2)/3600 as `75% within`,max(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as Longest from gridimage_ticket where updated > date_sub(now(),interval 24 day) and status = 'closed' and moderator_id > 0 group by date(updated)
+		select date(updated) as `Date Closed`,count(*) as `Tickets`,count(distinct moderator_id) as `Moderators`, min(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as Shortest,avg(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as `Average Hours`,(avg(unix_timestamp(updated)-unix_timestamp(suggested))+stddev(unix_timestamp(updated)-unix_timestamp(suggested))*2)/3600 as `75% within`,max(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as Longest from gridimage_ticket where updated > date_sub(now(),interval 24 day) and status = 'closed' and moderator_id > 0 and deferred = 0 group by date(updated)
 		" );
 
 		$table['total'] = count($table);
