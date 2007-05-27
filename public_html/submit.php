@@ -294,12 +294,6 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->setDirection(stripslashes($_POST['view_direction']));
 				$uploadmanager->setUse6fig(stripslashes($_POST['use6fig']));
 				$uploadmanager->setUserStatus(stripslashes($_POST['user_status']));
-				if ($_POST['pattrib'] == 'other') {
-					$uploadmanager->setCredit(stripslashes($_POST['pattrib_name']));
-				}
-				if (!empty($_POST['pattrib_default'])) {
-					$USER->setCreditDefault(($_POST['pattrib'] == 'other')?stripslashes($_POST['pattrib_name']):'');
-				}
 				
 				$err = $uploadmanager->commit();
 				
@@ -377,11 +371,6 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('today_imagetaken', date("Y-m-d"));
 		}
 		if ($step == 4) {
-			$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
-			$smarty->assign('preview_url', $preview_url);
-			$smarty->assign('preview_width', $uploadmanager->upload_width);
-			$smarty->assign('preview_height', $uploadmanager->upload_height);
-			
 			if (isset($_SESSION['last_imagetaken'])) {
 				$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
 			}
