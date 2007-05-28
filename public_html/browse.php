@@ -265,17 +265,16 @@ if ($grid_given)
 				}
 			} elseif ($_GET['by'] == 'status') {
 				$breakdown_title = "Status";
-				$all = $db->getAll("SELECT CONCAT(ELT(ftf+1, '','first '),moderation_status),count(*),gridimage_id
+				$all = $db->getAll("SELECT moderation_status,count(*),gridimage_id
 				FROM gridimage
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND (moderation_status in ('accepted', 'geograph') $user_crit )
-				GROUP BY CONCAT(ELT(ftf+1, '','first '),moderation_status) 
+				GROUP BY moderation_status 
 				ORDER BY ftf DESC,moderation_status+0 DESC");
 				foreach ($all as $row) {
 					$rowname = str_replace('accepted','supplemental',$row[0]);
 					$breakdown[$i] = array('name'=>"<b>{$rowname}</b>",'count'=>$row[1]);
 					if ($row[1] > 20) {
-						$row[0] = str_replace('first ','',$row[0]);//we have to ignore it for now! ButButBut there should only ever be one first :)
 						if ($row[0] == 'pending' || $row[0] == 'rejected') {
 							$breakdown[$i]['link']="/profile.php?u={$USER->user_id}";
 						} else {
