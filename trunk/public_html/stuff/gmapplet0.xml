@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
-<ModulePrefs title="Geograph v.3" 
-                description="Trying out Mapplets"
+<ModulePrefs title="Geograph British Isles" 
+                description="Very basic Mapplet - loads Geograph pictures into the current view as you move the main map."
                 author="Barry Hunter"
                 author_email="geograph@barryhunter.co.uk"
                 height="150">
@@ -16,7 +16,7 @@
 <div style="font-size:0.8em">
 	<p><i>The Geograph British Isles project aims to collect geographically representative photographs and information for every square kilometre of the UK and the Republic of Ireland, and you can be part of it.</i></p>
 
-	<p>This Maplet allows full access to the thousends of images contributed to Geograph since March 2005, Zoom into the map to see the all the photos, only 15 images will be shown on the map at any one time.</p>
+	<p>This Maplet allows full access to the hundreds of thousends of images contributed to Geograph since March 2005, Zoom into the map to see the all the photos, only 15 images will be shown on the map at any one time.</p>
 
 	<p>Click on the Thumbnails to view a bigger image, and follow the link to view the full resolution image on the geograph website.</p>
 
