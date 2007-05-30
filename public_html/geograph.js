@@ -222,11 +222,16 @@ function markImage(image) {
 	}
 }
 
+String.prototype.commatrim = function () {
+	return this.replace(/^,+|,+$/g,"");
+}
+
 function importToMarkedImages() {
-	current = readCookie('markedImages');
-	newCookie = current;
+	newCookie = readCookie('markedImages');
+	if (!newCookie)
+		newCookie = new String();
 	list = prompt('Paste your current list, either comma or space seperated\n or just surrounded with [[[ ]]] ','');
-	if (list != '') {
+	if (list && list != '') {
 		splited = list.split(/[^\d]+/);
 		count=0;	
 		for(i=0; i < splited.length; i++) {
@@ -239,14 +244,17 @@ function importToMarkedImages() {
 		}
 		createCookie('markedImages',newCookie,10);
 		showMarkedImages();
-		alert("Added "+count+" image(s) to your list");
+		leng = newCookie.commatrim().split(',').length;
+		alert("Added "+count+" image(s) to your list, now contains "+leng+" images in total.");
+	} else {
+		alert("Nothing to add");
 	}
 }
 
 function displayMarkedImages() {
 	current = readCookie('markedImages');
 	if (current) {
-		splited = current.split(',');
+		splited = current.commatrim().split(',');
 		newstring = '[[['+splited.join(']]] [[[')+']]]';
 		prompt("Copy and Paste the following into the forum",newstring);
 	} else {
@@ -257,7 +265,7 @@ function displayMarkedImages() {
 function returnMarkedImages() {
 	current = readCookie('markedImages');
 	if (current) {
-		splited = current.split(',');
+		splited = current.commatrim().split(',');
 		return '[[['+splited.join(']]] [[[')+']]]';
 	} else {
 		alert("You haven't marked any images yet. Or cookies are disabled");
@@ -268,7 +276,7 @@ function returnMarkedImages() {
 function showMarkedImages() {
 	current = readCookie('markedImages');
 	if (current) {
-		splited = current.split(',');
+		splited = current.commatrim().split(',');
 		
 		for(i=0; i < splited.length; i++) 
 			if (document.getElementById('mark'+splited[i])) {
@@ -279,6 +287,9 @@ function showMarkedImages() {
 				    ele.textContent = 'marked';
 				}
 			}
+		if (document.getElementById('marked_number')) {
+			document.getElementById('marked_number').innerHTML = '['+(splited.length+0)+']';
+		}
 	} 
 }
 
@@ -286,7 +297,7 @@ function showMarkedImages() {
 function clearMarkedImages() {
 	current = readCookie('markedImages');
 	if (current && confirm('Are you sure?')) {
-		splited = current.split(',');
+		splited = current.commatrim().split(',');
 
 		for(i=0; i < splited.length; i++) 
 			if (document.getElementById('mark'+splited[i])) {
