@@ -310,6 +310,9 @@ function clearMarkedImages() {
 			}
 		eraseCookie('markedImages');
 		alert('All images removed from your list');
+		if (document.getElementById('marked_number')) {
+			document.getElementById('marked_number').innerHTML = '[0]';
+		}
 	} 
 }
 
