@@ -39,7 +39,7 @@ between servers
  </security>
 
  <resources>
-  <j2se version="1.4" />
+  <j2se version="1.5" />
   <jar href="JUploader.jar" />
  </resources>
 
