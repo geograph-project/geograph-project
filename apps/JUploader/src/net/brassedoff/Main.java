@@ -11,10 +11,14 @@ package net.brassedoff;
 
 import java.awt.Toolkit;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
 import javax.swing.JOptionPane;
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.methods.*;
+import javax.swing.UIManager;
+//import com.jgoodies.looks.*;
 
 /**
  *
@@ -27,6 +31,11 @@ public class Main {
     static String [] imageClassList;
     static boolean noCache = true;
     static int geoUserid = 0;
+    static boolean doResize = false;
+    static String cacheDirectory = "";
+    static int tuneParam1;
+    static int tuneParam2;
+    static String validationToken = "";
 
     
     /** Creates a new instance of Main */
@@ -38,6 +47,13 @@ public class Main {
      */
     public static void main(String[] args) {
 
+        try {
+            UIManager.setLookAndFeel("com.jgoodies.looks.plastic.Plastic3DLookAndFeel");
+        } catch (Exception e) {
+            System.out.println("Unable to set a look and feel - using default");
+
+        }
+        
         // check that we've got the correct number of command line arguments
         
         if (args.length != 1) {
@@ -51,11 +67,42 @@ public class Main {
                 
         LoadCache();
         
+        // load properties
+        
+        Properties propList = new Properties();
+
+        try {
+            propList.load(new FileInputStream("juppy.prop"));
+            
+            // we must have got a good property file read, so...
+            
+            if (propList.getProperty("doresize").equals("true")) {
+                doResize = true;
+            } else {
+                doResize = false;
+            }
+            
+            cacheDirectory = propList.getProperty("cachedirectory");
+            
+        } catch (FileNotFoundException fe) {
+            System.out.println("No properties file found");
+            
+            // we'd better set some defaults
+            
+            doResize = false;
+            cacheDirectory = "";
+            
+        } catch (IOException io) {
+            System.out.println("IO exception reading properties");
+        }
+        
         // TODO Get user authentication information (login) and validate on server
         
         UploadManager ul = new UploadManager();
 
         ul.setVisible(true);        
+        
+        
         
     }
     

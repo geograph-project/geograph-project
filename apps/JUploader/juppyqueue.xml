@@ -1,15 +1,15 @@
 <juppy>
 <count>1</count>
-<line0><juppyline><filename>/home/david/java/JUploader/PA230774.JPG</filename>
-<subject>sk1234</subject>
-<photographer>sk1234</photographer>
+<line0><juppyline><filename>/tmp/juppycache//p7050430.jpg</filename>
+<subject>p7050</subject>
+<photographer>p7050</photographer>
 <direction>NNE</direction>
-<title>Test picture</title>
-<comments>This is several lines
-of text for a particuar picture</comments>
-<feature>Canal Lock</feature>
-<date>04-Oct-2006</date>
+<title>123</title>
+<comments>123</comments>
+<feature>Abbey</feature>
+<date>30-May-2007</date>
 <supplemental>Y</supplemental>
 <cclicence>Y</cclience>
-</juppyline></line0>
+<uploadflag>User not verified</uploadflag>
+<imagelocation>cache</imagelocation></juppyline></line0>
 </juppy>
