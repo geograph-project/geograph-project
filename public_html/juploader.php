@@ -61,10 +61,10 @@ function UploadPicture() {
 		$USER = new GeographUser(intval($_POST['userid']));
 		
 		//TODO: check validation hash?
-		//if($_POST['validation'] != md5($_POST['userid'].'#'.$CONF['register_confirmation_secret'])) {
-		//	$xml['status'] = 'User not verified';
-		//	returnXML();
-		//}
+		if($_POST['validation'] != md5($_POST['userid'].'#'.$CONF['register_confirmation_secret'])) {
+			$xml['status'] = 'User not verified';
+			returnXML();
+		}
 		
 		if (!$USER->user_id || !$USER->hasPerm('basic')) {
 			$xml['status'] = 'Not authorised to post';
@@ -158,7 +158,7 @@ function AuthenticateUser() {
 		$xml['user_id'] = $rs->fields[3];
 		
 		//TODO: send validation hash?
-		//$xml['validation'] = md5($rs->fields[3].'#'.$CONF['register_confirmation_secret']);
+		$xml['validation'] = md5($rs->fields[3].'#'.$CONF['register_confirmation_secret']);
 		
 		returnXML();
 	}
