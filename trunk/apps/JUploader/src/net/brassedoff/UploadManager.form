@@ -18,12 +18,18 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="menuFileSave">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/document-save.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Save queue"/>
                 <Property name="actionCommand" type="java.lang.String" value="Save"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="menuFileLoad">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/document-open.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Load queue"/>
                 <Property name="actionCommand" type="java.lang.String" value="Load"/>
               </Properties>
@@ -32,7 +38,15 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="menuFileUpload">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/view-refresh.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Upload"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="menuFileSettings">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Settings"/>
               </Properties>
             </MenuItem>
           </SubComponents>
@@ -40,21 +54,31 @@
         <Menu class="javax.swing.JMenu" name="menuItem">
           <Properties>
             <Property name="text" type="java.lang.String" value="Items"/>
+            <Property name="toolTipText" type="java.lang.String" value="This will be disabled until you&apos;ve logged in to Geograph once"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="menuItemAdd">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/camera-photo.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Add picture"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="menuItemEdit">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/applications-multimedia.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Change current picture"/>
                 <Property name="actionCommand" type="java.lang.String" value="Change picture"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="menuItemDelete">
               <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/user-trash-full.png"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Delete picture"/>
               </Properties>
             </MenuItem>
@@ -76,7 +100,7 @@
     </Menu>
   </NonVisualComponents>
   <Properties>
-    <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property name="defaultCloseOperation" type="int" value="0"/>
     <Property name="title" type="java.lang.String" value="Geograph JUppy"/>
   </Properties>
   <SyntheticProperties>
@@ -85,6 +109,8 @@
   </SyntheticProperties>
   <AuxValues>
     <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="2"/>
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="2"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>

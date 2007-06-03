@@ -6,12 +6,19 @@
 
 package net.brassedoff;
 
+import java.awt.BorderLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Paint;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 
@@ -19,7 +26,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
  *
  * @author  david
  */
+
+
 public class GeoLogin extends javax.swing.JDialog implements ActionListener{
+    
+    
+    private ImagePanel imagePanel;
+    Image loginImage;
     
     /** Creates new form GeoLogin */
     public GeoLogin(java.awt.Frame parent, boolean modal) {
@@ -28,7 +41,42 @@ public class GeoLogin extends javax.swing.JDialog implements ActionListener{
         
         btnLogin.addActionListener(this);
         btnCancel.addActionListener(this);
+        
+        // we've got an empty panel in the dialog that we'll
+        // drop another panel in that will contain the geograph project logo
+        
+        imagePanel = new ImagePanel();
+        pImageLoc.add(imagePanel, BorderLayout.CENTER);
+        
+        ImageIcon icon = new ImageIcon(getClass().getResource("/loginpanel.png"));
+        loginImage = icon.getImage();
     }
+    
+    
+    
+    private class ImagePanel extends JPanel  {
+        
+        ImagePanel() {
+            super();
+        }
+        
+        public void paint(Graphics g) {
+            Graphics2D g2d = (Graphics2D) g;
+            
+            Paint store = g2d.getPaint();
+            
+            //TODO: Need an image observer here
+            
+            g.drawImage(loginImage, 0, 0, this);
+            
+            g2d.setPaint(store);
+            
+        }
+        
+        
+    }
+    
+    
     
     public void actionPerformed(ActionEvent ae) {
         String action = ae.getActionCommand();
@@ -37,7 +85,8 @@ public class GeoLogin extends javax.swing.JDialog implements ActionListener{
             
             // user wants out
             
-            System.exit(1);
+            this.dispose();
+            return;
         } else if (action.equals("Login")) {
             
             // we can check the username and password on the server now...
@@ -62,7 +111,7 @@ public class GeoLogin extends javax.swing.JDialog implements ActionListener{
             Toolkit.getDefaultToolkit().beep();
             return;
         }
-
+        
         GetMethod methodAuthenticate = new GetMethod(Main.geoURL + "?action=login&username=" + user + "&password=" + password);
         try {
             htc.executeMethod(methodAuthenticate);
@@ -81,7 +130,11 @@ public class GeoLogin extends javax.swing.JDialog implements ActionListener{
             Toolkit.getDefaultToolkit().beep();
             return;
         }
-
+        
+        // remember the validation token from the server
+        
+        Main.validationToken = XMLHandler.getXMLField(xmlResponse, "validation");
+        
         // we'll need to store the geo userid because it's used in all sorts of places for creating
         // user classes which the server side will need to simulate
         
@@ -92,20 +145,20 @@ public class GeoLogin extends javax.swing.JDialog implements ActionListener{
             JOptionPane.showMessageDialog(this, "Invalid integer userid received");
             Toolkit.getDefaultToolkit().beep();
             return;
-        }        
+        }
         
         // If we've got this far, we can be assured that the user is OK and we have a valid
         // numeric user number back from the server
         
-        JOptionPane.showMessageDialog(this, "Welcome to Geograph, " + 
-                XMLHandler.getXMLField(xmlResponse, "realname") + "\n(User number " + 
-                XMLHandler.getXMLField(xmlResponse, "user_id") + ")\n" + 
+        JOptionPane.showMessageDialog(this, "Welcome to Geograph, " +
+                XMLHandler.getXMLField(xmlResponse, "realname") + "\n(User number " +
+                XMLHandler.getXMLField(xmlResponse, "user_id") + ")\n" +
                 "Half a mo whilst I update the image class list");
         
         // load data and initialise the cache file
         
         GetMethod methodGetClass = new GetMethod(Main.geoURL + "?action=getclass");
-                
+        
         try {
             htc.executeMethod(methodGetClass);
             byte [] response = methodGetClass.getResponseBody();
@@ -115,7 +168,7 @@ public class GeoLogin extends javax.swing.JDialog implements ActionListener{
             JOptionPane.showMessageDialog(this, "Unable to fetch image class list");
             Toolkit.getDefaultToolkit().beep();
         }
-
+        
         status = XMLHandler.getXMLField(xmlResponse, "status");
         System.out.println("status=" + status);
         if (!status.equals("OK")) {
@@ -155,6 +208,7 @@ public class GeoLogin extends javax.swing.JDialog implements ActionListener{
         
     }
     
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -166,38 +220,17 @@ public class GeoLogin extends javax.swing.JDialog implements ActionListener{
         jLabel2 = new javax.swing.JLabel();
         txtUser = new javax.swing.JTextField();
         txtPassword = new javax.swing.JPasswordField();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
+        pImageLoc = new javax.swing.JPanel();
         btnLogin = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
         jLabel1.setText("Geograph user name:");
 
         jLabel2.setText("Geograph password:");
 
-        jPanel1.setBackground(new java.awt.Color(0, 51, 255));
-        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder(new java.awt.Color(0, 102, 204), new java.awt.Color(0, 0, 153)));
-        jLabel3.setFont(new java.awt.Font("Dialog", 1, 24));
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Photograph every grid square!");
-
-        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jLabel3)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jLabel3)
-                .addContainerGap(31, Short.MAX_VALUE))
-        );
+        pImageLoc.setLayout(new java.awt.BorderLayout());
 
         btnLogin.setText("Login");
 
@@ -211,26 +244,27 @@ public class GeoLogin extends javax.swing.JDialog implements ActionListener{
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jLabel1)
-                            .add(jLabel2))
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                            .add(jLabel2)
+                            .add(jLabel1))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                             .add(txtUser)
-                            .add(txtPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)))
+                            .add(txtPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 132, Short.MAX_VALUE))
                     .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
                         .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
                             .add(btnCancel)
                             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .add(btnLogin))
-                        .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .add(org.jdesktop.layout.GroupLayout.LEADING, pImageLoc, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 391, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(pImageLoc, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 73, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel1)
@@ -239,7 +273,7 @@ public class GeoLogin extends javax.swing.JDialog implements ActionListener{
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel2)
                     .add(txtPassword, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 9, Short.MAX_VALUE)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnCancel)
                     .add(btnLogin))
@@ -248,24 +282,14 @@ public class GeoLogin extends javax.swing.JDialog implements ActionListener{
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new GeoLogin(new javax.swing.JFrame(), true).setVisible(true);
-            }
-        });
-    }
+    
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnLogin;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel pImageLoc;
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtUser;
     // End of variables declaration//GEN-END:variables

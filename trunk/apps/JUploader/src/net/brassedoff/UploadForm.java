@@ -6,15 +6,25 @@
 
 package net.brassedoff;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
 
 /**
  *
@@ -25,14 +35,15 @@ import javax.swing.JOptionPane;
  * @author  david
  */
 public class UploadForm extends javax.swing.JDialog implements ActionListener {
-
+    
     public String [] editData = new String [20];
     public boolean acceptFlag;
+    ImagePreview preview = new ImagePreview();
     
     /** Creates new form UploadForm */
     public UploadForm(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        initComponents(); 
+        initComponents();
         
         // my initialisation stuff (listeners etc)
         btnImagefile.addActionListener(this);
@@ -42,11 +53,25 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
         
         // fill the feature combobox
         cmbGeoFeature.removeAllItems();
+        
+        // it was thought that a null first entry might be useful
+        
+        cmbGeoFeature.addItem("");
+        
         for (int i = 0; i < Main.imageClassList.length; i++) {
             cmbGeoFeature.addItem(Main.imageClassList[i]);
         }
         
         acceptFlag = false;
+        
+        // sort out the image preview
+        
+        pnlPreview.add(preview, java.awt.BorderLayout.CENTER);
+        
+        // status label...
+        lblStatus.setText("");
+        
+        
     }
     
     public void populateFields() {
@@ -55,6 +80,9 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
         // to an edit)
         
         txtImagefile.setText(editData[0]);
+        
+        preview.setFilename(editData[0]);
+        
         txtSubject.setText(editData[1]);
         txtPhotographer.setText(editData[2]);
         cmbDirection.setSelectedItem(editData[3]);
@@ -64,6 +92,8 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
         txtPhotoDate.setText(editData[7]);
         chkSupplemental.setSelected(editData[8].equals("Y") ? true : false);
         chkCCLicence.setSelected(editData[9].equals("Y") ? true : false);
+        
+        lblStatus.setText("");
         
     }
     
@@ -96,6 +126,8 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
         btnImagefile = new javax.swing.JButton();
         chkSupplemental = new javax.swing.JCheckBox();
         chkCCLicence = new javax.swing.JCheckBox();
+        pnlPreview = new javax.swing.JPanel();
+        lblStatus = new javax.swing.JLabel();
 
         setTitle("Geograph uploader");
         setBackground(java.awt.Color.lightGray);
@@ -106,7 +138,7 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
 
         jLabel4.setText("View direction:");
 
-        cmbDirection.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "North", "NNE", "NE", "ENE", "East", "ESE", "SE", "SSE", "South", "SSW", "SW", "WSW", "West", "WNW", "NW", "NNW" }));
+        cmbDirection.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "", "North", "NNE", "NE", "ENE", "East", "ESE", "SE", "SSE", "South", "SSW", "SW", "WSW", "West", "WNW", "NW", "NNW" }));
 
         jLabel5.setText("Image title:");
 
@@ -141,18 +173,25 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
         chkCCLicence.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
         chkCCLicence.setMargin(new java.awt.Insets(0, 0, 0, 0));
 
+        pnlPreview.setLayout(new java.awt.BorderLayout());
+
+        pnlPreview.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        pnlPreview.setPreferredSize(new java.awt.Dimension(100, 75));
+
+        lblStatus.setText("jLabel1");
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(chkCCLicence, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
-                    .add(chkSupplemental, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
+                    .add(chkCCLicence, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 567, Short.MAX_VALUE)
+                    .add(chkSupplemental, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 567, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
                         .add(btnReset)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 190, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 365, Short.MAX_VALUE)
                         .add(btnUpload, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 134, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                     .add(layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -162,19 +201,21 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
                             .add(btnImagefile, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 226, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, cmbDirection, 0, 161, Short.MAX_VALUE)
-                            .add(txtImagefile, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)
+                            .add(txtImagefile, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
+                            .add(cmbDirection, 0, 222, Short.MAX_VALUE)
                             .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
                                 .add(org.jdesktop.layout.GroupLayout.LEADING, txtPhotographer)
-                                .add(org.jdesktop.layout.GroupLayout.LEADING, txtSubject, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE))))
+                                .add(org.jdesktop.layout.GroupLayout.LEADING, txtSubject, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)))
+                        .add(14, 14, 14)
+                        .add(pnlPreview, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                     .add(layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(jLabel5)
                             .add(jLabel6))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
-                            .add(txtImageTitle, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)))
+                            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 485, Short.MAX_VALUE)
+                            .add(txtImageTitle, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 485, Short.MAX_VALUE)))
                     .add(layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(jLabel7)
@@ -183,69 +224,77 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
                                 .add(txtPhotoDate, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 104, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 22, Short.MAX_VALUE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 197, Short.MAX_VALUE)
                                 .add(btnToday))
-                            .add(cmbGeoFeature, 0, 198, Short.MAX_VALUE))))
+                            .add(cmbGeoFeature, 0, 373, Short.MAX_VALUE))))
                 .addContainerGap())
+            .add(lblStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(txtImagefile, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(btnImagefile))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(layout.createSequentialGroup()
-                        .add(jLabel2)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jLabel3)
-                        .add(17, 17, 17)
-                        .add(jLabel4))
-                    .add(layout.createSequentialGroup()
-                        .add(txtSubject, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(txtPhotographer, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(cmbDirection, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(jLabel5)
-                            .add(txtImageTitle, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(27, 27, 27)
-                        .add(jLabel6))
-                    .add(layout.createSequentialGroup()
+                            .add(btnImagefile)
+                            .add(txtImagefile, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(jLabel7)
-                        .add(17, 17, 17)
-                        .add(jLabel8))
-                    .add(layout.createSequentialGroup()
-                        .add(cmbGeoFeature, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(layout.createSequentialGroup()
+                                .add(jLabel2)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jLabel3)
+                                .add(17, 17, 17)
+                                .add(jLabel4))
+                            .add(layout.createSequentialGroup()
+                                .add(txtSubject, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(txtPhotographer, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(cmbDirection, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                    .add(jLabel5)
+                                    .add(txtImageTitle, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(layout.createSequentialGroup()
+                                .add(27, 27, 27)
+                                .add(jLabel6))
+                            .add(layout.createSequentialGroup()
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(layout.createSequentialGroup()
+                                .add(jLabel7)
+                                .add(17, 17, 17)
+                                .add(jLabel8))
+                            .add(layout.createSequentialGroup()
+                                .add(cmbGeoFeature, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                    .add(txtPhotoDate, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                    .add(btnToday))))
+                        .add(14, 14, 14)
+                        .add(chkSupplemental)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(chkCCLicence)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 28, Short.MAX_VALUE)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(txtPhotoDate, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(btnToday))))
-                .add(14, 14, 14)
-                .add(chkSupplemental)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(chkCCLicence)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 38, Short.MAX_VALUE)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(btnReset)
-                    .add(btnUpload))
-                .add(22, 22, 22))
+                            .add(btnReset)
+                            .add(btnUpload))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED))
+                    .add(layout.createSequentialGroup()
+                        .add(pnlPreview, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .add(301, 301, 301)))
+                .add(12, 12, 12)
+                .add(lblStatus))
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
- 
+    
     
     public final void actionPerformed(ActionEvent ae) {
         String action = ae.getActionCommand();
@@ -256,23 +305,23 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
             
         } else if (action.equals("Today")) {
             
-                SetDateToday();
-                
+            SetDateToday();
+            
         } else if (action.equals("Reset")) {
-
+            
             ResetFields();
             
         } else if (action.equals("Add to queue")) {
-
+            
             ValidateAndAdd();
             
         }
     }
     
     final public void ResetFields() {
-
+        
 //        reset all the fields for restart
-
+        
         acceptFlag = false;
         
         txtImageComments.setText("");
@@ -301,32 +350,142 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
             JOptionPane.showMessageDialog(this, "Please check the Creative Commons\nlicence before continuing");
             return;
         }
-
+        
+        if (cmbGeoFeature.getSelectedIndex() == 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(this, "No valid category / feature selected");
+            return;
+        }
+        
+        if (cmbDirection.getSelectedIndex() == 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(this, "No valid direction selected");
+            return;
+            
+        }
+        
+        if (txtSubject.getText().trim().equals("")) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(this, "No grid reference entered");
+            return;
+        }
+        
+        if (txtPhotoDate.getText().trim().equals("")) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(this, "No date specified for photograph");
+            return;
+        }
+        
+        // decide whether or not we need to resize the image here
+        
+        
+        //TODO: why is this passing the preview sizes?
+        
+        String submitFileName = txtImagefile.getText();
+        String resizeStatus = "original";
+        if (Main.doResize) {
+            String newFile = ResizeJPGImage(txtImagefile.getText());
+            
+            // if the resize was sucessful, replace the image name in the list with 
+            // the cached resized image otherwise go with the original
+            
+            if (newFile != null) {
+                submitFileName = newFile;
+                resizeStatus = "cache";
+            }
+        }
+        
         acceptFlag = true;
         
         // save all the fields
         
-        editData[0] = new String(txtImagefile.getText());
-        editData[1] = new String(txtSubject.getText());
-        editData[2] = new String(txtPhotographer.getText());
+        editData[0] = new String(submitFileName);
+        editData[1] = new String(txtSubject.getText().trim());
+        editData[2] = new String(txtPhotographer.getText().trim());
         editData[3] = new String(cmbDirection.getSelectedItem().toString());
-        editData[4] = new String(txtImageTitle.getText());
+        editData[4] = new String(txtImageTitle.getText().trim());
         editData[5] = new String(txtImageComments.getText());
         editData[6] = new String(cmbGeoFeature.getSelectedItem().toString());
-        editData[7] = new String(txtPhotoDate.getText());
+        editData[7] = new String(txtPhotoDate.getText().trim());
         editData[8] = new String(chkSupplemental.isSelected() ? "Y" : "N");
         editData[9] = new String(chkCCLicence.isSelected() ? "Y" : "N");
+
+        // [10] is used to hold the upload status
         editData[10] = new String();
-        for (int i = 11; i < 20; i++) {
+        editData[11] = resizeStatus;
+        for (int i = 12; i < 20; i++) {
             editData[i] = new String("");
         }
-            
+        
         this.setVisible(false);
         
     }
     
+    /**
+     * 
+     * This routine resizes an image into the cache directory. The resized image will have
+     * a major dimension no bigger that 640px with a minor dimension to suit the aspect
+     * ratio of the original image
+     *
+     * @param currentFile 
+     * @return newFileName
+     */
+    final public String ResizeJPGImage(String currentFile) {
+        Image originalPicture = null;
+        int fullWidth = 0;
+        int fullHeight = 0;
+        int scaleWidth = 0;
+        int scaleHeight = 0;
+        String baseFileName = null;
+
+        try {
+            File imageFile = new File(currentFile);
+            baseFileName = imageFile.getName();
+            originalPicture = ImageIO.read(imageFile);
+            fullWidth = originalPicture.getWidth(this);
+            fullHeight = originalPicture.getHeight(this);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Unable to resize image", "JUploader", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+        
+        // we need to work out whether our image is landscape or portrait, then
+        // decide on the scaled dimensions
+        // If it's within acceptable sizes, all we're goping to do is copy it to the
+        // cache directory as it (assuming the user rescaled it first but they have
+        // rescale switched on
+        
+        double aspectRatio = (double) fullWidth / (double) fullHeight;
+        
+        if (fullHeight > fullWidth) {
+            // it's portrait, so we enfore a maximum 640px
+            scaleHeight = 640;
+            scaleWidth = (int) ((double) (scaleHeight / aspectRatio));
+        } else {
+            // ...landscape
+            scaleWidth = 640;
+            scaleHeight = (int) ((double) (scaleWidth / aspectRatio));
+        }
+        
+        
+        BufferedImage newPicture = new BufferedImage(scaleWidth, scaleHeight, BufferedImage.TYPE_INT_BGR);
+        newPicture.createGraphics().drawImage(originalPicture, 0, 0, null);
+        String newFileName = Main.cacheDirectory + "/" + baseFileName;
+        try {
+            FileOutputStream fos = new FileOutputStream(newFileName);
+            ImageIO.write(newPicture, "jpg", fos);
+            fos.close();
+        } catch (Exception ex) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(this, "Unable to resize image\nFile system error");
+            return null;
+        }
+        JOptionPane.showMessageDialog(this, "Image resized");
+        return newFileName;
+    }
+    
     final public void SetDateToday() {
-        // set today's date 
+        // set today's date
         
         String today = DateFormat.getDateInstance().format(new Date());
         txtPhotoDate.setText(today);
@@ -335,11 +494,18 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
     final public void DisplayFileChooser() {
 //        Display a file chooser dialog for a jpg file
         JFileChooser fc = new JFileChooser();
+        
+        // create the jpg chooser and attach it...
+        
+        fc.addChoosableFileFilter(new JPEGFileFilter());
+        
         int rc = fc.showOpenDialog(this);
         if (rc == JFileChooser.APPROVE_OPTION) {
             
             String filePath = fc.getSelectedFile().getPath();
             txtImagefile.setText(filePath);
+            preview.setFilename(filePath);
+            
             
             // if the file name looks like a grid reference, we'll fill in the grid
             // ref as well and default the photographer position (someone will like it!)
@@ -375,7 +541,81 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
             
         }
         
+        
+        
+        
     }
+    
+    class JPEGFileFilter extends FileFilter {
+        public boolean accept(File f) {
+            
+            if (f.isDirectory()) return true;
+            
+            if (f.getAbsolutePath().toLowerCase().endsWith(".jpg")) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
+        public String getDescription() {return "*.jpg | JPG image files";}
+    }
+    
+    class ImagePreview extends javax.swing.JComponent implements ImageObserver {
+        
+        String filename = new String();
+        
+        public void setFilename(String fn) {
+            filename = fn;
+            this.repaint();
+        }
+        
+        public void paint(Graphics g) {
+            
+            if (filename.equals("")) {
+                return;
+            }
+            
+            Graphics2D g2d = (Graphics2D) g;
+            
+            Image img = Toolkit.getDefaultToolkit().getImage(filename);
+            
+            
+            g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), this);
+            
+            
+        }
+        
+        
+        public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
+            if ((infoflags & ImageObserver.ALLBITS) == ImageObserver.ALLBITS) {
+                
+                if (img.getHeight(this) * img.getWidth(this) > 307200) {
+                    lblStatus.setText("Warning: image will have to be resized");
+                    if (Main.doResize) {
+                        lblStatus.setBackground(Color.YELLOW);
+                        lblStatus.setOpaque(true);
+                        lblStatus.setText("Image resize will be attempted locally");
+                    } else {
+                        lblStatus.setBackground(Color.RED);
+                        lblStatus.setOpaque(true);
+                        lblStatus.setText("Server will resize image. Consider using local resize");
+                        
+                    }
+                } else {
+                    lblStatus.setText("");
+                    lblStatus.setOpaque(false);
+                }
+                
+                this.repaint();
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+    
+    
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnImagefile;
@@ -394,6 +634,8 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblStatus;
+    private javax.swing.JPanel pnlPreview;
     private javax.swing.JTextArea txtImageComments;
     private javax.swing.JTextField txtImageTitle;
     private javax.swing.JTextField txtImagefile;

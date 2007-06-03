@@ -4,19 +4,23 @@
  * Created on August 22, 2006, 12:37 PM
  */
 
+
 package net.brassedoff;
 
-import com.sun.corba.se.ActivationIDL._ActivatorImplBase;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
@@ -28,13 +32,15 @@ import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 
 /**
+ * This is the application main form. It handles the image queue and the
+ * upload actions.
  *
  * @author  david
  */
 public class UploadManager extends javax.swing.JFrame implements ActionListener {
     
     Vector uploadData = new Vector();
-    int [] fieldList = {1, 4, 10};
+    int [] fieldList = {1, 4, 10, 11};
     TableQueueModel tqm = new TableQueueModel();
     
     /** Creates new form UploadManager */
@@ -50,9 +56,37 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         menuFileSave.addActionListener(this);
         menuFileLoad.addActionListener(this);
         menuFileUpload.addActionListener(this);
+        menuFileSettings.addActionListener(this);
         menuItemAdd.addActionListener(this);
         menuItemEdit.addActionListener(this);
         menuItemDelete.addActionListener(this);
+        
+        // if no login (i.e. no cache), disable picture editing
+        
+        if (Main.noCache) {
+            menuItem.setEnabled(false);
+        }
+        
+        this.addWindowListener(new myWindowAdapter());
+    }
+    
+    class myWindowAdapter extends WindowAdapter {
+        
+        public void windowClosing(WindowEvent e) {
+            
+            // need to save the properties before we close
+            
+            Properties propList = new Properties();
+            propList.put("doresize", Main.doResize ? "true" : "false");
+            propList.put("cachedirectory", Main.cacheDirectory);
+            try {
+                propList.store(new FileOutputStream("juppy.prop"), "Juppy properties");
+            } catch (Exception ex) {
+                Toolkit.getDefaultToolkit().beep();
+                JOptionPane.showMessageDialog(null, "Error storing properties");
+            }
+            System.exit(0);
+        }
     }
     
     /** This method is called from within the constructor to
@@ -73,6 +107,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         menuFileLoad = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JSeparator();
         menuFileUpload = new javax.swing.JMenuItem();
+        menuFileSettings = new javax.swing.JMenuItem();
         menuItem = new javax.swing.JMenu();
         menuItemAdd = new javax.swing.JMenuItem();
         menuItemEdit = new javax.swing.JMenuItem();
@@ -80,7 +115,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         menuAbout = new javax.swing.JMenu();
         menuAboutAbout = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Geograph JUppy");
         tblQueue.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -113,29 +148,39 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
 
         menuFile.add(jSeparator1);
 
+        menuFileSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/document-save.png")));
         menuFileSave.setText("Save queue");
         menuFileSave.setActionCommand("Save");
         menuFile.add(menuFileSave);
 
+        menuFileLoad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/document-open.png")));
         menuFileLoad.setText("Load queue");
         menuFileLoad.setActionCommand("Load");
         menuFile.add(menuFileLoad);
 
         menuFile.add(jSeparator2);
 
+        menuFileUpload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view-refresh.png")));
         menuFileUpload.setText("Upload");
         menuFile.add(menuFileUpload);
+
+        menuFileSettings.setText("Settings");
+        menuFile.add(menuFileSettings);
 
         menuBar.add(menuFile);
 
         menuItem.setText("Items");
+        menuItem.setToolTipText("This will be disabled until you've logged in to Geograph once");
+        menuItemAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/camera-photo.png")));
         menuItemAdd.setText("Add picture");
         menuItem.add(menuItemAdd);
 
+        menuItemEdit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/applications-multimedia.png")));
         menuItemEdit.setText("Change current picture");
         menuItemEdit.setActionCommand("Change picture");
         menuItem.add(menuItemEdit);
 
+        menuItemDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/user-trash-full.png")));
         menuItemDelete.setText("Delete picture");
         menuItem.add(menuItemDelete);
 
@@ -173,6 +218,9 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
     }// </editor-fold>//GEN-END:initComponents
     
     /**
+     *
+     * Static main method. Handle creating the rest of the application.
+     *
      * @param args the command line arguments
      */
     public static void main(String args[]) {
@@ -183,6 +231,12 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         });
     }
     
+    /**
+     *
+     * All the main form actions are handled through this routine.
+     *
+     * @param ae Action event
+     */
     public void actionPerformed(ActionEvent ae) {
         
         // general handler for all action events
@@ -225,6 +279,13 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
             // Change current picture
             
             ChangePicture();
+            
+        } else if(action.equals("Settings")) {
+            
+            // Settings (PropertyForm) dialog box
+            
+            EditSettings();
+            
         
         } else if (action.equals("About")) {
             
@@ -237,12 +298,42 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         
     }
 
+    /** 
+     *
+     * Check that the upload queue looks good before attempting the upload.
+     * Currently, this involves checking that we have all the image files
+     * intact which may or may not be an issue if local resizing has been
+     * enabled part way through a queue buildup
+     *
+     **/
+    
+    private int OKToUpload() {
+        
+        int rc = -1;
+        
+        for (int i = 0; i < uploadData.size(); i++) {
+            File f = new File(((Object [])uploadData.elementAt(i))[0].toString());
+            if (!f.exists()) {
+                rc = i + 1;
+                break;
+            }
+        }
+        return rc;
+    }
+    
     private void UploadQueue() {
         
         // this is the real fun
         // we're going to take each entry, one at a time, and upload
         // it to the server, awaiting a response afer each process
 
+        int checkUpload = OKToUpload();
+        if (checkUpload > 0) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(this, "Missing file on line " + checkUpload + " in image queue");
+            return;
+        }
+        
         // If we get an error, we report it and stop, preserving what's left
 
         HttpClient htc = new HttpClient();
@@ -265,6 +356,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
                     new StringPart("feature", line[6].toString()),
                     new StringPart("date", line[7].toString()),
                     new StringPart("supplemental", line[8].toString()),
+                    new StringPart("validation", Main.validationToken),
                     new StringPart("cclicence", "I grant you the permission to use this"
                              + " submission under the terms of the Creative Commons by-sa-2.0 licence"),
                     new FilePart("uploadfile", f)
@@ -329,6 +421,12 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         int currentRow = tblQueue.getSelectedRow();
         tqm.deleteRow(currentRow);
         
+    }
+    
+    private void EditSettings() {
+        PropertyForm pf = new PropertyForm(this, true);
+        pf.setVisible(true);
+        pf.dispose();
     }
     
     private void AddPicture() {
@@ -418,6 +516,8 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
                 op.write("<date>" + thisLine[7] + "</date>\n");
                 op.write("<supplemental>" + thisLine[8] + "</supplemental>\n");
                 op.write("<cclicence>" + thisLine[9] + "</cclience>\n");
+                op.write("<uploadflag>" + thisLine[10] + "</uploadflag>\n");
+                op.write("<imagelocation>" + thisLine[11] + "</imagelocation>");
                 op.write("</juppyline>");
                 op.write("</line" + i + ">\n");
             }
@@ -483,7 +583,9 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
             newLine[7] = new String(XMLHandler.getXMLField(xmlLine, "date"));
             newLine[8] = new String(XMLHandler.getXMLField(xmlLine, "supplemental"));
             newLine[9] = new String(XMLHandler.getXMLField(xmlLine, "cclicence"));
-            for (int j = 10; j < 20; j++) {
+            newLine[10] = new String(XMLHandler.getXMLField(xmlLine, "uploadflag"));
+            newLine[11] = new String(XMLHandler.getXMLField(xmlLine, "imagelocation"));
+            for (int j = 12; j < 20; j++) {
                 newLine[j] = new String("");
             }
             
@@ -497,7 +599,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         // data is provided by the outer class - we're using the same data
         // to avoid having a cut-down version for the table model.
         
-        String [] columnNames = {"gridref", "title", "uploadstatus"};
+        String [] columnNames = {"gridref", "title", "uploadstatus", "imageloc"};
         
         TableQueueModel() {
             super();
@@ -549,6 +651,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
     private javax.swing.JMenuItem menuFileLoad;
     private javax.swing.JMenuItem menuFileLogin;
     private javax.swing.JMenuItem menuFileSave;
+    private javax.swing.JMenuItem menuFileSettings;
     private javax.swing.JMenuItem menuFileUpload;
     private javax.swing.JMenu menuItem;
     private javax.swing.JMenuItem menuItemAdd;
