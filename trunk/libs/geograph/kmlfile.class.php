@@ -108,6 +108,9 @@ class kmlPrimative {
 					$s .= str_repeat("\t",$indent+1)."<$name>$value</$name>\n";
 				}
 			}
+			if (!empty($this->link)) {
+				$s .= str_repeat("\t",$indent+1)."<atom:link href=\"{$this->link}\" />\n";
+			}
 			if (count($this->children)) {
 				foreach ($this->children as $id => $obj) {
 					$s .= $obj->toString($indent+1);
@@ -124,6 +127,9 @@ class kmlPrimative {
 				foreach ($this->items as $name => $value) {
 					$s .= "<$name>$value</$name>";
 				}
+			}
+			if (!empty($this->link)) {
+				$s .= "<atom:link href=\"{$this->link}\" />\n";
 			}
 			if (count($this->children)) {
 				foreach ($this->children as $id => $obj) {
@@ -226,6 +232,10 @@ class kmlFile extends kmlPrimative {
 		$s = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 
 		$this->id .= "\" xmlns=\"http://earth.google.com/kml/2.0";
+		
+		if (!empty($this->atom)) {
+			$this->id .= "\" xmlns:atom=\"http://www.w3.org/2005/Atom";
+		}
 
 		return $s.parent::toString(0,$prettyprint);
 	}
@@ -325,6 +335,15 @@ class kmlPlacemark extends kmlPrimative {
 	public function makeFloating() {
 		$this->getChild('Point')->makeFloating();
 		return $this;
+	}
+
+	public function useCredit($author,$link = '') {
+		if (!empty($author)) {
+			$this->addChild('atom:author','','atom:author')->setItem('atom:name',$author);
+		}
+		if (!empty($link)) {
+			$this->link = $link;
+		}
 	}
 }
 

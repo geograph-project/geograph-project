@@ -48,6 +48,7 @@ $grid_ok=$square->setByFullGridRef($gr);
 
 
 $kml = new kmlFile();
+$kml->atom = true;
 $stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
 
 $folder = $kml->addChild('Document');
@@ -99,7 +100,7 @@ if ($square->imagecount > 20) {
 		
 		$point = new kmlPoint($wgs84_lat,$wgs84_long);			
 
-		$placemark = new kmlPlacemark(null,$name,$point);
+		$placemark = new kmlPlacemark($entry['hunk_square'],$name,$point);
 		
 		$placemark->useHoverStyle('p'.$c);
 		$folder->addChild($placemark);
@@ -165,13 +166,15 @@ if ($square->imagecount > 20) {
 	{
 		$point = new kmlPoint($entry['wgs84_lat'],$entry['wgs84_long']);			
 
-		$placemark = new kmlPlacemark_Photo(null,$entry['grid_reference'].' :: '.$entry['title'],$point);
+		$placemark = new kmlPlacemark_Photo($entry['gridimage_id'],$entry['grid_reference'].' :: '.$entry['title'],$point);
 		$placemark->useHoverStyle();
 
 		$image=new GridImage;
 		$image->fastInit($entry);
 
-			$linkTag = "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id."\">";
+			$placemark->useCredit($image->realname,"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id);
+
+			$linkTag = "<a href=\"".$placemark->link."\">";
 			$thumb = "http://".$_SERVER['HTTP_HOST'].$image->getThumbnail(120,120,true); 
 			$thumbTag = preg_replace('/\/photos\/.*\.jpg/',$thumb,$image->getThumbnail(120,120)); 
 

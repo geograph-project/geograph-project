@@ -48,6 +48,7 @@ $grid_ok=$square->setByFullGridRef($gr);
 
 
 $kml = new kmlFile();
+$kml->atom = true;
 $stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
 
 $folder = $kml->addChild('Document');
@@ -56,21 +57,6 @@ $folder->setItem('name',"$gr :: Geograph SuperLayer");
 
 $links = new kmlPrimative('Folder');
 $links->setItem('name','Next Level...');
-
-	
-/*
-list($wgs84_lat,$wgs84_long) = $conv->gridsquare_to_wgs84($square);
-
-$point = new kmlPoint($wgs84_lat,$wgs84_long);			
-
-$placemark = new kmlPlacemark(null,$square->grid_reference,$point);
-$placemark->useHoverStyle();
-$folder->addChild($placemark);	
-	
-if (!isset($_GET['debug'])) {
-	$kml->outputKML();
-	exit;
-} */	
 
 	
 $prefix = $db->GetRow('select * from gridprefix where prefix='.$db->Quote($square->gridsquare).' limit 1');	
@@ -86,7 +72,7 @@ $sql_where = "CONTAINS(GeomFromText($rectangle),point_xy)";
 
 
 $photos = $db->GetAll("select 
-gridimage_id,grid_reference,title,imagecount,view_direction,natgrlen,
+gridimage_id,grid_reference,title,imagecount,view_direction,natgrlen,realname,
 wgs84_lat,wgs84_long
 from gridimage_kml 
 where $sql_where and tile = 0
@@ -98,8 +84,9 @@ foreach($photos as $id=>$entry)
 	$point = new kmlPoint($entry['wgs84_lat'],$entry['wgs84_long']);			
 
 	if ($entry['imagecount']==1) {
-		$placemark = new kmlPlacemark(null,$entry['grid_reference'].' :: '.$entry['title'],$point);
-		$placemark->setItem('description',"http://{$_SERVER['HTTP_HOST']}/photo/{$entry['gridimage_id']}");
+		$placemark = new kmlPlacemark($entry['gridimage_id'],$entry['grid_reference'].' :: '.$entry['title'],$point);
+		$placemark->useCredit($entry['realname'],"http://{$_SERVER['HTTP_HOST']}/photo/{$entry['gridimage_id']}");
+		$placemark->setItem('description',$placemark->link);
 		$r = ($entry['natgrlen'] > 4)?'':'r';
 		if ($entry['view_direction'] != -1) {
 			$placemark->useHoverStyle('p1d'.$r);
@@ -110,7 +97,7 @@ foreach($photos as $id=>$entry)
 			$placemark->useHoverStyle('p1'.$r);
 		}
 	} else {
-		$placemark = new kmlPlacemark(null,$entry['grid_reference'].' :: '.$entry['imagecount'].' images e.g. '.$entry['title'],$point);
+		$placemark = new kmlPlacemark($entry['grid_reference'],$entry['grid_reference'].' :: '.$entry['imagecount'].' images e.g. '.$entry['title'],$point);
 		$placemark->setItem('description',"http://{$_SERVER['HTTP_HOST']}/gridref/{$entry['grid_reference']}");
 		$c = ($entry['imagecount']>20)?20:(($entry['imagecount']>4)?10:$entry['imagecount']);
 		$placemark->useHoverStyle('p'.$c);
