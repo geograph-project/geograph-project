@@ -574,6 +574,9 @@ class SearchCriteria_All extends SearchCriteria
 		if (count($users) == 1) {
 			$this->realname = $users[0]['realname'];
 			$this->user_id = $users[0]['user_id'];
+			if (strcasecmp($username,$this->realname) != 0) {
+				$this->nickname = $username;
+			}
 		}
 	}
 	

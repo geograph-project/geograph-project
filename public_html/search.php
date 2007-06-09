@@ -401,6 +401,8 @@ if (isset($_GET['fav']) && $i) {
 		if (!empty($engine->criteria->realname)) {
 			$smarty->assign('pos_realname', $engine->criteria->realname);
 			$smarty->assign('pos_user_id', $engine->criteria->user_id);
+			if (!empty($engine->criteria->nickname)) 
+				$smarty->assign('pos_nickname', $engine->criteria->nickname);
 		} else {
 			$usercriteria = new SearchCriteria_All();
 			$usercriteria->setByUsername($q);
@@ -408,6 +410,8 @@ if (isset($_GET['fav']) && $i) {
 				//could also be a username
 				$smarty->assign('pos_realname', $usercriteria->realname);
 				$smarty->assign('pos_user_id', $usercriteria->user_id);
+				if (!empty($usercriteria->nickname)) 
+					$smarty->assign('pos_nickname', $usercriteria->nickname);
 			}
 		}
 		
