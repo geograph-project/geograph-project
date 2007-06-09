@@ -168,7 +168,7 @@
 	
 	<i>({$ticket->status})</i>
 	
-	{if $ticket->status eq "open" && $isadmin && $ticket->moderator_id == $user->user_id}
+	{if $ticket->status ne "closed" && $isadmin && $ticket->moderator_id == $user->user_id}
 
 		<input type="submit" name="disown" id="disown" value="Disown"/>
 
