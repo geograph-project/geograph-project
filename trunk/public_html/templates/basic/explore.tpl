@@ -10,7 +10,7 @@
 <h2>Themed Browsing</h2>
 
 
-<h3>Outstanding archivement...</h3>
+<h3>Outstanding achievement...</h3>
 <ul class="explore">
 
 	<li><a href="/statistics/fully_geographed.php">List <b>Fully Geographed Hectads</b></a> <small>(10 x 10 Gridsquares)</small> - include Image Mosaics!</li>

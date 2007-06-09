@@ -38,7 +38,7 @@
 	{if $total > 0}
 	<p><small>Click a column header to change the sort order.
 	{if $linkpro || $linkprefix}
-		Click a {$title} to run a search for just that all images within that {$title}.
+		Click a {$title} to run a search for just images within that {$title}.
 	{/if}</small></p>
 
 	<table class="report">
