@@ -884,9 +884,9 @@ class GeographMap
 					//	imagerectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $colBorder);
 					//	imagerectangle ($img, $imgx1+1, $imgy1+1, $imgx2-1, $imgy2-1, $colBorder);
 
-						if (false && !$recordSet->fields[3]) {
-							imagefilledrectangle ($img, $imgx1+2, $imgy1-4, $imgx1+8, $imgy1-6, $colSuppMarker);
-							imagefilledrectangle ($img, $imgx1+4, $imgy1-2, $imgx1+6, $imgy1-8, $colSuppMarker);
+						if (!$recordSet->fields[3]) {
+							imagefilledrectangle ($img, $imgx1+2, $imgy1-4, $imgx1+6, $imgy1-6, $colSuppMarker);
+							imagefilledrectangle ($img, $imgx1+3, $imgy1-3, $imgx1+5, $imgy1-7, $colSuppMarker);
 						}
 					} else {
 						$ok = false;
