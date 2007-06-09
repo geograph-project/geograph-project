@@ -173,7 +173,9 @@ if (isset($_POST['msg']))
 		}
 		
 		if ($sendcopy) {
-			if (!@mail($from_email, $subject, "Copy of message sent to {$recipient->realname}\n----------------------\n\n".$body, "From: $from_name <$from_email>")) {
+			$subject="[Geograph] Copy of message sent to {$recipient->realname}";
+		
+			if (!@mail($from_email, $subject, $body, "From: $from_name <$from_email>")) {
 				@mail($CONF['contact_email'], 
 					'Mail Error Report from '.$_SERVER['HTTP_HOST'],
 					"Original Subject: $subject\n".
