@@ -19,7 +19,7 @@
 	<table cellpadding="3" cellspacing="0"> 
 		  <tr> 
 			 <td><label for="first">Location</label></td> 
-			 <td><input type="text" name="first" id="first" value="{$searchq|escape:'html'}" class="searchinput" size="6"/></td> 
+			 <td><input type="text" name="first" id="first" value="%" class="searchinput" size="6"/></td> 
 			 <td></td> 
 		  </tr> 
 		  <tr> 

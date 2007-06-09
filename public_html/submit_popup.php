@@ -38,7 +38,7 @@ $cacheid='';
 
 $square=new GridSquare;
 
-if (!$USER->hasPerm("basic") || empty($_GET['t']) || (!isset($_SESSION['gridsquare']) && !$USER->hasPerm("moderator"))) {
+if (!$USER->hasPerm("basic") || empty($_GET['t'])) {
 	$smarty->assign('error', "unable to access page");
 	$smarty->display($template,$cacheid);
 	exit;

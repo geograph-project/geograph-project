@@ -5,7 +5,7 @@
 {dynamic}
 <p>In your search for images<i>{$searchdesc}</i>.</p>
 
-<p>We have found the following possible match{if count($criteria->matches) > 1}es{/if} for '{$criteria->searchq}': <small>(hover over a placename for the <a href="/faq.php#counties">historic county</a>)</small></p>
+<p>We have found the following possible match{if count($criteria->matches) > 1}es{/if} for '{$criteria->searchq}': {if count($criteria->matches) > 0}<small>(hover over a placename for the <a href="/faq.php#counties">historic county</a>)</small>{/if}</p>
 
 <form action="{$script_name}" method="post">
 
@@ -36,7 +36,7 @@
 {/if}
 
 <br/>
-{if preg_match('/near\s+/',$post.q)}
+{if preg_match('/near\s+/',$post.q) && !preg_match('/near\s+\(anywhere\)/',$post.q)}
 <input type="radio" name="{$multipleon}" value="text:{$post.q|replace:'near ':'AND '}" id="dotext">
 <label for="dotext"><i>Perform a title search for '{$post.q|replace:'near ':'AND '}'</i></label> <br/>
 {if !preg_match('/\+$/',$criteria->searchq)}
