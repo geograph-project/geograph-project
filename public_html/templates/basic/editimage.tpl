@@ -167,6 +167,12 @@
 	Suggested {$ticket->suggested|date_format:"%a, %e %b %Y at %H:%M"} 
 	
 	<i>({$ticket->status})</i>
+	
+	{if $ticket->status eq "open" && $isadmin && $ticket->moderator_id == $user->user_id}
+
+		<input type="submit" name="disown" id="disown" value="Disown"/>
+
+	{/if}
 	</div>
 	
 
@@ -286,7 +292,8 @@
 
 			{/if} {$ticket->suggester_name} is notified.
 			
-			<input class="accept" type="button" id="defer" value="Defer" onclick="deferTicket({$ticket->gridimage_ticket_id})"/>
+			<input class="accept" type="button" id="defer" value="Defer 24 hours" onclick="deferTicket({$ticket->gridimage_ticket_id},24)"/>
+	 		<input class="accept" type="button" id="defer" value="Defer 7 days" onclick="deferTicket({$ticket->gridimage_ticket_id},168)"/>
 	 		<span class="caption" id="modinfo{$ticket->gridimage_ticket_id}"></span>
 		{/if}
 		
