@@ -276,6 +276,19 @@ class GridImageTroubleTicket
 	}
 	
 	/**
+	* set back to a pending ticket
+	* @access public
+	*/
+	
+	function removeModerator() {
+		$db=&$this->_getDB();
+		//update ticket status
+		$sql="update gridimage_ticket set moderator_id=0 where gridimage_ticket_id={$this->gridimage_ticket_id}";
+		$db->Execute($sql);
+		$this->moderator_id = 0;
+	}
+	
+	/**
 	* Updates a given field of the image, holding it for moderation if necessary
 	* A series of calls to this function should be followed up with a call
 	* to commit(), which persist the ticket and any unmoderated changes

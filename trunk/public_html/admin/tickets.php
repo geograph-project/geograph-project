@@ -25,8 +25,6 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-$defertime = 24; //hour
-
 $USER->mustHavePerm("ticketmod");
 
 $smarty = new GeographPage;
@@ -53,11 +51,13 @@ if (isset($_GET['gridimage_ticket_id']))
 	//either way, we want to check for admin status on the session
 	$gridimage_ticket_id=intval($_GET['gridimage_ticket_id']);
 
+	$hours = (isset($_GET['hours']) && is_numeric($_GET['hours']))?intval($_GET['hours']):24;
+
 	$ticket=new GridImageTroubleTicket($gridimage_ticket_id);
 	if ($ticket->isValid())
 	{
-		$ticket->setDefer('NOW()');
-		echo "Ticket Deferred for $defertime hours";		
+		$ticket->setDefer("DATE_ADD(NOW(), INTERVAL $hours HOUR)");
+		echo "Ticket Deferred for $hours hours";		
 	}
 	else
 	{
@@ -114,8 +114,6 @@ $columns = '';
 $tables = '';
 $sql_where = '';
 
-$where_crit = " t.moderator_id=0 and t.status<>'closed'";
-
 #################
 # setup type
 
@@ -164,7 +162,7 @@ if ($type == 'open') {
 		$smarty->assign('defer', 1);
 	} else {
 		//exclude deferred
-		$sql_where .= " and deferred < date_sub(NOW(),INTERVAL $defertime HOUR)";
+		$sql_where .= " and deferred < NOW()";
 	}
 
 } elseif ($type == 'closed') {
@@ -180,6 +178,9 @@ if ($type == 'open') {
 	
 } else {
 	$type = 'pending';
+	
+	$where_crit = " t.moderator_id=0 and t.status<>'closed'";
+
 	
 	$sql_where .= " and i.user_id != {$USER->user_id}";
 	
@@ -250,7 +251,7 @@ if ($defer) {
 
 $smarty->assign('title', $title);
 
-$info = $db->getAssoc("select moderator_id>0,count(*) as c from gridimage_ticket where status<>'closed' and deferred < date_sub(NOW(),INTERVAL $defertime HOUR) group by moderator_id=0");
+$info = $db->getAssoc("select moderator_id>0,count(*) as c from gridimage_ticket where status<>'closed' and deferred < NOW() group by moderator_id=0");
 
 $types['pending'] .= " [{$info['0']}]";
 $types['open'] .= " [{$info['1']}]";

@@ -214,7 +214,11 @@ if (isset($_REQUEST['id']))
 			$comment=stripslashes($_POST['comment']);
 			if ($isadmin)
 			{
-				if (isset($_POST['addcomment']))
+				if (isset($_POST['disown']))
+				{
+					$ticket->removeModerator();
+				} 
+				elseif (isset($_POST['addcomment']))
 				{
 					$ticket->addModeratorComment($USER->user_id, $comment, !empty($_POST['claim']));
 				}

@@ -1,7 +1,8 @@
 {assign var="page_title" value="Trouble Tickets"}
 {include file="_std_begin.tpl"}
 
-<script src="/sorttable.js"></script>
+<script type="text/javascript" src="/sorttable.js"></script>
+<script type="text/javascript" src="/admin/moderation.js?v={$javascript_version}"></script>
 
 {literal}<script type="text/javascript">
 	setTimeout('window.location.href="/admin/";',1000*60*45);
@@ -56,6 +57,7 @@
 <td>{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes|escape:'html'|geographlinks}</td>
 <td>{$ticket.suggester}</td>
 <td>{$ticket.suggested}</td>
+<td><input class="accept" type="button" id="defer" value="D" style="width:10px;" onclick="deferTicket({$ticket.gridimage_ticket_id},24)"/><span class="caption" id="modinfo{$ticket.gridimage_ticket_id}"></span></td>
 </tr>
 {/foreach}
 </tbody>
