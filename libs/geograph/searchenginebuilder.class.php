@@ -163,6 +163,9 @@ class SearchEngineBuilder extends SearchEngine
 					$searchdesc = ", containing '{$q}' ".$searchdesc;
 				}
 			}
+		} elseif ($placename && !$searchdesc) {
+			$q = $searchtext = $placename;
+			$searchdesc = ", matching '".$placename."' ".$searchdesc;
 		}
 		
 		if (($searchtext || $limit1) && !$searchclass) {
