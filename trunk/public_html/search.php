@@ -398,14 +398,19 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign('multipletitle', "Placename");
 		$smarty->assign('multipleon', "placename");
 
-		$usercriteria = new SearchCriteria_All();
-		$usercriteria->setByUsername($q);
-		if (!empty($usercriteria->realname)) {
-			//could also be a username
-			$smarty->assign('pos_realname', $usercriteria->realname);
-			$smarty->assign('pos_user_id', $usercriteria->user_id);
+		if (!empty($engine->criteria->realname)) {
+			$smarty->assign('pos_realname', $engine->criteria->realname);
+			$smarty->assign('pos_user_id', $engine->criteria->user_id);
+		} else {
+			$usercriteria = new SearchCriteria_All();
+			$usercriteria->setByUsername($q);
+			if (!empty($usercriteria->realname)) {
+				//could also be a username
+				$smarty->assign('pos_realname', $usercriteria->realname);
+				$smarty->assign('pos_user_id', $usercriteria->user_id);
+			}
 		}
-
+		
 		$smarty->assign_by_ref('criteria', $engine->criteria);
 		$smarty->assign_by_ref('post', $_GET);
 		$smarty->assign_by_ref('references',$CONF['references']);

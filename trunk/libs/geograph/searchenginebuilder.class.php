@@ -154,9 +154,18 @@ class SearchEngineBuilder extends SearchEngine
 				$criteria2 = new SearchCriteria_All();
 				$criteria2->setByUsername($q);
 				if (!empty($criteria2->realname)) {
-					$searchq = $criteria2->realname;
-					$limit1 = $criteria2->user_id;
-					$searchdesc .= ", by '{$criteria2->realname}' ";
+					if (strcasecmp($q,$criteria2->realname) == 0) {
+						$searchq = $criteria2->realname;
+						$limit1 = $criteria2->user_id;
+						$searchdesc .= ", by '{$criteria2->realname}' ";
+					} else {
+						$this->searchdesc = ", by '{$criteria2->realname}' ";
+						$this->criteria = $criteria2;
+						$this->criteria->searchq = $q;
+						$this->criteria->is_multiple = true;
+						$this->criteria->ismore = true; #so doesnt display placename prompt
+						unset($searchclass);
+					}
 				} else {
 					//asuume a text search
 					$searchtext = $q;
