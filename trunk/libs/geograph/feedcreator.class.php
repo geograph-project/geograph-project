@@ -1166,7 +1166,7 @@ class KMLCreator extends FeedCreator {
 			}
 			$feed.= "
 			<description>".$this->items[$i]->getDescription(true)."</description>
-			<Snippet maxlines=\"2\">".htmlspecialchars($snippet)."</Snippet>
+			<Snippet maxLines=\"2\">".htmlspecialchars($snippet)."</Snippet>
 			<name>".FeedCreator::iTrunc(htmlspecialchars(strip_tags($this->items[$i]->title)),100)."</name>
 			<visibility>1</visibility>
 			<Point>
