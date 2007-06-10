@@ -1157,8 +1157,14 @@ class KMLCreator extends FeedCreator {
 			".$this->items[$i]->licence."
 				<br/><br/><a href=\"".htmlspecialchars($this->items[$i]->link)."\">View Online</a></b>";
 			
+			if ($this->items[$i]->guid != '') {
+				$feed.= "
+		<Placemark id=\"".htmlspecialchars($this->items[$i]->guid)."\">";
+			} else {
 			$feed.= "
-		<Placemark>
+		<Placemark>";
+			}
+			$feed.= "
 			<description>".$this->items[$i]->getDescription(true)."</description>
 			<Snippet maxlines=\"2\">".htmlspecialchars($snippet)."</Snippet>
 			<name>".FeedCreator::iTrunc(htmlspecialchars(strip_tags($this->items[$i]->title)),100)."</name>

@@ -159,6 +159,7 @@ for ($i=0; $i<$cnt; $i++)
 {
 	
 	$item = new FeedItem(); 
+	$item->guid = $images->images[$i]->gridimage_id;
 	$item->title = $images->images[$i]->grid_reference." : ".$images->images[$i]->title; 
 	$item->link = "http://{$_SERVER['HTTP_HOST']}/photo/{$images->images[$i]->gridimage_id}";
 	if (isset($images->images[$i]->dist_string) || isset($images->images[$i]->imagetakenString)) {
