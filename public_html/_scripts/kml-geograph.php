@@ -125,7 +125,7 @@ foreach (array(1,2) as $ri) {
 
 		$point = new kmlPoint($wgs84_lat,$wgs84_long);			
 
-		$placemark = new kmlPlacemark_Circle(null,$entry['hunk_square'],$point,$radius);
+		$placemark = new kmlPlacemark_Circle($entry['hunk_square'],$entry['hunk_square'],$point,$radius);
 		$placemark->setItem('description',$entry['percentage'].'%');
 		$placemark->useHoverStyle('c1');		
 		$circles->addChild($placemark);

@@ -101,7 +101,7 @@ function UploadPicture() {
 	$um->setSquare($gs);
 	$um->setViewpoint($_POST['photographer']);
 	$um->setDirection($_POST['direction']);
-	$um->setTaken($_POST['date']);
+	$um->setTaken(date('Y-m-d',strtotime($_POST['date'])));
 	$um->setTitle($_POST['title']);
 	$um->setComment($_POST['comments']);
 	$um->setClass($_POST['feature']);
