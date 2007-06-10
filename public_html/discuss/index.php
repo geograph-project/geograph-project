@@ -8,6 +8,8 @@ require_once('geograph/global.inc.php');
 init_session();
 $USER->mustHavePerm("basic");
 
+customGZipHandlerStart();
+
 //most of everthing below is standard minibb stuff
 
 $currY=date('Y');
