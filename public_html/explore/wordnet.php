@@ -61,7 +61,7 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	dieUnderHighLoad();
+	dieUnderHighLoad(0.1);//lets hobble this!
 	
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (empty($db)) die('Database connection failed');  
