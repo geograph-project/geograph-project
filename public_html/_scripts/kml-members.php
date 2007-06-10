@@ -49,8 +49,8 @@ $folder->setItem('name',"Geograph British Isles Members");
 $users = $db->GetAssoc("select
 		user.user_id,nickname,user.realname,nickname,user.user_id,count(*) as images,gs.x,gs.y,gs.reference_index
 		from user
-			inner join gridsquare gs on (home_gridsquare = gridsquare_id)
 			inner join gridimage_search gi using (user_id)
+			inner join gridsquare gs on (home_gridsquare = gridsquare_id)
 		group by gi.user_id
 		order by realname");
 
