@@ -336,6 +336,7 @@ function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl')
 
 		if ($load>$threshold)
 		{
+			header("HTTP/1.1 503 Service Unavailable");
 			$smarty->assign('searchq',stripslashes($_GET['q']));
 			$smarty->display($template);
 			exit;
