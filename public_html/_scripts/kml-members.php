@@ -38,6 +38,7 @@ $db=NewADOConnection($GLOBALS['DSN']);
 if (!$db) die('Database connection failed');  
 			
 $kml = new kmlFile();
+$kml->atom = true;
 $stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
 
 $kml->filename = "Geograph-Members.kml";
