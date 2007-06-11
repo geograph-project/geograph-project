@@ -1,15 +1,27 @@
 <juppy>
-<count>1</count>
-<line0><juppyline><filename>/tmp/juppycache//p7050430.jpg</filename>
-<subject>p7050</subject>
-<photographer>p7050</photographer>
+<count>2</count>
+<line0><juppyline><filename>/tmp/juppycache//p9260693.jpg</filename>
+<subject>p9260</subject>
+<photographer>p9260</photographer>
 <direction>NNE</direction>
 <title>123</title>
-<comments>123</comments>
+<comments>123 123</comments>
 <feature>Abbey</feature>
-<date>30-May-2007</date>
+<date>11-Jun-2007</date>
 <supplemental>Y</supplemental>
-<cclicence>Y</cclience>
-<uploadflag>User not verified</uploadflag>
+<cclicence>Y</cclicence>
+<uploadflag>P9260 seems to be all at sea! Please contact us if you think this is in error</uploadflag>
 <imagelocation>cache</imagelocation></juppyline></line0>
+<line1><juppyline><filename>/tmp/juppycache//pa090745.jpg</filename>
+<subject>pa090745</subject>
+<photographer>pa090745</photographer>
+<direction>ENE</direction>
+<title>123 123</title>
+<comments>234345 567</comments>
+<feature>Activity Centre</feature>
+<date>11-Jun-2007</date>
+<supplemental>Y</supplemental>
+<cclicence>Y</cclicence>
+<uploadflag>PA0974 seems to be all at sea! Please contact us if you think this is in error</uploadflag>
+<imagelocation>cache</imagelocation></juppyline></line1>
 </juppy>

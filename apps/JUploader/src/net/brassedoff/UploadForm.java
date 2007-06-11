@@ -13,10 +13,11 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -155,7 +156,9 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
         txtImagefile.setEnabled(false);
 
         txtImageComments.setColumns(20);
+        txtImageComments.setLineWrap(true);
         txtImageComments.setRows(5);
+        txtImageComments.setWrapStyleWord(true);
         jScrollPane1.setViewportView(txtImageComments);
 
         cmbGeoFeature.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -187,11 +190,11 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(chkCCLicence, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 567, Short.MAX_VALUE)
-                    .add(chkSupplemental, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 567, Short.MAX_VALUE)
+                    .add(chkCCLicence, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE)
+                    .add(chkSupplemental, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
                         .add(btnReset)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 365, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 366, Short.MAX_VALUE)
                         .add(btnUpload, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 134, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                     .add(layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -214,8 +217,8 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
                             .add(jLabel6))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 485, Short.MAX_VALUE)
-                            .add(txtImageTitle, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 485, Short.MAX_VALUE)))
+                            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
+                            .add(txtImageTitle, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)))
                     .add(layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(jLabel7)
@@ -224,11 +227,11 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
                                 .add(txtPhotoDate, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 104, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 197, Short.MAX_VALUE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 198, Short.MAX_VALUE)
                                 .add(btnToday))
-                            .add(cmbGeoFeature, 0, 373, Short.MAX_VALUE))))
+                            .add(cmbGeoFeature, 0, 374, Short.MAX_VALUE))))
                 .addContainerGap())
-            .add(lblStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)
+            .add(lblStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -431,7 +434,7 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
      * @return newFileName
      */
     final public String ResizeJPGImage(String currentFile) {
-        Image originalPicture = null;
+        BufferedImage originalPicture = null;
         int fullWidth = 0;
         int fullHeight = 0;
         int scaleWidth = 0;
@@ -467,19 +470,37 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
             scaleHeight = (int) ((double) (scaleWidth / aspectRatio));
         }
         
-        
-        BufferedImage newPicture = new BufferedImage(scaleWidth, scaleHeight, BufferedImage.TYPE_INT_BGR);
-        newPicture.createGraphics().drawImage(originalPicture, 0, 0, null);
-        String newFileName = Main.cacheDirectory + "/" + baseFileName;
+        String newFileName = null;
         try {
-            FileOutputStream fos = new FileOutputStream(newFileName);
-            ImageIO.write(newPicture, "jpg", fos);
-            fos.close();
-        } catch (Exception ex) {
+            BufferedImage dest = new BufferedImage(scaleWidth, scaleHeight, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = dest.createGraphics();
+            AffineTransform at = AffineTransform.getScaleInstance((double)scaleWidth / originalPicture.getWidth(),
+                    (double)scaleHeight / originalPicture.getHeight());
+            g.drawRenderedImage(originalPicture, at);
+
+            newFileName = Main.cacheDirectory + "/" + baseFileName;
+
+            ImageIO.write(dest,"JPG", new File(newFileName));
+            BufferedImage newPicture = new BufferedImage(scaleWidth, scaleHeight, BufferedImage.TYPE_INT_RGB);
+            newPicture.createGraphics().drawImage(originalPicture, 0, 0, null);
+            
+        } catch (IOException ex) {
+            
             Toolkit.getDefaultToolkit().beep();
             JOptionPane.showMessageDialog(this, "Unable to resize image\nFile system error");
             return null;
+            
         }
+//        String newFileName = Main.cacheDirectory + "/" + baseFileName;
+//        try {
+//            FileOutputStream fos = new FileOutputStream(newFileName);
+//            ImageIO.write(newPicture, "jpg", fos);
+//            fos.close();
+//        } catch (Exception ex) {
+//            Toolkit.getDefaultToolkit().beep();
+//            JOptionPane.showMessageDialog(this, "Unable to resize image\nFile system error");
+//            return null;
+//        }
         JOptionPane.showMessageDialog(this, "Image resized");
         return newFileName;
     }

@@ -205,6 +205,8 @@ public class GeoLogin extends javax.swing.JDialog implements ActionListener{
         
         Main.imageClassList = XMLHandler.getXMLField(xmlResponse, "classlist").split("}");
         Main.noCache = false;
+        // enable the items menu
+        
         
     }
     

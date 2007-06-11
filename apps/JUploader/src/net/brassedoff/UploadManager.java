@@ -99,6 +99,8 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         jScrollPane1 = new javax.swing.JScrollPane();
         tblQueue = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txtProgress = new javax.swing.JTextArea();
         menuBar = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         menuFileLogin = new javax.swing.JMenuItem();
@@ -131,15 +133,19 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         jScrollPane1.setViewportView(tblQueue);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        txtProgress.setColumns(20);
+        txtProgress.setRows(5);
+        jScrollPane2.setViewportView(txtProgress);
+
         org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 549, Short.MAX_VALUE)
+            .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 53, Short.MAX_VALUE)
+            .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
         );
 
         menuFile.setText("File");
@@ -209,7 +215,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 259, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 191, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -334,57 +340,74 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
             return;
         }
         
+        // clear the progress field
+        
+        txtProgress.setText("");
+        
         // If we get an error, we report it and stop, preserving what's left
 
-        HttpClient htc = new HttpClient();
-        PostMethod post = new PostMethod(Main.geoURL + "?action=upload");
+
         int warningCount = 0;
         
         for (int i = 0; i < uploadData.size(); i++) {
             Object [] line = (String []) uploadData.elementAt(i);
+            
+            // if the status is 'OK', it's already been uploaded
+            if (!line[10].toString().toUpperCase().equals("OK")) {
+
+                HttpClient htc = new HttpClient();
+                PostMethod post = new PostMethod(Main.geoURL + "?action=upload");                
         
-            try {
-                File f = new File(line[0].toString());
-                Part [] parts = {
-                    new StringPart("action", "upload"),
-                    new StringPart("userid", Integer.toString(Main.geoUserid)),
-                    new StringPart("subject", line[1].toString()),
-                    new StringPart("photographer", line[2].toString()),
-                    new StringPart("direction", line[3].toString()),
-                    new StringPart("title", line[4].toString()),
-                    new StringPart("comments", line[5].toString()),
-                    new StringPart("feature", line[6].toString()),
-                    new StringPart("date", line[7].toString()),
-                    new StringPart("supplemental", line[8].toString()),
-                    new StringPart("validation", Main.validationToken),
-                    new StringPart("cclicence", "I grant you the permission to use this"
-                             + " submission under the terms of the Creative Commons by-sa-2.0 licence"),
-                    new FilePart("uploadfile", f)
-                };
-                
-                post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
-                htc.executeMethod(post);
-                String response = post.getResponseBodyAsString();
-                System.out.println("response from server was " + response + "\n");
-                
-                if (!XMLHandler.getXMLField(response, "status").equals("OK")) {
-                    warningCount++;
+                try {
+                    File f = new File(line[0].toString());
+                    Part [] parts = {
+                        new StringPart("action", "upload"),
+                        new StringPart("userid", Integer.toString(Main.geoUserid)),
+                        new StringPart("subject", line[1].toString()),
+                        new StringPart("photographer", line[2].toString()),
+                        new StringPart("direction", line[3].toString()),
+                        new StringPart("title", line[4].toString()),
+                        new StringPart("comments", line[5].toString()),
+                        new StringPart("feature", line[6].toString()),
+                        new StringPart("date", line[7].toString()),
+                        new StringPart("supplemental", line[8].toString()),
+                        new StringPart("validation", Main.validationToken),
+                        new StringPart("cclicence", "I grant you the permission to use this"
+                                 + " submission under the terms of the Creative Commons by-sa-2.0 licence"),
+                        new FilePart("uploadfile", f)
+                    };
+
+                    post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
+                    htc.executeMethod(post);
+                    String response = post.getResponseBodyAsString();
+                    System.out.println("response from server was " + response + "\n");
+
+                    if (!XMLHandler.getXMLField(response, "status").equals("OK")) {
+                        warningCount++;
+                    }
+
+                    // what we need to do here is to put the response in the grid
+
+                    String uploadStatus = XMLHandler.getXMLField(response, "status");
+                    tqm.setValueAt(uploadStatus, i, 2);
+
+
+                    System.out.println("Uploaded " + line[4].toString() + " :: " + uploadStatus);
+                    txtProgress.setText(txtProgress.getText() + "\n" + "Uploaded " + line[4].toString() + 
+                            " :: " + uploadStatus);
+                    txtProgress.repaint();
+                    post.releaseConnection();
+
+
+                } catch (FileNotFoundException ex) {
+                    Toolkit.getDefaultToolkit().beep();
+                    JOptionPane.showMessageDialog(this, ex.getMessage());
+                } catch (IOException ex) {
+                    Toolkit.getDefaultToolkit().beep();
+                    JOptionPane.showMessageDialog(this, ex.getMessage());
+                } finally {
+                    post.releaseConnection();
                 }
-
-                // what we need to do here is to put the response in the grid
-
-                tqm.setValueAt(XMLHandler.getXMLField(response, "status"), i, 2);
-
-                            
-                System.out.println("Uploaded " + line[4].toString());
-
-                
-            } catch (FileNotFoundException ex) {
-                Toolkit.getDefaultToolkit().beep();
-                JOptionPane.showMessageDialog(this, ex.getMessage());
-            } catch (IOException ex) {
-                Toolkit.getDefaultToolkit().beep();
-                JOptionPane.showMessageDialog(this, ex.getMessage());
             }
             
         }
@@ -405,6 +428,11 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         GeoLogin gl = new GeoLogin(this, true);
         gl.setVisible(true);
         gl.dispose();
+        if (!Main.noCache) {
+            // must have logged in ok so enable the items menu
+            
+            menuItem.setEnabled(true);
+        }
         
     }
     
@@ -515,7 +543,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
                 op.write("<feature>" + thisLine[6] + "</feature>\n");
                 op.write("<date>" + thisLine[7] + "</date>\n");
                 op.write("<supplemental>" + thisLine[8] + "</supplemental>\n");
-                op.write("<cclicence>" + thisLine[9] + "</cclience>\n");
+                op.write("<cclicence>" + thisLine[9] + "</cclicence>\n");
                 op.write("<uploadflag>" + thisLine[10] + "</uploadflag>\n");
                 op.write("<imagelocation>" + thisLine[11] + "</imagelocation>");
                 op.write("</juppyline>");
@@ -642,6 +670,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JMenu menuAbout;
@@ -658,6 +687,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
     private javax.swing.JMenuItem menuItemDelete;
     private javax.swing.JMenuItem menuItemEdit;
     private javax.swing.JTable tblQueue;
+    private javax.swing.JTextArea txtProgress;
     // End of variables declaration//GEN-END:variables
     
 }
