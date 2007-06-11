@@ -28,6 +28,8 @@ public class Main {
     
     static String geoURL = new String("http://geograph/juploader.php");
     
+    static String juppyVersion = "1.1";
+    
     static String [] imageClassList;
     static boolean noCache = true;
     static int geoUserid = 0;
