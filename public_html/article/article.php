@@ -154,14 +154,13 @@ function smarty_function_articletext($input) {
 			}
 		}
 	}
-	print htmlentities($output);
-	print "<hr>";
+	
 	$output=preg_replace($pattern, $replacement, $output);
 	
 	if (count($m[0])) {
 		$smarty->assign("copyright", '<div class="copyright">Great Britain 1:50 000 Scale Colour Raster Mapping Extracts &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.</div>');
 	}
-	print htmlentities($output);
+	
 	$output = GeographLinks($output,true);
 	
 	if (count($imageCredits)) {
