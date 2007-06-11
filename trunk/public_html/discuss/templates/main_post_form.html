@@ -22,7 +22,7 @@
 <script type="text/javascript">
 current = readCookie('markedImages')
 if (current && current != '') {
-splited = current.split(',');
+splited = current.commatrim().split(',');
 document.write('<div style="border: 1px solid lightgrey;">Marked Images['+(splited.length+0)+']: <a title="Insert marked image list" href="JavaScript:paste_strinL(returnMarkedImages(),0)" onMouseOver="window.status=\'Insert marked image list\'; return true" onMouseOut="window.status=\'\'; return true"><b>Insert into Post</b></a> (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear</a>)</div>');
 }
 </script>
