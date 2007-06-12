@@ -193,8 +193,15 @@ if ($grid_given)
 			$smarty->assign('filtered', 1);
 		}
 			
-		$user_crit = $USER->user_id?" or gridimage.user_id = {$USER->user_id}":'';
-				
+		if ($USER->user_id) {
+			if ($USER->hasPerm('moderator')) {
+				$user_crit = "1";
+			} else {
+				$user_crit = "(moderation_status in ('accepted', 'geograph') or gridimage.user_id = {$USER->user_id})";
+			}
+		} else {
+			$user_crit = "moderation_status in ('accepted', 'geograph')";
+		}
 			
 		if (($square->imagecount > 15 && !isset($_GET['by']) && !$custom_where) || (isset($_GET['by']) && $_GET['by'] == 1)) {
 			$square->totalimagecount = $square->imagecount;
@@ -213,7 +220,7 @@ if ($grid_given)
 			sum(nateastings = 0) as centi_blank
 			FROM gridimage
 			WHERE gridsquare_id = {$square->gridsquare_id}
-			AND (moderation_status in ('accepted', 'geograph') $user_crit)");
+			AND $user_crit");
 			
 			$breakdowns = array();
 			$breakdowns[] = array('type'=>'user','name'=>'Contributors','count'=>$row['user']);
@@ -250,7 +257,7 @@ if ($grid_given)
 				$all = $db->getAll("SELECT imageclass,count(*),gridimage_id
 				FROM gridimage
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
-				AND (moderation_status in ('accepted', 'geograph') $user_crit )
+				AND $user_crit
 				GROUP BY imageclass");
 				foreach ($all as $row) {
 					$breakdown[$i] = array('name'=>"in category <b>{$row[0]}</b>",'count'=>$row[1]);
@@ -268,7 +275,7 @@ if ($grid_given)
 				$all = $db->getAll("SELECT moderation_status,count(*),gridimage_id
 				FROM gridimage
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
-				AND (moderation_status in ('accepted', 'geograph') $user_crit )
+				AND $user_crit
 				GROUP BY moderation_status 
 				ORDER BY ftf DESC,moderation_status+0 DESC");
 				foreach ($all as $row) {
@@ -293,7 +300,7 @@ if ($grid_given)
 				FROM gridimage
 				INNER JOIN user USING(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
-				AND (moderation_status in ('accepted', 'geograph') $user_crit )
+				AND $user_crit
 				GROUP BY user_id");
 				foreach ($all as $row) {
 					$breakdown[$i] = array('name'=>"contributed by <b>{$row[0]}</b>",'count'=>$row[1]);
@@ -311,7 +318,7 @@ if ($grid_given)
 				$all = $db->getAll("SELECT (nateastings = 0),count(*),gridimage_id,nateastings DIV 100, natnorthings DIV 100
 				FROM gridimage
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
-				AND (moderation_status in ('accepted', 'geograph') $user_crit )
+				AND $user_crit
 				GROUP BY nateastings DIV 100, natnorthings DIV 100,(nateastings = 0)");
 				foreach ($all as $row) {
 					if ($row[0]) {
@@ -338,7 +345,7 @@ if ($grid_given)
 				$all = $db->getAll("SELECT SUBSTRING($column,1,$length) as date,count(*),gridimage_id
 				FROM gridimage
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
-				AND (moderation_status in ('accepted', 'geograph') $user_crit )
+				AND $user_crit
 				GROUP BY SUBSTRING($column,1,$length)");
 				foreach ($all as $row) {
 					$date = getFormattedDate($row[0]);
