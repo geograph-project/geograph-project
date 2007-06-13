@@ -8,7 +8,7 @@
 
 {if $u}
 <ul>
-<li>from images by <a href="/profile.php?u={$u}">{$profile->realname}</a> <span style="font-size:0.7em">
+<li>from images by <a href="/profile/{$u}">{$profile->realname}</a> <span style="font-size:0.7em">
 [<a href="{$script_name}?len={$len}{if $words}&amp;words={$words|escape:url}{/if}">remove filter</a>]</span></li>
 </ul>
 {/if}

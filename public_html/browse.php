@@ -283,7 +283,7 @@ if ($grid_given)
 					$breakdown[$i] = array('name'=>"<b>{$rowname}</b>",'count'=>$row[1]);
 					if ($row[1] > 20) {
 						if ($row[0] == 'pending' || $row[0] == 'rejected') {
-							$breakdown[$i]['link']="/profile.php?u={$USER->user_id}";
+							$breakdown[$i]['link']="/profile/{$USER->user_id}";
 						} else {
 							$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;moderation_status=".urlencode($row[0])."&amp;do=1";
 						}

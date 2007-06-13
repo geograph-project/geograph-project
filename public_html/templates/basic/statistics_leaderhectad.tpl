@@ -18,7 +18,7 @@
 <tbody>
 
 {foreach from=$topusers item=topuser}
-<tr><td>{$topuser.ordinal}</td><td><a title="View profile" href="/profile.php?u={$topuser.user_id}">{$topuser.realname}</a></td>
+<tr><td>{$topuser.ordinal}</td><td><a title="View profile" href="/profile/{$topuser.user_id}">{$topuser.realname}</a></td>
 <td align="right">{$topuser.imgcount}</td>
 <td style="font-size:0.8em" title="{$topuser.hectads|replace:",":", "}" ondblclick="this.innerHTML='{$topuser.hectads|replace:"[100]":""|replace:",":", "|replace:"[":"<sup>["|replace:"]":"]</sup>"}'">{$topuser.hectads|replace:"[100]":""|truncate:24:"..."|replace:"[":"<sup>["|replace:"]":"]</sup>"}</td></tr>
 {/foreach}

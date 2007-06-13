@@ -62,7 +62,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$title .= " for ".($profile->realname);
 	} elseif (isset($_GET['users'])) {
 		$group_sql = 'poster_id,';
-		$column_sql = "CONCAT('<a href=\"/profile.php?u=',poster_id,'\">',poster_name,'</a>') as User,";
+		$column_sql = "CONCAT('<a href=\"/profile/',poster_id,'\">',poster_name,'</a>') as User,";
 		$title .= " by user";
 	}
 	if (isset($_GET['threads'])) {

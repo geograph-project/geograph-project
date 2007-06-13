@@ -69,7 +69,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign_by_ref('profile', $profile);
 		$title .= ' for '.($profile->realname);
 	} else {
-		$columns_sql = "CONCAT('<a href=\"/profile.php?u=',user_id,'\">',realname,'</a>') as User,";
+		$columns_sql = "CONCAT('<a href=\"/profile/',user_id,'\">',realname,'</a>') as User,";
 	}
 	
 	if ($ri) {

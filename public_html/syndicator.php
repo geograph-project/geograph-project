@@ -173,7 +173,7 @@ for ($i=0; $i<$cnt; $i++)
 	}
 	
 	$item->date = strtotime($images->images[$i]->submitted); 
-	$item->source = "http://{$_SERVER['HTTP_HOST']}/profile.php?u=".$images->images[$i]->user_id; 
+	$item->source = "http://{$_SERVER['HTTP_HOST']}/profile/".$images->images[$i]->user_id; 
 	$item->author = $images->images[$i]->realname; 
 	     
 	     if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GeoPhotoRSS' || $format == 'GPX') {

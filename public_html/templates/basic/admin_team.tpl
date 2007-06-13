@@ -21,7 +21,7 @@
 	<td>{$userrow.realname}</td>
 	<td>{$userrow.nickname}</td>
 	<td>{if $userrow.role}{$userrow.role}{else}{if strpos($userrow.rights,'admin') > 0}Developer{else}Moderator{/if}{/if}</td>
-	<td><a href="/profile.php?u={$userrow.user_id}">Profile</a>/<a href="/usermsg.php?to={$userrow.user_id}">Contact</a></td>
+	<td><a href="/profile/{$userrow.user_id}">Profile</a>/<a href="/usermsg.php?to={$userrow.user_id}">Contact</a></td>
 </tr>
 {/if}
 {/foreach}
@@ -44,7 +44,7 @@
 <tr bgcolor="{$bgcolor}"{if strpos($userrow.rights,'admin') > 0} style="font-weight:bold"{/if}>
 	<td>{$userrow.realname}</td>
 	<td>{$userrow.nickname}</td>
-	<td><a href="/profile.php?u={$userrow.user_id}">Profile</a>/<a href="/usermsg.php?to={$userrow.user_id}">Contact</a></td>
+	<td><a href="/profile/{$userrow.user_id}">Profile</a>/<a href="/usermsg.php?to={$userrow.user_id}">Contact</a></td>
 </tr>
 {/if}
 {/foreach}

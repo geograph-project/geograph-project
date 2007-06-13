@@ -37,7 +37,7 @@
 {foreach from=$moderators item=userrow}
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}">
-	<td{if strpos($userrow.rights,'admin') > 0} style="font-weight:bold"{/if}><a href="/profile.php?u={$userrow.user_id}">{$userrow.realname}</a></td>
+	<td{if strpos($userrow.rights,'admin') > 0} style="font-weight:bold"{/if}><a href="/profile/{$userrow.user_id}">{$userrow.realname}</a></td>
 	<td>{$userrow.nickname}</td>
 	<td>{if $userrow.role}{$userrow.role}{else}{if strpos($userrow.rights,'admin') > 0}Developer{else}{if strpos($userrow.rights,'moderator') > 0}Moderator{/if}{/if}{/if}&nbsp;<a href="javascript:assignRole({$userrow.user_id},'{$userrow.role}');">e</a></td>
 	<td>{$userrow.signup_date}</td>

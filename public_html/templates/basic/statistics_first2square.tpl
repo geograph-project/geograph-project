@@ -12,7 +12,7 @@
 <tbody>
 
 {foreach from=$topusers item=topuser}
-<tr><td>{$topuser.ordinal}</td><td><a title="View profile" href="/profile.php?u={$topuser.user_id}">{$topuser.realname}</a></td>
+<tr><td>{$topuser.ordinal}</td><td><a title="View profile" href="/profile/{$topuser.user_id}">{$topuser.realname}</a></td>
 <td>{$topuser.imgcount}</td></tr>
 {/foreach}
 

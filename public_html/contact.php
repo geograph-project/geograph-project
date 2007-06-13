@@ -52,7 +52,7 @@ if (isset($_POST['msg']))
 			$msg.="\n\n-------------------------------\n";
 			$msg.="Referring page: ".$_POST['referring_page']."\n";
 			if ($_SESSION['user']->user_id)
-				$msg.="User profile: http://{$_SERVER['HTTP_HOST']}/profile.php?u={$_SESSION['user']->user_id}\n";
+				$msg.="User profile: http://{$_SERVER['HTTP_HOST']}/profile/{$_SESSION['user']->user_id}\n";
 			$msg.="Browser: ".$_SERVER['HTTP_USER_AGENT']."\n";
 			
 			mail($CONF['contact_email'], 

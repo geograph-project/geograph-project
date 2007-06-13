@@ -65,7 +65,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$title .= " for ".($profile->realname);
 	} elseif (isset($_GET['users'])) {
 		$group_sql = 'user_id,';
-		$column_sql = "CONCAT('<a href=\"/profile.php?u=',user_id,'\">',realname,'</a>') as User,";
+		$column_sql = "CONCAT('<a href=\"/profile/',user_id,'\">',realname,'</a>') as User,";
 	}
 	
 	if ($ri) {

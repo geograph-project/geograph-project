@@ -299,7 +299,7 @@ elseif($action=='movetopic2') {$step=1;require($pathToFiles.'bb_func_movetpc.php
 elseif($action=='userinfo')
 {
 	//require($pathToFiles.'bb_func_usernfo.php');
-	$url="http://".$_SERVER['HTTP_HOST']."/profile.php?u=".$_GET['user'];
+	$url="http://".$_SERVER['HTTP_HOST']."/profile/".$_GET['user'];
 	header("Location: $url");
 	exit;
 	
