@@ -57,7 +57,7 @@ referring to <b>image {$image->gridimage_id}</b>
 
 <!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{if $image->nickname}/user/{$image->nickname|escape:'url'}/{else}/profile.php?u={$image->user_id}{/if}">{$image->realname|escape:'html'}</a> and  
+alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="/profile/{$image->user_id}">{$image->realname|escape:'html'}</a> and  
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 <!-- /Creative Commons Licence -->
 
@@ -163,7 +163,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 </dd>
 
 <dt>Photographer</dt>
- <dd><a title="View profile" href="{if $image->nickname}/user/{$image->nickname|escape:'url'}/{else}/profile.php?u={$image->user_id}{/if}">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap">find more nearby</a>)</dd>
+ <dd><a title="View profile" href="/profile/{$image->user_id}">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap">find more nearby</a>)</dd>
 
 <dt>Image status</dt>
 <dd>{if $image->ftf}

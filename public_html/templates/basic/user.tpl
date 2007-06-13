@@ -12,7 +12,7 @@
 
 <p class="wordnet" align="justify"> 
 {foreach from=$users key=nick item=obj}
-<a style="font-size:{$obj.size}px;" title="{$obj.realname},{$obj.images} images" href="/user/{$nick|escape:url}/">{$nick|replace:' ':'&middot;'}</a>
+<a style="font-size:{$obj.size}px;" title="{$obj.realname},{$obj.images} images" href="/profile/{$obj.user_id}">{$nick|replace:' ':'&middot;'}</a>
 {/foreach}
 </p>
  		

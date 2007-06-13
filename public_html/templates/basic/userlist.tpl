@@ -10,7 +10,7 @@
 
 <p class="wordnet" style="font-size:0.8em;line-height:1.4em" align="center"> 
 {foreach from=$users key=user_id item=obj}
-&nbsp;<a title="{$obj.nickname}, {$obj.images} images" {if $obj.images > 100} style="font-weight:bold"{/if} href="{if $obj.nickname}/user/{$obj.nickname|escape:url}/{else}/profile.php?u={$user_id}{/if}">{$obj.realname|replace:' ':'&middot;'}</a><small>&nbsp;[{$obj.images}]</small> &nbsp;
+&nbsp;<a title="{$obj.nickname}, {$obj.images} images" {if $obj.images > 100} style="font-weight:bold"{/if} href="/profile/{$user_id}">{$obj.realname|replace:' ':'&middot;'}</a><small>&nbsp;[{$obj.images}]</small> &nbsp;
 {/foreach} 
 </p>
  		
