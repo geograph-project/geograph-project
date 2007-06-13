@@ -96,6 +96,10 @@ if ($template=='profile.tpl')
 	{
 		$uid=$_GET['u'];
 	} 
+	elseif (isset($_GET['id']) && preg_match('/^[0-9]+$/' , $_GET['id']))
+	{
+		$uid=$_GET['id'];
+	} 
 	elseif (isset($_GET['user']) && isValidRealName($_GET['user']))
 	{
 		if ($_GET['user'] == $USER->nickname)
@@ -155,9 +159,9 @@ if ($template=='profile.tpl')
 		if (!$profile) {
 			$profile=new GeographUser($uid);
 			
-			if (!isset($_GET['user']) && !empty($profile->nickname)) {
+			if (isset($_GET['user']) || isset($_GET['u'])) {
 				header("Status: 301 Moved Permanently");
-				header("Location: /user/".urlencode($profile->nickname).(isset($_GET['all'])?'/all':''));
+				header("Location: /profile/{$profile->user_id}".(isset($_GET['all'])?'/all':''));
 				exit;
 			}
 		}

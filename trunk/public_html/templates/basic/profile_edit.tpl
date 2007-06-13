@@ -33,15 +33,7 @@
 	<input type="text" id="nickname" name="nickname" value="{$profile->nickname|escape:'html'}"/>
 	
 	<div class="fieldnotes">Your nickname can be used to login and is also 
-	used to identify you on the forums. You can also link to your profile at 
-	
-	{if $profile->nickname ne ""}
-		<span class="nowrap">http://{$http_host}/user/{$profile->nickname|lower|escape:'html'}</span>
-	{else}
-		<span class="nowrap">http://{$http_host}/user/<i>nickname</i></span>
-	{/if}
-	
-	</div>
+	used to identify you on the forums.</div>
 	
 	{if $errors.nickname}</div>{/if}
 </div>

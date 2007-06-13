@@ -63,11 +63,10 @@ foreach ($users as $user_id => $user) {
 	$point = new kmlPoint($wgs84_lat,$wgs84_long);			
 
 	$placemark = new kmlPlacemark($user_id,$user['realname'].' :: '.$user['images'],$point);
+	$placemark->useCredit($entry['realname'],"http://{$_SERVER['HTTP_HOST']}/profile/$user_id");
 	if (empty($user['nickname'])) {
-		$placemark->useCredit($entry['realname'],"http://{$_SERVER['HTTP_HOST']}/profile.php?u=$user_id");
 		$placemark->setItemCDATA('description',$placemark->link);
 	} else {
-		$placemark->useCredit($entry['realname'],"http://{$_SERVER['HTTP_HOST']}/user/".urlencode($user['nickname']) );
 		$placemark->setItemCDATA('description',"Nickname: {$user['nickname']}<br/>{$placemark->link}");
 	}
 	$placemark->useHoverStyle('def');

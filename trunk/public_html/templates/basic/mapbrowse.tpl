@@ -267,13 +267,13 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 {if $token_zoomout || $realname}
 <div style="position:relative;">
 	<div style="position:absolute;left:445px;top:5px;">
-	<b><a title="right click and select&#13;&#10; [Copy Shortcut] or [Copy Link Location]" href="{if $token_zoomout}/map/{$mosaic_token}{else}{if $nickname}/user/{$nickname|escape:'url'}/map/{else}/map/?u={$user_id}{/if}{/if}">Link to this Map</a></b>
+	<b><a title="right click and select&#13;&#10; [Copy Shortcut] or [Copy Link Location]" href="{if $token_zoomout}/map/{$mosaic_token}{else}/profile/{$user_id}/map{/if}">Link to this Map</a></b>
 	</div>
 </div>
 {/if}
 <br/>
 
-<h2>Map{if $realname}, for <a title="view user profile" href="{if $nickname}/user/{$nickname|escape:'url'}{else}/profile.php?u={$user_id}{/if}">{$realname}</a>  <small style="font-size:0.4em; font-weight:normal">[ <a title="Remove User Filter" href="/map/{$mosaic_token}?u=0">Remove User Filter</a> ]</small>{else} Browsing (beta!){/if}</h2>
+<h2>Map{if $realname}, for <a title="view user profile" href="/profile/{$user_id}">{$realname}</a>  <small style="font-size:0.4em; font-weight:normal">[ <a title="Remove User Filter" href="/map/{$mosaic_token}?u=0">Remove User Filter</a> ]</small>{else} Browsing (beta!){/if}</h2>
 <p>Here are a few tips for using our map - we're still developing and testing this, so if you
 notice any problems, do let us know.</p>
 <ul>
