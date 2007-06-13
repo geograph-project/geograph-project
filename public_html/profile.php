@@ -126,6 +126,12 @@ if ($template=='profile.tpl')
 
 		//to reach here, user must be logged in...
 		$uid=$USER->user_id;
+	} else {
+		if (isset($_GET['user']) || isset($_GET['u'])) {
+			header("Status: 301 Moved Permanently");
+			header("Location: /profile/{$profile->user_id}".(isset($_GET['all'])?'/all':''));
+			exit;
+		}
 	}
 	
 	if ($uid==$USER->user_id) {
@@ -158,13 +164,10 @@ if ($template=='profile.tpl')
 
 		if (!$profile) {
 			$profile=new GeographUser($uid);
-			
-			if (isset($_GET['user']) || isset($_GET['u'])) {
-				header("Status: 301 Moved Permanently");
-				header("Location: /profile/{$profile->user_id}".(isset($_GET['all'])?'/all':''));
-				exit;
-			}
 		}
+			
+
+		
 		$profile->getStats();
 
 		$smarty->assign('page_title', 'Profile for '.$profile->realname);
