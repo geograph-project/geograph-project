@@ -245,7 +245,7 @@ $sql_order";
 			foreach($breakdown as $idx=>$entry) {
 				$y = $breakdown[$idx]['field'];
 
-				$breakdown[$idx]['link'] = "/profile.php?u=".$entry['user_id'];
+				$breakdown[$idx]['link'] = "/profile/".$entry['user_id'];
 			}
 		} elseif ($by == 'takenyear') {
 			foreach($breakdown as $idx=>$entry) {

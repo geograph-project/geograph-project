@@ -68,7 +68,7 @@ class RestAPI
 				
 				echo '<title>'.htmlentities2($image->title).'</title>';
 				echo '<gridref>'.htmlentities($image->grid_reference).'</gridref>';
-				echo "<user profile=\"http://{$_SERVER['HTTP_HOST']}/profile.php?u={$image->user_id}\">".htmlentities($image->realname).'</user>';
+				echo "<user profile=\"http://{$_SERVER['HTTP_HOST']}/profile/{$image->user_id}\">".htmlentities($image->realname).'</user>';
 				
 				$url=$image->_getFullpath();
 				$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$url);
@@ -113,7 +113,7 @@ class RestAPI
 						echo " <image url=\"http://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\">";
 
 						echo ' <title>'.htmlentities($image->title).'</title>';
-						echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}/profile.php?u={$image->user_id}\">".htmlentities($image->realname).'</user>';
+						echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}/profile/{$image->user_id}\">".htmlentities($image->realname).'</user>';
 
 						$url=$image->getThumbnail(120,120,true);
 						$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$url);

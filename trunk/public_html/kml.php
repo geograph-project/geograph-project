@@ -64,7 +64,7 @@ if (isset($_GET['id']))  {
 		$thumb = "http://".$_SERVER['HTTP_HOST'].$image->getThumbnail(120,120,true); 
 		$thumbTag = preg_replace('/\/photos\/.*\.jpg/',$thumb,$image->getThumbnail(120,120)); 
 
-		$description = $linkTag.$thumbTag."</a><br/>".GeographLinks($image->comment)." (".$linkTag."view full size</a>)"."<br/><br/> &copy; Copyright <a title=\"view user profile\" href=\"http://{$_SERVER['HTTP_HOST']}/profile.php?u=".$image->user_id."\">".$image->realname."</a> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a><br/><br/>";
+		$description = $linkTag.$thumbTag."</a><br/>".GeographLinks($image->comment)." (".$linkTag."view full size</a>)"."<br/><br/> &copy; Copyright <a title=\"view user profile\" href=\"http://{$_SERVER['HTTP_HOST']}/profile/".$image->user_id."\">".$image->realname."</a> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a><br/><br/>";
 
 		$placemark->setItemCDATA('description',$description);
 

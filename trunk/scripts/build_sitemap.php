@@ -210,11 +210,11 @@ for ($sitemap=$sitemaps+1; $sitemap<=$sitemaps+$sitemaps2; $sitemap++)
 			$maxdate=$date;
 		
 		fprintf($fh,"<url>".
-			"<loc>http://{$param['config']}/%s</loc>".
+			"<loc>http://{$param['config']}/profile/%d</loc>".
 			"<lastmod>%s</lastmod>".
 			"<changefreq>monthly</changefreq><priority>0.7</priority>".
 			"</url>\n",
-			empty($recordSet->fields['nickname'])?'profile.php?u='.$recordSet->fields['user_id']:'user/'.urlencode($recordSet->fields['nickname']),
+			$recordSet->fields['user_id']),
 			$date
 			);
 			

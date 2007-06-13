@@ -235,7 +235,7 @@
   &lt;status state="ok" /&gt; 
   &lt;title&gt;Bascote&lt;/title&gt; 
   &lt;gridref&gt;SP4063&lt;/gridref&gt; 
-  &lt;user profile="http://{$http_host}/profile.php?u=120"&gt;David Stowell&lt;/user&gt; 
+  &lt;user profile="http://{$http_host}/profile/120"&gt;David Stowell&lt;/user&gt; 
   &lt;img src="http://{$http_host}/photos/00/34/003456_e10e23bc.jpg"
      width="640" height="480" /&gt; 
 &lt;/geograph&gt;</pre>
@@ -254,7 +254,7 @@
   &lt;status state="ok" count="1" /&gt; 
   &lt;image url="http://{$http_host}/photo/64854"&gt;
     &lt;title&gt;Afon Cynfal&lt;/title&gt; 
-    &lt;user profile="http://{$http_host}/profile.php?u=3"&gt;Barry Hunter&lt;/user&gt; 
+    &lt;user profile="http://{$http_host}/profile/3"&gt;Barry Hunter&lt;/user&gt; 
     &lt;img src="http://{$http_host}/photos/06/48/064854_d68e7342_120x120.jpg" width="90" height="120" /&gt; 
     &lt;location grid="1" eastings="270500" northings="341100" /&gt; 
   &lt;/image&gt;

@@ -19,7 +19,7 @@
 
 <h2>Geograph Map {if substr($gridref, -1, 1) == '5' && substr(substr($gridref, -3, 3), 0, 1) == '5'}
    for Hectad {$gridref|regex_replace:"/([A-Z]+\d)\d(\d)\d/":"\\1\\2"} 
-   {else} centred on {$gridref}{/if}{if $realname}, for <a title="view user profile" class="nowrap" href="/profile.php?u={$user_id}">{$realname}</a>{/if}</h2>
+   {else} centred on {$gridref}{/if}{if $realname}, for <a title="view user profile" class="nowrap" href="/profile/{$user_id}">{$realname}</a>{/if}</h2>
 
  
 {*begin containing div for main map*}
