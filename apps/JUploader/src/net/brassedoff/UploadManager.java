@@ -79,6 +79,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
             Properties propList = new Properties();
             propList.put("doresize", Main.doResize ? "true" : "false");
             propList.put("cachedirectory", Main.cacheDirectory);
+            propList.put("gridrefFromImage", Main.gridrefFromImage ? "true" : "false");
             try {
                 propList.store(new FileOutputStream("juppy.prop"), "Juppy properties");
             } catch (Exception ex) {
@@ -329,10 +330,13 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
     
     private void UploadQueue() {
         
+        String [] dirCode = {"N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"};
+        String [] angle = {"0", "22", "45", "67", "90", "112", "135", "157", "180", "202", "225", "247", "270", "292", "315", "337"};
+        
         // this is the real fun
         // we're going to take each entry, one at a time, and upload
         // it to the server, awaiting a response afer each process
-
+        
         int checkUpload = OKToUpload();
         if (checkUpload > 0) {
             Toolkit.getDefaultToolkit().beep();
@@ -358,6 +362,16 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
                 HttpClient htc = new HttpClient();
                 PostMethod post = new PostMethod(Main.geoURL + "?action=upload");                
         
+                // ok, I know this is a ludge... some day I'll engineer it out...
+                
+                String direction = line[3].toString().toUpperCase();
+                String newAngle = "0";
+                for (int j = 0; j < dirCode.length; j++) {
+                    if (direction.equals(dirCode[j])) {
+                        newAngle = angle[j];
+                    }
+                }
+                
                 try {
                     File f = new File(line[0].toString());
                     Part [] parts = {
@@ -365,7 +379,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
                         new StringPart("userid", Integer.toString(Main.geoUserid)),
                         new StringPart("subject", line[1].toString()),
                         new StringPart("photographer", line[2].toString()),
-                        new StringPart("direction", line[3].toString()),
+                        new StringPart("direction", newAngle),
                         new StringPart("title", line[4].toString()),
                         new StringPart("comments", line[5].toString()),
                         new StringPart("feature", line[6].toString()),
@@ -376,7 +390,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
                                  + " submission under the terms of the Creative Commons by-sa-2.0 licence"),
                         new FilePart("uploadfile", f)
                     };
-
+                    
                     post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
                     htc.executeMethod(post);
                     String response = post.getResponseBodyAsString();
@@ -391,13 +405,18 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
                     String uploadStatus = XMLHandler.getXMLField(response, "status");
                     tqm.setValueAt(uploadStatus, i, 2);
 
-
                     System.out.println("Uploaded " + line[4].toString() + " :: " + uploadStatus);
                     txtProgress.setText(txtProgress.getText() + "\n" + "Uploaded " + line[4].toString() + 
                             " :: " + uploadStatus);
                     txtProgress.repaint();
                     post.releaseConnection();
 
+                    if (uploadStatus.toUpperCase().equals("NOT LOGGED IN")) {
+                        txtProgress.setText(txtProgress.getText() + "\n" + "Upload aborted");
+                        break;
+                    }
+
+                    
 
                 } catch (FileNotFoundException ex) {
                     Toolkit.getDefaultToolkit().beep();
@@ -494,7 +513,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         
         // copy the data in
         
-        Object [] qData = (Object []) uploadData.elementAt(tblQueue.getSelectedRow());
+        String [] qData = (String []) uploadData.elementAt(tblQueue.getSelectedRow());
         for (int i = 0; i < qData.length; i++) {
             uf.editData[i] = new String(qData[i].toString());
         }
@@ -507,7 +526,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         // if the accept flag is set, create a new row and replace the old one
         
         if (uf.acceptFlag) {
-            Object [] newRow = new Object[20];
+            String [] newRow = new String[20];
             for (int i = 0; i < uf.editData.length; i++) {
                 newRow[i] = new String(uf.editData[i]);
             }

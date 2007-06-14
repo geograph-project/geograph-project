@@ -552,7 +552,12 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
                 }
                 
             }
-            if (gridRef != null) {
+            
+            // if the user has disabled the gridrefFromImage flag in properties, we
+            // don't bother with the assignment. Many cameras generate file names that
+            // can confuse the issue
+            
+            if ((gridRef != null) && Main.gridrefFromImage) {
                 txtSubject.setText(gridRef);
                 txtPhotographer.setText(gridRef);
             }
