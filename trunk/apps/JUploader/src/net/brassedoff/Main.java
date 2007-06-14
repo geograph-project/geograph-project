@@ -28,7 +28,7 @@ public class Main {
     
     static String geoURL = new String("http://geograph/juploader.php");
     
-    static String juppyVersion = "1.1";
+    static String juppyVersion = "1.2";
     
     static String [] imageClassList;
     static boolean noCache = true;
@@ -38,6 +38,7 @@ public class Main {
     static int tuneParam1;
     static int tuneParam2;
     static String validationToken = "";
+    static boolean gridrefFromImage;
 
     
     /** Creates a new instance of Main */
@@ -85,6 +86,12 @@ public class Main {
             }
             
             cacheDirectory = propList.getProperty("cachedirectory");
+            
+            if (propList.getProperty("gridrefFromImage", "true").equals("true")) {
+                gridrefFromImage = true;
+            } else {
+                gridrefFromImage = false;
+            }
             
         } catch (FileNotFoundException fe) {
             System.out.println("No properties file found");

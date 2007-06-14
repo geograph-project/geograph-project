@@ -36,6 +36,7 @@ public class PropertyForm extends javax.swing.JDialog implements ActionListener 
         if (Main.doResize) {
             txtLocation.setText(Main.cacheDirectory);
         }
+        chkGridRef.setSelected(Main.gridrefFromImage);
         
     }
     
@@ -57,6 +58,7 @@ public class PropertyForm extends javax.swing.JDialog implements ActionListener 
         txtParam2 = new javax.swing.JTextField();
         btnOk = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
+        chkGridRef = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         chkResize.setText("Allow JUploader to resize images?");
@@ -102,7 +104,7 @@ public class PropertyForm extends javax.swing.JDialog implements ActionListener 
         pnlResizeOptionsLayout.setVerticalGroup(
             pnlResizeOptionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(pnlResizeOptionsLayout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .add(jLabel1)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(txtLocation, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -111,43 +113,52 @@ public class PropertyForm extends javax.swing.JDialog implements ActionListener 
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(pnlResizeOptionsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(txtParam1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(txtParam2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(33, Short.MAX_VALUE))
+                    .add(txtParam2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
         );
 
         btnOk.setText("Ok");
 
         btnCancel.setText("Cancel");
 
+        chkGridRef.setText("Derive grid refs from image file name");
+        chkGridRef.setToolTipText("If enabled, Juppy will try to extract a UK or Irish grid ref from the image file name");
+        chkGridRef.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        chkGridRef.setMargin(new java.awt.Insets(0, 0, 0, 0));
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
-                .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(chkResize)
                     .add(layout.createSequentialGroup()
-                        .add(17, 17, 17)
+                        .addContainerGap()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(pnlResizeOptions, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 359, Short.MAX_VALUE)))
+                            .add(chkResize)
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+                                .add(btnCancel)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 249, Short.MAX_VALUE)
+                                .add(btnOk))
+                            .add(layout.createSequentialGroup()
+                                .add(17, 17, 17)
+                                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 359, Short.MAX_VALUE))
+                            .add(chkGridRef)))
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                        .add(btnCancel)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 249, Short.MAX_VALUE)
-                        .add(btnOk)))
+                        .add(29, 29, 29)
+                        .add(pnlResizeOptions, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
-                .addContainerGap()
+                .add(chkGridRef)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(chkResize)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(pnlResizeOptions, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 15, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 54, Short.MAX_VALUE)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnOk)
                     .add(btnCancel))
@@ -223,6 +234,8 @@ public class PropertyForm extends javax.swing.JDialog implements ActionListener 
             Main.cacheDirectory = "";
         }
         
+        Main.gridrefFromImage = chkGridRef.isSelected();        
+        
         // done with this now...
         
         this.dispose();
@@ -231,6 +244,7 @@ public class PropertyForm extends javax.swing.JDialog implements ActionListener 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnOk;
+    private javax.swing.JCheckBox chkGridRef;
     private javax.swing.JCheckBox chkResize;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
