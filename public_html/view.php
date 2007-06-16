@@ -38,10 +38,12 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.or
 		print "<meta name=\"DC.title\" content=\"Geograph::$title\"/>\n";
 		print "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/{$row['gridimage_id']}\">View image page</a>";
 	} elseif ($row['gridimage_id']) {
+		header("HTTP/1.0 500 Server Error");
 		header("Status: 500 Server Error");
 		print "<title>Lat/Long not available, try again later</title>";
 		print "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/{$row['gridimage_id']}\">View image page</a>";
 	} else {
+		header("HTTP/1.0 404 Not Found");
 		header("Status: 404 Not Found");
 		print "<title>Image no longer available</title>";
 	}
@@ -204,6 +206,9 @@ if ($image->isValid())
 			$smarty->assign('view_direction', ($image->view_direction%90==0)?strtoupper($search->heading_string($image->view_direction)):ucwords($search->heading_string($image->view_direction)) );
 		}
 	}
+} else {
+	header("HTTP/1.0 404 Not Found");
+	header("Status: 404 Not Found");
 }
 
 

@@ -114,7 +114,10 @@ if ($template=='profile.tpl')
 		}
 		if ($uid==0)
 		{
-			$uid = 9999999999999;
+			header("HTTP/1.0 404 Not Found");
+			header("Status: 404 Not Found");
+			$smarty->display('static_404.tpl');
+			exit;
 		}
 	}
 
@@ -167,7 +170,13 @@ if ($template=='profile.tpl')
 			$profile=new GeographUser($uid);
 		}
 			
-
+		if ($profile->user_id==0)
+		{
+			header("HTTP/1.0 404 Not Found");
+			header("Status: 404 Not Found");
+			$smarty->display('static_404.tpl');
+			exit;
+		}
 		
 		$profile->getStats();
 
