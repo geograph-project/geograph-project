@@ -67,6 +67,7 @@
     </ul>
     </li>
     <li>Great Britain 1:50 000 Scale Colour Raster Mapping (Same as paper based Landranger&trade; product). &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616. Provided as part of Sponsorship deal.</li>
+    <li>Maps for Ireland and also during the search using the {external href="http://www.google.com/apis/maps/" text="Google Maps API"}.</li>
     </ul>
     
     <h3>Hosting</h3>
@@ -77,6 +78,17 @@
      <li>During the early days of the project, we relied on a dedicated server generously donated by {external title="Visit Positive Internet website" href="http://www.positive-internet.com/" text="Positive Internet"}.</li> 
 
     </ul>
+
+
+    <h3>Supporting Sites</h3>
+    <p>The following support Geograph in various functions:</p>
+    
+    <ul>
+     <li>Natural Language Query Parsing by {external href="http://developers.metacarta.com/" text="MetaCarta Web Services"}</li>
+     <li>Source code visualization by <a href="http://www.cenqua.com/fisheye"><img src="http://www.cenqua.com/images/fisheyed1.gif" width="89" height="33" border="0" alt="Source Perspective by FishEye"/></a></li>
+     <li>Online image manipulation by {external href="http://picnik.com/" text="picnik.com"}</li>
+    </ul>
+    
     
     <h3>Technology</h3>
     <p>This project relies on the following open-source technologies:</p>
