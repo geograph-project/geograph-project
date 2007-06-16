@@ -70,6 +70,7 @@ function UploadPicture() {
 			$xml['status'] = 'Not authorised to post';
 			returnXML();
 		}
+
 	}
 	
 	$tmpfile = $_FILES['uploadfile']['tmp_name'];
@@ -152,6 +153,22 @@ function AuthenticateUser() {
 			returnXML();
 		}
 
+                if ($CONF['juppy_minimum_images']) {
+                
+                        // a user must have submitted a minimum number of images
+                        
+                        $sqlcnt = "select count(*) as icount from gridimage where user_id = '" . $rs->fields[3] . "'";
+                        $icount = 0;
+                        if ($rsimg = &$db->Execute($sqlcnt)) {
+                                $icount = $rsimg->fields[0];
+                        }
+                        if ($icount < $CONF['juppy_minimum_images']) {
+                                $xml['status'] = "You need to have submitted " . $CONF['juppy_minimum_images'] .
+                                    " image(s) using web submission before you can use JUppy. Sorry";
+                                    returnXML();
+                        }
+                }
+                
 		// let's assume they're OK to post
 		$xml['status'] = 'OK';
 		$xml['realname'] = $rs->fields[1];
