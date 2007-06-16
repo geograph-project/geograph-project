@@ -60,6 +60,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         menuItemAdd.addActionListener(this);
         menuItemEdit.addActionListener(this);
         menuItemDelete.addActionListener(this);
+        menuItemPurge.addActionListener(this);
         
         // if no login (i.e. no cache), disable picture editing
         
@@ -115,6 +116,8 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         menuItemAdd = new javax.swing.JMenuItem();
         menuItemEdit = new javax.swing.JMenuItem();
         menuItemDelete = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JSeparator();
+        menuItemPurge = new javax.swing.JMenuItem();
         menuAbout = new javax.swing.JMenu();
         menuAboutAbout = new javax.swing.JMenuItem();
 
@@ -190,6 +193,12 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         menuItemDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/user-trash-full.png")));
         menuItemDelete.setText("Delete picture");
         menuItem.add(menuItemDelete);
+
+        menuItem.add(jSeparator3);
+
+        menuItemPurge.setText("Purge uploaded images");
+        menuItemPurge.setActionCommand("Purge");
+        menuItem.add(menuItemPurge);
 
         menuBar.add(menuItem);
 
@@ -286,6 +295,12 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
             // Change current picture
             
             ChangePicture();
+            
+        } else if(action.equals("Purge")) {
+            
+            // purge queue of uploaded items
+            
+            PurgeQueue();
             
         } else if(action.equals("Settings")) {
             
@@ -455,6 +470,11 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         
     }
     
+    private void PurgeQueue() {
+        
+        tqm.PurgeUploadedItems();
+    }
+    
     private void DeletePicture() {
 
         // delete the current row from the table - there should be only one row selected
@@ -535,6 +555,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         }
         
     }
+
     
     private void SaveQueue() {
         BufferedWriter op;
@@ -665,7 +686,24 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
             fireTableCellUpdated(row, col);
             
         }
-        
+
+    
+        private void PurgeUploadedItems() {
+
+            // if status is "ok", delete the row
+            
+            int i = 0;
+            while (i < uploadData.size()) {
+                // if the status is 'ok', delete the line
+                String [] thisLine = (String []) uploadData.elementAt(i);
+                if (thisLine[10].toUpperCase().equals("OK")) {
+                    uploadData.removeElementAt(i);
+                } else {
+                    i++;
+                }
+            }
+            fireTableDataChanged();
+        }        
         
         public void addRow(Object o) {
             uploadData.addElement(o);
@@ -692,6 +730,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JMenu menuAbout;
     private javax.swing.JMenuItem menuAboutAbout;
     private javax.swing.JMenuBar menuBar;
@@ -705,6 +744,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
     private javax.swing.JMenuItem menuItemAdd;
     private javax.swing.JMenuItem menuItemDelete;
     private javax.swing.JMenuItem menuItemEdit;
+    private javax.swing.JMenuItem menuItemPurge;
     private javax.swing.JTable tblQueue;
     private javax.swing.JTextArea txtProgress;
     // End of variables declaration//GEN-END:variables
