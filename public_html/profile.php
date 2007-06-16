@@ -128,6 +128,7 @@ if ($template=='profile.tpl')
 		$uid=$USER->user_id;
 	} else {
 		if (isset($_GET['user']) || isset($_GET['u'])) {
+			header("HTTP/1.0 301 Moved Permanently");
 			header("Status: 301 Moved Permanently");
 			header("Location: /profile/{$uid}".(isset($_GET['all'])?'/all':''));
 			exit;
