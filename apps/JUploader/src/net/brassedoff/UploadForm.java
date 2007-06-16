@@ -379,6 +379,9 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
             return;
         }
         
+        // this is a hack
+        
+        
         // decide whether or not we need to resize the image here
         
         

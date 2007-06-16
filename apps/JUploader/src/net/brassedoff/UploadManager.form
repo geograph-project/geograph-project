@@ -82,6 +82,14 @@
                 <Property name="text" type="java.lang.String" value="Delete picture"/>
               </Properties>
             </MenuItem>
+            <MenuItem class="javax.swing.JSeparator" name="jSeparator3">
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="menuItemPurge">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Purge uploaded images"/>
+                <Property name="actionCommand" type="java.lang.String" value="Purge"/>
+              </Properties>
+            </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="menuAbout">
