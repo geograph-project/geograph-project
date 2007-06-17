@@ -93,7 +93,7 @@ class Gazetteer
 					loc_placenames
 					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
 				where
-					dsg = 'PPL' AND 
+					dsg LIKE 'PPL%' AND 
 					CONTAINS( 	
 						GeomFromText($rectangle),
 						point_en) AND
@@ -279,7 +279,7 @@ class Gazetteer
 					loc_placenames
 					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
 				where
-					dsg = 'PPL' AND 
+					dsg LIKE 'PPL%' AND 
 					CONTAINS( 	
 						GeomFromText($rectangle),
 						point_en) AND
@@ -297,7 +297,7 @@ class Gazetteer
 					loc_placenames
 					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
 				where
-					dsg = 'PPL' AND 
+					dsg LIKE 'PPL%' AND 
 					CONTAINS( 	
 						GeomFromText($rectangle),
 						point_en) AND
@@ -407,7 +407,7 @@ class Gazetteer
 				inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) 
 				left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
 			where
-				dsg = 'PPL' AND loc_placenames.reference_index != 1 AND
+				dsg LIKE 'PPL%' AND loc_placenames.reference_index != 1 AND
 				full_name LIKE ".$db->Quote($placename.'%')."
 			group by gns_ufi
 			LIMIT 20)");
