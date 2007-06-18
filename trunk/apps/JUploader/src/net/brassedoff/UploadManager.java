@@ -57,6 +57,7 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         menuFileLoad.addActionListener(this);
         menuFileUpload.addActionListener(this);
         menuFileSettings.addActionListener(this);
+        menuFileExit.addActionListener(this);
         menuItemAdd.addActionListener(this);
         menuItemEdit.addActionListener(this);
         menuItemDelete.addActionListener(this);
@@ -71,23 +72,31 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         this.addWindowListener(new myWindowAdapter());
     }
     
+    private void ExitApp() {
+        
+        // we're closing - dump the properties back to disk
+        
+        Properties propList = new Properties();
+        propList.put("doresize", Main.doResize ? "true" : "false");
+        propList.put("cachedirectory", Main.cacheDirectory);
+        propList.put("gridrefFromImage", Main.gridrefFromImage ? "true" : "false");
+        try {
+            propList.store(new FileOutputStream("juppy.prop"), "Juppy properties");
+        } catch (Exception ex) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Error storing properties");
+        }
+        System.exit(0);        
+    }
+    
     class myWindowAdapter extends WindowAdapter {
         
         public void windowClosing(WindowEvent e) {
+        
+            // no return from here...
             
-            // need to save the properties before we close
-            
-            Properties propList = new Properties();
-            propList.put("doresize", Main.doResize ? "true" : "false");
-            propList.put("cachedirectory", Main.cacheDirectory);
-            propList.put("gridrefFromImage", Main.gridrefFromImage ? "true" : "false");
-            try {
-                propList.store(new FileOutputStream("juppy.prop"), "Juppy properties");
-            } catch (Exception ex) {
-                Toolkit.getDefaultToolkit().beep();
-                JOptionPane.showMessageDialog(null, "Error storing properties");
-            }
-            System.exit(0);
+            ExitApp();
+
         }
     }
     
@@ -112,6 +121,8 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         jSeparator2 = new javax.swing.JSeparator();
         menuFileUpload = new javax.swing.JMenuItem();
         menuFileSettings = new javax.swing.JMenuItem();
+        jSeparator4 = new javax.swing.JSeparator();
+        menuFileExit = new javax.swing.JMenuItem();
         menuItem = new javax.swing.JMenu();
         menuItemAdd = new javax.swing.JMenuItem();
         menuItemEdit = new javax.swing.JMenuItem();
@@ -176,6 +187,11 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
 
         menuFileSettings.setText("Settings");
         menuFile.add(menuFileSettings);
+
+        menuFile.add(jSeparator4);
+
+        menuFileExit.setText("Exit");
+        menuFile.add(menuFileExit);
 
         menuBar.add(menuFile);
 
@@ -276,6 +292,10 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
             // this is where the fun starts...
             
             UploadQueue();
+            
+        } else if (action.equals("Exit")) {
+            
+            ExitApp();
 
         } else if(action.equals("Add picture")) {
             
@@ -731,10 +751,12 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JMenu menuAbout;
     private javax.swing.JMenuItem menuAboutAbout;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenu menuFile;
+    private javax.swing.JMenuItem menuFileExit;
     private javax.swing.JMenuItem menuFileLoad;
     private javax.swing.JMenuItem menuFileLogin;
     private javax.swing.JMenuItem menuFileSave;
