@@ -28,7 +28,7 @@ public class Main {
     
     static String geoURL = new String("http://geograph/juploader.php");
     
-    static String juppyVersion = "1.4";
+    static String juppyVersion = "1.5";
     
     static String [] imageClassList;
     static boolean noCache = true;
@@ -40,6 +40,18 @@ public class Main {
     static String validationToken = "";
     static boolean gridrefFromImage;
     static String lastDirectory = "";
+    
+    // this is the list of valid grid ref regexps we support, basically
+    // UK 4, 6 and 8 character and Irish 4, 6 and 8.
+    
+    static String[] validGridRefs = {
+        "^[A-Za-z]{2}\\d{4}$",
+        "^[A-Za-z]{2}\\d{6}$",
+        "^[A-Za-z]{2}\\d{8}$",
+        "^[A-Za-z]{1}\\d{4}$",
+        "^[A-Za-z]{1}\\d{6}$",
+        "^[A-Za-z]{1}\\d{8}$"
+    };
 
     
     /** Creates a new instance of Main */

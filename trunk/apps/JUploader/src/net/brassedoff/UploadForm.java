@@ -379,8 +379,39 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
             return;
         }
         
-        // this is a hack
+        // we have a list of valid gridref regexps...
         
+        String subject = new String(txtSubject.getText().trim());
+        String photographer = new String(txtPhotographer.getText().trim());
+        
+        boolean matchSubject = false;
+        boolean matchPhotographer = false;
+        
+        for (int i = 0; i < Main.validGridRefs.length; i++) {
+            Pattern gridRegExp = Pattern.compile(Main.validGridRefs[i]);
+            Matcher subjectMatch = gridRegExp.matcher(subject);
+            if (subjectMatch.find()) {
+                matchSubject = true;
+            }
+            
+            if (!photographer.equals("")) {
+                Matcher photographerMatch = gridRegExp.matcher(photographer);
+                if (photographerMatch.find()) {
+                    matchPhotographer = true;
+                }
+            } else { 
+                
+                // if there's no hotographer position, it's valid by default
+                
+                matchPhotographer = true;
+            }
+        }
+        
+        if (!matchSubject || !matchPhotographer) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(this, "Subject or photographer is an invalid grid reference");
+            return;            
+        }
         
         // decide whether or not we need to resize the image here
         
