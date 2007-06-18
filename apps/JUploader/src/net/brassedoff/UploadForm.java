@@ -517,7 +517,15 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
     
     final public void DisplayFileChooser() {
 //        Display a file chooser dialog for a jpg file
-        JFileChooser fc = new JFileChooser();
+        JFileChooser fc;
+        
+        // if there's a non-null last directory, get the fill chooser to go there
+        
+        if (!Main.lastDirectory.equals("")) {
+            fc = new JFileChooser(Main.lastDirectory);
+        } else {
+            fc = new JFileChooser();
+        }
         
         // create the jpg chooser and attach it...
         
@@ -529,6 +537,7 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
             String filePath = fc.getSelectedFile().getPath();
             txtImagefile.setText(filePath);
             preview.setFilename(filePath);
+            Main.lastDirectory = fc.getSelectedFile().getParent();
             
             
             // if the file name looks like a grid reference, we'll fill in the grid

@@ -28,7 +28,7 @@ public class Main {
     
     static String geoURL = new String("http://geograph/juploader.php");
     
-    static String juppyVersion = "1.3";
+    static String juppyVersion = "1.4";
     
     static String [] imageClassList;
     static boolean noCache = true;
@@ -39,6 +39,7 @@ public class Main {
     static int tuneParam2;
     static String validationToken = "";
     static boolean gridrefFromImage;
+    static String lastDirectory = "";
 
     
     /** Creates a new instance of Main */
