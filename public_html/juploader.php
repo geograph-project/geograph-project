@@ -102,12 +102,19 @@ function UploadPicture() {
 		returnXML();
 	}
 
+	$takendate = strtotime_uk($_POST['date']);
+	
+	if ($takendate > time()) {
+		$xml['status'] = "Date taken in future";
+		returnXML();
+	}
+	
 	// set up attributes from uploaded data
 
 	$um->setSquare($gs);
 	$um->setViewpoint($_POST['photographer']);
 	$um->setDirection($_POST['direction']);
-	$um->setTaken(date('Y-m-d',strtotime_uk($_POST['date'])));
+	$um->setTaken(date('Y-m-d',$takendate));
 	$um->setTitle($_POST['title']);
 	$um->setComment($_POST['comments']);
 	$um->setClass($_POST['feature']);
