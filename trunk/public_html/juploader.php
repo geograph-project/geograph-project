@@ -49,6 +49,11 @@ case "upload":
 	break;
 }
 
+function strtotime_uk($str) {
+    $str = preg_replace("/^\s*([0-9]{1,2})[\/\. -]+([0-9]{1,2})[\/\. -]*([0-9]{0,4})/", "\\2/\\1/\\3", $str);
+    return strtotime(trim($str,'/'));
+}
+
 function UploadPicture() {
 	global $CONF;
 	global $xml;
@@ -102,7 +107,7 @@ function UploadPicture() {
 	$um->setSquare($gs);
 	$um->setViewpoint($_POST['photographer']);
 	$um->setDirection($_POST['direction']);
-	$um->setTaken(date('Y-m-d',strtotime($_POST['date'])));
+	$um->setTaken(date('Y-m-d',strtotime_uk($_POST['date'])));
 	$um->setTitle($_POST['title']);
 	$um->setComment($_POST['comments']);
 	$um->setClass($_POST['feature']);
