@@ -243,11 +243,12 @@ function smarty_function_thousends($input) {
 
 function smarty_function_ordinal($i) {
 	$units=$i%10;
+	$tens=$i%100;
 	switch($units)
 	{
-		case 1:$end=($i==11)?'th':'st';break;
-		case 2:$end=($i==12)?'th':'nd';break;
-		case 3:$end=($i==13)?'th':'rd';break;
+		case 1:$end=($tens==11)?'th':'st';break;
+		case 2:$end=($tens==12)?'th':'nd';break;
+		case 3:$end=($tens==13)?'th':'rd';break;
 		default: $end="th";
 	}
 	return $i.$end;
