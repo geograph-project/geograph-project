@@ -48,7 +48,12 @@ if (isset($_POST['go']))
 	
 	$realname = $db->Quote($db->GetOne("select realname from user where user_id='$to'"));
 	
-	$recordSet = &$db->Execute("select * from gridimage where user_id='$from'");
+	
+	if (!empty($_POST['ids'])) {		
+		$recordSet = &$db->Execute("select * from gridimage where user_id='$from' and gridimage_id IN ({$_POST['ids']})");
+	} else {
+		$recordSet = &$db->Execute("select * from gridimage where user_id='$from'");
+	}
 	while (!$recordSet->EOF) 
 	{
 		
