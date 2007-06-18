@@ -182,6 +182,10 @@ class GeographPage extends Smarty
 		$this->template_dir=$_SERVER['DOCUMENT_ROOT'].'/templates/'.$CONF['template'];
 		$this->compile_dir=$this->template_dir."/compiled";
 		$this->config_dir=$this->template_dir."/configs";
+
+		//subdirs more efficient
+		$this->use_sub_dirs=true;
+
 		if (!empty($CONF['memcache']['smarty'])) {
 			if ($CONF['memcache']['smarty'] != $CONF['memcache']['app']) {
 				$memcached_res = new MultiServerMemcache($CONF['memcache']['smarty']);
