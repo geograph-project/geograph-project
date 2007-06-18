@@ -1241,3 +1241,61 @@ CREATE TABLE `gridimage_pending` (
 `gridimage_ticket_id` INT UNSIGNED NOT NULL ,
 `suggested` DATETIME NOT NULL
 );
+
+
+
+ALTER TABLE gridsquare ADD `placename_id` int(10) unsigned NOT NULL;
+
+
+
+
+CREATE TABLE os_squares SELECT km_ref,SUBSTRING(GROUP_CONCAT(LPAD(seq,10,'0') ORDER BY f_code+0),1,10) as seq from gridsquare, os_gaz
+WHERE gridsquare.grid_reference = os_gaz.km_ref
+GROUP BY os_gaz.km_ref;
+
+ALTER TABLE `os_squares` ADD PRIMARY KEY ( `km_ref` ) ;
+
+#UPDATE gridsquare, os_squares SET gridsquare.placename_id = (seq + 1000000) WHERE gridsquare.grid_reference = os_squares.km_ref;
+
+#DROP TABLE os_squares;
+
+
+
+#$CONF['origins'] = array(1 => array(206,0),2 => array(10,149));
+
+CREATE TABLE loc_squares 
+SELECT ((loc_placenames.e div 1000) + 10) as x,
+((loc_placenames.n div 1000) + 149) as y,
+id from loc_placenames
+WHERE dsg LIKE 'PPL%'
+GROUP BY loc_placenames.e,loc_placenames.n;
+
+ALTER TABLE `loc_squares` ADD PRIMARY KEY ( `x`,'y' ) ;
+
+#UPDATE gridsquare, loc_squares SET gridsquare.placename_id = id WHERE gridsquare.x = loc_squares.x AND gridsquare.y = loc_squares.y;
+
+#DROP TABLE loc_squares;
+
+
+
+SELECT placename_id, reference_index, count( * )
+FROM gridsquare
+GROUP BY placename_id =0, reference_index;
+
+
+UPDATE `loc_placenames` SET adm1 = '00' WHERE adm1 = '';
+
+
+
+
+
+DROP TABLE IF EXISTS `loc_adm1`;
+CREATE TABLE `loc_adm1` (
+  `country` varchar(2) NOT NULL,
+  `adm1` char(2) NOT NULL default '0',
+  `name` varchar(32) NOT NULL default '',
+  `reference_index` tinyint(3) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`adm1`,`country`)
+) ENGINE=MyISAM;
+
+

@@ -35,9 +35,7 @@ if ( ($_SERVER['REMOTE_ADDR'] == $_SERVER['SERVER_ADDR']) ||
 }
 else
 {
-	phpinfo();
-
-        init_session();
+	init_session();
         $smarty = new GeographPage;
         $USER->mustHavePerm("admin");
 }
