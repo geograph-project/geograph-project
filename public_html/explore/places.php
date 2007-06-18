@@ -51,7 +51,8 @@ if (!empty($_GET['ri'])) {
 				$placename = $db->GetRow($sql);
 
 				if ($_GET['ri'] == 2) {
-					$sql = "SELECT name FROM loc_adm1 WHERE reference_index = {$_GET['ri']} AND adm1 = {$_GET['adm1']}";
+					list($country,$adm1) = explode('-',$_GET['adm1']);
+					$sql = "SELECT name FROM loc_adm1 WHERE country = '$country' AND adm1 = '$adm1'";
 					$adm1_name = ", ".$db->GetOne($sql);
 				}
 			}
@@ -101,11 +102,11 @@ if (!$smarty->is_cached($template, $cacheid))
 				//todo: error message?
 			} 
 			if ($_GET['ri'] == 2) {
-			
-				$sql = "SELECT name FROM loc_adm1 WHERE reference_index = {$_GET['ri']} AND adm1 = {$_GET['adm1']}";
+				list($country,$adm1) = explode('-',$_GET['adm1']);
+				$sql = "SELECT name FROM loc_adm1 WHERE country = '$country' AND adm1 = '$adm1'";
 				$smarty->assign_by_ref('adm1_name', $db->GetOne($sql));
 				$smarty->assign('parttitle', "in County");
-				$sql_where = "AND loc_placenames.adm1 = {$_GET['adm1']}";
+				$sql_where = "AND loc_placenames.country = '$country' AND loc_placenames.adm1 = '$adm1'";
 				$sql = "SELECT placename_id,full_name,count(*) as c,gridimage_id 
 				FROM gridimage INNER JOIN loc_placenames ON(placename_id = loc_placenames.id)
 				WHERE moderation_status <> 'rejected' 
@@ -114,7 +115,7 @@ if (!$smarty->is_cached($template, $cacheid))
 				GROUP BY placename_id";
 			} else {
 				//adm1 is actullu just an example placename!
-				$sql = "SELECT co_code,full_county as adm1_name FROM os_gaz WHERE seq = ".$_GET['adm1'];
+				$sql = "SELECT co_code,full_county as adm1_name FROM os_gaz WHERE seq = {$_GET['adm1']}";
 				$placename = $db->GetRow($sql);
 				
 				$smarty->assign_by_ref('adm1_name', $placename['adm1_name']);
@@ -142,11 +143,11 @@ if (!$smarty->is_cached($template, $cacheid))
 			$counts = $db->GetAssoc($sql);
 			$smarty->assign_by_ref('counts', $counts);
 		} else {
-			$sql = "SELECT loc_placenames.adm1,loc_adm1.name,
+			$sql = "SELECT concat(loc_placenames.country,'-',loc_placenames.adm1) as adm1,loc_adm1.name,
 			placename_id,full_name,
 			count(*) as images,count(distinct (placename_id)) as places 
 			FROM gridimage INNER JOIN loc_placenames ON(placename_id = loc_placenames.id)
-			INNER JOIN loc_adm1 ON(loc_adm1.adm1 = loc_placenames.adm1 AND loc_adm1.reference_index = {$_GET['ri']})
+			INNER JOIN loc_adm1 ON(loc_adm1.adm1 = loc_placenames.adm1 AND loc_adm1.country = loc_placenames.country)
 			WHERE moderation_status <> 'rejected' AND loc_placenames.reference_index = {$_GET['ri']}
 			GROUP BY loc_placenames.adm1";
 			$counts = $db->GetAssoc($sql);
@@ -167,5 +168,4 @@ if (!$smarty->is_cached($template, $cacheid))
 
 $smarty->display($template, $cacheid);
 
-	
 ?>

@@ -211,7 +211,7 @@ function smarty_function_place($params) {
 		$t .= "near to ";
 
 	$t .= "<b>{$place['full_name']}</b><small><i>";
-	if ($place['adm1_name'] && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'])
+	if ($place['adm1_name'] && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name']))
 		$t .= ", {$place['adm1_name']}";
 	elseif ($place['hist_county'])
 		$t .= ", {$place['hist_county']}";

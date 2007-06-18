@@ -36,16 +36,19 @@ $db = NewADOConnection($GLOBALS['DSN']);
 $conv = new Conversions();
 
 
-	//this takes a long time, so we output a header first of all
-	$smarty->display('_std_begin.tpl');
-	if (isset($_POST['crit']))
-		$crit = $_POST['crit'];
-	else 
-		$crit = "placename_id < 1000000";
+//this takes a long time, so we output a header first of all
+$smarty->display('_std_begin.tpl');
+
+if (isset($_POST['crit']))
+	$crit = $_POST['crit'];
+else 
+	$crit = "placename_id = 0";
+
 ?>
-<h2>gridimage.placename_id Rebuild Tool</h2>
+<h2>placename_id Rebuild Tool</h2>
 <form action="buildplacename_id.php" method="post">
-select * from gridimage gi where <input type="text" name="crit" size="60" value="<? echo $crit; ?>"/><br/>
+select * from <select name="table"><option>gridimage</option>
+<option>gridsquare</option></select> where <input type="text" name="crit" size="60" value="<? echo $crit; ?>"/><br/>
 (if reference gs will join gridsquare gs)<br/>
 <input type="submit" name="go" value="Start">
 </form>
@@ -58,6 +61,7 @@ if (isset($_POST['go']))
 	flush();
 	set_time_limit(3600*24);
 	
+	$table = $_POST['table'];
 	
 	$tim = time();
 		 
@@ -70,87 +74,96 @@ if (isset($_POST['go']))
 	$join = '';
 	if (preg_match('/\bgs\b/',$_POST['crit']))
 		$join .= " inner join gridsquare gs using (gridsquare_id)";
+	if (preg_match('/\bgi\b/',$_POST['crit']))
+		$join .= " inner join gridimage gi using (gridsquare_id)";
 	if (preg_match('/\bu\b/',$_POST['crit']))
 		$join .= " inner join user u using (user_id)";
 	
 
-	$recordSet = &$db->Execute("select * from gridimage $join where {$_POST['crit']} $limit");
+	$recordSet = &$db->Execute("select * from $table $join where {$_POST['crit']} $limit");
 	
+	$handle = fopen("updates.sql",'a');
 	
 	while (!$recordSet->EOF) 
 	{
-		$image=new GridImage;
-		$gid = $recordSet->fields['gridimage_id'];
-		$image->_initFromArray($recordSet->fields);
-		
-		$square = $image->grid_square;
-		if (!isset($square->nateastings))
-			$square->getNatEastings();
+		if ($table == 'gridimage') {
+			$image=new GridImage;
+			$gid = $recordSet->fields['gridimage_id'];
+			$image->_initFromArray($recordSet->fields);
 
-		//to optimise the query, we scan a square centred on the
-		//the required point
-		$radius = 100000;
+			$square = $image->grid_square;
+			$extra = ",upd_timestamp = '{$recordSet->fields['upd_timestamp']}'";
 		
-		$left=$square->nateastings-$radius;
-		$right=$square->nateastings+$radius;
-		$top=$square->natnorthings-$radius;
-		$bottom=$square->natnorthings+$radius;
-		
-		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
-		
-		if ($CONF['use_gazetteer'] == 'OS' && $square->reference_index == 1) {
-			$e2 = (floor($square->nateastings/1000) * 1000) + 500;
-			$n2 = (floor($square->natnorthings/1000) * 1000) + 500;
-		
-			$left=$e2-$radius;
-			$right=$e2+$radius;
-			$top=$n2-$radius;
-			$bottom=$n2+$radius;
+			if (!isset($square->nateastings))
+				$square->getNatEastings();
 
-			$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
-			
-			$places =& $db->GetRow("select
-					(seq + 1000000) as pid,
-					power(east-{$square->nateastings},2)+power(north-{$square->natnorthings},2) as distance
-				from
-					os_gaz
-				where
-					CONTAINS( 	
-						GeomFromText($rectangle),
-						point_en) AND
-					f_code in ('C','T')
-				order by distance asc,f_code+0 asc limit 1");
-		} else if ($CONF['use_gazetteer'] == 'towns' && $square->reference_index == 1) {
-			$places =& $db->GetRow("select
-					(id + 900000) as pid,
-					power(e-{$square->nateastings},2)+power(n-{$square->natnorthings},2) as distance
-				from 
-					loc_towns
-				where
-					CONTAINS( 	
-						GeomFromText($rectangle),
-						point_en) AND
-					reference_index = {$square->reference_index}
-				order by distance asc limit 1");
+			//to optimise the query, we scan a square centred on the
+			//the required point
+			$radius = 100000;
+
+			$places = $square->findNearestPlace($radius);
+			$pid = $places['pid'];		
 		} else {
-			$places =& $db->GetRow("select
-					loc_placenames.id as pid,
-					power(e-{$square->nateastings},2)+power(n-{$square->natnorthings},2) as distance
-				from 
-					loc_placenames
-				where
-					dsg = 'PPL' AND 
+			$gid = $recordSet->fields['gridsquare_id'];
+			if ($from_stratch || $recordSet->fields['reference_index'] == 2) {
+				$square=new GridSquare;
+				#$square->_initFromArray($recordSet->fields);
+				//store cols as members
+				foreach($recordSet->fields as $name=>$value) {
+					if (!is_numeric($name))
+						$square->$name=$value;
+				}
+				$square->_storeGridRef($square->grid_reference);
+				$extra = "";
+			
+				if (!isset($square->nateastings))
+					$square->getNatEastings();
+
+				//to optimise the query, we scan a square centred on the
+				//the required point
+				$radius = 10000;
+
+				$places = $square->findNearestPlace($radius);
+				$pid = $places['pid'];		
+			} else {
+				//to optimise the query, we scan a square centred on the
+				//the required point
+				$radius = 10000;
+				
+				
+				$left=$recordSet->fields['x']-$radius;
+				$right=$recordSet->fields['x']+$radius;
+				$top=$recordSet->fields['y']-$radius;
+				$bottom=$recordSet->fields['y']+$radius;
+
+				$ofilter=" and placename_id>0 ";
+
+				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
+				$sql="select placename_id,
+					power(x-{$recordSet->fields['x']},2)+power(y-{$recordSet->fields['y']},2) as distance
+					from gridsquare where
 					CONTAINS( 	
 						GeomFromText($rectangle),
-						point_en) AND
-					loc_placenames.reference_index = {$square->reference_index}
-				order by distance asc limit 1");
+						point_xy)
+					$ofilter
+					order by distance asc limit 1";
+
+				$square = $db->GetRow($sql);
+				$pid = 0;
+				if (count($square) && ($distance = sqrt($square['distance'])) && ($distance <= $radius))
+				{
+					$pid = $square['placename_id'];
+				}
+			} 
+			
 		}
 
-		$pid = $places['pid'];
 			
+		#if ($pid)
+			#$db->Execute("update LOW_PRIORITY gridimage set placename_id = $pid,upd_timestamp = '{$recordSet->fields['upd_timestamp']}' where gridimage_id = $gid");
 		if ($pid)
-			$db->Execute("update LOW_PRIORITY gridimage set placename_id = $pid,upd_timestamp = '{$recordSet->fields['upd_timestamp']}' where gridimage_id = $gid");
+			fwrite($handle,"update $table set placename_id = $pid$extra where {$table}_id = $gid;\n");
 				
 		if (++$count%500==0) {
 			printf("done %d at <b>%d</b> seconds<BR>",$count,time()-$tim);
@@ -161,6 +174,7 @@ if (isset($_POST['go']))
 		$recordSet->MoveNext();
 	}
 	$recordSet->Close(); 
+	fclose($handle);
 }
 
 $smarty->display('_std_end.tpl');

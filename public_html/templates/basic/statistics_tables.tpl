@@ -6,7 +6,10 @@
 
 <h2>{$h2title}</h2>
 
-
+{if $headnote}
+	{$headnote}
+{/if}
+	
 {foreach from=$tables item=table}
 
 	<h3>{$table.title}</h3>

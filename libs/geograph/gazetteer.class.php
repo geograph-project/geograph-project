@@ -91,7 +91,7 @@ class Gazetteer
 					power(e-{$e},2)+power(n-{$n},2) as distance
 				from 
 					loc_placenames
-					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
+					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
 				where
 					dsg LIKE 'PPL%' AND 
 					CONTAINS( 	
@@ -277,7 +277,7 @@ class Gazetteer
 					power(e-{$e},2)+power(n-{$n},2) as distance
 				from 
 					loc_placenames
-					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
+					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
 				where
 					dsg LIKE 'PPL%' AND 
 					CONTAINS( 	
@@ -295,7 +295,7 @@ class Gazetteer
 					power(e-{$e},2)+power(n-{$n},2) as distance
 				from 
 					loc_placenames
-					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
+					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
 				where
 					dsg LIKE 'PPL%' AND 
 					CONTAINS( 	
@@ -405,7 +405,7 @@ class Gazetteer
 			from 
 				loc_placenames
 				inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) 
-				left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
+				left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
 			where
 				dsg LIKE 'PPL%' AND loc_placenames.reference_index != 1 AND
 				full_name LIKE ".$db->Quote($placename.'%')."
@@ -487,7 +487,7 @@ class Gazetteer
 				from 
 					loc_placenames
 					inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) 
-					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_placenames.reference_index = loc_adm1.reference_index)
+					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
 				where
 					full_name LIKE ".$db->Quote('%'.$placename.'%')."
 					OR full_name_soundex = SOUNDEX(".$db->Quote($placename).")
