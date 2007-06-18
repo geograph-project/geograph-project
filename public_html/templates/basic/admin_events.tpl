@@ -12,7 +12,7 @@
 
 </ul>
 
-<form method="get" action="process_events.php">
+<form method="get" action="/_scripts/process_events.php">
 <input type="submit" name="start" value="Process Events (for debugging use only)"/>
 
 Test mode <input type="radio" name="testmode" value="1" id="testmode_on"/>
