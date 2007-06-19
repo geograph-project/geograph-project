@@ -415,10 +415,24 @@ class RasterMap
 				$block .= $this->getPolyLineBlock($conv,$e+1000,$n-1000,$e+1000,$n+2000);
 				
 				if (!empty($this->viewpoint_northings)) {
-					list($lat,$long) = $conv->national_to_wgs84($this->viewpoint_eastings,$this->viewpoint_northings,$this->reference_index);
-					$block .= "
-					var ppoint = new GLatLng({$lat},{$long});
-					map.addOverlay(createPMarker(ppoint));\n";
+					$different_square_true = (intval($this->nateastings/1000) != intval($this->viewpoint_eastings/1000)
+						|| intval($this->natnorthings/1000) != intval($this->viewpoint_northings/1000));
+
+					$show_viewpoint = (intval($this->viewpoint_grlen) > 4) || ($different_square_true && ($this->viewpoint_grlen == '4'));
+
+					if ($show_viewpoint) {
+						$e = $this->viewpoint_eastings;	$n = $this->viewpoint_northings;
+						if ($this->viewpoint_grlen == '4') {
+							$e +=500; $n += 500;
+						}
+						if ($this->viewpoint_grlen == '6') {
+							$e +=50; $n += 50;
+						}
+						list($lat,$long) = $conv->national_to_wgs84($e,$n,$this->reference_index);
+						$block .= "
+						var ppoint = new GLatLng({$lat},{$long});
+						map.addOverlay(createPMarker(ppoint));\n";
+					}
 				}
 			} else {
 				$block = '';
