@@ -28,7 +28,7 @@ $smarty = new GeographPage;
 
 $template='statistics_tables.tpl';
 
-$cacheid='coverage_by_county';
+$cacheid='coverage_by_county'.isset($_GET['hist']);
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
@@ -48,29 +48,42 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	
 		$table['title'] = "Great Britain";
 
-		$table['table']=$db->GetAll("
-		select 
-			full_county as County,
-			loc_country.name as Country,
-			count(*) as `Grid Squares`,
-			sum(has_geographs) as `Geographed`,
-			sum(has_geographs)/count(*)*100 as Percentage
-		from gridsquare gs
-			inner join os_gaz on (placename_id-1000000 = os_gaz.seq)
-			inner join os_gaz_county on (full_county = os_gaz_county.name)
-			inner join loc_country on (country = loc_country.code)
-		where gs.reference_index = 1 and percent_land > 0
-		group by co_code
-		" );
-
-		foreach ($table['table'] as $id => $row) {
+		if (isset($_GET['hist'])) {
+			$table['table']=$db->GetAll("
+			select 
+				hcounty as `Historic County`,
+				count(*) as `Grid Squares`,
+				sum(has_geographs) as `Geographed`,
+				sum(has_geographs)/count(*)*100 as Percentage
+			from gridsquare gs
+				inner join os_gaz on (placename_id-1000000 = os_gaz.seq)
+			where gs.reference_index = 1 and percent_land > 0
+			group by hcounty
+			" );
 			
+			$table['footnote'] = "This table is using an approximate version of <a href=\"/faq.php#counties\">Historic Counties</a>";
+		} else {
+			$table['table']=$db->GetAll("
+			select 
+				full_county as County,
+				loc_country.name as Country,
+				count(*) as `Grid Squares`,
+				sum(has_geographs) as `Geographed`,
+				sum(has_geographs)/count(*)*100 as Percentage
+			from gridsquare gs
+				inner join os_gaz on (placename_id-1000000 = os_gaz.seq)
+				inner join os_gaz_county on (full_county = os_gaz_county.name)
+				inner join loc_country on (country = loc_country.code)
+			where gs.reference_index = 1 and percent_land > 0
+			group by co_code
+			" );
+			
+			$table['footnote'] = "This table is using Modern <a href=\"/faq.php#counties\">Administrative Counties</a>";
 		}
 
 		$table['total'] = count($table['table']);
 		
-		$table['footnote'] = "This table is using Modern <a href=\"/faq.php#counties\">Administrative Counties</a>";
-
+		
 
 	$tables[] = $table;
 
