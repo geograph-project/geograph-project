@@ -288,7 +288,7 @@ class Gazetteer
 
 	//if found very close then lookup mutliple
 			$d = 2500*2500;	
-			if ($places['distance'] < $d) {
+			if (isset($places['distance']) && $places['distance'] < $d) {
 				$nearest = $db->GetAll("select
 					distinct full_name,
 					loc_placenames.id as pid,
@@ -305,6 +305,7 @@ class Gazetteer
 					power(e-{$e},2)+power(n-{$n},2) < $d
 				group by gns_ufi
 				order by distance asc limit 5");
+				$values = array();
 				foreach ($nearest as $id => $value) {
 					$values[] = $value['full_name'];
 				}

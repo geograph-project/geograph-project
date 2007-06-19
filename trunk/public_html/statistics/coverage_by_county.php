@@ -67,7 +67,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			
 		}
 
-		$table['total'] = count($table);
+		$table['total'] = count($table['table']);
 		
 		$table['footnote'] = "This table is using Modern <a href=\"/faq.php#counties\">Administrative Counties</a>";
 
@@ -92,10 +92,10 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			inner join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_adm1.country = loc_placenames.country)
 			inner join loc_country on (loc_placenames.country = loc_country.code)
 		where gs.reference_index = 2 and percent_land > 0
-		group by loc_adm1.adm1
+		group by loc_placenames.country,loc_adm1.adm1
 		");
 
-		$table['total'] = count($table);
+		$table['total'] = count($table['table']);
 
 	$tables[] = $table;
 
