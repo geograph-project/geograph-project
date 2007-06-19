@@ -146,7 +146,9 @@ if ($template=='profile.tpl')
 		$level = 0;
 	}
 	
-	$cacheid="user{$uid}|{$level}";
+	$ab=floor($uid/10000);
+	
+	$cacheid="user$ab|{$uid}|{$level}";
 	
 	if (isset($_GET['all'])) {
 		$limit = 50000;
