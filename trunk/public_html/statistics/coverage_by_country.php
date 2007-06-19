@@ -56,7 +56,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			sum(has_geographs)/count(*)*100 as Percentage
 		from gridsquare gs
 			inner join os_gaz on (placename_id-1000000 = os_gaz.seq)
-			inner join os_gaz_county on (full_county = name)
+			inner join os_gaz_county on (full_county = os_gaz_county.name)
 			inner join loc_country on (country = loc_country.code)
 		where gs.reference_index = 1 and percent_land > 0
 		group by country with rollup
