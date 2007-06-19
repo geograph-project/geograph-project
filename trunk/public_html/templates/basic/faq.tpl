@@ -119,7 +119,7 @@ ul.contents li.last { padding-bottom:2px; border-bottom: 1px solid lightgrey; }
 		<dd>These are the counties that have evolved over many hundreds of years and were in active use until 1974. We use this data as a fallback - where we've opted to display the administrative country on a photo page, you can often find the historic county by hovering over this title.</dd>
 	</dl>
 
-	<p>For a more in depth explanation, see {external href="http://www.abcounties.org.uk/" text="abcounties.org.uk"}. <span class="nowrap">(however beware that the site doesn't use the exact same terms)</span></p>
+	<p>For a more in depth explanation, see {external href="http://www.abcounties.co.uk/" text="abcounties.org.uk"}. <span class="nowrap">(however beware that the site doesn't use the exact same terms)</span></p>
 	
 	<p>To see lists of counties in each structure see the <a href="/explore/#counties">Explore Section</a>.</p>
 
