@@ -48,20 +48,22 @@ else
 <h2>placename_id Rebuild Tool</h2>
 <form action="buildplacename_id.php" method="post">
 select * from <select name="table"><option>gridimage</option>
-<option>gridsquare</option></select> where <input type="text" name="crit" size="60" value="<? echo $crit; ?>"/><br/>
+<option<? if ($_POST['table'] == 'gridsquare') echo " selected"; ?>>gridsquare</option></select> where <input type="text" name="crit" size="60" value="<? echo $crit; ?>"/><br/>
 (if reference gs will join gridsquare gs)<br/>
-<input type="submit" name="go" value="Start">
+<input type="submit" name="go" value="Start"/>
+<input type="checkbox" name="file"/> Write results to file (otherwise writes to DB)
 </form>
 
 <?php
 
 if (isset($_POST['go']))
 {
-	echo "<h3> Rebuilding gridimage.placename_id...</h3>";
+	$table = $_POST['table'];
+	
+	echo "<h3> Rebuilding $table.placename_id...</h3>";
 	flush();
 	set_time_limit(3600*24);
 	
-	$table = $_POST['table'];
 	
 	$tim = time();
 		 
@@ -81,8 +83,9 @@ if (isset($_POST['go']))
 	
 
 	$recordSet = &$db->Execute("select * from $table $join where {$_POST['crit']} $limit");
-	
-	$handle = fopen("updates.sql",'a');
+	if (!empty($_POST['file'])) {	
+		$handle = fopen("updates.sql",'a');
+	}
 	
 	while (!$recordSet->EOF) 
 	{
@@ -121,14 +124,14 @@ if (isset($_POST['go']))
 
 				//to optimise the query, we scan a square centred on the
 				//the required point
-				$radius = 10000;
+				$radius = 100000;
 
 				$places = $square->findNearestPlace($radius);
 				$pid = $places['pid'];		
 			} else {
 				//to optimise the query, we scan a square centred on the
 				//the required point
-				$radius = 10000;
+				$radius = 100000;
 				
 				
 				$left=$recordSet->fields['x']-$radius;
@@ -159,11 +162,13 @@ if (isset($_POST['go']))
 			
 		}
 
-			
-		#if ($pid)
-			#$db->Execute("update LOW_PRIORITY gridimage set placename_id = $pid,upd_timestamp = '{$recordSet->fields['upd_timestamp']}' where gridimage_id = $gid");
-		if ($pid)
-			fwrite($handle,"update $table set placename_id = $pid$extra where {$table}_id = $gid;\n");
+		if ($pid) {
+			if (!empty($_POST['file'])) {	
+				$db->Execute("update LOW_PRIORITY gridimage set placename_id = $pid,upd_timestamp = '{$recordSet->fields['upd_timestamp']}' where gridimage_id = $gid");
+			} else {
+				fwrite($handle,"update $table set placename_id = $pid$extra where {$table}_id = $gid;\n");
+			}
+		}
 				
 		if (++$count%500==0) {
 			printf("done %d at <b>%d</b> seconds<BR>",$count,time()-$tim);
@@ -174,7 +179,8 @@ if (isset($_POST['go']))
 		$recordSet->MoveNext();
 	}
 	$recordSet->Close(); 
-	fclose($handle);
+	if ($handle)
+		fclose($handle);
 }
 
 $smarty->display('_std_end.tpl');

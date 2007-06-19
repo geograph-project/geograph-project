@@ -1299,3 +1299,25 @@ CREATE TABLE `loc_adm1` (
 ) ENGINE=MyISAM;
 
 
+
+CREATE TABLE `loc_country` (
+  `code` varchar(2) NOT NULL,
+  `name` varchar(30) NOT NULL,
+  PRIMARY KEY  (`code`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- 
+-- Dumping data for table `loc_country`
+-- 
+
+INSERT INTO `loc_country` (`code`, `name`) VALUES 
+('E', 'England'),
+('G', 'Great Britain'),
+('I', 'Republic of Ireland'),
+('ie', 'Republic of Ireland'),
+('M', 'Isle of Man'),
+('N', 'Northern Ireland'),
+('S', 'Scotland'),
+('uk', 'Northern Ireland'),
+('W', 'Wales');
+

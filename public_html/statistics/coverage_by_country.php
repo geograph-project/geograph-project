@@ -59,15 +59,16 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			inner join os_gaz_county on (full_county = name)
 			inner join loc_country on (country = loc_country.code)
 		where gs.reference_index = 1 and percent_land > 0
-		group by country
+		group by country with rollup
 		" );
 
 		foreach ($table['table'] as $id => $row) {
 			
 		}
 
-		$table['total'] = count($table);
-	
+		$table['total'] = count($table['table']);
+		$table['table'][$table['total']-1]['Country'] = '-Total-';
+
 
 	$tables[] = $table;
 
@@ -87,10 +88,11 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			inner join loc_placenames on (placename_id = id)
 			inner join loc_country on (country = loc_country.code)
 		where gs.reference_index = 2 and percent_land > 0
-		group by country
+		group by country with rollup
 		");
 
-		$table['total'] = count($table);
+		$table['total'] = count($table['table']);
+		$table['table'][$table['total']-1]['Country'] = '-Total-';
 
 	$tables[] = $table;
 
