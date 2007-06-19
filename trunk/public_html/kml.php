@@ -201,9 +201,9 @@ $cacheid = '';
 		$smarty->assign('currentPage', 1);
 		
 		$db=NewADOConnection($GLOBALS['DSN']);
-		$updatetime = $db->getOne("select unix_timestamp(min(ts)) from kmlcache where rendered = 1");
+		$updatetime = $db->getOne("select avg(unix_timestamp(ts))-stddev(unix_timestamp(ts)) from kmlcache where rendered = 1");
 		
-		$smarty->assign('superlayer_updated', strftime("%A, %d %b at %H:%M",$updatetime));
+		$smarty->assign('superlayer_updated', strftime("%A, %d %b at %H:%M",intval($updatetime)));
 		$smarty->assign('coverage_updated', strftime("%A, %d %b at %H:%M",@filemtime("kml/hectads-points.kmz")));
 		
 	}
