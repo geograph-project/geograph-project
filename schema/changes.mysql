@@ -1251,6 +1251,7 @@ ALTER TABLE gridsquare ADD `placename_id` int(10) unsigned NOT NULL;
 
 CREATE TABLE os_squares SELECT km_ref,SUBSTRING(GROUP_CONCAT(LPAD(seq,10,'0') ORDER BY f_code+0),1,10) as seq from gridsquare, os_gaz
 WHERE gridsquare.grid_reference = os_gaz.km_ref
+AND f_code in ('C','T','O')
 GROUP BY os_gaz.km_ref;
 
 ALTER TABLE `os_squares` ADD PRIMARY KEY ( `km_ref` ) ;
