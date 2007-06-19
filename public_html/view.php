@@ -96,7 +96,7 @@ if (isset($_GET['id']))
 	$isowner=($image->user_id==$USER->user_id)?1:0;
 	$ismoderator=$USER->hasPerm('moderator')?1:0;
 
-	$ab=sprintf("%02d", floor($_GET['id']/10000));
+	$ab=floor($_GET['id']/10000);
 	
 	$cacheid="img$ab|{$_GET['id']}|{$isowner}_{$ismoderator}";
 
