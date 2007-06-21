@@ -65,6 +65,9 @@ if (isset($_GET['text'])) {
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
 	
+	if (!empty($_GET['lat']) && !empty($_GET['lon'])) {
+		$_GET['location'] = $_GET['lat'].','.$_GET['lon'];
+	} 
 	if (!empty($_GET['location'])) {
 		if (!empty($_GET['q'])) {
 			$q=trim($_GET['q']).' near '.trim($_GET['location']);
