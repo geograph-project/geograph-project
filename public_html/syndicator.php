@@ -74,6 +74,8 @@ if (isset($_GET['text'])) {
 		} else {
 			$q=trim($_GET['q']);
 		}
+	} elseif (!empty($_GET['bbox'])) {
+		$q=trim($_GET['q']).' near (anywhere)';
 	} else {
 		$q=trim($_GET['q']);
 	}
