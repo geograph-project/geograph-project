@@ -18,10 +18,10 @@
   <moz:SearchForm>http://www.geograph.org.uk/</moz:SearchForm>
 
   <Url type="application/rss+xml" 
-       template="http://www.geograph.org.uk/syndicator.php?q={searchTerms}&amp;location={opensearchgeo:locationString?}&amp;lat={opensearchgeo:lat?}&amp;lon={opensearchgeo:lon?}&amp;bbox={opensearchgeo:bbox?}">
+       template="http://www.geograph.org.uk/syndicator.php?q={searchTerms}&amp;location={opensearchgeo:locationString?}&amp;lat={opensearchgeo:lat?}&amp;lon={opensearchgeo:lon?}&amp;BBOX={opensearchgeo:bbox?}">
   </Url>
   <Url type="text/html" 
-       template="http://www.geograph.org.uk/search.php?q={searchTerms}&amp;location={opensearchgeo:locationString?}&amp;lat={opensearchgeo:lat?}&amp;lon={opensearchgeo:lon?}&amp;bbox={opensearchgeo:bbox?}">
+       template="http://www.geograph.org.uk/search.php?q={searchTerms}&amp;location={opensearchgeo:locationString?}&amp;lat={opensearchgeo:lat?}&amp;lon={opensearchgeo:lon?}&amp;BBOX={opensearchgeo:bbox?}">
   </Url>
   <Query role="example" searchTerms="Liverpool" />
 
