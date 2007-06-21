@@ -54,7 +54,7 @@ class UploadManager
 	{
 		global $CONF;
 		$this->db = NewADOConnection($GLOBALS['DSN']);
-		if (!$this->db) die('Database connection failed');   
+		if (!$this->db) die('Database connection failed: '.mysql_error());   
 		
 		$this->tmppath=isset($CONF['photo_upload_dir'])?$CONF['photo_upload_dir']:'/tmp';
 		 
