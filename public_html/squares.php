@@ -34,7 +34,9 @@ $smarty = new GeographPage;
 $template = "squares.tpl";
 $cacheid = '';
 
-$d=(!empty($_REQUEST['distance']))?min(30,intval(stripslashes($_REQUEST['distance']))):5;
+$max = (isset($_GET['s']) && isset($_GET['p']))?50:30;
+
+$d=(!empty($_REQUEST['distance']))?min($max,intval(stripslashes($_REQUEST['distance']))):5;
 		
 $type=(isset($_REQUEST['type']))?stripslashes($_REQUEST['type']):'few';
 switch($type) {
@@ -66,7 +68,7 @@ if (isset($_GET['p']))
 
 if ($grid_ok)
 {
-	$cacheid = $square->grid_reference.'-'.($type == 'with').'-'.($d);
+	$cacheid = 'squares|'.$square->grid_reference.'-'.$type.'-'.($d).'-'.isset($_GET['s']);
 
 	//regenerate?
 	if (!$smarty->is_cached($template, $cacheid))
@@ -86,9 +88,11 @@ if ($grid_ok)
 		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
 		$sql_where .= "CONTAINS(GeomFromText($rectangle),point_xy)";
-
-		//shame cant use dist_sqd in the next line!
-		$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);
+		
+		if (empty($_GET['s'])) {
+			//shame cant use dist_sqd in the next line!
+			$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);
+		}
 
 		$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
 		$sql_order = ' dist_sqd ';
@@ -97,7 +101,8 @@ if ($grid_ok)
 		$sql = "SELECT grid_reference as id,grid_reference,x,y,imagecount $sql_fields
 		FROM gridsquare gs
 		WHERE $sql_where
-		ORDER BY $sql_order";
+		ORDER BY $sql_order
+		LIMIT 250"; ##limt just to make sure
 
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');  
