@@ -350,6 +350,9 @@ if (isset($_GET['fav']) && $i) {
 	if (!empty($_GET['q']) && $_GET['q'] == '(anything)') {
 		$_GET['q'] = '';
 	}
+	if (!empty($_GET['lat']) && !empty($_GET['lon'])) {
+		$_GET['location'] = $_GET['lat'].','.$_GET['lon'];
+	} 
 	if (!empty($_GET['text'])) {
 		$q=trim($_GET['text']).' near (anywhere)';
 	} elseif (!empty($_GET['location'])) {
