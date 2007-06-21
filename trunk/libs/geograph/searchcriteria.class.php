@@ -61,7 +61,11 @@ class SearchCriteria
 	
 	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) 
 	{
+		global $CONF;
 		if (!empty($_GET['BBOX'])) {
+			
+			//we need to turn this off as it will break the caching of number of results!
+			$CONF['search_count_first_page'] = 0;
 			
 			list($west,$south,$east,$north) = explode(',',trim(str_replace('e ','e+',$_GET['BBOX'])));
 		
