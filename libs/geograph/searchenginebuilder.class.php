@@ -220,8 +220,8 @@ class SearchEngineBuilder extends SearchEngine
 				$extra = '';
 				if (isset($_GET['page']))
 					$extra = "&page=".intval($_GET['page']);
-				if (isset($_GET['bbox']))
-					$extra .= "&bbox=".$_GET['bbox'];
+				if (!empty($_GET['BBOX']))
+					$extra .= "&BBOX=".$_GET['BBOX'];
 				header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra");
 				$extra = str_replace('&','&amp;',$extra);
 				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra\">Your Search Results</a>";
@@ -592,8 +592,8 @@ class SearchEngineBuilder extends SearchEngine
 					$extra = "&page=".intval($_GET['page']);
 				if ($dataarray['submit'] == 'Count')
 					$extra .= '&count=1';
-				if (isset($_GET['bbox']))
-					$extra .= "&bbox=".$_GET['bbox'];
+				if (!empty($_GET['BBOX']))
+					$extra .= "&BBOX=".$_GET['BBOX'];
 				header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra");
 				$extra = str_replace('&','&amp;',$extra);
 				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra\">Your Search Results</a>";

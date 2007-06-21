@@ -361,7 +361,7 @@ if (isset($_GET['fav']) && $i) {
 		} else {
 			$q='near '.trim($_GET['location']);
 		}
-	} elseif (!empty($_GET['bbox'])) {
+	} elseif (!empty($_GET['BBOX'])) {
 		$q=trim($_GET['q']).' near (anywhere)';
 	} else {
 		$q=trim($_GET['q']);
