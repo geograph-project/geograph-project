@@ -12,14 +12,16 @@
 {$extra_meta}
 <link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/basic.css?v={$javascript_version}" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
-{if $profile && $profile->user_id}
+{if $image && $image->gridimage_id && $image->moderation_status ne 'rejected'}
+<link rel="alternate" type="application/vnd.google-earth.kml+xml" href="/photo/{$image->gridimage_id}.kml"/>
+{elseif $profile && $profile->user_id}
 <link rel="alternate" type="application/rss+xml" title="Geograph RSS for {$profile->realname}" href="/feed/userid/{$profile->user_id}.rss"/>
+<link rel="alternate" type="application/vnd.google-earth.kml+xml" href="/feed/userid/{$profile->user_id}.kml"/>
+{elseif $engine && $engine->resultCount}
+<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.rss"/>
+<link rel="alternate" type="application/vnd.google-earth.kml+xml" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.kml"/>
 {else}
-	{if $engine && $engine->resultCount}
-	<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.rss"/>
-	{else}
-	<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/feed/recent.rss"/>
-	{/if}
+<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/feed/recent.rss"/>
 {/if}
 <link rel="search" type="application/opensearchdescription+xml" 
 title="Geograph British Isles search" href="/stuff/osd.xml" />
