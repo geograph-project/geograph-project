@@ -604,8 +604,8 @@ class SearchCriteria_Placename extends SearchCriteria
 
 			$this->x = intval($places[0]['e']/1000) + $origin['origin_x'];
 			$this->y = intval($places[0]['n']/1000) + $origin['origin_y'];
-			$this->placename = $places[0]['full_name'].($county&&$places[0]['adm1_name']?", {$places[0]['adm1_name']}":'');
-			$this->searchq = $places[0]['full_name'].($county&&$places[0]['adm1_name']?", {$places[0]['adm1_name']}":'');
+			$this->placename = $places[0]['full_name'].($places[0]['adm1_name']?", {$places[0]['adm1_name']}":'');
+			$this->searchq = $places[0]['full_name'].($places[0]['adm1_name']?", {$places[0]['adm1_name']}":'');
 			$this->reference_index = $places[0]['reference_index'];
 		} elseif (count($places)) {
 			$this->matches = $places;

@@ -331,6 +331,7 @@ class Gazetteer
 
 		$ismore = 0;
 		$placename = str_replace('?','',$placename,$ismore);
+		$places = array();
 		
 		if (is_numeric($placename)) {
 			if ($placename > 1000000) {
@@ -347,19 +348,22 @@ class Gazetteer
 				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where def_nam=".$db->Quote($placename)." and (full_county = $qcount OR hcounty = $qcount)");
 			} else {
 				$qplacename = $db->Quote($placename);
-				$sql_where  = '';
+				$sql_where  = "def_nam=$qplacename";
+				$sql_where2  = "full_name=$qplacename";
 				if (strpos($placename,' ') !== FALSE) {
 					$county = $db->getOne("select `name` from os_gaz_county where $qplacename LIKE CONCAT('%',name)");
 					if (!empty($county)) {
 						$qcount = $db->Quote($county);
-						$sql_where = " and full_county = $qcount";
-
+					
 						$placename = preg_replace("/\s+$county/i",'',$placename);
 						$qplacename = $db->Quote($placename);
+						
+						$sql_where .= " or (def_nam=$qplacename and full_county = $qcount)";
+						$sql_where2 .= " or full_name=$qplacename"; //we cant search easily on county here!
 					}
 				} 
 				//todo need to 'union'  with other gazetterr! (as if one match in each then will no work!) 
-				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where def_nam=$qplacename $sql_where");
+				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where $sql_where");
 				if (count($places) == 0) {
 					$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where full_name=$qplacename");
 				}
@@ -377,7 +381,7 @@ class Gazetteer
 			}
 			
 			//starts with (both gaz's)
-			$places = $db->GetAll("
+			$places = array_merge($places,$db->GetAll("
 			(select
 				(seq + 1000000) as id,
 				`def_nam` as full_name,
@@ -411,7 +415,7 @@ class Gazetteer
 				dsg LIKE 'PPL%' AND loc_placenames.reference_index != 1 AND
 				full_name LIKE ".$db->Quote($placename.'%')."
 			group by gns_ufi
-			LIMIT 20)");
+			LIMIT 20)"));
 			if (count($places) < 10 || $ismore) {
 				//sounds like (OS)
 				$places = array_merge($places,$db->GetAll("
