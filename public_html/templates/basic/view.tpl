@@ -240,8 +240,8 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 <br style="clear:both"/>
 <div class="interestBox" style="text-align:center">View this location: 
 
-<a title="Open in Google Earth" href="/photo/{$image->gridimage_id}.kml">Google Earth</a>
-<a title="Open in Google Earth" href="/photo/{$image->gridimage_id}.kml" class="xml-kml">KML</a>, 
+<a title="Open in Google Earth" href="/photo/{$image->gridimage_id}.kml" type="application/vnd.google-earth.kml+xml">Google Earth</a>
+<a title="Open in Google Earth" href="/photo/{$image->gridimage_id}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a>, 
 <a title="Open in Google Maps" href="http://maps.google.co.uk/maps?q=http://{$http_host}/photo/{$image->gridimage_id}.kml">Google Maps</a>, 
 
 {getamap gridref=$image->subject_gridref text="OS Get-a-map&trade;"},
