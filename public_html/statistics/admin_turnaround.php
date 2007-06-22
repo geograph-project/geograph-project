@@ -68,15 +68,15 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 		$table['title'] = "Ticket Moderating";
 
-		$table['headnote'] = "Excludes tickets deferred at some point";
+		$table['headnote'] = "Excludes deferred and 'self closed' tickets";
 
 		$table['table']=$db->GetAll("
-		select date(updated) as `Date Closed`,count(*) as `Tickets`,count(distinct moderator_id) as `Moderators`, min(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as Shortest,avg(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as `Average Hours`,(avg(unix_timestamp(updated)-unix_timestamp(suggested))+stddev(unix_timestamp(updated)-unix_timestamp(suggested))*2)/3600 as `at least 75% within`,max(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as Longest from gridimage_ticket where updated > date_sub(now(),interval 24 day) and status = 'closed' and moderator_id > 0 and deferred = 0 group by date(updated)
+		select date(updated) as `Date Closed`,count(*) as `Tickets`,count(distinct moderator_id) as `Moderators`, min(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as Shortest,avg(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as `Average Hours`,(avg(unix_timestamp(updated)-unix_timestamp(suggested))+stddev(unix_timestamp(updated)-unix_timestamp(suggested))*2)/3600 as `at least 75% within`,max(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as Longest from gridimage_ticket where updated > date_sub(now(),interval 24 day) and status = 'closed' and moderator_id > 0 and user_id != moderator_id and deferred = 0 group by date(updated)
 		" );
 
 		$table['total'] = count($table);
 
-		$table['footnote'] = "<br/><br/>All Hour values are decimal, not imperial";
+		$table['footnote'] = "<br/>The last fews days figures will be lower, as there is probably a number of open tickets.<br/><br/>Note: All Hour values are decimal, not imperial hours and minutes";
 
 	$tables[] = $table;
 
@@ -84,7 +84,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign_by_ref('tables', $tables);
 	
-	$smarty->assign('headnote','"at least 75% within" column is only an estimate based on Statistical Probability');
+	$smarty->assign('headnote','"at least 75% within" column is only an estimate based on <a href="http://en.wikipedia.org/wiki/Standard_deviation#Chebyshev.27s_inequality">Chebyshev\'s inequality</a>');
 		
 	$smarty->assign('h2title','Admin Turnaround');
 	
