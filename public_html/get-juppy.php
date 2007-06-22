@@ -31,6 +31,10 @@ between servers
    project when a connection is available.
   </description>
   <offline-allowed />
+  <shortcut online="true">
+    <desktop />
+  </shortcut>
+  
  </information>
 
  <security>
@@ -40,6 +44,7 @@ between servers
 
  <resources>
   <j2se version="1.5" />
+  <j2se version="1.6" />
   <jar href="JUploader.jar" />
  </resources>
 
