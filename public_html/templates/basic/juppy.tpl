@@ -1,6 +1,6 @@
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
-
+{dynamic}
 <p>Before you jump down to the interesting bit about where to find JUppy, we'd like you to read the following, 
 just so you know what you're letting yourself in for...</p>
 
@@ -26,14 +26,12 @@ Windows and Linux machines. It should work with Macs as well although we've not 
 
 <p>JUppy is still under development and we'd be pleased to receive any comments or suggestions for improvements.</p>
 
-{dynamic}
 <p>Before you can use JUppy, you need to have submitted a minimum of {$imagecount} images
 using the web interface. We just want to make sure you fully understand the submission process. {$sadly}</p>
-{/dynamic}
 
 <h2>You'll need to trust us</h2>
 
-<p>Java applications try to be well behaved. Becuase of this, unless you specifically grant an application like JUppy 
+<p>Java applications try to be well behaved. Because of this, unless you specifically grant an application like JUppy 
 access to your hard drive, it won't be able to write anything. This means that JUppy won't be able to save your 
 upload queue or category lists (see below). So, when you run JUppy for the first time, you'll see a 'digital certificate'
 window appear. We like to think you know us well enough to tell your system to always trust us. If you don't, your system
@@ -49,9 +47,15 @@ the Geograph servers to see whether we've updated JUppy. If we have, it will aut
 
 <h2>...and finally...</h2>
 
-<p>Thanks for being patient. It's now time to <a href="get-juppy.php">download JUppy...</a></p>
+{if $notgood}
+  <p style='border: single red 1px; background: pink'><br />{$sadly}<br />&nbsp;</p>
+{else}
+  <p>{$sadly}</p>
+  <p>Thanks for being patient. It's now time to <a href="get-juppy.php">download JUppy...</a></p>  
+{/if}
+
 
 <br style="clear:both"/>
 &nbsp;
-
+{/dynamic}
 {include file="_std_end.tpl"}
