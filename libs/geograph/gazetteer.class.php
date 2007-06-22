@@ -381,7 +381,7 @@ class Gazetteer
 			}
 			
 			//starts with (both gaz's)
-			$places = array_merge($places,$db->GetAll("
+			$places = $db->GetAll("
 			(select
 				(seq + 1000000) as id,
 				`def_nam` as full_name,
@@ -415,7 +415,7 @@ class Gazetteer
 				dsg LIKE 'PPL%' AND loc_placenames.reference_index != 1 AND
 				full_name LIKE ".$db->Quote($placename.'%')."
 			group by gns_ufi
-			LIMIT 20)"));
+			LIMIT 20)");
 			if (count($places) < 10 || $ismore) {
 				//sounds like (OS)
 				$places = array_merge($places,$db->GetAll("
