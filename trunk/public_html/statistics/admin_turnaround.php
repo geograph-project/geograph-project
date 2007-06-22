@@ -54,7 +54,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$table['headnote'] = "We actully only have data for the time between submisison and <i>last</i> moderation, so remoderation at a later date will cause artificially long times.";
 		
 		$table['table']=$db->GetAll("
-		select date(submitted) as `Date Submitted`,count(*) as Images,count(distinct moderator_id) as `Moderators`,min(unix_timestamp(moderated)-unix_timestamp(submitted))/3600 as Shortest,avg(unix_timestamp(moderated)-unix_timestamp(submitted))/3600 as `Average Hours`,(avg(unix_timestamp(moderated)-unix_timestamp(submitted))+stddev(unix_timestamp(moderated)-unix_timestamp(submitted))*2)/3600 as `at least 75% within`,max(unix_timestamp(moderated)-unix_timestamp(submitted))/3600 as Longest from gridimage where submitted > date_sub(now(),interval 24 day) and moderated > 0 group by date(submitted)
+		select date(submitted) as `Date Submitted`,count(*) as Images,count(distinct moderator_id) as `Moderators`,min(unix_timestamp(moderated)-unix_timestamp(submitted))/3600 as Shortest,avg(unix_timestamp(moderated)-unix_timestamp(submitted))/3600 as `Average Hours`,(avg(unix_timestamp(moderated)-unix_timestamp(submitted))+stddev(unix_timestamp(moderated)-unix_timestamp(submitted))*2)/3600 as `at least 75% within`,max(unix_timestamp(moderated)-unix_timestamp(submitted))/3600 as Longest from gridimage where submitted > date_sub(date(now()),interval 24 day) and moderated > 0 group by date(submitted)
 		" );
 
 		$table['total'] = count($table);
@@ -71,7 +71,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$table['headnote'] = "Excludes deferred and 'self closed' tickets";
 
 		$table['table']=$db->GetAll("
-		select date(updated) as `Date Closed`,count(*) as `Tickets`,count(distinct moderator_id) as `Moderators`, min(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as Shortest,avg(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as `Average Hours`,(avg(unix_timestamp(updated)-unix_timestamp(suggested))+stddev(unix_timestamp(updated)-unix_timestamp(suggested))*2)/3600 as `at least 75% within`,max(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as Longest from gridimage_ticket where updated > date_sub(now(),interval 24 day) and status = 'closed' and moderator_id > 0 and user_id != moderator_id and deferred = 0 group by date(updated)
+		select date(updated) as `Date Closed`,count(*) as `Tickets`,count(distinct moderator_id) as `Moderators`, min(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as Shortest,avg(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as `Average Hours`,(avg(unix_timestamp(updated)-unix_timestamp(suggested))+stddev(unix_timestamp(updated)-unix_timestamp(suggested))*2)/3600 as `at least 75% within`,max(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as Longest from gridimage_ticket where updated > date_sub(date(now()),interval 24 day) and status = 'closed' and moderator_id > 0 and user_id != moderator_id and deferred = 0 group by date(updated)
 		" );
 
 		$table['total'] = count($table);
