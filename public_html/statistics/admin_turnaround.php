@@ -34,7 +34,7 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 
 $template='statistics_tables.tpl';
 
-$cacheid='admin_turnaround';
+$cacheid='statistics|admin_turnaround';
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -51,6 +51,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 		$table['title'] = "Image Moderating";
 
+		$table['headnote'] = "Estimate Only. We actully only have data for the time between submisison and <i>last</i> moderation, so remoderation at a later date will cause artificially long times.";
+		
 		$table['table']=$db->GetAll("
 		select date(submitted) as `Date Submitted`,count(*) as Images,count(distinct moderator_id) as `Moderators`,min(unix_timestamp(moderated)-unix_timestamp(submitted))/3600 as Shortest,avg(unix_timestamp(moderated)-unix_timestamp(submitted))/3600 as `Average Hours`,(avg(unix_timestamp(moderated)-unix_timestamp(submitted))+stddev(unix_timestamp(moderated)-unix_timestamp(submitted))*2)/3600 as `75% within`,max(unix_timestamp(moderated)-unix_timestamp(submitted))/3600 as Longest from gridimage where submitted > date_sub(now(),interval 24 day) and moderated > 0 group by date(submitted)
 		" );
@@ -82,7 +84,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign_by_ref('tables', $tables);
 	
-	$smarty->assign("h2title",'Admin Turnaround');
+	$smarty->assign('headnote','"75% within" column is only an estimate based on Statistical Probability');
+		
+	$smarty->assign('h2title','Admin Turnaround');
 	
 } 
 
