@@ -88,7 +88,7 @@ if (!$GLOBALS['USER']->registered) {
         . "we can check your image submission count before we let you loose with JUppy.";
          $notgood = 1;
 } else {
-        $icsql = "select count(gridimage_id) from gridimage where user_id = " . $GLOBALS['USER']->user_id;
+        $icsql = "select count(gridimage_id) from gridimage_search where user_id = " . $GLOBALS['USER']->user_id;
         
         if ($rs = $db->Execute($icsql)) {
         

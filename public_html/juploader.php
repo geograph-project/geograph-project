@@ -169,7 +169,7 @@ function AuthenticateUser() {
                 
                         // a user must have submitted a minimum number of images
                         
-                        $sqlcnt = "select count(*) as icount from gridimage where user_id = '" . $rs->fields[3] . "'";
+                        $sqlcnt = "select count(*) as icount from gridimage_search where user_id = '" . $rs->fields[3] . "'";
                         $icount = 0;
                         if ($rsimg = &$db->Execute($sqlcnt)) {
                                 $icount = $rsimg->fields[0];
