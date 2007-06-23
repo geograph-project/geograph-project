@@ -52,8 +52,10 @@ if (isset($_REQUEST['edit']))
 			//show the user their new profile
 			$template='profile.tpl';	
 			
+			$ab=floor($USER->user_id/10000);
+			
 			//clear anything with a cache id userxyz|
-			$smarty->clear_cache(null, "user{$USER->user_id}");
+			$smarty->clear_cache(null, "user$ab|{$USER->user_id}");
 			
 			$profile =& $USER;
 		}

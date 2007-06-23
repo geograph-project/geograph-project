@@ -422,10 +422,12 @@ if (isset($_REQUEST['id']))
 
 
 				//clear any caches involving this photo
-				$smarty->clear_cache(null, "img{$image->gridimage_id}");
+				$ab=floor($image->gridimage_id/10000);
+				$smarty->clear_cache(null, "img$ab|{$image->gridimage_id}");
 
 				//clear user specific stuff like profile page
-				$smarty->clear_cache(null, "user{$image->user_id}");
+				$ab=floor($image->user_id/10000);
+				$smarty->clear_cache(null, "user$ab|{$image->user_id}");
 				
 				if (isset($_SESSION['editpage_options']) && in_array('small_redirect',$_SESSION['editpage_options'])) {
 					header("Location: http://{$_SERVER['HTTP_HOST']}/thankyou.php#thankyou=$status&id={$_REQUEST['id']}");
