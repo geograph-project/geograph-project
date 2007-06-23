@@ -26,8 +26,6 @@ Windows and Linux machines. It should work with Macs as well although we've not 
 
 <p>JUppy is still under development and we'd be pleased to receive any comments or suggestions for improvements.</p>
 
-<p>Before you can use JUppy, you need to have submitted a minimum of {$imagecount} images
-using the web interface. We just want to make sure you fully understand the submission process. {$sadly}</p>
 
 <h2>You'll need to trust us</h2>
 
@@ -44,6 +42,10 @@ will ask you every time you start JUppy.</p>
 
 <p>Because JUppy is a Java 'webstart' application, whenever Java detects that your system is on-line, it will check
 the Geograph servers to see whether we've updated JUppy. If we have, it will automatically fetch the latest, greatest version and install it automatically. If we haven't changed it or you're off-line, you'll use whatever version is installed.</p>
+
+<h2>Feedback</h2>
+
+<p>If you've got any issues with JUppy or any suggested improvements, please contact the developers through the <a href="/discuss">discussion forums</a>.</p>
 
 <h2>...and finally...</h2>
 
