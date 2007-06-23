@@ -53,7 +53,7 @@ the Geograph servers to see whether we've updated JUppy. If we have, it will aut
   <p style='border: single red 1px; background: pink'><br />{$sadly}<br />&nbsp;</p>
 {else}
   <p>{$sadly}</p>
-  <p>Thanks for being patient. It's now time to <a href="get-juppy.php">download JUppy...</a></p>  
+  <p>Thanks for being patient. It's now time to <a href="/get-juppy.jnlp">download JUppy...</a></p>  
 {/if}
 
 
