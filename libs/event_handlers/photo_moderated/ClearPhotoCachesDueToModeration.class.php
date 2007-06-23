@@ -44,7 +44,8 @@ class ClearPhotoCachesDueToModeration extends EventHandler
 		list($gridimage_id,$updatemaps) = explode(',',$event['event_param']);
 		
 		$smarty = new GeographPage;
-		$smarty->clear_cache(null, "img{$gridimage_id}");
+		$ab=floor($gridimage_id/10000);
+		$smarty->clear_cache(null, "img$ab|{$gridimage_id}");
 		
 		//return true to signal completed processing
 		//return false to have another attempt later

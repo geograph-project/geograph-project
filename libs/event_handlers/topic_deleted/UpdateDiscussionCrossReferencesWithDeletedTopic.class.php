@@ -52,7 +52,8 @@ class UpdateDiscussionCrossReferencesWithDeletedTopic extends EventHandler
 
 			foreach ($images as $gridimage_id) {
 				//clear any caches involving this photo
-				$smarty->clear_cache(null, "img{$gridimage_id}");
+				$ab=floor($gridimage_id/10000);
+				$smarty->clear_cache(null, "img$ab|{$gridimage_id}");
 			}
 
 			// -trash any mappings to this topic
