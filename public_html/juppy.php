@@ -29,8 +29,10 @@ $smarty = new GeographPage;
 
 
 $template='juppy.tpl';
-$cacheid=rand(1,5); //so we get a selection of homepages
+$cacheid='';
 
+$db=NewADOConnection($GLOBALS['DSN']);
+	
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -58,7 +60,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	//let's find recent posts in the announcements forum made by
 	//administrators
-	$db=NewADOConnection($GLOBALS['DSN']);
 	$sql="select u.user_id,u.realname,t.topic_title,p.post_text,t.topic_id,t.topic_time, posts_count - 1 as comments 
 		from geobb_topics as t
 		inner join geobb_posts as p on(t.topic_id=p.topic_id)
