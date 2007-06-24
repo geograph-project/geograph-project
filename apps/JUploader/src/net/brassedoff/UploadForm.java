@@ -6,6 +6,7 @@
 
 package net.brassedoff;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -19,7 +20,9 @@ import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
@@ -40,11 +43,18 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
     public String [] editData = new String [20];
     public boolean acceptFlag;
     ImagePreview preview = new ImagePreview();
+    Compass compass = new Compass();
     
     /** Creates new form UploadForm */
     public UploadForm(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        
+        
+        /*
+        pnlCompass.add(compass, BorderLayout.CENTER);
+        pnlCompass.repaint();
+         */
         
         // my initialisation stuff (listeners etc)
         btnImagefile.addActionListener(this);
@@ -129,6 +139,7 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
         chkCCLicence = new javax.swing.JCheckBox();
         pnlPreview = new javax.swing.JPanel();
         lblStatus = new javax.swing.JLabel();
+        pnlCompass = new javax.swing.JPanel();
 
         setTitle("Geograph uploader");
         setBackground(java.awt.Color.lightGray);
@@ -183,6 +194,8 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
 
         lblStatus.setText("jLabel1");
 
+        pnlCompass.setLayout(new java.awt.BorderLayout());
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -198,29 +211,6 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
                         .add(btnUpload, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 134, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                     .add(layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jLabel3)
-                            .add(jLabel2)
-                            .add(jLabel4)
-                            .add(btnImagefile, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 226, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(txtImagefile, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
-                            .add(cmbDirection, 0, 222, Short.MAX_VALUE)
-                            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                                .add(org.jdesktop.layout.GroupLayout.LEADING, txtPhotographer)
-                                .add(org.jdesktop.layout.GroupLayout.LEADING, txtSubject, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)))
-                        .add(14, 14, 14)
-                        .add(pnlPreview, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jLabel5)
-                            .add(jLabel6))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
-                            .add(txtImageTitle, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)))
-                    .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(jLabel7)
                             .add(jLabel8))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -229,7 +219,38 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
                                 .add(txtPhotoDate, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 104, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 198, Short.MAX_VALUE)
                                 .add(btnToday))
-                            .add(cmbGeoFeature, 0, 374, Short.MAX_VALUE))))
+                            .add(cmbGeoFeature, 0, 374, Short.MAX_VALUE)))
+                    .add(layout.createSequentialGroup()
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(layout.createSequentialGroup()
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                    .add(jLabel3)
+                                    .add(jLabel2)
+                                    .add(jLabel4)
+                                    .add(btnImagefile, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 226, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                    .add(txtImagefile, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
+                                    .add(cmbDirection, 0, 222, Short.MAX_VALUE)
+                                    .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                                        .add(org.jdesktop.layout.GroupLayout.LEADING, txtPhotographer)
+                                        .add(org.jdesktop.layout.GroupLayout.LEADING, txtSubject, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE))))
+                            .add(layout.createSequentialGroup()
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                    .add(jLabel5)
+                                    .add(jLabel6))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
+                                    .add(txtImageTitle, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)))
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(layout.createSequentialGroup()
+                                .add(14, 14, 14)
+                                .add(pnlPreview, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                            .add(layout.createSequentialGroup()
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(pnlCompass, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 50, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
             .add(lblStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
         );
@@ -255,11 +276,15 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(txtPhotographer, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(cmbDirection, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                                    .add(jLabel5)
-                                    .add(txtImageTitle, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                    .add(pnlCompass, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 50, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                    .add(layout.createSequentialGroup()
+                                        .add(cmbDirection, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                            .add(jLabel5)
+                                            .add(txtImageTitle, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
                                 .add(27, 27, 27)
@@ -279,11 +304,11 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                     .add(txtPhotoDate, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                     .add(btnToday))))
-                        .add(14, 14, 14)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(chkSupplemental)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(chkCCLicence)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 28, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 56, Short.MAX_VALUE)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                             .add(btnReset)
                             .add(btnUpload))
@@ -372,12 +397,37 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
             JOptionPane.showMessageDialog(this, "No grid reference entered");
             return;
         }
+
+        // date should be there and valid (in that order!)
         
         if (txtPhotoDate.getText().trim().equals("")) {
             Toolkit.getDefaultToolkit().beep();
             JOptionPane.showMessageDialog(this, "No date specified for photograph");
             return;
+        }        
+        
+        String enteredDate = txtPhotoDate.getText().trim();
+        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.UK);
+        dateFormat.setLenient(false);
+        Date actualDate;
+        
+        try {
+            actualDate = dateFormat.parse(enteredDate);
+        } catch (ParseException pe) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(this, "Invalid date specified for photograph\nShould be dd/mm/yyyy");
+            return;            
         }
+        
+        // not in the future?
+        
+        Date today = new Date();
+        if (actualDate.after(today)) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(this, "Time travel is not allowed. Check your date please!");
+            return;
+        }
+
         
         // we have a list of valid gridref regexps...
         
@@ -542,7 +592,7 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
     final public void SetDateToday() {
         // set today's date
         
-        String today = DateFormat.getDateInstance().format(new Date());
+        String today = DateFormat.getDateInstance(DateFormat.SHORT, Locale.UK).format(new Date());
         txtPhotoDate.setText(today);
     }
     
@@ -704,6 +754,7 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblStatus;
+    private javax.swing.JPanel pnlCompass;
     private javax.swing.JPanel pnlPreview;
     private javax.swing.JTextArea txtImageComments;
     private javax.swing.JTextField txtImageTitle;
