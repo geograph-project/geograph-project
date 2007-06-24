@@ -18,7 +18,7 @@ between servers
 *********************************************************/
 ?>
 
-<jnlp spec="1.0+" href="juppy.php" 
+<jnlp spec="1.0+" href="get-juppy.jnlp" 
 <?php
 	echo 'codebase="http://' . $_SERVER['SERVER_NAME'] . '">';
 ?>
