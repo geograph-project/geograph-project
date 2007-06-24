@@ -47,13 +47,27 @@ if (!$smarty->is_cached('explore.tpl'))
 	$recordSet->Close(); 
 	$smarty->assign_by_ref('countylist', $countylist);
 
-	$topics = $db->GetAssoc("select gp.topic_id,concat(topic_title,' [',count(*),']') from gridimage_post gp
+	$topicsraw = $db->GetAssoc("select gp.topic_id,concat(topic_title,' [',count(*),']') as title,forum_name from gridimage_post gp
 		inner join geobb_topics using (topic_id)
+		inner join geobb_forums using (forum_id)
 		group by gp.topic_id 
 		having count(*) > 4
-		order by topic_title");
+		order by geobb_topics.forum_id desc,topic_title");
 
-	$topics=array("1"=>"Any Topic") + $topics; 	
+	$topics=array("1"=>"Any Topic"); 
+	
+	$options = array();
+	foreach ($topicsraw as $topic_id => $row) {
+		if ($last != $row['forum_name'] && $last) {
+			$topics[$last] = $options;
+			$options = array();
+		}
+		$last = $row['forum_name'];
+	
+		$options[$topic_id] = $row['title'];
+	}
+	$topics[$last] = $options;
+	
 	$smarty->assign_by_ref('topiclist',$topics);	
 }
 
