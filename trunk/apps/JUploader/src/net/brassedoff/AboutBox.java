@@ -48,6 +48,7 @@ public class AboutBox extends javax.swing.JDialog implements ActionListener {
         btnClose = new javax.swing.JButton();
         lblJVM = new javax.swing.JLabel();
         lblVersion = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("JUploader About");
@@ -61,26 +62,29 @@ public class AboutBox extends javax.swing.JDialog implements ActionListener {
 
         lblVersion.setText("will be jUppy version");
 
+        jLabel2.setText("JUppy version:");
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 280, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(13, Short.MAX_VALUE))
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(224, Short.MAX_VALUE)
-                .add(btnClose)
-                .addContainerGap())
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(lblJVM)
-                .addContainerGap(164, Short.MAX_VALUE))
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(lblVersion)
-                .addContainerGap(161, Short.MAX_VALUE))
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(layout.createSequentialGroup()
+                        .add(jLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 280, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(13, Short.MAX_VALUE))
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+                        .add(btnClose)
+                        .addContainerGap())
+                    .add(layout.createSequentialGroup()
+                        .add(lblJVM)
+                        .addContainerGap(164, Short.MAX_VALUE))
+                    .add(layout.createSequentialGroup()
+                        .add(jLabel2)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(lblVersion)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -90,7 +94,9 @@ public class AboutBox extends javax.swing.JDialog implements ActionListener {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(lblJVM)
                 .add(15, 15, 15)
-                .add(lblVersion)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel2)
+                    .add(lblVersion))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 19, Short.MAX_VALUE)
                 .add(btnClose)
                 .addContainerGap())
@@ -112,6 +118,7 @@ public class AboutBox extends javax.swing.JDialog implements ActionListener {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnClose;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel lblJVM;
     private javax.swing.JLabel lblVersion;
     // End of variables declaration//GEN-END:variables

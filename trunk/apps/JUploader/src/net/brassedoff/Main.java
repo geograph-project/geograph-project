@@ -28,7 +28,7 @@ public class Main {
     
     static String geoURL = new String("http://geograph/juploader.php");
     
-    static String juppyVersion = "1.5";
+    static String juppyVersion = "1.6";
     
     static String [] imageClassList;
     static boolean noCache = true;
@@ -48,9 +48,11 @@ public class Main {
         "^[A-Za-z]{2}\\d{4}$",
         "^[A-Za-z]{2}\\d{6}$",
         "^[A-Za-z]{2}\\d{8}$",
+        "^[A-Za-z]{2}\\d{10}$",        
         "^[A-Za-z]{1}\\d{4}$",
         "^[A-Za-z]{1}\\d{6}$",
-        "^[A-Za-z]{1}\\d{8}$"
+        "^[A-Za-z]{1}\\d{8}$",
+        "^[A-Za-z]{1}\\d{10}$"        
     };
 
     
