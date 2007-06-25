@@ -17,7 +17,7 @@
 <tr><td align="right" sortvalue="{$obj.percentage|thousends}">{$obj.ordinal}</td><td><a title="View map for {$obj.hunk_square}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.hunk_square}</a></td>
 <td align="right">{$obj.geograph_count}</td>
 <td align="right">{$obj.land_count}</td>
-<td align="right">{$obj.percentage|thousends}</td></tr>
+<td align="right">{$obj.percentage|string_format:"%.1f"}</td></tr>
 {/foreach}
 
 </tbody>
@@ -35,7 +35,7 @@
 <tr><td align="right" sortvalue="{$obj.percentage|thousends}">{$obj.ordinal}</td><td><a title="View map for {$obj.hunk_square}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.hunk_square}</a></td>
 <td align="right">{$obj.geograph_count}</td>
 <td align="right">{$obj.land_count}</td>
-<td align="right">{$obj.percentage|thousends}</td></tr>
+<td align="right">{$obj.percentage|string_format:"%.1f"}</td></tr>
 {/foreach}
 
 </tbody>
