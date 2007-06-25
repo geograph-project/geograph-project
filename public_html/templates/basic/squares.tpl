@@ -4,7 +4,7 @@
 <div style="float:right">Alternate Versions: <a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$square->grid_reference}">check sheet</a> or <a href="/gpx.php?gridref={$square->grid_reference}&amp;distance={$d}&amp;type={$type}&amp;submit=1" class="xml-gpx">GPX</a></div>
 
 <h2>Photographed Squares</h2>
-<h3 style="color:red">{$searchdesc}</h3>
+<h3 style="color:red">{$searchdesc|escape:"html"}</h3>
 <p><small>(hover over a placename for the <a href="/faq.php#counties">historic county</a>)</small></p>
 
 	{if $overview}

@@ -3,9 +3,9 @@
 
 <h2>Please refine your Search</h2>
 {dynamic}
-<p>In your search for images<i>{$searchdesc}</i>.</p>
+<p>In your search for images<i>{$searchdesc|escape:"html"}</i>.</p>
 
-<p>We have found the following possible match{if count($criteria->matches) > 1}es{/if} for '{$criteria->searchq}': {if count($criteria->matches) > 0}<small>(hover over a placename for the <a href="/faq.php#counties">historic county</a>)</small>{/if}</p>
+<p>We have found the following possible match{if count($criteria->matches) > 1}es{/if} for '{$criteria->searchq|escape:"html"}': {if count($criteria->matches) > 0}<small>(hover over a placename for the <a href="/faq.php#counties">historic county</a>)</small>{/if}</p>
 
 <form action="{$script_name}" method="post">
 
@@ -25,7 +25,7 @@
 
 {if !$criteria->ismore}
 <br/>
-<input type="radio" name="{$multipleon}" value="{$criteria->searchq}?" id="domore">
+<input type="radio" name="{$multipleon}" value="{$criteria->searchq|escape:"html"}?" id="domore">
 <label for="domore"><b>Place looking for not listed above? Try a wider search.</b></label> <br/>		
 {/if}
 
@@ -44,11 +44,11 @@
 &nbsp;<label for="dotext2"><i>Perform a text search for '{$post.q|replace:'near ':'AND '}' in title and description</i></label> <br/>		
 {/if}
 {/if}
-<input type="radio" name="{$multipleon}" value="text:{$criteria->searchq}" id="dotext">
-<label for="dotext"><i>Perform a title search for '{$criteria->searchq}'</i></label> <br/>	
+<input type="radio" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}" id="dotext">
+<label for="dotext"><i>Perform a title search for '{$criteria->searchq|escape:"html"}'</i></label> <br/>	
 {if !preg_match('/\+$/',$criteria->searchq)}
-<input type="radio" name="{$multipleon}" value="text:{$criteria->searchq}+" id="dotext2">
-&nbsp;<label for="dotext2"><i>Perform a text search for '{$criteria->searchq}' in title and description</i></label> <br/>		
+<input type="radio" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}+" id="dotext2">
+&nbsp;<label for="dotext2"><i>Perform a text search for '{$criteria->searchq|escape:"html"}' in title and description</i></label> <br/>		
 {/if}
 {/dynamic}
 <p><input type="submit" name="refine" value="Refine"> <input type="submit" value="Find &gt;"></p>

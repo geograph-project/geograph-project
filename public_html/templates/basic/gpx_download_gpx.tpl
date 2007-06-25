@@ -2,7 +2,7 @@
 <gpx xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0"
 creator="{$http_host}"
 xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd" xmlns="http://www.topografix.com/GPX/1/0">
-<desc>{$searchdesc}</desc>
+<desc>{$searchdesc|escape:"html"}</desc>
 <author>{$http_host}</author>
 <email>support@{$http_host}</email>
 <url>http://{$http_host}/</url>

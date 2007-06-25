@@ -21,11 +21,11 @@
 <div style="position:relative;" class="interestBox">
 	<div style="position:relative;width:240px;">
 		<label for="searchq" style="line-height:1.8em"><b>Search For</b>:</label> <small>(<a href="/help/search">help &amp; tips</a>)</small><br/>
-		&nbsp;&nbsp;&nbsp;<input id="searchq" type="text" name="q" value="{$searchtext|default:"(anything)"}" size="30" onfocus="if (this.value=='(anything)') this.value=''" onblur="if (this.value=='') this.value='(anything)'"/>
+		&nbsp;&nbsp;&nbsp;<input id="searchq" type="text" name="q" value="{$searchtext|escape:"html"|default:"(anything)"}" size="30" onfocus="if (this.value=='(anything)') this.value=''" onblur="if (this.value=='') this.value='(anything)'"/>
 	</div>
 	<div style="position:relative;width:430px;">
 		<label for="searchlocation" style="line-height:1.8em">and/or a <b>Placename, Postcode, Grid Reference</b>:</label><br/>
-		&nbsp;&nbsp;&nbsp;<i>near</i> <input id="searchlocation" type="text" name="location" value="{$searchlocation|default:"(anywhere)"}" size="30" onfocus="if (this.value=='(anywhere)') this.value=''" onblur="if (this.value=='') this.value='(anywhere)'"/>
+		&nbsp;&nbsp;&nbsp;<i>near</i> <input id="searchlocation" type="text" name="location" value="{$searchlocation|escape:"html"|default:"(anywhere)"}" size="30" onfocus="if (this.value=='(anywhere)') this.value=''" onblur="if (this.value=='') this.value='(anywhere)'"/>
 		<input id="searchgo" type="submit" name="go" value="Search..."/>
 	</div><span style="line-height:0.1em; font-size:0.1em"><br style="clear:both"/>&nbsp;</span></div>
 </form>
@@ -69,7 +69,7 @@ title="customisable search options">advanced search</a></span><br/><br/>
 	<ul style="margin-left:0;
 	padding:0 0 0 0em; list-style-type:none">
 	{foreach from=$recentsearchs key=id item=obj}
-	<li>{if $obj.favorite == 'Y'}<a href="/search.php?i={$id}&amp;fav=0" title="remove favorite flag"><img src="/templates/basic/img/star-on.png" width="14" height="14" alt="remove favorite flag" onmouseover="this.src='/templates/basic/img/star-light.png'" onmouseout="this.src='/templates/basic/img/star-on.png'"></a> <b>{else}<a href="/search.php?i={$id}&amp;fav=1" title="make favorite"><img src="/templates/basic/img/star-light.png" width="14" height="14" alt="make favorite" onmouseover="this.src='/templates/basic/img/star-on.png'" onmouseout="this.src='/templates/basic/img/star-light.png'"></a> {/if}{if $obj.searchclass == 'Special'}<i>{/if}<a href="search.php?i={$id}" title="Re-Run search for images{$obj.searchdesc}{if $obj.use_timestamp != '0000-00-00 00:00:00'}, last used {$obj.use_timestamp}{/if} (Display: {$obj.displayclass})">{$obj.searchdesc|regex_replace:"/^, /":""|regex_replace:"/(, in [\w ]+ order)/":'</a><small>$1</small>'}</a>{if !is_null($obj.count)} [{$obj.count}]{/if}{if $obj.searchclass == 'Special'}</i>{/if}{if $obj.favorite == 'Y'}</b>{/if}</li>
+	<li>{if $obj.favorite == 'Y'}<a href="/search.php?i={$id}&amp;fav=0" title="remove favorite flag"><img src="/templates/basic/img/star-on.png" width="14" height="14" alt="remove favorite flag" onmouseover="this.src='/templates/basic/img/star-light.png'" onmouseout="this.src='/templates/basic/img/star-on.png'"></a> <b>{else}<a href="/search.php?i={$id}&amp;fav=1" title="make favorite"><img src="/templates/basic/img/star-light.png" width="14" height="14" alt="make favorite" onmouseover="this.src='/templates/basic/img/star-on.png'" onmouseout="this.src='/templates/basic/img/star-light.png'"></a> {/if}{if $obj.searchclass == 'Special'}<i>{/if}<a href="search.php?i={$id}" title="Re-Run search for images{$obj.searchdesc|escape:"html"}{if $obj.use_timestamp != '0000-00-00 00:00:00'}, last used {$obj.use_timestamp}{/if} (Display: {$obj.displayclass})">{$obj.searchdesc|escape:"html"|regex_replace:"/^, /":""|regex_replace:"/(, in [\w ]+ order)/":'</a><small>$1</small>'}</a>{if !is_null($obj.count)} [{$obj.count}]{/if}{if $obj.searchclass == 'Special'}</i>{/if}{if $obj.favorite == 'Y'}</b>{/if}</li>
 	{/foreach}
 	{if !$more && !$all}
 	<li><a href="search.php?more=1" title="View More of your recent searches" rel="nofollow"><i>view more...</i></a></li>

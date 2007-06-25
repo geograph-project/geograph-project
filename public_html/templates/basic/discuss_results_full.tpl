@@ -3,13 +3,13 @@
 
 <h2>Grid Square Discussions Search Results</h2>
 {dynamic}
-<p>Your search for discussions<i>{$engine->criteria->searchdesc}</i>, returns 
+<p>Your search for discussions<i>{$engine->criteria->searchdesc|escape:"html"}</i>, returns 
 <b>{$engine->resultCount}</b> results:
 {if $engine->resultCount}
 	<br/>( Page {$engine->pagesString()}) [<a href="/discuss/search.php?i={$i}&amp;form=simple">search again</a>]
 	</p>
 
-<p align="center"><i>perform text search for <a href="/discuss/index.php?action=search&searchForum=0&days=60&searchWhere=0&searchHow=0&searchFor=+{$engine->criteria->searchq}+&go=Find">{$engine->criteria->searchq}</a></i></p>
+<p align="center"><i>perform text search for <a href="/discuss/index.php?action=search&searchForum=0&days=60&searchWhere=0&searchHow=0&searchFor=+{$engine->criteria->searchq|escape:"url"}+&go=Find">{$engine->criteria->searchq|escape:"html"}</a></i></p>
 
 	{foreach from=$engine->results item=image}
 	  <div style="clear:both">
