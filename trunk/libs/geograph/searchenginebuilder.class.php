@@ -59,7 +59,7 @@ class SearchEngineBuilder extends SearchEngine
 		$searchclass = '';
 		$limit1 = '';
 		$location = '';
-		$q = trim($q);
+		$q = trim(strip_tags($q));
 		if (preg_match("/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$q,$pc)) {
 			$searchq = strtoupper($pc[1].$pc[2].($pc[3]?" ".$pc[3]:''));
 			$criteria = new SearchCriteria_Postcode();
@@ -241,6 +241,7 @@ class SearchEngineBuilder extends SearchEngine
 	function buildAdvancedQuery(&$dataarray,$autoredirect='auto')
 	{
 		global $CONF,$imagestatuses,$breakdowns,$sortorders,$USER;
+		$dataarray = array_map("strip_tags", $dataarray);
 		
 		if (empty($dataarray['distance'])) {
 			$dataarray['distance'] = $CONF['default_search_distance'];
@@ -250,7 +251,6 @@ class SearchEngineBuilder extends SearchEngine
 		} else {
 			$nearstring = sprintf("within %dkm of",$dataarray['distance']);
 		}
-		
 		$searchdesc = '';
 		if (!empty($dataarray['q'])) {
 			//we coming from multiple - which means there might be a text search stored in a q

@@ -19,7 +19,7 @@
 
 <h2 class="nowrap">Search Results</h2>
 
-<p><small>Your <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}" target="_main">search</a> for images<i class="nowrap">{$engine->criteria->searchdesc}</i>, returns 
+<p><small>Your <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}" target="_main">search</a> for images<i class="nowrap">{$engine->criteria->searchdesc|escape:"html"}</i>, returns 
 {if $engine->pageOneOnly && $engine->resultCount == $engine->numberofimages}
 	<acronym title="to keep server load under control, we delay calculating the total">many</acronym> images
 {else}{if $engine->islimited}

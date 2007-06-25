@@ -7,7 +7,7 @@
 <p style="color:red"><b>{$errormsg}</b></p>
 {/if}
 {if $i}
-<p>Original Search: images{$searchdesc}</p>
+<p>Original Search: images{$searchdesc|escape:"html"}</p>
 {/if}
 <form action="/search.php" method="post" name="theForm" onsubmit="this.imageclass.disabled=false">
 	

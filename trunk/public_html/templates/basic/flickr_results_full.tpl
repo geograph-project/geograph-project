@@ -3,13 +3,13 @@
 
 <h2>Flickr Search Results</h2>
 {dynamic}
-<p>Your search for flickr photos<i>{$engine->criteria->searchdesc}</i>, returns 
+<p>Your search for flickr photos<i>{$engine->criteria->searchdesc|escape:"html"}</i>, returns 
 <b>{$engine->resultCount}</b> images:
 {if $engine->resultCount}
 	<br/>( Page {$engine->pagesString()}) [<a href="flickr.php?i={$i}&amp;form=simple">search again</a>]
 	</p>
 <!--{if $nofirstmatch}
-<p style="font-size:0.8em">[We have no images for {$engine->criteria->searchq}, <a href="/submit.php?gridreference={$engine->criteria->searchq}">Submit Yours Now</a>]</p>
+<p style="font-size:0.8em">[We have no images for {$engine->criteria->searchq|escape:"html"}, <a href="/submit.php?gridreference={$engine->criteria->searchq|escape:"url"}">Submit Yours Now</a>]</p>
 {/if}-->
 	{foreach from=$engine->results item=image}
 	  <div style="clear:both">

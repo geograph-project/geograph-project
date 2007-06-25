@@ -1,4 +1,4 @@
-{assign var="page_title" value="Search Results`$engine->criteria->searchdesc`"}
+{assign var="page_title" value="Search Results`$engine->criteria->searchdesc`"|escape:"html"}
 {include file="_std_begin.tpl"}
 
 <div style="padding:10px;" class="searchresults">
@@ -15,7 +15,7 @@
 
 <h2>Search Results</h2>
 
-<p>Your search for images<i>{$engine->criteria->searchdesc}</i>, returns 
+<p>Your search for images<i>{$engine->criteria->searchdesc|escape:"html"}</i>, returns 
 {if $engine->pageOneOnly && $engine->resultCount == $engine->numberofimages}
 	<acronym title="to keep server load under control, we delay calculating the total">many</acronym> images
 {else}{if $engine->islimited}

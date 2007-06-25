@@ -34,7 +34,7 @@
     <input type="submit" value="Go"/></p></form>
     
 
-	<h3>{$h2title}</h3>
+	<h3>{$h2title|escape:"html"}</h3>
 	{if $total > 0}
 	<p><small>Click a column header to change the sort order.
 	{if $linkpro || $linkprefix}
