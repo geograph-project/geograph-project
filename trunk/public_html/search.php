@@ -578,7 +578,9 @@ if (isset($_GET['fav']) && $i) {
 		}
 	}
 	$template = 'search_results_'.$display.'.tpl';
-	$cacheid="search|$i.$pg";
+	
+	$ab=floor($i%10000);
+	$cacheid="search|$ab|$i.$pg";
 	if (!empty($_GET['count'])) {
 		$engine->countOnly = 1;
 		$cacheid.=".";
