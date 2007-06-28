@@ -131,6 +131,10 @@ function UploadPicture() {
 		// so far so good... can we commit the submission?
 		$rc = $um->commit();
 		if ($rc == "") {
+			//clear user profile
+			$ab=floor($USER->user_id/10000);
+			$smarty->clear_cache(null, "user$ab|{$USER->user_id}");
+		
 			$xml['status'] = "OK";
 		} else {
 			$xml['status'] = $rc;
