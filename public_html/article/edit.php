@@ -150,7 +150,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		
 		$_SESSION[$_POST['url']] = $db->Insert_ID();
 
-		header("Location: /article/");
+		header("Location: /article/".$_POST['url']);
 		exit;
 	} else {
 		if ($errors[1] != 1)
