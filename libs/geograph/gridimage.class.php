@@ -1046,7 +1046,7 @@ class GridImage
 			return "No change, still {$this->moderation_status}";
 		}
 		if (!in_array($status, $valid_status))
-			return "Bad status $status";
+			return "Bad classification $status";
 		
 		//to get this far, the image is valid, the status
 		//is valid, and it is a definite change of status
@@ -1127,7 +1127,7 @@ class GridImage
 	
 	
 		
-		return "Status is now $status";	
+		return "Classification is now $status";	
 			
 		
 	}
