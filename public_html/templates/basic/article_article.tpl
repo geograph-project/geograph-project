@@ -16,8 +16,13 @@
 #contents_table .h2 { font-weight:bold; }
 #contents_table .h3 { padding-left: 3px; }
 #contents_table .h4 { padding-left: 10px; font-size: 0.7em}
-
+@media print {
+	.no_print {
+		display: none;
+	}
+}
 </style>{/literal}
+{dynamic}{if $user->user_id == $user_id}<p style="text-align:center" class="no_print">[[<a href="/article/edit.php?page={$url}">edit this article</a>]]</p>{/if}{/dynamic}
 
 <h1>{$title}</h1>
 

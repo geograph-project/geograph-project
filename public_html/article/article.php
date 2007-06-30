@@ -104,11 +104,6 @@ function smarty_function_articletext($input) {
 	$pattern[]='/\{image id=(\d+) text=([^\}]+)\}/e';
 	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '\$2'))";
 
-	$pattern[]="/\[url[=]?\](.+?)\[\/url\]/i";
-	$replacement[]='\1';
-
-	$pattern[]="/\[url=((f|ht)tp[s]?:\/\/[^<> \n]+?)\](.+?)\[\/url\]/ie";
-	$replacement[]="smarty_function_external(array('href'=>\"\$1\",'text'=>'\$3','title'=>\"\$1\"))";
 
 	$pattern[]='/(?<!["\'\[\/\!\w])([STNH]?[A-Z]{1}\d{4,10})(?!["\'\]\/\!\w])/';
 	$replacement[]="<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/\\1\" target=\"_blank\">\\1</a>";
@@ -132,6 +127,14 @@ function smarty_function_articletext($input) {
 	$replacement[]="'<ol style=\"margin-bottom:0px;'.('\$1'?'':'margin-top:0px').'\"'.('\$2'?' start=\"\$2\"':'').'><li>\$1\$3\$4</li></ol>'.('\$5'?'\n':'')";
 	$pattern[]='/<\/ol>\n?<ol style=\"margin-bottom:0px;margin-top:0px\">/';
 	$replacement[]='';
+
+
+	$pattern[]="/\[url[=]?\](.+?)\[\/url\]/i";
+	$replacement[]='\1';
+
+	$pattern[]="/\[url=((f|ht)tp[s]?:\/\/[^<> \n]+?)\](.+?)\[\/url\]/ie";
+	$replacement[]="smarty_function_external(array('href'=>\"\$1\",'text'=>'\$3','title'=>\"\$1\"))";
+
 
 	$pattern[]="/\n/";
 	$replacement[]="<br/>\n";
@@ -215,6 +218,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	} else {
 		$template = 'static_404.tpl';
 	}
+} else {
+	$smarty->assign('user_id', $page['user_id']);
+	$smarty->assign('url', $page['url']);
 }
 
 
