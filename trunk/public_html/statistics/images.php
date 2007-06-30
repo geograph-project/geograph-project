@@ -47,7 +47,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 
 	$sql = "SELECT 
-	CONCAT(ELT(ftf+1, '','first '),moderation_status) as `Status`, 
+	CONCAT(ELT(ftf+1, '','first '),moderation_status) as `Classification`, 
 	SUM(submitted > DATE_SUB(NOW() , interval 1 HOUR)) as `In last Hour`,
 	SUM(submitted > DATE_SUB(NOW() , interval 1 DAY)) as `In last 24 Hours`,
 	SUM(submitted > DATE_SUB(NOW() , interval 7 DAY)) as `In last 7 Days`,
@@ -55,7 +55,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	SUM(submitted > DATE_SUB(NOW() , interval 1 YEAR)) as `In last Year`,
 	COUNT(*) as `All Time Count`
 	FROM gridimage 
-	GROUP BY `Status` 
+	GROUP BY `Classification` 
 	ORDER BY moderation_status+0 DESC, ftf DESC";
 	
 	$table = $db->getAll($sql);	

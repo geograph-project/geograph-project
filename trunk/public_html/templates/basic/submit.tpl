@@ -185,10 +185,6 @@ geographing</a> first.</p>
 
 	  <div class="photo33" style="float:left;width:150px; height:170px; background-color:white"><a title="{$image->title|escape:'html'} by {$image->realname} - click to view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(120,120,false,true)}</a>
 	  <div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->title|escape:'html'}</a></div>
-	  <div class="statuscaption">status:
-		{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}
-		{if $image->ftf}(first){/if}
-	  </div>
 	  </div>
 
 	{/foreach}
@@ -346,11 +342,11 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 
 <div style="position:relative; background-color:#dddddd; border: 1px solid red; padding-left:10px;padding-top:1px;padding-bottom:1px;">
-<h3>Image Status</h3>
+<h3>Image Classification</h3>
 
-<p><label for="user_status">I wish to suggest this image become a supplemental:</label> <input type="checkbox" name="user_status" id="user_status" value="accepted" {if $user_status == "accepted"}checked="checked"{/if}/> (tick to apply)</p>
+<p><label for="user_status">I wish to suggest supplemental classification:</label> <input type="checkbox" name="user_status" id="user_status" value="accepted" {if $user_status == "accepted"}checked="checked"{/if}/> (tick to apply)</p>
 
-<p>Only use this tick box if you believe the subject matter is not quite a 'geograph', there can be many geograph images per square.</p>
+<p>Only use this tick box if you believe the subject matter is not a 'geograph', there can be many geograph images per square.</p>
 
 <p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in the <a href="/help/geograph_guide" target="_blank">geograph guide</a> (opens in new window).</span></p>
 </div>

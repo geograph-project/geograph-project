@@ -146,7 +146,7 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
      <a href="/statistics/contributor.php?u={$user->user_id}">Your Totals</a>, 
     {/if}
    {/dynamic}
-   <a href="/statistics/images.php">Status Breakdown</a> and
+   <a href="/statistics/images.php">Classification Breakdown</a> and
    <a href="/statistics/estimate.php">Future Estimates</a>.</p>
 
 {include file="_std_end.tpl"}

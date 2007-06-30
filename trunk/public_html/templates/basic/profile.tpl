@@ -72,7 +72,7 @@
 
 {if $profile->stats.total gt 0}
  	<div style="background-color:#dddddd; padding:10px;">
-		<div style="float:right; position:relative; margin-top:0px; font-size:0.7em">View Breakdown by <a href="/statistics/breakdown.php?by=status&u={$profile->user_id}" rel="nofollow">Status</a>, <a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}" rel="nofollow">Date Taken</a> or <a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}" rel="nofollow">Myriad</a>(<a href="/help/squares" title="What is a Myriad?">?</a>).</div>
+		<div style="float:right; position:relative; margin-top:0px; font-size:0.7em">View Breakdown by <a href="/statistics/breakdown.php?by=status&u={$profile->user_id}" rel="nofollow">Classification</a>, <a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}" rel="nofollow">Date Taken</a> or <a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}" rel="nofollow">Myriad</a>(<a href="/help/squares" title="What is a Myriad?">?</a>).</div>
 		<h3 style="margin-top:0px;margin-bottom:0px">My Statistics</h3>
 		<ul>
 			<li><b>{$profile->stats.ftf}</b> Geograph points (see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)<ul>
@@ -116,7 +116,7 @@
 		<td>Grid Ref</td>
 		<td>Title</td>
 		<td sorted="desc">Submitted</td>
-		<td>Status</td>
+		<td>Classification</td>
 	</tr></thead>
 	<tbody>
 	{foreach from=$userimages item=image}
