@@ -63,7 +63,7 @@ if (count($images->results)) {
 	foreach ($images->results as $img)
 	{
 		$item = new FeedItem();
-		$item->guid = $images->images[$i]->gridimage_id;
+		$item->guid = $img->gridimage_id;
 		$item->title = $img->grid_reference." : ".$img->title;
 		$item->link = "http://{$_SERVER['HTTP_HOST']}/photo/{$img->gridimage_id}";
 		if (!empty($img->dist_string) || !empty($img->imagetakenString)) {

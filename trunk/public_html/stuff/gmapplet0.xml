@@ -4,8 +4,11 @@
                 description="Very basic Mapplet - loads Geograph pictures into the current view as you move the main map."
                 title_url="http://www.geograph.org.uk/"
                 author="Barry Hunter"
+                author_affiliation="Developer"
                 author_email="geograph@barryhunter.co.uk"
                 author_link="http://www.nearby.org.uk/blog/"
+                screenshot="http://www.geograph.org.uk/img/gmapplet0.png"
+                thumbnail="http://www.geograph.org.uk/img/gmapplet0-thumb.png"
                 height="150">
   <Require feature="sharedmap"/>
 </ModulePrefs>
