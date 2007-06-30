@@ -80,10 +80,10 @@
 	  <input class="accept" type="button" id="accept{$image->gridimage_id}" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey;"{/if}/>
 	  <input class="reject" type="button" id="reject{$image->gridimage_id}" value="Reject" onClick="moderateImage({$image->gridimage_id}, 'rejected')"/>
 	  {if (!$remoderate && $image->user_status && $image->moderation_status != 'pending') || $moderator}
-	  	<br/>Current Status: {$image->moderation_status} {if $image->mod_realname}, by {$image->mod_realname}{/if}
+	  	<br/>Current Classification: {$image->moderation_status} {if $image->mod_realname}, by {$image->mod_realname}{/if}
 	  {/if}
 	  {if $image->new_status}
-	  	<br/><span{if $image->new_status != $image->moderation_status} style="border:1px solid red; padding:5px; line-height:3em;"{/if}>Suggested Status: {$image->new_status} {if $image->ml_realname}, by {$image->ml_realname}{/if}</span>
+	  	<br/><span{if $image->new_status != $image->moderation_status} style="border:1px solid red; padding:5px; line-height:3em;"{/if}>Suggested Classification: {$image->new_status} {if $image->ml_realname}, by {$image->ml_realname}{/if}</span>
 	  {/if}
 	  {if $image->user_status}<div class="caption" style="color:red">User: suggest {$image->user_status}</div>{else}{if $image->different_square}<div class="caption" style="color:red">System: suggest Accept</div>{/if}{/if}
 	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
