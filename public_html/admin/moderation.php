@@ -54,7 +54,7 @@ if (isset($_GET['gridimage_id']))
 				if ($USER->hasPerm('basic')) {
 					$status = $db->Quote($status);
 					$db->Execute("REPLACE INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status, old_status='{$image->moderation_status}',created=now()");
-					print "status $status recorded";
+					print "classification $status recorded";
 				}
 				else
 				{

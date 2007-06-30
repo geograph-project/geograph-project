@@ -60,7 +60,7 @@ $db = NewADOConnection($GLOBALS['DSN']);
 	dump_sql_table($sql,'Most Active Searched on User');
 
 	$sql = "select limit2,count(distinct user_id) as users,count(*) as count from queries where $datecrit group by limit2";	
-	dump_sql_table($sql,'Most Used Moduration Status');
+	dump_sql_table($sql,'Most Used Classification');
 
 	$sql = "select limit3,count(distinct user_id) as users,count(*) as count from queries where $datecrit group by limit3";	
 	dump_sql_table($sql,'Most Used Image Category');

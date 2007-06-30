@@ -138,7 +138,7 @@ Refine:
 
 	<li>Breakdown by: <ul>
 	   <li><a href="/statistics/breakdown.php?by=category">Category</a>,
-	   <a href="/statistics/breakdown.php?by=status">Status</a>,
+	   <a href="/statistics/breakdown.php?by=status">Classification</a>,
 	   <a href="/statistics/breakdown.php?by=takenyear">Date Taken</a>,
 	   <a href="/statistics/breakdown.php?by=user">Contributor</a> or<br/>
 	   <a href="/statistics/breakdown.php?by=gridsq">100km x 100km</a> Squares (Myriads)

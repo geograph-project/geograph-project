@@ -165,7 +165,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 <dt>Photographer</dt>
  <dd><a title="View profile" href="/profile/{$image->user_id}">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap">find more nearby</a>)</dd>
 
-<dt>Image status</dt>
+<dt>Image classification</dt>
 <dd>{if $image->ftf}
 	Geograph (First for {$image->grid_reference})
 {else}

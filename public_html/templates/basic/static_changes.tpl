@@ -22,7 +22,7 @@ When the moderator closes the ticket, you will receive an email.</p>
 <p>Similarly if you leave a message to the moderators <i>without making any changes</i>, a ticket is raised
 and a moderator will be notified.</p>
 
-<p>In certain cases you can use the 'Image Self Moderation' section to suggest a status for an image, 
+<p>In certain cases you can use the 'Image Self Moderation' section to suggest a classification for an image, 
 if the image is still pending then the moderator will see the suggestion, just like ticking the box during submission.
 You can also use this to request rejection of an image submitted in error. Once the image has been moderated you
 can also suggest a further moderation, in which case a moderator will revisit your image and may offer feedback.</p>

@@ -229,7 +229,7 @@ if ($grid_given)
 			$breakdowns[] = array('type'=>'takenyear','name'=>'Taken Years','count'=>$row['takenyear']);
 			$breakdowns[] = array('type'=>'submitted','name'=>'Submitted Months','count'=>$row['submitted']);
 			$breakdowns[] = array('type'=>'submittedyear','name'=>'Submitted Years','count'=>$row['submittedyear']);
-			$breakdowns[] = array('type'=>'status','name'=>'Status','count'=>$row['status']);
+			$breakdowns[] = array('type'=>'status','name'=>'Classification','count'=>$row['status']);
 			$breakdowns[] = array('type'=>'centi','name'=>'Centisquares','count'=>$row['centi']-($row['centi_blank'] > 0));
 			$smarty->assign_by_ref('breakdowns', $breakdowns);
 			
@@ -271,7 +271,7 @@ if ($grid_given)
 					$i++;
 				}
 			} elseif ($_GET['by'] == 'status') {
-				$breakdown_title = "Status";
+				$breakdown_title = "Classification";
 				$all = $db->getAll("SELECT moderation_status,count(*),gridimage_id
 				FROM gridimage
 				WHERE gridsquare_id = '{$square->gridsquare_id}'

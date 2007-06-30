@@ -88,7 +88,7 @@
 				<small>open <a href="/statistics.php?by=user" target="_blank">Contributor List</a> in new window</small></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="moderation_status">status</label></td> 
+			 <td><label for="moderation_status">classification</label></td> 
 			 <td> 
 				<select name="moderation_status" id="moderation_status" size="1" class="searchinput"> 
 				  <option value=""> </option> 
