@@ -64,7 +64,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	where (licence != 'none' and approved = 1) 
 		or user.user_id = {$USER->user_id}
 		or ($isadmin and approved != -1)
-	order by article_sort_order desc,sort_order,article.article_cat_id,create_time desc");
+	order by sort_order,article.article_cat_id,article_sort_order desc,create_time desc");
 	
 	$urls = array();
 	foreach ($list as $i => $row) {
