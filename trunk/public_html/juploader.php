@@ -133,6 +133,7 @@ function UploadPicture() {
 		if ($rc == "") {
 			//clear user profile
 			$ab=floor($USER->user_id/10000);
+			$smarty = new GeographPage;
 			$smarty->clear_cache(null, "user$ab|{$USER->user_id}");
 		
 			$xml['status'] = "OK";
