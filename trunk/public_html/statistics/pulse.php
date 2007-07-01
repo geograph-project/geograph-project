@@ -77,7 +77,7 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 $table[] = array("Parameter"=>'',"Value"=>'');
 
 	$sql = "SELECT COUNT(DISTINCT ipaddr) FROM sessions WHERE EXPIRY > UNIX_TIMESTAMP(DATE_SUB(NOW(),INTERVAL 24 MINUTE))";
-	calc("Approx Visitors in last 24 minutes",$sql);
+	calc("Approx Visitors in last 24 <u>minutes</u>",$sql);
 	
 	$sql = "SELECT COUNT(DISTINCT user_id)-1 FROM autologin WHERE created > DATE_SUB(NOW(), INTERVAL 1 HOUR)";
 	calc("Approx Regular Users visited in last hour",$sql);
