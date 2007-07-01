@@ -13,12 +13,15 @@ NameVirtualHost *
     LogFormat "%{X-Forwarded-For}i %l %{user_id}n %t \"%r\" \"%v\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{php_timing}n" geograph
 
     #don't log heartbeat requests
-    SetEnvIf Request_Method "OPTIONS" dontlog 
+    SetEnvIf Request_Method "OPTIONS" dontlog
 
     #only log if we haven't tripped our dontlog switch
-    CustomLog /var/www/geograph_svn/logs/access_log geograph env=!dontlog 
-    ErrorLog /var/www/geograph_svn/logs/error_log  
+    CustomLog /var/www/geograph_live/logs/access_log geograph env=!dontlog
+    ErrorLog /var/www/geograph_live/logs/error_log
 
+    php_value include_path .:/var/www/geograph_svn/libs/
+    php_value register_globals Off
+    php_value upload_max_filesize 8M
     <Directory /var/www/geograph_svn/public_html/>
 	DirectoryIndex index.php
         Options -Indexes
@@ -28,10 +31,6 @@ NameVirtualHost *
         AddType application/vnd.google-earth.kmz kmz 
     </Directory>
        
-
-    php_value include_path .:/var/www/geograph_svn/libs/
-    php_value register_globals Off
-    php_value upload_max_filesize 8M
 
 #    php_value display_errors Off
 
@@ -47,6 +46,7 @@ NameVirtualHost *
 
     RewriteRule /help/([^/]*) /staticpage.php?page=$1 [qsa]
 
+    RewriteRule /profile/([0-9]+)/feed(|/[0-9]+)/recent\.([\w]+) /syndicator.php?page=$2&u=$1&extension=$3 [qsa]
     RewriteRule /feed/userid/([0-9]+)(|/[0-9]+)\.([\w]+) /syndicator.php?page=$2&u=$1&extension=$3 [qsa]
     RewriteRule /user/([^\/]+)/map/?(.*)$ /mapbrowse.php?user=$1&t=$2
     RewriteRule /user/([^\/]+)/all/?$ /profile.php?user=$1&all=1
@@ -66,6 +66,8 @@ NameVirtualHost *
 
     RewriteRule /credits/?([\d-]*)/?$ /credits.php?when=$1
 
+    RewriteRule /article/feed/recent\.([\w]+) /article/syndicator.php?extension=$1 [qsa]
+  
     RewriteRule /feed/recent\.([\w]+) /syndicator.php?extension=$1 [qsa]
     RewriteRule /feed/recent/?([^/]*)/? /syndicator.php?format=$1 [qsa]
 
@@ -81,9 +83,9 @@ NameVirtualHost *
     RewriteRule /discuss/feed/recent/?([^/]*) /discuss/syndicator.php?format=$1 [qsa]
     RewriteRule /discuss/feed/forum([0-9]+)\.([\w]+) /discuss/syndicator.php?forum=$1&extension=$2 [qsa]
     RewriteRule /discuss/feed/forum([0-9]+)/?([^/]*) /discuss/syndicator.php?forum=$1&format=$2 [qsa]
-    
+
     RewriteRule /get-juppy.jnlp /get-juppy.php [qsa]
-    
+
     #rewrite imagemap clicks as regular urls - must do this otherwise
     #php's use_trans_sid will break the urls
     RewriteCond %{QUERY_STRING} (.+)\?([0-9]+),([0-9]+)$

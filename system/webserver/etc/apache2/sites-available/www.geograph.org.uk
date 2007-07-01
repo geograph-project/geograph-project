@@ -57,6 +57,7 @@
 
     RewriteRule /help/([^/]*) /staticpage.php?page=$1 [qsa]
 
+    RewriteRule /profile/([0-9]+)/feed(|/[0-9]+)/recent\.([\w]+) /syndicator.php?page=$2&u=$1&extension=$3 [qsa]
     RewriteRule /feed/userid/([0-9]+)(|/[0-9]+)\.([\w]+) /syndicator.php?page=$2&u=$1&extension=$3 [qsa]
     RewriteRule /user/([^\/]+)/map/?(.*)$ /mapbrowse.php?user=$1&t=$2
     RewriteRule /user/([^\/]+)/all/?$ /profile.php?user=$1&all=1
@@ -76,6 +77,8 @@
 
     RewriteRule /credits/?([\d-]*)/?$ /credits.php?when=$1
 
+    RewriteRule /article/feed/recent\.([\w]+) /article/syndicator.php?extension=$1 [qsa]
+  
     RewriteRule /feed/recent\.([\w]+) /syndicator.php?extension=$1 [qsa]
     RewriteRule /feed/recent/?([^/]*)/? /syndicator.php?format=$1 [qsa]
 
