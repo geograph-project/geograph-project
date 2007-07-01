@@ -237,8 +237,8 @@ function smarty_function_place($params) {
 /**
 * adds commas to thousendise a number
 */
-function smarty_function_thousends($input) {
-	return number_format($input);
+function smarty_function_thousends($input,$decimals=0) {
+	return number_format($input,$decimals);
 }
 
 function smarty_function_ordinal($i) {

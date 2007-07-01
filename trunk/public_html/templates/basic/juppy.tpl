@@ -18,7 +18,7 @@ if you're on an extended trip away from your internet connection with your lapto
 information in whilst it's still fresh in your mind.</p>
 
 <p>To use JUppy, you need a machine with a Sun Java 1.5 (SE5) runtime installed. This is a free download
-from <a href="http://java.sun.com/javase/downloads/index.jsp">Sun<a/>. If you already have Java 
+from {external href="http://java.sun.com/javase/downloads/index.jsp" text="Sun"}. If you already have Java 
 installed and it's not the correct one, it will be updated automatically.</p>
 
 <p>JUppy is written in Java so it runs on several different types of machine. It's been extensively tested on 
@@ -50,10 +50,10 @@ the Geograph servers to see whether we've updated JUppy. If we have, it will aut
 <h2>...and finally...</h2>
 
 {if $notgood}
-  <p style='border: single red 1px; background: pink'><br />{$sadly}<br />&nbsp;</p>
+  <p style="border:1px solid red; background-color:pink"><br />{$sadly}<br />&nbsp;</p>
 {else}
   <p>{$sadly}</p>
-  <p>Thanks for being patient. It's now time to <a href="/get-juppy.jnlp">download JUppy...</a></p>  
+  <p>Thanks for being patient. It's now time to <a href="/get-juppy.jnlp">download JUppy...</a> ({$filesize|thousends:2}kb)</p>  
 {/if}
 
 

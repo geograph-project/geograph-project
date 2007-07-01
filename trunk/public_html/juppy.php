@@ -109,6 +109,7 @@ if (!$GLOBALS['USER']->registered) {
 
 $smarty->assign_by_ref('sadly', $sadly);
 $smarty->assign_by_ref('notgood', $notgood);
+$smarty->assign('filesize', filesize('JUploader.jar')/1024);
 
 
 $smarty->display($template, $cacheid);
