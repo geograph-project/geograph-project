@@ -4,6 +4,9 @@
 {literal}<style type="text/css">
 ul.explore li {	padding:3px; }
 </style>{/literal}
+
+<div style="float:right"><a title="geoRSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-geo">geo RSS</a></div>
+
 <h2>Articles</h2>
 
 {foreach from=$list item=item}
@@ -34,6 +37,9 @@ ul.explore li {	padding:3px; }
 
 </ul>
 </div>
+<br style="clear:both"/>
+
+<div style="float:right"><a title="geoRSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-geo">geo RSS</a></div>
 <br style="clear:both"/>
 
 <div class="interestBox">

@@ -430,8 +430,9 @@ class GridSquare
 			//ensure we get exploded reference members too
 			$this->_storeGridRef($this->grid_reference);
 			
-			
+			return true;
 		}
+		return false;
 	}
 	
 	/**

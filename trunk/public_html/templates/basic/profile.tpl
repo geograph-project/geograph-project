@@ -138,9 +138,9 @@
 	<h3 style="margin-bottom:0px">Explore My Images</h3>
 
 	<ul>
-		<li><b>Maps</b>: {if $profile->stats.total gt 10}<a href="/profile/{$profile->user_id}/map">Personalised Geograph Map</a> or {/if} Recent Photos on <a href="http://maps.google.co.uk/maps?q=http://{$http_host}/feed/userid/{$profile->user_id}.kml&ie=UTF8&om=1">Google Maps</a></li>
+		<li><b>Maps</b>: {if $profile->stats.total gt 10}<a href="/profile/{$profile->user_id}/map">Personalised Geograph Map</a> or {/if} Recent Photos on <a href="http://maps.google.co.uk/maps?q=http://{$http_host}/profile/{$profile->user_id}/feed/recent.kml&ie=UTF8&om=1">Google Maps</a></li>
 
-		<li><b>Recent Images</b>: <a title="RSS Feed for images by {$profile->realname}" href="/feed/userid/{$profile->user_id}.georss" class="xml-rss">RSS</a> or <a title="GPX file for images by {$profile->realname}" href="/feed/userid/{$profile->user_id}.gpx" class="xml-gpx">GPX</a></li>
+		<li><b>Recent Images</b>: <a title="RSS Feed for images by {$profile->realname}" href="/profile/{$profile->user_id}/feed/recent.georss" class="xml-rss">RSS</a> or <a title="GPX file for images by {$profile->realname}" href="/profile/{$profile->user_id}/feed/recent.gpx" class="xml-gpx">GPX</a></li>
 		{if $profile->stats.total gt 10}
 			{dynamic}{if $user->registered}
 				<li><b>Download</b>: 

@@ -1322,3 +1322,7 @@ INSERT INTO `loc_country` (`code`, `name`) VALUES
 ('uk', 'Northern Ireland'),
 ('W', 'Wales');
 
+
+
+ALTER TABLE `article` ADD `article_sort_order` TINYINT NOT NULL AFTER `create_time` ;
+ALTER TABLE `article_revisions` ADD `article_sort_order` TINYINT NOT NULL AFTER `create_time` ;

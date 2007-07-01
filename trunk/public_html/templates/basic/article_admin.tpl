@@ -2,6 +2,8 @@
 
 {include file="_std_begin.tpl"}
 
+<div style="float:right"><a title="geoRSS Feed for Geograph Pending Articles" href="/article/syndicator.php?admin=1" class="xml-geo">geo RSS</a> (unapproved articles)</div>
+
 <h2>Articles</h2>
 
 <ul class="explore">
@@ -35,6 +37,8 @@
 {/foreach}
 
 </ul>
+<div style="float:right"><a title="geoRSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-geo">geo RSS</a></div>
+<br style="clear:both"/>
 
 <div class="interestBox">
 {if $user->registered} 
