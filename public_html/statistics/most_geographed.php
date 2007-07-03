@@ -105,31 +105,35 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign("most$ri", $most);	
 	}
 
-	
-	$onekm = $db->GetAll("select grid_reference,imagecount from gridsquare where imagecount>1 order by imagecount desc,grid_reference limit 50");
-		
-	$i = 1;
-	$lastgeographs = -1;
-	foreach($onekm as $id=>$entry)
-	{
-		if ($lastgeographs == $onekm[$id]['imagecount'])
-			$onekm[$id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
-		else {
+	if ($myriad) {
+		$onekm = array();
+		$smarty->assign("myriad", $myriad);
+	} else {
+		$onekm = $db->GetAll("select grid_reference,imagecount from gridsquare where imagecount>1 order by imagecount desc,grid_reference limit 50");
 
-			$units=$i%10;
-			switch($units)
-			{
-				case 1:$end=($i==11)?'th':'st';break;
-				case 2:$end=($i==12)?'th':'nd';break;
-				case 3:$end=($i==13)?'th':'rd';break;
-				default: $end="th";	
+		$i = 1;
+		$lastgeographs = -1;
+		foreach($onekm as $id=>$entry)
+		{
+			if ($lastgeographs == $onekm[$id]['imagecount'])
+				$onekm[$id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
+			else {
+
+				$units=$i%10;
+				switch($units)
+				{
+					case 1:$end=($i==11)?'th':'st';break;
+					case 2:$end=($i==12)?'th':'nd';break;
+					case 3:$end=($i==13)?'th':'rd';break;
+					default: $end="th";	
+				}
+
+				$onekm[$id]['ordinal']=$i.$end;
+				$lastgeographs = $onekm[$id]['imagecount'];
 			}
+			$i++;
 
-			$onekm[$id]['ordinal']=$i.$end;
-			$lastgeographs = $onekm[$id]['imagecount'];
 		}
-		$i++;
-		
 	}
 
 	$smarty->assign_by_ref("onekm", $onekm);		
