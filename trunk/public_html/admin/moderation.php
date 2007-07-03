@@ -98,6 +98,22 @@ if (isset($_GET['gridimage_id']))
 	exit;
 }
 
+if (!empty($_GET['abandon'])) {
+	$USER->hasPerm('moderator') || $USER->mustHavePerm("ticketmod");
+	
+	$db->Execute("DELETE FROM gridsquare_moderation_lock WHERE user_id = {$USER->user_id}");
+	
+	$db->Execute("DELETE FROM gridimage_moderation_lock WHERE user_id = {$USER->user_id}");
+	
+	if ($USER->hasPerm('moderator')) {
+		header("Location: /admin/");
+	} else {
+		header("Location: /");
+	}
+	exit;
+}
+
+
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(100,intval($_GET['limit'])):50;
 
 
@@ -152,15 +168,6 @@ Regards,
 	$USER->mustHavePerm('admin');
 } else {
 	$USER->mustHavePerm('moderator');
-}
-
-if (!empty($_GET['abandon'])) {
-	$db->Execute("DELETE FROM gridsquare_moderation_lock WHERE user_id = {$USER->user_id}");
-	
-	$db->Execute("DELETE FROM gridimage_moderation_lock WHERE user_id = {$USER->user_id}");
-	
-	header("Location: /admin/");
-	exit;
 }
 
 
