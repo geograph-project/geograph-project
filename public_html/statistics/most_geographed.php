@@ -27,10 +27,11 @@ init_session();
 
 $smarty = new GeographPage;
 
+$myriad = (isset($_GET['myriad']) && preg_match('/^\w+$/' , $_GET['myriad']))?$_GET['myriad']:'';
 
 
 $template='statistics_most_geographed.tpl';
-$cacheid='statistics|most_geographed';
+$cacheid='statistics|most_geographed'.$myriad;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
@@ -51,7 +52,12 @@ if (!$smarty->is_cached($template, $cacheid))
 			
 		$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=$ri order by origin_x,origin_y limit 1");
 		
-			
+		if ($myriad) {
+			$sql_where = " and grid_reference like '$myriad%'";
+		} else {
+			$sql_where = '';
+		}
+		
 		$most = $db->GetAll("select 
 		grid_reference,x,y,
 		concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,
@@ -59,7 +65,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		sum(percent_land >0) as land_count,
 		(sum(has_geographs) * 100 / sum(percent_land >0)) as percentage
 		from gridsquare 
-		where reference_index = $ri 
+		where reference_index = $ri $sql_where
 		group by tenk_square 
 		having geograph_count > 0 and percentage <100
 		order by percentage desc,tenk_square 
