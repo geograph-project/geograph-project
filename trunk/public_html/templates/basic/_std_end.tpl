@@ -12,7 +12,7 @@
     <li><a title="Articles" href="/article/">Articles</a></li>
     <li><a title="Statistics" href="/numbers.php">Statistics</a></li>
     <li><a title="Leaderboard" href="/statistics/moversboard.php">Leaderboard</a></li>
-    <li><a title="FAQ" href="/faq.php">FAQ</a></li>
+    <li><a title="FAQ" href="/faq.php">FAQ</a> <span style="color:red; font-size:0.8em">Updated!</span></li>
     <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact</a></li>
   </ul>
   
