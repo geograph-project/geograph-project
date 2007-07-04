@@ -34,7 +34,7 @@ if (empty($_GET['page']) || preg_match('/[^\w-\.]/',$_GET['page'])) {
 $isadmin=$USER->hasPerm('moderator')?1:0;
 
 $template = 'article_article.tpl';
-$cacheid = $_GET['page'];
+$cacheid = 'articles|'.$_GET['page'];
 $cacheid .= '|'.$USER->hasPerm('moderator')?1:0;
 $cacheid .= '-'.(isset($_SESSION['article_urls']) && in_array($_GET['page'],$_SESSION['article_urls'])?1:0);
 if (isset($_SESSION[$_GET['page']])) {
