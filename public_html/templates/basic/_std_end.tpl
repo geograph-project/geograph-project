@@ -17,11 +17,13 @@
   </ul>
   
   {dynamic}
-  {if $is_mod || $is_admin}
+  {if $is_mod || $is_admin || $is_tickmod}
   <h3>Admin</h3>
   <ul>
      <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
-     <li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
+     {if $is_mod}
+     	<li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
+     {/if}
      {if $is_tickmod}
      	<li><a title="Trouble Tickets" href="/admin/tickets.php">Tickets</a> (<a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search" title="Open in Sidebar, IE and Firefox Only">S</a>)</li>
      {/if}

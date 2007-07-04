@@ -24,7 +24,7 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-$USER->hasPerm("admin") || $USER->mustHavePerm("moderator");
+$USER->hasPerm("admin") || $USER->hasPerm("ticketmod") || $USER->mustHavePerm("moderator");
 
 if (isset($_SESSION['editpage_options']))
 	unset($_SESSION['editpage_options']);
@@ -36,27 +36,31 @@ $template='admin_index.tpl';
 $cacheid=$USER->user_id;
 $smarty->caching=0;
 
-if (!$smarty->is_cached($template, $cacheid))
-{
+
 	//lets get some stats
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
+
+if ($USER->hasPerm("ticketmod")) {
 		
-	$smarty->assign('images_pending', $db->GetOne("select count(*) from gridimage where moderation_status='pending'"));
 	$smarty->assign('tickets_new', $db->GetOne("select count(*) from gridimage_ticket where moderator_id=0 and status<>'closed' and deferred < date_sub(NOW(),INTERVAL 24 HOUR)"));
 	$smarty->assign('tickets_yours', $db->GetOne("select count(*) from gridimage_ticket where moderator_id={$USER->user_id} and status<>'closed'"));
-
-	
-	$smarty->assign('gridsquares_sea', $db->GetAssoc("select reference_index,count(*) from gridsquare where percent_land=-1 group by reference_index"));
 }
 
-$smarty->assign('images_pending_available', $db->GetOne("select count(distinct gridimage_id) from gridimage as gi left join gridsquare_moderation_lock as l on(gi.gridsquare_id=l.gridsquare_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) ) where submitted > date_sub(now(), interval 7 day) and (moderation_status = 2) and (l.gridsquare_id is null OR (l.user_id = {$USER->user_id} AND lock_type = 'modding') OR (l.user_id != {$USER->user_id} AND lock_type = 'cantmod') )"));
+if ($USER->hasPerm("moderator")) {
 
-$smarty->assign('gridsquares_sea_test', $db->GetOne("select count(*) from mapfix_log where old_percent_land=-1 and created > date_sub(now(),interval 30 minute) and user_id != {$USER->user_id}"));
-
-
-$smarty->assign('articles_ready', $db->getOne("select count(*) from article where licence != 'none' and approved = 0"));
+	$smarty->assign('images_pending', $db->GetOne("select count(*) from gridimage where moderation_status='pending'"));
 	
+	$smarty->assign('gridsquares_sea', $db->GetAssoc("select reference_index,count(*) from gridsquare where percent_land=-1 group by reference_index"));
+
+
+	$smarty->assign('images_pending_available', $db->GetOne("select count(distinct gridimage_id) from gridimage as gi left join gridsquare_moderation_lock as l on(gi.gridsquare_id=l.gridsquare_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) ) where submitted > date_sub(now(), interval 7 day) and (moderation_status = 2) and (l.gridsquare_id is null OR (l.user_id = {$USER->user_id} AND lock_type = 'modding') OR (l.user_id != {$USER->user_id} AND lock_type = 'cantmod') )"));
+
+	$smarty->assign('gridsquares_sea_test', $db->GetOne("select count(*) from mapfix_log where old_percent_land=-1 and created > date_sub(now(),interval 30 minute) and user_id != {$USER->user_id}"));
+
+
+	$smarty->assign('articles_ready', $db->getOne("select count(*) from article where licence != 'none' and approved = 0"));
+}	
 
 
 $smarty->display($template,$cacheid);

@@ -9,6 +9,10 @@
 
 	<h2>Submit Step 1 of 4 : Choose grid square</h2>
 
+{if $user->rank eq 0} 
+	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"><b>First time here?</b> - if so you might like to have a look at our <a href="/faq.php">FAQ</a>.</div>
+
+{/if}
 
 <div style="width:180px;margin-left:10px;margin-bottom:100px;float:right;font-size:0.8em;padding:10px;background:#dddddd;position:relative">
 <h3 style="margin-bottom:0;margin-top:0">Need Help?</h3>
@@ -228,7 +232,7 @@ Below is a full-size preview of the image we will store for grid reference
 <p>If you're the first to submit a proper &quot;geograph&quot; for {$gridref}
 you'll get a geograph point added to your profile and the warm glow that comes
 with it.</p>
-<p>So what makes an image a genuine geograph? (there can be many geograph images per square)</p>
+<p>So what makes an image a genuine geograph?</p>
 <ul>
 <li>The image subject must be within grid square {getamap gridref=$gridref}, and ideally the photographer should be too.</li>
 <li>You must clearly show at close range one of the main geographical features within the square</li>
@@ -239,6 +243,11 @@ with it.</p>
 <p>Good quality, visually appealing and historically relevant pictures (eg wide area views
 covering many square kilometres) may also be accepted as supplemental images 
 for {$gridref} provided they are accurately located, but may not qualify as geographs.</p>
+
+<ul>
+<li>We welcome many Geograph or Supplemental images per square, so even if you don't get the point, you are still making a valuable contribution to the project.</li>
+</ul>
+
 </div>
 
 <div style="float:right;position:relative;">
@@ -346,9 +355,9 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 <p><label for="user_status">I wish to suggest supplemental classification:</label> <input type="checkbox" name="user_status" id="user_status" value="accepted" {if $user_status == "accepted"}checked="checked"{/if}/> (tick to apply)</p>
 
-<p>Only use this tick box if you believe the subject matter is not a 'geograph', there can be many geograph images per square.</p>
+<p>Only use this tick box if you believe the subject matter is not a 'geograph', there can be many geograph images per square, if you are unsure just leave it unticked and a moderator will decide. In either case a moderator will make the final classification.</p>
 
-<p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in the <a href="/help/geograph_guide" target="_blank">geograph guide</a> (opens in new window).</span></p>
+<p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in this <a href="http://www.geograph.org.uk/article/Geograph-or-supplemental" target="_blank">article on how images are moderated</a> (opens in new window).</span></p>
 </div>
 
 <p>

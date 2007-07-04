@@ -1,6 +1,16 @@
 {include file="_std_begin.tpl"}
 
+ 
+ <div style="float:right;padding:5px;background:pink;position:relative; font-size:0.8em;margin-left:20px;">
+ <b>Press Releases</b> 
+ <ul style="margin-top:0;padding:0 0 0 1em;">
+ <li><a href="/help/press_release_001">Ordnance Survey to sponsor the Geograph Project</a></li>
+ <li><a href="/help/press_release_002"><small>Geograph British Isles nominated for the New Statesman New Media Awards 2007 for Education</small></a></li>
+ </ul></div>
+
     <h2>Geograph Sitemap</h2>
+
+ <br style="clear:both"/>
  
  <div style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;margin-left:20px;">
  <h3>Help and Info...</h3>

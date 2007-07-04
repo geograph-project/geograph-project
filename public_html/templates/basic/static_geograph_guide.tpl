@@ -1,6 +1,14 @@
 {assign var="page_title" value="What is a Geograph?"}
 {include file="_std_begin.tpl"}
 
+<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+<img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
+Like many things, this project evolves, and as such this page has been replaced by: <br/>
+{external href="http://www.geograph.org.uk/article/Geograph-or-supplemental"}<br/>
+the text below is maintained only as a historical record. <br/>
+</div>
+<br/>
+
 <h2>Geograph or Supplemental - How are pictures moderated?</h2>
 
 <p>If you are new to the site, please have a look at our <a href="/help/guide">guide</a> 

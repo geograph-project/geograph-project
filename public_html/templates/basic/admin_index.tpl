@@ -3,12 +3,15 @@
 {literal}<style type="text/css">
 #maincontent li { padding-bottom:10px;}
 </style>{/literal}
+{dynamic}
 
 <h2>Administrative Tools</h2>
 <ul>
+{if $is_mod} 
+
 <li><a href="/admin/moderation.php">Moderate</a> new photo submissions<br/>
 <b>[{$images_pending} pending, {dynamic}{$images_pending_available}{/dynamic} available to moderate]</b></li>
-
+{/if}
 
 {if $is_tickmod} 
 <li><a title="Trouble Tickets" href="/admin/tickets.php">Trouble Tickets</a> <small>(Sidebar: <a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search">IE &amp; Firefox</a>, <a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" rel="sidebar" title="Tickets">Opera</a>)</small> - 
@@ -16,7 +19,8 @@
 {/if}
 
 
-{dynamic}
+
+{if $is_mod} 
 
 {if $articles_ready}
 <li><a href="/article/">Articles</a><br/>
@@ -26,7 +30,7 @@
 <li{if $gridsquares_sea_test > 0} style="color:lightgrey">
 <b>Map-fixing in Progress</b> - please come back later.<br/>
 {else}>{/if}
-{/dynamic}
+
 
 <div style="position:relative;float:right; border:1px solid silver">
 <form method="get" action="/admin/mapfixer.php" style="display:inline">
@@ -47,9 +51,10 @@ corrected<br/> <b>{if $gridsquares_sea.1 || $gridsquares_sea.2}[GB:{$gridsquares
 
 <li><a title="Picture of the day" href="/admin/pictureoftheday.php">Picture of the Day</a> - 
    choose daily picture selections</li>
-         
+{/if}
+
 <li>Stats: <a href="/statistics/admin_turnaround.php">Turn Around</a> - 
-   how amazingly quick moderation is</li>
+   rough estimate at moderation times</li>
 </ul>
 
 <h2>Total Submissions</h2>
@@ -58,6 +63,7 @@ corrected<br/> <b>{if $gridsquares_sea.1 || $gridsquares_sea.2}[GB:{$gridsquares
 <h2>Daily Submission Rate</h2>
 <img src="http://www.geograph.org.uk/img/rate.png" width="480" height="161"/>
 
+{if $is_mod} 
 <br/><br/>
 <h4>Remoderate a Square</h4>
 <div style="position:relative;padding:10px">
@@ -72,7 +78,7 @@ corrected<br/> <b>{if $gridsquares_sea.1 || $gridsquares_sea.2}[GB:{$gridsquares
 <input type="hidden" name="resultsperpage" value="100"/>
 </form>
 </div>
-
+{/if}
 
 {if $is_admin}
 <br/><br/>
@@ -137,4 +143,6 @@ the internal land/sea map</li>
 </ul>
 {/if}
     
+{/dynamic}
+
 {include file="_std_end.tpl"}
