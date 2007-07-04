@@ -45,7 +45,7 @@ the Republic of Ireland, and you can be part of it.</p>
 <li>It's a geography project for the people</li>
 <li>It's a national photography project</li>
 <li>It's a good excuse to get out more!</li>
-<li>It's a free and open online community project for all</li>
+<li>It's a free and <a href="/faq.php#opensource">open online community</a> project for all</li>
 </ul>
 
 

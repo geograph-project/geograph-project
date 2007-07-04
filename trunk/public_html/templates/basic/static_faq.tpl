@@ -7,6 +7,13 @@ ul.contents li { border-top: 1px solid lightgrey; padding-top:2px; margin-top:2p
 ul.contents li.last { padding-bottom:2px; border-bottom: 1px solid lightgrey; }
 </style>{/literal}
  
+ 
+<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+<img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
+This page is was never finished, please see our main <a href="/faq.php">FAQ</a>
+</div>
+<br/>
+
     <h2>Image FAQ - Frequently Asked Questions</h2>
  
   

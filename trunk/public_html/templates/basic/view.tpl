@@ -12,15 +12,9 @@
 {if $image->moderation_status eq 'rejected'}
 <h3>Rejected</h3>
 <p>This photograph has been rejected by the site moderators, and is only viewable by you.
-Possible reasons for rejection include:
 </p>
 <ul>
-<li>Doesn't offer much geographical context - closeups tend to fall into this category.
-Shots don't have to be sweeping landscapes, but must provide a reasonable idea of
-typical geography.</li>
-<li>Family snap - while people can be in the photo, they must not <i>be</i> the photo</li>
-<li>Inappropriate content - any image containing material inappropriate for minors</li>
-<li>Image too small - minimum is 480 pixels on longer side, 640 is preferred.</li>
+<li><a href="http://www.geograph.org.uk/article/Reasons-for-rejection">Possible reasons for rejection</a></li>
 </ul>
 <p>We keep rejected submissions on file for a short period, so if you think your
 image has been incorrectly rejected (and mistakes do happen!) please <a title="Contact us" href="/contact.php">contact us</a>
@@ -102,7 +96,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <table style="width:100%"><tr>
 
-<td style="width:50px"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img src="/templates/basic/img/icon_discuss.gif" alt="Discuss"/></a></td>
+<td style="width:50px"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img src="/templates/basic/img/icon_discuss.gif" alt="Discuss" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
 {if $discuss}
 	There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a
@@ -113,7 +107,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 {/if}
 </td>
 
-<td style="width:50px"><a href="/editimage.php?id={$image->gridimage_id}"><img src="/templates/basic/img/icon_alert.gif" alt="Modify"/></a></td>
+<td style="width:50px"><a href="/editimage.php?id={$image->gridimage_id}"><img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
   
   {if ($user->user_id eq $image->user_id) or ($ismoderator)}
@@ -123,7 +117,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
   {/if}
 </td>
 
-<td style="width:50px"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="/templates/basic/img/icon_email.gif" alt="Email"/></a></td>
+<td style="width:50px"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="/templates/basic/img/icon_email.gif" alt="Email" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
   
   <a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the photographer</a>

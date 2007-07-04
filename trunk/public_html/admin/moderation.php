@@ -105,11 +105,7 @@ if (!empty($_GET['abandon'])) {
 	
 	$db->Execute("DELETE FROM gridimage_moderation_lock WHERE user_id = {$USER->user_id}");
 	
-	if ($USER->hasPerm('moderator')) {
-		header("Location: /admin/");
-	} else {
-		header("Location: /");
-	}
+	header("Location: /admin/");
 	exit;
 }
 
