@@ -10,17 +10,22 @@
 {/if}
 
 {if $image->moderation_status eq 'rejected'}
-<h3>Rejected</h3>
-<p>This photograph has been rejected by the site moderators, and is only viewable by you.
-</p>
+
+<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+
+<h3 style="color:black"><img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/> Rejected</h3>
+
+<p>This photograph has been rejected by the site moderators, and is only viewable by you.</p>
+
 <ul>
 <li><a href="http://www.geograph.org.uk/article/Reasons-for-rejection">Possible reasons for rejection</a></li>
 </ul>
-<p>We keep rejected submissions on file for a short period, so if you think your
-image has been incorrectly rejected (and mistakes do happen!) please <a title="Contact us" href="/contact.php">contact us</a>
-referring to <b>image {$image->gridimage_id}</b>
-</p>
 
+<p>We keep rejected submissions on file for a short period, so if you think your
+image has been incorrectly rejected (and mistakes do happen!) please use the "<a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">edit picture information</a>" link below, and explain the problem in the box "Please tell us what is wrong...".</p>
+
+</div>
+<br/>
 {/if}
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
