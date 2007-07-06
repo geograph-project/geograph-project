@@ -34,6 +34,8 @@ dump_sql_table('select rendered,level,url,filename,count(*),min(ts),max(ts) from
 
 dump_sql_table('select now()','');
 
+dump_sql_table("select substring(ts,1,10),count(*),count(distinct level),sum(rendered=1),sum(rendered=0) from kmlcache group by substring(ts,1,10) order by ts desc limit 20",'Last few days');
+
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
 	$result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
