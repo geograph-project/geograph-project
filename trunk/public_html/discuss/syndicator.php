@@ -45,7 +45,11 @@ if (isset($_GET['extension']) && !isset($_GET['format']))
 	$_GET['format'] = str_replace('PHOTO','Photo',$_GET['format']);
 }
 
-$format="RSS1.0";
+if (!empty($_GET['forum']) && $_GET['forum'] == 5) {
+	$format="GeoRSS";
+} else {
+	$format="RSS1.0";
+}
 if (!empty($_GET['format']) && in_array($_GET['format'], $valid_formats))
 {
 	$format=$_GET['format'];
