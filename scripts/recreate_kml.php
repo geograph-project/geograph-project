@@ -149,7 +149,7 @@ $map=new GeographMap;
 
 while (1) {
 
-	$invalid_maps = $db->GetOne("select count(*) from kmlcache where rendered != 1");
+	$invalid_maps = $db->GetOne("select SQL_NO_CACHE count(*) from kmlcache where rendered != 1");
 
 	if ($invalid_maps) {
 		//done as many small select statements to allow new maps to be processed 
