@@ -152,8 +152,7 @@
 		<tr> 
 		  <td>format=<b>RSS1.0</b></td> 
 		  <td><a title="Geograph RSS 0.91 feed"
-			 href="http://{$http_host}/syndicator.php?key=[apikey]&i=12345&format=RSS1.0">RSS 1.0</a> -<b><i>
-			 Default</i></b></td> 
+			 href="http://{$http_host}/syndicator.php?key=[apikey]&i=12345&format=RSS1.0">RSS 1.0</a></td> 
 		</tr> 
 		<tr> 
 		  <td>format=<b>RSS2.0</b></td> 
@@ -163,7 +162,8 @@
 		<tr> 
 		  <td>format=<b>GeoRSS</b></td> 
 		  <td><a title="Geograph GeoRSS feed"
-			 href="http://{$http_host}/syndicator.php?key=[apikey]&i=12345&format=GeoRSS">GeoRSS</a> - 
+			 href="http://{$http_host}/syndicator.php?key=[apikey]&i=12345&format=GeoRSS">GeoRSS</a> -<b><i>
+			 Default</i></b> - 
 			 Extension of RSS 1.0 to include the lat/long, see {external href="http://www.georss.org/" text="georss.org"}</td> 
 		</tr> 
 		<tr> 
