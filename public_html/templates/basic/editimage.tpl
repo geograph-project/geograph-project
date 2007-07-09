@@ -34,10 +34,11 @@
   {if $image->comment}
   <div class="caption">{$image->current_comment|escape:'html'|geographlinks}</div>
   {/if}
-  {if $isadmin || ($user->user_id eq $image->user_id)}
+  {if $isadmin or $isowner}
   <div class="statuscaption">classification:
    {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}
-   {if $image->ftf}(first){/if}</div>
+   {if $image->ftf}(first){/if}
+   {if $image->mod_realname}(moderator: {$image->mod_realname}){/if}</div>
   {/if}
 </div>
 {if $showfull}
@@ -265,6 +266,7 @@
 	
 	{if ($isadmin or $isowner) and ($ticket->status ne "closed")}
 	<div class="ticketactions">
+		<div>&nbsp;<b>Add a commment to this ticket:</b></div>
 		<textarea name="comment" rows="4" cols="70"></textarea><br/>
 		
 		<input type="submit" name="addcomment" value="Add comment"/>
@@ -314,6 +316,12 @@
 <a href="/editimage.php?id={$image->gridimage_id}&amp;simple=1" style="font-size:0.6em">Switch to Simple Edit Page</a>
 {else}
 <a href="/editimage.php?id={$image->gridimage_id}&amp;simple=0" style="font-size:0.6em">Switch to Full Edit Page</a>
+{/if}
+
+{if $opentickets && !$error && $isowner}
+<input type="button" value="Change Image Details Form &gt; &gt;" style="font-size:1.2em" onclick="this.style.display='none';document.getElementById('change_form_div').style.display=''"/>
+
+<div id="change_form_div" style="display:none">
 {/if}
 
 <h2 class="titlebar" style="margin-bottom:0px">Report Problem / Change Image Details <small><a href="/help/changes">[help]</a></small></h2>
@@ -505,7 +513,9 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 
 
 </form>
-
+{if $opentickets && !$error && $isowner}
+</div>
+{/if}
 
 <script type="text/javascript" src="/categories.js.php"></script>
 

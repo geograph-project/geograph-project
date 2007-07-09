@@ -528,7 +528,7 @@ if (isset($_REQUEST['id']))
 			if (count($openTickets))
 				$smarty->assign_by_ref('opentickets', $openTickets);
 			
-			if ($isadmin)
+			if ($isadmin || $isowner)
 				$image->lookupModerator();
 		}
 

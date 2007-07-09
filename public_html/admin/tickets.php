@@ -134,7 +134,11 @@ if (isset($_GET['moderator'])) {
 	$mid = intval($_GET['user_id']);
 	
 	if ($mid != 0) {
-		$sql_where .= " and i.user_id=$mid";
+		if (!empty($_GET['s'])) {
+			$sql_where .= " and t.user_id=$mid";
+		} else {
+			$sql_where .= " and i.user_id=$mid";
+		}
 	}
 } 
 
