@@ -282,7 +282,23 @@ elseif($action=='vpost') { $pageAnchor=db_searchDeSlice(false,intval($_GET['post
 
 elseif($action=='search') {if($reqTxt!=1)require($pathToFiles.'bb_func_txt.php');require($pathToFiles.'bb_func_search.php');}
 
-elseif($action=='deltopic') require($pathToFiles.'bb_func_deltopic.php');
+elseif($action=='wait') {
+	if ($user_sort==1) $orderBy='topic_id DESC'; else $orderBy='topic_last_post_id DESC';
+
+	if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','forum_id','!=','5',$orderBy,1)){
+		if ($cols[9]) {
+			print "Updated Since Last Visit";
+			exit;
+		} elseif (is_null($cols[9])) {
+			print "New Since Last Visit";
+			exit;
+		} 
+	}
+	
+	print "nope";
+
+	exit;
+} elseif($action=='deltopic') require($pathToFiles.'bb_func_deltopic.php');
 
 elseif($action=='locktopic') require($pathToFiles.'bb_func_locktop.php');
 
