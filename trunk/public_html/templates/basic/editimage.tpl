@@ -266,7 +266,7 @@
 	
 	{if ($isadmin or $isowner) and ($ticket->status ne "closed")}
 	<div class="ticketactions">
-		<div>&nbsp;<b>Add a commment to this ticket:</b></div>
+		<div>&nbsp;<b>Add a reply to this ticket:</b></div>
 		<textarea name="comment" rows="4" cols="70"></textarea><br/>
 		
 		<input type="submit" name="addcomment" value="Add comment"/>
