@@ -51,6 +51,7 @@ my $basepath="/home/www/geograph.elphin/";
 my $now=-1;
 my $show_help=0;
 my $init=0;
+my $graph=1;
 
 #-------------------------------------------------
 # get configuration overides from cmd line
@@ -64,6 +65,7 @@ GetOptions
     'user=s', \$user,
     'pass=s', \$password,
     'db=s', \$db,
+    'graph=s', \$graph,
     
 );
 
@@ -128,17 +130,22 @@ if ($init>0)
 	
 	`$cmd`;
 		
-	print "\nrrd database initialised - prime it as follows:\n";
+	print "#!/bin/bash\n";
+	print "#rrd database initialised - prime it as follows:\n\n";
 	#now output the commands needed to update
 	$now=time();
 	
 	my $t;
 	for ($t=$init+86400; $t<$now; $t+=86400)
 	{
-		print "perl update_submission_graph.pl --update=$t \\\n".
+		print "perl update_submission_graph.pl --update=$t --graph=0\\\n".
 		"    --base=$basepath --db=$db --user=$user --pass=$password\n";
         }
 	
+	#draw graph
+		print "perl update_submission_graph.pl --update=$t\\\n".
+		"    --base=$basepath --db=$db --user=$user --pass=$password\n";
+		
 	print "\n";
 	exit;
 	
@@ -204,20 +211,22 @@ if ($now > 0)
 # We always update the graph...
 #-------------------------------------------------
 
-my $cmd="$rrdtool graph ".
-	"$basepath/public_html/img/submission_graph.png ".
-  	"--lower-limit=0 ".
-  	"--start -1year ".
-  	"--end now ".
-  	"DEF:pending=$basepath/submissions.rrd:pending:LAST ".
-  	"DEF:accepted=$basepath/submissions.rrd:accepted:LAST ".
-  	"DEF:geograph=$basepath/submissions.rrd:geograph:LAST ".
-  	"AREA:accepted#006000:supplemental ".
-	"STACK:geograph#00C000:geographs ".
-  	"STACK:pending#80FF80:'pending moderation'";
-  
-`$cmd`;
+if ($graph)
+{
+	my $cmd="$rrdtool graph ".
+		"$basepath/public_html/img/submission_graph.png ".
+		"--lower-limit=0 ".
+		"--start -1year ".
+		"--end now ".
+		"DEF:pending=$basepath/submissions.rrd:pending:LAST ".
+		"DEF:accepted=$basepath/submissions.rrd:accepted:LAST ".
+		"DEF:geograph=$basepath/submissions.rrd:geograph:LAST ".
+		"AREA:accepted#006000:supplemental ".
+		"STACK:geograph#00C000:geographs ".
+		"STACK:pending#80FF80:'pending moderation'";
 
+	`$cmd`;
+}
 
 
 
