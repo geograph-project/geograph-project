@@ -30,6 +30,11 @@ function smarty_modifier_escape($string, $esc_type = 'html', $char_set = 'ISO-88
         case 'htmlall':
             return htmlentities2($string, ENT_QUOTES, $char_set);
 
+	case 'csv':
+            if (strpos($string,',') !== FALSE || strpos($string,'"') !== FALSE || strpos($string,"\n") !== FALSE)
+                $string = '"'.str_replace('"', '""', $string).'"';
+            return $string;
+
         case 'url':
             return rawurlencode($string);
 
