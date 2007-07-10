@@ -36,7 +36,7 @@ $template='statistics_graph.tpl';
 
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 
-$cacheid='forum'.$u;
+$cacheid='statistics|forum'.$u;
 
 if (!$smarty->is_cached($template, $cacheid))
 {

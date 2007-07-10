@@ -34,7 +34,7 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 
 $template='statistics_graph.tpl';
 
-$cacheid='users';
+$cacheid='statistics|users';
 
 if (!$smarty->is_cached($template, $cacheid))
 {

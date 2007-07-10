@@ -26,9 +26,21 @@ init_session();
 
 $smarty = new GeographPage;
 
-$template='statistics_tables.tpl';
+if (isset($_GET['output']) && $_GET['output'] == 'csv') {
+	$table = (isset($_GET['table']) && is_numeric($_GET['table']))?intval($_GET['table']):0;
+	$smarty->assign('whichtable',$table);
+	
+	$template='statistics_tables_csv.tpl';
+	# let the browser know what's coming
+	header("Content-type: application/octet-stream");
+	header("Content-Disposition: attachment; filename=\"".basename($_SERVER['SCRIPT_NAME'],'.php').".$table.csv\"");
 
-$cacheid='coverage_by_county'.isset($_GET['hist']);
+	$cacheid='statistics|coverage_by_county.'.$table.isset($_GET['hist']);
+} else {
+	$template='statistics_tables.tpl';
+	
+	$cacheid='statistics|coverage_by_county'.isset($_GET['hist']);
+}
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache

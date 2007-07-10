@@ -143,7 +143,7 @@ if ($init>0)
         }
 	
 	#draw graph
-		print "perl update_submission_graph.pl --update=$t\\\n".
+	print "perl update_submission_graph.pl --update=$t\\\n".
 		"    --base=$basepath --db=$db --user=$user --pass=$password\n";
 		
 	print "\n";

@@ -26,9 +26,24 @@ init_session();
 
 $smarty = new GeographPage;
 
-$template='statistics_tables.tpl';
+if (isset($_GET['output']) && $_GET['output'] == 'csv') {
 
-$cacheid='grid_references';
+	$table = (isset($_GET['table']) && is_numeric($_GET['table']))?intval($_GET['table']):0;
+
+	$smarty->assign('whichtable',$table);
+	
+	$template='statistics_tables_csv.tpl';
+	# let the browser know what's coming
+	header("Content-type: application/octet-stream");
+	header("Content-Disposition: attachment; filename=\"".basename($_SERVER['SCRIPT_NAME'],'.php').".$table.csv\"");
+
+	$cacheid='statistics|grid_references.'.$table;
+
+} else {
+	$template='statistics_tables.tpl';
+	
+	$cacheid='statistics|grid_references';
+}
 
 if (!$smarty->is_cached($template, $cacheid)) {
 	dieUnderHighLoad();

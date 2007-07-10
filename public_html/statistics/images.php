@@ -26,12 +26,16 @@ init_session();
 
 $smarty = new GeographPage;
 
-$template='statistics_table.tpl';
+if (isset($_GET['output']) && $_GET['output'] == 'csv') {
+	$template='statistics_table_csv.tpl';
+	# let the browser know what's coming
+	header("Content-type: application/octet-stream");
+	header("Content-Disposition: attachment; filename=\"".basename($_SERVER['SCRIPT_NAME'],'.php').".csv\"");
+} else {
+	$template='statistics_table.tpl';
+}
 
-$cacheid='images';
-
-if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
-	$smarty->clear_cache($template, $cacheid);
+$cacheid='statistics|images';
 
 if (!$smarty->is_cached($template, $cacheid))
 {
