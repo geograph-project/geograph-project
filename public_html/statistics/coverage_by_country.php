@@ -53,7 +53,8 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			loc_country.name as Country,
 			count(*) as `Grid Squares`,
 			sum(has_geographs) as `Geographed`,
-			sum(has_geographs)/count(*)*100 as Percentage
+			sum(has_geographs)/count(*)*100 as Percentage,
+			sum(imagecount) as 'Total Photos'
 		from gridsquare gs
 			inner join os_gaz on (placename_id-1000000 = os_gaz.seq)
 			inner join os_gaz_county on (full_county = os_gaz_county.name)
@@ -83,7 +84,8 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			loc_country.name as Country,
 			count(*) as `Grid Squares`,
 			sum(has_geographs) as `Geographed`,
-			sum(has_geographs)/count(*)*100 as Percentage
+			sum(has_geographs)/count(*)*100 as Percentage,
+			sum(imagecount) as 'Total Photos'
 		from gridsquare gs
 			inner join loc_placenames on (placename_id = id)
 			inner join loc_country on (country = loc_country.code)

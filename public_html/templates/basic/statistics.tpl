@@ -99,7 +99,7 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
    None: <a href="/statistics/not_geographed.php">Hectads</a> (10<small>km</small> x 10<small>km</small> Squares) - shrinking all the time!<br/>
    Mostly: <a href="/statistics/most_geographed.php">Grid Squares &amp; Hectads</a> and <a href="/statistics/most_geographed_myriad.php">Myriads</a> <small>(100 x 100 Squares)</small>.<br/>
    <b>Fully: <a href="/statistics/fully_geographed.php">Hectads</a> <small>(10 x 10 Squares)</small> - including Large Mosaic!</b><br/>
-   Graph: <a href="/statistics/photos_per_square.php">Gridsquares</a> and <a href="/statistics/hectads.php">Hectad</a> Coverage</p>
+   Graph: <a href="/statistics/photos_per_square.php">Gridsquares</a>, <a href="/statistics/hectads.php">Hectad</a>, <a href="/statistics/coverage_by_county.php">County</a> and <a href="/statistics/coverage_by_country.php">Country</a> Coverage</p>
 
    <p><b>Past Activity:</b><br/>
    Graphs: <a href="/statistics/moversboard.php#rate_graph">Weekly Submissions</a>, <a href="/statistics/leaderboard.php#submission_graph">Overall Submissions</a>, <a href="/statistics/contributors.php">Contributor Graphs</a>.<br/>
