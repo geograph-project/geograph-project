@@ -3,6 +3,6 @@
 
 {foreach from=$table.table item=row}
 {foreach from=$row key=name item=value}{$value},{/foreach}
-			
+
 {/foreach}
 {/if}{/foreach}
