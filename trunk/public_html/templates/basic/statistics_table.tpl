@@ -77,6 +77,10 @@
 	{if $footnote}
 		{$footnote}
 	{/if}
+
+	<div class="interestBox">NEW! 
+	<a href="{$script_name}?{foreach from=$extra key=name item=value}{$name}={$value}&amp;{/foreach}{if $ri}ri={$ri}&amp;{/if}{if $i}i={$i}&amp;{/if}{dynamic}{if $u}ri={$u}&amp;{/if}{/dynamic}output=csv">Download this table as a CSV File</a></div>
+
 {else}
 	<p><i>No Results to Display</i></p>
 {/if}

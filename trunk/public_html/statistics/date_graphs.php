@@ -41,7 +41,7 @@ $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 $date = (isset($_GET['date']) && ctype_lower($_GET['date']))?intval($_GET['date']):'submitted';
 
 
-$cacheid='submitted'.$date.'.'.$ri.'.'.$u;
+$cacheid='statistics|submitted'.$date.'.'.$ri.'.'.$u;
 
 if (!$smarty->is_cached($template, $cacheid))
 {

@@ -32,7 +32,15 @@ $smarty = new GeographPage;
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
-$template='statistics_table.tpl';
+if (isset($_GET['output']) && $_GET['output'] == 'csv') {
+	$template='statistics_table_csv.tpl';
+	# let the browser know what's coming
+	header("Content-type: application/octet-stream");
+	header("Content-Disposition: attachment; filename=\"".basename($_SERVER['SCRIPT_NAME'],'.php').".csv\"");
+
+} else {
+	$template='statistics_table.tpl';
+}
 
 $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
@@ -41,10 +49,7 @@ $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 $date = (isset($_GET['date']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['date']))?$_GET['date']:'2005-12';
 
 
-$cacheid='distances'.$date.'.'.$ri.'.'.$u;
-
-if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
-	$smarty->clear_cache($template, $cacheid);
+$cacheid='statistics|distances'.$date.'.'.$ri.'.'.$u;
 
 if (!$smarty->is_cached($template, $cacheid))
 {

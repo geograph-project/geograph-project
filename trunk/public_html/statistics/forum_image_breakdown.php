@@ -32,14 +32,22 @@ $smarty = new GeographPage;
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*3; //3hr cache
 
-$template='statistics_table.tpl';
+if (isset($_GET['output']) && $_GET['output'] == 'csv') {
+	$template='statistics_table_csv.tpl';
+	# let the browser know what's coming
+	header("Content-type: application/octet-stream");
+	header("Content-Disposition: attachment; filename=\"".basename($_SERVER['SCRIPT_NAME'],'.php').".csv\"");
+
+} else {
+	$template='statistics_table.tpl';
+}
 
 $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 
 
-$cacheid='forum_image_breakdown'.$ri.'.'.$u;
+$cacheid='statistics|forum_image_breakdown'.$ri.'.'.$u;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
