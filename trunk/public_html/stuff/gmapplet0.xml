@@ -11,6 +11,7 @@
                 thumbnail="http://www.geograph.org.uk/img/gmapplet0-thumb.png"
                 height="150">
   <Require feature="sharedmap"/>
+  <Require feature="analytics"/>
 </ModulePrefs>
 <Content type="html"><![CDATA[
 
@@ -50,6 +51,7 @@
 
 		map.addOverlay(geoXml);
 		document.getElementById('message').innerHTML = "Loaded. Displaying thumbnails...";
+		_IG_Analytics("UA-172738-3", "/earth.php");
 	}
 	
 	map.getBoundsAsync(updateMapView);
@@ -57,6 +59,9 @@
 	GEvent.addListener(map, "moveend", function() {
 		map.getBoundsAsync(updateMapView);
 	});
+	
+	
+	_IG_Analytics("UA-172738-3", "/stuff/gmapplet0.xml");
 </script>
 
 ]]></Content>
