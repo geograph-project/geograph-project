@@ -50,10 +50,19 @@
 					<input type=submit name="sub" value="Subscribe">
 				</td>
 			</tr>
+			<tr>
+				<td colspan="2">
+					<i>Recommended, API updates will be posted here.</i>
+				</td>
+			</tr>
+			
 		</table>
 	</form>
 	
-	 <p style="border:1px solid red;background-color: #FF3300; padding:10px;"><b>Each of these Feeds includes the photographer credit/name, which under the CC licence MUST be displayed along any use of the image.</b><br/><br/>Ideally also you could link back to the main photo page, either with the link supplied or with <a href="http://{$http_host}/photo/[id]">http://{$http_host}/photo/[id]</a>.<br/><br/> Thank you for your attention in this matter.</p>
+	 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+	 <img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
+	<b>Each of these Feeds includes the photographer credit/name, which under the CC licence MUST be displayed along any use of the image. Also the fact the image is CC licenced needs to be mentioned.</b><br/><br/>Ideally also you could link back to the main photo page, either with the link supplied or with <a href="http://{$http_host}/photo/[id]">http://{$http_host}/photo/[id]</a>.<br/><br/> <i>Thank you for your attention in this matter.</i>
+	</div>
 		
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px; clear:both;margin-top:30px;"><a name="api"></a>API-key</h3> 
 	 <p>If you haven't got one you will need to obtain a unique API-key, which
@@ -264,6 +273,13 @@
 	</table>
 	 
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="csv"></a>CSV Export</h3> 
+	 
+	 
+	  <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+	 <img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
+	 <b>Note, that these CSV exports have become very inefficient, and so will only return 1000 records without prior arrangement.</b>
+	 </div>
+	 
 	 <p>This is ideal for bulk downloads, or for keeping an offsite cache
 		up-to-date, it lives at:<br/><br/>
 	 <a title="Geograph RSS feed"
