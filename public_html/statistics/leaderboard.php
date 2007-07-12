@@ -33,6 +33,8 @@ if (isset($_GET['whenYear'])) {
 	$_GET['when'] = sprintf("%04d-%02d",$_GET['whenYear'],$_GET['whenMonth']);
 }
 
+$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
+
 $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
 
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(250,intval($_GET['limit'])):50;
@@ -42,7 +44,7 @@ $minimum = (isset($_GET['minimum']) && is_numeric($_GET['minimum']))?intval($_GE
 $smarty = new GeographPage;
 
 $template='statistics_leaderboard.tpl';
-$cacheid=$minimum.$type.$date.$when.$limit;
+$cacheid=$minimum.$type.$date.$when.$limit.'.'.$ri;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*3; //3hour cache
@@ -155,6 +157,10 @@ if (!$smarty->is_cached($template, $cacheid))
 		$title = ($date == 'taken')?'taken':'submitted'; 
 		$desc .= ", <b>for images $title during ".getFormattedDate($when)."</b>";
 	}
+	if ($ri) {
+		$sql_where .= " and reference_index = $ri";
+		$desc .= " in ".$CONF['references_all'][$ri];
+	}
 	
 	$smarty->assign('heading', $heading);
 	$smarty->assign('desc', $desc);
@@ -216,7 +222,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$extra = array();
 	$extralink = '';
 	
-	foreach (array('when','date') as $key) {
+	foreach (array('when','date','ri') as $key) {
 		if (isset($_GET[$key])) {
 			$extra[$key] = $_GET[$key];
 			$extralink .= "&amp;$key={$_GET[$key]}";
