@@ -319,10 +319,10 @@
 {/if}
 
 {if $opentickets && !$error && $isowner}
-<div class="interestBox">
+<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 	If you agree with the changes listed above, simply add a quick reply signifying that fact and the changes will be made in due course. However, if you want to make the changes straight away, or want to make other changes, use the form below. Also, if a ticket suggests an error but doesn't actually list the changes then it would help us if you were to make the changes using the form below.
 </div>
-
+<br>
 <input type="button" value="Change Image Details Form &gt; &gt;" style="font-size:1.2em" onclick="this.style.display='none';document.getElementById('change_form_div').style.display=''"/>
 {literal}
 	<script type="text/javascript">
