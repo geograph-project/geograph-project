@@ -89,9 +89,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql = "select count(*) from gridimage_search $wherewhere";
 	calc("Images",$sql);
 	
-	$sql = "select count(*) from recent_gridimage inner join gridimage_search using (gridimage_id) $wherewhere";
-	calc("Recent Images",$sql);
-	
 	$sql = "select count(distinct grid_reference) from gridimage_search where moderation_status = 'geograph' $andwhere";
 	calc("GeoSquares",$sql);
 	
