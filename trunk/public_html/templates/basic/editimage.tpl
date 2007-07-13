@@ -319,9 +319,21 @@
 {/if}
 
 {if $opentickets && !$error && $isowner}
-<input type="button" value="Change Image Details Form &gt; &gt;" style="font-size:1.2em" onclick="this.style.display='none';document.getElementById('change_form_div').style.display=''"/>
+<div class="interestBox">
+	If you agree with the changes listed above, simply add a quick reply signifying that fact and the changes will be made in due course. However, if you want to make the changes straight away, or want to make other changes, use the form below. Also, if a ticket suggests an error but doesn't actually list the changes then it would help us if you were to make the changes using the form below.
+</div>
 
-<div id="change_form_div" style="display:none">
+<input type="button" value="Change Image Details Form &gt; &gt;" style="font-size:1.2em" onclick="this.style.display='none';document.getElementById('change_form_div').style.display=''"/>
+{literal}
+	<script type="text/javascript">
+	
+	function hideForm() {
+		document.getElementById('change_form_div').style.display='none';
+	}
+	AttachEvent(window,'load',hideForm,false);
+</script>
+{/literal}
+<div id="change_form_div">
 {/if}
 
 <h2 class="titlebar" style="margin-bottom:0px">Report Problem / Change Image Details <small><a href="/help/changes">[help]</a></small></h2>
