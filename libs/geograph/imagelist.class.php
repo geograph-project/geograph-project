@@ -343,13 +343,18 @@ class RecentImageList extends ImageList {
 		
 		$db=&$this->_getDB();
 		
-		$limit="limit ".rand(0,245).",5";
+		//very quick on myISAM
+		$count = $db->getOne("select count(*) from gridimage_search");
+		
+		$offset=rand(1,250);
+		$ids = range($count-$offset,$count-$offset+5);
+		$id_string = join(',',$ids);
 		
 		//lets find some recent photos
 		$this->images=array();
 		$i=0;
 		
-		$recordSet = &$db->Execute("select * from gridimage_search inner join (select gridimage_id from recent_gridimage $limit) as t2 using (gridimage_id)");
+		$recordSet = &$db->Execute("select * from gridimage_search where gridimage_id in ($id_string) limit 5");
 		while (!$recordSet->EOF) 
 		{
 			$this->images[$i]=new GridImage;
