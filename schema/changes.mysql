@@ -1326,3 +1326,15 @@ INSERT INTO `loc_country` (`code`, `name`) VALUES
 
 ALTER TABLE `article` ADD `article_sort_order` TINYINT NOT NULL AFTER `create_time` ;
 ALTER TABLE `article_revisions` ADD `article_sort_order` TINYINT NOT NULL AFTER `create_time` ;
+
+
+
+
+ALTER TABLE `user` ADD INDEX `realname` ( `realname` );
+ALTER TABLE `user` ADD INDEX `nickname` ( `nickname` );
+
+
+alter table kmlcache add key (`rendered`);
+
+
+ALTER TABLE `gridprefix` ADD INDEX ( `origin_x` , `origin_y` ) ;

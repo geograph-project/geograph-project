@@ -300,7 +300,7 @@ elseif($action=='wait') {
 	}
 	print "<META HTTP-EQUIV=\"refresh\" content=\"60;URL={$main_url}/{$indexphp}action=wait\"/>"; 
 	print "<title>Geograph - No new Posts</title>";
-	print "<b>No new Posts</b> - will check again in one minute - this message will change if something is posted";
+	print "<b>No new Posts</b> - will check once a minute, this message will change if something is posted.";
 	
 	print "<br/><br/><br/><a href=\"/\">Return to homepage</a>";
 	exit;
