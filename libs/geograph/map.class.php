@@ -308,32 +308,31 @@ class GeographMap
 		} else {
 			if ($this->reference_index) {
 				//so it can be set from above (mapmosaic!)
-				$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
-					where $x_km between origin_x and (origin_x+width-1) and 
-					$y_km between origin_y and (origin_y+height-1)
-					order by ({$this->reference_index} = reference_index) desc, landcount desc, reference_index limit 1";
-				$prefix=$db->GetRow($sql);
+				
+				$order_by = "(reference_index = {$this->reference_index}) desc, landcount desc, reference_index";
 			} else {
 				//But what to do when the square is not on land??
 
 				//when not on land just try any square!
 				// but favour the _smaller_ grid - works better, now use SPATIAL index
-
-				$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
-					where CONTAINS( geometry_boundary,	GeomFromText('POINT($x_km $y_km)'))
-					order by landcount desc, reference_index limit 1";
-
-				$prefix=$db->GetRow($sql);
-
-				if (empty($prefix['prefix'])) { 
-					//if fails try a less restrictive search
-					$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
-						where $x_km between origin_x and (origin_x+width-1) and 
-						$y_km between origin_y and (origin_y+height-1)
-						order by landcount desc, reference_index limit 1";
-					$prefix=$db->GetRow($sql);
-				}
+				$order_by = "landcount desc, reference_index";
 			}
+			
+			$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
+				where CONTAINS( geometry_boundary,	GeomFromText('POINT($x_km $y_km)'))
+				order by $order_by limit 1";
+
+			$prefix=$db->GetRow($sql);
+
+			if (empty($prefix['prefix'])) { 
+				//if fails try a less restrictive search
+				$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
+					where $x_km between origin_x and (origin_x+width-1) and 
+					$y_km between origin_y and (origin_y+height-1)
+					order by landcount desc, reference_index limit 1";
+				$prefix=$db->GetRow($sql);
+			}
+			
 			if (!empty($prefix['prefix'])) { 
 				$n=$y_km-$prefix['origin_y'];
 				$e=$x_km-$prefix['origin_x'];
@@ -1103,8 +1102,8 @@ class GeographMap
 
 		$db=&$this->_getDB();
 
-		$sql="select imagecount from gridsquare group by imagecount";
-		$counts = $db->getCol($sql);
+		#$sql="select imagecount from gridsquare group by imagecount";
+		#$counts = $db->getCol($sql);
 
 		//figure out what we're mapping in internal coords
 		$left=$this->map_x;
@@ -1571,9 +1570,15 @@ END;
 		
 		$db=&$this->_getDB();
 
+		
+		//TODO  - HARD CODED VALUES!!
+		$width = 100;
+		$scanleft -= $width;
+		$scanbottom -= $width;
+		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
+		
 		$sql="select * from gridprefix where ".
-			"origin_x between $scanleft-width and $scanright and ".
-			"origin_y between $scanbottom-height and $scantop ".
+			"CONTAINS( GeomFromText($rectangle),	point_origin_xy) ".
 			"and landcount>0";
 
 		$recordSet = &$db->Execute($sql);
