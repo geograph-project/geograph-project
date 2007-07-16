@@ -70,7 +70,7 @@ if (isset($_POST['gridsquare']))
 	}
 	
 	//ensure the submitted reference is valid
-	if (!empty($_POST['grid_reference'])) 
+	if (!empty($_POST['grid_reference']) && empty($_POST['setpos2'])) 
 	{
 		$ok= $square->setByFullGridRef($_POST['grid_reference']);
 		
@@ -139,7 +139,7 @@ if (isset($_POST['gridsquare']))
 		$smarty->assign('imagecount', $square->imagecount);
 		
 		//we're just setting up the position, move to step 2
-		if (isset($_POST['setpos']))
+		if (isset($_POST['setpos']) || isset($_POST['setpos2']))
 		{
 			//Submit Step 1...
 

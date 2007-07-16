@@ -63,7 +63,7 @@ geographing</a> first.</p>
 		{html_options options=$kmlist selected=$northings}
 	</select>
 	
-	<input type="submit" name="setpos" value="Next &gt;"/>
+	<input type="submit" name="setpos2" value="Next &gt;"/>
 	
 	
 	<p>If you are unsure of the photo location there are a number of online 
