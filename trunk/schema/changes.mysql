@@ -1338,3 +1338,11 @@ alter table kmlcache add key (`rendered`);
 
 
 ALTER TABLE `gridprefix` ADD INDEX ( `origin_x` , `origin_y` ) ;
+
+
+ALTER TABLE `os_gaz` ADD INDEX (`def_nam`);
+
+
+ALTER TABLE `geobb_users` ADD INDEX (`username`,`user_password`);
+
+ALTER TABLE `user` ADD INDEX `email` ( `email` );

@@ -40,7 +40,7 @@ $db = NewADOConnection($GLOBALS['DSN']);
 	
 	
 ?>
-<h2>gridimage.placename_id Rebuild Tool</h2>
+<h2>gridprefix.geometry_boundary Rebuild Tool</h2>
 <form action="buildgisindex.php" method="post">
 <input type="radio" name="table" value="gridprefix.geometry_boundary"/> gridprefix [geometry_boundary]<br/>
 <input type="submit" name="go" value="Start">

@@ -235,11 +235,11 @@ class EventProcessor
 	{
 		//clear events and event log entries older than one month
 
-		$this->db->Execute("delete from event where status='completed' and (to_days(now()) - to_days(processed))>30");
-		$this->db->Execute("delete from event_log where (to_days(now()) - to_days(logtime))>30");
+		$this->db->Execute("delete from event where status='completed' and logtime > date_sub(now(),interval 30 day)");
+		$this->db->Execute("delete from event_log where logtime > date_sub(now(),interval 30 day)");
 
 		//clear all verbose entries not associated with a event once they are 8 hours old - they are really just for debugging
-		$this->db->Execute("delete from event_log where event_id=0 and verbosity in('trace', 'verbose') and (unix_timestamp(now()) - unix_timestamp(logtime))>28800");
+		$this->db->Execute("delete from event_log where event_id=0 and verbosity in('trace', 'verbose') and logtime > date_sub(now(),interval 8 hour)");
 	}
 	
 
