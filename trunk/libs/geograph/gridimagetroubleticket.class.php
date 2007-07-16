@@ -488,7 +488,16 @@ class GridImageTroubleTicket
 		{
 			$img=&$this->_getImage();
 
-
+			$this->loadItems();
+			$changes = '';
+			foreach($this->changes as $idx=>$item)
+			{
+				if ($item['oldvalue']!=$item['newvalue'])
+				{
+					$changes.=" {$item['field']} changed from \"{$item['oldvalue']}\" to \"{$item['newvalue']}\"\n";
+				}
+			}
+		
 			if ($this->status=="pending")
 			{
 				$ttype = ($this->type == 'minor')?' Minor':'';
@@ -500,10 +509,20 @@ class GridImageTroubleTicket
 				//if suggester isn't the owner of the image, alert the owner too
 				if ($this->user_id != $img->user_id)
 				{
-					$msg =& $this->_buildEmail("A visitor to the site has suggested$ttype changes to this photo submission. ".
+					$comment = "A visitor to the site has suggested$ttype changes to this photo submission. ".
 						"The changes will be reviewed by site moderators, who may need to contact you ".
 						"if further information is required. If you wish, you can review and comment on these ".
-						"changes by following the links in this message. ");
+						"changes by following the links in this message. ";
+					if (!empty($changes))
+					{
+						$comment.="\n\n\nThe following changes have been suggested:\n\n";
+						$comment.=$changes;
+					}
+					if (!empty($this->notes)) {
+						$comment.="\n\nComment: {$this->notes}";
+					}
+				
+					$msg =& $this->_buildEmail($comment);
 					$submitter=new GeographUser($img->user_id);
 					if ( ($submitter->ticket_option == 'all') || 
 							( ($this->type=='normal') && $submitter->ticket_option == 'major')
@@ -523,6 +542,11 @@ class GridImageTroubleTicket
 					} else {
 						$comment="A site moderator has just modified this photo submission. ".
 							"You can review these changes by following the links in this message. ";
+					}
+					if (!empty($changes))
+					{
+						$comment.="\n\n\nThe following changes have been made:\n\n";
+						$comment.=$changes;
 					}
 					if (strlen($this->notes))
 						$comment.="\n\nModerator Comment: {$this->notes}";
