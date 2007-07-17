@@ -152,7 +152,9 @@
 		{if $ticket->user_id eq $image->user_id}
 		  (photo owner)
 		{/if}
-		 
+		|
+	{elseif $ticket->user_id eq $image->user_id}
+	  	Submitted by photo owner |
 	{/if} 
 	
 
