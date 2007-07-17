@@ -267,6 +267,7 @@
 	</div>
 	
 	{if ($isadmin or $isowner) and ($ticket->status ne "closed")}
+		{assign var="ticketsforcomments" value=1}
 	<div class="ticketactions">
 		<div>&nbsp;<b>Add a reply to this ticket:</b></div>
 		<textarea name="comment" rows="4" cols="70"></textarea><br/>
@@ -320,7 +321,7 @@
 <a href="/editimage.php?id={$image->gridimage_id}&amp;simple=0" style="font-size:0.6em">Switch to Full Edit Page</a>
 {/if}
 
-{if $opentickets && !$error && $isowner}
+{if $opentickets && !$error && $isowner && $ticketsforcomments}
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 	If you agree with the changes listed above, simply add a quick reply signifying that fact and the changes will be made in due course. However, if you want to make the changes straight away, or want to make other changes, use the form below. Also, if a ticket suggests an error but doesn't actually list the changes then it would help us if you were to make the changes using the form below.
 </div>
