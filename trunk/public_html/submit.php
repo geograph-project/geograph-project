@@ -28,6 +28,8 @@ require_once('geograph/uploadmanager.class.php');
 
 init_session();
 
+list($usec, $sec) = explode(' ',microtime());
+$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
 
 $uploadmanager=new UploadManager;
 
@@ -336,6 +338,18 @@ if (isset($_POST['gridsquare']))
 		}
 		
 		if ($step == 3) {
+		
+			list($usec, $sec) = explode(' ',microtime());
+			$endtime = ((float)$usec + (float)$sec);
+			$timetaken = $endtime - $STARTTIME;
+			
+			if ($timetaken > 15) {
+				//mysql might of closed the connection in the meantime
+				unset($square->db);
+				//so get a new one...
+				$square->_getDB();
+			}
+		
 			//find a possible place within 25km
 			$smarty->assign('place', $square->findNearestPlace(25000));
 			
