@@ -52,7 +52,7 @@ $DSN = $CONF['db_driver'].'://'.
 	'@'.$CONF['db_connect'].
 	'/'.$CONF['db_db'].$CONF['db_persist'];
 
-if (isset($CONF['db_driver2']) {
+if (isset($CONF['db_driver2'])) {
 	$DSN2 = $CONF['db_driver2'].'://'.
 		$CONF['db_user2'].':'.$CONF['db_pwd2'].
 		'@'.$CONF['db_connect2'].
