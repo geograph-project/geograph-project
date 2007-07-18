@@ -52,6 +52,14 @@ $DSN = $CONF['db_driver'].'://'.
 	'@'.$CONF['db_connect'].
 	'/'.$CONF['db_db'].$CONF['db_persist'];
 
+if (isset($CONF['db_driver2']) {
+	$DSN2 = $CONF['db_driver2'].'://'.
+		$CONF['db_user2'].':'.$CONF['db_pwd2'].
+		'@'.$CONF['db_connect2'].
+		'/'.$CONF['db_db2'].$CONF['db_persist2'];
+} else {
+	$DSN2 = $DSN;
+}
 
 if (!empty($CONF['memcache']['app'])) {
 	
@@ -92,6 +100,14 @@ if (!empty($CONF['memcache']['sessions'])) {
 	require('geograph/memcachesessions.inc.php');
 	
 	$memcachesession->period = ini_get("session.gc_maxlifetime");
+} elseif (isset($CONF['db_driver2']) {
+	//adodb session configuration - we use same database
+	$ADODB_SESSION_DRIVER=$CONF['db_driver2'];
+	$ADODB_SESSION_CONNECT=$CONF['db_connect2'];
+	$ADODB_SESSION_USER =$CONF['db_user2'];
+	$ADODB_SESSION_PWD =$CONF['db_pwd2'];
+	$ADODB_SESSION_DB =$CONF['db_db2'];
+	require_once('adodb/session/adodb-session.php');
 } else {
 	//adodb session configuration - we use same database
 	$ADODB_SESSION_DRIVER=$CONF['db_driver'];
