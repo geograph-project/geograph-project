@@ -47,16 +47,21 @@ $ip=getRemoteIP();
 
 $user_id = "inet_aton('{$ip}')";
 
+$throttlenumber = 5;
+if ($USER->hasPerm("ticketmod") || $USER->hasPerm("moderator")) {
+	$throttlenumber = 30;
+}
+
 if (empty($CONF['usermsg_spam_trap'])) {
 	$throttle = 0;
 } elseif ($db->getOne("select count(*) from throttle ".
 		"where used > date_sub(now(), interval 1 hour) and ".
-		"user_id=$user_id AND feature = 'usermsg'") > 5) {
+		"user_id=$user_id AND feature = 'usermsg'") > $throttlenumber) {
 	$smarty->assign('throttle',1);
 	$throttle = 1;
 } elseif ($db->getOne("select count(*) from throttle " .
 		"where used > date_sub(now(), interval 24 hour) and " .
-		"user_id=$user_id AND feature = 'usermsg'") > 30) {
+		"user_id=$user_id AND feature = 'usermsg'") > $throttlenumber*6) {
 	$smarty->assign('throttle',1);
 	$throttle = 1;
 } else {
