@@ -75,7 +75,7 @@ if(isset($_GET['gridref'])) {
 	$forum = 5;
 	
 
-	$result=mysql_query("SELECT topic_id FROM $Tt WHERE forum_id = $forum AND topic_title = '".mysql_escape_string($gridref)."'");
+	$result=mysql_query("SELECT topic_id FROM $Tt WHERE forum_id = $forum AND topic_title = '".mysql_escape_string($gridref)."'",$GLOBALS['minibb_link']);
 	$currentgridreftopics = mysql_num_rows($result);
 		
 	if ($currentgridreftopics == 1) {
