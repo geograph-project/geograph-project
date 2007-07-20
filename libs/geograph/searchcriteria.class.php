@@ -411,13 +411,7 @@ class SearchCriteria
 			$sql_where .= ")";
 		} elseif (strpos($q,'^') === 0) {
 			$words = str_replace('^','',$q);
-			$len = substr_count($words,' ')+1;
-			if ($len >= 1 && $len <= 3) {
-				$sql_where .= " wordnet$len.title>0 AND words = ".$db->Quote($words);
-				$sql_from .= " INNER JOIN wordnet$len ON(gi.gridimage_id=wordnet$len.gid) ";
-			} else {
-				$sql_where .= ' title REGEXP '.$db->Quote('[[:<:]]'.preg_replace('/\+$/','',$words).'[[:>:]]');
-			}
+			$sql_where .= ' title REGEXP '.$db->Quote('[[:<:]]'.preg_replace('/\+$/','',$words).'[[:>:]]');
 		} elseif (preg_match('/\+$/',$q)) {
 			$words = $db->Quote('%'.preg_replace("/\+$/",'',$q).'%');
 			$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';
