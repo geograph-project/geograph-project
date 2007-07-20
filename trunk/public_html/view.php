@@ -211,7 +211,7 @@ if ($image->isValid())
 	}
 } elseif (!empty($rejected)) {
 	header("HTTP/1.0 410 Gone");
-	header("Status: 404 Gone");
+	header("Status: 410 Gone");
 } else {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");

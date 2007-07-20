@@ -38,7 +38,7 @@ if (isset($_GET['id']))  {
 
 	if ($ok && $image->moderation_status=='rejected') {
 		header("HTTP/1.0 410 Gone");
-		header("Status: 404 Gone");
+		header("Status: 410 Gone");
 	} elseif ($ok) {
 		if ((strpos($_SERVER["REQUEST_URI"],'/photo/') === FALSE && isset($_GET['id'])) || strlen($_GET['id']) !== strlen(intval($_GET['id']))) {
 			//keep urls nice and clean - esp. for search engines!
