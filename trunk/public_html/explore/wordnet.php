@@ -61,7 +61,12 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	dieUnderHighLoad(0,'function_disabled.tpl');//lets hobble this!
+	//lets hobble this!
+	header("HTTP/1.1 503 Service Unavailable");
+	$smarty->assign('searchq',stripslashes($_GET['q']));
+	$smarty->display('function_disabled.tpl');
+	exit;
+	
 	
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (empty($db)) die('Database connection failed');  
