@@ -44,7 +44,7 @@ if (isset($_GET['id']))  {
 			//keep urls nice and clean - esp. for search engines!
 			header("HTTP/1.0 301 Moved Permanently");
 			header("Status: 301 Moved Permanently");
-			header("Location: /photo/".intval($_GET['id'].".kml"));
+			header("Location: /photo/".intval($_GET['id']).".kml");
 			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".intval($_GET['id']).".kml\">View file</a>";
 			exit;
 		}
