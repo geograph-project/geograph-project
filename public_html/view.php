@@ -112,6 +112,7 @@ if (isset($_GET['id']))
 			//clear the image
 			$image=new GridImage;
 			$cacheid=0;
+			$rejected = true;
 		}
 	}
 }
@@ -208,6 +209,9 @@ if ($image->isValid())
 			$smarty->assign('view_direction', ($image->view_direction%90==0)?strtoupper($search->heading_string($image->view_direction)):ucwords($search->heading_string($image->view_direction)) );
 		}
 	}
+} elseif (!empty($rejected)) {
+	header("HTTP/1.0 410 Gone");
+	header("Status: 404 Gone");
 } else {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");

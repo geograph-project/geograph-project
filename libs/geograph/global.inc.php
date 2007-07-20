@@ -108,6 +108,8 @@ if (!empty($CONF['memcache']['sessions'])) {
 	$ADODB_SESSION_PWD =$CONF['db_pwd2'];
 	$ADODB_SESSION_DB =$CONF['db_db2'];
 	require_once('adodb/session/adodb-session.php');
+	if (empty($CONF['db_persist2'])) 
+		adodb_sess_open(false,false,false);
 } else {
 	//adodb session configuration - we use same database
 	$ADODB_SESSION_DRIVER=$CONF['db_driver'];
@@ -116,6 +118,8 @@ if (!empty($CONF['memcache']['sessions'])) {
 	$ADODB_SESSION_PWD =$CONF['db_pwd'];
 	$ADODB_SESSION_DB =$CONF['db_db'];
 	require_once('adodb/session/adodb-session.php');
+	if (empty($CONF['db_persist'])) 
+		adodb_sess_open(false,false,false);
 }
 
 

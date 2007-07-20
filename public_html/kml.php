@@ -36,7 +36,20 @@ if (isset($_GET['id']))  {
 	
 	$ok = $image->loadFromId($_GET['id']);
 
-	if ($ok) {
+	if ($ok && $image->moderation_status=='rejected') {
+		header("HTTP/1.0 410 Gone");
+		header("Status: 404 Gone");
+	} elseif ($ok) {
+		if ((strpos($_SERVER["REQUEST_URI"],'/photo/') === FALSE && isset($_GET['id'])) || strlen($_GET['id']) !== strlen(intval($_GET['id']))) {
+			//keep urls nice and clean - esp. for search engines!
+			header("HTTP/1.0 301 Moved Permanently");
+			header("Status: 301 Moved Permanently");
+			header("Location: /photo/".intval($_GET['id'].".kml"));
+			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".intval($_GET['id']).".kml\">View file</a>";
+			exit;
+		}
+	
+	
 		header("Cache-Control: Public");
 		
 		//when this image was modified
@@ -95,10 +108,11 @@ if (isset($_GET['id']))  {
 		}
 
 		$kml->outputKML();
-		exit;
 	} else {
-		
+		header("HTTP/1.0 404 Not Found");
+		header("Status: 404 Not Found");
 	}
+	exit;
 }
 
 init_session();
