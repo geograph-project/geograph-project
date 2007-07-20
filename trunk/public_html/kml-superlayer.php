@@ -30,13 +30,15 @@ preg_match('/(kh_|GoogleEarth)\w+\/\w+(\d).(\d)/',$_SERVER['HTTP_USER_AGENT'],$m
 $kml = new kmlFile();
 $kml->filename = "Geograph-Layer.kml";
 
+$i=(!empty($_GET['i']))?intval($_GET['i']):'';
+
 if ($m[2] == 3) { //GE 3
 	$NetworkLink = $kml->addChild('NetworkLink');
 	$NetworkLink->setItem('name','Geograph NetworkLink');
 	$NetworkLink->setItemCDATA('description',"Please upgrade to Google Earth Version 4 to take advantage latest Superlayer");
 	$NetworkLink->setItem('open',0);
 
-	$UrlTag = $NetworkLink->useUrl("http://{$_SERVER['HTTP_HOST']}/earth.php?simple=1");
+	$UrlTag = $NetworkLink->useUrl("http://{$_SERVER['HTTP_HOST']}/earth.php?simple=1".($i?"&i=$i":''));
 	$NetworkLink->setItem('visibility',0);
 
 	$UrlTag->setItem('viewRefreshMode','onStop');
@@ -45,7 +47,11 @@ if ($m[2] == 3) { //GE 3
 
 } elseif ($m[2] == 4 || isset($_GET['download'])) { 
 	
-	$cache_file = "kml/geograph.kmz";
+	if ($i) {
+		$cache_file = "kml/$i/geograph.kmz";
+	} else {
+		$cache_file = "kml/geograph.kmz";
+	} 
 	
 	$mtime = filemtime($cache_file);
 
@@ -56,7 +62,7 @@ if ($m[2] == 3) { //GE 3
 	customCacheControl($t,$cache_file,true);	
 
 	Header("Content-Type: application/vnd.google-earth.kmz+xml; charset=utf-8; filename=geograph.kmz");
-	Header("Content-Disposition: attachment; filename=\"geograph.kmz\"");
+	Header("Content-Disposition: attachment; filename=\"geograph$i.kmz\"");
 	
 	header('Content-length: '.filesize($cache_file));
 
@@ -84,7 +90,7 @@ END_HTML
 );
 $networklink->setItem('Snippet','move...scroll...rotate...tilt, to view the Geograph Archive...');
 
-	$UrlTag = $networklink->useUrl("http://{$_SERVER['HTTP_HOST']}/kml-superlayer.php?download");
+	$UrlTag = $networklink->useUrl("http://{$_SERVER['HTTP_HOST']}/kml-superlayer.php?download".($i?"&i=$i":''));
 	$UrlTag->setItem('refreshMode','onInterval');
 	$UrlTag->setItem('refreshInterval',60*60*24);
 	$kml->addChild($networklink);
