@@ -36,6 +36,11 @@
 	var point = new GLatLng(53.13359, -2.504883);
 	map.setCenter(point, 6);
 	var geoXml = null;
+	var britishisles = new GLatLngBounds(new GLatLng(49, -12.2),new GLatLng(62, 2.3));
+
+	function updateMessage() {
+		document.getElementById('message').innerHTML = "Layer Loaded.";
+	}
 
 	function updateMapView(bounds) {
 		document.getElementById('message').innerHTML = "Loading...";
@@ -43,16 +48,30 @@
 		var southWest = bounds.getSouthWest();
 		var northEast = bounds.getNorthEast();
 
-		url = "http://www.geograph.org.uk/earth.php?BBOX="+southWest.lng().toFixed(3)+","+southWest.lat().toFixed(3)+","+northEast.lng().toFixed(3)+","+northEast.lat().toFixed(3);
+		url = "/earth.php?BBOX="+southWest.lng().toFixed(3)+","+southWest.lat().toFixed(3)+","+northEast.lng().toFixed(3)+","+northEast.lat().toFixed(3);
 
-		if (geoXml != null) {
-			map.removeOverlay(geoXml);
+		var span = bounds.toSpan();
+
+		if (span.lng() < 7 && span.lat() < 7) {
+			if (span.lng() > 0.001 && span.lat() > 0.001) {
+				if (bounds.intersects(britishisles)) {	
+					if (geoXml != null) {
+						map.removeOverlay(geoXml);
+					}
+					geoXml = new GGeoXml("http://www.geograph.org.uk"+url,updateMessage);
+
+					map.addOverlay(geoXml);
+					document.getElementById('message').innerHTML = "Loaded. Displaying thumbnails...";
+				} else {
+					document.getElementById('message').innerHTML = "Pan to the British Isles to see thumbnails.";
+				}
+			} else {
+				document.getElementById('message').innerHTML = "Zoom out to see thumbnails.";
+			}
+		} else {
+			document.getElementById('message').innerHTML = "Zoom in on British Isles to see thumbnails.";
 		}
-		geoXml = new GGeoXml(url);
-
-		map.addOverlay(geoXml);
-		document.getElementById('message').innerHTML = "Loaded. Displaying thumbnails...";
-		_IG_Analytics("UA-172738-3", "/earth.php");
+		_IG_Analytics("UA-172738-3", url);
 	}
 	
 	map.getBoundsAsync(updateMapView);
