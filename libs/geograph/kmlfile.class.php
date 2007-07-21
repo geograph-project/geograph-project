@@ -33,6 +33,8 @@ class kmlPrimative {
 	public $tag = '';
 	public $id = '';
 
+	public $values = array();
+
 	public $items = array();
 
 	public $children = array();
@@ -40,7 +42,7 @@ class kmlPrimative {
 	public function __construct($tag,$id = '') {
 		$this->tag = $tag;
 		if (!empty($id)) {
-			$this->id = $id;
+			$this->values['id'] = $id;
 		}
 	}
 
@@ -99,8 +101,10 @@ class kmlPrimative {
 	public function toString($indent = 0,$prettyprint = true) {
 		if ($prettyprint) {
 			$s = str_repeat("\t",$indent)."<{$this->tag}";
-			if (!empty($this->id)) {
-				$s .= " id=\"{$this->id}\"";
+			if (count($this->values)) {
+				foreach ($this->values as $name => $value) {
+					$s .= " $name=\"$value\"";
+				}
 			}
 			$s .= ">\n";
 			if (count($this->items)) {
@@ -119,8 +123,10 @@ class kmlPrimative {
 			return $s.str_repeat("\t",$indent)."</{$this->tag}>\n";
 		} else {
 			$s = "<{$this->tag}";
-			if (!empty($this->id)) {
-				$s .= " id=\"{$this->id}\"";
+			if (count($this->values)) {
+				foreach ($this->values as $name => $value) {
+					$s .= " $name=\"$value\"";
+				}
 			}
 			$s .= ">";
 			if (count($this->items)) {
@@ -168,11 +174,8 @@ class kmlFile extends kmlPrimative {
 
 	
 	public function outputKML($sendheaders = true,$diskfile = '') {
-		if (empty($this->id)) {
-			$this->id = uniqid();
-		}
 		if (empty($this->filename)) {
-			$this->filename = $this->id.".kml";
+			$this->filename = uniqid().".kml";
 		}
 		$content =& $this->returnKML();
 		if ($sendheaders && !headers_sent()) {
@@ -191,11 +194,8 @@ class kmlFile extends kmlPrimative {
 	function outputKMZ($sendheaders = true,$diskfile = '') {
 		$this->contentType = "application/vnd.google-earth.kmz+xml";
 
-		if (empty($this->id)) {
-			$this->id = uniqid();
-		}
 		if (empty($this->filename)) {
-			$this->filename = $this->id.".kmz";
+			$this->filename = uniqid().".kmz";
 		}
 		
 		$content = $this->returnKML(false);
@@ -225,16 +225,12 @@ class kmlFile extends kmlPrimative {
 	}
 
 	public function returnKML($prettyprint = true) {
-		if (empty($this->id)) {
-			$this->id = uniqid();
-		}
-
 		$s = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 
-		$this->id .= "\" xmlns=\"http://earth.google.com/kml/2.0";
+		$this->values['xmlns'] = "http://earth.google.com/kml/2.0";
 		
 		if (!empty($this->atom)) {
-			$this->id .= "\" xmlns:atom=\"http://www.w3.org/2005/Atom";
+			$this->values['xmlns:atom'] .= "http://www.w3.org/2005/Atom";
 		}
 
 		return $s.parent::toString(0,$prettyprint);
