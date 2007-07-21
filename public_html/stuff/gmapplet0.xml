@@ -43,7 +43,8 @@
 		var southWest = bounds.getSouthWest();
 		var northEast = bounds.getNorthEast();
 
-		url = "http://www.geograph.org.uk/earth.php?BBOX="+southWest.lng()+","+southWest.lat()+","+northEast.lng()+","+northEast.lat();
+		url = "http://www.geograph.org.uk/earth.php?BBOX="+southWest.lng().toFixed(3)+","+southWest.lat().toFixed(3)+","+northEast.lng().toFixed(3)+","+northEast.lat().toFixed(3);
+		alert(url);
 		if (geoXml != null) {
 			map.removeOverlay(geoXml);
 		}
