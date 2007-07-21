@@ -48,6 +48,7 @@ $template='mapbrowse.tpl';
 
 $smarty = new GeographPage;
 
+customGZipHandlerStart();
 
 //initialise mosaic
 $mosaic=new GeographMapMosaic;
