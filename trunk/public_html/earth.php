@@ -32,6 +32,31 @@ if (empty($_GET['i']) || !intval($_GET['i'])) {
 
 dieUnderHighLoad(2,'earth_unavailable.tpl');
 
+	list($west,$south,$east,$north) = explode(',',trim(str_replace('e ','e+',$_GET['BBOX'])));
+	
+	$span = min($north - $south,$east - $west);
+	
+	if ($span > 4 || !$span) {
+		$smarty = new GeographPage;
+		header("Content-type: application/vnd.google-earth.kml+xml");
+		$smarty->display("earth_outsidearea.tpl");
+		exit;
+	}
+	
+	$ire = ($lat > 51.2 && $lat < 55.73 && $long > -12.2 && $long < -4.8);
+	$uk = ($lat > 49 && $lat < 62 && $long > -9.5 && $long < 2.3);
+	
+	$long = (($east - $west)/2) + $west;
+	$lat = (($north - $south)/2) + $south;
+
+	
+	if (!$ire && !$uk) {
+		$smarty = new GeographPage;
+		header("Content-type: application/vnd.google-earth.kml+xml");
+		$smarty->display("earth_outsidearea.tpl");
+		exit;
+	}
+		
 require_once('geograph/feedcreator.class.php');
 require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
