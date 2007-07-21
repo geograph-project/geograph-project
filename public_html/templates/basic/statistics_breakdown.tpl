@@ -1,6 +1,6 @@
 {assign var="page_title" value="Statistics:: $h2title"}
 {include file="_std_begin.tpl"}
-
+<script src="/sorttable.js"></script>
     <form method="get" action="{$script_name}">
     <p>View breakdown of images by 
     <select name="by">
@@ -41,10 +41,10 @@
 		Click a {$title} to run a search for just images within that {$title}.
 	{/if}</small></p>
 
-	<table class="report">
+	<table class="report sortable" id="reportlist">
 	<thead><tr>
-	<td><a href="{$script_name}?{$link}&amp;order={$no}">{$title}</a></td>
-	<td><a href="{$script_name}?{$link}&amp;order=c{$no}">Number</a></td>
+	<td {if $order ne 'c'} sorted="{$jsdir}"{/if}>{$title}</td>
+	<td {if $order eq 'c'} sorted="{$jsdir}"{/if}>Number</td>
 	<td>Percentage</td></tr></thead>
 	<tbody>
 
@@ -73,7 +73,7 @@
 
 	</tbody>
 	
-	<tr class="totalrow"><td>({$breakdown_count} items)</td>
+	<tr class="totalrow sortbottom"><td>({$breakdown_count} items)</td>
 	<th align=right>{$total}</th>
 	<th align=right>100%</th></tr>
 	

@@ -72,22 +72,34 @@ if ($m[2] == 3) { //GE 3
 } else { 
 	$networklink = new kmlNetworkLink(null,'Geograph SuperLayer');
 
-$networklink->setItemCDATA('description',<<<END_HTML
+$desc = <<<END_HTML
 <table bgcolor="#000066" border="0"><tr bgcolor="#000066"><td bgcolor="#000066">
 <a href="http://{$_SERVER['HTTP_HOST']}/"><img src="http://{$_SERVER['HTTP_HOST']}/templates/basic/img/logo.gif" height="74" width="257"/></a>
 </td></tr></table>
 
 <p><i>The Geograph British Isles project aims to collect geographically representative photographs and information for every square kilometre of the UK and the Republic of Ireland, and you can be part of it.</i></p>
 
+<p>Click on the Camera Icon or Thumbnails to view a bigger image, and follow the link to view the full resolution image on the geograph website.</p>
+END_HTML;
+
+if ($i) {
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+	$engine = new SearchEngine($i);
+	$desc .= "<p>Displaying results for search for images<i>".htmlentities2($engine->criteria->searchdesc)."</i></p>";
+} else {
+$desc .= <<<END_HTML
 <p>This SuperLayer allows full access to the thousends of images contributed to Geograph since March 2005, the view starts depicting a coarse overview of the current coverage, zooming in reveals more detail until pictures themselves become visible.</p>
 
-<p>Click on the Camera Icon or Thumbnails to view a bigger image, and follow the link to view the full resolution image on the geograph website.</p>
-
 <p>This SuperLayer will automatically update, but by design is not realtime, so can take a number of weeks for new pictures to become available in the SuperLayer.</p>
+END_HTML;
+}
 
+$desc .= <<<END_HTML
 <p><b>Join us now at: <a href="http://{$_SERVER['HTTP_HOST']}/">{$_SERVER['HTTP_HOST']}</a></b></p>
-END_HTML
-);
+END_HTML;
+
+$networklink->setItemCDATA('description',$desc);
 $networklink->setItem('Snippet','move...scroll...rotate...tilt, to view the Geograph Archive...');
 
 	$UrlTag = $networklink->useUrl("http://{$_SERVER['HTTP_HOST']}/kml-superlayer.php?download".($i?"&i=$i":''));

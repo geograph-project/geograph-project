@@ -200,15 +200,16 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	if (strpos($order,'2') !== FALSE) {
 		$sql_dir = ' DESC';
-		$no = '';
+		$jsdir = 'desc';
 	} else {
 		$sql_dir = '';
-		$no = '2';
+		$jsdir = 'asc';
 	}
-	$smarty->assign_by_ref('no', $no);
+	$smarty->assign_by_ref('jsdir', $jsdir);
 
 	if (strpos($order,'c') !== FALSE) {
 		$sql_order = "ORDER BY c$sql_dir";
+		$smarty->assign_by_ref('order', 'c');
 	} else {
 		$sql_order = "ORDER BY field$sql_dir";
 	}
