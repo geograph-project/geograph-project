@@ -36,19 +36,18 @@ dieUnderHighLoad(2,'earth_unavailable.tpl');
 	
 	$span = min($north - $south,$east - $west);
 	
-	if ($span > 4 || !$span) {
+	if (($span > 7) || !$span) {
 		$smarty = new GeographPage;
 		header("Content-type: application/vnd.google-earth.kml+xml");
 		$smarty->display("earth_outsidearea.tpl");
 		exit;
 	}
 	
-	$ire = ($lat > 51.2 && $lat < 55.73 && $long > -12.2 && $long < -4.8);
-	$uk = ($lat > 49 && $lat < 62 && $long > -9.5 && $long < 2.3);
-	
 	$long = (($east - $west)/2) + $west;
 	$lat = (($north - $south)/2) + $south;
 
+	$ire = ($lat > 51.2 && $lat < 55.73 && $long > -12.2 && $long < -4.8);
+	$uk = ($lat > 49 && $lat < 62 && $long > -9.5 && $long < 2.3);
 	
 	if (!$ire && !$uk) {
 		$smarty = new GeographPage;
