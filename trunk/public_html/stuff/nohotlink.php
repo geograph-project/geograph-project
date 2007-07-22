@@ -83,7 +83,7 @@ imagestring($img, 2, 36, 98, "Image creator must be credited", $black);
 header("HTTP/1.1 403 Forbidden");
 header("Status: 403 Forbidden");
 
-if (preg_match('/28dayslater\.co\.uk/',$_SERVER['HTTP_REFERER'])
+if (strpos($_SERVER['HTTP_REFERER'],'28dayslater') !== FALSE
 	&& preg_match('/^\/photos\/\d+\/\d+\/\d{1,6}_(\w+)\.jpg$/',$filename,$m) && strpos($m[1],'_') === FALSE) {
 	$fullimg = imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$filename); 
 	$fullw=imagesx($fullimg);
