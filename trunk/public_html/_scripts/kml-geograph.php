@@ -38,6 +38,7 @@ if (!$db) die('Database connection failed');
 require_once('geograph/conversions.class.php');
 $conv = new Conversions;
 
+$html = '';
 $kml = new kmlFile();
 $stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
 
@@ -146,6 +147,7 @@ foreach (array(1,2) as $ri) {
 		$networklink = new kmlNetworkLink(null,$entry['hunk_square']);
 		$file = getKmlFilepath($kml->extension,2,$square,$entry['hunk_square']);
 		$UrlTag = $networklink->useUrl("http://".$CONF['KML_HOST'].$file);
+		$html .= getHtmlLink($file,$entry['hunk_square']);
 		if (!isset($_GET['debug'])) {
 			if (isset($_GET['newonly'])) {
 				$db->Execute("insert ignore into kmlcache set `url` = 'myriad.php?gr={$entry['hunk_square']}',filename='$file',`level` = 2,`rendered` = 0");
@@ -168,7 +170,7 @@ $folder->addChild($circles);
 $folder->addChild($links);
 
 
-kmlPageFooter($kml,$square,$gr,'geograph.php',1);
+kmlPageFooter($kml,$square,$gr,'geograph.php',1,$html);
 
 
 

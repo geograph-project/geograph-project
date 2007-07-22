@@ -154,9 +154,10 @@ class kmlPlacemark_Circle extends kmlPlacemark {
 }
 
 
+#$_SERVER['HTTP_HOST'] = "www.geograph.org.uk";
 
-
-function getKmlFilepath($extension,$level,$square = null,$gr='') {
+function getKmlFilepath($extension,$level,$square = null,$gr='',$i = 0) {
+	#$i = 270727;
 	if (is_object($square)) {
 		$s = $square->gridsquare;
 		if ($level > 2) {
@@ -176,26 +177,39 @@ function getKmlFilepath($extension,$level,$square = null,$gr='') {
 	}
 	
 	$base=$_SERVER['DOCUMENT_ROOT'].'/kml';
+	$prefix = "/kml";
+	$base2=$_SERVER['DOCUMENT_ROOT'].'/sitemap';
+	if ($i) {
+		$base .= "/$i";
+		$prefix .= "/$i";
+		$base2 .= "/$i";
+	} 
 	if (!is_dir("$base/$s"))
 		mkdir("$base/$s");
+	if (!is_dir("$base2/$s"))
+		mkdir("$base2/$s");
 	if ($n && !is_dir("$base/$s/$n"))
 		mkdir("$base/$s/$n");
+	if ($n && !is_dir("$base2/$s/$n"))
+		mkdir("$base2/$s/$n");
 	
 	if ($level == 3) {
-		return "/kml/$s/$n.$extension";
+		return "$prefix/$s/$n.$extension";
 	} elseif ($level == 2) {
-		return "/kml/$s.$extension";
+		return "$prefix/$s.$extension";
 	} elseif ($level == 1) {
-		return '/kml/geograph.'.$extension;
+		return "$prefix/geograph.$extension";
 	} else {
 		if ($n && !is_dir("$base/$s/$n/$level"))
 			mkdir("$base/$s/$n/$level");
-		return "/kml/$s/$n/$level/$gr.$extension";
+		if ($n && !is_dir("$base2/$s/$n/$level"))
+			mkdir("$base2/$s/$n/$level");
+		return "$prefix/$s/$n/$level/$gr.$extension";
 	}
 
 }
 
-function kmlPageFooter(&$kml,&$square,$gr,$self,$level) {
+function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '') {
 	global $db;
 	
 	if (isset($_GET['debug'])) {
@@ -213,8 +227,30 @@ function kmlPageFooter(&$kml,&$square,$gr,$self,$level) {
 
 		$base=$_SERVER['DOCUMENT_ROOT'];
 		$kml->outputFile('kmz',false,$base.$file);
+		
+		if ($html) {
+			$file = str_replace("kml",'sitemap',$file);
+			$file = str_replace("kmz",'html',$file);
+			
+			$html = "<html><head><title>{$square->grid_reference}</title></head>\n".
+			"<body>".
+			"<h3>Geograph British Isles</h3>".
+			"<p><a href=\"/\">Back to Homepage</a></p>".
+			"<ul>\n$html</ul>".
+			"</body></html>";
+			
+			file_put_contents($base.$file,$html);
+		}
 	}
 }
 
+function getHtmlLinkP($url,$text) {
+	return "<li><a title=\"View Full Size $text\" href=\"$url\">$text</a></li>\n";
+}
+function getHtmlLink($url,$text) {
+	$url = str_replace("kml",'sitemap',$url);
+	$url = str_replace("kmz",'html',$url);
+	return "<li><a title=\"List photographs in $text\" href=\"$url\">$text</a></li>\n";
+}
 
 ?>

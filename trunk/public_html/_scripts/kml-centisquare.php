@@ -61,6 +61,7 @@ $square=new GridSquare;
 $grid_ok=$square->setByFullGridRef($gr2);
 
 
+$html = '';
 $kml = new kmlFile();
 $kml->atom = true;
 $stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
@@ -101,7 +102,7 @@ $folder->setItem('name',"$gr :: Geograph SuperLayer");
 		$image->fastInit($entry);
 
 			$placemark->useCredit($image->realname,"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id);
-
+			$html .= getHtmlLinkP($placemark->link,$square->grid_reference.' :: '.$entry['title'].' by '.$image->realname);
 			$linkTag = "<a href=\"".$placemark->link."\">";
 			$thumb = "http://".$_SERVER['HTTP_HOST'].$image->getThumbnail(120,120,true); 
 			$thumbTag = preg_replace('/\/photos\/.*\.jpg/',$thumb,$image->getThumbnail(120,120)); 
@@ -131,7 +132,7 @@ $folder->setItem('name',"$gr :: Geograph SuperLayer");
 
 
 
-kmlPageFooter($kml,$square,$gr,'centisquare.php',7);
+kmlPageFooter($kml,$square,$gr,'centisquare.php',7,$html);
 
 
 ?>
