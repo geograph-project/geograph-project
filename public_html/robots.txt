@@ -3,6 +3,7 @@
 
 User-agent: *
 Disallow: /mapbrowse.php?
+Disallow: /map/
 Disallow: /maplarge.php
 Disallow: /mapprint.php
 Disallow: /admin
