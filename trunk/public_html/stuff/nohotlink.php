@@ -30,8 +30,10 @@ if ($_SERVER["PATH_INFO"]) {
 }
 
 $path = "/{$_SERVER['HTTP_HOST']}/";
-if (preg_match('/\/(\d{1,6})_/',$filename,$m))
-	$path .= "photo/".$m[1];
+if (preg_match('/\/(\d{1,6})_/',$filename,$m)) {#
+	$id = intval($m[1]);
+	$path .= "photo/".$id;
+}
 
 
 $t=time()+(3600*24*7);
@@ -48,11 +50,11 @@ imagefill($img,0,0,$blue);
 $black=imagecolorallocate($img, 255,255,255);
 
 
-if ($m[1]) {
+if ($id) {
 	//die as quickly as possible with the minimum 
 	$db = NewADOConnection($GLOBALS['DSN']);
 
-	$realname =& $db->getOne($sql = "select realname from gridimage_search where gridimage_id=".intval($m[1]) );
+	$realname =& $db->getOne($sql = "select realname from gridimage_search where gridimage_id=".intval($id) );
 }
 	
 if (!empty($realname)) {
