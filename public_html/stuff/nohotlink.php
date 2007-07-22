@@ -82,7 +82,21 @@ imagestring($img, 2, 36, 98, "Image creator must be credited", $black);
 
 header("HTTP/1.1 403 Forbidden");
 header("Status: 403 Forbidden");
-header("Content-Type: image/png");
-imagepng($img);
 
+if (true && preg_match('/^\/photos\/\d+\/\d+\/\d{1,6}_(\w+)\.jpg$/',$filename,$m) && strpos($m[1],'_') === FALSE) {
+	$fullimg = imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$filename); 
+	$fullw=imagesx($fullimg);
+	$fullh=imagesy($fullimg);
+
+	$iw=imagesx($img);
+	$ih=imagesy($img);
+
+	imagecopy($fullimg,$img,$fullw-$iw,$fullh-$ih,0,0,$iw,$ih);
+
+	header("Content-Type: image/jpeg");
+	imagejpeg($fullimg,null,75);
+} else {
+	header("Content-Type: image/png");
+	imagepng($img);
+}
 ?>
