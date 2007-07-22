@@ -102,7 +102,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	$fh=fopen($filename, "w");
 	
 	fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
-	fprintf($fh, '<urlset xmlns="http://www.google.com/schemas/sitemap/0.84">'."\n");
+	fprintf($fh, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
 	
 	
 	$maxdate="";
@@ -185,7 +185,7 @@ for ($sitemap=$sitemaps+1; $sitemap<=$sitemaps+$sitemaps2; $sitemap++)
 	$fh=fopen($filename, "w");
 	
 	fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
-	fprintf($fh, '<urlset xmlns="http://www.google.com/schemas/sitemap/0.84">'."\n");
+	fprintf($fh, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
 	
 	
 	$maxdate="";
@@ -251,7 +251,7 @@ $filename=sprintf('%s/public_html/sitemap.xml', $param['dir']);
 $fh=fopen($filename, "w");
 
 fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
-fprintf($fh, '<sitemapindex xmlns="http://www.google.com/schemas/sitemap/0.84">'."\n");
+fprintf($fh, '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
 
 for ($s=0; $s<=$sitemaps; $s++)
 {
