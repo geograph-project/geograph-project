@@ -47,6 +47,7 @@ $square=new GridSquare;
 $grid_ok=$square->setByFullGridRef($gr);
 
 
+$html = '';
 $kml = new kmlFile();
 $kml->atom = true;
 $stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
@@ -86,6 +87,7 @@ foreach($photos as $id=>$entry)
 	if ($entry['imagecount']==1) {
 		$placemark = new kmlPlacemark($entry['gridimage_id'],$entry['grid_reference'].' :: '.$entry['title'],$point);
 		$placemark->useCredit($entry['realname'],"http://{$_SERVER['HTTP_HOST']}/photo/{$entry['gridimage_id']}");
+		$html .= getHtmlLinkP($placemark->link,$entry['grid_reference'].' :: '.$entry['title'].' by '.$entry['realname']);
 		$placemark->setItem('description',$placemark->link);
 
 		$r = ($entry['natgrlen'] > 4)?'':'r';
@@ -145,6 +147,7 @@ foreach($most as $id=>$entry)
 	$networklink = new kmlNetworkLink(null,$entry['hunk_square']);
 	$file = getKmlFilepath($kml->extension,4,$square,$entry['hunk_square']);
 	$UrlTag = $networklink->useUrl("http://".$CONF['KML_HOST'].$file);
+	$html .= getHtmlLink($file,$entry['hunk_square']);
 	if (!isset($_GET['debug'])) {
 		if (isset($_GET['newonly'])) {
 			$db->Execute("insert ignore into kmlcache set `url` = 'hectad.php?gr={$entry['hunk_square']}',filename='$file',`level` = 4,`rendered` = 0");
@@ -164,6 +167,6 @@ foreach($most as $id=>$entry)
 
 $folder->addChild($links);
 
-kmlPageFooter($kml,$square,$gr,'tile.php',3);
+kmlPageFooter($kml,$square,$gr,'tile.php',3,$html);
 
 ?>

@@ -43,6 +43,7 @@ $conv = new Conversions;
 
 $gr = $_GET['gr'];
 
+$html = '';
 $kml = new kmlFile();
 $stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
 
@@ -132,6 +133,7 @@ foreach($most as $id=>$entry)
 	$networklink = new kmlNetworkLink(null,$entry['hunk_square']);
 	$file = getKmlFilepath($kml->extension,3,$square,$entry['hunk_square']);
 	$UrlTag = $networklink->useUrl("http://".$CONF['KML_HOST'].$file);
+	$html .= getHtmlLink($file,$entry['hunk_square']);
 	if (!isset($_GET['debug'])) {
 		if (isset($_GET['newonly'])) {
 			$db->Execute("insert ignore into kmlcache set `url` = 'tile.php?gr={$entry['hunk_square']}',filename='$file',`level` = 3,`rendered` = 0");
@@ -152,7 +154,7 @@ foreach($most as $id=>$entry)
 $folder->addChild($links);
 
 
-kmlPageFooter($kml,$square,$gr,'myriad.php',2);
+kmlPageFooter($kml,$square,$gr,'myriad.php',2,$html);
 
 
 ?>

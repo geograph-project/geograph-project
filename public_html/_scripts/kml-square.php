@@ -47,6 +47,7 @@ $square=new GridSquare;
 $grid_ok=$square->setByFullGridRef($gr);
 
 
+$html = '';
 $kml = new kmlFile();
 $kml->atom = true;
 $stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
@@ -121,6 +122,7 @@ if ($square->imagecount > 20) {
 		$networklink = new kmlNetworkLink(null,$name);
 		$file = getKmlFilepath($kml->extension,7,$square,$entry['hunk_square']);
 		$UrlTag = $networklink->useUrl("http://".$CONF['KML_HOST'].$file);
+		$html .= getHtmlLink($file,$entry['hunk_square']);
 		if (!isset($_GET['debug'])) {
 			if (isset($_GET['newonly'])) {
 				$db->Execute("insert ignore into kmlcache set `url` = 'centisquare.php?gr={$entry['hunk_square']}',filename='$file',`level` = 7,`rendered` = 0");
@@ -173,7 +175,7 @@ if ($square->imagecount > 20) {
 		$image->fastInit($entry);
 
 			$placemark->useCredit($image->realname,"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id);
-
+			$html .= getHtmlLinkP($placemark->link,$entry['grid_reference'].' :: '.$entry['title'].' by '.$image->realname);
 			$linkTag = "<a href=\"".$placemark->link."\">";
 			$thumb = "http://".$_SERVER['HTTP_HOST'].$image->getThumbnail(120,120,true); 
 			$thumbTag = preg_replace('/\/photos\/.*\.jpg/',$thumb,$image->getThumbnail(120,120)); 
@@ -204,7 +206,7 @@ if ($square->imagecount > 20) {
 }
 
 
-kmlPageFooter($kml,$square,$gr,'square.php',6);
+kmlPageFooter($kml,$square,$gr,'square.php',6,$html);
 
 
 

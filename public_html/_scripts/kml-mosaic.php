@@ -47,6 +47,7 @@ $square=new GridSquare;
 $grid_ok=$square->setByFullGridRef($gr);
 
 
+$html = '';
 $kml = new kmlFile();
 $kml->atom = true;
 $stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
@@ -93,7 +94,7 @@ foreach($photos as $id=>$entry)
 		$image->fastInit($entry);
 		
 			$placemark->useCredit($image->realname,"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id);
-
+			$html .= getHtmlLinkP($placemark->link,$entry['grid_reference'].' :: '.$entry['title'].' by '.$image->realname);
 			$linkTag = "<a href=\"".$placemark->link."\">";
 			$thumb = "http://".$_SERVER['HTTP_HOST'].$image->getThumbnail(120,120,true); 
 			$thumbTag = preg_replace('/\/photos\/.*\.jpg/',$thumb,$image->getThumbnail(120,120)); 
@@ -131,6 +132,7 @@ foreach($photos as $id=>$entry)
 		$networklink = new kmlNetworkLink(null,$entry['grid_reference']);
 		$file = getKmlFilepath($kml->extension,6,$square,$entry['grid_reference']);
 		$UrlTag = $networklink->useUrl("http://".$CONF['KML_HOST'].$file);
+		$html .= getHtmlLink($file,$entry['grid_reference']);
 		if (!isset($_GET['debug'])) {
 			if (isset($_GET['newonly'])) {
 				$db->Execute("insert ignore into kmlcache set `url` = 'square.php?gr={$entry['grid_reference']}',filename='$file',`level` = 6,`rendered` = 0");
@@ -157,7 +159,7 @@ foreach($photos as $id=>$entry)
 $folder->addChild($links);
 
 
-kmlPageFooter($kml,$square,$gr,'mosaic.php',5);
+kmlPageFooter($kml,$square,$gr,'mosaic.php',5,$html);
 
 
 
