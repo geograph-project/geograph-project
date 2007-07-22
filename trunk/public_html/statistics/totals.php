@@ -78,7 +78,6 @@ function count_files($dir,$ext) {
 	$files['memorymap'] = count_files("memorymap/","csv");
 	$files['tpraw'] = count_files("templates/basic/","tpl");
 	$files['tpcompiled'] = count_files("templates/basic/compiled/","php");
-	$files['tpcache'] = count_files("templates/basic/cache/","tpl");
 	
 	$smarty->assign_by_ref("files", $files);
 }
