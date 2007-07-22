@@ -105,4 +105,10 @@
 
     ErrorDocument 404 /staticpage.php?page=404
 
+	RewriteCond %{HTTP_REFERER} ^http://(.+\.)?myspace\.com/ [NC,OR]
+	RewriteCond %{HTTP_REFERER} ^http://(.+\.)?facebook\.com/ [NC,OR]
+	RewriteCond %{HTTP_REFERER} ^http://(.+\.)?blogspot\.com/ [NC,OR]
+	RewriteCond %{HTTP_REFERER} ^http://(.+\.)?livejournal\.com/ [NC]
+	RewriteRule /photos/.*\.jpg$ /stuff/nohotlink.php [L]
+
 </VirtualHost>

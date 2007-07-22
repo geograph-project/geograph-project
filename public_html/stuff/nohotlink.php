@@ -21,6 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+require_once('geograph/global.inc.php');
+
 if ($_SERVER["PATH_INFO"]) {
 	$filename = $_SERVER["PATH_INFO"];
 } else {
@@ -28,17 +30,42 @@ if ($_SERVER["PATH_INFO"]) {
 }
 
 $path = "/{$_SERVER['HTTP_HOST']}/";
-if (preg_match('/(\d{1,6})/',$filename,$m))
+if (preg_match('/(\d{1,7})/',$filename,$m))
 	$path .= "photo/".$m[1];
 
-$img=imagecreate(250,100);
+
+$t=time()+(3600*24*7);
+$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", $t);
+header("Expires: $expires");
+customCacheControl(filemtime(__FILE__),$m[1]);
+
+
+
+$img=imagecreate(250,112);
 
 $blue=imagecolorallocate ($img, 101,117,255);
 imagefill($img,0,0,$blue);
 $black=imagecolorallocate($img, 255,255,255);
 
-imagestring($img, 2, 5, 5, "Image from", $black);	
-imagestring($img, 3, 72, 5, "{$_SERVER['HTTP_HOST']}", $black);
+
+if ($m[1]) {
+	//die as quickly as possible with the minimum 
+	$db = NewADOConnection($GLOBALS['DSN']);
+
+	$realname =& $db->getOne($sql = "select realname from gridimage_search where gridimage_id=".intval($m[1]) );
+}
+	
+if (!empty($realname)) {
+	imagestring($img, 2, 8, 5, "c Copyright", $black);	
+	imageellipse($img, 10, 12, 12, 12, $black);	
+
+	imagestring($img, 3, 78, 5, $realname, $black);
+} else {
+	imagestring($img, 2, 5, 5, "Image from", $black);	
+
+	imagestring($img, 3, 72, 5, "{$_SERVER['HTTP_HOST']}", $black);
+}
+
 
 imagestring($img, 5, 5, 30, "View image at:", $black);
 
@@ -46,10 +73,12 @@ imagestring($img, 2, 10, 45, "http:/", $black);
 imagestring($img, 2, 44, 45, $path, $black);
 imageline($img, 10, 58, 44+strlen($path)*imagefontwidth(2), 58, $black);
 
-imagestring($img, 2, 17, 70, "To prevent this message take a copy.", $black);
-imagestring($img, 2, 5, 84, "All images are Creative Commons Licensed", $black);
+imagestring($img, 2, 5, 70, "All images are Creative Commons Licensed", $black);
+imagestring($img, 2, 20, 84, "To prevent this message take a copy", $black);
+imagestring($img, 2, 36, 98, "Image creator must be credited", $black);
 
 
+header("HTTP/1.1 403 Forbidden");
 header("Status: 403 Forbidden");
 header("Content-Type: image/png");
 imagepng($img);
