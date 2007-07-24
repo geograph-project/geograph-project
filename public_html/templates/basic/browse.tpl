@@ -87,12 +87,12 @@
 		
 		<dl class="browselist">
 			<dt>Links for {$gridref}:</dt>
-			<dd>{if !$breakdown && !$breakdowns && !$filtered && $totalimagecount > 1}
-				&middot;&nbsp;<a href="/gridref/{$gridref}?by=1">view breakdown</a>
-			{/if}
-			&middot;&nbsp;<a href="/submit.php?gridreference={$gridrefraw}" title="Submit image for {$gridref}" class="nowrap">submit your own</a>
+			<dd>&middot;&nbsp;<a href="/submit.php?gridreference={$gridrefraw}" title="Submit image for {$gridref}" class="nowrap">submit your own</a>
 			&middot;&nbsp;<a href="/search.php?q={$gridref}" title="Search for other nearby images" class="nowrap">search nearby</a>
 			&middot;&nbsp;<a href="/discuss/index.php?gridref={$gridref}" title="discussion about {$gridref}" class="nowrap">discuss {$gridref}</a>
+			{if !$breakdown && !$breakdowns && !$filtered && $totalimagecount > 1}
+				&middot;&nbsp;<a href="/gridref/{$gridref}?by=1">view breakdown</a>
+			{/if}
 			{if $totalimagecount > 5}
 				&middot;&nbsp;<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show" class="nowrap">view slide show</a>
 			{/if}
