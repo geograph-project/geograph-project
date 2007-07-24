@@ -1,0 +1,26 @@
+#mapcontainer {
+	position: relative;
+	border: 10px solid #000066;
+	width:520px; 
+	height:420px; 
+}
+#mapcontainer #mapbox {
+	width:520px; 
+	height:407px; 
+	border: 1px;
+	position: relative;
+	
+}
+#mapcontainer #mapfooter {
+	width:520px; 
+	top: 407px;
+	color: #fff;
+	font: 10px sans-serif;
+	height: 13px;
+	background: #00f;
+}
+
+#mapcontainer #maplocation {
+	right: 5px;
+ 	position: absolute; 
+}
