@@ -32,7 +32,7 @@
 		</div>
 		
 	{else} 
-		<script type="text/javascript" src="/mapping.js?v={$javascript_version}"></script>
+		<script type="text/javascript" src="/mapping.v{$javascript_version}.js"></script>
 	{/if}
 <div style="float:left; position:relative; font-size:0.8em;" class="interestBox">
 <i>Placenames featured on this map:</i>
