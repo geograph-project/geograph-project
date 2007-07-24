@@ -10,6 +10,7 @@
 
 var lon = {$e};
 var lat = {$n};
+var tileurl = "http://{$http_host}/tile.php";
 
 var zoom = 0;
 var map, osposition, ml;
@@ -18,7 +19,7 @@ var map, osposition, ml;
 
 function loadMap() {
 	map = new OpenLayers.Map('mapbox', {controls:[], maxExtent: new OpenLayers.Bounds(0, 0, 700000, 1300000), maxResolution: 2000/125, units: 'meters', projection: "EPSG:27700"});
-	var mmlayer = new OpenLayers.Layer.WMS("Geograph GB", "http://geograph.mobile/tile.php", {}, {projection: "EPSG:27700"});
+	var mmlayer = new OpenLayers.Layer.WMS("Geograph GB", tileurl, {}, {projection: "EPSG:27700"});
 	
 	mmlayer.tileSize = new OpenLayers.Size(125,125);
 	
