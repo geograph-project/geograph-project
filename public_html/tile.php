@@ -56,18 +56,22 @@ if (isset($_GET['map']))
 		$rastermap->returnImage();
 	}
 	exit;	
-} elseif (isset($_GET['p'])) {
-	require_once('geograph/conversions.class.php');
+} elseif (isset($_GET['e']) && isset($_GET['n'])) {
+
+	//temporolly restriction so only registered users can see it
+	session_cache_limiter('none');
 	
-	$p = intval($_GET['p']);
-	$x = ($p % 900);
-	$y = ($p - $x) / 900;
-	$x = 900 - $x;
+	init_session();
+	
+	if (!$USER->hasPerm('basic')) {
+		header("Location: /maps/errortile.png");
+		exit;
+	}
 
-
+	require_once('geograph/conversions.class.php');
 	$conv = new Conversions();
 	
-	list($e,$n,$reference_index) = $conv->internal_to_national($x,$y);
+	list($e,$n,$reference_index) = array(intval($_GET['e'])*1000,intval($_GET['n'])*1000,1);
 	
 	if ($reference_index == 1) {
 		require_once('geograph/rastermap.class.php');
@@ -81,25 +85,37 @@ if (isset($_GET['map']))
 		$rastermap->natnorthings = $n;
 		$rastermap->width = $rastermap->tilewidth[$rastermap->service];
 
-		if (isset($_GET['debug']))
-			print $rastermap->getOSGBStorePath($rastermap->service,0,0,false);
-
-		#$rastermap->returnImage();
-		
+				
 		header("Content-Type: image/png");
 		
 		
 		$mappath = $rastermap->getMapPath($rastermap->service);
 		
 		if (!file_exists($mappath)) {
-			$mappath=$_SERVER['DOCUMENT_ROOT']."/maps/errortile.png";
-			readfile($mappath);
+		
+			$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", time()+604800);
+			header("Expires: $expires");
+		
+			header("Location: /maps/errortile.png");
+			
+			exit;
 		} else {
 		
+			//Last-Modified: Sun, 20 Mar 2005 18:19:58 GMT
+			$t=filemtime($mappath);
+			$lastmod=strftime("%a, %d %b %Y %H:%M:%S GMT", $t);
+
+			//use the filename as a hash (md5'ed)
+			//can use if-last-mod as file is not unique per user
+			//we have already calculated a header version of the modification date so forward that
+			customCacheControl($t,$mappath,true,$lastmod);
+
+			$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", time()+604800);
+			header("Expires: $expires");
 		
-				
 		
 		
+			list($x,$y) = $conv->national_to_internal($e,$n,$reference_index );	
 			
 			$db=NewADOConnection($GLOBALS['DSN']);
 			
@@ -119,13 +135,16 @@ if (isset($_GET['map']))
 			
 			
 			if (count($arr)) {
-				$part = $rastermap->tilewidth[$rastermap->service] /4;
+				$w = $rastermap->tilewidth[$rastermap->service];
+				$part = $w /4;
 				$xd = imagefontwidth(5)/2;
 				$yd = imagefontheight(5)/2;
 				$s = imagefontwidth(5)*2.1;
 				
-				$img=imagecreatefrompng($mappath);
+				$img=imagecreate($w,$w);
 				$colMarker=imagecolorallocate($img, 255,255,255);
+				imagecolortransparent($img,$colMarker);
+				
 				$colBack=imagecolorallocate($img, 0,0,240);
 				
 				foreach ($arr as $i => $row) {
@@ -141,7 +160,9 @@ if (isset($_GET['map']))
 					imagestring($img, 5, $x2-2-$xd*strlen($row['imagecount'])/2, $y2-$yd, $row['imagecount'], $colMarker);	
 
 				}
-				imagepng($img);
+				$img2=imagecreatefrompng($mappath);				
+				imagecopymerge($img2,$img,0,0,0,0,$w,$w,45);
+				imagepng($img2);
 
 			} else {
 				readfile($mappath);

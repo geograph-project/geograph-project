@@ -173,7 +173,7 @@ geographing</a> first.</p>
 			{/literal}
 		
 	{else} 
-		<script type="text/javascript" src="/mapping.js?v={$javascript_version}"></script>
+		<script type="text/javascript" src="/mapping.v{$javascript_version}.js"></script>
 	{/if}
 
 	<br/>
