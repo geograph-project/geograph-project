@@ -19,9 +19,9 @@
 	{/if}
 {/if}
 
-<p>In order for Geograph to get an accurate coverage figure, and to make pretty maps, we need to know which squares are one land and which are 'all at sea'. To this end, we built up a reasonable basemap using freely available data, but this isn't totally accuarate on our complicated coastline. If you beleive a square is wrongly classified then you can use this form to notify a moderator, in due cause a high resolution map will be checked.</p>
+<p>In order for Geograph to get an accurate coverage figure, and to make pretty maps, we need to know which squares are one land and which are 'all at sea'. To this end, we built up a reasonable basemap using freely available data, but this isn't totally accuarate on our complicated coastline. If you believe a square is wrongly classified then you can use this form to notify a moderator, in due course a high resolution map will be checked.</p>
 
-<p>Note: for the purposes of Geograph, the Mean LOW Water line is used in classifing squares. For Great Britain 1:25,000 mapping is used, however for Ireland such mapping isn't as available, so Google Earth or sometimes Discoverer or Discovery maps will be consulted.</p>
+<p>Note: for the purposes of Geograph, the Mean LOW Water line is used in classifing squares. For Great Britain 1:25,000 mapping is used, however for Ireland such mapping isn't as available, so Satellite imagery or where possible 1:50,000 maps will be consulted.</p>
 
 <!-- {$status} -->
 
@@ -34,7 +34,7 @@
 	{if $check_count}
 		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 		<img src="/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
-		This square has already been manually verified by a moderator. However if you beleive this is still wrong you can request a recheck using the form below.</div>
+		This square has already been manually verified by a moderator. However if you believe this is still wrong you can request a recheck using the form below.</div>
 	{/if}
 {/if}
 
