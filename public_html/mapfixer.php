@@ -53,12 +53,18 @@ if (isset($_GET['gridref']))
 	
 		$db = NewADOConnection($GLOBALS['DSN']);
 
+		$smarty->assign('check_count', -2);
 	
 		//can we find a square?
 		$sq=$db->GetRow("select * from gridsquare where grid_reference='{$gridref}' limit 1");
 		if (count($sq))
 		{
 			$smarty->assign('percent_land', $sq['percent_land']);
+			
+			if ($count= $db->GetOne("select count(*) from mapfix_log where gridsquare_id='{$sq['gridsquare_id']}'"))
+			{
+				$smarty->assign('check_count', $count);
+			}
 		}
 		
 		//update?
