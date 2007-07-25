@@ -67,7 +67,7 @@
 	{/if}
 <br/>
 <br/>
-  {if $isadmin}
+  {if $isadmin && $is_mod}
 	  <form method="post">
 	  <script type="text/javascript" src="/admin/moderation.v{$javascript_version}.js"></script>
 	  <h2 class="titlebar">Moderation</h2>
