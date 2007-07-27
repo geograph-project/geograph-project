@@ -23,24 +23,26 @@
     php_value register_globals Off
     php_value upload_max_filesize 8M
     php_value memory_limit  32M
-    
+
     <Directory /var/www/geograph_live/public_html/>
 	DirectoryIndex index.php
         Options -Indexes
         Options FollowSymLinks
         AllowOverride None
         AddType application/vnd.google-earth.kml+xml kml
-        AddType application/vnd.google-earth.kmz kmz 
-    </Directory>    
-    
+        AddType application/vnd.google-earth.kmz kmz
+
+        FileETag MTime Size
+    </Directory>
+
     RewriteEngine on
 
-    RewriteCond %{HTTP_HOST}   !^www\.geograph\.org\.uk [NC]                 
+    RewriteCond %{HTTP_HOST}   !^www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^kml\.geograph\.org\.uk [NC]
-    RewriteCond %{HTTP_HOST}   !^cluster1\.geograph\.org\.uk [NC]                 
-    RewriteCond %{HTTP_HOST}   !^schools\.geograph\.org\.uk [NC]                 
+    RewriteCond %{HTTP_HOST}   !^cluster1\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !^schools\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^$
-    RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]   
+    RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
     RewriteCond %{HTTP_HOST}   ^kml\.geograph\.org\.uk [NC]
     RewriteCond %{REQUEST_URI} !^/kml
@@ -78,7 +80,7 @@
     RewriteRule /credits/?([\d-]*)/?$ /credits.php?when=$1
 
     RewriteRule /article/feed/recent\.([\w]+) /article/syndicator.php?extension=$1 [qsa]
-  
+
     RewriteRule /feed/recent\.([\w]+) /syndicator.php?extension=$1 [qsa]
     RewriteRule /feed/recent/?([^/]*)/? /syndicator.php?format=$1 [qsa]
 
@@ -100,10 +102,10 @@
     #rewrite imagemap clicks as regular urls - must do this otherwise
     #php's use_trans_sid will break the urls
     RewriteCond %{QUERY_STRING} (.+)\?([0-9]+),([0-9]+)$
-    RewriteRule /mapbrowse.php /mapbrowse.php?x=%2&y=%3&%1 
+    RewriteRule /mapbrowse.php /mapbrowse.php?x=%2&y=%3&%1
 
 
-    RewriteRule ^/(.*)\.v[0-9]+\.(css|js)$ /$1.$2 [L] 
+    RewriteRule ^/(.*)\.v[0-9]+\.(css|js)$ /$1.$2 [L]
 
     ErrorDocument 404 /staticpage.php?page=404
 

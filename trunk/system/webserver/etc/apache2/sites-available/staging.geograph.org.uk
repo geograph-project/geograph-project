@@ -1,9 +1,9 @@
-NameVirtualHost * 
+NameVirtualHost *
 
 <VirtualHost *>
     DocumentRoot /var/www/geograph_svn/public_html
     ServerName staging.geograph.org.uk
-    ServerAlias staging.geograph.co.uk 
+    ServerAlias staging.geograph.co.uk
     ServerAlias scone.geograph.org.uk
     ServerAlias toast.geograph.org.uk
     ServerAlias crumpet.geograph.org.uk
@@ -28,9 +28,16 @@ NameVirtualHost *
         Options FollowSymLinks
         AllowOverride None
         AddType application/vnd.google-earth.kml+xml kml
-        AddType application/vnd.google-earth.kmz kmz 
+        AddType application/vnd.google-earth.kmz kmz
+
+        FileETag MTime Size
+
+        ExpiresActive On
+        ExpiresByType image/gif "access plus 20 days"
+        ExpiresByType image/png "access plus 20 days"
+        ExpiresByType image/jpeg "access plus 60 days"
     </Directory>
-       
+
 
 #    php_value display_errors Off
 
@@ -67,7 +74,7 @@ NameVirtualHost *
     RewriteRule /credits/?([\d-]*)/?$ /credits.php?when=$1
 
     RewriteRule /article/feed/recent\.([\w]+) /article/syndicator.php?extension=$1 [qsa]
-  
+
     RewriteRule /feed/recent\.([\w]+) /syndicator.php?extension=$1 [qsa]
     RewriteRule /feed/recent/?([^/]*)/? /syndicator.php?format=$1 [qsa]
 
@@ -89,9 +96,9 @@ NameVirtualHost *
     #rewrite imagemap clicks as regular urls - must do this otherwise
     #php's use_trans_sid will break the urls
     RewriteCond %{QUERY_STRING} (.+)\?([0-9]+),([0-9]+)$
-    RewriteRule /mapbrowse.php /mapbrowse.php?x=%2&y=%3&%1 
+    RewriteRule /mapbrowse.php /mapbrowse.php?x=%2&y=%3&%1
 
-    RewriteRule ^/(.*)\.v[0-9]+\.(css|js)$ /$1.$2 [L] 
+    RewriteRule ^/(.*)\.v[0-9]+\.(css|js)$ /$1.$2 [L]
 
     ErrorDocument 404 /staticpage.php?page=404
 
