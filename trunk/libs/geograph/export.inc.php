@@ -32,7 +32,8 @@ $sql = "SELECT * FROM `apikeys` WHERE `apikey` = ".$db->Quote($_GET['key'])." AN
 $profile = $db->GetRow($sql);
 
 if ($profile['apikey']) {
-	$sql_hardlimit = $hardlimit = '';
+	$hardlimit = 2500;
+	$sql_hardlimit = " LIMIT $hardlimit";
 } elseif (!empty($_GET['u']) && preg_match("/^\d+$/",$_GET['u']) && (init_session() || true) && $USER->hasPerm('basic')) {
 	$sql_hardlimit = $hardlimit = '';
 } else {
