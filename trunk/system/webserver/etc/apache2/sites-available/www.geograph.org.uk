@@ -6,6 +6,10 @@
     ServerAlias geograph.org.uk
     ServerAlias kml.geograph.org.uk
     ServerAlias cluster1.geograph.org.uk
+    ServerAlias s0.www.geograph.org.uk
+    ServerAlias s1.www.geograph.org.uk
+    ServerAlias s2.www.geograph.org.uk
+    ServerAlias s3.www.geograph.org.uk
     ServerAlias www.geograph.co.uk
 	ServerAlias schools.geograph.org.uk
 
@@ -44,6 +48,7 @@
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^kml\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^cluster1\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !^s[0-9]\.www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^schools\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^$
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
