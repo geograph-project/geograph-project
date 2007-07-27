@@ -1,6 +1,5 @@
 </div>
 </div>
-
 <div id="nav_block">
  <div class="nav">
   <ul>
@@ -15,7 +14,6 @@
     <li><a title="FAQ" href="/faq.php">FAQ</a> <span style="color:red; font-size:0.8em">Updated!</span></li>
     <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact</a></li>
   </ul>
-  
   {dynamic}
   {if $is_mod || $is_admin || $is_tickmod}
   <h3>Admin</h3>
@@ -31,13 +29,9 @@
   </ul>
   {/if}
   {/dynamic}
-
 <div style="text-align:center; padding-top:15px; border-top: 2px solid black; margin-top: 15px;">sponsored by <br/> <br/>
 <a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey" style="padding:4px;"/></a></div>
-
-   
 {if $discuss}
-
 {foreach from=$discuss item=newsitem}
 <h3 class="newstitle" style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;">{$newsitem.topic_title}</h3>
 <div class="newsbody">{$newsitem.post_text}</div>
@@ -45,14 +39,9 @@
 Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$newsitem.topic_time|date_format:"%a, %e %b"}
 <a href="/discuss/index.php?action=vthread&amp;topic={$newsitem.topic_id}">({$newsitem.comments} {if $newsitem.comments eq 1}comment{else}comments{/if})</a>
 </div>
-
 {/foreach}
-
 {/if}
- 
-
 {if $news}
-
 {foreach from=$news item=newsitem}
 <h3 class="newstitle" style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;">{$newsitem.topic_title}</h3>
 <div class="newsbody">{$newsitem.post_text}</div>
@@ -60,14 +49,10 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
 Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$newsitem.topic_time|date_format:"%a, %e %b"}
 <a href="/discuss/index.php?action=vthread&amp;topic={$newsitem.topic_id}">({$newsitem.comments} {if $newsitem.comments eq 1}comment{else}comments{/if})</a>
 </div>
-
 {/foreach}
-
 {/if}
-
   </div>
 </div>
-
 <div id="search_block">
   <div id="search">
     <div id="searchform">
@@ -78,11 +63,8 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
     <input id="searchbutton" type="submit" name="go" value="Find"/></div>
     </form>
     </div>
-    
   </div>
-
   <div id="login">
-
   {dynamic}
   {if $user->registered}
   	  Logged in as {$user->realname|escape:'html'}
@@ -97,10 +79,8 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
 	  <a title="Register to upload photos" href="/register.php">register</a>
   {/if}
   {/dynamic}
-  
   </div>
 </div>
-
 {if $right_block}
 	{include file=$right_block}
 	<div class="content3" id="footer_block">
@@ -124,6 +104,5 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
     </p>
   </div>
 </div>
-
 </body>
 </html>
