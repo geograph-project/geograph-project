@@ -5,6 +5,9 @@ $CONF=array();
 //main server (the server that fires cron jobs etc)
 $CONF['server_ip'] = '127.0.0.1';
 
+//set to true to server from http://s[0-3].$domain/photos/....
+$CONF['enable_cluster'] = 0;
+
 
 ##database configuration
 

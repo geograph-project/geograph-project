@@ -56,6 +56,11 @@ init_session();
 			unset($CONF['enable_newmap']);
 			
 			$map->type_or_user = -1;
+		} elseif (isset($_GET['plain'])) {
+			$map->setOrigin(0,-10);
+			$map->setImageSize(900,1300);
+			$map->setScale(1);
+			
 		} elseif (isset($_GET['big'])) {
 			$map->setOrigin(0,-10);
 			$map->setImageSize(1200,1700);
@@ -77,9 +82,11 @@ init_session();
 			$map->setScale(1);
 			$map->type_or_user = -2;
 			
+			set_time_limit(3600*3);
+			
 			$root=&$_SERVER['DOCUMENT_ROOT'];
 			$n = time()-(60*60*24*7);
-			for($t=strtotime("10 March 2005"); $t<$n; $t+=(60*60*24) ) {
+			for($t=strtotime("10 March 2005"); $t<$n; $t+=(60*60*24*7) ) {
 				$mapDateStart = date('Y-m-d',$t);
 				$mapDateCrit = date('Y-m-d',$t-(60*60*24*7));
 			

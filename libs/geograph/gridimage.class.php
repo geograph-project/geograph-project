@@ -541,6 +541,7 @@ class GridImage
 	function getSquareThumbnail($maxw, $maxh)
 	{
 		
+		global $CONF;
 		//establish whether we have a cached thumbnail
 		$ab=sprintf("%02d", floor($this->gridimage_id/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
@@ -637,6 +638,8 @@ class GridImage
 			$title=htmlentities($this->title);
 			
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
+			if (!empty($CONF['enable_cluster'])) 
+				$thumbpath = "http://s".($this->gridimage_id%4).".{$_SERVER['HTTP_HOST']}".$thumbpath;
 			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]}/>";
 		}
 		
@@ -938,6 +941,8 @@ class GridImage
 		{
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
+			if (!empty($CONF['enable_cluster'])) 
+				$thumbpath = "http://s".($this->gridimage_id%4).".{$_SERVER['HTTP_HOST']}".$thumbpath;
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 		}
 		
