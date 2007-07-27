@@ -266,6 +266,11 @@ function smarty_function_geographlinks($input,$thumbs = false) {
 //replace geograph links
 function GeographLinks(&$posterText,$thumbs = false) {
 	global $imageCredits;
+	
+	$posterText = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"\$1\",'text'=>'Link','title'=>\"\$1\"))",$posterText);
+
+	$posterText = preg_replace('/(?<![\/F])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"http://\$1\",'text'=>'Link','title'=>\"\$1\"))",$posterText);
+
 	//look for [[gridref_or_photoid]] and [[[gridref_or_photoid]]]
 	if (preg_match_all('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
 		foreach ($g_matches[2] as $i => $g_id) {
@@ -304,10 +309,6 @@ function GeographLinks(&$posterText,$thumbs = false) {
 			}
 		}
 	}
-
-	$posterText = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"\$1\",'text'=>'Link','title'=>\"\$1\"))",$posterText);
-
-	$posterText = preg_replace('/(?<![\/F])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"http://\$1\",'text'=>'Link','title'=>\"\$1\"))",$posterText);
 
 	return $posterText;
 }
