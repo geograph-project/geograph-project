@@ -27,19 +27,15 @@
 title="Geograph British Isles search" href="/stuff/osd.xml" />
 <script type="text/javascript" src="/geograph.v{$javascript_version}.js"></script>
 </head>
-
 <body>
-
 <div id="header_block">
   <div id="header">
     <h1 onclick="document.location='/';"><a title="Geograph home page" href="/">GeoGraph - photograph every grid square</a></h1>
   </div>
 </div>
-
 {if $right_block}
 <div {if $maincontentclass}class="{$maincontentclass}"{else}class="content3"{/if} id="maincontent_block">
 {else}
 <div {if $maincontentclass}class="{$maincontentclass}"{else}class="content2"{/if} id="maincontent_block">
 {/if}
-
 <div id="maincontent">
