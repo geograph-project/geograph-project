@@ -501,7 +501,7 @@ class RasterMap
 				var mapw = {$this->width};
 				var mapb = 1;
 			</script>
-			<script type=\"text/javascript\" src=\"/mapping.js?v={$CONF['javascript_version']}\"></script>";
+			<script type=\"text/javascript\" src=\"/mapping.v{$CONF['javascript_version']}.js\"></script>";
 
 			if ($this->issubmit) {
 				return "$str
