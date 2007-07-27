@@ -33,6 +33,10 @@
         AddType application/vnd.google-earth.kmz kmz
 
         FileETag MTime Size
+        ExpiresByType image/gif "access plus 30 days"
+        ExpiresByType image/png "access plus 30 days"
+        ExpiresByType image/jpeg "access plus 180 days"
+        ExpiresByType application/x-javascript "access plus 180 days"
     </Directory>
 
     RewriteEngine on

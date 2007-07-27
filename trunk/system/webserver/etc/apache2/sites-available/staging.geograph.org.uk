@@ -36,6 +36,7 @@ NameVirtualHost *
         ExpiresByType image/gif "access plus 20 days"
         ExpiresByType image/png "access plus 20 days"
         ExpiresByType image/jpeg "access plus 60 days"
+        ExpiresByType application/x-javascript "access plus 180 days"
     </Directory>
 
 
