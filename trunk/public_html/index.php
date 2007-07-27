@@ -27,6 +27,7 @@ init_session();
 
 $smarty = new GeographPage;
 
+customGZipHandlerStart();
 
 $template='homepage.tpl';
 $cacheid=rand(1,5); //so we get a selection of homepages
