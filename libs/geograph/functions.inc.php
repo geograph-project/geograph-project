@@ -410,18 +410,30 @@ function connectToURL($addr, $port, $path, $userpass="", $timeout="30") {
 		return 0;
 }
 
-function customCacheControl($mtime,$hash,$useifmod = true,$gmdate_mod = 0) {
-	$hash = $mtime.'-'.md5($hash);
+function customCacheControl($mtime,$uniqstr,$useifmod = true,$gmdate_mod = 0) {
+	$hash = md5($mtime.'-'.$uniqstr);
 
-	header ("Etag: \"$hash\""); 
-
+	
 	if(isset($_SERVER['HTTP_IF_NONE_MATCH'])) { // check ETag
 		if($_SERVER['HTTP_IF_NONE_MATCH'] == $hash ) {
 			header("HTTP/1.0 304 Not Modified");
+			header ("Etag: \"$hash\""); 
+			header('Content-Length: 0'); 
+			exit;
+		}
+		
+		//also check legacy Etag
+		$hash2 = $mtime.'-'.md5($uniqstr);
+		
+		if($_SERVER['HTTP_IF_NONE_MATCH'] == $hash2 ) {
+			header("HTTP/1.0 304 Not Modified");
+			header ("Etag: \"$hash2\""); 
 			header('Content-Length: 0'); 
 			exit;
 		}
 	}	
+
+	header ("Etag: \"$hash\""); 
 
 	if (!$gmdate_mod)
 		$gmdate_mod = gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
@@ -473,6 +485,7 @@ function customGZipHandlerEnd() {
 		// Send compressed contents
 		$contents = gzencode($contents, 9,  ($encoding == 'gzip') ? FORCE_GZIP : FORCE_DEFLATE);
 		header ('Content-Encoding: '.$encoding);
+		header ('Vary: Accept-Encoding');
 	}
 	header('Content-length: '.strlen($contents));
 	echo $contents;
