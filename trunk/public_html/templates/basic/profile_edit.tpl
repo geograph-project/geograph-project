@@ -160,6 +160,18 @@
  
 
 <div class="field"> 
+	<label for="message_sig" class="nowrap">Message Signature</label>
+	
+	<textarea name="message_sig" id="message_sig" rows="4" cols="60">{$profile->message_sig|escape:'html'}</textarea>
+
+	 
+	<div class="fieldnotes">Automatically include this text in messages sent though the site. <br/>
+	(250 chars max) 
+	<input type="button" value="Use Suggested Text" onclick="this.form.message_sig.value='-- '+this.form.realname.value+' http://{$http_host}/profile/{$user->user_id}'"/></div>
+</div>
+
+
+<div class="field"> 
 	<label for="ticket_option" class="nowrap">Trouble Ticket Emails</label>
 	
 	<select name="ticket_option" id="ticket_option" size="1"> 

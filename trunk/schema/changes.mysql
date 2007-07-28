@@ -1346,3 +1346,7 @@ ALTER TABLE `os_gaz` ADD INDEX (`def_nam`);
 ALTER TABLE `geobb_users` ADD INDEX (`username`,`user_password`);
 
 ALTER TABLE `user` ADD INDEX `email` ( `email` );
+
+
+
+ALTER TABLE `user` ADD `message_sig` VARCHAR( 250 ) NOT NULL default '';

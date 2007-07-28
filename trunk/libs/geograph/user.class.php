@@ -714,7 +714,8 @@ class GeographUser
 				age_group=%d,
 				use_age_group=%d,
 				home_gridsquare=%s,
-				ticket_option=%s
+				ticket_option=%s,
+				message_sig=%s
 				where user_id=%d",
 				$db->Quote($profile['realname']),
 				$db->Quote($profile['nickname']),
@@ -728,6 +729,7 @@ class GeographUser
 				$profile['use_age_group']?1:0,
 				$gs->gridsquare_id,
 				$db->Quote($profile['ticket_option']),
+				$db->Quote(stripslashes($profile['message_sig'])),
 				$this->user_id
 				);
 

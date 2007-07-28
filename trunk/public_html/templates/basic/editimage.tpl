@@ -490,7 +490,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 {if $error.updatenote}<br/><span class="formerror">{$error.updatenote}</span><br/>{/if}
 
 <table><tr><td>
-<textarea id="updatenote" name="updatenote" rows="5" cols="60">{$updatenote|escape:'html'}</textarea>
+<textarea id="updatenote" name="updatenote" rows="5" cols="60"{if $user->message_sig} onclick="if (this.value=='') this.value='{$user->message_sig|escape:'html'}';"{/if}>{$updatenote|escape:'javascript'}</textarea>
 </td><td>
 
 <div style="float:left;font-size:0.7em;padding-left:5px;width:250px;">
