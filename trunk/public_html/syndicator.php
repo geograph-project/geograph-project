@@ -159,8 +159,6 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 
 $cnt=count($images->images);
 
-$linkprefix = (empty($CONF['enable_cluster']))?"http://".$_SERVER['HTTP_HOST']:'';
-
 //create some feed items
 for ($i=0; $i<$cnt; $i++)
 {
@@ -192,13 +190,13 @@ for ($i=0; $i<$cnt; $i++)
 	     			$item->thumb = $details['server'].$details['url']; 
 				$item->thumbTag = $details['html']; 				
 	     		} else {
-				$item->thumb = $linkprefix.$details['url']; 
+				$item->thumb = "http://".$_SERVER['HTTP_HOST'].$details['url']; 
 				$item->thumbTag = preg_replace('/\/photos\/.*\.jpg/',$item->thumb,$details['html']); 
 			}
 	       	} elseif ($format == 'GeoPhotoRSS')
-	     		$item->thumb = $linkprefix.$images->images[$i]->getThumbnail(120,120,true); 
+	     		$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
 	     } elseif ($format == 'BASE') {
-	     	$item->thumb = $linkprefix.$images->images[$i]->getThumbnail(120,120,true); 
+	     	$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
 	     } elseif ($format == 'PHP') {
 	     	$item->thumb = $images->images[$i]->getThumbnail(120,120,true); 
 	     } elseif ($format == 'TOOLBAR') {
