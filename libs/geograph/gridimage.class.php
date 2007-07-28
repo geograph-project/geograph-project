@@ -639,7 +639,7 @@ class GridImage
 			
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) 
-				$thumbpath = "http://s".($this->gridimage_id%4).".{$_SERVER['HTTP_HOST']}".$thumbpath;
+				$thumbpath = "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$_SERVER['HTTP_HOST']}".$thumbpath;
 			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]}/>";
 		}
 		
@@ -942,7 +942,7 @@ class GridImage
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) 
-				$thumbpath = "http://s".($this->gridimage_id%4).".{$_SERVER['HTTP_HOST']}".$thumbpath;
+				$thumbpath = "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$_SERVER['HTTP_HOST']}".$thumbpath;
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 		}
 		
@@ -964,9 +964,12 @@ class GridImage
 		$params['attribname']=$attribname;
 		$resized=$this->_getResized($params);
 		
-		if ($urlonly)
-			return $resized['url'];
-		else
+		if ($urlonly) {
+			if ($urlonly == 2) 
+				return $resized;
+			else 
+				return $resized['url'];
+		} else
 			return $resized['html'];
 	}	
 	

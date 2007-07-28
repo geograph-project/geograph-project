@@ -185,8 +185,15 @@ for ($i=0; $i<$cnt; $i++)
 	     	$item->lat = $images->images[$i]->wgs84_lat;
 	     	$item->long = $images->images[$i]->wgs84_long;
 	     	if ($format == 'KML') {
-	     		$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
-	     		$item->thumbTag = preg_replace('/\/photos\/.*\.jpg/',$item->thumb,$images->images[$i]->getThumbnail(120,120)); 
+	     		$details = $images->images[$i]->getThumbnail(120,120,true);
+	     		
+	     		if (!empty($CONF['enable_cluster'])) {
+	     			$item->thumb = $details['url']; 
+				$item->thumbTag = $details['html']; 				
+	     		} else {
+				$item->thumb = "http://".$_SERVER['HTTP_HOST'].$details['url']; 
+				$item->thumbTag = preg_replace('/\/photos\/.*\.jpg/',$item->thumb,$details['html']); 
+			}
 	       	} elseif ($format == 'GeoPhotoRSS')
 	     		$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
 	     } elseif ($format == 'BASE') {
