@@ -146,7 +146,8 @@ if (isset($_REQUEST['id']))
 		
 		$fullpath=$image->_getFullpath();
 		$q['_import'] = "http://".$_SERVER['HTTP_HOST'].$fullpath;
-		$fullpath=$image->getThumbnail(213,160,true);
+		$details = $image->getThumbnail(213,160,2);
+		$fullpath=$details['url'];
 		$q['_original_thumb'] = "http://".$_SERVER['HTTP_HOST'].$fullpath;
 		
 		if ($CONF['picnik_method'] == 'inabox' && !preg_match('/safari|msie 6/i',$_SERVER['HTTP_USER_AGENT'])) { 

@@ -74,9 +74,14 @@ if (isset($_GET['id']))  {
 		$placemark = $kml->addChild(new kmlPlacemark_Photo('id'.$image->gridimage_id,$image->grid_reference." : ".$image->title,$point));
 
 		$linkTag = "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id."\">";
-		$thumb = "http://".$_SERVER['HTTP_HOST'].$image->getThumbnail(120,120,true); 
-		$thumbTag = preg_replace('/\/photos\/.*\.jpg/',$thumb,$image->getThumbnail(120,120)); 
-
+		$details = $image->getThumbnail(120,120,2);
+		if (!empty($details['server'])) {
+			$thumb = $details['server'].$details['url']; 
+			$thumbTag = $details['html']; 				
+		} else {
+			$thumb = "http://".$_SERVER['HTTP_HOST'].$details['url']; 
+			$thumbTag = preg_replace('/\/photos\/.*\.jpg/',$item->thumb,$details['html']); 
+		}
 		$description = $linkTag.$thumbTag."</a><br/>".GeographLinks($image->comment)." (".$linkTag."view full size</a>)"."<br/><br/> &copy; Copyright <a title=\"view user profile\" href=\"http://{$_SERVER['HTTP_HOST']}/profile/".$image->user_id."\">".$image->realname."</a> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a><br/><br/>";
 
 		$placemark->setItemCDATA('description',$description);

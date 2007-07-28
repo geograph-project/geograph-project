@@ -106,9 +106,14 @@ if (count($images->results)) {
 
 		$item->lat = $img->wgs84_lat;
 		$item->long = $img->wgs84_long;
-		$item->thumb = "http://".$_SERVER['HTTP_HOST'].$img->getThumbnail(120,120,true);
-		$item->thumbTag = preg_replace('/\/photos\/.*\.jpg/',$item->thumb,$img->getThumbnail(120,120)); 
-
+		$details = $img->getThumbnail(120,120,2);
+		if (!empty($details['server'])) {
+			$item->thumb = $details['server'].$details['url']; 
+			$item->thumbTag = $details['html']; 				
+		} else {
+			$item->thumb = $linkprefix.$details['url']; 
+			$item->thumbTag = preg_replace('/\/photos\/.*\.jpg/',$item->thumb,$details['html']); 
+		}
 		$item->licence = "&copy; Copyright <i class=\"attribution\">".htmlspecialchars($img->realname)."</i> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a>";
 
 		$rss->addItem($item);
