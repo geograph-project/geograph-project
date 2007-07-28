@@ -65,7 +65,7 @@
 
 			<br/><br/>
 			<label for="msg">Message</label><br />
-			<textarea rows="10" cols="60" name="msg" id="msg"{if $user->message_sig} onclick="if (this.value=='') this.value='{$user->message_sig|escape:'html'}';"{/if}>{$msg|escape:'html'}</textarea>
+			<textarea rows="10" cols="60" name="msg" id="msg"{if $user->message_sig} onfocus="if (this.value=='') {literal}{{/literal}this.value='{$user->message_sig|escape:'html'}';setCaretTo(this,0); {literal}}{/literal}"{/if}>{$msg|escape:'html'}</textarea>
 			<br/>
 			<span class="formerror">{$errors.msg}</span>
 
