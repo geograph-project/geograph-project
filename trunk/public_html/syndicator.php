@@ -187,8 +187,7 @@ for ($i=0; $i<$cnt; $i++)
 	     	$item->lat = $images->images[$i]->wgs84_lat;
 	     	$item->long = $images->images[$i]->wgs84_long;
 	     	if ($format == 'KML') {
-	     		$details = $images->images[$i]->getThumbnail(120,120,true);
-	     		
+	     		$details = $images->images[$i]->getThumbnail(120,120,2);
 	     		if (!empty($details['server'])) {
 	     			$item->thumb = $details['server'].$details['url']; 
 				$item->thumbTag = $details['html']; 				

@@ -36,7 +36,8 @@ $db=NewADOConnection($GLOBALS['DSN']);
 if ($_GET['image']) {
 	$image = new GridImage;
 	$image->loadFromId($_SESSION['id']);
-	$url = $image->getThumbnail(213,160,true);
+	$details = $image->getThumbnail(213,160,2);
+	$url = $details['url'];
 	header("Content-Type: image/jpeg");
 	@readfile('.'.$url);
 	exit;
