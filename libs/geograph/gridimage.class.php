@@ -969,7 +969,7 @@ class GridImage
 		$resized=$this->_getResized($params);
 		
 		if ($urlonly) {
-			if ($urlonly == 2) 
+			if ($urlonly === 2) 
 				return $resized;
 			else 
 				return $resized['url'];
