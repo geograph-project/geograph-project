@@ -189,8 +189,8 @@ for ($i=0; $i<$cnt; $i++)
 	     	if ($format == 'KML') {
 	     		$details = $images->images[$i]->getThumbnail(120,120,true);
 	     		
-	     		if (!empty($CONF['enable_cluster'])) {
-	     			$item->thumb = $details['url']; 
+	     		if (!empty($details['server'])) {
+	     			$item->thumb = $details['server'].$details['url']; 
 				$item->thumbTag = $details['html']; 				
 	     		} else {
 				$item->thumb = $linkprefix.$details['url']; 
