@@ -764,6 +764,7 @@ class GeographUser
 				$this->use_age_group=stripslashes($profile['use_age_group']);
 				$this->grid_reference=$gs->grid_reference;	
 				$this->ticket_option=stripslashes($profile['ticket_option']);
+				$this->message_sig=stripslashes($profile['message_sig']);
 				$this->_forumUpdateProfile();
 				
 			}
