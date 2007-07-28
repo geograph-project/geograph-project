@@ -638,8 +638,10 @@ class GridImage
 			$title=htmlentities($this->title);
 			
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
-			if (!empty($CONF['enable_cluster'])) 
-				$thumbpath = "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$_SERVER['HTTP_HOST']}".$thumbpath;
+			if (!empty($CONF['enable_cluster'])) {
+				$return['server']= "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$_SERVER['HTTP_HOST']}";
+				$thumbpath = $return['server'].$thumbpath;
+			}
 			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]}/>";
 		}
 		
@@ -941,8 +943,10 @@ class GridImage
 		{
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
-			if (!empty($CONF['enable_cluster'])) 
-				$thumbpath = "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$_SERVER['HTTP_HOST']}".$thumbpath;
+			if (!empty($CONF['enable_cluster'])) {
+				$return['server']= "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$_SERVER['HTTP_HOST']}";
+				$thumbpath = $return['server'].$thumbpath;
+			}
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 		}
 		
