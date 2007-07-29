@@ -18,15 +18,18 @@ var map, osposition, ml;
 {literal}
 
 function loadMap() {
-	map = new OpenLayers.Map('mapbox', {controls:[], maxExtent: new OpenLayers.Bounds(0, 0, 700000, 1300000), maxResolution: 2000/125, units: 'meters', projection: "EPSG:27700"});
-	var mmlayer = new OpenLayers.Layer.WMS("Geograph GB", tileurl, {}, {projection: "EPSG:27700"});
+	map = new OpenLayers.Map('mapbox', {controls:[], maxExtent: new OpenLayers.Bounds(0, 0, 700000, 1300000), maxResolution: 4000/250, units: 'meters', projection: "EPSG:27700"});
 	
-	mmlayer.tileSize = new OpenLayers.Size(125,125);
+	var oslayer = new OpenLayers.Layer.WMS("OSGB Landranger", tileurl+"?l=o", {}, {projection: "EPSG:27700"});	
+	oslayer.tileSize = new OpenLayers.Size(250,250);	
+	oslayer.getURL = geographURL;
 	
-	mmlayer.getURL = geographURL;
-
-	map.addLayer(mmlayer);
-
+	var glayer = new OpenLayers.Layer.WMS("Geograph Coverage", tileurl+"?l=g", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, opacity: 0.3});	
+	glayer.tileSize = new OpenLayers.Size(250,250);	
+	glayer.getURL = geographURL;
+	
+	map.addLayers([oslayer,glayer]);
+	
 	ll = new OpenLayers.LonLat(lon, lat);
 	map.setCenter(ll, 0);
 
@@ -43,6 +46,9 @@ function loadMap() {
 	osposition = new OpenLayers.Control.MousePosition({element: document.getElementById('maplocation'), numdigits: 3, update: 1});
 	osposition.redraw = showGridRef;
 	map.addControl( osposition );
+	
+	switcher = new OpenLayers.Control.LayerSwitcher();
+	map.addControl( switcher );
 }
 
 AttachEvent(window,'load',loadMap,false);
