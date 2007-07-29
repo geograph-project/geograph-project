@@ -409,6 +409,8 @@ if (isset($_POST['gridsquare']))
 			list($lat,$long) = $conv->gridsquare_to_wgs84($square);
 			$smarty->assign('lat', $lat);
 			$smarty->assign('long', $long);
+			
+			$rastermap->addLatLong($lat,$long);
 
 			$images=$square->getImages($USER->user_id,'',"order by submitted desc limit 6");
 			$square->totalimagecount = count($images);
