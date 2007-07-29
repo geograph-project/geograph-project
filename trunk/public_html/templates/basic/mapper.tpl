@@ -20,11 +20,11 @@ var map, osposition, ml;
 function loadMap() {
 	map = new OpenLayers.Map('mapbox', {controls:[], maxExtent: new OpenLayers.Bounds(0, 0, 700000, 1300000), maxResolution: 4000/250, units: 'meters', projection: "EPSG:27700"});
 	
-	var oslayer = new OpenLayers.Layer.WMS("OSGB Landranger", tileurl+"?l=o", {}, {projection: "EPSG:27700"});	
+	var oslayer = new OpenLayers.Layer.WMS("OSGB Landranger", tileurl+"?l=o", {}, {projection: "EPSG:27700", buffer:0});	
 	oslayer.tileSize = new OpenLayers.Size(250,250);	
 	oslayer.getURL = geographURL;
 	
-	var glayer = new OpenLayers.Layer.WMS("Geograph Coverage", tileurl+"?l=g", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, opacity: 0.3});	
+	var glayer = new OpenLayers.Layer.WMS("Geograph Coverage", tileurl+"?l=g", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, opacity: 0.3, buffer:0});	
 	glayer.tileSize = new OpenLayers.Size(250,250);	
 	glayer.getURL = geographURL;
 	
