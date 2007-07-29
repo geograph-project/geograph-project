@@ -586,6 +586,7 @@ class RasterMap
 		$nort = floor($this->natnorthings/1000) * 1000;
 
 		preg_match('/-(\d)k-/',$this->folders[$this->service],$m);
+		$numtiles = $m[1];
 		$stepdist = ($m[1]-1)*1000;
 		
 		if (strlen($CONF['imagemagick_path'])) {
@@ -621,10 +622,11 @@ class RasterMap
 			if (!$path) 
 				$path = $this->getOSGBStorePath('OS50k',$east,$nort,true);
 
-			$cmd = sprintf('%s"%smontage" -geometry +0+0 %s -tile 2x2 png:- | "%sconvert" - -thumbnail %ldx%ld -colors 128 -depth 8 -type Palette png:%s &1>1 &2>1', 
+			$cmd = sprintf('%s"%smontage" -geometry +0+0 %s -tile %dx%d png:- | "%sconvert" - -thumbnail %ldx%ld -colors 128 -depth 8 -type Palette png:%s &1>1 &2>1', 
 				isset($_GET['nice'])?'nice ':'',
 				$CONF['imagemagick_path'],
 				implode(' ',$tilelist),
+				$numtiles,numtiles,
 				$CONF['imagemagick_path'],
 				$this->width, $this->width, 
 				$path);
