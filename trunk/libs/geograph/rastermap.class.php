@@ -64,12 +64,14 @@ class RasterMap
 			'tile-source'=>'pngs-1k-200/',
 			'OS50k'=>'pngs-2k-250/',
 			'OS50k-mapper'=>'pngs-2k-125/',
+			'OS50k-mapper2'=>'pngs-4k-250/',
 			'OS50k-small'=>'pngs-1k-125/'
 		);
 	var $tilewidth=array(
 			'tile-source'=>200,
 			'OS50k'=>250,
 			'OS50k-mapper'=>125,
+			'OS50k-mapper2'=>250,
 			'OS50k-small'=>125,
 			'VoB'=>250,
 			'Google'=>250
@@ -78,6 +80,7 @@ class RasterMap
 			'tile-source'=>1000,
 			'OS50k'=>1000,
 			'OS50k-mapper'=>1000,
+			'OS50k-mapper2'=>1000,
 			'OS50k-small'=>100
 		);
 	
@@ -540,7 +543,7 @@ class RasterMap
 	function createTile($service,$path = null) {
 		if ($service == 'OS50k') {
 			return $this->combineTiles($this->square,$path);
-		} elseif ($service == 'OS50k-mapper') {
+		} elseif ($service == 'OS50k-mapper' || $service == 'OS50k-mapper2') {
 			return $this->combineTilesMapper($this->square,$path);
 		} elseif ($service == 'OS50k-small') {
 			if ($sourcepath = $this->getMapPath('OS50k',true)) {
@@ -559,7 +562,7 @@ class RasterMap
 		}
 	}
 
-	//take four 1km tiles and create a 2km tile
+	//take 1km tiles and create a 2/4km tile
 	function combineTilesMapper(&$gr,$path = false) {
 		global $CONF,$USER;
 		if (is_string($gr)) {
@@ -582,15 +585,18 @@ class RasterMap
 		$east = floor($this->nateastings/1000) * 1000;
 		$nort = floor($this->natnorthings/1000) * 1000;
 
+		preg_match('/-(\d)k-/',$this->folders[$this->service],$m);
+		$stepdist = ($m[1]-1)*1000;
+		
 		if (strlen($CONF['imagemagick_path'])) {
 			$tilelist = array();
 			$c = 0;
 			$found = 0;
-			foreach(range(	$nort+1000 ,
+			foreach(range(	$nort+$stepdist ,
 							$nort ,
 							-1000 ) as $n) {
 				foreach(range(	$east ,
-								$east+1000 ,
+								$east+$stepdist ,
 								1000 ) as $e) {
 					$newpath = $this->getOSGBStorePath($service,$e,$n);
 					
@@ -770,8 +776,13 @@ class RasterMap
 	{
 		$mappath = $this->getMapPath($this->service);
 
-		if (!file_exists($mappath))
-			$mappath=$_SERVER['DOCUMENT_ROOT']."/maps/errortile.png";
+		if (!file_exists($mappath)) {
+			$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", time()+604800);
+			header("Expires: $expires");
+
+			header("Location: /maps/errortile.png");
+			exit;
+		}
 
 		//Last-Modified: Sun, 20 Mar 2005 18:19:58 GMT
 		$t=filemtime($mappath);

@@ -80,49 +80,29 @@ if (isset($_GET['map']))
 		if (isset($_GET['debug']))
 			init_session();
 		
-		$rastermap->service = 'OS50k-mapper';
+		$rastermap->service = 'OS50k-mapper2';
 		$rastermap->nateastings = $e;
 		$rastermap->natnorthings = $n;
 		$rastermap->width = $rastermap->tilewidth[$rastermap->service];
 
-				
-		header("Content-Type: image/png");
-		
-		
-		$mappath = $rastermap->getMapPath($rastermap->service);
-		
-		if (!file_exists($mappath)) {
-		
-			$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", time()+604800);
-			header("Expires: $expires");
-		
-			header("Location: /maps/errortile.png");
-			
-			exit;
+		if ($_GET['l'] == 'o') {
+			$rastermap->returnImage();
 		} else {
 		
-			//Last-Modified: Sun, 20 Mar 2005 18:19:58 GMT
-			$t=filemtime($mappath);
-			$lastmod=strftime("%a, %d %b %Y %H:%M:%S GMT", $t);
-
-			//use the filename as a hash (md5'ed)
-			//can use if-last-mod as file is not unique per user
-			//we have already calculated a header version of the modification date so forward that
-			customCacheControl($t,$mappath,true,$lastmod);
-
 			$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", time()+604800);
 			header("Expires: $expires");
 		
-		
+			preg_match('/-(\d)k-/',$rastermap->folders[$rastermap->service],$m);
+			$stepdist = ($m[1]-1);
 		
 			list($x,$y) = $conv->national_to_internal($e,$n,$reference_index );	
 			
 			$db=NewADOConnection($GLOBALS['DSN']);
 			
 			$scanleft=$x;
-			$scanright=$x+1;
+			$scanright=$x+$stepdist;
 			$scanbottom=$y;
-			$scantop=$y+1;
+			$scantop=$y+$stepdist;
 
 			$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 		
@@ -136,7 +116,8 @@ if (isset($_GET['map']))
 			
 			if (count($arr)) {
 				$w = $rastermap->tilewidth[$rastermap->service];
-				$part = $w /4;
+				$part = $w /8;
+				$part2 = $w /4;
 				$xd = imagefontwidth(5)/2;
 				$yd = imagefontheight(5)/2;
 				$s = imagefontwidth(5)*2.1;
@@ -150,22 +131,21 @@ if (isset($_GET['map']))
 				foreach ($arr as $i => $row) {
 					
 					$x1 = $row['x'] - $x;
-					$y1 = 1 - ($row['y'] - $y);
+					$y1 = $stepdist - ($row['y'] - $y);
 					
-					$x2 = $part + ($x1 * $part * 2);
-					$y2 = $part + ($y1 * $part * 2);
+					$x2 = $part + ($x1 * $part2);
+					$y2 = $part + ($y1 * $part2);
 					
 					imagefilledellipse ($img,$x2,$y2,$s*strlen($row['imagecount']),$s,$colBack);
 					
 					imagestring($img, 5, $x2-2-$xd*strlen($row['imagecount'])/2, $y2-$yd, $row['imagecount'], $colMarker);	
 
 				}
-				$img2=imagecreatefrompng($mappath);				
-				imagecopymerge($img2,$img,0,0,0,0,$w,$w,45);
-				imagepng($img2);
+				header("Content-Type: image/png");
+				imagepng($img);
 
 			} else {
-				readfile($mappath);
+				header("Location: /maps/blank.png");
 			}
 
 			exit;
