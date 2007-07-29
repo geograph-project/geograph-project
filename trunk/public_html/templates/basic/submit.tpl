@@ -198,7 +198,11 @@ geographing</a> first.</p>
 		<div>See <a href="/gridref/{$gridref}" target="_blank">all {$imagecount} live image{if $imagecount!=1}s{/if} for {$gridref}</a> plus any images you have hidden (opens in new window)</div>
 	{/if}&nbsp;
 	</div>
-	
+	{else}
+		<br style="clear:both"/>
+	{/if}
+	{if $rastermap->enabled}
+		{$rastermap->getFooterTag()}
 	{/if}
 {else}
 	<input type="hidden" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}">
