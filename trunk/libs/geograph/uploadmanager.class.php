@@ -383,6 +383,7 @@ class UploadManager
 				if ($exif!==false)
 				{
 					$this->trySetDateFromExif($exif);
+					$this->rawExifData = $exif;
 					$strExif=serialize($exif);
 					$exif =  $this->_pendingEXIF($upload_id);
 					$f=fopen($exif, 'w');

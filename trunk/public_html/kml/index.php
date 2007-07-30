@@ -115,7 +115,7 @@ $folder->addChild($networklink);
 
 $networklink = new kmlNetworkLink(null,'3D Coverage Graph :: Points');
 $networklink->setItemCDATA('description',"Geograph Points breakdown by <a href=\"/help/squares\">Hectad</a>s");
-$UrlTag = $networklink->useUrl("http://{$_SERVER['HTTP_HOST']}/kml/hectads-points.kmz");
+$UrlTag = $networklink->useUrl("http://{$CONF['KML_HOST']}/kml/hectads-points.kmz");
 $networklink->setItem('visibility',0);
 $networklink->setItem('open',0);
 $folder->addChild($networklink);
@@ -123,7 +123,7 @@ $folder->addChild($networklink);
 
 $networklink = new kmlNetworkLink(null,'3D Coverage Graph :: Images');
 $networklink->setItemCDATA('description',"Images Submitted breakdown by <a href=\"/help/squares\">Hectad</a>s");
-$UrlTag = $networklink->useUrl("http://{$_SERVER['HTTP_HOST']}/kml/hectads-images.kmz");
+$UrlTag = $networklink->useUrl("http://{$CONF['KML_HOST']}/kml/hectads-images.kmz");
 $networklink->setItem('visibility',0);
 $networklink->setItem('open',0);
 $folder->addChild($networklink);
