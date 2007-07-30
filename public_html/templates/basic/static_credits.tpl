@@ -85,10 +85,9 @@
     
     <ul>
      <li>Natural Language Query Parsing by {external href="http://developers.metacarta.com/" text="MetaCarta Web Services"}</li>
-     <li>Source code visualization by <a href="http://www.cenqua.com/fisheye"><img src="http://www.cenqua.com/images/fisheyed1.gif" width="89" height="33" border="0" alt="Source Perspective by FishEye"/></a></li>
      <li>Online image manipulation by {external href="http://picnik.com/" text="picnik.com"}</li>
     </ul>
-    
+    <p>NOTE: use of these features does not imply endorsement by the host organizations</p>
     
     <h3>Technology</h3>
     <p>This project relies on the following open-source technologies:</p>
@@ -96,7 +95,24 @@
     <div><a title="PHP Programming Language" href="http://www.php.net" target="_blank"><img src="/img/php.png" width="88" height="31" alt="PHP"></a>
     <a title="Smarty Template Engine" href="http://smarty.php.net" target="_blank"><img src="/img/smarty.gif" width="88" height="31" alt="Smarty"></a>
     <a title="ADOdb Database Abstraction Library" href="http://adodb.sourceforge.net" target="_blank"><img src="/img/adodb.gif" width="88" height="31" alt="adodb"></a>
-    <a title="MySQL Database Server" href="http://www.mysql.com" target="_blank"><img src="/img/mysql.png" width="88" height="31" alt="MySQL"></a></div>
+    <a title="MySQL Database Server" href="http://www.mysql.com" target="_blank"><img src="/img/mysql.png" width="88" height="31" alt="MySQL"></a>
+    <a href="http://www.sphinxsearch.com/"><img src="/img/sphinx_silver.gif" width="88" height="31" border="0" alt="powered by Sphinx"></a>
+    {external href="http://www.danga.com/memcached/" text="memcached"} </div>
+    
+    <h3>Code Libaries</h3>
+    <p>We have reused code from following open-source projects:</p>
+    <ul>
+     <li>{external href="http://www.kryogenix.org/code/browser/sorttable/" text="Sorttable"} - javascript table reordering</li>
+     <li>{external href="http://www.bitfolge.de" text="FeedCreator"} - Generate a wide range of RSS feeds in PHP - extended for GEO</li>
+     <li>{external href="http://openrico.org/" text="Rico"} - Javascript for Rich Internet Applications</li>
+     <li>{external href="http://prototype.conio.net/" text="Prototype"} - Javascript Framework</li>
+     <li>{external href="http://openlayers.org/" text="OpenLayers"} - DHTML and Javascript Draggable Map Interface<br/>
+     	<small>&nbsp;&nbsp;&nbsp;&nbsp;Also reuses parts of Rico and Prototype seperatly</small></li>
+     <li>{external href="http://blog.dixo.net/" text="GeoTools"} - Javascript Coordinate Conversion</li>
+    </ul>
+     
+    
+    <div class="interestBox">Without all of the above this site wouldn't be possible, thanks to everyone involved!</div>
     
     <p>We also strive to adhere to the following standards:</p>
     <div><a title="Check our XHTML Compliance"  target="_blank" href="http://validator.w3.org/check/referer"><img  src="/img/valid-xhtml10.png" width="88" height="31" alt="XHTML"></a>

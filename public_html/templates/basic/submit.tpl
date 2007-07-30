@@ -31,40 +31,74 @@ geographing</a> first.</p>
 </div>
 
 
-	<p>Begin by choosing the grid square you wish to submit.</p>
-
 	{if $errormsg}
 	<p style="color:#990000;font-weight:bold;">{$errormsg}</p>
 	{/if}
 	
-	<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, if you wish you can specify a photographer location in the next step.</p>
+	<p>Choose your submission method:</p>
+	
+<div style="position:relative;width: 735px">
+	<div class="tabHolder">
+		<a class="tabSelected" id="tab1" onclick="tabClick('tab','div',1,4)">Enter Grid Reference</a>
+		<a class="tab" id="tab2" onclick="tabClick('tab','div',2,4)">Choose GR</a>
+		<a class="tab" id="tab3" onclick="tabClick('tab','div',3,4)">Upload Tagged Image <span style="color:red">New!</span></a>
+		<a class="tab" id="tab4" onclick="tabClick('tab','div',4,4)">Offline Application</a>
+	</div>
 
-	
-	<p><label for="grid_reference">Enter an exact grid reference 
-	(<u title="e.g. TQ4364 or TQ 43 64">4</u>,
-	<u title="e.g. TQ435646 or TQ 435 646">6</u>,
-	<u title="e.g. TQ43526467 or TQ 4352 6467">8</u> or 
-	<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure) for the picture subject</label><br />
-	<input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14"/>
-	<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}or <input type="submit" name="picnik" value="Upload via Picnik &gt;"/><span style="color:red">New!</span>{/if}<br/>
-	</p>
+	<div style="position:relative;" class="interestBox" id="div1">
+		<p>Begin by choosing the grid square you wish to submit.</p>
+
+		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, if you wish you can specify a photographer location in the next step.</p>
+
+		<p><label for="grid_reference">Enter an exact <b>Subject</b> grid reference 
+		(<u title="e.g. TQ4364 or TQ 43 64">4</u>,
+		<u title="e.g. TQ435646 or TQ 435 646">6</u>,
+		<u title="e.g. TQ43526467 or TQ 4352 6467">8</u> or 
+		<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure)</label><br />
+		<input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14"/>
+		&nbsp;&nbsp;&nbsp;
+		<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}or <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>{/if}
+		</p>
+	</div>		
+
+	<div style="position:relative;display:none" class="interestBox" id="div2">
+		<p>Begin by choosing the grid square you wish to submit.</p>
+
+		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, if you wish you can specify a photographer location in the next step.</p>
+
+		<p><label for="gridsquare">Select the 1km grid square below...</label><br/>
+		<select id="gridsquare" name="gridsquare">
+			{html_options options=$prefixes selected=$gridsquare}
+		</select>
+		<label for="eastings">E</label>
+		<select id="eastings" name="eastings">
+			{html_options options=$kmlist selected=$eastings}
+		</select>
+		<label for="northings">N</label>
+		<select id="northings" name="northings">
+			{html_options options=$kmlist selected=$northings}
+		</select>
+		&nbsp;&nbsp;&nbsp;
+		<input type="submit" name="setpos2" value="Next &gt;"/> {if $picnik_api_key}or <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>{/if}
+		</p>
+	</div>
+
+	<div style="position:relative;display:none;" class="interestBox" id="div3">
+		<label for="jpeg_exif"><b>Upload an image with GPS EXIF tags (FAQ)</b></label> <br/>
 		
-	
-	<label for="gridsquare">Alternatively, you can select the 1km grid square below...</label><br/>
-	<select id="gridsquare" name="gridsquare">
-		{html_options options=$prefixes selected=$gridsquare}
-	</select>
-	<label for="eastings">E</label>
-	<select id="eastings" name="eastings">
-		{html_options options=$kmlist selected=$eastings}
-	</select>
-	<label for="northings">N</label>
-	<select id="northings" name="northings">
-		{html_options options=$kmlist selected=$northings}
-	</select>
-	
-	<input type="submit" name="setpos2" value="Next &gt;"/>
-	
+		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60"/><br/>
+		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
+		
+		<input type="submit" name="setpos" value="Next &gt;"/>
+		
+		<p>Currently only EXIF GPS based on WGS84 Lat/Long tags are read, however you can also use this if you have named your image file with a Grid Reference in the filename or contains it in the EXIF comment/description.</p>
+	</div>
+
+	<div style="position:relative;display:none" class="interestBox" id="div4">
+
+		<p><a href="/juppy.php">JUppy</a> is coded in cross-platform Java, and is an ideal solution to upload many images, allowing you to prepare the images without an internet connection. <a href="/juppy.php">Go Get it Now!</a></p>
+	</div>
+</div>
 	
 	<p>If you are unsure of the photo location there are a number of online 
 		sources available to help:</p>
@@ -112,7 +146,10 @@ geographing</a> first.</p>
 			<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}! {if $totalimagecount && $totalimagecount ne $imagecount} (but you have {$totalimagecount} hidden){/if}</p>
 		{/if}
 
-		{if $jpeg_url}
+		{if $transfer_id}
+		<img src="{$preview_url}" width="{$preview_width*0.2|string_format:"%d"}" height="{$preview_height*0.2|string_format:"%d"}" alt="low resolution reminder image"/>	
+		<input name="transfer_id" type="hidden" value="{$transfer_id|escape:"html"}"/>
+		{elseif $jpeg_url}
 		<label for="jpeg_url"><b>JPEG Image URL</b></label>
 		<input id="jpeg_url" name="jpeg_url" type="text" size="40" value="{$jpeg_url|escape:"html"}"/>
 		{else}

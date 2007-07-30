@@ -50,11 +50,95 @@ if (!$USER->hasPerm("basic")) {
 
 $step=isset($_POST['step'])?intval($_POST['step']):1;
 
-if ($step == 1) {
-	//init smarty
-	$smarty->assign('prefixes', $square->getGridPrefixes());
-	$smarty->assign('kmlist', $square->getKMList());
+if (isset($_FILES['jpeg_exif']))
+{
+	//Submit Step 1a..
+
+	switch($_FILES['jpeg_exif']['error'])
+	{
+		case 0:
+			if (!filesize($_FILES['jpeg_exif']['tmp_name'])) 
+			{
+				$smarty->assign('error', 'Sorry, no file was received - please try again');
+			} 
+			elseif ($uploadmanager->processUpload($_FILES['jpeg_exif']['tmp_name']))
+			{
+				$smarty->assign('upload_id', $uploadmanager->upload_id);
+				$smarty->assign('transfer_id', $uploadmanager->upload_id);
+				
+				$smarty->assign('preview_url', "/submit.php?preview=".$uploadmanager->upload_id);
+				$smarty->assign('preview_width', $uploadmanager->upload_width);
+				$smarty->assign('preview_height', $uploadmanager->upload_height);
+				
+				$exif = $uploadmanager->rawExifData;
+				
+				if (!empty($exif['GPS'])) {
+					$conv = new Conversions;
+					
+					$deg = FractionToDecimal($exif['GPS']['GPSLatitude'][0]);
+					$min = FractionToDecimal($exif['GPS']['GPSLatitude'][1]);
+					$sec = FractionToDecimal($exif['GPS']['GPSLatitude'][2]);
+					$lat = ExifConvertDegMinSecToDD($deg, $min, $sec);
+
+					if ($exif['GPS']['GPSLatitudeRef'] == 'S') 
+						$lat *= -1;
+
+					$deg = FractionToDecimal($exif['GPS']['GPSLongitude'][0]);
+					$min = FractionToDecimal($exif['GPS']['GPSLongitude'][1]);
+					$sec = FractionToDecimal($exif['GPS']['GPSLongitude'][2]);
+					$long = ExifConvertDegMinSecToDD($deg, $min, $sec);
+
+					if ($exif['GPS']['GPSLongitudeRef'] == 'W') 
+						$long *= -1;
+
+
+					list($e,$n,$reference_index) = $conv->wgs84_to_national($lat,$long);
+
+					list ($_POST['grid_reference'],$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
+					
+					$_POST['gridsquare'] = preg_replace('/^([A-Z]+).*$/','',$_POST['grid_reference']);
+					
+				
+				} elseif (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/",$_FILES['jpeg_exif']['name'],$m)) {
+					$_POST['gridsquare'] = $m[1];
+					$_POST['grid_reference'] = $m[1].$m[2].$m[3];
+				
+				} else {
+					//try exif comment?
+				}
+				
+				$_POST['eastings'] = '';
+			} else {
+				$smarty->assign('error', $uploadmanager->errormsg);
+				$uploadmanager->errormsg = '';
+			}
+			break;
+		case UPLOAD_ERR_INI_SIZE:
+		case UPLOAD_ERR_FORM_SIZE:
+			$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 8Mb - please resize the image and try again');
+			break;
+		case UPLOAD_ERR_PARTIAL:
+			$smarty->assign('error', 'Your file was only partially uploaded - please try again');
+			break;
+		case UPLOAD_ERR_NO_FILE:
+			$smarty->assign('error', 'No file was uploaded - please try again');
+			break;
+		case UPLOAD_ERR_NO_TMP_DIR:
+			$smarty->assign('error', 'System Error: Folder missing - please let us know');
+			break;
+		case UPLOAD_ERR_CANT_WRITE:
+			$smarty->assign('error', 'System Error: Can not write file - please let us know');
+			break;
+		case UPLOAD_ERR_EXTENSION:
+			$smarty->assign('error', 'System Error: Upload Blocked - please let us know');
+			break;
+		default:
+			$smarty->assign('error', 'We were unable to process your upload - please try again');
+			break;
+	}
 }
+
+
 //for every stage after step 1, we expect to get a
 //grid reference posted...
 if (isset($_POST['gridsquare']))
@@ -155,6 +239,23 @@ if (isset($_POST['gridsquare']))
 		{
 			$step=1;
 		}			
+		elseif (isset($_POST['transfer_id']))
+		{
+			//preserve the upload id
+			if($uploadmanager->validUploadId($_POST['transfer_id'])) {
+				$smarty->assign('upload_id', $_POST['transfer_id']);
+				$uploadmanager->setUploadId($_POST['transfer_id']);
+				
+				//we ok to continue
+				if (isset($_POST['photographer_gridref'])) {
+					$step=3;
+				} else {
+					$step=2;
+				}
+			} else {
+				$step=1;
+			}
+		}	
 		//see if we have an url to process?
 		elseif (isset($_POST['jpeg_url']))
 		{
@@ -337,7 +438,11 @@ if (isset($_POST['gridsquare']))
 			$step = 3;
 		}
 		
-		if ($step == 3) {
+		if ($step == 1) {
+			//init smarty
+			$smarty->assign('prefixes', $square->getGridPrefixes());
+			$smarty->assign('kmlist', $square->getKMList());
+		} elseif ($step == 3) {
 		
 			list($usec, $sec) = explode(' ',microtime());
 			$endtime = ((float)$usec + (float)$sec);
@@ -384,13 +489,11 @@ if (isset($_POST['gridsquare']))
 				$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
 			}
 			$smarty->assign('today_imagetaken', date("Y-m-d"));
-		}
-		if ($step == 4) {
+		} elseif ($step == 4) {
 			if (isset($_SESSION['last_imagetaken'])) {
 				$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
 			}
-		}
-		if ($step == 2) {
+		} elseif ($step == 2) {
 			require_once('geograph/rastermap.class.php');
 
 			$rastermap = new RasterMap($square,true);
@@ -456,8 +559,11 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('northings', $_POST['northings']);
 			$smarty->assign('gridref', sprintf("%s%02d%02d", $_POST['gridsquare'],$_POST['eastings'],$_POST['northings']));
 		}
-		
-	
+		if ($step == 1) {
+			//init smarty
+			$smarty->assign('prefixes', $square->getGridPrefixes());
+			$smarty->assign('kmlist', $square->getKMList());
+		}
 	}
 }
 else
@@ -481,6 +587,11 @@ else
 			$smarty->assign('northings', $square->northings);
 			$smarty->assign('gridref', $square->grid_reference);
 		}
+	}
+	if ($step == 1) {
+		//init smarty
+		$smarty->assign('prefixes', $square->getGridPrefixes());
+		$smarty->assign('kmlist', $square->getKMList());
 	}
 }
 

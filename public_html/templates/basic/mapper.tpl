@@ -43,7 +43,7 @@ function loadMap() {
 	panzoom.draw = drawNoZoom;
 	map.addControl( panzoom );
 	
-	osposition = new OpenLayers.Control.MousePosition({element: document.getElementById('maplocation'), numdigits: 3, update: 1});
+	osposition = new OpenLayers.Control.MousePosition({element: document.getElementById('maplocation'), numdigits: 4, update: 1});
 	osposition.redraw = showGridRef;
 	map.addControl( osposition );
 	

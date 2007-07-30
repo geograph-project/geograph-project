@@ -23,6 +23,18 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+function FractionToDecimal($fraction) {
+	$result = 0;
+	eval ("\$result = 1.0*$fraction;");
+	return $result;
+}
+
+function ExifConvertDegMinSecToDD($deg, $min, $sec) {
+	$dec_min = ($min*60.0 + $sec)/60.0;
+	return ($deg*60.0 + $dec_min)/60.0;
+}
+
+
 /**
 * Perform coordinate conversion for use within Geograph
 *
