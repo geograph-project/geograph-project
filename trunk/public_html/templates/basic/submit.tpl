@@ -44,13 +44,13 @@ geographing</a> first.</p>
 	
 <div style="position:relative;width: 690px">
 	<div class="tabHolder">
-		<a class="tabSelected" id="tab1" onclick="tabClick('tab','div',1,4)">Enter Grid Reference</a>
-		<a class="tab" id="tab2" onclick="tabClick('tab','div',2,4)">Choose GR</a>
-		<a class="tab" id="tab3" onclick="tabClick('tab','div',3,4)">Upload Tagged Image <span style="color:red">New!</span></a>
-		<a class="tab" id="tab4" onclick="tabClick('tab','div',4,4)">Offline Application</a>
+		<a class="tab{if $tab == 1}Selected{/if}" id="tab1" onclick="tabClick('tab','div',1,4)">Enter Grid Reference</a>
+		<a class="tab{if $tab == 2}Selected{/if}" id="tab2" onclick="tabClick('tab','div',2,4)">Choose GR</a>
+		<a class="tab{if $tab == 3}Selected{/if}" id="tab3" onclick="tabClick('tab','div',3,4)">Upload Tagged Image <span style="color:red">New!</span></a>
+		<a class="tab{if $tab == 4}Selected{/if}" id="tab4" onclick="tabClick('tab','div',4,4)">Offline Application</a>
 	</div>
 
-	<div style="position:relative;" class="interestBox" id="div1">
+	<div style="position:relative;{if $tab != 1}display:none{/if}" class="interestBox" id="div1">
 		<p>Begin by choosing the grid square you wish to submit.</p>
 
 		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, if you wish you can specify a photographer location in the next step.</p>
@@ -64,9 +64,11 @@ geographing</a> first.</p>
 		&nbsp;&nbsp;&nbsp;
 		<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}or <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>{/if}
 		</p>
+		
+		<p>TIP: you can just enter a 4fig reference and enter a more precise location in the next step</p> 
 	</div>		
 
-	<div style="position:relative;display:none" class="interestBox" id="div2">
+	<div style="position:relative;{if $tab != 2}display:none{/if}" class="interestBox" id="div2">
 		<p>Begin by choosing the grid square you wish to submit.</p>
 
 		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, if you wish you can specify a photographer location in the next step.</p>
@@ -88,7 +90,7 @@ geographing</a> first.</p>
 		</p>
 	</div>
 
-	<div style="position:relative;display:none;" class="interestBox" id="div3">
+	<div style="position:relative;{if $tab != 3}display:none{/if}" class="interestBox" id="div3">
 		<label for="jpeg_exif"><b>Upload an image with GPS EXIF tags (FAQ)</b></label> <br/>
 		
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60"/><br/>
@@ -104,7 +106,7 @@ geographing</a> first.</p>
 		</div>
 	</div>
 
-	<div style="position:relative;display:none" class="interestBox" id="div4">
+	<div style="position:relative;{if $tab != 4}display:none{/if}" class="interestBox" id="div4">
 
 		<p><a href="/juppy.php">JUppy</a> is coded in cross-platform Java, and is an ideal solution to upload many images, allowing you to prepare the images without an internet connection. <a href="/juppy.php">Go Get it Now!</a></p>
 		
