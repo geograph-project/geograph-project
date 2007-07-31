@@ -19,7 +19,7 @@
 
 {/if}
 
-<div style="width:180px;margin-left:10px;margin-bottom:100px;float:right;font-size:0.8em;padding:10px;background:#dddddd;position:relative">
+<div style="width:180px;margin-left:10px;margin-bottom:100px;float:right;font-size:0.8em;padding:10px;background:#dddddd;position:relative; border:1px solid gray; z-index:100">
 <h3 style="margin-bottom:0;margin-top:0">Need Help?</h3>
 
 <p>If you enter the exact location, e.g. <b>TL 246329</b> we'll figure 
@@ -42,12 +42,12 @@ geographing</a> first.</p>
 	
 	<p>Choose your submission method:</p>
 	
-<div style="position:relative;width: 690px">
+<div style="position:relative;">
 	<div class="tabHolder">
-		<a class="tab{if $tab == 1}Selected{/if}" id="tab1" onclick="tabClick('tab','div',1,4)">Enter Grid Reference</a>
-		<a class="tab{if $tab == 2}Selected{/if}" id="tab2" onclick="tabClick('tab','div',2,4)">Choose GR</a>
-		<a class="tab{if $tab == 3}Selected{/if}" id="tab3" onclick="tabClick('tab','div',3,4)">Upload Tagged Image <span style="color:red">New!</span></a>
-		<a class="tab{if $tab == 4}Selected{/if}" id="tab4" onclick="tabClick('tab','div',4,4)">Offline Application</a>
+		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,4)">Enter Grid Reference</a>
+		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,4)">Choose GR</a>
+		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,4)">Upload Tagged Image <span style="color:red">New!</span></a>
+		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,4)">Offline Application</a>
 	</div>
 
 	<div style="position:relative;{if $tab != 1}display:none{/if}" class="interestBox" id="div1">
