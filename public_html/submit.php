@@ -48,6 +48,12 @@ if (!$USER->hasPerm("basic")) {
 	exit;
 }
 
+if (isset($_SESSION['tab'])) {
+	$selectedtab=$_SESSION['tab'];
+} else {
+	$selectedtab =1;
+}
+
 $step=isset($_POST['step'])?intval($_POST['step']):1;
 
 if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_NO_FILE)
@@ -108,6 +114,7 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 				}
 				
 				$_POST['eastings'] = '';
+				$selectedtab =3;
 			} else {
 				$smarty->assign('error', $uploadmanager->errormsg);
 				$uploadmanager->errormsg = '';
@@ -170,6 +177,7 @@ if (isset($_POST['gridsquare']))
 		{
 			//preserve inputs in smarty
 			$smarty->assign('grid_reference', $grid_reference = $square->grid_reference);
+			$selectedtab =2;
 		}
 	}
 	if ($ok)
@@ -605,6 +613,9 @@ if (strlen($uploadmanager->errormsg))
 	$smarty->assign('errormsg', $uploadmanager->errormsg);
 	$step=7;
 }
+
+$smarty->assign('tab', $selectedtab);
+$_SESSION['tab'] = $selectedtab;
 
 //which step to display?
 $smarty->assign('step', $step);
