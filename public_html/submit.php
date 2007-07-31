@@ -253,6 +253,7 @@ if (isset($_POST['gridsquare']))
 			if($uploadmanager->validUploadId($_POST['transfer_id'])) {
 				$smarty->assign('upload_id', $_POST['transfer_id']);
 				$uploadmanager->setUploadId($_POST['transfer_id']);
+				$uploadmanager->reReadExifFile();
 				
 				//we ok to continue
 				if (isset($_POST['photographer_gridref'])) {
