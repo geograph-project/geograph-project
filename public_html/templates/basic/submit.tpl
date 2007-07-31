@@ -42,7 +42,7 @@ geographing</a> first.</p>
 	
 	<p>Choose your submission method:</p>
 	
-<div style="position:relative;width: 735px">
+<div style="position:relative;width: 690px">
 	<div class="tabHolder">
 		<a class="tabSelected" id="tab1" onclick="tabClick('tab','div',1,4)">Enter Grid Reference</a>
 		<a class="tab" id="tab2" onclick="tabClick('tab','div',2,4)">Choose GR</a>
