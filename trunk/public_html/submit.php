@@ -50,7 +50,7 @@ if (!$USER->hasPerm("basic")) {
 
 $step=isset($_POST['step'])?intval($_POST['step']):1;
 
-if (isset($_FILES['jpeg_exif']))
+if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_NO_FILE)
 {
 	//Submit Step 1a..
 
@@ -438,6 +438,7 @@ if (isset($_POST['gridsquare']))
 			$step = 3;
 		}
 		
+		
 		if ($step == 1) {
 			//init smarty
 			$smarty->assign('prefixes', $square->getGridPrefixes());
@@ -559,6 +560,7 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('northings', $_POST['northings']);
 			$smarty->assign('gridref', sprintf("%s%02d%02d", $_POST['gridsquare'],$_POST['eastings'],$_POST['northings']));
 		}
+		
 		if ($step == 1) {
 			//init smarty
 			$smarty->assign('prefixes', $square->getGridPrefixes());
@@ -588,6 +590,7 @@ else
 			$smarty->assign('gridref', $square->grid_reference);
 		}
 	}
+	
 	if ($step == 1) {
 		//init smarty
 		$smarty->assign('prefixes', $square->getGridPrefixes());
