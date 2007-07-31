@@ -113,7 +113,7 @@ if (!empty($_GET['abandon'])) {
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(100,intval($_GET['limit'])):50;
 
 
-if (!empty($_GET['relinqush'])) {
+if (!empty($_GET['relinquish'])) {
 	$USER->mustHavePerm('basic');
 	$db->Execute("UPDATE user SET rights = REPLACE(REPLACE(rights,'traineemod',''),'moderator','') WHERE user_id = {$USER->user_id}");
 	

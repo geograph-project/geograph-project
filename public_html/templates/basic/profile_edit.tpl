@@ -232,7 +232,7 @@
 
 		<label for="moderator" class="nowrap">Moderator</label>
 		{if strpos($profile->rights,'moderator') > 0}
-			<input type="button" value="Relinqush moderator rights" onclick="location.href = '/admin/moderation.php?relinqush=1';"/>
+			<input type="button" value="Relinquish moderator rights" onclick="location.href = '/admin/moderation.php?relinquish=1';"/>
 
 			<div class="fieldnotes">If you are no longer able to help out with moderation then click the button above. (you will have to reapply)</div>  
 		{else}
