@@ -91,14 +91,17 @@ geographing</a> first.</p>
 	</div>
 
 	<div style="position:relative;{if $tab != 3}display:none{/if}" class="interestBox" id="div3">
-		<label for="jpeg_exif"><b>Upload an image with GPS EXIF tags (FAQ)</b></label> <br/>
+		<label for="jpeg_exif"><b>Upload an image with Locational information attached</b></label> <br/>
 		
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60"/><br/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
 		
 		<input type="submit" name="setpos" value="Next &gt;"/>
 		
-		<p>Currently only EXIF GPS based on WGS84 Lat/Long tags are read, however you can also use this if you have named your image file with a Grid Reference in the filename!</p>
+		<div>Currently understands:<ul>
+		<li>GPS-EXIF tags based on WGS84 Lat/Long<li>
+		<li>Subject grid-reference from the name of the file (eg "TQ435646-A.jpg")</li>
+		</ul></div>
 		
 		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 		<img src="/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
