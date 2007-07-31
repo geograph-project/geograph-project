@@ -485,6 +485,25 @@ class UploadManager
 		return $ok;
 	}
 	
+	function reReadExifFile() 
+	{
+		//get the exif data
+		$exiffile=$this->_pendingEXIF($this->upload_id);
+		$exif="";
+		$f=@fopen($exiffile, 'r');
+		if ($f)
+		{
+			$exif = fread ($f, filesize($exiffile)); 
+			fclose($f);
+			$strExif=unserialize($exif);
+			if ($strExif!==false)
+			{
+				$this->trySetDateFromExif($strExif);
+				$this->rawExifData = $strExif;
+			}
+		}
+	}
+	
 	/**
 	* commit the upload process
 	*/
