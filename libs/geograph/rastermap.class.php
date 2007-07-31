@@ -467,7 +467,7 @@ class RasterMap
 					function createPMarker(ppoint) {
 						var picon = new GIcon();
 						picon.image =\"/templates/basic/img/camicon.png\";
-						picon.shadow = \"http://labs.google.com/ridefinder/images/mm_20_shadow.png\";
+						picon.shadow = \"/templates/basic/img/cam-s.png\";
 						picon.iconSize = new GSize(12, 20);
 						picon.shadowSize = new GSize(22, 20);
 						picon.iconAnchor = new GPoint(6, 20);

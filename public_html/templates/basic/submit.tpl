@@ -45,7 +45,7 @@ geographing</a> first.</p>
 <div style="position:relative;">
 	<div class="tabHolder">
 		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,4)">Enter Grid Reference</a>
-		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,4)">Choose GR</a>
+		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,4)">Choose Square</a>
 		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,4)">Upload Tagged Image <span style="color:red">New!</span></a>
 		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,4)">Offline Application</a>
 	</div>
@@ -55,11 +55,11 @@ geographing</a> first.</p>
 
 		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, if you wish you can specify a photographer location in the next step.</p>
 
-		<p><label for="grid_reference">Enter an exact <b>Subject</b> grid reference 
+		<p><label for="grid_reference">Enter the grid reference 
 		(<u title="e.g. TQ4364 or TQ 43 64">4</u>,
 		<u title="e.g. TQ435646 or TQ 435 646">6</u>,
 		<u title="e.g. TQ43526467 or TQ 4352 6467">8</u> or 
-		<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure)</label><br />
+		<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure) for the subject grid square</label><br /><br />
 		<input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14"/>
 		&nbsp;&nbsp;&nbsp;
 		<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}or <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>{/if}
@@ -73,7 +73,7 @@ geographing</a> first.</p>
 
 		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, if you wish you can specify a photographer location in the next step.</p>
 
-		<p><label for="gridsquare">Select the 1km grid square below...</label><br/>
+		<p><label for="gridsquare">Select the 1km grid square below...</label><br/><br/>
 		<select id="gridsquare" name="gridsquare">
 			{html_options options=$prefixes selected=$gridsquare}
 		</select>
@@ -91,16 +91,16 @@ geographing</a> first.</p>
 	</div>
 
 	<div style="position:relative;{if $tab != 3}display:none{/if}" class="interestBox" id="div3">
-		<label for="jpeg_exif"><b>Upload an image with Locational information attached</b></label> <br/>
+		<p><label for="jpeg_exif"><b>Upload an image with Locational information attached</b></label> <br/>
 		
-		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60"/><br/>
+		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60"/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
 		
-		<input type="submit" name="setpos" value="Next &gt;"/>
+		<input type="submit" name="setpos" value="Next &gt;"/> <br/>
 		
 		<div>Currently understands:<ul>
 		<li>GPS-EXIF tags based on WGS84 Lat/Long<li>
-		<li>Subject grid-reference from the name of the file (eg "TQ435646-A.jpg")</li>
+		<li>Subject grid-reference from the name of the file (eg "<tt>photo-<b style="padding:1px">TQ435646</b>A.jpg</tt>")</li>
 		</ul></div>
 		
 		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
