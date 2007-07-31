@@ -10,7 +10,7 @@
 {if $lat && $long}<meta name="ICBM" content="{$lat}, {$long}"/>{/if}
 <meta name="DC.title" content="Geograph{if $page_title}:: {$page_title|escape:'html'}{/if}"/>
 {$extra_meta}
-<link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/basic.v{$javascript_version}.css" media="screen" />
+<link rel="stylesheet" type="text/css" title="Monitor" href="http://s0.{$http_host}/templates/basic/css/basic.v{$javascript_version}.css" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
 {if $image && $image->gridimage_id && $image->moderation_status ne 'rejected'}
 <link rel="alternate" type="application/vnd.google-earth.kml+xml" href="/photo/{$image->gridimage_id}.kml"/>
@@ -25,7 +25,7 @@
 {/if}
 <link rel="search" type="application/opensearchdescription+xml" 
 title="Geograph British Isles search" href="/stuff/osd.xml" />
-<script type="text/javascript" src="/geograph.v{$javascript_version}.js"></script>
+<script type="text/javascript" src="http://s0.{$http_host}/geograph.v{$javascript_version}.js"></script>
 </head>
 <body>
 <div id="header_block">
