@@ -1,6 +1,11 @@
 {assign var="page_title" value="Submit"}
 {include file="_std_begin.tpl"}
-
+{literal}<style type="text/css">
+.tab {
+	cursor:pointer;
+	cursor:hand;
+}
+</style>{/literal}
 {dynamic}
 
     <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
@@ -91,12 +96,21 @@ geographing</a> first.</p>
 		
 		<input type="submit" name="setpos" value="Next &gt;"/>
 		
-		<p>Currently only EXIF GPS based on WGS84 Lat/Long tags are read, however you can also use this if you have named your image file with a Grid Reference in the filename or contains it in the EXIF comment/description.</p>
+		<p>Currently only EXIF GPS based on WGS84 Lat/Long tags are read, however you can also use this if you have named your image file with a Grid Reference in the filename!</p>
+		
+		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+		<img src="/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
+		This feature is still in development, if a image fails to upload please let us know, <br/>or better yet, send it as an attachment to <a href="mailto:geograph@barryhunter.co.uk">me</a> so we can try to ensure its recognized.
+		</div>
 	</div>
 
 	<div style="position:relative;display:none" class="interestBox" id="div4">
 
 		<p><a href="/juppy.php">JUppy</a> is coded in cross-platform Java, and is an ideal solution to upload many images, allowing you to prepare the images without an internet connection. <a href="/juppy.php">Go Get it Now!</a></p>
+		
+		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+		<img src="/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>JUppy is still under development and we'd be pleased to receive any comments or suggestions for improvements.
+		</div>
 	</div>
 </div>
 	
@@ -140,7 +154,7 @@ geographing</a> first.</p>
 	{/if}
 		{if $imagecount gt 0}
 			<p style="color:#440000">We currently have 
-			{if $imagecount eq 1}an image{else}{$imagecount} images{/if} {if $totalimagecount && $totalimagecount > $imagecount} ({$totalimagecount} including hidden){/if} (preview shown below)
+			{if $imagecount eq 1}an image{else}{$imagecount} images{/if} {if $totalimagecount && $totalimagecount > $imagecount} ({$totalimagecount} including hidden){/if} 
 			uploaded for <a title="View Images for {$gridref} (opens in new window)" href="/gridref/{$gridref}" target="_blank">{$gridref}</a>, add yours now!</p>
 		{else}
 			<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}! {if $totalimagecount && $totalimagecount ne $imagecount} (but you have {$totalimagecount} hidden){/if}</p>
