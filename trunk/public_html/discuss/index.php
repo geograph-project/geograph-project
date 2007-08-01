@@ -187,6 +187,9 @@ else $l_adminpanel_link='';
 if($action=='vthread'){
 $topicData=db_simpleSelect(0,$Tt,'topic_title, topic_status, topic_poster, topic_poster_name, forum_id, posts_count, sticky, topic_views','topic_id','=',$topic);
 if($topicData and $topicData[4]!=$forum) $forum=$topicData[4];
+if ($forum == 6) {
+	$viewmaxreplys=10;
+}
 unset($result);unset($countRes);
 }
 
