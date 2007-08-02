@@ -97,7 +97,7 @@ function smarty_function_articletext($input) {
 		$smarty->assign("tableContents", $list);
 	}
 	
-	$pattern[]='/<\/h(\d)><br\/>$/';
+	$pattern[]='/<\/h(\d)>\n(?!\*)/';
 	$replacement[]='</h$1>';
 
 
