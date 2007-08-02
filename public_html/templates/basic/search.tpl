@@ -36,7 +36,7 @@
 <div style="float:left; width:50%; position:relative">
 <ul style="margin-left:0;padding:0 0 0 1em;">
 <li><a href="search.php?i=1522" title="Show the most recent submissions">Recent Submissions</a></li>
-<li><a href="search.php?displayclass=thumbs&amp;do=1" title="Show a selection of random thumbnails">Random : Thumbnails</a></li>
+<li><a href="search.php?displayclass=thumbs&amp;orderby=random&amp;do=1" title="Show a selection of random thumbnails">Random : Thumbnails</a></li>
 {dynamic}
 {if $user->registered}
 <li><a href="search.php?u={$user->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1" title="show your recent photos">Your Photos, recent first</a></li>
