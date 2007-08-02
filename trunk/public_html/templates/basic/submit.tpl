@@ -294,7 +294,7 @@ you'll get a geograph point added to your profile and the warm glow that comes
 with it.</p>
 <p>So what makes an image a genuine geograph?</p>
 <ul>
-<li>The image subject must be within grid square {getamap gridref=$gridref}, and ideally the photographer should be too.</li>
+<li>The image subject must be within grid square {$gridref}, and ideally the photographer should be too.</li>
 <li>You must clearly show at close range one of the main geographical features within the square</li>
 <li>You should include a short description relating the image to the map square</li>
 <li>The image should be a natural image as a human would see it, please avoid digitally altering the image to add dates, texts etc, or creating montages, similarly turn off date stamping performed by a camera. A little tweaking of brightness/contrast and/or cropping is fine and encouraged. </li>
@@ -318,7 +318,8 @@ for {$gridref} provided they are accurately located, but may not qualify as geog
 can be edited at any time) but to activate a square you need to be first to meet the
 criteria above!</p>
 
-<span class="interestBox"><a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> (and view list of placenames)</span>
+<div class="interestBox" style="width:30em"><a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> (and view list of placenames)<br/>
+{getamap gridref=$gridref text="Open Get-a-Map"}, <a href="/gridref/{$gridref}" target="_blank">Open {$gridref} Page</a> (in new window)</div>
 
 <h3>Title and Comments</h3>
 <p>Please provide a short title for the image, and any other comments about where
