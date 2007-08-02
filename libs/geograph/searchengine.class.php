@@ -124,7 +124,6 @@ class SearchEngine
 			if (strpos($sql_where,'moderation_status') === FALSE) 
 				$sql_where .= " and moderation_status in ('accepted','geograph')";
 		}
-		if (!$sql_order) {$sql_order = 'gs.grid_reference';}
 		
 		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=`]+) where/i",$sql_where,$matches)) {
 			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\'`]+) where/i",'',$sql_where);
@@ -159,6 +158,8 @@ class SearchEngine
 		if ($this->countOnly || ( ($pg > 1 || $CONF['search_count_first_page']) && !$this->resultCount))
 			return 0;
 		
+		if ($sql_order)
+			$sql_order = "ORDER BY $sql_order";
 	// construct the query sql
 $sql = <<<END
 SELECT gi.*,x,y,gs.grid_reference,user.realname $sql_fields $extra_fields
@@ -166,7 +167,7 @@ FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 	INNER JOIN user ON(gi.user_id=user.user_id)
 	$sql_from
 WHERE $sql_where
-ORDER BY $sql_order
+$sql_order
 LIMIT $page,$pgsize
 END;
 		if (!empty($_GET['debug']))
@@ -228,8 +229,7 @@ END;
 			$sql_where = "WHERE $sql_where";
 			$this->islimited = true;
 		}
-		if (!$sql_order) {$sql_order = 'grid_reference';}
-	
+		
 		if (strpos($sql_where,'gs') !== FALSE) {
 			$sql_where = str_replace('gs.','gi.',$sql_where);
 		}
@@ -262,12 +262,15 @@ END;
 		}
 		if ($this->countOnly || ( ($pg > 1 || $CONF['search_count_first_page']) && !$this->resultCount))
 			return 0;
+			
+		if ($sql_order)
+			$sql_order = "ORDER BY $sql_order";
 	// construct the query sql
 $sql = <<<END
 SELECT gi.* $sql_fields
 FROM gridimage_search as gi $sql_from
 $sql_where
-ORDER BY $sql_order
+$sql_order
 LIMIT $page,$pgsize
 END;
 		if (!empty($_GET['debug']))

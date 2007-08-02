@@ -551,13 +551,6 @@ class SearchCriteria_Text extends SearchCriteria
 
 class SearchCriteria_All extends SearchCriteria
 {
-	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) {
-		parent::getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
-		
-		if (!$this->orderby)
-			$sql_order .= " rand('{$this->crt_timestamp_ts}') ";
-	}
-	
 	/*
 	* allows finding of a user by text string
 	*/
