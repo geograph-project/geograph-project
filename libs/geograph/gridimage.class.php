@@ -805,9 +805,12 @@ class GridImage
 							$unsharpen=$unsharp?"-unsharp 0x1+0.8+0.1":"";
 							
 							$raised=$bevel?"-raise 2x2":"";
+							
+							$operation = ($maxw+$maxh < 400)?'thumbnail':'resize';
+							
 							if ($bestfit)
 							{
-								$cmd = sprintf ("\"%sconvert\" -resize %ldx%ld  $unsharpen $raised -quality 87 jpg:%s jpg:%s", 
+								$cmd = sprintf ("\"%sconvert\" -$operation %ldx%ld  $unsharpen $raised -quality 87 jpg:%s jpg:%s", 
 								$CONF['imagemagick_path'],
 								$maxw, $maxh, 
 								$_SERVER['DOCUMENT_ROOT'].$fullpath,
@@ -849,7 +852,7 @@ class GridImage
 								passthru ($cmd);
 								
 								//now resize
-								$cmd = sprintf ("\"%smogrify\" -resize %ldx%ld $unsharpen $raised -quality 87 jpg:%s", 
+								$cmd = sprintf ("\"%smogrify\" -$operation %ldx%ld $unsharpen $raised -quality 87 jpg:%s", 
 								$CONF['imagemagick_path'],
 								$maxw, $maxh, 
 								$_SERVER['DOCUMENT_ROOT'].$thumbpath);
