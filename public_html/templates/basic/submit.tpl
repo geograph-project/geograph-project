@@ -310,7 +310,7 @@ for {$gridref} provided they are accurately located, but may not qualify as geog
 
 </div>
 
-<div style="float:right;position:relative;">
+<div style="float:right;position:relative;z-index:110">
 <img src="{$preview_url}" width="{$preview_width*0.5|string_format:"%d"}" height="{$preview_height*0.5|string_format:"%d"}" alt="low resolution reminder image"/>	
 </div>
 
@@ -318,7 +318,7 @@ for {$gridref} provided they are accurately located, but may not qualify as geog
 can be edited at any time) but to activate a square you need to be first to meet the
 criteria above!</p>
 
-<div class="interestBox" style="width:30em"><a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> (and view list of placenames)<br/>
+<div class="interestBox" style="width:30em;z-index:0"><a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> (and view list of placenames)<br/>
 {getamap gridref=$gridref text="Open Get-a-Map"}, <a href="/gridref/{$gridref}" target="_blank">Open {$gridref} Page</a> (in new window)</div>
 
 <h3>Title and Comments</h3>
