@@ -81,18 +81,28 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 				if (!empty($exif['GPS'])) {
 					$conv = new Conversions;
 					
-					$deg = FractionToDecimal($exif['GPS']['GPSLatitude'][0]);
-					$min = FractionToDecimal($exif['GPS']['GPSLatitude'][1]);
-					$sec = FractionToDecimal($exif['GPS']['GPSLatitude'][2]);
-					$lat = ExifConvertDegMinSecToDD($deg, $min, $sec);
+					if (is_array($exif['GPS']['GPSLatitude'])) {
+						$deg = FractionToDecimal($exif['GPS']['GPSLatitude'][0]);
+						$min = FractionToDecimal($exif['GPS']['GPSLatitude'][1]);
+						$sec = FractionToDecimal($exif['GPS']['GPSLatitude'][2]);
+						$lat = ExifConvertDegMinSecToDD($deg, $min, $sec);
+					} else {
+						//not sure if this will ever happen but it could?
+						$lat = $exif['GPS']['GPSLatitude'];
+					}
 
 					if ($exif['GPS']['GPSLatitudeRef'] == 'S') 
 						$lat *= -1;
 
-					$deg = FractionToDecimal($exif['GPS']['GPSLongitude'][0]);
-					$min = FractionToDecimal($exif['GPS']['GPSLongitude'][1]);
-					$sec = FractionToDecimal($exif['GPS']['GPSLongitude'][2]);
-					$long = ExifConvertDegMinSecToDD($deg, $min, $sec);
+					if (is_array($exif['GPS']['GPSLongitude'])) {
+						$deg = FractionToDecimal($exif['GPS']['GPSLongitude'][0]);
+						$min = FractionToDecimal($exif['GPS']['GPSLongitude'][1]);
+						$sec = FractionToDecimal($exif['GPS']['GPSLongitude'][2]);
+						$long = ExifConvertDegMinSecToDD($deg, $min, $sec);
+					} else {
+						//not sure if this will ever happen but it could?
+						$long = $exif['GPS']['GPSLongitude'];
+					}
 
 					if ($exif['GPS']['GPSLongitudeRef'] == 'W') 
 						$long *= -1;
@@ -109,8 +119,9 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 					$_POST['gridsquare'] = $m[1];
 					$_POST['grid_reference'] = $m[1].$m[2].$m[3];
 				
-				} else {
-					//try exif comment?
+				} elseif (!empty($exif['COMMENT']) && preg_match("/\b([a-zA-Z]{1,2})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z])/",implode(' ',$exif['COMMENT']),$m)) {
+					$_POST['gridsquare'] = $m[1];
+					$_POST['grid_reference'] = $m[1].$m[2].$m[3];
 				}
 				
 				$_POST['eastings'] = '';
