@@ -45,7 +45,7 @@
 	<thead><tr>
 	<td {if $order ne 'c'} sorted="{$jsdir}"{/if}>{$title}</td>
 	<td {if $order eq 'c'} sorted="{$jsdir}"{/if}>Number</td>
-	<td>Percentage</td></tr></thead>
+	<td sorted="none">Percentage</td></tr></thead>
 	<tbody>
 
 
