@@ -57,8 +57,8 @@ function ts_makeSortable(table) {
         if (sortorder=='desc')
         	arrow='&uarr;';
        
-       
-        cell.innerHTML = '<a href="#" class="sortheader" style="text-decoration:none;" title="Sort on this column" onclick="ts_resortTable(this);return false;">'+txt+'<span class="sortarrow">&nbsp;&nbsp;'+arrow+'</span></a>';
+        if (sortorder!='none')
+        	cell.innerHTML = '<a href="#" class="sortheader" style="text-decoration:none;" title="Sort on this column" onclick="ts_resortTable(this);return false;">'+txt+'<span class="sortarrow">&nbsp;&nbsp;'+arrow+'</span></a>';
     }
 }
 
