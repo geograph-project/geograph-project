@@ -144,12 +144,6 @@ if ($grid_given)
 		}
 		if (!empty($_GET['status'])) {
 			$filtered_title = "moderated as '".$_GET['status']."'";
-			if (preg_match('/^first /',$_GET['status'])) {
-				$_GET['status'] = preg_match('/^first /','',$_GET['status']);
-				$custom_where .= " and ftf = 1";
-			} else {
-				$custom_where .= " and ftf = 0";
-			}
 			$_GET['status'] = str_replace('supplemental','accepted',$_GET['status']);
 			$custom_where .= " and moderation_status = '".$_GET['status']."'";
 		}
