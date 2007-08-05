@@ -215,7 +215,7 @@ if ($grid_given)
 			count(distinct SUBSTRING(imagetaken,1,4)) as takenyear,
 			count(distinct SUBSTRING(submitted,1,7)) as submitted,
 			count(distinct SUBSTRING(submitted,1,4)) as submittedyear,
-			count(distinct CONCAT(ELT(ftf+1, '','first '),moderation_status)) as status,
+			count(distinct moderation_status) as status,
 			count(distinct nateastings DIV 100, natnorthings DIV 100) as centi,
 			sum(nateastings = 0) as centi_blank
 			FROM gridimage
