@@ -48,7 +48,7 @@ if ($USER->hasPerm("ticketmod")) {
 }
 
 if ($USER->hasPerm("moderator")) {
-	$smarty->assign('images_pending', $db->GetAssoc("select count(*) as `count`,(unix_timestamp(now()) - unix_timestamp(min(submitted))) as age from gridimage where moderation_status='pending'"));
+	$smarty->assign('images_pending', $db->GetRow("select count(*) as `count`,(unix_timestamp(now()) - unix_timestamp(min(submitted))) as age from gridimage where moderation_status='pending'"));
 	
 	$smarty->assign('gridsquares_sea', $db->GetAssoc("select reference_index,count(*) from gridsquare where percent_land=-1 group by reference_index"));
 
