@@ -53,7 +53,7 @@ corrected</small><br/>
 {/if}
 
 <li>Stats: <br/>
-   <a href="/statistics/admin_turnaround.php">Turn Around</a> - 
+   <a href="/statistics/admin_turnaround.php">Turn Around</a> {dynamic}(<a href="/statistics/admin_turnaround.php?u={$user->user_id}">You</a>){/dynamic} - 
    rough estimate at moderation times <br/>
    <a title="Web Stats" href="/statistics/pulse.php">Geograph Pulse</a> - 
    upto the minute general site status</li>
