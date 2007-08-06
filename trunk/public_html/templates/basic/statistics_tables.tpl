@@ -4,6 +4,42 @@
 <script src="/sorttable.js"></script>
 {/if}
 
+{if $filter}
+    <form method="get" action="{$script_name}">
+    <p>{if $references}In <select name="ri">
+    	{html_options options=$references selected=$ri}
+    </select>{/if}
+    {if $i}
+    	<input type="checkbox" name="i" value="{$i}" checked="checked" 
+    	id="i"/><label for="i">Limited to <a href="/search.php?i={$i}">Search</a></label>
+    {else}
+    {dynamic}
+    {if $filter > 1}
+    {if $user->registered}
+	<select name="u">
+		{if $u && $u != $user->user_id}
+			<option value="{$u}">Just for {$profile->realname}</option>
+		{/if}
+		<option value="{$user->user_id}">Just for {$user->realname}</option>
+		<option value="" {if !$u} selected{/if}>For Everyone</option>
+	</select>
+    {else}
+	{if $u}
+	<select name="u">
+		<option value="{$u}" selected>Just for {$profile->realname}</option>
+		<option value="">For Everyone</option>
+	</select>
+	{/if}
+    {/if}
+    {/if}
+    {/dynamic}
+    {/if}
+    {foreach from=$extra key=name item=value}
+    	<input type="hidden" name="{$name}" value="{$value}"/>
+    {/foreach}
+    <input type="submit" value="Go"/></p></form>
+ {/if} 
+ 
 <h2>{$h2title}</h2>
 
 {if $headnote}
@@ -52,7 +88,7 @@
 		{/if}
 		
 		<div class="interestBox">NEW! 
-		<a href="{$script_name}?{foreach from=$extra key=name item=value}{$name}={$value}&amp;{/foreach}{if $ri}ri={$ri}&amp;{/if}{if $i}i={$i}&amp;{/if}{dynamic}{if $u}ri={$u}&amp;{/if}{/dynamic}table={$tableindex}&amp;output=csv">Download this table as a CSV File</a></div>
+		<a href="{$script_name}?{foreach from=$extra key=name item=value}{$name}={$value}&amp;{/foreach}{if $ri}ri={$ri}&amp;{/if}{if $i}i={$i}&amp;{/if}{dynamic}{if $u}u={$u}&amp;{/if}{/dynamic}table={$tableindex}&amp;output=csv">Download this table as a CSV File</a></div>
 		
 	{else}
 		<p><i>No Results to Display</i></p>

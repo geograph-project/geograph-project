@@ -10,7 +10,7 @@
 {if $is_mod} 
 
 <li><a href="/admin/moderation.php">Moderate</a> new photo submissions<br/>
-<b>[{$images_pending} pending, {dynamic}{$images_pending_available}{/dynamic} available to moderate]</b></li>
+<b>[{$images_pending.count} pending, {dynamic}{$images_pending_available}{/dynamic} available to moderate, oldest is {$images_pending.age/3600|thousends} hours]</b></li>
 {/if}
 
 {if $is_tickmod} 
@@ -32,18 +32,17 @@
 {else}>{/if}
 
 
-<div style="position:relative;float:right; border:1px solid silver">
 <form method="get" action="/admin/mapfixer.php" style="display:inline">
-<label for="gridref">Grid Reference:</label><br/>
+
+<a title="Map Fixer" href="/admin/mapfixer.php">Map Fixer</a>: <label for="gridref">Grid Reference:</label>
 <input type="text" size="6" name="gridref" id="gridref" value="{$gridref|escape:'html'}"/>
 <span class="formerror">{$gridref_error}</span>
-<input type="submit" name="show" value="Check"/>
-</form>
-</div>
-
-<a title="Map Fixer" href="/admin/mapfixer.php">Map Fixer</a> allows the land percentage
+<input type="submit" name="show" value="Check"/> or <a href="/mapfixer.php">add to queue</a><br/>
+<small>allows the land percentage
 for each 1km grid squares to be updated, which allows "square is all at sea" to be 
-corrected<br/> <b>{if $gridsquares_sea.1 || $gridsquares_sea.2}[GB:{$gridsquares_sea.1},I:{$gridsquares_sea.2} in queue]{/if}</b> - <a href="/mapfixer.php">add to queue</a><br/>
+corrected</small><br/>
+{if $gridsquares_sea.1 || $gridsquares_sea.2}<b>[GB:{$gridsquares_sea.1},I:{$gridsquares_sea.2} in queue]</b>{/if}
+</form>
 </li>
 
 <li><a title="Recreate Maps" href="/recreatemaps.php">Recreate Maps</a> - 
@@ -53,22 +52,16 @@ corrected<br/> <b>{if $gridsquares_sea.1 || $gridsquares_sea.2}[GB:{$gridsquares
    choose daily picture selections</li>
 {/if}
 
-<li>Stats: <a href="/statistics/admin_turnaround.php">Turn Around</a> - 
-   rough estimate at moderation times</li>
-</ul>
+<li>Stats: <br/>
+   <a href="/statistics/admin_turnaround.php">Turn Around</a> - 
+   rough estimate at moderation times <br/>
+   <a title="Web Stats" href="/statistics/pulse.php">Geograph Pulse</a> - 
+   upto the minute general site status</li>
 
-<h2>Total Submissions</h2>
-<img src="http://www.geograph.org.uk/img/submission_graph.png" width="480" height="161"/>
-
-<h2>Daily Submission Rate</h2>
-<img src="http://www.geograph.org.uk/img/rate.png" width="480" height="161"/>
 
 {if $is_mod} 
-<br/><br/>
-<h4>Remoderate a Square</h4>
-<div style="position:relative;padding:10px">
-<form method="get" action="/search.php" style="display:inline">
-<label for="gridref">Grid Reference:</label>
+<li><form method="get" action="/search.php" style="display:inline">
+Remoderate a Square: <label for="gridref">Grid Reference:</label>
 <input type="text" size="6" name="gridref" id="gridref" value="{$gridref|escape:'html'}"/>
 <span class="formerror">{$gridref_error}</span>
 <input type="submit" name="do" value="Moderate"/>
@@ -76,9 +69,9 @@ corrected<br/> <b>{if $gridsquares_sea.1 || $gridsquares_sea.2}[GB:{$gridsquares
 <input type="hidden" name="orderby" value="submitted"/>
 <input type="hidden" name="displayclass" value="moremod"/>
 <input type="hidden" name="resultsperpage" value="100"/>
-</form>
-</div>
+</form></li>
 {/if}
+</ul>
 
 {if $is_admin}
 <br/><br/>
