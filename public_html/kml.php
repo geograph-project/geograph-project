@@ -50,15 +50,12 @@ if (isset($_GET['id']))  {
 		}
 	
 	
-		header("Cache-Control: Public");
-		
 		//when this image was modified
 		$mtime = strtotime($image->upd_timestamp);
 
 		customCacheControl($mtime,$image->gridimage_id);	
 		
-		
-		header("Expires: ".date("D, d M Y H:i:s",mktime(0,0,0,date('m'),date('d')+48,date('Y')) )." GMT");
+		customExpiresHeader(3600*24*48,true);
 		
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
@@ -170,9 +167,8 @@ $cacheid = '';
 				print "<a href=\"$url\">Open Google Maps</a>";
 				exit;
 			} else {
-				header("Cache-Control: Public");
-				header("Expires: ".date("D, d M Y H:i:s",mktime(0,0,0,date('m'),date('d')+14,date('Y')) )." GMT");
-
+				customExpiresHeader(3600*24*14,true);
+				
 				$kml = new kmlFile();
 				$kml->filename = "Geograph.kml";
 

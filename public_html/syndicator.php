@@ -217,7 +217,7 @@ for ($i=0; $i<$cnt; $i++)
 }
 
 
-header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past 
+customExpiresHeader(0); // always modified 
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); 
                                                     // always modified 
 header("Cache-Control: must-revalidate");  // HTTP/1.1 

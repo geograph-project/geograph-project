@@ -467,15 +467,12 @@ class GeographMap
 			
 		//Last-Modified: Sun, 20 Mar 2005 18:19:58 GMT
 		$t=filemtime($full);
-		$lastmod=strftime("%a, %d %b %Y %H:%M:%S GMT", $t);
 		
 		//use the filename as a hash
 		//can use if-last-mod as file is not unique per user
-		//we have already calculated a header version of the modification date so forward that
-		customCacheControl($t,$full,true,$lastmod);	
-
-		$t=time()+3600;
-		$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", $t);
+		customCacheControl($t,$full,true);	
+		customExpiresHeader(3600*6,true);
+		
 		
 		
 		$size=filesize($full);
@@ -483,8 +480,7 @@ class GeographMap
 		header("Content-Size: $size");
 		header("Content-Length: $size");
 		
-		header("Expires: $expires");
-		//header("Cache-Control: public");
+		
 		//header("Cache-Control: no-store, no-cache, must-revalidate");  // HTTP/1.1 
 		//header("Cache-Control: post-check=0, pre-check=0", false); 
 		//header("Pragma: no-cache");         
