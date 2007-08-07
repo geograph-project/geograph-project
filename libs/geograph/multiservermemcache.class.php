@@ -53,21 +53,21 @@ class MultiServerMemcache extends Memcache {
 			die(" Can't connect to memcache server on: {$conf['host']}, {$conf['port']}<br>\n");
 			
 		if (!empty($conf['host2'])) {
-			if (@$memcache->addServer($conf['host2'], $conf['port2']))
+			if (@$this->addServer($conf['host2'], $conf['port2']))
 				$valid = true;
 			elseif ($debug) 
 				die(" Can't connect to memcache server on: {$conf['host2']}, {$conf['port2']}<br>\n");
 		}
 		
 		if (!empty($conf['host3'])) {
-			if (@$memcache->addServer($conf['host3'], $conf['port3']))
+			if (@$this->addServer($conf['host3'], $conf['port3']))
 				$valid = true;
 			elseif ($debug) 
 				die(" Can't connect to memcache server on: {$conf['host3']}, {$conf['port3']}<br>\n");
 		}
 		
 		if (!empty($conf['host4'])) {
-			if (@$memcache->addServer($conf['host4'], $conf['port4']))
+			if (@$this->addServer($conf['host4'], $conf['port4']))
 				$valid = true;
 			elseif ($debug) 
 				die(" Can't connect to memcache server on: {$conf['host4']}, {$conf['port4']}<br>\n");
