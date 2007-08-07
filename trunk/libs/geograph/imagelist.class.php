@@ -340,6 +340,7 @@ class RecentImageList extends ImageList {
 	* constructor - used to build a basic list (See getImages)
 	*/
 	function RecentImageList(&$smarty) {
+		global $memcache;
 		
 		$mkey = rand(1,10);
 		//fails quickly if not using memcached!
