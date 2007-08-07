@@ -508,6 +508,13 @@ class GridImage
 	*/
 	function getFull($returntotalpath = false)
 	{
+		global $memcache;
+		$mkey = "{$this->gridimage_id},$returntotalpath";
+		//fails quickly if not using memcached!
+		$html =& $memcache->name_get('if',$mkey);
+		if ($html)
+			return $html;
+		
 		$fullpath=$this->_getFullpath();
 		$title=htmlentities($this->title);
 		
@@ -518,6 +525,9 @@ class GridImage
 		
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
 			
+		//fails quickly if not using memcached!
+		$memcache->name_set('if',$mkey,$places,$memcache->compress,$memcache->period_med);
+			
 		return $html;
 	}
 	
@@ -526,9 +536,21 @@ class GridImage
 	*/
 	function isLandscape()
 	{
+		global $memcache;
+		$mkey = "{$this->gridimage_id}";
+		//fails quickly if not using memcached!
+		$result =& $memcache->name_get('il',$mkey);
+		if ($result)
+			return $result;
+	
 		$fullpath=$this->_getFullpath();
 		$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
-		return $size[0]>$size[1];
+		$result = $size[0]>$size[1];
+		
+		//fails quickly if not using memcached!
+		$memcache->name_set('if',$mkey,$result,$memcache->compress,$memcache->period_long);
+		
+		return $result;
 		
 	}
 	
@@ -765,6 +787,13 @@ class GridImage
 	*/
 	function _getResized($params)
 	{
+		global $memcache;
+		$mkey = "{$this->gridimage_id}:".md5(serialize($params));
+		//fails quickly if not using memcached!
+		$result =& $memcache->name_get('ir',$mkey);
+		if ($result)
+			return $result;
+	
 		//unpack known params and set defaults
 		$maxw=isset($params['maxw'])?$params['maxw']:100;
 		$maxh=isset($params['maxh'])?$params['maxh']:100;
@@ -954,6 +983,9 @@ class GridImage
 		}
 		
 		$return['html']=$html;
+		
+		//fails quickly if not using memcached!
+		$memcache->name_set('ir',$mkey,$return,$memcache->compress,$memcache->period_med);
 		
 		return $return;
 	}
