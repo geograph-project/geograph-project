@@ -28,7 +28,7 @@ public class Main {
     
     static String geoURL = new String("http://geograph/juploader.php");
     
-    static String juppyVersion = "1.6";
+    static String juppyVersion = "1.7";
     
     static String [] imageClassList;
     static boolean noCache = true;
@@ -40,7 +40,7 @@ public class Main {
     static String validationToken = "";
     static boolean gridrefFromImage;
     static String lastDirectory = "";
-    
+
     // this is the list of valid grid ref regexps we support, basically
     // UK 4, 6 and 8 character and Irish 4, 6 and 8.
     
@@ -64,7 +64,29 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        
+        if (Debug.ON) {
 
+            try {
+                OSGridRef.calculateBearing("SK0000", "SK0002");
+                OSGridRef.calculateBearing("SK0002", "SK0000");
+                OSGridRef.calculateBearing("SK0000", "SK0200");
+                OSGridRef.calculateBearing("SK0200", "SK0000");
+                OSGridRef.calculateBearing("SK0000", "SK0101");
+                OSGridRef.calculateBearing("SK0101", "SK0000");
+                
+                OSGridRef.bearingToIndex(0.);
+                OSGridRef.bearingToIndex(12.);
+                OSGridRef.bearingToIndex(349.);
+                OSGridRef.bearingToIndex(347.);
+                OSGridRef.bearingToIndex(359.);
+                OSGridRef.bearingToIndex(361.);
+
+            } catch (Exception ex) {
+
+            }
+        }
+        
         try {
             UIManager.setLookAndFeel("com.jgoodies.looks.plastic.Plastic3DLookAndFeel");
         } catch (Exception e) {

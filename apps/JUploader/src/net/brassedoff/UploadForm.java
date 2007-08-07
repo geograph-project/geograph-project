@@ -6,7 +6,6 @@
 
 package net.brassedoff;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -14,6 +13,10 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
@@ -62,6 +65,21 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
         btnReset.addActionListener(this);
         btnUpload.addActionListener(this);
         
+        txtPhotographer.addKeyListener(new PhotographerKeyAdapter());
+
+        // OK, I know I don't normally use anonymous inner classes...
+        txtPhotographer.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent fe) {
+                CheckBearing();
+            }
+        });
+        
+        txtSubject.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent fe) {
+                CheckBearing();
+            }
+        });
+        
         // fill the feature combobox
         cmbGeoFeature.removeAllItems();
         
@@ -83,6 +101,43 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
         lblStatus.setText("");
         
         
+    }
+    
+    /**
+     * Check the photographer and subject position. Automatically calculate the view direction.
+     */
+    public void CheckBearing() {
+        String subject = txtSubject.getText().trim();
+        String photographer = txtPhotographer.getText().trim();
+        
+        try {
+            int bearing = OSGridRef.calculateBearing(photographer, subject);
+            int newIndex = OSGridRef.bearingToIndex(bearing);
+            cmbDirection.setSelectedIndex(newIndex + 1);
+        } catch (Exception ex) {
+            // probably don't want to do anything here, just ignore the error
+            if (Debug.ON) {
+                System.out.println("Invalid direction parameters passed\n" + ex.toString());
+            }
+        }
+    }
+    
+    public class PhotographerKeyAdapter extends KeyAdapter {
+        /**
+         * This provides a simple paste facility for the photographer position from 
+         * the subject position.
+         * @param ke 
+         */
+        public void keyPressed(KeyEvent ke) {
+
+            // we're looking for a Ctrl-C in the photographer field to copy in the
+            // subject
+            
+            if ((ke.getKeyCode() == ke.VK_C) && ke.getKeyModifiersText(ke.getModifiers()).equals("Ctrl")) {
+                txtPhotographer.setText(txtSubject.getText());
+            
+            }
+        }
     }
     
     public void populateFields() {
@@ -165,6 +220,8 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
         btnReset.setText("Reset");
 
         txtImagefile.setEnabled(false);
+
+        txtPhotographer.setToolTipText("Press CTRL-C to copy in subject grid reference");
 
         txtImageComments.setColumns(20);
         txtImageComments.setLineWrap(true);
@@ -346,6 +403,9 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
         }
     }
     
+    /**
+     * Reset everything back to default.
+     */
     final public void ResetFields() {
         
 //        reset all the fields for restart
@@ -513,9 +573,8 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
      * This routine resizes an image into the cache directory. The resized image will have
      * a major dimension no bigger that 640px with a minor dimension to suit the aspect
      * ratio of the original image
-     *
-     * @param currentFile 
-     * @return newFileName
+     * @param currentFile Current file name to be resized
+     * @return New file name after resizing (includes location)
      */
     final public String ResizeJPGImage(String currentFile) {
         BufferedImage originalPicture = null;
@@ -589,6 +648,9 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
         return newFileName;
     }
     
+    /**
+     * Put todays date into the photograph date field.
+     */
     final public void SetDateToday() {
         // set today's date
         
@@ -596,6 +658,9 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
         txtPhotoDate.setText(today);
     }
     
+    /**
+     * Display the file selector dialog
+     */
     final public void DisplayFileChooser() {
 //        Display a file chooser dialog for a jpg file
         JFileChooser fc;

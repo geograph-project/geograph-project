@@ -262,6 +262,9 @@
     <Component class="javax.swing.JTextField" name="txtSubject">
     </Component>
     <Component class="javax.swing.JTextField" name="txtPhotographer">
+      <Properties>
+        <Property name="toolTipText" type="java.lang.String" value="Press CTRL-C to copy in subject grid reference"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtImageTitle">
     </Component>
