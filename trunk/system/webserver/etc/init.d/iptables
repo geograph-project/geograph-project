@@ -92,7 +92,7 @@ iptables -A INPUT -p icmp -j ACCEPT
 iptables -A INPUT -p tcp -s 87.124.24.32/23 --dport 4949 -j ACCEPT
 
 #memcache
-iptables -A INPUT -p tcp -s 87.124.24.32/23 --dport 11211 -j ACCEP
+iptables -A INPUT -p tcp -s 87.124.24.32/23 --dport 11211 -j ACCEPT
 
 
 #--------------------------------
