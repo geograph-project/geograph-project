@@ -67,7 +67,7 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 	$sql = "SELECT COUNT(DISTINCT user_id) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
 	calc("Image Contributors in last 24 hours",$sql);
 
-	$sql = "SELECT COUNT(DISTINCT moderator_id) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 24 HOUR) and moderator_id > 0";
+	$sql = "SELECT COUNT(DISTINCT moderator_id) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 48 HOUR) and moderator_id > 0 and moderated > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
 	calc("Active Moderators in last 24 hours",$sql);
 
 $table[] = array("Parameter"=>'',"Value"=>'');
