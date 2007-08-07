@@ -71,7 +71,14 @@ if (!empty($CONF['memcache']['app'])) {
 	$memcache = new MultiServerMemcache($CONF['memcache']['app']);
 } else {
 	//need lightweight fake object that does nothing!
-	class fakeObject {}
+	class fakeObject {
+		function set($key, &$val, $flag = false, $expire = 0) {return false;}
+		function get($key) {return false;}
+		function delete($namespace, $key, $timeout = 0) {return false;}
+		function name_set($namespace, $key, &$val, $flag = false, $expire = 0) {return false;}
+		function name_get($namespace, $key) {return false;}
+		function name_delete($namespace, $key, $timeout = 0) {return false;}
+	}
 	
 	$memcache = new fakeObject();
 	$memcache->valid = false;

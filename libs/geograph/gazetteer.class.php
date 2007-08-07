@@ -108,14 +108,13 @@ class Gazetteer
 	}
 	
 	function findByNational($reference_index,$e,$n,$radius = 25005,$f_codes = null) {
-		global $CONF;
-		/*global $CONF,$memcache;
+		global $CONF,$memcache;
 		
 		$mkey = "$reference_index,$e,$n,$radius,$f_codes";
 		//fails quickly if not using memcached!
 		$places =& $memcache->name_get('g',$mkey);
 		if ($places)
-			return $places;*/
+			return $places;
 		
 		$db=&$this->_getDB();
 		
@@ -318,7 +317,7 @@ class Gazetteer
 		$places['reference_name'] = $CONF['references'][$places['reference_index']];
 		
 		//fails quickly if not using memcached!
-		//$memcache->name_set('g',$mkey,$places,$memcache->compress,$memcache->period_long);
+		$memcache->name_set('g',$mkey,$places,$memcache->compress,$memcache->period_long);
 		
 		return $places;
 	}
