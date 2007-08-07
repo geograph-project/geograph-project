@@ -62,21 +62,21 @@ if (!$smarty->is_cached($template, $cacheid))
 $table[] = array("Parameter"=>'',"Value"=>'');
 	
 	$sql = "SELECT COUNT(*) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
-	calc("Images Submitted in last 24 hours",$sql);
+	calc("Images Submitted in last 24 hours",$sql,600);
 
 	$sql = "SELECT COUNT(DISTINCT user_id) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
-	calc("Image Contributors in last 24 hours",$sql);
+	calc("Image Contributors in last 24 hours",$sql,3600);
 
 	$sql = "SELECT COUNT(DISTINCT moderator_id) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 48 HOUR) and moderator_id > 0 and moderated > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
-	calc("Active Moderators in last 24 hours",$sql);
+	calc("Active Moderators in last 24 hours",$sql,3600);
 
 $table[] = array("Parameter"=>'',"Value"=>'');
 
 	$sql = "SELECT COUNT(*) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 7 DAY)";
-	calc("Images Submitted in last 7 days",$sql);
+	calc("Images Submitted in last 7 days",$sql,3600*3);
 
 	$sql = "SELECT COUNT(DISTINCT user_id) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 7 DAY)";
-	calc("Image Contributors in last 7 days",$sql);
+	calc("Image Contributors in last 7 days",$sql,3600*3);
 
 $table[] = array("Parameter"=>'',"Value"=>'');
 
@@ -141,10 +141,14 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 
 $smarty->display($template, $cacheid);
 
-function calc($name,$sql) {
+function calc($name,$sql,$cache = 0) {
 	global $db,$table;
 	
-	$val = $db->getOne($sql);
+	if ($cache) {
+		$val = $db->cacheGetOne(cache,$sql);
+	} else {
+		$val = $db->getOne($sql);
+	}
 	
 	$table[] = array("Parameter"=>$name,"Value"=>$val);
 	

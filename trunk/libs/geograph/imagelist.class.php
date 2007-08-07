@@ -341,6 +341,14 @@ class RecentImageList extends ImageList {
 	*/
 	function RecentImageList(&$smarty) {
 		
+		$mkey = rand(1,10);
+		//fails quickly if not using memcached!
+		$this->images =& $memcache->name_get('ril',$mkey);
+		if ($this->images) {
+			$this->assignSmarty($smarty, 'recent');
+			return;
+		}
+		
 		$db=&$this->_getDB();
 		
 		//very quick on myISAM
@@ -364,6 +372,10 @@ class RecentImageList extends ImageList {
 		}
 		$recordSet->Close(); 
 		$this->assignSmarty($smarty, 'recent');
+		
+		//fails quickly if not using memcached!
+		$memcache->name_set('ril',$mkey,$this->images,$memcache->compress,$memcache->period_short);
+		
 		return $i;
 	}
 
