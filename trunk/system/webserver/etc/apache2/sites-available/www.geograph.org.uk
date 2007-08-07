@@ -6,10 +6,6 @@
     ServerAlias geograph.org.uk
     ServerAlias kml.geograph.org.uk
     ServerAlias cluster1.geograph.org.uk
-    ServerAlias s0.www.geograph.org.uk
-    ServerAlias s1.www.geograph.org.uk
-    ServerAlias s2.www.geograph.org.uk
-    ServerAlias s3.www.geograph.org.uk
     ServerAlias www.geograph.co.uk
 	ServerAlias schools.geograph.org.uk
 
@@ -37,9 +33,12 @@
         AddType application/vnd.google-earth.kmz kmz
 
         FileETag MTime Size
+
+        ExpiresActive On
         ExpiresByType image/gif "access plus 30 days"
         ExpiresByType image/png "access plus 30 days"
         ExpiresByType image/jpeg "access plus 180 days"
+        ExpiresByType text/css "access plus 180 days"
         ExpiresByType application/x-javascript "access plus 180 days"
     </Directory>
 
@@ -124,5 +123,12 @@
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?livejournal\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?28dayslater\.co\.uk/ [NC]
     RewriteRule /photos/.*\.jpg$ /stuff/nohotlink.php [L]
+
+<Location /sitemap/>
+    DirectoryIndex geograph.html
+    ErrorDocument 404 /sitemap/later.php?page=404
+</Location>
+
+RewriteRule ^/rss/(.*\.kmz)         http://kml.geograph.org.uk/kml/$1 [L,R=permanent]
 
 </VirtualHost>
