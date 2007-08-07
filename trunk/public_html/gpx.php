@@ -74,9 +74,8 @@ if (isset($_GET['id']))  {
 
 		header("Content-type: application/octet-stream");
 		header("Content-Disposition: attachment; filename=\"Geograph{$image->gridimage_id}.gpx\"");
-		header("Cache-Control: Public");
-		header("Expires: ".date("D, d M Y H:i:s",mktime(0,0,0,date('m'),date('d')+14,date('Y')) )." GMT");
-
+		customExpiresHeader(3600*24*14,true);
+		
 		$smarty->display($template, $cacheid);
 		exit;
 		
@@ -157,9 +156,8 @@ if (isset($_GET['id']))  {
 			
 			header("Content-type: application/octet-stream");
 			header("Content-Disposition: attachment; filename=\"Geograph-$cacheid.gpx\"");
-			header("Cache-Control: Public");
-			header("Expires: ".date("D, d M Y H:i:s",mktime(0,0,0,date('m'),date('d')+14,date('Y')) )." GMT");
-
+			customExpiresHeader(3600*24*14,true);
+			
 			$smarty->display($template, $cacheid);
 			exit;
 		}

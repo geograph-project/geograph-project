@@ -411,6 +411,11 @@ function connectToURL($addr, $port, $path, $userpass="", $timeout="30") {
 }
 
 function customCacheControl($mtime,$uniqstr,$useifmod = true,$gmdate_mod = 0) {
+	global $encoding;
+	if (isset($encoding) && $encoding != 'none') {
+		$uniqstr .= $encoding;
+	}
+	
 	$hash = md5($mtime.'-'.$uniqstr);
 
 	
@@ -451,6 +456,18 @@ function customCacheControl($mtime,$uniqstr,$useifmod = true,$gmdate_mod = 0) {
 	header("Last-Modified: $gmdate_mod");
 }
 
+function customExpiresHeader($diff,$public = false) {
+	if ($diff > 0) {
+		$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", time()+$diff);
+		header("Expires: $expires");
+		header("Cache-Control: max-age=$diff");
+	} else {
+		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past 
+	}
+	if ($public)
+		header("Cache-Control: Public");
+}
+
 function customGZipHandlerStart() {
 	global $encoding;
 	if (!empty($_SERVER['HTTP_ACCEPT_ENCODING'])) {
@@ -487,6 +504,7 @@ function customGZipHandlerEnd() {
 		header ('Content-Encoding: '.$encoding);
 		header ('Vary: Accept-Encoding');
 	}
+	//else ... we could still send Vary: but because a browser that doesnt will accept non gzip in all cases, doesnt matter if the cache caches the non compressed version (the otherway doesnt hold true, hence the Vary: above)
 	header('Content-length: '.strlen($contents));
 	echo $contents;
 }

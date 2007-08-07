@@ -2,8 +2,8 @@
 
 require_once('geograph/global.inc.php');
 
-$mtime = filemtime(__FILE__);
-customCacheControl($mtime,$_SERVER['SERVER_NAME']);
+customCacheControl(getlastmod(),$_SERVER['SERVER_NAME']);
+customExpiresHeader(3600,true);
 
 header('Content-type: application/x-java-jnlp-file');
 echo '<?xml version="1.0" encoding="utf8"?>' 

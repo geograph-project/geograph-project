@@ -88,10 +88,9 @@ if (isset($_GET['map']))
 		if ($_GET['l'] == 'o') {
 			$rastermap->returnImage();
 		} else {
-		
-			$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", time()+604800);
-			header("Expires: $expires");
-		
+			customCacheControl(getlastmod(),"$e,$n,$reference_index");
+			customExpiresHeader(604800,true);
+			
 			preg_match('/-(\d)k-/',$rastermap->folders[$rastermap->service],$m);
 			$stepdist = ($m[1]-1);
 		
