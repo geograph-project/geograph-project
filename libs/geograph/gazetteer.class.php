@@ -48,7 +48,14 @@ class Gazetteer
 	
 
 	function findListByNational($reference_index,$e,$n,$radius = 1005) {
-		global $CONF;
+		global $CONF,$memcache;
+		
+		$mkey = "$reference_index,$e,$n,$radius,-";
+		//fails quickly if not using memcached!
+		$places =& $memcache->name_get('g',$mkey);
+		if ($places)
+			return $places;
+		
 		$db=&$this->_getDB();
 		
 		$e = (floor($e/1000) * 1000) + 500;
@@ -104,6 +111,9 @@ class Gazetteer
 
 		}
 
+		//fails quickly if not using memcached!
+		$memcache->name_set('g',$mkey,$places,$memcache->compress,$memcache->period_long);
+		
 		return $places;
 	}
 	
@@ -326,6 +336,14 @@ class Gazetteer
 	function findPlacename($placename) {
 		global $places; //only way to get the array into the compare functions
 		global $USER;
+		global $CONF,$memcache;
+		
+		$mkey = "$placename";
+		//fails quickly if not using memcached!
+		$places =& $memcache->name_get('g',$mkey);
+		if ($places)
+			return $places;
+		
 		$db = $this->_getDB();
 
 		$ismore = 0;
@@ -531,6 +549,10 @@ class Gazetteer
 				}
 			}
 		}
+		
+		//fails quickly if not using memcached!
+		$memcache->name_set('g',$mkey,$places,$memcache->compress,$memcache->period_long);
+		
 		return $places;
 	}
 
