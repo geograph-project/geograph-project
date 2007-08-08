@@ -179,33 +179,45 @@ if (($topicDesc && !$postID) || !$topicDesc)
 	$postID = $cols[6];
 
 if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
-	foreach ($g_matches[2] as $g_i => $g_id) {
-		if (is_numeric($g_id)) {
-			if (!isset($g_image)) {
-				require_once('geograph/gridimage.class.php');
-				require_once('geograph/gridsquare.class.php');
-				$g_image=new GridImage;
+	global $memcache;
+	$mkey = $cols[6];
+	//fails quickly if not using memcached!
+	$memtext =& $memcache->name_get('fp',$mkey);
+	if ($memtext) {
+		$posterText =& $memtext;
+	} else {
+		foreach ($g_matches[2] as $g_i => $g_id) {
+			if (is_numeric($g_id)) {
+				if (!isset($g_image)) {
+					require_once('geograph/gridimage.class.php');
+					require_once('geograph/gridsquare.class.php');
+					$g_image=new GridImage;
+				}
+				$g_ok = $g_image->loadFromId($g_id);
+				if ($g_ok && $g_image->moderation_status == 'rejected' && !isset($userRanks[$cc])) {
+					if ($g_matches[1][$g_i]) {
+						$posterText = str_replace("[[[$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available ['.$g_id.']" />',$posterText);
+					} else {
+						$posterText = preg_replace("/(?<!\[)\[\[$g_id\]\]/","{<span title=\"[$g_id]\">image no longer available</span>}",$posterText);
+					}
+				} elseif ($g_ok) {
+					if ($g_matches[1][$g_i]) {
+						$g_img = $g_image->getThumbnail(120,120,false,true);
+						#$g_img = preg_replace('/alt="(.*?)"/','alt="'.$g_image->grid_reference.' : \1 by '.$g_image->realname.'"',$g_img);
+						$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title).' by '.$g_image->realname;
+						$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
+					} else {
+						$posterText = preg_replace("/(?<!\[)\[\[$g_id\]\]/","{<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\">{$g_image->grid_reference} : {$g_image->title}</a>}",$posterText);
+					}
+				}			
+			} else {
+				$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/".str_replace(' ','+',$g_id)."\" target=\"_blank\">$g_id</a>",$posterText);
 			}
-			$g_ok = $g_image->loadFromId($g_id);
-			if ($g_ok && $g_image->moderation_status == 'rejected' && !isset($userRanks[$cc])) {
-				if ($g_matches[1][$g_i]) {
-					$posterText = str_replace("[[[$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available ['.$g_id.']" />',$posterText);
-				} else {
-					$posterText = preg_replace("/(?<!\[)\[\[$g_id\]\]/","{<span title=\"[$g_id]\">image no longer available</span>}",$posterText);
-				}
-			} elseif ($g_ok) {
-				if ($g_matches[1][$g_i]) {
-					$g_img = $g_image->getThumbnail(120,120,false,true);
-					#$g_img = preg_replace('/alt="(.*?)"/','alt="'.$g_image->grid_reference.' : \1 by '.$g_image->realname.'"',$g_img);
-					$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title).' by '.$g_image->realname;
-					$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
-				} else {
-					$posterText = preg_replace("/(?<!\[)\[\[$g_id\]\]/","{<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\">{$g_image->grid_reference} : {$g_image->title}</a>}",$posterText);
-				}
-			}			
-		} else {
-			$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/".str_replace(' ','+',$g_id)."\" target=\"_blank\">$g_id</a>",$posterText);
 		}
+		
+		//fails quickly if not using memcached!
+		$memcache->name_set('fp',$mkey,$posterText,$memcache->compress,$memcache->period_med);
+		
 	}
 }
 
