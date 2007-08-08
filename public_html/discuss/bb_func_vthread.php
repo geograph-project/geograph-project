@@ -184,7 +184,7 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,2}
 	//fails quickly if not using memcached!
 	$memtext =& $memcache->name_get('fp',$mkey);
 	if ($memtext) {
-		$posterText =& $memtext;
+		$posterText = $memtext;
 	} else {
 		foreach ($g_matches[2] as $g_i => $g_id) {
 			if (is_numeric($g_id)) {
