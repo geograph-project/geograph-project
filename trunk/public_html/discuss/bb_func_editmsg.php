@@ -75,6 +75,11 @@ $correctErr="<a href=\"{$main_url}/{$indexphp}action=vthread&amp;forum=$forum&am
 //fire an event
 	require_once('geograph/event.class.php');
 	new Event('topic_edit', $post);
+	
+//delete it now as users expect their edit to show up!
+	global $memcache;
+	$mkey = $post;
+	$memcache->name_delete('fp',$mkey);
 
 if ($user_id!=1 and $postRange!=0) {
 if($useSessions and !session_is_registered($cookiename.'Update')) { session_register($cookiename.'Update'); $_SESSION[$cookiename.'Update']=time()+$postRange;}
