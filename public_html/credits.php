@@ -59,7 +59,7 @@ if (!$smarty->is_cached($template,$cacheid))
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	
 	if (isset($_GET['cloud'])) {
-		$users = $db->GetAssoc("select
+		$users = $db->CacheGetAssoc(3600*6,"select
 			nickname,user.user_id,user.realname,user.user_id,count(*) as images
 			from user
 				inner join gridimage_search gi using (user_id)
@@ -87,7 +87,7 @@ if (!$smarty->is_cached($template,$cacheid))
 		}
 		uksort($users, "cmp");
 	} else {
-		$users = $db->GetAssoc("select
+		$users = $db->CacheGetAssoc(3600*6,"select
 			user.user_id,nickname,user.realname,user.user_id,count(*) as images
 			from user
 				inner join gridimage_search gi using (user_id)
