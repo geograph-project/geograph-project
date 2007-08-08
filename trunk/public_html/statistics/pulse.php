@@ -145,7 +145,7 @@ function calc($name,$sql,$cache = 0) {
 	global $db,$table;
 	
 	if ($cache) {
-		$val = $db->cacheGetOne(cache,$sql);
+		$val = $db->cacheGetOne($cache,$sql);
 	} else {
 		$val = $db->getOne($sql);
 	}
