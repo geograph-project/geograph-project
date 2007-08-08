@@ -904,6 +904,8 @@ class GeographMapMosaic
 	*/
 	function expirePosition($x,$y,$user_id = 0,$expire_basemaps=false)
 	{
+		global $memcache;
+		
 		$db=&$this->_getDB();
 		
 		if ($user_id > 0) {
@@ -911,19 +913,44 @@ class GeographMapMosaic
 		} else {
 			$and_crit = " and type_or_user = 0";
 		}
+		$deleted = 0;
+
+		if ($memcache->valid) {
+			$sql="select * from mapcache set age=age+1 
+				where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
+				$y between map_y and (map_y+image_h/pixels_per_km-1) $and_crit";
+				
+			$recordSet = &$this->db->Execute($sql);
+			while (!$recordSet->EOF) 
+			{
+				$mkey = $this->getImageFilename($recordSet->fields);
+				//memcache delete
+				$memcache->name_delete('mi',$mkey);
+				$memcache->name_delete('mc',$mkey);
+				
+				if ($expire_basemaps) {
+					$file = $this->getBaseMapFilename($recordSet->fields);
+					if (file_exists($root.$file)) {
+						unlink($root.$file);
+						$deleted++;
+					} 
+				}
+				$recordSet->MoveNext();
+			}
+			$recordSet->Close();
+		}
 		
 		$sql="update mapcache set age=age+1 
 			where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
 			$y between map_y and (map_y+image_h/pixels_per_km-1) $and_crit";
 		$db->Execute($sql);
 		
-		if ($expire_basemaps) {
+		if ($expire_basemaps && !$memcache->valid) {
 			$root=&$_SERVER['DOCUMENT_ROOT'];
-		
+
 			$sql="select * from mapcache 
 			where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
 			$y between map_y and (map_y+image_h/pixels_per_km-1)";
-			$deleted = 0;
 			$recordSet = &$this->db->Execute($sql);
 			while (!$recordSet->EOF) 
 			{
@@ -935,10 +962,8 @@ class GeographMapMosaic
 				$recordSet->MoveNext();
 			}
 			$recordSet->Close();
-			return $deleted;
 		}
-		
-		
+		return $deleted;
 	}
 	
 	
@@ -949,6 +974,7 @@ class GeographMapMosaic
 	*/
 	function deleteBySql($crit,$dummy=false,$expire_basemaps=false)
 	{
+		global $memcache;
 		$db=&$this->_getDB();
 		
 		$root=&$_SERVER['DOCUMENT_ROOT'];
@@ -963,7 +989,10 @@ class GeographMapMosaic
 				if (!$dummy)
 					unlink($root.$file);
 				$deleted++;
-			} 
+			}
+			$memcache->name_delete('mi',$file);
+			$memcache->name_delete('mc',$file);
+
 			if (!$dummy && $expire_basemaps) {
 				$file = $this->getBaseMapFilename($recordSet->fields);
 				if (file_exists($root.$file)) {
@@ -973,9 +1002,8 @@ class GeographMapMosaic
 			$recordSet->MoveNext();
 		}
 		$recordSet->Close();
-		$sql="delete from mapcache where $crit";
 		if (!$dummy)
-			$db->Execute($sql);	
+			$db->Execute("delete from mapcache where $crit");
 		return $deleted;
 	}
 	
