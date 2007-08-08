@@ -434,12 +434,7 @@ END;
 			else
 				$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=$index$postfix\"$extrahtml>$index</a> ";
 		}
-		if ($endr < $this->numberOfPages+1) {
-			$index = $this->numberOfPages;
-			$r .= "... <a href=\"/{$this->page}?i={$this->query_id}&amp;page=$index$postfix\"$extrahtml>$index</a> ";
-		}
-		
-		if ($this->pageOneOnly) 
+		if ($endr < $this->numberOfPages+1 || $this->pageOneOnly) 
 			$r .= "... ";
 			
 		if ( ($this->numberOfPages > $this->currentPage || $this->pageOneOnly ) && !$this->countOnly) 
