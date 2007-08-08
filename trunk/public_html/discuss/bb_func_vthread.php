@@ -216,7 +216,7 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,2}
 		}
 		
 		//fails quickly if not using memcached!
-		$memcache->name_set('fp',$mkey,$posterText,$memcache->compress,$memcache->period_med);
+		$memcache->name_set('fp',$mkey,$posterText,$memcache->compress,$memcache->period_long);
 		
 	}
 }

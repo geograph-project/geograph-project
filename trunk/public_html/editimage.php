@@ -425,6 +425,10 @@ if (isset($_REQUEST['id']))
 				$ab=floor($image->gridimage_id/10000);
 				$smarty->clear_cache(null, "img$ab|{$image->gridimage_id}");
 
+				global $memcache;
+				$mkey = "{$image->gridimage_id}:F";
+				$memcache->name_delete('is',$mkey);
+
 				//clear user specific stuff like profile page
 				$ab=floor($image->user_id/10000);
 				$smarty->clear_cache(null, "user$ab|{$image->user_id}");

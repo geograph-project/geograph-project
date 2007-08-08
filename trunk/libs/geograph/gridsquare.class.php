@@ -148,6 +148,17 @@ class GridSquare
 	
 	function assignDiscussionToSmarty(&$smarty) 
 	{
+		global $memcache;
+		
+		$mkey = $this->gridsquare_id;
+		//fails quickly if not using memcached!
+		$result =& $memcache->name_get('gsd',$mkey);
+		if ($result) {
+			$smarty->assign_by_ref('discuss', $result['topics']);
+			$smarty->assign('totalcomments', $result['totalcomments']);
+			return;
+		}
+	
 		$db=&$this->_getDB();
 		
 		$sql='select t.topic_id,posts_count-1 as comments,CONCAT(\'Discussion on \',t.topic_title) as topic_title '.
@@ -172,7 +183,14 @@ class GridSquare
 				$totalcomments += $topics[$idx]['comments'] + 1;
 			}
 			$smarty->assign_by_ref('discuss', $topics);
-			$smarty->assign('totalcomments', $totalcomments);	
+			$smarty->assign('totalcomments', $totalcomments);
+			
+			$result = array();
+			$result['topics'] = $topics;
+			$result['totalcomments'] = $totalcomments;
+			
+			//fails quickly if not using memcached!
+			$memcache->name_set('gsd',$mkey,$result,$memcache->compress,$memcache->period_short);
 		}
 	}
 	
@@ -190,11 +208,20 @@ class GridSquare
 	*/
 	function getNatEastings()
 	{
-		global $CONF;
+		global $CONF,$memcache;
+		
 		if (!isset($this->nateastings)) {
-			$db=&$this->_getDB();
-			
-			$square = $db->GetRow('select origin_x,origin_y from gridprefix where prefix='.$db->Quote($this->gridsquare).' limit 1');	
+			//fails quickly if not using memcached!
+			$mkey = $this->gridsquare;
+			$square =& $memcache->name_get('pr',$mkey);
+			if (!$square) {
+				$db=&$this->_getDB();
+
+				$square = $db->GetRow('select origin_x,origin_y from gridprefix where prefix='.$db->Quote($this->gridsquare).' limit 1');
+				
+				//fails quickly if not using memcached!
+				$memcache->name_set('pr',$mkey,$square,$memcache->compress,$memcache->period_short);
+			}
 			
 			//get the first gridprefix with the required reference_index
 			//after ordering by x,y - you'll get the bottom
@@ -229,7 +256,7 @@ class GridSquare
 		//only show gb grid if we have land there
 		//show all irish grid squares...
 		$db=&$this->_getDB();
-		return $db->GetAssoc("select prefix,prefix from gridprefix ".
+		return $db->CacheGetAssoc(3600*24*7,"select prefix,prefix from gridprefix ".
 			"where landcount>0 ".
 			"order by reference_index,prefix");
 
@@ -569,6 +596,16 @@ class GridSquare
 	*/
 	function findNearby($x, $y, $radius, $occupied=true)
 	{
+		global $memcache;
+		
+		//fails quickly if not using memcached!
+		$mkey = "$x,$y,$radius,$occupied";
+		$nearest =& $memcache->name_get('gn',$mkey);
+		if ($nearest) {
+			$this->nearest = $nearest;
+			return true;
+		}
+		
 		$db=&$this->_getDB();
 
 		//to optimise the query, we scan a square centred on the
@@ -609,6 +646,9 @@ class GridSquare
 					$this->nearest->$name=$value;
 			}
 			
+			//fails quickly if not using memcached!
+			$memcache->name_set('gn',$mkey,$this->nearest,$memcache->compress,$memcache->period_med);
+			
 			return true;
 		}
 		else
@@ -630,6 +670,15 @@ class GridSquare
 	
 	function &getImages($inc_all_user = false,$custom_where_sql = '',$order_and_limit = 'order by moderation_status+0 desc,seq_no')
 	{
+		global $memcache;
+		
+		//fails quickly if not using memcached!
+		$mkey = md5("$inc_all_user,$custom_where_sql,$order_and_limit");
+		$images =& $memcache->name_get('gi',$mkey);
+		if ($images) {
+			return $images;
+		}
+		
 		$db=&$this->_getDB();
 		$images=array();
 		
@@ -649,6 +698,9 @@ class GridSquare
 			$i++;
 		}
 		$recordSet->Close(); 
+		
+		//fails quickly if not using memcached!
+		$memcache->name_set('gi',$mkey,$images,$memcache->compress,$memcache->period_short);
 		
 		return $images;
 	}
