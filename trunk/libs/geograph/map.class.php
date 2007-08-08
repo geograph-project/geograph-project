@@ -1699,6 +1699,17 @@ END;
 	*/
 	function& getGridArray($isimgmap = false)
 	{
+		global $memcache;
+		
+		if ($memcache->valid) {
+			$mkey = $this->getImageFilename();
+			$mnamespace = $isimgmap?'mi':'mc';
+			$grid =& $memcache->name_get($mnamespace,$mkey);
+			if ($grid) {
+				return $grid;
+			}
+		}
+	
 		//figure out what we're mapping in internal coords
 		$db=&$this->_getDB();
 		
@@ -1766,6 +1777,9 @@ END;
 		}
 		$recordSet->Close(); 
 
+		if ($memcache->valid)
+			$memcache->name_set($mnamespace,$mkey,$grid,$memcache->compress,$memcache->period_long*4);
+		
 		return $grid;	
 	}	
 	
