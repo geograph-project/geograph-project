@@ -558,7 +558,7 @@ class SearchCriteria_All extends SearchCriteria
 		$db = $this->_getDB();
 		if (preg_match('/^(\d+):/',$username,$m)) {
 			$users = $db->GetAll("select user_id,realname from user where user_id={$m[1]} limit 2");			
-		} else {
+		} elseif (!preg_match('/\bnear\b/',$username)) {
 			$username = $db->Quote($username);
 			$users = $db->GetAll("select user_id,realname from user where realname=$username or nickname=$username order by (nickname=$username) desc limit 2");
 		}
