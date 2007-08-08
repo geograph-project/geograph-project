@@ -673,7 +673,7 @@ class GridSquare
 		global $memcache;
 		
 		//fails quickly if not using memcached!
-		$mkey = md5("$inc_all_user,$custom_where_sql,$order_and_limit");
+		$mkey = md5("{$this->gridsquare_id}:$inc_all_user,$custom_where_sql,$order_and_limit");
 		$images =& $memcache->name_get('gi',$mkey);
 		if ($images) {
 			return $images;
