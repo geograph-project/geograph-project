@@ -22,6 +22,7 @@ $admin_pwd=$CONF['minibb_admin_pwd'];
 $admin_email=$CONF['minibb_admin_email'];
 
 $GLOBALS['javascript_version'] = $CONF['javascript_version'];
+$GLOBALS['http_host'] = $_SERVER['HTTP_HOST'];
 
 $bb_admin='bb_admin.php?';
 

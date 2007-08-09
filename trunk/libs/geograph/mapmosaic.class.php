@@ -914,6 +914,7 @@ class GeographMapMosaic
 			$and_crit = " and type_or_user = 0";
 		}
 		$deleted = 0;
+		$root=&$_SERVER['DOCUMENT_ROOT'];
 
 		if ($memcache->valid) {
 			$sql="select * from mapcache set age=age+1 
@@ -946,8 +947,7 @@ class GeographMapMosaic
 		$db->Execute($sql);
 		
 		if ($expire_basemaps && !$memcache->valid) {
-			$root=&$_SERVER['DOCUMENT_ROOT'];
-
+			
 			$sql="select * from mapcache 
 			where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
 			$y between map_y and (map_y+image_h/pixels_per_km-1)";
