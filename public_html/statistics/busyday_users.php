@@ -32,7 +32,7 @@ $smarty = new GeographPage;
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
-$if (isset($_GET['output']) && $_GET['output'] == 'csv') {
+if (isset($_GET['output']) && $_GET['output'] == 'csv') {
 	$template='statistics_table_csv.tpl';
 	# let the browser know what's coming
 	header("Content-type: application/octet-stream");
