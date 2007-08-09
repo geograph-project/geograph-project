@@ -1,6 +1,8 @@
 //Written by Stuart Langridge
 //http://www.kryogenix.org/code/browser/sorttable/
 //Additional features added by Paul Dixon (paul@elphin.com)
+//Amended by N D Davies: Sort on scalar key data instead of objects.
+//                       Perform DOM manipulations on non-display memory construct.
 
 /*
 To use this, simply add
@@ -63,24 +65,24 @@ function ts_makeSortable(table) {
 }
 
 function ts_getInnerText(el) {
-	if (typeof el == "string") return el;
-	if (typeof el == "undefined") { return el };
-	if (el.innerText) return el.innerText;	//Not needed but it is faster
-	var str = "";
-	
-	var cs = el.childNodes;
-	var l = cs.length;
-	for (var i = 0; i < l; i++) {
-		switch (cs[i].nodeType) {
-			case 1: //ELEMENT_NODE
-				str += ts_getInnerText(cs[i]);
-				break;
-			case 3:	//TEXT_NODE
-				str += cs[i].nodeValue;
-				break;
-		}
-	}
-	return str;
+    if (typeof el == "string") return el;
+    if (typeof el == "undefined") { return el };
+    if (el.innerText) return el.innerText;    //Not needed but it is faster
+    var str = "";
+    
+    var cs = el.childNodes;
+    var l = cs.length;
+    for (var i = 0; i < l; i++) {
+        switch (cs[i].nodeType) {
+            case 1: //ELEMENT_NODE
+                str += ts_getInnerText(cs[i]);
+                break;
+            case 3:    //TEXT_NODE
+                str += cs[i].nodeValue;
+                break;
+        }
+    }
+    return str;
 }
 
 function ts_resortTable(lnk) {
@@ -97,45 +99,66 @@ function ts_resortTable(lnk) {
     // Work out a type for the column
     if (table.rows.length <= 1) return;
     var itm = ts_getInnerText(table.rows[1].cells[column]);
-    sortfn = ts_sort_caseinsensitive;
-    if (itm.match(/^\d\d[\/-]\d\d[\/-]\d\d\d\d$/)) sortfn = ts_sort_date;
-    if (itm.match(/^\d\d[\/-]\d\d[\/-]\d\d$/)) sortfn = ts_sort_date;
-    if (itm.match(/^[£$]/)) sortfn = ts_sort_currency;
-    if (itm.match(/^[\d\.]+$/)) sortfn = ts_sort_numeric;
+    parsefn = ts_parse_caseinsensitive;
+    if (itm.match(/^\d\d[\/-]\d\d[\/-]\d\d\d\d$/)) parsefn = ts_parse_date;
+    if (itm.match(/^\d\d[\/-]\d\d[\/-]\d\d$/)) parsefn = ts_parse_date;
+    if (itm.match(/^[£$]/)) parsefn = ts_parse_currency;
+    if (itm.match(/^[\d\.]+$/)) parsefn = ts_parse_numeric;
     
     if (table.rows[1].cells[column].getAttribute && 
     table.rows[1].cells[column].getAttribute('sortvalue')!=null) {
     	itm = table.rows[1].cells[column].getAttribute('sortvalue');
     	if (itm.match(/^[\d]+$/)) {
-    		sortfn=ts_sort_hidden_numeric;	
+    		parsefn=ts_parse_hidden_numeric;	
     	} else {
-    		sortfn=ts_sort_hidden;
+    		parsefn=ts_parse_hidden;
     	}
     }
-    
+
+    // Parse key values into a dedicated array to allow quicker sorting
     SORT_COLUMN_INDEX = column;
     var firstRow = new Array();
+    var keylist = new Array();
     var newRows = new Array();
     for (i=0;i<table.rows[0].length;i++) { firstRow[i] = table.rows[0][i]; }
-    for (j=1;j<table.rows.length;j++) { newRows[j-1] = table.rows[j]; }
 
-    newRows.sort(sortfn);
+    for (j=1;j<table.rows.length;j++) {
+        keylist[j-1] = Array(parsefn(table.rows[j]) , j) ;
+    }
+    
+    // Sort the array of keys
+    keylist.sort(function(a,b){return compare(a[0],b[0]);});
 
     if (span.getAttribute("sortdir") == 'down') {
         ARROW = '&nbsp;&nbsp;&uarr;';
-        newRows.reverse();
+        keylist.reverse();
         span.setAttribute('sortdir','up');
     } else {
         ARROW = '&nbsp;&nbsp;&darr;';
         span.setAttribute('sortdir','down');
     }
-    
-    // We appendChild rows that already exist to the tbody, so it moves them rather than creating new ones
-    // don't do sortbottom rows
-    for (i=0;i<newRows.length;i++) { if (!newRows[i].className || (newRows[i].className && (newRows[i].className.indexOf('sortbottom') == -1))) table.tBodies[0].appendChild(newRows[i]);}
-    // do sortbottom rows only
-    for (i=0;i<newRows.length;i++) { if (newRows[i].className && (newRows[i].className.indexOf('sortbottom') != -1)) table.tBodies[0].appendChild(newRows[i]);}
-    
+
+    // Build rows in sorted order
+    for (j=0;j<keylist.length;j++) { newRows[j] = table.rows[keylist[j][1]]; }
+
+    var newbdy = document.createElement('tbody');
+
+    // Put rows in newbody in required order
+    // Append rows not needing to be kept at bottom
+    for (i=0;i<newRows.length;i++) { if (!newRows[i].className || (newRows[i].className && (newRows[i].className.indexOf('sortbottom') == -1))) newbdy.appendChild(newRows[i]);}
+    // Append rows needing to be kept at bottom
+    for (i=0;i<newRows.length;i++) { if (newRows[i].className && (newRows[i].className.indexOf('sortbottom') != -1)) newbdy.appendChild(newRows[i]);}
+
+    // Disconnect old TBODY from displayed document
+    var bdy = table.tBodies[0];
+    var oldpos = bdy.nextSibling;
+    var oldparent = bdy.parentNode;
+    oldparent.removeChild(bdy);
+    bdy = null;
+
+    // Reconnect new TBODY in the original position
+    oldparent.insertBefore(newbdy, oldpos);
+
     // Delete any other arrows there may be showing
     var allspans = document.getElementsByTagName("span");
     for (var ci=0;ci<allspans.length;ci++) {
@@ -150,16 +173,15 @@ function ts_resortTable(lnk) {
 }
 
 function getParent(el, pTagName) {
-	if (el == null) return null;
-	else if (el.nodeType == 1 && el.tagName.toLowerCase() == pTagName.toLowerCase())	// Gecko bug, supposed to be uppercase
-		return el;
-	else
-		return getParent(el.parentNode, pTagName);
+    if (el == null) return null;
+    else if (el.nodeType == 1 && el.tagName.toLowerCase() == pTagName.toLowerCase())	// Gecko bug, supposed to be uppercase
+        return el;
+    else
+        return getParent(el.parentNode, pTagName);
 }
-function ts_sort_date(a,b) {
+function ts_parse_date(a) {
     // y2k notes: two digit years less than 50 are treated as 20XX, greater than 50 are treated as 19XX
     aa = ts_getInnerText(a.cells[SORT_COLUMN_INDEX]);
-    bb = ts_getInnerText(b.cells[SORT_COLUMN_INDEX]);
     if (aa.length == 10) {
         dt1 = aa.substr(6,4)+aa.substr(3,2)+aa.substr(0,2);
     } else {
@@ -167,71 +189,42 @@ function ts_sort_date(a,b) {
         if (parseInt(yr) < 50) { yr = '20'+yr; } else { yr = '19'+yr; }
         dt1 = yr+aa.substr(3,2)+aa.substr(0,2);
     }
-    if (bb.length == 10) {
-        dt2 = bb.substr(6,4)+bb.substr(3,2)+bb.substr(0,2);
-    } else {
-        yr = bb.substr(6,2);
-        if (parseInt(yr) < 50) { yr = '20'+yr; } else { yr = '19'+yr; }
-        dt2 = yr+bb.substr(3,2)+bb.substr(0,2);
-    }
-    if (dt1==dt2) return 0;
-    if (dt1<dt2) return -1;
-    return 1;
+    return dt1;
 }
 
-function ts_sort_currency(a,b) { 
+function ts_parse_currency(a) { 
     aa = ts_getInnerText(a.cells[SORT_COLUMN_INDEX]).replace(/[^0-9.]/g,'');
-    bb = ts_getInnerText(b.cells[SORT_COLUMN_INDEX]).replace(/[^0-9.]/g,'');
-    return parseFloat(aa) - parseFloat(bb);
+    return parseFloat(aa);
 }
 
-function ts_sort_numeric(a,b) { 
+function ts_parse_numeric(a) { 
     aa = parseFloat(ts_getInnerText(a.cells[SORT_COLUMN_INDEX]));
     if (isNaN(aa)) aa = 0;
-    bb = parseFloat(ts_getInnerText(b.cells[SORT_COLUMN_INDEX])); 
-    if (isNaN(bb)) bb = 0;
-    return aa-bb;
+    return aa;
 }
 
-function ts_sort_caseinsensitive(a,b) {
+function ts_parse_caseinsensitive(a) {
     aa = ts_getInnerText(a.cells[SORT_COLUMN_INDEX]).toLowerCase();
-    bb = ts_getInnerText(b.cells[SORT_COLUMN_INDEX]).toLowerCase();
-    if (aa==bb) return 0;
-    if (aa<bb) return -1;
-    return 1;
+    return aa;
 }
 
-function ts_sort_default(a,b) {
+function ts_parse_default(a,b) {
     aa = ts_getInnerText(a.cells[SORT_COLUMN_INDEX]);
-    bb = ts_getInnerText(b.cells[SORT_COLUMN_INDEX]);
-    if (aa==bb) return 0;
-    if (aa<bb) return -1;
-    return 1;
+    return aa;
 }
 
-function ts_sort_hidden(a,b) {
+function ts_parse_hidden(a,b) {
     aa = a.cells[SORT_COLUMN_INDEX].getAttribute('sortvalue');
-    bb = b.cells[SORT_COLUMN_INDEX].getAttribute('sortvalue');
-    if (aa==bb) return 0;
-    
-    //we treat empty as a very low priority value...
-    if (aa=="") return 1;
-    if (bb=="") return -1;
-    
-    if (aa<bb) return -1;
-    return 1;
+    return aa;
 }
 
-function ts_sort_hidden_numeric(a,b) {
+function ts_parse_hidden_numeric(a,b) {
     aa = parseInt(a.cells[SORT_COLUMN_INDEX].getAttribute('sortvalue'));
-    bb = parseInt(b.cells[SORT_COLUMN_INDEX].getAttribute('sortvalue'));
-    if (aa==bb) return 0;
-    
-    //we treat empty as a very low priority value...
-    if (aa=="") return 1;
-    if (bb=="") return -1;
-    
-    if (aa<bb) return -1;
-    return 1;
+    return aa;
 }
 
+function compare(a,b) {
+    if (a<b) {return -1;}
+    if (a>b) {return 1;}
+    return 0;
+}
