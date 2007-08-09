@@ -391,7 +391,7 @@ if (isset($_POST['gridsquare']))
 				}
 				//preserve title and comment
 				$smarty->assign('title', $title);
-				$smarty->assign('comment', stripslashes($_POST['comment']));
+				$smarty->assign('comment', trim(stripslashes($_POST['comment'])));
 
 				$smarty->assign('user_status', stripslashes($_POST['user_status']));
 
