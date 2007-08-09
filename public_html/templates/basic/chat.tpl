@@ -67,6 +67,20 @@
 
 </applet>
 
+  {literal}
+  <script language="JavaScript" type="text/javascript">
+  
+  function removeSiteLinks() {
+  	el = document.getElementById('nav_block');
+  	el.innerHTML = '<a accesskey="1" title="Home Page" href="/">Home</a><small style="font-size:0.7em"><br/><br/>(<b>will close Chat session</b>)</small>';
+  	el = document.getElementById('search_block');
+  	el.style.display='none';
+  }
+  AttachEvent(window,'load',removeSiteLinks,false);
+  
+  </script>
+  {/literal}
+
 {else}
 
 <h2>Geograph Chat (beta)</h2>
@@ -81,10 +95,10 @@ natter to your fellow geographers.</p>
 for anyone unfamiliar with IRC. To use the applet, simply enter your desired 
 nickname below and press "Join".</p>
 
-<form method="get" action="/chat/index.php">
+<form method="get" action="/chat/index.php" target="newchat">
 <label for="nickname">Nickname</label>
 <input type="text" name="nickname" id="nickname" value="{$nickname}">
-<input type="submit" name="join" value="Join">
+<input type="submit" name="join" value="Join"> (opens in a new window)
 </form>
 
 <h3>2. Use an IRC client</h3>
