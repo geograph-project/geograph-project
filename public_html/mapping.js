@@ -444,11 +444,11 @@ function updateViewDirection() {
 				if (ele.options[q].value == newangle)
 					ele.selectedIndex = q;
 
-			document.images['camicon'].src = "/templates/basic/img/viewc-"+parseInt(newangle,10)+".png";
+			document.images['camicon'].src = "http://s0."+location.host+"/templates/basic/img/viewc-"+parseInt(newangle,10)+".png";
 			if (document.theForm.photographer_gridref.value == '')
-				document.images['subicon'].src = "/templates/basic/img/subc-"+parseInt(newangle,10)+".png";
+				document.images['subicon'].src = "http://s0."+location.host+"/templates/basic/img/subc-"+parseInt(newangle,10)+".png";
 			else 
-				document.images['subicon'].src = "/templates/basic/img/circle.png";
+				document.images['subicon'].src = "http://s0."+location.host+"/templates/basic/img/circle.png";
 		}
 	}
 }
@@ -461,8 +461,8 @@ function updateCamIcon() {
 	ele = document.theForm.view_direction;
 	realangle = ele.options[ele.selectedIndex].value;
 	if (realangle == -1) {
-		document.images['camicon'].src = "/templates/basic/img/viewc--1.png";
-		document.images['subicon'].src = "/templates/basic/img/subc--1.png";
+		document.images['camicon'].src = "http://s0."+location.host+"/templates/basic/img/viewc--1.png";
+		document.images['subicon'].src = "http://s0."+location.host+"/templates/basic/img/subc--1.png";
 	} else {
 		jump = 360.0/16.0;
 		newangle = Math.floor(Math.round(realangle/jump)*jump);
@@ -470,8 +470,8 @@ function updateCamIcon() {
 			newangle = 0;
 		document.images['camicon'].src = "/templates/basic/img/viewc-"+parseInt(newangle,10)+".png";
 		if (document.theForm.photographer_gridref.value == '')
-			document.images['subicon'].src = "/templates/basic/img/subc-"+parseInt(newangle,10)+".png";
+			document.images['subicon'].src = "http://s0."+location.host+"/templates/basic/img/subc-"+parseInt(newangle,10)+".png";
 		else 
-			document.images['subicon'].src = "/templates/basic/img/circle.png";
+			document.images['subicon'].src = "http://s0."+location.host+"/templates/basic/img/circle.png";
 	}
 }

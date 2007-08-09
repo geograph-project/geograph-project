@@ -1,6 +1,6 @@
 {assign var="page_title" value="Statistics:: $h2title"}
 {include file="_std_begin.tpl"}
-<script src="/sorttable.js"></script>
+<script src="http://s0.{$http_host}/sorttable.js"></script>
     <form method="get" action="{$script_name}">
     <p>View breakdown of images by 
     <select name="by">

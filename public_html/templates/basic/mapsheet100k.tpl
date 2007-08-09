@@ -7,10 +7,10 @@
 {if $meta_description}<meta name="description" content="{$meta_description|escape:'html'}" />
 {else}<meta name="description" content="Geograph British Isles is a web based project to collect and reference geographically representative images of every square kilometer of the British Isles."/>{/if}
 <meta name="DC.title" content="Geograph:: {$page_title|escape:'html'}">
-<link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/basic.css" media="screen" />
+<link rel="stylesheet" type="text/css" title="Monitor" href="http://s0.{$http_host}/templates/basic/css/basic.v{$javascript_version}.css" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
 <link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/feed/recent.rss"/>
-<script type="text/javascript" src="/geograph.js"></script>
+<script type="text/javascript" src="http://s0.{$http_host}/geograph.v{$javascript_version}.js"></script>
 <style type="text/css">
 {literal}
 

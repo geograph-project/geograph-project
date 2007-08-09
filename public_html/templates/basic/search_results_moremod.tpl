@@ -1,5 +1,5 @@
 {include file="_search_begin.tpl"}
-<script type="text/javascript" src="/admin/moderation.js"></script>
+<script type="text/javascript" src="http://s0.{$http_host}/admin/moderation.v{$javascript_version}.js"></script>
 			  
 {if $engine->resultCount}
 	<br/>( Page {$engine->pagesString()}) {if $engine->criteria->searchclass != 'Special'}[<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}

@@ -5,10 +5,10 @@
 <title>Geograph Map</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 
-<link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/basic.css" media="screen" />
+<link rel="stylesheet" type="text/css" title="Monitor" href="http://s0.{$http_host}/templates/basic/css/basic.v{$javascript_version}.css" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
 
-<script type="text/javascript" src="/geograph.js"></script>
+<script type="text/javascript" src="http://s0.{$http_host}/geograph.v{$javascript_version}.js"></script>
 
 </head>
 
@@ -32,7 +32,7 @@
 		</div>
 		
 	{else} 
-		<script type="text/javascript" src="/mapping.v{$javascript_version}.js"></script>
+		<script type="text/javascript" src="http://s0.{$http_host}/mapping.v{$javascript_version}.js"></script>
 	{/if}
 <div style="float:left; position:relative; font-size:0.8em;" class="interestBox">
 <i>Placenames featured on this map:</i>

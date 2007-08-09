@@ -2,9 +2,9 @@
 {include file="_std_begin.tpl"}
 <link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/mapper.v{$javascript_version}.css" media="screen" />
 
-<script src="/mapper/OpenLayers.js" type="text/javascript"></script>
-<script src="/mapper/geotools2.js"></script>
-<script src="/mapper/mapper.v{$javascript_version}.js"></script>
+<script src="http://s0.{$http_host}/mapper/OpenLayers.js" type="text/javascript"></script>
+<script src="http://s0.{$http_host}/mapper/geotools2.js"></script>
+<script src="http://s0.{$http_host}/mapper/mapper.v{$javascript_version}.js"></script>
 
 <script type="text/javascript">
 
