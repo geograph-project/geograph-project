@@ -1,7 +1,7 @@
 {assign var="page_title" value="Moderators"}
 {include file="_std_begin.tpl"}
 
-<script src="/sorttable.js"></script>
+<script src="http://s0.{$http_host}/sorttable.js"></script>
 
 <h2><a title="Admin home page" href="/admin/index.php">Admin</a> : Moderators</h2>
 {dynamic}

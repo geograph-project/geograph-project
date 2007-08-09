@@ -13,7 +13,7 @@
 
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 
-<h3 style="color:black"><img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/> Rejected</h3>
+<h3 style="color:black"><img src="http://s0.{$http_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/> Rejected</h3>
 
 <p>This photograph has been rejected by the site moderators, and is only viewable by you.</p>
 
@@ -101,7 +101,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <table style="width:100%"><tr>
 
-<td style="width:50px"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img src="/templates/basic/img/icon_discuss.gif" alt="Discuss" width="50" height="44"/></a></td>
+<td style="width:50px"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img src="http://s0.{$http_host}/templates/basic/img/icon_discuss.gif" alt="Discuss" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
 {if $discuss}
 	There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a
@@ -112,7 +112,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 {/if}
 </td>
 
-<td style="width:50px"><a href="/editimage.php?id={$image->gridimage_id}"><img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44"/></a></td>
+<td style="width:50px"><a href="/editimage.php?id={$image->gridimage_id}"><img src="http://s0.{$http_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
   
   {if ($user->user_id eq $image->user_id) or ($ismoderator)}
@@ -122,7 +122,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
   {/if}
 </td>
 
-<td style="width:50px"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="/templates/basic/img/icon_email.gif" alt="Email" width="50" height="44"/></a></td>
+<td style="width:50px"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="http://s0.{$http_host}/templates/basic/img/icon_email.gif" alt="Email" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
   
   <a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the photographer</a>
@@ -247,7 +247,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 {if $image->grid_square->reference_index eq 1}
 	{assign var="urltitle" value=$image->title|escape:'url'}
-	{external href="http://www.streetmap.co.uk/newmap.srf?x=`$image->grid_square->nateastings`&amp;y=`$image->grid_square->natnorthings`&amp;z=3&amp;sv=`$image->grid_square->nateastings`,`$image->grid_square->natnorthings`&amp;st=OSGrid&amp;lu=N&amp;tl=[$urltitle]+from+geograph.org.uk&amp;ar=y&amp;bi=background=http://$http_host/templates/basic/img/background.gif&amp;mapp=newmap.srf&amp;searchp=newsearch.srf" text="streetmap.co.uk"},
+	{external href="http://www.streetmap.co.uk/newmap.srf?x=`$image->grid_square->nateastings`&amp;y=`$image->grid_square->natnorthings`&amp;z=3&amp;sv=`$image->grid_square->nateastings`,`$image->grid_square->natnorthings`&amp;st=OSGrid&amp;lu=N&amp;tl=[$urltitle]+from+geograph.org.uk&amp;ar=y&amp;bi=background=http://s0.$http_host/templates/basic/img/background.gif&amp;mapp=newmap.srf&amp;searchp=newsearch.srf" text="streetmap.co.uk"},
 	{external href="http://www.multimap.com/maps/?title=[`$urltitle`]+on+geograph.org.uk#t=l&map=$lat,$long|14|4&dp=841&loc=GB:$lat:$long:14|$urltitle|$urltitle" text="multimap.com"},
 	{external href="http://local.live.com/default.aspx?v=2&amp;cp=`$lat`~`$long`&amp;style=h&amp;lvl=14&amp;rtp=~pos.`$lat`_`$long`_`$urltitle`" text="local.live.com" title="detailed aerial photography from getmapping.com"},
 {else}

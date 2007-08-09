@@ -1,6 +1,6 @@
 {assign var="page_title" value="Fully Geographed Squares"}
 {include file="_std_begin.tpl"}
-<script src="/sorttable.js"></script>
+<script src="http://s0.{$http_host}/sorttable.js"></script>
 
 <div style="float:right;position:relative;">
 <div class="map" style="margin-left:20px;border:2px solid black; height:{$overview_height}px;width:{$overview_width}px">
