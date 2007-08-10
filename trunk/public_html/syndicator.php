@@ -217,14 +217,9 @@ for ($i=0; $i<$cnt; $i++)
 }
 
 
-customExpiresHeader(0); // always modified 
+customExpiresHeader(3600,true); //we cache it for an hour anyway! 
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); 
-                                                    // always modified 
-header("Cache-Control: must-revalidate");  // HTTP/1.1 
-header("Cache-Control: post-check=0, pre-check=0", false); 
-header("Pragma: no-cache");          
-
-
+      
 
 $rss->saveFeed($format, $rssfile); 
 

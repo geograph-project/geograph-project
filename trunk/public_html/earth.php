@@ -120,6 +120,7 @@ if (count($images->results)) {
 	}
 }
 
+customExpiresHeader(86400,true);
 header("Content-type: application/vnd.google-earth.kml+xml");
 header("Content-Disposition: attachment; filename=\"geograph.kml\"");
 
