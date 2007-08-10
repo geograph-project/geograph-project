@@ -666,18 +666,13 @@ class FeedCreator extends HtmlDescribable {
 	 * @access private
 	 */
 	function _redirect($filename) {
-		// attention, heavily-commented-out-area
+	
+		//uses Geograph specific functions, get them seperatly or just comment out. 
+		$mtime = filemtime($filename);
+		customCacheControl($mtime,$filename);		
+		customExpiresHeader(3600-(time()-$mtime),true);
+		//end;
 		
-		// maybe use this in addition to file time checking
-		//Header("Expires: ".date("r",time()+$this->_timeout));
-		
-		/* no caching at all, doesn't seem to work as good:
-		Header("Cache-Control: no-cache");
-		Header("Pragma: no-cache");
-		*/
-		
-		// HTTP redirect, some feed readers' simple HTTP implementations don't follow it
-		//Header("Location: ".$filename);
 
 		Header("Content-Type: ".$this->contentType."; charset=".$this->encoding."; filename=".basename($filename));
 		if (preg_match("/\.(kml|gpx)$/",$filename)) {
