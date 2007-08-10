@@ -151,7 +151,9 @@ class SearchEngine
 					print "<BR><BR>$sql";
 
 				$this->resultCount = $db->CacheGetOne(3600,$sql);
-				$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+				if (empty($_GET['BBOX'])) {
+					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+				}
 			}
 			$this->numberOfPages = ceil($this->resultCount/$pgsize);
 		} 
@@ -195,7 +197,9 @@ END;
 					$this->pageOneOnly = 1;
 				} else {
 					$this->numberOfPages = ceil($this->resultCount/$pgsize);
-					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+					if (empty($_GET['BBOX'])) {
+						$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+					}
 				}
 			}
 		}
@@ -256,7 +260,9 @@ END;
 					print "<BR><BR>$sql";
 
 				$this->resultCount = $db->CacheGetOne(3600,$sql);
-				$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+				if (empty($_GET['BBOX'])) {
+					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+				}
 			}
 			$this->numberOfPages = ceil($this->resultCount/$pgsize);
 		}
@@ -298,7 +304,9 @@ END;
 					$this->pageOneOnly = 1;
 				} else {
 					$this->numberOfPages = ceil($this->resultCount/$pgsize);
-					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+					if (empty($_GET['BBOX'])) {
+						$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+					}
 				}
 			}
 		}
@@ -372,7 +380,9 @@ END;
 				if ($this->currentPage < $lastPage) {
 					$db=$this->_getDB();
 					
-					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = 0");
+					if (empty($_GET['BBOX'])) {
+						$db->Execute("replace into queries_count set id = {$this->query_id},`count` = 0");
+					}
 					$this->resultCount = 0;
 				}
 			}
