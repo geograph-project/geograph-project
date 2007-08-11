@@ -6,6 +6,9 @@
     ServerAlias s3.www.geograph.org.uk
     ServerAlias s9.www.geograph.org.uk
     ServerAlias cluster3.geograph.org.uk
+    ServerAlias s0.www.scone.geograph.org.uk
+    ServerAlias s0.www.toast.geograph.org.uk
+    ServerAlias s0.www.crumpet.geograph.org.uk
 
     #create logformat like combined but with our user id and script timing
     LogFormat "%h %l %{user_id}n %t \"%r\" \"%v\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{php_timing}n" geograph
