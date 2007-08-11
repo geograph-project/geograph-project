@@ -11,6 +11,9 @@ NameVirtualHost *
     ServerAlias scone.geograph.org.uk
     ServerAlias toast.geograph.org.uk
     ServerAlias crumpet.geograph.org.uk
+    ServerAlias s0.staging.scone.geograph.org.uk
+    ServerAlias s0.staging.toast.geograph.org.uk
+    ServerAlias s0.staging.crumpet.geograph.org.uk
 	ServerAlias schooltest.geograph.org.uk
 
     #create logformat like combined but with our user id and script timing
