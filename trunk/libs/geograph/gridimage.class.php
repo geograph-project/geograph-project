@@ -804,6 +804,12 @@ class GridImage
 	*/
 	function _getResized($params)
 	{
+		global $memcache;
+		$mkey = "{$this->gridimage_id}:".md5(serialize($params));
+		//fails quickly if not using memcached!
+		$result =& $memcache->name_get('ir',$mkey);
+		if ($result)
+			return $result;
 	
 		//unpack known params and set defaults
 		$maxw=isset($params['maxw'])?$params['maxw']:100;
@@ -826,7 +832,6 @@ class GridImage
 		$base=$_SERVER['DOCUMENT_ROOT'].'/photos';
 		$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$maxw}x{$maxh}.jpg";
 
-		global $memcache;
 		$mkey = "{$this->gridimage_id}:{$maxw}x{$maxh}";
 		//fails quickly if not using memcached!
 		$size =& $memcache->name_get('is',$mkey);
