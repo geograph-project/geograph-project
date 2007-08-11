@@ -418,9 +418,23 @@ if (isset($_REQUEST['id']))
 				$ticket->updateField("use6fig", $image->use6fig, $use6fig, $moderated["use6fig"]);
 
 				//finalise the change ticket
-				$status=$ticket->commit((!empty($_REQUEST['mod']) && $_REQUEST['mod'] == 'pending')?'pending':null);
-
-
+				if (!empty($_REQUEST['mod'])) {
+					switch ($_REQUEST['mod']) {
+						//owner has choosen to notify a modeator
+						case 'pending': $status=$ticket->commit('pending'); break;
+						
+						//a modwerator wants to close the ticket
+						case 'apply': $status=$ticket->commit('closed'); break;
+						
+						//a modwerator wants to own the ticket
+						case 'assign': $status=$ticket->commit('open'); break;
+						
+						default: $status=$ticket->commit(); break;
+					}
+				} else {
+					$status=$ticket->commit();
+				}
+				
 				//clear any caches involving this photo
 				$ab=floor($image->gridimage_id/10000);
 				$smarty->clear_cache(null, "img$ab|{$image->gridimage_id}");
