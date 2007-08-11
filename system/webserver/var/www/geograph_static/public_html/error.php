@@ -21,10 +21,16 @@ if (preg_match('/^\/photos\/(\d{2})\/(\d{2})\/\d{6}_\w+\.jpg$/',$p,$m)) {
 	#the -p is important to maintain the mod date
 	system("cp -p /var/www/geograph_live/public_html$p .$p");
 
+	$size=filesize('.'.$p);
+	if (!$size) {	
+	        header("HTTP/1.0 404 Not Found");
+        	header("Status: 404 Not Found");
+        	print 'Not Found : <a href="http://www.geograph.org.uk/">Visit our homepage</a>';
+        	exit;
+	}
 
 	$t=filemtime('.'.$p);
 	$type="image/jpeg";
-	$size=filesize('.'.$p);
 	$e=time()+3600*24*180;
 
 
