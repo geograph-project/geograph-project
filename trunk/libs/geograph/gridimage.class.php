@@ -342,6 +342,8 @@ class GridImage
 	*/
 	function loadFromId($gridimage_id,$usesearch = false)
 	{
+		//todo memcache
+		
 		$db=&$this->_getDB();
 		
 		$this->_clear();
@@ -357,6 +359,7 @@ class GridImage
 				$this->_initFromArray($row);
 			}
 		}
+		//todo memcache (probably make sure dont serialise the dbs!) 
 		
 		return $this->isValid();
 	}
@@ -508,25 +511,33 @@ class GridImage
 	*/
 	function getFull($returntotalpath = false)
 	{
-		global $memcache;
-		$mkey = "{$this->gridimage_id},$returntotalpath";
-		//fails quickly if not using memcached!
-		$html =& $memcache->name_get('if',$mkey);
-		if ($html)
-			return $html;
 		
 		$fullpath=$this->_getFullpath();
+		
+		if (isset($this->cached_size)) {
+			$size = $this->cached_size;
+		} else {
+			global $memcache;
+			$mkey = "{$this->gridimage_id}:F";
+			//fails quickly if not using memcached!
+			$size =& $memcache->name_get('is',$mkey);
+			if (!$size) {
+
+				$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
+			} else {
+				//fails quickly if not using memcached!
+				$memcache->name_set('is',$mkey,$places,$memcache->compress,$memcache->period_long);
+			}
+			$this->cached_size = $size;
+		}
+		
 		$title=htmlentities($this->title);
-		
-		$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
-		
+				
 		if ($returntotalpath)  
 			$fullpath="http://".$_SERVER['HTTP_HOST'].$fullpath;
 		
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
 			
-		//fails quickly if not using memcached!
-		$memcache->name_set('if',$mkey,$places,$memcache->compress,$memcache->period_med);
 			
 		return $html;
 	}
@@ -536,20 +547,26 @@ class GridImage
 	*/
 	function isLandscape()
 	{
-		global $memcache;
-		$mkey = "{$this->gridimage_id}";
-		//fails quickly if not using memcached!
-		$result =& $memcache->name_get('il',$mkey);
-		if ($result)
+		if (isset($this->cached_size)) {
+			$result = $this->cached_size[0]>$this->cached_size[1];
 			return $result;
-	
-		$fullpath=$this->_getFullpath();
-		$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
-		$result = $size[0]>$size[1];
+		} 
+		global $memcache;
 		
+		$mkey = "{$this->gridimage_id}:F";
 		//fails quickly if not using memcached!
-		$memcache->name_set('if',$mkey,$result,$memcache->compress,$memcache->period_long);
-		
+		$size =& $memcache->name_get('is',$mkey);
+		if ($size) {
+			$result = $size[0]>$size[1];
+		} else {
+			$fullpath=$this->_getFullpath();
+			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
+			$result = $size[0]>$size[1];
+			
+			//fails quickly if not using memcached!
+			$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long);
+		}
+		$this->cached_size = $size;
 		return $result;
 		
 	}
@@ -787,12 +804,6 @@ class GridImage
 	*/
 	function _getResized($params)
 	{
-		global $memcache;
-		$mkey = "{$this->gridimage_id}:".md5(serialize($params));
-		//fails quickly if not using memcached!
-		$result =& $memcache->name_get('ir',$mkey);
-		if ($result)
-			return $result;
 	
 		//unpack known params and set defaults
 		$maxw=isset($params['maxw'])?$params['maxw']:100;
@@ -814,6 +825,27 @@ class GridImage
 
 		$base=$_SERVER['DOCUMENT_ROOT'].'/photos';
 		$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$maxw}x{$maxh}.jpg";
+
+		global $memcache;
+		$mkey = "{$this->gridimage_id}:{$maxw}x{$maxh}";
+		//fails quickly if not using memcached!
+		$size =& $memcache->name_get('is',$mkey);
+		if ($size) {
+			$return=array();
+			$return['url']=$thumbpath;
+
+			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
+			if (!empty($CONF['enable_cluster'])) {
+				$return['server']= "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$_SERVER['HTTP_HOST']}";
+				$thumbpath = $return['server'].$thumbpath;
+			}
+			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
+			
+			$return['html']=$html;
+					
+			return $return;
+		}
+
 		if (!file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))
 		{
 			//get path to fullsize image, but don't fallback to error image..
@@ -980,12 +1012,12 @@ class GridImage
 				$thumbpath = $return['server'].$thumbpath;
 			}
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
+			
+			//fails quickly if not using memcached!
+			$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_med);
 		}
 		
 		$return['html']=$html;
-		
-		//fails quickly if not using memcached!
-		$memcache->name_set('ir',$mkey,$return,$memcache->compress,$memcache->period_med);
 		
 		return $return;
 	}
