@@ -44,7 +44,7 @@ class MultiServerMemcache extends Memcache {
 	
 	function MultiServerMemcache(&$conf,$debug = false) {
 		//parent::__construct();
-		if (!$conf['host'])
+		if (empty($conf['host']) && empty($conf['host1']))
 			return;
 		$valid = false;
 		if (@$this->connect($conf['host'], $conf['port']))
@@ -52,6 +52,13 @@ class MultiServerMemcache extends Memcache {
 		elseif ($debug) 
 			die(" Can't connect to memcache server on: {$conf['host']}, {$conf['port']}<br>\n");
 			
+		if (!empty($conf['host1'])) {
+			if (@$this->addServer($conf['host1'], $conf['port1']))
+				$valid = true;
+			elseif ($debug) 
+				die(" Can't connect to memcache server on: {$conf['host1']}, {$conf['port1']}<br>\n");
+		}
+		
 		if (!empty($conf['host2'])) {
 			if (@$this->addServer($conf['host2'], $conf['port2']))
 				$valid = true;
