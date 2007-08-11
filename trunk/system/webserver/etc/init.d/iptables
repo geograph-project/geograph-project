@@ -50,8 +50,9 @@ iptables -A OUTPUT -d 87.124.24.35 -p tcp -m tcp --dport 139 -j ACCEPT
 #ntp
 iptables -A OUTPUT -p udp --dport 123 -j ACCEPT
 
-#mysql
+#mysql (jam & tea)
 iptables -A OUTPUT -d 87.124.24.35 -p tcp --dport 3306 -j ACCEPT
+iptables -A OUTPUT -d 87.124.24.34 -p tcp --dport 3306 -j ACCEPT
 
 #nfs to jam (well, anything to jam really)
 iptables -A OUTPUT -d 87.124.24.35 -p tcp -j ACCEPT
