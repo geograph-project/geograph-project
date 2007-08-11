@@ -12,10 +12,15 @@ $hostname =~ s/\s//;
 #find suitable logfiles and rename them with a date range and server name
 find(\&scandir, $basedir);
 
-#now rsync to jam
-#print "Syncing logfiles to jam\n";
-#my $logfiles=$basedir."access_log_*.gz";
-#`rsync -a $logfiles jam:/var/www/geograph_live/logs/`;
+
+$basedir="/var/www/geograph_static/logs/";
+$hostname=`hostname`."static";
+
+#find suitable logfiles and rename them with a date range and server name
+find(\&scandir, $basedir);
+
+
+
 
 exit;
 
