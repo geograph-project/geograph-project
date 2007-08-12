@@ -209,7 +209,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	if (strpos($order,'c') !== FALSE) {
 		$sql_order = "ORDER BY c$sql_dir";
-		$smarty->assign_by_ref('order', 'c');
+		$smarty->assign('order', 'c');
 	} else {
 		$sql_order = "ORDER BY field$sql_dir";
 	}
