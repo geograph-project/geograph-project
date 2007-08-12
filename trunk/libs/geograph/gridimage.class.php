@@ -808,7 +808,7 @@ class GridImage
 		$mkey = "{$this->gridimage_id}:".md5(serialize($params));
 		//fails quickly if not using memcached!
 		$result =& $memcache->name_get('ir',$mkey);
-		if ($result && $result['thumbpath'] !='/photos/error.jpg')
+		if ($result && $result['url'] !='/photos/error.jpg')
 			return $result;
 	
 		//unpack known params and set defaults
