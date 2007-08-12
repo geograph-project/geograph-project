@@ -80,6 +80,8 @@ if (!empty($CONF['disable_discuss_thumbs'])) {
 			
 			if ($square->imagecount)
 			{
+				//todo use smarty caching
+				
 				//what style should we use?
 				$style = $USER->getStyle();
 				$smarty->assign('maincontentclass', 'content_photo'.$style);	
@@ -194,7 +196,7 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,2}
 					$g_image=new GridImage;
 				}
 				$g_ok = $g_image->loadFromId($g_id);
-				if ($g_ok && $g_image->moderation_status == 'rejected' && !isset($userRanks[$cc])) {
+				if ($g_ok && $g_image->moderation_status == 'rejected' && (!isset($userRanks[$cc]) || $userRanks[$cc] != 'Member')) {
 					if ($g_matches[1][$g_i]) {
 						$posterText = str_replace("[[[$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available ['.$g_id.']" />',$posterText);
 					} else {
