@@ -428,9 +428,12 @@ if (isset($_POST['gridsquare']))
 				$ab=floor($USER->user_id/10000);
 				$smarty->clear_cache(null, "user$ab|{$USER->user_id}");
 				
-				//fails quickly if not using memcached!
-				$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by submitted desc limit 6");
-				$memcache->name_delete('gi',$mkey);
+				if ($memcache->valid) {
+					$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by submitted desc limit 6");
+					$memcache->name_delete('gi',$mkey);
+					$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,");
+					$memcache->name_delete('gi',$mkey);
+				}
 				
 				if (!$err)
 					$smarty->assign('gridimage_id', $uploadmanager->gridimage_id);

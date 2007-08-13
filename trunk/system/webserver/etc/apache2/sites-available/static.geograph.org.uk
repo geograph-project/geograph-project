@@ -11,7 +11,7 @@
     ServerAlias s0.www.crumpet.geograph.org.uk
 
     #create logformat like combined but with our user id and script timing
-    LogFormat "%h %l %{user_id}n %t \"%r\" \"%v\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{php_timing}n" geograph
+    LogFormat "%{X-Forwarded-For}i %l %{user_id}n %t \"%r\" \"%v\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{php_timing}n" geograph
 
     CustomLog /var/www/geograph_static/logs/access_log geograph
     ErrorLog /var/www/geograph_static/logs/error_log
