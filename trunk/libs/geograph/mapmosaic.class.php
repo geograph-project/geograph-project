@@ -917,11 +917,11 @@ class GeographMapMosaic
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 
 		if ($memcache->valid) {
-			$sql="select * from mapcache set age=age+1 
+			$sql="select * from mapcache
 				where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
 				$y between map_y and (map_y+image_h/pixels_per_km-1) $and_crit";
-				
-			$recordSet = &$this->db->Execute($sql);
+			
+			$recordSet = &$db->Execute($sql);
 			while (!$recordSet->EOF) 
 			{
 				$mkey = $this->getImageFilename($recordSet->fields);
@@ -951,7 +951,7 @@ class GeographMapMosaic
 			$sql="select * from mapcache 
 			where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
 			$y between map_y and (map_y+image_h/pixels_per_km-1)";
-			$recordSet = &$this->db->Execute($sql);
+			$recordSet = &$db->Execute($sql);
 			while (!$recordSet->EOF) 
 			{
 				$file = $this->getBaseMapFilename($recordSet->fields);
