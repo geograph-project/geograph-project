@@ -2,8 +2,8 @@
 //domain specific configuration file
 $CONF=array();
 
-//main server (the server that fires cron jobs etc)
-$CONF['server_ip'] = '127.0.0.1';
+//servers ip BEGIN with (the server that fires cron jobs etc)
+$CONF['server_ip'] = '127.0.0.';
 
 //set to X to server from http://s[0-X].$domain/photos/....
 $CONF['enable_cluster'] = 2;
