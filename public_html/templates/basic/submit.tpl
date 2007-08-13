@@ -99,13 +99,14 @@ geographing</a> first.</p>
 		<input type="submit" name="setpos" value="Next &gt;"/> <br/>
 		
 		<div>Currently understands:<ul>
-		<li>GPS-EXIF tags based on WGS84 Lat/Long<li>
+		<li>GPS-EXIF tags based on WGS84 Lat/Long</li>
 		<li>Subject grid-reference from the name of the file (eg "<tt>photo-<b style="padding:1px">TQ435646</b>A.jpg</tt>")</li>
+		<li>Subject grid-reference in EXIF Comment tag</li>
 		</ul></div>
 		
 		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 		<img src="http://s0.{$http_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
-		This feature is still in development, if a image fails to upload please let us know, <br/>or better yet, send it as an attachment to <a href="mailto:geograph@barryhunter.co.uk">me</a> so we can try to ensure its recognized.
+		 This feature is still in development. If a image fails to upload please let us know, or better still, send it as an attachment to <a href="mailto:geograph@barryhunter.co.uk">me</a> so we can try to ensure it's recognised.
 		</div>
 	</div>
 
