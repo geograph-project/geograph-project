@@ -161,8 +161,9 @@
 	</form>
 {/dynamic} 
 
-
+{if !$i}
 <p style="background-color:lightgreen;padding:10px;">Alternatively you can load the <a href="/gpx.php">GPX</a> files into Google Earth, to produce coverage maps. (rather than loading the individual images).</p>
+{/if}
 
 <div class="copyright">Google Earth and Google Maps are registered trademarks of Google Inc. Geograph is not affiliated with Google.</div>
 
