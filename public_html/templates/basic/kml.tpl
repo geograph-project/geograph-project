@@ -1,7 +1,7 @@
 {assign var="page_title" value="Google Earth or Google Maps :: KML Export"}
 {include file="_std_begin.tpl"}
 {dynamic}
-	<div style="padding:5px;background:#dddddd;position:relative; float:right; font-size:0.8em">
+	<div style="padding:5px;background:#dddddd;position:relative; float:right; font-size:0.8em; z-index:100">
 	Quick links:<br/><br/>
 	<b>All Geograph Images</b>: <br/>
 	&nbsp;&nbsp;&nbsp;<a href="/kml-superlayer.php">Google Earth <b>Version 4</b></a><br/>
