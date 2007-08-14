@@ -35,6 +35,7 @@
 	 allowing you view satellite images and geo-located information for the entire globe.
 	 </p>
 	
+	{if !$i}
 	 <div class="interestBox" style="width:550px;background-color:yellow;padding:2px;">
 	 <img src="/kml/images/cam1-small.gif" width="24" height="24"/> <a href="/kml-superlayer.php"><b>Geograph SuperLayer</b></a> (Google Earth Version 4+ REQUIRED)
 	{if $i}<br/><i><b>- displays all images - not the selection as per requested search</b></i>{/if}
@@ -42,7 +43,7 @@
 	 <br/><small><i>Last updated: {$superlayer_updated}</i></small>
 	 <a href="/help/superlayer">View Icon Key</a></small>
 	 </div>
-	
+	{/if}
 	 
 	 
 	 <p>&middot;
