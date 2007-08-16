@@ -75,12 +75,16 @@ function onCheckCompleted()
 			}
 			
 			if (bits[1] == '1' || score == 0) {
-				thatForm.save.disabled= false;
-				thatForm.save.style.backgroundColor = 'lightgreen';
-				thatForm.save.style.fontSize = '1.3em';
-				thatForm.next.disabled= false;
-				thatForm.next.style.backgroundColor = 'lightgreen';
-				thatForm.next.style.fontSize = '1.3em';
+				if (thatForm.save) {
+					thatForm.save.disabled= false;
+					thatForm.save.style.backgroundColor = 'lightgreen';
+					thatForm.save.style.fontSize = '1.3em';
+				} 
+				if (thatForm.next) {
+					thatForm.next.disabled= false;
+					thatForm.next.style.backgroundColor = 'lightgreen';
+					thatForm.next.style.fontSize = '1.3em';
+				}
 			}
 			l = bits.length-1;
 			if (bits[l].indexOf('set') == 0) {

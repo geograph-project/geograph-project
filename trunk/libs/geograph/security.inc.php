@@ -40,7 +40,7 @@ function inEmptyRequestInt($key,$def = 0) {
 }
 
 function inSetRequestInt($key,$def = 0) {
-	return (!isset($_REQUEST[$key]))?intval($_REQUEST[$key]):$def;
+	return (isset($_REQUEST[$key]))?intval($_REQUEST[$key]):$def;
 }
 
 

@@ -69,6 +69,9 @@ class game {
 		}
 		
 		$updates['game_id'] = $this->game_id;
+		if (!empty($this->l)) {
+			$updates['level'] = $this->l;
+		}
 		$updates['score'] = $points;
 		
 		$this->_getDB()->Execute('INSERT INTO game_image_score SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
@@ -86,6 +89,9 @@ class game {
 			$updates['username'] = $username;
 		}
 		$updates['game_id'] = $this->game_id;
+		if (!empty($this->l)) {
+			$updates['level'] = $this->l;
+		}
 		$updates['score'] = $this->score;
 		$updates['games'] = $this->games;
 		
@@ -109,7 +115,16 @@ class game {
 		$updates['game_id'] = $this->game_id;
 		$updates['rating'] = $rating;
 		
-		$this->_getDB()->Execute('INSERT INTO game_rate SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+		
+		$db = $this->_getDB();
+
+		$db->Execute('INSERT INTO game_rate SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+	
+		if (rand(1,10) > 8) {
+			$db->Execute("DROP TABLE IF EXISTS game_image_rate");
+			$db->Execute("CREATE TABLE game_image_rate SELECT gridimage_id,game_id,round(avg(rating)) as rating,count(*) as ratings from game_rate where rating > 0 group by gridimage_id,game_id");
+			$db->Execute("ALTER TABLE `game_image_rate` ADD PRIMARY KEY (`gridimage_id` , `game_id`)");
+		}
 	}
 
 	public function issetImage($ref) {
@@ -209,19 +224,19 @@ class game {
 	}
 
 	public function getImagesByRating($rating) {
-		if (rand(1,10) > 7) {
-			$db = $this->_getDB();
-			
-			$db->Execute("DROP TABLE IF EXISTS game_image_rate");
-			$db->Execute("CREATE TABLE game_image_rate SELECT gridimage_id,game_id,round(avg(rating)) as rating,count(*) as ratings from game_rate where rating > 0 group by gridimage_id,game_id");
-			$db->Execute("ALTER TABLE `game_image_rate` ADD PRIMARY KEY (`gridimage_id` , `game_id`)");
+		if ($rating > 9) {
+			$where = sprintf("rating BETWEEN %d AND %d",($rating/10)-1,($rating/10)+1);
+		} else {
+			$where = "rating = $rating";
 		}
-		
+		if (empty($game->batchsize)) {
+			$game->batchsize = 10;
+		}
 		$sql = "select gi.*
 			from game_image_rate 
 				inner join gridimage_search gi using(gridimage_id)
-			where game_id = {$this->game_id} and rating = $rating
-			order by rand()";
+			where game_id = {$this->game_id} and $where
+			order by rand() limit ".($game->batchsize*2);
 		
 		$imagelist=new ImageList();
 		$this->numberofimages =$imagelist->_getImagesBySql($sql);
