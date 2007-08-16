@@ -64,6 +64,10 @@ if (isset($_GET['gridref']))
 			if ($count= $db->GetOne("select count(*) from mapfix_log where gridsquare_id='{$sq['gridsquare_id']}'"))
 			{
 				$smarty->assign('check_count', $count);
+			} 
+			else 
+			{
+				$smarty->assign('check_count', 0);
 			}
 		}
 		

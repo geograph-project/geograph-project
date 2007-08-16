@@ -17,6 +17,7 @@ Disallow: /submit.php
 Disallow: /discuss/
 Disallow: /mapsheet.php
 Disallow: /kml.php
+Disallow: /gpx.php
 Disallow: /editimage.php
 Disallow: /browse.php
 Disallow: /gridref/
@@ -32,6 +33,8 @@ Disallow: /_scripts/
 
 User-agent: Slurp
 Disallow: /profile/*/map
+Disallow: /photo/*?style=*
+Disallow: /search.php?i=*&style=*
 
 
 User-agent: Mozilla/2.0 (compatible; Ask Jeeves/Teoma)
