@@ -26,6 +26,8 @@ function showHide(id,show) {
 		
 		</form>
 		<p>As you play please add an approximate level of difficultly for the image, if a image is not suitable please label it as such. Please rate asubing no local knowledge, and user of medium ability</p>
+		
+		<a href="/games/moversboard.php?g=1&l=0">Rater Weekly Scoreboard</a>
 		<br style="clear:both"/>
 		</div>
 	</div>
