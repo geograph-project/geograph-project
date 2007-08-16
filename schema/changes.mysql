@@ -1350,3 +1350,10 @@ ALTER TABLE `user` ADD INDEX `email` ( `email` );
 
 
 ALTER TABLE `user` ADD `message_sig` VARCHAR( 250 ) NOT NULL default '';
+
+
+
+ALTER TABLE `game_score` ADD `level` TINYINT NOT NULL AFTER `game_id` ;
+
+ALTER TABLE `game_image_score` ADD `level` TINYINT NOT NULL AFTER `game_id` ;
+

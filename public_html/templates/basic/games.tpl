@@ -21,6 +21,7 @@ function showHide(id,show) {
 		<div  class="interestBox" style="width:45%; float:left">
 		<form action="/games/markit.php" method="get">
 		<input type="hidden" name="rater" value="1"/>
+		<input type="hidden" name="autoload" value="1"/>
 		<h3 style="background-color:black;color:white;margin-top:0px; padding:10px;"><div style="float:right"><input type="submit" value="Go &gt; &gt;" style="font-size:1.2em"/></div> Mark It</h3>
 		
 		</form>
@@ -32,9 +33,7 @@ function showHide(id,show) {
 
 
 <div class="interestBox" style="background-color:lightgreen; color:black; border:2px solid red; padding:10px; width:260px; float:right; text-align:center">
-<img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
-
-or Help us Locate new <br/>images for the game. <br/>
+Help us Locate new <br/>images for the games.<br/>
 
 <a href="javascript:showHide('helpout1',true);">Read More &gt;&gt;</a>
 </div>
@@ -47,7 +46,7 @@ or Help us Locate new <br/>images for the game. <br/>
 
 
 
-<div style="float:left; margin-top:60px; width:235px;height:59px; background-image:url('http://s0.{$http_host}/templates/basic/img/callout1.gif');padding-left:75px;padding-top:5px; padding-right:10px; text-align:center;">
+<div style="float:left; margin-top:60px; width:235px;height:59px; background-image:url('http://s0.{$http_host}/templates/basic/img/callout1.gif');padding-left:75px;padding-top:5px; padding-right:10px; text-align:center;color:#0000FF">
 Welcome to Geograph's <h2>Games Section</h2></div>
 
 <br style="clear:both"/>
@@ -70,7 +69,7 @@ Welcome to Geograph's <h2>Games Section</h2></div>
 <input type="radio" name="l" value="5"/>5 
 <br/><tt>&lt;-- Easy | Harder --&gt;</tt><br/><br/>
 
-<input type="submit" value="Play Now &gt; &gt;" style="font-size:1.3em"/> or view the <a href="/games/moversboard.php">Scoreboard</a> 
+<input type="submit" value="Play Now &gt; &gt;" style="font-size:1.3em"/> or view the <a href="/games/moversboard.php?g=1">Scoreboard</a> 
 
 </form><br/>
 
@@ -79,6 +78,10 @@ Welcome to Geograph's <h2>Games Section</h2></div>
 </div>
 
 
+<div class="interestBox" style=" padding:10px; width:260px; float:right; text-align:center">
+
+more games coming soon...
+</div>
 
 <br style="clear:both"/>
 

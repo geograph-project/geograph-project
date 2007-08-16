@@ -36,7 +36,9 @@ if (isset($_REQUEST['login']) && !$USER->hasPerm('basic')) {
 
 $game = new Game();
 
-if (isset($_REQUEST['token'])) {
+if (isset($_SESSION['gameToken'])) {
+	$game->setToken($_SESSION['gameToken']);
+} elseif (isset($_REQUEST['token'])) {
 	$game->setToken($_REQUEST['token']);
 }
 
@@ -53,6 +55,9 @@ if (!empty($game->rastermap)) {
 
 if (!empty($_REQUEST['save'])) {
 	$game->saveScore($_REQUEST['save'],!empty($_REQUEST['username'])?$_REQUEST['username']:'');
+	if (isset($_SESSION['gameToken'])) {
+		unset($_SESSION['gameToken']);
+	}
 	header("Location: /games/moversboard.php?more");
 	exit;
 }

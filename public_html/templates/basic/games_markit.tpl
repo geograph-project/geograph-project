@@ -13,13 +13,28 @@
 
 </style>
 {/literal}
+
+<h2><a href="/games/">Geograph Games</a> - Mark-It!</h2>
+	
 {dynamic}
 {if $game->image} 
+
+	{if !$rater}
+	<div style="position:relative; float:right; width:60px; height:{$game->batchsize*32}px; border:1px solid red">
+		{section loop=$game->batchsize name="batch"}
+			{if $smarty.section.batch.index+1 > $game->batchsize-$game->games}
+				<div style="width:60px;height:30px; border:1px solid gray; background-color:green; color:white; text-align:center">Done</div>
+			{else} 
+				<div style="width:60px;height:30px; border:1px solid gray"></div>
+			{/if}
+		{/section}
+	</div>
+	{/if}
+
   <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
-	<h2>Game - Mark-It!</h2>
 	
-	<p>Drag the circle to mark the subject shown in the image. Get within 100m to win the remaining pineapples, lose one pineapple for every miss. Once you think you are close, click the check button to see how you did! If unsure you can reveal the caption of the image which may or may not make it easier!</p> 
+	<p>Drag the circle to mark the subject shown in the image. Get within 100m to win the remaining tokens, lose one token for every miss. Once you think you are close, click the check button to see how you did! If unsure you can reveal the caption of the image which may or may not make it easier!</p> 
 	
 	{if $message}
 		<p style="color:#990000;font-weight:bold;">{$message}</p>
@@ -52,9 +67,9 @@
 		
 		<input type="hidden" name="token" value="{$game->getToken()}"/>
 		<fieldset>
-			<legend>Pineapples Available <input type="text" name="points" value="{$game->points}" size="1" readonly="readonly"/></legend>
+			<legend>Hamster Tokens Available <input type="text" name="points" value="{$game->points}" size="1" readonly="readonly"/></legend>
 			{section loop=$game->points name="point"}
-				<img src="/templates/basic/img/game_point.png" name="pointimg{$smarty.section.point.index}"/>
+				<img src="http://s0.{$http_host}/templates/basic/img/hamster-icon.gif" name="pointimg{$smarty.section.point.index}"/>
 			{/section}
 		</fieldset>
 		
@@ -64,26 +79,36 @@
 	 {$game->image->comment|escape:'html'}
 	</div>
 	<div id="anticaption">
-		<input type="button" value="show caption" onclick="return showCaption(this.form)"/> (cost: one pineapple)
+		<input type="button" value="show caption" onclick="return showCaption(this.form)"/> (cost: one token)
 	</div>
 	
 	
 	{if $rater} 
 		<p>
 		Please rate this<br/> particular image:<br/>
-		<select name="rate" size="6" onchange="rateUpdate(this)">
+		<select name="rate" size="7" onchange="rateUpdate(this)">
 			<option value="1">1 - Very Easy</option>
 			<option value="2">2 - Easy</option>
 			<option value="3">3 - Medium</option>
 			<option value="4">4 - Hard</option>
 			<option value="5">5 - Very Hard</option>
 			<option value="-1">Not Suitable</option>
+			<option value="-2">Doubt Position Specified</option>
 		</select></p>
 		<input type="hidden" name="rater" value="1"/>
 	{/if}
 	
 	<br style="clear:both"/>
-	<div style="text-align:right">{if $game->score}Score at beginning of this game: {$game->score}{/if} <input type="submit" name="save" value="save scores &gt;" disabled="disabled"/> or <input type="submit" name="next" value="another &gt; &gt;" disabled="disabled"/></div>
+	<div style="text-align:right">{if $game->score}Score at beginning of this game: {$game->score}, with {$game->games} played{/if} 
+		{if $rater}
+			<input type="submit" name="save" value="save scores &gt;" disabled="disabled"/>
+			or <input type="submit" name="next" value="another &gt; &gt;" disabled="disabled"/>
+		{elseif $game->games == $game->batchsize-1}
+			<input type="submit" name="save" value="save scores &gt;" disabled="disabled"/>
+		{else}
+			<input type="submit" name="next" value="another &gt; &gt;" disabled="disabled"/>
+		{/if}
+	</div>
 </form>
 
 
@@ -94,8 +119,12 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 <!-- /Creative Commons Licence -->
 
 {else}
-	<p>There are no images available at the moment, thanks for your interest, and please check back tomorrow.</p>
-	{if $game->score}<p>Don't forget to <a href="/games/score.php?token={$game->getToken()}">save your score</a>!</a></p>{/if}
+	<p>There are no images available available in the current set.</p>
+	{if $game->score}<p>Don't forget to <a href="/games/score.php">save your score</a>!</a></p>{/if}
+	
+	{if $rater}
+		<p>You can also try <a href="/games/markit.php?rater=1&amp;autoload">loading a new set</a>.</p>
+	{/if}
 {/if}
 {/dynamic}
 
