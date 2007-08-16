@@ -136,6 +136,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign("most$ri", $most);	
 	}
 
+	$db->Execute("ALTER TABLE `hectad_complete` ORDER BY `completed` DESC");
+
 	$smarty->assign("markers", $markers);	
 }
 
