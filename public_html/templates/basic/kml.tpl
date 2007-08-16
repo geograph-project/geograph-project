@@ -58,7 +58,7 @@
 	<div class="interestBox">
 	
 		<input type="hidden" name="i" value="{$i}"/>
-		Your <a href="/search.php?i={$i}">search</a> for images<i>{$engine->criteria->searchdesc|escape:"html"}</i>, returns 
+		Your <a href="/search.php?i={$i}">search for images<i>{$engine->criteria->searchdesc|escape:"html"}</i></a>, returns 
 		<b>{$engine->resultCount}</b> results.	
 		{if $engine->criteria->searchclass != 'Special'}[<a href="search.php?i={$i}&amp;form=advanced">refine</a>]{/if}
 		{if $engine->resultCount == 0} 
