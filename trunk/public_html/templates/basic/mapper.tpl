@@ -74,9 +74,12 @@ AttachEvent(window,'load',loadMap,false);
 
 <div class="copyright">Great Britain 1:50 000 Scale Colour Raster Mapping &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.<br/>
 <br/>
-Photographs and coverages are available under a seperate <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.
-
+Photographs and coverages are available under a seperate <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.<br/>
+<br/>
+For the purposes of the Creative Commons Licence this page should be considered a "Collective Work", and as such is not available in its entirety for reuse.
 </div>
 
+<br/><br/>
+<div class="interestBox">If you are getting messages to "Login to continue viewing maps", then <a href="/mapper/captcha.php">click here</a></div>
 
 {include file="_std_end.tpl"}

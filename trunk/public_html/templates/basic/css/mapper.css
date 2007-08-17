@@ -1,19 +1,19 @@
 #mapcontainer {
 	position: relative;
 	border: 10px solid #000066;
-	width:520px; 
-	height:420px; 
+	width:640px; 
+	height:480px; 
 }
 #mapcontainer #mapbox {
-	width:520px; 
-	height:407px; 
+	width:640px; 
+	height:467px; 
 	border: 1px;
 	position: relative;
 	
 }
 #mapcontainer #mapfooter {
-	width:520px; 
-	top: 407px;
+	width:640px; 
+	top: 467px;
 	color: #fff;
 	font: 10px sans-serif;
 	height: 13px;
