@@ -28,7 +28,6 @@ require_once('geograph/imagelist.class.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/gridimage.class.php');
 
-init_session();
 
 $smarty = new GeographPage;
 
@@ -36,6 +35,8 @@ $template='gpx.tpl';
 $cacheid = '';
 
 if (isset($_GET['id']))  {
+	init_session();
+
 	$image=new GridImage;
 	
 	$ok = $image->loadFromId($_GET['id'],true);
@@ -163,6 +164,8 @@ if (isset($_GET['id']))  {
 		}
 		else
 		{
+			init_session();
+
 			//preserve the input at least
 			$smarty->assign('gridref', stripslashes($_REQUEST['gridref']));
 			$smarty->assign('distance', $d);
@@ -175,6 +178,8 @@ if (isset($_GET['id']))  {
 	
 		
 	} else {
+		init_session();
+
 		$smarty->assign('distance', 5);
 		$smarty->assign('type', 'without');
 		if (isset($_REQUEST['gridref'])) {
