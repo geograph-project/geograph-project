@@ -15,16 +15,27 @@ var tileurl = "http://{$http_host}/tile.php";
 var zoom = 0;
 var map, osposition, ml;
 
+var maxOpacity = 0.9;
+var minOpacity = 0.1;
+
+var glayer;
+
 {literal}
+
+function changeOpacity(byOpacity) {
+	var newOpacity = (parseFloat(glayer.opacity) + byOpacity).toFixed(1);
+	newOpacity = Math.min(maxOpacity, Math.max(minOpacity, newOpacity));
+	glayer.setOpacity(newOpacity);
+}
 
 function loadMap() {
 	map = new OpenLayers.Map('mapbox', {controls:[], maxExtent: new OpenLayers.Bounds(0, 0, 700000, 1300000), maxResolution: 4000/250, units: 'meters', projection: "EPSG:27700"});
 	
-	var oslayer = new OpenLayers.Layer.WMS("OSGB Landranger", tileurl+"?l=o", {}, {projection: "EPSG:27700", buffer:0});	
-	oslayer.tileSize = new OpenLayers.Size(250,250);	
+	var oslayer = new OpenLayers.Layer.WMS("OSGB Landranger", tileurl+"?l=o", {}, {projection: "EPSG:27700", buffer:0});
+	oslayer.tileSize = new OpenLayers.Size(250,250);
 	oslayer.getURL = geographURL;
 	
-	var glayer = new OpenLayers.Layer.WMS("Geograph Coverage", tileurl+"?l=g", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, opacity: 0.3, buffer:0});	
+	glayer = new OpenLayers.Layer.WMS("Geograph Coverage", tileurl+"?l=g", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, opacity: 0.3, buffer:0});	
 	glayer.tileSize = new OpenLayers.Size(250,250);	
 	glayer.getURL = geographURL;
 	
@@ -69,6 +80,7 @@ AttachEvent(window,'load',loadMap,false);
 		</div>
 	</div>
 </div>
+<div style="width:660px; text-align:center; font-size:0.9em;">Change Overlay Transparency: [<a title="increase opacity" href="javascript: changeOpacity(0.1);">-</a>] [<a title="decrease opacity" href="javascript: changeOpacity(-0.1);">+</a>]</div>
 
 <br/><br/>
 
