@@ -456,6 +456,16 @@ function customCacheControl($mtime,$uniqstr,$useifmod = true,$gmdate_mod = 0) {
 	header("Last-Modified: $gmdate_mod");
 }
 
+function customNoCacheHeader($type = 'nocache') {
+	//none/nocache/private/private_no_expire/public
+	if ($type == 'nocache') {
+		header("Cache-Control: no-store, no-cache, must-revalidate");  // HTTP/1.1 
+		header("Cache-Control: post-check=0, pre-check=0", false); 
+		header("Pragma: no-cache"); 
+		customExpiresHeader(-1);
+	} 
+}
+
 function customExpiresHeader($diff,$public = false) {
 	if ($diff > 0) {
 		$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", time()+$diff);

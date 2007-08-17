@@ -58,13 +58,28 @@ if (isset($_GET['map']))
 	exit;	
 } elseif (isset($_GET['e']) && isset($_GET['n'])) {
 
-	//temporolly restriction so only registered users can see it
+	//we need to silently load the session
 	session_cache_limiter('none');
 	
 	init_session();
 	
-	if (!$USER->hasPerm('basic')) {
-		header("Location: /maps/errortile.png");
+	if (isset($_SESSION['maptt'])) {
+		$tt = $_SESSION['maptt'];
+	} elseif (!empty($_GET['tt'])) {
+		$tt = new ThrottleToken($_GET['tt']);
+	} else {
+		customNoCacheHeader();       
+		
+		header("Location: /maps/login.png");
+		exit;
+	}
+
+	if (!($tt->useCredit())) {
+		//run out of credit!
+		
+		customNoCacheHeader();       
+		
+		header("Location: /maps/login.png");
 		exit;
 	}
 
@@ -88,13 +103,40 @@ if (isset($_GET['map']))
 		if ($_GET['l'] == 'o') {
 			$rastermap->returnImage();
 		} else {
-			customCacheControl(getlastmod(),"$e,$n,$reference_index");
+			$mustgenerate = false;
+			
+			if ($valid->memcache) {
+				$mkey = "{$_GET['l']},$e,$n,$reference_index";
+				$lastmod =& $memcache->name_get('tl',$mkey);
+				if (!$lastmod) {
+					$lastmod = time();
+					$mustgenerate = true;
+				}
+			} else {
+				$lastmod = time();
+				$mustgenerate = true;
+			}
+		
+			customCacheControl($lastmod,"$e,$n,$reference_index");
 			customExpiresHeader(604800,true);
+				
+			if ($valid->memcache && !$mustgenerate) {
+				$data =& $memcache->name_get('td',$mkey);
+				if ($data) {
+					if ($data == 'blank') {
+						header("Location: /maps/blank.png");
+					} else {
+						header("Content-Type: image/png");
+						print $data;
+					}
+					exit;
+				}
+			} 
 			
 			preg_match('/-(\d)k-/',$rastermap->folders[$rastermap->service],$m);
 			$stepdist = ($m[1]-1);
 		
-			list($x,$y) = $conv->national_to_internal($e,$n,$reference_index );	
+			list($x,$y) = $conv->national_to_internal($e,$n,$reference_index);	
 			
 			$db=NewADOConnection($GLOBALS['DSN']);
 			
@@ -141,9 +183,17 @@ if (isset($_GET['map']))
 
 				}
 				header("Content-Type: image/png");
-				imagepng($img);
+				if ($memcache->valid) {
+					ob_start();
+					imagepng($img);
+					$memcache->name_set('td',$mkey,ob_get_flush(),$memcache->compress,$memcache->period_long*4);
+		;
+				} else {
+					imagepng($img);
+				}
 
 			} else {
+				$memcache->name_set('td',$mkey,'blank',false,$memcache->period_long*4);
 				header("Location: /maps/blank.png");
 			}
 

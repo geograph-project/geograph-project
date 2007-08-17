@@ -53,6 +53,22 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('e',$e);
 	$smarty->assign('n',$n);
 }
+if (isset($_SESSION['maptt'])) {
+	
+} else {
+	// as we doing in session no need to save.
+	$tt = new ThrottleToken('',false);
+
+	if ($USER->hasPerm('admin') || $USER->hasPerm('moderator')) {
+		$tt->uses = 500;
+	} elseif ($USER->hasPerm('basic')) {
+		$tt->uses = 200;
+	} else {
+		$tt->uses = 35;
+	}
+
+	$_SESSION['maptt'] = $tt;
+}
 
 $smarty->display($template, $cacheid);
 
