@@ -69,7 +69,7 @@ class game {
 		}
 		
 		$updates['game_id'] = $this->game_id;
-		if (!empty($this->l)) {
+		if (!empty($this->l) && $this->l < 10) {
 			$updates['level'] = $this->l;
 		}
 		$updates['score'] = $points;
@@ -89,7 +89,7 @@ class game {
 			$updates['username'] = $username;
 		}
 		$updates['game_id'] = $this->game_id;
-		if (!empty($this->l)) {
+		if (!empty($this->l) && $this->l < 10) {
 			$updates['level'] = $this->l;
 		}
 		$updates['score'] = $this->score;
