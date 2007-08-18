@@ -1038,9 +1038,6 @@ class GeographUser
 			//instead...
 			if (!$logged_in)
 			{
-				//this is only for search engines!
-				header("HTTP/1.0 403 Forbidden");
-				header("Status: 403 Forbidden");
 				$smarty = new GeoGraphPage;
 				
 				$smarty->assign('remember_me', isset($_COOKIE['autologin'])?1:0);
