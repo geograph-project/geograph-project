@@ -75,6 +75,8 @@
   	el.innerHTML = '<a accesskey="1" title="Home Page" href="/">Home</a><small style="font-size:0.7em"><br/><br/>(<b>will close Chat session</b>)</small>';
   	el = document.getElementById('search_block');
   	el.style.display='none';
+  	el = document.getElementById('header').getElementsByTagName('h1');
+  	el[0].style.width='1px';
   }
   AttachEvent(window,'load',removeSiteLinks,false);
   
