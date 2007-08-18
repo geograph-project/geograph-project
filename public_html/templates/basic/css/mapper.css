@@ -1,6 +1,7 @@
 #mapcontainer {
 	position: relative;
-	border: 10px solid #000066;
+	padding:10px;
+	background-color:#000066;
 	width:640px; 
 	height:480px; 
 }
