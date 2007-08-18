@@ -146,6 +146,7 @@ class RasterMap
 	
 	function getImageTag() 
 	{
+		global $CONF;
 		$east = floor($this->nateastings/1000) * 1000;
 		$nort = floor($this->natnorthings/1000) * 1000;
 
@@ -214,8 +215,11 @@ class RasterMap
 			return $str;
 		
 		} elseif ($this->service == 'OS50k') {
-
-			$mapurl = "/tile.php?r=".$this->getToken();
+			if (!empty($CONF['fetch_on_demand'])) {
+				$mapurl = "http://{$CONF['fetch_on_demand']}/tile.php?r=".$this->getToken();
+			} else {
+				$mapurl = "/tile.php?r=".$this->getToken();
+			}
 
 			$title = "1:50,000 Modern Day Landranger(TM) Map &copy; Crown Copyright";
 		}
