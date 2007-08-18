@@ -80,7 +80,7 @@ AttachEvent(window,'load',loadMap,false);
 		</div>
 	</div>
 </div>
-<div style="width:660px; text-align:center; font-size:0.9em;">Change Overlay Transparency: [<a title="increase opacity" href="javascript: changeOpacity(0.1);">-</a>] [<a title="decrease opacity" href="javascript: changeOpacity(-0.1);">+</a>]</div>
+<div style="width:660px; text-align:center; font-size:0.9em;">Change Overlay Opacity: [<a title="increase opacity" href="javascript: changeOpacity(0.1);">+</a>] [<a title="decrease opacity" href="javascript: changeOpacity(-0.1);">-</a>]</div>
 
 <br/><br/>
 
