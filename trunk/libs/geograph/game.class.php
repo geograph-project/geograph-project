@@ -252,7 +252,7 @@ class game {
 		if ($issearch) {
 			$db = $this->_getDB();
 			
-			$ids += $db->getCol("select gridimage_id from game_rate where game_id = {$this->game_id} and gridimage_id > 0 and rating = -2");
+			$ids += $db->getCol("select gridimage_id from game_rate where game_id = {$this->game_id} and gridimage_id > 0 and rating < 0");
 			
 		
 			foreach ($this->images as $index => $image) {
