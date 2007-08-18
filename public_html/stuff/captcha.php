@@ -33,13 +33,46 @@ $db=NewADOConnection($GLOBALS['DSN']);
 
 
 
-if ($_GET['image']) {
+if (!empty($_GET['token'])) {
+	$ok=false;
+	$token=new Token;
+
+	if ($token->parse($_GET['token']))
+	{
+		if ($token->hasValue("id")) {
+			$id = $token->getValue("id");
+	
+			//iamges should be immutable! So we have permentent urls
+			customCacheControl(getlastmod(),$id);	
+			customExpiresHeader(3600*24*48,true);
+			
+			$image = new GridImage;
+			$image->loadFromId($id);
+			$details = $image->getThumbnail(213,160,2);
+			$url = $details['url'];
+			
+			header("Content-Type: image/jpeg");
+			@readfile('..'.$url);
+			exit;
+		}
+	}
+	exit;
+} elseif (!empty($_GET['id'])) {
+	$token=new Token;
+	$token->setValue("id", intval($_GET['id']));
+
+	print "TOKEN: <TT>".$token->getToken()."</TT>";
+	exit;
+}
+
+
+if (!empty($_GET['image'])) {
 	$image = new GridImage;
 	$image->loadFromId($_SESSION['id']);
 	$details = $image->getThumbnail(213,160,2);
 	$url = $details['url'];
 	header("Content-Type: image/jpeg");
-	@readfile('.'.$url);
+	@readfile('..'.$url);
 	exit;
 } 
 
