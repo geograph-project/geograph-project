@@ -157,7 +157,10 @@ class SearchEngine
 			}
 			$this->numberOfPages = ceil($this->resultCount/$pgsize);
 		} 
-		if ($this->countOnly || ( ($pg > 1 || $CONF['search_count_first_page']) && !$this->resultCount))
+		if ($this->countOnly
+			|| ( ($pg > 1 || $CONF['search_count_first_page']) && !$this->resultCount)
+			|| ( ($this->numberOfPages) && ($pg > $this->numberOfPages) ) 
+			)
 			return 0;
 		
 		if ($sql_order)
@@ -266,7 +269,10 @@ END;
 			}
 			$this->numberOfPages = ceil($this->resultCount/$pgsize);
 		}
-		if ($this->countOnly || ( ($pg > 1 || $CONF['search_count_first_page']) && !$this->resultCount))
+		if ($this->countOnly
+			|| ( ($pg > 1 || $CONF['search_count_first_page']) && !$this->resultCount)
+			|| ( ($this->numberOfPages) && ($pg > $this->numberOfPages) ) 
+			)
 			return 0;
 			
 		if ($sql_order)
