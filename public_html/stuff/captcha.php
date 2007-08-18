@@ -25,7 +25,6 @@ require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
 
-init_session();
 
 
 
@@ -65,6 +64,7 @@ if (!empty($_GET['token'])) {
 	exit;
 }
 
+init_session();
 
 if (!empty($_GET['image'])) {
 	$image = new GridImage;
@@ -111,7 +111,7 @@ if ($_POST['choice']) {
 
 	$cache = md5(time()); //cache defeat & red hearing ;-)
 	$html = preg_replace("/src=\".*?\"/","src=\"?image=$cache\"",$html);
-	print $cache.' '.$id;
+	#print $cache.' '.$id;
 	
 	//can never be too careful!
 	srand(time());
