@@ -35,7 +35,12 @@ tt { color:green; border: 1px solid lightgrey; padding:3px; background-color:whi
 <li><b style="font-size:0.7em">Webpage/URL</b><br/>
 <div class="example"><tt class="bbcode">[url=http://www.example.com]Some text[/url]</tt> shows as <span class="preview"><a href="http://www.example.com">Some text</a></span></div><br/></li>
 <div class="example"><tt class="bbcode">http://www.example.com</tt> shows as a clickable link, <span class="preview"><a href="http://www.example.com">http://www.example.com</a></span></div><br/></li>
+</ul>
 
+<p class="tip"><b>Linking to a specific Discussion Post</b><br/>
+You can get the link for a specifc post, by right clicking the # symbol at the beginning of a post, and selecting 'Copy Link Location' or similar. You can then use this in [url=...]thread[/url] tags.</p
+
+<ul>
 <li><b style="font-size:0.7em">Link to Browse page for a Square</b><br/>
 <div class="example"><tt class="bbcode">[[TQ7506]]</tt> shows as <span class="preview"><a href="/gridref/TQ7506">TQ7506</a></span></div><br/></li>
 </ul>
