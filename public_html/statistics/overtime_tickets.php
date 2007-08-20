@@ -94,7 +94,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	count( * ) AS `Tickets`, 
 	count( distinct gi.gridimage_id ) AS `Images`,
 	sum(type='minor')/count( * )*100 AS `Percentage Minor`,
-	count( DISTINCT gi.user_id ) AS `Different Suggestors`
+	count( DISTINCT t.user_id ) AS `Different Suggestors`
 	$columns_sql
 FROM gridimage_ticket t INNER JOIN gridimage gi USING (gridimage_id)
 $where_sql
