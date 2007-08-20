@@ -99,7 +99,7 @@ if (isset($_GET['check'])) {
 
 		if ($_GET['points'] == 1) {
 			$postfix = "But no tokens left! Better luck next time.";
-			$postfix2 = "^-1^set:".$game->image->getSubjectGridref(false)
+			$postfix2 = "^-1^set:".$game->image->getSubjectGridref(false);
 		} else {
 			$postfix = "try again...";
 			$postfix2 = "^-1";
