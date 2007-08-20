@@ -98,12 +98,14 @@ if (isset($_GET['check'])) {
 			sqrt(pow($game->image->nateastings-$square->nateastings,2)+pow($game->image->natnorthings-$square->natnorthings,2)));
 
 		if ($_GET['points'] == 1) {
-			$postfix = "But no tokens left! Better luck next time.^-1^set:".$game->image->getSubjectGridref(false)
+			$postfix = "But no tokens left! Better luck next time.";
+			$postfix2 = "^-1^set:".$game->image->getSubjectGridref(false)
 		} else {
-			$postfix = "try again...^-1";
+			$postfix = "try again...";
+			$postfix2 = "^-1";
 		}
 		$prefix = "<span style=\"color:blue;background-color:pink; padding:10px;\">";
-		$postfix .= "</span>";
+		$postfix .= "</span>".$postfix2;
 		if ($distance < 100) {
 			$game->image->use6fig = false;
 			echo "<span style=\"color:blue;background-color:lightgreen; padding:10px; font-weight:bold;\">Well done, you were within 100m, collect {$_GET['points']} tokens</span>^1^set:".$game->image->getSubjectGridref(false);
