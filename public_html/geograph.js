@@ -223,6 +223,47 @@ function prePopulateImageclass() {
 
 //	-	-	-	-	-	-	-	-
 
+function checkstyle(that,name,final) {
+	var valid = true;
+	var type = null;
+	v = that.value;
+	if (v.length > 1) {
+		f = v.substr(0,1);
+		if (f.match(/[a-z]/)) {
+			valid = false;
+			type = 'missing initial capital';
+		}
+		
+		if (v.toUpperCase() == v || v.toLowerCase() == v) {
+			valid = false;
+			type = 'single case';
+		}
+		
+		l = v.substr(-1);
+		l3 = v.substr(-3);
+		if (name == 'title' && l == '.' && l3 != '...') {
+			valid = false;
+			type = 'full stop';
+		}
+		
+		if (final && !v.match(/ /)) {
+			valid = false;
+			type = 'very short';
+		}
+		
+		if (name == 'comment' && that.form.title.value == v) {
+			valid = false;
+			type = 'duplicate of title';
+		}
+	}
+	
+	document.getElementById(name+'style').style.display = valid?'none':'';
+	document.getElementById(name+'stylet').innerHTML = type?("("+type+")"):'';
+	document.getElementById('styleguidelink').style.backgroundColor = valid?'':'yellow';
+}
+
+//	-	-	-	-	-	-	-	-
+
 function markImage(image) {
 	current = readCookie('markedImages');
 	newtext = 'marked';

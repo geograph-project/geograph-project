@@ -421,20 +421,19 @@
 	{/foreach}
 </select></p>
 
+(Open <a href="/help/style" target="_blank" id="styleguidelink">Style Guide</a>)
 
-<p><label for="title"><b>Title</b> {if $moderated.title}<span class="moderatedlabel">(moderated)</span>{/if}</label> (<a href="/help/style" target="_blank">Open Style Guide</a>)<br/>
+<p><label for="title"><b>Title</b> {if $moderated.title}<span class="moderatedlabel">(moderated)</span>{/if}</label> <br/>
+ <span class="formerror" style="display:none" id="titlestyle">Possible style issue. See Guide above. <span id="titlestylet" style="font-size:0.9em"></span><br/></span>
 {if $error.title}<span class="formerror">{$error.title}</span><br/>{/if}
-<input type="text" id="title" name="title" size="50" value="{$image->title|escape:'html'}" title="Original: {$image->current_title|escape:'html'}" spellcheck="true"/>
+<input type="text" id="title" name="title" size="50" value="{$image->title|escape:'html'}" title="Original: {$image->current_title|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title',true);" onkeyup="checkstyle(this,'title',false);"/>
 </p>
-
-
-
 
 
 {if !$rastermap->enabled}
 {literal}
 <script type="text/javascript">
-<!--
+
 //rest loaded in geograph.js
 AttachEvent(window,'load',onChangeImageclass,false);
 
@@ -477,8 +476,9 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 
 <p><label for="comment"><b>Description</b> {if $moderated.comment}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
+ <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span><br/></span>
 {if $error.comment}<span class="formerror">{$error.comment}</span><br/>{/if}
-<textarea id="comment" name="comment" rows="7" cols="80" title="Original: {$image->current_comment|escape:'html'}" spellcheck="true">{$image->comment|escape:'html'}</textarea>
+<textarea id="comment" name="comment" rows="7" cols="80" title="Original: {$image->current_comment|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$image->comment|escape:'html'}</textarea>
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
 to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 </p>
