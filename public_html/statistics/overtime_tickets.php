@@ -108,7 +108,6 @@ GROUP BY $group_date" );
 	
 	$smarty->assign("h2title",$title);
 	$smarty->assign("total",count($table));
-	$smarty->assign_by_ref('references',$CONF['references_all']);	
 		
 	$extra = array();
 	foreach (array('month','week','date') as $key) {
