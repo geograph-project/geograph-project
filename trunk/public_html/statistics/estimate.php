@@ -77,7 +77,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql = "select completed as d ,count(*) as c from hectad_complete where completed > '$beginday' AND completed < '$today' $andri group by completed";
 	$sql2 = "select count(*) from hectad_complete $whereri";
 		
-	$hectad = calc($sql,$sql2,10000,'Hectads');
+	$hectad = calc($sql,$sql2,100,'Hectads');
 		
 	$smarty->assign("hectad",$hectad);
 	
