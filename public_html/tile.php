@@ -69,8 +69,8 @@ if (isset($_GET['map']))
 		$tt = new ThrottleToken($_GET['tt']);
 	} else {
 		customNoCacheHeader();       
-		header("HTTP/1.0 303 See Other");
-		header("Status: 303 See Other");
+		header("HTTP/1.0 307 Temporary Redirect");
+		header("Status: 307 Temporary Redirect");
 		
 		header("Location: /maps/login.png");
 		exit;
@@ -80,8 +80,8 @@ if (isset($_GET['map']))
 		//run out of credit!
 		
 		customNoCacheHeader();       
-		header("HTTP/1.0 303 See Other");
-		header("Status: 303 See Other");
+		header("HTTP/1.0 307 Temporary Redirect");
+		header("Status: 307 Temporary Redirect");
 		
 		header("Location: /maps/login.png");
 		exit;
