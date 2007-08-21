@@ -116,9 +116,24 @@ if (isset($_GET['coast_GB_40'])) {
 	$basemap = isset($_GET['base']);
 	$dummy = !isset($_GET['do']);
 	
-	$prefixes = $db->GetAll("select * from gridprefix");	
+	$prefixes = $db->GetAll("select * from gridprefix");
+	
+	list($usec, $sec) = explode(' ',microtime());
+	$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
+
+	
 	foreach($prefixes as $idx=>$prefix)
 	{
+		list($usec, $sec) = explode(' ',microtime());
+		$endtime = ((float)$usec + (float)$sec);
+		$timetaken = $endtime - $STARTTIME;
+
+		if ($timetaken > 15) {
+			//mysql might of closed the connection in the meantime
+			unset($mosaic->db);
+		}
+		
+	
 		print "<h3>{$prefix['prefix']}</h3>";flush();
 
 		$minx=$prefix['origin_x'];
@@ -137,6 +152,9 @@ if (isset($_GET['coast_GB_40'])) {
 		print "Deleted $count<br>";
 
 		$total += $count;
+		
+		list($usec, $sec) = explode(' ',microtime());
+		$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
 	
 	}
 	print "<h2>Total: $total</h2>";
