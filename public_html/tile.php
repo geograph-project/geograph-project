@@ -59,7 +59,7 @@ if (isset($_GET['map']))
 } elseif (isset($_GET['e']) && isset($_GET['n'])) {
 
 	//we need to silently load the session
-	session_cache_limiter('none');
+	customNoCacheHeader('',true);
 	
 	init_session();
 	
@@ -152,9 +152,9 @@ if (isset($_GET['map']))
 			$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 		
 			
-			$sql="select x,y,grid_reference,imagecount from gridsquare where 
+			$sql="select x,y,grid_reference,imagecount,percent_land from gridsquare where 
 				CONTAINS( GeomFromText($rectangle),	point_xy)
-				and imagecount>0 ";
+				and imagecount>0 or percent_land = 0";
 			
 			$arr = $db->getAll($sql);
 			
@@ -171,6 +171,7 @@ if (isset($_GET['map']))
 				$colMarker=imagecolorallocate($img, 255,255,255);
 				imagecolortransparent($img,$colMarker);
 				
+				$colSea=imagecolorallocate($img, 0,0,0);
 				$colBack=imagecolorallocate($img, 0,0,240);
 				
 				foreach ($arr as $i => $row) {
@@ -181,10 +182,14 @@ if (isset($_GET['map']))
 					$x2 = $part + ($x1 * $part2);
 					$y2 = $part + ($y1 * $part2);
 					
-					imagefilledellipse ($img,$x2,$y2,$s*strlen($row['imagecount']),$s,$colBack);
-					
-					imagestring($img, 5, $x2-2-$xd*strlen($row['imagecount'])/2, $y2-$yd, $row['imagecount'], $colMarker);	
+					if ($row['imagecount']) {
+						imagefilledellipse ($img,$x2,$y2,$s*strlen($row['imagecount']),$s,$colBack);
 
+						imagestring($img, 5, $x2-2-$xd*strlen($row['imagecount'])/2, $y2-$yd, $row['imagecount'], $colMarker);	
+					} 
+					if (!$row['percent_land']) {
+						imagestring($img, 5, $x2-2-$xd/2, $y2-$yd, 'X', $colSea);
+					}
 				}
 				header("Content-Type: image/png");
 				if ($memcache->valid) {
