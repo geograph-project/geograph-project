@@ -74,6 +74,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign("geograph",$geograph);
 	
 	
+	$sql = "select completed as d ,count(*) as c from hectad_complete where completed > '$beginday' AND completed < '$today' $andri group by completed";
+	$sql2 = "select count(*) from hectad_complete $whereri";
+		
+	$hectad = calc($sql,$sql2,10000,'Hectads');
+		
+	$smarty->assign("hectad",$hectad);
+	
+	
 	$sql = "select substring(crt_timestamp,1,10) as d ,count(*) as c from queries where crt_timestamp > '$beginday' AND crt_timestamp < '$today' group by substring(crt_timestamp,1,10)";
 	$sql2 = "select count(*) from queries";
 

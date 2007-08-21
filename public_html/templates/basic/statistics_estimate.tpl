@@ -27,6 +27,9 @@ for details of the various measures. Will be more accurate when limited to one c
 <h3>Images</h3>
 <p>We currently have {$image.count|thousends} images, therefore at the current rate of {$image.average_r} submissions a day, we will reach {$image.next|thousends} in about {$image.days_r} days time!</p>
 
+<h3>Hectads</h3>
+<p>We currently have {$hectad.count|thousends} completed hectads, therefore at the current rate of {$hectad.average_r} hectads a day, we will reach {$hectad.next|thousends} in about {$hectad.days_r} days time!</p>
+
 
 <hr/>
 
