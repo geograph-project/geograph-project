@@ -105,6 +105,9 @@ if (isset($_GET['map']))
 		$rastermap->width = $rastermap->tilewidth[$rastermap->service];
 
 		if ($_GET['l'] == 'o') {
+			if (isset($_GET['refresh']) && $_GET['refresh'] == 2 && $USER->hasPerm('admin'))
+				$rastermap->caching=false;
+	
 			$rastermap->returnImage();
 		} else {
 			$mustgenerate = false;
