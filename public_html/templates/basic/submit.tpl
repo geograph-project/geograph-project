@@ -345,7 +345,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 <script type="text/javascript" src="/categories.js.php"></script>
 {literal}
 <script type="text/javascript">
- /* <![CDATA[ */
+<!--
 //rest loaded in geograph.js
 function mouseOverImageClass() {
 	if (!hasloaded) {
@@ -368,7 +368,7 @@ function prePopulateImageclass2() {
 		document.getElementById('imageclass_enable_button').disabled = true;
 }
 AttachEvent(window,'load',onChangeImageclass,false);
-/* ]]> */
+//-->
 </script>
 {/literal}
 
