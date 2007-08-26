@@ -62,7 +62,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		where reference_index = $ri 
 		group by hunk_square 
 		having geograph_count > 0 
-		order by percentage desc,hunk_square");
+		order by percentage desc,land_count desc,hunk_square");
 		
 		$i = 1;
 		$lastgeographs = -1;
