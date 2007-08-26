@@ -33,8 +33,10 @@ if (isset($_GET['cloud'])) {
 
 $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
 
+$where = (isset($_GET['where']) && preg_match('/^[\w]{1,}$/',$_GET['where']))?$_GET['where']:'';
 
-$cacheid=$when;
+
+$cacheid=$when.'|'.$where;
 
 //regenerate?
 if (!$smarty->is_cached($template,$cacheid))
@@ -43,6 +45,7 @@ if (!$smarty->is_cached($template,$cacheid))
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
 	}
+	$andwhere = '';
 	
 	if ($when) {
 		if (strlen($when) == 7) {
@@ -55,6 +58,12 @@ if (!$smarty->is_cached($template,$cacheid))
 		$smarty->assign_by_ref('when',$when);
 		$smarty->assign('whenname',getFormattedDate($when));
 	}
+	if ($where) {
+		$andwhere .= " and grid_reference like '$where%'";
+		
+		$smarty->assign_by_ref('where',$where);
+	}
+	
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	
