@@ -429,9 +429,11 @@ if (isset($_POST['gridsquare']))
 				$smarty->clear_cache(null, "user$ab|{$USER->user_id}");
 				
 				if ($memcache->valid) {
+					//the submit list
 					$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by submitted desc limit 6");
 					$memcache->name_delete('gi',$mkey);
-					$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,");
+					//the browse page for the user (to show pending)
+					$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by ftf desc,gridimage_id");
 					$memcache->name_delete('gi',$mkey);
 				}
 				
