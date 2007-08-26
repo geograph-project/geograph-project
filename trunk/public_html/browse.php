@@ -362,7 +362,8 @@ if ($grid_given)
 			if (count($breakdown))
 				$smarty->assign_by_ref('breakdown', $breakdown);
 		} else {
-			$images=$square->getImages($USER->user_id,$custom_where);
+			//todo ideally here we only want to forward teh user_id IF they have images in the square, or a mod, for greater cachablity, but the chicken and the egg thingy....
+			$images=$square->getImages($USER->user_id,$custom_where,'order by ftf desc,gridimage_id');
 			$square->totalimagecount = count($images);
 		
 			//otherwise, lets gether the info we need to display some thumbs
