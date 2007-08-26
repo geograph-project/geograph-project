@@ -1688,9 +1688,8 @@ END;
 					$n=sprintf("%02d",($n+1)%100);
 				}
 			}
-		}		
+		}
 	}
-	
 
 
 	/**
@@ -1700,21 +1699,23 @@ END;
 	function& getGridArray($isimgmap = false)
 	{
 		global $memcache;
-		
+
 		if ($memcache->valid) {
+			//we only use cache imagemap as they invalidate correctly - and checksheets get smarty cached anyways
+
 			$mkey = $this->getImageFilename();
 			$mnamespace = $isimgmap?'mi':'mc';
 			$grid =& $memcache->name_get($mnamespace,$mkey);
 			if ($grid) {
 				return $grid;
 			}
+			$mperiod = $isimgmap?($memcache->period_long*4):($memcache->period_short);
 		}
-	
+
 		//figure out what we're mapping in internal coords
 		$db=&$this->_getDB();
 		
 		$grid=array();
-		
 
 		$left=$this->map_x;
 		$bottom=$this->map_y;
@@ -1775,15 +1776,15 @@ END;
 			
 			$recordSet->MoveNext();
 		}
-		$recordSet->Close(); 
+		$recordSet->Close();
 
 		if ($memcache->valid)
-			$memcache->name_set($mnamespace,$mkey,$grid,$memcache->compress,$memcache->period_long*4);
+			$memcache->name_set($mnamespace,$mkey,$grid,$memcache->compress,$mperiod);
 		
-		return $grid;	
-	}	
-	
-	
+		return $grid;
+	}
+
+
 	/**
 	 * get stored db object, creating if necessary
 	 * @access private
