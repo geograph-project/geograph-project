@@ -246,7 +246,7 @@
 			{if $isadmin or $isowner or ($user->user_id eq $ticket->user_id && $ticket->notify eq 'suggestor')}
 				{foreach from=$ticket->comments item=comment}
 				<div class="ticketnote">
-					<div class="ticketnotehdr">{$comment.realname} {if $comment.moderator}(Moderator){/if} wrote on {$comment.added|date_format:"%a, %e %b %Y at %H:%M"}</div>
+					<div class="ticketnotehdr">{$comment.realname} {if $comment.user_id == $image->user_id}(Photo Owner){/if}{if $comment.moderator}(Moderator){/if} wrote on {$comment.added|date_format:"%a, %e %b %Y at %H:%M"}</div>
 					{$comment.comment|escape:'html'|geographlinks}
 
 				</div>

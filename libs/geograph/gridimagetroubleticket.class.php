@@ -618,7 +618,7 @@ class GridImageTroubleTicket
 
 		//add comment to db
 		$sql=sprintf("insert into gridimage_ticket_comment(gridimage_ticket_id, user_id, comment, added) ".
-			"values(%d, %d, '%s', now())",
+			"values(%d, %d, %s, now())",
 			$this->gridimage_ticket_id,
 			$user_id,
 			$db->Quote($comment));
@@ -784,7 +784,7 @@ class GridImageTroubleTicket
 	 * owner comment is added to ticket and emailed to photo moderators
 	 * @access public
 	 */
-	function addSuggestorComment($user_id, $comment)
+	function addSuggesterComment($user_id, $comment)
 	{
 		$db=&$this->_getDB();
 		if (!$this->isValid())
