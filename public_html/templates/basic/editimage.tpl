@@ -183,7 +183,7 @@
 
 	{if $ticket->changes}
 
-		<div class="ticketfields">
+		<div class="ticketfields interestBox">
 		{foreach from=$ticket->changes item=item}
 			<div>
 			{assign var="editable" value=0}
@@ -215,13 +215,13 @@
 
 			{elseif $item.field eq "comment"}
 			  <br/>
-			  <span style="border:1px solid #dddddd{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldvalue|escape:'html'|default:'blank'}</span><br/>
+			  <span style="background-color:#eeeeee; border:1px solid #e9e9e9{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldvalue|escape:'html'|default:'blank'}</span><br/>
 			  to<br/>
-			  <span style="border:1px solid #dddddd">{$item.newvalue|escape:'html'|default:'blank'}</span>
+			  <span style="background-color:#eeeeee; border:1px solid #e9e9e9">{$item.newvalue|escape:'html'|default:'blank'}</span>
 			{else}
-			  <span style="border:1px solid #dddddd{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldvalue|escape:'html'|default:'blank'}</span>
+			  <span style="background-color:#eeeeee; border:1px solid #e9e9e9{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldvalue|escape:'html'|default:'blank'}</span>
 			  to 
-			  <span style="border:1px solid #dddddd">{$item.newvalue|escape:'html'|default:'blank'}</span>
+			  <span style="background-color:#eeeeee; border:1px solid #e9e9e9">{$item.newvalue|escape:'html'|default:'blank'}</span>
 			{/if}
 
 			{if $editable && $item.newvalue == $image->$field}
@@ -268,7 +268,7 @@
 	
 	{if ($isadmin or $isowner or ($ticket->user_id eq $user->user_id and $ticket->notify=='suggestor') ) and ($ticket->status ne "closed")}
 		{assign var="ticketsforcomments" value=1}
-	<div class="ticketactions">
+	<div class="ticketactions interestBox">
 		<div>&nbsp;<b>Add a reply to this ticket:</b></div>
 		<textarea name="comment" rows="4" cols="70"></textarea><br/>
 		
@@ -484,6 +484,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 </p>
 
 <br/>
+<div class="interestBox">
 <p>
 <label for="updatenote">&nbsp;<b>Please describe what's wrong or briefly why you have made the changes above...</b></label><br/>
 
@@ -532,7 +533,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 		<option value="everyone" {if $user->ticket_public eq 'everyone'} selected{/if}>Show my name against the ticket</option>
 	</select>
 {/if}
-
+</div>
 </form>
 {if $opentickets && !$error && $isowner}
 </div>
