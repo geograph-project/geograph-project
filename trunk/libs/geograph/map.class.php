@@ -1704,7 +1704,7 @@ END;
 			//we only use cache imagemap as they invalidate correctly - and checksheets get smarty cached anyways
 
 			$mkey = $this->getImageFilename();
-			$mnamespace = $isimgmap?'mi':'mc';
+			$mnamespace = $isimgmap?'mi':'ms';
 			$grid =& $memcache->name_get($mnamespace,$mkey);
 			if ($grid) {
 				return $grid;
