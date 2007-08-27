@@ -207,8 +207,12 @@ if (isset($_REQUEST['id']))
 			if ($ticket->gridimage_id != $image->gridimage_id)
 				die("ticket/image mismatch");
 			
-			$ticket->setNotify((!empty($_POST['notify']))?preg_replace('/[^\w]+/','',$_POST['notify']):'');
+			$issuggester=($ticket->user_id==$USER->user_id)?1:0;
+	
 			
+			if (!$issuggester) {
+				$ticket->setNotify((!empty($_POST['notify']))?preg_replace('/[^\w]+/','',$_POST['notify']):'');
+			}
 			
 			//now lets do our thing depending on your permission level..
 			$comment=stripslashes($_POST['comment']);
@@ -243,6 +247,15 @@ if (isset($_REQUEST['id']))
 				if (isset($_POST['addcomment']))
 				{
 					$ticket->addOwnerComment($USER->user_id, $comment);
+					#$smarty->assign("thankyou", "comment");
+				}
+			}
+			elseif ($issuggester)
+			{
+				//add comment to ticket
+				if (isset($_POST['addcomment']))
+				{
+					$ticket->addSuggesterComment($USER->user_id, $comment);
 					#$smarty->assign("thankyou", "comment");
 				}
 			}
@@ -395,12 +408,14 @@ if (isset($_REQUEST['id']))
 
 				//create new change control object
 				$ticket=new GridImageTroubleTicket();
-				$ticket->setSuggester($USER->user_id);
+				$ticket->setSuggester($USER->user_id,$USER->realname);
 				if ($isadmin && !empty($_REQUEST['mod']))
 					$ticket->setModerator($USER->user_id);
 
 				if (!empty($_REQUEST['type'])) 
 					$ticket->setType($_REQUEST['type']);
+				$ticket->setPublic($_REQUEST['public']);
+				
 				$ticket->setImage($_REQUEST['id']);
 				$ticket->setNotes($updatenote);
 

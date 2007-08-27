@@ -146,7 +146,7 @@
 	{if $ticket->type == 'minor'}
 		<u>Minor Changes</u>, 
 	{/if}
-	{if $isadmin}
+	{if $isadmin || $ticket->public eq 'everyone' || ($isowner && $ticket->public eq 'owner') }
 		Submitted by {$ticket->suggester_name} 
 		
 		{if $ticket->user_id eq $image->user_id}
@@ -164,7 +164,7 @@
 	{/if}
 
 	{if $ticket->user_id eq $user->user_id}
-		You
+		<b>You</b>
 	{/if}
 	
 	Suggested {$ticket->suggested|date_format:"%a, %e %b %Y at %H:%M"} 
@@ -266,7 +266,7 @@
 
 	</div>
 	
-	{if ($isadmin or $isowner) and ($ticket->status ne "closed")}
+	{if ($isadmin or $isowner or ($ticket->user_id eq $user->user_id and $ticket->notify=='suggestor') ) and ($ticket->status ne "closed")}
 		{assign var="ticketsforcomments" value=1}
 	<div class="ticketactions">
 		<div>&nbsp;<b>Add a reply to this ticket:</b></div>
@@ -281,8 +281,8 @@
 			<input type="hidden" name="claim" value="on"/>
 		{/if}
 		
-		{if $ticket->user_id ne $image->user_id}
-			<input type="checkbox" name="notify" value="suggestor" id="notify_suggestor" {if $ticket->notify=='suggestor'}checked="checked"{/if}/> <label for="notify_suggestor">Send {if $isadmin}{$ticket->suggester_name}{else}ticket suggestor{/if} this comment.</label>
+		{if $isowner || $isadmin}
+			<input type="checkbox" name="notify" value="suggestor" id="notify_suggestor" {if $ticket->notify=='suggestor'}checked="checked"{/if}/> <label for="notify_suggestor">Send {if $isadmin || $ticket->public eq 'everyone' || ($isowner && $ticket->public eq 'owner') }{$ticket->suggester_name}{else}ticket suggestor{/if} this comment.</label>
 			&nbsp;&nbsp;&nbsp;
 		{/if}
 		{if $isadmin}
@@ -323,7 +323,7 @@
 
 {if $opentickets && !$error && $isowner && $ticketsforcomments}
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
-	If you agree with the changes listed above, simply add a quick reply signifying that fact and the changes will be made in due course. However, if you want to make the changes straight away, or want to make other changes, use the form below. Also, if a ticket suggests an error but doesn't actually list the changes then it would help us if you were to make the changes using the form below.
+	If you agree with the changes suggested, please indicate your acceptance. If you disagree, please explain why you do not accept the changes. This will be helpful to the Moderator in making a decision. However, if you want to make the changes straight away, or want to make other changes, use the form below. If a ticket suggests an issue but doesn't actually list the changes then it would help us if you were to make the changes using the form below.
 </div>
 <br>
 <input type="button" value="Change Image Details Form &gt; &gt;" style="font-size:1.2em" onclick="this.style.display='none';document.getElementById('change_form_div').style.display=''"/>
@@ -470,7 +470,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	{html_select_date prefix="imagetaken" time=`$image->imagetaken` start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" day_value_format="%02d" month_value_format="%m"}
 	<br/><small>(please provide as much detail as possible, if you only know the year or month then that's fine)</small></p>
 {else}
-	<p><label><b>Date picture taken</b></label> <span class="moderatedlabel">(only changable by submitter)</span><br/>
+	<p><label><b>Date picture taken</b></label> <span class="moderatedlabel">(only changable by owner)</span><br/>
 	{html_select_date prefix="imagetaken" time=`$image->imagetaken` reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" day_value_format="%02d" month_value_format="%m" all_extra="disabled"}</p>
 {/if}
 
@@ -485,7 +485,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 
 <br/>
 <p>
-<label for="updatenote">&nbsp;<b>Please tell us what's wrong or briefly why you have made the changes above...</b></label><br/>
+<label for="updatenote">&nbsp;<b>Please describe what's wrong or briefly why you have made the changes above...</b></label><br/>
 
 {if $error.updatenote}<br/><span class="formerror">{$error.updatenote}</span><br/>{/if}
 
@@ -495,9 +495,8 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 
 <div style="float:left;font-size:0.7em;padding-left:5px;width:250px;">
 	Please provide as much detail for the moderator 
-	{if !$isowner} and submitter{/if} about 
-	any necessary change (if you know the details e.g. a corrected grid reference,
-	then please enter directly into the boxes above)
+	{if !$isowner} and photo owner{/if} about this suggestion as possible. 
+	Explaining the reasoning behind the suggestion will greatly help everyone in dealing with this ticket. 
 </div>
 
 </td></tr></table>
@@ -509,12 +508,12 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 <br style="clear:both"/>
 
 {if $isadmin}
-<div>
-<input type="radio" name="mod" value="" id="mod_blank" checked="checked"/> <label for="mod_blank">Create a new ticket to be moderated by someone else.</label><br/>
-<input type="radio" name="mod" value="assign" id="mod_assign"/> <label for="mod_assign">Create an open ticket and assign to myself. (give the Contributor a chance to respond)</label><br/>
-<input type="radio" name="mod" value="apply" id="mod_apply"/> <label for="mod_apply">Apply the changes immediately, and close the ticket. (Contributor is notified)</label></div>
+	<div>
+	<input type="radio" name="mod" value="" id="mod_blank" checked="checked"/> <label for="mod_blank">Create a new ticket to be moderated by someone else.</label><br/>
+	<input type="radio" name="mod" value="assign" id="mod_assign"/> <label for="mod_assign">Create an open ticket and assign to myself. (give the Contributor a chance to respond)</label><br/>
+	<input type="radio" name="mod" value="apply" id="mod_apply"/> <label for="mod_apply">Apply the changes immediately, and close the ticket. (Contributor is notified)</label></div>
 
-<br style="clear:both"/>
+	<br style="clear:both"/>
 {else}
 	{if $isowner} 
 	<div>
@@ -526,6 +525,13 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 <input type="submit" name="save" value="Submit Changes" onclick="autoDisable(this)"/>
 <input type="button" name="cancel" value="Cancel" onclick="document.location='/photo/{$image->gridimage_id}';"/>
 
+{if !$isowner && !$isadmin}
+&nbsp;	<select name="public">
+		<option value="no">Do not disclose my name</option>
+		<option value="owner" {if $user->ticket_public eq 'owner'} selected{/if}>Show my name to the photo owner</option>
+		<option value="everyone" {if $user->ticket_public eq 'everyone'} selected{/if}>Show my name against the ticket</option>
+	</select>
+{/if}
 
 </form>
 {if $opentickets && !$error && $isowner}
