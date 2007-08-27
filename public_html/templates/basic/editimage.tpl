@@ -183,7 +183,7 @@
 
 	{if $ticket->changes}
 
-		<div class="ticketfields interestBox">
+		<div class="ticketfields" style="padding-bottom:3px;margin-bottom:3px;border-bottom:1px solid gray">
 		{foreach from=$ticket->changes item=item}
 			<div>
 			{assign var="editable" value=0}
@@ -215,13 +215,13 @@
 
 			{elseif $item.field eq "comment"}
 			  <br/>
-			  <span style="background-color:#eeeeee; border:1px solid #e9e9e9{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldvalue|escape:'html'|default:'blank'}</span><br/>
+			  <span style="border:1px solid #dddddd{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldvalue|escape:'html'|default:'blank'}</span><br/>
 			  to<br/>
-			  <span style="background-color:#eeeeee; border:1px solid #e9e9e9">{$item.newvalue|escape:'html'|default:'blank'}</span>
+			  <span style="border:1px solid #dddddd">{$item.newvalue|escape:'html'|default:'blank'}</span>
 			{else}
-			  <span style="background-color:#eeeeee; border:1px solid #e9e9e9{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldvalue|escape:'html'|default:'blank'}</span>
+			  <span style="border:1px solid #dddddd{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldvalue|escape:'html'|default:'blank'}</span>
 			  to 
-			  <span style="background-color:#eeeeee; border:1px solid #e9e9e9">{$item.newvalue|escape:'html'|default:'blank'}</span>
+			  <span style="border:1px solid #dddddd">{$item.newvalue|escape:'html'|default:'blank'}</span>
 			{/if}
 
 			{if $editable && $item.newvalue == $image->$field}
