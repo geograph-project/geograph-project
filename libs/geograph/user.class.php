@@ -726,6 +726,7 @@ class GeographUser
 				age_group=%d,
 				use_age_group=%d,
 				home_gridsquare=%s,
+				ticket_public=%s,
 				ticket_option=%s,
 				message_sig=%s
 				where user_id=%d",
@@ -740,6 +741,7 @@ class GeographUser
 				$profile['age_group'],
 				$profile['use_age_group']?1:0,
 				$gs->gridsquare_id,
+				$db->Quote($profile['ticket_public']),
 				$db->Quote($profile['ticket_option']),
 				$db->Quote(stripslashes($profile['message_sig'])),
 				$this->user_id
@@ -775,10 +777,25 @@ class GeographUser
 				$this->age_group=stripslashes($profile['age_group']);
 				$this->use_age_group=stripslashes($profile['use_age_group']);
 				$this->grid_reference=$gs->grid_reference;	
-				$this->ticket_option=stripslashes($profile['ticket_option']);
+				$this->ticket_public=stripslashes($profile['ticket_public']);
+				$this->ticket_option=stripslashes($profile['ticket_option']);				
 				$this->message_sig=stripslashes($profile['message_sig']);
 				$this->_forumUpdateProfile();
 				
+				if (!empty($profile['ticket_public_change'])) {
+
+					$sql = sprintf("update gridimage_ticket set `public`=%s where user_id = %d",
+						$db->Quote($profile['ticket_public_change']),
+						$this->user_id
+						);
+
+					if ($db->Execute($sql) === false) 
+					{
+						$errors['general']='error updating: '.$db->ErrorMsg();
+						$ok=false;
+					}
+				}
+
 			}
 		
 		}

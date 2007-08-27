@@ -42,6 +42,7 @@ $newtickets=$db->GetAll(
 	left join gridimage_ticket_comment as c on (t.gridimage_ticket_id=c.gridimage_ticket_id)
 	where i.user_id = {$USER->user_id} and t.moderator_id=0
 	and c.gridimage_ticket_id IS NULL and t.status<>'closed'
+	group by t.gridimage_ticket_id
 	order by t.suggested");
 $smarty->assign_by_ref('newtickets', $newtickets);
 
@@ -55,6 +56,7 @@ $opentickets=$db->GetAll(
 	left join user as moderator on (moderator.user_id=t.moderator_id)
 	where i.user_id = {$USER->user_id} and t.status<>'closed'
 	and (t.moderator_id>0 or c.gridimage_ticket_id IS NOT NULL)
+	group by t.gridimage_ticket_id
 	order by t.updated");
 $smarty->assign_by_ref('opentickets', $opentickets);
 
@@ -68,7 +70,8 @@ $closedtickets=$db->GetAll(
 	left join user as moderator on (moderator.user_id=t.moderator_id)
 	where i.user_id = {$USER->user_id} and t.status='closed'
 	and t.updated > date_sub(now(),interval 30 day)
-	order by t.updated");
+	group by t.gridimage_ticket_id
+	order by t.updated desc");
 $smarty->assign_by_ref('closedtickets', $closedtickets);
 
 

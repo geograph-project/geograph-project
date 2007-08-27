@@ -1357,3 +1357,12 @@ ALTER TABLE `game_score` ADD `level` TINYINT NOT NULL AFTER `game_id` ;
 
 ALTER TABLE `game_image_score` ADD `level` TINYINT NOT NULL AFTER `game_id` ;
 
+
+
+
+ALTER TABLE `gridimage_ticket` ADD `public` ENUM( 'no', 'owner', 'everyone' ) NOT NULL DEFAULT 'everyone';
+UPDATE `gridimage_ticket` SET `public` = 'no';
+
+
+ALTER TABLE `user` ADD `ticket_public` ENUM( 'no', 'owner', 'everyone' ) NOT NULL DEFAULT 'everyone';
+UPDATE `user` SET `ticket_public` = 'no';

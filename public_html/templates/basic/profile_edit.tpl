@@ -172,6 +172,33 @@
 
 
 <div class="field"> 
+	<label for="ticket_public" class="nowrap">Ticket Anonymity</label>
+	
+	<select name="ticket_public" id="ticket_public">
+		<option value="no">Do not disclose my name</option>
+		<option value="owner" {if $profile->ticket_public eq 'owner'} selected{/if}>Show my name to the photo owner</option>
+		<option value="everyone" {if $profile->ticket_public eq 'everyone'} selected{/if}>Show my name against the ticket</option>
+	</select>
+	 
+	<div class="fieldnotes">Change how your name is disclosed on tickets your create from now on.</div>
+</div>
+
+
+<div class="field"> 
+	<label for="ticket_public_change" class="nowrap">Anonymity for previous tickets</label>
+	<br/>
+	<select name="ticket_public_change" id="ticket_public_change" style="margin-left:10em;">
+		<option value="">- no change - </option>
+		<option value="no">Do not disclose my name</option>
+		<option value="owner">Show my name to the photo owner</option>
+		<option value="everyone">Show my name against the ticket</option>
+	</select>
+	 
+	<div class="fieldnotes">Change how your name is disclosed on tickets you have already created.</div>
+</div>
+
+
+<div class="field"> 
 	<label for="ticket_option" class="nowrap">Trouble Ticket Emails</label>
 	
 	<select name="ticket_option" id="ticket_option" size="1"> 

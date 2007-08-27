@@ -152,6 +152,11 @@ class GridImageTroubleTicket
 	var $status;
 
 	/**
+	* is this ticket public
+	*/
+	var $public;
+
+	/**
 	* moderator notes
 	*/
 	var $notes;
@@ -214,9 +219,12 @@ class GridImageTroubleTicket
 	* set user id of suggesting user
 	* @access public
 	*/
-	function setSuggester($user_id)
+	function setSuggester($user_id,$realname = '')
 	{
 		$this->user_id=intval($user_id);
+		if (!empty($realname)) {
+			$this->suggester_name = $realname;
+		}
 	}
 
 	/**
@@ -254,6 +262,15 @@ class GridImageTroubleTicket
 	function setNotify($notify)
 	{
 		$this->notify=$notify;
+	}
+	
+	/**
+	* set public setting
+	* @access public
+	*/
+	function setPublic($public)
+	{
+		$this->public=$public;
 	}
 
 	/**
@@ -413,8 +430,8 @@ class GridImageTroubleTicket
 		if ($newticket)
 		{
 			//new ticket
-			$sql=sprintf("insert into gridimage_ticket(gridimage_id, suggested, updated,user_id, moderator_id, status, type, notes) ".
-				"values(%d, '%s', '%s', %d, %d, '%s', '%s', %s)",
+			$sql=sprintf("insert into gridimage_ticket(gridimage_id, suggested, updated,user_id, moderator_id, status, type, public, notes) ".
+				"values(%d, '%s', '%s', %d, %d, '%s', '%s', '%s', %s)",
 				$this->gridimage_id,
 				$this->suggested,
 				$this->updated,
@@ -422,6 +439,7 @@ class GridImageTroubleTicket
 				$this->moderator_id,
 				"pending",
 				$this->type,
+				$this->public,
 				$db->Quote($this->notes));
 			$db->Execute($sql);
 			$this->gridimage_ticket_id=$db->Insert_ID();
@@ -509,7 +527,13 @@ class GridImageTroubleTicket
 				//if suggester isn't the owner of the image, alert the owner too
 				if ($this->user_id != $img->user_id)
 				{
-					$comment = "A visitor to the site has suggested$ttype changes to this photo submission. ".
+					if ($this->public == 'no') {
+						$comment = "A visitor to the site";
+					} else {
+						$comment = $this->suggester_name;
+					}
+					
+					$comment .= " has suggested$ttype changes to this photo submission. ".
 						"The changes will be reviewed by site moderators, who may need to contact you ".
 						"if further information is required. If you wish, you can review and comment on these ".
 						"changes by following the links in this message. ";
@@ -540,7 +564,7 @@ class GridImageTroubleTicket
 						$comment="A site moderator has made minor modifications to this photo submission. ".
 							"You can review these changes by following the links in this message. ";
 					} else {
-						$comment="A site moderator has just modified this photo submission. ".
+						$comment="A site moderator has modified this photo submission. ".
 							"You can review these changes by following the links in this message. ";
 					}
 					if (!empty($changes))
@@ -597,7 +621,7 @@ class GridImageTroubleTicket
 			"values(%d, %d, '%s', now())",
 			$this->gridimage_ticket_id,
 			$user_id,
-			mysql_escape_string($comment));
+			$db->Quote($comment));
 		$db->Execute($sql);
 		
 		$this->_touch();
@@ -614,7 +638,7 @@ class GridImageTroubleTicket
 		$image=& $this->_getImage();
 		
 		$ttype = ($this->type == 'minor')?' Minor':'';
-		$msg['subject']="[Geograph]$ttype Changes to {$image->grid_reference} {$image->title} [#{$this->gridimage_ticket_id}]";
+		$msg['subject']="[Geograph]$ttype Suggestion for {$image->grid_reference} {$image->title} [#{$this->gridimage_ticket_id}]";
 		
 		$msg['body']="Re: {$image->grid_reference} {$image->title}\n";
 		$msg['body'].="http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$this->gridimage_id}\n";
@@ -637,7 +661,7 @@ class GridImageTroubleTicket
 	function _sendMail($to, &$msg)
 	{
 		mail($to, $msg['subject'], $msg['body'],
-				"From: Geograph DO NOT REPLY <lordelph@gmail.com>");
+				"From: Geograph - Reply Using Link <lordelph@gmail.com>");
 		
 	}
 	
@@ -755,7 +779,40 @@ class GridImageTroubleTicket
 		}
 	}
 	
+	/**
+	 * add a suggestor comment to existing ticket
+	 * owner comment is added to ticket and emailed to photo moderators
+	 * @access public
+	 */
+	function addSuggestorComment($user_id, $comment)
+	{
+		$db=&$this->_getDB();
+		if (!$this->isValid())
+			die("addSuggestorComment - bad ticket");
 	
+		$comment=trim($comment);
+		if (strlen($comment)==0)
+			return;
+		
+		$this->_addComment($user_id, $comment);
+		
+		if ($this->public != 'no') {
+			$suggestor=new GeographUser($user_id);
+			$comment.="\n\n".$suggestor->realname."\nTicket Suggestor\n";
+		}
+		
+		//email comment to moderators
+		$msg =& $this->_buildEmail($comment);
+		$this->_sendModeratorMail($msg);
+		
+		$image=& $this->_getImage();
+		$submitter=new GeographUser($image->user_id);		
+		
+		if ( ($submitter->ticket_option == 'all') || 
+			( ($this->type=='normal') && $submitter->ticket_option == 'major')
+			)
+			$this->_sendMail($submitter->email, $msg);
+	}	
 	
 	/**
 	 * ticket is closed, the comment is sent to owner and suggester
