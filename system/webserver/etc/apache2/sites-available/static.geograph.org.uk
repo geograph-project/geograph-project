@@ -30,14 +30,11 @@
         ExpiresByType image/jpeg "access plus 180 days"
         ExpiresByType text/css "access plus 180 days"
         ExpiresByType application/x-javascript "access plus 180 days"
-
-	AddOutputFilterByType DEFLATE text/css application/x-javascript
-
     </Directory>
 
     RewriteEngine on
 
-    RewriteRule ^/(.*)\.v[0-9]+\.(css|js)$ /$1.$2 [L]
+    RewriteRule ^/(.*)\.v[0-9]+\.(css|js)$ /staticfile.php [qsa,L]
 
     ErrorDocument 404 /error.php
     ErrorDocument 403 /error.php
