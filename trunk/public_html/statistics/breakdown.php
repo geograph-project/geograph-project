@@ -180,7 +180,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		$engine->criteria->searchdesc = preg_replace("/(, in [\w ]* order)/",'',$engine->criteria->searchdesc);
 		
-		$title .= "<i>{$engine->criteria->searchdesc}</i>";
+		$title .= "<i>".htmlentities2($engine->criteria->searchdesc)."</i>";
 		
 		//preserve input
 		$link .= "&amp;i=$i";
@@ -193,7 +193,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 		$profile=new GeographUser($u);
 		$smarty->assign_by_ref('profile', $profile);
-		$title .= " for ".($profile->realname);
+		$title .= " for ".htmlentities2($profile->realname);
 	}
 	$smarty->assign_by_ref('link', str_replace(' ','+',$link));
 	$smarty->assign_by_ref('h2title', $title);
