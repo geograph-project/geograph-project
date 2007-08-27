@@ -414,7 +414,7 @@ if (isset($_REQUEST['id']))
 
 				if (!empty($_REQUEST['type'])) 
 					$ticket->setType($_REQUEST['type']);
-				$ticket->setPublic($_REQUEST['public']);
+				$ticket->setPublic(isset($_REQUEST['public'])?$_REQUEST['public']:'everyone');
 				
 				$ticket->setImage($_REQUEST['id']);
 				$ticket->setNotes($updatenote);
