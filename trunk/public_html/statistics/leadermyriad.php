@@ -165,14 +165,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	foreach($topusers as $idx=>$entry)
 	{
 		if ($lastimgcount == $entry['imgcount']) {
-			if ($i > 200) { //|| ($type != 'only' && $entry['imgcount'] == 1)
+			if ($i > 200 || ($type == 'all' && $entry['imgcount'] == 1)) {
 				unset($topusers[$idx]);
 			} else {
 				$topusers[$idx]['ordinal'] = '&nbsp;&nbsp;&nbsp;&quot;';
 				$topusers[$idx]['myriads'] = implode(',', $entry['squares']);
 			}
 		} else {
-			if ($i > 200) {
+			if ($i > 200 || ($type == 'all' && $entry['imgcount'] == 1)) {
 				unset($topusers[$idx]);
 			} else {
 				$units=$i%10;
