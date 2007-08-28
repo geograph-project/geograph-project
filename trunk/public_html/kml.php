@@ -48,12 +48,18 @@ if (isset($_GET['id']))  {
 			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".intval($_GET['id']).".kml\">View file</a>";
 			exit;
 		}
-	
+		$version42plus = false;
+		if ($_GET['new']) {
+			$version42plus = true;
+		} 
+		//if (check version) {
+		//	$version42plus = true;
+		//}
 	
 		//when this image was modified
 		$mtime = strtotime($image->upd_timestamp);
 
-		customCacheControl($mtime,$image->gridimage_id);	
+		customCacheControl($mtime,$image->gridimage_id.'|'.$version42plus);	
 		
 		customExpiresHeader(3600*24*48,true);
 		
@@ -63,7 +69,7 @@ if (isset($_GET['id']))  {
 		//because we not loading from the search cache need to recalculate this
 		list($image->wgs84_lat,$image->wgs84_long) = $conv->gridsquare_to_wgs84($image->grid_square);
 		
-		$kml = new kmlFile($image->gridimage_id);
+		$kml = new kmlFile();
 		$kml->filename = "Geograph".$image->gridimage_id.".kml";
 
 		$point = new kmlPoint($image->wgs84_lat,$image->wgs84_long);
@@ -104,7 +110,11 @@ if (isset($_GET['id']))  {
 
 			$point2 = new kmlPoint($line['eLat'],$line['eLong']);
 
-			$placemark->addPhotographerPoint($point2,$image->view_direction,$image->realname);
+			if ($version42plus) {
+				$placemark->addPhotographerPhoto($point2,$image->view_direction,$image->realname,"http://".$_SERVER['HTTP_HOST'].$image->_getFullpath());
+			} else {
+				$placemark->addPhotographerPoint($point2,$image->view_direction,$image->realname);
+			}
 		} elseif (isset($image->view_direction) && strlen($image->view_direction) && $image->view_direction != -1) {
 			$placemark->addViewDirection($image->view_direction);
 		}
