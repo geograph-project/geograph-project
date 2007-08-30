@@ -79,6 +79,8 @@ if (isset($_GET['gridimage_id']))
 				//clear the users profile cache
 				$smarty->clear_cache('profile.tpl', "{$image->user_id}_0");
 				$smarty->clear_cache('profile.tpl', "{$image->user_id}_1");
+				
+				$memcache->name_delete('us',$image->user_id);
 			}
 		}
 		else
