@@ -7,9 +7,12 @@
 
 package net.brassedoff;
 
+import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
@@ -22,7 +25,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Vector;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.table.AbstractTableModel;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -39,6 +44,13 @@ import org.apache.commons.httpclient.methods.multipart.StringPart;
  */
 public class UploadManager extends javax.swing.JFrame implements ActionListener {
     
+    // define the popup menu
+    
+    JPopupMenu contextMenu = new JPopupMenu();
+    JMenuItem addLine = new JMenuItem("Add line");
+    JMenuItem editLine = new JMenuItem("Edit this line");
+    JMenuItem deleteLine = new JMenuItem("Delete this line");
+    
     Vector uploadData = new Vector();
     int [] fieldList = {1, 4, 10, 11};
     TableQueueModel tqm = new TableQueueModel();
@@ -46,6 +58,42 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
     /** Creates new form UploadManager */
     public UploadManager() {
         initComponents();
+        
+        // setup the popup context menu (the long way round)
+        
+        contextMenu.add(addLine);
+        addLine.setActionCommand("Add picture");
+        addLine.addActionListener(this);
+        
+        contextMenu.add(editLine);
+        editLine.setActionCommand("Change picture");
+        editLine.addActionListener(this);
+        
+        contextMenu.add(new JPopupMenu.Separator());
+        
+        contextMenu.add(deleteLine);
+        deleteLine.setActionCommand("Delete picture");
+        deleteLine.addActionListener(this);
+        
+        // we need a mouse listener for the menu...
+        
+        jScrollPane1.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent me) {
+                QueueMouseClick(me);
+            }
+           public void mouseReleased(MouseEvent me) {
+               QueueMouseClick(me);
+           }            
+        });
+        
+        tblQueue.addMouseListener(new MouseAdapter() {
+           public void mousePressed(MouseEvent me) {
+               QueueMouseClick(me);
+           } 
+           public void mouseReleased(MouseEvent me) {
+               QueueMouseClick(me);
+           }
+        });
         
         menuAboutAbout.addActionListener(this);
         tblQueue.setModel(tqm);
@@ -72,9 +120,20 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
         this.addWindowListener(new myWindowAdapter());
     }
     
+    private void QueueMouseClick(MouseEvent me) {
+        
+        // Don't allow the popup if there's no cache present
+        
+        if (me.isPopupTrigger() && !Main.noCache) {
+            // display the context menu
+            
+            contextMenu.show((Component) me.getSource(), me.getX(), me.getY());
+        }
+    }
+    
     private void ExitApp() {
         
-        // we're closing - dump the properties back to disk
+        // we're closing - dump the properties back to disk and save the image queue
         
         Properties propList = new Properties();
         propList.put("doresize", Main.doResize ? "true" : "false");
@@ -86,6 +145,9 @@ public class UploadManager extends javax.swing.JFrame implements ActionListener 
             Toolkit.getDefaultToolkit().beep();
             JOptionPane.showMessageDialog(null, "Error storing properties");
         }
+        
+        SaveQueue();
+        
         System.exit(0);        
     }
     
