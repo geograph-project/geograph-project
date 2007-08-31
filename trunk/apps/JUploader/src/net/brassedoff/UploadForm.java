@@ -66,6 +66,7 @@ public class UploadForm extends javax.swing.JDialog implements ActionListener {
         btnUpload.addActionListener(this);
         
         txtPhotographer.addKeyListener(new PhotographerKeyAdapter());
+        System.out.println("hello");
 
         // OK, I know I don't normally use anonymous inner classes...
         txtPhotographer.addFocusListener(new FocusAdapter() {
