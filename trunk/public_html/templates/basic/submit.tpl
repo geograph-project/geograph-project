@@ -417,7 +417,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 <p><label for="user_status">I wish to suggest supplemental classification:</label> <input type="checkbox" name="user_status" id="user_status" value="accepted" {if $user_status == "accepted"}checked="checked"{/if}/> (tick to apply)</p>
 
-<p>Only use this tick box if you believe the subject matter is not a 'geograph', there can be many geograph images per square, if you are unsure just leave it unticked and a moderator will decide. In either case a moderator will make the final classification.</p>
+<p>Only use this tick box if you believe the subject matter is not a 'geograph', if you are unsure just leave it unticked; the moderator will only use this box as a suggestion. Note: There can be many geograph images per square.</p>
 
 <p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in this <a href="http://www.geograph.org.uk/article/Geograph-or-supplemental" target="_blank">article on how images are moderated</a> (opens in new window).</span></p>
 </div>
