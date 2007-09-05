@@ -48,15 +48,14 @@ if (!empty($_SERVER['HTTP_ACCEPT_ENCODING'])) {
 		if ($version == 6 && !strstr($_SERVER['HTTP_USER_AGENT'], 'EV1')) 
 			$encoding = '';
 	}
+	if ($encoding) {
+		$cachename .= ".$encoding";
+		header ('Content-Encoding: '.$encoding);
+	}
 } else {
 	$encoding = '';
 }
 
-if ($encoding) {
-	$cachename .= ".$encoding";
-}
-
-header ('Content-Encoding: '.$encoding);
 header ('Vary: Accept-Encoding');
 
 //an important note here, the cache lives FOREVER!

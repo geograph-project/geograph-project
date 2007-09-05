@@ -1366,3 +1366,31 @@ UPDATE `gridimage_ticket` SET `public` = 'no';
 
 ALTER TABLE `user` ADD `ticket_public` ENUM( 'no', 'owner', 'everyone' ) NOT NULL DEFAULT 'everyone';
 UPDATE `user` SET `ticket_public` = 'no';
+
+
+
+CREATE TABLE `gridimage_recent` (
+  `gridimage_id` int(11) NOT NULL default '0',
+  `user_id` int(11) NOT NULL default '0',
+  `moderation_status` enum('rejected','pending','accepted','geograph') default NULL,
+  `title` varchar(128) default NULL,
+  `submitted` datetime default NULL,
+  `imageclass` varchar(32) NOT NULL default '',
+  `imagetaken` date NOT NULL default '0000-00-00',
+  `upd_timestamp` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `x` smallint(3) NOT NULL default '0',
+  `y` smallint(4) NOT NULL default '0',
+  `grid_reference` varchar(6) NOT NULL default '',
+  `realname` varchar(128) NOT NULL default '',
+  `reference_index` tinyint(1) NOT NULL default '0',
+  `comment` text,
+  `wgs84_lat` decimal(10,6) NOT NULL default '0.000000',
+  `wgs84_long` decimal(10,6) NOT NULL default '0.000000',
+  `ftf` tinyint(3) unsigned NOT NULL default '0',
+  `seq_no` smallint(5) unsigned NOT NULL default '0',
+  `point_xy` point NOT NULL default '',
+  `point_ll` point NOT NULL default '',
+  `recent_id` int(3) unsigned NOT NULL auto_increment,
+  PRIMARY KEY  (`recent_id`),
+  UNIQUE KEY `gridimage_id` (`gridimage_id`)
+) ENGINE=MyISAM ;
