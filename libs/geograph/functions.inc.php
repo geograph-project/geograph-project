@@ -416,29 +416,29 @@ function customCacheControl($mtime,$uniqstr,$useifmod = true,$gmdate_mod = 0) {
 		$uniqstr .= $encoding;
 	}
 	
-	$hash = md5($mtime.'-'.$uniqstr);
+	$hash = "\"".md5($mtime.'-'.$uniqstr)."\"";
 
 	
 	if(isset($_SERVER['HTTP_IF_NONE_MATCH'])) { // check ETag
 		if($_SERVER['HTTP_IF_NONE_MATCH'] == $hash ) {
 			header("HTTP/1.0 304 Not Modified");
-			header ("Etag: \"$hash\""); 
+			header ("Etag: $hash"); 
 			header('Content-Length: 0'); 
 			exit;
 		}
 		
 		//also check legacy Etag
-		$hash2 = $mtime.'-'.md5($uniqstr);
+		$hash2 = "\"".$mtime.'-'.md5($uniqstr)."\"";
 		
 		if($_SERVER['HTTP_IF_NONE_MATCH'] == $hash2 ) {
 			header("HTTP/1.0 304 Not Modified");
-			header ("Etag: \"$hash2\""); 
+			header ("Etag: $hash2"); 
 			header('Content-Length: 0'); 
 			exit;
 		}
 	}	
 
-	header ("Etag: \"$hash\""); 
+	header ("Etag: $hash"); 
 
 	if (!$gmdate_mod)
 		$gmdate_mod = gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
@@ -456,14 +456,18 @@ function customCacheControl($mtime,$uniqstr,$useifmod = true,$gmdate_mod = 0) {
 	header("Last-Modified: $gmdate_mod");
 }
 
-function customNoCacheHeader($type = 'nocache') {
+function customNoCacheHeader($type = 'nocache',$disable_auto = false) {
 	//none/nocache/private/private_no_expire/public
 	if ($type == 'nocache') {
 		header("Cache-Control: no-store, no-cache, must-revalidate");  // HTTP/1.1 
 		header("Cache-Control: post-check=0, pre-check=0", false); 
 		header("Pragma: no-cache"); 
 		customExpiresHeader(-1);
-	} 
+	} 	
+	if ($disable_auto) {
+		//call to disable the auto session one, could then call another here if needbe
+		session_cache_limiter('none');
+	}
 }
 
 function customExpiresHeader($diff,$public = false) {
