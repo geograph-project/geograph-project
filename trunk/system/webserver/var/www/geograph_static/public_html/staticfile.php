@@ -60,7 +60,10 @@ header ('Vary: Accept-Encoding');
 
 //an important note here, the cache lives FOREVER!
 
-$mtime = @filemtime($cachename);
+if (($mtime = apc_fetch("d$cachename")) === FALSE) {
+	$mtime = @filemtime($cachename);
+	apc_store("d$cachename",$mtime,360000);
+}
 
 if (!$mtime) {
 	copy(".$filename",$cachename);
@@ -72,6 +75,7 @@ if (!$mtime) {
 	}
 	
 	$mtime = @filemtime($cachename);
+	apc_store("d$cachename",$mtime,3600);
 } 
 
 customExpiresHeader(3600*24*180,true);
@@ -83,9 +87,20 @@ if (strpos($cachename,'css') !== FALSE) {
 	header("Content-type: application/x-javascript");
 }
 
-header('Content-length: '.filesize($cachename));
+if (($fsize = apc_fetch("s$cachename")) === FALSE) {
+        $fsize = filesize($cachename);
+        apc_store("s$cachename",$fsize,360000);
+}
 
-readfile($cachename);
+header('Content-length: '.$fsize);
+
+if (($contents = apc_fetch("c$cachename")) === FALSE) {
+	apc_store("c$cachename",implode('',file($cachename)),360000);
+	readfile($cachename);
+} else {
+	echo $contents;
+}
+
 exit;
 
 
@@ -99,7 +114,7 @@ function customCacheControl($mtime,$uniqstr,$useifmod = true,$gmdate_mod = 0) {
 		$uniqstr .= $encoding;
 	}
 	
-	$hash = "\"".md5($mtime.'-'.$uniqstr)."\"";
+	$hash = "\"".crc32($mtime.'-'.$uniqstr)."\"";
 
 	
 	if(isset($_SERVER['HTTP_IF_NONE_MATCH'])) { // check ETag
