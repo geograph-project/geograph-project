@@ -2,6 +2,12 @@
 
 $p = $_SERVER['REQUEST_URI'];
 
+if (preg_match('/(ie|ff)\.gif$/',$p)) {
+        //you can just go away - Gmaps seem to lookup these urls via GGeoXML for somereason...
+        header('Content-Length: 0');
+        exit;
+}
+
 #http://s1.www.geograph.org.uk/photos/50/64/506453_c5b9915b_120x120.jpg
 if (preg_match('/^\/photos\/(\d{2})\/(\d{2})\/\d{6}_\w+\.jpg$/',$p,$m)) {
 
