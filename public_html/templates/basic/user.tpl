@@ -15,7 +15,9 @@
 	<h3>Submitting in {$where} Myriad</h3>
 {/if}
 <ul style="font-size:0.7em"><li>The bigger the text the more images contributed</li>
-<li>You can also click a nickname to see the users profile.</li></ul>
+<li>You can also click a nickname to see the users profile.</li>
+<li>Note: This is not a complete list of contributors, as it only includes members who have set a Nickname in their profile.</li>
+</ul>
 
 <p class="wordnet" align="justify"> 
 {foreach from=$users key=nick item=obj}
