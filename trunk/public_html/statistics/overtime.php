@@ -129,9 +129,13 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 FROM `gridimage_search` $where_sql
 GROUP BY $group_date" );
-	foreach($table as $idx=>$entry)
+
+	if (!isset($_GET['output']) || $_GET['output'] != 'csv') 
 	{
-		$table[$idx]['Date'] = getFormattedDate($table[$idx]['Date']);
+		foreach($table as $idx=>$entry)
+		{
+			$table[$idx]['Date'] = getFormattedDate($table[$idx]['Date']);
+		}
 	}
 	
 	$smarty->assign_by_ref('table', $table);
