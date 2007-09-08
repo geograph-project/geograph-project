@@ -68,7 +68,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign_by_ref('profile', $profile);
 		$title .= " for ".($profile->realname);
 	} else {
-		$columns_sql = ", count( DISTINCT poster_id ) AS `Different Users`";
+		$columns_sql = ", count( DISTINCT poster_id ) AS `Different Posters`";
 	}
 	if (count($where))
 		$where_sql = " WHERE ".join(' AND ',$where);
@@ -82,9 +82,13 @@ if (!$smarty->is_cached($template, $cacheid))
 	$columns_sql
 FROM `geobb_posts` $where_sql
 GROUP BY substring( post_time, 1, $length )" );
-	foreach($table as $idx=>$entry)
+
+	if (!isset($_GET['output']) || $_GET['output'] != 'csv') 
 	{
-		$table[$idx]['Date'] = getFormattedDate($table[$idx]['Date']);
+		foreach($table as $idx=>$entry)
+		{
+			$table[$idx]['Date'] = getFormattedDate($table[$idx]['Date']);
+		}
 	}
 	
 	$smarty->assign_by_ref('table', $table);

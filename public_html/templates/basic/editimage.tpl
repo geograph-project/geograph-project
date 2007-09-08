@@ -147,7 +147,7 @@
 		<u>Minor Changes</u>, 
 	{/if}
 	{if $isadmin || $ticket->public eq 'everyone' || ($isowner && $ticket->public eq 'owner') }
-		Submitted by {$ticket->suggester_name} 
+		Submitted {if $ticket->public ne 'everyone'}anonymously{/if} by {$ticket->suggester_name} 
 		
 		{if $ticket->user_id eq $image->user_id}
 		  (photo owner)
