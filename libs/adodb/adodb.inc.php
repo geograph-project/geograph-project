@@ -1672,7 +1672,7 @@
 		} else {
 			$mode = $this->fetchMode;
 		}
-		$m = md5($sql.$this->databaseType.$this->database.$this->user.$mode);
+		$m = md5(preg_replace('/^\/\*.+?\*\/\s*/','',$sql).$this->databaseType.$this->database.$this->user.$mode);
 		if ($memcache) return $m;
 		
 		if (!isset($notSafeMode)) $notSafeMode = !ini_get('safe_mode');

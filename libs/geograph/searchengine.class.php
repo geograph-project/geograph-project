@@ -143,9 +143,9 @@ class SearchEngine
 				// construct the count query sql
 				if (preg_match("/group by ([\w\,\(\)\/ ]+)/i",$sql_where,$matches)) {
 					$sql_where2 = preg_replace("/group by ([\w\,\(\)\/ ]+)/i",'',$sql_where);
-					$sql = "SELECT count(DISTINCT {$matches[1]}) FROM gridimage AS gi $count_from $sql_from WHERE $sql_where2";
+					$sql = "/* i{$this->query_id} */ SELECT count(DISTINCT {$matches[1]}) FROM gridimage AS gi $count_from $sql_from WHERE $sql_where2";
 				} else {
-					$sql = "SELECT count(*) FROM gridimage AS gi $count_from $sql_from WHERE $sql_where";
+					$sql = "/* i{$this->query_id} */ SELECT count(*) FROM gridimage AS gi $count_from $sql_from WHERE $sql_where";
 				}
 				if (!empty($_GET['debug']))
 					print "<BR><BR>$sql";
@@ -167,7 +167,7 @@ class SearchEngine
 			$sql_order = "ORDER BY $sql_order";
 	// construct the query sql
 $sql = <<<END
-SELECT gi.*,x,y,gs.grid_reference,user.realname $sql_fields $extra_fields
+/* i{$this->query_id} */ SELECT gi.*,x,y,gs.grid_reference,user.realname $sql_fields $extra_fields
 FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 	INNER JOIN user ON(gi.user_id=user.user_id)
 	$sql_from
@@ -255,9 +255,9 @@ END;
 				// construct the count sql
 				if (preg_match("/group by ([\w\,\(\)\/ ]+)/i",$sql_where,$matches)) {
 					$sql_where2 = preg_replace("/group by ([\w\,\(\)\/ ]+)/i",'',$sql_where);
-					$sql = "SELECT count(DISTINCT {$matches[1]}) FROM gridimage_search as gi $sql_from $sql_where2";
+					$sql = "/* i{$this->query_id} */ SELECT count(DISTINCT {$matches[1]}) FROM gridimage_search as gi $sql_from $sql_where2";
 				} else {
-					$sql = "SELECT count(*) FROM gridimage_search as gi $sql_from $sql_where";
+					$sql = "/* i{$this->query_id} */ SELECT count(*) FROM gridimage_search as gi $sql_from $sql_where";
 				}
 				if (!empty($_GET['debug']))
 					print "<BR><BR>$sql";
@@ -279,7 +279,7 @@ END;
 			$sql_order = "ORDER BY $sql_order";
 	// construct the query sql
 $sql = <<<END
-SELECT gi.* $sql_fields
+/* i{$this->query_id} */ SELECT gi.* $sql_fields
 FROM gridimage_search as gi $sql_from
 $sql_where
 $sql_order
