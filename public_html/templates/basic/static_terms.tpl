@@ -2,16 +2,16 @@
 
  <h2>Terms of use, the quick version</h2>
 
- <p>Lawyers, eh? This is an entirely volunteer run project and our terms can
+ <p>Lawyers, eh? Geograph Project Ltd's terms of use for the www.geograph.org.uk website can
  be boiled down to the following</p>
  <ul>
  <li><b>We'll do no evil</b> - we'll not sell your personal details to
  spammers or abuse the copyright on your submissions.</li>
- <li><b>We want you to do no evil too</b>. Don't spider or
+ <li><b>We want you to do no evil to us</b>. Don't spider or
  leech the site, and be polite on the forums. Make sure you own the
- copyright on the images you submit.</li>
+ copyright on the images you submit and check the accuracy of the information you supply and/or choose to use.</li>
  <li>If evil has been done, <b>you agree not to come after us with a
- pack of lawyers</b>. We're just volunteers trying to build something worthwhile.
+ pack of lawyers</b>. We're just trying to build something worthwhile.
  <a href="/contact.php">Contact us</a> with your concerns.</li>
 
  </ul>
