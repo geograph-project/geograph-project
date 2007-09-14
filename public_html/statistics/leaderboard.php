@@ -195,15 +195,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			if ($i > $limit) {
 				unset($topusers[$idx]);
 			} else {
-				$units=$i%10;
-				switch($units)
-				{
-					case 1:$end=($i==11)?'th':'st';break;
-					case 2:$end=($i==12)?'th':'nd';break;
-					case 3:$end=($i==13)?'th':'rd';break;
-					default: $end="th";	
-				}
-				$topusers[$idx]['ordinal']=$i.$end;
+				$topusers[$idx]['ordinal'] = smarty_function_ordinal($i);
 			}
 			$lastimgcount = $entry['imgcount'];
 			$lastrank = $i;

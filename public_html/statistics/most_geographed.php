@@ -81,17 +81,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			if ($lastgeographs == $most[$id]['percentage'])
 				$most[$id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
 			else {
-
-				$units=$i%10;
-				switch($units)
-				{
-					case 1:$end=($i==11)?'th':'st';break;
-					case 2:$end=($i==12)?'th':'nd';break;
-					case 3:$end=($i==13)?'th':'rd';break;
-					default: $end="th";	
-				}
-
-				$most[$id]['ordinal']=$i.$end;
+				$most[$id]['ordinal'] = smarty_function_ordinal($i);
 				$lastgeographs = $most[$id]['percentage'];
 			}
 			$i++;
@@ -118,17 +108,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			if ($lastgeographs == $onekm[$id]['imagecount'])
 				$onekm[$id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
 			else {
-
-				$units=$i%10;
-				switch($units)
-				{
-					case 1:$end=($i==11)?'th':'st';break;
-					case 2:$end=($i==12)?'th':'nd';break;
-					case 3:$end=($i==13)?'th':'rd';break;
-					default: $end="th";	
-				}
-
-				$onekm[$id]['ordinal']=$i.$end;
+				$onekm[$id]['ordinal'] = smarty_function_ordinal($i);
 				$lastgeographs = $onekm[$id]['imagecount'];
 			}
 			$i++;
