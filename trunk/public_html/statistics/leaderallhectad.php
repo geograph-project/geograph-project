@@ -134,7 +134,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($type == 'every') {
 		$desc = "hectads contributed to every square";
 	} elseif ($type == 'most') {
-		$desc = "hectads where they are the largest contributor";
+		$desc = "hectads where they are the contributor to the most squares";
 	} 
 	
 	

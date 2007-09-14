@@ -5,7 +5,7 @@
 <h2>All Hectad Leaderboard :: {$type|capitalize}</h2>
 
 <p>Variation: {foreach from=$types item=t}
-[{if $t == $type}<b>{$type}</b>{else}<a href="leaderhectad.php?type={$t}">{$t}</a>{/if}]
+[{if $t == $type}<b>{$type}</b>{else}<a href="leaderallhectad.php?type={$t}">{$t}</a>{/if}]
 {/foreach}</p>
 
 <p>Listed below are the top 200 contributors based on number of
