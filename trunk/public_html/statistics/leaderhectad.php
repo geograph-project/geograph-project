@@ -106,29 +106,39 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 		} elseif ($type == 'all') {
 			foreach ($users as $i => $user) {
+				if ($user['count'] == $hectad['land_count']) {
+					$land_count = $hectad['land_count'];
+				} else {
+					$land_count = $user['count'].'/'.$hectad['land_count'];
+				}
 				if (isset($topusers[$user['user_id']])) {
 					$topusers[$user['user_id']]['imgcount']++;
-					$topusers[$best['user_id']]['bigesthectad'] = max($topusers[$user['user_id']]['bigesthectad'],$hectad['land_count']);
-					array_push($topusers[$user['user_id']]['squares'],$hectad['tenk_square']."[".$hectad['land_count']."]");
+					$topusers[$user['user_id']]['bigesthectad'] = max($topusers[$user['user_id']]['bigesthectad'],$hectad['land_count']);
+					array_push($topusers[$user['user_id']]['squares'],$hectad['tenk_square']."[".$land_count."]");
 				} else {
 					$topusers[$user['user_id']] = $user;
 					$topusers[$user['user_id']]['imgcount'] = 1;
-					$topusers[$best['user_id']]['bigesthectad'] = $hectad['land_count'];
-					$topusers[$user['user_id']]['squares'] = array($hectad['tenk_square']."[".$hectad['land_count']."]");
+					$topusers[$user['user_id']]['bigesthectad'] = $hectad['land_count'];
+					$topusers[$user['user_id']]['squares'] = array($hectad['tenk_square']."[".$land_count."]");
 				}
 			}
 		}
 		
 		if (count($best_user)) {
+			if ($best_user['count'] == $hectad['land_count']) {
+				$land_count = $hectad['land_count'];
+			} else {
+				$land_count = $best_user['count'].'/'.$hectad['land_count'];
+			}
 			if (isset($topusers[$best_user['user_id']])) {
 				$topusers[$best_user['user_id']]['imgcount']++;
 				$topusers[$best_user['user_id']]['bigesthectad'] = max($topusers[$best_user['user_id']]['bigesthectad'],$hectad['land_count']);
-				array_push($topusers[$best_user['user_id']]['squares'],$hectad['tenk_square']."[".$hectad['land_count']."]");
+				array_push($topusers[$best_user['user_id']]['squares'],$hectad['tenk_square']."[".$land_count."]");
 			} else {
 				$topusers[$best_user['user_id']] = $best_user;
 				$topusers[$best_user['user_id']]['imgcount'] = 1;
 				$topusers[$best_user['user_id']]['bigesthectad'] = $hectad['land_count'];
-				$topusers[$best_user['user_id']]['squares'] = array($hectad['tenk_square']."[".$hectad['land_count']."]");
+				$topusers[$best_user['user_id']]['squares'] = array($hectad['tenk_square']."[".$land_count."]");
 			}
 		}
 	}
