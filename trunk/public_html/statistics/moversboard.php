@@ -180,17 +180,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($lastgeographs == $entry['geographs'])
 			$topusers[$user_id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
 		else {
-			
-			$units=$i%10;
-			switch($units)
-			{
-				case 1:$end=($i==11)?'th':'st';break;
-				case 2:$end=($i==12)?'th':'nd';break;
-				case 3:$end=($i==13)?'th':'rd';break;
-				default: $end="th";	
-			}
-
-			$topusers[$user_id]['ordinal']=$i.$end;
+			$topusers[$user_id]['ordinal'] = smarty_function_ordinal($i);
 			$lastgeographs = $entry['geographs'];
 		}
 		$i++;
