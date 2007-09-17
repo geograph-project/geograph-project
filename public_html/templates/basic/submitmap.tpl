@@ -2,8 +2,8 @@
 {include file="_std_begin.tpl"}
 
 {literal}
-<script type="text/javascript" src="http://s0.geograph.mobile/mapper/geotools2.js"></script>
-	<script type="text/javascript" src="http://s0.geograph.mobile/mappingG.v1190064943.js"></script>
+<script type="text/javascript" src="http://s0.{$http_host}/mapper/geotools2.js"></script>
+	<script type="text/javascript" src="http://s0.{$http_host}/mappingG.v{$javascript_version}.js"></script>
 	<script type="text/javascript">
 	//<![CDATA[
 		var issubmit = 1;
