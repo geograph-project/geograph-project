@@ -7,7 +7,7 @@
     <li><a title="Find images" href="/search.php">Search</a> / <a title="Explore Images by Theme" href="/explore/">Explore</a></li>
     <li><a title="View map of all submissions" href="/mapbrowse.php">Map Viewer</a></li>
     <li><a title="Submit" href="/submit.php">Submit</a></li>
-    <li><a title="Discuss" href="/discuss/">Discuss</a></li>
+    <li><a title="Discuss" href="/discuss/">Discuss</a> / <a href="/chat/">Chat</a></li>
     <li><a title="Articles" href="/article/">Articles</a></li>
     <li><a title="Statistics" href="/numbers.php">Statistics</a></li>
     <li><a title="Leaderboard" href="/statistics/moversboard.php">Leaderboard</a></li>
