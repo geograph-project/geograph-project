@@ -10,9 +10,41 @@
 		var issubmit = 1;
 		var themarker;
 		
+		//the google map object
+		var map;
+
+		//the geocoder object
+		var geocoder;
+		var running = false;
+
+		function showAddress(address) {
+			if (!geocoder) {
+				 geocoder = new GClientGeocoder();
+			}
+			if (geocoder) {
+				geocoder.getLatLng(address,function(point) {
+					if (!point) {
+						alert("Your entry '" + address + "' could not be geocoded, please try again");
+					} else {
+						if (themarker) {
+							themarker.setPoint(point);
+							GEvent.trigger(themarker,'drag');
+
+						} else {
+							themarker = createMarker(point,null);
+							map.addOverlay(themarker);
+
+							GEvent.trigger(themarker,'drag');
+						}
+						map.setCenter(point, 12);
+					}
+				 });
+			}
+		}
+
 		function loadmap() {
 			if (GBrowserIsCompatible()) {
-				var map = new GMap2(document.getElementById("map"));
+				map = new GMap2(document.getElementById("map"));
 				map.addControl(new GLargeMapControl());
 				map.addControl(new GMapTypeControl(true));
 				
@@ -59,8 +91,11 @@
 <input type="submit" value="Step 2 &gt; &gt;"/></p>
 
 <div id="map" style="width:600px; height:500px">Loading map...</div><br/>			
-			
 
+     <p>Enter Address or Postcode: 
+        <input type="text" size="50" id="addressInput" name="address" value="" />
+        <input type="button" value="Find" onclick="showAddress(this.form.address.value)"/> (Google Maps API Geocoder)
+      </p>
 
 <input type="hidden" name="gridsquare" value=""/>
 <input type="hidden" name="setpos" value=""/>
