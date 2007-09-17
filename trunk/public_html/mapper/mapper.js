@@ -82,9 +82,12 @@ function showGridRef(evt) {
 	}
 }
 
+String.prototype.trim = function () {
+	return this.replace(/^\s+|\s+$/g,"");
+}
 
 function parseLocation() {
-	var coordstr = document.getElementById('coordin').value;
+	var coordstr = document.getElementById('coordin').value.trim().toUpperCase();
 	var coord = new GT_OSGB();
 	if(coord.parseGridRef(coordstr)) {
 		ll = new OpenLayers.LonLat(coord.eastings, coord.northings);

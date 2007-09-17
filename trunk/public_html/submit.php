@@ -534,7 +534,12 @@ if (isset($_POST['gridsquare']))
 			require_once('geograph/rastermap.class.php');
 
 			$rastermap = new RasterMap($square,true);
-			if (isset($_POST['view_direction']) && strlen($_POST['view_direction']) && $_POST['view_direction'] != -1) {
+			
+			if (isset($_POST['photographer_gridref'])) {
+				$square2=new GridSquare;
+				$ok= $square2->setByFullGridRef($_POST['photographer_gridref']);
+				$rastermap->addViewpoint($square2->nateastings,$square2->natnorthings,$square2->natgrlen,$_POST['view_direction']);
+			} elseif (isset($_POST['view_direction']) && strlen($_POST['view_direction']) && $_POST['view_direction'] != -1) {
 				$rastermap->addViewDirection($_POST['view_direction']);
 			}
 			$smarty->assign_by_ref('rastermap', $rastermap);

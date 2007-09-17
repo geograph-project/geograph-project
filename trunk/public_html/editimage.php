@@ -524,6 +524,13 @@ if (isset($_REQUEST['id']))
 		} elseif (isset($image->view_direction) && strlen($image->view_direction) && $image->view_direction != -1) {
 			$rastermap->addViewDirection($image->view_direction);
 		}
+		require_once('geograph/conversions.class.php');
+		$conv = new Conversions;
+		list($lat,$long) = $conv->gridsquare_to_wgs84($image->grid_square);
+		$smarty->assign('lat', $lat);
+		$smarty->assign('long', $long);
+		$rastermap->addLatLong($lat,$long);
+
 		$smarty->assign_by_ref('rastermap', $rastermap);
 
 		//build a list of view directions
