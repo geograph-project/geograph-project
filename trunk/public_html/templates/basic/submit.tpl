@@ -375,7 +375,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 <p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
 	<br/><span class="formerror">{$error.imageclass}</span>
 	{/if}<br />	
-	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onfocus="prePopulateImageclass()" onmouseover="mouseOverImageClass()">
+	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onfocus="prePopulateImageclass()" onmouseover="mouseOverImageClass()" style="width:300px">
 		<option value="">--please select feature--</option>
 		{if $imageclass}
 			<option value="{$imageclass}" selected="selected">{$imageclass}</option>

@@ -121,7 +121,8 @@
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?facebook\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?blogspot\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?livejournal\.com/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?28dayslater\.co\.uk/ [NC]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?28dayslater\.co\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?secretscotland\.org\.uk/ [NC]
     RewriteRule /photos/.*\.jpg$ /stuff/nohotlink.php [L]
 
 <Location /sitemap/>

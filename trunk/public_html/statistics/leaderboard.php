@@ -94,6 +94,12 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_where = "1";
 		$heading = "G-Points";
 		$desc = "test points";
+	} elseif ($type == 'reverse_points') {
+		$sql_column = "count(*) as images, count(*)/(sum(ftf=1)+1)";
+		$sql_where = "1";
+		$sql_having_having = "having count(*) > $minimum";
+		$heading = "Depth";
+		$desc = "the <b>approx</b> images/points ratio, and having submitted over $minimum images";
 	} elseif ($type == 'depth') {
 		$sql_column = "count(*)/count(distinct grid_reference)";
 		$sql_where = "1";
@@ -176,6 +182,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$lastimgcount = 0;
 	$toriserank = 0;
 	$points = 0;
+	$images = 0;
 	foreach($topusers as $idx=>$entry)
 	{
 		$i=$idx+1;
@@ -201,13 +208,16 @@ if (!$smarty->is_cached($template, $cacheid))
 			$lastrank = $i;
 			$points += $entry['points'];
 			if ($points && empty($entry['points'])) $topusers[$user_id]['points'] = '';
-	
+	                $images += $entry['images'];
+                        if ($images && empty($entry['images'])) $topusers[$user_id]['images'] = '';
 		}
 	}
 	
 	$smarty->assign_by_ref('topusers', $topusers);
 	$smarty->assign('points', $points);
-	
+	$smarty->assign('images', $images);
+
+
 	$smarty->assign('types', array('points','geosquares','images','depth'));
 	
 	
