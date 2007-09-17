@@ -1,9 +1,10 @@
 {assign var="page_title" value="Grid Ref Finder"}
 {include file="_std_begin.tpl"}
 
-{literal}
+
 <script type="text/javascript" src="http://s0.{$http_host}/mapper/geotools2.js"></script>
-	<script type="text/javascript" src="http://s0.{$http_host}/mappingG.v{$javascript_version}.js"></script>
+<script type="text/javascript" src="http://s0.{$http_host}/mappingG.v{$javascript_version}.js"></script>
+{literal}
 	<script type="text/javascript">
 	//<![CDATA[
 		var issubmit = 1;
@@ -29,7 +30,7 @@
 						GEvent.trigger(themarker,'drag');
 					
 					} else {
-						themarker = createMarker(point,'',0,'-',true);
+						themarker = createMarker(point,null);
 						map.addOverlay(themarker);
 						
 						GEvent.trigger(themarker,'drag');
@@ -40,15 +41,12 @@
 			}
 		}
 		AttachEvent(window,'load',loadmap,false);
-	//]]>
+	
+		function updateMapMarkers() {
+			updateMapMarker(document.theForm.grid_reference,false,true);
+		}
+		AttachEvent(window,'load',updateMapMarkers,false);
 	</script>
-
-<script type="text/javascript">
-	function updateMapMarkers() {
-		updateMapMarker(document.theForm.grid_reference,false,true);
-	}
-	AttachEvent(window,'load',updateMapMarkers,false);
-</script>
 {/literal}
 
 <p>Click on the map to create a point, pick it up and drag to move to better location...</p>
