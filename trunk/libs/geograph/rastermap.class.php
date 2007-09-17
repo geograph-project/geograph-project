@@ -455,7 +455,9 @@ class RasterMap
 						var ppoint = new GLatLng({$lat},{$long});
 						map.addOverlay(createPMarker(ppoint));\n";
 					}
-				} elseif ($this->issubmit) {
+				}
+
+				if (empty($lat) && $this->issubmit) {
 					list($lat,$long) = $conv->national_to_wgs84($e-700,$n-400,$this->reference_index);
 					$block .= "
 						var ppoint = new GLatLng({$lat},{$long});
