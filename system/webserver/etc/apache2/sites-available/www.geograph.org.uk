@@ -40,6 +40,8 @@
         ExpiresByType image/jpeg "access plus 180 days"
         ExpiresByType text/css "access plus 180 days"
         ExpiresByType application/x-javascript "access plus 180 days"
+        ExpiresByType image/x-icon "access plus 180 days"
+        ExpiresByType application/xml "access plus 7 days"
     </Directory>
 
     RewriteEngine on

@@ -405,17 +405,32 @@ class RasterMap
 			map.addOverlay(polyline);\n";
 	}
 	
+	function getPolySquareBlock(&$conv,$e1,$n1,$e2,$n2) {
+		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
+		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
+		return "			var polygon = new GPolygon([
+				new GLatLng($lat1,$long1),
+				new GLatLng($lat1,$long2),
+				new GLatLng($lat2,$long2),
+				new GLatLng($lat2,$long1),
+				new GLatLng($lat1,$long1)
+			], \"#0000FF\", 1, 0.7, \"#00FF00\", 0.5);
+			map.addOverlay(polygon);\n";
+	}
+	
 	function getScriptTag()
 	{
 		global $CONF;
 		if ($this->service == 'Google') {
-			if (strpos($CONF['raster_service'],'Grid') !== FALSE) {
-				$e = floor($this->nateastings/1000) * 1000;
-				$n = floor($this->natnorthings/1000) * 1000;
-				
-				require_once('geograph/conversions.class.php');
-				$conv = new Conversions;
 			
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;
+				
+			$e = floor($this->nateastings/1000) * 1000;
+			$n = floor($this->natnorthings/1000) * 1000;
+				
+			if (strpos($CONF['raster_service'],'Grid') !== FALSE) {
+				
 				$block = $this->getPolyLineBlock($conv,$e-1000,$n,$e+2000,$n);
 				$block .= $this->getPolyLineBlock($conv,$e-1000,$n+1000,$e+2000,$n+1000);
 				$block .= $this->getPolyLineBlock($conv,$e,$n-1000,$e,$n+2000);
@@ -440,17 +455,33 @@ class RasterMap
 						var ppoint = new GLatLng({$lat},{$long});
 						map.addOverlay(createPMarker(ppoint));\n";
 					}
+				} elseif ($this->issubmit) {
+					list($lat,$long) = $conv->national_to_wgs84($e-700,$n-400,$this->reference_index);
+					$block .= "
+						var ppoint = new GLatLng({$lat},{$long});
+						map.addOverlay(createPMarker(ppoint));\n";
 				}
 			} else {
 				$block = '';
 			}
 			if ($this->exactPosition) {
 				$block.= "map.addOverlay(createMarker(point));";
+			} elseif ($this->issubmit) {
+				list($lat,$long) = $conv->national_to_wgs84($e-400,$n-500,$this->reference_index);
+				$block .= "
+					var point2 = new GLatLng({$lat},{$long});
+					map.addOverlay(createMarker(point2));\n";
+			}
+			if ($this->issubmit) {
+				$block .= $this->getPolySquareBlock($conv,$e-800,$n-600,$e-200,$n-100);
 			}
 			if (empty($this->lat)) {
-				require_once('geograph/conversions.class.php');
-				$conv = new Conversions;
 				list($this->lat,$this->long) = $conv->national_to_wgs84($this->nateastings,$this->natnorthings,$this->reference_index);
+			}
+			if ($this->issubmit) {
+				$p1 = "<script type=\"text/javascript\" src=\"http://s0.{$_SERVER['HTTP_HOST']}/mapper/geotools2.js\"></script>";
+			} else {
+				$p1 = '';
 			}
 			return "
 				<style type=\"text/css\">
@@ -458,29 +489,12 @@ class RasterMap
 					behavior:url(#default#VML);
 				}
 				</style>
+				$p1
+				<script type=\"text/javascript\" src=\"http://s0.{$_SERVER['HTTP_HOST']}/mappingG.v{$CONF['javascript_version']}.js\"></script>
 				<script type=\"text/javascript\">
 				//<![CDATA[
-					function createMarker(point) {
-						var marker = new GMarker(point, {draggable: true});
-						GEvent.addListener(marker, \"dragend\", function() {
-								marker.setPoint(point);
-							});
-						return marker;
-					}
+					var issubmit = {$this->issubmit}+0;
 					
-					function createPMarker(ppoint) {
-						var picon = new GIcon();
-						picon.image =\"http://s0.{$_SERVER['HTTP_HOST']}/templates/basic/img/camicon.png\";
-						picon.shadow = \"http://s0.{$_SERVER['HTTP_HOST']}/templates/basic/img/cam-s.png\";
-						picon.iconSize = new GSize(12, 20);
-						picon.shadowSize = new GSize(22, 20);
-						picon.iconAnchor = new GPoint(6, 20);
-						var marker = new GMarker(ppoint,{draggable: true, icon:picon});
-						GEvent.addListener(marker, \"dragend\", function() {
-								marker.setPoint(ppoint);
-							});
-						return marker;
-					}
 					function loadmap() {
 						if (GBrowserIsCompatible()) {
 							var map = new GMap2(document.getElementById(\"map\"));
@@ -496,7 +510,7 @@ class RasterMap
 					}
 					AttachEvent(window,'load',loadmap,false);
 				//]]>
-	    	</script>";
+				</script>";
 		} else {
 				$east = (floor($this->nateastings/1000) * 1000) + 500;
 				$nort = (floor($this->natnorthings/1000) * 1000) + 500;
@@ -630,7 +644,7 @@ class RasterMap
 				isset($_GET['nice'])?'nice ':'',
 				$CONF['imagemagick_path'],
 				implode(' ',$tilelist),
-				$numtiles,numtiles,
+				$numtiles,$numtiles,
 				$CONF['imagemagick_path'],
 				$this->width, $this->width, 
 				$path);
