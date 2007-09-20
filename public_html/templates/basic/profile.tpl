@@ -55,6 +55,10 @@
 		<li><b>Home grid reference</b>: 
 		<a href="/gridref/{$profile->grid_reference|escape:'html'}">{$profile->grid_reference|escape:'html'}</a>
 	{/if}
+	
+	<li><b>Member since</b>: 
+		{$profile->signup_date|date_format:"%B %Y"}
+	</li>
 </ul>
 
 {if $profile->about_yourself && $profile->public_about}
