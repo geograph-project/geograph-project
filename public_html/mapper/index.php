@@ -52,6 +52,8 @@ if (!$smarty->is_cached($template, $cacheid))
 			
 	$smarty->assign('e',$e);
 	$smarty->assign('n',$n);
+	
+	$smarty->assign('token',$token);
 }
 if (isset($_SESSION['maptt'])) {
 	

@@ -58,34 +58,7 @@ if (isset($_GET['map']))
 	exit;	
 } elseif (isset($_GET['e']) && isset($_GET['n'])) {
 
-	//we need to silently load the session
-	customNoCacheHeader('',true);
-	
-	init_session();
-	
-	if (isset($_SESSION['maptt'])) {
-		$tt = $_SESSION['maptt'];
-	} elseif (!empty($_GET['tt'])) {
-		$tt = new ThrottleToken($_GET['tt']);
-	} else {
-		customNoCacheHeader();       
-		header("HTTP/1.0 307 Temporary Redirect");
-		header("Status: 307 Temporary Redirect");
-		
-		header("Location: /maps/login.png");
-		exit;
-	}
 
-	if (!($tt->useCredit())) {
-		//run out of credit!
-		
-		customNoCacheHeader();       
-		header("HTTP/1.0 307 Temporary Redirect");
-		header("Status: 307 Temporary Redirect");
-		
-		header("Location: /maps/login.png");
-		exit;
-	}
 
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions();
@@ -105,6 +78,36 @@ if (isset($_GET['map']))
 		$rastermap->width = $rastermap->tilewidth[$rastermap->service];
 
 		if ($_GET['l'] == 'o') {
+		
+			//we need to silently load the session
+			customNoCacheHeader('',true);
+
+			init_session();
+
+			if (isset($_SESSION['maptt'])) {
+				$tt = $_SESSION['maptt'];
+			} elseif (!empty($_GET['tt'])) {
+				$tt = new ThrottleToken($_GET['tt']);
+			} else {
+				customNoCacheHeader();       
+				header("HTTP/1.0 307 Temporary Redirect");
+				header("Status: 307 Temporary Redirect");
+
+				header("Location: /maps/login.png");
+				exit;
+			}
+
+			if (!($tt->useCredit())) {
+				//run out of credit!
+
+				customNoCacheHeader();       
+				header("HTTP/1.0 307 Temporary Redirect");
+				header("Status: 307 Temporary Redirect");
+
+				header("Location: /maps/validate.png");
+				exit;
+			}
+		
 			if (isset($_GET['refresh']) && $_GET['refresh'] == 2 && $USER->hasPerm('admin'))
 				$rastermap->caching=false;
 	
@@ -125,7 +128,7 @@ if (isset($_GET['map']))
 			}
 		
 			customCacheControl($lastmod,"$e,$n,$reference_index");
-			customExpiresHeader(604800,true);
+			customExpiresHeader(86400,true);
 				
 			if ($valid->memcache && !$mustgenerate) {
 				$data =& $memcache->name_get('td',$mkey);
@@ -155,7 +158,7 @@ if (isset($_GET['map']))
 			$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 		
 			
-			$sql="select x,y,grid_reference,imagecount,percent_land from gridsquare where 
+			$sql="select x,y,grid_reference,imagecount,percent_land,has_geographs from gridsquare where 
 				CONTAINS( GeomFromText($rectangle),	point_xy)
 				and imagecount>0 or percent_land = 0";
 			
@@ -176,6 +179,7 @@ if (isset($_GET['map']))
 				
 				$colSea=imagecolorallocate($img, 0,0,0);
 				$colBack=imagecolorallocate($img, 0,0,240);
+				$colSuppBack=imagecolorallocate($img, 236,206,64);
 				
 				foreach ($arr as $i => $row) {
 					
@@ -186,7 +190,8 @@ if (isset($_GET['map']))
 					$y2 = $part + ($y1 * $part2);
 					
 					if ($row['imagecount']) {
-						imagefilledellipse ($img,$x2,$y2,$s*strlen($row['imagecount']),$s,$colBack);
+						$color = ($row['has_geographs'])?$colBack:$colSuppBack;	
+						imagefilledellipse ($img,$x2,$y2,$s*strlen($row['imagecount']),$s,$color);
 
 						imagestring($img, 5, $x2-2-$xd*strlen($row['imagecount'])/2, $y2-$yd, $row['imagecount'], $colMarker);	
 					} 

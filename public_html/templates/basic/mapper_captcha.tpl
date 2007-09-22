@@ -14,6 +14,7 @@
 
 				
 		<input type="hidden" name="verification" value="{$verification|escape:'html'}"/>				
+		<input type="hidden" name="token" value="{$token|escape:'html'}"/>				
 		
 		<br />
 
