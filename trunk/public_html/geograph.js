@@ -174,6 +174,22 @@ function populateImageclass()
 	opt[0] = first_opt;
 
 	newselected = -1;
+	//add the recent list
+	if (typeof catListUser != "undefined" && catListUser.length > 1) {
+		for(i=0; i < catListUser.length; i++) {
+			if (catListUser[i].length > 0) {
+				act = catListUser[i].unescapeHTML();
+				var newoption = new Option(act,act);
+				if (idx_value == act) {
+					newoption.selected = true;
+					newselected = opt.length;
+				}
+				opt[opt.length] = newoption;
+			}
+		}
+		var newoption = new Option('-----','-----');
+		opt[opt.length] = newoption;
+	}
 	//add the whole list
 	for(i=0; i < catList.length; i++) {
 		if (catList[i].length > 0) {
