@@ -3,18 +3,18 @@
 	padding:10px;
 	background-color:#000066;
 	width:640px; 
-	height:480px; 
+	height:640px; 
 }
 #mapcontainer #mapbox {
 	width:640px; 
-	height:467px; 
+	height:637px; 
 	border: 1px;
 	position: relative;
 	
 }
 #mapcontainer #mapfooter {
 	width:640px; 
-	top: 467px;
+	top: 637px;
 	color: #fff;
 	font: 10px sans-serif;
 	height: 13px;
