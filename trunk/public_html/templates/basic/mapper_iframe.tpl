@@ -14,7 +14,7 @@
 <body bgcolor="#ffffff" style="background-color:white;margin:0px">
 
 
-<script src="http://s0.{$http_host}/mapper/OpenLayers.v250.js" type="text/javascript"></script>
+<script src="http://s0.{$http_host}/mapper/OpenLayers.v240.js" type="text/javascript"></script>
 <script src="http://s0.{$http_host}/mapper/geotools2.js"></script>
 <script src="http://s0.{$http_host}/mapper/mapper.v{$javascript_version}.js"></script>
 
