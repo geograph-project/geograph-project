@@ -71,10 +71,14 @@ if ($ok) {
 	if (isset($_SESSION['maptt'])) 
 		unset($_SESSION['maptt']);
 	
-	header("Location: /mapper/");
+	header("Location: /mapper/".((!empty($_REQUEST['token']))?"?token={$_REQUEST['token']}":'') );
 }
 
 $_SESSION['verification'] = $verification;
+
+if (!empty($_REQUEST['token'])) {
+	$smarty->assign('token',$_REQUEST['token']);
+}
 
 $smarty->display($template, $cacheid);
 

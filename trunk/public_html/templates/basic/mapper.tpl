@@ -2,7 +2,7 @@
 {include file="_std_begin.tpl"}
 <link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/mapper.v{$javascript_version}.css" media="screen" />
 
-<script src="http://s0.{$http_host}/mapper/OpenLayers.js" type="text/javascript"></script>
+<script src="http://s0.{$http_host}/mapper/OpenLayers.v250.js" type="text/javascript"></script>
 <script src="http://s0.{$http_host}/mapper/geotools2.js"></script>
 <script src="http://s0.{$http_host}/mapper/mapper.v{$javascript_version}.js"></script>
 
@@ -11,6 +11,7 @@
 var lon = {$e};
 var lat = {$n};
 var tileurl = "http://{$http_host}/tile.php";
+var ttileurl = "http://t0.{$http_host}/tile.php";
 
 var zoom = 0;
 var map, osposition, ml;
@@ -35,7 +36,7 @@ function loadMap() {
 	oslayer.tileSize = new OpenLayers.Size(250,250);
 	oslayer.getURL = geographURL;
 	
-	glayer = new OpenLayers.Layer.WMS("Geograph Coverage", tileurl+"?l=g", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, opacity: 0.3, buffer:0});	
+	glayer = new OpenLayers.Layer.WMS("Geograph Coverage", ttileurl+"?l=g", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, opacity: 0.3, buffer:0});	
 	glayer.tileSize = new OpenLayers.Size(250,250);	
 	glayer.getURL = geographURL;
 	
@@ -92,6 +93,6 @@ For the purposes of the Creative Commons Licence this page should be considered 
 </div>
 
 <br/><br/>
-<div class="interestBox">If you are getting messages to "Login to continue viewing maps", then <a href="/mapper/captcha.php">click here</a></div>
+<div class="interestBox">If you are getting messages "Quota Exceeded", then <a href="/mapper/captcha.php?token={$token}">visit this page to continue</a></div>
 
 {include file="_std_end.tpl"}

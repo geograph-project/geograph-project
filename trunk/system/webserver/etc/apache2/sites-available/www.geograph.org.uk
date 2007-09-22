@@ -5,10 +5,11 @@
     ServerAlias geograph.co.uk
     ServerAlias geograph.org.uk
     ServerAlias kml.geograph.org.uk
-    ServerAlias cluster1.geograph.org.uk
     ServerAlias www.geograph.co.uk
-	ServerAlias schools.geograph.org.uk
-
+    ServerAlias schools.geograph.org.uk
+    ServerAlias t0.new.geograph.co.uk
+    
+    
     #create logformat like combined but with our user id and script timing
     LogFormat "%{X-Forwarded-For}i %l %{user_id}n %t \"%r\" \"%v\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{php_timing}n" geograph
 
@@ -48,14 +49,17 @@
 
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^kml\.geograph\.org\.uk [NC]
-    RewriteCond %{HTTP_HOST}   !^cluster1\.geograph\.org\.uk [NC]
-    RewriteCond %{HTTP_HOST}   !^s[0-9]\.www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^schools\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !^t0\.www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^$
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
     RewriteCond %{HTTP_HOST}   ^kml\.geograph\.org\.uk [NC]
     RewriteCond %{REQUEST_URI} !^/kml
+    RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
+
+    RewriteCond %{HTTP_HOST}   ^t0\.www\.geograph\.org\.uk [NC]
+    RewriteCond %{REQUEST_URI} !^/tile
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
 

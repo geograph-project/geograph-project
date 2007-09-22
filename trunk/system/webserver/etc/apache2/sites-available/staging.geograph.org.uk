@@ -14,7 +14,8 @@ NameVirtualHost *
     ServerAlias s0.staging.scone.geograph.org.uk
     ServerAlias s0.staging.toast.geograph.org.uk
     ServerAlias s0.staging.crumpet.geograph.org.uk
-	ServerAlias schooltest.geograph.org.uk
+    ServerAlias t0.staging.geograph.org.uk
+    ServerAlias schooltest.geograph.org.uk
 
     #create logformat like combined but with our user id and script timing
     LogFormat "%{X-Forwarded-For}i %l %{user_id}n %t \"%r\" \"%v\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{php_timing}n" geograph
