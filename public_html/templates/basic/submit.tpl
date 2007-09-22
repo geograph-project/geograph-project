@@ -346,6 +346,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 <h3>Further Information</h3>
 
 <script type="text/javascript" src="/categories.js.php"></script>
+<script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>
 {literal}
 <script type="text/javascript">
 <!--
