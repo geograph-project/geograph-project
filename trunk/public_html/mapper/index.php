@@ -35,7 +35,11 @@ if (isset($_GET['t'])) {
 
 $smarty = new GeographPage;
 
-$template = 'mapper.tpl';
+if (isset($_REQUEST['inner'])) {
+	$template = 'mapper_iframe.tpl';
+} else {
+	$template = 'mapper.tpl';
+}
 
 $token=$mosaic->getToken();
 
@@ -55,7 +59,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign('token',$token);
 }
-if (isset($_SESSION['maptt'])) {
+if (isset($_SESSION['maptt']) || isset($_REQUEST['inner'])) {
 	
 } else {
 	// as we doing in session no need to save.

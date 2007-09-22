@@ -273,7 +273,7 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 {/if}
 <br/>
 
-<h2>Map{if $realname}, for <a title="view user profile" href="/profile/{$user_id}">{$realname}</a>  <small style="font-size:0.4em; font-weight:normal">[ <a title="Remove User Filter" href="/map/{$mosaic_token}?u=0">Remove User Filter</a> ]</small>{else} Browsing (beta!){/if}</h2>
+<h2>Map{if $realname}, for <a title="view user profile" href="/profile/{$user_id}">{$realname}</a>  <small style="font-size:0.4em; font-weight:normal">[ <a title="Remove User Filter" href="/map/{$mosaic_token}?u=0">Remove User Filter</a> ]</small>{else} Browsing{/if}</h2>
 <p>Here are a few tips for using our map - we're still developing and testing this, so if you
 notice any problems, do let us know.</p>
 <ul>

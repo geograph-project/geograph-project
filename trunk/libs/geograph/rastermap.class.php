@@ -806,12 +806,14 @@ class RasterMap
 			exit;
 		}
 
-		//Last-Modified: Sun, 20 Mar 2005 18:19:58 GMT
-		$t=filemtime($mappath);
-		
-		//use the filename as a hash (md5'ed)
-		//can use if-last-mod as file is not unique per user
-		customCacheControl($t,$mappath,true);
+		#there is a suggestion that as we setting an expires, we can do without mod checks (by not sending etag/lastmod), and avoid needless 304's 
+		#//Last-Modified: Sun, 20 Mar 2005 18:19:58 GMT
+		#$t=filemtime($mappath);
+
+		#//use the filename as a hash (md5'ed)
+		#//can use if-last-mod as file is not unique per user
+		#customCacheControl($t,$mappath,true);
+
 		customExpiresHeader(604800,true);
 		
 		header("Content-Type: image/png");
