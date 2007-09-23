@@ -126,7 +126,8 @@ Refine:
 	<li><a href="/statistics.php?by=user&amp;ri=2"><b>Ireland Contributor</b> List</a></li>
 	<li><a href="/statistics/first2square.php"><b>Numberical Squares</b> Leaderboard</a> (see <a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=2&topic=1235&page=0#19">forum</a>)</li>
 	<li><a href="/statistics/busyday.php?users=1">Most <b>Taken in a Day</b> Leaderboard</a></li>
-	<li><a href="/statistics/leaderhectad.php"><b>Hectad</b> Leaderboard</a></li>
+	<li><a href="/statistics/leaderhectad.php"><b>Hectad</b> Leaderboard for <b>First Geographs</b></a></li>
+	<li><a href="/statistics/leaderallhectad.php"><b>Hectad</b> Leaderboard all Images</a></li>
 </ul>
 <i>{external href="http://www.nearby.org.uk/geograph/leaderboards.html" text="Rough and ready page giving a few more examples"}</i>
 
@@ -163,6 +164,7 @@ Refine:
 	   <li><a href="/statistics/overtime.php">Photo Submission Activity Breakdown</a></li>
 	   <li><a href="/statistics/overtime.php?date=taken">Photo Taken Activity Breakdown</a></li>
 	   <li><a href="/statistics/overtime_forum.php">Forum Posting Breakdown</a></li>
+	   <li><a href="/statistics/overtime_tickets.php">Change Suggestions</a></li>
 	   <li><a href="/statistics/busyday.php">Most taken in a day</a></li>
 	   <li><a href="/statistics/busyday.php?date=submitted">Most submitted in a day</a></li>
 	</ul>
