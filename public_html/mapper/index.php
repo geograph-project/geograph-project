@@ -52,8 +52,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions();
 	
-	list($e,$n) = $conv->internal_to_national($mosaic->map_x,$mosaic->map_y,1);	
-			
+	$mapw=($mosaic->image_w/$mosaic->pixels_per_km)/2;
+	
+	list($e,$n) = $conv->internal_to_national($mosaic->map_x+$mapw,$mosaic->map_y+$mapw,1);	
+	
 	$smarty->assign('e',$e);
 	$smarty->assign('n',$n);
 	
