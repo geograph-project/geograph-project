@@ -97,6 +97,9 @@
 				&middot;&nbsp;<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show" class="nowrap">view slide show</a>
 			{/if}
 			&middot;&nbsp;<a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}" title="Geograph map for {$gridref}" class="nowrap">view map</a>
+			{if $rastermap->reference_index == 1}
+				&middot;&nbsp;<a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}">draggable map</a><sup style="color:red">New!</sup>
+			{/if}
 			&middot;&nbsp;<a href="/gpx.php?gridref={$gridref}" title="Download GPX coverage around {$gridref}" class="nowrap">download gpx</a>
 			&middot;&nbsp;<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}" class="nowrap">print check sheet</a>
 			{if strlen($gridrefraw) < 5}
@@ -137,6 +140,7 @@
 			{/if}
 		{/if}</li>
 		<li><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph <b>map</b> for {if strlen($gridrefraw) < 5}{$gridrefraw}{else}{$gridref}{/if}</a>,</li>
+		{if $rastermap->reference_index == 1}<li><a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}">Open the <span style="color:red">New!</span> <b>Draggable Map</b></a>,</li>{/if}
 		<li><a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}">View a <b>printable check sheet</b> for {if strlen($gridrefraw) < 5}{$gridrefraw}{else}{$gridref}{/if}</a>,</li>
 		<li><a title="Download GPX" href="/gpx.php?gridref={$gridref}">Download a <b>GPX coverage</b> file around {$gridref}</a>,</li>
 		{if strlen($gridrefraw) < 5}

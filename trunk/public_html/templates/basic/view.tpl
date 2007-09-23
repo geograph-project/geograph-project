@@ -142,7 +142,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 	<div class="rastermap" style="width:{$rastermap->width}px;position:relative">
 	{$rastermap->getImageTag()}
 	<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
-
+	{if $rastermap->reference_index == 1}<br/><a href="/mapper/?t={$map_token}&amp;gridref_from={$image->grid_reference}">Open Larger Map</a> <sup style="color:red">New!</sup>{/if}
 	</div>
 
 	{$rastermap->getScriptTag()}

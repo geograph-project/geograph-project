@@ -71,7 +71,7 @@ if ($ok) {
 	if (isset($_SESSION['maptt'])) 
 		unset($_SESSION['maptt']);
 	
-	header("Location: /mapper/".((!empty($_REQUEST['token']))?"?token={$_REQUEST['token']}":'') );
+	header("Location: /mapper/".((!empty($_REQUEST['token']))?"?t={$_REQUEST['token']}":'') );
 }
 
 $_SESSION['verification'] = $verification;
