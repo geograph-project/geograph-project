@@ -48,14 +48,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	$largemosaic->setScale(80);
 	$largemosaic->setMosaicFactor(2);
 	$largemosaic->setMosaicSize(800,800);
-
-	//lets add an overview map too
-	$overview=new GeographMapMosaic('overview');
-	$overview->assignToSmarty($smarty, 'overview');
 	
 	$censquare = new GridSquare;
-	
-	$markers = array();
 	
 	function cmp($a,$b) {
 		if ($a['sort'] == $b['dateraw'])
@@ -64,8 +58,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 
 	$db->Execute("TRUNCATE hectad_complete");
-		
-	$i = 1;
+
 	foreach (array(1,2) as $ri) {
 		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 		
@@ -99,16 +92,12 @@ if (!$smarty->is_cached($template, $cacheid))
 			$largemosaic->setOrigin($most[$id]['x'],$most[$id]['y']);
 
 			$most[$id]['largemap_token'] = $largemosaic->getToken();
-			
+
 			//actully we don't need the full loading of a square
 			//$ok = $censquare->loadFromPosition($most[$id]['x'],$most[$id]['y']);
 			$censquare->x = $most[$id]['x'];
 			$censquare->y = $most[$id]['y'];
-			
-			$markers[$i] = $overview->getSquarePoint($censquare);
-			$markers[$i]->tenk_square = $most[$id]['tenk_square'];
-			$i++;
-			
+
 			$crit = substr($most[$id]['tenk_square'],0,3).'_'.substr($most[$id]['tenk_square'],3,1).'_';
 
 			list($most[$id]['date'],$most[$id]['dateraw']) = $db->getRow(
@@ -133,16 +122,14 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		uasort($most,"cmp");
 		
-		$smarty->assign("most$ri", $most);	
+		$smarty->assign("most$ri", $most);
 	}
 
 	$db->Execute("ALTER TABLE `hectad_complete` ORDER BY `completed` DESC");
 
-	$smarty->assign("markers", $markers);	
 }
 
 
 $smarty->display($template, $cacheid);
 
-	
 ?>

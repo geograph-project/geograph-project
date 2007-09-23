@@ -2,27 +2,6 @@
 {include file="_std_begin.tpl"}
 <script src="http://s0.{$http_host}/sorttable.js"></script>
 
-<div style="float:right;position:relative;">
-<div class="map" style="margin-left:20px;border:2px solid black; height:{$overview_height}px;width:{$overview_width}px">
-
-<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
-
-{foreach from=$overview key=y item=maprow}
-	<div>
-	{foreach from=$maprow key=x item=mapcell}
-	<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img 
-	alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
-	{/foreach}
-	</div>
-{/foreach}
-{foreach from=$markers key=i item=marker}
-<div style="position:absolute;top:{$marker->top-5}px;left:{$marker->left-5}px;"><img src="/templates/basic/img/crosshairs-small.gif" alt="{$marker->tenk_square}" width="10" height="10"/></div>
-{/foreach}
-</div>
-</div>
-
-</div>
-
 <h2>Fully Geographed Hectads</h2>
 
 <p>These are the 10km x 10km squares or hectads<a href="/help/squares">?</a> with full land coverage!
