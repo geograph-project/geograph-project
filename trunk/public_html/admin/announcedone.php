@@ -31,7 +31,7 @@ $smarty = new GeographPage;
 $db = NewADOConnection($GLOBALS['DSN']);
 	
 if ($_POST) {
-	$text = "<b>{$_POST['title']}</b><br><br>{$_POST['entry']}";
+	$text = str_replace("\n","<br>\n","<b>{$_POST['title']}</b><br><br>{$_POST['entry']}");
 
 	$sql = "INSERT INTO geobb_posts SET topic_id = 5808,forum_id=1,poster_id={$USER->user_id},poster_name='{$USER->nickname}'";
 	$sql .= ",post_time = '".mysql_real_escape_string($_POST['date'])."'";
