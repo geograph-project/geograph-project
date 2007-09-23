@@ -220,14 +220,15 @@ class GeographMapMosaic
 		$smarty->assign_by_ref($basename, $overviewimages);
 		$smarty->assign($basename.'_width', $this->image_w);
 		$smarty->assign($basename.'_height', $this->image_h);
+		$smarty->assign($basename.'_ri', $this->reference_index);
 		$smarty->assign($basename.'_token', $this->getToken());
 		$smarty->assign($basename.'_updated', $this->getUpdateDateString());
 	
 	}
-		
-		
-	
-	
+
+
+
+
 	/**
 	* Set origin of map in internal coordinates, returns true if valid
 	* @access public

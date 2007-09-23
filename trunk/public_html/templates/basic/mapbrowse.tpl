@@ -272,7 +272,9 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 </div>
 {/if}
 <br/>
-
+{if !$token_zoomin && !$realname && $mosaic_ri == 1}
+<div style="background-color:yellow;padding:10px; font-weight:bold; width:{$mosaic_width}px;"><a href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">Try New Draggable Map</a> <sup style="color:red">New!</sup></div>
+{/if}
 <h2>Map{if $realname}, for <a title="view user profile" href="/profile/{$user_id}">{$realname}</a>  <small style="font-size:0.4em; font-weight:normal">[ <a title="Remove User Filter" href="/map/{$mosaic_token}?u=0">Remove User Filter</a> ]</small>{else} Browsing{/if}</h2>
 <p>Here are a few tips for using our map - we're still developing and testing this, so if you
 notice any problems, do let us know.</p>
