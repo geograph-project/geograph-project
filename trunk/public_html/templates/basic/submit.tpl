@@ -60,7 +60,7 @@ geographing</a> first.</p>
 		<u title="e.g. TQ435646 or TQ 435 646">6</u>,
 		<u title="e.g. TQ43526467 or TQ 4352 6467">8</u> or 
 		<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure) for the subject grid square</label><br /><br />
-		<input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14"/>
+		<input id="grid_reference" type="text" name="grid_reference" size="14" {if $grid_reference} value="{$grid_reference|escape:'html'}"  style="color:gray" onfocus="if (this.value=='{$grid_reference|escape:'html'}') {literal}{ this.value='';this.style.color='';}{/literal}" onblur="{literal}if (this.value=='') { this.value='{/literal}{$grid_reference|escape:'html'}{literal}';this.style.color='gray';}{/literal}"{/if}/><small><small><a href="javascript:doMove('grid_reference',-1,0);">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);">E</a></small></small>
 		&nbsp;&nbsp;&nbsp;
 		<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}or <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>{/if}
 		</p>
@@ -140,7 +140,8 @@ geographing</a> first.</p>
 		</li>
 	</ul>
 
-
+	<script type="text/javascript" src="http://s0.{$http_host}/mapping1.v{$javascript_version}.js"></script>
+	<script type="text/javascript" src="http://s0.{$http_host}/mapper/geotools2.js"></script>
 {else}
 	<input type="hidden" name="gridsquare" value="{$gridsquare|escape:'html'}">
 	<input type="hidden" name="eastings" value="{$eastings|escape:'html'}">

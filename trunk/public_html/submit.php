@@ -611,10 +611,6 @@ if (isset($_POST['gridsquare']))
 }
 else
 {
-	//just starting - use remembered values
-	$smarty->assign('gridsquare', $_SESSION['gridsquare']);
-	$smarty->assign('eastings', $_SESSION['eastings']);
-	$smarty->assign('northings', $_SESSION['northings']);
 	if (!empty($_GET['gridreference']) && empty($_GET['grid_reference'])) {
 		$_GET['grid_reference'] = $_GET['gridreference'];
 	}
@@ -629,7 +625,16 @@ else
 			$smarty->assign('eastings', $square->eastings);
 			$smarty->assign('northings', $square->northings);
 			$smarty->assign('gridref', $square->grid_reference);
+			$smarty->assign('grid_reference', $square->grid_reference);
 		}
+	} elseif (!empty($_SESSION['gridsquare'])) {
+		//just starting - use remembered values
+		$smarty->assign('gridsquare', $_SESSION['gridsquare']);
+		$smarty->assign('eastings', $_SESSION['eastings']);
+		$smarty->assign('northings', $_SESSION['northings']);
+		$smarty->assign('auto',1);
+		$smarty->assign('gridref', $_SESSION['gridsquare'].' '.$_SESSION['eastings'].' '.$_SESSION['northings']);
+		$smarty->assign('grid_reference', $_SESSION['gridsquare'].' '.$_SESSION['eastings'].' '.$_SESSION['northings']);
 	}
 	
 	if ($step == 1) {
