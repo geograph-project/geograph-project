@@ -179,7 +179,7 @@ if (isset($_GET['map']))
 				
 				$colSea=imagecolorallocate($img, 0,0,0);
 				$colBack=imagecolorallocate($img, 0,0,240);
-				$colSuppBack=imagecolorallocate($img, 236,206,64);
+				$colSuppBack=imagecolorallocate($img, 192,158,0);
 				
 				foreach ($arr as $i => $row) {
 					

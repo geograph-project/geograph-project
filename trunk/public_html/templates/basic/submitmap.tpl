@@ -1,6 +1,21 @@
+{if $inner}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" style="margin:0px">
+<head>
+<title>Grid Ref Finder</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" title="Monitor" href="http://s0.{$http_host}/templates/basic/css/basic.v{$javascript_version}.css" media="screen" />
+<script type="text/javascript" src="http://s0.{$http_host}/geograph.v{$javascript_version}.js"></script>
+</style>
+</head>
+
+<body bgcolor="#ffffff" style="background-color:white;margin:0px">
+{else}
+
 {assign var="page_title" value="Grid Ref Finder"}
 {include file="_std_begin.tpl"}
-
+{/if}
 
 <script type="text/javascript" src="http://s0.{$http_host}/mapper/geotools2.js"></script>
 <script type="text/javascript" src="http://s0.{$http_host}/mappingG.v{$javascript_version}.js"></script>
@@ -83,19 +98,20 @@
 
 <p>Click on the map to create a point, pick it up and drag to move to better location...</p>
 
-<form action="/submit.php" name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
+<form action="/submit.php" name="theForm" method="post" {if $inner} target="_top"{/if} style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
 
-<p><label for="grid_reference"><b style="color:#0018F8">Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $grid_reference}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)"/>
+<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $grid_reference}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)"/>
 
-<input type="submit" value="Step 2 &gt; &gt;"/></p>
+<input type="submit" value="Step 2 &gt; &gt;"/></div>
 
-<div id="map" style="width:600px; height:500px">Loading map...</div><br/>			
+<div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div><br/>			
 
-     <p>Enter Address or Postcode: 
-        <input type="text" size="50" id="addressInput" name="address" value="" />
-        <input type="button" value="Find" onclick="showAddress(this.form.address.value)"/> (Google Maps API Geocoder)
-      </p>
+<div style="width:600px; text-align:right;"><label for="addressInput">Enter Address or Postcode: 
+	<input type="text" size="50" id="addressInput" name="address" value="" />
+	<input type="button" value="Find" onclick="showAddress(this.form.address.value)"/><small><small><br/>
+	(Powered by the Google Maps API Geocoder)</small></small>
+</div>
 
 <input type="hidden" name="gridsquare" value=""/>
 <input type="hidden" name="setpos" value=""/>
@@ -104,5 +120,9 @@
 
 <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>
 			
-
+{if $inner}
+</body>
+</html>
+{else}
 {include file="_std_end.tpl"}
+{/if}

@@ -44,10 +44,11 @@ geographing</a> first.</p>
 	
 <div style="position:relative;">
 	<div class="tabHolder">
-		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,4)">Enter Grid Reference</a>
-		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,4)">Choose Square</a>
-		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,4)">Upload Tagged Image <span style="color:red">New!</span></a>
-		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,4)">Offline Application</a>
+		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,5)">Enter Grid Reference</a>
+		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,5)">Choose Square</a>
+		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,5)">Tagged Image</a>
+		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,5); document.getElementById('innerFrame4').src = '/submitmap.php?inner'">Map/Placename</a>
+		<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" onclick="tabClick('tab','div',5,5)">Offline Application</a>
 	</div>
 
 	<div style="position:relative;{if $tab != 1}display:none{/if}" class="interestBox" id="div1">
@@ -112,6 +113,10 @@ geographing</a> first.</p>
 	</div>
 
 	<div style="position:relative;{if $tab != 4}display:none{/if}" class="interestBox" id="div4">
+		<iframe {if $tab == 4}src="/submitmap.php?inner"{/if} id="innerFrame4" width="613" height="660" frameborder="0"><a href="/submitmap.php">Click here to open a Draggable Interactive Google Map</a></iframe>
+	</div>
+	
+	<div style="position:relative;{if $tab != 5}display:none{/if}" class="interestBox" id="div5">
 
 		<p><a href="/juppy.php">JUppy</a> is coded in cross-platform Java, and is an ideal solution to upload many images, allowing you to prepare the images without an internet connection. <a href="/juppy.php">Go Get it Now!</a></p>
 		

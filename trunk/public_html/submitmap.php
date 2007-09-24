@@ -31,7 +31,13 @@ $smarty = new GeographPage;
 
 $smarty->assign('google_maps_api_key',$CONF['google_maps_api_key']);
 
-$smarty->display('submitmap.tpl');
+if (isset($_REQUEST['inner'])) {
+	$cacheid = 'iframe';
+	$smarty->assign('inner',1);
+} else {
+	$cacheid = '';
+}
 
-	
+$smarty->display('submitmap.tpl',$cacheid);
+
 ?>
