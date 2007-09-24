@@ -60,6 +60,11 @@
 		function loadmap() {
 			if (GBrowserIsCompatible()) {
 				map = new GMap2(document.getElementById("map"));
+
+				G_NORMAL_MAP.getMinimumResolution = function () { return 5 };
+				G_SATELLITE_MAP.getMinimumResolution = function () { return 5 };
+				G_HYBRID_MAP.getMinimumResolution = function () { return 5 };
+
 				map.addControl(new GLargeMapControl());
 				map.addControl(new GMapTypeControl(true));
 				
@@ -83,12 +88,51 @@
 						GEvent.trigger(themarker,'drag');
 					}
 				});
-		
+
+
 				AttachEvent(window,'unload',GUnload,false);
+
+				// Add a move listener to restrict the bounds range
+				GEvent.addListener(map, "move", function() {
+					checkBounds();
+				});
+
+				// The allowed region which the whole map must be within
+				var allowedBounds = new GLatLngBounds(new GLatLng(49.4,-11.8), new GLatLng(61.8,4.1));
+
+				// If the map position is out of range, move it back
+				function checkBounds() {
+					// Perform the check and return if OK
+					if (allowedBounds.contains(map.getCenter())) {
+					  return;
+					}
+					// It`s not OK, so find the nearest allowed point and move there
+					var C = map.getCenter();
+					var X = C.lng();
+					var Y = C.lat();
+
+					var AmaxX = allowedBounds.getNorthEast().lng();
+					var AmaxY = allowedBounds.getNorthEast().lat();
+					var AminX = allowedBounds.getSouthWest().lng();
+					var AminY = allowedBounds.getSouthWest().lat();
+
+					if (X < AminX) {X = AminX;}
+					if (X > AmaxX) {X = AmaxX;}
+					if (Y < AminY) {Y = AminY;}
+					if (Y > AmaxY) {Y = AmaxY;}
+
+					map.setCenter(new GLatLng(Y,X));
+
+					// This Javascript Function is based on code provided by the
+					// Blackpool Community Church Javascript Team
+					// http://www.commchurch.freeserve.co.uk/   
+					// http://econym.googlepages.com/index.htm
+				}
 			}
 		}
+
 		AttachEvent(window,'load',loadmap,false);
-	
+
 		function updateMapMarkers() {
 			updateMapMarker(document.theForm.grid_reference,false,true);
 		}
