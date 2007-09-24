@@ -78,15 +78,17 @@ geographing</a> first.</p>
 		<p><label for="gridsquare">Select the 1km grid square below...</label><br/><br/>
 		<select id="gridsquare" name="gridsquare">
 			{html_options options=$prefixes selected=$gridsquare}
-		</select>
+		</select>&nbsp;&nbsp;
 		<label for="eastings">E</label>
 		<select id="eastings" name="eastings">
 			{html_options options=$kmlist selected=$eastings}
 		</select>
+		<small><small><a href="javascript:doMove2(-1,0);">W</a></small><small><a href="javascript:doMove2(1,0);">E</a></small></small>&nbsp;&nbsp;
 		<label for="northings">N</label>
 		<select id="northings" name="northings">
 			{html_options options=$kmlist selected=$northings}
 		</select>
+		<small><sup><a href="javascript:doMove2(0,1);">N</a></sup><sub><a href="javascript:doMove2(0,-1);">S</a></sub></small>
 		&nbsp;&nbsp;&nbsp;
 		<input type="submit" name="setpos2" value="Next &gt;"/> {if $picnik_api_key}or <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>{/if}
 		</p>
