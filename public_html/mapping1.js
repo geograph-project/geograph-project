@@ -45,3 +45,42 @@ function doMove(obj,e,n) {
 		document.getElementById(obj).value = gridref;
 	}
 }
+
+
+function doMove2(e,n) {
+	ob1 = document.getElementById('gridsquare');
+	ob2 = document.getElementById('eastings');
+	ob3 = document.getElementById('northings');
+	gridref = ob1.options[ob1.selectedIndex].value+ob2.options[ob2.selectedIndex].text+ob3.options[ob3.selectedIndex].text;
+
+	var grid=new GT_OSGB();
+	var ok = false;
+	if (grid.parseGridRef(gridref)) {
+		ok = true;
+	} else {
+		grid=new GT_Irish();
+		ok = grid.parseGridRef(gridref)
+	}
+	
+	if (ok) {
+		grid.eastings = grid.eastings + (e*1000);
+		grid.northings = grid.northings + (n*1000);
+	
+		bits = grid.getGridRef(2).split(/ /);
+		
+		for(var q=0;q<ob1.options.length;q++) {
+			if (ob1.options[q].value == bits[0])
+				ob1.selectedIndex = q;
+		}
+		for(var q=0;q<ob2.options.length;q++) {
+			if (ob2.options[q].text == bits[1])
+				ob2.selectedIndex = q;
+		}
+		for(var q=0;q<ob3.options.length;q++) {
+			if (ob3.options[q].text == bits[2])
+				ob3.selectedIndex = q;
+		}
+		
+		
+	}
+}
