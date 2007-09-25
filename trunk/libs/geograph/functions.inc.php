@@ -380,7 +380,7 @@ function getFormattedDate($input) {
 
 //credit: http://www.php.net/fsockopen
 function connectToURL($addr, $port, $path, $userpass="", $timeout="30") {
-	$urlHandle = fsockopen($addr, $port, $errno, $errstr, $timeout);
+	$urlHandle = @fsockopen($addr, $port, $errno, $errstr, $timeout);
 	if ($urlHandle)	{
 		socket_set_timeout($urlHandle, $timeout);
 		if ($path) {
