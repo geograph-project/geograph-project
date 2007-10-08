@@ -56,11 +56,15 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$db=NewADOConnection($GLOBALS['DSN']);
 	
+	$prev_fetch_mode = $ADODB_FETCH_MODE;
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll("
-	select article_id,article.article_cat_id,category_name,article.user_id,url,title,extract,licence,publish_date,approved,update_time,create_time,realname
+	select article.article_id,article.article_cat_id,category_name,article.user_id,url,title,extract,licence,publish_date,approved,update_time,create_time,realname,l.user_id as locked_user
 	from article 
 		inner join user using (user_id)
 		left join article_cat on (article.article_cat_id = article_cat.article_cat_id)
+		left join article_lock as l
+			on(article.article_id=l.article_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) and l.user_id != {$USER->user_id})
 	where (licence != 'none' and approved = 1) 
 		or user.user_id = {$USER->user_id}
 		or ($isadmin and approved != -1)
@@ -82,8 +86,9 @@ if (!$smarty->is_cached($template, $cacheid))
 				where article_id = {$row['article_id']} and update_time = '{$row['update_time']}'");
 		}
 	}
+	$ADODB_FETCH_MODE = $prev_fetch_mode;
 	$_SESSION['article_urls'] = $urls;
-	
+	print_r($list);
 	$smarty->assign_by_ref('list', $list);
 
 }
