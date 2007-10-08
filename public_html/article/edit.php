@@ -169,7 +169,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		$smarty->clear_cache('article_article.tpl', $_POST['url']);
 		$smarty->clear_cache('article.tpl');
 
-		$db->Execute("DELETE FROM article_lock WHERE user_id = $mid, article_id = {$_REQUEST['article_id']}");
+		$db->Execute("DELETE FROM article_lock WHERE user_id = {$USER->user_id} AND article_id = {$_REQUEST['article_id']}");
 
 		header("Location: /article/".$_POST['url']);
 		exit;
