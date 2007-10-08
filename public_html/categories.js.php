@@ -42,7 +42,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (empty($db)) die('Database connection failed');
 
 	if ($u) {
-		$where = "where submitted > date_sub(now(),interval 1 day) and user_id = $u";
+		$where = "where submitted > date_sub(now(),interval 3 day) and user_id = $u";
 		$table = 'gridimage';
 		$smarty->assign('varname','catListUser');
 	} else {
