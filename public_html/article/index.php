@@ -88,7 +88,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	$ADODB_FETCH_MODE = $prev_fetch_mode;
 	$_SESSION['article_urls'] = $urls;
-	print_r($list);
+	
 	$smarty->assign_by_ref('list', $list);
 
 }

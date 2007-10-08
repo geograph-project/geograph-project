@@ -1394,3 +1394,14 @@ CREATE TABLE `gridimage_recent` (
   PRIMARY KEY  (`recent_id`),
   UNIQUE KEY `gridimage_id` (`gridimage_id`)
 ) ENGINE=MyISAM ;
+
+
+
+
+
+CREATE TABLE `article_lock` (
+  `article_id` int(10) unsigned NOT NULL default '0',
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `lock_obtained` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`article_id`,`user_id`)
+) ENGINE=MyISAM;
