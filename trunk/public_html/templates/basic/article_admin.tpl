@@ -17,7 +17,11 @@
 	<small>by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}">{$item.realname}</a></small>
 		{if $isadmin || $item.user_id == $user->user_id}
 			<small><small><br/>&nbsp;&nbsp;&nbsp;&nbsp; 
-			[<a title="Edit {$item.title}" href="/article/edit.php?page={$item.url}">Edit</a>]
+			{if $item.locked_user} 
+				Locked
+			{else}
+				[<a title="Edit {$item.title}" href="/article/edit.php?page={$item.url}">Edit</a>]
+			{/if}
 		{/if} 
 		{if $isadmin}
 			{if $item.approved == 1}

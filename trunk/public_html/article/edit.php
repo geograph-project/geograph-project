@@ -36,7 +36,7 @@ if (empty($_REQUEST['article_id']) && (empty($_REQUEST['page']) || preg_match('/
 
 
 $template = 'article_edit.tpl';
-
+$cacheid = '';
 
 
 
@@ -64,9 +64,28 @@ $template = 'article_edit.tpl';
 		$ADODB_FETCH_MODE = $prev_fetch_mode;
 		
 		if (count($page) && ($page['user_id'] == $USER->user_id || $USER->hasPerm('moderator'))) {
+			$lockedby = $db->getOne("
+				select 
+					m.realname
+				from
+					article_lock as l
+					inner join user as m using (user_id)
+				where
+					article_id = {$page['article_id']}
+					and m.user_id != {$USER->user_id}
+				and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR)");
+					
+			if ($lockedby) {
+				$smarty->assign('lockedby', $lockedby);
+				$template = 'article_locked.tpl';
+				$smarty->display($template, $cacheid);
+				exit;
+			}
+
 			foreach ($page as $key => $value) {
 				$smarty->assign($key, $value);
 			}
+			$db->Execute("REPLACE INTO article_lock SET user_id = {$USER->user_id}, article_id = {$page['article_id']}");
 		} else {
 			$template = 'static_404.tpl';
 		}
@@ -145,10 +164,12 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		$sql = "INSERT INTO article_revisions SELECT *,NULL,{$USER->user_id} FROM article WHERE article_id = ".$db->Quote($_REQUEST['article_id']);
 		$db->Execute($sql);
 
+		$_SESSION[$_POST['url']] = $db->Insert_ID();
+
 		$smarty->clear_cache('article_article.tpl', $_POST['url']);
 		$smarty->clear_cache('article.tpl');
-		
-		$_SESSION[$_POST['url']] = $db->Insert_ID();
+
+		$db->Execute("DELETE FROM article_lock WHERE user_id = $mid, article_id = {$_REQUEST['article_id']}");
 
 		header("Location: /article/".$_POST['url']);
 		exit;
