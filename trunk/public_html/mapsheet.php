@@ -32,6 +32,7 @@ init_session();
 
 $smarty = new GeographPage;
 
+customGZipHandlerStart();
 
 //initialise map
 $map=new GeographMap;
