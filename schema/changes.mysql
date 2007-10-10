@@ -1405,3 +1405,7 @@ CREATE TABLE `article_lock` (
   `lock_obtained` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`article_id`,`user_id`)
 ) ENGINE=MyISAM;
+
+
+
+ALTER TABLE `queries` CHANGE `limit1` `limit1` VARCHAR( 7 )  NOT NULL ;
