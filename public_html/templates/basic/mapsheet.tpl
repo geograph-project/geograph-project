@@ -18,6 +18,9 @@
 	.no_print {
 		display: none;
 	}
+	div.r a:visited {
+		color: black;
+	}
 }
 
 div.g1 {
@@ -48,6 +51,14 @@ div.g2 {
 
 div.r {
 	font-size:8pt;
+}
+
+div.r a {
+	color: black;
+	text-decoration: none;
+}
+div.r a:visited {
+	color: #551A8B;
 }
 
 div.d {
@@ -118,7 +129,7 @@ div.hl {
 {*begin map square divs*}
 {foreach from=$grid key=x item=maprow}
 {foreach from=$maprow key=y item=mapcell}
-<div class="{if $mapcell.has_geographs}g2{else}g1{/if}{if substr($mapcell.grid_reference,$ofe,1) == '0'} zx{/if}{if substr($mapcell.grid_reference,$ofn,1) == '0'} zy{/if}{if $mapcell.grid_reference == $gridref_from} hl{/if}" style="left:{$x+0.2}em;top:{$y+1.6}em;" onclick="window.location='/gridref/{$mapcell.grid_reference}';"><div class="{if $mapcell.has_geographs}t2{else}t1{/if} nowrap">{if $mapcell.has_geographs}{$mapcell.geographs}{else}{if $mapcell.pending}pend{else}{if $mapcell.accepted}sup{else}&nbsp;{/if}{/if}{/if}{if $mapcell.imagecount > 1 && ($mapcell.imagecount !=$mapcell.geographs)}<span class="s">({if $mapcell.imagecount !=$mapcell.accepted}{if $mapcell.accepted}+{$mapcell.accepted}{/if}{else}{$mapcell.imagecount}{/if})</span>{/if}</div><div class="r">{$mapcell.grid_reference}</div>{if $mapcell.last_date && $mapcell.last_date != '00/00/00'}<div class="d">{$mapcell.last_date}</div>{/if}</div>
+<div class="{if $mapcell.has_geographs}g2{else}g1{/if}{if substr($mapcell.grid_reference,$ofe,1) == '0'} zx{/if}{if substr($mapcell.grid_reference,$ofn,1) == '0'} zy{/if}{if $mapcell.grid_reference == $gridref_from} hl{/if}" style="left:{$x+0.2}em;top:{$y+1.6}em;" onclick="window.location='/gridref/{$mapcell.grid_reference}';"><div class="{if $mapcell.has_geographs}t2{else}t1{/if} nowrap">{if $mapcell.has_geographs}{$mapcell.geographs}{else}{if $mapcell.pending}pend{else}{if $mapcell.accepted}sup{else}&nbsp;{/if}{/if}{/if}{if $mapcell.imagecount > 1 && ($mapcell.imagecount !=$mapcell.geographs)}<span class="s">({if $mapcell.imagecount !=$mapcell.accepted}{if $mapcell.accepted}+{$mapcell.accepted}{/if}{else}{$mapcell.imagecount}{/if})</span>{/if}</div><div class="r"><a href="/gridref/{$mapcell.grid_reference}">{$mapcell.grid_reference}</a></div>{if $mapcell.last_date && $mapcell.last_date != '00/00/00'}<div class="d">{$mapcell.last_date}</div>{/if}</div>
 {/foreach}
 {/foreach}
 
