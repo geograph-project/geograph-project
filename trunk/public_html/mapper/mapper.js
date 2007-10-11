@@ -49,6 +49,16 @@ function mouseDefaultClick(evt) {
 	return notAfterDrag;
 }
 
+/* Replacement defaultMouseDown function for MouseDefaults control, removed the shift-click functionality that starts rubber-band zoom */
+function mouseDefaultMouseDown (evt) {
+	if (!OpenLayers.Event.isLeftClick(evt)) return;
+	this.mouseDragStart = evt.xy.clone();
+	this.performedDrag  = false;
+
+	document.onselectstart=function() { return false; }
+	OpenLayers.Event.stop(evt);
+}
+
 /* Replacement redraw function for MousePosition control, formats as NGR rather than raw numbers */
 function showGridRef(evt) {
 	var lonLat;

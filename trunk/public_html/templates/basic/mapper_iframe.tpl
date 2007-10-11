@@ -52,6 +52,7 @@ function loadMap() {
 	var mousecontrol = new OpenLayers.Control.MouseDefaults();
 	mousecontrol.onWheelEvent = mousecontrol.defaultDblClick = function (){ };
 	mousecontrol.defaultClick = mouseDefaultClick;
+	mousecontrol.defaultMouseDown = mouseDefaultMouseDown;
 	map.addControl( mousecontrol );
 	
 	var panzoom = new OpenLayers.Control.PanZoom();
