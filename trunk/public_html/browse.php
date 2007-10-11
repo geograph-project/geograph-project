@@ -40,8 +40,13 @@ customGZipHandlerStart();
 
 $square=new GridSquare;
 
-$smarty->assign('prefixes', $square->getGridPrefixes());
-$smarty->assign('kmlist', $square->getKMList());
+if (isset($_GET['inner'])) {
+	$template='browse_inner.tpl';
+} else {
+	$template='browse.tpl';
+	$smarty->assign('prefixes', $square->getGridPrefixes());
+	$smarty->assign('kmlist', $square->getKMList());
+}
 
 
 //we can be passed a gridreference as gridsquare/northings/eastings 
@@ -90,7 +95,6 @@ elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 	}	
 }
 
-$template='browse.tpl';
 $cacheid='';
 
 //what style should we use?
@@ -426,24 +430,26 @@ else
 	
 }
 
-//lets find some recent photos
-new RecentImageList($smarty);
+if (!isset($_GET['inner'])) {
+	//lets find some recent photos
+	new RecentImageList($smarty);
 
-//lets add an overview map too
-if ($grid_ok) {
-	$overview=new GeographMapMosaic('largeoverview');
-	$overview->setCentre($square->x,$square->y); //does call setAlignedOrigin
-	$smarty->assign('marker', $overview->getSquarePoint($square));
-	
-	//lets add an rastermap too
-	$rastermap = new RasterMap($square,false,$square->natspecified);
-	$rastermap->addLatLong($lat,$long);
-	$smarty->assign_by_ref('rastermap', $rastermap);
-	
-} else {
-	$overview=new GeographMapMosaic('overview');	
+	//lets add an overview map too
+	if ($grid_ok) {
+		$overview=new GeographMapMosaic('largeoverview');
+		$overview->setCentre($square->x,$square->y); //does call setAlignedOrigin
+		$smarty->assign('marker', $overview->getSquarePoint($square));
+
+		//lets add an rastermap too
+		$rastermap = new RasterMap($square,false,$square->natspecified);
+		$rastermap->addLatLong($lat,$long);
+		$smarty->assign_by_ref('rastermap', $rastermap);
+
+	} else {
+		$overview=new GeographMapMosaic('overview');	
+	}
+	$overview->assignToSmarty($smarty, 'overview');
 }
-$overview->assignToSmarty($smarty, 'overview');
 
 #}
 
