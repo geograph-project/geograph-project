@@ -28,7 +28,7 @@ function drawNoZoom(px) {
 
 /* Replacement defaultClick function for MouseDefaults control, onclick will stop the grid ref updating */
 function mouseDefaultClick(evt) {
-	if (!OpenLayers.Event.isLeftClick(evt)) return;
+	//if (!OpenLayers.Event.isLeftClick(evt) && !((evt.button) && (evt.button == 0))) return;
 	var notAfterDrag = !this.performedDrag;
 	this.performedDrag = false;
 	
