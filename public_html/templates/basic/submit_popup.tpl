@@ -1,18 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
- "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" id="geograph">
-<head>
-<title>Geograph Map</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+{assign var="page_title" value="Geograph Map"}
 
-<link rel="stylesheet" type="text/css" title="Monitor" href="http://s0.{$http_host}/templates/basic/css/basic.v{$javascript_version}.css" media="screen" />
-<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
-
-<script type="text/javascript" src="http://s0.{$http_host}/geograph.v{$javascript_version}.js"></script>
-
-</head>
-
-<body>
+{include file="_basic_begin.tpl"}
 {dynamic}
 {if $error} 
 	<p>ERROR: {$error}</p>
