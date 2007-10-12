@@ -124,7 +124,9 @@
 	 
 	<textarea name="about_yourself" id="about_yourself" rows="4" cols="60">{$profile->about_yourself|escape:'html'}</textarea>
 
-	<div class="fieldnotes">TIP: use <span style="color:blue">[[TQ7506]]</span> or 
+	<div class="fieldnotes"><span style="color:red">Note: HTML code will be removed, 
+	however basic URLs will be autolinked.</span><br/>
+	TIP: use <span style="color:blue">[[TQ7506]]</span> or 
 	<span style="color:blue">[[5463]]</span> to link to a Grid Square or another Image.
 	</div>
 
