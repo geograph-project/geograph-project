@@ -67,7 +67,7 @@ if (isset($_REQUEST['edit']))
 			//ensure we keep submission intact
 			foreach($_POST as $name=>$value)
 			{
-				$profile->$name=stripslashes($value);
+				$profile->$name=strip_tags(stripslashes($value));
 			}
 		}
 	} 

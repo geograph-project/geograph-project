@@ -371,8 +371,8 @@ if (isset($_GET['fav']) && $i) {
 		$urlHandle = connectToURL('developers.metacarta.com',80,"/webservices/QueryParser/JSON/basic?version=1.0.0&bbox=-14.1707,48.9235,6.9506,61.7519&query=".rawurlencode($q),$CONF['metacarta_auth'],6);
 		if ($urlHandle) {
 			$r = '';
-			while (!feof($urlHandle)) {
-				$r .= fgets($urlHandle);
+			while ($urlHandle && !feof($urlHandle) && ($s = fgets($urlHandle)) !== false) {
+				$r .= $s;
 			}
 			fclose($urlHandle);
 			#$r = '{"Styles": {"loc": {"DefaultSymbol": {"URL": "http://developers.metacarta.com/img/symbols/LocationMarker.png", "Width": 30, "Height": 30}}}, "Warnings": [], "MinConfidence": 0.0, "Locations": [{"Confidence": 0.451807, "Name": "Skellingthorpe, United Kingdom", "Style": "loc", "Centroid": {"Latitude": 53.2333, "X": -0.616666, "Y": 53.2333, "Longitude": -0.616666}, "RemainingQuery": "mitchel close", "Path": ["Skellingthorpe", "United Kingdom"], "ViewBox": {"MaxX": -0.589905177287, "MaxY": 53.2600950873, "MaxLongitude": -0.589905177287, "MinY": 53.2065720927, "MinLatitude": 53.2065720927, "MinX": -0.643428171913, "MaxLatitude": 53.2600950873, "MinLongitude": -0.643428171913}}], "SRS": "epsg:4326", "SystemVersion": "MetaCarta GTS v3.7.0, JSON Query Parser API v1.0.0", "BBox": {"MaxX": 180.0, "MaxY": 90.0, "MaxLongitude": 180.0, "MinY": -90.0, "MinLongitude": -180.0, "MinX": -180.0, "MaxLatitude": 90.0, "MinLatitude": -90.0}, "Query": "mitchel close Skellingthorpe", "ResultsCreationTime": "Fri Mar 02 13:40:19 2007 UTC"}';
