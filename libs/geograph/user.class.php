@@ -736,7 +736,7 @@ class GeographUser
 				empty($profile['public_email'])?0:1,
 				$profile['search_results'],
 				$profile['slideshow_delay'],
-				$db->Quote(stripslashes($profile['about_yourself'])),
+				$db->Quote(strip_tags(stripslashes($profile['about_yourself']))),
 				$profile['public_about']?1:0,
 				$profile['age_group'],
 				$profile['use_age_group']?1:0,

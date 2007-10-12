@@ -392,7 +392,7 @@ function connectToURL($addr, $port, $path, $userpass="", $timeout="30") {
 			$response = fgets($urlHandle);
 			if (substr_count($response, "200 OK") > 0) {	// Check the status of the link
 				$endHeader = false;			// Strip initial header information
-				while ( !$endHeader) {
+				while ($urlHandle && !$endHeader && !feof($urlHandle)) {
 					if (fgets($urlHandle) == "\r\n")
 						$endHeader = true;
 				}
