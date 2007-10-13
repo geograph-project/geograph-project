@@ -66,7 +66,7 @@ if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_i
         if($i>0) $bg='tbCel1'; else $bg='tbCel2';
         
         if(isset($mod_rewrite) and $mod_rewrite) $urlp="{$main_url}/{$forum}_{$topic}_"; else $urlp="{$main_url}/{$indexphp}action=vthread&amp;forum=$forum&amp;topic=$topic&amp;page=";
-        $pageNavCell=pageNav(0,$numReplies+1,$urlp,($forum == 6)?10:$viewmaxreplys,TRUE);
+        $pageNavCell=pageNav(0,$numReplies+1,$urlp,($forum == 6 || $forum == 11)?10:$viewmaxreplys,TRUE);
         
         $whenPosted=convert_date($cols[4]);
         if(trim($cols[1])=='') $cols[1]=$l_emptyTopic;

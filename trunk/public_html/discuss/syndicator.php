@@ -82,7 +82,7 @@ if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
 
 	$posts = $db->getOne("SELECT COUNT(*) FROM `geobb_posts` WHERE `topic_id` = {$_GET['topic']}");
 
-	$perpage = ($forrom == 6)?10:30;
+	$perpage = ($forrom == 6 || $forrom == 11)?10:30;
 
 	$hash = $posts % $perpage;
 	$page = floor($posts / $perpage);

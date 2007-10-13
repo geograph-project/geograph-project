@@ -151,7 +151,7 @@ $mainPostForm=ParseTpl(makeUp('main_post_form'));
 $title=$title.' '.$forumName;
 if ($gridref && $currentgridreftopics == 0) 
  $main=makeUp('main_topics_gridref');
-else if ($forum == 6 && !$USER->hasPerm("basic")) 
+else if ($forum == 11 && !$USER->hasPerm("basic")) 
  $main=makeUp('main_topics_gallery');
 else if(!isset($showSep)) $main=makeUp('main_topics');
 else $main=makeUp('main_newtopicform');

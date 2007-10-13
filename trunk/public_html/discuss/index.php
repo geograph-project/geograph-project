@@ -6,7 +6,7 @@ This file is part of miniBB. miniBB is free discussion forums/message board soft
 //use our own authentication first...
 require_once('geograph/global.inc.php');
 init_session();
-if (!isset($_GET['forum']) || $_GET['forum'] != 6)
+if (!isset($_GET['forum']) || $_GET['forum'] != 11)
 	$USER->mustHavePerm("basic");
 
 customGZipHandlerStart();
@@ -95,7 +95,7 @@ if(isset($_GET['topic'])) $topic=$_GET['topic']; elseif(isset($_POST['topic'])) 
 
 if (isset($_POST['action'])) $action=$_POST['action']; elseif (isset($_GET['action'])) $action=$_GET['action'];
 
-if ($forum == 6) {
+if ($forum == 6 || $forum == 11) {
 	$viewmaxreplys=10;
 }
 
@@ -147,7 +147,7 @@ $loginLogout=ParseTpl(makeUp('user_logged_in'));
 $user_logging=$loginLogout;
 }
 else {
-if (!isset($_GET['forum']) || $_GET['forum'] != 6)
+if (!isset($_GET['forum']) || $_GET['forum'] != 11)
 	$USER->mustHavePerm("admin");
 
 if($sdef==0) $user_sort=$sortingTopics; else $user_sort=$sortBy;
@@ -189,7 +189,7 @@ else $l_adminpanel_link='';
 if($action=='vthread'){
 $topicData=db_simpleSelect(0,$Tt,'topic_title, topic_status, topic_poster, topic_poster_name, forum_id, posts_count, sticky, topic_views','topic_id','=',$topic);
 if($topicData and $topicData[4]!=$forum) $forum=$topicData[4];
-if ($forum == 6) {
+if ($forum == 6 || $forum == 11) {
 	$viewmaxreplys=10;
 }
 unset($result);unset($countRes);
