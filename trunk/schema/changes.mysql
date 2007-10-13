@@ -1409,3 +1409,41 @@ CREATE TABLE `article_lock` (
 
 
 ALTER TABLE `queries` CHANGE `limit1` `limit1` VARCHAR( 7 )  NOT NULL ;
+
+
+
+ CREATE TABLE `queries_archive` (
+  `id` int(10) unsigned NOT NULL ,
+  `searchdesc` varchar(255) NOT NULL default '',
+  `searchclass` enum('County','GridRef','Placename','Postcode','Random','Text','All','Special') NOT NULL default 'All',
+  `searchq` varchar(255) NOT NULL default '',
+  `searchtext` varchar(255) NOT NULL default '',
+  `limit1` varchar(7) NOT NULL,
+  `limit2` enum('','geograph','geographÿaccepted','geographÿacceptedÿpending','pending','accepted','rejected') NOT NULL default '',
+  `limit3` varchar(32) NOT NULL default '',
+  `limit4` char(1) NOT NULL default '',
+  `limit5` char(2) NOT NULL default '',
+  `limit6` varchar(32) NOT NULL default '',
+  `limit7` varchar(32) NOT NULL default '',
+  `limit8` smallint(5) unsigned NOT NULL default '0',
+  `limit9` int(10) unsigned NOT NULL default '0',
+  `limit10` mediumint(8) unsigned NOT NULL default '0',
+  `x` smallint(5) unsigned NOT NULL default '0',
+  `y` smallint(5) unsigned NOT NULL default '0',
+  `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','moremod','gmap') NOT NULL default 'full',
+  `resultsperpage` smallint(5) NOT NULL default '15',
+  `orderby` varchar(32) NOT NULL default '',
+  `breakby` varchar(32) NOT NULL default '',
+  `crt_timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `user_id` int(11) NOT NULL default '0',
+  `searchuse` enum('search','flickr','gazetteer','discuss') NOT NULL default 'search',
+  `use_timestamp` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `favorite` enum('Y','N') NOT NULL default 'N',
+  PRIMARY KEY  (`id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 ;
+
+
+INSERT INTO queries_archive SELECT * FROM queries WHERE user_id = 0 and use_timestamp < date_sub(now(),interval 1 month);
+
+DELETE FROM queries WHERE user_id = 0 and use_timestamp < date_sub(now(),interval 1 month);

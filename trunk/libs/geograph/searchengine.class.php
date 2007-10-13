@@ -80,7 +80,10 @@ class SearchEngine
 			$db=$this->_getDB();
 
 			$query = $db->GetRow("SELECT *,crt_timestamp+0 as crt_timestamp_ts FROM queries WHERE id = $query_id LIMIT 1");
-
+			if (!count($query)) {
+				$query = $db->GetRow("SELECT *,crt_timestamp+0 as crt_timestamp_ts FROM queries_archive WHERE id = $query_id LIMIT 1");
+			}
+			
 			$classname = "SearchCriteria_".$query['searchclass'];
 			$this->criteria = new $classname($query['q']);
 			
