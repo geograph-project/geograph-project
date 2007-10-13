@@ -29,10 +29,13 @@ init_session();
 
 $smarty = new GeographPage;
 
-$template='games_moversboard.tpl';
+$template='games_leaderboard.tpl';
 
 $l=inSetRequestInt('l',-1);
-$cacheid=$l;
+
+$limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(250,intval($_GET['limit'])):50;
+
+$cacheid="$l.$limit";
 
 
 if (isset($_GET['more'])) {
@@ -68,10 +71,20 @@ if (!$smarty->is_cached($template, $cacheid))
 	foreach($topusers as $id=>$entry)
 	{
 		if ($lastscore == $entry['average'])
-			$topusers[$id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
+			if ($i > $limit) {
+				unset($topusers[$idx]);
+				continue;
+			} else {
+				$topusers[$id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
+			}
 		else {
-			$topusers[$id]['ordinal'] = smarty_function_ordinal($i);
-			$lastscore = $entry['average'];
+			if ($i > $limit) {
+				unset($topusers[$idx]);
+				continue;
+			} else {
+				$topusers[$id]['ordinal'] = smarty_function_ordinal($i);
+				$lastscore = $entry['average'];
+			}
 		}
 		$i++;
 		$average += $entry['average'];

@@ -2,12 +2,9 @@
 
 {include file="_std_begin.tpl"}
 
-<h2><a href="/games/">Geograph Games</a> - Weekly Leaderboard</h2>
+<h2><a href="/games/">Geograph Games</a> - All Time Leaderboard</h2>
 	
-<p>See also <a href="/games/leaderboard.php?l={$l}">all time leaderboard</a></p>
-
-<p>Last generated at {$smarty.now|date_format:"%H:%M"} and covers games since
-{$cutoff_time|date_format:"%A, %d %b at %H:%M"}</p>
+<p>See also <a href="/games/moversboard.php?l={$l}">weekly leaderboard</a></p>
 
 <table class="report"> 
 <thead><tr><td>Position</td><td>Name</td><td>Level</td><td>Overall</td><td>Games</td><td><img src="http://s0.{$http_host}/templates/basic/img/hamster-icon.gif"/></td></tr></thead>
@@ -22,8 +19,6 @@
 </tr>
 {/foreach}
 
-
-<tr class="totalrow"><th colspan="3">Totals</th><th align="right">{$average}</th><th align="right">{$games}</th><th align="right">{$score}</th></tr></thead>
 </tbody>
 </table>
 
