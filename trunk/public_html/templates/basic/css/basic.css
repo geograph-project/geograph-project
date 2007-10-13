@@ -184,6 +184,12 @@ body>#nav_block {width:128px;}
 {
 	margin:0;
 	padding:0 0 0 1em;
+	font-size:0.85em;
+}
+
+.nav ul li ul
+{
+	font-size:1.17em;
 }
 
 .nav h3.newstitle
