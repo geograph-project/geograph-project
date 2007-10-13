@@ -90,8 +90,9 @@ if (!empty($CONF['disable_discuss_thumbs'])) {
 				$images=$square->getImages();
 				$smarty->assign_by_ref('images', $images);
 
-				$gridThumbs = $smarty->fetch("_discuss_gridref_cell.tpl");
 			}
+			$smarty->assign('gridref', $gridref);	
+			$gridThumbs = $smarty->fetch("_discuss_gridref_cell.tpl");
 		}
 	}
 }

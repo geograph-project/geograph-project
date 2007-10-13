@@ -1,9 +1,11 @@
 
 {dynamic}
+	<h3 style="float:left; margin-top:0; padding-left:10px; font-weight:normal;"><a href="/gridref/{$gridref}" style="color:silver;">{$gridref}</a> :: &nbsp;</h3>
 	{if $place.distance}
-		{place place=$place h3=' style="text-align:left; margin-top:0; padding-left:10px; font-weight:normal; color:silver;"'}
+		 {place place=$place h3=' style="text-align:left; margin-top:0; padding-left:10px; font-weight:normal; color:silver;"'}
 	{/if}
 
+	{if count($images) > 3}
 	<div style="{if count($images) > 3}height:520px; overflow:auto; {/if}position:relative; background-color:{$backgroundcolor}" onscroll="return showThumbnails(this);" id="scrollDiv">
 		<div style="position:relative;height:250px;">
 		{foreach from=$images item=image name=i}
@@ -27,6 +29,7 @@
 		<br style="clear:both"/>
 		</div>
 	</div>
+	{/if}
 	<br style="clear:both"/>
 
 {/dynamic}
