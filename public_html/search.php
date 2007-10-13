@@ -459,7 +459,9 @@ if (isset($_GET['fav']) && $i) {
 
 	if (is_int($i)) {
 		$query = $db->GetRow("SELECT * FROM queries WHERE id = $i LIMIT 1");
-
+		if (!count($query)) {
+			$query = $db->GetRow("SELECT * FROM queries_archive WHERE id = $i LIMIT 1");
+		}
 		$smarty->assign('searchclass', $query['searchclass']);
 		switch ($query['searchclass']) {
 			case "Special":
@@ -625,6 +627,9 @@ if (isset($_GET['fav']) && $i) {
 			if (!$db) die('Database connection failed');
 		}
 		$db->query("UPDATE queries SET use_timestamp = null WHERE id = $i");
+		if (!$db->Affected_Rows()) {
+			$db->query("UPDATE queries_archive SET use_timestamp = null WHERE id = $i");
+		}
 	}
 
 	$smarty->display($template, $cacheid);
@@ -641,6 +646,9 @@ if (isset($_GET['fav']) && $i) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
 		$query = $db->GetRow("SELECT searchq FROM queries WHERE id = $i LIMIT 1");
+		if (!count($query)) {
+			$query = $db->GetRow("SELECT searchq FROM queries_archive WHERE id = $i LIMIT 1");
+		}
 		$smarty->assign('searchq', $query['searchq']);
 	} else if (isset($_SESSION['searchq'])) {
 		list($q,$loc) = preg_split('/\s*near\s+/',$_SESSION['searchq'],2);
