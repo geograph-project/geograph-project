@@ -20,7 +20,7 @@ var map, osposition, ml;
 var maxOpacity = 0.9;
 var minOpacity = 0.1;
 
-var glayer;
+var glayer,player;
 
 {literal}
 
@@ -43,7 +43,11 @@ function loadMap() {
 	glayer.tileSize = new OpenLayers.Size(250,250);	
 	glayer.getURL = geographURL;
 	
-	map.addLayers([oslayer,glayer]);
+//	player = new OpenLayers.Layer.WMS("Geograph Photos", ttileurl+"?l=p", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, opacity: 0.3, buffer:0});	
+//	player.tileSize = new OpenLayers.Size(250,250);	
+//	player.getURL = geographURL;
+	
+	map.addLayers([oslayer,glayer]); //,player
 	
 	ll = new OpenLayers.LonLat(lon, lat);
 	map.setCenter(ll, 0);
@@ -84,7 +88,10 @@ AttachEvent(window,'load',loadMap,false);
 
 <div style="float:left; width:330px; font-size:0.9em;">Change Overlay Opacity: [<a title="increase opacity" href="javascript: changeOpacity(0.1);">+</a>] [<a title="decrease opacity" href="javascript: changeOpacity(-0.1);">-</a>]</div>
 <div style="float:left; width:330px; text-align:right; position:relative; font-size:0.9em;">Jump to Grid Reference: <input type="text" size="8" id="coordin" /><input type="button" onclick="parseLocation()" value="Go" /></div>
-<br style="clear:both"/><br/>
+<br style="clear:both"/>
+
+<h3>Draggable Geograph Map of Great Britain <sup>(beta)</sup></h3>
+
 
 <div class="copyright"  style="width:660px;">Great Britain 1:50 000 Scale Colour Raster Mapping &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.<br/>
 <br/>

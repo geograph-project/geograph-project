@@ -329,5 +329,9 @@ include ($pathToFiles.'bb_func_forums.php');
 
 if(isset($mod_rewrite) and $mod_rewrite) $linkToForums="{$main_url}/{$forum}_0.html"; else $linkToForums="{$main_url}/{$indexphp}action=vtopic&amp;forum={$forum}";
 
-echo load_header(); echo ParseTpl(makeUp('main_posts'));
+if (!$USER->hasPerm("basic")) {
+	echo load_header(); echo ParseTpl(makeUp('main_posts_gallery'));
+} else {
+	echo load_header(); echo ParseTpl(makeUp('main_posts'));
+}
 ?>

@@ -99,14 +99,14 @@
 	{/if}
 	
 	<br style="clear:both"/>
-	<div style="text-align:right">{if $game->score}Score at beginning of this game: {$game->score}, with {$game->games} played{/if} 
+	<div style="text-align:right">{if $game->score}Score at beginning of this game: {$game->score}, with {$game->games} games played{/if} 
 		{if $rater}
 			<input type="submit" name="save" value="save scores &gt;" disabled="disabled"/>
 			or <input type="submit" name="next" value="another &gt; &gt;" disabled="disabled"/>
 		{elseif $game->games == $game->batchsize-1}
 			<input type="submit" name="save" value="save scores &gt;" disabled="disabled"/>
 		{else}
-			<input type="submit" name="next" value="another &gt; &gt;" disabled="disabled"/>
+			<input type="submit" name="next" value="next &gt; &gt;" disabled="disabled"/>
 		{/if}
 	</div>
 </form>

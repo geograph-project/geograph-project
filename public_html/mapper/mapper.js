@@ -38,7 +38,7 @@ function mouseDefaultClick(evt) {
 		if(osposition.update) {
 			osposition.update = 0;
 			gr = osposition.element.innerHTML;
-			osposition.element.innerHTML = gr + " <a href='/gridref/"+escape(gr)+"' target='_top'>Go</a>";
+			osposition.element.innerHTML = gr + ' <a href="/gridref/'+escape(gr)+'" target="_top">Go</a>';
 			parent.frames['browseframe'].location.href = "/gridref/"+gr+"?inner";
 		} else {
 			osposition.update = 1;

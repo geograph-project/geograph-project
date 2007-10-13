@@ -3,21 +3,32 @@
 <div id="nav_block">
  <div class="nav">
   <ul>
-    <li><a accesskey="1" title="Home Page" href="/">Home</a></li>
-    <li><a title="Find images" href="/search.php">Search</a> / <a title="Explore Images by Theme" href="/explore/">Explore</a></li>
-    <li><a title="View map of all submissions" href="/mapbrowse.php">Map Viewer</a></li>
+    <li style="font-size:1.42em"><a accesskey="1" title="Home Page" href="/">Home</a></li>
+    <li>View<ul>
+     <li><a title="Find images" href="/search.php">Search</a></li>
+     <li><a title="View map of all submissions" href="/mapbrowse.php">Map</a></li>
+     <li><a title="Explore Images by Theme" href="/explore/">Explore</a></li>
+     <li><a title="Photos Galleries" href="/discuss/index.php?&action=vtopic&forum=6">Galleries</a></li>
+    </ul></li>
+    <li>Contribute<ul>
     <li><a title="Submit" href="/submit.php">Submit</a></li>
-    <li><a title="Discuss" href="/discuss/">Discuss</a> / <a href="/chat/">Chat</a></li>
-    <li><a title="Articles" href="/article/">Articles</a></li>
-    <li><a title="Statistics" href="/numbers.php">Statistics</a></li>
-    <li><a title="Leaderboard" href="/statistics/moversboard.php">Leaderboard</a></li>
-    <li><a title="FAQ" href="/faq.php">FAQ</a></li>
-    <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact</a></li>
-  </ul>
+     <li><a title="Statistics" href="/numbers.php">Statistics</a></li>
+     <li><a title="Leaderboard" href="/statistics/moversboard.php">Leaderboard</a></li>
+    </ul></li>
+    <li>Interact<ul>
+     <li><a title="Articles" href="/article/">Articles</a>
+     <li><a title="Play Games" href="/games/">Games</a></li>
+     <li><a title="Discuss" href="/discuss/">Discuss</a></li>
+     <li><a title="Chat" href="/chat/">Chat</a></li>
+    </ul></li>
+    <li>Further Info<ul>
+     <li><a title="FAQ" href="/faq.php">FAQ</a></li>
+     <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
+     <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a></li>
+    </ul></li>
   {dynamic}
   {if $is_mod || $is_admin || $is_tickmod}
-  <h3>Admin</h3>
-  <ul>
+    <li>Admin<ul>
      <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
      {if $is_mod}
      	<li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
@@ -26,9 +37,10 @@
      	<li><a title="Trouble Tickets" href="/admin/tickets.php">Tickets</a> (<a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search" title="Open in Sidebar, IE and Firefox Only">S</a>)</li>
      {/if}
      <li><a title="Finish Moderation for this session" href="/admin/moderation.php?abandon=1">Finish</a></li>
-  </ul>
+    </ul></li>
   {/if}
   {/dynamic}
+  </ul> 
 <div style="text-align:center; padding-top:15px; border-top: 2px solid black; margin-top: 15px;">sponsored by <br/> <br/>
 <a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="http://s0.{$http_host}/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey" style="padding:4px;"/></a></div>
 {if $discuss}
