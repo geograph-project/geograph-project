@@ -15,7 +15,7 @@ function showHide(id,show) {
 	<div style="position:absolute; left:80px; top:30px;border:1px solid red; z-index:100; color:white; background-color:green; width:84%; height:380px" class="interestBox">
 		<div style="float:right">[ <a href="javascript:showHide('helpout1',false);">Close</a> ]</div>
 		<h3 style="color:yellow">Playing in Rater Mode</h3>
-		<p>You will play an estentially normal game, however you will be shown completly random images from the large collection of images submitted to Geograph. Because of this many images wont actully be suitable for play, such as wide angle views, or very closeups that arent visible on the map extract.</p>
+		<p>You will play an essentially normal game, however you will be shown completely random images from the large collection of images submitted to Geograph. Because of this, many images won't actually be suitable for play, such as wide angle views or closeups that aren't visible on the map extract.</p>
 		
 
 		<div  class="interestBox" style="width:45%; float:left">
@@ -25,7 +25,7 @@ function showHide(id,show) {
 		<h3 style="background-color:black;color:white;margin-top:0px; padding:10px;"><div style="float:right"><input type="submit" value="Go &gt; &gt;" style="font-size:1.2em"/></div> Mark It</h3>
 		
 		</form>
-		<p>As you play please add an approximate level of difficultly for the image, if a image is not suitable please label it as such. Please rate asubing no local knowledge, and user of medium ability</p>
+		<p>As you play please add an approximate level of difficultly for the image, if a image is not suitable please label it as such. Please rate assumeing no local knowledge, and user of medium ability.</p>
 		
 		<a href="/games/moversboard.php?g=1&l=0">Rater Weekly Scoreboard</a>
 		<br style="clear:both"/>
