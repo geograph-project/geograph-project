@@ -19,7 +19,7 @@ if ($closedForums!='n') $xtr=getClForums($closedForums,'where','','forum_id','an
 $lPosts=array();
 if ($user_sort==1) $orderBy='topic_id DESC'; else $orderBy='topic_last_post_id DESC';
 
-if($cols=db_simpleSelect(0, $Tt, 'topic_last_post_id','forum_id','!=','5',$orderBy,$viewlastdiscussions)){
+if($cols=db_simpleSelect(0, $Tt, 'topic_last_post_id','forum_id','!=','5',$orderBy,$viewlastdiscussions,'forum_id','!=','11')){
     do $lPosts[]=$cols[0]; while($cols=db_simpleSelect(1));
 }
 
@@ -32,7 +32,7 @@ $xtr=$xtr1;
 
 $list_topics='';
 
-if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','forum_id','!=','5',$orderBy,$viewlastdiscussions)){
+if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','forum_id','!=','5',$orderBy,$viewlastdiscussions,'forum_id','!=','11')){
     
     $i=1;
     $tpl=makeUp('main_last_discuss_cell');
