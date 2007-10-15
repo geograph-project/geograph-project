@@ -285,7 +285,7 @@ class GeographPage extends Smarty
 					} else {
 						$value = 0;
 					}
-					apc_add('irc.seen',$value,30);
+					apc_store('irc.seen',$value,30);
 				}  
 			} else {
 				if (filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
