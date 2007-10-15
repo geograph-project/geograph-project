@@ -19,7 +19,7 @@
      <li><a title="Articles" href="/article/">Articles</a>
      <li><a title="Play Games" href="/games/">Games</a></li>
      <li><a title="Discuss" href="/discuss/">Discuss</a></li>
-     <li><a title="Chat" href="/chat/">Chat</a></li>
+     <li><a title="Chat" href="/chat/">Chat</a> {dynamic}{if $irc_seen}<span style="color:gray">({$irc_seen} online)</span>{/if}{/dynamic}</li>
     </ul></li>
     <li>Further Info<ul>
      <li><a title="FAQ" href="/faq.php">FAQ</a></li>
