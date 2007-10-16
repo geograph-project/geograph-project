@@ -249,7 +249,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{assign var="urltitle" value=$image->title|escape:'url'}
 	{external href="http://www.streetmap.co.uk/newmap.srf?x=`$image->grid_square->nateastings`&amp;y=`$image->grid_square->natnorthings`&amp;z=3&amp;sv=`$image->grid_square->nateastings`,`$image->grid_square->natnorthings`&amp;st=OSGrid&amp;lu=N&amp;tl=[$urltitle]+from+geograph.org.uk&amp;ar=y&amp;bi=background=http://s0.$http_host/templates/basic/img/background.gif&amp;mapp=newmap.srf&amp;searchp=newsearch.srf" text="streetmap.co.uk"},
 	{external href="http://www.multimap.com/maps/?title=[`$urltitle`]+on+geograph.org.uk#t=l&amp;map=$lat,$long|14|4&amp;dp=841&amp;loc=GB:$lat:$long:14|$urltitle|$urltitle" text="multimap.com"},
-	{external href="http://local.live.com/default.aspx?v=2&amp;cp=`$lat`~`$long`&amp;style=h&amp;lvl=14&amp;rtp=~pos.`$lat`_`$long`_`$urltitle`" text="local.live.com" title="detailed aerial photography from getmapping.com"},
+	{external href="http://maps.live.com/default.aspx?v=2&amp;cp=`$lat`~`$long`&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;mapurl=http://{$http_host}/photo/{$image->gridimage_id}.kml&amp;encType=1" text="maps.live.com" title="detailed aerial photography from maps.live.com"},
 {else}
 	{external href="http://www.multimap.com/map/browse.cgi?scale=25000&amp;lon=`$long`&amp;lat=`$lat`&amp;GridE=`$long`&amp;GridN=`$lat`" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"},
 {/if}
