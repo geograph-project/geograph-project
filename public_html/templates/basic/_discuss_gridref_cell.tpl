@@ -5,7 +5,7 @@
 		 {place place=$place h3=' style="text-align:left; margin-top:0; padding-left:10px; font-weight:normal; color:silver;"'}
 	{/if}
 
-	{if count($images) > 3}
+	{if count($images) > 0}
 	<div style="{if count($images) > 3}height:520px; overflow:auto; {/if}position:relative; background-color:{$backgroundcolor}" onscroll="return showThumbnails(this);" id="scrollDiv">
 		<div style="position:relative;height:250px;">
 		{foreach from=$images item=image name=i}

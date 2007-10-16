@@ -52,7 +52,7 @@
 			</tr>
 			<tr>
 				<td colspan="2">
-					<i>Recommended, API updates will be posted here.</i>
+					<i>Recommended, API updates will be posted here.<small><br/> Low traffic, membership list is not disclosed.</small></i>
 				</td>
 			</tr>
 			
