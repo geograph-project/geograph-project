@@ -72,7 +72,7 @@ $genEmailDisable=0;
 
 /* New options for miniBB 1.3 */
 $defDays=60;
-$userUnlock=0;
+$userUnlock=1;
 
 /* New options for miniBB 1.5 */
 $emailadmposts=0;
