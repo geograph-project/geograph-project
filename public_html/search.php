@@ -54,7 +54,8 @@ $displayclasses =  array(
 			'gmap' => 'on a Google Map',
 			'slide' => 'slide-show mode',
 			'text' => 'text only',
-			'spelling' => 'spelling utility');
+			'spelling' => 'spelling utility',
+			'reveal' => 'map imagine slideshow');
 $smarty->assign_by_ref('displayclasses',$displayclasses);
 
 
@@ -600,7 +601,10 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->register_function("searchbreak", "smarty_function_searchbreak");
 
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
-
+		
+		if ($display == 'reveal') {
+			$engine->noCache = true;
+		}
 
 		$smarty->assign('querytime', $engine->Execute($pg));
 
