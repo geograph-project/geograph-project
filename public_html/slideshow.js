@@ -4,12 +4,20 @@ var marker = false;
 
 function slide_go(delta) {
 	document.getElementById("result"+cs).style.display = 'none';
+	if (document.getElementById("mapA"+cs)) {
+		document.getElementById("mapA"+cs).style.display = 'none';
+	}
 	if (marker != false && document.getElementById(marker))
 		document.getElementById(marker).style.display = 'none';
 	csnext = cs + delta;
 	if (document.getElementById("result"+csnext)) {
 		cs = cs + delta;
-		document.getElementById("result"+cs).style.display = '';
+		if (document.getElementById("mapA"+cs)) {
+			document.getElementById("mapA"+cs).style.display = '';
+			setTimeout('show_slide_part2('+cs+')',mapdelayinsec*1000);
+		} else {
+			document.getElementById("result"+cs).style.display = '';
+		}
 		document.images['image'+cs].src = document.images['image'+cs].lowsrc;
 		csnext = cs + delta;
 		if (document.getElementById("result"+csnext)) 
@@ -29,6 +37,14 @@ function slide_go(delta) {
 		document.getElementById("prevautobutton").disabled = (cs <= 1);
 		document.getElementById("nextautobutton").disabled = (cs >= resultcount);
 	}
+}
+
+function show_slide_part2(cs) {
+	document.getElementById("result"+cs).style.display = '';
+	if (document.getElementById("mapA"+cs)) {
+		if (document.all)
+			document.getElementById("mapB"+cs).style.zoom = 1.0;
+	} 
 }
 
 function slide_stop() {
