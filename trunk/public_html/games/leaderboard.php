@@ -72,14 +72,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	{
 		if ($lastscore == $entry['average'])
 			if ($i > $limit) {
-				unset($topusers[$idx]);
+				unset($topusers[$id]);
 				continue;
 			} else {
 				$topusers[$id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
 			}
 		else {
 			if ($i > $limit) {
-				unset($topusers[$idx]);
+				unset($topusers[$id]);
 				continue;
 			} else {
 				$topusers[$id]['ordinal'] = smarty_function_ordinal($i);
