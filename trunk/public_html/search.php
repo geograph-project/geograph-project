@@ -619,6 +619,31 @@ if (isset($_GET['fav']) && $i) {
 				$smarty->assign('singlesquare_radius', $CONF['search_prompt_radius']);
 			}
 		}
+		
+		if ($display == 'reveal') {
+			foreach ($engine->results as $i => $image) {
+			
+				if ($engine->results[$i]->gridsquare_id) {
+					$engine->results[$i]->grid_square=new GridSquare;
+					$engine->results[$i]->grid_square->loadFromId($engine->results[$i]->gridsquare_id);
+					$engine->results[$i]->grid_reference=$engine->results[$i]->grid_square->grid_reference;
+					if ($engine->results[$i]->nateastings) {
+						$engine->results[$i]->natspecified = 1;
+						$engine->results[$i]->grid_square->natspecified = 1;
+						$engine->results[$i]->grid_square->natgrlen=$engine->results[$i]->natgrlen;
+						$engine->results[$i]->grid_square->nateastings=$engine->results[$i]->nateastings;
+						$engine->results[$i]->grid_square->natnorthings=$engine->results[$i]->natnorthings;
+					}
+				
+					//lets add an rastermap too
+					$engine->results[$i]->rastermap = new RasterMap($engine->results[$i]->grid_square,false);
+
+					if (isset($engine->results[$i]->view_direction) && strlen($engine->results[$i]->view_direction) && $engine->results[$i]->view_direction != -1) {
+						$engine->results[$i]->rastermap->addViewDirection($engine->results[$i]->view_direction);
+					}
+				}
+			}
+		}
 	}
 
 	if ($engine->criteria->user_id == $USER->user_id) {
