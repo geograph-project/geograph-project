@@ -15,6 +15,8 @@
 				<div id="mapB{$smarty.foreach.results.iteration}" class="rastermap" style="zoom:2.3; width:{$image->rastermap->width}px;position:relative; ">
 				{$image->rastermap->getImageTag()}
 				</div>
+			</td></tr><tr><td align="center">
+				<input type="button" value="Reveal Image &gt; &gt;" onclick="show_slide_part2(cs); this.style.display='none';"/>
 			</td></tr></table>
 		{/if}
 
@@ -56,8 +58,6 @@ setTimeout("document.images['image2'].src = document.images['image2'].lowsrc",60
 var mapdelayinsec = 7;
 var delayinsec = {$user->slideshow_delay|default:5} + mapdelayinsec;
 {/dynamic}
-cs = 1;
-setTimeout('show_slide_part2('+cs+')',mapdelayinsec*1000);
  //]]></script>
  	<br style="clear:both"/>
 	<p>Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})

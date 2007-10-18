@@ -14,7 +14,9 @@ function slide_go(delta) {
 		cs = cs + delta;
 		if (document.getElementById("mapA"+cs)) {
 			document.getElementById("mapA"+cs).style.display = '';
-			setTimeout('show_slide_part2('+cs+')',mapdelayinsec*1000);
+			if (timer != false) {
+				setTimeout('show_slide_part2('+cs+')',mapdelayinsec*1000);
+			}
 		} else {
 			document.getElementById("result"+cs).style.display = '';
 		}
@@ -44,6 +46,8 @@ function show_slide_part2(cs) {
 	if (document.getElementById("mapA"+cs)) {
 		if (document.all)
 			document.getElementById("mapB"+cs).style.zoom = 1.0;
+		mapA = document.getElementById("mapA"+cs);
+		mapA.setAttribute("style","float:left");
 	} 
 }
 
