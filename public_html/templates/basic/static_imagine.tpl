@@ -1,19 +1,16 @@
 {assign var="page_title" value="Imagine"}
 {include file="_std_begin.tpl"}
 
-<h2>Imagine Slideshow</h2>
+<h2>Through The Square Window.....</h2>
 
-<p>As well as the standard search results methods we have created a new display specially designed for use in the classroom. 
-In this mode each result is first shown as just a map, at which point you ask the class to visualise the spot highlighted, 
-then click a button to reveal the photo at the point so see how it matches up.</p>
+<p>We have created a new page specially designed for use in the classroom. 
+Here a map is shown, ask the class to imagine what the landscape looks like from the spot highlighted, then click a button to reveal the photo to see how it matches up.</p>
 
-<p>As this is part of the search results, it can visualise any images on the site, that match a certain criteria or you can even hand select the images you wish to use. </p>
 
 <h3>Example</h3>
 
-<p>We have created this <a href="http://www.geograph.org.uk/search.php?i=1796032&displayclass=reveal">quick example</a> of its use, but see below how to create your own</p>
+<p>We have created this <a href="http://www.geograph.org.uk/search.php?i=1796032&displayclass=reveal">quick example</a> for you to use, but you can create your own set of images</p>
 
-<h3>Standard Searches</h3>
 
 Either
 
@@ -26,7 +23,7 @@ or
 
 <h3>Hand Picking Images</h3>
 
-<p>You can hand craft images using the 'Marked Images' feature. When browseing search results, if you select the "plus links" display format, then you can mark individual images, also find the button top right on any full size photo page.</p>
+<p>You can hand craft images using the 'Marked Images' feature. When browseing search results, if you select the "+ links" display format, then you can mark individual images, also find the button top right on any full size photo page.</p>
 
 <p>Note: images are replayed in the order marked</p>
 
