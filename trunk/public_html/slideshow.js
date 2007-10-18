@@ -17,13 +17,18 @@ function slide_go(delta) {
 			if (timer != false) {
 				setTimeout('show_slide_part2('+cs+')',mapdelayinsec*1000);
 			}
+			document.images['map'+cs].src = document.images['map'+cs].lowsrc;
 		} else {
 			document.getElementById("result"+cs).style.display = '';
 		}
 		document.images['image'+cs].src = document.images['image'+cs].lowsrc;
 		csnext = cs + delta;
-		if (document.getElementById("result"+csnext)) 
-			document.images['image'+csnext].src = document.images['image'+csnext].lowsrc
+		if (document.getElementById("result"+csnext)) {
+			document.images['image'+csnext].src = document.images['image'+csnext].lowsrc;
+			if (document.getElementById("mapA"+csnext)) {
+				document.images['map'+csnext].src = document.images['map'+csnext].lowsrc;
+			}
+		}
 	} else {
 		marker = (delta > 0)?'marker_end':'marker_start';
 		if (document.getElementById(marker))

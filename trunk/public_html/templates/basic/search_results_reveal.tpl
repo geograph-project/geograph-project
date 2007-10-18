@@ -13,7 +13,7 @@
 	 	{if $image->rastermap->enabled}
 	 		<table align="center" id="mapA{$smarty.foreach.results.iteration}"{if !$smarty.foreach.results.first} style="display:none;"{/if}><tr><td>
 				<div id="mapB{$smarty.foreach.results.iteration}" class="rastermap" style="zoom:2.3; width:{$image->rastermap->width}px;position:relative; ">
-				{$image->rastermap->getImageTag()}
+				{$image->rastermap->getImageTag()|replace:'src="/tile':"name=map`$smarty.foreach.results.iteration` lowsrc=\"/tile"}
 				</div>
 			</td></tr><tr><td align="center">
 				<input type="button" value="Reveal Image &gt; &gt;" onclick="show_slide_part2(cs); this.style.display='none';"/>
@@ -54,6 +54,8 @@
 var resultcount = {$engine->numberofimages};
 setTimeout("document.images['image1'].src = document.images['image1'].lowsrc",300);
 setTimeout("document.images['image2'].src = document.images['image2'].lowsrc",600);
+setTimeout("document.images['map1'].src = document.images['map1'].lowsrc",300);
+setTimeout("document.images['map2'].src = document.images['map2'].lowsrc",600);
 {dynamic}
 var mapdelayinsec = 7;
 var delayinsec = {$user->slideshow_delay|default:5} + mapdelayinsec;
