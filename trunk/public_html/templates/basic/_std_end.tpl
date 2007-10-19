@@ -8,7 +8,7 @@
      <li><a title="Find images" href="/search.php">Search</a></li>
      <li><a title="View map of all submissions" href="/mapbrowse.php">Map</a></li>
      <li><a title="Explore Images by Theme" href="/explore/">Explore</a></li>
-     <li><a title="Photos Galleries" href="/discuss/?action=vtopic&amp;forum=11">Galleries</a></li>
+     <li><a title="Photos Galleries" href="/discuss/?action=vtopic&amp;forum=11">Galleries</a> <sup style="color:red">New!</sup></li>
     </ul></li>
     <li>Contribute<ul>
     <li><a title="Submit" href="/submit.php">Submit</a></li>
@@ -17,7 +17,7 @@
     </ul></li>
     <li>Interact<ul>
      <li><a title="Play Games" href="/games/">Games</a></li>
-     <li><a title="Imagine the map in pictures" href="/help/imagine">Imagine</a></li>
+     <li><a title="Imagine the map in pictures" href="/help/imagine">Imagine</a> <sup style="color:red">New!</sup></li>
      <li><a title="Discuss" href="/discuss/">Discuss</a></li>
      <li><a title="Chat" href="/chat/">Chat</a> {dynamic}{if $irc_seen}<span style="color:gray">({$irc_seen} online)</span>{/if}{/dynamic}</li>
     </ul></li>
