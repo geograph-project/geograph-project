@@ -4,7 +4,7 @@
 <h2>Through The Square Window.....</h2>
 
 <p>We have created a new page specially designed for use in the classroom. 
-Here a map is shown, ask the class to imagine what the landscape looks like from the spot highlighted, then click a button to reveal the photo to see how it matches up.</p>
+Here a map is shown, ask the class to imagine what the landscape looks like at the spot highlighted, then click a button to reveal the photo to see how it matches up.</p>
 
 
 <h3>Example</h3>
