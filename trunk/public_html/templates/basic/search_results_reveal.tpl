@@ -22,11 +22,13 @@
 
 	 <div id="result{$smarty.foreach.results.iteration}" style="display:none;" class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}" style="position:relative">
 	 
+	 {if $image->rastermap->enabled}
 	 <div style="float:left; position:relative; width:137px; height:137px;border:1px solid gray; padding: 10px;">
 	 <div style="position:absolute; top:-48px;left:-48px; clip: rect(56px 197px 197px 56px); overflow: hidden; width:199px; height:199px;">
 	 {$image->rastermap->getImageTag()|replace:'src="/tile':"name=mapD`$smarty.foreach.results.iteration` lowsrc=\"/tile"}
 	 </div>
 	 </div>
+	 {/if}
 	 
 	 <div style="float:right; position:relative;">{$smarty.foreach.results.iteration}/{$engine->numberofimages}</div>
 		<div class="caption" style="clear:none"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a> by <a title="view user profile" href="/profile/{$image->user_id}">{$image->realname}</a><br/>
@@ -35,7 +37,7 @@
 		{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 		</div>
-		<div class="img-shadow" style="position:relative;"><a title="{$image->title|escape:'html'} - click to view image page" href="/photo/{$image->gridimage_id}">{$image->getFull()|replace:'src=':"name=image`$smarty.foreach.results.iteration` lowsrc="}</a></div>
+		<div class="img-shadow" style="clear:both; position:relative;"><a title="{$image->title|escape:'html'} - click to view image page" href="/photo/{$image->gridimage_id}">{$image->getFull()|replace:'src=':"name=image`$smarty.foreach.results.iteration` lowsrc="}</a></div>
 		{if $image->comment}
 		  <div class="caption">{$image->comment|escape:'html'|geographlinks}</div>
   		{/if}
