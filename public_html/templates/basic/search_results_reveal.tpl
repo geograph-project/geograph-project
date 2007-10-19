@@ -30,14 +30,14 @@
 	 </div>
 	 {/if}
 	 
-	 <div style="float:right; position:relative;">{$smarty.foreach.results.iteration}/{$engine->numberofimages}</div>
-		<div class="caption" style="clear:none"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a> by <a title="view user profile" href="/profile/{$image->user_id}">{$image->realname}</a><br/>
+	<div style="float:right; position:relative;">{$smarty.foreach.results.iteration}/{$engine->numberofimages}</div>
+	<div class="caption" style="clear:none"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a> by <a title="view user profile" href="/profile/{$image->user_id}">{$image->realname}</a><br/>
 		{if $image->moderation_status == 'geograph'}geograph{else}{if $image->moderation_status == 'pending'}pending{/if}{/if} for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
 		<i class="nowrap">{$image->dist_string}</i><br/>
 		{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 		</div>
-		<div class="img-shadow" style="clear:both; position:relative;"><a title="{$image->title|escape:'html'} - click to view image page" href="/photo/{$image->gridimage_id}">{$image->getFull()|replace:'src=':"name=image`$smarty.foreach.results.iteration` lowsrc="}</a></div>
+		<div class="img-shadow" style="clear:right; position:relative;"><a title="{$image->title|escape:'html'} - click to view image page" href="/photo/{$image->gridimage_id}">{$image->getFull()|replace:'src=':"name=image`$smarty.foreach.results.iteration` lowsrc="}</a></div>
 		{if $image->comment}
 		  <div class="caption">{$image->comment|escape:'html'|geographlinks}</div>
   		{/if}
