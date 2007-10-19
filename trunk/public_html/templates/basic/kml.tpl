@@ -86,12 +86,16 @@
 	 	<h3>Download type:</h3> 
 		<table border="1" cellpadding="3" cellspacing="0"> 
 		  <tr> 
-			 <td><input type="radio" name="type" value="maps" id="type_maps"
-				checked="checked"/></td> 
+			 <td><input type="radio" name="type" value="live" id="type_live"/></td> 
+			 <td><b><label for="type_maps"><big><acronym title="Open on maps.live.com">maps.live.com</acronym></big></label></b><br/>
+			 Open search results on the <b>maps.live.com</b> website.<br/><br/></td> 
+			 <td rowspan="4"><label for="page">Download<br/> Page</label>
+				<input type="text" name="page" value="{$currentPage}" size="3" id="page"/> of {if $engine->numberOfPages}{$engine->numberOfPages}{else}results{/if}.</td> 
+		  </tr> 
+		  <tr> 
+			 <td><input type="radio" name="type" value="maps" id="type_maps"/></td> 
 			 <td><b><label for="type_maps"><big><acronym title="Open in Google Maps">Maps</acronym></big></label></b><br/>
 			 Open search results in the <b>Google Maps UK</b> website.<br/><br/></td> 
-			 <td rowspan="3"><label for="page">Download<br/> Page</label>
-				<input type="text" name="page" value="{$currentPage}" size="3" id="page"/> of {if $engine->numberOfPages}{$engine->numberOfPages}{else}results{/if}.</td> 
 		  </tr> 
 		  <tr> 
 			 <td><input type="radio" name="type" value="static" id="type_static"

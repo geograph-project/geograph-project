@@ -16,13 +16,13 @@
      <li><a title="Leaderboard" href="/statistics/moversboard.php">Leaderboard</a></li>
     </ul></li>
     <li>Interact<ul>
-     <li><a title="Articles" href="/article/">Articles</a>
      <li><a title="Play Games" href="/games/">Games</a></li>
      <li><a title="Imagine the map in pictures" href="/help/imagine">Imagine</a></li>
      <li><a title="Discuss" href="/discuss/">Discuss</a></li>
      <li><a title="Chat" href="/chat/">Chat</a> {dynamic}{if $irc_seen}<span style="color:gray">({$irc_seen} online)</span>{/if}{/dynamic}</li>
     </ul></li>
     <li>Further Info<ul>
+     <li><a title="Articles" href="/article/">Articles</a>
      <li><a title="FAQ" href="/faq.php">FAQ</a></li>
      <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
      <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a></li>

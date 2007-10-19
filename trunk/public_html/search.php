@@ -580,6 +580,7 @@ if (isset($_GET['fav']) && $i) {
 			$engine->temp_displayclass = $display;
 		}
 	}
+	$engine->display = $display;
 	$template = 'search_results_'.$display.'.tpl';
 	
 	$ab=floor($i%10000);
@@ -604,6 +605,7 @@ if (isset($_GET['fav']) && $i) {
 		
 		if ($display == 'reveal') {
 			$engine->noCache = true;
+			$engine->criteria->limit4 = 1; //only works in GB
 		}
 
 		$smarty->assign('querytime', $engine->Execute($pg));
@@ -642,7 +644,9 @@ if (isset($_GET['fav']) && $i) {
 					//lets add an rastermap too
 					$engine->results[$i]->rastermap = new RasterMap($engine->results[$i]->grid_square,false);
 
-					if (isset($engine->results[$i]->view_direction) && strlen($engine->results[$i]->view_direction) && $engine->results[$i]->view_direction != -1) {
+					if (!empty($engine->results[$i]->viewpoint_northings)) {
+						$engine->results[$i]->rastermap->addViewpoint($engine->results[$i]->viewpoint_eastings,$engine->results[$i]->viewpoint_northings,$engine->results[$i]->viewpoint_grlen,$engine->results[$i]->view_direction);
+					} elseif (isset($engine->results[$i]->view_direction) && strlen($engine->results[$i]->view_direction) && $engine->results[$i]->view_direction != -1) {
 						$engine->results[$i]->rastermap->addViewDirection($engine->results[$i]->view_direction);
 					}
 				}

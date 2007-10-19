@@ -154,7 +154,7 @@ class SearchEngine
 					print "<BR><BR>$sql";
 
 				$this->resultCount = $db->CacheGetOne(3600,$sql);
-				if (empty($_GET['BBOX'])) {
+				if (empty($_GET['BBOX']) && $this->display != 'reveal') {
 					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 				}
 			}
@@ -203,7 +203,7 @@ END;
 					$this->pageOneOnly = 1;
 				} else {
 					$this->numberOfPages = ceil($this->resultCount/$pgsize);
-					if (empty($_GET['BBOX'])) {
+					if (empty($_GET['BBOX']) && $this->display != 'reveal') {
 						$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 					}
 				}
@@ -266,7 +266,7 @@ END;
 					print "<BR><BR>$sql";
 
 				$this->resultCount = $db->CacheGetOne(3600,$sql);
-				if (empty($_GET['BBOX'])) {
+				if (empty($_GET['BBOX']) && $this->display != 'reveal') {
 					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 				}
 			}
@@ -313,7 +313,7 @@ END;
 					$this->pageOneOnly = 1;
 				} else {
 					$this->numberOfPages = ceil($this->resultCount/$pgsize);
-					if (empty($_GET['BBOX'])) {
+					if (empty($_GET['BBOX']) && $this->display != 'reveal') {
 						$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 					}
 				}
@@ -389,7 +389,7 @@ END;
 				if ($this->currentPage < $lastPage) {
 					$db=$this->_getDB();
 					
-					if (empty($_GET['BBOX'])) {
+					if (empty($_GET['BBOX']) && $this->display != 'reveal') {
 						$db->Execute("replace into queries_count set id = {$this->query_id},`count` = 0");
 					}
 					$this->resultCount = 0;
