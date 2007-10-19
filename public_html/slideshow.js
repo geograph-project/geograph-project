@@ -26,7 +26,8 @@ function slide_go(delta) {
 		if (document.getElementById("result"+csnext)) {
 			document.images['image'+csnext].src = document.images['image'+csnext].lowsrc;
 			if (document.getElementById("mapA"+csnext)) {
-				document.images['map'+csnext].src = document.images['map'+csnext].lowsrc;
+				document.images['mapC'+csnext].src = document.images['mapC'+csnext].lowsrc;
+				document.images['mapD'+csnext].src = document.images['mapD'+csnext].lowsrc;
 			}
 		}
 	} else {
@@ -49,10 +50,7 @@ function slide_go(delta) {
 function show_slide_part2(cs) {
 	document.getElementById("result"+cs).style.display = '';
 	if (document.getElementById("mapA"+cs)) {
-		if (document.all)
-			document.getElementById("mapB"+cs).style.zoom = 1.0;
-		mapA = document.getElementById("mapA"+cs);
-		mapA.setAttribute("style","float:left");
+		document.getElementById("mapA"+cs).style.display = 'none';
 	} 
 }
 
