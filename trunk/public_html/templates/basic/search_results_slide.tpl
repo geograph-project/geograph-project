@@ -1,7 +1,7 @@
 {include file="_search_begin.tpl"}
 
 {if $engine->resultCount}
-	<script src="http://s0.{$http_host}/slideshow.js"></script>
+	<script src="http://s0.{$http_host}/slideshow.v{$javascript_version}.js"></script>
 	<br/>( Page {$engine->pagesString()}) {if $engine->criteria->searchclass != 'Special'}[<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}
 	</p>
 
