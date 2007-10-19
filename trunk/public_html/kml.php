@@ -161,6 +161,9 @@ $cacheid = '';
 			$simple = $_REQUEST['simple'];
 			if (isset($_REQUEST['type']) && $_REQUEST['type'] == 'view') {
 				$url = "http://{$_SERVER['HTTP_HOST']}/earth.php?i=$i&simple=$simple";
+			} elseif (isset($_REQUEST['type']) && $_REQUEST['type'] == 'mapsview') {
+				$url = "http://{$_SERVER['HTTP_HOST']}/feed/results/$i/$pg.nl";
+				$_REQUEST['type'] = 'maps';
 			} else {
 				$url = "http://{$_SERVER['HTTP_HOST']}/feed/results/$i/$pg.kml";
 			}
@@ -169,6 +172,12 @@ $cacheid = '';
 				header("Location:$url");
 				$url = str_replace('&','&amp;',$url);
 				print "<a href=\"$url\">Open KML</a>";
+				exit;
+			} elseif (isset($_REQUEST['type']) && $_REQUEST['type'] == 'live') {
+				header("Status:302 Found");
+				$url = "http://maps.live.com/default.aspx?v=2&mapurl=$url"; //no need to urlencode as we using rest style url
+				header("Location:$url");
+				print "<a href=\"$url\">Open 'Maps Live'</a>";
 				exit;
 			} elseif (isset($_REQUEST['type']) && $_REQUEST['type'] == 'maps') {
 				header("Status:302 Found");
