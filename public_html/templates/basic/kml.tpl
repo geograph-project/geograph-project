@@ -1,7 +1,7 @@
 {assign var="page_title" value="Google Earth or Google Maps :: KML Export"}
 {include file="_std_begin.tpl"}
 {dynamic}
-	<div style="padding:5px;background:#dddddd;position:relative; float:right; font-size:0.8em; z-index:100">
+	<div style="padding:5px;background:#dddddd;position:relative; float:right; font-size:0.8em; z-index:100; border:1px solid blue">
 	Quick links:<br/><br/>
 	<b>All Geograph Images</b>: <br/>
 	&nbsp;&nbsp;&nbsp;<a href="/kml-superlayer.php">Google Earth <b>Version 4</b></a><br/>
@@ -15,18 +15,16 @@
 	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=http://$http_host/discuss/feed/forum5.kml" text="Google Maps"}<br/>
 	{/if}
 	<br/> 
-	<b><a href="/help/squares">Hectad</a> 3D Coverage Graph</b>:<br/> 
+	<b>Hectad<a href="/help/squares">?</a> 3D Coverage Graph</b>:<br/> 
 	&nbsp;&nbsp;&nbsp;<a href="/kml/hectads-points.kmz">Google Earth</a> (~200kb KMZ)<br/>
 	{if $user->registered}
 	&nbsp;&nbsp;&nbsp;<a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=2&topic=4415"><i>More <small>including time animation</small></i></a><br/>
 	{/if}
-	<small><small><i>Last updated: {$coverage_updated}</i></small></small>
+	<small><small><i>Last updated: {$coverage_updated}</i></small></small><br/> 
+	<br/> 
+	<b>Geograph Layer Collection</b>:<br/>
+	&nbsp;&nbsp;&nbsp;<a href="/kml">Google Earth</a> <small><small>- includes access to<br/> nearly all the features on this page and more!</small></small>
 	</div>
-
-	{if !$i}<div class="interestBox" style="width:550px;background-color:pink;padding:2px">
-	 NEW! <a href="/kml"><b>Geograph Layer Collection</b> for Google Earth!</a><br/>
-	- includes access to nearly all the features on this page and more! </div>
-	 {/if}
 	 
 	 <h2>Geograph Images in Google Earth or Google Maps</h2> 
 	 <p>&middot;
@@ -36,13 +34,17 @@
 	 </p>
 	
 	{if !$i}
-	 <div class="interestBox" style="width:550px;background-color:yellow;padding:2px;">
+	 <div class="interestBox" style="width:550px;background-color:yellow;padding:2px;margin-left: 15px">
 	 <img src="/kml/images/cam1-small.gif" width="24" height="24"/> <a href="/kml-superlayer.php"><b>Geograph SuperLayer</b></a> (Google Earth Version 4+ REQUIRED)
 	{if $i}<br/><i><b>- displays all images - not the selection as per requested search</b></i>{/if}
 	<small><br/><br/>This SuperLayer allows full access to the thousends of images contributed to Geograph, the view starts depicting a coarse overview of the current coverage, zooming in reveals more detail until pictures themselves become visible. (Broadband Recommended) 
 	 <br/><small><i>Last updated: {$superlayer_updated}</i></small>
 	 <a href="/help/superlayer">View Icon Key</a></small>
 	 </div>
+	
+	 <p style="margin-left: 15px"><small>Anywhere you see a <a title="Google Earth Feed" href="/kml.php" class="xml-kml">KML</a>
+		 link on the Geograph website, (for example on a photo page) click to download images into Google Earth.</small></p>
+
 	{/if}
 	 
 	 
@@ -65,9 +67,7 @@
 			<p>Please enter <a href="/search.php">another search</a>, or select <a href="/kml.php">common exports</a></p>
 		{/if}
 	{else} 
-	 <p>Anywhere you see a <a title="Google Earth Feed" href="/kml.php" class="xml-kml">KML</a>
-	 link on the Geograph website, (for example on a photo page, or on search results) click to download images into Google Earth or Maps.</p>
-
+	
 	<div class="interestBox">
 		
 		Show <select name="i" id="i">
@@ -87,7 +87,7 @@
 		<table border="1" cellpadding="3" cellspacing="0"> 
 		  <tr> 
 			 <td><input type="radio" name="type" value="live" id="type_live"/></td> 
-			 <td><b><label for="type_maps"><big><acronym title="Open on maps.live.com">maps.live.com</acronym></big></label></b><br/>
+			 <td><b><label for="type_live"><big><acronym title="Open on maps.live.com">maps.live.com</acronym></big></label></b><br/>
 			 Open search results on the <b>maps.live.com</b> website.<br/><br/></td> 
 			 <td rowspan="4"><label for="page">Download<br/> Page</label>
 				<input type="text" name="page" value="{$currentPage}" size="3" id="page"/> of {if $engine->numberOfPages}{$engine->numberOfPages}{else}results{/if}.</td> 
@@ -105,7 +105,7 @@
 		  </tr> 
 		  <tr> 
 			 <td><input type="radio" name="type" value="time" id="type_time"/></td> 
-			 <td><b><label for="type_time"><big><acronym title="Time-Based Refresh">Automatic Updates</acronym></big></label></b> <br/>
+			 <td><b><label for="type_time"><big><acronym title="Time-Based Refresh Network Link">Automatic Updates</acronym></big></label></b> <br/>
 			 Like 'Simple', but <b>Google Earth</b> will refresh the results <label>once every 
 				<select name="refresh" size="1"> 
 				  <option value="3600">Hour</option> 
@@ -116,11 +116,20 @@
 		  </tr> 
 		  <tr> 
 			 <td><input type="radio" name="type" value="view" id="type_view"/></td> 
-			 <td colspan="2"><b><label for="type_view"><big><acronym title="View-Based Refresh">Wide area</acronym></big></label></b><br>
+			 <td colspan="2"><b><label for="type_view"><big><acronym title="View-Based Refresh Network Link">Wide area</acronym></big></label></b><br>
 			 For a large result set covering a wide area, this option allows the <b>Google Earth</b> application
 			 to just show the photos within the area of view. As you scroll around, Google Earth will
 			 automatically fetch other photos from the result set. Please note that you'll normally only see
 			 {if $i && $engine->resultCount}{$engine->criteria->resultsperpage}{else}around 15{/if} photos at a time with this option. (if you have GE4+ it is recommended to use the <a href="/kml.php">superlayer</a>, however you will not get the filtering of the results, and will see all images)
+			 </td> 
+		  </tr> 
+		  <tr> 
+			 <td><input type="radio" name="type" value="mapsview" id="type_mapsview"/></td> 
+			 <td colspan="2"><b><label for="type_mapsview"><big><acronym title="View-Based Refresh Network Link on Maps">Wide area on Google Maps</acronym></big></label></b><br>
+			 For a large result set covering a wide area, this option allows the <b>Google Maps</b> 
+			 to just show the photos within the area of view. As you scroll around, Google Maps will
+			 automatically fetch other photos from the result set. Please note that you'll normally only see
+			 {if $i && $engine->resultCount}{$engine->criteria->resultsperpage}{else}around 15{/if} photos at a time with this option. 
 			 </td> 
 		  </tr> 
 		</table> 
