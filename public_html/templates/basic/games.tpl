@@ -12,7 +12,7 @@ function showHide(id,show) {
 {if $user->registered}
 
 <div style="position:relative; display: none" id="helpout1">
-	<div style="position:absolute; left:80px; top:30px;border:1px solid red; z-index:100; color:white; background-color:green; width:84%; height:380px" class="interestBox">
+	<div style="left:80px; border:1px solid red; color:white; background-color:green; width:84%; height:340px; margin-bottom:30px" class="interestBox">
 		<div style="float:right">[ <a href="javascript:showHide('helpout1',false);">Close</a> ]</div>
 		<h3 style="color:yellow">Playing in Rater Mode</h3>
 		<p>You will play an essentially normal game, however you will be shown completely random images from the large collection of images submitted to Geograph. Because of this, many images won't actually be suitable for play, such as wide angle views or closeups that aren't visible on the map extract.</p>
