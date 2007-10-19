@@ -5,7 +5,6 @@
  <b>Press Releases</b> 
  <ul style="margin-top:0;padding:0 0 0 1em;">
  <li><a href="/help/press_release_001">Ordnance Survey to sponsor the Geograph Project</a></li>
- <li><a href="/help/press_release_002"><small>Geograph British Isles nominated for the New Statesman New Media Awards 2007 for Education</small></a></li>
  </ul></div>
 
     <h2>Geograph Sitemap</h2>
@@ -28,7 +27,7 @@
  <li><a href="/help/bbcodes">Forum BBcodes Help</a><br/><br/></li>
  <li><a href="/help/terms">Terms &amp; Conditions</a><br/><br/></li>
  <li><a href="/contact.php">Contact Us</a><br/><br/></li>
- <li><a href="/admin/team.php">Team</a> &amp; <a href="/help/credits">Credits</a></li>
+ <li><a href="/admin/team.php">The Team</a> &amp; <a href="/help/credits">Credits</a></li>
  </ul></div>
  
  
@@ -39,6 +38,7 @@
 	<li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a></li>
 	<li><a title="Discussion forums" href="/discuss/"><b>discuss the site</b> on our forums</a></li>
 	<li><a title="Submitted Articles" href="/article/">read <b>articles</b> submitted by members</b></a></li>
+	<li><a title="education area" href="/teachers/">Geograph for <b>teachers</b></a></li>
 </ul>
  
 <h3>Exploring in more depth...</h3>
@@ -47,6 +47,8 @@
 	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a> (<a href="#stats">more below</a>)</li>
 	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
 	<li><a title="List of all images" href="/sitemap/geograph.html">view the <b>full list</b> of images</a></li>
+	<li><a title="Games" href="/games/"><b>play</b> with geograph images</a></li>
+	<li><a title="draggable map" href="/mapper/">interacrive <b>draggable map</b></a></li>
 </ul>
  
 <h3><a name="software"></a>Interacting with other software...</h3>
@@ -66,6 +68,7 @@
 	<li><a href="/forgotten.php">Forgotton Password</a></li>
 	<li><a href="/contact.php">Contact Us</a></li>
 	<li><a href="/profile.php">Your Profile</a> (for registered users only)</li>
+	<li><a href="/tickets.php">Review Your Recent Change Suggestions</a></li>
 </ul>
 
 <h3><a name="users"></a>Contributors...</h3>
