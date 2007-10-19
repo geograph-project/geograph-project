@@ -11,7 +11,7 @@
 
 	{foreach from=$engine->results item=image name=results}
 	 	{if $image->rastermap->enabled}
-	 		<table align="center" id="mapA{$smarty.foreach.results.iteration}"{if !$smarty.foreach.results.first} style="display:none;"{/if}><tr><td>
+	 		<table align="center" id="mapA{$smarty.foreach.results.iteration}" style="position:relative;{if !$smarty.foreach.results.first}display:none;{/if}"><tr><td>
 				<div id="mapB{$smarty.foreach.results.iteration}" class="rastermap" style="zoom:2.0; width:{$image->rastermap->width}px;position:relative; ">
 				{$image->rastermap->getImageTag()|replace:'src="/tile':"name=mapC`$smarty.foreach.results.iteration` lowsrc=\"/tile"}
 				</div>
