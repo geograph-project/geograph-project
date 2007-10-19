@@ -16,7 +16,7 @@
 				{$image->rastermap->getImageTag()|replace:'src="/tile':"name=mapC`$smarty.foreach.results.iteration` lowsrc=\"/tile"}
 				</div>
 			</td></tr><tr><td align="center">
-				<input type="button" value="Reveal Image &gt; &gt;" onclick="show_slide_part2(cs); this.style.display='none';"/>
+				<input type="button" value="Reveal Image &gt; &gt;" onclick="show_slide_part2(cs);"/>
 			</td></tr></table>
 		{/if}
 
