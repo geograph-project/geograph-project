@@ -17,7 +17,8 @@ function slide_go(delta) {
 			if (timer != false) {
 				setTimeout('show_slide_part2('+cs+')',mapdelayinsec*1000);
 			}
-			document.images['map'+cs].src = document.images['map'+cs].lowsrc;
+			document.images['mapC'+cs].src = document.images['mapC'+cs].lowsrc;
+			document.images['mapD'+cs].src = document.images['mapD'+cs].lowsrc;
 		} else {
 			document.getElementById("result"+cs).style.display = '';
 		}
