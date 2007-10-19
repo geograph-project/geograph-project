@@ -4,29 +4,30 @@
 	<div style="padding:5px;background:#dddddd;position:relative; float:right; font-size:0.8em; z-index:100; border:1px solid blue">
 	Quick links:<br/><br/>
 	<b>All Geograph Images</b>: <br/>
-	&nbsp;&nbsp;&nbsp;<a href="/kml-superlayer.php">Google Earth <b>Version 4</b></a><br/>
+	&nbsp;&nbsp;&nbsp;<a href="/kml-superlayer.php" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (<b>GE Version 4+</b>)<br/>
+	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/ig/directory?synd=mpl&pid=mpl&features=sharedmap%2Cgeofeed&backlink=http%3A%2F%2Fmaps.google.co.uk%2Fmaps%2Fmm%3Fmapprev%3D1%26ie%3DUTF8%26z%3D5%26om%3D1&num=24&url=http://www.geograph.org.uk/stuff/gmapplet0.xml" text="Google Maps Mapplet"}<br/>
 	<br/> 
 	<b>Recent Images</b>: <br/>
-	&nbsp;&nbsp;&nbsp;<a href="/feed/recent.kml">Google Earth</a><br/>
+	&nbsp;&nbsp;&nbsp;<a href="/feed/recent.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> 
 	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=http://$http_host/feed/recent.kml" text="Google Maps"}<br/>
 	{if $user->registered}<br/> 
 	<b>Recent Discussions</b>:<br/> 
-	&nbsp;&nbsp;&nbsp;<a href="/discuss/feed/forum5.kml">Google Earth</a><br/>
+	&nbsp;&nbsp;&nbsp;<a href="/discuss/feed/forum5.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a>
 	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=http://$http_host/discuss/feed/forum5.kml" text="Google Maps"}<br/>
 	{/if}
 	<br/> 
 	<b>Hectad<a href="/help/squares">?</a> 3D Coverage Graph</b>:<br/> 
-	&nbsp;&nbsp;&nbsp;<a href="/kml/hectads-points.kmz">Google Earth</a> (~200kb KMZ)<br/>
+	&nbsp;&nbsp;&nbsp;<a href="/kml/hectads-points.kmz" title="Google Earth :: Geograph 3D Coverage Graph" class="xml-kml" type="application/vnd.google-earth.kmz+xml">KMZ</a> (about 200 kilobytes)<br/>
 	{if $user->registered}
 	&nbsp;&nbsp;&nbsp;<a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=2&topic=4415"><i>More <small>including time animation</small></i></a><br/>
 	{/if}
 	<small><small><i>Last updated: {$coverage_updated}</i></small></small><br/> 
 	<br/> 
 	<b>Geograph Layer Collection</b>:<br/>
-	&nbsp;&nbsp;&nbsp;<a href="/kml">Google Earth</a> <small><small>- includes access to<br/> nearly all the features on this page and more!</small></small>
+	&nbsp;&nbsp;&nbsp;<a href="/kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> <small><small>- includes access to<br/> nearly all the features on this page and more!</small></small>
 	</div>
 	 
-	 <h2>Geograph Images in Google Earth or Google Maps</h2> 
+	 <h2>View Geograph Images using KML</h2> 
 	 <p>&middot;
 	 {external href="http://earth.google.com/" text="Google Earth"}
 		is a free desktop application
@@ -34,8 +35,8 @@
 	 </p>
 	
 	{if !$i}
-	 <div class="interestBox" style="width:550px;background-color:yellow;padding:2px;margin-left: 15px">
-	 <img src="/kml/images/cam1-small.gif" width="24" height="24"/> <a href="/kml-superlayer.php"><b>Geograph SuperLayer</b></a> (Google Earth Version 4+ REQUIRED)
+	 <div class="interestBox" style="width:550px;background-color:yellow;padding:10px;margin-left: 15px; border:1px solid orange">
+	 <img src="/kml/images/cam1-small.gif" width="24" height="24" style="vertical-align: middle"/> <a href="/kml-superlayer.php"><b>Geograph SuperLayer</b></a> (Google Earth Version 4+ REQUIRED)
 	{if $i}<br/><i><b>- displays all images - not the selection as per requested search</b></i>{/if}
 	<small><br/><br/>This SuperLayer allows full access to the thousends of images contributed to Geograph, the view starts depicting a coarse overview of the current coverage, zooming in reveals more detail until pictures themselves become visible. (Broadband Recommended) 
 	 <br/><small><i>Last updated: {$superlayer_updated}</i></small>
@@ -43,7 +44,7 @@
 	 </div>
 	
 	 <p style="margin-left: 15px"><small>Anywhere you see a <a title="Google Earth Feed" href="/kml.php" class="xml-kml">KML</a>
-		 link on the Geograph website, (for example on a photo page) click to download images into Google Earth.</small></p>
+		 icon on the Geograph website, (for example on a photo page) click to download into Google Earth.</small></p>
 
 	{/if}
 	 
@@ -75,7 +76,7 @@
 		</select><br/>
 		
 		Or perform a <a href="/search.php">search</a> and 
-		look for the the <a title="Google Earth Feed" href="/kml.php" class="xml-kml">KML</a> button on the results page.
+		look for the KML link at the foot of the results page.
 	{/if}
 	<br/><br/>
 	<input type="submit" name="submit" value="Download KML file ({if $engine->resultCount > $engine->criteria->resultsperpage}{$engine->criteria->resultsperpage}{else}{$engine->resultCount}{/if} images)..."/> <span id="advtoggle"></span>
