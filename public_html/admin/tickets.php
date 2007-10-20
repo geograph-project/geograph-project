@@ -142,6 +142,11 @@ if (isset($_GET['moderator'])) {
 	}
 } 
 
+if (isset($_GET['q'])) {
+	$q = $db->Quote("%{$_GET['q']}%");
+	$sql_where .= " and (t.notes like $q or i.title like $q)";
+}
+
 #################
 # available values
 
