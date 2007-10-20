@@ -4,6 +4,7 @@
 User-agent: *
 Disallow: /mapbrowse.php
 Disallow: /map/
+Disallow: /mapper/
 Disallow: /maplarge.php
 Disallow: /mapprint.php
 Disallow: /admin/
@@ -36,6 +37,7 @@ Disallow: /profile/*/map
 Disallow: /photo/*?style=*
 Disallow: /mapbrowse.php
 Disallow: /map/
+Disallow: /mapper/
 Disallow: /maplarge.php
 Disallow: /mapprint.php
 Disallow: /admin/
