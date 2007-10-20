@@ -82,7 +82,8 @@ if (isset($_REQUEST['edit']))
 	'major' => 'Only Major changes', 
 	//'digest' => 'Receive Digest emails Once per Day',
 	'none' => 'No Email - access online only' ));
-			
+	
+	$profile->getStats();
 	
 	$smarty->assign_by_ref('profile', $profile);
 }

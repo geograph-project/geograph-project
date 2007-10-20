@@ -251,7 +251,7 @@
  	<input type="submit" name="savechanges" value="Save Changes"/>
  	<input type="submit" name="cancel" value="Cancel"/>
 
-{if ($profile->rank) || ($profile->rights && $profile->rights ne 'basic')}
+{if ($profile->stats.squares gt 20) || ($profile->rights && $profile->rights ne 'basic')}
 	<br/><br/><br/><br/><br/><br/>
 	<fieldset>
 	<legend>User Roles</legend>
