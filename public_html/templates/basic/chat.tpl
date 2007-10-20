@@ -67,6 +67,19 @@
 
 </applet>
 
+<p>:) <img src="/chat/img/sourire.gif">&nbsp;
+:d <img src="/chat/img/content.gif">&nbsp;
+:o <img src="/chat/img/OH-1.gif">&nbsp;
+:p <img src="/chat/img/langue.gif">&nbsp;
+;) <img src="/chat/img/clin-oeuil.gif">&nbsp;
+:( <img src="/chat/img/triste.gif">&nbsp;
+:| <img src="/chat/img/OH-3.gif">&nbsp;
+:'( <img src="/chat/img/pleure.gif">&nbsp;
+:$ <img src="/chat/img/rouge.gif">&nbsp;
+(H) <img src="/chat/img/cool.gif">&nbsp;
+:@ <img src="/chat/img/enerve2.gif">&nbsp;
+:s <img src="/chat/img/roll-eyes.gif"></p>
+
   {literal}
   <script language="JavaScript" type="text/javascript">
   
