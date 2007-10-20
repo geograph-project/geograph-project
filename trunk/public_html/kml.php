@@ -162,7 +162,7 @@ $cacheid = '';
 			if (isset($_REQUEST['type']) && $_REQUEST['type'] == 'view') {
 				$url = "http://{$_SERVER['HTTP_HOST']}/earth.php?i=$i&simple=$simple";
 			} elseif (isset($_REQUEST['type']) && $_REQUEST['type'] == 'mapsview') {
-				$url = "http://{$_SERVER['HTTP_HOST']}/feed/results/$i/$pg.nl";
+				$url = "http://{$_SERVER['HTTP_HOST']}/feed/results/$i.nl";
 				$_REQUEST['type'] = 'maps';
 			} else {
 				$url = "http://{$_SERVER['HTTP_HOST']}/feed/results/$i/$pg.kml";
