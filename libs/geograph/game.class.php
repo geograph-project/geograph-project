@@ -94,8 +94,10 @@ class game {
 		}
 		$updates['score'] = $this->score;
 		$updates['games'] = $this->games;
+		$updates['ua'] = $_SERVER['HTTP_USER_AGENT'];
+		$updates['session'] = session_id();
 		
-		$this->_getDB()->Execute('INSERT INTO game_score SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+		$this->_getDB()->Execute('INSERT INTO game_score SET `ipaddr` = INET_ATON(\''.getRemoteIP().'\'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 	}
 	
 	public function saveRate($rating) {
