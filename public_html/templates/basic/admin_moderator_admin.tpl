@@ -14,6 +14,12 @@
 	<p>Click Grant to make a user a moderator, you can also check the verification moderations using the Verify link.</p>
 {/if}
 
+<form method="get" action="{$script_name}">
+<label for="show_role">Show assigned role</label>: <select name="show_role" id="show_role">
+    	{html_options options=$roles selected=$show_role}
+    </select>
+ <input type="submit" value="Go"/></p></form>
+ 
 {if $moderators}
 
 <table class="report sortable" id="newtickets" style="font-size:8pt;">
@@ -24,8 +30,8 @@
 	<td>Signup Date</td>
 	<td>Last Verification</td>
 	{if $stats}
-		<td>Photos</td>
-		<td>Moderations</td>
+		<td>Images Submitted</td>
+		<td>Images Moderated</td>
 		<td>Tickets Moderated</td>
 		<td>Forum Posts</td>
 	{/if}

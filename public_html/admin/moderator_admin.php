@@ -71,6 +71,18 @@ if (!empty($_GET['q']) && trim($_GET['q'])) {
 	$sql_where = '';
 }
 
+$roles = $db->GetAssoc("select if(role != '',role,if(rights like '%admin%','Developer',if(rights like '%moderator%','Moderator','-none-'))) , if(role != '',role,if(rights like '%admin%','Developer',if(rights like '%moderator%','Moderator','-none-'))) from user group by if(role != '',role,if(rights like '%admin%','Developer',if(rights like '%moderator%','Moderator','-none-')))");
+$smarty->assign('roles', array(''=>'-any-')+$roles);
+
+if (!empty($_GET['show_role'])) {
+	$sql_where .= " and if(role != '',role,if(rights like '%admin%','Developer',if(rights like '%moderator%','Moderator','-none-'))) = ".$db->Quote($_GET['show_role']);
+	$smarty->assign('show_role', $_GET['show_role']);
+} 
+if (isset($_GET['stats'])) { 
+	$user = $db->Quote($_GET['stats']);
+	$sql_where .= " and user.user_id = $user";
+}
+
 $moderators = $db->GetAssoc("
 select 
 	user.user_id,user.realname,user.nickname,user.rights,role,substring(user.signup_date,1,10) as signup_date,
@@ -85,10 +97,9 @@ order by last_log_time desc,user.user_id");
 
 
 if (isset($_GET['stats'])) { 
-	$user = $db->Quote($_GET['stats']);
 	$moderatorstats = $db->GetRow("
 	select user.user_id,user.realname,user.nickname,user.rights,
-	(select count(*) from gridimage gi2 where gi2.user_id = user.user_id) as photo_count,
+	(select count(*) from gridimage_search gi2 where gi2.user_id = user.user_id) as photo_count,
 	(select count(*) from geobb_posts p where p.poster_id = user.user_id) as post_count,
 	(select count(*) from gridimage gi where gi.moderator_id = user.user_id) as count,
 	(select count(*) from gridimage_ticket t where t.moderator_id = user.user_id) as ticket_count
