@@ -1447,3 +1447,8 @@ ALTER TABLE `queries` CHANGE `limit1` `limit1` VARCHAR( 7 )  NOT NULL ;
 INSERT INTO queries_archive SELECT * FROM queries WHERE user_id = 0 and use_timestamp < date_sub(now(),interval 1 month);
 
 DELETE FROM queries WHERE user_id = 0 and use_timestamp < date_sub(now(),interval 1 month);
+
+
+ALTER TABLE `game_score` ADD `ipaddr` INT UNSIGNED NOT NULL ,
+ADD `ua` VARCHAR( 128 ) NOT NULL ,
+ADD `session` VARCHAR( 32 ) NOT NULL ;
