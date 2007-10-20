@@ -81,6 +81,10 @@ if (!empty($_GET['Submit'])) {
 # form input
 
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(100,intval($_GET['limit'])):50;
+$page = (isset($_GET['page']) && is_numeric($_GET['page']))?min(100,intval($_GET['page'])):0;
+if ($page) {
+	$limit = sprintf("%d,%d",($page -1)* $limit,$limit);	
+}
 
 $rev = (isset($_GET['rev']))?'desc':'';
 
