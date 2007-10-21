@@ -78,7 +78,7 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
 <h2>Admin Tools - use with care</h2>
 <ul>
 
-<li><a title="Moderators" href="/admin/moderator_admin.php">Moderator Admin</a> - 
+<li><a title="Moderators" href="/admin/moderator_admin.php?show_role=-none-">Moderator Admin</a> - 
    grant/revoke moderator rights to users</li>
 
 <li><a title="API Keys" href="/admin/apikeys.php">API Keys</a> - 

@@ -133,8 +133,6 @@ if (isset($_GET['moderator'])) {
 	$smarty->assign('moderator', 1);
 
 } elseif (isset($_GET['user_id'])) {
-	$USER->mustHavePerm('admin');
-	
 	$mid = intval($_GET['user_id']);
 	
 	if ($mid != 0) {

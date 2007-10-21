@@ -1452,3 +1452,10 @@ DELETE FROM queries WHERE user_id = 0 and use_timestamp < date_sub(now(),interva
 ALTER TABLE `game_score` ADD `ipaddr` INT UNSIGNED NOT NULL ,
 ADD `ua` VARCHAR( 128 ) NOT NULL ,
 ADD `session` VARCHAR( 32 ) NOT NULL ;
+
+
+
+ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full', 'text', 'thumbs', 'slide', 'more', 'spelling', 'thumbsmore', 'search', 'searchtext', 'reveal', 'cluster' ) NOT NULL DEFAULT 'full';
+
+ALTER TABLE `queries` CHANGE `queries_archive` `displayclass` ENUM( 'full', 'text', 'thumbs', 'slide', 'more', 'spelling', 'thumbsmore', 'search', 'searchtext', 'reveal', 'cluster' ) NOT NULL DEFAULT 'full';
+

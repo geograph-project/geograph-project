@@ -627,28 +627,52 @@ if (isset($_GET['fav']) && $i) {
 		}
 		
 		if ($display == 'reveal') {
-			foreach ($engine->results as $i => $image) {
+			foreach ($engine->results as $idx => $image) {
 			
-				if ($engine->results[$i]->gridsquare_id) {
-					$engine->results[$i]->grid_square=new GridSquare;
-					$engine->results[$i]->grid_square->loadFromId($engine->results[$i]->gridsquare_id);
-					$engine->results[$i]->grid_reference=$engine->results[$i]->grid_square->grid_reference;
-					if ($engine->results[$i]->nateastings) {
-						$engine->results[$i]->natspecified = 1;
-						$engine->results[$i]->grid_square->natspecified = 1;
-						$engine->results[$i]->grid_square->natgrlen=$engine->results[$i]->natgrlen;
-						$engine->results[$i]->grid_square->nateastings=$engine->results[$i]->nateastings;
-						$engine->results[$i]->grid_square->natnorthings=$engine->results[$i]->natnorthings;
+				if ($engine->results[$idx]->gridsquare_id) {
+					$engine->results[$idx]->grid_square=new GridSquare;
+					$engine->results[$idx]->grid_square->loadFromId($engine->results[$idx]->gridsquare_id);
+					$engine->results[$idx]->grid_reference=$engine->results[$idx]->grid_square->grid_reference;
+					if ($engine->results[$idx]->nateastings) {
+						$engine->results[$idx]->natspecified = 1;
+						$engine->results[$idx]->grid_square->natspecified = 1;
+						$engine->results[$idx]->grid_square->natgrlen=$engine->results[$idx]->natgrlen;
+						$engine->results[$idx]->grid_square->nateastings=$engine->results[$idx]->nateastings;
+						$engine->results[$idx]->grid_square->natnorthings=$engine->results[$idx]->natnorthings;
 					}
 				
 					//lets add an rastermap too
-					$engine->results[$i]->rastermap = new RasterMap($engine->results[$i]->grid_square,false);
+					$engine->results[$idx]->rastermap = new RasterMap($engine->results[$idx]->grid_square,false);
 
-					if (!empty($engine->results[$i]->viewpoint_northings)) {
-						$engine->results[$i]->rastermap->addViewpoint($engine->results[$i]->viewpoint_eastings,$engine->results[$i]->viewpoint_northings,$engine->results[$i]->viewpoint_grlen,$engine->results[$i]->view_direction);
-					} elseif (isset($engine->results[$i]->view_direction) && strlen($engine->results[$i]->view_direction) && $engine->results[$i]->view_direction != -1) {
-						$engine->results[$i]->rastermap->addViewDirection($engine->results[$i]->view_direction);
+					if (!empty($engine->results[$idx]->viewpoint_northings)) {
+						$engine->results[$idx]->rastermap->addViewpoint($engine->results[$idx]->viewpoint_eastings,$engine->results[$idx]->viewpoint_northings,$engine->results[$idx]->viewpoint_grlen,$engine->results[$idx]->view_direction);
+					} elseif (isset($engine->results[$idx]->view_direction) && strlen($engine->results[$idx]->view_direction) && $engine->results[$idx]->view_direction != -1) {
+						$engine->results[$idx]->rastermap->addViewDirection($engine->results[$idx]->view_direction);
 					}
+				}
+			}
+		}
+		if ($display == 'cluster') {
+			foreach ($engine->results as $idx => $image) {
+				$engine->results[$idx]->simple_title = preg_replace('/\s*\(?\s*\d+\s*\)?\s*$/','',$engine->results[$idx]->title);
+				$found = -1;
+				for($ic = 0;$ic< $idx;$ic++) {
+					if ($engine->results[$ic] 
+						&& $engine->results[$ic]->simple_title == $engine->results[$idx]->simple_title
+						&& $engine->results[$ic]->user_id == $engine->results[$idx]->user_id
+						&& $engine->results[$ic]->grid_reference == $engine->results[$idx]->grid_reference
+						) {
+						$found = $ic;
+						break;
+					}
+				}
+				if ($found > -1) {
+					if (!isset($engine->results[$found]->cluster)) 
+						$engine->results[$found]->cluster = array();
+
+					$image->simple_title = $engine->results[$idx]->simple_title;
+					array_push($engine->results[$found]->cluster,$image);
+					unset($engine->results[$idx]);
 				}
 			}
 		}
