@@ -345,6 +345,7 @@ if ($grid_given)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
 				GROUP BY SUBSTRING($column,1,$length)");
+				$column = (preg_match('/^taken/',$_GET['by']))?'taken':'submitted';
 				foreach ($all as $row) {
 					$date = getFormattedDate($row[0]);
 					$breakdown[$i] = array('name'=>"$title <b>$date</b>",'count'=>$row[1]);
