@@ -252,9 +252,10 @@ class SearchCriteria
 			list($y,$m,$d) = explode('-',$dates[1]);
 			if ($y > 0) {
 				if ($m == 0) {
-					$m = 12; $d = 31;
-				} else if ($d == 0) {
-					$d = 31;
+					$m = 12;
+				}  
+				if ($d == 0) {
+					$d = date('t',mktime(0,0,0,$m,1,$y)); ;
 				}
 				$dates[1] = "$y-$m-$d";
 			}
@@ -297,9 +298,10 @@ class SearchCriteria
 			list($y,$m,$d) = explode('-',$dates[1]);
 			if ($y > 0) {
 				if ($m == 0) {
-					$m = 12; $d = 31;
-				} else if ($d == 0) {
-					$d = 31;
+					$m = 12;
+				}
+				if ($d == 0) {
+					$d = date('t',mktime(0,0,0,$m,1,$y)); ;
 				}
 				$dates[1] = "$y-$m-$d";
 			}
