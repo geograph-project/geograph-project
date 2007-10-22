@@ -301,7 +301,7 @@ function markImage(image) {
 	createCookie('markedImages',newCookie,10);
 	
 	ele = document.getElementById('mark'+image);
-	if(document.all) {
+	if(ele.innerText != undefined) {
 	    ele.innerText = newtext;
 	} else {
 	    ele.textContent = newtext;
@@ -364,10 +364,12 @@ function showMarkedImages() {
 	if (current) {
 		splited = current.commatrim().split(',');
 		
+		var hasInnerText = (document.getElementsByTagName('body')[0].innerText != undefined)?true:false;
+		
 		for(i=0; i < splited.length; i++) 
 			if (document.getElementById('mark'+splited[i])) {
 				ele = document.getElementById('mark'+splited[i])
-				if(document.all) {
+				if(hasInnerText) {
 				    ele.innerText = 'marked';
 				} else {
 				    ele.textContent = 'marked';
@@ -385,10 +387,12 @@ function clearMarkedImages() {
 	if (current && confirm('Are you sure?')) {
 		splited = current.commatrim().split(',');
 
+		var hasInnerText = (document.getElementsByTagName('body')[0].innerText != undefined)?true:false;
+		
 		for(i=0; i < splited.length; i++) 
 			if (document.getElementById('mark'+splited[i])) {
 				ele = document.getElementById('mark'+splited[i])
-				if(document.all) {
+				if(hasInnerText) {
 				    ele.innerText = 'Mark';
 				} else {
 				    ele.textContent = 'Mark';
