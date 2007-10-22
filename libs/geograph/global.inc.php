@@ -37,6 +37,8 @@
 //files in /libs/conf
 require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
 
+@include('conf/revisions.conf.php');
+
 //adodb configuration
 require_once('adodb/adodb.inc.php');
 if ($CONF['adodb_debugging'])
@@ -254,7 +256,7 @@ class GeographPage extends Smarty
 		//gridimage
 		$this->register_function("place", "smarty_function_place");
 
-
+		$this->register_modifier("revision", "smarty_modifier_revision");
 		$this->register_modifier("geographlinks", "smarty_function_geographlinks");
 		$this->register_modifier("ordinal", "smarty_function_ordinal");
 

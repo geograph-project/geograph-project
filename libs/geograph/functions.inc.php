@@ -255,6 +255,19 @@ function smarty_function_ordinal($i) {
 }
 
 /**
+* smarty function to get revision number
+*/
+function smarty_modifier_revision($filename) {
+	global $REVISIONS;
+	if (isset($REVISIONS[$filename])) {
+		return "http://s0.{$_SERVER['HTTP_HOST']}".preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
+	} else {
+        	return $filename;
+	}
+}
+
+
+/**
 * smarty wrapper to GeographLinks
 */
 function smarty_function_geographlinks($input,$thumbs = false) {
