@@ -481,7 +481,7 @@ class RasterMap
 				list($this->lat,$this->long) = $conv->national_to_wgs84($this->nateastings,$this->natnorthings,$this->reference_index);
 			}
 			if ($this->issubmit) {
-				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapper/geotools2.js"}."\"></script>";
+				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapper/geotools2.js")."\"></script>";
 			} else {
 				$p1 = '';
 			}
@@ -492,7 +492,7 @@ class RasterMap
 				}
 				</style>
 				$p1
-				<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mappingG.js"}."\"></script>
+				<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mappingG.js")."\"></script>
 				<script type=\"text/javascript\">
 				//<![CDATA[
 					var issubmit = {$this->issubmit}+0;
@@ -524,7 +524,7 @@ class RasterMap
 				var mapw = {$this->width};
 				var mapb = 1;
 			</script>
-			<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapping.js"}."\"></script>";
+			<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapping.js")."\"></script>";
 
 			if ($this->issubmit) {
 				return "$str
