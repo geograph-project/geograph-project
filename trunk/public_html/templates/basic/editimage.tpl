@@ -69,7 +69,7 @@
 <br/>
   {if $isadmin && $is_mod}
 	  <form method="post">
-	  <script type="text/javascript" src="http://s0.{$http_host}/admin/moderation.v{$javascript_version}.js"></script>
+	  <script type="text/javascript" src="{"/admin/moderation.js"|revision}"></script>
 	  <h2 class="titlebar">Moderation</h2>
 	  <p><input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey"{/if}/>
 	  <input class="accept" type="button" id="accept" value="Accept" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey"{/if}/>
@@ -371,7 +371,7 @@
 			{/literal}
 		
 	{else} 
-		<script type="text/javascript" src="http://s0.{$http_host}/mapping.v{$javascript_version}.js"></script>
+		<script type="text/javascript" src="{"/mapping.js"|revision}"></script>
 	{/if}
 	
  		

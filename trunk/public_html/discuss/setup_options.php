@@ -21,7 +21,11 @@ $admin_usr=$CONF['minibb_admin_user'];
 $admin_pwd=$CONF['minibb_admin_pwd'];
 $admin_email=$CONF['minibb_admin_email'];
 
-$GLOBALS['javascript_version'] = $CONF['javascript_version'];
+if (isset($REVISIONS)) {
+	foreach ($REVISIONS as $key => $value) {
+		$GLOBALS['revision_'.str_replace(array('/','.'),'',$key)] = ".v$value";
+	}
+}
 $GLOBALS['http_host'] = $_SERVER['HTTP_HOST'];
 
 $bb_admin='bb_admin.php?';

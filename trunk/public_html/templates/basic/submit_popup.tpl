@@ -20,7 +20,7 @@
 		</div>
 		
 	{else} 
-		<script type="text/javascript" src="http://s0.{$http_host}/mapping.v{$javascript_version}.js"></script>
+		<script type="text/javascript" src="{"/mapping.js"|revision}"></script>
 	{/if}
 <div style="float:left; position:relative; font-size:0.8em;" class="interestBox">
 <i>Placenames featured on this map:</i>

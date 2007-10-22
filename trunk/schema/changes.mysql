@@ -1457,5 +1457,5 @@ ADD `session` VARCHAR( 32 ) NOT NULL ;
 
 ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full', 'text', 'thumbs', 'slide', 'more', 'spelling', 'thumbsmore', 'search', 'searchtext', 'reveal', 'cluster' ) NOT NULL DEFAULT 'full';
 
-ALTER TABLE `queries` CHANGE `queries_archive` `displayclass` ENUM( 'full', 'text', 'thumbs', 'slide', 'more', 'spelling', 'thumbsmore', 'search', 'searchtext', 'reveal', 'cluster' ) NOT NULL DEFAULT 'full';
+ALTER TABLE `queries_archive` CHANGE `displayclass` `displayclass` ENUM( 'full', 'text', 'thumbs', 'slide', 'more', 'spelling', 'thumbsmore', 'search', 'searchtext', 'reveal', 'cluster' ) NOT NULL DEFAULT 'full';
 

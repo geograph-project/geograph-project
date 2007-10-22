@@ -3,9 +3,9 @@
 {include file="_basic_begin.tpl"}
 
 
-<script src="http://s0.{$http_host}/mapper/OpenLayers.v240.js" type="text/javascript"></script>
-<script src="http://s0.{$http_host}/mapper/geotools2.js"></script>
-<script src="http://s0.{$http_host}/mapper/mapper.v{$javascript_version}.js"></script>
+<script src="{"/mapper/OpenLayers.js"|revision}" type="text/javascript"></script>
+<script src="{"/mapper/geotools2.js"|revision}"></script>
+<script src="{"/mapper/mapper.js"|revision}"></script>
 
 <script type="text/javascript">
 
