@@ -148,8 +148,8 @@ geographing</a> first.</p>
 		</li>
 	</ul>
 
-	<script type="text/javascript" src="http://s0.{$http_host}/mapping1.v{$javascript_version}.js"></script>
-	<script type="text/javascript" src="http://s0.{$http_host}/mapper/geotools2.js"></script>
+	<script type="text/javascript" src="{"/mapping1.js"|revision}"></script>
+	<script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
 {else}
 	<input type="hidden" name="gridsquare" value="{$gridsquare|escape:'html'}">
 	<input type="hidden" name="eastings" value="{$eastings|escape:'html'}">
@@ -242,7 +242,7 @@ geographing</a> first.</p>
 			{/literal}
 		
 	{else} 
-		<script type="text/javascript" src="http://s0.{$http_host}/mapping.v{$javascript_version}.js"></script>
+		<script type="text/javascript" src="http://s0.{$http_host}/mapping.js"></script>
 	{/if}
 
 	<br/>

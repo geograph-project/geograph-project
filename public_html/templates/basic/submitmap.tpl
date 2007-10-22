@@ -8,8 +8,8 @@
 {include file="_std_begin.tpl"}
 {/if}
 
-<script type="text/javascript" src="http://s0.{$http_host}/mapper/geotools2.js"></script>
-<script type="text/javascript" src="http://s0.{$http_host}/mappingG.v{$javascript_version}.js"></script>
+<script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
+<script type="text/javascript" src="{"/mappingG.js"|revision}"></script>
 {literal}
 	<script type="text/javascript">
 	//<![CDATA[
@@ -154,7 +154,6 @@
 </form>
 
 <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>
-			
 {if $inner}
 </body>
 </html>

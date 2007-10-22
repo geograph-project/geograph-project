@@ -1,6 +1,6 @@
 {assign var="page_title" value="Games :: Mark-It!"}
 {include file="_std_begin.tpl"}
-<script type="text/javascript" src="http://s0.{$http_host}/games/markit.v{$javascript_version}.js"></script>
+<script type="text/javascript" src="{"/games/markit.js"|revision}"></script>
 	
 {literal}
 <style type="text/css">
