@@ -1459,3 +1459,8 @@ ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full', 'text',
 
 ALTER TABLE `queries_archive` CHANGE `displayclass` `displayclass` ENUM( 'full', 'text', 'thumbs', 'slide', 'more', 'spelling', 'thumbsmore', 'search', 'searchtext', 'reveal', 'cluster' ) NOT NULL DEFAULT 'full';
 
+
+
+ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full', 'text', 'thumbs', 'slide', 'more', 'spelling', 'thumbsmore', 'search', 'searchtext', 'reveal', 'cluster', 'moremod' ) NOT NULL DEFAULT 'full';
+
+ALTER TABLE `queries_archive` CHANGE `displayclass` `displayclass` ENUM( 'full', 'text', 'thumbs', 'slide', 'more', 'spelling', 'thumbsmore', 'search', 'searchtext', 'reveal', 'cluster', 'moremod' ) NOT NULL DEFAULT 'full';
