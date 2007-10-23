@@ -131,7 +131,7 @@
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?28dayslater\.co\.uk/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?secretscotland\.org\.uk/ [NC,OR]
     RewriteCond %{HTTP_REFERER} (thread|topic|forum) [NC]    
-    RewriteRule /photos/.*\.jpg$ /stuff/nohotlink.php [L]
+    RewriteRule /photos/\d.*\.jpg$ /stuff/nohotlink.php [L]
 
 <Location /sitemap/>
     DirectoryIndex geograph.html

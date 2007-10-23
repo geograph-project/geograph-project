@@ -485,7 +485,7 @@ function customNoCacheHeader($type = 'nocache',$disable_auto = false) {
 
 function customExpiresHeader($diff,$public = false) {
 	if ($diff > 0) {
-		$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", time()+$diff);
+		$expires=gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+$diff);
 		header("Expires: $expires");
 		header("Cache-Control: max-age=$diff");
 	} else {

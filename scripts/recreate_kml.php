@@ -148,7 +148,7 @@ $end_time = $start_time + (60*$param['timeout']);
 $map=new GeographMap;
 
 while (1) {
-
+	#$db = NewADOConnection($GLOBALS['DSN']);
 	$invalid_maps = $db->GetOne("select SQL_NO_CACHE count(*) from kmlcache where rendered != 1");
 
 	if ($invalid_maps) {
@@ -163,7 +163,7 @@ while (1) {
 				{
 					sleep($param['sleep']);
 					if (time()>$end_time) 
-						exit;	
+						die('C');	
 
 				}
 			}
@@ -183,7 +183,7 @@ while (1) {
 			if (time()>$end_time) {
 				$recordSet->Close(); 
 				//well come to the end of the scripts useful life
-				exit;
+				die('D');
 			}
 
 			$recordSet->MoveNext();
@@ -192,15 +192,15 @@ while (1) {
 	} else {
 		//nothing more to do here
 
-		exit;
+		die('E');
 	}
 
 	//sleep anyway for a bit
-	sleep($param['sleep']*3);
+	sleep($param['sleep']);
 
 	if (time()>$end_time) {
 		//retreat and let the next recruit take the strain
-		exit;
+		die('F');
 	}
 }
 

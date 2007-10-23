@@ -670,7 +670,10 @@ class FeedCreator extends HtmlDescribable {
 		//uses Geograph specific functions, get them seperatly or just comment out. 
 		$mtime = filemtime($filename);
 		customCacheControl($mtime,$filename);		
-		customExpiresHeader(3600-(time()-$mtime),true);
+		$timeout = 3600;
+		if (!empty($GLOBALS['rss_timeout']))
+			$timeout = $GLOBALS['rss_timeout'];
+		customExpiresHeader($timeout-(time()-$mtime),true);
 		//end;
 		
 
