@@ -284,7 +284,7 @@ class GeographPage extends Smarty
 					if (filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
 						$value = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen');
 					} else {
-						$value = 0;
+						$value = '?';
 					}
 					apc_store('irc.seen',$value,30);
 				}  
@@ -292,7 +292,7 @@ class GeographPage extends Smarty
 				if (filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
 					$value = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen');
 				} else {
-					$value = 0;
+					$value = '?';
 				}
 			}
 			$this->assign('irc_seen',$value);

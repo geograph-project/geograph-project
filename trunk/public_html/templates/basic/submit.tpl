@@ -47,7 +47,7 @@ geographing</a> first.</p>
 		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,5)">Enter Grid Reference</a>
 		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,5)">Choose Square</a>
 		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,5)">Tagged Image</a>
-		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,5); if (!document.getElementById('innerFrame4').src) document.getElementById('innerFrame4').src = '/submitmap.php?inner'">Map/Placename</a>
+		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,5); if (!document.getElementById('innerFrame4').src) document.getElementById('innerFrame4').src = '/submitmap.php?inner'">Map/Placename<sup style="color:red">New!</sup></a>
 		<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" onclick="tabClick('tab','div',5,5)">Offline Application</a>
 	</div>
 

@@ -147,7 +147,7 @@ while (1) {
 	if ($invalid_maps) {
 		//done as many small select statements to allow new maps to be processed 
 		$recordSet = &$db->Execute("select * from mapcache where age > 0 and type_or_user >= 0
-			order by pixels_per_km desc, age desc limit 10");
+			order by pixels_per_km desc, age desc limit 50");
 		while (!$recordSet->EOF) 
 		{
 			//sleep until calm if we've specified a load average
@@ -191,7 +191,7 @@ while (1) {
 	}
 	
 	//sleep anyway for a bit
-	sleep($param['sleep']*3);
+	sleep($param['sleep']);
 					
 	if (time()>$end_time) {
 		//retreat and let the next recruit take the strain

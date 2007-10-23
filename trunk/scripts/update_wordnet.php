@@ -23,10 +23,10 @@
 
 
 //needed to allow the config file to load - could be passed in as a argument??
-$_SERVER['HTTP_HOST'] = "geograph.local";
+$_SERVER['HTTP_HOST'] = "www.geograph.org.uk";
 
 //not sure how to autodetect this?
-$_SERVER['DOCUMENT_ROOT'] = "/home/geograph/public_html/"; 
+$_SERVER['DOCUMENT_ROOT'] = "/var/www/geograph_live/"; 
 
 //--------------------------------------------
 // nothing below here should need changing

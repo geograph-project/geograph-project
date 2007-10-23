@@ -109,14 +109,17 @@ if (isset($_GET['text'])) {
 if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}.$extension";
+	$rss_timeout = 3600;
 } elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/u{$_GET['u']}-{$format}.$extension";
+	$rss_timeout = 1800;
 } else {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$format}.$extension";
+	$rss_timeout = 900;
 }
 
 $rss = new UniversalFeedCreator(); 
-$rss->useCached($format,$rssfile); 
+$rss->useCached($format,$rssfile,$rss_timeout); 
 $rss->title = 'Geograph British Isles'; 
 $rss->link = "http://{$_SERVER['HTTP_HOST']}";
  
@@ -217,7 +220,7 @@ for ($i=0; $i<$cnt; $i++)
 }
 
 
-customExpiresHeader(3600,true); //we cache it for an hour anyway! 
+customExpiresHeader($rss_timeout,true); //we cache it for a while anyway! 
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); 
       
 

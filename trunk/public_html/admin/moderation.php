@@ -112,7 +112,7 @@ if (!empty($_GET['abandon'])) {
 }
 
 
-$limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(100,intval($_GET['limit'])):50;
+$limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(100,intval($_GET['limit'])):15;
 
 
 if (!empty($_GET['relinquish'])) {
@@ -138,7 +138,7 @@ if (!empty($_GET['relinquish'])) {
 		mail(implode(',',$mods), "[Geograph] Moderator Application ({$USER->user_id})", 
 "Dear Admin, 
 
-I have just completed verification and request moderator rights, 
+I have just completed verification,
 click the following link to review the application:	
 
 $url
