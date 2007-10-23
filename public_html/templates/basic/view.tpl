@@ -106,7 +106,6 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 {if $discuss}
 	There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a
 	<a href="/discuss/index.php?gridref={$image->grid_reference}">discussion<br/>on {$image->grid_reference}</a> (preview on the left)
-
 {else}
 	<a href="/discuss/index.php?gridref={$image->grid_reference}#newtopic">Start a discussion on {$image->grid_reference}</a>
 {/if}
@@ -114,18 +113,12 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <td style="width:50px"><a href="/editimage.php?id={$image->gridimage_id}"><img src="http://s0.{$http_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
-  
-  {if ($user->user_id eq $image->user_id) or ($ismoderator)}
-  	<a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">Edit picture information</a>
-  {else}
-  	<a href="/editimage.php?id={$image->gridimage_id}">Suggest an update to picture details</a>
-  {/if}
+	<a href="/editimage.php?id={$image->gridimage_id}">Picture details need updating?</a>
 </td>
 
 <td style="width:50px"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="http://s0.{$http_host}/templates/basic/img/icon_email.gif" alt="Email" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
-  
-  <a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the photographer</a>
+	<a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the photographer</a>
 </td>
 
 </tr>
