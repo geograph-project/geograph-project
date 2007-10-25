@@ -162,6 +162,7 @@ geographing</a> first.</p>
 {if $step eq 2}
 
 	<h2>Submit Step 2 of 4 : Upload photo for {$gridref}</h2>
+	<div style="color:black; background-color:yellow; font-size:0.7em; padding:3px; border: 1px solid orange">Please don't submit images with overlaid text or borders, crop them first!</div><br/>
 	{if $rastermap->enabled}
 		<div style="float:left;width:50%;position:relative">
 	{else}
@@ -183,7 +184,6 @@ geographing</a> first.</p>
 		<input id="jpeg_url" name="jpeg_url" type="text" size="40" value="{$jpeg_url|escape:"html"}"/>
 		{else}
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
-		<div style="color:black; background-color:yellow; font-size:0.7em; padding:3px; border: 1px solid orange">Please don't submit images with overlaid text or borders, crop them first!</div><br/>
 		<label for="jpeg"><b>JPEG Image File</b></label>
 		<input id="jpeg" name="jpeg" type="file" />
 		
