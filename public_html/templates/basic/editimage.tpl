@@ -360,7 +360,7 @@
 				function updateMapMarkers() {
 					updateMapMarker(document.theForm.grid_reference,false,true);
 					updateMapMarker(document.theForm.photographer_gridref,false,true);
-					{/literal}{if !$image->view_direction || $image->view_direction == -1}
+					{/literal}{if $image->view_direction == -1}
 						updateViewDirection();
 					{/if}{literal}
 
