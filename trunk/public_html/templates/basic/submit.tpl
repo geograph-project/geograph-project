@@ -234,7 +234,7 @@ geographing</a> first.</p>
 				function updateMapMarkers() {
 					updateMapMarker(document.theForm.grid_reference,false,true);
 					updateMapMarker(document.theForm.photographer_gridref,false,true);
-					{/literal}{if !$view_direction || $view_direction == -1}
+					{/literal}{if $view_direction == -1}
 						updateViewDirection();
 					{/if}{literal}
 				}

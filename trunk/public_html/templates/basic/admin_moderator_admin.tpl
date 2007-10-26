@@ -97,7 +97,8 @@
 <script type="text/javascript">
 function assignRole(user_id,role) {
 	name = prompt("Please amend Role as required:",role);
-	location.href= "/admin/moderator_admin.php?user_id="+user_id+"&role="+escape(name);
+	if (name != null)
+		location.href= "/admin/moderator_admin.php?user_id="+user_id+"&role="+escape(name);
 }
 </script>
 {/literal}
