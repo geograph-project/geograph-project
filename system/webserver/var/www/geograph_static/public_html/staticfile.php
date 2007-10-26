@@ -66,13 +66,24 @@ if (($mtime = apc_fetch("d$cachename")) === FALSE) {
 }
 
 if (!$mtime) {
-	copy(".$filename",$cachename);
+	$contents = implode('',file(".$filename"));
+	
+	if (strpos($filename,'css') !== FALSE) {
+		// Compress whitespace.
+		$contents = preg_replace('/\s+/', ' ', $contents);
+
+		// Remove comments.
+		$contents = preg_replace('/\/\*.*?\*\//', '', $contents);
+
+	} elseif (strpos($filename,'js') !== FALSE) {
+		require_once dirname(__FILE__).'/lib/jsmin.php';
+	}
 	
 	if ($encoding) {
-		$contents = implode('',file($cachename));
 		$contents = gzencode($contents, 9,  ($encoding == 'gzip') ? FORCE_GZIP : FORCE_DEFLATE);
-		file_put_contents($cachename,$contents);
 	}
+	
+	file_put_contents($cachename,$contents);
 	
 	$mtime = @filemtime($cachename);
 	apc_store("d$cachename",$mtime,3600);
