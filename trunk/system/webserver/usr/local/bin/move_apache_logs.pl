@@ -15,6 +15,8 @@ find(\&scandir, $basedir);
 
 $basedir="/var/www/geograph_static/logs/";
 $hostname=`hostname`."static";
+$hostname =~ s/\s//;
+
 
 #find suitable logfiles and rename them with a date range and server name
 find(\&scandir, $basedir);
