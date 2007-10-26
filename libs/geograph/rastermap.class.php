@@ -523,11 +523,11 @@ class RasterMap
 				var maph = {$this->width};
 				var mapw = {$this->width};
 				var mapb = 1;
-			</script>
-			<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapping.js")."\"></script>";
-
+			</script>";
+			
 			if ($this->issubmit) {
 				return "$str
+			<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapping.js")."\"></script>
 			<script type=\"text/javascript\">
 				document.images['map'].onmousemove = overlayMouseMove;
 				document.images['map'].onmouseup = overlayMouseUp;

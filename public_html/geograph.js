@@ -1,5 +1,8 @@
 //	-	-	-	-	-	-	-	-
 
+var IE = document.all?true:false;
+
+
 function popupOSMap(gridref,gridref2)
 {
 	if (!gridref && gridref2.length)
@@ -431,6 +434,43 @@ function readCookie(name) {
 
 function eraseCookie(name) {
 	createCookie(name,"",-1);
+}
+
+
+//	-	-	-	-	-	-	-	-
+
+function overlayHideMarkers(e) {
+	if (IE) {
+		tempX = event.offsetX;
+		tempY = event.offsetY;
+	} else {
+		tempX = e.layerX
+		tempY = e.layerY
+	}
+	
+	var m1 = document.getElementById('marker1');
+	
+	m1left = parseInt(m1.style.left)+marker1left;
+	m1top = parseInt(m1.style.top)+marker1top;
+	found = false;
+	if (Math.abs(tempX - m1left) < marker1left && Math.abs(tempY - m1top) < marker1top) {
+		m1.style.display = 'none';
+	} else {
+		m1.style.display = displayMarker1?'':'none';
+	}
+	
+	var m2 = document.getElementById('marker2');
+
+	m2left = parseInt(m2.style.left)+marker2left;
+	m2top = parseInt(m2.style.top)+marker2top;
+
+	if (Math.abs(tempX - m2left) < marker2left && Math.abs(tempY - m2top) < marker2top) {
+		m2.style.display = 'none';
+	} else {
+		m2.style.display = displayMarker2?'':'none';
+	}
+	
+	return false;
 }
 
 //	-	-	-	-	-	-	-	-
