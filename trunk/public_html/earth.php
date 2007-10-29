@@ -75,6 +75,7 @@ require_once('geograph/searchengine.class.php');
 	if ($pg == '' or $pg < 1) {$pg = 1;}
 
 $images = new SearchEngine($_GET['i']);
+$images->criteria->resultsperpage = min(100,$images->criteria->resultsperpage);
 
 $rss->description = "Images".$images->criteria->searchdesc; 
 $rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=$format&amp;i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
