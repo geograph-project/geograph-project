@@ -288,7 +288,7 @@ $mainPostForm=ParseTpl(makeUp('main_post_form'));
 if (file_exists("templates/main_post_area_{$forum}.html")) {
 	$templatename = "main_post_area_{$forum}";
 } else {
-	$templatename = "main_post_area_{$forum}";
+	$templatename = "main_post_area";
 } 
 $mainPostArea=makeUp($templatename);
 $nTop=1;
