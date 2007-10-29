@@ -439,6 +439,12 @@ function eraseCookie(name) {
 
 //	-	-	-	-	-	-	-	-
 
+var marker1left = 14;
+var marker1top = 14;
+
+var marker2left = 14;
+var marker2top = 14;
+
 function overlayHideMarkers(e) {
 	if (IE) {
 		tempX = event.offsetX;
