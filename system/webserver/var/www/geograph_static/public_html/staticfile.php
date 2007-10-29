@@ -68,16 +68,16 @@ if (($mtime = apc_fetch("d$cachename")) === FALSE) {
 if (!$mtime) {
 	$contents = implode('',file(".$filename"));
 	
-	if (strpos($filename,'css') !== FALSE) {
-		// Compress whitespace.
-		$contents = preg_replace('/\s+/', ' ', $contents);
-
-		// Remove comments.
-		$contents = preg_replace('/\/\*.*?\*\//', '', $contents);
-
-	} elseif (strpos($filename,'js') !== FALSE) {
-		require_once dirname(__FILE__).'/lib/jsmin.php';
-	}
+#	if (strpos($filename,'css') !== FALSE) {
+#		// Compress whitespace.
+#		$contents = preg_replace('/\s+/', ' ', $contents);
+#
+#		// Remove comments.
+#		$contents = preg_replace('/\/\*.*?\*\//', '', $contents);
+#
+#	} elseif (strpos($filename,'js') !== FALSE) {
+#		require_once dirname(__FILE__).'/lib/jsmin.php';
+#	}
 	
 	if ($encoding) {
 		$contents = gzencode($contents, 9,  ($encoding == 'gzip') ? FORCE_GZIP : FORCE_DEFLATE);
