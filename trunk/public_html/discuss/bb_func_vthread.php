@@ -285,7 +285,12 @@ $nTop=0;
 $listPosts=str_replace('getQuotation();','',$listPosts);
 }else{
 $mainPostForm=ParseTpl(makeUp('main_post_form'));
-$mainPostArea=makeUp('main_post_area');
+if (file_exists("templates/main_post_area_{$forum}.html")) {
+	$templatename = "main_post_area_{$forum}";
+} else {
+	$templatename = "main_post_area_{$forum}";
+} 
+$mainPostArea=makeUp($templatename);
 $nTop=1;
 }
 }
@@ -329,9 +334,12 @@ include ($pathToFiles.'bb_func_forums.php');
 
 if(isset($mod_rewrite) and $mod_rewrite) $linkToForums="{$main_url}/{$forum}_0.html"; else $linkToForums="{$main_url}/{$indexphp}action=vtopic&amp;forum={$forum}";
 
-if (!$USER->hasPerm("basic")) {
-	echo load_header(); echo ParseTpl(makeUp('main_posts_gallery'));
+if (!$USER->hasPerm("basic") && file_exists("templates/main_posts_{$forum}_anon.html")) {
+	$templatename = "main_posts_{$forum}_anon";
+} elseif (file_exists("templates/main_posts_{$forum}.html")) {
+	$templatename = "main_posts_{$forum}";
 } else {
-	echo load_header(); echo ParseTpl(makeUp('main_posts'));
+	$templatename = 'main_posts';
 }
+echo load_header(); echo ParseTpl(makeUp($templatename));
 ?>

@@ -149,12 +149,18 @@ $emailCheckBox=emailCheckBox();
 $mainPostForm=ParseTpl(makeUp('main_post_form'));
 
 $title=$title.' '.$forumName;
-if ($gridref && $currentgridreftopics == 0) 
- $main=makeUp('main_topics_gridref');
-else if ($forum == 11 && !$USER->hasPerm("basic")) 
- $main=makeUp('main_topics_gallery');
-else if(!isset($showSep)) $main=makeUp('main_topics');
-else $main=makeUp('main_newtopicform');
+if ($gridref && $currentgridreftopics == 0) {
+	$templatename = 'main_newtopic_gridref';
+} elseif (!$USER->hasPerm("basic") && file_exists("templates/main_topics_{$forum}_anon.html")) {
+	$templatename = "main_topics_{$forum}_anon";
+} elseif (file_exists("templates/main_topics_{$forum}.html")) {
+	$templatename = "main_topics_{$forum}";
+} elseif(!isset($showSep)) {
+	$templatename = 'main_topics';
+} else {
+	$templatename = 'main_newtopicform';
+}
+$main=makeUp($templatename);
 
 $nTop=1;
 $allowForm=($user_id==1 or $isMod==1);
