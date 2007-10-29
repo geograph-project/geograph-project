@@ -142,7 +142,7 @@
 
 <div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div><br/>			
 
-<div style="width:600px; text-align:right;"><label for="addressInput">Enter Address or Postcode: 
+<div style="width:600px; text-align:right;"><label for="addressInput">Enter Address: 
 	<input type="text" size="50" id="addressInput" name="address" value="" />
 	<input type="button" value="Find" onclick="showAddress(this.form.address.value)"/><small><small><br/>
 	(Powered by the Google Maps API Geocoder)</small></small>
