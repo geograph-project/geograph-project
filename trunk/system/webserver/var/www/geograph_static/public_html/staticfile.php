@@ -61,7 +61,7 @@ header ('Vary: Accept-Encoding');
 //an important note here, the cache lives FOREVER!
 
 if (($mtime = apc_fetch("d$cachename")) === FALSE) {
-	$mtime = @filemtime($cachename);
+	$mtime = @filemtime(".$filename");
 	apc_store("d$cachename",$mtime,360000);
 }
 
@@ -85,7 +85,8 @@ if (!$mtime) {
 	
 	file_put_contents($cachename,$contents);
 	
-	$mtime = @filemtime($cachename);
+	$mtime = @filemtime(".$filename");
+
 	apc_store("d$cachename",$mtime,3600);
 } 
 
@@ -137,7 +138,7 @@ function customCacheControl($mtime,$uniqstr,$useifmod = true,$gmdate_mod = 0) {
 		}
 	}	
 
-	header ("Etag: $hash"); 
+#	header ("Etag: $hash"); 
 
 	if (!$gmdate_mod)
 		$gmdate_mod = gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
@@ -158,7 +159,7 @@ function customCacheControl($mtime,$uniqstr,$useifmod = true,$gmdate_mod = 0) {
 
 function customExpiresHeader($diff,$public = false) {
 	if ($diff > 0) {
-		$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", time()+$diff);
+		$expires=gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+$diff);
 		header("Expires: $expires");
 		header("Cache-Control: max-age=$diff");
 	} else {
