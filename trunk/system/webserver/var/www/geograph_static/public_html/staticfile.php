@@ -77,6 +77,7 @@ if (($mtime = apc_fetch("d$cachename")) === FALSE) {
 
 		} elseif (strpos($filename,'js') !== FALSE) {
 			require_once dirname(__FILE__).'/lib/jsmin.php';
+			$contents = JSMin::minify($contents);
 		}
 
 		if ($encoding) {
