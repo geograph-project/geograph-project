@@ -281,16 +281,16 @@ class GeographPage extends Smarty
 		if (isset($GLOBALS['USER']) && $GLOBALS['USER']->user_id > 0) {
 			if (function_exists('apc_fetch')) {
 				if (($value = apc_fetch('irc.seen')) === FALSE) {
-					if (filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
-						$value = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen');
+					if (@filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
+						$value = @file_get_contents($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen');
 					} else {
 						$value = '?';
 					}
 					apc_store('irc.seen',$value,30);
 				}  
 			} else {
-				if (filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
-					$value = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen');
+				if (@filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
+					$value = @file_get_contents($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen');
 				} else {
 					$value = '?';
 				}
