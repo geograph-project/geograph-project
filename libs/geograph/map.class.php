@@ -949,15 +949,15 @@ class GeographMap
 		foreach (array(0,1,2,3,4,5,7,10,20,40,80) as $idx => $o) {
 			switch (true) {
 				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break; 
-				case $o == 1: $r=112; $g=0; $b=0; break; 
-				case $o == 2: $r=136; $g=0; $b=0; break; 
-				case $o == 3: $r=168; $g=0; $b=0; break; 
-				case $o == 4: $r=200; $g=0; $b=0; break; 
+				case $o == 1: $r=255; $g=255; $b=0; break; 
+				case $o == 2: $r=255; $g=196; $b=0; break; 
+				case $o == 3: $r=255; $g=132; $b=0; break; 
+				case $o == 4: $r=255; $g=64; $b=0; break; 
 				case $o <  7: $r=225; $g=0; $b=0; break; 
-				case $o < 10: $r=255; $g=64; $b=0; break; 
-				case $o < 20: $r=255; $g=132; $b=0; break; 
-				case $o < 40: $r=255; $g=196; $b=0; break; 
-				case $o < 80: $r=255; $g=255; $b=0; break; 
+				case $o < 10: $r=200; $g=0; $b=0; break; 
+				case $o < 20: $r=168; $g=0; $b=0; break; 
+				case $o < 40: $r=136; $g=0; $b=0; break; 
+				case $o < 80: $r=112; $g=0; $b=0; break; 
 			}
 			$back=imagecolorallocate($imgkey, $r,$g,$b);
 			$text=imagecolorallocate($imgkey, 255-$r,255-$g,255-$b);
@@ -1013,9 +1013,9 @@ class GeographMap
 		for ($p=0; $p<count($counts); $p++)
 		{
 			$o = $counts[$p];
-			// dark green, red => yellow
+			/* dark green, red => yellow
 			switch (true) {
-				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break; 
+				case $o == 0: $r=128; $g=128; $b=0; break; 
 				case $o == 1: $r=112; $g=0; $b=0; break; 
 				case $o == 2: $r=136; $g=0; $b=0; break; 
 				case $o == 3: $r=168; $g=0; $b=0; break; 
@@ -1025,7 +1025,7 @@ class GeographMap
 				case $o < 20: $r=255; $g=132; $b=0; break; 
 				case $o < 40: $r=255; $g=196; $b=0; break; 
 				case $o < 80: $r=255; $g=255; $b=0; break; 
-			}
+			}*/
 			/* high contrast as suggested on the forum...
 			switch (true) {
 				case $o == 0: $r=128; $g=128; $b=0; break; 
@@ -1040,9 +1040,8 @@ class GeographMap
 				case $o < 38: $r=128; $g=255; $b=0; break; 
 				case $o < 80: $r=254; $g=0; $b=0; break; 
 			}*/
-			/*standard green, yellow => red
+			//standard green, yellow => red
 			switch (true) {
-
 				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break; 
 				case $o == 1: $r=255; $g=255; $b=0; break; 
 				case $o == 2: $r=255; $g=196; $b=0; break; 
@@ -1053,7 +1052,7 @@ class GeographMap
 				case $o < 20: $r=168; $g=0; $b=0; break; 
 				case $o < 40: $r=136; $g=0; $b=0; break; 
 				case $o < 80: $r=112; $g=0; $b=0; break; 
-			}*/
+			}
 			$last = $colour[$o]=imagecolorallocate($img, $r,$g,$b);
 		}
 
