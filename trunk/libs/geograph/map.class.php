@@ -371,7 +371,11 @@ class GeographMap
 		$palette="";
 		if ($this->palette>0)
 			$palette="_".$this->palette;
-			
+		
+		if (!empty($this->minimum)) {
+			$palette .= "_n{$this->minimum}";
+		}
+		
 		$extension = ($this->pixels_per_km > 40 || $this->type_or_user < -20)?'jpg':'png';
 		
 		$file="detail_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}_{$this->type_or_user}{$palette}.$extension";
@@ -451,6 +455,9 @@ class GeographMap
 	*/
 	function returnImage()
 	{
+		if ($this->type_or_user == -1 && $this->pixels_per_km >4) {
+			$this->type_or_user = 0;
+		}
 		$file=$this->getImageFilename();
 		$full=$_SERVER['DOCUMENT_ROOT'].$file;
 		if (!$this->caching || !@file_exists($full))
@@ -499,7 +506,11 @@ class GeographMap
 			$ok = $this->_renderImage();
 		} else if ($this->type_or_user < 0) {
 			if ($this->type_or_user == -1) {
-				$ok = $this->_renderDepthImage();
+				if ($this->pixels_per_km<=4) {
+					$ok = $this->_renderDepthImage();
+				} else {
+					$ok = $this->_renderImage();
+				}
 			} elseif ($this->type_or_user == -2) {
 				$ok = $this->_renderDateImage();
 			} elseif ($this->type_or_user == -10) {
@@ -801,9 +812,10 @@ class GeographMap
 					user_id = {$this->type_or_user} group by grid_reference";
 			}
 		} else {
+			$number = !empty($this->minimum)?intval($this->minimum):0;
 			$sql="select x,y,gridsquare_id,has_geographs from gridsquare where 
 				CONTAINS( GeomFromText($rectangle),	point_xy)
-				and imagecount>0";
+				and imagecount>$number";
 		}
 
 		$recordSet = &$db->Execute($sql);
@@ -926,6 +938,38 @@ class GeographMap
 		}
 	}	
 
+
+	function _outputDepthKey()
+	{
+		$imgkey=imagecreatetruecolor(400,20);
+
+		$green=imagecolorallocate ($imgkey, $this->colour['land'][0],$this->colour['land'][1],$this->colour['land'][2]);
+		imagefill($imgkey,0,0,$green);
+
+		foreach (array(0,1,2,3,4,5,7,10,20,40,80) as $idx => $o) {
+			switch (true) {
+				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break; 
+				case $o == 1: $r=112; $g=0; $b=0; break; 
+				case $o == 2: $r=136; $g=0; $b=0; break; 
+				case $o == 3: $r=168; $g=0; $b=0; break; 
+				case $o == 4: $r=200; $g=0; $b=0; break; 
+				case $o <  7: $r=225; $g=0; $b=0; break; 
+				case $o < 10: $r=255; $g=64; $b=0; break; 
+				case $o < 20: $r=255; $g=132; $b=0; break; 
+				case $o < 40: $r=255; $g=196; $b=0; break; 
+				case $o < 80: $r=255; $g=255; $b=0; break; 
+			}
+			$back=imagecolorallocate($imgkey, $r,$g,$b);
+			$text=imagecolorallocate($imgkey, 255-$r,255-$g,255-$b);
+
+			imagefilledrectangle($imgkey, ($idx*40), 0, ($idx*40)+40, 20, $back);
+			imagestring($imgkey, 5, ($idx*40)+9, 3, $o<10?" $o":$o, $text);
+		}
+		header("Content-Type: image/png");
+		imagepng($imgkey);
+		exit;
+	}
+
 	/**
 	* render the image to cached file if not already available
 	* @access private
@@ -936,8 +980,20 @@ class GeographMap
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 		$ok = true;
 		
+		if ($this->pixels_per_km < 1) {
+			//render at 1px/km and scale...
+			$this->real_pixels_per_km = $this->pixels_per_km;
+			$this->real_image_w = $this->image_w;
+			$this->real_image_h = $this->image_h;
+			
+			//need to change the actual values as need to fool other functions too
+			$this->image_w = floor($this->image_w/$this->pixels_per_km);
+			$this->image_h = floor($this->image_h/$this->pixels_per_km);
+			$this->pixels_per_km = 1;
+		}
+		
 		$basemap=$this->getBaseMapFilename();
-		if ($this->caching && @file_exists($root.$basemap))	{
+		if ($this->caching && @file_exists($root.$basemap)) {
 			$img=imagecreatefromgd($root.$basemap);
 		} else {
 			$img=&$this->_createBasemap($root.$basemap);
@@ -947,67 +1003,72 @@ class GeographMap
 			return false;
 		}
 		
-		$colMarker=imagecolorallocate($img, 255,0,0);
-		$colSuppMarker=imagecolorallocate($img,236,206,64);
-		$colBorder=imagecolorallocate($img, 255,255,255);
-		
 		$db=&$this->_getDB();
 				
 		$sql="select imagecount from gridsquare group by imagecount";
 		$counts = $db->getCol($sql);
-		
-#$imgkey=imagecreatetruecolor(50,count($counts)*8);	
 
-#$green=imagecolorallocate ($imgkey, 117,255,101);
-#imagefill($imgkey,0,0,$green);
-
-		//we need some colours for depth
-		if (true) {
-			//we want a range of aliases from 255,0,0 to 159,33,33
-			$rmin=225;
-			$gmin=225;
-			$bmin=225;
-			$rmax=0;
-			$gmax=0;
-			$bmax=0;
-			
-			$colour=array();
-			$last=null;
-			for ($p=0; $p<count($counts); $p++)
-			{
-				if ($p > 20) {
-					$colour[$counts[$p]] = $last;
-				} else {
-				$scale=$p/20;
-				
-				$r=round($rmin + ($rmax-$rmin)*$scale);
-				$g=round($gmin + ($gmax-$gmin)*$scale);
-				$b=round($bmin + ($bmax-$bmin)*$scale);
-				$last = $colour[$counts[$p]]=imagecolorallocate($img, $r,$g,$b);
-#$colour[$counts[$p]]=imagecolorallocate($imgkey, $r,$g,$b);
-
-#imagestring($imgkey, 2, 3, $p*8, $counts[$p], $colour[$counts[$p]]);
-				}
+		$colour=array();
+		$last=null;
+		for ($p=0; $p<count($counts); $p++)
+		{
+			$o = $counts[$p];
+			// dark green, red => yellow
+			switch (true) {
+				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break; 
+				case $o == 1: $r=112; $g=0; $b=0; break; 
+				case $o == 2: $r=136; $g=0; $b=0; break; 
+				case $o == 3: $r=168; $g=0; $b=0; break; 
+				case $o == 4: $r=200; $g=0; $b=0; break; 
+				case $o <  7: $r=225; $g=0; $b=0; break; 
+				case $o < 10: $r=255; $g=64; $b=0; break; 
+				case $o < 20: $r=255; $g=132; $b=0; break; 
+				case $o < 40: $r=255; $g=196; $b=0; break; 
+				case $o < 80: $r=255; $g=255; $b=0; break; 
 			}
-			$colour[0]=imagecolorallocate($img, 255,255,255);
+			/* high contrast as suggested on the forum...
+			switch (true) {
+				case $o == 0: $r=128; $g=128; $b=0; break; 
+				case $o == 1: $r=128; $g=0; $b=0; break; 
+				case $o == 2: $r=255; $g=0; $b=254; break; 
+				case $o == 3: $r=0; $g=255; $b=255; break; 
+				case $o == 4: $r=0; $g=0; $b=254; break; 
+				case $o <  6: $r=225; $g=168; $b=65; break; 
+				case $o <  8: $r=127; $g=128; $b=0; break; 
+				case $o < 14: $r=255; $g=255; $b=0; break; 
+				case $o < 21: $r=191; $g=64; $b=255; break; 
+				case $o < 38: $r=128; $g=255; $b=0; break; 
+				case $o < 80: $r=254; $g=0; $b=0; break; 
+			}*/
+			/*standard green, yellow => red
+			switch (true) {
+
+				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break; 
+				case $o == 1: $r=255; $g=255; $b=0; break; 
+				case $o == 2: $r=255; $g=196; $b=0; break; 
+				case $o == 3: $r=255; $g=132; $b=0; break; 
+				case $o == 4: $r=255; $g=64; $b=0; break; 
+				case $o <  7: $r=225; $g=0; $b=0; break; 
+				case $o < 10: $r=200; $g=0; $b=0; break; 
+				case $o < 20: $r=168; $g=0; $b=0; break; 
+				case $o < 40: $r=136; $g=0; $b=0; break; 
+				case $o < 80: $r=112; $g=0; $b=0; break; 
+			}*/
+			$last = $colour[$o]=imagecolorallocate($img, $r,$g,$b);
 		}
-#header("Content-Type: image/png");
-#imagepng($imgkey);
-#exit;
-		
+
 		//figure out what we're mapping in internal coords
 		$left=$this->map_x;
 		$bottom=$this->map_y;
 		$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
 		$top=$bottom + floor($this->image_h/$this->pixels_per_km)-1;
 
-		
 		//size of a marker in pixels
 		$markerpixels=$this->pixels_per_km;
-		
+
 		//size of marker in km
 		$markerkm=ceil($markerpixels/$this->pixels_per_km);
-		
+
 		//we scan for images a little over the edges so that if
 		//an image lies on a mosaic edge, we still plot the point
 		//on both mosaics
@@ -1016,14 +1077,16 @@ class GeographMap
 		$scanright=$right+$overscan;
 		$scanbottom=$bottom-$overscan;
 		$scantop=$top+$overscan;
-		
-		$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left,true);
-				
+
+		if (!(isset($this->real_pixels_per_km) && $this->real_pixels_per_km < 1) )
+			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left,true);
+
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
-				
+
+		$number = !empty($this->minimum)?intval($this->minimum):0;
 		$sql="select x,y,gridsquare_id,imagecount from gridsquare where 
 			CONTAINS( GeomFromText($rectangle),	point_xy)
-			and percent_land != 0";
+			and imagecount>$number"; #and percent_land = 100  #can uncomment this if using the standard green base
 
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
@@ -1047,7 +1110,25 @@ class GeographMap
 			$recordSet->MoveNext();
 		}
 		$recordSet->Close(); 
-#exit;
+
+		if (isset($this->real_pixels_per_km) && $this->real_pixels_per_km < 1) {
+			//render at 1px/km and scale...
+
+			$resized = imagecreatetruecolor($this->real_image_w, $this->real_image_h);
+			imagecopyresampled($resized, $img, 0, 0, 0, 0, 
+						$this->real_image_w, $this->real_image_h, $this->image_w, $this->image_h);
+
+			imagedestroy($img);
+
+			$img = $resized;
+
+			$this->pixels_per_km = $this->real_pixels_per_km;
+			$this->image_w = $this->real_image_w;
+			$this->image_h = $this->real_image_h;
+			
+			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left,true);
+		}
+
 		if ($img) {
 			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
 			

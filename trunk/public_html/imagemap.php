@@ -50,12 +50,17 @@ init_session();
 			$map->setImageSize(900,1300);
 			$map->setScale(1);
 			
-			#$map->setOrigin(400,200);
-			#$map->setImageSize(600,600);
-			#$map->setScale(2);
 			unset($CONF['enable_newmap']);
 			
 			$map->type_or_user = -1;
+		} elseif (isset($_GET['number'])) {
+			$map->setOrigin(0,-10);
+			$map->setImageSize(900,1300);
+			$map->setScale(1);
+			
+			$map->minimum = intval($_GET['number']);
+			
+			unset($CONF['enable_newmap']);
 		} elseif (isset($_GET['plain'])) {
 			$map->setOrigin(0,-10);
 			$map->setImageSize(900,1300);
