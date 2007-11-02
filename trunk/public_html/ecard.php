@@ -152,16 +152,25 @@ if (!$throttle && isset($_POST['msg']))
 			exit;
 		} else {
 			$db->query("insert into throttle set user_id={$USER->user_id},feature = 'ecard'");
-					
+			
+			$ip=getRemoteIP();
+			
 			$headers = array();
 			$headers[] = "From: $from_name <{$USER->email}>";
 			if ($from_email != $USER->email) 
 				$headers[] = "Reply-To: $from_name <$from_email>";
 			$headers[] = "X-GeographUserId:{$USER->user_id}";
+			$headers[] = "X-IP:$ip";
 
 			$headers[] = "Content-Type: multipart/alternative;\n	boundary=\"----=_NextPart_000_00DF_01C5EB66.9313FF40\"";
-
-			@mail("$to_name <$to_email>", $subject, $body, implode("\n",$headers));
+			
+			$hostname=trim(`hostname`);
+			$received="Received: from [{$ip}]".
+				" by {$hostname}.geograph.org.uk ".
+				"with HTTP;".
+				strftime("%d %b %Y %H:%M:%S -0000", time())."\n";
+			
+			@mail("$to_name <$to_email>", $subject, $body, $received.implode("\n",$headers));
 
 			$smarty->assign('sent', 1);
 		}
