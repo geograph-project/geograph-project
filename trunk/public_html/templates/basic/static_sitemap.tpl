@@ -46,9 +46,10 @@
 	<li><a title="Browse by Grid Reference" href="/browse.php">browse by <b>grid square</b></a></li>
 	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a> (<a href="#stats">more below</a>)</li>
 	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
+	<li><a title="Photo Gallery" href="/discuss/?action=vtopic&amp;forum=11">view some <b>themed galleries</b></a></li>
 	<li><a title="List of all images" href="/sitemap/geograph.html">view the <b>full list</b> of images</a></li>
 	<li><a title="Games" href="/games/"><b>play</b> with geograph images</a></li>
-	<li><a title="draggable map" href="/mapper/">interacrive <b>draggable map</b></a></li>
+	<li><a title="draggable map" href="/mapper/">interactive <b>draggable map</b></a></li>
 </ul>
  
 <h3><a name="software"></a>Interacting with other software...</h3>

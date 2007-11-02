@@ -14,14 +14,15 @@ the Republic of Ireland, and you can be part of it.</p>
 <ul>
 	<li><a title="Browse by Map" href="/mapbrowse.php">browse images on a <b>map</b></a></li>
 	<li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a></li>
+	<li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a></li>
 	<li><a title="Discussion forums" href="/discuss/"><b>discuss the site</b> on our forums</a></li>
 </ul>
 
 <h3>Exploring in more depth...</h3>
 <ul>
-	<li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a></li>
 	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a></li>
 	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
+	<li><a title="Photo Gallery" href="/discuss/?action=vtopic&amp;forum=11">view some <b>themed galleries</b></a></li>
 	<li><a title="List of all pages" href="/help/sitemap">view the <b>full list</b> of pages</a></li>
 </ul>
     
