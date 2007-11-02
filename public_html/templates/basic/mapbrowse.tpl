@@ -93,6 +93,10 @@ table.navtable {
 	<div class="cnr"></div>
 	</div>
 {/if}
+
+{if $depth}
+	<img src="/img/depthkey.png" width="400" height="20" style="padding-left:10px;"/>
+{/if}
 {*end containing div for main map*}
 </div>
 
