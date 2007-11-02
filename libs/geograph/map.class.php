@@ -1810,7 +1810,7 @@ END;
 		$scantop=$top+$overscan;
 		
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
-		if (!empty($this->type_or_user)) {
+		if (!empty($this->type_or_user) && $this->type_or_user > 0) {
 			$where_crit = " and gi2.user_id = {$this->type_or_user}";
 			$where_crit2 = " and gi.user_id = {$this->type_or_user}";
 			$columns = ", sum(moderation_status='geograph') as has_geographs, sum(moderation_status IN ('accepted','geograph')) as imagecount";

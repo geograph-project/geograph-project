@@ -45,22 +45,30 @@ if (isset($_GET['t'])) {
 	die("Missing Token");
 }
 
-$template=($map->pixels_per_km == 4)?'mapsheet100k.tpl':'mapsheet.tpl';
-
-
 
 if ($map->pixels_per_km != 40 && $map->pixels_per_km != 4)
 	die("Invalid Parameter");
 
 if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
-	$mosaic->type_or_user = $USER->user_id;
+	$map->type_or_user = $USER->user_id;
 } elseif (isset($_GET['u'])) {
 	if (!empty($_GET['u'])) {
-		$mosaic->type_or_user = max(0,intval($_GET['u']));
+		$map->type_or_user = max(0,intval($_GET['u']));
 	} else {
-		$mosaic->type_or_user = 0;
+		$map->type_or_user = 0;
 	}
-}
+} elseif (isset($_GET['depth'])) {
+	if ($_GET['depth']) {
+	
+		$smarty->assign('depth', 1);
+		$map->type_or_user = -1;
+	} else {
+		$map->type_or_user = 0;
+	}
+} 
+
+$template=($map->pixels_per_km == 4)?(($map->type_or_user == -1)?'mapsheet100kdepth.tpl':'mapsheet100k.tpl'):'mapsheet.tpl';
+
 
 //get token, we'll use it as a cache id
 $token=$map->getToken();
