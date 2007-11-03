@@ -96,6 +96,8 @@ table.navtable {
 
 {if $depth}
 	<img src="/img/depthkey.png" width="400" height="20" style="padding-left:10px;"/>
+{elseif $token_zoomin}
+	<div style="padding-left:10px; width:400px; height:20px"><a href="/map/{$mosaic_token}?depth=1">View as a Depth Map</a> <sup style="color:red">new!</sup></div>
 {/if}
 {*end containing div for main map*}
 </div>
