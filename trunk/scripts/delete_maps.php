@@ -144,76 +144,49 @@ $start_time = time();
 
 $end_time = $start_time + (60*$param['timeout']);
 
-$map=new GeographMap;
-			
-	$mosaic = new GeographMapMosaic;
-	
-	$prefixes = $db->GetAll("select * from gridprefix order by rand();");
-	
-	list($usec, $sec) = explode(' ',microtime());
-	$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
 
-	
-	foreach($prefixes as $idx=>$prefix)
+$prefixes = $db->GetAll("select * from gridprefix order by rand();");
+
+
+foreach($prefixes as $idx=>$prefix) {
+	//sleep until calm if we've specified a load average
+	if ($param['load']<100)
 	{
-		//sleep until calm if we've specified a load average
-		if ($param['load']<100)
+		while (get_loadavg() > $param['load'])
 		{
-			while (get_loadavg() > $param['load'])
-			{
-				sleep($param['sleep']);
-				if (time()>$end_time) 
-					exit;	
-
-			}
+			sleep($param['sleep']);
+			if (time()>$end_time) 
+				exit;	
 		}
-		
-		list($usec, $sec) = explode(' ',microtime());
-		$endtime = ((float)$usec + (float)$sec);
-		$timetaken = $endtime - $STARTTIME;
-
-		if ($timetaken > 15) {
-			//mysql might of closed the connection in the meantime
-			unset($mosaic->db);
-		}
-		
-	
-		print "Starting {$prefix['prefix']}...\n";flush();
-
-		$minx=$prefix['origin_x'];
-		$maxx=$prefix['origin_x']+$prefix['width']-1;
-		$miny=$prefix['origin_y'];
-		$maxy=$prefix['origin_y']+$prefix['height']-1;
-
-		
-		$crit = "map_x between $minx and $maxx and ".
-			"map_y between $miny and $maxy and ".
-			"pixels_per_km >= 40 and ".
-			"((map_x-{$prefix['origin_x']}) mod 5) != 0 and ".
-			"((map_y-{$prefix['origin_y']}) mod 5) != 0";
-			
-		$count = $mosaic->deleteBySql($crit,$param['dryrun'],$param['base']);
-		print "Deleted $count\n";
-
-		$total += $count;
-
-		
-		
-		list($usec, $sec) = explode(' ',microtime());
-		$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
-		
-		
-		if (time()>$end_time) {
-			$recordSet->Close(); 
-			//well come to the end of the scripts useful life
-			exit;	
-		}
-		
 	}
-	print "Total: $total\n";
-	exit;
 
- 
+	//mysql might of closed the connection in the meantime if we reuse the same object
+	$mosaic = new GeographMapMosaic;
 
-	
+	print "Starting {$prefix['prefix']}...\n";flush();
+
+	$minx=$prefix['origin_x'];
+	$maxx=$prefix['origin_x']+$prefix['width']-1;
+	$miny=$prefix['origin_y'];
+	$maxy=$prefix['origin_y']+$prefix['height']-1;
+
+	$crit = "map_x between $minx and $maxx and ".
+		"map_y between $miny and $maxy and ".
+		"pixels_per_km >= 40 and ".
+		"((map_x-{$prefix['origin_x']}) mod 5) != 0 and ".
+		"((map_y-{$prefix['origin_y']}) mod 5) != 0";
+
+	$count = $mosaic->deleteBySql($crit,$param['dryrun'],$param['base']);
+	print "Deleted $count\n";
+
+	$total += $count;
+
+	if (time()>$end_time) {
+		//well come to the end of the scripts useful life
+		exit;	
+	}
+}
+print "Total: $total\n";
+exit;
+
 ?>
