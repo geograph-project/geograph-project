@@ -54,6 +54,10 @@ if (!$smarty->is_cached($template, $cacheid))
 {
 	$overview=new GeographMapMosaic('overview');
 
+	if ($mosaic->type_or_user == -1) {
+		$smarty->assign('depth', 1);
+		$overview->type_or_user = -1;
+	}
 
 	//assign overview to smarty
 	if ($mosaic->type_or_user > 0) {
