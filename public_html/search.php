@@ -348,6 +348,9 @@ if (isset($_GET['fav']) && $i) {
 	// -------------------------------
 	//  Build a query from simple text 
 	// -------------------------------
+	foreach ($_GET as $key => $value) {
+		$_GET[$key] = preg_replace('/\{\w+:\w+\?\}/','',$value);
+	}
 	if (!empty($_GET['q']) && $_GET['q'] == '(anything)') {
 		$_GET['q'] = '';
 	}
