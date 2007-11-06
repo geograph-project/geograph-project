@@ -15,13 +15,14 @@
 	<h4>{$row.poster_name} <sup>{$row.post_time}</sup> <a href="/discuss/?action=vpost&amp;forum=6&amp;topic=822&amp;post={$id}">Open &gt;&gt;</a></h4>
 
 	<table border="1" cellspacing="0" cellpadding="3">
-		<tr><th>GridSquare</th><th>Mentions</th><th>Photos</th><th>Distance</th></tr>
+		<tr><th>GridSquare</th><th>Mentions</th><th>Photos</th><th>Submitted</th><th>Distance</th></tr>
 
 		{foreach from=$row.gridsquares item=square}
-			<tr {if $square->images == 0} style="background-color:pink"{/if}>
+			<tr {if $square->images == 0 and $square->imagecount > 0} style="background-color:pink"{/if}>
 				<td><a href="/gridref/{$square->grid_reference}">{$square->grid_reference}</a></td>
 				<td>{$square->mentions}</td>
 				<td>{$square->images}</td>
+				<td>{$square->imagecount}</td>
 				<td {if $square->distance>1.5} style="background-color:red"{/if}>{$square->distance}km</td>
 			</tr>
 		{/foreach}

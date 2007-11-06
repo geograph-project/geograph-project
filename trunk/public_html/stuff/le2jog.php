@@ -124,7 +124,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			}
 			if ($cacheid) {
 				foreach ($gridsquares as $g => $square) {
-					if ($square->distance < 1.5 && $square->images) {
+					if ($square->distance < 1.5 && ($square->images || !$square->imagecount)) {
 						unset($gridsquares[$g]);
 					}
 				}
