@@ -47,7 +47,20 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	$g_image->_setDB($db);
 	$square=new GridSquare;
 	$square->_setDB($db);
-									
+
+	if (isset($_GET['kml'])) {
+		if ($USER->hasPerm("admin")) {
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;	
+			$kml = new kmlFile();
+			$document = $kml->addChild('Document');
+			$document->setItem('name','geotest');
+		} else {
+			unset($_GET['kml']);
+		}
+	}
+
+
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 
@@ -58,9 +71,13 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	$lx = 0;
 	foreach ($all as $id => $row) {
 		if (preg_match_all('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/',$row['post_text'],$g_matches)) {
-			
+			if (isset($_GET['kml'])) {
+				$folder = $document->addChild('Folder');
+				$folder->setItem('name',$row['poster_name']);	
+				$folder->setTimeStamp(substr($row['post_time'],0,10));
+			}
 			$gridsquares = array();
-			
+
 			foreach ($g_matches[2] as $g_i => $g_id) {
 				$image = 0;
 				if (is_numeric($g_id)) {
@@ -94,8 +111,15 @@ if (!$smarty->is_cached($template, $cacheid)) {
 						}
 						$lx = $square->x;
 						$ly = $square->y;
+
+						if (isset($_GET['kml'])) {
+
+							list($lat,$long) = $conv->gridsquare_to_wgs84($square);
+
+							$point = new kmlPoint($lat,$long);
+							$placemark = $folder->addChild(new kmlPlacemark(null,$g,$point));
+						}
 					}
-					
 				}
 			}
 			if ($cacheid) {
@@ -116,6 +140,9 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	}
 	$smarty->assign_by_ref('posts', $posts);
 	$smarty->assign('hide', $cacheid);
+
+	if (isset($_GET['kml']))
+		$kml->outputKMZ(false,"../kml/le2jog$cacheid.kmz");
 }
 
 
