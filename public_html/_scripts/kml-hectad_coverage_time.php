@@ -29,8 +29,6 @@ $USER->mustHavePerm("admin");
 
 $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'points';
 
-$when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
-
 set_time_limit(3600);
 
 
@@ -52,7 +50,7 @@ foreach (range(2005,date('Y')) as $year) {
 			$when  = sprintf("%04d-%02d",$year,$month);
 	
 			if (isset($_GET['build'])) {
-				$url = "http://".$_SERVER['HTTP_HOST']."/_stripts/kml-hectad_coverage.php?type=$type&when=$when".($thismonth?'&over=1':'');
+				$url = "http://".$_SERVER['HTTP_HOST']."/_scripts/kml-hectad_coverage.php?type=$type&when=$when".($thismonth?'&over=1':'');
 				$files[] = $url; 
 				if (!isset($_GET['d'])) {
 					file_get_contents($url);
@@ -92,6 +90,23 @@ ob_end_clean();
 file_put_contents ( $_SERVER['DOCUMENT_ROOT']."/kml/hectads-$type-animation.kml", $filedata); 
 
 print "wrote ".strlen($filedata);
-print "<br/><br/><a href=\"/kml/hectads-$type-animation.kml\">Download</a>";
+print "<br/><br/><a href=\"/kml/hectads-$type-animation.kml\">Download KML</a>";
+
+include("geograph/zip.class.php");
+
+$zipfile = new zipfile();
+
+// add the binary data stored in the string 'filedata'
+$zipfile -> addFile($filedata, "doc.kml");   
+
+$content =& $zipfile->file();
+
+file_put_contents ( $_SERVER['DOCUMENT_ROOT']."/kml/hectads-$type-animation.kmz", $content);
+
+print "<br/><br/><br/><br/>wrote ".strlen($content);
+print "<br/><br/><a href=\"/kml/hectads-$type-animation.kmz\">Download KMZ</a>";
+
+
+
 
 ?>

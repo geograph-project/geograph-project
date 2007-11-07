@@ -225,7 +225,25 @@ ob_end_clean();
 
 file_put_contents ( $filename, $filedata); 
 
+$type = "$type".($when?"-$when":'');
+
 print "wrote ".strlen($filedata);
-print "<br/><br/><a href=\"/kml/hectads-$type.kml\">Download</a>";
+print "<br/><br/><a href=\"/kml/hectads-$type.kml\">Download KML</a>";
+
+
+include("geograph/zip.class.php");
+
+$zipfile = new zipfile();
+
+// add the binary data stored in the string 'filedata'
+$zipfile -> addFile($filedata, "doc.kml");
+
+$content =& $zipfile->file();
+
+file_put_contents ( $_SERVER['DOCUMENT_ROOT']."/kml/hectads-$type.kmz", $content);
+
+print "<br/><br/><br/><br/>wrote ".strlen($content);
+print "<br/><br/><a href=\"/kml/hectads-$type.kmz\">Download KMZ</a>";
+
 
 ?>
