@@ -44,6 +44,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$preset=($CONF['template']=='charcoal')?'overview_charcoal':'overview';
 	$overview=new GeographMapMosaic($preset);
+	$overview->type_or_user = -1;
 	$overview->assignToSmarty($smarty, 'overview');
 	
 	
