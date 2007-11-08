@@ -262,6 +262,7 @@ function smarty_modifier_revision($filename) {
 	if (isset($REVISIONS[$filename])) {
 		return "http://s0.{$_SERVER['HTTP_HOST']}".preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
 	} else {
+#return "http://s0.{$_SERVER['HTTP_HOST']}".preg_replace('/\.(js|css)$/',".v".time().".$1",$filename);
         	return $filename;
 	}
 }
@@ -490,6 +491,7 @@ function customExpiresHeader($diff,$public = false) {
 		header("Cache-Control: max-age=$diff");
 	} else {
 		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past 
+		header("Cache-Control: max-age=0");
 	}
 	if ($public)
 		header("Cache-Control: Public");
