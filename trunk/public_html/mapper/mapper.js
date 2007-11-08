@@ -13,7 +13,7 @@ function drawNoZoom(px) {
 	px = this.position;
 
 	// place the controls
-	this.buttons = new Array();
+	this.buttons = [];
 
 	var sz = new OpenLayers.Size(18,18);
 	var centered = new OpenLayers.Pixel(px.x+sz.w/2, px.y);
@@ -39,10 +39,10 @@ function mouseDefaultClick(evt) {
 			osposition.update = 0;
 			gr = osposition.element.innerHTML;
 			osposition.element.innerHTML = gr + ' <a href="/gridref/'+escape(gr)+'" target="_top">Go</a>';
-			parent.frames['browseframe'].location.href = "/gridref/"+gr+"?inner";
+			parent.frames.browseframe.location.href = "/gridref/"+gr+"?inner";
 		} else {
 			osposition.update = 1;
-			parent.frames['browseframe'].location.href = "about:blank";
+			parent.frames.browseframe.location.href = "about:blank";
 		}
 	}
 	
@@ -51,11 +51,11 @@ function mouseDefaultClick(evt) {
 
 /* Replacement defaultMouseDown function for MouseDefaults control, removed the shift-click functionality that starts rubber-band zoom */
 function mouseDefaultMouseDown (evt) {
-	if (!OpenLayers.Event.isLeftClick(evt)) return;
+	if (!OpenLayers.Event.isLeftClick(evt)) { return; }
 	this.mouseDragStart = evt.xy.clone();
 	this.performedDrag  = false;
 
-	document.onselectstart=function() { return false; }
+	document.onselectstart=function() { return false; };
 	OpenLayers.Event.stop(evt);
 }
 
@@ -67,11 +67,11 @@ function showGridRef(evt) {
 		return;
 	}
 	
-	if (evt == null) {
+	if (evt === null) {
 		this.element.innerHTML = "loaded.";
 		return;
 	} else {
-		if (this.lastXy == null || Math.abs(evt.xy.x - this.lastXy.x) > this.granularity || Math.abs(evt.xy.y - this.lastXy.y) > this.granularity) {
+		if (this.lastXy === null || Math.abs(evt.xy.x - this.lastXy.x) > this.granularity || Math.abs(evt.xy.y - this.lastXy.y) > this.granularity) {
 			this.lastXy = evt.xy;
 			return;
 		}
@@ -79,15 +79,15 @@ function showGridRef(evt) {
 		lonLat = this.map.getLonLatFromPixel(evt.xy);
 		this.lastXy = evt.xy;
 	}
-        
-	var digits = parseInt(this.numdigits);
-        		
+
+	var digits = parseInt(this.numdigits,10);
+
 	var gro = new GT_OSGB();
 	gro.northings = lonLat.lat;
 	gro.eastings = lonLat.lon;
-        		
+
 	var gr = gro.getGridRef(digits);
-        		
+
 	var newHtml = this.prefix + gr + this.suffix;
 
 
@@ -98,7 +98,7 @@ function showGridRef(evt) {
 
 String.prototype.trim = function () {
 	return this.replace(/^\s+|\s+$/g,"");
-}
+};
 
 function parseLocation() {
 	var coordstr = document.getElementById('coordin').value.trim().toUpperCase();
@@ -108,7 +108,7 @@ function parseLocation() {
 		//ml.addMarker(new OpenLayers.Marker(ll));
 		map.setCenter(ll, 0);
 	} else {
-		var coord = new GT_Irish();
+		coord = new GT_Irish();
 		if(coord.parseGridRef(coordstr)) {
 			window.location = "/gridref/"+coordstr;
 		}
