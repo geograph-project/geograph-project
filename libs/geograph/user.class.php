@@ -834,7 +834,7 @@ class GeographUser
 		
 		//also clear the autologin cookie as doesnt make sence to keep
 		setcookie('autologin', '', time()-3600*24*365,'/');  
-		
+
 	}
 
 	
@@ -1023,7 +1023,9 @@ class GeographUser
 								
 								//log into forum too
 								$this->_forumLogin();
-								
+
+								if (isset($_SESSION['maptt'])) 
+									unset($_SESSION['maptt']);								
 							}
 							else
 							{
