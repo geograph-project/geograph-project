@@ -92,20 +92,27 @@ if (isset($_GET['map']))
 				customNoCacheHeader();       
 				header("HTTP/1.0 307 Temporary Redirect");
 				header("Status: 307 Temporary Redirect");
-
-				header("Location: /maps/login.png");
+				if ($USER->registered) {
+ 	                               header("Location: /maps/validate.png");
+ 				} else {
+					header("Location: /maps/login.png");
+				}
 				exit;
 			}
 
 			if (!($tt->useCredit())) {
 				//run out of credit!
 
-				customNoCacheHeader();       
+				customNoCacheHeader(); 
 				header("HTTP/1.0 307 Temporary Redirect");
 				header("Status: 307 Temporary Redirect");
 
-				header("Location: /maps/validate.png");
-				exit;
+                                if ($USER->registered) {
+                                       header("Location: /maps/validate.png");
+                                } else {
+                                        header("Location: /maps/login.png");
+                                }
+ 				exit;
 			}
 		
 			if (isset($_GET['refresh']) && $_GET['refresh'] == 2 && $USER->hasPerm('admin'))
