@@ -488,13 +488,13 @@ function customExpiresHeader($diff,$public = false) {
 	if ($diff > 0) {
 		$expires=gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+$diff);
 		header("Expires: $expires");
-		header("Cache-Control: max-age=$diff");
+		header("Cache-Control: max-age=$diff",false);
 	} else {
 		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past 
-		header("Cache-Control: max-age=0");
+		header("Cache-Control: max-age=0",false);
 	}
 	if ($public)
-		header("Cache-Control: Public");
+		header("Cache-Control: Public",false);
 }
 
 function customGZipHandlerStart() {
