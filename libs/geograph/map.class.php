@@ -439,12 +439,17 @@ class GeographMap
 			$file="/mapbrowse.php?map=$token";
 		}
 		*/
-		
+		if ($this->type_or_user == -1 && $this->pixels_per_km >4) {
+			$this->type_or_user =0;
+			$real = -1;			
+		}
 		//always given dynamic url, that way cached HTML can 
 		//always get an image
 		$token=$this->getToken();
 		$file="/mapbrowse.php?map=$token";
-		
+		if (isset($real)) 
+			 $this->type_or_user = $real;
+
 		return $file;
 		
 	}
