@@ -1151,7 +1151,7 @@ class KMLCreator extends FeedCreator {
 				$this->items[$i]->description = "<a href=\"".htmlspecialchars($this->items[$i]->link)."\">".$this->items[$i]->thumbTag."</a><br/>".$this->items[$i]->description;
 			}
 			
-			$this->items[$i]->description = "<p align=\"center\"><b>".htmlentities2($this->items[$i]->description)."</b><br/>
+			$this->items[$i]->description = "<p align=\"center\"><b>".$this->items[$i]->description."</b><br/>
 			".$this->items[$i]->licence."
 				<br/><br/><a href=\"".htmlspecialchars($this->items[$i]->link)."\">View Online</a></b>";
 			
