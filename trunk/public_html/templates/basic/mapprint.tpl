@@ -35,7 +35,9 @@
 		</tr>
 	{/foreach}
 	</table>
-	
+	{if $depth}
+		<img src="/img/depthkey.png" width="{$mosaic_width}" height="20" style="padding-left:10px;"/>
+	{/if}
 {*end containing div for main map*}
 </div>
 

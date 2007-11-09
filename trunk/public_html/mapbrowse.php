@@ -90,9 +90,14 @@ if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
 		$mosaic->type_or_user = 0;
 	}
 } elseif (isset($_GET['depth'])) {
-	$smarty->assign('depth', 1);
-	$mosaic->type_or_user = -1;
-	$overview->type_or_user = -1;
+	if ($_GET['depth']) {
+		$smarty->assign('depth', 1);
+		$mosaic->type_or_user = -1;
+		$overview->type_or_user = -1;
+	} else {
+		$mosaic->type_or_user = 0;
+		$overview->type_or_user = 0;
+	}
 } elseif ($mosaic->type_or_user == -1) {
 	$smarty->assign('depth', 1);
 	$overview->type_or_user = -1;
