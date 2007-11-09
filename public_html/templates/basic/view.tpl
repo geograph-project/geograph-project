@@ -135,7 +135,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 	<div class="rastermap" style="width:{$rastermap->width}px;position:relative">
 	{$rastermap->getImageTag()}
 	<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
-	{if $rastermap->reference_index == 1}<br/><a href="/mapper/?t={$map_token}&amp;gridref_from={$image->grid_reference}">Open Larger Map</a> <sup style="color:red">New!</sup>{/if}
+	{if $rastermap->reference_index == 1}<br/>Open <a href="/mapper/?t={$map_token}&amp;gridref_from={$image->grid_reference}">OS Map Checksheet</a> <sup style="color:red">New!</sup>{/if}
 	</div>
 
 	{$rastermap->getScriptTag()}
@@ -217,13 +217,13 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </div>
 
 {if $overview}
-  <div style="float:left; text-align:center; width:{$overview_width+30}px; position:relative">
+  <div style="float:left; text-align:center; width:{$overview_width}px; position:relative">
 	{include file="_overview.tpl"}
 	<div style="width:inherit;margin-left:20px;"><br/>
 
 	<a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$image->grid_reference}">Geograph Map</a><br/><br/>
 
-	<div style="padding:3px;border:1px solid yellow;"><a title="Send an Electronic Card" href="/ecard.php?image={$image->gridimage_id}">Send Picture<br/> by Email &gt;</a></div>
+	<div style="margin:2px;padding:4px;background-color:lightgrey;"><a title="Send an Electronic Card" href="/ecard.php?image={$image->gridimage_id}">Forward Picture<br/> to a Friend</a> &gt;</div>
 
 	</div>
   </div>

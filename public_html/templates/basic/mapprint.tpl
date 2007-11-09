@@ -111,7 +111,7 @@
  
 
 
- <br style="clear:both;"/>
+ <br style="clear:both;"/><br/>
 
 <p style="font-size:10pt; text-align:center">Printed from <a href="http://{$http_host}/">{$http_host}</a>, {$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</p>
 

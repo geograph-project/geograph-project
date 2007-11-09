@@ -94,9 +94,7 @@ table.navtable {
 	</div>
 {/if}
 
-{if !$token_zoomin && !$realname && $mosaic_ri == 1}
-	<div style="adding-left:10px; width:{$mosaic_width}px;"><a href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">Try New Draggable Map</a></div>
-{elseif $depth}
+{if $depth}
 	<img src="/img/depthkey.png" width="{$mosaic_width}" height="20" style="padding-left:10px;"/>
 {/if}
 {*end containing div for main map*}
@@ -270,10 +268,12 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 
  <br style="clear:both;"/>
  
-{if $depth}
- 	<div style="padding-left:10px; width:{$mosaic_width}px; height:20px; float:left;position:relative"><b>Depth Map</b>/<a href="/map/{$mosaic_token}?depth=0">Standard Map</a></div>
+{if !$token_zoomin && !$realname && $mosaic_ri == 1}
+	<div style="adding-left:10px; width:{$mosaic_width}px;">Switch to <a href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">Draggable OS Map Checksheet</a> <sup style="color:red">New!</sup></div>
+{elseif $depth}
+ 	<div style="padding-left:10px; width:{$mosaic_width}px; height:20px; float:left;position:relative">View as <a href="/map/{$mosaic_token}?depth=0">Coverage Map</a></div>
 {elseif $token_zoomin}
-	<div style="padding-left:10px; width:{$mosaic_width}px; height:20px"><a href="/map/{$mosaic_token}?depth=1">View as a Depth Map</a> <sup style="color:red">New!</sup></div>
+	<div style="padding-left:10px; width:{$mosaic_width}px; height:20px">View as a <a href="/map/{$mosaic_token}?depth=1">Depth Map</a> <sup style="color:red">New!</sup></div>
 {/if}
  
 {if $token_zoomout || $realname}
