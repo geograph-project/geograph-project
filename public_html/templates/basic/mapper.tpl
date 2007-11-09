@@ -1,4 +1,4 @@
-{assign var="page_title" value="Geograph :: Great Britain Map"}
+{assign var="page_title" value="Great Britain Map"}
 {include file="_std_begin.tpl"}
 
 {dynamic}{if $user->registered}

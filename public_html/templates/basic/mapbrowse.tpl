@@ -94,12 +94,10 @@ table.navtable {
 	</div>
 {/if}
 
-{if $depth}
-	<img src="/img/depthkey.png" width="{$mosaic_width}" height="20" style="padding-left:10px;"/>
-{elseif $token_zoomin}
-	<div style="padding-left:10px; width:{$mosaic_width}px; height:20px"><a href="/map/{$mosaic_token}?depth=1">View as a Depth Map</a> <sup style="color:red">New!</sup></div>
-{elseif !$token_zoomin && !$realname && $mosaic_ri == 1}
+{if !$token_zoomin && !$realname && $mosaic_ri == 1}
 	<div style="adding-left:10px; width:{$mosaic_width}px;"><a href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">Try New Draggable Map</a></div>
+{elseif $depth}
+	<img src="/img/depthkey.png" width="{$mosaic_width}" height="20" style="padding-left:10px;"/>
 {/if}
 {*end containing div for main map*}
 </div>
@@ -272,6 +270,12 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 
  <br style="clear:both;"/>
  
+{if $depth}
+ 	<div style="padding-left:10px; width:{$mosaic_width}px; height:20px; float:left;position:relative"><b>Depth Map</b>/<a href="/map/{$mosaic_token}?depth=0">Standard Map</a></div>
+{elseif $token_zoomin}
+	<div style="padding-left:10px; width:{$mosaic_width}px; height:20px"><a href="/map/{$mosaic_token}?depth=1">View as a Depth Map</a> <sup style="color:red">New!</sup></div>
+{/if}
+ 
 {if $token_zoomout || $realname}
 <div style="position:relative;">
 	<div style="position:absolute;left:445px;top:5px;">
@@ -279,7 +283,7 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 	</div>
 </div>
 {/if}
-<br/>
+<br style="clear:both;"/><br/>
 
 <h2>Map{if $realname}, for <a title="view user profile" href="/profile/{$user_id}">{$realname}</a>  <small style="font-size:0.4em; font-weight:normal">[ <a title="Remove User Filter" href="/map/{$mosaic_token}?u=0">Remove User Filter</a> ]</small>{else} Browsing{/if}</h2>
 <p>Here are a few tips for using our map - we're still developing and testing this, so if you
