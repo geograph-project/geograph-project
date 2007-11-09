@@ -1151,7 +1151,7 @@ class KMLCreator extends FeedCreator {
 				$this->items[$i]->description = "<a href=\"".htmlspecialchars($this->items[$i]->link)."\">".$this->items[$i]->thumbTag."</a><br/>".$this->items[$i]->description;
 			}
 			
-			$this->items[$i]->description = "<p align=\"center\"><b>".$this->items[$i]->description."</b><br/>
+			$this->items[$i]->description = "<p align=\"center\"><b>".htmlentities2($this->items[$i]->description)."</b><br/>
 			".$this->items[$i]->licence."
 				<br/><br/><a href=\"".htmlspecialchars($this->items[$i]->link)."\">View Online</a></b>";
 			
@@ -1164,8 +1164,8 @@ class KMLCreator extends FeedCreator {
 			}
 			$feed.= "
 			<description>".$this->items[$i]->getDescription(true)."</description>
-			<Snippet maxLines=\"2\">".htmlspecialchars($snippet)."</Snippet>
-			<name>".FeedCreator::iTrunc(htmlentities(strip_tags($this->items[$i]->title)),100)."</name>
+			<Snippet maxLines=\"2\">".htmlentities2($snippet)."</Snippet>
+			<name>".FeedCreator::iTrunc(htmlentities2(strip_tags($this->items[$i]->title)),100)."</name>
 			<visibility>1</visibility>
 			<Point>
 				<extrude>1</extrude><altitudeMode>relativeToGround</altitudeMode>
