@@ -57,9 +57,7 @@ if ($m[2] == 3) { //GE 3
 
 
 	//use the filename as a hash
-	//can use if-last-mod as file is not unique per user
-	//we have already calculated a header version of the modification date so forward that
-	customCacheControl($t,$cache_file,true);	
+	customCacheControl($mtime,$cache_file);	
 
 	Header("Content-Type: application/vnd.google-earth.kmz+xml; charset=utf-8; filename=geograph.kmz");
 	Header("Content-Disposition: attachment; filename=\"geograph$i.kmz\"");
