@@ -455,17 +455,7 @@ div.ccmessage img
 	vertical-align: middle
 }
 
-/* styling for a full size portrait photo*/
-div.photoportrait
-{
-	width:inherit;
-	padding:10px;
-	text-align:center;
-	margin:10px;
-}
-
-/* styling for a full size landscape photo*/
-div.photolandscape
+div.photobox
 {
 	width:inherit;
 	padding:10px;
