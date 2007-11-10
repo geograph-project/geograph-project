@@ -20,7 +20,7 @@
 			</td></tr></table>
 		{/if}
 
-	 <div id="result{$smarty.foreach.results.iteration}" style="display:none;" class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}" style="position:relative">
+	 <div id="result{$smarty.foreach.results.iteration}" style="display:none;" class="photobox" style="position:relative">
 	 
 	 {if $image->rastermap->enabled}
 	 <div style="float:left; position:relative; width:137px; height:137px;border:1px solid gray; padding: 10px;">

@@ -17,7 +17,7 @@
 {/if}
 
 
-<div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
+<div class="photobox">
   {if $thumb}
   	{if $isadmin}
   		<a href="/editimage.php?id={$image->gridimage_id}&amp;thumb=0" style="font-size:0.6em">Switch to full Image</a>
