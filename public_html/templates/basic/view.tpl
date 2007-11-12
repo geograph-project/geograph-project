@@ -28,7 +28,7 @@ image has been incorrectly rejected (and mistakes do happen!) please use the "<a
 <br/>
 {/if}
 
-<div class="photobox">
+<div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
   
   {literal}
