@@ -70,9 +70,9 @@ if (isset($_SESSION['maptt']) || isset($_REQUEST['inner'])) {
 	if ($USER->hasPerm('admin') || $USER->hasPerm('moderator')) {
 		$tt->uses = 500;
 	} elseif ($USER->hasPerm('basic')) {
-		$tt->uses = 200;
+		$tt->uses = 250;
 	} else {
-		$tt->uses = 35;
+		$tt->uses = 50;
 	}
 
 	$_SESSION['maptt'] = $tt;
