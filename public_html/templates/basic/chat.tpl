@@ -67,18 +67,35 @@
 
 </applet>
 
-<p>:) <img src="/chat/img/sourire.gif">&nbsp;
-:d <img src="/chat/img/content.gif">&nbsp;
-:o <img src="/chat/img/OH-1.gif">&nbsp;
-:p <img src="/chat/img/langue.gif">&nbsp;
-;) <img src="/chat/img/clin-oeuil.gif">&nbsp;
-:( <img src="/chat/img/triste.gif">&nbsp;
-:| <img src="/chat/img/OH-3.gif">&nbsp;
-:'( <img src="/chat/img/pleure.gif">&nbsp;
-:$ <img src="/chat/img/rouge.gif">&nbsp;
-(H) <img src="/chat/img/cool.gif">&nbsp;
-:@ <img src="/chat/img/enerve2.gif">&nbsp;
-:s <img src="/chat/img/roll-eyes.gif"></p>
+<style type="text/css">{literal}
+#crib img  {
+	border-right:1px solid gray; 
+	padding-right:5px;
+}
+{/literal}</style>
+
+<p>Cribsheet:</p><ul id="crib">
+<li><span style="background-color:lightgreen; border:1px solid black; padding: 2px">
+:) <img src="/chat/img/sourire.gif"/>&nbsp;&nbsp;
+:d <img src="/chat/img/content.gif"/>&nbsp;&nbsp;
+:o <img src="/chat/img/OH-1.gif"/>&nbsp;&nbsp;
+:p <img src="/chat/img/langue.gif"/>&nbsp;&nbsp;
+;) <img src="/chat/img/clin-oeuil.gif"/>&nbsp;&nbsp;
+:( <img src="/chat/img/triste.gif"/>&nbsp;&nbsp;
+:| <img src="/chat/img/OH-3.gif"/>&nbsp;&nbsp;
+:'( <img src="/chat/img/pleure.gif"/>&nbsp;&nbsp;
+:$ <img src="/chat/img/rouge.gif"/>&nbsp;&nbsp;
+(H) <img src="/chat/img/cool.gif"/>&nbsp;&nbsp;
+:@ <img src="/chat/img/enerve2.gif"/>&nbsp;&nbsp;
+:s <img src="/chat/img/roll-eyes.gif" style="border-right:none"/>
+</span> <small><small><br/>Just type the charactors and it will be turned into the image</small><br/><br/></small></li>
+
+<li><tt style="background-color:lightgreen; border:1px solid black; padding: 2px"><b>/me</b> rolls eyes in bewilderment</tt>
+shows as <tt style="color:purple; border: 1px solid gray; padding:2px">*{$nickname} rolls eyes in bewilderment</tt><br/><br/></li>
+<li><tt style="background-color:lightgreen; border:1px solid black; padding: 2px"><b>/quit</b> needs sleep now</tt>
+allows you to leave gracefully with the message, helping to show users you intended to leave!
+</li>
+</ul>
 
   {literal}
   <script language="JavaScript" type="text/javascript">
