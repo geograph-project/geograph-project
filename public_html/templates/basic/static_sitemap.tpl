@@ -66,7 +66,7 @@
 <ul>
 	<li><a href="/register.php">Register as a User</a></li>
 	<li><a href="/login.php">Login</a> / <a href="/logout.php">Logout</a></li>
-	<li><a href="/forgotten.php">Forgotton Password</a></li>
+	<li><a href="/forgotten.php">Forgotten Password</a></li>
 	<li><a href="/contact.php">Contact Us</a></li>
 	<li><a href="/profile.php">Your Profile</a> (for registered users only)</li>
 	<li><a href="/tickets.php">Review Your Recent Change Suggestions</a></li>
@@ -128,7 +128,7 @@ Refine:
 	<li><a href="/statistics/monthlyleader.php">By Month</b> Leaderboard</a></li>
 	<li><a href="/statistics.php?by=user&amp;ri=1"><b>Great Britain Contributor</b> List</a></li>
 	<li><a href="/statistics.php?by=user&amp;ri=2"><b>Ireland Contributor</b> List</a></li>
-	<li><a href="/statistics/first2square.php"><b>Numberical Squares</b> Leaderboard</a> (see <a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=2&topic=1235&page=0#19">forum</a>)</li>
+	<li><a href="/statistics/first2square.php"><b>Numerical Squares</b> Leaderboard</a> (see <a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=2&topic=1235&page=0#19">forum</a>)</li>
 	<li><a href="/statistics/busyday.php?users=1">Most <b>Taken in a Day</b> Leaderboard</a></li>
 	<li><a href="/statistics/leaderhectad.php"><b>Hectad</b> Leaderboard for <b>First Geographs</b></a></li>
 	<li><a href="/statistics/leaderallhectad.php"><b>Hectad</b> Leaderboard all Images</a></li>
@@ -176,7 +176,7 @@ Refine:
 	
 	<li>Technical Database Stats: <ul>
 	   <li><a href="/statistics/totals.php">Database Statisitics</a></li>
-	   <li>Estimate for compleation of Milestones<ul>
+	   <li>Estimate for completion of Milestones<ul>
 	   	<li><a href="/statistics/estimate.php?ri=1">Great Britain</a> or <a href="/statistics/estimate.php?ri=2">Ireland</a></li>
 	   	</ul></li>
 	   <li><a href="/statistics/forum_image_breakdown.php">Breakdown of Thumbnails used in Forum Topics</a></li>
@@ -191,7 +191,7 @@ Refine:
 <ul>
    <li><a href="/explore/calendar.php">Geograph <b>Calendar</b></a>, view images by date taken.<br/><br/></li>
 
-   <li><b>Centre Points</b>: (really just arbituary lists of Grid References!)<ul>
+   <li><b>Centre Points</b>: (really just arbitrary lists of Grid References!)<ul>
 	   <li><a href="/explore/counties.php?type=modern">Modern Administrative Counties</a></li>
 	   <li><a href="/explore/counties.php">Ceremonial (Pre 1994) Counties</a></li>
 	   <li><a href="/explore/counties.php?type=pre74">Historic (Pre 1974) Counties</a></li>
@@ -221,8 +221,8 @@ Refine:
 <h3>Developers...</h3>
 
 <ul>
-	<li>Paul Dixon's {external href="http://blog.dixo.net/category/geograph/" text="Blog" title="read Geograph related posts on Pauls blog"}</li>
-	<li>Barry Hunters {external href="http://www.nearby.org.uk/blog/category/geograph/" text="Blog" title="read Geograph related posts on Barrys blog"}, and <i>unoffical</i> {external href="http://www.nearby.org.uk/geograph/" text="GeographTools"} extensions</li>
+	<li>Paul Dixon's {external href="http://blog.dixo.net/category/geograph/" text="Blog" title="read Geograph related posts on Paul's blog"}</li>
+	<li>Barry Hunters {external href="http://www.nearby.org.uk/blog/category/geograph/" text="Blog" title="read Geograph related posts on Barry's blog"}, and <i>unofficial</i> {external href="http://www.nearby.org.uk/geograph/" text="GeographTools"} extensions</li>
 	<li>David Morris's {external href="http://www.brassedoff.net/wp/index.php?s=geograph" text="Blog" title="read Geograph related posts on Davids blog"}</li>
 	
 	

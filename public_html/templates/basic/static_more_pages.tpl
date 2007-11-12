@@ -19,7 +19,7 @@
 
 	<li>All photos are licenced for reuse under a <b>{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Licence"}</b>. <a href="/help/freedom" title="">Find out more</a><br/><br/></li>
 	<li><a href="/kml.php" title="">Geograph with <b>Google Earth</b> and <b>Google Maps</b></a></li>
-	<li><a href="/help/sitemap#software" title=""><b>Other ways</b> to can use this faboulous resource</a></li>
+	<li><a href="/help/sitemap#software" title=""><b>Other ways</b> to can use this fabulous resource</a></li>
 
 </ul>
 
@@ -38,10 +38,10 @@
 <h3>Statistics Junkie?</h3>
 <ul class="explore">
 
-	<li><a href="/numbers.php" title="">View a <b>summery</b></a></li>
+	<li><a href="/numbers.php" title="">View a <b>summary</b></a></li>
 	<li><a href="/statistics.php" title="">More <b>in-depth Statistics</b></a></li>
 	<li><a href="/help/sitemap#stats" title="">Further Statistics</a></li>
-	<li><a href="/statistics/moversboard.php" title="">View the current <b>leaderboard</b></a></li>
+	<li><a href="/statistics/moversboard.php" title="">View the current <b>leader-board</b></a></li>
 </ul>
 
 
