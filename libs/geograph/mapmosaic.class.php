@@ -993,7 +993,7 @@ class GeographMapMosaic
 				$deleted++;
 			}
 			$memcache->name_delete('mi',$file);
-			$memcache->name_delete('mc',$file);
+			$memcache->name_delete('ms',$file);
 
 			if (!$dummy && $expire_basemaps) {
 				$file = $this->getBaseMapFilename($recordSet->fields);
