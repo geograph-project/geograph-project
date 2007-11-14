@@ -172,7 +172,7 @@ class SearchCriteria
 					$sql_where .= "imagetaken NOT LIKE '0000-%'";
 					//falls though...
 				default:
-					$sql_order = $this->orderby;
+					$sql_order = preg_replace('/[^\w,]+/',' ',$this->orderby);
 			}
 			$sql_order = preg_replace('/^submitted/','gridimage_id',$sql_order);
 		}

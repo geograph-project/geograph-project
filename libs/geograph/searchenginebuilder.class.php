@@ -562,8 +562,9 @@ class SearchEngineBuilder extends SearchEngine
 				case "dist_sqd":
 					break;
 				default:
-					$sql .= ",orderby = ".$db->Quote($dataarray['orderby'].($dataarray['reverse_order_ind']?' desc':''));
+					$orderby = $dataarray['orderby'];
 					if ($dataarray['reverse_order_ind']) {
+						$orderby = preg_replace('/(,|$)/',' desc$1',$orderby);
 						if (strpos($sortorders[$dataarray['orderby']],'-') > 1) {
 							$searchdesc .= ", in ".(implode('-&gt;',array_reverse(explode('-&gt;',$sortorders[$dataarray['orderby']]))))." order";
 						} else {
@@ -573,6 +574,7 @@ class SearchEngineBuilder extends SearchEngine
 						$searchdesc .= ", in ".($sortorders[$dataarray['orderby']])." order";
 
 					}
+					$sql .= ",orderby = ".$db->Quote($orderby);
 			}
 			
 			if (!empty($dataarray['breakby'])) {
