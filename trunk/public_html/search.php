@@ -158,6 +158,11 @@ if (isset($_GET['fav']) && $i) {
 		$data['adminoverride'] = 1;
 
 		$engine = new SearchEngineBuilder('#');
+		if (isset($_GET['rss'])) {
+			$engine->page = "syndicator.php";
+		} elseif (isset($_GET['kml'])) {
+			$engine->page = "kml.php";
+		}
 		$engine->buildAdvancedQuery($data);
 
 		//should never fail?? - but display form 'in case'
@@ -263,6 +268,11 @@ if (isset($_GET['fav']) && $i) {
 	$_GET['adminoverride'] = 0; //prevent overriding it
 
 	$engine = new SearchEngineBuilder('#');
+	if (isset($_GET['rss'])) {
+		$engine->page = "syndicator.php";
+	} elseif (isset($_GET['kml'])) {
+		$engine->page = "kml.php";
+	}
  	$engine->buildAdvancedQuery($_GET);
 
  	//should never fail?? - but display form 'in case'
