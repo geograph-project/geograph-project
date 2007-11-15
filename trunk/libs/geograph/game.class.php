@@ -80,10 +80,20 @@ class game {
 	public function saveScore($where = 'user',$username = '') {
 		global $USER;
 		
+		$db = $this->_getDB();
+		
 		$updates = array();
 		
+		$app = 1; 
 		if (!empty($USER->user_id)) {
 			$updates['user_id'] = $USER->user_id;
+		} elseif (!$db->getOne('SELECT game_score_id FROM game_score WHERE approved = 1 and username = '.$db->Quote($username))) {
+			$updates['approved'] = '0';
+			$app = 0; 
+			
+			$mods=$db->GetCol("select email from user where FIND_IN_SET('admin',rights)>0;");			
+			
+			mail(implode(',',$mods), "[Geograph] Scoreboard approval required","Click the following link to review current list\n\nhttp://{$_SERVER['HTTP_HOST']}/games/approve.php","From: Geograph <lordelph@gmail.com>");
 		}
 		if (!empty($username)) {
 			$updates['username'] = $username;
@@ -97,7 +107,9 @@ class game {
 		$updates['ua'] = $_SERVER['HTTP_USER_AGENT'];
 		$updates['session'] = session_id();
 		
-		$this->_getDB()->Execute('INSERT INTO game_score SET `ipaddr` = INET_ATON(\''.getRemoteIP().'\'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+		$db->Execute('INSERT INTO game_score SET `ipaddr` = INET_ATON(\''.getRemoteIP().'\'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+		
+		return $app;
 	}
 	
 	public function saveRate($rating) {

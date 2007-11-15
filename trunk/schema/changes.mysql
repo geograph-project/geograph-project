@@ -1464,3 +1464,7 @@ ALTER TABLE `queries_archive` CHANGE `displayclass` `displayclass` ENUM( 'full',
 ALTER TABLE `queries` CHANGE `displayclass` `displayclass` ENUM( 'full', 'text', 'thumbs', 'slide', 'more', 'spelling', 'thumbsmore', 'search', 'searchtext', 'reveal', 'cluster', 'moremod' ) NOT NULL DEFAULT 'full';
 
 ALTER TABLE `queries_archive` CHANGE `displayclass` `displayclass` ENUM( 'full', 'text', 'thumbs', 'slide', 'more', 'spelling', 'thumbsmore', 'search', 'searchtext', 'reveal', 'cluster', 'moremod' ) NOT NULL DEFAULT 'full';
+
+
+ALTER TABLE `game_score` ADD `approved` TINYINT NOT NULL DEFAULT '1' AFTER `created` ;
+

@@ -14,7 +14,7 @@
 <tbody>
 
 {foreach from=$topusers key=topuser_id item=topuser}
-<tr><td align="right">{$topuser.ordinal}</td><td>{if $topuser.user_id}<a title="View profile" href="/profile/{$topuser.user_id}">{$topuser.realname}</a>{else}{$topuser.username}{/if}</td>
+<tr><td align="right">{$topuser.ordinal}</td><td>{if $topuser.user_id}<a title="View profile" href="/profile/{$topuser.user_id}">{$topuser.realname|escape:"html"}</a>{else}{$topuser.username|escape:"html"}{/if}</td>
 <td align="right">{$topuser.level}</td>
 <td align="right">{$topuser.average}</td>
 <td align="right">{$topuser.games}</td>
