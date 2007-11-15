@@ -54,16 +54,25 @@ if (!empty($game->rastermap)) {
 }
 
 if (!empty($_REQUEST['save'])) {
-	$game->saveScore($_REQUEST['save'],!empty($_REQUEST['username'])?$_REQUEST['username']:'');
+	$app = $game->saveScore($_REQUEST['save'],!empty($_REQUEST['username'])?$_REQUEST['username']:'');
 	if (isset($_SESSION['gameToken'])) {
 		unset($_SESSION['gameToken']);
 	}
-	header("Location: /games/moversboard.php?more");
+	if (!empty($_REQUEST['username'])) {
+		$_SESSION['username']= $_REQUEST['username'];
+	} 
+	if ($app) {
+		header("Location: /games/moversboard.php?more");
+	} else {
+		header("Location: /games/");
+	}
 	exit;
 }
 
 $smarty->assign_by_ref('game',$game);
-	
+if (!empty($_SESSION['username'])) {
+	$smarty->assign('username',$_SESSION['username']);
+}
 $smarty->display('games_score.tpl');
 
 ?>

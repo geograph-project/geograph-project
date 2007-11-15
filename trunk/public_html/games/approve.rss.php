@@ -32,7 +32,7 @@ $rss = new UniversalFeedCreator();
 
 
 $rss->title = 'Game Scoreboard Approvals'; 
-$rss->link = "http://{$_SERVER['HTTP_HOST']}/games/";
+$rss->link = "http://{$_SERVER['HTTP_HOST']}/games/approve.php";
 
 
 $db=NewADOConnection($GLOBALS['DSN']);

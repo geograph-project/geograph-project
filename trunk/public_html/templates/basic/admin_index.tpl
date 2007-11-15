@@ -7,6 +7,12 @@
 
 <h2>Administrative Tools</h2>
 <ul>
+
+{if $names_pending}
+	<li><a href="/games/approve.php">Game Usernames</a> (<a href="/games/approve.rss.php" class="xml-rss">RSS</a>)<br/>
+	<b>[{$names_pending} pending]</b></li>
+{/if}
+
 {if $is_mod} 
 
 <li><a href="/admin/moderation.php">Moderate</a> new photo submissions<br/>
