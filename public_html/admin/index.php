@@ -61,6 +61,7 @@ if ($USER->hasPerm("moderator")) {
 	$smarty->assign('articles_ready', $db->getOne("select count(*) from article where licence != 'none' and approved = 0"));
 }	
 
+$smarty->assign('names_pending', $db->GetOne("select count(*)  from game_score where approved=0"));
 
 $smarty->display($template,$cacheid);
 
