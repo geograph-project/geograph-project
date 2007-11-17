@@ -168,7 +168,7 @@ class RasterMap
 				//nice central marker
 
 				$padding = intval(($width-29)/2);
-				$str .= "<a href=\"/gridref/$gr\" title=\"$title\" onmouseover=\"document.getElementById('marker$idcounter').src='http://s0.{$_SERVER['HTTP_HOST']}/img/blank.gif'\" onmouseout=\"document.getElementById('marker$idcounter').src='http://s0.{$_SERVER['HTTP_HOST']}/templates/basic/img/circle.png'\"><img src=\"http://s0.{$_SERVER['HTTP_HOST']}/templates/basic/img/circle.png\" style=\"padding:{$padding}px;width:29px;height:29px;background-image:url($mapurl);\" border=\"1\" alt=\"$title\" galleryimg=\"no\" id=\"marker$idcounter\"/></a>";
+				$str .= "<a href=\"/gridref/$gr\" title=\"$title\" onmouseover=\"document.getElementById('marker$idcounter').src='http://{$CONF['STATIC_HOST']}/img/blank.gif'\" onmouseout=\"document.getElementById('marker$idcounter').src='http://{$CONF['STATIC_HOST']}/templates/basic/img/circle.png'\"><img src=\"http://{$CONF['STATIC_HOST']}/templates/basic/img/circle.png\" style=\"padding:{$padding}px;width:29px;height:29px;background-image:url($mapurl);\" border=\"1\" alt=\"$title\" galleryimg=\"no\" id=\"marker$idcounter\"/></a>";
 
 			} elseif ($this->displayMarker1) {
 				//need to manipualte the marker position
@@ -202,12 +202,12 @@ class RasterMap
 
 				$padding = "padding:{$ptop}px {$pright}px {$pbottom}px {$pleft}px";
 
-				$str .= "<a href=\"/gridref/$gr\" title=\"$title\" onmouseover=\"document.getElementById('marker$idcounter').src='http://s0.{$_SERVER['HTTP_HOST']}/img/blank.gif'\" onmouseout=\"document.getElementById('marker$idcounter').src='http://s0.{$_SERVER['HTTP_HOST']}/templates/basic/img/circle.png'\"><img src=\"http://s0.{$_SERVER['HTTP_HOST']}/templates/basic/img/circle.png\" style=\"{$padding};width:29px;height:29px;background-image:url($mapurl);\" border=\"0\" alt=\"$title\" galleryimg=\"no\" id=\"marker$idcounter\"/></a>";
+				$str .= "<a href=\"/gridref/$gr\" title=\"$title\" onmouseover=\"document.getElementById('marker$idcounter').src='http://{$CONF['STATIC_HOST']}/img/blank.gif'\" onmouseout=\"document.getElementById('marker$idcounter').src='http://{$CONF['STATIC_HOST']}/templates/basic/img/circle.png'\"><img src=\"http://{$CONF['STATIC_HOST']}/templates/basic/img/circle.png\" style=\"{$padding};width:29px;height:29px;background-image:url($mapurl);\" border=\"0\" alt=\"$title\" galleryimg=\"no\" id=\"marker$idcounter\"/></a>";
 
 			} else {
 				//no marker
 
-				$str .= "<a href=\"/gridref/$gr\" title=\"$title\"><img src=\"/img/blank.gif\" style=\"width:{$width}px;height:{$width}px;background-image:url($mapurl);\" border=\"1\" alt=\"$title\" galleryimg=\"no\" id=\"marker$idcounter\"/></a>";
+				$str .= "<a href=\"/gridref/$gr\" title=\"$title\"><img src=\"http://{$CONF['STATIC_HOST']}/img/blank.gif\" style=\"width:{$width}px;height:{$width}px;background-image:url($mapurl);\" border=\"1\" alt=\"$title\" galleryimg=\"no\" id=\"marker$idcounter\"/></a>";
 			}
 		
 			$idcounter++;
@@ -337,13 +337,13 @@ class RasterMap
 			}
 			
 	//subject icon
-			$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;".( $this->displayMarker1 ?'':'display:none')."\" id=\"marker1\"><img src=\"http://s0.{$_SERVER['HTTP_HOST']}/templates/basic/img/$subfile\" alt=\"+\" width=\"29\" height=\"29\" name=\"subicon\"/></div>";
+			$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;".( $this->displayMarker1 ?'':'display:none')."\" id=\"marker1\"><img src=\"http://{$CONF['STATIC_HOST']}/templates/basic/img/$subfile\" alt=\"+\" width=\"29\" height=\"29\" name=\"subicon\"/></div>";
 
 	//photographer icon
 			if ($this->issubmit) {
-				$str .= "<div style=\"position:absolute;top:".($vtop-14)."px;left:".($vleft-14)."px;".( $this->displayMarker2 ?'':'display:none')."\" id=\"marker2\"><img src=\"http://s0.{$_SERVER['HTTP_HOST']}/templates/basic/img/$iconfile\" alt=\"+\" width=\"29\" height=\"29\" name=\"camicon\"/></div>";
+				$str .= "<div style=\"position:absolute;top:".($vtop-14)."px;left:".($vleft-14)."px;".( $this->displayMarker2 ?'':'display:none')."\" id=\"marker2\"><img src=\"http://{$CONF['STATIC_HOST']}/templates/basic/img/$iconfile\" alt=\"+\" width=\"29\" height=\"29\" name=\"camicon\"/></div>";
 			} else {
-				$str .= "<div style=\"position:absolute;top:".($vtop-20)."px;left:".($vleft-9)."px;".( $this->displayMarker2 ?'':'display:none')."\" id=\"marker2\"><img src=\"http://s0.{$_SERVER['HTTP_HOST']}/templates/basic/img/$iconfile\" alt=\"+\" width=\"20\" height=\"31\" name=\"camicon\"/></div>";
+				$str .= "<div style=\"position:absolute;top:".($vtop-20)."px;left:".($vleft-9)."px;".( $this->displayMarker2 ?'':'display:none')."\" id=\"marker2\"><img src=\"http://{$CONF['STATIC_HOST']}/templates/basic/img/$iconfile\" alt=\"+\" width=\"20\" height=\"31\" name=\"camicon\"/></div>";
 			}
 
 	//overlay (for dragging)
