@@ -9,6 +9,8 @@ init_session();
 if (!isset($_GET['forum']) || $_GET['forum'] != 11)
 	$USER->mustHavePerm("basic");
 
+$static_host = $CONF['STATIC_HOST'];
+
 customGZipHandlerStart();
 
 //most of everthing below is standard minibb stuff
