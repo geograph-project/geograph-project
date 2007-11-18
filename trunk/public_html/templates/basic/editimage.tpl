@@ -155,6 +155,8 @@
 		|
 	{elseif $ticket->user_id eq $image->user_id}
 	  	Submitted by photo owner |
+	{else}
+		Submitted by anonymous site visitor |
 	{/if} 
 	
 
