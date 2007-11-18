@@ -31,6 +31,18 @@ class File_Bittorrent2_MakeTorrentFiles extends File_Bittorrent2_MakeTorrent
 	*/
 	protected $is_multifile = false;
 
+	/**
+	* Function to set the name for
+	* the .torrent file
+	*
+	* @param string name
+	* @return bool
+	*/
+	function setName($name)
+	{
+		$this->name = strval($name);
+		return true;
+	}
 
 	/**
 	* Function to add a specific list of files, 
