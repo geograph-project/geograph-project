@@ -511,7 +511,7 @@ class GridImage
 	*/
 	function getFull($returntotalpath = false)
 	{
-		
+		global $CONF;
 		$fullpath=$this->_getFullpath();
 		
 		if (isset($this->cached_size)) {
@@ -534,7 +534,7 @@ class GridImage
 		$title=htmlentities($this->title);
 				
 		if ($returntotalpath)  
-			$fullpath="http://".$_SERVER['HTTP_HOST'].$fullpath;
+			$fullpath="http://".$CONF['CONTENT_HOST'].$fullpath;
 		
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
 			
@@ -678,7 +678,7 @@ class GridImage
 			
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$_SERVER['HTTP_HOST']}";
+				$return['server']= "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$CONF['CONTENT_HOST']}";
 				$thumbpath = $return['server'].$thumbpath;
 			}
 			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]}/>";
@@ -804,7 +804,7 @@ class GridImage
 	*/
 	function _getResized($params)
 	{
-		global $memcache;
+		global $memcache,$CONF;
 		$mkey = "{$this->gridimage_id}:".md5(serialize($params));
 		//fails quickly if not using memcached!
 		$result =& $memcache->name_get('ir',$mkey);
@@ -841,7 +841,7 @@ class GridImage
 
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
 			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$_SERVER['HTTP_HOST']}";
+				$return['server']= "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$CONF['CONTENT_HOST']}";
 				$thumbpath = $return['server'].$thumbpath;
 			}
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
@@ -1013,7 +1013,7 @@ class GridImage
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$_SERVER['HTTP_HOST']}";
+				$return['server']= "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$CONF['CONTENT_HOST']}";
 				$thumbpath = $return['server'].$thumbpath;
 			}
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";

@@ -20,7 +20,7 @@
     CustomLog /var/www/geograph_live/logs/access_log geograph env=!dontlog
     ErrorLog /var/www/geograph_live/logs/error_log
 
-    php_value include_path .:/var/www/geograph_live/libs/
+    php_value include_path .:/var/www/geograph_live/libs/:/usr/share/php:/usr/share/pear
     php_value register_globals Off
     php_value upload_max_filesize 8M
     php_value memory_limit  32M
@@ -130,7 +130,6 @@
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?livejournal\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?28dayslater\.co\.uk/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?secretscotland\.org\.uk/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} (thread|topic|forum) [NC]    
     RewriteRule /photos/\d.*\.jpg$ /stuff/nohotlink.php [L]
 
 <Location /sitemap/>
