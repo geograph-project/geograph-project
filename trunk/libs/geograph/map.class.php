@@ -423,22 +423,8 @@ class GeographMap
 	*/
 	function getImageUrl()
 	{
+		global $CONF;
 		
-		//
-		/*
-		$file=$this->getImageFilename();
-		$full=$_SERVER['DOCUMENT_ROOT'].$file;
-		
-		if ($this->caching && @file_exists($full))
-		{
-			//we can just return file!
-		}
-		else
-		{
-			$token=$this->getToken();
-			$file="/mapbrowse.php?map=$token";
-		}
-		*/
 		if ($this->type_or_user == -1 && $this->pixels_per_km >4) {
 			$this->type_or_user =0;
 			$real = -1;			
@@ -446,7 +432,7 @@ class GeographMap
 		//always given dynamic url, that way cached HTML can 
 		//always get an image
 		$token=$this->getToken();
-		$file="/mapbrowse.php?map=$token";
+		$file="http://{$CONF['TILE_HOST']}/tile.php?map=$token";
 		if (isset($real)) 
 			 $this->type_or_user = $real;
 
@@ -464,6 +450,10 @@ class GeographMap
 			$this->type_or_user = 0;
 		}
 		$file=$this->getImageFilename();
+		if (!empty($this->mapDateCrit)) {
+			$file=preg_replace('/\./',"-{$this->mapDateStart}.",$file);
+		}
+		
 		$full=$_SERVER['DOCUMENT_ROOT'].$file;
 		if (!$this->caching || !@file_exists($full))
 		{
@@ -1088,9 +1078,22 @@ class GeographMap
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 
 		$number = !empty($this->minimum)?intval($this->minimum):0;
+
+		if (!empty($this->mapDateCrit)) {
+		$sql="select x,y,gs.gridsquare_id,count(*) as imagecount
+			from 
+			gridsquare gs 
+			inner join gridimage gi using(gridsquare_id)
+			where CONTAINS( GeomFromText($rectangle),	point_xy) and
+			submitted < '{$this->mapDateStart}'
+			group by gi.gridsquare_id ";
+		} else {
 		$sql="select x,y,gridsquare_id,imagecount from gridsquare where 
 			CONTAINS( GeomFromText($rectangle),	point_xy)
 			and imagecount>$number"; #and percent_land = 100  #can uncomment this if using the standard green base
+		}
+
+
 
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
@@ -1141,6 +1144,14 @@ class GeographMap
 			}				
 			
 			$target=$this->getImageFilename();
+			
+			if (!empty($this->mapDateCrit)) {
+				$black = imagecolorallocate ($img, 70, 70, 0);
+				imagestring($img, 5, 3, $this->image_h-30, $this->mapDateStart, $black);
+			
+				$target=preg_replace('/\./',"-{$this->mapDateStart}.",$target);
+			}
+			
 			if (preg_match('/jpg/',$target)) {
 				$ok = (imagejpeg($img, $root.$target) && $ok);
 			} else {
