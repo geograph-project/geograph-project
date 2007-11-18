@@ -24,23 +24,22 @@
 require_once('geograph/global.inc.php');
 
 
-
-$size = 'full';
+$size = (isset($_GET['size']) && in_array($_GET['size'],array('full','med','small')))?$_GET['size']:'small';
 
 $s = (isset($_GET['s']) && is_numeric($_GET['s']))?intval($_GET['s']):0;
 
-$filename = sprintf("geograph-%02d-$size.torrent",$s/10000);
+$filename = sprintf("geograph-%02d-$size",$s/10000);
 
-if (file_exists("torrent/$filename")) {
+if (file_exists("torrent/$filename.torrent")) {
 	# let the browser know what's coming
 	header("Content-type: application/x-bittorrent");
-	header("Content-Disposition: attachment; filename=\"$filename\"");
+	header("Content-Disposition: attachment; filename=\"$filename.torrent\"");
 	
 	
-	customCacheControl(filemtime("torrent/$filename"),$filename);
+	customCacheControl(filemtime("torrent/$filename.torrent"),$filename);
 	customExpiresHeader(86400,true);
 	
-	readfile("torrent/$filename");
+	readfile("torrent/$filename.torrent");
 	exit;
 }
 
@@ -55,24 +54,56 @@ $MakeTorrent = new File_Bittorrent2_MakeTorrentFiles('');
 
 $MakeTorrent->setAnnounce('http://cdn.geograph.org.uk:6969/announce');
 
-$MakeTorrent->setComment('Photographs from Geograph British Isles, see htpp://www.geograph.org.uk/ Image Copyright respective owners, released under this Creative Commons Licence: 
-http://creativecommons.org/licenses/by-sa/2.0/');
+$MakeTorrent->setComment('Photographs from Geograph British Isles, see http://'.$_SERVER['HTTP_HOST'].'/ Image Copyright respective owners, released under this Creative Commons Licence: 
+http://creativecommons.org/licenses/by-sa/2.0/, see enclosed rdf file.');
 
 $dir = $_SERVER['DOCUMENT_ROOT']."/photos/";
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
+$rdf = fopen("photos/rdf/$filename.rdf",'w');
+
+fwrite ($rdf,
+'<rdf:RDF xmlns="http://web.resource.org/cc/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:georss="http://www.georss.org/georss/">
+');
+
+#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
+
 $db=NewADOConnection($GLOBALS['DSN']);
 
-$recordSet = &$db->Execute(sprintf("select gridimage_id,user_id from gridimage_search gi where gridimage_id between %d and %d",$s,$s+10000));
+$recordSet = &$db->Execute(sprintf("select * from gridimage_search gi where gridimage_id between %d and %d",$s,$s+10000));
 
-$files = array();
+$files = array("rdf/$filename.rdf");
 while (!$recordSet->EOF) 
 {
 	$image = $recordSet->fields;
-	$i = getGeographFile($image['gridimage_id'],substr(md5($image['gridimage_id'].$image['user_id'].$CONF['photo_hashing_secret']), 0, 8),$size);
-	if (file_exists($dir.'/'.$i[0].'/'.$i[1])) {
-		$files[] = implode("/",$i);
+	$file = getGeographFile($image['gridimage_id'],substr(md5($image['gridimage_id'].$image['user_id'].$CONF['photo_hashing_secret']), 0, 8),$size);
+	if (file_exists($dir.'/'.$file)) {
+		$files[] = $file;
+		
+fwrite ($rdf,
+'<Work rdf:about="http://'.$_SERVER['HTTP_HOST'].'/photos/'.$file.'">
+     <dc:title>'.$image['grid_reference'].' : '.htmlspecialchars2($image['title']).'</dc:title>
+     <dc:creator><Agent>
+	<dc:title>'.htmlspecialchars2($image['realname']).'</dc:title>
+     </Agent></dc:creator>
+     <dc:rights><Agent>
+	<dc:title>'.htmlspecialchars2($image['realname']).'</dc:title>
+     </Agent></dc:rights>
+     <dc:date>'.$image['submitted'].'</dc:date>
+     <dc:format>image/jpeg</dc:format>
+     <dc:type>http://purl.org/dc/dcmitype/StillImage</dc:type>
+     <dc:publisher><Agent>
+	<dc:title>'.$_SERVER['HTTP_HOST'].'</dc:title>
+     </Agent></dc:publisher>
+     <dc:subject>'.htmlspecialchars2($image['imageclass']).'</dc:subject>
+     <georss:point>'.$image['wgs84_lat'].' '.$image['wgs84_long'].'</georss:point>
+     <license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
+</Work>
+');
 	}
 	$recordSet->MoveNext();
 }
@@ -80,21 +111,39 @@ $recordSet->Close();
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
+
+fwrite ($rdf,
+'
+<License rdf:about="http://creativecommons.org/licenses/by-sa/2.0/">
+   <permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+   <permits rdf:resource="http://web.resource.org/cc/Distribution" />
+   <requires rdf:resource="http://web.resource.org/cc/Notice" />
+   <requires rdf:resource="http://web.resource.org/cc/Attribution" />
+   <permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+   <requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+</License>
+
+</rdf:RDF>
+');
+fclose($rdf);
+
 $MakeTorrent->addFiles($files,$dir);
+
+$MakeTorrent->setName($filename);
 
 $metainfo = $MakeTorrent->buildTorrent();
 
-file_put_contents("torrent/$filename",$metainfo);
+file_put_contents("torrent/$filename.torrent",$metainfo);
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
 
 	# let the browser know what's coming
 	header("Content-type: application/x-bittorrent");
-	header("Content-Disposition: attachment; filename=\"$filename\"");
+	header("Content-Disposition: attachment; filename=\"$filename.torrent\"");
 
 
-customCacheControl(filemtime("torrent/$filename"),$filename);
+customCacheControl(filemtime("torrent/$filename.torrent"),$filename);
 customExpiresHeader(86400,true);
 print $metainfo;
 	
@@ -106,16 +155,15 @@ function getGeographFile($gridimage_id,$hash,$size) {
        $ab=sprintf("%02d", floor($gridimage_id/10000));
        $cd=sprintf("%02d", floor(($gridimage_id%10000)/100));
        $abcdef=sprintf("%06d", $gridimage_id);
-       $fullpath="$ab/$cd";
-       
-       $file = "{$abcdef}_{$hash}";
+
+       $file = "$ab/$cd/{$abcdef}_{$hash}";
 
        switch($size) {
-               case 'full': return array($fullpath, "$file.jpg"); break;
-               case 'med': return array($fullpath, "{$file}_213x160.jpg"); break;
+               case 'full': return "$file.jpg"; break;
+               case 'med': return "{$file}_213x160.jpg"; break;
                case 'small':
-               default: return array($fullpath, "{$file}_120x120.jpg");
+               default: return "{$file}_120x120.jpg";
        }
-}	
+}
 
 ?>
