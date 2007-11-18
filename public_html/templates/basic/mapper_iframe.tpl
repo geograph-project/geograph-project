@@ -12,7 +12,7 @@
 var lon = {$e};
 var lat = {$n};
 var tileurl = "http://{$http_host}/tile.php";
-var ttileurl = "http://t0.{$http_host}/tile.php";
+var ttileurl = "http://{$tile_host}/tile.php";
 
 var zoom = 0;
 var map, osposition, ml;

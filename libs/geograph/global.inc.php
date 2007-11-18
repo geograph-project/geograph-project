@@ -266,6 +266,7 @@ class GeographPage extends Smarty
 		//assign globallly useful stuff
 		$this->assign_by_ref('user', $GLOBALS['USER']);
 		$this->assign_by_ref('http_host', $_SERVER['HTTP_HOST']);
+		$this->assign_by_ref('static_host', $CONF['STATIC_HOST']);
 		$this->assign_by_ref('script_name', $_SERVER['PHP_SELF']);
 		$this->assign_by_ref('script_uri', $_SERVER['REQUEST_URI']);
 		$this->assign_by_ref('searchq', $_SESSION['searchq']);

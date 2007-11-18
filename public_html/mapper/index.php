@@ -78,6 +78,10 @@ if (isset($_SESSION['maptt']) || isset($_REQUEST['inner'])) {
 	$_SESSION['maptt'] = $tt;
 }
 
+$smarty->assign('content_host',$CONF['CONTENT_HOST']);
+$smarty->assign('tile_host',$CONF['TILE_HOST']);
+
+
 $smarty->display($template, $cacheid);
 
 	
