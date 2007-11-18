@@ -1,7 +1,7 @@
 {assign var="page_title" value="Statistics:: $h2title"}
 {include file="_std_begin.tpl"}
 {if !$nosort}
-<script src="http://s0.{$http_host}/sorttable.js"></script>
+<script src="{"/sorttable.js"|revision}"></script>
 {/if}
 
 {if $filter}

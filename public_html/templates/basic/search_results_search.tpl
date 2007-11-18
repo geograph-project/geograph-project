@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>Search Results</title>
-<script src="http://s0.{$http_host}/sorttable.js"></script>
+<script src="{"/sorttable.js"|revision}"></script>
 <link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/basic.css" media="screen" />
 </head>
 <body style="background-color:{$maincontentclass|replace:"content_photo":""}"

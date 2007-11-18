@@ -37,7 +37,7 @@ function mouseDefaultClick(evt) {
 		// Freezes the map position onclick of the map, unfreeze on another click
 		if(osposition.update) {
 			osposition.update = 0;
-			gr = osposition.element.innerHTML;
+			gr = osposition.element.innerHTML.substr(0,13);
 			osposition.element.innerHTML = gr + ' <a href="/gridref/'+escape(gr)+'" target="_top">Go</a>';
 			parent.frames.browseframe.location.href = "/gridref/"+gr+"?inner";
 		} else {

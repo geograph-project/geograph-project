@@ -1,6 +1,6 @@
 {assign var="page_title" value="Fully Geographed Squares"}
 {include file="_std_begin.tpl"}
-<script src="http://s0.{$http_host}/sorttable.js"></script>
+<script src="{"/sorttable.js"|revision}"></script>
 
 <h2>Fully Geographed Hectads</h2>
 

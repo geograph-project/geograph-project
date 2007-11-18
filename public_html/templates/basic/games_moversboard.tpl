@@ -10,7 +10,7 @@
 {$cutoff_time|date_format:"%A, %d %b at %H:%M"}</p>
 
 <table class="report"> 
-<thead><tr><td>Position</td><td>Name</td><td>Level</td><td>Overall</td><td>Games</td><td><img src="http://s0.{$http_host}/templates/basic/img/hamster-icon.gif"/></td></tr></thead>
+<thead><tr><td>Position</td><td>Name</td><td>Level</td><td>Overall</td><td>Games</td><td><img src="http://{$static_host}/templates/basic/img/hamster-icon.gif"/></td></tr></thead>
 <tbody>
 
 {foreach from=$topusers key=topuser_id item=topuser}

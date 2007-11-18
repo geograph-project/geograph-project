@@ -1,5 +1,5 @@
 {include file="_std_begin.tpl"}
-<script src="http://s0.{$http_host}/sorttable.js"></script>
+<script src="{"/sorttable.js"|revision}"></script>
 
 {if $overview}
   <div style="float:right; width:{$overview_width+30}px; position:relative">
