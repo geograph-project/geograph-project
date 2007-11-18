@@ -27,7 +27,7 @@ NameVirtualHost *
     CustomLog /var/www/geograph_svn/logs/access_log geograph env=!dontlog
     ErrorLog /var/www/geograph_svn/logs/error_log
 
-    php_value include_path .:/var/www/geograph_svn/libs/
+    php_value include_path .:/var/www/geograph_svn/libs/:/usr/share/pear
     php_value register_globals Off
     php_value upload_max_filesize 8M
     <Directory /var/www/geograph_svn/public_html/>
