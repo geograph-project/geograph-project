@@ -1,6 +1,6 @@
 {assign var="page_title" value="Routes in Pictures :: Explore"}
 {include file="_std_begin.tpl"}
-<script src="http://s0.{$http_host}/sorttable.js"></script>
+<script src="{"/sorttable.js"|revision}"></script>
 
 <h2>Routes in Pictures</h2>
 

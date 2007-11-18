@@ -109,7 +109,7 @@ geographing</a> first.</p>
 		</ul></div>
 		
 		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
-		<img src="http://s0.{$http_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
+		<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
 		 This feature is still in development. If a image fails to upload please let us know, or better still, send it as an attachment to <a href="mailto:geograph@barryhunter.co.uk">me</a> so we can try to ensure it's recognised.
 		</div>
 	</div>
@@ -123,7 +123,7 @@ geographing</a> first.</p>
 		<p><a href="/juppy.php">JUppy</a> is coded in cross-platform Java, and is an ideal solution to upload many images, allowing you to prepare the images without an internet connection. <a href="/juppy.php">Go Get it Now!</a></p>
 		
 		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
-		<img src="http://s0.{$http_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>JUppy is still under development and we'd be pleased to receive any comments or suggestions for improvements.
+		<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>JUppy is still under development and we'd be pleased to receive any comments or suggestions for improvements.
 		</div>
 	</div>
 </div>
@@ -201,9 +201,9 @@ geographing</a> first.</p>
 		{/if}
 		
 		<h4><b>Grid References:</b> (recommended)</h4>
-		<p><label for="grid_reference"><b style="color:#0018F8">Primary Photo Subject</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://s0.{$http_host}/templates/basic/img/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{/if}</p>
+		<p><label for="grid_reference"><b style="color:#0018F8">Primary Photo Subject</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/templates/basic/img/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{/if}</p>
 	
-		<p><label for="photographer_gridref"><b style="color:#002E73">Photographer Position</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://s0.{$http_host}/templates/basic/img/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://s0.{$http_host}/templates/basic/img/camicon.png" alt="Marks the Photographer" width="12" height="20" align="middle"/>{/if}
+		<p><label for="photographer_gridref"><b style="color:#002E73">Photographer Position</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/templates/basic/img/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/templates/basic/img/camicon.png" alt="Marks the Photographer" width="12" height="20" align="middle"/>{/if}
 		
 		<span style="font-size:0.8em"><br/><a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Copy from Subject</a></span>
 		
@@ -243,7 +243,7 @@ geographing</a> first.</p>
 			{/literal}
 		
 	{else} 
-		<script type="text/javascript" src="http://s0.{$http_host}/mapping.js"></script>
+		<script type="text/javascript" src="{"/mapping.js"|revision}"></script>
 	{/if}
 
 	<br/>

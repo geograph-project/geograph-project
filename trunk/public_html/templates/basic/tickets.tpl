@@ -1,7 +1,7 @@
 {assign var="page_title" value="Change Request Tickets"}
 {include file="_std_begin.tpl"}
 
-<script src="http://s0.{$http_host}/sorttable.js"></script>
+<script src="{"/sorttable.js"|revision}"></script>
 
 {dynamic}
 <h2>Change Request Tickets for {$user->realname}</h2>

@@ -1,6 +1,6 @@
 {assign var="page_title" value="Most Geographed Squares"}
 {include file="_std_begin.tpl"}
-<script src="http://s0.{$http_host}/sorttable.js"></script>
+<script src="{"/sorttable.js"|revision}"></script>
 
 <h2>Most Geographed 100km x 100km Squares (Myriads)</h2>
 

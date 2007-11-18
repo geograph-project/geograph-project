@@ -70,7 +70,7 @@
 		<fieldset>
 			<legend>Hamster Tokens Available <input type="text" name="points" value="{$game->points}" size="1" readonly="readonly"/></legend>
 			{section loop=$game->points name="point"}
-				<img src="http://s0.{$http_host}/templates/basic/img/hamster-icon.gif" name="pointimg{$smarty.section.point.index}"/>
+				<img src="http://{$static_host}/templates/basic/img/hamster-icon.gif" name="pointimg{$smarty.section.point.index}"/>
 			{/section}
 		</fieldset>
 		

@@ -13,7 +13,7 @@
 
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 
-<h3 style="color:black"><img src="http://s0.{$http_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/> Rejected</h3>
+<h3 style="color:black"><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/> Rejected</h3>
 
 <p>This photograph has been rejected by the site moderators, and is only viewable by you.</p>
 
@@ -64,9 +64,10 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <rdf:RDF xmlns="http://web.resource.org/cc/"
     xmlns:dc="http://purl.org/dc/elements/1.1/"
-    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:georss="http://www.georss.org/georss/">
 <Work rdf:about="">
-     <dc:title>{$image->title|escape:'html'}</dc:title>
+     <dc:title>{$image->grid_reference} : {$image->title|escape:'html'}</dc:title>
      <dc:creator><Agent>
         <dc:title>{$image->realname|escape:'html'}</dc:title>
      </Agent></dc:creator>
@@ -75,12 +76,14 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
      </Agent></dc:rights>
      <dc:date>{$image->submitted}</dc:date>
      <dc:format>image/jpeg</dc:format>
+     <dc:type>http://purl.org/dc/dcmitype/StillImage</dc:type>
      <dc:publisher><Agent>
         <dc:title>{$http_host}</dc:title>
      </Agent></dc:publisher>
 {if $image->imageclass}
      <dc:subject>{$image->imageclass}</dc:subject>
 {/if}
+     <georss:point>{$lat|string_format:"%.5f"} {$long|string_format:"%.5f"}</georss:point>
      <license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
 </Work>
 
@@ -101,7 +104,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <table style="width:100%"><tr>
 
-<td style="width:50px"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img src="http://s0.{$http_host}/templates/basic/img/icon_discuss.gif" alt="Discuss" width="50" height="44"/></a></td>
+<td style="width:50px"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img src="http://{$static_host}/templates/basic/img/icon_discuss.gif" alt="Discuss" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
 {if $discuss}
 	There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a
@@ -111,12 +114,12 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 {/if}
 </td>
 
-<td style="width:50px"><a href="/editimage.php?id={$image->gridimage_id}"><img src="http://s0.{$http_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44"/></a></td>
+<td style="width:50px"><a href="/editimage.php?id={$image->gridimage_id}"><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
 	<a href="/editimage.php?id={$image->gridimage_id}">Picture details need updating?</a>
 </td>
 
-<td style="width:50px"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="http://s0.{$http_host}/templates/basic/img/icon_email.gif" alt="Email" width="50" height="44"/></a></td>
+<td style="width:50px"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="http://{$static_host}/templates/basic/img/icon_email.gif" alt="Email" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
 	<a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the photographer</a>
 </td>

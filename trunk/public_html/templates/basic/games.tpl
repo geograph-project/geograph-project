@@ -44,11 +44,11 @@ Help us Locate new <br/>images for the games.<br/>
 {/if}
 {/dynamic}
 
-<div style="float:left; padding-right:20px"><img src="http://s0.{$http_host}/templates/basic/img/hamster.gif"/></div>
+<div style="float:left; padding-right:20px"><img src="http://{$static_host}/templates/basic/img/hamster.gif"/></div>
 
 
 
-<div style="float:left; margin-top:60px; width:235px;height:59px; background-image:url('http://s0.{$http_host}/templates/basic/img/callout1.gif');padding-left:75px;padding-top:5px; padding-right:10px; text-align:center;color:#0000FF">
+<div style="float:left; margin-top:60px; width:235px;height:59px; background-image:url('http://{$static_host}/templates/basic/img/callout1.gif');padding-left:75px;padding-top:5px; padding-right:10px; text-align:center;color:#0000FF">
 Welcome to Geograph's <h2>Games Section</h2></div>
 
 <br style="clear:both"/>
@@ -56,7 +56,7 @@ Welcome to Geograph's <h2>Games Section</h2></div>
 
 
 <div  class="interestBox" style="width:45%; float:left">
-<img src="http://s0.{$http_host}/games/markit.gif" align="right"/>
+<img src="http://{$static_host}/games/markit.gif" align="right"/>
 <h3 style="background-color:black;color:white;margin-top:0px; padding:10px;">Mark It</h3>
 
 <p>Earn Hamster Tokens by locating Photos on the Map!</p>
