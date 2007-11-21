@@ -321,7 +321,7 @@ class kmlPlacemark extends kmlPrimative {
 	public function __construct($id,$itemname = '',$kmlPoint = null) {
 		parent::__construct('Placemark',$id);
 		if (!empty($itemname)) {
-			$this->setItemCDATA('name',$itemname);
+			$this->setItem('name',$itemname);
 		}
 		if (is_object($kmlPoint)) {
 			$this->addChild($kmlPoint,$id,'Point');
