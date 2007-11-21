@@ -22,7 +22,7 @@
      <li><a title="Chat" href="/chat/">Chat</a> {dynamic}{if $irc_seen}<span style="color:gray">({$irc_seen} online)</span>{/if}{/dynamic}</li>
     </ul></li>
     <li>Further Info<ul>
-     <li><a title="Articles" href="/article/">Articles</a>
+     <li><a title="Articles" href="/article/">Articles</a></li>
      <li><a title="FAQ" href="/faq.php">FAQ</a></li>
      <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
      <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a></li>
@@ -35,7 +35,7 @@
      	<li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
      {/if}
      {if $is_tickmod}
-     	<li><a title="Trouble Tickets" href="/admin/tickets.php">Tickets</a> (<a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search" title="Open in Sidebar, IE and Firefox Only">S</a>)</li>
+     	<li><a title="Trouble Tickets" href="/admin/tickets.php">Tickets</a> (<a href="/admin/tickets.php?sidebar=1" target="_search" title="Open in Sidebar, IE and Firefox Only">S</a>)</li>
      {/if}
      <li><a title="Finish Moderation for this session" href="/admin/moderation.php?abandon=1">Finish</a></li>
     </ul></li>
