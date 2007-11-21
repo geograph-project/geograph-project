@@ -92,11 +92,11 @@
     <h3>Technology</h3>
     <p>This project relies on the following open-source technologies:</p>
     
-    <div><a title="PHP Programming Language" href="http://www.php.net" target="_blank"><img src="/img/php.png" width="88" height="31" alt="PHP"></a>
-    <a title="Smarty Template Engine" href="http://smarty.php.net" target="_blank"><img src="/img/smarty.gif" width="88" height="31" alt="Smarty"></a>
-    <a title="ADOdb Database Abstraction Library" href="http://adodb.sourceforge.net" target="_blank"><img src="/img/adodb.gif" width="88" height="31" alt="adodb"></a>
-    <a title="MySQL Database Server" href="http://www.mysql.com" target="_blank"><img src="/img/mysql.png" width="88" height="31" alt="MySQL"></a>
-    <a href="http://www.sphinxsearch.com/"><img src="/img/sphinx_silver.gif" width="88" height="31" border="0" alt="powered by Sphinx"></a>
+    <div>{external title="PHP Programming Language" href="http://www.php.net" text='<img src="/img/php.png" width="88" height="31" alt="PHP"/>'}
+    {external title="Smarty Template Engine" href="http://smarty.php.net" text='<img src="/img/smarty.gif" width="88" height="31" alt="Smarty"/>'}
+    {external title="ADOdb Database Abstraction Library" href="http://adodb.sourceforge.net" text='<img src="/img/adodb.gif" width="88" height="31" alt="adodb"/>'}
+    {external title="MySQL Database Server" href="http://www.mysql.com" text='<img src="/img/mysql.png" width="88" height="31" alt="MySQL"/>'}
+    {external title="Sphinx Full Text Search" href="http://www.sphinxsearch.com/" text='<img src="/img/sphinx_silver.gif" width="88" height="31" alt="powered by Sphinx"/>'}
     {external href="http://www.danga.com/memcached/" text="memcached"} </div>
     
     <h3>Code Libaries</h3>
@@ -115,9 +115,9 @@
     <div class="interestBox">Without all of the above this site wouldn't be possible, thanks to everyone involved!</div>
     
     <p>We also strive to adhere to the following standards:</p>
-    <div><a title="Check our XHTML Compliance"  target="_blank" href="http://validator.w3.org/check/referer"><img  src="/img/valid-xhtml10.png" width="88" height="31" alt="XHTML"></a>
-    <a title="Check our CSS Compliance" target="_blank" href="http://jigsaw.w3.org/css-validator/validator?uri=http://{$http_host}/templates/basic/css/basic.css"><img  src="/img/css1.png" width="88" height="31" alt="CSS"></a>
-    <a href="http://bobby.watchfire.com/" title="Bobby's Home Page" target="_blank"><img  src="/img/approved_508.gif" alt="Bobby WorldWide Approved 508" width="88" height="31"></a></div>
+    <div>{external title="Check our XHTML Compliance" href="http://validator.w3.org/check/referer" text='<img src="/img/valid-xhtml10.png" width="88" height="31" alt="XHTML"/>'}
+    {external title="Check our CSS Compliance" href="http://jigsaw.w3.org/css-validator/validator?uri=http://`$http_host`/templates/basic/css/basic.css" text='<img src="/img/css1.png" width="88" height="31" alt="CSS"/>'}
+    {external href="http://bobby.watchfire.com/" title="Bobby's Home Page" text='<img src="/img/approved_508.gif" alt="Bobby WorldWide Approved 508" width="88" height="31"/>'}</div>
 
     
 {include file="_std_end.tpl"}
