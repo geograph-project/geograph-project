@@ -25,7 +25,7 @@
  */
 
 /**************************************************
-*
+* WARNING: Designed for PHP5 - not php4 compatible
 ******/
 
 class kmlPrimative {
@@ -43,11 +43,16 @@ class kmlPrimative {
 		$this->tag = $tag;
 		if (!empty($id)) {
 			$this->values['id'] = $id;
+			$this->id = $id;
 		}
 	}
 
-	public function setItem($name,$value) {
-		$this->items[$name] = $value;
+	public function setItem($name,$value,$raw = false) {
+		if ($raw) {
+			$this->items[$name] = htmlnumericentities($value);
+		} else {
+			$this->items[$name] = $value;
+		}
 		return $this;
 	}
 
@@ -154,11 +159,21 @@ class kmlPrimative {
 
 class kmlFile extends kmlPrimative {
 	var $extension = 'kmz';
+	var $version = '2.0';
 	
 	public function __construct($id = '') {
 		$this->contentType = "application/vnd.google-earth.kml+xml";
 		$this->encoding = "utf-8";
 		parent::__construct('kml',$id);
+	}
+	
+	public function setHint($target='sky') {
+		if ($mode=='sky') {
+			$this->values['hint'] = "target=sky";
+			$this->version = "2.2";
+		} elseif (isset($this->values['hint'])) {
+			unset($this->values['hint']);
+		}
 	}
 	
 	public function outputFile($extension='',$sendheaders = true,$diskfile = '') {
@@ -227,7 +242,7 @@ class kmlFile extends kmlPrimative {
 	public function returnKML($prettyprint = true) {
 		$s = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 
-		$this->values['xmlns'] = "http://earth.google.com/kml/2.0";
+		$this->values['xmlns'] = "http://earth.google.com/kml/".$this->version;
 		
 		if (!empty($this->atom)) {
 			$this->values['xmlns:atom'] .= "http://www.w3.org/2005/Atom";
@@ -347,6 +362,37 @@ class kmlPlacemark extends kmlPrimative {
 *
 ******/
 
+class kmlPhotoOverlay extends kmlPlacemark {
+
+	public function __construct($id,$itemname = '',$kmlPoint = null) {
+		parent::__construct($id,$itemname,$kmlPoint);
+		$this->tag = 'PhotoOverlay';
+	}
+
+	public function setPhoto($url,$shape = 'rectangle') {
+		$Icon = $this->addChild('Icon');
+		$Icon->setItem('href',$url);
+		
+		$this->setItem('shape',$shape);
+	}
+	
+	public function setViewVolume1($near=1000,$horzFov = 60,$vertFov = 40) {
+		$ViewVolume = $this->addChild('ViewVolume');
+		$ViewVolume->setItem('near',$near);
+		$ViewVolume->setItem('leftFov',-$horzFov);
+		$ViewVolume->setItem('rightFov',$horzFov);
+		$ViewVolume->setItem('bottomFov',-$vertFov);
+		$ViewVolume->setItem('topFov',$vertFov);
+	}
+	
+	
+	
+}
+
+/**************************************************
+*
+******/
+
 class kmlNetworkLink extends kmlPrimative {
 
 	public function __construct($id,$itemname = '',$url = null) {
@@ -404,6 +450,26 @@ class kmlPoint extends kmlPrimative {
 		$y = sin($p2lon-$p1lon) * cos($p2lat);
 		$x = cos($p1lat)*sin($p2lat) - sin($p1lat)*cos($p2lat)*cos($p2lon-$p1lon);
 		return rad2deg(atan2($y, $x));
+	}
+}
+
+/**************************************************
+*
+******/
+
+class kmlCamera extends kmlPrimative {
+
+	public function __construct($lat=0,$lon=0,$alt=0,$heading=0,$tilt=0,$roll=0) {
+		parent::__construct('Point');
+		$this->setItem('longitude',$lon);
+		$this->setItem('latitude',$lat);
+		$this->setItem('altitude',$alt);
+		$this->lat = $lat;
+		$this->lon = $lon;
+		$this->alt = $alt;
+		$this->setItem('heading',$heading);
+		$this->setItem('tilt',$tilt);
+		$this->setItem('roll',$roll);
 	}
 }
 
