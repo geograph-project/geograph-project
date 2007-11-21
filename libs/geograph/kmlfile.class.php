@@ -49,9 +49,9 @@ class kmlPrimative {
 
 	public function setItem($name,$value,$raw = false) {
 		if ($raw) {
-			$this->items[$name] = htmlnumericentities($value);
-		} else {
 			$this->items[$name] = $value;
+		} else {
+			$this->items[$name] = htmlnumericentities($value);
 		}
 		return $this;
 	}
