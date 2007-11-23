@@ -43,6 +43,8 @@ function mouseDefaultClick(evt) {
 		} else {
 			osposition.update = 1;
 			parent.frames.browseframe.location.href = "about:blank";
+			osposition.lastXy = new OpenLayers.Pixel(); //can't use null
+			osposition.redraw(evt);
 		}
 	}
 	
@@ -72,7 +74,8 @@ function showGridRef(evt) {
 		return;
 	} else {
 		if (this.lastXy === null || Math.abs(evt.xy.x - this.lastXy.x) > this.granularity || Math.abs(evt.xy.y - this.lastXy.y) > this.granularity) {
-			this.lastXy = evt.xy;
+			if (evt)
+				this.lastXy = evt.xy;
 			return;
 		}
 		
