@@ -76,8 +76,9 @@ if (isset($_GET['gridimage_id']))
 					$ticket=new GridImageTroubleTicket();
 					$ticket->setSuggester($USER->user_id);
 					$ticket->setModerator($USER->user_id);
+					$ticket->setPublic('everyone');
 					$ticket->setImage($gridimage_id);
-					$ticket->setNotes("Auto-generated ticket, as a result of Moderation. Please leave a comment to explain the reason for suggesting '$status'.");
+					$ticket->setNotes("Auto-generated ticket, as a result of Moderation. Please leave a comment to explain the reason for rejecting this image.");
 					$status=$ticket->commit('open');
 					echo " <a href=\"/editimage.php?id={$gridimage_id}\"><B>View Ticket</b></a>";
 				}
