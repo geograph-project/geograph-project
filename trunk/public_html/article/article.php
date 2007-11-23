@@ -80,8 +80,8 @@ function smarty_function_articletext($input) {
 	$output = preg_replace('/(-{7,})\n(.*?)(-{7,})/es',"article_make_table('\$2')",str_replace("\r",'',$input));
 
 	$output = str_replace(
-		array('[b]','[/b]','[big]','[/big]','[i]','[/i]','[h2]','[/h2]','[h3]','[/h3]','[h4]','[/h4]','[float]','[/float]','[br/]'),
-		array('<b>','</b>','<big>','</big>','<i>','</i>','<h2>','</h2>','<h3>','</h3>','<h4>','</h4>','<div style="float:left">','</div>','<br style="clear:both"/>'),
+		array('[b]','[/b]','[big]','[/big]','[i]','[/i]','[h2]','[/h2]','[h3]','[/h3]','[h4]','[/h4]','[float]','[/float]','[br/]','[reveal]','[/reveal]'),
+		array('<b>','</b>','<big>','</big>','<i>','</i>','<h2>','</h2>','<h3>','</h3>','<h4>','</h4>','<div style="float:left">','</div>','<br style="clear:both"/>','<span style="color:white">','</span>'),
 		$output);
 
 	$pattern=array(); $replacement=array();
@@ -112,7 +112,7 @@ function smarty_function_articletext($input) {
 	$replacement[]='<img src="\1" alt="\2" title="\2"/>';
 
 	$pattern[]='/\n\* ?([^\n]+)(\n{2})?/e';
-	$replacement[]="'<ul style=\"margin-bottom:0px;margin-top:0px\"><li>\$1</li></ul>'.('$2'?'\n':'')";
+	$replacement[]="'<ul style=\"margin-bottom:0px;margin-top:0px\"><li>'.stripslashes('\$1').'</li></ul>'.('$2'?'\n':'')";
 	$pattern[]='/<\/ul>\n?<ul style=\"margin-bottom:0px;margin-top:0px\">/';
 	$replacement[]='';
 
