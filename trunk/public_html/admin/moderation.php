@@ -51,7 +51,8 @@ if (isset($_GET['gridimage_id']))
 		{
 			if (isset($_GET['remoderate'])) 
 			{
-				if ($USER->hasPerm('basic')) {
+				if ($USER->hasPerm('basic'))
+				{
 					$status = $db->Quote($status);
 					$db->Execute("REPLACE INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status, old_status='{$image->moderation_status}',created=now()");
 					print "classification $status recorded";
@@ -59,7 +60,7 @@ if (isset($_GET['gridimage_id']))
 				else
 				{
 					echo "NOT LOGGED IN";
-				}	
+				}
 			} 
 			else
 			{
@@ -69,6 +70,17 @@ if (isset($_GET['gridimage_id']))
 
 				$info=$image->setModerationStatus($status, $USER->user_id);
 				echo $info;
+
+				if ($status == 'rejected')
+				{
+					$ticket=new GridImageTroubleTicket();
+					$ticket->setSuggester($USER->user_id);
+					$ticket->setModerator($USER->user_id);
+					$ticket->setImage($gridimage_id);
+					$ticket->setNotes("Auto-generated ticket, as a result of Moderation. Please leave a comment to explain the reason for suggesting '$status'.");
+					$status=$ticket->commit('open');
+					echo " <a href=\"/editimage.php?id={$gridimage_id}\"><B>View Ticket</b></a>";
+				}
 
 				//clear caches involving the image
 				$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_0");
