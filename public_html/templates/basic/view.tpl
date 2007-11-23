@@ -32,7 +32,7 @@ image has been incorrectly rejected (and mistakes do happen!) please use the "<a
   <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
   
   {literal}
-  <script language="JavaScript" type="text/javascript">
+  <script type="text/javascript">
   
   function redrawMainImage() {
   	el = document.getElementById('mainphoto');

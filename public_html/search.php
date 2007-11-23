@@ -252,6 +252,81 @@ if (isset($_GET['fav']) && $i) {
 
 	advanced_form($smarty,$db);
 
+} else if (!empty($_GET['article_id'])) { //
+	dieUnderHighLoad(2,'search_unavailable.tpl');
+	// -------------------------------
+	//  special handler to build a search from an article
+	// -------------------------------
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
+
+	$data = $_GET;
+	$error = false;
+
+	$db=NewADOConnection($GLOBALS['DSN']);
+	if (empty($db)) die('Database connection failed');
+
+	$isadmin=$USER->hasPerm('moderator')?1:0;
+
+	$page = $db->getRow("
+	select article.*,realname,gs.grid_reference
+	from article 
+		left join user using (user_id)
+		left join gridsquare gs on (article.gridsquare_id = gs.gridsquare_id)
+	where ( (licence != 'none' and approved = 1) 
+		or user.user_id = {$USER->user_id}
+		or $isadmin )
+		and article_id = ".$db->Quote($_GET['article_id']).'
+	limit 1');
+
+	if (count($page) && !$error) {
+		$data['description'] = "in Article: {$page['title']}";
+		$data['searchq'] = "1"; //temporally
+
+		if (!empty($_GET['u']))
+			$data['user_id'] = $_GET['u'];
+
+		$data['adminoverride'] = 1;
+
+		$engine = new SearchEngineBuilder('#');
+
+		if ($i = $engine->buildAdvancedQuery($data,false)) {
+
+			if (preg_match_all("/\[\[(\[?)(\d+)(\]?)\]\]/",$page['content'],$g_matches)) {
+				foreach ($g_matches[2] as $idx => $g_id) {
+					$db->Execute("INSERT INTO gridimage_query SET query_id = $i, gridimage_id = ".$db->Quote($g_id));
+				}
+				$data['searchq'] = "inner join gridimage_query using (gridimage_id) where query_id = $i";
+
+				$db->Execute("UPDATE queries SET searchq = '{$data['searchq']}' WHERE id = $i");
+
+			}
+
+			header("Location:http://{$_SERVER['HTTP_HOST']}/{$engine->page}?i={$i}$extra".(($dataarray['submit'] == 'Count')?'&count=1':''));
+			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$engine->page}?i={$i}$extra".(($dataarray['submit'] == 'Count')?'&amp;count=1':'')."\">Your Search Results</a>";
+			exit;
+		}
+
+		//should never fail?? - but display form 'in case'
+
+		//if we get this far then theres a problem...
+		$smarty->assign('errormsg', $engine->errormsg);
+	} else {
+		$smarty->assign('errormsg', $error);
+	}
+
+	foreach ($data as $key=> $value) {
+		$smarty->assign($key, $value);
+	}
+	$_POST = $data;
+	$smarty->reassignPostedDate("submitted_start");
+	$smarty->reassignPostedDate("submitted_end");
+	$smarty->reassignPostedDate("taken_start");
+	$smarty->reassignPostedDate("taken_end");
+
+	advanced_form($smarty,$db);
+
 } else if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || !empty($_GET['gridsquare'])) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------

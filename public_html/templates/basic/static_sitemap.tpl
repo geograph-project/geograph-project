@@ -37,7 +37,7 @@
 	<li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a></li>
 	<li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a></li>
 	<li><a title="Discussion forums" href="/discuss/"><b>discuss the site</b> on our forums</a></li>
-	<li><a title="Submitted Articles" href="/article/">read <b>articles</b> submitted by members</b></a></li>
+	<li><a title="Submitted Articles" href="/article/">read <b>articles</b> submitted by members</a></li>
 	<li><a title="education area" href="/teachers/">Geograph for <b>teachers</b></a></li>
 </ul>
  

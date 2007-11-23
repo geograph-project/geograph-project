@@ -11,8 +11,8 @@
  	<p>Got something to tell us? Then fire away - we try to respond within 24 hours, often much quicker.</p>
  
     <form action="contact.php" method="post">
-    <input type="hidden" name="referring_page" value="{$referring_page|escape:'html'}"/>
-    <p><label for="from">Your email address</label><br/>
+    <p><input type="hidden" name="referring_page" value="{$referring_page|escape:'html'}"/>
+    <label for="from">Your email address</label><br/>
 	<input size="40" id="from" name="from" value="{$from|escape:'html'}"/><span class="formerror">{$from_error}</span>
     
     <br /><br />
