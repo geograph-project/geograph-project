@@ -24,19 +24,65 @@
 </style>{/literal}
 {dynamic}{if $user->user_id == $user_id}<p style="text-align:center" class="no_print">[[<a href="/article/edit.php?page={$url}">edit this article</a>]]</p>{/if}{/dynamic}
 
-<h1>{$title}</h1>
+<h1>{$title|escape:'html'}</h1>
 
 <div style="text-align:right">
 {if $licence == 'copyright'}
-	text <small>&copy;</small> <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>, {$publish_date|date_format:" %B, %Y"}
-{else}
-	{if $licence == 'cc-by-sa/2.0'}
+	Text <small>&copy;</small> Copyright <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>, {$publish_date|date_format:" %B %Y"}
+{elseif $licence == 'cc-by-sa/2.0'}
+	<!-- Creative Commons Licence -->
 		<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-		alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; Text &copy; Copyright {$publish_date|date_format:" %B, %Y"}, <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>; {if $imageCredits}text and images{/if}
-	licensed for reuse under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
-	{else}
-		text by <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>, {$publish_date|date_format:" %B, %Y"} {if $licence == 'pd'}(Public Domain){/if}
-	{/if}
+		alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; Text &copy; Copyright {$publish_date|date_format:" %B %Y"}, <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>; {if $imageCredits}text <a href="#imlicence">and images</a>{/if}
+		licensed for reuse under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
+	<!-- /Creative Commons Licence -->
+
+<!--
+
+<rdf:RDF xmlns="http://web.resource.org/cc/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:georss="http://www.georss.org/georss/">
+<Work rdf:about="">
+     <dc:title>{if $grid_reference}{$grid_reference} : {/if}{$title|escape:'html'}</dc:title>
+     <dc:creator><Agent>
+        <dc:title>{$realname}</dc:title>
+     </Agent></dc:creator>
+     <dc:rights><Agent>
+        <dc:title>{$realname}</dc:title>
+     </Agent></dc:rights>
+     <dc:format>text/html</dc:format>
+     <dc:date>{$publish_date}</dc:date>
+     <dc:publisher><Agent>
+        <dc:title>{$http_host}</dc:title>
+     </Agent></dc:publisher>
+{if $lat && $long}
+     <georss:point>{$lat|string_format:"%.5f"} {$long|string_format:"%.5f"}</georss:point>
+{/if}
+     <license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
+</Work>
+
+<License rdf:about="http://creativecommons.org/licenses/by-sa/2.0/">
+   <permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+   <permits rdf:resource="http://web.resource.org/cc/Distribution" />
+   <requires rdf:resource="http://web.resource.org/cc/Notice" />
+   <requires rdf:resource="http://web.resource.org/cc/Attribution" />
+   <permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+   <requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+</License>
+
+</rdf:RDF>
+
+-->	
+
+{else}
+	 <div class="ccmessage">{if $licence == 'pd'}<a rel="license" href="http://creativecommons.org/licenses/publicdomain/">
+	<img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/publicdomain/88x31.png" /></a> {/if} Text by <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>, {$publish_date|date_format:" %B %Y"}
+	</a>{if $licence == 'pd'}; This work is dedicated to the 
+	<a rel="license" href="http://creativecommons.org/licenses/publicdomain/">Public Domain</a>.{/if}</div>
+{/if}
+
+{if $imageCredits && $licence != 'cc-by-sa/2.0'}
+	<div class="ccmessage" style="color:gray; font-size:0.9em; text-align:right">Images are under a seperate <a href="#imlicence">Creative Commons licence</a>.</div>
 {/if}
 
 </div> 
@@ -54,10 +100,10 @@
 {$content_articletext}
 
 {if $imageCredits}
-<hr/>
-<div class="ccmessage copyright"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-		alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; Images used on this page, &copy; Copyright {$imageCredits};
-	licensed for reuse under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>. <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">http://creativecommons.org/licenses/by-sa/2.0/</a><br/><br/></div>
+	<hr/>
+	<div class="ccmessage copyright"><a rel="license" name="imlicence" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
+		alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; <b>Images used on this page</b>, &copy; Copyright {$imageCredits};
+		licensed for reuse under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>. <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">http://creativecommons.org/licenses/by-sa/2.0/</a><br/><br/></div>
 {/if}
 
 {if $copyright}{$copyright}{/if}
