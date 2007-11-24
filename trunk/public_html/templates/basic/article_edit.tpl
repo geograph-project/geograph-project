@@ -62,6 +62,19 @@
 </div>
 
 <div class="field">
+	{if $errors.article_cat_id}<div class="formerror"><p class="error">{$errors.article_cat_id}</p>{/if}
+	 
+	<label for="article_cat_id">Category:</label>
+	<select name="article_cat_id">
+	{html_options options=$article_cat selected=$article_cat_id}
+	</select> 
+	
+
+	{if $errors.licence}</div>{/if}
+</div>
+
+
+<div class="field">
 	{if $errors.grid_reference}<div class="formerror"><p class="error">{$errors.grid_reference}</p>{/if}
 	 
 	<label for="grid_reference">Relevent Grid Square:</label>

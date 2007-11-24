@@ -124,7 +124,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 
 	
 	$updates = array();
-	foreach (array('url','title','licence','content','publish_date','gridsquare_id','extract') as $key) {
+	foreach (array('url','title','licence','content','publish_date','article_cat_id','gridsquare_id','extract') as $key) {
 		if ($page[$key] != $_POST[$key]) {
 			$updates[] = "`$key` = ".$db->Quote($_POST[$key]); 
 			$smarty->assign($key, $_POST[$key]);
@@ -181,6 +181,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 } 
 
 	$smarty->assign('licences', array('none' => '(Temporarily) Not Published','pd' => 'Public Domain','cc-by-sa/2.0' => 'Creative Commons BY-SA/2.0' ,'copyright' => 'Copyright'));
+	$smarty->assign('article_cat', array(0=>'')+$db->getAssoc("select article_cat_id,category_name from article_cat order by sort_order"));
 
 
 
