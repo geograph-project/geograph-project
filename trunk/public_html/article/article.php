@@ -215,6 +215,19 @@ if (!$smarty->is_cached($template, $cacheid))
 		if (!empty($page['extract'])) {
 			$smarty->assign('meta_description', $page['extract']);
 		}
+		
+		if (!empty($page['gridsquare_id'])) {
+			$square=new GridSquare;
+			$square->loadFromId($page['gridsquare_id']);
+			$smarty->assign('grid_reference', $square->grid_reference);
+			
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;
+		
+			list($lat,$long) = $conv->gridsquare_to_wgs84($square);
+			$smarty->assign('lat', $lat);
+			$smarty->assign('long', $long);
+		}
 	} else {
 		$template = 'static_404.tpl';
 	}
