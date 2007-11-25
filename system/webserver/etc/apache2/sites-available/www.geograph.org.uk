@@ -7,7 +7,7 @@
     ServerAlias kml.geograph.org.uk
     ServerAlias www.geograph.co.uk
     ServerAlias schools.geograph.org.uk
-    ServerAlias t0.new.geograph.co.uk
+    ServerAlias t0.www.geograph.org.uk
     
     
     #create logformat like combined but with our user id and script timing
@@ -44,6 +44,15 @@
         ExpiresByType image/x-icon "access plus 180 days"
         ExpiresByType application/xml "access plus 7 days"
     </Directory>
+
+#not actully working
+	<Location /img/rate.png>
+		 ExpiresByType image/png "modification plus 1 hours"
+	</Location>
+        <Location /img/submission_graph.png>
+                 ExpiresByType image/png "modification plus 1 days"
+        </Location>
+
 
     RewriteEngine on
 
@@ -129,7 +138,7 @@
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?blogspot\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?livejournal\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?28dayslater\.co\.uk/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?secretscotland\.org\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?secretscotland\.org\.uk/ [NC]
     RewriteRule /photos/\d.*\.jpg$ /stuff/nohotlink.php [L]
 
 <Location /sitemap/>
