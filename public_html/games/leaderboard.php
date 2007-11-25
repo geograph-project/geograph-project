@@ -58,7 +58,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	from game_score gs
 		left join user using(user_id)
 	where $where and approved = 1
-	group by username,gs.user_id 
+	group by if(gs.user_id>0,gs.user_id,concat(username,session))
 	order by average desc,score desc, games desc,username,realname ";
 	if ($_GET['debug'])
 		print $sql;
