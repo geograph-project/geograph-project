@@ -218,12 +218,13 @@ if ($graph)
 		"--lower-limit=0 ".
 		"--start -1year ".
 		"--end now ".
-		"DEF:pending=$basepath/submissions.rrd:pending:LAST ".
+#		"DEF:pending=$basepath/submissions.rrd:pending:LAST ".
 		"DEF:accepted=$basepath/submissions.rrd:accepted:LAST ".
 		"DEF:geograph=$basepath/submissions.rrd:geograph:LAST ".
 		"AREA:accepted#006000:supplemental ".
 		"STACK:geograph#00C000:geographs ".
-		"STACK:pending#80FF80:'pending moderation'";
+#		"STACK:pending#80FF80:'pending moderation'".
+		"";
 
 	`$cmd`;
 }
