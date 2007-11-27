@@ -500,6 +500,7 @@ class RasterMap
 					function loadmap() {
 						if (GBrowserIsCompatible()) {
 							var map = new GMap2(document.getElementById(\"map\"));
+							map.addMapType(G_PHYSICAL_MAP);
 							map.addControl(new GSmallZoomControl());
 							map.addControl(new GMapTypeControl(true));
 							map.disableDragging();
