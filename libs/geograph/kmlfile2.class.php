@@ -67,7 +67,7 @@ class kmlPlacemark_Photo extends kmlPlacemark {
 		$MultiGeometry->addChild($kmlPoint);
 		$LineString = $MultiGeometry->addChild('LineString');
 		$LineString->setItem('tessellate',1);
- 		$LineString->setItem('altitudeMode','clampedToGround');
+ 		$LineString->setItem('altitudeMode','clampToGround');
  		$LineString->setItem('coordinates',$sbjPoint->getItem('coordinates')." ".$kmlPoint->getItem('coordinates'));
  		
  		//seems a LookAt is required (but is nice to set the heading anyway!)
