@@ -668,6 +668,8 @@ if (isset($_GET['fav']) && $i) {
 			$engine->temp_displayclass = $display;
 		}
 	}
+	if (empty($display))
+		$display = 'full';
 	$engine->display = $display;
 	$template = 'search_results_'.$display.'.tpl';
 	
