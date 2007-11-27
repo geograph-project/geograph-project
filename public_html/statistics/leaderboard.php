@@ -40,11 +40,20 @@ $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET[
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(250,intval($_GET['limit'])):50;
 
 $minimum = (isset($_GET['minimum']) && is_numeric($_GET['minimum']))?intval($_GET['minimum']):25;
+$maximum = (isset($_GET['maximum']) && is_numeric($_GET['maximum']))?intval($_GET['maximum']):0;
+
+
+
+$u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
+
+if (isset($_GET['me']) && $USER->registered) {
+	$u = $USER->user_id;
+}
 
 $smarty = new GeographPage;
 
 $template='statistics_leaderboard.tpl';
-$cacheid=$minimum.$type.$date.$when.$limit.'.'.$ri;
+$cacheid=$minimum.'-'.$maximum.$type.$date.$when.$limit.'.'.$ri.'.'.$u;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*3; //3hour cache
@@ -103,15 +112,20 @@ if (!$smarty->is_cached($template, $cacheid))
 	} elseif ($type == 'depth') {
 		$sql_column = "count(*)/count(distinct grid_reference)";
 		$sql_where = "1";
-		$sql_having_having = "having count(*) > $minimum";
+		if ($maximum) {
+			$sql_having_having = "having count(*) between $minimum and $maximum";
+			$desc = "the depth score, and having submitted between $minimum and $maximum images";
+		} else {
+                        $sql_having_having = "having count(*) > $minimum";
+			$desc = "the depth score, and having submitted over $minimum images";
+		}
 		$heading = "Depth";
-		$desc = "the depth score, and having submitted over $minimum images";
 	} elseif ($type == 'depth2') {
-		$sql_column = "count(*)/count(distinct grid_reference)";
+		$sql_column = "round(pow(count(*),2)/count(distinct grid_reference))";
 		$sql_where = "1";
 		$sql_having_having = "having count(*) > $minimum";
 		$heading = "High Depth";
-		$desc = "the high depth score, and having submitted over $minimum images";
+		$desc = "the depth score X images, and having submitted over $minimum images";
 	} elseif ($type == 'myriads') {
 		$sql_column = "count(distinct substring(grid_reference,1,3 - reference_index))";
 		$sql_where = "1";
@@ -190,7 +204,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($lastimgcount == $entry['imgcount']) {
 			if ($type == 'points' && !$when && !$ri)
 				$db->query("UPDATE user SET rank = $lastrank,to_rise_rank = $toriserank WHERE user_id = {$entry['user_id']}");
-			if ($i > $limit) {
+			if ($u && $u == $entry['user_id']) {
+				$topusers[$idx]['ordinal'] = smarty_function_ordinal($i);
+			} elseif ($i > $limit) {
 				unset($topusers[$idx]);
 			} else {
 				$topusers[$idx]['ordinal'] = '&nbsp;&nbsp;&nbsp;&quot;';
@@ -199,7 +215,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			$toriserank = ($lastimgcount - $entry['imgcount']);
 			if ($type == 'points' && !$when && !$ri)
 				$db->query("UPDATE user SET rank = $i,to_rise_rank = $toriserank WHERE user_id = {$entry['user_id']}");
-			if ($i > $limit) {
+			if ($u && $u == $entry['user_id']) {
+                                $topusers[$idx]['ordinal'] = smarty_function_ordinal($i);
+                        } elseif ($i > $limit) {
 				unset($topusers[$idx]);
 			} else {
 				$topusers[$idx]['ordinal'] = smarty_function_ordinal($i);
@@ -207,9 +225,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			$lastimgcount = $entry['imgcount'];
 			$lastrank = $i;
 			$points += $entry['points'];
-			if ($points && empty($entry['points'])) $topusers[$user_id]['points'] = '';
+			#if ($points && empty($entry['points'])) $topusers[$user_id]['points'] = '';
 	                $images += $entry['images'];
-                        if ($images && empty($entry['images'])) $topusers[$user_id]['images'] = '';
+                        #if ($images && empty($entry['images'])) $topusers[$user_id]['images'] = '';
 		}
 	}
 	
