@@ -390,6 +390,8 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 		}
 		$title=$sitename;
 		echo load_header();
+                print "<div style=\"float:left\"><a href=\"index.php\">Reload</a></div>";
+ 		print "<div style=\"float:right\"><a href=\"index.php?action=wait\">Watch</a></div>";
 		print "<div style=\"text-align:center\">Show <a href=\"index.php?forums=1\">Forum List</a> | View <a href=\"index.php?action=vtopic&amp;forum=5\">Recent Grid Square Discussions</a></div>";
 	} else {
 		require($pathToFiles.'bb_func_vforum.php');
