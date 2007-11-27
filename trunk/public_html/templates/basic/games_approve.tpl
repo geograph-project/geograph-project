@@ -28,5 +28,6 @@
 <p><input type="submit" name="submit" value="Action this &gt;&gt;"/></p>
 </form>
 
+When done: <a href="/games/moversboard.php?g=1&more">Refresh the Scoreboard</a>
  		
 {include file="_std_end.tpl"}
