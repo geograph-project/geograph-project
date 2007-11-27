@@ -51,7 +51,9 @@
 		function loadmap() {
 			if (GBrowserIsCompatible()) {
 				map = new GMap2(document.getElementById("map"));
+				map.addMapType(G_PHYSICAL_MAP);
 
+				G_PHYSICAL_MAP.getMinimumResolution = function () { return 5 };
 				G_NORMAL_MAP.getMinimumResolution = function () { return 5 };
 				G_SATELLITE_MAP.getMinimumResolution = function () { return 5 };
 				G_HYBRID_MAP.getMinimumResolution = function () { return 5 };
