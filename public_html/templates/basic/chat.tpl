@@ -134,11 +134,14 @@ nickname below and press "Join".</p>
 </form>
 
 <h3>2. Use an IRC client</h3>
-<p>If you are familiar with IRC, then simply connect to irc.freenode.net and join 
-<a href="irc://irc.freenode.net/%23geograph">#geograph</a></p>
+<p>If you are familiar with IRC, then simply connect to <tt>irc.freenode.net</tt> and join 
+<tt><a href="irc://irc.freenode.net/%23geograph">#geograph</a></tt></p>
 
+<br/><br/>
 <div style="background:#a8e60d;padding:15px;">
-<h3>Important Notes</h3>
+<h3 style="margin-top:0px"><img src="/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/> Important Notes</h3>
+
+<p>While logged in you might see an automated bot present in the geograph channel with the name "GeographBot". This is there so we can get an idea on the number of users in the channel to report on the website. To do this it records the last communication from each user, it does not log the whole conversation. In time it might have additional functionality like being able to answer questions about images etc</p>
 
 <p>The channel is hosted by <a href="http://freenode.net">Freenode</a>, which 
 provides discussion facilities for the Free and Open Source Software communities, 
