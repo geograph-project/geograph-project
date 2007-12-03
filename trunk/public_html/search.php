@@ -187,7 +187,7 @@ if (isset($_GET['fav']) && $i) {
 
 	advanced_form($smarty,$db);
 
-} else if (!empty($_GET['marked']) && isset($_COOKIE['markedImages'])) { //
+} else if (!empty($_GET['marked']) && isset($_COOKIE['markedImages']) || isset($_GET['markedImages'])) { //
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
 	//  special handler to build a special query for marke list.
@@ -217,6 +217,9 @@ if (isset($_GET['fav']) && $i) {
 
 		if ($i = $engine->buildAdvancedQuery($data,false)) {
 
+			if (!empty($_GET['markedImages'])) {
+				$_COOKIE['markedImages'] = $_GET['markedImages'];
+			}
 			if (!empty($_COOKIE['markedImages'])) {
 				foreach (explode(',',$_COOKIE['markedImages']) as $id) {
 					$db->Execute("INSERT INTO gridimage_query SET query_id = $i, gridimage_id = ".$db->Quote($id));
