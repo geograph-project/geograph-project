@@ -162,6 +162,9 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 
 $cnt=count($images->images);
 
+$geoformat = ($format == 'KML' || $format == 'GeoRSS' || $format == 'GeoPhotoRSS' || $format == 'GPX');
+$photoformat = ($format == 'KML' || $format == 'GeoPhotoRSS' || $format == 'BASE');
+
 //create some feed items
 for ($i=0; $i<$cnt; $i++)
 {
@@ -179,44 +182,37 @@ for ($i=0; $i<$cnt; $i++)
 	if (!empty($images->images[$i]->imagetaken) && strpos($images->images[$i]->imagetaken,'-00') === FALSE) {
 		$item->imageTaken = $images->images[$i]->imagetaken;
 	}
-	
+
 	$item->date = strtotime($images->images[$i]->submitted); 
 	$item->source = "http://{$_SERVER['HTTP_HOST']}/profile/".$images->images[$i]->user_id; 
 	$item->author = $images->images[$i]->realname; 
-	     
-	     if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GeoPhotoRSS' || $format == 'GPX') {
-	     	$item->lat = $images->images[$i]->wgs84_lat;
-	     	$item->long = $images->images[$i]->wgs84_long;
-	     	if ($format == 'KML') {
-	     		$details = $images->images[$i]->getThumbnail(120,120,2);
-	     		if (!empty($details['server'])) {
-	     			$item->thumb = $details['server'].$details['url']; 
-				$item->thumbTag = $details['html']; 				
-	     		} else {
-				$item->thumb = "http://".$_SERVER['HTTP_HOST'].$details['url']; 
-				$item->thumbTag = preg_replace('/\/photos\/.*\.jpg/',$item->thumb,$details['html']); 
-			}
-	       	} elseif ($format == 'GeoPhotoRSS')
-	     		$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
-	     } elseif ($format == 'BASE') {
-	     	$item->thumb = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->getThumbnail(120,120,true); 
-	     } elseif ($format == 'PHP') {
-	     	$item->thumb = $images->images[$i]->getThumbnail(120,120,true); 
-	     } elseif ($format == 'TOOLBAR') {
-	     	ob_start();
-	     	imagejpeg($images->images[$i]->getSquareThumb(16));
-	     	$item->thumbdata = ob_get_contents();
-	     	ob_end_clean();
-	     }
-	     
-	//<license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
-	     
-	    $item->licence = "&copy; Copyright <i class=\"attribution\">".htmlspecialchars($images->images[$i]->realname)."</i> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a>";
-	     
-	
-    $rss->addItem($item); 
-	
 
+	if ($geoformat) {
+		$item->lat = $images->images[$i]->wgs84_lat;
+		$item->long = $images->images[$i]->wgs84_long;
+	}
+	if ($photoformat) {
+		$details = $images->images[$i]->getThumbnail(120,120,2);
+		if (!empty($details['server'])) {
+			$item->thumb = $details['server'].$details['url']; 
+			$item->thumbTag = $details['html'];
+		} else {
+			$item->thumb = "http://".$_SERVER['HTTP_HOST'].$details['url']; 
+			$item->thumbTag = preg_replace('/\/photos\/.*\.jpg/',$item->thumb,$details['html']); 
+		}
+	} elseif ($format == 'PHP') {
+		$item->thumb = $images->images[$i]->getThumbnail(120,120,true); 
+	} elseif ($format == 'TOOLBAR') {
+		ob_start();
+		imagejpeg($images->images[$i]->getSquareThumb(16));
+		$item->thumbdata = ob_get_clean();
+	}
+
+	//<license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
+
+	$item->licence = "&copy; Copyright <i class=\"attribution\">".htmlspecialchars($images->images[$i]->realname)."</i> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a>";
+
+	$rss->addItem($item);
 }
 
 
