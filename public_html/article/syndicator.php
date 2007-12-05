@@ -119,9 +119,11 @@ while (!$recordSet->EOF)
 
 		if ($grid_ok)
 			list($item->lat,$item->long) = $conv->gridsquare_to_wgs84($gridsquare);
+	
+		$rss->addItem($item);
+	} elseif ($format != 'KML') {
+		$rss->addItem($item);
 	}
-
-	$rss->addItem($item);
 
 	$recordSet->MoveNext();
 }
