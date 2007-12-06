@@ -146,6 +146,16 @@ require_once('geograph/user.class.php');
 //function to replace having to have loads of require_once's
 // PHP5 ONLY
 function __autoload($class_name) {
+        if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/../libs/geograph/'.strtolower($class_name).'.class.php')) {
+                ob_start();
+                debug_print_backtrace();
+                print_r($GLOBALS);
+                $con = ob_get_clean();
+                mail('geograph@barryhunter.co.uk','[Geograph Error] '.date('r'),$con);
+                die('Fatal Internal Error, the developers have been notified, if possible please <a
+href="mailto:geograph@barryhunter.co.uk">let us know</a> what you where doing that lead up to this error');
+        }
+
 	require_once('geograph/'.strtolower($class_name).'.class.php');
 }
 
