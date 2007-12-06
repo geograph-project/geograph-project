@@ -196,7 +196,7 @@ class SearchEngineBuilder extends SearchEngine
 			$searchdesc .= ", by ".($profile->realname);
 		}				
 
-		if (isset($searchclass) && empty($criteria->is_multiple)) {
+		if (!empty($searchclass) && empty($criteria->is_multiple)) {
 			$db=$this->_GetDB();
 
 			$sql = "INSERT INTO queries SET searchclass = '$searchclass',".
