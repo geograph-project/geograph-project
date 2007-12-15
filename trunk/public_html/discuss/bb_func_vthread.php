@@ -116,6 +116,9 @@ elseif($page==-1 and $topicDesc==1) $page=0;
 
 if(isset($mod_rewrite) and $mod_rewrite) $urlp="{$main_url}/{$forum}_{$topic}_"; else $urlp="{$main_url}/{$indexphp}action=vthread&amp;forum=$forum&amp;topic=$topic&amp;dontcount=1&amp;page=";
 
+if (!empty($_GET['l']))
+	$urlp = str_replace('dontcount','l=1&amp;dontcount',$urlp);
+
 $pageNav=pageNav($page,$numRows,$urlp,$viewmaxreplys,FALSE);
 $makeLim=makeLim($page,$numRows,$viewmaxreplys);
 
@@ -185,8 +188,7 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,2}
 	global $memcache;
 	$mkey = $cols[6];
 	//fails quickly if not using memcached!
-	$memtext =& $memcache->name_get('fp',$mkey);
-	if ($memtext) {
+	if (empty($_GET['l']) && ($memtext =& $memcache->name_get('fp',$mkey))) {
 		$posterText = $memtext;
 	} else {
 		foreach ($g_matches[2] as $g_i => $g_id) {
@@ -204,13 +206,14 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,2}
 						$posterText = preg_replace("/(?<!\[)\[\[$g_id\]\]/","{<span title=\"[$g_id]\">image no longer available</span>}",$posterText);
 					}
 				} elseif ($g_ok) {
+					$postfix = empty($_GET['l'])?'':"<input value='{$g_matches[0][$g_i]}' ondblclick='this.select()' class='imageselect'/>";
 					if ($g_matches[1][$g_i]) {
 						$g_img = $g_image->getThumbnail(120,120,false,true);
 						#$g_img = preg_replace('/alt="(.*?)"/','alt="'.$g_image->grid_reference.' : \1 by '.$g_image->realname.'"',$g_img);
 						$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title).' by '.$g_image->realname;
-						$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
+						$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>".$postfix,$posterText);
 					} else {
-						$posterText = preg_replace("/(?<!\[)\[\[$g_id\]\]/","{<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\">{$g_image->grid_reference} : {$g_image->title}</a>}",$posterText);
+						$posterText = preg_replace("/(?<!\[)\[\[$g_id\]\]/","{<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\">{$g_image->grid_reference} : {$g_image->title}</a>}".$postfix,$posterText);
 					}
 				}			
 			} else {
