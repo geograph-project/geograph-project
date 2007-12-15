@@ -227,7 +227,7 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,2}
 //no external images
 // the callback function
 $fixExternalImages= <<<FUNC
-	if ((\$matches[2] == 'www.geograph.org.uk') || (\$matches[2] == 'www.geograph.co.uk'))
+	if ((\$matches[2] == 'www.geograph.org.uk') || (\$matches[2] == 'www.geograph.co.uk') || (\$matches[2] == 'chart.apis.google.com'))
 	{
 		//this is fine
 		return \$matches[0];
