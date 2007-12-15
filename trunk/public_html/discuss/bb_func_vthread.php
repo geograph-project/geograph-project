@@ -273,7 +273,7 @@ if ($USER->user_id) {
 
 unset($result);unset($countRes);
 
-$l_messageABC=$l_sub_answer;
+$l_messageABC=($forum==11)?$l_sub_answer11:$l_sub_answer;
 if ($topicStatus!=1) {
 $emailCheckBox=emailCheckBox();
 

@@ -24,6 +24,7 @@ $l_reply='Reply';
 $l_author='Author';
 $l_lastAuthor='Last poster';
 $l_sub_answer='Reply to this topic';
+$l_sub_answer11='Add new images to this gallery';
 $l_message='Message';
 $l_views='Views';
 
