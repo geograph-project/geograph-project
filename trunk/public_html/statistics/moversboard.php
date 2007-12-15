@@ -128,6 +128,18 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_table = " gridimage_search i ";
 		$heading = "Days";
 		$desc = "different days";
+        } elseif ($type == 'antispread') {
+                //we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
+                $sql_column = "count(*)/count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )";
+		$sql_table = " gridimage_search i ";
+                $heading = "AntiSpread Score";
+                $desc = "antispread score (images/hectads)";
+        } elseif ($type == 'spread') {
+                //we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
+                $sql_column = "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )/count(*)";
+                $sql_table = " gridimage_search i ";
+                $heading = "Spread Score";
+                $desc = "spread score (hectads/images)";
 	} elseif ($type == 'classes') {
 		$sql_column = "count(distinct imageclass)";
 		$sql_table = " gridimage_search i ";

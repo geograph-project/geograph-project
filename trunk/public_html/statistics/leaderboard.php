@@ -131,7 +131,18 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_where = "1";
 		$heading = "Myriads";
 		$desc = "different myriads";
-	} elseif ($type == 'hectads') {
+        } elseif ($type == 'antispread') {
+                $sql_column = "count(*)/count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )";
+                $sql_where = "1";
+                $heading = "AntiSpread Score";
+                $desc = "antispread score (images/hectads)";
+        } elseif ($type == 'spread') {
+                $sql_column = "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )/count(*)";
+                $sql_where = "1";
+		$sql_having_having = "having count(*) > $minimum";
+                $heading = "Spread Score";
+                $desc = "spread score (hectads/images), and having submitted over $minimum images";
+ 	} elseif ($type == 'hectads') {
 		$sql_column = "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )";
 		$sql_where = "1";
 		$heading = "Hectads";

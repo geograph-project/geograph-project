@@ -88,6 +88,8 @@ Refine:
 <option value="depth">Depth Score</option>
 <option value="myriads">Myriads</option>
 <option value="hectads">Hectads</option>
+<option value="spread">Spread</option>
+<option value="antispread">AntiSpread</option>
 <option value="days">Days</option>
 <option value="classes">Categories</option>
 <option value="additional">Additional Geographs</option>
@@ -110,6 +112,8 @@ Refine:
 <option value="depth">Depth Score</option>
 <option value="myriads">Myriads</option>
 <option value="hectads">Hectads</option>
+<option value="spread">Spread</option>
+<option value="antispread">AntiSpread</option>
 <option value="days">Days</option>
 <option value="classes">Categories</option>
 <option value="additional">Additional Geographs</option>
