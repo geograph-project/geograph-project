@@ -661,6 +661,10 @@ if (isset($_GET['fav']) && $i) {
 
 	$engine = new SearchEngine($i);
 
+	if (empty($engine->criteria)) {
+		die("Invalid Search Parameter");
+	}
+
 	$display = $engine->getDisplayclass();
 	if (isset($_GET['displayclass']) && preg_match('/^\w+$/',$_GET['displayclass'])) {
 		$display = $_GET['displayclass'];
@@ -687,6 +691,12 @@ if (isset($_GET['fav']) && $i) {
 	$style = $USER->getStyle();
 	$cacheid.=$style;
 
+	if (!empty($_GET['t'])) {
+		$token=new Token;
+		if ($token->parse($_GET['t']) && $token->getValue("i") == $i)
+			$smarty->clear_cache($template, $cacheid);
+	}
+
 	if (!$smarty->is_cached($template, $cacheid)) {
 		dieUnderHighLoad(3,'search_unavailable.tpl');
 		
@@ -709,6 +719,7 @@ if (isset($_GET['fav']) && $i) {
 
 		if (!$engine->countOnly && $pg == 1 ) {
 			if ($engine->criteria->searchclass == 'GridRef' && $engine->criteria->issubsetlimited == false
+					&& preg_match('/^\w{1,2}\d{4}/',$engine->criteria->searchq)
 					&& ( $engine->criteria->orderby == 'dist_sqd' || $engine->criteria->orderby == '' )
 					&& strpos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
 				$smarty->assign('nofirstmatch', true);
@@ -795,11 +806,16 @@ if (isset($_GET['fav']) && $i) {
 	if (is_int($i)) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
-		$query = $db->GetRow("SELECT searchq FROM queries WHERE id = $i LIMIT 1");
+		$query = $db->GetRow("SELECT searchq,searchclass FROM queries WHERE id = $i LIMIT 1");
 		if (!count($query)) {
-			$query = $db->GetRow("SELECT searchq FROM queries_archive WHERE id = $i LIMIT 1");
+			$query = $db->GetRow("SELECT searchq,searchclass FROM queries_archive WHERE id = $i LIMIT 1");
 		}
-		$smarty->assign('searchq', $query['searchq']);
+		if ($query['searchclass'] != 'Special') {
+			$smarty->assign('searchq', $query['searchq']);
+			list($q,$loc) = preg_split('/\bnear(\b|$)/',$query['searchq'],2);
+			$smarty->assign('searchlocation', $loc);
+			$smarty->assign('searchtext', $q);
+		}
 	} else if (isset($_SESSION['searchq'])) {
 		list($q,$loc) = preg_split('/\s*near\s+/',$_SESSION['searchq'],2);
 		$smarty->assign('searchlocation', $loc);
@@ -852,6 +868,9 @@ if (isset($_GET['fav']) && $i) {
 				unset($recentsearchs[$i]);
 			} else {
 				$a["{$row['searchdesc']},{$row['searchq']},{$row['displayclass']},{$row['resultsperpage']}"] = 1;
+				if ($row['searchq'] == "inner join gridimage_query using (gridimage_id) where query_id = $i") {
+					$recentsearchs[$i]['edit'] = 1;
+				}
 			}
 		}
 		unset($a);
