@@ -107,8 +107,8 @@
 
 </fieldset>
 
-<input type="reset" name="reset" value="Undo Changes" onclick="return confirm('Are you sure? Changes will be lost!');"/>
-<input type="submit" name="submit" value="Save Changes..."/> {if $title == 'New Article'}<br/>(Articles will only show on the site once they have been approved by a site moderator){/if}</p>
+<input type="reset" name="reset" value="Reset" onclick="return confirm('Are you sure? Changes will be lost!');"/>
+<input type="submit" name="submit" value="Save Changes..." style="font-size:1.1em"/> {if $title == 'New Article'}<br/>(Articles will only show on the site once they have been approved by a site moderator){/if}</p>
 </form>
 
 <div style="padding:5px; border: 1px solid gray; background-color:silver; font-family: monospace; font-size:0.8em">

@@ -8,6 +8,13 @@ ul.explore li {	padding:3px; }
 <div style="float:right"><a title="geoRSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-rss">RSS</a></div>
 
 <h2>Articles</h2>
+
+<div class="interestBox">
+{if $user->registered} 
+	<a href="/article/edit.php?page=new">Create your own Article</a>
+{/if}
+</div>
+
 {assign var="lastid" value="0"}
 {foreach from=$list item=item}
 {if $lastcat != $item.category_name}
