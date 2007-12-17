@@ -167,7 +167,7 @@ if (isset($_GET['map']))
 			
 			$sql="select x,y,grid_reference,imagecount,percent_land,has_geographs from gridsquare where 
 				CONTAINS( GeomFromText($rectangle),	point_xy)
-				and imagecount>0 or percent_land = 0";
+				having imagecount>0 or percent_land = 0";
 			
 			$arr = $db->getAll($sql);
 			
