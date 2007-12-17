@@ -1468,3 +1468,19 @@ ALTER TABLE `queries_archive` CHANGE `displayclass` `displayclass` ENUM( 'full',
 
 ALTER TABLE `game_score` ADD `approved` TINYINT NOT NULL DEFAULT '1' AFTER `created` ;
 
+
+
+
+ALTER TABLE `gridimage_query` ADD `seq_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST ;
+
+ALTER TABLE `gridimage_query` ADD `crt_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ;
+
+UPDATE gridimage_query,queries SET gridimage_query.crt_timestamp = queries.crt_timestamp WHERE query_id = queries.id; 
+
+
+
+ALTER TABLE `user` ADD FULLTEXT (
+`realname` ,
+`nickname`
+);
+
