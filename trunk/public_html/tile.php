@@ -93,9 +93,9 @@ if (isset($_GET['map']))
 				header("HTTP/1.0 307 Temporary Redirect");
 				header("Status: 307 Temporary Redirect");
 				if ($USER->registered) {
- 	                               header("Location: /maps/validate.png");
+ 	                               header("Location: http://{$CONF['CONTENT_HOST']}/maps/validate.png");
  				} else {
-					header("Location: /maps/login.png");
+					header("Location: http://{$CONF['CONTENT_HOST']}/maps/login.png");
 				}
 				exit;
 			}
@@ -108,9 +108,9 @@ if (isset($_GET['map']))
 				header("Status: 307 Temporary Redirect");
 
                                 if ($USER->registered) {
-                                       header("Location: /maps/validate.png");
+                                       header("Location: http://{$CONF['CONTENT_HOST']}/maps/validate.png");
                                 } else {
-                                        header("Location: /maps/login.png");
+                                        header("Location: http://{$CONF['CONTENT_HOST']}/maps/login.png");
                                 }
  				exit;
 			}
@@ -143,7 +143,7 @@ if (isset($_GET['map']))
 					if ($data == 'blank') {
 						header("HTTP/1.0 302 Found");
 						header("Status: 302 Found");
-						header("Location: /maps/blank.png");
+						header("Location: http://{$CONF['CONTENT_HOST']}/maps/blank.png");
 					} else {
 						header("Content-Type: image/png");
 						print $data;
@@ -223,7 +223,7 @@ if (isset($_GET['map']))
 				$memcache->name_set('td',$mkey,$blank,false,$memcache->period_long*4);
 				header("HTTP/1.0 302 Found");
 				header("Status: 302 Found");
-				header("Location: /maps/blank.png");
+				header("Location: http://{$CONF['CONTENT_HOST']}/maps/blank.png");
 			}
 
 			exit;
