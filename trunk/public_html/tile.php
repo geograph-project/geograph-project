@@ -141,6 +141,8 @@ if (isset($_GET['map']))
 				$data =& $memcache->name_get('td',$mkey);
 				if ($data) {
 					if ($data == 'blank') {
+						header("HTTP/1.0 302 Found");
+						header("Status: 302 Found");
 						header("Location: /maps/blank.png");
 					} else {
 						header("Content-Type: image/png");
@@ -217,7 +219,10 @@ if (isset($_GET['map']))
 				}
 
 			} else {
-				$memcache->name_set('td',$mkey,'blank',false,$memcache->period_long*4);
+				$blank = 'blank';
+				$memcache->name_set('td',$mkey,$blank,false,$memcache->period_long*4);
+				header("HTTP/1.0 302 Found");
+				header("Status: 302 Found");
 				header("Location: /maps/blank.png");
 			}
 
