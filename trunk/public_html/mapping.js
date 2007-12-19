@@ -198,6 +198,9 @@ function overlayMouseMove(e) {
 				eastings1 = easting;
 				northings1 = northing;
 				document.theForm.grid_reference.value = grstr;
+				if (document.theForm.grid_reference_display) {
+					document.theForm.grid_reference_display.value = '??'+ cenXhun + cenYhun
+				}
 			} else if (currentelement.id == 'marker2') {
 				eastings2 = easting;
 				northings2 = northing;

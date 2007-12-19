@@ -90,6 +90,7 @@ function onCheckCompleted()
 			if (bits[l].indexOf('set') == 0) {
 				parts = bits[l].split(':');
 				thatForm.grid_reference.value = parts[1];
+				thatForm.grid_reference_display.value = parts[1];
 				updateMapMarker(thatForm.grid_reference,false)
 			}
 		}
@@ -102,6 +103,7 @@ function rateUpdate(that) {
 		that.form.next.style.backgroundColor = 'lightgreen';
 		that.form.next.style.fontSize = '1.3em';
 		that.form.grid_reference.value = '';
+		that.form.grid_reference_display.value = '';
 	}
 }
 
