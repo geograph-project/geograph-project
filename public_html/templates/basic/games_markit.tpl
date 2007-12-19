@@ -63,7 +63,7 @@
 		<small><small><br/>Click thumbnail to view full size</small></small></p>
 		
 		
-		<p><label for="grid_reference"><b style="color:#0018F8">Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)"/> <input type="button" value="check..." onclick="return game_check(this.form)"/></p>
+		<p><label for="grid_reference"><b style="color:#0018F8">Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" style="display:none"/> <input type="text" name="grid_reference_display" value="{$grid_reference|escape:'html'}" readonly="readonly" disabled="disabled"/> <input type="button" value="check..." onclick="return game_check(this.form)"/></p>
 	
 		
 		<input type="hidden" name="token" value="{$game->getToken()}"/>
