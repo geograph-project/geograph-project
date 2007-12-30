@@ -98,7 +98,7 @@ if (isset($_GET['check'])) {
 		$match = $game->image->grid_reference == $square->grid_reference;
 		
 		if (!$match) {
-			$distance = sprintf("%0.1f",
+			$distance = sprintf("%d",
 				sqrt(pow($game->image->grid_square->x-$square->x,2)+pow($game->image->grid_square->y-$square->y,2)));
 		}
 		
@@ -117,9 +117,9 @@ if (isset($_GET['check'])) {
 			exit;
 		} else {
 			if ($distance < 10) {
-				echo $prefix."Not Quite, distance: {$distance}km ... $postfix";
+				echo $prefix."Not Quite, distance: about {$distance}km ... $postfix";
 			} else {
-				echo $prefix."Not Right, distance: {$distance}km ... $postfix";
+				echo $prefix."Not Right, distance: about {$distance}km ... $postfix";
 			}
 			exit;
 		}
@@ -142,8 +142,9 @@ if (isset($_GET['check'])) {
 
 	if ($grid_ok && $square->grid_reference) {
 		$rastermap = new RasterMap($square,false,$square->natspecified);
-		print 'Map for <b>'.htmlspecialchars($_GET['grid_reference']).'</b><br/>';
+		
 		print $rastermap->getImageTag();
+		print '<br/>Map for <b>'.htmlspecialchars($_GET['grid_reference']).'</b>';
 		exit;	
 	} else {
 		die('<span style="color:red">Please enter a Grid Reference</span>');

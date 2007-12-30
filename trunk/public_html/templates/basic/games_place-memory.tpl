@@ -98,7 +98,7 @@
 
 
 <div class="yui-skin-sam">
-	<label for="ysearchinput1"><b style="color:#0018F8">Place/Feature Name Search</b></label><br/>
+	<label for="ysearchinput1"><b style="color:#0018F8">Placename/Map Feature/Gazetteer Search</b></label><br/>
 	<div id="example1" class="autocomplete">
 		<input id="ysearchinput1" name="placename" type="text"/>
 		<div id="ysearchcontainer1"></div>

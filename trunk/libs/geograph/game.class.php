@@ -292,6 +292,9 @@ class game {
 		if (!empty($reference_index)) {
 			$where .= " and reference_index = $reference_index";
 		}
+		if ($USER->registered && !empty($USER->user_id)) {
+			$where .= " and user_id!='{$USER->user_id}'";
+		}
 		if (empty($game->batchsize)) {
 			$game->batchsize = 10;
 		}
