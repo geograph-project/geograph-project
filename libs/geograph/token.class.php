@@ -262,6 +262,9 @@ class Token
 		//it gets included in the validation hash
 		if ($expiry>0)
 		{
+			if ($expiry < 10000000) {
+				$expiry += time();
+			}
 			$this->data['texp']=$expiry;
 		}
 		else

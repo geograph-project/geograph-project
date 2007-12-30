@@ -81,7 +81,7 @@
 		<p><label for="grid_reference"><b style="color:#0018F8">Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="8" onfocus="stopMap()"/><small><small><a href="javascript:doMove('grid_reference',-1,0);fetchMap()">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);fetchMap()">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);fetchMap()">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);fetchMap()">E</a></small></small> <input type="button" value="map" onclick="return game_map(this.form)"/><br/><input type="button" value="check..." onclick="return game_check(this.form)"/></p>
 	
 		
-		<input type="hidden" name="token" value="{$game->getToken()}"/>
+		<input type="hidden" name="token" value="{$game->getToken(3600)}"/>
 		<fieldset>
 			<legend>Hamster Tokens Available <input type="text" name="points" value="{$game->points}" size="1" readonly="readonly"/></legend>
 			{section loop=$game->points name="point"}
