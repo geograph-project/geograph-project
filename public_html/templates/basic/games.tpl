@@ -49,7 +49,7 @@ Help us Locate new <br/>images for the games.<br/>
 
 
 <div style="float:left; margin-top:60px; width:300px;height:85px; background-image:url('http://{$static_host}/templates/basic/img/callout2.gif');padding-left:90px;padding-top:15px; padding-right:10px; text-align:center;color:#0000FF">
-Hi, my name is Perdita the Geograph hamster. Welcome you to our <h2>Games Section</h2></div>
+Hi, my name is Perdita the Geograph hamster. Welcome to our <h2>Games Section</h2></div>
 
 <br style="clear:both"/>
 

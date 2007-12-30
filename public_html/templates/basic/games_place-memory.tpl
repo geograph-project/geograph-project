@@ -19,6 +19,11 @@
 	
 }
 
+.navButtons A {
+	border: 1px solid lightgrey;
+	padding: 2px;
+}
+
 .yui-skin-sam {
 	float:left;
 	position:relative;
@@ -74,11 +79,11 @@
 	<div id="responce"></div>
 		
 	<div class="photo_box">
-		<p><a href="{$game->image->_getFullpath()}" target="gameimag"><img src="{$game->image->getThumbnail(213,160,true)}"></a>
+		<p><a href="{$game->image->_getFullpath()}" target="gameimag"><img src="{$game->image->getThumbnail(213,160,true)}" alt="thumbnail loading..."></a>
 		<small><small><br/>Click thumbnail to view full size</small></small></p>
 		
 		
-		<p><label for="grid_reference"><b style="color:#0018F8">Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="8" onfocus="stopMap()"/><small><small><a href="javascript:doMove('grid_reference',-1,0);fetchMap()">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);fetchMap()">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);fetchMap()">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);fetchMap()">E</a></small></small> <input type="button" value="map" onclick="return game_map(this.form)"/><br/><input type="button" value="check..." onclick="return game_check(this.form)"/></p>
+		<p><label for="grid_reference"><b style="color:#0018F8">Grid Reference</b></label><br/> <input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="8" onfocus="stopMap()"/><small class="navButtons"><small><a href="javascript:doMove('grid_reference',-1,0);fetchMap()">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);fetchMap()">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);fetchMap()">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);fetchMap()">E</a></small></small> <input type="button" value="map" onclick="return game_map(this.form)"/> <input type="button" value="check..." onclick="return game_check(this.form)"/></p>
 	
 		
 		<input type="hidden" name="token" value="{$game->getToken(3600)}"/>
@@ -93,15 +98,16 @@
 
 
 <div class="yui-skin-sam">
-	<div>
-		Start typing, then pause to display possible matches,<br/> keep adding keywords to refine the search. <br/>
-	</div>
+	<label for="ysearchinput1"><b style="color:#0018F8">Place/Feature Name Search</b></label><br/>
 	<div id="example1" class="autocomplete">
 		<input id="ysearchinput1" name="placename" type="text"/>
 		<div id="ysearchcontainer1"></div>
 	</div>
+	<div style="font-size:0.8em">
+		Start typing, then pause to display possible matches,<br/> keep adding terms to refine the search. <br/>
+	</div>
 	
-	<div id="mapcontainer"></div>
+	<div id="mapcontainer" style="width:300px;height:300px"></div>
 </div>
 
 
