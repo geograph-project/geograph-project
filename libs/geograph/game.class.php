@@ -237,6 +237,77 @@ class game {
 		}
 	}
 
+	public function getImagesByLevel($level,$reference_index = 0) {
+		global $USER;
+		$where = 1;
+		$dist = $x = 0;
+		switch($level) {
+			case 1: $dist = 3;
+			
+			case 2: if (!$dist) $dist = 10;
+				
+			//case 1,2
+				$square = new GridSquare();
+				if ($square->setByFullGridRef($this->grid_reference)) {
+					$x = $square->x;
+					$y = $square->y;
+					
+				} 
+				
+			case 3: if (empty($x)) {
+					$db = $this->_getDB();
+					$rows = $db->CacheGetAll(3600,"SELECT x,y,COUNT(*) AS c FROM gridimage_search WHERE user_id='{$USER->user_id}' GROUP BY concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) ORDER BY COUNT(*) DESC LIMIT 20");
+					if (count($rows) > 10 && $rows[0]['c'] > 10 && $rows[10]['c'] < 5) {
+						$rows = array_slice($rows,0,10);
+					}
+					$pos = rand(0,count($rows)-1);
+					list($x,$y) = $rows[$pos];
+				}
+
+			case 4: if (empty($x)) {
+					$db = $this->_getDB();
+					$total = $db->CacheGetOne(3600,"select count(*) from gridimage where user_id='{$USER->user_id}' and moderation_status<>'rejected'");
+					$pos = rand(0,$total-1);
+					list($x,$y) = $db->getRow("SELECT x,y FROM gridimage_search WHERE user_id='{$USER->user_id}' LIMIT $pos,1");
+				}
+			
+			//case 1,2
+				if (!$dist) $dist = 5;
+			
+			//case 1,2,3,4
+				$left=$x-$dist;
+				$right=$x+$dist;
+				$top=$y+$dist;
+				$bottom=$y-$dist;
+
+				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
+				$where = "CONTAINS(GeomFromText($rectangle),point_xy)";
+				
+				break;
+		
+			case 5: $where = 1; break;
+		}
+		
+		if (!empty($reference_index)) {
+			$where .= " and reference_index = $reference_index";
+		}
+		if (empty($game->batchsize)) {
+			$game->batchsize = 10;
+		}
+		$sql = "select gi.*
+			from gridimage_search gi
+			where $where
+			order by rand() limit ".($game->batchsize*2);
+		
+		$imagelist=new ImageList();
+		$this->numberofimages =$imagelist->_getImagesBySql($sql,3600);
+		$this->images =& $imagelist->images;
+		
+		$this->sanitiseImages(false);
+	}
+	
+	
 	public function getImagesByRating($rating) {
 		if ($rating > 9) {
 			$where = sprintf("rating BETWEEN %d AND %d",($rating/10)-1,($rating/10)+1);
@@ -316,6 +387,9 @@ class game {
 		if (!empty($this->l)) {
 			$token->setValue("l", $this->l);
 		}
+		if (!empty($this->grid_reference)) {
+			$token->setValue("gr", $this->grid_reference);
+		}
 		if (!empty($this->rastermap) && $this->rastermap->enabled) {
 			$token->setValueBinary("r", $this->rastermap->getToken());
 			$token->setValue("e", $this->rastermap->exactPosition);
@@ -360,6 +434,9 @@ class game {
 			}
 			if ($token->hasValue("l")) {
 				$this->l = $token->getValue("l");
+			}
+			if ($token->hasValue("gr")) {
+				$this->grid_reference = $token->getValue("gr");
 			}
 			if ($token->hasValue("r")) {
 				$square = false;				

@@ -14,7 +14,7 @@
 </style>
 {/literal}
 
-<h2><a href="/games/">Geograph Games</a> - Mark-It!</h2>
+<h2><a href="/games/">Geograph Games</a> :: Mark-It!</h2>
 	
 {dynamic}
 {if $game->image} 

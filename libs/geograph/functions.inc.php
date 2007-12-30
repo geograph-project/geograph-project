@@ -426,7 +426,7 @@ function connectToURL($addr, $port, $path, $userpass="", $timeout="30") {
 
 function customCacheControl($mtime,$uniqstr,$useifmod = true,$gmdate_mod = 0) {
 	global $encoding;
-	if (isset($encoding) && $encoding != 'none') {
+	if (isset($encoding) && $encoding != 'none' && $encoding != '') {
 		$uniqstr .= $encoding;
 	}
 	
@@ -497,44 +497,51 @@ function customExpiresHeader($diff,$public = false) {
 		header("Cache-Control: Public",false);
 }
 
-function customGZipHandlerStart() {
+function getEncoding() {
 	global $encoding;
 	if (!empty($_SERVER['HTTP_ACCEPT_ENCODING'])) {
 		$gzip = strstr($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip');
 		$deflate = strstr($_SERVER['HTTP_ACCEPT_ENCODING'], 'deflate');
 
-		$encoding = $gzip ? 'gzip' : ($deflate ? 'deflate' : 'none');
-	
+		$encoding = $gzip ? 'gzip' : ($deflate ? 'deflate' : '');
+
 		if (!strstr($_SERVER['HTTP_USER_AGENT'], 'Opera') && 
 				preg_match('/^Mozilla\/4\.0 \(compatible; MSIE ([0-9]\.[0-9])/i', $_SERVER['HTTP_USER_AGENT'], $matches)) {
 			$version = floatval($matches[1]);
 
 			if ($version < 6)
-				$encoding = 'none';
+				$encoding = '';
 
 			if ($version == 6 && !strstr($_SERVER['HTTP_USER_AGENT'], 'EV1')) 
-				$encoding = 'none';
+				$encoding = '';
 		}
 	} else {
-		$encoding = 'none';
+		$encoding = '';
 	}
-	ob_start();
-	register_shutdown_function('customGZipHandlerEnd');
+	return $encoding;
+}
+
+function customGZipHandlerStart() {
+	global $encoding;
+	if ($encoding = getEncoding()) {
+		ob_start();
+		register_shutdown_function('customGZipHandlerEnd');
+	}
 }
 
 function customGZipHandlerEnd() {
 	global $encoding;
 	
 	$contents =& ob_get_clean();
-	
-	if (isset($encoding) && $encoding != 'none') {
+
+	if (isset($encoding) && $encoding) {
 		// Send compressed contents
 		$contents = gzencode($contents, 9,  ($encoding == 'gzip') ? FORCE_GZIP : FORCE_DEFLATE);
 		header ('Content-Encoding: '.$encoding);
 		header ('Vary: Accept-Encoding');
 	}
 	//else ... we could still send Vary: but because a browser that doesnt will accept non gzip in all cases, doesnt matter if the cache caches the non compressed version (the otherway doesnt hold true, hence the Vary: above)
-	header('Content-length: '.strlen($contents));
+	header('Content-Length: '.strlen($contents));
 	echo $contents;
 }
  

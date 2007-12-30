@@ -32,10 +32,11 @@ $smarty = new GeographPage;
 $template='games_leaderboard.tpl';
 
 $l=inSetRequestInt('l',-1);
+$g=inSetRequestInt('g',1);
 
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(250,intval($_GET['limit'])):50;
 
-$cacheid="$l.$limit";
+$cacheid="$g.$l.$limit";
 
 
 if (isset($_GET['more'])) {
@@ -57,7 +58,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql="select game_score_id,username,gs.user_id,realname,round(avg(level)) as level,sum(score) as score,sum(games) as games,sum(score)/sum(games) as average
 	from game_score gs
 		left join user using(user_id)
-	where $where and approved = 1
+	where game_id = $g and $where and approved = 1
 	group by if(gs.user_id>0,gs.user_id,concat(username,session))
 	order by average desc,score desc, games desc,username,realname ";
 	if ($_GET['debug'])
@@ -101,6 +102,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('score', $score);
 	$smarty->assign('games', $games);
 	$smarty->assign('l', $l);
+	$smarty->assign('g', $g);
 	
 	$smarty->assign_by_ref('topusers', $topusers);
 	

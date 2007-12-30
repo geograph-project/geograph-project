@@ -32,8 +32,9 @@ $smarty = new GeographPage;
 $template='games_moversboard.tpl';
 
 $l=inSetRequestInt('l',-1);
-$cacheid=$l;
+$g=inSetRequestInt('g',1);
 
+$cacheid="$g.$l";
 
 if (isset($_GET['more'])) {
 	$smarty->clear_cache($template, $cacheid);
@@ -54,7 +55,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql="select game_score_id,username,gs.user_id,realname,round(avg(level)) as level,sum(score) as score,sum(games) as games,sum(score)/sum(games) as average
 	from game_score gs
 		left join user using(user_id)
-	where gs.created > date_sub(now(), interval 7 day) and approved = 1 $where
+	where game_id = $g and gs.created > date_sub(now(), interval 7 day) and approved = 1 $where
 	group by if(gs.user_id>0,gs.user_id,concat(username,session))
 	order by average desc,score desc, games desc,username,realname ";
 	if ($_GET['debug'])
@@ -88,6 +89,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('score', $score);
 	$smarty->assign('games', $games);
 	$smarty->assign('l', $l);
+	$smarty->assign('g', $g);
 	
 	$smarty->assign_by_ref('topusers', $topusers);
 	
