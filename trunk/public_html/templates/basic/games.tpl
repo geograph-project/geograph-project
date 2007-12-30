@@ -44,7 +44,7 @@ Help us Locate new <br/>images for the games.<br/>
 {/if}
 {/dynamic}
 
-<div style="float:left; padding-right:20px"><img src="http://{$static_host}/templates/basic/img/hamster.gif"/></div>
+<div style="float:left; padding-right:20px"><img src="http://{$static_host}/templates/basic/img/hamster.gif" width="161" height="174"/></div>
 
 
 
@@ -55,8 +55,8 @@ Welcome to Geograph's <h2>Games Section</h2></div>
 
 
 
-<div  class="interestBox" style="width:45%; float:left">
-<img src="http://{$static_host}/games/markit.gif" align="right"/>
+<div  class="interestBox" style="width:45%; float:left; height:350px; margin-right:20px">
+<img src="http://{$static_host}/games/markit.gif" align="right" width="115" height="125"/>
 <h3 style="background-color:black;color:white;margin-top:0px; padding:10px;">Mark It</h3>
 
 <p>Earn Hamster Tokens by locating Photos on the Map!</p>
@@ -80,7 +80,39 @@ Welcome to Geograph's <h2>Games Section</h2></div>
 </div>
 
 
-<div class="interestBox" style=" padding:10px; width:260px; float:right; text-align:center">
+<div  class="interestBox" style="width:45%; float:left; height:350px; ">
+<h3 style="background-color:black;color:white;margin-top:0px; padding:10px;">Place Memory (beta) <sup style="color:pink">New!</sup></h3>
+
+<p>Earn Hamster Tokens by locating the Grid Square of a photo. Note: this game is timed, the quicker you answer the more tokens you earn!</p>
+
+<form action="/games/place-memory.php">
+
+<b>Level:</b><br/>
+<input type="radio" name="l" value="1"/>1 :: Within 3km of &nbsp;&nbsp;&nbsp; <div style="position:absolute; display:inline;"><div style="position:relative; top: 8px"><label for="grid_reference">Grid Reference:</label> <input type="text" size="6" name="grid_reference" id="grid_reference"/></div></div><br/>
+<input type="radio" name="l" value="2" checked/>2 :: Within 10km of  <br/>
+{dynamic}
+{if $USER->registered && $USER->rank > 0}<span style="color:gray">
+<input type="radio" name="l" value="3" disabled/>3 :: Anywhere near one of my regular haunts<br/>
+<input type="radio" name="l" value="4" disabled/>4 :: Anywhere near a photo I've submitted<br/>
+(level 3 and 4 are only available to contributors)<br/>
+</span>
+{else}
+<input type="radio" name="l" value="3" checked/>3 :: Anywhere near one of my regular haunts<br/>
+<input type="radio" name="l" value="4"/>4 :: Anywhere near a photo I've submitted<br/>
+{/if}
+{/dynamic}
+<input type="radio" name="l" value="5"/>5 :: Anywhere in Great Britain<br/>
+<br/>
+
+<input type="submit" value="Play Now &gt; &gt;" style="font-size:1.3em"/> or view the <a href="/games/moversboard.php?g=2">Scoreboard</a> 
+
+</form><br/>
+
+
+<br style="clear:both"/>
+</div>
+
+<div class="interestBox" style="margin: 20px; padding:10px; width:260px; float:right; text-align:center">
 
 more games coming soon...
 </div>

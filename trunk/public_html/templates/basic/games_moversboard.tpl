@@ -4,7 +4,7 @@
 
 <h2><a href="/games/">Geograph Games</a> - Weekly Leaderboard</h2>
 	
-<p>See also <a href="/games/leaderboard.php?l={$l}">all time leaderboard</a></p>
+<p>See also <a href="/games/leaderboard.php?l={$l}&amp;g={$g}">all time leaderboard</a></p>
 
 <p>Last generated at {$smarty.now|date_format:"%H:%M"} and covers games since
 {$cutoff_time|date_format:"%A, %d %b at %H:%M"}</p>

@@ -160,13 +160,17 @@ class ImageList
 	* get image list based on supplied sql...
 	* @access private
 	*/
-	function _getImagesBySql($sql) {
+	function _getImagesBySql($sql,$cache = 0) {
 		$db=&$this->_getDB();
 		if ($_GET['debug'])
 			print $sql;
 		$this->images=array();
 		$i=0;
-		$recordSet = &$db->Execute($sql);
+		if ($cache > 0) {
+			$recordSet = &$db->CacheExecute($cache,$sql);
+		} else {
+			$recordSet = &$db->Execute($sql);
+		}
 		while (!$recordSet->EOF) 
 		{
 			$this->images[$i]=new GridImage;

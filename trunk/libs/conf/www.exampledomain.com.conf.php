@@ -40,6 +40,12 @@ $CONF['db_persist']='?persist'; //options: ''|'?persist'
 ##$CONF['memcache']['smarty'] =& $CONF['memcache']['app'];
 
 
+$CONF['sphinx_host'] = "localhost";
+$CONF['sphinx_port'] = 3312;
+$CONF['sphinx_cache'] = $_SERVER['DOCUMENT_ROOT'].'/../sphinxcache/';
+
+
+
 //choose UI template
 $CONF['template']='basic';
 
