@@ -91,7 +91,7 @@ Welcome to Geograph's <h2>Games Section</h2></div>
 <input type="radio" name="l" value="1"/>1 :: Within 3km of &nbsp;&nbsp;&nbsp; <div style="position:absolute; display:inline;"><div style="position:relative; top: 8px"><label for="grid_reference">Grid Reference:</label> <input type="text" size="6" name="grid_reference" id="grid_reference"/></div></div><br/>
 <input type="radio" name="l" value="2" checked/>2 :: Within 10km of  <br/>
 {dynamic}
-{if $USER->registered && $USER->rank > 0}<span style="color:gray">
+{if !$user->registered || $user->rank == 0}<span style="color:gray">
 <input type="radio" name="l" value="3" disabled/>3 :: Anywhere near one of my regular haunts<br/>
 <input type="radio" name="l" value="4" disabled/>4 :: Anywhere near a photo I've submitted<br/>
 (level 3 and 4 are only available to contributors)<br/>
