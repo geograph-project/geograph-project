@@ -55,7 +55,7 @@ if (isset($_REQUEST['debug']) && $USER->hasPerm("admin")) {
 	if (!empty($_GET['page'])){ 
 		$token->setValue("p", $_GET['page']);
 	}
-	print $token->getToken(); 
+	print $token->getToken(3600); 
 }
 if (isset($_GET['l']) && isset($_SESSION['gameToken'])) {
 	unset($_SESSION['gameToken']);
@@ -64,14 +64,12 @@ if (isset($_GET['l']) && isset($_SESSION['gameToken'])) {
 $game = new Game();
 
 if (isset($_REQUEST['token'])) {
-	$game->setToken($_REQUEST['token']);
+	$ok = $game->setToken($_REQUEST['token']);
 } elseif (isset($_SESSION['gameToken'])) {
-	$game->setToken($_SESSION['gameToken']);
+	$ok = $game->setToken($_SESSION['gameToken']);
 } 
 
-if (isset($_REQUEST['debug']) && $USER->hasPerm("admin") && $game->i) {
-	print "<br>{$game->i}";
-}
+
 
 if (isset($_REQUEST['autoload'])) {
 	switch (rand(1,3)) {
@@ -85,6 +83,9 @@ $game->game_id = 2;
 $game->batchsize = 10;
 
 if (isset($_GET['check'])) {
+	if (empty($ok) || !$ok) {
+		die("Game Expired, please start again");
+	}
 	if (empty($_GET['grid_reference'])) {
 		die('<span style="color:red">Please enter a Grid Reference</span>');
 	} elseif (empty($_GET['points'])) {
@@ -130,6 +131,9 @@ if (isset($_GET['check'])) {
 	die('unknown error');
 
 } elseif (isset($_GET['map'])) {
+	if (empty($ok) || !$ok) {
+		die("Game Expired, please start again");
+	}
 	if (!$game->l) {
 		die("Game Expired, please start again");
 	}
@@ -145,7 +149,9 @@ if (isset($_GET['check'])) {
 		die('<span style="color:red">Please enter a Grid Reference</span>');
 	}
 } elseif (isset($_REQUEST['next']) || isset($_REQUEST['save'])) {
-	
+	if (empty($ok) || !$ok) {
+		die("Game Expired, please start again");
+	}
 	if (empty($_REQUEST['grid_reference'])) {
 
 	} else {
@@ -174,8 +180,8 @@ if (isset($_GET['check'])) {
 			}
 		}
 	}
-	#$params[] = "token=".$game->getToken();
-	$_SESSION['gameToken'] = $game->getToken();
+	#$params[] = "token=".$game->getToken(3600);
+	$_SESSION['gameToken'] = $game->getToken(3600);
 	
 	if (isset($_REQUEST['next'])) {
 		header("Location: /games/place-memory.php?".implode('&',$params));

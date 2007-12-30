@@ -362,7 +362,7 @@ class game {
 	* Return an opaque, url-safe token representing this game
 	* @access public
 	*/
-	function getToken()
+	function getToken($expiry=0)
 	{
 		$token=new Token;
 		$token->setValue("u", $this->game_id);
@@ -397,7 +397,7 @@ class game {
 		if (!empty($this->done)) {
 			$token->setValueBinary("d", serialize($this->done));
 		}
-		return $token->getToken();
+		return $token->getToken($expiry);
 	}
 	
 	/**
@@ -446,7 +446,8 @@ class game {
 			}
 			if ($token->hasValue("d")) {
 				$this->done = unserialize($token->getValueBinary("d"));
-			}	
+			}
+			$ok=true;
 		}
 		return $ok;
 	}

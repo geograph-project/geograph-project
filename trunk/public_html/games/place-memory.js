@@ -70,7 +70,7 @@ function fetchMap() {
 	if (runningTimer) {
 		clearTimeout(runningTimer);
 	}
-	runningTimer = setTimeout("game_map(document.forms[0])",500);
+	runningTimer = setTimeout("game_map(document.forms[0])",800);
 }
 
 function stopMap() {
