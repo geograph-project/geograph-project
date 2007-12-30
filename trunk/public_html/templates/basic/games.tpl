@@ -48,8 +48,8 @@ Help us Locate new <br/>images for the games.<br/>
 
 
 
-<div style="float:left; margin-top:60px; width:235px;height:59px; background-image:url('http://{$static_host}/templates/basic/img/callout1.gif');padding-left:75px;padding-top:5px; padding-right:10px; text-align:center;color:#0000FF">
-Welcome to Geograph's <h2>Games Section</h2></div>
+<div style="float:left; margin-top:60px; width:300px;height:85px; background-image:url('http://{$static_host}/templates/basic/img/callout2.gif');padding-left:90px;padding-top:15px; padding-right:10px; text-align:center;color:#0000FF">
+Hi, my name is Perdita the Geograph hamster. Welcome you to our <h2>Games Section</h2></div>
 
 <br style="clear:both"/>
 
@@ -79,18 +79,19 @@ Welcome to Geograph's <h2>Games Section</h2></div>
 <br style="clear:both"/>
 </div>
 
-
+{dynamic}
+{if $user->registered}
 <div  class="interestBox" style="width:45%; float:left; height:350px; ">
 <h3 style="background-color:black;color:white;margin-top:0px; padding:10px;">Place Memory (beta) <sup style="color:pink">New!</sup></h3>
 
-<p>Earn Hamster Tokens by locating the Grid Square of a photo. Note: this game is timed, the quicker you answer the more tokens you earn!</p>
+<p>Earn Hamster Tokens by locating the Grid Square of a photo.</p>
 
 <form action="/games/place-memory.php">
 
 <b>Level:</b><br/>
 <input type="radio" name="l" value="1"/>1 :: Within 3km of &nbsp;&nbsp;&nbsp; <div style="position:absolute; display:inline;"><div style="position:relative; top: 8px"><label for="grid_reference">Grid Reference:</label> <input type="text" size="6" name="grid_reference" id="grid_reference"/></div></div><br/>
 <input type="radio" name="l" value="2" checked/>2 :: Within 10km of  <br/>
-{dynamic}
+
 {if !$user->registered || $user->rank == 0}<span style="color:gray">
 <input type="radio" name="l" value="3" disabled/>3 :: Anywhere near one of my regular haunts<br/>
 <input type="radio" name="l" value="4" disabled/>4 :: Anywhere near a photo I've submitted<br/>
@@ -100,7 +101,7 @@ Welcome to Geograph's <h2>Games Section</h2></div>
 <input type="radio" name="l" value="3" checked/>3 :: Anywhere near one of my regular haunts<br/>
 <input type="radio" name="l" value="4"/>4 :: Anywhere near a photo I've submitted<br/>
 {/if}
-{/dynamic}
+
 <input type="radio" name="l" value="5"/>5 :: Anywhere in Great Britain<br/>
 <br/>
 
@@ -111,6 +112,8 @@ Welcome to Geograph's <h2>Games Section</h2></div>
 
 <br style="clear:both"/>
 </div>
+{/if}
+{/dynamic}
 
 <div class="interestBox" style="margin: 20px; padding:10px; width:260px; float:right; text-align:center">
 

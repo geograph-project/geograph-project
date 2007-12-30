@@ -58,11 +58,26 @@ function onCheckCompleted()
 			if (bits[l].indexOf('set') == 0) {
 				parts = bits[l].split(':');
 				thatForm.grid_reference.value = parts[1];
+				fetchMap();
 			}
 		}
 	}
 }
 
+var runningTimer = null;
+
+function fetchMap() {
+	if (runningTimer) {
+		clearTimeout(runningTimer);
+	}
+	runningTimer = setTimeout("game_map(document.forms[0])",500);
+}
+
+function stopMap() {
+	if (runningTimer) {
+		clearTimeout(runningTimer);
+	}
+}
 
 function game_map(thatForm) {
 		
