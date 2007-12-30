@@ -80,7 +80,9 @@ function stopMap() {
 }
 
 function game_map(thatForm) {
-		
+	if (runningTimer) {
+		clearTimeout(runningTimer);
+	}	
 	var url="/games/place-memory.php?map&token="+thatForm.token.value+
 		"&grid_reference="+thatForm.grid_reference.value;
 
