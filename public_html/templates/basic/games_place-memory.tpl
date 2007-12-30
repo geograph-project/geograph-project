@@ -65,7 +65,7 @@
   <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
 	
-	<p>Enter the Grid Reference of the square that contains the photo. You can also use the placename box to search for a grid reference. The quicker you answer the more tokens you earn. </p> 
+	<p>Enter the Grid Reference of the square that contains the photo. You can also use the placename box to search for a grid reference. </p> 
 	
 	{if $message}
 		<p style="color:#990000;font-weight:bold;">{$message}</p>
@@ -78,7 +78,7 @@
 		<small><small><br/>Click thumbnail to view full size</small></small></p>
 		
 		
-		<p><label for="grid_reference"><b style="color:#0018F8">Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="8"/><small><small><a href="javascript:doMove('grid_reference',-1,0);">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);">E</a></small></small> <input type="button" value="map" onclick="return game_map(this.form)"/><br/><input type="button" value="check..." onclick="return game_check(this.form)"/></p>
+		<p><label for="grid_reference"><b style="color:#0018F8">Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="8" onfocus="stopMap()"/><small><small><a href="javascript:doMove('grid_reference',-1,0);fetchMap()">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);fetchMap()">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);fetchMap()">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);fetchMap()">E</a></small></small> <input type="button" value="map" onclick="return game_map(this.form)"/><br/><input type="button" value="check..." onclick="return game_check(this.form)"/></p>
 	
 		
 		<input type="hidden" name="token" value="{$game->getToken()}"/>
@@ -163,6 +163,7 @@ var ACFlatData = new function(){
     	
     	document.getElementById('grid_reference').value = aData[0];
     	document.getElementById('ysearchinput1').value = aData[1];
+    	fetchMap();
     };
     
     //subscribe your handler to the event

@@ -96,6 +96,11 @@ if (isset($_GET['check'])) {
 
 		$match = $game->image->grid_reference == $square->grid_reference;
 		
+		if (!$match) {
+			$distance = sprintf("%0.1f",
+				sqrt(pow($game->image->grid_square->x-$square->x,2)+pow($game->image->grid_square->y-$square->y,2)));
+		}
+		
 		if ($_GET['points'] == 1) {
 			$postfix = "But no tokens left! Better luck next time.";
 			$postfix2 = "^-1^set:".$game->image->grid_reference;
@@ -110,9 +115,13 @@ if (isset($_GET['check'])) {
 			echo "<span style=\"color:blue;background-color:lightgreen; padding:10px; font-weight:bold;\">Well done, got the square! collect {$_GET['points']} tokens</span>^1^set:".$game->image->grid_reference;
 			exit;
 		} else {
-			echo $prefix."Not Right... $postfix";
+			if ($distance < 10) {
+				echo $prefix."Not Quite, distance: {$distance}km ... $postfix";
+			} else {
+				echo $prefix."Not Right, distance: {$distance}km ... $postfix";
+			}
 			exit;
-		}		
+		}
 
 		echo $distance;
 		exit;
@@ -129,7 +138,7 @@ if (isset($_GET['check'])) {
 
 	if ($grid_ok && $square->grid_reference) {
 		$rastermap = new RasterMap($square,false,$square->natspecified);
-
+		print 'Map for <b>'.htmlspecialchars($_GET['grid_reference']).'</b><br/>';
 		print $rastermap->getImageTag();
 		exit;	
 	} else {
