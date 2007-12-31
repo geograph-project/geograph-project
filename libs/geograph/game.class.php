@@ -237,7 +237,7 @@ class game {
 		}
 	}
 
-	public function getImagesByLevel($level,$reference_index = 0) {
+	public function getImagesByLevel($level,$reference_index = 0,$geoonly = true) {
 		global $USER;
 		$where = 1;
 		$dist = $x = 0;
@@ -294,6 +294,9 @@ class game {
 		}
 		if ($USER->registered && !empty($USER->user_id)) {
 			$where .= " and user_id!='{$USER->user_id}'";
+		}
+		if (!empty($geoonly)) {
+			$where .= " and moderation_status = 'geograph'";
 		}
 		if (empty($game->batchsize)) {
 			$game->batchsize = 10;
