@@ -28,7 +28,7 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
 	
 	
-$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','KML','BASE','GeoRSS','GeoPhotoRSS','GPX','TOOLBAR');
+$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','KML','BASE','GeoRSS','GeoPhotoRSS','GPX','TOOLBAR','MEDIA');
 
 if (isset($_GET['extension']) && !isset($_GET['format']))
 {
@@ -162,17 +162,16 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 
 $cnt=count($images->images);
 
-$geoformat = ($format == 'KML' || $format == 'GeoRSS' || $format == 'GeoPhotoRSS' || $format == 'GPX');
-$photoformat = ($format == 'KML' || $format == 'GeoPhotoRSS' || $format == 'BASE');
+$geoformat = ($format == 'KML' || $format == 'GeoRSS' || $format == 'GeoPhotoRSS' || $format == 'GPX' || $format == 'MEDIA');
+$photoformat = ($format == 'KML' || $format == 'GeoPhotoRSS' || $format == 'BASE' || $format == 'MEDIA');
 
 //create some feed items
 for ($i=0; $i<$cnt; $i++)
 {
 	
 	$item = new FeedItem(); 
-	$item->guid = $images->images[$i]->gridimage_id;
 	$item->title = $images->images[$i]->grid_reference." : ".$images->images[$i]->title; 
-	$item->link = "http://{$_SERVER['HTTP_HOST']}/photo/{$images->images[$i]->gridimage_id}";
+	$item->guid = $item->link = "http://{$_SERVER['HTTP_HOST']}/photo/{$images->images[$i]->gridimage_id}";
 	if (isset($images->images[$i]->dist_string) || isset($images->images[$i]->imagetakenString)) {
 		$item->description = $images->images[$i]->dist_string.($images->images[$i]->imagetakenString?' Taken: '.$images->images[$i]->imagetakenString:'')."<br/>".$images->images[$i]->comment; 
 		$item->descriptionHtmlSyndicated = true;
@@ -200,6 +199,9 @@ for ($i=0; $i<$cnt; $i++)
 			$item->thumb = "http://".$_SERVER['HTTP_HOST'].$details['url']; 
 			$item->thumbTag = preg_replace('/\/photos\/.*\.jpg/',$item->thumb,$details['html']); 
 		}
+		if ($format == 'MEDIA') {
+			$item->content = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->_getFullpath(); 
+		}
 	} elseif ($format == 'PHP') {
 		$item->thumb = $images->images[$i]->getThumbnail(120,120,true); 
 	} elseif ($format == 'TOOLBAR') {
@@ -210,7 +212,11 @@ for ($i=0; $i<$cnt; $i++)
 
 	//<license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
 
-	$item->licence = "&copy; Copyright <i class=\"attribution\">".htmlspecialchars($images->images[$i]->realname)."</i> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a>";
+	if ($format == 'KML') {
+		$item->licence = "&copy; Copyright <i class=\"attribution\">".htmlspecialchars($images->images[$i]->realname)."</i> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a>";
+	} else {
+		$item->licence = "http://creativecommons.org/licenses/by-sa/2.0/";
+	}
 
 	$rss->addItem($item);
 }
