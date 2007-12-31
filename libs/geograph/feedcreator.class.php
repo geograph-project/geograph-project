@@ -27,16 +27,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 Changelog:
 
+v1.7.8(BH)	31-12-07
+	added MediaRSS output (and georss to RSS2) (Barry Hunter)
+
 v1.7.71(BH)	13-02-07
 	correct georss namespace (Barry Hunter)
 
 v1.7.7(BH)	28-03-06
 	added GPX Feed (Barry Hunter)
 
-
 v1.7.6(BH)	20-02-06
 	added GeoRSS Feed (Barry Hunter)
-
 
 v1.7.5(BH)	16-11-05
 	added BASE Feed (Barry Hunter)
@@ -176,7 +177,7 @@ echo $rss->saveFeed("RSS1.0", "news/feed.xml");
 **************************************************************************/
 
 // your local timezone, set to "" to disable or for GMT
-define("TIME_ZONE","");
+define("TIME_ZONE","GMT");
 
 
 
@@ -184,7 +185,7 @@ define("TIME_ZONE","");
 /**
  * Version string.
  **/
-define("FEEDCREATOR_VERSION", "FeedCreator 1.7.71(BH)");
+define("FEEDCREATOR_VERSION", "FeedCreator 1.7.8(BH)");
 
 
 
@@ -958,7 +959,7 @@ class RSSCreator091 extends FeedCreator {
 		$feed.= $this->_createStylesheetReferences();
 		$feed.= "<rss version=\"".$this->RSSVersion."\"";
 		if ($this->format == 'MEDIA') 
-			$feed.= " xmlns:media=\"http://search.yahoo.com/mrss\"";
+			$feed.= " xmlns:media=\"http://search.yahoo.com/mrss/\"";
 		if ($this->items[0]->licence!="" || $this->creativeCommons)
 			$feed.= " xmlns:creativeCommons=\"http://backend.userland.com/creativeCommonsRssModule\"";
 		if ($this->items[0]->lat!="" || $this->geo)
@@ -1059,9 +1060,9 @@ class RSSCreator091 extends FeedCreator {
 			}
 			if ($this->items[$i]->content!="") {
 				if ($this->items[$i]->thumb!="") {
-					$feed.= "            <media:thumbnail>".htmlspecialchars($this->items[$i]->thumb)."</media:thumbnail>\n";
+					$feed.= "            <media:thumbnail url=\"".htmlspecialchars($this->items[$i]->thumb)."\"/>\n";
 				}
-				$feed.= "            <media:content>".htmlspecialchars($this->items[$i]->content)."</media:content>\n";
+				$feed.= "            <media:content url=\"".htmlspecialchars($this->items[$i]->content)."\"/>\n";
 			} elseif ($this->items[$i]->thumb!="") {
 				$feed.= "            <g:image_link>".htmlspecialchars($this->items[$i]->thumb)."</g:image_link>\n";
 			}
