@@ -964,6 +964,9 @@ class RSSCreator091 extends FeedCreator {
 			$feed.= " xmlns:creativeCommons=\"http://backend.userland.com/creativeCommonsRssModule\"";
 		if ($this->items[0]->lat!="" || $this->geo)
 			$feed.= " xmlns:georss=\"http://www.georss.org/georss\"";
+		if ($this->syndicationURL != '')
+			$feed.= " xmlns:atom=\"http://www.w3.org/2005/Atom\"";
+		$feed.= " xmlns:dc=\"http://purl.org/dc/elements/1.1/\"";
 		$feed.= ">\n";
 		if ($this->format == 'BASE') {
 			$feed.= "    <channel xmlns:g=\"http://base.google.com/ns/1.0\">\n";
@@ -974,6 +977,9 @@ class RSSCreator091 extends FeedCreator {
 		$this->descriptionTruncSize = 500;
 		$feed.= "        <description>".$this->getDescription()."</description>\n";
 		$feed.= "        <link>".$this->link."</link>\n";
+		if ($this->syndicationURL != '') {
+			$feed.= "        <atom:link href=\"".$this->syndicationURL."\" rel=\"self\" type=\"".$this->contentType."\" />\n";
+		}
 		$now = new FeedDate();
 		$feed.= "        <lastBuildDate>".htmlspecialchars($now->rfc822())."</lastBuildDate>\n";
 		$feed.= "        <generator>".FEEDCREATOR_VERSION."</generator>\n";
@@ -1036,7 +1042,9 @@ class RSSCreator091 extends FeedCreator {
 			$feed.= "            <link>".htmlspecialchars($this->items[$i]->link)."</link>\n";
 			$feed.= "            <description>".$this->items[$i]->getDescription()."</description>\n";
 			
-			if ($this->items[$i]->author!="") {
+			if ($this->items[$i]->author!="" && strpos($this->items[$i]->author,'@') === FALSE) {
+				$feed.= "            <dc:creator>".htmlspecialchars($this->items[$i]->author)."</dc:creator>\n";
+			} elseif ($this->items[$i]->author!="") {
 				$feed.= "            <author>".htmlspecialchars($this->items[$i]->author)."</author>\n";
 			}
 			/*
