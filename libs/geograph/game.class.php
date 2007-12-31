@@ -257,7 +257,7 @@ class game {
 			case 3: if (empty($x)) {
 					$db = $this->_getDB();
 					$rows = $db->CacheGetAll(3600,"SELECT x,y,COUNT(*) AS c FROM gridimage_search WHERE user_id='{$USER->user_id}' GROUP BY concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) ORDER BY COUNT(*) DESC LIMIT 20");
-					if (count($rows) > 10 && $rows[0]['c'] > 10 && $rows[10]['c'] < 5) {
+					if (count($rows) > 10 && $rows[0]['c'] > 10 && $rows[10]['c'] < max(5,$rows[0]['c']/10)) {
 						$rows = array_slice($rows,0,10);
 					}
 					$pos = rand(0,count($rows)-1);
@@ -271,7 +271,7 @@ class game {
 					list($x,$y) = $db->getRow("SELECT x,y FROM gridimage_search WHERE user_id='{$USER->user_id}' LIMIT $pos,1");
 				}
 			
-			//case 1,2
+			//case 3,4
 				if (!$dist) $dist = 5;
 			
 			//case 1,2,3,4
