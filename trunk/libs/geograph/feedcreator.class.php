@@ -356,6 +356,7 @@ class UniversalFeedCreator extends FeedCreator {
 	function _setFormat($format) {
 		switch (strtoupper($format)) {
 			
+			case "MEDIA":
 			case "BASE":
 				$this->format = $format;
 			case "2.0":
@@ -955,7 +956,14 @@ class RSSCreator091 extends FeedCreator {
 		$feed = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 		$feed.= $this->_createGeneratorComment();
 		$feed.= $this->_createStylesheetReferences();
-		$feed.= "<rss version=\"".$this->RSSVersion."\">\n";
+		$feed.= "<rss version=\"".$this->RSSVersion."\"";
+		if ($this->format == 'MEDIA') 
+			$feed.= " xmlns:media=\"http://search.yahoo.com/mrss\"";
+		if ($this->items[0]->licence!="" || $this->creativeCommons)
+			$feed.= " xmlns:creativeCommons=\"http://backend.userland.com/creativeCommonsRssModule\"";
+		if ($this->items[0]->lat!="" || $this->geo)
+			$feed.= " xmlns:georss=\"http://www.georss.org/georss\"";
+		$feed.= ">\n";
 		if ($this->format == 'BASE') {
 			$feed.= "    <channel xmlns:g=\"http://base.google.com/ns/1.0\">\n";
 		} else {
@@ -1049,8 +1057,19 @@ class RSSCreator091 extends FeedCreator {
 			if ($this->items[$i]->guid!="") {
 				$feed.= "            <guid>".htmlspecialchars($this->items[$i]->guid)."</guid>\n";
 			}
-			if ($this->items[$i]->thumb!="") {
+			if ($this->items[$i]->content!="") {
+				if ($this->items[$i]->thumb!="") {
+					$feed.= "            <media:thumbnail>".htmlspecialchars($this->items[$i]->thumb)."</media:thumbnail>\n";
+				}
+				$feed.= "            <media:content>".htmlspecialchars($this->items[$i]->content)."</media:content>\n";
+			} elseif ($this->items[$i]->thumb!="") {
 				$feed.= "            <g:image_link>".htmlspecialchars($this->items[$i]->thumb)."</g:image_link>\n";
+			}
+			if ($this->items[$i]->lat!="") {
+				$feed.= "            <georss:point>".$this->items[$i]->lat." ".$this->items[$i]->long."</georss:point>\n";
+			}
+			if ($this->items[$i]->licence!="") {
+				$feed.= "            <creativeCommons:license>".htmlspecialchars($this->items[$i]->licence)."</creativeCommons:license>\n";
 			}
 			$feed.= $this->_createAdditionalElements($this->items[$i]->additionalElements, "        ");
 			$feed.= "        </item>\n";
