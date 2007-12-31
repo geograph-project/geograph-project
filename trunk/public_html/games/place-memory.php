@@ -116,6 +116,8 @@ if (isset($_GET['check'])) {
 			echo "<span style=\"color:blue;background-color:lightgreen; padding:10px; font-weight:bold;\">Well done, got the square! collect {$_GET['points']} tokens</span>^1^set:".$game->image->grid_reference;
 			exit;
 		} else {
+			$_SESSION['thisGamePoints'] = max(0,$_GET['points']-1);
+			$_SESSION['thisGameImageID'] = $game->image->gridimage_id;
 			if ($distance < 10) {
 				echo $prefix."Not Quite, distance: about {$distance}km ... $postfix";
 			} else {
@@ -184,6 +186,10 @@ if (isset($_GET['check'])) {
 	#$params[] = "token=".$game->getToken(3600);
 	$_SESSION['gameToken'] = $game->getToken(3600);
 	
+	if (isset($_SESSION['thisGamePoints'])) {
+		unset($_SESSION['thisGamePoints']);
+	}
+	
 	if (isset($_REQUEST['next'])) {
 		header("Location: /games/place-memory.php?".implode('&',$params));
 	} else {
@@ -241,6 +247,12 @@ if ($game->numberofimages > 0) {
 	if (!empty($game->rastermap)) {
 		unset($game->rastermap);
 	}
+}
+
+$smarty->assign('gameToken',$game->getToken(3600));
+
+if (!empty($_SESSION['thisGamePoints']) && $_SESSION['thisGameImageID'] == $game->image->gridimage_id) {
+	$game->points = $_SESSION['thisGamePoints'];
 }
 
 $smarty->assign_by_ref('game',$game);
