@@ -40,13 +40,22 @@
 .autocomplete .yui-ac-highlight .sample-query { color:#FFF; }
 
 .autocomplete .sample-info { float:right; font-size:0.8em; line-height: 0.8em} /* push right */
-.autocomplete .sample-result { color:#000; }
-.autocomplete .sample-result TT { font-size:0.8em; color: red}
+.autocomplete .sample-result { color:#000; z-index:9999}
+.autocomplete .sample-result TT { font-size:0.9em; color: red}
 .autocomplete .sample-result SUB { font-size:0.8em; color: blue}
 
 .autocomplete .sample-result SPAN { color:green; font-weight: bold; width:200px }
 
 .autocomplete .sample-query { color:#000; }
+
+#rastermap {
+	z-index: 1;
+}
+
+#rastermap DIV {
+	z-index: 2;
+}
+
 </style>
 {/literal}
 
@@ -86,7 +95,7 @@
 		<p><label for="grid_reference"><b style="color:#0018F8">Grid Reference</b></label><br/> <input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="8" onfocus="stopMap()"/><small class="navButtons"><small><a href="javascript:doMove('grid_reference',-1,0);fetchMap()">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);fetchMap()">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);fetchMap()">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);fetchMap()">E</a></small></small> <input type="button" value="map" onclick="return game_map(this.form)"/> <input type="button" value="check..." onclick="return game_check(this.form)"/></p>
 	
 		
-		<input type="hidden" name="token" value="{$game->getToken(3600)}"/>
+		<input type="hidden" name="token" value="{$gameToken}"/>
 		<fieldset>
 			<legend>Hamster Tokens Available <input type="text" name="points" value="{$game->points}" size="1" readonly="readonly"/></legend>
 			{section loop=$game->points name="point"}
@@ -97,14 +106,14 @@
 	</div>
 
 
-<div class="yui-skin-sam">
+<div class="yui-skin-sam" style="position:relative">
 	<label for="ysearchinput1"><b style="color:#0018F8">Placename/Map Feature/Gazetteer Search</b></label><br/>
 	<div id="example1" class="autocomplete">
 		<input id="ysearchinput1" name="placename" type="text"/>
 		<div id="ysearchcontainer1"></div>
 	</div>
 	<div style="font-size:0.8em">
-		Start typing, then pause to display possible matches,<br/> keep adding terms to refine the search. <br/>
+		Start typing, then pause to display possible matches, keep adding terms to<br/> refine the search. Once you found your location, select it to use the grid reference. <br/><br/>
 	</div>
 	
 	<div id="mapcontainer" style="width:300px;height:300px"></div>
@@ -124,7 +133,7 @@
 
 <!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; Image used on this page, &copy; Copyright <a title="View profile" href="/profile/{$game->image->user_id}">{$game->image->realname|escape:'html'}</a> and  
+alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; Image used on this page, &copy; Copyright {$game->image->realname|escape:'html'} and  
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 <!-- /Creative Commons Licence -->
 
