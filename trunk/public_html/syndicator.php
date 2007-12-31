@@ -135,7 +135,7 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	$images = new SearchEngine($_GET['i']);
 	
 	$rss->description = "Images".$images->criteria->searchdesc; 
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=$format&amp;i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/feed/results/".$_GET['i'].(($pg>1)?"/$pg":'').".".strtolower($format);
 	
 	$images->Execute($pg);
 	
@@ -144,7 +144,7 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 } elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
 	$profile=new GeographUser($_GET['u']);
 	$rss->description = 'Latest Images by '.$profile->realname; 
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=$format&amp;u=".$_GET['u'];
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/profile/".intval($_GET['u'])."/feed/recent.".strtolower($format);
 
 
 	//lets find some recent photos
@@ -152,7 +152,7 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	$images->getImagesByUser($_GET['u'],array('accepted', 'geograph'), 'gridimage_id desc', 15, false);
 } else {
 	$rss->description = 'Latest Images'; 
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=$format";
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/feed/recent.".strtolower($format);
 
 
 	//lets find some recent photos
