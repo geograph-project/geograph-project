@@ -139,17 +139,19 @@ function smarty_function_articletext($input) {
 	$pattern[]="/\n/";
 	$replacement[]="<br/>\n";
 
-	if (preg_match_all('/\[smallmap *([STNH]?[A-Z]{1}[ \.]*\d{2,5}[ \.]*\d{2,5})\]/',$output,$m)) {
+	if (preg_match_all('/\[(small|)map *([STNH]?[A-Z]{1}[ \.]*\d{2,5}[ \.]*\d{2,5})\]/',$output,$m)) {
 		foreach ($m[0] as $i => $full) {
 			//lets add an rastermap too
 			$square = new Gridsquare;
-			$square->setByFullGridRef($m[1][$i],true);
-			$square->grid_reference_full = 	$m[1][$i];
+			$square->setByFullGridRef($m[2][$i],true);
+			$square->grid_reference_full = 	$m[2][$i];
 
 			$rastermap = new RasterMap($square,false);
 			if ($rastermap->service == 'OS50k') {
-				$rastermap->service = 'OS50k-small';
-				$rastermap->width = 125;
+				if ($m[1][$i]) {
+					$rastermap->service = 'OS50k-small';
+					$rastermap->width = 125;
+				}
 				
 				$pattern[] = "/".preg_quote($full, '/')."/";
 				$replacement[] = $rastermap->getImageTag();
