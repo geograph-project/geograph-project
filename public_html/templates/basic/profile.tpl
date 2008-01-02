@@ -158,7 +158,7 @@
 		{dynamic}
 			{if $user->user_id eq $profile->user_id}
 				<li><b>Change Requests</b>: <a href="/tickets.php">View Recent Tickets</a></li>
-				{if $profile->stats.total gt 10}
+				{if $profile->stats.total gt 100}
 					<li><form method="post" action="/profile/{$profile->user_id}/more"><input type="submit" value="Show Longer Profile Page"/></form></li>
 				{/if}
 			{/if}
