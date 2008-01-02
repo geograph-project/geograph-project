@@ -35,15 +35,18 @@ $year=(!empty($_GET['Year']))?intval($_GET['Year']):date('Y');
 
 $template=($month)?'explore_calendar_month.tpl':'explore_calendar_year.tpl';
 $cacheid="$year-$month";
-
-if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
-	$smarty->clear_cache($template, $cacheid);
+if (isset($_REQUEST['image'])) {
+	$cacheid .= ".".intval($_REQUEST['image']);
+}
+if (isset($_GET['blank'])) {
+	$cacheid .= "b";
+}
 
 $smarty->caching = 2; // lifetime is per cache
 if ($month == date('n') && $year == date('Y')) {
 	$smarty->cache_lifetime = 3600*24; //1day cache
 } else {
-	$smarty->cache_lifetime = 3600*24*3; //3day cache
+	$smarty->cache_lifetime = 3600*24*7; //7day cache
 }
 
 function print_rp(&$in,$exit = false) {
@@ -78,24 +81,46 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 
+	if (isset($_REQUEST['image']))
+	{
+		//initialise message
+		require_once('geograph/gridsquare.class.php');
+		require_once('geograph/gridimage.class.php');
+
+		$image=new GridImage();
+		$image->loadFromId($_REQUEST['image']);
+
+		if ($image->moderation_status=='rejected' || $image->moderation_status=='pending') {
+			//clear the image
+			$image=new GridImage;
+		} else {
+			$smarty->assign_by_ref('image', $image);
+		}
+	}
+
 	if (!empty($month)) {
 	
 		$like = sprintf("%04d-%02d",$year,$month);
 	
-		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-		$images=&$db->GetAssoc("SELECT 
-		imagetaken, 
-		gridimage_id, title, user_id, realname, grid_reference,
-		COUNT(*) AS images,
-		SUM(moderation_status = 'accepted') AS `supps`
-		FROM `gridimage_search`
-		WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%'
-		GROUP BY imagetaken" );
-		
 		$maximages=0;
-		foreach ($images as $day=>$arr) {
-			if ($maximages < $arr['images'])
-				$maximages = $arr['images'];
+		if (isset($_GET['blank'])) {
+			$images = array();
+			$smarty->assign('blank', 1);
+		} else {
+			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+			$images=&$db->GetAssoc("SELECT 
+			imagetaken, 
+			gridimage_id, title, user_id, realname, grid_reference,
+			COUNT(*) AS images,
+			SUM(moderation_status = 'accepted') AS `supps`
+			FROM `gridimage_search`
+			WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%'
+			GROUP BY imagetaken" );
+		
+			foreach ($images as $day=>$arr) {
+				if ($maximages < $arr['images'])
+					$maximages = $arr['images'];
+			}
 		}
 	
 		$timeStamp = mktime(0, 0, 0, $month, 1, $year);
@@ -140,19 +165,24 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		$like = sprintf("%04d-",$year);
 		
-		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-		$images=&$db->GetAssoc("SELECT 
-		imagetaken, 
-		COUNT(*) AS images,
-		SUM(moderation_status = 'accepted') AS `supps`
-		FROM `gridimage_search`
-		WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%'
-		GROUP BY imagetaken" );
-		
 		$maximages=0;
-		foreach ($images as $day=>$arr) {
-			if ($maximages < $arr['images'])
-				$maximages = $arr['images'];
+		if (isset($_GET['blank'])) {
+			$images = array();
+			$smarty->assign('blank', 1);
+		} else {
+			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+			$images=&$db->GetAssoc("SELECT 
+			imagetaken, 
+			COUNT(*) AS images,
+			SUM(moderation_status = 'accepted') AS `supps`
+			FROM `gridimage_search`
+			WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%'
+			GROUP BY imagetaken" );
+
+			foreach ($images as $day=>$arr) {
+				if ($maximages < $arr['images'])
+					$maximages = $arr['images'];
+			}
 		}
 		
 		for($month=1; $month<=12; $month++) {

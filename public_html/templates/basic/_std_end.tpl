@@ -1,6 +1,6 @@
 </div>
 </div>
-<div id="nav_block">
+<div id="nav_block" class="no_print">
  <div class="nav">
   <ul>
     <li style="font-size:1.42em"><a accesskey="1" title="Home Page" href="/">Home</a></li>
@@ -66,7 +66,7 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
 {/if}
   </div>
 </div>
-<div id="search_block">
+<div id="search_block" class="no_print">
   <div id="search">
     <div id="searchform">
     <form method="get" action="/search.php">
@@ -100,7 +100,7 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
 {else}
 	<div class="content2" id="footer_block">
 {/if}
-  <div id="footer">
+  <div id="footer" class="no_print">
      <p style="color:#AAAABB;float:left">Page updated at {$smarty.now|date_format:"%H:%M"}</p>
    <p><a href="/help/sitemap" title="Listing of site pages">Sitemap</a>
        <span class="sep">|</span>
