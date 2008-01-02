@@ -155,11 +155,12 @@ if ($template=='profile.tpl')
 	
 	if (isset($_GET['all'])) {
 		$limit = 50000;
+	} elseif (isset($_GET['more'])) {
+		$limit = 1000;
 	} else {
 		$limit = 100;
-		$cacheid.="_$limit";
 	}
-	
+	$cacheid.="_$limit";
 
 	if (!$smarty->is_cached($template, $cacheid))
 	{
