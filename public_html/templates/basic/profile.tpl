@@ -142,6 +142,7 @@
 	<h3 style="margin-bottom:0px">Explore My Images</h3>
 
 	<ul>
+		
 		<li><b>Maps</b>: {if $profile->stats.total gt 10}<a href="/profile/{$profile->user_id}/map">Personalised Geograph Map</a> or {/if} Recent Photos on <a href="http://maps.google.co.uk/maps?q=http://{$http_host}/profile/{$profile->user_id}/feed/recent.kml&ie=UTF8&om=1">Google Maps</a></li>
 
 		<li><b>Recent Images</b>: <a title="View images by {$profile->realname} in Google Earth" href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;kml">as KML</a> or <a title="RSS Feed for images by {$profile->realname}" href="/profile/{$profile->user_id}/feed/recent.georss" class="xml-rss">RSS</a> or <a title="GPX file for images by {$profile->realname}" href="/profile/{$profile->user_id}/feed/recent.gpx" class="xml-gpx">GPX</a></li>
@@ -157,6 +158,9 @@
 		{dynamic}
 			{if $user->user_id eq $profile->user_id}
 				<li><b>Change Requests</b>: <a href="/tickets.php">View Recent Tickets</a></li>
+				{if $profile->stats.total gt 10}
+					<li><form method="post" action="/profile/{$profile->user_id}/more"><input type="submit" value="Show Longer Profile Page"/></form></li>
+				{/if}
 			{/if}
 		{/dynamic}
 	</ul>
