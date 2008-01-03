@@ -21,7 +21,7 @@
 
 
 <div id="sponsor">sponsored by</div>
-<span id="sponsorlink"><a href="http://www.ordnancesurvey.co.uk/oswebsite/education/" title="Geograph British Isles sponsored by Ordnance Survey"><img src="/templates/charcoal/css/oslogo.gif" width="127" height="35" alt="Ordnance Survey Logo"/></a></span>
+<span id="sponsorlink"><a href="http://www.ordnancesurvey.co.uk/oswebsite/education/" title="Geograph British Isles sponsored by Ordnance Survey"><img src="http://{$static_host}/templates/charcoal/css/oslogo.gif" width="127" height="35" alt="Ordnance Survey Logo"/></a></span>
 </div>
 {/box}
 
@@ -46,7 +46,7 @@ title="Click to see full size photo"
 geographically representative photograph for every square 
 kilometre of the British Isles and you can be part of it.</p>
 
-<p><a href="/help/more_pages"><img src="/templates/charcoal/css/find_out_more.gif"/></a></p>
+<p><a href="/help/more_pages"><img src="http://{$static_host}/templates/charcoal/css/find_out_more.gif"/></a></p>
 
 <div id="photocount">{$stats.images|thousends}</div>
 <div id="photocount_title">photographs</div>
