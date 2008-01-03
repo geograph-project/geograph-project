@@ -1343,7 +1343,7 @@ class GeographMap
 			$sql="select x,y,gi.gridimage_id from gridimage_search gi
 			where 
 			CONTAINS( GeomFromText($rectangle),	point_xy) and imagetaken = '".($this->type_or_user * -1)."-12-25'
-			 order by rand()";
+			 order by ( (gi.title LIKE '%xmas%' OR gi.comment LIKE '%xmas%' OR gi.imageclass LIKE '%xmas%') OR (gi.title LIKE '%christmas%' OR gi.comment LIKE '%christmas%' OR gi.imageclass LIKE '%christmas%') ), rand()";
 			 	 
 		} elseif (1) {
 			$sql="select x,y,gi.gridimage_id from gridimage_search gi
