@@ -192,15 +192,11 @@ for ($i=0; $i<$cnt; $i++)
 	}
 	if ($photoformat) {
 		$details = $images->images[$i]->getThumbnail(120,120,2);
-		if (!empty($details['server'])) {
-			$item->thumb = $details['server'].$details['url']; 
-			$item->thumbTag = $details['html'];
-		} else {
-			$item->thumb = "http://".$_SERVER['HTTP_HOST'].$details['url']; 
-			$item->thumbTag = preg_replace('/\/photos\/.*\.jpg/',$item->thumb,$details['html']); 
-		}
+		$item->thumb = $details['server'].$details['url']; 
+		$item->thumbTag = $details['html'];
+		
 		if ($format == 'MEDIA') {
-			$item->content = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->_getFullpath(); 
+			$item->content = $images->images[$i]->_getFullpath(true,true); 
 		}
 	} elseif ($format == 'PHP') {
 		$item->thumb = $images->images[$i]->getThumbnail(120,120,true); 

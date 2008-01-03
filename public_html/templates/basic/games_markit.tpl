@@ -59,7 +59,7 @@
 	
 
 	<div class="photo_box">
-		<p><a href="{$game->image->_getFullpath()}" target="gameimag"><img src="{$game->image->getThumbnail(213,160,true)}"></a>
+		<p><a href="{$game->image->_getFullpath(true,true)}" target="gameimag"><img src="{$game->image->getThumbnail(213,160,true)}"></a>
 		<small><small><br/>Click thumbnail to view full size</small></small></p>
 		
 		

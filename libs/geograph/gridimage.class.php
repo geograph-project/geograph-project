@@ -219,6 +219,8 @@ class GridImage
 	
 		if (empty($this->grid_square) && $this->gridsquare_id) {
 			$this->grid_square=new GridSquare;
+			if (is_object($this->db))
+				$this->grid_square->_setDB($this->db);
 			$this->grid_square->loadFromId($this->gridsquare_id);
 			$this->grid_reference=$this->grid_square->grid_reference;
 			if ($this->nateastings) {
@@ -270,10 +272,11 @@ class GridImage
 		{
 			if (!is_numeric($name))
 				$this->$name=$value;
-													
 		}
 		if ($this->gridsquare_id) {
 			$this->grid_square=new GridSquare;
+			if (is_object($this->db))
+				$this->grid_square->_setDB($this->db);
 			$this->grid_square->loadFromId($this->gridsquare_id);
 			$this->grid_reference=$this->grid_square->grid_reference;
 			if ($this->nateastings) {
@@ -445,7 +448,7 @@ class GridImage
 	* images from the fetch_on_demand server, which must use the same
 	* hash secret
 	*/
-	function _getFullpath($check_exists=true)
+	function _getFullpath($check_exists=true,$returntotalpath = false)
 	{
 		global $CONF;
 		
@@ -496,20 +499,21 @@ class GridImage
 		
 				}
 			}
-			
-			
-			
 		}
-		
+
 		if (!$ok)
 			$fullpath="/photos/error.jpg";
+
+		if ($returntotalpath)
+			$fullpath="http://".$CONF['CONTENT_HOST'].$fullpath;
+
 		return $fullpath;
 	}
 	
 	/**
 	* returns HTML img tag to display this image at full size
 	*/
-	function getFull($returntotalpath = false)
+	function getFull($returntotalpath = true)
 	{
 		global $CONF;
 		$fullpath=$this->_getFullpath();
@@ -679,8 +683,10 @@ class GridImage
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$CONF['CONTENT_HOST']}";
-				$thumbpath = $return['server'].$thumbpath;
+			} else {
+				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
+			$thumbpath = $return['server'].$thumbpath;
 			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]}/>";
 		}
 		
@@ -842,8 +848,10 @@ class GridImage
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$CONF['CONTENT_HOST']}";
-				$thumbpath = $return['server'].$thumbpath;
+			} else {
+				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
+			$thumbpath = $return['server'].$thumbpath;
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 			
 			$return['html']=$html;
@@ -867,7 +875,12 @@ class GridImage
 						list($width, $height, $type, $attr) = $info;
 						
 						if (($width>$maxw) || ($height>$maxh)) {
-
+							$operation = ($maxw+$maxh < 400)?'thumbnail':'resize';
+						} elseif (!$bestfit) {
+							$operation = 'adaptive-resize';
+						}
+						
+						if (isset($operation)) {
 							$unsharpen=$unsharp?"-unsharp 0x1+0.8+0.1":"";
 							
 							$raised=$bevel?"-raise 2x2":"";
@@ -1014,8 +1027,10 @@ class GridImage
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$CONF['CONTENT_HOST']}";
-				$thumbpath = $return['server'].$thumbpath;
+			} else {
+				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
+			$thumbpath = $return['server'].$thumbpath;
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 			
 			//fails quickly if not using memcached!
@@ -1228,6 +1243,8 @@ class GridImage
 		//is the reference valid?
 		//old one is in $this->grid_square
 		$newsq=new GridSquare;
+		if (is_object($this->db))
+			$newsq->_setDB($this->db);
 		if ($newsq->setByFullGridRef($grid_reference))
 		{
 			$db=&$this->_getDB();
