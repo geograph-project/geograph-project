@@ -71,10 +71,8 @@ class RestAPI
 				echo '<gridref>'.htmlentities($image->grid_reference).'</gridref>';
 				echo "<user profile=\"http://{$_SERVER['HTTP_HOST']}/profile/{$image->user_id}\">".htmlentities($image->realname).'</user>';
 				
-				$url=$image->_getFullpath(true,true);
-				$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$url);
-				echo "<img src=\"http://{$url}\" width=\"{$size[0]}\" height=\"{$size[1]}\" />";
-				
+				echo preg_replace('/alt=".*?" /','',$image->getFull());
+
 				$this->endResponse();
 			}
 			else
@@ -116,12 +114,7 @@ class RestAPI
 						echo ' <title>'.htmlentities($image->title).'</title>';
 						echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}/profile/{$image->user_id}\">".htmlentities($image->realname).'</user>';
 
-						$details = $image->getThumbnail(120,120,2);
-						$thumb = $details['server'].$details['url'];
-
-						$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$details['url']);
-						echo " <img src=\"$thumb\" width=\"{$size[0]}\" height=\"{$size[1]}\" />";
-
+						echo ' '.preg_replace('/alt=".*?" /','',$image->getThumbnail(120,120));
 
 						echo ' <location grid="'.($square->reference_index).'" eastings="'.($image->nateastings).'" northings="'.($image->natnorthings).'" figures="'.($image->natgrlen).'"/>';
 						echo '</image>';
