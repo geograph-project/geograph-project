@@ -156,7 +156,7 @@ class RasterMap
 			return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\">Loading map...</div>";
 		} elseif ($this->service == 'OS50k-small') {
 			static $idcounter = 1;
-			$mapurl = "/tile.php?r=".$this->getToken();
+			$mapurl = "http://{$CONF['CONTENT_HOST']}/tile.php?r=".$this->getToken();
 			
 			$gr= !empty($this->square->grid_reference_full)?$this->square->grid_reference_full:$this->square->grid_reference;
 			
@@ -218,7 +218,7 @@ class RasterMap
 			if (!empty($CONF['fetch_on_demand'])) {
 				$mapurl = "http://{$CONF['fetch_on_demand']}/tile.php?r=".$this->getToken();
 			} else {
-				$mapurl = "/tile.php?r=".$this->getToken();
+				$mapurl = "http://{$CONF['CONTENT_HOST']}/tile.php?r=".$this->getToken();
 			}
 
 			$title = "1:50,000 Modern Day Landranger(TM) Map &copy; Crown Copyright";
