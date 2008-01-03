@@ -1796,6 +1796,11 @@ END;
 	{
 		global $memcache;
 
+		if ($this->type_or_user == -10) {
+			//we want a blank map!
+			return array();
+		} 
+
 		if ($memcache->valid) {
 			//we only use cache imagemap as they invalidate correctly - and checksheets get smarty cached anyways
 
