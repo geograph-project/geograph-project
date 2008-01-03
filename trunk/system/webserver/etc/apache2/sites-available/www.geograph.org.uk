@@ -139,6 +139,7 @@
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?blogspot\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?livejournal\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?28dayslater\.co\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?hbwalkersaction\.org\.uk/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?secretscotland\.org\.uk/ [NC,OR]
     RewriteCond %{HTTP_REFERER} (thread|topic|forum) [NC]    
     RewriteRule /photos/\d.*\.jpg$ /stuff/nohotlink.php [L]
