@@ -115,9 +115,16 @@ class RestAPI
 						echo ' <title>'.htmlentities($image->title).'</title>';
 						echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}/profile/{$image->user_id}\">".htmlentities($image->realname).'</user>';
 
-						$url=$image->getThumbnail(120,120,true);
-						$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$url);
-						echo " <img src=\"http://{$_SERVER['HTTP_HOST']}{$url}\" width=\"{$size[0]}\" height=\"{$size[1]}\" />";
+				                $details = $image->getThumbnail(120,120,2);
+				                if (!empty($details['server'])) {
+				                        $thumb = $details['server'].$details['url'];
+				                } else {
+				                        $thumb = "http://".$_SERVER['HTTP_HOST'].$details['url'];
+				                }
+
+                                                $size=getimagesize($_SERVER['DOCUMENT_ROOT'].$details['url']);
+                                                echo " <img src=\"$thumb\" width=\"{$size[0]}\" height=\"{$size[1]}\" />";
+
 
 						echo ' <location grid="'.($square->reference_index).'" eastings="'.($image->nateastings).'" northings="'.($image->natnorthings).'" figures="'.($image->natgrlen).'"/>';
 						echo '</image>';
