@@ -1059,7 +1059,7 @@ class GridImage
 			if ($urlonly === 2) 
 				return $resized;
 			else 
-				return $resized['url'];
+				return $resized['server'].$resized['url'];
 		} else
 			return $resized['html'];
 	}	
