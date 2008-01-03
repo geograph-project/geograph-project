@@ -35,6 +35,9 @@ $replacement[]='<i>\\1</i>';
 $pattern[]="/\[[uU]\](.+?)\[\/[uU]\]/s";
 $replacement[]='<u>\\1</u>';
 
+$pattern[]="/\[code\](.+?)\[\/code\]/se";
+$replacement[]='"<pre>".str_replace("<br>","","\\1")."</pre>"'; //any real /n will become <br> later anyway
+
 if($admin==1) {
 $pattern[]="/\[font(#[A-F0-9]{6})\](.+?)\[\/font\]/is";
 $replacement[]='<font color="\\1">\\2</font>';
@@ -67,6 +70,9 @@ $replacement[]="[i]\\1[/i]";
 
 $pattern[]="/<[uU]>(.+?)<\/[uU]>/s";
 $replacement[]="[u]\\1[/u]";
+
+$pattern[]="/<pre>(.+?)<\/pre>/s";
+$replacement[]="[code]\\1[/code]";
 
 $pattern[]="/<font color=\"(#[A-F0-9]{6})\">(.+?)<\/font>/is";
 $replacement[]='[font\\1]\\2[/font]';

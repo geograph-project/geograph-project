@@ -16,7 +16,8 @@ tt { color:green; border: 1px solid lightgrey; padding:3px; background-color:whi
 <ul>
 <li class="example"><tt class="bbcode">[b]some text here[/b]</tt> shows as <span class="preview"><b>some text here</b></span></li>
 <li class="example"><tt class="bbcode">[i]some text here[/i]</tt> shows as <span class="preview"><i>some text here</i></span></li>
-<li class="example"><tt class="bbcode">[u]some text here[/u]</tt> shows as <span class="preview"><u>some text here</u></span></li>
+<li class="example"><tt class="bbcode">[u]some&nbsp;&nbsp;text here[/u]</tt> shows as <span class="preview"><u>some  text here</u></span></li>
+<li class="example"><tt class="bbcode">[code]some&nbsp;&nbsp;&nbsp;text&nbsp;&nbsp;here[/code]</tt> shows as <tt class="preview">some&nbsp;&nbsp;&nbsp;text&nbsp;&nbsp;here</tt></li>
 </ul>
 
 <h4>Linking</h4>
