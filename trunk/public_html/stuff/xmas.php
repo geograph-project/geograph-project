@@ -71,7 +71,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
 	
-	if ($cacheid == date('Y')) {
+	#if ($cacheid == date('Y')) {
 		$data['taken_start'] = "$cacheid-12-25";
 		$data['taken_end'] = $data['taken_start'];
 		
@@ -87,7 +87,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$engine = new SearchEngineBuilder('#'); 
 		$i = $engine->buildAdvancedQuery($data,false);
 		$smarty->assign("i",$i);
-	}
+	#}
 }
 
 
