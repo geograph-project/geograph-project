@@ -347,7 +347,7 @@ class RasterMap
 			}
 
 	//overlay (for dragging)
-			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"/img/blank.gif\" class=\"mapmask\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/></div>";
+			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"http://{$CONF['STATIC_HOST']}/img/blank.gif\" class=\"mapmask\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/></div>";
 
 			$str .= "</div>";
 
@@ -373,7 +373,7 @@ class RasterMap
 						document.images['tile'].src = '$mapurl';
 						document.images['map'].title = '$title';
 					} else {
-						document.images['tile'].src = '/img/blank.gif';
+						document.images['tile'].src = 'http://{$CONF['STATIC_HOST']}/img/blank.gif';
 						document.images['tile'].src = '$mapurl2';
 						document.images['map'].title = '$title2';
 					}
