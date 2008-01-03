@@ -128,6 +128,7 @@ if($eofs){
 while (substr_count($text, "\r\n\r\n\r\n\r\n")>4) $text=str_replace("\r\n\r\n\r\n\r\n","\r\n",$text);
 while (substr_count($text, "\n\n\n\n")>4) $text=str_replace("\n\n\n\n","\n",$text);
 $text=str_replace("\n",'<br>',$text);
+$text=str_replace("\r",'',$text);
 }
 while(substr($text,-1)==chr(92)) $text=substr($text,0,strlen($text)-1);
 return $text;
