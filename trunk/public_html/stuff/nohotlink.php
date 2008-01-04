@@ -79,7 +79,7 @@ imagestring($img, 2, 5, 70, "All images are Creative Commons Licensed", $black);
 imagestring($img, 2, 20, 84, "To prevent this message take a copy", $black);
 imagestring($img, 2, 36, 98, "Image creator must be credited", $black);
 
-if (empty($_SERVER["PATH_INFO"]) {
+if (empty($_SERVER["PATH_INFO"])) {
 	header("HTTP/1.1 403 Forbidden");
 	header("Status: 403 Forbidden");
 }
