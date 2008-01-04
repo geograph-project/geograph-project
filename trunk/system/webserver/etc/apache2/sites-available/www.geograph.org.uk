@@ -139,10 +139,13 @@
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?blogspot\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?livejournal\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?28dayslater\.co\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?keyhole\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?hbwalkersaction\.org\.uk/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?secretscotland\.org\.uk/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} (thread|topic|forum) [NC]    
-    RewriteRule /photos/\d.*\.jpg$ /stuff/nohotlink.php [L]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?phlap\.net/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?valendale\.myby\.co\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} (thread|topic|forum|blog) [NC]    
+    RewriteRule (/photos/\d.*\.jpg)$ http://s9.www.geograph.org.uk$1 [L]
 
 <Location /sitemap/>
     DirectoryIndex geograph.html
