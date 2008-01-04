@@ -9,7 +9,7 @@ if (preg_match('/(ie|ff)\.gif$/',$p)) {
 }
 
 #http://s1.www.geograph.org.uk/photos/50/64/506453_c5b9915b_120x120.jpg
-if (preg_match('/^\/photos\/(\d{2})\/(\d{2})\/\d{6}_\w+\.jpg$/',$p,$m)) {
+if (preg_match('/^\/photos\/(\d{2})\/(\d{2})\/\d{6}_(\w+)\.jpg$/',$p,$m)) {
 
 #	#give them something quick 
 #	header("HTTP/1.1 302 Found");
@@ -24,8 +24,14 @@ if (preg_match('/^\/photos\/(\d{2})\/(\d{2})\/\d{6}_\w+\.jpg$/',$p,$m)) {
 		mkdir("$base/{$m[1]}/{$m[2]}");
 
 
-	#the -p is important to maintain the mod date
-	system("cp -p /var/www/geograph_live/public_html$p .$p");
+	if (preg_match('/_\d+x\d+$/',$m[3])) { 
+		#the -p is important to maintain the mod date
+		system("cp -p /var/www/geograph_live/public_html$p .$p");
+	} else {
+		#but here touch isnt wanted as want to mark it as a different file
+		$data = file_get_contents("http://www.geograph.org.uk/stuff/nohotlink.php$p");
+		file_put_contents('.'.$p,$data);
+	}
 
 	$size=filesize('.'.$p);
 	if (!$size) {	
