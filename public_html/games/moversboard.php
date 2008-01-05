@@ -42,6 +42,8 @@ if (isset($_GET['more'])) {
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+	$smarty->assign('gamelist',array('0'=>'-all games-','1'=>'Mark It','2'=>'Place Memory'));
+
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed'); 
@@ -52,10 +54,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	} else {
 		$where = 'and level > 0';
 	}
+	if ($g > 0) {
+		$where .= " and game_id = $g";
+	} 
+	
 	$sql="select game_score_id,username,gs.user_id,realname,round(avg(level)) as level,sum(score) as score,sum(games) as games,sum(score)/sum(games) as average
 	from game_score gs
 		left join user using(user_id)
-	where game_id = $g and gs.created > date_sub(now(), interval 7 day) and approved = 1 $where
+	where gs.created > date_sub(now(), interval 7 day) and approved = 1 $where
 	group by if(gs.user_id>0,gs.user_id,concat(username,session))
 	order by average desc,score desc, games desc,username,realname ";
 	if ($_GET['debug'])

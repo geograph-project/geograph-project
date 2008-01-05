@@ -3,8 +3,17 @@
 {include file="_std_begin.tpl"}
 
 <h2><a href="/games/">Geograph Games</a> - All Time Leaderboard</h2>
-	
-<p>See also <a href="/games/moversboard.php?l={$l}&amp;g={$g}">weekly leaderboard</a></p>
+
+<form method="get" action="{$script_name}">
+<p>Game: <select name="g">
+{html_options options=$gamelist selected=$g}
+</select>
+<input type="hidden" name="l" value="{$l}">
+<input type="submit" value="Go">
+
+See also <a href="/games/moversboard.php?l={$l}&amp;g={$g}">weekly leaderboard</a></p>
+</form>
+<hr/>
 
 <table class="report"> 
 <thead><tr><td>Position</td><td>Name</td><td>Level</td><td>Overall</td><td>Games</td><td><img src="http://{$static_host}/templates/basic/img/hamster-icon.gif"/></td></tr></thead>

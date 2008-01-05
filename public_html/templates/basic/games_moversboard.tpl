@@ -3,8 +3,17 @@
 {include file="_std_begin.tpl"}
 
 <h2><a href="/games/">Geograph Games</a> - Weekly Leaderboard</h2>
+
+<form method="get" action="{$script_name}">
+<p>Game: <select name="g">
+{html_options options=$gamelist selected=$g}
+</select>
+<input type="hidden" name="l" value="{$l}">
+<input type="submit" value="Go">
 	
-<p>See also <a href="/games/leaderboard.php?l={$l}&amp;g={$g}">all time leaderboard</a></p>
+ See also <a href="/games/leaderboard.php?l={$l}&amp;g={$g}">all time leaderboard</a></p>
+</form>
+<hr/>
 
 <p>Last generated at {$smarty.now|date_format:"%H:%M"} and covers games since
 {$cutoff_time|date_format:"%A, %d %b at %H:%M"}</p>
