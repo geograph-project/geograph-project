@@ -21,20 +21,6 @@
 		display: none;
 	}
 }
-
-* html body .mapmask {
-   background-image: none;
-   filter:
-progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/mapmask.png',sizingMethod='scale');
-       background-repeat: repeat-x;
-       background-position: center bottom;
-}
-.mapmask {
-       background-image: url(/img/mapmask.png);
-       background-repeat: repeat-x;
-       background-position: center bottom;
-}
-
 </style>{/literal}
 {dynamic}{if $user->user_id == $user_id}<p style="text-align:center" class="no_print">[[<a href="/article/edit.php?page={$url}">edit this article</a>]]</p>{/if}{/dynamic}
 
