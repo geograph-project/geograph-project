@@ -71,6 +71,10 @@
     RewriteCond %{REQUEST_URI} !^/tile
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
+    RewriteCond %{HTTP_HOST}   !^www\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !^kml\.geograph\.org\.uk [NC]
+    RewriteRule ^/robots.txt   /robots-none.txt [qsa]
+
 
     #the following includes a fix as some useragents auto add a / to what it thinks is a folder
 
