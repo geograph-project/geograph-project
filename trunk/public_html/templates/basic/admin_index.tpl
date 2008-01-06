@@ -55,7 +55,10 @@ corrected</small><br/>
    request update for map tiles</li>
 
 <li><a title="Picture of the day" href="/admin/pictureoftheday.php">Picture of the Day</a> - 
-   choose daily picture selections</li>
+   choose daily picture selections for <tt>http://schools.geograph.org.uk/</tt>
+   {if $pic_pending < 5}
+   	<br/><small><b>There are {$pics_pending} images waiting to be displayed as picture of the day, please consider adding some!</b></small>
+   {/if}</li>
 {/if}
 
 <li>Stats: <br/>
