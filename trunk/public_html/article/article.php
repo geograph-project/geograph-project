@@ -139,6 +139,12 @@ function smarty_function_articletext($input) {
 	$pattern[]="/\n/";
 	$replacement[]="<br/>\n";
 
+	$output=preg_replace($pattern, $replacement, $output);
+	
+	$output = GeographLinks($output,true);
+	
+	$pattern=array(); $replacement=array();
+	
 	if (preg_match_all('/\[(small|)map *([STNH]?[A-Z]{1}[ \.]*\d{2,5}[ \.]*\d{2,5})\]/',$output,$m)) {
 		foreach ($m[0] as $i => $full) {
 			//lets add an rastermap too
@@ -166,7 +172,6 @@ function smarty_function_articletext($input) {
 		$smarty->assign("copyright", '<div class="copyright">Great Britain 1:50 000 Scale Colour Raster Mapping Extracts &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.</div>');
 	}
 	
-	$output = GeographLinks($output,true);
 	
 	if (count($imageCredits)) {
 		arsort($imageCredits);
