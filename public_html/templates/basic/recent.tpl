@@ -1,7 +1,6 @@
 <html>
 <head>
 <title>Recent Photos</title>
-<script src="{"/sorttable.js"|revision}"></script>
 <link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/basic.css" media="screen" />
 </head>
 <body style="background-color:{$maincontentclass|replace:"content_photo":""}"
