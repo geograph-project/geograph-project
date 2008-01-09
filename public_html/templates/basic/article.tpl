@@ -11,7 +11,7 @@ ul.explore li {	padding:3px; }
 
 <div class="interestBox">
 {if $user->registered} 
-	<a href="/article/edit.php?page=new">Create your own Article</a>
+	<ul style="margin:0px;"><li><a href="/article/edit.php?page=new">Create your own Article</a></li></ul>
 {/if}
 </div>
 

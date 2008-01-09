@@ -1484,3 +1484,19 @@ ALTER TABLE `user` ADD FULLTEXT (
 `nickname`
 );
 
+
+
+CREATE TABLE `geoevent` (
+  `geoevent_id` int(10) unsigned NOT NULL auto_increment,
+  `title` varchar(128) character set utf8 NOT NULL,
+  `description` varchar(255) character set utf8 NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `gridsquare_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `event_time` datetime NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `approved` tinyint(3) unsigned NOT NULL default '1',
+  PRIMARY KEY  (`geoevent_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
