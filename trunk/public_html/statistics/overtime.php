@@ -145,7 +145,7 @@ GROUP BY $group_date" );
 	$smarty->assign_by_ref('references',$CONF['references_all']);	
 	
 	if ($date == 'submitted') {
-		$smarty->assign("footnote","<p><a href=\"/img/static_submission_graph.png\" target=\"_blank\">Static Graph compiled from this data</a></p>");
+		$smarty->assign("footnote","<p><a href=\"http://www.swivel.com/data_sets/show/1009608\" target=\"_blank\">Graphs compiled from this data</a></p>");
 	}
 	
 	$extra = array();
