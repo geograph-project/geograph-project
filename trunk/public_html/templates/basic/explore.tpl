@@ -19,7 +19,7 @@
 <h3>Specialist locations...</h3>
 <ul class="explore">
 
-	<li><a href="/explore/routes.php">Follow <b>National Routes</b></a>. NEW!</li>
+	<li><a href="/explore/routes.php">Follow <b>National Routes</b></a>.</li>
 
 	<li><a name="counties"></a>View Photographs at <b>Centre Points</b>: <ul>
 		<li><a href="/explore/counties.php?type=modern">Modern Administrative Counties</a>,
