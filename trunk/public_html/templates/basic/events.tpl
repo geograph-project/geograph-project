@@ -4,12 +4,13 @@
 <script src="{"/sorttable.js"|revision}"></script>
 
 
-<div style="float:right; position:relative; padding:10px; border:1px solid gray; ">
-	<div style="width:300px; height:300px;" id="mapCanvas"></div>
+<div style="float:right; position:relative; padding:5px; border:1px solid gray; ">
+	<div style="width:400px; height:320px;" id="mapCanvas"></div>
 </div>
 
 <h2>Geograph Events</h2>
 
+<div style="float:right; padding-right:30px;"><a title="geoRSS Feed for Geograph Events" href="/events/feed.rss" class="xml-rss">RSS</a> <a title="KML Feed for Geograph Events" href="/events/kml-nl.php" class="xml-kml">KML</a></div>
 
 {dynamic}
 {if $user->registered}
@@ -33,12 +34,12 @@
 {if $list}
 
 <p>Upcoming Events...</p>
-<table class="report sortable" id="opentickets" style="font-size:8pt;">
+<table class="report sortable" id="events">
 <thead><tr>
-	<td>Date/Time</td>
+	<td>Title &amp; more info</td>
+	<td style="width:150px" sorted="asc">Date/Time</td>
 	<td>Where</td>
-	<td>Title</td>
-	<td style="width:150px">by</td>
+	<td>by</td>
 </tr></thead>
 <tbody>
 
@@ -46,10 +47,13 @@
 	{if $list.future == 0}
 		{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 		<tr bgcolor="{$bgcolor}" id="row{$item.geoevent_id}">
-		<td sortvalue="{$item.event_time}" class="nowrap">{$item.event_time|date_format:"%a, %e %b %Y"}</td>
+		<td sortvalue="{$item.title|escape:"html"|default:'Untitled'}"><b><a href="/events/event.php?id={$item.geoevent_id}" title="{$item.description|escape:"html"|default:''}">{$item.title|escape:"html"|default:'Untitled'}</a></b></td>
+		<td sortvalue="{$item.event_time}" class="nowrap"><b>{$item.event_time|date_format:"%a, %e %b %Y"}</b></td>
 		<td sortvalue="{$item.grid_reference}"><a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></td>
-		<td><a href="/events/event.php?id={$item.geoevent_id}">{$item.title|default:'Untitled'}</a></td>
-		<td sortvalue="{$item.realname}"><a href="/profile/{$item.user_id}">{$item.realname}</a></td>
+		<td sortvalue="{$item.realname|escape:"html"}"><a href="/profile/{$item.user_id}">{$item.realname|escape:"html"}</a></td>
+		{if $user->user_id == $item.user_id || $isadmin}
+			<td><a href="/events/edit.php?id={$item.geoevent_id}">edit</a></td>
+		{/if}
 		</tr>
 	{/if}
 {/foreach}
