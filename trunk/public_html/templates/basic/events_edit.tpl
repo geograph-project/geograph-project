@@ -32,7 +32,7 @@
 	{if $errors.url}<div class="formerror"><p class="error">{$errors.url}</p>{/if}
 	 
 	<label for="url">URL:</label>
-	<input type="text" name="url" value="{$url|escape:"html"}" maxlength="64" size="40"/></span>
+	<input type="text" name="url" value="{$url|escape:"html"}" maxlength="255" size="40"/></span>
 
 	<div class="fieldnotes">Link to more information (eg discussion forum)</div>
 	
