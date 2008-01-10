@@ -46,6 +46,7 @@ $cacheid = '';
 		$smarty->assign('title', "New Article");
 		$smarty->assign('realname', $USER->realname);
 		$smarty->assign('user_id', $USER->user_id);
+		$page = array();
 	} else {
 		if (!empty($_REQUEST['article_id'])) {
 			$sql_where = " article_id = ".$db->Quote($_REQUEST['article_id']);
@@ -145,8 +146,6 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	}
 	if ($_REQUEST['page'] == 'new' || $_REQUEST['article_id'] == 'new') {
 	
-		//todo check has title/url and that its unique!
-		
 		$updates[] = "`user_id` = {$USER->user_id}";
 		$updates[] = "`create_time` = NOW()";
 		$sql = "INSERT INTO article SET ".implode(',',$updates);

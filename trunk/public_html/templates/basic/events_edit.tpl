@@ -7,7 +7,7 @@
 	<div><span class="formerror">{$error}</span></div>
 {/if}
 
-<form class="simpleform" action="/events/edit.php" method="post">
+<form class="simpleform" action="{$script_name}" method="post">
 
 <input type="hidden" name="id" value="{$id|escape:"html"}"/>
 
@@ -53,7 +53,7 @@
 <div class="field">
 	{if $errors.grid_reference}<div class="formerror"><p class="error">{$errors.grid_reference}</p>{/if}
 	 
-	<label for="grid_reference">Relevent Grid Square:</label>
+	<label for="grid_reference">Relevant Grid Square:</label>
 	<input type="text" name="grid_reference" value="{$grid_reference|escape:"html"}" maxlength="12" size="6"/>
 	
 	<div class="fieldnotes">Square where this event is located</div>
@@ -64,7 +64,7 @@
 <div class="field">
 	{if $errors.gridimage_id}<div class="formerror"><p class="error">{$errors.gridimage_id}</p>{/if}
 	 
-	<label for="gridimage_id">Relevent Image ID:</label>
+	<label for="gridimage_id">Relevant Image ID:</label>
 	<input type="text" name="gridimage_id" value="{$gridimage_id|escape:"html"}" maxlength="12" size="6"/>
 	
 	<div class="fieldnotes">Optional, enter a image id to illistrate this event</div>

@@ -46,6 +46,7 @@ $cacheid = '';
 		$smarty->assign('title', "New Event");
 		$smarty->assign('realname', $USER->realname);
 		$smarty->assign('user_id', $USER->user_id);
+		$page = array();
 	} else {
 		$sql_where = " geoevent_id = ".$db->Quote($_REQUEST['id']);
 		 
@@ -105,8 +106,6 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	}
 	if ($_REQUEST['id'] == 'new') {
 	
-		//todo check has title/url and that its unique!
-		
 		$updates[] = "`user_id` = {$USER->user_id}";
 		$updates[] = "`created` = NOW()";
 		$sql = "INSERT INTO geoevent SET ".implode(',',$updates);
@@ -120,16 +119,14 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		if ($_REQUEST['id'] == 'new') {
 			$_REQUEST['id'] = $db->Insert_ID();
 		}
+	
+		$memcache->name_increment('ep',intval($_REQUEST['id']),1,true);
 		
-
-		$smarty->clear_cache('events_event.tpl');
 		$smarty->clear_cache('events.tpl');
-
 		
 		header("Location: /events/event.php?id=".intval($_REQUEST['id']));
 		exit;
 	} else {
-		print_r($errors);
 		if ($errors[1] != 1)
 			$smarty->assign('error', "Please see messages below...");
 		$smarty->assign_by_ref('errors',$errors);

@@ -86,25 +86,43 @@ class MultiServerMemcache extends Memcache {
 		}
 	}
 
-	
 	//extended to allow quick exit if memcache not in use
 	// and to have a global simple namespace;
 	function set($key, &$val, $flag = false, $expire = 0) {
 		if (!$this->valid) return false;
 		return parent::set($this->prefix.$key, $val, $flag, $expire);
 	}
-	
+
 	function get($key) {
 		if (!$this->valid) return false;
 		$tmp =& parent::get($this->prefix.$key);
 		return $tmp;
 	}
 
-	function delete($namespace, $key, $timeout = 0) {
+	function delete($key, $timeout = 0) {
 		if (!$this->valid) return false;
 		return parent::delete($this->prefix.$key, $timeout);
 	}
-	
+
+	function increment($key, $value = 1,$create = false) {
+		if (!$this->valid) return false;
+		$v = parent::increment($this->prefix.$key, $value);
+		if ($v === false && $create) {
+			$this->set($key,$value);
+		}
+		return $v;
+	}
+
+	function decrement($key, $value = 1,$create = false) {
+		if (!$this->valid) return false;
+		$v = parent::decrement($this->prefix.$key, $value);
+		if ($v === false && $create) {
+			$v2 = $value*-1;
+			$this->set($key,$v2);
+		}
+		return $v;
+	}
+
 	//the following are basic currently, but setup to be able to add namespace invalidation
 	//http://lists.danga.com/pipermail/memcached/2006-July/002545.html
 	function name_set($namespace, $key, &$val, $flag = false, $expire = 0) {
@@ -117,10 +135,18 @@ class MultiServerMemcache extends Memcache {
 		$tmp =& parent::get($this->prefix.$namespace.':'.$key);
 		return $tmp;
 	}
-	
+
 	function name_delete($namespace, $key, $timeout = 0) {
 		if (!$this->valid) return false;
 		return parent::delete($this->prefix.$namespace.':'.$key, $timeout);
+	}
+
+	function name_increment($namespace, $key, $value = 1,$create = false) {
+		return $this->increment($namespace.':'.$key, $value, $create);
+	}
+
+	function name_decrement($namespace, $key, $value = 1,$create = false) {
+		return $this->decrement($namespace.':'.$key, $value, $create);
 	}
 }
 
