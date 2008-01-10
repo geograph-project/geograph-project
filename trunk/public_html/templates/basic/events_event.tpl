@@ -1,13 +1,12 @@
 {assign var="page_title" value="Event :: $title"}
 {include file="_std_begin.tpl"}
 
+<h2><a href="/events/">Events</a> :: {$title|escape:"html"}</h2>
+
 <div style="float:right; position:relative; padding:5px; border:1px solid gray; ">
 	Marker only shows gridsquare, see description for exact location<br/><br/>
 	<div style="width:500px; height:500px;" id="mapCanvas">Loading map...</div>
 </div>
-
-<h2><a href="/events/">Events</a> :: {$title|escape:"html"}</h2>
-
 
 <dl class="picinfo">
 

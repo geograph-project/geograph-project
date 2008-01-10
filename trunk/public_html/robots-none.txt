@@ -1,6 +1,5 @@
-# PLEASE visit www.geograph.org.uk instead
+# ALL crawling should be done on www.geograph.org.uk instead
 
 User-agent: *
 Disallow: /
 
-Sitemap: http://www.geograph.org.uk/sitemap.xml

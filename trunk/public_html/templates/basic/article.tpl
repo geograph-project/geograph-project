@@ -1,5 +1,5 @@
 {assign var="page_title" value="Articles"}
-
+{assign var="rss_url" value="/article/feed/recent.rss"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
 ul.explore li {	padding:3px; }

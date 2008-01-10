@@ -1,4 +1,5 @@
 {assign var="page_title" value="Events"}
+{assign var="rss_url" value="/events/feed.rss"}
 {include file="_std_begin.tpl"}
 
 <script src="{"/sorttable.js"|revision}"></script>
