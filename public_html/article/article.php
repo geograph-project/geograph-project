@@ -201,15 +201,14 @@ where ( (licence != 'none' and approved = 1)
 	and url = ".$db->Quote($_GET['page']).'
 limit 1');
 if (count($page)) {
-
+	if ($page['user_id'] == $USER->user_id) {
+		$cacheid .= '|'.$USER->user_id;
+	}
 	//when this page was modified
 	$mtime = strtotime($page['update_time']);
 	
-	//page is unqiue per user (the profile and links) 
-	$hash = $cacheid.'.'.$USER->user_id;
-	
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
-	customCacheControl($mtime,$hash,($USER->user_id == 0));
+	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
 }
 

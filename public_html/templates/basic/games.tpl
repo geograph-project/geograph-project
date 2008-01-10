@@ -79,8 +79,7 @@ Hi, my name is Perdita the Geograph hamster. Welcome to our <h2>Games Section</h
 <br style="clear:both"/>
 </div>
 
-{dynamic}
-{if $user->registered}
+
 <div  class="interestBox" style="width:45%; float:left; height:350px; ">
 <h3 style="background-color:black;color:white;margin-top:0px; padding:10px;">Place Memory (beta) <sup style="color:pink">New!</sup></h3>
 
@@ -112,8 +111,6 @@ Hi, my name is Perdita the Geograph hamster. Welcome to our <h2>Games Section</h
 
 <br style="clear:both"/>
 </div>
-{/if}
-{/dynamic}
 
 <div class="interestBox" style="margin: 20px; padding:10px; width:260px; float:right; text-align:center">
 

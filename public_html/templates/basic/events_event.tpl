@@ -44,16 +44,62 @@
 
 </dl>
 
-<br style="clear:both"/>
-
 {if $user->user_id == $user_id || $isadmin}
 	<td><a href="/events/edit.php?id={$geoevent_id}">edit</a></td>
 {/if}
 
+<br style="clear:both"/>
 
+{if $stats}
+<br/>
+<div class="interestBox">Breakdown: |
+{foreach from=$stats key=name item=value}
+	{$name}: <b>{$value}</b> &nbsp; |  
+{/foreach}
+</div><br/>
+{/if}
 
+<form action="{$script_name}?id={$geoevent_id}" method="post">
 
+<table class="report sortable" id="events">
+<thead><tr>
+	<td style="width:130px;font-size:0.9em" sorted="asc">Updated</td>
+	<td>Who</td>
+	<td>Message{dynamic}{if $user->registered} <small>(optional, 160 charactors max)</small>{/if}{/dynamic}</td>
+	<td>type</td>
+</tr></thead>
+<tbody>
+{dynamic}
+{if $user->registered}
+<tr>
+	<td style="font-size:0.9em">{$attendee.updated|date_format:"%a, %e %b %Y"|default:"-"}</td>
+	<td>{$user->realname|escape:"html"}<input type="hidden" name="id" value="{$geoevent_id}"/><input type="hidden" name="attendee" value="{$attendee.geoevent_attendee_id}"/></td>
+	<td><input type="text" name="message" value="{$attendee.message|escape:"html"}" size="64" maxlength="160"/></td>
+	<td><select name="type">
+	{html_options options=$types selected=$attendee.type}
+	</select> </td>
+	<td><input type="submit" value="save"/></td>
+</tr>
+{/if}
+{/dynamic}
+{if $list}
+{foreach from=$list item=item}
+	{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
+	<tr bgcolor="{$bgcolor}">
+		<td sortvalue="{$item.updated}" class="nowrap" style="font-size:0.9em"><b>{$item.updated|date_format:"%a, %e %b %Y"}</b></td>
+		<td sortvalue="{$item.realname|escape:"html"}"><a href="/profile/{$item.user_id}">{$item.realname|escape:"html"}</a></td>
+		<td>{$item.message|escape:"html"|default:'--None--'}</td>
+		<td>{$item.type}</td>
+	</tr>
+{/foreach}
+{/if}
+</tbody>
+<tfoot>
 
+</tfoot>
+</table>
+
+</form>
 
 
 {if $lat}

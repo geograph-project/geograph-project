@@ -59,13 +59,16 @@ if (!$smarty->is_cached($template, $cacheid))
 	select geoevent.*,
 		realname,
 		(event_time > now()) as future,
-		grid_reference,x,y
+		grid_reference,x,y,
+		sum(type='attend') as attendees
 	from geoevent 
 		inner join user using (user_id)
 		inner join gridsquare using (gridsquare_id)
+		left join geoevent_attendee using (geoevent_id)
 	where (approved = 1) 
 		or user.user_id = {$USER->user_id}
 		or ($isadmin and approved != -1)
+	group by geoevent_id
 	order by event_time");
 	
 	

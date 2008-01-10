@@ -31,17 +31,65 @@ if (empty($_GET['id']) || preg_match('/[^\d]/',$_GET['id'])) {
 	exit;
 }
 
+$event_id = intval($_GET['id']);
+
+$db=NewADOConnection($GLOBALS['DSN']);
+
 $isadmin=$USER->hasPerm('moderator')?1:0;
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+	$updates = array();
+	if (empty($_POST['attendee'])) {
+		$page = array();
+		$updates[] = "`user_id` = {$USER->user_id}";
+	} else {
+		$page = $db->getRow("
+		select *
+		from geoevent_attendee 
+		where geoevent_attendee_id = ".$db->Quote('attendee'));
+		if ($page['user_id'] != $USER->user_id && !$isadmin) {
+			die("fatal error");
+		}
+	}
+
+	foreach (array('type','message') as $key) {
+		if ($page[$key] != $_POST[$key]) {
+			$updates[] = "`$key` = ".$db->Quote($_POST[$key]); 
+		}		
+	}
+	if (!count($updates)) {
+		$smarty->assign('error', "No Changes to Save");
+	} else {
+		if (empty($_POST['attendee'])) {
+			$updates[] = "`created` = NOW()";
+			$updates[] = "`geoevent_id` = $event_id";
+			$sql = "INSERT INTO geoevent_attendee SET ".implode(',',$updates);
+		} else {
+
+			$sql = "UPDATE geoevent_attendee SET ".implode(',',$updates)." WHERE geoevent_attendee_id = ".$db->Quote($_REQUEST['attendee']);
+		}
+				
+		$db->Execute($sql);
+		
+		$memcache->name_increment('ep',$event_id,1,true);
+
+		$smarty->clear_cache('events.tpl');
+	}
+}
+
+
 $template = 'events_event.tpl';
-$cacheid = 'event|'.intval($_GET['id']);
+$cacheid = 'event|'.$event_id;
+if ($serial = & $memcache->name_get('ep',intval($event_id)) ) {
+	$cacheid .= '|'.$serial;
+}
 $cacheid .= '|'.$USER->hasPerm('moderator')?1:0;
 
 
 
-$db=NewADOConnection($GLOBALS['DSN']);
 
-$sql_where = " geoevent_id = ".$db->Quote($_REQUEST['id']);
+$sql_where = " geoevent_id = ".$db->Quote($event_id);
 
 $page = $db->getRow("
 select geoevent.*,DATEDIFF(event_time,NOW()) as days,
@@ -53,15 +101,15 @@ where $sql_where
 limit 1");
 
 if (count($page)) {
-
+	if ($page['user_id'] == $USER->user_id) {
+		$cacheid .= '|'.$USER->user_id;
+	}
+	
 	//when this page was modified
 	$mtime = strtotime($page['updated']);
-	
-	//page is unqiue per user (the profile and links) 
-	$hash = $cacheid.'.'.$USER->user_id;
-	
+		
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
-	customCacheControl($mtime,$hash,($USER->user_id == 0));
+	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
 }
 
@@ -108,7 +156,29 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('url', $page['url']);
 }
 
+$types = array('attend'=>'will attend','maybe'=>'probably attend','not'=>'unable to attend');
 
+$prev_fetch_mode = $ADODB_FETCH_MODE;
+$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+$list = $db->getAll($sql = "
+select geoevent_attendee.*,realname
+from geoevent_attendee 
+	left join user using (user_id)
+where $sql_where
+order by updated desc");
+$stats = array();
+foreach ($list as $i => $row) {
+	if (!empty($USER->user_id) && $USER->user_id == $row['user_id']) {
+		$smarty->assign('attendee', $list[$i]);
+	}
+	$type = $list[$i]['type'] = $types[$row['type']];
+	$stats[$type]=isset($stats[$type])?($stats[$type]+1):1;
+}
+
+
+$smarty->assign_by_ref('stats', $stats);
+$smarty->assign_by_ref('list', $list);
+$smarty->assign('types', $types);
 
 
 $smarty->display($template, $cacheid);

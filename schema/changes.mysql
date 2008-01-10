@@ -1500,3 +1500,15 @@ CREATE TABLE `geoevent` (
   `approved` tinyint(3) unsigned NOT NULL default '1',
   PRIMARY KEY  (`geoevent_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE `geoevent_attendee` (
+  `geoevent_attendee_id` int(10) unsigned NOT NULL auto_increment,
+  `geoevent_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `message` varchar(160) character set utf8 NOT NULL,
+  `type` enum('attend','maybe','not') NOT NULL default 'attend',
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`geoevent_attendee_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
