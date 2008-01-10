@@ -1,11 +1,13 @@
 {assign var="page_title" value="Event :: $title"}
 {include file="_std_begin.tpl"}
 
+<script src="{"/sorttable.js"|revision}"></script>
+
 <h2><a href="/events/">Events</a> :: {$title|escape:"html"}</h2>
 
 <div style="float:right; position:relative; padding:5px; border:1px solid gray; ">
-	Marker only shows gridsquare, see description for exact location<br/><br/>
-	<div style="width:500px; height:500px;" id="mapCanvas">Loading map...</div>
+	<div style="color:red; background-color:white">Marker only shows gridsquare, see description for exact location</div><br/>
+	<div style="width:500px; height:450px;" id="mapCanvas">Loading map...</div>
 </div>
 
 <dl class="picinfo">
@@ -65,8 +67,8 @@
 <thead><tr>
 	<td style="width:130px;font-size:0.9em" sorted="asc">Updated</td>
 	<td>Who</td>
-	<td>Message{dynamic}{if $user->registered} <small>(optional, 160 charactors max)</small>{/if}{/dynamic}</td>
-	<td>type</td>
+	<td>Message{dynamic}{if $user->registered} <small>(<i>optional</i>, 160 charactors max)</small>{/if}{/dynamic}</td>
+	<td>Intention</td>
 </tr></thead>
 <tbody>
 {dynamic}
@@ -84,14 +86,18 @@
 {/dynamic}
 {if $list}
 {foreach from=$list item=item}
-	{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
-	<tr bgcolor="{$bgcolor}">
-		<td sortvalue="{$item.updated}" class="nowrap" style="font-size:0.9em"><b>{$item.updated|date_format:"%a, %e %b %Y"}</b></td>
-		<td sortvalue="{$item.realname|escape:"html"}"><a href="/profile/{$item.user_id}">{$item.realname|escape:"html"}</a></td>
-		<td>{$item.message|escape:"html"|default:'--None--'}</td>
-		<td>{$item.type}</td>
-	</tr>
+	{if $item.geoevent_attendee_id != $attendee.geoevent_attendee_id}
+		{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
+		<tr bgcolor="{$bgcolor}">
+			<td sortvalue="{$item.updated}" class="nowrap" style="font-size:0.9em"><b>{$item.updated|date_format:"%a, %e %b %Y"}</b></td>
+			<td sortvalue="{$item.realname|escape:"html"}"><a href="/profile/{$item.user_id}">{$item.realname|escape:"html"}</a></td>
+			<td>{$item.message|escape:"html"|default:'--None--'}</td>
+			<td>{$item.type}</td>
+		</tr>
+	{/if}
 {/foreach}
+{else}
+	<tr><td colspan="2">- there are no registered attendees -</td></tr>
 {/if}
 </tbody>
 <tfoot>
