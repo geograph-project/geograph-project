@@ -6,6 +6,7 @@
 
 
 <div style="float:right; position:relative; padding:5px; border:1px solid gray; ">
+	<small style="color:red">Marker only shows gridsquare, see description for exact location<small><br/><br/></small></small>
 	<div style="width:400px; height:320px;" id="mapCanvas"></div>
 </div>
 
@@ -24,11 +25,13 @@
 {/if}
 {/dynamic}
 
-<p>Use this section to find out about upcoming events, organised by Geograph members for Geograph members! Listed below are events, as well as their location plotted on a national map. If you are able to attend then let the organiser know by clicking the link below</p>
-
-<p>If you are thinking of organising your own event (or want to attend an meetup) then you may be interested in this {external href="http://www.nearby.org.uk/google/meet-me-at.php?group=1" text="meet-me-at map"} for finding possible areas of interest.</p>
+<p>Use this section to find out about upcoming events, organised by Geograph members for Geograph members! Listed below are events, as well as their location plotted on a national map. If you are able to attend then let the organiser know by adding your name on the event page.</p>
 
 <p>Use the RSS <small>({external href="http://en.wikipedia.org/wiki/RSS_(protocol)" text="Wikipedia article"})</small> or KML <small class="nowrap">(for {external href="http://earth.google.com/" text="Google Earth"} amongst others)</small> links above to keep track of new events in your favorite program.</p>
+
+<p><small>If you are thinking of organising your own event (or want to attend an meetup) then you may be interested in this {external href="http://www.nearby.org.uk/google/meet-me-at.php?group=1" text="meet-me-at map"} for finding possible areas of interest.</small></p>
+
+
 
 <br style="clear:both"/>
 
@@ -54,7 +57,7 @@
 		<td sortvalue="{$item.grid_reference}"><a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></td>
 		<td>{$item.attendees}</td>
 		<td sortvalue="{$item.realname|escape:"html"}"><a href="/profile/{$item.user_id}">{$item.realname|escape:"html"}</a></td>
-		<td><a href="/events/event.php?id={$item.geoevent_id}" title="{$item.description|escape:"html"|default:''}">info</a>
+		<td><a href="/events/event.php?id={$item.geoevent_id}" title="{$item.description|escape:"html"|default:''}">event page</a>
 		{if $user->user_id == $item.user_id || $isadmin}
 			<a href="/events/edit.php?id={$item.geoevent_id}">edit</a>
 		{/if}
