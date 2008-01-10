@@ -12,7 +12,9 @@
 {$extra_meta}
 <link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/basic/css/basic.css"|revision}" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
-{if $image && $image->gridimage_id && $image->moderation_status ne 'rejected'}
+{if $rss_url}
+<link rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}"/>
+{elseif $image && $image->gridimage_id && $image->moderation_status ne 'rejected'}
 <link rel="alternate" type="application/vnd.google-earth.kml+xml" href="/photo/{$image->gridimage_id}.kml"/>
 {elseif $profile && $profile->user_id}
 <link rel="alternate" type="application/rss+xml" title="Geograph RSS for {$profile->realname}" href="/feed/userid/{$profile->user_id}.rss"/>
