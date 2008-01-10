@@ -45,7 +45,7 @@
 	{if $errors.event_date}<div class="formerror"><p class="error">{$errors.event_date}</p>{/if}
 	 
 	<label for="event_date">Event Date:</label>
-	{html_select_date prefix="event_date" time=`$event_date` end_year="+10" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" day_value_format="%02d" month_value_format="%m"}
+	{html_select_date prefix="event_date" time=`$event_time` end_year="+10" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" day_value_format="%02d" month_value_format="%m"}
 	
 	{if $errors.publish_date}</div>{/if}
 </div>
