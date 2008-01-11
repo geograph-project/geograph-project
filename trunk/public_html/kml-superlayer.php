@@ -32,7 +32,29 @@ $kml->filename = "Geograph-Layer.kml";
 
 $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
-if ($m[2] == 3) { //GE 3
+if (empty($_SERVER['HTTP_USER_AGENT']) || $_SERVER['HTTP_USER_AGENT'] == '-') { //Google Maps (Mapplet)
+	$NetworkLink = $kml->addChild('NetworkLink');
+	$NetworkLink->setItem('name','Geograph NetworkLink');
+$folder->setItemCDATA('description',<<<END_HTML
+<table bgcolor="#000066" border="0"><tr bgcolor="#000066"><td bgcolor="#000066">
+<a href="http://{$_SERVER['HTTP_HOST']}/"><img src="http://{$_SERVER['HTTP_HOST']}/templates/basic/img/logo.gif" height="74" width="257"/></a>
+</td></tr></table>
+
+<p><i>The Geograph British Isles project aims to collect geographically representative photographs and information for every square kilometre of the UK and the Republic of Ireland, and you can be part of it.</i></p>
+
+<p><b>Join us now at: <a href="http://{$_SERVER['HTTP_HOST']}/">{$_SERVER['HTTP_HOST']}</a></b>, and read more about the <a href="http://{$_SERVER['HTTP_HOST']}/kml.php">Google intergration</a>.</p>
+END_HTML
+);
+	$NetworkLink->setItem('open',0);
+
+	$UrlTag = $NetworkLink->useUrl("http://{$_SERVER['HTTP_HOST']}/earth.php?simple=1".($i?"&i=$i":''));
+	$NetworkLink->setItem('visibility',0);
+
+	$UrlTag->setItem('viewRefreshMode','onStop');
+	$UrlTag->setItem('viewRefreshTime',4);
+	$UrlTag->setItem('viewFormat','BBOX=[bboxWest],[bboxSouth],[bboxEast],[bboxNorth]&amp;LOOKAT=[lookatLon],[lookatLat],[lookatRange],[lookatTilt],[lookatHeading],[horizFov],[vertFov]');
+
+} elseif ($m[2] == 3) { //GE 3
 	$NetworkLink = $kml->addChild('NetworkLink');
 	$NetworkLink->setItem('name','Geograph NetworkLink');
 	$NetworkLink->setItemCDATA('description',"Please upgrade to Google Earth Version 4 to take advantage latest Superlayer");
