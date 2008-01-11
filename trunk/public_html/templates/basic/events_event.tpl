@@ -33,7 +33,7 @@
 
 
 {if $image}
-<dt>Choosen Photo</dt>
+<dt>Chosen Photo</dt>
  <dd><div class="img-shadow">
 		<a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(213,160)}</a>
 		 <div style="font-size:0.7em">
