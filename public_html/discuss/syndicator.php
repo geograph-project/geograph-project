@@ -57,6 +57,10 @@ if (!empty($_GET['format']) && in_array($_GET['format'], $valid_formats))
 
 $extension = ($format == 'KML')?'kml':'xml';
 
+if (!empty($_GET['first'])) {
+	$extension = "first.$extension";
+}
+
 if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-t{$_GET['topic']}-{$format}.$extension";
 } elseif (!empty($_GET['forum']) && is_numeric($_GET['forum'])) {
@@ -157,21 +161,30 @@ if (!$_GET['nolimit']) {
 		$sql_where = 'WHERE geobb_topics.forum_id!=5'; //we exclude Grid Ref discussions...
 	}
 
-	if (!empty($_GET['sortBy']) && $_GET['sortBy'] == 1) {
+	if (!empty($_GET['first'])) {
+		$rss->title = "Geograph.org.uk Forum $title :: New Topics";
+		$rss->desciption = 'New Geograph Topics';
+		$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format&amp;first=1".$synd;
+		$sql_order= 'geobb_topics.topic_id DESC';
+		$sql_where .= " GROUP BY geobb_topics.topic_id";
+		$sql_join = "geobb_topics.topic_id=geobb_posts.topic_id";
+	} elseif (!empty($_GET['sortBy']) && $_GET['sortBy'] == 1) {
 		$rss->title = "Geograph.org.uk Forum $title :: Latest Topics";
 		$rss->description = 'Latest Geograph Topics';
 		$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format&amp;sortBy=1".$synd;
 		$sql_order= 'geobb_topics.topic_id DESC';
+		$sql_join = "topic_last_post_id=geobb_posts.post_id";
 	} else {
 		$rss->title = "Geograph.org.uk Forum $title :: Latest Discussions";
 		$rss->description = 'Latest Geograph Discussions';
 		$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format".$synd;
 		$sql_order= '`topic_last_post_id` DESC';
+		$sql_join = "topic_last_post_id=geobb_posts.post_id";
 	}
 
 $sql="SELECT *
 FROM `geobb_topics`
-INNER JOIN geobb_posts ON(topic_last_post_id=geobb_posts.post_id)
+INNER JOIN geobb_posts ON ($sql_join)
 $sql_where
 ORDER BY $sql_order
 LIMIT 30";

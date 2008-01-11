@@ -89,6 +89,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	$stats += $db->cacheGetRow(3600,"select count(*) as total,sum(imagecount=0) as nophotos,sum(imagecount in (1,2,3)) as fewphotos from gridsquare where percent_land > 0");
 	$stats['percentage'] = sprintf("%.1f",$stats['squares']/$stats['total']*100);
 	$smarty->assign_by_ref('stats', $stats);
+	
+	$smarty->assign('rss_url','/discuss/syndicator.php?forum=1&first=1');
 }
 
 

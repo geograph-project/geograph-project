@@ -35,6 +35,7 @@ $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET[
 
 $where = (isset($_GET['where']) && preg_match('/^[\w]{1,}$/',$_GET['where']))?$_GET['where']:'';
 
+customGZipHandlerStart();
 
 $cacheid=$when.'|'.$where;
 
