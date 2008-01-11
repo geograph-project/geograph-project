@@ -66,6 +66,11 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
 <a href="/discuss/index.php?action=vthread&amp;topic={$newsitem.topic_id}">({$newsitem.comments} {if $newsitem.comments eq 1}comment{else}comments{/if})</a>
 </div>
 {/foreach}
+{if $rss_url}
+<div style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;">
+<a rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}" class="xml-rss">News RSS Feed</a>
+</div>
+{/if}
 {/if}
   </div>
 </div>
