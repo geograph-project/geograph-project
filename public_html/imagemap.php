@@ -33,6 +33,9 @@ init_session();
 
 	$map=new GeographMap;
 	
+	if (isset($_GET['key'])) 
+		$map->_outputDepthKey();
+	
 	if (isset($_GET['refresh']) && $_GET['refresh'] == 2 && $USER->hasPerm('admin'))
 		$map->caching=false;
 	
@@ -77,30 +80,30 @@ init_session();
 			$map->setImageSize(900,1300);
 			$map->setScale(1);
 			
-			$mapDateStart = "2005-06-07";
-			$mapDateCrit = "2005-06-01";
+			$map->mapDateStart = "2005-06-07";
+			$map->mapDateCrit = "2005-06-01";
 			
-			$map->type_or_user = -2;
+			$map->type_or_user = -1;
 		} elseif (isset($_GET['dates']) && $USER->hasPerm("admin")) {
 			$map->setOrigin(0,-10);
 			$map->setImageSize(900,1300);
 			$map->setScale(1);
-			$map->type_or_user = -2;
+			$map->type_or_user = -1;
 			
 			set_time_limit(3600*3);
 			
 			$root=&$_SERVER['DOCUMENT_ROOT'];
 			$n = time()-(60*60*24*7);
 			for($t=strtotime("10 March 2005"); $t<$n; $t+=(60*60*24*7) ) {
-				$mapDateStart = date('Y-m-d',$t);
-				$mapDateCrit = date('Y-m-d',$t-(60*60*24*7));
+				$map->mapDateStart = date('Y-m-d',$t);
+				$map->mapDateCrit = date('Y-m-d',$t-(60*60*24*7));
 			
 				$target=$map->getImageFilename();
-				$target=preg_replace('/\./',"-$mapDateStart.",$target);
 				
 				if (!file_exists($root.$target)) {
 					$map->_renderMap();	
 				}
+				print "$mapDateStart DONE<BR>";flush();
 			}
 			exit;
 		}
