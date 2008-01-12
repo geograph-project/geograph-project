@@ -380,7 +380,9 @@ class GeographMap
 		
 		$file="detail_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}_{$this->type_or_user}{$palette}.$extension";
 		
-		
+		if (!empty($this->mapDateCrit)) {
+			$file=preg_replace('/\./',"-{$this->mapDateStart}.",$file);
+		}
 		return $dir.$file;
 	}
 
@@ -450,9 +452,6 @@ class GeographMap
 			$this->type_or_user = 0;
 		}
 		$file=$this->getImageFilename();
-		if (!empty($this->mapDateCrit)) {
-			$file=preg_replace('/\./',"-{$this->mapDateStart}.",$file);
-		}
 		
 		$full=$_SERVER['DOCUMENT_ROOT'].$file;
 		if (!$this->caching || !@file_exists($full))
@@ -1148,8 +1147,6 @@ class GeographMap
 			if (!empty($this->mapDateCrit)) {
 				$black = imagecolorallocate ($img, 70, 70, 0);
 				imagestring($img, 5, 3, $this->image_h-30, $this->mapDateStart, $black);
-			
-				$target=preg_replace('/\./',"-{$this->mapDateStart}.",$target);
 			}
 			
 			if (preg_match('/jpg/',$target)) {
@@ -1172,8 +1169,6 @@ class GeographMap
 	function _renderDateImage()
 	{
 		global $CONF;
-		global $mapDateStart;
-		global $mapDateCrit;
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 		$ok = true;
 
@@ -1227,7 +1222,7 @@ class GeographMap
 			gridsquare gs 
 			inner join gridimage gi using(gridsquare_id)
 			where CONTAINS( GeomFromText($rectangle),	point_xy) and
-			submitted < '$mapDateStart'
+			submitted < '{$this->mapDateStart}'
 			group by gi.gridsquare_id ";
 
 		$recordSet = &$db->Execute($sql);
@@ -1256,13 +1251,13 @@ class GeographMap
 		if ($img) {
 			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
 
-			imagestring($img, 5, 3, $this->image_h-30, $mapDateStart, $black);
+			imagestring($img, 5, 3, $this->image_h-30, $this->mapDateStart, $black);
 
 			if ($this->pixels_per_km>=1  && $this->pixels_per_km<40 && isset($CONF['enable_newmap']))
 				$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
 
 			$target=$this->getImageFilename();
-			$target=preg_replace('/\./',"-$mapDateStart.",$target);
+
 			if (preg_match('/jpg/',$target)) {
 				$ok = (imagejpeg($img, $root.$target) && $ok);
 			} else {
