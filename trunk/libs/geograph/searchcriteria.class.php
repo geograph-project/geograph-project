@@ -559,16 +559,16 @@ class SearchCriteria_All extends SearchCriteria
 	function setByUsername($username) {
 		$db = $this->_getDB();
 		if (preg_match('/^(\d+):/',$username,$m)) {
-			$users = $db->GetAll("select user_id,realname from user where user_id={$m[1]} limit 2");			
+			$users = $db->GetAll("select user_id,realname,nickname from user where user_id={$m[1]} limit 2");
 		} elseif (!preg_match('/\bnear\b/',$username)) {
 			$username = $db->Quote($username);
-			$users = $db->GetAll("select user_id,realname from user where MATCH (realname,nickname) AGAINST ($username) order by (nickname=$username) desc limit 2");
+			$users = $db->GetAll("select user_id,realname,nickname from user where MATCH (realname,nickname) AGAINST ($username) order by (nickname=$username) desc limit 2");
 		}
 		if (count($users) == 1) {
 			$this->realname = $users[0]['realname'];
 			$this->user_id = $users[0]['user_id'];
 			if (strcasecmp($username,$this->realname) != 0) {
-				$this->nickname = $username;
+				$this->nickname = $users[0]['nickname'];
 			}
 		}
 	}
