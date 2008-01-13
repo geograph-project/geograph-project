@@ -35,7 +35,7 @@ $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 if (empty($_SERVER['HTTP_USER_AGENT']) || $_SERVER['HTTP_USER_AGENT'] == '-') { //Google Maps (Mapplet)
 	$NetworkLink = $kml->addChild('NetworkLink');
 	$NetworkLink->setItem('name','Geograph NetworkLink');
-$folder->setItemCDATA('description',<<<END_HTML
+$NetworkLink->setItemCDATA('description',<<<END_HTML
 <table bgcolor="#000066" border="0"><tr bgcolor="#000066"><td bgcolor="#000066">
 <a href="http://{$_SERVER['HTTP_HOST']}/"><img src="http://{$_SERVER['HTTP_HOST']}/templates/basic/img/logo.gif" height="74" width="257"/></a>
 </td></tr></table>
