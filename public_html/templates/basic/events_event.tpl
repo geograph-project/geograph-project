@@ -1,6 +1,10 @@
 {assign var="page_title" value="Event :: $title"}
 {include file="_std_begin.tpl"}
-
+{literal}<style type="text/css">
+.unable,.unable A  {
+	color:gray;
+}
+</style>{/literal}
 <script src="{"/sorttable.js"|revision}"></script>
 
 <h2><a href="/events/">Events</a> :: {$title|escape:"html"}</h2>
@@ -88,7 +92,7 @@
 {foreach from=$list item=item}
 	{if $item.geoevent_attendee_id != $attendee.geoevent_attendee_id}
 		{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
-		<tr bgcolor="{$bgcolor}">
+		<tr bgcolor="{$bgcolor}"{if $item.type == 'unable to attend'} class="unable"{/if}>
 			<td sortvalue="{$item.updated}" class="nowrap" style="font-size:0.9em"><b>{$item.updated|date_format:"%a, %e %b %Y"}</b></td>
 			<td sortvalue="{$item.realname|escape:"html"}"><a href="/profile/{$item.user_id}">{$item.realname|escape:"html"}</a></td>
 			<td>{$item.message|escape:"html"|default:'--None--'}</td>
