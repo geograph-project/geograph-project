@@ -87,7 +87,7 @@
 	<td><input type="submit" value="save"/></td>
 </tr>
 {/if}
-{/dynamic}
+
 {if $list}
 {foreach from=$list item=item}
 	{if $item.geoevent_attendee_id != $attendee.geoevent_attendee_id}
@@ -103,6 +103,7 @@
 {else}
 	<tr><td colspan="2">- there are no registered attendees -</td></tr>
 {/if}
+{/dynamic}
 </tbody>
 <tfoot>
 
