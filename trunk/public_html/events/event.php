@@ -167,14 +167,18 @@ from geoevent_attendee
 where $sql_where
 order by updated desc");
 $stats = array();
+$a = false;
 foreach ($list as $i => $row) {
 	if (!empty($USER->user_id) && $USER->user_id == $row['user_id']) {
 		$smarty->assign('attendee', $list[$i]);
+		$a = true;
 	}
 	$type = $list[$i]['type'] = $types[$row['type']];
 	$stats[$type]=isset($stats[$type])?($stats[$type]+1):1;
 }
-
+if (!$a) {
+	unset($types['not']);
+}
 
 $smarty->assign_by_ref('stats', $stats);
 $smarty->assign_by_ref('list', $list);
