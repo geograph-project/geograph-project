@@ -237,9 +237,9 @@
 
 <a name="missing"></a>
 <h3>Many thumbnails seem to be missing, any idea of the cause?</h3>
-	<p>Some firewall programs, in particular Norton Internet Security, block images of a certain size, as they happen to be the exact same size as some advertisements. Unfortunatly many thumbnails happen to be this exact size.</p>
+	<p>Some firewall programs, in particular Norton Internet Security, block images that are the same size as some common advertisements. Unfortunatly many thumbnails and some map imageshappen to be this exact size.</p>
 
-	<p>So if you use such program you might like to try turning it off temporally and trying again, and if that gets our images back, then have a look for the option to disable this, arguably, flawed method of security.</p>
+	<p>So if you use such a program you might like to try turning it off temporally and trying again, and if that gets our images back, then have a look for the option to disable this, arguably, flawed method of security.</p>
 
 
 {include file="_std_end.tpl"}

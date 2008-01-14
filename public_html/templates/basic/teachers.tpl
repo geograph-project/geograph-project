@@ -14,11 +14,12 @@
 </ul>
 
 
-<h3>Activities</h3>
+<h3>Activities &amp; Resources</h3>
 
 <ul>
 	<li><a href="/games/">Geograph Games</a> - fun games involving images and maps</li>
 	<li><a href="/help/imagine">Imagine Slideshow</a> - imagine the landscape behind the map</li>
+	<li><a href="/discuss/?action=vtopic&forum=11">Galleries</a> - hand picked images on varies themes</li>
 </ul>
 
 
