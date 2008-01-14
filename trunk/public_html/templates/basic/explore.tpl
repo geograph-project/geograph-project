@@ -15,6 +15,8 @@
 
 	<li><a href="/statistics/fully_geographed.php">List <b>Fully Geographed Hectads</b></a> <small>(10 x 10 Gridsquares)</small> - include Image Mosaics!</li>
 
+	<li>{external href="http://www.nearby.org.uk/geograph/mosaic/" text="Mosaics of <b>Completed Myriads</b>"} (using a Flash based viewer)</li>
+
 </ul>
 <h3>Specialist locations...</h3>
 <ul class="explore">
@@ -28,6 +30,8 @@
 		<li><a href="/explore/counties.php?type=capital">(Irish) County Capitals</a>, <a href="/explore/cities.php">Cities and Large Towns</a></li>
 	</ul></li>
 
+	<li><a href="/discuss/?action=vtopic&forum=11">Galleries</a> - hand picked images on varies themes</li>
+
 </ul>
 <h3>Breakdowns...</h3>
 <ul class="explore">
@@ -35,10 +39,6 @@
 	<li><a href="/explore/calendar.php">Geograph <b>Calendar</b></a>, view images by date taken.</li>
 
 	<li><a href="/statistics/breakdown.php?by=class">Breakdown by <b>Category</b></a>, (soon to be replaced by tags).</li>
-
-	<li><a href="/explore/wordnet.php">By Popular <b>Title Words</b></a> in the last 7 days and all time.<ul>
-		<li><a href="/explore/wordnet.php">Cloud Style</a> or <a href="/explore/wordnet.php?t=1">List Style</a></li>
-	</ul></li>
 
 	<li><a href="/help/sitemap#users">Explore by <b>Contributor</b></a>.</li>
 
@@ -55,6 +55,8 @@
 	<li><a href="/stuff/browse-random.php">Jump to a <b>Random</b> Gridsquare</a>.</li>
 
 	<li><a href="/mapbrowse.php">Explore a Zoomable <b>Map</b></a>.</li>
+
+	<li><a href="/mapper/">View a <b>Draggable Map</b> checksheet</a>. (use the Grid Reference box to jump to your area of interest)</li>
 
 	<li><form method="get" action="/search.php" style="display:inline">
 	<label for="searchterm"><b>Search</b> by keyword, place, postcode or contributor</label>: <br/>
