@@ -42,7 +42,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/map.class.php');
 	require_once('geograph/mapmosaic.class.php');
 
-	$preset=($CONF['template']=='charcoal')?'overview_charcoal':'overview';
+	switch($CONF['template']) {
+		case 'charcoal': $preset = 'overview_charcoal'; break;
+		case 'ireland': $preset = 'overview_ireland'; break;
+		default: $preset = 'overview'; break;
+	}
 	$overview=new GeographMapMosaic($preset);
 	$overview->type_or_user = -1;
 	$overview->assignToSmarty($smarty, 'overview');
