@@ -7,6 +7,7 @@
     ServerAlias kml.geograph.org.uk
     ServerAlias www.geograph.co.uk
     ServerAlias schools.geograph.org.uk
+    ServerAlias ireland.geograph.org.uk
     ServerAlias t0.www.geograph.org.uk
     
     
@@ -59,6 +60,7 @@
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^kml\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^schools\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !^ireland\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^t0\.www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^$
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
@@ -90,12 +92,13 @@
     RewriteRule /feed/userid/([0-9]+)(|/[0-9]+)\.([\w]+) /syndicator.php?page=$2&u=$1&extension=$3 [qsa]
     RewriteRule /user/([^\/]+)/map/?(.*)$ /mapbrowse.php?user=$1&t=$2
     RewriteRule /user/([^\/]+)/all/?$ /profile.php?user=$1&all=1
+    RewriteRule /user/([^\/]+)/more/?$ /profile.php?user=$1&more=1
     RewriteRule /user/([^\/]+)/?$ /profile.php?user=$1
 
     RewriteRule /profile/(\d+)/map/?(.*)$ /mapbrowse.php?u=$1&t=$2
     RewriteRule /profile/(\d+)/all/?$ /profile.php?id=$1&all=1
     RewriteRule /profile/(\d+)/more/?$ /profile.php?id=$1&more=1
-    RewriteRule /profile/(\d+)/?$ /profile.php?id=$1
+    RewriteRule /profile/(\d+)/?$ /profile.php?id=$1 [qsa]
 
     RewriteRule /map/(.*) /mapbrowse.php?t=$1 [qsa]
     RewriteRule /article/([\w-]+)/?$ /article/article.php?page=$1 [qsa]

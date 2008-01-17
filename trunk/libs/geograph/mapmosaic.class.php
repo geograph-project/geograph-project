@@ -159,6 +159,12 @@ class GeographMapMosaic
 				$this->setScale(0.13);
 				$this->setMosaicFactor(1);
 				break;
+			case 'overview_ireland':
+				$this->setOrigin(-5,110);
+				$this->setMosaicSize(120,170);
+				$this->setScale(0.3);
+				$this->setMosaicFactor(1);
+				break;
 			case 'overview_charcoal':
 				$this->setOrigin(0,-10);
 				$this->setMosaicSize(144,210);

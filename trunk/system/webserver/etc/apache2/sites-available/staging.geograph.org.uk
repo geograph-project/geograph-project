@@ -16,6 +16,7 @@ NameVirtualHost *
     ServerAlias s0.staging.crumpet.geograph.org.uk
     ServerAlias t0.staging.geograph.org.uk
     ServerAlias staging.schools.geograph.org.uk
+    ServerAlias staging.ireland.geograph.org.uk
 
     #create logformat like combined but with our user id and script timing
     LogFormat "%{X-Forwarded-For}i %l %{user_id}n %t \"%r\" \"%v\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{php_timing}n" geograph
@@ -69,11 +70,13 @@ NameVirtualHost *
     RewriteRule /feed/userid/([0-9]+)(|/[0-9]+)\.([\w]+) /syndicator.php?page=$2&u=$1&extension=$3 [qsa]
     RewriteRule /user/([^\/]+)/map/?(.*)$ /mapbrowse.php?user=$1&t=$2
     RewriteRule /user/([^\/]+)/all/?$ /profile.php?user=$1&all=1
+    RewriteRule /user/([^\/]+)/more/?$ /profile.php?user=$1&more=1
     RewriteRule /user/([^\/]+)/?$ /profile.php?user=$1
 
     RewriteRule /profile/(\d+)/map/?(.*)$ /mapbrowse.php?u=$1&t=$2
     RewriteRule /profile/(\d+)/all/?$ /profile.php?id=$1&all=1
-    RewriteRule /profile/(\d+)/?$ /profile.php?id=$1
+    RewriteRule /profile/(\d+)/more/?$ /profile.php?id=$1&more=1
+    RewriteRule /profile/(\d+)/?$ /profile.php?id=$1 [qsa]
 
     RewriteRule /map/(.*) /mapbrowse.php?t=$1 [qsa]
     RewriteRule /article/([\w-]+)/?$ /article/article.php?page=$1 [qsa]
@@ -121,7 +124,13 @@ NameVirtualHost *
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?facebook\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?blogspot\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?livejournal\.com/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} ^http://altlab\.com/ [NC]
-    RewriteRule /photos/.*\.jpg$ /stuff/nohotlink.php [L]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?28dayslater\.co\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?keyhole\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?hbwalkersaction\.org\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?secretscotland\.org\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?phlap\.net/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?valendale\.myby\.co\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} (thread|topic|forum|blog) [NC]    
+    RewriteRule /photos/\d.*\.jpg$ /stuff/nohotlink.php [L]
 
 </VirtualHost>
