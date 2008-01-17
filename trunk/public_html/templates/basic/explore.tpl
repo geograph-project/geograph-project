@@ -32,6 +32,8 @@
 
 	<li><a href="/discuss/?action=vtopic&forum=11">Galleries</a> - hand picked images on varies themes</li>
 
+	<li><a href="/explore/places/" title="Explore by Place">Explore the <b>placename gazetteer</b></a> <sup style="color:red">New!</sup></li>
+
 </ul>
 <h3>Breakdowns...</h3>
 <ul class="explore">
