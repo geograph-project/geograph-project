@@ -5,8 +5,8 @@
 
 <div style="width:60%;float:left;padding-right:5px;position:relative">
 <p>The Geograph British Isles project aims to collect geographically
-representative photographs and information for every square kilometre of the UK and 
-the Republic of Ireland, and you can be part of it.</p>
+representative photographs and information for every square kilometre of the <a href="/explore/places/1/">Great Britain</a> and 
+<a href="/explore/places/2/">Ireland</a>, and you can be part of it.</p>
 
 
 
