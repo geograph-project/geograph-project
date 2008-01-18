@@ -69,7 +69,8 @@ class RestAPI
 				
 				echo "<stats";
 				foreach ($profile->stats as $key => $value) {
-					echo " $key=\"$value\"";
+					if (!is_numeric($key))
+						echo " $key=\"$value\"";
 				}
 				echo " />";
 				
