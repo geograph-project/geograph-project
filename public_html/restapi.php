@@ -51,11 +51,43 @@ class RestAPI
 	var $db=null;
 	var $params=array();
 	
+	function handleUser()
+	{
+		$user_id=intval($this->params[0]);
+		
+		$profile=new GeographUser($user_id);
+		if ($profile->registered)
+		{
+			$profile->getStats()
+			if (isset($profile->stats) && count($profile->stats))
+			{
+				$this->beginResponse();
+		
+				echo '<status state="ok"/>';
+				echo '<realname>'.htmlentities2($profile->realname).'</realname>';
+				echo '<nickname>'.htmlentities2($profile->nickname).'</nickname>';
+				
+				echo "<stats";
+				foreach ($profile->stats as $key => $value) {
+					echo " $key=\"$value\"";
+				}
+				echo " />";
+				
+				$this->endResponse();
+			}
+			else
+			{
+				$this->error("User $gridimage_id unavailable ({$image->moderation_status})");	
+			}
+		}
+		else
+		{
+			$this->error("Invalid user id $user_id");	
+		}
+	}
+	
 	function handlePhoto()
 	{
-		global $CONF;
-		$db=NewADOConnection($GLOBALS['DSN']);
-		
 		$gridimage_id=intval($this->params[0]);
 		
 		$image=new GridImage;
@@ -88,8 +120,6 @@ class RestAPI
 	
 	function handleGridref()
 	{
-		$db=NewADOConnection($GLOBALS['DSN']);
-		
 		$square=new GridSquare;
 		$grid_given=true;
 		$grid_ok=$square->setByFullGridRef($this->params[0]);
@@ -136,8 +166,6 @@ class RestAPI
 	
 	function handleUserTimeline()
 	{
-		$db=NewADOConnection($GLOBALS['DSN']);
-
 		$uid=intval($this->params[0]);
 
 		$profile=new GeographUser($uid);
