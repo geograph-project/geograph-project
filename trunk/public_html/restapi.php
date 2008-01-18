@@ -58,7 +58,7 @@ class RestAPI
 		$profile=new GeographUser($user_id);
 		if ($profile->registered)
 		{
-			$profile->getStats()
+			$profile->getStats();
 			if (isset($profile->stats) && count($profile->stats))
 			{
 				$this->beginResponse();
@@ -77,7 +77,7 @@ class RestAPI
 			}
 			else
 			{
-				$this->error("User $gridimage_id unavailable ({$image->moderation_status})");	
+				$this->error("User $user_id unavailable (or they have not contributed anything)");	
 			}
 		}
 		else
