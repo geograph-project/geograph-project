@@ -97,6 +97,7 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 <h2>Join In...</h2>
 <ul>
 
+	<li><a href="/games/" title="educational games">try out some <b>games</b> using our images and maps</a></li>
 	<li><a href="/submit.php" title="">Add <b>your own pictures</b></a></li>
 	<li><a href="/article/edit.php" title="">Write an <b>article</b></a></li>
 	{if $enable_forums}
