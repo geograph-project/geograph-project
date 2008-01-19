@@ -67,7 +67,7 @@
 	<label for="gridimage_id">Relevant Image ID:</label>
 	<input type="text" name="gridimage_id" value="{$gridimage_id|escape:"html"}" maxlength="12" size="6"/>
 	
-	<div class="fieldnotes">Optional, enter a image id to illistrate this event</div>
+	<div class="fieldnotes">Optional, enter a image id to illustrate this event</div>
 	
 	{if $errors.gridimage_id}</div>{/if}
 </div>
@@ -78,7 +78,7 @@
 	<label for="description">Short Description:</label>
 	<input type="text" name="description" value="{$description|escape:"html"}" maxlength="255" size="90" style="width:58em"/>
 	
-	<div class="fieldnotes">Please provide a meaningful short description for the event.</div>
+	<div class="fieldnotes">Please provide a meaningful short description for the event</div>
 	
 	{if $errors.extract}</div>{/if}
 </div>
