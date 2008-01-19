@@ -176,9 +176,6 @@ foreach ($list as $i => $row) {
 	$type = $list[$i]['type'] = $types[$row['type']];
 	$stats[$type]=isset($stats[$type])?($stats[$type]+1):1;
 }
-if (!$a) {
-	unset($types['not']);
-}
 
 $smarty->assign_by_ref('stats', $stats);
 $smarty->assign_by_ref('list', $list);
