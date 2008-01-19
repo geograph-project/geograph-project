@@ -153,7 +153,7 @@
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?phlap\.net/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?valendale\.myby\.co\.uk/ [NC,OR]
     RewriteCond %{HTTP_REFERER} (thread|topic|forum|blog) [NC]    
-    RewriteRule (/photos/\d.*\.jpg)$ http://s9.www.geograph.org.uk.nyud.net$1 [L]
+    RewriteRule (/photos/\d.*\.jpg)$ http://s9.www.geograph.org.uk$1 [L]
 
 <Location /sitemap/>
     DirectoryIndex geograph.html
