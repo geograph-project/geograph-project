@@ -1,8 +1,8 @@
-{assign var="page_title" value="Weekly Leaderboard :: $type"|capitalize}
+{assign var="page_title" value="Weekly Leaderboard :: $heading"}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
-<h2>Weekly Leaderboard :: {$type|capitalize}</h2>
+<h2>Weekly Leaderboard :: {$heading}</h2>
 	
 <p><i>Variation</i>: {foreach from=$types item=t}
 [{if $t == $type}<b>{$type}</b>{else}<a href="/statistics/moversboard.php?type={$t}">{$t}</a>{/if}]

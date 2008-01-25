@@ -145,6 +145,16 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_table = " gridimage_search i ";
 		$heading = "Categories";
 		$desc = "different categories";
+	} elseif ($type == 'clen') {
+		$sql_column = "avg(length(comment))";
+		$sql_table = " gridimage_search i ";
+		$heading = "Average Description Length";
+		$desc = "average length of the description";
+	} elseif ($type == 'tlen') {
+		$sql_column = "avg(length(title))";
+		$sql_table = " gridimage_search i ";
+		$heading = "Average Title Length";
+		$desc = "average length of the title";
 	} elseif ($type == 'category_depth') {
 		$sql_column = "count(*)/count(distinct imageclass)";
 		$sql_table = " gridimage_search i ";

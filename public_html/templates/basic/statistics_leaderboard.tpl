@@ -1,8 +1,8 @@
-{assign var="page_title" value="Top $limit Leaderboard  :: $type"|capitalize}
+{assign var="page_title" value="Top $limit Leaderboard  :: $heading"}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
-<h2>Top {$limit} Leaderboard :: {$type|capitalize}</h2>
+<h2>Top {$limit} Leaderboard :: {$heading}</h2>
 
 <p>Variation: {foreach from=$types item=t}
 [{if $t == $type}<b>{$type}</b>{else}<a href="/statistics/leaderboard.php?type={$t}{$extralink}">{$t}</a>{/if}]
