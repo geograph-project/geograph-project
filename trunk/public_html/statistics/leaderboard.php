@@ -161,6 +161,18 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_where = "1";
 		$heading = "Categories";
 		$desc = "different categories";
+	} elseif ($type == 'clen') {
+		$sql_column = "avg(length(comment))";
+		$sql_where = "1";
+		$sql_having_having = "having count(*) > $minimum";
+		$heading = "Average Description Length";
+		$desc = "average length of the description, and having submitted over $minimum images";
+	} elseif ($type == 'tlen') {
+		$sql_column = "avg(length(title))";
+		$sql_where = "1";
+		$sql_having_having = "having count(*) > $minimum";
+		$heading = "Average Title Length";
+		$desc = "average length of the title, and having submitted over $minimum images";
 	} elseif ($type == 'category_depth') {
 		$sql_column = "count(*)/count(distinct imageclass)";
 		$sql_where = "1";
