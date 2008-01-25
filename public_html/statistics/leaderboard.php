@@ -30,7 +30,11 @@ $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['t
 $date = (isset($_GET['date']) && ctype_lower($_GET['date']))?$_GET['date']:'submitted';
 
 if (isset($_GET['whenYear'])) {
-	$_GET['when'] = sprintf("%04d-%02d",$_GET['whenYear'],$_GET['whenMonth']);
+	if (!empty($_GET['whenMonth']) {
+		$_GET['when'] = sprintf("%04d-%02d",$_GET['whenYear'],$_GET['whenMonth']);
+	} else {
+		$_GET['when'] = sprintf("%04d",$_GET['whenYear']);
+	}
 }
 
 $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
