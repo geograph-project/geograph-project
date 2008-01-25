@@ -126,6 +126,7 @@ if (isset($_GET['fav']) && $i) {
 							} break;
 				case 'sho': $sql[] = "comment!='' AND substring_index(comment,' ',9) = comment"; $l[] = 'G'; break;
 				case 'dup': $sql[] = "comment=title"; $l[] = 'H'; break;
+				case 'lon': $sql[] = "comment!='' AND substring_index(comment,' ',15) != comment"; $l[] = 'I'; break;
 			}
 		}
 		if (count($sql)) {
