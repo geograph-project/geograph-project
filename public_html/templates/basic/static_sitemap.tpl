@@ -105,6 +105,7 @@ Refine:
 <option value="additional">Additional Geographs</option>
 <option value="supps">Supplementals</option>
 <option value="centi">Centisquares</option>
+<option value="clen">Description Length</option>
 </select>
  <input type="submit" value="Go"/>
 </form></li></ul></li>
@@ -129,6 +130,7 @@ Refine:
 <option value="additional">Additional Geographs</option>
 <option value="supps">Supplementals</option>
 <option value="centi">Centisquares</option>
+<option value="clen">Description Length</option>
 </select>
 
 <select name="date">
