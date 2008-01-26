@@ -10,7 +10,21 @@
 	{assign var="sidebarclass" value="searchtext"}
 {/if}
 
-<div style="float:right;position:relative">Sidebar: <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass={$sidebarclass}" target="_search" rel="nofollow">IE &amp; Firefox</a>, <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass={$sidebarclass}" rel="sidebar" rel="nofollow" title="Results">Opera</a></div>
+<div style="float:right;position:relative">View in Sidebar for:<br/>
+<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass={$sidebarclass}" target="_search" rel="nofollow">IE &amp; Firefox</a>, <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass={$sidebarclass}" rel="sidebar" rel="nofollow" title="Results">Opera</a><br/>
+
+<form action="/search.php" method="get" style="display:inline">
+<input type="hidden" name="i" value="{$i}"/>
+{if $engine->currentPage > 1}<input type="hidden" name="page" value="{$engine->currentPage}"/>{/if}
+<select name="displayclass" size="1" onchange="this.form.submit()" style="font-size:0.9em"> 
+	{html_options options=$displayclasses selected=$engine->criteria->displayclass}
+</select>
+<noscript>
+<input type="submit" value="Update"/>
+</noscript>
+</form>
+
+</div>
 {/if}
 
 <h2>Search Results</h2>
