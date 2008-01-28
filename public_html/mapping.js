@@ -70,8 +70,10 @@ var currentelement = null;
 
 var eastings1 = 0;
 var northings1 = 0;
+var grlen1 = 0;
 var eastings2 = 0;
 var northings2 = 0;
+var grlen2 = 0;
 
 
 function overlayMouseUp(e) {
@@ -197,6 +199,7 @@ function overlayMouseMove(e) {
 			if (currentelement.id == 'marker1') {
 				eastings1 = easting;
 				northings1 = northing;
+				grlen1 = grlen;
 				document.theForm.grid_reference.value = grstr;
 				if (document.theForm.grid_reference_display) {
 					document.theForm.grid_reference_display.value = '??'+ cenXhun + cenYhun
@@ -204,6 +207,7 @@ function overlayMouseMove(e) {
 			} else if (currentelement.id == 'marker2') {
 				eastings2 = easting;
 				northings2 = northing;
+				grlen2 = grlen;
 				document.theForm.photographer_gridref.value = grstr;
 			} 
 			if (document.theForm.use6fig && grlen == 4)
@@ -349,9 +353,11 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 								tempY = tempY - (maph /40);
 								eastings1 = easting + 50;
 								northings1 = northing + 50;
+								grlen1 = halve;
 							} else {
 								eastings1 = easting;
 								northings1 = northing;
+								grlen1 = halve;
 							}
 							currentelement.style.left = (tempX - marker1left)+'px';
 							currentelement.style.top = (tempY - marker1top)+'px';
@@ -366,9 +372,11 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 								tempY = tempY - (maph /40);
 								eastings2 = easting + 50;
 								northings2 = northing + 50;
+								grlen2 = halve;
 							} else {
 								eastings2 = easting;
 								northings2 = northing;
+								grlen2 = halve;
 							}
 							currentelement.style.left = (tempX - marker2left)+'px';
 							currentelement.style.top = (tempY - marker2top)+'px';
@@ -398,7 +406,7 @@ function updateViewDirection() {
 		
 		distance = Math.sqrt( Math.pow(eastings1 - eastings2,2) + Math.pow(northings1 - northings2,2) );
 	
-		if (distance > (mult*1.4)) {
+		if (distance > (mult*1.4) || (distance > 0 && grlen1 == 5 && grlen2 == 5) {
 			realangle = Math.atan2( eastings1 - eastings2, northings1 - northings2 ) / (Math.PI/180);
 
 			if (realangle < 0)
