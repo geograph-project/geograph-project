@@ -283,7 +283,7 @@
 			<input type="hidden" name="claim" value="on"/>
 		{/if}
 		
-		{if $isowner || $isadmin}
+		{if ($isowner || $isadmin) && $ticket->user_id ne $user->user_id}
 			<input type="checkbox" name="notify" value="suggestor" id="notify_suggestor" {if $ticket->notify=='suggestor'}checked="checked"{/if}/> <label for="notify_suggestor">Send {if $isadmin || $ticket->public eq 'everyone' || ($isowner && $ticket->public eq 'owner') }{$ticket->suggester_name}{else}ticket suggestor{/if} this comment.</label>
 			&nbsp;&nbsp;&nbsp;
 		{/if}
