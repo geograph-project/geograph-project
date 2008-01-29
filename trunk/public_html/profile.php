@@ -164,7 +164,7 @@ if ($template=='profile.tpl')
 
 	if (!$smarty->is_cached($template, $cacheid))
 	{
-		if (isset($_GET['all'])) {
+		if (isset($_GET['all']) || isset($_GET['more'])) {
 			dieUnderHighLoad();
 		}
 		

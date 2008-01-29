@@ -137,8 +137,13 @@
 	{if $limit}
 		<p>Showing the latest {$limit} images, see <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=text&amp;resultsperpage=100">More</a></p>
 	{/if}
-
-
+	{if $profile->stats.total gt 100 && $limit == 100}
+		{dynamic}
+		{if $user->user_id eq $profile->user_id}
+			<form method="get" action="/profile/{$profile->user_id}/more"><input type="submit" value="Show Longer Profile Page"/></form>
+		{/if}
+		{/dynamic}
+	{/if}
 	<h3 style="margin-bottom:0px">Explore My Images</h3>
 
 	<ul>
@@ -158,9 +163,6 @@
 		{dynamic}
 			{if $user->user_id eq $profile->user_id}
 				<li><b>Change Requests</b>: <a href="/tickets.php">View Recent Tickets</a></li>
-				{if $profile->stats.total gt 100}
-					<li><form method="post" action="/profile/{$profile->user_id}/more"><input type="submit" value="Show Longer Profile Page"/></form></li>
-				{/if}
 			{/if}
 		{/dynamic}
 	</ul>
