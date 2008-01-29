@@ -325,7 +325,7 @@
 
 {if $opentickets && !$error && $isowner && $ticketsforcomments}
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
-	If you agree with the changes suggested, please indicate your acceptance. If you disagree, please explain why you do not accept the changes. This will be helpful to the Moderator in making a decision. However, if you want to make the changes straight away, or want to make other changes, use the form below. If a ticket suggests an issue but doesn't actually list the changes then it would help us if you were to make the changes using the form below.
+	If you agree with the changes suggested, please indicate your acceptance, <b>in the reply box above</b>. If you disagree, please explain above why you do not accept the changes. This will be helpful to the Moderator in making a decision. However, if you want to make the changes straight away, or want to make other changes, use the form below. If a ticket suggests an issue but doesn't actually list the changes then it would help us if you were to make the changes using the form below.
 </div>
 <br>
 <input type="button" value="Change Image Details Form &gt; &gt;" style="font-size:1.2em" onclick="this.style.display='none';document.getElementById('change_form_div').style.display=''"/>
@@ -399,7 +399,7 @@
   <a title="Open in Google Earth" href="/kml.php?id={$image->gridimage_id}" class="xml-kml">KML</a></div>
 
 <p>
-<label for="grid_reference"><b style="color:#0018F8">Subject Grid Reference</b> {if $moderated.grid_reference}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
+<label for="grid_reference"><b style="color:#0018F8">Subject Grid Reference</b> {if $moderated.grid_reference}<span class="moderatedlabel">(moderated for gridsquare changes)</span>{/if}</label><br/>
 {if $error.grid_reference}<span class="formerror">{$error.grid_reference}</span><br/>{/if}
 <input type="text" id="grid_reference" name="grid_reference" size="14" value="{$image->subject_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/templates/basic/img/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{/if}
 {getamap gridref="document.theForm.grid_reference.value" gridref2=$image->subject_gridref text="OS Get-a-map&trade;"}

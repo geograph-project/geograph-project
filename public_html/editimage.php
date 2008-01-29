@@ -158,10 +158,6 @@ if (isset($_REQUEST['id']))
 			$moderated["comment"]=false;
 			$moderated["imageclass"]=false;
 			$moderated["imagetaken"]=false;
-
-		 	if ($image->moderation_status == "pending")
-				$moderated["grid_reference"]=false;
-
 			$moderated["photographer_gridref"]=false;
 			$moderated["view_direction"]=false;
 			$moderated["use6fig"]=false;
