@@ -34,6 +34,9 @@ $isadmin=$USER->hasPerm('moderator')?1:0;
 $smarty->assign_by_ref('isadmin', $isadmin);
 
 $template = ($isadmin)?'article_admin.tpl':'article.tpl';
+if (isset($_GET['table'])) {
+	$template = 'article_table.tpl';
+}
 
 if ($isadmin) {
 	if (!empty($_GET['page']) && !preg_match('/[^\w-]/',$_GET['page'])) {
