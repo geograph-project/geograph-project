@@ -4,7 +4,7 @@
 
 <div style="float:right"><a title="geoRSS Feed for Geograph Pending Articles" href="/article/syndicator.php?admin=1" class="xml-geo">geo RSS</a> (unapproved articles)</div>
 
-<h2>Articles</h2>
+<h2>Articles <sub><a href="/article/?table">View as List</a> <sup style="color:red">New!</sup></sub></h2>
 
 <ul class="explore">
 {foreach from=$list item=item}

@@ -7,7 +7,7 @@ ul.explore li {	padding:3px; }
 
 <div style="float:right"><a title="geoRSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-rss">RSS</a></div>
 
-<h2>Articles</h2>
+<h2>User Contributed Articles &nbsp;&nbsp;&nbsp;<sub><a href="/article/?table">View as List</a> <sup style="color:red">New!</sup></sub></h2>
 
 <div class="interestBox">
 {if $user->registered} 
