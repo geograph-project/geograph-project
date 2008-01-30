@@ -25,7 +25,7 @@
 	{foreach from=$list item=item}
 	<tr>
 		<td>{$item.category_name}</td>
-		<td sortvalue="{$row.title}"><b>{if $item.approved != 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'}" href="/article/{$item.url}">{$item.title}</a></b>{if $item.approved != 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}Not publicly visible{/if}){/if}</td>
+		<td sortvalue="{$item.title}"><b>{if $item.approved != 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'}" href="/article/{$item.url}">{$item.title}</a></b>{if $item.approved != 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}Not publicly visible{/if}){/if}</td>
 		<td style="font-size:0.9em"><a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}">{$item.realname}</a></td>
 		<td sortvalue="{$item.update_time}" style="font-size:0.8em">{$item.update_time|date_format:"%a, %e %b %Y"}</td>
 		{if $isadmin || $item.user_id == $user->user_id}
