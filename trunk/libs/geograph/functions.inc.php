@@ -331,7 +331,12 @@ function GeographLinks(&$posterText,$thumbs = false) {
 //available as a function, as doesn't come into effect if just re-using a smarty cache
 function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl') {
 	global $smarty,$USER;
-	if (!isset($_ENV["OS"]) || strpos($_ENV["OS"],'Windows') === FALSE) {
+	if ($threshold == 0) {
+		header("HTTP/1.1 503 Service Unavailable");
+		$smarty->assign('searchq',stripslashes($_GET['q']));
+		$smarty->display($template);
+		exit;
+	} elseif (!isset($_ENV["OS"]) || strpos($_ENV["OS"],'Windows') === FALSE) {
 		$threshold *= 1.5;
 		//lets give registered users a bit more leaway!
 		if ($USER->registered) {

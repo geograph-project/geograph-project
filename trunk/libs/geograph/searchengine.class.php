@@ -240,7 +240,7 @@ END;
 			$this->islimited = true;
 		} elseif (preg_match('/^ rand\(/',$sql_order)) {
 			//homefully temporally
-			dieUnderHighLoad(0.1,'search_unavailable.tpl');
+			dieUnderHighLoad(0,'search_unavailable.tpl');
 		}
 		
 		if (strpos($sql_where,'gs') !== FALSE) {
