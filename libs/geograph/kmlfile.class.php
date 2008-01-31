@@ -460,7 +460,7 @@ class kmlPoint extends kmlPrimative {
 class kmlCamera extends kmlPrimative {
 
 	public function __construct($lat=0,$lon=0,$alt=0,$heading=0,$tilt=0,$roll=0) {
-		parent::__construct('Point');
+		parent::__construct('Camera');
 		$this->setItem('longitude',$lon);
 		$this->setItem('latitude',$lat);
 		$this->setItem('altitude',$alt);

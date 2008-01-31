@@ -54,6 +54,14 @@ END_HTML
 	$UrlTag->setItem('viewRefreshTime',4);
 	$UrlTag->setItem('viewFormat','BBOX=[bboxWest],[bboxSouth],[bboxEast],[bboxNorth]&amp;LOOKAT=[lookatLon],[lookatLat],[lookatRange],[lookatTilt],[lookatHeading],[horizFov],[vertFov]');
 
+	$LookAt = $NetworkLink->addChild('LookAt');
+	$LookAt->setItem('longitude',-2.968);
+	$LookAt->setItem('latitude',55.031);
+	$LookAt->setItem('altitude',0);
+	$LookAt->setItem('range',1253729);
+	$LookAt->setItem('heading',0);
+	$LookAt->setItem('tilt',0);
+
 } elseif ($m[2] == 3) { //GE 3
 	$NetworkLink = $kml->addChild('NetworkLink');
 	$NetworkLink->setItem('name','Geograph NetworkLink');
