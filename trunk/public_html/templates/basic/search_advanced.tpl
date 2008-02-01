@@ -268,7 +268,7 @@ function onlyone_part2(f) {
 		f.reverse_order_ind.disabled = false;
 		document.getElementById('l_reverse_order_ind').className = '';
 				
-		f.orderby.options[2].className = '';
+		f.orderby.options[1].className = '';
 	} else {
 		f.orderby.disabled = iscenter;
 		if (iscenter)
@@ -280,7 +280,7 @@ function onlyone_part2(f) {
 		f.reverse_order_ind.disabled = iscenter;
 		document.getElementById('l_reverse_order_ind').className = classname;
 
-		f.orderby.options[2].className = classname;
+		f.orderby.options[1].className = classname;
 	}
 	
 	

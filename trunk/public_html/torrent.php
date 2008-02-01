@@ -28,7 +28,11 @@ $size = (isset($_GET['size']) && in_array($_GET['size'],array('full','med','smal
 
 $s = (isset($_GET['s']) && is_numeric($_GET['s']))?intval($_GET['s']):0;
 
+if (!empty($_GET['rejected'])) {
+$filename = "rejected-$size";
+} else {
 $filename = sprintf("geograph-%02d-$size",$s/10000);
+}
 
 if (file_exists("torrent/$filename.torrent")) {
 	# let the browser know what's coming
@@ -73,8 +77,12 @@ fwrite ($rdf,
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
 $db=NewADOConnection($GLOBALS['DSN']);
+if (!empty($_GET['rejected'])) {
+$recordSet = &$db->Execute(sprintf("select * from gridimage where moderation_status = 'rejected'",$s,$s+10000));
 
+} else {
 $recordSet = &$db->Execute(sprintf("select * from gridimage_search gi where gridimage_id between %d and %d",$s,$s+10000));
+}
 
 $files = array("rdf/$filename.rdf");
 while (!$recordSet->EOF) 

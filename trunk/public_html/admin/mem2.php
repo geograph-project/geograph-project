@@ -34,7 +34,7 @@ memcache_debug(true);
 
 
 $a = $memcache->getExtendedStats();
-
+$a = array_reverse($a);
 print "<table border=1 cellspacing=0>";
 $first = true;
 foreach ($a as $name => $row) {
