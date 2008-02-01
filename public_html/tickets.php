@@ -38,7 +38,7 @@ if (isset($_GET['others'])) {
 	$where = "t.user_id = {$USER->user_id} and i.user_id != {$USER->user_id}";
 } else {
 	$where = "i.user_id = {$USER->user_id}";
-	$smarty->assign_by_ref('own', 1);
+	$smarty->assign('own', 1);
 }
 
 $newtickets=$db->GetAll(
@@ -82,7 +82,7 @@ $smarty->assign_by_ref('closedtickets', $closedtickets);
 
 
 $template = (!empty($_GET['sidebar']))?'tickets_sidebar.tpl':'tickets.tpl';
-$smarty->display($template,$cacheid);
+$smarty->display($template);
 
 	
 ?>
