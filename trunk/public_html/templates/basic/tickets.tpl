@@ -6,6 +6,12 @@
 {dynamic}
 <h2>Change Request Tickets for {$user->realname}</h2>
 
+{if $own}
+	<p><b>Own images</b> / <a href="/tickets.php?others">On others</a></p>
+{else}
+	<p><a href="/tickets.php">Own images</a> / <b>On others</b></p>
+{/if}	
+
 <h3>New Tickets</h3>
 
 {if $newtickets}

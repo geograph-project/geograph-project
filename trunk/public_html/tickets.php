@@ -34,13 +34,19 @@ if (isset($_SESSION['editpage_options']))
 
 $db = NewADOConnection($GLOBALS['DSN']);
 
+if (isset($_GET['others'])) {
+	$where = "t.user_id = {$USER->user_id} and i.user_id != {$USER->user_id}";
+} else {
+	$where = "i.user_id = {$USER->user_id}";
+	$smarty->assign_by_ref('own', 1);
+}
 
 $newtickets=$db->GetAll(
 	"select t.*, i.title
 	from gridimage_ticket as t
 	inner join gridimage as i on (t.gridimage_id=i.gridimage_id)
 	left join gridimage_ticket_comment as c on (t.gridimage_ticket_id=c.gridimage_ticket_id)
-	where i.user_id = {$USER->user_id} and t.moderator_id=0
+	where $where and t.moderator_id=0
 	and c.gridimage_ticket_id IS NULL and t.status<>'closed'
 	group by t.gridimage_ticket_id
 	order by t.suggested");
@@ -54,7 +60,7 @@ $opentickets=$db->GetAll(
 	inner join gridimage as i on (t.gridimage_id=i.gridimage_id)
 	left join gridimage_ticket_comment as c on (t.gridimage_ticket_id=c.gridimage_ticket_id)
 	left join user as moderator on (moderator.user_id=t.moderator_id)
-	where i.user_id = {$USER->user_id} and t.status<>'closed'
+	where $where and t.status<>'closed'
 	and (t.moderator_id>0 or c.gridimage_ticket_id IS NOT NULL)
 	group by t.gridimage_ticket_id
 	order by t.updated");
@@ -68,7 +74,7 @@ $closedtickets=$db->GetAll(
 	inner join gridimage as i on (t.gridimage_id=i.gridimage_id)
 	left join gridimage_ticket_comment as c on (t.gridimage_ticket_id=c.gridimage_ticket_id)
 	left join user as moderator on (moderator.user_id=t.moderator_id)
-	where i.user_id = {$USER->user_id} and t.status='closed'
+	where $where and t.status='closed'
 	and t.updated > date_sub(now(),interval 30 day)
 	group by t.gridimage_ticket_id
 	order by t.updated desc");
@@ -76,7 +82,7 @@ $smarty->assign_by_ref('closedtickets', $closedtickets);
 
 
 $template = (!empty($_GET['sidebar']))?'tickets_sidebar.tpl':'tickets.tpl';
-$smarty->display($template);
+$smarty->display($template,$cacheid);
 
 	
 ?>
