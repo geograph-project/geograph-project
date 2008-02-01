@@ -156,6 +156,7 @@ function __autoload($class_name) {
                 print_r($GLOBALS);
                 $con = ob_get_clean();
                 mail('geograph@barryhunter.co.uk','[Geograph Error] '.date('r'),$con);
+		header("HTTP/1.1 505 Server Error");
                 die('Fatal Internal Error, the developers have been notified, if possible please <a
 href="mailto:geograph@barryhunter.co.uk">let us know</a> what you where doing that lead up to this error');
         }

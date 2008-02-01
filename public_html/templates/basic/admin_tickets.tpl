@@ -35,6 +35,8 @@
 
 {if $moderator}
 <p>These tickets have been recently been touched by the selected moderator</p>
+{else}
+<p>Tickets currently open by other moderators are not shown in the list below</p>
 {/if}
 
 <table class="report sortable" id="newtickets" style="font-size:8pt;">

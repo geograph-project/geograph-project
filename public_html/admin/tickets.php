@@ -269,8 +269,8 @@ $smarty->assign('title', $title);
 
 $info = $db->getAssoc("select moderator_id>0,count(*) as c from gridimage_ticket where status<>'closed' and deferred < NOW() group by moderator_id=0");
 
-$types['pending'] .= " [{$info['0']}]";
-$types['open'] .= " [{$info['1']}]";
+$types['pending'] .= " [~ {$info['0']}]";
+$types['open'] .= " [~ {$info['1']}]";
 
 
 

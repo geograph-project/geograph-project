@@ -21,6 +21,7 @@
  <li><a href="#opensource" style="text-decoration:none"><b>Open source? Creative Commons?</b> What's that all about?</a></li>
  <li><a href="#commercial" style="text-decoration:none">Why must I agree to allow <b>commercial use</b> of my image?</a></li>
  <li><a href="#built" style="text-decoration:none"><b>Who</b> built this marvellous site?</a></li>
+ <li><a href="#concern" style="text-decoration:none">I'm concerned about a photo or comment I have seen on the site.</a></li>
  <li><a href="#question" style="text-decoration:none">I have a further <b>question</b>, what should I do?</a> <br/><br/>Issues:</li>
  <li><a href="#aol" style="text-decoration:none">I use AOL, and the images look terrible!</a></li>
  <li class="last"><a href="#missing" style="text-decoration:none">Many thumbnails seem to be missing, any idea of the cause?</a></li>
@@ -217,16 +218,20 @@
 	<p>Please see the <a href="/help/credits" title="Credits Page">Credits Page</a> for
 	information on all the <a href="/admin/team.php">people</a> who make this site possible.</p>
 
+<a name="concern"></a>
+<h3>I'm concerned about a photo or comment I have seen on the site.</h3>
+       <p>Please get in <a title="Contact Us" href="contact.php">Contact</a>, we'll do our best to deal with your concerns prompty.</p>
+
 <a name="question"></a>
 <h3>I have a further question, what should I do?</h3>
 	<p>Please <a title="Contact Us" href="contact.php">Contact Us</a>, or drop in on our friendly Discussion Forum.</p>
 
-<hr/>
+<h2 style="margin-top:200px;">Issues in using the Geograph Site</h2>
 
-<h2>Issues in using the Geograph Site</h2>
+<div class="interestBox">
 
 <a name="aol"></a>
-<h3>I use AOL, and the images look terrible!</h3>
+<h3 style="border:none;padding-top:0px">I use AOL, and the images look terrible!</h3>
 	<p>AOL's default settings for graphics is to show &quot;Compressed Graphics Only&quot;. 
 	This means AOL is selectively <i>re-compressing</i> images before you see them on your
 	screen. This loses a lot of image quality.</p>
@@ -241,5 +246,6 @@
 
 	<p>So if you use such a program you might like to try turning it off temporally and trying again, and if that gets our images back, then have a look for the option to disable this, arguably, flawed method of security.</p>
 
+</div/>
 
 {include file="_std_end.tpl"}

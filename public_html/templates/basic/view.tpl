@@ -270,29 +270,21 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 </div>
 
-  
-  
 
+<p style="text-align:center"><span class="interestBox" id="styleLinks"></span></p>
+<script type="text/javascript">
+/* <![CDATA[ */
+{literal}
+function addStyleLinks() {
+{/literal}
+	document.getElementById('styleLinks').innerHTML = 'Background for photo viewing:{if $maincontentclass eq "content_photowhite"}<b>white</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=white" rel="nofollow" class="robots-nofollow robots-noindex">White</a>{/if}/{if $maincontentclass eq "content_photoblack"}<b>black</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=black" rel="nofollow" class="robots-nofollow robots-noindex">Black</a>{/if}/{if $maincontentclass eq "content_photogray"}<b>grey</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=gray" rel="nofollow" class="robots-nofollow robots-noindex">Grey</a>{/if}';
+{literal}
+}
+{/literal}
+ AttachEvent(window,'load',addStyleLinks,false);
+/* ]]> */
+</script>
 
-<p style="text-align:center">
-<span class="interestBox">Background for photo viewing:
-{if $maincontentclass eq "content_photowhite"}
-	<b>white</b>
-{else}
-	<a href="/photo/{$image->gridimage_id}?style=white" rel="nofollow" class="robots-nofollow robots-noindex">White</a>
-{/if}/
-{if $maincontentclass eq "content_photoblack"}
-	<b>black</b>
-{else}
-	<a href="/photo/{$image->gridimage_id}?style=black" rel="nofollow" class="robots-nofollow robots-noindex">Black</a>
-{/if}/
-{if $maincontentclass eq "content_photogray"}
-	<b>grey</b>
-{else}
-	<a href="/photo/{$image->gridimage_id}?style=gray" rel="nofollow" class="robots-nofollow robots-noindex">Grey</a>
-{/if}
-</span>
-</p>
 
 <div style="width:100%;position:absolute;top:0px;left:0px;height:0px">
 	<div class="interestBox" style="float: right; position:relative; padding:2px;">
