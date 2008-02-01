@@ -156,6 +156,12 @@ class RasterMap
 			return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\">Loading map...</div>";
 		} elseif ($this->service == 'OS50k-small') {
 			static $idcounter = 1;
+			
+			if ($this->natgrlen == 4) {
+				$this->nateastings = $east + 500;
+				$this->natnorthings = $nort + 500;
+			}
+			
 			$mapurl = "http://{$CONF['CONTENT_HOST']}/tile.php?r=".$this->getToken();
 			
 			$gr= !empty($this->square->grid_reference_full)?$this->square->grid_reference_full:$this->square->grid_reference;
