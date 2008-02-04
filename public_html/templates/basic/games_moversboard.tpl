@@ -5,13 +5,14 @@
 <h2><a href="/games/">Geograph Games</a> - Weekly Leaderboard</h2>
 
 <form method="get" action="{$script_name}">
-<p>Game: <select name="g">
+<p> <label for="g">Game</label>: <select name="g" id="g">
 {html_options options=$gamelist selected=$g}
+</select> <label for="l">Level:</label><select name="l" id="l">
+{html_options options=$levellist selected=$l}
 </select>
-<input type="hidden" name="l" value="{$l}">
 <input type="submit" value="Go">
 	
- See also <a href="/games/leaderboard.php?l={$l}&amp;g={$g}">all time leaderboard</a></p>
+&nbsp;&nbsp;&nbsp;&nbsp; See also <a href="/games/leaderboard.php?l={$l}&amp;g={$g}">all time leaderboard</a></p>
 </form>
 <hr/>
 

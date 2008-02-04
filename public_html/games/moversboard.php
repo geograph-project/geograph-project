@@ -43,6 +43,7 @@ if (isset($_GET['more'])) {
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$smarty->assign('gamelist',array('0'=>'-all games-','1'=>'Mark It','2'=>'Place Memory'));
+	$smarty->assign('levellist',array('0'=>'-all-','1'=>'1','2'=>'2','3'=>'3','4'=>'4','5'=>'5'));
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$db=NewADOConnection($GLOBALS['DSN']);
