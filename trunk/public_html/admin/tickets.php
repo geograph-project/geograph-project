@@ -302,8 +302,8 @@ $db->Execute("LOCK TABLES ".implode(',',$locks));
 $newtickets=$db->GetAll($sql = 
 	"select t.*,suggester.realname as suggester,
 		submitter.realname as submitter, i.title, 
-		sum(c.user_id=i.user_id) as submitter_comments,
-		group_concat(if(c.user_id=i.user_id,c.comment,null)) as submitter_comment
+		group_concat(if(c.user_id=i.user_id,c.comment,null)) as submitter_comment,
+		group_concat(if(c.user_id=i.user_id,c.comment,null)) as suggester_comment
 		$columns
 	from gridimage_ticket as t
 	inner join user as suggester on (suggester.user_id=t.user_id)
