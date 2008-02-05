@@ -173,13 +173,6 @@ if ($type == 'open') {
 	$smarty->assign('col_moderator', 1);
 
 	$where_crit = "t.moderator_id>0 and t.status<>'closed'";
-	
-	if (!empty($_GET['defer'])) {		
-		$smarty->assign('defer', 1);
-	} else {
-		//exclude deferred
-		$sql_where .= " and deferred < NOW()";
-	}
 
 } elseif ($type == 'closed') {
 	$columns .= ",moderator.realname as moderator";
@@ -192,6 +185,17 @@ if ($type == 'open') {
 	
 	$rev = ($rev)?'':'desc';
 	
+} elseif ($type == 'all') {
+	$columns .= ",moderator.realname as moderator";
+	$tables .= " left join user as moderator on (moderator.user_id=t.moderator_id)";
+		$locks[] = "user moderator READ";
+		
+	$smarty->assign('col_moderator', 1);
+
+	$where_crit = "1";
+	
+	$rev = ($rev)?'':'desc';
+	
 } else {
 	$type = 'pending';
 	
@@ -199,12 +203,13 @@ if ($type == 'open') {
 
 	
 	$sql_where .= " and i.user_id != {$USER->user_id}";
-	
-	if (!$defer) {		
-		//exclude deferred
-		$sql_where .= " and deferred < date_sub(NOW(),INTERVAL 24 HOUR)";
-	}
-	
+}
+
+#################
+
+if (!$defer) {
+	//exclude deferred
+	$sql_where .= " and deferred < date_sub(NOW(),INTERVAL 24 HOUR)";
 }
 
 #################
