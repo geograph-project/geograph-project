@@ -54,10 +54,10 @@
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}">
 {if $col_moderator}<td>{$ticket.moderator}</td>{/if}
-<td>{$ticket.submitter}{if $ticket.submitter_comments}<img src="/templates/basic/img/star-light.png" width="14" height="14" title="Comment: {$ticket.submitter_comment}"/>{/if}</td>
+<td>{$ticket.submitter}{if $ticket.submitter_comment}<img src="/templates/basic/img/star-light.png" width="14" height="14" title="Comment: {$ticket.submitter_comment}"/>{/if}</td>
 <td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
 <td>{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes|escape:'html'|geographlinks}</td>
-<td>{$ticket.suggester}</td>
+<td>{$ticket.suggester}{if $ticket.suggester_comment}<img src="/templates/basic/img/star-light.png" width="14" height="14" title="Comment: {$ticket.suggester_comment}"/>{/if}</td>
 <td>{$ticket.suggested}</td>
 <td><input class="accept" type="button" id="defer" value="D" style="width:10px;" onclick="deferTicket({$ticket.gridimage_ticket_id},24)"/><span class="caption" id="modinfo{$ticket.gridimage_ticket_id}"></span></td>
 </tr>

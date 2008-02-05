@@ -50,6 +50,7 @@
 	<td>Moderator?</td>
 	<td>Title</td>
 	<td>Problem</td>
+	<td>Comments</td>
 	<td style="width:150px">Updated</td>
 </tr></thead>
 <tbody>
@@ -60,6 +61,7 @@
 <td>{$ticket.moderator}</td>
 <td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
 <td>{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes}</td>
+<td>{$ticket.comments}</td>
 <td style="width:150px">{$ticket.updated}</td>
 </tr>
 {/foreach}
@@ -79,6 +81,7 @@
 	<td>Moderator</td>
 	<td>Title</td>
 	<td>Problem</td>
+	<td>Comments</td>
 	<td style="width:150px">Updated</td>
 </tr></thead>
 <tbody>
@@ -89,6 +92,7 @@
 <td>{$ticket.moderator}</td>
 <td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
 <td>{$ticket.notes}</td>
+<td>{$ticket.comments}</td>
 <td style="width:150px">{$ticket.updated}</td>
 </tr>
 {/foreach}
