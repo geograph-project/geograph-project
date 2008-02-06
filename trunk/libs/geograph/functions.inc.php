@@ -181,8 +181,16 @@ function smarty_function_external($params)
 */
 function smarty_function_gridimage($params)
 {
+	global $imageCredits;
+
 	$image=new GridImage;
 	$image->loadFromId($params['id']);
+
+	if (isset($imageCredits[$image->realname])) {
+		$imageCredits[$image->realname]++;
+	} else {
+		$imageCredits[$image->realname]=1;
+	}
 
 	$html='<div class="photoguide">';
 
