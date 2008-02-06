@@ -12,6 +12,8 @@
 	<p><a href="/tickets.php">Own images</a> / <b>On others</b></p>
 {/if}	
 
+<p>Click a column header to resort a list</p>
+
 <h3>New Tickets</h3>
 
 {if $newtickets}
@@ -42,11 +44,14 @@
 
 <h3>Open Tickets</h3>
 
-<p><small>The 'Comments' column shows the number of replies to the ticket, which might be <s>striked</s> if those replies are not visible</small></p>
-
 {if $opentickets}
 
 <p>These tickets have seen some activity...</p>
+
+{if !$own}
+<p><small>The 'Comments' column shows the number of replies to the ticket, will might be <s>striked</s> if those replies are not visible.</small></p>
+{/if}
+
 <table class="report sortable" id="opentickets" style="font-size:8pt;">
 <thead><tr>
 	<td>Moderator?</td>

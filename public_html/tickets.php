@@ -35,8 +35,12 @@ if (isset($_SESSION['editpage_options']))
 $db = NewADOConnection($GLOBALS['DSN']);
 
 if (isset($_GET['others'])) {
+	$opencol = "if (notify = 'suggestor',count(distinct c.gridimage_ticket_comment_id),CONCAT('<s>',count(distinct c.gridimage_ticket_comment_id),'</s>') )";
+
 	$where = "t.user_id = {$USER->user_id} and i.user_id != {$USER->user_id}";
 } else {
+	$opencol = "count(distinct c.gridimage_ticket_comment_id)";
+
 	$where = "i.user_id = {$USER->user_id}";
 	$smarty->assign('own', 1);
 }
@@ -54,7 +58,7 @@ $smarty->assign_by_ref('newtickets', $newtickets);
 
 
 $opentickets=$db->GetAll(
-	"select t.*, i.title, if (notify = 'suggestor',count(distinct c.gridimage_ticket_comment_id),CONCAT('<s>',count(distinct c.gridimage_ticket_comment_id),'</s>') ) as comments,
+	"select t.*, i.title, $opencol as comments,
 	moderator.realname as moderator
 	from gridimage_ticket as t
 	inner join gridimage as i on (t.gridimage_id=i.gridimage_id)
