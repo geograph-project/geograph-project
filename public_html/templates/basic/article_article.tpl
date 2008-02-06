@@ -16,7 +16,7 @@
 #contents_table .h2 { font-weight:bold; }
 #contents_table .h3 { padding-left: 3px; }
 #contents_table .h4 { padding-left: 10px; font-size: 0.7em}
-#contents_table .h2 small, #contents_table .h3 small, #contents_table .h4 small { font-size:0.8em; color:gray }
+#contents_table .h2 small, #contents_table .h3 small, #contents_table .h4 small { font-size:0.6em; color:gray }
 @media print {
 	.no_print {
 		display: none;
