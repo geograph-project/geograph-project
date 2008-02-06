@@ -122,7 +122,7 @@ if (isset($_REQUEST['id']))
 		$smarty->assign_by_ref('isowner', $isowner);
 		$smarty->assign_by_ref('isadmin', $isadmin);
 
-		if ($_GET['thankyou'])
+		if (!empty($_GET['thankyou']))
 			$smarty->assign('thankyou', $_GET['thankyou']);
 
 
@@ -210,6 +210,8 @@ if (isset($_REQUEST['id']))
 				$ticket->setNotify((!empty($_POST['notify']))?preg_replace('/[^\w]+/','',$_POST['notify']):'');
 			}
 			
+			$thankyou = '';
+			
 			//now lets do our thing depending on your permission level..
 			$comment=stripslashes($_POST['comment']);
 			if ($isadmin)
@@ -244,6 +246,7 @@ if (isset($_REQUEST['id']))
 				{
 					$ticket->addOwnerComment($USER->user_id, $comment);
 					#$smarty->assign("thankyou", "comment");
+					$thankyou="comment";
 				}
 			}
 			elseif ($issuggester)
@@ -253,6 +256,7 @@ if (isset($_REQUEST['id']))
 				{
 					$ticket->addSuggesterComment($USER->user_id, $comment);
 					#$smarty->assign("thankyou", "comment");
+					$thankyou="comment";
 				}
 			}
 			else
@@ -266,7 +270,7 @@ if (isset($_REQUEST['id']))
 			}
 			
 			//refresh this page so you're less likely to repost
-			header("Location: http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$image->gridimage_id}");
+			header("Location: http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$image->gridimage_id}".($thankyou?"&thankyou=$thankyou":''));
 			exit;
 		}
 
