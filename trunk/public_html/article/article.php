@@ -81,7 +81,7 @@ function smarty_function_articletext($input) {
 
 	$output = str_replace(
 		array('[b]','[/b]','[big]','[/big]','[i]','[/i]','[h2]','[/h2]','[h3]','[/h3]','[h4]','[/h4]','[float]','[/float]','[br/]','[hr/]','[reveal]','[/reveal]'),
-		array('<b>','</b>','<big>','</big>','<i>','</i>','<h2>','</h2>','<h3>','</h3>','<h4>','</h4>','<div style="float:left">','</div>','<br style="clear:both"/>','<hr align="center" width="75%"/>','<span style="color:white">','</span>'),
+		array('<b>','</b>','<big>','</big>','<i>','</i>','<h2>','</h2>','<h3>','</h3>','<h4>','</h4>','<div style="float:left;padding-right:10px;padding-bottom:10px;">','</div>','<br style="clear:both"/>','<hr align="center" width="75%"/>','<span style="color:white">','</span>'),
 		$output);
 
 	$pattern=array(); $replacement=array();
