@@ -62,18 +62,18 @@ if (isset($_POST['gridimage_id']))
 					case 'Supplemental':
 						$user_status = 'accepted'; break;
 					case 'Reject':
-						$user_status = 'rejected'; 
-
-						$ticket=new GridImageTroubleTicket();
-						$ticket->setSuggester($USER->user_id);
-						$ticket->setImage($gridimage_id);
-						$ticket->setNotes("Auto-generated ticket, as a result of Self Moderation. Please leave a comment (in the reply box just below this message) to explain the reason for suggesting '$status'.");
-						$status=$ticket->commit('pending');
-
-						break;
+						$user_status = 'rejected'; break;
 					default:
 						echo "UNKNOWN STATUS";
 						exit;
+				}
+
+				if ($user_status == 'rejected' || $image->moderation_status != 'pending') {
+					$ticket=new GridImageTroubleTicket();
+					$ticket->setSuggester($USER->user_id);
+					$ticket->setImage($gridimage_id);
+					$ticket->setNotes("Auto-generated ticket, as a result of Self Moderation. Please leave a comment (in the reply box just below this message) to explain the reason for suggesting '$status'.");
+					$status=$ticket->commit('pending');
 				}
 
 				
