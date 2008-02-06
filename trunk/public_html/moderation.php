@@ -68,7 +68,8 @@ if (isset($_POST['gridimage_id']))
 						exit;
 				}
 
-				if ($user_status == 'rejected' || $image->moderation_status != 'pending') {
+				if ($user_status == 'rejected' || $image->moderation_status != 'pending' 
+				     || $db->getOne("SELECT COUNT(*) FROM gridsquare_moderation_lock WHERE gridsquare_id = {$image->gridsquare_id} AND lock_obtained > DATE_SUB(NOW(),INTERVAL 1 HOUR)") ) {
 					$ticket=new GridImageTroubleTicket();
 					$ticket->setSuggester($USER->user_id);
 					$ticket->setImage($gridimage_id);
