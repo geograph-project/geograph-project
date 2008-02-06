@@ -54,7 +54,7 @@ $smarty->assign_by_ref('newtickets', $newtickets);
 
 
 $opentickets=$db->GetAll(
-	"select t.*, i.title, count(distinct c.gridimage_ticket_comment_id) as comments,
+	"select t.*, i.title, if (notify = 'suggestor',count(distinct c.gridimage_ticket_comment_id),CONCAT('<s>',count(distinct c.gridimage_ticket_comment_id),'</s>') ) as comments,
 	moderator.realname as moderator
 	from gridimage_ticket as t
 	inner join gridimage as i on (t.gridimage_id=i.gridimage_id)

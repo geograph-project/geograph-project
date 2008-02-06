@@ -42,6 +42,8 @@
 
 <h3>Open Tickets</h3>
 
+<p><small>The 'Comments' column shows the number of replies to the ticket, which might be <s>striked</s> if those replies are not visible</small></p>
+
 {if $opentickets}
 
 <p>These tickets have seen some activity...</p>
