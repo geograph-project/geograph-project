@@ -469,7 +469,7 @@ class GridSquare
 	{
 		$ok=false;
 		$db=&$this->_getDB();
-		$square = $db->GetRow("select * from gridsquare where CONTAINS( GeomFromText('POINT($internalx $internaly)'),point_xy ) limit 1");
+		$square = $db->GetRow("select * from gridsquare where CONTAINS( GeomFromText('POINT($internalx $internaly)'),point_xy ) order by percent_land desc limit 1");
 		if (count($square))
 		{		
 			$ok=true;
@@ -553,7 +553,12 @@ class GridSquare
 				//what's the closes square with land? more than 5km away? disallow
 				$ok=$this->findNearby($x,$y, 2, false);
 			
-				//we only need to know we found one...
+				//check on the correct grid!;
+				if ($ok && $this->nearest->reference_index != $prefix['reference_index'])
+				{
+					$ok = false;
+				}
+				
 				unset($this->nearest);
 				
 				if ($ok)
