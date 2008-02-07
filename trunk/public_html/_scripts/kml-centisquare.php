@@ -75,8 +75,8 @@ $folder->setItem('name',"$gr :: Geograph SuperLayer");
 	
 
 	$photos = $db->GetAll($sql = "select 
-	gridimage_id,title,realname,user.user_id,comment,nateastings,natnorthings,natgrlen,view_direction
-	from gridimage
+	gridimage_id,title,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.user_id,comment,nateastings,natnorthings,natgrlen,view_direction
+	from gridimage gi
 		 inner join user using(user_id)
 	where $sql_where
 	order by null");
@@ -109,7 +109,7 @@ $folder->setItem('name',"$gr :: Geograph SuperLayer");
 			$thumb = $details['server'].$details['url']; 
 			$thumbTag = $details['html'];
 			
-			$description = $linkTag.$thumbTag."</a><br/>".GeographLinks($image->comment)." (".$linkTag."view full size</a>)"."<br/><br/> &copy; Copyright <a title=\"view user profile\" href=\"http://{$_SERVER['HTTP_HOST']}/profile/".$image->user_id."\">".$image->realname."</a> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a><br/><br/>";
+			$description = $linkTag.$thumbTag."</a><br/>".GeographLinks($image->comment)." (".$linkTag."view full size</a>)"."<br/><br/> &copy; Copyright <a title=\"view user profile\" href=\"".$image->profile_link."\">".$image->realname."</a> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a><br/><br/>";
 
 			$placemark->setItemCDATA('description',$description);
 

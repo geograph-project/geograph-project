@@ -66,8 +66,8 @@ for example.</p>
 and the closure notifications, (and optionally only on minor tickets). In this way you can
 cut down on the volume of emails, and just let a moderator deal with the ticket.
 
-<p><i>Note that 
-at in all cases as the photographer, you can always revert any change you don't agree with.</i></p>
+<p><i>Note that at in all cases as the Contributor, you can always revert any change 
+you don't agree with.</i></p>
 
 <hr/>
 

@@ -29,7 +29,7 @@
   	{/if}
   	<div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getFull()}</a></div>
   {/if}
-  <div class="caption"><b>{$image->current_title|escape:'html'}</b> by {$image->realname}</div>
+  <div class="caption"><b>{$image->current_title|escape:'html'}</b> by {$image->realname}{if $isowner} (<a href="/licence.php?id={$image->gridimage_id}">change credit</a>){/if}</div>
   
   {if $image->comment}
   <div class="caption">{$image->current_comment|escape:'html'|geographlinks}</div>

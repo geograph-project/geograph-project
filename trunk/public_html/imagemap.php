@@ -84,11 +84,34 @@ init_session();
 			$map->mapDateCrit = "2005-06-01";
 			
 			$map->type_or_user = -1;
+		} elseif (isset($_GET['years']) && $USER->hasPerm("admin")) {
+			$map->setOrigin(0,-10);
+			$map->setImageSize(900,1300);
+			$map->setScale(1);
+			$map->type_or_user = -2;
+			
+			set_time_limit(3600*3);
+			
+			$root=&$_SERVER['DOCUMENT_ROOT'];
+			$n = time()-(60*60*24*7);
+			for($t=2000; $t<2009; $t++) {
+				foreach (range(1,12) as $m) {
+					$map->displayYear = sprintf("%04d-%02d",$t,$m);
+
+					$target=$map->getImageFilename();
+
+					if (!file_exists($root.$target)) {
+						$map->_renderMap();	
+					}
+					print "{$map->displayYear} DONE<BR>";flush();
+				}
+			}
+			exit;
 		} elseif (isset($_GET['dates']) && $USER->hasPerm("admin")) {
 			$map->setOrigin(0,-10);
 			$map->setImageSize(900,1300);
 			$map->setScale(1);
-			$map->type_or_user = -1;
+			$map->type_or_user = ($_GET['dates'] == -2)?-2:-1;
 			
 			set_time_limit(3600*3);
 			
@@ -103,7 +126,7 @@ init_session();
 				if (!file_exists($root.$target)) {
 					$map->_renderMap();	
 				}
-				print "$mapDateStart DONE<BR>";flush();
+				print "{$map->mapDateStart} DONE<BR>";flush();
 			}
 			exit;
 		}

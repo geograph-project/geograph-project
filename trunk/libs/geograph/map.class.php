@@ -383,6 +383,9 @@ class GeographMap
 		if (!empty($this->mapDateCrit)) {
 			$file=preg_replace('/\./',"-{$this->mapDateStart}.",$file);
 		}
+		if (!empty($this->displayYear)) {
+			$file=preg_replace('/\./',"-y{$this->displayYear}.",$file);
+		}
 		return $dir.$file;
 	}
 
@@ -448,6 +451,7 @@ class GeographMap
 	*/
 	function returnImage()
 	{
+		//if thumbs level on depeth map, can just use normal render.
 		if ($this->type_or_user == -1 && $this->pixels_per_km >4) {
 			$this->type_or_user = 0;
 		}
@@ -496,28 +500,42 @@ class GeographMap
 	* @access private
 	*/
 	function& _renderMap() {
+	
+	#STANDARD MAP
 		if ($this->type_or_user == 0) {
 			$ok = $this->_renderImage();
 		} else if ($this->type_or_user < 0) {
+	
+	#DEPTH MAP (_renderDepthImage also understands date maps)
 			if ($this->type_or_user == -1) {
+				//if thumbs level can just use normal render. 
 				if ($this->pixels_per_km<=4) {
 					$ok = $this->_renderDepthImage();
 				} else {
 					$ok = $this->_renderImage();
 				}
+	
+	#ONLY INCLUDE PHOTOS UPTO CERTAIN DATE
 			} elseif ($this->type_or_user == -2) {
 				$ok = $this->_renderDateImage();
+	
+	#BLANK (base) MAP
 			} elseif ($this->type_or_user == -10) {
 				//normal render image, understands type_or_user = -10 and just draws empty tile
 				$ok = $this->_renderImage();
+	
+	#RANDOM SELECTION OF THUMBS OF A LARGEMAP
 			} else  {
 				$ok = $this->_renderRandomGeographMap();
 			}
+			
+	#PERSONAL MAP
 		} else if ($this->type_or_user > 0) {
 			//normal render image, understands type_or_user > 0!
 			$ok = $this->_renderImage();
 		} 
 
+		//save it for rerendering later. 
 		if ($ok) {
 			$db=&$this->_getDB();
 
@@ -1173,7 +1191,11 @@ class GeographMap
 		$ok = true;
 
 		$basemap=$this->getBaseMapFilename();
-		if ($this->caching && @file_exists($root.$basemap))	{
+		if (!empty($this->displayYear)) {
+			$img=imagecreate($this->image_w,$this->image_h);
+			$colBackground=imagecolorallocate($img, 255,255,255);
+			imagecolortransparent($img,$colBackground);
+		} elseif ($this->caching && @file_exists($root.$basemap)) {
 			$img=imagecreatefromgd($root.$basemap);
 		} else {
 			$img=&$this->_createBasemap($root.$basemap);
@@ -1213,17 +1235,30 @@ class GeographMap
 		$scanbottom=$bottom-$overscan;
 		$scantop=$top+$overscan;
 
-		$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left,true);
-
+		if (empty($this->displayYear)) {
+			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left,true);
+		}
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 
-		$sql="select x,y,sum(submitted > '$mapDateCrit')
-			from 
-			gridsquare gs 
-			inner join gridimage gi using(gridsquare_id)
-			where CONTAINS( GeomFromText($rectangle),	point_xy) and
-			submitted < '{$this->mapDateStart}'
-			group by gi.gridsquare_id ";
+		if (!empty($this->displayYear)) {
+			$sql="select x,y,'' as dummy
+				from 
+				gridsquare gs 
+				inner join gridimage gi using(gridsquare_id)
+				where CONTAINS( GeomFromText($rectangle),	point_xy) and
+				imagetaken LIKE '{$this->displayYear}%'
+				group by gi.gridsquare_id ";
+		
+		} else {
+			$sql="select x,y,sum(submitted > '$mapDateCrit')
+				from 
+				gridsquare gs 
+				inner join gridimage gi using(gridsquare_id)
+				where CONTAINS( GeomFromText($rectangle),	point_xy) and
+				submitted < '{$this->mapDateStart}'
+				group by gi.gridsquare_id ";
+		}
+
 
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
@@ -1249,13 +1284,14 @@ class GeographMap
 		$recordSet->Close(); 
 
 		if ($img) {
-			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
+			if (empty($this->displayYear)) {
+				$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
 
-			imagestring($img, 5, 3, $this->image_h-30, $this->mapDateStart, $black);
+				imagestring($img, 5, 3, $this->image_h-30, $this->mapDateStart, $black);
 
-			if ($this->pixels_per_km>=1  && $this->pixels_per_km<40 && isset($CONF['enable_newmap']))
-				$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
-
+				if ($this->pixels_per_km>=1  && $this->pixels_per_km<40 && isset($CONF['enable_newmap']))
+					$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
+			}
 			$target=$this->getImageFilename();
 
 			if (preg_match('/jpg/',$target)) {
@@ -1836,7 +1872,7 @@ END;
 		}
 		if ($isimgmap) {
 			//yes I know the imagecount is possibly strange in the join, but does speeds it up, having it twice speeds it up even more! (by preference have the second one, speed wise!), also keeping the join on gridsquare_id really does help too for some reason! 
-			$sql="select gs.*,gridimage_id,realname,title 
+			$sql="select gs.*,gridimage_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,title 
 				from gridsquare gs
 				left join gridimage gi ON 
 				(imagecount > 0 AND gi.gridsquare_id = gs.gridsquare_id $where_crit2 AND imagecount > 0 AND gridimage_id = 

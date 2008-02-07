@@ -105,7 +105,7 @@ height=3D31=20
 align=3Dright=20
       border=3D0></A> <FONT face=3DGeorgia>Image =A9 Copyright <A =
 title=3D"View profile"=20
-      href=3D"/profile/{$image->user_id}">{$image->realname}</A> and licensed for =
+      href=3D"{$image->profile_link|replace:'=':'=3D'}">{$image->realname}</A> and licensed for =
 reuse under this=20
       <A class=3Dnowrap =
 href=3D"http://creativecommons.org/licenses/by-sa/2.0/"=20

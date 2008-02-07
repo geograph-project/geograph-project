@@ -74,7 +74,7 @@ $sql_where = "CONTAINS(GeomFromText($rectangle),point_xy)";
 
 
 $photos = $db->GetAll("select 
-gridimage_id,grid_reference,title,imagecount,user_id,realname,x,y,view_direction,realname,
+gridimage_id,grid_reference,title,imagecount,user_id,realname,x,y,view_direction,credit_realname,realname,
 wgs84_lat,wgs84_long
 from gridimage_kml 
 where $sql_where
@@ -101,7 +101,7 @@ foreach($photos as $id=>$entry)
 			$thumb = $details['server'].$details['url']; 
 			$thumbTag = $details['html'];
 			
-			$description = $linkTag.$thumbTag."</a><br/>".GeographLinks($image->comment)." (".$linkTag."view full size</a>)"."<br/><br/> &copy; Copyright <a title=\"view user profile\" href=\"http://{$_SERVER['HTTP_HOST']}/profile/".$image->user_id."\">".$image->realname."</a> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a><br/><br/>";
+			$description = $linkTag.$thumbTag."</a><br/>".GeographLinks($image->comment)." (".$linkTag."view full size</a>)"."<br/><br/> &copy; Copyright <a title=\"view user profile\" href=\"".$image->profile_link."\">".$image->realname."</a> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a><br/><br/>";
 
 			$placemark->setItemCDATA('description',$description);
 

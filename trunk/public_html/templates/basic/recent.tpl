@@ -29,7 +29,7 @@
   	  
   	  <div>
   	  <a title="view full size image" href="/photo/{$image->gridimage_id}" target="_main">{$image->title|escape:'html'}</a>
-  	  by <a title="view user profile" href="/profile/{$image->user_id}" target="_main">{$image->realname}</a>
+  	  by <a title="view user profile" href="{$image->profile_link}" target="_main">{$image->realname}</a>
 	  for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}" target="_main">{$image->grid_reference}</a>
 	  
 	  </div>

@@ -143,7 +143,7 @@ if ($i && !$user_crit ) {
 	if (!empty($_GET['ftf'])) {
 		$mod_sql .= " and ftf = 1"; 
 	}
-	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,nateastings,natnorthings,natgrlen,gi.user_id $sql_from 
+	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,imageclass,nateastings,natnorthings,natgrlen,gi.user_id $sql_from 
 	from user 
 	inner join gridimage gi using(user_id) 
 	inner join gridsquare using(gridsquare_id) 
@@ -155,7 +155,7 @@ if ($i && !$user_crit ) {
 	if (!empty($_GET['ftf'])) {
 		$mod_sql .= " and ftf = 1"; 
 	}
-	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,realname,imageclass,user_id $sql_from 
+	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,credit_realname,realname,imageclass,user_id $sql_from 
 	from gridimage_search gi 
 	where $mod_sql $sql_crit");
 }

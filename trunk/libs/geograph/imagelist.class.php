@@ -87,7 +87,7 @@ class ImageList
 			$limit="limit $count";
 		
 		if ($advanced) {
-			$sql = "select gi.*,grid_reference,user.realname,imagecount ".
+			$sql = "select gi.*,grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,imagecount ".
 				"from gridimage as gi ".
 				"inner join gridsquare as gs using(gridsquare_id) ".
 				"inner join user on(gi.user_id=user.user_id) ".
@@ -132,7 +132,7 @@ class ImageList
 			$limit="limit $count";
 		
 		if ($advanced || preg_match("/(pending|rejected)/",$statuslist)) {
-		$sql="select gi.*,grid_reference,user.realname, t.topic_id,t.forum_id,t.last_post ";
+		$sql="select gi.*,grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname, t.topic_id,t.forum_id,t.last_post ";
 		if ($advanced == 2)
 			$sql.=", (select count(*) from gridimage_ticket where gridimage_id=gi.gridimage_id and status<3) as open_tickets ";
 		$sql.="from gridimage as gi ".

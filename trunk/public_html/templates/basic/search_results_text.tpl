@@ -15,7 +15,7 @@
 	<li>
 	<a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> 
 	  <a title="{$image->comment|escape:"html"}" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
-	  by <a title="view user profile" href="/profile/{$image->user_id}">{$image->realname}</a>
+	  by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a>
 	 
 
 	  <i>{$image->dist_string}</i></li>

@@ -102,7 +102,7 @@ class RestAPI
 				
 				echo '<title>'.htmlentities2($image->title).'</title>';
 				echo '<gridref>'.htmlentities($image->grid_reference).'</gridref>';
-				echo "<user profile=\"http://{$_SERVER['HTTP_HOST']}/profile/{$image->user_id}\">".htmlentities($image->realname).'</user>';
+				echo "<user profile=\"{$image->profile_link}\">".htmlentities($image->realname).'</user>';
 				
 				echo preg_replace('/alt=".*?" /','',$image->getFull());
 
@@ -143,7 +143,7 @@ class RestAPI
 						echo " <image url=\"http://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\">";
 
 						echo ' <title>'.htmlentities($image->title).'</title>';
-						echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}/profile/{$image->user_id}\">".htmlentities($image->realname).'</user>';
+						echo " <user profile=\"{$image->profile_link}\">".htmlentities($image->realname).'</user>';
 
 						echo ' '.preg_replace('/alt=".*?" /','',$image->getThumbnail(120,120));
 

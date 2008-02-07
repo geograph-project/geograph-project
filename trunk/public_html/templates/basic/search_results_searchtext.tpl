@@ -35,7 +35,7 @@
 	{searchbreak image=$image}
 	
 	<span class="nowrap"><a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}" target="_main" style="font-size:0.6em">{$image->grid_reference}</a> <a title="{$image->comment|escape:"html"}" href="/editimage.php?id={$image->gridimage_id}" target="_main">{$image->title|escape:'html'}</a>
-		  by <a title="view user profile" href="/profile/{$image->user_id}" target="_main">{$image->realname}</a></span><br/>
+		  by <a title="view user profile" href="{$image->profile_link}" target="_main">{$image->realname}</a></span><br/>
 	
 
 	{foreachelse}

@@ -182,9 +182,9 @@ for ($i=0; $i<$cnt; $i++)
 		$item->imageTaken = $images->images[$i]->imagetaken;
 	}
 
-	$item->date = strtotime($images->images[$i]->submitted); 
-	$item->source = "http://{$_SERVER['HTTP_HOST']}/profile/".$images->images[$i]->user_id; 
-	$item->author = $images->images[$i]->realname; 
+	$item->date = strtotime($images->images[$i]->submitted);
+	$item->source = $images->images[$i]->profile_link;
+	$item->author = $images->images[$i]->realname;
 
 	if ($geoformat) {
 		$item->lat = $images->images[$i]->wgs84_lat;
