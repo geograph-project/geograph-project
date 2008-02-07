@@ -66,8 +66,9 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
     xmlns:dc="http://purl.org/dc/elements/1.1/"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:georss="http://www.georss.org/georss/">
-<Work rdf:about="">
+<Work rdf:about="http://{$http_host}/photo/{$image->gridimage_id}">
      <dc:title>{$image->grid_reference} : {$image->title|escape:'html'}</dc:title>
+     <dc:identifier>http://{$http_host}/photo/{$image->gridimage_id}</dc:identifier>
      <dc:creator><Agent>
         <dc:title>{$image->realname|escape:'html'}</dc:title>
      </Agent></dc:creator>
