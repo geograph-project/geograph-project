@@ -416,14 +416,24 @@ if (isset($_POST['gridsquare']))
 			//create the image record
 			if($uploadmanager->setUploadId($_POST['upload_id']))
 			{
-				$uploadmanager->setTitle(stripslashes($_POST['title']));
-				$uploadmanager->setComment(stripslashes($_POST['comment']));
+				$uploadmanager->setTitle(stripslashes(trim($_POST['title'])));
+				$uploadmanager->setComment(stripslashes(trim($_POST['comment'])));
 				$uploadmanager->setTaken(stripslashes($_POST['imagetaken']));
-				$uploadmanager->setClass(stripslashes($_POST['imageclass']));
+				$uploadmanager->setClass(stripslashes(trim($_POST['imageclass'])));
 				$uploadmanager->setViewpoint(stripslashes($_POST['photographer_gridref']));
 				$uploadmanager->setDirection(stripslashes($_POST['view_direction']));
 				$uploadmanager->setUse6fig(stripslashes($_POST['use6fig']));
 				$uploadmanager->setUserStatus(stripslashes($_POST['user_status']));
+				
+				if ($_POST['pattrib'] == 'other') {
+					$uploadmanager->setCredit(stripslashes($_POST['pattrib_name']));
+				} elseif ($_POST['pattrib'] == 'self') {
+					$uploadmanager->setCredit('');
+				}
+				if (!empty($_POST['pattrib_default'])) {
+					$USER->setCreditDefault(($_POST['pattrib'] == 'other')?stripslashes($_POST['pattrib_name']):'');
+				}
+				
 				
 				$err = $uploadmanager->commit();
 				
