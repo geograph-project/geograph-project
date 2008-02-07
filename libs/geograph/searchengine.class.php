@@ -97,6 +97,13 @@ class SearchEngine
   
 	} 
 	
+	function getMarkedCount() {
+		if ($this->query_id && $this->criteria->searchclass == 'Special' && $this->criteria->searchq == "inner join gridimage_query using (gridimage_id) where query_id = $this->query_id") {
+			$db=$this->_getDB();
+			return $db->getOne("SELECT COUNT(*) FROM gridimage_query WHERE query_id = ?",$this->query_id);
+		}
+	}
+	
 	function ExecuteReturnRecordset($pg,$extra_fields = '') 
 	{
 		global $CONF;
@@ -170,7 +177,7 @@ class SearchEngine
 			$sql_order = "ORDER BY $sql_order";
 	// construct the query sql
 $sql = <<<END
-/* i{$this->query_id} */ SELECT gi.*,x,y,gs.grid_reference,user.realname $sql_fields $extra_fields
+/* i{$this->query_id} */ SELECT gi.*,x,y,gs.grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname $sql_fields $extra_fields
 FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 	INNER JOIN user ON(gi.user_id=user.user_id)
 	$sql_from

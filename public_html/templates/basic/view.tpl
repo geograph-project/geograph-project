@@ -56,7 +56,7 @@ image has been incorrectly rejected (and mistakes do happen!) please use the "<a
 
 <!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="/profile/{$image->user_id}">{$image->realname|escape:'html'}</a> and  
+alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 <!-- /Creative Commons Licence -->
 
@@ -72,7 +72,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
         <dc:title>{$image->realname|escape:'html'}</dc:title>
      </Agent></dc:creator>
      <dc:rights><Agent>
-        <dc:title>{$image->realname|escape:'html'}</dc:title>
+        <dc:title>{$image->user_realname|escape:'html'}</dc:title>
      </Agent></dc:rights>
      <dc:date>{$image->submitted}</dc:date>
      <dc:format>image/jpeg</dc:format>
@@ -121,7 +121,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <td style="width:50px"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="http://{$static_host}/templates/basic/img/icon_email.gif" alt="Email" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
-	<a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the photographer</a>
+	<a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the contributor</a>
 </td>
 
 </tr>
@@ -157,8 +157,16 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
  <dd><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $square_count gt 1}, {$square_count} total images{/if} &nbsp; (<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">find images nearby</a>) 
 </dd>
 
-<dt>Photographer</dt>
- <dd><a title="View profile" href="/profile/{$image->user_id}">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap">find more nearby</a>)</dd>
+{if $image->credit_realname}
+	<dt>Photographer</dt>
+	 <dd>{$image->realname|escape:'html'}</dd>
+
+	<dt>Contributed by</dt>
+	 <dd><a title="View profile" href="/profile/{$image->user_id}">{$image->user_realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->user_realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap">find more nearby</a>)</dd>
+{else}
+	<dt>Photographer</dt>
+	 <dd><a title="View profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap">find more nearby</a>)</dd>
+{/if}
 
 <dt>Image classification</dt>
 <dd>{if $image->ftf}

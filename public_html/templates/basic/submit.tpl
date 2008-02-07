@@ -458,6 +458,10 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<input type="hidden" name="user_status" value="{$user_status|escape:'html'}"/>
 	
 	<h2>Submit Step 4 of 4 : Confirm image rights</h2>
+
+<div style="float:right;position:relative;">
+<img src="{$preview_url}" width="{$preview_width*0.3|string_format:"%d"}" height="{$preview_height*0.3|string_format:"%d"}" alt="low resolution reminder image" hspace="10"/>	
+</div>
 	{if $user->rank && $user->rank < 250 && $last_imagetaken}
 
 	<div style="border:1px solid gray; padding:10px">I've read this already, <input style="width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);autoDisable(this.form.finalise[1]);"/> (saves scrolling to the bottom)</div>
@@ -482,6 +486,9 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	
 	<p>{external title="View licence" href="http://creativecommons.org/licenses/by-sa/2.0/" text="Here is the Commons Deed outlining the licence terms" target="_blank"}</p>
 	
+	{assign var="credit" value=$user->credit_realname}
+	{assign var="credit_default" value=0}
+	{include file="_submit_licence.tpl"}
 	
 	<p>If you do
 	not agree with these terms, click "I do not agree" and your upload will

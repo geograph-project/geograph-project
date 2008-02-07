@@ -1,6 +1,16 @@
 {include file="_std_begin.tpl"}
 <script src="{"/sorttable.js"|revision}"></script>
 
+{dynamic}
+{if $credit_realname}
+	<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+	<img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
+	The image you where viewing was contributed by the user below, but is specifically credited to <b>{$credit_realname|escape:'html'}</b>
+	</div>
+	<br/><br/>
+{/if}
+{/dynamic}
+
 {if $overview}
   <div style="float:right; width:{$overview_width+30}px; position:relative">
   {include file="_overview.tpl"}

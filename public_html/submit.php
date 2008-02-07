@@ -527,6 +527,11 @@ if (isset($_POST['gridsquare']))
 			}
 			$smarty->assign('today_imagetaken', date("Y-m-d"));
 		} elseif ($step == 4) {
+			$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
+			$smarty->assign('preview_url', $preview_url);
+			$smarty->assign('preview_width', $uploadmanager->upload_width);
+			$smarty->assign('preview_height', $uploadmanager->upload_height);
+			
 			if (isset($_SESSION['last_imagetaken'])) {
 				$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
 			}

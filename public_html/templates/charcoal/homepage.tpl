@@ -34,7 +34,7 @@ title="Click to see full size photo"
 >{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 <div class="potdtitle"><a href="/photo/{$pictureoftheday.gridimage_id}"
 title="Click to see full size photo"
->{$pictureoftheday.image->title}</a> by <a title="Profile" href="/profile/{$pictureoftheday.image->user_id}">{$pictureoftheday.image->realname}</a></div>
+>{$pictureoftheday.image->title}</a> by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname}</a></div>
 </div>
 {/box}
 

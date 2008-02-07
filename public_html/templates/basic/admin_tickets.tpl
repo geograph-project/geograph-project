@@ -23,7 +23,7 @@
     Your:<select name="theme">
     	{html_options options=$themes selected=$theme}
     </select> <br/>
-    Photographer:<select name="variation">
+    Contributor:<select name="variation">
     	{html_options options=$variations selected=$variation}
     </select><br/>
     <label for="defer">Include Deferred?</label><input type="checkbox" name="defer" id="defer" {if $defer} checked="checked"{/if}/> &nbsp;
@@ -42,7 +42,7 @@
 <table class="report sortable" id="newtickets" style="font-size:8pt;">
 <thead><tr>
 	{if $col_moderator}<td>Moderator</td>{/if}
-	<td>Photographer</td>
+	<td>Contributor</td>
 	<td>Title</td>
 	<td>Problem</td>
 	<td>Suggested by</td>

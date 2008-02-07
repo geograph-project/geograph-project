@@ -215,7 +215,9 @@ if ($template=='profile.tpl')
 	}
 }
 
+if (!empty($_GET['a']))
+	$smarty->assign('credit_realname', $_GET['a']);
+
 $smarty->display($template, $cacheid);
 
-	
 ?>

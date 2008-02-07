@@ -60,6 +60,7 @@ select
 	gi.y,
 	gi.grid_reference,
 	gi.title,
+	gi.credit_realname,
 	gi.realname,
 	gi.user_id,
 	gi.wgs84_lat,

@@ -189,6 +189,7 @@ class UploadManager
 			$uploadfile = $this->_pendingJPEG($id);
 			if (file_exists($uploadfile))
 			{
+				customExpiresHeader(3600);
 				header("Content-Type:image/jpeg");
 				readfile($uploadfile);
 				exit;

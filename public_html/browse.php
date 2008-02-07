@@ -231,7 +231,7 @@ if ($grid_given)
 			$breakdowns[] = array('type'=>'centi','name'=>'Centisquares','count'=>$row['centi']-($row['centi_blank'] > 0));
 			$smarty->assign_by_ref('breakdowns', $breakdowns);
 			
-			$sql="select gridimage.*,user.realname,user.nickname from gridimage  inner join user using(user_id) where gridsquare_id={$square->gridsquare_id} 
+			$sql="select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname from gridimage as gi inner join user using(user_id) where gridsquare_id={$square->gridsquare_id} 
 			and moderation_status in ('accepted','geograph') order by moderation_status+0 desc,seq_no limit 1";
 
 			$rec=$db->GetRow($sql);
@@ -294,7 +294,7 @@ if ($grid_given)
 				}
 			} elseif ($_GET['by'] == 'user') {
 				$breakdown_title = "Contributor";
-				$all = $db->getAll("SELECT realname,count(*),gridimage_id,gridimage.user_id
+				$all = $db->getAll("SELECT user.realname,count(*),gridimage_id,gridimage.user_id
 				FROM gridimage
 				INNER JOIN user USING(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
@@ -440,6 +440,9 @@ if (!isset($_GET['inner'])) {
 		$overview=new GeographMapMosaic('largeoverview');
 		$overview->setCentre($square->x,$square->y); //does call setAlignedOrigin
 		$smarty->assign('marker', $overview->getSquarePoint($square));
+
+
+//TODO if centisquare is specified use that to plot a circle!
 
 		//lets add an rastermap too
 		$rastermap = new RasterMap($square,false,$square->natspecified);

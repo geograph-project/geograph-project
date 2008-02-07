@@ -28,7 +28,7 @@
     Your:<select name="theme">
     	{html_options options=$themes selected=$theme}
     </select> <br/>
-    Photographer:<select name="variation">
+    Contributor:<select name="variation">
     	{html_options options=$variations selected=$variation}
     </select><br/>
     <label for="defer">Include Deferred?</label><input type="checkbox" name="defer" id="defer" {if $defer} checked{/if}/> &nbsp;
@@ -44,7 +44,7 @@
 	<td>Title</td>
 	<td>Suggested by</td>
 	<td>Submitted</td>
-	<td>Photographer</td>	
+	<td>Contributor</td>
 </tr></thead>
 <tbody>
 
