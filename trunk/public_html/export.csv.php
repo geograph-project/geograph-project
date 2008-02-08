@@ -36,7 +36,11 @@ include('geograph/export.inc.php');
 header("Content-type: application/octet-stream");
 header("Content-Disposition: attachment; filename=\"geograph.csv\"");
 
-echo "$csvhead\n";
+if (isset($_GET['headers']) && $_GET['headers'] == 'lower') {
+	echo preg_replace('/[^\w,]+/','_',strtolower("$csvhead\n"));
+} else {
+	echo "$csvhead\n";
+}
 
 $counter = -1;
 while (!$recordSet->EOF) 

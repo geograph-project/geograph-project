@@ -44,24 +44,24 @@ if ($profile['apikey']) {
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
-$sql_crit = '';
+$sql_from = $sql_crit = '';
 
 $csvhead = "Id,Name,Grid Ref,Submitter,Image Class";
 if (!empty($_GET['thumb'])) {
 	require_once('geograph/gridimage.class.php');
 	$gridimage = new GridImage;
-	$sql_from = ',gi.user_id,x,y';
 	$csvhead .= ",Thumb URL";
+	$sql_from = ',gi.user_id,x,y';
 }
 if (!empty($_GET['en'])) {
 	$csvhead .= ",Easting,Northing,Figures";
 	if (!empty($_GET['ppos'])) {
-		echo ",Photographer Eastings,Photographer Northings,Photographer Figures";
+		$csvhead .= ",Photographer Eastings,Photographer Northings,Photographer Figures";
 		$sql_from .= ",viewpoint_eastings,viewpoint_northings,viewpoint_grlen";
 	}
 } elseif (!empty($_GET['ll'])) {
-	$sql_from = ',wgs84_lat,wgs84_long';
 	$csvhead .= ",Lat,Long";
+	$sql_from .= ',wgs84_lat,wgs84_long';
 }
 
 if (!empty($_GET['taken'])) {
