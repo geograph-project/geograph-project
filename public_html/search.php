@@ -256,7 +256,7 @@ if (isset($_GET['fav']) && $i) {
 
 	advanced_form($smarty,$db);
 
-} else if (!empty($_GET['article_id'])) { //
+} else if (!empty($_GET['article_id']) || !empty($_GET['profile_id'])) { //
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
 	//  special handler to build a search from an article
@@ -273,19 +273,25 @@ if (isset($_GET['fav']) && $i) {
 
 	$isadmin=$USER->hasPerm('moderator')?1:0;
 
-	$page = $db->getRow("
-	select article.*,realname,gs.grid_reference
-	from article 
-		left join user using (user_id)
-		left join gridsquare gs on (article.gridsquare_id = gs.gridsquare_id)
-	where ( (licence != 'none' and approved = 1) 
-		or user.user_id = {$USER->user_id}
-		or $isadmin )
-		and article_id = ".$db->Quote($_GET['article_id']).'
-	limit 1');
+	if (!empty($_GET['article_id']) {
+		$page = $db->getRow("
+		select concat('in Article: ',title) as title,content
+		from article
+		where ( (licence != 'none' and approved = 1) 
+			or article.user_id = {$USER->user_id}
+			or $isadmin )
+			and article_id = ".$db->Quote($_GET['article_id']).'
+		limit 1');
+	} else {
+		$page = $db->getRow("
+		select concat('in ',realname,'\'s profile') as title, about_yourself as content
+		from user
+		where user_id = ".$db->Quote($_GET['profile_id']).'
+		limit 1');
+	}
 
 	if (count($page) && !$error) {
-		$data['description'] = "in Article: {$page['title']}";
+		$data['description'] = $page['title'];
 		$data['searchq'] = "1"; //temporally
 
 		if (!empty($_GET['u']))
