@@ -133,7 +133,7 @@ if (isset($_GET['coast_GB_40'])) {
 	list($usec, $sec) = explode(' ',microtime());
 	$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
 
-	
+	print "start<br>";flush();
 	foreach($prefixes as $idx=>$prefix)
 	{
 		list($usec, $sec) = explode(' ',microtime());
@@ -161,7 +161,7 @@ if (isset($_GET['coast_GB_40'])) {
 			"((map_y-{$prefix['origin_y']}) mod 5) != 0";
 			
 		$count = $mosaic->deleteBySql($crit,$dummy,$basemap);
-		print "Deleted $count<br>";
+		print "Deleted $count<br>";flush();
 
 		$total += $count;
 		
