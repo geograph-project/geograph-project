@@ -109,6 +109,18 @@ if (isset($_GET['coast_GB_40'])) {
 	print "<h2>$total</h2>";
 	exit;
 	
+} elseif (isset($_GET['customsql'])) {
+	require_once('geograph/mapmosaic.class.php');
+	$mosaic = new GeographMapMosaic;
+	
+	$basemap = isset($_GET['base']);
+	$dummy = !isset($_GET['do']);
+
+	$count = $mosaic->deleteBySql($_GET['customsql'],$dummy,$basemap);
+	print "Deleted $count<br>";
+
+	exit;
+
 } elseif (isset($_GET['nonalign'])) {
 	require_once('geograph/mapmosaic.class.php');
 	$mosaic = new GeographMapMosaic;
