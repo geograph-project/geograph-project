@@ -273,7 +273,7 @@ if (isset($_GET['fav']) && $i) {
 
 	$isadmin=$USER->hasPerm('moderator')?1:0;
 
-	if (!empty($_GET['article_id']) {
+	if (!empty($_GET['article_id'])) {
 		$page = $db->getRow("
 		select concat('in Article: ',title) as title,content
 		from article
