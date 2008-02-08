@@ -37,7 +37,7 @@ header("Content-type: application/octet-stream");
 header("Content-Disposition: attachment; filename=\"geograph.csv\"");
 
 if (isset($_GET['headers']) && $_GET['headers'] == 'lower') {
-	echo preg_replace('/[^\w,]+/','_',strtolower("$csvhead\n"));
+	echo preg_replace('/[^\w,]+/','_',strtolower($csvhead))."\n";
 } else {
 	echo "$csvhead\n";
 }
