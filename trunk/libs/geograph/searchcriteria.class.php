@@ -561,10 +561,14 @@ class SearchCriteria_All extends SearchCriteria
 		if (preg_match('/^(\d+):/',$username,$m)) {
 			$users = $db->GetAll("select user_id,realname,nickname from user where user_id={$m[1]} limit 2");
 		} elseif (!preg_match('/\bnear\b/',$username)) {
-			$username = $db->Quote($username);
-			$users = $db->GetAll("select user_id,realname,nickname from user where MATCH (realname,nickname) AGAINST ($username) order by (nickname=$username) desc limit 2");
+			$username2 = $db->Quote($username);
+			$users = $db->GetAll("select user_id,realname,nickname from user where MATCH (realname,nickname) AGAINST ($username2) order by (nickname=$username2 or realname=$username2) desc limit 2");
 		}
-		if (count($users) == 1) {
+		if (count($users) == 1 || 
+			( count($users) && 
+				(strcasecmp($users[0]['realname'],$username) == 0 || strcasecmp($users[0]['nickname'],$username) == 0 )
+			) 
+		) {
 			$this->realname = $users[0]['realname'];
 			$this->user_id = $users[0]['user_id'];
 			if (strcasecmp($username,$this->realname) != 0) {
