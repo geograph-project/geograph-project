@@ -128,7 +128,7 @@ if (isset($_GET['coast_GB_40'])) {
 	$basemap = isset($_GET['base']);
 	$dummy = !isset($_GET['do']);
 	
-	$prefixes = $db->GetAll("select * from gridprefix");
+	$prefixes = $db->GetAll("select * from gridprefix order by landcount desc");
 	
 	list($usec, $sec) = explode(' ',microtime());
 	$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
