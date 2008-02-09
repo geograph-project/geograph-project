@@ -5,7 +5,7 @@
 {if $image}
 
 
-<div style="float:right" class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
+<div style="float:right; width:250px" class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   <div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(213,160)}</a></div>
   <div class="caption"><b>{$image->title|escape:'html'}</b><br/> by {$image->realname}</div>
   
