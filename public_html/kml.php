@@ -71,12 +71,14 @@ if (isset($_GET['id']))  {
 		
 		$kml = new kmlFile();
 		$kml->atom = true;
+		$stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
+
 		$kml->filename = "Geograph".$image->gridimage_id.".kml";
 
 		$point = new kmlPoint($image->wgs84_lat,$image->wgs84_long);
 
 		$placemark = $kml->addChild(new kmlPlacemark_Photo('id'.$image->gridimage_id,$image->grid_reference." : ".$image->title,$point));
-
+		$placemark->useHoverStyle();
 		$placemark->useCredit($image->realname,"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id);
 
 		$linkTag = "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id."\">";
