@@ -102,6 +102,15 @@ class kmlPrimative {
 		$this->addChild('TimeStamp','','TimeStamp')->setItem('when',$when);
 		return $this;
 	}
+	
+	public function useCredit($author,$link = '') {
+		if (!empty($author)) {
+			$this->addChild('atom:author','','atom:author')->setItem('atom:name',$author);
+		}
+		if (!empty($link)) {
+			$this->link = $link;
+		}
+	}
 
 	public function toString($indent = 0,$prettyprint = true) {
 		if ($prettyprint) {
@@ -347,15 +356,6 @@ class kmlPlacemark extends kmlPrimative {
 	public function makeFloating() {
 		$this->getChild('Point')->makeFloating();
 		return $this;
-	}
-
-	public function useCredit($author,$link = '') {
-		if (!empty($author)) {
-			$this->addChild('atom:author','','atom:author')->setItem('atom:name',$author);
-		}
-		if (!empty($link)) {
-			$this->link = $link;
-		}
 	}
 }
 

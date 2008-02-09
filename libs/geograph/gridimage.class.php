@@ -1134,16 +1134,25 @@ class GridImage
 	}
 	
 	function setCredit($realname) {
+		global $USER;
+
 		if (!$this->isValid())
 			return "Invalid image";
-		
+
 		$db = $this->_getDB();
 
 		$db->Execute(sprintf("update gridimage set realname = %s where gridimage_id=%d",$db->Quote($realname),$this->gridimage_id));
+
+		$ticket=new GridImageTroubleTicket();
+		$ticket->setSuggester($USER->user_id);
+		$ticket->setPublic('everyone'); ## dont thing any case for this to be anon, its either a mod or the owner
+		$ticket->setImage($this->gridimage_id);
+		#$ticket->setNotes("Credit changed to '$realname'");
+		$ticket->updateField("realname", $this->realname, $realname, false);
+		$status=$ticket->commit('closed');
+
 		$this->realname = $realname;
-		
-		//todo - create (autoclosed) ticket
-		
+
 		$this->updateCachedTables();
 	}
 	
