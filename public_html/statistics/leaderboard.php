@@ -185,7 +185,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	ORDER BY _count_all DESC
 	LIMIT 30; */
 		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
-		$sql_table = "gridimage i inner join user u using (user_id)";
+		$sql_table = "gridimage i ";
 		$sql_column = "COUNT(DISTINCT nateastings div 100, natnorthings div 100)";
 		$sql_where = "i.moderation_status='geograph' and nateastings div 1000 > 0";
 		$heading = "Centigraph<br/>Points";
@@ -214,8 +214,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('type', $type);
 
 	$topusers=$db->GetAll("select 
-	i.user_id,realname, $sql_column as imgcount,max(gridimage_id) as last
-	from $sql_table 
+	i.user_id,u.realname, $sql_column as imgcount,max(gridimage_id) as last
+	from $sql_table inner join user u using (user_id)
 	where $sql_where
 	group by user_id 
 	$sql_having_having
