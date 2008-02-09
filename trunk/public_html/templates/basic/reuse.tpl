@@ -73,6 +73,11 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 &copy; Copyright [url={$image->profile_link}]{$image->realname|escape:'html'}[/a] and  
 licensed for reuse under this [url=http://creativecommons.org/licenses/by-sa/2.0/]Creative Commons Licence[/url].</textarea></form>
 
+<h3>BBCode for reusing image on a forum (with shorter message)</H3>
+
+<form><textarea rows="3">[url=http://{$http_host}/photo/{$image->gridimage_id}][b]{$image->title|escape:'html'}[/b]
+[img]{$image->getThumbnail(120,120,true)}[/img][/url]
+&copy; [url={$image->profile_link}]{$image->realname|escape:'html'}[/a], [url=http://creativecommons.org/licenses/by-sa/2.0/]cc-by-sa[/url].</textarea></form>
 
 
 <h3>Creative Commons Metadata for this image</h3>
