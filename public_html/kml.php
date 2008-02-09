@@ -70,11 +70,14 @@ if (isset($_GET['id']))  {
 		list($image->wgs84_lat,$image->wgs84_long) = $conv->gridsquare_to_wgs84($image->grid_square);
 		
 		$kml = new kmlFile();
+		$kml->atom = true;
 		$kml->filename = "Geograph".$image->gridimage_id.".kml";
 
 		$point = new kmlPoint($image->wgs84_lat,$image->wgs84_long);
 
 		$placemark = $kml->addChild(new kmlPlacemark_Photo('id'.$image->gridimage_id,$image->grid_reference." : ".$image->title,$point));
+
+		$placemark->useCredit($image->realname,"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id);
 
 		$linkTag = "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id."\">";
 		$details = $image->getThumbnail(120,120,2);
@@ -82,7 +85,7 @@ if (isset($_GET['id']))  {
 		$thumb = $details['server'].$details['url']; 
 		$thumbTag = $details['html'];
 
-		$description = $linkTag.$thumbTag."</a><br/>".GeographLinks($image->comment)." (".$linkTag."view full size</a>)"."<br/><br/> &copy; Copyright <a title=\"view user profile\" href=\"".$image->profile_link."\">".$image->realname."</a> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a><br/><br/>";
+		$description = "<big><a href=\"http://{$_SERVER['HTTP_HOST']}/\">Geograph British Isles</a></big><br/><br/>".$linkTag.$thumbTag."</a><br/>".GeographLinks($image->comment)." (".$linkTag."view full size</a>)"."<br/><br/> &copy; Copyright <a title=\"view user profile\" href=\"".$image->profile_link."\">".$image->realname."</a> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a><br/><br/>";
 
 		$placemark->setItemCDATA('description',$description);
 
