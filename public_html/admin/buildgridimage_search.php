@@ -45,7 +45,11 @@ $smarty->display('_std_begin.tpl');
 &nbsp;<input type="checkbox" id="use_new" name="use_new" value="1" checked="checked">
 <label for="use_new">Use multi-stage copy (recommended on a live site)</label><br>
 
-<input type="checkbox" id="update" name="update" value="1" checked="checked">
+(<input type="checkbox" id="update" name="update" value="1" checked="checked">Yes
+
+<input type="checkbox" name="update" value="0" checked="checked">No
+
+<input type="checkbox" name="update" value="2" checked="checked">only blank)
 <label for="update">Update lat/long values in gridimage_search</label><br>
 
 <input type="submit" name="go" value="Start">
@@ -63,7 +67,7 @@ if (isset($_POST['recreate']))
 	if ($_POST['use_new']) {
 	
 		echo "<p>Creating gridimage copy...</p>";flush();
-		$db->Execute("create table tmpimg select gridimage_id,moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp,comment,ftf,seq_no,user_id,gridsquare_id from gridimage where moderation_status in ('accepted','geograph');");
+		$db->Execute("create table tmpimg select gridimage_id,moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp,comment,ftf,seq_no,user_id,realname,gridsquare_id from gridimage where moderation_status in ('accepted','geograph');");
 
 		echo "<p>Creating gridsquare copy...</p>";flush();
 		$db->Execute("create table tmpsq select gridsquare_id,grid_reference,x, y,reference_index,point_xy from gridsquare;");
@@ -120,7 +124,7 @@ if (isset($_POST['recreate']))
 
 }
 
-if (isset($_POST['update']))
+if (!empty($_POST['update']))
 {
 	echo "<h3>Updating Lat/Long</h3>";
 	flush();
@@ -130,7 +134,7 @@ if (isset($_POST['update']))
 	$recordSet = &$db->Execute("select gridimage_id,x,y,reference_index,nateastings,natnorthings
 		from gridimage
 		INNER JOIN gridsquare AS gs USING ( gridsquare_id )
-		where moderation_status in ('accepted','geograph')");
+		where moderation_status in ('accepted','geograph')".(($_POST['update'] == 2)?' AND wgs84_lat = 0':'') );
 	$count=0;
 	while (!$recordSet->EOF) 
 	{
