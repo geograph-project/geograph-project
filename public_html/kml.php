@@ -85,7 +85,7 @@ if (isset($_GET['id']))  {
 		$thumb = $details['server'].$details['url']; 
 		$thumbTag = $details['html'];
 
-		$description = "<big><a href=\"http://{$_SERVER['HTTP_HOST']}/\">Geograph British Isles</a></big><br/><br/>".$linkTag.$thumbTag."</a><br/>".GeographLinks($image->comment)." (".$linkTag."view full size</a>)"."<br/><br/> &copy; Copyright <a title=\"view user profile\" href=\"".$image->profile_link."\">".$image->realname."</a> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a><br/><br/>";
+		$description = $linkTag.$thumbTag."</a><br/>".GeographLinks($image->comment)." (".$linkTag."view full size</a>)"."<br/><br/> &copy; Copyright <a title=\"view user profile\" href=\"".$image->profile_link."\">".$image->realname."</a> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a><br/><br/>";
 
 		$placemark->setItemCDATA('description',$description);
 
