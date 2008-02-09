@@ -27,9 +27,13 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/map.class.php');
 require_once('geograph/mapmosaic.class.php');
 require_once('geograph/image.inc.php');
-init_session();
 
-$USER->mustHavePerm("admin");
+if ( ($_SERVER['REMOTE_ADDR'] != $_SERVER['SERVER_ADDR']) &&
+     (strpos($_SERVER['HTTP_X_FORWARDED_FOR'],$CONF['server_ip']) !== 0) )  //begins with
+{
+	init_session();
+        $USER->mustHavePerm("admin");
+}
 
 $smarty = new GeographPage;
 
