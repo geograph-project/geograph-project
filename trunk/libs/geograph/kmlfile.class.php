@@ -242,12 +242,13 @@ class kmlFile extends kmlPrimative {
 	public function returnKML($prettyprint = true) {
 		$s = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 
-		$this->values['xmlns'] = "http://earth.google.com/kml/".$this->version;
-		
 		if (!empty($this->atom)) {
 			$this->values['xmlns:atom'] .= "http://www.w3.org/2005/Atom";
+			$this->version = 2.2;
 		}
-
+	
+		$this->values['xmlns'] = "http://earth.google.com/kml/".$this->version;
+	
 		return $s.parent::toString(0,$prettyprint);
 	}
 
