@@ -22,8 +22,19 @@
 	</div>
 </div>
 
-<br/><br/>
+<br/>
 
+<h3>Examples of uses of this</h3>
+<ul>
+	<li>School and Scout Groups, a single teacher can contribute, but attribute the photos to the relevent child. This is on the condiction that have permission to do so. Also note that the full name of the child doesnt not have to be included, but the credit serves as means to distinguish photographers.</li>
+	<li>Family Groups, a single person can upload all the photos, but they can remain attributed to the correct photographer.</li>
+	<li>Historic photos, the contributor can submit photos from deceased family members for example.</li>
+
+</ul>
+
+<hr/>
+
+<h3>Notes</h3>
 <ul>
 	<li>Heirs of deceased authors can inherit copyrights, and so act as a Licensor</li>
 	<li>Public Domain works can be relicenced as Creative Commons. For our purposes the original author should be credited.</li>
