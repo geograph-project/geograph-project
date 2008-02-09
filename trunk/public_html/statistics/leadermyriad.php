@@ -62,12 +62,13 @@ if (!$smarty->is_cached($template, $cacheid))
 	foreach ($myriads as $i => $myriad) {
 		$str = $myriad['tenk_square'].'%';
 		
-		$users = $db->CacheGetAll(3600,"SELECT user_id,realname,
+		$users = $db->CacheGetAll(3600,"SELECT gi.user_id,u.realname,
 		COUNT(*) AS count,
 		UNIX_TIMESTAMP(MIN(submitted)) as first_date,
 		UNIX_TIMESTAMP(MAX(submitted)) as last_date
 		FROM 
-			gridimage_search
+			gridimage_search gi
+			INNER JOIN user u USING (user_id)
 		WHERE 
 			grid_reference LIKE '$str' AND
 			moderation_status = 'geograph' AND
