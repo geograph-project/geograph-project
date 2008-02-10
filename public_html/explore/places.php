@@ -124,8 +124,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 		
 		if (count($counts)) {
-			reset($counts);
-			list($key, $val) = each($counts);
+			$key = array_rand($counts,1);
+			$val = $counts[$key];
 			$image=new GridImage();
 			if ($image->loadFromId($val['gridimage_id'],true)) {
 				$image->county = $val['name'];

@@ -8,10 +8,10 @@
 
 {if $ri == 1}<h4>Local Authorities of {$references.$ri} in alphabetical order:</h4>{/if}
 
-<div style="float:right" class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
+<div style="position:relative; float:right" class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   Example photo in <b>{$image->county}</b>: 
-  <div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(213,160)}</a></div>
-  <div class="caption"><b>{$image->title|escape:'html'}</b><br/> by {$image->realname}</div>
+  <div class="img-shadow"><a href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160)}</a></div>
+  <div class="caption"><b>{$image->title|escape:'html'}</b><br/> by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></div>
 </div>
 
 <ul>
@@ -19,6 +19,8 @@
 <li>{if $line.places == 1}<a href="/search.php?placename={$line.placename_id}&amp;do=1" title="Place: {$line.full_name}">{else}<a href="/explore/places/{$ri}/{$adm1}/"  title="EXAMPLE Place: {$line.full_name}">{/if}<b>{$line.name}</b></a> [{$line.places} Places, {$line.images} Images]</li>
 {/foreach}
 </ul>
+
+<br style="clear:both"/>
 
 {if $ri == 1} 
 <div class="copyright">Great Britain locations based upon 1:50 000 Scale Gazetteer with the permission of Ordnance Survey on behalf of The Controller of Her Majesty's Stationery Office, &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.</div>
