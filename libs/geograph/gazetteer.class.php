@@ -354,7 +354,7 @@ class Gazetteer
 			if ($placename > 1000000) {
 				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where seq=".$db->Quote($placename-1000000));
 			} else {
-				$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where id=".$db->Quote($placename));
+				$places = $db->GetAll("select full_name,dsg,e,n,reference_index,loc_adm1.name as adm1_name from loc_placenames left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country) where id=".$db->Quote($placename));
 			}
 		} elseif (!$ismore) {
 			list($placename,$county) = preg_split('/\s*,\s*/',$placename);
