@@ -8,6 +8,12 @@
 
 {if $ri == 1}<h4>Local Authorities of {$references.$ri} in alphabetical order:</h4>{/if}
 
+<div style="float:right" class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
+  Example photo in <b>{$image->county}</b>: 
+  <div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(213,160)}</a></div>
+  <div class="caption"><b>{$image->title|escape:'html'}</b><br/> by {$image->realname}</div>
+</div>
+
 <ul>
 {foreach from=$counts key=adm1 item=line}
 <li>{if $line.places == 1}<a href="/search.php?placename={$line.placename_id}&amp;do=1" title="Place: {$line.full_name}">{else}<a href="/explore/places/{$ri}/{$adm1}/"  title="EXAMPLE Place: {$line.full_name}">{/if}<b>{$line.name}</b></a> [{$line.places} Places, {$line.images} Images]</li>
