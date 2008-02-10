@@ -24,6 +24,11 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+if (!empty($_GET['i'])) {
+	header("Location: /statistics/breakdown.php?by=user&i=".intval($_GET['i']));
+	exit;
+}
+
 $smarty = new GeographPage;
 if (isset($_GET['cloud'])) {
 	$template='user.tpl';
