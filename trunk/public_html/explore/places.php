@@ -33,7 +33,7 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 if (!empty($_GET['ri'])) {
 	if (!empty($_GET['adm1'])) {
 		if (!empty($_GET['pid'])) {
-			$url = "/search.php?placename=".."&do=1";
+			$url = "/search.php?placename=".intval($_GET['pid'])."&do=1";
 			header("Location: $url");
 			print "<a href=\"".htmlentities($url)."\">Continue to Search</a>";
 			exit;
