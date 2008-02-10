@@ -101,11 +101,10 @@ if (!$smarty->is_cached($template, $cacheid))
 
 			$counts = $db->GetAssoc($sql);
 			$smarty->assign_by_ref('counts', $counts);
-			
 		} elseif ($_GET['ri'] == 1) {
 			$sql = "SELECT seq as adm1,
 			full_county as name,placename_id,def_nam as full_name,
-			count(*) as images,count(distinct (seq)) as places 
+			count(*) as images,count(distinct (seq)) as places,gridimage_id 
 			FROM gridimage INNER JOIN os_gaz ON(placename_id-1000000 = os_gaz.seq)
 			WHERE moderation_status <> 'rejected' AND placename_id > 1000000
 			GROUP BY full_county";
@@ -114,7 +113,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		} else {
 			$sql = "SELECT concat(loc_placenames.country,'-',loc_placenames.adm1) as adm1,loc_adm1.name,
 			placename_id,full_name,
-			count(*) as images,count(distinct (placename_id)) as places 
+			count(*) as images,count(distinct (placename_id)) as places,gridimage_id 
 			FROM gridimage INNER JOIN loc_placenames ON(placename_id = loc_placenames.id)
 			INNER JOIN loc_adm1 ON(loc_adm1.adm1 = loc_placenames.adm1 AND loc_adm1.country = loc_placenames.country)
 			WHERE moderation_status <> 'rejected' AND loc_placenames.reference_index = {$_GET['ri']}
@@ -122,6 +121,17 @@ if (!$smarty->is_cached($template, $cacheid))
 			$counts = $db->GetAssoc($sql);
 			unset($counts['0']); //adm1 0 is bogus!
 			$smarty->assign_by_ref('counts', $counts);
+		}
+		
+		if (count($counts)) {
+			reset($counts);
+			list($key, $val) = each($counts);
+			$image=new GridImage();
+			if ($image->loadFromId($val['gridimage_id'],true)) {
+				$image->county = $val['name'];
+				$image->placename = $val['full_name'];
+				$smarty->assign_by_ref('image', $image);
+			}
 		}
 	} else {
 		$sql = "SELECT reference_index,count(*) as c 
