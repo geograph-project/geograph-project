@@ -7,7 +7,7 @@
 
 <ul>
 {foreach from=$counts key=adm1 item=line}
-<li>{if $line.places == 1}<a href="/explore/places.php?ri={$ri}&amp;adm1={$adm1}&amp;pid={$line.placename_id}" title="Place: {$line.full_name}">{else}<a href="/explore/places/{$ri}/{$adm1}/"  title="EXAMPLE Place: {$line.full_name}">{/if}<b>{$line.name}</b></a> [{$line.places} Places, {$line.images} Images]</li>
+<li>{if $line.places == 1}<a href="/search.php?placename={$line.placename_id}&amp;do=1" title="Place: {$line.full_name}">{else}<a href="/explore/places/{$ri}/{$adm1}/"  title="EXAMPLE Place: {$line.full_name}">{/if}<b>{$line.name}</b></a> [{$line.places} Places, {$line.images} Images]</li>
 {/foreach}
 </ul>
 

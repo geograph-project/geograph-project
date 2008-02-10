@@ -33,42 +33,10 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 if (!empty($_GET['ri'])) {
 	if (!empty($_GET['adm1'])) {
 		if (!empty($_GET['pid'])) {
-			$db=NewADOConnection($GLOBALS['DSN']);
-	
-			require_once('geograph/searchcriteria.class.php');
-			require_once('geograph/searchengine.class.php');
-			require_once('geograph/searchenginebuilder.class.php');
-			
-			$dataarray = array();
-	
-			if ($_GET['pid'] > 1000000) {
-				$sql = "SELECT def_nam as full_name,east as e,north as n,full_county as adm1_name FROM os_gaz WHERE seq = ".($_GET['pid']-1000000);
-				$placename = $db->GetRow($sql);
-				if ($placename['full_name'] != $placename['adm1_name'])
-					$adm1_name = ", ".$placename['adm1_name'];
-			} else {
-				$sql = "SELECT full_name,e,n FROM loc_placenames WHERE id = {$_GET['pid']}";
-				$placename = $db->GetRow($sql);
-
-				if ($_GET['ri'] == 2) {
-					list($country,$adm1) = explode('-',$_GET['adm1']);
-					$sql = "SELECT name FROM loc_adm1 WHERE country = '$country' AND adm1 = '$adm1'";
-					$adm1_name = ", ".$db->GetOne($sql);
-				}
-			}
-			$dataarray['description'] = "around {$placename['full_name']}$adm1_name";
-			$dataarray['searchq'] = " gi.placename_id = {$_GET['pid']} ";
-			
-			$dataarray['adminoverride'] = 1;
-			
-			$dataarray['x'] = intval($placename['e']/1000) + $CONF['origins'][$_GET['ri']][0];
-			$dataarray['y'] = intval($placename['n']/1000) + $CONF['origins'][$_GET['ri']][1];
-			#$this->placename = $places[0]['full_name'];
-			$dataarray['reference_index'] = $_GET['ri'];
-			
-			$engine = new SearchEngineBuilder('#'); 
-			$engine->buildAdvancedQuery($dataarray);
-			
+			$url = "/search.php?placename=".."&do=1";
+			header("Location: $url");
+			print "<a href=\"".htmlentities($url)."\">Continue to Search</a>";
+			exit;
 			//should never return!
 		}
 		$template='explore_places_adm1.tpl';
