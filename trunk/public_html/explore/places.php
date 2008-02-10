@@ -87,7 +87,8 @@ if (!$smarty->is_cached($template, $cacheid))
 				$placename = $db->GetRow($sql);
 				
 				$smarty->assign_by_ref('adm1_name', $placename['adm1_name']);
-				$smarty->assign('parttitle', "in County");
+				if ($placename['adm1_name'] != "Isle of Man")
+					$smarty->assign('parttitle', "in County");
 				$sql_where = "AND co_code = '{$placename['co_code']}'";
 				
 				$sql = "SELECT placename_id,def_nam as full_name,count(*) as c,gridimage_id 
