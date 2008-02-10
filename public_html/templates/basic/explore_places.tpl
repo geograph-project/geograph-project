@@ -3,7 +3,7 @@
  
     <h2>Geograph British Isles</h2>
 
-<p>Use the links below to browse images by the city or town they are closest to.</p>
+<p>Please choose country you wish to find images in:</p>
 
 <ul>
 {foreach from=$counts key=ri item=count}

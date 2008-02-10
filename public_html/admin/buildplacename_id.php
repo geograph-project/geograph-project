@@ -84,7 +84,7 @@ if (isset($_POST['go']))
 
 	$recordSet = &$db->Execute("select * from $table $join where {$_POST['crit']} $limit");
 	if (!empty($_POST['file'])) {	
-		$handle = fopen("updates.sql",'a');
+		$handle = fopen("updates.sql",'a') or die("unable to open file");
 	}
 	
 	while (!$recordSet->EOF) 
@@ -102,7 +102,7 @@ if (isset($_POST['go']))
 
 			//to optimise the query, we scan a square centred on the
 			//the required point
-			$radius = 100000;
+			$radius = 30000;
 
 			$places = $square->findNearestPlace($radius);
 			$pid = $places['pid'];		
