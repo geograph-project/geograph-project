@@ -136,7 +136,9 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	
 	$rss->description = "Images".$images->criteria->searchdesc; 
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/feed/results/".$_GET['i'].(($pg>1)?"/$pg":'').".".strtolower($format);
-	
+	if ($format == 'MEDIA') {
+		$rss->link =  "http://{$_SERVER['HTTP_HOST']}/search.php?i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
+	} 
 	$images->Execute($pg);
 	
 	$images->images = &$images->results;
