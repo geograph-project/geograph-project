@@ -6,10 +6,10 @@
 
 <p>Below is a list of places we know about in {$adm1_name}, {$references.$ri}. <b>Click a name to run a search for images in that area</b>, the number shown is approximate number of photographs surrounding the place based on a cross-section of the geograph archive, if however there is only one photograph identified you will be taken direct to the photo page. Note that not all places are shown we try to pick the bigger places, but this selection is approximate.</p>
 
-<div style="float:right" class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
+<div style="position:relative; float:right" class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   Example photo near <b>{$image->placename}</b>: 
-  <div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(213,160)}</a></div>
-  <div class="caption"><b>{$image->title|escape:'html'}</b><br/> by {$image->realname}</div>
+  <div class="img-shadow"><a href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160)}</a></div>
+  <div class="caption"><b>{$image->title|escape:'html'}</b><br/> by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></div>
 </div>
 
 <table><tr>
@@ -18,6 +18,8 @@
 {if $smarty.foreach.repeat.iteration %3 == 0}</tr><tr>{/if}
 {/foreach}
 </tr></table>
+
+<br style="clear:both"/>
 
 {if $ri == 1} 
 <br/><br/>
