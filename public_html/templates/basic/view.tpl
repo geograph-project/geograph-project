@@ -272,7 +272,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$image->grid_square->nateastings`+`$image->grid_square->natnorthings`" text="more local links from nearby.org.uk"}
 {else}
 	{external href="http://www.geocaching.com/seek/nearest.aspx?lat=`$lat`&amp;lon=`$long`" text="geocaches" title="Geocaches from geocaching.com"},
-	{external href="http://www.trigtools.co.uk/irish.cgi?gr=`$image->subject_gridref`&c=25" text="trigpoints" title="Trigpoints from trigtools.co.uk"},
+	{external href="http://www.trigpointing-ireland.org.uk/gridref.php?g=`$image->subject_gridref`" text="trigpoints" title="Trigpoints from trigpointing-ireland.org.uk"},
 	{external href="http://geourl.org/near?lat=`$lat`&amp;long=`$long`" text="geourl.org" title="search for webpages near this location"} &amp;
 	{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$image->grid_square->nateastings`+`$image->grid_square->natnorthings`+OSI" text="more local links from nearby.org.uk"}
 {/if}
