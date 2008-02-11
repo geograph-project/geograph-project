@@ -101,7 +101,7 @@ while (!$recordSet->EOF)
 {
 	$item = new FeedItem();
 	
-	$item->title = $recordSet->fields['title'];
+	$item->title = date('d/m/Y: 'strtotime($recordSet->fields['created'])).$recordSet->fields['title'];
 
 	//htmlspecialchars is called on link so dont use &amp;
 	$item->link = "http://{$_SERVER['HTTP_HOST']}/events/event.php?id={$recordSet->fields['geoevent_id']}";
@@ -115,7 +115,7 @@ while (!$recordSet->EOF)
 		
 	$description .= "<br/><br/><a href=\"{$item->link}\">More details of this event</a>";	
 	$item->description = $description;
-	$item->date = strtotime($recordSet->fields['event_time']);
+	$item->date = strtotime($recordSet->fields['created']);
 	$item->author = $recordSet->fields['realname'];
 	
 	if (($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') && $recordSet->fields['gridsquare_id']) {
