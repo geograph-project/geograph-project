@@ -79,7 +79,7 @@ if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
 	#$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/topic{$_GET['topic']}";
 	$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vthread&amp;topic={$_GET['topic']}";
 
-		list($title,$forrom) = $db->GetOne("select topic_title,forum_id from `geobb_topics` where `topic_id` = {$_GET['topic']}");
+		list($title,$forrom) = $db->GetRow("select topic_title,forum_id from `geobb_topics` where `topic_id` = {$_GET['topic']}");
 
 	$rss->title = "Geograph.org.uk Forum :: $title :: Latest Posts";
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format&amp;topic=".$_GET['topic'];
@@ -120,7 +120,7 @@ if (!$_GET['nolimit']) {
 
 		//send description if more verbose than the snippet title
 		if ($title != $recordSet->fields['post_text'])
-			$item->description = GeographLinks($recordSet->fields['post_text']);
+			$item->description = GeographLinks($recordSet->fields['post_text'],!empty($_GET['expand']));
 
 		$item->date = strtotime($recordSet->fields['post_time']);
 		//$item->source = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vthread&amp;topic={$_GET['topic']}";
