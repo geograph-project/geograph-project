@@ -115,7 +115,7 @@ while (!$recordSet->EOF)
 		
 	$description .= "<br/><br/><a href=\"{$item->link}\">More details of this event</a>";	
 	$item->description = $description;
-	$item->date = strtotime($recordSet->fields['event_date']);
+	$item->date = strtotime($recordSet->fields['event_time']);
 	$item->author = $recordSet->fields['realname'];
 	
 	if (($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') && $recordSet->fields['gridsquare_id']) {
