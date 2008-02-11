@@ -101,7 +101,7 @@ while (!$recordSet->EOF)
 {
 	$item = new FeedItem();
 	
-	$item->title = date('d/m/Y: 'strtotime($recordSet->fields['created'])).$recordSet->fields['title'];
+	$item->title = date('d/m/Y: ',strtotime($recordSet->fields['created'])).$recordSet->fields['title'];
 
 	//htmlspecialchars is called on link so dont use &amp;
 	$item->link = "http://{$_SERVER['HTTP_HOST']}/events/event.php?id={$recordSet->fields['geoevent_id']}";
