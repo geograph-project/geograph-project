@@ -62,7 +62,7 @@ if (!empty($_GET['first'])) {
 }
 
 if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-t{$_GET['topic']}-{$format}.$extension";
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-t{$_GET['topic']}-{$format}".!empty($_GET['expand']).".$extension";
 } elseif (!empty($_GET['forum']) && is_numeric($_GET['forum'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-f{$_GET['forum']}-{$format}-".(($_GET['sortBy'] == 1)?1:0).".$extension";
 } else {
