@@ -44,14 +44,16 @@ $smarty->display('_std_begin.tpl');
 <label for="recreate">Recreate entire gridimage_search table from gridimage table</label><br>
 &nbsp;<input type="checkbox" id="use_new" name="use_new" value="1" checked="checked">
 <label for="use_new">Use multi-stage copy (recommended on a live site)</label><br>
+<br>
+<br>-and/or-
+<br>
+(<input type="radio" id="update" name="update" value="1" checked="checked">Yes
 
-(<input type="checkbox" id="update" name="update" value="1" checked="checked">Yes
+<input type="radio" name="update" value="0" checked="checked">No
 
-<input type="checkbox" name="update" value="0" checked="checked">No
-
-<input type="checkbox" name="update" value="2" checked="checked">only blank)
+<input type="radio" name="update" value="2" checked="checked">only blank)
 <label for="update">Update lat/long values in gridimage_search</label><br>
-
+<br><br>
 <input type="submit" name="go" value="Start">
 </form>
 
@@ -110,7 +112,7 @@ if (isset($_POST['recreate']))
 
 
 		$db->Execute("INSERT INTO gridimage_search
-			SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,0,0,ftf,seq_no,point_xy,GeomFromText('POINT(0 0)')
+			SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,0,0,ftf,seq_no,point_xy,GeomFromText('POINT(0 0)')
 			FROM gridimage AS gi
 			INNER JOIN gridsquare AS gs
 			USING ( gridsquare_id )
@@ -134,7 +136,7 @@ if (!empty($_POST['update']))
 	$recordSet = &$db->Execute("select gridimage_id,x,y,reference_index,nateastings,natnorthings
 		from gridimage
 		INNER JOIN gridsquare AS gs USING ( gridsquare_id )
-		where moderation_status in ('accepted','geograph')".(($_POST['update'] == 2)?' AND wgs84_lat = 0':'') );
+		where moderation_status in ('accepted','geograph')".(($_POST['update'] == 2)?' AND wgs84_lat < 1':'') );
 	$count=0;
 	while (!$recordSet->EOF) 
 	{
