@@ -272,8 +272,8 @@ function onlyone_part2(f) {
 	} else {
 		f.orderby.disabled = iscenter;
 		if (iscenter)
-			f.orderby.selectedIndex = 2 //todo this shouldnt be hardcoded!
-		else if (f.orderby.selectedIndex == 2)
+			f.orderby.selectedIndex = 1 //todo this shouldnt be hardcoded!
+		else if (f.orderby.selectedIndex == 1)
 			f.orderby.selectedIndex = 0;
 		document.getElementById('l_orderby').className = classname;
 		
