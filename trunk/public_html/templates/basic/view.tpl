@@ -84,6 +84,9 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 {if $image->imageclass}
      <dc:subject>{$image->imageclass}</dc:subject>
 {/if}
+{if !strpos($image->imagetaken,'-00')}
+     <dc:coverage>{$image->imagetaken}</dc:coverage>
+{/if}
      <georss:point>{$lat|string_format:"%.5f"} {$long|string_format:"%.5f"}</georss:point>
      <license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
 </Work>
