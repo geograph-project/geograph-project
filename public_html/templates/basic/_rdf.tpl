@@ -5,12 +5,21 @@
 <Work rdf:about="http://{$http_host}/photo/{$image->gridimage_id}">
      <dc:title>{$image->grid_reference} : {$image->title|escape:'html'}</dc:title>
      <dc:identifier>http://{$http_host}/photo/{$image->gridimage_id}</dc:identifier>
+{if $image->credit_realname}
+     <dc:creator><Agent>
+        <dc:title>{$image->realname|escape:'html'}</dc:title>
+     </Agent></dc:creator>
+     <dc:rights><Agent>
+        <dc:title>{$image->user_realname|escape:'html'}</dc:title>
+     </Agent></dc:rights>
+{else}
      <dc:creator><Agent>
         <dc:title>{$image->realname|escape:'html'}</dc:title>
      </Agent></dc:creator>
      <dc:rights><Agent>
         <dc:title>{$image->realname|escape:'html'}</dc:title>
      </Agent></dc:rights>
+{/if}     
      <dc:date>{$image->submitted}</dc:date>
      <dc:format>image/jpeg</dc:format>
      <dc:type>http://purl.org/dc/dcmitype/StillImage</dc:type>
