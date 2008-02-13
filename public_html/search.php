@@ -53,6 +53,7 @@ $displayclasses =  array(
 			'thumbsmore' => 'thumbnails + links',
 			'gmap' => 'on a Google Map',
 			'slide' => 'slide-show mode',
+			'piclens' => 'piclens + slideshow',
 			'text' => 'text only',
 			'spelling' => 'spelling utility',
 			'reveal' => 'map imagine slideshow');
