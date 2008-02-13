@@ -1,7 +1,7 @@
 {assign var="page_title" value="API"}
 {include file="_std_begin.tpl"}
 
-	 <h2>Geograph API v0.75</h2> 
+	 <h2>Geograph API v0.8</h2> 
 	 <div
 	  style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;"><b>Contents</b><br/>
 		<ul style="margin-top:0;margin-left:0;padding:0 0 0 1em;"> 
@@ -270,7 +270,15 @@
 &lt;/geograph&gt;</pre>
   </td> 
 		</tr> 
-	</table>
+		<tr> 
+		  <th colspan="2"><a title="Example RDF Request"
+			 href="http://{$http_host}/photo/1234.rdf">http://{$http_host}/photo/[photo-id].rdf</a></th> 
+		</tr> 
+		<tr> 
+		  <th colspan="2"><a title="Example KML File"
+			 href="http://{$http_host}/photo/1234.kml">http://{$http_host}/photo/[photo-id].kml</a></th> 
+		</tr> 
+	 </table>
 	 
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="csv"></a>CSV Export</h3> 
 	 
