@@ -30,14 +30,14 @@ $template='_rdf.tpl';
 
 
 
-if (isset($_REQUEST['image']))
+if (isset($_REQUEST['id']))
 {
 	//initialise message
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/gridimage.class.php');
 
 	$image=new GridImage();
-	$image->loadFromId($_REQUEST['image']);
+	$image->loadFromId($_REQUEST['id']);
 	
 	if ($image->moderation_status=='rejected') {
 		//clear the image
