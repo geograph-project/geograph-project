@@ -146,7 +146,7 @@ else {
 		$pageNav.=' - <a href="'.$url.$i.$mr.'" class="pageNav" title="Page '.($i+1).'">Last</a> ';
 	}
 }
-if((($navCell&&$iVal>4)||($iVal>9&&$start<$iVal-10))){
+if((($navCell&&$iVal>4)||($iVal>9&&$start<=$iVal-10))){
 if($navCell&&$iVal<6); else $pageNav.='..';
 for($n=$iVal-1;$n<=$iVal;$n++){
 if($n>=$i) {
