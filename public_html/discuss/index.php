@@ -301,20 +301,16 @@ elseif($action=='wait') {
 		if ($cols[9]) {
 			print "<title>Updated Since Last Visit</title>";
 			print "<b>Updated Since Last Visit</b>";
-			print " - <a href=\"{$main_url}/\">Visit Forum</a>"; 
-			exit;
 		} elseif (is_null($cols[9])) {
 			print "<title>New Since Last Visit</title>";
 			print "<b>New Since Last Visit</b>";
-			print " - <a href=\"{$main_url}/\">Visit Forum</a>"; 
-			exit;
 		} 
+	} else {
+		print "<META HTTP-EQUIV=\"refresh\" content=\"60;URL={$main_url}/{$indexphp}action=wait\"/>"; 
+		print "<title>Geograph - No new Posts</title>";
+		print "<b>No new Posts</b> - will check once a minute, this message will change if something is posted.";
 	}
-	print "<META HTTP-EQUIV=\"refresh\" content=\"60;URL={$main_url}/{$indexphp}action=wait\"/>"; 
-	print "<title>Geograph - No new Posts</title>";
-	print "<b>No new Posts</b> - will check once a minute, this message will change if something is posted.";
-	
-	print "<br/><br/><br/><a href=\"/\">Return to homepage</a>";
+	print "<br/><br/><br/><a href=\"/\">homepage</a> | <a href=\"{$main_url}/\">discuss</a>";
 	exit;
 } elseif($action=='deltopic') require($pathToFiles.'bb_func_deltopic.php');
 
