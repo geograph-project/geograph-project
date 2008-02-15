@@ -181,7 +181,8 @@ class SearchCriteria
 			$breakby = preg_replace('/^submitted/','gridimage_id',$breakby);
 			if (strpos($sql_order,' desc') !== FALSE)
 				$breakby .= ' desc';
-			$sql_order = $breakby.($sql_order?", $sql_order":'');
+			if ($breakby != $sql_order) 
+				$sql_order = $breakby.($sql_order?", $sql_order":'');
 		}
 		
 		$sql_where_start = $sql_where;
