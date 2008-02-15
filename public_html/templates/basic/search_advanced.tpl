@@ -173,15 +173,12 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="orderby" id="l_breakby">break by</label></td> 
+			 <td><label for="orderby" id="l_breakby">group by</label></td> 
 			 <td colspan="2"> 
 				<select name="breakby" id="breakby" size="1"> 
 					{html_options options=$breakdowns selected=$breakby}
-				</select></td> 
-		  </tr>
-		  <tr> 
-			 <td><label for="orderby" id="l_orderby">order</label></td> 
-			 <td colspan="2"> 
+				</select> then... 
+				<label for="orderby" id="l_orderby">order by</label></td> 
 				<select name="orderby" id="orderby" size="1" onchange="updateBreakBy(this);"> 
 					{html_options options=$sortorders selected=$orderby}
 				</select> <input type="checkbox" name="reverse_order_ind" id="reverse_order_ind" {$reverse_order_checked}/> <label for="reverse_order_ind" id="l_reverse_order_ind">reverse order</label></td> 
@@ -206,7 +203,7 @@ function updateBreakBy(that) {
 		name = 'submitted';
 	ele = that.form.breakby;
 	for(q=0;q<ele.options.length;q++) {
-		enabled = (name.length && ele.options[q].value.indexOf(name) == 0);
+		enabled = (name.length && ele.options[q].value.indexOf(name) == 0) || name.length == 0;
 		ele.options[q].style.color = enabled?'':'#999999';
 		if (ele.options[q].selected && !enabled)
 			ele.selectedIndex = 0;

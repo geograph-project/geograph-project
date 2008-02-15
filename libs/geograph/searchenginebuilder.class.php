@@ -616,6 +616,9 @@ class SearchEngineBuilder extends SearchEngine
 			if (!empty($dataarray['gridsquare'])) 
 				$searchdesc .= ", in ".$dataarray['gridsquare'];
 			
+			if (!empty($dataarray['breakby']))
+				$searchdesc .= ", group by ".($breakdowns[$dataarray['breakby']]);
+	
 			if (!empty($dataarray['orderby'])) {
 				switch ($dataarray['orderby']) {
 					case "":
@@ -629,9 +632,6 @@ class SearchEngineBuilder extends SearchEngine
 						$searchdesc .= ", in ".($dataarray['reverse_order_ind']?'reverse ':'').($sortorders[$dataarray['orderby']])." order";
 				}
 			}
-	
-			if (!empty($dataarray['breakby']))
-				$searchdesc .= ", by ".($breakdowns[$dataarray['breakby']]);
 	
 			$this->searchdesc = $searchdesc;
 			$this->criteria = $criteria;
