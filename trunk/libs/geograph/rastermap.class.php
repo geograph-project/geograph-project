@@ -281,7 +281,7 @@ class RasterMap
 	//choose photographer icon
 			$prefix = $this->issubmit?'viewc':'camicon';
 			if (isset($this->view_direction) && strlen($this->view_direction) && $this->view_direction != -1)
-				$iconfile = "$prefix-{$this->view_direction}.png";
+				$iconfile = "$prefix-".intval($this->view_direction).".png";
 			else
 				$iconfile = "$prefix--1.png";
 
@@ -335,7 +335,7 @@ class RasterMap
 			if ((!$this->displayMarker2 || $iconfile == "camera.png") && !$this->issubmit) {
 				$prefix = 'subc';
 				if (isset($this->view_direction) && strlen($this->view_direction) && $this->view_direction != -1)
-					$subfile = "$prefix-{$this->view_direction}.png";
+					$subfile = "$prefix-".intval($this->view_direction).".png";
 				else
 					$subfile = "$prefix--1.png";
 			} else {
