@@ -93,6 +93,6 @@ function bodyOnLoad()
 <div id="breadcrumbs">
 </div>
 
-<div id="content">
+<div id="content" {if $maincontentclass}class="{$maincontentclass}"{/if}>
 
 

@@ -487,6 +487,109 @@ margin:10px;
 }
 
 /*---------------------------------------------------------------*
+ * main content block
+ *---------------------------------------------------------------*/
+
+.content_photoblack
+{
+	background:black;
+	position:relative;
+
+	z-index:3;
+	color:silver;
+}
+
+.content_photoblack h2
+{
+	color:white;
+	padding-left:10px;
+	padding-top:10px;
+	margin-bottom:0;
+}
+
+.content_photoblack h3
+{
+	margin-top:0;
+	padding-left:10px;
+	font-weight:normal;
+	color:silver;
+}
+
+.content_photoblack .interestBox {
+	background-color:#333333;
+	color:#bbbbbb;
+}
+
+.content_photoblack .interestBox a {
+	color:white;
+}
+
+
+.content_photogray
+{
+	background:gray;
+	position:relative;
+
+	color:silver;
+}
+
+.content_photogray h2
+{
+	color:#D3D3D3;
+	padding-left:10px;
+	padding-top:10px;
+	margin-bottom:0;
+}
+
+.content_photogray h3
+{
+	margin-top:0;
+	padding-left:10px;
+	font-weight:normal;
+	color:silver;
+}
+
+.content_photogray .searchresults a
+{
+	color:silver;
+}
+
+.content_photogray .searchresults a:visited
+{
+	color:#999999;
+}
+
+.content_photogray .interestBox {
+	background-color:#cccccc;
+	color:#444444;
+}
+
+.content_photowhite
+{
+	background:white;
+	position:relative;
+
+	z-index:3;
+	color:black;
+}
+
+.content_photowhite h2
+{
+	color:black;
+	padding-left:10px;
+	padding-top:10px;
+	margin-bottom:0;
+}
+
+.content_photowhite h3
+{
+	margin-top:0;
+	padding-left:10px;
+	font-weight:normal;
+	color:silver;
+
+}
+/*---------------------------------------------------------------*
  * Misc styles used in page
  *---------------------------------------------------------------*/
 .nowrap 
@@ -585,6 +688,70 @@ div.ccmessage
 div.ccmessage img
 {
 	vertical-align: middle
+}
+
+/* styling for a full size portrait photo*/
+div.photoportrait
+{
+	width:inherit;
+	padding:10px;
+	text-align:center;
+	margin:10px;
+}
+
+/* styling for a full size landscape photo*/
+div.photolandscape
+{
+	width:inherit;
+	padding:10px;
+	text-align:center;
+	margin:10px;
+}
+
+.img-shadow img {
+	/*
+	width:100%;
+	height:100%;
+	max-width:640px;
+	max-height:640px;
+	*/
+  	border: 1px solid #a9a9a9;
+  	padding: 4px;
+  }
+
+
+/* styling for a 66% resized photo*/
+div.photo66
+{
+	width:442px;
+	padding:10px;
+	border: silver 1px solid;
+	text-align:center;
+	margin:10px;
+}
+
+
+
+/* styling for a 33% resized photo*/
+div.photo33
+{
+	width:230px;
+	padding:10px;
+	border: silver 1px solid;
+	text-align:center;
+	margin:10px;
+	position:relative;
+}
+
+/* styling for a guide photo*/
+div.photoguide
+{
+	width:650px;
+	padding:10px;
+	border: silver 1px solid;
+	text-align:center;
+	margin:10px;
+	position:relative;
 }
 
 
