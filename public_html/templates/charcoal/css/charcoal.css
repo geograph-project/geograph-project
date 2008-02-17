@@ -693,7 +693,6 @@ div.ccmessage img
 /* styling for a full size portrait photo*/
 div.photoportrait
 {
-	width:inherit;
 	padding:10px;
 	text-align:center;
 	margin:10px;
@@ -702,7 +701,6 @@ div.photoportrait
 /* styling for a full size landscape photo*/
 div.photolandscape
 {
-	width:inherit;
 	padding:10px;
 	text-align:center;
 	margin:10px;
