@@ -4,7 +4,7 @@
  
 <h2><a href="/explore/places/">Places Directory</a> &gt; {$references.$ri}</h2>
 
-<p>If there is only one place in the devision you will be taken direct to an image search, otherwise click to view a list of places</p>
+<p>{if $ri == 2}At this point we dont have data to be able to offer a breakdown for Northern Ireland, so it appears as one entry. {/if}If there is only one place in the devision you will be taken direct to an image search, otherwise click to view a list of places</p>
 
 {if $ri == 1}<h4>Local Authorities of {$references.$ri} in alphabetical order:</h4>{/if}
 
