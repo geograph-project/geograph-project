@@ -123,6 +123,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	count( * ) AS `Images`, 
 	sum( moderation_status = 'geograph' ) AS `Geographs`, 
 	sum( ftf =1 ) AS `Points Awarded`, 
+	count( * ) / count( DISTINCT grid_reference ) AS `Depth`,
 	count( DISTINCT grid_reference ) AS `Different Gridsquares`
 	$columns_sql
 	, count( DISTINCT imageclass ) AS `Different Categories`
