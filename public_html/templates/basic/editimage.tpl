@@ -411,8 +411,31 @@
 <input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$image->photographer_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/templates/basic/img/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/templates/basic/img/camicon.png" alt="Marks the Photographer" width="12" height="20" align="middle"/>{/if}
 {getamap gridref="document.theForm.photographer_gridref.value" gridref2=$image->photographer_gridref text="OS Get-a-map&trade;"}<br/>
 <span style="font-size:0.6em">
-| <a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));">Copy from Subject</a> | 
-<a href="javascript:void(document.theForm.grid_reference.value = document.theForm.grid_reference.defaultValue);void(document.theForm.photographer_gridref.value = document.theForm.photographer_gridref.defaultValue);void(updateMapMarker(document.theForm.grid_reference,false));void(updateMapMarker(document.theForm.photographer_gridref,false));">Reset to initial values</a> |<br/></span>
+| <a href="javascript:void(copyGridRef());">Copy from Subject</a> | 
+<a href="javascript:void(resetGridRefs());">Reset to initial values</a> |<br/></span>
+
+	{literal}
+	<script type="text/javascript">
+		function copyGridRef() {
+			document.theForm.photographer_gridref.value = document.theForm.grid_reference.value;
+			updateMapMarker(document.theForm.photographer_gridref,false);
+			return false;
+		}
+		function resetGridRefs() {
+			document.theForm.grid_reference.value = document.theForm.grid_reference.defaultValue;
+			document.theForm.photographer_gridref.value = document.theForm.photographer_gridref.defaultValue;
+			updateMapMarker(document.theForm.grid_reference,false);
+			updateMapMarker(document.theForm.photographer_gridref,false);
+			var ele = document.theForm.view_direction;
+			for (var q=0;q<ele.options.length;q++) {
+				if (ele.options[q].defaultSelected)
+					ele.options[q].selected = true;
+			}
+			return false;
+		}
+	</script>
+	{/literal}
+
 
 {if $rastermap->enabled}
 	<br/><input type="checkbox" name="use6fig" id="use6fig" {if $image->use6fig} checked="checked"{/if} value="1"/> <label for="use6fig">Only display 6 figure grid reference (<a href="/help/map_precision" target="_blank">Explanation</a>)</label>
