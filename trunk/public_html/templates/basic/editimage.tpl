@@ -431,6 +431,8 @@
 				if (ele.options[q].defaultSelected)
 					ele.options[q].selected = true;
 			}
+			if (document.theForm.use6fig)
+				document.theForm.use6fig.checked = document.theForm.use6fig.defaultChecked;
 			return false;
 		}
 	</script>
