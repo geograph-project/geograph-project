@@ -22,6 +22,7 @@
 			{else}
 				[<a title="Edit {$item.title}" href="/article/edit.php?page={$item.url}">Edit</a>]
 			{/if}
+			[<a title="Edit History for {$item.title}" href="/article/history.php?page={$item.url}">History</a>]
 		{/if} 
 		{if $isadmin}
 			{if $item.approved == 1}
