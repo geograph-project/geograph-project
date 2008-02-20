@@ -16,9 +16,7 @@
 		<td>Title</td>
 		<td>Author</td>
 		<td>Updated</td>
-		{if $isadmin}
-			<td>Links</td>
-		{/if}
+		<td>Links</td>
 	</tr>
 </thead>
 <tbody>
@@ -28,14 +26,15 @@
 		<td sortvalue="{$item.title}"><b>{if $item.approved != 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'}" href="/article/{$item.url}">{$item.title}</a></b>{if $item.approved != 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}Not publicly visible{/if}){/if}</td>
 		<td style="font-size:0.9em"><a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}">{$item.realname}</a></td>
 		<td sortvalue="{$item.update_time}" style="font-size:0.8em">{$item.update_time|date_format:"%a, %e %b %Y"}</td>
+		<td style="font-size:0.8em">
 		{if $isadmin || $item.user_id == $user->user_id}
-			<td style="font-size:0.8em">
 			{if $item.locked_user} 
 				Locked
 			{else}
 				[<a title="Edit {$item.title}" href="/article/edit.php?page={$item.url}">Edit</a>]
 			{/if}
 		{/if} 
+		[<a title="Edit History for {$item.title}" href="/article/history.php?page={$item.url}">History</a>]
 		{if $isadmin}
 			{if $item.approved == 1}
 				[<a href="/article/?page={$item.url}&amp;approve=0">Disapprove</a>]
@@ -44,15 +43,13 @@
 			{/if}
 			<br/>-- Version {$item.version}{if $item.modifier_id != $item.user_id} by <a href="/profile/{$item.modifier_id}" title="View Geograph Profile for {$item.modifier_realname}">{$item.modifier_realname}</a>{/if}
 		{/if}
-		{if $isadmin || $item.user_id == $user->user_id}
-			</td>
-		{/if}
+		</td>
 	</tr>
 	{/foreach}
 </tbody>
 </table>
 
-</ul>
+
 <div style="float:right"><a title="geoRSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-geo">geoRSS</a></div>
 <br style="clear:both"/>
 

@@ -32,7 +32,7 @@ ul.explore li {	padding:3px; }
 	<small id="att{$lastid+1}"><small style="color:lightgrey">by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}"  style="color:#6699CC">{$item.realname}</a>
 		{if $item.user_id == $user->user_id && !$item.locked_user}
 			&nbsp;&nbsp;&nbsp;&nbsp; 
-			[<a title="Edit {$item.title}" href="/article/edit.php?page={$item.url}">Edit</a>]
+			[<a title="Edit {$item.title}" href="/article/edit.php?page={$item.url}">Edit</a>] [<a title="Edit History for {$item.title}" href="/article/history.php?page={$item.url}">History</a>]
 		{/if} 
 		
 		</small></small>
