@@ -1191,9 +1191,9 @@ class KMLCreator extends FeedCreator {
 		<Placemark>";
 			}
 			$feed.= "
-			<description>".$this->items[$i]->getDescription(true)."</description>
-			<Snippet maxLines=\"2\">".htmlnumericentities($snippet)."</Snippet>
-			<name>".FeedCreator::iTrunc(htmlnumericentities(strip_tags($this->items[$i]->title)),100)."</name>
+			<description>".utf8_encode($this->items[$i]->getDescription(true))."</description>
+			<Snippet maxLines=\"2\">".utf8_encode(htmlnumericentities($snippet))."</Snippet>
+			<name>".FeedCreator::iTrunc(utf8_encode(htmlnumericentities(strip_tags($this->items[$i]->title))),100)."</name>
 			<visibility>1</visibility>
 			<Point>
 				<extrude>1</extrude><altitudeMode>relativeToGround</altitudeMode>
@@ -1266,8 +1266,8 @@ xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com
 			
 		for ($i=0;$i<count($this->items);$i++) {
 			$feed.= "<wpt lat=\"".$this->items[$i]->lat."\" lon=\"".$this->items[$i]->long."\">
-				<name>".substr(htmlnumericentities(strip_tags($this->items[$i]->title)),0,6)."</name>
-				<desc>".htmlnumericentities(strip_tags($this->items[$i]->title))."</desc>
+				<name>".substr(utf8_encode(htmlnumericentities(strip_tags($this->items[$i]->title)),0,6))."</name>
+				<desc>".utf8_encode(htmlnumericentities(strip_tags($this->items[$i]->title)))."</desc>
 				<src>".htmlspecialchars($this->items[$i]->author)."</src>
 				<url>".htmlspecialchars($this->items[$i]->link)."</url>
 			</wpt>\n";
@@ -1305,7 +1305,7 @@ class PHPCreator extends FeedCreator {
 			if ($this->items[$i]->guid!="") {
 				$feed.= "    \$feedItem[$i]->id='".htmlspecialchars($this->items[$i]->guid)."';\n";
 			}
-			$feed.= "    \$feedItem[$i]->title='".addslashes(FeedCreator::iTrunc(htmlnumericentities(strip_tags($this->items[$i]->title)),100))."';\n";
+			$feed.= "    \$feedItem[$i]->title='".addslashes(FeedCreator::iTrunc(utf8_encode(htmlnumericentities(strip_tags($this->items[$i]->title))),100))."';\n";
 			$feed.= "    \$feedItem[$i]->link='".htmlspecialchars($this->items[$i]->link)."';\n";
 			$feed.= "    \$feedItem[$i]->date=".htmlspecialchars($this->items[$i]->date).";\n";
 			if ($this->items[$i]->author!="") {
@@ -1314,7 +1314,7 @@ class PHPCreator extends FeedCreator {
 					$feed.= "    \$feedItem[$i]->authorEmail='".$this->items[$i]->authorEmail."';\n";
 				}
 			}
-			$feed.= "    \$feedItem[$i]->description='".addslashes($this->items[$i]->getDescription())."';\n";
+			$feed.= "    \$feedItem[$i]->description='".addslashes(utf8_encode($this->items[$i]->getDescription()))."';\n";
 			if ($this->items[$i]->thumb!="") {
 				$feed.= "    \$feedItem[$i]->thumbURL='".htmlspecialchars($this->items[$i]->thumb)."';\n";
 			}
@@ -1348,7 +1348,7 @@ class PIECreator01 extends FeedCreator {
 		$feed.= "    <link>".$this->link."</link>\n";
 		for ($i=0;$i<count($this->items);$i++) {
 			$feed.= "    <entry>\n";
-			$feed.= "        <title>".FeedCreator::iTrunc(htmlnumericentities(strip_tags($this->items[$i]->title)),100)."</title>\n";
+			$feed.= "        <title>".FeedCreator::iTrunc(utf8_encode(htmlnumericentities(strip_tags($this->items[$i]->title))),100)."</title>\n";
 			$feed.= "        <link>".htmlspecialchars($this->items[$i]->link)."</link>\n";
 			$itemDate = new FeedDate($this->items[$i]->date);
 			$feed.= "        <created>".htmlspecialchars($itemDate->iso8601())."</created>\n";
@@ -1364,7 +1364,7 @@ class PIECreator01 extends FeedCreator {
 				$feed.="        </author>\n";
 			}
 			$feed.= "        <content type=\"text/html\" xml:lang=\"en-us\">\n";
-			$feed.= "            <div xmlns=\"http://www.w3.org/1999/xhtml\">".$this->items[$i]->getDescription()."</div>\n";
+			$feed.= "            <div xmlns=\"http://www.w3.org/1999/xhtml\">".utf8_encode($this->items[$i]->getDescription())."</div>\n";
 			$feed.= "        </content>\n";
 			$feed.= "    </entry>\n";
 		}
@@ -1427,7 +1427,7 @@ class AtomCreator03 extends FeedCreator {
 		$feed.= $this->_createAdditionalElements($this->additionalElements, "    ");
 		for ($i=0;$i<count($this->items);$i++) {
 			$feed.= "    <entry>\n";
-			$feed.= "        <title>".htmlnumericentities(strip_tags($this->items[$i]->title))."</title>\n";
+			$feed.= "        <title>".utf8_encode(htmlnumericentities(strip_tags($this->items[$i]->title)))."</title>\n";
 			$feed.= "        <link rel=\"alternate\" type=\"text/html\" href=\"".htmlspecialchars($this->items[$i]->link)."\"/>\n";
 			if ($this->items[$i]->date=="") {
 				$this->items[$i]->date = time();
@@ -1444,7 +1444,7 @@ class AtomCreator03 extends FeedCreator {
 				$feed.= "        </author>\n";
 			}
 			if ($this->items[$i]->description!="") {
-				$feed.= "        <summary>".htmlnumericentities($this->items[$i]->description)."</summary>\n";
+				$feed.= "        <summary>".utf8_encode(htmlnumericentities($this->items[$i]->description))."</summary>\n";
 			}
 			if ($this->items[$i]->thumbdata) {
 				$feed.= "        <gtb:icon mode=\"base64\" type=\"image/jpeg\">\n";
@@ -1584,7 +1584,7 @@ class OPMLCreator extends FeedCreator {
 		$feed.= "    <body>\n";
 		for ($i=0;$i<count($this->items);$i++) {
 			$feed.= "    <outline type=\"rss\" ";
-			$title = htmlnumericentities(strip_tags(strtr($this->items[$i]->title,"\n\r","  ")));
+			$title = utf8_encode(htmlnumericentities(strip_tags(strtr($this->items[$i]->title,"\n\r","  "))));
 			$feed.= " title=\"".$title."\"";
 			$feed.= " text=\"".$title."\"";
 			//$feed.= " description=\"".htmlspecialchars($this->items[$i]->description)."\"";
