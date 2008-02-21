@@ -330,9 +330,9 @@ class FeedHtmlField {
 			$result = "<![CDATA[".$this->rawFieldContent."]]>";
 		} else {
 			if ($this->truncSize and is_int($this->truncSize)) {
-				$result = FeedCreator::iTrunc(htmlspecialchars($this->rawFieldContent),$this->truncSize);
+				$result = FeedCreator::iTrunc(htmlnumericentities($this->rawFieldContent),$this->truncSize);
 			} else {
-				$result = htmlspecialchars($this->rawFieldContent);
+				$result = htmlnumericentities($this->rawFieldContent);
 			}
 		}
 		return $result;
@@ -1266,8 +1266,8 @@ xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com
 			
 		for ($i=0;$i<count($this->items);$i++) {
 			$feed.= "<wpt lat=\"".$this->items[$i]->lat."\" lon=\"".$this->items[$i]->long."\">
-				<name>".substr(htmlspecialchars(strip_tags($this->items[$i]->title)),0,6)."</name>
-				<desc>".htmlspecialchars(strip_tags($this->items[$i]->title))."</desc>
+				<name>".substr(htmlnumericentities(strip_tags($this->items[$i]->title)),0,6)."</name>
+				<desc>".htmlnumericentities(strip_tags($this->items[$i]->title))."</desc>
 				<src>".htmlspecialchars($this->items[$i]->author)."</src>
 				<url>".htmlspecialchars($this->items[$i]->link)."</url>
 			</wpt>\n";
@@ -1305,7 +1305,7 @@ class PHPCreator extends FeedCreator {
 			if ($this->items[$i]->guid!="") {
 				$feed.= "    \$feedItem[$i]->id='".htmlspecialchars($this->items[$i]->guid)."';\n";
 			}
-			$feed.= "    \$feedItem[$i]->title='".addslashes(FeedCreator::iTrunc(htmlspecialchars(strip_tags($this->items[$i]->title)),100))."';\n";
+			$feed.= "    \$feedItem[$i]->title='".addslashes(FeedCreator::iTrunc(htmlnumericentities(strip_tags($this->items[$i]->title)),100))."';\n";
 			$feed.= "    \$feedItem[$i]->link='".htmlspecialchars($this->items[$i]->link)."';\n";
 			$feed.= "    \$feedItem[$i]->date=".htmlspecialchars($this->items[$i]->date).";\n";
 			if ($this->items[$i]->author!="") {
@@ -1348,7 +1348,7 @@ class PIECreator01 extends FeedCreator {
 		$feed.= "    <link>".$this->link."</link>\n";
 		for ($i=0;$i<count($this->items);$i++) {
 			$feed.= "    <entry>\n";
-			$feed.= "        <title>".FeedCreator::iTrunc(htmlspecialchars(strip_tags($this->items[$i]->title)),100)."</title>\n";
+			$feed.= "        <title>".FeedCreator::iTrunc(htmlnumericentities(strip_tags($this->items[$i]->title)),100)."</title>\n";
 			$feed.= "        <link>".htmlspecialchars($this->items[$i]->link)."</link>\n";
 			$itemDate = new FeedDate($this->items[$i]->date);
 			$feed.= "        <created>".htmlspecialchars($itemDate->iso8601())."</created>\n";
@@ -1427,7 +1427,7 @@ class AtomCreator03 extends FeedCreator {
 		$feed.= $this->_createAdditionalElements($this->additionalElements, "    ");
 		for ($i=0;$i<count($this->items);$i++) {
 			$feed.= "    <entry>\n";
-			$feed.= "        <title>".htmlspecialchars(strip_tags($this->items[$i]->title))."</title>\n";
+			$feed.= "        <title>".htmlnumericentities(strip_tags($this->items[$i]->title))."</title>\n";
 			$feed.= "        <link rel=\"alternate\" type=\"text/html\" href=\"".htmlspecialchars($this->items[$i]->link)."\"/>\n";
 			if ($this->items[$i]->date=="") {
 				$this->items[$i]->date = time();
@@ -1440,11 +1440,11 @@ class AtomCreator03 extends FeedCreator {
 			$feed.= $this->_createAdditionalElements($this->items[$i]->additionalElements, "        ");
 			if ($this->items[$i]->author!="") {
 				$feed.= "        <author>\n";
-				$feed.= "            <name>".htmlspecialchars($this->items[$i]->author)."</name>\n";
+				$feed.= "            <name>".htmlnumericentities($this->items[$i]->author)."</name>\n";
 				$feed.= "        </author>\n";
 			}
 			if ($this->items[$i]->description!="") {
-				$feed.= "        <summary>".htmlspecialchars($this->items[$i]->description)."</summary>\n";
+				$feed.= "        <summary>".htmlnumericentities($this->items[$i]->description)."</summary>\n";
 			}
 			if ($this->items[$i]->thumbdata) {
 				$feed.= "        <gtb:icon mode=\"base64\" type=\"image/jpeg\">\n";
@@ -1584,7 +1584,7 @@ class OPMLCreator extends FeedCreator {
 		$feed.= "    <body>\n";
 		for ($i=0;$i<count($this->items);$i++) {
 			$feed.= "    <outline type=\"rss\" ";
-			$title = htmlspecialchars(strip_tags(strtr($this->items[$i]->title,"\n\r","  ")));
+			$title = htmlnumericentities(strip_tags(strtr($this->items[$i]->title,"\n\r","  ")));
 			$feed.= " title=\"".$title."\"";
 			$feed.= " text=\"".$title."\"";
 			//$feed.= " description=\"".htmlspecialchars($this->items[$i]->description)."\"";
