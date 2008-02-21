@@ -51,13 +51,13 @@ class kmlPrimative {
 		if ($raw) {
 			$this->items[$name] = $value;
 		} else {
-			$this->items[$name] = htmlnumericentities($value);
+			$this->items[$name] = utf8_encode(htmlnumericentities($value));
 		}
 		return $this;
 	}
 
 	public function setItemCDATA($name,$value) {
-		$this->items[$name] = "<![CDATA[$value]]>";
+		$this->items[$name] = utf8_encode("<![CDATA[$value]]>");
 		return $this;
 	}
 
