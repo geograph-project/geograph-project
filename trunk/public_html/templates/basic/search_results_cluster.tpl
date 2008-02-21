@@ -21,10 +21,12 @@
 			<a title="view full size image" href="/photo/{$image->gridimage_id}"><b>{$image->simple_title|escape:'html'}</b></a>
 			by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a><br/>
 			<i>multiple</i> images for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a><br/>
+			<div style="position:relative; width:600px; height:70px; overflow:auto" class="nowrap">
 			{foreach from=$image->cluster item=im}
 				<a title="{$im->title|escape:'html'} - click to view full size image" href="/photo/{$im->gridimage_id}">{$im->getThumbnail(120,120)|regex_replace:'/"(\d+)"/e':'"\'".($1/2)."\'"'}</a> 
 	
 			{/foreach}
+			</div>
 		{else}
 			<a title="view full size image" href="/photo/{$image->gridimage_id}"><b>{$image->title|escape:'html'}</b></a>
 			by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a><br/>
