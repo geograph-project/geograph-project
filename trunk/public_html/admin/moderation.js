@@ -47,7 +47,16 @@ function moderateImage(gridimage_id, status)
 	var url="/admin/moderation.php?gridimage_id="+gridimage_id+"&status="+status;
 	if (remoderate)
 		url=url+"&remoderate=1";
-
+	
+	if (status == 'rejected') {
+		comment = prompt("Please leave a comment to explain the reason for rejecting this image.",'');
+		if (comment.length > 1) {
+			url=url+"&comment="+escape(comment);
+		} else {
+			return false;
+		}
+	}
+	
 	//make the request
 	var req=getXMLRequestObject();
 	
