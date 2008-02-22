@@ -80,7 +80,11 @@ if (isset($_GET['gridimage_id']))
 					$ticket->setImage($gridimage_id);
 					$ticket->setNotes("Auto-generated ticket, as a result of Moderation. Please leave a comment to explain the reason for rejecting this image.");
 					$status=$ticket->commit('open');
-					echo " <a href=\"/editimage.php?id={$gridimage_id}\"><B>View Ticket</b></a>";
+					
+					if (!empty($_GET['comment'])) {
+						$ticket->addModeratorComment($USER->user_id,stripslashes($_GET['comment']));
+					}
+					
 				}
 
 				//clear caches involving the image
