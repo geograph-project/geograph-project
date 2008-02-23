@@ -78,12 +78,14 @@ if (isset($_GET['gridimage_id']))
 					$ticket->setModerator($USER->user_id);
 					$ticket->setPublic('everyone');
 					$ticket->setImage($gridimage_id);
-					$ticket->setNotes("Auto-generated ticket, as a result of Moderation. Please leave a comment to explain the reason for rejecting this image.");
+					if (!empty($_GET['comment'])) {
+						$ticket->setNotes("Auto-generated ticket, as a result of Moderation. Rejecting this image because: ".stripslashes($_GET['comment']));
+					} else {
+						$ticket->setNotes("Auto-generated ticket, as a result of Moderation. Please leave a comment to explain the reason for rejecting this image.");
+					}
 					$status=$ticket->commit('open');
 					
-					if (!empty($_GET['comment'])) {
-						$ticket->addModeratorComment($USER->user_id,stripslashes($_GET['comment']));
-					}
+					echo " <a href=\"/editimage.php?id={$gridimage_id}\"><B>View Ticket</b></a>";
 					
 				}
 
