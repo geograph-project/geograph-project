@@ -27,35 +27,40 @@ init_session();
 
 $smarty = new GeographPage;
 $template='_rdf.tpl';	
+$cacheid='';	
 
 
 
 if (isset($_REQUEST['id']))
 {
-	//initialise message
-	require_once('geograph/gridsquare.class.php');
-	require_once('geograph/gridimage.class.php');
+	$cacheid = intval($_REQUEST['id']);
+	if (!$smarty->is_cached($template, $cacheid))
+	{
+		//initialise message
+		require_once('geograph/gridsquare.class.php');
+		require_once('geograph/gridimage.class.php');
 
-	$image=new GridImage();
-	$image->loadFromId($_REQUEST['id']);
-	
-	if ($image->moderation_status=='rejected') {
-		//clear the image
-		$image=new GridImage;
-		header("HTTP/1.0 410 Gone");
-		header("Status: 410 Gone");
-		print '<?'.'xml version="1.0" encoding="UTF-8"?'.">\n";
-		echo '<status state="failed">';
-	} else {
+		$image=new GridImage();
+		$image->loadFromId($_REQUEST['id']);
+		
+		if ($image->moderation_status=='rejected') {
+			//clear the image
+			$image=new GridImage;
+			header("HTTP/1.0 410 Gone");
+			header("Status: 410 Gone");
+			print '<?'.'xml version="1.0" encoding="UTF-8"?'.">\n";
+			echo '<status state="failed">';
+		} else {
 
-		require_once('geograph/conversions.class.php');
-		$conv = new Conversions;
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;
 
-		list($lat,$long) = $conv->gridsquare_to_wgs84($image->grid_square);
-		$smarty->assign('lat', $lat);
-		$smarty->assign('long', $long);
+			list($lat,$long) = $conv->gridsquare_to_wgs84($image->grid_square);
+			$smarty->assign('lat', $lat);
+			$smarty->assign('long', $long);
+		}
+		$smarty->assign_by_ref('image', $image);
 	}
-	$smarty->assign_by_ref('image', $image);
 } else {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");
@@ -65,6 +70,6 @@ if (isset($_REQUEST['id']))
 
 print '<?'.'xml version="1.0" encoding="UTF-8"?'.">\n";
 
-$smarty->display($template);
+$smarty->display($template,$cacheid);
 
 ?>
