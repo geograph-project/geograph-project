@@ -1,3 +1,4 @@
+{dynamic}
 {assign var="page_title" value="Reuse Image"}
 {include file="_std_begin.tpl"}
 <style type="text/css">
@@ -9,7 +10,6 @@ textarea {
 }
 {/literal}
 </style>
-{dynamic}
 
 
 
