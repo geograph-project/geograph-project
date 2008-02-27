@@ -1,3 +1,4 @@
+{if $engine->currentPage > 1}{assign var="rss_url" value="/feed/results/`$i`/`$engine->currentPage`.media"}{else}{assign var="rss_url" value="/feed/results/`$i`.media"}{/if}
 {include file="_search_begin.tpl"}
 {literal}
 <style type="text/css">
