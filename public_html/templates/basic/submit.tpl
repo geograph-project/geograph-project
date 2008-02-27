@@ -493,7 +493,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<p>If you do
 	not agree with these terms, click "I do not agree" and your upload will
 	be abandoned.<br />
-	<input style="width:200px" type="submit" name="abandon" value="I DO NOT AGREE"/>
+	<input style="width:200px" type="submit" name="abandon" value="I DO NOT AGREE" onclick="return confirm('Are you sure? The current upload will be discarded!');"/>
 	
 	</p>
 
