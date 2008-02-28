@@ -37,7 +37,6 @@
   {if $isadmin or $isowner}
   <div class="statuscaption">classification:
    {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}
-   {if $image->ftf}(first){/if}
    {if $image->mod_realname}(moderator: {$image->mod_realname}){/if}</div>
   {/if}
 </div>
