@@ -1407,9 +1407,13 @@ class GridImage
 			", use6fig=".$db->Quote($this->use6fig).
 			" where gridimage_id = '{$this->gridimage_id}'";
 		$db->Execute($sql);
-			
+		
+		//fire an event 
+		require_once('geograph/event.class.php');
+		new Event(EVENT_UPDATEDPHOTO, "{$img->gridimage_id}");
+		
 		//updated cached tables
-		$this->updateCachedTables();	
+		$this->updateCachedTables();
 	}
 	
 	
