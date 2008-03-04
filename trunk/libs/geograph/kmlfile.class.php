@@ -409,7 +409,7 @@ class kmlNetworkLink extends kmlPrimative {
 
 	public function useUrl($url) {
 		$Url = $this->addChild('Url','','Url');
-		$Url->setItem('href',htmlspecialchars($url));
+		$Url->setItem('href',$url);
 		return $Url;
 	}
 }
