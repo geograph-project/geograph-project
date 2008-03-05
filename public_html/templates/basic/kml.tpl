@@ -10,7 +10,7 @@
 	<b>Recent Images</b>: <br/>
 	&nbsp;&nbsp;&nbsp;<a href="/feed/recent.kml" title="recent Geograph Submissions" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> 
 	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=http://$http_host/feed/recent.kml" text="Google Maps"}<br/>
-	{if $user->registered}<br/> 
+	{if $user->registered && $enable_forums}<br/> 
 	<b>Recent Discussions</b>:<br/> 
 	&nbsp;&nbsp;&nbsp;<a href="/discuss/feed/forum5.kml" title="recent Geograph Discussions" Google Earth class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a>
 	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=http://$http_host/discuss/feed/forum5.kml" text="Google Maps"}<br/>

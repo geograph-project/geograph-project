@@ -34,7 +34,7 @@
 
 <a name="question"></a>
 <h3>I have a question, what should I do?</h3>
-    <p>Please see the <a href="/faq.php">General Questions</a> or <a title="Contact Us" href="/contact.php">Contact Us</a>, alternatively pop into the <a href="/discuss/">Discussion Forum</a>.</p>
+    <p>Please see the <a href="/faq.php">General Questions</a> or <a title="Contact Us" href="/contact.php">Contact Us</a>{if $enable_forums}, alternatively pop into the <a href="/discuss/">Discussion Forum</a>{/if}.</p>
     
     
 {include file="_std_end.tpl"}

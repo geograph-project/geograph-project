@@ -165,8 +165,10 @@ if ($image->isValid())
 		//find a possible place within 25km
 		$smarty->assign('place', $image->grid_square->findNearestPlace(75000));
 
-		//let's find posts in the gridref discussion forum
-		$image->grid_square->assignDiscussionToSmarty($smarty);
+		if ($CONF['forums']) {
+			//let's find posts in the gridref discussion forum
+			$image->grid_square->assignDiscussionToSmarty($smarty);
+		}
 		
 		//count the number of photos in this square
 		$smarty->assign('square_count', $image->grid_square->imagecount);

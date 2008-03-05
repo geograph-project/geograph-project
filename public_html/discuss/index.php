@@ -9,6 +9,18 @@ init_session();
 if (!isset($_GET['forum']) || $_GET['forum'] != 11)
 	$USER->mustHavePerm("basic");
 
+if (empty($CONF['forums'])) {
+	if (!$USER->hasPerm("admin") && $_GET['forum'] == 11) {
+		if (!empty($_GET['topic'])) {
+			header("Location: /gallery/__".intval($_GET['topic']));
+		} else {
+			header("Location: /gallery/");
+		}
+		exit;
+	}
+	$USER->mustHavePerm("admin");
+}
+
 $static_host = $CONF['STATIC_HOST'];
 
 customGZipHandlerStart();

@@ -30,7 +30,7 @@
 		<li><a href="/explore/counties.php?type=capital">(Irish) County Capitals</a>, <a href="/explore/cities.php">Cities and Large Towns</a></li>
 	</ul></li>
 
-	<li><a href="/discuss/?action=vtopic&forum=11">Galleries</a> - hand picked images on varies themes</li>
+	<li><a href="/gallery/"><b>Galleries</b></a> - hand picked images on varies themes</li>
 
 	<li><a href="/explore/places/" title="Explore by Place">Explore the <b>placename gazetteer</b></a> <sup style="color:red">New!</sup></li>
 
@@ -75,6 +75,7 @@
 	</select> <input id="searchgo" type="submit" name="go" value="Find"/>
 	</form></li>
 
+{if $enable_forums}
 	<li><form method="get" action="/search.php" style="display:inline">
 	<label for="topic_id">Search by <b>Discussion Topic</b></label>: 
 	<input type="hidden" name="do" value="1"/>
@@ -83,6 +84,7 @@
 		{html_options options=$topiclist selected=$topic_id}
 	</select> <input id="searchgo" type="submit" name="go" value="Find"/>
 	</form></li>
+{/if}
 
 </ul>
 
