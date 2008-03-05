@@ -69,7 +69,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 <div style="background:#bbbbbb;color:black;">
 
 <table style="width:100%"><tr>
-
+{if $enable_forums}
 <td style="width:50px"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img src="http://{$static_host}/templates/basic/img/icon_discuss.gif" alt="Discuss" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
 {if $discuss}
@@ -79,6 +79,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 	<a href="/discuss/index.php?gridref={$image->grid_reference}#newtopic">Start a discussion on {$image->grid_reference}</a>
 {/if}
 </td>
+{/if}
 
 <td style="width:50px"><a href="/editimage.php?id={$image->gridimage_id}"><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">

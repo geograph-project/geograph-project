@@ -516,8 +516,10 @@ if (isset($_REQUEST['id']))
 			
 			$smarty->assign('showfull', 1);
 			
-			//let's find posts in the gridref discussion forum
-			$image->grid_square->assignDiscussionToSmarty($smarty);
+			if ($CONF['forums']) {
+				//let's find posts in the gridref discussion forum
+				$image->grid_square->assignDiscussionToSmarty($smarty);
+			}
 		}
 		
 		require_once('geograph/rastermap.class.php');

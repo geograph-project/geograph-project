@@ -24,7 +24,9 @@
  <li><a href="/help/changes">Change Request System</a><br/><br/></li>
  <li><a href="/help/search">Text Search Help</a></li>
  <li><a href="/help/stats_faq">Statistics FAQ</a><br/><br/></li>
+ {if $enable_forums}
  <li><a href="/help/bbcodes">Forum BBcodes Help</a><br/><br/></li>
+ {/if}
  <li><a href="/help/terms">Terms &amp; Conditions</a><br/><br/></li>
  <li><a href="/contact.php">Contact Us</a><br/><br/></li>
  <li><a href="/admin/team.php">The Team</a> &amp; <a href="/help/credits">Credits</a></li>
@@ -45,7 +47,7 @@
 	<li><a title="Browse by Grid Reference" href="/browse.php">browse by <b>grid square</b></a></li>
 	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a> (<a href="#stats">more below</a>)</li>
 	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
-	<li><a title="Photo Gallery" href="/discuss/?action=vtopic&amp;forum=11">view some <b>themed galleries</b></a></li>
+	<li><a title="Photo Gallery" href="/gallery/">view some <b>themed galleries</b></a></li>
 	<li><a title="List of all images" href="/sitemap/geograph.html">view the <b>full list</b> of images</a></li>
 	<li><a title="Games" href="/games/"><b>play</b> with geograph images</a></li>
 	<li><a title="Draggable Map" href="/mapper/">interactive <b>draggable map</b></a></li>
@@ -53,6 +55,7 @@
 	<li><a href="/explore/places/">Explore the <b>placename gazetteer</b></a> <sup style="color:red">New!</sup></li>
 </ul>
 
+{if $enable_forums}
 <h3><a name="social"></a>Interacting with other members...</h3>
 <ul>
 	<li><a title="Discussion forums" href="/discuss/"><b>discuss the site</b> on our forums</a></li>
@@ -61,6 +64,7 @@
 	<li><a title="Articles" href="/article/">submit your own <b>article</b></a></li>
 	<li><a title="Galleries" href="/discuss/?action=vtopic&forum=11">create <b>submitted galleries</b></a></li>
 </ul>
+{/if}
  
 <h3><a name="software"></a>Interacting with other software...</h3>
 <ul>

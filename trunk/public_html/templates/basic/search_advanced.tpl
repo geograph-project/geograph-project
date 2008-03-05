@@ -112,6 +112,7 @@
 				</select><input type="button" name="imageclass_enable_button" value="enable" onclick="prePopulateImageclass()"/></td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
+{if $enable_forums}
 		  <tr> 
 			 <td><label for="topic_id">discuss topic</label></td> 
 			 <td> 
@@ -121,6 +122,7 @@
 				</select></td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
+{/if}
 		  <tr> 
 			 <td><label for="reference_index">country</label></td> 
 			 <td> 

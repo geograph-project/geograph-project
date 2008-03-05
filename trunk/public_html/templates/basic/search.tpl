@@ -106,9 +106,9 @@ title="customisable search options">advanced search</a></span><br/><br/>
 
 <li>Or you can browse a <a title="choose a photograph" href="browse.php">particular grid square</a>.<br/><br/></li>
 
-
+{if $enable_forums}
 <li>Registered users can also <a href="/discuss/index.php?action=search">search the forum</a>.</li>
-
+{/if}
 </ul>
 </div>
    

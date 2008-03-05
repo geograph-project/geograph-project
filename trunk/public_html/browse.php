@@ -400,8 +400,9 @@ if ($grid_given)
 		$mosaic=new GeographMapMosaic;
 		$smarty->assign('map_token', $mosaic->getGridSquareToken($square));
 	
-		$square->assignDiscussionToSmarty($smarty);
-			
+		if ($CONF['forums']) {
+			$square->assignDiscussionToSmarty($smarty);
+		}
 	}
 	else
 	{

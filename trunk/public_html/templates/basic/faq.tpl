@@ -152,7 +152,7 @@
 	<div>We have recently added RSS feeds to other parts of the site:
 		<ul>
 			<li>You will find an <a class="xml-rss">RSS</a> button at the bottom of <a href="/search.php" title="photograph search">search results</a>, useful to keep updated on local images.</li>
-			<li>Registered users can access RSS feed of the latest Topics in the Discussion Forum, and even subscribe to an individual Topic, just look for the <a class="xml-rss">RSS</a> button!</li>
+			{if $enable_forums}<li>Registered users can access RSS feed of the latest Topics in the Discussion Forum, and even subscribe to an individual Topic, just look for the <a class="xml-rss">RSS</a> button!</li>{/if}
 			<li>the Grid Square Discussions even supports <a class="xml-geo" title="Geograph Grid Square Discussions" href="http://{$http_host}/discuss/syndicator.php?forum=5&amp;format=GeoRSS">GeoRSS</a>.</li>
 			<li>Get a <a class="xml-rss" href="/article/feed/recent.rss">RSS</a> feed of recently updated <a href="/article/">Articles</a>.</li>
 		</ul>
@@ -224,7 +224,7 @@
 
 <a name="question"></a>
 <h3>I have a further question, what should I do?</h3>
-	<p>Please <a title="Contact Us" href="contact.php">Contact Us</a>, or drop in on our friendly Discussion Forum.</p>
+	<p>Please <a title="Contact Us" href="contact.php">Contact Us</a>{if $enable_forums}, or drop in on our friendly Discussion Forum.{/if}</p>
 
 <h2 style="margin-top:200px;">Issues in using the Geograph Site</h2>
 

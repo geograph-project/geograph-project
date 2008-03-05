@@ -26,7 +26,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-if (empty($_GET['page']) || preg_match('/[^\w-\.]/',$_GET['page'])) {
+if (empty($_GET['page']) || preg_match('/[^\w\.-]/',$_GET['page'])) {
 	$smarty->display('static_404.tpl');
 	exit;
 }
@@ -210,6 +210,8 @@ if (count($page)) {
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
+} else {
+	$template = 'static_404.tpl';
 }
 
 if (!$smarty->is_cached($template, $cacheid))
@@ -234,9 +236,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign('lat', $lat);
 			$smarty->assign('long', $long);
 		}
-	} else {
-		$template = 'static_404.tpl';
-	}
+	} 
 } else {
 	$smarty->assign('user_id', $page['user_id']);
 	$smarty->assign('url', $page['url']);

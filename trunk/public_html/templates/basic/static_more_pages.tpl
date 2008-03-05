@@ -30,7 +30,9 @@
 	<li><a href="/games/" title="educational games">try out some <b>games</b> using our images and maps</a></li>
 	<li><a href="/submit.php" title="">Add <b>your own pictures</b></a></li>
 	<li><a href="/article/edit.php" title="">Write an <b>article</b></a></li>
+{if $enable_forums}
 	<li><a href="/discuss/" title=""><b>Discuss</b> the project on our forums</a></li>
+{/if}
 	<li><a href="/help/guide" title="">view our <b>submission criteria</b></a></li>
 	
 </ul>
