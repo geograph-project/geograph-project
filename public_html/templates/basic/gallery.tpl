@@ -14,7 +14,7 @@ ul.explore li {	padding:3px; }
 
 
 	<li><b><a  href="/gallery/{$item.url}">{$item.topic_title}</a></b><br/>
-	<small><small style="color:gray">by <a href="/profile/{$item.topic_poster}" title="View Geograph Profile for {$item.topic_poster_name}"  style="color:#6699CC">{$item.topic_poster_name}</a>, with {$item.posts_count} posts, {$item.images_count} images and viewed {$item.topic_views} times.</small></small>
+	<small><small style="color:gray">started by <a href="/profile/{$item.topic_poster}" title="View Geograph Profile for {$item.topic_poster_name}"  style="color:#6699CC">{$item.topic_poster_name}</a>, with {$item.posts_count} posts, {$item.images_count} images and viewed {$item.topic_views} times.</small></small>
 
 	</li>
 
