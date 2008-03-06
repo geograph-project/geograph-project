@@ -54,7 +54,7 @@ if (count($page)) {
 	//when this page was modified
 	$mtime = strtotime($page['post_time']);
 
-	$page['url'] = trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode($page['topic_title']))),'_').'_'.$page['topic_id'];
+	$page['url'] = trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode(preg_replace('/&#\d+;?/','_',$page['topic_title'])))),'_').'_'.$page['topic_id'];
 
 	
 	if (@strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE) {
@@ -99,7 +99,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 		
 	} 
-} 
+} else {
+	$smarty->assign('topic_id', $topic_id);
+}
 
 
 

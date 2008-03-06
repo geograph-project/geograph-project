@@ -62,4 +62,12 @@
 
 <div style="text-align:right"><a title="RSS Feed for {$topic_title}" href="/discuss/syndicator.php?forum=11&amp;topic={$topic_id}" class="xml-rss">RSS</a></div>
 
+{dynamic}
+{if $user->registered && $enable_forums}
+	<div class="interestBox">
+		<a href="/discuss/?action=vthread&amp;forum=11&amp;topic={$topic_id}">Switch to Edit mode</a> (Registered Users Only)
+	</div>
+{/if}
+{/dynamic}
+
 {include file="_std_end.tpl"}
