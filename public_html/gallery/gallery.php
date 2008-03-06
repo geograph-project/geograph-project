@@ -53,9 +53,16 @@ if (count($page)) {
 	
 	//when this page was modified
 	$mtime = strtotime($page['post_time']);
+
+	$page['url'] = trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode($page['topic_title']))),'_').'_'.$page['topic_id'];
+
+	
+	if (@strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE) {
+		$db->Execute("UPDATE LOW_PRIORITY geobb_topics SET topic_views=topic_views+1 WHERE topic_id = $topic_id");
+	}
 	
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
-	customCacheControl($mtime,$cacheid);
+	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
 } else {
 	$template = 'static_404.tpl';
@@ -64,7 +71,6 @@ if (count($page)) {
 if (!$smarty->is_cached($template, $cacheid))
 {
 	if (count($page)) {
-		$page['url'] = trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode($page['topic_title']))),'_').'_'.$page['topic_id'];
 		
 		foreach ($page as $key => $value) {
 			$smarty->assign($key, $value);
@@ -95,7 +101,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	} 
 } 
 
-//todo - increment view count!
+
 
 $smarty->display($template, $cacheid);
 
