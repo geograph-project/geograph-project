@@ -86,25 +86,29 @@
 
 {if $profile->stats.images gt 0}
  	<div style="background-color:#dddddd; padding:10px;">
+ 		{if $profile->stats.images > 2}
 		<div style="float:right; position:relative; margin-top:0px; font-size:0.7em">View Breakdown by <a href="/statistics/breakdown.php?by=status&u={$profile->user_id}" rel="nofollow">Classification</a>, <a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}" rel="nofollow">Date Taken</a> or <a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}" rel="nofollow">Myriad</a>(<a href="/help/squares" title="What is a Myriad?">?</a>).</div>
+		{/if}
 		<h3 style="margin-top:0px;margin-bottom:0px">My Statistics</h3>
 		<ul>
+			{if $profile->stats.points}
 			<li><b>{$profile->stats.points}</b> Geograph points (see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)
 			{if $user->user_id eq $profile->user_id && $profile->stats.points_rank > 0}
 				<ul>
 				<li>Overall Rank: <b>{$profile->stats.points_rank|ordinal}</b> {if $profile->stats.points_rank > 1}({$profile->stats.points_rise} more needed to reach {$profile->stats.points_rank-1|ordinal} position){/if}</li>
 				</ul>
-			{/if}</li>
+			{/if}</li>{/if}
+			{if $profile->stats.geosquares}
 			<li><b>{$profile->stats.geosquares}</b> Personal points (gridsquare{if $profile->stats.geosquares ne 1}s{/if} <i>geographed</i>)
 			{if $user->user_id eq $profile->user_id && $profile->stats.geo_rank > 0}
 				<ul>
 				<li>Overall Rank: <b>{$profile->stats.geo_rank|ordinal}</b> {if $profile->stats.geo_rank > 1}({$profile->stats.geo_rise} more needed to reach {$profile->stats.geo_rank-1|ordinal} position){/if}</li>
 				</ul>
-			{/if}</li>
+			{/if}</li>{/if}
 			
 			
 			<li><b>{$profile->stats.images}</b> photograph{if $profile->stats.images ne 1}s{/if} submitted
-				{if $profile->stats.squares gt 0}<ul>
+				{if $profile->stats.squares gt 1}<ul>
 					<li><b>{$profile->stats.squares}</b> gridsquare{if $profile->stats.squares ne 1}s{/if} <i>photographed</i>,
 					giving a depth score of <b>{$profile->stats.depth|string_format:"%.2f"}</b> (see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)
 					</li>
