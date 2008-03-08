@@ -57,8 +57,8 @@ class RebuildUserStats extends EventHandler
 					`geographs` smallint(5) unsigned NOT NULL default '0',
 					`days` smallint(5) unsigned NOT NULL default '0',
 					`depth` decimal(6,2) NOT NULL default '0',
-					`myriads` smallint(5) unsigned NOT NULL default '0',
-					`hectads` tinyint(3) unsigned NOT NULL default '0',
+					`myriads` tinyint(5) unsigned NOT NULL default '0',
+					`hectads` smallint(3) unsigned NOT NULL default '0',
 					PRIMARY KEY  (`user_id`),
 					KEY `points` (`points`)
 				) ENGINE=MyISAM
