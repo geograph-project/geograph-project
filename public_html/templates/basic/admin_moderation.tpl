@@ -47,7 +47,7 @@
 	  <div style="float:left;font-size:0.8em; padding-left:10px; text-align:left; width: 503px">
 	  
 	  square: <b><a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></b> ({$image->imagecount} images) &nbsp;&nbsp; category: <b style="color:blue">{$image->imageclass}</b><br/>
-	  by: <b><a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></b> (rank: {$image->rank})<br/>
+	  by: <b><a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></b><br/>
 	  title: <b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></b> (<a href="/editimage.php?id={$image->gridimage_id}">edit</a>)<br/>
 	  
 	  {if $image->comment}

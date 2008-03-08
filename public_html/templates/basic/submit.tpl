@@ -20,7 +20,7 @@
 
 	<h2>Submit Step 1 of 4 : Choose grid square</h2>
 
-{if $user->rank eq 0} 
+{if $user->stats.images eq 0} 
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"><b>First time here?</b> - if so you might like to have a look at our <a href="/faq.php">FAQ</a>.</div>
 
 {/if}
@@ -462,9 +462,9 @@ AttachEvent(window,'load',onChangeImageclass,false);
 <div style="float:right;position:relative;">
 <img src="{$preview_url}" width="{$preview_width*0.3|string_format:"%d"}" height="{$preview_height*0.3|string_format:"%d"}" alt="low resolution reminder image" hspace="10"/>	
 </div>
-	{if $user->rank && $user->rank < 250 && $last_imagetaken}
+	{if $user->stats.images && $user->stats.images > 1}
 
-	<div style="border:1px solid gray; padding:10px">I've read this already, <input style="width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);autoDisable(this.form.finalise[1]);"/> (saves scrolling to the bottom)</div>
+	<div style="border:1px solid gray; padding:10px">I've read this already, <input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);autoDisable(this.form.finalise[1]);"/><br/> (saves scrolling to the bottom)</div>
 	{/if}
 	
 	<p>
@@ -493,7 +493,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<p>If you do
 	not agree with these terms, click "I do not agree" and your upload will
 	be abandoned.<br />
-	<input style="width:200px" type="submit" name="abandon" value="I DO NOT AGREE" onclick="return confirm('Are you sure? The current upload will be discarded!');"/>
+	<input style="background-color:pink; width:200px" type="submit" name="abandon" value="I DO NOT AGREE" onclick="return confirm('Are you sure? The current upload will be discarded!');"/>
 	
 	</p>
 
@@ -501,7 +501,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<p>If you agree with these terms, click "I agree" and your image will be
 	stored in grid square {$gridref}.<br />
 	<input type="submit" name="goback3" value="&lt; Back"/>
-	<input style="width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);{if $user->rank && $user->rank < 250 && $last_imagetaken}autoDisable(this.form.finalise[0]);{/if}"/>
+	<input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);{if $user->stats.images && $user->stats.images > 100 && $last_imagetaken}autoDisable(this.form.finalise[0]);{/if}"/>
 	</p>
 	
 

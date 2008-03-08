@@ -59,7 +59,7 @@
 <div class="interestBox">... see also the <a href="/help/credits">Credits Page</a></div>
 
 {dynamic}
-{if $user->registered && ($user->rank && $user->rank < 500)}
+{if $user->registered && ($user->stats.squares gt 20)}
 	<p>If you are interested in helping out with moderation then please visit your <a href="/profile.php?edit=1">profile update page</a>, there you will find a button to get a feel for the moderation process. Please note that we however have a long waiting list!</p>
 {/if}
 {/dynamic}
