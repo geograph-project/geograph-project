@@ -1,4 +1,4 @@
-{assign var="page_title" value="Galleries"}
+{assign var="page_title" value=$topic_title}
 {assign var="rss_url" value="/discuss/syndicator.php?forum=11&amp;topic=`$topic_id`"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
