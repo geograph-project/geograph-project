@@ -1410,7 +1410,7 @@ class GridImage
 		
 		//fire an event 
 		require_once('geograph/event.class.php');
-		new Event(EVENT_UPDATEDPHOTO, "{$img->gridimage_id}");
+		new Event(EVENT_UPDATEDPHOTO, "{$this->gridimage_id}");
 		
 		//updated cached tables
 		$this->updateCachedTables();
