@@ -44,27 +44,40 @@ class RebuildUserStats extends EventHandler
 		$db->Execute("DROP TABLE IF EXISTS user_stat_tmp");
 		
 		
-		$db->Execute("CREATE TABLE user_stat_tmp 
-				ENGINE=MyISAM
+		$db->Execute("CREATE TABLE user_stat_tmp (
+					`user_id` int(11) unsigned NOT NULL default '0',
+					`images` smallint(5) unsigned NOT NULL default '0',
+					`squares` smallint(5) unsigned NOT NULL default '0',
+					`geosquares` smallint(5) unsigned NOT NULL default '0',
+					`geo_rank` smallint(5) unsigned NOT NULL default '0',
+					`geo_rise` smallint(5) unsigned NOT NULL default '0',
+					`points` smallint(5) unsigned default NOT NULL,
+					`points_rank` smallint(5) unsigned NOT NULL default '0',
+					`points_rise` smallint(5) unsigned NOT NULL default '0',
+					`geographs` smallint(5) unsigned default NOT NULL  default '0',
+					`days` smallint(5) unsigned NOT NULL default '0',
+					`depth` decimal(6,2) default NOT NULL  default '0',
+					`myriads` smallint(5) unsigned NOT NULL default '0',
+					`hectads` tinyint(3) unsigned NOT NULL default '0',
+					PRIMARY KEY  (`user_id`),
+					KEY `points` (`points`)
+				) ENGINE=MyISAM
 				SELECT user_id,
 					count(*) as images,
 					count(distinct grid_reference) as squares,
-					10000 as geosquares,
-					50000 as geo_rank,
-					500 as geo_rise,
+					0 as geosquares,
+					0 as geo_rank,
+					0 as geo_rise,
 					sum(ftf=1 and moderation_status = 'geograph') as points,
-					50000 as points_rank,
-					500 as points_rise,
-					FLOOR(sum(moderation_status = 'geograph')) as geographs,
-					FLOOR(sum(moderation_status = 'accepted')) as accepted,
+					0 as points_rank,
+					0 as points_rise,
+					sum(moderation_status = 'geograph') as geographs,
 					count(distinct imagetaken) as days,
 					count(*)/count(distinct grid_reference) as depth,
 					count(distinct substring(grid_reference,1,3 - reference_index)) as myriads,
 					count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) ) as hectads
 				FROM gridimage_search
 				GROUP BY user_id");
-		
-		$db->Execute("ALTER TABLE `user_stat_tmp` ADD PRIMARY KEY (`user_id`)");
 		
 		$topusers=$db->GetAll("SELECT user_id,sum(ftf=1) as points,count(distinct grid_reference) as geosquares
 		FROM gridimage_search 
@@ -114,7 +127,6 @@ class RebuildUserStats extends EventHandler
 			geo_rise = {$grise[$user_id]}
 			WHERE user_id = $user_id");
 		}
-		$db->Execute("UPDATE user_stat_tmp SET points_rank=0,points_rise=0,geosquares=0,geo_rank=0,geo_rise=0 WHERE points_rank = 50000");
 		
 		
 		$db->Execute("DROP TABLE IF EXISTS user_stat");
