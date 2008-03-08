@@ -84,28 +84,34 @@
 {/if}
 
 
-{if $profile->stats.total gt 0}
+{if $profile->stats.images gt 0}
  	<div style="background-color:#dddddd; padding:10px;">
 		<div style="float:right; position:relative; margin-top:0px; font-size:0.7em">View Breakdown by <a href="/statistics/breakdown.php?by=status&u={$profile->user_id}" rel="nofollow">Classification</a>, <a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}" rel="nofollow">Date Taken</a> or <a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}" rel="nofollow">Myriad</a>(<a href="/help/squares" title="What is a Myriad?">?</a>).</div>
 		<h3 style="margin-top:0px;margin-bottom:0px">My Statistics</h3>
 		<ul>
-			<li><b>{$profile->stats.ftf}</b> Geograph points (see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)<ul>
-			{if $user->user_id eq $profile->user_id && $profile->rank > 0}
-				<li>Overall Rank: <b>{$profile->rank|ordinal}</b> {if $profile->rank > 1}({$profile->to_rise_rank} more needed to reach {$profile->rank-1|ordinal} position){/if}</li>
-			{/if}
-			<li><b>{$profile->stats.geosquares}</b> gridsquare{if $profile->stats.geosquares ne 1}s{/if} <i>geographed</i></li>
-			</ul></li>
-			<li><b>{$profile->stats.total}</b> photograph{if $profile->stats.total ne 1}s{/if} submitted
-				{if $profile->stats.pending gt 0}
-					({$profile->stats.pending} awaiting moderation)
-				{/if}
+			<li><b>{$profile->stats.points}</b> Geograph points (see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)
+			{if $user->user_id eq $profile->user_id && $profile->stats.points_rank > 0}
+				<ul>
+				<li>Overall Rank: <b>{$profile->stats.points_rank|ordinal}</b> {if $profile->stats.points_rank > 1}({$profile->stats.points_rise} more needed to reach {$profile->stats.points_rank-1|ordinal} position){/if}</li>
+				</ul>
+			{/if}</li>
+			<li><b>{$profile->stats.geosquares}</b> Personal points (gridsquare{if $profile->stats.geosquares ne 1}s{/if} <i>geographed</i>)
+			{if $user->user_id eq $profile->user_id && $profile->stats.geo_rank > 0}
+				<ul>
+				<li>Overall Rank: <b>{$profile->stats.geo_rank|ordinal}</b> {if $profile->stats.geo_rank > 1}({$profile->stats.geo_rise} more needed to reach {$profile->stats.geo_rank-1|ordinal} position){/if}</li>
+				</ul>
+			{/if}</li>
+			
+			
+			<li><b>{$profile->stats.images}</b> photograph{if $profile->stats.images ne 1}s{/if} submitted
 				{if $profile->stats.squares gt 0}<ul>
 					<li><b>{$profile->stats.squares}</b> gridsquare{if $profile->stats.squares ne 1}s{/if} <i>photographed</i>,
-					giving a depth score of <b>{math equation="(t-p)/s" assign="depth" t=$profile->stats.total p=$profile->stats.pending s=$profile->stats.squares}{$depth|string_format:"%.2f"}</b> (see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)
+					giving a depth score of <b>{$profile->stats.depth|string_format:"%.2f"}</b> (see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)
 					</li>
 				</ul>{/if}
 			</li>
 		</ul>
+		<div style="text-align:right;font-size:0.8em">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
 	</div>
 {else}
 	<h3>My Statistics</h3>
@@ -114,7 +120,7 @@
 	</ul>
 {/if}
 
-{if $profile->stats.total gt 0}
+{if $profile->stats.images gt 0}
 	<div style="float:right; position:relative; margin-top:0px; font-size:0.7em"><a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Find images by {$profile->realname|escape:'html'}</a> (<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs">Thumbnail Only</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide">Slide Show Mode</a>)</div>
 	<h3 style="margin-bottom:0px">Photographs</h3>
 	
@@ -147,7 +153,7 @@
 	{if $limit}
 		<p>Showing the latest {$limit} images, see <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=text&amp;resultsperpage=100">More</a></p>
 	{/if}
-	{if $profile->stats.total gt 100 && $limit == 100}
+	{if $profile->stats.images gt 100 && $limit == 100}
 		{dynamic}
 		{if $user->user_id eq $profile->user_id}
 			<form method="get" action="/profile/{$profile->user_id}/more"><input type="submit" value="Show Longer Profile Page"/></form>
@@ -158,10 +164,10 @@
 
 	<ul>
 		
-		<li><b>Maps</b>: {if $profile->stats.total gt 10}<a href="/profile/{$profile->user_id}/map">Personalised Geograph Map</a> or {/if} Recent Photos on <a href="http://maps.google.co.uk/maps?q=http://{$http_host}/profile/{$profile->user_id}/feed/recent.kml&ie=UTF8&om=1">Google Maps</a></li>
+		<li><b>Maps</b>: {if $profile->stats.images gt 10}<a href="/profile/{$profile->user_id}/map">Personalised Geograph Map</a> or {/if} Recent Photos on <a href="http://maps.google.co.uk/maps?q=http://{$http_host}/profile/{$profile->user_id}/feed/recent.kml&ie=UTF8&om=1">Google Maps</a></li>
 
 		<li><b>Recent Images</b>: <a title="View images by {$profile->realname} in Google Earth" href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;kml">as KML</a> or <a title="RSS Feed for images by {$profile->realname}" href="/profile/{$profile->user_id}/feed/recent.georss" class="xml-rss">RSS</a> or <a title="GPX file for images by {$profile->realname}" href="/profile/{$profile->user_id}/feed/recent.gpx" class="xml-gpx">GPX</a></li>
-		{if $profile->stats.total gt 10}
+		{if $profile->stats.images gt 10}
 			{dynamic}{if $user->registered}
 				<li><b>Download</b>: 
 					<a title="Comma Seperated Values - file for images by {$profile->realname}" href="/export.csv.php?u={$profile->user_id}&amp;supp=1{if $user->user_id eq $profile->user_id}&amp;taken=1{/if}">CSV</a>
@@ -170,11 +176,9 @@
 					{/if} of all images</li>
 			{/if}{/dynamic}
 		{/if}
-		{dynamic}
-			{if $user->user_id eq $profile->user_id}
-				<li><b>Change Requests</b>: <a href="/tickets.php">View Recent Tickets</a></li>
-			{/if}
-		{/dynamic}
+		{if $user->user_id eq $profile->user_id}
+			<li><b>Change Requests</b>: <a href="/tickets.php">View Recent Tickets</a></li>
+		{/if}
 	</ul>
 {/if}
 

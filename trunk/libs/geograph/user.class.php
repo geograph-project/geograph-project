@@ -223,28 +223,13 @@ class GeographUser
 	*/
 	function getStats()
 	{
-		global $memcache;
-				
-		$mkey = $this->user_id;
-		//fails quickly if not using memcached!
-		$stats =& $memcache->name_get('us',$mkey);
-		if ($stats) {
-			$this->stats = $stats;
-			return;
-		}
-		
 		$db = $this->_getDB();
 		
-		$this->stats=array();
+		$this->stats=$db->GetRow("select * from user_stat where user_id='{$this->user_id}'");
 
-		$this->stats['total']=$db->GetOne("select count(*) from gridimage where user_id='{$this->user_id}' and moderation_status<>'rejected'");
-		$this->stats['pending']=$db->GetOne("select count(*) from gridimage where user_id='{$this->user_id}' and moderation_status='pending'");
-		$this->stats['squares']=$db->GetOne("select count(distinct grid_reference) from gridimage_search where user_id='{$this->user_id}'");
-		
-		$this->stats += $db->GetRow("select sum(ftf=1) as ftf,count(distinct grid_reference) as geosquares from gridimage_search where user_id='{$this->user_id}' and moderation_status='geograph'");
-		
-		//fails quickly if not using memcached!
-		$memcache->name_set('us',$mkey,$this->stats,$memcache->compress,$memcache->period_short);
+		$data = $db->GetRow("SHOW TABLE STATUS LIKE 'user_stat'");
+		$this->stats['updated'] = $data['Update_time'];
+
 	}
 	
 	/**

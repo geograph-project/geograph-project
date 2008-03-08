@@ -83,28 +83,22 @@ if (!$smarty->is_cached($template, $cacheid))
 
 // juppy page specific stuff
 
-if (!$GLOBALS['USER']->registered) {
+if (!$USER->registered) {
          $sadly = "As you're not logged in, we don't know how many images you've submitted. If you log on, "
         . "we can check your image submission count before we let you loose with JUppy.";
          $notgood = 1;
 } else {
-        $icsql = "select count(gridimage_id) from gridimage_search where user_id = " . $GLOBALS['USER']->user_id;
-        
-        if ($rs = $db->Execute($icsql)) {
-        
-            $userimages = $rs->fields[0];
-            
-             if ($userimages >= $CONF['juppy_minimum_images']) {
-                $sadly = "Happily, you've already submitted $userimages image(s) which is enough to let you loose with JUppy.";
+        $USER->getStats();
+
+        if ($USER->stats['images'] >= $CONF['juppy_minimum_images']) {
+                $sadly = "Happily, you've already submitted {$USER->stats['images']} image(s) which is enough to let you loose with JUppy.";
                 $notgood = 0;
-              
-             } else {
-      
-                $sadly = "Sadly, your current submission count is only $userimages. Before you can use JUppy, you need"
+         } else {
+                $sadly = "Sadly, your current submission count is only {$USER->stats['images']}. Before you can use JUppy, you need"
                    . " to have submitted " . $CONF['juppy_minimum_images'] . " images.";
                 $notgood = 1;
-             }
-       }
+         }
+
 }
 
 $smarty->assign_by_ref('sadly', $sadly);

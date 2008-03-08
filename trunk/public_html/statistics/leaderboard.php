@@ -229,8 +229,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		$i=$idx+1;
 			
 		if ($lastimgcount == $entry['imgcount']) {
-			if ($type == 'points' && !$when && !$ri)
-				$db->query("UPDATE user SET rank = $lastrank,to_rise_rank = $toriserank WHERE user_id = {$entry['user_id']}");
 			if ($u && $u == $entry['user_id']) {
 				$topusers[$idx]['ordinal'] = smarty_function_ordinal($i);
 			} elseif ($i > $limit) {
@@ -240,21 +238,20 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 		} else {
 			$toriserank = ($lastimgcount - $entry['imgcount']);
-			if ($type == 'points' && !$when && !$ri)
-				$db->query("UPDATE user SET rank = $i,to_rise_rank = $toriserank WHERE user_id = {$entry['user_id']}");
 			if ($u && $u == $entry['user_id']) {
                                 $topusers[$idx]['ordinal'] = smarty_function_ordinal($i);
                         } elseif ($i > $limit) {
 				unset($topusers[$idx]);
 			} else {
 				$topusers[$idx]['ordinal'] = smarty_function_ordinal($i);
+				$points += $entry['points'];
+				if ($points && empty($entry['points'])) $topusers[$user_id]['points'] = '';
+				$images += $entry['images'];
+				if ($images && empty($entry['images'])) $topusers[$user_id]['images'] = '';
 			}
 			$lastimgcount = $entry['imgcount'];
 			$lastrank = $i;
-			$points += $entry['points'];
-			#if ($points && empty($entry['points'])) $topusers[$user_id]['points'] = '';
-	                $images += $entry['images'];
-                        #if ($images && empty($entry['images'])) $topusers[$user_id]['images'] = '';
+
 		}
 	}
 	
