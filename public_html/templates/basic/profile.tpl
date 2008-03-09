@@ -87,14 +87,14 @@
 {if $profile->stats.images gt 0}
  	<div style="background-color:#dddddd; padding:10px;">
  		{if $profile->stats.images > 2}
-		<div style="float:right; position:relative; margin-top:0px; font-size:0.7em">View Breakdown by <a href="/statistics/breakdown.php?by=status&u={$profile->user_id}" rel="nofollow">Classification</a>, <a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}" rel="nofollow">Date Taken</a> or <a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}" rel="nofollow">Myriad</a>(<a href="/help/squares" title="What is a Myriad?">?</a>).</div>
+		<div style="float:right; position:relative; margin-top:0px; font-size:0.7em">View Breakdown by <a href="/statistics/breakdown.php?by=status&u={$profile->user_id}" rel="nofollow">Classification</a>, <a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}" rel="nofollow">Date Taken</a> or <a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}" rel="nofollow">Myriad</a><sup><a href="/help/squares" title="What is a Myriad?">?</a></sup>.</div>
 		{/if}
 		<h3 style="margin-top:0px;margin-bottom:0px">My Statistics</h3>
 		<ul>
 			{if $profile->stats.points}
-				<li><b>{$profile->stats.points}</b> Geograph points (see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)
+				<li><b>{$profile->stats.points}</b> Geograph points <sup>(see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)</sup>
 					{if $user->user_id eq $profile->user_id && $profile->stats.points_rank > 0}
-						<ul style="font-size:0.8em">
+						<ul style="font-size:0.8em;margin-bottom:2px">
 						<li>Overall Rank: <b>{$profile->stats.points_rank|ordinal}</b> {if $profile->stats.points_rank > 1}({$profile->stats.points_rise} more needed to reach {$profile->stats.points_rank-1|ordinal} position){/if}</li>
 						</ul>
 					{/if}
@@ -103,7 +103,7 @@
 			{if $profile->stats.geosquares}
 				<li><b>{$profile->stats.geosquares}</b> Personal points (gridsquare{if $profile->stats.geosquares ne 1}s{/if} <i>geographed</i>)
 					{if $user->user_id eq $profile->user_id && $profile->stats.geo_rank > 0}
-						<ul style="font-size:0.8em">
+						<ul style="font-size:0.8em;margin-bottom:2px">
 						<li>Overall Rank: <b>{$profile->stats.geo_rank|ordinal}</b> {if $profile->stats.geo_rank > 1}({$profile->stats.geo_rise} more needed to reach {$profile->stats.geo_rank-1|ordinal} position){/if}</li>
 						</ul>
 					{/if}
@@ -111,20 +111,20 @@
 			{/if}
 			
 			
-			<li><b>{$profile->stats.images}</b> Photograph{if $profile->stats.images ne 1}s{/if} submitted
+			<li><b>{$profile->stats.images}</b> Photograph{if $profile->stats.images ne 1}s{/if}
 				{if $profile->stats.squares gt 1}
-					<ul style="font-size:0.8em">
-					<li><b>{$profile->stats.squares}</b> gridsquare{if $profile->stats.squares ne 1}s{/if} <i>photographed</i>,
-					giving a depth score of <b>{$profile->stats.depth|string_format:"%.2f"}</b> (see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)
+					<ul style="font-size:0.8em;margin-bottom:2px">
+					<li><b>{$profile->stats.squares}</b> gridsquare{if $profile->stats.squares ne 1}s{/if},
+					giving a depth score of <b>{$profile->stats.depth|string_format:"%.2f"}</b> <sup>(see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)</sup>
 					</li>
 					{if $profile->stats.hectads > 1}
-						<li>in <b>{$profile->stats.hectads}</b> different hectads and <b>{$profile->stats.myriads}</b> Myriads<a href="/help/squares">?</a>{if $profile->stats.days > 3}, taken on <b>{$profile->stats.days}</b> different days{/if}</li>
+						<li>in <b>{$profile->stats.hectads}</b> different hectads and <b>{$profile->stats.myriads}</b> Myriads<sup><a href="/help/squares">?</a></sup>{if $profile->stats.days > 3}, taken on <b>{$profile->stats.days}</b> different days{/if}</li>
 					{/if}
 					</ul>
 				{/if}
 			</li>
 		</ul>
-		<div style="text-align:right;font-size:0.8em">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
+		<div style="float:right;font-size:0.8em; color:gray; margin-top:-20px">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
 	</div>
 {else}
 	<h3>My Statistics</h3>
@@ -134,7 +134,7 @@
 {/if}
 
 {if $profile->stats.images gt 0}
-	<div style="float:right; position:relative; margin-top:0px; font-size:0.7em"><a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Find images by {$profile->realname|escape:'html'}</a> (<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs">Thumbnail Only</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide">Slide Show Mode</a>)</div>
+	<div style="float:right; position:relative; margin-top:20px; font-size:0.7em; padding:10px"><a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Find images by {$profile->realname|escape:'html'}</a> (<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs">Thumbnail Only</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide">Slide Show Mode</a>)</div>
 	<h3 style="margin-bottom:0px">Photographs</h3>
 	
 	<p style="font-size:0.7em">Click column headers to sort in a different order</p>
