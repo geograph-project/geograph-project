@@ -56,6 +56,7 @@
 
 <br style="clear:both"/>
 
+{dynamic}
 {if $stats}
 <br/>
 <div class="interestBox">Breakdown: |
@@ -64,6 +65,7 @@
 {/foreach}
 </div><br/>
 {/if}
+{/dynamic}
 
 <form action="{$script_name}?id={$geoevent_id}" method="post">
 

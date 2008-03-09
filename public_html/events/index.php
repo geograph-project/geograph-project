@@ -65,19 +65,23 @@ if (!$smarty->is_cached($template, $cacheid))
 		inner join user using (user_id)
 		inner join gridsquare using (gridsquare_id)
 		left join geoevent_attendee using (geoevent_id)
-	where (approved = 1) 
+	where ((approved = 1) 
 		or user.user_id = {$USER->user_id}
 		or ($isadmin and approved != -1)
+		) and (event_time > date_sub(now(),interval 1 month) )
 	group by geoevent_id
-	order by event_time");
+	order by future desc,event_time");
 	
 	
 	$conv = new Conversions;
-	
+	$f = 0;
 	foreach ($list as $i => $row) {
+		if ($row['future']) {
+			$f++;
+		}
 		list($list[$i]['wgs84_lat'],$list[$i]['wgs84_long']) = $conv->internal_to_wgs84($row['x'],$row['y']);
 	}
-	
+	$smarty->assign('future', $f);
 	$smarty->assign_by_ref('list', $list);
 
 }
