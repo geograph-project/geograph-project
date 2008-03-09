@@ -57,7 +57,7 @@
 	{/if}
 		<td sortvalue="{$item.title|escape:"html"|default:'Untitled'}"><b><a href="/events/event.php?id={$item.geoevent_id}" title="{$item.description|escape:"html"|default:''}">{$item.title|escape:"html"|default:'Untitled'}</a></b></td>
 		<td sortvalue="{$item.event_time}" class="nowrap"><b>{$item.event_time|date_format:"%a, %e %b %Y"}</b></td>
-		<td sortvalue="{$item.grid_reference}"><a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></td>
+		<td sortvalue="{$item.grid_reference}"><a href="/location.php?gridref={$item.grid_reference}"><img src="/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/></a> <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></td>
 		<td>{$item.attendees}</td>
 		<td sortvalue="{$item.realname|escape:"html"}"><a href="/profile/{$item.user_id}">{$item.realname|escape:"html"}</a></td>
 		<td><a href="/events/event.php?id={$item.geoevent_id}" title="{$item.description|escape:"html"|default:''}">event page</a>

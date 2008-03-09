@@ -24,7 +24,7 @@
  <dd style="font-size:1.2em">{$event_time|date_format:"%a, %e %b %Y"} <small>({$days} days from now)</small></dd>
 
 <dt>Grid Square</dt>
- <dd><a title="Grid Reference {$grid_reference}" href="/gridref/{$grid_reference}">{$grid_reference}</a></dd>
+ <dd><a href="/location.php?gridref={$grid_reference}"><img src="/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/></a> <a title="Grid Reference {$grid_reference}" href="/gridref/{$grid_reference}">{$grid_reference}</a></dd>
 
 {if $url}
 <dt>Link</dt>
