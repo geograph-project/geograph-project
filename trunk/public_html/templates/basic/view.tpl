@@ -219,7 +219,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{assign var="imagetakenurl" value=$image_taken|date_format:"&amp;taken=%Y-%m-%d"}
 {/if}
 
-<img src="/img/geotag_16.png" width="16" height="16" align="absmiddle"> <a href="/location.php?gridref={$image->subject_gridref}{$imagetakenurl}&amp;title={$image->title|escape:'url'}&id={$image->gridimage_id}"><b>More Links for <b>{$image->subject_gridref}</b></a>
+<img src="/img/geotag_16.png" width="16" height="16" align="absmiddle"> <a href="/location.php?gridref={$image->subject_gridref}{$imagetakenurl}&amp;title={$image->title|escape:'url'}&id={$image->gridimage_id}"><b>More Links for {$image->subject_gridref}</b></a>
 </div>
 
 
