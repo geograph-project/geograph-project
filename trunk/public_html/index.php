@@ -92,8 +92,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	$hectads= $db->getAll("select * from hectad_complete limit 5");
 	$smarty->assign_by_ref('hectads', $hectads);
 	
-	$stats= $db->cacheGetRow(3600,"select count(*) as images,count(distinct grid_reference) as squares,count(distinct user_id) as users from gridimage_search");
-	$stats += $db->cacheGetRow(3600,"select count(*) as total,sum(imagecount=0) as nophotos,sum(imagecount in (1,2,3)) as fewphotos from gridsquare where percent_land > 0");
+	$stats= $db->GetRow("select * from user_stat where user_id = 0");
+	$stats += $db->GetRow("select count(*)-1 as users from user_stat");
+	$stats += $db->cacheGetRow(3600,"select count(*) as total,sum(imagecount in (1,2,3)) as fewphotos from gridsquare where percent_land > 0");
+	$stats['nophotos'] = $stats['total'] - $stats['squares'];
 	$stats['percentage'] = sprintf("%.1f",$stats['squares']/$stats['total']*100);
 	$smarty->assign_by_ref('stats', $stats);
 	

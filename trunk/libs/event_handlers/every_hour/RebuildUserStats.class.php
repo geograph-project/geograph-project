@@ -46,19 +46,20 @@ class RebuildUserStats extends EventHandler
 		
 		$db->Execute("CREATE TABLE user_stat_tmp (
 					`user_id` int(11) unsigned NOT NULL default '0',
-					`images` smallint(5) unsigned NOT NULL default '0',
-					`squares` smallint(5) unsigned NOT NULL default '0',
+					`images` mediumint(5) unsigned NOT NULL default '0',
+					`squares` mediumint(5) unsigned NOT NULL default '0',
 					`geosquares` smallint(5) unsigned NOT NULL default '0',
 					`geo_rank` smallint(5) unsigned NOT NULL default '0',
 					`geo_rise` smallint(5) unsigned NOT NULL default '0',
-					`points` smallint(5) unsigned NOT NULL default '0',
+					`points` mediumint(5) unsigned NOT NULL default '0',
 					`points_rank` smallint(5) unsigned NOT NULL default '0',
 					`points_rise` smallint(5) unsigned NOT NULL default '0',
-					`geographs` smallint(5) unsigned NOT NULL default '0',
+					`geographs` mediumint(5) unsigned NOT NULL default '0',
 					`days` smallint(5) unsigned NOT NULL default '0',
 					`depth` decimal(6,2) NOT NULL default '0',
 					`myriads` tinyint(5) unsigned NOT NULL default '0',
 					`hectads` smallint(3) unsigned NOT NULL default '0',
+					`last` int(11) unsigned NOT NULL default '0',
 					PRIMARY KEY  (`user_id`),
 					KEY `points` (`points`)
 				) ENGINE=MyISAM
@@ -75,9 +76,11 @@ class RebuildUserStats extends EventHandler
 					count(distinct imagetaken) as days,
 					count(*)/count(distinct grid_reference) as depth,
 					count(distinct substring(grid_reference,1,3 - reference_index)) as myriads,
-					count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) ) as hectads
+					count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) ) as hectads,
+					max(gridimage_id) as last
 				FROM gridimage_search
-				GROUP BY user_id");
+				GROUP BY user_id
+				WITH ROLLUP");
 		
 		$topusers=$db->GetAll("SELECT user_id,sum(ftf=1) as points,count(distinct grid_reference) as geosquares
 		FROM gridimage_search 
