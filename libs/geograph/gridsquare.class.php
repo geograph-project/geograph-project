@@ -340,6 +340,9 @@ class GridSquare
 				$this->nateastings = $emajor.sprintf("%05d",$e);
 				$this->natnorthings = $nmajor.sprintf("%05d",$n);
 				$this->natgrlen = $natgrlen;
+				$this->precision=pow(10,6-($natgrlen/2))/10;
+			} else {
+				$this->precision=1000;
 			}
 		} else {
 			$ok=false;
