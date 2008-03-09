@@ -660,6 +660,8 @@ else
 		//init smarty
 		$smarty->assign('prefixes', $square->getGridPrefixes());
 		$smarty->assign('kmlist', $square->getKMList());
+	
+		$USER->getStats();
 	}
 }
 
