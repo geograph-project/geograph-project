@@ -15,7 +15,7 @@
 		This option should <b>not</b> be used to republish the work of others already published under a Creative Commons Licence, either elsewhere or on Geograph, such content is not approriate for Geograph.
 		</dd>
 	</dl>
-	<div style="text-align:right"><input type="checkbox" name="pattrib_default" value="on" id="pattrib_default" {if $credit_default}checked="checked"{/if}/>Make this my new default</div>
+	<div style="text-align:right"><input type="checkbox" name="pattrib_default" value="on" id="pattrib_default" {if $credit_default}checked="checked"{/if}/>Make this my new default from now on</div>
 	
 	{literal}
 		<script type="text/javascript">
