@@ -154,6 +154,8 @@ function smarty_function_external($params)
 	global $CONF;
   	//get params and use intelligent defaults...
   	$href=str_replace(' ','+',$params['href']);
+  	if (strpos($href,'http://') !== 0)
+  		$href ="http://$href";
 
   	if (isset($params['text']))
   		$text=$params['text'];

@@ -21,6 +21,9 @@
 	.no_print {
 		display: none;
 	}
+	img {
+		border: 0px;
+	}
 }
 </style>{/literal}
 {dynamic}{if $user->user_id == $user_id}<p style="text-align:center" class="no_print">[[<a href="/article/edit.php?page={$url}">edit this article</a>]]</p>{/if}{/dynamic}
@@ -92,6 +95,12 @@
 
 </div> 
 
+{if $grid_reference}
+	<div class="no_print" style="float:left; font-size:0.8em">
+	<img src="/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$grid_reference}">Links for {$grid_reference}</a>&nbsp; 
+	</div>
+{/if}
+
 {if $copyright}{$copyright}{/if}
 <hr/><br/>
 {if $tableContents}
@@ -112,5 +121,11 @@
 {/if}
 
 {if $copyright}{$copyright}{/if}
+
+{if $grid_reference}
+	<div class="no_print">
+	<img src="/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$grid_reference}">Further Links for {$grid_reference}</a>
+	</div>
+{/if}
 
 {include file="_std_end.tpl"}
