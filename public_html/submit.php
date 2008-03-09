@@ -537,6 +537,8 @@ if (isset($_POST['gridsquare']))
 			}
 			$smarty->assign('today_imagetaken', date("Y-m-d"));
 		} elseif ($step == 4) {
+			$USER->getStats();
+			
 			$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
 			$smarty->assign('preview_url', $preview_url);
 			$smarty->assign('preview_width', $uploadmanager->upload_width);
@@ -621,6 +623,8 @@ if (isset($_POST['gridsquare']))
 			//init smarty
 			$smarty->assign('prefixes', $square->getGridPrefixes());
 			$smarty->assign('kmlist', $square->getKMList());
+			
+			$USER->getStats();
 		}
 	}
 }

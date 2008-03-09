@@ -147,6 +147,18 @@ if ($grid_given)
 			$overview=new GeographMapMosaic('overview');	
 		}
 		$overview->assignToSmarty($smarty, 'overview');
+		
+		
+		if (!empty($_GET['taken'])) {
+			$smarty->assign('image_taken',$_GET['taken']);
+		}
+		if (!empty($_GET['title'])) {
+			$smarty->assign('title',$_GET['title']);
+		}
+		if (!empty($_GET['id'])) {
+			$smarty->assign('id',$_GET['id']);
+		}
+		
 	}
 	else
 	{
