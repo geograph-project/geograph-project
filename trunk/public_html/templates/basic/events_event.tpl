@@ -73,7 +73,7 @@
 <thead><tr>
 	<td style="width:130px;font-size:0.9em" sorted="asc">Updated</td>
 	<td>Who</td>
-	<td>Message{dynamic}{if $user->registered} <small>(<i>optional</i>, 160 charactors max)</small>{/if}{/dynamic}</td>
+	<td>Message{dynamic}{if $user->registered} <small>(<i>optional</i>, 160 characters max)</small>{/if}{/dynamic}</td>
 	<td>Intention</td>
 </tr></thead>
 <tbody>
