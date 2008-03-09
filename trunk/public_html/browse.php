@@ -433,8 +433,8 @@ else
 }
 
 if (!isset($_GET['inner'])) {
-	//lets find some recent photos
-	new RecentImageList($smarty);
+	#//lets find some recent photos
+	#new RecentImageList($smarty);
 
 	//lets add an overview map too
 	if ($grid_ok) {
