@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$page = $db->getRow("
 		select *
 		from geoevent_attendee 
-		where geoevent_attendee_id = ".$db->Quote('attendee'));
+		where geoevent_attendee_id = ".$db->Quote($_POST['attendee']));
 		if ($page['user_id'] != $USER->user_id && !$isadmin) {
 			die("fatal error");
 		}
@@ -165,7 +165,7 @@ select geoevent_attendee.*,realname
 from geoevent_attendee 
 	left join user using (user_id)
 where $sql_where
-order by updated desc");
+order by `type`+0,updated desc");
 $stats = array();
 $a = false;
 foreach ($list as $i => $row) {
@@ -180,7 +180,7 @@ foreach ($list as $i => $row) {
 $smarty->assign_by_ref('stats', $stats);
 $smarty->assign_by_ref('list', $list);
 $smarty->assign('types', $types);
-
+$smarty->assign('geoevent_id', $page['geoevent_id']);
 
 $smarty->display($template, $cacheid);
 

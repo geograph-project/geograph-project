@@ -49,9 +49,12 @@
 <tbody>
 
 {foreach from=$list item=item}
-	{if $list.future == 0}
+	{if $item.future == 1}
 		{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 		<tr bgcolor="{$bgcolor}" id="row{$item.geoevent_id}">
+	{else}
+		<tr style="color:gray; font-size:0.8em" id="row{$item.geoevent_id}">
+	{/if}
 		<td sortvalue="{$item.title|escape:"html"|default:'Untitled'}"><b><a href="/events/event.php?id={$item.geoevent_id}" title="{$item.description|escape:"html"|default:''}">{$item.title|escape:"html"|default:'Untitled'}</a></b></td>
 		<td sortvalue="{$item.event_time}" class="nowrap"><b>{$item.event_time|date_format:"%a, %e %b %Y"}</b></td>
 		<td sortvalue="{$item.grid_reference}"><a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></td>
@@ -63,7 +66,7 @@
 		{/if}
 		</td>
 		</tr>
-	{/if}
+	
 {/foreach}
 </tbody>
 </table>
@@ -84,7 +87,7 @@
 {/dynamic}
 
 
-{if $item}
+{if $future}
 	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>
 	
 	{literal}
@@ -102,9 +105,11 @@
 		var bounds = new GLatLngBounds();
 		
 		{foreach from=$list item=item}
-			bounds.extend(new GLatLng({$item.wgs84_lat}, {$item.wgs84_long}));
+			{if $item.future == 1}
+				bounds.extend(new GLatLng({$item.wgs84_lat}, {$item.wgs84_long}));
+			{/if}
 		{/foreach}
-		{if count($list) == 1}
+		{if $future == 1}
 			//bounds doesnt seem to like one point via extends
 			bounds.extend(new GLatLng({$item.wgs84_lat}+1, {$item.wgs84_long}+1));
 			bounds.extend(new GLatLng({$item.wgs84_lat}-1, {$item.wgs84_long}-1));
