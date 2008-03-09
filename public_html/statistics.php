@@ -62,11 +62,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/gridsquare.class.php');
 
 
-	$smarty->assign('users_submitted',  $db->GetOne("select count(*) from user_stat"));
+	$smarty->assign('users_submitted',  $db->GetOne("select count(*)-1 from user_stat"));
 	
 	$smarty->assign('users_thisweek',  $db->GetOne("select count(*) from user where rights>0 and (unix_timestamp(now())-unix_timestamp(signup_date))<604800"));
 
-	$smarty->assign("images_ftf",  $db->GetOne("select sum(points) from user_stat"));
+	$smarty->assign("images_ftf",  $db->GetOne("select points from user_stat where user_id = 0"));
 
 
 	//lets add an overview map too

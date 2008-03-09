@@ -157,6 +157,25 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 	</div>
 	
 	{/box}
+	
+	
+	<br/><br/><br/>
+	{box colour="f4f4f4"}
+	<div class="infobox_alt" style="font-size:0.7em; text-align:center;">
+	<b class="nowrap">{$stats.users|thousends} users</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total</span>.<br/>
+	
+	Recently completed hectads: 
+	{foreach from=$hectads key=id item=obj}
+	<a title="View Mosaic for {$obj.hectad_ref}, completed {$obj.completed}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad_ref}</a>,
+	{/foreach}
+	<a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">more...</a><br/>
+	
+	<span class="nowrap"><b>{$stats.fewphotos|thousends} photographed squares</b> with <b>fewer than 4 photos</b></span>, <a href="/submit.php">add yours now</a>!
+	
+	</div>
+	{/box}
+	
+	
 </div>
 
 <br style="clear:both"/>

@@ -27,10 +27,8 @@ init_session();
 
 $smarty = new GeographPage;
 
-$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
-
 $template='numbers.tpl';
-$cacheid=$ri;
+$cacheid='';
 
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
@@ -45,30 +43,19 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$db=NewADOConnection($GLOBALS['DSN']);
 	
-	if ($ri) {
-		$wherewhere = "where reference_index=$ri";
-		$andwhere = "and reference_index=$ri";
-	} else {
-		$wherewhere = $andwhere = '';
-	}
+
 	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$hectads= $db->getAll("select * from hectad_complete $wherewhere limit 10");
 	$smarty->assign_by_ref('hectads', $hectads);
 	
-	$stats= $db->cacheGetRow(3600,"select 
-		count(*) as images,
-		count(distinct user_id) as users,
-		sum(ftf = 1 and moderation_status = 'geograph') as points
-	from gridimage_search 
-		$wherewhere");
+	$stats= $db->GetRow("select * from user_stat where user_id = 0");
+	$stats += $db->GetRow("select count(*)-1 as users from user_stat");
 	$stats += $db->cacheGetRow(3600,"select 
 		count(*) as total,
-		sum(imagecount>0) as squares,
 		sum(imagecount in (1,2,3)) as fewphotos
 	from gridsquare 
-	where percent_land > 0
-		$andwhere");	
+	where percent_land > 0");	
 	
 	$stats['nophotos'] = $stats['total'] - $stats['squares'];
 	
@@ -78,11 +65,48 @@ if (!$smarty->is_cached($template, $cacheid))
 	$stats['persquare'] = sprintf("%.1f",$stats['images']/$stats['squares']);
 	$stats['peruser'] = sprintf("%.1f",$stats['images']/$stats['users']);
 	
+#	$test_data = array(); $labels = array(); $colours = array();
+#	$test_data[] = $stats['percentage']; $colours[] = "0000ff"; $labels[] = urlencode($stats['percentage']."% or ".number_format($stats['squares']));
+#	$test_data[] = 100 - $stats['percentage']; $colours[] = "00ff00"; $labels[] = number_format($stats['total'] - $stats['squares']);
+	
+#	$chart = "http://chart.apis.google.com/chart?cht=p3&chs=450x125&chl=".join('|',$labels)."&chco=".join('|',$colours).
+#			"&chd=".chart_data($test_data)."&chtt=".urlencode(number_format($stats['total'])." Squares");
+	
 	$smarty->assign_by_ref('stats', $stats);
 }
 
 
 $smarty->display($template, $cacheid);
+
+
+#echo "<img src=\"$chart\">";
+
+function chart_data($values) {
+
+	// Port of JavaScript from http://code.google.com/apis/chart/
+	// http://james.cridland.net/code
+
+	// First, find the maximum value from the values given
+	$maxValue = max($values);
+
+	// A list of encoding characters to help later, as per Google's example
+	$simpleEncoding = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+	$chartData = "s:";
+	  for ($i = 0; $i < count($values); $i++) {
+	    $currentValue = $values[$i];
+
+	    if ($currentValue > -1) {
+	    $chartData.=substr($simpleEncoding,61*($currentValue/$maxValue),1);
+	    }
+	      else {
+	      $chartData.='_';
+	      }
+	  }
+
+	// Return the chart data - and let the Y axis to show the maximum value
+	return $chartData."&chxt=y&chxl=0:|0|".$maxValue;
+}
 
 	
 ?>

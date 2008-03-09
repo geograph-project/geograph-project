@@ -100,12 +100,12 @@
 			contributors
 		</div>
 		<div> 
-			<b class="nowrap">{$stats.images|thousends}</b><br/>
-			images
-		</div>
-		<div> 
 			<b class="nowrap">{$stats.points|thousends}</b><br/>
 			points awarded
+		</div>
+		<div> 
+			<b class="nowrap">{$stats.images|thousends}</b> images,
+			taken on <b class="nowrap">{$stats.days|thousends}</b> different days
 		</div>
 		<div> 
 			<b class="nowrap">{$stats.persquare}</b><br/>
