@@ -32,6 +32,9 @@ $g=inSetRequestInt('g',1);
 $template='games_statistics.tpl';
 $cacheid=$g;
 
+$smarty->caching = 2; // lifetime is per cache
+$smarty->cache_lifetime = 3600*6; //6hour cache
+
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$smarty->assign('gamelist',array('0'=>'-all games-','1'=>'Mark It','2'=>'Place Memory'));
