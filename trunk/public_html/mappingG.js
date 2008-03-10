@@ -29,6 +29,8 @@
  var eastings2 = 0;
  var northings2 = 0;
  
+ var pickupbox = null;
+ 
  function createMarker(point,picon) {
  	if (picon) {
  		marker2 = new GMarker(point,{draggable: true, icon:picon});
@@ -69,6 +71,9 @@
 			
 			if (document.theForm.use6fig)
 				document.theForm.use6fig.checked = true;
+			
+			if (eastings1 > 0 && eastings2 > 0 && pickupbox != null)
+				removeOverlay(pickupbox);
 			
 			updateViewDirection();			
 		});
@@ -200,6 +205,9 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 
 		if (!dontcalcdirection)
 			updateViewDirection();
+			
+		if (eastings1 > 0 && eastings2 > 0 && pickupbox != null)
+			removeOverlay(pickupbox);
 	}
 }
 

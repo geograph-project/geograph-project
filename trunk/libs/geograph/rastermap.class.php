@@ -414,14 +414,14 @@ class RasterMap
 	function getPolySquareBlock(&$conv,$e1,$n1,$e2,$n2) {
 		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
 		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
-		return "			var polygon = new GPolygon([
+		return "			pickupbox = new GPolygon([
 				new GLatLng($lat1,$long1),
 				new GLatLng($lat1,$long2),
 				new GLatLng($lat2,$long2),
 				new GLatLng($lat2,$long1),
 				new GLatLng($lat1,$long1)
 			], \"#0000FF\", 1, 0.7, \"#00FF00\", 0.5);
-			map.addOverlay(polygon);\n";
+			map.addOverlay(pickupbox);\n";
 	}
 	
 	function getScriptTag()
