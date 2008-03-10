@@ -129,11 +129,11 @@
 {else}
 	<h3>My Statistics</h3>
 	<ul>
-		  <li>No photographs submitted</li>
+		  <li>No photographs submitted {if $userimages}(statistics can take a few hours to appear if you have only recently began submitting){/if}</li>
 	</ul>
 {/if}
 
-{if $profile->stats.images gt 0}
+{if $userimages}
 	<div style="float:right; position:relative; margin-top:20px; font-size:0.7em; padding:10px"><a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Find images by {$profile->realname|escape:'html'}</a> (<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs">Thumbnail Only</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide">Slide Show Mode</a>)</div>
 	<h3 style="margin-bottom:0px">Photographs</h3>
 	
