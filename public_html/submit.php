@@ -489,6 +489,8 @@ if (isset($_POST['gridsquare']))
 			//init smarty
 			$smarty->assign('prefixes', $square->getGridPrefixes());
 			$smarty->assign('kmlist', $square->getKMList());
+			
+			$USER->getStats();
 		} elseif ($step == 3) {
 		
 			list($usec, $sec) = explode(' ',microtime());

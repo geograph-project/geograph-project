@@ -502,10 +502,10 @@ class RasterMap
 				<script type=\"text/javascript\">
 				//<![CDATA[
 					var issubmit = {$this->issubmit}+0;
-					
+					var map = null;
 					function loadmap() {
 						if (GBrowserIsCompatible()) {
-							var map = new GMap2(document.getElementById(\"map\"));
+							map = new GMap2(document.getElementById(\"map\"));
 							map.addMapType(G_PHYSICAL_MAP);
 							map.addControl(new GSmallZoomControl());
 							map.addControl(new GMapTypeControl(true));
