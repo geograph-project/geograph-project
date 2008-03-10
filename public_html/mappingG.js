@@ -72,10 +72,12 @@
 			if (document.theForm.use6fig)
 				document.theForm.use6fig.checked = true;
 			
-			if (eastings1 > 0 && eastings2 > 0 && pickupbox != null)
+			if (eastings1 > 0 && eastings2 > 0 && pickupbox != null) {
 				map.removeOverlay(pickupbox);
+				pickupbox = null;
+			}
 			
-			updateViewDirection();			
+			updateViewDirection();
 		});
 	} else {
 		GEvent.addListener(marker, "dragend", function() {
@@ -205,9 +207,10 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 
 		if (!dontcalcdirection)
 			updateViewDirection();
-			
-		if (eastings1 > 0 && eastings2 > 0 && pickupbox != null)
-			map.removeOverlay(pickupbox);
+		
+		if (eastings1 > 0 && eastings2 > 0 && pickupbox != null) {
+			setTimeout(" if (pickupbox != null) {map.removeOverlay(pickupbox);pickupbox = null;}",1000);
+		}
 	}
 }
 
