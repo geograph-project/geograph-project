@@ -132,20 +132,21 @@ if ($grid_given)
 		$mosaic=new GeographMapMosaic;
 		$smarty->assign('map_token', $mosaic->getGridSquareToken($square));
 	
-		if ($CONF['forums']) {
+		if (!empty($CONF['forums'])) {
 			$square->assignDiscussionToSmarty($smarty);
 		}
 		
 		
 		//lets add an overview map too
-		if ($grid_ok) {
-			$overview=new GeographMapMosaic('largeoverview');
-			$overview->setCentre($square->x,$square->y); //does call setAlignedOrigin
-			$smarty->assign('marker', $overview->getSquarePoint($square));
+		$overview=new GeographMapMosaic('largeoverview');
+		$overview->setCentre($square->x,$square->y); //does call setAlignedOrigin
+		$smarty->assign('marker', $overview->getSquarePoint($square));
 
-		} else {
-			$overview=new GeographMapMosaic('overview');	
-		}
+		//lets add an rastermap too
+		$rastermap = new RasterMap($square,false,$square->natspecified);
+		$rastermap->addLatLong($lat,$long);
+		$smarty->assign_by_ref('rastermap', $rastermap);
+
 		$overview->assignToSmarty($smarty, 'overview');
 		
 		
