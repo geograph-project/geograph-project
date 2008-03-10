@@ -59,7 +59,7 @@ Hi, my name is Perdita the Geograph hamster. Welcome to our <h2>Games Section</h
 <img src="http://{$static_host}/games/markit.gif" align="right" width="115" height="125"/>
 <h3 style="background-color:black;color:white;margin-top:0px; padding:10px;">Mark It</h3>
 
-<p>Earn Hamster Tokens by locating Photos on the Map!</p>
+<p>Earn Hamster Tokens by locating Photos on the Map! A single round consists of playing 10 images.</p>
 
 <form action="/games/markit.php">
 
@@ -83,7 +83,7 @@ Hi, my name is Perdita the Geograph hamster. Welcome to our <h2>Games Section</h
 <div  class="interestBox" style="width:45%; float:left; height:350px; ">
 <h3 style="background-color:black;color:white;margin-top:0px; padding:10px;">Place Memory (beta) <sup style="color:pink">New!</sup></h3>
 
-<p>Earn Hamster Tokens by locating the Grid Square of a photo.</p>
+<p>Earn Hamster Tokens by locating the Grid Square of a photo. A single round consists of playing 10 images.</p>
 
 <form action="/games/place-memory.php">
 
@@ -112,10 +112,14 @@ Hi, my name is Perdita the Geograph hamster. Welcome to our <h2>Games Section</h
 <br style="clear:both"/>
 </div>
 
+<br style="clear:both"/>
+
 <div class="interestBox" style="margin: 20px; padding:10px; width:260px; float:right; text-align:center">
 
 more games coming soon...
 </div>
+
+<p>Just for fun, <a href="/games/statistics.php">some overview statistics</a>.</p>
 
 <br style="clear:both"/>
 
