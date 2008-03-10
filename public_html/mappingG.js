@@ -73,7 +73,7 @@
 				document.theForm.use6fig.checked = true;
 			
 			if (eastings1 > 0 && eastings2 > 0 && pickupbox != null)
-				removeOverlay(pickupbox);
+				map.removeOverlay(pickupbox);
 			
 			updateViewDirection();			
 		});
@@ -207,7 +207,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 			updateViewDirection();
 			
 		if (eastings1 > 0 && eastings2 > 0 && pickupbox != null)
-			removeOverlay(pickupbox);
+			map.removeOverlay(pickupbox);
 	}
 }
 
