@@ -4,8 +4,8 @@
 {dynamic}
 {if $credit_realname}
 	<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
-	<img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
-	The image you where viewing was contributed by the user below, but is specifically credited to <b>{$credit_realname|escape:'html'}</b>
+	<img src="/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
+	The image you were viewing was contributed by the user below, but is specifically credited to <b>{$credit_realname|escape:'html'}</b>
 	</div>
 	<br/><br/>
 {/if}
