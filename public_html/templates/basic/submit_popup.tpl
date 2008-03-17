@@ -11,7 +11,7 @@
 	
 		<div class="rastermap">
 			<b>{$rastermap->getTitle($gridref)}</b><br/><br/>
-			{$rastermap->getImageTag()}<br/>
+			{$rastermap->getImageTag($gridref)}<br/>
 			<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
 
 			</div>

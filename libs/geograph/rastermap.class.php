@@ -356,6 +356,7 @@ class RasterMap
 			$str .= "<div style=\"position:absolute;top:0px;left:0px;\">";
 			$imagestr = "<img src=\"http://{$CONF['STATIC_HOST']}/img/blank.gif\" class=\"mapmask\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/>";
 			if (!empty($gridref)) {
+				$this->clickable = true;
 				$str .= smarty_function_getamap(array('text'=>$imagestr,'gridref'=>$gridref,'title'=>$title,'icon'=>'no'));
 			} else {
 				$str .= $imagestr;
@@ -571,7 +572,11 @@ class RasterMap
 			return "<span id=\"mapFootNoteOS50k\"".(($this->service == 'OS50k' && $this->issubmit)?'':' style="display:none"')."><br/>Centre the blue circle on the subject and mark the photographer position with the black circle. The red arrow will then show view direction.</span>".
 			"<span id=\"mapFootNoteVoB\"".($this->service == 'VoB'?'':' style="display:none"')."><br/>Historical Map provided by <a href=\"http://www.visionofbritain.org.uk/\" title=\"Vision of Britain\">VisionOfBritain.org.uk</a></span>";
 		} elseif ($this->service == 'OS50k') {
-			return "<span id=\"mapFootNoteOS50k\"".(($this->displayMarker1 || $this->displayMarker2)?'':' style="display:none"').">TIP: Hover over the icons to hide</span><span id=\"mapFootNoteVoB\"></span>";
+			if (!empty($this->clickable)) {
+				return "<span id=\"mapFootNoteOS50k\">TIP: Click the map to open OS Get-a-Map</span><span id=\"mapFootNoteVoB\"></span>";
+			} else {
+				return "<span id=\"mapFootNoteOS50k\"".(($this->displayMarker1 || $this->displayMarker2)?'':' style="display:none"').">TIP: Hover over the icons to hide</span><span id=\"mapFootNoteVoB\"></span>";
+			}
 		}
 	}
 

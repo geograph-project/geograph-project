@@ -20,7 +20,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 {if $rastermap->enabled}
 	<div class="rastermap" style="width:{$rastermap->width}px;position:relative;font-size:0.8em; float:right; z-index:10">
-	{$rastermap->getImageTag()}
+	{$rastermap->getImageTag($gridrefraw)}
 	<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
 	{$rastermap->getScriptTag()}	
 	</div>

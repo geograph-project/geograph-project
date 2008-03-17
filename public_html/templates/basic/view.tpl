@@ -103,7 +103,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 {if $rastermap->enabled}
 	<div class="rastermap" style="width:{$rastermap->width}px;position:relative">
-	{$rastermap->getImageTag()}
+	{$rastermap->getImageTag($image->subject_gridref)}
 	<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
 	{if $rastermap->reference_index == 1}<br/>Open <a href="/mapper/?t={$map_token}&amp;gridref_from={$image->grid_reference}">OS Map Checksheet</a> <sup style="color:red">New!</sup>{/if}
 	</div>
