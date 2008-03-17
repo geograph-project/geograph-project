@@ -303,7 +303,7 @@ $newtickets=$db->GetAll($sql =
 	"select t.*,suggester.realname as suggester,
 		submitter.realname as submitter, i.title, 
 		group_concat(if(c.user_id=i.user_id,c.comment,null)) as submitter_comment,
-		group_concat(if(c.user_id=i.user_id,c.comment,null)) as suggester_comment
+		group_concat(if(c.user_id=t.user_id,c.comment,null)) as suggester_comment
 		$columns
 	from gridimage_ticket as t
 	inner join user as suggester on (suggester.user_id=t.user_id)
