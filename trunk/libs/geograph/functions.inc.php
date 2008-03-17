@@ -93,7 +93,7 @@ function smarty_block_dynamic($param, $content, &$smarty)
 function smarty_function_getamap($params)
 {
 	global $CONF;
-	$icon="<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in popup window\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/>";
+	$icon=empty($params['icon'])?"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in popup window\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/>":'';
 
 	//get params
 	$matches=array();
@@ -132,7 +132,7 @@ function smarty_function_getamap($params)
 		if (!empty($params['text']))
 			$text=$params['text'];
 		else
-			$text='OS Get-A-Map';
+			$text='OS Get-a-Map';
 		return "<a title=\"Ordnance Survey Get-a-Map\" href=\"http://getamap.ordnancesurvey.co.uk/getamap/frames.htm\" onclick=\"popupOSMap('',''); return false;\">$text</a>$icon";
 	}
 	else

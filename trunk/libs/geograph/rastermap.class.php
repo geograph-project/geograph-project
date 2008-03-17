@@ -144,7 +144,7 @@ class RasterMap
 		$this->view_direction = $view_direction;
 	}
 	
-	function getImageTag() 
+	function getImageTag($gridref = '') 
 	{
 		global $CONF;
 		$east = floor($this->nateastings/1000) * 1000;
@@ -353,8 +353,16 @@ class RasterMap
 			}
 
 	//overlay (for dragging)
-			$str .= "<div style=\"position:absolute;top:0px;left:0px;\"><img src=\"http://{$CONF['STATIC_HOST']}/img/blank.gif\" class=\"mapmask\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/></div>";
-
+			$str .= "<div style=\"position:absolute;top:0px;left:0px;\">";
+			$imagestr = "<img src=\"http://{$CONF['STATIC_HOST']}/img/blank.gif\" class=\"mapmask\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/>";
+			if (!empty($gridref)) {
+				$str .= smarty_function_getamap(array('text'=>$imagestr,'gridref'=>$gridref,'title'=>$title,'icon'=>'no'));
+			} else {
+				$str .= $imagestr;
+			}
+			$str .= "</div>";
+			
+			
 			$str .= "</div>";
 
 	//map switcher

@@ -122,7 +122,7 @@
 </div>
 {if $rastermap->enabled}
 	<div class="rastermap" style="width:{$rastermap->width}px;position:relative;font-size:0.8em">
-	{$rastermap->getImageTag()}
+	{$rastermap->getImageTag($gridrefraw)}
 	<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
 	{$rastermap->getScriptTag()}	
 	</div>
