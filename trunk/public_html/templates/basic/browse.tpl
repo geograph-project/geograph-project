@@ -150,7 +150,7 @@
 			<table cellspacing="0" cellpadding="4" border="1">
 				{foreach from=$tendown item=y}
 					<tr>
-						<th>{$y}</th>
+						<th height="30">{$y}</th>
 						{foreach from=$tenup item=x}
 							{if $breakdown.$y.$x.link}
 								<td align="right" bgcolor="#{$breakdown.$y.$x.count|colerize}"><a href="{$breakdown.$y.$x.link}" title="{$breakdown.$y.$x.name}">{$breakdown.$y.$x.count}</a></td>
@@ -163,7 +163,7 @@
 				<tr>
 					<td>&nbsp;</td>
 					{foreach from=$tenup item=x}
-						<th>{$x}</th>
+						<th width="20">{$x}</th>
 					{/foreach}
 				</tr>
 			</table>
