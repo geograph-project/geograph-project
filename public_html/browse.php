@@ -112,7 +112,19 @@ $cacheid.=$style;
 
 	$smarty->assign('maincontentclass', 'content_photo'.$style);
 
+function smarty_modifier_colerize($input) {
+	global $maximages;
+	if ($input) {
 
+		$hex = str_pad(dechex(255 - $input/$maximages*255), 2, '0', STR_PAD_LEFT); 
+		return "ffff$hex";
+	} 
+	return 'ffffff';
+}
+
+$smarty->register_modifier("colerize", "smarty_modifier_colerize");
+				
+				
 
 //process grid reference
 if ($grid_given)
@@ -318,18 +330,6 @@ if ($grid_given)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
 				GROUP BY nateastings DIV 100, natnorthings DIV 100,(nateastings = 0)");
-				
-				function smarty_modifier_colerize($input) {
-					global $maximages;
-					if ($input) {
-				
-						$hex = str_pad(dechex(255 - $input/$maximages*255), 2, '0', STR_PAD_LEFT); 
-						return "ffff$hex";
-					} 
-					return 'ffffff';
-				}
-				
-				$smarty->register_modifier("colerize", "smarty_modifier_colerize");
 				
 				$maximages = 0;
 				$hasnone = 0;
