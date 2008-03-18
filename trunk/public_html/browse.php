@@ -318,23 +318,48 @@ if ($grid_given)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
 				GROUP BY nateastings DIV 100, natnorthings DIV 100,(nateastings = 0)");
+				
+				function smarty_modifier_colerize($input) {
+					global $maximages;
+					if ($input) {
+				
+						$hex = str_pad(dechex(255 - $input/$maximages*255), 2, '0', STR_PAD_LEFT); 
+						return "ffff$hex";
+					} 
+					return 'ffffff';
+				}
+				
+				$smarty->register_modifier("colerize", "smarty_modifier_colerize");
+				
+				$maximages = 0;
+				$hasnone = 0;
 				foreach ($all as $row) {
 					if ($row[0]) {
 						$centi = "unspecified";
+						$x = $y = 50; 
+						$hasnone = 1;
 					} else {
-						$centi=$square->gridsquare.$square->eastings.($row[3]%10).$square->northings.($row[4]%10);
+						$x = ($row[3]%10);
+						$y = ($row[4]%10);
+						$centi=$square->gridsquare.$square->eastings.$x.$square->northings.$y;
+						if (!isset($breakdown[$y])) {
+							$breakdown[$y] = array();
+						}
 					}
-					$breakdown[$i] = array('name'=>"in <b>$centi</b> centisquare",'count'=>$row[1]);
+					$maximages = max($row[1],$maximages);
+					$breakdown[$y][$x] = array('name'=>"in $centi centisquare",'count'=>$row[1]);
 					if ($row[1] > 2000000) {
 						//todo
-						$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;user_id={$row[3]}&amp;do=1";
+						$breakdown[$y][$x]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;user_id={$row[3]}&amp;do=1";
 					} elseif ($row[1] == 1) {
-						$breakdown[$i]['link']="/photo/{$row[2]}";
+						$breakdown[$y][$x]['link']="/photo/{$row[2]}";
 					} else {
-						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?centi=$centi";
+						$breakdown[$y][$x]['link']="/gridref/{$square->grid_reference}?centi=$centi";
 					}
-					$i++;
 				}
+				$smarty->assign('allcount', count($all)-$hasnone);
+				$smarty->assign('tenup', range(0,9));
+				$smarty->assign('tendown', range(9,0));
 			} else { //must be a date (unless something has gone wrong!)
 				$length = (preg_match('/year$/',$_GET['by']))?4:7;
 				$column = (preg_match('/^taken/',$_GET['by']))?'imagetaken':'submitted';
@@ -362,6 +387,7 @@ if ($grid_given)
 				}
 			}
 			$ADODB_FETCH_MODE = $old_ADODB_FETCH_MODE;
+			$smarty->assign('by', $_GET['by']);
 			if (!empty($breakdown_title))
 				$smarty->assign_by_ref('breakdown_title', $breakdown_title);
 			if (count($breakdown))
