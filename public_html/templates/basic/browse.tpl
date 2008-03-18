@@ -142,14 +142,44 @@
 
 	{if $breakdown}
 		{* We want to display a breakdown list *}
-
+		<blockquote>
 		<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images, by {$breakdown_title}:</p>
-
-		<ul>
-		{foreach from=$breakdown item=b}
-			<li><a href="{$b.link}">{$b.name}</a> [{$b.count}]</li>
-		{/foreach}
-		</ul>	
+		
+		{if $by eq 'centi'}
+			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6figure grid reference.</small></p>
+			<table cellspacing="0" cellpadding="4" border="1">
+				{foreach from=$tendown item=y}
+					<tr>
+						<th>{$y}</th>
+						{foreach from=$tenup item=x}
+							{if $breakdown.$y.$x.link}
+								<td align="right" bgcolor="#{$breakdown.$y.$x.count|colerize}"><a href="{$breakdown.$y.$x.link}" title="{$breakdown.$y.$x.name}">{$breakdown.$y.$x.count}</a></td>
+							{else}
+								<td>&nbsp;</td>
+							{/if}
+						{/foreach}
+					</tr>
+				{/foreach}
+				<tr>
+					<td>&nbsp;</td>
+					{foreach from=$tenup item=x}
+						<th>{$x}</th>
+					{/foreach}
+				</tr>
+			</table>
+			{if $breakdown.50.50.link}
+				<ul>
+				<li><a href="{$breakdown.50.50.link}" title="{$breakdown.50.50.name}">{$breakdown.50.50.name}</a> [{$breakdown.50.50.count}]</li>
+				</ul>
+			{/if}
+		{else}
+			<ul>
+			{foreach from=$breakdown item=b}
+				<li><a href="{$b.link}">{$b.name}</a> [{$b.count}]</li>
+			{/foreach}
+			</ul>	
+		{/if}
+		</blockquote>
 	{else}
 		{if $breakdowns}
 			{* We want to choose a breakdown criteria to show *}
