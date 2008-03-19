@@ -30,7 +30,10 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 <ul>
 	<li><a href="/submit.php?gridreference={$gridrefraw}"><b>submit your own picture for {$gridref}</b></a></li>
-	<li><a href="/gridref/{$gridrefraw}">View <b>browse page</b> for {$gridref}</a></li>
+	<li><a href="/gridref/{$gridrefraw}">View <b>browse page</b> for {$gridref}</a> 
+		{if $square->imagecount > 2}
+				(<a href="/gridref/{$gridref}?by=1">view breakdown</a>)
+			{/if}</li>
 	{if $square->imagecount > 2}
 		<li><a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show" class="nowrap">View <b>slide show</b> for the {$square->imagecount} images</a></li>
 	{/if}
