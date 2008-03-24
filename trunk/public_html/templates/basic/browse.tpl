@@ -148,9 +148,15 @@
 		{* We want to display a breakdown list *}
 		<blockquote>
 		<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images, by {$breakdown_title}:</p>
-		
+
 		{if $by eq 'centi'}
 			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6figure grid reference.</small></p>
+	<table border="0" cellspacing="0" cellpadding="2">
+		<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}&amp;by=centi">NW</a></td>
+		<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}&amp;by=centi">N</a></td>
+		<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}&amp;by=centi">NE</a></td></tr>
+		<tr><td><a href="/browse.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}&amp;by=centi">W</a></td>
+		<td>			
 			<table cellspacing="0" cellpadding="4" border="1">
 				{foreach from=$tendown item=y}
 					<tr>
@@ -171,6 +177,12 @@
 					{/foreach}
 				</tr>
 			</table>
+	</td>
+		<td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}&amp;by=centi">E</a></td></tr>
+		<tr><td><a href="/browse.php?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}&amp;by=centi">SW</a></td>
+		<td align="center"><a href="/browse.php?p={math equation="900*(y-1)+900-(x)" x=$x y=$y}&amp;by=centi">S</a></td>
+		<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}&amp;by=centi">SE</a></td></tr>
+	</table>
 			{if $breakdown.50.50.link}
 				<ul>
 				<li><a href="{$breakdown.50.50.link}" title="{$breakdown.50.50.name}">{$breakdown.50.50.name}</a> [{$breakdown.50.50.count}]</li>
@@ -183,6 +195,9 @@
 			{/foreach}
 			</ul>	
 		{/if}
+		
+		<p>{if $imagecount < 15}<a href="/gridref/{$gridref}?by=1">&lt;&lt; Choose a different filter method</a></p>{/if}
+		
 		</blockquote>
 	{else}
 		{if $breakdowns}
@@ -210,7 +225,7 @@
 			
 			
 			{if $filtered}
-				<p>{$totalimagecount} Images, {$filtered_title}... (<a href="/gridref/{$gridref}">Remove Filter</a>)</p>
+				<p>{$totalimagecount} Images, {$filtered_title|escape:'html'}... (<a href="/gridref/{$gridref}">Remove Filter</a>)</p>
 			{/if}
 
 			{foreach from=$images item=image}
