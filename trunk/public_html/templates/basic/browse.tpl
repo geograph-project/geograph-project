@@ -158,12 +158,12 @@
 		<tr><td><a href="/browse.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}&amp;by=centi">W</a></td>
 		<td>			
 			<table cellspacing="0" cellpadding="4" border="1">
-				{foreach from=$tendown item=y}
+				{foreach from=$tendown item=yy}
 					<tr>
-						<th height="30">{$y}</th>
-						{foreach from=$tenup item=x}
-							{if $breakdown.$y.$x.link}
-								<td align="right" bgcolor="#{$breakdown.$y.$x.count|colerize}"><a href="{$breakdown.$y.$x.link}" title="{$breakdown.$y.$x.name}">{$breakdown.$y.$x.count}</a></td>
+						<th height="30">{$yy}</th>
+						{foreach from=$tenup item=xx}
+							{if $breakdown.$yy.$xx.link}
+								<td align="right" bgcolor="#{$breakdown.$yy.$xx.count|colerize}"><a href="{$breakdown.$yy.$xx.link}" title="{$breakdown.$yy.$xx.name}">{$breakdown.$yy.$xx.count}</a></td>
 							{else}
 								<td>&nbsp;</td>
 							{/if}
@@ -172,8 +172,8 @@
 				{/foreach}
 				<tr>
 					<td>&nbsp;</td>
-					{foreach from=$tenup item=x}
-						<th width="20">{$x}</th>
+					{foreach from=$tenup item=xx}
+						<th width="20">{$xx}</th>
 					{/foreach}
 				</tr>
 			</table>
