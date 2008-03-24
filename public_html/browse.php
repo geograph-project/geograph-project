@@ -151,39 +151,45 @@ if ($grid_given)
 			$smarty->assign('nearest_distance', $square->nearest->distance);
 			$smarty->assign('nearest_gridref', $square->nearest->grid_reference);
 		}
-		
+		$db = null;
 		$custom_where = '';
 		if (!empty($_GET['user'])) {
-			$custom_where .= " and gi.user_id = ".$_GET['user'];
+			$custom_where .= " and gi.user_id = ".intval($_GET['user']);
 			$profile=new GeographUser($_GET['user']);
-			$filtered_title = "by ".($profile->realname);
+			$filtered_title = "by ".htmlentities2($profile->realname);
 		}
 		if (!empty($_GET['status'])) {
-			$filtered_title = "moderated as '".$_GET['status']."'";
+			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			$filtered_title = "moderated as '".htmlentities2($_GET['status'])."'";
 			$_GET['status'] = str_replace('supplemental','accepted',$_GET['status']);
-			$custom_where .= " and moderation_status = '".$_GET['status']."'";
+			$custom_where .= " and moderation_status = ".$db->Quote($_GET['status']);
 		}
 		if (!empty($_GET['class'])) {
-			$custom_where .= " and imageclass = '".$_GET['class']."'";
-			$filtered_title = "categorised as '".$_GET['class']."'";
+			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			$custom_where .= " and imageclass = ".$db->Quote($_GET['class']);
+			$filtered_title = "categorised as '".htmlentities2($_GET['class'])."'";
 		}
 		if (!empty($_GET['taken'])) {
-			$custom_where .= " and imagetaken LIKE '".$_GET['taken']."%'";
+			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			$custom_where .= " and imagetaken LIKE ".$db->Quote($_GET['taken']."%");
 			$date = getFormattedDate($_GET['taken']);
 			$filtered_title = "Taken in $date";
 		}
 		if (!empty($_GET['takenyear'])) {
-			$custom_where .= " and imagetaken LIKE '".$_GET['takenyear']."%'";
+			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			$custom_where .= " and imagetaken LIKE ".$db->Quote($_GET['takenyear']."%");
 			$date = getFormattedDate($_GET['takenyear']);
 			$filtered_title = "Taken in $date";
 		}
 		if (!empty($_GET['submitted'])) {
-			$custom_where .= " and submitted LIKE '".$_GET['submitted']."%'";
+			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			$custom_where .= " and submitted LIKE ".$db->Quote($_GET['submitted']."%");
 			$date = getFormattedDate($_GET['submitted']);
 			$filtered_title = "Submitted in $date";
 		}
 		if (!empty($_GET['submittedyear'])) {
-			$custom_where .= " and submitted LIKE '".$_GET['submittedyear']."%'";
+			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			$custom_where .= " and submitted LIKE ".$db->Quote($_GET['submittedyear']."%");
 			$date = getFormattedDate($_GET['submittedyear']);
 			$filtered_title = "Submitted in $date";
 		}
@@ -196,29 +202,32 @@ if ($grid_given)
 				$custom_where .= " and ((nateastings div 100) mod 10) = ".$matches[1];
 				$custom_where .= " and ((natnorthings div 100) mod 10) = ".$matches[2];
 			}
-			$filtered_title = "in {$_GET['centi']} Centisquare<a href=\"/help/squares\">?</a>";
+			$filtered_title = "in ".htmlentities2($_GET['centi'])." Centisquare<a href=\"/help/squares\">?</a>";
 		}
 		if ($custom_where) {
 			$smarty->assign('filtered_title', $filtered_title);
 			$smarty->assign('filtered', 1);
 		}
 			
-		if ($USER->user_id) {
+		if ($USER->user_id && !empty($_GET['nl'])) {
 			if ($USER->hasPerm('moderator')) {
 				$user_crit = "1";
+				$cacheseconds = 600;
 			} else {
 				$user_crit = "(moderation_status in ('accepted', 'geograph') or gridimage.user_id = {$USER->user_id})";
+				$cacheseconds = 60;
 			}
 		} else {
 			$user_crit = "moderation_status in ('accepted', 'geograph')";
+			$cacheseconds = 1500;
 		}
 			
 		if (($square->imagecount > 15 && !isset($_GET['by']) && !$custom_where) || (isset($_GET['by']) && $_GET['by'] == 1)) {
 			$square->totalimagecount = $square->imagecount;
 			
-			$db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			
-			$row = $db->getRow("SELECT 
+			$row = $db->cacheGetRow($cacheseconds,"SELECT 
 			count(distinct user_id) as user,
 			count(distinct imageclass) as class,
 			count(distinct SUBSTRING(imagetaken,1,7)) as taken,
@@ -234,15 +243,16 @@ if ($grid_given)
 			
 			$breakdowns = array();
 			$breakdowns[] = array('type'=>'user','name'=>'Contributors','count'=>$row['user']);
+			$breakdowns[] = array('type'=>'centi','name'=>'Centisquares','count'=>$row['centi']-($row['centi_blank'] > 0));
 			$breakdowns[] = array('type'=>'class','name'=>'Categories','count'=>$row['class']);
 			$breakdowns[] = array('type'=>'taken','name'=>'Taken Months','count'=>$row['taken']);
 			$breakdowns[] = array('type'=>'takenyear','name'=>'Taken Years','count'=>$row['takenyear']);
 			$breakdowns[] = array('type'=>'submitted','name'=>'Submitted Months','count'=>$row['submitted']);
 			$breakdowns[] = array('type'=>'submittedyear','name'=>'Submitted Years','count'=>$row['submittedyear']);
 			$breakdowns[] = array('type'=>'status','name'=>'Classification','count'=>$row['status']);
-			$breakdowns[] = array('type'=>'centi','name'=>'Centisquares','count'=>$row['centi']-($row['centi_blank'] > 0));
 			$smarty->assign_by_ref('breakdowns', $breakdowns);
 			
+			//find the first geograph
 			$sql="select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname from gridimage as gi inner join user using(user_id) where gridsquare_id={$square->gridsquare_id} 
 			and moderation_status in ('accepted','geograph') order by moderation_status+0 desc,seq_no limit 1";
 
@@ -256,7 +266,7 @@ if ($grid_given)
 		} elseif (!empty($_GET['by'])) {
 			$square->totalimagecount = $square->imagecount;
 			
-			$db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$old_ADODB_FETCH_MODE =  $ADODB_FETCH_MODE;
 			$ADODB_FETCH_MODE = ADODB_FETCH_NUM;
 			$breakdown = array();
@@ -264,7 +274,7 @@ if ($grid_given)
 			
 			if ($_GET['by'] == 'class') {
 				$breakdown_title = "Category";
-				$all = $db->getAll("SELECT imageclass,count(*),gridimage_id
+				$all = $db->cacheGetAll($cacheseconds,"SELECT imageclass,count(*),gridimage_id
 				FROM gridimage
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
@@ -282,7 +292,7 @@ if ($grid_given)
 				}
 			} elseif ($_GET['by'] == 'status') {
 				$breakdown_title = "Classification";
-				$all = $db->getAll("SELECT moderation_status,count(*),gridimage_id
+				$all = $db->cacheGetAll($cacheseconds,"SELECT moderation_status,count(*),gridimage_id
 				FROM gridimage
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
@@ -306,7 +316,7 @@ if ($grid_given)
 				}
 			} elseif ($_GET['by'] == 'user') {
 				$breakdown_title = "Contributor";
-				$all = $db->getAll("SELECT user.realname,count(*),gridimage_id,gridimage.user_id
+				$all = $db->cacheGetAll($cacheseconds,"SELECT user.realname,count(*),gridimage_id,gridimage.user_id
 				FROM gridimage
 				INNER JOIN user USING(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
@@ -325,7 +335,7 @@ if ($grid_given)
 				}
 			} elseif ($_GET['by'] == 'centi') {
 				$breakdown_title = "Centisquare<a href=\"/help/squares\">?</a>";
-				$all = $db->getAll("SELECT (nateastings = 0),count(*),gridimage_id,nateastings DIV 100, natnorthings DIV 100
+				$all = $db->cacheGetAll($cacheseconds,"SELECT (nateastings = 0),count(*),gridimage_id,nateastings DIV 100, natnorthings DIV 100
 				FROM gridimage
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
@@ -365,7 +375,7 @@ if ($grid_given)
 				$column = (preg_match('/^taken/',$_GET['by']))?'imagetaken':'submitted';
 				$title = (preg_match('/^taken/',$_GET['by']))?'Taken':'Submitted';
 				$breakdown_title = "$title".((preg_match('/year$/',$_GET['by']))?'':' Month');
-				$all = $db->getAll("SELECT SUBSTRING($column,1,$length) as date,count(*),gridimage_id
+				$all = $db->cacheGetAll($cacheseconds,"SELECT SUBSTRING($column,1,$length) as date,count(*),gridimage_id
 				FROM gridimage
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
@@ -394,7 +404,7 @@ if ($grid_given)
 				$smarty->assign_by_ref('breakdown', $breakdown);
 		} else {
 			//todo ideally here we only want to forward teh user_id IF they have images in the square, or a mod, for greater cachablity, but the chicken and the egg thingy....
-			$images=$square->getImages($USER->user_id,$custom_where,'order by ftf desc,gridimage_id');
+			$images=$square->getImages(empty($_GET['nl'])?0:$USER->user_id,$custom_where,'order by ftf desc,gridimage_id');
 			$square->totalimagecount = count($images);
 		
 			//otherwise, lets gether the info we need to display some thumbs
