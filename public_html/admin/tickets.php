@@ -121,28 +121,16 @@ $sql_where = '';
 #################
 # setup type
 
-if (isset($_GET['moderator'])) {
-	$USER->mustHavePerm('admin');
-	
-	$mid = intval($_GET['moderator']);
-	
-	if ($mid != 0) {
-		$sql_where .= " and t.moderator_id=$mid";
-	}
-	
+if (isset($_GET['moderator']) && ($mid = intval($_GET['moderator']))) {
+	$sql_where .= " and t.moderator_id=$mid";
 	$smarty->assign('moderator', 1);
 
-} elseif (isset($_GET['user_id'])) {
-	$mid = intval($_GET['user_id']);
+} elseif (isset($_GET['user_id']) && ($mid = intval($_GET['user_id']))) {
+	$sql_where .= " and i.user_id=$mid";
 	
-	if ($mid != 0) {
-		if (!empty($_GET['s'])) {
-			$sql_where .= " and t.user_id=$mid";
-		} else {
-			$sql_where .= " and i.user_id=$mid";
-		}
-	}
-} 
+} elseif (isset($_GET['suggestor']) && ($mid = intval($_GET['suggestor']))) {
+	$sql_where .= " and t.user_id=$mid";
+}
 
 if (isset($_GET['q'])) {
 	if (strpos($_GET['q'],'!') === 0) {
