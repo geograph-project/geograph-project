@@ -226,7 +226,7 @@ class RasterMap
 			} else {
 				$mapurl = "http://{$CONF['CONTENT_HOST']}/tile.php?r=".$this->getToken();
 			}
-
+			#$this->mapurl = $mapurl;
 			$title = "1:50,000 Modern Day Landranger(TM) Map &copy; Crown Copyright";
 		}
 		if ($this->service == 'VoB' || $this->service2 == 'VoB' ) {

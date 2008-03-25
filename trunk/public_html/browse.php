@@ -210,6 +210,8 @@ if ($grid_given)
 		}
 			
 		if ($USER->user_id && !empty($_GET['nl'])) {
+			$smarty->assign('extra', "&amp;nl=1");
+			$extra = "&amp;nl=1";
 			if ($USER->hasPerm('moderator')) {
 				$user_crit = "1";
 				$cacheseconds = 600;
@@ -286,7 +288,7 @@ if ($grid_given)
 					} elseif ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
-						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?class=".urlencode($row[0]);
+						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?class=".urlencode($row[0]).$extra;
 					}
 					$i++;
 				}
@@ -310,7 +312,7 @@ if ($grid_given)
 					} elseif ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
-						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?status=".urlencode($row[0]);
+						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?status=".urlencode($row[0]).$extra;
 					}
 					$i++;
 				}
@@ -329,7 +331,7 @@ if ($grid_given)
 					} elseif ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
-						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?user={$row[3]}";
+						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?user={$row[3]}".$extra;
 					}
 					$i++;
 				}
@@ -364,7 +366,7 @@ if ($grid_given)
 					} elseif ($row[1] == 1) {
 						$breakdown[$y][$x]['link']="/photo/{$row[2]}";
 					} else {
-						$breakdown[$y][$x]['link']="/gridref/{$square->grid_reference}?centi=$centi";
+						$breakdown[$y][$x]['link']="/gridref/{$square->grid_reference}?centi=$centi".$extra;
 					}
 				}
 				$smarty->assign('allcount', count($all)-$hasnone);
@@ -391,7 +393,7 @@ if ($grid_given)
 					} elseif ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
-						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?{$_GET['by']}={$row[0]}";
+						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?{$_GET['by']}={$row[0]}".$extra;
 					}
 					$i++;
 				}
