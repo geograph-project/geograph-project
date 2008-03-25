@@ -578,7 +578,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 	
 	function releaseLock() {
 		var myImage = new Image();
-		myImage.src = "/editimage.php?id={$image->gridimage_id}&unlock";
+		myImage.src = "/editimage.php?id={/literal}{$image->gridimage_id}{literal}&unlock";
 	}
 	AttachEvent(window,'unload',releaseLock,false);
 	</script>
