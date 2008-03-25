@@ -335,7 +335,7 @@
 		document.getElementById('change_form_div').style.display='none';
 	}
 	AttachEvent(window,'load',hideForm,false);
-</script>
+	</script>
 {/literal}
 <div id="change_form_div">
 {/if}
@@ -573,6 +573,16 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 {if $rastermap->enabled}
 	{$rastermap->getFooterTag()}
 {/if}
+{literal}
+	<script type="text/javascript">
+	
+	function releaseLock() {
+		var myImage = new Image();
+		myImage.src = "/editimage.php?id={$image->gridimage_id}&unlock";
+	}
+	AttachEvent(window,'unload',releaseLock,false);
+	</script>
+{/literal}
 {else}
 	<h2>Sorry, image not available</h2>
 

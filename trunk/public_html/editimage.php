@@ -102,7 +102,10 @@ if (isset($_REQUEST['id']))
 				exit;
 			}
 		}
-
+		if (isset($_GET['unlock'])) {
+			$image->unlockThisImage($USER->user_id);
+			die(1);
+		}
 
 		//get the grid references
 		$image->getSubjectGridref();
