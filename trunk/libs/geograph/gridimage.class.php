@@ -1094,13 +1094,23 @@ class GridImage
 	}	
 	
 	/**
-	* Locks this image so its now shown to other moderators
+	* Locks this image so its not shown to other moderators
 	*/
 	function lockThisImage($mid)
 	{	
 		$db=&$this->_getDB();
 		
 		$db->Execute("REPLACE INTO gridimage_moderation_lock SET user_id = $mid, gridimage_id = {$this->gridimage_id}");
+	}
+	
+	/**
+	* UnLocks this image so its now shown to other moderators
+	*/
+	function unlockThisImage($mid)
+	{	
+		$db=&$this->_getDB();
+		
+		$db->Execute("DELETE FROM gridimage_moderation_lock WHERE user_id = $mid AND gridimage_id = {$this->gridimage_id}");
 	}
 	
 	/**
