@@ -113,7 +113,11 @@
 			{/if}</li>
 		{/if}
 		{if !$breakdown && !$breakdowns && !$filtered && $totalimagecount > 1}
-			<li><a href="/gridref/{$gridref}?by=1">View <b>breakdowns</b> for this square</a></li>
+			<li><a href="/gridref/{$gridref}?by=1{if $extra}?{$extra}{/if}">View <b>breakdowns</b> for this square</a></li>
+			
+		{/if}
+		{if !$extra && $totalimagecount > 1}
+			<li><a href="/gridref/{$gridref}?by=1&amp;nl=1">Include <b>pending and rejected</b> images</a></li>
 		{/if}
 
 		<li><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph <b>map</b> for {if strlen($gridrefraw) < 5}{$gridrefraw}{else}{$gridref}{/if}</a>,</li>
@@ -156,8 +160,17 @@
 		<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}&amp;by=centi">N</a></td>
 		<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}&amp;by=centi">NE</a></td></tr>
 		<tr><td><a href="/browse.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}&amp;by=centi">W</a></td>
-		<td>			
+		<td>	
+			{if $rastermap->enabled && $rastermap->mapurl}
+				<div style="position:relative; width:330px; height:330px">
+					<div style="position:absolute; top:-150px; left:-120px; overflow:hidden; clip: rect(150px 450px 450px 150px); width:600px; height:600px;">
+						<img id="background" src="{$rastermap->mapurl}" alt="Background-image" height="600" width="600" style="filter:alpha(opacity=80);-moz-opacity:.80;opacity:.80;"/>
+					</div>
+					<div style="position:absolute; width:330px; height:330px">
+			<table cellspacing="0" cellpadding="4" border="1"  style="filter:alpha(opacity=80);-moz-opacity:.80;opacity:.80;">
+			{else}
 			<table cellspacing="0" cellpadding="4" border="1">
+			{/if}
 				{foreach from=$tendown item=yy}
 					<tr>
 						<th height="30">{$yy}</th>
@@ -171,12 +184,16 @@
 					</tr>
 				{/foreach}
 				<tr>
-					<td>&nbsp;</td>
+					<td width="20">&nbsp;</td>
 					{foreach from=$tenup item=xx}
 						<th width="20">{$xx}</th>
 					{/foreach}
 				</tr>
 			</table>
+			{if $rastermap->enabled && $rastermap->mapurl}
+					</div>
+				</div>
+			{/if}
 	</td>
 		<td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}&amp;by=centi">E</a></td></tr>
 		<tr><td><a href="/browse.php?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}&amp;by=centi">SW</a></td>
@@ -196,7 +213,7 @@
 			</ul>	
 		{/if}
 		
-		<p>{if $imagecount < 15}<a href="/gridref/{$gridref}?by=1">&lt;&lt; Choose a different filter method</a></p>{/if}
+		<p>{if $imagecount < 15}<a href="/gridref/{$gridref}?by=1{if $extra}?{$extra}{/if}">&lt;&lt; Choose a different filter method</a></p>{/if}
 		
 		</blockquote>
 	{else}
@@ -213,7 +230,7 @@
 
 			<ul>
 			{foreach from=$breakdowns item=b}
-				<li><a href="/gridref/{$gridref}?by={$b.type}">{$b.name}</a> [{$b.count}]</li>
+				<li><a href="/gridref/{$gridref}?by={$b.type}{$extra}">{$b.name}</a> [{$b.count}]</li>
 			{/foreach}
 
 			<li style="margin-top:10px;">Or view all images in the <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1" title="View images in {$gridref}">search interface</a> (<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;&displayclass=thumbs&amp;do=1">thumbnails only</a>)</li>
@@ -225,7 +242,7 @@
 			
 			
 			{if $filtered}
-				<p>{$totalimagecount} Images, {$filtered_title|escape:'html'}... (<a href="/gridref/{$gridref}">Remove Filter</a>)</p>
+				<p>{$totalimagecount} Images, {$filtered_title|escape:'html'}... (<a href="/gridref/{$gridref}{if $extra}?{$extra}{/if}">Remove Filter</a>)</p>
 			{/if}
 
 			{foreach from=$images item=image}
