@@ -113,7 +113,7 @@
 			{/if}</li>
 		{/if}
 		{if !$breakdown && !$breakdowns && !$filtered && $totalimagecount > 1}
-			<li><a href="/gridref/{$gridref}?by=1{if $extra}?{$extra}{/if}">View <b>breakdowns</b> for this square</a></li>
+			<li><a href="/gridref/{$gridref}?by=1{if $extra}{$extra}{/if}">View <b>breakdowns</b> for this square</a></li>
 			
 		{/if}
 		{if !$extra && $totalimagecount > 1}
