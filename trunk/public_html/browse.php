@@ -54,6 +54,14 @@ if (isset($_GET['inner'])) {
 $grid_given=false;
 $grid_ok=false;
 
+if (isset($_GET['nl']))
+{
+	$_SESSION['nl']=intval($_GET['nl']);
+}
+elseif (isset($_SESSION['nl']))
+{
+	$_GET['nl']=intval($_SESSION['nl']);
+}
 
 //set by grid components?
 if (isset($_GET['p']))

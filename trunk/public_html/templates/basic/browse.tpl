@@ -117,7 +117,7 @@
 			
 		{/if}
 		{if !$extra && $totalimagecount > 1}
-			<li><a href="/gridref/{$gridref}?by=1&amp;nl=1">Include <b>pending and rejected</b> images</a></li>
+			<li><a href="/gridref/{$gridref}?{$breakdown || $breakdowns || $filtered}by=1&amp;{/if}nl=1">Include <b>pending and rejected</b> images</a></li>
 		{/if}
 
 		<li><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph <b>map</b> for {if strlen($gridrefraw) < 5}{$gridrefraw}{else}{$gridref}{/if}</a>,</li>
