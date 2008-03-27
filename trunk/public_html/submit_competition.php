@@ -31,6 +31,7 @@ $template='submit_competition.tpl';
 
 if (isset($_REQUEST['code']) && trim(strtoupper($_REQUEST['code'])) == 'MN1') {
 	if (isset($_REQUEST['id'])) {
+		$smarty->assign('code', $_REQUEST['code']);
 		require_once('geograph/gridsquare.class.php');
 		require_once('geograph/gridimage.class.php');
 
@@ -43,9 +44,18 @@ if (isset($_REQUEST['code']) && trim(strtoupper($_REQUEST['code'])) == 'MN1') {
 			header("HTTP/1.0 410 Gone");
 			header("Status: 410 Gone");
 			$template = "view.tpl";
-		} else {
+		} elseif (!empty($_REQUEST['finalise'])) {
+			$db=NewADOConnection($GLOBALS['DSN']);
 
+			$updates = array();
 
+			$updates['user_id'] = $USER->user_id;
+			$updates['gridimage_id'] = intval($_REQUEST['id']);
+			$updates['code'] = $_REQUEST['code'];
+			
+			$db->Execute('INSERT INTO competition_code SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+
+			$smarty->assign('saved', 1);
 		}
 		$smarty->assign_by_ref('image', $image);
 	} else {

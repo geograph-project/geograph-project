@@ -427,6 +427,7 @@ if (isset($_POST['gridsquare']))
 				
 				if ($_POST['pattrib'] == 'other') {
 					$uploadmanager->setCredit(stripslashes($_POST['pattrib_name']));
+					$smarty->assign('credit_realname',$_POST['pattrib_name']);
 				} elseif ($_POST['pattrib'] == 'self') {
 					$uploadmanager->setCredit('');
 				}
