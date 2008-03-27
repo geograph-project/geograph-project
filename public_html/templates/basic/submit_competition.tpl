@@ -10,8 +10,18 @@
 
 <h2>‘Bag the Most Grid Squares’ &amp; <br/> ‘Best Photograph’ entry form</h2>
 
-<form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm"  style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
+{if $saved}
+	<h2>Submission Complete!</h2>
+	<p>Thank you very much - your photo entered for the competition</p>
+	<p>Your photo has identification number [<a href="/photo/{$image->gridimage_id}">{$image->gridimage_id}</a>]</p>
 
+	<p><a title="submit another photo" href="/submit.php">Click here to submit a new photo...</a></p>
+
+{else}
+
+<form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm"  style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
+<input type="hidden" name="id" value="{$image->gridimage_id}"/>
+<input type="hidden" name="code" value="{$code}"/>
 <p>By completing this page you are entering the selected picture "{$image->title|escape:'html'}", into the above mentioned competitions.</p>
 
 
@@ -29,7 +39,7 @@
 
 		{include file="static_competition_terms.tpl"}
 	 </div>
-	 <div style="text-align:right">{external href="/help/competition_terms" text="open in new window" target="_blank"}</div>
+	 <div style="text-align:right">{external href="http://`$http_host`/help/competition_terms" text="open in new window" target="_blank"}</div>
 	 <br/>
 	</li>
 
@@ -37,13 +47,14 @@
 
 <p>If you agree with these terms, click "I agree" and your image will be
 	entered into the competitions.<br /><br />
-	<input type="submit" name="goback3" value="&lt; Back"/>
-	<input style="width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);"/> and <b>Good Luck!</b>
+	<input style="background-color:pink;" type="button" value="&lt; Back" onclick="window.location.href='/submit.php'"/>
+	<input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);"/> and <b>Good Luck!</b>
 </p>
 
 </form>
 
  <br style="clear:both"/>
+{/if}
 
 {else}
 
@@ -59,12 +70,12 @@
 	
 	<p>If you wish to enter the Mapping News competitions, simple enter the provided code into the box below</p>
 
-	<p>Competition Code: <input type="hidden" name="id" value="123456"/> <input type="text" name="code" size="5"/> 
+	<p>Competition Code: <input type="hidden" name="id" value="{$id}"/> <input type="text" name="code" size="5"/> 
 	<input type="submit" value="Go"/>
 	</p>
 	<hr/>
 	<small>Opening Dates: <i>between 1 April 2008 and 30 September 2008</i>, <br/>
-	Note: <i>Entry is only open to UK permanent residents aged 18 and under in full time education</i> ({external href="/help/competition_terms" text="full terms" target="_blank"}).</small>
+	Note: <i>Entry is only open to UK permanent residents aged 18 and under in full time education</i> ({external href="http://`$http_host`/help/competition_terms" text="full terms" target="_blank"}).</small>
 </div>
 </form>
 

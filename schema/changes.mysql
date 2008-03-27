@@ -1526,3 +1526,10 @@ ALTER TABLE `gridimage_recent` ADD `credit_realname` TINYINT NOT NULL DEFAULT '0
 
 
 
+CREATE TABLE `competition_code` (
+`competition_code_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`user_id` INT UNSIGNED NOT NULL ,
+`gridimage_id` INT UNSIGNED NOT NULL ,
+`code` VARCHAR( 6 ) NOT NULL ,
+`submitted` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE = MYISAM ;
