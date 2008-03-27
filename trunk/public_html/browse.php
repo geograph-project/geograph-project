@@ -223,13 +223,16 @@ if ($grid_given)
 			if ($USER->hasPerm('moderator')) {
 				$user_crit = "1";
 				$cacheseconds = 600;
+				$inc_all_user=">0";
 			} else {
 				$user_crit = "(moderation_status in ('accepted', 'geograph') or gridimage.user_id = {$USER->user_id})";
 				$cacheseconds = 60;
+				$inc_all_user=$USER->user_id;
 			}
 		} else {
 			$user_crit = "moderation_status in ('accepted', 'geograph')";
 			$cacheseconds = 1500;
+			$inc_all_user=0;
 		}
 			
 		if (($square->imagecount > 15 && !isset($_GET['by']) && !$custom_where) || (isset($_GET['by']) && $_GET['by'] == 1)) {
@@ -414,7 +417,7 @@ if ($grid_given)
 				$smarty->assign_by_ref('breakdown', $breakdown);
 		} else {
 			//todo ideally here we only want to forward teh user_id IF they have images in the square, or a mod, for greater cachablity, but the chicken and the egg thingy....
-			$images=$square->getImages(empty($_GET['nl'])?0:$USER->user_id,$custom_where,'order by ftf desc,gridimage_id');
+			$images=$square->getImages($inc_all_user,$custom_where,'order by ftf desc,gridimage_id');
 			$square->totalimagecount = count($images);
 		
 			//otherwise, lets gether the info we need to display some thumbs

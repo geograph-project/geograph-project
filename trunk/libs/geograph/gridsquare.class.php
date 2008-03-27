@@ -689,14 +689,16 @@ class GridSquare
 		
 		$db=&$this->_getDB();
 		$images=array();
-		
+		if ($inc_all_user && ctype_digit($inc_all_user)) {
+			$inc_all_user = "=$inc_all_user";
+		}
 		$i=0;
 		$recordSet = &$db->Execute("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname ".
 			"from gridimage gi ".
 			"inner join user using(user_id) ".
 			"where gridsquare_id={$this->gridsquare_id} $custom_where_sql ".
 			"and (moderation_status in ('accepted', 'geograph') ".
-			($inc_all_user?"or user.user_id = $inc_all_user":'').") ".
+			($inc_all_user?"or user.user_id $inc_all_user":'').") ".
 			$order_and_limit);
 		while (!$recordSet->EOF) 
 		{
