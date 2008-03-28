@@ -53,20 +53,24 @@ if (!empty($game->rastermap)) {
 	unset($game->rastermap);
 }
 
-if (!empty($_REQUEST['save'])) {
-	$app = $game->saveScore($_REQUEST['save'],!empty($_REQUEST['username'])?$_REQUEST['username']:'');
-	if (isset($_SESSION['gameToken'])) {
-		unset($_SESSION['gameToken']);
-	}
-	if (!empty($_REQUEST['username'])) {
-		$_SESSION['username']= $_REQUEST['username'];
-	} 
-	if ($app) {
-		header("Location: /games/moversboard.php?more");
+if (!empty($_REQUEST['save']) && ($USER->registered || !empty($_REQUEST['username'])) ) {
+	if (!empty($_REQUEST['username']) && !isValidRealName($_REQUEST['username'])) {
+		$smarty->assign('errormsg',"Please only use only letters and numbers in your name, in particular you should not enter an email address");
 	} else {
-		header("Location: /games/");
+		$app = $game->saveScore($_REQUEST['save'],!empty($_REQUEST['username'])?$_REQUEST['username']:'');
+		if (isset($_SESSION['gameToken'])) {
+			unset($_SESSION['gameToken']);
+		}
+		if (!empty($_REQUEST['username'])) {
+			$_SESSION['username']= $_REQUEST['username'];
+		} 
+		if ($app) {
+			header("Location: /games/moversboard.php?more");
+		} else {
+			header("Location: /games/");
+		}
+		exit;
 	}
-	exit;
 }
 
 $smarty->assign_by_ref('game',$game);

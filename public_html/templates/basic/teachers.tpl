@@ -19,7 +19,7 @@
 <ul>
 	<li><a href="/games/">Geograph Games</a> - fun games involving images and maps</li>
 	<li><a href="/help/imagine">Imagine Slideshow</a> - imagine the landscape behind the map</li>
-	<li><a href="/gallery/">Galleries</a> - hand picked images on varies themes</li>
+	<li><a href="/gallery/">Galleries</a> - hand picked images on various themes</li>
 </ul>
 
 
@@ -38,7 +38,7 @@
 <h3>Discussion Forum</h3>
 
 <ul>
-	<li>We have a <a href="http://www.geograph.org.uk/discuss/index.php?&action=vtopic&forum=8">dedicated area</a> in our forum for educators. Let us know what you would like to see here!</li> 
+	<li>We have a <a href="http://www.geograph.org.uk/discuss/index.php?&action=vtopic&amp;forum=8">dedicated area</a> in our forum for educators. Let us know what you would like to see here!</li> 
 </ul>
 {/if}
 

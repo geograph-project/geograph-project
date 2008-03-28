@@ -5,6 +5,10 @@
 
 <h2>Save score</h2>
 
+	{if $errormsg}
+	<p style="color:#990000;font-weight:bold;">{$errormsg}</p>
+	{/if}
+
 {if $user->registered}
 
 	<p>To save your {$game->score} points to your account, <a href="{$script_name}?save=user">click here</a></p> 
