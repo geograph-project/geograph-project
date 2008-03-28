@@ -526,7 +526,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<h2><span style="color:#000066">‘Bag the Most Grid Squares’ <br/>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp; ‘Best Photograph’</span></h2>
 	
-	<p>If you wish to enter the Mapping News competitions, simple enter the provided code into the box below</p>
+	<p>If you wish to enter the Mapping News competitions, simply enter the provided code into the box below</p>
 
 	<p>Competition Code: <input type="hidden" name="id" value="{$gridimage_id}"/> <input type="text" name="code" size="5"/> 
 	<input type="submit" value="Go"/>
