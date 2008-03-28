@@ -4,17 +4,14 @@ NameVirtualHost *
     DocumentRoot /var/www/geograph_svn/public_html
     ServerName staging.geograph.org.uk
     ServerAlias staging.geograph.co.uk
-    ServerAlias s0.staging.geograph.org.uk
-    ServerAlias s1.staging.geograph.org.uk
-    ServerAlias s2.staging.geograph.org.uk
-    ServerAlias s3.staging.geograph.org.uk
+    ServerAlias staging.s0.geograph.org.uk
+    ServerAlias staging.s1.geograph.org.uk
+    ServerAlias staging.s2.geograph.org.uk
+    ServerAlias staging.s3.geograph.org.uk
     ServerAlias scone.geograph.org.uk
     ServerAlias toast.geograph.org.uk
     ServerAlias crumpet.geograph.org.uk
-    ServerAlias s0.staging.scone.geograph.org.uk
-    ServerAlias s0.staging.toast.geograph.org.uk
-    ServerAlias s0.staging.crumpet.geograph.org.uk
-    ServerAlias t0.staging.geograph.org.uk
+    ServerAlias staging.t0.geograph.org.uk
     ServerAlias staging.schools.geograph.org.uk
     ServerAlias staging.ireland.geograph.org.uk
 
@@ -31,6 +28,8 @@ NameVirtualHost *
     php_value include_path .:/var/www/geograph_svn/libs/:/usr/share/php:/usr/share/pear
     php_value register_globals Off
     php_value upload_max_filesize 8M
+    php_value session.cookie_domain staging.geograph.co.uk
+
     <Directory /var/www/geograph_svn/public_html/>
 	DirectoryIndex index.php
         Options -Indexes
@@ -52,7 +51,7 @@ NameVirtualHost *
     </Directory>
 
 
-#    php_value display_errors Off
+    php_value display_errors On
 
     RewriteEngine on
 
