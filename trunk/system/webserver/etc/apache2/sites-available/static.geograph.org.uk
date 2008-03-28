@@ -5,6 +5,11 @@
     ServerAlias s2.www.geograph.org.uk
     ServerAlias s3.www.geograph.org.uk
     ServerAlias s9.www.geograph.org.uk
+    ServerAlias s0.geograph.org.uk
+    ServerAlias s1.geograph.org.uk
+    ServerAlias s2.geograph.org.uk
+    ServerAlias s3.geograph.org.uk
+    ServerAlias s9.geograph.org.uk
     ServerAlias cluster3.geograph.org.uk
     ServerAlias s0.www.scone.geograph.org.uk
     ServerAlias s0.www.toast.geograph.org.uk

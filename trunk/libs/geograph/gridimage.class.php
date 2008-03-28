@@ -691,7 +691,7 @@ class GridImage
 			
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$CONF['CONTENT_HOST']}";
+				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
 				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
@@ -856,7 +856,7 @@ class GridImage
 
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
 			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$CONF['CONTENT_HOST']}";
+				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
 				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
@@ -1035,7 +1035,7 @@ class GridImage
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= "http://s".($this->gridimage_id%$CONF['enable_cluster']).".{$CONF['CONTENT_HOST']}";
+				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
 				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
