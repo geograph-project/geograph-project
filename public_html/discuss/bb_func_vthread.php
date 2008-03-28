@@ -107,7 +107,7 @@ $topic_reverse='';
 $srt='ASC';
 if(isset($themeDesc) and in_array($topic,$themeDesc)) {
 $topicDesc=1;
-$topic_reverse="<img src=\"{$main_url}/img/topic_reverse.gif\" align=middle border=0 alt=\"\">&nbsp;";
+$topic_reverse="<img src=\"{$static_url}/img/topic_reverse.gif\" align=middle border=0 alt=\"\">&nbsp;";
 $srt='DESC';
 }
 

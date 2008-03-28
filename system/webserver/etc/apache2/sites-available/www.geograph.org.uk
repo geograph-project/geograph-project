@@ -62,6 +62,7 @@
     RewriteCond %{HTTP_HOST}   !^schools\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^ireland\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^t0\.www\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !^t0\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^$
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
@@ -69,7 +70,8 @@
     RewriteCond %{REQUEST_URI} !^/kml
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
-    RewriteCond %{HTTP_HOST}   ^t0\.www\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   ^t0\.www\.geograph\.org\.uk [NC,OR]
+    RewriteCond %{HTTP_HOST}   ^t0\.geograph\.org\.uk [NC]
     RewriteCond %{REQUEST_URI} !^/tile
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
