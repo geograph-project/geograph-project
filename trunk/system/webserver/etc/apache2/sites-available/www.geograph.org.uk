@@ -9,6 +9,7 @@
     ServerAlias schools.geograph.org.uk
     ServerAlias ireland.geograph.org.uk
     ServerAlias t0.www.geograph.org.uk
+    ServerAlias t0.geograph.org.uk
     
     
     #create logformat like combined but with our user id and script timing
