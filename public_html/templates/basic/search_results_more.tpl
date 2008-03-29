@@ -18,7 +18,7 @@
 	  <div style="float:left; position:relative">
 		<a title="view full size image" href="/photo/{$image->gridimage_id}"><b>{$image->title|escape:'html'}</b></a>
 		by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a><br/>
-		{if $image->moderation_status == 'geograph'}geograph{else}{if $image->moderation_status == 'pending'}pending{/if}{/if} for square <a href="/location.php?gridref={$image->grid_reference}"><img src="/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/></a> <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
+		{if $image->moderation_status == 'geograph'}geograph{else}{if $image->moderation_status == 'pending'}pending{/if}{/if} for square <a href="/location.php?gridref={$image->grid_reference}"><img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/></a> <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
 		<i>{$image->dist_string}</i><br/>
 		{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}

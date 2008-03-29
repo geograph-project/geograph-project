@@ -15,7 +15,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </dd>
 </dl>
 
-<h2><img src="/img/geotag_32.png" width="32" height="32" align="absmiddle"> Links for {$gridrefraw} <sup>[{$square->imagecount} images]</sup></h2>
+<h2><img src="http://{$static_host}/img/geotag_32.png" width="32" height="32" align="absmiddle"> Links for {$gridrefraw} <sup>[{$square->imagecount} images]</sup></h2>
 <hr style="margin-top:5px"/>
 
 {if $rastermap->enabled}

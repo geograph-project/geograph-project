@@ -97,7 +97,7 @@
 
 {if $grid_reference}
 	<div class="no_print" style="float:left; font-size:0.8em">
-	<img src="/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$grid_reference}">Links for {$grid_reference}</a>&nbsp; 
+	<img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$grid_reference}">Links for {$grid_reference}</a>&nbsp; 
 	</div>
 {/if}
 
@@ -124,7 +124,7 @@
 
 {if $grid_reference}
 	<div class="no_print">
-	<img src="/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$grid_reference}">Further Links for {$grid_reference}</a>
+	<img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$grid_reference}">Further Links for {$grid_reference}</a>
 	</div>
 {/if}
 
