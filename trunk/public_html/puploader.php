@@ -231,13 +231,16 @@ if (isset($_GET['success'])) {
 
 		//find a possible place within 25km
 		$smarty->assign('place', $square->findNearestPlace(25000));
-
-		$token=new Token;
-		$token->setValue("g", !empty($_REQUEST['grid_reference'])?$_REQUEST['grid_reference']:$square->grid_reference);
-		$token->setValue("p", $_REQUEST['photographer_gridref']);
-		$token->setValue("v", $_REQUEST['view_direction']);
-		$smarty->assign('reopenmaptoken', $token->getToken());
 		
+		if (!empty($_REQUEST['grid_reference'])) {
+			$token=new Token;
+			$token->setValue("g", !empty($_REQUEST['grid_reference'])?$_REQUEST['grid_reference']:$square->grid_reference);
+			$token->setValue("p", $_REQUEST['photographer_gridref']);
+			$token->setValue("v", $_REQUEST['view_direction']);
+			$smarty->assign('reopenmaptoken', $token->getToken());
+			
+			$smarty->assign_by_ref('square', $square);
+		}
 		
 		if ($_REQUEST['imagetaken'] && $_REQUEST['imagetaken'] != '0000-00-00') {
 			$smarty->assign('imagetaken', stripslashes($_REQUEST['imagetaken']));

@@ -15,11 +15,9 @@
 	<dt>{$filenames.$key|escape:"html"}</dt>
 	{if strpos($result,'ok:') === 0} 
 		<dd><form enctype="multipart/form-data" action="/submit_competition.php" method="get" target="_blank">
-			<p>Your photo has identification number [<a href="/photo/{$result|replace:'ok:':''}">{$result|replace:'ok:':''}</a>] 
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<span style="border:2px solid black; padding:5px;">Competition Code: <input type="hidden" name="id" value="{$result|replace:'ok:':''}"/> <input type="text" name="code" size="5"/> 
-			<input type="submit" value="Enter Mapping News competitions"/></span>
-			</p>
+			<div style="float:right; border:2px solid black; padding:5px;">Competition Code: <input type="hidden" name="id" value="{$result|replace:'ok:':''}"/> <input type="text" name="code" size="5"/> 
+			<input type="submit" value="Enter Mapping News competitions"/></div>
+			<p>Your photo has identification number [<a href="/photo/{$result|replace:'ok:':''}">{$result|replace:'ok:':''}</a>]</p>
 		</form></dd>
 	{else}
 		<dd style="background-color:red">{$result|escape:"html"}</dd>
