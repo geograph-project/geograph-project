@@ -1,43 +1,259 @@
+{assign var="page_title" value="Geograph Picasa Uploader"}
 {include file="_basic_begin.tpl"}
+ {literal}<style type="text/css">
+ 
+table.c3 {
+	background-color:#000066; font-family:Georgia
+}
+table.c3 I {
+	color: white; font-family: Georgia
+}
+a.c1 {
+	color: white; font-size: 144%
+} 
+ 
+#theForm {
+	background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;
+}
+.scrollbox {
+	overflow:auto; 
+	height:200px; 
+	width:100%; 
+	border: 1px solid red;
+}
+.photobox {
+	float:left; 
+	height:180px; 
+	width:180px; 
+	border:1px solid green; 
+	margin:5px;
+	margin-right:0px; 
+	text-align:center;
+	background-color:lightgrey;
+}
+.photobox_selected {
+	float:left; 
+	height:180px; 
+	width:180px; 
+	border:1px solid green; 
+	margin:5px;
+	margin-right:0px; 
+	text-align:center;
+	background-color:yellow;
+}
+.photobox input,.photobox_selected input,.photobox textarea,.photobox_selected textarea {
+	font-size:0.5em;
+	border:0px;
+	background-color:white;
+	padding:0px;
+	margin:0px;
+}
+.photobox .nowrap,.photobox_selected .nowrap {
+	font-size:0.4em;
+}
+.termsbox {
+	position:relative; 
+	overflow:auto; 
+	height:400px; 
+	width:100%;
+}
+
+</style>
+<script type="text/javascript">
+function selectPhoto(name) {
+	var ele = document.forms['theForm'].elements['selected'];
+	if (ele.value != '') {
+		if (document.getElementById("photo:"+ele.value))
+			document.getElementById("photo:"+ele.value).className="photobox";
+	}
+	ele.value = name;
+	if (document.getElementById("photo:"+name))
+		document.getElementById("photo:"+name).className="photobox_selected";
+	document.getElementById('subIframe').src = "about:blank";
+	tabClick('tab','',-1,4);
+}
+
+  function startUp() {
+  	selectPhoto(document.forms['theForm'].elements['selected'].value);
+  }
+  AttachEvent(window,'load',startUp,false);
+
+function submitTabClick(tabname,divname,num,count) {
+	var theForm = document.forms['theForm'];
+	var name = document.forms['theForm'].elements['selected'].value;
+	if (num == 2) {
+		document.getElementById('subIframe').src = '/submitmap.php?inner&picasa';
+	} else {
+		url = '/puploader.php?inner';
+		
+		if (theForm.elements['grid_reference['+name+']'] && theForm.elements['grid_reference['+name+']'].value != '') {
+			url = url + "&grid_reference="+escape(theForm.elements['grid_reference['+name+']'].value);
+		}
+		if (theForm.elements['photographer_gridref['+name+']'] && theForm.elements['photographer_gridref['+name+']'].value != '') {
+			url = url + "&photographer_gridref="+escape(theForm.elements['photographer_gridref['+name+']'].value);
+		}
+		if (num > 2) {
+			url = url + "&step="+(num-1);
+		} else {
+			url = url + "&step="+(num);
+		}
+		
+		document.getElementById('subIframe').src = url;
+	}  
+	tabClick(tabname,divname,num,count);
+}
+function checkPicasaFormSubmission() {
+	var theForm = document.forms['theForm'];
+	var warnings = new Array();
+	var warnings_count = 0;
+	var errors = new Array();
+	var errors_count = 0;
+			
+	for(q=0;q<theForm.elements.length;q++) {
+		var ele=theForm.elements[q];
+		
+		if (ele.name.indexOf('grid_reference') == 0) {
+			if (ele.value == '') {
+				var name = "* Subject Grid Reference";
+				errors[name] = (errors[name])?(errors[name] + 1):1;
+				errors_count = errors_count + 1;
+			} else if (ele.value.length < 7) {
+				var name = "* Subject Grid Reference";
+				warnings[name] = (warnings[name])?(warnings[name] + 1):1;
+				warnings_count = warnings_count + 1;
+			}
+		}
+		if (ele.name.indexOf('photographer_gridref') == 0)
+			if (ele.value == '') {
+				var name = "* Photographer Grid Reference";
+				warnings[name] = (warnings[name])?(warnings[name] + 1):1;
+				warnings_count = warnings_count + 1;
+			}
+		if (ele.name.indexOf('view_direction') == 0)
+			if (ele.value == '') {
+				var name = "* View Direction";
+				warnings[name] = (warnings[name])?(warnings[name] + 1):1;
+				warnings_count = warnings_count + 1;
+			}
+		if (ele.name.indexOf('title') == 0)
+			if (ele.value == '') {
+				var name = "* Photo Title";
+				errors[name] = (errors[name])?(errors[name] + 1):1;
+				errors_count = errors_count + 1;
+			}
+		if (ele.name.indexOf('imageclass[') == 0) {
+			if (ele.value == '') {
+				var name = "* Geographical Category";
+				errors[name] = (errors[name])?(errors[name] + 1):1;
+				errors_count = errors_count + 1;
+			} else if (ele.value == 'Other') {
+				if (theForm.elements[ele.name.replace(/imageclass/,'imageclassother')].value == '') {
+					var name = "* Geographical Category Other";
+					errors[name] = (errors[name])?(errors[name] + 1):1;
+					errors_count = errors_count + 1;
+				} 
+			}
+		}
+		if (ele.name.indexOf('imagetaken') == 0)
+			if (ele.value == '') {
+				var name = "* Date photo taken";
+				errors[name] = (errors[name])?(errors[name] + 1):1;
+				errors_count = errors_count + 1;
+			}
+	}
+
+	if (errors_count > 0) {
+		message = "We notice that the following fields have been left blank:\n\n";
+		
+		for(q in errors) {
+			message = message + q + " x " + errors[q] + " times\n";
+		} 
+		if (warnings_count > 0) {
+			message = message + "\nAdditionally the following fields are left blank, which while not required it would be appreciated:\n\n";
+
+			for(q in warnings) {
+				message = message + q + " x " + warnings[q] + " times\n";
+			}
+		}
+		message = message + "\nPlease provide the missing information\n\n";
+		alert(message);
+		return false;
+	} else if (warnings_count > 0) {
+		message = "We notice that the following fields have been left blank:\n\n";
+		
+		for(q in warnings) {
+			message = message + q + " x " + warnings[q] + " times\n";
+		} 
+		message = message + "\nWhile you can continue without providing this information we would appreciate including as much detail as possible as it will make plotting the photo on a map much easier.\n\n";
+		message = message + "Adding the missing information should be very quick by dragging the icons on the map.\n\n";
+		message = message + "Click OK to add the information, or Cancel to continue anyway.";
+		return !confirm(message);
+	}
+	return true;
+	
+}
+</script>{/literal}
 {dynamic}
 
-<TABLE cellSpacing=0 cellPadding=4 width="100%" style="background-color:#000066; font-family:Georgia">
-  <TBODY>
-  <TR>
-    <TD>&nbsp;</TD>
-    <TD><A href="http://{$http_host}/"><IMG height=74 src="http://{$http_host}/templates/basic/img/logo.gif" width=257 border=0></A></TD>
-    <TD vAlign=top align=center><A href="http://{$http_host}/"><font color=#ffffff size=+2>{$http_host}</FONT></A><BR>
-       <FONT face=Georgia color=#ffffff><I>The Geograph British Isles project aims to collect a geographically representative<BR> photograph for every square kilometre of the British Isles and you can be part of it.</I></FONT></TD>
-    <TD>&nbsp;</TD></TR>
-</TABLE>  
+<table cellspacing="0" cellpadding="4" width="100%" class="c3">
+<tbody>
+<tr>
+<td>&nbsp;</td>
+<td><a href="http://{$http_host}/"><img height="74" src=
+"http://{$http_host}/templates/basic/img/logo.gif" width="257" border="0" /></a></td>
+<td valign="top" align="center"><a href="http://{$http_host}/" class=
+"c1">{$http_host}</a><br />
+<i>The Geograph British Isles project aims to collect a geographically
+representative<br />
+photograph for every square kilometre of the British Isles and you can be part of
+it.</i></td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+
 
 <div style="padding:10px">
-	<form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
+	<form enctype="multipart/form-data" action="post.php" method="post" name="theForm" id="theForm">
 		
-		<div style="float:right">Logged in as {$user->realname}</div>
+		<div style="float:right">Logged in as {$user->realname} / <a href="/logout.php">Logout</a></div>
 
-		<h2>Geograph --&gt; Uploader v0.1</h2>
+		<h2>Picasa --&gt; Geograph Uploader v0.6</h2>
 
-		<div style="overflow:auto; height:200px; width:100%; border: 1px solid red">
-		{assign var="thumnbail" value="photo:thumbnail"}
+		<div class="scrollbox">
+		{assign var="thumbnail" value="photo:thumbnail"}
 		{assign var="imgsrc" value="photo:imgsrc"}
-		{foreach from=$pData item=image}
-			{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
-			<div style="float:left; height:180px; width:180px; border:1px solid green; margin-right:15px; text-align:center; background-color:{$bgcolor}">
-				{$image.title}
+		{foreach from=$pData key=key item=image}
+			<div class="photobox" id="photo:{$key}" onclick="selectPhoto('{$key}');">
+				<tt>{$image.title}</tt>
 				<div style="width:100px; height:100px;">
-					<img src="{$image.$thumnbail}?size=100"/>
+					<img src="{$image.$thumbnail}?size=100"/>
 				</div>
-				<input type=checkbox name="{$image.$imgsrc}?size=640" checked/> Upload?<br/>
+				<input type="hidden" name="{$image.$imgsrc}?size=640"/>
+				<input type="hidden" name="field[{$key}]" value="{$image.$imgsrc}?size=640"/>
+				<span class="nowrap">Su:<input type="text" name="grid_reference[{$key}]" value="" size="12" maxlength="12"/></span>  
+				<span class="nowrap">Ph:<input type="text" name="photographer_gridref[{$key}]" value="" size="12" maxlength="12"/></span>  
+				<span class="nowrap">6f:<input type="text" name="use6fig[{$key}]" value="" size="1" maxlength="2"/></span> 
+				<span class="nowrap">Dir:<input type="text" name="view_direction[{$key}]" value="" size="3" maxlength="4"/></span> 
+				<span class="nowrap">Ti:<input type="text" name="title[{$key}]" value="" size="20" maxlength="255"/></span>  
+				<span class="nowrap">De:<textarea name="comment[{$key}]" cols="30" rows="2" wrap="soft"></textarea></span>  
+				<span class="nowrap">Cl:<input type="text" name="imageclass[{$key}]" value="" size="12" maxlength="64"/> <input type="text" name="imageclassother[{$key}]" value="" size="12" maxlength="64"/></span>  
+				<span class="nowrap">Da:<input type="text" name="imagetaken[{$key}]" value="" size="10" maxlength="10"/></span>  
 			</div>
 		{/foreach}
 
 		</div>
+		<input type="hidden" name="selected" value="0"/>
+		<div class="tabHolder">
+			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="submitTabClick('tab','',1,4)">Enter Grid Reference</a>
+			<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="submitTabClick('tab','',2,4)">Draggable Map</a>
+			<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="submitTabClick('tab','',3,4)">Map References</a>
+			<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="submitTabClick('tab','',4,4)">Title/Description</a>
+		</div>
+		<iframe id="subIframe" name="subIframe" src="about:blank" width="100%" height="350"></iframe>
 
-		<iframe src="about:blank" width="500" height="300"></iframe>
 
-
-		<div style="position:relative; overflow:auto; height:400px; width:100%;">
+		<div class="termsbox">
 
 			<h2>Confirm image rights</h2>
 
@@ -66,7 +282,7 @@
 
 			<p>If you agree with these terms, click "I agree" and your images submitted to Geograph.<br />
 			<input type="button" value="Close Window" onclick="location.href='minibrowser:close'"/>
-			<input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);{if $user->stats.images && $user->stats.images > 100 && $last_imagetaken}autoDisable(this.form.finalise[0]);{/if}"/>
+			<input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="{literal}if (checkPicasaFormSubmission()) {autoDisable(this); return true} else {return false;}{/literal}"/>
 			</p>
 		</div>
 

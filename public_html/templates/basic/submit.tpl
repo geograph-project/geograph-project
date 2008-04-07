@@ -53,8 +53,8 @@ geographing</a> first.</p>
 		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,5)">Enter Grid Reference</a>
 		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,5)">Choose Square</a>
 		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,5)">Tagged Image</a>
-		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,5); if (!document.getElementById('innerFrame4').src) document.getElementById('innerFrame4').src = '/submitmap.php?inner'">Map/Placename<sup style="color:red">New!</sup></a>
-		<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" onclick="tabClick('tab','div',5,5)">Offline Application</a>
+		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,5); if (!document.getElementById('innerFrame4').src) document.getElementById('innerFrame4').src = '/submitmap.php?inner'">Map/Placename</a>
+		<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" onclick="tabClick('tab','div',5,5)">Application<sup style="color:red">New!</sup></a>
 	</div>
 
 	<div style="position:relative;{if $tab != 1}display:none{/if}" class="interestBox" id="div1">
@@ -126,11 +126,14 @@ geographing</a> first.</p>
 	
 	<div style="position:relative;{if $tab != 5}display:none{/if}" class="interestBox" id="div5">
 
+		<h3>JUppy Java&trade; Client</h3>
 		<p><a href="/juppy.php">JUppy</a> is coded in cross-platform Java, and is an ideal solution to upload many images, allowing you to prepare the images without an internet connection. <a href="/juppy.php">Go Get it Now!</a></p>
+				
+		<h3>Picasa Plugin<sup style="color:red">New!</sup></h3>	
+		<p>We have recently created a new submission process that intergrates into the {external href="http://picasa.google.com/" text="Picasa"} image mananagement program, 
+		<a href="picasa://importbutton/?url=http://{$http_host}/stuff/geograph-for-picasa.pbz.php/geograph-for-picasa.pbz">Click Here to install Picasa Button</a>. With this button installed can use the selection tools in Picasa to upload photos in bulk, the submission process matches the online upload allowing selection with maps etc.</p>
 		
-		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
-		<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>JUppy is still under development and we'd be pleased to receive any comments or suggestions for improvements.
-		</div>
+		<p>Note while JUppy is an Offline Application, with which you can prepare the upload in advance of connecting; the Picasa button requires a Internet Connection to work as it integrates the interactive maps and other aids from the Geograph website.</p>
 	</div>
 </div>
 	
@@ -533,7 +536,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	</p>
 	<hr/>
 	<small>Opening Dates: <i>between 1 April 2008 and 30 September 2008</i>, <br/>
-	Note: <i>Entry is only open to UK permanent residents aged 18 and under in full time education</i> ({external href="http://`$http_host`/help/competition_terms" text="full terms" target="_blank"}).</small>
+	Note: <i>Entry is only open to <b>UK permanent residents aged 18 and under in full time education</b></i> ({external href="http://`$http_host`/help/competition_terms" text="full terms" target="_blank"}).</small>
 </div>
 
 {/if}

@@ -218,12 +218,15 @@ function overlayMouseMove(e) {
 	if (currentelement != null) {
 		updateViewDirection();
 	}
+	if (typeof parentUpdateVariables != 'undefined') {
+		parentUpdateVariables();
+	}
 }
 
 function checkFormSubmission(that_form,mapenabled) {
 	if (checkGridReferences(that_form)) {
 		message = '';
-		if (that_form.grid_reference.value == '') 
+		if (that_form.grid_reference.value == '' || that_form.grid_reference.value.length < 7) 
 			message = message + "* Subject Grid Reference\n";
 		if (that_form.photographer_gridref.value == '') 
 			message = message + "* Photographer Grid Reference\n";
