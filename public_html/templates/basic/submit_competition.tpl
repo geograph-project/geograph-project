@@ -58,7 +58,7 @@
 
 {else}
 
-<p class="error" style="color:#990000;font-weight:bold;">Please enter the Competition Code to contrinue...</p>
+<p class="error" style="color:#990000;font-weight:bold;">Please enter the Competition Code to continue...</p>
 
 <form enctype="multipart/form-data" action="/submit_competition.php" method="get" name="theForm">
 
