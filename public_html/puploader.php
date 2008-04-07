@@ -43,10 +43,6 @@ if (isset($_GET['success'])) {
 	
 	
 } elseif (isset($_POST['selected'])) {  //we dont get the button :(
-	$s .= print_r($_REQUEST,true);
-	$s .= print_r($_FILES,true);
-	file_put_contents("puload.log",$s);
-
 	$status = array();
 	$filenames = array();
 	
