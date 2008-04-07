@@ -131,7 +131,7 @@ geographing</a> first.</p>
 		<hr/>
 		<h3>Picasa Plugin<sup style="color:red">New!</sup></h3>	
 		<p>We have recently created a new submission process that intergrates into the {external href="http://picasa.google.com/" text="Picasa"} image mananagement program. With this button installed can use the selection tools in Picasa to upload photos in bulk, the submission process matches the online upload allowing selection with maps etc. Picasa automatically resizes the photo to Geograph specifications before upload, EXIF data is preserved however its only provided to Geograph at the end so it can't be used to find geolocation or dates embedded in the file. <br/>
-		<b><a href="picasa://importbutton/?url=http://{$http_host}/stuff/geograph-for-picasa.pbz.php/geograph-for-picasa.pbz">Install the Geograph Uploader, Picasa Button</a></b>. (You will be asked to confirm this action, <b>only works if have Picasa installed!)</p>
+		<b><a href="picasa://importbutton/?url=http://{$http_host}/stuff/geograph-for-picasa.pbz.php/geograph-for-picasa.pbz">Install the Geograph Uploader, Picasa Button</a></b>. (You will be asked to confirm this action, <b>only works if have Picasa installed!)</b></p>
 		<hr/>
 		<p>Note while JUppy is an Offline Application, with which you can prepare the upload in advance of connecting; the Picasa button requires a Internet Connection to work as it integrates the interactive maps and other aids from the Geograph website.</p>
 	</div>
@@ -518,13 +518,15 @@ AttachEvent(window,'load',onChangeImageclass,false);
 <p>Your photo has identification number [<a href="/photo/{$gridimage_id}">{$gridimage_id}</a>]</p>
 </form> 
 
-{if !$credit_realname}
+{if !$credit_realname && $show_comp}
 <br/><br/>
 
 <form enctype="multipart/form-data" action="/submit_competition.php" method="get" name="theForm">
 
 
 <div class="interestBox" style="border:2px solid black">
+	Note: <i>Entry is only open to UK permanent residents <b>aged 18 and under, in full time education</b></i>
+	<hr/>
 	<img src="http://{$static_host}/templates/basic/img/hamster.gif" width="161" height="174" align="right"/>
 	<h2><span style="color:#000066">‘Bag the Most Grid Squares’ <br/>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp; ‘Best Photograph’</span></h2>
@@ -535,8 +537,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<input type="submit" value="Go"/>
 	</p>
 	<hr/>
-	<small>Opening Dates: <i>between 1 April 2008 and 30 September 2008</i>, <br/>
-	Note: <i>Entry is only open to <b>UK permanent residents aged 18 and under in full time education</b></i> ({external href="http://`$http_host`/help/competition_terms" text="full terms" target="_blank"}).</small>
+	<small>Opening Dates: <i>between 1 April 2008 and 30 September 2008</i>,  ({external href="http://`$http_host`/help/competition_terms" text="full terms" target="_blank"}).</small>
 </div>
 
 {/if}
