@@ -533,7 +533,7 @@ class RasterMap
 				$east = (floor($this->nateastings/1000) * 1000) + 500;
 				$nort = (floor($this->natnorthings/1000) * 1000) + 500;
 			$str = "
-			<script type=\"text/javascript\" language=\"JavaScript\">
+			<script type=\"text/javascript\">
 				var cene = {$east};
 				var cenn = {$nort};
 				var maph = {$this->width};

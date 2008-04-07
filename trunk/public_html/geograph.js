@@ -49,7 +49,9 @@ function setCaretTo(obj, pos) {
 function tabClick(tabname,divname,num,count) {
 	for (var q=1;q<=count;q++) {
 		document.getElementById(tabname+q).className = (num==q)?'tabSelected':'tab';
-		document.getElementById(divname+q).style.display = (num==q)?'':'none';
+		if (divname != '') {
+			document.getElementById(divname+q).style.display = (num==q)?'':'none';
+		}
 	}
 }
 

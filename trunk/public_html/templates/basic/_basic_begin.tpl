@@ -8,7 +8,6 @@
 <link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/basic/css/mapper.css"|revision}" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
 <script type="text/javascript" src="{"/geograph.js"|revision}"></script>
-</style>
 </head>
 
 <body bgcolor="#ffffff" style="background-color:white;margin:0px">

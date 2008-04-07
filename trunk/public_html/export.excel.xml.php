@@ -67,26 +67,26 @@ while (!$recordSet->EOF)
 {
 	print "<Row>\n";
 	$image = $recordSet->fields;
-		
+
 	print "<Cell ss:StyleID=\"sHy\" ss:HRef=\"http://{$_SERVER['HTTP_HOST']}/photo/{$image['gridimage_id']}\"><Data ss:Type=\"Number\">{$image['gridimage_id']}</Data></Cell>\n";
-    print "<Cell><Data ss:Type=\"String\">{$image['title']}</Data></Cell>";
-    print "<Cell><Data ss:Type=\"String\">{$image['grid_reference']}</Data></Cell>";
-    print "<Cell><Data ss:Type=\"String\">{$image['realname']}</Data></Cell>";
-    print "<Cell><Data ss:Type=\"String\">{$image['imageclass']}</Data></Cell>";
-  
+	print "<Cell><Data ss:Type=\"String\">{$image['title']}</Data></Cell>";
+	print "<Cell><Data ss:Type=\"String\">{$image['grid_reference']}</Data></Cell>";
+	print "<Cell><Data ss:Type=\"String\">{$image['realname']}</Data></Cell>";
+	print "<Cell><Data ss:Type=\"String\">{$image['imageclass']}</Data></Cell>";
+
 	if (!empty($_GET['thumb'])) {
 		$gridimage->fastInit($image);
-	  	print "<Cell><Data ss:Type=\"String\">".$gridimage->getThumbnail(120,120,true)."</Data></Cell>";
-  	}
+		print "<Cell><Data ss:Type=\"String\">".$gridimage->getThumbnail(120,120,true)."</Data></Cell>";
+	}
 	if (!empty($_GET['en'])) {
 		print "<Cell><Data ss:Type=\"Number\">{$image['nateastings']}</Data></Cell>\n";
 		print "<Cell><Data ss:Type=\"Number\">{$image['natnorthings']}</Data></Cell>\n";
-  		print "<Cell><Data ss:Type=\"Number\">{$image['natgrlen']}</Data></Cell>\n";
-  		if (!empty($_GET['ppos'])) {
-		  	print "<Cell><Data ss:Type=\"Number\">{$image['viewpoint_eastings']}</Data></Cell>\n";
-  	  		print "<Cell><Data ss:Type=\"Number\">{$image['viewpoint_northings']}</Data></Cell>\n";
-  			print "<Cell><Data ss:Type=\"Number\">{$image['viewpoint_grlen']}</Data></Cell>\n";
-  		}
+		print "<Cell><Data ss:Type=\"Number\">{$image['natgrlen']}</Data></Cell>\n";
+		if (!empty($_GET['ppos'])) {
+			print "<Cell><Data ss:Type=\"Number\">{$image['viewpoint_eastings']}</Data></Cell>\n";
+			print "<Cell><Data ss:Type=\"Number\">{$image['viewpoint_northings']}</Data></Cell>\n";
+			print "<Cell><Data ss:Type=\"Number\">{$image['viewpoint_grlen']}</Data></Cell>\n";
+		}
 	} elseif (!empty($_GET['ll'])) {
 		print "<Cell><Data ss:Type=\"Number\">{$image['wgs84_lat']}</Data></Cell>\n";
 		print "<Cell><Data ss:Type=\"Number\">{$image['wgs84_long']}</Data></Cell>\n";

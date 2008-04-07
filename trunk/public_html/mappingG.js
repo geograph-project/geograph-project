@@ -78,6 +78,10 @@
 			}
 			
 			updateViewDirection();
+			
+			if (typeof parentUpdateVariables != 'undefined') {
+				parentUpdateVariables();
+			}
 		});
 	} else {
 		GEvent.addListener(marker, "dragend", function() {
@@ -103,7 +107,7 @@ function createPMarker(ppoint) {
 function checkFormSubmission(that_form,mapenabled) {
 	if (checkGridReferences(that_form)) {
 		message = '';
-		if (that_form.grid_reference.value == '') 
+		if (that_form.grid_reference.value == '' || that_form.grid_reference.value.length < 7) 
 			message = message + "* Subject Grid Reference\n";
 		if (that_form.photographer_gridref.value == '') 
 			message = message + "* Photographer Grid Reference\n";
@@ -195,6 +199,12 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 		//now work with wgs84.latitude and wgs84.longitude
 		var point = new GLatLng(wgs84.latitude,wgs84.longitude);
 
+		if (currentelement == null && map) {
+			currentelement = createMarker(point,null);
+			map.addOverlay(currentelement);
+
+			GEvent.trigger(currentelement,'drag');
+		}
 		currentelement.setPoint(point);
 
 		if (that.name == 'photographer_gridref') {
@@ -210,6 +220,10 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 		
 		if (eastings1 > 0 && eastings2 > 0 && pickupbox != null) {
 			setTimeout(" if (pickupbox != null) {map.removeOverlay(pickupbox);pickupbox = null;}",1000);
+		}
+		
+		if (typeof parentUpdateVariables != 'undefined') {
+			parentUpdateVariables();
 		}
 	}
 }
