@@ -92,6 +92,11 @@
 {elseif $step eq 3}
 	<script type="text/javascript">window.parent.tabClick('tab','',4,4);</script>
 	
+	{if $reopenmaptoken}
+	<div class="interestBox" style="z-index:0"><a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> <small>(and view list of placenames)</small>
+	{getamap gridref=$square->grid_reference text="Open Get-a-Map"}, <a href="/gridref/{$square->grid_reference}" target="_blank">Open {$square->grid_reference} Page</a> <small>(in new window)</small></div>
+	{/if}
+	
 	<h3>Title and Comments</h3>
 	<p>Please provide a short title for the image, and any other comments about where
 	it was taken or other interesting geographical information. (Open <a href="/help/style" target="_blank" id="styleguidelink">Style Guide</a>)</p>

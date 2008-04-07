@@ -19,7 +19,7 @@ a.c1 {
 	overflow:auto; 
 	height:200px; 
 	width:100%; 
-	border: 1px solid red;
+	border: 1px solid green;
 }
 .photobox {
 	float:left; 
@@ -53,9 +53,8 @@ a.c1 {
 }
 .termsbox {
 	position:relative; 
-	overflow:auto; 
-	height:400px; 
-	width:100%;
+	background-color:pink;
+	padding:10px;
 }
 
 </style>
@@ -218,8 +217,13 @@ it.</i></td>
 		
 		<div style="float:right">Logged in as {$user->realname} / <a href="/logout.php">Logout</a></div>
 
-		<h2>Picasa --&gt; Geograph Uploader v0.6</h2>
+		<h2>Picasa --&gt; Geograph Uploader v0.68</h2>
 
+		<ol>
+			<li>Select each photo in turn, the selected image is shown in yellow</li>
+			<li>Fill out the relevent details in available tabs</li>
+			<li>Once you have filled out all the details check the terms, and the photos will be sent to Geograph</li>
+		</ol>
 		<div class="scrollbox">
 		{assign var="thumbnail" value="photo:thumbnail"}
 		{assign var="imgsrc" value="photo:imgsrc"}
@@ -227,7 +231,7 @@ it.</i></td>
 			<div class="photobox" id="photo:{$key}" onclick="selectPhoto('{$key}');">
 				<tt>{$image.title}</tt>
 				<div style="width:100px; height:100px;">
-					<img src="{$image.$thumbnail}?size=100"/>
+					<a href="{$image.$imgsrc}?size=640" target="_blank"><img src="{$image.$thumbnail}?size=100"/></a>
 				</div>
 				<input type="hidden" name="{$image.$imgsrc}?size=640"/>
 				<input type="hidden" name="field[{$key}]" value="{$image.$imgsrc}?size=640"/>
@@ -245,12 +249,12 @@ it.</i></td>
 		</div>
 		<input type="hidden" name="selected" value="0"/>
 		<div class="tabHolder">
-			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="submitTabClick('tab','',1,4)">Enter Grid Reference</a>
-			<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="submitTabClick('tab','',2,4)">Draggable Map</a>
-			<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="submitTabClick('tab','',3,4)">Map References</a>
-			<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="submitTabClick('tab','',4,4)">Title/Description</a>
+			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="submitTabClick('tab','',1,4)">1) Enter Grid Reference</a><a 
+			   class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="submitTabClick('tab','',2,4)">or Draggable Map</a>
+			<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="submitTabClick('tab','',3,4)">2) Map References</a>
+			<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="submitTabClick('tab','',4,4)">3) Title/Description</a>
 		</div>
-		<iframe id="subIframe" name="subIframe" src="about:blank" width="100%" height="350"></iframe>
+		<iframe id="subIframe" name="subIframe" src="about:blank" width="100%" height="400"></iframe>
 
 
 		<div class="termsbox">
