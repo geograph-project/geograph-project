@@ -131,7 +131,7 @@ geographing</a> first.</p>
 				
 		<h3>Picasa Plugin<sup style="color:red">New!</sup></h3>	
 		<p>We have recently created a new submission process that intergrates into the {external href="http://picasa.google.com/" text="Picasa"} image mananagement program, 
-		<a href="picasa://importbutton/?url=http://{$http_host}/stuff/geograph-for-picasa.pbz.php/geograph-for-picasa.pbz">Click Here to install Picasa Button</a>. With this button installed can use the selection tools in Picasa to upload photos in bulk, the submission process matches the online upload allowing selection with maps etc.</p>
+		<a href="picasa://importbutton/?url=http://{$http_host}/stuff/geograph-for-picasa.pbz.php/geograph-for-picasa.pbz">Click Here to install Picasa Button</a>. (You will be asked to confirm this action). With this button installed can use the selection tools in Picasa to upload photos in bulk, the submission process matches the online upload allowing selection with maps etc. Picasa automatically resizes the photo to Geograph specifications before upload, EXIF data is preserved however its only provided to Geograph at the end so it can't be used to find geolocation or dates embedded in the file.</p>
 		
 		<p>Note while JUppy is an Offline Application, with which you can prepare the upload in advance of connecting; the Picasa button requires a Internet Connection to work as it integrates the interactive maps and other aids from the Geograph website.</p>
 	</div>
