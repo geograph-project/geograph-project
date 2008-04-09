@@ -59,7 +59,9 @@ function reveal() {
 			<td colspan="2" align="center" bgcolor="#dddddd">
 				<input type="button" value="Reveal" onclick="reveal()" style="font-size:1.3em; color:green; font-weight:bold" id="rbutton"/> 
 				<input type="hidden" name="pair_id" value="{$pair_id}"/> 
-				<input type="submit" name="invalid" value="This isn't a valid pair" onclick="next(true)" style="color:red" /> 
+				{if $user->registered}
+					<input type="submit" name="invalid" value="This isn't a valid pair" onclick="next(true)" style="color:red" />
+				{/if}
 				<input type="submit" value="Next" onclick="next(false)" style="color:green" /> 
 			</td>
 		</tr>
