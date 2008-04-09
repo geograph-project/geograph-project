@@ -95,7 +95,7 @@ function reveal() {
 					<dt>Category</dt>
 
 					<dd>{if $image1->imageclass}
-						{$image1->imageclass} &nbsp; (<a title="pictures near {$image1->grid_reference} of {$image1->imageclass|escape:'html'}" href="/search.php?gridref={$image1->grid_reference}&amp;imageclass={$image1->imageclass|escape:'url'}">find more nearby</a>)
+						{$image1->imageclass}
 					{else}
 						<i>n/a</i>
 					{/if}</dd>
@@ -137,7 +137,7 @@ function reveal() {
 					<dt>Category</dt>
 
 					<dd>{if $image2->imageclass}
-						{$image2->imageclass} &nbsp; (<a title="pictures near {$image2->grid_reference} of {$image2->imageclass|escape:'html'}" href="/search.php?gridref={$image2->grid_reference}&amp;imageclass={$image2->imageclass|escape:'url'}">find more nearby</a>)
+						{$image2->imageclass}
 					{else}
 						<i>n/a</i>
 					{/if}</dd>
