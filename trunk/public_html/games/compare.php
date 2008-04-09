@@ -39,7 +39,7 @@ if (isset($_GET['charge'])) {
 	
 	
 	$posts = $db->getAssoc("
-		SELECT post_id,post_text,topic_id 
+		SELECT p.post_id,p.post_text,p.topic_id 
 		FROM geobb_posts p
 		LEFT JOIN compare_pair c USING (post_id)
 		WHERE p.topic_id IN (2294,7494,2843) AND c.post_id IS NULL AND post_text LIKE '%[[[%'");
