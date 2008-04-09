@@ -64,10 +64,10 @@ if (isset($_GET['success'])) {
 			$uploadmanager->setDirection($_POST['view_direction'][$key]);
 			$uploadmanager->setUse6fig(stripslashes($_POST['use6fig'][$key]));
 			$uploadmanager->setTaken($_POST['imagetaken'][$key]);
-			$uploadmanager->setTitle($_POST['title'][$key]);
+			$uploadmanager->setTitle(utf8_decode($_POST['title'][$key]));
 			if ($_POST['comment'][$key] != "comment[$key]") {
 				//bug? in Picasa sends the name in the value if blank, useful! (but only seems to apply to textareas)
-				$uploadmanager->setComment($_POST['comment'][$key]);
+				$uploadmanager->setComment(utf8_decode($_POST['comment'][$key]));
 			}
 			
 			if (($_POST['imageclass'][$key] == 'Other' || empty($_POST['imageclass'][$key])) && !empty($_POST['imageclassother'][$key])) {
@@ -75,11 +75,11 @@ if (isset($_GET['success'])) {
 			} else if ($_POST['imageclass'] != 'Other') {
 				$imageclass =  stripslashes($_POST['imageclass'][$key]);
 			}			
-			$uploadmanager->setClass($imageclass);
+			$uploadmanager->setClass(utf8_decode($imageclass));
 
 			if ($_POST['pattrib'] == 'other') {
-				$uploadmanager->setCredit(stripslashes($_POST['pattrib_name']));
-				$smarty->assign('credit_realname',$_POST['pattrib_name']);
+				$uploadmanager->setCredit(stripslashes(utf8_decode($_POST['pattrib_name'])));
+				$smarty->assign('credit_realname',utf8_decode($_POST['pattrib_name']));
 			} elseif ($_POST['pattrib'] == 'self') {
 				$uploadmanager->setCredit('');
 			}
