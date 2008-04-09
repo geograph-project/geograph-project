@@ -129,7 +129,7 @@
 {else}
 	<h3>My Statistics</h3>
 	<ul>
-		  <li>No photographs submitted {if $userimages}(statistics can take a few hours to appear if you have only recently began submitting){/if}</li>
+		  <li>No photographs submitted {if $userimages}(statistics can take a few hours to appear if you have only recently begun submitting){/if}</li>
 	</ul>
 {/if}
 

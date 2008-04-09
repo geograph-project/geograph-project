@@ -12,7 +12,7 @@
 		<br/><br/>
 		Note: It's vitally important to be sure you are a valid '<i>Licensor</i>' on behalf of the '<i>Original Author</i>' mentioned here. 
 		<br/><br/>
-		This option should <b>not</b> be used to republish the work of others already published under a Creative Commons Licence, either elsewhere or on Geograph, such content is not approriate for Geograph.
+		This option should <b>not</b> be used to republish the work of others already published under a Creative Commons Licence, either elsewhere or on Geograph; such content is not appropriate for Geograph.
 		</dd>
 	</dl>
 	<div style="text-align:right"><input type="checkbox" name="pattrib_default" value="on" id="pattrib_default" {if $credit_default}checked="checked"{/if}/>Make this my new default from now on</div>
