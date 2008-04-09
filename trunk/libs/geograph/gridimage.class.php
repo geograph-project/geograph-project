@@ -288,7 +288,7 @@ class GridImage
 			}
 		}
 		
-		$this->profile_link = "http://{$_SERVER['HTTP_HOST']}/profile/{$this->user_id}";
+		$this->profile_link = "/profile/{$this->user_id}";
 		
 		if (!empty($this->credit_realname))
 			$this->profile_link .= "?a=".urlencode($this->realname);
@@ -312,7 +312,7 @@ class GridImage
 				$this->$name=$value;
 		}
 		
-		$this->profile_link = "http://{$_SERVER['HTTP_HOST']}/profile/{$this->user_id}";
+		$this->profile_link = "/profile/{$this->user_id}";
 		
 		if (!empty($this->credit_realname))
 			$this->profile_link .= "?a=".urlencode($this->realname);

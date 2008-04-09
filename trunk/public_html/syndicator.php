@@ -185,7 +185,7 @@ for ($i=0; $i<$cnt; $i++)
 	}
 
 	$item->date = strtotime($images->images[$i]->submitted);
-	$item->source = $images->images[$i]->profile_link;
+	$item->source = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->profile_link;
 	$item->author = $images->images[$i]->realname;
 
 	if ($geoformat) {

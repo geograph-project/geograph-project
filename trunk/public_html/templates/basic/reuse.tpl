@@ -61,7 +61,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 <form><textarea rows="3"><div style="width:210px; text-align:center">
 <a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160)}</a><br/>
 <a href="/photo/{$image->gridimage_id}"><b>{$image->title|escape:'html'}</b></a><br/>
-&amp;nbsp; &amp;copy; Copyright <a title="View profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
+&amp;nbsp; &amp;copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div></textarea></form>
 
 
@@ -70,20 +70,20 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <form><textarea rows="3">[url=http://{$http_host}/photo/{$image->gridimage_id}][b]{$image->title|escape:'html'}[/b]
 [img]{$image->getThumbnail(213,160,true)}[/img][/url]
-&copy; Copyright [url={$image->profile_link}]{$image->realname|escape:'html'}[/a] and  
+&copy; Copyright [url=http://{$http_host}{$image->profile_link}]{$image->realname|escape:'html'}[/a] and  
 licensed for reuse under this [url=http://creativecommons.org/licenses/by-sa/2.0/]Creative Commons Licence[/url].</textarea></form>
 
 <h3>BBCode for reusing image on a forum (with shorter message)</H3>
 
 <form><textarea rows="3">[url=http://{$http_host}/photo/{$image->gridimage_id}][b]{$image->title|escape:'html'}[/b]
 [img]{$image->getThumbnail(120,120,true)}[/img][/url]
-&copy; [url={$image->profile_link}]{$image->realname|escape:'html'}[/a], [url=http://creativecommons.org/licenses/by-sa/2.0/]cc-by-sa[/url].</textarea></form>
+&copy; [url=http://{$http_host}{$image->profile_link}]{$image->realname|escape:'html'}[/a], [url=http://creativecommons.org/licenses/by-sa/2.0/]cc-by-sa[/url].</textarea></form>
 
 
 <h3>Creative Commons Metadata for this image</h3>
 <form><textarea rows="20" style="width:100%; font-size:0.8em"><!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &amp;nbsp; &amp;copy; Copyright <a title="View profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
+alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &amp;nbsp; &amp;copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 <!-- /Creative Commons Licence -->
 
