@@ -63,9 +63,11 @@ if (isset($_GET['charge'])) {
 		}
 	}
 	
-	$db->Execute("ALTER TABLE `compare_pair` ORDER BY rand()");
+	$db->Execute("ALTER TABLE `compare_pair` ORDER BY REVERSE(gridimage_id1)");
 	print "<h3>All done</h3>";
 	exit;
+} elseif (!empty($_POST['pair_id']) && ($p = intval($_POST['pair_id'])) && isset($_POST['invalid'])) {
+	$db->Execute("UPDATE `compare_pair` SET status='rejected' WHERE compare_pair_id = $p");
 }
 
 $pair = $db->getRow("
