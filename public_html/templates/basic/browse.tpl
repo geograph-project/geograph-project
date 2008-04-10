@@ -8,7 +8,7 @@
 {include file="_std_begin.tpl"}
 
     <h2>Browse</h2>
-<div style="margin-left:10px;">
+<div style="margin-left:10px; width:850px;">
 <div style="position:relative;float:left;width:530px">
 
 {if $showresult}
@@ -61,7 +61,7 @@
 </form>
 
 {if $errormsg}
-<p>{$errormsg}</p>
+	<p>{$errormsg}</p>
 
 	{if $square->percent_land < 50 && $square->percent_land != -1}
 	<form action="/mapfixer.php" method="get">
@@ -76,10 +76,10 @@
 	{* We have a valid GridRef *}
 
 	{if $overview}
-	<br style="clear:both;"/>
-	  <div style="float:right; text-align:center; width:{$overview_width+30}px; position:relative; margin-right:20px">
+		<br style="clear:both;"/>
+		<div style="float:right; text-align:center; width:{$overview_width+30}px; position:relative; margin-right:20px">
 		{include file="_overview.tpl"}
-	  </div>
+		</div>
 	{/if}
 
 	{if $totalimagecount}
