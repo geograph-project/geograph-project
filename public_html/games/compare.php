@@ -62,8 +62,8 @@ if (isset($_GET['charge'])) {
 			}
 		}
 	}
-	
-	$db->Execute("ALTER TABLE `compare_pair` ORDER BY REVERSE(gridimage_id1)");
+	$db->Execute("UPDATE `compare_pair` SET crccol = CRC32(gridimage_id1*gridimage_id2)");
+	$db->Execute("ALTER TABLE `compare_pair` ORDER BY crccol");
 	print "<h3>All done</h3>";
 	exit;
 } elseif (!empty($_POST['pair_id']) && ($p = intval($_POST['pair_id'])) && isset($_POST['invalid'])) {
