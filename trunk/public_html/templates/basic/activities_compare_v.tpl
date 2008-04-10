@@ -30,7 +30,7 @@ function reveal() {
 
 <div style="float:right; position:relative; background-color:yellow; padding:10px;"><b><a href="{$script_name}?v&amp;t={$token}">Link to this Pair</a></b></div>
 
-<p>What's similar, or different and how long sperates the photos, in the two shots below of the same location, discuss!</p>
+<p>What's similar, or different and how long separates the photos, in the two shots below of the same location, discuss! <small>(Click the photo to swap to the <i>other</i>)</small></p>
 
 <table id="compare_table" cellspacing=0 cellpadding=0>
 	<tbody>
@@ -44,7 +44,7 @@ function reveal() {
 				<!-- /Creative Commons Licence -->
 				<hr/>
 				<div class="{if $image1->isLandscape()}photolandscape{else}photoportrait{/if}">
-				  <div class="img-shadow" id="mainphoto1">{$image1->getFull()}</div>
+				  <div class="img-shadow" id="mainphoto1"><a href="#2" name="1">{$image1->getFull()}</a></div>
 				</div>
 			</td>
 			<td id="cell12" style="display:none;" width="250px">
@@ -123,7 +123,7 @@ function reveal() {
 		<tr>	
 			<td>
 				<div class="{if $image2->isLandscape()}photolandscape{else}photoportrait{/if}">
-				  <div class="img-shadow" id="mainphoto2">{$image2->getFull()}</div>
+				  <div class="img-shadow" id="mainphoto2"><a href="#1" name="2">{$image2->getFull()}</a></div>
 				</div>
 				<hr/>
 				<!-- Creative Commons Licence -->
