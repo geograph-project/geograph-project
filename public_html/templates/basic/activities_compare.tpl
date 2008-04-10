@@ -220,7 +220,7 @@ function reveal() {
 {else}
 	<p>No Pairs left, please try again later</p>
 	
-	<p>Or you can <a href="{$script_name}?v&amp;again">start again</a>
+	<p>Or you can <a href="{$script_name}?again">start again</a>
 {/if}
 {/dynamic}
 </form>
