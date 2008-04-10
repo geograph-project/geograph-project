@@ -70,15 +70,39 @@ if (isset($_GET['charge'])) {
 	$db->Execute("UPDATE `compare_pair` SET status='rejected' WHERE compare_pair_id = $p");
 }
 
-$pair = $db->getRow("
-	SELECT p.compare_pair_id,gridimage_id1,gridimage_id2
-	FROM compare_pair p
-	LEFT JOIN compair_done d ON (p.compare_pair_id = d.compare_pair_id AND `ipaddr` = INET_ATON(?) AND `ua` = ?)
-	WHERE status != 'rejected' AND d.compare_pair_id IS NULL",array(getRemoteIP(),$_SERVER['HTTP_USER_AGENT']));
+if (isset($_GET['t'])) {
+	$token=new Token;
+	if ($token->parse($_GET['t'])) {
+		$pair = $db->getRow("
+			SELECT p.compare_pair_id,gridimage_id1,gridimage_id2
+			FROM compare_pair p
+			WHERE compare_pair_id = ?",array($token->getValue("p")));
+	}
+} else {
+	if ($USER->user_id) {
+		$where = "user_id = ?";
+		$a = array($USER->user_id);
+	} else {
+		$where = "user_id = 0 and `ipaddr` = INET_ATON(?) AND `ua` = ?";
+		$a = array(getRemoteIP(),$_SERVER['HTTP_USER_AGENT']);
+	}	
 
+	$pair = $db->getRow("
+		SELECT p.compare_pair_id,gridimage_id1,gridimage_id2
+		FROM compare_pair p
+		LEFT JOIN compair_done d ON (p.compare_pair_id = d.compare_pair_id AND $where)
+		WHERE status != 'rejected' AND d.compare_pair_id IS NULL",$a);
+}
 
 if (!empty($pair['compare_pair_id'])) {
 	$smarty->assign('pair_id', $pair['compare_pair_id']);
+	
+	$token=new Token;
+			
+	$token->setValue("p", $pair['compare_pair_id']);
+					
+	$smarty->assign('token', $token->getToken());
+	
 	$search = new SearchEngine('');
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions;
@@ -121,12 +145,27 @@ if (!empty($pair['compare_pair_id'])) {
 
 
 	$updates = array();
+	$updates['user_id'] = $USER->user_id;
 	$updates['compare_pair_id'] = $pair['compare_pair_id'];
 	$updates['ua'] = $_SERVER['HTTP_USER_AGENT'];
 	
 	$db->Execute('REPLACE INTO compair_done SET `ipaddr` = INET_ATON(\''.getRemoteIP().'\'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+
+} elseif (isset($_GET['again']) && !isset($_GET['t'])) {
+	$pair = $db->getRow("
+		DELETE FROM compair_done
+		WHERE $where",$a);
+		
+	header("Location: ".$_SERVER['PHP_SELF'].(isset($_GET['v'])?'?v':''));
+	exit;
 }
 
-$smarty->display('games_compare.tpl');
+if (isset($_GET['v'])) {
+	$tamplate = 'games_compare_v.tpl';
+} else {
+	$tamplate = 'games_compare.tpl';
+}
+
+$smarty->display($tamplate);
 
 ?>
