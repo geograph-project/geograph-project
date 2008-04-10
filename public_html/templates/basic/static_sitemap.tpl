@@ -51,8 +51,9 @@
 	<li><a title="List of all images" href="/sitemap/geograph.html">view the <b>full list</b> of images</a></li>
 	<li><a title="Games" href="/games/"><b>play</b> with geograph images</a></li>
 	<li><a title="Draggable Map" href="/mapper/">interactive <b>draggable map</b></a></li>
+	<li><a href="/activities/">explore our Activities section</a> <sup style="color:red">New!</sup></li>
 	<li><a href="/help/imagine">Through The Square Window...</a></li>
-	<li><a href="/explore/places/">Explore the <b>placename gazetteer</b></a> <sup style="color:red">New!</sup></li>
+	<li><a href="/explore/places/">Explore the <b>placename gazetteer</b></a></li>
 </ul>
 
 {if $enable_forums}

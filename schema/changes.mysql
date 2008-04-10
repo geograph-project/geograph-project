@@ -1557,3 +1557,13 @@ CREATE TABLE `compare_pair` (
   `status` enum('new','confirmed','rejected') NOT NULL,
   PRIMARY KEY  (`compare_pair_id`)
 ) ENGINE=MyISAM;
+
+
+ALTER TABLE  `compare_pair` ADD crccol int(10) unsigned NOT NULL DEFAULT 0;
+
+ALTER TABLE  `compair_done` ADD user_id int(10) unsigned NOT NULL DEFAULT 0;
+
+
+UPDATE `compare_pair` SET crccol = CRC32(gridimage_id1*gridimage_id2);
+
+RENAME TABLE `compair_done` TO `compare_done`;

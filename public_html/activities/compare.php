@@ -90,7 +90,7 @@ if (isset($_GET['t'])) {
 	$pair = $db->getRow("
 		SELECT p.compare_pair_id,gridimage_id1,gridimage_id2
 		FROM compare_pair p
-		LEFT JOIN compair_done d ON (p.compare_pair_id = d.compare_pair_id AND $where)
+		LEFT JOIN compare_done d ON (p.compare_pair_id = d.compare_pair_id AND $where)
 		WHERE status != 'rejected' AND d.compare_pair_id IS NULL",$a);
 }
 
@@ -149,11 +149,11 @@ if (!empty($pair['compare_pair_id'])) {
 	$updates['compare_pair_id'] = $pair['compare_pair_id'];
 	$updates['ua'] = $_SERVER['HTTP_USER_AGENT'];
 	
-	$db->Execute('REPLACE INTO compair_done SET `ipaddr` = INET_ATON(\''.getRemoteIP().'\'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+	$db->Execute('REPLACE INTO compare_done SET `ipaddr` = INET_ATON(\''.getRemoteIP().'\'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 
 } elseif (isset($_GET['again']) && !isset($_GET['t'])) {
 	$pair = $db->getRow("
-		DELETE FROM compair_done
+		DELETE FROM compare_done
 		WHERE $where",$a);
 		
 	header("Location: ".$_SERVER['PHP_SELF'].(isset($_GET['v'])?'?v':''));
@@ -161,9 +161,9 @@ if (!empty($pair['compare_pair_id'])) {
 }
 
 if (isset($_GET['v'])) {
-	$tamplate = 'games_compare_v.tpl';
+	$tamplate = 'activities_compare_v.tpl';
 } else {
-	$tamplate = 'games_compare.tpl';
+	$tamplate = 'activities_compare.tpl';
 }
 
 $smarty->display($tamplate);

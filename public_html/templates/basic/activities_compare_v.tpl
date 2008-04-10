@@ -23,7 +23,7 @@ function reveal() {
 </script>
 {/literal}
 
-<h2>Compare-a-pair</h2>
+<h2><a href="/activities/">Activities</a> - Compare-a-pair</h2>
 <form action="{$script_name}?v" method="post">
 {dynamic}
 {if $image1->gridimage_id && $image2->gridimage_id}
