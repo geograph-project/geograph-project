@@ -1,90 +1,53 @@
 {include file="_std_begin.tpl"}
  {literal}<style type="text/css">
-td.left {
-	text-align:right;
+#compare_table td {
+	background-color:white;
+}
+#cell11,#cell12 ,#cell13 {
+	vertical-align:bottom;
+}
+#cell21,#cell22 ,#cell23 {
 	vertical-align:top;
-	background-color:#ffffff;
 }
-td.right {
-	text-align:left;
-	vertical-align:top;
-	background-color:#ffffff;
-	padding-left:3px;
-	border-left:5px solid gray;
+.picinfo {
+	width:250px;
 }
-
-td.left dl.picinfo
-{
-	padding-right:15px;
-}
-
-td.left dl.picinfo dd
-{
-	margin-right:25px;
-
-}
-
 </style>
 <script type="text/javascript">
 function reveal() {
-	for(n=1;n<=3;n=n+1) {
-		document.getElementById('row'+n).style.display='';
+	for(n=2;n<=3;n=n+1) {
+		document.getElementById('cell1'+n).style.display='';
+		document.getElementById('cell2'+n).style.display='';
 	}
 }
 </script>
 {/literal}
 
 <h2>Compare-a-pair</h2>
-<form action="{$script_name}" method="post">
+<form action="{$script_name}?v" method="post">
 {dynamic}
 {if $image1->gridimage_id && $image2->gridimage_id}
 
-<div style="float:right; position:relative; background-color:yellow; padding:10px;"><b><a href="{$script_name}?t={$token}">Link to this Pair</a></b></div>
+<div style="float:right; position:relative; background-color:yellow; padding:10px;"><b><a href="{$script_name}?v&amp;t={$token}">Link to this Pair</a></b></div>
 
 <p>What's similar, or different and how long sperates the photos, in the two shots below of the same location, discuss!</p>
 
-<table>
+<table id="compare_table" cellspacing=0 cellpadding=0>
 	<tbody>
 		<tr>
-			<td class="left">
+		
+			<td>
+				<!-- Creative Commons Licence -->
+				<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
+				alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image1->profile_link}">{$image1->realname|escape:'html'}</a> and  
+				licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
+				<!-- /Creative Commons Licence -->
+				<hr/>
 				<div class="{if $image1->isLandscape()}photolandscape{else}photoportrait{/if}">
 				  <div class="img-shadow" id="mainphoto1">{$image1->getFull()}</div>
 				</div>
 			</td>
-			<td class="right">
-				<div class="{if $image2->isLandscape()}photolandscape{else}photoportrait{/if}">
-				  <div class="img-shadow" id="mainphoto2">{$image2->getFull()}</div>
-				</div>
-			</td>
-		</tr>
-		<tr id="row0">
-			<td colspan="2" align="center" bgcolor="#dddddd">
-				<input type="button" value="Reveal" onclick="reveal()" style="font-size:1.3em; color:green; font-weight:bold" id="rbutton"/> 
-				<input type="hidden" name="pair_id" value="{$pair_id}"/> 
-				{if $user->registered}
-					<input type="submit" name="invalid" value="This isn't a valid pair" onclick="next(true)" style="color:red" />
-				{/if}
-				<input type="submit" value="Next" onclick="next(false)" style="color:green" /> 
-			</td>
-		</tr>
-		<tr id="row1" style="display:none">
-			<td class="left">
-				<h3 class="caption">{$image1->title|escape:'html'}</h3>
-
-				{if $image1->comment}
-					<div class="caption">{$image1->comment|escape:'html'|nl2br|geographlinks}</div>
-				{/if}
-			</td>
-			<td class="right">
-				<h3 class="caption">{$image2->title|escape:'html'}</h3>
-
-				{if $image2->comment}
-					<div class="caption">{$image2->comment|escape:'html'|nl2br|geographlinks}</div>
-				{/if}
-			</td>
-		</tr>
-		<tr id="row2" style="display:none">
-			<td class="left">
+			<td id="cell12" style="display:none;" width="250px">
 				<dl class="picinfo">
 					<dt>Grid Square</dt>
 					 <dd><a title="Grid Reference {$image1->grid_reference}" href="/gridref/{$image1->grid_reference}">{$image1->grid_reference}</a></dd>
@@ -126,7 +89,50 @@ function reveal() {
 					{/if}
 				</dl>
 			</td>
-			<td class="right">
+			<td id="cell13" style="display:none">
+				<h3 class="caption">{$image1->title|escape:'html'}</h3>
+
+				{if $image1->comment}
+					<div class="caption">{$image1->comment|escape:'html'|nl2br|geographlinks}</div>
+				{/if}
+				
+				<hr/>
+				
+				{if $rastermap1->enabled}
+					<div class="rastermap" style="width:{$rastermap1->width}px;position:relative; float:right;">
+					{$rastermap1->getImageTag($image1->subject_gridref)}
+					<span style="color:gray"><small>{$rastermap1->getFootNote()}</small></span>
+					</div>
+				
+					{$rastermap1->getScriptTag()}
+				{/if}
+			</td>			
+			
+			
+		</tr>
+		<tr id="row0">
+			<td align="right" style="background-color:#dddddd">
+				<input type="button" value="Reveal" onclick="reveal()" style="font-size:1.3em; color:green; font-weight:bold" id="rbutton"/> 
+				<input type="hidden" name="pair_id" value="{$pair_id}"/> 
+				{if $user->registered}
+					<input type="submit" name="invalid" value="This isn't a valid pair" onclick="next(true)" style="color:red" />
+				{/if}
+				<input type="submit" value="Next" onclick="next(false)" style="color:green" /> 
+			</td>
+		</tr>
+		<tr>	
+			<td>
+				<div class="{if $image2->isLandscape()}photolandscape{else}photoportrait{/if}">
+				  <div class="img-shadow" id="mainphoto2">{$image2->getFull()}</div>
+				</div>
+				<hr/>
+				<!-- Creative Commons Licence -->
+				<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
+				alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image2->profile_link}">{$image2->realname|escape:'html'}</a> and  
+				licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
+				<!-- /Creative Commons Licence -->
+			</td>
+			<td id="cell22" style="display:none;" width="250px">
 				<dl class="picinfo">
 					<dt>Grid Square</dt>
 					 <dd><a title="Grid Reference {$image2->grid_reference}" href="/gridref/{$image2->grid_reference}">{$image2->grid_reference}</a></dd>
@@ -167,20 +173,16 @@ function reveal() {
 					{$view_direction1} (about {$image2->view_direction} degrees)</dd>
 					{/if}
 				</dl>
-			</td>
-		</tr>
-		<tr id="row3" style="display:none">
-			<td class="left">
-				{if $rastermap1->enabled}
-					<div class="rastermap" style="width:{$rastermap1->width}px;position:relative; float:right;">
-					{$rastermap1->getImageTag($image1->subject_gridref)}
-					<span style="color:gray"><small>{$rastermap1->getFootNote()}</small></span>
-					</div>
+			</td>		
+			<td id="cell23" style="display:none">
+				<h3 class="caption">{$image2->title|escape:'html'}</h3>
 				
-					{$rastermap1->getScriptTag()}
+				{if $image2->comment}
+					<div class="caption">{$image2->comment|escape:'html'|nl2br|geographlinks}</div>
 				{/if}
-			</td>
-			<td class="right">
+				
+				<hr/>
+				
 				{if $rastermap2->enabled}
 					<div class="rastermap" style="width:{$rastermap2->width}px;position:relative">
 					{$rastermap2->getImageTag($image2->subject_gridref)}
@@ -189,25 +191,8 @@ function reveal() {
 				
 					{$rastermap2->getScriptTag()}
 				{/if}
-			</td>
-		</tr>
-		<tr>
-			<td class="left">
-				<hr/>
-				<!-- Creative Commons Licence -->
-				<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-				alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image1->profile_link}">{$image1->realname|escape:'html'}</a> and  
-				licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
-				<!-- /Creative Commons Licence -->
-			</td>
-			<td class="right">
-				<hr/>
-				<!-- Creative Commons Licence -->
-				<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-				alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image2->profile_link}">{$image2->realname|escape:'html'}</a> and  
-				licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
-				<!-- /Creative Commons Licence -->
-			</td>
+			</td>		
+		
 		</tr>
 	</tbody>
 </table>
