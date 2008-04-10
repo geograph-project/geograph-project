@@ -14,11 +14,12 @@
 </ul>
 
 
-<h3>Activities &amp; Resources</h3>
+<h3>Activities &amp; Resources <sup>[<a href="/activities/">more...</a>]</sup></h3>
 
 <ul>
 	<li><a href="/games/">Geograph Games</a> - fun games involving images and maps</li>
 	<li><a href="/help/imagine">Imagine Slideshow</a> - imagine the landscape behind the map</li>
+	<li><a href="/activities/compare.php">Compare-a-Pair</a> - compare and contrast two similar pictures</li>
 	<li><a href="/gallery/">Galleries</a> - hand picked images on various themes</li>
 </ul>
 

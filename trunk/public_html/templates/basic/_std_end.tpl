@@ -9,21 +9,21 @@
      <li><a title="View map of all submissions" href="/mapbrowse.php">Map</a></li>
      <li><a title="Explore Images by Theme" href="/explore/">Explore</a></li>
      <li><a title="Photos Galleries" href="/gallery/">Galleries</a></li>
-    </ul></li>
-    <li>Contribute<ul>
-    <li><a title="Submit" href="/submit.php">Submit</a></li>
-     <li><a title="Statistics" href="/numbers.php">Statistics</a></li>
-     <li><a title="Leaderboard" href="/statistics/moversboard.php">Leaderboard</a></li>
      <li><a title="Articles" href="/article/">Articles</a></li>
     </ul></li>
     <li>Interact<ul>
-     <li><a title="Play Games" href="/games/">Games</a> <sup style="color:red">Updated!</sup></li>
-     <li><a title="Imagine the map in pictures" href="/help/imagine">Imagine</a></li>
+     <li><a title="Play Games" href="/games/">Games</a></li>
+     <li><a title="Activities" href="/activities/">Activities</a> <sup style="color:red">New!</sup></li>
      <li><a title="Discuss" href="/discuss/">Discuss</a></li>
      {dynamic}{if $user->registered}
      <li><a title="Chat" href="/chat/">Chat</a> {if $irc_seen}<span style="color:gray">({$irc_seen} online)</span>{/if}</li>
-     <li><a title="Find out about local Events" href="/events/">Events</a> <sup style="color:red">New!</sup></li>
+     <li><a title="Find out about local Events" href="/events/">Events</a></li>
      {/if}{/dynamic}
+    </ul></li>
+    <li>Contributors<ul>
+    <li><a title="Submit" href="/submit.php">Submit</a></li>
+     <li><a title="Statistics" href="/numbers.php">Statistics</a></li>
+     <li><a title="Leaderboard" href="/statistics/moversboard.php">Leaderboard</a></li>
     </ul></li>
     <li>Further Info<ul>
      <li><a title="FAQ" href="/faq.php">FAQ</a></li>

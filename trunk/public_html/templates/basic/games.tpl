@@ -44,7 +44,7 @@ Help us Locate new <br/>images for the games.<br/>
 {/if}
 {/dynamic}
 
-<div style="float:left; padding-right:20px"><img src="http://{$static_host}/templates/basic/img/hamster.gif" width="161" height="174"/></div>
+<div style="float:left; padding-right:20px"><img src="http://{$static_host}/templates/basic/img/hamster.gif" width="161" height="174" alt="Perdita the Geograph hamster"/></div>
 
 
 
