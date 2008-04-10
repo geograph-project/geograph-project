@@ -386,14 +386,14 @@ class GridSquare
 	/**
 	* set up and validate grid square selection using seperate reference components
 	*/
-	function setGridPos($gridsquare, $eastings, $northings)
+	function setGridPos($gridsquare, $eastings, $northings,$allowzeropercent = false)
 	{
 		//assume the inputs are tainted..
 		$ok=$this->validGridPos($gridsquare, $eastings, $northings);
 		if ($ok)
 		{
 			$gridref=sprintf("%s%02d%02d", $gridsquare, $eastings, $northings);
-			$ok=$this->_setGridRef($gridref);
+			$ok=$this->_setGridRef($gridref,$allowzeropercent);
 		}
 		
 		return $ok;
@@ -524,7 +524,7 @@ class GridSquare
 						
 			}
 			
-			if ($this->percent_land==0 && (!$allowzeropercent || $this->has_geographs==0) )
+			if ($this->percent_land==0 && (!$allowzeropercent || $this->imagecount==0) )
 			{
 				$this->_error("$gridref seems to be all at sea! Please contact us if you think this is in error");
 				$ok=false;
