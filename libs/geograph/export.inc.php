@@ -57,7 +57,7 @@ if (!empty($_GET['en'])) {
 	$csvhead .= ",Easting,Northing,Figures";
 	if (!empty($_GET['ppos'])) {
 		$csvhead .= ",Photographer Eastings,Photographer Northings,Photographer Figures";
-		$sql_from .= ",viewpoint_eastings,viewpoint_northings,viewpoint_grlen";
+		$sql_from .= ",viewpoint_eastings,viewpoint_northings,if(use6fig=1,6,viewpoint_grlen) as viewpoint_grlen";
 	}
 } elseif (!empty($_GET['ll'])) {
 	$csvhead .= ",Lat,Long";
@@ -143,7 +143,7 @@ if ($i && !$user_crit ) {
 	if (!empty($_GET['ftf'])) {
 		$mod_sql .= " and ftf = 1"; 
 	}
-	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,imageclass,nateastings,natnorthings,natgrlen,gi.user_id $sql_from 
+	$recordSet = &$db->Execute("select gridimage_id,title,grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,imageclass,nateastings,natnorthings,if(use6fig=1,6,natgrlen) as natgrlen,gi.user_id $sql_from 
 	from user 
 	inner join gridimage gi using(user_id) 
 	inner join gridsquare using(gridsquare_id) 
