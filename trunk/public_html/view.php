@@ -147,6 +147,7 @@ if ($image->isValid())
 
 		//remove grid reference from title
 		$image->bigtitle=trim(preg_replace("/^{$image->grid_reference}/", '', $image->title));
+		$image->bigtitle=preg_replace('/(?<![\.])\.$/', '', $image->bigtitle);
 
 		$smarty->assign('page_title', $image->bigtitle.":: OS grid {$image->grid_reference}");
 		$smarty->assign('meta_description', $image->comment);
