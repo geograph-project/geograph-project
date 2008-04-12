@@ -30,6 +30,11 @@ $smarty->caching = 0; //dont cache!
 
 $cacheid = $USER->hasPerm('basic')?$USER->user_id:0;
 
+if (!empty($_GET)) {
+	ksort($_GET);
+	$cacheid .= ".".md5(serialize($_GET));
+}
+
 $isadmin=$USER->hasPerm('moderator')?1:0;
 $smarty->assign_by_ref('isadmin', $isadmin);
 
@@ -59,6 +64,22 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$db=NewADOConnection($GLOBALS['DSN']);
 	
+	if (!empty($_GET['user_id']) && preg_match('/^\d+$/',$_GET['user_id'])) {
+		$where = "AND article.user_id = {$_GET['user_id']}";
+		$smarty->assign('extra', "&amp;user_id={$_GET['user_id']}");
+	} elseif (!empty($_GET['q']) && preg_match('/^[\w ]+$/',$_GET['q'])) {
+		$where = "AND title LIKE '%{$_GET['q']}%'";
+		$smarty->assign('extra', "&amp;q={$_GET['q']}");
+	} elseif (!empty($_GET['cat_q']) && preg_match('/^[\w ]+$/',$_GET['cat_q'])) {
+		$where = "AND category_name LIKE '%{$_GET['cat_q']}%'";
+		$smarty->assign('extra', "&amp;cat_q={$_GET['cat_q']}");
+	} elseif (!empty($_GET['cat_word']) && preg_match('/^[\w ]+$/',$_GET['cat_word'])) {
+		$where = 'AND category_name REGEXP '.$db->Quote('[[:<:]]'.$_GET['cat_word'].'[[:>:]]');
+		$smarty->assign('extra', "&amp;cat_word={$_GET['cat_word']}");
+	} else {
+		$where = '';
+	}
+	
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll("
@@ -68,9 +89,10 @@ if (!$smarty->is_cached($template, $cacheid))
 		left join article_cat on (article.article_cat_id = article_cat.article_cat_id)
 		left join article_lock as l
 			on(article.article_id=l.article_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) and l.user_id != {$USER->user_id})
-	where (licence != 'none' and approved = 1) 
+	where ((licence != 'none' and approved = 1) 
 		or user.user_id = {$USER->user_id}
-		or ($isadmin and approved != -1)
+		or ($isadmin and approved != -1))
+		$where
 	order by sort_order,article.article_cat_id,article_sort_order desc,create_time desc");
 	
 	$urls = array();
