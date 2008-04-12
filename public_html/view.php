@@ -146,11 +146,9 @@ if ($image->isValid())
 
 
 		//remove grid reference from title
-		$untitled="Untitled photograph for {$image->grid_reference}";
-		if ($image->title!=$untitled)
-			$image->title=trim(str_replace($image->grid_reference, '', $image->title));
+		$image->bigtitle=trim(preg_replace("/^{$image->grid_reference}/", '', $image->title));
 
-		$smarty->assign('page_title', $image->title.":: OS grid {$image->grid_reference}");
+		$smarty->assign('page_title', $image->bigtitle.":: OS grid {$image->grid_reference}");
 		$smarty->assign('meta_description', $image->comment);
 		$smarty->assign('image_taken', $taken);
 		$smarty->assign('ismoderator', $ismoderator);
