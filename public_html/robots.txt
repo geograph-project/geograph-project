@@ -74,6 +74,7 @@ Disallow: /mapper/
 Disallow: /maplarge.php
 Disallow: /mapprint.php
 Disallow: /admin/
+Allow: /admin/team.php
 Disallow: /search.php
 Disallow: /explore/wordnet.php
 Disallow: /places.php
