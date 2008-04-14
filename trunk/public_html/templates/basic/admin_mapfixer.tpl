@@ -26,7 +26,7 @@ Land percent for <span id="voteref"></span>&nbsp; is
 <div id="voteinfo"></div>
 
 </div>
-<div style="font-size:0.7em">When checking Ireland Squares in Google Earth, please open {external href="http://www.nearby.org.uk/google/Gridlines.kml.pl" text="Gridlines Layer"}.</div>
+<div style="font-size:0.7em">Great Britain open in Get-a-Map, Ireland opens our 'Location' page which displays Google Maps.</div>
 
 <script language="javascript">
 
@@ -86,8 +86,12 @@ function shownext()
 		currentgr = gr4;
 
 		if (gr4.length == 5) {
-			gr6 = gr4.substr(0,gr4.length-2)+'5'+gr4.substr(gr4.length-2,2)+'5';
-			window.open('http://www.nearby.org.uk/flyto.php?p='+gr6+'&range=3000','multimap');
+			var wWidth = 740;
+			var wHeight = 520;
+			var wLeft = Math.round(0.5 * (screen.availWidth - wWidth));
+			var wTop = Math.round(0.5 * (screen.availHeight - wHeight)) - 20;
+			window.open('/location.php?gridref='+gr4,'gam',
+			'left='+wLeft+',screenX='+wLeft+',top='+wTop+',screenY='+wTop+',width='+wWidth+',height='+wHeight+',status,scrolling=no');
 		} else {
 			popupOSMap(gr4,'');
 		}
