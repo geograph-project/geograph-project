@@ -520,7 +520,7 @@ class RasterMap
 							map.addControl(new GMapTypeControl(true));
 							map.disableDragging();
 							var point = new GLatLng({$this->lat},{$this->long});
-							map.setCenter(point, 13);
+							map.setCenter(point, 13, G_PHYSICAL_MAP);
 							$block 
 							
 							AttachEvent(window,'unload',GUnload,false);
