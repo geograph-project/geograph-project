@@ -540,9 +540,6 @@ if (isset($_POST['gridsquare']))
 				$smarty->assign('imagetaken', '--');
 			}
 
-			if (isset($_SESSION['last_imagetaken'])) {
-				$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
-			}
 			$smarty->assign('today_imagetaken', date("Y-m-d"));
 		} elseif ($step == 4) {
 			$USER->getStats();
@@ -551,10 +548,6 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('preview_url', $preview_url);
 			$smarty->assign('preview_width', $uploadmanager->upload_width);
 			$smarty->assign('preview_height', $uploadmanager->upload_height);
-			
-			if (isset($_SESSION['last_imagetaken'])) {
-				$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
-			}
 		} elseif ($step == 2) {
 			require_once('geograph/rastermap.class.php');
 
@@ -611,7 +604,9 @@ if (isset($_POST['gridsquare']))
 			}
 			$dirs['00'] = $dirs[0];
 			$smarty->assign_by_ref('dirs', $dirs);
-			
+		}
+		if (isset($_SESSION['last_imagetaken'])) {
+			$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
 		}
 	}
 	else
