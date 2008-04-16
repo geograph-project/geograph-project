@@ -4,13 +4,13 @@
 {dynamic}
 	<h2>Choose Hectads to Adopt</h2> 
 
-	<p>Use the following to suggest hectads you would be interested in adopting. The specific of this scheme have not been worked out, the point of this exercise is to get some realistic data on the potential interest and distribution. (and to sort out how to allocate squares.)</p>
+	<p>Use the following to suggest hectads you would be interested in adopting. The specifics of this scheme have not been worked out yet, but the point of this exercise is to get some realistic data on the potential interest and distribution (and to sort out how to allocate squares).</p>
 	
-	<p>The general idea will be that the 'adopter' of a hectad will be able to create their own custom mosaic of images for the square - with the aim to objectivity select the most representative images. A map of these custom mosaics will then be offered alongside the current 'first' mosaic.</p>
+	<p>The general idea will be that the 'adopter' of a hectad will be able to create their own custom mosaic of images for the square - with the aim to objectively select the most representative images. A map of these custom mosaics will then be offered alongside the current 'first' mosaic.</p>
 	
-	<p>You can add as many hectads as you like, but bear in if successful you would be asked to sort though potential hundreds of photos per hectad. If there are multiple requests per hectad we will use some as yet undecided algorithm to attempt to fairly allocate requests.</p>
+	<p>You can add as many hectads as you like, but bear in mind if successful you would be asked to sort though potentially hundreds of photos per hectad. If there are multiple requests per hectad we will use some as yet undecided algorithm to attempt to fairly allocate requests.</p>
 	
-	<p>Note however there is no commitment at this stage, you will be asked to confirm acceptance later on when we have the system ready.</p>
+	<p>Note however there is no commitment at this stage. You will be asked to confirm acceptance later on when we have the system ready.</p>
 
 	<div class="interestBox">
 	<form action="{$script_name}" method="post">
