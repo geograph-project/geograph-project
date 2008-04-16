@@ -171,7 +171,12 @@ geographing</a> first.</p>
 {if $step eq 2}
 
 	<h2>Submit Step 2 of 4 : Upload photo for {$gridref}</h2>
-	<div style="color:black; background-color:yellow; font-size:0.7em; padding:3px; border: 1px solid orange">Please avoid submitting images with overlaid text or borders; they should be cropped before submission. Thank you for your attention to this matter.</div><br/>
+	
+	{if !$user->stats.images || $user->stats.images < 100 || !$last_imagetaken}
+	<div style="color:black; background-color:yellow; font-size:0.7em; padding:3px; border: 1px solid orange">Please avoid submitting images with overlaid text or borders; they should be cropped before submission. Thank you for your attention to this matter.<br/><br/>
+	You should only submit photos you have taken yourself, or where you can specifically act as a Licensor on behalf of the original author.</div><br/>
+	{/if}
+	
 	{if $rastermap->enabled}
 		<div style="float:left;width:50%;position:relative">
 	{else}

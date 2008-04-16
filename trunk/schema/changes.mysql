@@ -1585,3 +1585,38 @@ CREATE TABLE `hectad_assignment` (
 
 
 
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `geograph_images_full` AS 
+	select 
+		`gs`.`gridimage_id` AS `gridimage_id`,
+		`gs`.`user_id` AS `user_id`,
+		`gs`.`moderation_status` AS `moderation_status`,
+		`gs`.`title` AS `title`,
+		`gs`.`submitted` AS `submitted`,
+		`gs`.`imageclass` AS `imageclass`,
+		`gs`.`imagetaken` AS `imagetaken`,
+		`gs`.`x` AS `x`,
+		`gs`.`y` AS `y`,
+		`gs`.`grid_reference` AS `grid_reference`,
+		`gs`.`realname` AS `realname`,
+		`gs`.`reference_index` AS `reference_index`,
+		`gs`.`comment` AS `comment`,
+		`gs`.`wgs84_lat` AS `wgs84_lat`,
+		`gs`.`wgs84_long` AS `wgs84_long`,
+		`gs`.`ftf` AS `ftf`,
+		`gs`.`seq_no` AS `seq_no`,
+		`g`.`nateastings` AS `nateastings`,
+		`g`.`natnorthings` AS `natnorthings`,
+		`g`.`natgrlen` AS `natgrlen`,
+		`g`.`viewpoint_eastings` AS `viewpoint_eastings`,
+		`g`.`viewpoint_northings` AS `viewpoint_northings`,
+		`g`.`viewpoint_grlen` AS `viewpoint_grlen`,
+		`g`.`view_direction` AS `view_direction`,
+		substr(md5(concat(`gs`.`gridimage_id`,`gs`.`user_id`,_latin1'__INSERT_{{photo_hashing_secret}}_HERE__')),1,8) AS `secret`
+	from (
+		`gridimage_search` `gs` 
+		join `gridimage` `g` on ((`gs`.`gridimage_id` = `g`.`gridimage_id`))
+	);
+	
+	
+#then to create a dumpable table:
+#create table geograph_images_output select * from geograph_images_full;
