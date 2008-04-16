@@ -219,6 +219,9 @@ it.</i></td>
 
 		<h2>Picasa --&gt; Geograph Uploader v0.68</h2>
 
+		<div style="color:black; background-color:yellow; font-size:0.7em; padding:3px; border: 1px solid orange">Please avoid submitting images with overlaid text or borders; they should be cropped before submission. Thank you for your attention to this matter.<br/><br/>
+		You should only submit photos you have taken yourself, or where you can specifically act as a Licensor on behalf of the original author.</div><br/>
+
 		<ol>
 			<li>Select each photo in turn, the selected image is shown in yellow</li>
 			<li>Fill out the relevent details in available tabs</li>

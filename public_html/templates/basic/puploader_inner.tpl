@@ -25,6 +25,8 @@
 	<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}or <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>{/if}
 	</p>
 
+	<script type="text/javascript" src="{"/mapping1.js"|revision}"></script>
+	<script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
 {elseif $step eq 2}
 	<script type="text/javascript">window.parent.tabClick('tab','',3,4);</script>
 	{if $rastermap->enabled}
