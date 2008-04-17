@@ -26,6 +26,10 @@ init_session();
 
 
 
+if ($USER->hasPerm("basic")) {
+	header("Location: /login.php");
+	exit;
+}
 
 $smarty = new GeographPage;
 $template='register.tpl';
