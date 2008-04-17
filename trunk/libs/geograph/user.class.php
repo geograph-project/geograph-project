@@ -311,11 +311,12 @@ class GeographUser
 					//to send a fresh one so lets just refresh the existing record
 					$user_id=$arr['user_id'];	
 					
-					$sql = sprintf("update user set realname=%s,email=%s,password=%s,signup_date=now() where user_id=$user_id",
+					$sql = sprintf("update user set realname=%s,email=%s,password=%s,signup_date=now(),http_host=%s where user_id=$user_id",
 						$db->Quote($name),
 						$db->Quote($email),
 						$db->Quote($password1),
-						$db->Quote($user_id));
+						$db->Quote($user_id),
+						$db->Quote($_SERVER['HTTP_HOST']));
 						
 					if ($db->Execute($sql) === false) 
 					{
@@ -327,11 +328,12 @@ class GeographUser
 				else
 				{
 					//ok, user doesn't exist, insert a new row
-					$sql = sprintf("insert into user (realname,email,password,signup_date) ".
-						"values (%s,%s,%s,now())",
+					$sql = sprintf("insert into user (realname,email,password,signup_date,http_host) ".
+						"values (%s,%s,%s,now(),%s)",
 						$db->Quote($name),
 						$db->Quote($email),
-						$db->Quote($password1));
+						$db->Quote($password1),
+						$db->Quote($_SERVER['HTTP_HOST']));
 				
 					
 					if ($db->Execute($sql) === false) 
