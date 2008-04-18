@@ -135,8 +135,8 @@ class SearchCriteria
 		$x = $this->x;
 		$y = $this->y;
 		if ($x > 0 && $y > 0) {
-			if ($this->limit8 && $this->limit8 < 2000) {//2000 is a special value for effectivly unlimted!
-				$d = intval($this->limit8);
+			if ($this->limit8 && $this->limit8 < 2000 && $this->limit8 > -2000) {//2000 is a special value for effectivly unlimted!
+				$d = abs(intval($this->limit8));
 				if ($sql_where) {
 					$sql_where .= ' and ';
 				}
@@ -150,8 +150,10 @@ class SearchCriteria
 
 				$sql_where .= "CONTAINS(GeomFromText($rectangle),point_xy)";
 
-				//shame cant use dist_sqd in the next line!
-				$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);
+				if ($this->limit8 > 1) {//no need to even do this for 1 :)
+					//shame cant use dist_sqd in the next line!
+					$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);
+				}
 			}
 
 			//not using "power(gs.x -$x,2) * power( gs.y -$y,2)" beucause is testing could be upto 2 times slower!

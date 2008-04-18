@@ -42,8 +42,8 @@
 			 <td> 
 				<select name="distance" id="distance" size="1" style="text-align:right" onchange="onlyone_part2(this.form)" onblur="onlyone_part2(this.form)"> 
 				  <option value=""> </option> 
-					{html_options values=$distances output=$distances selected=$distance}
-				</select>km</td> 
+					{html_options options=$distances selected=$distance}
+				</select></td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
