@@ -957,7 +957,13 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign('pagesizes', array(5,10,15,20,30,50));
 
 		if (!$is_cachable || !$smarty->is_cached($template, $is_cachable)) {
-			$smarty->assign('distances', array(1,2,3,4,5,7,8,10,20,30,40,50,100,200,300,400,500,1000,2000));
+			function addkm($a) {
+				return $a."km";
+			}
+			$d =  array(1,2,3,4,5,7,8,10,20,30,40,50,71,100,2000);
+			$d = array_combine($d,array_map('addkm',$d));
+			$d += array(-5=>'5km square',-10=>'10km square',-50=>'50km square');
+			$smarty->assign('distances',$d);
 
 			$countylist = array();
 			$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0");
