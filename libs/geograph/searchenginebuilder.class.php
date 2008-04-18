@@ -82,8 +82,8 @@ class SearchEngineBuilder extends SearchEngine
 		} elseif (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$q,$gr)) {
 			require_once('geograph/gridsquare.class.php');
 			$square=new GridSquare;
-			$grid_ok=$square->setByFullGridRef($gr[1].$gr[2].$gr[3]);
-			if ($grid_ok) {
+			$grid_ok=$square->setByFullGridRef($gr[1].$gr[2].$gr[3],false,true);
+			if ($grid_ok || $square->x && $square->y) {
 				if ($square->imagecount && $autoredirect == 'simple') {
 					header("Location:http://{$_SERVER['HTTP_HOST']}/gridref/{$q}");
 					print "<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/{$q}\">View Pictures</a>";
@@ -311,8 +311,8 @@ class SearchEngineBuilder extends SearchEngine
 			if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$dataarray['gridref'],$gr)) {
 				require_once('geograph/gridsquare.class.php');
 				$square=new GridSquare;
-				$grid_ok=$square->setByFullGridRef($dataarray['gridref']);
-				if ($grid_ok) {
+				$grid_ok=$square->setByFullGridRef($dataarray['gridref'],false,true);
+				if ($grid_ok || $square->x && $square->y) {
 					$searchclass = 'GridRef';
 					$searchq = $dataarray['gridref'];
 					$searchdesc = ", $nearstring grid reference ".$square->grid_reference;

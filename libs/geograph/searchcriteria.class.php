@@ -141,18 +141,21 @@ class SearchCriteria
 					$sql_where .= ' and ';
 				}
 
-				$left=$x-$d;
-				$right=$x+$d;
-				$top=$y+$d;
-				$bottom=$y-$d;
+				if ($this->limit8 == 1) {
+					$sql_where .= "CONTAINS( GeomFromText('POINT($x $y)'),point_xy )";
+				} else {
+					$left=$x-$d;
+					$right=$x+$d-1;
+					$top=$y+$d-1;
+					$bottom=$y-$d;
 
-				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+					$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-				$sql_where .= "CONTAINS(GeomFromText($rectangle),point_xy)";
-
-				if ($this->limit8 > 1) {//no need to even do this for 1 :)
-					//shame cant use dist_sqd in the next line!
-					$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);
+					$sql_where .= "CONTAINS(GeomFromText($rectangle),point_xy)";
+					if ($this->limit8 > 0) {
+						//shame cant use dist_sqd in the next line!
+						$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);
+					}
 				}
 			}
 
