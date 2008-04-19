@@ -136,7 +136,7 @@ function customCacheControl($mtime,$uniqstr,$useifmod = true,$gmdate_mod = 0) {
 		}
 	}	
 
-#	header ("Etag: $hash"); 
+	header ("Etag: $hash"); 
 
 	if (!$gmdate_mod)
 		$gmdate_mod = gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
@@ -164,7 +164,7 @@ function customExpiresHeader($diff,$public = false) {
 		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past 
 	}
 	if ($public)
-		header("Cache-Control: Public");
+		header("Cache-Control: Public",true);
 }
 
 ?>
