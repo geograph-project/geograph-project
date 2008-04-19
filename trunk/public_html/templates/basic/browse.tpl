@@ -8,7 +8,7 @@
 {include file="_std_begin.tpl"}
 
     <h2>Browse</h2>
-<div style="margin-left:10px; width:850px;">
+<div style="position:relative;margin-left:10px; width:850px;">
 <div style="position:relative;float:left;width:530px">
 
 {if $showresult}
