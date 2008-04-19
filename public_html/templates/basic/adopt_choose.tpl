@@ -2,7 +2,7 @@
 {include file="_std_begin.tpl"}
 
 {dynamic}
-	<h2>Choose Hectads to Adopt</h2> 
+	<h2><a href="/adopt/">Hectad Adoptions</a> - Choose Hectads to Adopt</h2> 
 
 	<p>Use the following to suggest hectads you would be interested in adopting. The specifics of this scheme have not been worked out yet, but the point of this exercise is to get some realistic data on the potential interest and distribution (and to sort out how to allocate squares).</p>
 	
