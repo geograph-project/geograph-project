@@ -29,7 +29,7 @@ $smarty = new GeographPage;
 
 $USER->mustHavePerm("basic");
 
-$template='stuff_choose_hectads.tpl';
+$template='adopt_choose.tpl';
 
 $cacheid='';
 

@@ -125,5 +125,11 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
     </p>
   </div>
 </div>
+<script type="text/javascript" src="http://www.google-analytics.com/ga.js"></script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-172738-3");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
 </body>
 </html>
