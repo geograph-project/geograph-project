@@ -70,7 +70,7 @@ square.</p>
 <div style="text-align:right"><a href="/profile/1">Gary Rogers</a>, Feb 2005</div>
 
 <ul>
-<li>See <a title="geograph and supplemental guide" href="http://www.geograph.org.uk/article/Geograph-or-supplemental">What is a geograph?</a> 
+<li>See <a title="geograph and supplemental guide" href="/article/Geograph-or-supplemental">What is a geograph?</a> 
     for more examples of images submitted to geograph and how they are moderated.</ul>
 </ul>
 

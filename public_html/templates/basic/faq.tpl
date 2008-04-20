@@ -1,33 +1,88 @@
 {assign var="page_title" value="FAQ"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
-#maincontent h3 { padding-top:10px; border-top: 1px solid lightgrey; }
+.helpbox { float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;margin-left:20px;}
+.helpbox UL { margin-top:2px;margin-bottom:0;padding:0 0 0 1em; }
+.contents A { text-decoration:none; }
+.contents LI { padding-bottom:2px; }
+.answers h3 { padding:10px; border-top: 1px solid lightgrey; background-color:#f9f9f9 }
+.answers p { padding-left:20px; }
 </style>{/literal}
- 
-    <h2>FAQ - Frequently Asked Questions</h2>
- 
+
+ <div class="helpbox">
+ <h3>Useful Links</h3>
+ <b>Contributing</b> photos:
  <ul>
- <li><a href="#geograph" style="text-decoration:none">What makes a good <b>Geograph</b>?</a></li>
- <li><a href="#points" style="text-decoration:none">How do I get a geograph <b>point</b> for my image?</a></li>
- <li><a href="#supplemental" style="text-decoration:none">What is a <b>supplemental</b> image?</a></li>
- <li><a href="#multiple" style="text-decoration:none">Do you accept <b>multiple images</b> per square</a></li>
- <li><a href="#resize" style="text-decoration:none">Do I need to <b>resize</b> my photos? Are there size limits?</a></li>
- <li><a href="#change" style="text-decoration:none">I <b>disagree</b> with the location or title of an image - what can I do?</a></li>
- <li><a href="#legal" style="text-decoration:none">What are my <b>legal rights</b> when taking photographs?</a></li>
- <li><a href="#pages" style="text-decoration:none">Theres a page I once saw on geograph, and I <b>can't find</b> it again!</a></li>
- <li><a href="#counties" style="text-decoration:none"><b>Counties</b>, I'm confused, which do you display?</a></li>
- <li><a href="#geographism" style="text-decoration:none">I've just seen XYZ mentioned, I have <b>no idea what that means</b>!</a></li>
- <li><a href="#rss" style="text-decoration:none">Do you have an <b>RSS</b> feed?</a></li>
- <li><a href="#use" style="text-decoration:none">I would be interested in <b>reusing</b> Geograph content, is that possible?</a></li>
- <li><a href="#opensource" style="text-decoration:none"><b>Open source? Creative Commons?</b> What's that all about?</a></li>
- <li><a href="#commercial" style="text-decoration:none">Why must I agree to allow <b>commercial use</b> of my image?</a></li>
- <li><a href="#built" style="text-decoration:none"><b>Who</b> built this marvellous site?</a></li>
- <li><a href="#concern" style="text-decoration:none">I'm concerned about a photo or comment I have seen on the site.</a></li>
- <li><a href="#question" style="text-decoration:none">I have a further <b>question</b>, what should I do?</a> <br/><br/>Issues:</li>
- <li><a href="#aol" style="text-decoration:none">I use AOL, and the images look terrible!</a></li>
- <li class="last"><a href="#missing" style="text-decoration:none">Many thumbnails seem to be missing, any idea of the cause?</a></li>
+ <li><a href="/help/guide">Geograph Guide</a></li>
+ <li><a href="/help/geograph_guide">Moderation Guide</a></li>
+ <li><a href="/article/Which-Square">Locating your Image</a></li>
+ <li><a href="/help/style">Submission Style Guide</a><br/><br/></li>
+ <li><a href="/help/changes">Change Request System</a><br/><br/></li>
  </ul>
- 
+ <b>Browsing</b> the site:
+ <ul>
+ <li><a href="/help/squares">Square Definitions</a><br/><br/></li>
+ <li><a href="/help/search">Text Search Help</a></li>
+ <li><a href="/help/stats_faq">Statistics FAQ</a><br/><br/></li>
+ {if $enable_forums}
+ <li><a href="/help/bbcodes">Forum BBcodes Help</a><br/><br/></li>
+ {/if}
+ </ul>
+ The <b>Geograph Website</b>:
+ <ul>
+ <li><a href="/help/freedom">Geograph Freedom</a></li>
+ <li><a href="/help/terms">Terms &amp; Conditions</a><br/><br/></li>
+ <li><a href="/contact.php">Contact Us</a></li>
+ <li><a href="/admin/team.php">The Team</a> &amp; <a href="/help/credits">Credits</a><br/><br/></li>
+ </ul>
+ <b>Further Resources</b>:
+ <ul>
+ <li><a href="/article/?cat_word=Geograph">Geograph Articles</a></li>
+ <li><a href="/help/sitemap">Sitemap</a><br/><br/></li>
+ </ul></div>
+
+
+    <h2>FAQ - Frequently Asked Questions</h2>
+
+<div style="position:relative" class="contents">
+<b>Contributing</b> photos:
+ <ul>
+ <li><a href="#what">What is <b>Geographing</b>?</a></li>
+ <li><a href="#geograph">What makes a good <b>Geograph</b>?</a></li>
+ <li><a href="#points">How do I get a geograph <b>point</b> for my image?</a></li>
+ <li><a href="#supplemental">What is a <b>supplemental</b> image?</a></li>
+ <li><a href="#multiple">Do you accept <b>multiple images</b> per square</a></li>
+ <li><a href="#resize">Do I need to <b>resize</b> my photos? Are there size limits?</a></li>
+ <li><a href="#commercial">Why must I agree to allow <b>commercial use</b> of my image?</a></li>
+ <li><a href="#legal">What are my <b>legal rights</b> when taking photographs?</a></li>
+ </ul>
+<b>Browsing</b> the site:
+ <ul>
+ <li><a href="#use">I would be interested in <b>reusing</b> Geograph content, is that possible?</a></li>
+ <li><a href="#change">I <b>disagree</b> with the location or title of an image - what can I do?</a></li>
+ <li><a href="#concern">I'm <b>concerned</b> about a photo or comment I have seen on the site.</a></li>
+ <li><a href="#counties"><b>Counties</b>, I'm confused, which do you display?</a></li>
+ <li><a href="#geographism">What do all these <b>strange words</b> mean?</a></li>
+ </ul>
+The <b>Geograph Website</b>:
+ <ul>
+ <li><a href="#pages">Theres a page I once saw on geograph, and I <b>can't find</b> it again!</a></li>
+ <li><a href="#rss">Do you <b>RSS</b> feeds available?</a></li>
+ <li><a href="#opensource"><b>Open source? Creative Commons?</b> What's that all about?</a></li>
+ <li><a href="#built"><b>Who</b> built this marvellous site?</a></li>
+ <li><a href="#question"><b>I have a further question</b>, what should I do?</a></li>
+ </ul>
+<b>Issues</b> in using the Geograph Site:
+ <ul>
+ <li><a href="#aol">I use AOL, and the images look terrible!</a></li>
+ <li class="last"><a href="#missing">Many thumbnails seem to be missing, any idea of the cause?</a></li>
+ </ul>
+</div>
+<br/><br/><br/>
+
+<div style="position:relative" class="answers">
+
+<a name="what"></a>
 <h3>What is Geographing?</h3>
 
 	<ul>
@@ -38,7 +93,7 @@
 	<li>It's a free and <a href="#opensource">open online community</a> project for all</li>
 	</ul>
 	
-	<p>See the original <a title="guide to geographing" href="/help/guide">guide to good geographing</a>, and <a title="Geograph Quickstart Guide" href="http://www.geograph.org.uk/article/Geograph-Quickstart-Guide">contributors quickstart guide</a>.</p>
+	<p>See the original <a title="guide to geographing" href="/help/guide">guide to good geographing</a>, and <a title="Geograph Quickstart Guide" href="/article/Geograph-Quickstart-Guide">contributors quickstart guide</a>.</p>
 
 <a name="geograph"></a>
 <h3>What makes a good Geograph image?</h3>
@@ -63,7 +118,7 @@
 	but the image will still appear on the selected grid square. A square that just contains
 	supplemental images is still open to be claimed as a geograph though!</p>
 
-	<p><img src="/templates/basic/img/icon_alert.gif" alt="Note" width="25" height="22" align="absmiddle"/> Follow this link for a <a title="geograph and supplemental guide" href="http://www.geograph.org.uk/article/Geograph-or-supplemental">more in depth discussion</a> on the finer points of moderation.</p>
+	<p><img src="/templates/basic/img/icon_alert.gif" alt="Note" width="25" height="22" align="absmiddle"/> Follow this link for a <a title="geograph and supplemental guide" href="/article/Geograph-or-supplemental">more in depth discussion</a> on the finer points of moderation.</p>
 
 <a name="multiple"></a>
 <h3>Do you accept multiple images per square?</h3>
@@ -127,8 +182,8 @@
 	<p>To see lists of counties in each structure see the <a href="/explore/#counties">Explore Section</a>.</p>
 
 <a name="geographism"></a>
-<h3>I've just seen XYZ mentioned, I have no idea what that means!</h3>
-	<p>Well, if it's a 'geographism' - a term developed during use on this site, then see <a href="http://www.geograph.org.uk/article/Geographisms">this glossary article</a> we have started compiling. There is also a wide range of sites dealing with Acronums, and Abbreviations, listed on {external href="http://www.dmoz.org/Reference/Dictionaries/By_Subject/Computers/Internet_Terms_and_Acronyms/" text="DMOZ here"}.</p>
+<h3>What do all these strange words mean?</h3>
+	<p>Well, if it's a 'geographism' - a term developed during use on this site, then see <a href="/article/Geographisms">this glossary article</a> we have started compiling. There is also a wide range of sites dealing with Acronums, and Abbreviations, listed on {external href="http://www.dmoz.org/Reference/Dictionaries/By_Subject/Computers/Internet_Terms_and_Acronyms/" text="DMOZ here"}.</p>
 
 <a name="rss"></a>
 <h3>Do you have an RSS feed?</h3>
@@ -177,7 +232,7 @@
 	licence details by viewing a full size image.</p>
 
 	<ul>
-	<li>Not a developer and simply looking for <a href="http://www.geograph.org.uk/article/Ways-to-view-Geograph-Images">ways to access the images</a>?</li>
+	<li>Not a developer and simply looking for <a href="/article/Ways-to-view-Geograph-Images">ways to access the images</a>?</li>
 	</ul>
 	
 <a name="opensource"></a>
@@ -189,7 +244,7 @@
 	for re-use under the terms of the GNU Public Licence (GPL).</p>
 	
 	<ul>
-	<li>Similarlly, if you want to get involved at developer level, <a href="http://www.geograph.org.uk/article/Geograph-for-Developers">see this article</a>.</li>
+	<li>Similarlly, if you want to get involved at developer level, <a href="/article/Geograph-for-Developers">see this article</a>.</li>
 	</ul>
 
 	<p>In addition, we require all submitters to adopt a 
@@ -227,16 +282,14 @@
 <h3>I'm concerned about a photo or comment I have seen on the site.</h3>
        <p>Please get in <a title="Contact Us" href="contact.php">Contact</a>, we'll do our best to deal with your concerns prompty.</p>
 
+<div style="position:relative; border-left:3px solid yellow; border-right:3px solid yellow; padding-bottom:10px;">
 <a name="question"></a>
-<h3>I have a further question, what should I do?</h3>
+<h3 style="padding-top:0px;">I have a further question, what should I do?</h3>
 	<p>Please <a title="Contact Us" href="contact.php">Contact Us</a>{if $enable_forums}, or drop in on our friendly Discussion Forum.{/if}</p>
-
-<h2 style="margin-top:200px;">Issues in using the Geograph Site</h2>
-
-<div class="interestBox">
+</div>
 
 <a name="aol"></a>
-<h3 style="border:none;padding-top:0px">I use AOL, and the images look terrible!</h3>
+<h3>I use AOL, and the images look terrible!</h3>
 	<p>AOL's default settings for graphics is to show &quot;Compressed Graphics Only&quot;. 
 	This means AOL is selectively <i>re-compressing</i> images before you see them on your
 	screen. This loses a lot of image quality.</p>
@@ -251,6 +304,6 @@
 
 	<p>So if you use such a program you might like to try turning it off temporally and trying again, and if that gets our images back, then have a look for the option to disable this, arguably, flawed method of security.</p>
 
-</div/>
+</div>
 
 {include file="_std_end.tpl"}
