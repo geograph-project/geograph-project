@@ -51,11 +51,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$stats= $db->GetRow("select * from user_stat where user_id = 0");
 	$stats += $db->GetRow("select count(*)-1 as users from user_stat");
-	$stats += $db->cacheGetRow(3600,"select 
-		count(*) as total,
-		sum(imagecount in (1,2,3)) as fewphotos
-	from gridsquare 
-	where percent_land > 0");	
+	$stats += $db->cacheGetRow(3600,"select count(*) as total,sum(imagecount in (1,2,3)) as fewphotos from gridsquare where percent_land > 0");
 	
 	$stats['nophotos'] = $stats['total'] - $stats['squares'];
 	

@@ -18,7 +18,7 @@
 <p>This photograph has been rejected by the site moderators, and is only viewable by you.</p>
 
 <ul>
-<li><a href="http://www.geograph.org.uk/article/Reasons-for-rejection">Possible reasons for rejection</a></li>
+<li><a href="/article/Reasons-for-rejection">Possible reasons for rejection</a></li>
 </ul>
 
 <p>We keep rejected submissions on file for a short period, so if you think your
