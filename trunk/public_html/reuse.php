@@ -49,6 +49,9 @@ if (isset($_REQUEST['id']))
 		if (isset($_REQUEST['download'])) {
 			$filepath = $image->_getFullpath();
 			$filename = basename($filepath);
+			$filename = preg_replace('/(\.jpg)/'," by {$image->realname}\$1",$filename);
+			$filename = preg_replace('/ /','-',trim($filename));
+			$filename = preg_replace('/[^\w-\.,]+/','',$filename);
 			$lastmod = filemtime($_SERVER['DOCUMENT_ROOT'].$filepath);
 			
 			header("Content-Type: image/jpeg");
