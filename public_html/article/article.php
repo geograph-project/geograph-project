@@ -75,9 +75,13 @@ function article_make_table($input) {
 }
 
 function smarty_function_articletext($input) {
-	global $imageCredits,$smarty;
+	global $imageCredits,$smarty,$CONF;
 	
 	$output = preg_replace('/(-{7,})\n(.*?)(-{7,})/es',"article_make_table('\$2')",str_replace("\r",'',$input));
+
+	if ($CONF['CONTENT_HOST'] != $_SERVER['HTTP_HOST']) {
+		$output = str_replace($CONF['CONTENT_HOST'],$_SERVER['HTTP_HOST'],$output);
+	}
 
 	$output = str_replace(
 		array('[b]','[/b]','[big]','[/big]','[small]','[/small]','[i]','[/i]','[h2]','[/h2]','[h3]','[/h3]','[h4]','[/h4]','[float]','[/float]','[br/]','[hr/]','[reveal]','[/reveal]'),
