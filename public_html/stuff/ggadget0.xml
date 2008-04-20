@@ -79,7 +79,9 @@
 			}
 		}
 		html += '<br style="clear:both"/>';
-		html += '<div style="text-align:right; background-color:#000066; "><a href="http://www.geograph.org.uk/results/'+inumber+'" target="_blank" style="color:white">More...</div>';
+		html += '<div style="text-align:right; background-color:#000066; "><a href="http://www.geograph.org.uk/results/'+inumber+'" target="_blank" style="color:white">More Results...</a></div>';
+		html +='<div style="text-align:center; background-color:#EEEEEE; font-size:0.8em;">photos licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">Creative Commons Licence</a></div>';
+
 		_gel('content_div').innerHTML = html;
 		});
 	}
