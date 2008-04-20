@@ -3,7 +3,7 @@
 
 <h2>Geograph for Teachers</h2>
  
-<p>This page is intended as a quick start guide for using Geograph in the Classroom,</p>
+<p>This page is intended as a quick start guide for using Geograph in the Classroom, please get in a href="/contact.php">contact</a> if you have an idea for something to add here.</p>
 
 
 <h3>Understanding the Map</h3>
