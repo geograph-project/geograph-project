@@ -46,7 +46,7 @@ if (isset($_REQUEST['id']))
 		header("Status: 410 Gone");
 		$template = "view.tpl";
 	} else {
-		if (isset($_REQUEST['download'])) {
+		if (isset($_REQUEST['download']) && $_REQUEST['download'] == $image->_getAntiLeechHash()) {
 			$filepath = $image->_getFullpath();
 			$filename = basename($filepath);
 			$filename = preg_replace('/(\.jpg)/'," by {$image->realname}\$1",$filename);
