@@ -164,7 +164,7 @@ class RasterMap
 			
 			$mapurl = "http://{$CONF['TILE_HOST']}/tile.php?r=".$this->getToken();
 			
-			$gr= !empty($this->square->grid_reference_full)?$this->square->grid_reference_full:$this->square->grid_reference;
+			$gr= str_replace(' ','+',!empty($this->square->grid_reference_full)?$this->square->grid_reference_full:$this->square->grid_reference);
 			
 			$title = "1:50,000 Modern Day Landranger(TM) Map &copy; Crown Copyright";
 			
