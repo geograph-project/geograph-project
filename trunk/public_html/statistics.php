@@ -79,17 +79,16 @@ if (!$smarty->is_cached($template, $cacheid))
 
 		$smarty->assign("images_thisweek_$ri",  $db->CacheGetOne(3*3600,"select count(*) from gridimage_search where reference_index = $ri and (unix_timestamp(now())-unix_timestamp(submitted))<604800"));
 
-		$stats= $db->CacheGetOne(3*3600,$sql = "select 
+		$stats= $db->CacheGetRow(3*3600,"select 
 			count(*) as squares_total,
 			sum(imagecount) as images_total,
 			sum(imagecount > 0) as squares_submitted,
-			sum(has_geographs > 0) geographs_submitted,
 			count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) as tenk_total
 		from gridsquare 
 		where reference_index = $ri and percent_land > 0");
 
-
-		$stats += $db->CacheGetOne(3*3600,"select 
+		$stats += $db->CacheGetRow(3*3600,"select 
+			count(*) as geographs_submitted,
 			count(distinct substring(grid_reference,1,$letterlength)) as grid_submitted,
 			count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) as tenk_submitted,
 			avg( x ) as x,
