@@ -68,7 +68,11 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <div style="background:#bbbbbb;color:black;">
 
-<table style="width:100%"><tr>
+<table style="width:100%">
+<tr>
+	<td colspan="6" align="center" style="background-color:pink"><b>Interested in reusing this image?</b> <a href="/reuse.php?id={$image->gridimage_id}">Click here to find out how</a>! <sup style="color:red">New Page</a></td>
+</tr>
+<tr>
 {if $enable_forums}
 <td style="width:50px"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img src="http://{$static_host}/templates/basic/img/icon_discuss.gif" alt="Discuss" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
@@ -219,7 +223,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{assign var="imagetakenurl" value=$image_taken|date_format:"&amp;taken=%Y-%m-%d"}
 {/if}
 
-<img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$image->subject_gridref}{$imagetakenurl}&amp;title={$image->title|escape:'url'}&id={$image->gridimage_id}"><b>More Links for {$image->subject_gridref}</b></a>
+<img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$image->subject_gridref}{$imagetakenurl}&amp;title={$image->title|escape:'url'}&id={$image->gridimage_id}"><b>More Links for this image</b></a>
 </div>
 
 
