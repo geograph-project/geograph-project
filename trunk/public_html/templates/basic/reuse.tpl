@@ -35,7 +35,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 
 <li>So <b>do not hotlink</b> the fullsize image directly off our servers, this will likely be blocked.</li>
 
-<li>Instead download a copy, and upload it to your own site. Click: <b><a href="{$script_name}?id={$image->gridimage_id}&amp;download">Download Fullsize .jpg file</a></b></li>
+<li>Instead download a copy, and upload it to your own site. Click: <b><a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">Download Fullsize .jpg file</a></b></li>
 
 <li style="font-size:1.1em; background-color:pink;"><b>Under the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image MUST be credited as specified by the contributor ({if $image->credit_realname}<tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>{else}credited to {$image->realname|escape:'html'}{/if}).</b></li>
 
