@@ -324,7 +324,7 @@
 
 {if $opentickets && !$error && $isowner && $ticketsforcomments}
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
-	If you agree with the changes suggested, please indicate your acceptance, <b>in the reply box above</b>. If you disagree, please explain above why you do not accept the changes. This will be helpful to the Moderator in making a decision. However, if you want to make the changes straight away, or want to make other changes, use the form below. If a ticket suggests an issue but doesn't actually list the changes then it would help us if you were to make the changes using the form below.
+	If you agree with the changes suggested, please indicate your acceptance, <b>in the reply box above</b>. If you disagree, please explain above why you do not accept the changes. This will be helpful to the Moderator in making a decision. However, if you want to make the changes straight away {if $moderated.grid_reference}<span class="moderatedlabel">(except gridsquare changes)</span>{/if}, or want to make other changes, use the form below. If a ticket suggests an issue but doesn't actually list the changes then it would help us if you were to make the changes using the form below.
 </div>
 <br>
 <input type="button" value="Change Image Details Form &gt; &gt;" style="font-size:1.2em" onclick="this.style.display='none';document.getElementById('change_form_div').style.display=''"/>

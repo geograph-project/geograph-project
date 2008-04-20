@@ -16,6 +16,7 @@
  <li><a href="#legal" style="text-decoration:none">What are my <b>legal rights</b> when taking photographs?</a></li>
  <li><a href="#pages" style="text-decoration:none">Theres a page I once saw on geograph, and I <b>can't find</b> it again!</a></li>
  <li><a href="#counties" style="text-decoration:none"><b>Counties</b>, I'm confused, which do you display?</a></li>
+ <li><a href="#geographism" style="text-decoration:none">I've just seen XYZ mentioned, I have <b>no idea what that means</b>!</a></li>
  <li><a href="#rss" style="text-decoration:none">Do you have an <b>RSS</b> feed?</a></li>
  <li><a href="#use" style="text-decoration:none">I would be interested in <b>reusing</b> Geograph content, is that possible?</a></li>
  <li><a href="#opensource" style="text-decoration:none"><b>Open source? Creative Commons?</b> What's that all about?</a></li>
@@ -124,6 +125,10 @@
 	<p>For a more in depth explanation, see {external href="http://www.abcounties.co.uk/" text="abcounties.org.uk"}. <span class="nowrap">(however beware that the site doesn't use the exact same terms)</span></p>
 	
 	<p>To see lists of counties in each structure see the <a href="/explore/#counties">Explore Section</a>.</p>
+
+<a name="geographism"></a>
+<h3>I've just seen XYZ mentioned, I have no idea what that means!</h3>
+	<p>Well, if it's a 'geographism' - a term developed during use on this site, then see <a href="http://www.geograph.org.uk/article/Geographisms">this glossary article</a> we have started compiling. There is also a wide range of sites dealing with Acronums, and Abbreviations, listed on {external href="http://www.dmoz.org/Reference/Dictionaries/By_Subject/Computers/Internet_Terms_and_Acronyms/" text="DMOZ here"}.</p>
 
 <a name="rss"></a>
 <h3>Do you have an RSS feed?</h3>
