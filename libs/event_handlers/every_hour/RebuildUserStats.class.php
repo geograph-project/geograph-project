@@ -80,8 +80,19 @@ class RebuildUserStats extends EventHandler
 					max(gridimage_id) as last
 				FROM gridimage_search
 				GROUP BY user_id
-				WITH ROLLUP");
+				ORDER BY user_id");
 		
+		$GLOBALS['ADODB_FETCH_MODE'] = ADODB_FETCH_ASSOC;
+		$overall = $db->getRow("select 
+			sum(imagecount) as images,
+			sum(imagecount>0) as squares,
+			sum(has_geographs=1) as points,
+			0 as user_id
+		from gridsquare 
+		where percent_land > 0");
+		$db->Execute('INSERT INTO user_stat_tmp SET `'.implode('` = ?,`',array_keys($overall)).'` = ?',array_values($overall));
+
+
 		$topusers=$db->GetAll("SELECT user_id,sum(ftf=1) as points,count(distinct grid_reference) as geosquares
 		FROM gridimage_search 
 		WHERE moderation_status = 'geograph'

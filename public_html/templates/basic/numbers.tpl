@@ -104,8 +104,8 @@
 			points awarded
 		</div>
 		<div> 
-			<b class="nowrap">{$stats.images|thousends}</b> images,
-			taken on <b class="nowrap">{$stats.days|thousends}</b> different days
+			<b class="nowrap">{$stats.images|thousends}</b><br/>
+			images in total!
 		</div>
 		<div> 
 			<b class="nowrap">{$stats.persquare}</b><br/>
