@@ -25,6 +25,7 @@
 
 {/if}
 
+{if $user->stats.images < 20} 
 <div style="width:180px;margin-left:10px;margin-bottom:100px;float:right;font-size:0.8em;padding:10px;background:#dddddd;position:relative; border:1px solid gray; z-index:100">
 <h3 style="margin-bottom:0;margin-top:0">Need Help?</h3>
 
@@ -40,7 +41,7 @@ for that square</p>
 geographing</a> first.</p>
 
 </div>
-
+{/if} 
 
 	{if $errormsg}
 	<p style="color:#990000;font-weight:bold;">{$errormsg}</p>
@@ -60,7 +61,7 @@ geographing</a> first.</p>
 	<div style="position:relative;{if $tab != 1}display:none{/if}" class="interestBox" id="div1">
 		<p>Begin by choosing the grid square you wish to submit.</p>
 
-		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, if you wish you can specify a photographer location in the next step.</p>
+		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, specify the photographer location in the next step.</p>
 
 		<p><label for="grid_reference">Enter the grid reference 
 		(<u title="e.g. TQ4364 or TQ 43 64">4</u>,
@@ -73,7 +74,7 @@ geographing</a> first.</p>
 		<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}or <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>{/if}
 		</p>
 		
-		<p>TIP: you can just enter a 4fig reference and enter a more precise location in the next step</p> 
+		<p>Clicking the <i>Upload via Picnik</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transfering it to Geograph.</p>
 	</div>		
 
 	<div style="position:relative;{if $tab != 2}display:none{/if}" class="interestBox" id="div2">
@@ -131,12 +132,12 @@ geographing</a> first.</p>
 		<hr/>
 		<h3>Picasa Plugin<sup style="color:red">New!</sup></h3>	
 		<p>We have recently created a new submission process that intergrates into the {external href="http://picasa.google.com/" text="Picasa"} image mananagement program. With this button installed can use the selection tools in Picasa to upload photos in bulk, the submission process matches the online upload allowing selection with maps etc. Picasa automatically resizes the photo to Geograph specifications before upload, EXIF data is preserved however its only provided to Geograph at the end so it can't be used to find geolocation or dates embedded in the file. <br/>
-		<b><a href="picasa://importbutton/?url=http://{$http_host}/stuff/geograph-for-picasa.pbz.php/geograph-for-picasa.pbz">Install the Geograph Uploader, Picasa Button</a></b>. (You will be asked to confirm this action, <b>only works if have Picasa installed!)</b></p>
+		<b><a href="picasa://importbutton/?url=http://{$http_host}/stuff/geograph-for-picasa.pbz.php/geograph-for-picasa.pbz">Install the Geograph Uploader, Picasa Button</a></b>.<br/> (You will be asked to confirm this action, <b>only works if have Picasa installed!)</b></p>
 		<hr/>
 		<p>Note while JUppy is an Offline Application, with which you can prepare the upload in advance of connecting; the Picasa button requires a Internet Connection to work as it integrates the interactive maps and other aids from the Geograph website.</p>
 	</div>
 </div>
-	
+	<br/><br/><br/>
 	<p>If you are unsure of the photo location there are a number of online 
 		sources available to help:</p>
 		
@@ -447,7 +448,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 <p>Tick this box only if you believe your photograph is not a 'geograph'. The moderator will just use the box as a suggestion, so if you are not sure, leave it unticked. Note: There can be many geograph images per square.</p>
 
-<p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in this <a href="http://www.geograph.org.uk/article/Geograph-or-supplemental" target="_blank">article on how images are moderated</a> (opens in new window).</span></p>
+<p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in this <a href="/article/Geograph-or-supplemental" target="_blank">article on how images are moderated</a> (opens in new window).</span></p>
 </div>
 
 <p>

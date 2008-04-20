@@ -70,13 +70,13 @@
 
 <div class="greenbar">{* for 33-66% coverage *}
 	<div class="righttextbox">
-		Total <b class="nowrap">{$stats.total|thousends}</b> Squares<br/>
+		<b class="nowrap">{$stats.total|thousends}</b><br/>
 		<br/>
 	</div>
 	<div class="redbar" style="width:{$stats.percentage}%;">
 
 		<div class="righttextbox">
-			<b class="nowrap">{$stats.squares|thousends}</b> Squares<br/>
+			<b class="nowrap">{$stats.squares|thousends}</b> Squares photographed<br/>
 			<br/>
 		</div>
 		<br style="clear:both"/>

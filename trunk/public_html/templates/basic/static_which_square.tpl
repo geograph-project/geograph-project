@@ -4,7 +4,7 @@
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 <img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
 Like many things, this project evolves, and as such this page has been replaced by: <br/>
-{external href="http://www.geograph.org.uk/article/Which-Square"}<br/>
+<a href="/article/Which-Square">Which Square Article</a><br/>
 the text below is maintained only as a historical record. <br/>
 </div>
 <br/>
