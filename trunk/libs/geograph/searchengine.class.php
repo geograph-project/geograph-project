@@ -147,8 +147,8 @@ class SearchEngine
 			if ($resultCount) {
 				$this->resultCount = $resultCount;
 			} else {
-				$count_from = (strpos($sql_where,'gs.' || strpos($sql_from,'gs.') !== FALSE)?"INNER JOIN gridsquare AS gs USING(gridsquare_id)":'';
-				$count_from .= (strpos($sql_where,'user.' || strpos($sql_from,'user.') !== FALSE)?" INNER JOIN user ON(gi.user_id=user.user_id)":'';
+				$count_from = (strpos($sql_where,'gs.') || strpos($sql_from,'gs.') !== FALSE)?"INNER JOIN gridsquare AS gs USING(gridsquare_id)":'';
+				$count_from .= (strpos($sql_where,'user.') || strpos($sql_from,'user.') !== FALSE)?" INNER JOIN user ON(gi.user_id=user.user_id)":'';
 
 				// construct the count query sql
 				if (preg_match("/group by ([\w\,\(\)\/ ]+)/i",$sql_where,$matches)) {
