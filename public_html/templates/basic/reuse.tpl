@@ -39,7 +39,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 
 <li style="font-size:1.1em; background-color:pink;"><b>Under the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image MUST be credited as specified by the contributor ({if $image->credit_realname}<tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>{else}credited to {$image->realname|escape:'html'}{/if}).</b></li>
 
-<li><b>You should also mention that the photos is copyrighted but licenced as such for further reuse.</b> If you alter, transform, or build upon this work, you may distribute the resulting work only under a similar license.</li>
+<li><b>You should also mention that the photo is copyrighted but licensed as such for further reuse.</b> If you alter, transform, or build upon this work, you may distribute the resulting work only under a similar licence.</li>
 
 <li>Ideally you could link back to the main photo page, at <a href="http://{$http_host}/photo/{$image->gridimage_id}">http://{$http_host}/photo/{$image->gridimage_id}</a></li>
 </ul>
