@@ -193,6 +193,11 @@
 			<li><b>Change Requests</b>: <a href="/tickets.php">View Recent Tickets</a></li>
 		{/if}
 	</ul>
+	{if $user->user_id eq $profile->user_id}
+		<ul>
+		<li><a href="/search.php?my_squares=1&amp;user_id={$profile->user_id}&amp;user_invert_ind=1&amp;submitted_startDay=30&amp;submitted_startYear">Search for Submissions in last 30 days in squares I photographed</a></li>
+		</ul>
+	{/if}
 {/if}
 
 
