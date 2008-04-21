@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-<ModulePrefs title="Geograph Images" scrolling="true" description="Displays Geograph pictures - Edit settings to choose what pictures to display, can display the images from any search, by copying the 'i' number from the url on a search results page" title_url="http://www.geograph.org.uk/" author="Barry Hunter" author_affiliation="Developer" author_email="geograph@barryhunter.co.uk" author_link="http://www.nearby.org.uk/blog/" screenshot="http://www.geograph.org.uk/img/ggadget0.png" thumbnail="http://www.geograph.org.uk/img/ggadget0-thumb.png" width="290" height="300"/>
-<UserPref name="inumber" display_name="Search Results number" default_value="1522"/>
-<UserPref name="results" display_name="Results to display (max 15)" default_value="4"/>
+<ModulePrefs title="Geograph Images" scrolling="true" description="Displays Geograph pictures - Edit settings to choose what pictures to display, can display the images from any search, by copying the 'i' number from the url on a search results page" title_url="http://www.geograph.org.uk/" author="Barry Hunter" author_affiliation="Developer" author_email="geograph@barryhunter.co.uk" author_link="http://www.nearby.org.uk/blog/" screenshot="http://www.geograph.org.uk/img/ggadget0.png" thumbnail="http://www.geograph.org.uk/img/ggadget0-thumb.png" width="290" height="300" singleton ="false">
+	<Require feature="analytics"/>
+</ModulePrefs>
+<UserPref name="inumber" display_name="Search Results number" default_value="1522" required="true"/>
+<UserPref name="results" display_name="Results to display (max 15)" default_value="4" required="true"/>
 
 <Content type="html"><![CDATA[
 <div id="content_div" style="font-family:Arial,Helvetica;text-align:left;font-size:70%"></div>
@@ -83,6 +85,8 @@
 		html +='<div style="text-align:center; background-color:#EEEEEE; font-size:0.8em;">photos licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">Creative Commons Licence</a></div>';
 
 		_gel('content_div').innerHTML = html;
+		
+		_IG_Analytics("UA-172738-3", "/stuff/ggadget0.xml");
 		});
 	}
 	_IG_RegisterOnloadHandler(displayMenu);
