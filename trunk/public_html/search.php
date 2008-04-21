@@ -71,7 +71,7 @@ if (isset($_GET['fav']) && $i) {
 	header("Location:/search.php");
 	exit;
 
-} else if (!empty($_GET['first']) || !empty($_GET['blank']) || !empty($_GET['glue']) ) {
+} else if (!empty($_GET['first']) || !empty($_GET['blank']) || !empty($_GET['glue']) || (!empty($_GET['my_squares']) &&  intval($_GET['user_id'])) ) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
 	//  special handler to build a special query for myriads/numberical squares.
@@ -81,9 +81,17 @@ if (isset($_GET['fav']) && $i) {
 	require_once('geograph/searchenginebuilder.class.php');
 
 	$data = $_GET;
+	$data['searchq'] = '';
 	$error = false;
 
-	if (!empty($_GET['first'])) {
+	if (!empty($_GET['my_squares'])) {
+		$u = intval($_GET['user_id']);
+		$profile=new GeographUser($u);
+		$data['description'] = "in squares photographed by ".($profile->realname);
+
+		$data['searchq'] = "inner join user_gridsquare ug on (gs.grid_reference = ug.grid_reference and ug.user_id = $u) where 1";
+
+	} elseif (!empty($_GET['first'])) {
 		$_GET['first'] = strtoupper(preg_replace('/\s+/','',$_GET['first']));
 
 		if (preg_match('/^[A-Z_%]{0,2}[\d_%]{1,4}$/',$_GET['first']) ) {
