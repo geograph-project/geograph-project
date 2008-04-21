@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-<ModulePrefs title="Geograph Photo of the Day" scrolling="true" description="Displays the Geograph Photo of the Day" title_url="http://www.geograph.org.uk/" author="Barry Hunter" author_affiliation="Developer" author_email="geograph@barryhunter.co.uk" author_link="http://www.nearby.org.uk/blog/" screenshot="http://www.geograph.org.uk/img/ggadget0.png" thumbnail="http://www.geograph.org.uk/img/ggadget0-thumb.png" width="230" height="230"/>
+<ModulePrefs title="Geograph Photo of the Day" scrolling="true" description="Displays the Geograph Photo of the Day" title_url="http://www.geograph.org.uk/" author="Barry Hunter" author_affiliation="Developer" author_email="geograph@barryhunter.co.uk" author_link="http://www.nearby.org.uk/blog/" screenshot="http://www.geograph.org.uk/img/ggadget0.png" thumbnail="http://www.geograph.org.uk/img/ggadget0-thumb.png" width="250" height="250">
+	<Require feature="analytics"/>
+</ModulePrefs>
 <UserPref name="inumber" display_name="Search Results number" default_value="2087426" datatype="hidden"/>
-<UserPref name="results" display_name="Results to display (max 15)" default_value="1"/>
+<UserPref name="results" display_name="Results to display (max 15)" default_value="1" required="true"/>
 
 <Content type="html"><![CDATA[
 <div id="content_div" style="font-family:Arial,Helvetica;text-align:left;font-size:70%"></div>
@@ -82,6 +84,8 @@
 		html +='<div style="text-align:center; background-color:#EEEEEE; font-size:0.8em;">photos licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">Creative Commons Licence</a></div>';
 
 		_gel('content_div').innerHTML = html;
+		
+		_IG_Analytics("UA-172738-3", "/stuff/ggadget1.xml");
 		});
 	}
 	_IG_RegisterOnloadHandler(displayMenu);
