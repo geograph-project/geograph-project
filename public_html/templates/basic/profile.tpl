@@ -95,7 +95,7 @@
 				<li><b>{$profile->stats.points}</b> Geograph points <sup>(see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)</sup>
 					{if $user->user_id eq $profile->user_id && $profile->stats.points_rank > 0}
 						<ul style="font-size:0.8em;margin-bottom:2px">
-						<li>Overall Rank: <b>{$profile->stats.points_rank|ordinal}</b> {if $profile->stats.points_rank > 1}({$profile->stats.points_rise} more needed to reach {$profile->stats.points_rank-1|ordinal} position){/if}</li>
+						<li>Overall Rank: <b>{$profile->stats.points_rank|ordinal}</b> {if $profile->stats.points_rank > 1}({$profile->stats.points_rise} more needed to rise rank){/if}</li>
 						</ul>
 					{/if}
 				</li>
@@ -104,7 +104,7 @@
 				<li><b>{$profile->stats.geosquares}</b> Personal points (gridsquare{if $profile->stats.geosquares ne 1}s{/if} <i>geographed</i>)
 					{if $user->user_id eq $profile->user_id && $profile->stats.geo_rank > 0}
 						<ul style="font-size:0.8em;margin-bottom:2px">
-						<li>Overall Rank: <b>{$profile->stats.geo_rank|ordinal}</b> {if $profile->stats.geo_rank > 1}({$profile->stats.geo_rise} more needed to reach {$profile->stats.geo_rank-1|ordinal} position){/if}</li>
+						<li>Overall Rank: <b>{$profile->stats.geo_rank|ordinal}</b> {if $profile->stats.geo_rank > 1}({$profile->stats.geo_rise} more needed to rise rank){/if}</li>
 						</ul>
 					{/if}
 				</li>
