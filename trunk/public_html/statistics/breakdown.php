@@ -26,7 +26,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-$by = (isset($_GET['by']) && preg_match('/^\w+$/' , $_GET['by']))?$_GET['by']:'status';
+$by = (isset($_GET['by']) && preg_match('/^\w+$/' , $_GET['by']))?$_GET['by']:'myriad';
 
 $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
@@ -101,9 +101,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."gridsquare=");
 		if ($ri) {
 			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
-			$sql_group = $sql_fieldname = "SUBSTRING(grid_reference,1,$letterlength)";
+			$sql_group = $sql_fieldname = "SUBSTRING(gi.grid_reference,1,$letterlength)";
 		} else {
-			$sql_group = $sql_fieldname = "SUBSTRING(grid_reference,1,3 - reference_index)";
+			$sql_group = $sql_fieldname = "SUBSTRING(gi.grid_reference,1,3 - reference_index)";
 		}
 	} else if ($by == 'hectad') {
 		$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."first=");
@@ -111,9 +111,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 			$ll1 = $letterlength+1;
 			$ll3 = $letterlength+3;
-			$sql_group = $sql_fieldname = "concat(substring(grid_reference,1,$ll1),substring(grid_reference,$ll3,1))";
+			$sql_group = $sql_fieldname = "concat(substring(gi.grid_reference,1,$ll1),substring(gi.grid_reference,$ll3,1))";
 		} else {
-			$sql_group = $sql_fieldname = "concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1))";
+			$sql_group = $sql_fieldname = "concat(substring(gi.grid_reference,1,length(gi.grid_reference)-3),substring(gi.grid_reference,length(gi.grid_reference)-1,1))";
 		}
 	} else if ($by == 'taken') {
 		$smarty->assign('linkpro', 1);
@@ -175,6 +175,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		if (strpos($user_crit,'gs') !== FALSE) {
 			$user_crit = str_replace('gs.','gi.',$user_crit);
+		}
+		if (strpos($sql_from,'gs') !== FALSE) {
+			$sql_from = str_replace('gs.','gi.',$sql_from);
 		}
 		#$sql_fields_dummy = str_replace('gs.','gi.',$sql_fields_dummy);
 		
