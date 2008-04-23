@@ -240,7 +240,7 @@
 	{/if}
 	
 	<div class="ticketnotes">
-		<div class="ticketnote">{$ticket->notes|escape:'html'|geographlinks}</div>
+		<div class="ticketnote">{$ticket->notes|escape:'html'|geographlinks|replace:'Auto-generated ticket, as a result of Moderation. Rejecting this image because:':'<span style="color:gray">Auto-generated ticket, as a result of Moderation. Rejecting this image because:</span><br/>'}</div>
 	
 		
 		{if $ticket->comments}
