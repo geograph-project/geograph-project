@@ -77,7 +77,12 @@ if (isset($_REQUEST['id']))
 		list($latdm,$longdm) = $conv->wgs84_to_friendly($lat,$long);
 		$smarty->assign('latdm', $latdm);
 		$smarty->assign('longdm', $longdm);
-
+		
+		if (!empty($image->viewpoint_northings)) {
+			list($lat,$long) = $conv->national_to_wgs84($image->viewpoint_eastings,$image->viewpoint_northings,$image->grid_square->reference_index);
+			$smarty->assign('photographer_lat', $lat);
+			$smarty->assign('photographer_long', $long);
+		}
 	}
 	$smarty->assign_by_ref('image', $image);
 } else {

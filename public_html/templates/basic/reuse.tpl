@@ -100,6 +100,28 @@ licensed for reuse under this [url=http://creativecommons.org/licenses/by-sa/2.0
 &copy; [url=http://{$http_host}{$image->profile_link}]{$image->realname|escape:'html'}[/a], [url=http://creativecommons.org/licenses/by-sa/2.0/]cc-by-sa[/url].</textarea></form>
 
 
+<h3>Wikipedia Template for image page.</h3>
+
+The following is the recommended template for using on the photo page. You should <a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">download the image</a>, and upload to {external href="http://commons.wikimedia.org/wiki/Main_Page" text="wikimedia commons"}.
+
+<form><textarea rows="5" style="font-size:0.8em">{literal}{{{/literal}Information
+|Description={$image->title|escape:'html'}
+|Source=From [http://{$http_host}/photo/{$image->gridimage_id} geograph.org.uk]
+|Date={$image->submitted|date_format:'%Y-%m-%dT%H:%M:%S+00:00'}
+|Author=[http://{$http_host}{$image->profile_link} {$image->realname|escape:'html'}]
+|Permission=Creative Commons Attribution Share-alike license 2.0
+{literal}}}{/literal}
+{if $photographer_lat}
+{literal}{{{/literal}Location dec|{$photographer_lat|string_format:"%.6f"}|{$photographer_long|string_format:"%.6f"}{if $image->view_direction > -1}|heading:{$image->view_direction}{/if}{literal}}}{/literal}
+{else}
+{literal}{{{/literal}Location dec|{$lat|string_format:"%.5f"}|{$long|string_format:"%.5f"}{if $image->view_direction > -1}|heading:{$image->view_direction}{/if}{literal}}}{/literal}
+{/if}
+
+{literal}{{{/literal}geograph|{$image->gridimage_id}|{$image->realname|escape:'html'}{literal}}}{/literal}</textarea><br/>
+<small>This template includes the {external href="http://commons.wikimedia.org/wiki/Template:Information" text="information box"} with the relevent data (title, links and licence), {external href="http://commons.wikimedia.org/wiki/Template:Location" text="geotags the image"}, as well as the specific {external href="http://commons.wikimedia.org/wiki/Template:Geograph" text="Geograph Template"}</small></form>
+
+
+
 <h3>Creative Commons Metadata for this image</h3>
 <form><textarea rows="20" style="width:100%; font-size:0.8em"><!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
