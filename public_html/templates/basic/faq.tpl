@@ -270,16 +270,18 @@ The <b>Geograph Website</b>:
 <div id="use">
 <a name="use"></a>
 <h3>I would be interested in using Geograph content, is that possible?</h3>
-	<p>If you can think of an interesting use on your own site, or for a new idea, (beyond what's available via the RSS feeds above) 
-	then we would be very interested to <a title="Contact Us" href="contact.php">hear from you</a>. 
-	In all likelihood we can provide a <a href="/help/api">feed</a> to suit your requirements.</p>
+	<p>Please get in <a title="Contact Us" href="/contact.php">contact</a> if you have an idea for reusing images, 
+	beyond what's available via the RSS feeds above, in all likelihood we can provide a <a href="/help/api">feed</a> 
+	to suit your requirements.</p>
 
 	<p>Images are licensed for re-use under a <a href="#opensource">Creative Commons Licence</a>, see
-	licence details by viewing a full size image.</p>
+	licence details by viewing a full size image. Also look for the "Interested in reusing this image?" link under each image on the main photo page, which outlines easy ways to reuse the image.</p>
 
 	<ul>
-	<li>Not a developer and simply looking for <a href="/article/Ways-to-view-Geograph-Images">ways to access the images</a>?</li>
+	<li>If you are not a developer and maybe looking for <a href="/article/Ways-to-view-Geograph-Images">ways to access images outside the website</a>.</li>
 	</ul>
+	
+	<p>We also have a Google Gadget: * {external href="http://www.google.com/ig/add?moduleurl=http%3A%2F%2Fwww.geograph.org.uk%2Fstuff%2Fggadget0.xml" target="_blank" text="Add to my iGoogle page"} * {external href="http://www.google.com/ig/creator?url=http%3A%2F%2Fwww.geograph.org.uk%2Fstuff%2Fggadget0.xml" text="Add to any webpage"} *</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
