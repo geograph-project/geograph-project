@@ -12,12 +12,23 @@ textarea {
 	padding:10px;
 }
 h3 {
-	 padding:10px;
-	 border-top: 1px solid lightgrey;
-	 background-color:#f9f9f9;
+	padding:10px;
+	margin-top:30px;
+	border-top: 1px solid lightgrey;
+	background-color:#f9f9f9;
 }
+
+div:target { 
+	border:2px solid orange;
+	padding:20px; 
+	background-color: lightgrey;
+}
+.top { text-align:right;font-size:0.7em; }
+.top A { text-decoration:none; }
+
 {/literal}
 </style>
+<a name="top"></a>
 
 <div style="float:right; position:relative; text-align:center; width:180px; border:1px solid red; padding:10px; background-color:lightgrey">Code for pasting into a Geograph related page <input type=text size="10" value="[[[{$image->gridimage_id}]]]" readonly="readonly"/></div>
 
@@ -33,9 +44,8 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 <ul class="checklist">
 <li style="background-color: yellow;">We do ask you be polite and not abuse Geograph's resources in using the image irresponsibly on your own site. For your convenience we have created some approved ways to reuse this image, such as mentioning this image in forum posts.</li>
 
-<li>So <b>do not hotlink</b> the fullsize image directly off our servers, this will likely be blocked.</li>
-
-<li>Instead download a copy, and upload it to your own site. Click: <b><a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">Download Fullsize .jpg file</a></b></li>
+<li>So <b>do not {external href="http://en.wikipedia.org/wiki/Inline_linking" text="hotlink"}</b> the fullsize image directly off our servers, this will likely be blocked.<br/>
+Instead download a copy, and upload it to your own site. Click: <b><a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">Download Fullsize .jpg file</a></b></li>
 
 <li style="font-size:1.1em; background-color:pink;"><b>Under the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image MUST be credited as specified by the contributor ({if $image->credit_realname}<tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>{else}credited to {$image->realname|escape:'html'}{/if}).</b></li>
 
@@ -45,7 +55,8 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 </ul>
 
 <div style="text-align:right"><i>Thank you for your attention in this matter.</i></div>
-
+<br/>
+<div class="interestBox">Jump snippets for: <a href="#html">HTML</a>, <a href="#bbcode">Forums</a> or <a href="#wikipedia">Wikipedia</a>. Or get <a href="#meta">CC-metadata</a> or <a href="#kml">KML File</a></div>
 <br/>
 
 <div class="photoguide" style="margin-left:auto;margin-right:auto">
@@ -59,6 +70,9 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 	<br style="clear:both"/>
 </div>
 
+
+<div id="html">
+<a name="html"></a>
 <h3>HTML text link for this Image</H3>
 
 <div class="ccmessage" style="border:2px solid yellow;padding:10px;"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
@@ -83,9 +97,12 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 <a href="http://{$http_host}/photo/{$image->gridimage_id}"><b>{$image->title|escape:'html'}</b></a><br/>
 &amp;nbsp; &amp;copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div></textarea></form>
+</div>
+<div class="top"><a href="#top">back to top</a></div>
 
 
-
+<div id="bbcode">
+<a name="bbcode"></a>
 <h3>BBCode for reusing image on a forum</H3>
 
 <form><textarea rows="3">[url=http://{$http_host}/photo/{$image->gridimage_id}][b]{$image->title|escape:'html'}[/b]
@@ -98,8 +115,12 @@ licensed for reuse under this [url=http://creativecommons.org/licenses/by-sa/2.0
 <form><textarea rows="3">[url=http://{$http_host}/photo/{$image->gridimage_id}][b]{$image->title|escape:'html'}[/b]
 [img]{$image->getThumbnail(120,120,true)}[/img][/url]
 &copy; [url=http://{$http_host}{$image->profile_link}]{$image->realname|escape:'html'}[/a], [url=http://creativecommons.org/licenses/by-sa/2.0/]cc-by-sa[/url].</textarea></form>
+</div>
+<div class="top"><a href="#top">back to top</a></div>
 
 
+<div id="wikipedia">
+<a name="wikipedia"></a>
 <h3>Wikipedia Template for image page.</h3>
 
 The following is the recommended template for using on the photo page. You should <a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">download the image</a>, and upload to {external href="http://commons.wikimedia.org/wiki/Main_Page" text="wikimedia commons"}.
@@ -119,9 +140,12 @@ The following is the recommended template for using on the photo page. You shoul
 
 {literal}{{{/literal}geograph|{$image->gridimage_id}|{$image->realname|escape:'html'}{literal}}}{/literal}</textarea><br/>
 <small>This template includes the {external href="http://commons.wikimedia.org/wiki/Template:Information" text="information box"} with the relevent data (title, links and licence), {external href="http://commons.wikimedia.org/wiki/Template:Location" text="geotags the image"}, as well as the specific {external href="http://commons.wikimedia.org/wiki/Template:Geograph" text="Geograph Template"}</small></form>
+</div>
+<div class="top"><a href="#top">back to top</a></div>
 
 
-
+<div id="meta">
+<a name="meta"></a>
 <h3>Creative Commons Metadata for this image</h3>
 <form><textarea rows="20" style="width:100%; font-size:0.8em"><!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
@@ -135,11 +159,17 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 --></textarea></form>
 <div style="text-align:right"><i>this metadata is also embedded in all photo pages</i></div>
+</div>
+<div class="top"><a href="#top">back to top</a></div>
 
+
+<div id="kml">
+<a name="kml"></a>
 <h3>{external href="http://en.wikipedia.org/wiki/Keyhole_Markup_Language" text="KML"} - geographic exchange format</h3>
 <p>The automatic
 <a title="Open in Google Earth" href="http://{$http_host}/photo/{$image->gridimage_id}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> file we produce for the image, is another great way of sharing the image.</p>
-
+</div>
+<div class="top"><a href="#top">back to top</a></div>
 
 <br/><br/>
 <a href="/photo/{$image->gridimage_id}">Return to photo page</a>

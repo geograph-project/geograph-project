@@ -70,7 +70,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <table style="width:100%">
 <tr>
-	<td colspan="6" align="center" style="background-color:lightgrey;font-size:0.7em;"><b>Interested in reusing this image?</b> <a href="/reuse.php?id={$image->gridimage_id}">Click here to find out how</a>.</td>
+	<td colspan="6" align="center" style="background-color:lightgrey;font-size:0.7em;"><b>Interested in reusing this image?</b> E.g. On your webpage, blog, a forum, or Wikipedia. <a href="/reuse.php?id={$image->gridimage_id}">Click here to find out how</a>.</td>
 </tr>
 <tr>
 {if $enable_forums}
