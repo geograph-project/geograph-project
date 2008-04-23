@@ -334,7 +334,7 @@ END;
 	}
 	
 	function ReturnRecordset($pg,$nocache = false) {
-		if ($nocache || $this->noCache || ($this->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\./',$this->criteria->searchq))) {
+		if ($nocache || $this->noCache || ($this->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\.(grid_reference|)/',$this->criteria->searchq,$m)) && !$m[2]) {
 			//a Special Search needs full access to GridImage/GridSquare/User
 			$recordSet =& $this->ExecuteReturnRecordset($pg);
 		} else {
@@ -345,7 +345,7 @@ END;
 		
 	function Execute($pg) 
 	{
-		if ($this->noCache || ($this->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\./',$this->criteria->searchq))) {
+		if ($this->noCache || ($this->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\.(grid_reference|)/',$this->criteria->searchq,$m)) && !$m[2]) {
 			//a Special Search needs full access to GridImage/GridSquare/User
 			$recordSet =& $this->ExecuteReturnRecordset($pg);
 		} else {
