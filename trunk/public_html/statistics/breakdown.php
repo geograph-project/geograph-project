@@ -128,7 +128,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign('linkpro', 1);
 		$sql_group = "user_id";
 		$sql_fieldname = "realname";
-		$sql_fields = ',user_id';
+		$sql_fields = ',gi.user_id';
 	} else if ($by == 'count') {
 		$sql_group = $sql_fieldname = "imagecount";
 	} else {
