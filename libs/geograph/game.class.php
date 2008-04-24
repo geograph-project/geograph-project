@@ -260,14 +260,14 @@ class game {
 					if (count($rows) > 10 && $rows[0]['c'] > 10 && $rows[10]['c'] < max(5,$rows[0]['c']/10)) {
 						$rows = array_slice($rows,0,10);
 					}
-					$pos = rand(0,count($rows)-1);
+					$pos = mt_rand(0,count($rows)-1);
 					list($x,$y) = $rows[$pos];
 				}
 
 			case 4: if (empty($x)) {
 					$db = $this->_getDB();
-					$total = $db->CacheGetOne(3600,"select count(*) from gridimage where user_id='{$USER->user_id}' and moderation_status<>'rejected'");
-					$pos = rand(0,$total-1);
+					$total = $db->CacheGetOne(3600,"select images from user_stat where user_id='{$USER->user_id}'");
+					$pos = mt_rand(0,$total-1);
 					list($x,$y) = $db->getRow("SELECT x,y FROM gridimage_search WHERE user_id='{$USER->user_id}' LIMIT $pos,1");
 				}
 			
@@ -286,7 +286,30 @@ class game {
 				
 				break;
 		
-			case 5: $where = 1; break;
+			case 5: 
+				$db = $this->_getDB();
+				#$where .= sprintf(" and submitted like '____-%02d-%%'",(abs(crc32(session_id()))%12) + 1); 
+				
+				$maxId = $db->cacheGetOne(3600,"SELECT MAX(gridimage_id) AS max FROM gridimage_search");
+				
+				$ids = array();
+				
+				$needed = ($game->batchsize*3); //we need to allow for users images, ireland, rejected etc
+				
+				if ($maxId < $needed) {
+					die("not enough images submitted");
+				}
+				
+				mt_srand(abs(crc32(session_id()))*intval(time()/600));//give the sql a better chance of been cached
+				while (count($ids) < $needed) {
+					$id = mt_rand(1,$maxId);
+					if (!in_array($id,$this->done)) {
+						$ids[$id]=1;
+					}
+				}
+				
+				$where = "gridimage_id IN (".implode(',',array_keys($ids)).")"; 
+				break;
 		}
 		
 		if (!empty($reference_index)) {
