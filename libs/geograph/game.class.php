@@ -241,6 +241,9 @@ class game {
 		global $USER;
 		$where = 1;
 		$dist = $x = 0;
+		if (empty($game->batchsize)) {
+			$game->batchsize = 10;
+		}
 		switch($level) {
 			case 1: $dist = 3;
 			
@@ -320,9 +323,6 @@ class game {
 		}
 		if (!empty($geoonly)) {
 			$where .= " and moderation_status = 'geograph'";
-		}
-		if (empty($game->batchsize)) {
-			$game->batchsize = 10;
 		}
 		$sql = "select gi.*
 			from gridimage_search gi

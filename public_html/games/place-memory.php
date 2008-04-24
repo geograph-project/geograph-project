@@ -31,32 +31,8 @@ init_session();
 
 
 $rater=inEmptyRequestInt('rater',0);
-$i=inEmptyRequestInt('i',0);
 $l=inEmptyRequestInt('l',0);
 
-if (isset($_REQUEST['t'])) {
-	$ok=false;
-	$token=new Token;
-
-	if ($token->parse($_REQUEST['t']))
-	{
-		if ($token->hasValue("i")) {
-			$i = $token->getValue("i");
-		}
-		if ($token->hasValue("p")) {
-			$_GET['page'] = $token->getValue("p");
-		}
-	}
-} 
-if (isset($_REQUEST['debug']) && $USER->hasPerm("admin")) {
-	$token=new Token;
-
-	$token->setValue("i", $i);
-	if (!empty($_GET['page'])){ 
-		$token->setValue("p", $_GET['page']);
-	}
-	print $token->getToken(3600); 
-}
 if (isset($_GET['l']) && isset($_SESSION['gameToken'])) {
 	unset($_SESSION['gameToken']);
 }
@@ -69,15 +45,6 @@ if (isset($_REQUEST['token'])) {
 	$ok = $game->setToken($_SESSION['gameToken']);
 } 
 
-
-
-if (isset($_REQUEST['autoload'])) {
-	switch (rand(1,3)) {
-		case 1: $i = 958023; $_GET['page'] = 'x'; break;
-		case 2: $l = rand(1,5); break;
-		case 3: $l = rand(2,4)*10; break;
-	}
-}
 
 $game->game_id = 2;
 $game->batchsize = 10;
