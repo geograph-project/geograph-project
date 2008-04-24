@@ -145,42 +145,30 @@ if (isset($_GET['q'])) {
 #################
 # available values
 
-$types = array('pending'=>'New Tickets','open'=>"Open Tickets",'closed'=>"Closed Tickets");
+$types = array('pending'=>'New Tickets','open'=>"Open Tickets",'closed'=>"Closed Tickets",'ongoing'=>'New or Open');
 $modifers = array('recent'=>'All','24'=>"over 24 hours old",'7'=>"over 7 days old");
-$themes = array('any'=>'Any','tmod'=>"on ticket I moderating/ed",'mod'=>"on images I moderated",'comment'=>"tickets I have commented on",'suggest'=>"tickets I suggested");
+$themes = array('any'=>'Any','tmod'=>"on ticket I moderating/ed",'mod'=>"on images I moderated",'comment'=>"tickets I have commented on",'suggest'=>"tickets I suggested",'all'=>'any involvement');
 $variations = array('any'=>'Any','own'=>"suggested on own images",'comment'=>"has left comment");
 
 #################
 # setup type
 
-if ($type == 'open') {
+if ($type != 'pending') {
 	$columns .= ",moderator.realname as moderator";
 	$tables .= " left join user as moderator on (moderator.user_id=t.moderator_id)";
 		$locks[] = "user moderator READ";
 
 	$smarty->assign('col_moderator', 1);
 
-	$where_crit = "t.moderator_id>0 and t.status<>'closed'";
-
-} elseif ($type == 'closed') {
-	$columns .= ",moderator.realname as moderator";
-	$tables .= " left join user as moderator on (moderator.user_id=t.moderator_id)";
-		$locks[] = "user moderator READ";
-		
-	$smarty->assign('col_moderator', 1);
-
-	$where_crit = "t.status='closed'";
-	
-	$rev = ($rev)?'':'desc';
-	
-} elseif ($type == 'all') {
-	$columns .= ",moderator.realname as moderator";
-	$tables .= " left join user as moderator on (moderator.user_id=t.moderator_id)";
-		$locks[] = "user moderator READ";
-		
-	$smarty->assign('col_moderator', 1);
-
-	$where_crit = "1";
+	if ($type == 'open') { 
+		$where_crit = "t.moderator_id>0 and t.status<>'closed'";
+	} elseif ($type == 'closed') {
+		$where_crit = "t.status='closed'";
+	} elseif ($type == 'all') {
+		$where_crit = "1";
+	} else {//ongoing
+		$where_crit = "t.status<>'closed'";
+	}
 	
 	$rev = ($rev)?'':'desc';
 	
@@ -214,7 +202,10 @@ if ($modifer == '24') {
 
 #################
 
-if ($theme == 'mod') {
+if ($theme == 'all') {
+	$sql_where .= " and {$USER->user_id} in (i.moderator_id,t.moderator_id,c.user_id,t.user_id)";
+
+} elseif ($theme == 'mod') {
 	$sql_where .= " and i.moderator_id = {$USER->user_id}";
 
 } elseif ($theme == 'tmod') {
