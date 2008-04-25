@@ -116,9 +116,6 @@
 			<li><a href="/gridref/{$gridref}?by=1{if $extra}{$extra}{/if}">View <b>breakdowns</b> for this square</a></li>
 			
 		{/if}
-		{if !$extra && $totalimagecount > 1}
-			<li><a href="/gridref/{$gridref}?{if $breakdown || $breakdowns || $filtered}by=1&amp;{/if}nl=1">Include <b>pending and rejected</b> images</a></li>
-		{/if}
 
 		<li><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph <b>map</b> for {if strlen($gridrefraw) < 5}{$gridrefraw}{else}{$gridref}{/if}</a>,</li>
 		<li><img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <b><a href="/location.php?gridref={$gridrefraw}">More Links for {$gridrefraw}</a></b></li>
@@ -147,6 +144,14 @@
 	{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
 	for <b>{$gridref}</b>
 	{if !$breakdown && !$breakdowns && $totalimagecount > 0}<span style="font-size:0.8em;">- click for larger version</span>{/if}</div>
+
+	{if $user->registered}
+		{if !$extra && $totalimagecount > 1}
+			<div style="position:relative;text-align:right; font-size:0.7em"><a href="/gridref/{$gridref}?{if $breakdown || $breakdowns || $filtered}by=1&amp;{/if}nl=1">Include <b>pending and rejected</b> images</a>&nbsp;</div>
+		{elseif $extra}
+			<div style="position:relative;text-align:right; font-size:0.7em"><a href="/gridref/{$gridref}?{if $breakdown || $breakdowns || $filtered}by=1&amp;{/if}nl=0">Exclude <b>pending and rejected</b> images</a>&nbsp;</div>
+		{/if}
+	{/if}
 
 	{if $breakdown}
 		{* We want to display a breakdown list *}
