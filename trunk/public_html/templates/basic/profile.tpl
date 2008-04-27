@@ -17,6 +17,8 @@
   </div>
 {/if}
 
+<img src="http://www.gravatar.com/avatar.php?gravatar_id={$profile->md5_email}&amp;rating=G&amp;default=http://{$static_host}/img/blank.gif&amp;size=60" align="right" alt="{$profile->realname|escape:'html'}'s Gravatar"/>
+
 <h2><a name="top"></a>Profile for {$profile->realname|escape:'html'}</h2>
 
 {if $profile->role}

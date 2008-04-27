@@ -208,6 +208,8 @@ if ($template=='profile.tpl')
 			$overview->type_or_user = $uid;
 			$overview->assignToSmarty($smarty, 'overview');
 		}
+		
+		$profile->md5_email = md5($profile->email);
 	} else {
 		$profile=new GeographUser();
 		$profile->user_id = $uid;
