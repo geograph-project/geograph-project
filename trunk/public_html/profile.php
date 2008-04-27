@@ -84,8 +84,9 @@ if (isset($_REQUEST['edit']))
 	'none' => 'No Email - access online only' ));
 	
 	$profile->getStats();
+	$profile->md5_email = md5(strtolower($profile->email));
 	
-	$smarty->assign_by_ref('profile', $profile);
+	$smarty->assign_by_ref('profile', $profile);	
 }
 
 
