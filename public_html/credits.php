@@ -78,7 +78,7 @@ if (!$smarty->is_cached($template,$cacheid))
 			nickname,user.user_id,user.realname,user.user_id,count(*) as images
 			from user
 				inner join gridimage_search gi using (user_id)
-			where nickname != '' $andwhere
+			where nickname != '' and rights IS NOT NULL $andwhere
 			group by gi.user_id
 			order by images desc");
 
@@ -106,7 +106,7 @@ if (!$smarty->is_cached($template,$cacheid))
 			user.user_id,nickname,user.realname,user.user_id,count(*) as images
 			from user
 				inner join gridimage_search gi using (user_id)
-			where 1 $andwhere
+			where rights IS NOT NULL $andwhere
 			group by gi.user_id
 			order by realname");
 	}
