@@ -562,7 +562,7 @@ class SearchEngineBuilder extends SearchEngine
 			switch ($dataarray['orderby']) {
 				case "":
 					if ($searchclass == 'All') {
-						$searchdesc .= ", in random order";
+						$searchdesc .= ", in undefined order";
 					}
 					break;
 				case "random":
