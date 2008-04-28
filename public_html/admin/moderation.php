@@ -287,6 +287,10 @@ if (isset($_GET['moderator'])) {
 	$sql_where = "gi.user_id = ".intval($_GET['user_id']);
 	$sql_order = "gridimage_id desc";
 	$smarty->assign('remoderate', 1);
+} elseif (isset($_GET['image'])) {
+	$sql_where = "gridimage_id = ".intval($_GET['image']);
+	$sql_order = "gridimage_id desc";
+	$smarty->assign('remoderate', 1);
 } elseif (isset($_GET['remoderate'])) {
 	$sql_where = "moderation_status != 2 and moderator_id != {$USER->user_id} and submitted > date_sub(now(),interval 10 day) ";
 	$sql_order = "gridimage_id desc";
