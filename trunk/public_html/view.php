@@ -165,7 +165,7 @@ if ($image->isValid())
 		$smarty->assign_by_ref('place', $place);
 
 		if (empty($image->comment)) {
-			$smarty->assign('meta_description', "{$image->grid_reference} :: {$image->big_title}, ".strip_tags(smarty_function_place(array('place'=>$place)));
+			$smarty->assign('meta_description', "{$image->grid_reference} :: {$image->bigtitle}, ".strip_tags(smarty_function_place(array('place'=>$place))) );
 		} else {
 			$smarty->assign('meta_description', $image->comment);
 		}
