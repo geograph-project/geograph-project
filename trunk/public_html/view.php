@@ -28,7 +28,7 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.or
 	$db = NewADOConnection($GLOBALS['DSN']);
 
 	$row =& $db->getRow("select gridimage_id,wgs84_lat,wgs84_long,title,grid_reference from gridimage_search where gridimage_id=".intval($_GET['id']) );
-	
+
 	if ($row['wgs84_lat']) {
 		$title = htmlentities($row['title']."::".$row['grid_reference']);
 
@@ -97,7 +97,7 @@ if (isset($_GET['id']))
 	$ismoderator=$USER->hasPerm('moderator')?1:0;
 
 	$ab=floor($_GET['id']/10000);
-	
+
 	$cacheid="img$ab|{$_GET['id']}|{$isowner}_{$ismoderator}";
 
 	//is the image rejected? - only the owner and administrator should see it
@@ -127,13 +127,13 @@ if ($image->isValid())
 
 	//when this image was modified
 	$mtime = strtotime($image->upd_timestamp);
-	
-	//page is unqiue per user (the profile and links) 
+
+	//page is unqiue per user (the profile and links)
 	$hash = $cacheid.'.'.$USER->user_id;
-	
+
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$hash,($USER->user_id == 0));
-	
+
 	if (!$smarty->is_cached($template, $cacheid))
 	{
 		$taken=$image->getFormattedTakenDate();
@@ -141,7 +141,7 @@ if ($image->isValid())
 		//get the grid references
 		$image->getSubjectGridref(true);
 		$image->getPhotographerGridref(true);
-	
+
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
 
 
@@ -150,7 +150,7 @@ if ($image->isValid())
 		$image->bigtitle=preg_replace('/(?<![\.])\.$/', '', $image->bigtitle);
 
 		$smarty->assign('page_title', $image->bigtitle.":: OS grid {$image->grid_reference}");
-		$smarty->assign('meta_description', $image->comment);
+
 		$smarty->assign('image_taken', $taken);
 		$smarty->assign('ismoderator', $ismoderator);
 		$smarty->assign_by_ref('image', $image);
@@ -160,15 +160,21 @@ if ($image->isValid())
 		$smarty->assign('map_token', $mosaic->getGridSquareToken($image->grid_square));
 
 
-
 		//find a possible place within 25km
-		$smarty->assign('place', $image->grid_square->findNearestPlace(75000));
+		$place = $image->grid_square->findNearestPlace(75000);
+		$smarty->assign_by_ref('place', $place);
+
+		if (empty($image->comment)) {
+			$smarty->assign('meta_description', "{$image->grid_reference} :: {$image->big_title}, ".strip_tags(smarty_function_place(array('place'=>$place)));
+		} else {
+			$smarty->assign('meta_description', $image->comment);
+		}
 
 		if ($CONF['forums']) {
 			//let's find posts in the gridref discussion forum
 			$image->grid_square->assignDiscussionToSmarty($smarty);
 		}
-		
+
 		//count the number of photos in this square
 		$smarty->assign('square_count', $image->grid_square->imagecount);
 
@@ -203,7 +209,7 @@ if ($image->isValid())
 
 		$smarty->assign('x', $image->grid_square->x);
 		$smarty->assign('y', $image->grid_square->y);
-		
+
 		if ($image->view_direction > -1) {
 			require_once('geograph/searchengine.class.php');
 			$search = new SearchEngine('');
