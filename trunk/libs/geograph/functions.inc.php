@@ -32,6 +32,8 @@
 * @version $Revision: 2911 $
 */
 
+$global_thumb_count =0;
+
 
 /**
 * Logs execution time of script
@@ -296,36 +298,43 @@ function GeographLinks(&$posterText,$thumbs = false) {
 	global $imageCredits;
 	//look for [[gridref_or_photoid]] and [[[gridref_or_photoid]]]
 	if (preg_match_all('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
+		$thumb_count = 0;
 		foreach ($g_matches[2] as $i => $g_id) {
 			//photo id?
 			if (is_numeric($g_id)) {
-				if (!isset($g_image)) {
-					$g_image=new GridImage;
-				}
-				$ok = $g_image->loadFromId($g_id);
-				if ($g_image->moderation_status == 'rejected') {
-					$posterText = str_replace("[[[$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
-				} elseif ($ok) {
-					$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title);
-					if ($g_matches[1][$i]) {
-						if ($thumbs) {
-							$g_title.=' by '.htmlentities($g_image->realname);
-							$g_img = $g_image->getThumbnail(120,120,false,true);
+				if ($global_thumb_count > 200 || $thumb_count > 60) {
+					$posterText = preg_replace("/\[?\[\[$g_id\]\]\]?/","[[<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_id</a>]]",$posterText);
+				} else {
+					if (!isset($g_image)) {
+						$g_image=new GridImage;
+					}
+					$ok = $g_image->loadFromId($g_id);
+					if ($g_image->moderation_status == 'rejected') {
+						$posterText = str_replace("[[[$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
+					} elseif ($ok) {
+						$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title);
+						if ($g_matches[1][$i]) {
+							if ($thumbs) {
+								$g_title.=' by '.htmlentities($g_image->realname);
+								$g_img = $g_image->getThumbnail(120,120,false,true);
 
-							$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
-							if (isset($imageCredits[$g_image->realname])) {
-								$imageCredits[$g_image->realname]++;
+								$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
+								if (isset($imageCredits[$g_image->realname])) {
+									$imageCredits[$g_image->realname]++;
+								} else {
+									$imageCredits[$g_image->realname]=1;
+								}
 							} else {
-								$imageCredits[$g_image->realname]=1;
+								//we don't place thumbnails in non forum links
+								$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_title</a>",$posterText);
 							}
 						} else {
-							//we don't place thumbnails in non forum links
-							$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_title</a>",$posterText);
+							$posterText = preg_replace("/(?<!\[)\[\[$g_id\]\]/","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_title</a>",$posterText);
 						}
-					} else {
-						$posterText = preg_replace("/(?<!\[)\[\[$g_id\]\]/","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_title</a>",$posterText);
 					}
+					$global_thumb_count++;
 				}
+				$thumb_count++;
 			} else {
 				//link to grid ref
 				$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/$g_id\">".str_replace(' ','+',$g_id)."</a>",$posterText);

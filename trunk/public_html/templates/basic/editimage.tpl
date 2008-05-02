@@ -395,7 +395,7 @@
 {/if}
 
   <div style="float:right;  position:relative">
-  <a title="Open in Google Earth" href="/kml.php?id={$image->gridimage_id}" class="xml-kml">KML</a></div>
+  <a title="Open in Google Earth" href="/photo/{$image->gridimage_id}.kml" class="xml-kml">KML</a></div>
 
 <p>
 <label for="grid_reference"><b style="color:#0018F8">Subject Grid Reference</b> {if $moderated.grid_reference}<span class="moderatedlabel">(moderated{if $isowner} for gridsquare changes{/if})</span>{/if}</label><br/>
@@ -500,7 +500,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	{html_select_date prefix="imagetaken" time=`$image->imagetaken` start_year="-200" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" day_value_format="%02d" month_value_format="%m"}
 	<br/><small>(please provide as much detail as possible, if you only know the year or month then that's fine)</small></p>
 {else}
-	<p><label><b>Date picture taken</b></label> <span class="moderatedlabel">(only changable by owner)</span><br/>
+	<p><label><b>Date picture taken</b></label> <span class="moderatedlabel">(only changeable by owner)</span><br/>
 	{html_select_date prefix="imagetaken" time=`$image->imagetaken` reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" day_value_format="%02d" month_value_format="%m" all_extra="disabled"}</p>
 {/if}
 
