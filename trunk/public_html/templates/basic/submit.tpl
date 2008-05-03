@@ -370,8 +370,6 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 
 <h3>Further Information</h3>
 
-<script type="text/javascript" src="/categories.js.php"></script>
-<script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>
 {literal}
 <script type="text/javascript">
 <!--
@@ -456,6 +454,10 @@ AttachEvent(window,'load',onChangeImageclass,false);
 <input type="hidden" name="savedata" value="1"/>
 <input type="submit" name="goback" value="&lt; Back"/>
 <input type="submit" name="next" value="Next &gt;"/></p>
+
+<script type="text/javascript" src="/categories.js.php"></script>
+<script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>
+
 {/if}
 
 {if $step eq 4}
