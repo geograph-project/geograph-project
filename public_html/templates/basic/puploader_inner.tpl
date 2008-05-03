@@ -119,8 +119,6 @@
 
 	<h3>Further Information</h3>
 
-	<script type="text/javascript" src="/categories.js.php"></script>
-	<script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>
 	{literal}
 	<script type="text/javascript">
 	<!--
@@ -180,6 +178,9 @@
 		Date ]
 
 		<br/><br/><span style="font-size:0.7em">(please provide as much detail as possible, if you only know the year or month then that's fine)</span></p>
+
+	<script type="text/javascript" src="/categories.js.php"></script>
+	<script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>
 
 {/if}
 
