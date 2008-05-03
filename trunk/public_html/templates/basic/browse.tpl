@@ -249,7 +249,7 @@
 			
 			
 			{if $filtered}
-				<p>{$totalimagecount} Images, {$filtered_title|escape:'html'}... (<a href="/gridref/{$gridref}{if $extra}?{$extra}{/if}">Remove Filter</a>)</p>
+				<p>{$totalimagecount} Images, {$filtered_title}... (<a href="/gridref/{$gridref}{if $extra}?{$extra}{/if}">Remove Filter</a>)</p>
 			{/if}
 
 			{foreach from=$images item=image}
