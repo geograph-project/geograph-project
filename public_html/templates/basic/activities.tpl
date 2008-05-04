@@ -12,7 +12,7 @@
 	<li><a href="/help/imagine">Imagine Slideshow</a> - imagine the landscape behind the map<br/><br/></li>
 	<li><a href="/activities/compare.php">Compare-a-Pair</a><sup style="color:red">New!</sup> - compare and contrast pairs of similar pictures<br/><br/></li>
 	<li><a href="/games/">Geograph Games</a> - fun games involving images and maps<br/><br/></li>
-	<li><a href="/article/?q=symbols">OS Map Symbols</a> - explorting map symbols in pictures <sub>(<a href="/article/Ordnance-Survey-Map-Symbols">Introductory Article</a>)</sub><br/><br/></li>
+	<li><a href="/article/?q=symbols">OS Map Symbols</a> - exploring map symbols in pictures <sub>(<a href="/article/Ordnance-Survey-Map-Symbols">Introductory Article</a>)</sub><br/><br/></li>
 	<li><a href="/gallery/">Galleries</a> - hand picked images on various themes<br/><br/></li>
 </ul>
 
