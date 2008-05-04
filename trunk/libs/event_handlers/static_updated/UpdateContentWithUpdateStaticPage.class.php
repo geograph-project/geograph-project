@@ -50,11 +50,11 @@ class UpdateContentWithUpdateStaticPage extends EventHandler
 		//the online servers dont have svn
 		#$lines = `svn log $path`;
 		//a temporally measure:
-		$lines = file_get_contents("http://www.nearby.org.uk/geograph/log.php?http://svn.geograph.org.uk/svn/trunk/public_html/templates/basic/".$filename);
-		
+		$lines = file_get_contents($url = "http://www.nearby.org.uk/geograph/log.php?url=http://svn.geograph.org.uk/svn/trunk/public_html/templates/basic/".$filename);
+
 		if (strlen($lines)) {
 		
-			#print "<pre>$lines</pre>";
+			print "<pre>$lines</pre>";
 
 			$updated = '';
 			foreach (explode("\n",$lines) as $line) {
@@ -69,12 +69,9 @@ class UpdateContentWithUpdateStaticPage extends EventHandler
 					$username = $user;
 				}
 			}
-			print "$filename<BR>";
 			
 			$url = preg_replace("/static_(\w+)\.tpl/",'/help/$1',$filename);
-			print "$url<BR>";
 			$url = preg_replace("/(\w+)\.tpl/",'/$1.php',$url);
-			print "$url<BR>";
 			
 			$updates = array();
 			$updates[] = "`foreign_id` = CRC32('$filename')";
