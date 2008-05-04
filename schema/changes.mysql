@@ -1639,23 +1639,27 @@ ALTER TABLE `user` CHANGE `rights` `rights` SET( 'basic', 'moderator', 'admin', 
 
 
 CREATE TABLE `content` (
-`content_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-`title` VARCHAR( 255 ) NOT NULL ,
-`url` VARCHAR( 255 ) NOT NULL ,
-`user_id` INT UNSIGNED NOT NULL ,
-`gridimage_id` INT UNSIGNED NOT NULL ,
-`gridsquare_id` INT UNSIGNED NOT NULL ,
-`titles` TEXT NOT NULL ,
-`tags` TEXT NOT NULL ,
-`words` TEXT NOT NULL ,
-`type` ENUM( 'article', 'gallery', 'gsd', 'submittedarticle', 'help', 'other' ) NOT NULL ,
-`use` ENUM( 'info', 'document' ) NOT NULL DEFAULT 'info',
-`updated` DATETIME NOT NULL ,
-`created` DATETIME NOT NULL ,
-INDEX (`title`),
-INDEX (`type`),
-INDEX (`updated`)
-) ENGINE = MYISAM COMMENT = 'consolidated index of geograph content';
+  `content_id` int(10) unsigned NOT NULL auto_increment,
+  `foreign_id` int(10) unsigned NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `gridsquare_id` int(10) unsigned NOT NULL,
+  `extract` varchar(255) NOT NULL,
+  `titles` text NOT NULL,
+  `tags` text NOT NULL,
+  `words` text NOT NULL,
+  `type` enum('article','gallery','gsd','submittedarticle','help','other') NOT NULL,
+  `use` enum('info','document') NOT NULL default 'info',
+  `updated` datetime NOT NULL,
+  `created` datetime NOT NULL,
+  PRIMARY KEY  (`content_id`),
+  UNIQUE KEY `foreign_id` (`foreign_id`,`type`),
+  KEY `title` (`title`),
+  KEY `type` (`type`),
+  KEY `updated` (`updated`)
+) ENGINE=MyISAM COMMENT='consolidated index of geograph content';
 
 
 INSERT INTO `event`
