@@ -302,7 +302,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 		foreach ($g_matches[2] as $i => $g_id) {
 			//photo id?
 			if (is_numeric($g_id)) {
-				if ($global_thumb_count > 250 || $thumb_count > 100) {
+				if ($global_thumb_count > 300 || $thumb_count > 200) {
 					$posterText = preg_replace("/\[?\[\[$g_id\]\]\]?/","[[<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_id</a>]]",$posterText);
 				} else {
 					if (!isset($g_image)) {
