@@ -24,7 +24,7 @@ if (preg_match('/^\/photos\/(\d{2})\/(\d{2})\/\d{6}_(\w+)\.jpg$/',$p,$m)) {
 		mkdir("$base/{$m[1]}/{$m[2]}");
 
 
-	if (preg_match('/_\d+x\d+$/',$m[3])) { 
+	if (preg_match('/_\d+(x|XX)\d+$/',$m[3])) { 
 		#the -p is important to maintain the mod date
 		system("cp -p /var/www/geograph_live/public_html$p .$p");
 	} else {
