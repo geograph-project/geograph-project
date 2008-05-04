@@ -60,7 +60,7 @@ class UpdateContentWithNewTopic extends EventHandler
 			$updates[] = "`user_id` = {$topic['topic_poster']}";
 			
 			
-			$posts=$db->GetRow("select max(post_time) as post_time,group_concat(post_text ORDER BY post_id DESC SEPARATOR ' ') as post_text from geobb_posts where topic_id='$topic_id'");
+			$posts=$db->GetRow("select max(post_time) as post_time,group_concat(post_text ORDER BY post_id SEPARATOR ' ') as post_text from geobb_posts where topic_id='$topic_id'");
 		
 			#$updates[] = "`extract` = ".$db->Quote($page['extract']);			
 			
