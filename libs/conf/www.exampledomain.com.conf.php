@@ -206,9 +206,9 @@ $CONF['picnik_method'] = 'inabox'; //'inabox'|'redirect'
 //this can be different to your main hostname if want to seperate out the hosting of the Google Earth Superlayer. 
 $CONF['KML_HOST'] = $_SERVER['HTTP_HOST'];
 
+##limits on numbers of thumbnails per page, and 'single item'
+$CONF['global_thumb_limit'] = 300;
+$CONF['post_thumb_limit'] = 200;
 
-
-//increment to force reloadling of geograph.js and basic.css
-$CONF['javascript_version'] = 1.1;
 
 ?>
