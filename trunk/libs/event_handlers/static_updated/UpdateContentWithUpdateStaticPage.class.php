@@ -54,7 +54,7 @@ class UpdateContentWithUpdateStaticPage extends EventHandler
 
 		if (strlen($lines)) {
 		
-			print "<pre>$lines</pre>";
+			#print "<pre>$lines</pre>";
 
 			$updated = '';
 			foreach (explode("\n",$lines) as $line) {
