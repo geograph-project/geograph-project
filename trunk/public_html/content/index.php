@@ -96,7 +96,6 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 			if (!$g_ok) {
 				unset($list[$i]['image']);
 			}
-			print "$i::$g_ok :: {$row['gridimage_id']}<BR>";
 		}
 	}
 	
