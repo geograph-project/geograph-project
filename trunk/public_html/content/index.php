@@ -47,20 +47,6 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	
 	$limit = 25;
 	
-	if (!empty($_GET['user_id']) && preg_match('/^\d+$/',$_GET['user_id'])) {
-		$where = "AND content.user_id = {$_GET['user_id']}";
-		$smarty->assign('extra', "&amp;user_id={$_GET['user_id']}");
-	
-	} elseif (!empty($_GET['q']) && preg_match('/^[\w ]+$/',$_GET['q'])) {
-		$where = "AND title LIKE '%{$_GET['q']}%'";
-		$smarty->assign('extra', "&amp;q={$_GET['q']}");
-	} elseif (isset($_GET['docs'])) {
-		$where = "`use` = 'document'";
-		$limit = 1000;
-	} else {
-		$where = "`use` = 'info'";
-	}
-	
 	#$pg = empty($_GET['page'])?1:intval($_GET['page']);
 	
 	$order = (isset($_GET['order']) && ctype_lower($_GET['order']))?$_GET['order']:'updated';
@@ -74,6 +60,26 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		case 'updated':
 		default: $sql_order = "updated desc";
 			$title = "Recently Updated";
+	}
+	
+	if (!empty($_GET['user_id']) && preg_match('/^\d+$/',$_GET['user_id'])) {
+		$where = "content.user_id = {$_GET['user_id']}";
+		$smarty->assign('extra', "&amp;user_id={$_GET['user_id']}");
+	
+	} elseif (!empty($_GET['q']) && preg_match('/^[\w ]+$/',$_GET['q'])) {
+		$where = "title LIKE '%{$_GET['q']}%'";
+		$smarty->assign('extra', "&amp;q={$_GET['q']}");
+		$title = "Title matching {$_GET['q']}";
+	} elseif (isset($_GET['docs'])) {
+		$where = "`use` = 'document'";
+		$limit = 1000;
+		$title = "Geograph Documents";
+	} elseif (isset($_GET['loc'])) {
+		$where = "gridsquare_id > 0";
+		$limit = 100;
+		$title = "Location Specific Content";
+	} else {
+		$where = "`use` = 'info'";
 	}
 	
 	
@@ -103,6 +109,8 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	
 	$smarty->assign_by_ref('list', $list);
 	$smarty->assign_by_ref('title', $title);
+} elseif (!empty($_SERVER['QUERY_STRING']) && preg_match("/^[\w&;=+ %]/",$_SERVER['QUERY_STRING'])) {
+	$smarty->assign('extra', "&amp;".htmlentities($_SERVER['QUERY_STRING']));
 }
 
 $smarty->display($template, $cacheid);

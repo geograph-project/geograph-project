@@ -16,18 +16,18 @@
  <div style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;margin-left:20px;top:-30px">
  <h3>Help and Info...</h3>
  <ul style="margin-top:0;padding:0 0 0 1em;">
- <li><a href="/help/freedom">Geograph Freedom</a></li>
  <li><a href="/help/guide">Geograph Guide</a></li>
- <li><a href="/help/geograph_guide">Moderation Guide</a></li>
- <li><a href="/help/which_square">Locating your Image</a></li>
+ <li><a href="/article/Geograph-or-supplemental">Moderation Guide</a></li>
+ <li><a href="/article/Which-Square">Locating your Image</a></li>
  <li><a href="/help/style">Submission Style Guide</a><br/><br/></li>
- <li><a href="/help/squares">Square Definitions</a><br/><br/></li>
  <li><a href="/help/changes">Change Request System</a><br/><br/></li>
+ <li><a href="/help/squares">Square Definitions</a><br/><br/></li>
  <li><a href="/help/search">Text Search Help</a></li>
  <li><a href="/help/stats_faq">Statistics FAQ</a><br/><br/></li>
  {if $enable_forums}
  <li><a href="/help/bbcodes">Forum BBcodes Help</a><br/><br/></li>
  {/if}
+ <li><a href="/help/freedom">Geograph Freedom</a></li>
  <li><a href="/help/terms">Terms &amp; Conditions</a><br/><br/></li>
  <li><a href="/contact.php">Contact Us</a><br/><br/></li>
  <li><a href="/admin/team.php">The Team</a> &amp; <a href="/help/credits">Credits</a><br/><br/></li>

@@ -18,7 +18,7 @@ div:target { background-color:orange;padding-bottom:10px; }
  <b>Contributing</b> photos:
  <ul>
  <li><a href="/help/guide">Geograph Guide</a></li>
- <li><a href="/help/geograph_guide">Moderation Guide</a></li>
+ <li><a href="/article/Geograph-or-supplemental">Moderation Guide</a></li>
  <li><a href="/article/Which-Square">Locating your Image</a></li>
  <li><a href="/help/style">Submission Style Guide</a><br/><br/></li>
  <li><a href="/help/changes">Change Request System</a><br/><br/></li>

@@ -1008,7 +1008,8 @@ ul.explore li ul li {
 
 ul.content {
 	padding:0 0 0 0; 
-	border-bottom: 1px solid gray
+	border-bottom: 1px solid gray;
+	list-style:none;
 }
 ul.content li {	
 	padding:3px; 
