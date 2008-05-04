@@ -221,8 +221,6 @@ if (count($page)) {
 if (!$smarty->is_cached($template, $cacheid))
 {
 	if (count($page)) {
-		$global_thumb_count = -40;
-		
 		foreach ($page as $key => $value) {
 			$smarty->assign($key, $value);
 		}
