@@ -1,20 +1,21 @@
+{assign var="page_title" value="Sitemap"}
 {include file="_std_begin.tpl"}
 
+ <h2>Geograph Sitemap</h2>
  
- <div style="float:right;padding:5px;background:pink;position:relative; font-size:0.8em;margin-left:20px;">
+ <p>Quick links to nealy all Geograph Webpages</p>
+ 
+ <div style="float:right;padding:5px;background:pink;position:relative; font-size:0.8em;margin-left:20px;top:-30px">
  <b>Press Releases</b> 
  <ul style="margin-top:0;padding:0 0 0 1em;">
  <li><a href="/help/press_release_001">Ordnance Survey to sponsor the Geograph Project</a></li>
  </ul></div>
 
-    <h2>Geograph Sitemap</h2>
-
- <br style="clear:both"/>
+ <br style="clear:both;"/>
  
- <div style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;margin-left:20px;">
+ <div style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;margin-left:20px;top:-30px">
  <h3>Help and Info...</h3>
  <ul style="margin-top:0;padding:0 0 0 1em;">
- <li><a href="/help/faq">Geograph FAQ</a><br/><br/></li>
  <li><a href="/help/freedom">Geograph Freedom</a></li>
  <li><a href="/help/guide">Geograph Guide</a></li>
  <li><a href="/help/geograph_guide">Moderation Guide</a></li>

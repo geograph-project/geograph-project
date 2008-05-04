@@ -1006,6 +1006,14 @@ ul.explore li ul li {
 	padding:2px;
 }
 
+ul.content {
+	padding:0 0 0 0; 
+	border-bottom: 1px solid gray
+}
+ul.content li {	
+	padding:3px; 
+	border-top: 1px solid gray
+}
 
 
 input.imageselect {

@@ -159,6 +159,10 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		if ($_REQUEST['page'] == 'new' || $_REQUEST['article_id'] == 'new') {
 			$_REQUEST['article_id'] = $db->Insert_ID();
 		}
+
+		require_once('geograph/event.class.php');
+		new Event("article_updated", $_REQUEST['article_id']);
+
 		//and back it up
 		$sql = "INSERT INTO article_revisions SELECT *,NULL,{$USER->user_id} FROM article WHERE article_id = ".$db->Quote($_REQUEST['article_id']);
 		$db->Execute($sql);

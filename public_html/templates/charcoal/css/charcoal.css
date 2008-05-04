@@ -1181,3 +1181,13 @@ ul.explore li ul li {
 	border:none;
 	padding:2px;
 }
+
+ul.content {
+	padding:0 0 0 0; 
+	border-bottom: 1px solid lightgrey;
+	list-style: none;
+}
+ul.content li {	
+	padding:3px; 
+	border-top: 1px solid lightgrey
+}

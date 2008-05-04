@@ -1,3 +1,4 @@
+{assign var="page_title" value="Terms of Use"}
 {include file="_std_begin.tpl"}
 
  <h2>Terms of use, the quick version</h2>

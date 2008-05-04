@@ -1630,3 +1630,74 @@ ALTER TABLE  `user` ADD http_host varchar(64) NOT NULL DEFAULT '';
 
 ALTER TABLE `queries` CHANGE `limit8` `limit8` SMALLINT( 5 ) NOT NULL DEFAULT '0';
 ALTER TABLE `queries_archive` CHANGE `limit8` `limit8` SMALLINT( 5 ) NOT NULL DEFAULT '0';
+
+
+
+ALTER TABLE `user` CHANGE `rights` `rights` SET( 'basic', 'moderator', 'admin', 'ticketmod', 'traineemod', 'suspicious' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL ;
+
+
+
+
+CREATE TABLE `content` (
+`content_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`title` VARCHAR( 255 ) NOT NULL ,
+`url` VARCHAR( 255 ) NOT NULL ,
+`user_id` INT UNSIGNED NOT NULL ,
+`gridimage_id` INT UNSIGNED NOT NULL ,
+`gridsquare_id` INT UNSIGNED NOT NULL ,
+`titles` TEXT NOT NULL ,
+`tags` TEXT NOT NULL ,
+`words` TEXT NOT NULL ,
+`type` ENUM( 'article', 'gallery', 'gsd', 'submittedarticle', 'help', 'other' ) NOT NULL ,
+`use` ENUM( 'info', 'document' ) NOT NULL DEFAULT 'info',
+`updated` DATETIME NOT NULL ,
+`created` DATETIME NOT NULL ,
+INDEX (`title`),
+INDEX (`type`),
+INDEX (`updated`)
+) ENGINE = MYISAM COMMENT = 'consolidated index of geograph content';
+
+
+INSERT INTO `event`
+SELECT
+NULL as event_id,
+'article_updated' as event_name ,
+`article_id` as event_param ,
+NOW() as posted ,
+'' as processed ,
+1 as instances ,
+0 as priority ,
+'pending' as status
+FROM article
+WHERE (licence != 'none' and approved = 1)
+
+
+insert into event(event_name, event_param,posted,priority) values('static_updated', 'static_press_release_001.tpl', now(), '0');
+insert into event(event_name, event_param,posted,priority) values('static_updated', 'static_guide.tpl', now(), '0');
+insert into event(event_name, event_param,posted,priority) values('static_updated', 'static_geograph_guide.tpl', now(), '0');
+insert into event(event_name, event_param,posted,priority) values('static_updated', 'static_style.tpl', now(), '0');
+insert into event(event_name, event_param,posted,priority) values('static_updated', 'static_changes.tpl', now(), '0');
+insert into event(event_name, event_param,posted,priority) values('static_updated', 'static_squares.tpl', now(), '0');
+insert into event(event_name, event_param,posted,priority) values('static_updated', 'static_search.tpl', now(), '0');
+insert into event(event_name, event_param,posted,priority) values('static_updated', 'static_stats_faq.tpl', now(), '0');
+insert into event(event_name, event_param,posted,priority) values('static_updated', 'static_bbcodes.tpl', now(), '0');
+insert into event(event_name, event_param,posted,priority) values('static_updated', 'static_freedom.tpl', now(), '0');
+insert into event(event_name, event_param,posted,priority) values('static_updated', 'static_terms.tpl', now(), '0');
+insert into event(event_name, event_param,posted,priority) values('static_updated', 'static_sitemap.tpl', now(), '0');
+
+
+insert into event(event_name, event_param,posted,priority) values('static_updated', 'faq.tpl', now(), '0');
+
+
+INSERT INTO `event`
+SELECT
+NULL as event_id,
+'topic_new' as event_name ,
+`topic_id` as event_param ,
+NOW() as posted ,
+'' as processed ,
+1 as instances ,
+0 as priority ,
+'pending' as status
+FROM geobb_topics
+WHERE forum_id = 11;
