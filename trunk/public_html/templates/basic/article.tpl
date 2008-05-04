@@ -1,19 +1,16 @@
 {assign var="page_title" value="Articles"}
 {assign var="rss_url" value="/article/feed/recent.rss"}
 {include file="_std_begin.tpl"}
-{literal}<style type="text/css">
-ul.explore li {	padding:3px; }
-</style>{/literal}
 
 <div style="float:right"><a title="geoRSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-rss">RSS</a></div>
 
 <h2>User Contributed Articles &nbsp;&nbsp;&nbsp;<sub><a href="/article/?table{$extra}">View as List</a> <sup style="color:red">New!</sup></sub></h2>
 
-<div class="interestBox">
 {if $user->registered} 
+<div class="interestBox">
 	<ul style="margin:0px;"><li><a href="/article/edit.php?page=new">Create your own Article</a></li></ul>
-{/if}
 </div>
+{/if}
 
 {assign var="lastid" value="0"}
 {foreach from=$list item=item}
@@ -25,7 +22,7 @@ ul.explore li {	padding:3px; }
 {/if}
 <div style="float:left;width:46%;position:relative; padding:5px;">
 <h3>{$item.category_name}</h3>
-<ul class="explore">
+<ul class="content">
 {assign var="lastname" value=""}
 {/if}
 	<li><b>{if $item.approved != 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'}" href="/article/{$item.url}">{$item.title}</a></b>{if $item.approved != 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}Not publicly visible{/if}){/if}<br/>

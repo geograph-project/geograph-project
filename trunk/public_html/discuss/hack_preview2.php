@@ -11,7 +11,7 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,2}
 	$thumb_count = 0;
 	foreach ($g_matches[2] as $i => $g_id) {
 		if (is_numeric($g_id)) {
-			if ($global_thumb_count >= 250 || $thumb_count >= 100) {
+			if ($global_thumb_count >= 300 || $thumb_count >= 200) {
 				$posterText = preg_replace("/\[?\[\[$g_id\]\]\]?/","[[<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_id</a>]]",$posterText);
 			} else {
 				if (!isset($g_image)) {
@@ -20,7 +20,7 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,2}
 					$g_image=new GridImage;
 				}
 				$ok = $g_image->loadFromId($g_id);
-				if (ok && $g_image->moderation_status == 'rejected' && (!isset($userRanks[$cc]) || $userRanks[$cc] == 'Member'))
+				if ($ok && $g_image->moderation_status == 'rejected' && (!isset($userRanks[$cc]) || $userRanks[$cc] == 'Member'))
 					$ok = false;
 				if ($ok) {
 					if ($g_matches[1][$i]) {

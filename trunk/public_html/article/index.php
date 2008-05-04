@@ -56,6 +56,16 @@ if ($isadmin) {
 		$sql = "INSERT INTO article_revisions SELECT *,NULL,{$USER->user_id} FROM article WHERE url = ".$db->Quote($_GET['page']);
 		$db->Execute($sql);
 		
+		$article_id = $db->getOne("SELECT article_id FROM article WHERE url = ".$db->Quote($_GET['page']));
+		if ($a == 1) {
+			require_once('geograph/event.class.php');
+			new Event("article_updated", $article_id);
+		
+		} else {
+			$db->Execute("delete from content where foreign_id = $article_id and type = 'article'");
+			//todo maybe make it an event?
+		}
+		
 		$smarty->clear_cache($template, $cacheid);
 	}
 }
