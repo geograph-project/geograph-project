@@ -50,7 +50,7 @@ class UpdateContentWithUpdateStaticPage extends EventHandler
 		//the online servers dont have svn
 		#$lines = `svn log $path`;
 		//a temporally measure:
-		$lines = file_get_contents("http://svn.geograph.org.uk/svn/trunk/public_html/templates/basic/".$filename);
+		$lines = file_get_contents("http://www.nearby.org.uk/geograph/log.php?http://svn.geograph.org.uk/svn/trunk/public_html/templates/basic/".$filename);
 		
 		if (strlen($lines)) {
 		
