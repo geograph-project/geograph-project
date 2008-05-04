@@ -26,7 +26,7 @@ init_session();
 
 
 
-if ($USER->hasPerm("basic")) {
+if ($USER->hasPerm("basic") && substr($_GET['u'],0,1)!='m') {
 	header("Location: /login.php");
 	exit;
 }
