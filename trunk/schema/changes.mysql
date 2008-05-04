@@ -1685,7 +1685,6 @@ insert into event(event_name, event_param,posted,priority) values('static_update
 insert into event(event_name, event_param,posted,priority) values('static_updated', 'static_terms.tpl', now(), '0');
 insert into event(event_name, event_param,posted,priority) values('static_updated', 'static_sitemap.tpl', now(), '0');
 
-
 insert into event(event_name, event_param,posted,priority) values('static_updated', 'faq.tpl', now(), '0');
 
 
