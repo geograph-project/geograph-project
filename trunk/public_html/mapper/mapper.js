@@ -39,10 +39,10 @@ function mouseDefaultClick(evt) {
 			osposition.update = 0;
 			gr = osposition.element.innerHTML.substr(0,13);
 			osposition.element.innerHTML = gr + ' <a href="/gridref/'+escape(gr)+'" target="_top">Go</a>';
-			parent.frames.browseframe.location.href = "/gridref/"+gr+"?inner";
+			parent.frames.browseframe.location.replace("/gridref/"+gr+"?inner");
 		} else {
 			osposition.update = 1;
-			parent.frames.browseframe.location.href = "about:blank";
+			parent.frames.browseframe.location.replace("about:blank");
 			osposition.lastXy = new OpenLayers.Pixel(); //can't use null
 			osposition.redraw(evt);
 		}
