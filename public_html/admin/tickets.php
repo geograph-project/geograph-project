@@ -125,6 +125,10 @@ if (isset($_GET['moderator']) && ($mid = intval($_GET['moderator']))) {
 	$sql_where .= " and t.moderator_id=$mid";
 	$smarty->assign('moderator', 1);
 
+} elseif (isset($_GET['image_moderator']) && ($mid = intval($_GET['image_moderator']))) {
+	$sql_where .= " and i.moderator_id=$mid";
+	$smarty->assign('moderator', 1);
+
 } elseif (isset($_GET['user_id']) && ($mid = intval($_GET['user_id']))) {
 	$sql_where .= " and i.user_id=$mid";
 	
