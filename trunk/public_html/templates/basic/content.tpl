@@ -25,6 +25,7 @@
 <ul>
 	<li><a href="/content/?inner" target="content">Recently Updated</a></li>
 	<li><a href="/content/?inner&amp;order=created" target="content">Recently Created</a></li>
+	<li><a href="/content/?inner&amp;order=views" target="content">Most Viewed</a></li>
 	<li><a href="/content/?inner&amp;loc" target="content">Location Specific</a></li>
 	<li><a href="/content/?inner&amp;docs&amp;order=title" target="content">Geograph Documents</a></li>
 </ul>
