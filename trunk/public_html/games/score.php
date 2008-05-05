@@ -65,7 +65,7 @@ if (!empty($_REQUEST['save']) && ($USER->registered || !empty($_REQUEST['usernam
 			$_SESSION['username']= $_REQUEST['username'];
 		} 
 		if ($app) {
-			header("Location: /games/moversboard.php?more");
+			header("Location: /games/moversboard.php?g={$game->game_id}&more");
 		} else {
 			header("Location: /games/");
 		}

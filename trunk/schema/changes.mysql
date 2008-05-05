@@ -1750,3 +1750,29 @@ CREATE TABLE `article_log` (
   `article_url` varchar(255) NOT NULL,
   `views` mediumint(8) unsigned NOT NULL
 ) ENGINE=MyISAM;
+
+
+##populate article_log
+
+#update article_stat,(select article_id,article_url,count(*) as months,sum(views) as views from article_log inner join article on (article.url = article_log.article_url) group by article_url) as joined set article_stat.views = article_stat.views +joined.views where article_stat.article_id = joined.article_id;
+
+	
+CREATE TABLE `photo_log` (
+  `month` varchar(7) NOT NULL,
+  `gridimage_id` int unsigned NOT NULL,
+  `views` mediumint(8) unsigned NOT NULL
+) ENGINE=MyISAM;
+#... load data
+alter table photo_log add index(gridimage_id);
+	
+CREATE TABLE `gridref_log` (
+  `month` varchar(7) NOT NULL,
+  `grid_reference` varchar(6) NOT NULL,
+  `views` mediumint(8) unsigned NOT NULL
+) ENGINE=MyISAM;
+#.... load data
+alter table gridref_log add index(grid_reference);
+
+
+
+alter table gridimage_post add index(topic_id);
