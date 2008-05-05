@@ -1673,7 +1673,7 @@ NOW() as posted ,
 0 as priority ,
 'pending' as status
 FROM article
-WHERE (licence != 'none' and approved = 1)
+WHERE (licence != 'none' and approved = 1);
 
 
 insert into event(event_name, event_param,posted,priority) values('static_updated', 'static_press_release_001.tpl', now(), '0');
@@ -1704,3 +1704,49 @@ NOW() as posted ,
 'pending' as status
 FROM geobb_topics
 WHERE forum_id = 11;
+
+
+
+
+
+
+CREATE TABLE `article_stat` (
+`article_id` INT UNSIGNED NOT NULL ,
+`views` MEDIUMINT UNSIGNED NOT NULL ,
+`images` MEDIUMINT UNSIGNED NOT NULL ,
+`words` MEDIUMINT UNSIGNED NOT NULL ,
+PRIMARY KEY ( `article_id` )
+) ENGINE = MYISAM ;
+
+
+INSERT INTO article_stat 
+SELECT 
+	article_id,
+	0 as views,
+	0 as images,
+	0 as words
+FROM 
+	article 
+WHERE
+	approved != -1;
+
+	#rerun this to update the stats!
+	INSERT INTO `event`
+	SELECT
+	NULL as event_id,
+	'article_updated' as event_name ,
+	`article_id` as event_param ,
+	NOW() as posted ,
+	'' as processed ,
+	1 as instances ,
+	0 as priority ,
+	'pending' as status
+	FROM article
+	WHERE (licence != 'none' and approved = 1);
+	
+	
+CREATE TABLE `article_log` (
+  `month` varchar(7) NOT NULL,
+  `article_url` varchar(255) NOT NULL,
+  `views` mediumint(8) unsigned NOT NULL
+) ENGINE=MyISAM;
