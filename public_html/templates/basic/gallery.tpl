@@ -9,7 +9,7 @@ ul.explore li {	padding:3px; }
 
 <h2>Themed Galleries</h2>
 
-<ul class="explore">
+<ul class="content">
 {foreach from=$list item=item}
 
 

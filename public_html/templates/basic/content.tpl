@@ -40,6 +40,7 @@
 	<li><a href="/content/?inner&amp;q=Symbols" target="content" onclick="document.getElementById('q_title').value='Symbols'">OS Map Symbols</a></li>
 	<li><a href="/content/?inner&amp;q=Wind+Farm" target="content" onclick="document.getElementById('q_title').value='Wind Farm'">Wind Farm</a></li>
 	<li><a href="/content/?inner&amp;q=Coast" target="content" onclick="document.getElementById('q_title').value='Coast'">Coast</a></li>
+	<li><a href="/content/?inner&amp;q=Railway" target="content" onclick="document.getElementById('q_title').value='Railway'">Railway</a></li>
 </ul>
 <hr/>
 This section is new and under development, and will include more options. For the moment you can use the above box to search the titles (only), we have also noted a few example searches.
