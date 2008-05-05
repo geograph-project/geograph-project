@@ -103,6 +103,15 @@ class UpdateContentWithUpdateArticle extends EventHandler
 			$sql = "REPLACE INTO `content` SET ".implode(',',$updates);
 
 			$db->Execute($sql);
+			
+			$words = preg_split("/\s+/s",$content);
+			$words = count($words);
+			
+			$images = count($this->gridimage_ids);
+			
+			$sql = "INSERT INTO `article_stat` SET article_id = {$page['article_id']}, words = $words, images = $images ON DUPLICATE KEY UPDATE words = $words, images = $images"; 
+			
+			$db->Execute($sql);
 		} 
 	
 		//return true to signal completed processing
