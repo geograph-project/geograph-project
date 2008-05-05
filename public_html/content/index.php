@@ -89,14 +89,14 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll("
-	select content.content_id,content.user_id,url,title,extract,updated,created,realname,type,gridimage_id,
+	select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.type,content.gridimage_id,
 		(coalesce(views,0)+coalesce(topic_views,0)) as views,
 		(coalesce(images,0)+coalesce(count(*),0)) as images,
 		article_stat.words,posts_count
 	from content 
 		left join user using (user_id)
-		left join article_stat on (type = 'article' and foreign_id = article_id)
-		left join geobb_topics on (type = 'gallery' and foreign_id = topic_id) 
+		left join article_stat on (content.type = 'article' and foreign_id = article_id)
+		left join geobb_topics on (content.type = 'gallery' and foreign_id = topic_id) 
 		left join gridimage_post using (topic_id)
 	where $where
 	group by content_id
