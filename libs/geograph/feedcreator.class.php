@@ -980,6 +980,15 @@ class RSSCreator091 extends FeedCreator {
 		if ($this->syndicationURL != '') {
 			$feed.= "        <atom:link href=\"".$this->syndicationURL."\" rel=\"self\" type=\"".$this->contentType."\" />\n";
 		}
+		if ($this->icon != '') {
+			$feed.= "        <atom:icon>".$this->icon."</atom:icon>\n";
+		}
+		if ($this->prevURL != '') {
+			$feed.= "        <atom:link href=\"".$this->prevURL."\" rel=\"previous\" type=\"".$this->contentType."\" />\n";
+		}
+		if ($this->nextURL != '') {
+			$feed.= "        <atom:link href=\"".$this->nextURL."\" rel=\"next\" type=\"".$this->contentType."\" />\n";
+		}
 		$now = new FeedDate();
 		$feed.= "        <lastBuildDate>".htmlspecialchars($now->rfc822())."</lastBuildDate>\n";
 		$feed.= "        <generator>".FEEDCREATOR_VERSION."</generator>\n";

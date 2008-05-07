@@ -136,10 +136,26 @@ if (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	
 	$rss->description = "Images".$images->criteria->searchdesc; 
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/feed/results/".$_GET['i'].(($pg>1)?"/$pg":'').".".strtolower($format);
+	
+	$images->Execute($pg);
+	
 	if ($format == 'MEDIA') {
 		$rss->link =  "http://{$_SERVER['HTTP_HOST']}/search.php?i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
+		if ($pg>1) {
+			$prev = $pg - 1;
+			$rss->prevURL = "http://{$_SERVER['HTTP_HOST']}/feed/results/".$_GET['i'].(($prev>1)?"/$prev":'').".".strtolower($format);
+		}
+		$pgsize = $images->criteria->resultsperpage;
+			
+		if (!$pgsize) {$pgsize = 15;}
+		
+		$offset = ($pg -1)* $pgsize;
+		if ($pg < 10 && $offset < 250 && $images->numberOfPages > $pg) {
+			$next = $pg + 1;
+			$rss->nextURL = "http://{$_SERVER['HTTP_HOST']}/feed/results/".$_GET['i'].(($next>1)?"/$next":'').".".strtolower($format);
+		}
+		$rss->icon = "http://{$CONF['STATIC_HOST']}/templates/basic/img/logo.gif";
 	} 
-	$images->Execute($pg);
 	
 	$images->images = &$images->results;
 	

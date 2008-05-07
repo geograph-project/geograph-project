@@ -56,6 +56,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{if strlen($gridrefraw) < 5}
 		<li><a title="First Geographs within {$gridrefraw}" href="/search.php?first={$gridrefraw}">Find <b>first geographs for hectad</b> {$gridrefraw}</a></li>
 	{/if}
+	<li><a title="Empty Squares" href="/squares.php?gridref={$gridref}&amp;type=without">View list of nearby squares <b>without images</b></a></li>
 	<li>or <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}"><b>search</b> for nearby images</a></li>
 
 </ul>
