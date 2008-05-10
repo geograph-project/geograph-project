@@ -36,7 +36,7 @@ require_once("geograph/eventhandler.class.php");
 require_once("geograph/gridsquare.class.php");
 
 //filename of class file should correspond to class name, e.g.  myhandler.class.php
-class UpdateContentWithDeleted extends EventHandler
+class UpdateContentWithDeletedTopic extends EventHandler
 {
 	function processEvent(&$event)
 	{
