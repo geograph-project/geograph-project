@@ -508,10 +508,13 @@ if (isset($_REQUEST['id']))
 		}
 		if (isset($_GET['simple'])) {
 			if (empty($_GET['simple'])) {
-				if (($i = array_search('simple',$_SESSION['editpage_options']))!==FALSE) {
+				if (isset($_SESSION['editpage_options']) && ($i = array_search('simple',$_SESSION['editpage_options']))!==FALSE) {
 					unset($_SESSION['editpage_options'][$i]);
 				}
 			} else {
+				if (!isset($_SESSION['editpage_options'])) {
+					$_SESSION['editpage_options'] = array();
+				}
 				$_SESSION['editpage_options'][] = 'simple';
 			}
 		} 
@@ -561,27 +564,27 @@ if (isset($_REQUEST['id']))
 			}
 			$dirs['00'] = $dirs[0];
 			$smarty->assign_by_ref('dirs', $dirs);
+		
+			if (!isset($_SESSION['editpage_options']) || !in_array('simple',$_SESSION['editpage_options'])) {
+
+				//get trouble tickets
+				$show_all_tickets = isset($_REQUEST['alltickets'])?intval($_REQUEST['alltickets']):1;
+				$smarty->assign('show_all_tickets', $show_all_tickets);
+
+				$statuses=array('pending', 'open');
+				if ($show_all_tickets)
+					$statuses[]='closed';
+
+				$openTickets=&$image->getTroubleTickets($statuses);
+
+				if (count($openTickets))
+					$smarty->assign_by_ref('opentickets', $openTickets);
+
+				if ($isadmin || $isowner)
+					$image->lookupModerator();
+			}
 		}
 		
-		if (!isset($_SESSION['editpage_options']) || !in_array('simple',$_SESSION['editpage_options'])) {
-		
-			//get trouble tickets
-			$show_all_tickets = isset($_REQUEST['alltickets'])?intval($_REQUEST['alltickets']):1;
-			$smarty->assign('show_all_tickets', $show_all_tickets);
-
-			$statuses=array('pending', 'open');
-			if ($show_all_tickets)
-				$statuses[]='closed';
-
-			$openTickets=&$image->getTroubleTickets($statuses);
-
-			if (count($openTickets))
-				$smarty->assign_by_ref('opentickets', $openTickets);
-			
-			if ($isadmin || $isowner)
-				$image->lookupModerator();
-		}
-
 		if (isset($_POST['title']) && isset($_POST['create']))
 		{
 			$title=trim(stripslashes($_POST['title']));
