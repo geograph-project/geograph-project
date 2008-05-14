@@ -69,7 +69,7 @@
 		or <a href="/admin/moderation.php?abandon=1">Finish</a> the current moderation session</div>
 
 
-<p><small>KEY: <span style="text-decoration:line-through">User opted out of initial receiving notification</span>, <img src="/templates/basic/img/star-light.png" width="14" height="14" title="Comment"/> User has left comment on this ticket, <input class="accept" type="button" value="D" style="width:10px;"> - Defer the ticket for 24 hours</small></p>
+<p><small>KEY: <span style="text-decoration:line-through">User opted out of receiving initial notification</span>, <img src="/templates/basic/img/star-light.png" width="14" height="14" title="Comment"/> User has left comment on this ticket, <input class="accept" type="button" value="D" style="width:10px;"> - Defer the ticket for 24 hours</small></p>
 
 {else}
   <p>There are no tickets available to moderate at this time, please try again later.</p>
