@@ -863,8 +863,8 @@ class GridImageTroubleTicket
 		}
 		$this->commit('closed');
 
-		//message to suggester (if not the owner)
-		if ($this->user_id != $image->user_id)
+		//message to suggester (if not the owner and not the moderator closing the ticket!)
+		if ($this->user_id != $image->user_id && $this->moderator_id != $this->user_id )
 		{
 			$suggester_msg="Many thanks for your feedback on this photo, we've now closed this issue.";
 			if (!empty($changes))
