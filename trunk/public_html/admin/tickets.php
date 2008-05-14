@@ -284,7 +284,8 @@ $db->Execute("LOCK TABLES ".implode(',',$locks));
 
 $newtickets=$db->GetAll($sql = 
 	"select t.*,suggester.realname as suggester,
-		submitter.realname as submitter, i.title, 
+		submitter.realname as submitter, submitter.ticket_option as submitter_ticket_option, 
+		i.title, 
 		group_concat(if(c.user_id=i.user_id,c.comment,null)) as submitter_comment,
 		group_concat(if(c.user_id=t.user_id,c.comment,null)) as suggester_comment
 		$columns
