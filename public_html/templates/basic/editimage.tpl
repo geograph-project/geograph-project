@@ -316,7 +316,13 @@
 
 
 <br/>
-
+<br/>
+{if !($opentickets && !$error && $isowner && $ticketsforcomments)}
+<a href="/editimage.php?id={$image->gridimage_id}&amp;simple=1" style="font-size:0.6em">Switch to Simple Edit Page</a>
+{/if}
+{else}
+<a href="/editimage.php?id={$image->gridimage_id}&amp;simple=0" style="font-size:0.6em">Switch to Full Edit Page</a>
+{/if}
 
 {if $opentickets && !$error && $isowner && $ticketsforcomments && $showfull}
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
@@ -331,12 +337,6 @@
 
 
 {else}
-
-<br/>
-<a href="/editimage.php?id={$image->gridimage_id}&amp;simple=1" style="font-size:0.6em">Switch to Simple Edit Page</a>
-{else}
-<a href="/editimage.php?id={$image->gridimage_id}&amp;simple=0" style="font-size:0.6em">Switch to Full Edit Page</a>
-{/if}
 
 <h2 class="titlebar" style="margin-bottom:0px">Report Problem / Change Image Details <small><a href="/help/changes">[help]</a></small></h2>
 {if $error}
