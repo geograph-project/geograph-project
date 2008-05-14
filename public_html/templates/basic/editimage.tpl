@@ -316,28 +316,26 @@
 
 
 <br/>
+
+
+{if $opentickets && !$error && $isowner && $ticketsforcomments && $showfull}
+<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+	<ul>
+		<li>If you agree with the changes suggested, please indicate your acceptance, <b>in the reply box above</b>.</li> 
+		<li>If you disagree, please explain above why you do not accept the changes. This will be helpful to the Moderator in making a decision.</li>
+		<li>However, if you want to make the changes straight away {if $moderated.grid_reference}<span class="moderatedlabel">(except gridsquare changes)</span>{/if}, or want to make other changes, use the <b><a href="/editimage.php?id={$image->gridimage_id}&amp;form">Change Image Details</a> Form</b>.</li>
+		<li>If a ticket suggests an issue but doesn't actually list the changes then it would help us if you were to make the changes yourself</li>
+	</ul>
+</div>
+<br>
+
+
+{else}
+
 <br/>
 <a href="/editimage.php?id={$image->gridimage_id}&amp;simple=1" style="font-size:0.6em">Switch to Simple Edit Page</a>
 {else}
 <a href="/editimage.php?id={$image->gridimage_id}&amp;simple=0" style="font-size:0.6em">Switch to Full Edit Page</a>
-{/if}
-
-{if $opentickets && !$error && $isowner && $ticketsforcomments}
-<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
-	If you agree with the changes suggested, please indicate your acceptance, <b>in the reply box above</b>. If you disagree, please explain above why you do not accept the changes. This will be helpful to the Moderator in making a decision. However, if you want to make the changes straight away {if $moderated.grid_reference}<span class="moderatedlabel">(except gridsquare changes)</span>{/if}, or want to make other changes, use the form below. If a ticket suggests an issue but doesn't actually list the changes then it would help us if you were to make the changes using the form below.
-</div>
-<br>
-<input type="button" value="Change Image Details Form &gt; &gt;" style="font-size:1.2em" onclick="this.style.display='none';document.getElementById('change_form_div').style.display=''"/>
-{literal}
-	<script type="text/javascript">
-	
-	function hideForm() {
-		document.getElementById('change_form_div').style.display='none';
-	}
-	AttachEvent(window,'load',hideForm,false);
-	</script>
-{/literal}
-<div id="change_form_div">
 {/if}
 
 <h2 class="titlebar" style="margin-bottom:0px">Report Problem / Change Image Details <small><a href="/help/changes">[help]</a></small></h2>
@@ -565,8 +563,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 {/if}
 </div>
 </form>
-{if $opentickets && !$error && $isowner}
-</div>
+
 {/if}
 
 <script type="text/javascript" src="/categories.js.php"></script>

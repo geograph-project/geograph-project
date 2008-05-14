@@ -514,8 +514,11 @@ if (isset($_REQUEST['id']))
 			} else {
 				$_SESSION['editpage_options'][] = 'simple';
 			}
-		}
-		if (!isset($_SESSION['editpage_options']) || !in_array('simple',$_SESSION['editpage_options'])) {
+		} 
+		if (isset($_GET['form'])) {
+			$smarty->assign('showfull', 0);
+			
+		} elseif (!isset($_SESSION['editpage_options']) || !in_array('simple',$_SESSION['editpage_options'])) {
 			
 			$smarty->assign('showfull', 1);
 			
@@ -525,38 +528,40 @@ if (isset($_REQUEST['id']))
 			}
 		}
 		
-		require_once('geograph/rastermap.class.php');
+		if (!isset($_GET['form'])) {
+			require_once('geograph/rastermap.class.php');
 
-		$rastermap = new RasterMap($image->grid_square,true);
-		if (!empty($image->viewpoint_northings)) {
-			$rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings,$image->viewpoint_grlen,$image->view_direction);
-		} elseif (isset($image->view_direction) && strlen($image->view_direction) && $image->view_direction != -1) {
-			$rastermap->addViewDirection($image->view_direction);
+			$rastermap = new RasterMap($image->grid_square,true);
+			if (!empty($image->viewpoint_northings)) {
+				$rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings,$image->viewpoint_grlen,$image->view_direction);
+			} elseif (isset($image->view_direction) && strlen($image->view_direction) && $image->view_direction != -1) {
+				$rastermap->addViewDirection($image->view_direction);
+			}
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;
+			list($lat,$long) = $conv->gridsquare_to_wgs84($image->grid_square);
+			$smarty->assign('lat', $lat);
+			$smarty->assign('long', $long);
+			$rastermap->addLatLong($lat,$long);
+
+			$smarty->assign_by_ref('rastermap', $rastermap);
+
+			//build a list of view directions
+			require_once('geograph/searchengine.class.php');
+			$search = new SearchEngine('');
+			$dirs = array (-1 => '');
+			$jump = 360/16; $jump2 = 360/32;
+			for($q = 0; $q< 360; $q+=$jump) {
+				$s = ($q%90==0)?strtoupper($search->heading_string($q)):ucwords($search->heading_string($q));
+				$dirs[$q] = sprintf('%s : %03d deg (%03d > %03d)',
+					str_pad($s,16,' '),
+					$q,
+					($q == 0?$q+360-$jump2:$q-$jump2),
+					$q+$jump2);
+			}
+			$dirs['00'] = $dirs[0];
+			$smarty->assign_by_ref('dirs', $dirs);
 		}
-		require_once('geograph/conversions.class.php');
-		$conv = new Conversions;
-		list($lat,$long) = $conv->gridsquare_to_wgs84($image->grid_square);
-		$smarty->assign('lat', $lat);
-		$smarty->assign('long', $long);
-		$rastermap->addLatLong($lat,$long);
-
-		$smarty->assign_by_ref('rastermap', $rastermap);
-
-		//build a list of view directions
-		require_once('geograph/searchengine.class.php');
-		$search = new SearchEngine('');
-		$dirs = array (-1 => '');
-		$jump = 360/16; $jump2 = 360/32;
-		for($q = 0; $q< 360; $q+=$jump) {
-			$s = ($q%90==0)?strtoupper($search->heading_string($q)):ucwords($search->heading_string($q));
-			$dirs[$q] = sprintf('%s : %03d deg (%03d > %03d)',
-				str_pad($s,16,' '),
-				$q,
-				($q == 0?$q+360-$jump2:$q-$jump2),
-				$q+$jump2);
-		}
-		$dirs['00'] = $dirs[0];
-		$smarty->assign_by_ref('dirs', $dirs);
 		
 		if (!isset($_SESSION['editpage_options']) || !in_array('simple',$_SESSION['editpage_options'])) {
 		
