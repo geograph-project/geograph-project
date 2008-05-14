@@ -217,7 +217,7 @@
 		{html_options options=$ticket_options selected=$profile->ticket_option}
 	</select>
 	 
-	<div class="fieldnotes">Change the amount of automated emails you receive in relation to trouble tickets on your images. (more options to be added later)</div>
+	<div class="fieldnotes">Allows opting out of receiving initial notification of certain suggestions. Note you however receive follow up comments and notification of the closure - in-case there is information needed by a moderator.</div>
 </div>
 
 
