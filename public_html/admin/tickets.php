@@ -283,7 +283,7 @@ $smarty->assign('query_string', $_SERVER['QUERY_STRING']);
 $db->Execute("LOCK TABLES ".implode(',',$locks));
 
 $newtickets=$db->GetAll($sql = 
-	"select t.*,suggester.realname as suggester,
+	"select t.*,suggester.realname as suggester, (i.user_id = t.user_id) as ownimage,
 		submitter.realname as submitter, submitter.ticket_option as submitter_ticket_option, 
 		i.title, 
 		group_concat(if(c.user_id=i.user_id,c.comment,null)) as submitter_comment,
