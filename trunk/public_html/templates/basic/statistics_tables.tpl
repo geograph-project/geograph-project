@@ -62,9 +62,6 @@
 
 		<table class="report sortable" id="reportlist" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5">
 		<thead><tr>
-		{if $table.daterow}
-			<td style="direction: rtl; writing-mode: tb-rl;" sorted="desc">Date</td>
-		{/if}
 		{foreach from=$table.table.0 key=name item=value}
 		<td style="direction: rtl; writing-mode: tb-rl;">{$name}</td>
 		{/foreach}
@@ -73,11 +70,8 @@
 		<tbody>
 
 
-		{foreach from=$table.table key=item item=row}
+		{foreach from=$table.table item=row}
 		<tr>
-			{if $table.daterow}
-				<td align="right" sortvalue="">Date</td>
-			{/if}
 			{foreach from=$row key=name item=value}
 				<td align="right">{$value}</td>
 			{/foreach}
