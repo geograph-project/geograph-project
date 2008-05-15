@@ -531,59 +531,58 @@ if (isset($_REQUEST['id']))
 			}
 		}
 		
-		if (!isset($_GET['form'])) {
-			require_once('geograph/rastermap.class.php');
+		require_once('geograph/rastermap.class.php');
 
-			$rastermap = new RasterMap($image->grid_square,true);
-			if (!empty($image->viewpoint_northings)) {
-				$rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings,$image->viewpoint_grlen,$image->view_direction);
-			} elseif (isset($image->view_direction) && strlen($image->view_direction) && $image->view_direction != -1) {
-				$rastermap->addViewDirection($image->view_direction);
-			}
-			require_once('geograph/conversions.class.php');
-			$conv = new Conversions;
-			list($lat,$long) = $conv->gridsquare_to_wgs84($image->grid_square);
-			$smarty->assign('lat', $lat);
-			$smarty->assign('long', $long);
-			$rastermap->addLatLong($lat,$long);
-
-			$smarty->assign_by_ref('rastermap', $rastermap);
-
-			//build a list of view directions
-			require_once('geograph/searchengine.class.php');
-			$search = new SearchEngine('');
-			$dirs = array (-1 => '');
-			$jump = 360/16; $jump2 = 360/32;
-			for($q = 0; $q< 360; $q+=$jump) {
-				$s = ($q%90==0)?strtoupper($search->heading_string($q)):ucwords($search->heading_string($q));
-				$dirs[$q] = sprintf('%s : %03d deg (%03d > %03d)',
-					str_pad($s,16,' '),
-					$q,
-					($q == 0?$q+360-$jump2:$q-$jump2),
-					$q+$jump2);
-			}
-			$dirs['00'] = $dirs[0];
-			$smarty->assign_by_ref('dirs', $dirs);
-		
-			if (!isset($_SESSION['editpage_options']) || !in_array('simple',$_SESSION['editpage_options'])) {
-
-				//get trouble tickets
-				$show_all_tickets = isset($_REQUEST['alltickets'])?intval($_REQUEST['alltickets']):1;
-				$smarty->assign('show_all_tickets', $show_all_tickets);
-
-				$statuses=array('pending', 'open');
-				if ($show_all_tickets)
-					$statuses[]='closed';
-
-				$openTickets=&$image->getTroubleTickets($statuses);
-
-				if (count($openTickets))
-					$smarty->assign_by_ref('opentickets', $openTickets);
-
-				if ($isadmin || $isowner)
-					$image->lookupModerator();
-			}
+		$rastermap = new RasterMap($image->grid_square,true);
+		if (!empty($image->viewpoint_northings)) {
+			$rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings,$image->viewpoint_grlen,$image->view_direction);
+		} elseif (isset($image->view_direction) && strlen($image->view_direction) && $image->view_direction != -1) {
+			$rastermap->addViewDirection($image->view_direction);
 		}
+		require_once('geograph/conversions.class.php');
+		$conv = new Conversions;
+		list($lat,$long) = $conv->gridsquare_to_wgs84($image->grid_square);
+		$smarty->assign('lat', $lat);
+		$smarty->assign('long', $long);
+		$rastermap->addLatLong($lat,$long);
+
+		$smarty->assign_by_ref('rastermap', $rastermap);
+
+		//build a list of view directions
+		require_once('geograph/searchengine.class.php');
+		$search = new SearchEngine('');
+		$dirs = array (-1 => '');
+		$jump = 360/16; $jump2 = 360/32;
+		for($q = 0; $q< 360; $q+=$jump) {
+			$s = ($q%90==0)?strtoupper($search->heading_string($q)):ucwords($search->heading_string($q));
+			$dirs[$q] = sprintf('%s : %03d deg (%03d > %03d)',
+				str_pad($s,16,' '),
+				$q,
+				($q == 0?$q+360-$jump2:$q-$jump2),
+				$q+$jump2);
+		}
+		$dirs['00'] = $dirs[0];
+		$smarty->assign_by_ref('dirs', $dirs);
+
+		if (!isset($_SESSION['editpage_options']) || !in_array('simple',$_SESSION['editpage_options'])) {
+
+			//get trouble tickets
+			$show_all_tickets = isset($_REQUEST['alltickets'])?intval($_REQUEST['alltickets']):1;
+			$smarty->assign('show_all_tickets', $show_all_tickets);
+
+			$statuses=array('pending', 'open');
+			if ($show_all_tickets)
+				$statuses[]='closed';
+
+			$openTickets=&$image->getTroubleTickets($statuses);
+
+			if (count($openTickets))
+				$smarty->assign_by_ref('opentickets', $openTickets);
+
+			if ($isadmin || $isowner)
+				$image->lookupModerator();
+		}
+		
 		
 		if (isset($_POST['title']) && isset($_POST['create']))
 		{
