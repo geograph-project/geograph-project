@@ -224,7 +224,11 @@ if (isset($_GET['fav']) && $i) {
 		$data['adminoverride'] = 1;
 
 		$engine = new SearchEngineBuilder('#');
-
+		if (isset($_GET['rss'])) {
+			$engine->page = "syndicator.php";
+		} elseif (isset($_GET['kml'])) {
+			$engine->page = "kml.php";
+		}
 		if ($i = $engine->buildAdvancedQuery($data,false)) {
 
 			if (!empty($_GET['markedImages'])) {
@@ -309,7 +313,11 @@ if (isset($_GET['fav']) && $i) {
 		$data['adminoverride'] = 1;
 
 		$engine = new SearchEngineBuilder('#');
-
+		if (isset($_GET['rss'])) {
+			$engine->page = "syndicator.php";
+		} elseif (isset($_GET['kml'])) {
+			$engine->page = "kml.php";
+		}
 		if ($i = $engine->buildAdvancedQuery($data,false)) {
 
 			if (preg_match_all("/\[\[(\[?)(\d+)(\]?)\]\]/",$page['content'],$g_matches)) {
@@ -404,6 +412,11 @@ if (isset($_GET['fav']) && $i) {
 	} else {
 		$_POST['adminoverride'] = 0; //prevent overriding it
 		$engine = new SearchEngineBuilder('#');
+		if (isset($_GET['rss'])) {
+			$engine->page = "syndicator.php";
+		} elseif (isset($_GET['kml'])) {
+			$engine->page = "kml.php";
+		}
 		$engine->buildAdvancedQuery($_POST);
 
 		//if we get this far then theres a problem...
@@ -503,6 +516,11 @@ if (isset($_GET['fav']) && $i) {
 	require_once('geograph/searchenginebuilder.class.php');
 
  	$engine = new SearchEngineBuilder('#');
+ 	if (isset($_GET['rss'])) {
+		$engine->page = "syndicator.php";
+	} elseif (isset($_GET['kml'])) {
+		$engine->page = "kml.php";
+	}
  	$engine->buildSimpleQuery($q,$CONF['default_search_distance'],(isset($_GET['form']) && $_GET['form'] == 'simple')?'simple':'auto');
  	if (isset($engine->criteria) && $engine->criteria->is_multiple) {
  		if (empty($_GET['distance']))
