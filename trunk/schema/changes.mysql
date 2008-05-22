@@ -1776,3 +1776,7 @@ alter table gridref_log add index(grid_reference);
 
 
 alter table gridimage_post add index(topic_id);
+
+
+ update loc_placenames set full_name = replace(full_name,'â',"'") where full_name like '%â%';
+
