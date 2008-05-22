@@ -4,7 +4,7 @@
 <div style="float:right; position:relative; width:5em; height:4em;"></div>
 <div style="float:right; position:relative; width:2.5em; height:1em;"></div>
 
- <h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} total images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
+ <h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
  {if $place.distance}
  {place place=$place h3=true}
 {/if}
@@ -125,7 +125,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 
 <dt>Grid Square</dt>
- <dd><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $square_count gt 1}, {$square_count} total images{/if} &nbsp; (<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">find images nearby</a>) 
+ <dd><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $square_count gt 1}, {$square_count} images{/if} &nbsp; (<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}">find more images nearby</a>) 
 </dd>
 
 {if $image->credit_realname}
