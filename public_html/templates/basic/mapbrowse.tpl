@@ -291,7 +291,7 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 {/if}
 <br style="clear:both;"/><br/>
 
-<h2>Map{if $realname}, for <a title="view user profile" href="/profile/{$user_id}">{$realname}</a>  <small style="font-size:0.4em; font-weight:normal">[ <a title="Remove User Filter" href="/map/{$mosaic_token}?u=0">Remove User Filter</a> ]</small>{else} Browsing{dynamic}{if $user->registered} <small style="font-size:0.4em; font-weight:normal">[ <a title="Remove User Filter" href="/map/{$mosaic_token}?mine">Personalise the map for you</a>]</small>{/if}{/dynamic}{/if}</h2>
+<h2>Map{if $realname}, for <a title="view user profile" href="/profile/{$user_id}">{$realname}</a>  <small style="font-size:0.4em; font-weight:normal">[ <a title="Remove User Filter" href="/map/{$mosaic_token}?u=0">Remove User Filter</a> ]</small>{else} Browsing{dynamic}{if $user->registered} <small style="font-size:0.4em; font-weight:normal">[ <a title="Add User Filter" href="/map/{$mosaic_token}?mine">Personalise the map for you</a> ]</small>{/if}{/dynamic}{/if}</h2>
 <p>Here are a few tips for using our map - we're still developing and testing this, so if you
 notice any problems, do let us know.</p>
 <ul>

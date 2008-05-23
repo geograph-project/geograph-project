@@ -445,7 +445,7 @@
 		  <td rowspan="3">Absolute position for the image in m from the Grid
 			 False origin. Use the <i>Grid Ref</i> column to deduce with Grid the location
 			 refers to.<b> These columns will be 0 when the image isn't positioned with more
-			 than a 4 figure Grid Reference</b></td> 
+			 than a 4 figure Grid Reference</b>. <sup style="color:red">New!</sup> include &coords=1 to get eastings/northings even for 4fig References</td> 
 		  <td>545667</td> 
 		</tr> 
 		<tr> 
