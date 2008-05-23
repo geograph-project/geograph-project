@@ -51,10 +51,13 @@ if (!empty($_GET['thumb'])) {
 	require_once('geograph/gridimage.class.php');
 	$gridimage = new GridImage;
 	$csvhead .= ",Thumb URL";
-	$sql_from = ',gi.user_id,x,y';
+	$sql_from = ',gi.user_id,x,y,reference_index';
 }
 if (!empty($_GET['en'])) {
 	$csvhead .= ",Easting,Northing,Figures";
+	if (isset($_GET['coords']) && empty($_GET['thumb'])) {
+		$sql_from = ',x,y,reference_index';
+	}
 	if (!empty($_GET['ppos'])) {
 		$csvhead .= ",Photographer Eastings,Photographer Northings,Photographer Figures";
 		$sql_from .= ",viewpoint_eastings,viewpoint_northings,if(use6fig=1,6,viewpoint_grlen) as viewpoint_grlen";

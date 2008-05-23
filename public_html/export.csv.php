@@ -37,11 +37,17 @@ header("Content-type: application/octet-stream");
 header("Content-Disposition: attachment; filename=\"geograph.csv\"");
 
 if (isset($_GET['headers']) && $_GET['headers'] == 'lower') {
-	echo preg_replace('/[^\w,]+/','_',strtolower($csvhead))."\n";
+	echo str_replace(array('photographer','easting','northing','figures','view_direction','image_'),array('photo','e','n','figs','dir',''),
+		preg_replace('/[^\w,]+/','_',
+			strtolower($csvhead)))."\n";
 } else {
 	echo "$csvhead\n";
 }
 
+if ( isset($_GET['coords'])) {
+	require_once('geograph/conversions.class.php');
+	$conv = new ConversionsLatLong;
+}
 $counter = -1;
 while (!$recordSet->EOF) 
 {
@@ -56,7 +62,13 @@ while (!$recordSet->EOF)
 		echo ','.$gridimage->getThumbnail(120,120,true);
 	}
 	if (!empty($_GET['en'])) {
-		echo ",{$image['nateastings']},{$image['natnorthings']},{$image['natgrlen']}";
+		if (empty($image['nateastings']) && isset($_GET['coords'])) {
+			list($e,$n) = $conv->internal_to_national($image['x'],$image['y'],$image['reference_index']);
+			
+			echo ",$e,$n,{$image['natgrlen']}";
+		} else {
+			echo ",{$image['nateastings']},{$image['natnorthings']},{$image['natgrlen']}";
+		}
 		if (!empty($_GET['ppos']))
 			echo ",{$image['viewpoint_eastings']},{$image['viewpoint_northings']},{$image['viewpoint_grlen']}";
 	} elseif (!empty($_GET['ll']))
