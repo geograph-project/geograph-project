@@ -128,7 +128,11 @@ The following is the recommended template for using on the photo page. You shoul
 <form><textarea rows="5" style="font-size:0.8em">{literal}{{{/literal}Information
 |Description={$image->title|escape:'html'}
 |Source=From [http://{$http_host}/photo/{$image->gridimage_id} geograph.org.uk]
+{if $image->imagetaken && strpos($image->imagetaken,'0000') !== 0}
+|Date={$image->imagetaken|replace:'-00':''}
+{else}
 |Date={$image->submitted|date_format:'%Y-%m-%dT%H:%M:%S+00:00'}
+{/if}
 |Author=[http://{$http_host}{$image->profile_link} {$image->realname|escape:'html'}]
 |Permission=Creative Commons Attribution Share-alike license 2.0
 {literal}}}{/literal}
