@@ -62,9 +62,7 @@ $cacheid = '';
 		$ADODB_FETCH_MODE = $prev_fetch_mode;
 		
 		if (count($page) && ($page['user_id'] == $USER->user_id || $USER->hasPerm('moderator'))) {
-			foreach ($page as $key => $value) {
-				$smarty->assign($key, $value);
-			}
+			$smarty->assign($page);
 			$smarty->assign('id', $page['geoevent_id']);
 		} else {
 			$template = 'static_404.tpl';

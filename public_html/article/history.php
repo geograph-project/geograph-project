@@ -70,9 +70,7 @@ if (count($page)) {
 if (!$smarty->is_cached($template, $cacheid))
 {
 	if (count($page)) {
-		foreach ($page as $key => $value) {
-			$smarty->assign($key, $value);
-		}
+		$smarty->assign($page);
 		if (!empty($page['extract'])) {
 			$smarty->assign('meta_description', $page['extract']);
 		}
