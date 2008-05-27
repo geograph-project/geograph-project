@@ -118,9 +118,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (count($page)) {
 		$smarty->assign('google_maps_api_key',$CONF['google_maps_api_key']);
 		
-		foreach ($page as $key => $value) {
-			$smarty->assign($key, $value);
-		}
+		$smarty->assign($page);
 		if (!empty($page['extract'])) {
 			$smarty->assign('meta_description', $page['description']);
 		}

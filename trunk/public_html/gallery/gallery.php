@@ -73,10 +73,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (count($page)) {
 		$CONF['global_thumb_limit'] *= 2;
 		$CONF['post_thumb_limit'] *= 2;
-		
-		foreach ($page as $key => $value) {
-			$smarty->assign($key, $value);
-		}
+
+		$smarty->assign($page);
 
 		if (empty($pgsize)) {$pgsize = 10;}
 		if (!$pg or $pg < 1) {$pg = 1;}

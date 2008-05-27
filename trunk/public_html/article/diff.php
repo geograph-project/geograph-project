@@ -69,9 +69,7 @@ if (count($page)) {
 if (!$smarty->is_cached($template, $cacheid))
 {
 	if (count($page)) {
-		foreach ($page as $key => $value) {
-			$smarty->assign($key, $value);
-		}
+		$smarty->assign($page);
 		if ($r1 && $r2 && $r1 != $r2) {
 			if ($r1 > $r2) {
 				$a1 = getRevisionArray($page['article_id'],intval($r2));

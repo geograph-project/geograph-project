@@ -183,9 +183,7 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign('errormsg', $error);
 	}
 
-   	foreach ($data as $key=> $value) {
-		$smarty->assign($key, $value);
-	}
+	$smarty->assign($data);
 	$_POST = $data;
 	$smarty->reassignPostedDate("submitted_start");
 	$smarty->reassignPostedDate("submitted_end");
@@ -257,9 +255,7 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign('errormsg', $error);
 	}
 
-   	foreach ($data as $key=> $value) {
-		$smarty->assign($key, $value);
-	}
+	$smarty->assign($data);
 	$_POST = $data;
 	$smarty->reassignPostedDate("submitted_start");
 	$smarty->reassignPostedDate("submitted_end");
@@ -343,9 +339,7 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign('errormsg', $error);
 	}
 
-	foreach ($data as $key=> $value) {
-		$smarty->assign($key, $value);
-	}
+	$smarty->assign($data);
 	$_POST = $data;
 	$smarty->reassignPostedDate("submitted_start");
 	$smarty->reassignPostedDate("submitted_end");
@@ -377,20 +371,18 @@ if (isset($_GET['fav']) && $i) {
 	}
  	$engine->buildAdvancedQuery($_GET);
 
- 	//should never fail?? - but display form 'in case'
+	//should never fail?? - but display form 'in case'
 
- 	//if we get this far then theres a problem...
+	//if we get this far then theres a problem...
 	$smarty->assign('errormsg', $engine->errormsg);
 
- 	foreach ($_GET as $key=> $value) {
-		$smarty->assign($key, $value);
-	}
+	$smarty->assign($_GET);
 	$smarty->reassignPostedDate("submitted_start");
 	$smarty->reassignPostedDate("submitted_end");
 	$smarty->reassignPostedDate("taken_start");
 	$smarty->reassignPostedDate("taken_end");
 
- 	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=NewADOConnection($GLOBALS['DSN']);
 	if (empty($db)) die('Database connection failed');
 
 	advanced_form($smarty,$db);
@@ -434,9 +426,7 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign('searchdesc', $engine->searchdesc);
 		$smarty->display('search_multiple.tpl');
 	} else {
-		foreach ($_POST as $key=> $value) {
-			$smarty->assign($key, $value);
-		}
+		$smarty->assign($_POST);
 		foreach (array('postcode','searchtext','gridref','county_id','placename','all_checked') as $key) {
 			if (isset($_POST[$key]))
 				$smarty->assign('elementused', $key);

@@ -83,9 +83,7 @@ $cacheid = '';
 				exit;
 			}
 
-			foreach ($page as $key => $value) {
-				$smarty->assign($key, $value);
-			}
+			$smarty->assign($page);
 			$db->Execute("REPLACE INTO article_lock SET user_id = {$USER->user_id}, article_id = {$page['article_id']}");
 		} else {
 			$template = 'static_404.tpl';
