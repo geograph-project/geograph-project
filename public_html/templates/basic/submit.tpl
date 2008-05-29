@@ -458,6 +458,12 @@ AttachEvent(window,'load',onChangeImageclass,false);
 <script type="text/javascript" src="/categories.js.php"></script>
 <script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>
 
+{else}
+	<input type="hidden" name="title" value="{$title|escape:'html'}"/>
+	<input type="hidden" name="comment" value="{$comment|escape:'html'}"/>
+	<input type="hidden" name="imageclass" value="{$imageclass|escape:'html'}"/>
+	<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
+	<input type="hidden" name="user_status" value="{$user_status|escape:'html'}"/>
 {/if}
 
 {if $step eq 4}

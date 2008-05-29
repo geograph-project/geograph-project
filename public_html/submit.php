@@ -258,7 +258,15 @@ if (isset($_POST['gridsquare']))
 			if (isset($_POST['jpeg_url'])) {
 				$smarty->assign('jpeg_url', $_POST['jpeg_url']);
 			}
-
+			
+			if (isset($_POST['title'])) {
+				//preserve stuff
+				$smarty->assign('title', stripslashes($_POST['title']));
+				$smarty->assign('comment', stripslashes($_POST['comment']));
+				$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
+				$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
+				$smarty->assign('user_status', stripslashes($_POST['user_status']));
+			}
 			$step=2;
 		}
 		elseif (isset($_POST['goback']))
@@ -498,7 +506,12 @@ if (isset($_POST['gridsquare']))
 			
 			$USER->getStats();
 		} elseif ($step == 3) {
-		
+			$smarty->assign('title', stripslashes($_POST['title']));
+			$smarty->assign('comment', stripslashes($_POST['comment']));
+			$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
+			$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
+			$smarty->assign('user_status', stripslashes($_POST['user_status']));
+			
 			list($usec, $sec) = explode(' ',microtime());
 			$endtime = ((float)$usec + (float)$sec);
 			$timetaken = $endtime - $STARTTIME;
