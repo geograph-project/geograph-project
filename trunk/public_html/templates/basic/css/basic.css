@@ -636,9 +636,10 @@ div.picinfo
 {
 	font-size:0.8em;
 	padding:5px;
-	width:720px;
+	width:750px;
 	margin-left:auto;
 	margin-right:auto;
+	position:relative;
 }
 
 div.picinfo td
