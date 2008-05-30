@@ -1,7 +1,6 @@
 /*
 Geograph "Charcoal" Layout
 Designed by Paul Dixon for Geograph Project Ltd
-
 */
 
 
@@ -528,7 +527,7 @@ margin:10px;
 
 .content_photoblack a 
 {
-	color:lightgrey;
+	color:#eeeeee;
 }
 .content_photoblack a:visited
 {
@@ -583,7 +582,7 @@ margin:10px;
 
 .content_photogray a 
 {
-	color:white;
+	color:#eeeeee;
 }
 .content_photogray a:visited
 {
