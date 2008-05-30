@@ -8,7 +8,7 @@
 
 <br style="clear:both"/>
 
-<div style="border:1px solid red; padding:10px; margin:10px; text-align:center">
+<div class="interestBox" style="text-align:center">
 
 <form action="/search.php" method="get" style="display:inline">
 <input type="hidden" name="i" value="{$i}"/>

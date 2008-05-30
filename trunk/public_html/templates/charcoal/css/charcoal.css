@@ -518,12 +518,21 @@ margin:10px;
 .content_photoblack .interestBox {
 	background-color:#333333;
 	color:#bbbbbb;
+	font-size:0.9em;
 }
 
 .content_photoblack .interestBox a {
 	color:white;
 }
 
+.content_photoblack a 
+{
+	color:lightgrey;
+}
+.content_photoblack a:visited
+{
+	color:gray;
+}
 
 .content_photogray
 {
@@ -562,6 +571,22 @@ margin:10px;
 .content_photogray .interestBox {
 	background-color:#cccccc;
 	color:#444444;
+	font-size:0.9em;
+}
+.content_photogray .interestBox a {
+	color:blue;
+}
+.content_photogray .interestBox a:visited {
+	color:purple;
+}
+
+.content_photogray a 
+{
+	color:white;
+}
+.content_photogray a:visited
+{
+	color:lightgrey;
 }
 
 .content_photowhite
@@ -589,6 +614,10 @@ margin:10px;
 	color:silver;
 
 }
+.content_photowhite .interestBox {
+	font-size:0.9em;
+}
+
 /*---------------------------------------------------------------*
  * Misc styles used in page
  *---------------------------------------------------------------*/
@@ -836,6 +865,21 @@ dl.picinfo dd
 {
 	margin-left:25px;
 	padding-bottom:10px;
+}
+
+.buttonbar {
+	background:#bbbbbb;
+	color:black;
+	margin-top:10px;
+	margin-bottom:10px;
+}
+.buttonbar a 
+{
+	color:blue;
+}
+.buttonbar a:visited
+{
+	color:purple;
 }
 
 /*---------------------------------------------------------------*
