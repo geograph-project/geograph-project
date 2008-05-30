@@ -65,7 +65,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <table style="width:100%">
 <tr>
-	<td colspan="6" align="center" style="background-color:lightgrey;font-size:0.7em;"><b><a href="/reuse.php?id={$image->gridimage_id}">Interested in reusing this image?</a></b> For exmaple on your webpage, blog, a forum, or Wikipedia. </td>
+	<td colspan="6" align="center" style="background-color:lightgrey;font-size:0.7em;"><b><a href="/reuse.php?id={$image->gridimage_id}">Interested in reusing this image?</a></b> For example on your webpage, blog, a forum, or Wikipedia. </td>
 </tr>
 <tr>
 {if $enable_forums}
