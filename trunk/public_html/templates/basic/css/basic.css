@@ -1,7 +1,7 @@
-/*--------------------------------------------------------------*
+/*---------------------------------------------------------------*
  * Kudos to http://bluerobot.com/web/layouts/default.asp
  * for the 3 column layout
- *--------------------------------------------------------------*/
+ *---------------------------------------------------------------*/
 
 body
 {
@@ -254,7 +254,7 @@ body>#nav_block {width:128px;}
 
 .content_photoblack a 
 {
-	color:lightgrey;
+	color:#eeeeee;
 }
 .content_photoblack a:visited
 {
@@ -314,7 +314,7 @@ body>#nav_block {width:128px;}
 
 .content_photogray a 
 {
-	color:white;
+	color:#eeeeee;
 }
 .content_photogray a:visited
 {
