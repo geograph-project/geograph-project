@@ -146,9 +146,9 @@
 	{if !$breakdown && !$breakdowns && $totalimagecount > 0}<span style="font-size:0.8em;">- click for larger version</span>{/if}</div>
 
 	{if $user->registered}
-		{if !$extra && $totalimagecount > 1}
+		{if !$extra}
 			<div style="position:relative;text-align:right; font-size:0.7em"><a href="/gridref/{$gridref}?{if $breakdown || $breakdowns || $filtered}by=1&amp;{/if}nl=1">Include <b>pending and rejected</b> images</a>&nbsp;</div>
-		{elseif $extra}
+		{else}
 			<div style="position:relative;text-align:right; font-size:0.7em"><a href="/gridref/{$gridref}?{if $breakdown || $breakdowns || $filtered}by=1&amp;{/if}nl=0">Exclude <b>pending and rejected</b> images</a>&nbsp;</div>
 		{/if}
 	{/if}
