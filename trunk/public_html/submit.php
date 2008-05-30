@@ -44,7 +44,7 @@ $square=new GridSquare;
 $smarty = new GeographPage;
 
 if (!$USER->hasPerm("basic")) {
-	$smarty->display('submit_intro.tpl');
+	$smarty->display('static_submit_intro.tpl');
 	exit;
 }
 
