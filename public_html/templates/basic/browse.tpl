@@ -128,7 +128,7 @@
 {if $rastermap->enabled}
 	<div class="rastermap" style="width:{$rastermap->width}px;position:relative;font-size:0.8em">
 	{$rastermap->getImageTag($gridrefraw)}
-	<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
+	<div class="interestBox" style="margin-top:3px;margin-left:2px;padding:1px;"><small>{$rastermap->getFootNote()}</small></div>
 	{$rastermap->getScriptTag()}	
 	</div>
 {/if}

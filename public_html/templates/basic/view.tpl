@@ -61,11 +61,11 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 -->
 
-<div style="background:#bbbbbb;color:black;">
+<div class="buttonbar">
 
 <table style="width:100%">
 <tr>
-	<td colspan="6" align="center" style="background-color:lightgrey;font-size:0.7em;"><b>Interested in reusing this image?</b> E.g. On your webpage, blog, a forum, or Wikipedia. <a href="/reuse.php?id={$image->gridimage_id}">Click here to find out how</a>.</td>
+	<td colspan="6" align="center" style="background-color:lightgrey;font-size:0.7em;"><b><a href="/reuse.php?id={$image->gridimage_id}">Interested in reusing this image?</a></b> For exmaple on your webpage, blog, a forum, or Wikipedia. </td>
 </tr>
 <tr>
 {if $enable_forums}
@@ -103,8 +103,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 {if $rastermap->enabled}
 	<div class="rastermap" style="width:{$rastermap->width}px;position:relative">
 	{$rastermap->getImageTag($image->subject_gridref)}
-	<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
-	{if $rastermap->reference_index == 1}<br/>Open <a href="/mapper/?t={$map_token}&amp;gridref_from={$image->grid_reference}">OS Map Checksheet</a> <sup style="color:red">New!</sup>{/if}
+	<div class="interestBox" style="margin-top:3px;margin-left:2px;padding:1px;"><small>{$rastermap->getFootNote()}</small></div>
 	</div>
 
 	{$rastermap->getScriptTag()}
@@ -198,14 +197,13 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{include file="_overview.tpl"}
 	<div style="width:inherit;margin-left:20px;"><br/>
 
-	<a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$image->grid_reference}">Geograph Map</a><br/><br/>
-
-	<div style="margin:2px;padding:4px;background-color:lightgrey;"><a title="Send an Electronic Card" href="/ecard.php?image={$image->gridimage_id}">Forward Picture<br/> to a Friend</a> &gt;</div>
+	<a title="Send an Electronic Card" href="/ecard.php?image={$image->gridimage_id}">Forward to a<br/>Friend &gt; &gt;</a>
 
 	</div>
   </div>
 {/if}
 
+</div>
 <br style="clear:both"/>
 <div class="interestBox" style="text-align:center">View this location: 
 
@@ -214,21 +212,25 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 {getamap gridref=$image->subject_gridref text="OS Get-a-map&trade;"},
 
+{if $rastermap->reference_index == 1}<a href="/mapper/?t={$map_token}&amp;gridref_from={$image->grid_reference}">OS Map Checksheet</a>, {/if}
+
+<a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$image->grid_reference}">Geograph Map</a>, 
+
 {if $image_taken}
 	{assign var="imagetakenurl" value=$image_taken|date_format:"&amp;taken=%Y-%m-%d"}
 {/if}
 
-<img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$image->subject_gridref}{$imagetakenurl}&amp;title={$image->title|escape:'url'}&id={$image->gridimage_id}"><b>More Links for this image</b></a>
+<span class="nowrap"><img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$image->subject_gridref}{$imagetakenurl}&amp;title={$image->title|escape:'url'}&id={$image->gridimage_id}"><b>More Links for this image</b></a></span>
 </div>
 
 
-<p style="text-align:center"><span class="interestBox" id="styleLinks"></span></p>
+<div style="text-align:center;margin-top:3px" class="interestBox" id="styleLinks"></div>
 <script type="text/javascript">
 /* <![CDATA[ */
 {literal}
 function addStyleLinks() {
 {/literal}
-	document.getElementById('styleLinks').innerHTML = 'Background for photo viewing:{if $maincontentclass eq "content_photowhite"}<b>white</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=white" rel="nofollow" class="robots-nofollow robots-noindex">White</a>{/if}/{if $maincontentclass eq "content_photoblack"}<b>black</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=black" rel="nofollow" class="robots-nofollow robots-noindex">Black</a>{/if}/{if $maincontentclass eq "content_photogray"}<b>grey</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=gray" rel="nofollow" class="robots-nofollow robots-noindex">Grey</a>{/if}';
+	document.getElementById('styleLinks').innerHTML = 'Background for photo viewing: {if $maincontentclass eq "content_photowhite"}<b>white</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=white" rel="nofollow" class="robots-nofollow robots-noindex">White</a>{/if}/{if $maincontentclass eq "content_photoblack"}<b>black</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=black" rel="nofollow" class="robots-nofollow robots-noindex">Black</a>{/if}/{if $maincontentclass eq "content_photogray"}<b>grey</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=gray" rel="nofollow" class="robots-nofollow robots-noindex">Grey</a>{/if}';
 {literal}
 }
 {/literal}
@@ -256,7 +258,6 @@ function addStyleLinks() {
 	</div>
 </div>
 
-</div>
 
 {if $rastermap->enabled}
 	{$rastermap->getFooterTag()}
