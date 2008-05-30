@@ -46,13 +46,13 @@
   	  <input type="hidden" name="gridimage_id" value="{$image->gridimage_id}"/>
   	  <h2 class="titlebar">Moderation Suggestion</h2>
   	  <p>I suggest this image should become:
-  	  {if ($image->moderation_status == 'pending' || $image->moderation_status == 'geograph') && $image->user_status == 'accepted'}
+  	  {if $image->user_status}
   	  <input class="accept" type="submit" id="geograph" name="user_status" value="Geograph"/>
   	  {/if}
-  	  {if $image->moderation_status != 'accepted' && $image->user_status != 'accepted'}
+  	  {if $image->user_status != 'accepted'}
   	  <input class="accept" type="submit" id="accept" name="user_status" value="Supplemental"/>
   	  {/if}
-  	  {if $image->moderation_status == 'pending' && $image->user_status != 'rejected'}
+  	  {if $image->user_status != 'rejected'}
   	  <input class="reject" type="submit" id="reject" name="user_status" value="Reject"/>
   	  {/if}
   	  {if $image->user_status}
