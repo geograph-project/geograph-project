@@ -107,7 +107,8 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 			if ( $cl->GetLastWarning() )
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 
-			$query_info = "Query '$qo' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+			$query_info = "Query '$q' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+			$smarty->assign("query_info",$query_info);
 		}
 
 		if (is_array($res["matches"]) ) {
