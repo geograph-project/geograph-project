@@ -521,17 +521,20 @@ margin:10px;
 	font-size:0.9em;
 }
 
-.content_photoblack .interestBox a {
-	color:white;
-}
+
 
 .content_photoblack a 
 {
-	color:#eeeeee;
+	color:#00CCCC;
 }
 .content_photoblack a:visited
 {
-	color:gray;
+	color:#99FFFF;
+}
+
+.content_photoblack  dl.picinfo dt
+{
+	border-bottom:1px solid #333333;
 }
 
 .content_photogray
@@ -582,11 +585,16 @@ margin:10px;
 
 .content_photogray a 
 {
-	color:#eeeeee;
+	color:skyblue;
 }
 .content_photogray a:visited
 {
-	color:lightgrey;
+	color:#00CCCC;
+}
+
+.content_photogray  dl.picinfo dt
+{
+	border-bottom:1px solid #888888;
 }
 
 .content_photowhite
