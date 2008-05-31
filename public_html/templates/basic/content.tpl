@@ -32,8 +32,8 @@
 <br/>
 <form action="/content/" method="get" target="content">
 <input type="hidden" name="inner" value="1"/>
-<lable for="q_title">Title Search:</label><br/>
-<input type="text" name="q" id="q_title" size="30"/><br/>
+<lable for="qs">Full-Text Search:</label><br/>
+<input type="text" name="q" id="qs" size="30"/><br/>
 <input type="submit" value="Find"/>
 </form>
 <ul>
@@ -44,7 +44,7 @@
 	<li><a href="/content/?inner&amp;q=Railway" target="content" onclick="document.getElementById('q_title').value='Railway'">Railway</a></li>
 </ul>
 <hr/>
-This section is new and under development, and will include more options. For the moment you can use the above box to search the titles (only), we have also noted a few example searches.
+This section is new and under development, and will include more options. We have noted a few example searches above.
 <hr/>
 
 <b>Comprising:</b>

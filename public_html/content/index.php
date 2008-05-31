@@ -68,10 +68,55 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		$where = "content.user_id = {$_GET['user_id']}";
 		$smarty->assign('extra', "&amp;user_id={$_GET['user_id']}");
 	
-	} elseif (!empty($_GET['q']) && preg_match('/^[\w ]+$/',$_GET['q'])) {
-		$where = "title LIKE '%{$_GET['q']}%'";
-		$smarty->assign('extra', "&amp;q={$_GET['q']}");
-		$title = "Title matching {$_GET['q']}";
+	} elseif (!empty($_GET['q'])) {
+		$q = isset($_GET['q'])?$_GET['q']:'';
+		$q = preg_replace('/ OR /',' | ',$q);
+		$q = preg_replace('/[^\w~\|\(\)-]+/',' ',trim(strtolower($q)));
+
+		$smarty->assign('extra', "&amp;q=$q");
+		$title = "Matching ".htmlentities($q);
+		
+		// --------------
+		
+		require ( "3rdparty/sphinxapi.php" );
+
+		$mode = SPH_MATCH_ALL;
+		if (strpos($q,'~') === 0) {
+			$q = preg_replace('/^\~/','',$q);
+			if (substr_count($q,' ') > 1) //over 2 words
+				$mode = SPH_MATCH_ANY;
+		} elseif (strpos($q,'-') !== FALSE || strpos($q,'|') !== FALSE) {
+			$mode = SPH_MATCH_EXTENDED;
+		} 
+		$index = "content_stemmed";
+
+		$cl = new SphinxClient ();
+		$cl->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
+		$cl->SetWeights ( array ( 100, 1 ) );
+		$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
+		$cl->SetMatchMode ( $mode );
+		$cl->SetLimits(0,25);
+		$res = $cl->Query ( $q, $index );
+
+		// --------------
+
+		if ( $res===false ) {
+			print "\tQuery failed: -- please try again later.\n";
+			exit;
+		} else {
+			if ( $cl->GetLastWarning() )
+				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
+
+			$query_info = "Query '$qo' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+		}
+
+		if (is_array($res["matches"]) ) {
+			$ids = array_keys($res["matches"]);
+			$where = "content_id IN(".join(",",$ids).")";
+		}
+		// --------------
+
+		
 	} elseif (isset($_GET['docs'])) {
 		$where = "`use` = 'document'";
 		$limit = 1000;
