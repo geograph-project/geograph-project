@@ -38,6 +38,8 @@ $q = preg_replace('/ OR /',' | ',$q);
 
 $q = preg_replace('/[^\w~\|\(\)-]+/',' ',trim(strtolower($q)));
 
+$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,2} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
+//todo - handle full placenames with near, by looking up in gaz :)
 
 if (empty($q)) {
 	die('no query');
