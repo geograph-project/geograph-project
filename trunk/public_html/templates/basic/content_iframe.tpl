@@ -36,5 +36,11 @@ h2 { padding: 5px; margin-top:0px; background-color: black; color:white}
 
 <br style="clear:both"/>
 
+	{if $query_info}
+	<p>{$query_info}</p>
+	
+	<p>to access more results simply add more keywords to refine your search, including negation by prefixing keywords with -</p>
+	{/if}
+	
 </body>
 </html>
