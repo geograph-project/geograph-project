@@ -95,8 +95,6 @@ if (!@is_dir($CONF['sphinx_cache']."place/$q1")) {
 		} elseif (strpos($q,'-') !== FALSE || strpos($q,'|') !== FALSE) {
 			$mode = SPH_MATCH_EXTENDED;
 		} 
-		$host = "localhost";
-		$port = 3312;
 		$index = "gaz";
 		$cl = new SphinxClient ();
 		$cl->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
