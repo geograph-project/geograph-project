@@ -83,7 +83,7 @@
 
 			{foreach from=$images item=image}
 				<div class="photo33" style="float:left; margin-left:5px; width:150px; height:170px; background-color:white"><a title="{$image->title|escape:'html'} by {$image->realname} - click to view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(120,120,false,true)}</a>
-					<div class="caption"><a targer="_blank" title="view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->title|escape:'html'}</a> by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></div>
+					<div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->title|escape:'html'}</a> by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></div>
 				</div>
 			{/foreach}
 			<br style="clear:left;"/>&nbsp;
