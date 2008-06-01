@@ -11,7 +11,7 @@
 
 <h2>Full-Text Image Search <sup style="color:red">Experimental Beta</sup></h2>
 
-<div class="interestBox">This is a preview of a new text search, you might of seen a similar version on nearby.org.uk. With time the full-text keyword matching will be integrated into the main site search.</div>
+<div class="interestBox">This is a preview of a new text search, you might have seen a similar version on nearby.org.uk. With time the full-text keyword matching will be integrated into the main site search.</div>
 
 <form action="/stuff/search-service.php" method="get" target="searchwindow">
 	<p>
@@ -20,7 +20,7 @@
 	</p>
 	<p>
 		<small>&middot; There is no paging of results, to access more images simply add more keywords to refine your search (view <a href="#cheatsheet">Cheatsheet</a>)<br/>
-		<small>&middot; Currently searches the title, description, category and photographer name fields as well as the subject grid-references</small></small>
+		<small>&middot; Currently searches the title, description, category and photographer name fields as well as various forms of the subject grid-reference</small></small>
 	</p>
 </form>
 

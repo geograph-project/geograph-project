@@ -4,10 +4,10 @@
 
 <h2>Text <a href="/search.php">Search</a> Options</h2>
 
-<ul>
- 	<li><h3 style="background-color:#eeeeee; padding:10px"><i>Default</i></h3>
-	<p>By default the geograph search just searches for the exact text you enter anywhere in the title, matching part words. (does not seperate into keywords)</p></li>
-</ul>
+<div class="interestBox">Note: This page ONLY refers to the main <a href="/search.php">image search</a></div>
+
+<p><i>By default the geograph search just searches for the exact text you enter anywhere in the title, matching part words. (does not seperate into keywords)</i></p>
+
 
 <p>Use any of the following features to refine your search:</p>
 
