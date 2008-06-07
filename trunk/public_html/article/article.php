@@ -83,6 +83,8 @@ function smarty_function_articletext($input) {
 		$output = str_replace($CONF['CONTENT_HOST'],$_SERVER['HTTP_HOST'],$output);
 	}
 
+	$output = preg_replace('/\!(\[+)/e','str_repeat("¬",strlen("$1"))',$output);
+
 	$output = str_replace(
 		array('[b]','[/b]','[big]','[/big]','[small]','[/small]','[i]','[/i]','[h2]','[/h2]','[h3]','[/h3]','[h4]','[/h4]','[float]','[/float]','[br/]','[hr/]','[reveal]','[/reveal]'),
 		array('<b>','</b>','<big>','</big>','<small>','</small>','<i>','</i>','<h2>','</h2>','<h3>','</h3>','<h4>','</h4>','<div style="float:left;padding-right:10px;padding-bottom:10px;position:relative">','</div>','<br style="clear:both"/>','<hr align="center" width="75%"/>','<span style="color:white">','</span>'),
@@ -171,6 +173,8 @@ function smarty_function_articletext($input) {
 	}
 	
 	$output=preg_replace($pattern, $replacement, $output);
+	
+	$output=str_replace('¬','[',$output);
 	
 	if (count($m[0])) {
 		$smarty->assign("copyright", '<div class="copyright">Great Britain 1:50 000 Scale Colour Raster Mapping Extracts &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.</div>');
