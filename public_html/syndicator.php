@@ -146,19 +146,19 @@ $rss->link = "http://{$_SERVER['HTTP_HOST']}";
 
 if (isset($sphinx)) {
 	$rss->description = "Images, matching ".$sphinx->qoutput; 
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?q=".urlencode($sphinx->q).(($pg>1)?"&amp;page=$pg":'')."&amp;format=".($format);
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?q=".urlencode($sphinx->q).(($pg>1)?"&amp;page=$pg":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
 
 	if ($format == 'MEDIA') {
 		$rss->link =  "http://{$_SERVER['HTTP_HOST']}/search.php?q=".urlencode($sphinx->$q).(($pg>1)?"&amp;page=$pg":'');
 		if ($pg>1) {
 			$prev = $pg - 1;
-			$rss->prevURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?q=".urlencode($sphinx->q).(($prev>1)?"&amp;page=$prev":'')."&amp;format=".($format);
+			$rss->prevURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?q=".urlencode($sphinx->q).(($prev>1)?"&amp;page=$prev":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
 		}
 		
 		$offset = ($pg -1)* $pgsize;
 		if ($pg < 10 && $offset < 250 && $sphinx->numberOfPages > $pg) {
 			$next = $pg + 1;
-			$rss->nextURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?q=".urlencode($sphinx->q).(($next>1)?"&amp;page=$next":'')."&amp;format=".($format);
+			$rss->nextURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?q=".urlencode($sphinx->q).(($next>1)?"&amp;page=$next":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
 		}
 		$rss->icon = "http://{$CONF['STATIC_HOST']}/templates/basic/img/logo.gif";
 	}
