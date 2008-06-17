@@ -79,17 +79,33 @@ if (isset($_GET['text'])) {
 	} else {
 		$q=trim($_GET['q']);
 	}
+	//temporally only enable full-text for piclens
+	if (isset($_GET['source']) && $_GET['source'] == 'piclens') {
+		$sphinx = new sphinxwrapper($q);
+		
+		//gets a cleaned up verion of the query (suitable for filename etc) 
+		$cacheid = $sphinx->q;
+		
+		$sphinx->pageSize = $pgsize = 15;
+		
+		$sphinx->processQuery();
+		
+		$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 	
+		$ids = $sphinx->returnImageIds($pg);
 	
-	$engine = new SearchEngineBuilder('#'); 
- 	$_GET['i'] = $engine->buildSimpleQuery($q,30,false,isset($_GET['u'])?$_GET['u']:0);
- 	
- 	if (!empty($engine->errormsg) && !empty($_GET['fatal'])) {
- 		die('error: '.$engine->errormsg);
- 	}
- 	if (isset($engine->criteria) && $engine->criteria->is_multiple) {
- 		die('error: unable to identify a unique location');
- 	}
+	} else {
+	
+		$engine = new SearchEngineBuilder('#'); 
+		$_GET['i'] = $engine->buildSimpleQuery($q,30,false,isset($_GET['u'])?$_GET['u']:0);
+
+		if (!empty($engine->errormsg) && !empty($_GET['fatal'])) {
+			die('error: '.$engine->errormsg);
+		}
+		if (isset($engine->criteria) && $engine->criteria->is_multiple) {
+			die('error: unable to identify a unique location');
+		}
+	}
 } elseif (false && !empty($_GET['u'])) {
 	//no need to use this now getImagesByUser works for lat/long
 	require_once('geograph/searchcriteria.class.php');
@@ -106,7 +122,10 @@ if (isset($_GET['text'])) {
  	$_GET['i'] = $engine->buildAdvancedQuery($_GET,false);
 }
 
-if (isset($_GET['i']) && is_numeric($_GET['i'])) {
+if (isset($cacheid)) {
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/$cacheid-{$pg}-{$format}.$extension";
+	$rss_timeout = 3600;
+} elseif (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}.$extension";
 	$rss_timeout = 3600;
@@ -124,8 +143,30 @@ $rss->title = 'Geograph British Isles';
 $rss->link = "http://{$_SERVER['HTTP_HOST']}";
  
 
+if (isset($sphinx)) {
+	$rss->description = "Images, matching ".$sphinx->qoutput; 
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?q=".urlencode($sphinx->$q).(($pg>1)?"&amp;page=$pg":'')."&amp;format=".($format);
 
-if (isset($_GET['i']) && is_numeric($_GET['i'])) {
+	if ($format == 'MEDIA') {
+		$rss->link =  "http://{$_SERVER['HTTP_HOST']}/search.php?q=".urlencode($sphinx->$q).(($pg>1)?"&amp;page=$pg":'');
+		if ($pg>1) {
+			$prev = $pg - 1;
+			$rss->prevURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?q=".urlencode($sphinx->$q).(($prev>1)?"&amp;page=$prev":'')."&amp;format=".($format);
+		}
+		
+		$offset = ($pg -1)* $pgsize;
+		if ($pg < 10 && $offset < 250 && $sphinx->numberOfPages > $pg) {
+			$next = $pg + 1;
+			$rss->nextURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?q=".urlencode($sphinx->$q).(($next>1)?"&amp;page=$next":'')."&amp;format=".($format);
+		}
+		$rss->icon = "http://{$CONF['STATIC_HOST']}/templates/basic/img/logo.gif";
+	}
+
+	//lets find some photos
+	$images=new ImageList();
+	$images->getImagesByIdList($ids);
+
+} elseif (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 		

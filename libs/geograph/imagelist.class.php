@@ -157,6 +157,41 @@ class ImageList
 		return $this->_getImagesBySql($sql);
 	}
 	
+	
+	/**
+	* get image list for particular user
+	*/
+	function getImagesByIdList($ids) {
+		$sql = "SELECT * FROM gridimage_search WHERE gridimage_id IN(".join(",",$ids).") LIMIT ".count($ids);
+				
+		$i=0;
+		if ($sql) {
+			$db=&$this->_getDB();
+	
+			$prev_fetch_mode = $ADODB_FETCH_MODE;
+			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;	
+			$rows = $db->getAssoc($sql);
+			$ADODB_FETCH_MODE = $prev_fetch_mode;
+		
+			if (count($rows)) {
+				
+				$this->images = array();
+				foreach ($ids as $c => $id) {
+					if (!empty($rows[$id])) {
+						$gridimage = new GridImage;
+						$row = array('gridimage_id'=>$id)+$rows[$id];
+						$gridimage->fastInit($row);
+	
+						$this->images[] = $gridimage;
+						$i++;
+					}
+				}
+			}
+		}
+		return $i;
+	}
+
+
 	/**
 	* get image list based on supplied sql...
 	* @access private
