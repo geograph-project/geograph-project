@@ -98,7 +98,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$censquare->x = $most[$id]['x'];
 			$censquare->y = $most[$id]['y'];
 
-			$crit = substr($most[$id]['tenk_square'],0,$letterlength+1).'_'.substr($most[$id]['tenk_square'],$letterlength+2,1).'_';
+			$crit = substr($most[$id]['tenk_square'],0,$letterlength+1).'_'.substr($most[$id]['tenk_square'],$letterlength+1,1).'_';
 
 			list($most[$id]['date'],$most[$id]['dateraw']) = $db->getRow(
 			"SELECT DATE_FORMAT(MAX(submitted),'%D %b %Y'),MAX(submitted)
