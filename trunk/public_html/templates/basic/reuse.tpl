@@ -103,11 +103,11 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <div id="bbcode">
 <a name="bbcode"></a>
-<h3>BBCode for reusing image on a forum</H3>
+<h3>BBCode for reusing image on a forum (non Geograph)</H3>
 
-<form><textarea rows="3">[url=http://{$http_host}/photo/{$image->gridimage_id}][b]{$image->title|escape:'html'}[/b]
-[img]{$image->getThumbnail(213,160,true)}[/img][/url]
-&copy; Copyright [url=http://{$http_host}{$image->profile_link}]{$image->realname|escape:'html'}[/a] and  
+<form><textarea rows="3">[b][url=http://{$http_host}/photo/{$image->gridimage_id}]{$image->title|escape:'html'}
+[img]{$image->getThumbnail(213,160,true)}[/img][/url][/b]
+&copy; Copyright [url=http://{$http_host}{$image->profile_link}]{$image->realname|escape:'html'}[/url] and  
 licensed for reuse under this [url=http://creativecommons.org/licenses/by-sa/2.0/]Creative Commons Licence[/url].</textarea></form>
 
 <h3>BBCode for reusing image on a forum (with shorter message)</H3>
