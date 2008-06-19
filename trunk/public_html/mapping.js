@@ -218,8 +218,8 @@ function overlayMouseMove(e) {
 		return;
 	}
 
-	tempX = tempX - w2;
-	tempY = tempY - h2;
+	tempX = tempX - w2 - offX;
+	tempY = tempY - h2 - offY;
 	
 	var easting = cene + Math.round(tempX * ratw);
 	var northing = cenn - Math.round(tempY * rath);
