@@ -60,6 +60,8 @@ var marker2left = 14;
 var marker2top = 14;
 
 var eleontop = 0;
+var offX = 0;
+var offY = 0;
 
 var w2 = mapw / 2;
 var h2 = maph / 2;
@@ -119,6 +121,8 @@ function overlayMouseDown(e) {
 	
 	if (Math.abs(tempX - m1left) < marker1left && Math.abs(tempY - m1top) < marker1top) {
 		currentelement = m1;
+		offX = tempX - m1left;
+		offY = tempY - m1top;
 	} 
 	
 	if (currentelement == null || eleontop == 2) {
@@ -129,6 +133,8 @@ function overlayMouseDown(e) {
 
 		if (Math.abs(tempX - m2left) < marker2left && Math.abs(tempY - m2top) < marker2top) {
 			currentelement = m2;
+			offX = tempX - m2left;
+			offY = tempY - m2top;
 		}
 	}
 	
@@ -151,11 +157,11 @@ function overlayMouseMove(e) {
 	if (currentelement != null) {
 		if (document.getElementById) {
 			if (currentelement.id == 'marker1') {
-				currentelement.style.left = (tempX - marker1left)+'px';
-				currentelement.style.top = (tempY - marker1top)+'px';
+				currentelement.style.left = (tempX - marker1left - offX)+'px';
+				currentelement.style.top = (tempY - marker1top - offY)+'px';
 			} else {
-				currentelement.style.left = (tempX - marker2left)+'px';
-				currentelement.style.top = (tempY - marker2top)+'px';
+				currentelement.style.left = (tempX - marker2left - offX)+'px';
+				currentelement.style.top = (tempY - marker2top - offY)+'px';
 			}
 		}
 	}
