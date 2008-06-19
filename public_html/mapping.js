@@ -59,6 +59,7 @@ var marker1top = 14;
 var marker2left = 14;
 var marker2top = 14;
 
+var eleontop = 0;
 
 var w2 = mapw / 2;
 var h2 = maph / 2;
@@ -118,7 +119,9 @@ function overlayMouseDown(e) {
 	
 	if (Math.abs(tempX - m1left) < marker1left && Math.abs(tempY - m1top) < marker1top) {
 		currentelement = m1;
-	} else {
+	} 
+	
+	if (currentelement == null || eleontop == 2) {
 		var m2 = document.getElementById('marker2');
 
 		m2left = parseInt(m2.style.left)+marker2left;
@@ -130,6 +133,11 @@ function overlayMouseDown(e) {
 	}
 	
 	return false;
+}
+function overlayMouseOut(e) {
+	eleontop = 2;
+	document.getElementById('marker2').style.zIndex = 2;
+	document.getElementById('marker1').style.zIndex = 1;
 }
 
 function overlayMouseMove(e) {
@@ -163,6 +171,44 @@ function overlayMouseMove(e) {
 			}
 		}
 		document.images['map'].alt = "";
+		return;
+	}
+
+	if (currentelement == null) {
+		var ele = null;
+		var m1 = document.getElementById('marker1');
+			
+		m1left = parseInt(m1.style.left)+marker1left;
+		m1top = parseInt(m1.style.top)+marker1top;
+
+		if (Math.abs(tempX - m1left) < marker1left && Math.abs(tempY - m1top) < marker1top) {
+			ele = m1;
+		}
+		
+		if (ele == null || eleontop == 2) {
+			var m2 = document.getElementById('marker2');
+
+			m2left = parseInt(m2.style.left)+marker2left;
+			m2top = parseInt(m2.style.top)+marker2top;
+
+			if (Math.abs(tempX - m2left) < marker2left && Math.abs(tempY - m2top) < marker2top) {
+				ele = m2;
+			}
+		}
+		
+		if (ele != null) {
+			if (ele.id == 'marker1') {
+				eleontop = 1;
+				document.getElementById('marker1').style.zIndex = 2;
+				document.getElementById('marker2').style.zIndex = 1;
+			} else {
+				eleontop = 2;
+				document.getElementById('marker2').style.zIndex = 2;
+				document.getElementById('marker1').style.zIndex = 1;
+			}
+			//alert(ele.id);
+		}
+		//the alt isnt used anyway so lets give up...
 		return;
 	}
 

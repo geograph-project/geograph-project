@@ -353,7 +353,7 @@ class RasterMap
 			}
 
 	//overlay (for dragging)
-			$str .= "<div style=\"position:absolute;top:0px;left:0px;\">";
+			$str .= "<div style=\"position:absolute;top:0px;left:0px;z-index:3\">";
 			$imagestr = "<img src=\"http://{$CONF['STATIC_HOST']}/img/blank.gif\" class=\"mapmask\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/>";
 			if (!empty($gridref)) {
 				$this->clickable = true;
@@ -546,6 +546,7 @@ class RasterMap
 			<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapping.js")."\"></script>
 			<script type=\"text/javascript\">
 				document.images['map'].onmousemove = overlayMouseMove;
+				document.images['map'].onmouseout = overlayMouseOut;
 				document.images['map'].onmouseup = overlayMouseUp;
 				document.images['map'].onmousedown = overlayMouseDown;
 			</script>";
