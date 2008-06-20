@@ -25,7 +25,7 @@
 
 
 
-require_once($_SERVER["DOCUMENT_ROOT"]."/../libs/event_handlers/topic_new/UpdateContentWithNewTopic.class.php");
+require_once(realpath($_SERVER["DOCUMENT_ROOT"]."/../libs/event_handlers")."/topic_new/UpdateContentWithNewTopic.class.php");
 
 //filename of class file should correspond to class name, e.g.  myhandler.class.php
 class UpdateContentWithReplyTopic extends UpdateContentWithNewTopic
