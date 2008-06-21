@@ -42,10 +42,11 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 <p>Thank you for your interest in this photo, you are more than welcome to use this image as long as you follow a few basic requirements:</p>
 
 <ul class="checklist">
-<li style="background-color: yellow;">We do ask you be polite and not abuse Geograph's resources in using the image irresponsibly on your own site. For your convenience we have created some approved ways to reuse this image, such as mentioning this image in forum posts.</li>
+<li>For your convenience we have created below some approved ways to reuse this image, such as mentioning this image in forum posts, or reusing the image on your own website.</li>
 
-<li>So <b>do not {external href="http://en.wikipedia.org/wiki/Inline_linking" text="hotlink"}</b> the fullsize image directly off our servers, this will likely be blocked.<br/>
-Instead download a copy, and upload it to your own site. Click: <b><a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">Download Fullsize .jpg file</a></b></li>
+<li style="background-color: yellow;"><b>We do ask you be polite and not abuse Geograph's resources in using the image irresponsibly.</b> <br/>
+So <b>do not {external href="http://en.wikipedia.org/wiki/Inline_linking" text="hotlink"}</b> the fullsize image directly off our servers, this will likely be blocked.<br/>
+Instead download a copy, and upload it to your own webspace. Click: <b><a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">Download Fullsize .jpg file</a></b></li>
 
 <li style="font-size:1.1em; background-color:pink;"><b>Under the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image MUST be credited as specified by the contributor ({if $image->credit_realname}<tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>{else}credited to {$image->realname|escape:'html'}{/if}).</b></li>
 
