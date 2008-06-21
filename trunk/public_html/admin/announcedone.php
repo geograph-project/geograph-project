@@ -29,6 +29,9 @@ $USER->mustHavePerm("admin");
 $smarty = new GeographPage;
 
 $db = NewADOConnection($GLOBALS['DSN']);
+
+$smarty->display('_std_begin.tpl');
+flush();
 	
 if ($_POST) {
 	$text = str_replace("\n","<br>\n","<b>{$_POST['title']}</b><br><br>{$_POST['entry']}");
@@ -59,4 +62,7 @@ Entry: <textarea name="entry" rows="4" cols="80"/></textarea>
 
 </form>
 
-
+<?
+$smarty->display('_std_end.tpl');
+exit;
+?>
