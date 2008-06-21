@@ -40,7 +40,7 @@
 {/if}
 
 <form action="/mapfixer.php" method="get">
-<p>{if $gridref_error}Try again:{else}{if $status}Repeat for another square:{/if}{/if} <br/>
+<p>{if $gridref_error}Try again:{else}{if $status}Repeat for another square:{else}Submit the form below to confirm the notification{/if}{/if} <br/>
 4-fig Grid Reference: <input type="text" size=8"" name="gridref" value="{$gridref|escape:html}"/>
 <input type="submit" name="save" value="This square needs checking"/>
 </p>
