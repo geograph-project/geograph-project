@@ -42,7 +42,6 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 <p>Thank you for your interest in this photo, you are more than welcome to use this image as long as you follow a few basic requirements:</p>
 
 <ul class="checklist">
-<li>For your convenience we have created below some approved ways to reuse this image, such as mentioning this image in forum posts, or reusing the image on your own website.</li>
 
 <li style="background-color: yellow;"><b>We do ask you be polite and not abuse Geograph's resources in using the image irresponsibly.</b> <br/>
 So <b>do not {external href="http://en.wikipedia.org/wiki/Inline_linking" text="hotlink"}</b> the fullsize image directly off our servers, this will likely be blocked.<br/>
