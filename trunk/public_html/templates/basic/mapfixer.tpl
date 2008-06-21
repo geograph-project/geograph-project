@@ -10,7 +10,7 @@
 	{if $status}
 		<h2>Thank you for notification</h2>
 
-		<p>The square has been flagged and will be checked by a moderator.</p>
+		<p>The square has been flagged and will be checked by a moderator. In the meantime you should be able to submit photos.</p>
 
 		<p>Return to <a href="/gridref/{$gridref}">{$gridref}</a> or </p>
 	{else}
@@ -19,9 +19,9 @@
 	{/if}
 {/if}
 
-<p>In order for Geograph to get an accurate coverage figure, and to make pretty maps, we need to know which squares are on land and which are 'all at sea'. To this end, we built up a reasonable basemap using freely available data, but this isn't totally accurate on our complicated coastline. If you believe a square is wrongly classified then you can use this form to notify a moderator, in due course a high resolution map will be checked.</p>
+<p style="font-size:0.8em">In order for Geograph to get an accurate coverage figure, and to make pretty maps, we need to know which squares are on land and which are 'all at sea'. To this end, we built up a reasonable basemap using freely available data, but this isn't totally accurate on our complicated coastline. If you believe a square is wrongly classified then you can use this form to notify a moderator, in due course a high resolution map will be checked.</p>
 
-<p>Note: for the purposes of Geograph, the Mean LOW Water* (MLW) line  is used in classifying squares. For Great Britain 1:25,000 mapping is used, however for Ireland such mapping isn't as available, so satellite imagery or where possible 1:50,000 maps will be consulted.<br/><br/>
+<p style="font-size:0.8em">Note: for the purposes of Geograph, the Mean LOW Water* (MLW) line  is used in classifying squares. For Great Britain 1:25,000 mapping is used, however for Ireland such mapping isn't as available, so satellite imagery or where possible 1:50,000 maps will be consulted.<br/><br/>
 <small>* might be Mean Low Water Springs (MLWS) in Scotland.</small></p>
 
 <!-- {$status} -->
