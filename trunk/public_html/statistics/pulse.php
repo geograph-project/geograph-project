@@ -103,6 +103,9 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 	$sql = "SELECT COUNT(DISTINCT poster_id) FROM geobb_posts WHERE post_time > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
 	calc("Forum Posters in last 24 hours",$sql);
 
+	$sql = "SELECT COUNT(DISTINCT user_id) FROM geobb_lastviewed WHERE ts > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
+	calc("Forum Viewers in last 24 hours",$sql);
+
 $table[] = array("Parameter"=>'',"Value"=>'');
 	
 	if (strpos($_ENV["OS"],'Windows') === FALSE) {
@@ -127,9 +130,11 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 	$sql = "SELECT count(*) FROM event WHERE status='pending'";
 	calc("Pending Hamster Tasks",$sql);
 	
-	$sql = "SELECT COUNT(*) FROM mapcache WHERE age > 0 and type_or_user >= -1";
+	$sql = "SELECT COUNT(*) FROM mapcache WHERE age > 0 AND type_or_user >= -1";
 	calc("Map tiles to redraw",$sql);
 	
+	$sql = "SELECT COUNT(*) FROM kmlcache WHERE rendered = 0";
+	calc("Superlayers tiles to update",$sql);
 	
 	$smarty->assign_by_ref('table', $table);
 	
