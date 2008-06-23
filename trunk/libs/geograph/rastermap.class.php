@@ -527,6 +527,7 @@ class RasterMap
 						}
 					}
 					AttachEvent(window,'load',loadmap,false);
+					var static_host = '{$CONF['STATIC_HOST']}';
 				//]]>
 				</script>";
 		} else {
@@ -539,6 +540,7 @@ class RasterMap
 				var maph = {$this->width};
 				var mapw = {$this->width};
 				var mapb = 1;
+				var static_host = '{$CONF['STATIC_HOST']}';
 			</script>";
 			
 			if ($this->issubmit) {

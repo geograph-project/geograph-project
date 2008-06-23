@@ -478,11 +478,11 @@ function updateViewDirection() {
 				if (ele.options[q].value == newangle)
 					ele.selectedIndex = q;
 
-			document.images['camicon'].src = "http://s0."+location.host+"/img/icons/viewc-"+parseInt(newangle,10)+".png";
+			document.images['camicon'].src = "http://"+static_host+"/img/icons/viewc-"+parseInt(newangle,10)+".png";
 			if (document.theForm.photographer_gridref.value == '')
-				document.images['subicon'].src = "http://s0."+location.host+"/img/icons/subc-"+parseInt(newangle,10)+".png";
+				document.images['subicon'].src = "http://"+static_host+"/img/icons/subc-"+parseInt(newangle,10)+".png";
 			else 
-				document.images['subicon'].src = "http://s0."+location.host+"/img/icons/circle.png";
+				document.images['subicon'].src = "http://"+static_host+"/img/icons/circle.png";
 		}
 	}
 }
@@ -495,17 +495,17 @@ function updateCamIcon() {
 	ele = document.theForm.view_direction;
 	realangle = ele.options[ele.selectedIndex].value;
 	if (realangle == -1) {
-		document.images['camicon'].src = "http://s0."+location.host+"/img/icons/viewc--1.png";
-		document.images['subicon'].src = "http://s0."+location.host+"/img/icons/subc--1.png";
+		document.images['camicon'].src = "http://"+static_host+"/img/icons/viewc--1.png";
+		document.images['subicon'].src = "http://"+static_host+"/img/icons/subc--1.png";
 	} else {
 		jump = 360.0/16.0;
 		newangle = Math.floor(Math.round(realangle/jump)*jump);
 		if (newangle == 360)
 			newangle = 0;
-		document.images['camicon'].src = "/img/icons/viewc-"+parseInt(newangle,10)+".png";
+		document.images['camicon'].src = "http://"+static_host+"/img/icons/viewc-"+parseInt(newangle,10)+".png";
 		if (document.theForm.photographer_gridref.value == '')
-			document.images['subicon'].src = "http://s0."+location.host+"/img/icons/subc-"+parseInt(newangle,10)+".png";
+			document.images['subicon'].src = "http://"+static_host+"/img/icons/subc-"+parseInt(newangle,10)+".png";
 		else 
-			document.images['subicon'].src = "http://s0."+location.host+"/img/icons/circle.png";
+			document.images['subicon'].src = "http://"+static_host+"/img/icons/circle.png";
 	}
 }
