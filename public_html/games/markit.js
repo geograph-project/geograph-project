@@ -38,7 +38,7 @@ function game_check(thatForm) {
 	var m1 = document.getElementById('marker1');
 	
 	var n = document.createElement('div');
-	n.innerHTML = '<img src="/templates/basic/img/crosshairs.gif" alt="+" width="16" height="16"/>';
+	n.innerHTML = '<img src="/img/crosshairs.gif" alt="+" width="16" height="16"/>';
 	n.style.position = "absolute";
 	n.style.left = (parseInt(m1.style.left) +7)+'px';
 	n.style.top = (parseInt(m1.style.top) +7)+'px';
