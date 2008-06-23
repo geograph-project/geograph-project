@@ -53,9 +53,9 @@
 <tr bgcolor="{$bgcolor}">
 {if $col_moderator}<td>{$ticket.moderator}</td>{/if}
 <td><b><a href="/editimage.php?id={$ticket.gridimage_id}" target="_main">{$ticket.title|default:'Untitled'}</a></b></td>
-<td>{$ticket.suggester}{if $ticket.suggester_comment}<img src="/templates/basic/img/star-light.png" width="14" height="14" title="Comment: {$ticket.suggester_comment}"/>{/if}</td>
+<td>{$ticket.suggester}{if $ticket.suggester_comment}<img src="http://{$static_host}/img/star-light.png" width="14" height="14" title="Comment: {$ticket.suggester_comment}"/>{/if}</td>
 <td>{$ticket.suggested}</td>
-<td>{$ticket.submitter}{if $ticket.submitter_comment}<img src="/templates/basic/img/star-light.png" width="14" height="14" title="Comment: {$ticket.submitter_comment}"/>{/if}</td>
+<td>{$ticket.submitter}{if $ticket.submitter_comment}<img src="http://{$static_host}/img/star-light.png" width="14" height="14" title="Comment: {$ticket.submitter_comment}"/>{/if}</td>
 </tr>
 <tr bgcolor="{$bgcolor}">
 <td colspan="4">{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes|escape:'html'|geographlinks}</td>
