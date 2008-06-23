@@ -253,3 +253,7 @@ function updateViewDirection() {
 		}
 	}
 }
+
+function updateCamIcon() {
+
+}
