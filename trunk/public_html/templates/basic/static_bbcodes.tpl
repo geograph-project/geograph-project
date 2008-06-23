@@ -39,7 +39,7 @@ tt { color:green; border: 1px solid lightgrey; padding:3px; background-color:whi
 </ul>
 
 <p class="tip"><b>Linking to a specific Discussion Post</b><br/>
-You can get the link for a specifc post, by right clicking the # symbol at the beginning of a post, and selecting 'Copy Link Location' or similar. You can then use this in [url=...]thread[/url] tags.</p
+You can get the link for a specifc post, by right clicking the # charactor at the beginning of a post, and selecting 'Copy Link Location' or similar. You can then use this in [url=...]thread[/url] tags.</p
 
 <ul>
 <li><b style="font-size:0.7em">Link to Browse page for a Square</b><br/>

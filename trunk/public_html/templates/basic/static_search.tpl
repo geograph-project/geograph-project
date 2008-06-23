@@ -39,7 +39,7 @@
     	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">(river AND crossing) OR bridge</tt> : brackets <b>required</b></li>
     	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">wood -^trees+</tt> : the - goes before the ^</li>
     	</ul>
-    	<p>* each term can be combined with either or both ^ and + symbols for very flexible searching!</p>
+    	<p>* each term can be combined with either or both ^ and + charactors for very flexible searching!</p>
    	</li>
    	  	
 </ul> 
