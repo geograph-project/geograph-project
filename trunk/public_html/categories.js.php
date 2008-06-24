@@ -36,13 +36,21 @@ $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 $template = 'js_categories.tpl';
 $cacheid = "cat|$u.".isset($_GET['full']);
 
+if (isset($_GET['days'])) {
+	$_GET['days']=$_SESSION['days']=min(max(intval($_GET['days']),1),30);
+} elseif (isset($_SESSION['days'])) {
+	$_GET['days']=min(max(intval($_SESSION['days']),1),30);
+} else {
+	$_GET['days']=3;
+}
+
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (empty($db)) die('Database connection failed');
 
 	if ($u) {
-		$where = "where submitted > date_sub(now(),interval 3 day) and user_id = $u";
+		$where = "where submitted > date_sub(now(),interval {$_GET['days']} day) and user_id = $u";
 		$table = 'gridimage';
 		$smarty->assign('varname','catListUser');
 	} else {
