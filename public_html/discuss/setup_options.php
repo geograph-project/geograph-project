@@ -39,7 +39,7 @@ $emailusers=1;
 $userRegName='_A-Za-z0-9 ';
 $l_sepr='<span style="color:#006699">&nbsp;-&nbsp;</span>';
 
-$post_text_maxlength=10240;
+$post_text_maxlength=32640;
 $post_word_maxlength=70;
 $topic_max_length=100;
 $viewmaxtopic=30;
