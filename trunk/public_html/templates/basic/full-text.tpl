@@ -7,13 +7,24 @@
 		padding:5px;
 	}
 </style>
+
+  <script type="text/javascript">
+  
+  function focusBox() {
+  	el = document.getElementById('fq');
+  	el.focus();
+  }
+  AttachEvent(window,'load',focusBox,false);
+  
+  </script>
+
 {/literal}
 
 <h2>Full-Text Image Search <sup style="color:red">Experimental Beta</sup></h2>
 
 <div class="interestBox">This is a preview of a new text search, you might have seen a similar version on nearby.org.uk. With time the full-text keyword matching will be integrated into the main site search.</div>
 
-<form action="/stuff/search-service.php" method="get" target="searchwindow">
+<form action="/stuff/search-service.php" method="get" target="searchwindow" onsubmit="focusBox()">
 	<p>
 		<label for="fq">Free Text Search</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 		<input type="submit" value="Search"/>
