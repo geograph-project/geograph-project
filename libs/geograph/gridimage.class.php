@@ -544,7 +544,7 @@ class GridImage
 			$this->cached_size = $size;
 		}
 		
-		$title=htmlentities($this->title);
+		$title=htmlentities2($this->title);
 				
 		if ($returntotalpath)  
 			$fullpath="http://".$CONF['CONTENT_HOST'].$fullpath;
@@ -687,7 +687,7 @@ class GridImage
 		}
 		else
 		{
-			$title=htmlentities($this->title);
+			$title=htmlentities2($this->title);
 			
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) {
