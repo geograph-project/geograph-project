@@ -36,7 +36,7 @@ $q = isset($_GET['q'])?$_GET['q']:'';
 
 $q = preg_replace('/ OR /',' | ',$q);
 
-$q = preg_replace('/[^\w~\|\(\)-]+/',' ',trim(strtolower($q)));
+$q = trim(preg_replace('/[^\w~\|\(\)@"\/-]+/',' ',trim(strtolower($q))));
 
 $q = preg_replace('/^(.*) *near +([a-zA-Z]{1,2} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
 //todo - handle full placenames with near, by looking up in gaz :)
@@ -45,13 +45,8 @@ if (empty($q)) {
 	die('no query');
 }
 
-
-$q2 = str_replace('~','_',$q);
-$q2 = str_replace('|','.',$q2);
-
 $template = "search_service.tpl";
-$cacheid = $q2;
-
+$cacheid = md5($q);
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -129,9 +124,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		$mode = SPH_MATCH_ALL;
 		if (strpos($q,'~') === 0) {
 			$q = preg_replace('/^\~/','',$q);
-			if (substr_count($q,' ') > 1) //over 2 words
+			if (substr_count($q,' ') > 1) //2 words or more
 				$mode = SPH_MATCH_ANY;
-		} elseif (strpos($q,'-') !== FALSE || strpos($q,'|') !== FALSE) {
+		} elseif (preg_match('/[~\|\(\)@"\/-]/',$q)) {
 			$mode = SPH_MATCH_EXTENDED;
 		} 
 		$index = "gi_stemmed,gi_delta_stemmed";
