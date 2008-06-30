@@ -139,7 +139,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$cl->SetLimits(0,25);
 		$res = $cl->Query ( $q, $index );
 		
-		if (strlen($q) < 64)
+		if (strlen($q) < 64 && $mode != SPH_MATCH_EXTENDED)
 			$smarty->assign("suggestions",didYouMean($q,$cl));
 		
 		// --------------
