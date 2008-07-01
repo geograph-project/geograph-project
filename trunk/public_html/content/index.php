@@ -137,7 +137,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	$list = $db->getAll("
 	select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.type,content.gridimage_id,
 		(coalesce(views,0)+coalesce(topic_views,0)) as views,
-		(coalesce(images,0)+coalesce(count(*),0)) as images,
+		(coalesce(images,0)+coalesce(count(gridimage_post.seq_id),0)) as images,
 		article_stat.words,posts_count
 	from content 
 		left join user using (user_id)
@@ -149,6 +149,18 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	order by  $sql_order 
 	limit $limit");
 	
+	if (false && !empty($_GET['q'])) {
+		$docs = array();
+		foreach ($list as $i => $row) {
+			$docs[] = $row['title'].' '.$row['extract'].' '.$row['allwords'];
+		}
+		
+		$ex = $cl->BuildExcerpts ( $docs, $index, $q);
+		print "<pre>";print_r($ex);exit;
+		foreach ($ex as $i => $row) {
+			$list[$i]['extract'] = $row;
+		}
+	}
 	foreach ($list as $i => $row) {
 		if ($row['gridimage_id']) {
 			$list[$i]['image'] = new GridImage;
@@ -165,11 +177,42 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	
 	$smarty->assign_by_ref('list', $list);
 	$smarty->assign_by_ref('title', $title);
-} elseif (!empty($_SERVER['QUERY_STRING']) && preg_match("/^[\w&;=+ %]/",$_SERVER['QUERY_STRING'])) {
-	$smarty->assign('extra', "&amp;".htmlentities($_SERVER['QUERY_STRING']));
+	
+} else if ($template == 'content.tpl' && !$smarty->is_cached($template, $cacheid)) {
+	
+	$db=NewADOConnection($GLOBALS['DSN']);
+	
+	$prev_fetch_mode = $ADODB_FETCH_MODE;
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+	$list = $db->getAll("select title from content");
+
+	$a = array();
+	foreach ($list as $i => $row) {
+		$alltext = preg_replace('/[^a-zA-Z0-9]+/',' ',str_replace("'",'',$row['title']));
+
+		$words = preg_split('/ +/',trim($alltext));
+
+		foreach ($words as $c => $w) {
+			if (preg_match('/^(geograph|a|about|above|according|across|actually|adj|after|afterwards|again|against|all|almost|alone|along|already|also|although|always|among|amongst|an|and|another|any|anyhow|anyone|anything|anywhere|are|arent|around|as|at|b|be|became|because|become|becomes|becoming|been|before|beforehand|begin|beginning|behind|being|below|beside|besides|between|beyond|billion|both|but|by|c|can|cant|cannot|caption|co|co.|could|couldnt|d|did|didnt|do|does|doesnt|dont|down|during|e|each|eg|e.g.|eight|eighty|either|else|elsewhere|end|ending|enough|etc|etc.|even|ever|every|everyone|everything|everywhere|except|f|few|fifty|first|five|for|former|formerly|forty|found|four|from|further|g|h|had|has|hasnt|have|havent|he|hed|hell|hes|hence|her|here|heres|hereafter|hereby|herein|hereupon|hers|herself|him|himself|his|how|however|hundred|i|id|ill|im|ive|ie|if|in|inc|inc.|indeed|instead|into|is|isnt|it|its|its|itself|j|k|l|last|later|latter|latterly|least|less|let|lets|like|likely|ltd|m|made|make|makes|many|maybe|me|meantime|meanwhile|might|million|miss|more|moreover|most|mostly|mr|mrs|much|must|my|myself|n|namely|neither|never|nevertheless|next|nine|ninety|no|nobody|none|nonetheless|noone|nor|not|nothing|now|nowhere|o|of|off|often|on|once|one|ones|only|onto|or|other|others|otherwise|our|ours|ourselves|out|over|overall|own|p|per|perhaps|q|r|rather|recent|recently|s|same|seem|seemed|seeming|seems|seven|seventy|several|she|shed|shell|shes|should|shouldnt|since|six|sixty|so|some|somehow|someone|something|sometime|sometimes|somewhere|still|stop|such|t|taking|ten|than|that|thatll|thats|thatve|the|their|them|themselves|then|thence|there|thered|therell|therere|theres|thereve|thereafter|thereby|therefore|therein|thereupon|these|they|theyd|theyll|theyre|theyve|thirty|this|those|though|thousand|three|through|throughout|thru|thus|to|together|too|toward|towards|trillion|twenty|two|u|under|unless|unlike|unlikely|until|up|upon|us|used|using|v|very|via|w|was|wasnt|we|wed|well|were|weve|well|were|werent|what|whatll|whats|whatve|whatever|when|whence|whenever|where|wheres|whereafter|whereas|whereby|wherein|whereupon|wherever|whether|which|while|whither|who|whod|wholl|whos|whoever|whole|whom|whomever|whose|why|will|with|within|without|wont|would|wouldnt|x|y|yes|yet|you|youd|youll|youre|youve|your|yours|yourself|yourselves|z)$/i',$w)) {
+				//skip...
+			} elseif (preg_match('/^[A-Z]/',$w)) {
+				//give promience to uppercased words
+				$a[strtolower($w)]+=2;
+			} else {
+				$a[$w]++;
+			}
+		}
+	}
+	$ADODB_FETCH_MODE = $prev_fetch_mode;
+
+	arsort($a);
+	$smarty->assign('words', array_slice($a,0,50));
+
+	if (!empty($_SERVER['QUERY_STRING']) && preg_match("/^[\w&;=+ %]/",$_SERVER['QUERY_STRING'])) {
+		$smarty->assign('extra', "&amp;".htmlentities($_SERVER['QUERY_STRING']));
+	}
 }
 
 $smarty->display($template, $cacheid);
 
-	
 ?>

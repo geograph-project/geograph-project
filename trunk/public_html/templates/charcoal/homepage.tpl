@@ -77,18 +77,18 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 <ul>
 
 	<li><a href="/mapbrowse.php" title="View the coverage Map">Explore these isles with our <b>map</b></a></li>
-	<li><a href="/search.php" title=""><b>Search</b> for places or features</a></li>
-	<li><a href="/explore/" title="">Try browsing by <b>theme</b></a></li>
-	<li><a href="/article/" title="">Read <b>articles</b> submitted by members</b></a></li>
+	<li><a href="/search.php" title="Image Search"><b>Search</b> for places or features</a></li>
+	<li><a href="/explore/" title="Themed Exploring">Try browsing by <b>theme</b></a></li>
+	<li><a href="/content/" title="Submitted Content">Read <b>content</b> submitted by members</b></a></li>
 	<li><a href="/help/sitemap">View a complete site map</a></li>
 </ul>
 
 
 <h2>Use and re-use our images!</h2>
 <ul>
-	<li><a href="/kml.php" title="">Geograph with <b>Google Earth</b> and <b>Google Maps</b></a></li>
+	<li><a href="/kml.php" title="KML Exports">Geograph with <b>Google Earth</b> and <b>Google Maps</b></a></li>
 	<li><a href="/help/sitemap#software" title="Geograph Page List"><b>Other ways</b> to can use this faboulous resource</a></li>
-	<li><a href="/activities/">View images in our <b>Activities section</b></a><sup style="color:red">New!</sup></li>
+	<li><a href="/activities/" title="Activites">View images in our <b>Activities section</b></a><sup style="color:red">New!</sup></li>
 	<li><a href="/teachers/" title="Education Area">Geograph for <b>teachers</b></a><br/><br/></li>
 	
 	<li>All photos are licenced for reuse under a <b>{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Licence"}</b>. <a href="/help/freedom" title="">Find out more</a></li>

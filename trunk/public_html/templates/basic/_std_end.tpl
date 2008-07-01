@@ -8,8 +8,7 @@
      <li><a title="Find images" href="/search.php">Search</a></li>
      <li><a title="View map of all submissions" href="/mapbrowse.php">Map</a></li>
      <li><a title="Explore Images by Theme" href="/explore/">Explore</a></li>
-     <li><a title="Photos Galleries" href="/gallery/">Galleries</a></li>
-     <li><a title="Articles" href="/article/">Articles</a></li>
+     <li><a title="Submitted Content" href="/content/">Content</a></li>
     </ul></li>
     <li>Interact<ul>
      <li><a title="Play Games" href="/games/">Games</a></li>
