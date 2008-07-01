@@ -40,7 +40,7 @@
 	<li><a title="Browse by Map" href="/mapbrowse.php">browse images on a <b>map</b></a></li>
 	<li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a></li>
 	<li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a></li>
-	<li><a title="Articles" href="/article/">read <b>articles</b> submitted by members</a></li>
+	<li><a title="Content" href="/content/">read <b>content</b> submitted by members</a></li>
 	<li><a title="Education Area" href="/teachers/">Geograph for <b>teachers</b></a></li>
 </ul>
  

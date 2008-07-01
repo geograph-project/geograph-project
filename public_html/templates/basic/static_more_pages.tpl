@@ -8,9 +8,10 @@
 <ul class="explore">
 
 	<li><a href="/mapbrowse.php" title="View the coverage Map">Explore these isles with our <b>map</b></a></li>
-	<li><a href="/search.php" title=""><b>Search</b> for places or features</a></li>
-	<li><a href="/explore/" title="">Try browsing by <b>theme</b></a></li>
-	<li><a href="/article/" title="">Read <b>articles</b> submitted by members</b></a></li>
+	<li><a href="/search.php" title="Image Search"><b>Search</b> for places or features</a></li>
+	<li><a href="/explore/" title="Themed Exploring">Try browsing by <b>theme</b></a></li>
+	<li><a href="/content/" title="Submitted Content">Read <b>content</b> submitted by members</b></a></li>
+	<li><a href="/help/sitemap">View a complete site map</a></li>
 </ul>
 
 
