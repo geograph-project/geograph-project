@@ -146,7 +146,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		left join gridimage_post using (topic_id)
 	where $where
 	group by content_id
-	order by  $sql_order 
+	order by `use` = 'info' desc, $sql_order 
 	limit $limit");
 	
 	if (false && !empty($_GET['q'])) {
