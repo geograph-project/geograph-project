@@ -17,8 +17,8 @@
 <table style="width:100%">
 	<tbody>
 		<tr>
-			<td width="80%">
-<iframe src="/content/?inner{$extra}" width="100%" height="550" frameborder="0" name="content"></iframe>
+			<td width="80%" valign="top" height="600">
+<iframe src="/content/?inner{$extra}" width="100%" height="100%" frameborder="0" name="content"></iframe>
 			</td>
 			<td valign="top" class="helpbox">
 <form action="/content/" method="get" target="content">
