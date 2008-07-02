@@ -14,10 +14,10 @@
 
 
 
-<table style="width:100%">
+<table width="100%">
 	<tbody>
 		<tr>
-			<td width="80%" valign="top" height="600">
+			<td width="80%" valign="top" height="700">
 <iframe src="/content/?inner{$extra}" width="100%" height="100%" frameborder="0" name="content"></iframe>
 			</td>
 			<td valign="top" class="helpbox">
@@ -39,7 +39,7 @@ Shortcuts:
 </ul><hr/>
 Common Themes:<br/>
 {foreach from=$words key=word item=count}
-	<span class="nowrap">&middot; <a href="/content/?inner&amp;q={$word}" target="content" onclick="document.getElementById('q_title').value='{$word}'" style="font-size:{math equation="log(c)" c=$count}em">{$word}</a></span>
+	<span class="nowrap">&middot; <a href="/content/?inner&amp;q={$word}" target="content" onclick="document.getElementById('qs').value='{$word}'" style="font-size:{math equation="log(c)" c=$count}em">{$word}</a></span>
 {/foreach}
 <hr/>
 
