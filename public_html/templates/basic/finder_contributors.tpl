@@ -47,15 +47,16 @@
 
 </ol>
 
+{if $query_info}
+	<p>{$query_info}</p>
+{/if}
+	
 {if count($results) eq 15}
 	<p>
-		<small>&middot; There is no paging of results, to access further results simply add more keywords to refine your search (view <a href="#cheatsheet">Cheatsheet</a>)<br/>
+		<small>&middot; There is no paging of results, to access further results simply add more keywords to refine your search (view <a href="#cheatsheet">Cheatsheet</a>)</small>
 	</p>
 {/if}
 
-	{if $query_info}
-	<p>{$query_info}</p>
-	{/if}
 
 <div class="interestBox" style="margin-top:60px;">
 	<big><a name="cheatsheet"></a>Cheatsheet</big>:
