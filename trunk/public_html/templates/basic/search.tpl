@@ -19,15 +19,16 @@
 	{/if}	
 </div>
 <div style="position:relative;" class="interestBox">
-	<div style="position:relative;width:240px;">
-		<label for="searchq" style="line-height:1.8em"><b>Search For</b>:</label> <small>(<a href="/help/search">help &amp; tips</a>)</small><br/>
-		&nbsp;&nbsp;&nbsp;<input id="searchq" type="text" name="q" value="{$searchtext|escape:"html"|default:"(anything)"}" size="30" onfocus="if (this.value=='(anything)') this.value=''" onblur="if (this.value=='') this.value='(anything)'"/>
-	</div>
-	<div style="position:relative;width:430px;">
-		<label for="searchlocation" style="line-height:1.8em">and/or a <b>Placename, Postcode, Grid Reference</b>:</label><br/>
-		&nbsp;&nbsp;&nbsp;<i>near</i> <input id="searchlocation" type="text" name="location" value="{$searchlocation|escape:"html"|default:"(anywhere)"}" size="30" onfocus="if (this.value=='(anywhere)') this.value=''" onblur="if (this.value=='') this.value='(anywhere)'"/>
-		<input id="searchgo" type="submit" name="go" value="Search..."/>
-	</div><span style="line-height:0.1em; font-size:0.1em"><br style="clear:both"/>&nbsp;</span></div>
+			<div style="position:relative;">
+				<label for="searchq" style="line-height:1.8em"><b>Search For</b>:</label> <small>(<a href="/help/search">help &amp; tips</a>)</small><br/>
+				&nbsp;&nbsp;&nbsp;<input id="searchq" type="text" name="q" value="{$searchtext|escape:"html"|default:"(anything)"}" size="30" onfocus="if (this.value=='(anything)') this.value=''" onblur="if (this.value=='') this.value='(anything)'"/> (finds images containing this <b>exact phrase in title</b>)
+			</div>
+			<div style="position:relative;">
+				<label for="searchlocation" style="line-height:1.8em">and/or a <b>Placename, Postcode, Grid Reference</b>:</label><br/>
+				&nbsp;&nbsp;&nbsp;<i>near</i> <input id="searchlocation" type="text" name="location" value="{$searchlocation|escape:"html"|default:"(anywhere)"}" size="30" onfocus="if (this.value=='(anywhere)') this.value=''" onblur="if (this.value=='') this.value='(anywhere)'"/>
+				<input id="searchgo" type="submit" name="go" value="Search..."/>
+			</div>
+		</div>
 </form>
 {/dynamic} 
 <ul style="margin-left:0;padding:0 0 0 1em;">
