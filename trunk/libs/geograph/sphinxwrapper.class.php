@@ -47,7 +47,7 @@ class sphinxwrapper {
 		
 		$q = preg_replace('/ OR /',' | ',$q);
 		
-		$q = preg_replace('/[^\w~\|\(\)-]+/',' ',trim(strtolower($q)));
+		$q = trim(preg_replace('/[^\w~\|\(\)@"\/-]+/',' ',trim(strtolower($q))));
 		
 		$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,2} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
 		
@@ -132,7 +132,7 @@ class sphinxwrapper {
 			$q = preg_replace('/^\~/','',$q);
 			if (substr_count($q,' ') > 1) //over 2 words
 				$mode = SPH_MATCH_ANY;
-		} elseif (strpos($q,'-') !== FALSE || strpos($q,'|') !== FALSE) {
+		} elseif (preg_match('/[~\|\(\)@"\/-]/',$q)) {
 			$mode = SPH_MATCH_EXTENDED;
 		} 
 		$index = "gi_stemmed,gi_delta_stemmed";
@@ -180,6 +180,62 @@ class sphinxwrapper {
 		} else {
 			$r = "\t--none--";
 		}		
+	}
+
+	public function returnUserIds($page = 1) {
+		global $CONF;
+		$q = $this->q;
+		
+		require ( "3rdparty/sphinxapi.php" );
+		
+		$mode = SPH_MATCH_ALL;
+		if (strpos($q,'~') === 0) {
+			$q = preg_replace('/^\~/','',$q);
+			if (substr_count($q,' ') > 1) //over 2 words
+				$mode = SPH_MATCH_ANY;
+		} elseif (preg_match('/[~\|\(\)@"\/-]/',$q)) {
+			$mode = SPH_MATCH_EXTENDED;
+		} 
+		$index = "user";
+		
+		$cl = new SphinxClient ();
+		$cl->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
+		$cl->SetWeights ( array ( 100, 1 ) );
+		$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
+		$cl->SetMatchMode ( $mode );
+		
+		$sqlpage = ($page -1)* $this->pageSize;
+		$cl->SetLimits($sqlpage,$this->pageSize);
+		
+		$res = $cl->Query ( $q, $index );
+		
+		// --------------
+		
+		if ( $res===false )
+		{
+			print "\tQuery failed: -- please try again later.\n";
+			exit;
+		} else
+		{
+			if ( $cl->GetLastWarning() )
+				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
+		
+			$this->query_info = "Query '$qo' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+			$this->resultCount = $res['total_found'];
+			$this->numberOfPages = ceil($this->resultCount/$this->pageSize);
+		}
+		
+		if (is_array($res["matches"]) ) {
+			$this->res = $res;
+			$this->ids = array_keys($res["matches"]);
+			
+			
+			$this->where = "user_id IN(".join(",",$this->ids).")";
+		
+			return $this->ids;
+		} else {
+			$r = "\t--none--";
+		}
 	}
 	
 	/**
