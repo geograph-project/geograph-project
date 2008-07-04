@@ -44,7 +44,7 @@ if (!empty($_GET['format']) && in_array($_GET['format'], $valid_formats))
 $extension = ($format == 'KML')?'kml':'xml';
 
 
-$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/article-{$format}-".empty($_GET['admin']).".$extension";
+$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/content-{$format}-".empty($_GET['admin']).".$extension";
 
 
 $rss = new UniversalFeedCreator();
