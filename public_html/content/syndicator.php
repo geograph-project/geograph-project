@@ -51,21 +51,15 @@ $rss = new UniversalFeedCreator();
 if (empty($_GET['refresh'])) 
 	$rss->useCached($format,$rssfile);
 
-$rss->title = 'Geograph Articles'; 
-$rss->link = "http://{$_SERVER['HTTP_HOST']}/article/";
+$rss->title = 'Geograph Content'; 
+$rss->link = "http://{$_SERVER['HTTP_HOST']}/content/";
  
 	
-$rss->description = "Recently updated articles on Geograph British Isles"; 
+$rss->description = "Recently updated content on Geograph British Isles"; 
 
-if (empty($_GET['admin'])) {
-	$sql_where = "licence != 'none' and approved = 1";
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/syndicator.php?format=$format";
 
-} else {
-	$sql_where = "licence = 'none' or approved = 0";
-	$rss->title = 'Geograph Pending Articles'; 
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/syndicator.php?format=$format&amp;admin=1";
-}
+$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/content/syndicator.php?format=$format";
+
 
 if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 	require_once('geograph/conversions.class.php');
@@ -78,12 +72,10 @@ if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 $db=NewADOConnection($GLOBALS['DSN']);
 	
 
-$sql="select article_id, article.article_cat_id, category_name, article.user_id, url, title, extract, licence, publish_date, approved, update_time, create_time, realname, article.gridsquare_id
-	from article 
-		inner join user using (user_id)
-		left join article_cat on (article.article_cat_id = article_cat.article_cat_id)
-	where $sql_where
-	order by update_time desc
+$sql="select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.type
+	from content 
+		left join user using (user_id)
+	order by updated desc
 	limit 50";
 
 $recordSet = &$db->Execute($sql);
@@ -91,29 +83,18 @@ while (!$recordSet->EOF)
 {
 	$item = new FeedItem();
 	
-	$version = $db->getOne("
-		select count(*)
-		from article_revisions
-		where article_id = {$recordSet->fields['article_id']}
-		group by article_id");
-	
-	
 	$item->title = $recordSet->fields['title'];
 
 	//htmlspecialchars is called on link so dont use &amp;
-	$item->link = "http://{$_SERVER['HTTP_HOST']}/article/{$recordSet->fields['url']}";
-	
-	$item->guid = $item->link."#$version";
-
+	$item->link = "http://{$_SERVER['HTTP_HOST']}{$recordSet->fields['url']}";
 	
 	$description = $recordSet->fields['extract'];
 	if (strlen($description) > 160)
 		$description = substr($description,0,157)."...";
 	$item->description = $description;
-	$item->date = strtotime($recordSet->fields['publish_date']);
+	$item->date = strtotime($recordSet->fields['created']);
 	$item->author = $recordSet->fields['realname'];
-	$item->category = $recordSet->fields['category_name'];
-
+	
 	if (($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') && $recordSet->fields['gridsquare_id']) {
 		$gridsquare = new GridSquare;
 		$grid_ok=$gridsquare->loadFromId($recordSet->fields['gridsquare_id']);

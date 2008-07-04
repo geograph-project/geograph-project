@@ -70,7 +70,7 @@
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="searchtext" id="l_searchtext"><b>containing text</b></label></td> 
+			 <td><label for="searchtext" id="l_searchtext"><b>containing phrase</b></label></td> 
 			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput"/><br/>
 			 <small>open <a href="/help/search" target="geo_help">text search help</a> in new window</small></td> 
 			 <td>eg Bridge</td> 
