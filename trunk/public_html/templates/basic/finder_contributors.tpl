@@ -34,7 +34,7 @@
 {foreach from=$results item=item}
 	<li>
 	<b><a href="/profile/{$item.user_id}" target="_top">{$item.realname|escape:'html'|default:'unknown'}</a></b>
-	{if $item.nickname}<small>Nickname: {$item.realname|escape:'html'}</small>{/if}
+	{if $item.nickname}<small>Nickname: {$item.nickname|escape:'html'}</small>{/if}
 	
 	{if $item.images}
 	<small><small style="color:gray">{$item.images} images submitted</small></small>{/if}
