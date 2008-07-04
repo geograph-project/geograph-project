@@ -22,13 +22,10 @@
 
 <h2>Contributor Search</h2>
 
-<form action="{$script_name}" method="get" target="searchwindow" onsubmit="focusBox()">
+<form action="{$script_name}" method="get" onsubmit="focusBox()">
 	<p>
-		<label for="fq">Free Text Search</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+		<label for="fq">Name</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 		<input type="submit" value="Search"/>
-	</p>
-	<p>
-		<small>&middot; There is no paging of results, to access more images simply add more keywords to refine your search (view <a href="#cheatsheet">Cheatsheet</a>)<br/>
 	</p>
 </form>
 
@@ -36,7 +33,7 @@
 <ol>
 {foreach from=$results item=item}
 	<li>
-	<b><a href="/profile/{$item.user_id}" target="_top">{$item.realname|escape:'html'}</a></b>
+	<b><a href="/profile/{$item.user_id}" target="_top">{$item.realname|escape:'html'|default:'unknown'}</a></b>
 	{if $item.nickname}<small>Nickname: {$item.realname|escape:'html'}</small>{/if}
 	
 	{if $item.images}
@@ -50,9 +47,20 @@
 
 </ol>
 
+{if count($results) eq 15}
+	<p>
+		<small>&middot; There is no paging of results, to access further results simply add more keywords to refine your search (view <a href="#cheatsheet">Cheatsheet</a>)<br/>
+	</p>
+{/if}
+
+	{if $query_info}
+	<p>{$query_info}</p>
+	{/if}
+
 <div class="interestBox" style="margin-top:60px;">
 	<big><a name="cheatsheet"></a>Cheatsheet</big>:
 	<ul class="explore">
+		<li>you can enter just the first few letters of a name</li>
 		<li>prefix a keyword with - to <b>exclude</b> that word from the match; example : <tt>smith -john</tt></li>
 		<li>can use OR to match <b>either/or</b> keywords; example: <tt>john OR joan</tt></li>
 	</ul>

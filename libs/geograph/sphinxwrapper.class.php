@@ -164,7 +164,7 @@ class sphinxwrapper {
 			if ( $cl->GetLastWarning() )
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 		
-			$this->query_info = "Query '$qo' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+			$this->query_info = "Query '{$this->qoutput}' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
 			$this->resultCount = $res['total_found'];
 			$this->numberOfPages = ceil($this->resultCount/$this->pageSize);
 		}
@@ -220,7 +220,7 @@ class sphinxwrapper {
 			if ( $cl->GetLastWarning() )
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 		
-			$this->query_info = "Query '$qo' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+			$this->query_info = "Query '{$this->qoutput}' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
 			$this->resultCount = $res['total_found'];
 			$this->numberOfPages = ceil($this->resultCount/$this->pageSize);
 		}

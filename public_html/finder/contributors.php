@@ -69,6 +69,7 @@ if (!empty($_GET['q'])) {
 			$results[] = $row;
 		}
 		$smarty->assign_by_ref('results', $results);
+		$smarty->assign("query_info",$sphinx->query_info);
 		$cacheid = md5($q);
 	}
 	$ADODB_FETCH_MODE = $prev_fetch_mode;
