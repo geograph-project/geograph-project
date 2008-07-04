@@ -44,10 +44,7 @@ if (!empty($_GET['q'])) {
 	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 	if (empty($pg) || $pg < 1) {$pg = 1;}
 
-	#$ids = $sphinx->returnUserIds($pg);	
-	
-	$ids = array(3,4,5);
-	$sphinx->where = "user_id IN(".join(",",$ids).")";
+	$ids = $sphinx->returnUserIds($pg);	
 	
 	if (count($ids)) {
 		$where = $sphinx->where;
