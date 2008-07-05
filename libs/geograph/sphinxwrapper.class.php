@@ -182,7 +182,7 @@ class sphinxwrapper {
 		}		
 	}
 
-	public function returnUserIds($page = 1) {
+	public function returnIds($page = 1,$index = "user") {
 		global $CONF;
 		$q = $this->q;
 		
@@ -196,7 +196,6 @@ class sphinxwrapper {
 		} elseif (preg_match('/[~\|\(\)@"\/-]/',$q)) {
 			$mode = SPH_MATCH_EXTENDED;
 		} 
-		$index = "user";
 		
 		$cl = new SphinxClient ();
 		$cl->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
@@ -228,10 +227,7 @@ class sphinxwrapper {
 		if (is_array($res["matches"]) ) {
 			$this->res = $res;
 			$this->ids = array_keys($res["matches"]);
-			
-			
-			$this->where = "user_id IN(".join(",",$this->ids).")";
-		
+					
 			return $this->ids;
 		} else {
 			$r = "\t--none--";

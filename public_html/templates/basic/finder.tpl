@@ -153,9 +153,10 @@ h4.title {
 	<div style="position:relative;{if $tab != 5}display:none{/if}" class="interestBox" id="div5">
 		<h3 class="title">Place Search</h3>
 		
-		
-		<h4 class="title">Geograph</h4>
-			<p><i>coming soon...</i>, see <a href="/explore/places/" target="_blank">Places</a> in meantime</p>
+		<form method="get" action="/finder/places.php">
+			<label for="fcq">Keywords</label>: <input type="text" name="q" id="fcq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+			<input type="submit" value="Search"/>
+		</form>
 	
 		<p>&nbsp;</p>
 	</div>
