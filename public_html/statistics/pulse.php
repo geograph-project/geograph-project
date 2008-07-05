@@ -58,6 +58,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$sql = "SELECT COUNT(*) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 1 HOUR)";
 	calc("Images Submitted in last hour",$sql);
+	
+	$sql = "SELECT MAX(gridimage_id) FROM gridimage_search";
+	calc("Last Moderated Image",$sql);
 
 $table[] = array("Parameter"=>'',"Value"=>'');
 	
