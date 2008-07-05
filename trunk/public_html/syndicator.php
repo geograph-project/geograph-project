@@ -80,7 +80,7 @@ if (isset($_GET['text'])) {
 		$q=trim($_GET['q']);
 	}
 	//temporally only enable full-text for piclens
-	if (isset($_GET['source']) && $_GET['source'] == 'piclens') {
+	if (isset($_GET['source']) && ($_GET['source'] == 'piclens' || $_GET['source'] == 'fist') ) {
 		$sphinx = new sphinxwrapper($q);
 		
 		//gets a cleaned up verion of the query (suitable for filename etc) 
