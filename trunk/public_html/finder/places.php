@@ -28,7 +28,7 @@ init_session();
 
 
 $smarty = new GeographPage;
-$template = 'finder_contributors.tpl';
+$template = 'finder_places.tpl';
 
 if (!empty($_GET['q'])) {
 	$q=trim($_GET['q']);
@@ -47,42 +47,50 @@ if (!empty($_GET['q'])) {
 	$cacheid .=".".$pg;
 	
 	if (!$smarty->is_cached($template, $cacheid)) {
-	
-		$sphinx->processQuery();
 		
-		$ids = $sphinx->returnIds($pg,'user');	
+		$offset = (($pg -1)* $sphinx->pageSize)+1;
+		
+		if ($offset < (1000-$pgsize) ) { 
+			$sphinx->processQuery();
 
-		if (count($ids)) {
-			$where = "user_id IN(".join(",",$ids).")";
+			$ids = $sphinx->returnIds($pg,'gaz');	
 
-			$db=NewADOConnection($GLOBALS['DSN']);
+			if (count($ids)) {
+				$where = "id IN(".join(",",$ids).")";
 
-			$limit = 25;
+				$db=NewADOConnection($GLOBALS['DSN2']);
 
-			$prev_fetch_mode = $ADODB_FETCH_MODE;
-			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-			$rows = $db->getAssoc("
-			select user.user_id,nickname,realname,images
-			from user 
-			left join user_stat using (user_id)
-			where $where
-			limit $limit");
+				$limit = 25;
 
-			$results = array();
-			foreach ($ids as $c => $id) {
-				$row = $rows[$id];
-				$row['user_id'] = $id;
-				$results[] = $row;
+				$prev_fetch_mode = $ADODB_FETCH_MODE;
+				$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+				$rows = $db->getAssoc("
+				select id,name,gr,localities
+				from placename_index 
+				where $where
+				limit $limit");
+
+				$results = array();
+				foreach ($ids as $c => $id) {
+					$row = $rows[$id];
+					$row['id'] = $id;
+					$results[] = $row;
+				}
+				$smarty->assign_by_ref('results', $results);
+				$smarty->assign("query_info",$sphinx->query_info);
+
+				if ($sphinx->numberOfPages > 1) {
+					$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q)."&amp;page=") );
+					$smarty->assign("offset",$offset);
+				}
+				$ADODB_FETCH_MODE = $prev_fetch_mode;
 			}
-			$smarty->assign_by_ref('results', $results);
-			$smarty->assign("query_info",$sphinx->query_info);
+		} else {
+			$smarty->assign("query_info","Search will only return 1000 results - please refine your search");
+			$smarty->assign('pagesString', pagesString($pg,1,$_SERVER['PHP_SELF']."?q=".urlencode($q)."&amp;page=") );
 
-			if ($sphinx->numberOfPages > 1) {
-				$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q)."&amp;page=") );
-				$smarty->assign("offset",(($pg -1)* $sphinx->pageSize)+1);
-			}
-			$ADODB_FETCH_MODE = $prev_fetch_mode;
 		}
+			
 	}
 	
 	$smarty->assign("q",$sphinx->q);

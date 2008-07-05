@@ -1,4 +1,4 @@
-{assign var="page_title" value="Contributor Search"}
+{assign var="page_title" value="Place Search"}
 {include file="_std_begin.tpl"}
 {literal}
 <style type="text/css">
@@ -20,7 +20,7 @@
 
 {/literal}
 
-<h2><a href="/finder/">Finder</a> :: Contributors</h2>
+<h2><a href="/finder/">Finder</a> :: Places</h2>
 
 <form action="{$script_name}" method="get" onsubmit="focusBox()">
 	<p>
@@ -35,18 +35,20 @@
 	</p>
 {/if}
 
+{if $query_info}
+	<p><i>Click a placename to find pictures around that location</i></p>
+{/if}
+
 <ol start="{$offset}">
 {foreach from=$results item=item}
 	<li>
-	<b><a href="/profile/{$item.user_id}" target="_top">{$item.realname|escape:'html'|default:'unknown'}</a></b>
-	{if $item.nickname}<small>Nickname: {$item.nickname|escape:'html'}</small>{/if}
+	{$item.gr} <b><a href="/search.php?placename={$item.id}&amp;do=1" target="_top">{$item.name|escape:'html'|default:'unknown'}</a></b>
+	{if $item.localities}<small>{$item.localities|escape:'html'}</small>{/if}
 	
-	{if $item.images}
-	<small><small style="color:gray">{$item.images} images submitted</small></small>{/if}
 	</li>
 {foreachelse}
 	{if $q}
-		<li><i>There is no content to display at this time.</i></li>
+		<li><i>There are no results to display at this time.</i></li>
 	{/if}
 {/foreach}
 

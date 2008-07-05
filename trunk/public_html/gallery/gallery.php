@@ -95,7 +95,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($page['posts_count'] > $pgsize) {
 			$numberOfPages = ceil($page['posts_count']/$pgsize);
 			
-			$smarty->assign('pagesString', pagesString($pg,$numberOfPages,"/gallery/{$page['url']}"));
+			$smarty->assign('pagesString', pagesString($pg,$numberOfPages,"/gallery/{$page['url']}/"));
 		}
 		
 	} 
@@ -106,34 +106,6 @@ if (!$smarty->is_cached($template, $cacheid))
 
 
 $smarty->display($template, $cacheid);
-
-
-	function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtml = '') {
-		static $r;
-		if (!empty($r))
-			return($r);
-		if ($currentPage > 1) 
-			$r .= "<a href=\"$prefix/".($currentPage-1)."$postfix\"$extrahtml>&lt; &lt; prev</a> ";
-		$start = max(1,$currentPage-5);
-		$endr = min($numberOfPages+1,$currentPage+8);
-		
-		if ($start > 1)
-			$r .= "<a href=\"$prefix$postfix\"$extrahtml>1</a> ... ";
-
-		for($index = $start;$index<$endr;$index++) {
-			if ($index == $currentPage) 
-				$r .= "<b>$index</b> "; 
-			else
-				$r .= "<a href=\"$prefix/$index$postfix\"$extrahtml>$index</a> ";
-		}
-		if ($endr < $numberOfPages+1) 
-			$r .= "... ";
-			
-		if ($numberOfPages > $currentPage) 
-			$r .= "<a href=\"$prefix/".($currentPage+1)."$postfix\"$extrahtml>next &gt;&gt;</a> ";
-		return $r;	
-	}
-	
 
 	
 ?>
