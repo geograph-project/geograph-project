@@ -125,7 +125,7 @@ class sphinxwrapper {
 		global $CONF;
 		$q = $this->q;
 		
-		require ( "3rdparty/sphinxapi.php" );
+		require_once ( "3rdparty/sphinxapi.php" );
 		
 		$mode = SPH_MATCH_ALL;
 		if (strpos($q,'~') === 0) {
@@ -186,7 +186,7 @@ class sphinxwrapper {
 		global $CONF;
 		$q = $this->q;
 		
-		require ( "3rdparty/sphinxapi.php" );
+		require_once( "3rdparty/sphinxapi.php" );
 		
 		$mode = SPH_MATCH_ALL;
 		if (strpos($q,'~') === 0) {
@@ -220,7 +220,7 @@ class sphinxwrapper {
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 		
 			$this->query_info = "Query '{$this->qoutput}' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
-			$this->resultCount = $res['total_found'];
+			$this->resultCount = min(1000,$res['total_found']); #sphinx will only give us 1000 results anyway!
 			$this->numberOfPages = ceil($this->resultCount/$this->pageSize);
 		}
 		
