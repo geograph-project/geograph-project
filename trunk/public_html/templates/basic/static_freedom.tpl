@@ -16,9 +16,11 @@ who help create it or use it. To bring that about:</p>
 <li>The source code for the website is open source and
 licenced under the GNU General Public Licence (GPL).</li>
 <li>All photographic submissions are licensed by the original submitter under
-a Creative Commons licence granting everyone the rights to use the image
+a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">
+Creative Commons Attribution-ShareAlike licence</a> 
+granting everyone the rights to use the image
 for any purpose (including commercial uses), as long as credit is given 
-to the copyright holder.</li>
+to the copyright holder and that derivative works use the same licence.</li>
 </ul>
 
 <p>To illustrate how this ensures freedom, let's look at what would happen
@@ -42,8 +44,8 @@ alternative.
 But what use is the site without content? Fortunately, all of the photographs are also
 licenced by the original submitters under a Creative Commons licence allowing them to
 be used by anyone as long as a credit is given. This means Bob will able to obtain the
-images and associated metadata for integration into the new site (we're currently
-working on methods of providing such data feeds - please contact us for details)
+images and associated metadata for integration into the new site (we have several ways
+of providing such data feeds - please contact us for details)
 </p>
 
 <p>
