@@ -22,7 +22,7 @@ if (!$_SESSION['admin_logged_in'] && !$_SESSION['upload_logged_in'])
 <body>
 
 <?php
-$tracker_url = $website_url . substr($_SERVER['REQUEST_URI'], 0, -15) . "announce.php";
+$tracker_url = $website_url . "/announce.php";
 
 if (isset($_FILES["torrent"]))
 	addTorrent();
@@ -34,7 +34,7 @@ endOutput();
 function addTorrent()
 {
 	require ("config.php");
-	$tracker_url = $website_url . substr($_SERVER['REQUEST_URI'], 0, -15) . "announce.php";
+	$tracker_url = $website_url . "/announce.php";
 	
 	$hash = strtolower($_POST["hash"]);
 
@@ -45,22 +45,34 @@ function addTorrent()
 	require_once ("BDecode.php");
 	require_once ("BEncode.php");
 	
+echo "<pre>";
+var_dump($_FILES);
+echo "</pre>";
+
 	if ($_FILES["torrent"]["error"] != 4)	
 	{
 		$fd = fopen($_FILES["torrent"]["tmp_name"], "rb") or die(errorMessage() . "File upload error 1</p>\n");
 		is_uploaded_file($_FILES["torrent"]["tmp_name"]) or die(errorMessage() . "File upload error 2</p>\n");
 		$alltorrent = fread($fd, filesize($_FILES["torrent"]["tmp_name"]));
 
+echo "decoding torrent<br>";flush();
+
 		$array = BDecode($alltorrent);
+
+echo "checking decode<br>";flush();
+
 		if (!$array)
 		{
 			echo errorMessage() . "Error: The parser was unable to load your torrent.  Please re-create and re-upload the torrent.</p>\n";
 			endOutput();
 			exit;
 		}
+
+echo "checking announce url<br>";flush();
+
 		if (strtolower($array["announce"]) != $tracker_url)
 		{
-			echo errorMessage() . "Error: The tracker announce URL does not match this:<br>$tracker_url<br>Please re-create and re-upload the torrent.</p>\n";
+			echo errorMessage() . "Error: The tracker announce URL {$array['announce']} does not match this:<br>$tracker_url<br>Please re-create and re-upload the torrent.</p>\n";
 			endOutput();
 			exit;
 		}
@@ -103,8 +115,12 @@ function addTorrent()
 			endOutput();
 			exit;
 		}
+		
+echo "generating hash<br>";flush();
 		$hash = @sha1(BEncode($array["info"]));
 		fclose($fd);
+
+echo "moving file<br>";flush();
 		
 		$target_path = "torrents/";
 		$target_path = $target_path . basename( clean($_FILES['torrent']['name'])); 
@@ -133,6 +149,8 @@ function addTorrent()
 			$filename = $array["info"]["name"];
 	}
 	
+echo "totalling files<br>";flush();
+
 
 	//figure out total size of all files in torrent
 	$info = $array["info"];
@@ -166,6 +184,9 @@ function addTorrent()
 		echo errorMessage() . "Error: The Torrent URL does not start with http:// Make sure you entered a correct URL.</p>\n";
 		endOutput();
 	}
+
+echo "inserting into db<br>";flush();
+
 
 	$query = "INSERT INTO ".$prefix."namemap (info_hash, filename, url, size, pubDate) VALUES (\"$hash\", \"$filename\", \"$url\", \"$total_size\", \"" . date('D, j M Y h:i:s') . "\")";
 	$status = makeTorrent($hash, true);
@@ -205,7 +226,7 @@ function addTorrent()
 function endOutput() 
 {
 	require ("config.php");
-	$tracker_url = $website_url . substr($_SERVER['REQUEST_URI'], 0, -15) . "announce.php";
+	$tracker_url = $website_url ."/announce.php";
 	?>
 	<p align="right"><a href="./docs/help.html"><img src="images/help.png" border="0" class="icon" alt="Help" title="Help" /></a><a href="./docs/help.html">Help</a></p>
 	<div class="center">
