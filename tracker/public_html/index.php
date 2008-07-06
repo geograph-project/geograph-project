@@ -126,9 +126,14 @@ if (file_exists("rss/rss.xml"))
 	archive of the <a href="http://www.geograph.org.uk">Geograph British Isles</a> project readily downloadable in volumes each 
 	comprising around 50,000 images plus RDF formatted metadata</p>
 
-	<p>All of the data is licenced under a Creative Commons licence, and the RDF file 
-	references the licence terms for each item in the volume. Please take care to respect
-	these licences when re-using this data!</p>
+
+<p>Everything in the torrents -- images and
+    metadata -- is licensed under the <a rel="license"
+    href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons
+    Attribution-ShareAlike licence</a>, and the RDF file references
+    the licence terms for each item in the volume. Please take care to
+    respect these licences when re-using this data.</p>
+    
 
 	<p>Finally, if you are able <b>please seed these torrents</b> - even a small amount of bandwidth
 	can help</p>
