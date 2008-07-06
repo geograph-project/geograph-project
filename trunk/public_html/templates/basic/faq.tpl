@@ -277,6 +277,10 @@ The <b>Geograph Website</b>:
 	<p>Images are licensed for re-use under a <a href="#opensource">Creative Commons Licence</a>, see
 	licence details by viewing a full size image. Also look for the "Interested in reusing this image?" link under each image on the main photo page, which outlines easy ways to reuse the image.</p>
 
+    <p>The entire archive is also available for download via bittorrent - see 
+    {external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk" text="http://torrents.geograph.org.uk"}
+    for details.   
+
 	<ul>
 	<li>If you are not a developer and maybe looking for <a href="/article/Ways-to-view-Geograph-Images">ways to access images outside the website</a>.</li>
 	</ul>
@@ -290,24 +294,23 @@ The <b>Geograph Website</b>:
 <h3>Open source? Creative Commons? What's that all about?</h3>
 	<p>Putting this together requires many people to donate their
 	time or resources, and we wanted to be sure that we created a resource
-	free from commercial exploitation in future. To that end, the site
-	{external title="geograph source code" href="http://geograph.sourceforge.net" text="source code"} is available 
-	for re-use under the terms of the GNU Public Licence (GPL).</p>
+	free from commercial exploitation in future. To that end, the site software
+    is available for re-use under the terms of the GNU Public Licence (GPL).</p>
 	
 	<ul>
-	<li>Similarlly, if you want to get involved at developer level, <a href="/article/Geograph-for-Developers">see this article</a>.</li>
+	<li>If you want to get involved as a developer, <a href="/article/Geograph-for-Developers">see this article</a>.</li>
 	</ul>
 
 	<p>In addition, we require all submitters to adopt a 
-	{external href="http://creativecommons.org" text="Creative Commons"} 
+	{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Attribution-ShareAlike"} 
 	licence on their photographic submissions. While our volunteer photographers
 	keep copyright on their photos, they also grant the use of their photographs
 	in return for attribution (take a look at a <a title="View a typical photograph" href="/photo/14">typical 
-	submission</a> for more details)</p>
+	submission</a> for more details).</p>
 
 	<p>In a nutshell, we wanted to build a true community project that won't 
 	leave a nasty taste in the mouth by getting sold for shedloads of cash and
-	taken away from the people who contributed. Our licence terms ensure that the
+	taken away from the people who contributed. These licence terms ensure that the
 	site and content can never be "taken away" from you. See <a href="/help/freedom">Freedom - The Geograph Manifesto</a>
 	</p>
 </div>
