@@ -1,5 +1,5 @@
 <?php
-
+require("config.php"); 
 
 //////////////////////////////////////////////////////////////////
 // Worker functions
@@ -101,7 +101,8 @@ function errorMessage()
 // Returns true/false, depending on if there were errors.
 function makeTorrent($hash, $tolerate = false)
 {
-	require("config.php"); //necessary to get the prefix value, require_once() doesn't seem to work :/
+	global $prefix;
+	
 	if (strlen($hash) != 40)
 		showError("makeTorrent: Received an invalid hash");
 	$result = true;
@@ -124,7 +125,7 @@ function makeTorrent($hash, $tolerate = false)
 // Currently checks by locating the row in "summary"
 function verifyTorrent($hash)
 {
-	require("config.php"); //need prefix value...
+	global $prefix;
 	$query = "SELECT COUNT(*) FROM ".$prefix."summary where info_hash=\"$hash\"";
 	$results = mysql_query($query);
 	
@@ -150,7 +151,7 @@ function verifyHash($input)
 // Returns info on one peer
 function getPeerInfo($user, $hash)
 {
-	require("config.php");
+	global $prefix;
 	// If "trackerid" is set, let's try that
 	if (isset($GLOBALS["trackerid"]))
 	{
@@ -184,7 +185,7 @@ function getPeerInfo($user, $hash)
 // Slight redesign of loadPeers
 function getRandomPeers($hash, $where="")
 {
-	require("config.php");
+	global $prefix;
 
 	// Don't want to send a bad "num peers" for new seeds
 	if ($GLOBALS["NAT"])
@@ -221,7 +222,7 @@ function getRandomPeers($hash, $where="")
 //  if we should grab it ourselves.
 function killPeer($userid, $hash, $left, $assumepeer = false)
 {
-	require("config.php");
+	global $prefix;
 	if (!$assumepeer)
 	{
 		$peer = getPeerInfo($userid, $hash);
@@ -259,7 +260,7 @@ function killPeer($userid, $hash, $left, $assumepeer = false)
 // Transfers bytes from "left" to "dlbytes" when a peer reports in.
 function collectBytes($peer, $hash, $left)
 {
-	require("config.php");
+	global $prefix;
 	$peerid=$peer["peer_id"];
 
 	if (!$GLOBALS["countbytes"])
@@ -320,7 +321,7 @@ function sendPeerList($peers)
 // It's the only way to use cache tables. In fact, it only uses it.
 function sendRandomPeers($info_hash)
 {
-	require("config.php");
+	global $prefix;
 	$result = mysql_query("SELECT COUNT(*) FROM ".$prefix."y$info_hash");
 	$count = mysql_result($result, 0, 0);
 	
@@ -377,7 +378,7 @@ function sendRandomPeers($info_hash)
 // for any reasonable report interval (900 or larger))
 function loadLostPeers($hash, $timeout)
 {
-	require("config.php"); //necessary for getting prefix value
+	global $prefix;
 	$results = mysql_query("SELECT peer_id,bytes,ip,port,status,lastupdate,sequence from ".$prefix."x$hash where lastupdate < (UNIX_TIMESTAMP() - 2 * $timeout)");
 	$peerno = 0;
 	if (!$results)
@@ -393,7 +394,7 @@ function loadLostPeers($hash, $timeout)
 
 function trashCollector($hash, $timeout)
 {
-	require("config.php"); //need to grab prefix value...
+	global $prefix;
 	if (isset($GLOBALS["trackerid"]))
 		unset($GLOBALS["trackerid"]);
 
@@ -525,7 +526,7 @@ function evilReject($ip, $peer_id, $port)
 
 function runSpeed($info_hash, $delta)
 {
-	require("config.php");
+	global $prefix;
 	//stick in our latest data before we calc it out
 	quickQuery("INSERT IGNORE INTO ".$prefix."timestamps (info_hash, bytes, delta, sequence) SELECT '$info_hash' AS info_hash, dlbytes, UNIX_TIMESTAMP() - lastSpeedCycle, NULL FROM ".$prefix."summary WHERE info_hash=\"$info_hash\"");
 
