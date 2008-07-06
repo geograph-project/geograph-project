@@ -237,7 +237,9 @@ function killPeer($userid, $hash, $left, $assumepeer = false)
 		$bytes = 0;
 		$peer = $assumepeer;
 	}
-
+	
+	quickQuery("INSERT INTO ".$prefix."peer_archive SELECT '$hash' as `info_hash`, `peer_id`, `bytes`, `ip`, `port`, `status`, `lastupdate`, `sequence`, `natuser`, NOW() as `written` FROM ".$prefix."x$hash WHERE peer_id=\"$userid\"");
+	
 	quickQuery("DELETE FROM ".$prefix."x$hash WHERE peer_id=\"$userid\"");
 	if (mysql_affected_rows() == 1)
 	{
