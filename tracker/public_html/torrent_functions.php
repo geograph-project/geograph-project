@@ -292,7 +292,23 @@ if (isset($_FILES["torrent"]) || isset($_POST["url"]) || isset($_GET["url"]))
 				echo "</td></tr>\n";
 				continue;
 			}
-			echo "<tr><td align=right>$left</td><td>=</td><td>".$array[$left]."</td></tr>\n";
+				
+
+			echo "<tr><td align=right>$left</td><td>=</td><td>";
+			
+			if (is_array($array[$left]))
+			{
+				foreach($array[$left] as $n=>$v)
+				{
+					echo "$n: $v<br>";
+				}
+			}
+			else
+			{
+				echo $array[$left];
+			}			
+
+			echo "</td></tr>\n";
 		}
 		
 		echo "</table><br><br><h2>File data:</h2><pre>";
