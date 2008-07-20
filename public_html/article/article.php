@@ -107,7 +107,7 @@ function smarty_function_articletext($input) {
 	$replacement[]='</h$1>';
 
 
-	$pattern[]='/\[image id=(\d+) text=([^\}]+)\]/e';
+	$pattern[]='/\[image id=(\d+) text=([^\]]+)\]/e';
 	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '\$2'))";
 
 
