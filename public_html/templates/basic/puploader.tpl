@@ -154,7 +154,7 @@ function checkPicasaFormSubmission() {
 			}
 		}
 		if (ele.name.indexOf('imagetaken') == 0)
-			if (ele.value == '') {
+			if (ele.value == '' || ele.value == '--') {
 				var name = "* Date photo taken";
 				errors[name] = (errors[name])?(errors[name] + 1):1;
 				errors_count = errors_count + 1;
