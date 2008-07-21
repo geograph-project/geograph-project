@@ -111,7 +111,7 @@
 <input type="submit" name="submit" value="Save Changes..." style="font-size:1.1em; color:green"/> {if $title == 'New Article'}<br/>(Articles will only show on the site once they have been approved by a site moderator){/if}</p>
 </form>
 <br/><br/><br/>
-<div style="padding:5px; border: 1px solid gray; background-color:silver; font-family: monospace; font-size:0.9em">
+<div style="padding:5px; border: 1px solid gray; background-color:silver; font-size:0.9em">
 | <b>Quick Reference</b> | <a href="/article/Help_on_formatting_of_articles" target="_blank">Full Reference</a> (opens in new window) |
 <hr/>
 
