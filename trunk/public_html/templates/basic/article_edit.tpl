@@ -111,20 +111,24 @@
 <input type="submit" name="submit" value="Save Changes..." style="font-size:1.1em"/> {if $title == 'New Article'}<br/>(Articles will only show on the site once they have been approved by a site moderator){/if}</p>
 </form>
 
-<div style="padding:5px; border: 1px solid gray; background-color:silver; font-family: monospace; font-size:0.8em">
-Quick Reference: 
+<div style="padding:5px; border: 1px solid gray; background-color:silver; font-family: monospace; font-size:0.9em">
+| <b>Quick Reference</b> | [<a href="/article/Help_on_formatting_of_articles" target="_blank">Full Reference</a> (opens in new window) |
 
 <h2>[h2]Big Title[/h2]</h2>
 <h3>[h3]Sub Title[/h3]</h3>
+<small>&middot; h2, h3 and h4 will create an automatic table of contents</small>
 
 <p>[b]<b>Bold</b>[/b], [i]<i>Italic</i>[/i] and [big]<big>Big</big>[/big]</p>
 
 <p>* Bulleted List<br/>
 * Item Two</p>
 
+<p>[[[123434]] <small>&middot; insert the thumbnail of a geograph image - get the id from the image url</small></p>
+
+
 <p>[url=http://www.example.com]Goto this site[/url]</p>
 
-
+<small>&middot; See the full reference for including tables, map extracts, external images and order features.</small>
 </div>
 
 {include file="_std_end.tpl"}
