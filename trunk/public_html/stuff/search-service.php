@@ -203,10 +203,17 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign_by_ref("images",$images);
 			$smarty->assign("query_info",$query_info);
 		} else {
+			$images = array();
+			$smarty->assign_by_ref("images",$images);
 			$smarty->assign("query_info","no results");
 		}
 
-	} 
+	} else {
+		$images = array();
+		$smarty->assign_by_ref("images",$images);
+		$smarty->assign("query_info","no results");
+	}
+	$smarty->assign("searchq",$qo);
 }
 
 $smarty->display($template,$cacheid);
