@@ -99,7 +99,7 @@
 <div class="field">
 	{if $errors.content}<div class="formerror"><p class="error">{$errors.content}</p>{/if}
 	 
-	<label for="content">Content:</label>
+	<label for="content">Content:</label> (see markup reference at bottom of page)
 	<textarea rows="40" cols="80" name="content" style="width:58em">{$content|escape:"html"}</textarea></p>
 	
 	{if $errors.content}</div>{/if}
@@ -107,27 +107,28 @@
 
 </fieldset>
 
-<input type="reset" name="reset" value="Reset" onclick="return confirm('Are you sure? Changes will be lost!');"/>
-<input type="submit" name="submit" value="Save Changes..." style="font-size:1.1em"/> {if $title == 'New Article'}<br/>(Articles will only show on the site once they have been approved by a site moderator){/if}</p>
+<input type="reset" name="reset" value="Reset" onclick="return confirm('Are you sure? Changes will be lost!');" style="color:green"/>
+<input type="submit" name="submit" value="Save Changes..." style="font-size:1.1em; color:green"/> {if $title == 'New Article'}<br/>(Articles will only show on the site once they have been approved by a site moderator){/if}</p>
 </form>
-
+<br/><br/><br/>
 <div style="padding:5px; border: 1px solid gray; background-color:silver; font-family: monospace; font-size:0.9em">
-| <b>Quick Reference</b> | [<a href="/article/Help_on_formatting_of_articles" target="_blank">Full Reference</a> (opens in new window) |
+| <b>Quick Reference</b> | <a href="/article/Help_on_formatting_of_articles" target="_blank">Full Reference</a> (opens in new window) |
+<hr/>
 
-<h2>[h2]Big Title[/h2]</h2>
-<h3>[h3]Sub Title[/h3]</h3>
+<h2><tt>[h2]Big Title[/h2]</tt></h2>
+<h3><tt>[h3]Sub Title[/h3]</tt></h3>
 <small>&middot; h2, h3 and h4 will create an automatic table of contents</small>
 
-<p>[b]<b>Bold</b>[/b], [i]<i>Italic</i>[/i] and [big]<big>Big</big>[/big]</p>
+<p><tt>[b]<b>Bold</b>[/b]</tt>, <tt>[i]<i>Italic</i>[/i]</tt> and <tt>[big]<big>Big</big>[/big]</tt></p>
 
-<p>* Bulleted List<br/>
-* Item Two</p>
+<p><tt>* Bulleted List<br/>
+* Item Two</tt></p>
 
-<p>[[[123434]] <small>&middot; insert the thumbnail of a geograph image - get the id from the image url</small></p>
+<p><tt>[[[123434]]]</tt> <small>&middot; inserts the thumbnail of a geograph image - get the id number from the image url</small></p>
 
 
-<p>[url=http://www.example.com]Goto this site[/url]</p>
-
+<p><tt>[url=http://www.example.com]Goto this site[/url]</tt></p>
+<hr/>
 <small>&middot; See the full reference for including tables, map extracts, external images and order features.</small>
 </div>
 
