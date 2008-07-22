@@ -127,9 +127,9 @@
 <p><tt>[[[123434]]]</tt> <small>&middot; inserts the thumbnail of a geograph image - get the id number from the image url</small></p>
 
 
-<p><tt>[url=http://www.example.com]Goto this site[/url]</tt></p>
+<p>Link: <tt>[url=http://www.example.com]Goto this site[/url]</tt></p>
 <hr/>
-<small>&middot; See the full reference for including tables, map extracts, external images and order features.</small>
+<small>&middot; See the full reference for including tables, map extracts, external images and other features.</small>
 </div>
 
 {include file="_std_end.tpl"}
