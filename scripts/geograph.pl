@@ -294,20 +294,6 @@ if ($docopy==0)
 else
 {
 
-  if (my @files = ($rsync_out =~ /([^\n\r ]+\.js|[^\n\r ]+?\.css)'?$/msg)) {
-    &update_revision_file('/var/www/geograph_live',@files);
-    foreach my $server (@servers)
-    {
-       my $cmd="rsync ".
-        "/var/www/geograph_live/libs/conf/revisions.conf.php ".
-        "$server:/var/www/geograph_live/libs/conf/";
-
-       print "Copying Revision File to $server...\n";
-       `sudo -u geograph $cmd`;
-
-    }
-  }
-
    #replicate to webservers
    my $server;
    foreach $server (@servers)
@@ -326,6 +312,20 @@ else
        `sudo -u geograph $cmd`;
 
    }
+
+  if (my @files = ($rsync_out =~ /([^\n\r ]+\.js|[^\n\r ]+?\.css)'?$/msg)) {
+    &update_revision_file('/var/www/geograph_live',@files);
+    foreach my $server (@servers)
+    {
+       my $cmd="rsync ".
+        "/var/www/geograph_live/libs/conf/revisions.conf.php ".
+        "$server:/var/www/geograph_live/libs/conf/";
+
+       print "Copying Revision File to $server...\n";
+       `sudo -u geograph $cmd`;
+
+    }
+  }
 
 
 
