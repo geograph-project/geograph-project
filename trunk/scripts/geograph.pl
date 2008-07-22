@@ -174,27 +174,6 @@ if ($update_out =~ /^C/m) {
    print "*******************************\n\n\nWARNING: Conflicted Files!\n\n\n*******************************\n\n";
 } 
 
-if (my @files = ($update_out =~ /([^ ]+\.js|[^ ]+?\.css)'?$/mg)) {
-  &update_revision_file('/var/www/geograph_svn',@files);
-  foreach my $server (@servers)
-    {
-       my $cmd="rsync ".
-        "/var/www/geograph_svn/libs/conf/revisions.conf.php ".
-        "$server:/var/www/geograph_svn/libs/conf/";
-
-       print "Copying Revision File to $server...\n";
-       `sudo -u geograph $cmd`;
-
-    }
-}
-
-#my $all = `svn status /var/www/geograph_svn/public_html -v`;
-#if (my @files = ($all =~ /\/var\/www\/geograph_svn\/([^ ]+\.js|[^ ]+?\.css)'?$/mg)) {
-#  &update_revision_file('/var/www/geograph_svn',@files);
-#}
-
-
-
    #now we need to rsync that to the webserver staging areas
 
    
@@ -214,6 +193,27 @@ if (my @files = ($update_out =~ /([^ ]+\.js|[^ ]+?\.css)'?$/mg)) {
        `sudo -u geograph $cmd`;
 
    }
+
+
+if (my @files = ($update_out =~ /([^ ]+\.js|[^ ]+?\.css)'?$/mg)) {
+  &update_revision_file('/var/www/geograph_svn',@files);
+  foreach my $server (@servers)
+    {
+       my $cmd="rsync ".
+        "/var/www/geograph_svn/libs/conf/revisions.conf.php ".
+        "$server:/var/www/geograph_svn/libs/conf/";
+
+       print "Copying Revision File to $server...\n";
+       `sudo -u geograph $cmd`;
+
+    }
+}
+
+#my $all = `svn status /var/www/geograph_svn/public_html -v`;
+#if (my @files = ($all =~ /\/var\/www\/geograph_svn\/([^ ]+\.js|[^ ]+?\.css)'?$/mg)) {
+#  &update_revision_file('/var/www/geograph_svn',@files);
+#}
+
 
    #sync tracker site
     my $cmd="rsync ".
