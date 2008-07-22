@@ -302,14 +302,14 @@ function markImage(image) {
 	} else {
 		newCookie = image.toString();
 	}
-	
+
 	createCookie('markedImages',newCookie,10);
-	
+
 	ele = document.getElementById('mark'+image);
 	if(ele.innerText != undefined) {
-	    ele.innerText = newtext;
+		ele.innerText = newtext;
 	} else {
-	    ele.textContent = newtext;
+		ele.textContent = newtext;
 	}
 }
 
