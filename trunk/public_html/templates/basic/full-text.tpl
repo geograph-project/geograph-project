@@ -22,7 +22,7 @@
 
 <h2>Full-Text Image Search <sup style="color:red">Experimental Beta</sup></h2>
 
-<div class="interestBox">This is a preview of a new text search, you might have seen a similar version on nearby.org.uk. With time the full-text keyword matching will be integrated into the main site search.</div>
+<div class="interestBox">This is a preview of a new text search engine. With time the full-text keyword matching engine will be integrated into the main site search (and maintain its current format - with paging etc).</div>
 
 <form action="/stuff/search-service.php" method="get" target="searchwindow" onsubmit="focusBox()">
 	<p>
