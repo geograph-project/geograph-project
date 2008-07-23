@@ -289,7 +289,7 @@ function markImage(image) {
 	current = readCookie('markedImages');
 	newtext = 'marked';
 	if (current) {
-		re = new RegExp("\b"+image+"\b");
+		re = new RegExp("\\b"+image+"\\b");
 		if (current.search(re) > -1) {
 			newCookie = current.replace(re,',');
 			newCookie = newCookie.replace(/,,/g,',');
@@ -328,7 +328,7 @@ function importToMarkedImages() {
 		for(i=0; i < splited.length; i++) {
 			image = splited[i];
 			if (image != '')
-				if (newCookie.search(new RegExp("\b"+image+"\b")) == -1) {
+				if (newCookie.search(new RegExp("\\b"+image+"\\b")) == -1) {
 					newCookie = newCookie + ',' + image;
 					count=count+1;
 				}
