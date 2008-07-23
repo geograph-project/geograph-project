@@ -1169,7 +1169,7 @@ class Smarty
                 'results' => null
             );
             require_once(SMARTY_CORE_DIR . 'core.read_cache_file.php');
-            if (smarty_core_read_cache_file($_params, $this)) {
+            if ($_valid_cache = smarty_core_read_cache_file($_params, $this)) {
                 $_smarty_results = $_params['results'];
                 if (!empty($this->_cache_info['insert_tags'])) {
                     $_params = array('plugins' => $this->_cache_info['insert_tags']);
@@ -1180,12 +1180,13 @@ class Smarty
                     $_smarty_results = smarty_core_process_cached_inserts($_params, $this);
                 }
                 if (!empty($this->_cache_info['cache_serials'])) {
-                    $_params = array('results' => $_smarty_results);
+                    $_params = array('results' => $_smarty_results, 'valid_cache' => &$_valid_cache);
                     require_once(SMARTY_CORE_DIR . 'core.process_compiled_include.php');
                     $_smarty_results = smarty_core_process_compiled_include($_params, $this);
                 }
-
-
+            } 
+            
+            if ($_valid_cache) { 
                 if ($display) {
                     if ($this->debugging)
                     {

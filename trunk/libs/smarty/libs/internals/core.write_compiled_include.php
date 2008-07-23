@@ -28,6 +28,8 @@ function smarty_core_write_compiled_include($params, &$smarty)
     $_include_compiled =  "<?php /* Smarty version ".$smarty->_version.", created on ".strftime("%Y-%m-%d %H:%M:%S")."\n";
     $_include_compiled .= "         compiled from " . strtr(urlencode($params['resource_name']), array('%2F'=>'/', '%3A'=>':')) . " */\n\n";
 
+    $_include_compiled .= "if (\$params['cache_serial'] != '".$params['cache_serial']."') \$params['valid_cache'] = false;\n"; 
+
     $_compile_path = $params['include_file_path'];
 
     $smarty->_cache_serials[$_compile_path] = $params['cache_serial'];
