@@ -227,9 +227,7 @@ class GeographPage extends Smarty
 		$this->compile_dir=$this->template_dir."/compiled";
 		$this->config_dir=$this->template_dir."/configs";
 
-		//subdirs more efficient
-		$this->use_sub_dirs=true;
-
+		
 		if (!empty($CONF['memcache']['smarty'])) {
 			global $memcached_res,$memcache;
 			if ($CONF['memcache']['smarty'] != $CONF['memcache']['app']) {
@@ -238,9 +236,12 @@ class GeographPage extends Smarty
 				$GLOBALS['memcached_res'] =& $memcache;
 			}
 			
-			require('3rdparty/memcache_cache_handler.inc.php');
+			require_once('3rdparty/memcache_cache_handler.inc.php');
 			$this->cache_handler_func = 'memcache_cache_handler';
 		} else {
+			//subdirs more efficient
+			$this->use_sub_dirs=true;
+			
 			$this->cache_dir=$this->template_dir."/cache";
 		}
 
@@ -332,10 +333,15 @@ class GeographPage extends Smarty
 
 	function is_cached($template, $cache_id = null, $compile_id = null)
 	{
-		global $USER;
+		global $USER,$CONF;
 		$filename = str_replace("|","___","{$this->cache_dir}/lock_$template-$cache_id.tmp");
 		if (isset($_GET['refresh']) && $USER->hasPerm('admin')) {
 			$this->clear_cache($template, $cache_id, $compile_id);
+		} elseif (!empty($CONF['memcache']['smarty'])) {
+			if ($GLOBALS['memcached_res']->get($filename)) {
+				//its recent so lets extend caching to use the current file (IF there is one!)
+				$this->cache_lifetime = $this->cache_lifetime+(3600*2); //+2hr
+			} 
 		} else {
 			//check if there is a generation already in progress
 			if (file_exists($filename)) {
@@ -352,10 +358,14 @@ class GeographPage extends Smarty
 
 		$isCached = parent::is_cached($template, $cache_id, $compile_id);
 		if (!$isCached) {
-			//we don't have a cache so lets write the lock file
-			$h = fopen($filename, "w");
-			fwrite($h,".");
-			fclose($h);
+			if (!empty($CONF['memcache']['smarty'])) {
+				$GLOBALS['memcached_res']->set($filename, $template, false, 60*5);
+			} else {
+				//we don't have a cache so lets write the lock file
+				$h = fopen($filename, "w");
+				fwrite($h,".");
+				fclose($h);
+			}
 			$this->wroteLock = $filename;
 		}
 		return $isCached;
@@ -363,12 +373,17 @@ class GeographPage extends Smarty
 
 	function display($template, $cache_id = null, $compile_id = null)
 	{
+		global $CONF;
 		$ret = parent::display($template, $cache_id, $compile_id);
 
 		//we finished so remove the lock file
-		if (!empty($this->wroteLock))
-			unlink($this->wroteLock);
-
+		if (!empty($this->wroteLock)) {
+			if (!empty($CONF['memcache']['smarty'])) {
+				$GLOBALS['memcached_res']->delete($this->wroteLock);
+			} else {
+				unlink($this->wroteLock);
+			}
+		}
 		return $ret;
 	}
 

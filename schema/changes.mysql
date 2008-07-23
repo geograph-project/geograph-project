@@ -12,3 +12,10 @@
 ###############################################################################
 
 
+
+CREATE TABLE `smarty_cache_page` (
+  `CacheID` varchar(255) NOT NULL,
+  `TemplateFile` varchar(255) NOT NULL,
+  `GroupCache` varchar(255) NOT NULL,
+  PRIMARY KEY  (`CacheID`)
+) ENGINE=MyISAM;
