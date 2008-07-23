@@ -231,13 +231,14 @@ class GeographPage extends Smarty
 		$this->use_sub_dirs=true;
 
 		if (!empty($CONF['memcache']['smarty'])) {
+			global $memcached_res,$memcache;
 			if ($CONF['memcache']['smarty'] != $CONF['memcache']['app']) {
-				$memcached_res = new MultiServerMemcache($CONF['memcache']['smarty']);
+				$GLOBALS['memcached_res'] = new MultiServerMemcache($CONF['memcache']['smarty']);
 			} elseif (isset($memcache)) {
-				$memcached_res =& $memcache;
+				$GLOBALS['memcached_res'] =& $memcache;
 			}
 			
-			require('geograph/memcache_cache_handler.inc.php');
+			require('3rdparty/memcache_cache_handler.inc.php');
 			$this->cache_handler_func = 'memcache_cache_handler';
 		} else {
 			$this->cache_dir=$this->template_dir."/cache";
