@@ -32,12 +32,13 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 	}
 	
 	// unique cache id
-	$cache_id = ($tpl_file.$cache_id.$compile_id);
+	$_auto_id = $smarty_obj->_get_auto_id($cache_id,$compile_id);
+	$cache_file = substr($smarty_obj->_get_auto_filename(".",$tpl_file,$_auto_id),2);
 	
 	switch ($action) {
 	case 'read':
 		// grab the key from memcached
-		$contents = $m->get($cache_id);
+		$contents = $m->get($cache_file);
 		
 		// use compression
 		if($smarty_obj->use_gzip && function_exists("gzuncompress")) {
@@ -57,18 +58,21 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 			$contents = $cache_content;
 		}
 		
-		// add the cache_id to the $key string
-		$caches = $m->get($key);
-		if (!is_array($caches)) {
-			$caches = array($cache_id);
-			$m->set($key, $caches);
-		} else if (!in_array($cache_id, $caches)) {
-			array_push($caches, $cache_id);
-			$m->set($key, $caches);
-		}
+		$current_time = time();
+		if (is_null($exp_time) || $exp_time < $current_time)
+			$ttl = 0;
+		else
+			$ttl = $exp_time - time(); 
+		
+		// store the metadata in mysql
+		$db=&$m->_getDB();
+		$db->Execute("REPLACE INTO smarty_cache_page VALUES(
+			'$cache_file',
+			'$tpl_file',
+			'$cache_id')"); 
 		
 		// store the value in memcached
-		$stored = $m->set($cache_id, $contents);
+		$stored = $m->set($cache_file, $contents, false, $ttl);
 		
 		if(!$stored) {
 			$smarty_obj->trigger_error("cache_handler: set failed.");
@@ -78,26 +82,22 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 		break;
 	
 	case 'clear':
+		$db=&$m->_getDB();
 		if(empty($cache_id) && empty($compile_id) && empty($tpl_file)) {
 			// get all cache ids
-			$caches = $m->get($key);
-			
-			if (is_array($caches)) {
-				$len = count($caches);
-				for ($i=0; $i<$len; $i++) {
-					// assume no errors
-					$m->delete($caches[$i]);
-				}
-				
-				// delete the cache ids
-				$m->delete($key);
-				
-				$result = true;
-			}
+			$results = memcache_cache_handler_clear_helper($db,$m,'');
 		} else {
-			$result = $m->delete($cache_id);
-		}
-		if(!$result) {
+			if(strpos($cache_id, '|') !== false) {
+				if(!empty($tpl_file)) {
+					$results = memcache_cache_handler_clear_helper($db,$m,"WHERE TemplateFile='" .$tpl_file ."' AND GroupCache LIKE '$cache_id%'");
+				} else {
+					$results = memcache_cache_handler_clear_helper($db,$m,"WHERE GroupCache LIKE '$cache_id%'");
+				}
+			} else {
+				$results = memcache_cache_handler_clear_helper($db,$m,"WHERE CacheID='$cache_file'");
+			}
+		} 
+		if(!$results) {
 			$smarty_obj->trigger_error("cache_handler: query failed.");
 		}
 		$return = true;
@@ -111,6 +111,22 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 	}
 	
 	return $return;
+}
+
+function memcache_cache_handler_clear_helper(&$db,&$m,$where = '') {
+	$r = 1;
+	$recordSet = &$db->Execute("SELECT CacheID FROM smarty_cache_page $where");
+	while (!$recordSet->EOF) 
+	{
+		$cid = $recordSet->fields['CacheID'];
+
+		$r += $m->delete($cid);
+
+		$recordSet->MoveNext();
+	}
+	$recordSet->Close();
+	$db->Execute("DELETE FROM smarty_cache_page $where");
+	return $r;
 }
 
 ?>

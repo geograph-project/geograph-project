@@ -42,6 +42,8 @@ class MultiServerMemcache extends Memcache {
 	var $compress = false; //|| MEMCACHE_COMPRESSED
 	var $valid = false;
 	
+	var $db=null;
+	
 	function MultiServerMemcache(&$conf,$debug = false) {
 		//parent::__construct();
 		if (empty($conf['host']) && empty($conf['host1']))
@@ -147,6 +149,18 @@ class MultiServerMemcache extends Memcache {
 
 	function name_decrement($namespace, $key, $value = 1,$create = false) {
 		return $this->decrement($namespace.':'.$key, $value, $create);
+	}
+	
+	/**
+	 * get stored db object, creating if necessary
+	 * @access private
+	 */
+	function &_getDB()
+	{
+		if (!is_object($this->db))
+			$this->db=NewADOConnection(!empty($GLOBALS['DSN2'])?$GLOBALS['DSN2']:$GLOBALS['DSN']);
+		if (!$this->db) die('Database connection failed');  
+		return $this->db;
 	}
 }
 
