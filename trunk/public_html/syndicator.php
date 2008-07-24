@@ -147,7 +147,7 @@ $rss->link = "http://{$_SERVER['HTTP_HOST']}";
 if (isset($sphinx)) {
 	$rss->description = "Images, matching ".$sphinx->qoutput; 
 	if ($sphinx->resultCount) {
-		$rss->description .= " ({sphinx->resultCount} in total)";
+		$rss->description .= " ({$sphinx->resultCount} in total)";
 	}
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?q=".urlencode($sphinx->q).(($pg>1)?"&amp;page=$pg":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
 
