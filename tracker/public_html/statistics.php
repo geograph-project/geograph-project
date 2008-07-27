@@ -118,7 +118,7 @@ while ($data = mysql_fetch_row($results))
 	}
 	
 	if (mysql_num_rows($results2) == 0 && isset($_GET["activeonly"]))
-		break;
+		next;
 	else
 	{
 		echo "<hr><table>\n";
@@ -138,8 +138,8 @@ while ($data = mysql_fetch_row($results))
 	echo "<tr><th class=\"subheader\">IP Address</th><th class=\"subheader\">Data Left to Download</th><th class=\"subheader\" width=200>Percent Finished</th><th class=\"subheader\">Port</th><th class=\"subheader\">Last Update</th><th class=\"subheader\">NAT User</th></tr>\n";
 	while ($data2 = mysql_fetch_row($results2))
 	{
-		if (isset($done[$data2[2]])) {
-			break;
+		if (isset($done[$data2[2]]) && $data2[8] == 2) {
+			next;
 		}
 		$done[$data2[2]] = 1;
 		if ($data2[8] == 1) {
