@@ -110,7 +110,7 @@ while ($data = mysql_fetch_row($results))
 		//status and sequence are unused
 		$query2p2 = "SELECT `peer_id`,min(`bytes`) as `bytes`,`ip`,`port`,`status`,max(`lastupdate`) as `lastupdate`,`sequence`,`natuser`,2 as t FROM ".$prefix."peer_archive WHERE info_hash = '".$data[0]."' GROUP BY `ip`";
 		
-		$query2 = "($query2p1) UNION ($query2p2) ORDER BY ip,p";
+		$query2 = "($query2p1) UNION ($query2p2) ORDER BY ip,t";
 		$results2 = mysql_query($query2) or die(errorMessage() . "Can't do SQL query - " . mysql_error() . "</p>");
 	} else {
 		$query2 = "SELECT * FROM ".$prefix."$xhash";
