@@ -57,6 +57,13 @@ else //display everything
 		echo "<a href=\"$scriptname\">Show all torrents</a>\n";
 		$scriptname = $scriptname . "activeonly=yes&";	
 	}
+	if (!isset($_GET["historic"])) 
+		echo "<a href=\"$scriptname" . "historic=yes\">Show historic peers</a>\n";
+	else
+	{
+		echo "<a href=\"$scriptname\">Show only active peers</a>\n";
+		$scriptname = $scriptname . "historic=yes&";	
+	}
 
 	if (isset($_GET["activeonly"]))
 		$where = " WHERE leechers+seeds > 0";
@@ -73,9 +80,9 @@ else //display everything
 	while($count < $res)
 	{
 		if (isset($_GET["page_number"]) && $page == $_GET["page_number"])
-			echo "<b><a href=\"$scriptname" . "page_number=$page\">($page)</a></b>-\n";
+			echo "<b>($page)</b>-\n";
 		else if (!isset($_GET["page_number"]) && $page == 1)
-			echo "<b><a href=\"$scriptname" . "page_number=$page\">($page)</a></b>-\n";
+			echo "<b>($page)</b>-\n";
 		else
 			echo "<a href=\"$scriptname" . "page_number=$page\">$page</a>-\n";
 		$page++;
@@ -105,7 +112,7 @@ while ($data = mysql_fetch_row($results))
 			$active[$data2[2].":".$data2[3]] = 1;
 		}
 		//status and sequence are unused
-		$query2 = "SELECT `peer_id`,min(`bytes`) as `bytes`,`ip`,`port`,`status`,max(`lastupdate`) as `lastupdate`,`sequence`,`natuser` FROM ".$prefix."peer_archive WHERE info_hash = '".$data[0]."' GROUP BY `ip`,`port`";
+		$query2 = "SELECT `peer_id`,min(`bytes`) as `bytes`,`ip`,`port`,`status`,max(`lastupdate`) as `lastupdate`,`sequence`,`natuser` FROM ".$prefix."peer_archive WHERE info_hash = '".$data[0]."' GROUP BY `ip`";
 		
 		$results2 = mysql_query($query2) or die(errorMessage() . "Can't do SQL query - " . mysql_error() . "</p>");
 	} 
