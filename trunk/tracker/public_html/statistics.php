@@ -104,18 +104,18 @@ $results = mysql_query($query) or die(errorMessage() . "Can't do SQL query - " .
 while ($data = mysql_fetch_row($results))
 {
 	$xhash = "x" . $data[0];
-	$query2 = "SELECT * FROM ".$prefix."$xhash";
-	$results2 = mysql_query($query2) or die(errorMessage() . "Can't do SQL query - " . mysql_error() . "</p>");
-	$active = array();
 	if (isset($_GET['historic'])) {
-		while ($data2 = mysql_fetch_row($results2)) {
-			$active[$data2[2]] = 1;
-		}
-		//status and sequence are unused
-		$query2 = "SELECT `peer_id`,min(`bytes`) as `bytes`,`ip`,`port`,`status`,max(`lastupdate`) as `lastupdate`,`sequence`,`natuser` FROM ".$prefix."peer_archive WHERE info_hash = '".$data[0]."' GROUP BY `ip`";
+		$query2p1 = "SELECT *,1 as t FROM ".$prefix."$xhash";
 		
+		//status and sequence are unused
+		$query2p2 = "SELECT `peer_id`,min(`bytes`) as `bytes`,`ip`,`port`,`status`,max(`lastupdate`) as `lastupdate`,`sequence`,`natuser`,2 as t FROM ".$prefix."peer_archive WHERE info_hash = '".$data[0]."' GROUP BY `ip`";
+		
+		$query2 = "($query2p1) UNION ($query2p2) ORDER BY t,ip";
 		$results2 = mysql_query($query2) or die(errorMessage() . "Can't do SQL query - " . mysql_error() . "</p>");
-	} 
+	} else {
+		$query2 = "SELECT * FROM ".$prefix."$xhash";
+		$results2 = mysql_query($query2) or die(errorMessage() . "Can't do SQL query - " . mysql_error() . "</p>");
+	}
 	
 	if (mysql_num_rows($results2) == 0 && isset($_GET["activeonly"]))
 		break;
@@ -132,12 +132,17 @@ while ($data = mysql_fetch_row($results))
 		echo "<td>" . $data[14] . "</td></tr>\n";
 		echo "</table>\n";
 	}
-
+	
+	$done = array();
 	echo "<table>\n";
 	echo "<tr><th class=\"subheader\">IP Address</th><th class=\"subheader\">Data Left to Download</th><th class=\"subheader\" width=200>Percent Finished</th><th class=\"subheader\">Port</th><th class=\"subheader\">Last Update</th><th class=\"subheader\">NAT User</th></tr>\n";
 	while ($data2 = mysql_fetch_row($results2))
 	{
-		if (isset($active[$data2[2]])) {
+		if (isset($done[$data2[2]])) {
+			break;
+		}
+		$done[$data2[2]] = 1;
+		if ($data2[8] == 1) {
 			echo "<tr style=\"font-weight:bold\">";
 		} else {
 			echo "<tr>";
