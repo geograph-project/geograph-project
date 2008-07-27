@@ -109,7 +109,7 @@ while ($data = mysql_fetch_row($results))
 	$active = array();
 	if (isset($_GET['historic'])) {
 		while ($data2 = mysql_fetch_row($results2)) {
-			$active[$data2[2].":".$data2[3]] = 1;
+			$active[$data2[2]] = 1;
 		}
 		//status and sequence are unused
 		$query2 = "SELECT `peer_id`,min(`bytes`) as `bytes`,`ip`,`port`,`status`,max(`lastupdate`) as `lastupdate`,`sequence`,`natuser` FROM ".$prefix."peer_archive WHERE info_hash = '".$data[0]."' GROUP BY `ip`";
@@ -137,7 +137,7 @@ while ($data = mysql_fetch_row($results))
 	echo "<tr><th class=\"subheader\">IP Address</th><th class=\"subheader\">Data Left to Download</th><th class=\"subheader\" width=200>Percent Finished</th><th class=\"subheader\">Port</th><th class=\"subheader\">Last Update</th><th class=\"subheader\">NAT User</th></tr>\n";
 	while ($data2 = mysql_fetch_row($results2))
 	{
-		if (isset($active[$data2[2].":".$data2[3]])) {
+		if (isset($active[$data2[2]])) {
 			echo "<tr style=\"font-weight:bold\">";
 		} else {
 			echo "<tr>";
@@ -174,7 +174,7 @@ while ($data = mysql_fetch_row($results))
 		</td>
 		<?php
 		echo "<td>" . $data2[3] . "</td>\n"; //port
-		echo "<td>" . date('g:ia m-d-Y', $data2[5]) . "</td>\n"; //last time check-in
+		echo "<td align=\"right\">" . date('g:ia m-d-Y', $data2[5]) . "</td>\n"; //last time check-in
 		echo "<td>" . $data2[7] . "</td>\n"; //NAT user
 		echo "</tr>\n";
 	}
