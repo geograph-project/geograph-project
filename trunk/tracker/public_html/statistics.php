@@ -99,14 +99,24 @@ while ($data = mysql_fetch_row($results))
 	$xhash = "x" . $data[0];
 	$query2 = "SELECT * FROM ".$prefix."$xhash";
 	$results2 = mysql_query($query2) or die(errorMessage() . "Can't do SQL query - " . mysql_error() . "</p>");
-
+	$active = array();
+	if (isset($_GET['historic'])) {
+		while ($data2 = mysql_fetch_row($results2)) {
+			$active[$data2[2].":".$data2[3]] = 1;
+		}
+		//status and sequence are unused
+		$query2 = "SELECT `peer_id`,min(`bytes`) as `bytes`,`ip`,`port`,`status`,max(`lastupdate`) as `lastupdate`,`sequence`,`natuser` FROM ".$prefix."peer_archive WHERE info_hash = '".$data[0]."' GROUP BY `ip`,`port`";
+		
+		$results2 = mysql_query($query2) or die(errorMessage() . "Can't do SQL query - " . mysql_error() . "</p>");
+	} 
+	
 	if (mysql_num_rows($results2) == 0 && isset($_GET["activeonly"]))
 		break;
 	else
 	{
 		echo "<hr><table>\n";
 		echo "<tr><th>Info Hash</th><th>Filename</th><th>URL</th><th>File Size</th><th>Publication Date</th></tr>\n";
-		echo "<tr><td>" . $data[0] . "</td><td>" . $data[11] . "</td><td>\n";
+		echo "<tr><td>" . $data[0] . "</td><td><b>" . $data[11] . "</b></td><td>\n";
 		if (Substr($data[12], 0, 7) == "http://")
 			echo "<a href=\"" . $data[12] . "\">" . $data[12] . "</a>\n";
 		else
@@ -120,8 +130,15 @@ while ($data = mysql_fetch_row($results))
 	echo "<tr><th class=\"subheader\">IP Address</th><th class=\"subheader\">Data Left to Download</th><th class=\"subheader\" width=200>Percent Finished</th><th class=\"subheader\">Port</th><th class=\"subheader\">Last Update</th><th class=\"subheader\">NAT User</th></tr>\n";
 	while ($data2 = mysql_fetch_row($results2))
 	{
+		if (isset($active[$data2[2].":".$data2[3]])) {
+			echo "<tr style=\"font-weight:bold\">";
+		} else {
+			echo "<tr>";
+		}
+		
 		//grab information on each user
-		echo "<tr><td>" . $data2[2] . "</td>\n";
+		$name = gethostbyaddr($data2[2]);
+		echo "<td title=\"$data2[2]\">" . (($name && $name != $data2[2]) ? $name:$data2[2])  . "</td>\n";
 		echo "<td>" . bytesToString($data2[1]) . "</td>\n";
 
 		//calculate percent done for user
