@@ -118,7 +118,7 @@ while ($data = mysql_fetch_row($results))
 	}
 	
 	if (mysql_num_rows($results2) == 0 && isset($_GET["activeonly"]))
-		next;
+		continue;
 	else
 	{
 		echo "<hr><table>\n";
@@ -139,7 +139,7 @@ while ($data = mysql_fetch_row($results))
 	while ($data2 = mysql_fetch_row($results2))
 	{
 		if (isset($done[$data2[2]]) && $data2[8] == 2) {
-			next;
+			continue;
 		}
 		$done[$data2[2]] = 1;
 		if ($data2[8] == 1) {
