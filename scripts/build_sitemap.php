@@ -212,7 +212,7 @@ for ($sitemap=$sitemaps+1; $sitemap<=$sitemaps+$sitemaps2; $sitemap++)
 		fprintf($fh,"<url>".
 			"<loc>http://{$param['config']}/profile/%d</loc>".
 			"<lastmod>%s</lastmod>".
-			"<changefreq>monthly</changefreq><priority>0.7</priority>".
+			"<changefreq>monthly</changefreq>".
 			"</url>\n",
 			$recordSet->fields['user_id'],
 			$date
