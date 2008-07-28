@@ -1,3 +1,0 @@
-The system folder contains system settings for replication to cluster servers
-
-webserver - common configuration files for all webservers (e.g. scone, toast, crumpet)
