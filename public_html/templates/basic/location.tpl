@@ -131,7 +131,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 		</div>
 		<div style="position:relative; float:left; width:40%;">
 		<ul style="margin-top:0px">
-			<li>{external title="find local features and maps with wikimedia" href="http://tools.wikimedia.de/~magnus/geo/geohack.php?params=`$lat`_`$nl`_`$long`_`$el`_region:GB_scale:25000" text="more from wikimedia"}</li>
+			<li>{external title="find local features and maps with wikimedia" href="http://stable.toolserver.org/geohack/geohack.php?params=`$lat`_`$nl`_`$long`_`$el`_region:GB_scale:25000" text="more from wikimedia"}</li>
 			<li>{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$square->nateastings`+`$square->natnorthings`" text="more from nearby.org.uk"}</li>
 	{else}
 			<li>{external href="http://www.geocaching.com/seek/nearest.aspx?lat=`$lat`&amp;lon=`$long`" text="Geocaches" title="Geocaches from geocaching.com"}</li>
@@ -141,7 +141,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 		</div>
 		<div style="position:relative; float:left; width:40%;">
 		<ul style="margin-top:0px">
-			<li>{external title="find local features and maps with wikimedia" href="http://tools.wikimedia.de/~magnus/geo/geohack.php?params=`$lat`_`$nl`_`$long`_`$el`_region:GB_scale:25000" text="more from wikimedia"}</li>
+			<li>{external title="find local features and maps with wikimedia" href="http://stable.toolserver.org/geohack/geohack.php?params=`$lat`_`$nl`_`$long`_`$el`_region:GB_scale:25000" text="more from wikimedia"}</li>
 			<li>{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$square->nateastings`+`$square->natnorthings`+OSI" text="more from nearby.org.uk"}</li>
 	{/if}
 </ul>
