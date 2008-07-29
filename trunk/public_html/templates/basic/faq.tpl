@@ -277,12 +277,12 @@ The <b>Geograph Website</b>:
 	<p>Images are licensed for re-use under a <a href="#opensource">Creative Commons Licence</a>, see
 	licence details by viewing a full size image. Also look for the "Interested in reusing this image?" link under each image on the main photo page, which outlines easy ways to reuse the image.</p>
 
-    <p>The entire archive is also available for download via bittorrent - see 
-    {external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk" text="http://torrents.geograph.org.uk"}
-    for details.   
+	<p>The entire archive is also available for download via bittorrent - see 
+	{external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk" text="http://torrents.geograph.org.uk"}
+	for details.</p>
 
 	<ul>
-	<li>If you are not a developer and maybe looking for <a href="/article/Ways-to-view-Geograph-Images">ways to access images outside the website</a>.</li>
+	<li>Are you a developer and maybe looking for <a href="/article/Ways-to-view-Geograph-Images">ways to access images outside the website</a>.</li>
 	</ul>
 	
 	<p>We also have a Google Gadget: * {external href="http://www.google.com/ig/add?moduleurl=http%3A%2F%2Fwww.geograph.org.uk%2Fstuff%2Fggadget0.xml" target="_blank" text="Add to my iGoogle page"} * {external href="http://www.google.com/ig/creator?url=http%3A%2F%2Fwww.geograph.org.uk%2Fstuff%2Fggadget0.xml" text="Add to any webpage"} *</p>
@@ -295,8 +295,8 @@ The <b>Geograph Website</b>:
 	<p>Putting this together requires many people to donate their
 	time or resources, and we wanted to be sure that we created a resource
 	free from commercial exploitation in future. To that end, the site software
-    is available for re-use under the terms of the GNU Public Licence (GPL).</p>
-	
+	is available for re-use under the terms of the GNU Public Licence (GPL).</p>
+
 	<ul>
 	<li>If you want to get involved as a developer, <a href="/article/Geograph-for-Developers">see this article</a>.</li>
 	</ul>
@@ -369,9 +369,9 @@ The <b>Geograph Website</b>:
 <div id="missing">
 <a name="missing"></a>
 <h3>Many thumbnails seem to be missing, any idea of the cause?</h3>
-	<p>Some firewall programs, in particular Norton Internet Security, block images that are the same size as some common advertisements. Unfortunatly many thumbnails and some map imageshappen to be this exact size.</p>
+	<p>Some firewall programs, in particular Norton Internet Security, block images that are the same size as some common advertisements. Unfortunately many thumbnails and some map images happen to be this exact size.</p>
 
-	<p>So if you use such a program you might like to try turning it off temporally and trying again, and if that gets our images back, then have a look for the option to disable this, arguably, flawed method of security.</p>
+	<p>So if you use such a program you might like to try turning it off temporarily and trying again, and if that gets our images back, then have a look for the option to disable this, arguably, flawed method of security.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
