@@ -39,14 +39,14 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 <input type="submit" name="login" value="Login"/>
 
 {foreach from=$_post key=key item=value}
-	{if $key eq 'email' || $key eq 'password' || $key eq 'remember_me'}
+	{if $key eq 'email' || $key eq 'password' || $key eq 'remember_me' || $key eq 'login'}
 	{elseif strpos($value,"\n") !== false}
 		<textarea name="{$key|escape:"html"}" style="display:none">{$value|escape:"html"}</textarea>
 	{else}
 		<input type="hidden" name="{$key|escape:"html"}" value="{$value|escape:"html"}"/>
 	{/if}
 {/foreach}
-{if count($_post)}
+{if count($_post) && !$_post.login}
 	<br/><br/>
 	<div class="interestBox"><sup style="color:red">new!</sup> Entering your details above should allow you to continue without loss of data. The exception is actully uploading an image, for example on Step 2 of the submission process, which will need to be resent. <br/><br/>
 	It's highly recommended to use the 'Remember me' function to reduce the likelyhood of seeing this message, even on public computers; using the Logout function will also clear the 'Remember me' cookie.</div>
