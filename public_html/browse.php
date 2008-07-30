@@ -235,6 +235,17 @@ if ($grid_given)
 			}
 			$filtered_title = "in ".htmlentities2($_GET['centi'])." Centisquare<a href=\"/help/squares\">?</a>";
 		}
+		if (!empty($_GET['viewcenti'])) {
+			if ($_GET['viewcenti'] == 'unspecified') {
+				$custom_where .= " and viewpoint_eastings = 0";
+			} else {
+				preg_match('/^[A-Z]{1,2}\d\d(\d)\d\d(\d)$/',$_GET['viewcenti'],$matches);
+				$custom_where .= " and viewpoint_eastings != 0";//to stop XX0XX0 matching 4fig GRs
+				$custom_where .= " and ((viewpoint_eastings div 100) mod 10) = ".$matches[1];
+				$custom_where .= " and ((viewpoint_northings div 100) mod 10) = ".$matches[2];
+			}
+			$filtered_title = " photographer in ".htmlentities2($_GET['viewcenti'])." Centisquare<a href=\"/help/squares\">?</a>";
+		}
 		if ($custom_where) {
 			$smarty->assign('filtered_title', $filtered_title);
 			$smarty->assign('filtered', 1);
@@ -458,6 +469,45 @@ if ($grid_given)
 						$breakdown[$y][$x]['link']="/photo/{$row[2]}";
 					} else {
 						$breakdown[$y][$x]['link']="/gridref/{$square->grid_reference}?centi=$centi".$extra;
+					}
+				}
+				$smarty->assign('allcount', count($all)-$hasnone);
+				$smarty->assign('tenup', range(0,9));
+				$smarty->assign('tendown', range(9,0));
+			} elseif ($_GET['by'] == 'viewcenti') {
+				$e = intval($square->getNatEastings()/1000);
+				$n = intval($square->getNatNorthings()/1000);
+				$breakdown_title = "Photographer Centisquare<a href=\"/help/squares\">?</a>";
+				$all = $db->cacheGetAll($cacheseconds,"SELECT (viewpoint_eastings = 0),count(*),gridimage_id,viewpoint_eastings DIV 100, viewpoint_northings DIV 100
+				FROM gridimage
+				WHERE gridsquare_id = '{$square->gridsquare_id}'
+				AND $user_crit
+				AND viewpoint_eastings DIV 1000 = $e AND viewpoint_northings DIV 1000 = $n
+				GROUP BY viewpoint_eastings DIV 100, viewpoint_northings DIV 100,(viewpoint_eastings = 0)");
+				$maximages = 0;
+				$hasnone = 0;
+				foreach ($all as $row) {
+					if ($row[0]) {
+						$centi = "unspecified";
+						$x = $y = 50; 
+						$hasnone = 1;
+					} else {
+						$x = ($row[3]%10);
+						$y = ($row[4]%10);
+						$centi=$square->gridsquare.$square->eastings.$x.$square->northings.$y;
+						if (!isset($breakdown[$y])) {
+							$breakdown[$y] = array();
+						}
+					}
+					$maximages = max($row[1],$maximages);
+					$breakdown[$y][$x] = array('name'=>"in $centi centisquare",'count'=>$row[1]);
+					if ($row[1] > 2000000) {
+						//todo
+						$breakdown[$y][$x]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;user_id={$row[3]}&amp;do=1";
+					} elseif ($row[1] == 1) {
+						$breakdown[$y][$x]['link']="/photo/{$row[2]}";
+					} else {
+						$breakdown[$y][$x]['link']="/gridref/{$square->grid_reference}?viewcenti=$centi".$extra;
 					}
 				}
 				$smarty->assign('allcount', count($all)-$hasnone);
