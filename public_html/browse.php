@@ -201,6 +201,25 @@ if ($grid_given)
 			$date = getFormattedDate($_GET['submittedyear']);
 			$filtered_title = "Submitted in $date";
 		}
+		if (!empty($_GET['direction'])) {
+			$direction = intval($_GET['direction']);
+			$custom_where .= " and view_direction = $direction";
+			
+			$search = new SearchEngine('');
+			$view_direction = ($direction%90==0)?strtoupper($search->heading_string($direction)):ucwords($search->heading_string($direction)) ;
+			$filtered_title = "Looking $view_direction";
+		}
+		if (!empty($_GET['viewpoint'])) {
+			$viewpoint_square = new GridSquare;
+			if ($viewpoint_square->setByFullGridRef($_GET['viewpoint'],true,true)) {
+			
+				$e = intval($viewpoint_square->nateastings /1000);
+				$n = intval($viewpoint_square->natnorthings /1000);
+				$custom_where .= " and viewpoint_eastings DIV 1000 = $e AND viewpoint_northings DIV 1000 = $n";
+
+				$filtered_title = "Taken in ".$viewpoint_square->grid_reference;
+			}
+		}
 		if (!empty($_GET['centi'])) {
 			if ($_GET['centi'] == 'unspecified') {
 				$custom_where .= " and nateastings = 0";
@@ -249,6 +268,8 @@ if ($grid_given)
 			count(distinct SUBSTRING(submitted,1,4)) as submittedyear,
 			count(distinct moderation_status) as status,
 			count(distinct nateastings DIV 100, natnorthings DIV 100) as centi,
+			count(distinct view_direction) as direction,
+			count(distinct viewpoint_eastings DIV 1000, viewpoint_northings DIV 1000) as viewpoints,
 			sum(nateastings = 0) as centi_blank
 			FROM gridimage
 			WHERE gridsquare_id = {$square->gridsquare_id}
@@ -262,6 +283,8 @@ if ($grid_given)
 			$breakdowns[] = array('type'=>'takenyear','name'=>'Taken Years','count'=>$row['takenyear']);
 			$breakdowns[] = array('type'=>'submitted','name'=>'Submitted Months','count'=>$row['submitted']);
 			$breakdowns[] = array('type'=>'submittedyear','name'=>'Submitted Years','count'=>$row['submittedyear']);
+			$breakdowns[] = array('type'=>'direction','name'=>'View Directions','count'=>$row['direction']);
+			$breakdowns[] = array('type'=>'viewpoint','name'=>'Photographer Gridsquares','count'=>$row['viewpoints']);
 			$breakdowns[] = array('type'=>'status','name'=>'Classification','count'=>$row['status']);
 			$smarty->assign_by_ref('breakdowns', $breakdowns);
 			
@@ -343,6 +366,56 @@ if ($grid_given)
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
 						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?user={$row[3]}".$extra;
+					}
+					$i++;
+				}
+			} elseif ($_GET['by'] == 'direction') {
+				$breakdown_title = "View Direction";
+				$all = $db->cacheGetAll($cacheseconds,"SELECT view_direction,count(*),gridimage_id
+				FROM gridimage
+				WHERE gridsquare_id = '{$square->gridsquare_id}'
+				AND $user_crit
+				GROUP BY view_direction");
+				$search = new SearchEngine('');
+				foreach ($all as $row) {
+					if ($row[0] != -1) {
+						$view_direction = ($row[0]%90==0)?strtoupper($search->heading_string($row[0])):ucwords($search->heading_string($row[0])) ;
+						$breakdown[$i] = array('name'=>"looking <b>$view_direction</b> (about {$row[0]} degrees)",'count'=>$row[1]);
+					} else {
+						$breakdown[$i] = array('name'=>"unknown direction",'count'=>$row[1]);
+					}
+					if ($row[1] == 1) {
+						$breakdown[$i]['link']="/photo/{$row[2]}";
+					} else {
+						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?direction={$row[0]}".$extra;
+					}
+					$i++;
+				}
+			} elseif ($_GET['by'] == 'viewpoint') {
+				$breakdown_title = "Photographer Gridsquare";
+				$all = $db->cacheGetAll($cacheseconds,"SELECT viewpoint_eastings,count(*),gridimage_id,viewpoint_northings
+				FROM gridimage
+				WHERE gridsquare_id = '{$square->gridsquare_id}'
+				AND $user_crit
+				GROUP BY viewpoint_eastings DIV 1000, viewpoint_northings DIV 1000");
+				$conv = new Conversions('');
+				foreach ($all as $row) {
+					if ($row[0]) {
+						list($posgr,$len) = $conv->national_to_gridref(
+							$row[0],
+							$row[3],
+							4,
+							$square->reference_index,false);
+						
+						$breakdown[$i] = array('name'=>"taken in <b>$posgr</b>",'count'=>$row[1]);
+					} else {
+						$breakdown[$i] = array('name'=>"taken in this square",'count'=>$row[1]);
+						$posgr = $square->grid_reference;
+					}
+					if ($row[1] == 1) {
+						$breakdown[$i]['link']="/photo/{$row[2]}";
+					} else {
+						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?viewpoint={$posgr}".$extra;
 					}
 					$i++;
 				}
