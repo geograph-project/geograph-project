@@ -4,7 +4,7 @@
 
 
 <form action="{$script_uri}" method="post">
-    
+
 {if $inline}
    <h2>Login Required</h2>
    <p>You must log in to access this page. 
@@ -37,8 +37,23 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 <br/>
 
 <input type="submit" name="login" value="Login"/>
-</form>  
 
-    
-{/dynamic}    
+{foreach from=$_post key=key item=value}
+	{if $key eq 'email' || $key eq 'password' || $key eq 'remember_me'}
+	{elseif strpos($value,"\n") !== false}
+		<textarea name="{$key|escape:"html"}" style="display:none">{$value|escape:"html"}</textarea>
+	{else}
+		<input type="hidden" name="{$key|escape:"html"}" value="{$value|escape:"html"}"/>
+	{/if}
+{/foreach}
+{if count($_post)}
+	<br/><br/>
+	<div class="interestBox"><sup style="color:red">new!</sup> Entering your details above should allow you to continue without loss of data. The exception is actully uploading an image, for example on Step 2 of the submission process, which will need to be resent. <br/><br/>
+	It's highly recommended to use the 'Remember me' function to reduce the likelyhood of seeing this message, even on public computers; using the Logout function will also clear the 'Remember me' cookie.</div>
+{/if}
+
+</form>
+
+
+{/dynamic}
 {include file="_std_end.tpl"}

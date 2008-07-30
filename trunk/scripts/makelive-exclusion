@@ -13,7 +13,7 @@ public_html/templates/ireland/cache
 public_html/kml/
 public_html/sitemap/
 public_html/stuff/captcha_tmp
-tracker/public_htmll/torrents
+tracker/public_html/torrents
 logs/
 adodbcache/
 schema/
