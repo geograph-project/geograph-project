@@ -211,7 +211,11 @@ if ($grid_given)
 		}
 		if (!empty($_GET['viewpoint'])) {
 			$viewpoint_square = new GridSquare;
-			if ($viewpoint_square->setByFullGridRef($_GET['viewpoint'],true,true)) {
+			if ($_GET['viewpoint'] == '-') {
+				$custom_where .= " and viewpoint_eastings = 0";
+				
+				$filtered_title = "photographer position unspecified";
+			} elseif ($viewpoint_square->setByFullGridRef($_GET['viewpoint'],true,true)) {
 			
 				$e = intval($viewpoint_square->nateastings /1000);
 				$n = intval($viewpoint_square->natnorthings /1000);
@@ -406,11 +410,14 @@ if ($grid_given)
 							$row[3],
 							4,
 							$square->reference_index,false);
-						
-						$breakdown[$i] = array('name'=>"taken in <b>$posgr</b>",'count'=>$row[1]);
+						if ($posgr == $square->grid_reference) {
+							$breakdown[$i] = array('name'=>"taken in this square",'count'=>$row[1]);
+						} else {
+							$breakdown[$i] = array('name'=>"taken in <b>$posgr</b>",'count'=>$row[1]);
+						}
 					} else {
-						$breakdown[$i] = array('name'=>"taken in this square",'count'=>$row[1]);
-						$posgr = $square->grid_reference;
+						$breakdown[$i] = array('name'=>"photographer position unspecified",'count'=>$row[1]);
+						$posgr = '-';
 					}
 					if ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
