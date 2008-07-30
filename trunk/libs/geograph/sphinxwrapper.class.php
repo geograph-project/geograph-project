@@ -120,6 +120,39 @@ class sphinxwrapper {
 		$this->q = $q;
 		$this->qoutput = $qo;
 	}
+	public function countImagesViewpoint($e,$n,$exclude = '') {
+		global $CONF;
+		require_once ( "3rdparty/sphinxapi.php" );
+		
+		$q = "@viewsquare ".(intval($n/1000)*1000 + intval($e/1000));
+		if ($exclude) {
+			$q .= " @grid_reference -$exclude";
+		}
+		$this->q = $q;
+		
+		$index = "gi_stemmed,gi_delta_stemmed";
+		
+		$cl = new SphinxClient ();
+		$cl->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
+		$cl->SetMatchMode ( SPH_MATCH_EXTENDED );
+		$cl->SetLimits(0,1,0);
+		$res = $cl->Query ( $q, $index );
+		if ( $res===false )
+		{
+			print "\tQuery failed: -- please try again later.\n";
+			exit;
+		} else
+		{
+			if ( $cl->GetLastWarning() )
+				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
+
+			$this->query_info = "Query '{$q}' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+			$this->resultCount = $res['total_found'];
+			if (!empty($this->pageSize))
+				$this->numberOfPages = ceil($this->resultCount/$this->pageSize);
+			return $this->resultCount;
+		}
+	}
 	
 	public function returnImageIds($page = 1, $didyoumean = false) {
 		global $CONF;
@@ -204,7 +237,7 @@ class sphinxwrapper {
 		$cl->SetMatchMode ( $mode );
 		
 		$sqlpage = ($page -1)* $this->pageSize;
-		$cl->SetLimits($sqlpage,$this->pageSize);
+		$cl->SetLimits($sqlpage,$this->pageSize); ##todo reduce the page size when nearing the 1000 limit - so at least get bit of page
 		
 		$res = $cl->Query ( $q, $index );
 		

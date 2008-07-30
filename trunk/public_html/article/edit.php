@@ -94,8 +94,7 @@ $cacheid = '';
 if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	$errors = array();
 	
-
-	$_POST['publish_date']=sprintf("%04d-%02d-%02d",$_POST['publish_dateYear'],$_POST['publish_dateMonth'],$_POST['publish_dateDay']);
+	$smarty->reassignPostedDate('publish_date');
 	$_POST['title'] = preg_replace('/[^\w-\., ]+/','',trim($_POST['title']));
 	if (empty($_POST['url']) && !empty($_POST['title'])) {
 		$_POST['url'] = $_POST['title'];
