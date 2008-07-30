@@ -532,6 +532,13 @@ if ($grid_given)
 		if ($CONF['forums']) {
 			$square->assignDiscussionToSmarty($smarty);
 		}
+		
+		//look for images from here...
+		$sphinx = new sphinxwrapper();
+		if ($viewpoint_count = $sphinx->countImagesViewpoint($square->nateastings,$square->natnorthings,$square->grid_reference)) {
+			$smarty->assign('viewpoint_count', $viewpoint_count);
+			$smarty->assign('viewpoint_query', $sphinx->q);
+		}
 	}
 	else
 	{
