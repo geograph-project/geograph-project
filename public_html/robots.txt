@@ -10,6 +10,7 @@ Disallow: /mapprint.php
 Disallow: /admin/
 Allow: /admin/team.php
 Disallow: /search.php
+Disallow: /full-text.php
 Disallow: /explore/wordnet.php
 Disallow: /places.php
 Disallow: /explore/places.php
@@ -43,6 +44,7 @@ Disallow: /mapprint.php
 Disallow: /admin/
 Allow: /admin/team.php
 Disallow: /search.php?
+Disallow: /full-text.php?
 Disallow: /explore/wordnet.php
 Disallow: /places.php
 Disallow: /explore/places.php
@@ -78,6 +80,7 @@ Disallow: /mapprint.php
 Disallow: /admin/
 Allow: /admin/team.php
 Disallow: /search.php
+Disallow: /full-text.php
 Disallow: /explore/wordnet.php
 Disallow: /places.php
 Disallow: /explore/places.php
@@ -111,6 +114,7 @@ Disallow: /maplarge.php
 Disallow: /mapprint.php
 Disallow: /admin/
 Disallow: /search.php
+Disallow: /full-text.php
 Disallow: /explore/wordnet.php
 Disallow: /places.php
 Disallow: /explore/places.php
