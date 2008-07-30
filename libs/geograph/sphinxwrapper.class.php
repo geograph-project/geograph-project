@@ -120,11 +120,11 @@ class sphinxwrapper {
 		$this->q = $q;
 		$this->qoutput = $qo;
 	}
-	public function countImagesViewpoint($e,$n,$exclude = '') {
+	public function countImagesViewpoint($e,$n,$ri,$exclude = '') {
 		global $CONF;
 		require_once ( "3rdparty/sphinxapi.php" );
 		
-		$q = "@viewsquare ".(intval($n/1000)*1000 + intval($e/1000));
+		$q = "@viewsquare ".($ri*10000000 + intval($n/1000)*1000 + intval($e/1000));
 		if ($exclude) {
 			$q .= " @grid_reference -$exclude";
 		}

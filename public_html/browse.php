@@ -535,7 +535,7 @@ if ($grid_given)
 		
 		//look for images from here...
 		$sphinx = new sphinxwrapper();
-		if ($viewpoint_count = $sphinx->countImagesViewpoint($square->nateastings,$square->natnorthings,$square->grid_reference)) {
+		if ($viewpoint_count = $sphinx->countImagesViewpoint($square->nateastings,$square->natnorthings,$square->reference_index,$square->grid_reference)) {
 			$smarty->assign('viewpoint_count', $viewpoint_count);
 			$smarty->assign('viewpoint_query', $sphinx->q);
 		}
