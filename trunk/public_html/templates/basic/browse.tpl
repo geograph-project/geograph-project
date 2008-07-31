@@ -82,51 +82,53 @@
 		</div>
 	{/if}
 
-	{if $totalimagecount}
+	{if $$imagecount}
 		{* There are some thumbnails to display *}
-		
-		<ul>
+		<small><small><b>Sample links...</b></small></small>
+		<ul style="margin-top:5px; padding-left:24px">
 	{else}
 		{* There are no images in this square (yet) *}
 		
 		<p>We have no images for <b>{$gridref}</b> yet,
 		
 		{if $nearest_distance}
-			</p><ul><li>The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away<br/><br/></li>
+			</p>
+			<small><small><b>Sample links...</b></small></small>
+			<ul style="margin-top:5px; padding-left:24px">
+			<li>The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away<br/><br/></li>
 		{else}
 			and have no pictures for any grid square within 100km either!</p>
-			<ul>
+			<small><small><b>Sample links...</b></small></small>
+			<ul style="margin-top:5px; padding-left:24px">
 		{/if}
 	{/if}
-		<li><a href="/submit.php?gridreference={$gridrefraw}"><b>submit your own picture for {$gridref}</b></a>.</li>
+		<li><a href="/submit.php?gridreference={$gridrefraw}"><b>submit your own picture for {$gridref}</b></a></li>
 		{if $enable_forums}
 			<li>
 			{if $discuss}
 				There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a 
-				<a href="/discuss/index.php?gridref={$gridref}"><b>discussion</b> about {$gridref}</a> (preview on the left),
+				<a href="/discuss/index.php?gridref={$gridref}"><b>discussion</b> about {$gridref}</a> (preview on the left)
 			{else}
 				{if $user->registered} 
-					<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a <b>discussion</b> about {$gridref}</a>,
+					<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a <b>discussion</b> about {$gridref}</a>
 				{else}
-					<a href="/login.php">login</a> to start a <b>discussion</b> about {$gridref}</a>,
+					<a href="/login.php">login</a> to start a <b>discussion</b> about {$gridref}</a>
 				{/if}
 			{/if}</li>
 		{/if}
-		{if !$breakdown && !$breakdowns && !$filtered && $totalimagecount > 1}
-			<li><a href="/gridref/{$gridref}?by=1{if $extra}{$extra}{/if}">View <b>breakdowns</b> for this square</a></li>
-			
-		{/if}
 
-		<li><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph <b>map</b> for {if strlen($gridrefraw) < 5}{$gridrefraw}{else}{$gridref}{/if}</a>,</li>
-		<li><img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <b><a href="/location.php?gridref={$gridrefraw}">More Links for {$gridrefraw}</a></b></li>
+		<li><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph <b>map</b> for {if strlen($gridrefraw) < 5}{$gridrefraw}{else}{$gridref}{/if}</a></li>
+		
+		{if $gridref6}
+			<li style="margin-top:10px"><a href="/gridref/{$gridref}?viewcenti={$gridref6}">image(s) <b>taken in {$gridref6}</b></b></a> / <span class="nowrap"><a href="/gridref/{$gridref}?centi={$gridref6}">of <b>subjects in {$gridref6}</b></a> (if any)</span> <sup style="color:red">new!</sup></li>
+		{/if}
 		
 		{if $viewpoint_count}
-			<li><a href="/full-text.php?q={$viewpoint_query|escape:'url'}">view <b>{$viewpoint_count} images taken <i>from</i> {$gridref}</b></a></li>
-		
+			<li style="margin-top:10px"><a href="/full-text.php?q={$viewpoint_query|escape:'url'}">view <b>{$viewpoint_count} images taken <i>from</i> {$gridref}</b></a> <sup style="color:red">new!</sup></li>
 		{/if}
 		
 		</ul>
-	
+	<p><big><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" alt="geotagged!"/> <b><a href="/location.php?gridref={$gridrefraw}">More Links for {$gridrefraw}</a></b> </big></p>
 {/if}
 
 </div>
@@ -150,6 +152,10 @@
 	for <b>{$gridref}</b>
 	{if !$breakdown && !$breakdowns && $totalimagecount > 0}<span style="font-size:0.8em;">- click for larger version</span>{/if}</div>
 
+	{if !$breakdown && !$breakdowns && $totalimagecount > 0 &&  $totalimagecount > 1}
+		<div style="position:relative;text-align:right; font-size:0.7em"><a href="/gridref/{$gridref}?by=1{if $extra}{$extra}{/if}">View as <b>breakdown list</b></a>&nbsp;</div>
+	
+	{/if}	
 	{if $user->registered}
 		{if !$extra}
 			<div style="position:relative;text-align:right; font-size:0.7em"><a href="/gridref/{$gridref}?{if $breakdown || $breakdowns || $filtered}by=1&amp;{/if}nl=1">Include <b>pending and rejected</b> images</a>&nbsp;</div>
@@ -230,7 +236,7 @@
 		{if $breakdowns}
 			{* We want to choose a breakdown criteria to show *}
 
-			<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select how you would like to view the images</p>
+			<blockquote><p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select how you would like to view the images</p></blockquote>
 
 			{if $image}
 			<div style="float:right;" class="photo33"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160,false,true)}</a>
@@ -254,7 +260,7 @@
 			
 			
 			{if $filtered}
-				<p>{$totalimagecount} Images, {$filtered_title}... (<a href="/gridref/{$gridref}{if $extra}?{$extra}{/if}">Remove Filter</a>)</p>
+				<blockquote><p>{$totalimagecount} Images, {$filtered_title}... (<a href="/gridref/{$gridref}{if $extra}?{$extra}{/if}">Remove Filter</a>)</p></blockquote>
 			{/if}
 
 			{foreach from=$images item=image}
