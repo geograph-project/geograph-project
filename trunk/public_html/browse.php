@@ -201,7 +201,7 @@ if ($grid_given)
 			$date = getFormattedDate($_GET['submittedyear']);
 			$filtered_title = "Submitted in $date";
 		}
-		if (!empty($_GET['direction'])) {
+		if (isset($_GET['direction']) && strlen($_GET['direction'])) {
 			$direction = intval($_GET['direction']);
 			$custom_where .= " and view_direction = $direction";
 			
