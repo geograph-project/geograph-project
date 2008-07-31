@@ -12,7 +12,12 @@
    <url>
       <loc>http://www.geograph.org.uk/browse.php</loc>
       <changefreq>monthly</changefreq>
-      <priority>0.9</priority>
+      <priority>0.7</priority>
+   </url>
+   <url>
+      <loc>http://www.geograph.org.uk/credits/</loc>
+      <changefreq>weekly</changefreq>
+      <priority>0.8</priority>
    </url>
    <url>
       <loc>http://www.geograph.org.uk/mapbrowse.php</loc>
@@ -22,10 +27,15 @@
    <url>
       <loc>http://www.geograph.org.uk/statistics.php</loc>
       <changefreq>daily</changefreq>
+      <priority>0.8</priority>
+   </url>
+   <url>
+      <loc>http://www.geograph.org.uk/numbers.php</loc>
+      <changefreq>daily</changefreq>
       <priority>0.9</priority>
    </url>
    <url>
-      <loc>http://www.geograph.org.uk/moversboard.php</loc>
+      <loc>http://www.geograph.org.uk/statistics/moversboard.php</loc>
       <priority>0.9</priority>
    </url>
    <url>
@@ -33,9 +43,31 @@
       <priority>0.9</priority>
    </url>
    <url>
+      <loc>http://www.geograph.org.uk/teachers/</loc>
+      <priority>0.8</priority>
+   </url>
+   <url>
+      <loc>http://www.geograph.org.uk/games/</loc>
+      <priority>0.8</priority>
+   </url>
+   <url>
+      <loc>http://www.geograph.org.uk/activities/</loc>
+      <priority>0.9</priority>
+   </url>
+   <url>
       <loc>http://www.geograph.org.uk/article/</loc>
       <changefreq>weekly</changefreq>
+      <priority>0.7</priority>
+   </url>
+   <url>
+      <loc>http://www.geograph.org.uk/content/</loc>
+      <changefreq>weekly</changefreq>
       <priority>0.9</priority>
+   </url>
+   <url>
+      <loc>http://www.geograph.org.uk/gallery/</loc>
+      <changefreq>weekly</changefreq>
+      <priority>0.7</priority>
    </url>
    <url>
       <loc>http://www.geograph.org.uk/sitemap/geograph.html</loc>
@@ -56,7 +88,7 @@
    </url>
    <url>
       <loc>http://www.geograph.org.uk/help/stats_faq</loc>
-      <priority>0.8</priority>
+      <priority>0.6</priority>
    </url>
    <url>
       <loc>http://www.geograph.org.uk/help/squares</loc>
@@ -64,11 +96,11 @@
    </url>
    <url>
       <loc>http://www.geograph.org.uk/help/press_release_001</loc>
-      <priority>0.9</priority>
+      <priority>0.7</priority>
    </url>
    <url>
       <loc>http://www.geograph.org.uk/help/search</loc>
-      <priority>0.8</priority>
+      <priority>0.7</priority>
    </url>
    <url>
       <loc>http://www.geograph.org.uk/help/api</loc>
@@ -80,11 +112,11 @@
    </url>
    <url>
       <loc>http://www.geograph.org.uk/help/credits</loc>
-      <priority>0.8</priority>
+      <priority>0.9</priority>
    </url>
    <url>
       <loc>http://www.geograph.org.uk/help/freedom</loc>
-      <priority>0.8</priority>
+      <priority>0.9</priority>
    </url>
    <url>
       <loc>http://www.geograph.org.uk/help/changes</loc>
@@ -96,14 +128,14 @@
    </url>
    <url>
       <loc>http://www.geograph.org.uk/mapprint.php</loc>
+      <priority>0.5</priority>
+   </url>
+   <url>
+      <loc>http://www.geograph.org.uk/statistics/leaderboard.php</loc>
       <priority>0.7</priority>
    </url>
    <url>
-      <loc>http://www.geograph.org.uk/leaderboard.php</loc>
-      <priority>0.7</priority>
-   </url>
-   <url>
-      <loc>http://www.geograph.org.uk/leaderhectad.php</loc>
+      <loc>http://www.geograph.org.uk/statistics/leaderhectad.php</loc>
       <priority>0.7</priority>
    </url>
    <url>
@@ -112,14 +144,10 @@
    </url>
    <url>
       <loc>http://www.geograph.org.uk/submit.php</loc>
-      <priority>0.7</priority>
+      <priority>0.9</priority>
    </url>
    <url>
-      <loc>http://www.geograph.org.uk/faq.php</loc>
-      <priority>0.7</priority>
-   </url>
-   <url>
-      <loc>http://www.geograph.org.uk/monthlyleader.php</loc>
+      <loc>http://www.geograph.org.uk/statistics/monthlyleader.php</loc>
       <changefreq>monthly</changefreq>
       <priority>0.7</priority>
    </url>
@@ -132,20 +160,12 @@
       <priority>0.8</priority>
    </url>
    <url>
-      <loc>http://www.geograph.org.uk/syndicator.php</loc>
-      <priority>0.8</priority>
-   </url>
-   <url>
-      <loc>http://www.geograph.org.uk/recreatemaps.php</loc>
-      <priority>0.2</priority>
-   </url>
-   <url>
-      <loc>http://www.geograph.org.uk/first2square.php</loc>
+      <loc>http://www.geograph.org.uk/statistics/first2square.php</loc>
       <priority>0.7</priority>
    </url>
    <url>
       <loc>http://www.geograph.org.uk/memorymap.php</loc>
-      <priority>0.7</priority>
+      <priority>0.8</priority>
    </url>
    <url>
       <loc>http://www.geograph.org.uk/conversion.php</loc>
@@ -157,7 +177,11 @@
    </url>
    <url>
       <loc>http://www.geograph.org.uk/gpx.php</loc>
-      <priority>0.7</priority>
+      <priority>0.8</priority>
+   </url>
+   <url>
+      <loc>http://www.geograph.org.uk/events/</loc>
+      <priority>0.8</priority>
    </url>
    <url>
       <loc>http://www.geograph.org.uk/register.php</loc>
@@ -265,7 +289,7 @@
    </url>
    <url>
       <loc>http://www.geograph.org.uk/explore/counties.php</loc>
-      <priority>0.7</priority>
+      <priority>0.8</priority>
    </url>
    <url>
       <loc>http://www.geograph.org.uk/explore/cities.php</loc>
@@ -277,11 +301,11 @@
    </url>
    <url>
       <loc>http://www.geograph.org.uk/explore/</loc>
-      <priority>0.7</priority>
+      <priority>0.9</priority>
    </url>
    <url>
       <loc>http://www.geograph.org.uk/explore/calendar.php</loc>
-      <priority>0.7</priority>
+      <priority>0.8</priority>
    </url>
    <url>
       <loc>http://www.geograph.org.uk/explore/routes.php</loc>
