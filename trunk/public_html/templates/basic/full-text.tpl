@@ -31,7 +31,7 @@
 	</p>
 	<p>
 		<small>&middot; There is no paging of results, to access more images simply add more keywords to refine your search (view <a href="#cheatsheet">Cheatsheet</a>)<br/>
-		<small>&middot; Currently searches the title, description, category and photographer name fields as well as various forms of the subject grid-reference</small></small>
+		<small>&middot; Currently searches the title, description, category, photographer name and image taken (20071103, 200711 or just 2007) fields, as well the subject grid-reference (SH1234, SH13 or just SH)</small></small>
 	</p>
 </form>
 
@@ -42,9 +42,10 @@
 <div class="interestBox" style="margin-top:60px;">
 	<big><a name="cheatsheet"></a>Cheatsheet</big>:
 	<ul class="explore">
-		<li>prefix a keyword with - to <b>exclude</b> that word from the match; example : <tt>stone wall -sh</tt></li>
+		<li>prefix a keyword with - to <b>exclude</b> that word from the match; example: <tt>stone wall -sh</tt></li>
 		<li>can use OR to match <b>either/or</b> keywords; example: <tt>bridge river OR canal</tt></li>
 		<li>use gridsquares, hectads or myriads as keywords <tt>stone wall sh65</tt> or <tt>stone wall tq</tt></li>
+		<li>use dates when photo taken, can use specific day, as well as shortened less specific versions, eg: <tt>river bridge 2007</tt> or <tt>tower 200712</tt></li>
 		<li>a grid-reference as first keyword will find images near that location; example: <tt>TQ7041 bridge</tt></li>
 		<li>start query with a ~ so that <b>any word</b> is matched; example: <tt>~train railway track</tt></li>
 	</ul>
