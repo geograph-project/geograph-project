@@ -36,6 +36,8 @@ $q = isset($_GET['q'])?$_GET['q']:'';
 
 $q = preg_replace('/ OR /',' | ',$q);
 
+$q = preg_replace('/\b([a-z_]+):/','@$1 ',$q);
+
 $q = trim(preg_replace('/[^\w~\|\(\)@"\/-]+/',' ',trim(strtolower($q))));
 
 $q = preg_replace('/^(.*) *near +([a-zA-Z]{1,2} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
