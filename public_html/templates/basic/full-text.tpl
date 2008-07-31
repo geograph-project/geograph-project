@@ -22,7 +22,7 @@
 
 <h2>Full-Text Image Search <sup style="color:red">Experimental Beta</sup></h2>
 
-<div class="interestBox">This is a preview of a new text search engine. With time the full-text keyword matching engine will be integrated into the main site search (and maintain its current format - with paging etc).</div>
+<div class="interestBox">This is a preview of a new text search engine. With time the full-text keyword matching engine will be integrated into the main site search. This highly simplified frontend was simply created to test this backend-engine, and will not replace the more fully featured interface of the current <a href="/search.php">search</a>. The new engine makes some queries possible that weren't before, such as searching on photographer square, so you will find some features linking here simply as a preview. You can find other similar previews <a href="/finder/">here</a>. Thanks for your patience while we continue to improve our searching facilities.</div>
 
 <form action="/stuff/search-service.php" method="get" target="searchwindow" onsubmit="focusBox()">
 	<p>
