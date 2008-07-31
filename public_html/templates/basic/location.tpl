@@ -43,10 +43,10 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 <small><b>Links within Geograph for gridsquare {$gridref}:</b></small>
 
 <ul style="list-style-type:none; padding-left:5px">
-	<li><img src="http://{$static_host}/img/links/20/submit.png" width="20" height="20" alt="submit icon" align="absmiddle"/> <a href="/submit.php?gridreference={$gridrefraw}"><b>submit your own picture for {$gridref}</b></a></li>
-	<li><img src="http://{$static_host}/img/links/20/browse.png" width="20" height="20" alt="browse icon" align="absmiddle"/> <a href="/gridref/{$gridrefraw}">View <b>browse page</b> for {$gridref}</a> 
+	<li><img src="http://{$static_host}/img/links/20/submit.png" width="20" height="20" alt="submit icon" align="absmiddle"/> <a href="/submit.php?gridreference={$gridrefraw}"><b>submit your own picture</b></a></li>
+	<li><img src="http://{$static_host}/img/links/20/browse.png" width="20" height="20" alt="browse icon" align="absmiddle"/> <a href="/gridref/{$gridrefraw}">View the <b>browse page</b></a> 
 		{if $square->imagecount > 2}
-				(<img src="http://{$static_host}/img/links/20/grid.png" width="20" height="20" alt="centisquare icon" align="absmiddle"/>  <a href="/gridref/{$gridref}?by=1">view <b>breakdown</b></a>)
+				(<img src="http://{$static_host}/img/links/20/grid.png" width="20" height="20" alt="centisquare icon" align="absmiddle"/>  <a href="/gridref/{$gridref}?by=1">or a <b>breakdown</b></a>)
 			{/if}</li>
 	{if $square->imagecount > 2}
 		<li><img src="http://{$static_host}/img/links/20/slideshow.png" width="20" height="20" alt="slideshow icon" align="absmiddle"/> <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show" class="nowrap">View <b>slide show</b> for the {$square->imagecount} images in this square</a></li>
@@ -63,11 +63,11 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 			{if $user->registered} 
 				<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a <b>discussion</b> about {$gridref}</a>
 			{else}
-				<a href="/login.php">login</a> to start a <b>discussion</b> about {$gridref}</a>
+				<a href="/login.php">login</a> to start a <b>discussion</b> about this square</a>
 			{/if}
 		{/if}</li>
 	{/if}
-	<li><img src="http://{$static_host}/img/links/20/gpx.png" width="20" height="20" alt="gpx icon" align="absmiddle"/> <a title="Download GPX" href="/gpx.php?gridref={$gridref}">Download a <b>GPX coverage</b> file around {$gridref}</a></li>
+	<li><img src="http://{$static_host}/img/links/20/gpx.png" width="20" height="20" alt="gpx icon" align="absmiddle"/> <a title="Download GPX" href="/gpx.php?gridref={$gridref}">Download a <b>GPX coverage</b> file around this area</a></li>
 	{if strlen($gridrefraw) < 5}
 		<li><img src="http://{$static_host}/img/links/20/hectad.png" width="20" height="20" alt="hectad icon" align="absmiddle"/> <a title="First Geographs within {$gridrefraw}" href="/search.php?first={$gridrefraw}">Find <b>first geographs for hectad</b> {$gridrefraw}</a></li>
 	{/if}
