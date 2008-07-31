@@ -300,6 +300,7 @@ if ($grid_given)
 			$breakdowns[] = array('type'=>'submittedyear','name'=>'Submitted Years','count'=>$row['submittedyear']);
 			$breakdowns[] = array('type'=>'direction','name'=>'View Directions','count'=>$row['direction']);
 			$breakdowns[] = array('type'=>'viewpoint','name'=>'Photographer Gridsquares','count'=>$row['viewpoints']);
+			$breakdowns[] = array('type'=>'viewcenti','name'=>'Photographer Centisquares','count'=>'?');
 			$breakdowns[] = array('type'=>'status','name'=>'Classification','count'=>$row['status']);
 			$smarty->assign_by_ref('breakdowns', $breakdowns);
 			
