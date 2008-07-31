@@ -4,6 +4,7 @@
         {assign var="page_title" value="Map Browsing :: British Isles"}
 {/if}
 {include file="_std_begin.tpl"}
+<meta name="robots" content="noindex, nofollow"/>
 {literal}<style type="text/css">
 table.navtable {
 	margin-top:5px; line-height:0px
