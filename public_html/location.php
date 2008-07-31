@@ -136,6 +136,22 @@ if ($grid_given)
 			$square->assignDiscussionToSmarty($smarty);
 		}
 		
+		//look for images from here...
+		$sphinx = new sphinxwrapper();
+		if ($viewpoint_count = $sphinx->countImagesViewpoint($square->nateastings,$square->natnorthings,$square->reference_index,$square->grid_reference)) {
+			$smarty->assign('viewpoint_count', $viewpoint_count);
+			$smarty->assign('viewpoint_query', $sphinx->q);
+		}
+		
+		if ($square->natspecified && $square->natgrlen >= 6) {
+			$conv = new Conversions('');
+			list($gr6,$len) = $conv->national_to_gridref(
+				$square->getNatEastings(),
+				$square->getNatNorthings(),
+				6,
+				$square->reference_index,false);
+			$smarty->assign('gridref6', $gr6);
+		}
 		
 		//lets add an overview map too
 		$overview=new GeographMapMosaic('largeoverview');

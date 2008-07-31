@@ -232,6 +232,9 @@ if ($grid_given)
 				$custom_where .= " and nateastings != 0";//to stop XX0XX0 matching 4fig GRs
 				$custom_where .= " and ((nateastings div 100) mod 10) = ".$matches[1];
 				$custom_where .= " and ((natnorthings div 100) mod 10) = ".$matches[2];
+				
+				$grid_ok=$square->setByFullGridRef($_GET['centi'],false,true);
+				$smarty->assign('gridrefraw', stripslashes($_GET['centi']));
 			}
 			$filtered_title = "in ".htmlentities2($_GET['centi'])." Centisquare<a href=\"/help/squares\">?</a>";
 		}
@@ -243,6 +246,9 @@ if ($grid_given)
 				$custom_where .= " and viewpoint_eastings != 0";//to stop XX0XX0 matching 4fig GRs
 				$custom_where .= " and ((viewpoint_eastings div 100) mod 10) = ".$matches[1];
 				$custom_where .= " and ((viewpoint_northings div 100) mod 10) = ".$matches[2];
+				
+				$grid_ok=$square->setByFullGridRef($_GET['viewcenti'],false,true);
+				$smarty->assign('gridrefraw', stripslashes($_GET['viewcenti']));
 			}
 			$filtered_title = " photographer in ".htmlentities2($_GET['viewcenti'])." Centisquare<a href=\"/help/squares\">?</a>";
 		}
@@ -301,12 +307,17 @@ if ($grid_given)
 			$breakdowns[] = array('type'=>'direction','name'=>'View Directions','count'=>$row['direction']);
 			$breakdowns[] = array('type'=>'viewpoint','name'=>'Photographer Gridsquares','count'=>$row['viewpoints']);
 			$breakdowns[] = array('type'=>'viewcenti','name'=>'Photographer Centisquares','count'=>'?');
-			$breakdowns[] = array('type'=>'status','name'=>'Classification','count'=>$row['status']);
+			$breakdowns[] = array('type'=>'status','name'=>'Classifications','count'=>$row['status']);
 			$smarty->assign_by_ref('breakdowns', $breakdowns);
 			
+			if (rand(1,10) > 7) {
+				$order = "(moderation_status = 'geograph') desc,rand()";
+			} else {
+				$order = "moderation_status+0 desc,seq_no";
+			}
 			//find the first geograph
 			$sql="select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname from gridimage as gi inner join user using(user_id) where gridsquare_id={$square->gridsquare_id} 
-			and moderation_status in ('accepted','geograph') order by moderation_status+0 desc,seq_no limit 1";
+			and moderation_status in ('accepted','geograph') order by $order limit 1";
 
 			$rec=$db->GetRow($sql);
 			if (count($rec))
@@ -483,7 +494,7 @@ if ($grid_given)
 				FROM gridimage
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
-				AND viewpoint_eastings DIV 1000 = $e AND viewpoint_northings DIV 1000 = $n
+				AND ((viewpoint_eastings DIV 1000 = $e AND viewpoint_northings DIV 1000 = $n) OR viewpoint_eastings = 0)
 				GROUP BY viewpoint_eastings DIV 100, viewpoint_northings DIV 100,(viewpoint_eastings = 0)");
 				$maximages = 0;
 				$hasnone = 0;
@@ -589,6 +600,15 @@ if ($grid_given)
 		if ($viewpoint_count = $sphinx->countImagesViewpoint($square->nateastings,$square->natnorthings,$square->reference_index,$square->grid_reference)) {
 			$smarty->assign('viewpoint_count', $viewpoint_count);
 			$smarty->assign('viewpoint_query', $sphinx->q);
+		}
+		if ($square->natspecified && $square->natgrlen >= 6) {
+			$conv = new Conversions('');
+			list($gr6,$len) = $conv->national_to_gridref(
+				$square->getNatEastings(),
+				$square->getNatNorthings(),
+				6,
+				$square->reference_index,false);
+			$smarty->assign('gridref6', $gr6);
 		}
 	}
 	else
