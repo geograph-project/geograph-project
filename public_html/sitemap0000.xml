@@ -72,7 +72,6 @@
    <url>
       <loc>http://www.geograph.org.uk/sitemap/geograph.html</loc>
       <changefreq>weekly</changefreq>
-      <priority>0.8</priority>
    </url>
    <url>
       <loc>http://www.geograph.org.uk/help/sitemap</loc>
@@ -126,6 +125,10 @@
       <loc>http://www.geograph.org.uk/help/which_square</loc>
       <priority>0.8</priority>
    </url>
+   <url>
+      <loc>http://www.geograph.org.uk/help/submit_intro</loc>
+      <priority>0.9</priority>
+   </url> 
    <url>
       <loc>http://www.geograph.org.uk/mapprint.php</loc>
       <priority>0.5</priority>
