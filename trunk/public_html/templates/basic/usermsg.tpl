@@ -47,6 +47,14 @@
 		<input type="submit" name="send" value="Send">
 		</form>	
 	{else}
+		{if $invalid_email} 
+		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+			<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Warning" width="50" height="44" align="left" style="margin-right:10px"/>
+			We don't have valid contact details on record for this user, you can fill out the form below,
+			it will be sent to the Geograph Team, who might or might not be able to help with your query.
+		</div>
+		<br/><br/><br/>
+		{/if}
 		<form method="post" action="/usermsg.php">
 		<div class="interestBox">
 			<input type="hidden" name="to" value="{$recipient->user_id|escape:'html'}">
@@ -69,6 +77,12 @@
 			<br/>
 			<span class="formerror">{$errors.msg}</span>
 
+			<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
+			<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="30" height="24" align="left" style="margin-right:10px"/>
+			If you are sending this message in relation to a particular photo or location, please
+			make sure you clearly state which. The contributor may of photographed
+			many locations and may not know immediately to where you are referring.</div>
+			<br/>
 		</div>
 		<input type="submit" name="send" value="Send">
 		</form>
