@@ -288,17 +288,16 @@ if ($grid_given)
 			count(distinct SUBSTRING(submitted,1,7)) as submitted,
 			count(distinct SUBSTRING(submitted,1,4)) as submittedyear,
 			count(distinct moderation_status) as status,
-			count(distinct nateastings DIV 100, natnorthings DIV 100) as centi,
+			(count(distinct nateastings DIV 100, natnorthings DIV 100) - (sum(nateastings = 0) > 0) ) as centi,
 			count(distinct view_direction) as direction,
-			count(distinct viewpoint_eastings DIV 1000, viewpoint_northings DIV 1000) as viewpoints,
-			sum(nateastings = 0) as centi_blank
+			count(distinct viewpoint_eastings DIV 1000, viewpoint_northings DIV 1000) as viewpoints
 			FROM gridimage
 			WHERE gridsquare_id = {$square->gridsquare_id}
 			AND $user_crit");
 			
 			$breakdowns = array();
 			$breakdowns[] = array('type'=>'user','name'=>'Contributors','count'=>$row['user']);
-			$breakdowns[] = array('type'=>'centi','name'=>'Centisquares','count'=>$row['centi']-($row['centi_blank'] > 0));
+			$breakdowns[] = array('type'=>'centi','name'=>'Centisquares','count'=>$row['centi']);
 			$breakdowns[] = array('type'=>'class','name'=>'Categories','count'=>$row['class']);
 			$breakdowns[] = array('type'=>'taken','name'=>'Taken Months','count'=>$row['taken']);
 			$breakdowns[] = array('type'=>'takenyear','name'=>'Taken Years','count'=>$row['takenyear']);
@@ -373,7 +372,7 @@ if ($grid_given)
 					} elseif ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
-						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?status=".urlencode($row[0]).$extra;
+						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?status=".urlencode($rowname).$extra;
 					}
 					$i++;
 				}
