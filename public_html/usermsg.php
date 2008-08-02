@@ -26,9 +26,9 @@ require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
-$template='usermsg.tpl';	
+$template='usermsg.tpl';
 
-//gather what we need	
+//gather what we need
 $recipient=new GeographUser($_REQUEST['to']);
 $from_name=isset($_POST['from_name'])?stripslashes($_POST['from_name']):$USER->realname;
 $from_email=isset($_POST['from_email'])?stripslashes($_POST['from_email']):$USER->email;
@@ -156,7 +156,17 @@ if (isset($_POST['msg']))
 			"with HTTP;".
 			strftime("%d %b %Y %H:%M:%S -0000", time())."\n";
 
-		if (@mail($recipient->email, $subject, $body, $received."From: $from_name <$from_email>")) 
+		if (preg_match('/(DORMANT|geograph\.org\.uk|geograph\.co\.uk|dev\.null|deleted|localhost|127\.0\.0\.1)/',$recipient->email)) {
+			$smarty->assign('invalid_email', 1);
+			
+			$email = $CONF['contact_email'];
+			
+			$body = "Sent as Geograph doesn't hold email address for this user [id {$recipient->user_id}]\n\n--\n\n".$body;
+		} else {
+			$email = $recipient->email;
+		}
+
+		if (@mail($email, $subject, $body, $received."From: $from_name <$from_email>")) 
 		{
 			$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
 		
@@ -207,7 +217,7 @@ elseif (isset($_GET['image']))
 {
 	//initialise message
 	require_once('geograph/gridsquare.class.php');
-  require_once('geograph/gridimage.class.php');
+	require_once('geograph/gridimage.class.php');
 
 	$image=new GridImage();
 	$image->loadFromId($_GET['image']);
@@ -219,6 +229,14 @@ elseif (isset($_GET['image']))
 	}
 	$smarty->assign_by_ref('msg', $msg);
 }
+
+if (preg_match('/(DORMANT|geograph\.org\.uk|geograph\.co\.uk|dev\.null|deleted|localhost|127\.0\.0\.1)/',$recipient->email)) {
+	$smarty->assign('invalid_email', 1);
+	if ($recipient->public_email) {
+		$smarty->assign_by_ref('public_email', $recipient->public_email);
+	}
+}
+
 
 $smarty->display($template);
 
