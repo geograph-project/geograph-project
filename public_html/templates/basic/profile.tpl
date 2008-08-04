@@ -11,6 +11,14 @@
 {/if}
 {/dynamic}
 
+{if $profile->tickets}
+	<div class="interestBox" style="background-color:yellow; color:black; border:2px solid orange; padding:5px;">
+	<img src="/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
+	You have <b>{$profile->tickets}</b> ongoing tickets on your images, please goto <a href="/tickets.php">your tickets page</a> to review them.
+	</div>
+	<br/><br/>
+{/if}
+
 {if $overview}
   <div style="float:right; width:{$overview_width+30}px; position:relative">
   {include file="_overview.tpl"}
@@ -31,14 +39,6 @@
 			<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Geograph Role</b>: Moderator</div>
 		{/if}
 	{/if}
-{/if}
-
-{if $profile->tickets}
-	<div class="interestBox" style="background-color:yellow; color:black; border:2px solid orange; padding:5px;">
-	<img src="/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
-	You have <b>{$profile->tickets}</b> tickets on your images, please goto <a href="/tickets.php">your tickets page</a> to review them.
-	</div>
-	<br/><br/>
 {/if}
 
 <ul>
