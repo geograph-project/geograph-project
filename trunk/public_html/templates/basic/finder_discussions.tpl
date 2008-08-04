@@ -105,7 +105,10 @@
 <div class="interestBox" style="margin-top:60px;">
 	<big><a name="cheatsheet"></a>Cheatsheet</big>:
 	<ul class="explore">
-		<li>prefix a keyword with - to <b>exclude</b> that word from the match; example : <tt>railway -track</tt></li>
+		<li>can find only posts by a user with by:&gt;nickname&lt; : <tt>railway by:fred</tt> or exclude <tt>railway -by:fred</tt></li>
+		<li>can search just the title : <tt>railway title:track</tt></li>
+		<li>or just the post content : <tt>railway text:track</tt></li>
+		<li>prefix a keyword with - to <b>exclude</b> that word from the match; example : <tt>railway -track</tt> <tt>railway -title:track</tt></li>
 		<li>can use OR to match <b>either/or</b> keywords; example: <tt>train OR railway</tt></li>
 	</ul>
 </div>

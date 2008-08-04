@@ -32,7 +32,7 @@ $template = 'finder_discussions.tpl';
 
 if (!empty($_GET['q'])) {
 	$q=trim($_GET['q']);
-
+	$q = preg_replace('/(-?)\b(by):/','@name $1',$q);
 	$sphinx = new sphinxwrapper($q);
 
 	//gets a cleaned up verion of the query (suitable for filename etc) 
