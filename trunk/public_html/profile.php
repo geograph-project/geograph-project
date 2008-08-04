@@ -78,10 +78,10 @@ if (isset($_REQUEST['edit']))
 	$smarty->assign('pagesizes', array(5,10,15,20,30,50));
 	$smarty->assign('delays', array(2,3,4,5,6,10,12));
 	$smarty->assign('ticket_options', array(
-	'all' => 'Emails for all changes' ,
-	'major' => 'Only Major changes', 
+	'all' => 'Notifications for all suggestions' ,
+	'major' => 'Only Major suggestions', 
 	//'digest' => 'Receive Digest emails Once per Day',
-	'none' => 'No Email - access online only' ));
+	'none' => 'No Initial Notifications' ));
 	
 	$profile->getStats();
 	$profile->md5_email = md5(strtolower($profile->email));
@@ -186,6 +186,8 @@ if ($template=='profile.tpl')
 		}
 		
 		$profile->getStats();
+		if ($uid==$USER->user_id)
+			$profile->countTickets();
 
 		$smarty->assign('page_title', 'Profile for '.$profile->realname);
 		$smarty->assign_by_ref('profile', $profile);

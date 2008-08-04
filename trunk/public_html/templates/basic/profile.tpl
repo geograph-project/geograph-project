@@ -33,6 +33,14 @@
 	{/if}
 {/if}
 
+{if $profile->tickets}
+	<div class="interestBox" style="background-color:yellow; color:black; border:2px solid orange; padding:5px;">
+	<img src="/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
+	You have <b>{$profile->tickets}</b> open on your images, please goto <a href="/tickets.php">your tickets</a> page to review them.
+	</div>
+	<br/><br/>
+{/if}
+
 <ul>
 	<li><b>Name</b>: {$profile->realname|escape:'html'}</li>
 
