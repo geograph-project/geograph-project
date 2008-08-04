@@ -4,7 +4,7 @@
  * $Id: faq.php 15 2005-02-16 12:23:35Z lordelph $
  * 
  * GeoGraph geographic photo archive project
- * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
+ * This file copyright (C) 2008 Barry Hunter (geo@barryhunter.co.uk)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

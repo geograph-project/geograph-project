@@ -62,7 +62,7 @@ if (!empty($_GET['q'])) {
 			if (count($ids)) {
 				$where = "post_id IN(".join(",",$ids).")";
 
-				$db=NewADOConnection($GLOBALS['DSN2']);
+				$db=NewADOConnection($GLOBALS['DSN']);
 
 				$limit = 25;
 
