@@ -593,24 +593,24 @@ function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtm
 	if (!empty($r))
 		return($r);
 	if ($currentPage > 1) 
-		$r .= "<a href=\"$prefix".($currentPage-1)."$postfix\"$extrahtml>&lt; &lt; prev</a> ";
+		$r .= "<a href=\"$prefix".($currentPage-1)."$postfix\"$extrahtml class=\"pageNav\">&lt; &lt; prev</a> ";
 	$start = max(1,$currentPage-5);
 	$endr = min($numberOfPages+1,$currentPage+8);
 
 	if ($start > 1)
-		$r .= "<a href=\"$prefix$postfix\"$extrahtml>1</a> ... ";
+		$r .= "<a href=\"$prefix$postfix\"$extrahtml class=\"pageNav\">1</a> ... ";
 
 	for($index = $start;$index<$endr;$index++) {
 		if ($index == $currentPage) 
-			$r .= "<b>$index</b> "; 
+			$r .= "<b class=\"pageNav\">$index</b> "; 
 		else
-			$r .= "<a href=\"$prefix$index$postfix\"$extrahtml>$index</a> ";
+			$r .= "<a href=\"$prefix$index$postfix\"$extrahtml class=\"pageNav\">$index</a> ";
 	}
 	if ($endr < $numberOfPages+1) 
 		$r .= "... ";
 
 	if ($numberOfPages > $currentPage) 
-		$r .= "<a href=\"$prefix".($currentPage+1)."$postfix\"$extrahtml>next &gt;&gt;</a> ";
+		$r .= "<a href=\"$prefix".($currentPage+1)."$postfix\"$extrahtml class=\"pageNav\">next &gt;&gt;</a> ";
 	return $r;	
 }
 	
