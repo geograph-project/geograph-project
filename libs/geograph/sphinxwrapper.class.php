@@ -47,6 +47,8 @@ class sphinxwrapper {
 		
 		$q = preg_replace('/ OR /',' | ',$q);
 		
+		$q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
+		
 		$q = trim(preg_replace('/[^\w~\|\(\)@"\/-]+/',' ',trim(strtolower($q))));
 		
 		$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,2} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
@@ -122,6 +124,8 @@ class sphinxwrapper {
 	}
 	public function countImagesViewpoint($e,$n,$ri,$exclude = '') {
 		
+		$cl = $this->_getClient();
+		
 		$q = "@viewsquare ".($ri*10000000 + intval($n/1000)*1000 + intval($e/1000));
 		if ($exclude) {
 			$q .= " @grid_reference -$exclude";
@@ -129,8 +133,6 @@ class sphinxwrapper {
 		$this->q = $q;
 		
 		$index = "gi_stemmed,gi_delta_stemmed";
-		
-		$cl = $this->_getClient();
 		
 		$cl->SetMatchMode ( SPH_MATCH_EXTENDED );
 		$cl->SetLimits(0,1,0);
@@ -155,6 +157,8 @@ class sphinxwrapper {
 	public function returnImageIds($page = 1, $didyoumean = false) {
 		$q = $this->q;
 		
+		$cl = $this->_getClient();
+		
 		$mode = SPH_MATCH_ALL;
 		if (strpos($q,'~') === 0) {
 			$q = preg_replace('/^\~/','',$q);
@@ -164,8 +168,6 @@ class sphinxwrapper {
 			$mode = SPH_MATCH_EXTENDED;
 		} 
 		$index = "gi_stemmed,gi_delta_stemmed";
-		
-		$cl = $this->_getClient();
 		
 		$cl->SetWeights ( array ( 100, 1 ) );
 		$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
@@ -212,6 +214,8 @@ class sphinxwrapper {
 
 	public function returnIds($page = 1,$index = "user",$DateColumn = '') {
 		$q = $this->q;
+	
+		$cl = $this->_getClient();
 		
 		$mode = SPH_MATCH_ALL;
 		if (strpos($q,'~') === 0) {
@@ -222,7 +226,6 @@ class sphinxwrapper {
 			$mode = SPH_MATCH_EXTENDED;
 		} 
 		
-		$cl = $this->_getClient();
 		$cl->SetWeights ( array ( 100, 1 ) );
 		if (!empty($DateColumn)) {
 			$cl->SetSortMode ( SPH_SORT_ATTR_DESC, $DateColumn);
