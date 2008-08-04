@@ -74,14 +74,22 @@ if (!$smarty->is_cached($template,$cacheid))
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	
 	if (isset($_GET['cloud'])) {
-		$users = $db->CacheGetAssoc(3600*6,"select
-			nickname,user.user_id,user.realname,user.user_id,count(*) as images
-			from user
-				inner join gridimage_search gi using (user_id)
-			where nickname != '' and rights IS NOT NULL $andwhere
-			group by gi.user_id
-			order by images desc");
-
+		if {$andwhere) {
+			$users = $db->CacheGetAssoc(3600*6,"select
+				nickname,user.user_id,user.realname,user.user_id,count(*) as images
+				from user
+					inner join gridimage_search gi using (user_id)
+				where nickname != '' and rights IS NOT NULL $andwhere
+				group by gi.user_id
+				order by images desc");
+		} else {
+			$users = $db->CacheGetAssoc(3600*6,"select
+				nickname,user.user_id,user.realname,user.user_id,`us`,images
+				from user
+					inner join user_stat `us` using (user_id)
+				where nickname != '' and rights IS NOT NULL 
+				order by images desc");
+		}
 
 		$size = $startsize = 30;
 			$sizedelta = 0.05;
@@ -102,13 +110,22 @@ if (!$smarty->is_cached($template,$cacheid))
 		}
 		uksort($users, "cmp");
 	} else {
-		$users = $db->CacheGetAssoc(3600*6,"select
-			user.user_id,nickname,user.realname,user.user_id,count(*) as images
-			from user
-				inner join gridimage_search gi using (user_id)
-			where rights IS NOT NULL $andwhere
-			group by gi.user_id
-			order by realname");
+		if {$andwhere) {
+			$users = $db->CacheGetAssoc(3600*6,"select
+				user.user_id,nickname,user.realname,user.user_id,count(*) as images
+				from user
+					inner join gridimage_search gi using (user_id)
+				where rights IS NOT NULL $andwhere
+				group by gi.user_id
+				order by realname");
+		} else {
+			$users = $db->CacheGetAssoc(3600*6,"select
+				user.user_id,nickname,user.realname,user.user_id,`us`.images
+				from user
+					inner join user_stat `us` using (user_id)
+				where rights IS NOT NULL
+				order by realname");
+		}
 	}
 
 	$smarty->assign_by_ref('users',$users);
