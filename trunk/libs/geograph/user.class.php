@@ -239,7 +239,7 @@ class GeographUser
 	{
 		$db = $this->_getDB();
 		
-		$this->tickets=$db->GetOne("select count(*) from gridimage_ticket where user_id='{$this->user_id}' and status != 'closed'");
+		$this->tickets=$db->GetOne("select count(*) from gridimage inner join gridimage_ticket using (gridimage_id) where gridimage.user_id='{$this->user_id}' and status != 'closed'");
 		return $this->tickets;
 	}
 	
