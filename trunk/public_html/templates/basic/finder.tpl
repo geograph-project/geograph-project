@@ -163,7 +163,14 @@ h4.title {
 	
 	{if $enable_forums}
 	<div style="position:relative;{if $tab != 6}display:none{/if}" class="interestBox" id="div6">
-		<h3 class="title">Discussion Search</h3>
+		<h3 class="title">Discussion Search - NEW</h3>
+		<form method="get" action="/finder/discussions.php">
+			<div><label for="searchnewterm">Keywords</label>
+			<input id="searchnewterm" type="text" name="q" value="{$q}" size="30"/>
+			<input id="searchbutton" type="submit" name="go" value="Find"/></div>
+		</form>
+		<p>&nbsp;</p>
+		<h3 class="title">Discussion Search - old</h3>
 		<form method="get" action="/discuss/index.php">
 			<input type="hidden" name="action" value="search"/>
 			<input type="hidden" name="searchForum" value="0"/>

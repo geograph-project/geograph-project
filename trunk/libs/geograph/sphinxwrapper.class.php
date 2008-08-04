@@ -34,7 +34,7 @@ class sphinxwrapper {
 	public $qraw = '';
 	public $qoutput = '';
 
-
+	private $client = null;
 	
 	public function __construct($q = '') {
 		if (!empty($q)) {
@@ -121,8 +121,6 @@ class sphinxwrapper {
 		$this->qoutput = $qo;
 	}
 	public function countImagesViewpoint($e,$n,$ri,$exclude = '') {
-		global $CONF;
-		require_once ( "3rdparty/sphinxapi.php" );
 		
 		$q = "@viewsquare ".($ri*10000000 + intval($n/1000)*1000 + intval($e/1000));
 		if ($exclude) {
@@ -133,7 +131,7 @@ class sphinxwrapper {
 		$index = "gi_stemmed,gi_delta_stemmed";
 		
 		$cl = new SphinxClient ();
-		$cl->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
+		
 		$cl->SetMatchMode ( SPH_MATCH_EXTENDED );
 		$cl->SetLimits(0,1,0);
 		$res = $cl->Query ( $q, $index );
@@ -155,10 +153,7 @@ class sphinxwrapper {
 	}
 	
 	public function returnImageIds($page = 1, $didyoumean = false) {
-		global $CONF;
 		$q = $this->q;
-		
-		require_once ( "3rdparty/sphinxapi.php" );
 		
 		$mode = SPH_MATCH_ALL;
 		if (strpos($q,'~') === 0) {
@@ -170,8 +165,8 @@ class sphinxwrapper {
 		} 
 		$index = "gi_stemmed,gi_delta_stemmed";
 		
-		$cl = new SphinxClient ();
-		$cl->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
+		$cl = $this->_getClient();
+		
 		$cl->SetWeights ( array ( 100, 1 ) );
 		$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
 		$cl->SetMatchMode ( $mode );
@@ -215,11 +210,8 @@ class sphinxwrapper {
 		}		
 	}
 
-	public function returnIds($page = 1,$index = "user") {
-		global $CONF;
+	public function returnIds($page = 1,$index = "user",$DateColumn = '') {
 		$q = $this->q;
-		
-		require_once( "3rdparty/sphinxapi.php" );
 		
 		$mode = SPH_MATCH_ALL;
 		if (strpos($q,'~') === 0) {
@@ -230,10 +222,13 @@ class sphinxwrapper {
 			$mode = SPH_MATCH_EXTENDED;
 		} 
 		
-		$cl = new SphinxClient ();
-		$cl->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
+		$cl = $this->_getClient();
 		$cl->SetWeights ( array ( 100, 1 ) );
-		$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
+		if (!empty($DateColumn)) {
+			$cl->SetSortMode ( SPH_SORT_ATTR_DESC, $DateColumn);
+		} else {
+			$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
+		}
 		$cl->SetMatchMode ( $mode );
 		
 		$sqlpage = ($page -1)* $this->pageSize;
@@ -267,6 +262,12 @@ class sphinxwrapper {
 		}
 	}
 	
+	function BuildExcerpts($docs, $index, $words, $opts=array() ) {
+		$cl = $this->_getClient();
+		return $cl->BuildExcerpts ( $docs, $index, $words, $opts);
+	}
+	
+	
 	/**
 	 * get stored db object, creating if necessary
 	 * @access private
@@ -278,7 +279,21 @@ class sphinxwrapper {
 		if (!$this->db) die('Database connection failed'); 
 		return $this->db;
 	}
-}
+	
+	function &_getClient()
+	{
+		if (is_object($this->client))
+			return $this->client;
+		
+		global $CONF;
+		
+		require_once ( "3rdparty/sphinxapi.php" );
+		
+		$this->client = new SphinxClient ();
+		$this->client->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
+		
+		return $this->client;
+	}}
 
 
 ?>
