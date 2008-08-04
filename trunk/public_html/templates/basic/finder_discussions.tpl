@@ -6,6 +6,11 @@
 		border:1px solid gray;
 		padding:5px;
 	}
+	ol.results li {
+		padding-bottom:4px;
+		border-bottom:1px solid lightgrey;
+		margin-bottom:6px;
+	}
 </style>
 
   <script type="text/javascript">
@@ -49,7 +54,7 @@
 	</p>
 {/if}
 {if $results}{/if}
-<ol start="{$offset}">
+<ol start="{$offset}" class="results">
 {foreach from=$results item=item key=key}
 	{if $item.era != $last}
 		{if $item.era}
@@ -66,7 +71,7 @@
 		<blockquote>
 			<div id="hide{$key}">... and <a href="javascript:void(show_tree({$key}));">{$item.result_count} more results from this thread.</a></div>
 			<div id="show{$key}" style="display:none">
-				<ol type="i">
+				<ol type="i" class="inner">
 				{foreach from=$item.results item=item2 key=key2}
 					<li><div style="float:right">{$item2.post_time|date_format:"%a, %e %b %Y"}</div><small style="color:gray">[<a href="/discuss/?action=vpost&forum={$item2.forum_id}&amp;topic={$item2.topic_id}&amp;post={$item2.id}">view post</a>] {$item2.excerpt|replace:'<br>':' '} by <a href="/profile/{$item2.poster_id}">{$item2.poster_name|escape:'html'}</a></small></li>
 				{/foreach}
