@@ -79,7 +79,7 @@ if (!empty($_GET['q'])) {
 				$docs = array();
 				foreach ($ids as $c => $id) {
 					$row = $rows[$id];
-					$docs[$c] = $row['post_text'];
+					$docs[$c] = strip_tags(preg_replace('/<i>.*?<\/i>/',' ',$row['post_text']));
 				}
 				$reply = $sphinx->BuildExcerpts($docs, 'post_stemmed', $sphinx->q);
 				
