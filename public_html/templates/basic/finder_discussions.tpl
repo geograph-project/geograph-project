@@ -11,6 +11,9 @@
 		border-bottom:1px solid lightgrey;
 		margin-bottom:6px;
 	}
+	ol.results ol.inner {
+		margin-left:-30px;
+	}
 </style>
 
   <script type="text/javascript">
@@ -64,20 +67,18 @@
 		{/if}
 	{/if}
 	<li>
+	<b><a href="/discuss/?action=vpost&forum={$item.forum_id}&amp;topic={$item.topic_id}&amp;post={$item.id}" target="_top">{$item.topic_title|escape:'html'|default:'unknown'}</a></b> <small>[thread by <a href="/profile/{$item.topic_poster}">{$item.topic_poster_name|escape:'html'}</a>]<small><br/>
 	<div style="float:right">{$item.post_time|date_format:"%a, %e %b %Y"}</div>
-	<b><a href="/discuss/?action=vpost&forum={$item.forum_id}&amp;topic={$item.topic_id}&amp;post={$item.id}" target="_top">{$item.topic_title|escape:'html'|default:'unknown'}</a></b> by <a href="/profile/{$item.topic_poster}">{$item.topic_poster_name|escape:'html'}</a><br/>
-	<small style="color:gray">{$item.excerpt|replace:'<br>':' '} by <a href="/profile/{$item.poster_id}">{$item.poster_name|escape:'html'}</a></small>
+	<small style="color:gray">{$item.excerpt|replace:'<br>':' '} [post by <a href="/profile/{$item.poster_id}">{$item.poster_name|escape:'html'}</a>]</small>
 	{if count($item.results)}
-		<blockquote>
-			<div id="hide{$key}">... and <a href="javascript:void(show_tree({$key}));">{$item.result_count} more results from this thread.</a></div>
-			<div id="show{$key}" style="display:none">
-				<ol type="i" class="inner">
-				{foreach from=$item.results item=item2 key=key2}
-					<li><div style="float:right">{$item2.post_time|date_format:"%a, %e %b %Y"}</div><small style="color:gray">[<a href="/discuss/?action=vpost&forum={$item2.forum_id}&amp;topic={$item2.topic_id}&amp;post={$item2.id}">view post</a>] {$item2.excerpt|replace:'<br>':' '} by <a href="/profile/{$item2.poster_id}">{$item2.poster_name|escape:'html'}</a></small></li>
-				{/foreach}
-				</ol>
-			</div>
-		</blockquote>
+		<div id="hide{$key}" style="margin-left:20px">... and <a href="javascript:void(show_tree({$key}));">{$item.result_count} more results from this thread.</a></div>
+		<div id="show{$key}" style="display:none">
+			<ol type="i" class="inner">
+			{foreach from=$item.results item=item2 key=key2}
+				<li><div style="float:right">{$item2.post_time|date_format:"%a, %e %b %Y"}</div><small style="color:gray">[<a href="/discuss/?action=vpost&forum={$item2.forum_id}&amp;topic={$item2.topic_id}&amp;post={$item2.id}">view post</a>] {$item2.excerpt|replace:'<br>':' '} [post by <a href="/profile/{$item2.poster_id}">{$item2.poster_name|escape:'html'}</a>]</small></li>
+			{/foreach}
+			</ol>
+		</div>
 	{/if}
 	</li>
 	{assign var="last" value=$item.era}
