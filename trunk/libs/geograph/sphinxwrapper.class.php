@@ -130,7 +130,7 @@ class sphinxwrapper {
 		
 		$index = "gi_stemmed,gi_delta_stemmed";
 		
-		$cl = new SphinxClient ();
+		$cl = $this->_getClient();
 		
 		$cl->SetMatchMode ( SPH_MATCH_EXTENDED );
 		$cl->SetLimits(0,1,0);
