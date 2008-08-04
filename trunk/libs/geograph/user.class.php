@@ -233,6 +233,17 @@ class GeographUser
 	}
 	
 	/**
+	* count the number of tickets this user has
+	*/
+	function countTickets()
+	{
+		$db = $this->_getDB();
+		
+		$this->tickets=$db->GetOne("select count(*) from gridimage_ticket where user_id='{$this->user_id}' and status != 'closed'");
+		return $this->tickets;
+	}
+	
+	/**
 	* register user 
 	* returns true if successful and false if not. Array of
 	* errors returned via $error param
