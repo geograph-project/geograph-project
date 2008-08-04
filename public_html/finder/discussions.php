@@ -69,7 +69,8 @@ if (!empty($_GET['q'])) {
 				$prev_fetch_mode = $ADODB_FETCH_MODE;
 				$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 				$rows = $db->getAssoc($sql = "
-				select post_id,topic_id,forum_id,topic_title,post_text,poster_name,topic_poster,topic_poster_name
+				select post_id,post_text,poster_name,poster_id,
+					geobb_posts.topic_id,geobb_topics.forum_id,topic_title,topic_poster,topic_poster_name
 				from geobb_posts 
 					inner join geobb_topics using (topic_id)
 				where $where
