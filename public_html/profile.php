@@ -125,7 +125,7 @@ if ($template=='profile.tpl')
 		}
 	}
 
-	if ($uid==0 || $uid=$USER->user_id)
+	if ($uid==0 || $uid==$USER->user_id)
 	{
 		//no uid given, so we'll assume user was trying to access their own
 		//profile, in which case, they must login...
