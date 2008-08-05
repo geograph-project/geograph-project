@@ -68,7 +68,7 @@
 	<ul class="explore">
 		<li>you can enter just the first few letters of a name</li>
 		<li>prefix a keyword with - to <b>exclude</b> that word from the match; example : <tt>smith -john</tt></li>
-		<li>can use OR to match <b>either/or</b> keywords; example: <tt>john OR joan</tt></li>
+		<li>can use OR (Uppercase only!) to match <b>either/or</b> keywords; example: <tt>john OR joan</tt></li>
 	</ul>
 </div>
 
