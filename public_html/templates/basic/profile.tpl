@@ -9,15 +9,24 @@
 	</div>
 	<br/><br/>
 {/if}
-{/dynamic}
 
 {if $profile->tickets}
+	<div id="ticket_message">
 	<div class="interestBox" style="background-color:yellow; color:black; border:2px solid orange; padding:5px;">
 	<img src="/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
 	You have <b>{$profile->tickets}</b> ongoing tickets on your images, please goto <a href="/tickets.php">your tickets page</a> to review them.
+	<small><br/><br/>We are aware of some issues with ticket notification emails - hence the reason for this message. <a href="javascript:void(hide_message())">I've read this, please hide</a> </small>
 	</div>
-	<br/><br/>
+	<br/><br/></div>
+	<script type="text/javascript">{literal}
+	function hide_message() {
+		document.getElementById('ticket_message').style.display= 'none';
+		pic1= new Image(); 
+		pic1.src="/profile.php?hide_message";
+	}
+	{/literal}</script>
 {/if}
+{/dynamic}
 
 {if $overview}
   <div style="float:right; width:{$overview_width+30}px; position:relative">

@@ -125,7 +125,7 @@ if ($template=='profile.tpl')
 		}
 	}
 
-	if ($uid==0)
+	if ($uid==0 || $uid=$USER->user_id)
 	{
 		//no uid given, so we'll assume user was trying to access their own
 		//profile, in which case, they must login...
@@ -133,6 +133,20 @@ if ($template=='profile.tpl')
 
 		//to reach here, user must be logged in...
 		$uid=$USER->user_id;
+		
+		if (isset($_GET['hide_message'])) {
+			#header("HTTP/1.0 200 OK");
+			#header("Content-Length: 0");
+			
+			$USER->countTickets();
+			
+			$_SESSION['last_ticket_time'] = $USER->last_ticket_time;
+			
+			print_r($_SESSION);
+			
+			exit;
+		}
+		
 	} else {
 		if (isset($_GET['user']) || isset($_GET['u'])) {
 			header("HTTP/1.0 301 Moved Permanently");
@@ -186,8 +200,14 @@ if ($template=='profile.tpl')
 		}
 		
 		$profile->getStats();
-		if ($uid==$USER->user_id)
+		if ($uid==$USER->user_id) {
 			$profile->countTickets();
+			$USER->tickets = $profile->tickets;
+			$USER->last_ticket_time = $profile->last_ticket_time;
+			if (!empty($_SESSION['last_ticket_time']) && $profile->last_ticket_time <= $_SESSION['last_ticket_time']) {
+				$profile->tickets = 0;
+			}
+		}
 
 		$smarty->assign('page_title', 'Profile for '.$profile->realname);
 		$smarty->assign_by_ref('profile', $profile);
@@ -216,6 +236,11 @@ if ($template=='profile.tpl')
 	} else {
 		$profile=new GeographUser();
 		$profile->user_id = $uid;
+		if ($uid==$USER->user_id) {
+			if (empty($_SESSION['last_ticket_time']) || $USER->last_ticket_time > $_SESSION['last_ticket_time']) {
+				$profile->tickets = $USER->tickets;
+			}
+		}
 		$smarty->assign_by_ref('profile', $profile);
 	}
 }
