@@ -55,7 +55,7 @@
 <tbody>
 
 {foreach from=$users key=id item=obj}
-<tr><td><a title="View profile for {$obj.realname}" href="/profile/{$obj.user_id}">{$obj.realname}</a></td><td>{$obj.last_date}</td>
+<tr><td><a title="View profile for {$obj.realname}" href="/profile/{$obj.user_id}{if $obj.credit_realname}?a={$obj.realname|escape:'url'}{/if}">{$obj.realname|escape:'html'}</a></td><td>{$obj.last_date}</td>
 <td align="right">{$obj.count}</td><td align="right">{$obj.days}</td><td align="right">{$obj.categories}</td></tr>
 {/foreach}
 

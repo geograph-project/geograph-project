@@ -20,7 +20,7 @@
         <dc:title>{$image->realname|escape:'html'}</dc:title>
      </Agent></dc:rights>
 {/if}     
-     <dc:date>{$image->submitted}</dc:date>
+     <dc:dateSubmitted>{$image->submitted}</dc:dateSubmitted>
      <dc:format>image/jpeg</dc:format>
      <dc:type>http://purl.org/dc/dcmitype/StillImage</dc:type>
      <dc:publisher><Agent>
@@ -32,7 +32,7 @@
 {if !strpos($image->imagetaken,'-00')}
      <dc:coverage>{$image->imagetaken}</dc:coverage>
 {/if}
-     <georss:point>{$lat|string_format:"%.5f"} {$long|string_format:"%.5f"}</georss:point>
+     <georss:point>{$lat|string_format:"%.6f"} {$long|string_format:"%.6f"}</georss:point>
      <license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
 </Work>
 
