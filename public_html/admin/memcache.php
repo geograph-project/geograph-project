@@ -108,14 +108,26 @@ if (isset($_GET['getExtendedStats'])) {
 		print "Delete return value: $ok";
 	}
 
-} elseif ($_GET['flushMemcache']) {
+} elseif (isset($_GET['flushMemcache'])) {
 	print "<h2>Flush Memcache</h2>";
 	print $memcache->flush();
 	print "<h3>done</h3>";
-} elseif ($_GET['clearSmarty']) {
+} elseif (isset($_GET['clearSmarty'])) {
 	print "<h2>Clear Whole Smarty Cache</h2>";
 	$smarty->clear_cache();
 	print "<h3>done</h3>";
+} elseif (isset($_GET['get'])) {
+	$v = $memcache->get($_GET['get']);
+	print "<pre>";
+	var_dump($v);
+	print "</pre><pre>";
+	var_dump(unserialize($v));
+	exit;
+} elseif (isset($_GET['set'])) {
+	$v = $memcache->set($_GET['set'],$_GET['v']);
+	print "<pre>";
+	var_dump($v);
+	print "</pre>";
 } else {
 ?>
 <h2>Memcache Toolkit</h2>

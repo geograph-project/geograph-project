@@ -54,6 +54,7 @@ class sphinxwrapper {
 		$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,2} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
 		
 		$this->q = $q;
+		$this->qclean = preg_replace('/(-?)[@]([a-z_]+) (-?)/','$1$3$2:',$q);
 	}
 	
 	public function processQuery() {

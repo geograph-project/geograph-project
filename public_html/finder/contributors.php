@@ -85,7 +85,7 @@ if (!empty($_GET['q'])) {
 		}
 	}
 	
-	$smarty->assign("q",$sphinx->q);
+	$smarty->assign("q",$sphinx->qclean);
 
 }
 
