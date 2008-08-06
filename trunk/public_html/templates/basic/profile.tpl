@@ -13,8 +13,7 @@
 {if $profile->tickets}
 	<div id="ticket_message">
 		{if $profile->last_ticket_time}
-			<div class="interestBox" style="background-color:yellow; color:black; border:2px solid orange; padding:5px;">
-			<img src="/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
+			<div class="interestBox" style="background-color:yellow; color:black; border:2px solid orange; padding:5px; font-size:0.9em">
 			You have <b>{$profile->tickets}</b> ongoing tickets on your images, please goto <a href="/tickets.php">your tickets page</a> to review them.
 			<small><br/><br/>We are aware of some issues with ticket notification emails - hence the reason for this message. <a href="javascript:void(hide_message())">I've read this, please hide</a> </small>
 			</div>
@@ -214,7 +213,7 @@
 			{/if}{/dynamic}
 		{/if}
 		{if $user->user_id eq $profile->user_id}
-			<li><b>Change Requests</b>: <a href="/tickets.php">View Recent Tickets</a></li>
+			<li><b>Change Requests</b>: <a href="/tickets.php" rel="nofollow">View Recent Tickets</a></li>
 		{/if}
 	</ul>
 	{if $user->user_id eq $profile->user_id}

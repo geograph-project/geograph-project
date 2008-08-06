@@ -87,7 +87,7 @@
 {foreach from=$months key=name item=weeks name=loop}
 <div style="position:relative;float:left;width=340px;padding:10px;height:280px;">
 
-<h2><a href="{$script_name}?Year={$year}&amp;Month={$smarty.foreach.loop.iteration}">{$name}</a></h2>
+<h2><a href="{$script_name}?Year={$year}&amp;Month={$smarty.foreach.loop.iteration}" rel="nofollow">{$name}</a></h2>
 
 <table class="report" bordercolor="#eeeeee" border="1" cellspacing="0" cellpadding="1" style="position:relative">
 <thead><tr>{foreach from=$days item=day}
