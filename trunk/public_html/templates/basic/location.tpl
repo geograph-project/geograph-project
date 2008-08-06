@@ -72,7 +72,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 		<li><img src="http://{$static_host}/img/links/20/hectad.png" width="20" height="20" alt="hectad icon" align="absmiddle"/> <a title="First Geographs within {$gridrefraw}" href="/search.php?first={$gridrefraw}">Find <b>first geographs for hectad</b> {$gridrefraw}</a></li>
 	{/if}
 	<li><img src="http://{$static_host}/img/links/20/search.png" width="20" height="20" alt="search icon" align="absmiddle"/> <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}"><b>search</b> for images near {$gridref}</a></li>
-	<li><img src="http://{$static_host}/img/links/20/no-photos.png" width="20" height="20" alt="no photos icon" align="absmiddle"/> <a title="Empty Squares" href="/squares.php?gridref={$gridref}&amp;type=without">View list of nearby <b>squares without images</b></a><br/><br/></li>
+	<li><img src="http://{$static_host}/img/links/20/no-photos.png" width="20" height="20" alt="no photos icon" align="absmiddle"/> <a title="Empty Squares" href="/squares.php?gridref={$gridref}&amp;type=without">View list of nearby <b>squares without images</b></a> or <a title="Few Squares" href="/squares.php?gridref={$gridref}&amp;type=few">without many images</a><br/><br/></li>
 	
 	{if $gridref6}
 		<li><img src="http://{$static_host}/img/links/20/centi.png" width="20" height="20" alt="centisquare icon" align="absmiddle"/> <a href="/gridref/{$gridref}?viewpoint={$gridref6}">image(s) <b>taken in {$gridref6}</b></b></a> / <span class="nowrap"><a href="/gridref/{$gridref}?centi={$gridref6}">of <b>subjects in {$gridref6}</b></a> (if any)</span><br/><br/></li>
