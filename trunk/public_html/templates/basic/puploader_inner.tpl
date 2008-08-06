@@ -234,8 +234,11 @@
 					if (thatForm.elements[ele.name+'['+name+']'].value != '')
 						ele.checked = true;
 					AttachEvent(ele,'click',parentUpdateVariables,false);
+				} else if (ele.tagName.toLowerCase() == 'input' && ele.type.toLowerCase() == 'input') {
+					AttachEvent(ele,'click',parentUpdateVariables,false);
 				} else {
 					ele.value = thatForm.elements[ele.name+'['+name+']'].value;
+					AttachEvent(ele,'mouseup',parentUpdateVariables,false);
 					AttachEvent(ele,'keyup',parentUpdateVariables,false);
 				}
 			}
