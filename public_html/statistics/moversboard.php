@@ -59,9 +59,10 @@ if (!$smarty->is_cached($template, $cacheid))
 			$desc = "different squares photographed";
 		}
 		//squares has to use a count(distinct ...) meaning cant have pending in same query... possibly could do with a funky subquery but probably would lower performance...
-		$sql="select i.user_id,i.realname,
+		$sql="select i.user_id,u.realname,
 		count(distinct grid_reference) as geographs
 		from gridimage_search as i 
+		inner join user as u using(user_id)  
 		where i.submitted > date_sub(now(), interval 7 day) $sql_where
 		group by i.user_id 
 		order by geographs desc";

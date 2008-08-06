@@ -112,7 +112,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-$sql="SELECT user_id,realname,
+$sql="SELECT user_id,credit_realname,realname,
 COUNT(*) AS count,
 DATE_FORMAT(MAX(submitted),'%D %b %Y') as last_date,
 count(distinct imagetaken) as days,
@@ -123,7 +123,7 @@ WHERE
 	CONTAINS(GeomFromText($rectangle),point_xy) AND
 	moderation_status = 'geograph' AND
 	ftf = 1
-GROUP BY user_id 
+GROUP BY user_id,realname
 ORDER BY count DESC,last_date DESC
 ";
 		$db=NewADOConnection($GLOBALS['DSN']);

@@ -78,10 +78,10 @@ fwrite ($rdf,
 
 $db=NewADOConnection($GLOBALS['DSN']);
 if (!empty($_GET['rejected'])) {
-$recordSet = &$db->Execute(sprintf("select * from gridimage where moderation_status = 'rejected'",$s,$s+10000));
+$recordSet = &$db->Execute(sprintf("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname,user.nickname from gridimage gi inner join user using(user_id) where moderation_status = 'rejected'",$s,$s+10000));
 
 } else {
-$recordSet = &$db->Execute(sprintf("select * from gridimage_search gi where gridimage_id between %d and %d",$s,$s+10000));
+$recordSet = &$db->Execute(sprintf("select gi.*,user.realname as user_realname from gridimage_search gi inner join user using (user_id) where gridimage_id between %d and %d",$s,$s+10000));
 }
 
 $files = array("rdf/$filename.rdf");
@@ -93,15 +93,16 @@ while (!$recordSet->EOF)
 		$files[] = $file;
 		
 fwrite ($rdf,
-'<Work rdf:about="http://'.$_SERVER['HTTP_HOST'].'/photos/'.$file.'">
+'<Work rdf:about="'.$file.'">
      <dc:title>'.$image['grid_reference'].' : '.htmlspecialchars2($image['title']).'</dc:title>
+     <dc:identifier>http://'.$_SERVER['HTTP_HOST'].'/photo/'.$image['gridimage_id'].'</dc:identifier>
      <dc:creator><Agent>
 	<dc:title>'.htmlspecialchars2($image['realname']).'</dc:title>
      </Agent></dc:creator>
      <dc:rights><Agent>
-	<dc:title>'.htmlspecialchars2($image['realname']).'</dc:title>
+	<dc:title>'.htmlspecialchars2($image['credit_realname']?$image['user_realname']:$image['realname']).'</dc:title>
      </Agent></dc:rights>
-     <dc:date>'.$image['submitted'].'</dc:date>
+     <dc:dateSubmitted>'.$image['submitted'].'</dc:dateSubmitted>
      <dc:format>image/jpeg</dc:format>
      <dc:type>http://purl.org/dc/dcmitype/StillImage</dc:type>
      <dc:publisher><Agent>
@@ -109,6 +110,7 @@ fwrite ($rdf,
      </Agent></dc:publisher>
      <dc:subject>'.htmlspecialchars2($image['imageclass']).'</dc:subject>
      <georss:point>'.$image['wgs84_lat'].' '.$image['wgs84_long'].'</georss:point>
+     '.(strpos($image->imagetaken,'-00')?'':'<dc:coverage>'.$image['imagetaken'].'</dc:coverage>').'
      <license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
 </Work>
 ');
