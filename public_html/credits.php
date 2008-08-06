@@ -74,7 +74,7 @@ if (!$smarty->is_cached($template,$cacheid))
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	
 	if (isset($_GET['cloud'])) {
-		if {$andwhere) {
+		if ($andwhere) {
 			$users = $db->CacheGetAssoc(3600*6,"select
 				nickname,user.user_id,user.realname,user.user_id,count(*) as images
 				from user
@@ -110,7 +110,7 @@ if (!$smarty->is_cached($template,$cacheid))
 		}
 		uksort($users, "cmp");
 	} else {
-		if {$andwhere) {
+		if ($andwhere) {
 			$users = $db->CacheGetAssoc(3600*6,"select
 				user.user_id,nickname,user.realname,user.user_id,count(*) as images
 				from user
