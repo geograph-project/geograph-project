@@ -85,7 +85,7 @@ if (!$smarty->is_cached($template,$cacheid))
 			$smarty->assign('what','Contributors');
 		} else {
 			$users = $db->CacheGetAssoc(3600*6,"select
-				nickname,user.user_id,user.realname,user.user_id,`us`,images
+				nickname,user.user_id,user.realname,user.user_id,`us`.images
 				from user
 					inner join user_stat `us` using (user_id)
 				where nickname != '' and rights IS NOT NULL 
