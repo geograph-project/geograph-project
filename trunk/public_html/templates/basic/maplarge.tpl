@@ -51,7 +51,7 @@
 
 {if $users}
 <table class="report"> 
-<thead><tr><td>Contributor</td><td>Last Submission</td><td>First Geographs</td><td>Days</td><td>Categories</td></tr></thead>
+<thead><tr><td>Photographer</td><td>Last Submission</td><td>First Geographs</td><td>Days</td><td>Categories</td></tr></thead>
 <tbody>
 
 {foreach from=$users key=id item=obj}
