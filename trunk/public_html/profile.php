@@ -210,6 +210,7 @@ if ($template=='profile.tpl')
 		}
 
 		$smarty->assign('page_title', 'Profile for '.$profile->realname);
+		$smarty->assign('meta_description', 'Profile page for '.$profile->realname.', listing recent images, statistics and links to further information.');
 		$smarty->assign_by_ref('profile', $profile);
 		
 		$images=new ImageList;

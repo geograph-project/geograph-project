@@ -107,8 +107,8 @@
      <li>{external href="http://openrico.org/" text="Rico"} - Javascript for Rich Internet Applications</li>
      <li>{external href="http://prototype.conio.net/" text="Prototype"} - Javascript Framework</li>
      <li>{external href="http://openlayers.org/" text="OpenLayers"} - DHTML and Javascript Draggable Map Interface<br/>
-     	<small>&nbsp;&nbsp;&nbsp;&nbsp;Also reuses parts of Rico and Prototype seperatly</small></li>
-     <li>{external href="http://blog.dixo.net/" text="GeoTools"} - Javascript Coordinate Conversion</li>
+     	<small>&nbsp;&nbsp;&nbsp;&nbsp;Also reuses parts of Rico and Prototype separately</small></li>
+     <li>{external href="http://blog.dixo.net/downloads/" text="GeoTools"} - Javascript Coordinate Conversion</li>
     </ul>
      
     
