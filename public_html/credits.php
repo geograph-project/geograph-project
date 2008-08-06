@@ -82,6 +82,7 @@ if (!$smarty->is_cached($template,$cacheid))
 				where nickname != '' and rights IS NOT NULL $andwhere
 				group by gi.user_id
 				order by images desc");
+			$smarty->assign('what','Contributors');
 		} else {
 			$users = $db->CacheGetAssoc(3600*6,"select
 				nickname,user.user_id,user.realname,user.user_id,`us`,images
@@ -89,6 +90,7 @@ if (!$smarty->is_cached($template,$cacheid))
 					inner join user_stat `us` using (user_id)
 				where nickname != '' and rights IS NOT NULL 
 				order by images desc");
+			$smarty->assign('what','Contributors');
 		}
 
 		$size = $startsize = 30;
@@ -112,12 +114,13 @@ if (!$smarty->is_cached($template,$cacheid))
 	} else {
 		if ($andwhere) {
 			$users = $db->CacheGetAssoc(3600*6,"select
-				user.user_id,nickname,user.realname,user.user_id,count(*) as images
+				user.user_id,nickname,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.user_id,count(*) as images
 				from user
 					inner join gridimage_search gi using (user_id)
 				where rights IS NOT NULL $andwhere
-				group by gi.user_id
+				group by gi.user_id,gi.realname
 				order by realname");
+			$smarty->assign('what','Photographers'); //because we *can*
 		} else {
 			$users = $db->CacheGetAssoc(3600*6,"select
 				user.user_id,nickname,user.realname,user.user_id,`us`.images
@@ -125,6 +128,7 @@ if (!$smarty->is_cached($template,$cacheid))
 					inner join user_stat `us` using (user_id)
 				where rights IS NOT NULL
 				order by realname");
+			$smarty->assign('what','Contributors');
 		}
 	}
 

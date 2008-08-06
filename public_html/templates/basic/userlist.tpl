@@ -1,4 +1,5 @@
-{assign var="page_title" value="Geograph Contributors"}
+{assign var="page_title" value="Geograph $what"}
+{assign var="meta_description" value="A listing of all the $user_count $what with photos on Geograph British Isles"}
 {include file="_std_begin.tpl"}
 
 {if $where}
@@ -7,7 +8,7 @@
 <div style="float:right">Switch to <a href="/credits.php?cloud{if $whenname}&amp;when={$when}{/if}">cloud version</a> or <a href="/statistics/breakdown.php?by=user{if $whenname}&amp;when={$when}{/if}">statistics version</a>.</div>
 {/if}
 
-<h2>Geograph British Isles Photographers <small>[{$user_count}]</small></h2>
+<h2>Geograph British Isles {$what} <small>[{$user_count}]</small></h2>
 {if $whenname}
 	<h3>Submitting images March 2005 though {$whenname}</h3>
 {/if}
@@ -17,7 +18,7 @@
 
 <p class="wordnet" style="font-size:0.8em;line-height:1.4em" align="center"> 
 {foreach from=$users key=user_id item=obj}
-&nbsp;<a title="{$obj.nickname}, {$obj.images} images" {if $obj.images > 100} style="font-weight:bold"{/if} href="/profile/{$user_id}">{$obj.realname|replace:' ':'&middot;'}</a><small>&nbsp;[{$obj.images}]</small> &nbsp;
+&nbsp;<a title="{$obj.nickname|escape:'html'}, {$obj.images} images" {if $obj.images > 100} style="font-weight:bold"{/if} href="/profile/{$user_id}{if $obj.credit_realname}?a={$obj.credit_realname|escape:'url'}{/if}">{$obj.realname|escape:'html'|replace:' ':'&middot;'}</a><small>&nbsp;[{$obj.images}]</small> &nbsp;
 {/foreach} 
 </p>
  		

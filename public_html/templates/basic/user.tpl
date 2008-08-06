@@ -1,4 +1,5 @@
-{assign var="page_title" value="Geograph Contributors"}
+{assign var="page_title" value="Geograph $what"}
+{assign var="meta_description" value="A listing of all $what by nickname from Geograph British Isles"}
 {include file="_std_begin.tpl"}
 
 {if $where}
@@ -7,7 +8,7 @@
 <div style="float:right">Switch to <a href="/credits/{if $whenname}{$when}/{/if}">list version</a> or <a href="/statistics/breakdown.php?by=user{if $whenname}&amp;when={$when}{/if}">statistics version</a>.</div>
 {/if}
 
-<h2>Geograph British Isles Nicknames</h2>
+<h2>Geograph British Isles {$what} by Nickname</h2>
 {if $whenname}
 	<h3>Submitting images March 2005 though {$whenname}</h3>
 {/if}
@@ -21,7 +22,7 @@
 
 <p class="wordnet" align="justify"> 
 {foreach from=$users key=nick item=obj}
-<a style="font-size:{$obj.size}px;" title="{$obj.realname}, {$obj.images} images" href="/profile/{$obj.user_id}">{$nick|replace:' ':'&middot;'}</a>
+<a style="font-size:{$obj.size}px;" title="{$obj.realname|escape:'html'}, {$obj.images} images" href="/profile/{$obj.user_id}">{$nick|escape:'html'|replace:' ':'&middot;'}</a>
 {/foreach}
 </p>
  		
