@@ -114,7 +114,7 @@ if (!$smarty->is_cached($template,$cacheid))
 	} else {
 		if ($andwhere) {
 			$users = $db->CacheGetAssoc(3600*6,"select
-				user.user_id,nickname,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.user_id,count(*) as images
+				user.user_id,nickname,gi.realname as realname,user.realname as user_realname,user.user_id,count(*) as images
 				from user
 					inner join gridimage_search gi using (user_id)
 				where rights IS NOT NULL $andwhere
