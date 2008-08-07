@@ -450,6 +450,10 @@ div.statuscaption
 	font-size:0.7em;
 	color:silver;
 }
+div.statuscaption a
+{
+	color:silver;
+}
 
 dl.browselist
 {
