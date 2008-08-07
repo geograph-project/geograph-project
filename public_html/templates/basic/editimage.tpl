@@ -34,11 +34,9 @@
   {if $image->comment}
   <div class="caption">{$image->current_comment|escape:'html'|geographlinks}</div>
   {/if}
-  {if $isadmin or $isowner}
   <div class="statuscaption">classification:
    {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}
-   {if $image->mod_realname}(moderator: {$image->mod_realname}){/if}</div>
-  {/if}
+   {if $image->mod_realname}(moderator: <a href="/profile/{$image->moderator_id}">{$image->mod_realname}</a>){/if}</div>
 </div>
 {if $showfull}
   	{if $isowner and $image->moderation_status eq 'pending'}
