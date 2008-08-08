@@ -4,7 +4,7 @@
 
 	<h2>Memory Map Export</h2>
 
-	<p>Use this page to download a CSV file to import into Memory Map, to show squares currently with Geograph Images. See also a <a href="/gpx.php">GPX</a> download, which offers a more location specific version.</p>
+	<p>Use this page to download a CSV file to import into Memory Map, to show squares currently with Geograph Images by downloading a list of 'First Geographs'.</p>
 {dynamic}
 {if $errormsg}
 <p><b>{$errormsg}</b></p>
