@@ -19,3 +19,11 @@ CREATE TABLE `smarty_cache_page` (
   `GroupCache` varchar(255) NOT NULL,
   PRIMARY KEY  (`CacheID`)
 ) ENGINE=MyISAM;
+
+
+
+ALTER TABLE `moderation_log` DROP INDEX `user_id` ;
+
+ALTER TABLE `moderation_log` CHANGE `old_status` `old_status` ENUM( 'rejected', 'pending', 'accepted', 'geograph', '' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'rejected';
+
+ALTER TABLE `moderation_log` ADD `type` ENUM( 'dummy', 'real' ) NOT NULL DEFAULT 'dummy';

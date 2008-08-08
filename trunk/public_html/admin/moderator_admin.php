@@ -90,7 +90,7 @@ select
 	substring(max(ml.created),1,10) as last_log,
 	max(ml.created) as last_log_time
 from user 
-	left join moderation_log ml on (ml.user_id = user.user_id)
+	left join moderation_log ml on (ml.user_id = user.user_id AND ml.type = 'dummy')
 where length(rights) > 0 AND (rights != 'basic' OR role != '') $sql_where
 group by user.user_id
 order by last_log_time desc,user.user_id");

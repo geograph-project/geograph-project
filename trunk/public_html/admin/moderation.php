@@ -54,7 +54,7 @@ if (isset($_GET['gridimage_id']))
 				if ($USER->hasPerm('basic'))
 				{
 					$status = $db->Quote($status);
-					$db->Execute("REPLACE INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status, old_status='{$image->moderation_status}',created=now()");
+					$db->Execute("REPLACE INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status, old_status='{$image->moderation_status}',created=now(),type = 'dummy'");
 					print "classification $status recorded";
 				}
 				else
@@ -67,7 +67,10 @@ if (isset($_GET['gridimage_id']))
 				//we really need this not be interupted
 				ignore_user_abort(TRUE);
 				set_time_limit(3600);
-
+				
+				$status2 = $db->Quote($status);
+				$db->Execute("INSERT INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status2, old_status='{$image->moderation_status}',created=now(),type = 'real'");
+				
 				$info=$image->setModerationStatus($status, $USER->user_id);
 				echo $info;
 
@@ -171,7 +174,7 @@ Regards,
 		exit;
 	} 
 	
-	$count = $db->getRow("select count(*) as total,sum(created > date_sub(now(),interval 60 day)) as recent from moderation_log WHERE user_id = {$USER->user_id}");
+	$count = $db->getRow("select count(*) as total,sum(created > date_sub(now(),interval 60 day)) as recent from moderation_log WHERE user_id = {$USER->user_id} AND type = 'dummy'");
 	if ($count['total'] > 0) {
 		$limit = 10;
 	}
@@ -228,7 +231,7 @@ $recordSet->Close();
 
 if (!isset($_GET['moderator']) && !isset($_GET['remoderate'])) {
 
-	$count = $db->getRow("select count(*) as total,sum(created > date_sub(now(),interval 60 day)) as recent from moderation_log WHERE user_id = {$USER->user_id}");
+	$count = $db->getRow("select count(*) as total,sum(created > date_sub(now(),interval 60 day)) as recent from moderation_log WHERE user_id = {$USER->user_id} AND type='dummy'");
 	if ($count['total'] == 0) {
 		$_GET['remoderate'] = 1;
 		$limit = 25;
@@ -248,7 +251,7 @@ if (isset($_GET['moderator'])) {
 		
 	if (isset($_GET['verify'])) {
 		$sql_columns = ", new_status,moderation_log.user_id as ml_user_id,v.realname as ml_realname";
-		$sql_from = " inner join moderation_log on(moderation_log.gridimage_id=gi.gridimage_id)
+		$sql_from = " inner join moderation_log on(moderation_log.gridimage_id=gi.gridimage_id AND moderation_log.type='dummy')
 					inner join user v on(moderation_log.user_id=v.user_id)";
 		if ($mid == 0) {
 			$sql_where = "1";
