@@ -56,7 +56,7 @@ if (!empty($_GET['format']) && in_array($_GET['format'], $valid_formats))
 }
 
 $opt_expand = (!empty($_GET['expand']))?1:0;
-$opt_sortBy = ((!empty($_GET['sortBy']) && $_GET['sortBy'] == 1)?1:0;
+$opt_sortBy = (!empty($_GET['sortBy']) && $_GET['sortBy'] == 1)?1:0;
 $opt_first  = (!empty($_GET['first']))?1:0;
 $opt_noLimit  = (!empty($_GET['nolimit']))?1:0;
 $opt_when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
