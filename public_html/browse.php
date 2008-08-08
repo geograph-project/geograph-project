@@ -383,7 +383,8 @@ if ($grid_given)
 				INNER JOIN user USING(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
-				GROUP BY user_id");
+				GROUP BY user_id
+				ORDER BY user.realname");
 				foreach ($all as $row) {
 					$breakdown[$i] = array('name'=>"contributed by <b>{$row[0]}</b>",'count'=>$row[1]);
 					if ($row[1] > 20) {
