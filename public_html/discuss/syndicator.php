@@ -55,18 +55,21 @@ if (!empty($_GET['format']) && in_array($_GET['format'], $valid_formats))
 	$format=$_GET['format'];
 }
 
+$opt_expand = (!empty($_GET['expand']))?1:0;
+$opt_sortBy = ((!empty($_GET['sortBy']) && $_GET['sortBy'] == 1)?1:0;
+$opt_first  = (!empty($_GET['first']))?1:0;
+$opt_noLimit  = (!empty($_GET['nolimit']))?1:0;
+$opt_when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
+
+
 $extension = ($format == 'KML')?'kml':'xml';
 
-if (!empty($_GET['first'])) {
-	$extension = "first.$extension";
-}
-
 if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-t{$_GET['topic']}-{$format}".!empty($_GET['expand']).".$extension";
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-t{$_GET['topic']}-{$format}-{$opt_expand}-{$opt_noLimit}-{$opt_when}.$extension";
 } elseif (!empty($_GET['forum']) && is_numeric($_GET['forum'])) {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-f{$_GET['forum']}-{$format}-".(($_GET['sortBy'] == 1)?1:0).".$extension";
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-f{$_GET['forum']}-{$format}-{$opt_sortBy}-{$opt_first}-{$opt_when}.$extension";
 } else {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-{$format}-".((!empty($_GET['sortBy']) && $_GET['sortBy'] == 1)?1:0).".$extension";
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-{$format}-{$opt_sortBy}-{$opt_first}-{$opt_when}.$extension";
 }
 
 $rss = new UniversalFeedCreator();
@@ -90,12 +93,14 @@ if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
 
 	$hash = $posts % $perpage;
 	$page = floor($posts / $perpage);
-
+	
+	$andwhere = $opt_when?" AND post_time > '$opt_when'":'';
+	
 $sql="SELECT *
 FROM `geobb_posts`
-WHERE `topic_id` = {$_GET['topic']}
+WHERE `topic_id` = {$_GET['topic']} $andwhere
 ORDER BY `post_time` DESC";
-if (!$_GET['nolimit']) {
+if (!$opt_noLimit) {
 	$sql .= " LIMIT 15";
 }
 	$recordSet = &$db->Execute($sql);
@@ -120,7 +125,7 @@ if (!$_GET['nolimit']) {
 
 		//send description if more verbose than the snippet title
 		if ($title != $recordSet->fields['post_text'])
-			$item->description = GeographLinks($recordSet->fields['post_text'],!empty($_GET['expand']));
+			$item->description = GeographLinks($recordSet->fields['post_text'],$opt_expand);
 
 		$item->date = strtotime($recordSet->fields['post_time']);
 		//$item->source = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vthread&amp;topic={$_GET['topic']}";
@@ -158,17 +163,18 @@ if (!$_GET['nolimit']) {
 		$title = '';
 		$synd = '';
 		$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/";
-		$sql_where = 'WHERE geobb_topics.forum_id!=5'; //we exclude Grid Ref discussions...
+		$sql_where = 'WHERE geobb_topics.forum_id NOT IN (5,11)'; //we exclude Grid Ref discussions and Gallery...
 	}
-
-	if (!empty($_GET['first'])) {
+	$andwhere .= $opt_when?" AND post_time > '$opt_when'":'';
+	
+	if ($opt_first) {
 		$rss->title = "Geograph.org.uk Forum $title :: New Topics";
 		$rss->desciption = 'New Geograph Topics';
 		$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format&amp;first=1".$synd;
 		$sql_order= 'geobb_topics.topic_id DESC';
 		$sql_where .= " GROUP BY geobb_topics.topic_id";
 		$sql_join = "geobb_topics.topic_id=geobb_posts.topic_id";
-	} elseif (!empty($_GET['sortBy']) && $_GET['sortBy'] == 1) {
+	} elseif ($opt_sortBy) {
 		$rss->title = "Geograph.org.uk Forum $title :: Latest Topics";
 		$rss->description = 'Latest Geograph Topics';
 		$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format&amp;sortBy=1".$synd;
