@@ -2,12 +2,29 @@
 {assign var="page_title" value="Edit::$title"}
 
 {include file="_std_begin.tpl"}
+<script type="text/javascript">{literal}
+function unloadMess() {
+	var ele = document.forms['theForm'].elements['content'];
+	if (ele.value == ele.defaultValue) {
+		return;
+	}
+	return "**************************\n\nYou have unsaved changes the content box.\n\n**************************\n";
+}
+window.onbeforeunload=unloadMess;
 
+function cancelMess() {
+	window.onbeforeunload=null;
+}
+function setupSubmitForm() {
+	AttachEvent(document.forms['theForm'],'submit',cancelMess,false);
+}
+AttachEvent(window,'load',setupSubmitForm,false);
+{/literal}</script>
 {if $error}
 	<div><span class="formerror">{$error}</span></div>
 {/if}
 
-<form class="simpleform" action="/article/edit.php" method="post">
+<form class="simpleform" action="/article/edit.php" method="post" name="theForm">
 
 <input type="hidden" name="article_id" value="{$article_id|escape:"html"}"/>
 

@@ -27,3 +27,25 @@ ALTER TABLE `moderation_log` DROP INDEX `user_id` ;
 ALTER TABLE `moderation_log` CHANGE `old_status` `old_status` ENUM( 'rejected', 'pending', 'accepted', 'geograph', '' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'rejected';
 
 ALTER TABLE `moderation_log` ADD `type` ENUM( 'dummy', 'real' ) NOT NULL DEFAULT 'dummy';
+
+
+
+
+CREATE TABLE `gridimage_link` (
+  `gridimage_link_id` int(10) unsigned NOT NULL auto_increment,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `HTTP_Status` smallint(5) unsigned NOT NULL,
+  `HTTP_Last_Modified` varchar(64) NOT NULL,
+  `HTTP_Location` varchar(255) NOT NULL,
+  `match_score` smallint(6) NOT NULL,
+  `page_title` varchar(255) NOT NULL,
+  `last_checked` datetime NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`gridimage_link_id`),
+  KEY `gridimage_id` (`gridimage_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+
+
