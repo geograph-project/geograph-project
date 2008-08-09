@@ -29,7 +29,7 @@ document.write('<div style="border: 1px solid lightgrey;">Marked Images['+(split
 function unloadMess() {
 	var ele = document.forms['postMsg'].elements['postText'];
 	if (ele.value == ele.defaultValue) {
-		return null;
+		return;
 	}
 	return "**************************\n\nYou have unsaved changes in the message box.\n\n**************************\n";
 }
