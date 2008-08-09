@@ -14,6 +14,13 @@
 	ol.results ol.inner {
 		margin-left:-30px;
 	}
+	.hidediv {
+		margin-left:20px; 
+		margin-bottom: 20px;
+		border:2px solid lightgrey; 
+		padding:2px;
+		font-weight:bold
+	}
 </style>
 
   <script type="text/javascript">
@@ -34,13 +41,14 @@
 
 {/literal}
 
+{if $q}<div style="float:right;position:relative">Not getting the results you expect? <a href="/discuss/?action=search&amp;searchFor={$q|escape:'url'}&amp;go=Find">Try the old search engine</a></div>{/if}
+
 <h2><a href="/finder/">Finder</a> :: Discussions <sup style="color:red">beta</sup></h2>
 
 <form action="{$script_name}" method="get" onsubmit="focusBox()">
 	<p>
 		<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 		<input type="submit" value="Search"/>
-		{if $q}Not getting the results you expect? <a href="/discuss/?action=search&amp;searchFor={$q|escape:'url'}&amp;go=Find">Try the old search engine</a>{/if}
 	</p>
 </form>
 
@@ -71,7 +79,7 @@
 	<div style="float:right">{$item.post_time|date_format:"%a, %e %b %Y"}</div>
 	<small style="color:gray">{$item.excerpt|replace:'<br>':' '} <span class="nowrap">[post by <a href="/profile/{$item.poster_id}">{$item.poster_name|escape:'html'}</a>]</span></small>
 	{if count($item.results)}
-		<div id="hide{$key}" style="margin-left:20px">... and <a href="javascript:void(show_tree({$key}));">{$item.result_count} more results from this thread.</a></div>
+		<div id="hide{$key}" class="hidediv">... and <a href="javascript:void(show_tree({$key}));">{$item.result_count} more results from this thread.</a></div>
 		<div id="show{$key}" style="display:none">
 			<ol type="i" class="inner">
 			{foreach from=$item.results item=item2 key=key2}
