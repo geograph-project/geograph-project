@@ -44,6 +44,9 @@ for details of the various measures. Will be more accurate when limited to one c
 <h3>Forum Posts</h3>
 <p>We currently have {$post.count|thousends} posts, therefore at the current rate of {$post.average_r} posts a day, we will reach {$post.next|thousends} in about {$post.days_r} days time!</p>
 
+<h3>Change Suggestions</h3>
+<p>Contributors have created {$ticket.count|thousends} tickets, therefore at the current rate of {$ticket.average_r} new tickets a day, we will reach {$ticket.next|thousends} in about {$ticket.days_r} days time!</p>
+
 
 <h3>New Image Searches</h3>
 <p>Visitors have created {$searches.count|thousends} searches, therefore at the current rate of {$searches.average_r} new searches a day, we will reach {$searches.next|thousends} in about {$searches.days_r} days time!</p>

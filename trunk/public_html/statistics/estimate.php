@@ -74,6 +74,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign("geograph",$geograph);
 	
 	
+	$sql = "select substring(suggested,1,10) as d ,count(*) as c from gridimage_ticket where suggested > '$beginday' AND suggested < '$today' group by substring(suggested,1,10)";
+	$sql2 = "select count(*) from gridimage_ticket";
+		
+	$ticket = calc($sql,$sql2,100,'Tickets');
+		
+	$smarty->assign("ticket",$ticket);
+	
+	
 	$sql = "select completed as d ,count(*) as c from hectad_complete where completed > '$beginday' AND completed < '$today' $andri group by completed";
 	$sql2 = "select count(*) from hectad_complete $whereri";
 		
