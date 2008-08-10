@@ -68,7 +68,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$sql = "SELECT 
 	l.*
-	FROM gridimage_link l 
+	FROM gridimage_link l $tables
 	WHERE HTTP_Status != 0 $andwhere
 	ORDER BY last_checked desc
 	LIMIT 100";
@@ -85,6 +85,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	'4' => 'Possible Errors', 
 	'5' => 'Any Error' ));
 	$smarty->assign("l",$l);
+	$smarty->assign("u",$u);
 	
 	$smarty->assign('codes', array(
 	200 => "OK",
@@ -110,10 +111,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	506 => "Variant Also Varies",
 	600 => "Unable to contact Server",
 	601 => "Non HTTP?" ));
-} 
+} else {
+	$smarty->assign("u",$u);
+}
 
 
 $smarty->display($template, $cacheid);
 
-	
 ?>
