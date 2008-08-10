@@ -34,16 +34,16 @@ return false;
 }
 
 function pasteSel() {
-if(document.getSelection) selection=document.getSelection();
-else if(document.selection) selection=document.selection.createRange().text;
-else if(window.getSelection) selection=window.getSelection();
-else selection='';
+if(document.getSelection) window.selection=document.getSelection();
+else if(document.selection) window.selection=document.selection.createRange().text;
+else if(window.getSelection) window.selection=window.getSelection();
+else window.selection='';
 }
 
 function getQuotation() {
 var bw=new checkBrowser();
 if (bw.ns6 || bw.ie5 || bw.ie6 || bw.ie7 || bw.ns4 || bw.safari || bw.opr) {
-document.writeln('<a href="#" onclick="return paste_strinL(selection,1)" onMouseMove="pasteSel()">{$l_quoting}<'+'/a>');
+document.writeln('<a href="#" onclick="return paste_strinL(window.selection,1)" onMouseMove="pasteSel()">{$l_quoting}<'+'/a>');
 }
 }
 
