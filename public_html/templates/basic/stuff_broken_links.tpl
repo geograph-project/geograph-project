@@ -11,6 +11,24 @@
     <select name="l">
     	{html_options options=$levels selected=$l}
     </select>
+    {dynamic}
+    {if $user->registered}
+	<select name="u">
+		{if $u && $u != $user->user_id}
+			<option value="{$u}">Just for {$profile->realname}</option>
+		{/if}
+		<option value="{$user->user_id}">Just for {$user->realname}</option>
+		<option value="" {if !$u} selected{/if}>For Everyone</option>
+	</select>
+    {else}
+	{if $u}
+	<select name="u">
+		<option value="{$u}" selected>Just for {$profile->realname}</option>
+		<option value="">For Everyone</option>
+	</select>
+	{/if}
+    {/if}
+    {/dynamic}
     <input type="submit" value="Go"/></p></form>
 </form>
 
