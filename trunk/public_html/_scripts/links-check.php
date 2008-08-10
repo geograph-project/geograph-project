@@ -42,14 +42,13 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 $sql = "
 SELECT
-	gridimage_link_id,url,HTTP_Last_Modified,count(*) as uses
+	gridimage_link_id,gridimage_id,url,HTTP_Last_Modified,count(*) as uses
 FROM
 	gridimage_link l
 WHERE
 	last_checked < date_sub(now(), interval 90 day)
 GROUP BY 
 	url
-ORDER BY RAND()
 LIMIT 10";
 
 
@@ -59,12 +58,15 @@ $recordSet = &$db->Execute("$sql");
 $ua = 'Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)';
 ini_set('user_agent',$ua);
 $bindts = $db->BindTimeStamp(time());	
-	
+$done_urls = array();
 while (!$recordSet->EOF) 
 {
 	$rs = $recordSet->fields;
 	$url = $rs['url'];
-		
+	if (isset($done_urls[$url])) {
+		$recordSet->MoveNext();
+		continue;
+	}
 	if ($rs['HTTP_Last_Modified']) {
 		ini_set('user_agent',"$ua\r\nIf-Modified-Since: ".$rs['HTTP_Last_Modified']);
 	} else {
@@ -89,13 +91,39 @@ while (!$recordSet->EOF)
 	
 	if ($http_response_header) {
 		$updates['HTTP_Status'] = 601;
+		$heads = array(); $i=-1;
 		foreach ($http_response_header as $c => $header) {
-			if (preg_match('/HTTP\/\d+.\d+ (\d+) (.*)/',$header,$m)) {
-				$updates['HTTP_Status'] = $m[1];
-			} elseif(preg_match('/Location:(.*)/i',$header,$m)) {
-				$updates['HTTP_Location'] = trim($m[1]);
-			} elseif(preg_match('/Last-Modified:(.*)/i',$header,$m)) {
-				$updates['HTTP_Last_Modified'] = trim($m[1]);
+			if (preg_match('/^HTTP\/\d+.\d+ (\d+) (.*)/',$header,$m)) {
+				$i++;
+				$heads[$i] = array();
+				$heads[$i]['HTTP_Status'] = $m[1];
+			} elseif(preg_match('/^Location:(.*)/i',$header,$m)) {
+				$heads[$i]['HTTP_Location'] = trim($m[1]);
+			} elseif(preg_match('/^Last-Modified:(.*)/i',$header,$m)) {
+				$heads[$i]['HTTP_Last_Modified'] = trim($m[1]);
+			}
+		}
+		if (count($heads) == 0) {
+		} else {
+			if (count($heads) > 1) {
+				//need to create additional links... 
+				
+				for($i =1;$i<count($heads);$i++) {
+					$row = array();
+					$row['gridimage_id'] = $rs['gridimage_id'];
+					$row['created'] = $bindts;
+					$row['last_checked'] = $bindts;
+					$row['url'] = $heads[$i-1]['HTTP_Location'];
+					foreach ($heads[$i] as $key => $value) {
+						$row[$key] = $value;
+					}
+					print "CREATED<pre>".print_r($row,1)."</pre>";
+					$db->Execute('INSERT INTO gridimage_link SET `'.implode('` = ?,`',array_keys($row)).'` = ?',array_values($row));
+			
+				}
+			} 
+			foreach ($heads[0] as $key => $value) {
+				$updates[$key] = $value;
 			}
 		}
 		if ($content && preg_match('/<title>(.*?)<\/title>/is',$content,$m)) {
@@ -123,9 +151,9 @@ while (!$recordSet->EOF)
 	
 	print "<pre>".$sql."</pre>";
 	print "<pre>".print_r($updates,1)."</pre>";
-	exit;
 	
 	$done++;
+	$done_urls[$url]=1;
 	
 	$recordSet->MoveNext();
 }

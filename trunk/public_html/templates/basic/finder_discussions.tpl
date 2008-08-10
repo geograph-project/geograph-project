@@ -12,6 +12,7 @@
 		margin-bottom:6px;
 	}
 	ol.results ol.inner {
+		border-top:1px solid lightgrey;
 		margin-left:-30px;
 	}
 	.hidediv {
