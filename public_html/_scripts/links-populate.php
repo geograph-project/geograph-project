@@ -40,7 +40,7 @@ set_time_limit(3600*24);
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-if (0) {
+if (empty($_GET['add'])) {
 $sql = "
 SELECT
 	gi.gridimage_id,comment
@@ -54,7 +54,7 @@ AND
 	l.gridimage_link_id IS NULL 
 GROUP BY 
 	gi.gridimage_id
-LIMIT 100";
+LIMIT 1000";
 } else {
 $sql = "
 SELECT
