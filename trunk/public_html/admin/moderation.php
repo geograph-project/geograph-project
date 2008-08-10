@@ -335,6 +335,11 @@ $c = $images->_getImagesBySql($sql);
 $realname = array();
 foreach ($images->images as $i => $image) {
 	$token=new Token;
+	$fix6fig = 0;
+	if ($image->use6fig && ($image->natgrlen > 6 || $image->viewpoint_grlen > 6)) {
+		$fix6fig = 1;
+		$images->images[$i]->use6fig = 0;
+	}
 	$token->setValue("g", $images->images[$i]->getSubjectGridref(true));
 	if ($image->viewpoint_eastings) {
 		//note $image DOESNT work non php4, must use $images->images[$i]
@@ -359,6 +364,11 @@ foreach ($images->images as $i => $image) {
 		$token->setValue("v", $image->view_direction);
 	}
 	$images->images[$i]->reopenmaptoken = $token->getToken();
+	if ($fix6fig) {
+		$images->images[$i]->subject_gridref = '';//kill the cache so will be done again with use6fig;
+		$images->images[$i]->photographer_gridref = '';
+		$images->images[$i]->use6fig = 1;
+	}
 	
 	$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$image->gridsquare_id}");
 
