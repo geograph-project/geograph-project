@@ -17,7 +17,7 @@
 					<div class="statuscaption">classification: {$image->moderation_status} {if $image->ftf}(first){/if}</div>
 				{/if}
 
-				<div style="font-size:0.7em"><br/>Insert: <a href="javascript:paste_strinL('[[[{$image->gridimage_id}]]]',0)">Thumbnail</a> or <a href="javascript:paste_strinL('[[{$image->gridimage_id}]]',0)">Text Link</a></div>
+				<div style="font-size:0.7em"><br/>Insert: <a href="#" onclick="return paste_strinL('[[[{$image->gridimage_id}]]]',0)">Thumbnail</a> or <a href="#" onclick="return paste_strinL('[[{$image->gridimage_id}]]',0)">Text Link</a></div>
 			</div>
 
 		{if $smarty.foreach.i.iteration%3 == 0 && $smarty.foreach.i.iteration < count($images)}
