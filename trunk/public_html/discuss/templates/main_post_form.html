@@ -4,17 +4,17 @@
 
 <div class=txt style="text-align:right"> <b><a href="/help/bbcodes" target="_blank">[Help - How to format posts including inserting images and links]</a></b> </div>
 
-<a title="Insert bold tags" href="JavaScript:paste_strinL('[b][/b]',0)" onMouseOver="window.status='Bold Style'; return true" onMouseOut="window.status=''; return true"><img src="{$static_url}/img/button_bold.gif" width="23" height="22" alt="Bold Style" border="0"></a>&nbsp;
+<a title="Insert bold tags" href="#" onclick="return paste_strinL('[b][/b]',0)" onMouseOver="window.status='Bold Style'; return true" onMouseOut="window.status=''; return true"><img src="{$static_url}/img/button_bold.gif" width="23" height="22" alt="Bold Style" border="0"></a>&nbsp;
 
-<a title="Insert italic tags"  href="JavaScript:paste_strinL('[i][/i]',0)" onMouseOver="window.status='Italic Style'; return true" onMouseOut="window.status=''; return true"><img src="{$static_url}/img/button_italic.gif" width="23" height="22" alt="Italic Style" border="0"></a>&nbsp;
+<a title="Insert italic tags"  href="#" onclick="return paste_strinL('[i][/i]',0)" onMouseOver="window.status='Italic Style'; return true" onMouseOut="window.status=''; return true"><img src="{$static_url}/img/button_italic.gif" width="23" height="22" alt="Italic Style" border="0"></a>&nbsp;
 
-<a title="Insert underline tags" href="JavaScript:paste_strinL('[u][/u]',0)" onMouseOver="window.status='Underlined Style'; return true" onMouseOut="window.status=''; return true"><img src="{$static_url}/img/button_underlined.gif" width="23" height="22" alt="Underlined Style" border="0"></a>&nbsp;
+<a title="Insert underline tags" href="#" onclick="return paste_strinL('[u][/u]',0)" onMouseOver="window.status='Underlined Style'; return true" onMouseOut="window.status=''; return true"><img src="{$static_url}/img/button_underlined.gif" width="23" height="22" alt="Underlined Style" border="0"></a>&nbsp;
 
-<a title="Insert image link tags" href="JavaScript:paste_strinL('[img][/img]',0)" onMouseOver="window.status='Image Link'; return true" onMouseOut="window.status=''; return true"><img src="{$static_url}/img/button_image.gif" width="23" height="22" alt="Image Link" border="0"></a>&nbsp;
+<a title="Insert image link tags" href="#" onclick="return paste_strinL('[img][/img]',0)" onMouseOver="window.status='Image Link'; return true" onMouseOut="window.status=''; return true"><img src="{$static_url}/img/button_image.gif" width="23" height="22" alt="Image Link" border="0"></a>&nbsp;
 
-<a title="Insert URL link tags" href="JavaScript:paste_strinL('[url=][/url]',0)" onMouseOver="window.status='Insert URL'; return true" onMouseOut="window.status=''; return true"><img src="{$static_url}/img/button_url.gif" width="23" height="22" alt="Insert URL" border="0"></a>&nbsp;
+<a title="Insert URL link tags" href="#" onclick="return paste_strinL('[url=][/url]',0)" onMouseOver="window.status='Insert URL'; return true" onMouseOut="window.status=''; return true"><img src="{$static_url}/img/button_url.gif" width="23" height="22" alt="Insert URL" border="0"></a>&nbsp;
 
-<a title="Insert email link tags" href="JavaScript:paste_strinL('[email=][/email]',0)" onMouseOver="window.status='Email Link'; return true" onMouseOut="window.status=''; return true"><img src="{$static_url}/img/button_email.gif" width="23" height="22" alt="Email Link" border="0"></a>&nbsp;
+<a title="Insert email link tags" href="#" onclick="return paste_strinL('[email=][/email]',0)" onMouseOver="window.status='Email Link'; return true" onMouseOut="window.status=''; return true"><img src="{$static_url}/img/button_email.gif" width="23" height="22" alt="Email Link" border="0"></a>&nbsp;
 
 
 <input type="checkbox" name="disbbcode" id="disbbcode" value="on"><label for="disbbcode">{$l_disableBbCode}</label>
@@ -23,7 +23,7 @@
 current = readCookie('markedImages')
 if (current && current != '') {
 splited = current.commatrim().split(',');
-document.write('<div style="border: 1px solid lightgrey;">Marked Images['+(splited.length+0)+']: <a title="Insert marked image list" href="JavaScript:paste_strinL(returnMarkedImages(),0)" onMouseOver="window.status=\'Insert marked image list\'; return true" onMouseOut="window.status=\'\'; return true"><b>Insert into Post</b></a> (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear</a>)</div>');
+document.write('<div style="border: 1px solid lightgrey;">Marked Images['+(splited.length+0)+']: <a title="Insert marked image list" href="#" onclick="return paste_strinL(returnMarkedImages(),0)" onMouseOver="window.status=\'Insert marked image list\'; return true" onMouseOut="window.status=\'\'; return true"><b>Insert into Post</b></a> (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear</a>)</div>');
 }
 
 function unloadMess() {

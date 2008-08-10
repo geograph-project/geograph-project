@@ -30,6 +30,7 @@ input.value=input.value+strinL;
 }
 else alert('{$l_accessDenied}');
 }
+return false;
 }
 
 function pasteSel() {
@@ -42,7 +43,7 @@ else selection='';
 function getQuotation() {
 var bw=new checkBrowser();
 if (bw.ns6 || bw.ie5 || bw.ie6 || bw.ie7 || bw.ns4 || bw.safari || bw.opr) {
-document.writeln('<a href="javascript:paste_strinL(selection,1)" onMouseMove="pasteSel()">{$l_quoting}<'+'/a>');
+document.writeln('<a href="#" onclick="return paste_strinL(selection,1)" onMouseMove="pasteSel()">{$l_quoting}<'+'/a>');
 }
 }
 
