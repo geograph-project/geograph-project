@@ -98,7 +98,11 @@ while (!$recordSet->EOF)
 				$heads[$i] = array();
 				$heads[$i]['HTTP_Status'] = $m[1];
 			} elseif(preg_match('/^Location:(.*)/i',$header,$m)) {
-				$heads[$i]['HTTP_Location'] = trim($m[1]);
+				if (strpos(trim($m[1]),'http://') ===0) {
+					$heads[$i]['HTTP_Location'] = trim($m[1]);
+				} else {
+					$heads[$i]['HTTP_Location'] = InternetCombineUrl($url, trim($m[1]));
+				}
 			} elseif(preg_match('/^Last-Modified:(.*)/i',$header,$m)) {
 				$heads[$i]['HTTP_Last_Modified'] = trim($m[1]);
 			}
@@ -135,9 +139,11 @@ while (!$recordSet->EOF)
 	
 	
 	if ($rs['uses'] == 1) {
-		$where = "gridimage_link_id = {$rs['gridimage_link_id']}";
+		$where = "gridimage_link_id = ?";
+		$where_value = $rs['gridimage_link_id'];
 	} else {
-		$where = "url = ".$db->Quote($url);
+		$where = "url = ?".
+		$where_value = $url;
 	}
 	
 	if ($rs['HTTP_Last_Modified'] && $updates['HTTP_Status'] == 304) {
@@ -146,7 +152,7 @@ while (!$recordSet->EOF)
 	} else {
 		$sql = '';
 		$updates['last_checked'] = $bindts;
-		$db->Execute('UPDATE gridimage_link SET `'.implode('` = ?,`',array_keys($updates))."` = ? WHERE $where",array_values($updates));
+		$db->Execute('UPDATE gridimage_link SET `'.implode('` = ?,`',array_keys($updates))."` = ? WHERE $where",array_merge(array_values($updates),array($where_value)));
 	}
 	
 	print "<pre>".$sql."</pre>";
@@ -163,7 +169,51 @@ print "<h2>DONE</h2>";
 
 if ($done) {
 	print " <A href=\"?\">Continue...</a>";
-	#####print "<script>setTimeout(\"window.location.href = window.location.href\",1000);</script>";
+	print "<script>setTimeout(\"window.location.href = window.location.href\",4000);</script>";
 }
+
+
+function InternetCombineUrl($absolute, $relative) {
+	if (preg_match('/=nolink$/',$relative)) {
+		return 'javascript:void(0);';
+	}
+	extract(parse_url($absolute));
+	if($relative{0} == '/') {
+		$cparts = array_filter(explode("/", $relative));
+	}
+	else {
+		$aparts = array_filter(explode("/", $path));
+		$rparts = array_filter(explode("/", $relative));
+		$cparts = array_merge($aparts, $rparts);
+		foreach($cparts as $i => $part) {
+			if($part == '.') {
+				$cparts[$i] = null;
+			}
+			if($part == '..') {
+				$cparts[$i - 1] = null;
+				$cparts[$i] = null;
+			}
+		}
+		$cparts = array_filter($cparts);
+	}
+	$path = implode("/", $cparts);
+	$url = "";
+	if($scheme) {
+		$url = "$scheme://";
+	}
+	if($user) {
+		$url .= "$user";
+		if($pass) {
+			$url .= ":$pass";
+		}
+		$url .= "@";
+	}
+	if($host) {
+		$url .= "$host/";
+	}
+	$url .= $path;
+	return $url;
+}
+
 
 ?>
