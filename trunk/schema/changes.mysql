@@ -49,3 +49,17 @@ CREATE TABLE `gridimage_link` (
 
 
 
+
+ALTER TABLE `gridimage_link` ADD `next_check` DATETIME NOT NULL AFTER `last_checked` ;
+
+
+
+UPDATE `gridimage_link` SET next_check = date_add(last_checked,interval 90 day) WHERE HTTP_Status = 200;
+
+UPDATE `gridimage_link` SET next_check = date_add(last_checked,interval 10 day) WHERE HTTP_Status > 0 AND HTTP_Status != 200;
+
+
+
+
+
+
