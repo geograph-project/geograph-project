@@ -74,12 +74,11 @@ while (!$recordSet->EOF)
 		$recordSet->MoveNext();
 		continue;
 	}
+	$user_agent = "$ua\r\nReferer: http://{$_SERVER['HTTP_HOST']/photo/{$rs['gridimage_id']}";
 	if ($rs['HTTP_Last_Modified']) {
-		ini_set('user_agent',"$ua\r\nIf-Modified-Since: ".$rs['HTTP_Last_Modified']);
-	} else {
-		ini_set('user_agent',$ua);
-	}
-	
+		$user_agent .= "\r\nIf-Modified-Since: ".$rs['HTTP_Last_Modified'];
+	} 
+	ini_set('user_agent',$user_agent);
 	
 	$content = '';
 	$updates = array();
