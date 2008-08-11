@@ -29,10 +29,10 @@
   	{/if}
   	<div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getFull()}</a></div>
   {/if}
-  <div class="caption"><b>{$image->current_title|escape:'html'}</b> by {$image->realname}{if $isowner} (<a href="/licence.php?id={$image->gridimage_id}">change credit</a>){/if}</div>
+  <div class="caption"><b>{$image->current_title|escape:'html'}</b> by <a href="{$image->profile_link}">{$image->realname}</a>{if $isowner} (<a href="/licence.php?id={$image->gridimage_id}">change credit</a>){/if}</div>
   
   {if $image->comment}
-  <div class="caption">{$image->current_comment|escape:'html'|geographlinks}</div>
+  <div class="caption" style="border:1px dotted lightgrey;">{$image->current_comment|escape:'html'|geographlinks}</div>
   {/if}
   <div class="statuscaption">classification:
    {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}
@@ -180,7 +180,7 @@
 
 	
 
-	{if $ticket->changes}
+	{if $ticket->changes && ($isadmin or $isowner or ($ticket->user_id eq $user->user_id and $ticket->notify=='suggestor') )}
 
 		<div class="ticketfields" style="padding-bottom:3px;margin-bottom:3px;border-bottom:1px solid gray">
 		{foreach from=$ticket->changes item=item}
@@ -237,6 +237,7 @@
 		</div>
 	{/if}
 	
+	{if ($isadmin or $isowner or ($ticket->user_id eq $user->user_id and $ticket->notify=='suggestor') )}
 	<div class="ticketnotes">
 		<div class="ticketnote">{$ticket->notes|escape:'html'|geographlinks|replace:'Auto-generated ticket, as a result of Moderation. Rejecting this image because:':'<span style="color:gray">Auto-generated ticket, as a result of Moderation. Rejecting this image because:</span><br/>'}</div>
 	
@@ -264,6 +265,7 @@
 	
 
 	</div>
+	{/if}
 	
 	{if ($isadmin or $isowner or ($ticket->user_id eq $user->user_id and $ticket->notify=='suggestor') ) and ($ticket->status ne "closed")}
 		{assign var="ticketsforcomments" value=1}
