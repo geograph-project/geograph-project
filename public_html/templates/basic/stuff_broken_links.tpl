@@ -49,7 +49,7 @@
 		{assign var="HTTP_Status" value=$item.HTTP_Status}
 	<tr>
 		<td sortvalue="{$item.gridimage_id}" align="right">[[<a href="/photo/{$item.gridimage_id}">{$item.gridimage_id}</a>]] <a href="/editimage.php?id={$item.gridimage_id}">E</a></td>
-		<td sortvalue="{$item.url|escape:'html'}">{external href=$item.url}</td>
+		<td sortvalue="{$item.url|escape:'html'}">{external href=$item.url text=$item.url|truncate:90}</td>
 		<td><b>{$item.HTTP_Status}</b> <small>{$codes.$HTTP_Status}</small></td>
 		<td sortvalue="{$item.last_checked}" style="font-size:0.8em">{$item.last_checked|date_format:"%a, %e %b %Y"}</td>
 		<td style="font-size:0.8em">
