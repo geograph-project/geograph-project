@@ -30,6 +30,10 @@ $smarty = new GeographPage;
 
 $template='stuff_broken_links.tpl';
 
+if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
+	$_GET['u'] = $USER->user_id;
+}
+
 $u = (isset($_GET['u']) && is_numeric($_GET['u']) && $_GET['u'] == $USER->user_id)?intval($_GET['u']):0;
 
 $l = (isset($_GET['l']) && is_numeric($_GET['l']))?intval($_GET['l']):3;
