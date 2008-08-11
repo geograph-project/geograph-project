@@ -37,9 +37,9 @@
 <table class="report sortable" id="reportlist" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5" style="font-size:0.9em">
 <thead>
 	<tr>
-		<td>Image</td>
-		<td>URL</td>
-		<td>Error</td>
+		<td>Image(s)</td>
+		<td>URL & Error</td>
+		<td>Code</td>
 		<td>Checked</td>
 		<td>Info</td>
 	</tr>
@@ -48,10 +48,17 @@
 	{foreach from=$table item=item}
 		{assign var="HTTP_Status" value=$item.HTTP_Status}
 	<tr>
-		<td sortvalue="{$item.gridimage_id}" align="right">[[<a href="/photo/{$item.gridimage_id}">{$item.gridimage_id}</a>]] <a href="/editimage.php?id={$item.gridimage_id}">E</a></td>
-		<td sortvalue="{$item.url|escape:'html'}">{external href=$item.url text=$item.url|truncate:90}</td>
-		<td><b>{$item.HTTP_Status}</b> <small>{$codes.$HTTP_Status}</small></td>
-		<td sortvalue="{$item.last_checked}" style="font-size:0.8em">{$item.last_checked|date_format:"%a, %e %b %Y"}</td>
+		<td sortvalue="{$item.gridimage_id}" align="right">
+			{if $item.images > 1}
+				<a href="/editimage.php?id={$item.gridimage_id}">{$item.ids|replace:',':'<br/>'}</a>
+			{else}
+				<a href="/editimage.php?id={$item.gridimage_id}">{$item.gridimage_id}</a>
+			{/if}
+		</td>
+		<td sortvalue="{$item.url|escape:'html'}">{external href=$item.url text=$item.url|truncate:90|regex_replace:'/\/\/([\w\.-]+)/':'//<b>$1</b>'}<small><br/>
+		<b>{$item.HTTP_Status}</b> {$codes.$HTTP_Status}</small></td>
+		<td>{$item.HTTP_Status}</td>
+		<td sortvalue="{$item.last_checked}" style="font-size:0.8em">{$item.last_checked|date_format:"%e %b %Y"}</td>
 		<td style="font-size:0.8em">
 			{if $item.HTTP_Location}
 				Server reports {external href=$item.HTTP_Location text="new location"}

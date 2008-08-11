@@ -58,7 +58,7 @@ LIMIT 1000";
 } else {
 $sql = "
 SELECT
-	gi.gridimage_id,comment,gi.upd_timestamp, max(l.created) as last_link
+	gi.gridimage_id,comment,gi.upd_timestamp, max(l.created) as last_link,group_concat(url separator ' ') as urls
 FROM
 	gridimage_search gi
 INNER JOIN
@@ -79,7 +79,6 @@ $bindts = $db->BindTimeStamp(time());
 	
 while (!$recordSet->EOF) 
 {
-	$recordSet->fields['comment'] = $recordSet->fields['comment'] . " " . $recordSet->fields['comment'];
 	preg_match_all('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/',$recordSet->fields['comment'],$m1);
 	
 	preg_match_all('/(?<![\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/',$recordSet->fields['comment'],$m2);
@@ -91,6 +90,13 @@ while (!$recordSet->EOF)
 	
 	$all = array_unique(array_merge($m1[1],$m2[1]));
 	
+	if (!empty($recordSet->fields['urls'])) {
+		foreach (explode(' ',$recordSet->fields['urls']) as $url) {
+			$urls[$url] = 1;
+		} 
+	} else {
+		$urls = array();
+	}
 	
 	foreach ($all as $url) {
 		if (strpos($url,'http://') !== 0) {
@@ -123,10 +129,23 @@ while (!$recordSet->EOF)
 				created = NOW()";
 			$db->Execute("$sql");
 		}
-		
-		
+		if (isset($urls[$url])) {
+			unset($urls[$url]);
+		}
 		
 	}
+	
+	if (count($urls)) {
+		foreach ($urls as $url => $dummy) {
+			print "<BR>DELETING: $url from {$recordSet->fields['gridimage_id']}<BR>";
+			$qurl = $db->Quote($url);
+			$sql = "DELETE FROM gridimage_link WHERE 
+				gridimage_id = {$recordSet->fields['gridimage_id']} AND 
+				url = $qurl";
+			$db->Execute("$sql");
+		}
+	}
+	
 	print "{$recordSet->fields['gridimage_id']} ";
 	$done++;
 	
