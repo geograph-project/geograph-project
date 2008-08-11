@@ -99,7 +99,7 @@ while (!$recordSet->EOF)
 		$updates['HTTP_Status'] = 601;
 		$heads = array(); $i=-1;
 		foreach ($http_response_header as $c => $header) {
-			if (preg_match('/^HTTP\/\d+.\d+ (\d+) (.*)/',$header,$m)) {
+			if (preg_match('/^HTTP\/\d+.\d+ +(\d+)/i',$header,$m)) {
 				$i++;
 				$heads[$i] = array();
 				$heads[$i]['HTTP_Status'] = $m[1];
