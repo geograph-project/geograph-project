@@ -139,6 +139,9 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 	$sql = "SELECT COUNT(*) FROM kmlcache WHERE rendered = 0";
 	calc("Superlayers tiles to update",$sql);
 	
+	$sql = "SELECT COUNT(DISTINCT url) FROM gridimage_link WHERE next_check < NOW()";
+	calc("Links waiting to be checked",$sql);
+	
 	$smarty->assign_by_ref('table', $table);
 	
 	$smarty->assign("h2title",$title);
