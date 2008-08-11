@@ -74,7 +74,7 @@ while (!$recordSet->EOF)
 		$recordSet->MoveNext();
 		continue;
 	}
-	$user_agent = "$ua\r\nReferer: http://{$_SERVER['HTTP_HOST']/photo/{$rs['gridimage_id']}";
+	$user_agent = "$ua\r\nReferer: http://{$_SERVER['HTTP_HOST']}/photo/{$rs['gridimage_id']}";
 	if ($rs['HTTP_Last_Modified']) {
 		$user_agent .= "\r\nIf-Modified-Since: ".$rs['HTTP_Last_Modified'];
 	} 
