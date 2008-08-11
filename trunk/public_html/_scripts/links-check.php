@@ -46,7 +46,7 @@ SELECT
 FROM
 	gridimage_link l
 WHERE
-	last_checked < date_sub(now(), interval 90 day)
+	next_check < now()
 GROUP BY 
 	url
 LIMIT 10";
@@ -58,6 +58,8 @@ $recordSet = &$db->Execute("$sql");
 $ua = 'Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)';
 ini_set('user_agent',$ua);
 $bindts = $db->BindTimeStamp(time());	
+$bindts10 = $db->BindTimeStamp(time()+3600*24*10);	
+$bindts90 = $db->BindTimeStamp(time()+3600*24*90);	
 $done_urls = array();
 while (!$recordSet->EOF) 
 {
@@ -142,17 +144,21 @@ while (!$recordSet->EOF)
 		$where = "gridimage_link_id = ?";
 		$where_value = $rs['gridimage_link_id'];
 	} else {
-		$where = "url = ?".
+		$where = "url = ?";
 		$where_value = $url;
 	}
 	
 	if ($rs['HTTP_Last_Modified'] && $updates['HTTP_Status'] == 304) {
-		$sql = "UPDATE gridimage_link SET last_checked = NOW() WHERE $where";
-		$db->Execute($sql);		
+		$db->Execute($sql = "UPDATE gridimage_link SET last_checked = NOW(),next_check=date_add(NOW(),interval 90 day) WHERE $where",array($where_value));		
 	} else {
-		$sql = '';
 		$updates['last_checked'] = $bindts;
-		$db->Execute('UPDATE gridimage_link SET `'.implode('` = ?,`',array_keys($updates))."` = ? WHERE $where",array_merge(array_values($updates),array($where_value)));
+		if ($updates['HTTP_Status'] == 200 || $updates['HTTP_Status'] == 301 || $updates['HTTP_Status'] == 302) {
+			$updates['next_check'] = $bindts90;
+		} else {
+			$updates['next_check'] = $bindts10;
+		}
+		$db->Execute($sql = 'UPDATE gridimage_link SET `'.implode('` = ?,`',array_keys($updates))."` = ? WHERE $where",
+		array_merge(array_values($updates),array($where_value)));
 	}
 	
 	print "<pre>".$sql."</pre>";

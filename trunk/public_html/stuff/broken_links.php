@@ -42,8 +42,7 @@ if (!$smarty->is_cached($template, $cacheid))
 {
 	if (!$db) {
 		$db=NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');  
-		#$db->debug = true;
+		if (!$db) die('Database connection failed');
 	}
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
@@ -73,20 +72,20 @@ if (!$smarty->is_cached($template, $cacheid))
 	ORDER BY last_checked desc
 	LIMIT 100";
 
-	$table = $db->getAll($sql);	
+	$table = $db->getAll($sql);
 
 	$smarty->assign_by_ref('table', $table);
 	$smarty->assign("total",count($table));
 
 	$smarty->assign('levels', array(
 	'1' => 'Only OKs' ,
-	'2' => 'Critical', 
-	'3' => 'Major', 
-	'4' => 'Possible Errors', 
+	'2' => 'Critical',
+	'3' => 'Major',
+	'4' => 'Possible Errors',
 	'5' => 'Any Error' ));
 	$smarty->assign("l",$l);
 	$smarty->assign("u",$u);
-	
+
 	$smarty->assign('codes', array(
 	200 => "OK",
 	206 => "Partial Content",
