@@ -40,6 +40,9 @@ set_time_limit(3600*24);
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+$offset = isset($_GET['offset'])?intval($_GET['offset']).",":'';
+
+
 $sql = "
 SELECT
 	gridimage_link_id,gridimage_id,url,HTTP_Last_Modified,count(*) as uses
@@ -49,7 +52,9 @@ WHERE
 	next_check < now()
 GROUP BY 
 	url
-LIMIT 10";
+ORDER BY 
+	PASSWORD(url)
+LIMIT {$offset}15";
 
 
 $done = 0;
