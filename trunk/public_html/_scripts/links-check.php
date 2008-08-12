@@ -118,7 +118,7 @@ while (!$recordSet->EOF)
 			if (count($heads) > 1) {
 				//need to create additional links... 
 				
-				$parent_id = $rs['gridimage_link_id'];
+				$parent_link_id = $rs['gridimage_link_id'];
 				for($i =1;$i<count($heads);$i++) {
 					$url2 = $heads[$i-1]['HTTP_Location'];
 					
@@ -128,13 +128,13 @@ while (!$recordSet->EOF)
 						$row['created'] = $bindts;
 						$row['last_checked'] = $bindts;
 						$row['url'] = $url2;
-						$row['parent_id'] = $parent_id;
+						$row['parent_link_id'] = $parent_link_id;
 						foreach ($heads[$i] as $key => $value) {
 							$row[$key] = $value;
 						}
 						print "CREATED<pre>".print_r($row,1)."</pre>";
 						$db->Execute('INSERT INTO gridimage_link SET `'.implode('` = ?,`',array_keys($row)).'` = ? ON DUPLICATE KEY UPDATE gridimage_link_id = LAST_INSERT_ID(gridimage_link_id), last_checked = ? ',array_merge(array_values($row),array($row['last_checked'])) );
-						$parent_id = mysql_insert_id();
+						$parent_link_id = mysql_insert_id();
 						$done_urls[$url2] = 1;
 					} 
 				}
