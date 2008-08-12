@@ -34,20 +34,23 @@
 
 <p>Click a column header to reorder</p>
 
+<form action"{$script_name}" method="post">
+
 <table class="report sortable" id="reportlist" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5" style="font-size:0.9em">
 <thead>
 	<tr>
-		<td>Image(s)</td>
-		<td>URL & Error</td>
+		<td>Image</td>
+		<td>Link &amp; Reported Error</td>
 		<td>Code</td>
 		<td>Checked</td>
-		<td>Info</td>
+		<td>Retry</td>
 	</tr>
 </thead>
 <tbody>
-	{foreach from=$table item=item}
+	{foreach from=$table item=item name="i"}
 		{assign var="HTTP_Status" value=$item.HTTP_Status}
-	<tr>
+	{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
+	<tr bgcolor="{$bgcolor}">
 		<td sortvalue="{$item.gridimage_id}" align="right">
 			{if $item.images > 1}
 				<a href="/editimage.php?id={$item.gridimage_id}">{$item.ids|replace:',':'<br/>'}</a>
@@ -55,13 +58,23 @@
 				<a href="/editimage.php?id={$item.gridimage_id}">{$item.gridimage_id}</a>
 			{/if}
 		</td>
-		<td sortvalue="{$item.url|escape:'html'}">{external href=$item.url text=$item.url|truncate:90|regex_replace:'/\/\/([\w\.-]+)/':'//<b>$1</b>'}<small><br/>
-		<b>{$item.HTTP_Status}</b> {$codes.$HTTP_Status}</small></td>
+		<td sortvalue="{$item.url|escape:'html'}">{external href=$item.url text=$item.url|replace:"http://":""|truncate:90|regex_replace:'/^([\w\.-]+)/':'<b>$1</b><small>'}<br/>
+		<b>{$item.HTTP_Status}</b> {$codes.$HTTP_Status}</small>
+		{if $item.HTTP_Location}
+			<small>... Server reports {external href=$item.HTTP_Location text="new location"}
+			{if strpos($item.HTTP_Location,'404')}
+				[<b>Which <i>appears</i> to be an Error Page</b>]
+			{/if}
+			</small>
+		{/if}
+		
+		</td>
 		<td>{$item.HTTP_Status}</td>
 		<td sortvalue="{$item.last_checked}" style="font-size:0.8em">{$item.last_checked|date_format:"%e %b %Y"}</td>
-		<td style="font-size:0.8em">
-			{if $item.HTTP_Location}
-				Server reports {external href=$item.HTTP_Location text="new location"}
+		<td style="font-size:0.8em" sortvalue="{$smarty.foreach.i.iteration}">
+			
+			{if $item.HTTP_Status != 200 && $item.failure_count < 4} 
+				<input type="checkbox" name="retry[]" value="{$item.url|escape:'html'}"/>
 			{/if}
 		</td>
 	</tr>
@@ -69,6 +82,10 @@
 </tbody>
 </table>
 
-    
+<p>
+If you have checked some links and beleive them to be ok despite the result of our recent automatic check, please tick the relevent links above and click the following button: <input type="submit" name="Submit" value="Schedule a Recheck"/><br/>
+(Note even after submitting this form it may take some time for your rescheduled checks to be processed and disappear from this page)</p>
+
+</form>
     
 {include file="_std_end.tpl"}

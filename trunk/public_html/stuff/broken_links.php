@@ -41,6 +41,25 @@ $l = (isset($_GET['l']) && is_numeric($_GET['l']))?intval($_GET['l']):3;
 
 $cacheid=$u.'.'.$l;
 
+if (!empty($_POST) && !empty($_POST['retry'])) {
+	
+	if (!$db) {
+		$db=NewADOConnection($GLOBALS['DSN']);
+		if (!$db) die('Database connection failed');
+	}
+	
+	$a = array_map(array($db,'Quote'),array_unique($_POST['retry']));
+	
+	
+	$sql = "UPDATE gridimage_link SET next_check = NOW() WHERE url IN (".implode(",",$a).")";
+	
+	$db->Execute($sql);
+	
+	$smarty->clear_cache($template, $cacheid);
+}
+
+
+
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -72,8 +91,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql = "SELECT 
 	l.*
 	FROM gridimage_link l $tables
-	WHERE HTTP_Status != 0 $andwhere
-	ORDER BY last_checked desc
+	WHERE HTTP_Status != 0 AND next_check > NOW() $andwhere
+	ORDER BY last_checked desc,parent_link_id,HTTP_Location
 	LIMIT 100";
 
 	$table = $db->getAll($sql);
