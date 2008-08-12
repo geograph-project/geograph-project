@@ -107,7 +107,7 @@ while (!$recordSet->EOF)
 				if (strpos(trim($m[1]),'http://') ===0) {
 					$heads[$i]['HTTP_Location'] = trim($m[1]);
 				} else {
-					$heads[$i]['HTTP_Location'] = InternetCombineUrl($url, trim($m[1]));
+					$heads[$i]['HTTP_Location'] = InternetCombineUrl($url, str_replace(" ",'+',trim($m[1])));
 				}
 			} elseif(preg_match('/^Last-Modified:(.*)/i',$header,$m)) {
 				$heads[$i]['HTTP_Last_Modified'] = trim($m[1]);
@@ -118,18 +118,25 @@ while (!$recordSet->EOF)
 			if (count($heads) > 1) {
 				//need to create additional links... 
 				
+				$parent_id = $rs['gridimage_link_id'];
 				for($i =1;$i<count($heads);$i++) {
-					$row = array();
-					$row['gridimage_id'] = $rs['gridimage_id'];
-					$row['created'] = $bindts;
-					$row['last_checked'] = $bindts;
-					$row['url'] = $heads[$i-1]['HTTP_Location'];
-					foreach ($heads[$i] as $key => $value) {
-						$row[$key] = $value;
-					}
-					print "CREATED<pre>".print_r($row,1)."</pre>";
-					$db->Execute('INSERT INTO gridimage_link SET `'.implode('` = ?,`',array_keys($row)).'` = ?',array_values($row));
-			
+					$url2 = $heads[$i-1]['HTTP_Location'];
+					
+					if (!isset($done_urls[$url2])) {
+						$row = array();
+						$row['gridimage_id'] = $rs['gridimage_id'];
+						$row['created'] = $bindts;
+						$row['last_checked'] = $bindts;
+						$row['url'] = $url2;
+						$row['parent_id'] = $parent_id;
+						foreach ($heads[$i] as $key => $value) {
+							$row[$key] = $value;
+						}
+						print "CREATED<pre>".print_r($row,1)."</pre>";
+						$db->Execute('INSERT INTO gridimage_link SET `'.implode('` = ?,`',array_keys($row)).'` = ? ON DUPLICATE KEY UPDATE gridimage_link_id = LAST_INSERT_ID(gridimage_link_id), last_checked = ? ',array_merge(array_values($row),array($row['last_checked'])) );
+						$parent_id = mysql_insert_id();
+						$done_urls[$url2] = 1;
+					} 
 				}
 			} 
 			foreach ($heads[0] as $key => $value) {

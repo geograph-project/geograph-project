@@ -59,6 +59,10 @@ UPDATE `gridimage_link` SET next_check = date_add(last_checked,interval 90 day) 
 UPDATE `gridimage_link` SET next_check = date_add(last_checked,interval 10 day) WHERE HTTP_Status > 0 AND HTTP_Status != 200;
 
 
+ ALTER IGNORE TABLE `gridimage_link` ADD UNIQUE (
+`gridimage_id` ,
+`url`
+) ;
 
 
 
