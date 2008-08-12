@@ -35,7 +35,7 @@
 	{/foreach}
 	<div style="position:relative;clear:both"/>
 	<br/><br/>
-	<small style="padding:10px; background-color:#eeeeee;">Marked Images<span id="marked_number"></span>: <a href="javascript:void(displayMarkedImages())"><b>Display</b>/Export</a> &nbsp; <a href="/search.php?marked=1&amp;displayclass={$engine->criteria->displayclass}">View as Search Results</a> &nbsp; <a href="javascript:void(importToMarkedImages())">Import to List</a> &nbsp; (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear List</a>)</small></div>
+	<div class="interestBox" style="font-size:0.8em">Marked Images<span id="marked_number"></span>: <a href="javascript:void(displayMarkedImages())"><b>Display</b>/Export</a> &nbsp; <a href="/search.php?marked=1&amp;displayclass={$engine->criteria->displayclass}">View as Search Results</a> &nbsp; <a href="javascript:void(importToMarkedImages())">Import to List</a> &nbsp; (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear List</a>)</div></div>
 	<script>
 	AttachEvent(window,'load',showMarkedImages,false);
 	</script>
