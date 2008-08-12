@@ -121,6 +121,7 @@ while (!$recordSet->EOF)
 				$row['created'] = $bindts;
 				
 				$db->Execute('INSERT INTO gridimage_link SET `'.implode('` = ?,`',array_keys($row)).'` = ?',array_values($row));
+				$done++;
 			}
 		} else {
 			$sql = "INSERT INTO gridimage_link SET 
@@ -128,6 +129,7 @@ while (!$recordSet->EOF)
 				url = $qurl,
 				created = NOW()";
 			$db->Execute("$sql");
+			$done++;
 		}
 		if (isset($urls[$url])) {
 			unset($urls[$url]);
@@ -144,10 +146,11 @@ while (!$recordSet->EOF)
 				url = $qurl";
 			$db->Execute("$sql");
 		}
+		$done++;
 	}
 	
 	print "{$recordSet->fields['gridimage_id']} ";
-	$done++;
+	
 	
 	$recordSet->MoveNext();
 }
