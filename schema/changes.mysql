@@ -66,4 +66,10 @@ UPDATE `gridimage_link` SET next_check = date_add(last_checked,interval 10 day) 
 
 
 
+ALTER TABLE `gridimage_link` ADD `parent_link_id` INT UNSIGNED NOT NULL ;
+
+
+
+
+
 
