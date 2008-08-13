@@ -127,6 +127,7 @@ while (!$recordSet->EOF)
 						$row['gridimage_id'] = $rs['gridimage_id'];
 						$row['created'] = $bindts;
 						$row['last_checked'] = $bindts;
+						$row['next_check'] = $bindts90;
 						$row['url'] = $url2;
 						$row['parent_link_id'] = $parent_link_id;
 						foreach ($heads[$i] as $key => $value) {
@@ -165,10 +166,12 @@ while (!$recordSet->EOF)
 		$updates['last_checked'] = $bindts;
 		if ($updates['HTTP_Status'] == 200 || $updates['HTTP_Status'] == 301 || $updates['HTTP_Status'] == 302) {
 			$updates['next_check'] = $bindts90;
+			$extra = ",failure_count = 0";
 		} else {
 			$updates['next_check'] = $bindts10;
+			$extra = ",failure_count = failure_count + 1";
 		}
-		$db->Execute($sql = 'UPDATE gridimage_link SET `'.implode('` = ?,`',array_keys($updates))."` = ? WHERE $where",
+		$db->Execute($sql = 'UPDATE gridimage_link SET `'.implode('` = ?,`',array_keys($updates))."` = ? $extra WHERE $where",
 		array_merge(array_values($updates),array($where_value)));
 	}
 	
