@@ -84,6 +84,12 @@
 			many locations and may not know immediately to where you are referring.</div>
 			<br/>
 		</div>
+		
+		<div style="float:right; position:relative; vertical-align:top;">
+			- <b>{external href="http://akismet.com/" text="Protected by Akismet"}</b> -
+			<span style="font-size:0.8em">{external href="http://wordpress.com/" text="Blog with WordPress"}</span> -
+		</div>
+		
 		<input type="submit" name="send" value="Send">
 		</form>
 	{/if}
