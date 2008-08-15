@@ -43,7 +43,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 
 <ul class="checklist">
 
-<li style="font-size:1.1em; background-color:pink;"><b>Under the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image MUST be credited as specified by the contributor ({if $image->credit_realname}<tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>{else}credited to {$image->realname|escape:'html'}{/if}).</b></li>
+<li style="font-size:1.1em; background-color:pink;"><b>Under the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image MUST be credited as specified by the contributor ({if $image->credit_realname}<tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>{else}{$image->realname|escape:'html'}{/if}).</b></li>
 
 <li><b>You should also mention that the photo is copyrighted but licensed as such for further reuse.</b> If you alter, transform, or build upon this work, you may distribute the resulting work only under a similar licence.</li>
 
@@ -61,9 +61,9 @@ Instead download a copy, and upload it to your own webspace. Click: <b><a href="
 </ul>
 
 <div style="text-align:right; border-bottom:1px solid gray"><i>Thank you for your attention in this matter.</i></div>
+<br/><br/>
 
-
-<p style="margin-left:auto;margin-right:auto">Preview of this image</p>
+<div style="margin-left:auto;margin-right:auto">Preview of this image</div>
 <div class="photoguide" style="margin-left:auto;margin-right:auto">
 	<div style="float:left;width:213px">
 		<a title="view full size image" href="/photo/{$image->gridimage_id}">
@@ -80,7 +80,7 @@ Instead download a copy, and upload it to your own webspace. Click: <b><a href="
 	<br style="clear:both"/>
 </div>
 
-<p>In addition we have created some snippets of code to make using the photo easy on various websites or similar:</p>
+<p>We have created some snippets of code to make using the photo easy on various websites or similar:</p>
 <br/>
 <div class="interestBox">Jump snippets for: <a href="#html">HTML</a>, <a href="#bbcode">Forums</a> or <a href="#wikipedia">Wikipedia</a>. Or get <a href="#meta">CC-metadata</a> (RDF) or <a href="#kml">KML File</a></div>
 <br/>
