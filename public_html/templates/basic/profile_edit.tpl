@@ -200,13 +200,13 @@
 	<label for="ticket_public_change" class="nowrap">Anonymity for previous tickets</label>
 	<br/>
 	<select name="ticket_public_change" id="ticket_public_change" style="margin-left:10em;">
-		<option value="">- no change - </option>
+		<option value="">- no change - leave previous tickets as is</option>
 		<option value="no">Do not disclose my name</option>
 		<option value="owner">Show my name to the photo owner</option>
 		<option value="everyone">Show my name against the ticket</option>
 	</select>
 	 
-	<div class="fieldnotes">Change how your name is disclosed on tickets you have already created.</div>
+	<div class="fieldnotes">Optionally use this box to change all your previous tickets to a new setting.</div>
 </div>
 
 
