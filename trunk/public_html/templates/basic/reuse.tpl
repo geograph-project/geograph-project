@@ -61,22 +61,29 @@ Instead download a copy, and upload it to your own webspace. Click: <b><a href="
 </ul>
 
 <div style="text-align:right; border-bottom:1px solid gray"><i>Thank you for your attention in this matter.</i></div>
-<p>In addition we have created some snippets of code to make using the photo easy on various websites or similar:</p>
-<br/>
-<div class="interestBox">Jump snippets for: <a href="#html">HTML</a>, <a href="#bbcode">Forums</a> or <a href="#wikipedia">Wikipedia</a>. Or get <a href="#meta">CC-metadata</a> (RDF) or <a href="#kml">KML File</a></div>
-<br/>
 
+
+<p style="margin-left:auto;margin-right:auto">Preview of this image</p>
 <div class="photoguide" style="margin-left:auto;margin-right:auto">
 	<div style="float:left;width:213px">
 		<a title="view full size image" href="/photo/{$image->gridimage_id}">
 		{$image->getThumbnail(213,160)}
 		</a><div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a> for <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></div>
 	</div>
-	<div style="float:left;padding-left:20px; width:400px;">{$image->comment|escape:'html'|nl2br|geographlinks|default:"<tt>no description for this image</tt>"}</div>
+	<div style="float:left;padding-left:20px; width:400px;">
+		{$image->comment|escape:'html'|nl2br|geographlinks|default:"<tt>no description for this image</tt>"}<br/>
+		<br/>
+		<small>&nbsp; &copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
+		licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a></small>
+	</div>
 	
 	<br style="clear:both"/>
 </div>
 
+<p>In addition we have created some snippets of code to make using the photo easy on various websites or similar:</p>
+<br/>
+<div class="interestBox">Jump snippets for: <a href="#html">HTML</a>, <a href="#bbcode">Forums</a> or <a href="#wikipedia">Wikipedia</a>. Or get <a href="#meta">CC-metadata</a> (RDF) or <a href="#kml">KML File</a></div>
+<br/>
 
 <div id="html">
 <a name="html"></a>
