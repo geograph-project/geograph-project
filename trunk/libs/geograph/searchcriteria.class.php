@@ -58,6 +58,11 @@ class SearchCriteria
 	
 	var $is_multiple = false;
 	
+	var $sphinx = array(
+		'query' => '',
+		'sort' => '@relevance DESC, @id DESC',
+		'impossible' => 0
+	);
 	
 	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) 
 	{
@@ -126,8 +131,10 @@ class SearchCriteria
 			}
 			
 			$rectangle = "'POLYGON(($west $south,$east $south,$east $north,$west $north,$west $south))'";
-
+			
 			$sql_where = "CONTAINS(GeomFromText($rectangle),point_ll)";
+			
+			$this->sphinx['impossible']++; //todo we might be able to transform it to a set of GR's?
 		} else {
 			$sql_where = '';
 		}
@@ -158,6 +165,14 @@ class SearchCriteria
 					}
 				}
 			}
+			if ($this->limit8 && $this->limit8 < 20 && $this->limit8 > -20) {
+				//possible, but calculate it JIT
+				$this->sphinx['x'] = $x;
+				$this->sphinx['y'] = $y;
+				$this->sphinx['d'] = $this->limit8;
+			} else {
+				$this->sphinx['impossible']++;
+			}
 
 			//not using "power(gs.x -$x,2) * power( gs.y -$y,2)" beucause is testing could be upto 2 times slower!
 			$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
@@ -167,8 +182,10 @@ class SearchCriteria
 			switch ($this->orderby) {
 				case 'random':
 					$sql_order = ' rand('.($this->crt_timestamp_ts).') ';
+					$this->sphinx['impossible']++;
 					break;
 				case 'dist_sqd':
+					$this->sphinx['impossible']++;
 					break;
 				case 'imagetaken':
 					if ($sql_where) {
@@ -178,16 +195,36 @@ class SearchCriteria
 					//falls though...
 				default:
 					$sql_order = preg_replace('/[^\w,\(\)]+/',' ',$this->orderby);
+					
+					switch (str_replace(' desc','',$this->orderby)) {
+						case 'gridimage_id':
+						case 'submitted': 
+							$this->sphinx['sort'] = '@id';
+							break;
+						case 'x':
+						case 'y':
+						case 'imagetaken':
+						case 'realname':
+						case 'title':
+						case 'imageclass':
+						case 'grid_reference':
+						default: 
+							$this->sphinx['impossible']++;
+					}
+					if (!$this->sphinx['impossible'] && preg_match('/ desc$/',$this->orderby)) {
+						$this->sphinx['sort'] .= " DESC";
+					} 
 			}
 			$sql_order = preg_replace('/^submitted/','gridimage_id',$sql_order);
 		}
 		if ($this->breakby) {
-			$breakby = preg_replace('/_(year|month|decade)$/','',$this->breakby);			
+			$breakby = preg_replace('/_(year|month|decade)$/','',$this->breakby);
 			$breakby = preg_replace('/^submitted/','gridimage_id',$breakby);
 			if (strpos($sql_order,' desc') !== FALSE)
 				$breakby .= ' desc';
 			if ($breakby != $sql_order) 
 				$sql_order = $breakby.($sql_order?", $sql_order":'');
+			$this->sphinx['impossible']++; //todo - should be possible, just cant be bothered yet!
 		}
 		
 		$sql_where_start = $sql_where;
@@ -205,6 +242,7 @@ class SearchCriteria
 			} else {
 				$sql_where .= 'gi.user_id = '.($this->limit1);
 			}
+			$this->sphinx['impossible']++; //todo - should be possible, just need to add index user_id, currently only have realname
 		} 
 		if (!empty($this->limit2)) {
 			if ($sql_where) {
@@ -212,6 +250,7 @@ class SearchCriteria
 			}
 			$statuslist="'".implode("','", explode(',',$this->limit2))."'";
 			$sql_where .= "moderation_status in ($statuslist) ";
+			$this->sphinx['impossible']++; //todo
 		} 
 		if (!empty($this->limit3)) {
 			if ($sql_where) {
@@ -219,12 +258,19 @@ class SearchCriteria
 			}
 			$sql_where .= "imageclass = '".addslashes(($this->limit3 == '-')?'':$this->limit3)."' ";
 			//todo tags tags tags
+			
+			if ($this->limit3 == '-') {
+				$this->sphinx['impossible']++;
+			} else {
+				$this->sphinx['query'] .= " @imageclass \"".$this->limit3."\"";
+			}
 		} 
 		if (!empty($this->limit4)) {
 			if ($sql_where) {
 				$sql_where .= ' and ';
 			}
 			$sql_where .= 'gs.reference_index = '.($this->limit4).' ';
+			$this->sphinx['impossible']++; //todo
 		} 
 		if (!empty($this->limit5)) {
 			if ($sql_where) {
@@ -247,6 +293,7 @@ class SearchCriteria
 			if (empty($this->limit4))
 				$sql_where .= ' and gs.reference_index = '.$prefix['reference_index'].' ';
 			
+			$this->sphinx['query'] .= " @myriad ".$this->limit5;
 		}
 		if (!empty($this->limit6)) {
 			if ($sql_where) {
@@ -268,28 +315,36 @@ class SearchCriteria
 			
 			if ($dates[0]) {
 				if (preg_match("/0{4}-([01]?[1-9]+|10)-/",$dates[0]) > 0) {
-						//month only
-						list($y,$m,$d) = explode('-',$dates[0]);
-						$sql_where .= "MONTH(submitted) = $m ";
+					//month only
+					list($y,$m,$d) = explode('-',$dates[0]);
+					$sql_where .= "MONTH(submitted) = $m ";
+					
+					$this->sphinx['impossible']++;
 				} elseif (preg_match("/0{4}-0{2}-([01]?[1-9]+|10)/",$dates[0]) > 0) {
-						//day only ;)
-						list($y,$m,$d) = explode('-',$dates[0]);
-						$sql_where .= "submitted > DATE_SUB(NOW(),INTERVAL $d DAY)";
+					//day only ;)
+					list($y,$m,$d) = explode('-',$dates[0]);
+					$sql_where .= "submitted > DATE_SUB(NOW(),INTERVAL $d DAY)";
+					
+					$this->sphinx['submitted_range'] = array(time()-86400*$d,time()); 
 				} elseif ($dates[1]) {
 					if ($dates[0] == $dates[1]) {
 						//both the same
 						$sql_where .= "submitted LIKE '".$dates[0]."%' ";
+						$this->sphinx['submitted_range'] = array(strtotime($dates[0]),strtotime($dates[0]." 23:59")); 
 					} else {
 						//between
 						$sql_where .= "submitted BETWEEN '".$dates[0]."' AND DATE_ADD('".$dates[1]."',INTERVAL 1 DAY) ";
+						$this->sphinx['submitted_range'] = array(strtotime($dates[0]),strtotime($dates[1]." 23:59")); 
 					}
 				} else {
 					//from
 					$sql_where .= "submitted >= '".$dates[0]."' ";
+					$this->sphinx['submitted_range'] = array(strtotime($dates[0]),time()); 
 				}
 			} else {
 				//to
 				$sql_where .= "submitted <= '".$dates[1]."' ";
+				$this->sphinx['submitted_range'] = array(strtotime("2005-01-01"),strtotime($dates[1]." 23:59")); 
 			}
 			
 			
@@ -318,25 +373,31 @@ class SearchCriteria
 					//month only
 					list($y,$m,$d) = explode('-',$dates[0]);
 					$sql_where .= "MONTH(imagetaken) = $m ";
+					$this->sphinx['impossible']++;
 				} elseif (preg_match("/0{4}-0{2}-([01]?[1-9]+|10)/",$dates[0]) > 0) {
-						//day only ;)
-						list($y,$m,$d) = explode('-',$dates[0]);
-						$sql_where .= "imagetaken > DATE_SUB(NOW(),INTERVAL $d DAY)";
+					//day only ;)
+					list($y,$m,$d) = explode('-',$dates[0]);
+					$sql_where .= "imagetaken > DATE_SUB(NOW(),INTERVAL $d DAY)";
+					$this->sphinx['impossible']++;
 				} elseif ($dates[1]) {
 					if ($dates[0] == $dates[1]) {
 						//both the same
 						$sql_where .= "imagetaken = '".$dates[0]."' ";
+						$this->sphinx['query'] .= " @takenday ".str_replace('-','',$this->limit5);
 					} else {
 						//between
 						$sql_where .= "imagetaken BETWEEN '".$dates[0]."' AND '".$dates[1]."' ";
+						$this->sphinx['impossible']++;
 					}
 				} else {
 					//from
 					$sql_where .= "imagetaken >= '".$dates[0]."' ";
+					$this->sphinx['impossible']++;
 				}
 			} else {
 				//to
 				$sql_where .= "imagetaken != '0000-00-00' AND imagetaken <= '".$dates[1]."' ";
+				$this->sphinx['impossible']++;
 			}
 			
 			
@@ -349,16 +410,25 @@ class SearchCriteria
 				$sql_where .= "topic_id = {$this->limit9} ";
 			}
 			$sql_from .= " INNER JOIN gridimage_post gp ON(gi.gridimage_id=gp.gridimage_id) ";
+			$this->sphinx['impossible']++;
 		} 
 		if (!empty($this->limit10)) {
 			if ($sql_where)
 				$sql_where .= ' and ';
 			$sql_where .= "route_id = {$this->limit10} and ftf=1 ";
 			$sql_from .= " INNER JOIN route_item r ON(grid_reference=r.gridref) ";
+			$this->sphinx['impossible']++;
 		} 
 		
 		if ($sql_where_start != $sql_where) {
 			$this->issubsetlimited = true;
+		}
+		if (!empty($_GET['debug'])) { 
+			print "($sql_fields)<BR>($sql_order)<BR>($sql_where)<BR>($sql_from)<BR>";
+
+			print "<pre>";
+			print_r($this->sphinx);
+			print "</pre>";
 		}
 	} 
 	
@@ -412,19 +482,31 @@ class SearchCriteria
 					case 'NOT': $prefix = 'NOT'; break;
 					default: 
 						if ($terms)	$terms .= " ";
-						$terms .= $token;							
+						$terms .= $token;
 				}
 				$c++;
 			}
 			$sql_where .= ")";
+			
+			if (preg_match('/^\^/',$q)) {
+				$this->sphinx['impossible']++; 
+			} elseif (preg_match('/^\^.*\+$/',$q)) {
+				$this->sphinx['query'] .= " ".str_replace("NOT ",' -',str_replace(" AND ",' ',$q));
+			} else {
+				$this->sphinx['query'] .= " ".str_replace("NOT ",' -',str_replace(" AND ",' ',preg_replace('/(^| )/','$1@title ',$q)));
+			}
+			
 		} elseif (strpos($q,'^') === 0) {
 			$words = str_replace('^','',$q);
 			$sql_where .= ' title REGEXP '.$db->Quote('[[:<:]]'.preg_replace('/\+$/','',$words).'[[:>:]]');
+			$this->sphinx['impossible']++; 
 		} elseif (preg_match('/\+$/',$q)) {
 			$words = $db->Quote('%'.preg_replace("/\+$/",'',$q).'%');
 			$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';
+			$this->sphinx['query'] .= " ".preg_replace("/\+$/",'',$q);
 		} else {
 			$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$q.'%');
+			$this->sphinx['query'] .= " ".preg_replace('/(^| )/','$1@title ',$q);
 		}
 	}
 	
@@ -494,7 +576,7 @@ class SearchCriteria
 		foreach($arr as $name=>$value)
 		{
 			if (!is_numeric($name))
-				$this->$name=$value;	
+				$this->$name=$value;
 		}
 	}
 	
@@ -545,6 +627,7 @@ class SearchCriteria_Special extends SearchCriteria
 			$sql_where .= ' and ';
 		}
 		$sql_where .= $this->searchq;
+		$this->sphinx['impossible']++; //todo, safest - but could do some?
 	}
 }
 
