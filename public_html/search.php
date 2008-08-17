@@ -714,6 +714,10 @@ if (isset($_GET['fav']) && $i) {
 	//what style should we use?
 	$style = $USER->getStyle();
 	$cacheid.=$style;
+	
+	if (!empty($_GET['legacy'])) {
+		$cacheid.="X";
+	}
 
 	if (!empty($_GET['t'])) {
 		$token=new Token;

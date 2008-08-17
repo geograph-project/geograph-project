@@ -241,6 +241,79 @@ END;
 		if ($pg == '' or $pg < 1) {$pg = 1;}
 	
 		$page = ($pg -1)* $pgsize;
+
+		if (strpos($sql_where,'gs') !== FALSE) {
+			$sql_where = str_replace('gs.','gi.',$sql_where);
+		}
+		$sql_fields = str_replace('gs.','gi.',$sql_fields);
+	
+		###################
+		# run_via_sphinx
+		if (empty($_GET['legacy']) && isset($this->criteria->sphinx) && $this->criteria->sphinx['impossible'] == 0) {
+			
+			$sphinx = new sphinxwrapper($this->criteria->sphinx['query']);
+
+			$this->fullText = 1;
+			
+			$sphinx->pageSize = $pgsize+0;
+
+			if (!empty($this->criteria->sphinx['sort'])) {
+				$sphinx->setSort($this->criteria->sphinx['sort']);
+				
+				if ($this->criteria->sphinx['sort'] == '@relevance DESC, @id DESC')
+					$this->criteria->searchdesc = str_replace('undefined','relevance',$this->criteria->searchdesc);
+			} else {
+				$this->criteria->searchdesc = str_replace('undefined','relevance',$this->criteria->searchdesc);
+			}
+			
+			if (!empty($this->criteria->sphinx['d'])) {
+				$sphinx->setSpatial($this->criteria->sphinx);
+			}
+			
+			if (!empty($this->criteria->sphinx['submitted_range'])) {
+				$sphinx->setSubmittedRange($this->criteria->sphinx['submitted_range']);
+			}
+			
+			//this step is handled internally by search and setSpatial
+			//$sphinx->processQuery();
+
+			if (!empty($CONF['fetch_on_demand'])) {
+				$sphinx->upper_limit = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
+			}
+			
+			$ids = $sphinx->returnImageIds($pg);
+
+			$this->resultCount = $sphinx->resultCount;
+			$this->numberOfPages = $sphinx->numberOfPages;
+			
+			$this->islimited = true;
+			
+			if ($this->countOnly || !$this->resultCount)
+				return 0;
+			
+			$this->orderList = $ids;
+
+			// construct the query sql
+			$sql = "/* i{$this->query_id} */ SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN (".implode(',',$ids).")";
+
+			if (!empty($_GET['debug']))
+				print "<BR><BR>$sql";
+
+			list($usec, $sec) = explode(' ',microtime());
+			$querytime_before = ((float)$usec + (float)$sec);
+
+			$recordSet = &$db->Execute($sql);
+
+			list($usec, $sec) = explode(' ',microtime());
+			$querytime_after = ((float)$usec + (float)$sec);
+					
+			$this->querytime =  $querytime_after - $querytime_before + $sphinx->query_time;
+			
+			return $recordSet;
+		} 
+		# /run_via_sphinx
+		###################
+	
 	
 		if (!empty($sql_where)) {
 			$sql_where = "WHERE $sql_where";
@@ -250,11 +323,6 @@ END;
 			dieUnderHighLoad(0,'search_unavailable.tpl');
 		}
 		
-		if (strpos($sql_where,'gs') !== FALSE) {
-			$sql_where = str_replace('gs.','gi.',$sql_where);
-		}
-		$sql_fields = str_replace('gs.','gi.',$sql_fields);
-	
 		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=`]+) where/i",$sql_where,$matches)) {
 			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\'`]+) where/i",'',$sql_where);
 			$sql_from .= " {$matches[1]} join {$matches[2]}";
@@ -389,6 +457,19 @@ END;
 			$recordSet->Close(); 
 			$this->numberofimages = $i;
 			
+			if (!empty($this->orderList)) {
+				//well we need to reorder...
+				$lookup = array();
+				foreach ($this->results as $i => $image) {
+					$lookup[$image->gridimage_id] = $i;
+				}
+				$newlist = array();
+				foreach ($this->orderList as $id) {
+					$newlist[] = $this->results[$lookup[$id]];
+				}
+				$this->results = $newlist;
+			}
+			
 			if (!$i && $this->resultCount) {
 				$pgsize = $this->criteria->resultsperpage;
 
@@ -448,6 +529,9 @@ END;
 			return($r);
 		if (isset($this->temp_displayclass)) {
 			$postfix .= "&amp;displayclass=".$this->temp_displayclass;
+		}
+		if (!empty($_GET['legacy'])) { //todo - technically a bodge!
+			$postfix .= "&amp;legacy=true";
 		}
 		if ($this->currentPage > 1) 
 			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage-1)."$postfix\"$extrahtml>&lt; &lt; prev</a> ";
