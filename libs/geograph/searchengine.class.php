@@ -249,7 +249,7 @@ END;
 	
 		###################
 		# run_via_sphinx
-		if (empty($_GET['legacy']) && isset($this->criteria->sphinx) && $this->criteria->sphinx['impossible'] == 0) {
+		if (empty($_GET['legacy']) && !empty($CONF['sphinx_host']) && isset($this->criteria->sphinx) && strlen($this->criteria->sphinx['query']) && $this->criteria->sphinx['impossible'] == 0) {
 			
 			$sphinx = new sphinxwrapper($this->criteria->sphinx['query']);
 
