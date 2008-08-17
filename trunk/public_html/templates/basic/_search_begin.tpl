@@ -37,3 +37,7 @@ Display:
 {else}
 	the following
 {/if}{/if}:
+
+{if $engine->fullText}
+	<div style="padding:20px;border:1px solid pink"><b>Not seeing the results you expect?</b> This search is powered by the new experimental Full-Text search index, which is less precise than the legacy search, but often results in quicker and more relevent results. You can access the <a href="/search.php?i={$i}&amp;legacy=true">old search here</a>.</div>
+{/if}

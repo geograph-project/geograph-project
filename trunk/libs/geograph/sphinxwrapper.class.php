@@ -33,6 +33,8 @@ class sphinxwrapper {
 	public $q = '';
 	public $qraw = '';
 	public $qoutput = '';
+	public $sort = '';
+	public $submitted_range;
 
 	private $client = null;
 	
@@ -123,6 +125,53 @@ class sphinxwrapper {
 		$this->q = $q;
 		$this->qoutput = $qo;
 	}
+	
+	public function setSpatial($data) {
+		$q = $this->q;
+		$qo = $q;
+		
+		
+		require_once('geograph/conversions.class.php');
+		$conv = new Conversions;
+
+		list($e,$n,$reference_index) = $conv->internal_to_national($data['x'],$data['y'],0);
+
+		$e = floor($e/1000);
+		$n = floor($n/1000);
+		$grs = array();
+			
+			
+		if ($data['d'] < 10) {
+			for($x=$e-$data['d'];$x<=$e+$data['d'];$x++) {
+				for($y=$n-$data['d'];$y<=$n+$data['d'];$y++) {
+					list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,4,$reference_index,false);
+					$grs[] = $gr2;
+				}
+			}
+		} else {
+			for($x=$e-10;$x<=$e+10;$x+=10) {
+				for($y=$n-10;$y<=$n+10;$y+=10) {
+					list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,4,$reference_index,false);
+					$grs[] = preg_replace('/([A-Z]+)(\d)\d(\d)\d/','$1$2$3',$gr2);
+				}
+			}
+		}
+		
+		
+		if (strpos($q,'~') === 0) {
+			$q = preg_replace('/^\~/','',$q);
+			$q = "(".str_replace(" "," | ",$q).") (".join(" | ",$grs).")";
+		} else {
+			$q .= " (".join(" | ",$grs).")";
+		}
+		#$qo .= " near $gr";
+				
+		
+		$this->q = $q;
+		$this->qoutput = $qo;
+	} 
+	
+	
 	public function countImagesViewpoint($e,$n,$ri,$exclude = '') {
 		
 		$cl = $this->_getClient();
@@ -171,10 +220,24 @@ class sphinxwrapper {
 		$index = "gi_stemmed,gi_delta_stemmed";
 		
 		$cl->SetWeights ( array ( 100, 1 ) );
-		$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
+		if (!empty($this->sort)) {
+			$cl->SetSortMode ( SPH_SORT_EXTENDED, $this->sort);
+		} else {
+			$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
+		}
 		$cl->SetMatchMode ( $mode );
+
+		if (!empty($this->submitted_range)) {
+			$cl->SetFilterRange ('submitted', $this->submitted_range[0], $this->submitted_range[1]);
+		}
 		
-		$sqlpage = ($page -1)* $this->pageSize;		
+		if (!empty($this->upper_limit)) {
+			
+			//todo a bodge to run on dev/staging
+			$cl->SetIDRange ( 1, $this->upper_limit+0);
+		}
+		
+		$sqlpage = ($page -1)* $this->pageSize;
 		$cl->SetLimits($sqlpage,$this->pageSize);
 		
 		$res = $cl->Query ( $q, $index );
@@ -196,8 +259,9 @@ class sphinxwrapper {
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 		
 			$this->query_info = "Query '{$this->qoutput}' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+			$this->query_time = $res['time'];
 			$this->resultCount = $res['total_found'];
-			$this->numberOfPages = ceil($this->resultCount/$this->pageSize);
+			$this->numberOfPages = ceil(min($this->resultCount,1000)/$this->pageSize);
 		}
 		
 		if (is_array($res["matches"]) ) {
@@ -271,6 +335,12 @@ class sphinxwrapper {
 		return $cl->BuildExcerpts ( $docs, $index, $words, $opts);
 	}
 	
+	function setSort($sort) {
+		$this->sort = $sort;
+	}
+	function setSubmittedRange($range) {
+		$this->submitted_range = $range;
+	}
 	
 	/**
 	 * get stored db object, creating if necessary
