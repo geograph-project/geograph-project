@@ -290,6 +290,10 @@ class SearchEngineBuilder extends SearchEngine
 			}
 		}
 		
+		if (!empty($dataarray['location']) && empty($dataarray['placename'])) {
+			$dataarray['placename'] = $dataarray['location'];
+		}
+		
 		if (!empty($dataarray['postcode'])) {
 			if (preg_match("/^\s*([A-Z]{1,2})([0-9]{1,2}[A-Z]?)\s*([0-9]?)([A-Z]{0,2})\s*$/",strtoupper($dataarray['postcode']),$pc)) {
 				require_once('geograph/searchcriteria.class.php');
