@@ -493,7 +493,7 @@ class SearchCriteria
 			} elseif (preg_match('/^\^.*\+$/',$q)) {
 				$this->sphinx['query'] .= " ".str_replace("NOT ",' -',str_replace(" AND ",' ',$q));
 			} else {
-				$this->sphinx['query'] .= " ".str_replace("NOT ",' -',str_replace(" AND ",' ',preg_replace('/(^| )/','$1@title ',$q)));
+				$this->sphinx['query'] .= " ".preg_replace('/(^| +)/','$1@title ',str_replace("NOT ",' -',str_replace(" AND ",' ',$q)));
 			}
 			
 		} elseif (strpos($q,'^') === 0) {

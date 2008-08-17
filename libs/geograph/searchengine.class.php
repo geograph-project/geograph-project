@@ -297,7 +297,7 @@ END;
 			$sql = "/* i{$this->query_id} */ SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN (".implode(',',$ids).")";
 
 			if (!empty($_GET['debug']))
-				print "<BR><BR>$sql";
+				print "<BR><BR>{$sphinx->q}<BR><BR>$sql";
 
 			list($usec, $sec) = explode(' ',microtime());
 			$querytime_before = ((float)$usec + (float)$sec);
