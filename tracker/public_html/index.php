@@ -259,6 +259,7 @@ if ($pages>1)
 	<!-- Column Headers -->
 	<tr>
 		<th>Name/Info Hash</th>
+		<th>Size</th>
 		<th>Seeds</th>
 		<th>Peers</th>
 		<th>Completed D/Ls</th>
@@ -332,17 +333,18 @@ while ($data = mysql_fetch_row($results)) {
 	echo "<a title=\"download torrent\" href=\"torrents/" . rawurlencode($data[5]) . ".torrent\">{$data[5]}</a>";
 	
 	
-	if (strlen($data[7]) > 0) //show file size
-	{
-		echo " (".bytesToString($data[7]).")";
-		$total_disk_usage = $total_disk_usage + $data[7]; //total up file sizes
-	}
-	
 	echo "</td></tr>";
 	
 	
 	
 	echo "</table></td>\n";
+	
+	if (strlen($data[7]) > 0) //show file size
+	{
+		echo "<td class=\"center\">".bytesToString($data[7])."</td>";
+		$total_disk_usage = $total_disk_usage + $data[7]; //total up file sizes
+	}
+	
 	for ($j=1; $j < 4; $j++) //show seeders, leechers, and completed downloads
 	{
 		echo "\t<td class=\"center\">$data[$j]</td>\n";
@@ -377,11 +379,11 @@ while ($data = mysql_fetch_row($results)) {
 }
 
 if ($i == 0)
-	echo "<tr class=\"row0\"><td style=\"text-align: center;\" colspan=\"6\">No torrents</td></tr>";
+	echo "<tr class=\"row0\"><td style=\"text-align: center;\" colspan=\"7\">No torrents</td></tr>";
 
 //show totals in last row
 echo "<tr>";
-echo "<th>Space Used: " . bytesToString($total_disk_usage) . "</th>";
+echo "<th colspan=\"2\" align=\"right\">Space Used: " . bytesToString($total_disk_usage) . "</th>";
 echo "<th>" . $total_seeders . "</th>";
 echo "<th>" . $total_leechers . "</th>";
 echo "<th>" . $total_downloads . "</th>";
@@ -454,7 +456,7 @@ if ($data[0] != null) //if there are no torrents in database, don't show anythin
 
 <div class="helpful"> 
 
-<p style="color:#880000">These torrents are large! Ensure than downloading and
+<p style="color:#880000"><b>These torrents are large!</b> Ensure than downloading and
 	seeding them will not put you over your Internet provider's bandwidth limits.</p>
 
 <p>If you need any help or have questions about this service, contact Paul Dixon
