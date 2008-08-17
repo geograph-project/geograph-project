@@ -262,21 +262,6 @@ class SearchEngineBuilder extends SearchEngine
 			$nearstring = 'near';
 		}
 		$searchdesc = '';
-		if (!empty($dataarray['q'])) {
-			//we coming from multiple - which means there might be a text search stored in a q
-			list($q,$placename) = preg_split('/\s+near\s+/',$dataarray['q']);
-			if ($placename && empty($dataarray['searchtext'])) {
-				$dataarray['searchtext'] = $q;
-				if (empty($dataarray['placename'])) {
-					$dataarray['placename'] = $placename;				
-				}
-			} elseif (!empty($dataarray['location'])) {
-				$dataarray['searchtext'] = $q;
-				if (empty($dataarray['placename'])) {
-					$dataarray['placename'] = $dataarray['location'];
-				}
-			}
-		}
 		if (!empty($dataarray['placename'])) {
 			//check if we actully want to perform a textsearch (it comes through in the placename beucase of the way the multiple mathc page works)
 			if (strpos($dataarray['placename'],'text:') === 0) {
@@ -289,7 +274,21 @@ class SearchEngineBuilder extends SearchEngine
 				unset($dataarray['placename']);
 			}
 		}
-		
+		if (!empty($dataarray['q'])) {
+			//we coming from multiple - which means there might be a text search stored in a q
+			list($q,$placename) = preg_split('/\s+near\s+/',$dataarray['q']);
+			if ($placename && (empty($dataarray['searchtext']) || $dataarray['searchtext'] == $q)) {
+				$dataarray['searchtext'] = $q;
+				if (empty($dataarray['placename'])) {
+					$dataarray['placename'] = $placename;				
+				}
+			} elseif (!empty($dataarray['location'])) {
+				$dataarray['searchtext'] = $q;
+				if (empty($dataarray['placename'])) {
+					$dataarray['placename'] = $dataarray['location'];
+				}
+			}
+		}
 		if (!empty($dataarray['location']) && empty($dataarray['placename'])) {
 			$dataarray['placename'] = $dataarray['location'];
 		}
