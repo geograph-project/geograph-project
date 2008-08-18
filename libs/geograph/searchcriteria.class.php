@@ -490,6 +490,8 @@ class SearchCriteria
 			
 			if (preg_match('/^\^/',$q)) {
 				$this->sphinx['impossible']++; 
+			} elseif (preg_match('/[:@]/',$q)) {
+				$this->sphinx['query'] .= " ".$q;
 			} elseif (preg_match('/^\^.*\+$/',$q)) {
 				$this->sphinx['query'] .= " ".str_replace("NOT ",' -',str_replace(" AND ",' ',$q));
 			} else {
@@ -499,11 +501,13 @@ class SearchCriteria
 		} elseif (strpos($q,'^') === 0) {
 			$words = str_replace('^','',$q);
 			$sql_where .= ' title REGEXP '.$db->Quote('[[:<:]]'.preg_replace('/\+$/','',$words).'[[:>:]]');
-			$this->sphinx['impossible']++; 
+			$this->sphinx['query'] .= " ".$words;
 		} elseif (preg_match('/\+$/',$q)) {
 			$words = $db->Quote('%'.preg_replace("/\+$/",'',$q).'%');
 			$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';
 			$this->sphinx['query'] .= " ".preg_replace("/\+$/",'',$q);
+		} elseif (preg_match('/[:@]/',$q)) {
+			$this->sphinx['query'] .= " ".$q;
 		} else {
 			$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$q.'%');
 			$this->sphinx['query'] .= " ".preg_replace('/(^| )/','$1@title ',$q);
