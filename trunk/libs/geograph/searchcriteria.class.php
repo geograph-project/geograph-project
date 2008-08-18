@@ -506,12 +506,14 @@ class SearchCriteria
 			$words = $db->Quote('%'.preg_replace("/\+$/",'',$q).'%');
 			$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';
 			$this->sphinx['query'] .= " ".preg_replace("/\+$/",'',$q);
+			$this->isallsearch = 1;
 		} elseif (preg_match('/[:@]/',$q)) {
 			$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$q.'%');//todo, maybe better handle this - jsut for legacy searches...
 			$this->sphinx['query'] .= " ".$q;
 		} else {
 			$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$q.'%');
-			$this->sphinx['query'] .= " ".preg_replace('/(^| )/','$1@title ',$q);
+			$this->sphinx['query'] .= " ".$q; //todo this is defaulting to searching all 
+			$this->changeindefault = 1;
 		}
 	}
 	
