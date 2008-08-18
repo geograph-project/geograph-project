@@ -493,9 +493,9 @@ class SearchCriteria
 			} elseif (preg_match('/[:@]/',$q)) {
 				$this->sphinx['query'] .= " ".$q;
 			} elseif (preg_match('/^\^.*\+$/',$q)) {
-				$this->sphinx['query'] .= " ".str_replace("NOT ",' -',str_replace(" AND ",' ',$q));
+				$this->sphinx['query'] .= " ".str_replace("NOT ",' -',str_replace(" AND ",' ',str_replace("+",'',$q)));
 			} else {
-				$this->sphinx['query'] .= " ".preg_replace('/(^| +)/','$1@title ',str_replace("NOT ",' -',str_replace(" AND ",' ',$q)));
+				$this->sphinx['query'] .= " ".str_replace("+",'',str_replace("NOT ",' -',str_replace(" AND ",' ',$q)));
 			}
 			
 		} elseif (strpos($q,'^') === 0) {
