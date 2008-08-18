@@ -39,7 +39,7 @@ Display:
 {/if}{/if}:
 
 {if $engine->fullText}
-	<div style="padding:20px;border:1px solid pink"><b>Not seeing the results you expect?</b> This search is powered by the new experimental Full-Text search index, which is less precise than the legacy search, but often results in quicker and more relevent results. You can access the <a href="/search.php?i={$i}&amp;legacy=true">old search here</a>.</div>
+	<div style="padding:20px;border:1px solid pink"><b>Not seeing the results you expect?</b> This search is powered by the new <a href="/help/search_new">experimental Full-Text search index</a>, which is less precise than the legacy search, but often results in quicker and more relevent results. You can access the <a href="/search.php?i={$i}&amp;legacy=true">old search here</a>.</div>
 	
 	{if $engine->criteria->isallsearch}
 		<p>Note: The new engine defaults to searching the whole entry (not just the title like in legacy), so + has no effect, to search just in the title prefix the word with "title:"</p>
@@ -47,4 +47,6 @@ Display:
 	{if $engine->criteria->changeindefault}
 		<p>Note: The new engine defaults to searching the whole entry (not just the title like in legacy), to search just in the title prefix the word with "title:"</p>
 	{/if}
+{else $engine->criteria->searchtext && $engine->criteria->sphinx.impossible}
+	<div style="padding:2px;border:1px solid gray; font-size:0.7em;text-align:center">You have dropped back into <a href="/help/search_new">legacy search mode</a>, the search options you have selected are not supported in the new search,<br/> you can try simplifing the choosen options to change mode.</div>
 {/if}
