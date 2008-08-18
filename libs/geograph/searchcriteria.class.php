@@ -488,14 +488,10 @@ class SearchCriteria
 			}
 			$sql_where .= ")";
 			
-			if (preg_match('/^\^/',$q)) {
-				$this->sphinx['impossible']++; 
-			} elseif (preg_match('/[:@]/',$q)) {
+			if (preg_match('/[:@"]/',$q)) { //already in sphinx format!
 				$this->sphinx['query'] .= " ".$q;
-			} elseif (preg_match('/^\^.*\+$/',$q)) {
-				$this->sphinx['query'] .= " ".str_replace("NOT ",' -',str_replace(" AND ",' ',str_replace("+",'',$q)));
 			} else {
-				$this->sphinx['query'] .= " ".str_replace("+",'',str_replace("NOT ",' -',str_replace(" AND ",' ',$q)));
+				$this->sphinx['query'] .= " ".preg_replace('/[\+^]+/','',str_replace("NOT ",' -',str_replace(" AND ",' ',$q)));
 			}
 			
 		} elseif (strpos($q,'^') === 0) {
