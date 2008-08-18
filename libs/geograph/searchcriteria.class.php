@@ -507,6 +507,7 @@ class SearchCriteria
 			$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';
 			$this->sphinx['query'] .= " ".preg_replace("/\+$/",'',$q);
 		} elseif (preg_match('/[:@]/',$q)) {
+			$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$q.'%');//todo, maybe better handle this - jsut for legacy searches...
 			$this->sphinx['query'] .= " ".$q;
 		} else {
 			$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$q.'%');
