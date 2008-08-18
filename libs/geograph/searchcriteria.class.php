@@ -515,6 +515,10 @@ class SearchCriteria
 			$this->sphinx['query'] .= " ".$q; //todo this is defaulting to searching all 
 			$this->changeindefault = 1;
 		}
+		$this->sphinx['query'] = preg_replace('/\b(day|month|year):/','taken$1:',$this->sphinx['query']);
+		$this->sphinx['query'] = preg_replace('/\b(gridref):/','grid_reference:',$this->sphinx['query']);
+		$this->sphinx['query'] = preg_replace('/\b(category):/','imageclass:',$this->sphinx['query']);
+		$this->sphinx['query'] = preg_replace('/\b(description):/','comment:',$this->sphinx['query']);
 	}
 	
 	function countSingleSquares($radius = 4) {

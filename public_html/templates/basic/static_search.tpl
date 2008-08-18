@@ -4,6 +4,15 @@
 
 <h2>Text <a href="/search.php">Search</a> Options</h2>
 
+
+<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
+We have recently introduced a new search engine, <a href="/help/search_new">see this page</a> for more details.<br/>
+</div>
+<br/>
+
+
+
 <div class="interestBox">Note: This page ONLY refers to the main <a href="/search.php">image search</a></div>
 
 <p><i>By default the geograph search just searches for the exact text you enter anywhere in the title, matching part words. (does not seperate into keywords)</i></p>
