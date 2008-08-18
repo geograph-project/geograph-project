@@ -40,4 +40,11 @@ Display:
 
 {if $engine->fullText}
 	<div style="padding:20px;border:1px solid pink"><b>Not seeing the results you expect?</b> This search is powered by the new experimental Full-Text search index, which is less precise than the legacy search, but often results in quicker and more relevent results. You can access the <a href="/search.php?i={$i}&amp;legacy=true">old search here</a>.</div>
+	
+	{if $engine->criteria->isallsearch}
+		<p>Note: The new engine defaults to searching the whole entry (not just the title like in legacy), so + has no effect, to search just in the title prefix the word with "title:"</p>
+	{/if}
+	{if $engine->criteria->changeindefault}
+		<p>Note: The new engine defaults to searching the whole entry (not just the title like in legacy), to search just in the title prefix the word with "title:"</p>
+	{/if}
 {/if}
