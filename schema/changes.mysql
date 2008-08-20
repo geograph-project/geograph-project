@@ -22,6 +22,9 @@ CREATE TABLE `smarty_cache_page` (
 
 
 
+alter table gridimage_ticket add index (`user_id`);
+
+
 ALTER TABLE `moderation_log` DROP INDEX `user_id` ;
 
 ALTER TABLE `moderation_log` CHANGE `old_status` `old_status` ENUM( 'rejected', 'pending', 'accepted', 'geograph', '' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'rejected';

@@ -39,11 +39,20 @@ if (isset($_REQUEST['inner'])) {
 	$template = 'content.tpl';
 }
 
+$db=NewADOConnection($GLOBALS['DSN']);
+
+$data = $db->getRow("show table status like 'content'");
+
+//when this table was modified
+$mtime = strtotime($data['Update_time']);
+	
+//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
+customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
 if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid))
 {
 
-	$db=NewADOConnection($GLOBALS['DSN']);
+
 	
 	$limit = 25;
 	
@@ -179,8 +188,6 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	$smarty->assign_by_ref('title', $title);
 	
 } else if ($template == 'content.tpl' && !$smarty->is_cached($template, $cacheid)) {
-	
-	$db=NewADOConnection($GLOBALS['DSN']);
 	
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;

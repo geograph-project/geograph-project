@@ -262,11 +262,11 @@ if ($pages>1)
 		<th>Size</th>
 		<th>Seeds</th>
 		<th>Peers</th>
-		<th>Completed D/Ls</th>
+		<th>Completed<br/>Downloads</th>
 		<?php
 		// Bytes mode off? Ignore the columns
 		if ($GLOBALS["countbytes"])
-			echo '<th>Bytes Transferred</th><th>Speed (rough estimate)</th>';
+			echo '<th>Bytes<br/>Transferred</th><th>Speed<br/>(estimated)</th>';
 		?>
 	</tr>
 	

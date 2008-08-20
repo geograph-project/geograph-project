@@ -22,12 +22,9 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 	// ref to the memcache object
 	$m = $GLOBALS['memcached_res'];
 	
-	// the key to store cache_ids under, used for clearing
-	$key = 'smarty_caches';
-
 	// check memcache object
 	if (!in_array(strtolower(get_class($m)),array('multiservermemcache','memcached'))) {
-        $smarty_obj->trigger_error('cache_handler: $GLOBALS[\'memcached_res\'] is not a memcached object');
+		$smarty_obj->trigger_error('cache_handler: $GLOBALS[\'memcached_res\'] is not a memcached object');
 		return false;
 	}
 	
@@ -41,7 +38,7 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 		$contents = $m->get($cache_file);
 		
 		// use compression
-		if($smarty_obj->use_gzip && function_exists("gzuncompress")) {
+		if(!empty($smarty_obj->use_gzip) && function_exists("gzuncompress")) {
 			$cache_content = gzuncompress($contents);
 		} else {
 			$cache_content = $contents;
@@ -52,7 +49,7 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 	
 	case 'write':
 		// use compression
-		if($smarty_obj->use_gzip && function_exists("gzcompress")) {
+		if(!empty($smarty_obj->use_gzip) && function_exists("gzcompress")) {
 			$contents = gzcompress($cache_content);
 		} else {
 			$contents = $cache_content;

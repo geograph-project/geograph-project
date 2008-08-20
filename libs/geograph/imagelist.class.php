@@ -379,10 +379,10 @@ class RecentImageList extends ImageList {
 	/**
 	* constructor - used to build a basic list (See getImages)
 	*/
-	function RecentImageList(&$smarty) {
+	function RecentImageList(&$smarty,$reference_index = 0) {
 		global $memcache;
 		
-		$mkey = rand(1,10);
+		$mkey = rand(1,10).'.'.$reference_index;
 		//fails quickly if not using memcached!
 		$this->images =& $memcache->name_get('ril',$mkey);
 		if ($this->images) {
@@ -392,7 +392,9 @@ class RecentImageList extends ImageList {
 		
 		$db=&$this->_getDB();
 		
-		$start = $db->getOne("select recent_id from gridimage_recent");
+		$where = ($reference_index)?" and reference_index = $reference_index":'';
+		
+		$start = $db->getOne("select recent_id from gridimage_recent where 1 $where");
 		
 		$offset=rand(1,230);
 		$ids = range($start+$offset,$start+$offset+20);
@@ -404,7 +406,7 @@ class RecentImageList extends ImageList {
 		$this->images=array();
 		$i=0;
 		
-		$recordSet = &$db->Execute("select * from gridimage_recent where recent_id in ($id_string) limit 5");
+		$recordSet = &$db->Execute("select * from gridimage_recent where recent_id in ($id_string) $where limit 5");
 		while (!$recordSet->EOF) 
 		{
 			$this->images[$i]=new GridImage;
