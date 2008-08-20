@@ -187,12 +187,12 @@ class sphinxwrapper {
 		$cl->SetMatchMode ( SPH_MATCH_EXTENDED );
 		$cl->SetLimits(0,1,0);
 		$res = $cl->Query ( $q, $index );
-		if ( $res===false )
-		{
-			print "\tQuery failed: -- please try again later.\n";
-			exit;
-		} else
-		{
+		if ( $res===false ) {
+			//lets make this non fatal
+			$this->query_info = $cl->GetLastError();
+			$this->resultCount = 0;
+			return 0;
+		} else {
 			if ( $cl->GetLastWarning() )
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 

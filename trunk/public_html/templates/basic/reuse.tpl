@@ -63,7 +63,7 @@ Instead download a copy, and upload it to your own webspace. Click: <b><a href="
 <div style="text-align:right; border-bottom:1px solid gray"><i>Thank you for your attention in this matter.</i></div>
 <br/><br/>
 
-<div style="margin-left:auto;margin-right:auto">Preview of this image</div>
+<div style="width:300px;margin-left:auto;margin-right:auto; text-align:center">Preview of this image</div>
 <div class="photoguide" style="margin-left:auto;margin-right:auto">
 	<div style="float:left;width:213px">
 		<a title="view full size image" href="/photo/{$image->gridimage_id}">

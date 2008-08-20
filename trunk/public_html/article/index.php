@@ -69,10 +69,19 @@ if ($isadmin) {
 		$smarty->clear_cache($template, $cacheid);
 	}
 }
+
+$db=NewADOConnection($GLOBALS['DSN']);
+
+$data = $db->getRow("show table status like 'article'");
+
+//when this table was modified
+$mtime = strtotime($data['Update_time']);
+	
+//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
+customCacheControl($mtime,$cacheid,($USER->user_id == 0));
+
 if (!$smarty->is_cached($template, $cacheid))
 {
-	
-	$db=NewADOConnection($GLOBALS['DSN']);
 	
 	if (!empty($_GET['user_id']) && preg_match('/^\d+$/',$_GET['user_id'])) {
 		$where = "AND article.user_id = {$_GET['user_id']}";

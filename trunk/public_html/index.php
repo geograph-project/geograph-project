@@ -60,7 +60,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	
 	//lets find some recent photos
-	new RecentImageList($smarty);
+	if ($CONF['template']=='ireland') {
+		new RecentImageList($smarty,2);
+	} else {
+		new RecentImageList($smarty);
+	}
+	
 	
 	$db=NewADOConnection($GLOBALS['DSN']);
 	
