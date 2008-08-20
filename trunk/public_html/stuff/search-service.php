@@ -84,6 +84,13 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 	} 
 
+	if (preg_match('/\bp(age|)(\d+)\s*$/',$q,$m)) {
+		$offset = min(max((intval($m[2])-1)*15,0),984);
+		$q = preg_replace('/\bp(age|)\d+\s*$/','',$q);
+	} else {
+		$offset = 0;
+	}
+
 	$qo = $q;
 	if (strlen($qo) > 64) {
 		$qo = '--complex query--';
@@ -138,7 +145,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$cl->SetWeights ( array ( 100, 1 ) );
 		$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
 		$cl->SetMatchMode ( $mode );
-		$cl->SetLimits(0,25);
+		$cl->SetLimits($offset,25);
 		$res = $cl->Query ( $q, $index );
 		
 		if (strlen($q) < 64 && $mode != SPH_MATCH_EXTENDED)
