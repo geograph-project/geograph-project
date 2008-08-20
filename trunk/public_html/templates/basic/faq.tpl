@@ -223,7 +223,7 @@ The <b>Geograph Website</b>:
 <div id="geographism">
 <a name="geographism"></a>
 <h3>What do all these strange words mean?</h3>
-	<p>Well, if it's a 'geographism' - a term developed during use on this site, then see <a href="/article/Geographisms">this glossary article</a> we have started compiling. There is also a wide range of sites dealing with Acronums, and Abbreviations, listed on {external href="http://www.dmoz.org/Reference/Dictionaries/By_Subject/Computers/Internet_Terms_and_Acronyms/" text="DMOZ here"}.</p>
+	<p>Well, if it's a 'geographism' - a term developed during use on this site, then see <a href="/article/Geographisms">this glossary article</a> we have started compiling. There is also a wide range of sites dealing with Acronyms, and Abbreviations, listed on {external href="http://www.dmoz.org/Reference/Dictionaries/By_Subject/Computers/Internet_Terms_and_Acronyms/" text="DMOZ here"}.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
