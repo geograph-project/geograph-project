@@ -39,14 +39,42 @@ Display:
 {/if}{/if}:
 
 {if $engine->fullText}
-	<div style="padding:20px;border:1px solid pink"><b>Not seeing the results you expect?</b> This search is powered by the new <a href="/help/search_new">experimental Full-Text search index</a>, which is less precise than the legacy search, but often results in quicker and more relevent results. You can access the <a href="/search.php?i={$i}&amp;legacy=true">old search here</a>.</div>
-	
-	{if $engine->criteria->isallsearch}
-		<p>Note: The new engine defaults to searching the whole entry (not just the title like in legacy), so + has no effect, to search just in the title prefix the word with "title:"</p>
-	{/if}
-	{if $engine->criteria->changeindefault}
-		<p>Note: The new engine defaults to searching the whole entry (not just the title like in legacy), to search just in the title prefix the word with "title:"</p>
-	{/if}
-{else $engine->criteria->searchtext && $engine->criteria->sphinx.impossible}
+	{literal}<script type="text/javascript">
+	function show_tree(id) {
+		document.getElementById("show"+id).style.display='';
+		document.getElementById("hide"+id).style.display='none';
+	}
+	function hide_tree(id) {
+		document.getElementById("show"+id).style.display='none';
+		document.getElementById("hide"+id).style.display='';
+	}
+	</script>{/literal}
+
+	<div class="interestBox" style="border:1px solid pink;display:none; " id="show1">
+		<h4>Not seeing the results you expect?</h4>
+		This search is powered by the new <a href="/help/search_new">experimental Full-Text search index</a>, which is less precise than the legacy search, but often results in quicker and more relevent results. You can access the <a href="/search.php?i={$i}&amp;legacy=true">old search here</a>.
+
+		{if $engine->criteria->isallsearch}
+			<p>Note: The new query engine searches the whole entry (not just the title like before), so + has no effect, to search just in the title prefix the word with "title:"</p>
+		{/if}
+		{if $engine->criteria->changeindefault}
+			<p>Note: The new query engine searches the whole entry (not just the title like before), to search just in the title prefix a keyword with "title:", example "title:bridge"</p>
+		{/if}
+		<a href="javascript:void(hide_tree(1));">close</a>
+	</div>
+
+	<div class="interestBox" style="border:1px solid pink; float:right; width:200px; position:relative; " id="hide1"><b>Not seeing the results you expect?</b>	<a href="javascript:void(show_tree(1));">expand...</a>
+		
+	</div>
+{elseif strlen($engine->criteria->searchtext) && $engine->criteria->sphinx.impossible}
 	<div style="padding:2px;border:1px solid gray; font-size:0.7em;text-align:center">You have dropped back into <a href="/help/search_new">legacy search mode</a>, the search options you have selected are not supported in the new search,<br/> you can try simplifing the choosen options to change mode.</div>
+{/if}
+
+{if $suggestions} 
+	<b>Did you mean:</b>
+	<ul>
+	{foreach from=$suggestions item=row}
+		<li><b><a href="/search.php?q={$row.query|escape:'url'}+near+{$row.gr}">{$row.query} <i>near</i> {$row.name}</a></b>? <small>({$row.localities})</small></li>
+	{/foreach}
+	</ul>
 {/if}

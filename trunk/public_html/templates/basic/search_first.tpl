@@ -33,9 +33,9 @@
 		 	 <td colspan="3" style="background:#dddddd;"><b>you can optionally limit to results to: </b></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="searchtext" id="l_searchtext"><b>containing text</b></label></td> 
+			 <td><label for="searchtext" id="l_searchtext"><b>containing keywords</b></label></td> 
 			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput"/><br/>
-			 <small>open <a href="/help/search" target="geo_help">text search help</a> in new window</small></td> 
+			 <small>open <a href="/help/search_new" target="geo_help">text search help</a> in new window</small></td> 
 			 <td>eg Bridge</td> 
 		  </tr> 
 		  <tr> 

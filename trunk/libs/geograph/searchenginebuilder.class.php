@@ -262,7 +262,7 @@ class SearchEngineBuilder extends SearchEngine
 			$nearstring = 'near';
 		}
 		$searchdesc = '';
-		if (!empty($dataarray['placename'])) {
+		if (!empty($dataarray['placename']) &&  ($dataarray['placename'] != '(anywhere)')) {
 			//check if we actully want to perform a textsearch (it comes through in the placename beucase of the way the multiple mathc page works)
 			if (strpos($dataarray['placename'],'text:') === 0) {
 				$dataarray['searchtext'] = preg_replace("/^text\:/",'',$dataarray['placename']);
@@ -274,22 +274,9 @@ class SearchEngineBuilder extends SearchEngine
 				unset($dataarray['placename']);
 			}
 		}
-		if (!empty($dataarray['q'])) {
-			//we coming from multiple - which means there might be a text search stored in a q
-			list($q,$placename) = preg_split('/\s+near\s+/',$dataarray['q']);
-			if ($placename && (empty($dataarray['searchtext']) || $dataarray['searchtext'] == $q)) {
-				$dataarray['searchtext'] = $q;
-				if (empty($dataarray['placename'])) {
-					$dataarray['placename'] = $placename;				
-				}
-			} elseif (!empty($dataarray['location'])) {
-				$dataarray['searchtext'] = $q;
-				if (empty($dataarray['placename'])) {
-					$dataarray['placename'] = $dataarray['location'];
-				}
-			}
-		}
-		if (!empty($dataarray['location']) && empty($dataarray['placename'])) {
+
+
+		if (!empty($dataarray['location']) &&  ($dataarray['location'] != '(anywhere)') && empty($dataarray['placename']) && empty($dataarray['gridref']) && empty($dataarray['postcode'])) {
 			if (preg_match("/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$dataarray['location'],$pc) 
 					&& !in_array($pc[1],array('SV','SX','SZ','TV','SU','TL','TM','SH','SJ','TG','SC','SD','NX','NY','NZ','OV','NS','NT','NU','NL','NM','NO','NF','NH','NJ','NK','NA','NB','NC','ND','HW','HY','HZ','HT','Q','D','C','J','H','F','O','T','R','X','V')) ) {
 				$dataarray['postcode'] = $dataarray['location'];		
@@ -298,6 +285,23 @@ class SearchEngineBuilder extends SearchEngine
 			} else {
 				$dataarray['placename'] = $dataarray['location'];
 			}
+		}
+
+		
+		if (!empty($dataarray['q'])) {
+			//we coming from multiple - which means there might be a text search stored in a q
+			list($q,$placename) = preg_split('/\s+near\s+/',$dataarray['q']);
+			if (!empty($dataarray['location']) &&  ($dataarray['location'] != '(anywhere)')) {
+				$dataarray['searchtext'] = $q;
+				if (empty($dataarray['placename'])) {
+					$dataarray['placename'] = $dataarray['location'];
+				}
+			} elseif ($placename && (empty($dataarray['searchtext']) || $dataarray['searchtext'] == $q)) {
+				$dataarray['searchtext'] = $q;
+				if (empty($dataarray['placename'])) {
+					$dataarray['placename'] = $placename;				
+				}
+			} 
 		}
 		
 		if (!empty($dataarray['postcode'])) {

@@ -249,7 +249,7 @@ END;
 	
 		###################
 		# run_via_sphinx
-		if (empty($_GET['legacy']) && !empty($CONF['sphinx_host']) && isset($this->criteria->sphinx) && strlen($this->criteria->sphinx['query']) && $this->criteria->sphinx['impossible'] == 0) {
+		if (empty($_GET['legacy']) && !empty($CONF['sphinx_host']) && isset($this->criteria->sphinx) && (strlen($this->criteria->sphinx['query']) || !empty($this->criteria->sphinx['d'])) && $this->criteria->sphinx['impossible'] == 0) {
 			
 			$sphinx = new sphinxwrapper($this->criteria->sphinx['query']);
 
@@ -281,7 +281,7 @@ END;
 				$sphinx->upper_limit = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 			}
 			
-			$ids = $sphinx->returnImageIds($pg);
+			$ids = $sphinx->returnImageIds($pg,empty($this->countOnly));
 
 			$this->resultCount = $sphinx->resultCount;
 			$this->numberOfPages = $sphinx->numberOfPages;

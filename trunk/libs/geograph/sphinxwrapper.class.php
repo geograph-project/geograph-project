@@ -226,6 +226,11 @@ class sphinxwrapper {
 			$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
 		}
 		$cl->SetMatchMode ( $mode );
+	
+		if ($didyoumean) {
+			if (strlen($q) < 64) 
+				$GLOBALS['smarty']->assign("suggestions",$this->didYouMean($q));
+		}
 
 		if (!empty($this->submitted_range)) {
 			$cl->SetFilterRange ('submitted', $this->submitted_range[0], $this->submitted_range[1]);
@@ -241,11 +246,7 @@ class sphinxwrapper {
 		$cl->SetLimits($sqlpage,$this->pageSize);
 		
 		$res = $cl->Query ( $q, $index );
-		
-		if ($didyoumean) {
-			if (strlen($q) < 64)
-				$smarty->assign("suggestions",$this->didYouMean($q,$cl));
-		}
+
 		
 		// --------------
 		
@@ -328,6 +329,51 @@ class sphinxwrapper {
 		} else {
 			$r = "\t--none--";
 		}
+	}
+	function didYouMean($q = '') {
+		if (empty($q)) {
+			$q = $this->q;
+		}
+		$cl = $this->_getClient();
+		$cl->SetMatchMode ( SPH_MATCH_ANY );
+		$res = $cl->Query ( preg_replace('/\s*\b(the|to|of)\b\s*/',' ',$q), 'gaz' );
+		
+		$arr = array();
+		if ( $res!==false && is_array($res["matches"]) )
+		{
+			if ( $cl->GetLastWarning() )
+				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
+
+			$query_info = "Query '$qo' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+
+			$db=NewADOConnection(!empty($GLOBALS['DSN2'])?$GLOBALS['DSN2']:$GLOBALS['DSN']);
+
+			$ids = array_keys($res["matches"]);
+
+			$where = "id IN(".join(",",$ids).")";
+
+			$sql = "SELECT gr,name,localities
+			FROM placename_index
+			WHERE $where
+			LIMIT 60";
+
+			$results = $db->getAll($sql);
+			$r = '';
+			if (!empty($results) && count($results)) {
+				foreach ($results as $row) {
+					foreach (preg_split('/[\/,\|]+/',trim(strtolower($row['name']))) as $word) {
+						$word = preg_replace('/[^\w ]+/','',$word);
+						if (strpos($q,$word) !== FALSE) {
+							$row['query'] = str_replace($word,'',$q);
+							$arr[] = $row;
+						}
+
+					}
+				}
+			}
+		}
+
+		return $arr;
 	}
 	
 	function BuildExcerpts($docs, $index, $words, $opts=array() ) {
