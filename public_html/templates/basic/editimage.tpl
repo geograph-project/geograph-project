@@ -180,7 +180,7 @@
 
 	
 
-	{if $ticket->changes && ($isadmin or $isowner or ($ticket->user_id eq $user->user_id and $ticket->notify=='suggestor') )}
+	{if $ticket->changes}
 
 		<div class="ticketfields" style="padding-bottom:3px;margin-bottom:3px;border-bottom:1px solid gray">
 		{foreach from=$ticket->changes item=item}
@@ -246,7 +246,18 @@
 			{if $isadmin or $isowner or ($user->user_id eq $ticket->user_id && $ticket->notify eq 'suggestor')}
 				{foreach from=$ticket->comments item=comment}
 				<div class="ticketnote">
-					<div class="ticketnotehdr">{if $comment.user_id ne $ticket->user_id or ($isadmin || $ticket->public eq 'everyone' || ($isowner && $ticket->public eq 'owner')) }{$comment.realname}{else}ticket suggestor{/if} {if $comment.user_id == $image->user_id}(Photo Owner){elseif $comment.moderator}(Moderator){/if} wrote on {$comment.added|date_format:"%a, %e %b %Y at %H:%M"}</div>
+					<div class="ticketnotehdr">
+					{if $comment.user_id ne $ticket->user_id or ($isadmin || $ticket->public eq 'everyone' || ($isowner && $ticket->public eq 'owner')) }
+						{$comment.realname}
+					{else}
+						ticket suggestor
+					{/if} 
+					{if $comment.user_id == $image->user_id}
+						(Photo Owner)
+					{elseif $comment.moderator}
+						(Moderator)
+					{/if}
+					wrote on {$comment.added|date_format:"%a, %e %b %Y at %H:%M"}</div>
 					{$comment.comment|escape:'html'|geographlinks}
 
 				</div>
