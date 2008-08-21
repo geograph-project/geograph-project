@@ -658,7 +658,7 @@ class SearchCriteria_All extends SearchCriteria
 			$users = $db->GetAll("select user_id,realname,nickname from user where user_id={$m[1]} limit 2");
 		} elseif (!preg_match('/\bnear\b/',$username)) {
 			$username2 = $db->Quote($username);
-			$users = $db->GetAll("select user_id,realname,nickname from user where MATCH (realname,nickname) AGAINST ($username2) order by (nickname=$username2 or realname=$username2) desc limit 2");
+			$users = $db->GetAll("select user_id,realname,nickname from user inner join user_stat using (user_id) where rights LIKE '%basic%' AND MATCH (realname,nickname) AGAINST ($username2) order by (nickname=$username2 or realname=$username2) desc limit 2");
 		}
 		if (count($users) == 1 || 
 			( count($users) && 
