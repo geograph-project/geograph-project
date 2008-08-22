@@ -339,9 +339,9 @@ class sphinxwrapper {
 		$q = preg_replace('/@([a-z_]+) /','',$q);
 		$cl = $this->_getClient();
 		$cl->SetMatchMode ( SPH_MATCH_ANY );
-		$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, sort_order DESC, @id DESC" );
+		$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
 		$cl->SetLimits(0,100);
-		$res = $cl->Query ( preg_replace('/\s*\b(the|to|of)\b\s*/',' ',$q), 'gaz' );
+		$res = $cl->Query ( preg_replace('/\s*\b(the|to|of)\b\s*/',' ',$q), 'gaz_stopped' );
 		
 		$arr = array();
 		if ( $res!==false && is_array($res["matches"]) )

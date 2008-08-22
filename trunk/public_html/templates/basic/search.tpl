@@ -17,7 +17,6 @@
 	{if $user->registered}
 		<a href="/search.php?form=check" class="tab">check submissions</a>
 	{/if}	
-	<a href="/full-text.php" class="tab">full-text <sup style="color:red">beta!</sup></a>
 </div>
 <div style="position:relative;" class="interestBox">
 			<div style="position:relative;">

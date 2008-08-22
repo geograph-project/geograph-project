@@ -29,6 +29,15 @@ Display:
 
 <h2>Search Results</h2>
 
+{if $suggestions} 
+	<div><b>Did you mean:</b>
+	<ul>
+	{foreach from=$suggestions item=row}
+		<li><b><a href="/search.php?q={$row.query|escape:'url'}+near+{$row.gr}">{$row.query} <i>near</i> {$row.name}</a></b>? <small>({$row.localities})</small></li>
+	{/foreach}
+	</ul></div>
+{/if}
+
 <p>Your search for images<i>{$engine->criteria->searchdesc|escape:"html"}</i>, returns 
 {if $engine->pageOneOnly && $engine->resultCount == $engine->numberofimages}
 	<acronym title="to keep server load under control, we delay calculating the total">many</acronym> images
@@ -70,11 +79,3 @@ Display:
 	<div style="padding:2px;border:1px solid gray; font-size:0.7em;text-align:center">You have dropped back into <a href="/help/search_new">legacy search mode</a>, the search options you have selected are not supported in the new search,<br/> you can try simplifing the choosen options to change mode.</div>
 {/if}
 
-{if $suggestions} 
-	<b>Did you mean:</b>
-	<ul>
-	{foreach from=$suggestions item=row}
-		<li><b><a href="/search.php?q={$row.query|escape:'url'}+near+{$row.gr}">{$row.query} <i>near</i> {$row.name}</a></b>? <small>({$row.localities})</small></li>
-	{/foreach}
-	</ul>
-{/if}
