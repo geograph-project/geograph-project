@@ -1,6 +1,10 @@
 {assign var="page_title" value="Search Results"}
 
 {include file="_basic_begin.tpl"}
+<div style="float:right">
+	<a href="/search.php?q={searchq|escape:"url"}">Run this query in the Full Search</a>
+</div>
+
 <div id="maincontent">
 {if $suggestions} 
 	<b>Did you mean:</b>
