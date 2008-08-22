@@ -24,36 +24,44 @@
 {/foreach}
 
 {if !$criteria->ismore}
-<br/>
-<input type="radio" name="{$multipleon}" value="{$criteria->searchq|escape:"html"}?" id="domore">
-<label for="domore"><b>Place looking for not listed above? Try a wider search.</b></label> <br/>		
+	<br/>
+	<input type="radio" name="{$multipleon}" value="{$criteria->searchq|escape:"html"}?" id="domore">
+	<label for="domore"><b>Place looking for not listed above? Try a wider search.</b></label> <br/>		
 {/if}
 
 {if $pos_realname}
-<br/>
-<input type="radio" name="{$multipleon}" value="user:{$pos_user_id}" id="douser">
-<label for="douser"><i>Perform a search for pictures taken by '<a href="/profile/{$pos_user_id}" title="profile for {$pos_realname}">{$pos_realname}</a>' {if $pos_nickname}(nickname: '{$pos_nickname}'){/if}</i></label> <br/>		
+	<br/>
+	<input type="radio" name="{$multipleon}" value="user:{$pos_user_id}" id="douser">
+	<label for="douser"><i>Perform a search for pictures taken by '<a href="/profile/{$pos_user_id}" title="profile for {$pos_realname}">{$pos_realname}</a>' {if $pos_nickname}(nickname: '{$pos_nickname}'){/if}</i></label> <br/>		
 {/if}
 
 <br/>
 {if preg_match('/near\s+/',$post.q) && !preg_match('/near\s+\(anywhere\)/',$post.q)}
-<input type="radio" name="{$multipleon}" value="text:{$post.q|replace:'near ':'AND '}" id="dotext">
-<label for="dotext"><i>Perform a title search for '{$post.q|replace:'near ':'AND '}'</i></label> <br/>
-{if !preg_match('/\+$/',$criteria->searchq)}
-<input type="radio" name="{$multipleon}" value="text:{$post.q|replace:' near ':'+ AND '}+" id="dotext2">
-&nbsp;<label for="dotext2"><i>Perform a text search for '{$post.q|replace:'near ':'AND '}' in title and description</i></label> <br/>		
+	<input type="radio" name="{$multipleon}" value="text:{$post.q|replace:'near ':'AND '}" id="dotext">
+	<label for="dotext"><i>Perform a title search for '{$post.q|replace:'near ':'AND '}'</i></label> <br/>
+	{if !preg_match('/\+$/',$criteria->searchq)}
+		<input type="radio" name="{$multipleon}" value="text:{$post.q|replace:' near ':'+ AND '}+" id="dotext2">
+		&nbsp;<label for="dotext2"><i>Perform a text search for '{$post.q|replace:'near ':'AND '}' in title and description</i></label> <br/>		
+	{/if}
 {/if}
-{/if}
+
+
 <input type="radio" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}" id="dotext">
-<label for="dotext"><i>Perform a title search for '{$criteria->searchq|escape:"html"}'</i></label> <br/>	
-{if !preg_match('/\+$/',$criteria->searchq)}
-<input type="radio" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}+" id="dotext2">
-&nbsp;<label for="dotext2"><i>Perform a text search for '{$criteria->searchq|escape:"html"}' in title and description</i></label> <br/>		
-{/if}
+<label for="dotext"><i>Perform a text keyword search for '{$criteria->searchq|escape:"html"}'</i></label> <br/>	
+
 {/dynamic}
 <p><input type="submit" name="refine" value="Refine"> <input type="submit" value="Find &gt;"></p>
 
 </form>	
+
+{if $suggestions} 
+	<div><b>Did you mean:</b>
+	<ul>
+	{foreach from=$suggestions item=row}
+		<li><b><a href="/search.php?q={$row.query|escape:'url'}+near+{$row.gr}">{$row.query} <i>near</i> {$row.name}</a></b>? <small>({$row.localities})</small></li>
+	{/foreach}
+	</ul></div>
+{/if}
 
 <div class="copyright">Great Britain locations based upon 1:50 000 Scale Gazetteer with the permission of Ordnance Survey on behalf of The Controller of Her Majesty's Stationery Office,<br/>
 &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.<br/>
