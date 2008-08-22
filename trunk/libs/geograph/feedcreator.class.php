@@ -1274,9 +1274,10 @@ xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com
 \n";
 			
 		for ($i=0;$i<count($this->items);$i++) {
+			$title = utf8_encode(htmlnumericentities(strip_tags($this->items[$i]->title)));
 			$feed.= "<wpt lat=\"".$this->items[$i]->lat."\" lon=\"".$this->items[$i]->long."\">
-				<name>".substr(utf8_encode(htmlnumericentities(strip_tags($this->items[$i]->title)),0,6))."</name>
-				<desc>".utf8_encode(htmlnumericentities(strip_tags($this->items[$i]->title)))."</desc>
+				<name>".substr($title,0,6)."</name>
+				<desc>".$title."</desc>
 				<src>".htmlspecialchars($this->items[$i]->author)."</src>
 				<url>".htmlspecialchars($this->items[$i]->link)."</url>
 			</wpt>\n";
