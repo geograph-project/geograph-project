@@ -2,7 +2,8 @@
 {include file="_std_begin.tpl"}
 {dynamic}
 	<div style="padding:5px;background:#dddddd;position:relative; float:right; font-size:0.8em; z-index:100; border:1px solid blue">
-	Quick links:<br/><br/>
+	Quick links: <a href="javascript:void(show_tree(1));" id="hide1">Expand...</a>
+	<span style="display:none" id="show1"><a href="javascript:void(hide_tree(1));">Hide</a><br/><br/>
 	<b>All Geograph Images</b>: <br/>
 	&nbsp;&nbsp;&nbsp;<a href="/kml-superlayer.php" title="Geograph Superlayer" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (<b>GE Version 4+</b>)<br/>
 	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/ig/directory?synd=mpl&pid=mpl&features=sharedmap%2Cgeofeed&backlink=http%3A%2F%2Fmaps.google.co.uk%2Fmaps%2Fmm%3Fmapprev%3D1%26ie%3DUTF8%26z%3D5%26om%3D1&num=24&url=http://www.geograph.org.uk/stuff/gmapplet0.xml" text="Google Maps Mapplet"}<br/>
@@ -24,7 +25,7 @@
 	<small><small><i>Last updated: {$coverage_updated}</i></small></small><br/> 
 	<br/> 
 	<b>Geograph Layer Collection</b>:<br/>
-	&nbsp;&nbsp;&nbsp;<a href="/kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> <small><small>- includes access to<br/> nearly all the features on this page and more!</small></small>
+	&nbsp;&nbsp;&nbsp;<a href="/kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> <small><small>- includes access to<br/> nearly all the features on this page and more!</small></small></span>
 	</div>
 	 
 	 <h2>View Geograph Images using KML</h2> 
@@ -58,14 +59,21 @@
 	
 	{if $i} 
 	
-	<div class="interestBox">
+	<div class="interestBox" style="background-color:#eeeeee">
 	
 		<input type="hidden" name="i" value="{$i}"/>
-		Your <a href="/search.php?i={$i}">search for images<i>{$engine->criteria->searchdesc|escape:"html"}</i></a>, returns 
+		Your <a href="/search.php?i={$i}"><b>search for images<i>{$engine->criteria->searchdesc|escape:"html"}</i></b></a>, returns 
 		<b>{$engine->resultCount}</b> results.	
 		{if $engine->criteria->searchclass != 'Special'}[<a href="search.php?i={$i}&amp;form=advanced">refine</a>]{/if}
 		{if $engine->resultCount == 0} 
 			<p>Please enter <a href="/search.php">another search</a>, or select <a href="/kml.php">common exports</a></p>
+		{/if}
+		
+		{if $engine->fullText}
+			<br/><br/>
+			<div style="padding:2px;border:1px solid gray; font-size:0.7em;text-align:center">
+			This search is powered by the new <a href="/help/search_new">experimental Full-Text search index</a>, which in some ways is less precise than the legacy search, but often results in quicker and more relevent results. However at this time its not fully compatible with all KML exports, such options are curretly hidden.</div>
+			<br/><br/>
 		{/if}
 	{else} 
 	
@@ -77,37 +85,36 @@
 		
 		Or perform a <a href="/search.php">search</a> and 
 		look for the KML link at the foot of the results page.
+		<br/><br/>
 	{/if}
-	<br/><br/>
-	<div style="border:1px solid red; padding: 10px;">
-	<input type="submit" name="submit" style="font-size:1.1em" value="Download KML file ({if $engine->resultCount > $engine->criteria->resultsperpage}{$engine->criteria->resultsperpage}{else}{$engine->resultCount}{/if} images)..."/> <span id="advtoggle"></span>
-	</div>
+	
+
 	
 	<div id="advanced">
 	{if $i && $engine->resultCount || !$i}	
 	 	<h3>Download type:</h3> 
 	 	<label for="page">Download Page</label>
-				<input type="text" name="page" value="{$currentPage}" size="3" id="page"/> of {if $engine->numberOfPages}{$engine->numberOfPages}{else}results{/if} in...
+				<input type="text" name="page" value="{$currentPage}" size="3" id="page"/> of {if $engine->numberOfPages}{$engine->numberOfPages}{else}results{/if} in {if $engine->fullText && $engine->resultCount > 1000}(only 1000 results available){/if} ...
 		<table border="1" cellpadding="3" cellspacing="0"> 
 		  <tr> 
 			 <td><input type="radio" name="type" value="live" id="type_live"/></td> 
 			 <td><b><label for="type_live"><big><acronym title="Open on maps.live.com">maps.live.com</acronym></big></label></b><br/>
-			 Open search results on the <b>maps.live.com</b> website.</td>  
+			 Open search results on the <b>maps.live.com</b> website. (will automatically update)</td>  
 		  </tr> 
 		  <tr> 
 			 <td><input type="radio" name="type" value="maps" id="type_maps"/></td> 
-			 <td><b><label for="type_maps"><big><acronym title="Open in Google Maps">Maps</acronym></big></label></b><br/>
-			 Open search results in the <b>Google Maps UK</b> website.</td> 
+			 <td><b><label for="type_maps"><big><acronym title="Open in Google Maps">Google Maps</acronym></big></label></b><br/>
+			 Open search results in the <b>Google Maps UK</b> website. (will automatically update)</td> 
 		  </tr> 
 		  <tr> 
 			 <td><input type="radio" name="type" value="static" id="type_static"
 				checked="checked"/></td> 
-			 <td><b><label for="type_static"><big><acronym title="Static One Off Download">Simple</acronym></big></label></b><br/>
-			 View your search results in <b>Google Earth</b> by downloading the KML file.</td> 
+			 <td><b><label for="type_static"><big><acronym title="Static One Off Download">Google Earth</acronym></big></label></b><br/>
+			 View your search results in <b>Google Earth</b> by downloading the KML file. Downloads the raw data which will not update.</td> 
 		  </tr> 
 		  <tr> 
 			 <td><input type="radio" name="type" value="time" id="type_time"/></td> 
-			 <td><b><label for="type_time"><big><acronym title="Time-Based Refresh Network Link">Automatic Updates</acronym></big></label></b> <br/>
+			 <td><b><label for="type_time"><big><acronym title="Time-Based Refresh Network Link">Automatic Updates for Google Earth</acronym></big></label></b> <br/>
 			 Like 'Simple', but <b>Google Earth</b> will refresh the results <label>once every 
 				<select name="refresh" size="1"> 
 				  <option value="3600">Hour</option> 
@@ -117,7 +124,7 @@
 				</select></label></td> 
 		  </tr> 
 		</table> 
-		
+		{if !$engine->fullText}
 		<br/> -or - <br/><br/>
 		 For a large result set covering a wide area, this option allows the application
 		 to just show the photos within the area of view. As you scroll around, will
@@ -140,14 +147,7 @@
 		<ul><li> (if you have GE4+ it is recommended to use the <a href="/kml.php">superlayer</a>, however you will not get the filtering of the results, and will see all images)</li></ul>
 		
 		<input type="hidden" name="simple" value="1"/>
-		<!--
-		<h3>View Type:</h3> 
-		<div style="float:left;position:relative;width:50%">
-			<div><input type="radio" name="simple" value="1" id="simple_1"
-				checked="checked"> <b><label for="simple_1">Image Title pops up when point at image</label></b></div> 
-			<div><input type="radio" name="simple" value="0" id="simple_0"> <b><label for="simple_0">Image Title is always visible</label></b></div> 
-		</div> 
-		-->
+		{/if}
 		
 		
 		<br style="clear:both"/>
@@ -156,26 +156,53 @@
 	
 	</div>	
 	
+	<div style="border:1px solid red; padding: 10px;">
+	<input type="submit" name="submit" style="font-size:1.1em" value="Download KML file ({if $engine->resultCount > $engine->criteria->resultsperpage}{$engine->criteria->resultsperpage}{else}{$engine->resultCount}{/if} images)..."/> <div id="advtoggle"></div>
 	</div>
-	{if !$adv} 
+	
+	</div>
+	
 	<script type="text/javascript">
 	{literal}
-	var advanced=document.getElementById('advanced');
-	advanced.style.display='none';
-	
-	var advtoggle=document.getElementById('advtoggle');
-	advtoggle.innerHTML=' <a href="#" onclick="showAdvanced()">[<b>open advanced options</b> (including opening results in Google Maps)...]</a>';
-	
-	function showAdvanced()
-	{
+	function hideAdvanced() {
+		var advanced=document.getElementById('advanced');
+		advanced.style.display='none';
+
+		var advtoggle=document.getElementById('advtoggle');
+		advtoggle.innerHTML='<br/>&middot; Should open in Google Earth, alternativly <a href="#" onclick="return showAdvanced()"><b>open advanced panel</b></a> for more options';
+	}
+	function showQuickLinks() {
+		show_tree(1);
+	}
+	{/literal}
+	{if !$adv} 
+	AttachEvent(window,'load',hideAdvanced,false);
+	{/if}
+	{if !$i} 
+	AttachEvent(window,'load',showQuickLinks,false);
+	{/if}
+	{literal}
+	function showAdvanced()	{
 		var advanced=document.getElementById('advanced');
 		advanced.style.display='block';
 		var advtoggle=document.getElementById('advtoggle');
 		advtoggle.style.display='none';
+		return false;
 	}
+
+	function show_tree(id) {
+		document.getElementById("show"+id).style.display='';
+		document.getElementById("hide"+id).style.display='none';
+	}
+	function hide_tree(id) {
+		document.getElementById("show"+id).style.display='none';
+		document.getElementById("hide"+id).style.display='';
+	}
+
+	
 	{/literal}
 	</script>
-	{/if}
+	
 	</form>
 {/dynamic} 
 
@@ -185,6 +212,6 @@
 <p style="background-color:lightgreen;padding:10px;">Alternatively you can load the <a href="/gpx.php">GPX</a> files into Google Earth, to produce coverage maps. (rather than loading the individual images).</p>
 {/if}
 
-<div class="copyright">Google Earth and Google Maps are registered trademarks of Google Inc. Geograph is not affiliated with Google.</div>
+<div class="copyright">{external href="http://www.opengeospatial.org/standards/kml/" text="KML"} is now owned and controled by Open Geospatial Consortium Inc.<br/>Google Earth and Google Maps are registered trademarks of Google Inc. Geograph is not affiliated with Google.</div>
 
 {include file="_std_end.tpl"}
