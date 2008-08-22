@@ -291,10 +291,7 @@ function markImage(image) {
 	if (current) {
 		re = new RegExp("\\b"+image+"\\b");
 		if (current.search(re) > -1) {
-			newCookie = current.replace(re,',');
-			newCookie = newCookie.replace(/,,/g,',');
-			newCookie = newCookie.replace(/^,/,'');
-			newCookie = newCookie.replace(/,$/,'');
+			newCookie = current.replace(re,',').commatrim();
 			newtext = 'Mark';
 		} else {
 			newCookie = current + ',' + image;
@@ -314,7 +311,7 @@ function markImage(image) {
 }
 
 String.prototype.commatrim = function () {
-	return this.replace(/^,+|,+$/g,"");
+	return this.replace(/^,+|,+$/g,"").replace(/,,/g,',');
 }
 
 function importToMarkedImages() {
