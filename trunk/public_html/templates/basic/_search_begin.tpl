@@ -38,7 +38,7 @@ Display:
 	the following
 {/if}{/if}:
 
-{if $engine->fullText}
+{if $engine->fullText && !strpos($engine->criteria->searchtext,':')}
 	{literal}<script type="text/javascript">
 	function show_tree(id) {
 		document.getElementById("show"+id).style.display='';
@@ -52,13 +52,13 @@ Display:
 
 	<div class="interestBox" style="border:1px solid pink;display:none; " id="show1">
 		<h4>Not seeing the results you expect?</h4>
-		This search is powered by the new <a href="/help/search_new">experimental Full-Text search index</a>, which is less precise than the legacy search, but often results in quicker and more relevent results. You can access the <a href="/search.php?i={$i}&amp;legacy=true">old search here</a>.
+		This search is powered by the new <a href="/help/search_new">experimental Full-Text search index</a>, which in some ways is less precise than the legacy search, but often results in quicker and more relevent results. You can access the <a href="/search.php?i={$i}&amp;legacy=true">old search here</a>.<br/><br/>
 
 		{if $engine->criteria->isallsearch}
-			<p>Note: The new query engine searches the whole entry (not just the title like before), so + has no effect, to search just in the title prefix the word with "title:"</p>
+			Note: The new query engine searches the whole entry (not just the title like before), so + has no effect, to search just in the title prefix the word with "title:"<br/><br/>
 		{/if}
 		{if $engine->criteria->changeindefault}
-			<p>Note: The new query engine searches the whole entry (not just the title like before), to search just in the title prefix a keyword with "title:", example "title:bridge"</p>
+			Note: The new query engine searches the whole entry (not just the title like before), to search just in the title prefix a keyword with "title:", example "title:bridge"<br/><br/>
 		{/if}
 		<a href="javascript:void(hide_tree(1));">close</a>
 	</div>

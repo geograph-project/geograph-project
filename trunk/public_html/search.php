@@ -897,7 +897,7 @@ if (isset($_GET['fav']) && $i) {
 			} else {
 				$a["{$row['searchdesc']},{$row['searchq']},{$row['displayclass']},{$row['resultsperpage']}"] = 1;
 				if ($row['searchq'] == "inner join gridimage_query using (gridimage_id) where query_id = $i") {
-					$recentsearchs[$i]['edit'] = 1;
+					//todo $recentsearchs[$i]['edit'] = 1;
 				}
 			}
 		}

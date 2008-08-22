@@ -53,6 +53,8 @@ class sphinxwrapper {
 		
 		$q = trim(preg_replace('/[^\w~\|\(\)@"\/-]+/',' ',trim(strtolower($q))));
 		
+		$q = preg_replace('/(\w+)(-\w+[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\""',$q);
+		
 		$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,2} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
 		
 		$this->q = $q;
@@ -217,6 +219,11 @@ class sphinxwrapper {
 		} elseif (preg_match('/[~\|\(\)@"\/-]/',$q)) {
 			$mode = SPH_MATCH_EXTENDED;
 		} 
+		if ($didyoumean && isset($GLOBALS['smarty'])) {
+			if (strlen($q) < 64) 
+				$GLOBALS['smarty']->assign("suggestions",$this->didYouMean($q));
+		}
+
 		$index = "gi_stemmed,gi_delta_stemmed";
 		
 		$cl->SetWeights ( array ( 100, 1 ) );
@@ -227,11 +234,6 @@ class sphinxwrapper {
 		}
 		$cl->SetMatchMode ( $mode );
 	
-		if ($didyoumean) {
-			if (strlen($q) < 64) 
-				$GLOBALS['smarty']->assign("suggestions",$this->didYouMean($q));
-		}
-
 		if (!empty($this->submitted_range)) {
 			$cl->SetFilterRange ('submitted', $this->submitted_range[0], $this->submitted_range[1]);
 		}
@@ -334,8 +336,11 @@ class sphinxwrapper {
 		if (empty($q)) {
 			$q = $this->q;
 		}
+		$q = preg_replace('/@([a-z_]+) /','',$q);
 		$cl = $this->_getClient();
 		$cl->SetMatchMode ( SPH_MATCH_ANY );
+		$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, sort_order DESC, @id DESC" );
+		$cl->SetLimits(0,100);
 		$res = $cl->Query ( preg_replace('/\s*\b(the|to|of)\b\s*/',' ',$q), 'gaz' );
 		
 		$arr = array();
@@ -372,7 +377,7 @@ class sphinxwrapper {
 				}
 			}
 		}
-
+		//todo maybe check users too? ( then skip setByUsername when building search!) 
 		return $arr;
 	}
 	

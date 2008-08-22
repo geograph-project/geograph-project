@@ -25,7 +25,7 @@ require_once('geograph/global.inc.php');
 
 
 
-customGZipHandlerStart();
+#customGZipHandlerStart();
 
 $smarty = new GeographPage;
 
@@ -205,11 +205,12 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 			$images = array();
 			foreach ($ids as $c => $id) {
-				$row = $rows[$id];
-				$gridimage = new GridImage;
-				$gridimage->fastInit($rows[$id]);
-				
-				$images[] = $gridimage;
+				if ($row = $rows[$id]) {
+					$gridimage = new GridImage;
+					$gridimage->fastInit($rows[$id]);
+
+					$images[] = $gridimage;
+				}
 			}
 			$smarty->assign_by_ref("images",$images);
 			$smarty->assign("query_info",$query_info);

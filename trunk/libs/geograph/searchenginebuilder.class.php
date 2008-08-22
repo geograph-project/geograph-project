@@ -84,7 +84,7 @@ class SearchEngineBuilder extends SearchEngine
 			$square=new GridSquare;
 			$grid_ok=$square->setByFullGridRef($gr[1].$gr[2].$gr[3],false,true);
 			if ($grid_ok || $square->x && $square->y) {
-				if ($square->imagecount && $autoredirect == 'simple') {
+				if ($square->imagecount && $autoredirect == 'simple' && strlen($q)-strlen($gr[0]) < 2) {
 					header("Location:http://{$_SERVER['HTTP_HOST']}/gridref/{$q}");
 					print "<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/{$q}\">View Pictures</a>";
 					exit;		
@@ -129,7 +129,7 @@ class SearchEngineBuilder extends SearchEngine
 
 		$criteria = new SearchCriteria_Placename();
 
-		if ($placename != '(anywhere)') {
+		if ($placename != '(anywhere)' && strpos($q,':') === FALSE) {
 			if (!empty($placename)) {
 				$criteria->setByPlacename($placename);
 			} elseif (!$location) {
@@ -151,7 +151,7 @@ class SearchEngineBuilder extends SearchEngine
 			$location = $criteria->placename;
 		} 
 		if (($q) && ((!$criteria->is_multiple && empty($criteria->placename) ) || $placename) ) {
-			if (preg_match('/(^\^|\+$)/',$q) || preg_match('/\b(OR|AND|NOT)\b/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q)) {
+			if (preg_match('/(^\^|\+$)/',$q) || preg_match('/\b(OR|AND|NOT)\b/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q) || strpos($q,':')) {
 				$searchtext = $q;
 				$searchdesc = ", matching '".$q."' ".$searchdesc;
 			} else {
@@ -399,7 +399,7 @@ class SearchEngineBuilder extends SearchEngine
 		if (!empty($dataarray['searchtext'])) {
 			$dataarray['searchtext'] = trim($dataarray['searchtext']);
 			$searchtext = $dataarray['searchtext'];
-			if (preg_match('/^\^.*\+$/',$dataarray['searchtext']) || preg_match('/\b(OR|AND|NOT)\b/',$dataarray['searchtext']) || preg_match('/(^|\s+)-([\w^]+)/',$dataarray['searchtext'])) {
+			if (preg_match('/^\^.*\+$/',$dataarray['searchtext']) || preg_match('/\b(OR|AND|NOT)\b/',$dataarray['searchtext']) || preg_match('/(^|\s+)-([\w^]+)/',$dataarray['searchtext']) || strpos($dataarray['searchtext'],':')) {
 				$searchdesc = ", matching '".$dataarray['searchtext']."' ".$searchdesc;
 			} elseif (preg_match('/\+$/',$dataarray['searchtext'])) {
 				$searchdesc = ", all about '".preg_replace('/\+$/','',$dataarray['searchtext'])."' ".$searchdesc;
