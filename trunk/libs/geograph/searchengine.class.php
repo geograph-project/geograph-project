@@ -243,7 +243,7 @@ END;
 	 * NOTE: $this->criteria->getSQLParts(...) needs to have been called before this function to populate sphinx criteria
 	 * @access private
 	 */
-	function ExecuteSphinxRecordSet($pg) {
+	function ExecuteSphinxRecordSet($pg,$sql_fields='',$sql_order='') {
 		global $CONF;
 		$db=$this->_getDB();
 		
@@ -296,10 +296,13 @@ END;
 		if ($this->countOnly || !$this->resultCount)
 			return 0;
 
-		$this->orderList = $ids;
+		if ($sql_order != ' dist_sqd ')
+			$this->orderList = $ids;
 
 		// construct the query sql
-		$sql = "/* i{$this->query_id} */ SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN (".implode(',',$ids).")";
+		if ($sql_order)
+			$sql_order = "ORDER BY $sql_order";
+		$sql = "/* i{$this->query_id} */ SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN (".implode(',',$ids).") $sql_order";
 
 		if (!empty($_GET['debug']))
 			print "<BR><BR>{$sphinx->q}<BR><BR>$sql";
@@ -350,9 +353,9 @@ END;
 	
 		###################
 		# run_via_sphinx
-		if (empty($_GET['legacy']) && !empty($CONF['sphinx_host']) && isset($this->criteria->sphinx) && (strlen($this->criteria->sphinx['query']) || !empty($this->criteria->sphinx['d'])) && $this->criteria->sphinx['impossible'] == 0) {
+		if (empty($_GET['legacy']) && empty($_SESSION['legacy']) && !empty($CONF['sphinx_host']) && isset($this->criteria->sphinx) && (strlen($this->criteria->sphinx['query']) || !empty($this->criteria->sphinx['d'])) && $this->criteria->sphinx['impossible'] == 0) {
 			
-			return $this->ExecuteSphinxRecordSet($pg);
+			return $this->ExecuteSphinxRecordSet($pg,$sql_fields,$sql_order);
 		} 
 		# /run_via_sphinx
 		###################
@@ -509,6 +512,9 @@ END;
 			$this->numberofimages = $i;
 			
 			if (!empty($this->orderList)) {
+				if (!empty($_GET['debug']))
+					print "REORDERING";
+				
 				//well we need to reorder...
 				$lookup = array();
 				foreach ($this->results as $i => $image) {

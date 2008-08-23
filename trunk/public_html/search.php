@@ -60,7 +60,11 @@ $displayclasses =  array(
 $smarty->assign_by_ref('displayclasses',$displayclasses);
 
 
-if (isset($_GET['fav']) && $i) {
+if (isset($_GET['set_legacy'])) {
+	$_SESSION['legacy'] = intval($_GET['set_legacy']);
+	header("Location: /search.php");
+	exit;
+} else if (isset($_GET['fav']) && $i) {
 	if (!$db) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
