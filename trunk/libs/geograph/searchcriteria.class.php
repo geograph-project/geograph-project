@@ -242,7 +242,7 @@ class SearchCriteria
 			} else {
 				$sql_where .= 'gi.user_id = '.($this->limit1);
 			}
-			$this->sphinx['impossible']++; //todo - should be possible, just need to add index user_id, currently only have realname
+			$this->sphinx['query'] .= " @user_id \"".$this->limit1."\"";
 		} 
 		if (!empty($this->limit2)) {
 			if ($sql_where) {
