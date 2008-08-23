@@ -13,9 +13,7 @@ We have recently introduced a new search engine, <a href="/help/search_new">see 
 
 
 
-<div class="interestBox">Note: This page ONLY refers to the main <a href="/search.php">image search</a></div>
-
-<p><i>By default the geograph search just searches for the exact text you enter anywhere in the title, matching part words. (does not seperate into keywords)</i></p>
+<p><i>By default the Geograph Image Search just searches for the exact text you enter anywhere in the <b>title</b>, matching part words. (does not seperate into keywords)</i></p>
 
 
 <p>Use any of the following features to refine your search:</p>
