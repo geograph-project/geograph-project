@@ -3,8 +3,15 @@
 {literal}<style type="text/css">
 h2 { padding: 5px; margin-top:0px; background-color: black; color:white}
 
-</style>{/literal}
+</style>
 
+<script language="JavaScript" type="text/javascript">
+
+  if (top.location == location) {
+    top.location.href = document.location.href.replace(/inner/,'');
+  }
+
+</script>{/literal}
 
 <h2>{$title|escape:"html"}</h2>
 
