@@ -204,12 +204,10 @@ if (isset($_GET['success'])) {
 			$smarty->assign_by_ref('images', $images);
 		}
 
-		require_once('geograph/searchengine.class.php');
-		$search = new SearchEngine('');
 		$dirs = array (-1 => '');
 		$jump = 360/16; $jump2 = 360/32;
 		for($q = 0; $q< 360; $q+=$jump) {
-			$s = ($q%90==0)?strtoupper($search->heading_string($q)):ucwords($search->heading_string($q));
+			$s = ($q%90==0)?strtoupper(heading_string($q)):ucwords(heading_string($q));
 			$dirs[$q] = sprintf('%s : %03d deg (%03d > %03d)',
 				str_pad($s,16,' '),
 				$q,

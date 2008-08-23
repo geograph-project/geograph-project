@@ -66,8 +66,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	LIMIT
 		100
 	");
-	require_once('geograph/searchengine.class.php');
-	$search = new SearchEngine('');
 	foreach ($images as $i => $row) {
 		$image=& new GridImage();
 		$image->LoadFromId($row['gridimage_id']);	
@@ -110,7 +108,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$q = round($angle/$jump)*$jump;
 		
 		
-		$s = ($q%90==0)?strtoupper($search->heading_string($q)):ucwords($search->heading_string($q));
+		$s = ($q%90==0)?strtoupper(heading_string($q)):ucwords(heading_string($q));
 		$direction = sprintf('%s : %03d deg (%03d > %03d)',
 			str_pad($s,16,' '),
 			$q,

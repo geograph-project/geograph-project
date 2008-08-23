@@ -47,9 +47,9 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="searchtext" id="l_searchtext"><b>containing text</b></label></td> 
+			 <td><label for="searchtext" id="l_searchtext"><b>containing keywords</b></label></td> 
 			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput"/><br/>
-			 <small>open <a href="/help/search" target="geo_help">text search help</a> in new window</small></td> 
+			 <small>open <a href="/help/search_new" target="geo_help">text search help</a> in new window</small></td> 
 			 <td>eg Bridge</td> 
 		  </tr> 
 		  <tr> 
@@ -63,7 +63,7 @@
 				{/if}
 				{/dynamic}
 				<input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label><br/>
-				<small>open <a href="/statistics.php?by=user" target="_blank">Contributor List</a> in new window</small></td> 
+				<small>open <a href="/finder/contributors.php?popup" target="_blank" onclick="window.open(this.href,this.target); return false;">Contributor Search</a> in new window</small></td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="moderation_status">classification</label></td> 

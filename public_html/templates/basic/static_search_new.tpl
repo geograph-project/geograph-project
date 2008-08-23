@@ -25,8 +25,7 @@
     	<li style="padding:10px;">To exclude a word put a - in front <tt style="border:1px solid gray;padding:10px">bridge -river</tt></li>
 </ul>
 
-<p>The new engine can also apply filters just by entering prefixes directly in the search box, below are some examples:</p>
-
+<p>The new engine can also apply filters just by entering prefixes directly in the search box, below are some examples of supported fields:</p>
 
 <ul>
     	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">title:bridge</tt></li>
@@ -46,6 +45,13 @@
     	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">"road bridge"</tt></li>
     	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">road bridge -"suspension bridge"</tt></li>
 </ul>  	
+
+<p>Also boolean queries are supported: (includes partiscal support for phrases and fields)</p> 
+<ul>
+	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">( cat -dog ) | ( cat -mouse)</tt></li>
+	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">(river OR road) AND tree</tt></li>
+</ul>  	
+
 
 <p>All keywords are not case sensitive!</p>
 

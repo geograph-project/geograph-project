@@ -16,6 +16,15 @@
   }
   AttachEvent(window,'load',focusBox,false);
   
+  function use_in_search(name) {
+  	if (window.opener) {
+  		window.opener.document.forms['theForm'].elements['user_name'].value = name;
+  		window.close();
+  	} else {
+  		alert("Error: Form no longer available");
+  	}
+  }
+  
   </script>
 
 {/literal}
@@ -27,6 +36,9 @@
 		<label for="fq">Name</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 		<input type="submit" value="Search"/>
 	</p>
+	{if $popup}
+		<input type="hidden" name="popup" value=""/>
+	{/if}
 </form>
 
 {if count($results) eq 15}
@@ -39,6 +51,9 @@
 {foreach from=$results item=item}
 	<li>
 	<b><a href="/profile/{$item.user_id}" target="_top">{$item.realname|escape:'html'|default:'unknown'}</a></b>
+	{if $popup}
+	[<a href="javascript:void(use_in_search('{$item.user_id}:{$item.realname|escape:'html'}'));">Use in search</a>]{/if}
+	
 	{if $item.nickname}<small>Nickname: {$item.nickname|escape:'html'}</small>{/if}
 	
 	{if $item.images}

@@ -145,8 +145,6 @@ h4.title {
 			<input type="submit" name="btnG" value="Search Geograph profiles"/></div>
 		</form>
 		
-			<p><i>coming soon...</i>, see <a href="/statistics.php?by=user" target="_blank">Contributor List</a> in meantime</p>
-	
 		<p>&nbsp;</p>
 	</div>
 	

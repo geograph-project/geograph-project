@@ -205,8 +205,7 @@ if ($grid_given)
 			$direction = intval($_GET['direction']);
 			$custom_where .= " and view_direction = $direction";
 			
-			$search = new SearchEngine('');
-			$view_direction = ($direction%90==0)?strtoupper($search->heading_string($direction)):ucwords($search->heading_string($direction)) ;
+			$view_direction = ($direction%90==0)?strtoupper(heading_string($direction)):ucwords(heading_string($direction)) ;
 			$filtered_title = "Looking $view_direction";
 		}
 		if (!empty($_GET['viewpoint'])) {
@@ -403,10 +402,9 @@ if ($grid_given)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
 				GROUP BY view_direction");
-				$search = new SearchEngine('');
 				foreach ($all as $row) {
 					if ($row[0] != -1) {
-						$view_direction = ($row[0]%90==0)?strtoupper($search->heading_string($row[0])):ucwords($search->heading_string($row[0])) ;
+						$view_direction = ($row[0]%90==0)?strtoupper(heading_string($row[0])):ucwords(heading_string($row[0])) ;
 						$breakdown[$i] = array('name'=>"looking <b>$view_direction</b> (about {$row[0]} degrees)",'count'=>$row[1]);
 					} else {
 						$breakdown[$i] = array('name'=>"unknown direction",'count'=>$row[1]);

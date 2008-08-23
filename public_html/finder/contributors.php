@@ -89,6 +89,10 @@ if (!empty($_GET['q'])) {
 
 }
 
+if (isset($_GET['popup'])) {
+	$smarty->assign("popup",1);
+}
+
 $smarty->display($template,$cacheid);
 
 ?>

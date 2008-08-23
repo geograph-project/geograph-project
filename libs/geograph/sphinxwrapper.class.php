@@ -246,9 +246,9 @@ class sphinxwrapper {
 			$cl->SetIDRange ( 1, $this->upper_limit+0);
 		}
 		
-		if ($index_in == "images") {
+		if ($index_in == "_images") {
 			$index = "gi_stemmed,gi_delta_stemmed";
-		} elseif ($index_in == "posts") {
+		} elseif ($index_in == "_posts") {
 			$index = "post_stemmed,post_delta_stemmed";
 		} else {
 			$index = $index_in;

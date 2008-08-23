@@ -635,6 +635,13 @@ class SearchCriteria_Special extends SearchCriteria
 		}
 		$sql_where .= $this->searchq;
 		$this->sphinx['impossible']++; //todo, safest - but could do some?
+		
+		if (preg_match("/group by ([\w\,\(\)\/ ]+)/i",$sql_where,$matches)) {
+			$this->sphinx['impossible']++; //todo, safest - but could do some?
+		
+		} elseif (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=`]+) where/i",$sql_where,$matches)) {
+			$this->sphinx['impossible']++; //will never be possible?
+		}
 	}
 }
 

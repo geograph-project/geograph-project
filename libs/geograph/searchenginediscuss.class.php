@@ -110,7 +110,7 @@ END;
 			$this->results[$i] = $recordSet->fields;
 			if ($d = $recordSet->fields['dist_sqd']) {
 				$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
-				$this->results[$i]['dist_string'] = sprintf("Dist:%.1fkm %s",sqrt($d),$this->heading_string($angle));
+				$this->results[$i]['dist_string'] = sprintf("Dist:%.1fkm %s",sqrt($d),heading_string($angle));
 			
 			}
 			

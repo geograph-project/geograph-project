@@ -614,6 +614,24 @@ function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtm
 	return $r;	
 }
 	
-
+/**
+ * returns a standard textual representation of a number
+ */
+function heading_string($deg) {
+	$dirs = array('north','east','south','west');
+	$rounded = round($deg / 22.5) % 16;
+	if ($rounded < 0)
+		$rounded += 16;
+	if (($rounded % 4) == 0) {
+		$s = $dirs[$rounded/4];
+	} else {
+		$s = $dirs[2 * intval(((intval($rounded / 4) + 1) % 4) / 2)];
+		$s .= $dirs[1 + 2 * intval($rounded / 8)];
+		if ($rounded % 2 == 1) {
+			$s = $dirs[round($rounded/4) % 4] . '-' . $s;
+		}
+	}
+	return $s;
+}
 
 ?>
