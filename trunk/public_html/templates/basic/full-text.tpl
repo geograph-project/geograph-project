@@ -1,4 +1,4 @@
-{assign var="page_title" value="Experimental Text Search"}
+{assign var="page_title" value="Full-Text Play Area"}
 {include file="_std_begin.tpl"}
 {literal}
 <style type="text/css">
@@ -20,9 +20,9 @@
 
 {/literal}
 
-<h2>Full-Text Image Search <sup style="color:red">Experimental Beta</sup></h2>
+<h2>Full-Text Image Search Play Area</h2>
 
-<div class="interestBox">This is a preview of a new text search engine. With time the full-text keyword matching engine will be integrated into the main site search. This highly simplified frontend was simply created to test this backend-engine, and will not replace the more fully featured interface of the current <a href="/search.php">search</a>. The new engine makes some queries possible that weren't before, such as searching on photographer square, so you will find some features linking here simply as a preview. You can find other similar previews <a href="/finder/">here</a>. Thanks for your patience while we continue to improve our searching facilities.</div>
+<div class="interestBox">Use this page to play with the new querying possibilities of the <a href="/help/search_new">new search</a>. It is not intended to replace main search which will soon include full-text keyword matching as available here; this interface is deliberatly very simple to focus on the query syntax. You can find other <a href="/finder/">similar searches here</a>. <i>Thank you for your patience while we continue to improve our searching facilities.</i></div>
 
 <form action="/stuff/search-service.php" method="get" target="searchwindow" onsubmit="focusBox()">
 	<p>
@@ -30,17 +30,22 @@
 		<input type="submit" value="Search"/>
 	</p>
 	<p>
-		<small>&middot; There is no paging of results, to access more images simply add more keywords to refine your search (view <a href="#cheatsheet">Cheatsheet</a>)<br/>
-		<small>&middot; Currently searches the title, description, category, photographer name and image taken (20071103, 200711 or just 2007) fields, as well the subject grid-reference (SH1234, SH13 or just SH)</small></small>
+		<small>&middot; To access more images simply add more keywords to refine your search, or add <tt>page2</tt> as the last keyword. (view more on the <a href="#cheatsheet">Cheatsheet</a>)<br/>
+		<small>&middot; Currently searches the title, description, category, photographer name and image taken (20071103, 200711 or just 2007) fields, as well the subject grid-reference (SH1234, SH13 or just SH)<br/>
+		&middot; Entering a 4-figure grid-reference as the first keyword is a special case as will look in the vicinity of the specified location. </small></small>
 	</p>
 </form>
 
 <iframe {dynamic}{if $q} src="/stuff/search-service.php?q={$q|escape:'url'}"{else}src="about:blank"{/if}{/dynamic} width="700" height="700" name="searchwindow"></iframe>
 
-<p><b>There is no paging of results</b>, to access more images simply add more keywords to refine your search</p>
 
 <div class="interestBox" style="margin-top:60px;">
 	<big><a name="cheatsheet"></a>Cheatsheet</big>:
+	
+	<ul class="explore">
+		<li>To access page 2 of the results add <tt>page2</tt> as the <i>last</i> keyword, however you can access more images simply add more keywords to refine your search, eg adding negative keywords</li>
+	</ul>
+
 	<ul class="explore">
 		<li>prefix a keyword with - to <b>exclude</b> that word from the match; example: <tt>stone wall -sh</tt></li>
 		<li>can use OR to match <b>either/or</b> keywords; example: <tt>bridge river OR canal</tt></li>
