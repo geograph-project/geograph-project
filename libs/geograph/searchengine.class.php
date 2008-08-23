@@ -296,13 +296,16 @@ END;
 		if ($this->countOnly || !$this->resultCount)
 			return 0;
 
-		if ($sql_order != ' dist_sqd ')
-			$this->orderList = $ids;
+		$this->orderList = $ids;
+		
+		if ($sql_order == ' dist_sqd ') {
+			$this->sphinx_matches = $sphinx->res['matches'];
+			$sql_fields = ',-1 as dist_sqd' ;
+		} 
 
 		// construct the query sql
-		if ($sql_order)
-			$sql_order = "ORDER BY $sql_order";
-		$sql = "/* i{$this->query_id} */ SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN (".implode(',',$ids).") $sql_order";
+
+		$sql = "/* i{$this->query_id} */ SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN (".implode(',',$ids).")";
 
 		if (!empty($_GET['debug']))
 			print "<BR><BR>{$sphinx->q}<BR><BR>$sql";
@@ -492,7 +495,14 @@ END;
 
 				if (!empty($recordSet->fields['dist_sqd'])) {
 					$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
-					$this->results[$i]->dist_string = sprintf($dist_format,sqrt($recordSet->fields['dist_sqd']),heading_string($angle));
+					
+					if ($recordSet->fields['dist_sqd'] == -1) {
+						$d = $this->sphinx_matches[$this->results[$i]->gridimage_id]['attrs']['@geodist']/1000;
+					} else {
+						$d = sqrt($recordSet->fields['dist_sqd']);
+					}
+					
+					$this->results[$i]->dist_string = sprintf($dist_format,$d,heading_string($angle));
 				}
 				if (empty($this->results[$i]->title))
 					$this->results[$i]->title="Untitled";
