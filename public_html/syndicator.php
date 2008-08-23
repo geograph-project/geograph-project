@@ -93,7 +93,7 @@ if (isset($_GET['text'])) {
 		$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 		if (empty($pg) || $pg < 1) {$pg = 1;}
 	
-		$ids = $sphinx->returnImageIds($pg);
+		$ids = $sphinx->returnIds($pg,'_images');
 	
 	} else {
 	

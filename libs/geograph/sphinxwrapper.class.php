@@ -206,9 +206,9 @@ class sphinxwrapper {
 		}
 	}
 	
-	public function returnImageIds($page = 1, $didyoumean = false) {
+	public function returnIds($page = 1,$index_in = "user",$DateColumn = '') {
 		$q = $this->q;
-		
+	
 		$cl = $this->_getClient();
 		
 		$mode = SPH_MATCH_ALL;
@@ -216,48 +216,53 @@ class sphinxwrapper {
 			$q = preg_replace('/^\~/','',$q);
 			if (substr_count($q,' ') > 1) //over 2 words
 				$mode = SPH_MATCH_ANY;
+		} elseif (preg_match('/^"[^"]+"$/',$q)) {
+			$mode = SPH_MATCH_PHRASE;
+		} elseif (preg_match('/^[\w\|\(\) -]*[\|\(\)-]+[\w\|\(\) -]*$/',$q)) {
+			$mode = SPH_MATCH_BOOLEAN;
 		} elseif (preg_match('/[~\|\(\)@"\/-]/',$q)) {
 			$mode = SPH_MATCH_EXTENDED;
 		} 
-		if ($didyoumean && isset($GLOBALS['smarty'])) {
-			if (strlen($q) < 64) 
-				$GLOBALS['smarty']->assign("suggestions",$this->didYouMean($q));
-		}
-
-		$index = "gi_stemmed,gi_delta_stemmed";
+		$cl->SetMatchMode ( $mode );
 		
 		$cl->SetWeights ( array ( 100, 1 ) );
-		if (!empty($this->sort)) {
+		if (!empty($DateColumn)) {
+			$cl->SetSortMode ( SPH_SORT_TIME_SEGMENTS, $DateColumn);
+		} elseif (!empty($this->sort)) {
 			$cl->SetSortMode ( SPH_SORT_EXTENDED, $this->sort);
 		} else {
 			$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
 		}
-		$cl->SetMatchMode ( $mode );
-	
+		
+		$sqlpage = ($page -1)* $this->pageSize;
+		$cl->SetLimits($sqlpage,$this->pageSize); ##todo reduce the page size when nearing the 1000 limit - so at least get bit of page
+		
 		if (!empty($this->submitted_range)) {
 			$cl->SetFilterRange ('submitted', $this->submitted_range[0], $this->submitted_range[1]);
 		}
-		
+
 		if (!empty($this->upper_limit)) {
-			
 			//todo a bodge to run on dev/staging
 			$cl->SetIDRange ( 1, $this->upper_limit+0);
 		}
 		
-		$sqlpage = ($page -1)* $this->pageSize;
-		$cl->SetLimits($sqlpage,$this->pageSize);
+		if ($index_in == "images") {
+			$index = "gi_stemmed,gi_delta_stemmed";
+		} elseif ($index_in == "posts") {
+			$index = "post_stemmed,post_delta_stemmed";
+		} else {
+			$index = $index_in;
+		}
 		
 		$res = $cl->Query ( $q, $index );
-
 		
 		// --------------
 		
-		if ( $res===false )
-		{
-			print "\tQuery failed: -- please try again later.\n";
-			exit;
-		} else
-		{
+		if ( $res===false ) {
+			$this->query_info = $cl->GetLastError();
+			$this->resultCount = 0;
+			return 0;
+		} else {
 			if ( $cl->GetLastWarning() )
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 		
@@ -265,71 +270,13 @@ class sphinxwrapper {
 			$this->query_time = $res['time'];
 			$this->resultCount = $res['total_found'];
 			$this->numberOfPages = ceil(min($this->resultCount,1000)/$this->pageSize);
-		}
 		
-		if (is_array($res["matches"]) ) {
-			$this->res = $res;
-			$this->ids = array_keys($res["matches"]);
-			
-			
-			$this->where = "gridimage_id IN(".join(",",$this->ids).")";
-		
-			return $this->ids;
-		} else {
-			$r = "\t--none--";
-		}		
-	}
+			if (is_array($res["matches"]) ) {
+				$this->res = $res;
+				$this->ids = array_keys($res["matches"]);
 
-	public function returnIds($page = 1,$index = "user",$DateColumn = '') {
-		$q = $this->q;
-	
-		$cl = $this->_getClient();
-		
-		$mode = SPH_MATCH_ALL;
-		if (strpos($q,'~') === 0) {
-			$q = preg_replace('/^\~/','',$q);
-			if (substr_count($q,' ') > 1) //over 2 words
-				$mode = SPH_MATCH_ANY;
-		} elseif (preg_match('/[~\|\(\)@"\/-]/',$q)) {
-			$mode = SPH_MATCH_EXTENDED;
-		} 
-		
-		$cl->SetWeights ( array ( 100, 1 ) );
-		if (!empty($DateColumn)) {
-			$cl->SetSortMode ( SPH_SORT_ATTR_DESC, $DateColumn);
-		} else {
-			$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
-		}
-		$cl->SetMatchMode ( $mode );
-		
-		$sqlpage = ($page -1)* $this->pageSize;
-		$cl->SetLimits($sqlpage,$this->pageSize); ##todo reduce the page size when nearing the 1000 limit - so at least get bit of page
-		
-		$res = $cl->Query ( $q, $index );
-		
-		// --------------
-		
-		if ( $res===false )
-		{
-			print "\tQuery failed: -- please try again later.\n";
-			exit;
-		} else
-		{
-			if ( $cl->GetLastWarning() )
-				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
-		
-			$this->query_info = "Query '{$this->qoutput}' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
-			$this->resultCount = min(1000,$res['total_found']); #sphinx will only give us 1000 results anyway!
-			$this->numberOfPages = ceil($this->resultCount/$this->pageSize);
-		}
-		
-		if (is_array($res["matches"]) ) {
-			$this->res = $res;
-			$this->ids = array_keys($res["matches"]);
-					
-			return $this->ids;
-		} else {
-			$r = "\t--none--";
+				return $this->ids;
+			}
 		}
 	}
 	function didYouMean($q = '') {
@@ -344,12 +291,10 @@ class sphinxwrapper {
 		$res = $cl->Query ( preg_replace('/\s*\b(the|to|of)\b\s*/',' ',$q), 'gaz_stopped' );
 		
 		$arr = array();
-		if ( $res!==false && is_array($res["matches"]) )
+		if ( $res!==false && is_array($res["matches"]) && count($res["matches"]))
 		{
 			if ( $cl->GetLastWarning() )
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
-
-			$query_info = "Query '$qo' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
 
 			$db=NewADOConnection(!empty($GLOBALS['DSN2'])?$GLOBALS['DSN2']:$GLOBALS['DSN']);
 
