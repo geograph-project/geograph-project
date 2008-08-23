@@ -262,6 +262,12 @@ class sphinxwrapper {
 		
 		$res = $cl->Query ( $q, $index );
 		
+		if (!empty($_GET['debug']) && $_GET['debug'] == 2) {
+			print "<pre>";
+			print_r($cl);	
+			print_r($res);	
+			exit;
+		}
 		// --------------
 		
 		if ( $res===false ) {
@@ -276,9 +282,9 @@ class sphinxwrapper {
 			$this->query_time = $res['time'];
 			$this->resultCount = $res['total_found'];
 			$this->numberOfPages = ceil(min($this->resultCount,$res['total'])/$this->pageSize);
-		
+			$this->res = $res;
+
 			if (is_array($res["matches"]) ) {
-				$this->res = $res;
 				$this->ids = array_keys($res["matches"]);
 
 				return $this->ids;

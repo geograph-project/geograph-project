@@ -12,6 +12,17 @@
 
 <br style="clear:both"/>
 
+{if $statistics} 
+	<a href="javascript:void(show_tree(2));" id="hide2">Expand Word Statistics</a>
+	<div style="font-size:0.8em; display:none; margin-left:20px" id="show2"><b>Word Match statistics</b>
+	<ul>
+	{foreach from=$statistics key=word item=row}
+		<li><b>{$word}</b> <small>{$row.docs} images, {$row.hits} hits</small></li>
+	{/foreach}
+	</ul><a href="javascript:void(hide_tree(2));">close</a></div>
+
+{/if}
+
 <div class="interestBox" style="text-align:center">
 
 <form action="/search.php" method="get" style="display:inline">
