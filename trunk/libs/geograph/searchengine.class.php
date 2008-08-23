@@ -281,7 +281,11 @@ END;
 				$sphinx->upper_limit = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 			}
 			
-			$ids = $sphinx->returnImageIds($pg,empty($this->countOnly));
+			if (empty($this->countOnly) && strlen($sphinx->q) < 64) {
+				$GLOBALS['smarty']->assign("suggestions",$sphinx->didYouMean($sphinx->q));
+			}
+			
+			$ids = $sphinx->returnIds($pg,'_images');
 
 			$this->resultCount = $sphinx->resultCount;
 			$this->numberOfPages = $sphinx->numberOfPages;

@@ -57,7 +57,7 @@ if (!empty($_GET['q'])) {
 		if ($offset < (1000-$pgsize) ) { 
 			$sphinx->processQuery();
 
-			$ids = $sphinx->returnIds($pg,'post_stemmed,post_delta_stemmed','post_time');	
+			$ids = $sphinx->returnIds($pg,'_posts','post_time');	
 
 			if (count($ids)) {
 				$where = "post_id IN(".join(",",$ids).")";
