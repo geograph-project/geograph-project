@@ -177,6 +177,7 @@ class SearchCriteria
 			//not using "power(gs.x -$x,2) * power( gs.y -$y,2)" beucause is testing could be upto 2 times slower!
 			$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
 			$sql_order = ' dist_sqd ';
+			$this->sphinx['sort'] = "@geodist ASC, @relevance DESC, @id DESC";
 		} 
 		if ((($x == 0 && $y == 0 ) || $this->limit8) && $this->orderby) {
 			switch ($this->orderby) {
@@ -185,7 +186,6 @@ class SearchCriteria
 					$this->sphinx['impossible']++;
 					break;
 				case 'dist_sqd':
-					$this->sphinx['impossible']++;
 					break;
 				case 'imagetaken':
 					if ($sql_where) {
@@ -213,7 +213,9 @@ class SearchCriteria
 					}
 					if (!$this->sphinx['impossible'] && preg_match('/ desc$/',$this->orderby)) {
 						$this->sphinx['sort'] .= " DESC";
-					} 
+					} else {
+						$this->sphinx['sort'] .= " ASC";
+					}
 			}
 			$sql_order = preg_replace('/^submitted/','gridimage_id',$sql_order);
 		}
