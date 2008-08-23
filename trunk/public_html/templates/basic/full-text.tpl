@@ -36,7 +36,7 @@
 	</p>
 </form>
 
-<iframe {dynamic}{if $q} src="/stuff/search-service.php?q={$q|escape:'url'}"{else}src="about:blank"{/if}{/dynamic} width="700" height="700" name="searchwindow"></iframe>
+<iframe {dynamic}{if $q} src="/stuff/search-service.php?q={$q|escape:'url'}"{else}src="about:blank"{/if}{/dynamic} width="700" height="700" name="searchwindow" style="width:100%"></iframe>
 
 
 <div class="interestBox" style="margin-top:60px;">
