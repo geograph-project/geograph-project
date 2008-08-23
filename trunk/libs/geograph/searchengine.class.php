@@ -288,9 +288,10 @@ END;
 
 		$this->islimited = true;
 
-		if (isset($GLOBALS['smarty'])) {
+		if (isset($GLOBALS['smarty']) && !empty($sphinx->res['words']) && (count($sphinx->res['words']) > 1 || !$this->resultCount)) {
 			$GLOBALS['smarty']->assign("statistics",$sphinx->res['words']);
 		} 
+
 
 		if ($this->countOnly || !$this->resultCount)
 			return 0;
@@ -521,7 +522,8 @@ END;
 				}
 				$newlist = array();
 				foreach ($this->orderList as $id) {
-					$newlist[] = $this->results[$lookup[$id]];
+					 if (!empty( $this->results[$lookup[$id]]))
+					 	$newlist[] = $this->results[$lookup[$id]];
 				}
 				$this->results = $newlist;
 			}
