@@ -141,8 +141,9 @@ class sphinxwrapper {
 		$e = floor($e/1000);
 		$n = floor($n/1000);
 		$grs = array();
-			
-			
+
+		list($gr2,$len) = $conv->national_to_gridref($e*1000,$n*1000,4,$reference_index,false);
+		$grs[] = $gr2;
 		if ($data['d'] < 10) {
 			for($x=$e-$data['d'];$x<=$e+$data['d'];$x++) {
 				for($y=$n-$data['d'];$y<=$n+$data['d'];$y++) {
@@ -153,8 +154,8 @@ class sphinxwrapper {
 		} else {
 			for($x=$e-10;$x<=$e+10;$x+=10) {
 				for($y=$n-10;$y<=$n+10;$y+=10) {
-					list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,4,$reference_index,false);
-					$grs[] = preg_replace('/([A-Z]+)(\d)\d(\d)\d/','$1$2$3',$gr2);
+					list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,2,$reference_index,false);
+					$grs[] = $gr2;
 				}
 			}
 		}
@@ -168,6 +169,11 @@ class sphinxwrapper {
 		}
 		#$qo .= " near $gr";
 				
+		
+		list($lat,$long) = $conv->national_to_wgs84($e*1000+500,$n*1000+500,$reference_index);
+		$cl = $this->_getClient();
+		$cl->SetGeoAnchor('wgs84_lat', 'wgs84_long', deg2rad($lat), deg2rad($long) );
+		$cl->SetFilterFloatRange('@geodist', 0.0, floatval($data['d']*1000));
 		
 		$this->q = $q;
 		$this->qoutput = $qo;
@@ -218,8 +224,8 @@ class sphinxwrapper {
 				$mode = SPH_MATCH_ANY;
 		} elseif (preg_match('/^"[^"]+"$/',$q)) {
 			$mode = SPH_MATCH_PHRASE;
-		} elseif (preg_match('/^[\w\|\(\) -]*[\|\(\)-]+[\w\|\(\) -]*$/',$q)) {
-			$mode = SPH_MATCH_BOOLEAN;
+		#} elseif (preg_match('/^[\w\|\(\) -]*[\|\(\)-]+[\w\|\(\) -]*$/',$q)) {
+		#	$mode = SPH_MATCH_BOOLEAN; //doesnt perform no relvence !
 		} elseif (preg_match('/[~\|\(\)@"\/-]/',$q)) {
 			$mode = SPH_MATCH_EXTENDED;
 		} 

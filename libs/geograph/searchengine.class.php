@@ -261,7 +261,6 @@ END;
 		} else {
 			$this->criteria->searchdesc = str_replace('undefined','relevance',$this->criteria->searchdesc);
 		}
-		$this->criteria->searchdesc = str_replace('within 10km of','not far from',$this->criteria->searchdesc);
 
 		if (!empty($this->criteria->sphinx['d'])) {
 			$sphinx->setSpatial($this->criteria->sphinx);
