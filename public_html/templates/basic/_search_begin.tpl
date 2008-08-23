@@ -27,8 +27,6 @@ Display:
 </div>
 {/if}
 
-<h2>Search Results</h2>
-
 {if $suggestions} 
 	<div><b>Did you mean:</b>
 	<ul>
@@ -36,7 +34,11 @@ Display:
 		<li><b><a href="/search.php?q={$row.query|escape:'url'}+near+{$row.gr}">{$row.query} <i>near</i> {$row.name}</a></b>? <small>({$row.localities})</small></li>
 	{/foreach}
 	</ul></div>
+	<hr/>
 {/if}
+
+<h2>Search Results</h2>
+
 
 <p>Your search for images<i>{$engine->criteria->searchdesc|escape:"html"}</i>, returns 
 {if $engine->pageOneOnly && $engine->resultCount == $engine->numberofimages}
