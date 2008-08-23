@@ -49,6 +49,9 @@ class SearchEngine
 	*/
 	var $criteria;
 	
+	/**
+	* array of GridImage's
+	*/
 	var $results;
 	
 	var $resultCount = 0;
@@ -71,6 +74,10 @@ class SearchEngine
 	//only run the count section of exercute
 	var $countOnly = false;
 	
+	/**
+	 * constructor
+	 * @access public
+	 */
 	function SearchEngine($query_id = '')
 	{
 		if (is_numeric($query_id)) {
@@ -97,6 +104,10 @@ class SearchEngine
   
 	} 
 	
+	/**
+	 * count how many images in this saved 'marked list'
+	 * @access public
+	 */
 	function getMarkedCount() {
 		if ($this->query_id && $this->criteria->searchclass == 'Special' && $this->criteria->searchq == "inner join gridimage_query using (gridimage_id) where query_id = $this->query_id") {
 			$db=$this->_getDB();
@@ -104,6 +115,10 @@ class SearchEngine
 		}
 	}
 	
+	/**
+	 * run a search via the gridimage table
+	 * @access private
+	 */
 	function ExecuteReturnRecordset($pg,$extra_fields = '') 
 	{
 		global $CONF;
@@ -116,7 +131,10 @@ class SearchEngine
 		$sql_from = "";
 		
 		$this->criteria->getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
-	
+		
+		//todo ReturnRecordset is currently always impossible -  will be fixed!, eg checks only returning live images 
+		$this->criteria->sphinx['impossible']++;
+		
 		$this->currentPage = $pg;
 	
 		$pgsize = $this->criteria->resultsperpage;
@@ -220,6 +238,88 @@ END;
 		return $recordSet;
 	}
 
+	/**
+	 * run a standard search via sphinxsearch index
+	 * NOTE: $this->criteria->getSQLParts(...) needs to have been called before this function to populate sphinx criteria
+	 * @access private
+	 */
+	function ExecuteSphinxRecordSet($pg) {
+		global $CONF;
+		$db=$this->_getDB();
+		
+		$sphinx = new sphinxwrapper($this->criteria->sphinx['query']);
+
+		$this->fullText = 1;
+
+		$sphinx->pageSize = $this->criteria->resultsperpage+0;
+
+		if (!empty($this->criteria->sphinx['sort'])) {
+			$sphinx->setSort($this->criteria->sphinx['sort']);
+
+			if ($this->criteria->sphinx['sort'] == '@relevance DESC, @id DESC')
+				$this->criteria->searchdesc = str_replace('undefined','relevance',$this->criteria->searchdesc);
+		} else {
+			$this->criteria->searchdesc = str_replace('undefined','relevance',$this->criteria->searchdesc);
+		}
+
+		if (!empty($this->criteria->sphinx['d'])) {
+			$sphinx->setSpatial($this->criteria->sphinx);
+		}
+
+		if (!empty($this->criteria->sphinx['submitted_range'])) {
+			$sphinx->setSubmittedRange($this->criteria->sphinx['submitted_range']);
+		}
+
+		//this step is handled internally by search and setSpatial
+		//$sphinx->processQuery();
+
+		if (!empty($CONF['fetch_on_demand'])) {
+			$sphinx->upper_limit = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
+		}
+
+		if (empty($this->countOnly) && strlen($sphinx->q) < 64 && isset($GLOBALS['smarty'])) {
+			$GLOBALS['smarty']->assign("suggestions",$sphinx->didYouMean($sphinx->q));
+		}
+
+		$ids = $sphinx->returnIds($pg,'_images');
+
+		$this->resultCount = $sphinx->resultCount;
+		$this->numberOfPages = $sphinx->numberOfPages;
+
+		$this->islimited = true;
+
+		if (isset($GLOBALS['smarty'])) {
+			$GLOBALS['smarty']->assign("statistics",$sphinx->res['words']);
+		} 
+
+		if ($this->countOnly || !$this->resultCount)
+			return 0;
+
+		$this->orderList = $ids;
+
+		// construct the query sql
+		$sql = "/* i{$this->query_id} */ SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN (".implode(',',$ids).")";
+
+		if (!empty($_GET['debug']))
+			print "<BR><BR>{$sphinx->q}<BR><BR>$sql";
+
+		list($usec, $sec) = explode(' ',microtime());
+		$querytime_before = ((float)$usec + (float)$sec);
+
+		$recordSet = &$db->Execute($sql);
+
+		list($usec, $sec) = explode(' ',microtime());
+		$querytime_after = ((float)$usec + (float)$sec);
+
+		$this->querytime =  $querytime_after - $querytime_before + $sphinx->query_time;
+		
+		return $recordSet;
+	}
+
+	/**
+	 * run a standard search via the gridimage_search table (but will redirect to sphinx if possible)
+	 * @access private
+	 */
 	function ExecuteCachedReturnRecordset($pg) 
 	{
 		global $CONF;
@@ -251,69 +351,7 @@ END;
 		# run_via_sphinx
 		if (empty($_GET['legacy']) && !empty($CONF['sphinx_host']) && isset($this->criteria->sphinx) && (strlen($this->criteria->sphinx['query']) || !empty($this->criteria->sphinx['d'])) && $this->criteria->sphinx['impossible'] == 0) {
 			
-			$sphinx = new sphinxwrapper($this->criteria->sphinx['query']);
-
-			$this->fullText = 1;
-			
-			$sphinx->pageSize = $pgsize+0;
-
-			if (!empty($this->criteria->sphinx['sort'])) {
-				$sphinx->setSort($this->criteria->sphinx['sort']);
-				
-				if ($this->criteria->sphinx['sort'] == '@relevance DESC, @id DESC')
-					$this->criteria->searchdesc = str_replace('undefined','relevance',$this->criteria->searchdesc);
-			} else {
-				$this->criteria->searchdesc = str_replace('undefined','relevance',$this->criteria->searchdesc);
-			}
-			
-			if (!empty($this->criteria->sphinx['d'])) {
-				$sphinx->setSpatial($this->criteria->sphinx);
-			}
-			
-			if (!empty($this->criteria->sphinx['submitted_range'])) {
-				$sphinx->setSubmittedRange($this->criteria->sphinx['submitted_range']);
-			}
-			
-			//this step is handled internally by search and setSpatial
-			//$sphinx->processQuery();
-
-			if (!empty($CONF['fetch_on_demand'])) {
-				$sphinx->upper_limit = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
-			}
-			
-			if (empty($this->countOnly) && strlen($sphinx->q) < 64) {
-				$GLOBALS['smarty']->assign("suggestions",$sphinx->didYouMean($sphinx->q));
-			}
-			
-			$ids = $sphinx->returnIds($pg,'_images');
-
-			$this->resultCount = $sphinx->resultCount;
-			$this->numberOfPages = $sphinx->numberOfPages;
-			
-			$this->islimited = true;
-			
-			if ($this->countOnly || !$this->resultCount)
-				return 0;
-			
-			$this->orderList = $ids;
-
-			// construct the query sql
-			$sql = "/* i{$this->query_id} */ SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN (".implode(',',$ids).")";
-
-			if (!empty($_GET['debug']))
-				print "<BR><BR>{$sphinx->q}<BR><BR>$sql";
-
-			list($usec, $sec) = explode(' ',microtime());
-			$querytime_before = ((float)$usec + (float)$sec);
-
-			$recordSet = &$db->Execute($sql);
-
-			list($usec, $sec) = explode(' ',microtime());
-			$querytime_after = ((float)$usec + (float)$sec);
-					
-			$this->querytime =  $querytime_after - $querytime_before + $sphinx->query_time;
-			
-			return $recordSet;
+			return $this->ExecuteSphinxRecordSet($pg);
 		} 
 		# /run_via_sphinx
 		###################
@@ -405,6 +443,10 @@ END;
 		return $recordSet;
 	}
 	
+	/**
+	 * run a standard search and return the raw database recordset
+	 * @access public
+	 */
 	function ReturnRecordset($pg,$nocache = false) {
 		if ($nocache || $this->noCache || ($this->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\.(grid_reference|)/',$this->criteria->searchq,$m)) && !$m[2]) {
 			//a Special Search needs full access to GridImage/GridSquare/User
@@ -415,6 +457,10 @@ END;
 		return $recordSet;
 	}
 		
+	/**
+	 * run a standard search and populate $this->results with GridImages
+	 * @access public
+	 */
 	function Execute($pg) 
 	{
 		if ($this->noCache || ($this->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\.(grid_reference|)/',$this->criteria->searchq,$m)) && !$m[2]) {
@@ -442,7 +488,7 @@ END;
 
 				if (!empty($recordSet->fields['dist_sqd'])) {
 					$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
-					$this->results[$i]->dist_string = sprintf($dist_format,sqrt($recordSet->fields['dist_sqd']),$this->heading_string($angle));
+					$this->results[$i]->dist_string = sprintf($dist_format,sqrt($recordSet->fields['dist_sqd']),heading_string($angle));
 				}
 				if (empty($this->results[$i]->title))
 					$this->results[$i]->title="Untitled";
@@ -496,27 +542,18 @@ END;
 		return $this->querytime;
 	}
 	
-	function heading_string($deg) {
-		$dirs = array('north','east','south','west'); 
-		$rounded = round($deg / 22.5) % 16; 
-		if ($rounded < 0)
-			$rounded += 16;
-		if (($rounded % 4) == 0) { 
-			$s = $dirs[$rounded/4]; 
-		} else { 
-			$s = $dirs[2 * intval(((intval($rounded / 4) + 1) % 4) / 2)]; 
-			$s .= $dirs[1 + 2 * intval($rounded / 8)]; 
-			if ($rounded % 2 == 1) { 
-				$s = $dirs[round($rounded/4) % 4] . '-' . $s;
-			} 
-		} 
-		return $s; 
-	} 
-	
+	/**
+	 * finds the current displayclass
+	 * @access public
+	 */
 	function getDisplayclass() {
 		return $this->criteria->displayclass;
 	}
 	
+	/**
+	 * applies a new display class to this search
+	 * @access public
+	 */
 	function setDisplayclass($di) {
 		global $USER;
 		$db=$this->_getDB();
@@ -527,6 +564,11 @@ END;
 		}
 	}
 	
+	/**
+	 * returns html for paging
+	 * note: it caches so can be called multiple times easily
+	 * @access public
+	 */
 	function pagesString($postfix = '',$extrahtml ='') {
 		static $r;
 		if (!empty($r))
@@ -601,11 +643,8 @@ END;
 		{
 			if (!is_numeric($name))
 				$this->$name=$value;
-													
 		}
-		
-	}	
-
+	}
 
 	/**
 	 * get stored db object, creating if necessary

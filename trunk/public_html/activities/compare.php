@@ -103,7 +103,6 @@ if (!empty($pair['compare_pair_id'])) {
 					
 	$smarty->assign('token', $token->getToken());
 	
-	$search = new SearchEngine('');
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions;
 	
@@ -113,7 +112,7 @@ if (!empty($pair['compare_pair_id'])) {
 	{
 		$rastermap1 = new RasterMap($image1->grid_square);
 		if ($image1->view_direction > -1) {
-			$smarty->assign('view_direction1', ($image1->view_direction%90==0)?strtoupper($search->heading_string($image1->view_direction)):ucwords($search->heading_string($image1->view_direction)) );
+			$smarty->assign('view_direction1', ($image1->view_direction%90==0)?strtoupper(heading_string($image1->view_direction)):ucwords(heading_string($image1->view_direction)) );
 		}
 		list($lat,$long) = $conv->gridsquare_to_wgs84($image1->grid_square);
 		$smarty->assign('lat1', $lat);
@@ -131,7 +130,7 @@ if (!empty($pair['compare_pair_id'])) {
 	{
 		$rastermap2 = new RasterMap($image2->grid_square);
 		if ($image2->view_direction > -1) {
-			$smarty->assign('view_direction2', ($image2->view_direction%90==0)?strtoupper($search->heading_string($image2->view_direction)):ucwords($search->heading_string($image2->view_direction)) );
+			$smarty->assign('view_direction2', ($image2->view_direction%90==0)?strtoupper(heading_string($image2->view_direction)):ucwords(heading_string($image2->view_direction)) );
 		}
 		list($lat,$long) = $conv->gridsquare_to_wgs84($image2->grid_square);
 		$smarty->assign('lat2', $lat);

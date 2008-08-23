@@ -211,9 +211,7 @@ if ($image->isValid())
 		$smarty->assign('y', $image->grid_square->y);
 
 		if ($image->view_direction > -1) {
-			require_once('geograph/searchengine.class.php');
-			$search = new SearchEngine('');
-			$smarty->assign('view_direction', ($image->view_direction%90==0)?strtoupper($search->heading_string($image->view_direction)):ucwords($search->heading_string($image->view_direction)) );
+			$smarty->assign('view_direction', ($image->view_direction%90==0)?strtoupper(heading_string($image->view_direction)):ucwords(heading_string($image->view_direction)) );
 		}
 	}
 } elseif (!empty($rejected)) {
