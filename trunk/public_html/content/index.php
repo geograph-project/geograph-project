@@ -78,55 +78,36 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		$smarty->assign('extra', "&amp;user_id={$_GET['user_id']}");
 	
 	} elseif (!empty($_GET['q'])) {
-		$q = isset($_GET['q'])?$_GET['q']:'';
-		$q = preg_replace('/ OR /',' | ',$q);
-		$q = preg_replace('/[^\w~\|\(\)-]+/',' ',trim(strtolower($q)));
-
-		$smarty->assign('extra', "&amp;q=$q");
-		$title = "Matching ".htmlentities($q);
-		
-		// --------------
-		
-		require ( "3rdparty/sphinxapi.php" );
-
-		$mode = SPH_MATCH_ALL;
-		if (strpos($q,'~') === 0) {
-			$q = preg_replace('/^\~/','',$q);
-			if (substr_count($q,' ') > 1) //over 2 words
-				$mode = SPH_MATCH_ANY;
-		} elseif (strpos($q,'-') !== FALSE || strpos($q,'|') !== FALSE) {
-			$mode = SPH_MATCH_EXTENDED;
-		} 
-		$index = "content_stemmed";
-
-		$cl = new SphinxClient ();
-		$cl->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
-		$cl->SetWeights ( array ( 100, 1 ) );
-		$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
-		$cl->SetMatchMode ( $mode );
-		$cl->SetLimits(0,25);
-		$res = $cl->Query ( $q, $index );
 
 		// --------------
-
-		if ( $res===false ) {
-			print "\tQuery failed: -- please try again later.\n";
-			exit;
+		
+		$q=trim($_GET['q']);
+		
+		$sphinx = new sphinxwrapper($q);
+		$sphinx->pageSize = $pgsize = 25;
+		
+		if (preg_match('/\bp(age|)(\d+)\s*$/',$q,$m)) {
+			$pg = intval($m[2]);
+			$sphinx->q = preg_replace('/\bp(age|)\d+\s*$/','',$sphinx->q);
 		} else {
-			if ( $cl->GetLastWarning() )
-				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
-
-			$query_info = "Query '$q' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
-			$smarty->assign("query_info",$query_info);
+			$pg = 1;
 		}
-
-		if (is_array($res["matches"]) ) {
-			$ids = array_keys($res["matches"]);
+		
+		$smarty->assign('extra', "&amp;q=".urlencode($sphinx->q));
+		$title = "Matching ".htmlentities($sphinx->q);
+		
+		$sphinx->processQuery();
+		
+		$ids = $sphinx->returnIds($pg,'content_stemmed');	
+		
+		$smarty->assign("query_info",$sphinx->query_info);
+		
+		if (count($ids)) {
 			$where = "content_id IN(".join(",",$ids).")";
+		} else {
+			$where = "0";
 		}
 		// --------------
-
-		
 	} elseif (isset($_GET['docs'])) {
 		$where = "`use` = 'document'";
 		$limit = 1000;
@@ -186,6 +167,10 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	
 	$smarty->assign_by_ref('list', $list);
 	$smarty->assign_by_ref('title', $title);
+	
+	if (!empty($_SERVER['QUERY_STRING']) && preg_match("/^[\w&;=+ %]/",$_SERVER['QUERY_STRING'])) {
+		$smarty->assign('extra_raw', "&amp;".htmlentities($_SERVER['QUERY_STRING']));
+	}
 	
 } else if ($template == 'content.tpl' && !$smarty->is_cached($template, $cacheid)) {
 	

@@ -87,7 +87,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	} 
 
 	if (preg_match('/\bp(age|)(\d+)\s*$/',$q,$m)) {
-		$offset = min(max((intval($m[2])-1)*15,0),984);
+		$offset = min(max((intval($m[2])-1)*25,0),984);
 		$q = preg_replace('/\bp(age|)\d+\s*$/','',$q);
 	} else {
 		$offset = 0;
