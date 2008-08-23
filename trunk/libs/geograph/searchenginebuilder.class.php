@@ -272,6 +272,9 @@ class SearchEngineBuilder extends SearchEngine
 			if (strpos($dataarray['placename'],'user:') === 0) {
 				$dataarray['user_id'] = preg_replace("/^user\:/",'',$dataarray['placename']);
 				unset($dataarray['placename']);
+				if ($dataarray['old-placename'] == $dataarray['q']) {
+					unset($dataarray['q']);
+				} 
 			}
 		}
 
