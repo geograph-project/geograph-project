@@ -145,7 +145,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$cl = new SphinxClient ();
 		$cl->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
 		$cl->SetWeights ( array ( 100, 1 ) );
-		$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
+		$cl->SetSortMode ( SPH_SORT_EXTENDED2, "@relevance DESC, @id DESC" );
 		$cl->SetMatchMode ( $mode );
 		$cl->SetLimits($offset,25);
 		$res = $cl->Query ( $q, $index );

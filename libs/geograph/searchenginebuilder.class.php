@@ -151,7 +151,7 @@ class SearchEngineBuilder extends SearchEngine
 			$location = $criteria->placename;
 		} 
 		if (($q) && ((!$criteria->is_multiple && empty($criteria->placename) ) || $placename) ) {
-			if (preg_match('/(^\^|\+$)/',$q) || preg_match('/\b(OR|AND|NOT)\b/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q) || strpos($q,':')) {
+			if (preg_match('/[~\+\^\$:@ -]+/',$q)) {
 				$searchtext = $q;
 				$searchdesc = ", matching '".$q."' ".$searchdesc;
 			} else {
@@ -402,7 +402,7 @@ class SearchEngineBuilder extends SearchEngine
 		if (!empty($dataarray['searchtext'])) {
 			$dataarray['searchtext'] = trim($dataarray['searchtext']);
 			$searchtext = $dataarray['searchtext'];
-			if (preg_match('/^\^.*\+$/',$dataarray['searchtext']) || preg_match('/\b(OR|AND|NOT)\b/',$dataarray['searchtext']) || preg_match('/(^|\s+)-([\w^]+)/',$dataarray['searchtext']) || strpos($dataarray['searchtext'],':')) {
+			if (preg_match('/[~\+\^\$:@ -]+/',$q)) {
 				$searchdesc = ", matching '".$dataarray['searchtext']."' ".$searchdesc;
 			} elseif (preg_match('/\+$/',$dataarray['searchtext'])) {
 				$searchdesc = ", all about '".preg_replace('/\+$/','',$dataarray['searchtext'])."' ".$searchdesc;

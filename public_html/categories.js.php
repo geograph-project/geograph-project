@@ -58,9 +58,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		$table = 'gridimage_search';
 		$smarty->assign('varname','catList');
 	}
-	$having = isset($_GET['full'])?'':'cnt>5 and';
+	$having = isset($_GET['full'])?'':'having cnt>5';
 
-	$arr = $db->getCol("select imageclass,count(*) as cnt  from $table $where group by imageclass   having $having length(imageclass)>0;");
+	$arr = $db->getCol("select imageclass,count(*) as cnt from $table $where group by imageclass $having");
 	
 	$smarty->assign_by_ref('classes',$arr);
 	

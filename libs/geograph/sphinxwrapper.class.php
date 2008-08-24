@@ -208,7 +208,7 @@ class sphinxwrapper {
 	public function getFilterString() {
 		$q = '';
 		foreach ($this->filters as $name => $value) {
-			$q .= " & @$name $value";
+			$q .= " @$name $value";
 		}
 		return $q;
 	} 
@@ -234,7 +234,7 @@ class sphinxwrapper {
 			$q = preg_replace('/^\~/','',$q);
 			if (count($this->filters)) {
 				$mode = SPH_MATCH_EXTENDED2;
-				$q = "(".str_replace(" "," | ",$q).") ".$this->getFilterString();
+				$q = "(".str_replace(" "," | ",$q).")".$this->getFilterString();
 			} else {
 				if (substr_count($q,' ') > 1) //over 2 words
 					$mode = SPH_MATCH_ANY;
@@ -258,7 +258,6 @@ class sphinxwrapper {
 			$q .= $this->getFilterString();
 			$mode = SPH_MATCH_EXTENDED2;
 		}
-		$q = preg_replace('/^ \& /','',$q);
 		$cl->SetMatchMode ( $mode );
 		
 		$cl->SetWeights ( array ( 100, 1 ) );
