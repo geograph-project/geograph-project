@@ -144,7 +144,9 @@ class sphinxwrapper {
 
 		list($gr2,$len) = $conv->national_to_gridref($e*1000,$n*1000,4,$reference_index,false);
 		$grs[] = $gr2;
-		if ($data['d'] < 10) {
+		if ($data['d'] == 1) {
+			//done!
+		} elseif ($data['d'] < 10) {
 			for($x=$e-$data['d'];$x<=$e+$data['d'];$x++) {
 				for($y=$n-$data['d'];$y<=$n+$data['d'];$y++) {
 					list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,4,$reference_index,false);
@@ -161,7 +163,7 @@ class sphinxwrapper {
 		}
 		
 		
-		if (strpos($q,'~') === 0) {
+		if (strpos($q,'~') === 0) {//todo - this needs to be done with all additional filters (eg user_id) - cant just append on the end!
 			$q = preg_replace('/^\~/','',$q);
 			$q = "(".str_replace(" "," | ",$q).") (".join(" | ",$grs).")";
 		} else {
@@ -169,11 +171,12 @@ class sphinxwrapper {
 		}
 		#$qo .= " near $gr";
 				
-		
-		list($lat,$long) = $conv->national_to_wgs84($e*1000+500,$n*1000+500,$reference_index);
-		$cl = $this->_getClient();
-		$cl->SetGeoAnchor('wgs84_lat', 'wgs84_long', deg2rad($lat), deg2rad($long) );
-		$cl->SetFilterFloatRange('@geodist', 0.0, floatval($data['d']*1000));
+		if ($data['d'] > 1) {
+			list($lat,$long) = $conv->national_to_wgs84($e*1000+500,$n*1000+500,$reference_index);
+			$cl = $this->_getClient();
+			$cl->SetGeoAnchor('wgs84_lat', 'wgs84_long', deg2rad($lat), deg2rad($long) );
+			$cl->SetFilterFloatRange('@geodist', 0.0, floatval($data['d']*1000));
+		}
 		
 		$this->q = $q;
 		$this->qoutput = $qo;
