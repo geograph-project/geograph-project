@@ -53,13 +53,25 @@ if ($format == 'KML') {
 	$extension = 'xml';
 }
 
+function getTextKey() {
+	$t = '';
+	foreach (array('text','q','location','BBOX','lat','lon','u') as $k) {
+		$t .= "|".(empty($_GET[$k])?'':$_GET[$k]);
+	}
+	return md5($t);
+}
+
 if (isset($_GET['text'])) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
 	
+	$cacheid = getTextKey();
+	$pg = 1;
+	
 	$engine = new SearchEngineBuilder('#'); 
- 	$_GET['i'] = $engine->buildSimpleQuery($_GET['text'].' near (anywhere)',30,false,isset($_GET['u'])?$_GET['u']:0);
+	$_GET['i'] = $engine->buildSimpleQuery($_GET['text'].' near (anywhere)',30,false,isset($_GET['u'])?$_GET['u']:0);
+
 } elseif (isset($_GET['q']) || !empty($_GET['location'])) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
@@ -67,7 +79,7 @@ if (isset($_GET['text'])) {
 	
 	if (!empty($_GET['lat']) && !empty($_GET['lon'])) {
 		$_GET['location'] = $_GET['lat'].','.$_GET['lon'];
-	} 
+	}
 	if (!empty($_GET['location'])) {
 		if (!empty($_GET['q'])) {
 			$q=trim($_GET['q']).' near '.trim($_GET['location']);
@@ -92,11 +104,13 @@ if (isset($_GET['text'])) {
 		
 		$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 		if (empty($pg) || $pg < 1) {$pg = 1;}
-	
+		
 		$ids = $sphinx->returnIds($pg,'_images');
-	
+		
 	} else {
-	
+		$cacheid = getTextKey();
+		$pg = 1;
+		
 		$engine = new SearchEngineBuilder('#'); 
 		$_GET['i'] = $engine->buildSimpleQuery($q,30,false,isset($_GET['u'])?$_GET['u']:0);
 
@@ -107,20 +121,6 @@ if (isset($_GET['text'])) {
 			die('error: unable to identify a unique location');
 		}
 	}
-} elseif (false && !empty($_GET['u'])) {
-	//no need to use this now getImagesByUser works for lat/long
-	require_once('geograph/searchcriteria.class.php');
-	require_once('geograph/searchengine.class.php');
-	require_once('geograph/searchenginebuilder.class.php');
-	
-	$_GET['user_id'] = $_GET['u']; 
-	$_GET['orderby'] = 'gridimage_id'; 
-	$_GET['reverse_order_ind'] = 1; 
-	$sortorders = array('gridimage_id'=>'Date Submitted');
-
-	
-	$engine = new SearchEngineBuilder('#'); 
- 	$_GET['i'] = $engine->buildAdvancedQuery($_GET,false);
 }
 
 if (isset($cacheid)) {

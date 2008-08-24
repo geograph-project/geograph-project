@@ -678,7 +678,10 @@ class FeedCreator extends HtmlDescribable {
 		customExpiresHeader($timeout-(time()-$mtime),true);
 		//end;
 		
-
+		if ($filesize = filesize($filename)) {
+			header('Content-Length: '.$filesize);
+		} 
+		
 		Header("Content-Type: ".$this->contentType."; charset=".$this->encoding."; filename=".basename($filename));
 		if (preg_match("/\.(kml|gpx)$/",$filename)) {
 			Header("Content-Disposition: attachment; filename=".basename($filename));
