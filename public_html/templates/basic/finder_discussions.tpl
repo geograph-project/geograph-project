@@ -24,21 +24,15 @@
 	}
 </style>
 
-  <script type="text/javascript">
-  
-  function focusBox() {
-  	el = document.getElementById('fq');
-  	el.focus();
-  }
-  AttachEvent(window,'load',focusBox,false);
-  
-  function show_tree(id) {
-  	document.getElementById("show"+id).style.display='';
-  	document.getElementById("hide"+id).style.display='none';
-  	
-  }
-  
-  </script>
+<script type="text/javascript">
+
+function focusBox() {
+	el = document.getElementById('fq');
+	el.focus();
+}
+AttachEvent(window,'load',focusBox,false);
+
+</script>
 
 {/literal}
 
