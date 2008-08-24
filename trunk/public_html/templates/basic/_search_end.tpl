@@ -19,7 +19,10 @@
 	{foreach from=$statistics key=word item=row}
 		<li><b>{$word}</b> <small>{$row.docs} images, {$row.hits} hits</small></li>
 	{/foreach}
-	</ul><a href="javascript:void(hide_tree(2));">close</a></div>
+	</ul>
+	
+	<p>Note, these are the raw words sent to the query engine, which are used to form the base query. There is post-filtering to make the results match your query as closely as possible which is why these terms can seem very broad.</p>
+	<a href="javascript:void(hide_tree(2));">close</a></div>
 
 {/if}
 
