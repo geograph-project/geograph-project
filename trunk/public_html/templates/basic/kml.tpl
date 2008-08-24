@@ -189,17 +189,6 @@
 		advtoggle.style.display='none';
 		return false;
 	}
-
-	function show_tree(id) {
-		document.getElementById("show"+id).style.display='';
-		document.getElementById("hide"+id).style.display='none';
-	}
-	function hide_tree(id) {
-		document.getElementById("show"+id).style.display='none';
-		document.getElementById("hide"+id).style.display='';
-	}
-
-	
 	{/literal}
 	</script>
 	

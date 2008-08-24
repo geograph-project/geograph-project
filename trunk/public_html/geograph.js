@@ -438,6 +438,17 @@ function eraseCookie(name) {
 
 //	-	-	-	-	-	-	-	-
 
+	function show_tree(id) {
+		document.getElementById("show"+id).style.display='';
+		document.getElementById("hide"+id).style.display='none';
+	}
+	function hide_tree(id) {
+		document.getElementById("show"+id).style.display='none';
+		document.getElementById("hide"+id).style.display='';
+	}
+
+//	-	-	-	-	-	-	-	-
+
 var marker1left = 14;
 var marker1top = 14;
 
