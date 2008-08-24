@@ -106,7 +106,7 @@ if (isset($cacheid)) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/$cacheid-{$pg}-{$format}.$extension";
 	$rss_timeout = 3600;
 } elseif (isset($_GET['i']) && is_numeric($_GET['i'])) {
-	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
+	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):1;
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}.$extension";
 	$rss_timeout = 3600;
 } elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
@@ -136,8 +136,8 @@ if (isset($q)) {
 
 	if (function_exists('symlink')) {
 		//create a link so cache can be access as original query(cacheid) or directly via its 'i' number later...
-		symlink($_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}.$extension",
-		        $_SERVER['DOCUMENT_ROOT']."/rss/$cacheid-{$pg}-{$format}.$extension");
+		symlink($_SERVER['DOCUMENT_ROOT']."/rss/$cacheid-{$pg}-{$format}.$extension",
+		        $_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}.$extension");
 	}
 
 	if (!empty($engine->errormsg) && !empty($_GET['fatal'])) {
@@ -185,7 +185,7 @@ if (isset($sphinx)) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 		
-		$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
+		$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):1;
 		if (empty($pg) || $pg < 1) {$pg = 1;}
 		
 	$images = new SearchEngine($_GET['i']);
