@@ -53,30 +53,17 @@ if ($format == 'KML') {
 	$extension = 'xml';
 }
 
-function getTextKey() {
-	$t = '';
-	foreach (array('text','q','location','BBOX','lat','lon','u') as $k) {
-		$t .= "|".(empty($_GET[$k])?'':$_GET[$k]);
-	}
-	return md5($t);
-}
 
+/**
+ * We are building a text search for the first time
+ */
 if (isset($_GET['text'])) {
-	require_once('geograph/searchcriteria.class.php');
-	require_once('geograph/searchengine.class.php');
-	require_once('geograph/searchenginebuilder.class.php');
-	
 	$cacheid = getTextKey();
 	$pg = 1;
 	
-	$engine = new SearchEngineBuilder('#'); 
-	$_GET['i'] = $engine->buildSimpleQuery($_GET['text'].' near (anywhere)',30,false,isset($_GET['u'])?$_GET['u']:0);
+	$q = $_GET['text'].' near (anywhere)';
 
 } elseif (isset($_GET['q']) || !empty($_GET['location'])) {
-	require_once('geograph/searchcriteria.class.php');
-	require_once('geograph/searchengine.class.php');
-	require_once('geograph/searchenginebuilder.class.php');
-	
 	if (!empty($_GET['lat']) && !empty($_GET['lon'])) {
 		$_GET['location'] = $_GET['lat'].','.$_GET['lon'];
 	}
@@ -91,7 +78,7 @@ if (isset($_GET['text'])) {
 	} else {
 		$q=trim($_GET['q']);
 	}
-	//temporally only enable full-text for piclens
+	//temporally redirect piclens full-text search directly to sphinx
 	if (isset($_GET['source']) && ($_GET['source'] == 'piclens' || $_GET['source'] == 'fist') ) {
 		$sphinx = new sphinxwrapper($q);
 		
@@ -111,15 +98,7 @@ if (isset($_GET['text'])) {
 		$cacheid = getTextKey();
 		$pg = 1;
 		
-		$engine = new SearchEngineBuilder('#'); 
-		$_GET['i'] = $engine->buildSimpleQuery($q,30,false,isset($_GET['u'])?$_GET['u']:0);
-
-		if (!empty($engine->errormsg) && !empty($_GET['fatal'])) {
-			die('error: '.$engine->errormsg);
-		}
-		if (isset($engine->criteria) && $engine->criteria->is_multiple) {
-			die('error: unable to identify a unique location');
-		}
+		//$q is used below
 	}
 }
 
@@ -142,8 +121,37 @@ $rss = new UniversalFeedCreator();
 $rss->useCached($format,$rssfile,$rss_timeout); 
 $rss->title = 'Geograph British Isles'; 
 $rss->link = "http://{$_SERVER['HTTP_HOST']}";
- 
 
+
+/**
+ * Create a query the first time round!
+ */
+if (isset($q)) {
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
+	
+	$engine = new SearchEngineBuilder('#'); 
+	$_GET['i'] = $engine->buildSimpleQuery($q,30,false,isset($_GET['u'])?$_GET['u']:0);
+
+	if (function_exists('symlink')) {
+		//create a link so cache can be access as original query(cacheid) or directly via its 'i' number later...
+		symlink($_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}.$extension",
+		        $_SERVER['DOCUMENT_ROOT']."/rss/$cacheid-{$pg}-{$format}.$extension");
+	}
+
+	if (!empty($engine->errormsg) && !empty($_GET['fatal'])) {
+		die('error: '.$engine->errormsg);
+	}
+	if (isset($engine->criteria) && $engine->criteria->is_multiple) {
+		die('error: unable to identify a unique location');
+	}
+}
+
+
+/**
+ * A full-text query
+ */
 if (isset($sphinx)) {
 	$rss->description = "Images, matching ".$sphinx->qoutput; 
 	if ($sphinx->resultCount) {
@@ -170,6 +178,9 @@ if (isset($sphinx)) {
 	$images=new ImageList();
 	$images->getImagesByIdList($ids);
 
+/**
+ * runs a canned search (possibly created above)
+ */
 } elseif (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
@@ -203,7 +214,10 @@ if (isset($sphinx)) {
 	} 
 	
 	$images->images = &$images->results;
-	
+
+/**
+ * A user specific feed
+ */
 } elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
 	$profile=new GeographUser($_GET['u']);
 	$rss->description = 'Latest Images by '.$profile->realname; 
@@ -213,10 +227,13 @@ if (isset($sphinx)) {
 	//lets find some recent photos
 	$images=new ImageList();
 	$images->getImagesByUser($_GET['u'],array('accepted', 'geograph'), 'gridimage_id desc', 15, false);
+	
+/**
+ * general feed of all images
+ */
 } else {
 	$rss->description = 'Latest Images'; 
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/feed/recent.".strtolower($format);
-
 
 	//lets find some recent photos
 	$images=new ImageList(array('accepted', 'geograph'), 'gridimage_id desc', 15);
@@ -280,11 +297,23 @@ for ($i=0; $i<$cnt; $i++)
 	$rss->addItem($item);
 }
 
-
-customExpiresHeader($rss_timeout,true); //we cache it for a while anyway! 
-header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); 
-      
+//these are outputed by the rss class now!
+#customExpiresHeader($rss_timeout,true); //we cache it for a while anyway! 
+#header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); 
 
 $rss->saveFeed($format, $rssfile); 
+
+########################
+
+/**
+ * Build a unique key for this search - critically ignore the apikey and other bogus parameters
+ */
+function getTextKey() {
+	$t = '';
+	foreach (array('text','q','location','BBOX','lat','lon','u') as $k) {
+		$t .= "|".(empty($_GET[$k])?'':$_GET[$k]);
+	}
+	return md5($t);
+}
 
 ?>
