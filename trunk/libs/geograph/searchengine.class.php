@@ -255,11 +255,13 @@ END;
 
 		if (!empty($this->criteria->sphinx['sort'])) {
 			$sphinx->setSort($this->criteria->sphinx['sort']);
-
-			if ($this->criteria->sphinx['sort'] == '@relevance DESC, @id DESC')
+		}
+		if (empty($this->criteria->sphinx['sort']) || $this->criteria->sphinx['sort'] == '@relevance DESC, @id DESC') {
+			if (preg_match('/\w+/',preg_replace('/(@\w+ |\w+:)\w+/','',$this->criteria->sphinx['query']))) {
 				$this->criteria->searchdesc = str_replace('undefined','relevance',$this->criteria->searchdesc);
-		} else {
-			$this->criteria->searchdesc = str_replace('undefined','relevance',$this->criteria->searchdesc);
+			} elseif (strlen($this->criteria->sphinx['query'])) {
+				#$this->criteria->searchdesc = str_replace(', in undefined order','',$this->criteria->searchdesc);
+			}
 		}
 
 		if (!empty($this->criteria->sphinx['d'])) {
@@ -281,6 +283,10 @@ END;
 			$GLOBALS['smarty']->assign("suggestions",$sphinx->didYouMean($sphinx->q));
 		}
 
+		if (is_array($this->criteria->sphinx['filters']) && count($this->criteria->sphinx['filters'])) {
+			$sphinx->addFilters($this->criteria->sphinx['filters']);
+		}
+		
 		$ids = $sphinx->returnIds($pg,'_images');
 
 		$this->resultCount = $sphinx->resultCount;
@@ -319,7 +325,11 @@ END;
 		$querytime_after = ((float)$usec + (float)$sec);
 
 		$this->querytime =  $querytime_after - $querytime_before + $sphinx->query_time;
-		
+
+		if (empty($_GET['BBOX']) && $this->display != 'reveal') {
+			$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+		}
+
 		return $recordSet;
 	}
 
@@ -356,10 +366,17 @@ END;
 	
 		###################
 		# run_via_sphinx
-		if (empty($_GET['legacy']) && empty($_SESSION['legacy']) && !empty($CONF['sphinx_host']) && isset($this->criteria->sphinx) && (strlen($this->criteria->sphinx['query']) || !empty($this->criteria->sphinx['d'])) && $this->criteria->sphinx['impossible'] == 0) {
+		if (empty($_GET['legacy']) && empty($_SESSION['legacy']) && !empty($CONF['sphinx_host']) && 
+			isset($this->criteria->sphinx) && 
+			(strlen($this->criteria->sphinx['query']) || !empty($this->criteria->sphinx['d']) || !empty($this->criteria->sphinx['filters']))
+			&& $this->criteria->sphinx['impossible'] == 0) {
 			
 			return $this->ExecuteSphinxRecordSet($pg,$sql_fields,$sql_order);
-		} 
+		} elseif ($this->criteria->sphinx['no_legacy']) {
+			//oh dear, no point even trying :(
+			$this->resultCount = 0;
+			return 0; 
+		}
 		# /run_via_sphinx
 		###################
 	
