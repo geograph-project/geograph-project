@@ -36,8 +36,10 @@ class sphinxwrapper {
 	public $sort = '';
 	public $submitted_range;
 
+	public $filters = array();
+
 	private $client = null;
-	
+
 	public function __construct($q = '') {
 		if (!empty($q)) {
 			return $this->prepareQuery($q);
@@ -129,10 +131,6 @@ class sphinxwrapper {
 	}
 	
 	public function setSpatial($data) {
-		$q = $this->q;
-		$qo = $q;
-		
-		
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
 
@@ -143,43 +141,35 @@ class sphinxwrapper {
 		$grs = array();
 
 		list($gr2,$len) = $conv->national_to_gridref($e*1000,$n*1000,4,$reference_index,false);
-		$grs[] = $gr2;
+
 		if ($data['d'] == 1) {
-			//done!
+			$this->filters['grid_reference'] = $gr2;
 		} elseif ($data['d'] < 10) {
+			#$grs[] = $gr2;
 			for($x=$e-$data['d'];$x<=$e+$data['d'];$x++) {
 				for($y=$n-$data['d'];$y<=$n+$data['d'];$y++) {
 					list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,4,$reference_index,false);
 					$grs[] = $gr2;
 				}
 			}
+			$this->filters['grid_reference'] = "(".join(" | ",$grs).")";
 		} else {
+			#$this->filters['grid_reference'] = $gr2;
 			for($x=$e-10;$x<=$e+10;$x+=10) {
 				for($y=$n-10;$y<=$n+10;$y+=10) {
 					list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,2,$reference_index,false);
 					$grs[] = $gr2;
 				}
 			}
+			$this->filters['hectad'] = "(".join(" | ",$grs).")";
 		}
-		
-		
-		if (strpos($q,'~') === 0) {//todo - this needs to be done with all additional filters (eg user_id) - cant just append on the end!
-			$q = preg_replace('/^\~/','',$q);
-			$q = "(".str_replace(" "," | ",$q).") (".join(" | ",$grs).")";
-		} else {
-			$q .= " (".join(" | ",$grs).")";
-		}
-		#$qo .= " near $gr";
-				
+
 		if ($data['d'] > 1) {
 			list($lat,$long) = $conv->national_to_wgs84($e*1000+500,$n*1000+500,$reference_index);
 			$cl = $this->_getClient();
 			$cl->SetGeoAnchor('wgs84_lat', 'wgs84_long', deg2rad($lat), deg2rad($long) );
 			$cl->SetFilterFloatRange('@geodist', 0.0, floatval($data['d']*1000));
 		}
-		
-		$this->q = $q;
-		$this->qoutput = $qo;
 	} 
 	
 	
@@ -215,23 +205,60 @@ class sphinxwrapper {
 		}
 	}
 	
+	public function getFilterString() {
+		$q = '';
+		foreach ($this->filters as $name => $value) {
+			$q .= " & @$name $value";
+		}
+		return $q;
+	} 
+	public function addFilters($filters) {
+		if (is_array($filters)) {
+			$this->filters = array_merge($filters,$this->filters);
+		}
+	}
+	
 	public function returnIds($page = 1,$index_in = "user",$DateColumn = '') {
 		$q = $this->q;
 	
 		$cl = $this->_getClient();
-		
+		if (!empty($_GET['debug']) && $_GET['debug'] == 2) {
+			print "<pre style='background-color:red'>";
+			var_dump($q);
+			print "</pre>";
+			print "<pre>";
+			print_r($this->filters);
+		}
 		$mode = SPH_MATCH_ALL;
 		if (strpos($q,'~') === 0) {
 			$q = preg_replace('/^\~/','',$q);
-			if (substr_count($q,' ') > 1) //over 2 words
-				$mode = SPH_MATCH_ANY;
+			if (count($this->filters)) {
+				$mode = SPH_MATCH_EXTENDED2;
+				$q = "(".str_replace(" "," | ",$q).") ".$this->getFilterString();
+			} else {
+				if (substr_count($q,' ') > 1) //over 2 words
+					$mode = SPH_MATCH_ANY;
+			}
 		} elseif (preg_match('/^"[^"]+"$/',$q)) {
-			$mode = SPH_MATCH_PHRASE;
+			if (count($this->filters)) {
+				$mode = SPH_MATCH_EXTENDED2;
+				$q = "\"".$q."\" ".$this->getFilterString();
+			} else {
+				$mode = SPH_MATCH_PHRASE;
+			}
 		#} elseif (preg_match('/^[\w\|\(\) -]*[\|\(\)-]+[\w\|\(\) -]*$/',$q)) {
 		#	$mode = SPH_MATCH_BOOLEAN; //doesnt perform no relvence !
+		#	//todo if we enable this need to deal with filters
 		} elseif (preg_match('/[~\|\(\)@"\/-]/',$q)) {
-			$mode = SPH_MATCH_EXTENDED;
-		} 
+			if (count($this->filters)) {
+				$q .= $this->getFilterString();
+			} 
+			$mode = SPH_MATCH_EXTENDED2;
+		} elseif (count($this->filters)) {
+			$q .= $this->getFilterString();
+			$mode = SPH_MATCH_EXTENDED2;
+		}
+		$q = preg_replace('/^ \& /','',$q);
 		$cl->SetMatchMode ( $mode );
 		
 		$cl->SetWeights ( array ( 100, 1 ) );
@@ -268,6 +295,10 @@ class sphinxwrapper {
 		if (!empty($_GET['debug']) && $_GET['debug'] == 2) {
 			print "<pre>";
 			print_r($cl);	
+			print "<pre style='background-color:red'>";
+			var_dump($q);
+			print "</pre>";
+			print "<pre>";
 			print_r($res);	
 			exit;
 		}
@@ -297,6 +328,9 @@ class sphinxwrapper {
 	function didYouMean($q = '') {
 		if (empty($q)) {
 			$q = $this->q;
+		}
+		if (empty($q)) {
+			return array();
 		}
 		$q = preg_replace('/@([a-z_]+) /','',$q);
 		$cl = $this->_getClient();

@@ -61,7 +61,9 @@ class SearchCriteria
 	var $sphinx = array(
 		'query' => '',
 		'sort' => '@relevance DESC, @id DESC',
-		'impossible' => 0
+		'impossible' => 0,
+		'no_legacy' => 0,
+		'filters' => array()
 	);
 	
 	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) 
@@ -244,7 +246,7 @@ class SearchCriteria
 			} else {
 				$sql_where .= 'gi.user_id = '.($this->limit1);
 			}
-			$this->sphinx['query'] .= " @user_id \"".$this->limit1."\"";
+			$this->sphinx['filters']['user_id'] = $this->limit1;
 		} 
 		if (!empty($this->limit2)) {
 			if ($sql_where) {
@@ -264,7 +266,7 @@ class SearchCriteria
 			if ($this->limit3 == '-') {
 				$this->sphinx['impossible']++;
 			} else {
-				$this->sphinx['query'] .= " @imageclass \"".$this->limit3."\"";
+				$this->sphinx['filters']['imageclass'] = "\"".$this->limit3."\"";
 			}
 		} 
 		if (!empty($this->limit4)) {
@@ -295,7 +297,7 @@ class SearchCriteria
 			if (empty($this->limit4))
 				$sql_where .= ' and gs.reference_index = '.$prefix['reference_index'].' ';
 			
-			$this->sphinx['query'] .= " @myriad ".$this->limit5;
+			$this->sphinx['filters']['myriad'] = $this->limit5;
 		}
 		if (!empty($this->limit6)) {
 			if ($sql_where) {
@@ -385,7 +387,7 @@ class SearchCriteria
 					if ($dates[0] == $dates[1]) {
 						//both the same
 						$sql_where .= "imagetaken = '".$dates[0]."' ";
-						$this->sphinx['query'] .= " @takenday ".str_replace('-','',$this->limit5);
+						$this->sphinx['filters']['takenday'] = str_replace('-','',$this->limit5);
 					} else {
 						//between
 						$sql_where .= "imagetaken BETWEEN '".$dates[0]."' AND '".$dates[1]."' ";
@@ -492,6 +494,7 @@ class SearchCriteria
 			
 			if (preg_match('/[:@"]/',$q)) { //already in sphinx format!
 				$this->sphinx['query'] .= " ".$q;
+				$this->sphinx['no_legacy']++;
 			} else {
 				$this->sphinx['query'] .= " ".preg_replace('/[\+^]+/','',str_replace("NOT ",' -',str_replace(" AND ",' ',$q)));
 			}
@@ -508,6 +511,7 @@ class SearchCriteria
 		} elseif (preg_match('/[:@]/',$q)) {
 			$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$q.'%');//todo, maybe better handle this - jsut for legacy searches...
 			$this->sphinx['query'] .= " ".$q;
+			$this->sphinx['no_legacy']++;
 		} else {
 			$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$q.'%');
 			$this->sphinx['query'] .= " ".$q; //todo this is defaulting to searching all 
