@@ -90,7 +90,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign('ri', $ri);
 
-	$sql_fields = '';
+	$mysql_fields = '';
 	if ($by == 'status') {
 		$sql_group = $sql_fieldname = "CONCAT(moderation_status,ELT(ftf+1, '',' (ftf)'))";
 	} else if ($by == 'class') {
@@ -128,7 +128,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign('linkpro', 1);
 		$sql_group = "user_id";
 		$sql_fieldname = "realname";
-		$sql_fields = ',gi.user_id';
+		$mysql_fields = ',gi.user_id';
 	} else if ($by == 'count') {
 		$sql_group = $sql_fieldname = "imagecount";
 	} else {
@@ -144,8 +144,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($ri)
 		$title .= " in ".$CONF['references_all'][$ri];
 	$link = "by=$by";
-	$sql_from = '';
-	$user_crit = '';
+
 	if ($i) {
 		require_once('geograph/searchcriteria.class.php');
 		require_once('geograph/searchengine.class.php');
@@ -155,33 +154,33 @@ if (!$smarty->is_cached($template, $cacheid))
 			print "Invalid search";
 			exit;
 		}
-		$sql_fields_dummy = ''; $sql_order_dummy = ''; 
-		$engine->criteria->getSQLParts($sql_fields_dummy,$sql_order_dummy,$user_crit,$sql_from);
-		
-		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=]+) where/i",$user_crit,$matches)) {
-			$user_crit = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\']+) where/i",'',$user_crit);
+		$engine->criteria->getSQLParts();
+		extract($engine->criteria->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
+
+		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=]+) where/i",$sql_where,$matches)) {
+			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\']+) where/i",'',$sql_where);
 			$sql_from .= " {$matches[1]} join {$matches[2]}";
 		}
 		
-		if (preg_match("/group by ([\w\,\(\) ]+)/i",$user_crit)) {
+		if (preg_match("/group by ([\w\,\(\) ]+)/i",$sql_where)) {
 			print "Unable to run on this search";
 			exit;
 		}
 		
-		if (!empty($user_crit)) {
-			$user_crit = "AND $user_crit";
+		if (!empty($sql_where)) {
+			$sql_where = "AND $sql_where";
 			$engine->islimited = true;
 		}
 		
-		if (strpos($user_crit,'gs') !== FALSE) {
-			$user_crit = str_replace('gs.','gi.',$user_crit);
+		if (strpos($sql_where,'gs') !== FALSE) {
+			$sql_where = str_replace('gs.','gi.',$sql_where);
 		}
 		if (strpos($sql_from,'gs') !== FALSE) {
 			$sql_from = str_replace('gs.','gi.',$sql_from);
 		}
-		#$sql_fields_dummy = str_replace('gs.','gi.',$sql_fields_dummy);
 		
-		$engine->criteria->searchdesc = preg_replace("/(, in [\w ]* order)/",'',$engine->criteria->searchdesc);
+		
+		$engine->criteria->searchdesc = preg_replace("/, in [\w ]* order/",'',$engine->criteria->searchdesc);
 		
 		$title .= "<i>".htmlentities2($engine->criteria->searchdesc)."</i>";
 		
@@ -189,7 +188,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		$link .= "&amp;i=$i";
 		$smarty->assign('i', $i);
 	} elseif ($u) {
-		$user_crit = " and user_id = $u";
+		$sql_from = '';
+		$sql_where = " and user_id = $u";
 		$link .= "&amp;u=$u";
 		$smarty->assign_by_ref('u', $u);
 
@@ -197,6 +197,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		$profile=new GeographUser($u);
 		$smarty->assign_by_ref('profile', $profile);
 		$title .= " for ".htmlentities2($profile->realname);
+	} else {
+		$sql_from = '';
+		$sql_where = '';
 	}
 	$smarty->assign_by_ref('link', str_replace(' ','+',$link));
 	$smarty->assign_by_ref('h2title', $title);
@@ -211,20 +214,20 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign_by_ref('jsdir', $jsdir);
 
 	if (strpos($order,'c') !== FALSE) {
-		$sql_order = "ORDER BY c$sql_dir";
+		$mysql_order = "ORDER BY c$sql_dir";
 		$smarty->assign('order', 'c');
 	} else {
-		$sql_order = "ORDER BY field$sql_dir";
+		$mysql_order = "ORDER BY field$sql_dir";
 	}
 	
 $sql = "select 
 $sql_fieldname as field,
-count(*) as c $sql_fields
+count(*) as c $mysql_fields
 from gridimage_search as gi $sql_from
-where 1 $user_crit
+where 1 $sql_where
  $sql_crit
 group by $sql_group 
-$sql_order";
+$mysql_order";
 	if ($_GET['debug'])
 		print $sql;
 	$breakdown=$db->GetAll($sql);
