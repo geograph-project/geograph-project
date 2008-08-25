@@ -386,7 +386,7 @@ END;
 			(strlen($this->criteria->sphinx['query']) || !empty($this->criteria->sphinx['d']) || !empty($this->criteria->sphinx['filters']))
 			&& $this->criteria->sphinx['impossible'] == 0) {
 			
-			return $this->ExecuteSphinxRecordSet($pg,$sql_fields,$sql_order);
+			return $this->ExecuteSphinxRecordSet($pg);
 		} elseif ($this->criteria->sphinx['no_legacy']) {
 			//oh dear, no point even trying :(
 			$this->resultCount = 0;
