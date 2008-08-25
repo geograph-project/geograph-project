@@ -314,6 +314,7 @@ class sphinxwrapper {
 			$this->query_info = "Query '{$this->qoutput}' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
 			$this->query_time = $res['time'];
 			$this->resultCount = $res['total_found'];
+			$this->maxResults = $res['total'];
 			$this->numberOfPages = ceil(min($this->resultCount,$res['total'])/$this->pageSize);
 			$this->res = $res;
 

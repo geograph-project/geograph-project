@@ -188,7 +188,7 @@ class SearchEngineBuilder extends SearchEngine
 		}
 			
 		if ($searchclass != 'All' && $location) {
-			$q = $location;
+			#$q = $location;
 		}
 		
 		if ($criteria->reference_index == 2 && $CONF['default_search_distance_2'] && $distance == $CONF['default_search_distance']) {

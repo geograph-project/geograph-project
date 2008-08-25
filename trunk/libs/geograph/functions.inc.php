@@ -588,7 +588,7 @@ function htmlnumericentities($myXML){
 }
 
 
-function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtml = '') {
+function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtml = '',$showLastPage = false) {
 	static $r;
 	if (!empty($r))
 		return($r);
@@ -602,18 +602,22 @@ function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtm
 
 	for($index = $start;$index<$endr;$index++) {
 		if ($index == $currentPage) 
-			$r .= "<b class=\"pageNav\">$index</b> "; 
+			$r .= "<b class=\"pageNav\">$index</b> ";
 		else
 			$r .= "<a href=\"$prefix$index$postfix\"$extrahtml class=\"pageNav\">$index</a> ";
 	}
-	if ($endr < $numberOfPages+1) 
+	if ($endr < $numberOfPages+1)
 		$r .= "... ";
 
 	if ($numberOfPages > $currentPage) 
 		$r .= "<a href=\"$prefix".($currentPage+1)."$postfix\"$extrahtml class=\"pageNav\">next &gt;&gt;</a> ";
-	return $r;	
+
+	if ($showLastPage) 
+		$r .= "<a href=\"$prefix".($numberOfPages)."$postfix\"$extrahtml class=\"pageNav\">last</a> ";
+
+	return $r;
 }
-	
+
 /**
  * returns a standard textual representation of a number
  */
