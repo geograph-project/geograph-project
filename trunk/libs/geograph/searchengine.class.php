@@ -124,16 +124,8 @@ class SearchEngine
 		global $CONF;
 		$db=$this->_getDB();
 		
-		
-		$sql_fields = "";
-		$sql_order = "";
-		$sql_where = "";
-		$sql_from = "";
-		
-		$this->criteria->getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
-		
-		//todo ReturnRecordset is currently always impossible -  will be fixed!, eg checks only returning live images 
-		$this->criteria->sphinx['impossible']++;
+		$this->criteria->getSQLParts();
+		extract($this->criteria->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
 		
 		$this->currentPage = $pg;
 	
@@ -143,6 +135,19 @@ class SearchEngine
 		if ($pg == '' or $pg < 1) {$pg = 1;}
 	
 		$page = ($pg -1)* $pgsize;
+	
+	
+		if (empty($_GET['legacy']) && empty($_SESSION['legacy']) && !empty($CONF['sphinx_host']) && 
+			isset($this->criteria->sphinx) && 
+			(strlen($this->criteria->sphinx['query']) || !empty($this->criteria->sphinx['d']) || !empty($this->criteria->sphinx['filters']))
+			&& $this->criteria->sphinx['impossible'] == 0) {
+			$this->noCache = 1;
+			return $this->ExecuteSphinxRecordSet($pg,$sql_fields,$sql_order);
+		} elseif ($this->criteria->sphinx['no_legacy']) {
+			//oh dear, no point even trying :(
+			$this->resultCount = 0;
+			return 0; 
+		}
 	
 		//need to ensure rejected/pending images arent shown
 		if (empty($sql_where)) {
@@ -243,9 +248,11 @@ END;
 	 * NOTE: $this->criteria->getSQLParts(...) needs to have been called before this function to populate sphinx criteria
 	 * @access private
 	 */
-	function ExecuteSphinxRecordSet($pg,$sql_fields='',$sql_order='') {
+	function ExecuteSphinxRecordSet($pg) {
 		global $CONF;
 		$db=$this->_getDB();
+		
+		extract($this->criteria->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
 		
 		$sphinx = new sphinxwrapper($this->criteria->sphinx['query']);
 
@@ -314,8 +321,18 @@ END;
 
 		// construct the query sql
 
-		$sql = "/* i{$this->query_id} */ SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN (".implode(',',$ids).")";
-
+		$id_list = implode(',',$ids);
+		if ($this->noCache) {
+$sql = <<<END
+/* i{$this->query_id} */ SELECT gi.*,x,y,gs.grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname $sql_fields
+FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
+	INNER JOIN user ON(gi.user_id=user.user_id)
+WHERE gi.gridimage_id IN ($id_list)
+END;
+		} else {
+			$sql = "/* i{$this->query_id} */ SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN ($id_list)";
+		}
+		
 		if (!empty($_GET['debug']))
 			print "<BR><BR>{$sphinx->q}<BR><BR>$sql";
 
@@ -345,14 +362,9 @@ END;
 		global $CONF;
 		$db=$this->_getDB();
 		
+		$this->criteria->getSQLParts();
+		extract($this->criteria->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
 		
-		$sql_fields = "";
-		$sql_order = "";
-		$sql_where = "";
-		$sql_from = "";
-		
-		$this->criteria->getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
-	
 		$this->currentPage = $pg;
 	
 		$pgsize = $this->criteria->resultsperpage;

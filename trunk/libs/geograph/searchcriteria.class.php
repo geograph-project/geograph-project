@@ -65,10 +65,19 @@ class SearchCriteria
 		'no_legacy' => 0,
 		'filters' => array()
 	);
+	var $sql = array(
+		'fields' => '',
+		'from' => '',
+		'where' => '',
+		'order' => ''
+	);
 	
-	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) 
+	function getSQLParts() 
 	{
 		global $CONF;
+
+		extract($this->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
+
 		if (!empty($_GET['BBOX'])) {
 			
 			//we need to turn this off as it will break the caching of number of results!
@@ -172,6 +181,8 @@ class SearchCriteria
 				$this->sphinx['x'] = $x;
 				$this->sphinx['y'] = $y;
 				$this->sphinx['d'] = $this->limit8;
+				
+				$this->sphinx['sort'] = "@geodist ASC, @relevance DESC, @id DESC";
 			} else {
 				$this->sphinx['impossible']++;
 			}
@@ -179,7 +190,6 @@ class SearchCriteria
 			//not using "power(gs.x -$x,2) * power( gs.y -$y,2)" beucause is testing could be upto 2 times slower!
 			$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
 			$sql_order = ' dist_sqd ';
-			$this->sphinx['sort'] = "@geodist ASC, @relevance DESC, @id DESC";
 		} 
 		if ((($x == 0 && $y == 0 ) || $this->limit8) && $this->orderby) {
 			switch ($this->orderby) {
@@ -274,7 +284,12 @@ class SearchCriteria
 				$sql_where .= ' and ';
 			}
 			$sql_where .= 'gs.reference_index = '.($this->limit4).' ';
-			$this->sphinx['impossible']++; //todo
+			
+			if (empty($this->sphinx['d'])) {//no point adding this filter if querying on location!
+				$square=new GridSquare;
+				$prefixes = $square->getGridPrefixes($this->limit4);
+				$this->sphinx['filters']['myriad'] = "(".implode(' | ',$prefixes).")";
+			}
 		} 
 		if (!empty($this->limit5)) {
 			if ($sql_where) {
@@ -428,21 +443,20 @@ class SearchCriteria
 			$this->issubsetlimited = true;
 		}
 		if (!empty($_GET['debug'])) { 
-			print "($sql_fields)<BR>($sql_order)<BR>($sql_where)<BR>($sql_from)<BR>";
-
 			print "<pre>";
+			print_r($this->sql);
 			print_r($this->sphinx);
 			print "</pre>";
 		}
 	} 
 	
-	function getSQLPartsFromText($q,&$sql_where,&$sql_from) {
+	function getSQLPartsFromText($q) {
 		if (empty($q)) 
 			return;
 		$db = $this->_getDB();
 		
-		//todo, do keyword as opposed to phrase? and possibly make + the default.
-
+		extract($this->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
+		
 		if ($sql_where) {
 			$sql_where .= ' and ';
 		}
@@ -634,8 +648,11 @@ class SearchCriteria_GridRef extends SearchCriteria
 
 class SearchCriteria_Special extends SearchCriteria
 {
-	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) {
-		parent::getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
+	function getSQLParts() {
+		parent::getSQLParts();
+		
+		extract($this->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
+		
 		if ($sql_where) {
 			$sql_where .= ' and ';
 		}
@@ -653,10 +670,10 @@ class SearchCriteria_Special extends SearchCriteria
 
 class SearchCriteria_Text extends SearchCriteria
 {
-	function getSQLParts(&$sql_fields,&$sql_order,&$sql_where,&$sql_from) {
-		parent::getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
+	function getSQLParts() {
+		parent::getSQLParts();
 		
-		$this->getSQLPartsFromText($this->searchq,&$sql_where,&$sql_from);
+		$this->getSQLPartsFromText($this->searchq);
 	}
 }
 

@@ -47,15 +47,9 @@ class SearchEngineFlickr extends SearchEngineBuilder
 	{
 		$db=$this->_getDB();
 		
+		$this->criteria->getSQLParts($);
+		extract($this->criteria->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
 		
-		$sql_fields = "";
-		$sql_order = "";
-		$sql_where = "";
-		$sql_from = "";
-		
-		
-		$this->criteria->getSQLParts($sql_fields,$sql_order,$sql_where,$sql_from);
-	
 		$this->currentPage = $pg;
 	
 		$pgsize = $this->criteria->resultsperpage;
