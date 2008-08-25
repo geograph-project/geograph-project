@@ -75,7 +75,7 @@ Display:
 	
 	{if $engine->criteria->sphinx.no_legacy}
 	<br/><br/>
-		<b>However legacy is not able to support this query</b> - please <a href="/contact.php">let is know</a>.
+		<b>However legacy is not able to support this query</b> - please <a href="/contact.php">let us know</a>.
 	{elseif strpos($engine->criteria->searchtext,' ')}
 	<br/><br/>
 		Note: <b>The <a href="/help/search_new">text matching method</a> is different</b>. So the results might not be what you expect.
