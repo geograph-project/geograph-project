@@ -721,6 +721,7 @@ if (isset($_GET['set_legacy'])) {
 	
 	if (!empty($_GET['legacy'])) {
 		$cacheid.="X";
+		$smarty->assign('legacy', 1);
 	}
 
 	if (!empty($_GET['t'])) {
