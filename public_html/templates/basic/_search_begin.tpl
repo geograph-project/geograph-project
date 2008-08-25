@@ -31,7 +31,7 @@ Display:
 	<div><b>Did you mean:</b>
 	<ul>
 	{foreach from=$suggestions item=row}
-		<li><b><a href="/search.php?q={$row.query|escape:'url'}+near+{$row.gr}">{$row.query} <i>near</i> {$row.name}</a></b>? <small>({$row.localities})</small></li>
+		<li><b><a href="/search.php?q={$row.query|escape:'url'}+near+{$row.gr}">{$row.query}{if $row.name} <i>near</i> {$row.name}{/if}</a></b>? {if $row.localities}<small>({$row.localities})</small>{/if}</li>
 	{/foreach}
 	</ul></div>
 	<hr/>
@@ -52,7 +52,7 @@ Display:
 {if $engine->fullText && !strpos($engine->criteria->searchtext,':')}
 	<div class="interestBox" style="border:1px solid pink;display:none; " id="show1">
 		<h4>Not seeing the results you expect?</h4>
-		This search is powered by the new <a href="/help/search_new">experimental Full-Text search index</a>, which in some ways is less precise than the legacy search, but often results in quicker and more relevent results. 
+		This search is powered by the new <a href="/help/search_new">experimental Full-Text search index</a>, which in some ways is less precise than the legacy search in text matching, e.g. similar words are automatically matched. However this index often results in quicker and more relevent results. 
 		{if !$engine->criteria->sphinx.no_legacy}
 			You can access the <a href="/search.php?i={$i}&amp;legacy=true">old search here</a>.
 		{/if}

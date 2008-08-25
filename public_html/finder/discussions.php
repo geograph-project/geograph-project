@@ -120,7 +120,7 @@ if (!empty($_GET['q'])) {
 				$smarty->assign("query_info",$sphinx->query_info);
 
 				if ($sphinx->numberOfPages > 1) {
-					$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q)."&amp;page=") );
+					$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q)."&amp;page=",'','',$sphinx->resultCount <= $sphinx->maxResults) );
 					$smarty->assign("offset",$offset);
 				}
 				$ADODB_FETCH_MODE = $prev_fetch_mode;

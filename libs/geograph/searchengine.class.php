@@ -279,8 +279,10 @@ END;
 			$sphinx->upper_limit = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 		}
 
-		if (empty($this->countOnly) && strlen($sphinx->q) < 64 && isset($GLOBALS['smarty'])) {
+		if (empty($this->countOnly) && $sphinx->q && strlen($sphinx->q) < 64 && isset($GLOBALS['smarty'])) {
 			$GLOBALS['smarty']->assign("suggestions",$sphinx->didYouMean($sphinx->q));
+		} elseif ($this->criteria->searchclass == 'Placename' && strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE && isset($GLOBALS['smarty'])) {
+			$GLOBALS['smarty']->assign("suggestions",array(array('gr'=>'(anywhere)','localities'=>'as text search','query'=>$this->criteria->searchq) ));
 		}
 
 		if (is_array($this->criteria->sphinx['filters']) && count($this->criteria->sphinx['filters'])) {
@@ -291,6 +293,7 @@ END;
 
 		$this->resultCount = $sphinx->resultCount;
 		$this->numberOfPages = $sphinx->numberOfPages;
+		$this->maxResults = $sphinx->maxResults;
 
 		$this->islimited = true;
 
@@ -380,7 +383,11 @@ END;
 		# /run_via_sphinx
 		###################
 	
-	
+		
+		if ($this->criteria->searchclass == 'Placename' && strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE && isset($GLOBALS['smarty'])) {
+			$GLOBALS['smarty']->assign("suggestions",array(array('gr'=>'(anywhere)','localities'=>'as text search','query'=>$this->criteria->searchq) ));
+		}
+
 		if (!empty($sql_where)) {
 			$sql_where = "WHERE $sql_where";
 			$this->islimited = true;
@@ -633,6 +640,9 @@ END;
 			
 		if ( ($this->numberOfPages > $this->currentPage || $this->pageOneOnly ) && !$this->countOnly) 
 			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage+1)."$postfix\"$extrahtml>next &gt;&gt;</a> ";
+	
+		if ( $this->fullText && empty($_GET['legacy']) && $this->currentPage < $this->numberOfPages && $this->resultCount <= $this->maxResults ) 
+			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->numberOfPages)."$postfix\"$extrahtml>last</a> ";
 		return $r;	
 	}
 	
