@@ -387,7 +387,7 @@ class SearchCriteria
 					if ($dates[0] == $dates[1]) {
 						//both the same
 						$sql_where .= "imagetaken = '".$dates[0]."' ";
-						$this->sphinx['filters']['takenday'] = str_replace('-','',$this->limit5);
+						$this->sphinx['filters']['takenday'] = str_replace('-','',$dates[0]);
 					} else {
 						//between
 						$sql_where .= "imagetaken BETWEEN '".$dates[0]."' AND '".$dates[1]."' ";
