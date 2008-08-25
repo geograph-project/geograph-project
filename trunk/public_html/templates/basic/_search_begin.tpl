@@ -81,5 +81,9 @@ Display:
 		Note: <b>The <a href="/help/search_new">text matching method</a> is different</b>. So the results might not be what you expect.
 	{/if}
 	</div>
+{elseif $legacy && $engine->criteria->sphinx.no_legacy}
+	<div style="padding:2px;border:1px solid red; text-align:center">
+		This query is not supported in Legacy Mode, try in the <a href="/search.php?i={$i}"> new interface</a>
+	</div>
 {/if}
 

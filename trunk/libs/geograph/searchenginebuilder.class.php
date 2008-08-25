@@ -154,6 +154,9 @@ class SearchEngineBuilder extends SearchEngine
 			if (preg_match('/[~\+\^\$:@ -]+/',$q)) {
 				$searchtext = $q;
 				$searchdesc = ", matching '".$q."' ".$searchdesc;
+			} elseif (preg_match('/^".*"$/',$q)) {
+				$searchtext = $q;
+				$searchdesc = ", matching \"".$q."\" ".$searchdesc;
 			} else {
 		
 				//check if this is a user 
@@ -402,8 +405,10 @@ class SearchEngineBuilder extends SearchEngine
 		if (!empty($dataarray['searchtext'])) {
 			$dataarray['searchtext'] = trim($dataarray['searchtext']);
 			$searchtext = $dataarray['searchtext'];
-			if (preg_match('/[~\+\^\$:@ -]+/',$q)) {
+			if (preg_match('/[~\+\^\$:@ -]+/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching '".$dataarray['searchtext']."' ".$searchdesc;
+			} elseif (preg_match('/^".*"$/',$dataarray['searchtext'])) {
+				$searchdesc = ", matching \"".$dataarray['searchtext']."\" ".$searchdesc;
 			} elseif (preg_match('/\+$/',$dataarray['searchtext'])) {
 				$searchdesc = ", all about '".preg_replace('/\+$/','',$dataarray['searchtext'])."' ".$searchdesc;
 			} elseif (preg_match('/^\^/',$dataarray['searchtext'])) {

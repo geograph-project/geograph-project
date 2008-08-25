@@ -506,7 +506,10 @@ class SearchCriteria
 			}
 			$sql_where .= ")";
 			
-			if (preg_match('/[:@"]/',$q)) { //already in sphinx format!
+			if (preg_match('/^\^([\w ]+)\+$/',$q,$m) && !preg_match("/\b(AND|OR|NOT)\b/",$m[1])) { //convert to a phrase search
+				$this->sphinx['query'] .= " \"".preg_replace('/[\+^]+/','',$q)."\"";
+				$this->sphinx['no_legacy']++;
+			} elseif (preg_match('/[:@"]/',$q)) { //already in sphinx format!
 				$this->sphinx['query'] .= " ".$q;
 				$this->sphinx['no_legacy']++;
 			} else {
