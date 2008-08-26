@@ -148,7 +148,7 @@ class SearchEngineBuilder extends SearchEngine
 			$searchdesc = ", $nearstring ".$criteria->placename;
 			$searchx = $criteria->x;
 			$searchy = $criteria->y;
-			$location = $criteria->placename;
+			#$location = $criteria->placename; //this overwrites the original placename
 		} 
 		if (($q) && ((!$criteria->is_multiple && empty($criteria->placename) ) || $placename) ) {
 			if (preg_match('/[~\+\^\$:@ -]+/',$q)) {
@@ -183,14 +183,14 @@ class SearchEngineBuilder extends SearchEngine
 			}
 		} elseif ($placename && !$searchdesc) {
 			$q = $searchtext = $placename;
-			$searchdesc = ", matching '".$placename."' ".$searchdesc;
+			$searchdesc = ", matching '".$searchtext."' ".$searchdesc;
 		}
 		
 		if (($searchtext || $limit1) && !$searchclass) {
 			$searchclass = 'All';
 		}
 			
-		if ($searchclass != 'All' && $location && stripos($searchdesc,$location) !== FALSE) {
+		if ($searchclass != 'All' && $location) {
 			$q = $location;
 		}
 		
