@@ -190,8 +190,8 @@ class SearchEngineBuilder extends SearchEngine
 			$searchclass = 'All';
 		}
 			
-		if ($searchclass != 'All' && $location) {
-			#$q = $location;
+		if ($searchclass != 'All' && $location && stripos($searchdesc,$location) !== FALSE) {
+			$q = $location;
 		}
 		
 		if ($criteria->reference_index == 2 && $CONF['default_search_distance_2'] && $distance == $CONF['default_search_distance']) {
