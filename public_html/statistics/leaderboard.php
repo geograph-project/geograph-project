@@ -294,12 +294,13 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($when) {
 		if ($date == 'both') {
 			$sql_where .= " and imagetaken LIKE '$when%' and submitted LIKE '$when%'";
+			$desc .= ", <b>for images taken and submitted during ".getFormattedDate($when)."</b>";
 		} else {
 			$column = ($date == 'taken')?'imagetaken':'submitted';
 			$sql_where .= " and $column LIKE '$when%'";
+			$title = ($date == 'taken')?'taken':'submitted'; 
+			$desc .= ", <b>for images $title during ".getFormattedDate($when)."</b>";
 		}
-		$title = ($date == 'taken')?'taken':'submitted'; 
-		$desc .= ", <b>for images $title during ".getFormattedDate($when)."</b>";
 	}
 	if ($ri) {
 		$sql_where .= " and reference_index = $ri";
