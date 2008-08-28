@@ -41,7 +41,7 @@ $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
 $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
 
-$limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(250,intval($_GET['limit'])):50;
+$limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(250,intval($_GET['limit'])):150;
 
 $minimum = (isset($_GET['minimum']) && is_numeric($_GET['minimum']))?intval($_GET['minimum']):25;
 $maximum = (isset($_GET['maximum']) && is_numeric($_GET['maximum']))?intval($_GET['maximum']):0;
@@ -292,9 +292,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	} 
 
 	if ($when) {
-
-		$column = ($date == 'taken')?'imagetaken':'submitted';
-		$sql_where .= " and $column LIKE '$when%'";
+		if ($date == 'both') {
+			$sql_where .= " and imagetaken LIKE '$when%' and submitted LIKE '$when%'";
+		} else {
+			$column = ($date == 'taken')?'imagetaken':'submitted';
+			$sql_where .= " and $column LIKE '$when%'";
+		}
 		$title = ($date == 'taken')?'taken':'submitted'; 
 		$desc .= ", <b>for images $title during ".getFormattedDate($when)."</b>";
 	}
@@ -310,13 +313,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($sql_table != 'user_stat i') {
 		$sql_column = "max(gridimage_id) as last,$sql_column";
 	}
+	$limit2 = intval($limit * 1.6);
 	$topusers=$db->GetAll("select 
 	i.user_id,u.realname, $sql_column as imgcount
 	from $sql_table inner join user u using (user_id)
 	where $sql_where
 	group by user_id 
 	$sql_having_having
-	order by imgcount desc $sql_orderby,last asc"); 
+	order by imgcount desc $sql_orderby,last asc limit $limit2"); 
 	$lastimgcount = 0;
 	$toriserank = 0;
 	$points = 0;
