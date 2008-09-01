@@ -163,7 +163,7 @@
 	<p style="font-size:0.7em">Click column headers to sort in a different order</p>
 	
 	{if $limit}
-		<p>Showing the latest {$limit} images, see <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=text&amp;resultsperpage=100">More</a></p>
+		<p>This page shows the latest {$limit} images, more are available <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=text&amp;resultsperpage=100&amp;page=2">via the search interface</a></p>
 	{/if}
 	
 	<table class="report sortable" id="photolist" style="font-size:8pt;">
@@ -187,7 +187,7 @@
 	</tbody></table>
 
 	{if $limit}
-		<p>Showing the latest {$limit} images, see <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=text&amp;resultsperpage=100">More</a></p>
+		<p>This page shows the latest {$limit} images, more are available <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=text&amp;resultsperpage=100&amp;page=2">via the search interface</a></p>
 	{/if}
 	{if $profile->stats.images gt 100 && $limit == 100}
 		{dynamic}
