@@ -145,7 +145,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	
 	if ($pg > 1 && !isset($ids)) {
 		$page = ($pg -1)* $pageSize;
-		$limit = "$page,$limit";
+		$limit = "$page,$pageSize";
 	} else {
 		$limit = $pageSize;
 	}
