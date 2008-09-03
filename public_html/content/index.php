@@ -138,7 +138,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	}
 	
 	if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
-		$where .= " AND `type` != 'themed'";
+		$where .= " AND content.`type` != 'themed'";
 	}
 	
 	if (!isset($resultCount))
@@ -213,7 +213,13 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$list = $db->getAll("select title from content");
+	
+	$where = '';
+	if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
+		$where = " WHERE `type` != 'themed'";
+	}
+	
+	$list = $db->getAll("select title from content $where");
 
 	$a = array();
 	foreach ($list as $i => $row) {
@@ -227,7 +233,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 			} elseif (preg_match('/^[A-Z]/',$w)) {
 				//give promience to uppercased words
 				$a[strtolower($w)]+=2;
-			} else {
+			} elseif (!ctype_digit($w)) {
 				$a[$w]++;
 			}
 		}

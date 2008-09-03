@@ -222,7 +222,9 @@ class sphinxwrapper {
 	
 	public function returnIds($page = 1,$index_in = "user",$DateColumn = '') {
 		$q = $this->q;
-	
+		if (empty($this->qoutput)) {
+			$this->qoutput = $q;
+		}
 		$cl = $this->_getClient();
 		if (!empty($_GET['debug']) && $_GET['debug'] == 2) {
 			print "<pre style='background-color:red'>";
