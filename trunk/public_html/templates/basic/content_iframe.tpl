@@ -13,8 +13,21 @@ h2 { padding: 5px; margin-top:0px; background-color: black; color:white}
 
 </script>{/literal}
 
-<h2>{$title|escape:"html"}</h2>
+<h2 style="margin-bottom:0px">{$title|escape:"html"}</h2>
+<div style="text-align:right;font-size:0.8em;margin-top:0px;">Order by : | {foreach from=$orders item=name key=key}
+	{if $order eq $key}
+		<b>{$name}</b>
+	{else}
+		<a href="?{$extra|replace:'order=':'old='}&amp;order={$key}">{$name}</a>
+	{/if} |
+{/foreach}</div>
 
+
+<div style="margin-top:0px; font-size:0.6em"> 
+{if $pagesString}
+	( Page {$pagesString})
+{/if}
+</div>	
 <ul class="content">
 {foreach from=$list item=item}
 
@@ -40,6 +53,11 @@ h2 { padding: 5px; margin-top:0px; background-color: black; color:white}
 
 </ul>
 
+<div style="margin-top:0px"> 
+{if $pagesString}
+	( Page {$pagesString})
+{/if}
+</div>	
 
 <br style="clear:both"/>
 

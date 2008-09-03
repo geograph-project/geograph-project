@@ -7,7 +7,7 @@
 	<input id="searchgo1" type="submit" value="Go"/>
 	</form></div>
 
-<h2>Themed Browsing</h2>
+<h2>Exploring the photographs</h2>
 
 
 <h3>Outstanding achievement...</h3>

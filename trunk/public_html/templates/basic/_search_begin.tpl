@@ -55,7 +55,13 @@ Display:
 		This search is powered by the new <a href="/help/search_new">experimental Full-Text search index</a>, which in some ways is less precise than the legacy search in text matching, e.g. similar words are automatically matched. However this index often results in quicker and more relevent results. 
 		{if !$engine->criteria->sphinx.no_legacy}
 			You can access the <a href="/search.php?i={$i}&amp;legacy=true">old search here</a>.
+		
+			{if $enable_forums}
+				If you find yourself having to use this link, please tell us about it the forum. The legacy search will be phased out and it helps to know the functionality unintentionally broken in the new. 
+			{/if}
 		{/if}
+		
+		
 		<br/><br/>
 
 		{if $engine->criteria->isallsearch}

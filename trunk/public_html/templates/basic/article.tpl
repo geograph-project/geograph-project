@@ -4,7 +4,20 @@
 
 <div style="float:right"><a title="geoRSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-rss">RSS</a></div>
 
-<h2>User Contributed Articles &nbsp;&nbsp;&nbsp;<sub><a href="/article/?table{$extra}">View as List</a> <sup style="color:red">New!</sup></sub></h2>
+<div class="tabHolder">
+	<a href="/content/" class="tab">Content</a>
+	<span class="tabSelected">Articles</span>
+	<a href="/article/?table" class="tab">Article List</a>
+	<a href="/gallery/" class="tab">Galleries</a>
+	{if $enable_forums}
+		<a href="/discuss/index.php?action=vtopic&amp;forum=6" class="tab">Themed Topics</a>
+		<a href="/discuss/index.php?action=vtopic&amp;forum=5" class="tab">Grid Square Discussions</a>
+		<a href="/article/Content-on-Geograph" class="tab">Contribute...</a>
+	{/if}	
+</div>
+<div class="interestBox">
+<h2>User Contributed Articles</h2>
+</div>
 
 {if $user->registered} 
 <div class="interestBox">

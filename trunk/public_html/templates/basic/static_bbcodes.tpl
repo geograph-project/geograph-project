@@ -1,4 +1,4 @@
-{assign var="page_title" value="Code Help"}
+{assign var="page_title" value="Formatting Help"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
 tt { color:green; border: 1px solid lightgrey; padding:3px; background-color:white}

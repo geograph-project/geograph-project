@@ -30,7 +30,7 @@ ul.content {padding:0 0 0 0; border-bottom: 1px solid gray}
 ul.content li {	padding:3px; border-top: 1px solid gray}
 
 </style>{/literal}
-{dynamic}{if $user->user_id == $user_id}<p style="text-align:center" class="no_print">[[<a href="/article/edit.php?page={$url}">edit this article</a>]]</p>{/if}{/dynamic}
+{dynamic}{if $user->user_id == $user_id}<p style="text-align:center" class="no_print">[[<a href="/article/edit.php?page={$url}">edit this article</a>]] [[<a href="/article/">article listing</a>]]</p>{/if}{/dynamic}
 
 <h1>{$title|escape:'html'}</h1>
 

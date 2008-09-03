@@ -7,7 +7,20 @@ ul.explore li {	padding:3px; }
 
 <div style="float:right"><a title="RSS Feed for Geograph Galleries" href="/discuss/syndicator.php?forum=11" class="xml-rss">RSS</a></div>
 
-<h2>Themed Galleries</h2>
+<div class="tabHolder">
+	<a href="/content/" class="tab">Content</a>
+	<a href="/article/" class="tab">Articles</a>
+	<a href="/article/?table" class="tab">Article List</a>
+	<span class="tabSelected">Galleries</span>
+	{if $enable_forums}
+		<a href="/discuss/index.php?action=vtopic&amp;forum=6" class="tab">Themed Topics</a>
+		<a href="/discuss/index.php?action=vtopic&amp;forum=5" class="tab">Grid Square Discussions</a>
+		<a href="/article/Content-on-Geograph" class="tab">Contribute...</a>
+	{/if}	
+</div>
+<div class="interestBox">
+<h2>Galleries</h2>
+</div>
 
 <ul class="content">
 {foreach from=$list item=item}

@@ -51,10 +51,9 @@ customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
 if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid))
 {
-
-
+	$extra = 'inner';
 	
-	$limit = 25;
+	$pageSize = 25;
 	
 	#$pg = empty($_GET['page'])?1:intval($_GET['page']);
 	
@@ -71,12 +70,23 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		case 'updated':
 		default: $sql_order = "updated desc";
 			$title = "Recently Updated";
+			$order = 'updated';
+	}
+	$smarty->assign("order",$order);
+	$orders = array('views'=>'Most Viewed','created'=>'Recently Created','title'=>'Alphabetical','updated'=>'Last Updated');
+	$smarty->assign_by_ref("orders",$orders);
+	$extra .= "&amp;order={$order}";
+	
+	
+	if (!empty($_GET['page'])) {
+		$pg = intval($_GET['page']);
+	} else {
+		$pg = 1;
 	}
 	
 	if (!empty($_GET['user_id']) && preg_match('/^\d+$/',$_GET['user_id'])) {
 		$where = "content.user_id = {$_GET['user_id']}";
-		$smarty->assign('extra', "&amp;user_id={$_GET['user_id']}");
-	
+		$extra .= "&amp;user_id={$_GET['user_id']}";
 	} elseif (!empty($_GET['q'])) {
 
 		// --------------
@@ -89,14 +99,12 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		if (preg_match('/\bp(age|)(\d+)\s*$/',$q,$m)) {
 			$pg = intval($m[2]);
 			$sphinx->q = preg_replace('/\bp(age|)\d+\s*$/','',$sphinx->q);
-		} else {
-			$pg = 1;
 		}
 		
 		$smarty->assign('extra', "&amp;q=".urlencode($sphinx->q));
 		$title = "Matching ".htmlentities($sphinx->q);
 		
-		$sphinx->processQuery();
+		#$sphinx->processQuery();
 		
 		$ids = $sphinx->returnIds($pg,'content_stemmed');	
 		
@@ -107,21 +115,40 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		} else {
 			$where = "0";
 		}
+		$resultCount = $sphinx->resultCount;
+		
 		// --------------
 	} elseif (isset($_GET['docs'])) {
 		$where = "`use` = 'document'";
-		$limit = 1000;
+		$pageSize = 1000;
 		$title = "Geograph Documents";
+		$extra .= "&amp;docs=1";
 	} elseif (isset($_GET['loc'])) {
 		$where = "gridsquare_id > 0";
-		$limit = 100;
+		$pageSize = 100;
 		$title = "Location Specific Content";
+		$extra .= "&amp;loc=1";
 	} else {
 		$where = "`use` = 'info'";
 	}
 	
+	if (!isset($resultCount)) {
+		$resultCount = $db->getOne("SELECT COUNT(*) FROM content WHERE $where");
+	}
 	
+	$numberOfPages = ceil($resultCount/$pageSize);
+
+	if ($numberOfPages > 1) {
+		$smarty->assign('pagesString', pagesString($pg,$numberOfPages,"?$extra&amp;page=") );
+		$smarty->assign("offset",(($pg -1)* $pageSize)+1);
+	}
 	
+	if ($pg > 1 && !isset($ids)) {
+		$page = ($pg -1)* $pageSize;
+		$limit = "$page,$limit";
+	} else {
+		$limit = $pageSize;
+	}
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll("
@@ -167,6 +194,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	
 	$smarty->assign_by_ref('list', $list);
 	$smarty->assign_by_ref('title', $title);
+	$smarty->assign('extra', $extra);
 	
 	if (!empty($_SERVER['QUERY_STRING']) && preg_match("/^[\w&;=+ %]/",$_SERVER['QUERY_STRING'])) {
 		$smarty->assign('extra_raw', "&amp;".htmlentities($_SERVER['QUERY_STRING']));
@@ -203,6 +231,9 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	if (!empty($_SERVER['QUERY_STRING']) && preg_match("/^[\w&;=+ %]/",$_SERVER['QUERY_STRING'])) {
 		$smarty->assign('extra', "&amp;".htmlentities($_SERVER['QUERY_STRING']));
 	}
+}
+if ($template == 'content.tpl' && $USER->registered) {
+	$smarty->assign('content_count', $db->GetOne("SELECT count(*) FROM content WHERE user_id = ".$USER->user_id));
 }
 
 $smarty->display($template, $cacheid);
