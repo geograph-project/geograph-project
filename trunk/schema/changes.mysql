@@ -81,12 +81,15 @@ ALTER TABLE `gridimage_link` ADD `failure_count` SMALLINT NOT NULL ;
 CREATE TABLE `_tables` (
   `table_name` varchar(64) NOT NULL,
   `description` text NOT NULL,
-  `type` enum('primary','secondary','derivied','temp','static','archive') NOT NULL,
+  `type` enum('primary','secondary','derivied','temp','static','primary_archive','old') NOT NULL,
   `user_id` int(10) unsigned NOT NULL,
   `created` datetime NOT NULL,
   `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`table_name`)
 ) ENGINE=MyISAM;
+
+
+ALTER TABLE  `content` CHANGE  `type`  `type` ENUM(  'article',  'gallery',  'gsd',  'themed',  'help',  'other' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
 
 
 

@@ -101,10 +101,14 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 			$sphinx->q = preg_replace('/\bp(age|)\d+\s*$/','',$sphinx->q);
 		}
 		
-		$smarty->assign('extra', "&amp;q=".urlencode($sphinx->q));
+		$extra .= "&amp;q=".urlencode($sphinx->q);
 		$title = "Matching ".htmlentities($sphinx->q);
 		
 		#$sphinx->processQuery();
+		
+		if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
+			$sphinx->q .= " @type -themed";
+		}
 		
 		$ids = $sphinx->returnIds($pg,'content_stemmed');	
 		
@@ -116,6 +120,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 			$where = "0";
 		}
 		$resultCount = $sphinx->resultCount;
+		$numberOfPages = $sphinx->numberOfPages;
 		
 		// --------------
 	} elseif (isset($_GET['docs'])) {
@@ -132,14 +137,18 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		$where = "`use` = 'info'";
 	}
 	
-	if (!isset($resultCount)) {
-		$resultCount = $db->getOne("SELECT COUNT(*) FROM content WHERE $where");
+	if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
+		$where .= " AND `type` != 'themed'";
 	}
 	
-	$numberOfPages = ceil($resultCount/$pageSize);
+	if (!isset($resultCount))
+		$resultCount = $db->getOne("SELECT COUNT(*) FROM content WHERE $where");
+	
+	if (!isset($numberOfPages))
+		$numberOfPages = ceil($resultCount/$pageSize);
 
 	if ($numberOfPages > 1) {
-		$smarty->assign('pagesString', pagesString($pg,$numberOfPages,"?$extra&amp;page=") );
+		$smarty->assign('pagesString', pagesString($pg,$numberOfPages,$_SERVER['PHP_SELF']."?$extra&amp;page=") );
 		$smarty->assign("offset",(($pg -1)* $pageSize)+1);
 	}
 	
@@ -159,7 +168,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	from content 
 		left join user using (user_id)
 		left join article_stat on (content.type = 'article' and foreign_id = article_id)
-		left join geobb_topics on (content.type = 'gallery' and foreign_id = topic_id) 
+		left join geobb_topics on (content.type IN ('gallery','themed') and foreign_id = topic_id) 
 		left join gridimage_post using (topic_id)
 	where $where
 	group by content_id
