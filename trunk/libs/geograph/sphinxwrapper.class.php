@@ -169,6 +169,8 @@ class sphinxwrapper {
 			$cl = $this->_getClient();
 			$cl->SetGeoAnchor('wgs84_lat', 'wgs84_long', deg2rad($lat), deg2rad($long) );
 			$cl->SetFilterFloatRange('@geodist', 0.0, floatval($data['d']*1000));
+		} else {
+			$this->sort = preg_replace('/@geodist \w+,?\s*/','',$this->sort);
 		}
 	} 
 	
