@@ -860,9 +860,8 @@ if (isset($_GET['set_legacy'])) {
 			if (empty($db)) die('Database connection failed');
 		}
 		//list of a few image classes
-		$arr = $db->GetAssoc("select imageclass,concat(imageclass,' [',count(*),']') from gridimage_search
-			where length(imageclass)>0
-			group by imageclass having count(*) > 15 order by rand() limit 5");
+		$arr = $db->GetAssoc("select imageclass,concat(imageclass,' [',c,']') from category_stat
+			where c > 15 order by rand() limit 5");
 		$smarty->assign_by_ref('imageclasslist',$arr);
 	}
 	if ($USER->registered) {
