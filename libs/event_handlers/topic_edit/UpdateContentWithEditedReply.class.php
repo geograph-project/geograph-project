@@ -23,12 +23,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
-
-require_once(realpath($_SERVER["DOCUMENT_ROOT"]."/../libs/event_handlers")."/topic_new/UpdateContentWithNewTopic.class.php");
+require_once("geograph/eventhandler.class.php");
+require_once("geograph/content.topic.inc.php");
 
 //filename of class file should correspond to class name, e.g.  myhandler.class.php
-class UpdateContentWithEditedReply extends UpdateContentWithNewTopic
+class UpdateContentWithEditedReply extends EventHandler
 {
 	function processEvent(&$event)
 	{
@@ -38,14 +37,12 @@ class UpdateContentWithEditedReply extends UpdateContentWithNewTopic
 		$db=&$this->_getDB();
 
 		$post=$db->GetRow("select forum_id,topic_id from geobb_posts where post_id=$post_id");
-		
-		if ($post['forum_id'] == 11) {//gallery -todo gsd and maybe even submitted articles!
-			$event['event_param'] = $post['topic_id'];
-			return parent::processEvent($event);
-		} else {
-		
-			return true;
+
+		if ($post['forum_id'] == 6 || $post['forum_id'] == 11) {//todo gsd 
+			add_topic_to_content($post['topic_id'],$db);
 		}
+
+		return true;
 	}
 }
 ?>
