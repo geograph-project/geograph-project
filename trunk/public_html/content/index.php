@@ -107,6 +107,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		#$sphinx->processQuery();
 		
 		if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
+			$sphinx->qoutput = $sphinx->q;
 			$sphinx->q .= " @type -themed";
 		}
 		
