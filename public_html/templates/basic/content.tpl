@@ -10,14 +10,36 @@
 
 <div style="float:right"><a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></div>
 
+{dynamic}
+{if $user->registered && $content_count}
+<div class="tabHolder">
+	<span class="tabSelected">Content</span>
+	<a href="/article/" class="tab">Articles</a>
+	<a href="/article/?table" class="tab">Article List</a>
+	<a href="/gallery/" class="tab">Galleries</a>
+	{if $enable_forums}
+		<a href="/discuss/index.php?action=vtopic&amp;forum=6" class="tab">Themed Topics</a>
+		<a href="/discuss/index.php?action=vtopic&amp;forum=5" class="tab">Grid Square Discussions</a>
+		<a href="/article/Content-on-Geograph" class="tab">Contribute...</a>
+	{/if}	
+</div>
+<div class="interestBox">
+<h2 style="margin-bottom:0">Content submitted to Geograph</h2>
+</div>
+<br/>
+{else}
 <h2>Content submitted to Geograph</h2>
-
+	{if $user->registered && $enable_forums}
+		&middot; <a href="/article/Content-on-Geograph">Contribute your own Content...</a><br/><br/>
+	{/if}
+{/if}
+{/dynamic}
 
 
 <table width="100%">
 	<tbody>
 		<tr>
-			<td width="80%" valign="top" height="700">
+			<td width="80%" valign="top" height="2000">
 <iframe src="/content/?inner{$extra}" width="100%" height="100%" frameborder="0" name="content"></iframe>
 			</td>
 			<td valign="top" class="helpbox">
@@ -49,7 +71,7 @@ Common Themes:<br/>
   <li><a href="/gallery/">Galleries</a></li>
   {if false && $enable_forums}
 	  <li><a href="/discuss/?action=vtopic&amp;forum=5">Grid Square Discussions</a></li>
-	  <li><a href="/discuss/?action=vtopic&amp;forum=6">Submitted Articles</a></li>
+	  <li><a href="/discuss/?action=vtopic&amp;forum=6">Themed Topics</a></li>
   {/if}
   <li><a href="/help/sitemap">Help Documents</a></li>
  </ul>
