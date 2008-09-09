@@ -75,6 +75,7 @@ $db=NewADOConnection($GLOBALS['DSN']);
 $sql="select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.type
 	from content 
 		left join user using (user_id)
+	where type != 'themed'
 	order by updated desc
 	limit 50";
 
