@@ -23,7 +23,7 @@ h2 { padding: 5px; margin-top:0px; background-color: black; color:white}
 {/foreach}</div>
 
 
-<div style="margin-top:0px; font-size:0.6em"> 
+<div style="margin-top:5px; font-size:0.6em"> 
 {if $pagesString}
 	( Page {$pagesString})
 {/if}
