@@ -19,7 +19,6 @@
 	<a href="/gallery/" class="tab">Galleries</a>
 	{if $enable_forums}
 		<a href="/discuss/index.php?action=vtopic&amp;forum=6" class="tab">Themed Topics</a>
-		<a href="/discuss/index.php?action=vtopic&amp;forum=5" class="tab">Grid Square Discussions</a>
 		<a href="/article/Content-on-Geograph" class="tab">Contribute...</a>
 	{/if}	
 </div>
@@ -69,8 +68,7 @@ Common Themes:<br/>
  <ul>
   <li><a href="/article/">Articles</a></li>
   <li><a href="/gallery/">Galleries</a></li>
-  {if false && $enable_forums}
-	  <li><a href="/discuss/?action=vtopic&amp;forum=5">Grid Square Discussions</a></li>
+  {if $enable_forums}
 	  <li><a href="/discuss/?action=vtopic&amp;forum=6">Themed Topics</a></li>
   {/if}
   <li><a href="/help/sitemap">Help Documents</a></li>
