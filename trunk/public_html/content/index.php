@@ -165,7 +165,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.type,content.gridimage_id,
 		(coalesce(views,0)+coalesce(topic_views,0)) as views,
 		(coalesce(images,0)+coalesce(count(gridimage_post.seq_id),0)) as images,
-		article_stat.words,posts_count,coalesce(count(distinct gridimage_post.post_id),0) as posts_with_images
+		article_stat.words,coalesce(posts_count,0) as posts_count,coalesce(count(distinct gridimage_post.post_id),0) as posts_with_images
 	from content 
 		left join user using (user_id)
 		left join article_stat on (content.type = 'article' and foreign_id = article_id)
