@@ -27,7 +27,7 @@
     much of the coding / design, as well as specifying and building the dedicated server farm. 
     Paul can be contracted through his company {external href="http://www.elphin.com/" title="Elphin Limited" text="Elphin Limited"}.</li>
     
-    <li>{mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}, 
+    <li>{mailto address="geo@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}, 
     developer and maintainer of 
     {external title="Nearby.org.uk Website" href="http://www.nearby.org.uk" text="www.nearby.org.uk"} lends his wide experience of working with 
     mapping technologies and was responsible for the site search, as well as 
@@ -35,13 +35,13 @@
     
     <li>Ian Rutson contributed to the Memory Map export features.</li>
     
-    <li>David Morris has helped with the profile features and is currently working on a bulk standalone upload application.</li>
+    <li>David Morris has helped with the profile features and a bulk standalone upload application - JUppy.</li>
     
     </ul>
     
     <h3>Moderators</h3>
     <ul>
-    <li>View <a href="/admin/team.php">the Geograph Team</a> page</li>
+    <li>A growing number of volunteer moderators drawn from the contributor list, donate their time and effort to help sort and maintain the image archive. View <a href="/admin/team.php">the Geograph Team</a> for the list of current and past moderators.</li>
     </ul>
     
     <h3>Mapping &amp; Location Data</h3>

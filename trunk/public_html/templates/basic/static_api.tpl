@@ -32,8 +32,8 @@
 		looking to get access to some of the data, well you've come to the right place,
 		below you will find brief details of what's available and how to get it...</p>
 	 <p>Please note that the API is still in its early stages, these are the possiblities that 
-	 	the developers needed, or felt would be useful, if you have any special requests then
-	 	don't be shy, just <a href="/contact.php">let us know</a>.</p>
+		the developers needed, or felt would be useful, if you have any special requests then
+		don't be shy, just <a href="/contact.php">let us know</a>.</p>
 
 	<form action="http://groups-beta.google.com/group/geograph-api-users/boxsubscribe">
 		<table border=0 style="background-color: #fff; border:1px solid green; padding: 5px;" cellspacing=2>
@@ -61,9 +61,13 @@
 	
 	 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 	 <img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
-	<b>Each of these Feeds includes the photographer credit/name, which under the CC licence MUST be displayed along any use of the image. Also the fact the image is CC licenced needs to be mentioned.</b><br/><br/>Ideally also you could link back to the main photo page, either with the link supplied or with <a href="http://{$http_host}/photo/[id]">http://{$http_host}/photo/[id]</a>.<br/><br/> <i>Thank you for your attention in this matter.</i>
-	</div>
-		
+	 <b>Each of these Feeds includes the photographer credit/name, which under the CC licence MUST be displayed along any use of the image. Also the fact the image is CC licenced needs to be mentioned.</b><br/><br/>Ideally also you could link back to the main photo page, either with the link supplied or with <a href="http://{$http_host}/photo/[id]">http://{$http_host}/photo/[id]</a>.<br/><br/> <i>Thank you for your attention in this matter.</i>
+	 </div>
+	
+	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px; clear:both;margin-top:30px;"><a name="torrents"></a>Torrents - Bulk Image download</h3> 
+	 <p>The entire archive is also available for download via bittorrent - see 
+		{external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk" text="http://torrents.geograph.org.uk"} for details.</p>
+	
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px; clear:both;margin-top:30px;"><a name="api"></a>API-key</h3> 
 	 <p>If you haven't got one you will need to obtain a unique API-key, which
 		gives you access to the pages below, simply <a href="/contact.php">contact
