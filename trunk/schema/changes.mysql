@@ -93,3 +93,69 @@ ALTER TABLE  `content` CHANGE  `type`  `type` ENUM(  'article',  'gallery',  'gs
 
 
 
+###########################################
+
+## load data infile... into `os_gaz_new`
+
+
+ALTER TABLE `os_gaz_new`
+  ADD `def_nam_soundex` varchar(32) NOT NULL default '',
+  ADD `point_en` point NOT NULL default '',
+  ADD `hcounty` varchar(64) NOT NULL default '';
+
+
+#may want to add an index on os_gaz.km_ref here!
+UPDATE os_gaz_new,os_gaz
+	SET os_gaz_new.hcounty = os_gaz.hcounty
+	WHERE os_gaz_new.km_ref = os_gaz.km_ref;
+	
+UPDATE `os_gaz_new` SET `def_nam_soundex` = SOUNDEX( def_nam ) ;
+
+
+#need to repeat this after populating the table :)
+UPDATE os_gaz_new SET point_en = GeomFromText(CONCAT('POINT(',east,' ',north,')'));
+
+ALTER TABLE `os_gaz_new` 
+	ADD SPATIAL KEY(point_en),
+	ADD KEY `def_nam_soundex` (`def_nam_soundex`);
+
+#	ADD KEY `east` (`east`,`north`,`f_code`),
+#	ADD KEY `co_code` (`co_code`),
+#	ADD KEY `tile_ref` (`tile_ref`),
+#	ADD KEY `def_nam` (`def_nam`);
+
+
+
+RENAME TABLE `os_gaz` TO `os_gaz_old` ;
+RENAME TABLE `os_gaz_new` TO `os_gaz` ;
+
+#may want to add an index on os_gaz_old.km_ref here!
+UPDATE os_gaz,os_gaz_old
+	SET os_gaz.hcounty = os_gaz_old.hcounty
+	WHERE os_gaz.km_ref = os_gaz_old.km_ref AND os_gaz.hcounty = '';
+
+
+ALTER TABLE `os_gaz`
+CHANGE `seq` `seq` MEDIUMINT(6) UNSIGNED NOT NULL,
+CHANGE `north` `north` MEDIUMINT(7) UNSIGNED NOT NULL,
+CHANGE `east` `east` MEDIUMINT(6) UNSIGNED NOT NULL,
+CHANGE `gmt` `gmt` ENUM('E','W') NOT NULL,
+CHANGE `update_co` `update_co` ENUM('I','U') NOT NULL,
+CHANGE `co_code` `co_code` ENUM('AB','AG','AN','AR','BA','BB','BC','BD','BE','BF','BG','BH','BI','BL','BM','BN','BO','BP','BR','BS','BT','BU','BX','BY','BZ','CA','CB','CD','CE','CF','CH','CL','CM','CN','CT','CU','CV','CW','CY','DB','DD','DE','DG','DL','DN','DR','DT','DU','DY','DZ','EA','EB','ED','EG','EL','EN','ER','ES','EX','EY','FA','FF','FL','GH','GL','GR','GW','GY','HA','HD','HE','HF','HG','HI','HL','HN','HP','HR','HS','HT','HV','IA','IL','IM','IN','IS','IW','KC','KG','KH','KL','KN','KT','LA','LB','LC','LD','LL','LN','LO','LP','LS','LT','MA','MB','ME','MI','MK','MM','MO','MR','MT','NA','NC','ND','NE','NG','NH','NI','NK','NL','NN','NP','NR','NS','NT','NW','NY','OH','OK','ON','PB','PE','PK','PL','PO','PW','PY','RB','RC','RD','RE','RG','RH','RL','RO','RT','SA','SB','SC','SD','SE','SF','SG','SH','SI','SJ','SK','SL','SM','SN','SO','SP','SQ','SR','SS','ST','SU','SV','SW','SX','SY','SZ','TB','TF','TH','TR','TS','TU','VG','WA','WB','WC','WD','WE','WF','WG','WH','WI','WJ','WK','WL','WM','WN','WO','WP','WR','WS','WT','WW','WX','XX','YK','YS','YT','YY') NOT NULL,
+CHANGE `county` `county` ENUM('0','Aberd','Angus','Arg & Bt','Bark & Dag','Barnet','Barns','Bath & NE Somer','Beds','Bexley','Birm','Black w Dar','Blackp','Blae Gw','Bolton','Bourne','Brackn','Brad','Brent','Brig','Brom','Bucks','Bury','C of Aber','C of Bri & Hov','C of Bris','C of Derb','C of Dun','C of Edin','C of Glas','C of K upon H','C of Leic','C of Lon','C of Nott','C of Peterb','C of Plym','C of Port','C of Soton','C of Stoke','C of West','C of Wolv','Caer','Cald','Cambs','Camden','Card','Carm','Cered','Ches','Clackm','Conwy','Corn','Cov','Croy','Cumbr','D & G','Darl','Denb','Derby','Devon','Donc','Dorset','Dudley','Durham','E Ayr','E Dunb','E Loth','E Renf','E Susx','E Yorks','Ealing','Enf','Essex','Falk','Fife','Flint','Ghead','Glos','Gren','Gwyn','Hack','Halton','Ham & Ful','Hants','Hargy','Harrow','Hartpl','Hav','Heref','Herts','Highld','Hill','Houns','I of Angl','I of M','I of W','I Scilly','Inverc','Isling','Ken & Ch','Kent','King','Kirk','Know','Lam','Lancs','Leeds','Leic','Lew','Lincs','Liv','Luton','Man','Medway','Merth Tyd','Merton','Midd','Midlo','Mil Key','Monm','Moray','N Ayr','N Eil','N Lanak','N Lincs','N Som','N Tyne','N upon Ty','N Yks','NE Lincs','Newham','Newp','Norf','Northnts','Northum','Notts','Nth Pt Talb','Oldham','Orkney','Oxon','Pemb','Poole','Powys','Pth & Kin','Read','Red & Cl','Redbr','Renf','Rho Cyn Taf','Rich','Roch','Roth','Rut','S Ayr','S Glos','S Lanak','S Tyne','Salf','Sand','Scot Bord','Sefton','Sheff','Shetld','Shrops','Slough','Sol','Somer','Sou-on-Sea','St Hel','Staffs','Sthwk','Stir','Stock','Stock on T','Suff','Sund','Surrey','Sutton','Swan','Swin','T Ham','Tames','Thurr','Torbay','Torf','Traf','V of Glam','W Berks','W Dunb','W Loth','W Susx','Wakf','Wal F','Wals','Wan','Warr','Warw','Wigan','Wilts','Win & Maid','Wirral','Wok','Worcs','Wrekin','Wrex','York') NOT NULL,
+CHANGE `full_county` `full_county` ENUM('Aberdeen City','Aberdeenshire','Angus','Argyll and Bute','Barking & Dagenham','Barnet','Barnsley','Bath and North East Somerset','Bedfordshire','Bexley','Birmingham','Blackburn with Darwen','Blackpool','Blaenau Gwent','Bolton','Bournemouth','Bracknell Forest','Bradford','Brent','Bridgend','Bromley','Buckinghamshire','Bury','Caerphilly','Calderdale','Cambridgeshire','Camden','Cardiff','Carmarthenshire','Ceredigion','Cheshire','City of Brighton and Hove','City of Bristol','City of Derby','City of Edinburgh','City of Kingston upon Hull','City of Leicester','City of London','City of Nottingham','City of Peterborough','City of Plymouth','City of Portsmouth','City of Southampton','City of Stoke-on-Trent','City of Westminster','City of Wolverhampton','Clackmannanshire','Conwy','Cornwall','Coventry','Croydon','Cumbria','Darlington','Denbighshire','Derbyshire','Devon','Doncaster','Dorset','Dudley','Dumfries and Galloway','Dundee City','Durham','Ealing','East Ayrshire','East Dunbartonshire','East Lothian','East Renfrewshire','East Riding of Yorkshire','East Sussex','Enfield','Essex','Falkirk','Fife','Flintshire','Gateshead','Glasgow City','Gloucestershire','Greenwich','Gwynedd','Hackney','Halton','Hammersmith &Fulham','Hampshire','Haringey','Harrow','Hartlepool','Havering','Herefordshire','Hertfordshire','Highland','Hillingdon','Hounslow','Inverclyde','Isle of Anglesey','Isle of Man','Isle of Wight','Isles of Scilly','Islington','Kent','Kingston upon Thames','Kirklees','Knowsley','Lambeth','Lancashire','Leeds','Leicestershire','Lewisham','Lincolnshire','Liverpool','Luton','Manchester','Medway','Merthyr Tydfil','Merton','Middlesbrough','Midlothian','Milton Keynes','Monmouthshire','Moray','Na h-Eileanan an Iar','Neath Port Talbot','Newcastle upon Tyne','Newham','Newport','Norfolk','North Ayrshire','North East Lincolnshire','North Lanarkshire','North Lincolnshire','North Somerset','North Tyneside','North Yorkshire','Northamptonshire','Northumberland','Nottinghamshire','Oldham','Orkney Islands','Oxfordshire','Pembrokeshire','Perth and Kinross','Poole','Powys','Reading','Redbridge','Redcar & Cleveland','Renfrewshire','Rhondda,Cynon,Taff','Richmond upon Thames','Rochdale','Rotherham','Royal Borough of Kensington & Chelsea','Rutland','Salford','Sandwell','Scottish Borders','Sefton','Sheffield','Shetland Islands','Shropshire','Slough','Solihull','Somerset','South Ayrshire','South Gloucestershire','South Lanarkshire','South Tyneside','Southend-on-Sea','Southwark','St Helens','Staffordshire','Stirling','Stockport','Stockton on Tees','Suffolk','Sunderland','Surrey','Sutton','Swansea','Swindon','Tameside','Telford and Wrekin','The Vale of Glamorgan','Thurrock','Torbay','Torfaen','Tower Hamlets','Trafford','Wakefield','Walsall','Waltham Forest','Wandsworth','Warrington','Warwickshire','West Berkshire','West Dunbartonshire','West Lothian','West Sussex','Wigan','Wiltshire','Windsor and Maidenhead','Wirral','Wokingham','Worcestershire','Wrexham','XXXXXXXX','York') NOT NULL,
+CHANGE `hcounty` `hcounty` ENUM('','Aberdeenshire','Anglesey','Angus','Argyllshire','Ayrshire','Banffshire','Bedfordshire','Bedfordshire / Hertfordshire','Beds, pre-1844 part in det pt of Hunts','Berks, pre-1844 in det pt of Wilts','Berks, pre-1844 part in det pt of Wilts','Berkshire','Berwickshire','Brecknockshire','Brecknockshire / Monmouthshire','Brecknockshire / Radnorshire','Buckinghamshire','Bucks, pre-1844 in det pt of Herts','Bucks, pre-1844 in det pt of Oxon','Buteshire','Caernarfon (det), locally in Denbighs','Caernarfonshire','Caernarfonshire / Merioneth','Caithness','Cambridgeshire','Cambridgeshire / Hertfordshire','Cambridgeshire / Hunts','Cambridgeshire / Norfolk','Cambridgeshire / Suffolk','Cardiganshire','Carmarthenshire','Carmarthenshire / Brecknock','Cheshire','Cheshire / Flintshire','Clackmannanshire','Cornwall','Cornwall, pre-1884 in det pt of Devon','Cromartyshire','Cromartyshire / Ross-shire','Cumberland','Denbighshire','Denbighshire / Caernarfons','Denbighshire / Flintshire','Denbighshire / Montgomeryshire','Derbys (det), locally in Leics','Derbyshire','Derbyshire / Leicestershire','Derbyshire / Nottinghamshire','Devon','Devon / Dorset','Devon / Somerset','Devon, pre-1844 in det pt of Dorset','Dorset','Dorset / Hampshire','Dorset, pre-1844 in det pt of Devon','Dorset, pre-1844 in det pt of Som\'set','Dumfriesshire','Dunbartonshire','Durham','East Lothian','Essex','Fife','Flints (det), locally in Denbighs','Flintshire','Flintshire / Denbighshire','Glamorgan','Glamorgan / Brecknockshire','Gloucestershire','Gloucestershire / Herefords','Gloucs, pre-1844 in det pt of Wilts','Gloucs, pre-1844 in det pt of Worcs','Hampshire','Hampshire / Berkshire','Hampshire / Sussex','Hampshire / Wiltshire','Herefds, pre-1844 in det pt of Gloucs','Herefordshire','Herefordshire / Gloucestershire','Hertfordshire','Hertfordshire / Bedfordshire','Hertfordshire / Buckinghams','Hertfordshire / Middlesex','Huntingdonshire','Hunts (det), locally in Beds','Inverness (det), locally in Moray','Inverness-shire','Isles of Scilly','Kent','Kent / Surrey','Kent / Sussex','Kincardineshire','Kinross-shire','Kirkcudbrightshire','Lanarkshire','Lancashire','Lancs / Ches / Yorks, W.R.','Leicestershire','Leicestershire / Derbyshire','Leicestershire / Lincolnshire','Leicestershire / Northants','Lincolnshire','Lincolnshire / Cambridgeshire','Lincolnshire / Yorks, West Riding','Merioneth','Merioneth / Montgomeryshire','Middlesex','Middlesex / Hertfordshire','Midlothian','Monmouthshire','Montgomeryshire','Moray (det), locally in Inverness','Morayshire','Morayshire / Inverness-shir','N\'thumb, pre-1844 in det pt of Durham','Nairnshire','Norfolk','Norfolk / Cambridgeshire','Norfolk / Suffolk','Northamptonshire','Northumberland','Nottinghamshire','Orkney','Oxfordshire','Oxon, pre-1844 in det pt of Bucks','Peeblesshire','Pembrokeshire','Perthshire','Perthshire (det), locally in Fife','Radnorshire','Renfrewshire','Ross-shire','Roxburghshire','Rutland','Selkirk (det), locally in Roxburgh','Selkirkshire','Selkirkshire / Roxburghshire','Shetland','Shropshire','Shropshire / Montgomeryshire','Shropshire / Staffordshire','Somerset','Somerset / Devon','Somerset / Dorset','Staffordshire','Staffordshire / Cheshire','Staffordshire / Warwickshire','Staffordshire / Worcestershire','Stirling (det), locally in Clackman','Stirlingshire','Suffolk','Suffolk / Cambridgeshire','Suffolk / Essex','Suffolk / Norfolk','Surrey','Surrey / Kent','Surrey / Sussex','Sussex','Sussex / Hampshire','Sussex / Surrey','Sussex, pre-1844 in det pt of Hants','Sutherland','Warks, pre-1844 in det pt of Gloucs','Warwickshire','Warwickshire / Leicestershire','Warwickshire / Staffordshire','Warwickshire / Worcestershire','West Lothian','Westmorland','Wigtownshire','Wilts, pre-1844 in det pt of Gloucs','Wiltshire','Wiltshire / Berkshire','Wiltshire / Hampshire','Worcestershire','Worcestershire / Shropshire','Worcestershire / Warwickshire','Worcs (det), locally in Gloucs','Worcs (det), locally in Herefds','Worcs (det), locally in Staffs','Worcs (det), locally in Warks','Worcs, pre-1844 in det pt of Herefds','Worcs, pre-1844 in det pt of Shrops','Worcs, pre-1844 in det pt of Staffs','Worcs, pre-1844 in det pt of Warks','Yorkshire, East Riding','Yorkshire, North Riding','Yorkshire, W.R.','Yorkshire, West Riding','Yorkshire, West Riding / Li','Yorkshire, West Riding / Notts') NOT NULL;
+
+
+
+
+
+
+## now import the placename_id update script!
+
+UPDATE gridimage,gridsquare
+	SET gridimage.placename_id = gridsquare.placename_id
+	WHERE gridimage.gridsquare_id = gridsquare.gridsquare_id;
+
+
+

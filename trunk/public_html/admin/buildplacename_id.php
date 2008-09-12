@@ -108,6 +108,7 @@ if (isset($_POST['go']))
 			$pid = $places['pid'];		
 		} else {
 			$gid = $recordSet->fields['gridsquare_id'];
+			#$from_stratch = 1;
 			if ($from_stratch || $recordSet->fields['reference_index'] == 2) {
 				$square=new GridSquare;
 				#$square->_initFromArray($recordSet->fields);
@@ -163,7 +164,7 @@ if (isset($_POST['go']))
 		}
 
 		if ($pid) {
-			if (!empty($_POST['file'])) {	
+			if (empty($_POST['file'])) {	
 				$db->Execute("update LOW_PRIORITY gridimage set placename_id = $pid,upd_timestamp = '{$recordSet->fields['upd_timestamp']}' where gridimage_id = $gid");
 			} else {
 				fwrite($handle,"update $table set placename_id = $pid$extra where {$table}_id = $gid;\n");
