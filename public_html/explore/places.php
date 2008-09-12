@@ -86,9 +86,32 @@ if (!$smarty->is_cached($template, $cacheid))
 					$sql_where
 				GROUP BY placename_id";
 			} else {
-				//adm1 is actullu just an example placename!
-				$sql = "SELECT co_code,full_county as adm1_name FROM os_gaz WHERE seq = {$_GET['adm1']}";
-				$placename = $db->GetRow($sql);
+				if (is_numeric($_GET['adm1'])) {
+					//adm1 is actullu just an example placename in the OLD table!
+					$sql = "SELECT co_code,full_county as adm1_name FROM os_gaz_old WHERE seq = {$_GET['adm1']}";
+					$placename = $db->GetRow($sql);
+					
+					//and as its the old table - lets redirect... 
+					$ri = intval($_GET['ri']);
+					$adm1 = preg_replace('/[^A-Za-z]/','_',$placename['adm1_name']);
+					
+					header("HTTP/1.0 301 Moved Permanently");
+					header("Status: 301 Moved Permanently");
+					header("Location: /explore/places/{$ri}/{$adm1}/");
+					exit;
+				} else {
+					//bit convoluted, but want a column that is indexed!
+					
+					if (preg_match('/^\w+/',$_GET['adm1'])) {
+						$sql = "SELECT name FROM os_gaz_county WHERE name LIKE ".$db->Quote($_GET['adm1']);
+						$full_name = $db->GetOne($sql);
+						
+						$sql = "SELECT co_code,full_county as adm1_name FROM os_gaz WHERE full_county = ".$db->Quote($full_name)." LIMIT 1";
+						$placename = $db->GetRow($sql);
+					} else {
+						die("adm1 error");
+					}					
+				}
 				
 				$smarty->assign_by_ref('adm1_name', $placename['adm1_name']);
 				if ($placename['adm1_name'] != "Isle of Man")
@@ -106,13 +129,14 @@ if (!$smarty->is_cached($template, $cacheid))
 			$counts = $db->GetAssoc($sql);
 			$smarty->assign_by_ref('counts', $counts);
 		} elseif ($_GET['ri'] == 1) {
-			$sql = "SELECT seq as adm1,
+			$sql = "SELECT REPLACE(REPLACE(REPLACE(REPLACE(full_county,'&','_'),',','_'),'-','_'),' ','_') as adm1,
 			full_county as name,placename_id,def_nam as full_name,
 			count(*) as images,count(distinct (seq)) as places,gridimage_id 
 			FROM gridimage INNER JOIN os_gaz ON(placename_id-1000000 = os_gaz.seq)
 			WHERE moderation_status <> 'rejected' AND placename_id > 1000000
-			GROUP BY full_county";
+			GROUP BY co_code";
 			$counts = $db->GetAssoc($sql);
+			unset($counts['XXXXXXXX']); //not a real county
 			$smarty->assign_by_ref('counts', $counts);
 		} else {
 			$sql = "SELECT concat(loc_placenames.country,'-',loc_placenames.adm1) as adm1,coalesce(loc_adm1.name,'Northern Ireland') as name,
