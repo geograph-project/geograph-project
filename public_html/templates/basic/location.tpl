@@ -52,7 +52,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 		<li><img src="http://{$static_host}/img/links/20/slideshow.png" width="20" height="20" alt="slideshow icon" align="absmiddle"/> <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show" class="nowrap">View <b>slide show</b> for the {$square->imagecount} images in this square</a></li>
 	{/if}
 	{if $viewpoint_count}
-		<li><img src="http://{$static_host}/img/links/20/lookout.png" width="20" height="20" alt="browse icon" align="absmiddle"/> <a href="/full-text.php?q={$viewpoint_query|escape:'url'}">view <b>{$viewpoint_count} image{if $viewpoint_count != 1}s{/if} taken <i>from</i> {$gridref}</b></a></li>
+		<li><img src="http://{$static_host}/img/links/20/lookout.png" width="20" height="20" alt="browse icon" align="absmiddle"/> <a href="/gridref/{$gridref}?takenfrom">view <b>{$viewpoint_count} image{if $viewpoint_count != 1}s{/if} taken <i>from</i> {$gridref}</b></a></li>
 	{/if}
 	{if $enable_forums}
 		<li><img src="http://{$static_host}/img/links/20/discuss.png" width="20" height="20" alt="discussion icon" align="absmiddle"/> 

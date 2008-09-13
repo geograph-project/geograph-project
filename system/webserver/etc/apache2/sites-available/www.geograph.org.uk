@@ -89,6 +89,7 @@
     RewriteRule /photo/([0-9]+)\.rdf /rdfapi.php?id=$1 [qsa]
     RewriteRule /photo/([0-9]+)\.kml /kml.php?id=$1 [qsa]
     RewriteRule /photo/([0-9]+) /view.php?id=$1 [qsa]
+    RewriteRule /gridref/(.*)/links /location.php?gridref=$1 [qsa]
     RewriteRule /gridref/(.*) /browse.php?gridref=$1 [qsa]
 
     RewriteRule /help/([^/]*) /staticpage.php?page=$1 [qsa]
