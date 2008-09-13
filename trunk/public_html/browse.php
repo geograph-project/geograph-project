@@ -185,13 +185,6 @@ if ($grid_given)
 		}
 		
 		if (!empty($ids) && count($ids)) {
-			print_r($ids);
-			
-			
-			#$smarty->assign('viewpoint_count', $sphinx->resultCount);
-			#$smarty->assign('viewpoint_query', $sphinx->q);
-		
-			//todo ideally here we only want to forward teh user_id IF they have images in the square, or a mod, for greater cachablity, but the chicken and the egg thingy....
 			
 			$images=new ImageList();
 			$images->getImagesByIdList($ids);
