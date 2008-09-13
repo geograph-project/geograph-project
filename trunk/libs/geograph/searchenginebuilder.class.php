@@ -148,7 +148,7 @@ class SearchEngineBuilder extends SearchEngine
 			$searchdesc = ", $nearstring ".$criteria->placename;
 			$searchx = $criteria->x;
 			$searchy = $criteria->y;
-			#$location = $criteria->placename; //this overwrites the original placename
+			$location = $criteria->searchq; 
 		} 
 		if (($q) && ((!$criteria->is_multiple && empty($criteria->placename) ) || $placename) ) {
 			if (preg_match('/[~\+\^\$:@ -]+/',$q)) {
@@ -203,7 +203,7 @@ class SearchEngineBuilder extends SearchEngine
 			$limit1 = $userlimit;
 			$profile=new GeographUser($userlimit);
 			$searchdesc .= ", by ".($profile->realname);
-		}				
+		}
 
 		if (!empty($searchclass) && empty($criteria->is_multiple)) {
 			$db=$this->_GetDB();
