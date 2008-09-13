@@ -175,17 +175,20 @@ class sphinxwrapper {
 	} 
 	
 	
-	public function countImagesViewpoint($e,$n,$ri,$exclude = '') {
+	public function countMatches($index_in = "user") {
 		
 		$cl = $this->_getClient();
 		
-		$q = "@viewsquare ".($ri*10000000 + intval($n/1000)*1000 + intval($e/1000));
-		if ($exclude) {
-			$q .= " @grid_reference -$exclude";
+		if ($index_in == "_images") {
+			$index = "gi_stemmed,gi_delta_stemmed";
+		} elseif ($index_in == "_posts") {
+			$index = "post_stemmed,post_delta_stemmed";
+		} else {
+			$index = $index_in;
 		}
-		$this->q = $q;
 		
-		$index = "gi_stemmed,gi_delta_stemmed";
+		$q = $this->q;
+		#print "<pre>$index | $q</pre>";
 		
 		$cl->SetMatchMode ( SPH_MATCH_EXTENDED );
 		$cl->SetLimits(0,1,0);
@@ -206,6 +209,35 @@ class sphinxwrapper {
 			return $this->resultCount;
 		}
 	}
+	
+	public function countQuery($q,$index_in) {
+		$this->prepareQuery($q);
+		return $this->countMatches($index_in);
+	}
+	
+	public function countImagesViewpoint($e,$n,$ri,$exclude = '') {
+		
+		$q = "@viewsquare ".($ri*10000000 + intval($n/1000)*1000 + intval($e/1000));
+		if ($exclude) {
+			$q .= " @grid_reference -$exclude";
+		}
+		$this->q = $q;
+		
+		return $this->countMatches("_images");
+	}
+	
+	public function returnIdsViewpoint($e,$n,$ri,$exclude = '',$page = 1) {
+		
+		$q = "@viewsquare ".($ri*10000000 + intval($n/1000)*1000 + intval($e/1000));
+		if ($exclude) {
+			$q .= " @grid_reference -$exclude";
+		}
+		$this->q = $q;
+		
+		
+		return $this->returnIds($page,'_images');
+	}
+	
 	
 	public function getFilterString() {
 		$q = '';

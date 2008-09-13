@@ -159,6 +159,67 @@ if ($grid_given)
 			$smarty->assign('nearest_distance', $square->nearest->distance);
 			$smarty->assign('nearest_gridref', $square->nearest->grid_reference);
 		}
+	}
+	$smarty->assign('mode','normal');
+	if ($grid_ok && (isset($_GET['takenfrom']) || isset($_GET['mentioning'])) ) {
+		
+		$sphinx = new sphinxwrapper();
+		$sphinx->pageSize = 15;
+		
+		if (isset($_GET['takenfrom'])) {
+			if (!$square->nateastings)
+				$square->getNatEastings();
+				
+			$ids = $sphinx->returnIdsViewpoint($square->nateastings,$square->natnorthings,$square->reference_index,$square->grid_reference);
+			
+			
+			$viewpoint_count = 0; //set this to zero to suppress the prompt!
+			
+			$smarty->assign('mode','takenfrom');
+		} else {
+			$sphinx->prepareQuery("{$square->grid_reference} -grid_reference:{$square->grid_reference}");
+			$ids = $sphinx->returnIds(1,"_images");
+			$smarty->assign('mode','mentioning');
+			
+			$mention_count = 0; //set this to zero to suppress the prompt!
+		}
+		
+		if (!empty($ids) && count($ids)) {
+			print_r($ids);
+			
+			
+			#$smarty->assign('viewpoint_count', $sphinx->resultCount);
+			#$smarty->assign('viewpoint_query', $sphinx->q);
+		
+			//todo ideally here we only want to forward teh user_id IF they have images in the square, or a mod, for greater cachablity, but the chicken and the egg thingy....
+			
+			$images=new ImageList();
+			$images->getImagesByIdList($ids);
+			
+			$square->totalimagecount = $sphinx->resultCount;
+
+			//otherwise, lets gether the info we need to display some thumbs
+			if ($square->totalimagecount)
+			{
+				$smarty->assign_by_ref('images', $images->images);
+			}
+
+			$smarty->assign('totalimagecount', $sphinx->resultCount);
+			$smarty->assign('imagecount', $sphinx->resultCount);
+
+			if ($square->totalimagecount < 10 || ($USER->registered && !empty($_GET['big']))) {
+				$smarty->assign('thumbw',213);
+				$smarty->assign('thumbh',160);
+			} else {
+				$smarty->assign('thumbw',120);
+				$smarty->assign('thumbh',120);
+			}
+
+		} else {
+			$smarty->assign('imagecount', 0);
+		}
+		
+	} elseif ($grid_ok) {
 		$db = null;
 		$custom_where = '';
 		if (!empty($_GET['user'])) {
@@ -576,7 +637,9 @@ if ($grid_given)
 			$smarty->assign('thumbw',120);
 			$smarty->assign('thumbh',120);
 		}
-		
+	}
+	
+	if ($grid_ok) {
 		//geotag the page	
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
@@ -595,10 +658,15 @@ if ($grid_given)
 		
 		//look for images from here...
 		$sphinx = new sphinxwrapper();
-		if ($viewpoint_count = $sphinx->countImagesViewpoint($square->nateastings,$square->natnorthings,$square->reference_index,$square->grid_reference)) {
+		if (!isset($viewpoint_count) && $viewpoint_count = $sphinx->countImagesViewpoint($square->nateastings,$square->natnorthings,$square->reference_index,$square->grid_reference)) {
 			$smarty->assign('viewpoint_count', $viewpoint_count);
-			$smarty->assign('viewpoint_query', $sphinx->q);
+			#$smarty->assign('viewpoint_query', $sphinx->q);
 		}
+		
+		if (!isset($mention_count) && $mention_count = $sphinx->countQuery("{$square->grid_reference} -grid_reference:{$square->grid_reference}","_images")) {
+			$smarty->assign('mention_count', $mention_count);
+		} 
+		
 		if ($square->natspecified && $square->natgrlen >= 6) {
 			$conv = new Conversions('');
 			list($gr6,$len) = $conv->national_to_gridref(
