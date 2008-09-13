@@ -563,13 +563,13 @@ END;
 				
 				//well we need to reorder...
 				$lookup = array();
-				foreach ($this->results as $i => $image) {
-					$lookup[$image->gridimage_id] = $i;
+				foreach ($this->results as $gridimage_id => $image) {
+					$lookup[$image->gridimage_id] = $gridimage_id;
 				}
 				$newlist = array();
 				foreach ($this->orderList as $id) {
-					 if (!empty( $this->results[$lookup[$id]]))
-					 	$newlist[] = $this->results[$lookup[$id]];
+					if (!empty( $this->results[$lookup[$id]]))
+						$newlist[] = $this->results[$lookup[$id]];
 				}
 				$this->results = $newlist;
 			}
