@@ -124,7 +124,10 @@
 		{/if}
 		
 		{if $viewpoint_count}
-			<li style="margin-top:10px"><a href="/full-text.php?q={$viewpoint_query|escape:'url'}">view <b>{$viewpoint_count} images taken <i>from</i> {$gridref}</b></a> <sup style="color:red">new!</sup></li>
+			<li style="margin-top:10px"><a href="/gridref/{$gridref}?takenfrom">view <b>{$viewpoint_count} images taken <i>from</i> {$gridref}</b></a></li>
+		{/if}
+		{if $mention_count}
+			<li><a href="/gridref/{$gridref}?mentioning">view <b>{$mention_count} images <i>mentioning</i> {$gridref}</b></a> <sup style="color:red">new!</sup></li>
 		{/if}
 		
 		</ul>
@@ -149,7 +152,14 @@
 	<div class="interestBox" style="position:relative; margin-left:10px">We have 
 	{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
 	{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
-	for <b>{$gridref}</b>
+	
+	{if $mode eq 'takenfrom'}
+		taken from <b>{$gridref}</b>
+	{elseif $mode eq 'mentioning'}
+		mentioning <b>{$gridref}</b> <sup>[Note: Currently only matches 4 Figure Grid References]</sup>
+	{else}
+		for <b>{$gridref}</b>
+	{/if}
 	{if !$breakdown && !$breakdowns && $totalimagecount > 0}<span style="font-size:0.8em;">- click for larger version</span>{/if}</div>
 
 	{if !$breakdown && !$breakdowns && $totalimagecount > 0 &&  $totalimagecount > 1}
