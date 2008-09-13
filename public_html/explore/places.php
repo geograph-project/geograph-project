@@ -134,7 +134,8 @@ if (!$smarty->is_cached($template, $cacheid))
 			count(*) as images,count(distinct (seq)) as places,gridimage_id 
 			FROM gridimage INNER JOIN os_gaz ON(placename_id-1000000 = os_gaz.seq)
 			WHERE moderation_status <> 'rejected' AND placename_id > 1000000
-			GROUP BY co_code";
+			GROUP BY co_code
+			ORDER BY full_county";
 			$counts = $db->GetAssoc($sql);
 			unset($counts['XXXXXXXX']); //not a real county
 			$smarty->assign_by_ref('counts', $counts);
