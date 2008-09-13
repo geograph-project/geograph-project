@@ -167,10 +167,8 @@ if ($grid_given)
 		$sphinx->pageSize = 15;
 		
 		if (isset($_GET['takenfrom'])) {
-			if (!$square->nateastings)
-				$square->getNatEastings();
 				
-			$ids = $sphinx->returnIdsViewpoint($square->nateastings,$square->natnorthings,$square->reference_index,$square->grid_reference);
+			$ids = $sphinx->returnIdsViewpoint($square->getNatEastings(),$square->getNatNorthings(),$square->reference_index,$square->grid_reference);
 			
 			
 			$viewpoint_count = 0; //set this to zero to suppress the prompt!

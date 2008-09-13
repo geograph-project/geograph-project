@@ -131,7 +131,7 @@
 		{/if}
 		
 		</ul>
-	<p><big><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" alt="geotagged!"/> <b><a href="/location.php?gridref={$gridrefraw}">More Links for {$gridrefraw}</a></b> </big></p>
+	<p><big><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" alt="geotagged!"/> <b><a href="/gridref/{$gridrefraw}/links">More Links for {$gridrefraw}</a></b> </big></p>
 {/if}
 
 </div>
@@ -166,7 +166,7 @@
 		<div style="position:relative;text-align:right; font-size:0.7em"><a href="/gridref/{$gridref}?by=1{if $extra}{$extra}{/if}">View as <b>breakdown list</b></a>&nbsp;</div>
 	
 	{/if}	
-	{if $user->registered}
+	{if $user->registered && $mode eq 'normal'}
 		{if !$extra}
 			<div style="position:relative;text-align:right; font-size:0.7em"><a href="/gridref/{$gridref}?{if $breakdown || $breakdowns || $filtered}by=1&amp;{/if}nl=1">Include <b>pending and rejected</b> images</a>&nbsp;</div>
 		{else}
