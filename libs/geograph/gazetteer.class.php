@@ -338,7 +338,7 @@ class Gazetteer
 		global $USER;
 		global $CONF,$memcache;
 		
-		$mkey = "$placename".'.v2';//need to invalidate the whole cache. 
+		$mkey = strtolower(trim($placename)).'.v2';//need to invalidate the whole cache. 
 		//fails quickly if not using memcached!
 		$places =& $memcache->name_get('g',$mkey);
 		if ($places)
