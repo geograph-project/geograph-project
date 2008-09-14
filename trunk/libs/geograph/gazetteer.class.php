@@ -50,7 +50,7 @@ class Gazetteer
 	function findListByNational($reference_index,$e,$n,$radius = 1005) {
 		global $CONF,$memcache;
 		
-		$mkey = "$reference_index,$e,$n,$radius,-";
+		$mkey = "$reference_index,$e,$n,$radius,-".'.v2';//need to invalidate the whole cache. 
 		//fails quickly if not using memcached!
 		$places =& $memcache->name_get('g',$mkey);
 		if ($places)
@@ -120,7 +120,7 @@ class Gazetteer
 	function findByNational($reference_index,$e,$n,$radius = 25005,$f_codes = null) {
 		global $CONF,$memcache;
 		
-		$mkey = "$reference_index,$e,$n,$radius,$f_codes";
+		$mkey = "$reference_index,$e,$n,$radius,$f_codes".'.v2';//need to invalidate the whole cache. 
 		//fails quickly if not using memcached!
 		$places =& $memcache->name_get('g',$mkey);
 		if ($places)
@@ -338,7 +338,7 @@ class Gazetteer
 		global $USER;
 		global $CONF,$memcache;
 		
-		$mkey = "$placename";
+		$mkey = "$placename".'.v2';//need to invalidate the whole cache. 
 		//fails quickly if not using memcached!
 		$places =& $memcache->name_get('g',$mkey);
 		if ($places)
