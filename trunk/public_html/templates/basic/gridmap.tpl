@@ -38,10 +38,14 @@
 {literal}
 <script type="text/javascript">
 	function load_p2() {
+		map.enableDragging();
 		var ele = document.getElementById("map");
 		ele.style.width = "600px";
 		ele.style.height = "400px";
 		map.checkResize();
+		
+		var bounds = new GLatLngBounds();
+		
 		{/literal}
 		
 		{foreach from=$blocks item=code}
@@ -49,6 +53,11 @@
 		{/foreach}
 		
 		{literal}
+		
+		var newZoom = map.getBoundsZoomLevel(bounds);
+		var center = bounds.getCenter();
+		map.setCenter(center, newZoom);
+		
 	}
 	AttachEvent(window,'load',load_p2,false);
 </script>
