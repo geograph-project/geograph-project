@@ -2,7 +2,9 @@
 {assign var="page_title" value="$gridrefraw :: PhotoMap"}
 {include file="_std_begin.tpl"}
 
-
+{if $errormsg}
+	<p>{$errormsg}</p>
+{else}
 
 <h2>PhotoMap for {$gridrefraw} <sup>[{$square->imagecount} images]</sup></h2>
 <span class="nowrap"><img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$gridrefraw}.links"><b>More Links for this square</b></a></span>
@@ -54,5 +56,6 @@
 	{/if}
 
 {/if}
+
 {include file="_std_end.tpl"}
 {/dynamic}
