@@ -167,7 +167,7 @@ if ($grid_given)
 			var icon = MapIconMaker.createFlatIcon(iconOptions);";
 			$blocks[] = $code;
 			
-			$code = "map.addOverlay(new Gmarker(new GLatLng($lat2,$long2), icon);\n";
+			$code = "map.addOverlay(new Gmarker(new GLatLng($lat2,$long2), icon));\n";
 			$blocks[] = $code;
 			
 		}

@@ -50,7 +50,7 @@
 		
 		{literal}
 	}
-	AttachEvent(window,'load_p2',loadmap,false);
+	AttachEvent(window,'load',load_p2,false);
 </script>
 {/literal}
 
