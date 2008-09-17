@@ -164,7 +164,7 @@ if ($grid_given)
 			iconOptions.shape = \"circle\";
 			var icon = MapIconMaker.createFlatIcon(iconOptions);";
 						
-			$blocks[] = "map.addOverlay(new Gmarker(ppoint, icon));\n";
+			$blocks[] = "map.addOverlay(new GMarker(ppoint, icon));\n";
 		}
 		
 		
