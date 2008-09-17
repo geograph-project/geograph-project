@@ -165,6 +165,19 @@ if ($grid_given)
 			var icon = MapIconMaker.createFlatIcon(iconOptions);";
 						
 			$blocks[] = "map.addOverlay(new GMarker(ppoint, icon));\n";
+			
+			$blocks[] = "
+			var iconOptions = {};
+			iconOptions.width = 10;
+			iconOptions.height = 10;
+			iconOptions.primaryColor = \"#FF0000\";
+			iconOptions.label = \"\";
+			iconOptions.labelSize = 0;
+			iconOptions.labelColor = \"#000000\";
+			iconOptions.shape = \"roundrect\";
+			var icon = MapIconMaker.createFlatIcon(iconOptions);";
+									
+			$blocks[] = "map.addOverlay(new GMarker(new GLatLng($lat1,$long1), icon));\n";
 		}
 		
 		
