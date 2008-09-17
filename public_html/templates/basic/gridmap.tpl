@@ -52,12 +52,14 @@
 			{$code}
 		{/foreach}
 		
-		{literal}
 		
-		var newZoom = map.getBoundsZoomLevel(bounds);
-		var center = bounds.getCenter();
-		map.setCenter(center, newZoom);
+		{if $blocks}
+			var newZoom = map.getBoundsZoomLevel(bounds);
+			var center = bounds.getCenter();
+			map.setCenter(center, newZoom);
+		{/if}
 		
+		{literal}		
 	}
 	AttachEvent(window,'load',load_p2,false);
 </script>
