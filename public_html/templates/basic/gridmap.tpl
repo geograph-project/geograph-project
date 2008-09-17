@@ -34,7 +34,7 @@
 
 <script src="http://gmaps-utility-library.googlecode.com/svn/trunk/mapiconmaker/1.1/src/mapiconmaker.js" type="text/javascript"></script> 
 {literal}
-<script>
+<script type="text/javascript">
 	function load_p2() {
 		var ele = document.getElementById("map");
 		ele.style.width = "600px";
@@ -45,7 +45,7 @@
 	}
 	AttachEvent(window,'load_p2',loadmap,false);
 </script>
-{literal}
+{/literal}
 
 <br style="clear:both"/>
 <br/>
