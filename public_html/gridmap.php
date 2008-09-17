@@ -148,14 +148,12 @@ if ($grid_given)
 			list($lat1,$long1) = $conv->national_to_wgs84(quant($row['nateastings']),quant($row['natnorthings']),$square->reference_index);
 			list($lat2,$long2) = $conv->national_to_wgs84(quant($row['viewpoint_eastings']),quant($row['viewpoint_northings']),$square->reference_index);
 			
+			$blocks[] = "var ppoint = new GLatLng($lat2,$long2);";
+			$blocks[] = "bounds.extend(ppoint);";
 			
-			$code = "map.addOverlay(new GPolygon([
-							new GLatLng($lat1,$long1),
-							new GLatLng($lat2,$long2)
-						], \"#FF0000\", 1, 0.7, \"#00FF00\", 0.5));\n";
-			$blocks[] = $code;
+			$blocks[] = "map.addOverlay(new GPolygon([new GLatLng($lat1,$long1),ppoint], \"#FF0000\", 1, 0.7, \"#00FF00\", 0.5));\n";
 			
-			$code = "
+			$blocks[] = "
 			var iconOptions = {};
 			iconOptions.width = 16;
 			iconOptions.height = 16;
@@ -165,11 +163,8 @@ if ($grid_given)
 			iconOptions.labelColor = \"#000000\";
 			iconOptions.shape = \"circle\";
 			var icon = MapIconMaker.createFlatIcon(iconOptions);";
-			$blocks[] = $code;
-			
-			$code = "map.addOverlay(new Gmarker(new GLatLng($lat2,$long2), icon));\n";
-			$blocks[] = $code;
-			
+						
+			$blocks[] = "map.addOverlay(new Gmarker(ppoint, icon));\n";
 		}
 		
 		
