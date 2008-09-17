@@ -118,24 +118,62 @@ if ($grid_given)
 		$conv = new Conversions;
 		list($lat,$long) = $conv->gridsquare_to_wgs84($square);
 		$smarty->assign('lat', $lat);
-		$smarty->assign('long', $long);
-		$smarty->assign_by_ref('square', $square);
 		
-		list($latdm,$longdm) = $conv->wgs84_to_friendly($lat,$long);
-		$smarty->assign('latdm', $latdm);
-		$smarty->assign('longdm', $longdm);
-		
-		$smarty->assign('el', ($long > 0)?'E':'W');
-		$smarty->assign('nl', ($lat > 0)?'N':'S');
-		
-
-
 
 		//lets add an rastermap too
 		$rastermap = new RasterMap($square,false,$square->natspecified);
+		$rastermap->service = 'Google';
 		$rastermap->addLatLong($lat,$long);
 		$smarty->assign_by_ref('rastermap', $rastermap);
-
+	
+		
+		$blocks = array();
+		
+		$db=NewADOConnection($GLOBALS['DSN']);
+		if (!$db) die('Database connection failed');  
+		
+		
+		$rows = $db->cacheGetAll(3600,"SELECT 
+		nateastings,natnorthings,viewpoint_eastings,viewpoint_northings,count(*) as c
+		from gridimage
+		where gridsquare_id = {$square->gridsquare_id} and moderation_status in ('geograph','accepted') 
+			and nateastings > 0 and viewpoint_eastings > 0 and viewpoint_grlen != '4'
+		group by nateastings DIV 100,natnorthings DIV 100,viewpoint_eastings DIV 100, viewpoint_northings DIV 100");
+		
+		function quant($i) {
+			return (floor($i/100)*100)+50;
+		}
+		
+		foreach ($rows as $row) {
+			list($lat1,$long1) = $conv->national_to_wgs84(quant($row['nateastings']),quant($row['natnorthings']),$square->reference_index);
+			list($lat2,$long2) = $conv->national_to_wgs84(quant($row['viewpoint_eastings']),quant($row['viewpoint_northings']),$square->reference_index);
+			
+			
+			$code = "map.addOverlay(new GPolygon([
+							new GLatLng($lat1,$long1),
+							new GLatLng($lat2,$long2)
+						], \"#FF0000\", 1, 0.7, \"#00FF00\", 0.5));\n";
+			$blocks[] = $code;
+			
+			$code = "
+			var iconOptions = {};
+			iconOptions.width = 16;
+			iconOptions.height = 16;
+			iconOptions.primaryColor = \"#FF0000\";
+			iconOptions.label = \"{$row['c']}\";
+			iconOptions.labelSize = 0;
+			iconOptions.labelColor = \"#000000\";
+			iconOptions.shape = \"circle\";
+			var icon = MapIconMaker.createFlatIcon(iconOptions);";
+			$blocks[] = $code;
+			
+			$code = "map.addOverlay(new Gmarker(new GLatLng($lat2,$long2), icon);\n";
+			$blocks[] = $code;
+			
+		}
+		
+		
+		$smarty->assign_by_ref('blocks', $blocks);
 	}
 	else
 	{
