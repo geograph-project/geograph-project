@@ -65,7 +65,7 @@
 
 <br style="clear:both"/>
 
-<p>NB. Currently this map only counts images with both locations to specified to 6 figures, similarly locations are only marked at 6 figure resolution.</p>
+<p>{$groups} clusters shown. NB. Currently this map only counts images with both locations to specified to 6 figures, similarly locations are only marked at 6 figure resolution.</p>
 
 <br/>
 	{if $rastermap->enabled}

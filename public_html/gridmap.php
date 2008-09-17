@@ -168,6 +168,7 @@ if ($grid_given)
 		}
 		
 		
+		$smarty->assign('groups', count($rows));
 		$smarty->assign_by_ref('blocks', $blocks);
 	}
 	else
