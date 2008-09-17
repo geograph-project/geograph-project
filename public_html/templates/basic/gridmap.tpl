@@ -7,7 +7,7 @@
 {else}
 
 <h2>PhotoMap for {$gridrefraw} <sup>[{$square->imagecount} images]</sup></h2>
-<span class="nowrap"><img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$gridrefraw}.links"><b>More Links for this square</b></a></span>
+<span class="nowrap"><img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$gridrefraw}/links"><b>More Links for this square</b></a></span>
 <hr style="margin-top:5px"/>
 
 
@@ -42,14 +42,22 @@
 		ele.style.width = "600px";
 		ele.style.height = "400px";
 		map.checkResize();
+		{/literal}
 		
+		{foreach from=$blocks item=code}
+			{$code}
+		{/foreach}
 		
+		{literal}
 	}
 	AttachEvent(window,'load_p2',loadmap,false);
 </script>
 {/literal}
 
 <br style="clear:both"/>
+
+<p>NB. Currently this map only counts images with both locations to specified to 6 figures, similarly locations are only marked at 6 figure resolution.</p>
+
 <br/>
 	{if $rastermap->enabled}
 		{$rastermap->getFooterTag()}
