@@ -37,6 +37,10 @@ $tile = "SH64";
 if (!empty($_GET['tile'])) 
 	$tile = $_GET['tile'];
 
+if (!empty($_GET['epoch'])) 
+	$CONF['os50kepoch'] = $_GET['epoch']."/";
+
+
 		define('TIFF_W',4000); 
 		define('TIFF_KMW',20);
 		define('TIFF_KMW_BY10',TIFF_KMW / 10);
@@ -54,8 +58,9 @@ if ($_GET['listTiles']) {
 	exit;
 }
 
-if ($_GET['fakeSetup'])
-	$m->fakeSetup($gr);
+//probably outdated
+##if ($_GET['fakeSetup'])
+##	$m->fakeSetup($gr);
 
 if ($_GET['processTile1'])
 	$m->processTile($tile,100,100);
@@ -77,9 +82,9 @@ if ($_GET['processSingleTile'])
 if ($_GET['processSingleTile2'])
 	$m->processSingleTile($tile,200);
 
-
-if ($_GET['combineTiles'])
-	$m->combineTiles($gr);
+//probably outdated
+##if ($_GET['combineTiles'])
+##	$m->combineTiles($gr);
 
 
 
