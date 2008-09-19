@@ -129,6 +129,7 @@ $CONF['OS_licence'] = '100045616';
 //paths to where map data is stored (should be outside of the web root)
 $CONF['os50ktilepath']='c:/home/geograph/rastermaps/OS-50k/tiffs/';
 $CONF['os50kimgpath']='c:/home/geograph/rastermaps/OS-50k/';
+$CONF['os50kepoch']='latest/';
 
 //Username/Passowrd for the metacarta webservices api
 //http://developers.metacarta.com/register/

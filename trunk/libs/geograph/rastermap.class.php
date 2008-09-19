@@ -648,7 +648,7 @@ class RasterMap
 						$tilelist[] = $newpath;
 						$found = 1;
 					} else {
-						$tilelist[] = $CONF['os50kimgpath']."blank{$tilewidth}.png";
+						$tilelist[] = $CONF['os50kimgpath'].$CONF['os50kepoch']."blank{$tilewidth}.png";
 						if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 							print "$newpath not found<br/>\n";
 					}
@@ -732,7 +732,7 @@ class RasterMap
 						$tilelist[] = $newpath;
 						$found = 1;
 					} else {
-						$tilelist[] = $CONF['os50kimgpath']."blank{$tilewidth}.png";
+						$tilelist[] = $CONF['os50kimgpath'].$CONF['os50kepoch']."blank{$tilewidth}.png";
 						if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 							print "$newpath not found<br/>\n";
 					}
@@ -901,7 +901,7 @@ class RasterMap
 			$n3 = floor($this->natnorthings /$this->divisor[$service]);
 		}
 
-		$dir=$CONF['os50kimgpath'].$folder;
+		$dir=$CONF['os50kimgpath'].$CONF['os50kepoch'].$folder;
 		
 		$dir.=$e2.'/';
 		if ($create && !is_dir($dir))
