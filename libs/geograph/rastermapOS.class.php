@@ -30,9 +30,9 @@ class RasterMapOS {
 		$limit = (!empty($_GET['limit']))?intval($_GET['limit']):5;
 		$skip = (!empty($_GET['skip']))?intval($_GET['skip']):0;
 		
-	#	$CONF['os50ktilepath'].$ll.'/'.$tile.'.TIF';
+	#	$CONF['os50ktilepath'].$CONF['os50kepoch'].$ll.'/'.$tile.'.TIF';
 		
-		$root = $CONF['os50ktilepath'];
+		$root = $CONF['os50ktilepath'].$CONF['os50kepoch'];
 		$lldh = opendir($root);
 		$c = 1;
 		$cs = 0;
@@ -214,7 +214,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 		$this->nateastings = $square->getNatEastings()-500;
 		$this->natnorthings = $square->getNatNorthings()-500;
 
-		$path = $CONF['os50kimgpath'].$gr.'.png';
+		$path = $CONF['os50kimgpath'].$CONF['os50kepoch'].$gr.'.png';
 	
 		if (strlen($CONF['imagemagick_path'])) {
 			$tilelist = array();
@@ -287,7 +287,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 		$this->nateastings = $square->getNatEastings() - 5000;
 		$this->natnorthings = $square->getNatNorthings() - 5000;
 
-		$path = $CONF['os50kimgpath'].$tile.'.png';
+		$path = $CONF['os50kimgpath'].$CONF['os50kepoch'].$tile.'.png';
 	
 	
 		$n = $this->natnorthings; 
@@ -373,7 +373,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 		$this->nateastings = $square->getNatEastings() - 5000;
 		$this->natnorthings = $square->getNatNorthings() - 5000;
 
-		$path = $CONF['os50kimgpath'].$tile.'.png';
+		$path = $CONF['os50kimgpath'].$CONF['os50kepoch'].$tile.'.png';
 	
 		$kmoffsetX = ($offsetX==100)?1000:2000; 
 		$kmoffsetY = ($offsetY==100)?1000:2000; 
@@ -509,7 +509,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 		global $CONF;
 		if (!$ll) 
 			$ll = substr($tile,0,2);
-		return $CONF['os50ktilepath'].$ll.'/'.$tile.'.TIF';
+		return $CONF['os50ktilepath'].$CONF['os50kepoch'].$ll.'/'.$tile.'.TIF';
 	}
 
 	function getOSGBStorePath($folder = 'pngs-2k-250/',$e = 0,$n = 0) {
@@ -527,7 +527,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 			$n3 = floor($this->natnorthings /1000);
 		}
 
-		$dir=$CONF['os50kimgpath'].$folder;
+		$dir=$CONF['os50kimgpath'].$CONF['os50kepoch'].$folder;
 		
 		$dir.=$e2.'/';
 		if (!is_dir($dir))
