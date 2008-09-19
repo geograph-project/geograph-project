@@ -287,7 +287,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 		$this->nateastings = $square->getNatEastings() - 5000;
 		$this->natnorthings = $square->getNatNorthings() - 5000;
 
-		$path = $CONF['os50kimgpath'].$CONF['os50kepoch'].$tile.'.png';
+		$path = $CONF['os50kimgpath'].$CONF['os50kepoch'].'tmp/'.$tile.'.png';
 	
 	
 		$n = $this->natnorthings; 
@@ -373,7 +373,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 		$this->nateastings = $square->getNatEastings() - 5000;
 		$this->natnorthings = $square->getNatNorthings() - 5000;
 
-		$path = $CONF['os50kimgpath'].$CONF['os50kepoch'].$tile.'.png';
+		$path = $CONF['os50kimgpath'].$CONF['os50kepoch'].'tmp/'.$tile.'.png';
 	
 		$kmoffsetX = ($offsetX==100)?1000:2000; 
 		$kmoffsetY = ($offsetY==100)?1000:2000; 
