@@ -30,9 +30,9 @@ class RasterMapOS {
 		$limit = (!empty($_GET['limit']))?intval($_GET['limit']):5;
 		$skip = (!empty($_GET['skip']))?intval($_GET['skip']):0;
 		
-	#	$CONF['os50ktilepath'].$CONF['os50kepoch'].$ll.'/'.$tile.'.TIF';
+	#	$CONF['os50kimgpath'].$CONF['os50kepoch'].'tiffs/'.$ll.'/'.$tile.'.TIF';
 		
-		$root = $CONF['os50ktilepath'].$CONF['os50kepoch'];
+		$root = $CONF['os50kimgpath'].$CONF['os50kepoch'].'tiffs/';
 		$lldh = opendir($root);
 		$c = 1;
 		$cs = 0;
@@ -509,7 +509,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 		global $CONF;
 		if (!$ll) 
 			$ll = substr($tile,0,2);
-		return $CONF['os50ktilepath'].$CONF['os50kepoch'].$ll.'/'.$tile.'.TIF';
+		return $CONF['os50kimgpath'].$CONF['os50kepoch'].'tiffs/'.$ll.'/'.$tile.'.TIF';
 	}
 
 	function getOSGBStorePath($folder = 'pngs-2k-250/',$e = 0,$n = 0) {

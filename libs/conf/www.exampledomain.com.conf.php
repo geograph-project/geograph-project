@@ -127,7 +127,6 @@ $CONF['google_maps_api_key'] = 'ABQIAAAAw3BrxANqPQrDF3i-BIABYxSP0GH9nE7OiOmK3Tkv
 $CONF['OS_licence'] = '100045616';
 
 //paths to where map data is stored (should be outside of the web root)
-$CONF['os50ktilepath']='c:/home/geograph/rastermaps/OS-50k/tiffs/';
 $CONF['os50kimgpath']='c:/home/geograph/rastermaps/OS-50k/';
 $CONF['os50kepoch']='latest/';
 
