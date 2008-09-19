@@ -34,10 +34,10 @@ $gr = "SH7042";
 if (!empty($_GET['gr'])) 
 	$gr = $_GET['gr'];
 $tile = "SH64";
-if (!empty($_GET['tile'])) 
+if (!empty($_GET['tile']) && preg_match('/^[\w+]$/',$_GET['tile'])) 
 	$tile = $_GET['tile'];
 
-if (!empty($_GET['epoch'])) 
+if (!empty($_GET['epoch']) && preg_match('/^[\w+]$/',$_GET['epoch'])) 
 	$CONF['os50kepoch'] = $_GET['epoch']."/";
 
 
