@@ -294,7 +294,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 		$e = $this->nateastings; 
 		$newpath = $this->getOSGBStorePath('pngs-1k-'.$this->width.'/',$e,$n);
 		if (file_exists($newpath) && empty($_GET['force'])) {
-			print "already done processSingleTile($tile,$width)<br>";
+			print "already done processSingleTile($tile,$width)<br>\n";
 			flush();
 			return false;
 		}
@@ -382,7 +382,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 		$e = $this->nateastings+$kmoffsetX; 
 		$newpath = $this->getOSGBStorePath('pngs-2k-250/',$e,$n);
 		if (file_exists($newpath) && empty($_GET['force'])) {
-			print "already done processTile($tile,$offsetX,$offsetY)<br>";
+			print "already done processTile($tile,$offsetX,$offsetY)<br>\n";
 			flush();
 			return false;
 		}
