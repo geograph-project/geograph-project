@@ -21,6 +21,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+define('TIFF_W',4000); 
+define('TIFF_KMW',20);
+define('TIFF_KMW_BY10',TIFF_KMW / 10);
+define('TIFF_PX_PER_KM',TIFF_W / TIFF_KMW);
 
 class RasterMapOS {
 

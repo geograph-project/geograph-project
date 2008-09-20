@@ -41,11 +41,6 @@ if (!empty($_GET['epoch']) && preg_match('/^[\w]+$/',$_GET['epoch']))
 	$CONF['os50kepoch'] = $_GET['epoch']."/";
 
 
-		define('TIFF_W',4000); 
-		define('TIFF_KMW',20);
-		define('TIFF_KMW_BY10',TIFF_KMW / 10);
-		define('TIFF_PX_PER_KM',TIFF_W / TIFF_KMW);
-
 $USER->mustHavePerm("admin");
 
 $m = new RasterMapOS();
