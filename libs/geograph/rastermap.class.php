@@ -711,7 +711,9 @@ class RasterMap
 		
 		$service = 'tile-source';
 		$tilewidth = $this->tilewidth[$service];
-
+		
+		$outputwidth = $this->tilewidth['OS50k'];
+		
 		//this isn't STRICTLY needed as getOSGBStorePath does the same floor, but do so in case we do exact calculations
 		$east = floor($this->nateastings/1000) * 1000;
 		$nort = floor($this->natnorthings/1000) * 1000;
@@ -756,7 +758,7 @@ class RasterMap
 				$CONF['imagemagick_path'],
 				$tilewidth*2, $tilewidth*2, 
 				$tilewidth/2, $tilewidth/2,
-				$this->width, $this->width, 
+				$outputwidth, $outputwidth, 
 				$CONF['imagemagick_font'],
 				$CONF['OS_licence'],
 				$path);
