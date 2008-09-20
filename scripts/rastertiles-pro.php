@@ -79,6 +79,7 @@ $param=array(
 	'load'=>4,	//maximum load average
 	'help'=>0,	//show script help?
 	
+	'epoch'=>'latest',
 	'processTile'=>false,
 	'processSingleTile'=>false,
 );
@@ -125,7 +126,9 @@ php recreate_maps.php
     --skip=<number>     : skip checking X records (0)
     --load=<loadavg>    : maximum load average (4)
     
-    --processTile       : take a 20k tile and create 4 x (81 2km tiles)
+    --epoch=<rev>       : specific mapepoch to work with (latest)
+    
+    --processTile       : take a 20k tile and create 4 x 81 2km tiles
     --processSingleTile=<number> : create 400 tiles of specified width from 20k tile (200)
     
     --help              : show this message	
@@ -155,6 +158,9 @@ $start_time = time();
 $end_time = $start_time + (60*$param['timeout']);
 
 $m = new RasterMapOS();
+
+if (!empty($param['epoch']) && preg_match('/^[\w]+$/',$param['epoch'])) 
+	$CONF['os50kepoch'] = $param['epoch']."/";
 
 
 
