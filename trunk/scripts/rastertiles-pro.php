@@ -79,6 +79,10 @@ $param=array(
 	'load'=>4,	//maximum load average
 	'help'=>0,	//show script help?
 	
+	'run'=>0,
+	'force'=>0,
+	'nice'=>0,
+	
 	'epoch'=>'latest',
 	'processTile'=>false,
 	'processSingleTile'=>false,
@@ -126,7 +130,11 @@ php recreate_maps.php
     --skip=<number>     : skip checking X records (0)
     --load=<loadavg>    : maximum load average (4)
     
-    --epoch=<rev>       : specific mapepoch to work with (latest)
+    --run               : run for real (false)
+    --force             : overright existing files (false)
+    --nice              : run imagemagick commands via nice (false)
+    
+    --epoch=<rev>       : specific map epoch to work with (latest)
     
     --processTile       : take a 20k tile and create 4 x 81 2km tiles
     --processSingleTile=<number> : create 400 tiles of specified width from 20k tile (200)
@@ -162,6 +170,11 @@ $m = new RasterMapOS();
 if (!empty($param['epoch']) && preg_match('/^[\w]+$/',$param['epoch'])) 
 	$CONF['os50kepoch'] = $param['epoch']."/";
 
+foreach ($param as $key => $value) {
+	if ($value) {
+		$_GET[$key] = $value;
+	}
+}
 
 
 $root = $CONF['os50kimgpath'].$CONF['os50kepoch'].'tiffs/';
