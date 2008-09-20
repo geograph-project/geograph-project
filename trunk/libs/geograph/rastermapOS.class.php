@@ -316,7 +316,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 				$cmd = str_replace('/','\\',$cmd);
 			if (isset($_GET['run']))
 				passthru ($cmd);
-			print "<pre>$cmd</pre>";
+			print "<pre>$cmd</pre>\n";
 			flush();
 			 
 			$c = 0;
@@ -347,7 +347,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 			}
 			if (isset($_GET['print']))
 				print "</table>";
-			print "done renaming in processSingleTile($tile);<BR>";
+			print "\ndone renaming in processSingleTile($tile); <BR>\n";
 			flush();
 		} else {
 			//generate resized image
@@ -405,7 +405,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 				$cmd = str_replace('/','\\',$cmd);
 			if (isset($_GET['run']))
 				passthru ($cmd);
-			print "<pre>$cmd</pre>";
+			print "<pre>$cmd</pre>\n";
 			flush();
 			
 			$c = 0;
@@ -437,6 +437,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 			}
 			if (isset($_GET['print']))
 				print "</table>";
+			print "\ndone renaming in processTile($tile,$offsetX,$offsetY); <BR>\n";
 		} else {
 			//generate resized image
 			die("gd not implemented!");
