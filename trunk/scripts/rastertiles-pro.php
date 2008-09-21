@@ -139,7 +139,7 @@ php recreate_maps.php
     --processTile       : take a 20k tile and create 4 x 81 2km tiles
     --processSingleTile=<number> : create 400 tiles of specified width from 20k tile (200)
     
-    --help              : show this message	
+    --help              : show this message
 ---------------------------------------------------------------------
 	
 ENDHELP;
@@ -200,10 +200,9 @@ while (($llfile = readdir($lldh)) !== false) {
 				{
 					while (get_loadavg() > $param['load'])
 					{
-						sleep($param['sleep']);
+						sleep(10);
 						if (time()>$end_time) 
-							die('C');	
-
+							die('C');
 					}
 				}
 				
@@ -247,22 +246,5 @@ while (($llfile = readdir($lldh)) !== false) {
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ?>
