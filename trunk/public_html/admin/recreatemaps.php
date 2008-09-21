@@ -129,10 +129,12 @@ if (isset($_GET['coast_GB_40'])) {
 	require_once('geograph/mapmosaic.class.php');
 	$mosaic = new GeographMapMosaic;
 	
+	set_time_limit(6*90);
+	
 	$basemap = isset($_GET['base']);
 	$dummy = !isset($_GET['do']);
 	
-	$prefixes = $db->GetAll("select * from gridprefix order by landcount desc");
+	$prefixes = $db->GetAll("select * from gridprefix order by landcount desc, rand()");
 	
 	list($usec, $sec) = explode(' ',microtime());
 	$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
