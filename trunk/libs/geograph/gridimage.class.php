@@ -442,7 +442,7 @@ class GridImage
 		if (!is_dir("$base/$yz/$ab/$cd"))
 			mkdir("$base/$yz/$ab/$cd");
 
-		$dest="$base/$ab/$cd/{$abcdef}_{$hash}.jpg";
+		$dest="$base/$yz/$ab/$cd/{$abcdef}_{$hash}.jpg";
 		if ($movefile)
 			return @rename($srcfile, $dest);
 		else
@@ -464,6 +464,7 @@ class GridImage
 	{
 		global $CONF;
 		
+		$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
 		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
 		$abcdef=sprintf("%06d", $this->gridimage_id);
@@ -471,7 +472,6 @@ class GridImage
 		if ($this->gridimage_id<1000000) {
 			$fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}.jpg";
 		} else {
-			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
 			$fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}.jpg";
 		}
 		$ok=file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath);
@@ -490,11 +490,13 @@ class GridImage
 					$target=$_SERVER['DOCUMENT_ROOT'].$fullpath;
 					
 					//create target dir
-					$base=$_SERVER['DOCUMENT_ROOT'].'/photos';
-					if (!is_dir("$base/$ab"))
-						mkdir("$base/$ab");
-					if (!is_dir("$base/$ab/$cd"))
-						mkdir("$base/$ab/$cd");
+					$base=$_SERVER['DOCUMENT_ROOT'].'/geophotos';
+					if (!is_dir("$base/$yz"))
+						mkdir("$base/$yz");
+					if (!is_dir("$base/$yz/$ab"))
+						mkdir("$base/$yz/$ab");
+					if (!is_dir("$base/$yz/$ab/$cd"))
+						mkdir("$base/$yz/$ab/$cd");
 			
 					$fout=fopen($target, 'wb');
 					if ($fout)
