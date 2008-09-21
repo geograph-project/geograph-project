@@ -4,6 +4,7 @@ public_html/rss
 public_html/torrent
 public_html/memorymap
 public_html/photos
+public_html/geophotos
 public_html/templates/basic/compiled
 public_html/templates/basic/cache
 public_html/templates/charcoal/compiled

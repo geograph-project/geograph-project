@@ -101,7 +101,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	$fh=fopen($filename, "w");
 	
 	fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
-	fprintf($fh, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
+	fprintf($fh, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:geo="http://www.google.com/geo/schemas/sitemap/1.0">'."\n");
 	
 	
 	$maxdate="";
@@ -127,6 +127,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 			"<loc>%s</loc>".
 			"<lastmod>%s</lastmod>".
 			"<changefreq>monthly</changefreq>".
+			"<geo:geo><geo:format>kml</geo:format></geo:geo>".
 			"</url>\n",
 			"http://".$CONF['KML_HOST'].$recordSet->fields['filename'],
 			$date
