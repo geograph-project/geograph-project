@@ -49,7 +49,7 @@
 			
 			if (wgs84.isIreland()) {
 				//convert to Irish
-				var grid=wgs84.getIrish();	
+				var grid=wgs84.getIrish(true);
 			
 			} else if (wgs84.isGreatBritain()) {
 				//convert to OSGB
@@ -194,7 +194,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 	
 	if (ok) {
 		//convert to a wgs84 coordinate
-		wgs84 = grid.getWGS84();
+		wgs84 = grid.getWGS84(true);
 
 		//now work with wgs84.latitude and wgs84.longitude
 		var point = new GLatLng(wgs84.latitude,wgs84.longitude);
