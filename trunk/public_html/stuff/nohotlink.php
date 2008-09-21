@@ -30,7 +30,7 @@ if (!empty($_SERVER["PATH_INFO"])) {
 }
 
 $path = "/{$_SERVER['HTTP_HOST']}/";
-if (preg_match('/\/(\d{1,6})_/',$filename,$m)) {#
+if (preg_match('/\/(\d{6,})_/',$filename,$m)) {#
 	$id = intval($m[1]);
 	$path .= "photo/".$id;
 }

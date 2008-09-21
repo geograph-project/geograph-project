@@ -64,12 +64,13 @@ if (isset($_GET['check2']))
 			$image=new GridImage;
 			$image->fastInit($recordSet2->fields);	
 
-			$ab=sprintf("%02d", floor($image->gridimage_id/10000));
+			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
+			$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 			$cd=sprintf("%02d", floor(($image->gridimage_id%10000)/100));
 			$abcdef=sprintf("%06d", $image->gridimage_id);
 			$hash=$image->_getAntiLeechHash();
 
-			$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$size}x{$size}.gd";
+			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$size}x{$size}.gd";
 			if (!file_exists($base.$thumbpath))
 			{
 				print "Missing GD image for: {$recordSet->fields['grid_reference']}<BR>";

@@ -43,71 +43,71 @@ class GridSquare
 	*/
 	var $db=null;
 	
-   /**
-   	* gridsquare.gridsquare_id primary key
-   	*/
+	/**
+	* gridsquare_id primary key
+	*/
 	var $gridsquare_id=0;
 
-   /**
-   	* gridsquare.grid_reference 
-   	*/
-	var $grid_reference='';
- 
- 	/**
-	* gridsquare.reference_index type of grid reference
-	*/
- 	var $reference_index=0;
- 
 	/**
-	* gridsquare.x,y internal grid position
+	* 4figure text grid reference for this square
 	*/
- 	var $x=0;
- 	var $y=0;
- 
- 	/**
- 	* gridsquare.percent_land how much land?
- 	*/
-  	var $percent_land=0;
-  	
-  	/**
-	* gridsquare.percent_land how much land?
+	var $grid_reference='';
+
+	/**
+	* which grid does this location refer to
+	*/
+	var $reference_index=0;
+
+	/**
+	* internal grid position
+	*/
+	var $x=0;
+	var $y=0;
+
+	/**
+	* how much land? (0-100%)
+	*/
+	var $percent_land=0;
+	
+	/**
+	* how many images in this square
 	*/
 	var $imagecount=0;
-  	
-  	/**
+	
+	/**
 	* exploded gridsquare element of $this->grid_reference
 	*/
 	var $gridsquare="";
-  	
-  	/**
+	
+	/**
 	* exploded eastings element of $this->grid_reference
 	*/
 	var $eastings=0;
-  	
-  	/**
+	
+	/**
 	* exploded northings element of $this->grid_reference
 	*/
 	var $northings=0;
-  	
-  	/**
+	
+	/**
 	* national easting/northing (ie not internal)
 	*/
 	var $nateastings;
-  	var $natnorthings;
-  	var $natgrlen = 0;
-  	var $natspecified = false;
-  	
-  	/**
+	var $natnorthings;
+	var $natgrlen = 0;
+	var $natspecified = false;
+	
+	/**
 	* GridSquare instance of nearest square to this one with an image
 	*/
 	var $nearest=null;
-  	
-  	
-  	/**
+	
+	
+	/**
 	* nearest member will have this set to show distance of nearest square from this one
 	*/
 	var $distance=0;
-  	
+	
 	
 	
 	/**
