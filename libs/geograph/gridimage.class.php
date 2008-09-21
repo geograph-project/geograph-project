@@ -428,16 +428,19 @@ class GridImage
 	*/
 	function storeImage($srcfile, $movefile=false)
 	{
-		$ab=sprintf("%02d", floor($this->gridimage_id/10000));
+		$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
+		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
 		$abcdef=sprintf("%06d", $this->gridimage_id);
 		$hash=$this->_getAntiLeechHash();
 
-		$base=$_SERVER['DOCUMENT_ROOT'].'/photos';
-		if (!is_dir("$base/$ab"))
-			mkdir("$base/$ab");
-		if (!is_dir("$base/$ab/$cd"))
-			mkdir("$base/$ab/$cd");
+		$base=$_SERVER['DOCUMENT_ROOT'].'/geophotos';
+		if (!is_dir("$base/$yz"))
+			mkdir("$base/$yz");
+		if (!is_dir("$base/$yz/$ab"))
+			mkdir("$base/$yz/$ab");
+		if (!is_dir("$base/$yz/$ab/$cd"))
+			mkdir("$base/$yz/$ab/$cd");
 
 		$dest="$base/$ab/$cd/{$abcdef}_{$hash}.jpg";
 		if ($movefile)
@@ -461,13 +464,16 @@ class GridImage
 	{
 		global $CONF;
 		
-		$ab=sprintf("%02d", floor($this->gridimage_id/10000));
+		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
 		$abcdef=sprintf("%06d", $this->gridimage_id);
 		$hash=$this->_getAntiLeechHash();
-		$fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}.jpg";
-		
-		
+		if ($this->gridimage_id<1000000) {
+			$fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}.jpg";
+		} else {
+			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
+			$fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}.jpg";
+		}
 		$ok=file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath);
 		
 		if (!$ok)
@@ -595,13 +601,18 @@ class GridImage
 		
 		global $CONF;
 		//establish whether we have a cached thumbnail
-		$ab=sprintf("%02d", floor($this->gridimage_id/10000));
+		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
 		$abcdef=sprintf("%06d", $this->gridimage_id);
 		$hash=$this->_getAntiLeechHash();
 
 		$base=$_SERVER['DOCUMENT_ROOT'].'/photos';
-		$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$maxw}XX{$maxh}.jpg"; ##two XX's as windows isnt case sensitive!
+		if ($this->gridimage_id<1000000) {
+			$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$maxw}XX{$maxh}.jpg"; ##two XX's as windows isnt case sensitive!
+		} else {
+			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
+			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$maxw}XX{$maxh}.jpg"; ##two XX's as windows isnt case sensitive!
+		}
 		if (!file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))
 		{
 			//get path to fullsize image, but don't fallback to error image..
@@ -710,7 +721,7 @@ class GridImage
 	*/
 	function getSquareThumb($size)
 	{
-		$ab=sprintf("%02d", floor($this->gridimage_id/10000));
+		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
 		$abcdef=sprintf("%06d", $this->gridimage_id);
 		$hash=$this->_getAntiLeechHash();
@@ -718,7 +729,12 @@ class GridImage
 		
 		
 		$base=&$_SERVER['DOCUMENT_ROOT'];
-		$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$size}x{$size}.gd";
+		if ($this->gridimage_id<1000000) {
+			$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$size}x{$size}.gd";
+		} else {
+			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
+			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$size}x{$size}.gd";
+		}
 		if (!file_exists($base.$thumbpath))
 		{
 			//get path to fullsize image, but don't fallback to error image..
@@ -839,13 +855,19 @@ class GridImage
 		
 		global $CONF;
 		//establish whether we have a cached thumbnail
-		$ab=sprintf("%02d", floor($this->gridimage_id/10000));
+		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
 		$abcdef=sprintf("%06d", $this->gridimage_id);
 		$hash=$this->_getAntiLeechHash();
 
 		$base=$_SERVER['DOCUMENT_ROOT'].'/photos';
-		$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$maxw}x{$maxh}.jpg";
+		
+		if ($this->gridimage_id<1000000) {
+			$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$maxw}x{$maxh}.jpg";
+		} else {
+			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
+			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$maxw}x{$maxh}.jpg";
+		}
 
 		$mkey = "{$this->gridimage_id}:{$maxw}x{$maxh}";
 		//fails quickly if not using memcached!

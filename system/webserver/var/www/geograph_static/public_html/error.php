@@ -9,19 +9,35 @@ if (preg_match('/(ie|ff)\.gif$/',$p)) {
 }
 
 #http://s1.www.geograph.org.uk/photos/50/64/506453_c5b9915b_120x120.jpg
-if (preg_match('/^\/photos\/(\d{2})\/(\d{2})\/\d{6}_(\w+)\.jpg$/',$p,$m)) {
+if (preg_match('/^\/photos\/(\d{2})\/(\d{2})\/\d{6}_(\w+)\.jpg$/',$p,$m)
+
+#http://s1.www.geograph.org.uk/geophotos/01/50/64/506453_c5b9915b_120x120.jpg
+	|| preg_match('/^\/geophotos\/(\d{2})\/(\d{2})\/(\d{2})\/\d{6,}_(\w+)\.jpg$/',$p,$m) ) {
+
+	
+
 
 #	#give them something quick 
 #	header("HTTP/1.1 302 Found");
 #	header("Location: http://www.geograph.org.uk$p");
 #	#but lets cache it for next time.
 
-
-	$base=$_SERVER['DOCUMENT_ROOT'].'/photos';
-	if (!is_dir("$base/{$m[1]}"))
-		mkdir("$base/{$m[1]}");
-	if (!is_dir("$base/{$m[1]}/{$m[2]}"))
-		mkdir("$base/{$m[1]}/{$m[2]}");
+	if (!empty($m[4])) {
+		$base=$_SERVER['DOCUMENT_ROOT'].'/geophotos';
+		if (!is_dir("$base/{$m[1]}"))
+			mkdir("$base/{$m[1]}");
+		if (!is_dir("$base/{$m[1]}/{$m[2]}"))
+			mkdir("$base/{$m[1]}/{$m[2]}");
+		if (!is_dir("$base/{$m[1]}/{$m[2]}/{$m[3]}"))
+			mkdir("$base/{$m[1]}/{$m[2]}/{$m[3]}");
+		array_shift($m);
+	} else {
+		$base=$_SERVER['DOCUMENT_ROOT'].'/photos';
+		if (!is_dir("$base/{$m[1]}"))
+			mkdir("$base/{$m[1]}");
+		if (!is_dir("$base/{$m[1]}/{$m[2]}"))
+			mkdir("$base/{$m[1]}/{$m[2]}");
+	}
 
 
 	if (preg_match('/_\d+(x|XX)\d+$/',$m[3])) { 
@@ -37,7 +53,7 @@ if (preg_match('/^\/photos\/(\d{2})\/(\d{2})\/\d{6}_(\w+)\.jpg$/',$p,$m)) {
 	if (!$size) {	
 	        header("HTTP/1.0 404 Not Found");
         	header("Status: 404 Not Found");
-        	print 'Not Found : <a href="http://www.geograph.org.uk/">Visit our homepage</a>';
+        	print 'Not Found. <a href="http://www.geograph.org.uk/">Visit our homepage</a>';
         	exit;
 	}
 
@@ -68,7 +84,7 @@ if (preg_match('/^\/photos\/(\d{2})\/(\d{2})\/\d{6}_(\w+)\.jpg$/',$p,$m)) {
 } elseif (preg_match('/\.(css|js|png|gif|jpg)$/',$p)) {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");
-	print 'Not Found : <a href="http://www.geograph.org.uk/">Visit our homepage</a>';
+	print 'Not Found. <a href="http://www.geograph.org.uk/">Visit our homepage</a>';
 	exit;
 } else {
 	header("HTTP/1.0 301 Moved Permanently");
