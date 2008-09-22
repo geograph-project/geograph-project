@@ -40,6 +40,11 @@ $cacheid .= '-'.(isset($_SESSION['article_urls']) && in_array($_GET['page'],$_SE
 if (isset($_SESSION[$_GET['page']])) {
 	$cacheid .= '-'.$_SESSION[$_GET['page']];
 }
+if (!empty($_GET['epoch']) && preg_match('/^[\w]+$/',$_GET['epoch'])) {
+	$cacheid .= "--".$_GET['epoch'];
+} else {
+	$_GET['epoch'] = '';
+}
 
 
 function article_make_table($input) {
@@ -154,14 +159,19 @@ function smarty_function_articletext($input) {
 	
 	$pattern=array(); $replacement=array();
 	
-	if (preg_match_all('/\[(small|)map *([STNH]?[A-Z]{1}[ \.]*\d{2,5}[ \.]*\d{2,5})\]/',$output,$m)) {
+	if (preg_match_all('/\[(small|)map *([STNH]?[A-Z]{1}[ \.]*\d{2,5}[ \.]*\d{2,5})( \w+|)\]/',$output,$m)) {
 		foreach ($m[0] as $i => $full) {
 			//lets add an rastermap too
 			$square = new Gridsquare;
 			$square->setByFullGridRef($m[2][$i],true);
 			$square->grid_reference_full = 	$m[2][$i];
-
-			$rastermap = new RasterMap($square,false);
+			if (!empty($_GET['epoch'])) {
+				$rastermap = new RasterMap($square,false,true,false,$_GET['epoch']);
+			} elseif (!empty($m[3][$i])) {
+				$rastermap = new RasterMap($square,false,true,false,trim($m[3][$i]));
+			} else {
+				$rastermap = new RasterMap($square,false);
+			}
 			if ($rastermap->service == 'OS50k') {
 				if ($m[1][$i]) {
 					$rastermap->service = 'OS50k-small';

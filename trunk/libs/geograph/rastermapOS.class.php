@@ -261,9 +261,9 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 				
 			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) 
 				$cmd = str_replace('/','\\',$cmd);
+			print "<pre>$cmd</pre>";
 			if (isset($_GET['run']))
 				passthru ($cmd);
-			print "<pre>$cmd</pre>";
 			 
 
 		} else {
@@ -291,7 +291,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 		$this->nateastings = $square->getNatEastings() - 5000;
 		$this->natnorthings = $square->getNatNorthings() - 5000;
 
-		$path = $CONF['os50kimgpath'].$CONF['os50kepoch'].'tmp/'.$tile.'.png';
+		$path = $CONF['os50kimgpath'].$CONF['os50kepoch']."tmp/$tile-$width.png";
 	
 	
 		$n = $this->natnorthings; 
@@ -318,10 +318,10 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 				
 			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) 
 				$cmd = str_replace('/','\\',$cmd);
-			if (isset($_GET['run']))
-				passthru ($cmd);
 			print "<pre>$cmd</pre>\n";
 			flush();
+			if (isset($_GET['run']))
+				passthru ($cmd);
 			 
 			$c = 0;
 			if (isset($_GET['print']))
@@ -377,7 +377,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 		$this->nateastings = $square->getNatEastings() - 5000;
 		$this->natnorthings = $square->getNatNorthings() - 5000;
 
-		$path = $CONF['os50kimgpath'].$CONF['os50kepoch'].'tmp/'.$tile.'.png';
+		$path = $CONF['os50kimgpath'].$CONF['os50kepoch']."tmp/$tile-$offsetX-$offsetY.png";
 	
 		$kmoffsetX = ($offsetX==100)?1000:2000; 
 		$kmoffsetY = ($offsetY==100)?1000:2000; 
@@ -407,10 +407,10 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 				$path    );
 			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) 
 				$cmd = str_replace('/','\\',$cmd);
-			if (isset($_GET['run']))
-				passthru ($cmd);
 			print "<pre>$cmd</pre>\n";
 			flush();
+			if (isset($_GET['run']))
+				passthru ($cmd);
 			
 			$c = 0;
 			if (isset($_GET['print']))

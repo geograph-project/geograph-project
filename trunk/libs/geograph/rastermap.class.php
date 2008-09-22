@@ -54,6 +54,11 @@ class RasterMap
 	var $service;
 	
 	/**
+	* the version of mapping to display
+	*/
+	$epoch = 'latest';
+	
+	/**
 	* is this class in use (ie is a valid service specified)
 	*/	
 	var $enabled = false;
@@ -87,7 +92,7 @@ class RasterMap
 	/**
 	* setup the values
 	*/
-	function RasterMap(&$square,$issubmit = false, $useExact = true,$includeSecondService = false)
+	function RasterMap(&$square,$issubmit = false, $useExact = true,$includeSecondService = false,$epoch = 'latest')
 	{
 		global $CONF;
 		$this->enabled = false;
@@ -121,8 +126,12 @@ class RasterMap
 				//$this->enabled = true;
 				$this->service = 'Google';
 			} 
-			if (isset($this->tilewidth[$this->service]));
+			if (isset($this->tilewidth[$this->service])) {
 				$this->width = $this->tilewidth[$this->service];
+			}
+			if (!empty($epoch) && $epoch != 'latest' && preg_match('/^[\w]+$/',$epoch) ) {
+				$this->epoch = $epoch;
+			}
 		}
 	} 
 	
@@ -648,7 +657,7 @@ class RasterMap
 						$tilelist[] = $newpath;
 						$found = 1;
 					} else {
-						$tilelist[] = $CONF['os50kimgpath'].$CONF['os50kepoch']."blank{$tilewidth}.png";
+						$tilelist[] = $CONF['os50kimgpath'].$this->epoch.'/'."blank{$tilewidth}.png";
 						if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 							print "$newpath not found<br/>\n";
 					}
@@ -734,7 +743,7 @@ class RasterMap
 						$tilelist[] = $newpath;
 						$found = 1;
 					} else {
-						$tilelist[] = $CONF['os50kimgpath'].$CONF['os50kepoch']."blank{$tilewidth}.png";
+						$tilelist[] = $CONF['os50kimgpath'].$this->epoch.'/'."blank{$tilewidth}.png";
 						if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 							print "$newpath not found<br/>\n";
 					}
@@ -860,6 +869,9 @@ class RasterMap
 		$token->setValue("e", floor($this->nateastings /$this->divisor[$this->service]));
 		$token->setValue("n", floor($this->natnorthings /$this->divisor[$this->service]));
 		$token->setValue("s", $this->service);
+		if ($this->epoch != 'latest') {
+			$token->setValue("r", $this->epoch);
+		} 
 		return $token->getToken();
 	}
 
@@ -882,6 +894,10 @@ class RasterMap
 				$this->nateastings = $token->getValue("e") * $this->divisor[$this->service];
 				$this->natnorthings = $token->getValue("n") * $this->divisor[$this->service];
 				$this->width = $this->tilewidth[$this->service];
+				
+				if ($token->hasValue("r")) {
+					$this->epoch = $token->getValue("r");
+				}
 			}
 		}
 		return $ok;
@@ -903,7 +919,7 @@ class RasterMap
 			$n3 = floor($this->natnorthings /$this->divisor[$service]);
 		}
 
-		$dir=$CONF['os50kimgpath'].$CONF['os50kepoch'].$folder;
+		$dir=$CONF['os50kimgpath'].$this->epoch.'/'.$folder;
 		
 		$dir.=$e2.'/';
 		if ($create && !is_dir($dir))
