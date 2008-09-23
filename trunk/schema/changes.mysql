@@ -149,13 +149,29 @@ CHANGE `hcounty` `hcounty` ENUM('','Aberdeenshire','Anglesey','Angus','Argyllshi
 
 
 
-
+update gridsquare set placename_id = 0 where reference_index = 1;
 
 ## now import the placename_id update script!
 
 UPDATE gridimage,gridsquare
 	SET gridimage.placename_id = gridsquare.placename_id
 	WHERE gridimage.gridsquare_id = gridsquare.gridsquare_id;
+
+
+
+insert into os_gaz select * from geograph_staging.os_gaz;
+
+
+#####################
+
+CREATE VIEW `user_stat_view` AS SELECT user_id,images,pow(10,(ln(images-10) div 5)+2) as images_d FROM user_stat;
+
+CREATE TABLE ` milestone` (
+  `user_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `gridimage_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `milestone` mediumint(6) unsigned NOT NULL DEFAULT '0',
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 
