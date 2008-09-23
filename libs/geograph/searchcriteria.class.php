@@ -236,7 +236,7 @@ class SearchCriteria
 			$breakby = preg_replace('/^submitted/','gridimage_id',$breakby);
 			if (strpos($sql_order,' desc') !== FALSE)
 				$breakby .= ' desc';
-			if ($breakby != $sql_order) 
+			if ($breakby != $sql_order && !preg_match('/^(\w+)\+$/i',$this->breakby) ) 
 				$sql_order = $breakby.($sql_order?", $sql_order":'');
 			$this->sphinx['impossible']++; //todo - should be possible, just cant be bothered yet!
 		}
@@ -667,6 +667,10 @@ class SearchCriteria_Special extends SearchCriteria
 		
 		} elseif (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=`]+) where/i",$sql_where,$matches)) {
 			$this->sphinx['impossible']++; //will never be possible?
+		}
+		
+		if (preg_match('/^(\w+)\+$/i',$this->breakby,$matches)) {
+			$sql_fields .= ", ".$matches[1];
 		}
 	}
 }

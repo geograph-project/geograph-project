@@ -1090,7 +1090,7 @@ function smarty_function_searchbreak($params) {
 			$last = $s;
 			break;
 		default:
-			$name = $engine->criteria->breakby;
+			$name = str_replace('+','',$engine->criteria->breakby);
 			if ($last != $image->{$name})
 				$b = $image->{$name};
 			$last = $image->{$name};
