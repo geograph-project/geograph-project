@@ -164,14 +164,17 @@ insert into os_gaz select * from geograph_staging.os_gaz;
 
 #####################
 
-CREATE VIEW `user_stat_view` AS SELECT user_id,images,pow(10,(ln(images-10) div 5)+2) as images_d FROM user_stat;
+CREATE VIEW `user_stat_view` AS SELECT user_id,images,pow(10,floor(log10(images))+1) as images_d FROM user_stat;
 
-CREATE TABLE ` milestone` (
+CREATE TABLE `milestone` (
   `user_id` int(10) unsigned NOT NULL DEFAULT '0',
   `gridimage_id` int(10) unsigned NOT NULL DEFAULT '0',
   `milestone` mediumint(6) unsigned NOT NULL DEFAULT '0',
-  KEY `user_id` (`user_id`)
+  KEY `user_id` (`user_id`),
+  KEY `gridimage_id` (`gridimage_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 
+INSERT INTO `queries` (`id`, `searchdesc`, `searchclass`, `searchq`, `searchtext`, `limit1`, `limit2`, `limit3`, `limit4`, `limit5`, `limit6`, `limit7`, `limit8`, `limit9`, `limit10`, `x`, `y`, `displayclass`, `resultsperpage`, `orderby`, `breakby`, `crt_timestamp`, `user_id`, `searchuse`, `use_timestamp`, `favorite`) VALUES 
+(NULL, ', celebrating a milestone, newest first', 'Special', 'inner join milestone using (gridimage_id) where milestone.user_id > 0', '', '', '', '', '', '', '', '', 0, 0, 0, 0, 0, 'thumbs', 15, 'gridimage_id desc', 'milestone+', '2008-09-23 21:56:19', 3, 'search', '2008-09-23 22:20:21', 'N');
