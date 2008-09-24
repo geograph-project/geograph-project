@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?brea version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.google.com/schemas/sitemap/0.84">
    <url>
       <loc>http://www.geograph.org.uk/</loc>
@@ -36,6 +36,7 @@
    </url>
    <url>
       <loc>http://www.geograph.org.uk/statistics/moversboard.php</loc>
+      <changefreq>daily</changefreq>
       <priority>0.9</priority>
    </url>
    <url>
@@ -171,10 +172,6 @@
       <priority>0.8</priority>
    </url>
    <url>
-      <loc>http://www.geograph.org.uk/conversion.php</loc>
-      <priority>0.7</priority>
-   </url>
-   <url>
       <loc>http://www.geograph.org.uk/forgotten.php</loc>
       <priority>0.4</priority>
    </url>
@@ -280,10 +277,6 @@
    </url>
    <url>
       <loc>http://www.geograph.org.uk/statistics/busyday_forum.php</loc>
-      <priority>0.7</priority>
-   </url>
-   <url>
-      <loc>http://www.geograph.org.uk/statistics/breakdown.php</loc>
       <priority>0.7</priority>
    </url>
    <url>
