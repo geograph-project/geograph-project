@@ -209,25 +209,17 @@ while (($llfile = readdir($lldh)) !== false) {
 				print "TILE=$tile\n";
 				$r = true;
 				
-				$square=new GridSquare;
-				$grid_ok=$square->setByFullGridRef($tile);
-				if (!$square->reference_index) {
-					print " BROKEN: $tile (SKIPPED)\n";
-
-					$r = false;
-				} else {
-					if ($param['processTile']) {
-						$m->processTile($tile,100,100);
-						$m->processTile($tile,300,100);
-						$m->processTile($tile,300,300);
-						$r = $m->processTile($tile,100,300);
-					}
-
-					if ($param['processSingleTile'])
-						$r = $m->processSingleTile($tile,$param['processSingleTile']);
-					
+				if ($param['processTile']) {
+					$m->processTile($tile,100,100);
+					$m->processTile($tile,300,100);
+					$m->processTile($tile,300,300);
+					$r = $m->processTile($tile,100,300);
 				}
 
+				if ($param['processSingleTile'])
+					$r = $m->processSingleTile($tile,$param['processSingleTile']);
+					
+				
 				if ($r)
 					$c++;
 				if ($c > $param['limit']) {
