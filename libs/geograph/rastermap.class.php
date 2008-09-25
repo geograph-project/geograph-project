@@ -56,7 +56,7 @@ class RasterMap
 	/**
 	* the version of mapping to display
 	*/
-	$epoch = 'latest';
+	var $epoch = 'latest';
 	
 	/**
 	* is this class in use (ie is a valid service specified)
