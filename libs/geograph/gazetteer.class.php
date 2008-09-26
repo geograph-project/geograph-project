@@ -398,7 +398,7 @@ class Gazetteer
 			}
 			
 			//starts with (both gaz's)
-			$places = $db->GetAll("
+			$places = $db->GetAll($sql = "
 			(select
 				(seq + 1000000) as id,
 				`def_nam` as full_name,
@@ -433,6 +433,8 @@ class Gazetteer
 				full_name LIKE ".$db->Quote($placename.'%')."
 			group by gns_ufi
 			LIMIT 20)");
+			if (isset($_GET['debug']))
+				print "<pre>$sql</pre>count = ".count($places)."<hr>";
 			if (count($places) < 10 || $ismore) {
 				//sounds like (OS)
 				$places = array_merge($places,$db->GetAll("
@@ -453,11 +455,13 @@ class Gazetteer
 					def_nam_soundex = SOUNDEX(".$db->Quote($placename).") AND
 					def_nam NOT LIKE ".$db->Quote($placename.'%')."
 				limit $limi2"));
+				if (isset($_GET['debug']))
+					print "<pre>$sql</pre>count = ".count($places)."<hr>";
 			}
 			
 			if (count($places) < 10 || $ismore) {
 				//contains (OS)
-				$places = array_merge($places,$db->GetAll("
+				$places = array_merge($places,$db->GetAll($sql = "
 				select
 					(seq + 1000000) as id,
 					`def_nam` as full_name,
@@ -475,11 +479,13 @@ class Gazetteer
 					`def_nam` LIKE ".$db->Quote('%'.$placename.'%')." AND
 					`def_nam` NOT LIKE ".$db->Quote($placename.'%')."
 				limit $limi2"));
+				if (isset($_GET['debug']))
+					print "$limi2<pre>$sql</pre>count = ".count($places)."<hr>";
 			}
 			
 			if (count($places) < 10 || $ismore) {
 				//search the widest possible
-				$places2 = $db->GetAll("
+				$places2 = $db->GetAll($sql = "
 				(select
 					(seq + 1000000) as id,
 					`def_nam` as full_name,
@@ -496,6 +502,9 @@ class Gazetteer
 					os_gaz.f_code NOT IN ('C','T','O') AND
 					( `def_nam` LIKE ".$db->Quote('%'.$placename.'%')."
 					OR def_nam_soundex = SOUNDEX(".$db->Quote($placename).") )
+				order by 
+					def_nam = ".$db->Quote($placename)." desc,
+					def_nam_soundex = SOUNDEX(".$db->Quote($placename).") desc
 				limit $limi2) UNION
 				(select 
 					id, 
@@ -514,13 +523,20 @@ class Gazetteer
 					full_name LIKE ".$db->Quote('%'.$placename.'%')."
 					OR full_name_soundex = SOUNDEX(".$db->Quote($placename).")
 				group by gns_ufi
+				order by 
+					full_name = ".$db->Quote($placename)." desc,
+					full_name_soundex = SOUNDEX(".$db->Quote($placename).") desc
 				LIMIT 20)");
+				if (isset($_GET['debug']))
+					print "<pre>$sql</pre>count2 = ".count($places2)."<hr>";
 				if (count($places2)) {
 					if (count($places)) {
 						foreach ($places2 as $i2 => $place2) {
 							$found = 0; $look = str_replace("-",' ',$place2['full_name']);
 							foreach ($places as $i => $place) {
-								if ($place['full_name'] == $look && $place['reference_index'] == $place2['reference_index']) {
+								if ($place['full_name'] == $look && $place['reference_index'] == $place2['reference_index'] && 
+										($d = pow($place['e']-$place2['e'],2)+pow($place['n']-$place2['n'],2)) && 
+										($d < 5000*5000) ) {
 									$found = 1; break;
 								}
 							}
@@ -531,7 +547,7 @@ class Gazetteer
 						$places =& $place2;
 					}
 				}
-			}	
+			}
 			if ($c = count($places)) {
 				require_once('geograph/conversions.class.php');
 				$conv = new Conversions;
