@@ -56,7 +56,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	from gridsquare 
 	group by tenk_square 
 	having geograph_count > 0 and percentage >=100
-	order by percentage desc,land_count desc,tenk_square");
+	order by tenk_square,percentage desc,land_count desc,tenk_square");
 	
 	
 	foreach ($hectads as $i => $hectad) {
