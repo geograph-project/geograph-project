@@ -296,7 +296,7 @@ END;
 			$sphinx->addFilters($this->criteria->sphinx['filters']);
 		}
 		
-		$ids = $sphinx->returnIds($pg,empty($this->sphinx['exact'])?'_images':'_images_exact');
+		$ids = $sphinx->returnIds($pg,empty($this->criteria->sphinx['exact'])?'_images':'_images_exact');
 
 		$this->resultCount = $sphinx->resultCount;
 		$this->numberOfPages = $sphinx->numberOfPages;
