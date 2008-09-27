@@ -319,6 +319,8 @@ class sphinxwrapper {
 		
 		if ($index_in == "_images") {
 			$index = "gi_stemmed,gi_delta_stemmed";
+		} elseif ($index_in == "_images_exact") {
+			$index = "gridimage,gi_delta";
 		} elseif ($index_in == "_posts") {
 			$index = "post_stemmed,post_delta_stemmed";
 		} else {

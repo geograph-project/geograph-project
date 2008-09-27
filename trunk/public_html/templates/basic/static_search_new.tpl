@@ -23,6 +23,7 @@
 <ul>
     	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">river bridge arch</tt></li>
     	<li style="padding:10px;">To exclude a word put a - in front <tt style="border:1px solid gray;padding:10px">bridge -river</tt></li>
+    	<li style="padding:10px;">either/or <tt style="border:1px solid gray;padding:10px"><span style="color:lightgrey;font-size:0.8em">(</span>river OR road<span style="color:lightgrey;font-size:0.8em">)</span> tree</tt> (brackets optional)</li>
 </ul>
 
 <p>The new engine can also apply filters just by entering prefixes directly in the search box, below are some examples of supported fields:</p>
