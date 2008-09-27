@@ -214,8 +214,14 @@ class SearchCriteria
 							$this->sphinx['sort'] = '@id';
 							break;
 						case 'x':
+							$this->sphinx['sort'] = 'wgs84_long';
+							break;
 						case 'y':
+							$this->sphinx['sort'] = 'wgs84_lat';
+							break;
 						case 'imagetaken':
+							$this->sphinx['sort'] = 'takenstamp';
+							break;
 						case 'realname':
 						case 'title':
 						case 'imageclass':
@@ -459,6 +465,10 @@ class SearchCriteria
 		
 		if ($sql_where) {
 			$sql_where .= ' and ';
+		}
+		if (strpos($q,'=') === 0) {
+			$q = str_replace('=','',$q);
+			$this->sphinx['exact'] = 1;
 		}
 		if (preg_match("/\b(AND|OR|NOT)\b/",$q) || preg_match('/^\^.*\+$/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q)) {
 			$sql_where .= " (";

@@ -71,7 +71,7 @@ class PictureOfTheDay
 					//ok, there is still no image for today, and we have a
 					//lock on the table - assign the first available image
 					//ordered by number
-					$db->Execute("update gridimage_daily set showday='$now' where showday is null order by gridimage_id limit 1");
+					$db->Execute("update gridimage_daily set showday='$now' where showday is null order by moderation_status desc,gridimage_id limit 1");
 					
 					//refetch
 					$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where to_days(showday)=to_days(now())");
