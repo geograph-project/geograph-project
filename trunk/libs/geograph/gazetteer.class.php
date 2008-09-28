@@ -338,7 +338,7 @@ class Gazetteer
 		global $USER;
 		global $CONF,$memcache;
 		
-		$mkey = strtolower(trim($placename)).'.v2';//need to invalidate the whole cache. 
+		$mkey = strtolower(trim($placename)).'.v3';//need to invalidate the whole cache. 
 		//fails quickly if not using memcached!
 		$places =& $memcache->name_get('g',$mkey);
 		if ($places)
@@ -390,8 +390,8 @@ class Gazetteer
 		if (count($places) == 1) {
 			#we done!
 		} else {
-			$limit = (strlen($placename) > 3)?20:10;
-			$limi2 = 10;
+			$limit = (strlen($placename) > 3)?60:20;
+			$limi2 = 40;
 			if ($USER->registered) {
 				$limit *= 2;
 				$limi2 *= 2;
@@ -432,7 +432,7 @@ class Gazetteer
 				dsg LIKE 'PPL%' AND loc_placenames.reference_index != 1 AND
 				full_name LIKE ".$db->Quote($placename.'%')."
 			group by gns_ufi
-			LIMIT 20)");
+			LIMIT $limit)");
 			if (isset($_GET['debug']))
 				print "<pre>$sql</pre>count = ".count($places)."<hr>";
 			if (count($places) < 10 || $ismore) {
@@ -526,7 +526,7 @@ class Gazetteer
 				order by 
 					full_name = ".$db->Quote($placename)." desc,
 					full_name_soundex = SOUNDEX(".$db->Quote($placename).") desc
-				LIMIT 20)");
+				LIMIT $limi2)");
 				if (isset($_GET['debug']))
 					print "<pre>$sql</pre>count2 = ".count($places2)."<hr>";
 				if (count($places2)) {
@@ -556,7 +556,7 @@ class Gazetteer
 						list($places[$id]['gridref'],) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
 					}
 				}
-				if ($c > 20) {
+				if ($c > 14) {
 					foreach($places as $id => $row) {
 						if (stripos($row['full_name'],$placename) === FALSE && levenshtein($row['full_name'],$placename) > strlen($row['full_name'])/2) {
 							unset($places[$id]);
