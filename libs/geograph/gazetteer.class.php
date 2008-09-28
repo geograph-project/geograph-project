@@ -557,8 +557,10 @@ class Gazetteer
 					}
 				}
 				if ($c > 14) {
+					$placename = strtolower($placename);
 					foreach($places as $id => $row) {
-						if (stripos($row['full_name'],$placename) === FALSE && levenshtein($row['full_name'],$placename) > strlen($row['full_name'])/2) {
+						$p1 = strtolower($row['full_name']);
+						if (strpos($p1,$placename) === FALSE && levenshtein(strtolower($p1),$placename) > strlen($row['full_name'])/2) {
 							unset($places[$id]);
 						}
 					}
