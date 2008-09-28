@@ -42,8 +42,8 @@ class Gazetteer
 {
 	var $db=null;
 	
-	function findBySquare($square,$radius = 25000,$f_codes = null) {
-		return $this->findByNational($square->reference_index,$square->nateastings,$square->natnorthings,$radius,$f_codes);		
+	function findBySquare($square,$radius = 25000,$f_codes = null,$gazetteer = '') {
+		return $this->findByNational($square->reference_index,$square->nateastings,$square->natnorthings,$radius,$f_codes,$gazetteer);
 	}
 	
 
@@ -117,10 +117,14 @@ class Gazetteer
 		return $places;
 	}
 	
-	function findByNational($reference_index,$e,$n,$radius = 25005,$f_codes = null) {
+	function findByNational($reference_index,$e,$n,$radius = 25005,$f_codes = null,$gazetteer = '') {
 		global $CONF,$memcache;
 		
-		$mkey = "$reference_index,$e,$n,$radius,$f_codes".'.v2';//need to invalidate the whole cache. 
+		if (empty($gazetteer)) {
+			$gazetteer = $CONF['use_gazetteer'];
+		} 
+		
+		$mkey = "$reference_index,$e,$n,$radius,$f_codes,$gazetteer";
 		//fails quickly if not using memcached!
 		$places =& $memcache->name_get('g',$mkey);
 		if ($places)
@@ -142,7 +146,75 @@ class Gazetteer
 			//$sql = 	ROUND(GLength(LineStringFromWKB(LineString(AsBinary(point_en),
 			//				AsBinary(GeomFromText($point))  )))) as distance
 
-		if ($CONF['use_gazetteer'] == 'OS' && $reference_index == 1) {
+		if ($gazetteer == 'OS250' && $reference_index == 1) {
+			$places = array();
+			$left=$e-$radius;
+			$right=$e+$radius;
+			$top=$n-$radius;
+			$bottom=$n+$radius;
+
+			$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
+			$places = $db->GetRow("select
+					`def_nam` as full_name,
+					'PPL' as dsg,
+					1 as reference_index,
+					`full_county` as adm1_name,
+					(seq + 2000000) as pid,
+					( (east-{$e})*(east-{$e})+(north-{$n})*(north-{$n}) ) as distance,
+					'OS250' as gaz
+				from
+					os_gaz_250
+				where
+					CONTAINS(
+						GeomFromText($rectangle),
+						point_en)
+				order by distance asc limit 1");
+
+			$placeradius = 5005;
+			if (sqrt($places['distance']) > $placeradius) {
+				//if nothing near try finding a feature
+				
+				$e = (floor($e/1000) * 1000) + 500;
+				$n = (floor($n/1000) * 1000) + 500;
+				
+				$left=$e-$placeradius;
+				$right=$e+$placeradius;
+				$top=$n-$placeradius;
+				$bottom=$n+$placeradius;
+				
+				if (is_array($f_codes) && count($f_codes)) {
+					$codes = "'".implode("','",$f_codes)."'";
+				} else {
+					$codes = "'C','T','O'";
+				}
+				
+				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
+				$places2 = $db->GetRow("select
+						`def_nam` as full_name,
+						'PPL' as dsg,
+						1 as reference_index,
+						`full_county` as adm1_name,
+						`hcounty` as hist_county,
+						(seq + 1000000) as pid,
+						( (east-{$e})*(east-{$e})+(north-{$n})*(north-{$n}) ) as distance,
+						f_code,
+						'OS' as gaz
+					from
+						os_gaz
+					where
+						CONTAINS( 	
+							GeomFromText($rectangle),
+							point_en) AND
+						f_code not in ($codes)
+					order by distance asc,f_code+0 asc limit 1");
+				if (count($places2) && sqrt($places2['distance']) < $placeradius) {
+					$places = $places2;
+					$places['full_name'] .= ' ['.$db->getOne("select code_name from os_gaz_code where f_code = '".$places['f_code']."'")."]";
+				}
+			}
+		} elseif ($gazetteer == 'OS' && $reference_index == 1) {
 			
 			$e = (floor($e/1000) * 1000) + 500;
 			$n = (floor($n/1000) * 1000) + 500;
@@ -166,7 +238,8 @@ class Gazetteer
 						`hcounty` as hist_county,
 						(seq + 1000000) as pid,
 						( (east-{$e})*(east-{$e})+(north-{$n})*(north-{$n}) ) as distance,
-						1 as isin
+						1 as isin,
+						'OS' as gaz
 					from
 						os_gaz
 					where
@@ -197,7 +270,8 @@ class Gazetteer
 						`full_county` as adm1_name,
 						`hcounty` as hist_county,
 						(seq + 1000000) as pid,
-						( (east-{$e})*(east-{$e})+(north-{$n})*(north-{$n}) ) as distance
+						( (east-{$e})*(east-{$e})+(north-{$n})*(north-{$n}) ) as distance,
+						'OS' as gaz
 					from
 						os_gaz
 					where
@@ -228,7 +302,8 @@ class Gazetteer
 							`hcounty` as hist_county,
 							(seq + 1000000) as pid,
 							( (east-{$e})*(east-{$e})+(north-{$n})*(north-{$n}) ) as distance,
-							f_code
+							f_code,
+							'OS' as gaz
 						from
 							os_gaz
 						where
@@ -243,7 +318,7 @@ class Gazetteer
 					}
 				}
 			}
-		} else if ($CONF['use_gazetteer'] == 'hist' && $reference_index == 1) {
+		} else if ($gazetteer == 'hist' && $reference_index == 1) {
 			$places = $db->GetRow("select
 					full_name,
 					'PPL' as dsg,
@@ -251,7 +326,8 @@ class Gazetteer
 					`acounty` as adm1_name,
 					`hcounty` as hist_county,
 					(gaz_id + 800000) as pid,
-					( (e-{$e})*(e-{$e})+(n-{$n})*(n-{$n}) ) as distance
+					( (e-{$e})*(e-{$e})+(n-{$n})*(n-{$n}) ) as distance,
+					'hist' as gaz
 				from
 					loc_abgaz
 				where
@@ -259,14 +335,15 @@ class Gazetteer
 						GeomFromText($rectangle),
 						point_en)
 				order by distance asc limit 1");
-		} else if ($CONF['use_gazetteer'] == 'towns' && $reference_index == 1) {
+		} else if ($gazetteer == 'towns' && $reference_index == 1) {
 			$places = $db->GetRow("select
 					name as full_name,
 					'PPL' as dsg,
 					reference_index,
 					'' as adm1_name,
 					(id + 900000) as pid,
-					power(e-{$e},2)+power(n-{$n},2) as distance
+					power(e-{$e},2)+power(n-{$n},2) as distance,
+					'towns' as gaz
 				from 
 					loc_towns
 				where
@@ -283,7 +360,8 @@ class Gazetteer
 					loc_placenames.reference_index,
 					loc_adm1.name as adm1_name,
 					loc_placenames.id as pid,
-					power(e-{$e},2)+power(n-{$n},2) as distance
+					power(e-{$e},2)+power(n-{$n},2) as distance,
+					'geonames' as gaz
 				from 
 					loc_placenames
 					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
@@ -301,7 +379,8 @@ class Gazetteer
 				$nearest = $db->GetAll("select
 					distinct full_name,
 					loc_placenames.id as pid,
-					power(e-{$e},2)+power(n-{$n},2) as distance
+					power(e-{$e},2)+power(n-{$n},2) as distance,
+					'geonames' as gaz
 				from 
 					loc_placenames
 					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)

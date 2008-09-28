@@ -178,3 +178,30 @@ CREATE TABLE `milestone` (
 
 INSERT INTO `queries` (`id`, `searchdesc`, `searchclass`, `searchq`, `searchtext`, `limit1`, `limit2`, `limit3`, `limit4`, `limit5`, `limit6`, `limit7`, `limit8`, `limit9`, `limit10`, `x`, `y`, `displayclass`, `resultsperpage`, `orderby`, `breakby`, `crt_timestamp`, `user_id`, `searchuse`, `use_timestamp`, `favorite`) VALUES 
 (NULL, ', celebrating a milestone, newest first', 'Special', 'inner join milestone using (gridimage_id) where milestone.user_id > 0', '', '', '', '', '', '', '', '', 0, 0, 0, 0, 0, 'thumbs', 15, 'gridimage_id desc', 'milestone+', '2008-09-23 21:56:19', 3, 'search', '2008-09-23 22:20:21', 'N');
+
+
+
+########################
+
+CREATE TABLE `os_gaz_250` (
+`def_name` VARCHAR( 250 ) NOT NULL ,
+`full_county` VARCHAR( 250 ) NOT NULL ,
+`east` MEDIUMINT UNSIGNED NOT NULL ,
+`north` MEDIUMINT UNSIGNED NOT NULL
+) ENGINE = MYISAM ;
+
+LOAD DATA LOCAL INFILE 'c:/wamp/tmp\\php731.tmp' INTO TABLE `os_gaz_250` FIELDS TERMINATED BY '*' ESCAPED BY '\\' LINES TERMINATED BY '\r\n'# Affected rows: 25546
+
+ALTER TABLE `os_gaz_250`
+  ADD `def_nam_soundex` varchar(32) NOT NULL default '',
+  ADD `point_en` point NOT NULL default '';
+	
+UPDATE `os_gaz_250` SET `def_nam_soundex` = SOUNDEX( def_nam ) ;
+
+UPDATE os_gaz_250 SET point_en = GeomFromText(CONCAT('POINT(',east,' ',north,')'));
+
+ALTER TABLE `os_gaz_250` 
+	ADD SPATIAL KEY(point_en),
+	ADD KEY `def_nam_soundex` (`def_nam_soundex`);
+
+ALTER TABLE `os_gaz_250` ADD `seq` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST ;
