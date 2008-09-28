@@ -168,7 +168,7 @@ function national_to_gridref($e,$n,$gr_length,$reference_index,$spaced = false) 
 		"$y between origin_y and (origin_y+height-1) and reference_index=$reference_index";
 	$prefix=$db->GetOne($sql);
 
-	$eastings = sprintf("%05d",$e % 100000);
+	$eastings = sprintf("%05d",($e+ 500000) % 100000); //cope with negative! (for Rockall...)
 	$northings = sprintf("%05d",$n % 100000);
 	
 

@@ -332,9 +332,7 @@ class sphinxwrapper {
 		if (!empty($_GET['debug']) && $_GET['debug'] == 2) {
 			print "<pre>";
 			print_r($cl);	
-			print "<pre style='background-color:red'>";
-			var_dump($q);
-			print "</pre>";
+			print "<pre style='background-color:red'>( '$q', '$index' )</pre>";
 			print "<pre>";
 			print_r($res);	
 			exit;

@@ -230,8 +230,8 @@ class GridSquare
 			$square['origin_x'] -= $CONF['origins'][$this->reference_index][0];
 			$square['origin_y'] -= $CONF['origins'][$this->reference_index][1];
 			
-			$this->nateastings = sprintf("%d%05d",intval($square['origin_x']/100),$this->eastings * 1000 + 500);
-			$this->natnorthings = sprintf("%d%05d",intval($square['origin_y']/100),$this->northings * 1000 +500);
+			$this->nateastings = sprintf("%05d",intval($square['origin_x']/100)*100000+ ($this->eastings * 1000 + 500));
+			$this->natnorthings = sprintf("%05d",intval($square['origin_y']/100)*100000+ ($this->northings * 1000 +500));
 			$this->natgrlen = 4;
 		} 
 		return $this->nateastings;
@@ -664,7 +664,7 @@ class GridSquare
 		}
 	}
 	
-	function findNearestPlace($radius) {
+	function findNearestPlace($radius,$gazetteer = '') {
 		#require_once('geograph/gazetteer.class.php');
 		
 		if (!isset($this->nateastings))
@@ -672,7 +672,7 @@ class GridSquare
 			
 		$gaz = new Gazetteer();
 		
-		return $gaz->findBySquare($this,$radius);	
+		return $gaz->findBySquare($this,$radius,null,$gazetteer);	
 	}
 	
 	function &getImages($inc_all_user = false,$custom_where_sql = '',$order_and_limit = 'order by moderation_status+0 desc,seq_no')
