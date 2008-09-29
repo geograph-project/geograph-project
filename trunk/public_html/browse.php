@@ -298,7 +298,12 @@ if ($grid_given)
 				$custom_where .= " and ((viewpoint_eastings div 100) mod 10) = ".$matches[1];
 				$custom_where .= " and ((viewpoint_northings div 100) mod 10) = ".$matches[2];
 				
-				$grid_ok=$square->setByFullGridRef($_GET['viewcenti'],false,true);
+				$grid_ok=$square->setByFullGridRef($_GET['viewcenti'],true,true);
+				
+				$e = intval($square->nateastings /1000);
+				$n = intval($square->natnorthings /1000);
+				$custom_where .= " and viewpoint_eastings DIV 1000 = $e AND viewpoint_northings DIV 1000 = $n";
+				
 				$smarty->assign('gridrefraw', stripslashes($_GET['viewcenti']));
 			}
 			$filtered_title = " photographer in ".htmlentities2($_GET['viewcenti'])." Centisquare<a href=\"/help/squares\">?</a>";
