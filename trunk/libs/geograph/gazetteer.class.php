@@ -70,7 +70,9 @@ class Gazetteer
 
 		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-		if ($CONF['use_gazetteer'] == 'OS' && $reference_index == 1) {
+		if (($CONF['use_gazetteer'] == 'OS' || $CONF['use_gazetteer'] == 'OS250') && $reference_index == 1) {
+			//even for 250k gaz, lets use the 50k as we want the detailed list
+			
 			$places = $db->GetAll("select
 					`def_nam` as full_name,
 					km_ref as grid_reference,
