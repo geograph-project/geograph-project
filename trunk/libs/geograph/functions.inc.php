@@ -217,6 +217,11 @@ function smarty_function_gridimage($params)
 
 }
 
+function recaps($in) {
+	$out = preg_replace('/\b(\w{3,})/e','ucfirst("$1")',strtolower($in));
+	return preg_replace('/(^|\/)([a-z])/e','"$1".strtoupper("$2")',$out);
+}
+
 function smarty_function_place($params) {
 
 	$place = $params['place'];
@@ -224,12 +229,24 @@ function smarty_function_place($params) {
 	if ($place['distance'] > 3)
 		$t .= ($place['distance']-0.01)." km from ";
 	elseif (!$place['isin'])
-		$t .= "near to ";
+		$t .= "<span title=\"".($place['distance']-0.01)." km from\">near</span> to ";
 
-	$t .= "<b>{$place['full_name']}</b><small><i>";
-	if ($place['adm1_name'] && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name']))
-		$t .= ", {$place['adm1_name']}";
-	elseif ($place['hist_county'])
+	if (!ctype_lower($place['full_name'])) {
+		$t .= "<b>".recaps($place['full_name'])."</b><small><i>";
+	} else {
+		$t .= "<b>{$place['full_name']}</b><small><i>";
+	}
+	if ($place['adm1_name'] && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name'])) {
+		$parts = explode('/',$place['adm1_name']);
+		if (!ctype_lower($parts[0])) {
+			if (isset($parts[1]) && $parts[0] == $parts[1]) {
+				unset($parts[1]);
+			}
+			$t .= ", ".recaps(implode('/',$parts));
+		} else {
+			$t .= ", {$place['adm1_name']}";
+		}
+	} elseif ($place['hist_county'])
 		$t .= ", {$place['hist_county']}";
 	$t .= ", {$place['reference_name']}</i></small>";
 	
