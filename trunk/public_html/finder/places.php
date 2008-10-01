@@ -32,11 +32,13 @@ $template = 'finder_places.tpl';
 
 if (!empty($_GET['q'])) {
 	$q=trim($_GET['q']);
-
+	
+	$fuzzy = !empty($_GET['f']);
+	
 	$sphinx = new sphinxwrapper($q);
 
 	//gets a cleaned up verion of the query (suitable for filename etc) 
-	$cacheid = $sphinx->q;
+	$cacheid = $sphinx->q.'.'.$fuzzy;
 
 	$sphinx->pageSize = $pgsize = 15;
 
@@ -51,16 +53,24 @@ if (!empty($_GET['q'])) {
 		$offset = (($pg -1)* $sphinx->pageSize)+1;
 		
 		if ($offset < (1000-$pgsize) ) { 
-			#if (preg_match('/^\w+$/',$sphinx->q)) {
-			#	$sphinx->q = "{$sphinx->q} | {$sphinx->q}*"; //rank full matches first
-			#}
-		
-		
-			$sphinx->sort = "score ASC, @relevance DESC, @id DESC";
 			$sphinx->processQuery();
 
-			$ids = $sphinx->returnIds($pg,'gaz');	
-
+			$sphinx->sort = "score ASC, @relevance DESC, @id DESC";
+			#$sphinx->sort = -1;
+			#$sphinx->_getClient()->SetSortMode(SPH_SORT_EXPR,"(10-score) * @weight");
+			
+			if (preg_match('/^\w+$/',$sphinx->q)) {
+				$sphinx->qoutput = $sphinx->q;
+				$sphinx->q = "{$sphinx->q} | {$sphinx->q}*"; //rank full matches first
+			}
+		
+			if ($fuzzy) {
+				$sphinx->_getClient()->SetIndexWeights(array('gaz'=>10,'gaz_meta'=>1));
+				$ids = $sphinx->returnIds($pg,'gaz,gaz_meta');	
+			} else {
+				$ids = $sphinx->returnIds($pg,'gaz');	
+			}
+			
 			if (!empty($ids) && count($ids)) {
 				$where = "id IN(".join(",",$ids).")";
 
@@ -86,7 +96,7 @@ if (!empty($_GET['q'])) {
 				$smarty->assign("query_info",$sphinx->query_info);
 
 				if ($sphinx->numberOfPages > 1) {
-					$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q)."&amp;page=") );
+					$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q).($fuzzy?"&amp;f=on":'')."&amp;page=") );
 					$smarty->assign("offset",$offset);
 				}
 				$ADODB_FETCH_MODE = $prev_fetch_mode;
@@ -96,11 +106,10 @@ if (!empty($_GET['q'])) {
 			$smarty->assign('pagesString', pagesString($pg,1,$_SERVER['PHP_SELF']."?q=".urlencode($q)."&amp;page=") );
 
 		}
-			
 	}
 	
 	$smarty->assign("q",$sphinx->q);
-
+	$smarty->assign("fuzzy",$fuzzy);
 }
 
 $smarty->display($template,$cacheid);

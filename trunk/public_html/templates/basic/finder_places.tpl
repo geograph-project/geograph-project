@@ -25,7 +25,8 @@
 <form action="{$script_name}" method="get" onsubmit="focusBox()">
 	<p>
 		<label for="fq">Name</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
-		<input type="submit" value="Search"/>
+		<input type="submit" value="Search"/><br/>
+		<label for="fuzzy">Include 'fuzzy' matches?</label> <input type="checkbox" name="f" id="fuzzy" {if $fuzzy}checked{/if}/>
 	</p>
 </form>
 
@@ -41,8 +42,8 @@
 
 <ol start="{$offset}">
 {foreach from=$results item=item}
-	<li style="font-size:{math equation="3-log(s)" s=$item.score}em">
-	<tt>{$item.gr}</tt> <b><a href="/search.php?placename={$item.id}&amp;do=1" target="_top">{$item.name|escape:'html'|default:'unknown'} {if $item.name_2}<small>[{$item.name_2|escape:'html'}]</small>{/if}</a></b>
+	<li style="font-size:{math equation="2-log(s)/2" s=$item.score}em">
+	<tt>{$item.gr}</tt> <b><a href="/search.php?placename={$item.id}&amp;do=1" target="_top">{$item.name|escape:'html'|default:'unknown'}{if $item.name_2} <small>[{$item.name_2|escape:'html'}]</small>{/if}</a></b>
 	{if $item.localities}<small>{$item.localities|escape:'html'}</small>{/if}
 	{if $item.localities_2}<small>[{$item.localities_2|escape:'html'}]</small>{/if}
 	

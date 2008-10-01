@@ -300,7 +300,11 @@ class sphinxwrapper {
 		if (!empty($DateColumn)) {
 			$cl->SetSortMode ( SPH_SORT_TIME_SEGMENTS, $DateColumn);
 		} elseif (!empty($this->sort)) {
-			$cl->SetSortMode ( SPH_SORT_EXTENDED, $this->sort);
+			if ($this->sort == -1) {
+				#special token to mean will deal with it externally!
+			} else {
+				$cl->SetSortMode ( SPH_SORT_EXTENDED, $this->sort);
+			}
 		} else {
 			$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
 		}
@@ -335,6 +339,8 @@ class sphinxwrapper {
 			print "<pre style='background-color:red'>( '$q', '$index' )</pre>";
 			print "<pre>";
 			print_r($res);	
+			if ( $cl->GetLastWarning() )
+				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 			exit;
 		}
 		// --------------
@@ -344,8 +350,8 @@ class sphinxwrapper {
 			$this->resultCount = 0;
 			return 0;
 		} else {
-			if ( $cl->GetLastWarning() )
-				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
+			#if ( $cl->GetLastWarning() )
+			#	print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 		
 			$this->query_info = "Query '{$this->qoutput}' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
 			$this->query_time = $res['time'];
