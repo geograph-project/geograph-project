@@ -272,7 +272,7 @@ class sphinxwrapper {
 				$mode = SPH_MATCH_EXTENDED2;
 				$q = "(".str_replace(" "," | ",$q).")".$this->getFilterString();
 			} else {
-				if (substr_count($q,' ') > 1) //over 2 words
+				if (substr_count($q,' ') > 0) //at least one word
 					$mode = SPH_MATCH_ANY;
 			}
 		} elseif (preg_match('/^"[^"]+"$/',$q)) {
