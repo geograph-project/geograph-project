@@ -37,17 +37,19 @@
 
 <br/>
 {if preg_match('/near\s+/',$post.q) && !preg_match('/near\s+\(anywhere\)/',$post.q)}
-	<input type="radio" name="{$multipleon}" value="text:{$post.q|replace:'near ':'AND '}" id="dotext">
-	<label for="dotext"><i>Perform a title search for '{$post.q|replace:'near ':'AND '}'</i></label> <br/>
-	{if !preg_match('/\+$/',$criteria->searchq)}
-		<input type="radio" name="{$multipleon}" value="text:{$post.q|replace:' near ':'+ AND '}+" id="dotext2">
-		&nbsp;<label for="dotext2"><i>Perform a text search for '{$post.q|replace:'near ':'AND '}' in title and description</i></label> <br/>		
-	{/if}
+	<input type="radio" name="{$multipleon}" value="text:{$post.q|replace:'near ':'AND '|escape:"html"}" id="dotext">
+	<label for="dotext"><i>Perform a word search for '{$post.q|replace:'near ':'AND '|escape:"html"}'</i></label> <br/>
+{elseif $post.q && $post.q != $criteria->searchq}
+	<input type="radio" name="{$multipleon}" value="text:{$post.q|escape:"html"} AND {$criteria->searchq|escape:"html"}" id="dotext">
+	<label for="dotext"><i>Perform a word search for '{$post.q|escape:"html"} AND {$criteria->searchq|escape:"html"}'</i></label> <br/>
+{elseif $post.searchtext && $post.searchtext != $criteria->searchq}
+	<input type="radio" name="{$multipleon}" value="text:{$post.searchtext|escape:"html"} AND {$criteria->searchq|escape:"html"}" id="dotext">
+	<label for="dotext"><i>Perform a word search for '{$post.searchtext|escape:"html"} AND {$criteria->searchq|escape:"html"}'</i></label> <br/>
 {/if}
 
 
 <input type="radio" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}" id="dotext">
-<label for="dotext"><i>Perform a text keyword search for '{$criteria->searchq|escape:"html"}'</i></label> <br/>	
+<label for="dotext"><i>Perform a word search for '{$criteria->searchq|escape:"html"}'</i></label> <br/>	
 
 {/dynamic}
 <p><input type="submit" name="refine" value="Refine"> <input type="submit" value="Find &gt;"></p>
