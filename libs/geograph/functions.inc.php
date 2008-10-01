@@ -217,9 +217,15 @@ function smarty_function_gridimage($params)
 
 }
 
+if (!function_exists('mb_ucfirst') && function_exists('mb_substr')) {
+	function mb_ucfirst($string) {
+		return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1);
+	}
+}
+
 function recaps($in) {
-	$out = preg_replace('/\b(\w{3,})/e','ucfirst("$1")',strtolower($in));
-	return preg_replace('/(^|\/)([a-z])/e','"$1".strtoupper("$2")',$out);
+	$out = preg_replace('/(^|[ \/-])([^ \/-]{3,})/e','"$1".mb_ucfirst("$2")',mb_strtolower($in));
+	return preg_replace('/(^|\/)([^ \/-])/e','"$1".mb_strtoupper("$2")',$out);
 }
 
 function smarty_function_place($params) {
