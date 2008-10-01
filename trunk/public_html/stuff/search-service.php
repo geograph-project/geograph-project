@@ -135,7 +135,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$mode = SPH_MATCH_ALL;
 		if (strpos($q,'~') === 0) {
 			$q = preg_replace('/^\~/','',$q);
-			if (substr_count($q,' ') > 1) //2 words or more
+			if (substr_count($q,' ') > 0) //at least one word
 				$mode = SPH_MATCH_ANY;
 		} elseif (preg_match('/[~\|\(\)@"\/-]/',$q)) {
 			$mode = SPH_MATCH_EXTENDED;
