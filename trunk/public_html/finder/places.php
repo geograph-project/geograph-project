@@ -51,11 +51,17 @@ if (!empty($_GET['q'])) {
 		$offset = (($pg -1)* $sphinx->pageSize)+1;
 		
 		if ($offset < (1000-$pgsize) ) { 
+			#if (preg_match('/^\w+$/',$sphinx->q)) {
+			#	$sphinx->q = "{$sphinx->q} | {$sphinx->q}*"; //rank full matches first
+			#}
+		
+		
+			$sphinx->sort = "score ASC, @relevance DESC, @id DESC";
 			$sphinx->processQuery();
 
 			$ids = $sphinx->returnIds($pg,'gaz');	
 
-			if (count($ids)) {
+			if (!empty($ids) && count($ids)) {
 				$where = "id IN(".join(",",$ids).")";
 
 				$db=NewADOConnection($GLOBALS['DSN2']);
@@ -65,7 +71,7 @@ if (!empty($_GET['q'])) {
 				$prev_fetch_mode = $ADODB_FETCH_MODE;
 				$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 				$rows = $db->getAssoc("
-				select id,name,gr,localities
+				select id,name,name_2,gr,localities,localities_2,score
 				from placename_index 
 				where $where
 				limit $limit");

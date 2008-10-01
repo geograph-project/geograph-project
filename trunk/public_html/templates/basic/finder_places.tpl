@@ -41,9 +41,10 @@
 
 <ol start="{$offset}">
 {foreach from=$results item=item}
-	<li>
-	{$item.gr} <b><a href="/search.php?placename={$item.id}&amp;do=1" target="_top">{$item.name|escape:'html'|default:'unknown'}</a></b>
+	<li style="font-size:{math equation="3-log(s)" s=$item.score}em">
+	<tt>{$item.gr}</tt> <b><a href="/search.php?placename={$item.id}&amp;do=1" target="_top">{$item.name|escape:'html'|default:'unknown'} {if $item.name_2}<small>[{$item.name_2|escape:'html'}]</small>{/if}</a></b>
 	{if $item.localities}<small>{$item.localities|escape:'html'}</small>{/if}
+	{if $item.localities_2}<small>[{$item.localities_2|escape:'html'}]</small>{/if}
 	
 	</li>
 {foreachelse}
