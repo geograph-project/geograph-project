@@ -270,6 +270,7 @@ class SearchEngineBuilder extends SearchEngine
 			if (strpos($dataarray['placename'],'text:') === 0) {
 				$dataarray['searchtext'] = preg_replace("/^text\:/",'',$dataarray['placename']);
 				unset($dataarray['placename']);
+				unset($dataarray['location']);
 			}
 			//check if we actully want to perform a user_search
 			if (strpos($dataarray['placename'],'user:') === 0) {
