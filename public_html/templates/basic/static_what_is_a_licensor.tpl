@@ -37,7 +37,6 @@
 <h3>Notes</h3>
 <ul>
 	<li><b>Do not republish</b> the work of others already published under a Creative Commons Licence, either elsewhere or espially on Geograph, such content is not approriate for Geograph. All photos on geograph should be contributed by the photogapher, or a closly related Licensor.</li>
-	<li>Public Domain works can be relicenced as Creative Commons. For our purposes the original author should be credited.</li>
 	
 </ul>
 
