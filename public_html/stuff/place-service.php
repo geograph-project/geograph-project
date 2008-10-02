@@ -100,7 +100,7 @@ if (!@is_dir($CONF['sphinx_cache']."place/$q1")) {
 		$cl->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
 		$cl->SetWeights ( array ( 100, 1 ) );
 		$cl->SetMatchMode ( $mode );
-		$cl->SetSortMode ( SPH_SORT_EXTENDED, "sort_order DESC, @relevance DESC" );
+		$cl->SetSortMode ( SPH_SORT_EXTENDED, "score ASC, @relevance DESC" );
 		$cl->SetLimits(0,20);
 		$res = $cl->Query ( $q, $index );
 		
