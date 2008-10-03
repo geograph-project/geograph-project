@@ -161,7 +161,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	}
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$list = $db->getAll("
+	$list = $db->getAll($sql = "
 	select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.type,content.gridimage_id,
 		(coalesce(views,0)+coalesce(topic_views,0)) as views,
 		(coalesce(images,0)+coalesce(count(gridimage_post.seq_id),0)) as images,
@@ -177,6 +177,10 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	order by `use` = 'info' desc, $sql_order 
 	limit $limit");
 	
+if (!empty($_GET['debug'])) {
+	print "<pre>$sql</pre>";
+}
+
 	if (false && !empty($_GET['q'])) {
 		$docs = array();
 		foreach ($list as $i => $row) {
