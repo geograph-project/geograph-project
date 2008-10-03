@@ -49,17 +49,30 @@ class sphinxwrapper {
 	public function prepareQuery($q) {
 		$this->rawq = $q;
 		
+			//change OR to the right syntax
 		$q = preg_replace('/ OR /',' | ',$q);
 		
+			//setup field: syntax
 		$q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
 		
-		$q = trim(preg_replace('/[^\w~\|\(\)@"\/-]+/',' ',trim(strtolower($q))));
+			//remove unsuitable chars
+		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'-]+/',' ',trim(strtolower($q))));
 		
+			//make hyphenated words phrases
 		$q = preg_replace('/(\w+)(-\w+[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\""',$q);
 		
+			//make aposphies work (as a phrase) 
+		$q = preg_replace('/(\w+)(\'\w+[\'\w]*\w)/e','"\\"".str_replace("\'"," ","$1$2")."\\""',$q);
+		
+			//change single quotes to double
+		$q = preg_replace('/(^|\s)\b\'([\w ]+)\'\b(\s|$)/','$1"$2"$3',$q);
+		
+			//transform 'near gridref' to the put the GR first (thats how processQuery expects it) 
 		$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,2} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
 		
 		$this->q = $q;
+		
+			//change it back to simple: syntax
 		$this->qclean = preg_replace('/(-?)[@]([a-z_]+) (-?)/','$1$3$2:',$q);
 	}
 	
@@ -242,7 +255,11 @@ class sphinxwrapper {
 	public function getFilterString() {
 		$q = '';
 		foreach ($this->filters as $name => $value) {
-			$q .= " @$name $value";
+			if (strpos($value,'!') === 0) {
+				$q .= " @$name ".str_replace('!','-',$value);
+			} else {
+				$q .= " @$name $value";
+			}
 		}
 		return $q;
 	} 
