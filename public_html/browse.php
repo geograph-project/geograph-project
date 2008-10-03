@@ -401,7 +401,7 @@ if ($grid_given)
 				GROUP BY imageclass");
 				foreach ($all as $row) {
 					$breakdown[$i] = array('name'=>"in category <b>{$row[0]}</b>",'count'=>$row[1]);
-					if ($i< 50) {
+					if ($i< 20) {
 						$row['grid_reference'] = $square->grid_reference;
 						$breakdown[$i]['image'] = new GridImage();
 						$breakdown[$i]['image']->fastInit($row);
@@ -455,15 +455,17 @@ if ($grid_given)
 				ORDER BY user.realname");
 				foreach ($all as $row) {
 					$breakdown[$i] = array('name'=>"contributed by <b>{$row[0]}</b>",'count'=>$row[1]);
-					$breakdown[$i]['image'] = new GridImage();
-					$row['grid_reference'] = $square->grid_reference;
-					$breakdown[$i]['image']->fastInit($row);
+					if ($i< 20) {
+						$breakdown[$i]['image'] = new GridImage();
+						$row['grid_reference'] = $square->grid_reference;
+						$breakdown[$i]['image']->fastInit($row);
+					}
 					if ($row[1] > 20) {
-						$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;user_id={$row[3]}&amp;do=1";
+						$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;user_id={$row['user_id']}&amp;do=1";
 					} elseif ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
-						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?user={$row[3]}".$extra;
+						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?user={$row['user_id']}".$extra;
 					}
 					$i++;
 				}
