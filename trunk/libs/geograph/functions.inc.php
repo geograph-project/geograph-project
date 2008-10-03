@@ -237,11 +237,14 @@ function smarty_function_place($params) {
 	elseif (!$place['isin'])
 		$t .= "<span title=\"".($place['distance']-0.01)." km from\">near</span> to ";
 
+	$place['full_name'] = _utf8_decode($place['full_name']);
+
 	if (!ctype_lower($place['full_name'])) {
 		$t .= "<b>".recaps($place['full_name'])."</b><small><i>";
 	} else {
 		$t .= "<b>{$place['full_name']}</b><small><i>";
 	}
+	$t = str_replace(' And ','</b> and <b>',$t);
 	if ($place['adm1_name'] && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name'])) {
 		$parts = explode('/',$place['adm1_name']);
 		if (!ctype_lower($parts[0])) {
@@ -273,6 +276,24 @@ function smarty_function_place($params) {
 	return $t;
 }
 
+function _utf8_decode($string)
+{
+  $tmp = $string;
+  $count = 0;
+  while (mb_detect_encoding($tmp)=="UTF-8")
+  {
+    $tmp = utf8_decode($tmp);
+    $count++;
+  }
+  
+  for ($i = 0; $i < $count-1 ; $i++)
+  {
+    $string = utf8_decode($string);
+    
+  }
+  return $string;
+  
+}
 /**
 * adds commas to thousendise a number
 */

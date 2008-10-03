@@ -116,6 +116,7 @@
 
 
     RewriteRule /credits/?([\d-]*)/?$ /credits.php?when=$1
+    RewriteRule /contributors/(\d+) /statistics/breakdown.php?by=user&i=$1
 
     RewriteRule /content/feed/recent\.([\w]+) /content/syndicator.php?extension=$1 [qsa]
     RewriteRule /article/feed/recent\.([\w]+) /article/syndicator.php?extension=$1 [qsa]

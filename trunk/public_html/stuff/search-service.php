@@ -38,7 +38,7 @@ $q = preg_replace('/ OR /',' | ',$q);
 
 $q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
 
-$q = trim(preg_replace('/[^\w~\|\(\)@"\/-]+/',' ',trim(strtolower($q))));
+$q = trim(preg_replace('/[^\w~\|\(\)@"\/\*-]+/',' ',trim(strtolower($q))));
 
 $q = preg_replace('/(\w+)(-\w+[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\""',$q);
 
@@ -141,7 +141,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			$mode = SPH_MATCH_EXTENDED;
 		} 
 		$index = "gi_stemmed,gi_delta_stemmed";
-		
+ if (strpos($q,'*') !== FALSE) {
+	$index = 'gi_star';
+}		
 		$cl = new SphinxClient ();
 		$cl->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
 		$cl->SetWeights ( array ( 100, 1 ) );

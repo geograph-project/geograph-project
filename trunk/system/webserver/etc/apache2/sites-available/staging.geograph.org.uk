@@ -28,7 +28,6 @@ NameVirtualHost *
     php_value include_path .:/var/www/geograph_svn/libs/:/usr/share/php:/usr/share/pear
     php_value register_globals Off
     php_value upload_max_filesize 8M
-    php_value session.cookie_domain staging.geograph.co.uk
 
     <Directory /var/www/geograph_svn/public_html/>
 	DirectoryIndex index.php
