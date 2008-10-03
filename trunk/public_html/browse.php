@@ -388,20 +388,24 @@ if ($grid_given)
 			$square->totalimagecount = $square->imagecount;
 			
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
-			$old_ADODB_FETCH_MODE =  $ADODB_FETCH_MODE;
-			$ADODB_FETCH_MODE = ADODB_FETCH_NUM;
 			$breakdown = array();
 			$i = 0;		
 			
 			if ($_GET['by'] == 'class') {
 				$breakdown_title = "Category";
-				$all = $db->cacheGetAll($cacheseconds,"SELECT imageclass,count(*),gridimage_id
-				FROM gridimage
+				$all = $db->cacheGetAll($cacheseconds,"SELECT imageclass,count(*) as count,
+				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname
+				FROM gridimage gi inner join user using(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
 				GROUP BY imageclass");
 				foreach ($all as $row) {
 					$breakdown[$i] = array('name'=>"in category <b>{$row[0]}</b>",'count'=>$row[1]);
+					if ($i< 50) {
+						$row['grid_reference'] = $square->grid_reference;
+						$breakdown[$i]['image'] = new GridImage();
+						$breakdown[$i]['image']->fastInit($row);
+					}
 					if ($row[1] > 20) {
 						$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;imageclass=".urlencode($row[0])."&amp;do=1";
 					} elseif ($row[1] == 1) {
@@ -413,8 +417,9 @@ if ($grid_given)
 				}
 			} elseif ($_GET['by'] == 'status') {
 				$breakdown_title = "Classification";
-				$all = $db->cacheGetAll($cacheseconds,"SELECT moderation_status,count(*),gridimage_id
-				FROM gridimage
+				$all = $db->cacheGetAll($cacheseconds,"SELECT moderation_status,count(*) as count,
+				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname
+				FROM gridimage gi inner join user using(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
 				GROUP BY moderation_status 
@@ -422,6 +427,9 @@ if ($grid_given)
 				foreach ($all as $row) {
 					$rowname = str_replace('accepted','supplemental',$row[0]);
 					$breakdown[$i] = array('name'=>"<b>{$rowname}</b>",'count'=>$row[1]);
+					$breakdown[$i]['image'] = new GridImage();
+					$row['grid_reference'] = $square->grid_reference;
+					$breakdown[$i]['image']->fastInit($row);
 					if ($row[1] > 20) {
 						if ($row[0] == 'pending' || $row[0] == 'rejected') {
 							$breakdown[$i]['link']="/profile/{$USER->user_id}";
@@ -437,8 +445,9 @@ if ($grid_given)
 				}
 			} elseif ($_GET['by'] == 'user') {
 				$breakdown_title = "Contributor";
-				$all = $db->cacheGetAll($cacheseconds,"SELECT user.realname,count(*),gridimage_id,gridimage.user_id
-				FROM gridimage
+				$all = $db->cacheGetAll($cacheseconds,"SELECT user.realname as user_realname,count(*) as count,
+				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname
+				FROM gridimage gi
 				INNER JOIN user USING(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
@@ -446,6 +455,9 @@ if ($grid_given)
 				ORDER BY user.realname");
 				foreach ($all as $row) {
 					$breakdown[$i] = array('name'=>"contributed by <b>{$row[0]}</b>",'count'=>$row[1]);
+					$breakdown[$i]['image'] = new GridImage();
+					$row['grid_reference'] = $square->grid_reference;
+					$breakdown[$i]['image']->fastInit($row);
 					if ($row[1] > 20) {
 						$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;user_id={$row[3]}&amp;do=1";
 					} elseif ($row[1] == 1) {
@@ -457,18 +469,22 @@ if ($grid_given)
 				}
 			} elseif ($_GET['by'] == 'direction') {
 				$breakdown_title = "View Direction";
-				$all = $db->cacheGetAll($cacheseconds,"SELECT view_direction,count(*),gridimage_id
-				FROM gridimage
+				$all = $db->cacheGetAll($cacheseconds,"SELECT view_direction,count(*),
+				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname
+				FROM gridimage gi inner join user using(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
 				GROUP BY view_direction");
 				foreach ($all as $row) {
 					if ($row[0] != -1) {
 						$view_direction = ($row[0]%90==0)?strtoupper(heading_string($row[0])):ucwords(heading_string($row[0])) ;
-						$breakdown[$i] = array('name'=>"looking <b>$view_direction</b> (about {$row[0]} degrees)",'count'=>$row[1]);
+						$breakdown[$i] = array('name'=>"looking <b>$view_direction</b><br/> (about {$row[0]} degrees)",'count'=>$row[1]);
 					} else {
 						$breakdown[$i] = array('name'=>"unknown direction",'count'=>$row[1]);
 					}
+					$breakdown[$i]['image'] = new GridImage();
+					$row['grid_reference'] = $square->grid_reference;
+					$breakdown[$i]['image']->fastInit($row);
 					if ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
@@ -478,8 +494,9 @@ if ($grid_given)
 				}
 			} elseif ($_GET['by'] == 'viewpoint') {
 				$breakdown_title = "Photographer Gridsquare";
-				$all = $db->cacheGetAll($cacheseconds,"SELECT viewpoint_eastings,count(*),gridimage_id,viewpoint_northings
-				FROM gridimage
+				$all = $db->cacheGetAll($cacheseconds,"SELECT viewpoint_eastings,count(*),gridimage_id,viewpoint_northings,
+				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname
+				FROM gridimage gi inner join user using(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
 				GROUP BY viewpoint_eastings DIV 1000, viewpoint_northings DIV 1000");
@@ -500,6 +517,9 @@ if ($grid_given)
 						$breakdown[$i] = array('name'=>"photographer position unspecified",'count'=>$row[1]);
 						$posgr = '-';
 					}
+					$breakdown[$i]['image'] = new GridImage();
+					$row['grid_reference'] = $square->grid_reference;
+					$breakdown[$i]['image']->fastInit($row);
 					if ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
@@ -588,8 +608,9 @@ if ($grid_given)
 				$column = (preg_match('/^taken/',$_GET['by']))?'imagetaken':'submitted';
 				$title = (preg_match('/^taken/',$_GET['by']))?'Taken':'Submitted';
 				$breakdown_title = "$title".((preg_match('/year$/',$_GET['by']))?'':' Month');
-				$all = $db->cacheGetAll($cacheseconds,"SELECT SUBSTRING($column,1,$length) as date,count(*),gridimage_id
-				FROM gridimage
+				$all = $db->cacheGetAll($cacheseconds,"SELECT SUBSTRING($column,1,$length) as date,count(*),
+				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname
+				FROM gridimage gi inner join user using(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
 				GROUP BY SUBSTRING($column,1,$length)");
@@ -597,6 +618,9 @@ if ($grid_given)
 				foreach ($all as $row) {
 					$date = getFormattedDate($row[0]);
 					$breakdown[$i] = array('name'=>"$title <b>$date</b>",'count'=>$row[1]);
+					$breakdown[$i]['image'] = new GridImage();
+					$row['grid_reference'] = $square->grid_reference;
+					$breakdown[$i]['image']->fastInit($row);
 					if ($row[1] > 20) {
 						$datel = $row[0].substr('-00-00',0, 10-$length);
 
@@ -609,7 +633,7 @@ if ($grid_given)
 					$i++;
 				}
 			}
-			$ADODB_FETCH_MODE = $old_ADODB_FETCH_MODE;
+			
 			$smarty->assign('by', $_GET['by']);
 			if (!empty($breakdown_title))
 				$smarty->assign_by_ref('breakdown_title', $breakdown_title);
