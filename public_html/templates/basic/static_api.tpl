@@ -65,7 +65,7 @@
 	 </div>
 	
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px; clear:both;margin-top:30px;"><a name="torrents"></a>Torrents - Bulk Image download</h3> 
-	 <p>The entire archive is also available for download via bittorrent - see 
+	 <p>The entire (or at least it will be) archive is available for download via bittorrent - see 
 		{external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk" text="http://torrents.geograph.org.uk"} for details.</p>
 	
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px; clear:both;margin-top:30px;"><a name="api"></a>API-key</h3> 

@@ -39,11 +39,18 @@ if (isset($_REQUEST['image'])) {
 	$cacheid .= ".".intval($_REQUEST['image']);
 }
 if (isset($_GET['blank'])) {
-	$cacheid .= "b";
+	$cacheid .= "blank";
 }
 if (isset($_GET['both'])) {
-	$cacheid .= "B";
+	$cacheid .= "sub";
 }
+if (isset($_GET['geo'])) {
+        $cacheid .= "geo";
+}
+if (isset($_GET['supp'])) {
+        $cacheid .= "supp";
+}
+
 
 $smarty->caching = 2; // lifetime is per cache
 if ($month == date('n') && $year == date('Y')) {
@@ -111,12 +118,17 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign('blank', 1);
 		} else {
 			if (isset($_GET['both'])) {
-				$where = "AND submitted LIKE '$like%'";
+				$where = " AND submitted LIKE CONCAT(imagetaken,' %')";
 			} else {
 				$where = "";
 			}
+			if (isset($_GET['geo'])) {
+				$where .= " AND moderation_status = 'geograph'";
+			} elseif (isset($_GET['supp'])) {
+                                $where .= " AND moderation_status = 'accept'";
+                        }
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-			$images=&$db->GetAssoc("SELECT 
+			$images=&$db->GetAssoc($sql= "SELECT 
 			imagetaken, 
 			gridimage_id, title, user_id, realname, grid_reference,
 			COUNT(*) AS images,
@@ -124,7 +136,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			FROM `gridimage_search`
 			WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%' $where
 			GROUP BY imagetaken" );
-		
+			if (!empty($_GET['debug'])) {
+				print "<pre>$sql</pre>";
+			}
 			foreach ($images as $day=>$arr) {
 				if ($maximages < $arr['images'])
 					$maximages = $arr['images'];
@@ -178,13 +192,23 @@ if (!$smarty->is_cached($template, $cacheid))
 			$images = array();
 			$smarty->assign('blank', 1);
 		} else {
+                        if (isset($_GET['both'])) {
+				$where = " AND submitted LIKE CONCAT(imagetaken,' %')";
+                        } else {
+                                $where = "";
+                        }
+			if (isset($_GET['geo'])) {
+				$where .= " AND moderation_status = 'geograph'";
+			} elseif (isset($_GET['supp'])) {
+                                $where .= " AND moderation_status = 'accept'";
+                        }
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$images=&$db->GetAssoc("SELECT 
 			imagetaken, 
 			COUNT(*) AS images,
 			SUM(moderation_status = 'accepted') AS `supps`
 			FROM `gridimage_search`
-			WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%'
+			WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%' $where
 			GROUP BY imagetaken" );
 
 			foreach ($images as $day=>$arr) {

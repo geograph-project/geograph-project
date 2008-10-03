@@ -59,10 +59,10 @@ if (!empty($_GET['q'])) {
 			#$sphinx->sort = -1;
 			#$sphinx->_getClient()->SetSortMode(SPH_SORT_EXPR,"(10-score) * @weight");
 			
-			if (preg_match('/^\w+$/',$sphinx->q)) {
-				$sphinx->qoutput = $sphinx->q;
-				$sphinx->q = "{$sphinx->q} | {$sphinx->q}*"; //rank full matches first
-			}
+#			if (preg_match('/^\w+$/',$sphinx->q)) {
+#				$sphinx->qoutput = $sphinx->q;
+#				$sphinx->q = "{$sphinx->q} | {$sphinx->q}*"; //rank full matches first
+#			}
 		
 			if ($fuzzy) {
 				$sphinx->_getClient()->SetIndexWeights(array('gaz'=>10,'gaz_meta'=>1));

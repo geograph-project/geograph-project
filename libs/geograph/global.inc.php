@@ -153,7 +153,9 @@ function __autoload($class_name) {
         if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/../libs/geograph/'.strtolower($class_name).'.class.php')) {
                 ob_start();
                 debug_print_backtrace();
+		print "\n\nHost: ".`hostname`."\n\n";
                 print_r($GLOBALS);
+		print_r(get_included_files());
                 $con = ob_get_clean();
                 mail('geograph@barryhunter.co.uk','[Geograph Error] '.date('r'),$con);
 		header("HTTP/1.1 505 Server Error");
