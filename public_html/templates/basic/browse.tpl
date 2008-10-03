@@ -177,7 +177,7 @@
 	{if $breakdown}
 		{* We want to display a breakdown list *}
 		<blockquote>
-		<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images, by {$breakdown_title}:</p>
+		<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images <b>by {$breakdown_title}</b>:</p>
 
 		{if $by eq 'centi' || $by eq 'viewcenti' }
 			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6figure grid reference.</small></p>
@@ -232,13 +232,26 @@
 				</ul>
 			{/if}
 		{else}
-			<ul>
+		In each group an example image is shown [number in total].
+			<ul style="margin-top:0">
 			{foreach from=$breakdown item=b}
-				<li><a href="{$b.link}">{$b.name}</a> [{$b.count}]</li>
+				
+				{if $b.image}
+					<div style="float:left;" class="photo33">
+					<div class="interestBox"><a href="{$b.link}">{$b.name}</a> <b>[{$b.count}]</b></div><br/><br/>
+					
+					
+					<div style="height:{$thumbh}px;vertical-align:middle"><a title="{$b.image->grid_reference} : {$b.image->title|escape:'html'} by {$b.image->realname} {$b.image->dist_string} - click to view full size image" href="/photo/{$b.image->gridimage_id}">{$b.image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
+					<div class="caption"><div class="minheightprop" style="height:2.5em"></div>{if $mode != 'normal'}<a title="view full size image" href="/gridref/{$b.image->grid_reference}">{$b.image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$b.image->gridimage_id}">{$b.image->title|escape:'html'}</a><div class="minheightclear"></div></div>
+					<div class="statuscaption">by <a href="{$b.image->profile_link}">{$b.image->realname}</a></div>
+					</div>
+				{else}
+					<li style="clear:both"><a href="{$b.link}">{$b.name}</a> [{$b.count}]</li>
+				{/if}
 			{/foreach}
 			</ul>	
 		{/if}
-		
+		<br style="clear:both" />
 		<p>{if $imagecount < 15}<a href="/gridref/{$gridref}?by=1{if $extra}?{$extra}{/if}">&lt;&lt; Choose a different filter method</a></p>{/if}
 		
 		</blockquote>
