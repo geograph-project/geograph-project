@@ -41,6 +41,9 @@ if (isset($_REQUEST['image'])) {
 if (isset($_GET['blank'])) {
 	$cacheid .= "b";
 }
+if (isset($_GET['both'])) {
+	$cacheid .= "B";
+}
 
 $smarty->caching = 2; // lifetime is per cache
 if ($month == date('n') && $year == date('Y')) {
@@ -107,6 +110,11 @@ if (!$smarty->is_cached($template, $cacheid))
 			$images = array();
 			$smarty->assign('blank', 1);
 		} else {
+			if (isset($_GET['both'])) {
+				$where = "AND submitted LIKE '$like%'";
+			} else {
+				$where = "";
+			}
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$images=&$db->GetAssoc("SELECT 
 			imagetaken, 
@@ -114,7 +122,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			COUNT(*) AS images,
 			SUM(moderation_status = 'accepted') AS `supps`
 			FROM `gridimage_search`
-			WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%'
+			WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%' $where
 			GROUP BY imagetaken" );
 		
 			foreach ($images as $day=>$arr) {
