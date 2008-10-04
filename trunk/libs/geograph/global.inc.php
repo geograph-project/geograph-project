@@ -275,6 +275,9 @@ class GeographPage extends Smarty
 		//gridimage
 		$this->register_function("place", "smarty_function_place");
 
+		//linktoself
+		$this->register_function("linktoself", "smarty_function_linktoself");
+
 		$this->register_modifier("revision", "smarty_modifier_revision");
 		$this->register_modifier("geographlinks", "smarty_function_geographlinks");
 		$this->register_modifier("ordinal", "smarty_function_ordinal");

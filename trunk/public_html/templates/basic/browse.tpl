@@ -7,8 +7,8 @@
 
 {include file="_std_begin.tpl"}
 
-    <h2>Browse</h2>
-<div style="position:relative;margin-left:10px; width:850px;">
+ 
+<div style="position:relative;margin-top:5px; margin-left:10px; width:850px;">
 <div style="position:relative;float:left;width:530px">
 
 {if $showresult}
@@ -26,6 +26,7 @@
 	</table>
 	</div>
 {else}
+	   <h2>Browse</h2>
 	<p>You can view a particular grid square below - if the square hasn't been filled yet,
 	we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Get-a-map&trade;'} to help locate your grid square)</p>
 {/if}
@@ -84,7 +85,7 @@
 
 	{if $$imagecount}
 		{* There are some thumbnails to display *}
-		<small><small><b>Sample links...</b></small></small>
+		<small><small><b>Sample links for this square...</b></small></small>
 		<ul style="margin-top:5px; padding-left:24px">
 	{else}
 		{* There are no images in this square (yet) *}
@@ -117,7 +118,7 @@
 			{/if}</li>
 		{/if}
 
-		<li><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph <b>map</b> for {if strlen($gridrefraw) < 5}{$gridrefraw}{else}{$gridref}{/if}</a></li>
+		<li><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph <b>map</b> for {if strlen($gridrefraw) < 5}{$gridrefraw}{else}{$gridref}{/if}</a> (<a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}"><b>Draggable</b>)</a></li>
 		
 		{if $gridref6}
 			<li style="margin-top:10px"><a href="/gridref/{$gridref}?viewcenti={$gridref6}">image(s) <b>taken in {$gridref6}</b></b></a> / <span class="nowrap"><a href="/gridref/{$gridref}?centi={$gridref6}">of <b>subjects in {$gridref6}</b></a> (if any)</span> <sup style="color:red">new!</sup></li>
@@ -162,18 +163,28 @@
 	{/if}
 	{if !$breakdown && !$breakdowns && $totalimagecount > 0}<span style="font-size:0.8em;">- click for larger version</span>{/if}</div>
 
+	<div style="position:relative;float:right; text-align:right; font-size:0.7em">
 	{if !$breakdown && !$breakdowns && $totalimagecount > 0 &&  $totalimagecount > 1}
-		<div style="position:relative;text-align:right; font-size:0.7em"><a href="/gridref/{$gridref}?by=1{if $extra}{$extra}{/if}">View as <b>breakdown list</b></a>&nbsp;</div>
+		<a href="{linktoself name="by" value="1"}">View as <b>breakdown list</b></a>&nbsp;<br/>
 	
 	{/if}	
 	{if $user->registered && $mode eq 'normal'}
-		{if !$extra}
-			<div style="position:relative;text-align:right; font-size:0.7em"><a href="/gridref/{$gridref}?{if $breakdown || $breakdowns || $filtered}by=1&amp;{/if}nl=1">Include <b>pending and rejected</b> images</a>&nbsp;</div>
+		{if !$nl}
+			<a href="{linktoself name="nl" value="1"}">Include <b>pending and rejected</b> images</a>&nbsp;<br/>
 		{else}
-			<div style="position:relative;text-align:right; font-size:0.7em"><a href="/gridref/{$gridref}?{if $breakdown || $breakdowns || $filtered}by=1&amp;{/if}nl=0">Exclude <b>pending and rejected</b> images</a>&nbsp;</div>
+			<a href="{linktoself name="nl" value="0"}">Exclude <b>pending and rejected</b> images</a>&nbsp;<br/>
 		{/if}
 	{/if}
-
+	{if $breakdown}
+		{if !$ht}
+			<a href="{linktoself name="ht" value="1"}">Hide <b>thumbnail</b> images</a>&nbsp;<br/>
+		{else}
+			
+			<a href="{linktoself name="ht" value="0"}">Show <b>thumbnail</b> images</a>&nbsp;<br/>
+		{/if}
+	{/if}
+	</div>
+	
 	{if $breakdown}
 		{* We want to display a breakdown list *}
 		<blockquote>
@@ -232,13 +243,15 @@
 				</ul>
 			{/if}
 		{else}
-		In each group an example image is shown [number in total].
+		{if !$ht}
+			<span style="color:gray; font-size:0.8em">The first 20 group may show an example image [total number in brackets].</span>
+		{/if}
 			<ul style="margin-top:0">
 			{foreach from=$breakdown item=b}
 				
 				{if $b.image}
-					<div style="float:left;" class="photo33">
-					<div class="interestBox"><a href="{$b.link}">{$b.name}</a> <b>[{$b.count}]</b></div><br/><br/>
+					<div class="photo33" style="float:left;padding:2px;margin:2px">
+					<div class="interestBox" style="height:2.4em;padding:1px;margin:-2px"><a href="{$b.link}">{$b.name}</a> <b>[{$b.count}]</b></div><br/><br/>
 					
 					
 					<div style="height:{$thumbh}px;vertical-align:middle"><a title="{$b.image->grid_reference} : {$b.image->title|escape:'html'} by {$b.image->realname} {$b.image->dist_string} - click to view full size image" href="/photo/{$b.image->gridimage_id}">{$b.image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
