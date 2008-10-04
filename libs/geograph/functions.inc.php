@@ -294,6 +294,21 @@ function _utf8_decode($string)
   return $string;
   
 }
+
+function smarty_function_linktoself($params) {
+	$a = array();
+	$b = explode('?',$_SERVER['REQUEST_URI']);
+	if (isset($b[1])) 
+		parse_str($b[1],$a);
+	if ($params['value'] == 'null') {
+		if (isset($a[$params['name']]))
+			unset($a[$params['name']]);
+	} else {
+		$a[$params['name']] = $params['value'];
+	}
+	return htmlentities($_SERVER['SCRIPT_NAME'].count($a)?("?".http_build_query($a)):'');
+}
+
 /**
 * adds commas to thousendise a number
 */

@@ -63,6 +63,15 @@ elseif (isset($_SESSION['nl']))
 	$_GET['nl']=intval($_SESSION['nl']);
 }
 
+if (isset($_GET['ht']))
+{
+	$_SESSION['ht']=intval($_GET['ht']);
+}
+elseif (isset($_SESSION['ht']))
+{
+	$_GET['ht']=intval($_SESSION['ht']);
+}
+
 //set by grid components?
 if (isset($_GET['p']))
 {	
@@ -317,8 +326,13 @@ if ($grid_given)
 		}
 			
 		if ($USER->user_id && !empty($_GET['nl'])) {
-			$smarty->assign('extra', "&amp;nl=1");
 			$extra = "&amp;nl=1";
+			$smarty->assign('nl', 1);
+			
+			if (!empty($_GET['ht'])) {
+				$extra .= "&amp;ht=1";
+				$smarty->assign('ht', 1);
+			}
 			if ($USER->hasPerm('moderator')) {
 				$user_crit = "1";
 				$cacheseconds = 600;
@@ -329,9 +343,16 @@ if ($grid_given)
 				$inc_all_user=$USER->user_id;
 			}
 		} else {
+			if (!empty($_GET['ht'])) {
+				$extra = "&amp;ht=1";
+				$smarty->assign('ht', 1);
+			}
 			$user_crit = "moderation_status in ('accepted', 'geograph')";
 			$cacheseconds = 1500;
 			$inc_all_user=0;
+		}
+		if (!empty($extra)) {
+			$smarty->assign('extra', $extra);
 		}
 			
 		if (($square->imagecount > 15 && !isset($_GET['by']) && !$custom_where) || (isset($_GET['by']) && $_GET['by'] == 1)) {
@@ -401,7 +422,7 @@ if ($grid_given)
 				GROUP BY imageclass");
 				foreach ($all as $row) {
 					$breakdown[$i] = array('name'=>"in category <b>{$row[0]}</b>",'count'=>$row[1]);
-					if ($i< 20) {
+					if (empty($_GET['ht']) && $i< 20) {
 						$row['grid_reference'] = $square->grid_reference;
 						$breakdown[$i]['image'] = new GridImage();
 						$breakdown[$i]['image']->fastInit($row);
@@ -427,9 +448,11 @@ if ($grid_given)
 				foreach ($all as $row) {
 					$rowname = str_replace('accepted','supplemental',$row[0]);
 					$breakdown[$i] = array('name'=>"<b>{$rowname}</b>",'count'=>$row[1]);
-					$breakdown[$i]['image'] = new GridImage();
-					$row['grid_reference'] = $square->grid_reference;
-					$breakdown[$i]['image']->fastInit($row);
+					if (empty($_GET['ht']) && $i< 20) {
+						$breakdown[$i]['image'] = new GridImage();
+						$row['grid_reference'] = $square->grid_reference;
+						$breakdown[$i]['image']->fastInit($row);
+					}
 					if ($row[1] > 20) {
 						if ($row[0] == 'pending' || $row[0] == 'rejected') {
 							$breakdown[$i]['link']="/profile/{$USER->user_id}";
@@ -455,7 +478,7 @@ if ($grid_given)
 				ORDER BY user.realname");
 				foreach ($all as $row) {
 					$breakdown[$i] = array('name'=>"contributed by <b>{$row[0]}</b>",'count'=>$row[1]);
-					if ($i< 20) {
+					if (empty($_GET['ht']) && $i< 20) {
 						$breakdown[$i]['image'] = new GridImage();
 						$row['grid_reference'] = $square->grid_reference;
 						$breakdown[$i]['image']->fastInit($row);
@@ -484,9 +507,11 @@ if ($grid_given)
 					} else {
 						$breakdown[$i] = array('name'=>"unknown direction",'count'=>$row[1]);
 					}
-					$breakdown[$i]['image'] = new GridImage();
-					$row['grid_reference'] = $square->grid_reference;
-					$breakdown[$i]['image']->fastInit($row);
+					if (empty($_GET['ht']) && $i< 20) {
+						$breakdown[$i]['image'] = new GridImage();
+						$row['grid_reference'] = $square->grid_reference;
+						$breakdown[$i]['image']->fastInit($row);
+					}
 					if ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
@@ -519,9 +544,11 @@ if ($grid_given)
 						$breakdown[$i] = array('name'=>"photographer position unspecified",'count'=>$row[1]);
 						$posgr = '-';
 					}
-					$breakdown[$i]['image'] = new GridImage();
-					$row['grid_reference'] = $square->grid_reference;
-					$breakdown[$i]['image']->fastInit($row);
+					if (empty($_GET['ht']) && $i< 20) {
+						$breakdown[$i]['image'] = new GridImage();
+						$row['grid_reference'] = $square->grid_reference;
+						$breakdown[$i]['image']->fastInit($row);
+					}
 					if ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
@@ -620,9 +647,11 @@ if ($grid_given)
 				foreach ($all as $row) {
 					$date = getFormattedDate($row[0]);
 					$breakdown[$i] = array('name'=>"$title <b>$date</b>",'count'=>$row[1]);
-					$breakdown[$i]['image'] = new GridImage();
-					$row['grid_reference'] = $square->grid_reference;
-					$breakdown[$i]['image']->fastInit($row);
+					if (empty($_GET['ht']) && $i< 20) {
+						$breakdown[$i]['image'] = new GridImage();
+						$row['grid_reference'] = $square->grid_reference;
+						$breakdown[$i]['image']->fastInit($row);
+					}
 					if ($row[1] > 20) {
 						$datel = $row[0].substr('-00-00',0, 10-$length);
 
