@@ -500,10 +500,11 @@ if ($grid_given)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
 				GROUP BY view_direction");
+				$br = empty($_GET['ht'])?'<br/>':'';
 				foreach ($all as $row) {
 					if ($row[0] != -1) {
 						$view_direction = ($row[0]%90==0)?strtoupper(heading_string($row[0])):ucwords(heading_string($row[0])) ;
-						$breakdown[$i] = array('name'=>"looking <b>$view_direction</b><br/> (about {$row[0]} degrees)",'count'=>$row[1]);
+						$breakdown[$i] = array('name'=>"looking <b>$view_direction</b>$br (about {$row[0]} degrees)",'count'=>$row[1]);
 					} else {
 						$breakdown[$i] = array('name'=>"unknown direction",'count'=>$row[1]);
 					}
