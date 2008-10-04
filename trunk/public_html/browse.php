@@ -420,9 +420,11 @@ if ($grid_given)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
 				GROUP BY imageclass");
+				$start = rand(0,max(0,count($all)-20));
+				$end = $start + 20;
 				foreach ($all as $row) {
 					$breakdown[$i] = array('name'=>"in category <b>{$row[0]}</b>",'count'=>$row[1]);
-					if (empty($_GET['ht']) && $i< 20) {
+					if (empty($_GET['ht']) && $i >= $start && $i< $end) {
 						$row['grid_reference'] = $square->grid_reference;
 						$breakdown[$i]['image'] = new GridImage();
 						$breakdown[$i]['image']->fastInit($row);
@@ -476,9 +478,11 @@ if ($grid_given)
 				AND $user_crit
 				GROUP BY user_id
 				ORDER BY user.realname");
+				$start = rand(0,max(0,count($all)-20));
+				$end = $start + 20;
 				foreach ($all as $row) {
 					$breakdown[$i] = array('name'=>"contributed by <b>{$row[0]}</b>",'count'=>$row[1]);
-					if (empty($_GET['ht']) && $i< 20) {
+					if (empty($_GET['ht']) && $i >= $start && $i< $end) {
 						$breakdown[$i]['image'] = new GridImage();
 						$row['grid_reference'] = $square->grid_reference;
 						$breakdown[$i]['image']->fastInit($row);
@@ -501,6 +505,8 @@ if ($grid_given)
 				AND $user_crit
 				GROUP BY view_direction");
 				$br = empty($_GET['ht'])?'<br/>':'';
+				$start = rand(0,max(0,count($all)-20));
+				$end = $start + 20;
 				foreach ($all as $row) {
 					if ($row[0] != -1) {
 						$view_direction = ($row[0]%90==0)?strtoupper(heading_string($row[0])):ucwords(heading_string($row[0])) ;
@@ -508,7 +514,7 @@ if ($grid_given)
 					} else {
 						$breakdown[$i] = array('name'=>"unknown direction",'count'=>$row[1]);
 					}
-					if (empty($_GET['ht']) && $i< 20) {
+					if (empty($_GET['ht']) && $i >= $start && $i< $end) {
 						$breakdown[$i]['image'] = new GridImage();
 						$row['grid_reference'] = $square->grid_reference;
 						$breakdown[$i]['image']->fastInit($row);
@@ -529,6 +535,8 @@ if ($grid_given)
 				AND $user_crit
 				GROUP BY viewpoint_eastings DIV 1000, viewpoint_northings DIV 1000");
 				$conv = new Conversions('');
+				$start = rand(0,max(0,count($all)-20));
+				$end = $start + 20;
 				foreach ($all as $row) {
 					if ($row[0]) {
 						list($posgr,$len) = $conv->national_to_gridref(
@@ -545,7 +553,7 @@ if ($grid_given)
 						$breakdown[$i] = array('name'=>"photographer position unspecified",'count'=>$row[1]);
 						$posgr = '-';
 					}
-					if (empty($_GET['ht']) && $i< 20) {
+					if (empty($_GET['ht']) && $i >= $start && $i< $end) {
 						$breakdown[$i]['image'] = new GridImage();
 						$row['grid_reference'] = $square->grid_reference;
 						$breakdown[$i]['image']->fastInit($row);
@@ -645,10 +653,12 @@ if ($grid_given)
 				AND $user_crit
 				GROUP BY SUBSTRING($column,1,$length)");
 				$column = (preg_match('/^taken/',$_GET['by']))?'taken':'submitted';
+				$start = rand(0,max(0,count($all)-20));
+				$end = $start + 20;
 				foreach ($all as $row) {
 					$date = getFormattedDate($row[0]);
 					$breakdown[$i] = array('name'=>"$title <b>$date</b>",'count'=>$row[1]);
-					if (empty($_GET['ht']) && $i< 20) {
+					if (empty($_GET['ht']) && $i >= $start && $i< $end) {
 						$breakdown[$i]['image'] = new GridImage();
 						$row['grid_reference'] = $square->grid_reference;
 						$breakdown[$i]['image']->fastInit($row);
@@ -669,8 +679,10 @@ if ($grid_given)
 			$smarty->assign('by', $_GET['by']);
 			if (!empty($breakdown_title))
 				$smarty->assign_by_ref('breakdown_title', $breakdown_title);
-			if (count($breakdown))
+			if (count($breakdown)) {
 				$smarty->assign_by_ref('breakdown', $breakdown);
+				$smarty->assign('breakdown_count', count($breakdown));
+			}
 		} else {
 			//todo ideally here we only want to forward teh user_id IF they have images in the square, or a mod, for greater cachablity, but the chicken and the egg thingy....
 			$images=$square->getImages($inc_all_user,$custom_where,'order by ftf desc,gridimage_id');

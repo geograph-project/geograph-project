@@ -244,7 +244,7 @@
 			{/if}
 		{else}
 		{if !$ht}
-			<span style="color:gray; font-size:0.8em">The first 20 group may show an example image [total number in brackets].</span>
+			<span style="color:gray; font-size:0.8em">{if $breakdown_count> 20}Random 20 groupings{else}The groupings will{/if} show an example image [total number in brackets].</span>
 		{/if}
 			<ul style="margin-top:0">
 			{foreach from=$breakdown item=b}
