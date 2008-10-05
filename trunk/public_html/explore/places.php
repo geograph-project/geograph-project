@@ -78,7 +78,7 @@ if (!$smarty->is_cached($template, $cacheid))
 				} else {
 					$smarty->assign('adm1_name', "Northern Ireland");
 				}
-				$sql = "SELECT placename_id,full_name,count(*) as c,gridimage_id 
+				$sql = "SELECT placename_id,full_name,c,gridimage_id 
 				FROM gridimage_loc_placenames 
 				WHERE reference_index = ".$db->Quote($_GET['ri'])." AND country = ".$db->Quote($country)." AND adm1 = ".$db->Quote($adm1);
 			} else {
