@@ -51,16 +51,18 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	if ($u) {
 		$where = "where submitted > date_sub(now(),interval {$_GET['days']} day) and user_id = $u";
+		$having = isset($_GET['full'])?'':'having cnt>5';
 		$table = 'gridimage';
 		$smarty->assign('varname','catListUser');
+		
+		$arr = $db->getCol("select imageclass,count(*) as cnt from $table $where group by imageclass $having");
 	} else {
-		$where = '';
-		$table = 'gridimage_search';
+		$where = isset($_GET['full'])?'':'where c>5';
+		$table = 'category_stat';
 		$smarty->assign('varname','catList');
+	
+		$arr = $db->getCol("select imageclass,c as cnt from $table $where");
 	}
-	$having = isset($_GET['full'])?'':'having cnt>5';
-
-	$arr = $db->getCol("select imageclass,count(*) as cnt from $table $where group by imageclass $having");
 	
 	$smarty->assign_by_ref('classes',$arr);
 	
