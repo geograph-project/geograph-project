@@ -86,7 +86,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				sum(imagecount) as 'Total Photos'
 			from gridsquare gs
 				inner join os_gaz on (placename_id-1000000 = os_gaz.seq)
-				inner join os_gaz_county on (full_county = os_gaz_county.name)
+				inner join os_gaz_county on (os_gaz.co_code = os_gaz_county.co_code)
 				inner join loc_country on (country = loc_country.code)
 			where gs.reference_index = 1 and percent_land > 0
 			group by co_code
