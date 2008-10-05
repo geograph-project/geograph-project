@@ -72,19 +72,15 @@ if (!$smarty->is_cached($template, $cacheid))
 			if ($_GET['ri'] == 2) {
 				list($country,$adm1) = explode('-',$_GET['adm1']);
 				if ($adm1) {
-					$sql = "SELECT name FROM loc_adm1 WHERE country = '$country' AND adm1 = '$adm1'";
+					$sql = "SELECT name FROM loc_adm1 WHERE country = ".$db->Quote($country)." AND adm1 = ".$db->Quote($adm1);
 					$smarty->assign_by_ref('adm1_name', $db->GetOne($sql));
 					$smarty->assign('parttitle', "in County");
 				} else {
 					$smarty->assign('adm1_name', "Northern Ireland");
 				}
-				$sql_where = "AND loc_placenames.country = '$country' AND loc_placenames.adm1 = '$adm1'";
 				$sql = "SELECT placename_id,full_name,count(*) as c,gridimage_id 
-				FROM gridimage INNER JOIN loc_placenames ON(placename_id = loc_placenames.id)
-				WHERE moderation_status <> 'rejected' 
-					AND loc_placenames.reference_index = {$_GET['ri']}
-					$sql_where
-				GROUP BY placename_id";
+				FROM gridimage_loc_placenames 
+				WHERE reference_index = ".$db->Quote($_GET['ri'])." AND country = ".$db->Quote($country)." AND adm1 = ".$db->Quote($adm1);
 			} else {
 				if (is_numeric($_GET['adm1'])) {
 					//adm1 is actullu just an example placename in the OLD table!
@@ -100,13 +96,8 @@ if (!$smarty->is_cached($template, $cacheid))
 					header("Location: /explore/places/{$ri}/{$adm1}/");
 					exit;
 				} else {
-					//bit convoluted, but want a column that is indexed!
-					
 					if (preg_match('/^\w+/',$_GET['adm1'])) {
-						$sql = "SELECT name FROM os_gaz_county WHERE name LIKE ".$db->Quote($_GET['adm1']);
-						$full_name = $db->GetOne($sql);
-						
-						$sql = "SELECT co_code,full_county as adm1_name FROM os_gaz WHERE full_county = ".$db->Quote($full_name)." LIMIT 1";
+						$sql = "SELECT co_code,name as adm1_name FROM os_gaz_county WHERE name LIKE ".$db->Quote($_GET['adm1'])." LIMIT 1";
 						$placename = $db->GetRow($sql);
 					} else {
 						die("adm1 error");
@@ -116,37 +107,32 @@ if (!$smarty->is_cached($template, $cacheid))
 				$smarty->assign_by_ref('adm1_name', $placename['adm1_name']);
 				if ($placename['adm1_name'] != "Isle of Man")
 					$smarty->assign('parttitle', "in County");
-				$sql_where = "AND co_code = '{$placename['co_code']}'";
 				
-				$sql = "SELECT placename_id,def_nam as full_name,count(*) as c,gridimage_id 
-				FROM gridimage INNER JOIN os_gaz ON(placename_id-1000000 = os_gaz.seq)
-				WHERE moderation_status <> 'rejected' AND placename_id > 1000000
-					$sql_where
-				GROUP BY placename_id";
+				$sql = "SELECT placename_id,full_name,c,gridimage_id 
+				FROM gridimage_os_gaz 
+				WHERE co_code = '{$placename['co_code']}'";
 			}
 
 
 			$counts = $db->GetAssoc($sql);
 			$smarty->assign_by_ref('counts', $counts);
 		} elseif ($_GET['ri'] == 1) {
-			$sql = "SELECT REPLACE(REPLACE(REPLACE(REPLACE(full_county,'&','_'),',','_'),'-','_'),' ','_') as adm1,
-			full_county as name,placename_id,def_nam as full_name,
-			count(*) as images,count(distinct (seq)) as places,gridimage_id 
-			FROM gridimage INNER JOIN os_gaz ON(placename_id-1000000 = os_gaz.seq)
-			WHERE moderation_status <> 'rejected' AND placename_id > 1000000
+			$sql = "SELECT REPLACE(REPLACE(REPLACE(REPLACE(os_gaz_county.name,'&','_'),',','_'),'-','_'),' ','_') as adm1,
+			os_gaz_county.name as name,placename_id,full_name,
+			sum(gridimage_os_gaz.c) as images,count(distinct (placename_id)) as places,gridimage_id 
+			FROM gridimage_os_gaz INNER JOIN os_gaz_county USING (co_code)
 			GROUP BY co_code
-			ORDER BY full_county";
+			ORDER BY name";
 			$counts = $db->GetAssoc($sql);
 			unset($counts['XXXXXXXX']); //not a real county
 			$smarty->assign_by_ref('counts', $counts);
 		} else {
-			$sql = "SELECT concat(loc_placenames.country,'-',loc_placenames.adm1) as adm1,coalesce(loc_adm1.name,'Northern Ireland') as name,
+			$sql = "SELECT concat(gridimage_loc_placenames.country,'-',gridimage_loc_placenames.adm1) as adm1,coalesce(loc_adm1.name,'Northern Ireland') as name,
 			placename_id,full_name,
-			count(*) as images,count(distinct (placename_id)) as places,gridimage_id 
-			FROM gridimage INNER JOIN loc_placenames ON(placename_id = loc_placenames.id)
-			LEFT JOIN loc_adm1 ON(loc_adm1.adm1 = loc_placenames.adm1 AND loc_adm1.country = loc_placenames.country)
-			WHERE moderation_status <> 'rejected' AND loc_placenames.reference_index = {$_GET['ri']}
-			GROUP BY loc_placenames.adm1";
+			sum(gridimage_loc_placenames.c) as images,count(distinct (placename_id)) as places,gridimage_id 
+			FROM gridimage_loc_placenames
+			LEFT JOIN loc_adm1 ON(loc_adm1.adm1 = gridimage_loc_placenames.adm1 AND loc_adm1.country = gridimage_loc_placenames.country)
+			GROUP BY adm1";
 			$counts = $db->GetAssoc($sql);
 			unset($counts['0']); //adm1 0 is bogus!
 			$smarty->assign_by_ref('counts', $counts);

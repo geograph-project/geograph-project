@@ -205,3 +205,20 @@ ALTER TABLE `os_gaz_250`
 	ADD KEY `def_nam_soundex` (`def_nam_soundex`);
 
 ALTER TABLE `os_gaz_250` ADD `seq` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST ;
+
+
+########################
+
+alter table os_gaz_county ADD co_code  enum('AB','AG','AN','AR','BA','BB','BC','BD','BE','BF','BG','BH','BI','BL','BM','BN','BO','BP','BR','BS','BT','BU','BX','BY','BZ','CA','CB','CD','CE','CF','CH','CL','CM','CN','CT','CU','CV','CW','CY','DB','DD','DE','DG','DL','DN','DR','DT','DU','DY','DZ','EA','EB','ED','EG','EL','EN','ER','ES','EX','EY','FA','FF','FL','GH','GL','GR','GW','GY','HA','HD','HE','HF','HG','HI','HL','HN','HP','HR','HS','HT','HV','IA','IL','IM','IN','IS','IW','KC','KG','KH','KL','KN','KT','LA','LB','LC','LD','LL','LN','LO','LP','LS','LT','MA','MB','ME','MI','MK','MM','MO','MR','MT','NA','NC','ND','NE','NG','NH','NI','NK','NL','NN','NP','NR','NS','NT','NW','NY','OH','OK','ON','PB','PE','PK','PL','PO','PW','PY','RB','RC','RD','RE','RG','RH','RL','RO','RT','SA','SB','SC','SD','SE','SF','SG','SH','SI','SJ','SK','SL','SM','SN','SO','SP','SQ','SR','SS','ST','SU','SV','SW','SX','SY','SZ','TB','TF','TH','TR','TS','TU','VG','WA','WB','WC','WD','WE','WF','WG','WH','WI','WJ','WK','WL','WM','WN','WO','WP','WR','WS','WT','WW','WX','XX','YK','YS','YT','YY') NOT NULL AFTER `name`;
+
+
+UPDATE os_gaz_county,os_gaz SET os_gaz_county.co_code = os_gaz.co_code WHERE os_gaz_county.name = os_gaz.full_county;
+
+
+
+alter table os_gaz_county add index (`co_code`);
+
+
+
+########################
+

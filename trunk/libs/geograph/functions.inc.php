@@ -235,7 +235,7 @@ function smarty_function_place($params) {
 	if ($place['distance'] > 3)
 		$t .= ($place['distance']-0.01)." km from ";
 	elseif (!$place['isin'])
-		$t .= "<span title=\"".($place['distance']-0.01)." km from\">near</span> to ";
+		$t .= "<span title=\"about ".($place['distance']-0.01)." km from\">near</span> to ";
 
 	$place['full_name'] = _utf8_decode($place['full_name']);
 
