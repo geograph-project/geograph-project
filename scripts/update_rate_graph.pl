@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+]#!/usr/bin/perl
 #
 # $Project: GeoGraph $
 # $Id$
@@ -168,7 +168,7 @@ if ($now > 0)
 	my $submitted=0;
 	
 	my $sthCount = $dbh->prepare("select count(*) as cnt from gridimage where ".
-		"(unix_timestamp(submitted) between ($now-86400*7) and $now)");
+                "submitted > date_sub(from_unixtime($now),interval 7 day) and submitted < from_unixtime($now)");
 	
 	$sthCount->execute() || die($DBI::errstr);
 	if (my $row = $sthCount->fetchrow_hashref())
