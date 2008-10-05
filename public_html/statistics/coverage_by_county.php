@@ -89,7 +89,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				inner join os_gaz_county on (os_gaz.co_code = os_gaz_county.co_code)
 				inner join loc_country on (country = loc_country.code)
 			where gs.reference_index = 1 and percent_land > 0
-			group by co_code
+			group by os_gaz.co_code
 			" );
 			
 			$table['footnote'] = "This table is using Modern <a href=\"/faq.php#counties\">Administrative Counties</a>";
