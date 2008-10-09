@@ -100,7 +100,13 @@ if (isset($_GET['id']))  {
 		}
 	
 		$square=new GridSquare;
-		$grid_ok=$square->setByFullGridRef($_REQUEST['gridref']);
+		if (!empty($_REQUEST['ll']) && preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$_REQUEST['ll'],$ll)) {
+			$conv = new Conversions;
+			list($x,$y,$reference_index) = $conv->wgs84_to_internal($ll[1],$ll[2]);
+			$grid_ok=$square->loadFromPosition($x, $y, true);
+		} else {
+			$grid_ok=$square->setByFullGridRef($_REQUEST['gridref']);
+		}
 		
 		if ($grid_ok)
 		{
