@@ -400,7 +400,7 @@ class GridImage
 
 		$tickets=array();
 		
-		$recordSet = &$db->Execute("select t.*,u.realname as suggester_name from gridimage_ticket as t ".
+		$recordSet = &$db->Execute("select t.*,u.realname as suggester_name,DATEDIFF(NOW(),t.updated) as days from gridimage_ticket as t ".
 			"inner join user as u using(user_id) ".
 			"where t.gridimage_id={$this->gridimage_id} and t.status in ($statuses) order by t.updated desc");
 		while (!$recordSet->EOF) 
@@ -408,6 +408,18 @@ class GridImage
 			//create new ticket object
 			$t=new GridImageTroubleTicket;
 			$t->loadFromRecordset($recordSet);
+			
+			if ($t->days > 365) {
+				$t->days = 'over a year';
+			} elseif ($t->days > 30) {
+				$t->days = 'over '.intval($t->days/30).' months';
+			} elseif ($t->days > 14) {
+				$t->days = 'over '.intval($t->days/7).' weeks';
+			} elseif ($t->days > 7) {
+				$t->days = 'over a week';
+			} elseif ($t->days < 1) {
+				$t->days = 'less than a day';
+			}
 			
 			//load its ticket items (should this be part of load from Recordset?
 			$t->loadItems();

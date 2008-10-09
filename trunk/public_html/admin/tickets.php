@@ -99,6 +99,7 @@ if (empty($major) && empty($minor)) {
 	$major = 1;$minor = 1;
 }
 $defer = (isset($_GET['defer']))?1:0;
+$locked = (isset($_GET['locked']))?1:0;
 
 
 #############################
@@ -249,6 +250,9 @@ $title = "Showing: ".$modifers[$modifer].", ".$types[$type];
 if ($defer) {		
 	$title .= ", including Deferred";
 }
+if ($locked) {		
+	$title = "<span style='color:red'>$title, including Locked</span>";
+}
 
 #################
 # put it all together...
@@ -269,6 +273,7 @@ $smarty->assign('variation', $variation);
 $smarty->assign('minor', $minor);
 $smarty->assign('major', $major);
 $smarty->assign('defer', $defer);
+$smarty->assign('locked', $locked);
 
 $smarty->assign_by_ref('types', $types);
 $smarty->assign_by_ref('modifers', $modifers);
@@ -280,7 +285,21 @@ $smarty->assign('query_string', $_SERVER['QUERY_STRING']);
 #################
 # put it all together...
 
-$db->Execute("LOCK TABLES ".implode(',',$locks));
+$available = "(l.gridimage_id is null OR 
+				(l.user_id = {$USER->user_id} AND lock_type = 'modding') OR
+				(l.user_id != {$USER->user_id} AND lock_type = 'cantmod')
+		)";
+
+if (empty($_GET['locked'])) {
+
+	$db->Execute("LOCK TABLES ".implode(',',$locks));
+	
+	$sql_where .= " and $available";
+	
+	$columns .= ", 1 as available";
+} else {
+	$columns .= ", $available as available";
+}
 
 $newtickets=$db->GetAll($sql = 
 	"select t.*,suggester.realname as suggester, (i.user_id = t.user_id) as ownimage,
@@ -299,30 +318,30 @@ $newtickets=$db->GetAll($sql =
 	left join gridimage_ticket_comment as c
 		on(c.gridimage_ticket_id=t.gridimage_ticket_id)
 	where $where_crit $sql_where
-		and (l.gridimage_id is null OR 
-				(l.user_id = {$USER->user_id} AND lock_type = 'modding') OR
-				(l.user_id != {$USER->user_id} AND lock_type = 'cantmod')
-		)
+		
 	group by t.gridimage_ticket_id
 	order by t.suggested $rev
 	limit $limit");
 if (!empty($_GET['debug']))
 	print $sql;
+
 $smarty->assign_by_ref('newtickets', $newtickets);
 
-#################
-# lock images
 
-foreach ($newtickets as $i => $row) {
-	$db->Execute("REPLACE INTO gridimage_moderation_lock SET user_id = {$USER->user_id}, gridimage_id = {$row['gridimage_id']}");
+if (empty($_GET['locked'])) {
+	#################
+	# lock images
+
+	foreach ($newtickets as $i => $row) {
+		$db->Execute("REPLACE INTO gridimage_moderation_lock SET user_id = {$USER->user_id}, gridimage_id = {$row['gridimage_id']}");
+	}
+
+
+	#############################
+
+	$db->Execute("UNLOCK TABLES");
+
 }
-
-
-#############################
-
-$db->Execute("UNLOCK TABLES");
-
-
 #############################
 
 $template = (!empty($_GET['sidebar']))?'admin_tickets_sidebar.tpl':'admin_tickets.tpl';

@@ -50,7 +50,7 @@
 
 {foreach from=$newtickets item=ticket}
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
-<tr bgcolor="{$bgcolor}">
+<tr bgcolor="{$bgcolor}" {if !$ticket.available} style="color:red"{/if}>
 {if $col_moderator}<td>{$ticket.moderator}</td>{/if}
 <td><b><a href="/editimage.php?id={$ticket.gridimage_id}" target="_main">{$ticket.title|default:'Untitled'}</a></b></td>
 <td>{$ticket.suggester}{if $ticket.suggester_comment}<img src="http://{$static_host}/img/star-light.png" width="14" height="14" title="Comment: {$ticket.suggester_comment}"/>{/if}</td>
