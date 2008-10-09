@@ -137,7 +137,7 @@
 <input type="hidden" name="id" value="{$ticket->gridimage_id}"/>
 
 {if $lastdays ne $ticket->days}
-<b>-{$ticket->days} old-</b>
+<b>-updated {$ticket->days} ago-</b>
 {/if}
 {assign var="lastdays" value=$ticket->days} 
 <div class="ticket">
@@ -148,29 +148,25 @@
 		<u>Minor Changes</u>, 
 	{/if}
 	{if $isadmin || $ticket->public eq 'everyone' || ($isowner && $ticket->public eq 'owner') }
-		Submitted {if $ticket->public ne 'everyone'}anonymously{/if}{if $ticket->public eq 'owner'}(to everyone else){/if} by {$ticket->suggester_name} 
+		<b>Submitted</b> {if $ticket->public ne 'everyone'}anonymously{/if}{if $ticket->public eq 'owner'}(to everyone else){/if} by {$ticket->suggester_name} 
 		
 		{if $ticket->user_id eq $image->user_id}
-		  (photo owner)
+		  <b>(photo owner)</b>
 		{/if}
-		|
 	{elseif $ticket->user_id eq $image->user_id}
-	  	Submitted by photo owner |
+		Submitted <b>by photo owner</b>
+	{elseif $ticket->user_id eq $user->user_id}
+		<b>You</b> Submitted
 	{else}
-		Submitted by anonymous site visitor |
+		<b>Submitted</b> by anonymous site visitor 
 	{/if} 
-	
+	<b>on</b> {$ticket->suggested|date_format:"%a, %e %b %Y at %H:%M"} |
 
 	{if $ticket->suggested ne $ticket->updated}
 
-	Updated {$ticket->updated|date_format:"%a, %e %b %Y at %H:%M"} | 
+	<b>Updated</b> {$ticket->updated|date_format:"%a, %e %b %Y at %H:%M"} | 
 	{/if}
 
-	{if $ticket->user_id eq $user->user_id}
-		<b>You</b>
-	{/if}
-	
-	Suggested {$ticket->suggested|date_format:"%a, %e %b %Y at %H:%M"} 
 	
 	<i>({$ticket->status})</i>
 	
