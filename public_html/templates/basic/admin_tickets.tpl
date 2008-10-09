@@ -12,29 +12,33 @@
 
 <h2><a title="Admin home page" href="/admin/index.php">Admin</a> :: Trouble Tickets, <small>{$title}</small></h2>
 
-    <form method="get" action="{$script_name}">
-    <p> 
+    <form method="get" action="{$script_name}" style="background-color:#f0f0f0;padding:2px;margin:0px; border:1px solid #d0d0d0;">
+    <div> 
    When:<select name="modifer">
     	{html_options options=$modifers selected=$modifer}
-    </select> <br/>
+    </select> &nbsp;
     Type:<select name="type">
     	{html_options options=$types selected=$type}
-    </select> <br/>
+    </select> &nbsp;
     Your:<select name="theme">
     	{html_options options=$themes selected=$theme}
-    </select> <br/>
+    </select> &nbsp;
     Contributor:<select name="variation">
     	{html_options options=$variations selected=$variation}
     </select><br/>
-    <label for="defer">Include Deferred?</label><input type="checkbox" name="defer" id="defer" {if $defer} checked="checked"{/if}/> &nbsp;
-     <label for="minor">Minor</label><input type="checkbox" name="i" id="minor" {if $minor} checked="checked"{/if}/> &nbsp;
+    Include:
+     <label for="minor">Minor</label><input type="checkbox" name="i" id="minor" {if $minor} checked="checked"{/if}/>/
      <label for="major">Major</label><input type="checkbox" name="a" id="major" {if $major} checked="checked"{/if}/> &nbsp;
-    <input type="submit" name="Submit" value="Go"/></p></form>
+     <label for="defer" style="color:gray">Deferred</label><input type="checkbox" name="defer" id="defer" {if $defer} checked="checked"{/if}/> &nbsp;
+     <label for="locked" style="color:red">Locked</label><input type="checkbox" name="locked" id="locked" {if $locked} checked="checked"{/if}/> &nbsp;
+    <input type="submit" name="Submit" value="Update"/></div></form>
 
 {if $newtickets}
 
 {if $moderator}
 <p>These tickets have been recently been touched by the selected moderator</p>
+{elseif $locked}
+<p>NOTE: <span style="color:red">tickets in red</span> are currently open by another moderator, it is not recommended to process these tickets</p>
 {else}
 <p>Tickets currently open by other moderators are not shown in the list below. Click the small D button to defer the ticket for 24 hours.</p>
 {/if}
@@ -52,7 +56,7 @@
 
 {foreach from=$newtickets item=ticket}
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
-<tr bgcolor="{$bgcolor}">
+<tr bgcolor="{$bgcolor}" {if !$ticket.available} style="color:red"{/if}>
 {if $col_moderator}<td>{$ticket.moderator}</td>{/if}
 <td{if !$ticket.ownimage && (($ticket.submitter_ticket_option == 'none') || ($ticket.submitter_ticket_option == 'major' && $ticket.type == 'minor'))} style="text-decoration:line-through"{/if}>{$ticket.submitter}{if $ticket.submitter_comment}<img src="http://{$static_host}/img/star-light.png" width="14" height="14" title="Comment: {$ticket.submitter_comment}"/>{/if}</td>
 <td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
@@ -69,7 +73,7 @@
 		or <a href="/admin/moderation.php?abandon=1">Finish</a> the current moderation session</div>
 
 
-<p><small>KEY: <span style="text-decoration:line-through">User opted out of receiving initial notification</span>, <img src="http://{$static_host}/img/star-light.png" width="14" height="14" title="Comment"/> User has left comment on this ticket, <input class="accept" type="button" value="D" style="width:10px;"> - Defer the ticket for 24 hours</small></p>
+<p><small>KEY: |<span style="text-decoration:line-through">User opted out of receiving initial notification</span> | <img src="http://{$static_host}/img/star-light.png" width="14" height="14" title="Comment"/> User has left comment on this ticket | <input class="accept" type="button" value="D" style="width:10px;"> - Defer the ticket for 24 hours | <span style="color:red">ticket is locked</span>|</small> </p>
 
 {else}
   <p>There are no tickets available to moderate at this time, please try again later.</p>
