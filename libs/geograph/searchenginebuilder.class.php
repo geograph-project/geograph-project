@@ -407,17 +407,22 @@ class SearchEngineBuilder extends SearchEngine
 			$dataarray['searchtext'] = trim($dataarray['searchtext']);
 			$searchtext = $dataarray['searchtext'];
 			if (preg_match('/[~\+\^\$:@ -]+/',$dataarray['searchtext'])) {
-				$searchdesc = ", matching '".$dataarray['searchtext']."' ".$searchdesc;
+				$searchdesc = ", matching [".$dataarray['searchtext']."] ".$searchdesc;
 			} elseif (preg_match('/^".*"$/',$dataarray['searchtext'])) {
-				$searchdesc = ", matching \"".$dataarray['searchtext']."\" ".$searchdesc;
+				$searchdesc = ", matching [\"".$dataarray['searchtext']."\"] ".$searchdesc;
 			} elseif (preg_match('/\+$/',$dataarray['searchtext'])) {
-				$searchdesc = ", all about '".preg_replace('/\+$/','',$dataarray['searchtext'])."' ".$searchdesc;
+				$searchdesc = ", all about [".preg_replace('/\+$/','',$dataarray['searchtext'])."] ".$searchdesc;
+			} elseif (preg_match('/^=/',$dataarray['searchtext']) || !empty($dataarray['ind_exact']) ) {
+				$searchdesc = ", exactly matching [".preg_replace('/^=/','',$dataarray['searchtext'])."] ".$searchdesc;
 			} elseif (preg_match('/^\^/',$dataarray['searchtext'])) {
-				$searchdesc = ", matching whole word '".str_replace('^','',$dataarray['searchtext'])."' ".$searchdesc;
+				$searchdesc = ", matching whole word [".str_replace('^','',$dataarray['searchtext'])."] ".$searchdesc;
 			} else {
-				$searchdesc = ", containing '".$dataarray['searchtext']."' ".$searchdesc;	
+				$searchdesc = ", containing [".$dataarray['searchtext']."] ".$searchdesc;	
 			}
 		} 
+		if (!empty($dataarray['ind_exact'])) {
+			$dataarray['searchtext'] = "=".$dataarray['searchtext'];
+		}
 
 		if (isset($searchclass)) {
 			$db=NewADOConnection($GLOBALS['DSN']);
@@ -567,7 +572,19 @@ class SearchEngineBuilder extends SearchEngine
 				}
 			
 				$sql .= ",limit7 = '{$dataarray['taken_start']}^{$dataarray['taken_end']}'";
+			} else {
+				$this->builddate($dataarray,"taken");
+				if (!empty($dataarray['taken'])) {
+					$dataarray['taken_start'] = $dataarray['taken'];
+					$dataarray['taken_end'] = $dataarray['taken'];
+					$searchdesc .= ", taken ".(is_numeric($dataarray['takenString'])?'in ':'').$dataarray['takenString'];
+						
+					$sql .= ",limit7 = '{$dataarray['taken_start']}^{$dataarray['taken_end']}'";
+					
+					unset($dataarray['taken']);
+				}
 			}
+			
 			if (!empty($dataarray['distance']) && isset($searchx) && $searchx > 0 && $searchy > 0) {
 				$sql .= sprintf(",limit8 = %d",$dataarray['distance']);
 			}
