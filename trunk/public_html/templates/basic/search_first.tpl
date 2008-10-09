@@ -9,7 +9,7 @@
 <form action="/search.php" method="get" name="theForm">
 	<div class="tabHolder">
 		<a href="/search.php?form=simple" class="tab">simple search</a>
-		<a href="/search.php?form=advanced" class="tab">advanced search</a>
+		<a href="/search.php?form=text" class="tab">advanced search</a>
 		<span class="tabSelected">First Geographs</span>
 	</div>
 	<div class="interestBox">

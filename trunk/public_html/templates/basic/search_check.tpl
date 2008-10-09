@@ -8,7 +8,7 @@
 {/if}
 <form action="/search.php" method="get" name="theForm">
 	<div class="tabHolder">
-		<a href="/search.php?form=advanced" class="tab">advanced search</a>
+		<a href="/search.php?form=text" class="tab">advanced search</a>
 		<a href="/search.php?form=simple" class="tab">simple search</a>
 		<a href="/search.php?form=first" class="tab">first geographs</a>
 		<span class="tabSelected">Check Submissions</span>

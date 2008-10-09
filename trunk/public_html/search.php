@@ -441,6 +441,8 @@ if (isset($_GET['set_legacy'])) {
 		$smarty->reassignPostedDate("taken_start");
 		$smarty->reassignPostedDate("taken_end");
 
+		if (!empty($_POST['exact_ind']))
+			$smarty->assign('exact_ind_checked', 'checked="checked"');
 		if (!empty($_POST['all_ind']))
 			$smarty->assign('all_checked', 'checked="checked"');
 		if (!empty($_POST['user_invert_ind']))
@@ -562,7 +564,7 @@ if (isset($_GET['set_legacy'])) {
 		$smarty->display('search.tpl');
 	}
 
-} else if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'first' || $_GET['form'] == 'check')) {
+} else if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'text' || $_GET['form'] == 'first' || $_GET['form'] == 'check')) {
 	dieUnderHighLoad(1.5,'search_unavailable.tpl');
 	// -------------------------------
 	//  Advanced Form
@@ -576,35 +578,52 @@ if (isset($_GET['set_legacy'])) {
 
 		$smarty->assign('taken_start', "0-0-0");
 		$smarty->assign('taken_end', "0-0-0");
+		$smarty->assign('taken', "0-0-0");
 
 	if (is_int($i)) {
-		$query = $db->GetRow("SELECT * FROM queries WHERE id = $i LIMIT 1");
-		if (!count($query)) {
-			$query = $db->GetRow("SELECT * FROM queries_archive WHERE id = $i LIMIT 1");
+		require_once('geograph/searchcriteria.class.php');
+		$engine = new SearchEngine($i);
+
+		if (empty($engine->criteria)) {
+			die("Invalid Search Parameter");
 		}
-		$smarty->assign('searchclass', $query['searchclass']);
-		switch ($query['searchclass']) {
+		
+		if ($_GET['form'] == 'advanced' && empty($_GET['legacy'])) {
+			$engine->criteria->getSQLParts();
+					
+			if (!empty($CONF['sphinx_host']) && 
+				isset($engine->criteria->sphinx) && 
+				(strlen($engine->criteria->sphinx['query']) || !empty($engine->criteria->sphinx['d']) || !empty($engine->criteria->sphinx['filters']))
+				&& $engine->criteria->sphinx['impossible'] == 0) {
+				$_GET['form'] = 'text';
+				$smarty->assign('fullText', 1);
+			}
+		}
+		
+		$query = $engine->criteria;
+		$smarty->assign('searchclass', $query->searchclass);
+		switch ($query->searchclass) {
 			case "Special":
 				die("ERROR:Attempt to edit a locked search");
 				break;
 			case "Postcode":
-				$smarty->assign('postcode', $query['searchq']);
+				$smarty->assign('postcode', $query->searchq);
 				$smarty->assign('elementused', 'postcode');
 				break;
 			case "Text":
-				$smarty->assign('searchtext', $query['searchq']);
+				$smarty->assign('searchtext', $query->searchq);
 				$smarty->assign('elementused', 'searchtext');
 				break;
 			case "GridRef":
-				$smarty->assign('gridref', $query['searchq']);
+				$smarty->assign('gridref', $query->searchq);
 				$smarty->assign('elementused', 'gridref');
 				break;
 			case "County":
-				$smarty->assign('county_id', $query['searchq']);
+				$smarty->assign('county_id', $query->searchq);
 				$smarty->assign('elementused', 'county_id');
 				break;
 			case "Placename":
-				$smarty->assign('placename', $query['searchq']);
+				$smarty->assign('placename', $query->searchq);
 				$smarty->assign('elementused', 'placename');
 				break;
 			case "All":
@@ -612,11 +631,17 @@ if (isset($_GET['set_legacy'])) {
 				$smarty->assign('elementused', 'all_ind');
 				break;
 		}
-		if (!empty($query['searchtext']))
-			$smarty->assign('searchtext', $query['searchtext']);
+		if (!empty($query->searchtext)) {
+			if ($_GET['form'] == 'text' && (preg_match('/^=/',$query->searchtext) || !empty($query->ind_exact)) ) {
+				$smarty->assign('searchtext', preg_replace('/^=/','',$query->searchtext));
+				$smarty->assign('ind_exact_checked', 'checked="checked"');
+			} else {
+				$smarty->assign('searchtext', $query->searchtext);
+			}
+		}
 				
-		if (!empty($query['limit1'])) {
-			$user_id = $query['limit1'];
+		if (!empty($query->limit1)) {
+			$user_id = $query->limit1;
 			if (strpos($user_id,'!') === 0) {
 				$user_id = preg_replace('/^!/','',$user_id);
 				$smarty->assign('user_invert_checked', 'checked="checked"');
@@ -626,42 +651,44 @@ if (isset($_GET['set_legacy'])) {
 			$profile=new GeographUser($user_id);
 			$smarty->assign('user_name', "$user_id:{$profile->realname}");
 		}
-		$smarty->assign('moderation_status', $query['limit2']);
-		$smarty->assign('imageclass', $query['limit3']);
-		$smarty->assign('reference_index', $query['limit4']);
-		$smarty->assign('gridsquare', $query['limit5']);
+		$smarty->assign('moderation_status', $query->limit2);
+		$smarty->assign('imageclass', $query->limit3);
+		$smarty->assign('reference_index', $query->limit4);
+		$smarty->assign('gridsquare', $query->limit5);
 
 
-		if (!empty($query['limit6'])) {
-			$dates = explode('^',$query['limit6']);
+		if (!empty($query->limit6)) {
+			$dates = explode('^',$query->limit6);
 			if ($dates[0])
 				$smarty->assign('submitted_start', $dates[0]);
 			if ($dates[1])
 				$smarty->assign('submitted_end', $dates[1]);
 		}
-		if (!empty($query['limit7'])) {
-			$dates = explode('^',$query['limit7']);
-			if ($dates[0])
+		if (!empty($query->limit7)) {
+			$dates = explode('^',$query->limit7);
+			if ($dates[0]) {
 				$smarty->assign('taken_start', $dates[0]);
+				$smarty->assign('taken', $dates[0]);
+			}
 			if ($dates[1])
 				$smarty->assign('taken_end', $dates[1]);
 		}
-		$smarty->assign('distance', $query['limit8']);
+		$smarty->assign('distance', $query->limit8);
 
-		$smarty->assign('topic_id', $query['limit9']);
+		$smarty->assign('topic_id', $query->limit9);
 
-		$query['orderby'] = preg_replace('/^submitted/','gridimage_id',$query['orderby']);
+		$query->orderby = preg_replace('/^submitted/','gridimage_id',$query->orderby);
 
-		if (strpos($query['orderby'],' desc') > 0) {
-			$smarty->assign('orderby', preg_replace('/ desc$/','',$query['orderby']));
+		if (strpos($query->orderby,' desc') > 0) {
+			$smarty->assign('orderby', preg_replace('/ desc$/','',$query->orderby));
 			$smarty->assign('reverse_order_checked', 'checked="checked"');
 		} else {
-			$smarty->assign('orderby', $query['orderby']);
+			$smarty->assign('orderby', $query->orderby);
 		}
-		$smarty->assign('breakby', $query['breakby']);
-		$smarty->assign('displayclass', $query['displayclass']);
-		$smarty->assign('resultsperpage', $query['resultsperpage']);
-		$smarty->assign('searchdesc', $query['searchdesc']);
+		$smarty->assign('breakby', $query->breakby);
+		$smarty->assign('displayclass', $query->displayclass);
+		$smarty->assign('resultsperpage', $query->resultsperpage);
+		$smarty->assign('searchdesc', $query->searchdesc);
 		$smarty->assign('i', $i);
 
 		advanced_form($smarty,$db);
@@ -837,15 +864,15 @@ if (isset($_GET['set_legacy'])) {
 	// -------------------------------
 
 	if (is_int($i)) {
-		$db=NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');
-		$query = $db->GetRow("SELECT searchq,searchclass FROM queries WHERE id = $i LIMIT 1");
-		if (!count($query)) {
-			$query = $db->GetRow("SELECT searchq,searchclass FROM queries_archive WHERE id = $i LIMIT 1");
+		require_once('geograph/searchcriteria.class.php');
+		$engine = new SearchEngine($i);
+		if (empty($engine->criteria)) {
+			die("Invalid Search Parameter");
 		}
-		if ($query['searchclass'] != 'Special') {
-			$smarty->assign('searchq', $query['searchq']);
-			list($q,$loc) = preg_split('/\bnear(\b|$)/',$query['searchq'],2);
+		$query = $engine->criteria;
+		if ($query->searchclass != 'Special') {
+			$smarty->assign('searchq', $query->searchq);
+			list($q,$loc) = preg_split('/\bnear(\b|$)/',$query->searchq,2);
 			$smarty->assign('searchlocation', $loc);
 			$smarty->assign('searchtext', $q);
 		}
@@ -964,6 +991,15 @@ if (isset($_GET['set_legacy'])) {
 			unset($displayclasses['text']);
 			$displayclasses['searchtext'] = "Text-based Sidebar (IE Only)";
 			
+		} elseif ($_GET['form'] == 'text') {
+			$template = 'search_text.tpl';
+			
+			global $sortorders;
+			
+			unset($sortorders['imageclass']);
+			unset($sortorders['realname']);
+			unset($sortorders['title']);
+			unset($sortorders['grid_reference']);
 			
 		} elseif (isset($_GET['Special'])) {
 			$USER->mustHavePerm("admin");
@@ -984,44 +1020,52 @@ if (isset($_GET['set_legacy'])) {
 			function addkm($a) {
 				return $a."km";
 			}
-			$d =  array(1,2,3,4,5,7,8,10,20,30,40,50,71,100,2000);
-			$d = array_combine($d,array_map('addkm',$d));
-			$d += array(-5=>'5km square',-10=>'10km square',-50=>'50km square');
-			$smarty->assign('distances',$d);
+			if ($_GET['form'] == 'text') {
+				$d = array(1,2,3,4,5,7,8,10,20);
+				$d = array_combine($d,array_map('addkm',$d));
+				$smarty->assign_by_ref('distances',$d);
+			} else {
+				$d = array(1,2,3,4,5,7,8,10,20,30,40,50,71,100,2000);
+				$d = array_combine($d,array_map('addkm',$d));
+				$d += array(-5=>'5km square',-10=>'10km square',-50=>'50km square');
+			
 
-			$countylist = array();
-			$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0");
-			while (!$recordSet->EOF)
-			{
-				$countylist[$CONF['references'][$recordSet->fields[0]]][$recordSet->fields[1]] = $recordSet->fields[2];
-				$recordSet->MoveNext();
-			}
-			$recordSet->Close();
-			$smarty->assign_by_ref('countylist', $countylist);
+				$smarty->assign_by_ref('distances',$d);
 
-			$topicsraw = $db->GetAssoc("select gp.topic_id,concat(topic_title,' [',count(*),']') as title,forum_name from gridimage_post gp
-				inner join geobb_topics using (topic_id)
-				inner join geobb_forums using (forum_id)
-				group by gp.topic_id 
-				having count(*) > 4
-				order by geobb_topics.forum_id desc,topic_title");
-
-			$topics=array("1"=>"Any Topic"); 
-
-			$options = array();
-			foreach ($topicsraw as $topic_id => $row) {
-				if ($last != $row['forum_name'] && $last) {
-					$topics[$last] = $options;
-					$options = array();
+				$countylist = array();
+				$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0");
+				while (!$recordSet->EOF)
+				{
+					$countylist[$CONF['references'][$recordSet->fields[0]]][$recordSet->fields[1]] = $recordSet->fields[2];
+					$recordSet->MoveNext();
 				}
-				$last = $row['forum_name'];
+				$recordSet->Close();
+				$smarty->assign_by_ref('countylist', $countylist);
 
-				$options[$topic_id] = $row['title'];
+				$topicsraw = $db->GetAssoc("select gp.topic_id,concat(topic_title,' [',count(*),']') as title,forum_name from gridimage_post gp
+					inner join geobb_topics using (topic_id)
+					inner join geobb_forums using (forum_id)
+					group by gp.topic_id 
+					having count(*) > 4
+					order by geobb_topics.forum_id desc,topic_title");
+
+				$topics=array("1"=>"Any Topic"); 
+
+				$options = array();
+				foreach ($topicsraw as $topic_id => $row) {
+					if ($last != $row['forum_name'] && $last) {
+						$topics[$last] = $options;
+						$options = array();
+					}
+					$last = $row['forum_name'];
+
+					$options[$topic_id] = $row['title'];
+				}
+				$topics[$last] = $options;
+
+				$smarty->assign_by_ref('topiclist',$topics);
 			}
-			$topics[$last] = $options;
-	
-			$smarty->assign_by_ref('topiclist',$topics);
-
+			
 			require_once('geograph/gridsquare.class.php');
 			$square=new GridSquare;
 			$smarty->assign('prefixes', $square->getGridPrefixes());
