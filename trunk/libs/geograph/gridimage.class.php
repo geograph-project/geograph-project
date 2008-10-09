@@ -417,8 +417,12 @@ class GridImage
 				$t->days = 'over '.intval($t->days/7).' weeks';
 			} elseif ($t->days > 7) {
 				$t->days = 'over a week';
+			} elseif ($t->days > 1) {
+				$t->days = $t->days.' days';
 			} elseif ($t->days < 1) {
 				$t->days = 'less than a day';
+			} else {
+				$t->days = '1 day';
 			}
 			
 			//load its ticket items (should this be part of load from Recordset?
