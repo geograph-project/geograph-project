@@ -136,6 +136,10 @@
 <input type="hidden" name="gridimage_ticket_id" value="{$ticket->gridimage_ticket_id}"/>
 <input type="hidden" name="id" value="{$ticket->gridimage_id}"/>
 
+{if $lastdays ne $ticket->days}
+<b>-{$ticket->days} old-</b>
+{/if}
+{assign var="lastdays" value=$ticket->days} 
 <div class="ticket">
 	
 
