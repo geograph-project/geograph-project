@@ -6,8 +6,6 @@
 </style>
 {/literal}
 {if $engine->resultCount}
-	<script type="text/javascript" 	src="http://lite.piclens.com/current/piclens.js"></script>
-
 	<br/>( Page {$engine->pagesString()}) {if $engine->criteria->searchclass != 'Special'}[<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}
 	</p>
 	{if $nofirstmatch}
