@@ -36,8 +36,8 @@ h4.title {
 		{else}
 			{assign var="tabs" value="5"}
 		{/if}
-		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,{$tabs})">Combined</a>
-		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,{$tabs})">Images</a>
+		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,{$tabs})">Images</a>
+		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,{$tabs})">Combined</a>
 		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,{$tabs})">Content</a>
 		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,{$tabs})">Contributors</a>
 		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab5" onclick="tabClick('tab','div',5,{$tabs})">Locations</a>
@@ -48,6 +48,45 @@ h4.title {
 	</div>
 
 	<div style="position:relative;{if $tab != 1}display:none{/if}" class="interestBox" id="div1">
+		<h3 class="title">Image Searches</h3>
+		
+		<h4 class="title">Geograph Standard Search</h4>
+		<form method="get" action="/search.php">
+		<div style="position:relative;" class="interestBox">
+			<div style="position:relative;">
+				<label for="searchq" style="line-height:1.8em"><b>Search For</b>:</label> <small>(<a href="/article/Searching-on-Geograph">help &amp; tips</a>)</small><br/>
+				&nbsp;&nbsp;&nbsp;<input id="searchq" type="text" name="q" value="{$searchtext|escape:"html"|default:"(anything)"}" size="30" onfocus="if (this.value=='(anything)') this.value=''" onblur="if (this.value=='') this.value='(anything)'"/> (can enter multiple keywords)
+			</div>
+			<div style="position:relative;">
+				<label for="searchlocation" style="line-height:1.8em">and/or a <b>Placename, Postcode, Grid Reference</b>:</label><br/>
+				&nbsp;&nbsp;&nbsp;<i>near</i> <input id="searchlocation" type="text" name="location" value="{$searchlocation|escape:"html"|default:"(anywhere)"}" size="30" onfocus="if (this.value=='(anywhere)') this.value=''" onblur="if (this.value=='') this.value='(anywhere)'"/>
+				<input id="searchgo" type="submit" name="go" value="Search..."/>
+			</div>
+		</div>
+		</form>
+		
+		<p>&middot; <a href="/search.php?form=text">More Options...</a></p>
+		
+		<h4 class="title">Quick Search</h4>
+		<form method="get" action="/full-text.php">
+			<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+			<input type="submit" value="Search"/>
+			<p>&middot; Currently searches the title, description, category and photographer name fields as well as various forms of the subject grid-reference</p>
+		</form>
+		
+		<h4 class="title">Google Images</h4>
+		<form method="get" action="http://images.google.co.uk/images">
+		<div>
+			<label for="gimq">Keywords: </label>
+			<input type="text" name="q" value="{$searchq|escape:'html'}" id="gimq"/>
+			<input type="hidden" name="as_q" value="site:geograph.org.uk"/>
+			<input type="submit" name="btnG" value="Search"/></div>
+		</form>
+		
+		<p>see also <a href="/search.php?form=advanced">advanced search</a>, and <a href="/search.php">more</a>
+	</div>
+
+	<div style="position:relative;{if $tab != 2}display:none{/if}" class="interestBox" id="div2">
 		<h3 class="title">Combined Searches</h3>
 		
 		<h4 class="title">Google Search <sup>[~75% coverage July '08]</sup></h4>
@@ -80,51 +119,21 @@ h4.title {
 			<p><i>coming soon...</i></p>
 	</div>
 	
-	
-	<div style="position:relative;{if $tab != 2}display:none{/if}" class="interestBox" id="div2">
-		<h3 class="title">Image Searches</h3>
-		
-		<h4 class="title">Geograph Standard Search</h4>
-		<form method="get" action="/search.php">
-		<div style="position:relative;" class="interestBox">
-			<div style="position:relative;">
-				<label for="searchq" style="line-height:1.8em"><b>Search For</b>:</label> <small>(<a href="/help/search">help &amp; tips</a>)</small><br/>
-				&nbsp;&nbsp;&nbsp;<input id="searchq" type="text" name="q" value="{$searchtext|escape:"html"|default:"(anything)"}" size="30" onfocus="if (this.value=='(anything)') this.value=''" onblur="if (this.value=='') this.value='(anything)'"/> (finds images containing this <b>exact phrase in title</b>)
-			</div>
-			<div style="position:relative;">
-				<label for="searchlocation" style="line-height:1.8em">and/or a <b>Placename, Postcode, Grid Reference</b>:</label><br/>
-				&nbsp;&nbsp;&nbsp;<i>near</i> <input id="searchlocation" type="text" name="location" value="{$searchlocation|escape:"html"|default:"(anywhere)"}" size="30" onfocus="if (this.value=='(anywhere)') this.value=''" onblur="if (this.value=='') this.value='(anywhere)'"/>
-				<input id="searchgo" type="submit" name="go" value="Search..."/>
-			</div>
-		</div>
-		</form>
-		
-		<h4 class="title">Geograph Text Search</h4>
-		<form method="get" action="/full-text.php">
-			<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
-			<input type="submit" value="Search"/>
-			<p>&middot; Currently searches the title, description, category and photographer name fields as well as various forms of the subject grid-reference</p>
-		</form>
-		
-		<h4 class="title">Google Images</h4>
-		<form method="get" action="http://images.google.co.uk/images">
-		<div>
-			<label for="gimq">Keywords: </label>
-			<input type="text" name="q" value="{$searchq|escape:'html'}" id="gimq"/>
-			<input type="hidden" name="as_q" value="site:geograph.org.uk"/>
-			<input type="submit" name="btnG" value="Search"/></div>
-		</form>
-		
-		<p>see also <a href="/search.php?form=advanced">advanced search</a>, and <a href="/search.php">more</a>
-	</div>
-
 	<div style="position:relative;{if $tab != 3}display:none{/if}" class="interestBox" id="div3">
 		<h3 class="title">Content Search</h3>
 		<form method="get" action="/content/">
 			<label for="fq">Keywords</label>: <input type="text" name="q" id="cfq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 			<input type="submit" value="Search"/>
 		</form>
-		<p>&nbsp;</p>
+		<p><b>Content Comprises:</b></p>
+		 <ul>
+		  <li><a href="/article/">Articles</a></li>
+		  <li><a href="/gallery/">Galleries</a></li>
+		  {if $enable_forums}
+			  <li><a href="/discuss/?action=vtopic&amp;forum=6">Themed Topics</a></li>
+		  {/if}
+		  <li><a href="/help/sitemap">Help Documents</a></li>
+ 		</ul>
 	</div>
 	
 	<div style="position:relative;{if $tab != 4}display:none{/if}" class="interestBox" id="div4">
