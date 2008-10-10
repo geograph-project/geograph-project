@@ -51,12 +51,14 @@ $displayclasses =  array(
 			'more' => 'full listing + links',
 			'thumbs' => 'thumbnails only',
 			'thumbsmore' => 'thumbnails + links',
-			'gmap' => 'on a Google Map',
-			'slide' => 'slide-show mode',
-			'piclens' => 'piclens + slideshow',
-			'text' => 'text only',
-			'spelling' => 'spelling utility',
-			'reveal' => 'map imagine slideshow');
+			'gmap' => 'on a map',
+			'slide' => 'slideshow - fullsize',
+			'reveal' => 'slideshow - map imagine',
+			'cooliris' => 'cooliris 3d wall',
+			'mooflow' => 'cover flow',
+			'text' => 'text list only',
+			'spelling' => 'spelling utility'
+			);
 $smarty->assign_by_ref('displayclasses',$displayclasses);
 
 
