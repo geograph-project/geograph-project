@@ -631,6 +631,10 @@ if (isset($_GET['set_legacy'])) {
 				$smarty->assign('elementused', 'all_ind');
 				break;
 		}
+		if ($_GET['form'] == 'text' && !empty($query->limit3)) {
+			$query->searchtext = trim($query->searchtext." category:".str_replace('-',' ',$query->limit3));
+		}
+
 		if (!empty($query->searchtext)) {
 			if ($_GET['form'] == 'text' && (preg_match('/^=/',$query->searchtext) || !empty($query->ind_exact)) ) {
 				$smarty->assign('searchtext', preg_replace('/^=/','',$query->searchtext));
@@ -1023,25 +1027,11 @@ if (isset($_GET['set_legacy'])) {
 			if ($_GET['form'] == 'text') {
 				$d = array(1,2,3,4,5,7,8,10,20);
 				$d = array_combine($d,array_map('addkm',$d));
-				$smarty->assign_by_ref('distances',$d);
 			} else {
 				$d = array(1,2,3,4,5,7,8,10,20,30,40,50,71,100,2000);
 				$d = array_combine($d,array_map('addkm',$d));
 				$d += array(-5=>'5km square',-10=>'10km square',-50=>'50km square');
 			
-
-				$smarty->assign_by_ref('distances',$d);
-
-				$countylist = array();
-				$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0");
-				while (!$recordSet->EOF)
-				{
-					$countylist[$CONF['references'][$recordSet->fields[0]]][$recordSet->fields[1]] = $recordSet->fields[2];
-					$recordSet->MoveNext();
-				}
-				$recordSet->Close();
-				$smarty->assign_by_ref('countylist', $countylist);
-
 				$topicsraw = $db->GetAssoc("select gp.topic_id,concat(topic_title,' [',count(*),']') as title,forum_name from gridimage_post gp
 					inner join geobb_topics using (topic_id)
 					inner join geobb_forums using (forum_id)
@@ -1064,19 +1054,30 @@ if (isset($_GET['set_legacy'])) {
 				$topics[$last] = $options;
 
 				$smarty->assign_by_ref('topiclist',$topics);
+
+				$smarty->assign_by_ref('imagestatuses', $imagestatuses);
+				$smarty->assign_by_ref('breakdowns', $breakdowns);
+				$smarty->assign_by_ref('references',$CONF['references']);
 			}
-			
+
+			$smarty->assign_by_ref('distances',$d);
+
+			$countylist = array();
+			$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0");
+			while (!$recordSet->EOF)
+			{
+				$countylist[$CONF['references'][$recordSet->fields[0]]][$recordSet->fields[1]] = $recordSet->fields[2];
+				$recordSet->MoveNext();
+			}
+			$recordSet->Close();
+			$smarty->assign_by_ref('countylist', $countylist);
+
 			require_once('geograph/gridsquare.class.php');
 			$square=new GridSquare;
 			$smarty->assign('prefixes', $square->getGridPrefixes());
 
-			$smarty->assign_by_ref('imagestatuses', $imagestatuses);
-
 			$smarty->assign_by_ref('sortorders', $sortorders);
-			$smarty->assign_by_ref('breakdowns', $breakdowns);
 
-
-			$smarty->assign_by_ref('references',$CONF['references']);
 		}
 
 		$smarty->display($template, $is_cachable);
