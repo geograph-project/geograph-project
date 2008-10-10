@@ -14,18 +14,18 @@
 
     <form method="get" action="{$script_name}" style="background-color:#f0f0f0;padding:2px;margin:0px; border:1px solid #d0d0d0;">
     <div> 
-   When:<select name="modifer">
+    <span class="nowrap">When:<select name="modifer">
     	{html_options options=$modifers selected=$modifer}
-    </select> &nbsp;
-    Type:<select name="type">
+    </select></span> &nbsp;
+    <span class="nowrap">Type:<select name="type">
     	{html_options options=$types selected=$type}
-    </select> &nbsp;
-    Your:<select name="theme">
+    </select></span> &nbsp;
+    <span class="nowrap">Your:<select name="theme">
     	{html_options options=$themes selected=$theme}
-    </select> &nbsp;
-    Contributor:<select name="variation">
+    </select></span> &nbsp;
+    <span class="nowrap">Contributor:<select name="variation">
     	{html_options options=$variations selected=$variation}
-    </select><br/>
+    </select></span><br/>
     Include:
      <label for="minor">Minor</label><input type="checkbox" name="i" id="minor" {if $minor} checked="checked"{/if}/>/
      <label for="major">Major</label><input type="checkbox" name="a" id="major" {if $major} checked="checked"{/if}/> &nbsp;
