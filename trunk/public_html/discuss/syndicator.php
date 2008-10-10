@@ -206,11 +206,13 @@ if (!$opt_noLimit) {
 		}
 		
 		$d = 20;
+		$x = $square->x;
+		$y = $square->y;
 		
-		$left=$square->x-$d;
-		$right=$square->x+$d-1;
-		$top=$square->y+$d-1;
-		$bottom=$square->y-$d;
+		$left=$x-$d;
+		$right=$x+$d-1;
+		$top=$y+$d-1;
+		$bottom=$y-$d;
 
 		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
