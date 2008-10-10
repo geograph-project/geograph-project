@@ -45,7 +45,7 @@ if (isset($_GET['extension']) && !isset($_GET['format']))
 	$_GET['format'] = str_replace('PHOTO','Photo',$_GET['format']);
 }
 
-if (!empty($_GET['forum']) && $_GET['forum'] == 5) {
+if ((!empty($_GET['forum']) && $_GET['forum'] == 5) || isset($_GET['gridref'])) {
 	$format="GeoRSS";
 } else {
 	$format="RSS1.0";
@@ -60,12 +60,16 @@ $opt_sortBy = (!empty($_GET['sortBy']) && $_GET['sortBy'] == 1)?1:0;
 $opt_first  = (!empty($_GET['first']))?1:0;
 $opt_noLimit  = (!empty($_GET['nolimit']))?1:0;
 $opt_when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
+$opt_gridref = (isset($_GET['gridref']) && preg_match('/^([A-Z]{1,2})(\d\d)(\d\d)$/',$_GET['gridref']))?$_GET['gridref']:'';
 
 
 $extension = ($format == 'KML')?'kml':'xml';
 
 if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-t{$_GET['topic']}-{$format}-{$opt_expand}-{$opt_noLimit}-{$opt_when}.$extension";
+} elseif (!empty($_GET['gridref']) && preg_match('/^([A-Z]{1,2})(\d\d)(\d\d)$/',$_GET['gridref'])) {
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-f{$_GET['gridref']}-{$format}-{$opt_sortBy}-{$opt_first}-{$opt_when}.$extension";
+	$_GET['forum'] = 5;
 } elseif (!empty($_GET['forum']) && is_numeric($_GET['forum'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-f{$_GET['forum']}-{$format}-{$opt_sortBy}-{$opt_first}-{$opt_when}.$extension";
 } else {
@@ -165,7 +169,7 @@ if (!$opt_noLimit) {
 		$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/";
 		$sql_where = 'WHERE geobb_topics.forum_id NOT IN (5,11)'; //we exclude Grid Ref discussions and Gallery...
 	}
-	$andwhere .= $opt_when?" AND post_time > '$opt_when'":'';
+	$sql_where .= $opt_when?" AND post_time > '$opt_when'":'';
 	
 	if ($opt_first) {
 		$rss->title = "Geograph.org.uk Forum $title :: New Topics";
@@ -187,6 +191,37 @@ if (!$opt_noLimit) {
 		$sql_order= '`topic_last_post_id` DESC';
 		$sql_join = "topic_last_post_id=geobb_posts.post_id";
 	}
+
+	if ($opt_gridref) {
+		$rss->description .= " near ".$_REQUEST['gridref'];
+		$rss->syndicationURL .= "$amp;gridref=".$_REQUEST['gridref'];
+	
+		$sql_where = " INNER JOIN gridsquare AS gs ON(topic_title = grid_reference) ".$sql_where;
+		
+		$square=new GridSquare;
+		$grid_ok=$square->setByFullGridRef($_REQUEST['gridref']);
+		
+		if (!$grid_ok) {
+			die("invalid gridsquare");
+		}
+		
+		$d = 20;
+		
+		$left=$square->x-$d;
+		$right=$square->x+$d-1;
+		$top=$square->y+$d-1;
+		$bottom=$square->y-$d;
+
+		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
+		$sql_where .= " CONTAINS(GeomFromText($rectangle),point_xy)";
+		if ($this->limit8 > 0) {
+			//shame cant use dist_sqd in the next line!
+			$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);
+		}
+		
+	} 
+	
 
 $sql="SELECT *
 FROM `geobb_topics`
