@@ -214,7 +214,7 @@ if (!$opt_noLimit) {
 
 		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-		$sql_where .= " CONTAINS(GeomFromText($rectangle),point_xy)";
+		$sql_where .= " AND CONTAINS(GeomFromText($rectangle),point_xy)";
 		if ($d < 50) {
 			//shame cant use dist_sqd in the next line!
 			$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);
