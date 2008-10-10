@@ -53,7 +53,7 @@
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="postcode" id="l_postcode">postcode</label></td> 
 			 <td><input type="text" name="postcode" id="postcode" value="{$postcode|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
-			 <td><nobr>eg <tt>RH13 1BU</tt> (GB &amp; NI)</nobr></td> 
+			 <td class="nowrap">eg <tt>RH13 1BU</tt> (GB &amp; NI)</td> 
 		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="placename" id="l_placename">placename</label></td> 
@@ -88,7 +88,7 @@
 			 <td colspan="3">&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-		 	 <td colspan="3" style="background:#dddddd;">and/or <b>Word Match query:  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>[<a href="/help/search_new" target="geo_help">word search help</a> in new window.</b>]</small></b></td>
+		 	 <td colspan="3" style="background:#dddddd;">and/or <b>Word Match search:  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>[open <a href="/help/search_new" target="geo_help">word search help</a> in new window]</b></small></b></td>
 		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="searchtext" id="l_searchtext">keywords</label></td> 
@@ -98,11 +98,11 @@
 			 <td>eg <tt>Bridge</tt></td> 
 		  </tr> 
 		  <tr> 
-			 <td colspan="3"><small>&middot; Currently searches the title, description, category, photographer name and image taken date (<tt>20071103</tt>, <tt>200711</tt> or just <tt>2007</tt>) fields, as well the subject grid-reference (<tt>SH1234</tt>, <tt>SH13</tt> or just <tt>SH</tt>)</small></td> 
+			 <td colspan="3"><small>&middot; Currently searches the title, description, category, photographer name and image taken date (<tt>20071103</tt>, <tt>200711</tt> or just <tt>2007</tt>) fields, as well the subject grid-reference <span class="nowrap">(<tt>SH1234</tt>, <tt>SH13</tt> or just <tt>SH</tt>)</span>, seperate multiple keywords with spaces.</small></td> 
 		  </tr> 
 		  <tr> 
 			 <td colspan="2"><small>
-			 &middot; Matches whole words (punctation is ignored), accepts nagations (<tt>-river</tt>), phrases (<tt>"road bridge"</tt>), the OR keyword (<tt>bridge OR bont OR pont</tt>) and is not case sensitive.</small><br/>
+			 &middot; Only matches whole words, punctuation is ignored, can match phrases (<tt>"road bridge"</tt>), allows the OR keyword <span class="nowrap">(<tt>bridge OR bont OR pont</tt>)</span>, can exclude words (<tt>-river</tt>), and is not case sensitive.</small><br/>
 			 <br/></td> 
 			 <td>&nbsp;<input type="submit" value="Find"/></td> 
 		  </tr> 
