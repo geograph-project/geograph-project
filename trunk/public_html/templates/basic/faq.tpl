@@ -26,7 +26,7 @@ div:target { background-color:orange;padding-bottom:10px; }
  <b>Browsing</b> the site:
  <ul>
  <li><a href="/help/squares">Square Definitions</a><br/><br/></li>
- <li><a href="/help/search">Text Search Help</a></li>
+ <li><a href="/article/Searching-on-Geograph">Search Help</a></li>
  <li><a href="/help/stats_faq">Statistics FAQ</a><br/><br/></li>
  {if $enable_forums}
  <li><a href="/help/bbcodes">Forum BBcodes Help</a><br/><br/></li>

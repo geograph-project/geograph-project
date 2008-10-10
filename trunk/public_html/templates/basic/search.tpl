@@ -20,7 +20,7 @@
 </div>
 <div style="position:relative;" class="interestBox">
 			<div style="position:relative;">
-				<label for="searchq" style="line-height:1.8em"><b>Search For</b>:</label> <small>(<a href="/help/search_new">help &amp; tips</a>)</small><br/>
+				<label for="searchq" style="line-height:1.8em"><b>Search For</b>:</label> <small>(<a href="http://www.geograph.org.uk/article/Searching-on-Geograph">help &amp; tips</a><sup style="color:red">updated</sup>)</small><br/>
 				&nbsp;&nbsp;&nbsp;<input id="searchq" type="text" name="q" value="{$searchtext|escape:"html"|default:"(anything)"}" size="30" onfocus="if (this.value=='(anything)') this.value=''" onblur="if (this.value=='') this.value='(anything)'"/> (can now enter multiple keywords <sup style="color:red">new!</sup>)
 			</div>
 			<div style="position:relative;">

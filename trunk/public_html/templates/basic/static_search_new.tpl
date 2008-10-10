@@ -5,6 +5,12 @@
 
 <p>We have recently introduced a new search system to Geograph. This is powered by a indexing system designed specially for text searching. This is a drastic change compared to the old search, which while could do text searches it was kinda clunky.</p>
 
+<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+<img src="/templates/basic/img/icon_alert.gif" alt="Alert" width="25" height="22" align="left" style="margin-right:10px"/>
+There is a better introduction to the new search here: <a href="/article/Searching-on-Geograph">Searching on Geograph</a> and <a href="/article/Word-Searching-on-Geograph">Word Searching</a> 
+</div>
+<br/>
+
 <div class="interestBox" style="padding:10px;border:1px solid yellow; font-size:0.8em; width:300px; float:right">
 	However the legacy search engine was powerful in the options offered on the advanced search form, allowing you refine the query quite a bit. For this reason the legacy search is still available, but where your search can be furfullied by the new index you will be automatically redirected to the new search. <br/><br/>
 
@@ -49,7 +55,7 @@
 
 <p>Also boolean queries are supported: (includes partiscal support for phrases and fields)</p> 
 <ul>
-	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">( cat -dog ) | ( cat -mouse)</tt></li>
+	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px"> dog | ( cat mouse)</tt></li>
 	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">(river OR road) AND tree</tt></li>
 </ul>  	
 

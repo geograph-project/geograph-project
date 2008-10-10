@@ -88,7 +88,7 @@
 			 <td colspan="3">&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-		 	 <td colspan="3" style="background:#dddddd;">and/or <b>Word Match search:  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>[open <a href="/help/search_new" target="geo_help">word search help</a> in new window]</b></small></b></td>
+		 	 <td colspan="3" style="background:#dddddd;">and/or <b>Word Match search:  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>[open <a href="/article/Word-Searching-on-Geograph" target="geo_help">word search help</a> in new window]</b></small></b></td>
 		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="searchtext" id="l_searchtext">keywords</label></td> 
