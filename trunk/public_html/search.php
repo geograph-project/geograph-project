@@ -216,7 +216,9 @@ if (isset($_GET['set_legacy'])) {
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (empty($db)) die('Database connection failed');
 
-
+	if (empty($data['orderby'])) {
+		$data['orderby'] = 'seq_id';
+	}
 
 	$data['description'] = (($USER->registered)?"on {$USER->realname}'s ":'on ')."Marked List at ".strftime("%A, %e %B, %Y. %H:%M");
 	$data['searchq'] = "1"; //temporally
@@ -233,6 +235,9 @@ if (isset($_GET['set_legacy'])) {
 		} elseif (isset($_GET['kml'])) {
 			$engine->page = "kml.php";
 		}
+		
+		
+		
 		if ($i = $engine->buildAdvancedQuery($data,false)) {
 
 			if (!empty($_GET['markedImages'])) {
