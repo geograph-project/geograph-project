@@ -270,7 +270,11 @@ class SearchCriteria
 			}
 			$statuslist="'".implode("','", explode(',',$this->limit2))."'";
 			$sql_where .= "moderation_status in ($statuslist) ";
-			$this->sphinx['impossible']++; //todo
+			if ($this->limit2 = 'geograph') {
+				$this->sphinx['filters']['status'] = $this->limit2;
+			} elseif ($this->limit2 = 'accepted') {
+				$this->sphinx['filters']['status'] = 'supplemental';
+			}
 		} 
 		if (!empty($this->limit3)) {
 			if ($sql_where) {
@@ -282,7 +286,9 @@ class SearchCriteria
 			if ($this->limit3 == '-') {
 				$this->sphinx['impossible']++;
 			} else {
-				$this->sphinx['filters']['imageclass'] = "\"".$this->limit3."\"";
+				#$this->sphinx['filters']['imageclass'] = "\"".$this->limit3."\"";
+				$db = $this->_getDB();
+				$this->sphinx['filters']['classcrc'] = array($db->GetOne('select crc32('.$db->Quote($this->limit3).')'));
 			}
 		} 
 		if (!empty($this->limit4)) {
@@ -350,26 +356,26 @@ class SearchCriteria
 					list($y,$m,$d) = explode('-',$dates[0]);
 					$sql_where .= "submitted > DATE_SUB(NOW(),INTERVAL $d DAY)";
 					
-					$this->sphinx['submitted_range'] = array(time()-86400*$d,time()); 
+					$this->sphinx['filters']['submitted'] = array(time()-86400*$d,time()); 
 				} elseif ($dates[1]) {
 					if ($dates[0] == $dates[1]) {
 						//both the same
 						$sql_where .= "submitted LIKE '".$dates[0]."%' ";
-						$this->sphinx['submitted_range'] = array(strtotime($dates[0]),strtotime($dates[0]." 23:59")); 
+						$this->sphinx['filters']['submitted'] = array(strtotime($dates[0]),strtotime($dates[0]." 23:59")); 
 					} else {
 						//between
 						$sql_where .= "submitted BETWEEN '".$dates[0]."' AND DATE_ADD('".$dates[1]."',INTERVAL 1 DAY) ";
-						$this->sphinx['submitted_range'] = array(strtotime($dates[0]),strtotime($dates[1]." 23:59")); 
+						$this->sphinx['filters']['submitted'] = array(strtotime($dates[0]),strtotime($dates[1]." 23:59")); 
 					}
 				} else {
 					//from
 					$sql_where .= "submitted >= '".$dates[0]."' ";
-					$this->sphinx['submitted_range'] = array(strtotime($dates[0]),time()); 
+					$this->sphinx['filters']['submitted'] = array(strtotime($dates[0]),time()); 
 				}
 			} else {
 				//to
 				$sql_where .= "submitted <= '".$dates[1]."' ";
-				$this->sphinx['submitted_range'] = array(strtotime("2005-01-01"),strtotime($dates[1]." 23:59")); 
+				$this->sphinx['filters']['submitted'] = array(strtotime("2005-01-01"),strtotime($dates[1]." 23:59")); 
 			}
 			
 			
@@ -403,7 +409,7 @@ class SearchCriteria
 					//day only ;)
 					list($y,$m,$d) = explode('-',$dates[0]);
 					$sql_where .= "imagetaken > DATE_SUB(NOW(),INTERVAL $d DAY)";
-					$this->sphinx['impossible']++;
+					$this->sphinx['filters']['takenstamp'] = array(time()-86400*$d,time());
 				} elseif ($dates[1]) {
 					if ($dates[0] == $dates[1]) {
 						//both the same
@@ -412,17 +418,17 @@ class SearchCriteria
 					} else {
 						//between
 						$sql_where .= "imagetaken BETWEEN '".$dates[0]."' AND '".$dates[1]."' ";
-						$this->sphinx['impossible']++;
+						$this->sphinx['filters']['takenstamp'] = array(strtotime($dates[0]),strtotime($dates[1])); 
 					}
 				} else {
 					//from
 					$sql_where .= "imagetaken >= '".$dates[0]."' ";
-					$this->sphinx['impossible']++;
+					$this->sphinx['filters']['takenstamp'] = array(strtotime($dates[0]),time()); 
 				}
 			} else {
 				//to
 				$sql_where .= "imagetaken != '0000-00-00' AND imagetaken <= '".$dates[1]."' ";
-				$this->sphinx['impossible']++;
+				$this->sphinx['filters']['takenstamp'] = array(0,strtotime($dates[1])); 
 			}
 			
 			

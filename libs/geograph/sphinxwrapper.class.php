@@ -251,11 +251,19 @@ class sphinxwrapper {
 		return $this->returnIds($page,'_images');
 	}
 	
-	
 	public function getFilterString() {
 		$q = '';
+		
+		$cl = $this->_getClient();
+		
 		foreach ($this->filters as $name => $value) {
-			if (strpos($value,'!') === 0) {
+			if (is_array($value)) {
+				if (count($value) == 2) {
+					$cl->SetFilterRange($name, $value[0], $value[1]);
+				} else {
+					$cl->SetFilter($name, $value);
+				}
+			} elseif (strpos($value,'!') === 0) {
 				$q .= " @$name ".str_replace('!','-',$value);
 			} else {
 				$q .= " @$name $value";
@@ -263,6 +271,7 @@ class sphinxwrapper {
 		}
 		return $q;
 	} 
+	
 	public function addFilters($filters) {
 		if (is_array($filters)) {
 			$this->filters = array_merge($filters,$this->filters);
@@ -329,10 +338,6 @@ class sphinxwrapper {
 		$sqlpage = ($page -1)* $this->pageSize;
 		$cl->SetLimits($sqlpage,$this->pageSize); ##todo reduce the page size when nearing the 1000 limit - so at least get bit of page
 		
-		if (!empty($this->submitted_range)) {
-			$cl->SetFilterRange ('submitted', $this->submitted_range[0], $this->submitted_range[1]);
-		}
-
 		if (!empty($this->upper_limit)) {
 			//todo a bodge to run on dev/staging
 			$cl->SetIDRange ( 1, $this->upper_limit+0);
@@ -441,9 +446,6 @@ class sphinxwrapper {
 	
 	function setSort($sort) {
 		$this->sort = $sort;
-	}
-	function setSubmittedRange($range) {
-		$this->submitted_range = $range;
 	}
 	
 	/**
