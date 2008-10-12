@@ -34,9 +34,9 @@
 	window.addEvent('domready', function(){
 
 		var mf = new MooFlow($('MooFlow'), {
-			startIndex: 1,
+			startIndex: 0,
 			heightRatio: 0.5,
-			factor: 75,
+			factor: 82,
 			useSlider: true,
 			useAutoPlay: true,
 			useCaption: true,
