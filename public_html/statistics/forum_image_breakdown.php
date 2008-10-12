@@ -30,7 +30,7 @@ init_session();
 $smarty = new GeographPage;
 
 $smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*3; //3hr cache
+$smarty->cache_lifetime = 3600*12; //12hr cache
 
 if (isset($_GET['output']) && $_GET['output'] == 'csv') {
 	$template='statistics_table_csv.tpl';
@@ -90,7 +90,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$title .= " used in Forum Topics";	
 		
 	 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$table=$db->GetAll("SELECT 
+	$table=$db->CacheGetAll($smarty->cache_lifetime,"SELECT 
 	CONCAT('<a href=\"/discuss/?action=vthread&amp;topic=',gp.topic_id,'\">',topic_title,'</a>') as Topic,	
 	count( * ) AS `Thumbnails`, 
 	count( DISTINCT gp.gridimage_id ) AS `Seperate Images`, 
