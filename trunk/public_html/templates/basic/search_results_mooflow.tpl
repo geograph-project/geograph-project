@@ -20,7 +20,7 @@
 	<div id="MooFlow">
 	{foreach from=$engine->results item=image}
 
-	  <a href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,true)|replace:' alt=':' title='}</a>
+	  <a href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160,false,true)|replace:' alt=':' title='}</a>
 	
 	{foreachelse}
 		{if $engine->resultCount}
@@ -34,9 +34,9 @@
 	window.addEvent('domready', function(){
 
 		var mf = new MooFlow($('MooFlow'), {
-			startIndex: 5,
+			startIndex: 1,
 			heightRatio: 0.5,
-			factor: 65,
+			factor: 75,
 			useSlider: true,
 			useAutoPlay: true,
 			useCaption: true,
