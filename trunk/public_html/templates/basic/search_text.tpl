@@ -92,7 +92,7 @@
 		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="searchtext" id="l_searchtext">keywords</label></td> 
-			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput" size="60" style="width:400px"/><br/>
+			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput" size="60" style="width:400px" maxlength="250"/><br/>
 			 <small><label for="ind_exact">Exact matches?</label> <input type="checkbox" name="ind_exact" id="ind_exact" {$ind_exact_checked}/> (otherwise <tt>bridge</tt> matches bridges, bridging etc)</small>
 			 </td> 
 			 <td>eg <tt>Bridge</tt></td> 
@@ -123,6 +123,30 @@
 				<small>open <a href="/finder/contributors.php?popup" target="_blank" onclick="window.open(this.href,this.target); return false;">Contributor Search</a> in new window</small></td> 
 		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
+			 <td><label for="moderation_status">classification</label></td> 
+			 <td> 
+				<select name="moderation_status" id="moderation_status" size="1" class="searchinput"> 
+				  <option value=""> </option> 
+					{html_options options=$imagestatuses selected=$moderation_status}				  
+				</select></td> 
+			 <td>&nbsp;</td> 
+		  </tr> 
+		  <tr> 
+			 <td><label for="imageclass">category</label></td> 
+			 <td>
+			 
+<script type="text/javascript" src="/categories.js.php?full=1"></script>
+			 
+				<select name="imageclass" id="imageclass" size="1" class="searchinput"  onfocus="prePopulateImageclass()" disabled="disabled"> 
+					<option value=""></option>
+					{if $imageclass}
+						<option value="{$imageclass}" selected="selected">{$imageclass}</option>
+					{/if}
+					<option value="Other"></option>				  
+				</select><input type="button" name="imageclass_enable_button" value="enable" onclick="prePopulateImageclass()"/></td> 
+			 <td>&nbsp;</td> 
+		  </tr> 
+		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="gridsquare">myriad (<a href="/help/squares" title="What is a Myriad? (opens in new window)" target="_blank">?</a>)</label></td> 
 			 <td> 
 				<select name="gridsquare" id="gridsquare" size="1" class="searchinput"> 
@@ -141,13 +165,14 @@
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="taken_startDay">taken</label></td> 
 			 <td> 
-				{html_select_date prefix="taken" time=$taken start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
+				between {html_select_date prefix="taken_start" time=$taken_start start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
+				and {html_select_date prefix="taken_end" time=$taken_end start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
 				</td> 
 			 <td>&nbsp;<input type="submit" value="Find"/></td> 
 		  </tr> 
 		  <tr> 
 			 <td colspan="3"><small>
-			 You can just specify part of a date, for example just a year, or just month and year. To do this for the date submitted set both the start and end date to the same value.</small>
+			 You can just specify part of a date, for example just a year, or just month and year. Setting both the start and end date to the same value allows you to find pictures on during that period, eg 'Jan 2001' or even just 1988.</small>
 			 </td> 
 		  </tr> 
 		  <tr> 

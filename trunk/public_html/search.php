@@ -42,7 +42,7 @@ $smarty = new GeographPage;
 
 $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
-$imagestatuses = array('geograph' => 'geograph only','geograph,accepted' => 'geographs &amp; supplemental','accepted' => 'supplemental only');
+$imagestatuses = array('geograph' => 'geograph only','accepted' => 'supplemental only');
 $sortorders = array(''=>'','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North');
 $breakdowns = array(''=>'','imagetaken'=>'Day Taken','imagetaken_month'=>'Month Taken','imagetaken_year'=>'Year Taken','imagetaken_decade'=>'Decade Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted',);
 
@@ -1062,7 +1062,6 @@ if (isset($_GET['set_legacy'])) {
 
 				$smarty->assign_by_ref('topiclist',$topics);
 
-				$smarty->assign_by_ref('imagestatuses', $imagestatuses);
 				$smarty->assign_by_ref('breakdowns', $breakdowns);
 				$smarty->assign_by_ref('references',$CONF['references']);
 			}
@@ -1084,7 +1083,7 @@ if (isset($_GET['set_legacy'])) {
 			$smarty->assign('prefixes', $square->getGridPrefixes());
 
 			$smarty->assign_by_ref('sortorders', $sortorders);
-
+			$smarty->assign_by_ref('imagestatuses', $imagestatuses);
 		}
 
 		$smarty->display($template, $is_cachable);
