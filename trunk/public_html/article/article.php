@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: faq.php 15 2005-02-16 12:23:35Z lordelph $
+ * $Id$
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2006 Barry Hunter (geo@barryhunter.co.uk)
@@ -124,6 +124,9 @@ function smarty_function_articletext($input) {
 
 	$pattern[]='/\[img=([^\] ]+)(| [^\]]+)\]/';
 	$replacement[]='<img src="\1" alt="\2" title="\2"/>';
+
+	$pattern[]='/\[mooflow=(\d+)\]/';
+	$replacement[]='<iframe src="/search.php?i=\1&amp;temp_displayclass=mooflow_embed" width="750" height="430"></iframe>';
 
 	$pattern[]='/\n\* ?([^\n]+)(\n{2})?/e';
 	$replacement[]="'<ul style=\"margin-bottom:0px;margin-top:0px\"><li>'.stripslashes('\$1').'</li></ul>'.('$2'?'\n':'')";
