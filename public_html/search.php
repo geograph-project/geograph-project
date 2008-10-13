@@ -638,10 +638,7 @@ if (isset($_GET['set_legacy'])) {
 				$smarty->assign('elementused', 'all_ind');
 				break;
 		}
-		if ($_GET['form'] == 'text' && !empty($query->limit3)) {
-			$query->searchtext = trim($query->searchtext." category:".str_replace('-',' ',$query->limit3));
-		}
-
+		
 		if (!empty($query->searchtext)) {
 			if ($_GET['form'] == 'text' && (preg_match('/^=/',$query->searchtext) || !empty($query->ind_exact)) ) {
 				$smarty->assign('searchtext', preg_replace('/^=/','',$query->searchtext));
@@ -740,6 +737,8 @@ if (isset($_GET['set_legacy'])) {
 			//don't store search override permently
 			$engine->temp_displayclass = $display;
 		}
+	} elseif (isset($_GET['temp_displayclass']) && preg_match('/^\w+$/',$_GET['temp_displayclass'])) {
+		$display = $_GET['temp_displayclass'];
 	}
 	if (empty($display))
 		$display = 'full';
@@ -939,7 +938,7 @@ if (isset($_GET['set_legacy'])) {
 			} else {
 				$a["{$row['searchdesc']},{$row['searchq']},{$row['displayclass']},{$row['resultsperpage']}"] = 1;
 				if ($row['searchq'] == "inner join gridimage_query using (gridimage_id) where query_id = $i") {
-					//todo $recentsearchs[$i]['edit'] = 1;
+					$recentsearchs[$i]['edit'] = 1;
 				}
 			}
 		}
