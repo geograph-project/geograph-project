@@ -338,7 +338,7 @@ if ($grid_given)
 				$cacheseconds = 600;
 				$inc_all_user=">0";
 			} else {
-				$user_crit = "(moderation_status in ('accepted', 'geograph') or gridimage.user_id = {$USER->user_id})";
+				$user_crit = "(moderation_status in ('accepted', 'geograph') or gi.user_id = {$USER->user_id})";
 				$cacheseconds = 60;
 				$inc_all_user=$USER->user_id;
 			}
@@ -371,7 +371,7 @@ if ($grid_given)
 			(count(distinct nateastings DIV 100, natnorthings DIV 100) - (sum(nateastings = 0) > 0) ) as centi,
 			count(distinct view_direction) as direction,
 			count(distinct viewpoint_eastings DIV 1000, viewpoint_northings DIV 1000) as viewpoints
-			FROM gridimage
+			FROM gridimage gi
 			WHERE gridsquare_id = {$square->gridsquare_id}
 			AND $user_crit");
 			
@@ -568,7 +568,7 @@ if ($grid_given)
 			} elseif ($_GET['by'] == 'centi') {
 				$breakdown_title = "Centisquare<a href=\"/help/squares\">?</a>";
 				$all = $db->cacheGetAll($cacheseconds,"SELECT (nateastings = 0),count(*),gridimage_id,nateastings DIV 100, natnorthings DIV 100
-				FROM gridimage
+				FROM gridimage gi
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
 				GROUP BY nateastings DIV 100, natnorthings DIV 100,(nateastings = 0)");
@@ -607,7 +607,7 @@ if ($grid_given)
 				$n = intval($square->getNatNorthings()/1000);
 				$breakdown_title = "Photographer Centisquare<a href=\"/help/squares\">?</a>";
 				$all = $db->cacheGetAll($cacheseconds,"SELECT (viewpoint_eastings = 0),count(*),gridimage_id,viewpoint_eastings DIV 100, viewpoint_northings DIV 100
-				FROM gridimage
+				FROM gridimage gi
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit
 				AND ((viewpoint_eastings DIV 1000 = $e AND viewpoint_northings DIV 1000 = $n) OR viewpoint_eastings = 0)
