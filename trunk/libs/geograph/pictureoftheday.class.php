@@ -53,33 +53,34 @@ class PictureOfTheDay
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');  
 	
-	
 		$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where to_days(showday)=to_days(now())");
 		if (empty($gridimage_id))
 		{
 			//get timestamp from db server
 			$now=$db->GetOne("select now()");
 			
-			
-			
 			//lock the table to avoid a midnight race
 			$db->Execute("lock tables gridimage_daily write");
-				//we've got our lock, so lets check we weren't beaten to the punch
-				$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where to_days(showday)=to_days(now())");
-				if (empty($gridimage_id))
-				{
-					//ok, there is still no image for today, and we have a
-					//lock on the table - assign the first available image
-					//ordered by number
-					$db->Execute("update gridimage_daily set showday='$now' where showday is null order by moderation_status desc,gridimage_id limit 1");
-					
+			
+			//we've got our lock, so lets check we weren't beaten to the punch
+			$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where to_days(showday)=to_days(now())");
+			if (empty($gridimage_id))
+			{
+				//ok, there is still no image for today, and we have a
+				//lock on the table - assign the first available image
+				//ordered by number
+				$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null order by moderation_status desc,gridimage_id limit 1");
+
+				if (!empty($gridimage_id)) {
+					$db->Execute("update gridimage_daily set showday='$now' where gridimage_id = $gridimage_id");
+
 					//refetch
 					$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where to_days(showday)=to_days(now())");
-				
 				}
+			}
+				
 			//release our stranglehold
 			$db->Execute("unlock tables");
-			
 		}
 		
 		if (empty($gridimage_id))
@@ -88,7 +89,6 @@ class PictureOfTheDay
 			$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily " .
 					"where to_days(showday)<to_days(now()) " .
 					"order by (to_days(now())-to_days(showday))");
-		
 		}
 		
 		$this->gridimage_id=$gridimage_id;
