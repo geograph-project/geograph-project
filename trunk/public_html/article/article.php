@@ -26,7 +26,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-if (empty($_GET['page']) || preg_match('/[^\w\.-]/',$_GET['page'])) {
+if (empty($_GET['page']) || preg_match('/[^\w\.\,-]/',$_GET['page'])) {
 	$smarty->display('static_404.tpl');
 	exit;
 }
