@@ -58,7 +58,7 @@ a Img
 #header h1
 {
 	margin:0px;
-	background-image: url('/templates/basic/img/logo.gif');
+	background-image: url('/templates/basic/img/logo1M.gif');
 	height:74px;
 	width:257px;
 	cursor:pointer;
@@ -848,19 +848,19 @@ div.map div.inner img
  * Search Results
  *---------------------------------------------------------------*/
 
-.xml-kml {font: bold 10px Verdana, sans-serif; padding: 0 0.5em; border: 1px solid;
+.xml-kml, A.xml-kml {font: bold 10px Verdana, sans-serif; padding: 0 0.5em; border: 1px solid;
   text-decoration: none;
   background: #6AC23E; color: #FFF; border-color: #CAEABA #356020 #1B3010 #9CD77F;}
 
-.xml-rss {font: bold 10px Verdana, sans-serif; padding: 0 0.5em; border: 1px solid;
+.xml-rss, A.xml-rss {font: bold 10px Verdana, sans-serif; padding: 0 0.5em; border: 1px solid;
   text-decoration: none;
   background: #F60; color: #FFF; border-color: #FFC8A4 #7D3302 #3F1A01 #FF9A57;}
   
-.xml-geo {font: bold 10px Verdana, sans-serif; padding: 0 0.5em; border: 1px solid;
+.xml-geo, A.xml-geo {font: bold 10px Verdana, sans-serif; padding: 0 0.5em; border: 1px solid;
   text-decoration: none;
   background: #009900; color: #FFF; border-color: #FFC8A4 #7D3302 #3F1A01 #FF9A57;}
 
-.xml-gpx {font: bold 10px Verdana, sans-serif; padding: 0 0.5em; border: 1px solid;
+.xml-gpx, A.xml-gpx {font: bold 10px Verdana, sans-serif; padding: 0 0.5em; border: 1px solid;
   text-decoration: none;
   background: #000099; color: #FFF; border-color: #FFC8A4 #7D3302 #3F1A01 #FF9A57;}
 
