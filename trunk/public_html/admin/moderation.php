@@ -28,7 +28,7 @@ require_once('geograph/imagelist.class.php');
 
 init_session();
 
-if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && strpos($_SERVER['HTTP_REFERER'],'editimage' === FALSE) {
+if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && strpos($_SERVER['HTTP_REFERER'],'editimage') === FALSE) {
 	header("HTTP/1.1 503 Service Unavailable");
 	die("server busy, please try later");
 }
