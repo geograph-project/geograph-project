@@ -35,6 +35,7 @@ Disallow: /feed/results
 Disallow: /export.excel.xml.php
 Disallow: /export.csv.php
 Disallow: /_scripts/
+Disallow: /stuff/conversion.php
 
 User-Agent: Googlebot
 Disallow: /mapbrowse.php?
@@ -70,6 +71,7 @@ Disallow: /feed/results
 Disallow: /export.excel.xml.php
 Disallow: /export.csv.php
 Disallow: /_scripts/
+Disallow: /stuff/conversion.php
 
 User-agent: Slurp
 Disallow: /profile/*/map
@@ -107,6 +109,7 @@ Disallow: /feed/results
 Disallow: /export.excel.xml.php
 Disallow: /export.csv.php
 Disallow: /_scripts/
+Disallow: /stuff/conversion.php
 
 User-agent: Mozilla/2.0 (compatible; Ask Jeeves/Teoma)
 Crawl-Delay: 60
@@ -142,6 +145,7 @@ Disallow: /feed/results
 Disallow: /export.excel.xml.php
 Disallow: /export.csv.php
 Disallow: /_scripts/
+Disallow: /stuff/conversion.php
 
 User-agent: Fasterfox
 Disallow: /
