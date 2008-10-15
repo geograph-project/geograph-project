@@ -28,6 +28,11 @@
 *
 ******/
 
+if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 8 ) {
+	header("HTTP/1.1 503 Service Unavailable");
+	die("server busy, please try later");
+}
+
 class game {
 
 	public $rastermap = '';
