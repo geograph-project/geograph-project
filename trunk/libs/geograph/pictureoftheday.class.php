@@ -60,7 +60,7 @@ class PictureOfTheDay
 			$now=$db->GetOne("select now()");
 			
 			//lock the table to avoid a midnight race
-			$db->Execute("lock tables gridimage_daily write");
+			$db->Execute("lock tables gridimage_daily write,gridimage_search write");
 			
 			//we've got our lock, so lets check we weren't beaten to the punch
 			$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where to_days(showday)=to_days(now())");
@@ -69,7 +69,7 @@ class PictureOfTheDay
 				//ok, there is still no image for today, and we have a
 				//lock on the table - assign the first available image
 				//ordered by number
-				$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null order by moderation_status desc,gridimage_id limit 1");
+				$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null order by moderation_status desc,gridimage_id");
 
 				if (!empty($gridimage_id)) {
 					$db->Execute("update gridimage_daily set showday='$now' where gridimage_id = $gridimage_id");
