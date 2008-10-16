@@ -11,7 +11,8 @@
 		<p style="color:#990000;font-weight:bold;">Unknown error, suggestion NOT saved. Please contact us.</p>
 	{/if}
 {elseif $query.created}
-	<p>This search has already been suggested, Thank You for the suggestion.</p>
+	<h3>Thank You for the suggestion</h3>
+	<p>This search has already been suggested.</p>
 {elseif $errormsg}
 	<p style="color:#990000;font-weight:bold;">{$errormsg}</p>
 {else}
