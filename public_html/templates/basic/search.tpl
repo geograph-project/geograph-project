@@ -33,21 +33,13 @@
 {/dynamic} 
 <ul style="margin-left:0;padding:0 0 0 1em;">
 
-<li>Here are a couple of example searches:
+<li>Here are a couple of example searches:<br/>
 <div style="float:left; width:50%; position:relative">
-<ul style="margin-left:0;padding:0 0 0 1em;">
-<li><a href="search.php?i=1522" title="Show the most recent submissions">Recent Submissions</a></li>
-<li><a href="search.php?i=1522&amp;displayclass=slide" title="Recent Submissions">(as a slideshow)</a></li>
-{dynamic}
-{if $user->registered}
-<li><a href="search.php?u={$user->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1" title="show your recent photos">Your Photos, recent first</a></li>
-{else}
-<li><a href="search.php?displayclass=text&amp;orderby=submitted&amp;reverse_order_ind=1&amp;resultsperpage=50&amp;do=1" title="recent photo without thumbnails">Recent : Text Listing</a></li>
-{/if}
-{/dynamic}
-<li><a href="search.php?taken_endYear=1980&amp;do=1" title="View Historic Pictures">Taken Before 1980</a></li>
-<li><a href="search.php?i=199" title="Recent Images in Community Showcase">Community Showcase</a> (<a href="search.php?i=200" title="Images recently added to Community Showcase">more</a>)</li>
-<li><a href="search.php?reference_index=2&amp;do=1" title="Irish Pictures">Pictures of Ireland</a></li>
+<ul style="margin-left:0;padding:0 0 0 1em;font-size:0.8em">
+{foreach from=$featured key=id item=row}
+<li><a href="search.php?i={$row.id|escape:url}">images{$row.searchdesc|escape:html}</a>:{$row.days}</li>
+{/foreach}
+<li><a href="/explore/searches.php" title="Show Featured Searches"><i>more suggestions...</i></a></li>
 </ul>
 </div>
 <div style="float:left; width:50%; position:relative">

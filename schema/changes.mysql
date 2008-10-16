@@ -229,3 +229,15 @@ alter table os_gaz_county add index (`co_code`);
 alter table queries change `displayclass` `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','cooliris','cluster','mooflow')  NOT NULL DEFAULT 'full';
 
 
+
+
+
+CREATE TABLE `queries_featured` (
+  `id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `comment` varchar(100) NOT NULL,
+  `approved` tinyint(4) NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
