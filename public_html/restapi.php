@@ -111,7 +111,7 @@ class RestAPI
 				echo '<taken>'.htmlentities($image->imagetaken).'</taken>';
 				echo '<submitted>'.htmlentities($image->submitted).'</submitted>';
 				echo '<category>'.htmlentities2($image->imageclass).'</category>';
-				echo '<comment>'.htmlentities2($image->comment).'</comment>';
+				echo '<comment><![CDATA['.htmlentities2($image->comment).']]></comment>';
 				
 				$this->endResponse();
 			}
