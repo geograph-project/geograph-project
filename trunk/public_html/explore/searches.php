@@ -31,7 +31,7 @@ dieUnderHighLoad();
 
 
 $template='explore_searches.tpl';
-$cacheid = $is_mod=$USER->hasPerm('moderator')?1:0;
+$cacheid = $is_mod=$USER->hasPerm('admin')?1:0;
 
 $i = 0;
 if (isset($_REQUEST['i']) && is_numeric($_REQUEST['i'])) {
