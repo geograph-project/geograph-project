@@ -34,15 +34,15 @@
 <ul style="margin-left:0;padding:0 0 0 1em;">
 
 <li>Here are a couple of example searches:<br/>
-<div style="float:left; width:50%; position:relative">
+<div style="float:left; width:60%; position:relative">
 <ul style="margin-left:0;padding:0 0 0 1em;font-size:0.8em">
 {foreach from=$featured key=id item=row}
-<li><a href="search.php?i={$row.id|escape:url}">images{$row.searchdesc|escape:html}</a>:{$row.days}</li>
+<li><a href="search.php?i={$row.id|escape:url}">{$row.searchdesc|regex_replace:'/^, /':''|escape:html}</a></li>
 {/foreach}
 <li><a href="/explore/searches.php" title="Show Featured Searches"><i>more suggestions...</i></a></li>
 </ul>
 </div>
-<div style="float:left; width:50%; position:relative">
+<div style="float:left; width:40%; position:relative">
 <ul style="font-size:0.8em">
 {foreach from=$imageclasslist key=id item=name}
 <li><a href="search.php?imageclass={$id|escape:url}" title="Show images classed as {$id|escape:html}">{$name|escape:html}</a></li>
@@ -50,9 +50,7 @@
 <li><a href="/statistics/breakdown.php?by=class" title="Show Image Categories"><i>more categories...</i></a></li>
 
 </ul>
-</div><br style="clear:both;"/><br/><span style="font-size:0.8em">Tip: all these searches and more 
-are available in the <a href="/search.php?form=advanced" 
-title="customisable search options">advanced search</a></span><br/><br/>
+</div><br style="clear:both;"/><br/>
 </li>
 
 {dynamic} 

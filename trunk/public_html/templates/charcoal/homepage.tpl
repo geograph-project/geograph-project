@@ -32,6 +32,10 @@
 <a href="/photo/{$pictureoftheday.gridimage_id}"
 title="Click to see full size photo"
 >{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
+
+<div style="float:left">
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/80x15.png" /></a>
+</div>
 <div class="potdtitle"><a href="/photo/{$pictureoftheday.gridimage_id}"
 title="Click to see full size photo"
 >{$pictureoftheday.image->title}</a> by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname}</a></div>
@@ -136,14 +140,26 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 
 	{box colour="333" style="margin-bottom:12px;"}
 	<div class="titlebox">
-	<h1>Welcome to the new look!</h1>
+	<h1>One MILLION images!</h1>
 	</div>
 	{/box}
 	
 	{box colour="f4f4f4"}
 	<div class="infobox_alt">
-	
-	<h2>Excuse our dust!</h2>
+
+	<div style="float:right; width:150px; text-align:center">
+<a href="/photo/1006884" target="_blank" title="NN7421 : Minor road near Aberuchill by Dr Richard Murray"><img alt="NN7421 : Minor road near Aberuchill by Dr Richard Murray" 
+src="http://s0.geograph.org.uk/geophotos/01/00/68/1006884_2adf8fc7_120x120.jpg" width="120" height="83" /></a><br/>
+	<small>Minor road near Aberuchill<br/><a href="/gridref/NN7421">NN7421</a><br/> by <a href="/profile/21212">Dr Richard Murray</a></small>	
+	</div>
+
+	<p>We have just passed 1 million images on the site!
+ This is the image that took us over the 1,000,000 mark.</p>
+<p>
+ Thanks to the <a href="/credits/">many contributors</a> that have made this milesone possible!</p>
+
+
+	<h2 style="clear:right">Welcome to the new look!</h2>
 	<p>We are still developing our new look which 
 	we hope will make Geograph easier and more fun
 	to use!</p>

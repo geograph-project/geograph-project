@@ -62,6 +62,15 @@ $displayclasses =  array(
 $smarty->assign_by_ref('displayclasses',$displayclasses);
 
 
+if (isset($_GET['legacy']) && isset($CONF['curtail_level']) && $CONF['curtail_level'] > 4 ) {
+        header("HTTP/1.1 503 Service Unavailable");
+        die("server busy, please try later");
+}
+
+
+
+
+
 if (isset($_GET['set_legacy'])) {
 	$_SESSION['legacy'] = intval($_GET['set_legacy']);
 	header("Location: /search.php");
@@ -905,8 +914,7 @@ if (isset($_GET['set_legacy'])) {
 			from queries_featured
 				inner join queries using (id)
 			where approved = 1 
-			and log(datediff(now(),created))/20 < rand()
-			order by created desc limit 5");
+			order by rand() limit 5");
 		$smarty->assign_by_ref('featured',$arr2);
 	}
 	if ($USER->registered) {

@@ -34,11 +34,5 @@ top submitters this week.</p>
 </table>
 
 
-<h2 style="margin-top:2em;margin-bottom:0"><a name="submission_graph"></a>Overall Status</h2>
-<p>Here's a graph of photo submissions for the past 12 months...<br/>
-<img src="/img/submission_graph.png" width="480" height="161" alt="submission graph"/>
-</p>
-
-
  		
 {include file="_std_end.tpl"}

@@ -94,10 +94,12 @@ if ($i) {
 	exit;
 }
 
-
-
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hr cache
+if ($is_mod) {
+	$smarty->caching = 0;
+} else {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*24; //24hr cache
+}
 
 if (!$smarty->is_cached($template, $cacheid))
 {
