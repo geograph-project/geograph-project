@@ -569,7 +569,7 @@ class GridImage
 		
 		$title=htmlentities2($this->title);
 		
-		if (!empty($CONF['curtail_level']) && empty($GLOBALS['USER']->user_id)) {
+		if (!empty($CONF['curtail_level']) && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
 			$fullpath = cachize_url("http://".$CONF['CONTENT_HOST'].$fullpath);
 		} elseif ($returntotalpath)
 			$fullpath="http://".$CONF['CONTENT_HOST'].$fullpath;
@@ -723,7 +723,7 @@ class GridImage
 			}
 			$thumbpath = $return['server'].$thumbpath;
 			
-			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->user_id)) {
+			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
 				$thumbpath = cachize_url($thumbpath);
 			}
 			
@@ -904,7 +904,7 @@ class GridImage
 			}
 			$thumbpath = $return['server'].$thumbpath;
 			
-			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->user_id)) {
+			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
 				$thumbpath = cachize_url($thumbpath);
 			}
 			
@@ -1088,7 +1088,7 @@ class GridImage
 			}
 			$thumbpath = $return['server'].$thumbpath;
 			
-			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->user_id)) {
+			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
 				$thumbpath = cachize_url($thumbpath);
 			}
 			

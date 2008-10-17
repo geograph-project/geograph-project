@@ -194,7 +194,7 @@ class SearchCriteria
 		if ((($x == 0 && $y == 0 ) || $this->limit8) && $this->orderby) {
 			switch ($this->orderby) {
 				case 'random':
-					$sql_order = ' rand('.($this->crt_timestamp_ts).') ';
+					$sql_order = ' crc32(gi.gridimage_id) ';
 					$this->sphinx['impossible']++;
 					break;
 				case 'dist_sqd':
@@ -270,9 +270,9 @@ class SearchCriteria
 			}
 			$statuslist="'".implode("','", explode(',',$this->limit2))."'";
 			$sql_where .= "moderation_status in ($statuslist) ";
-			if ($this->limit2 = 'geograph') {
+			if ($this->limit2 == 'geograph') {
 				$this->sphinx['filters']['status'] = $this->limit2;
-			} elseif ($this->limit2 = 'accepted') {
+			} elseif ($this->limit2 == 'accepted') {
 				$this->sphinx['filters']['status'] = 'supplemental';
 			}
 		} 
