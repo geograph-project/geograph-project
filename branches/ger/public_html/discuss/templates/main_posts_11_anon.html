@@ -1,0 +1,104 @@
+<script type="text/javascript">
+<!--
+function checkBrowser()
+{
+this.ver=navigator.appVersion;
+this.dom=document.getElementById?1:0;
+this.ie7=(this.ver.indexOf("MSIE 7")>-1 && this.dom)?1:0;
+this.ie6=(this.ver.indexOf("MSIE 6")>-1 && this.dom)?1:0;
+this.ie5=(this.ver.indexOf("MSIE 5")>-1 && this.dom)?1:0;
+this.ns6=(this.dom && parseInt(this.ver)>= 5)?1:0;
+this.safari=(this.ver.indexOf("safari")>-1)?1:0;
+this.ns4=(document.layers && !this.dom)?1:0;
+this.opr=(navigator.userAgent.toLowerCase().indexOf("opera")!=-1)?1:0;
+return this
+}
+
+function paste_strinL(strinL,isQuote){
+if(strinL=='' && isQuote==1) alert('First highlight the text you wish to quote, then click the \'quote\' link');
+else{
+if (isQuote==1) {
+strinL='[i]'+strinL+'[/i]'+'\n';
+}
+if (isQuote==2) {
+strinL='[b]'+strinL+'[/b]'+'\n';
+}
+var isForm=document.forms["postMsg"];
+if (isForm) {
+var input=document.forms["postMsg"].elements["postText"];
+input.value=input.value+strinL;
+}
+else alert('{$l_accessDenied}');
+}
+return false;
+}
+
+function pasteSel() {
+if(document.getSelection) window.selection=document.getSelection();
+else if(document.selection) window.selection=document.selection.createRange().text;
+else if(window.getSelection) window.selection=window.getSelection();
+else window.selection='';
+}
+
+function getQuotation() {
+var bw=new checkBrowser();
+if (bw.ns6 || bw.ie5 || bw.ie6 || bw.ie7 || bw.ns4 || bw.safari || bw.opr) {
+document.writeln('<a href="#" onclick="return paste_strinL(window.selection,1)" onMouseMove="pasteSel()">{$l_quoting}<'+'/a>');
+}
+}
+
+function confirmDelete(id,what){
+var mes,url='forum={$forum}&topic={$topic}&';
+if(what==0) { mes='{$l_areYouSureDeletePost}'; url=url+'action=delmsg&page={$page}&post='+id; } else { mes='{$l_areYouSureDeleteTopic}'; url=url+'action=deltopic'; }
+if(confirm(mes))
+document.location='{$main_url}/{$indexphp}'+url;
+}
+
+//-->
+</script>
+
+<div align=center>
+<table class=forums>
+<tr>
+<td width=25 align=center class=caption3><img src="{$static_url}/img/forum_icons/{$forumIcon}" width=16 height=16 alt=""></td>
+<td width="100%" class=caption3><b><a title="Topic listing for {$forumName}" href="{$linkToForums}">{$forumName}</a></b> / <b>{$topic_reverse}{$topicName}</b></td>
+</tr>
+</table>
+
+<table class=tbTransparent>
+<tr><td class=tbTransparent><span class=txtSm><b>{$pageNav}</b></span></td></tr>
+</table>
+
+{$gridThumbs}
+
+<table class=forums>
+<tr>
+<td width="15%" class=caption4>{$l_author}</td>
+<td width="85%" class=caption4>{$l_message}</td>
+</tr>
+
+{$listPosts}
+
+</table>
+
+<br/>
+<table class=forums>
+<tr>
+<td width=25 align=center class=caption3><img src="{$static_url}/img/forum_icons/{$forumIcon}" width=16 height=16 alt=""></td>
+<td width="100%" class=caption3><b><a title="Forum Listing" href="{$main_url}/{$indexphp}">{$sitename}</a></b> / <b><a title="Topic listing for {$forumName}" href="{$linkToForums}">{$forumName}</a></b> / <b>{$topic_reverse}{$topicName}</b></td>
+</tr>
+</table>
+
+<table class=tbTransparent>
+<tr><td class=tbTransparent><span class=txtSm><b>{$pageNav}</b></span></td></tr>
+</table>
+<br/>
+</div>
+
+
+<p align=right><a href="/search.php?do=1&amp;topic_id={$topic}">View Image Detail</a>
+- <a href="/search.php?do=1&amp;topic_id={$topic}&amp;displayclass=slide">View as Slide Show</a>
+- <a title="View these images in Google Earth" href="/search.php?do=1&amp;topic_id={$topic}&amp;kml" class="xml-kml">KML</a>
+- <a title="RSS Feed for images" href="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;rss" class="xml-rss">photo RSS</a>
+- <a title="RSS Feed for this Topic" href="/discuss/syndicator.php?topic={$topic}" class="xml-rss">gallery RSS</a></p>
+

@@ -1,0 +1,47 @@
+<VirtualHost *>
+    DocumentRoot /var/www/geograph_static/public_html
+    ServerName s0.www.geograph.org.uk
+    ServerAlias s1.www.geograph.org.uk
+    ServerAlias s2.www.geograph.org.uk
+    ServerAlias s3.www.geograph.org.uk
+    ServerAlias s9.www.geograph.org.uk
+    ServerAlias s0.geograph.org.uk
+    ServerAlias s1.geograph.org.uk
+    ServerAlias s2.geograph.org.uk
+    ServerAlias s3.geograph.org.uk
+    ServerAlias s9.geograph.org.uk
+    ServerAlias cluster3.geograph.org.uk
+    ServerAlias s0.www.scone.geograph.org.uk
+    ServerAlias s0.www.toast.geograph.org.uk
+    ServerAlias s0.www.crumpet.geograph.org.uk
+
+    #create logformat like combined but with our user id and script timing
+    LogFormat "%{X-Forwarded-For}i %l %{user_id}n %t \"%r\" \"%v\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{php_timing}n" geograph
+
+    CustomLog /var/www/geograph_static/logs/access_log geograph
+    ErrorLog /var/www/geograph_static/logs/error_log
+
+    <Directory /var/www/geograph_static/public_html/>
+	DirectoryIndex index.php
+        Options -Indexes
+        Options FollowSymLinks
+        AllowOverride None
+
+        FileETag MTime Size
+
+        ExpiresActive On
+        ExpiresByType image/gif "access plus 30 days"
+        ExpiresByType image/png "access plus 30 days"
+        ExpiresByType image/jpeg "access plus 180 days"
+        ExpiresByType text/css "access plus 180 days"
+        ExpiresByType application/x-javascript "access plus 180 days"
+    </Directory>
+
+    RewriteEngine on
+
+    RewriteRule ^/(.*)\.v[0-9]+\.(css|js)$ /staticfile.php [qsa,L]
+
+    ErrorDocument 404 /error.php
+    ErrorDocument 403 /error.php
+
+</VirtualHost>

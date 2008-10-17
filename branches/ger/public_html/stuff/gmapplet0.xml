@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+<ModulePrefs title="Geograph British Isles" 
+                description="Very basic Mapplet - loads Geograph pictures into the current view as you move the main map."
+                title_url="http://www.geograph.org.uk/"
+                author="Barry Hunter"
+                author_affiliation="Developer"
+                author_email="geograph@barryhunter.co.uk"
+                author_link="http://www.nearby.org.uk/blog/"
+                screenshot="http://www.geograph.org.uk/img/gmapplet0.png"
+                thumbnail="http://www.geograph.org.uk/img/gmapplet0-thumb.png"
+                height="150">
+  <Require feature="sharedmap"/>
+  <Require feature="analytics"/>
+</ModulePrefs>
+<Content type="html"><![CDATA[
+
+<table bgcolor="#000066" border="0" width="100%"><tr bgcolor="#000066"><td bgcolor="#000066">
+<a href="http://www.geograph.org.uk/"><img src="http://www.geograph.org.uk/templates/basic/img/logo.gif" height="74" width="257" border="0"/></a>
+</td></tr></table>
+
+<div style="font-size:0.8em">
+	<p><i>The Geograph British Isles project aims to collect geographically representative photographs and information for every square kilometre of the UK and the Republic of Ireland, and you can be part of it.</i></p>
+
+	<p>This Maplet allows full access to the hundreds of thousends of images contributed to Geograph since March 2005, Zoom into the map to see the all the photos, only 15 images will be shown on the map at any one time.</p>
+
+	<p>Click on the Thumbnails to view a bigger image, and follow the link to view the full resolution image on the geograph website.</p>
+
+	<p><b>Join us now at: <a href="http://www.geograph.org.uk/">www.geograph.org.uk</a></b></p>
+</div>
+
+<div id="message"></div>
+
+<script>
+	var map = new GMap2();
+	var point = new GLatLng(53.13359, -2.504883);
+	map.setCenter(point, 6);
+	var geoXml = null;
+	var britishisles = new GLatLngBounds(new GLatLng(49, -12.2),new GLatLng(62, 2.3));
+
+	function updateMessage() {
+		document.getElementById('message').innerHTML = "Layer Loaded.";
+	}
+
+	function updateMapView(bounds) {
+		document.getElementById('message').innerHTML = "Loading...";
+
+		var southWest = bounds.getSouthWest();
+		var northEast = bounds.getNorthEast();
+
+		url = "/earth.php?BBOX="+southWest.lng().toFixed(3)+","+southWest.lat().toFixed(3)+","+northEast.lng().toFixed(3)+","+northEast.lat().toFixed(3);
+
+		var span = bounds.toSpan();
+
+		if (span.lng() < 7 && span.lat() < 7) {
+			if (span.lng() > 0.001 && span.lat() > 0.001) {
+				if (bounds.intersects(britishisles)) {	
+					if (geoXml != null) {
+						map.removeOverlay(geoXml);
+					}
+					geoXml = new GGeoXml("http://www.geograph.org.uk"+url,updateMessage);
+
+					map.addOverlay(geoXml);
+					document.getElementById('message').innerHTML = "Loaded. Displaying thumbnails...";
+				} else {
+					document.getElementById('message').innerHTML = "Pan to the British Isles to see thumbnails.";
+				}
+			} else {
+				document.getElementById('message').innerHTML = "Zoom out to see thumbnails.";
+			}
+		} else {
+			document.getElementById('message').innerHTML = "Zoom in on British Isles to see thumbnails.";
+		}
+		_IG_Analytics("UA-172738-3", url);
+	}
+	
+	map.getBoundsAsync(updateMapView);
+
+	GEvent.addListener(map, "moveend", function() {
+		map.getBoundsAsync(updateMapView);
+	});
+	
+	
+	_IG_Analytics("UA-172738-3", "/stuff/gmapplet0.xml");
+</script>
+
+]]></Content>
+</Module>
