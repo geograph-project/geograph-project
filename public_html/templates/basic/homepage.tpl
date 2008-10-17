@@ -8,6 +8,11 @@
 representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and 
 <a href="/explore/places/2/">Ireland</a>, and you can be part of it.</p>
 
+<div class="interestBox" style="padding:2px; background-color:lightgreen; text-align:center">
+Just looking for <a href="http://www.geograph.org.uk/search.php?i=2087426">some</a> 
+<a href="http://www.geograph.org.uk/search.php?i=3927740">interesting</a>
+<a href="http://www.geograph.org.uk/search.php?i=3927790">images</a>?
+</div>
 
 
 <h3>Getting started...</h3>

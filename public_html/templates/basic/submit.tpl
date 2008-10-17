@@ -532,29 +532,6 @@ AttachEvent(window,'load',onChangeImageclass,false);
 <p>Your photo has identification number [<a href="/photo/{$gridimage_id}">{$gridimage_id}</a>]</p>
 </form> 
 
-{if !$credit_realname && $show_comp}
-<br/><br/>
-
-<form enctype="multipart/form-data" action="/submit_competition.php" method="get" name="theForm">
-
-
-<div class="interestBox" style="border:2px solid black">
-	Note: <i>Entry is only open to UK permanent residents <b>aged 18 and under, in full time education</b></i>
-	<hr/>
-	<img src="http://{$static_host}/templates/basic/img/hamster.gif" width="161" height="174" align="right"/>
-	<h2><span style="color:#000066">‘Bag the Most Grid Squares’ <br/>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp; ‘Best Photograph’</span></h2>
-	
-	<p>If you wish to enter the Mapping News competitions, simply enter the provided code into the box below</p>
-
-	<p>Competition Code: <input type="hidden" name="id" value="{$gridimage_id}"/> <input type="text" name="code" size="5"/> 
-	<input type="submit" value="Go"/>
-	</p>
-	<hr/>
-	<small>Opening Dates: <i>between 1 April 2008 and 30 September 2008</i>,  ({external href="http://`$http_host`/help/competition_terms" text="full terms" target="_blank"}).</small>
-</div>
-
-{/if}
 
 
 <p><a title="submit another photo" href="/submit.php">Click here to submit a new photo...</a></p>

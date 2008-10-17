@@ -19,12 +19,6 @@
  
 <p>This page is intended as a quick start guide for using Geograph in the Classroom, please get in <a href="/contact.php">contact</a> if you have an idea for something to add here.</p>
 
-<div class="breakoutbox">
-<b>‘Bag the Most Grid Squares’ <br/>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp; ‘Best Photograph’</b><br/><br/>
-The Ordnance Survey in conjuction with Geograph is running a pair of competitions, by contributing to the project pupils could win a Digital Camera!<br/><br/>
-Find out more in the Spring 2008 issue of {external href="http://www.ordnancesurvey.co.uk/oswebsite/education/mappingnews/" text="Mapping News"}.<br/> <small>(available in PDF format at the above link)</small></div>
-
  
 
 <h3>Understanding the Map</h3>

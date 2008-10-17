@@ -24,7 +24,7 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 3 ) {
+if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 5 ) {
 	header("HTTP/1.1 503 Service Unavailable");
 	die("server busy, please try later");
 }
