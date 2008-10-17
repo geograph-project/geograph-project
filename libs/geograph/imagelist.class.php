@@ -396,8 +396,8 @@ class RecentImageList extends ImageList {
 		
 		$start = $db->getOne("select recent_id from gridimage_recent where 1 $where");
 		
-		$offset=rand(1,230);
-		$ids = range($start+$offset,$start+$offset+20);
+		$offset=rand(1,200);
+		$ids = range($start+$offset,$start+$offset+50);
 		shuffle($ids);
 		
 		$id_string = join(',',array_slice($ids,0,5));
