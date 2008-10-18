@@ -176,7 +176,7 @@ class SearchCriteria
 					}
 				}
 			}
-			if ($this->limit8 && $this->limit8 < 20 && $this->limit8 > -20) {
+			if ($this->limit8 && $this->limit8 <= 20 && $this->limit8 > -20) {
 				//possible, but calculate it JIT
 				$this->sphinx['x'] = $x;
 				$this->sphinx['y'] = $y;
