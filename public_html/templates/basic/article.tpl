@@ -19,6 +19,12 @@
 <h2>User Contributed Articles</h2>
 </div>
 
+{if $desc}
+	<div style="position:relative; float:right; background-color:silver; padding:4px">
+		Showing <b>articles{$desc|escape:'html'}</b> / <a href="/article/">Show all</a> 
+	</div>
+{/if}
+
 {if $user->registered} 
 <div class="interestBox">
 	<ul style="margin:0px;"><li><a href="/article/edit.php?page=new">Create your own Article</a></li></ul>

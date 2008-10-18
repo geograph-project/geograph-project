@@ -1047,7 +1047,7 @@ if (isset($_GET['set_legacy'])) {
 				return $a."km";
 			}
 			if ($_GET['form'] == 'text') {
-				$d = array(1,2,3,4,5,7,8,10,20);
+				$d = array(1,2,3,4,5,7,8,10,20,30);
 				$d = array_combine($d,array_map('addkm',$d));
 			} else {
 				$d = array(1,2,3,4,5,7,8,10,20,30,40,50,71,100,2000);
