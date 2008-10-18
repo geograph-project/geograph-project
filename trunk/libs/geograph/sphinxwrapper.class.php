@@ -168,8 +168,9 @@ class sphinxwrapper {
 			$this->filters['grid_reference'] = "(".join(" | ",$grs).")";
 		} else {
 			#$this->filters['grid_reference'] = $gr2;
-			for($x=$e-10;$x<=$e+10;$x+=10) {
-				for($y=$n-10;$y<=$n+10;$y+=10) {
+			$d = intval($data['d']/10)*10;
+			for($x=$e-$d;$x<=$e+$d;$x+=10) {
+				for($y=$n-$d;$y<=$n+$d;$y+=10) {
 					list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,2,$reference_index,false);
 					$grs[] = $gr2;
 				}
