@@ -86,26 +86,32 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (!empty($_GET['user_id']) && preg_match('/^\d+$/',$_GET['user_id'])) {
 		$where = "AND article.user_id = {$_GET['user_id']}";
 		$smarty->assign('extra', "&amp;user_id={$_GET['user_id']}");
+		$smarty->assign('desc', ", by specific user");
 	
 	} elseif (!empty($_GET['q']) && preg_match('/^[\w ]+$/',$_GET['q'])) {
 		$where = "AND title LIKE '%{$_GET['q']}%'";
 		$smarty->assign('extra', "&amp;q={$_GET['q']}");
+		$smarty->assign('desc', ", matching [ {$_GET['q']} ]");
 	
 	} elseif (!empty($_GET['cat_q']) && preg_match('/^\![\w ]+$/',$_GET['cat_q'])) {
-		$where = "AND category_name NOT LIKE '%".str_replace('1','',$_GET['cat_q'])."%'";
+		$where = "AND category_name NOT LIKE '%".str_replace('!','',$_GET['cat_q'])."%'";
 		$smarty->assign('extra', "&amp;cat_q={$_GET['cat_q']}");
+		$smarty->assign('desc', ", not matching [ {$_GET['cat_q']} ]");
 	
 	} elseif (!empty($_GET['cat_word']) && preg_match('/^\![\w ]+$/',$_GET['cat_word'])) {
 		$where = 'AND category_name NOT REGEXP '.$db->Quote('[[:<:]]'.str_replace('!','',$_GET['cat_word']).'[[:>:]]');
 		$smarty->assign('extra', "&amp;cat_word={$_GET['cat_word']}");
+		$smarty->assign('desc', ", category not matching word [ {$_GET['cat_word']} ]");
 	
 	} elseif (!empty($_GET['cat_q']) && preg_match('/^[\w ]+$/',$_GET['cat_q'])) {
 		$where = "AND category_name LIKE '%{$_GET['cat_q']}%'";
 		$smarty->assign('extra', "&amp;cat_q={$_GET['cat_q']}");
+		$smarty->assign('desc', ", category matching [ {$_GET['cat_q']} ]");
 	
 	} elseif (!empty($_GET['cat_word']) && preg_match('/^[\w ]+$/',$_GET['cat_word'])) {
 		$where = 'AND category_name REGEXP '.$db->Quote('[[:<:]]'.$_GET['cat_word'].'[[:>:]]');
 		$smarty->assign('extra', "&amp;cat_word={$_GET['cat_word']}");
+		$smarty->assign('desc', ", matching word [ {$_GET['cat_word']} ]");
 	
 	} else {
 		$where = '';

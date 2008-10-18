@@ -18,6 +18,12 @@
 <div class="interestBox">
 <h2>User Contributed Articles</h2>
 </div>
+{if $desc}
+	<div style="position:relative; float:right; background-color:silver; padding:4px">
+		Showing <b>articles{$desc|escape:'html'}</b> / <a href="/article/">Show all</a> 
+	</div>
+{/if}
+
 
 <ul class="explore">
 {foreach from=$list item=item}
