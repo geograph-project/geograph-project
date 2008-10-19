@@ -155,6 +155,10 @@ if (!$smarty->is_cached($template, $cacheid))
 
 }
 
+if ($USER->registered && (empty($_GET['user_id']) || $_GET['user_id'] != $USER->user_id)) {
+	$smarty->assign('article_count', $db->CacheGetOne(3600,"SELECT count(*) FROM article WHERE user_id = ".$USER->user_id));
+}
+
 $smarty->display($template, $cacheid);
 
 	

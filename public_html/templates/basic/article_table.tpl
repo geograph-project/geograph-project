@@ -23,6 +23,12 @@
 	<div style="position:relative; float:right; background-color:silver; padding:4px">
 		Showing <b>articles{$desc|escape:'html'}</b> / <a href="/article/?table">Show all</a> 
 	</div>
+{else}
+	{dynamic}{if $article_count}
+		<div style="position:relative; float:right; background-color:silver; padding:4px">
+			<a href="/article/?table&amp;user_id={$user->user_id}">show only yours [{$article_count}]</a>
+		</div>
+	{/if}{/dynamic}
 {/if}
 
 
