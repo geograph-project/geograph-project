@@ -1,4 +1,5 @@
 {assign var="page_title" value="Explore Geograph Themes"}
+{assign var="meta_description" value="We have many interesting ways to explore geograph images here..."}
 {include file="_std_begin.tpl"}
 
 	<div style="padding:5px;background:#dddddd;position:relative; float:right;"><form method="get" action="/browse.php" style="display:inline">

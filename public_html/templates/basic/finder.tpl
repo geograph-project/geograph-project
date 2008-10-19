@@ -1,4 +1,5 @@
 {assign var="page_title" value="Finder"}
+{assign var="meta_description" value="At Geograph we have lots of content, here we have put together a list of search facilities to find the right content for you."}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
 .tab {

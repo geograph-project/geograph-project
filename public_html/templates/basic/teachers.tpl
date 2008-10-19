@@ -1,4 +1,5 @@
-{assign var="page_title" value="Teachers"}
+{assign var="page_title" value="Geograph for Teachers"}
+{assign var="meta_description" value="Links to various resources on the Geograph website, of particular interest to Geography and History teachers."}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
 .breakoutbox {
@@ -19,6 +20,7 @@
  
 <p>This page is intended as a quick start guide for using Geograph in the Classroom, please get in <a href="/contact.php">contact</a> if you have an idea for something to add here.</p>
 
+<p>Probably mostly of interest for Geography and maybe History lessens, but also finds plenty of other uses such as inspiration for creative writing.</p>
  
 
 <h3>Understanding the Map</h3>
@@ -35,7 +37,7 @@
 	<li><a href="/games/">Geograph Games</a> - fun games involving images and maps</li>
 	<li><a href="/help/imagine">Imagine Slideshow</a> - imagine the landscape behind the map</li>
 	<li><a href="/activities/compare.php">Compare-a-Pair</a> - compare and contrast two similar pictures</li>
-	<li><a href="/gallery/">Galleries</a> - hand picked images on various themes</li>
+	<li><a href="/content/">Compiliations</a> - user contributed collections of images on various themes</li>
 </ul>
 
 

@@ -1,4 +1,5 @@
 {assign var="page_title" value="Submit to Geograph"}
+{assign var="meta_description" value="General overview and introduction to the submit process used to contribute images."}
 {include file="_std_begin.tpl"}
 {literal}
 <style type="text/css">

@@ -1,4 +1,5 @@
 {assign var="page_title" value="Progress So far..."}
+{assign var="meta_description" value="Short overview in numbers of the progress in photographing every grid square of the British Isles."}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">

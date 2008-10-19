@@ -3,6 +3,7 @@
 {else}
         {assign var="page_title" value="Map Browsing :: British Isles"}
 {/if}
+{assign var="meta_description" value="Geograph coverage map of the British Isles, showing where we have photos, green squares are yet to be photographed."}
 {include file="_std_begin.tpl"}
 <meta name="robots" content="noindex, nofollow"/>
 {literal}<style type="text/css">
