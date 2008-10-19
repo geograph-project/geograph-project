@@ -1,5 +1,5 @@
 {assign var="page_title" value="`$references.$ri` :: Geograph Gazetteer"}
-{assign var="meta_description" value="Geograph page for finding images in `$references.$ri`"}
+{assign var="meta_description" value="Geograph page for finding creative commons licenced images of `$references.$ri`"}
 {include file="_std_begin.tpl"}
  
 <h2><a href="/explore/places/">Places Directory</a> &gt; {$references.$ri}</h2>

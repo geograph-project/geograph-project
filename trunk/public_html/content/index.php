@@ -87,6 +87,9 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	if (!empty($_GET['user_id']) && preg_match('/^\d+$/',$_GET['user_id'])) {
 		$where = "content.user_id = {$_GET['user_id']}";
 		$extra .= "&amp;user_id={$_GET['user_id']}";
+		$profile=new GeographUser($_GET['user_id']);
+		$title = "By ".($profile->realname);
+		
 	} elseif (!empty($_GET['q'])) {
 
 		// --------------
@@ -250,6 +253,33 @@ if (!empty($_GET['debug'])) {
 	$smarty->assign('words', array_slice($a,0,50));
 
 	if (!empty($_SERVER['QUERY_STRING']) && preg_match("/^[\w&;=+ %]/",$_SERVER['QUERY_STRING'])) {
+	
+		$order = (isset($_GET['order']) && ctype_lower($_GET['order']))?$_GET['order']:'updated';
+		switch ($order) {
+			case 'views': 
+				$title = "Most Viewed"; break;
+			case 'created':
+				$title = "Recently Created"; break;
+			case 'title':
+				$title = "By Content Title";break;
+			case 'updated':
+			default: 
+				$title = "Recently Updated";
+		}
+		
+		if (!empty($_GET['user_id']) && preg_match('/^\d+$/',$_GET['user_id'])) {
+			$profile=new GeographUser($_GET['user_id']);
+			$title = "By ".($profile->realname);
+		} elseif (!empty($_GET['q'])) {
+			$sphinx = new sphinxwrapper(trim($_GET['q']));
+			$title = "Matching [ ".htmlentities($sphinx->q)." ]";
+		} elseif (isset($_GET['docs'])) {
+			$title = "Geograph Documents";
+		} elseif (isset($_GET['loc'])) {
+			$title = "Location Specific Content";
+		}
+	
+		$smarty->assign('title', $title);
 		$smarty->assign('extra', "&amp;".htmlentities($_SERVER['QUERY_STRING']));
 	}
 }

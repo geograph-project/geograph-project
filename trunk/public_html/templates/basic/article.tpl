@@ -1,4 +1,5 @@
 {assign var="page_title" value="Articles"}
+{assign var="meta_description" value="User contributed articles, combining Geograph photos with maps and more."}
 {assign var="rss_url" value="/article/feed/recent.rss"}
 {include file="_std_begin.tpl"}
 

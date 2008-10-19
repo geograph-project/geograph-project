@@ -1,4 +1,10 @@
+{if $title}
+{assign var="page_title" value="Geograph Content, `$title`"}
+{assign var="meta_description" value="User contributed images collections, `$title`. "}
+{else}
 {assign var="page_title" value="Content submitted to Geograph"}
+{assign var="meta_description" value="User contributed images collections. Showcasing a wide range of subject areas, from map symbols to lighthouses!"}
+{/if}
 {assign var="rss_url" value="/content/feed/recent.rss"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">

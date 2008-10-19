@@ -1,4 +1,5 @@
 {assign var="page_title" value="Sitemap"}
+{assign var="meta_description" value="Very long page linking to all the main areas of Geograph. "}
 {include file="_std_begin.tpl"}
 
  <h2>Geograph Sitemap</h2>
@@ -53,9 +54,10 @@
 	<li><a title="List of all images" href="/sitemap/geograph.html">view the <b>full list</b> of images</a></li>
 	<li><a title="Games" href="/games/"><b>play</b> with geograph images</a></li>
 	<li><a title="Draggable Map" href="/mapper/">interactive <b>draggable map</b></a></li>
-	<li><a href="/activities/">explore our Activities section</a> <sup style="color:red">New!</sup></li>
+	<li><a href="/activities/">explore our Activities section</a></li>
 	<li><a href="/help/imagine">Through The Square Window...</a></li>
 	<li><a href="/explore/places/">Explore the <b>placename gazetteer</b></a></li>
+	<li><a href="/explore/searches.php">A list of <b>featured searches</b></a> <sup style="color:red">New!</sup></li>
 </ul>
 
 {if $enable_forums}

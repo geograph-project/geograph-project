@@ -251,7 +251,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		$smarty->assign($page);
 		if (!empty($page['extract'])) {
-			$smarty->assign('meta_description', $page['extract']);
+			$smarty->assign('meta_description', "User contributed article about, ".$page['extract']);
 		}
 		
 		if (!empty($page['gridsquare_id'])) {

@@ -209,8 +209,14 @@ if ($template=='profile.tpl')
 			}
 		}
 
-		$smarty->assign('page_title', 'Profile for '.$profile->realname);
-		$smarty->assign('meta_description', 'Profile page for '.$profile->realname.', listing recent images, statistics and links to further information.');
+		if (!empty($_GET['a'])) {
+			$smarty->assign('page_title', 'Profile for '.$_GET['a'].'/'.$profile->realname);
+			$smarty->assign('meta_description', 'Profile page for '.$_GET['a'].'/'.$profile->realname.', listing recent images, statistics and links to further information.');
+		} else {
+			$smarty->assign('page_title', 'Profile for '.$profile->realname);
+			$smarty->assign('meta_description', 'Profile page for '.$profile->realname.', listing recent images, statistics and links to further information.');
+		}
+		
 		$smarty->assign_by_ref('profile', $profile);
 		
 		$images=new ImageList;
