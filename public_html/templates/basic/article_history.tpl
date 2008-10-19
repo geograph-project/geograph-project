@@ -37,6 +37,7 @@
 
 <form method="get" action="/article/diff.php">
 <input type="hidden" name="page" value="{$url}"/>
+<input type="submit" value="Compare Selected Revisions"/>
 <table class="report sortable" id="reportlist" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5" style="font-size:0.9em">
 <thead>
 	<tr>
@@ -53,11 +54,11 @@
 <tbody>
 	{foreach from=$list item=item}
 	<tr>
-		<td><input type="radio" name="1" value="{$item.article_revision_id}" {if ($item.approved != 1 || $item.licence == 'none') && !$isadmin && ($item.user_id != $user->user_id)} disabled="disabled"{/if}/></td>
+		<td><input type="radio" name="1" value="{$item.article_revision_id}" {if ($item.approved < 1 || $item.licence == 'none') && !$isadmin && ($item.user_id != $user->user_id)} disabled="disabled"{/if}/></td>
 		
-		<td><input type="radio" name="2" value="{$item.article_revision_id}" {if ($item.approved != 1 || $item.licence == 'none') && !$isadmin && ($item.user_id != $user->user_id)} disabled="disabled"{/if}/></td>
+		<td><input type="radio" name="2" value="{$item.article_revision_id}" {if ($item.approved < 1 || $item.licence == 'none') && !$isadmin && ($item.user_id != $user->user_id)} disabled="disabled"{/if}/></td>
 		
-		<td sortvalue="{$item.title}"><b>{if $item.approved != 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'}" href="/article/{$item.url}">{$item.title}</a></b>{if $item.approved != 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}hidden{/if}){/if}</td>
+		<td sortvalue="{$item.title}"><b>{if $item.approved < 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'}" href="/article/{$item.url}">{$item.title}</a></b>{if $item.approved < 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}hidden{/if}){/if}</td>
 		
 		<td><small>{$item.category_name|truncate:30}</small></td>
 		<td align="right">{$item.content_length}</td>

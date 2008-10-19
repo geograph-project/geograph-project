@@ -219,7 +219,7 @@ select article.*,realname,gs.grid_reference
 from article 
 	left join user using (user_id)
 	left join gridsquare gs on (article.gridsquare_id = gs.gridsquare_id)
-where ( (licence != 'none' and approved = 1) 
+where ( (licence != 'none' and approved > 0) 
 	or user.user_id = {$USER->user_id}
 	or $isadmin )
 	and url = ".$db->Quote($_GET['page']).'

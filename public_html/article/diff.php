@@ -49,7 +49,7 @@ $page = $db->getRow("
 select article.article_id,title,url,article.user_id,extract,licence,approved,realname
 from article 
 	left join user using (user_id)
-where ( (licence != 'none' and approved = 1) 
+where ( (licence != 'none' and approved >0) 
 	or user.user_id = {$USER->user_id}
 	or $isadmin )
 	and url = ".$db->Quote($_GET['page']).'
@@ -104,7 +104,7 @@ function getRevisionArray($aid,$revid) {
 	from article_revisions 
 		inner join user on (modifier = user.user_id)
 		left join article_cat on (article_revisions.article_cat_id = article_cat.article_cat_id)
-	where ( (licence != 'none' and approved = 1) 
+	where ( (licence != 'none' and approved > 0) 
 		or user.user_id = {$USER->user_id}
 		or $isadmin )
 		and article_id = {$aid}

@@ -38,7 +38,7 @@
 <h3>{$item.category_name}</h3>
 <ul class="content">
 {/if}
-	<li><b>{if $item.approved != 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'}" href="/article/{$item.url}">{$item.title}</a></b>{if $item.approved != 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}Not publicly visible{/if}){/if}
+	<li><b>{if $item.approved < 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'}" href="/article/{$item.url}">{$item.title}</a></b>{if $item.approved < 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}Not publicly visible{/if}){/if}
 	<small>by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}">{$item.realname}</a></small>
 		{if $isadmin || $item.user_id == $user->user_id}
 			<small><small><br/>&nbsp;&nbsp;&nbsp;&nbsp; 
@@ -50,7 +50,7 @@
 			[<a title="Edit History for {$item.title}" href="/article/history.php?page={$item.url}">History</a>]
 		{/if} 
 		{if $isadmin}
-			{if $item.approved == 1}
+			{if $item.approved > 0}
 				[<a href="/article/?page={$item.url}&amp;approve=0">Disapprove</a>]
 			{else}
 				[<a href="/article/?page={$item.url}&amp;approve=1">Approve</a>{if $item.approved == 0 and $item.licence != 'none'} <b>Ready to be Approved</b>{/if}]

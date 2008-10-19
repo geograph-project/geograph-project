@@ -306,7 +306,7 @@ if (isset($_GET['set_legacy'])) {
 		$page = $db->getRow("
 		select concat('in Article: ',title) as title,content
 		from article
-		where ( (licence != 'none' and approved = 1) 
+		where ( (licence != 'none' and approved > 0) 
 			or article.user_id = {$USER->user_id}
 			or $isadmin )
 			and article_id = ".$db->Quote($_GET['article_id']).'

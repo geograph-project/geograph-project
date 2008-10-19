@@ -57,7 +57,7 @@ if ($isadmin) {
 		$db->Execute($sql);
 		
 		$article_id = $db->getOne("SELECT article_id FROM article WHERE url = ".$db->Quote($_GET['page']));
-		if ($a == 1) {
+		if ($a > 0) {
 			require_once('geograph/event.class.php');
 			new Event("article_updated", $article_id);
 		
@@ -126,7 +126,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		left join article_cat on (article.article_cat_id = article_cat.article_cat_id)
 		left join article_lock as l
 			on(article.article_id=l.article_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) and l.user_id != {$USER->user_id})
-	where ((licence != 'none' and approved = 1) 
+	where ((licence != 'none' and approved > 0) 
 		or user.user_id = {$USER->user_id}
 		or ($isadmin and approved != -1))
 		$where
