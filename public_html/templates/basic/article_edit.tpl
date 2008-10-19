@@ -87,7 +87,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 	</select> 
 	
 
-	{if $errors.licence}</div>{/if}
+	{if $errors.article_cat_id}</div>{/if}
 </div>
 
 
