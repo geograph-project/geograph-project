@@ -64,7 +64,11 @@ $cacheid = '';
 		limit 1");
 		$ADODB_FETCH_MODE = $prev_fetch_mode;
 		
-		if (count($page) && ($page['user_id'] == $USER->user_id || $USER->hasPerm('moderator'))) {
+		if (count($page) && (
+				$page['user_id'] == $USER->user_id || 
+				$USER->hasPerm('moderator') ||
+				$page['approved'] == 2
+			) ) {
 			$lockedby = $db->getOne("
 				select 
 					m.realname
@@ -122,7 +126,14 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 
 	
 	$updates = array();
-	foreach (array('url','title','licence','content','publish_date','article_cat_id','gridsquare_id','extract') as $key) {
+	
+	if ($page['approved'] == 2) {
+		$keys = array('content');
+	} else {
+		$keys = array('url','title','licence','content','publish_date','article_cat_id','gridsquare_id','extract');
+	}
+	
+	foreach ($keys as $key) {
 		if ($page[$key] != $_POST[$key]) {
 			$updates[] = "`$key` = ".$db->Quote($_POST[$key]); 
 			$smarty->assign($key, $_POST[$key]);

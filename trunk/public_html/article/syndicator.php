@@ -44,7 +44,7 @@ if (!empty($_GET['format']) && in_array($_GET['format'], $valid_formats))
 $extension = ($format == 'KML')?'kml':'xml';
 
 
-$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/article-{$format}-".empty($_GET['admin']).".$extension";
+$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/article-{$format}-".md5(serialize($_GET)).".$extension";
 
 
 $rss = new UniversalFeedCreator();
@@ -57,14 +57,20 @@ $rss->link = "http://{$_SERVER['HTTP_HOST']}/article/";
 	
 $rss->description = "Recently updated articles on Geograph British Isles"; 
 
-if (empty($_GET['admin'])) {
-	$sql_where = "licence != 'none' and approved = 1";
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/syndicator.php?format=$format";
-
-} else {
+if (!empty($_GET['admin'])) {
 	$sql_where = "licence = 'none' or approved = 0";
 	$rss->title = 'Geograph Pending Articles'; 
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/syndicator.php?format=$format&amp;admin=1";
+
+} elseif (!empty($_GET['revisions'])) {
+	$sql_where = "approved > -1";
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/syndicator.php?format=$format&amp;revisions=1";
+
+} else {
+	$sql_where = "licence != 'none' and approved > 0";
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/feed/recent.".strtolower($format);
+	
+
 }
 
 if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
@@ -99,11 +105,22 @@ while (!$recordSet->EOF)
 	
 	
 	$item->title = $recordSet->fields['title'];
+	
+	if (!empty($_GET['revisions'])) {
+		$realname = $db->getOne("
+			select realname
+			from article_revisions
+				left join user on (article_revisions.modifier = user.user_id)
+			where article_id = {$recordSet->fields['article_id']} and update_time = '{$recordSet->fields['update_time']}'");
+	
+		$item->title .= " [rev #$version by $realname]";
+		$recordSet->fields['url'] = "history.php?page={$recordSet->fields['url']}";
+	} 
 
 	//htmlspecialchars is called on link so dont use &amp;
 	$item->link = "http://{$_SERVER['HTTP_HOST']}/article/{$recordSet->fields['url']}";
 	
-	$item->guid = $item->link."#$version";
+	$item->guid = $item->link."?v=$version";
 
 	
 	$description = $recordSet->fields['extract'];

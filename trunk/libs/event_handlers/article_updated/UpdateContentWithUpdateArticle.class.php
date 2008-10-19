@@ -49,7 +49,7 @@ class UpdateContentWithUpdateArticle extends EventHandler
 		select article.*,category_name
 		from article 
 		left join article_cat on (article.article_cat_id = article_cat.article_cat_id)
-		where (licence != 'none' and approved = 1) and article_id = $article_id");
+		where (licence != 'none' and approved > 0) and article_id = $article_id");
 		
 		if (count($page)) {
 			$updates = array();
@@ -112,7 +112,15 @@ class UpdateContentWithUpdateArticle extends EventHandler
 			$sql = "INSERT INTO `article_stat` SET article_id = {$page['article_id']}, words = $words, images = $images ON DUPLICATE KEY UPDATE words = $words, images = $images"; 
 			
 			$db->Execute($sql);
-		} 
+		} else {
+			$updates = array();
+			$updates[] = "`foreign_id` = $article_id";
+			$updates[] = "`type` = 'article'";
+			
+			$sql = "DELETE FROM `content` WHERE ".implode(' AND ',$updates);
+			
+			$db->Execute($sql);
+		}
 	
 		//return true to signal completed processing
 		//return false to have another attempt later
