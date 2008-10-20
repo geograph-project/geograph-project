@@ -39,9 +39,11 @@ if (isset($_GET['email']))
 if (isset($_POST['reminder']))
 {
 	$smarty->assign('email', stripslashes(trim($_POST['reminder'])));
+	$smarty->assign('password1', stripslashes(trim($_POST['password1'])));
+	$smarty->assign('password2', stripslashes(trim($_POST['password2'])));
 	
 	$errors=array();
-	$ok=$USER->sendReminder($_POST['reminder'], $errors);
+	$ok=$USER->sendReminder($_POST['reminder'], $_POST['password1'], $_POST['password2'], $errors);
 	if ($ok)
 	{
 		$smarty->assign('sent', true);
