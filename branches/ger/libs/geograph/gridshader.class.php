@@ -162,8 +162,12 @@ class GridShader
 							//we only create squares for land
 							if ($percent_land>0)
 							{
-								$sql="insert into gridsquare (grid_reference,reference_index,x,y,percent_land) ".
-									"values('{$gridref}','{$reference_index}',$gridx,$gridy,$percent_land)";
+								##$sql="insert into gridsquare (grid_reference,reference_index,x,y,percent_land) ".
+								##	"values('{$gridref}','{$reference_index}',$gridx,$gridy,$percent_land)";
+								#$sql="insert into gridsquare (grid_reference,reference_index,x,y,percent_land,point_xy) ".
+								#	"values('{$gridref}','{$reference_index}',$gridx,$gridy,$percent_land,GeomFromText(POINT($gridx $gridy)))";
+								$sql="insert into gridsquare (grid_reference,reference_index,x,y,percent_land,point_xy) ".
+									"values('{$gridref}','{$reference_index}',$gridx,$gridy,$percent_land,GeomFromText(CONCAT('POINT(',$gridx,' ',$gridy,')')))";
 								$this->db->Execute($sql);
 
 								$created++;
