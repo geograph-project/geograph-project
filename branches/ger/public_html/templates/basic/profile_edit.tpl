@@ -92,6 +92,32 @@
 </fieldset>
 
 <fieldset>
+<legend>Password</legend>
+<div class="field">
+	{if $errors.oldpassword}<div class="formerror"><p class="error">{$errors.oldpassword}</p>{/if}
+		<label for="oldpassword">Current password:</label>
+		<input id="oldpassword" name="oldpassword" type="password" value="{$profile->oldpassword|escape:'html'}" size="35"/>
+		<div class="fieldnotes">Your old password is needed for changing your password.</div>
+	{if $errors.oldpassword}</div>{/if}
+</div>
+<div class="field">
+	{if $errors.password1}<div class="formerror"><p class="error">{$errors.password1}</p>{/if}
+		<label for="password1">New password:</label>
+		<input id="password1" name="password1" type="password" value="{$profile->password1|escape:'html'}" size="35"/>
+		<div class="fieldnotes">Enter your new password here. Leave empty if you want to keep your old password.</div>
+	{if $errors.password1}</div>{/if}
+</div>
+<div class="field">
+	{if $errors.password2}<div class="formerror"><p class="error">{$errors.password2}</p>{/if}
+		<label for="password2">Confirm the new password:</label>
+		<input id="password2" name="password2" type="password" value="{$profile->password2|escape:'html'}" size="35"/>
+		<div class="fieldnotes">Enter your new password here in order to avoid spelling errors.</div>
+	{if $errors.password2}</div>{/if}
+</div>
+
+</fieldset>
+
+<fieldset>
 <legend>More about you</legend>
 
 

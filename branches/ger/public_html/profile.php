@@ -74,6 +74,9 @@ if (isset($_REQUEST['edit']))
 	else
 	{
 		$profile=new GeographUser($USER->user_id);
+		$profile->oldpassword='';
+		$profile->password1='';
+		$profile->password2='';
 	}
 	$smarty->assign('pagesizes', array(5,10,15,20,30,50));
 	$smarty->assign('delays', array(2,3,4,5,6,10,12));
