@@ -108,7 +108,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$second = current($first);
 	$ri = $second['reference_index'];
 	
-	$letterlength = 3 - $ri; #todo should this be auto-realised by selecting a item from gridprefix? (or a grid_reference)
+	$letterlength = $CONF['gridpreflen'][$ri];
 
 	$smarty->assign('ofe', $letterlength + 1);
 	$smarty->assign('ofn', $letterlength + 3);

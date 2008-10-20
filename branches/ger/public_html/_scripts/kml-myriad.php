@@ -69,7 +69,7 @@ $sql_where .= ' and reference_index = '.$prefix['reference_index'].' ';
 
 
 
-$letterlength = 3 - $prefix['reference_index']; #should this be auto-realised by selecting a item from gridprefix?
+$letterlength = $CONF['gridpreflen'][$prefix['reference_index']];
 
 $sql_column = "concat(substring(grid_reference,1,$letterlength),substring(grid_reference,$letterlength+1,1) div 2 * 2,substring(grid_reference,$letterlength+3,1) div 2 * 2)";
 

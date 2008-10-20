@@ -60,7 +60,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		route.route_id,
 		name,
 		count(*) as `count`,
-		count(distinct substring(gridref,1,3 - reference_index)) as myriads,
+		count(distinct substring(gridref,1,length(gridref)-4)) as myriads,
 		orderby,
 		route_group
 	from
