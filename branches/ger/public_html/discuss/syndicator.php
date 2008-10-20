@@ -60,14 +60,14 @@ $opt_sortBy = (!empty($_GET['sortBy']) && $_GET['sortBy'] == 1)?1:0;
 $opt_first  = (!empty($_GET['first']))?1:0;
 $opt_noLimit  = (!empty($_GET['nolimit']))?1:0;
 $opt_when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
-$opt_gridref = (isset($_GET['gridref']) && preg_match('/^([A-Z]{1,2})(\d\d)(\d\d)$/',$_GET['gridref']))?$_GET['gridref']:'';
+$opt_gridref = (isset($_GET['gridref']) && preg_match('/^([A-Z]{1,3})(\d\d)(\d\d)$/',$_GET['gridref']))?$_GET['gridref']:'';
 
 
 $extension = ($format == 'KML')?'kml':'xml';
 
 if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-t{$_GET['topic']}-{$format}-{$opt_expand}-{$opt_noLimit}-{$opt_when}.$extension";
-} elseif (!empty($_GET['gridref']) && preg_match('/^([A-Z]{1,2})(\d\d)(\d\d)$/',$_GET['gridref'])) {
+} elseif (!empty($_GET['gridref']) && preg_match('/^([A-Z]{1,3})(\d\d)(\d\d)$/',$_GET['gridref'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-f{$_GET['gridref']}-{$format}-{$opt_sortBy}-{$opt_first}-{$opt_when}.$extension";
 	$_GET['forum'] = $CONF['forum_gridsquare'];
 } elseif (!empty($_GET['forum']) && is_numeric($_GET['forum'])) {

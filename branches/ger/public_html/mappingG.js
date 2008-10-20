@@ -138,7 +138,7 @@ function checkGridReferences(that_form) {
 } 
 
 function checkGridReference(that,showmessage) {
-	GridRef = /\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/;
+	GridRef = /\b([a-zA-Z]{1,3}) ?(\d{2,5})[ \.]?(\d{2,5})\b/;
 	ok = true;
 	if (that.value.length > 0) {
 		myArray = GridRef.exec(that.value); 

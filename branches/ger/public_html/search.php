@@ -112,7 +112,7 @@ if (isset($_GET['set_legacy'])) {
 		if (preg_match('/^[A-Z_%]{0,2}[\d_%]{1,4}$/',$_GET['first']) ) {
 
 			//replace for myriads
-			$gr = preg_replace('/^([A-Z]{1,2}|%)(\d|_)(\d|_)$/','$1$2_$3_',$_GET['first']);
+			$gr = preg_replace('/^([A-Z]{1,3}|%)(\d|_)(\d|_)$/','$1$2_$3_',$_GET['first']);//FIXME?
 
 			//replace for numberical squares
 			$gr = preg_replace('/\w*(\d{4})/','%$1',$gr);
@@ -500,7 +500,7 @@ if (isset($_GET['set_legacy'])) {
 		$q=trim($_GET['q']);
 	}
 	
-	if (!isset($_GET['location']) && !empty($CONF['metacarta_auth']) && strpos($q,'near ') === FALSE && substr_count($q,' ') >= 1 && !preg_match("/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$q)) {
+	if (!isset($_GET['location']) && !empty($CONF['metacarta_auth']) && strpos($q,'near ') === FALSE && substr_count($q,' ') >= 1 && !preg_match("/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$q)) { ///FIXME?
 		$urlHandle = connectToURL('ondemand.metacarta.com',80,"/webservices/QueryParser/JSON/basic?version=1.0.0&bbox=-14.1707,48.9235,6.9506,61.7519&query=".rawurlencode($q),$CONF['metacarta_auth'],6);
 		if ($urlHandle) {
 			$r = '';
@@ -798,7 +798,7 @@ if (isset($_GET['set_legacy'])) {
 
 		if (!$engine->countOnly && $pg == 1 ) {
 			if ($engine->criteria->searchclass == 'GridRef' && $engine->criteria->issubsetlimited == false
-					&& preg_match('/^\w{1,2}\d{4}/',$engine->criteria->searchq)
+					&& preg_match('/^\w{1,3}\d{4}/',$engine->criteria->searchq)
 					&& ( $engine->criteria->orderby == 'dist_sqd' || $engine->criteria->orderby == '' )
 					&& strpos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
 				$smarty->assign('nofirstmatch', true);
