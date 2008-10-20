@@ -772,6 +772,13 @@ class SearchCriteria_Placename extends SearchCriteria
 	var $matches;
 	var $placename;
 	
+	function compact() {
+		parent::compact();
+		
+		unset($this->matches);
+		unset($this->placename);
+	}
+	
 	function setByPlacename($placename) {
 		$gaz = new Gazetteer();
 		
@@ -820,6 +827,13 @@ class SearchCriteria_Postcode extends SearchCriteria
 class SearchCriteria_County extends SearchCriteria
 {
 	var $county_name;
+	
+	function compact() {
+		parent::compact();
+		
+		unset($this->county_name);
+	}
+	
 	function setByCounty($county_id) {
 		$db = $this->_getDB();
 		
