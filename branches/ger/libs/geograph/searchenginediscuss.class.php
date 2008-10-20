@@ -94,7 +94,8 @@ $sql = <<<END
 		ORDER BY $sql_order
 		LIMIT $page,$pgsize
 END;
-#print "<BR><BR>$sql";
+if (!empty($_GET['debug']))
+	print "<BR><BR>$sql";
 		//lets find some photos
 		$this->results=array();
 		$i=0;
@@ -117,6 +118,8 @@ END;
 			$i++;
 		}
 		$recordSet->Close(); 
+if (!empty($_GET['debug']))
+	print_r($this->results);
 	}
 }
 

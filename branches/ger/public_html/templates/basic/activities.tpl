@@ -1,4 +1,5 @@
 {assign var="page_title" value="Activities"}
+{assign var="meta_description" value="Here at Geograph we have developed a number of interactive activies to explore our images, check back regually to see the latest additions"}
 {include file="_std_begin.tpl"}
 
 <h2>Activities on Geograph</h2>

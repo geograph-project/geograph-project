@@ -559,9 +559,8 @@ class GridImage
 			//fails quickly if not using memcached!
 			$size =& $memcache->name_get('is',$mkey);
 			if (!$size) {
-
 				$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
-			} else {
+			
 				//fails quickly if not using memcached!
 				$memcache->name_set('is',$mkey,$places,$memcache->compress,$memcache->period_long);
 			}
@@ -569,13 +568,14 @@ class GridImage
 		}
 		
 		$title=htmlentities2($this->title);
-				
-		if ($returntotalpath)  
+		
+		if (!empty($CONF['curtail_level']) && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
+			$fullpath = cachize_url("http://".$CONF['CONTENT_HOST'].$fullpath);
+		} elseif ($returntotalpath)
 			$fullpath="http://".$CONF['CONTENT_HOST'].$fullpath;
 		
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
-			
-			
+		
 		return $html;
 	}
 	
@@ -593,19 +593,16 @@ class GridImage
 		$mkey = "{$this->gridimage_id}:F";
 		//fails quickly if not using memcached!
 		$size =& $memcache->name_get('is',$mkey);
-		if ($size) {
-			$result = $size[0]>$size[1];
-		} else {
+		if (!$size) {
 			$fullpath=$this->_getFullpath();
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
-			$result = $size[0]>$size[1];
 			
 			//fails quickly if not using memcached!
 			$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long);
 		}
 		$this->cached_size = $size;
+		$result = $size[0]>$size[1];
 		return $result;
-		
 	}
 	
 	/**
@@ -725,6 +722,11 @@ class GridImage
 				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
+			
+			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
+				$thumbpath = cachize_url($thumbpath);
+			}
+			
 			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]}/>";
 		}
 		
@@ -901,6 +903,11 @@ class GridImage
 				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
+			
+			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
+				$thumbpath = cachize_url($thumbpath);
+			}
+			
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 			
 			$return['html']=$html;
@@ -1080,6 +1087,11 @@ class GridImage
 				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
+			
+			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
+				$thumbpath = cachize_url($thumbpath);
+			}
+			
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 			
 			//fails quickly if not using memcached!

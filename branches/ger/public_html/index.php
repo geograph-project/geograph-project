@@ -30,7 +30,9 @@ $smarty = new GeographPage;
 customGZipHandlerStart();
 
 $template='homepage.tpl';
-$cacheid=rand(1,5); //so we get a selection of homepages
+if ($CONF['template']!='charcoal') {
+ $cacheid=rand(1,5); //so we get a selection of homepages
+}
 
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))

@@ -62,6 +62,15 @@ $displayclasses =  array(
 $smarty->assign_by_ref('displayclasses',$displayclasses);
 
 
+if (isset($_GET['legacy']) && isset($CONF['curtail_level']) && $CONF['curtail_level'] > 4 ) {
+        header("HTTP/1.1 503 Service Unavailable");
+        die("server busy, please try later");
+}
+
+
+
+
+
 if (isset($_GET['set_legacy'])) {
 	$_SESSION['legacy'] = intval($_GET['set_legacy']);
 	header("Location: /search.php");
@@ -297,7 +306,7 @@ if (isset($_GET['set_legacy'])) {
 		$page = $db->getRow("
 		select concat('in Article: ',title) as title,content
 		from article
-		where ( (licence != 'none' and approved = 1) 
+		where ( (licence != 'none' and approved > 0) 
 			or article.user_id = {$USER->user_id}
 			or $isadmin )
 			and article_id = ".$db->Quote($_GET['article_id']).'
@@ -900,6 +909,13 @@ if (isset($_GET['set_legacy'])) {
 		$arr = $db->GetAssoc("select imageclass,concat(imageclass,' [',c,']') from category_stat
 			where c > 15 order by rand() limit 5");
 		$smarty->assign_by_ref('imageclasslist',$arr);
+	
+		$arr2 = $db->GetAll("select id,searchdesc
+			from queries_featured
+				inner join queries using (id)
+			where approved = 1 
+			order by rand() limit 5");
+		$smarty->assign_by_ref('featured',$arr2);
 	}
 	if ($USER->registered) {
 		if (!$db) {
@@ -1031,7 +1047,7 @@ if (isset($_GET['set_legacy'])) {
 				return $a."km";
 			}
 			if ($_GET['form'] == 'text') {
-				$d = array(1,2,3,4,5,7,8,10,20);
+				$d = array(1,2,3,4,5,7,8,10,20,30);
 				$d = array_combine($d,array_map('addkm',$d));
 			} else {
 				$d = array(1,2,3,4,5,7,8,10,20,30,40,50,71,100,2000);

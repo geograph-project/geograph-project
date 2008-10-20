@@ -1,4 +1,5 @@
 {assign var="page_title" value="Weekly Leaderboard :: $heading"}
+{assign var="meta_description" value="A list of all the contributors submitting images in the last week, ordered by `$heading`."}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 

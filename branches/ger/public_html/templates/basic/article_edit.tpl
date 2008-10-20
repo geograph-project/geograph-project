@@ -30,9 +30,17 @@ AttachEvent(window,'load',setupSubmitForm,false);
 
  
 <fieldset>
-<legend>Create/Edit Article</legend>
+{if $approved == 2}
+<legend>Edit Public Article</legend>
 
-{if $title != 'New Article'}
+{else}
+
+
+{if $title == 'New Article'}
+<legend>Create Article</legend>
+{else}
+<legend>Edit Article</legend>
+
 <div class="field">
 	{if $errors.url}<div class="formerror"><p class="error">{$errors.url}</p>{/if}
 	 
@@ -87,7 +95,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 	</select> 
 	
 
-	{if $errors.licence}</div>{/if}
+	{if $errors.article_cat_id}</div>{/if}
 </div>
 
 
@@ -112,6 +120,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 	
 	{if $errors.extract}</div>{/if}
 </div>
+{/if}
 
 <div class="field">
 	{if $errors.content}<div class="formerror"><p class="error">{$errors.content}</p>{/if}

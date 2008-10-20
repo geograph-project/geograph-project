@@ -438,6 +438,11 @@ class GeographMap
 		//always get an image
 		$token=$this->getToken();
 		$file="http://{$CONF['TILE_HOST']}/tile.php?map=$token";
+
+		if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 2 && empty($GLOBALS['USER']->user_id)) {
+			$file = cachize_url($file);
+		}
+
 		if (isset($real)) 
 			 $this->type_or_user = $real;
 
@@ -958,7 +963,7 @@ class GeographMap
 		$green=imagecolorallocate ($imgkey, $this->colour['land'][0],$this->colour['land'][1],$this->colour['land'][2]);
 		imagefill($imgkey,0,0,$green);
 
-		foreach (array(0,1,2,3,4,5,7,10,20,40,80) as $idx => $o) {
+		foreach (array(0,1,2,3,4,5,7,10,20,40) as $idx => $o) {
 			switch (true) {
 				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break; 
 				case $o == 1: $r=255; $g=255; $b=0; break; 
@@ -1021,7 +1026,7 @@ class GeographMap
 		$counts = $db->getCol($sql);
 
 		$colour=array();
-		$last=null;
+		$last=$lastcolour=null;
 		for ($p=0; $p<count($counts); $p++)
 		{
 			$o = $counts[$p];
@@ -1059,13 +1064,20 @@ class GeographMap
 				case $o == 2: $r=255; $g=196; $b=0; break; 
 				case $o == 3: $r=255; $g=132; $b=0; break; 
 				case $o == 4: $r=255; $g=64; $b=0; break; 
-				case $o <  7: $r=225; $g=0; $b=0; break; 
-				case $o < 10: $r=200; $g=0; $b=0; break; 
-				case $o < 20: $r=168; $g=0; $b=0; break; 
-				case $o < 40: $r=136; $g=0; $b=0; break; 
-				case $o < 80: $r=112; $g=0; $b=0; break; 
+				case $o <  7: $r=225; $g=0; $b=0; break; #5-6
+				case $o < 10: $r=200; $g=0; $b=0; break; #7-9
+				case $o < 20: $r=168; $g=0; $b=0; break; #10-19
+				case $o < 40: $r=136; $g=0; $b=0; break; #20-39
+				case $o < 80: $r=112; $g=0; $b=0; break; #40-79
+				default: $r=80; $g=0; $b=0; break;
 			}
-			$last = $colour[$o]=imagecolorallocate($img, $r,$g,$b);
+			$key = "$r,$g,$b";
+			if ($key == $last) {
+				$colour[$o] = $lastcolour;
+			} else {
+				$lastcolour = $colour[$o]=imagecolorallocate($img, $r,$g,$b);
+			}
+			$last = $key;
 		}
 
 		//figure out what we're mapping in internal coords
@@ -1893,7 +1905,7 @@ END;
 				where 
 				CONTAINS( GeomFromText($rectangle),	point_xy)
 				and percent_land<>0 
-				group by gs.grid_reference order by y,x";
+				group by gs.gridsquare_id order by y,x";
 		}
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 

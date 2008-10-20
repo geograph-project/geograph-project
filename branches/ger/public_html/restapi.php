@@ -92,7 +92,7 @@ class RestAPI
 		$gridimage_id=intval($this->params[0]);
 		
 		$image=new GridImage;
-		if ($image->loadFromId($gridimage_id))
+		if ($image->loadFromId($gridimage_id,1))
 		{
 			if ($image->moderation_status=='geograph' || $image->moderation_status=='accepted')
 			{
@@ -105,7 +105,14 @@ class RestAPI
 				echo "<user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".htmlentities($image->realname).'</user>';
 				
 				echo preg_replace('/alt=".*?" /','',$image->getFull());
-
+				
+				$details = $image->getThumbnail(120,120,2);
+				echo '<thumbnail>'.$details['server'].$details['url'].'</thumbnail>';
+				echo '<taken>'.htmlentities($image->imagetaken).'</taken>';
+				echo '<submitted>'.htmlentities($image->submitted).'</submitted>';
+				echo '<category>'.htmlentities2($image->imageclass).'</category>';
+				echo '<comment><![CDATA['.htmlentities2($image->comment).']]></comment>';
+				
 				$this->endResponse();
 			}
 			else

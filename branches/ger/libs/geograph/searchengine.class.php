@@ -421,6 +421,9 @@ END;
 				// construct the count sql
 				if (preg_match("/group by ([\w\,\(\)\/ ]+)/i",$sql_where,$matches)) {
 					$sql_where2 = preg_replace("/group by ([\w\,\(\)\/ ]+)/i",'',$sql_where);
+					if ($matches[1] == 'gridimage_id') {
+						$matches[1] = 'gi.gridimage_id';
+					}
 					$sql = "/* i{$this->query_id} */ SELECT count(DISTINCT {$matches[1]}) FROM gridimage_search as gi $sql_from $sql_where2";
 				} else {
 					$sql = "/* i{$this->query_id} */ SELECT count(*) FROM gridimage_search as gi $sql_from $sql_where";

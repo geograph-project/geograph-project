@@ -49,7 +49,7 @@ $page = $db->getRow("
 select article.article_id,title,url,article.user_id,extract,licence,approved,realname
 from article 
 	left join user using (user_id)
-where ( (licence != 'none' and approved = 1) 
+where ( (licence != 'none' and approved > 0) 
 	or user.user_id = {$USER->user_id}
 	or $isadmin )
 	and url = ".$db->Quote($_GET['page']).'

@@ -335,7 +335,12 @@ function smarty_function_ordinal($i) {
 function smarty_modifier_revision($filename) {
 	global $REVISIONS,$CONF;
 	if (isset($REVISIONS[$filename])) {
-		return "http://{$CONF['STATIC_HOST']}".preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
+		$url = "http://{$CONF['STATIC_HOST']}".preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
+		
+		if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 4 && strpos($filename,'css') === FALSE && empty($GLOBALS['USER']->user_id)) {
+			$url = cachize_url($url);
+		}
+		return $url;
 	} else {
 #return "http://{$CONF['STATIC_HOST']}".preg_replace('/\.(js|css)$/',".v".time().".$1",$filename);
         	return $filename;

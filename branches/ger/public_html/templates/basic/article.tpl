@@ -1,4 +1,5 @@
 {assign var="page_title" value="Articles"}
+{assign var="meta_description" value="User contributed articles, combining Geograph photos with maps and more."}
 {assign var="rss_url" value="/article/feed/recent.rss"}
 {include file="_std_begin.tpl"}
 
@@ -19,6 +20,18 @@
 <h2>User Contributed Articles</h2>
 </div>
 
+{if $desc}
+	<div style="position:relative; float:right; background-color:silver; padding:4px">
+		Showing <b>articles{$desc|escape:'html'}</b> / <a href="/article/">Show all</a> 
+	</div>
+{else}
+	{dynamic}{if $article_count}
+		<div style="position:relative; float:right; background-color:silver; padding:4px">
+			<a href="/article/?user_id={$user->user_id}">show only yours [{$article_count}]</a>
+		</div>
+	{/if}{/dynamic}
+{/if}
+
 {if $user->registered} 
 <div class="interestBox">
 	<ul style="margin:0px;"><li><a href="/article/edit.php?page=new">Create your own Article</a></li></ul>
@@ -38,9 +51,9 @@
 <ul class="content">
 {assign var="lastname" value=""}
 {/if}
-	<li><b>{if $item.approved != 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'}" href="/article/{$item.url}">{$item.title}</a></b>{if $item.approved != 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}Not publicly visible{/if}){/if}<br/>
+	<li><b>{if $item.approved < 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'}" href="/article/{$item.url}">{$item.title}</a></b>{if $item.approved < 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}Not publicly visible{/if}){/if}<br/>
 	<small id="att{$lastid+1}"><small style="color:lightgrey">by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}"  style="color:#6699CC">{$item.realname}</a>
-		{if $item.user_id == $user->user_id && !$item.locked_user}
+		{if (($item.user_id == $user->user_id) || $item.approved == 2) && !$item.locked_user}
 			&nbsp;&nbsp;&nbsp;&nbsp; 
 			[<a title="Edit {$item.title}" href="/article/edit.php?page={$item.url}">Edit</a>] [<a title="Edit History for {$item.title}" href="/article/history.php?page={$item.url}">History</a>]
 		{/if} 
