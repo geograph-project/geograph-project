@@ -12,51 +12,59 @@
 <table border="1" cellpadding="4" cellspacing="0" class="statstable">
 <thead><tr>
 	<th>&nbsp;</th>
-	<th>Great Britain</th>
-	<th>Ireland</th>
+	{foreach from=$references_real item=ref key=ri}
+	<th>{$ref}</th>
+	{/foreach}
 	<th><i>Total</i></th>
 </tr></thead>
 <tbody><tr>
 	<th>Images Submitted</th>
-	<td><b>{$images_total_1|thousends}</b></td>
-	<td><b>{$images_total_2|thousends}</b></td>
-	<td>{$images_total_both|thousends}</td>
+	{foreach from=$references_real item=ref key=ri}
+	<td><b>{$images_total[$ri]|thousends}</b></td>
+	{/foreach}
+	<td>{$images_total[0]|thousends}</td>
 </tr>
 <tr>
 	<th>&nbsp;[in past 7 days]</th>
-	<td><b>{$images_thisweek_1|thousends}</b></td>
-	<td><b>{$images_thisweek_2|thousends}</b></td>
-	<td>{$images_thisweek_both|thousends}</td>
+	{foreach from=$references_real item=ref key=ri}
+	<td><b>{$images_thisweek[$ri]|thousends}</b></td>
+	{/foreach}
+	<td>{$images_thisweek[0]|thousends}</td>
 </tr>
 <tr>
 	<th>1km<sup>2</sup> Grid Squares</th>
-	<td><b>{$squares_submitted_1|thousends}</b><br/>/{$squares_total_1|thousends}</td>
-	<td><b>{$squares_submitted_2|thousends}</b><br/>/{$squares_total_2|thousends}</td>
-	<td valign="top">{$squares_submitted_both|thousends}<br/>/{$squares_total_both|thousends}</td>
+	{foreach from=$references_real item=ref key=ri}
+	<td><b>{$squares_submitted[$ri]|thousends}</b><br/>/{$squares_total[$ri]|thousends}</td>
+	{/foreach}
+	<td valign="top">{$squares_submitted[0]|thousends}<br/>/{$squares_total[0]|thousends}</td>
 </tr>
 <tr>
 	<th>&nbsp;[as percentage]</th>
-	<td><b>{$percent_1}%</b></td>
-	<td><b>{$percent_2}%</b></td>
-	<td>{$percent_both}%</td>
+	{foreach from=$references_real item=ref key=ri}
+	<td><b>{$percent[$ri]}%</b></td>
+	{/foreach}
+	<td>{$percent[0]}%</td>
 </tr>
 <tr>
 	<th>&nbsp;[with geograph(s)]</th>
-	<td><b>{$geographs_submitted_1|thousends}</b></td>
-	<td><b>{$geographs_submitted_2|thousends}</b></td>
-	<td>{$geographs_submitted_both|thousends}</td>
+	{foreach from=$references_real item=ref key=ri}
+	<td><b>{$geographs_submitted[$ri]|thousends}</b></td>
+	{/foreach}
+	<td>{$geographs_submitted[0]|thousends}</td>
 </tr>
 <tr>
 	<th>Hectads<a href="/help/squares">?</a><br/>10km x 10km Squares</th>
-	<td><b>{$tenk_submitted_1|thousends}</b><br/>/{$tenk_total_1|thousends}</td>
-	<td><b>{$tenk_submitted_2|thousends}</b><br/>/{$tenk_total_2|thousends}</td>
-	<td valign="top">{$tenk_submitted_both|thousends}<br/>/{$tenk_total_both|thousends}</td>
+	{foreach from=$references_real item=ref key=ri}
+	<td><b>{$tenk_submitted[$ri]|thousends}</b><br/>/{$tenk_total[$ri]|thousends}</td>
+	{/foreach}
+	<td valign="top">{$tenk_submitted[0]|thousends}<br/>/{$tenk_total[0]|thousends}</td>
 </tr>
 <tr>
 	<th>Myriads<a href="/help/squares">?</a><br/>100km x 100km Squares</th>
-	<td><b>{$grid_submitted_1}</b><br/>/{$grid_total_1}</td>
-	<td><b>{$grid_submitted_2}</b><br/>/{$grid_total_2}</td>
-	<td>{$grid_submitted_1+$grid_submitted_2}<br/>/{$grid_total_1+$grid_total_2}</td>
+	{foreach from=$references_real item=ref key=ri}
+	<td><b>{$grid_submitted[$ri]}</b><br/>/{$grid_total[$ri]}</td>
+	{/foreach}
+	<td>{$grid_submitted[0]}<br/>/{$grid_total[0]}</td>
 </tr>
 </tbody>
 </table>
@@ -76,20 +84,24 @@
 	{/foreach}
 	</div>
 {/foreach}
-{if $marker_1}
-<div style="position:absolute;top:{$marker_1->top-8}px;left:{$marker_1->left-8}px;"><img src="http://{$static_host}/img/crosshairs.gif" alt="Centre for {$place_1.reference_name}" width="16" height="16"/></div>
+
+{foreach from=$references_real item=ref key=ri}
+{if $marker[$ri]}
+<div style="position:absolute;top:{$marker[$ri]->top-8}px;left:{$marker[$ri]->left-8}px;"><img src="http://{$static_host}/img/crosshairs.gif" alt="Centre for {$place[$ri].reference_name}" width="16" height="16"/></div>
 {/if}
-{if $marker_2}
-<div style="position:absolute;top:{$marker_2->top-8}px;left:{$marker_2->left-8}px;"><img src="http://{$static_host}/img/crosshairs.gif" alt="Centre for {$place_2.reference_name}" width="16" height="16"/></div>
-{/if}
+{/foreach}
 </div>
 </div>
 </div>
 {/if}
 
-<p>The <acronym title="the Centre of 'gravity' for all images submitted so far" style="text-decoration:underline">Geograph Centre</acronym> for images in the {$references.1} is <a href="/gridref/{$centergr_1}" title="view square {$centergr_1}">{$centergr_1}</a>, {place place=$place_1}.
+<p>The <acronym title="the Centre of 'gravity' for all images submitted so far" style="text-decoration:underline">Geograph Centre</acronym> for images is:
 
-And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {$centergr_2}">{$centergr_2}</a>, {place place=$place_2}.</p>
+
+{foreach from=$references_real item=ref key=ri}
+In {$ref} <a href="/gridref/{$centergr[$ri]}" title="view square {$centergr[$ri]}">{$centergr[$ri]}</a>, {place place=$place[$ri]}.
+{/foreach}
+</p>
     
     <h3><a name="more"></a>More Statistics</h3>
 

@@ -39,6 +39,7 @@ $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*3; //3hr cache
 
 $smarty->assign_by_ref('references',$CONF['references_all']);		
+$smarty->assign_by_ref('references_real',$CONF['references']);		
 
 $bys = array('status' => 'Classification','class' => 'Category','takenyear' => 'Date Taken','gridsq' => 'Myriad');
 $smarty->assign_by_ref('bys',$bys);
@@ -72,22 +73,24 @@ if (!$smarty->is_cached($template, $cacheid))
 	//lets add an overview map too
 	$overview=new GeographMapMosaic('overview');
 	$overview->assignToSmarty($smarty, 'overview');
-	
-	foreach (array(1,2) as $ri) {
+
+	$stats=array();
+	foreach ($CONF['references_all'] as $ri => $rname) {
+		$stats[$ri] = array();
+	}
+	foreach ($CONF['references'] as $ri => $rname) {
 		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 
-
-		$smarty->assign("images_thisweek_$ri",  $db->CacheGetOne(3*3600,"select count(*) from gridimage_search where reference_index = $ri and (unix_timestamp(now())-unix_timestamp(submitted))<604800"));
-
-		$stats= $db->CacheGetRow(3*3600,"select 
+		$newstats = $db->CacheGetRow(3*3600,"select 
 			count(*) as squares_total,
 			sum(imagecount) as images_total,
 			sum(imagecount > 0) as squares_submitted,
 			count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) as tenk_total
 		from gridsquare 
 		where reference_index = $ri and percent_land > 0");
+		$stats[$ri] = array_merge($stats[$ri], $newstats);
 
-		$stats += $db->CacheGetRow(3*3600,"select 
+		$newstats = $db->CacheGetRow(3*3600,"select 
 			count(*) as geographs_submitted,
 			count(distinct substring(grid_reference,1,$letterlength)) as grid_submitted,
 			count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) as tenk_submitted,
@@ -95,32 +98,45 @@ if (!$smarty->is_cached($template, $cacheid))
 			avg( y ) as y
 		from gridsquare 
 		where reference_index = $ri and percent_land > 0 and has_geographs > 0");
+		$stats[$ri] = array_merge($stats[$ri], $newstats);
 
-		foreach ($stats as $key => $value) {
-			$smarty->assign("{$key}_$ri",$value);
-		}
+		$stats[$ri] += array('images_thisweek' => $db->CacheGetOne(3*3600,"select count(*) from gridimage_search where reference_index = $ri and (unix_timestamp(now())-unix_timestamp(submitted))<604800"));
 
-		$smarty->assign("grid_total_$ri",  $db->CacheGetOne(24*3600,"select count(*) from gridprefix where reference_index = $ri and landcount > 0"));
-
+		$stats[$ri] += array("grid_total" => $db->CacheGetOne(24*3600,"select count(*) from gridprefix where reference_index = $ri and landcount > 0"));
 
 		$censquare = new GridSquare;
-		$ok = $censquare->loadFromPosition(intval($stats['x']),intval($stats['y']));
+		$ok = $censquare->loadFromPosition(intval($stats[$ri]['x']),intval($stats[$ri]['y']));
 
 		if ($ok) {
-			$smarty->assign("centergr_$ri",$censquare->grid_reference);
+			$stats[$ri] += array("centergr" => $censquare->grid_reference);
 
 			//find a possible place within 35km
-			$smarty->assign("place_$ri", $censquare->findNearestPlace(35000));
-			$smarty->assign("marker_$ri", $overview->getSquarePoint($censquare));
+			$stats[$ri] += array("place" => $censquare->findNearestPlace(35000));
+			$stats[$ri] += array("marker" => $overview->getSquarePoint($censquare));
 		} else {
-			$smarty->assign("centergr_$ri",'unknown');
+			$stats[$ri] += array("centergr" => 'unknown');
 		}
 	}
-	foreach (array('images_total','images_thisweek','squares_total','squares_submitted','tenk_total','tenk_submitted','geographs_submitted') as $name) {
-		$smarty->assign($name.'_both',$smarty->get_template_vars($name.'_1')+$smarty->get_template_vars($name.'_2'));
+	foreach (array('images_total','images_thisweek','squares_total','squares_submitted','tenk_total','tenk_submitted','geographs_submitted','grid_submitted','grid_total') as $name) {
+		$sum = 0;
+		foreach ($CONF['references'] as $ri => $rname) {
+			$sum += $stats[$ri][$name];
+		}
+		$stats[0] += array($name => $sum);
 	}
-	foreach (array('both','1','2') as $name) {
-		$smarty->assign('percent_'.$name,sprintf("%.3f",$smarty->get_template_vars('squares_submitted_'.$name)/$smarty->get_template_vars('squares_total_'.$name)*100));
+	foreach ($CONF['references_all'] as $ri => $rname) {
+		$sqtotal = $stats[$ri]['squares_total'];
+		$percentage = $sqtotal == 0 ? 0.0 : $stats[$ri]['squares_submitted'] / $sqtotal * 100;
+		$stats[$ri] += array('percent' => sprintf("%.3f", $percentage));
+	}
+	foreach (array('images_total','images_thisweek','squares_total','squares_submitted','tenk_total','tenk_submitted','geographs_submitted','grid_submitted','grid_total','centergr', 'place', 'marker','percent') as $name) {
+		$smarty_array = array();
+		foreach ($CONF['references_all'] as $ri => $rname) {
+			if (array_key_exists($name,$stats[$ri])) {
+				$smarty_array[$ri] = $stats[$ri][$name];
+			}
+		}
+		$smarty->assign($name,$smarty_array);
 	}
 } 
 

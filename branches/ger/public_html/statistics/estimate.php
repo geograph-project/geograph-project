@@ -27,7 +27,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
+$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))&& array_key_exists($ri, $CONF['references_all']) ?intval($_GET['ri']):0;
 
 $days = (isset($_GET['days']) && is_numeric($_GET['days']))?intval($_GET['days']):7;
 
