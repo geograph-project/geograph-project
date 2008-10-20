@@ -215,7 +215,6 @@ function updateBreakBy(that) {
 	}
 }
 
-updateBreakBy(document.theForm.orderby);
 
 var isvalue;
 var iscenter;

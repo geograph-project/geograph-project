@@ -93,3 +93,28 @@ Display:
 	</div>
 {/if}
 
+{if $engine->resultCount}
+	<br/>( Page {$engine->pagesString()}) {if $engine->criteria->searchclass != 'Special'}[<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}
+{/if}
+
+	{if $engine->fullText && $engine->criteria->searchclass != 'Special'}
+		[<a href="javascript:void(show_tree(101));" id="hide101">quick refine</a>]
+		<div class="interestBox" style="border:1px solid pink;display:none; " id="show101">
+			<form action="{$script_name}" method="get">
+				<label for="fq">New Keywords</label>: <input type="text" name="text" id="fq" size="30"{if $engine->criteria->searchtext} value="{$engine->criteria->searchtext|escape:'html'}"{/if}/>
+				<input type="submit" value="Search"/>
+				<input type="hidden" name="i" value="{$i}"/>
+				<input type="hidden" name="redo" value="1"/>
+				(<a href="/article/Word-Searching-on-Geograph">Tips</a>) - all other fields unchanged
+				
+				| <a href="javascript:void(hide_tree(101));">close</a>
+			</form>
+		</div>
+	{/if}
+	</p>
+	{if $nofirstmatch}
+	<p style="font-size:0.8em">[We have no images for {$engine->criteria->searchq|escape:"html"}, <a href="/submit.php?gridreference={$engine->criteria->searchq|escape:"url"}">Submit Yours Now</a>!]</p>
+	{/if}
+	{if $singlesquares}
+	<p style="font-size:0.8em">[<a href="/squares.php?p={math equation="900*(y-1)+900-(x+1)" x=$engine->criteria->x y=$engine->criteria->y}&amp;distance={$singlesquare_radius}">{$singlesquares} squares within {$singlesquare_radius}km have no or only one photo</a> - can you <a href="/submit.php">add more</a>?]</p>
+	{/if}

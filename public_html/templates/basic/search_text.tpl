@@ -190,9 +190,16 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
+			 <td><label for="breakby" id="l_breakby">group by</label></td> 
+			 <td colspan="2"> 
+				<select name="breakby" id="breakby" size="1"> 
+					{html_options options=$breakdowns selected=$breakby}
+				</select> then...</td> 
+		  </tr>
+		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="orderby" id="l_orderby">order by</label></td> 
 			 <td colspan="2"> 
-				<select name="orderby" id="orderby" size="1"> 
+				<select name="orderby" id="orderby" size="1" onchange="updateBreakBy(this);"> 
 					{html_options options=$sortorders selected=$orderby}
 				</select> <input type="checkbox" name="reverse_order_ind" id="reverse_order_ind" {$reverse_order_checked}/> <label for="reverse_order_ind" id="l_reverse_order_ind">reverse order</label></td> 
 		  </tr> 
@@ -209,6 +216,20 @@
   
 {literal}
 <script type="text/javascript"><!--
+
+function updateBreakBy(that) {
+	name = that.options[that.selectedIndex].value;
+	if (name == 'gridimage_id')
+		name = 'submitted';
+	ele = that.form.breakby;
+	for(q=0;q<ele.options.length;q++) {
+		enabled = (name.length && ele.options[q].value.indexOf(name) == 0) || name.length == 0;
+		ele.options[q].style.color = enabled?'':'#999999';
+		if (ele.options[q].selected && !enabled)
+			ele.selectedIndex = 0;
+	}
+}
+
 
 var isvalue;
 var iscenter;

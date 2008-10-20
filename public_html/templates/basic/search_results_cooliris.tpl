@@ -1,20 +1,7 @@
 {if $engine->currentPage > 1}{assign var="rss_url" value="/feed/results/`$i`/`$engine->currentPage`.media"}{else}{assign var="rss_url" value="/feed/results/`$i`.media"}{/if}
 {include file="_search_begin.tpl"}
-{literal}
-<style type="text/css">
-	.mbf-item { display: none; }
-</style>
-{/literal}
+
 {if $engine->resultCount}
-	<br/>( Page {$engine->pagesString()}) {if $engine->criteria->searchclass != 'Special'}[<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}
-	</p>
-	{if $nofirstmatch}
-	<p style="font-size:0.8em">[We have no images for {$engine->criteria->searchq|escape:"html"}, <a href="/submit.php?gridreference={$engine->criteria->searchq|escape:"html"}">Submit Yours Now</a>]</p>
-	{/if}
-	{if $singlesquares}
-	<p style="font-size:0.8em">[<a href="/squares.php?p={math equation="900*(y-1)+900-(x+1)" x=$engine->criteria->x y=$engine->criteria->y}&amp;distance={$singlesquare_radius}">{$singlesquares} squares within {$singlesquare_radius}km have no or only one photo</a> - can you <a href="/submit.php">add more</a>?]</p>
-	{/if}
-	
 	
 	<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="760" height="450">
 		<param name="movie" value="http://apps.cooliris.com/embed/cooliris.swf" />

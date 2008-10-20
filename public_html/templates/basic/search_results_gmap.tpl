@@ -1,8 +1,7 @@
 {include file="_search_begin.tpl"}
 
 {if $engine->resultCount}
-	<br/>( Page {$engine->pagesString()}) {if $engine->criteria->searchclass != 'Special'}[<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}
-	</p>
+
 	<div id="map" style="width:100%; height:500px; position:relative;"></div>
 	{if $engine->results}{literal}
 	<script type="text/javascript">

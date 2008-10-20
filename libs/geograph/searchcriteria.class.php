@@ -72,6 +72,14 @@ class SearchCriteria
 		'order' => ''
 	);
 	
+	function compact() {
+		unset($this->db);
+		unset($this->is_multiple);
+		unset($this->sphinx);
+		unset($this->sql);
+		unset($this->crt_timestamp_ts);
+	}
+	
 	function getSQLParts() 
 	{
 		global $CONF;
@@ -240,11 +248,42 @@ class SearchCriteria
 		if ($this->breakby) {
 			$breakby = preg_replace('/_(year|month|decade)$/','',$this->breakby);
 			$breakby = preg_replace('/^submitted/','gridimage_id',$breakby);
-			if (strpos($sql_order,' desc') !== FALSE)
+			
+			if (strpos($sql_order,' desc') !== FALSE) {
 				$breakby .= ' desc';
-			if ($breakby != $sql_order && !preg_match('/^(\w+)\+$/i',$this->breakby) ) 
+				$sorder2 = " DESC";
+			} else {
+				$sorder2 = " ASC";
+			}
+			
+			switch (str_replace(' desc','',$breakby)) {
+				case 'gridimage_id':
+				case 'submitted': 
+					$sorder = '@id';
+					break;
+				case 'x':
+					$sorder = 'wgs84_long';
+					break;
+				case 'y':
+					$sorder = 'wgs84_lat';
+					break;
+				case 'imagetaken':
+					$sorder = 'takenstamp';
+					break;
+				case 'imageclass':
+					$sorder = 'classcrc';
+					break;
+				case 'realname':
+				case 'title':
+				case 'grid_reference':
+				default: 
+					$this->sphinx['impossible']++;
+			}
+			
+			if ($breakby != $sql_order && !preg_match('/^(\w+)\+$/i',$this->breakby) ) {
 				$sql_order = $breakby.($sql_order?", $sql_order":'');
-			$this->sphinx['impossible']++; //todo - should be possible, just cant be bothered yet!
+				$this->sphinx['sort'] = "$sorder $sorder2".($this->sphinx['sort']?", {$this->sphinx['sort']}":'');
+			}
 		}
 		
 		$sql_where_start = $sql_where;
