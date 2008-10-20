@@ -4,15 +4,9 @@
 <h2>Welcome to Geograph British Isles</h2>
 
 <div style="width:60%;float:left;padding-right:5px;position:relative">
-<p>The Geograph British Isles project aims to collect geographically
+<p style="margin-top:2px;">The Geograph British Isles project aims to collect geographically
 representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and 
 <a href="/explore/places/2/">Ireland</a>, and you can be part of it.</p>
-
-<div class="interestBox" style="padding:2px; background-color:lightgreen; text-align:center">
-Just looking for <a href="http://www.geograph.org.uk/search.php?i=2087426">some</a> 
-<a href="http://www.geograph.org.uk/search.php?i=3927740">interesting</a>
-<a href="http://www.geograph.org.uk/search.php?i=3927790">images</a>?
-</div>
 
 
 <h3>Getting started...</h3>
@@ -27,10 +21,10 @@ Just looking for <a href="http://www.geograph.org.uk/search.php?i=2087426">some<
 <ul>
 	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a></li>
 	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
-	<li><a title="Photo Gallery" href="/gallery/">view some <b>themed galleries</b></a></li>
+	<li><a title="Submitted Content" href="/content/">view <b>submitted content and articles</b></a></li>
 	<li><a title="List of all pages" href="/help/sitemap">view the <b>full list</b> of pages</a></li>
+	<li><a title="Features Searches" href="/explore/searches">browse <b>featured collections</b> of images</a></li>
 </ul>
-    
 
 <h3>Interacting with other software...</h3>
 <ul>
@@ -43,6 +37,15 @@ Just looking for <a href="http://www.geograph.org.uk/search.php?i=2087426">some<
 </div>
 
 <div style="width:35%;float:left;font-size:0.8em;position:relative">
+
+<div style="padding:2px;background:#bbbbbb;position:relative; text-align:center">
+<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day</h3>
+<a href="/photo/{$pictureoftheday.gridimage_id}"
+title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(220,170)}</a><br/>
+
+<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a><br/>
+by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname|escape:'html'}</a> for <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></div>
+
 
 <div style="padding:5px;background:#dddddd;position:relative">
 <h3 style="margin-bottom:0;">What is Geographing?</h3>
@@ -67,10 +70,7 @@ we hope you'll enjoy being a part of this great project
 
 </div>
 
-<div style="margin-top:10px;padding:5px;background:#ffdddd;position:relative">
-<h3>Yahoo Find of the Year</h3>
-<p>Geograph has been judged as Yahoo's Find of the Year 2006 in the <a href="http://uk.promotions.yahoo.com/finds2006/travel/">"Travel"</a> category.</p>
-</div>
+
 
 </div>
 
@@ -89,6 +89,12 @@ Recently completed hectads:
 <span class="nowrap"><b>{$stats.fewphotos|thousends} photographed squares</b> with <b>fewer than 4 photos</b></span>, add yours now!
 
 </div><br/>
+
+
+<div style="margin-top:10px;font-size:0.8em;padding:5px;background:#ffdddd;position:relative">
+<h3>Yahoo Find of the Year</h3>
+<p>Geograph has been judged as Yahoo's Find of the Year 2006 in the <a href="http://uk.promotions.yahoo.com/finds2006/travel/">"Travel"</a> category.</p>
+</div>
 
 
 <br style="clear:both"/>

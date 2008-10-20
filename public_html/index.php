@@ -54,12 +54,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	$overview->assignToSmarty($smarty, 'overview');
 	
 	
-	if ($CONF['template']=='charcoal')
-	{
-		require_once('geograph/pictureoftheday.class.php');
-		$potd=new PictureOfTheDay;
-		$potd->assignToSmarty($smarty); 
-	}
+	require_once('geograph/pictureoftheday.class.php');
+	$potd=new PictureOfTheDay;
+	$potd->assignToSmarty($smarty); 
 	
 	//lets find some recent photos
 	if ($CONF['template']=='ireland') {
