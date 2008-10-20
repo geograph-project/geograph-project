@@ -80,7 +80,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			inner join user as u on (p.poster_id=u.user_id)
 			where find_in_set('admin',u.rights)>0 and
 			abs(unix_timestamp(t.topic_time) - unix_timestamp(p.post_time) ) < 10 and
-			t.forum_id=1
+			t.forum_id={$CONF['forum_announce']}
 			order by t.topic_time desc limit 3";
 		$news=$db->GetAll($sql);
 		if ($news) 
@@ -106,7 +106,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$stats['percentage'] = sprintf("%.1f",$stats['squares']/$stats['total']*100);
 	$smarty->assign_by_ref('stats', $stats);
 	
-	$smarty->assign('rss_url','/discuss/syndicator.php?forum=1&first=1');
+	$smarty->assign('rss_url','/discuss/syndicator.php?forum='.$CONF['forum_announce'].'&first=1');
 }
 
 

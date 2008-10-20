@@ -69,7 +69,7 @@ class SearchEngineDiscuss extends SearchEngineBuilder
 	// construct the count query sql
 $sql = <<<END
 	   SELECT count(*)
-		FROM geobb_topics AS gi INNER JOIN gridsquare AS gs ON(forum_id = 5 AND topic_title = grid_reference)
+		FROM geobb_topics AS gi INNER JOIN gridsquare AS gs ON(forum_id = {$CONF['forum_gridsquare']} AND topic_title = grid_reference)
 			 $sql_from
 		WHERE 
 			$sql_where 
@@ -86,7 +86,7 @@ END;
 $sql = <<<END
 	   SELECT distinct gi.*,x,y,nickname,realname,grid_reference,user_id,topic_time
 			$sql_fields
-		FROM geobb_topics AS gi INNER JOIN gridsquare AS gs ON(gi.forum_id = 5 AND topic_title = grid_reference)
+		FROM geobb_topics AS gi INNER JOIN gridsquare AS gs ON(gi.forum_id = {$CONF['forum_gridsquare']} AND topic_title = grid_reference)
 		INNER JOIN user ON(gi.topic_poster=user.user_id)
 			 $sql_from
 		WHERE 

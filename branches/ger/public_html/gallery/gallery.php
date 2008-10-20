@@ -47,7 +47,7 @@ $page = $db->getRow("
 select t.topic_id,topic_title,topic_poster,topic_poster_name,topic_time,post_time,posts_count
 	from geobb_topics t
 	inner join geobb_posts on (post_id = topic_last_post_id)
-	where t.topic_id = $topic_id and t.forum_id = 11");
+	where t.topic_id = $topic_id and t.forum_id = {$CONF['forum_gallery']}");
 	
 if (count($page)) {
 	

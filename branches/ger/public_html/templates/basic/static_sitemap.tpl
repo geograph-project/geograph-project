@@ -67,7 +67,7 @@
 	<li><a title="IRC Chat" href="/chat/"><b>realtime chat</b> with other members</a></li>
 	<li><a title="Geograph Events" href="/events/"><b>meet other members</b> at local events</a> <sup style="color:red">New!</sup></li>
 	<li><a title="Articles" href="/article/">submit your own <b>article</b></a></li>
-	<li><a title="Galleries" href="/discuss/?action=vtopic&forum=11">create <b>submitted galleries</b></a></li>
+	<li><a title="Galleries" href="/discuss/?action=vtopic&forum={$forum_gallery}">create <b>submitted galleries</b></a></li>
 </ul>
 {/if}
  

@@ -131,7 +131,7 @@ h4.title {
 		  <li><a href="/article/">Articles</a></li>
 		  <li><a href="/gallery/">Galleries</a></li>
 		  {if $enable_forums}
-			  <li><a href="/discuss/?action=vtopic&amp;forum=6">Themed Topics</a></li>
+			  <li><a href="/discuss/?action=vtopic&amp;forum={$forum_submittedarticles}">Themed Topics</a></li>
 		  {/if}
 		  <li><a href="/help/sitemap">Help Documents</a></li>
  		</ul>

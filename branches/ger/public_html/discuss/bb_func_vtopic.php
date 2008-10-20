@@ -151,10 +151,10 @@ $mainPostForm=ParseTpl(makeUp('main_post_form'));
 $title=$title.' '.$forumName;
 if ($gridref && $currentgridreftopics == 0) {
 	$templatename = 'main_newtopic_gridref';
-} elseif (!$USER->hasPerm("basic") && file_exists("templates/main_topics_{$forum}_anon.html")) {
-	$templatename = "main_topics_{$forum}_anon";
-} elseif (file_exists("templates/main_topics_{$forum}.html")) {
-	$templatename = "main_topics_{$forum}";
+} elseif (!$USER->hasPerm("basic") && file_exists("templates/main_topics_{$CONF['forum_to_template'][$forum]}_anon.html")) {
+	$templatename = "main_topics_{$CONF['forum_to_template'][$forum]}_anon";
+} elseif (file_exists("templates/main_topics_{$CONF['forum_to_template'][$forum]}.html")) {
+	$templatename = "main_topics_{$CONF['forum_to_template'][$forum]}";
 } elseif(!isset($showSep)) {
 	$templatename = 'main_topics';
 } else {
@@ -169,7 +169,7 @@ $c2=(isset($allForumsReg) and $allForumsReg and $user_id==0);
 $c3=(isset($poForums) and in_array($forum, $poForums) and !$allowForm);
 $c4=(isset($roForums) and in_array($forum, $roForums) and !$allowForm);
 
-if ($c1 or $c2 or $c3 or $c4 or ($forum == 5 && !$gridref)) {
+if ($c1 or $c2 or $c3 or $c4 or ($forum == $CONF['forum_gridsquare'] && !$gridref)) {
 $main=preg_replace("/(<form.*<\/form>)/Uis", '', $main);
 $nTop=0;
 $newTopicLink='';

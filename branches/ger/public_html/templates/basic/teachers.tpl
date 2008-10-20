@@ -51,12 +51,12 @@
 	
 </ul>
 
-{if $enable_forums}
+{if $enable_forums && $forum_teaching >= 0}
 
 <h3>Discussion Forum</h3>
 
 <ul>
-	<li>We have a <a href="http://www.geograph.org.uk/discuss/index.php?&action=vtopic&amp;forum=8">dedicated area</a> in our forum for educators. Let us know what you would like to see here!</li> 
+	<li>We have a <a href="/discuss/index.php?&action=vtopic&amp;forum={$forum_teaching}">dedicated area</a> in our forum for educators. Let us know what you would like to see here!</li> 
 </ul>
 {/if}
 

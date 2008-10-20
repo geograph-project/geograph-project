@@ -6,7 +6,7 @@ if (!defined('INCLUDED776')) die ('Fatal error.');
 
 //can edit articles in forum 6&11 for 5 years 
 //nice hack huh? :(
-if ($_REQUEST['forum']==6 || $_REQUEST['forum']==11)
+if ($_REQUEST['forum']==$CONF['forum_submittedarticles'] || $_REQUEST['forum']==$CONF['forum_gallery'])
 	$useredit=86400*365*5;
 
 if(isset($_GET['post'])) $post=$_GET['post']; elseif(isset($_POST['post'])) $post=$_POST['post']; else $post=0;

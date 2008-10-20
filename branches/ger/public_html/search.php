@@ -978,6 +978,7 @@ if (isset($_GET['set_legacy'])) {
 
 		if ($_GET['form'] == 'first') {
 			$template = 'search_first.tpl';
+			$smarty->assign('forum_topic_numsquare', $CONF['forum_topic_numsquare']);
 		} elseif ($_GET['form'] == 'check') {
 			$template = 'search_check.tpl';
 			if (!$_GET['i']) {
