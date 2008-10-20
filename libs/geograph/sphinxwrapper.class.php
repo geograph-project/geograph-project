@@ -59,10 +59,10 @@ class sphinxwrapper {
 		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'-]+/',' ',trim(strtolower($q))));
 		
 			//make hyphenated words phrases
-		$q = preg_replace('/(\w+)(-\w+[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\" OR ".str_replace("-","","$1$2")',$q);
+		$q = preg_replace('/(\w+)(-\w+[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2")',$q);
 		
 			//make aposphies work (as a phrase) 
-		$q = preg_replace('/(\w+)(\'\w+[\'\w]*\w)/e','"\\"".str_replace("\'"," ","$1$2")."\\" OR ".str_replace("\'","","$1$2")',$q);
+		$q = preg_replace('/(\w+)(\'\w+[\'\w]*\w)/e','"\\"".str_replace("\'"," ","$1$2")."\\" | ".str_replace("\'","","$1$2")',$q);
 		
 			//change single quotes to double
 		$q = preg_replace('/(^|\s)\b\'([\w ]+)\'\b(\s|$)/','$1"$2"$3',$q);
