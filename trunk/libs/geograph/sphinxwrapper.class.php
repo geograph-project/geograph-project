@@ -59,10 +59,10 @@ class sphinxwrapper {
 		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'-]+/',' ',trim(strtolower($q))));
 		
 			//make hyphenated words phrases
-		$q = preg_replace('/(\w+)(-\w+[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\""',$q);
+		$q = preg_replace('/(\w+)(-\w+[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\" OR ".str_replace("-","","$1$2")',$q);
 		
 			//make aposphies work (as a phrase) 
-		$q = preg_replace('/(\w+)(\'\w+[\'\w]*\w)/e','"\\"".str_replace("\'"," ","$1$2")."\\""',$q);
+		$q = preg_replace('/(\w+)(\'\w+[\'\w]*\w)/e','"\\"".str_replace("\'"," ","$1$2")."\\" OR ".str_replace("\'","","$1$2")',$q);
 		
 			//change single quotes to double
 		$q = preg_replace('/(^|\s)\b\'([\w ]+)\'\b(\s|$)/','$1"$2"$3',$q);
@@ -295,15 +295,17 @@ class sphinxwrapper {
 		$mode = SPH_MATCH_ALL;
 		if (strpos($q,'~') === 0) {
 			$q = preg_replace('/^\~/','',$q);
-			if (count($this->filters)) {
+			
+			$words = substr_count($q,' ');
+			
+			if (count($this->filters) || $words> 9) { //(MATCH_ANY - truncates to 10 words!)
 				$mode = SPH_MATCH_EXTENDED2;
 				$q = "(".str_replace(" "," | ",$q).")".$this->getFilterString();
-			} else {
-				if (substr_count($q,' ') > 0) //at least one word
-					$mode = SPH_MATCH_ANY;
+			} elseif ($words > 0) {//at least one word
+				$mode = SPH_MATCH_ANY;
 			}
 		} elseif (preg_match('/^"[^"]+"$/',$q)) {
-			if (count($this->filters)) {
+			if (count($this->filters)) { //TODO (MATCH_PHRASE - truncates to 10 words!)
 				$mode = SPH_MATCH_EXTENDED2;
 				$q = "\"".$q."\" ".$this->getFilterString();
 			} else {

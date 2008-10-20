@@ -368,6 +368,56 @@ if (isset($_GET['set_legacy'])) {
 
 	advanced_form($smarty,$db);
 
+} elseif (is_int($i) && !empty($_GET['redo'])) {
+	// -------------------------------
+	//  special handler to 'refine' a query by setting a new 'text' string. 
+	// -------------------------------
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+	
+	$engine = new SearchEngine($i);
+	
+	$engine->criteria->compact();
+	$updates = (array)$engine->criteria;
+
+	$updates['id'] = NULL;
+	unset($updates['crt_timestamp']);
+	$updates['use_timestamp'] = NULL;
+	$updates['user_id'] = $USER->user_id;
+	
+	
+	$sphinx = new sphinxwrapper($_GET['text']);
+	$sphinx->processQuery();
+	
+	if (empty($sphinx->qclean)) {
+		$updates['searchdesc'] = preg_replace('/(matching|all about|containing|exactly) .*?[\'"\[].*?[\'"\]]\s*(,|$)/',"",$updates['searchdesc']);
+	} else {
+		$updates['searchdesc'] = preg_replace('/(matching|all about|containing|exactly) .*?[\'"\[].*?[\'"\]]\s*(,|$)/',"matching [{$sphinx->qclean}]\$2",$updates['searchdesc']);
+		if (strpos($updates['searchdesc'],$sphinx->qclean) === FALSE) {
+			$updates['searchdesc'] = ", matching [{$sphinx->qclean}]".$updates['searchdesc'];
+		}
+	}
+	
+	$updates['searchtext'] = $sphinx->q;
+	
+	$db=NewADOConnection($GLOBALS['DSN']);
+	if (empty($db)) die('Database connection failed');
+	
+	$db->Execute('INSERT INTO queries SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+	$i = $db->Insert_ID();
+	
+	if (isset($_GET['page']))
+		$extra = "&page=".intval($_GET['page']);
+	if ($dataarray['submit'] == 'Count')
+		$extra .= '&count=1';
+	if (!empty($_GET['BBOX']))
+		$extra .= "&BBOX=".$_GET['BBOX'];
+	header("Location:http://{$_SERVER['HTTP_HOST']}/{$engine->page}?i={$i}$extra");
+	$extra = str_replace('&','&amp;',$extra);
+	print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$engine->page}?i={$i}$extra\">Your Search Results</a>";
+	exit;
+	
+		
 } else if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || !empty($_GET['gridsquare'])) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
@@ -1027,6 +1077,11 @@ if (isset($_GET['set_legacy'])) {
 			unset($sortorders['title']);
 			unset($sortorders['grid_reference']);
 			
+			unset($breakdowns['imageclass']);
+			unset($breakdowns['realname']);
+			unset($breakdowns['title']);
+			unset($breakdowns['grid_reference']);
+			
 		} elseif (isset($_GET['Special'])) {
 			$USER->mustHavePerm("admin");
 			$template = 'search_admin_advanced.tpl';
@@ -1077,7 +1132,6 @@ if (isset($_GET['set_legacy'])) {
 
 				$smarty->assign_by_ref('topiclist',$topics);
 
-				$smarty->assign_by_ref('breakdowns', $breakdowns);
 				$smarty->assign_by_ref('references',$CONF['references']);
 			}
 
@@ -1099,6 +1153,7 @@ if (isset($_GET['set_legacy'])) {
 
 			$smarty->assign_by_ref('sortorders', $sortorders);
 			$smarty->assign_by_ref('imagestatuses', $imagestatuses);
+			$smarty->assign_by_ref('breakdowns', $breakdowns);
 		}
 
 		$smarty->display($template, $is_cachable);
