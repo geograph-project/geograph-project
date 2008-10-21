@@ -39,7 +39,7 @@
 		<a href="/search.php?form=first" class="tab">first geographs</a>
 	</div>
 	<div class="interestBox">
-		<div style="text-align:right"><a href="/article/Searching-on-Geograph">More information on the Search Engine</a></div>
+		<div style="text-align:right">({newwin href="/article/Searching-on-Geograph" text="More information on the Search Engine"})</div>
 		<b>Centered Search:</b> (choose one)
 	</div>
 	
@@ -88,7 +88,7 @@
 			 <td colspan="3">&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-		 	 <td colspan="3" style="background:#dddddd;">and/or <b>Word Match search:  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>[open <a href="/article/Word-Searching-on-Geograph" target="geo_help">word search help</a> in new window]</b></small></b></td>
+		 	 <td colspan="3" style="background:#dddddd;">and/or <b>Word Match search:</b>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>({newwin href="/article/Word-Searching-on-Geograph" text="open <b>word search help</b>"})</small></td>
 		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="searchtext" id="l_searchtext">keywords</label></td> 
@@ -120,7 +120,7 @@
 				{/if}
 				{/dynamic}
 				<input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label><br/>
-				<small>open <a href="/finder/contributors.php?popup" target="_blank" onclick="window.open(this.href,this.target); return false;">Contributor Search</a> in new window</small></td> 
+				<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"})</small></td> 
 		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="moderation_status">classification</label></td> 
@@ -147,7 +147,7 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
-			 <td><label for="gridsquare">myriad (<a href="/help/squares" title="What is a Myriad? (opens in new window)" target="_blank">?</a>)</label></td> 
+			 <td><label for="gridsquare">myriad ({newwin href="/help/squares" title="What is a Myriad?" text="?"})</label></td> 
 			 <td> 
 				<select name="gridsquare" id="gridsquare" size="1" class="searchinput"> 
 				  <option value=""> </option> 

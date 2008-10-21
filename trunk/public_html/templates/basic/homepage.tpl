@@ -23,7 +23,7 @@ representative photographs and information for every square kilometre of <a href
 	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
 	<li><a title="Submitted Content" href="/content/">view <b>submitted content and articles</b></a></li>
 	<li><a title="List of all pages" href="/help/sitemap">view the <b>full list</b> of pages</a></li>
-	<li><a title="Features Searches" href="/explore/searches">browse <b>featured collections</b> of images</a></li>
+	<li><a title="Features Searches" href="/explore/searches.php">browse <b>featured collections</b> of images</a></li>
 </ul>
 
 <h3>Interacting with other software...</h3>
