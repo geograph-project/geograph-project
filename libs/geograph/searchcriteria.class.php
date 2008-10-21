@@ -82,8 +82,9 @@ class SearchCriteria
 	
 	function toDays($date) {
 		$db = $this->_getDB();
+		$date = str_replace('-00','-01',$date);
 		return intval($db->GetOne('select to_days('.
-			(preg_match('/\)$/',$db->Quote($date))?$db->Quote($date):$date).
+			(preg_match('/\)$/',$db->Quote($date))?$date:$db->Quote($date)).
 			')'));
 	}
 	
@@ -446,7 +447,7 @@ class SearchCriteria
 			
 			
 			if ($dates[0]) {
-				$days0 = $this->toDays(str_replace('-00','-01',$dates[0]));
+				$days0 = $this->toDays($dates[0]);
 				if (preg_match("/0{4}-([01]?[1-9]+|10)-/",$dates[0]) > 0) {
 					//month only
 					list($y,$m,$d) = explode('-',$dates[0]);
