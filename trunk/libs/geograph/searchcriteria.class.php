@@ -80,6 +80,13 @@ class SearchCriteria
 		unset($this->crt_timestamp_ts);
 	}
 	
+	function toDays($date) {
+		$db = $this->_getDB();
+		return intval($db->GetOne('select to_days('.
+			(preg_match('/\)$/',$db->Quote($date))?$db->Quote($date):$date).
+			')'));
+	}
+	
 	function getSQLParts() 
 	{
 		global $CONF;
@@ -228,7 +235,7 @@ class SearchCriteria
 							$this->sphinx['sort'] = 'wgs84_lat';
 							break;
 						case 'imagetaken':
-							$this->sphinx['sort'] = 'takenstamp';
+							$this->sphinx['sort'] = 'takendays';
 							break;
 						case 'realname':
 						case 'title':
@@ -268,7 +275,7 @@ class SearchCriteria
 					$sorder = 'wgs84_lat';
 					break;
 				case 'imagetaken':
-					$sorder = 'takenstamp';
+					$sorder = 'takendays';
 					break;
 				case 'imageclass':
 					$sorder = 'classcrc';
@@ -439,6 +446,7 @@ class SearchCriteria
 			
 			
 			if ($dates[0]) {
+				$days0 = $this->toDays(str_replace('-00','-01',$dates[0]));
 				if (preg_match("/0{4}-([01]?[1-9]+|10)-/",$dates[0]) > 0) {
 					//month only
 					list($y,$m,$d) = explode('-',$dates[0]);
@@ -448,7 +456,9 @@ class SearchCriteria
 					//day only ;)
 					list($y,$m,$d) = explode('-',$dates[0]);
 					$sql_where .= "imagetaken > DATE_SUB(NOW(),INTERVAL $d DAY)";
-					$this->sphinx['filters']['takenstamp'] = array(time()-86400*$d,time());
+					$start = $this->toDays("DATE_SUB(NOW(),INTERVAL $d DAY)");
+					$now = $this->toDays('NOW()');
+					$this->sphinx['filters']['takendays'] = array($start,$now);
 				} elseif ($dates[1]) {
 					if ($dates[0] == $dates[1]) {
 						//both the same
@@ -457,21 +467,24 @@ class SearchCriteria
 					} else {
 						//between
 						$sql_where .= "imagetaken BETWEEN '".$dates[0]."' AND '".$dates[1]."' ";
-						$this->sphinx['filters']['takenstamp'] = array(strtotime($dates[0]),strtotime($dates[1])); 
+						$days1 = $this->toDays($dates[1]);
+						$this->sphinx['filters']['takendays'] = array($days0,$days1); 
 					}
 				} else {
 					//from
 					$sql_where .= "imagetaken >= '".$dates[0]."' ";
-					$this->sphinx['filters']['takenstamp'] = array(strtotime($dates[0]),time()); 
+					$now = $this->toDays('NOW()');
+					$this->sphinx['filters']['takendays'] = array($days0,$now); 
 				}
 			} else {
 				//to
 				$sql_where .= "imagetaken != '0000-00-00' AND imagetaken <= '".$dates[1]."' ";
-				$this->sphinx['filters']['takenstamp'] = array(0,strtotime($dates[1])); 
+				$days1 = $this->toDays($dates[1]);
+				$this->sphinx['filters']['takendays'] = array(0,$days1); 
 			}
 			
 			
-		}	
+		}
 		
 		if (!empty($this->limit9)) {
 			if ($this->limit9 > 1) {
