@@ -186,7 +186,7 @@ geographing</a> first.</p>
 		{if $imagecount gt 0}
 			<p style="color:#440000">We currently have 
 			{if $imagecount eq 1}an image{else}{$imagecount} images{/if} {if $totalimagecount && $totalimagecount > $imagecount} ({$totalimagecount} including hidden){/if} 
-			uploaded for <a title="View Images for {$gridref} (opens in new window)" href="/gridref/{$gridref}" target="_blank">{$gridref}</a>, add yours now!</p>
+			uploaded for {newwin title="View Images for `$gridref`" href="/gridref/`$gridref`" text=`$gridref`}, add yours now!</p>
 		{else}
 			<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}! {if $totalimagecount && $totalimagecount ne $imagecount} (but you have {$totalimagecount} hidden){/if}</p>
 		{/if}
@@ -223,7 +223,7 @@ geographing</a> first.</p>
 		<span style="font-size:0.8em"><br/><a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Copy from Subject</a></span>
 		
 		{if $rastermap->enabled}
-			<br/><br/><input type="checkbox" name="use6fig" id="use6fig" {if $use6fig} checked{/if} value="1"/> <label for="use6fig">Only display 6 figure grid reference (<a href="/help/map_precision" target="_blank">Explanation</a>)</label>
+			<br/><br/><input type="checkbox" name="use6fig" id="use6fig" {if $use6fig} checked{/if} value="1"/> <label for="use6fig">Only display 6 figure grid reference ({newwin href="/help/map_precision" text="Explanation"})</label>
 		{/if}
 		</p>
 	
@@ -272,15 +272,15 @@ geographing</a> first.</p>
 
 	{foreach from=$images item=image}
 
-	  <div class="photo33" style="float:left;width:150px; height:170px; background-color:white"><a title="{$image->title|escape:'html'} by {$image->realname} - click to view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(120,120,false,true)}</a>
-	  <div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->title|escape:'html'}</a></div>
+	  <div class="photo33" style="float:left;width:150px; height:170px; background-color:white">{newwin title="`$image->title` by `$image->realname` - click to view full size image"|escape:'html' href="/photo/`$image->gridimage_id`" text=$image->getThumbnail(120,120,false,true)}
+	  <div class="caption">{newwin title="view full size image" href="/photo/`$image->gridimage_id`" text=$image->title|escape:'html'}</div>
 	  </div>
 
 	{/foreach}
 	<br style="clear:both"/>
 	
 	{if $imagecount gt 6 || $shownimagecount == 6}
-		<div>See <a href="/gridref/{$gridref}" target="_blank">{$imagecount} live image{if $imagecount!=1}s{/if} for {$gridref}</a> plus any images you have hidden (opens in new window)</div>
+		<div>{newwin href="/gridref/`$gridref`" text="View `$imagecount` live image(s) for `$gridref`"}<small> plus any images you have hidden</small></div>
 	{/if}&nbsp;
 	</div>
 	{else}
@@ -348,11 +348,11 @@ can be edited at any time) but to activate a square you need to be first to meet
 criteria above!</p>
 
 <div class="interestBox" style="width:30em;z-index:0"><a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> (and view list of placenames)<br/>
-{getamap gridref=$gridref text="Open Get-a-Map"}, <a href="/gridref/{$gridref}" target="_blank">Open {$gridref} Page</a> (in new window)</div>
+{getamap gridref=$gridref text="Open Get-a-Map"}, {newwin href="/gridref/`$gridref`" text="Open `$gridref` Page"}</div>
 
 <h3>Title and Comments</h3>
 <p>Please provide a short title for the image, and any other comments about where
-it was taken or other interesting geographical information. (Open <a href="/help/style" target="_blank" id="styleguidelink">Style Guide</a>)</p>
+it was taken or other interesting geographical information. <span id="styleguidelink">({newwin href="/help/style" text="Open Style Guide"})</span></p>
 
 <p><label for="title"><b>Title</b></label> {if $error.title}
 	<br/><span class="formerror">{$error.title}</span>
@@ -446,7 +446,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 <p>Tick this box only if you believe your photograph is not a 'geograph'. The moderator will just use the box as a suggestion, so if you are not sure, leave it unticked. Note: There can be many geograph images per square.</p>
 
-<p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in this <a href="/article/Geograph-or-supplemental" target="_blank">article on how images are moderated</a> (opens in new window).</span></p>
+<p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in this {newwin href="/article/Geograph-or-supplemental" text="article on how images are moderated"}.</span></p>
 </div>
 
 <p>

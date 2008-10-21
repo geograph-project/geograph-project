@@ -69,7 +69,7 @@
 
 {if $image}
 	<div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
-		<div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getFull()}</a></div>
+		<div class="img-shadow"><a href="/photo/{$image->gridimage_id}">{$image->getFull()}</a></div>
 		<div class="caption"><b><a href="/gridref/{$image->grid_reference|escape:'html'}">{$image->grid_reference|escape:'html'}</a> : {$image->title|escape:'html'}</b></div>
 		{if $image->comment}
 			<div class="caption">{$image->comment|escape:'html'|geographlinks}</div>

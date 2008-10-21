@@ -101,13 +101,13 @@ Display:
 		[<a href="javascript:void(show_tree(101));" id="hide101">quick refine</a>]
 		<div class="interestBox" style="border:1px solid pink;display:none; " id="show101">
 			<form action="{$script_name}" method="get">
-				<label for="fq">New Keywords</label>: <input type="text" name="text" id="fq" size="30"{if $engine->criteria->searchtext} value="{$engine->criteria->searchtext|escape:'html'}"{/if}/>
+				<div><label for="fq">New Keywords</label>: <input type="text" name="text" id="fq" size="30"{if $engine->criteria->searchtext} value="{$engine->criteria->searchtext|escape:'html'}"{/if}/>
 				<input type="submit" value="Search"/>
 				<input type="hidden" name="i" value="{$i}"/>
 				<input type="hidden" name="redo" value="1"/>
-				(<a href="/article/Word-Searching-on-Geograph">Tips</a>) - all other fields unchanged
+				({newwin href="/article/Word-Searching-on-Geograph" text="Tips"}) - all other fields unchanged
 				
-				| <a href="javascript:void(hide_tree(101));">close</a>
+				| <a href="javascript:void(hide_tree(101));">close</a></div>
 			</form>
 		</div>
 	{/if}

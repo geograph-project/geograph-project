@@ -39,7 +39,7 @@
 {if $image}
 <dt>Chosen Photo</dt>
  <dd><div class="img-shadow">
-		<a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(213,160)}</a>
+		<a href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160)}</a>
 		 <div style="font-size:0.7em">
 			  <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
 			  by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a>
