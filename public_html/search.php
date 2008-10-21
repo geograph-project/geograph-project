@@ -386,19 +386,21 @@ if (isset($_GET['set_legacy'])) {
 	$updates['user_id'] = $USER->user_id;
 	
 	
+	$exact = (strpos($_GET['text'],'=') === 0)?'exactly ':'';
+	
 	$sphinx = new sphinxwrapper($_GET['text']);
 	$sphinx->processQuery();
 	
 	if (empty($sphinx->qclean)) {
 		$updates['searchdesc'] = preg_replace('/(matching|all about|containing|exactly) .*?[\'"\[].*?[\'"\]]\s*(,|$)/',"",$updates['searchdesc']);
 	} else {
-		$updates['searchdesc'] = preg_replace('/(matching|all about|containing|exactly) .*?[\'"\[].*?[\'"\]]\s*(,|$)/',"matching [{$sphinx->qclean}]\$2",$updates['searchdesc']);
+		$updates['searchdesc'] = preg_replace('/(matching|all about|containing|exactly) .*?[\'"\[].*?[\'"\]]\s*(,|$)/',"{$exact}matching [{$sphinx->qclean}]\$2",$updates['searchdesc']);
 		if (strpos($updates['searchdesc'],$sphinx->qclean) === FALSE) {
-			$updates['searchdesc'] = ", matching [{$sphinx->qclean}]".$updates['searchdesc'];
+			$updates['searchdesc'] = ", {$exact}matching [{$sphinx->qclean}]".$updates['searchdesc'];
 		}
 	}
-	
-	$updates['searchtext'] = $sphinx->q;
+		
+	$updates['searchtext'] = (empty($exact)?'':'=').$sphinx->q;
 	
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (empty($db)) die('Database connection failed');
