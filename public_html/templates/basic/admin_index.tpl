@@ -15,7 +15,7 @@
 
 {if $is_mod} 
 
-<li><a href="/admin/moderation.php">Moderate</a> new photo submissions<br/>
+<li><a href="/admin/moderation.php">Moderate</a> new photo submissions (<span><a href="/admin/moderation.php?review=1" style="color:gray">Review</a>)</span><br/>
 <b>[{$images_pending.count} pending, {dynamic}{$images_pending_available}{/dynamic} available to moderate, oldest is {$images_pending.age/3600|thousends} hours]</b></li>
 {/if}
 
