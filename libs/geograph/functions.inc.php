@@ -169,10 +169,12 @@ function smarty_function_newwin($params)
 	
 	if (isset($params['nofollow']))
 		$title .= "\" rel=\"nofollow"; 	
-
+	
+	if (isset($params['onclick']))
+		$title .= "\" onclick=\"".$params['onclick']; 	
+	
 	return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
-		"<img style=\"padding-left:2px;\" alt=\"New Window\" title=\"opens in a new window\" src=\"http://{$CONF['STATIC_HOST']}/img/newwin.png\" width=\"10\" height=\"10\"/></span>";
- 
+		"<img style=\"padding-left:2px;\" alt=\"New Window\" title=\"opens in a new window\" src=\"http://{$CONF['STATIC_HOST']}/img/newwin.png\" width=\"10\" height=\"10\"/></span>"; 
 }
 
 /**
