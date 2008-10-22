@@ -41,7 +41,7 @@ representative photographs and information for every square kilometre of <a href
 	{foreach from=$overview2 key=y item=maprow}
 		<div>
 		{foreach from=$maprow key=x item=mapcell}
-		<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img 
+		<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1&amp;m={$m}"><img 
 		alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 		{/foreach}
 		</div>
@@ -53,7 +53,7 @@ representative photographs and information for every square kilometre of <a href
 
 	</div>
 	</div>
-	<div style="font-size:0.9em;text-align:center;position:relative">click map to zoom in</div>
+	<div style="font-size:0.9em;text-align:center;position:relative">{$messages.$m}</div>
 
 {/if}
 
