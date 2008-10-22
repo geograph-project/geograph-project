@@ -3,13 +3,104 @@
 
 <h2>Welcome to Geograph British Isles</h2>
 
+
+
 <div style="width:60%;float:left;padding-right:5px;position:relative">
-<p style="margin-top:2px;">The Geograph British Isles project aims to collect geographically
-representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and 
-<a href="/explore/places/2/">Ireland</a>, and you can be part of it.</p>
+
+<div style="text-align:center; padding:5px; background-color:#dddddd;">
+	The Geograph British Isles project aims to collect geographically
+	representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and 
+	<a href="/explore/places/2/">Ireland</a>, and you can be part of it.
+</div>
+
+<div style="padding:2px;margin-top:8px;background:#bbbbbb;position:relative; text-align:center">
+
+	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day</h3>
+	<a href="/photo/{$pictureoftheday.gridimage_id}"
+	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a><br/>
 
 
-<h3>Getting started...</h3>
+	<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a>
+
+	<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/80x15.png" /></a>
+
+	by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname|escape:'html'}</a> for <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></div>
+
+	</div>
+
+</div>
+
+<div style="width:35%;float:left;font-size:0.8em;position:relative">
+
+{if $overview2}
+<div style="background:#bbbbbb;position:relative">
+	<h3 style="margin-bottom:2px;margin-top:2px;text-align:center">Coverage Map</h3>
+	
+	<div class="map" style="margin-left:auto;margin-right:auto;border:2px solid black; height:{$overview2_height}px;width:{$overview2_width}px">
+
+	<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview2_width}px;height:{$overvie2w_height}px;">
+
+	{foreach from=$overview2 key=y item=maprow}
+		<div>
+		{foreach from=$maprow key=x item=mapcell}
+		<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img 
+		alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+		{/foreach}
+		</div>
+	{/foreach}
+
+	{if $marker}
+	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Location of the Photo of the Day"><img src="http://{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
+	{/if}
+
+	</div>
+	</div>
+	<div style="font-size:0.9em;text-align:center;position:relative">click map to zoom in</div>
+</div>
+{/if}
+
+
+
+
+
+<div style="margin-top:10px;padding:5px;background:#dddddd;position:relative">
+<h3 style="margin-top:0;margin-bottom:4px;text-align:center">What is Geographing?</h3>
+<ul style="margin-top:0;margin-left:0;padding:0 0 0 1em;">
+<li>It's a game - how many grid squares will you contribute?</li>
+<li>It's a geography project for the people</li>
+<li>It's a national photography project</li>
+<li>It's a good excuse to get out more!</li>
+<li>It's a free and <a href="/faq.php#opensource">open online community</a> project for all</li>
+</ul>
+
+
+
+</div>
+
+
+
+</div>
+
+
+<br style="clear:both"/>
+&nbsp;
+
+<div style="font-size:0.7em; text-align:center; border: 1px solid silver; padding:5px"><b class="nowrap">{$stats.users|thousends} users</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total</span>.<br/>
+
+Recently completed hectads: 
+{foreach from=$hectads key=id item=obj}
+<a title="View Mosaic for {$obj.hectad_ref}, completed {$obj.completed}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad_ref}</a>,
+{/foreach}
+<a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">more...</a><br/>
+
+<span class="nowrap"><b>{$stats.fewphotos|thousends} photographed squares</b> with <b>fewer than 4 photos</b></span>, add yours now!
+
+</div><br style="clear:both"/>
+
+
+<div style="width:60%;float:left;position:relative">
+
+<h3>Quick Links...</h3>
 <ul>
 	<li><a title="Browse by Map" href="/mapbrowse.php">browse images on a <b>map</b></a></li>
 	<li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a></li>
@@ -36,66 +127,17 @@ representative photographs and information for every square kilometre of <a href
 
 </div>
 
-<div style="width:35%;float:left;font-size:0.8em;position:relative">
-
-<div style="padding:2px;background:#bbbbbb;position:relative; text-align:center">
-<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day</h3>
-<a href="/photo/{$pictureoftheday.gridimage_id}"
-title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(220,170)}</a><br/>
-
-<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a><br/>
-by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname|escape:'html'}</a> for <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></div>
-
-
-<div style="padding:5px;background:#dddddd;position:relative">
-<h3 style="margin-bottom:0;">What is Geographing?</h3>
-<ul style="margin-top:0;margin-left:0;padding:0 0 0 1em;">
-<li>It's a game - how many grid squares will you contribute?</li>
-<li>It's a geography project for the people</li>
-<li>It's a national photography project</li>
-<li>It's a good excuse to get out more!</li>
-<li>It's a free and <a href="/faq.php#opensource">open online community</a> project for all</li>
-</ul>
-
-
-<h3 style="margin-bottom:0;">How do I get started?</h3>
-
+<div style="width:40%;float:left;position:relative">
 
 <p style="margin-top:0;"><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how 
-many grid squares you can claim first! 
+many grid squares you submit! 
 
 Read the <a title="Frequently Asked Questions" href="/faq.php">FAQ</a>, then get submitting -
 we hope you'll enjoy being a part of this great project
 </p>
 
-</div>
-
-
 
 </div>
-
-
-<br style="clear:both"/>
-&nbsp;
-
-<div style="font-size:0.7em; text-align:center; border: 1px solid silver; padding:5px"><b class="nowrap">{$stats.users|thousends} users</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total</span>.<br/>
-
-Recently completed hectads: 
-{foreach from=$hectads key=id item=obj}
-<a title="View Mosaic for {$obj.hectad_ref}, completed {$obj.completed}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad_ref}</a>,
-{/foreach}
-<a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">more...</a><br/>
-
-<span class="nowrap"><b>{$stats.fewphotos|thousends} photographed squares</b> with <b>fewer than 4 photos</b></span>, add yours now!
-
-</div><br/>
-
-
-<div style="margin-top:10px;font-size:0.8em;padding:5px;background:#ffdddd;position:relative">
-<h3>Yahoo Find of the Year</h3>
-<p>Geograph has been judged as Yahoo's Find of the Year 2006 in the <a href="http://uk.promotions.yahoo.com/finds2006/travel/">"Travel"</a> category.</p>
-</div>
-
 
 <br style="clear:both"/>
 &nbsp;

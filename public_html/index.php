@@ -47,17 +47,23 @@ if (!$smarty->is_cached($template, $cacheid))
 	switch($CONF['template']) {
 		case 'charcoal': $preset = 'overview_charcoal'; break;
 		case 'ireland': $preset = 'overview_ireland'; break;
-		default: $preset = 'overview'; break;
+		default: $preset = 'overview_large'; break;
 	}
 	$overview=new GeographMapMosaic($preset);
 	$overview->type_or_user = -1;
-	$overview->assignToSmarty($smarty, 'overview');
+	if ($CONF['template'] == 'basic') {
+		$overview->assignToSmarty($smarty, 'overview2');
+	} else {
+		$overview->assignToSmarty($smarty, 'overview');
+	}
 	
 	
 	require_once('geograph/pictureoftheday.class.php');
 	$potd=new PictureOfTheDay;
 	$potd->assignToSmarty($smarty); 
 	
+	$smarty->assign('marker', $overview->getSquarePoint($potd->image->grid_square));
+
 	//lets find some recent photos
 	if ($CONF['template']=='ireland') {
 		new RecentImageList($smarty,2);
@@ -103,7 +109,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$stats['percentage'] = sprintf("%.1f",$stats['squares']/$stats['total']*100);
 	$smarty->assign_by_ref('stats', $stats);
 	
-	$smarty->assign('rss_url','/discuss/syndicator.php?forum=1&first=1');
+	$smarty->assign('rss_url','/discuss/syndicator.php?forum=1&amp;first=1');
 }
 
 
