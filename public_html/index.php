@@ -110,6 +110,16 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign_by_ref('stats', $stats);
 	
 	$smarty->assign('rss_url','/discuss/syndicator.php?forum=1&amp;first=1');
+	
+	$smarty->assign('messages', array(
+		0=>'click map to zoom in',
+		1=>'click me and explore!',
+		2=>'I\'m zoomable - click me',
+		4=>'',
+		5=>'click to see bigger map',
+		6=>'click for more detail'));
+		
+	$smarty->assign('m',rand(0,6));	
 }
 
 
