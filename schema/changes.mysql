@@ -241,3 +241,21 @@ CREATE TABLE `queries_featured` (
   `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM;
+
+
+
+
+
+
+
+
+
+
+CREATE TABLE `vote_log` (
+`type` VARCHAR( 1 ) NOT NULL ,
+`id` INT UNSIGNED NOT NULL ,
+`vote` TINYINT NOT NULL ,
+`ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+`user_id` INT UNSIGNED NOT NULL ,
+`ipaddr` INT UNSIGNED NOT NULL
+) ENGINE = MYISAM ;

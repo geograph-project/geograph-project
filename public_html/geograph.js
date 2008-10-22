@@ -69,6 +69,15 @@ function autoDisable(that) {
 
 //	-	-	-	-	-	-	-	-
 
+function record_vote(type,id,vote) {
+	var i=new Image();
+	i.src= "/stuff/record_vote.php?t="+type+"&id="+id+"&v="+vote;
+	document.getElementById("votediv").innerHTML = "Thank you!";
+}
+
+//	-	-	-	-	-	-	-	-
+
+
 function di20(id, newSrc) {
     var theImage = FWFindImage(document, id, 0);
     if (theImage) {
