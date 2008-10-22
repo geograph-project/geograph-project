@@ -6,6 +6,15 @@
 
 <div class="interestBox" style="text-align:center">
 <a href="/explore/searches.php?i={$i}">Feature this search!</a> <sup style="color:red">new!</sup>
+&nbsp;&nbsp; | &nbsp;&nbsp;
+<span id="votediv">How well does this search match what you where looking for? (Click One: 
+<a href="javascript:void(record_vote('q',{$i},1));" title="Completely Hopeless">1</a>
+<a href="javascript:void(record_vote('q',{$i},2));" title="Not very well">2</a> 
+<a href="javascript:void(record_vote('q',{$i},3));" title="So So">3</a> 
+<a href="javascript:void(record_vote('q',{$i},4));" title="Reasonable">4</a> 
+<a href="javascript:void(record_vote('q',{$i},5));" title="Excellent">5</a>/5)
+</span>
+
 </div>
 
 <p align="right" style="clear:both">View/Download: {if $engine->islimited && !$engine->fullText}<a title="Breakdown for images{$engine->criteria->searchdesc|escape:"html"}" href="/statistics/breakdown.php?i={$i}">Statistics</a> {/if}<a title="Google Earth Or Google Maps Feed for images{$engine->criteria->searchdesc|escape:"html"}" href="/kml.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}">as KML</a> <a title="geoRSS Feed for images{$engine->criteria->searchdesc|escape:"html"}" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.rss" class="xml-geo">geo RSS</a> <a title="GPX file for images{$engine->criteria->searchdesc|escape:"html"}" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.gpx" class="xml-gpx">GPX</a></p>
