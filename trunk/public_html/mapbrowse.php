@@ -184,6 +184,8 @@ if (isset($_GET['gridref_from']) && preg_match('/^[a-zA-Z]{1,2}\d{4}$/',$_GET['g
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
+	$overview->setPreset('overview');
+	
 	//assign overview to smarty
 	if ($mosaic->type_or_user > 0) {
 		$profile=new GeographUser($mosaic->type_or_user);
