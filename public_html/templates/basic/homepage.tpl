@@ -1,38 +1,17 @@
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
+
 <h2>Welcome to Geograph British Isles</h2>
 
 
 
-<div style="width:60%;float:left;padding-right:5px;position:relative">
-
-The Geograph British Isles project aims to collect geographically
-representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and 
-<a href="/explore/places/2/">Ireland</a>, and you can be part of it.
-
-<div style="padding:2px;margin-top:8px;position:relative; text-align:center">
-
-	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day</h3>
-	<a href="/photo/{$pictureoftheday.gridimage_id}"
-	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a><br/>
-
-
-	<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a>
-
-	<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/80x15.png" /></a>
-	&nbsp;&nbsp;
-	by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname|escape:'html'}</a> for <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></div>
-
-	</div>
-
-</div>
 
 <div style="width:35%;float:left;font-size:0.8em;position:relative">
 
 {if $overview2}
 
-	<h3 style="margin-bottom:4px;margin-top:-20px;text-align:center">Coverage Map</h3>
+	<h3 style="margin-bottom:4px;margin-top:10px;text-align:center">Coverage Map</h3>
 	
 	<div class="map" style="margin-left:auto;margin-right:auto;border:2px solid black; height:{$overview2_height}px;width:{$overview2_width}px">
 
@@ -70,6 +49,31 @@ representative photographs and information for every square kilometre of <a href
 
 
 </div>
+
+<div style="width:60%;float:left;padding-right:5px;position:relative;text-align:center">
+
+
+The Geograph British Isles project aims to collect geographically
+representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and 
+<a href="/explore/places/2/">Ireland</a>, and you can be part of it.
+
+	<div style="padding:2px;margin-top:8px;position:relative; text-align:center">
+
+	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day</h3>
+	<a href="/photo/{$pictureoftheday.gridimage_id}" 
+	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a><br/>
+
+
+	<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a>
+
+	<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/80x15.png" /></a>
+	&nbsp;&nbsp;
+	by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname|escape:'html'}</a> for <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></div>
+
+	</div>
+
+</div>
+
 
 
 <br style="clear:both"/>
