@@ -1134,7 +1134,6 @@ if (isset($_GET['set_legacy'])) {
 
 				$smarty->assign_by_ref('topiclist',$topics);
 
-				$smarty->assign_by_ref('references',$CONF['references']);
 			}
 
 			$smarty->assign_by_ref('distances',$d);
@@ -1153,6 +1152,7 @@ if (isset($_GET['set_legacy'])) {
 			$square=new GridSquare;
 			$smarty->assign('prefixes', $square->getGridPrefixes());
 
+			$smarty->assign_by_ref('references',$CONF['references']);
 			$smarty->assign_by_ref('sortorders', $sortorders);
 			$smarty->assign_by_ref('imagestatuses', $imagestatuses);
 			$smarty->assign_by_ref('breakdowns', $breakdowns);
