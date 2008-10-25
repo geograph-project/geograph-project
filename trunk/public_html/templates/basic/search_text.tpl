@@ -147,6 +147,15 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
+			 <td><label for="reference_index">country</label></td> 
+			 <td> 
+				<select name="reference_index" id="reference_index" size="1" class="searchinput"> 
+				  <option value=""> </option> 
+					{html_options options=$references selected=$reference_index} 
+				</select></td> 
+			 <td>&nbsp;</td> 
+		  </tr> 
+		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="gridsquare">myriad ({newwin href="/help/squares" title="What is a Myriad?" text="?"})</label></td> 
 			 <td> 
 				<select name="gridsquare" id="gridsquare" size="1" class="searchinput"> 
