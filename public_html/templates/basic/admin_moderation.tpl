@@ -37,13 +37,13 @@
 	
 	{foreach from=$unmoderated item=image}
 
-	  <div class="photoguide" {if $image->user_status && $image->moderation_status != 'pending'}style="background-color:#eeeeee"{/if} style="width:730px;">
+	  <div class="photoguide" style="{if $image->user_status && $image->moderation_status != 'pending'}background-color:#eeeeee;{/if}font-size:0.8em;text-align:left;width:inherit">
 	  
 	  <div style="float:left;width:213px">
 	  <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160)}</a>
 	  </div>
 	  
-	  <div style="float:left;font-size:0.8em; padding-left:10px; text-align:left; width: 503px">
+	  <div style="margin-left:233px"> 
 	  
 	  square: <b><a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></b> ({$image->imagecount} images) &nbsp;&nbsp; category: <b style="color:blue">{$image->imageclass}</b><br/>
 	  by: <b><a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></b><br/>
@@ -87,7 +87,7 @@
 	  {if $image->user_status}<div class="caption" style="color:red">User: suggest {$image->user_status}</div>{else}{if $image->different_square}<div class="caption" style="color:red">System: suggest Accept</div>{/if}{/if}
 	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
 	  </div>
-	  <br style="clear:both"/>
+	  
 	  </div>
 
 

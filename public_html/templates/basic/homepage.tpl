@@ -7,11 +7,11 @@
 
 
 
-<div style="width:35%;float:left;font-size:0.8em;position:relative">
+<div style="width:35%;float:left;font-size:0.8em;position:relative;margin-right:20px">
 
 {if $overview2}
 
-	<h3 style="margin-bottom:4px;margin-top:10px;text-align:center">Coverage Map</h3>
+	<h3 style="margin-bottom:4px;margin-top:0px;text-align:center">Coverage Map</h3>
 	
 	<div class="map" style="margin-left:auto;margin-right:auto;border:2px solid black; height:{$overview2_height}px;width:{$overview2_width}px">
 
@@ -50,12 +50,12 @@
 
 </div>
 
-<div style="width:60%;float:left;padding-right:5px;position:relative;text-align:center">
+<div style="width:410px;float:left;padding-right:5px;position:relative;text-align:center;margin-left:-20px">
 
-
+<div style="background-color:#eeeeee;padding:2px">
 The Geograph British Isles project aims to collect geographically
 representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and 
-<a href="/explore/places/2/">Ireland</a>, and you can be part of it.
+<a href="/explore/places/2/">Ireland</a>, and you can be part of it.</div>
 
 	<div style="padding:2px;margin-top:8px;position:relative; text-align:center">
 
@@ -87,12 +87,12 @@ Recently completed hectads:
 {/foreach}
 <a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">more...</a><br/>
 
-<span class="nowrap"><b>{$stats.fewphotos|thousends} photographed squares</b> with <b>fewer than 4 photos</b></span>, add yours now!
+<b class="nowrap">{$stats.fewphotos|thousends} photographed squares</b> with <b class="nowrap">fewer than 4 photos</b>, add yours now!
 
 </div><br style="clear:both"/>
 
 
-<div style="width:60%;float:left;position:relative">
+<div style="width:430px;float:left;position:relative">
 
 <h3>Quick Links...</h3>
 <ul>
@@ -113,7 +113,7 @@ Recently completed hectads:
 
 </div>
 
-<div style="width:40%;float:left;position:relative">
+<div style="width:300px;float:left;position:relative">
 
 <p><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how 
 many grid squares you submit! 
