@@ -93,7 +93,7 @@ if (isset($_GET['text'])) {
 		if (empty($pg) || $pg < 1) {$pg = 1;}
 		
 		$ids = $sphinx->returnIds($pg,'_images');
-		
+		unset($q);
 	} else {
 		$cacheid = getTextKey();
 		$pg = 1;
