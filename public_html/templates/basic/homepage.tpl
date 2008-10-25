@@ -4,12 +4,8 @@
 
 <h2>Welcome to Geograph British Isles</h2>
 
+<div style="position:relative;width:640px; background-color:white;">
 
-{literal}<style>
-#maincontent_block {
-	width:640px
-}
-</style>{/literal}
 
 <div style="width:35%;float:left;font-size:0.8em;position:relative;margin-right:20px">
 
@@ -143,4 +139,5 @@ and <a href="/article/Ways-to-view-Geograph-Images">even more ways to view image
 <br style="clear:both"/>
 &nbsp;
 
+</div>
 {include file="_std_end.tpl"}
