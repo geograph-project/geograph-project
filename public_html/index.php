@@ -62,12 +62,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	$potd=new PictureOfTheDay;
 	$potd->assignToSmarty($smarty); 
 	
-	$smarty->assign('marker', $overview->getSquarePoint($potd->image->grid_square));
-
+	
 	//lets find some recent photos
 	if ($CONF['template']=='ireland') {
 		new RecentImageList($smarty,2);
 	} else {
+		$smarty->assign('marker', $overview->getSquarePoint($potd->image->grid_square));
 		new RecentImageList($smarty);
 	}
 	
