@@ -392,21 +392,26 @@ class RecentImageList extends ImageList {
 		
 		$db=&$this->_getDB();
 		
-		$where = ($reference_index)?" and reference_index = $reference_index":'';
-		
-		$start = $db->getOne("select recent_id from gridimage_recent where 1 $where");
-		
-		$offset=rand(1,200);
-		$ids = range($start+$offset,$start+$offset+50);
-		shuffle($ids);
-		
-		$id_string = join(',',array_slice($ids,0,5));
+		if ($reference_index == 2) {
+			$offset=rand(0,200);
+			$recordSet = &$db->Execute("select * from gridimage_search where reference_index=$reference_index order by gridimage_id desc limit $offset,5");
+		} else {
+			$where = ($reference_index)?" and reference_index = $reference_index":'';
+
+			$start = $db->getOne("select recent_id from gridimage_recent where 1 $where");
+
+			$offset=rand(1,200);
+			$ids = range($start+$offset,$start+$offset+50);
+			shuffle($ids);
+
+			$id_string = join(',',array_slice($ids,0,5));
+			$recordSet = &$db->Execute("select * from gridimage_recent where recent_id in ($id_string) $where limit 5");
+		}
 		
 		//lets find some recent photos
 		$this->images=array();
 		$i=0;
-		
-		$recordSet = &$db->Execute("select * from gridimage_recent where recent_id in ($id_string) $where limit 5");
+
 		while (!$recordSet->EOF) 
 		{
 			$this->images[$i]=new GridImage;
