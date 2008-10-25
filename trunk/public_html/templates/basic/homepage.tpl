@@ -5,7 +5,11 @@
 <h2>Welcome to Geograph British Isles</h2>
 
 
-
+{literal}<style>
+#maincontent_block {
+	width:640px
+}
+</style>{/literal}
 
 <div style="width:35%;float:left;font-size:0.8em;position:relative;margin-right:20px">
 
@@ -92,7 +96,7 @@ Recently completed hectads:
 </div><br style="clear:both"/>
 
 
-<div style="width:430px;float:left;position:relative">
+<div style="width:350px;float:left;position:relative">
 
 <h3>Quick Links...</h3>
 <ul>
@@ -113,7 +117,7 @@ Recently completed hectads:
 
 </div>
 
-<div style="width:300px;float:left;position:relative">
+<div style="width:40%;float:left;position:relative">
 
 <p><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how 
 many grid squares you submit! 
