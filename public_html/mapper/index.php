@@ -40,7 +40,8 @@ if (isset($_GET['t'])) {
 
 	list($x,$y) = $conv->national_to_internal($_GET['lon'],$_GET['lat'],1);	
 	
-	$mosaic->setCentre($x,$y);
+	$mapw=($mosaic->image_w/$mosaic->pixels_per_km)/2;
+	$mosaic->setOrigin($x-$mapw,$y-$mapw);
 	
 	$token=$mosaic->getToken();
 	$cacheid='mapper|'.$token;

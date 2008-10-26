@@ -100,7 +100,7 @@ AttachEvent(window,'load',loadMap,false);
 </div>
 
 <div style="float:left; font-size:0.9em; color:gray;">
-	<a href="#" id="permalink">Link to this Location</a>
+	<a href="#" id="permalink" target="_top">Link to this Location</a>
 </div>
 <div style="width:660px; text-align:right; font-size:0.9em;">Jump to Grid Reference: <input type="text" size="8" id="coordin" /><input type="button" onclick="parseLocation()" value="Go" /></div>
 
