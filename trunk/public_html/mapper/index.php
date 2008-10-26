@@ -31,6 +31,22 @@ $overview=new GeographMapMosaic('overview');
 
 if (isset($_GET['t'])) {
 	$mosaic->setToken($_GET['t']);
+	
+	$token=$mosaic->getToken();
+	$cacheid='mapper|'.$token;
+} elseif (isset($_GET['lat'])) {
+	require_once('geograph/conversions.class.php');
+	$conv = new Conversions();
+
+	list($x,$y) = $conv->national_to_internal($_GET['lon'],$_GET['lat'],1);	
+	
+	$mosaic->setCentre($x,$y);
+	
+	$token=$mosaic->getToken();
+	$cacheid='mapper|'.$token;
+} else {
+	$token=$mosaic->getToken();
+	$cacheid='mapper';
 }
 
 $smarty = new GeographPage;
@@ -44,8 +60,6 @@ if (isset($_REQUEST['inner'])) {
 $token=$mosaic->getToken();
 
 
-//regenerate html?
-$cacheid='mapper|'.$token;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
