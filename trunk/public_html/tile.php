@@ -63,6 +63,30 @@ if (isset($_GET['map']))
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions();
 	
+	if (isset($debugmode)) {
+		###############
+
+		$w = 250 ; 
+		$img=imagecreate($w,$w);
+		imagecolorallocate($img, 0,0,0);
+		$colMarker=imagecolorallocate($img, 255,255,255);
+
+
+		imagestring($img, 1, 2, 2, $_GET['b'], $colMarker);	
+
+		$b = explode(',',$_GET['b']);
+
+		$s = intval( ($b[2]-$b[0])/1000 );
+
+		imagestring($img, 1, 20, 20, "$s km", $colMarker);	
+
+		header("Content-Type: image/png");
+		imagepng($img); 
+		exit;
+
+		###############
+	}
+	
 	list($e,$n,$reference_index) = array(intval($_GET['e'])*1000,intval($_GET['n'])*1000,1);
 	
 	if ($reference_index == 1) {
@@ -122,7 +146,7 @@ if (isset($_GET['map']))
 		} else {
 			$mustgenerate = false;
 			
-			if ($valid->memcache) {
+			if ($valid->memcache && !isset($_GET['refresh'])) {
 				$mkey = "{$_GET['l']},$e,$n,$reference_index";
 				$lastmod =& $memcache->name_get('tl',$mkey);
 				if (!$lastmod) {
@@ -137,7 +161,7 @@ if (isset($_GET['map']))
 			customCacheControl($lastmod,"$e,$n,$reference_index");
 			customExpiresHeader(86400,true);
 				
-			if ($valid->memcache && !$mustgenerate) {
+			if ($valid->memcache && $mkey && !$mustgenerate) {
 				$data =& $memcache->name_get('td',$mkey);
 				if ($data) {
 					if ($data == 'blank') {
@@ -154,6 +178,7 @@ if (isset($_GET['map']))
 			
 			preg_match('/-(\d)k-/',$rastermap->folders[$rastermap->service],$m);
 			$stepdist = ($m[1]-1);
+			$widthdist = ($m[1]);
 		
 			list($x,$y) = $conv->national_to_internal($e,$n,$reference_index);	
 			
@@ -166,54 +191,117 @@ if (isset($_GET['map']))
 
 			$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 		
-			
-			$sql="select x,y,grid_reference,imagecount,percent_land,has_geographs from gridsquare where 
-				CONTAINS( GeomFromText($rectangle),	point_xy)
-				having imagecount>0 or percent_land = 0";
+			if ($_GET['l'] == 'p') {
+				$sql="select (nateastings DIV 100 * 100) AS nateastings,
+					(natnorthings DIV 100 * 100) AS natnorthings,
+					count(*) as imagecount 
+					from gridimage inner join gridsquare using (gridsquare_id) where 
+					CONTAINS( GeomFromText($rectangle),	point_xy)
+					and moderation_status = 'geograph' and natgrlen <= 3
+					group by nateastings DIV 100, natnorthings DIV 100";
+			} else {
+				$sql="select x,y,imagecount,percent_land,has_geographs from gridsquare where 
+					CONTAINS( GeomFromText($rectangle),	point_xy)
+					and imagecount>0 or percent_land = 0";
+			}
 			
 			$arr = $db->getAll($sql);
 			
 			
 			if (count($arr)) {
 				$w = $rastermap->tilewidth[$rastermap->service];
-				$part = $w /8;
-				$part2 = $w /4;
-				$xd = imagefontwidth(5)/2;
-				$yd = imagefontheight(5)/2;
-				$s = imagefontwidth(5)*2.1;
-				
-				$img=imagecreate($w,$w);
-				$colMarker=imagecolorallocate($img, 255,255,255);
-				imagecolortransparent($img,$colMarker);
-				
-				$colSea=imagecolorallocate($img, 0,0,0);
-				$colBack=imagecolorallocate($img, 0,0,240);
-				$colSuppBack=imagecolorallocate($img, 192,158,0);
-				
-				foreach ($arr as $i => $row) {
+			
+				if ($_GET['l'] == 'p') {
+					$pixels_per_centi = ($w / ($widthdist * 10) ); //10 as ten centis per km
+					$half = ($pixels_per_centi/2);
 					
-					$x1 = $row['x'] - $x;
-					$y1 = $stepdist - ($row['y'] - $y);
+					$img=imagecreate($w,$w);
+					$colMarker=imagecolorallocate($img, 255,255,255);
+					imagecolortransparent($img,$colMarker);
+					$colSea=imagecolorallocate($img, 0,0,0);
 					
-					$x2 = $part + ($x1 * $part2);
-					$y2 = $part + ($y1 * $part2);
-					
-					if ($row['imagecount']) {
-						$color = ($row['has_geographs'])?$colBack:$colSuppBack;	
-						imagefilledellipse ($img,$x2,$y2,$s*strlen($row['imagecount']),$s,$color);
+					$sql="select imagecount from gridsquare group by imagecount";
+					$counts = $db->cacheGetCol(3600,$sql);
+			
+					$colour=array();
+					$last=$lastcolour=null;
+					for ($p=1; $p<count($counts); $p++) {
+						$o = $counts[$p];
+						//standard green, yellow => red
+						switch (true) {
+							case $o == 1: $r=255; $g=255; $b=0; break; 
+							case $o == 2: $r=255; $g=196; $b=0; break; 
+							case $o == 3: $r=255; $g=132; $b=0; break; 
+							case $o == 4: $r=255; $g=64; $b=0; break; 
+							case $o <  7: $r=225; $g=0; $b=0; break; #5-6
+							case $o < 10: $r=200; $g=0; $b=0; break; #7-9
+							case $o < 20: $r=168; $g=0; $b=0; break; #10-19
+							case $o < 40: $r=136; $g=0; $b=0; break; #20-39
+							case $o < 80: $r=112; $g=0; $b=0; break; #40-79
+							default: $r=80; $g=0; $b=0; break;
+						}
+						$key = "$r,$g,$b";
+						if ($key == $last) {
+							$colour[$o] = $lastcolour;
+						} else {
+							$lastcolour = $colour[$o]=imagecolorallocate($img, $r,$g,$b);
+						}
+						$last = $key;
+					}
+					foreach ($arr as $i => $row) {
+						$x1 = (($row['nateastings'] - $e) / 100);
+						$y1 = (($row['natnorthings'] - $n) / 100);
 
-						imagestring($img, 5, $x2-2-$xd*strlen($row['imagecount'])/2, $y2-$yd, $row['imagecount'], $colMarker);	
-					} 
-					if (!$row['percent_land']) {
-						imagestring($img, 5, $x2-2-$xd/2, $y2-$yd, 'X', $colSea);
+						//+$half as in coords needed are the center
+						$x2 = intval(($x1 * $pixels_per_centi)+$half);
+						$y2 = $w - intval(($y1 * $pixels_per_centi)+$half);
+
+						$color = $colour[$row['imagecount']];
+						imagefilledellipse($img,$x2,$y2,$pixels_per_centi,$pixels_per_centi,$color);
+						
+						imageellipse($img,$x2,$y2,$pixels_per_centi,$pixels_per_centi,$lastcolour);
+					}
+					imagesavealpha($img, true);
+				} else {
+					$part = $w /8;
+					$part2 = $w /4;
+
+					$img=imagecreate($w,$w);
+					$colMarker=imagecolorallocate($img, 255,255,255);
+					imagecolortransparent($img,$colMarker);
+
+					$xd = imagefontwidth(5)/2;
+					$yd = imagefontheight(5)/2;
+					$s = imagefontwidth(5)*2.1;
+					
+					$colSea=imagecolorallocate($img, 0,0,0);
+					$colBack=imagecolorallocate($img, 0,0,240);
+					$colSuppBack=imagecolorallocate($img, 192,158,0);
+
+					foreach ($arr as $i => $row) {
+
+						$x1 = $row['x'] - $x;
+						$y1 = $stepdist - ($row['y'] - $y);
+
+						$x2 = $part + ($x1 * $part2);
+						$y2 = $part + ($y1 * $part2);
+
+						if ($row['imagecount']) {
+							$color = ($row['has_geographs'])?$colBack:$colSuppBack;	
+							imagefilledellipse ($img,$x2,$y2,$s*strlen($row['imagecount']),$s,$color);
+
+							imagestring($img, 5, $x2-2-$xd*strlen($row['imagecount'])/2, $y2-$yd, $row['imagecount'], $colMarker);	
+						} 
+						if (!$row['percent_land']) {
+							imagestring($img, 5, $x2-2-$xd/2, $y2-$yd, 'X', $colSea);
+						}
 					}
 				}
 				header("Content-Type: image/png");
 				if ($memcache->valid) {
 					ob_start();
 					imagepng($img);
-					$memcache->name_set('td',$mkey,ob_get_flush(),$memcache->compress,$memcache->period_long*4);
-		;
+					$memcache->name_set('td',$mkey,ob_get_flush(),$memcache->compress,$memcache->period_med);
 				} else {
 					imagepng($img);
 				}

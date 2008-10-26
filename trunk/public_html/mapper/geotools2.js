@@ -114,13 +114,13 @@ GT_OSGB.prototype.getGridRef = function(precision)
 		var x=Math.floor(this.eastings/100000);
 
 
-		var e=Math.round(this.eastings%100000);
-		var n=Math.round(this.northings%100000);
+		var e=Math.floor(this.eastings%100000);
+		var n=Math.floor(this.northings%100000);
 
 
 		var div=(5-precision);
-		e=Math.round(e / Math.pow(10, div));
-		n=Math.round(n / Math.pow(10, div));
+		e=Math.floor(e / Math.pow(10, div));
+		n=Math.floor(n / Math.pow(10, div));
 	}
 	
 	var prefix=GT_OSGB.prefixes[y][x];
@@ -263,13 +263,13 @@ GT_Irish.prototype.getGridRef = function(precision)
 		var x=Math.floor(this.eastings/100000);
 
 
-		var e=Math.round(this.eastings%100000);
-		var n=Math.round(this.northings%100000);
+		var e=Math.floor(this.eastings%100000);
+		var n=Math.floor(this.northings%100000);
 
 
 		var div=(5-precision);
-		e=Math.round(e / Math.pow(10, div));
-		n=Math.round(n / Math.pow(10, div));
+		e=Math.floor(e / Math.pow(10, div));
+		n=Math.floor(n / Math.pow(10, div));
 	}
 	
 	var prefix=GT_Irish.prefixes[x][y];

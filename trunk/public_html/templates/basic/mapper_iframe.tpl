@@ -28,6 +28,9 @@ function changeOpacity(byOpacity) {
 	var newOpacity = (parseFloat(glayer.opacity) + byOpacity).toFixed(1);
 	newOpacity = Math.min(maxOpacity, Math.max(minOpacity, newOpacity));
 	glayer.setOpacity(newOpacity);
+	if (player) {
+		player.setOpacity(newOpacity);
+	}
 }
 
 function loadMap() {
@@ -39,15 +42,15 @@ function loadMap() {
 	oslayer.getURL = geographURL;
 	
 	//Photographs and coverages are available under a seperate Creative Commons Licence, but NO spidering - see Terms.
-	glayer = new OpenLayers.Layer.WMS("Geograph Coverage", ttileurl+"?l=g", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, opacity: 0.3, buffer:0});	
+	glayer = new OpenLayers.Layer.WMS("Gridsquare Coverage", ttileurl+"?l=g", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, opacity: 0.3, buffer:0});	
 	glayer.tileSize = new OpenLayers.Size(250,250);	
 	glayer.getURL = geographURL;
 	
-//	player = new OpenLayers.Layer.WMS("Geograph Photos", ttileurl+"?l=p", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, opacity: 0.3, buffer:0});	
-//	player.tileSize = new OpenLayers.Size(250,250);	
-//	player.getURL = geographURL;
+	player = new OpenLayers.Layer.WMS("Centisquare Coverage", ttileurl+"?l=p", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, opacity: 0.3, buffer:0, visibility:false});	
+	player.tileSize = new OpenLayers.Size(250,250);	
+	player.getURL = geographURL;
 	
-	map.addLayers([oslayer,glayer]); //,player
+	map.addLayers([oslayer,glayer,player]); 
 	
 	ll = new OpenLayers.LonLat(lon, lat);
 	map.setCenter(ll, 0);
