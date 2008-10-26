@@ -16,9 +16,10 @@
 	</tbody>
 </table>
 
-Centisquare Depth Key: <img src="/img/depthkey.png" width="400" height="20"/> (click <img src="/mapper/img/layer-switcher-maximize.png" width="18" height="18"/> to enable Centisquare Layer)
+<hr/>
+<p><b>Centisquare Depth Key</b>: <img src="/img/depthkey.png" width="400" height="20"/> (click <img src="/mapper/img/layer-switcher-maximize.png" width="18" height="18"/> to enable Centisquare Layer)<br/>
+<small>NOTE: The centisquare coverage layer only includes photos plotted with 6figure grid-references or above, and only include Geograph Images.</small></p>
 
-<br/><br/>
 
 
 {include file="_std_end.tpl"}
