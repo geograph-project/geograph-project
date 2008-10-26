@@ -72,11 +72,21 @@ function loadMap() {
 	
 	switcher = new OpenLayers.Control.LayerSwitcher();
 	map.addControl( switcher );
+	
+	
+	//map.addControl(new OpenLayers.Control.Permalink());
+	map.addControl(new OpenLayers.Control.Permalink('permalink'));
+	
 }
 
 AttachEvent(window,'load',loadMap,false);
 
 </script>{/literal}
+
+{dynamic}{if $user->registered}
+<div style="float:left; font-size:0.9em; color:gray;">If parts of the map stop displaying, then <a href="/mapper/captcha.php?token={$token}" style="color:gray;">visit this page to continue</a></div>{/if}
+
+<div style="text-align:right; width:660px; font-size:0.7em;margin-bottom:3px" class="nowrap">Change Overlay Opacity: [<a title="increase opacity" href="javascript: changeOpacity(0.1);">+</a>] [<a title="decrease opacity" href="javascript: changeOpacity(-0.1);">-</a>]</div>{/dynamic}
 
 <div id="mapcontainer">
 	<div style="position:absolute">
@@ -89,9 +99,10 @@ AttachEvent(window,'load',loadMap,false);
 	</div>
 </div>
 
-<div style="float:left; width:330px; font-size:0.9em;">Change Overlay Opacity: [<a title="increase opacity" href="javascript: changeOpacity(0.1);">+</a>] [<a title="decrease opacity" href="javascript: changeOpacity(-0.1);">-</a>]</div>
-<div style="float:left; width:330px; text-align:right; position:relative; font-size:0.9em;">Jump to Grid Reference: <input type="text" size="8" id="coordin" /><input type="button" onclick="parseLocation()" value="Go" /></div>
-<br style="clear:both"/>
+<div style="float:left; font-size:0.9em; color:gray;">
+	<a href="#" id="permalink">Link to this Location</a>
+</div>
+<div style="width:660px; text-align:right; font-size:0.9em;">Jump to Grid Reference: <input type="text" size="8" id="coordin" /><input type="button" onclick="parseLocation()" value="Go" /></div>
 
 <h3>Draggable Geograph Map of Great Britain <sup>(beta)</sup></h3>
 
