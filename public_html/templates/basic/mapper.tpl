@@ -16,6 +16,8 @@
 	</tbody>
 </table>
 
+Centisquare Key: <img src="/img/depthkey.png" width="350" height="20"/> (click <img src="/mapper/img/layer-switcher-maximize.png" width="18" height="18"/> to enable Centisquare Layer)
+
 <br/><br/>
 
 
