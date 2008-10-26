@@ -4,7 +4,7 @@
 
 <h2>Welcome to Geograph British Isles</h2>
 
-<div style="position:relative;width:640px; background-color:white;">
+<div style="position:relative;width:600px; background-color:white;">
 
 
 <div style="width:35%;float:left;font-size:0.8em;position:relative;margin-right:20px">
@@ -50,7 +50,7 @@
 
 </div>
 
-<div style="width:410px;float:left;padding-right:5px;position:relative;text-align:center;margin-left:-20px">
+<div style="width:370px;float:left;padding-right:5px;position:relative;text-align:center;margin-left:-20px">
 
 <div style="background-color:#eeeeee;padding:2px">
 The Geograph British Isles project aims to collect geographically
@@ -61,7 +61,7 @@ representative photographs and information for every square kilometre of <a href
 
 	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day</h3>
 	<a href="/photo/{$pictureoftheday.gridimage_id}" 
-	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a><br/>
+	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(360,260)}</a><br/>
 
 
 	<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a>
