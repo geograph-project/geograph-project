@@ -117,8 +117,8 @@ if (isset($_GET['map']))
 				header("HTTP/1.0 307 Temporary Redirect");
 				header("Status: 307 Temporary Redirect");
 				if ($USER->registered) {
- 	                               header("Location: http://{$CONF['CONTENT_HOST']}/maps/validate.png");
- 				} else {
+					header("Location: http://{$CONF['CONTENT_HOST']}/maps/validate.png");
+				} else {
 					header("Location: http://{$CONF['CONTENT_HOST']}/maps/login.png");
 				}
 				exit;
@@ -131,11 +131,11 @@ if (isset($_GET['map']))
 				header("HTTP/1.0 307 Temporary Redirect");
 				header("Status: 307 Temporary Redirect");
 
-                                if ($USER->registered) {
-                                       header("Location: http://{$CONF['CONTENT_HOST']}/maps/validate.png");
-                                } else {
-                                        header("Location: http://{$CONF['CONTENT_HOST']}/maps/login.png");
-                                }
+				if ($USER->registered) {
+					header("Location: http://{$CONF['CONTENT_HOST']}/maps/validate.png");
+				} else {
+					header("Location: http://{$CONF['CONTENT_HOST']}/maps/login.png");
+				}
  				exit;
 			}
 		
@@ -146,7 +146,7 @@ if (isset($_GET['map']))
 		} else {
 			$mustgenerate = false;
 			
-			if ($valid->memcache && !isset($_GET['refresh'])) {
+			if ($memcache->valid && !isset($_GET['refresh'])) {
 				$mkey = "{$_GET['l']},$e,$n,$reference_index";
 				$lastmod =& $memcache->name_get('tl',$mkey);
 				if (!$lastmod) {
@@ -155,13 +155,12 @@ if (isset($_GET['map']))
 				}
 			} else {
 				$lastmod = time();
-				$mustgenerate = true;
 			}
 		
 			customCacheControl($lastmod,"$e,$n,$reference_index");
 			customExpiresHeader(86400,true);
-				
-			if ($valid->memcache && $mkey && !$mustgenerate) {
+			
+			if ($memcache->valid && $mkey && !$mustgenerate) {
 				$data =& $memcache->name_get('td',$mkey);
 				if ($data) {
 					if ($data == 'blank') {
@@ -175,12 +174,16 @@ if (isset($_GET['map']))
 					exit;
 				}
 			} 
+			$lastmod = time();
 			
 			preg_match('/-(\d)k-/',$rastermap->folders[$rastermap->service],$m);
 			$stepdist = ($m[1]-1);
 			$widthdist = ($m[1]);
 		
-			list($x,$y) = $conv->national_to_internal($e,$n,$reference_index);	
+			
+			$w = $rastermap->tilewidth[$rastermap->service];
+			
+			list($x,$y) = $conv->national_to_internal($e,$n,$reference_index);
 			
 			$db=NewADOConnection($GLOBALS['DSN']);
 			
@@ -209,8 +212,6 @@ if (isset($_GET['map']))
 			
 			
 			if (count($arr)) {
-				$w = $rastermap->tilewidth[$rastermap->service];
-			
 				if ($_GET['l'] == 'p') {
 					$pixels_per_centi = ($w / ($widthdist * 10) ); //10 as ten centis per km
 					$half = ($pixels_per_centi/2);
@@ -301,14 +302,16 @@ if (isset($_GET['map']))
 				if ($memcache->valid) {
 					ob_start();
 					imagepng($img);
-					$memcache->name_set('td',$mkey,ob_get_flush(),$memcache->compress,$memcache->period_med);
+					$memcache->name_set('td',$mkey,ob_get_flush(),$memcache->compress,$memcache->period_med*2);
+					$memcache->name_set('tl',$mkey,$lastmod,$memcache->compress,$memcache->period_med*2);
 				} else {
 					imagepng($img);
 				}
 
 			} else {
 				$blank = 'blank';
-				$memcache->name_set('td',$mkey,$blank,false,$memcache->period_long*4);
+				$memcache->name_set('td',$mkey,$blank,false,$memcache->period_med*2);
+				$memcache->name_set('tl',$mkey,$lastmod,$memcache->compress,$memcache->period_med*2);
 				header("HTTP/1.0 302 Found");
 				header("Status: 302 Found");
 				header("Location: http://{$CONF['CONTENT_HOST']}/maps/blank.png");
