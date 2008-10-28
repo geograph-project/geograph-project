@@ -1,4 +1,4 @@
-{assign var="page_title" value="Content"}
+{assign var="page_title" value=$title}
 {include file="_basic_begin.tpl"}
 {literal}<style type="text/css">
 h2 { padding: 5px; margin-top:0px; background-color: black; color:white}
