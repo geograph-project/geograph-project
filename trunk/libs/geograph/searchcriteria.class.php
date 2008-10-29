@@ -297,7 +297,7 @@ class SearchCriteria
 		$sql_where_start = $sql_where;
 		
 		
-		$this->getSQLPartsFromText($this->searchtext,$sql_where,$sql_from);
+		$this->getSQLPartsFromText($this->searchtext);
 		
 		
 		if (!empty($this->limit1)) {

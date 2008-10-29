@@ -259,7 +259,7 @@ class sphinxwrapper {
 		
 		foreach ($this->filters as $name => $value) {
 			if (is_array($value)) {
-				if (count($value) == 2) {
+				if (count($value) == 2) {//todo this is a rather flaky assuption!
 					$cl->SetFilterRange($name, $value[0], $value[1]);
 				} else {
 					$cl->SetFilter($name, $value);
@@ -328,12 +328,15 @@ class sphinxwrapper {
 		$cl->SetWeights ( array ( 100, 1 ) );
 		if (!empty($DateColumn)) {
 			$cl->SetSortMode ( SPH_SORT_TIME_SEGMENTS, $DateColumn);
+			
+			//todo maybe call SetRankingMode(SPH_RANK_NONE) ???
 		} elseif (!empty($this->sort)) {
 			if ($this->sort == -1) {
 				#special token to mean will deal with it externally!
 			} else {
 				$cl->SetSortMode ( SPH_SORT_EXTENDED, $this->sort);
 			}
+			//todo maybe call SetRankingMode(SPH_RANK_NONE) ??? - but only if relevance isnt in the $sort
 		} else {
 			$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
 		}

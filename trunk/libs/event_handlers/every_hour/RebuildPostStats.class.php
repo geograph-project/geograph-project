@@ -6,7 +6,7 @@
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
  *
- * This file copyright (C) 2008  Barry Hunter (geo@barryhunter.co.uk)
+ * This file copyright (C) 2005  Barry Hunter (geo@barryhunter.co.uk)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,7 +33,7 @@
 require_once("geograph/eventhandler.class.php");
 
 //filename of class file should correspond to class name, e.g.  myhandler.class.php
-class RebuildGridimageOSGaz extends EventHandler
+class RebuildPostStats extends EventHandler
 {
 	function processEvent(&$event)
 	{
@@ -41,18 +41,15 @@ class RebuildGridimageOSGaz extends EventHandler
 		
 		$db=&$this->_getDB();
 		
-		$db->Execute("DROP TABLE IF EXISTS gridimage_os_gaz_tmp");
+		$db->Execute("DROP TABLE IF EXISTS gridimage_post_stat_tmp");
 		
-		$db->Execute("CREATE TABLE gridimage_os_gaz_tmp
-				(INDEX (co_code))
-				ENGINE=MyISAM
-				SELECT placename_id,co_code,def_nam as full_name,count(*) as c,gridimage_id
-				FROM gridimage INNER JOIN os_gaz ON(placename_id-1000000 = os_gaz.seq)
-				WHERE moderation_status <> 'rejected' AND placename_id > 1000000
-				GROUP BY placename_id");
 		
-		$db->Execute("DROP TABLE IF EXISTS gridimage_os_gaz");
-		$db->Execute("RENAME TABLE gridimage_os_gaz_tmp TO gridimage_os_gaz");
+		$db->Execute("create table gridimage_post_stat_tmp (index (`gridimage_id`)) select gridimage_id,count(*) as images from gridimage_post group by gridimage_id having images > 5 ");
+		
+
+		
+		$db->Execute("DROP TABLE IF EXISTS gridimage_post_stat");
+		$db->Execute("RENAME TABLE gridimage_post_stat_tmp TO gridimage_post_stat");
 		
 		//return true to signal completed processing
 		//return false to have another attempt later
