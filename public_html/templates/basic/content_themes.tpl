@@ -4,7 +4,7 @@
 
 <div class="interestBox">
 <h2 style="margin-bottom:0">User Contributed Content</h2>
-Documents are assigned automaticlly to groups, this is still experimental! <small>[
+Documents are assigned automatically to groups, this is still experimental! <small>[
 {if $v}
 <a href="?">Short</a>/<b>Long</b> 
 {else}

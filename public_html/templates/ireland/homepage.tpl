@@ -5,7 +5,7 @@
 
 <div style="width:60%;float:left;padding-right:5px;position:relative">
 <p>The Geograph project aims to collect geographically
-representative photographs and information for every square kilometre of the <a href="/explore/places/1/">Great Britain</a> and 
+representative photographs and information for every square kilometre of 
 <a href="/explore/places/2/">Ireland</a>, and you can be part of it.</p>
 
 
@@ -62,9 +62,12 @@ we hope you'll enjoy being a part of this great project
 
 </div>
 
-<div style="margin-top:10px;padding:5px;background:#ffdddd;position:relative">
-<h3>Yahoo Find of the Year</h3>
-<p>Geograph has been judged as Yahoo's Find of the Year 2006 in the <a href="http://uk.promotions.yahoo.com/finds2006/travel/">"Travel"</a> category.</p>
+<div style="margin-top:10px;padding:5px;background:yellow;position:relative">
+	<p>We are still developing geograph.ie, and tailoring it to the Geograph Ireland project.</p>
+	
+	<p>While we make the transition, this beta site
+	may show some pages with elements a little out of
+	kilter, but we still welcome any <a href="/contact.php">feedback</a>.</p>
 </div>
 
 </div>
@@ -88,5 +91,10 @@ Recently completed hectads:
 
 <br style="clear:both"/>
 &nbsp;
+
+
+<div class="interestBox">
+	<b>Geograph Ireland</b> is a sub-project of {external href="http://www.geograph.org.uk/" text="Geograph British Isles"} which collects photos of Great Britain and Ireland, the two sites share a common database. Photos submitted to one will always be available on the other.
+</div>
 
 {include file="_std_end.tpl"}
