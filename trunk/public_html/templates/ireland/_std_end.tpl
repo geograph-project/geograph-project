@@ -5,30 +5,60 @@
   <ul>
     <li style="font-size:1.42em"><a accesskey="1" title="Home Page" href="/">Home</a></li>
     <li>View<ul>
-     <li><a title="Find images" href="/search.php">Search</a></li>
-     <li><a title="View map of all submissions" href="/mapbrowse.php">Map</a></li>
-     <li><a title="Explore Images by Theme" href="/explore/">Explore</a></li>
-     <li><a title="Photos Galleries" href="/discuss/?action=vtopic&amp;forum=11">Galleries</a></li>
+     <li><a title="Find images" href="/search.php">Search</a><ul>
+      <li><a title="Advanced image search" href="/search.php?form=text">Advanced</a></li>
+     </ul></li>
+     <li><a title="View map of all submissions" href="/mapbrowse.php">Map</a><ul>
+      <li><a title="Depth Map" href="/mapbrowse.php?depth=1">Depth</a></li>
+     </ul></li>
+     <li><a title="Browse" href="/browse.php">Browse</a></li>
+     <li><a title="Explore Images by Theme" href="/explore/">Explore</a><ul>
+      <li><a href="/statistics/fully_geographed.php">Mosaics</a></li>
+      <li><a href="/explore/routes.php">Routes</a></li>
+      <li><a href="/explore/places/2/">Places</a></li>
+      <li><a href="/explore/calendar.php">Calendar</a></li>
+      <li><a href="/explore/searches.php">Featured</a></li>
+     </ul></li>
+     <li><a title="Content" href="/content/">Content</a></li>
+     <li><a title="Activities" href="/activities/">Activities</a><ul>
+      <li><a title="Play Games" href="/games/">Games</a> </li>
+      <li><a title="Imagine the map in pictures" href="/help/imagine">Imagine</a></li>
+     </ul></li>
     </ul></li>
     <li>Contribute<ul>
-    <li><a title="Submit" href="/submit.php">Submit</a></li>
-     <li><a title="Statistics" href="/numbers.php">Statistics</a></li>
+     <li><b><a title="Submit" href="/submit.php">Submit</a></b></li>
+     <li><a title="Statistics" href="/numbers.php">Statistics</a><ul>
+      <li><a title="More Stats" href="/statistics.php">More Stats</a></li>
+      <li><a title="Credits" href="/credits/">Contributors</a></li>
+     </ul></li>
      <li><a title="Leaderboard" href="/statistics/moversboard.php">Leaderboard</a></li>
-     <li><a title="Articles" href="/article/">Articles</a></li>
+     <li><a title="Content" href="/article/Content-on-Geograph">Content</a></li>
     </ul></li>
     <li>Interact<ul>
-     <li><a title="Play Games" href="/games/">Games</a> <sup style="color:red">Updated!</sup></li>
-     <li><a title="Imagine the map in pictures" href="/help/imagine">Imagine</a></li>
      <li><a title="Discuss" href="/discuss/">Discuss</a></li>
      {dynamic}{if $user->registered}
      <li><a title="Chat" href="/chat/">Chat</a> {if $irc_seen}<span style="color:gray">({$irc_seen} online)</span>{/if}</li>
      <li><a title="Find out about local Events" href="/events/">Events</a> <sup style="color:red">New!</sup></li>
      {/if}{/dynamic}
     </ul></li>
+    <li>Export<ul>
+     <li><a title="KML" href="/kml.php">Google Earth/Maps</a></li>
+     <li><a title="Memory Map Exports" href="/memorymap.php">Memory Map</a></li>
+     <li><a title="GPX Downloads" href="/gpx.php">GPX</a></li>
+     <li><a title="API" href="/help/api" style="font-size:0.9em;">API</a></li>
+    </ul></li>
     <li>Further Info<ul>
-     <li><a title="FAQ" href="/faq.php">FAQ</a></li>
-     <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
-     <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a></li>
+     <li><a title="FAQ" href="/faq.php">FAQ</a><ul>
+      <li><a title="Geograph Documents" href="/content/?docs&order=title">Documents</a></li>
+     </ul></li>
+     <li><a title="View More Pages" href="/help/more_pages">More Pages</a><ul>
+      <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
+     </ul></li>
+     
+     <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a><ul>
+      <li><a title="The Geograph Team" href="/admin/team.php">The Team</a></li>
+      <li><a href="/help/credits" title="Who built this and how?">Credits</a></li>
+     </ul></li>
     </ul></li>
   {dynamic}
   {if $is_mod || $is_admin || $is_tickmod}
