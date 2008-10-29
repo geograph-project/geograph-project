@@ -399,7 +399,11 @@ if (isset($_GET['set_legacy'])) {
 			$updates['searchdesc'] = ", {$exact}matching [{$sphinx->qclean}]".$updates['searchdesc'];
 		}
 	}
-		
+	
+	if ($updates['searchclass'] == 'Text') {
+		//remove the old query from searchq (where it used to be stored before searchtext added) otherwise its 'hidden' but still used
+		$updates['searchq'] = '';
+	}
 	$updates['searchtext'] = (empty($exact)?'':'=').$sphinx->q;
 	
 	$db=NewADOConnection($GLOBALS['DSN']);
