@@ -1,10 +1,10 @@
 </div>
 </div>
 <div id="nav_block" class="no_print">
- <div class="nav">
+ <div id="treemenu1" class="treeview">
   <ul>
     <li style="font-size:1.42em"><a accesskey="1" title="Home Page" href="/">Home</a></li>
-    <li>View<ul>
+    <li>View<ul rel="open">
      <li><a title="Find images" href="/search.php">Search</a><ul>
       <li><a title="Advanced image search" href="/search.php?form=text">Advanced</a></li>
      </ul></li>
@@ -25,7 +25,7 @@
       <li><a title="Imagine the map in pictures" href="/help/imagine">Imagine</a></li>
      </ul></li>
     </ul></li>
-    <li>Contribute<ul>
+    <li>Contribute<ul rel="open">
      <li><b><a title="Submit" href="/submit.php">Submit</a></b></li>
      <li><a title="Statistics" href="/numbers.php">Statistics</a><ul>
       <li><a title="More Stats" href="/statistics.php">More Stats</a></li>
@@ -34,7 +34,7 @@
      <li><a title="Leaderboard" href="/statistics/moversboard.php">Leaderboard</a></li>
      <li><a title="Content" href="/article/Content-on-Geograph">Content</a></li>
     </ul></li>
-    <li>Interact<ul>
+    <li>Interact<ul rel="open">
      <li><a title="Discuss" href="/discuss/">Discuss</a></li>
      {dynamic}{if $user->registered}
      <li><a title="Chat" href="/chat/">Chat</a> {if $irc_seen}<span style="color:gray">({$irc_seen} online)</span>{/if}</li>
@@ -45,9 +45,9 @@
      <li><a title="KML" href="/kml.php">Google Earth/Maps</a></li>
      <li><a title="Memory Map Exports" href="/memorymap.php">Memory Map</a></li>
      <li><a title="GPX Downloads" href="/gpx.php">GPX</a></li>
-     <li><a title="API" href="/help/api" style="font-size:0.9em;">API</a></li>
+     <li style="font-size:0.9em;"><a title="API" href="/help/api">API</a></li>
     </ul></li>
-    <li>Further Info<ul>
+    <li>Further Info<ul rel="open">
      <li><a title="FAQ" href="/faq.php">FAQ</a><ul>
       <li><a title="Geograph Documents" href="/content/?docs&order=title">Documents</a></li>
      </ul></li>
@@ -62,8 +62,8 @@
     </ul></li>
   {dynamic}
   {if $is_mod || $is_admin || $is_tickmod}
-    <li>Admin<ul>
-     <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
+    <li>Admin<ul rel="open">
+     <li><a title="Admin Tools" href="/admin/">Admin Homepage</a></li>
      {if $is_mod}
      	<li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
      {/if}
