@@ -1,8 +1,8 @@
 </div>
 </div>
 <div id="nav_block" class="no_print">
- <div id="treemenu1" class="treeview">
-  <ul>
+ <div class="nav">
+  <ul id="treemenu1" class="treeview">
     <li style="font-size:1.42em"><a accesskey="1" title="Home Page" href="/">Home</a></li>
     <li>View<ul rel="open">
      <li><a title="Find images" href="/search.php">Search</a><ul>
@@ -10,6 +10,7 @@
      </ul></li>
      <li><a title="View map of all submissions" href="/mapbrowse.php">Map</a><ul>
       <li><a title="Depth Map" href="/mapbrowse.php?depth=1">Depth</a></li>
+      <li><a title="Draggable Map" href="/mapper/">Draggable</a></li>
      </ul></li>
      <li><a title="Browse" href="/browse.php">Browse</a></li>
      <li><a title="Explore Images by Theme" href="/explore/">Explore</a><ul>
