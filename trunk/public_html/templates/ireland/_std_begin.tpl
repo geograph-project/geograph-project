@@ -33,16 +33,16 @@
 title="Geograph British Isles search" href="/stuff/osd.xml" />
 <script type="text/javascript" src="{"/geograph.js"|revision}"></script>
 
-<script type="text/javascript" src="{"/js/simpletreemenu.js"|revision}"></script>
-<link rel="stylesheet" type="text/css" title="Monitor" href="{"/js/simpletree.css"|revision}" media="screen" />
 <script type="text/javascript">
 var static_host = '{$static_host}';
-
+{literal}
 function setuptreemenu() {
 	ddtreemenu.createTree("treemenu1", true, 5);
 }
 AttachEvent(window,'load',setuptreemenu,false);
-</script>
+{/literal}</script>
+<script type="text/javascript" src="{"/js/simpletreemenu.js"|revision}"></script>
+<link rel="stylesheet" type="text/css" title="Monitor" href="{"/js/simpletree.css"|revision}" media="screen" />
 </head>
 <body>
 <div id="header_block">
