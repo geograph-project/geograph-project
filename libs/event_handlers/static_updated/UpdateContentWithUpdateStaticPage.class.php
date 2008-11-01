@@ -75,7 +75,11 @@ class UpdateContentWithUpdateStaticPage extends EventHandler
 			
 			$updates = array();
 			$updates[] = "`foreign_id` = CRC32('$filename')";
-						
+			$updates[] = "`source` = 'help'";
+			
+			$content_id = $db->getOne("SELECT content_id FROM content WHERE ".implode(' AND ',$updates));
+			
+			
 			$updates[] = "`url` = ".$db->Quote($url);
 			
 			
@@ -130,14 +134,18 @@ class UpdateContentWithUpdateStaticPage extends EventHandler
 			}
 			
 			
-			$updates[] = "`source` = 'help'";
 			$updates[] = "`type` = 'document'";
 			
 			$updates[] = "`updated` = '$updated'";
-			$updates[] = "`created` = '$created'";
 			
-			//we can come here via update too, so replace works, as we have a UNIQUE(foreign_id,source)
-			$sql = "REPLACE INTO `content` SET ".implode(',',$updates);
+			if ($content_id) {
+				$sql = "UPDATE `content` SET ".implode(',',$updates)." WHERE content_id = $content_id";
+			} else {
+				$updates[] = "`created` = '$created'";
+			
+				//we can come here via update too, so replace works, as we have a UNIQUE(foreign_id,source)
+				$sql = "INSERT INTO `content` SET ".implode(',',$updates);
+			}
 
 			$db->Execute($sql);
 		} 
