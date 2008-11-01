@@ -128,7 +128,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		
 		// --------------
 	} elseif (isset($_GET['docs'])) {
-		$where = "`type` = 'document'";
+		$where = "content.`type` = 'document'";
 		$pageSize = 1000;
 		$title = "Geograph Documents";
 		$extra .= "&amp;docs=1";
