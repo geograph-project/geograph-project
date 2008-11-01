@@ -177,7 +177,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	where $where
 	group by content_id
 	having posts_with_images >= posts_count/2
-	order by `type` = 'info' desc, $sql_order 
+	order by content.`type` = 'info' desc, $sql_order 
 	limit $limit");
 	
 if (!empty($_GET['debug'])) {
