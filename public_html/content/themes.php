@@ -37,9 +37,18 @@ $mtime = strtotime($data['Update_time']);
 //can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
-$template = 'content_themes.tpl';
+$template = 'content_themes2.tpl';
 
-$source = $cacheid = (!empty($_GET['v']) && $_GET['v']==2)?'sphinx':'carrot2';
+if (!empty($_GET['v'])) {
+	switch ($_GET['v']) {
+		case '2': $source = 'sphinx'; break;
+		case '3': $source = 'user%'; break;
+		default:  $source = 'carrot2'; break;
+	}
+} else {
+	$source = 'carrot2';
+}
+$cacheid = $source;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -51,7 +60,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		inner join content using (content_id)
 		left join user using (user_id)
 		
-	where `source` = '$source' and `use` = 'info'
+	where content_group.`source` like '$source' and `type` = 'info'
 	order by label = '(Other)',content_group.label,content_group.score desc,content_group.sort_order
 	");
 	

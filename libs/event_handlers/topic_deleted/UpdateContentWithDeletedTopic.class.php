@@ -44,7 +44,7 @@ class UpdateContentWithDeletedTopic extends EventHandler
 		
 		$topic_id = $event['event_param'];
 		
-		$db->Execute("delete from content where foreign_id = $topic_id and type in ('gsd','themed','gallery')");
+		$db->Execute("delete from content where foreign_id = $topic_id and source in ('gsd','themed','gallery')");
 		
 		//return true to signal completed processing
 		//return false to have another attempt later

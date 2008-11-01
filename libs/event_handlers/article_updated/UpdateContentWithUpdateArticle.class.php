@@ -93,13 +93,13 @@ class UpdateContentWithUpdateArticle extends EventHandler
 			}
 			
 			
-			$updates[] = "`type` = 'article'";
-			$updates[] = "`use` = '".(preg_match('/\bGeograph\b/',$page['category_name'])?'document':'info')."'";
+			$updates[] = "`source` = 'article'";
+			$updates[] = "`type` = '".(preg_match('/\bGeograph\b/',$page['category_name'])?'document':'info')."'";
 			
 			$updates[] = "`updated` = '{$page['update_time']}'";
 			$updates[] = "`created` = '{$page['create_time']}'";
 			
-			//we can come here via update too, so replace works, as we have a UNIQUE(foreign_id,type)
+			//we can come here via update too, so replace works, as we have a UNIQUE(foreign_id,source)
 			$sql = "REPLACE INTO `content` SET ".implode(',',$updates);
 
 			$db->Execute($sql);
@@ -115,7 +115,7 @@ class UpdateContentWithUpdateArticle extends EventHandler
 		} else {
 			$updates = array();
 			$updates[] = "`foreign_id` = $article_id";
-			$updates[] = "`type` = 'article'";
+			$updates[] = "`source` = 'article'";
 			
 			$sql = "DELETE FROM `content` WHERE ".implode(' AND ',$updates);
 			

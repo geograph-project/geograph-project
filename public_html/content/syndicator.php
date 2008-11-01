@@ -72,10 +72,10 @@ if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 $db=NewADOConnection($GLOBALS['DSN']);
 	
 
-$sql="select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.type
+$sql="select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.source
 	from content 
 		left join user using (user_id)
-	where type != 'themed'
+	where source != 'themed'
 	order by updated desc
 	limit 50";
 
