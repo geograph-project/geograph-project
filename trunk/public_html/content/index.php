@@ -111,7 +111,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		
 		if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
 			$sphinx->qoutput = $sphinx->q;
-			$sphinx->q .= " @type -themed";
+			$sphinx->q .= " @source -themed";
 		}
 		
 		$ids = $sphinx->returnIds($pg,'content_stemmed');	
@@ -128,7 +128,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		
 		// --------------
 	} elseif (isset($_GET['docs'])) {
-		$where = "`use` = 'document'";
+		$where = "`type` = 'document'";
 		$pageSize = 1000;
 		$title = "Geograph Documents";
 		$extra .= "&amp;docs=1";
@@ -138,11 +138,11 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		$title = "Location Specific Content";
 		$extra .= "&amp;loc=1";
 	} else {
-		$where = "`use` = 'info'";
+		$where = "`type` = 'info'";
 	}
 	
 	if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
-		$where .= " AND content.`type` != 'themed'";
+		$where .= " AND content.`source` != 'themed'";
 	}
 	
 	if (!isset($resultCount))
@@ -165,19 +165,19 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll($sql = "
-	select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.type,content.gridimage_id,
+	select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.source,content.gridimage_id,
 		(coalesce(views,0)+coalesce(topic_views,0)) as views,
 		(coalesce(images,0)+coalesce(count(gridimage_post.seq_id),0)) as images,
 		article_stat.words,coalesce(posts_count,0) as posts_count,coalesce(count(distinct gridimage_post.post_id),0) as posts_with_images
 	from content 
 		left join user using (user_id)
-		left join article_stat on (content.type = 'article' and foreign_id = article_id)
-		left join geobb_topics on (content.type IN ('gallery','themed') and foreign_id = topic_id) 
+		left join article_stat on (content.source = 'article' and foreign_id = article_id)
+		left join geobb_topics on (content.source IN ('gallery','themed') and foreign_id = topic_id) 
 		left join gridimage_post using (topic_id)
 	where $where
 	group by content_id
 	having posts_with_images >= posts_count/2
-	order by `use` = 'info' desc, $sql_order 
+	order by `type` = 'info' desc, $sql_order 
 	limit $limit");
 	
 if (!empty($_GET['debug'])) {
@@ -225,7 +225,7 @@ if (!empty($_GET['debug'])) {
 	
 	$where = '';
 	if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
-		$where = " WHERE `type` != 'themed'";
+		$where = " WHERE `source` != 'themed'";
 	}
 	
 	$list = $db->getAll("select title from content $where");

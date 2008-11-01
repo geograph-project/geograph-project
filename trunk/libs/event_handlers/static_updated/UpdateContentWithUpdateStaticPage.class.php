@@ -130,13 +130,13 @@ class UpdateContentWithUpdateStaticPage extends EventHandler
 			}
 			
 			
-			$updates[] = "`type` = 'help'";
-			$updates[] = "`use` = 'document'";
+			$updates[] = "`source` = 'help'";
+			$updates[] = "`type` = 'document'";
 			
 			$updates[] = "`updated` = '$updated'";
 			$updates[] = "`created` = '$created'";
 			
-			//we can come here via update too, so replace works, as we have a UNIQUE(foreign_id,type)
+			//we can come here via update too, so replace works, as we have a UNIQUE(foreign_id,source)
 			$sql = "REPLACE INTO `content` SET ".implode(',',$updates);
 
 			$db->Execute($sql);

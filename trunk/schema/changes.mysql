@@ -259,3 +259,30 @@ CREATE TABLE `vote_log` (
 `user_id` INT UNSIGNED NOT NULL ,
 `ipaddr` INT UNSIGNED NOT NULL
 ) ENGINE = MYISAM ;
+
+
+
+
+
+
+
+
+
+
+
+INSERT INTO content_group
+SELECT content_id, category_name AS label, 1 AS `score` , 0 AS `sort_order` , 'user3' AS `source` , NOW( ) AS `updated`
+FROM `content`
+INNER JOIN article ON ( content.foreign_id = article.article_id )
+INNER JOIN article_cat
+USING ( article_cat_id )
+WHERE content.type = 'article';
+
+
+
+ALTER TABLE `content` CHANGE `type` `source` ENUM( 'article', 'gallery', 'gsd', 'themed', 'help', 'other' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ,
+CHANGE `use` `type` ENUM( 'info', 'document' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'info';
+
+
+
+
