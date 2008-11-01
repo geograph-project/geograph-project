@@ -433,38 +433,47 @@ class SearchCriteria
 			}
 			$dates = explode('^',$this->limit7);
 			
+			$same = ($dates[0] == $dates[1]);
+			
 			//if a 'to' search then we must make blank bits match the end!
-			list($y,$m,$d) = explode('-',$dates[1]);
-			if ($y > 0) {
-				if ($m == 0) {
-					$m = 12;
+			list($y1,$m1,$d1) = explode('-',$dates[1]);
+			if ($y1 > 0) {
+				if ($m1 == 0) {
+					$m1 = 12;
 				}
-				if ($d == 0) {
-					$d = date('t',mktime(0,0,0,$m,1,$y)); ;
+				if ($d1 == 0) {
+					$d1 = date('t',mktime(0,0,0,$m1,1,$y1));
 				}
-				$dates[1] = "$y-$m-$d";
+				$dates[1] = sprintf('%04d-%02d-%02d',$y1,$m1,$d1);
 			}
 			
 			
 			if ($dates[0]) {
+				list($y,$m,$d) = explode('-',$dates[0]);
 				$days0 = $this->toDays($dates[0]);
 				if (preg_match("/0{4}-([01]?[1-9]+|10)-/",$dates[0]) > 0) {
 					//month only
-					list($y,$m,$d) = explode('-',$dates[0]);
 					$sql_where .= "MONTH(imagetaken) = $m ";
 					$this->sphinx['impossible']++;
 				} elseif (preg_match("/0{4}-0{2}-([01]?[1-9]+|10)/",$dates[0]) > 0) {
 					//day only ;)
-					list($y,$m,$d) = explode('-',$dates[0]);
 					$sql_where .= "imagetaken > DATE_SUB(NOW(),INTERVAL $d DAY)";
 					$start = $this->toDays("DATE_SUB(NOW(),INTERVAL $d DAY)");
 					$now = $this->toDays('NOW()');
 					$this->sphinx['filters']['takendays'] = array($start,$now);
 				} elseif ($dates[1]) {
-					if ($dates[0] == $dates[1]) {
+					if ($same) {
 						//both the same
-						$sql_where .= "imagetaken = '".$dates[0]."' ";
-						$this->sphinx['filters']['takenday'] = str_replace('-','',$dates[0]);
+						if ($m == 0) {
+							$sql_where .= "imagetaken LIKE '$y%' ";
+							$this->sphinx['filters']['takenyear'] = $y;
+						} elseif ($d == 0) {
+							$sql_where .= "imagetaken = '".sprintf('%04d-%02d',$y,$m)."%' ";
+							$this->sphinx['filters']['takenmonth'] = sprintf('%04d%02d',$y,$m);
+						} else {
+							$sql_where .= "imagetaken = '".$dates[0]."' ";
+							$this->sphinx['filters']['takenday'] = str_replace('-','',$dates[0]);
+						}
 					} else {
 						//between
 						$sql_where .= "imagetaken BETWEEN '".$dates[0]."' AND '".$dates[1]."' ";
