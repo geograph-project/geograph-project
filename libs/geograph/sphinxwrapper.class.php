@@ -324,7 +324,7 @@ class sphinxwrapper {
 			
 			if (count($this->filters) || $words> 9 || strpos($q,'"') !== FALSE) { //(MATCH_ANY - truncates to 10 words!)
 				$mode = SPH_MATCH_EXTENDED2;
-				$q = "(".prog_replace('/\| [\| ]+/','| ',implode(" | ",$this->explodeWithQuotes(" ",$q))).")".$this->getFilterString();
+				$q = "(".preg_replace('/\| [\| ]+/','| ',implode(" | ",$this->explodeWithQuotes(" ",$q))).")".$this->getFilterString();
 			} elseif ($words > 0) {//at least one word
 				$mode = SPH_MATCH_ANY;
 			}
