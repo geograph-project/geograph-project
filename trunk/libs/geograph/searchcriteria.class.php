@@ -210,10 +210,14 @@ class SearchCriteria
 		if ((($x == 0 && $y == 0 ) || $this->limit8) && $this->orderby) {
 			switch ($this->orderby) {
 				case 'random':
-					$sql_order = ' crc32(gi.gridimage_id) ';
+					$sql_order = ' crc32(concat("'.($this->crt_timestamp_ts).'",gi.gridimage_id)) ';
 					$this->sphinx['impossible']++;
 					break;
 				case 'dist_sqd':
+					break;
+				case 'relevance':
+					$sql_order = '';
+					$this->sphinx['sort'] = "@relevance DESC, @id DESC";
 					break;
 				case 'imagetaken':
 					if ($sql_where) {
