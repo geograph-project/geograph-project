@@ -55,7 +55,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll($sql = "
-	select content.content_id,content.user_id,url,title,extract,updated,created,realname,label,score
+	select content.content_id,content.user_id,url,title,extract,content.updated,content.created,realname,label,score
 	from content_group
 		inner join content using (content_id)
 		left join user using (user_id)
