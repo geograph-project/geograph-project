@@ -279,6 +279,30 @@ class sphinxwrapper {
 		}
 	}
 	
+	function explodeWithQuotes($delimeter, $string) {
+		$insidequotes = false;
+		for ($i = 0; $i < strlen($string); $i++) {
+			if ($string{$i} == '"') {
+				if ($insidequotes)
+					$insidequotes = false;
+				else
+					$insidequotes = true;
+				$currentelement .= $string{$i};
+			} elseif ($string{$i} == $delimeter) {
+				if ($insidequotes) {
+					$currentelement .= $string{$i};
+				} else {
+					$returnarray[$elementcount++] = $currentelement;
+					$currentelement = '';
+				}
+			} else {
+				$currentelement .= $string{$i};
+			}
+		}
+		$returnarray[$elementcount++] = $currentelement;
+		return $returnarray;
+	}
+	
 	public function returnIds($page = 1,$index_in = "user",$DateColumn = '') {
 		$q = $this->q;
 		if (empty($this->qoutput)) {
@@ -298,16 +322,17 @@ class sphinxwrapper {
 			
 			$words = substr_count($q,' ');
 			
-			if (count($this->filters) || $words> 9) { //(MATCH_ANY - truncates to 10 words!)
+			if (count($this->filters) || $words> 9 || strpos($q,'"') !== FALSE) { //(MATCH_ANY - truncates to 10 words!)
 				$mode = SPH_MATCH_EXTENDED2;
-				$q = "(".str_replace(" "," | ",$q).")".$this->getFilterString();
+				$q = "(".prog_replace('/\| [\| ]+/','| ',implode(" | ",$this->explodeWithQuotes(" ",$q))).")".$this->getFilterString();
 			} elseif ($words > 0) {//at least one word
 				$mode = SPH_MATCH_ANY;
 			}
 		} elseif (preg_match('/^"[^"]+"$/',$q)) {
-			if (count($this->filters)) { //TODO (MATCH_PHRASE - truncates to 10 words!)
+			$words = substr_count($q,' ');
+			if (count($this->filters) || $words> 9) { //(MATCH_PHRASE - truncates to 10 words!)
 				$mode = SPH_MATCH_EXTENDED2;
-				$q = "\"".$q."\" ".$this->getFilterString();
+				$q .= $this->getFilterString();
 			} else {
 				$mode = SPH_MATCH_PHRASE;
 			}
