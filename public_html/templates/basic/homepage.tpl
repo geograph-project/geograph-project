@@ -6,12 +6,17 @@
 
 <div style="position:relative;width:600px; background-color:white;">
 
+<div style="background-color:#eeeeee;padding:2px; text-align:center">
+The Geograph British Isles project aims to collect geographically
+representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and 
+<a href="/explore/places/2/">Ireland</a>, and you can be part of it.</div>
 
-<div style="width:35%;float:left;font-size:0.8em;position:relative;margin-right:20px">
+
+<div style="width:35%;float:left;position:relative;margin-right:20px">
 
 {if $overview2}
 
-	<h3 style="margin-bottom:4px;margin-top:0px;text-align:center">Coverage Map</h3>
+	<h3 style="margin-bottom:4px;margin-top:8px;text-align:center">Coverage Map</h3>
 	
 	<div class="map" style="margin-left:auto;margin-right:auto;border:2px solid black; height:{$overview2_height}px;width:{$overview2_width}px">
 
@@ -36,32 +41,16 @@
 
 {/if}
 
-<div style="margin-top:10px;padding:5px;position:relative">
-	<h3 style="margin-top:0;margin-bottom:4px;text-align:center">What is Geographing?</h3>
-	<ul style="margin-top:0;margin-left:0;padding:0 0 0 1em;">
-	<li>It's a game - how many grid squares will you contribute?</li>
-	<li>It's a geography project for the people</li>
-	<li>It's a national photography project</li>
-	<li>It's a good excuse to get out more!</li>
-	<li>It's a free and <a href="/faq.php#opensource">open online community</a> project for all</li>
-	</ul>
-</div>
-
 
 </div>
 
 <div style="width:370px;float:left;padding-right:5px;position:relative;text-align:center;margin-left:-20px">
 
-<div style="background-color:#eeeeee;padding:2px">
-The Geograph British Isles project aims to collect geographically
-representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and 
-<a href="/explore/places/2/">Ireland</a>, and you can be part of it.</div>
-
 	<div style="padding:2px;margin-top:8px;position:relative; text-align:center">
 
 	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day</h3>
 	<a href="/photo/{$pictureoftheday.gridimage_id}" 
-	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(360,260)}</a><br/>
+	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(360,263)}</a><br/>
 
 
 	<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a>
@@ -77,8 +66,18 @@ representative photographs and information for every square kilometre of <a href
 
 
 <br style="clear:both"/>
-&nbsp;
 
+<div style="margin-top:10px;padding:5px;position:relative;text-align:center">
+	<h3 style="margin-top:0;margin-bottom:4px;text-align:center">What is Geographing?</h3>
+	
+	&middot; It's a game - how many grid squares will you contribute? &middot;<br/>
+	&middot; It's a geography project for the people &middot;<br/>
+	&middot; It's a national photography project &middot;<br/>
+	&middot; It's a good excuse to get out more! &middot;<br/>
+	&middot; It's a free and <a href="/faq.php#opensource">open online community</a> project for all &middot;<br/>
+	
+</div>
+<br style="clear:both"/>
 <div style="font-size:0.8em; text-align:center; border: 1px solid silver; padding:5px"><b class="nowrap">{$stats.users|thousends} users</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total</span>.<br/>
 
 Recently completed hectads: 
