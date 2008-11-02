@@ -61,6 +61,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		left join user using (user_id)
 		
 	where content_group.`source` like '$source' and `type` = 'info'
+	group by content_id
 	order by label = '(Other)',content_group.label,content_group.score desc,content_group.sort_order
 	");
 	
