@@ -405,15 +405,20 @@ class SearchEngineBuilder extends SearchEngine
 
 		if (!empty($dataarray['searchtext'])) {
 			$dataarray['searchtext'] = trim($dataarray['searchtext']);
-			$searchtext = $dataarray['searchtext'];
-			if (preg_match('/[~\+\^\$:@ -]+/',$dataarray['searchtext'])) {
+			if (!empty($dataarray['ind_exact']) || preg_match('/^=/',$dataarray['searchtext'])) {
+				if (preg_match('/^=?~/',$dataarray['searchtext'])) {
+					$searchdesc = ", exactly matching any of [".preg_replace('/^=?~/','',$dataarray['searchtext'])."] ".$searchdesc;
+				} else {
+					$searchdesc = ", exactly matching [".preg_replace('/^=/','',$dataarray['searchtext'])."] ".$searchdesc;
+				}
+			} elseif (preg_match('/^~/',$dataarray['searchtext'])) {
+				$searchdesc = ", matching any of [".preg_replace('/^~/','',$dataarray['searchtext'])."] ".$searchdesc;
+			} elseif (preg_match('/[~\+\^\$:@ -]+/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching [".$dataarray['searchtext']."] ".$searchdesc;
 			} elseif (preg_match('/^".*"$/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching [\"".$dataarray['searchtext']."\"] ".$searchdesc;
 			} elseif (preg_match('/\+$/',$dataarray['searchtext'])) {
 				$searchdesc = ", all about [".preg_replace('/\+$/','',$dataarray['searchtext'])."] ".$searchdesc;
-			} elseif (preg_match('/^=/',$dataarray['searchtext']) || !empty($dataarray['ind_exact']) ) {
-				$searchdesc = ", exactly matching [".preg_replace('/^=/','',$dataarray['searchtext'])."] ".$searchdesc;
 			} elseif (preg_match('/^\^/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching whole word [".str_replace('^','',$dataarray['searchtext'])."] ".$searchdesc;
 			} else {
