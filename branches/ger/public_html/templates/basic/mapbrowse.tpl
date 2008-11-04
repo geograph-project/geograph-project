@@ -4,22 +4,8 @@
         {assign var="page_title" value="Map Browsing :: British Isles"}
 {/if}
 {assign var="meta_description" value="Geograph coverage map of the British Isles, showing where we have photos, green squares are yet to be photographed."}
+{assign var="extra_meta" value="<meta name=\"robots\" content=\"noindex, nofollow\"/>"}
 {include file="_std_begin.tpl"}
-<meta name="robots" content="noindex, nofollow"/>
-{literal}<style type="text/css">
-table.navtable {
-	margin-top:5px; line-height:0px
-}
-.navtable img, .navtable a {
-	display:block;
-}
-.navtable td.textcell {
-	background:#6476fc; font-size:0.8em; text-align:center;
-}
-.navtable td.textcell a {
-	display: inline;
-}
-</style>{/literal}
  
     
  
