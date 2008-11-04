@@ -50,9 +50,9 @@ function add_topic_to_content($topic_id,& $db) {
 		$updates = array();
 		$updates[] = "`foreign_id` = {$topic_id}";
 		switch($topic['forum_id']) {
-			case 5: $updates[] = "`source` = 'gsd'"; break;
-			case 6: $updates[] = "`source` = 'themed'"; break;
-			case 11: $updates[] = "`source` = 'gallery'"; break;
+			case $CONF['forum_gridsquare']: $updates[] = "`source` = 'gsd'"; break;
+			case $CONF['forum_submittedarticles']: $updates[] = "`source` = 'themed'"; break;
+			case $CONF['forum_gallery']: $updates[] = "`source` = 'gallery'"; break;
 		} 
 		
 		$content_id = $db->getOne("SELECT content_id FROM content WHERE ".implode(' AND ',$updates));
