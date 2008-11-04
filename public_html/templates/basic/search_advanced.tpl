@@ -218,7 +218,7 @@ function updateBreakBy(that) {
 
 
 var isvalue;
-var iscenter;
+var iscenter = false;
 
 function onlyone(that) {
 	if (that.name == 'county_id') {
@@ -261,8 +261,7 @@ function onlyone_part2(f) {
 	classname = (iscenter)?'disabledLabel':'';
 
 	f.distance.disabled = !iscenter;
-	classname = (iscenter)?'':'disabledLabel';
-	document.getElementById('l_distance').className = classname;
+	document.getElementById('l_distance').className = (iscenter)?'':'disabledLabel';
 
 	if (f.distance.selectedIndex > 0) {
 		f.orderby.disabled = false;
