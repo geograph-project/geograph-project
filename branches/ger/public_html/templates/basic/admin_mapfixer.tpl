@@ -85,7 +85,7 @@ function shownext()
 		gridref.innerHTML=gr4;
 		currentgr = gr4;
 
-		if (gr4.length == 5) {
+		if (gr4.length != 6) {
 			var wWidth = 740;
 			var wHeight = 520;
 			var wLeft = Math.round(0.5 * (screen.availWidth - wWidth));
