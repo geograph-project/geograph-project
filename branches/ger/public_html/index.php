@@ -109,7 +109,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$stats['percentage'] = sprintf("%.1f",$stats['squares']/$stats['total']*100);
 	$smarty->assign_by_ref('stats', $stats);
 	
-	$smarty->assign('rss_url','/discuss/syndicator.php?forum='.$CONF['forum_announce'].'&first=1');
+	$smarty->assign('rss_url','/discuss/syndicator.php?forum='.$CONF['forum_announce'].'&amp;first=1');
 	
 	$smarty->assign('messages', array(
 		0=>'click map to zoom in',
