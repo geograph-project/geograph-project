@@ -20,7 +20,7 @@ representative photographs and information for every square kilometre of <a href
 	
 	<div class="map" style="margin-left:auto;margin-right:auto;border:2px solid black; height:{$overview2_height}px;width:{$overview2_width}px">
 
-	<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview2_width}px;height:{$overvie2w_height}px;">
+	<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview2_width}px;height:{$overview2_height}px;">
 
 	{foreach from=$overview2 key=y item=maprow}
 		<div>
