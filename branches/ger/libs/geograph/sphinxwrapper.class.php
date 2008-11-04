@@ -59,10 +59,10 @@ class sphinxwrapper {
 		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'-]+/',' ',trim(strtolower($q))));
 		
 			//make hyphenated words phrases
-		$q = preg_replace('/(\w+)(-\w+[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\""',$q);
+		$q = preg_replace('/(\w+)(-[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2")',$q);
 		
 			//make aposphies work (as a phrase) 
-		$q = preg_replace('/(\w+)(\'\w+[\'\w]*\w)/e','"\\"".str_replace("\'"," ","$1$2")."\\""',$q);
+		$q = preg_replace('/(\w+)(\'\w*[\'\w]*\w)/e','"\"".str_replace("\\\'"," ","$1$2")."\" | ".str_replace("\\\'","","$1$2")',$q);
 		
 			//change single quotes to double
 		$q = preg_replace('/(^|\s)\b\'([\w ]+)\'\b(\s|$)/','$1"$2"$3',$q);
@@ -259,7 +259,7 @@ class sphinxwrapper {
 		
 		foreach ($this->filters as $name => $value) {
 			if (is_array($value)) {
-				if (count($value) == 2) {
+				if (count($value) == 2) {//todo this is a rather flaky assuption!
 					$cl->SetFilterRange($name, $value[0], $value[1]);
 				} else {
 					$cl->SetFilter($name, $value);
@@ -279,6 +279,30 @@ class sphinxwrapper {
 		}
 	}
 	
+	function explodeWithQuotes($delimeter, $string) {
+		$insidequotes = false;
+		for ($i = 0; $i < strlen($string); $i++) {
+			if ($string{$i} == '"') {
+				if ($insidequotes)
+					$insidequotes = false;
+				else
+					$insidequotes = true;
+				$currentelement .= $string{$i};
+			} elseif ($string{$i} == $delimeter) {
+				if ($insidequotes) {
+					$currentelement .= $string{$i};
+				} else {
+					$returnarray[$elementcount++] = $currentelement;
+					$currentelement = '';
+				}
+			} else {
+				$currentelement .= $string{$i};
+			}
+		}
+		$returnarray[$elementcount++] = $currentelement;
+		return $returnarray;
+	}
+	
 	public function returnIds($page = 1,$index_in = "user",$DateColumn = '') {
 		$q = $this->q;
 		if (empty($this->qoutput)) {
@@ -295,17 +319,20 @@ class sphinxwrapper {
 		$mode = SPH_MATCH_ALL;
 		if (strpos($q,'~') === 0) {
 			$q = preg_replace('/^\~/','',$q);
-			if (count($this->filters)) {
+			
+			$words = substr_count($q,' ');
+			
+			if (count($this->filters) || $words> 9 || strpos($q,'"') !== FALSE) { //(MATCH_ANY - truncates to 10 words!)
 				$mode = SPH_MATCH_EXTENDED2;
-				$q = "(".str_replace(" "," | ",$q).")".$this->getFilterString();
-			} else {
-				if (substr_count($q,' ') > 0) //at least one word
-					$mode = SPH_MATCH_ANY;
+				$q = "(".preg_replace('/\| [\| ]+/','| ',implode(" | ",$this->explodeWithQuotes(" ",$q))).")".$this->getFilterString();
+			} elseif ($words > 0) {//at least one word
+				$mode = SPH_MATCH_ANY;
 			}
 		} elseif (preg_match('/^"[^"]+"$/',$q)) {
-			if (count($this->filters)) {
+			$words = substr_count($q,' ');
+			if (count($this->filters) || $words> 9) { //(MATCH_PHRASE - truncates to 10 words!)
 				$mode = SPH_MATCH_EXTENDED2;
-				$q = "\"".$q."\" ".$this->getFilterString();
+				$q .= $this->getFilterString();
 			} else {
 				$mode = SPH_MATCH_PHRASE;
 			}
@@ -326,12 +353,15 @@ class sphinxwrapper {
 		$cl->SetWeights ( array ( 100, 1 ) );
 		if (!empty($DateColumn)) {
 			$cl->SetSortMode ( SPH_SORT_TIME_SEGMENTS, $DateColumn);
+			
+			//todo maybe call SetRankingMode(SPH_RANK_NONE) ???
 		} elseif (!empty($this->sort)) {
 			if ($this->sort == -1) {
 				#special token to mean will deal with it externally!
 			} else {
 				$cl->SetSortMode ( SPH_SORT_EXTENDED, $this->sort);
 			}
+			//todo maybe call SetRankingMode(SPH_RANK_NONE) ??? - but only if relevance isnt in the $sort
 		} else {
 			$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
 		}
@@ -398,6 +428,8 @@ class sphinxwrapper {
 			return array();
 		}
 		$q = preg_replace('/@([a-z_]+) /','',$q);
+		$q = preg_replace('/([a-z_]+):/','',$q);
+		$q = preg_replace('/[\|"\']+/','',$q);
 		$cl = $this->_getClient();
 		$cl->SetMatchMode ( SPH_MATCH_ANY );
 		$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );

@@ -64,7 +64,7 @@ Shortcuts:
 	<li><a href="/content/?inner&amp;loc" target="content">Location Specific</a></li>
 	<li><a href="/content/?inner&amp;docs&amp;order=title" target="content">Geograph Documents</a></li>
 </ul><hr/>
-Common Themes:<br/>
+Common Themes: (<a href="/content/themes.php">more...</a>)<br/>
 {foreach from=$words key=word item=count}
 	<span class="nowrap">&middot; <a href="/content/?inner&amp;q={$word}" target="content" onclick="document.getElementById('qs').value='{$word}'" style="font-size:{math equation="log(c)" c=$count}em">{$word}</a></span>
 {/foreach}

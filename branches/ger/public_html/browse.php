@@ -291,6 +291,16 @@ if ($grid_given)
 			if ($_GET['centi'] == 'unspecified') {
 				$custom_where .= " and nateastings = 0";
 			} else {
+				if ($_GET['centi'] == 'X') {
+					require_once('geograph/conversions.class.php');
+					$conv = new Conversions;
+					list($_GET['centi'],$len) = $conv->national_to_gridref(
+					$square->getNatEastings()-$correction,
+					$square->getNatNorthings()-$correction,
+					6,
+					$square->reference_index,$spaced);
+				}
+			
 				preg_match('/^[A-Z]{1,3}\d\d(\d)\d\d(\d)$/',$_GET['centi'],$matches);
 				$custom_where .= " and nateastings != 0";//to stop XX0XX0 matching 4fig GRs
 				$custom_where .= " and ((nateastings div 100) mod 10) = ".$matches[1];

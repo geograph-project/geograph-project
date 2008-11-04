@@ -3,10 +3,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml"{if $rastermap->service == 'Google'} xmlns:v="urn:schemas-microsoft-com:vml"{/if} xml:lang="en" id="geograph">
 <head>
 {if $page_title}<title>{$page_title|escape:'html'} :: Geograph Ireland - photograph every grid square!</title>
-{else}<title>Geograph Britain and Ireland - photograph every grid square!</title>{/if}
+{else}<title>Geograph Ireland - photograph every grid square!</title>{/if}
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 {if $meta_description}<meta name="description" content="{$meta_description|escape:'html'|truncate:240:"... more"}" />
-{else}<meta name="description" content="Geograph Britain and Ireland is a web based project to collect and reference geographically representative images of every square kilometre of Great Britain and Ireland."/>{/if}
+{else}<meta name="description" content="Geograph Ireland is a web based project to collect and reference geographically representative images of every square kilometre of Ireland."/>{/if}
 {if $lat && $long}<meta name="ICBM" content="{$lat}, {$long}"/>{/if}
 <meta name="DC.title" content="Geograph{if $page_title}:: {$page_title|escape:'html'}{/if}"/>
 {$extra_meta}
@@ -32,6 +32,17 @@
 <link rel="search" type="application/opensearchdescription+xml" 
 title="Geograph British Isles search" href="/stuff/osd.xml" />
 <script type="text/javascript" src="{"/geograph.js"|revision}"></script>
+
+<script type="text/javascript">
+var static_host = '{$static_host}';
+{literal}
+function setuptreemenu() {
+	ddtreemenu.createTree("treemenu1", true, 5);
+}
+AttachEvent(window,'load',setuptreemenu,false);
+{/literal}</script>
+<script type="text/javascript" src="{"/js/simpletreemenu.js"|revision}"></script>
+<link rel="stylesheet" type="text/css" title="Monitor" href="{"/js/simpletree.css"|revision}" media="screen" />
 </head>
 <body>
 <div id="header_block">

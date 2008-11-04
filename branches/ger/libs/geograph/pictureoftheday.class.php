@@ -118,7 +118,7 @@ class PictureOfTheDay
 		*/
 		$smarty->assign('pictureoftheday', $pictureoftheday);
 	
-
+		$this->image =& $pictureoftheday['image'];
 	}
 
 	function serveImageFromToken($tokenstr)

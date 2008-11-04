@@ -83,7 +83,7 @@
 		</div>
 	{/if}
 
-	{if $$imagecount}
+	{if $imagecount}
 		{* There are some thumbnails to display *}
 		<small><small><b>Sample links for this square...</b></small></small>
 		<ul style="margin-top:5px; padding-left:24px">

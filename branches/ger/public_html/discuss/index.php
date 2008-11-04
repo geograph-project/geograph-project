@@ -7,6 +7,12 @@ This file is part of miniBB. miniBB is free discussion forums/message board soft
 require_once('geograph/global.inc.php');
 init_session();
 
+if (empty($CONF['forums'])) {
+	$smarty = new GeographPage;
+        $smarty->display('static_404.tpl');
+        exit;	
+}
+
 if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 9 ) {
 	header("HTTP/1.1 503 Service Unavailable");
 	die("server busy, please try later");

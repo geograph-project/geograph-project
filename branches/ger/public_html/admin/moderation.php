@@ -234,7 +234,7 @@ $recordSet->Close();
 #############################
 # define the images to moderate
 
-if (!isset($_GET['moderator']) && !isset($_GET['remoderate'])) {
+if (!isset($_GET['moderator']) && !isset($_GET['review']) && !isset($_GET['remoderate'])) {
 
 	$count = $db->getRow("select count(*) as total,sum(created > date_sub(now(),interval 60 day)) as recent from moderation_log WHERE user_id = {$USER->user_id} AND type='dummy'");
 	if ($count['total'] == 0) {
@@ -251,7 +251,22 @@ $sql_where2 = "
 			(l.user_id != {$USER->user_id} AND lock_type = 'cantmod')
 		)";
 $sql_columns = $sql_from = '';
-if (isset($_GET['moderator'])) {
+if (isset($_GET['review'])) {
+	$mid = intval($USER->user_id);
+	
+	$sql_columns = ", new_status,moderation_log.user_id as ml_user_id,v.realname as ml_realname";
+	$sql_from = " inner join moderation_log on(moderation_log.gridimage_id=gi.gridimage_id AND moderation_log.type='real')
+				inner join user v on(moderation_log.user_id=v.user_id)";
+	
+	$sql_where = "(moderation_log.user_id = $mid && gi.moderator_id != $mid)";
+	
+	$sql_where = "($sql_where and moderation_status != new_status)";
+			
+	$sql_order = "gridimage_id desc";
+	
+	$smarty->assign('review', 1);
+	$sql_where2 = '';
+} elseif (isset($_GET['moderator'])) {
 	$mid = intval($_GET['moderator']);
 		
 	if (isset($_GET['verify'])) {

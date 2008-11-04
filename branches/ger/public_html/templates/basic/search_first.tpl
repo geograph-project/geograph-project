@@ -35,7 +35,7 @@
 		  <tr> 
 			 <td><label for="searchtext" id="l_searchtext"><b>containing text</b></label></td> 
 			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput"/><br/>
-			 <small>open <a href="/help/search" target="geo_help">text search help</a> in new window</small></td> 
+			 <small>({newwin href="/help/search" text="open <b>text search help</b>"})</small></td> 
 			 <td>eg Bridge</td> 
 		  </tr> 
 		  <tr> 
@@ -49,7 +49,7 @@
 				{/if}
 				{/dynamic}
 				<input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label><br/>
-				<small>open <a href="/finder/contributors.php?popup" target="_blank" onclick="window.open(this.href,this.target); return false;">Contributor Search</a> in new window</small></td> 
+				<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"})</small></td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="moderation_status">classification</label></td> 
@@ -96,7 +96,7 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="gridsquare">myriad (<a href="/help/squares" title="What is a Myriad? (opens in new window)" target="_blank">?</a>)</label></td> 
+			 <td><label for="gridsquare">myriad ({newwin href="/help/squares" title="What is a Myriad?" text="?"})</label></td> 
 			 <td> 
 				<select name="gridsquare" id="gridsquare" size="1" class="searchinput"> 
 				  <option value=""> </option> 

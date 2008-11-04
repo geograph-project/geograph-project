@@ -5,7 +5,7 @@
 
 <div style="width:60%;float:left;padding-right:5px;position:relative">
 <p>The Geograph project aims to collect geographically
-representative photographs and information for every square kilometre of the <a href="/explore/places/1/">Great Britain</a> and 
+representative photographs and information for every square kilometre of 
 <a href="/explore/places/2/">Ireland</a>, and you can be part of it.</p>
 
 
@@ -30,7 +30,7 @@ representative photographs and information for every square kilometre of the <a 
 <h3>Interacting with other software...</h3>
 <ul>
 	<li><a title="Google Earth Export" href="/kml.php">view images in <b>Google Earth</b> or <b>Maps</b></a> <a title="Recent Images in Google Earth" href="/feed/recent.kml" class="xml-kml">KML</a></li>
-	<li><a title="RSS Feeds" href="/faq.php#rss">get <b>RSS feeds</b> of images</a> <a title="RSS Feed of Recent Images" href="/feed/recent.rss" rel="RSS" class="xml-rss">RSS</a></li>
+	<li><a title="RSS Feeds" href="/faq.php#rss">get <b>RSS feeds</b> of images</a> <a title="RSS Feed of Recent Images" href="/feed/results/5165.rss" rel="RSS" class="xml-rss">RSS</a></li>
 	<li><a title="Memory Map Export" href="/memorymap.php">view squares in <b>Memory Map</b></a></li>
 	<li><a title="GPX File Export" href="/gpx.php">download squares in <b>GPX Format</b></a> <a title="GPX File of Recent Images" href="/feed/recent.gpx" rel="RSS" class="xml-gpx">GPX</a></li>
 </ul>
@@ -62,9 +62,12 @@ we hope you'll enjoy being a part of this great project
 
 </div>
 
-<div style="margin-top:10px;padding:5px;background:#ffdddd;position:relative">
-<h3>Yahoo Find of the Year</h3>
-<p>Geograph has been judged as Yahoo's Find of the Year 2006 in the <a href="http://uk.promotions.yahoo.com/finds2006/travel/">"Travel"</a> category.</p>
+<div style="margin-top:10px;padding:5px;background:yellow;position:relative">
+	<p>We are still developing geograph.ie, and tailoring it to the Geograph Ireland project.</p>
+	
+	<p>While we make the transition, this beta site
+	may show some pages with elements a little out of
+	kilter, but we still welcome any <a href="/contact.php">feedback</a>.</p>
 </div>
 
 </div>
@@ -88,5 +91,10 @@ Recently completed hectads:
 
 <br style="clear:both"/>
 &nbsp;
+
+
+<div class="interestBox">
+	<b>Geograph Ireland</b> is a sub-project of {external href="http://www.geograph.org.uk/" text="Geograph British Isles"} which collects photos of Great Britain and Ireland, the two sites share a common database. Photos submitted to one will always be available on the other.
+</div>
 
 {include file="_std_end.tpl"}

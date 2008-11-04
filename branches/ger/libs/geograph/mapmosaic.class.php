@@ -159,6 +159,12 @@ class GeographMapMosaic
 				$this->setScale(0.13);
 				$this->setMosaicFactor(1);
 				break;
+			case 'overview_large':
+				$this->setOrigin(0,-10);
+				$this->setMosaicSize(183,263);
+				$this->setScale(0.20);
+				$this->setMosaicFactor(1);
+				break;
 			case 'overview_ireland':
 				$this->setOrigin(-5,110);
 				$this->setMosaicSize(120,170);
@@ -769,7 +775,7 @@ class GeographMapMosaic
 		
 		//range check the bestorigin - we've got some hard coded //todo
 		//values here
-		$bestoriginx=max($bestoriginx, 0);
+		$bestoriginx=max($bestoriginx, ($bestoriginy > 700 && $bestoriginy < 900)?-100:0);
 		$bestoriginx=min($bestoriginx, 860);
 		$bestoriginy=max($bestoriginy, 0);
 		$bestoriginy=min($bestoriginy, 1220);

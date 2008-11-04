@@ -28,6 +28,9 @@ function changeOpacity(byOpacity) {
 	var newOpacity = (parseFloat(glayer.opacity) + byOpacity).toFixed(1);
 	newOpacity = Math.min(maxOpacity, Math.max(minOpacity, newOpacity));
 	glayer.setOpacity(newOpacity);
+	if (player) {
+		player.setOpacity(newOpacity);
+	}
 }
 
 function loadMap() {
@@ -39,15 +42,15 @@ function loadMap() {
 	oslayer.getURL = geographURL;
 	
 	//Photographs and coverages are available under a seperate Creative Commons Licence, but NO spidering - see Terms.
-	glayer = new OpenLayers.Layer.WMS("Geograph Coverage", ttileurl+"?l=g", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, opacity: 0.3, buffer:0});	
+	glayer = new OpenLayers.Layer.WMS("Gridsquare Coverage", ttileurl+"?l=g", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, opacity: 0.3, buffer:0});	
 	glayer.tileSize = new OpenLayers.Size(250,250);	
 	glayer.getURL = geographURL;
 	
-//	player = new OpenLayers.Layer.WMS("Geograph Photos", ttileurl+"?l=p", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, opacity: 0.3, buffer:0});	
-//	player.tileSize = new OpenLayers.Size(250,250);	
-//	player.getURL = geographURL;
+	player = new OpenLayers.Layer.WMS("Centisquare Coverage", ttileurl+"?l=p", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, opacity: 0.3, buffer:0, visibility:false});	
+	player.tileSize = new OpenLayers.Size(250,250);	
+	player.getURL = geographURL;
 	
-	map.addLayers([oslayer,glayer]); //,player
+	map.addLayers([oslayer,glayer,player]); 
 	
 	ll = new OpenLayers.LonLat(lon, lat);
 	map.setCenter(ll, 0);
@@ -69,11 +72,21 @@ function loadMap() {
 	
 	switcher = new OpenLayers.Control.LayerSwitcher();
 	map.addControl( switcher );
+	
+	
+	//map.addControl(new OpenLayers.Control.Permalink());
+	map.addControl(new OpenLayers.Control.Permalink('permalink'));
+	
 }
 
 AttachEvent(window,'load',loadMap,false);
 
 </script>{/literal}
+
+{dynamic}{if $user->registered}
+<div style="float:left; font-size:0.9em; color:gray;">If parts of the map stop displaying, then <a href="/mapper/captcha.php?token={$token}" style="color:gray;">visit this page to continue</a></div>{/if}
+
+<div style="text-align:right; width:660px; font-size:0.7em;margin-bottom:3px" class="nowrap">Change Overlay Opacity: [<a title="increase opacity" href="javascript: changeOpacity(0.1);">+</a>] [<a title="decrease opacity" href="javascript: changeOpacity(-0.1);">-</a>]</div>{/dynamic}
 
 <div id="mapcontainer">
 	<div style="position:absolute">
@@ -86,9 +99,10 @@ AttachEvent(window,'load',loadMap,false);
 	</div>
 </div>
 
-<div style="float:left; width:330px; font-size:0.9em;">Change Overlay Opacity: [<a title="increase opacity" href="javascript: changeOpacity(0.1);">+</a>] [<a title="decrease opacity" href="javascript: changeOpacity(-0.1);">-</a>]</div>
-<div style="float:left; width:330px; text-align:right; position:relative; font-size:0.9em;">Jump to Grid Reference: <input type="text" size="8" id="coordin" /><input type="button" onclick="parseLocation()" value="Go" /></div>
-<br style="clear:both"/>
+<div style="float:left; font-size:0.9em; color:gray;">
+	<a href="#" id="permalink" target="_top">Link to this Location</a>
+</div>
+<div style="width:660px; text-align:right; font-size:0.9em;">Jump to Grid Reference: <input type="text" size="8" id="coordin" /><input type="button" onclick="parseLocation()" value="Go" /></div>
 
 <h3>Draggable Geograph Map of Great Britain <sup>(beta)</sup></h3>
 

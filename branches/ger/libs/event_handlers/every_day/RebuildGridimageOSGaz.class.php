@@ -49,7 +49,7 @@ class RebuildGridimageOSGaz extends EventHandler
 				SELECT placename_id,co_code,def_nam as full_name,count(*) as c,gridimage_id
 				FROM gridimage INNER JOIN os_gaz ON(placename_id-1000000 = os_gaz.seq)
 				WHERE moderation_status <> 'rejected' AND placename_id > 1000000
-				GROUP BY placename_id,co_code;");
+				GROUP BY placename_id");
 		
 		$db->Execute("DROP TABLE IF EXISTS gridimage_os_gaz");
 		$db->Execute("RENAME TABLE gridimage_os_gaz_tmp TO gridimage_os_gaz");

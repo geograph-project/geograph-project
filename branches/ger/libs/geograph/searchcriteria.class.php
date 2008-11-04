@@ -72,6 +72,22 @@ class SearchCriteria
 		'order' => ''
 	);
 	
+	function compact() {
+		unset($this->db);
+		unset($this->is_multiple);
+		unset($this->sphinx);
+		unset($this->sql);
+		unset($this->crt_timestamp_ts);
+	}
+	
+	function toDays($date) {
+		$db = $this->_getDB();
+		$date = str_replace('-00','-01',$date);
+		return intval($db->GetOne('select to_days('.
+			(preg_match('/\)$/',$db->Quote($date))?$date:$db->Quote($date)).
+			')'));
+	}
+	
 	function getSQLParts() 
 	{
 		global $CONF;
@@ -194,10 +210,14 @@ class SearchCriteria
 		if ((($x == 0 && $y == 0 ) || $this->limit8) && $this->orderby) {
 			switch ($this->orderby) {
 				case 'random':
-					$sql_order = ' crc32(gi.gridimage_id) ';
+					$sql_order = ' crc32(concat("'.($this->crt_timestamp_ts).'",gi.gridimage_id)) ';
 					$this->sphinx['impossible']++;
 					break;
 				case 'dist_sqd':
+					break;
+				case 'relevance':
+					$sql_order = '';
+					$this->sphinx['sort'] = "@relevance DESC, @id DESC";
 					break;
 				case 'imagetaken':
 					if ($sql_where) {
@@ -220,7 +240,7 @@ class SearchCriteria
 							$this->sphinx['sort'] = 'wgs84_lat';
 							break;
 						case 'imagetaken':
-							$this->sphinx['sort'] = 'takenstamp';
+							$this->sphinx['sort'] = 'takendays';
 							break;
 						case 'realname':
 						case 'title':
@@ -240,17 +260,48 @@ class SearchCriteria
 		if ($this->breakby) {
 			$breakby = preg_replace('/_(year|month|decade)$/','',$this->breakby);
 			$breakby = preg_replace('/^submitted/','gridimage_id',$breakby);
-			if (strpos($sql_order,' desc') !== FALSE)
+			
+			if (strpos($sql_order,' desc') !== FALSE) {
 				$breakby .= ' desc';
-			if ($breakby != $sql_order && !preg_match('/^(\w+)\+$/i',$this->breakby) ) 
+				$sorder2 = " DESC";
+			} else {
+				$sorder2 = " ASC";
+			}
+			
+			switch (str_replace(' desc','',$breakby)) {
+				case 'gridimage_id':
+				case 'submitted': 
+					$sorder = '@id';
+					break;
+				case 'x':
+					$sorder = 'wgs84_long';
+					break;
+				case 'y':
+					$sorder = 'wgs84_lat';
+					break;
+				case 'imagetaken':
+					$sorder = 'takendays';
+					break;
+				case 'imageclass':
+					$sorder = 'classcrc';
+					break;
+				case 'realname':
+				case 'title':
+				case 'grid_reference':
+				default: 
+					$this->sphinx['impossible']++;
+			}
+			
+			if ($breakby != $sql_order && !preg_match('/^(\w+)\+$/i',$this->breakby) ) {
 				$sql_order = $breakby.($sql_order?", $sql_order":'');
-			$this->sphinx['impossible']++; //todo - should be possible, just cant be bothered yet!
+				$this->sphinx['sort'] = "$sorder $sorder2".($this->sphinx['sort']?", {$this->sphinx['sort']}":'');
+			}
 		}
 		
 		$sql_where_start = $sql_where;
 		
 		
-		$this->getSQLPartsFromText($this->searchtext,$sql_where,$sql_from);
+		$this->getSQLPartsFromText($this->searchtext);
 		
 		
 		if (!empty($this->limit1)) {
@@ -386,53 +437,68 @@ class SearchCriteria
 			}
 			$dates = explode('^',$this->limit7);
 			
+			$same = ($dates[0] == $dates[1]);
+			
 			//if a 'to' search then we must make blank bits match the end!
-			list($y,$m,$d) = explode('-',$dates[1]);
-			if ($y > 0) {
-				if ($m == 0) {
-					$m = 12;
+			list($y1,$m1,$d1) = explode('-',$dates[1]);
+			if ($y1 > 0) {
+				if ($m1 == 0) {
+					$m1 = 12;
 				}
-				if ($d == 0) {
-					$d = date('t',mktime(0,0,0,$m,1,$y)); ;
+				if ($d1 == 0) {
+					$d1 = date('t',mktime(0,0,0,$m1,1,$y1));
 				}
-				$dates[1] = "$y-$m-$d";
+				$dates[1] = sprintf('%04d-%02d-%02d',$y1,$m1,$d1);
 			}
 			
 			
 			if ($dates[0]) {
+				list($y,$m,$d) = explode('-',$dates[0]);
+				$days0 = $this->toDays($dates[0]);
 				if (preg_match("/0{4}-([01]?[1-9]+|10)-/",$dates[0]) > 0) {
 					//month only
-					list($y,$m,$d) = explode('-',$dates[0]);
 					$sql_where .= "MONTH(imagetaken) = $m ";
 					$this->sphinx['impossible']++;
 				} elseif (preg_match("/0{4}-0{2}-([01]?[1-9]+|10)/",$dates[0]) > 0) {
 					//day only ;)
-					list($y,$m,$d) = explode('-',$dates[0]);
 					$sql_where .= "imagetaken > DATE_SUB(NOW(),INTERVAL $d DAY)";
-					$this->sphinx['filters']['takenstamp'] = array(time()-86400*$d,time());
+					$start = $this->toDays("DATE_SUB(NOW(),INTERVAL $d DAY)");
+					$now = $this->toDays('NOW()');
+					$this->sphinx['filters']['takendays'] = array($start,$now);
 				} elseif ($dates[1]) {
-					if ($dates[0] == $dates[1]) {
+					if ($same) {
 						//both the same
-						$sql_where .= "imagetaken = '".$dates[0]."' ";
-						$this->sphinx['filters']['takenday'] = str_replace('-','',$dates[0]);
+						if ($m == 0) {
+							$sql_where .= "imagetaken LIKE '$y%' ";
+							$this->sphinx['filters']['takenyear'] = $y;
+						} elseif ($d == 0) {
+							$sql_where .= "imagetaken = '".sprintf('%04d-%02d',$y,$m)."%' ";
+							$this->sphinx['filters']['takenmonth'] = sprintf('%04d%02d',$y,$m);
+						} else {
+							$sql_where .= "imagetaken = '".$dates[0]."' ";
+							$this->sphinx['filters']['takenday'] = str_replace('-','',$dates[0]);
+						}
 					} else {
 						//between
 						$sql_where .= "imagetaken BETWEEN '".$dates[0]."' AND '".$dates[1]."' ";
-						$this->sphinx['filters']['takenstamp'] = array(strtotime($dates[0]),strtotime($dates[1])); 
+						$days1 = $this->toDays($dates[1]);
+						$this->sphinx['filters']['takendays'] = array($days0,$days1); 
 					}
 				} else {
 					//from
 					$sql_where .= "imagetaken >= '".$dates[0]."' ";
-					$this->sphinx['filters']['takenstamp'] = array(strtotime($dates[0]),time()); 
+					$now = $this->toDays('NOW()');
+					$this->sphinx['filters']['takendays'] = array($days0,$now); 
 				}
 			} else {
 				//to
 				$sql_where .= "imagetaken != '0000-00-00' AND imagetaken <= '".$dates[1]."' ";
-				$this->sphinx['filters']['takenstamp'] = array(0,strtotime($dates[1])); 
+				$days1 = $this->toDays($dates[1]);
+				$this->sphinx['filters']['takendays'] = array(0,$days1); 
 			}
 			
 			
-		}	
+		}
 		
 		if (!empty($this->limit9)) {
 			if ($this->limit9 > 1) {
@@ -733,6 +799,13 @@ class SearchCriteria_Placename extends SearchCriteria
 	var $matches;
 	var $placename;
 	
+	function compact() {
+		parent::compact();
+		
+		unset($this->matches);
+		unset($this->placename);
+	}
+	
 	function setByPlacename($placename) {
 		$gaz = new Gazetteer();
 		
@@ -781,6 +854,13 @@ class SearchCriteria_Postcode extends SearchCriteria
 class SearchCriteria_County extends SearchCriteria
 {
 	var $county_name;
+	
+	function compact() {
+		parent::compact();
+		
+		unset($this->county_name);
+	}
+	
 	function setByCounty($county_id) {
 		$db = $this->_getDB();
 		

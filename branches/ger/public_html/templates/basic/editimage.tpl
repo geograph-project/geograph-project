@@ -448,7 +448,7 @@
 
 
 {if $rastermap->enabled}
-	<br/><input type="checkbox" name="use6fig" id="use6fig" {if $image->use6fig} checked="checked"{/if} value="1"/> <label for="use6fig">Only display 6 figure grid reference (<a href="/help/map_precision" target="_blank">Explanation</a>)</label>
+	<br/><input type="checkbox" name="use6fig" id="use6fig" {if $image->use6fig} checked="checked"{/if} value="1"/> <label for="use6fig">Only display 6 figure grid reference ({newwin href="/help/map_precision" text="Explanation"})</label>
 {/if}
 </p>
 
@@ -461,7 +461,7 @@
 	{/foreach}
 </select></p>
 
-(Open <a href="/help/style" target="_blank" id="styleguidelink">Style Guide</a>)
+<span id="styleguidelink">({newwin href="/help/style" text="Open Style Guide"})</span>
 
 <p><label for="title"><b>Title</b> {if $moderated.title}<span class="moderatedlabel">(moderated)</span>{/if}</label> <br/>
  <span class="formerror" style="display:none" id="titlestyle">Possible style issue. See Guide above. <span id="titlestylet" style="font-size:0.9em"></span><br/></span>

@@ -8,15 +8,6 @@
 {if $engine->resultCount}
 	<script type="text/javascript" 	src="http://lite.piclens.com/current/piclens.js"></script>
 
-	<br/>( Page {$engine->pagesString()}) {if $engine->criteria->searchclass != 'Special'}[<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}
-	</p>
-	{if $nofirstmatch}
-	<p style="font-size:0.8em">[We have no images for {$engine->criteria->searchq|escape:"html"}, <a href="/submit.php?gridreference={$engine->criteria->searchq|escape:"html"}">Submit Yours Now</a>]</p>
-	{/if}
-	{if $singlesquares}
-	<p style="font-size:0.8em">[<a href="/squares.php?p={math equation="900*(y-1)+900-(x+1)" x=$engine->criteria->x y=$engine->criteria->y}&amp;distance={$singlesquare_radius}">{$singlesquares} squares within {$singlesquare_radius}km have no or only one photo</a> - can you <a href="/submit.php">add more</a>?]</p>
-	{/if}
-	
 	<p align="center"><a href="javascript:PicLensLite.start();">Start PicLens Slide Show <img src="http://lite.piclens.com/images/PicLensButton.png" alt="PicLens" width="16" height="12" border="0" align="absmiddle"></a></p>
 	
 	<div>

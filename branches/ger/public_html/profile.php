@@ -144,8 +144,8 @@ if ($template=='profile.tpl')
 			$USER->countTickets();
 			
 			$_SESSION['last_ticket_time'] = $USER->last_ticket_time;
-			
-			print_r($_SESSION);
+
+			print '1';
 			
 			exit;
 		}

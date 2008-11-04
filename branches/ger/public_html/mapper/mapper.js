@@ -1,7 +1,7 @@
 
 /* Replacement layer getURL function, WMS is close to what we need, but for slight request differences */
 function geographURL(bounds){
-	return this.url + "&e="+Math.round(bounds.left/1000)+"&n="+Math.round(bounds.bottom/1000);
+	return this.url + "&e="+Math.round(bounds.left/1000)+"&n="+Math.round(bounds.bottom/1000);//+"&b="+bounds.toBBOX();
 }
 
 //Credit for this script to http://grand.edgemaster.googlepages.com/
@@ -39,7 +39,7 @@ function mouseDefaultClick(evt) {
 			osposition.update = 0;
 			gr = osposition.element.innerHTML.substr(0,13);
 			osposition.element.innerHTML = gr + ' <a href="/gridref/'+escape(gr)+'" target="_top">Go</a>';
-			parent.frames.browseframe.location.replace("/gridref/"+gr+"?inner");
+			parent.frames.browseframe.location.replace("/gridref/"+gr+"?centi=X&inner");
 		} else {
 			osposition.update = 1;
 			parent.frames.browseframe.location.replace("about:blank");

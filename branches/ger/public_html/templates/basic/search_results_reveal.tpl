@@ -2,8 +2,6 @@
 
 {if $engine->resultCount}
 	<script src="{"/slideshow.js"|revision}"></script>
-	<br/>( Page {$engine->pagesString()}) {if $engine->criteria->searchclass != 'Special'}[<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}
-	</p>
 
 	<form><p align="center"><input type="button" id="prevautobutton" value="&lt; Auto" disabled="disabled" onclick="auto_slide_go(-1)"/><input type="button" id="prevbutton" value="&lt; Prev" disabled="disabled" onclick="slide_go(-1)"/> 
 	<input type="button" id="stopbutton" value="stop" onclick="slide_stop()" disabled="disabled"/>

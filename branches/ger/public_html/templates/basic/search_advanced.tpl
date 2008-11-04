@@ -17,6 +17,7 @@
 		<a href="/search.php?form=first" class="tab">first geographs</a>
 	</div>
 	<div class="interestBox">
+		<div style="text-align:right">({newwin href="/article/Searching-on-Geograph" text="More information on the Search Engine"})</div>
 		<b>centre results on (one of):</b>
 	</div>
 	
@@ -72,8 +73,8 @@
 		  <tr> 
 			 <td><label for="searchtext" id="l_searchtext"><b>containing keywords</b></label></td> 
 			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput"/><br/>
-			 <small>open <a href="/help/search_new" target="geo_help">text search help</a> in new window</small></td> 
-			 <td>eg Bridge</td> 
+			 <small>({newwin href="/help/search_new" text="open <b>text search help</b>"})</small></td> 
+			<td>eg Bridge</td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="user_name">contributor</label></td> 
@@ -86,7 +87,7 @@
 				{/if}
 				{/dynamic}
 				<input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label><br/>
-				<small>open <a href="/finder/contributors.php?popup" target="_blank" onclick="window.open(this.href,this.target); return false;">Contributor Search</a> in new window</small></td> 
+				<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"})</small></td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="moderation_status">classification</label></td> 
@@ -133,7 +134,7 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="gridsquare">myriad (<a href="/help/squares" title="What is a Myriad? (opens in new window)" target="_blank">?</a>)</label></td> 
+			 <td><label for="gridsquare">myriad ({newwin href="/help/squares" title="What is a Myriad?" text="?"})</label></td> 
 			 <td> 
 				<select name="gridsquare" id="gridsquare" size="1" class="searchinput"> 
 				  <option value=""> </option> 
@@ -215,7 +216,6 @@ function updateBreakBy(that) {
 	}
 }
 
-updateBreakBy(document.theForm.orderby);
 
 var isvalue;
 var iscenter;

@@ -192,6 +192,11 @@ body>#nav_block {width:128px;}
 	font-size:1.17em;
 }
 
+.nav ul li ul li ul
+{
+	font-size:0.9em;
+}
+
 .nav h3.newstitle
 {
 	font-weight:bold;

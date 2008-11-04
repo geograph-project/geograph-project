@@ -49,7 +49,14 @@ function add_topic_to_content($topic_id,& $db) {
 	if ($topic['forum_id'] == $CONF['forum_submittedarticles'] || $topic['forum_id'] == $CONF['forum_gallery']) {//todo gsd
 		$updates = array();
 		$updates[] = "`foreign_id` = {$topic_id}";
-
+		switch($topic['forum_id']) {
+			case 5: $updates[] = "`source` = 'gsd'"; break;
+			case 6: $updates[] = "`source` = 'themed'"; break;
+			case 11: $updates[] = "`source` = 'gallery'"; break;
+		} 
+		
+		$content_id = $db->getOne("SELECT content_id FROM content WHERE ".implode(' AND ',$updates));
+		
 		$updates[] = "`title` = ".$db->Quote($topic['topic_title']);
 
 		$url = trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode(preg_replace('/&#\d+;?/','_',$topic['topic_title'])))),'_').'_'.$topic_id;
@@ -84,19 +91,19 @@ function add_topic_to_content($topic_id,& $db) {
 		if (count($gridimage_ids)) {
 			$updates[] = "`gridimage_id` = {$gridimage_ids[0]}";
 		}
-		switch($topic['forum_id']) {
-			case $CONF['forum_gridsquare']: $updates[] = "`type` = 'gsd'"; break;
-			case $CONF['forum_submittedarticles']: $updates[] = "`type` = 'themed'"; break;
-			case $CONF['forum_gallery']: $updates[] = "`type` = 'gallery'"; break;
-		} 
-		$updates[] = "`use` = 'info'";
+		$updates[] = "`type` = 'info'";
 
 		$updates[] = "`updated` = '{$posts['post_time']}'";
-		$updates[] = "`created` = '{$topic['topic_time']}'";
 
-		//we can come here via update too, so replace works, as we have a UNIQUE(foreign_id,type)
-		$sql = "REPLACE INTO `content` SET ".implode(',',$updates);
+		if ($content_id) {
+			$sql = "UPDATE `content` SET ".implode(',',$updates)." WHERE content_id = $content_id";
+		} else {
+			$updates[] = "`created` = '{$topic['topic_time']}'";
 
+			//we can come here via update too, so replace works, as we have a UNIQUE(foreign_id,type)
+			$sql = "INSERT INTO `content` SET ".implode(',',$updates);
+		}
+		
 		$db->Execute($sql);
 	} 
 }

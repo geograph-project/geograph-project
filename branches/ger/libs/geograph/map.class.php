@@ -1024,7 +1024,7 @@ class GeographMap
 		$db=&$this->_getDB();
 				
 		$sql="select imagecount from gridsquare group by imagecount";
-		$counts = $db->getCol($sql);
+		$counts = $db->cacheGetCol(3600,$sql);
 
 		$colour=array();
 		$last=$lastcolour=null;

@@ -269,6 +269,9 @@ class GeographPage extends Smarty
 		//external site linker...
 		$this->register_function("external", "smarty_function_external");
 
+		//new window linker...
+		$this->register_function("newwin", "smarty_function_newwin");
+
 		//gridimage
 		$this->register_function("gridimage", "smarty_function_gridimage");
 

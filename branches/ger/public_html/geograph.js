@@ -69,6 +69,28 @@ function autoDisable(that) {
 
 //	-	-	-	-	-	-	-	-
 
+function record_vote(type,id,vote) {
+	var i=new Image();
+	i.src= "/stuff/record_vote.php?t="+type+"&id="+id+"&v="+vote;
+	document.getElementById("votediv").innerHTML = "Thank you!";
+}
+
+function star_hover(vote,num) {
+	for (var i=1;i<=vote;i++) {
+		document.images['star'+i].src = document.images['star'+i].src.replace(/light/,'on');
+	}
+	
+}
+function star_out(num) {
+	for (var i=1;i<=num;i++) {
+		document.images['star'+i].src = document.images['star'+i].src.replace(/-on/,'-light');
+	}
+	
+}
+
+//	-	-	-	-	-	-	-	-
+
+
 function di20(id, newSrc) {
     var theImage = FWFindImage(document, id, 0);
     if (theImage) {

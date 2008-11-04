@@ -54,7 +54,11 @@ class UpdateContentWithUpdateArticle extends EventHandler
 		if (count($page)) {
 			$updates = array();
 			$updates[] = "`foreign_id` = {$page['article_id']}";
-						
+			$updates[] = "`source` = 'article'";
+			
+			$content_id = $db->getOne("SELECT content_id FROM content WHERE ".implode(' AND ',$updates));
+			
+			
 			$updates[] = "`title` = ".$db->Quote($page['title']);
 			$updates[] = "`url` = ".$db->Quote("/article/".$page['url']);
 			$updates[] = "`user_id` = {$page['user_id']}";
@@ -93,14 +97,17 @@ class UpdateContentWithUpdateArticle extends EventHandler
 			}
 			
 			
-			$updates[] = "`type` = 'article'";
-			$updates[] = "`use` = '".(preg_match('/\bGeograph\b/',$page['category_name'])?'document':'info')."'";
+			$updates[] = "`type` = '".(preg_match('/\bGeograph\b/',$page['category_name'])?'document':'info')."'";
 			
 			$updates[] = "`updated` = '{$page['update_time']}'";
 			$updates[] = "`created` = '{$page['create_time']}'";
 			
-			//we can come here via update too, so replace works, as we have a UNIQUE(foreign_id,type)
-			$sql = "REPLACE INTO `content` SET ".implode(',',$updates);
+			//we can come here via update too, so replace works, as we have a UNIQUE(foreign_id,source)
+			if ($content_id) {
+				$sql = "UPDATE `content` SET ".implode(',',$updates)." WHERE content_id = $content_id";
+			} else {
+				$sql = "REPLACE INTO `content` SET ".implode(',',$updates);
+			}
 
 			$db->Execute($sql);
 			
@@ -115,7 +122,7 @@ class UpdateContentWithUpdateArticle extends EventHandler
 		} else {
 			$updates = array();
 			$updates[] = "`foreign_id` = $article_id";
-			$updates[] = "`type` = 'article'";
+			$updates[] = "`source` = 'article'";
 			
 			$sql = "DELETE FROM `content` WHERE ".implode(' AND ',$updates);
 			

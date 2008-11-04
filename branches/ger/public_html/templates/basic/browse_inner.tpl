@@ -45,11 +45,65 @@
 
 		<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images, by {$breakdown_title}:</p>
 
-		<ul>
-		{foreach from=$breakdown item=b}
-			<li><a href="{$b.link}&amp;inner">{$b.name}</a> [{$b.count}]</li>
-		{/foreach}
-		</ul>	
+		{if $by eq 'centi' || $by eq 'viewcenti' }
+			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6figure grid reference.</small></p>
+	<table border="0" cellspacing="0" cellpadding="2">
+		<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}&amp;by={$by}">NW</a></td>
+		<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}&amp;by={$by}">N</a></td>
+		<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}&amp;by={$by}">NE</a></td></tr>
+		<tr><td><a href="/browse.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}&amp;by={$by}">W</a></td>
+		<td>	
+			{if $rastermap->enabled && $rastermap->mapurl}
+				<div style="position:relative; width:330px; height:330px">
+					<div style="position:absolute; top:-150px; left:-120px; overflow:hidden; clip: rect(150px 450px 450px 150px); width:600px; height:600px;">
+						<img id="background" src="{$rastermap->mapurl}" alt="Background-image" height="600" width="600" style="filter:alpha(opacity=80);-moz-opacity:.80;opacity:.80;"/>
+					</div>
+					<div style="position:absolute; width:330px; height:330px">
+			<table cellspacing="0" cellpadding="4" border="1"  style="filter:alpha(opacity=80);-moz-opacity:.80;opacity:.80;">
+			{else}
+			<table cellspacing="0" cellpadding="4" border="1">
+			{/if}
+				{foreach from=$tendown item=yy}
+					<tr>
+						<th height="30">{$yy}</th>
+						{foreach from=$tenup item=xx}
+							{if $breakdown.$yy.$xx.link}
+								<td align="right" bgcolor="#{$breakdown.$yy.$xx.count|colerize}"><a href="{$breakdown.$yy.$xx.link}&amp;inner" title="{$breakdown.$yy.$xx.name}">{$breakdown.$yy.$xx.count}</a></td>
+							{else}
+								<td>&nbsp;</td>
+							{/if}
+						{/foreach}
+					</tr>
+				{/foreach}
+				<tr>
+					<td width="20">&nbsp;</td>
+					{foreach from=$tenup item=xx}
+						<th width="20">{$xx}</th>
+					{/foreach}
+				</tr>
+			</table>
+			{if $rastermap->enabled && $rastermap->mapurl}
+					</div>
+				</div>
+			{/if}
+	</td>
+		<td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}&amp;by={$by}">E</a></td></tr>
+		<tr><td><a href="/browse.php?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}&amp;by={$by}">SW</a></td>
+		<td align="center"><a href="/browse.php?p={math equation="900*(y-1)+900-(x)" x=$x y=$y}&amp;by={$by}">S</a></td>
+		<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}&amp;by={$by}">SE</a></td></tr>
+	</table>
+			{if $breakdown.50.50.link}
+				<ul>
+				<li><a href="{$breakdown.50.50.link}" title="{$breakdown.50.50.name}">{$breakdown.50.50.name}</a> [{$breakdown.50.50.count}]</li>
+				</ul>
+			{/if}
+		{else}
+			<ul>
+			{foreach from=$breakdown item=b}
+				<li><a href="{$b.link}&amp;inner">{$b.name}</a> [{$b.count}]</li>
+			{/foreach}
+			</ul>	
+		{/if}
 	{else}
 		{if $breakdowns}
 			{* We want to choose a breakdown criteria to show *}

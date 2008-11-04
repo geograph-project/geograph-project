@@ -90,13 +90,12 @@ while (!$recordSet->EOF)
 	
 	$all = array_unique(array_merge($m1[1],$m2[1]));
 	
+	$urls = array();
 	if (!empty($recordSet->fields['urls'])) {
 		foreach (explode(' ',$recordSet->fields['urls']) as $url) {
 			$urls[$url] = 1;
 		} 
-	} else {
-		$urls = array();
-	}
+	} 
 	
 	foreach ($all as $url) {
 		if (strpos($url,'http://') !== 0) {

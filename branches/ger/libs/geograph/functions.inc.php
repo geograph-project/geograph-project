@@ -146,7 +146,39 @@ function smarty_function_getamap($params)
 
 
 /**
-* Smarty external site linker
+* Smarty new window linker
+*
+* Provides centralised formatting of external links
+* href, title and text are the params here...
+*/
+function smarty_function_newwin($params)
+{
+	global $CONF;
+  	//get params and use intelligent defaults...
+  	$href=str_replace(' ','+',trim($params['href']));
+  	
+  	if (isset($params['text']))
+  		$text=$params['text'];
+  	else
+  		$text=$href;
+
+  	if (isset($params['title']))
+		$title=$params['title'];
+	else
+		$title=$text;
+	
+	if (isset($params['nofollow']))
+		$title .= "\" rel=\"nofollow"; 	
+	
+	if (isset($params['onclick']))
+		$title .= "\" onclick=\"".$params['onclick']; 	
+	
+	return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
+		"<img style=\"padding-left:2px;\" alt=\"New Window\" title=\"opens in a new window\" src=\"http://{$CONF['STATIC_HOST']}/img/newwin.png\" width=\"10\" height=\"10\"/></span>"; 
+}
+
+/**
+* Smarty new window linker
 *
 * Provides centralised formatting of external links
 * href, title and text are the params here...

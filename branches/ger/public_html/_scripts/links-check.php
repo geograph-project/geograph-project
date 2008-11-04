@@ -128,7 +128,7 @@ while (!$recordSet->EOF)
 						$row['created'] = $bindts;
 						$row['last_checked'] = $bindts;
 						$row['next_check'] = $bindts90;
-						$row['url'] = $url2;
+						$row['url'] = str_replace(" ","%20",$url2);
 						$row['parent_link_id'] = $parent_link_id;
 						foreach ($heads[$i] as $key => $value) {
 							$row[$key] = $value;

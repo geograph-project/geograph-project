@@ -47,24 +47,27 @@ if (!$smarty->is_cached($template, $cacheid))
 	switch($CONF['template']) {
 		case 'charcoal': $preset = 'overview_charcoal'; break;
 		case 'ireland': $preset = 'overview_ireland'; break;
-		default: $preset = 'overview'; break;
+		default: $preset = 'overview_large'; break;
 	}
 	$overview=new GeographMapMosaic($preset);
 	$overview->type_or_user = -1;
-	$overview->assignToSmarty($smarty, 'overview');
-	
-	
-	if ($CONF['template']=='charcoal')
-	{
-		require_once('geograph/pictureoftheday.class.php');
-		$potd=new PictureOfTheDay;
-		$potd->assignToSmarty($smarty); 
+	if ($CONF['template'] == 'basic') {
+		$overview->assignToSmarty($smarty, 'overview2');
+	} else {
+		$overview->assignToSmarty($smarty, 'overview');
 	}
+	
+	
+	require_once('geograph/pictureoftheday.class.php');
+	$potd=new PictureOfTheDay;
+	$potd->assignToSmarty($smarty); 
+	
 	
 	//lets find some recent photos
 	if ($CONF['template']=='ireland') {
 		new RecentImageList($smarty,2);
 	} else {
+		$smarty->assign('marker', $overview->getSquarePoint($potd->image->grid_square));
 		new RecentImageList($smarty);
 	}
 	
@@ -107,6 +110,16 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign_by_ref('stats', $stats);
 	
 	$smarty->assign('rss_url','/discuss/syndicator.php?forum='.$CONF['forum_announce'].'&first=1');
+	
+	$smarty->assign('messages', array(
+		0=>'click map to zoom in',
+		1=>'click me and explore!',
+		2=>'I\'m zoomable - click me',
+		4=>'',
+		5=>'click to see bigger map',
+		6=>'click for more detail'));
+		
+	$smarty->assign('m',rand(0,6));	
 }
 
 

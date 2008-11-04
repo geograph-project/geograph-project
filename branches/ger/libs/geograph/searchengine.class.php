@@ -263,6 +263,16 @@ END;
 
 		$sphinx->pageSize = $this->criteria->resultsperpage+0;
 
+
+	//look for suggestions - this needs to be done before the filters are added - the same filters wont work on the gaz index
+		if (empty($this->countOnly) && $sphinx->q && strlen($sphinx->q) < 64 && isset($GLOBALS['smarty'])) {
+			$GLOBALS['smarty']->assign("suggestions",$sphinx->didYouMean($sphinx->q));
+		} elseif ($this->criteria->searchclass == 'Placename' && strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE && isset($GLOBALS['smarty'])) {
+			$GLOBALS['smarty']->assign("suggestions",array(array('gr'=>'(anywhere)','localities'=>'as text search','query'=>$this->criteria->searchq) ));
+		}
+
+
+	//setup the sphinx wrapper 
 		if (!empty($this->criteria->sphinx['sort'])) {
 			$sphinx->setSort($this->criteria->sphinx['sort']);
 		}
@@ -278,10 +288,6 @@ END;
 			$sphinx->setSpatial($this->criteria->sphinx);
 		}
 
-		if (!empty($this->criteria->sphinx['submitted_range'])) {
-			$sphinx->setSubmittedRange($this->criteria->sphinx['submitted_range']);
-		}
-
 		//this step is handled internally by search and setSpatial
 		//$sphinx->processQuery();
 
@@ -289,16 +295,11 @@ END;
 			$sphinx->upper_limit = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 		}
 
-		if (empty($this->countOnly) && $sphinx->q && strlen($sphinx->q) < 64 && isset($GLOBALS['smarty'])) {
-			$GLOBALS['smarty']->assign("suggestions",$sphinx->didYouMean($sphinx->q));
-		} elseif ($this->criteria->searchclass == 'Placename' && strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE && isset($GLOBALS['smarty'])) {
-			$GLOBALS['smarty']->assign("suggestions",array(array('gr'=>'(anywhere)','localities'=>'as text search','query'=>$this->criteria->searchq) ));
-		}
-
 		if (is_array($this->criteria->sphinx['filters']) && count($this->criteria->sphinx['filters'])) {
 			$sphinx->addFilters($this->criteria->sphinx['filters']);
 		}
 		
+	//run the sphinx search
 		$ids = $sphinx->returnIds($pg,empty($this->criteria->sphinx['exact'])?'_images':'_images_exact');
 
 		$this->resultCount = $sphinx->resultCount;
@@ -322,8 +323,7 @@ END;
 			$sql_fields = ',-1 as dist_sqd' ;
 		} 
 
-		// construct the query sql
-
+	// fetch from database
 		$id_list = implode(',',$ids);
 		if ($this->noCache) {
 $sql = <<<END
@@ -347,8 +347,20 @@ END;
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_after = ((float)$usec + (float)$sec);
 
-		$this->querytime =  $querytime_after - $querytime_before + $sphinx->query_time;
 
+		if ($this->display == 'excerpt') {
+			$docs = array();
+			foreach ($ids as $c => $id) {
+				$row = $rows[$id];
+				$docs[$c] = strip_tags(preg_replace('/<i>.*?<\/i>/',' ',$row['post_text']));
+			}
+			$reply = $sphinx->BuildExcerpts($docs, empty($this->criteria->sphinx['exact'])?'gridimage':'gi_stemmmed', $sphinx->q);	
+		}
+
+		$this->querytime =  $querytime_after - $querytime_before + $sphinx->query_time;
+		
+		
+	//finish off
 		if (empty($_GET['BBOX']) && $this->display != 'reveal') {
 			$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 		}
