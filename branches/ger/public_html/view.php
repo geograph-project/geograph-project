@@ -85,8 +85,10 @@ $template='view.tpl';
 
 $cacheid=0;
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*3; //3hour cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*3; //3hour cache
+}
 
 $image=new GridImage;
 
