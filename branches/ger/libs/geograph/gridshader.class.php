@@ -138,8 +138,8 @@ class GridShader
 						
 						if (is_array($square) && count($square))
 						{
-							if (($square['percent_land']!=$percent_land) ||
-							    ($clearexisting && ($square['percent_land']==0)))
+							if (($square['percent_land']!=$percent_land) &&
+							    ($clearexisting || ($percent_land!=0)))
 							{
 								
 								$sql="update gridsquare set grid_reference='{$gridref}', ".
