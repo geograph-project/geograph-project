@@ -266,6 +266,14 @@ CREATE TABLE `vote_log` (
 
 
 
+CREATE TABLE `content_group` (
+  `content_id` int(10) unsigned NOT NULL,
+  `label` varchar(128) NOT NULL,
+  `score` float NOT NULL,
+  `sort_order` tinyint(3) unsigned NOT NULL,
+  `source` varchar(10) NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 
