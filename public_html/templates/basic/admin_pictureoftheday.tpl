@@ -8,7 +8,7 @@
 another one to the emergency kitty below - these are used whenever a new day dawns
 without a particular image assigned.</p>
 
-<p>NOTE: the image will be cropped to landscape format - so for portrait format photos check that they still work when cropped to the central area.</p>
+<p>NOTE: the image will be cropped to landscape format - so for portrait format photos check that they still work when cropped to the central area. You can preview what a picture will look like: http://{$http_host}/?potd=1234</p>
 
 <form method="post" action="pictureoftheday.php">
 
