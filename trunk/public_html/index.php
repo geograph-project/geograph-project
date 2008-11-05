@@ -34,7 +34,8 @@ if ($CONF['template']!='charcoal') {
 	$cacheid=rand(1,5); //so we get a selection of homepages
 }
 
-if (isset($_GET['poty'])) {
+if (isset($_GET['potd'])) {
+	$USER->mustHavePerm("moderator");
 	$smarty->caching = 0;
 }
 
@@ -64,8 +65,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	require_once('geograph/pictureoftheday.class.php');
 	$potd=new PictureOfTheDay;
-	if (isset($_GET['poty'])) {
-		$potd->assignToSmarty($smarty,intval($_GET['poty'])); 
+	if (isset($_GET['potd'])) {
+		$potd->assignToSmarty($smarty,intval($_GET['potd'])); 
 	} else {
 		$potd->assignToSmarty($smarty); 
 	}
