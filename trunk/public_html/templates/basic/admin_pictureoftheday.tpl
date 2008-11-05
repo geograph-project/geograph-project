@@ -8,13 +8,14 @@
 another one to the emergency kitty below - these are used whenever a new day dawns
 without a particular image assigned.</p>
 
-<p>NOTE: the image will be cropped to landscape format - so for portrait format photos check that they still work when cropped to the central area. You can preview what a picture will look like: http://{$http_host}/?potd=1234</p>
+<p>NOTE: the image will be cropped to landscape format - so for portrait format photos check that they still work when cropped to the central area.</p>
 
 <form method="post" action="pictureoftheday.php">
 
 <div>
 <label for="addimage">Image number</label>
 <input type="text" name="addimage" size="8" id="addimage" value="{$addimage}"/>
+<input type="button" value="Preview" onclick="window.open('/?potd='+this.form.addimage.value);">
 </div>
 
 <div>
@@ -47,7 +48,7 @@ with any <a href="http://www.gnu.org/software/tar/manual/html_node/tar_109.html"
 
 </form>
 
-<h2>Coming up... <small>(<a href="/search.php?i=2136521">Preview</a> - don't disclose this url)</small></h2>
+<h3>Coming up... <small>(<a href="/search.php?i=2136521">Preview</a> - don't disclose this url)</small></h3>
 
 <table>
 {foreach from=$coming_up key=date item=info}
