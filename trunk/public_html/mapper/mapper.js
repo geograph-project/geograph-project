@@ -35,17 +35,23 @@ function mouseDefaultClick(evt) {
 	if(notAfterDrag) {
 		// Global, defined in init(), used in osredraw()
 		// Freezes the map position onclick of the map, unfreeze on another click
-		if(osposition.update) {
+		
+		if(osposition.update || osposition.lastgr != osposition.curgr) {
 			osposition.update = 0;
-			gr = osposition.element.innerHTML.substr(0,13);
-			osposition.element.innerHTML = gr + ' <a href="/gridref/'+escape(gr)+'" target="_top">Go</a>';
-			parent.frames.browseframe.location.replace("/gridref/"+gr+"?centi=X&inner");
+			
+			osposition.element.innerHTML = '<a href="javascript:void(osposition.update = true);">X</a> ' + osposition.curgr + ' <a href="/gridref/'+escape(osposition.curgr)+'" target="_top">Go</a>';
+			if (document.getElementById('clickto').checked) {
+				parent.frames.browseframe.location.replace("/gridref/"+osposition.curgr+"?inner");
+			} else {
+				parent.frames.browseframe.location.replace("/gridref/"+osposition.curgr+"?centi=X&inner");
+			}
 		} else {
 			osposition.update = 1;
 			parent.frames.browseframe.location.replace("about:blank");
 			osposition.lastXy = new OpenLayers.Pixel(); //can't use null
 			osposition.redraw(evt);
 		}
+		osposition.lastgr = osposition.curgr;
 	}
 	
 	return notAfterDrag;
@@ -65,9 +71,7 @@ function mouseDefaultMouseDown (evt) {
 function showGridRef(evt) {
 	var lonLat;
 
-	if(!this.update) {
-		return;
-	}
+	
 	
 	if (evt === null) {
 		this.element.innerHTML = "loaded.";
@@ -89,9 +93,13 @@ function showGridRef(evt) {
 	gro.northings = lonLat.lat;
 	gro.eastings = lonLat.lon;
 
-	var gr = gro.getGridRef(digits);
+	osposition.curgr = gro.getGridRef(digits);
+	
+	if(!this.update) {
+		return;
+	}
 
-	var newHtml = this.prefix + gr + this.suffix;
+	var newHtml = this.prefix + osposition.curgr + this.suffix;
 
 
 	if (newHtml != this.element.innerHTML) {

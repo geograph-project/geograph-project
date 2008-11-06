@@ -104,10 +104,16 @@ AttachEvent(window,'load',loadMap,false);
 </div>
 <div style="width:660px; text-align:right; font-size:0.9em;">Jump to Grid Reference: <input type="text" size="8" id="coordin" /><input type="button" onclick="parseLocation()" value="Go" /></div>
 
-<h3>Draggable Geograph Map of Great Britain <sup>(beta)</sup></h3>
+<div style="width:660px; border-top:1px solid lightgrey; text-align:center; padding-top:3px;margin-top:3px">
+	Click Map to goto <input type="radio" name="clickto" checked id="clickto"/>Square / <input type="radio" name="clickto"/>Centi-Square 
 
+</div>
 
-<div class="copyright"  style="width:660px;">Great Britain 1:50 000 Scale Colour Raster Mapping &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.<br/>
+<div class="interestBox" style="padding:0px; margin-top:6px">
+<h3 style="text-align:center;">Draggable Geograph Map of Great Britain <sup>(beta)</sup></h3>
+</div>
+
+<div class="copyright">Great Britain 1:50 000 Scale Colour Raster Mapping &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.<br/>
 <br/>
 Photographs and coverages are available under a seperate <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.<br/>
 <br/>
