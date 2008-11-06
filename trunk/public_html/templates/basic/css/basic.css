@@ -205,13 +205,17 @@ body>#nav_block {width:128px;}
 
 .nav .newsbody
 {
+	border-top: 1px solid silver;
+	padding-top:3px;
 	font-size:0.8em;
 }
 
 .nav .newsfooter
 {
+	border-top: 1px solid silver;
+	padding-top:3px;
 	font-size:0.7em;
-	color:silver;
+	color:gray;
 }
 
 /*---------------------------------------------------------------*
