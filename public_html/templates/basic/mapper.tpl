@@ -8,7 +8,7 @@
 <iframe src="/mapper/?inner&amp;t={$token}" width="700" height="900" frameborder="0"></iframe>
 			</td>
 			<td>
-<iframe src="/mapper/blank.html" width="210" height="900" frameborder="1" name="browseframe"></iframe>
+<iframe src="/mapper/blank.html?" width="210" height="900" frameborder="1" name="browseframe"></iframe>
 			</td>
 		</tr>
 	</tbody>
