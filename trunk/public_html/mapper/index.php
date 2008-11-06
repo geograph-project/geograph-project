@@ -36,13 +36,14 @@ if (isset($_GET['random'])) {
 	
 	$offset = rand(0,$count);
 
-	$str = $db->getRow("SELECT AsText(point_xy) FROM gridsquare WHERE reference_index=1 AND percent_land = 100 LIMIT $offset,1");
+	$str = $db->getOne("SELECT AsText(point_xy) FROM gridsquare WHERE reference_index=1 AND percent_land = 100 AND gridsquare_id > $offset"); //limit 1 is added automaticallu
 
-	preg_match('/\((\d+) (\d+)\)/',$str[0],$m);
-	
-	$mapw=($mosaic->image_w/$mosaic->pixels_per_km)/2;
-	$mosaic->setOrigin($m[1]-$mapw,$m[2]-$mapw);
-
+	preg_match('/\((\d+) (\d+)\)/',$str,$m);
+;
+	if ($str && $m[1]) {
+		$mapw=($mosaic->image_w/$mosaic->pixels_per_km)/2;
+		$mosaic->setOrigin($m[1]-$mapw,$m[2]-$mapw);
+	}
 	$token=$mosaic->getToken();
 	$cacheid='mapper|'.$token;
 } elseif (isset($_GET['t'])) {

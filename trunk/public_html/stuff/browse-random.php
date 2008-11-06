@@ -33,8 +33,8 @@ $count = $db->cacheGetOne(86400,"SELECT COUNT(*) FROM gridsquare WHERE percent_l
 	
 $offset = rand(0,$count);
 
-$str = $db->getRow("SELECT grid_reference FROM gridsquare WHERE percent_land > 0 $andwhere LIMIT $offset,1"); //(cant use getOne as it adds its own limit 1!!!) 
+$gridref = $db->getOne("SELECT grid_reference FROM gridsquare WHERE percent_land > 0 $andwhere AND gridsquare_id > $offset"); //limit 1 added automatically
 
-header("Location: /gridref/".$str[0]);
+header("Location: /gridref/".$gridref);
 
 ?>
