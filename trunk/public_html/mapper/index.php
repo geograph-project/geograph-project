@@ -29,7 +29,23 @@ init_session();
 $mosaic=new GeographMapMosaic;
 $overview=new GeographMapMosaic('overview');
 
-if (isset($_GET['t'])) {
+if (isset($_GET['random'])) {
+	$db=NewADOConnection($GLOBALS['DSN']);
+	
+	$count = $db->cacheGetOne(86400,"SELECT COUNT(*) FROM gridsquare WHERE reference_index=1 AND percent_land = 100");
+	
+	$offset = rand(0,$count);
+
+	$str = $db->getRow("SELECT AsText(point_xy) FROM gridsquare WHERE reference_index=1 AND percent_land = 100 LIMIT $offset,1");
+
+	preg_match('/\((\d+) (\d+)\)/',$str[0],$m);
+	
+	$mapw=($mosaic->image_w/$mosaic->pixels_per_km)/2;
+	$mosaic->setOrigin($m[1]-$mapw,$m[2]-$mapw);
+
+	$token=$mosaic->getToken();
+	$cacheid='mapper|'.$token;
+} elseif (isset($_GET['t'])) {
 	$mosaic->setToken($_GET['t']);
 	
 	$token=$mosaic->getToken();
