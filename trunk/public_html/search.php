@@ -933,7 +933,7 @@ if (isset($_GET['set_legacy'])) {
 					if (!isset($engine->results[$found]->cluster)) 
 						$engine->results[$found]->cluster = array();
 					
-					$image->simple_title = $engine->results[$idx]->{$breakby};
+					$engine->results[$found]->simple_title = $engine->results[$idx]->{$breakby};
 					array_push($engine->results[$found]->cluster,$image);
 					unset($engine->results[$idx]);
 				}
