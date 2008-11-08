@@ -99,13 +99,13 @@ foreach ($rows as $a => $row) {
 		if (!$row['milestone']) {
 			$milestone = 1;
 		} else {
-			$milestone = pow(10,floor(log($row['milestone'],10))+1);
+			$milestone = pow(10,floor(log($row['milestone']+1,10))+1);
 		}
 	} else {
 		$milestone = $row['calc'];
 	}
 
-	if ($row['images'] < $milestone) {
+	if ($row['images'] < $milestone || $milestone == $row['milestone']) {
 		continue;
 	}
 
