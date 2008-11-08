@@ -294,3 +294,7 @@ CHANGE `use` `type` ENUM( 'info', 'document' ) CHARACTER SET latin1 COLLATE lati
 
 
 
+alter table queries_archive change `displayclass` `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2') NOT NULL DEFAULT 'full';
+
+alter table queries change `displayclass` `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2') NOT NULL DEFAULT 'full';
+

@@ -914,6 +914,29 @@ if (isset($_GET['set_legacy'])) {
 					unset($engine->results[$idx]);
 				}
 			}
+		} elseif ($display == 'cluster2') {
+			$breakby = preg_replace('/_(year|month|decade)$/','',$engine->criteria->breakby);
+			if (preg_match('/^(\w+)\+$/i',$this->breakby,$m) ) {
+				$breakby  = $m[1];
+			}
+			foreach ($engine->results as $idx => $image) {
+				$found = -1;
+				for($ic = 0;$ic< $idx;$ic++) {
+					if ($engine->results[$ic] 
+						&& $engine->results[$ic]->{$breakby} == $engine->results[$idx]->{$breakby}
+						) {
+						$found = $ic;
+						break;
+					}
+				}
+				if ($found > -1) {
+					if (!isset($engine->results[$found]->cluster)) 
+						$engine->results[$found]->cluster = array();
+
+					array_push($engine->results[$found]->cluster,$image);
+					unset($engine->results[$idx]);
+				}
+			}
 		}
 	}
 

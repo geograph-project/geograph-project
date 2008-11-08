@@ -178,7 +178,7 @@ if ($grid_given)
 		if (isset($_GET['takenfrom'])) {
 				
 			$ids = $sphinx->returnIdsViewpoint($square->getNatEastings(),$square->getNatNorthings(),$square->reference_index,$square->grid_reference);
-			
+			$smarty->assign('viewpoint_query', $sphinx->q);
 			
 			$viewpoint_count = 0; //set this to zero to suppress the prompt!
 			
