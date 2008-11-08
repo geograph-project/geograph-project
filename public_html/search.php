@@ -916,7 +916,7 @@ if (isset($_GET['set_legacy'])) {
 			}
 		} elseif ($display == 'cluster2') {
 			$breakby = preg_replace('/_(year|month|decade)$/','',$engine->criteria->breakby);
-			if (preg_match('/^(\w+)\+$/i',$this->breakby,$m) ) {
+			if (preg_match('/^(\w+)\+$/i',$breakby,$m) ) {
 				$breakby  = $m[1];
 			}
 			foreach ($engine->results as $idx => $image) {
