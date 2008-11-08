@@ -107,7 +107,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (!$db) die('Database connection failed');  
 	
 	$where = array();
-	if ($USER->hasPerm('moderator')) {
+	if ($is_mod) {
 		$where[] = 'approved > -1';
 	} else {
 		$where[] = 'approved = 1';
