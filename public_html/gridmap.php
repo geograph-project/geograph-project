@@ -166,7 +166,6 @@ if ($grid_given)
 						
 			$blocks[] = "map.addOverlay(new GMarker(ppoint, icon));\n";
 			
-			if ($row['nateastings'] != 
 			$blocks[] = "
 			var iconOptions = {};
 			iconOptions.width = 10;
