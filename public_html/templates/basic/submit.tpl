@@ -273,7 +273,7 @@ geographing</a> first.</p>
 	{foreach from=$images item=image}
 
 	  <div class="photo33" style="float:left;width:150px; height:170px; background-color:white">{newwin title="`$image->title` by `$image->realname` - click to view full size image"|escape:'html' href="/photo/`$image->gridimage_id`" text=$image->getThumbnail(120,120,false,true)}
-	  <div class="caption">{newwin title="view full size image" href="/photo/`$image->gridimage_id`" text=$image->title|escape:'html'}</div>
+	  <div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->title|escape:'html'}</a></div>
 	  </div>
 
 	{/foreach}
