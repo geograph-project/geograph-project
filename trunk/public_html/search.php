@@ -443,10 +443,18 @@ if (isset($_GET['set_legacy'])) {
 		
 	
 	
-	$data['description'] = "themed images";
 	
-	$data['searchq'] = "inner join gridimage_group using (gridimage_id) where 1 group by gridimage_id";
+	if (!empty($_GET['label'])) {
+		$data['description'] = "labeled [".strip_tags($_GET['label'])."]";
 	
+		$where = "label = ".$db->Quote($_GET['label']);
+	} else {
+		$data['description'] = "labled images";
+		$where = 1;
+	}
+	
+	$data['searchq'] = "inner join gridimage_group using (gridimage_id) where $where group by gridimage_id";
+		
 	$data['distance'] = 1;
 	$nearstring = 'in';
 	if (!empty($data['gridref'])) {
