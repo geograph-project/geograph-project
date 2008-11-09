@@ -497,10 +497,11 @@ if (isset($_GET['set_legacy'])) {
 			if ($grid_ok || $square->x && $square->y) {
 				$data['description'] .= ", $nearstring grid reference ".$square->grid_reference;
 				$data['x'] = $square->x;
-				$data['x'] = $square->y;	
+				$data['y'] = $square->y;
 			} 
 		} 
-	}  
+		unset($data['gridref']);
+	}
 	
 	$data['displayclass'] = 'cluster2';
 	$data['breakby'] = 'label+';
