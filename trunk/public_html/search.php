@@ -213,7 +213,7 @@ if (isset($_GET['set_legacy'])) {
 } else if (!empty($_GET['marked']) && isset($_COOKIE['markedImages']) || isset($_GET['markedImages'])) { //
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
-	//  special handler to build a special query for marke list.
+	//  special handler to build a special query for marked list.
 	// -------------------------------
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
@@ -463,6 +463,59 @@ if (isset($_GET['set_legacy'])) {
 
 	advanced_form($smarty,$db);
 
+} else if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cluster'])) {
+	dieUnderHighLoad(2,'search_unavailable.tpl');
+	// -------------------------------
+	//  special handler to build a advanced query experimental cluster 
+	// -------------------------------
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
+
+	$data = $_POST;
+	
+	$data['adminoverride'] = 1;
+	
+	//a few we dont want to allow overriding
+	$data['searchtext'] = '';
+	$data['q'] = '';
+	$data['location'] = '';
+		
+	$data['description'] = "themed images";
+	
+	$data['searchq'] = "inner join gridimage_group using (gridimage_id) where 1 group by gridimage_id";
+	
+	$data['distance'] = 1;
+	
+	$data['displayclass'] = 'cluster2';
+	$data['breakby'] = 'label+';
+	
+	switch ($data['orderby']) {
+		case 'label': 
+		case 'crc32(label)': 
+		case 'grid_reference': break;
+		default: $data['orderby'] = '';
+	}
+	
+	$engine = new SearchEngineBuilder('#');
+	$engine->buildAdvancedQuery($data);
+
+	//should never fail?? - but display form 'in case'
+
+	//if we get this far then theres a problem...
+	$smarty->assign('errormsg', $engine->errormsg);
+
+	$smarty->assign($_POST);
+	$smarty->reassignPostedDate("submitted_start");
+	$smarty->reassignPostedDate("submitted_end");
+	$smarty->reassignPostedDate("taken_start");
+	$smarty->reassignPostedDate("taken_end");
+
+	$db=NewADOConnection($GLOBALS['DSN']);
+	if (empty($db)) die('Database connection failed');
+
+	advanced_form($smarty,$db);
+
 } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
@@ -636,7 +689,7 @@ if (isset($_GET['set_legacy'])) {
 		$smarty->display('search.tpl');
 	}
 
-} else if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'text' || $_GET['form'] == 'first' || $_GET['form'] == 'check')) {
+} else if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'text' || $_GET['form'] == 'first' || $_GET['form'] == 'check' || $_GET['form'] == 'cluster2')) {
 	dieUnderHighLoad(1.5,'search_unavailable.tpl');
 	// -------------------------------
 	//  Advanced Form
@@ -1058,6 +1111,8 @@ if (isset($_GET['set_legacy'])) {
 
 		if ($_GET['form'] == 'first') {
 			$template = 'search_first.tpl';
+		} elseif ($_GET['form'] == 'cluster2') {
+			$template = 'search_cluster2.tpl';
 		} elseif ($_GET['form'] == 'check') {
 			$template = 'search_check.tpl';
 			if (!$_GET['i']) {
@@ -1131,7 +1186,7 @@ if (isset($_GET['set_legacy'])) {
 			function addkm($a) {
 				return $a."km";
 			}
-			if ($_GET['form'] == 'text') {
+			if ($_GET['form'] == 'text' || $_GET['form'] == 'cluster2') {
 				$d = array(1,2,3,4,5,7,8,10,20,30);
 				$d = array_combine($d,array_map('addkm',$d));
 			} else {

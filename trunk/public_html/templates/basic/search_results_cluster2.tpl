@@ -12,17 +12,17 @@
 		
 		{if $image->cluster} 
 			<a title="view full size image" href="/photo/{$image->gridimage_id}"><b>{$image->title|escape:'html'}</b></a>, <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
-			by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a><br/>
+			by <a title="view user profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a><br/>
 			<i>multiple</i> images for <b>{$image->simple_title|escape:'html'}</b><br/>
 			<div style="position:relative; width:600px; height:80px; overflow:auto" class="nowrap">
 			{foreach from=$image->cluster item=im}
-				<a title="{$im->title|escape:'html'} - click to view full size image" href="/photo/{$im->gridimage_id}">{$im->getThumbnail(120,120)|regex_replace:'/"(\d+)"/e':'"\'".($1/2)."\'"'}</a> 
+				<a title="{$im->title|escape:'html'} by {$image->realname|escape:'html'}" href="/photo/{$im->gridimage_id}">{$im->getThumbnail(120,120)|regex_replace:'/"(\d+)"/e':'"\'".($1/2)."\'"'}</a> 
 	
 			{/foreach}
 			</div>
 		{else}
 			<a title="view full size image" href="/photo/{$image->gridimage_id}"><b>{$image->title|escape:'html'}</b></a>
-			by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a><br/>
+			by <a title="view user profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a><br/>
 			{if $image->moderation_status == 'geograph'}geograph{else}{if $image->moderation_status == 'pending'}pending{/if}{/if} for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
 			<i>{$image->dist_string}</i><br/>
 			{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
