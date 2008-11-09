@@ -640,8 +640,10 @@ class SearchEngineBuilder extends SearchEngine
 			
 			if (!empty($dataarray['breakby'])) {
 				$sql .= ",breakby = ".$db->Quote($dataarray['breakby']);
-				$searchdesc .= ", by ".($breakdowns[$dataarray['breakby']]);
-			}			
+				if (!empty($breakdowns[$dataarray['breakby']])) {
+					$searchdesc .= ", by ".($breakdowns[$dataarray['breakby']]);
+				}
+			}
 
 			$sql .= ",searchdesc = ".$db->Quote($searchdesc);
 
