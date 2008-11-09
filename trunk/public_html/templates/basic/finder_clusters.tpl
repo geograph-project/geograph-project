@@ -30,7 +30,7 @@
 <ol start="{$offset}">
 {foreach from=$results item=item}
 	<li>
-	<b><a href="/search.php?cluster2=1&amp;label={$item.label|escape:'url'}" target="_top">{$item.label|escape:'html'|default:'unknown'}</a></b>
+	<b><a href="/search.php?cluster2=1&amp;label={$item.label|escape:'url'}&amp;displayclass=full" target="_top">{$item.label|escape:'html'|default:'unknown'}</a></b>
 	
 	{if $item.images}
 	<small><small style="color:gray">{$item.images} images</small></small>{/if}

@@ -472,7 +472,9 @@ if (isset($_GET['set_legacy'])) {
 		unset($data['gridref']);
 	}
 	
-	$data['displayclass'] = 'cluster2';
+	if (empty($data['displayclass']))
+		$data['displayclass'] = 'cluster2';
+
 	$data['breakby'] = 'label+';
 	
 	switch ($data['orderby']) {
