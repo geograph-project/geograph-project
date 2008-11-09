@@ -447,6 +447,7 @@ if (isset($_GET['set_legacy'])) {
 	if (!empty($_GET['label'])) {
 		$data['description'] = "labeled [".strip_tags($_GET['label'])."]";
 	
+		$db=NewADOConnection($GLOBALS['DSN']);
 		$where = "label = ".$db->Quote($_GET['label']);
 	} else {
 		$data['description'] = "labled images";
