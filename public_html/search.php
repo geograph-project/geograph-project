@@ -481,11 +481,26 @@ if (isset($_GET['set_legacy'])) {
 	$data['q'] = '';
 	$data['location'] = '';
 		
+	
+	
 	$data['description'] = "themed images";
 	
 	$data['searchq'] = "inner join gridimage_group using (gridimage_id) where 1 group by gridimage_id";
 	
 	$data['distance'] = 1;
+	$nearstring = 'in';
+	if (!empty($data['gridref'])) {
+		require_once('geograph/gridsquare.class.php');
+		$square=new GridSquare;
+		if ($square->validGridRef(preg_replace('/[^\w]/','',$data['gridref']))) {
+			$grid_ok=$square->setByFullGridRef($data['gridref'],false,true);
+			if ($grid_ok || $square->x && $square->y) {
+				$data['description'] .= ", $nearstring grid reference ".$square->grid_reference;
+				$data['x'] = $square->x;
+				$data['x'] = $square->y;	
+			} 
+		} 
+	}  
 	
 	$data['displayclass'] = 'cluster2';
 	$data['breakby'] = 'label+';
@@ -944,7 +959,7 @@ if (isset($_GET['set_legacy'])) {
 				}
 			}
 		}
-		if ($display == 'cluster') {
+		if ($display == 'cluster' && $engine->resultCount) {
 			foreach ($engine->results as $idx => $image) {
 				$engine->results[$idx]->simple_title = preg_replace('/\s*\(?\s*\d+\s*\)?\s*$/','',$engine->results[$idx]->title);
 				$found = -1;
@@ -967,7 +982,7 @@ if (isset($_GET['set_legacy'])) {
 					unset($engine->results[$idx]);
 				}
 			}
-		} elseif ($display == 'cluster2') {
+		} elseif ($display == 'cluster2' && $engine->resultCount) {
 			$breakby = preg_replace('/_(year|month|decade)$/','',$engine->criteria->breakby);
 			if (preg_match('/^(\w+)\+$/i',$breakby,$m) ) {
 				$breakby  = $m[1];
