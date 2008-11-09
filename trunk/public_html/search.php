@@ -463,7 +463,7 @@ if (isset($_GET['set_legacy'])) {
 
 	advanced_form($smarty,$db);
 
-} else if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cluster'])) {
+} else if (isset($_GET['cluster2'])) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
 	//  special handler to build a advanced query experimental cluster 
@@ -472,7 +472,7 @@ if (isset($_GET['set_legacy'])) {
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
 
-	$data = $_POST;
+	$data = $_GET;
 	
 	$data['adminoverride'] = 1;
 	
@@ -505,7 +505,7 @@ if (isset($_GET['set_legacy'])) {
 	//if we get this far then theres a problem...
 	$smarty->assign('errormsg', $engine->errormsg);
 
-	$smarty->assign($_POST);
+	$smarty->assign($_GET);
 	$smarty->reassignPostedDate("submitted_start");
 	$smarty->reassignPostedDate("submitted_end");
 	$smarty->reassignPostedDate("taken_start");
