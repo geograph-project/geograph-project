@@ -423,46 +423,6 @@ if (isset($_GET['set_legacy'])) {
 	print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$engine->page}?i={$i}$extra\">Your Search Results</a>";
 	exit;
 	
-		
-} else if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || !empty($_GET['gridsquare'])) {
-	dieUnderHighLoad(2,'search_unavailable.tpl');
-	// -------------------------------
-	//  special handler to build a advanced query from the link in stats or profile.
-	// -------------------------------
-	require_once('geograph/searchcriteria.class.php');
-	require_once('geograph/searchengine.class.php');
-	require_once('geograph/searchenginebuilder.class.php');
-
-
-	if (!empty($_GET['u']))
-		$_GET['user_id'] = $_GET['u'];
-
-	$_GET['adminoverride'] = 0; //prevent overriding it
-
-	$engine = new SearchEngineBuilder('#');
-	if (isset($_GET['rss'])) {
-		$engine->page = "syndicator.php";
-	} elseif (isset($_GET['kml'])) {
-		$engine->page = "kml.php";
-	}
- 	$engine->buildAdvancedQuery($_GET);
-
-	//should never fail?? - but display form 'in case'
-
-	//if we get this far then theres a problem...
-	$smarty->assign('errormsg', $engine->errormsg);
-
-	$smarty->assign($_GET);
-	$smarty->reassignPostedDate("submitted_start");
-	$smarty->reassignPostedDate("submitted_end");
-	$smarty->reassignPostedDate("taken_start");
-	$smarty->reassignPostedDate("taken_end");
-
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (empty($db)) die('Database connection failed');
-
-	advanced_form($smarty,$db);
-
 } else if (isset($_GET['cluster2'])) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
@@ -515,6 +475,45 @@ if (isset($_GET['set_legacy'])) {
 	
 	$engine = new SearchEngineBuilder('#');
 	$engine->buildAdvancedQuery($data);
+
+	//should never fail?? - but display form 'in case'
+
+	//if we get this far then theres a problem...
+	$smarty->assign('errormsg', $engine->errormsg);
+
+	$smarty->assign($_GET);
+	$smarty->reassignPostedDate("submitted_start");
+	$smarty->reassignPostedDate("submitted_end");
+	$smarty->reassignPostedDate("taken_start");
+	$smarty->reassignPostedDate("taken_end");
+
+	$db=NewADOConnection($GLOBALS['DSN']);
+	if (empty($db)) die('Database connection failed');
+
+	advanced_form($smarty,$db);
+		
+} else if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || !empty($_GET['gridsquare'])) {
+	dieUnderHighLoad(2,'search_unavailable.tpl');
+	// -------------------------------
+	//  special handler to build a advanced query from the link in stats or profile.
+	// -------------------------------
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
+
+
+	if (!empty($_GET['u']))
+		$_GET['user_id'] = $_GET['u'];
+
+	$_GET['adminoverride'] = 0; //prevent overriding it
+
+	$engine = new SearchEngineBuilder('#');
+	if (isset($_GET['rss'])) {
+		$engine->page = "syndicator.php";
+	} elseif (isset($_GET['kml'])) {
+		$engine->page = "kml.php";
+	}
+ 	$engine->buildAdvancedQuery($_GET);
 
 	//should never fail?? - but display form 'in case'
 
