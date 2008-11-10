@@ -257,7 +257,7 @@ if (!function_exists('mb_ucfirst') && function_exists('mb_substr')) {
 
 function recaps($in) {
 	$out = preg_replace('/(^|[ \/-])([^ \/-]{3,})/e','"$1".mb_ucfirst("$2")',mb_strtolower($in));
-	return preg_replace('/(^|\/)([^ \/-])/e','"$1".mb_strtoupper("$2")',$out);
+	return stripslashes(preg_replace('/(^|\/)([^ \/-])/e','"$1".mb_strtoupper("$2")',$out));
 }
 
 function smarty_function_place($params) {
@@ -296,7 +296,7 @@ function smarty_function_place($params) {
 	if (!empty($params['h3']) && strlen($params['h3']) > 1)
 		$t2 .= $params['h3'];
 	if ($place['hist_county']) {
-		$t2 .= " title=\"".substr($place['full_name'],0,10).": Historic County - {$place['hist_county']}";
+		$t2 .= " title=\"".substr($place['full_name'],0,12).": Historic County - {$place['hist_county']}";
 		if ($place['hist_county'] == $place['adm1_name'])
 			$t2 .= ", and modern Administrative Area of the same name";
 		else
