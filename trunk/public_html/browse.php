@@ -299,6 +299,9 @@ if ($grid_given)
 				}
 			
 				preg_match('/^[A-Z]{1,2}\d\d(\d)\d\d(\d)$/',$_GET['centi'],$matches);
+				if (!isset($matches[2])) {
+					die("invalid Grid Reference");
+				}
 				$custom_where .= " and nateastings != 0";//to stop XX0XX0 matching 4fig GRs
 				$custom_where .= " and ((nateastings div 100) mod 10) = ".$matches[1];
 				$custom_where .= " and ((natnorthings div 100) mod 10) = ".$matches[2];

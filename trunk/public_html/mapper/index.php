@@ -69,14 +69,17 @@ if (isset($_GET['random'])) {
 
 $smarty = new GeographPage;
 
+if (isset($_REQUEST['centi'])) {
+	$smarty->assign('centi',1);
+	$smarty->assign('extra','centi');
+	$cacheid.='|centi';
+} 
+
 if (isset($_REQUEST['inner'])) {
 	$template = 'mapper_iframe.tpl';
 } else {
 	$template = 'mapper.tpl';
 }
-
-$token=$mosaic->getToken();
-
 
 
 if (!$smarty->is_cached($template, $cacheid))
