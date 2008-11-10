@@ -105,7 +105,7 @@ AttachEvent(window,'load',loadMap,false);
 <div style="width:660px; text-align:right; font-size:0.9em;">Jump to Grid Reference: <input type="text" size="8" id="coordin" /><input type="button" onclick="parseLocation()" value="Go" /></div>
 
 <div style="width:660px; border-top:1px solid lightgrey; text-align:center; padding-top:3px;margin-top:3px">
-	Click map to view photo(s) in <input type="radio" name="clickto" checked id="clickto"/>Grid-Square / <input type="radio" name="clickto"/>Centi-Square 
+	Click map to view photo(s) in <input type="radio" name="clickto" {if !$centi}checked{/if} id="clickto"/>Grid-Square / <input type="radio" {if $centi}checked{/if} name="clickto"/>Centi-Square 
 
 </div>
 
