@@ -450,7 +450,7 @@ if (isset($_GET['set_legacy'])) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		$where = "label = ".$db->Quote($_GET['label']);
 	} else {
-		$data['description'] = "labled images";
+		$data['description'] = "in a cluster";
 		$where = 1;
 	}
 	
