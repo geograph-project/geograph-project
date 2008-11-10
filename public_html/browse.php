@@ -313,7 +313,7 @@ if ($grid_given)
 				$custom_where .= " and viewpoint_eastings = 0";
 			} else {
 				preg_match('/^[A-Z]{1,2}\d\d(\d)\d\d(\d)$/',$_GET['viewcenti'],$matches);
-				if (empty($matches[2])) {
+				if (!isset($matches[2])) {
 					die("invalid Grid Reference");
 				}
 				$custom_where .= " and viewpoint_eastings != 0";//to stop XX0XX0 matching 4fig GRs
