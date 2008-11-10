@@ -287,6 +287,8 @@
 				<li><a href="/gridref/{$gridref}?by={$b.type}{$extra}">{$b.name}</a> [{$b.count}]</li>
 			{/foreach}
 
+			<li style="margin-top:10px;"><a href="/search.php?gridref={$gridref}&amp;cluster2=1&amp;orderby=label">View in Clusters</a> <sup style="color:red">experimental!</sup></li>
+
 			<li style="margin-top:10px;">
 			<form method="get" action="/search.php">
 				Or <label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="30"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
