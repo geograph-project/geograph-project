@@ -16,7 +16,7 @@
 			<i>multiple</i> images for <b>{$image->simple_title|escape:'html'}</b><br/>
 			<div style="position:relative; width:600px; height:80px; overflow:auto" class="nowrap">
 			{foreach from=$image->cluster item=im}
-				<a title="{$im->title|escape:'html'} by {$image->realname|escape:'html'}" href="/photo/{$im->gridimage_id}">{$im->getThumbnail(120,120)|regex_replace:'/"(\d+)"/e':'"\'".($1/2)."\'"'}</a> 
+				<a title="{$im->title|escape:'html'} by {$im->realname|escape:'html'}" href="/photo/{$im->gridimage_id}">{$im->getThumbnail(120,120)|regex_replace:'/"(\d+)"/e':'"\'".($1/2)."\'"'}</a> 
 	
 			{/foreach}
 			</div>
