@@ -775,7 +775,7 @@ class GeographMapMosaic
 		
 		//range check the bestorigin - we've got some hard coded //todo
 		//values here
-		$bestoriginx=max($bestoriginx, ($bestoriginy > 700 && $bestoriginy < 900)?-100:0);
+		$bestoriginx=max($bestoriginx, ($bestoriginy > 700 && $bestoriginy < 950)?-100:0);
 		$bestoriginx=min($bestoriginx, 860);
 		$bestoriginy=max($bestoriginy, 0);
 		$bestoriginy=min($bestoriginy, 1220);
