@@ -151,7 +151,7 @@ foreach($most as $id=>$entry)
 	$networklink = new kmlNetworkLink(null,$entry['hunk_square']);
 	$file = getKmlFilepath($kml->extension,5,$square,$entry['hunk_square']);
 	$UrlTag = $networklink->useUrl("http://".$CONF['KML_HOST'].$file);
-	$html .= getHtmlLink($file,$entry['hunk_square']);
+	$html .= getHtmlLink($file,$entry['hunk_square'],'in subhectad');
 	if (!isset($_GET['debug'])) {
 		if (isset($_GET['newonly'])) {
 			$db->Execute("insert ignore into kmlcache set `url` = 'mosaic.php?gr={$entry['hunk_square']}',filename='$file',`level` = 5,`rendered` = 0");
@@ -171,8 +171,9 @@ foreach($most as $id=>$entry)
 
 $folder->addChild($links);
 
+$grs = $square->gridsquare.floor($square->eastings/10).floor($square->northings/10);
 
-kmlPageFooter($kml,$square,$gr,'hectad.php',4,$html);
+kmlPageFooter($kml,$square,$gr,'hectad.php',4,$html,$grs);
 
 
 
