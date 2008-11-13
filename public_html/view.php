@@ -214,7 +214,7 @@ if ($image->isValid())
 			$smarty->assign('view_direction', ($image->view_direction%90==0)?strtoupper(heading_string($image->view_direction)):ucwords(heading_string($image->view_direction)) );
 		}
 		
-		
+		$level = ($image->grid_square->imagecount > 1)?6:5;
 		$smarty->assign('sitemap',getSitemapFilepath(6,$image->grid_square)); 
 	}
 } elseif (!empty($rejected)) {
