@@ -247,10 +247,10 @@ function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '') {
 function getHtmlLinkP($url,$text) {
 	return "<li><a title=\"View Full Size $text\" href=\"$url\">$text</a></li>\n";
 }
-function getHtmlLink($url,$text) {
+function getHtmlLink($url,$text,$prefix = 'in',$postfix) {
 	$url = str_replace("kml",'sitemap',$url);
 	$url = str_replace("kmz",'html',$url);
-	return "<li><a title=\"List photographs in $text\" href=\"$url\">$text</a></li>\n";
+	return "<li><a title=\"List photographs $prefix $text\" href=\"$url\">List Photographs $prefix $text$postfix</a></li>\n";
 }
 
 ?>
