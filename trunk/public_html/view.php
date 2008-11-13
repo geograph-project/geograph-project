@@ -215,7 +215,7 @@ if ($image->isValid())
 		}
 		
 		$level = ($image->grid_square->imagecount > 1)?6:5;
-		$smarty->assign('sitemap',getSitemapFilepath(6,$image->grid_square)); 
+		$smarty->assign('sitemap',getSitemapFilepath($level,$image->grid_square)); 
 	}
 } elseif (!empty($rejected)) {
 	header("HTTP/1.0 410 Gone");
