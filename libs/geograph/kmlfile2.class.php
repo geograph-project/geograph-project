@@ -197,7 +197,7 @@ function getKmlFilepath($extension,$level,$square = null,$gr='',$i = 0) {
 		return "$prefix/$s/$n.$extension";
 	} elseif ($level == 2) {
 		return "$prefix/$s.$extension";
-	} elseif ($level =< 1) {
+	} elseif ($level <= 1) {
 		return "$prefix/geograph.$extension";
 	} else {
 		if ($n && !is_dir("$base/$s/$n/$level"))
