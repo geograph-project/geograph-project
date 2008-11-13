@@ -75,6 +75,8 @@ $links = new kmlPrimative('Folder');
 $links->setItem('name','Next Level...');
 
 
+$names = $db->getAssoc("select prefix,title from gridprefix");
+
 
 foreach (array(1,2) as $ri) {
 	$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
@@ -147,7 +149,7 @@ foreach (array(1,2) as $ri) {
 		$networklink = new kmlNetworkLink(null,$entry['hunk_square']);
 		$file = getKmlFilepath($kml->extension,2,$square,$entry['hunk_square']);
 		$UrlTag = $networklink->useUrl("http://".$CONF['KML_HOST'].$file);
-		$html .= getHtmlLink($file,$entry['hunk_square']);
+		$html .= getHtmlLink($file,$entry['hunk_square'],'in Myriad'," (".$names[$entry['hunk_square']].")");
 		if (!isset($_GET['debug'])) {
 			if (isset($_GET['newonly'])) {
 				$db->Execute("insert ignore into kmlcache set `url` = 'myriad.php?gr={$entry['hunk_square']}',filename='$file',`level` = 2,`rendered` = 0");
