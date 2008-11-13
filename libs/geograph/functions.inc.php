@@ -380,6 +380,48 @@ function smarty_modifier_revision($filename) {
 }
 
 
+function getSitemapFilepath($level,$square = null,$gr='',$i = 0) {
+	#$i = 270727;
+	if (is_object($square)) {
+		$s = $square->gridsquare;
+		if ($level > 2) {
+			$n = sprintf("%d%d",intval($square->eastings/20)*2,intval($square->northings/20)*2);
+		}
+		if (empty($gr)) {
+			$gr = $square->grid_reference;
+		}
+	} elseif (!empty($gr)) {
+		preg_match('/^([A-Z]{1,2})([\d_]*)$/',strtoupper($gr),$m);
+		$s = $m[1];
+		if ($level > 2) {
+			$numbers = $m[2];
+			$numlen = strlen($m[2]);
+			$c = $numlen/2;
+			
+			$n = sprintf("%d%d",intval($numbers{0}/2)*2,intval($numbers{$c}/2)*2);
+		}
+	}
+	
+	$extension = 'html';
+	$prefix = "/sitemap";
+	
+	if ($i) {
+		$prefix .= "/$i";
+	} 
+
+	
+	if ($level == 3) {
+		return "$prefix/$s/$n.$extension";
+	} elseif ($level == 2) {
+		return "$prefix/$s.$extension";
+	} elseif ($level == 1) {
+		return "$prefix/geograph.$extension";
+	} else {
+		return "$prefix/$s/$n/$level/$gr.$extension";
+	}
+
+}
+
 /**
 * smarty wrapper to GeographLinks
 */

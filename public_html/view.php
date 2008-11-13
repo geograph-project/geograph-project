@@ -213,6 +213,9 @@ if ($image->isValid())
 		if ($image->view_direction > -1) {
 			$smarty->assign('view_direction', ($image->view_direction%90==0)?strtoupper(heading_string($image->view_direction)):ucwords(heading_string($image->view_direction)) );
 		}
+		
+		
+		$smarty->assign('sitemap',getSitemapFilepath(6,$image->grid_square)); 
 	}
 } elseif (!empty($rejected)) {
 	header("HTTP/1.0 410 Gone");
