@@ -815,7 +815,7 @@ class SearchCriteria_Placename extends SearchCriteria
 		
 		if (count($places) == 1) {
 			$db = $this->_getDB();
-			$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$places[0]['reference_index']." order by origin_x,origin_y limit 1");	
+			$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$places[0]['reference_index']." and origin_x > 0 order by origin_x,origin_y limit 1");	
 
 			$this->x = intval($places[0]['e']/1000) + $origin['origin_x'];
 			$this->y = intval($places[0]['n']/1000) + $origin['origin_y'];
@@ -842,7 +842,7 @@ class SearchCriteria_Postcode extends SearchCriteria
 			$postcode = $db->GetRow('select e,n,reference_index from loc_postcodes where code='.$db->Quote($code).' limit 1');	
 		}
 		if ($postcode['reference_index']) {
-			$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$postcode['reference_index'].' order by origin_x,origin_y limit 1');	
+			$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$postcode['reference_index'].' and origin_x > 0 order by origin_x,origin_y limit 1');	
 
 			$this->x = intval($postcode['e']/1000) + $origin['origin_x'];
 			$this->y = intval($postcode['n']/1000) + $origin['origin_y'];
@@ -870,7 +870,7 @@ class SearchCriteria_County extends SearchCriteria
 		//after ordering by x,y - you'll get the bottom
 		//left gridprefix, and hence the origin
 
-		$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$county['reference_index'].' order by origin_x,origin_y limit 1');	
+		$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$county['reference_index'].' and origin_x > 0 order by origin_x,origin_y limit 1');	
 
 		$this->x = intval($county['e']/1000) + $origin['origin_x'];
 		$this->y = intval($county['n']/1000) + $origin['origin_y'];
