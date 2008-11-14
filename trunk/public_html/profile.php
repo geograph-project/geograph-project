@@ -190,7 +190,14 @@ if ($template=='profile.tpl')
 		if (!$profile) {
 			$profile=new GeographUser($uid);
 		}
-			
+		
+		if (!empty($_GET['a']) && $_GET['a'] == $profile->realname) {
+			header("HTTP/1.0 301 Moved Permanently");
+			header("Status: 301 Moved Permanently");
+			header("Location: /profile/{$uid}");
+			exit;
+		}
+		
 		if ($profile->user_id==0)
 		{
 			header("HTTP/1.0 404 Not Found");
