@@ -55,7 +55,7 @@
 	<br style="clear:both"/>
 	<div style="text-align:center;margin-top:10px;padding-top:0px;padding-bottom:10px;margin-left:10px;margin-right:10px;width:670px;padding-top:10px;background:#dddddd;">
 	<form action="{$script_name}" style="display:inline"> 
-	or paste in the string from Multimap.com: <br/>
+	or paste in the string from <b>the old style</b> Multimap.com: <br/>
 		<input type="text" name="multimap" size=40/>
 		<input type="submit" name="From" value="convert"/><br/>
 	<small>eg: "<b>Lat</b>: 54:32:40N (54.5445) <b>Lon</b>: 6:49:22W (-6.8228)"</small>
