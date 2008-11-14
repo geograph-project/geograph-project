@@ -4,7 +4,7 @@
 
 <h2>Welcome to Geograph British Isles</h2>
 
-<div style="position:relative;width:600px; background-color:white;">
+<div style="position:relative;background-color:white;">
 
 <div style="background-color:#eeeeee;padding:2px; text-align:center">
 The Geograph British Isles project aims to collect geographically
@@ -12,7 +12,7 @@ representative photographs and information for every square kilometre of <a href
 <a href="/explore/places/2/">Ireland</a>, and you can be part of it.</div>
 
 
-<div style="width:35%;float:left;position:relative;margin-right:20px">
+<div style="width:35%;float:left;position:relative;margin-right:10px">
 
 {if $overview2}
 
@@ -44,7 +44,7 @@ representative photographs and information for every square kilometre of <a href
 
 </div>
 
-<div style="width:370px;float:left;padding-right:5px;position:relative;text-align:center;margin-left:-20px">
+<div style="width:370px;float:left;padding-right:5px;position:relative;text-align:center;">
 
 	<div style="padding:2px;margin-top:8px;position:relative; text-align:center">
 
@@ -112,7 +112,7 @@ Recently completed hectads:
 
 </div>
 
-<div style="width:40%;float:left;position:relative">
+<div style="width:300px;float:left;position:relative">
 
 <p><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how 
 many grid squares you submit! 
