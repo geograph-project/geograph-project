@@ -18,7 +18,7 @@
 
 <p class="wordnet" style="font-size:0.8em;line-height:1.4em" align="center"> 
 {foreach from=$users key=user_id item=obj}
-&nbsp;<a title="{$obj.nickname|escape:'html'}, {$obj.images} images" {if $obj.images > 100} style="font-weight:bold"{/if} href="/profile/{$user_id}{if $obj.realname ne $obj.user_realname}?a={$obj.realname|escape:'url'}{/if}">{$obj.realname|escape:'html'|replace:' ':'&middot;'}</a><small>&nbsp;[{$obj.images}]</small> &nbsp;
+&nbsp;<a title="{$obj.nickname|escape:'html'}, {$obj.images} images" {if $obj.images > 100} style="font-weight:bold"{/if} href="/profile/{$user_id}{if $obg.user_realname && $obj.realname ne $obj.user_realname}?a={$obj.realname|escape:'url'}{/if}">{$obj.realname|escape:'html'|replace:' ':'&middot;'}</a><small>&nbsp;[{$obj.images}]</small> &nbsp;
 {/foreach} 
 </p>
  		
