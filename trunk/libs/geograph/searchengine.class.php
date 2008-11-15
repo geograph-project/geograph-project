@@ -544,6 +544,7 @@ END;
 				$this->results[$i]=new GridImage;
 				$this->results[$i]->fastInit($recordSet->fields);
 
+				$this->results[$i]->dist_string = '';
 				if (!empty($recordSet->fields['dist_sqd'])) {
 					$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
 					
@@ -552,8 +553,9 @@ END;
 					} else {
 						$d = sqrt($recordSet->fields['dist_sqd']);
 					}
-					
-					$this->results[$i]->dist_string = sprintf($dist_format,$d,heading_string($angle));
+					if ($d >= 0.1) {
+						$this->results[$i]->dist_string = sprintf($dist_format,$d,heading_string($angle));
+					} 
 				}
 				if (empty($this->results[$i]->title))
 					$this->results[$i]->title="Untitled";
