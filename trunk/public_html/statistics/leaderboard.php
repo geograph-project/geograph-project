@@ -43,6 +43,9 @@ $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET[
 
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(250,intval($_GET['limit'])):150;
 
+$myriad = (isset($_GET['myriad']) && ctype_upper($_GET['myriad']))?$_GET['myriad']:'';
+
+
 $minimum = (isset($_GET['minimum']) && is_numeric($_GET['minimum']))?intval($_GET['minimum']):25;
 $maximum = (isset($_GET['maximum']) && is_numeric($_GET['maximum']))?intval($_GET['maximum']):0;
 
@@ -57,7 +60,7 @@ if (isset($_GET['me']) && $USER->registered) {
 $smarty = new GeographPage;
 
 $template='statistics_leaderboard.tpl';
-$cacheid=$minimum.'-'.$maximum.$type.$date.$when.$limit.'.'.$ri.'.'.$u;
+$cacheid=$minimum.'-'.$maximum.$type.$date.$when.$limit.'.'.$ri.'.'.$u.$myriad;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*3; //3hour cache
@@ -68,7 +71,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');
 
-	$filtered = ($when || $ri);
+	$filtered = ($when || $ri || $myriad);
 	
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
@@ -302,6 +305,10 @@ if (!$smarty->is_cached($template, $cacheid))
 			$desc .= ", <b>for images $title during ".getFormattedDate($when)."</b>";
 		}
 	}
+	if ($myriad) {
+		$sql_where .= " and grid_reference LIKE '{$myriad}____'";
+		$desc .= " in Myriad $myriad";
+	}
 	if ($ri) {
 		$sql_where .= " and reference_index = $ri";
 		$desc .= " in ".$CONF['references_all'][$ri];
@@ -368,7 +375,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$extra = array();
 	$extralink = '';
 	
-	foreach (array('when','date','ri') as $key) {
+	foreach (array('when','date','ri','myriad') as $key) {
 		if (isset($_GET[$key])) {
 			$extra[$key] = $_GET[$key];
 			$extralink .= "&amp;$key={$_GET[$key]}";
