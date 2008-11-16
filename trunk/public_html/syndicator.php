@@ -126,7 +126,7 @@ if (isset($cacheid)) {
 $rss = new UniversalFeedCreator(); 
 $rss->useCached($format,$rssfile,$rss_timeout); 
 $rss->title = 'Geograph British Isles'; 
-$rss->link = "http://{$_SERVER['HTTP_HOST']}";
+$rss->link = "http://{$_SERVER['HTTP_HOST']}/";
 
 
 /**
