@@ -119,7 +119,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$queries =& $db->getAll("
 	select
-		id,searchdesc,`count`,comment,created,approved
+		id,searchdesc,`count`,comment,created,approved,orderby
 	from
 		queries_featured
 		inner join queries using (id)
