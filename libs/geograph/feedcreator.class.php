@@ -1403,7 +1403,7 @@ class PIECreator01 extends FeedCreator {
  */
 class AtomCreator10 extends FeedCreator {
 
-	function AtomCreator03() {
+	function AtomCreator10() {
 		$this->contentType = "application/atom+xml";
 		$this->encoding = "utf-8";
 	}
@@ -1412,7 +1412,7 @@ class AtomCreator10 extends FeedCreator {
 		$feed = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 		$feed.= $this->_createGeneratorComment();
 		$feed.= $this->_createStylesheetReferences();
-		$feed.= "<feed version=\"1.0\" xmlns=\"http://www.w3.org/2005/Atom\"";
+		$feed.= "<feed xmlns=\"http://www.w3.org/2005/Atom\"";
 		if ($this->format=='TOOLBAR') {
 			$feed.= " xmlns:gtb=\"http://toolbar.google.com/custombuttons/\"";
 		}
@@ -1421,11 +1421,15 @@ class AtomCreator10 extends FeedCreator {
 		}
 		$feed.= ">\n"; 
 		$feed.= "    <title>".htmlspecialchars($this->title)."</title>\n";
-		$feed.= "    <tagline>".htmlspecialchars($this->description)."</tagline>\n";
+		$feed.= "    <subtitle>".htmlspecialchars($this->description)."</subtitle>\n";
 		$feed.= "    <link rel=\"alternate\" type=\"text/html\" href=\"".htmlspecialchars($this->link)."\"/>\n";
+		if ($this->syndicationURL != '') {
+			$feed.= "    <atom:link href=\"".$this->syndicationURL."\" rel=\"self\" type=\"".$this->contentType."\" />\n";
+		}
+		
 		$feed.= "    <id>".htmlspecialchars($this->link)."</id>\n";
 		$now = new FeedDate();
-		$feed.= "    <modified>".htmlspecialchars($now->iso8601())."</modified>\n";
+		$feed.= "    <updated>".htmlspecialchars($now->iso8601())."</updated>\n";
 		if ($this->editor!="") {
 			$feed.= "    <author>\n";
 			$feed.= "        <name>".$this->editor."</name>\n";
@@ -1444,9 +1448,7 @@ class AtomCreator10 extends FeedCreator {
 				$this->items[$i]->date = time();
 			}
 			$itemDate = new FeedDate($this->items[$i]->date);
-			$feed.= "        <created>".htmlspecialchars($itemDate->iso8601())."</created>\n";
-			$feed.= "        <issued>".htmlspecialchars($itemDate->iso8601())."</issued>\n";
-			$feed.= "        <modified>".htmlspecialchars($itemDate->iso8601())."</modified>\n";
+			$feed.= "        <updated>".htmlspecialchars($itemDate->iso8601())."</updated>\n";
 			$feed.= "        <id>".htmlspecialchars($this->items[$i]->link)."</id>\n";
 			$feed.= $this->_createAdditionalElements($this->items[$i]->additionalElements, "        ");
 			if ($this->items[$i]->author!="") {
