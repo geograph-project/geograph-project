@@ -1,6 +1,10 @@
 {assign var="page_title" value="Explore Featured Searches"}
+{assign var="rss_url" value="/explore/searches.rss.php"}
 {include file="_std_begin.tpl"}
 <script src="{"/sorttable.js"|revision}"></script>
+
+
+<div style="float:right; padding-right:30px;"><a title="RSS Feed Featured Searches" href="{$rss_url}" class="xml-rss">RSS</a></div>
 
 <h2>Featured Searches</h2>
 
@@ -14,6 +18,7 @@
 	{if $is_mod}
 		<td>Links</td>
 	{/if}
+	<td>Feed</td>
 </tr></thead>
 <tbody>
 
@@ -29,6 +34,11 @@
 			<a href="{$script_name}?i={$row.id}&amp;a=1">Approve</a>
 		{/if}
 	</td>
+	{/if}
+	{if $row.orderby == 'gridimage_id desc' || $row.orderby == 'submitted desc'}
+		<td><a href="/feed/results/{$row.id}.rss" class="xml-rss" title="RSS feed for {$row.searchdesc|escape:'html'}">RSS</a></td>
+	{else}
+		<td>n/a</td>
 	{/if}
 </tr>
 {/foreach}
