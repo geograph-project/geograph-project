@@ -1424,7 +1424,7 @@ class AtomCreator10 extends FeedCreator {
 		$feed.= "    <subtitle>".htmlspecialchars($this->description)."</subtitle>\n";
 		$feed.= "    <link rel=\"alternate\" type=\"text/html\" href=\"".htmlspecialchars($this->link)."\"/>\n";
 		if ($this->syndicationURL != '') {
-			$feed.= "    <atom:link href=\"".$this->syndicationURL."\" rel=\"self\" type=\"".$this->contentType."\" />\n";
+			$feed.= "    <link href=\"".$this->syndicationURL."\" rel=\"self\" type=\"".$this->contentType."\"/>\n";
 		}
 		
 		$feed.= "    <id>".htmlspecialchars($this->link)."</id>\n";
