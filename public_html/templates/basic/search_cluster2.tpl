@@ -1,22 +1,20 @@
 {assign var="page_title" value="Experimental Themed Images Search"}
 {include file="_std_begin.tpl"}
 
-<h2>Advanced Search Builder</h2>
+<h2>Experimental Themed Images Search</h2>
 
 {if $errormsg}
 <p style="color:red"><b>{$errormsg}</b></p>
 {/if}
 <form action="/search.php" method="get" name="theForm">
 	<input type="hidden" name="cluster2" value="1"/>
-	<div class="tabHolder">
-		<a href="/search.php?form=simple" class="tab">simple search</a>
-		<a href="/search.php?form=text" class="tab">advanced search</a>
-		<a href="/search.php?form=first" class="tab">first geographs</a>
-	</div>
-	<div class="interestBox">
-		<b>Experimental Themed Images Search:</b>
-	</div>
-	
+
+	<p>This special form allows you to search the 511,750 images that have have been assigned a 'theme' label, 
+	only images from busy squares are included as the system needs a reasonable corpus to be able to assign a label. 
+	The results pages shows the theme next to each result, and also groups image into the same theme. 
+	This whole process is highly experimental and almost guaranteed to produce unexpected results, 
+	please treat with caution, but please do have fun exploring images in a new way.</p>
+
 	<table cellpadding="3" cellspacing="0"> 
 		  <tr> 
 		 	 <td colspan="3" style="background:#dddddd;"><b>Limit to results to: </b></td> 
@@ -108,7 +106,7 @@
 					<option value="">none</option>
 					<option value="grid_reference">grid reference</option>
 					<option value="label">alphabetical label</option>
-					<option value="crc32(label)">mixed label</option>
+					<option value="crc32(label)" selected>mixed label</option>
 				</select>  </td> 
 		  </tr> 
 		  <tr> 

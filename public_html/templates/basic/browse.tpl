@@ -291,14 +291,16 @@
 
 			<li style="margin-top:10px;">
 			<form method="get" action="/search.php">
-				Or <label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="30"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+				Or search within images in this square:<br/> <small>(leave box keywords blank to simply page though all images)</small><br/>
+				<div class="interestBox" style="width:400px">
+				<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="30"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 				<input type="submit" value="Search"/><br/>
 				<input type="hidden" name="location" value="{$gridref}"/>
 				<input type="radio" name="distance" value="1" checked id="d1"/><label for="d1">In {$gridref} only</label> /
 				<input type="radio" name="distance" value="3" id="d3"/><label for="d1">including surrounding squares</label><br/>
 				<input type="checkbox" name="displayclass" value="thumbs" id="dc"/><label for="dc">Show thumbnails only</label>
 				<input type="hidden" name="do" value="1"/>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<small>Just click Search to list all images</small>)
+				</div>
 			</form></li>
 
 			</ul>

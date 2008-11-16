@@ -1,6 +1,8 @@
 {include file="_search_begin.tpl"}
 
-{if $engine->resultCount}
+{if !$google_maps_api_key}
+	<p>this page is no longer able to display a map - please use a different display method</p>
+{elseif $engine->resultCount}
 
 	<div id="map" style="width:100%; height:500px; position:relative;"></div>
 	{if $engine->results}{literal}

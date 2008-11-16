@@ -26,7 +26,7 @@
 
  {if $recentcount}
   
-  	<h3 {if $overview} style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;"{/if}>Recent Photos <small><a href="/search.php?i=1522" title="Show the most recent submissions">more</a></small></h3>
+  	<h3 {if $overview} style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;"{/if}>Recent Photos <small>[<a href="/search.php?i=1522" title="Show the most recent submissions">more...</a>]</small></h3>
   	
   	{foreach from=$recent item=image}
   
