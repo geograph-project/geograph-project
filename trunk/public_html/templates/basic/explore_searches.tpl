@@ -36,7 +36,7 @@
 	</td>
 	{/if}
 	{if $row.orderby == 'gridimage_id desc' || $row.orderby == 'submitted desc' || $row.orderby == 'post_id desc,seq_id desc' || $row.orderby == 'showday desc'}
-		<td><a href="/feed/results/{$row.id}.rss" class="xml-rss" title="RSS feed for {$row.searchdesc|escape:'html'}">RSS</a></td>
+		<td><a href="/feed/results/{$row.id}.rss?expand=1" class="xml-rss" title="RSS feed for {$row.searchdesc|escape:'html'}">RSS</a></td>
 	{else}
 		<td>n/a</td>
 	{/if}
