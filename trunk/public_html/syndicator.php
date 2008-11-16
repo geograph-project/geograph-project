@@ -281,6 +281,7 @@ for ($i=0; $i<$cnt; $i++)
 			$item->content = $images->images[$i]->_getFullpath(true,true); 
 			if ($opt_expand) {
 				$item->description = '<a href="'.$item->link.'"'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
+				$item->descriptionHtmlSyndicated = true;
 			}
 		}
 	} elseif ($format == 'PHP') {
@@ -291,6 +292,7 @@ for ($i=0; $i<$cnt; $i++)
 		$item->thumbdata = ob_get_clean();
 	} elseif ($opt_expand) {
 		$item->description = '<a href="'.$item->link.'"'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
+		$item->descriptionHtmlSyndicated = true;
 	}
 
 	//<license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
