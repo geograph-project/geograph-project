@@ -57,24 +57,22 @@ if ($format == 'KML') {
 /**
  * We are building a text search for the first time
  */
-if (isset($_GET['text'])) {
-	$cacheid = getTextKey();
-	$pg = 1;
-	
-	$q = $_GET['text'].' near (anywhere)';
-
-} elseif (isset($_GET['q']) || !empty($_GET['location'])) {
+if (isset($_GET['q']) || !empty($_GET['location'])) {
 	if (!empty($_GET['lat']) && !empty($_GET['lon'])) {
 		$_GET['location'] = $_GET['lat'].','.$_GET['lon'];
 	}
+	if (!empty($_GET['BBOX'])) {
+		//this is treated special later...
+		$_GET['location'] = '(anywhere)';
+	}
 	if (!empty($_GET['location'])) {
-		if (!empty($_GET['q'])) {
+		if (!empty($_GET['text'])) {
+			$q=trim($_GET['text']).' near '.trim($_GET['location']);
+		} elseif (!empty($_GET['q'])) {
 			$q=trim($_GET['q']).' near '.trim($_GET['location']);
 		} else {
 			$q='near '.trim($_GET['location']);
 		}
-	} elseif (!empty($_GET['BBOX'])) {
-		$q=trim($_GET['q']).' near (anywhere)';
 	} else {
 		$q=trim($_GET['q']);
 	}
@@ -100,7 +98,13 @@ if (isset($_GET['text'])) {
 		
 		//$q is used below
 	}
-}
+} elseif (isset($_GET['text'])) {
+	$cacheid = getTextKey();
+	$pg = 1;
+	
+	$q = $_GET['text'].' near (anywhere)';
+
+} 
 
 $opt_expand = (!empty($_GET['expand']) && $format != 'KML')?1:0;
 
