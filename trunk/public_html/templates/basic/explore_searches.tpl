@@ -49,6 +49,8 @@
 	
 <p>Suggest a new search for this page using the link on the search results page.</p>
 
+<p>Note: Searches without a link in the RSS column, are not sorted in descending order which is required for RSS feeds to work well.</p>
+
 {if $footnote}
 	{$footnote}
 {/if}
