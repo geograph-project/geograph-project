@@ -812,7 +812,7 @@ class FeedDate {
 	 * @return a date in RFC 3339 format
 	 */
 	function rfc3339() {
-		return gmdate("Y-m-dTH:i:sZ", $this->unix);
+		return gmdate("Y-m-d\TH:i:sP", $this->unix);
 	}
 	
 	/**
@@ -1457,6 +1457,7 @@ class AtomCreator10 extends FeedCreator {
 				$this->items[$i]->date = time();
 			}
 			$itemDate = new FeedDate($this->items[$i]->date);
+			$feed.= "        <updated>".htmlspecialchars($itemDate->rfc3339())."</updated>\n";
 			$feed.= "        <published>".htmlspecialchars($itemDate->rfc3339())."</published>\n";
 			$feed.= "        <id>".htmlspecialchars($this->items[$i]->link)."</id>\n";
 			$feed.= $this->_createAdditionalElements($this->items[$i]->additionalElements, "        ");
