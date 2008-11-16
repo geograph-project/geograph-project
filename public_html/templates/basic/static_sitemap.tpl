@@ -65,9 +65,9 @@
 <ul>
 	<li><a title="Discussion forums" href="/discuss/"><b>discuss the site</b> on our forums</a></li>
 	<li><a title="IRC Chat" href="/chat/"><b>realtime chat</b> with other members</a></li>
-	<li><a title="Geograph Events" href="/events/"><b>meet other members</b> at local events</a> <sup style="color:red">New!</sup></li>
-	<li><a title="Articles" href="/article/">submit your own <b>article</b></a></li>
-	<li><a title="Galleries" href="/discuss/?action=vtopic&forum=11">create <b>submitted galleries</b></a></li>
+	<li><a title="Geograph Events" href="/events/"><b>meet other members</b> at local events</a> <a title="geoRSS Feed for Geograph Events" href="/events/feed.rss" class="xml-rss">RSS</a></li>
+	<li><a title="Articles" href="/article/">submit your own <b>article</b></a> <a title="RSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-rss">RSS</a></li>
+	<li><a title="Galleries" href="/discuss/?action=vtopic&forum=11">create <b>submitted galleries</b></a> <a title="RSS Feed for Geograph Galleries" href="/discuss/syndicator.php?forum=11" class="xml-rss">RSS</a></li>
 </ul>
 {/if}
  
