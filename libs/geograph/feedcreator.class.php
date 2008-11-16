@@ -812,7 +812,9 @@ class FeedDate {
 	 * @return a date in RFC 3339 format
 	 */
 	function rfc3339() {
-		return gmdate("Y-m-d\TH:i:sO", $this->unix);
+		$date = gmdate("Y-m-d\TH:i:sO",$this->unix);
+		$date = substr($date,0,22) . ':' . substr($date,-2);
+		return $date;
 	}
 	
 	/**
