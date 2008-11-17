@@ -98,7 +98,7 @@
 			 <td>eg <tt>Bridge</tt></td> 
 		  </tr> 
 		  <tr> 
-			 <td colspan="3"><small>&middot; Currently searches the title, description, category, photographer name and image taken date (<tt>20071103</tt>, <tt>200711</tt> or just <tt>2007</tt>) fields, as well the subject grid-reference <span class="nowrap">(<tt>SH1234</tt>, <tt>SH13</tt> or just <tt>SH</tt>)</span>, seperate multiple keywords with spaces.</small></td> 
+			 <td colspan="3"><small>&middot; Currently searches the title, description, category, photographer name and image taken date (<tt>20071103</tt>, <tt>200711</tt> or just <tt>2007</tt>) fields, as well the subject grid-reference <span class="nowrap">(<tt>SH1234</tt>, <tt>SH13</tt> or just <tt>SH</tt>)</span>, separate multiple keywords with spaces.</small></td> 
 		  </tr> 
 		  <tr> 
 			 <td colspan="2"><small>
