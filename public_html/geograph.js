@@ -340,7 +340,7 @@ function importToMarkedImages() {
 	newCookie = readCookie('markedImages');
 	if (!newCookie)
 		newCookie = new String();
-	list = prompt('Paste your current list, either comma or space seperated\n or just surrounded with [[[ ]]] ','');
+	list = prompt('Paste your current list, either comma or space separated\n or just surrounded with [[[ ]]] ','');
 	if (list && list != '') {
 		splited = list.split(/[^\d]+/);
 		count=0;	
