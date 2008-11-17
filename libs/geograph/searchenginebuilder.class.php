@@ -213,7 +213,7 @@ class SearchEngineBuilder extends SearchEngine
 			"searchdesc = ".$db->Quote($searchdesc).",".
 			"searchuse = ".$db->Quote($this->searchuse).",".
 			"searchq = ".$db->Quote($q);
-			if ($searchx > 0 && $searchy > 0)
+			if (!empty($searchx) && !empty($searchy))
 				$sql .= ",x = $searchx,y = $searchy,limit8 = $distance";
 			if ($limit1)
 				$sql .= ",limit1 = $limit1";
@@ -391,7 +391,7 @@ class SearchEngineBuilder extends SearchEngine
 			if (preg_match("/;|update |delete |drop |replace |alter |password|email/i",$searchq))
 				die("Server Error");
 			$searchdesc = ", ".$dataarray['description'];	
-			if ($dataarray['x'] > 0 && $dataarray['y'] > 0) {
+			if (!empty($dataarray['x']) && !empty($dataarray['y'])) {
 				$searchx = $dataarray['x'];
 				$searchy = $dataarray['y'];
 			}
@@ -447,7 +447,7 @@ class SearchEngineBuilder extends SearchEngine
 			} elseif (isset($USER) && !empty($USER->search_results)) {
 				$sql .= ",resultsperpage = ".$db->Quote($USER->search_results);				
 			}
-			if (isset($searchx) && $searchx > 0 && $searchy > 0)
+			if (isset($searchx) && !empty($searchx) && !empty($searchy))
 				$sql .= ",x = $searchx,y = $searchy";
 			if (isset($USER) && $USER->registered)
 				$sql .= ",user_id = {$USER->user_id}";

@@ -168,7 +168,7 @@ class SearchCriteria
 		
 		$x = $this->x;
 		$y = $this->y;
-		if ($x > 0 && $y > 0) {
+		if (!empty($x) && !empty($y)) {
 			if ($this->limit8 && $this->limit8 < 2000 && $this->limit8 > -2000) {//2000 is a special value for effectivly unlimted!
 				$d = abs(intval($this->limit8));
 				if ($sql_where) {
