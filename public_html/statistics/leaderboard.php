@@ -59,7 +59,11 @@ if (isset($_GET['me']) && $USER->registered) {
 
 $smarty = new GeographPage;
 
-$template='statistics_leaderboard.tpl';
+if (isset($_GET['inner'])) {
+	$template='statistics_leaderboard_inner.tpl';
+} else {
+	$template='statistics_leaderboard.tpl';
+}
 $cacheid=$minimum.'-'.$maximum.$type.$date.$when.$limit.'.'.$ri.'.'.$u.$myriad;
 
 $smarty->caching = 2; // lifetime is per cache
