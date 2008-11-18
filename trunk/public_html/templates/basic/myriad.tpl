@@ -4,7 +4,7 @@
 
 <div style="width:40%; float:right; position:relative">
 	<form method="get" action="/search.php" target="results">
-		<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="30"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+		<label for="fq">Keywords</label>: <input type="text" name="searchtext" id="fq" size="30"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 		<input type="submit" value="Search"/><br/>
 		<input type="hidden" name="gridsquare" value="{$myriad}"/>
 		<input type="hidden" name="displayclass" value="search"/>
