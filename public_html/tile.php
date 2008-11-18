@@ -147,7 +147,7 @@ if (isset($_GET['map']))
 			$mustgenerate = false;
 			
 			if ($memcache->valid && !isset($_GET['refresh'])) {
-				$mkey = "{$_GET['l']},$e,$n,$reference_index";
+				$mkey = "{$_GET['l']}:$e,$n,$reference_index";
 				$lastmod =& $memcache->name_get('tl',$mkey);
 				if (!$lastmod) {
 					$lastmod = time();
@@ -204,8 +204,7 @@ if (isset($_GET['map']))
 					group by nateastings DIV 100, natnorthings DIV 100";
 			} else {
 				$sql="select x,y,imagecount,percent_land,has_geographs from gridsquare where 
-					CONTAINS( GeomFromText($rectangle),	point_xy)
-					and imagecount>0 or percent_land = 0";
+					CONTAINS( GeomFromText($rectangle),	point_xy)";
 			}
 			
 			$arr = $db->getAll($sql);
@@ -276,6 +275,7 @@ if (isset($_GET['map']))
 					$s = imagefontwidth(5)*2.1;
 					
 					$colSea=imagecolorallocate($img, 0,0,0);
+					$colGreen=imagecolorallocate($img, 117,255,101);
 					$colBack=imagecolorallocate($img, 0,0,240);
 					$colSuppBack=imagecolorallocate($img, 192,158,0);
 
@@ -292,7 +292,10 @@ if (isset($_GET['map']))
 							imagefilledellipse ($img,$x2,$y2,$s*strlen($row['imagecount']),$s,$color);
 
 							imagestring($img, 5, $x2-2-$xd*strlen($row['imagecount'])/2, $y2-$yd, $row['imagecount'], $colMarker);	
-						} 
+						} elseif ($row['percent_land']) {
+							#imagestring($img, 5, $x2-2-$xd/2, $y2-$yd, 'O', $colGreen);
+							imagefilledellipse($img,$x2,$y2,10,10,$colGreen);
+						}
 						if (!$row['percent_land']) {
 							imagestring($img, 5, $x2-2-$xd/2, $y2-$yd, 'X', $colSea);
 						}
