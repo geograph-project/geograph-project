@@ -146,6 +146,14 @@
 					</ul>
 				{/if}
 			</li>
+			{if $profile->stats.content}
+				<li style="margin-top:10px"><b>{$profile->stats.content}</b> items of Content submitted
+					[<a href="/content/?user_id={$profile->user_id}">View</a>]
+					{if $user->user_id eq $profile->user_id}
+						[<a href="/article/?user_id={$profile->user_id}">Article List</a>]
+					{/if}
+				</li>
+			{/if}
 		</ul>
 		<div style="float:right;font-size:0.8em; color:gray; margin-top:-20px">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
 	</div>
