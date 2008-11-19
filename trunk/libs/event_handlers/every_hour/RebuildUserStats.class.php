@@ -60,6 +60,7 @@ class RebuildUserStats extends EventHandler
 					`myriads` tinyint(5) unsigned NOT NULL default '0',
 					`hectads` smallint(3) unsigned NOT NULL default '0',
 					`last` int(11) unsigned NOT NULL default '0',
+					`content` mediumint(5) unsigned NOT NULL default '0',
 					PRIMARY KEY  (`user_id`),
 					KEY `points` (`points`)
 				) ENGINE=MyISAM
@@ -77,7 +78,8 @@ class RebuildUserStats extends EventHandler
 					count(*)/count(distinct grid_reference) as depth,
 					count(distinct substring(grid_reference,1,3 - reference_index)) as myriads,
 					count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) ) as hectads,
-					max(gridimage_id) as last
+					max(gridimage_id) as last,
+					0 as `content`
 				FROM gridimage_search
 				GROUP BY user_id
 				ORDER BY user_id");
@@ -142,6 +144,16 @@ class RebuildUserStats extends EventHandler
 			WHERE user_id = $user_id");
 		}
 		
+		$topusers=$db->GetAssoc("SELECT user_id,count(*) as content
+			FROM content 
+			WHERE source != 'themed'
+			GROUP BY user_id 
+			ORDER BY NULL"); 
+		foreach ($topusers as $user_id => $count) {
+			$db->query("UPDATE user_stat_tmp
+			SET content = $count
+			WHERE user_id = $user_id");
+		}
 		
 		$db->Execute("DROP TABLE IF EXISTS user_stat");
 		$db->Execute("RENAME TABLE user_stat_tmp TO user_stat");
