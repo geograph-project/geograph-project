@@ -286,6 +286,17 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "Centigraph<br/>Points";
 		$desc = "centigraph points awarded (centisquares photographed)";
 
+	} elseif ($type == 'content') {
+		if ($filtered) {
+			die("invalid request");
+		} else {
+			$sql_table = "user_stat i";
+			$sql_column = "content";
+			$sql_where = "content > 0";
+		}
+		$heading = "Content Items";
+		$desc = "items submitted";
+
 	} else { #if ($type == 'points') {
 		if ($filtered) {
 			$sql_where = "i.ftf=1 and i.moderation_status='geograph'";
