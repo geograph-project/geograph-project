@@ -44,6 +44,10 @@
 <label for="gridref">4-fig Grid Reference</a>: <input type="text" size=8"" name="gridref" id="gridref" value="{$gridref|escape:html}"/>
 <input type="submit" name="save" value="This square needs checking"/>
 </p>
+
+<label for="comment">Comment:</label> <input type="text" name="comment" id="comment" maxlength="128" size="60"/><br/>
+<small>(optional, this is shown to the moderator checking this square, in particular mention if the land is not visible on 50k maps)</small>
+
 </form>
 
 {/dynamic}
