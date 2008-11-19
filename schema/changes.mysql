@@ -344,3 +344,9 @@ INSERT INTO `gridsquare` (`gridsquare_id`, `x`, `y`, `percent_land`, `imagecount
 INSERT INTO `gridprefix` (`reference_index`, `prefix`, `origin_x`, `origin_y`, `width`, `height`, `landcount`, `title`, `boundary`, `labelcentre`, `geometry_boundary`, `point_origin_xy`) VALUES 
 (1, 'MC', -94, 900, 100, 100, 1, 'GB grid square MC', NULL, NULL, 0x00000000010300000001000000050000000000000000c0694000000000000000000000000000c06940000000000000594000000000002073400000000000005940000000000020734000000000000000000000000000c069400000000000000000, 0x00000000010100000000000000008057c00000000000208c40);
 
+
+
+
+ALTER TABLE `mapfix_log` ADD `comment` VARCHAR( 128 ) NOT NULL AFTER `gridsquare_id` ;
+
+

@@ -8,11 +8,11 @@
 <div style="border:2px silver solid;background:#eeeeee;padding:10px;">
 
 <div>This instant map updater requires no screen refresh to work - simply
-check the OS Map/Google Earth and vote on the land percentage{if $tofix} and a new square will
+check the Map and suggest the land percentage{if $tofix} and a new square will
 be opened up for processing{/if}. Note: When the square is substantial Mud-flats, please halve the estimate.</div>
 
-<span id="landvote" style="display:none">
-Land percent for <span id="voteref"></span>&nbsp; is 
+<div id="landvote" style="margin-top:10px;display:none">
+Land percent for <span id="voteref" style="font-weight:bold"></span>&nbsp; is 
 <input type="button" value="00" onclick="setland(0)" style="padding:5px">
 <input type="button" value="01" onclick="setland(1)" style="padding:5px">
 <input type="button" value="05" onclick="setland(5)" style="padding:5px">
@@ -22,8 +22,11 @@ Land percent for <span id="voteref"></span>&nbsp; is
 <input type="button" value="75" onclick="setland(75)" style="padding:5px">
 <input type="button" value="100" onclick="setland(100)" style="padding:5px">
 <input type="button" value="skip" onclick="shownext()" style="padding:5px">
-</span>
-<div id="voteinfo"></div>
+</span><br/>
+<label for="comment">Comment:</label> <input type="text" name="comment" id="comment" size="80" maxlength="128" ondblclick="this.value=''"/><br/>
+(double click to add YOUR comment to the square - before clicking button above) </div>
+
+<div style="margin-top:10px" id="voteinfo"></div>
 
 </div>
 <div style="font-size:0.7em">Great Britain open in Get-a-Map, Ireland opens our 'Location' page which displays Google Maps.</div>
@@ -76,13 +79,12 @@ function getXMLRequestObject()
 function shownext()
 {
 	var vote=document.getElementById('landvote');
-	var gridref=document.getElementById('voteref');
 	
 	current++;
 	if (current<aTodo.length)
 	{
 		var gr4=new String(aTodo[current]);
-		gridref.innerHTML=gr4;
+		document.getElementById('voteref').innerHTML=gr4;
 		currentgr = gr4;
 
 		if (gr4.length == 5) {
@@ -95,6 +97,18 @@ function shownext()
 		} else {
 			popupOSMap(gr4,'');
 		}
+
+		var comment=document.getElementById('comment');
+		if (message = document.getElementById('m'+currentgr)) {
+			if(document.all){
+				comment.value = message.innerText;
+			} else{
+				comment.value = message.textContent ;
+			}
+		} else {
+			comment.value = '';
+		}
+		comment.defaultValue = comment.value;
 
 		vote.style.display="";
 	}
@@ -125,18 +139,21 @@ function setland(percent)
 	var gr4=new String(aTodo[current]);
 	var url="/admin/mapfixer.php?save=quick&gridref="+gr4+"&percent_land="+percent;
 	
+	var comment=document.getElementById('comment');
+	if (comment.value.length> 0 && comment.value != comment.defaultValue) {
+		url=url+"&comment="+escape(comment.value);
+	}
+	
 	//make the request
 	var req=getXMLRequestObject();
 	
 	req.onreadystatechange=onMapUpdateComplete;
 	req.open("GET", url,true);
-	req.send(null)
-
-
+	req.send(null);
 }
 
 //kick off
-shownext();
+ AttachEvent(window,'load',shownext,false);
 
 {/literal}
 </script>
@@ -162,16 +179,17 @@ Land percentage for {$gridref} is
 </form>
 
 
-<h3>System created squares</h3>    
-<p>The following squares were created by the system when someone tried to view or 
-submit a square within 2km of an existing one - click one each one to update its
+<h3>Map Fix queue</h3>
+<p>The following squares are in the queue for checking - click one each one to update its
 land percentage. The "instant updater" at the top of the page provides a far
-quicker process though!</p>
+quicker process though! As the updater progresses though the list, the reference will turn gray. </p>
+
+<p>Any comments entered will also be shown, the numbers in square brackets are the previous transitions the square has had. (-1 represents unknown, which is used to put the square in this queue)</p>
 
 {if $unknowns}
 <ul>
 {foreach from=$unknowns item=unknown}
-<li><a href="mapfixer.php?gridref={$unknown.grid_reference}" id="a{$unknown.grid_reference}">{$unknown.grid_reference} ({$unknown.imagecount} images)</li>
+<li><a href="mapfixer.php?gridref={$unknown.grid_reference}" id="a{$unknown.grid_reference}">{$unknown.grid_reference}</a> ({$unknown.imagecount} images) <b><small id="m{$unknown.grid_reference}">{$unknown.comments|escape:'html'}{if $unknown.percents} [{$unknown.percents|escape:'html'}]{/if}</small></b></li>
 {/foreach}
 </ul>
 {else}

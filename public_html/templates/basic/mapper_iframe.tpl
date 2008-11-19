@@ -84,7 +84,7 @@ AttachEvent(window,'load',loadMap,false);
 </script>{/literal}
 
 {dynamic}{if $user->registered}
-<div style="float:left; font-size:0.9em; color:gray;">If parts of the map stop displaying, then <a href="/mapper/captcha.php?token={$token}" style="color:gray;">visit this page to continue</a></div>{/if}
+<div style="float:left; font-size:0.9em; color:gray;">If parts of the map stop displaying, then <a href="/mapper/captcha.php?token={$token}" style="color:gray;" target="_top">visit this page to continue</a></div>{/if}
 
 <div style="text-align:right; width:660px; font-size:0.7em;margin-bottom:3px" class="nowrap">Change Overlay Opacity: [<a title="increase opacity" href="javascript: changeOpacity(0.1);">+</a>] [<a title="decrease opacity" href="javascript: changeOpacity(-0.1);">-</a>]</div>{/dynamic}
 
