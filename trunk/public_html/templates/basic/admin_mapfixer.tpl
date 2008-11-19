@@ -36,9 +36,12 @@ Land percent for <span id="voteref" style="font-weight:bold"></span>&nbsp; is
 var aTodo=new Array();
 {if $gridref}
 	aTodo[aTodo.length]='{$gridref}';
-{else}
+{/if}
+{if $unknowns}
 {foreach from=$unknowns item=unknown}
+	{if $gridref != $unknown.grid_reference}
 	aTodo[aTodo.length]='{$unknown.grid_reference}';
+	{/if}
 {/foreach}
 {/if}
 
