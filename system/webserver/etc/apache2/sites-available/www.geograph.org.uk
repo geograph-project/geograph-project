@@ -10,7 +10,9 @@
     ServerAlias ireland.geograph.org.uk
     ServerAlias t0.www.geograph.org.uk
     ServerAlias t0.geograph.org.uk
-    
+
+    ServerAlias www.geograph.ie
+    ServerAlias geograph.ie    
     
     #create logformat like combined but with our user id and script timing
     LogFormat "%{X-Forwarded-For}i %l %{user_id}n %t \"%r\" \"%v\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{php_timing}n" geograph
@@ -58,10 +60,14 @@
 
     RewriteEngine on
 
+    RewriteCond %{HTTP_HOST}   ^geograph\.ie [NC]
+    RewriteRule ^/(.*)         http://www.geograph.ie/$1 [L,R=permanent]
+
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^kml\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^schools\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^ireland\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !^www\.geograph\.ie [NC]
     RewriteCond %{HTTP_HOST}   !^t0\.www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^t0\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^$
@@ -89,6 +95,7 @@
     RewriteRule /photo/([0-9]+)\.rdf /rdfapi.php?id=$1 [qsa]
     RewriteRule /photo/([0-9]+)\.kml /kml.php?id=$1 [qsa]
     RewriteRule /photo/([0-9]+) /view.php?id=$1 [qsa]
+    RewriteRule /gridref/([A-Z]{1,2})$ /myriad.php?myriad=$1 [qsa]
     RewriteRule /gridref/(.*)/links /location.php?gridref=$1 [qsa]
     RewriteRule /gridref/(.*) /browse.php?gridref=$1 [qsa]
 

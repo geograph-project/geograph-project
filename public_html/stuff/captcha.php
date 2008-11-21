@@ -96,7 +96,7 @@ if ($_POST['choice']) {
 	$_SESSION['pos'] = ''; //prevent retry
 	$_SESSION['id'] = ''; 
 } else {
-	$idarray = $db->getAssoc("select gridimage_id,imageclass from gridimage_search where imageclass <> '' order by rand(now()+0) limit 5");
+	$idarray = $db->getAssoc("select gridimage_id,imageclass from category_stat order by rand() limit 5");
 	
 	$ids = array_keys($idarray);
 

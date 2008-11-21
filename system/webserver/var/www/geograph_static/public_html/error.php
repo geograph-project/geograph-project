@@ -9,7 +9,7 @@ if (preg_match('/(ie|ff)\.gif$/',$p)) {
 }
 
 #http://s1.www.geograph.org.uk/photos/50/64/506453_c5b9915b_120x120.jpg
-if (preg_match('/^\/photos\/(\d{2})\/(\d{2})\/\d{6}_(\w+)\.jpg$/',$p,$m)
+if (preg_match('/^\/photos\/(\d{2,3})\/(\d{2})\/\d{6,7}_(\w+)\.jpg$/',$p,$m)
 
 #http://s1.www.geograph.org.uk/geophotos/01/50/64/506453_c5b9915b_120x120.jpg
 	|| preg_match('/^\/geophotos\/(\d{2})\/(\d{2})\/(\d{2})\/\d{6,}_(\w+)\.jpg$/',$p,$m) ) {
