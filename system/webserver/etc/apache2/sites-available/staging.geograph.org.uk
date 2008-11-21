@@ -54,7 +54,8 @@ NameVirtualHost *
 
     RewriteEngine on
 
-    #the following includes a fix as some useragents auto add a / to what it things is a folder
+    RewriteRule ^/robots.txt   /robots-none.txt [qsa]
+    #the following includes a fix as some useragents auto add a / to what it thinks is a folder
 
 
     RewriteRule ^/photo/([0-9]+)\.xml /api/photo/$1 [qsa]
@@ -90,6 +91,7 @@ NameVirtualHost *
 
 
     RewriteRule ^/credits/?([\d-]*)/?$ /credits.php?when=$1
+    RewriteRule ^/contributors/(\d+) /statistics/breakdown.php?by=user&i=$1
 
     RewriteRule ^/content/feed/recent\.([\w]+) /content/syndicator.php?extension=$1 [qsa]
     RewriteRule ^/article/feed/recent\.([\w]+) /article/syndicator.php?extension=$1 [qsa]
@@ -137,7 +139,14 @@ NameVirtualHost *
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?secretscotland\.org\.uk/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?phlap\.net/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?valendale\.myby\.co\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?youtube\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} (thread|topic|forum|blog) [NC]    
     RewriteRule /photos/\d.*\.jpg$ /stuff/nohotlink.php [L]
+
+<Location /sitemap/>
+    DirectoryIndex geograph.html
+</Location>
+
+RewriteRule ^/rss/(.*\.kmz)         http://kml.geograph.org.uk/kml/$1 [L,R=permanent]
 
 </VirtualHost>
