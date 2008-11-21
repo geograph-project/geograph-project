@@ -329,15 +329,21 @@ elseif($action=='wait') {
 			print " - <a href=\"{$main_url}/\">Visit Forum</a>"; 
 			exit;
 		} elseif (is_null($cols[9])) {
-			print "<title>New Since Last Visit</title>";
-			print "<b>New Since Last Visit</b>";
+			print "<title>New Thread Since Last Visit</title>";
+			print "<b>New Thread Since Last Visit</b>";
 			print " - <a href=\"{$main_url}/\">Visit Forum</a>"; 
 			exit;
 		} 
 	}
-	print "<META HTTP-EQUIV=\"refresh\" content=\"60;URL={$main_url}/{$indexphp}action=wait\"/>"; 
 	print "<title>Geograph - No new Posts</title>";
-	print "<b>No new Posts</b> - will check once a minute, this message will change if something is posted.";
+	$countdown = intval($_GET['countdown']);
+	if ($countdown>1) {
+		$countdown--;
+		print "<META HTTP-EQUIV=\"refresh\" content=\"60;URL={$main_url}/{$indexphp}action=wait&amp;countdown=$countdown\"/>"; 
+		print "<b>No new Posts</b> - will check once a minute, this message will change if something is posted.";
+	} else {
+		print "<b>No new Posts</b> - nothing posted for a while, given up checking. <a href=\"{$main_url}/{$indexphp}action=wait&amp;countdown=100\">Start checking again</a>";
+	}
 	
 	print "<br/><br/><br/><a href=\"/\">homepage</a> | <a href=\"{$main_url}/\">discuss</a>";
 	exit;
@@ -416,7 +422,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 		$title=$sitename;
 		echo load_header();
                 print "<div style=\"float:left\"><a href=\"index.php\">Reload</a></div>";
- 		print "<div style=\"float:right\"><a href=\"index.php?action=wait\">Watch</a></div>";
+ 		print "<div style=\"float:right\"><a href=\"index.php?action=wait&amp;countdown=100\">Watch</a></div>";
 		print "<div style=\"text-align:center\">Show <a href=\"index.php?forums=1\">Forum List</a> | View <a href=\"index.php?action=vtopic&amp;forum=5\">Recent Grid Square Discussions</a></div>";
 	} else {
 		require($pathToFiles.'bb_func_vforum.php');
