@@ -3,7 +3,7 @@
 
 <h2>Names for Different Size Squares</h2>
 
-<p>This page is born out of the confusion of what to call different size squares. The proposal is to refer to the squares as referenced in the top line of the table below. Underneath is the various other names it could be called by, and actully how similar they can be so if they are abbreviated it actully leaves open to interpretation which exactly is meant. </p>
+<p>This page is born out of the confusion of what to call different size squares. The proposal is to refer to the squares as referenced in the top line of the table below; included in the table are various other names it could be called by.</p>
 
  <table width="100%" border="1" cellpadding="5" cellspacing="0" class="report"> 
 	<thead>
