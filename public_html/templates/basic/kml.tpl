@@ -94,7 +94,7 @@
 	{if $i && $engine->resultCount || !$i}	
 	 	<h3>Download type:</h3> 
 	 	<label for="page">Download Page</label>
-				<input type="text" name="page" value="{$currentPage}" size="3" id="page"/> of {if $engine->numberOfPages}{$engine->numberOfPages}{else}results{/if} in {if $engine->fullText && $engine->resultCount > 1000}(only 1000 results available){/if} ...
+				<input type="text" name="page" value="{$currentPage}" size="3" id="page"/> of {if $engine->numberOfPages}{$engine->numberOfPages}{else}results{/if} in {if $engine->fullText && $engine->resultCount > $engine->maxResults}(only {$engine->maxResults} results available){/if} ...
 		<table border="1" cellpadding="3" cellspacing="0"> 
 		  <tr> 
 			 <td><input type="radio" name="type" value="live" id="type_live"/></td> 
