@@ -260,6 +260,12 @@ END;
 
 		$sphinx->pageSize = $this->criteria->resultsperpage+0;
 
+		$page = ($pg -1)* $sphinx->pageSize;
+		if ($page > 1000) { //todo - hard-coded 1000 needs autodetecting!
+			//lets jump to the last page of 'past results'
+			$pg = intval(ceil(1000/$pgsize));
+			$this->currentPage = $pg;
+		}
 
 	//look for suggestions - this needs to be done before the filters are added - the same filters wont work on the gaz index
 		if (empty($this->countOnly) && $sphinx->q && strlen($sphinx->q) < 64 && isset($GLOBALS['smarty'])) {
@@ -354,7 +360,7 @@ END;
 			$reply = $sphinx->BuildExcerpts($docs, empty($this->criteria->sphinx['exact'])?'gridimage':'gi_stemmmed', $sphinx->q);	
 		}
 
-		$this->querytime =  $querytime_after - $querytime_before + $sphinx->query_time;
+		$this->querytime = ($querytime_after - $querytime_before) + $sphinx->query_time;
 		
 		
 	//finish off
