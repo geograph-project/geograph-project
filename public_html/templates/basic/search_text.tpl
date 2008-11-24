@@ -35,7 +35,7 @@
 	<div class="tabHolder">
 		<a href="/search.php?form=simple" class="tab">simple search</a>
 		<span class="tabSelected">Advanced Search</span>
-		<a href="/search.php?form=advanced&amp;legacy=true" class="tab"><small>legacy advanced</small></a>
+		<a href="/search.php?form=advanced&amp;legacy=true" class="tab"><small>old advanced</small></a>
 		<a href="/search.php?form=first" class="tab">first geographs</a>
 	</div>
 	<div class="interestBox">
