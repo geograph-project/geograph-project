@@ -263,7 +263,7 @@ END;
 		$page = ($pg -1)* $sphinx->pageSize;
 		if ($page > 1000) { //todo - hard-coded 1000 needs autodetecting!
 			//lets jump to the last page of 'past results'
-			$pg = intval(ceil(1000/$pgsize));
+			$pg = intval(ceil(1000/$sphinx->pageSize));
 			$this->currentPage = $pg;
 		}
 
