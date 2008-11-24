@@ -212,6 +212,7 @@ class SearchCriteria
 			switch ($this->orderby) {
 				case 'random':
 					$sql_order = ' crc32(concat("'.($this->crt_timestamp_ts).'",gi.gridimage_id)) ';
+					$this->sphinx['compatible'] = 0;
 					$this->sphinx['sort'] = "@random";
 					break;
 				case 'dist_sqd':
