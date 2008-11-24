@@ -20,6 +20,7 @@ Display:
 <select name="displayclass" size="1" onchange="this.form.submit()" style="font-size:0.9em"> 
 	{html_options options=$displayclasses selected=$engine->criteria->displayclass}
 </select>
+{if $legacy}<input type="hidden" name="legacy" value="1"/>{/if}
 <noscript>
 <input type="submit" value="Update"/>
 </noscript></div>

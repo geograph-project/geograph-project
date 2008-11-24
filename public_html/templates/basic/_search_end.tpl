@@ -45,6 +45,7 @@
 <select name="displayclass" id="displayclass" size="1" onchange="this.form.submit()"> 
 	{html_options options=$displayclasses selected=$engine->criteria->displayclass}
 </select>
+{if $legacy}<input type="hidden" name="legacy" value="1"/>{/if}
 <noscript>
 <input type="submit" value="Update"/>
 </noscript>
