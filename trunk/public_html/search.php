@@ -1187,6 +1187,7 @@ if (isset($_GET['set_legacy'])) {
 			unset($sortorders['realname']);
 			unset($sortorders['title']);
 			unset($sortorders['grid_reference']);
+			$sortorders['random'] = "Random";
 			
 			unset($breakdowns['imageclass']);
 			unset($breakdowns['realname']);
