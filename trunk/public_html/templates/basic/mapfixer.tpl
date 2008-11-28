@@ -8,10 +8,12 @@
 	<p><small>If you reached the browse page by using the N-E-S-W buttons, then you will need to enter the full Grid Reference below, (we hope to have a solution for this soon)</small></p>
 {else}
 	{if $status}
-		<h2>Thank you for notification</h2>
+		<h2>Thank you for the notification</h2>
 
+		{if !$isadmin}
 		<p>The square has been flagged and will be checked by a moderator. In the meantime you should be able to submit photos.</p>
-
+		{/if}
+		
 		<p>Return to <a href="/gridref/{$gridref}">{$gridref}</a> or </p>
 	{else}
 
@@ -45,10 +47,40 @@
 <input type="submit" name="save" value="This square needs checking"/>
 </p>
 
-<label for="comment">Comment:</label> <input type="text" name="comment" id="comment" maxlength="128" size="60"/><br/>
-<small>(optional, this is shown to the moderator checking this square, in particular mention if the land is not visible on 50k maps)</small>
+<label for="comment">Optional Comment:</label> <input type="text" name="comment" id="comment" maxlength="128" size="60"/><br/>
+<small>(this is shown to the moderator checking this square, in particular mention if the land is not visible on 50k maps)</small><br/><br/>
 
 </form>
+
+{if $isadmin}
+
+<form action="/mapfixer.php" method="get" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
+<p>or <b>Set the Percentage Directly</b>: (skips the moderation queue)<br/> <br/>
+
+<label for="percent_land">To</label>: <input type="text" size="3" name="percent_land" id="percent_land" value="{$percent_land}">%
+(Set to: 
+<input type="button" value="00" onclick="setland(0)" style="padding:5px">
+<input type="button" value="01" onclick="setland(1)" style="padding:5px">
+<input type="button" value="05" onclick="setland(5)" style="padding:5px">
+<input type="button" value="10" onclick="setland(10)" style="padding:5px">
+<input type="button" value="25" onclick="setland(25)" style="padding:5px">
+<input type="button" value="50" onclick="setland(50)" style="padding:5px">
+<input type="button" value="75" onclick="setland(75)" style="padding:5px">
+<input type="button" value="100" onclick="setland(100)" style="padding:5px">)<br/><br/>
+
+<label for="gridref">4-fig Grid Reference</label>: <input type="text" size=8"" name="gridref" id="gridref" value="{$gridref|escape:html}"/>
+<input type="submit" name="save" value="Set Land Percentage"/><br/><br/>
+
+<label for="comment">Optional Comment:</label> <input type="text" name="comment" id="comment" maxlength="128" size="60"/><br/>
+
+
+</form>
+<script>{literal}
+function setland(num) {
+	document.getElementById('percent_land').value=num;
+}
+{/literal}</script>
+{/if}
 
 {/dynamic}
 {include file="_std_end.tpl"}
