@@ -125,7 +125,7 @@
 		</tr> 
 		<tr> 
 		  <th rowspan="2">q=[query]</th> 
-		  <td>Tries deduce the type of search, either a text or a location search. can use the format q={what}+near+{where} to be sure (or use seperate params as below) - Will in fact create a i query on the fly, so you can use that to get page 2 etc of the results. Accepts additonal paramater:</span>
+		  <td>Tries deduce the type of search, either a text or a location search. can use the format {literal}q={what}+near+{where}{/literal} to be sure (or use seperate params as below) - Will in fact create a i query on the fly, so you can use that to get page 2 etc of the results. Accepts additonal paramater:</span>
 			 <table border="1" cellpadding="3" cellspacing="0"> 
 				<tr> 
 				  <th>u=[user_id]</th> 
