@@ -59,7 +59,7 @@ if (!empty($_GET['q'])) {
 			if (!empty($ids) && count($ids)) {
 				$where = "gridsquare_id IN(".join(",",$ids).")";
 
-				$db=NewADOConnection($GLOBALS['DSN2']);
+				$db=NewADOConnection($GLOBALS['DSN']);
 
 				$limit = 25;
 
