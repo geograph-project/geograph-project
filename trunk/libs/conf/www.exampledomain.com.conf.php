@@ -1,13 +1,24 @@
 <?php
+
+setlocale(LC_ALL,'C'); //to match online servers...
+
 //domain specific configuration file
 $CONF=array();
+
+$CONF['curtail_level']=0;
 
 //servers ip BEGIN with (the server that fires cron jobs etc)
 $CONF['server_ip'] = '127.0.0.';
 
 //set to X to server from http://s[0-X].$domain/photos/....
 $CONF['enable_cluster'] = 2;
+$CONF['STATIC_HOST'] = "s0.geograph.mobile";
 
+$CONF['CONTENT_HOST'] = "geograph.mobile";
+$CONF['TILE_HOST'] = "t0.geograph.mobile";
+
+//this can be different to your main hostname if want to seperate out the hosting of the Google Earth Superlayer. 
+$CONF['KML_HOST'] = $_SERVER['HTTP_HOST'];
 
 ##database configuration
 
@@ -16,7 +27,7 @@ $CONF['db_connect']='localhost';
 $CONF['db_user']='geograph';
 $CONF['db_pwd']='banjo';
 $CONF['db_db']='geograph';
-$CONF['db_persist']='?persist'; //options: ''|'?persist'
+$CONF['db_persist']=''; //'?persist';
 
 
 ##optional memcache
@@ -50,7 +61,7 @@ $CONF['sphinx_cache'] = $_SERVER['DOCUMENT_ROOT'].'/../sphinxcache/';
 $CONF['template']='basic';
 
 //enable forums?
-$CONF['forums']=false;
+$CONF['forums']=true;
 
 
 ##smarty setup
@@ -122,13 +133,13 @@ $CONF['raster_service']='';
 // 'OS50k' - OSGB 50k Mapping - Licence Required (see next)
 // 'Google' - Use Google Mapping (api key required below)
 
-$CONF['google_maps_api_key'] = 'ABQIAAAAw3BrxANqPQrDF3i-BIABYxSP0GH9nE7OiOmK3TkvNtmcPkN-wBQOr_lS5w700jdE2EnoDZsA9U5VzQ';
+$CONF['google_maps_api_key'] = 'XXXXXXX';
 
-$CONF['OS_licence'] = '100045616';
+$CONF['OS_licence'] = 'XXXXXXXX';
 
 //paths to where map data is stored (should be outside of the web root)
+$CONF['os50ktilepath']='c:/home/geograph/rastermaps/OS-50k/tiffs/';
 $CONF['os50kimgpath']='c:/home/geograph/rastermaps/OS-50k/';
-$CONF['os50kepoch']='latest/';
 
 //Username/Passowrd for the metacarta webservices api
 //http://developers.metacarta.com/register/
@@ -203,8 +214,6 @@ $CONF['picnik_method'] = 'inabox'; //'inabox'|'redirect'
 
 
 
-//this can be different to your main hostname if want to seperate out the hosting of the Google Earth Superlayer. 
-$CONF['KML_HOST'] = $_SERVER['HTTP_HOST'];
 
 ##limits on numbers of thumbnails per page, and 'single item'
 $CONF['global_thumb_limit'] = 300;
