@@ -268,7 +268,7 @@ END;
 		}
 
 	//look for suggestions - this needs to be done before the filters are added - the same filters wont work on the gaz index
-		if (empty($this->countOnly) && $sphinx->q && strlen($sphinx->q) < 64 && isset($GLOBALS['smarty'])) {
+		if (empty($this->countOnly) && $sphinx->q && strlen($sphinx->q) < 64 && empty($this->criteria->sphinx['x']) && isset($GLOBALS['smarty'])) {
 			$GLOBALS['smarty']->assign("suggestions",$sphinx->didYouMean($sphinx->q));
 		} elseif ($this->criteria->searchclass == 'Placename' && strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE && isset($GLOBALS['smarty'])) {
 			$GLOBALS['smarty']->assign("suggestions",array(array('gr'=>'(anywhere)','localities'=>'as text search','query'=>$this->criteria->searchq) ));

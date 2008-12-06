@@ -40,16 +40,7 @@
 */
 class SearchEngineBuilder extends SearchEngine
 {
-
-
-	/**
-	* create a simple search object
-	*/
-	
-	function buildSimpleQuery($q = '',$distance = 100,$autoredirect='auto',$userlimit = 0)
-	{
-		global $USER,$CONF;
-		
+	function getNearString($distance) {
 		if ($distance == 1) {
 			$nearstring = 'in';
 		} elseif ($distance > 1) {
@@ -59,6 +50,19 @@ class SearchEngineBuilder extends SearchEngine
 		} else {
 			$nearstring = 'near';
 		}
+		return $nearstring;
+	}
+
+	/**
+	* create a simple search object
+	*/
+	
+	function buildSimpleQuery($q = '',$distance = 100,$autoredirect='auto',$userlimit = 0)
+	{
+		global $USER,$CONF;
+		
+		$nearstring = $this->getNearString($distance);
+		
 		
 		$searchclass = '';
 		$limit1 = '';
@@ -255,15 +259,8 @@ class SearchEngineBuilder extends SearchEngine
 		if (empty($dataarray['distance'])) {
 			$dataarray['distance'] = $CONF['default_search_distance'];
 		}
-		if ($dataarray['distance'] == 1) {
-			$nearstring = 'in';
-		} elseif ($dataarray['distance'] > 1) {
-			$nearstring = sprintf("within %dkm of",$dataarray['distance']);
-		} elseif ($dataarray['distance'] < 0) {
-			$nearstring = sprintf("within a %dkm square of",abs($dataarray['distance']));
-		} else {
-			$nearstring = 'near';
-		}
+		$nearstring = $this->getNearString($dataarray['distance']);
+		
 		$searchdesc = '';
 		if (!empty($dataarray['placename']) && ($dataarray['placename'] != '(anywhere)')) {
 			//check if we actully want to perform a textsearch (it comes through in the placename beucase of the way the multiple mathc page works)
