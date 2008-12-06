@@ -409,7 +409,7 @@ if (isset($_GET['fav']) && $i) {
 	} 
 	
 	if (empty($sphinx->qclean)) {
-		$updates['searchdesc'] = preg_replace('/(matching|all about|containing|exactly) .*?[\'"\[].*?[\'"\]]\s*(,|$)/',"{$searchdesc}",$updates['searchdesc']);
+		$updates['searchdesc'] = preg_replace('/(^|,)\s*(matching|all about|containing|exactly) .*?[\'"\[].*?[\'"\]]/',"{$searchdesc}",$updates['searchdesc']);
 	} else {
 		$updates['searchdesc'] = preg_replace('/(matching|all about|containing|exactly) .*?[\'"\[].*?[\'"\]]\s*(,|$)/',"{$exact}matching [{$sphinx->qclean}]{$searchdesc}\$2",$updates['searchdesc']);
 		if (strpos($updates['searchdesc'],$sphinx->qclean) === FALSE) {
