@@ -371,7 +371,7 @@ if (isset($_GET['fav']) && $i) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	
-	$engine = new SearchEngine($i);
+	$engine = new SearchEngineBuilder($i);
 	
 	$engine->criteria->compact();
 	$updates = (array)$engine->criteria;
@@ -387,12 +387,33 @@ if (isset($_GET['fav']) && $i) {
 	$sphinx = new sphinxwrapper($_GET['text']);
 	$sphinx->processQuery();
 	
+	$searchdesc = '';
+	if (!empty($_GET['gridref'])) {
+		if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$q,$gr)) {
+			require_once('geograph/gridsquare.class.php');
+			$square=new GridSquare;
+			$grid_ok=$square->setByFullGridRef($gr[1].$gr[2].$gr[3],false,true);
+			if ($grid_ok || $square->x && $square->y) {
+				
+				$updates['limit8'] = (empty($_GET['distance']))?$CONF['default_search_distance']?intval($_GET['distance']);
+				
+				$nearstring = $engine->getNearString($updates['limit8']);
+				$searchdesc = ", $nearstring grid reference ".$square->grid_reference;
+				
+				$updates['searchclass'] = 'GridRef';
+				$updates['x'] = $square->x;
+				$updates['y'] = $square->y;	
+				$updates['searchq'] = $gr[0];
+			} 
+		}
+	} 
+	
 	if (empty($sphinx->qclean)) {
-		$updates['searchdesc'] = preg_replace('/(matching|all about|containing|exactly) .*?[\'"\[].*?[\'"\]]\s*(,|$)/',"",$updates['searchdesc']);
+		$updates['searchdesc'] = preg_replace('/(matching|all about|containing|exactly) .*?[\'"\[].*?[\'"\]]\s*(,|$)/',"{$searchdesc}",$updates['searchdesc']);
 	} else {
-		$updates['searchdesc'] = preg_replace('/(matching|all about|containing|exactly) .*?[\'"\[].*?[\'"\]]\s*(,|$)/',"{$exact}matching [{$sphinx->qclean}]\$2",$updates['searchdesc']);
+		$updates['searchdesc'] = preg_replace('/(matching|all about|containing|exactly) .*?[\'"\[].*?[\'"\]]\s*(,|$)/',"{$exact}matching [{$sphinx->qclean}]{$searchdesc}\$2",$updates['searchdesc']);
 		if (strpos($updates['searchdesc'],$sphinx->qclean) === FALSE) {
-			$updates['searchdesc'] = ", {$exact}matching [{$sphinx->qclean}]".$updates['searchdesc'];
+			$updates['searchdesc'] = ", {$exact}matching [{$sphinx->qclean}]{$searchdesc}".$updates['searchdesc'];
 		}
 	}
 	
@@ -664,7 +685,7 @@ if (isset($_GET['fav']) && $i) {
 	} elseif (isset($_GET['kml'])) {
 		$engine->page = "kml.php";
 	}
- 	$engine->buildSimpleQuery($q,$CONF['default_search_distance'],(isset($_GET['form']) && $_GET['form'] == 'simple')?'simple':'auto');
+ 	$engine->buildSimpleQuery($q,$CONF['default_search_distance'],(isset($_GET['form']) && $_GET['form'] == 'simple')?'simple':'auto',(!empty($_GET['user_id']))?intval($_GET['user_id']):0);
  	if (isset($engine->criteria) && $engine->criteria->is_multiple) {
  		if (empty($_GET['distance']))
  			$_GET['distance'] = $CONF['default_search_distance'];
