@@ -395,7 +395,7 @@ if (isset($_GET['fav']) && $i) {
 			$grid_ok=$square->setByFullGridRef($gr[1].$gr[2].$gr[3],false,true);
 			if ($grid_ok || $square->x && $square->y) {
 				
-				$updates['limit8'] = (empty($_GET['distance']))?$CONF['default_search_distance']?intval($_GET['distance']);
+				$updates['limit8'] = (empty($_GET['distance']))?$CONF['default_search_distance']:intval($_GET['distance']);
 				
 				$nearstring = $engine->getNearString($updates['limit8']);
 				$searchdesc = ", $nearstring grid reference ".$square->grid_reference;
