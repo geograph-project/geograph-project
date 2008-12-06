@@ -389,7 +389,7 @@ if (isset($_GET['fav']) && $i) {
 	
 	$searchdesc = '';
 	if (!empty($_GET['gridref'])) {
-		if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$q,$gr)) {
+		if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$_GET['gridref'],$gr)) {
 			require_once('geograph/gridsquare.class.php');
 			$square=new GridSquare;
 			$grid_ok=$square->setByFullGridRef($gr[1].$gr[2].$gr[3],false,true);
