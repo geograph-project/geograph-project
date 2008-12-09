@@ -251,6 +251,13 @@ body>#nav_block {width:128px;}
 	color:silver;
 }
 
+.content_photoblack .keywords {
+	color:#666666;
+	font-size: 0.8em;
+	margin-top:2px;
+	padding:2px;
+}
+
 .content_photoblack .interestBox {
 	background-color:#333333;
 	color:#bbbbbb;
@@ -312,6 +319,13 @@ body>#nav_block {width:128px;}
 	color:#999999;
 }
 
+.content_photogray .keywords {
+	color:#999999;
+	font-size: 0.8em;
+	margin-top:2px;
+	padding:2px;
+}
+
 .content_photogray .interestBox {
 	background-color:#cccccc;
 	color:#444444;
@@ -367,6 +381,14 @@ body>#nav_block {width:128px;}
 	color:silver;
 
 }
+
+.content_photowhite .keywords {
+	color:#cccccc;
+	font-size: 0.8em;
+	margin-top:2px;
+	padding:2px;
+}
+
 .content_photowhite .interestBox {
 	font-size:0.9em;
 }

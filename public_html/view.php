@@ -136,6 +136,11 @@ if ($image->isValid())
 
 	if (!$smarty->is_cached($template, $cacheid))
 	{
+		function smarty_function_hidekeywords($input) {
+			return preg_replace('/(^|[\n\r\s]+)(Keywords?[\s:][^\n\r>]+)$/','<span class="keywords">$2</span>',$input);
+		}
+		$smarty->register_modifier("hidekeywords", "smarty_function_hidekeywords");
+
 		$taken=$image->getFormattedTakenDate();
 
 		//get the grid references
