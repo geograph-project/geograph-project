@@ -264,34 +264,6 @@ CREATE TABLE `event_log` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
--- Table structure for table `explorermaps`
---
-
-DROP TABLE IF EXISTS `explorermaps`;
-CREATE TABLE `explorermaps` (
-  `number` varchar(4) NOT NULL DEFAULT '',
-  `name` varchar(128) NOT NULL DEFAULT '',
-  PRIMARY KEY (`number`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `exploreroutlines1`
---
-
-DROP TABLE IF EXISTS `exploreroutlines1`;
-CREATE TABLE `exploreroutlines1` (
-  `Map` varchar(7) NOT NULL DEFAULT '',
-  `addon` enum('','a','b','c') NOT NULL DEFAULT '',
-  `left` smallint(6) NOT NULL DEFAULT '0',
-  `bottom` smallint(6) NOT NULL DEFAULT '0',
-  `right` smallint(6) NOT NULL DEFAULT '0',
-  `top` smallint(6) NOT NULL DEFAULT '0',
-  `numberic` smallint(6) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`Map`,`addon`),
-  KEY `bottom` (`left`,`bottom`,`right`,`top`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT=' v0.5 - Ian Richardson (ian@elsworth.demon.co.uk) 2004-09-28';
-
---
 -- Table structure for table `flickr_photos`
 --
 
@@ -967,32 +939,6 @@ CREATE TABLE `kmlcache` (
   `rendered` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`url`),
   KEY `rendered` (`rendered`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `landrangermaps`
---
-
-DROP TABLE IF EXISTS `landrangermaps`;
-CREATE TABLE `landrangermaps` (
-  `number` varchar(4) NOT NULL DEFAULT '',
-  `name` varchar(128) NOT NULL DEFAULT '',
-  PRIMARY KEY (`number`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `landrangeroutlines1`
---
-
-DROP TABLE IF EXISTS `landrangeroutlines1`;
-CREATE TABLE `landrangeroutlines1` (
-  `map` char(3) NOT NULL DEFAULT '',
-  `left` smallint(6) NOT NULL DEFAULT '0',
-  `bottom` smallint(6) NOT NULL DEFAULT '0',
-  `right` smallint(6) NOT NULL DEFAULT '0',
-  `top` smallint(6) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`map`),
-  KEY `bottom` (`left`,`bottom`,`right`,`top`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
