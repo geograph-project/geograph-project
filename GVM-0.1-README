@@ -42,6 +42,10 @@ Key Features
 
     * phpMyAdmin - for quick easy Database administration
 
+    * gd - graphics manipulation library 
+
+  * imagemagick - more graphics manipulation - great for jpg
+
   * Memcache, inc PECL memcache PHP extension - Memory based caching
 
   * SphinxSearch - full-text search engine
