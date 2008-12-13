@@ -124,7 +124,7 @@ if (file_exists("rss/rss.xml"))
 
 <p>Here you will find the entire
 	archive of the <a href="http://www.geograph.org.uk">Geograph British Isles</a> project readily downloadable in volumes each 
-	comprising around 50,000 images plus RDF formatted metadata</p>
+	comprising around 50,000 images plus RDF formatted metadata.</p>
 
 
 <p>Everything in the torrents -- images and
@@ -135,9 +135,10 @@ if (file_exists("rss/rss.xml"))
     respect these licences when re-using this data.</p>
     
 
-	<p>Finally, if you are able <b>please seed these torrents</b> - even a small amount of bandwidth
-	can help</p>
+<p><small><tt>Geograph-Dev0.1</tt> is a WMware based virtual machine setup as a pre-configured Development Enviroment - probably only of 
+	interest to potential developers, <a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=12&topic=9237">more on forum</a>.</small></p>
 
+<p></p>
 
 </div>
 
