@@ -48,7 +48,7 @@ $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*7*24; //7 day cache (as search can be cached - and we manually refreshed anyway
 
 
-if ($_GET['refresh'] && $USER->hasPerm("admin")) {
+if (!empty($_GET['refresh']) && $USER->hasPerm("admin")) {
 	unlink($target);
 	$map->_renderMap();
 	$smarty->clear_cache($template, $cacheid);
@@ -62,7 +62,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	
 	$smarty->assign_by_ref("map",$map);
 	
-	$smarty->assign("imageupdate",$target);
+	$smarty->assign("imageupdate",filemtime($target));
 }
 
 
