@@ -127,6 +127,8 @@ if ($grid_given)
 		
 		$smarty->assign('el', ($long > 0)?'E':'W');
 		$smarty->assign('nl', ($lat > 0)?'N':'S');
+		$smarty->assign('lat_abs', abs($lat));
+		$smarty->assign('long_abs', abs($long));
 		
 		//get a token to show a suroudding geograph map
 		$mosaic=new GeographMapMosaic;
