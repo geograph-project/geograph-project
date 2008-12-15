@@ -304,7 +304,7 @@ if (empty($_GET['locked'])) {
 $newtickets=$db->GetAll($sql = 
 	"select t.*,suggester.realname as suggester, (i.user_id = t.user_id) as ownimage,
 		submitter.realname as submitter, submitter.ticket_option as submitter_ticket_option, 
-		i.title, 
+		i.title, DATEDIFF(NOW(),t.updated) as days,
 		group_concat(if(c.user_id=i.user_id,c.comment,null)) as submitter_comment,
 		group_concat(if(c.user_id=t.user_id,c.comment,null)) as suggester_comment
 		$columns
