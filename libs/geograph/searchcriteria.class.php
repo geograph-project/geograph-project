@@ -505,7 +505,7 @@ class SearchCriteria
 				//to
 				$sql_where .= "imagetaken != '0000-00-00' AND imagetaken <= '".$dates[1]."' ";
 				$days1 = $this->toDays($dates[1]);
-				$this->sphinx['filters']['takendays'] = array(0,$days1); 
+				$this->sphinx['filters']['takendays'] = array(1,$days1); //1 is just so doesnt match 0
 			}
 			
 			
