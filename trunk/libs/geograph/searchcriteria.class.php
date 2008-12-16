@@ -85,7 +85,7 @@ class SearchCriteria
 		$db = $this->_getDB();
 		$date = str_replace('-00','-01',$date);
 		return intval($db->GetOne('select to_days('.
-			(preg_match('/\)$/',$db->Quote($date))?$date:$db->Quote($date)).
+			(preg_match('/\)$/',$date)?$date:$db->Quote($date)).
 			')'));
 	}
 	
