@@ -22,7 +22,6 @@
  */
 
 require_once('geograph/global.inc.php');
-init_session();
 
 $smarty = new GeographPage;
 
@@ -30,7 +29,7 @@ $smarty = new GeographPage;
 $db=NewADOConnection($GLOBALS['DSN']);
 
 if (empty($_REQUEST['key']) || preg_match("/[^\w\.]/",$_REQUEST['key']) )
-	die("ERROR: no api key or email address");
+	die("ERROR: no api key");
 	
 $sql = "SELECT * FROM `apikeys` WHERE `apikey` = ".$db->Quote($_REQUEST['key'])." AND (`ip` = INET_ATON('{$_SERVER['REMOTE_ADDR']}') OR `ip` = 0) AND `enabled` = 'Y'";
 
@@ -72,7 +71,7 @@ $domain = (!empty($_REQUEST['domain']) && preg_match('/^[\w.]+$/',$_REQUEST['dom
 
 $msg=!empty($_REQUEST['message'])?$msg.stripslashes($_REQUEST['message']):die('ERROR: no message');
 
-$msg = preg_replace("/[^\r]\n/","\r\n",$msg);
+#$msg = preg_replace("/[^\r]\n/","\r\n",$msg);
 
 $ok = true;
 $errors=array();
@@ -114,8 +113,8 @@ $received="Received: from [{$ip}]".
 	"with HTTP;".
 	strftime("%d %b %Y %H:%M:%S -0000", time())."\n";
 
-if (!empty($_REQUEST['client_ip']) && preg_match("/[^\w\.]/",$_REQUEST['client_ip']) ) {
-	$received="Received: from [{$ip}]".
+if (!empty($_REQUEST['client_ip']) && preg_match("/^[\w\.]+$/",$_REQUEST['client_ip']) ) {
+	$received.="\nReceived: from [{$_REQUEST['client_ip']}]".
 	" by [{$id}] ".
 	"with HTTP;".
 	strftime("%d %b %Y %H:%M:%S -0000", empty($_REQUEST['timestamp'])?time():intval($_REQUEST['timestamp']))."\n";
