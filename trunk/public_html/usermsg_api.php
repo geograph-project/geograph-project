@@ -114,7 +114,7 @@ $received="Received: from [{$ip}]".
 	strftime("%d %b %Y %H:%M:%S -0000", time())."\n";
 
 if (!empty($_REQUEST['client_ip']) && preg_match("/^[\w\.]+$/",$_REQUEST['client_ip']) ) {
-	$received.="\nReceived: from [{$_REQUEST['client_ip']}]".
+	$received.="Received: from [{$_REQUEST['client_ip']}]".
 	" by [{$id}] ".
 	"with HTTP;".
 	strftime("%d %b %Y %H:%M:%S -0000", empty($_REQUEST['timestamp'])?time():intval($_REQUEST['timestamp']))."\n";
