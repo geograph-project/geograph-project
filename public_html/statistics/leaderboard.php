@@ -29,7 +29,7 @@ $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['t
 
 $date = (isset($_GET['date']) && ctype_lower($_GET['date']))?$_GET['date']:'submitted';
 
-if (isset($_GET['whenYear'])) {
+if (!empty($_GET['whenYear'])) {
 	if (!empty($_GET['whenMonth'])) {
 		$_GET['when'] = sprintf("%04d-%02d",$_GET['whenYear'],$_GET['whenMonth']);
 	} else {
