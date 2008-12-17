@@ -200,6 +200,9 @@ if (isset($sphinx)) {
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/feed/results/".$_GET['i'].(($pg>1)?"/$pg":'').".".strtolower($format);
 	
 	$images->Execute($pg);
+	if ($images->resultCount) {
+		$rss->description .= " ({$images->resultCount} in total)";
+	}
 	
 	if ($format == 'MEDIA') {
 		$rss->link =  "http://{$_SERVER['HTTP_HOST']}/search.php?i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
