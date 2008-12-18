@@ -131,8 +131,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		left join queries_count using (id)
 	$where_sql
 	order by 
-		updated desc
-	limit 10");
+		updated desc");
 	$ADODB_FETCH_MODE = $dol;
 	
 	if (!empty($CONF['memcache']['app'])) { //without memcache this would suck
