@@ -9,7 +9,7 @@
 <h2>Featured Searches</h2>
 
 
-
+<p>click a column header to quickly re sort the table</p>
 	
 <table class="report sortable" id="reportlist" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5">
 <thead><tr>
