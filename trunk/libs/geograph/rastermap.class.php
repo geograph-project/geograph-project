@@ -162,7 +162,20 @@ class RasterMap
 		$width = $this->width;
 
 		if ($this->service == 'Google') {
-			return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\">Loading map...</div>";
+			if (!empty($this->inline) || !empty($this->issubmit)) {
+				return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\">Loading map...</div>";
+			} else {
+				$token=new Token;
+				
+				foreach ($this as $key => $value) {
+					if (is_scalar($value)) {
+						$token->setValue($key, $value);
+					}
+				}
+				$token = $token->getToken();
+				
+				return "<iframe src=\"/map_frame.php?t=$token\" id=\"map\" width=\"{$width}\" height=\"{$width}\">Loading map...</iframe>";
+			}
 		} elseif ($this->service == 'OS50k-small') {
 			static $idcounter = 1;
 			
@@ -419,7 +432,7 @@ class RasterMap
 	{
 		global $CONF;
 		//defer the tag to the last minute, to help prevent the page pausing mid load
-		if ($this->service == 'Google') {
+		if ((!empty($this->inline) || !empty($this->issubmit)) && $this->service == 'Google') {
 			return "<script src=\"http://maps.google.com/maps?file=api&amp;v=2&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
 		}
 	}
@@ -451,7 +464,10 @@ class RasterMap
 	{
 		global $CONF;
 		if ($this->service == 'Google') {
-			
+			if (empty($this->inline) && empty($this->issubmit)) {
+				//its now handled by the 'childmap'
+				return;
+			}
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
 				
@@ -579,13 +595,18 @@ class RasterMap
 
 	function getTitle($gridref) 
 	{
+		if ($this->service == 'Google') {
+			return '';
+		} 
 		return "<span id=\"mapTitleOS50k\"".($this->service == 'OS50k'?'':' style="display:none"').">1:50,000 Modern Day Landranger&trade; Map</span>".
 		"<span id=\"mapTitleVoB\"".($this->service == 'VoB'?'':' style="display:none"').">1940s OS New Popular Edition".(($this->issubmit)?"<span style=\"font-size:0.8em;color:red\"><br/><b>Please confirm positions on the modern map, as accuracy may be limited.</b></span>":'')."</span>";
 	}
 
 	function getFootNote() 
 	{
-		if ($this->issubmit) {
+		if ($this->service == 'Google') {
+			return '';
+		} elseif ($this->issubmit) {
 			return "<span id=\"mapFootNoteOS50k\"".(($this->service == 'OS50k' && $this->issubmit)?'':' style="display:none"')."><br/>Centre the blue circle on the subject and mark the photographer position with the black circle. <b style=\"color:red\">The circle centre marks the spot.</b> The red arrow will then show view direction.</span>".
 			"<span id=\"mapFootNoteVoB\"".($this->service == 'VoB'?'':' style="display:none"')."><br/>Historical Map provided by <a href=\"http://www.visionofbritain.org.uk/\" title=\"Vision of Britain\">VisionOfBritain.org.uk</a></span>";
 		} elseif ($this->service == 'OS50k') {
