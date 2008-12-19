@@ -789,6 +789,7 @@ class GeographUser
 				$this->ticket_option=stripslashes($profile['ticket_option']);				
 				$this->message_sig=stripslashes($profile['message_sig']);
 				$this->_forumUpdateProfile();
+				$this->_forumLogin();
 				
 				if (!empty($profile['ticket_public_change'])) {
 
@@ -842,6 +843,7 @@ class GeographUser
 		
 		//also clear the autologin cookie as doesnt make sence to keep
 		setcookie('autologin', '', time()-3600*24*365,'/');  
+		setcookie('autologin', '', time()-3600*24*365);  
 
 	}
 
@@ -1162,6 +1164,7 @@ class GeographUser
 			if (!$valid)
 			{
 				setcookie('autologin', '', time()-3600*24*365,'/');
+				setcookie('autologin', '', time()-3600*24*365);
 			}
 		}
 	}
