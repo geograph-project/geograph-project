@@ -103,7 +103,9 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 {if $rastermap->enabled}
 	<div class="rastermap" style="width:{$rastermap->width}px;position:relative">
 	{$rastermap->getImageTag($image->subject_gridref)}
+	{if $rastermap->getFootNote()}
 	<div class="interestBox" style="margin-top:3px;margin-left:2px;padding:1px;"><small>{$rastermap->getFootNote()}</small></div>
+	{/if}
 	</div>
 
 	{$rastermap->getScriptTag()}

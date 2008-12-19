@@ -18,6 +18,8 @@ Disallow: /explore/places.php
 Disallow: /usermsg.php
 Disallow: /statistics/breakdown.php
 Disallow: /submit.php
+Disallow: /submit_popup.php
+Disallow: /map_frame.php
 Disallow: /discuss/
 Disallow: /mapsheet.php
 Disallow: /kml.php
@@ -57,6 +59,8 @@ Disallow: /explore/places.php
 Disallow: /usermsg.php
 Disallow: /statistics/breakdown.php
 Disallow: /submit.php?
+Disallow: /submit_popup.php
+Disallow: /map_frame.php
 Disallow: /discuss/
 Disallow: /mapsheet.php
 Disallow: /kml.php?
@@ -97,6 +101,8 @@ Disallow: /explore/places.php
 Disallow: /usermsg.php
 Disallow: /statistics/breakdown.php
 Disallow: /submit.php
+Disallow: /submit_popup.php
+Disallow: /map_frame.php
 Disallow: /discuss/
 Disallow: /mapsheet.php
 Disallow: /kml.php
@@ -135,6 +141,8 @@ Disallow: /explore/places.php
 Disallow: /usermsg.php
 Disallow: /statistics/breakdown.php
 Disallow: /submit.php
+Disallow: /submit_popup.php
+Disallow: /map_frame.php
 Disallow: /discuss/
 Disallow: /mapsheet.php
 Disallow: /kml.php
