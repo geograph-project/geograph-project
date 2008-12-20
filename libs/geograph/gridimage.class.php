@@ -385,6 +385,90 @@ class GridImage
 		return substr(md5($this->gridimage_id.$this->user_id.$CONF['photo_hashing_secret']), 0, 8);
 	}
 	
+	function assignToSmarty($smarty) {
+		
+		$taken=$this->getFormattedTakenDate();
+
+		//get the grid references
+		$this->getSubjectGridref(true);
+		$this->getPhotographerGridref(true);
+
+
+
+		//remove grid reference from title
+		$this->bigtitle=trim(preg_replace("/^{$this->grid_reference}/", '', $this->title));
+		$this->bigtitle=preg_replace('/(?<![\.])\.$/', '', $this->bigtitle);
+
+		$smarty->assign('page_title', $this->bigtitle.":: OS grid {$this->grid_reference}");
+
+		$smarty->assign('image_taken', $taken);
+		$smarty->assign('ismoderator', $ismoderator);
+		$smarty->assign_by_ref('image', $this);
+
+		//get a token to show a suroudding geograph map
+		$mosaic=new GeographMapMosaic;
+		$smarty->assign('map_token', $mosaic->getGridSquareToken($this->grid_square));
+
+
+		//find a possible place within 25km
+		$place = $this->grid_square->findNearestPlace(75000);
+		$smarty->assign_by_ref('place', $place);
+
+		if (empty($this->comment)) {
+			$smarty->assign('meta_description', "{$this->grid_reference} :: {$this->bigtitle}, ".strip_tags(smarty_function_place(array('place'=>$place))) );
+		} else {
+			$smarty->assign('meta_description', $this->comment);
+		}
+
+		if ($CONF['forums']) {
+			//let's find posts in the gridref discussion forum
+			$this->grid_square->assignDiscussionToSmarty($smarty);
+		}
+
+		//count the number of photos in this square
+		$smarty->assign('square_count', $this->grid_square->imagecount);
+
+		//lets add an overview map too
+		$overview=new GeographMapMosaic('largeoverview');
+		$overview->setCentre($this->grid_square->x,$this->grid_square->y); //does call setAlignedOrigin
+		$overview->assignToSmarty($smarty, 'overview');
+		$smarty->assign('marker', $overview->getSquarePoint($this->grid_square));
+
+
+		require_once('geograph/conversions.class.php');
+		$conv = new Conversions;
+
+		list($lat,$long) = $conv->gridsquare_to_wgs84($this->grid_square);
+		$smarty->assign('lat', $lat);
+		$smarty->assign('long', $long);
+
+		list($latdm,$longdm) = $conv->wgs84_to_friendly($lat,$long);
+		$smarty->assign('latdm', $latdm);
+		$smarty->assign('longdm', $longdm);
+
+		//lets add an rastermap too
+		$rastermap = new RasterMap($this->grid_square,false);
+		$rastermap->addLatLong($lat,$long);
+		if (!empty($this->viewpoint_northings)) {
+			$rastermap->addViewpoint($this->viewpoint_eastings,$this->viewpoint_northings,$this->viewpoint_grlen,$this->view_direction);
+		} elseif (isset($this->view_direction) && strlen($this->view_direction) && $this->view_direction != -1) {
+			$rastermap->addViewDirection($this->view_direction);
+		}
+		$smarty->assign_by_ref('rastermap', $rastermap);
+
+
+		$smarty->assign('x', $this->grid_square->x);
+		$smarty->assign('y', $this->grid_square->y);
+
+		if ($this->view_direction > -1) {
+			$smarty->assign('view_direction', ($this->view_direction%90==0)?strtoupper(heading_string($this->view_direction)):ucwords(heading_string($this->view_direction)) );
+		}
+
+		$level = ($this->grid_square->imagecount > 1)?6:5;
+		$smarty->assign('sitemap',getSitemapFilepath($level,$image->grid_square)); 
+	}
+	
+	
 	/**
 	* get a list of tickers for this image
 	*/
@@ -480,6 +564,10 @@ class GridImage
 	{
 		global $CONF;
 		
+		if (!empty($this->fullpath)) {
+			return $this->fullpath;
+		}
+		
 		$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
 		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
@@ -553,7 +641,7 @@ class GridImage
 		
 		if (isset($this->cached_size)) {
 			$size = $this->cached_size;
-		} else {
+		} elseif ($this->gridimage_id) {
 			global $memcache;
 			$mkey = "{$this->gridimage_id}:F";
 			//fails quickly if not using memcached!
@@ -565,6 +653,9 @@ class GridImage
 				$memcache->name_set('is',$mkey,$places,$memcache->compress,$memcache->period_long);
 			}
 			$this->cached_size = $size;
+		} else {
+			$size = array();
+			$size[3] = '';
 		}
 		
 		$title=htmlentities2($this->title);
@@ -584,6 +675,9 @@ class GridImage
 	*/
 	function isLandscape()
 	{
+		if (!$this->gridimage_id) {
+			return 1;
+		} 
 		if (isset($this->cached_size)) {
 			$result = $this->cached_size[0]>$this->cached_size[1];
 			return $result;
