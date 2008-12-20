@@ -1,1 +1,0 @@
-/var/www/geograph_live/public_html/./mapping1.js
