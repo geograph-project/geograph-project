@@ -385,7 +385,7 @@ if (isset($_REQUEST['id']))
 			$photographer_gridref=trim(stripslashes($_POST['photographer_gridref']));
 			if (strlen($photographer_gridref))
 			{
-				if ($sq->setByFullGridRef($photographer_gridref))
+				if ($sq->setByFullGridRef($photographer_gridref,false,true))
 				{
 					//grid reference in $sq->grid_reference is OK, but might
 					//be different to what we entered...
