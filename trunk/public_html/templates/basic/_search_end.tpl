@@ -7,9 +7,7 @@
 <div class="interestBox" style="text-align:center">
 <a href="/explore/searches.php?i={$i}">Feature this search!</a> <sup style="color:red">new!</sup>
 &nbsp;&nbsp; | &nbsp;&nbsp;
-<span id="votediv"><b>Rate this Search Result</b>: 
-<a href="javascript:void(record_vote('q',{$i},1));" title="Completely Hopeless"><img src="http://{$static_host}/img/star-light.png" width="14" height="14" alt="1" onmouseover="star_hover(1,5)" onmouseout="star_out(5)" name="star1"/></a><a href="javascript:void(record_vote('q',{$i},2));" title="Below average"><img src="http://{$static_host}/img/star-light.png" width="14" height="14" alt="2" onmouseover="star_hover(2,5)" onmouseout="star_out(5)" name="star2"/></a><a href="javascript:void(record_vote('q',{$i},3));" title="So So"><img src="http://{$static_host}/img/star-light.png" width="14" height="14" alt="3" onmouseover="star_hover(3,5)" onmouseout="star_out(5)" name="star3"/></a><a href="javascript:void(record_vote('q',{$i},4));" title="Reasonable"><img src="http://{$static_host}/img/star-light.png" width="14" height="14" alt="4" onmouseover="star_hover(4,5)" onmouseout="star_out(5)" name="star4"/></a><a href="javascript:void(record_vote('q',{$i},5));" title="Excellent"><img src="http://{$static_host}/img/star-light.png" width="14" height="14" alt="5" onmouseover="star_hover(5,5)" onmouseout="star_out(5)" name="star5"/></a> (click one)
-</span>
+<span id="votediv{$i}"><b>Rate this Search Result</b>: {votestars id=$i type="q"} (click one)</span>
 
 </div>
 

@@ -350,3 +350,5 @@ INSERT INTO `gridprefix` (`reference_index`, `prefix`, `origin_x`, `origin_y`, `
 ALTER TABLE `mapfix_log` ADD `comment` VARCHAR( 128 ) NOT NULL AFTER `gridsquare_id` ;
 
 
+ALTER TABLE  `vote_log` CHANGE  `type`  `type` VARCHAR( 20 ) NOT NULL;
+

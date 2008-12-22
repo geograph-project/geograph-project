@@ -72,20 +72,18 @@ function autoDisable(that) {
 function record_vote(type,id,vote) {
 	var i=new Image();
 	i.src= "/stuff/record_vote.php?t="+type+"&id="+id+"&v="+vote;
-	document.getElementById("votediv").innerHTML = "Thank you!";
+	document.getElementById("votediv"+id).innerHTML = "Thank you!";
 }
 
-function star_hover(vote,num) {
+function star_hover(id,vote,num) {
 	for (var i=1;i<=vote;i++) {
-		document.images['star'+i].src = document.images['star'+i].src.replace(/light/,'on');
+		document.images['star'+i+id].src = document.images['star'+i+id].src.replace(/light/,'on');
 	}
-	
 }
-function star_out(num) {
+function star_out(id,num) {
 	for (var i=1;i<=num;i++) {
-		document.images['star'+i].src = document.images['star'+i].src.replace(/-on/,'-light');
+		document.images['star'+i+id].src = document.images['star'+i+id].src.replace(/-on/,'-light');
 	}
-	
 }
 
 //	-	-	-	-	-	-	-	-
