@@ -12,7 +12,7 @@
     </ul></li>
     <li>Interact<ul>
      <li><a title="Play Games" href="/games/">Games</a></li>
-     <li><a title="Activities" href="/activities/">Activities</a> <sup style="color:red">New!</sup></li>
+     <li><a title="Activities" href="/activities/">Activities</a> </li>
      <li><a title="Discuss" href="/discuss/">Discuss</a></li>
      {dynamic}{if $user->registered}
      <li><a title="Chat" href="/chat/">Chat</a> {if $irc_seen}<span style="color:gray">({$irc_seen} online)</span>{/if}</li>
@@ -26,6 +26,7 @@
     </ul></li>
     <li>Further Info<ul>
      <li><a title="FAQ" href="/faq.php">FAQ</a></li>
+     <li><a title="FAQ" href="/content/?docs&amp;order=title">Documents</a> <sup style="color:red">New!</sup></li>
      <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
      <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a></li>
     </ul></li>
