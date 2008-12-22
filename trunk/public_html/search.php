@@ -900,6 +900,7 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign_by_ref('google_maps_api_key', $CONF['google_maps_api_key']);
 		
 		$smarty->register_function("searchbreak", "smarty_function_searchbreak");
+		$smarty->register_function("votestars", "smarty_function_votestars");
 
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
 		
@@ -1290,6 +1291,17 @@ if (isset($_GET['fav']) && $i) {
 
 		$smarty->display($template, $is_cachable);
 	}
+
+function smarty_function_votestars($params) {
+	global $CONF;
+	
+	$type = $params['type'];
+	$id = $params['id'];
+	$names = array('','Hmm','Below average','So So','Reasonable','Excellent');
+	foreach (range(1,5) as $i) {
+		print "<a href=\"javascript:void(record_vote('$type',$id,$i));\" title=\"{$names[$i]}\"><img src=\"http://{$CONF['STATIC_HOST']}/img/star-light.png\" width=\"14\" height=\"14\" alt=\"$i\" onmouseover=\"star_hover($id,$i,5)\" onmouseout=\"star_out($id,5)\" name=\"star$i$id\"/></a>";
+	}
+}
 
 function smarty_function_searchbreak($params) {
 	global $engine;
