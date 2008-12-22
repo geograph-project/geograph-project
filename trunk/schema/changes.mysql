@@ -352,3 +352,10 @@ ALTER TABLE `mapfix_log` ADD `comment` VARCHAR( 128 ) NOT NULL AFTER `gridsquare
 
 ALTER TABLE  `vote_log` CHANGE  `type`  `type` VARCHAR( 20 ) NOT NULL;
 
+
+
+alter table queries_archive change `displayclass` `displayclass`  enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2','vote') NOT NULL DEFAULT 'full';
+
+alter table queries change `displayclass` `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2','vote') NOT NULL DEFAULT 'full';
+
+

@@ -7,7 +7,7 @@
 <div class="interestBox" style="text-align:center">
 <a href="/explore/searches.php?i={$i}">Feature this search!</a> <sup style="color:red">new!</sup>
 &nbsp;&nbsp; | &nbsp;&nbsp;
-<span id="votediv{$i}"><b>Rate this Search Result</b>: {votestars id=$i type="q"} (click one)</span>
+<span id="votediv{$i}"><b>Rate this Search Result</b>: {votestars id=$i type="q"}</span>
 
 </div>
 
