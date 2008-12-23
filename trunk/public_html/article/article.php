@@ -279,7 +279,7 @@ if (!$smarty->is_cached($template, $cacheid))
 					$arr[$row['modifier']] = "<a href=\"/profile/{$row['modifier']}\">".htmlentities2($row['realname'])."</a>";
 				}
 			}
-			$str = preg_replace('/, (.*?)$/',' and $1',implode(', ',$arr));
+			$str = preg_replace('/, ([^\,]*?)$/',' and $1',implode(', ',$arr));
 			$smarty->assign('moreCredits',$str);
 		}
 	} 
