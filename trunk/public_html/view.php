@@ -137,11 +137,10 @@ if ($image->isValid())
 	if (!empty($CONF['sphinx_host']) 
 		&& stripos($_SERVER['HTTP_REFERER'],$CONF['CONTENT_HOST']) === FALSE 
 		&& stripos($_SERVER['HTTP_REFERER'],$_SERVER['HTTP_HOST']) === FALSE
-		&& preg_match('/\b(q|query|qry|search|su|searchfor|s|qs|p|key|buscar|w)=([\w%\+\.\(\)\"\']+)(\&|$)/',$_SERVER['HTTP_REFERER'],$m) 
+		&& preg_match('/\b(q|query|qry|search|su|searchfor|s|qs|p|key|buscar|w)=([\w%\+\.\(\)\"\':]+)(\&|$)/',$_SERVER['HTTP_REFERER'],$m) 
 		&& !is_numeric($m[2])
-		&& strlen(preg_replace('/\b(geograph|photo|image|picture)\s?\b/','',$m[2])) > 5 ) {
-		
-		$q = trim(urldecode(preg_replace('/\b(geograph|photo|image|picture)\s?\b/','',$m[2])));
+		&& ($q = trim(preg_replace('/\b(geograph|photo|image|picture|site:[\w\.-]+|inurl:[\w\.-]+)s?\b/','',urldecode($m[2]) )) )
+		&& strlen($q) > 5 ) {
 		
 		$smarty->assign("search_keywords",$q);
 		
