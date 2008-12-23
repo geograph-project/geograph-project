@@ -215,9 +215,10 @@ $smarty->register_modifier("articletext", "smarty_function_articletext");
 $db=NewADOConnection($GLOBALS['DSN']);
 
 $page = $db->getRow("
-select article.*,realname,gs.grid_reference
+select article.*,realname,gs.grid_reference,category_name
 from article 
 	left join user using (user_id)
+	left join article_cat c on (article.article_cat_id = c.article_cat_id)
 	left join gridsquare gs on (article.gridsquare_id = gs.gridsquare_id)
 where ( (licence != 'none' and approved > 0) 
 	or user.user_id = {$USER->user_id}
@@ -265,6 +266,21 @@ if (!$smarty->is_cached($template, $cacheid))
 			list($lat,$long) = $conv->gridsquare_to_wgs84($square);
 			$smarty->assign('lat', $lat);
 			$smarty->assign('long', $long);
+		}
+		if (stripos($page['category_name'],'geograph') !== FALSE) {
+			$db->Execute("set @last=0");
+			$users = $db->getAll("select realname,modifier,update_time,if(approved = @last,1,0) as same,@last := approved 
+			from article_revisions 
+			left join user on (article_revisions.modifier = user.user_id)
+			where article_id = {$page['article_id']}");
+			$arr = array();
+			foreach ($users as $idx => $row) {
+				if ($row['same'] == 1 && $row['modifier'] != $page['user_id'] && !isset($arr[$row['modifier']])) {
+					$arr[$row['modifier']] = "<a href=\"/profile/{$row['modifier']}\">".htmlentities2($row['realname'])."</a>";
+				}
+			}
+			$str = preg_replace('/, (.*?)$/',' and $1',implode(', ',$arr));
+			$smarty->assign('moreCredits',$str);
 		}
 	} 
 } else {
