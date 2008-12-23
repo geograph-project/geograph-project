@@ -134,6 +134,40 @@ if ($image->isValid())
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$hash,($USER->user_id == 0));
 
+	if (!empty($CONF['sphinx_host']) 
+		&& stripos($_SERVER['HTTP_REFERER'],$CONF['CONTENT_HOST']) === FALSE 
+		&& stripos($_SERVER['HTTP_REFERER'],$_SERVER['HTTP_HOST']) === FALSE
+		&& preg_match('/\b(q|query|qry|search|su|searchfor|s|qs|p|key|buscar|w)=([\w%\+\.\(\)\"\']+)(\&|$)/',$_SERVER['HTTP_REFERER'],$m) 
+		&& !is_numeric($m[2])
+		&& strlen(str_ireplace('geograph','',$m[2])) > 5 ) {
+		
+		$q = trim(urldecode(str_ireplace('geograph','',$m[2])));
+		
+		$smarty->assign("search_keywords",$q);
+		
+		$mkey = $image->grid_reference.' '.$q;
+		$info =& $memcache->name_get('sn',$mkey);
+		
+		if (!empty($info)) {
+			list($count,$when) = $info;
+			
+			$smarty->assign("search_count",$count);
+		} else {
+			$sphinx = new sphinxwrapper($mkey);
+			
+			$sphinx->processQuery();
+
+			$count = $sphinx->countMatches('_images');
+			
+			$smarty->assign("search_count",$count);
+			
+			//fails quickly if not using memcached!
+			$info = array($count,time());
+			$memcache->name_set('sn',$mkey,$info,$memcache->compress,$memcache->period_med);
+			
+		}
+	}
+
 	if (!$smarty->is_cached($template, $cacheid))
 	{
 		$smarty->assign('maincontentclass', 'content_photo'.$style);

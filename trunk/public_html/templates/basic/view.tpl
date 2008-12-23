@@ -22,6 +22,13 @@
 </div>
 <br/>
 {/if}
+{dynamic}
+{if $search_keywords && $search_count}
+	<div class="interestBox" style="text-align:center; font-size:0.9em">
+		We have a least <b>{$search_count} images</b> that match your query [{$search_keywords|escape:'html'}] in the area! <a href="/search.php?searchtext={$search_keywords|escape:'url'}&amp;gridref={$image->grid_reference}&amp;do=1">View them now</a>
+	</div>
+{/if}
+{/dynamic}
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
