@@ -140,7 +140,7 @@ if ($image->isValid())
 		&& preg_match('/\b(q|query|qry|search|su|searchfor|s|qs|p|key|buscar|w)=([\w%\+\.\(\)\"\':]+)(\&|$)/',$_SERVER['HTTP_REFERER'],$m) 
 		&& !is_numeric($m[2])
 		&& ($q = trim(preg_replace('/\b(geograph|photo|image|picture|site:[\w\.-]+|inurl:[\w\.-]+)s?\b/','',urldecode($m[2]) )) )
-		&& strlen($q) > 5 ) {
+		&& strlen($q) > 3 ) {
 		
 		$smarty->assign("search_keywords",$q);
 		
@@ -151,6 +151,8 @@ if ($image->isValid())
 			list($count,$when) = $info;
 			
 			$smarty->assign("search_count",$count);
+			
+			$smarty->assign_by_ref("image",$image); //we dont need the full assignToSmarty
 		} else {
 			$sphinx = new sphinxwrapper($mkey);
 			
