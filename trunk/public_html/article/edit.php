@@ -69,6 +69,21 @@ $cacheid = '';
 				$USER->hasPerm('moderator') ||
 				$page['approved'] == 2
 			) ) {
+			
+			if (isset($_GET['release'])) {
+				$db->Execute("DELETE FROM article_lock WHERE user_id = {$USER->user_id} AND article_id = {$page['article_id']}");
+				
+				if (empty($_GET['release'])) {
+					header("HTTP/1.0 204 No Content");
+					header("Status: 204 No Content");
+					header("Content-Length: 0");
+					flush();
+				} else {
+					header("Location: /article/");
+				}
+				exit;
+				
+			}
 			$lockedby = $db->getOne("
 				select 
 					m.realname
