@@ -29,6 +29,8 @@ function changeOpacity(byOpacity) {
 	newOpacity = Math.min(maxOpacity, Math.max(minOpacity, newOpacity));
 	glayer.setOpacity(newOpacity);
 	if (player) {
+		var newOpacity = (parseFloat(player.opacity) + byOpacity).toFixed(1);
+		newOpacity = Math.min(maxOpacity, Math.max(minOpacity, newOpacity));
 		player.setOpacity(newOpacity);
 	}
 }
@@ -46,7 +48,7 @@ function loadMap() {
 	glayer.tileSize = new OpenLayers.Size(250,250);	
 	glayer.getURL = geographURL;
 	
-	player = new OpenLayers.Layer.WMS("Centisquare Coverage", ttileurl+"?l=p", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, buffer:0{/literal}{if $centi}, opacity: 1{else}, visibility:false, opacity: 0.3{/if}{literal}});	
+	player = new OpenLayers.Layer.WMS("Centisquare Coverage", ttileurl+"?l=p", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, buffer:0{/literal}{if $centi}, opacity: 1{else}, visibility:false, opacity: 0.9{/if}{literal}});	
 	player.tileSize = new OpenLayers.Size(250,250);	
 	player.getURL = geographURL;
 	
