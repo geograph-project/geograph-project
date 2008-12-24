@@ -28,8 +28,29 @@
 		map.setCenter(center, newZoom);
 		
 		var xml = new GGeoXml("http://{$http_host}/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.kml");
-		{literal}
 		map.addOverlay(xml);
+		
+		{if $markers} 
+			{foreach from=$markers item=marker}
+				map.addOverlay(createMarker(new GLatLng({$marker.1},{$marker.2}),'{$marker.0}'));
+			{/foreach}
+		{/if}
+		{literal}
+		
+	}
+
+	 function createMarker(point,myHtml) {
+
+		var marker = new GMarker(point, {draggable: true});
+
+		GEvent.addListener(marker, "click", function() {
+			map.openInfoWindowHtml(point, myHtml);
+		});
+		GEvent.addListener(marker, "dragend", function() {
+			marker.setPoint(point);
+		});
+
+		return marker;
 	}
 
 	AttachEvent(window,'load',onLoad,false);

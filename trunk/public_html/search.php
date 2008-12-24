@@ -928,7 +928,7 @@ if (isset($_GET['fav']) && $i) {
 			}
 		}
 		
-		if ($display == 'reveal') {
+		if ($display == 'reveal' && $engine->resultCount) {
 			foreach ($engine->results as $idx => $image) {
 			
 				if ($engine->results[$idx]->gridsquare_id) {
@@ -1001,6 +1001,24 @@ if (isset($_GET['fav']) && $i) {
 					unset($engine->results[$idx]);
 				}
 			}
+		} elseif ($display == 'gmap' && $engine->resultCount) {
+			$markers = array();
+			$conv = new Conversions();
+			
+			if ($engine->criteria->x && $engine->criteria->y) {
+				list($lat,$long) = $conv->internal_to_wgs84($engine->criteria->x,$engine->criteria->y);
+				$markers[] = array('Center Point',$lat,$long);
+			}
+			if (preg_match_all('/\b([a-zA-Z]{1,2} ?\d{1,5}[ \.]?\d{1,5})\b/',$engine->criteria->searchdesc,$m)) {
+				$m = array_unique($m[1]);
+				foreach ($m as $gr) {
+					$sq = new GridSquare();
+					$sq->setByFullGridRef($gr,false,true);
+					list($lat,$long) = $conv->gridsquare_to_wgs84($sq);
+					$markers[] = array($gr,$lat,$long);
+				}
+			}
+			$smarty->assign_by_ref('markers',$markers);
 		}
 	}
 
