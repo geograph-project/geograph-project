@@ -83,7 +83,7 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 -->	
 
 {if $moreCredits}
-	<div class="ccmessage" style="color:gray; font-size:0.9em; text-align:right">With contributions by {$moreCredits}. (<a href="/article/history.php?page={$url}">details</a>)</div>
+	<div class="ccmessage" style="color:gray; font-size:0.8em; text-align:right">With contributions by {$moreCredits}. (<a href="/article/history.php?page={$url}">details</a>)</div>
 {/if}
 {if $imageCredits}
 	<div class="ccmessage" style="color:gray; font-size:0.9em; text-align:right">Images also under a similar <a href="#imlicence">Creative Commons licence</a>.</div>
