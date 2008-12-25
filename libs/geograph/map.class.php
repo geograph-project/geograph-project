@@ -511,8 +511,18 @@ class GeographMap
 			$ok = $this->_renderImage();
 		} else if ($this->type_or_user < 0) {
 	
+	
+	#TEMPORYAY
+			if ($this->type_or_user == -3) {
+				$ok = $this->_renderDepthImage();
+				
+	#TEMPORYAY
+			} elseif ($this->type_or_user == -4) {
+				$ok = $this->_renderImage();
+				
+				
 	#DEPTH MAP (_renderDepthImage also understands date maps)
-			if ($this->type_or_user == -1) {
+			} elseif ($this->type_or_user == -1) {
 				//if thumbs level can just use normal render. 
 				if ($this->pixels_per_km<=4) {
 					$ok = $this->_renderDepthImage();
@@ -823,6 +833,11 @@ class GeographMap
 			if ($this->type_or_user == -10) {
 				//we want a blank map!
 				$sql = "select 0 limit 0";
+			} elseif ($this->type_or_user == -4) {
+				//todo doesnt use the where clause!
+				$sql="select x,y,gridsquare_id,max(created) > date_sub(now(),interval 30 day) as has_geographs from gridsquare3
+					inner join mapfix_log using (gridsquare_id)  
+					group by gridsquare_id";
 			} else {
 				$sql="select x,y,grid_reference,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where 
 					CONTAINS( GeomFromText($rectangle),	point_xy) and
@@ -1021,8 +1036,13 @@ class GeographMap
 		}
 		
 		$db=&$this->_getDB();
-				
-		$sql="select imagecount from gridsquare group by imagecount";
+		
+		if ($this->type_or_user == -3) {
+			
+			$sql="select imagecount from gridsquare_group_count group by imagecount";
+		} else {
+			$sql="select imagecount from gridsquare group by imagecount";
+		}
 		$counts = $db->cacheGetCol(3600,$sql);
 
 		$colour=array();
@@ -1030,33 +1050,6 @@ class GeographMap
 		for ($p=0; $p<count($counts); $p++)
 		{
 			$o = $counts[$p];
-			/* dark green, red => yellow
-			switch (true) {
-				case $o == 0: $r=128; $g=128; $b=0; break; 
-				case $o == 1: $r=112; $g=0; $b=0; break; 
-				case $o == 2: $r=136; $g=0; $b=0; break; 
-				case $o == 3: $r=168; $g=0; $b=0; break; 
-				case $o == 4: $r=200; $g=0; $b=0; break; 
-				case $o <  7: $r=225; $g=0; $b=0; break; 
-				case $o < 10: $r=255; $g=64; $b=0; break; 
-				case $o < 20: $r=255; $g=132; $b=0; break; 
-				case $o < 40: $r=255; $g=196; $b=0; break; 
-				case $o < 80: $r=255; $g=255; $b=0; break; 
-			}*/
-			/* high contrast as suggested on the forum...
-			switch (true) {
-				case $o == 0: $r=128; $g=128; $b=0; break; 
-				case $o == 1: $r=128; $g=0; $b=0; break; 
-				case $o == 2: $r=255; $g=0; $b=254; break; 
-				case $o == 3: $r=0; $g=255; $b=255; break; 
-				case $o == 4: $r=0; $g=0; $b=254; break; 
-				case $o <  6: $r=225; $g=168; $b=65; break; 
-				case $o <  8: $r=127; $g=128; $b=0; break; 
-				case $o < 14: $r=255; $g=255; $b=0; break; 
-				case $o < 21: $r=191; $g=64; $b=255; break; 
-				case $o < 38: $r=128; $g=255; $b=0; break; 
-				case $o < 80: $r=254; $g=0; $b=0; break; 
-			}*/
 			//standard green, yellow => red
 			switch (true) {
 				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break; 
@@ -1108,7 +1101,18 @@ class GeographMap
 
 		$number = !empty($this->minimum)?intval($this->minimum):0;
 
-		if (!empty($this->mapDateCrit)) {
+		if ($this->type_or_user == -3) {
+			$sql="select x,y,gs.gridsquare_id,count(distinct label) as imagecount
+				from 
+				gridsquare gs 
+				inner join gridimage2 gi using(gridsquare_id)
+				inner join gridimage_group gg using(gridimage_id)
+				
+			group by gi.gridsquare_id "; #where CONTAINS( GeomFromText($rectangle),	point_xy) 
+			
+			$sql="select * from gridsquare_group_count";
+			
+		} elseif (!empty($this->mapDateCrit)) {
 		$sql="select x,y,gs.gridsquare_id,count(*) as imagecount
 			from 
 			gridsquare gs 
@@ -1409,6 +1413,7 @@ class GeographMap
 		
 		$usercount=array();
 		$recordSet = &$db->Execute($sql);
+		$lines = array();
 		while (!$recordSet->EOF) 
 		{
 			$gridx=$recordSet->fields[0];
@@ -1428,7 +1433,7 @@ class GeographMap
 				
 			$gridimage_id=$recordSet->fields[2];
 
-			$sql="select * from gridimage_search where gridimage_id='$gridimage_id' and moderation_status<>'rejected' order by moderation_status+0 desc,seq_no limit 1";
+			$sql="select * from gridimage_search where gridimage_id='$gridimage_id' and moderation_status<>'rejected' limit 1";
 
 			//echo "$sql\n";	
 			$rec=$dbImg->GetRow($sql);
@@ -1444,9 +1449,8 @@ class GeographMap
 					imagedestroy($photo);
 
 					imagerectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $colBorder);
-				//	imagerectangle ($img, $imgx1+1, $imgy1+1, $imgx2-1, $imgy2-1, $colBorder);
-
-					fwrite($imagemap,"<area shape=\"rect\" coords=\"$imgx1,$imgy1,$imgx2,$imgy2\" href=\"/photo/{$rec['gridimage_id']}\" ALT=\"".htmlentities("{$rec['grid_reference']} : {$rec['title']} by {$rec['realname']}")."\">\n"); 
+				
+					$lines[] = "<area shape=\"rect\" coords=\"$imgx1,$imgy1,$imgx2,$imgy2\" href=\"/photo/{$rec['gridimage_id']}\" title=\"".htmlentities("{$rec['grid_reference']} : {$rec['title']} by {$rec['realname']}")."\">"; 
 
 				}
 				$usercount[$rec['realname']]++;
@@ -1459,7 +1463,8 @@ class GeographMap
 			$recordSet->MoveNext();
 		}
 		$recordSet->Close(); 
-
+			
+			fwrite($imagemap,implode("\n",array_reverse($lines)));
 			fwrite($imagemap,"</map>\n");
 			fclose($imagemap);
 		
