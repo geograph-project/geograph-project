@@ -1433,7 +1433,7 @@ class GridImage
 		$newsq=new GridSquare;
 		if (is_object($this->db))
 			$newsq->_setDB($this->db);
-		if ($newsq->setByFullGridRef($grid_reference))
+		if ($newsq->setByFullGridRef($grid_reference,false,true))
 		{
 			$db=&$this->_getDB();
 			

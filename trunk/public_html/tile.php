@@ -147,7 +147,11 @@ if (isset($_GET['map']))
 			$mustgenerate = false;
 			
 			if ($memcache->valid && !isset($_GET['refresh'])) {
+				if ($_GET['l'] == 'p') {
+                                $mkey = "{$_GET['l']},$e,$n,$reference_index";
+ 				} else {
 				$mkey = "{$_GET['l']}:$e,$n,$reference_index";
+				}
 				$lastmod =& $memcache->name_get('tl',$mkey);
 				if (!$lastmod) {
 					$lastmod = time();

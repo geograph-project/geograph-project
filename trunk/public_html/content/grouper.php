@@ -54,7 +54,7 @@ if (isset($_POST['save']) || isset($_GET['start'])) {
 	$page = $db->getRow("
 	select c.*
 	from content c
-		left join content_group cg on (c.content_id=cg.content_id and cg.source like 'user%')
+		left join content_group cg on (c.content_id=cg.content_id and cg.source = 'user{$USER->user_id}')
 	where cg.content_id IS NULL
 	limit 1");
 

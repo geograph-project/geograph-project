@@ -50,6 +50,7 @@ FROM
 	gridimage_link l
 WHERE
 	next_check < now()
+	AND url NOT like '%geograph.org.uk%'
 GROUP BY 
 	url
 ORDER BY 

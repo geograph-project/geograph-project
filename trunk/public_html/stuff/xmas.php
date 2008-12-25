@@ -82,7 +82,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$data['reverse_order_ind'] = 1; 
 		$sortorders = array('gridimage_id'=>'Date Submitted');
 
-		$data['searchtext'] = "xmas+ OR christmas+";
+		$data['searchtext'] = "category:christmas";
 
 		$engine = new SearchEngineBuilder('#'); 
 		$i = $engine->buildAdvancedQuery($data,false);

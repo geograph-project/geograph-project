@@ -64,6 +64,7 @@ $smarty->assign_by_ref('displayclasses',$displayclasses);
 
 if (isset($_GET['legacy']) && isset($CONF['curtail_level']) && $CONF['curtail_level'] > 4 ) {
         header("HTTP/1.1 503 Service Unavailable");
+	dieUnderHighLoad(0.1);
         die("server busy, please try later");
 }
 

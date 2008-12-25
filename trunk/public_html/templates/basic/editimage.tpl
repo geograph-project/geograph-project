@@ -447,9 +447,7 @@
 	{/literal}
 
 
-{if $rastermap->enabled}
 	<br/><input type="checkbox" name="use6fig" id="use6fig" {if $image->use6fig} checked="checked"{/if} value="1"/> <label for="use6fig">Only display 6 figure grid reference ({newwin href="/help/map_precision" text="Explanation"})</label>
-{/if}
 </p>
 
 
