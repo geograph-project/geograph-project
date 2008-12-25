@@ -1,7 +1,13 @@
 {include file="_search_begin.tpl"}
 
 {if !$google_maps_api_key}
-	<p>this page is no longer able to display a map - please use a different display method</p>
+	<div class="interestBox">
+	<p>This page is no longer able to display a map - please use a different display method.</p>
+	<p>However you may be able to display a map on {if $engine->currentPage > 1}
+{external href="http://maps.google.com/?q=http://`$http_host`/feed/results/`$i`/`$engine->currentPage`.kml" text="Google Maps"}.{else}
+{external href="http://maps.google.com/?q=http://`$http_host`/feed/results/`$i`.kml" text="Google Maps"}.{/if}</p>
+	</div>
+
 {elseif $engine->resultCount}
 
 	<div id="map" style="width:100%; height:500px; position:relative;"></div>

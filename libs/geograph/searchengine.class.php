@@ -114,6 +114,49 @@ class SearchEngine
 			return $db->getOne("SELECT COUNT(*) FROM gridimage_query WHERE query_id = ?",$this->query_id);
 		}
 	}
+
+	function checkExplain($sql) {
+		$bad = 0;
+
+		if (strpos($sql,'gridimage_group') === FALSE) {
+			return;
+		}
+
+		 $db=$this->_getDB();
+		global $ADODB_FETCH_MODE;		
+		$oldmode = $ADODB_FETCH_MODE;
+		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+		$explain = $db->getAll("EXPLAIN $sql");
+		foreach ($explain as $i => $row) {
+			if ($row['type'] == 'ALL') {
+				//let this pass for NOW
+			} elseif ($row['rows'] == 0) {
+			
+			} elseif (empty($row['key']) || is_null($row['key'])) {
+				$bad = 1;
+			} elseif ($row['rows'] > 20000 && !empty($row['Extra'])) {
+				$bad = 1;
+			}
+		}
+		
+		if ($bad) {
+			unset($this->criteria->db);
+                	ob_start();
+        	        debug_print_backtrace();
+			print "\n\nHost: ".`hostname`."\n\n";
+			print_r($this->criteria);
+	                print_r($explain);
+        	        $con = ob_get_clean();
+        	        mail('geograph@barryhunter.co.uk','[Geograph Search Quota] '.date('r'),$con);
+		
+			global $smarty,$USER;
+			header("HTTP/1.1 503 Service Unavailable");
+			$smarty->assign('searchq',stripslashes($_GET['q']));
+			$smarty->display('search_unavailable.tpl');
+			exit;
+		}
+		$ADODB_FETCH_MODE = $oldmode;
+	}
 	
 	/**
 	 * run a search via the gridimage table
@@ -183,6 +226,9 @@ class SearchEngine
 				if (!empty($_GET['debug']))
 					print "<BR><BR>$sql";
 
+				$this->checkExplain($sql);
+				$doneexplain = 1;
+
 				$this->resultCount = $db->CacheGetOne(3600,$sql);
 				if (empty($_GET['BBOX']) && $this->display != 'reveal') {
 					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
@@ -210,6 +256,10 @@ LIMIT $page,$pgsize
 END;
 		if (!empty($_GET['debug']))
 			print "<BR><BR>$sql";
+
+		if (!isset($doneexplain)) {
+			$this->checkExplain($sql);
+		}
 		
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_before = ((float)$usec + (float)$sec);
@@ -449,6 +499,9 @@ END;
 				if (!empty($_GET['debug']))
 					print "<BR><BR>$sql";
 
+                                $this->checkExplain($sql);
+                                $doneexplain = 1;
+
 				$this->resultCount = $db->CacheGetOne(3600,$sql);
 				if (empty($_GET['BBOX']) && $this->display != 'reveal') {
 					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
@@ -474,6 +527,10 @@ LIMIT $page,$pgsize
 END;
 		if (!empty($_GET['debug']))
 			print "<BR><BR>$sql";
+
+                if (!isset($doneexplain)) {
+                        $this->checkExplain($sql);
+                }
 		
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_before = ((float)$usec + (float)$sec);

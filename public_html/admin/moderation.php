@@ -30,7 +30,7 @@ init_session();
 
 if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 5 && strpos($_SERVER['HTTP_REFERER'],'editimage') === FALSE) {
 	header("HTTP/1.1 503 Service Unavailable");
-	die("server busy, please try later. (this is a emergency measure to curb server load!) ");
+	die("the servers are currently very busy - moderation is disabled to allow things to catch up, will be automatically re-enabled when load returns to normal");
 }
 
 customGZipHandlerStart();

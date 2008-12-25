@@ -51,6 +51,7 @@
 	<td>Problem</td>
 	<td>Suggested by</td>
 	<td>Submitted</td>
+	<td title="Defer ticket for a day, and Age of ticket in days">&nbsp;</td>
 </tr></thead>
 <tbody>
 
@@ -63,7 +64,7 @@
 <td>{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes|escape:'html'|geographlinks}</td>
 <td>{$ticket.suggester}{if $ticket.suggester_comment}<img src="http://{$static_host}/img/star-light.png" width="14" height="14" title="Comment: {$ticket.suggester_comment}"/>{/if}</td>
 <td>{$ticket.suggested}</td>
-<td><input class="accept" type="button" id="defer" value="D" style="width:10px;" onclick="deferTicket({$ticket.gridimage_ticket_id},24)"/><span class="caption" id="modinfo{$ticket.gridimage_ticket_id}"></span><br/>{$ticket.days}</td>
+<td sortvalue="{$ticket.days}"><input class="accept" type="button" id="defer" value="D" style="width:10px;" onclick="deferTicket({$ticket.gridimage_ticket_id},24)"/><span class="caption" id="modinfo{$ticket.gridimage_ticket_id}"></span><br/>{$ticket.days}</td>
 </tr>
 {/foreach}
 </tbody>

@@ -147,8 +147,7 @@
 				{/if}
 			</li>
 			{if $profile->stats.content}
-				<li style="margin-top:10px"><b>{$profile->stats.content}</b> items of Content submitted
-					[<a href="/content/?user_id={$profile->user_id}">View</a>]
+				<li style="margin-top:10px"><b>{$profile->stats.content}</b> items of <a href="/content/?user_id={$profile->user_id}" title="view content submitted by {$profile->realname|escape:'html'}">Content submitted</a>
 					{if $user->user_id eq $profile->user_id}
 						[<a href="/article/?user_id={$profile->user_id}">Article List</a>]
 					{/if}
