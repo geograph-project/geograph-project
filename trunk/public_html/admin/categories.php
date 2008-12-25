@@ -82,7 +82,15 @@ if (!$db) die('Database connection failed');
 		$message .= "<p>All values updated</p>";
 		$smarty->assign('message',  $message);
 	}
-	$arr = $db->GetAssoc("select imageclass,count(*) from gridimage where moderation_status != 'rejected' group by imageclass");
+	
+	$where = '';
+	if (!empty($_REQUEST['q'])) {
+		$a = explode(' ',preg_replace("/[^ \w'\(\)]+/",'',$_REQUEST['q']));
+		$where = " AND (imageclass LIKE '%".implode("%' OR imageclass LIKE '%",$a)."%' )";
+		$smarty->assign('q', implode(" ",$a));
+	}
+	
+	$arr = $db->GetAssoc("select imageclass,count(*) from gridimage where moderation_status != 'rejected' $where group by imageclass");
 	
 	$smarty->assign('arr',  $arr);
 
