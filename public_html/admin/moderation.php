@@ -323,6 +323,16 @@ if (isset($_GET['review'])) {
 	$sql_order = "gridimage_id asc";
 }
 
+if (isset($_GET['xmas'])) {
+	
+	$ii = $db->getAll("select gridsquare_id from gridimage as gi where imageclass like '%christmas%' and moderation_status = 'pending' and submitted > date_sub(now(),interval 1 day) limit 10");
+	
+	foreach ($ii as $i => $row) {
+		$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$row['gridsquare_id']}");
+	}
+	$sql_where .= " AND (lock_type = 'modding' OR imageclass like '%christmas%')";
+}
+
 
 $sql = "select gi.*,grid_reference,user.realname,imagecount $sql_columns
 from 
