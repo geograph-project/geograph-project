@@ -34,7 +34,7 @@ class sphinxwrapper {
 	public $qraw = '';
 	public $qoutput = '';
 	public $sort = '';
-	public $submitted_range;
+	public $pageSize = 15;
 
 	public $filters = array();
 

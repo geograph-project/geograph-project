@@ -384,6 +384,9 @@ class SearchEngineBuilder extends SearchEngine
 			$dataarray['description'] = trim($dataarray['description']);
 			$dataarray['searchq'] = trim($dataarray['searchq']);
 			$searchclass = 'Special';
+			if (!empty($dataarray['searchclass'])) {
+				$searchclass = $dataarray['searchclass'];
+			}
 			$searchq = $dataarray['searchq'];
 			if (preg_match("/;|update |delete |drop |replace |alter |password|email/i",$searchq))
 				die("Server Error");
