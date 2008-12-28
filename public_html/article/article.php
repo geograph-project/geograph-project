@@ -112,12 +112,12 @@ function smarty_function_articletext($input) {
 	$replacement[]='</h$1>';
 
 
+	$pattern[]='/(?<!["\'\[\/\!\w])([STNH]?[A-Z]{1}\d{4,10})(?!["\'\]\/\!\w])/';
+	$replacement[]="<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/\\1\" target=\"_blank\">\\1</a>";
+
 	$pattern[]='/\[image id=(\d+) text=([^\]]+)\]/e';
 	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '\$2'))";
 
-
-	$pattern[]='/(?<!["\'\[\/\!\w])([STNH]?[A-Z]{1}\d{4,10})(?!["\'\]\/\!\w])/';
-	$replacement[]="<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/\\1\" target=\"_blank\">\\1</a>";
 
 	$pattern[]='/(\!)([STNH]?[A-Z]{1}\d{4,10})(?!["\'\]\/\!\w])/';
 	$replacement[]="\\2";
