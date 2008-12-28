@@ -197,7 +197,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 
 		$db->Execute("DELETE FROM article_lock WHERE user_id = {$USER->user_id} AND article_id = {$_REQUEST['article_id']}");
 
-		header("Location: /article/".$_POST['url']);
+		header("Location: /article/".(empty($_POST['url'])?$page['url']:$_POST['url']));
 		exit;
 	} else {
 		if ($errors[1] != 1)
