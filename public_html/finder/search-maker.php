@@ -60,7 +60,7 @@ $grs = $db->GetCol("select grid_reference from gridsquare where gridsquare_id in
 
 $gr_str = implode('|',$grs);
 
-$data['description'] = "of {$place['name']}, {$place['gr']}";
+$data['description'] = "near {$place['name']}, {$place['gr']}";
 $data['searchq'] = $gr_str;
 
 if (!$error) {
