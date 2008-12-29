@@ -276,7 +276,7 @@ END;
 			if ($count) {
 				$this->resultCount = $count;
 				$this->numberOfPages = ceil($this->resultCount/$pgsize);
-			} else {
+			} elseif (!empty($recordSet)) {
 				$this->resultCount = $recordSet->RecordCount();
 				if ($this->resultCount == $pgsize) {
 					$this->numberOfPages = 2;
@@ -287,6 +287,10 @@ END;
 						$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 					}
 				}
+			} else {
+				$this->resultCount = 0;
+				$this->numberOfPages = 0;
+				$this->pageOneOnly = 1;
 			}
 		}
 
@@ -368,8 +372,6 @@ END;
 
 		if ($this->countOnly || !$this->resultCount)
 			return 0;
-
-		$this->orderList = $ids;
 		
 		if ($sql_order == ' dist_sqd ') {
 			$this->sphinx_matches = $sphinx->res['matches'];
@@ -384,9 +386,10 @@ $sql = <<<END
 FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 	INNER JOIN user ON(gi.user_id=user.user_id)
 WHERE gi.gridimage_id IN ($id_list)
+ORDER BY FIELD(gi.gridimage_id,$id_list)
 END;
 		} else {
-			$sql = "/* i{$this->query_id} */ SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN ($id_list)";
+			$sql = "/* i{$this->query_id} */ SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN ($id_list) ORDER BY FIELD(gi.gridimage_id,$id_list)";
 		}
 		
 		if (!empty($_GET['debug']))
@@ -414,7 +417,7 @@ END;
 		
 		
 	//finish off
-		if (empty($_GET['BBOX']) && $this->display != 'reveal') {
+		if (!empty($recordSet) && empty($_GET['BBOX']) && $this->display != 'reveal') {
 			$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 		}
 
@@ -547,7 +550,7 @@ END;
 			if ($count) {
 				$this->resultCount = $count;
 				$this->numberOfPages = ceil($this->resultCount/$pgsize);
-			} else {
+			} elseif (!empty($recordSet)) {
 				$this->resultCount = $recordSet->RecordCount();
 				if ($this->resultCount == $pgsize) {
 					$this->numberOfPages = 2;
@@ -558,6 +561,10 @@ END;
 						$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 					}
 				}
+			} else {
+				$this->resultCount = 0;
+				$this->numberOfPages = 0;
+				$this->pageOneOnly = 1;
 			}
 		}
 		
@@ -636,23 +643,6 @@ END;
 			}
 			$recordSet->Close(); 
 			$this->numberofimages = $i;
-			
-			if (!empty($this->orderList)) {
-				if (!empty($_GET['debug']))
-					print "REORDERING";
-				
-				//well we need to reorder...
-				$lookup = array();
-				foreach ($this->results as $gridimage_id => $image) {
-					$lookup[$image->gridimage_id] = $gridimage_id;
-				}
-				$newlist = array();
-				foreach ($this->orderList as $id) {
-					if (!empty( $this->results[$lookup[$id]]))
-						$newlist[] = $this->results[$lookup[$id]];
-				}
-				$this->results = $newlist;
-			}
 			
 			if (!$i && $this->resultCount) {
 				$pgsize = $this->criteria->resultsperpage;
