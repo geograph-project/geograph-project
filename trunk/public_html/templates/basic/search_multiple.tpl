@@ -15,6 +15,11 @@
 	{/if}		
 {/foreach}
 <input type="hidden" name="old-{$multipleon}" value="{$criteria->searchq|escape:'html'}">
+
+{if strlen($criteria->searchq) > 20} 
+	<input type="radio" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}" id="dotext">
+	<label for="dotext">Perform a word search for '<tt>{$criteria->searchq|escape:"html"}</tt>'</i></label> <br/><br/>	
+{/if}
 	
 {foreach from=$criteria->matches item=match}
 	<input type="radio" name="{$multipleon}" value="{$match.id}" id="match{$match.id}">
@@ -38,18 +43,18 @@
 <br/>
 {if preg_match('/near\s+/',$post.q) && !preg_match('/near\s+\(anywhere\)/',$post.q)}
 	<input type="radio" name="{$multipleon}" value="text:{$post.q|replace:'near ':'AND '|escape:"html"}" id="dotext">
-	<label for="dotext"><i>Perform a word search for '{$post.q|replace:'near ':'AND '|escape:"html"}'</i></label> <br/>
-{elseif $post.q && $post.q != $criteria->searchq}
+	<label for="dotext">Perform a word search for '<tt>{$post.q|replace:'near ':'AND '|escape:"html"}</tt>'</label> <br/>
+{elseif $post.q && $post.q != $criteria->searchq && preg_match('/near\s+$/',$post.q)}
 	<input type="radio" name="{$multipleon}" value="text:{$post.q|escape:"html"} AND {$criteria->searchq|escape:"html"}" id="dotext">
-	<label for="dotext"><i>Perform a word search for '{$post.q|escape:"html"} AND {$criteria->searchq|escape:"html"}'</i></label> <br/>
+	<label for="dotext">Perform a word search for '<tt>{$post.q|escape:"html"} AND {$criteria->searchq|escape:"html"}</tt>'</label> <br/>
 {elseif $post.searchtext && $post.searchtext != $criteria->searchq}
 	<input type="radio" name="{$multipleon}" value="text:{$post.searchtext|escape:"html"} AND {$criteria->searchq|escape:"html"}" id="dotext">
-	<label for="dotext"><i>Perform a word search for '{$post.searchtext|escape:"html"} AND {$criteria->searchq|escape:"html"}'</i></label> <br/>
+	<label for="dotext">Perform a word search for '<tt>{$post.searchtext|escape:"html"} AND {$criteria->searchq|escape:"html"}'</tt></label> <br/>
 {/if}
 
 
 <input type="radio" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}" id="dotext">
-<label for="dotext"><i>Perform a word search for '{$criteria->searchq|escape:"html"}'</i></label> <br/>	
+<label for="dotext">Perform a word search for '<tt>{$criteria->searchq|escape:"html"}</tt>'</i></label> <br/>	
 
 {/dynamic}
 <p><input type="submit" name="refine" value="Refine"> <input type="submit" value="Find &gt;"></p>
