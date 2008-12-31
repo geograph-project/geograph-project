@@ -747,7 +747,6 @@ if (isset($_GET['fav']) && $i) {
 				break;
 			case "Text":
 				$smarty->assign('searchtext', $query->searchq);
-				$smarty->assign('elementused', 'searchtext');
 				break;
 			case "GridRef":
 				$smarty->assign('gridref', $query->searchq);
@@ -763,7 +762,9 @@ if (isset($_GET['fav']) && $i) {
 				break;
 			case "All":
 				$smarty->assign('all_checked', 'checked="checked"');
-				$smarty->assign('elementused', 'all_ind');
+				if ($_GET['form'] != 'text') {
+					$smarty->assign('elementused', 'all_ind');
+				}
 				break;
 		}
 		
@@ -1140,7 +1141,7 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign($data);
 		$_POST = $data;
 		
-		foreach (array('postcode','searchtext','gridref','county_id','placename','all_checked') as $key) {
+		foreach (array('postcode','gridref','county_id','placename','all_checked') as $key) {
 			if (isset($_POST[$key]))
 				$smarty->assign('elementused', $key);
 		}
