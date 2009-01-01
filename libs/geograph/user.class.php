@@ -897,9 +897,9 @@ class GeographUser
 	/**
 	* got perm?
 	*/
-	function hasPerm($perm)
+	function hasPerm($perm,$allowNonRef = false)
 	{
-		return $this->registered && (strpos($this->rights, $perm)!==false);
+		return (($this->registered || $allowNonRef) && (strpos($this->rights, $perm)!==false));
 	}
 	
 	function basicAuthLogin() {
