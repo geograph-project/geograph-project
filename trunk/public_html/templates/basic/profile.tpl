@@ -74,7 +74,7 @@
 	</li>
  
  	{if $profile->hasPerm('dormant',true)}
- 		<li><i>We do not hold contact details for this user.</i></li>
+ 		<!--<li><i>We do not hold contact details for this user.</i></li>-->
  	{elseif $user->user_id ne $profile->user_id}
 		{if $profile->public_email eq 1}
 			<li><b>Email</b>: {mailto address=$profile->email encode="javascript"}</li>

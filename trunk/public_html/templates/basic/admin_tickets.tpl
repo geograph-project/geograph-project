@@ -59,7 +59,7 @@
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}" {if !$ticket.available} style="color:red"{/if}>
 {if $col_moderator}<td>{$ticket.moderator}</td>{/if}
-<td{if !$ticket.ownimage && (($ticket.submitter_ticket_option == 'none') || ($ticket.submitter_ticket_option == 'major' && $ticket.type == 'minor'))} style="text-decoration:line-through"{/if}>{$ticket.submitter}{if $ticket.submitter_comment}<img src="http://{$static_host}/img/star-light.png" width="14" height="14" title="Comment: {$ticket.submitter_comment}"/>{/if}</td>
+<td{if !$ticket.ownimage && (($ticket.submitter_ticket_option == 'none') || ($ticket.submitter_ticket_option == 'major' && $ticket.type == 'minor') || $ticket.submitter_dormant)} style="text-decoration:line-through"{/if}>{$ticket.submitter}{if $ticket.submitter_comment}<img src="http://{$static_host}/img/star-light.png" width="14" height="14" title="Comment: {$ticket.submitter_comment}"/>{/if}</td>
 <td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
 <td>{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes|escape:'html'|geographlinks}</td>
 <td>{$ticket.suggester}{if $ticket.suggester_comment}<img src="http://{$static_host}/img/star-light.png" width="14" height="14" title="Comment: {$ticket.suggester_comment}"/>{/if}</td>
