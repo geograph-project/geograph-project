@@ -28,12 +28,9 @@
 			{/if}
 			
 			{if $image and $image->isValid()}
-			<div style="float:right">
-				<div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(120,120)}</a>
-					<div style="font-size:0.7em">
-						  <tt>{$http_host}/p/{$image->gridimage_id}</tt>
-					</div>
-				</div>
+			<div class="img-shadow" style="font-size:0.7em;float:right;text-align:center;padding:1px">
+				{$image->getThumbnail(120,120)|replace:'_120x120':''}<br/>
+				<tt>{$http_host}/p/{$image->gridimage_id}</tt>
 			</div>
 			{/if}
 			
