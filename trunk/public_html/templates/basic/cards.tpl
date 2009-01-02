@@ -29,7 +29,7 @@
 			
 			{if $image and $image->isValid()}
 			<div class="img-shadow" style="font-size:0.7em;float:right;text-align:center;padding:1px">
-				{$image->getThumbnail(120,120)|replace:'_120x120':''}<br/>
+				{$image->getThumbnail(120,120)|replace:'_120x120':''|regex_replace:'/\/s\d\./':'/www.'}<br/>
 				<tt>{$http_host}/p/{$image->gridimage_id}</tt>
 			</div>
 			{/if}
