@@ -39,9 +39,11 @@ $cacheid='';
 
 $r = empty($_GET['r'])?5:intval($_GET['r']);
 $c = empty($_GET['c'])?2:intval($_GET['c']);
+$v = empty($_GET['v'])?1:intval($_GET['v']);
 
 $smarty->assign('r',$r);
 $smarty->assign('c',$c);
+$smarty->assign('v',$v);
 
 $smarty->display($template,$cacheid);
 
