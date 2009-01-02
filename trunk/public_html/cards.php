@@ -40,10 +40,29 @@ $cacheid='';
 $r = empty($_GET['r'])?5:intval($_GET['r']);
 $c = empty($_GET['c'])?2:intval($_GET['c']);
 $v = empty($_GET['v'])?1:intval($_GET['v']);
+$l = empty($_GET['l'])?1:intval($_GET['l']);
+
+if (isset($_REQUEST['image']))
+{
+	//initialise message
+	require_once('geograph/gridsquare.class.php');
+	require_once('geograph/gridimage.class.php');
+
+	$image=new GridImage();
+	$image->loadFromId($_REQUEST['image']);
+	
+	if ($image->moderation_status=='rejected' || $image->moderation_status=='pending') {
+		//clear the image
+		$image=new GridImage;
+	}
+	$smarty->assign_by_ref('image', $image);
+}
 
 $smarty->assign('r',$r);
 $smarty->assign('c',$c);
 $smarty->assign('v',$v);
+$smarty->assign('l',$l);
+
 
 $smarty->display($template,$cacheid);
 
