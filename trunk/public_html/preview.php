@@ -93,6 +93,69 @@ if (!empty($_POST))
 	$image->fullpath = "/submit.php?preview=".strip_tags(trim(stripslashes($_POST['upload_id'])));
 
 
+if (!empty($_POST['spelling'])) {
+	
+	include("3rdparty/spellchecker.class.php");
+	?>
+	<style>
+		body { font-family:Georgia, Verdana, Arial, serif; }
+		u { color:red }
+		u span { color:black } 
+		p { background-color:#eeeeee; border:1px solid gray; padding:10px }
+	</style>
+	<?
+	$query = "{$image->title} {$image->comment} {$image->imageclass}"; 
+
+	$xml = new SimpleXMLElement(SpellChecker::GetSuggestions( $query )); 
+
+	$sugges = $replacement = array(); 
+	foreach($xml->c as $correction) { 
+		$suggestions = explode("\t", (string)$correction); 
+		$offset = $correction['o']; 
+		$length = $correction['l']; 
+
+		$replacement[mb_substr($query, $offset, $length)] = $suggestions[0]; 
+		$sugges[mb_substr($query, $offset, $length)] = implode("\n",$suggestions);
+	} 
+
+	print "<form>";
+	foreach (array('title'=>'Title','comment'=>'Description/Comment','imageclass'=>'Category') as $key => $name) {
+		print "<h3>$name</h3><blockquote>";
+		$result = $original = htmlentities2($image->$key);
+		if (!empty($original)) {
+			foreach($replacement as $old => $new) { 
+				$old2 = preg_quote($old); 
+				$original = preg_replace("/$old2/is", "<u title=\"{$sugges[$old]}\"><span>$old</span></u>", $original, 1); 
+				$result = preg_replace("/$old2/is", "$new", $result, 1); 
+			}
+			print "<h4>Original</h4>";
+			print "<p>$original</p>";
+			print "<small><i>hover over underlined words to see suggestions</i></small>";
+			print "<h4>Suggestion</h4>";
+			if ($original != $result) {
+				if ($key == 'comment') {
+					print "<p><textarea name=\"$key\" rows=\"7\" cols=\"80\" spellcheck=\"true\">$result</textarea>";
+				} else {
+					print "<p><input name=\"$key\" spellcheck=\"true\" value=\"$result\" size=60 readonly/>";
+				}
+				if ($key != 'imageclass') {
+					print "<input type=button value=\"copy to submission\" onclick=\"window.opener.document.forms.theForm.$key.value= this.form.$key.value\" />";
+				}
+				print "</p>";
+			} else {
+				print "<i>no suggestions</i>";
+			}
+		} else {
+			print "<i>empty</i>";
+		}
+		print "</blockquote><hr/>";
+	}
+	print "</form>";
+	print "<div>Powered by Google Toolbar</div>";
+	exit;
+}
+
+
 	//what style should we use?
 	$style = $USER->getStyle();
 
