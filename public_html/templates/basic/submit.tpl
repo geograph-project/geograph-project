@@ -586,7 +586,10 @@ have problems
 	<input type="hidden" name="imagetakenMonth"/>
 	<input type="hidden" name="imagetakenYear"/>
 	<input type="hidden" name="upload_id"/>
-	<input type="submit" value="Preview Submission in a new window" onclick="previewImage()"/> <sup style="color:red">Experimental!</sup>
+	<input type="submit" value="Preview Submission in a new window" onclick="previewImage()"/> 
+	
+	<input type="checkbox" name="spelling"/>Check Spelling
+	<sup style="color:red">Experimental!</sup>
 	</form>
 {/if}
 
