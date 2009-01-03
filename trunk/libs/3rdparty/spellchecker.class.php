@@ -15,7 +15,6 @@
 class SpellChecker 
 { 
   private static $instance; 
-  private static $_cache; 
 
   private function __construct( ) {} 
 
@@ -85,9 +84,12 @@ class SpellChecker
    */ 
   public static function GetSuggestions( $query, $lang='en', $hl='en' ) 
   { 
-    if( !is_null(self::$_cache[$query]) ) { 
-      return self::$_cache[$query]; 
-    } 
+	global $memcache;
+	$mkey = md5($query).$lang.$hl;
+	//fails quickly if not using memcached!
+	$data =& $memcache->name_get('sp',$mkey);
+	if ($data)
+		return $data;
 
     $post = '<spellrequest textalreadyclipped="0" ignoredups="1" ignoredigits="1" ignoreallcaps="0"><text>'.htmlspecialchars($query).'</text></spellrequest>'; 
 
@@ -128,7 +130,8 @@ class SpellChecker
     xml_parse_into_struct($xml_parser, $data, $vals, $index); 
     xml_parser_free($xml_parser); 
 
-    self::$_cache[$query] = $data; 
+	//fails quickly if not using memcached!
+	$memcache->name_set('sp',$mkey,$data,$memcache->compress,$memcache->period_long);
 
     // Returns the same data you'd get form Google toolbar 
     return $data; 
