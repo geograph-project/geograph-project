@@ -327,6 +327,21 @@ END;
 		} elseif ($this->criteria->searchclass == 'Placename' && strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE && isset($GLOBALS['smarty'])) {
 			$GLOBALS['smarty']->assign("suggestions",array(array('gr'=>'(anywhere)','localities'=>'as text search','query'=>$this->criteria->searchq) ));
 		}
+		if (!empty($this->criteria->searchtext)) {
+			include("3rdparty/spellchecker.class.php");
+			
+			$correction = SpellChecker::Correct($this->criteria->searchtext);
+			
+			if ($correction != $this->criteria->searchtext) {
+				
+				$suggestions = @$GLOBALS['smarty']->get_template_vars('suggestions');
+				if (empty($suggestions)) {
+					$suggestions = array(); 
+				}
+				$suggestions += array(array('gr'=>'(anywhere)','localities'=>'','query'=>$correction));
+				$GLOBALS['smarty']->assign("suggestions",$suggestions);
+			}
+		}
 
 
 	//setup the sphinx wrapper 
