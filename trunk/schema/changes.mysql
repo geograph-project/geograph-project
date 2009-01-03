@@ -359,3 +359,27 @@ alter table queries_archive change `displayclass` `displayclass`  enum('full','t
 alter table queries change `displayclass` `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2','vote') NOT NULL DEFAULT 'full';
 
 
+
+
+ALTER TABLE `user` CHANGE `rights` `rights` SET( 'basic', 'moderator', 'admin', 'ticketmod', 'traineemod', 'suspicious', 'dormant') NULL DEFAULT NULL;
+
+UPDATE  `user` SET rights = concat(coalesce(rights,''),',dormant') WHERE email LIKE '%DORMANT%';
+UPDATE  `user` SET rights = concat(coalesce(rights,''),',dormant') WHERE email LIKE '%geograph.org.uk%';
+UPDATE  `user` SET rights = concat(coalesce(rights,''),',dormant') WHERE email LIKE '%geograph.co.uk%';
+UPDATE  `user` SET rights = concat(coalesce(rights,''),',dormant') WHERE email LIKE '%dev.null%';
+UPDATE  `user` SET rights = concat(coalesce(rights,''),',dormant') WHERE email LIKE '%deleted%';
+UPDATE  `user` SET rights = concat(coalesce(rights,''),',dormant') WHERE email LIKE '%localhost%';
+UPDATE  `user` SET rights = concat(coalesce(rights,''),',dormant') WHERE email LIKE '%127.0.0.1%';
+
+
+CREATE TABLE `feedback` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `category` varchar(32) NOT NULL,
+  `question` varchar(128) NOT NULL,
+  `enabled` tinyint(4) NOT NULL default '1',
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+
