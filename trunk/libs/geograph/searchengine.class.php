@@ -332,7 +332,7 @@ END;
 			
 			$correction = SpellChecker::Correct($this->criteria->searchtext);
 			
-			if ($correction != $this->criteria->searchtext) {
+			if ($correction != $this->criteria->searchtext && levenshtein($correction,$this->criteria->searchtext) < 0.25*strlen($correction)) {
 				
 				$suggestions = @$GLOBALS['smarty']->get_template_vars('suggestions');
 				if (empty($suggestions)) {
