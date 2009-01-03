@@ -465,7 +465,7 @@ class GridImage
 		}
 
 		$level = ($this->grid_square->imagecount > 1)?6:5;
-		$smarty->assign('sitemap',getSitemapFilepath($level,$image->grid_square)); 
+		$smarty->assign('sitemap',getSitemapFilepath($level,$this->grid_square)); 
 	}
 	
 	
