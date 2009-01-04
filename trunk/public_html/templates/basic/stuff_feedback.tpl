@@ -16,7 +16,7 @@
 
 <form method="post" action="{$script_name}">
 
-<p><b>A. First rate your experience with the following on a scale of 1-5:</b></p>
+<p><b>A. Please tell us how experienced you are with with the following on a scale of 1-5 (where 5 is very experienced):</b></p>
 
 <table class="report sortable" id="expTable" cellpadding="5">
 	
