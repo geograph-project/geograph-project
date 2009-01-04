@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: images.php 2380 2006-08-13 10:41:07Z barry $
+ * $Id: busyday_users.php 2176 2006-04-27 23:42:06Z barryhunter $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
@@ -24,7 +24,15 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+
+
+
 $smarty = new GeographPage;
+
+$u = (isset($_GET['u']) && is_numeric($_GET['u']) && $_GET['u'] == $USER->user_id)?intval($_GET['u']):0;
+
+$smarty->caching = 2; // lifetime is per cache
+$smarty->cache_lifetime = 3600*24; //24hr cache
 
 if (isset($_GET['output']) && $_GET['output'] == 'csv') {
 	$table = (isset($_GET['table']) && is_numeric($_GET['table']))?intval($_GET['table']):0;
@@ -35,62 +43,72 @@ if (isset($_GET['output']) && $_GET['output'] == 'csv') {
 	header("Content-type: application/octet-stream");
 	header("Content-Disposition: attachment; filename=\"".basename($_SERVER['SCRIPT_NAME'],'.php').".$table.csv\"");
 
-	$cacheid='statistics|feedback.'.$table;
+	$cacheid='statistics|admin_performance.'.$table.'|'.$u;
 } else {
 	$template='statistics_tables.tpl';
 	
-	$cacheid='statistics|feedback';
+	$cacheid='statistics|admin_performance|'.$u;
 }
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hr cache
+if (!$smarty->is_cached($template, $cacheid))
+{
 
-if (!$smarty->is_cached($template, $cacheid)) {
-	dieUnderHighLoad();
-	
 	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');
+	if (!$db) die('Database connection failed');  
 	 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	
+	if (!empty($u)) {
+		$crit1 = "and l.user_id = ".$u;
+		$smarty->assign('u', $u);
+
+		$profile=new GeographUser($u);
+		$smarty->assign_by_ref('profile', $profile);
+		$title = " for ".($profile->realname);
+	} else {
+		$title = '';
+	}
+
 	$tables = array();
 	
 	###################
 
 	$table = array();
 	
-		$table['title'] = "Part A - Experience";
+		$table['title'] = "Image Moderation Dummy Runs".$title;
 
 		$table['table']=$db->GetAll("
-			select category,question,num as Replies,v1,v2,v3,v4,v5 from feedback inner join vote_stat using (id) where type = 'f' and category = 'Experience' order by 3
-			" );
-	
-		$table['total'] = count($table['table']);
-		
-		
+		SELECT SUBSTRING(created,1,7) as Month,COUNT(*) AS Count,SUM(new_status != moderation_status) AS Mismatches,
+			SUM(new_status != moderation_status)/COUNT(*)*100 as Percentage,COUNT(DISTINCT l.user_id) as Moderators
+		FROM moderation_log l
+		INNER JOIN gridimage gi USING (gridimage_id)
+		WHERE created > moderated
+			$crit1
+		AND type = 'dummy'
+		GROUP BY SUBSTRING(created,1,7)
+		" );
 
-	$tables[] = $table;
+		$table['total'] = count($table);
 
-	###################
-
-	$table = array();
-	
-		$table['title'] = "Part B - Results";
-
-		$table['table']=$db->GetAll("
-		select category,question,sum(vote=-2) as 'Didn\'t Know',sum(vote=-1) as 'Not Tried',`num` as Votes,`avg` as Average,`baysian` as Weighted,`std` as `Std Dev` from feedback inner join vote_stat using (id) inner join vote_log using (id) where vote_stat.type = 'f' and category != 'Experience' group by id order by 4
-		");
-
-		$table['total'] = count($table['table']);
 
 	$tables[] = $table;
 
 	###################
 	
 	$smarty->assign_by_ref('tables', $tables);
-				
-	$smarty->assign("h2title",'Feedback results');
-} 
+		
+	$smarty->assign('h2title','Admin Performance');
+	
+} else {
+	if ($u) {
+		$profile=new GeographUser($u);
+		$smarty->assign_by_ref('profile', $profile);
+		$smarty->assign_by_ref('u', $u);
+	}
+}
 
+$smarty->assign("filter",2);
+$smarty->assign("nosort",1);
 $smarty->display($template, $cacheid);
 
+	
 ?>
