@@ -383,3 +383,17 @@ CREATE TABLE `feedback` (
 ) ENGINE=MyISAM;
 
 
+CREATE TABLE `vote_stat` (
+  `type` varchar(20) NOT NULL,
+  `id` int(10) unsigned NOT NULL,
+  `num` mediumint(8) unsigned NOT NULL,
+  `avg` float NOT NULL,
+  `baysian` float NOT NULL,
+  `v1` mediumint(8) unsigned NOT NULL,
+  `v2` mediumint(8) unsigned NOT NULL,
+  `v3` mediumint(8) unsigned NOT NULL,
+  `v4` mediumint(8) unsigned NOT NULL,
+  `v5` mediumint(8) unsigned NOT NULL,
+  PRIMARY KEY (`type`,`id`)
+) ENGINE=MyISAM;
+
