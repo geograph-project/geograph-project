@@ -1,18 +1,24 @@
 {assign var="page_title" value="Feedback"}
 {include file="_std_begin.tpl"}
+{dynamic}
+{if $thanks}
+	<h3>Thanks!</h3>
+	<p>Many thanks for your feedback, it's much appreciated. Watch the Discussion area where we will publish the overall results.</p>
 
-<h2>Send Feedback</h2>
+{else}
+<h2>Let us know what you think!</h2>
 
-<p>All replies are anonymous, results will only be used aggregated form.</p>
+<p>Please take a few minutes to answer the following questions. We will use the answers help identify what parts of the site needs improvement.</p>
+
+<p style="color:red">All replies are anonymous, we will not link this data with your user account.</p>
 
 <hr/>
-{dynamic}
 
-<form>
+<form method="post" action="{$script_name}">
 
-<p>A. First rate your expeience with the following on a scale of 1-5:</p>
+<p><b>A. First rate your experience with the following on a scale of 1-5:</b></p>
 
-<table class="report sortable" id="theTable">
+<table class="report sortable" id="expTable" cellpadding="5">
 	
 	<tbody>
 	{assign var="lastcat" value="0"}
@@ -42,31 +48,32 @@
 	</tbody>
 </table>
 
-<p>B. Now rate the ease of use of the following features:</p>
+<hr/>
+<p><b>B. Now rate the ease of use of the following features:</b></p>
 
 
-<table class="report sortable" id="theTable">
+<table class="report sortable" id="theTable" cellpadding="5">
 	
 	<tbody>
 	{assign var="lastcat" value="0"}
 	{foreach from=$list item=row}
 		{if $row.category != $lastcat}
 			<thead><tr style="font-size:0.9em">
-				<td><big>{$row.category}</big></td>
-				<td width="70" align="center">Didn't know possible</td>
-				<td width="70" align="center">Never Tried</td>
-				<td width="70" align="center">Hard</td>
-				<td width="70" align="center">Problematic</td>
-				<td width="70" align="center">Average</td>
-				<td width="70" align="center">Reasonable</td>
-				<td width="70" align="center">Very Easy</td>
+				<td valign="bottom"><big>&nbsp;&nbsp;&nbsp;{$row.category}</big></td>
+				<td width="50" align="center">Didn't know possible</td>
+				<td width="50" align="center">Never Tried</td>
+				<td width="50" align="center">Hard</td>
+				<td width="50" align="center">Problematic</td>
+				<td width="50" align="center">Average</td>
+				<td width="50" align="center">Reasonable</td>
+				<td width="5 0" align="center">Very Easy</td>
 			</tr></thead>
 			{assign var="lastcat" value=$row.category}
 		{/if}
 		
 		{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 		<tr bgcolor="{$bgcolor}">
-		<td>&nbsp;{$row.question}</td>
+		<td>{$row.question}</td>
 		<td align="center"><input type="radio" name="radio{$row.id}" value="-2"/></td>
 		<td align="center"><input type="radio" name="radio{$row.id}" value="-1"/></td>
 		<td align="center"><input type="radio" name="radio{$row.id}" value="1"/></td>
@@ -79,15 +86,17 @@
 	</tbody>
 </table>
 
-<p>C. Any other comments:</p>
+<hr/>
+
+<p><b>C. Finally add any other comments:</b></p>
 <textarea name="comments" rows="7" cols="80"></textarea><br/>
-(<input type="checkbox" name="nonanon"/> Identify yourself with this comment - we can then reply)
+<small>(<input type="checkbox" name="nonanon"/> <i>Tick here to include your name with this comment, so we can then reply. Will not be linked with the rest of the questions</i>)</small>
 
 <hr/>
 
-<p>D. <input type="submit" name="submit" value="Send it in!"/></p>
+<p><b>D. <input type="submit" name="submit" value="Send it in!" style="font-size:1.1em"/></b></p>
 </form>
-
+{/if}
 
 {/dynamic}    
 {include file="_std_end.tpl"}

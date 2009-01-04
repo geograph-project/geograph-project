@@ -33,7 +33,42 @@ $cacheid='';
 
 
 
-	$db = NewADOConnection($GLOBALS['DSN']);
+$db = NewADOConnection($GLOBALS['DSN']);
+
+if (!empty($_POST['submit'])) {
+	foreach ($_POST as $key => $value) {
+		if (preg_match('/radio(\d)/',$key,$m)) {
+			$id = intval($m[1]);
+			
+			$ins = "INSERT INTO vote_log SET
+			type = 'f',
+			id = $id,
+			vote = ".intval($value).",
+			ipaddr = INET_ATON('".getRemoteIP()."'),
+			user_id = ".intval($USER->user_id);
+			$db->Execute($ins);
+		}
+	}
+
+	$subject = "Feedback Form";
+	$msg=stripslashes(trim($_POST['comments']));
+		
+	if (!empty($_POST['nonanon']) && $_SESSION['user']->user_id) {
+		$msg.="User profile: http://{$_SERVER['HTTP_HOST']}/profile/{$_SESSION['user']->user_id}\n";
+		$from = $_SESSION['user']->email;
+	} else {
+		$from = "anon@geograph.org.uk";
+	}
+	$msg.="Browser: ".$_SERVER['HTTP_USER_AGENT']."\n";
+
+	mail($CONF['contact_email'], 
+		'[Geograph] '.$subject,
+		$msg,
+		'From:'.$from);	
+	
+	$smarty->assign('thanks', 1);
+} else {
+
 
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
@@ -51,11 +86,11 @@ $cacheid='';
 	select *
 	from feedback
 	where category != 'Experience'
-	order by category,question
+	order by FIELD(category,'Experience','Site Features','Searching for Photos','Viewing Maps','Exploring Images','Advanced Features','Profile','Submission','Editing','Contacting'),question
 	");
 	$smarty->assign_by_ref('list', $list);
 
-
+}
 
 $smarty->display($template,$cacheid);
 
