@@ -397,3 +397,5 @@ CREATE TABLE `vote_stat` (
   PRIMARY KEY (`type`,`id`)
 ) ENGINE=MyISAM;
 
+ALTER TABLE  `vote_stat` ADD  `std` FLOAT NOT NULL AFTER  `avg` ;
+
