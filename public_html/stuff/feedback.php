@@ -52,19 +52,21 @@ if (!empty($_POST['submit'])) {
 
 	$subject = "Feedback Form";
 	$msg=stripslashes(trim($_POST['comments']));
-	$msg.="\n\n-------------------------------\n";
-	if (!empty($_POST['nonanon']) && $_SESSION['user']->user_id) {
-		$msg.="User profile: http://{$_SERVER['HTTP_HOST']}/profile/{$_SESSION['user']->user_id}\n";
-		$from = $_SESSION['user']->email;
-	} else {
-		$from = "anon@geograph.org.uk";
-	}
-	$msg.="Browser: ".$_SERVER['HTTP_USER_AGENT']."\n";
+	if (!empty($msg)) {
+		$msg.="\n\n-------------------------------\n";
+		if (!empty($_POST['nonanon']) && $_SESSION['user']->user_id) {
+			$msg.="User profile: http://{$_SERVER['HTTP_HOST']}/profile/{$_SESSION['user']->user_id}\n";
+			$from = $_SESSION['user']->email;
+		} else {
+			$from = "anon@geograph.org.uk";
+		}
+		$msg.="Browser: ".$_SERVER['HTTP_USER_AGENT']."\n";
 
-	mail($CONF['contact_email'], 
-		'[Geograph] '.$subject,
-		$msg,
-		'From:'.$from);	
+		mail($CONF['contact_email'], 
+			'[Geograph] '.$subject,
+			$msg,
+			'From:'.$from);	
+	}
 	
 	$smarty->assign('thanks', 1);
 } else {
