@@ -399,3 +399,5 @@ CREATE TABLE `vote_stat` (
 
 ALTER TABLE  `vote_stat` ADD  `std` FLOAT NOT NULL AFTER  `avg` ;
 
+ALTER TABLE  `vote_stat` ADD  `users` MEDIUMINT UNSIGNED NOT NULL AFTER  `num` ;
+

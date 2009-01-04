@@ -58,6 +58,7 @@ foreach ($types as $type => $avg) {
 			type,
 			id,
 			COUNT(*) AS num,
+			COUNT(DISTINCT user_id,ipaddr) AS users,
 			AVG(vote) AS `avg`,
 			STD(vote) AS `std`,
 			(COUNT(*) / (COUNT(*)+$wm)) * AVG(vote) + ($wm / (COUNT(*)+$wm)) * $avg AS `baysian`, 
