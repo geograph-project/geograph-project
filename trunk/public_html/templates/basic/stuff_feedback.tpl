@@ -88,10 +88,11 @@
 
 <hr/>
 
-<p><b>C. Finally add any other comments:</b></p>
+<p><b>C. Any other comments to add?</b></p>
 <textarea name="comments" rows="7" cols="80"></textarea><br/>
+{if $user->registered}
 <small>(<input type="checkbox" name="nonanon"/> <i>Tick here to include your name with this comment, so we can then reply. Will not be linked with the rest of the questions</i>)</small>
-
+{/if}
 <hr/>
 
 <p><b>D. <input type="submit" name="submit" value="Send it in!" style="font-size:1.1em"/></b></p>
