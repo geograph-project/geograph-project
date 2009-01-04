@@ -67,7 +67,7 @@ foreach ($types as $type => $avg) {
 			SUM(vote=4) AS v4,
 			SUM(vote=5) AS v5
 		FROM vote_log
-		WHERE type = '$type'
+		WHERE type = '$type' AND vote > 0
 		GROUP BY id
 		ORDER BY NULL");
 }

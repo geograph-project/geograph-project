@@ -61,7 +61,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$table['title'] = "Part A - Experience";
 
 		$table['table']=$db->GetAll("
-			select category,question,num as Replies,v1,v2,v3,v4,v5 from feedback inner join vote_stat using (id) where type = 'f' and category = 'Experience' order by 3
+			select category,question,count(*) as replies,sum(vote=1) as `1`,sum(vote=2) as `2`,sum(vote=3) as `3`,sum(vote=4) as `4`,sum(vote=5) as `5` from feedback inner join vote_log using (id) where type = 'f' and category = 'Experience' group by id order by 4
 			" );
 	
 		$table['total'] = count($table['table']);
@@ -77,7 +77,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$table['title'] = "Part B - Results";
 
 		$table['table']=$db->GetAll("
-		select category,question,sum(vote=-2) as 'Didn\'t Know',sum(vote=-1) as 'Not Tried',`num` as Votes,`avg` as Average,`baysian` as Weighted,`std` as `Std Dev` from feedback inner join vote_stat using (id) inner join vote_log using (id) where vote_stat.type = 'f' and category != 'Experience' group by id order by 4
+		select category,question,sum(vote=-2) as 'Didn\'t Know',sum(vote=-1) as 'Not Tried',sum(vote>0) as Votes,sum(if(vote>0,vote,0))/sum(vote>0) as Average,std(vote) as `Std Dev` from feedback inner join vote_log using (id) where type = 'f' and category != 'Experience' group by id order by 4
 		");
 
 		$table['total'] = count($table['table']);
