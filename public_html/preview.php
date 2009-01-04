@@ -97,44 +97,70 @@ if (!empty($_POST['spelling'])) {
 	
 	include("3rdparty/spellchecker.class.php");
 	?>
-	<style>
+	<style type="text/css">
 		body { font-family:Georgia, Verdana, Arial, serif; }
 		u { color:red }
 		u span { color:black } 
 		p { background-color:#eeeeee; border:1px solid gray; padding:10px }
 	</style>
+	<script type="text/javascript">
+		function doupdate(that) {
+			var ele = that.form.elements[that.name];
+			var str = '';
+			for(q=0;q<ele.length;q++) {
+				if (ele[q].type.toLowerCase() == 'select-one' 
+						&& ele[q] == that
+						&& ele[q].selectedIndex == ele[q].options.length-1
+						) {
+					ele[q].options[ele[q].selectedIndex].value = prompt("Enter the correct spelling of "+ele[q].value,ele[q].value);
+				} 
+				str = str + ele[q].value;
+			}
+			name = that.name.replace(/_/,'');
+			that.form.elements[name].value = str;
+		}
+	</script>
 	<?
 	$query = "{$image->title} {$image->comment} {$image->imageclass}"; 
 
 	$xml = new SimpleXMLElement(SpellChecker::GetSuggestions( $query )); 
 
-	$sugges = $replacement = array(); 
+	$replacements = array(); 
 	foreach($xml->c as $correction) { 
 		$suggestions = explode("\t", (string)$correction); 
 		$offset = $correction['o']; 
 		$length = $correction['l']; 
 
-		$replacement[mb_substr($query, $offset, $length)] = $suggestions[0]; 
-		$sugges[mb_substr($query, $offset, $length)] = implode("\n",$suggestions);
+		$replacements[mb_substr($query, $offset, $length)] = $suggestions; 
 	} 
 
 	print "<form>";
 	foreach (array('title'=>'Title','comment'=>'Description/Comment','imageclass'=>'Category') as $key => $name) {
 		print "<h3>$name</h3><blockquote>";
-		$result = $original = htmlentities2($image->$key);
+		$result = $select = $original = htmlentities2($image->$key);
 		if (!empty($original)) {
-			foreach($replacement as $old => $new) { 
+			foreach($replacements as $old => $new) { 
 				$old2 = preg_quote($old); 
-				$original = preg_replace("/$old2/is", "<u title=\"{$sugges[$old]}\"><span>$old</span></u>", $original, 1); 
-				$result = preg_replace("/$old2/is", "$new", $result, 1); 
+				if (count($new)) {
+					$original = preg_replace("/$old2/is", "<u title=\"".implode("\n",$new)."\"><span>$old</span></u>", $original, 1); 
+					$select = preg_replace("/$old2/is", "<select name=\"_$key\" onchange=\"doupdate(this)\"><optgroup label=\"Suggestions\"><option>".implode("</option><option>",$new)."</option></optgroup><optgroup label=\"Original\"><option value=\"$old\">$old</option></optgroup><option value=\"$old\">EDIT...</option></select>", $select, 1); 
+					$result = preg_replace("/$old2/is", $new[0], $result, 1); 
+				} else {
+					$original = preg_replace("/$old2/is", "<u title=\"-no suggestions-\"><span>$old</span></u>", $original, 1); 
+				}
 			}
-			print "<h4>Original</h4>";
-			print "<p>$original</p>";
-			print "<small><i>hover over underlined words to see suggestions</i></small>";
-			print "<h4>Suggestion</h4>";
-			if ($original != $result) {
+			if (htmlentities2($image->$key) != $result) {
+				print "<h4>Original</h4>";
+				print "<p>$original</p>";
+				print "<h4>Suggestion</h4>";
+				$bits = preg_split('/<select.*?select>/',$select);
+				foreach ($bits as $bit) {
+					$select = preg_replace('/(?<!>)(<select|$)/',"<input type=\"hidden\" name=\"_$key\" value=\"$bit\">\$1",$select,1);
+				}
+			
+				print "<p>$select</p>";
 				if ($key == 'comment') {
-					print "<p><textarea name=\"$key\" rows=\"7\" cols=\"80\" spellcheck=\"true\">$result</textarea>";
+					print "<p><textarea name=\"$key\" rows=\"3\" cols=\"80\" spellcheck=\"true\">$result</textarea>";
 				} else {
 					print "<p><input name=\"$key\" spellcheck=\"true\" value=\"$result\" size=60 readonly/>";
 				}
@@ -143,7 +169,7 @@ if (!empty($_POST['spelling'])) {
 				}
 				print "</p>";
 			} else {
-				print "<i>no suggestions</i>";
+				print "<p>$original</p>";
 			}
 		} else {
 			print "<i>empty</i>";
@@ -151,7 +177,7 @@ if (!empty($_POST['spelling'])) {
 		print "</blockquote><hr/>";
 	}
 	print "</form>";
-	print "<div>Powered by Google Toolbar</div>";
+	print "<i>Powered by the <b>Google Toolbar</b> spell checker - language is set to English</i>";
 	exit;
 }
 
