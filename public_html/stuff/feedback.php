@@ -37,7 +37,7 @@ $db = NewADOConnection($GLOBALS['DSN']);
 
 if (!empty($_POST['submit'])) {
 	foreach ($_POST as $key => $value) {
-		if (preg_match('/radio(\d)/',$key,$m)) {
+		if (preg_match('/radio(\d+)/',$key,$m)) {
 			$id = intval($m[1]);
 			
 			$ins = "INSERT INTO vote_log SET
