@@ -345,7 +345,7 @@ END;
 					$suggestions += array(array('link'=>"/photo/{$image->gridimage_id}",'gr'=>'(anywhere)','localities'=>"Image by ".htmlentities($image->realname).", ID: {$image->gridimage_id}",'query'=>htmlentities2($image->title)));
 				}
 			} else {
-				include("3rdparty/spellchecker.class.php");
+				require_once("3rdparty/spellchecker.class.php");
 
 				$correction = SpellChecker::Correct($this->criteria->searchtext);
 
