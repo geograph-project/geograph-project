@@ -1,10 +1,10 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: hectads.php 3514 2007-07-10 21:09:55Z barry $
+ * $Id$
  * 
  * GeoGraph geographic photo archive project
- * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
+ * This file copyright (C) 2008 Barry Hunter (geo@barryhunter.co.uk)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -65,32 +65,19 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	if ($u) {
-		die("not ready yet");
-		$profile=new GeographUser($u);
-		$smarty->assign_by_ref('profile', $profile);
-		$title = " for ".($profile->realname);
-		
-		$hectads = $db->CacheGetAll(3600,"select 
-		concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) as tenk_square,
-		count(distinct x,y) as geograph_count,
-		round(count(distinct x,y) * 100 / sum(percent_land >0),1) as percentage,
-		sum(percent_land >0) as land_count,min(x) as x,min(y) as y
-		from gridsquare gs
-		left join gridimage gi on (gs.gridsquare_id = gi.gridsquare_id and user_id = $u and moderation_status = 'geograph')
-		group by tenk_square 
-		having land_count > 0
-		order by null");
+		$columns = '0 as geograph_count,0 as percentage,';
 	} else {
-		$hectads = $db->CacheGetAll(3600,"select 
+		$columns = "sum(has_geographs) as geograph_count,
+			round(sum(has_geographs) * 100 / sum(percent_land >0),1) as percentage,";
+	}
+	$hectads = $db->CacheGetAll(3600*24,"select 
 		concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) as tenk_square,
-		sum(has_geographs) as geograph_count,
-		round(sum(has_geographs) * 100 / sum(percent_land >0),1) as percentage,
+		$columns
 		sum(percent_land >0) as land_count,min(x) as x,min(y) as y
 		from gridsquare 
 		group by tenk_square 
 		having land_count > 0
 		order by null");
-	}
 	
 	$grid = array();
 	$x1 = 9999999;
@@ -103,6 +90,28 @@ if (!$smarty->is_cached($template, $cacheid))
 		$x1 = min($x,$x1);
 		$x2 = max($x,$x2);
 	}
+	
+	if ($u) {
+		$profile=new GeographUser($u);
+		$smarty->assign_by_ref('profile', $profile);
+		$title = " for ".($profile->realname);
+		
+		$hectads2 = $db->CacheGetAll(3600*24,"select 
+		concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) as tenk_square,
+		count(distinct x,y) as geograph_count,
+		min(x) as x,min(y) as y
+		from gridimage_search gs
+		where user_id = $u and moderation_status = 'geograph'
+		group by tenk_square 
+		order by null");
+		foreach ($hectads2 as $i => $h) {
+			$x = intval($h['x']/10)+10;
+			$y = intval($h['y']/10);
+			$grid[$y][$x]['geograph_count'] = $h['geograph_count'];
+			$grid[$y][$x]['percentage'] = round($h['geograph_count']/$grid[$y][$x]['land_count']*100,1);
+		}
+	}
+	
 	$ys = array_keys($grid);
 	$y1 = min($ys);
 	$y2 = max($ys);
