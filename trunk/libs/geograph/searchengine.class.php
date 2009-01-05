@@ -322,25 +322,41 @@ END;
 		}
 
 	//look for suggestions - this needs to be done before the filters are added - the same filters wont work on the gaz index
+		$suggestions = array();
 		if (empty($this->countOnly) && $sphinx->q && strlen($sphinx->q) < 64 && empty($this->criteria->sphinx['x']) && isset($GLOBALS['smarty'])) {
-			$GLOBALS['smarty']->assign("suggestions",$sphinx->didYouMean($sphinx->q));
+			$suggestions = $sphinx->didYouMean($sphinx->q);
 		} elseif ($this->criteria->searchclass == 'Placename' && strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE && isset($GLOBALS['smarty'])) {
-			$GLOBALS['smarty']->assign("suggestions",array(array('gr'=>'(anywhere)','localities'=>'as text search','query'=>$this->criteria->searchq) ));
+			$suggestions = array(array('gr'=>'(anywhere)','localities'=>'as text search','query'=>$this->criteria->searchq) );
 		}
 		if (!empty($this->criteria->searchtext)) {
-			include("3rdparty/spellchecker.class.php");
-			
-			$correction = SpellChecker::Correct($this->criteria->searchtext);
-			
-			if ($correction != $this->criteria->searchtext && levenshtein($correction,$this->criteria->searchtext) < 0.25*strlen($correction)) {
+		
+			if (is_numeric($this->criteria->searchtext)) {
 				
-				$suggestions = @$GLOBALS['smarty']->get_template_vars('suggestions');
-				if (empty($suggestions)) {
-					$suggestions = array(); 
+				require_once('geograph/gridsquare.class.php');
+				require_once('geograph/gridimage.class.php');
+
+				$image=new GridImage();
+				$image->loadFromId($this->criteria->searchtext);
+
+				if ($image->isValid() && ( 
+					($image->moderation_status!='rejected' && $image->moderation_status!='pending')
+					|| $image->user_id == $GLOBALS['USER']->user_id
+				) ) {
+					$suggestions += array(array('gr'=>'(anywhere)','localities'=>"Image by ".htmlentities($image->realname).", ID: {$image->gridimage_id}",'query'=>htmlentities2($image->title)));
 				}
-				$suggestions += array(array('gr'=>'(anywhere)','localities'=>'','query'=>$correction));
-				$GLOBALS['smarty']->assign("suggestions",$suggestions);
+			} else {
+				include("3rdparty/spellchecker.class.php");
+
+				$correction = SpellChecker::Correct($this->criteria->searchtext);
+
+				if ($correction != $this->criteria->searchtext && levenshtein($correction,$this->criteria->searchtext) < 0.25*strlen($correction)) {
+
+					$suggestions += array(array('gr'=>'(anywhere)','localities'=>'','query'=>$correction));
+				}
 			}
+		} 
+		if (!empty($suggestions) && count($suggestions)) {
+			$GLOBALS['smarty']->assign("suggestions",$suggestions);
 		}
 
 
