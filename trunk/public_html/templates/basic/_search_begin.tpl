@@ -33,7 +33,7 @@ Display:
 	<div><b>Did you mean:</b>
 	<ul>
 	{foreach from=$suggestions item=row}
-		<li><b><a href="/search.php?i={$i}&amp;text={$row.query|escape:'url'}&amp;gridref={$row.gr}&amp;redo=1">{$row.query}{if $row.name} <i>near</i> {$row.name}{/if}</a></b>? {if $row.localities}<small>({$row.localities})</small>{/if}</li>
+		<li><b><a href="{if $row.link}{$row.link}{else}/search.php?i={$i}&amp;text={$row.query|escape:'url'}&amp;gridref={$row.gr}&amp;redo=1{/if}">{$row.query}{if $row.name} <i>near</i> {$row.name}{/if}</a></b>? {if $row.localities}<small>({$row.localities})</small>{/if}</li>
 	{/foreach}
 	</ul></div>
 	<hr/>
