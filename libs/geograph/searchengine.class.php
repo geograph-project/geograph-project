@@ -342,7 +342,7 @@ END;
 					($image->moderation_status!='rejected' && $image->moderation_status!='pending')
 					|| $image->user_id == $GLOBALS['USER']->user_id
 				) ) {
-					$suggestions += array(array('gr'=>'(anywhere)','localities'=>"Image by ".htmlentities($image->realname).", ID: {$image->gridimage_id}",'query'=>htmlentities2($image->title)));
+					$suggestions += array(array('link'=>"/photo/{$image->gridimage_id}",'gr'=>'(anywhere)','localities'=>"Image by ".htmlentities($image->realname).", ID: {$image->gridimage_id}",'query'=>htmlentities2($image->title)));
 				}
 			} else {
 				include("3rdparty/spellchecker.class.php");
