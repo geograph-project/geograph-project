@@ -6,12 +6,12 @@
 {if $which eq 1}
 	<b>Geograph Coverage</b>
 {else}
-	<a href="?w=1">Geograph Coverage</a>
+	<a href="?w=1{if $profile}&amp;u={$profile->user_id}{/if}">Geograph Coverage</a>
 {/if} |
 {if $which eq 2}
 	<b>Coverage Percentage</b>
 {else}
-	<a href="?w=2">Coverage Percentage</a>
+	<a href="?w=2{if $profile}&amp;u={$profile->user_id}{/if}">Coverage Percentage</a>
 {/if} |
 {if $which eq 3}
 	<b>Land Squares</b>
