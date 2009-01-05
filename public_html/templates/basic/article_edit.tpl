@@ -111,10 +111,10 @@ AttachEvent(window,'load',setupSubmitForm,false);
 <div class="field">
 	{if $errors.grid_reference}<div class="formerror"><p class="error">{$errors.grid_reference}</p>{/if}
 	 
-	<label for="grid_reference">Relevent Grid Square:</label>
+	<label for="grid_reference">Relevant Grid Square:</label>
 	<input type="text" name="grid_reference" value="{$grid_reference|escape:"html"}" maxlength="12" size="6"/>
 	
-	<div class="fieldnotes">Optional, currently unused, to be used to help organise articles.</div>
+	<div class="fieldnotes">Optional, helps organise articles, such as been able to plot on map.</div>
 	
 	{if $errors.grid_reference}</div>{/if}
 </div>

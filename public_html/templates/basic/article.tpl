@@ -3,7 +3,7 @@
 {assign var="rss_url" value="/article/feed/recent.rss"}
 {include file="_std_begin.tpl"}
 
-<div style="float:right"><a title="geoRSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-rss">RSS</a></div>
+<div style="float:right"><a title="geoRSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-rss">RSS</a> {external href="http://maps.google.co.uk/maps?q=http://`$http_host`/article/feed/recent.rss" text="Map"}</div>
 
 <div class="tabHolder">
 	<a href="/content/" class="tab">Content</a>
