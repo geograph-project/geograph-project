@@ -11,6 +11,10 @@
 	<b>Recent Images</b>: <br/>
 	&nbsp;&nbsp;&nbsp;<a href="/feed/recent.kml" title="recent Geograph Submissions" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> 
 	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=http://$http_host/feed/recent.kml" text="Google Maps"}<br/>
+	<br/>
+	<b>Recent Articles</b>: <br/>
+	&nbsp;&nbsp;&nbsp;<a href="/article/feed/recent.kml" title="recent Geograph Articles" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> 
+	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=http://$http_host/article/feed/recent.kml" text="Google Maps"}<br/>
 	{if $user->registered && $enable_forums}<br/> 
 	<b>Recent Discussions</b>:<br/> 
 	&nbsp;&nbsp;&nbsp;<a href="/discuss/feed/forum5.kml" title="recent Geograph Discussions" Google Earth class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a>
