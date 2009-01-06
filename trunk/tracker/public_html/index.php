@@ -135,10 +135,10 @@ if (file_exists("rss/rss.xml"))
     respect these licences when re-using this data.</p>
     
 
-<p><small><tt>Geograph-Dev0.1</tt> is a WMware based virtual machine setup as a pre-configured Development Enviroment - probably only of 
-	interest to potential developers, <a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=12&topic=9237">more on forum</a>.</small></p>
+<p>Finally, if you are able <b>please seed these torrents</b> - even a small amount of bandwidth
+	can help. This will also help ensure the torrents are available for others in the future.</p>
 
-<p></p>
+
 
 </div>
 
@@ -405,60 +405,17 @@ if ($GLOBALS["countbytes"]) //stop count bytes variable
 </div>
 
 
-<?php
-/*
-$query = "SELECT SUM(".$prefix."namemap.size), SUM(".$prefix."summary.seeds), SUM(".$prefix."summary.leechers), SUM(".$prefix."summary.finished), SUM(".$prefix."summary.dlbytes), SUM(".$prefix."summary.speed) FROM ".$prefix."summary LEFT JOIN ".$prefix."namemap ON ".$prefix."summary.info_hash = ".$prefix."namemap.info_hash";
-$results = mysql_query($query) or die(errorMessage() . "Can't do SQL query - " . mysql_error() . "</p>");
-$data = mysql_fetch_row($results);
 
-?>
-
-
-
-<center>
-<table>
-<tr>
-<th class="subheader">Total Space Used</th>
-<th class="subheader">Seeders</th>
-<th class="subheader">Leechers</th>
-<th class="subheader">Completed D/Ls</th>
-<th class="subheader">Bytes Transferred</th>
-<th class="subheader">Speed (rough estimate)</th>
-</tr>
-<tr>
-<?php
-if ($data[0] != null) //if there are no torrents in database, don't show anything
-{
-	echo "<td align=\"center\">" . bytesToString($data[0]) . "</td>\n";
-	echo "<td align=\"center\">" . $data[1] . "</td>\n";
-	echo "<td align=\"center\">" . $data[2] . "</td>\n";
-	echo "<td align=\"center\">" . $data[3] . "</td>\n";
-	echo "<td align=\"center\">" . bytesToString($data[4]) . "</td>\n";
-	if ($GLOBALS["countbytes"]) //stop count bytes OFF, OK to do speed calculation
-	{
-		if ($data[5] > 2097152)
-			echo "<td align=\"center\">" . round($data[5] / 1048576, 2) . " MB/sec</td>\n";
-		else
-			echo "<td align=\"center\">" . round($data[5] / 1024, 2) . " KB/sec</td>\n";
-	}
-	else
-		echo "<td align=\"center\">No Info Available</td>\n";
-}
-?>
-</tr>
-</table>
-</center>
-<br>
-
-<?php
-*/
-?>
 
 
 <div class="helpful"> 
 
 <p style="color:#880000"><b>These torrents are large!</b> Ensure than downloading and
 	seeding them will not put you over your Internet provider's bandwidth limits.</p>
+
+<p><small><tt>Geograph-Dev0.1</tt> is a WMware based virtual machine setup as a pre-configured Development Enviroment - probably only of 
+	interest to potential developers, <a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=12&topic=9237">more on forum</a>.</small></p>
+
 
 <p>If you need any help or have questions about this service, contact Paul Dixon
 (<a href='ma&#105;lto&#58;&#108;%6Fr%&#54;4&#101;&#108;ph&#37;40g&#109;a&#105;&#108;&#37;2&#69;%6&#51;&#37;&#54;&#70;%6D'>&#108;o&#114;de&#108;p&#104;&#64;g&#109;ail&#46;co&#109;</a>)
