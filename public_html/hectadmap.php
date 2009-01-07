@@ -79,14 +79,14 @@ if (!$smarty->is_cached($template, $cacheid))
 		having land_count > 0
 		order by null");
 	
-	$grid = array();
+	$lookup = $grid = array();
 	$x1 = 9999999;
 	$x2 = 0;
 	foreach ($hectads as $i => $h) {
 		$x = intval($h['x']/10)+10;
 		$y = intval($h['y']/10);
 		$grid[$y][$x] = $h;
-	
+		$lookup[$h['tenk_square']] = array($y,$x);
 		$x1 = min($x,$x1);
 		$x2 = max($x,$x2);
 	}
@@ -98,15 +98,13 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		$hectads2 = $db->CacheGetAll(3600*24,"select 
 		concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) as tenk_square,
-		count(distinct x,y) as geograph_count,
-		min(x) as x,min(y) as y
+		count(distinct x,y) as geograph_count
 		from gridimage_search gs
 		where user_id = $u and moderation_status = 'geograph'
 		group by tenk_square 
 		order by null");
 		foreach ($hectads2 as $i => $h) {
-			$x = intval($h['x']/10)+10;
-			$y = intval($h['y']/10);
+			list($y,$x) = $lookup[$h['tenk_square']];
 			$grid[$y][$x]['geograph_count'] = $h['geograph_count'];
 			$grid[$y][$x]['percentage'] = round($h['geograph_count']/$grid[$y][$x]['land_count']*100,1);
 		}
@@ -129,7 +127,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('x2',$x2);
 	$smarty->assign('y1',$y1);
 	$smarty->assign('y2',$y2);
-	$smarty->assign('w',$x2-$x1);
+	$smarty->assign('w',$x2-$x1+5);
 	$smarty->assign('h',$y2-$y1);
 #print_r($smarty->_tpl_vars);	
 
