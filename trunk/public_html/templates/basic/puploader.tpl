@@ -257,7 +257,7 @@ it.</i></td>
 			<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="submitTabClick('tab','',3,4)">2) Map References</a>
 			<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="submitTabClick('tab','',4,4)">3) Title/Description</a>
 		</div>
-		<iframe id="subIframe" name="subIframe" src="about:blank" width="100%" height="400"></iframe>
+		<iframe id="subIframe" name="subIframe" src="about:blank" width="100%" height="800"></iframe>
 
 
 		<div class="termsbox">
