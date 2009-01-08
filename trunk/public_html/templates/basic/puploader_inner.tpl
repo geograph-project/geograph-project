@@ -170,7 +170,7 @@
 		[ Use 
 		<input type="button" value="Today's" onclick="setdate('imagetaken','{$today_imagetaken}',this.form);parentUpdateVariables()" class="accept"/>
 		{if $last_imagetaken}
-			<input type="button" value="Last Submitted" onclick="setdate('imagetaken','{$last_imagetaken}',this.form);" class="accept"/>
+			<input type="button" value="Last Submitted" onclick="setdate('imagetaken','{$last_imagetaken}',this.form);parentUpdateVariables()" class="accept"/>
 		{/if}
 		{if $imagetaken != '--' && $imagetaken != '0000-00-00'}
 			<input type="button" value="Current" onclick="setdate('imagetaken','{$imagetaken}',this.form);parentUpdateVariables()" class="accept"/>
