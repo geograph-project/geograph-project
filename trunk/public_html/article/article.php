@@ -267,7 +267,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign('lat', $lat);
 			$smarty->assign('long', $long);
 		}
-		if (stripos($page['category_name'],'geograph') !== FALSE) {
+		if (preg_match('/\bgeograph\b/i',$page['category_name'])) {
 			$db->Execute("set @last=0");
 			$users = $db->getAll("select realname,modifier,update_time,if(approved = @last,1,0) as same,@last := approved 
 			from article_revisions 
