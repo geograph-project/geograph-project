@@ -117,7 +117,7 @@ function parseLocation() {
 	if(coord.parseGridRef(coordstr)) {
 		ll = new OpenLayers.LonLat(coord.eastings, coord.northings);
 		//ml.addMarker(new OpenLayers.Marker(ll));
-		map.setCenter(ll, 0);
+		map.setCenter(ll);
 	} else {
 		coord = new GT_Irish();
 		if(coord.parseGridRef(coordstr)) {
