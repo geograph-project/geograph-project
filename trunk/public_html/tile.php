@@ -25,6 +25,9 @@
 require_once('geograph/global.inc.php');
 require_once('geograph/gridsquare.class.php');
 
+/**************************
+* Coverage Maps
+*/
 if (isset($_GET['map']))
 {
 	require_once('geograph/map.class.php');
@@ -40,10 +43,13 @@ if (isset($_GET['map']))
 	if($map->setToken($_GET['map']))
 		$map->returnImage();
 	exit;
-	
+
+/**************************
+* Raster Maps
+*/	
 } elseif (isset($_GET['r'])) {
 	require_once('geograph/rastermap.class.php');
-	$square = false;				
+	$square = false;
 	$rastermap = new RasterMap($square);
 	if (isset($_GET['debug']) || isset($_GET['refresh']))
 		init_session();
@@ -56,14 +62,19 @@ if (isset($_GET['map']))
 		$rastermap->returnImage();
 	}
 	exit;	
+
+/**************************
+* Mapper Tiles
+*/
 } elseif (isset($_GET['e']) && isset($_GET['n'])) {
-
-
 
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions();
 	
-	if (isset($debugmode)) {
+	/**************************
+	* Debug Tiles
+	*/
+	if (false) {
 		###############
 
 		$w = 250 ; 
@@ -71,14 +82,17 @@ if (isset($_GET['map']))
 		imagecolorallocate($img, 0,0,0);
 		$colMarker=imagecolorallocate($img, 255,255,255);
 
+		imagerectangle($img, 1, 1, $w, $w, $colMarker);
 
-		imagestring($img, 1, 2, 2, $_GET['b'], $colMarker);	
+		imagestring($img, 1, 2, 2, $_GET['b'], $colMarker);
 
 		$b = explode(',',$_GET['b']);
 
 		$s = intval( ($b[2]-$b[0])/1000 );
 
-		imagestring($img, 1, 20, 20, "$s km", $colMarker);	
+		imagestring($img, 1, 20, 20, "$s km", $colMarker);
+		
+		imagestring($img, 1, 50, 50, "z=".$_GET['z'], $colMarker);
 
 		header("Content-Type: image/png");
 		imagepng($img); 
@@ -89,18 +103,36 @@ if (isset($_GET['map']))
 	
 	list($e,$n,$reference_index) = array(intval($_GET['e'])*1000,intval($_GET['n'])*1000,1);
 	
+	/**************************
+	* Great Britain Only
+	*/
 	if ($reference_index == 1) {
 		require_once('geograph/rastermap.class.php');
-		$square = false;				
+		$square = false;
 		$rastermap = new RasterMap($square);
 		if (isset($_GET['debug']))
 			init_session();
 		
-		$rastermap->service = 'OS50k-mapper2';
+		if (isset($_GET['z'])) {
+			switch($_GET['z']) {
+				case 0: $rastermap->service = 'OS250k-m40k'; break;
+				case 1: $rastermap->service = 'OS250k-m10k'; break;
+				case 2: $rastermap->service = 'OS50k-mapper2'; break;#4k
+				case 3: $rastermap->service = 'OS50k-mapper3'; break;#2k
+				default: die("invalid zoom");
+			} 
+		} else {
+			//legacy support for no zoom specified
+			$rastermap->service = 'OS50k-mapper2';
+		} 
+
 		$rastermap->nateastings = $e;
 		$rastermap->natnorthings = $n;
 		$rastermap->width = $rastermap->tilewidth[$rastermap->service];
 
+		/**************************
+		* OS Map Tiles - handled by RasterMap class
+		*/
 		if ($_GET['l'] == 'o') {
 		
 			//we need to silently load the session
@@ -143,15 +175,29 @@ if (isset($_GET['map']))
 				$rastermap->caching=false;
 	
 			$rastermap->returnImage();
+		
+		/**************************
+		* Coverage Tiles
+		*/
 		} else {
+			preg_match('/-(\d+)k-/',$rastermap->folders[$rastermap->service],$m);
+			$stepdist = ($m[1]-1);
+			$widthdist = ($m[1]);
+
+			if ($_GET['l'] == 'p' && $widthdist > 4) {
+				//centisquare map not supported at this zoom level
+				customNoCacheHeader();       
+				header("HTTP/1.0 204 No Content");
+				header("Status: 204 No Content");
+				exit;
+			}
+
+			/////////////////////////
+			//check if we have a cached tile
 			$mustgenerate = false;
 			
 			if ($memcache->valid && !isset($_GET['refresh'])) {
-				if ($_GET['l'] == 'p') {
-                                $mkey = "{$_GET['l']},$e,$n,$reference_index";
- 				} else {
-				$mkey = "{$_GET['l']}:$e,$n,$reference_index";
-				}
+				$mkey = "{$_GET['l']},$e,$n,$reference_index,$widthdist";
 				$lastmod =& $memcache->name_get('tl',$mkey);
 				if (!$lastmod) {
 					$lastmod = time();
@@ -178,12 +224,12 @@ if (isset($_GET['map']))
 					exit;
 				}
 			} 
+			
+			/////////////////////////
+			// no hit from the cache....
+			
 			$lastmod = time();
 			
-			preg_match('/-(\d)k-/',$rastermap->folders[$rastermap->service],$m);
-			$stepdist = ($m[1]-1);
-			$widthdist = ($m[1]);
-		
 			
 			$w = $rastermap->tilewidth[$rastermap->service];
 			
@@ -211,10 +257,15 @@ if (isset($_GET['map']))
 					CONTAINS( GeomFromText($rectangle),	point_xy)";
 			}
 			
+			/////////////////////////
+			// fetch from database
 			$arr = $db->getAll($sql);
 			
 			
 			if (count($arr)) {
+				/**************************
+				* Centi Square Depth Tiles
+				*/
 				if ($_GET['l'] == 'p') {
 					$pixels_per_centi = ($w / ($widthdist * 10) ); //10 as ten centis per km
 					$half = ($pixels_per_centi/2);
@@ -224,34 +275,8 @@ if (isset($_GET['map']))
 					imagecolortransparent($img,$colMarker);
 					$colSea=imagecolorallocate($img, 0,0,0);
 					
-					$sql="select imagecount from gridsquare group by imagecount";
-					$counts = $db->cacheGetCol(3600,$sql);
-			
-					$colour=array();
-					$last=$lastcolour=null;
-					for ($p=1; $p<count($counts); $p++) {
-						$o = $counts[$p];
-						//standard green, yellow => red
-						switch (true) {
-							case $o == 1: $r=255; $g=255; $b=0; break; 
-							case $o == 2: $r=255; $g=196; $b=0; break; 
-							case $o == 3: $r=255; $g=132; $b=0; break; 
-							case $o == 4: $r=255; $g=64; $b=0; break; 
-							case $o <  7: $r=225; $g=0; $b=0; break; #5-6
-							case $o < 10: $r=200; $g=0; $b=0; break; #7-9
-							case $o < 20: $r=168; $g=0; $b=0; break; #10-19
-							case $o < 40: $r=136; $g=0; $b=0; break; #20-39
-							case $o < 80: $r=112; $g=0; $b=0; break; #40-79
-							default: $r=80; $g=0; $b=0; break;
-						}
-						$key = "$r,$g,$b";
-						if ($key == $last) {
-							$colour[$o] = $lastcolour;
-						} else {
-							$lastcolour = $colour[$o]=imagecolorallocate($img, $r,$g,$b);
-						}
-						$last = $key;
-					}
+					$colour = getColorKey($img);
+					
 					foreach ($arr as $i => $row) {
 						$x1 = (($row['nateastings'] - $e) / 100);
 						$y1 = (($row['natnorthings'] - $n) / 100);
@@ -266,23 +291,34 @@ if (isset($_GET['map']))
 						imageellipse($img,$x2,$y2,$pixels_per_centi,$pixels_per_centi,$lastcolour);
 					}
 					imagesavealpha($img, true);
+
+				/**************************
+				* GridSquare Depth Tiles
+				*/
 				} else {
-					$part = $w /8;
-					$part2 = $w /4;
+					$part = $w /$widthdist /2;
+					$part2 = $w /$widthdist;
 
 					$img=imagecreate($w,$w);
 					$colMarker=imagecolorallocate($img, 255,255,255);
 					imagecolortransparent($img,$colMarker);
-
-					$xd = imagefontwidth(5)/2;
-					$yd = imagefontheight(5)/2;
-					$s = imagefontwidth(5)*2.1;
+					
+					$ff = array(
+						1 => array('f'=> 5,	's' => imagefontwidth(5)*2.1,	'xd' => imagefontwidth(5)/2,	'yd' => imagefontheight(5)/2),
+						2 => array('f'=> 4,	's' => imagefontwidth(4)*3.1,	'xd' => imagefontwidth(4),	'yd' => 3+imagefontheight(4)/4),
+						3 => array('f'=> 3,	's' => imagefontwidth(3)*4.1,	'xd' => imagefontwidth(3)*1.5,	'yd' => imagefontheight(3)/2),
+						4 => array('f'=> 1,	's' => imagefontwidth(1)*5.1,	'xd' => imagefontwidth(1)*2,	'yd' => imagefontheight(1)/2),
+					);
+					$h = imagefontheight(5);
 					
 					$colSea=imagecolorallocate($img, 0,0,0);
 					$colGreen=imagecolorallocate($img, 117,255,101);
 					$colBack=imagecolorallocate($img, 0,0,240);
 					$colSuppBack=imagecolorallocate($img, 192,158,0);
-
+					
+					if ($widthdist > 4) {
+						$colour = getColorKey($img);
+					}
 					foreach ($arr as $i => $row) {
 
 						$x1 = $row['x'] - $x;
@@ -290,18 +326,32 @@ if (isset($_GET['map']))
 
 						$x2 = $part + ($x1 * $part2);
 						$y2 = $part + ($y1 * $part2);
-
+						
 						if ($row['imagecount']) {
-							$color = ($row['has_geographs'])?$colBack:$colSuppBack;	
-							imagefilledellipse ($img,$x2,$y2,$s*strlen($row['imagecount']),$s,$color);
-
-							imagestring($img, 5, $x2-2-$xd*strlen($row['imagecount'])/2, $y2-$yd, $row['imagecount'], $colMarker);	
+							$l = strlen($row['imagecount']);
+							if ($widthdist > 4) {
+								$color = $colour[$row['imagecount']];
+							} else {
+								$color = ($row['has_geographs'])?$colBack:$colSuppBack;	
+							}
+							if ($widthdist > 10) {
+								imagefilledellipse ($img,$x2,$y2,5,5,$color);
+							} else {
+								imagefilledellipse ($img,$x2,$y2,$ff[$l]['s'],$h,$color);
+				
+								imagestring($img, $ff[$l]['f'], $x2-$ff[$l]['xd'], $y2-$ff[$l]['yd'], $row['imagecount'], $colMarker);	
+							}
 						} elseif ($row['percent_land']) {
-							#imagestring($img, 5, $x2-2-$xd/2, $y2-$yd, 'O', $colGreen);
-							imagefilledellipse($img,$x2,$y2,10,10,$colGreen);
+							if ($widthdist > 10) {
+								imagefilledellipse($img,$x2,$y2,5,5,$colGreen);
+							} else {
+								#imagestring($img, 5, $x2-2-$xd/2, $y2-$yd, 'O', $colGreen);
+								imagefilledellipse($img,$x2,$y2,10,10,$colGreen);
+							}
 						}
-						if (!$row['percent_land']) {
-							imagestring($img, 5, $x2-2-$xd/2, $y2-$yd, 'X', $colSea);
+						if (!$row['percent_land'] && !($widthdist > 10)) {
+							$l = 1;
+							imagestring($img, $ff[$l]['f'], $x2-$ff[$l]['xd'], $y2-$ff[$l]['yd'], 'X', $colSea);
 						}
 					}
 				}
@@ -328,6 +378,43 @@ if (isset($_GET['map']))
 		} 
 
 	} 
+}
+
+
+////////////////////////////////////
+
+function getColorKey(&$img) {
+	global $db;
+	
+	$sql="select imagecount from gridsquare group by imagecount";
+	$counts = $db->cacheGetCol(3600,$sql);
+
+	$colour=array();
+	$last=$lastcolour=null;
+	for ($p=1; $p<count($counts); $p++) {
+		$o = $counts[$p];
+		//standard green, yellow => red
+		switch (true) {
+			case $o == 1: $r=255; $g=255; $b=0; break; 
+			case $o == 2: $r=255; $g=196; $b=0; break; 
+			case $o == 3: $r=255; $g=132; $b=0; break; 
+			case $o == 4: $r=255; $g=64; $b=0; break; 
+			case $o <  7: $r=225; $g=0; $b=0; break; #5-6
+			case $o < 10: $r=200; $g=0; $b=0; break; #7-9
+			case $o < 20: $r=168; $g=0; $b=0; break; #10-19
+			case $o < 40: $r=136; $g=0; $b=0; break; #20-39
+			case $o < 80: $r=112; $g=0; $b=0; break; #40-79
+			default: $r=80; $g=0; $b=0; break;
+		}
+		$key = "$r,$g,$b";
+		if ($key == $last) {
+			$colour[$o] = $lastcolour;
+		} else {
+			$lastcolour = $colour[$o]=imagecolorallocate($img, $r,$g,$b);
+		}
+		$last = $key;
+	}
+	return $colour;
 }
 
 ?>

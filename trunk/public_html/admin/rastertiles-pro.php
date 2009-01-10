@@ -28,7 +28,16 @@ require_once('geograph/map.class.php');
 require_once('geograph/mapmosaic.class.php');
 require_once('geograph/image.inc.php');
 require_once('geograph/rastermapOS.class.php');
+require_once('geograph/rastermapOS250.class.php');
 init_session();
+
+if (true) {
+	$m = new RasterMapOS250();
+} else {
+	$m = new RasterMapOS();
+}
+
+set_time_limit(3600*24);
 
 $gr = "SH7042";
 if (!empty($_GET['gr'])) 
@@ -38,12 +47,11 @@ if (!empty($_GET['tile']) && preg_match('/^[\w]+$/',$_GET['tile']))
 	$tile = $_GET['tile'];
 
 if (!empty($_GET['epoch']) && preg_match('/^[\w]+$/',$_GET['epoch'])) 
-	$CONF['os50kepoch'] = $_GET['epoch']."/";
+	$CONF['rastermap'][$m->source]['epoch'] = $_GET['epoch']."/";
 
 
 $USER->mustHavePerm("admin");
 
-$m = new RasterMapOS();
 
 
 if ($_GET['listTiles']) {

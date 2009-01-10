@@ -36,7 +36,7 @@ function changeOpacity(byOpacity) {
 }
 
 function loadMap() {
-	map = new OpenLayers.Map('mapbox', {controls:[], maxExtent: new OpenLayers.Bounds(0, 0, 700000, 1300000), maxResolution: 4000/250, units: 'meters', projection: "EPSG:27700"});
+	map = new OpenLayers.Map('mapbox', {controls:[], maxExtent: new OpenLayers.Bounds(0, 0, 700000, 1300000), resolutions: [40000/250,10000/250,4000/250], units: 'meters', projection: "EPSG:27700"});
 	
 	//Great Britain 1:50 000 Scale Colour Raster Mapping &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.
 	var oslayer = new OpenLayers.Layer.WMS("OSGB Landranger", tileurl+"?l=o", {}, {projection: "EPSG:27700", buffer:0});
@@ -55,7 +55,7 @@ function loadMap() {
 	map.addLayers([oslayer,glayer,player]); 
 	
 	ll = new OpenLayers.LonLat(lon, lat);
-	map.setCenter(ll, 0);
+	map.setCenter(ll, 2);
 
 	// Disable the scroll wheel - zooming breaks the map
 	var mousecontrol = new OpenLayers.Control.MouseDefaults();
@@ -65,7 +65,7 @@ function loadMap() {
 	map.addControl( mousecontrol );
 	
 	var panzoom = new OpenLayers.Control.PanZoom();
-	panzoom.draw = drawNoZoom;
+	//panzoom.draw = drawNoZoom;
 	map.addControl( panzoom );
 	
 	osposition = new OpenLayers.Control.MousePosition({element: document.getElementById('maplocation'), numdigits: 4, update: 1});
