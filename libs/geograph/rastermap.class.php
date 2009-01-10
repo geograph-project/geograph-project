@@ -66,27 +66,33 @@ class RasterMap
 	var $caching = true;
 	
 	var $folders = array(
-			'tile-source'=>'pngs-1k-200/',
+			'OS50k-source'=>'pngs-1k-200/',
 			'OS50k'=>'pngs-2k-250/',
 			'OS50k-mapper'=>'pngs-2k-125/',
 			'OS50k-mapper2'=>'pngs-4k-250/',
-			'OS50k-small'=>'pngs-1k-125/'
+			'OS50k-small'=>'pngs-1k-125/',
+			'OS250k-m10k'=>'pngs-10k-250/',
+			'OS250k-m40k'=>'pngs-40k-250/'
 		);
 	var $tilewidth=array(
-			'tile-source'=>200,
+			'OS50k-source'=>200,
 			'OS50k'=>250,
 			'OS50k-mapper'=>125,
 			'OS50k-mapper2'=>250,
 			'OS50k-small'=>125,
 			'VoB'=>250,
-			'Google'=>250
+			'Google'=>250,
+			'OS250k-m10k'=>250,
+			'OS250k-m40k'=>250
 		);
 	var $divisor = array(
-			'tile-source'=>1000,
+			'OS50k-source'=>1000,
 			'OS50k'=>1000,
 			'OS50k-mapper'=>1000,
 			'OS50k-mapper2'=>1000,
-			'OS50k-small'=>100
+			'OS50k-small'=>100,
+			'OS250k-m10k'=>10000,
+			'OS250k-m40k'=>10000
 		);
 	
 	/**
@@ -627,7 +633,9 @@ class RasterMap
 			if ($sourcepath = $this->getMapPath('OS50k',true)) {
 				return $this->createSmallExtract($sourcepath,$path);
 			} 
-		}
+		} elseif ($service == 'OS250k-m40k') {
+			return $this->combineTilesMapper($this->square,$path);
+		} 
 		return false;
 	}
 	
@@ -656,16 +664,23 @@ class RasterMap
 		$ll = $square->gridsquare;
 		
 		
-		$service = 'tile-source';
+		if($this->service == 'OS250k-m40k') {
+			$service = 'OS250k-m10k';
+		} else {
+			$service = 'OS50k-source';
+		}
+		$div = $this->divisor[$service];
+		
 		$tilewidth = $this->tilewidth[$service];
-
+		list($source,$dummy) = explode('-',$service);
+		
 		//this isn't STRICTLY needed as getOSGBStorePath does the same floor, but do so in case we do exact calculations
-		$east = floor($this->nateastings/1000) * 1000;
-		$nort = floor($this->natnorthings/1000) * 1000;
+		$east = floor($this->nateastings/$div) * $div;
+		$nort = floor($this->natnorthings/$div) * $div;
 
-		preg_match('/-(\d)k-/',$this->folders[$this->service],$m);
+		preg_match('/-(\d)0?k-/',$this->folders[$this->service],$m);
 		$numtiles = $m[1];
-		$stepdist = ($m[1]-1)*1000;
+		$stepdist = ($m[1]-1)*$div;
 		
 		if (strlen($CONF['imagemagick_path'])) {
 			$tilelist = array();
@@ -673,17 +688,17 @@ class RasterMap
 			$found = 0;
 			foreach(range(	$nort+$stepdist ,
 							$nort ,
-							-1000 ) as $n) {
+							-1*$div ) as $n) {
 				foreach(range(	$east ,
 								$east+$stepdist ,
-								1000 ) as $e) {
+								$div ) as $e) {
 					$newpath = $this->getOSGBStorePath($service,$e,$n);
 					
 					if (file_exists($newpath)) {
 						$tilelist[] = $newpath;
 						$found = 1;
 					} else {
-						$tilelist[] = $CONF['os50kimgpath'].$this->epoch.'/'."blank{$tilewidth}.png";
+						$tilelist[] = $CONF['rastermap'][$source]['path'].$this->epoch.'/'."blank{$tilewidth}.png";
 						if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 							print "$newpath not found<br/>\n";
 					}
@@ -698,7 +713,7 @@ class RasterMap
 			}
 			
 			if (!$path) 
-				$path = $this->getOSGBStorePath('OS50k',$east,$nort,true);
+				$path = $this->getOSGBStorePath($service,$east,$nort,true);
 
 			$cmd = sprintf('%s"%smontage" -geometry +0+0 %s -tile %dx%d png:- | "%sconvert" - -thumbnail %ldx%ld -colors 128 -depth 8 -type Palette png:%s &1>1 &2>1', 
 				isset($_GET['nice'])?'nice ':'',
@@ -744,8 +759,9 @@ class RasterMap
 		$ll = $square->gridsquare;
 		
 		
-		$service = 'tile-source';
+		$service = 'OS50k-source';
 		$tilewidth = $this->tilewidth[$service];
+		list($source,$dummy) = explode('-',$service);
 		
 		$outputwidth = $this->tilewidth['OS50k'];
 		
@@ -769,7 +785,7 @@ class RasterMap
 						$tilelist[] = $newpath;
 						$found = 1;
 					} else {
-						$tilelist[] = $CONF['os50kimgpath'].$this->epoch.'/'."blank{$tilewidth}.png";
+						$tilelist[] = $CONF['rastermap'][$source]['path'].$this->epoch.'/'."blank{$tilewidth}.png";
 						if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 							print "$newpath not found<br/>\n";
 					}
@@ -858,11 +874,11 @@ class RasterMap
 	{
 		$mappath = $this->getMapPath($this->service);
 
-		if (!file_exists($mappath)) {
+		if (!$mappath || !file_exists($mappath)) {
 			$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", time()+604800);
 			header("Expires: $expires");
 
-			header("Location: /maps/errortile.png");
+		#	header("Location: /maps/errortile.png");
 			exit;
 		}
 
@@ -933,20 +949,23 @@ class RasterMap
 		global $CONF;
 		
 		$folder = $this->folders[$service];
+		$div = $this->divisor[$service];
+		$div2 = max(10000,$div*10);
 		if ($e && $n) {
-			$e2 = floor($e /10000);
-			$n2 = floor($n /10000);
-			$e3 = floor($e /$this->divisor[$service]);
-			$n3 = floor($n /$this->divisor[$service]);
+			$e2 = floor($e /$div2);
+			$n2 = floor($n /$div2);
+			$e3 = floor($e /$div);
+			$n3 = floor($n /$div);
 		} else {
-			$e2 = floor($this->nateastings /10000);
-			$n2 = floor($this->natnorthings /10000);
-			$e3 = floor($this->nateastings /$this->divisor[$service]);
-			$n3 = floor($this->natnorthings /$this->divisor[$service]);
+			$e2 = floor($this->nateastings /$div2);
+			$n2 = floor($this->natnorthings /$div2);
+			$e3 = floor($this->nateastings /$div);
+			$n3 = floor($this->natnorthings /$div);
 		}
 
-		$dir=$CONF['os50kimgpath'].$this->epoch.'/'.$folder;
+		list($source,$dummy) = explode('-',$service);
 		
+		$dir=$CONF['rastermap'][$source]['path'].$this->epoch.'/'.$folder;
 		$dir.=$e2.'/';
 		if ($create && !is_dir($dir))
 			mkdir($dir);

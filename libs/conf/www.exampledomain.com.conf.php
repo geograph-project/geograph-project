@@ -138,8 +138,16 @@ $CONF['google_maps_api_key'] = 'XXXXXXX';
 $CONF['OS_licence'] = 'XXXXXXXX';
 
 //paths to where map data is stored (should be outside of the web root)
-$CONF['os50ktilepath']='c:/home/geograph/rastermaps/OS-50k/tiffs/';
-$CONF['os50kimgpath']='c:/home/geograph/rastermaps/OS-50k/';
+$CONF['rastermap'] = array(
+	'OS50k' => array(
+			'path'=>'c:/home/geograph/rastermaps/OS-50k/',
+			'epoch'=>'latest/'
+			),
+	'OS250k' => array(
+			'path'=>'c:/home/geograph/rastermaps/OS-250k/',
+			'epoch'=>'latest/'
+			)	
+);
 
 //Username/Passowrd for the metacarta webservices api
 //http://developers.metacarta.com/register/

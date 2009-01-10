@@ -1,7 +1,7 @@
 
 /* Replacement layer getURL function, WMS is close to what we need, but for slight request differences */
 function geographURL(bounds){
-	return this.url + "&e="+Math.round(bounds.left/1000)+"&n="+Math.round(bounds.bottom/1000);//+"&b="+bounds.toBBOX();
+	return this.url + "&e="+Math.round(bounds.left/1000)+"&n="+Math.round(bounds.bottom/1000)+"&z="+map.getZoom();//+"&b="+bounds.toBBOX();
 }
 
 //Credit for this script to http://grand.edgemaster.googlepages.com/
