@@ -17,7 +17,7 @@
 <hr/>
 <p><b>Centisquare Depth Key</b>: <img src="/img/depthkey.png" width="400" height="20"/><br/>
 To enable centisquare layer click <img src="/mapper/img/layer-switcher-maximize.png" width="18" height="18"/> in top right of map, and select "centisquare coverage" in popup. <small>Click + above map several times to increase overlay opacity.</small><br/>
-<small>NOTE: The centisquare coverage layer only includes photos plotted with 6 figure grid-references or above, and only include Geograph Images.</small></p>
+<small>NOTE: The centisquare coverage layer only includes Geograph Images plotted with 6 figure grid-references or above.</small></p>
 
 
 
