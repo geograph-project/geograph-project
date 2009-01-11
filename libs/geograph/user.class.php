@@ -596,6 +596,10 @@ class GeographUser
 		$profile['nickname']=stripslashes($profile['nickname']);
 		$profile['website']=stripslashes($profile['website']);
 
+		$profile['oldpassword']=stripslashes($profile['oldpassword']);
+		$profile['password1']=stripslashes($profile['password1']);
+		$profile['password2']=stripslashes($profile['password2']);
+
 		// valid homesquare?
 		$profile['grid_reference']=stripslashes($profile['grid_reference']);
 		$gridreference='';
@@ -661,6 +665,20 @@ class GeographUser
 				$errors['nickname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
 			else
 				$errors['nickname']='Please enter a nickname for use on the forums';
+		}
+
+		if (strlen($profile['password1'])) {
+			if ($profile['oldpassword'] != $this->password) {
+				$ok=false;
+				$errors['oldpassword']='Please enter your current password if you wish to change it';
+			} elseif ($profile['password1'] != $profile['password2']) {
+				$ok=false;
+				$errors['password2']='Passwords didn\'t match, please try again';
+			} else {
+				$password = $profile['password1'];
+			}
+		} else {
+			$password = $this->password;
 		}
 
 		//attempting to change email address?
@@ -736,7 +754,8 @@ class GeographUser
 				home_gridsquare=%s,
 				ticket_public=%s,
 				ticket_option=%s,
-				message_sig=%s
+				message_sig=%s,
+				password=%s
 				where user_id=%d",
 				$db->Quote($profile['realname']),
 				$db->Quote($profile['nickname']),
@@ -752,6 +771,7 @@ class GeographUser
 				$db->Quote($profile['ticket_public']),
 				$db->Quote($profile['ticket_option']),
 				$db->Quote(stripslashes($profile['message_sig'])),
+				$db->Quote($password),
 				$this->user_id
 				);
 
@@ -774,6 +794,7 @@ class GeographUser
 				
 				$this->realname=$profile['realname'];
 				$this->nickname=$profile['nickname'];
+				$this->password=$password;
 				$this->website=$profile['website'];
 				$this->public_email=isset($profile['public_email'])?1:0;
 				if (isset($profile['sortBy'])) 

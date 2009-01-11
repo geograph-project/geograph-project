@@ -48,7 +48,27 @@
 	
 	<label for="email">Email:</label>
 	<input type="text" id="email" name="email" value="{$profile->email|escape:'html'}" size="35"/>
-	
+	<script type="text/javascript">{literal}
+		// really ugly 'fix' for http://code.google.com/p/chromium/issues/detail?id=1854
+		// the last text box before the first password field are assumed to be a username,
+		//   but the saved username COULD be a nickname OR email...
+		// ... so we take away those text boxes!
+		if (navigator && navigator.userAgent && navigator.userAgent.search(/Chrome/) != -1) {
+			document.getElementById('realname').disabled = true;
+			document.getElementById('nickname').disabled = true;
+			document.getElementById('email').disabled = true;
+			AttachEvent(window,'load',reEnableTextBoxes1,false);
+		}
+		function reEnableTextBoxes1() {
+			//autofill happens jsut after 'onload'
+			setTimeout("reEnableTextBoxes2()",400);
+		} 
+		function reEnableTextBoxes2() {
+			document.getElementById('realname').disabled = false;
+			document.getElementById('nickname').disabled = false;
+			document.getElementById('email').disabled = false;
+		}
+	{/literal}</script>
 	  <div class="fieldnotes">We need your email address to
 	  keep you notified about any changes requested or made to your
 	  submissions. It also allows anyone who is interested in your photos
@@ -87,6 +107,34 @@
 	<div class="fieldnotes">To setup or change your Avatar image, goto {external href="http://www.gravatar.com" text="gravatar.com" target="_blank"} and use the same email address set above.</div>
 	
 	{if $errors.nickname}</div>{/if}
+</div>
+
+</fieldset>
+
+<fieldset>
+<legend>Change Password</legend>
+<p style="color:green">You only need to fill out this section if you wish to change your password</p>
+
+<div class="field">
+	{if $errors.oldpwd}<div class="formerror"><p class="error">{$errors.oldpwd}</p>{/if}
+		<label for="oldpwd">Current pwd:</label>
+		<input id="oldpwd" name="oldpwd" type="password" value="{$profile->oldpwd|escape:'html'}" size="35"/>
+		<div class="fieldnotes">Please enter your current password.</div>
+	{if $errors.oldpassword}</div>{/if}
+</div>
+<div class="field">
+	{if $errors.password1}<div class="formerror"><p class="error">{$errors.pwd1}</p>{/if}
+		<label for="pwd1">New password:</label>
+		<input id="pwd1" name="pwd1" type="password" value="{$profile->pwd1|escape:'html'}" size="35"/>
+		<div class="fieldnotes">Enter your new password here. Leave empty if you want to keep your old password.</div>
+	{if $errors.password1}</div>{/if}
+</div>
+<div class="field">
+	{if $errors.password2}<div class="formerror"><p class="error">{$errors.pwd2}</p>{/if}
+		<label for="pwd2">Confirm the new password:</label>
+		<input id="pwd2" name="pwd2" type="password" value="{$profile->pwd2|escape:'html'}" size="35"/>
+		<div class="fieldnotes">Enter your new password here in order to avoid spelling errors.</div>
+	{if $errors.password2}</div>{/if}
 </div>
 
 </fieldset>
