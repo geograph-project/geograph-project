@@ -8,15 +8,16 @@
 <iframe src="/mapper/?inner&amp;t={$token}{if $extra}&amp;{$extra}{/if}" width="700" height="900" frameborder="0"></iframe>
 			</td>
 			<td>
-<iframe src="/mapper/blank.html?" width="210" height="900" frameborder="1" name="browseframe"></iframe>
+<iframe src="/mapper/blank.html?v2" width="210" height="900" frameborder="1" name="browseframe"></iframe>
 			</td>
 		</tr>
 	</tbody>
 </table>
 
 <hr/>
-<p><b>Centisquare Depth Key</b>: <img src="/img/depthkey.png" width="400" height="20"/> (click <img src="/mapper/img/layer-switcher-maximize.png" width="18" height="18"/> to enable Centisquare Layer)<br/>
-<small>NOTE: The centisquare coverage layer only includes photos plotted with 6figure grid-references or above, and only include Geograph Images.</small></p>
+<p><b>Centisquare Depth Key</b>: <img src="/img/depthkey.png" width="400" height="20"/><br/>
+To enable centisquare layer click <img src="/mapper/img/layer-switcher-maximize.png" width="18" height="18"/> in top right of map, and select "centisquare coverage" in popup. <small>Click + above map several times to increase overlay opacity.</small><br/>
+<small>NOTE: The centisquare coverage layer only includes photos plotted with 6 figure grid-references or above, and only include Geograph Images.</small></p>
 
 
 

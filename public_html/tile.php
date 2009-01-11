@@ -186,9 +186,10 @@ if (isset($_GET['map']))
 
 			if ($_GET['l'] == 'p' && $widthdist > 4) {
 				//centisquare map not supported at this zoom level
-				customNoCacheHeader();       
-				header("HTTP/1.0 204 No Content");
-				header("Status: 204 No Content");
+				customNoCacheHeader();
+				header("HTTP/1.0 302 Found");
+				header("Status: 302 Found");
+				header("Location: http://{$CONF['STATIC_HOST']}/img/blank.gif");
 				exit;
 			}
 

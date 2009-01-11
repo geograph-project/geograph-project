@@ -95,7 +95,7 @@ if (!empty($_POST))
 
 if (!empty($_POST['spelling'])) {
 	
-	include("3rdparty/spellchecker.class.php");
+	require_once("3rdparty/spellchecker.class.php");
 	?>
 	<style type="text/css">
 		body { font-family:Georgia, Verdana, Arial, serif; }

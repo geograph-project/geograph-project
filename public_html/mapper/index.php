@@ -27,7 +27,8 @@ require_once('geograph/mapmosaic.class.php');
 init_session();
 
 $mosaic=new GeographMapMosaic;
-$overview=new GeographMapMosaic('overview');
+
+$mosaic->pixels_per_km = 40;
 
 if (isset($_GET['random'])) {
 	$db=NewADOConnection($GLOBALS['DSN']);
@@ -56,6 +57,18 @@ if (isset($_GET['random'])) {
 	$conv = new Conversions();
 
 	list($x,$y) = $conv->national_to_internal($_GET['lon'],$_GET['lat'],1);	
+	
+	if (isset($_GET['zoom'])) {
+		switch($_GET['zoom']) {
+			case 0: $mosaic->pixels_per_km =  4; break;
+			case 1: $mosaic->pixels_per_km = 40; break;//there isnt a direct equiv
+			case 2: $mosaic->pixels_per_km = 40; break;
+			case 3: $mosaic->pixels_per_km = 80; break;
+			default: die("invalid zoom");
+		} 
+	} else {
+		//legacy support for no zoom specified
+	} 
 	
 	$mapw=($mosaic->image_w/$mosaic->pixels_per_km)/2;
 	$mosaic->setOrigin($x-$mapw,$y-$mapw);
@@ -93,6 +106,16 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign('e',$e);
 	$smarty->assign('n',$n);
+	
+	switch($mosaic->pixels_per_km) {
+		case  1: $z = 0; break;//there isnt a direct equiv
+		case  4: $z = 0; break;
+	//	case ??: $z = 1; break;
+		case 40: $z = 2; break;
+		case 80: $z = 3; break;
+		default: $z = ($mosaic->pixels_per_km<1)?0:2;
+	} 
+	$smarty->assign('z',$z);
 	
 	$smarty->assign('token',$token);
 }
