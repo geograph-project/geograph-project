@@ -878,7 +878,7 @@ class RasterMap
 			$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", time()+604800);
 			header("Expires: $expires");
 
-		#	header("Location: /maps/errortile.png");
+			header("Location: /maps/errortile.png");
 			exit;
 		}
 
