@@ -132,7 +132,7 @@
 	<label for="about_yourself">About Yourself:</label>
 	
 	 
-	<textarea name="about_yourself" id="about_yourself" rows="4" cols="60">{$profile->about_yourself|escape:'html'}</textarea>
+	<textarea name="about_yourself" id="about_yourself" rows="10" cols="85">{$profile->about_yourself|escape:'html'}</textarea>
 
 	<div class="fieldnotes"><span style="color:red">Note: HTML code will be removed, 
 	however basic URLs will be autolinked.</span><br/>
@@ -301,7 +301,7 @@
 
 	</fieldset>
 {/if}
-</div>
+
 
  </form>	
 

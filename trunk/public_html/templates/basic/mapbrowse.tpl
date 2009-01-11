@@ -323,7 +323,7 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 <h2 style="margin-bottom:0">Geograph Coverage Map{if $realname}, for <a title="view user profile" href="/profile/{$user_id}">{$realname}</a>{/if}</h2>
 </div>
 {if $mosaic_updated}
-	<p style="text-align:center; font-size:0.8em; margin-top:0">{$mosaic_updated}</p>
+	<p style="text-align:right; font-size:0.8em; margin-top:0">{$mosaic_updated}</p>
 {/if}
 
 <p>Here are a few tips for using our map:</p>
@@ -337,12 +337,15 @@ and - buttons to zoom in and out, or the keyboard shortcuts Alt+Q to zoom out an
 <li>Pan the map using the links at the edges of the map, or the 'N' 'E' 'S' 'W' buttons.
 You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the map</li>
 <li>You can also pan the map by clicking the smaller overview map</li>
-<li>Use the tabs under the map to change map style <sup style="color:red">new!</sup> </li>
+<li>Use the tabs under the map to change map style</li>
 <li>The "Link to this Map" creates a nice accessible link to this map- which is tidier than many taken direct from the address bar.</li>
+{if $token_zoomin}
+	<li>NOTE: "open in new window"/tab does NOT function with this map correctly</li>
+{/if}
 </ul>
 
 
- 
+ <hr/>
 <div class="copyright">Maps on this page, &copy; Copyright Geograph Project Ltd and  
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">Creative Commons Licence</a>.</div> 
 
