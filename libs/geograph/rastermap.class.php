@@ -70,6 +70,7 @@ class RasterMap
 			'OS50k'=>'pngs-2k-250/',
 			'OS50k-mapper'=>'pngs-2k-125/',
 			'OS50k-mapper2'=>'pngs-4k-250/',
+			'OS50k-mapper3'=>'pngs-2k-250b/',
 			'OS50k-small'=>'pngs-1k-125/',
 			'OS250k-m10k'=>'pngs-10k-250/',
 			'OS250k-m40k'=>'pngs-40k-250/'
@@ -79,6 +80,7 @@ class RasterMap
 			'OS50k'=>250,
 			'OS50k-mapper'=>125,
 			'OS50k-mapper2'=>250,
+			'OS50k-mapper3'=>250,
 			'OS50k-small'=>125,
 			'VoB'=>250,
 			'Google'=>250,
@@ -90,6 +92,7 @@ class RasterMap
 			'OS50k'=>1000,
 			'OS50k-mapper'=>1000,
 			'OS50k-mapper2'=>1000,
+			'OS50k-mapper3'=>1000,
 			'OS50k-small'=>100,
 			'OS250k-m10k'=>10000,
 			'OS250k-m40k'=>10000
@@ -627,7 +630,7 @@ class RasterMap
 	function createTile($service,$path = null) {
 		if ($service == 'OS50k') {
 			return $this->combineTiles($this->square,$path);
-		} elseif ($service == 'OS50k-mapper' || $service == 'OS50k-mapper2') {
+		} elseif (preg_match('/OS50k-mapper\d?/',$service)) {
 			return $this->combineTilesMapper($this->square,$path);
 		} elseif ($service == 'OS50k-small') {
 			if ($sourcepath = $this->getMapPath('OS50k',true)) {
