@@ -36,7 +36,7 @@ function changeOpacity(byOpacity) {
 }
 
 function loadMap() {
-	map = new OpenLayers.Map('mapbox', {controls:[], maxExtent: new OpenLayers.Bounds(0, 0, 700000, 1300000), resolutions: [40000/250,10000/250,4000/250], units: 'meters', projection: "EPSG:27700"});
+	map = new OpenLayers.Map('mapbox', {controls:[], maxExtent: new OpenLayers.Bounds(0, 0, 700000, 1300000), resolutions: [40000/250,10000/250,4000/250,2000/250], units: 'meters', projection: "EPSG:27700"});
 	
 	//Great Britain 1:50 000 Scale Colour Raster Mapping &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.
 	var oslayer = new OpenLayers.Layer.WMS("OSGB Landranger", tileurl+"?l=o", {}, {projection: "EPSG:27700", buffer:0});
@@ -44,11 +44,11 @@ function loadMap() {
 	oslayer.getURL = geographURL;
 	
 	//Photographs and coverages are available under a seperate Creative Commons Licence, but NO spidering - see Terms.
-	glayer = new OpenLayers.Layer.WMS("Gridsquare Coverage", ttileurl+"?l=g", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, resolutions: [40000/250,10000/250,4000/250], buffer:0{/literal}{if $centi}, visibility:false, opacity: 1{else}, opacity: 0.3{/if}{literal}});	
+	glayer = new OpenLayers.Layer.WMS("Gridsquare Coverage", ttileurl+"?l=g", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, resolutions: [40000/250,10000/250,4000/250,2000/250], buffer:0{/literal}{if $centi}, visibility:false, opacity: 1{else}, opacity: 0.3{/if}{literal}});	
 	glayer.tileSize = new OpenLayers.Size(250,250);	
 	glayer.getURL = geographURL;
 	
-	player = new OpenLayers.Layer.WMS("Centisquare Coverage", ttileurl+"?l=p", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, resolutions: [4000/250], buffer:0{/literal}{if $centi}, opacity: 1{else}, visibility:false, opacity: 0.9{/if}{literal}});	
+	player = new OpenLayers.Layer.WMS("Centisquare Coverage", ttileurl+"?l=p", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, resolutions: [4000/250,2000/250], buffer:0{/literal}{if $centi}, opacity: 1{else}, visibility:false, opacity: 0.9{/if}{literal}});	
 	player.tileSize = new OpenLayers.Size(250,250);	
 	player.getURL = geographURL;
 	

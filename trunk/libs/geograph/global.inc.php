@@ -72,10 +72,12 @@ if (!empty($CONF['memcache']['app'])) {
 
 	$memcache = new MultiServerMemcache($CONF['memcache']['app']);
 
-	$level = $memcache->get('curtail_level');
-	if ($level) {
-		$CONF['real_curtail_level'] = $CONF['curtail_level'];
-		$CONF['curtail_level'] = $level-1;
+	if ($CONF['curtail_level'] > 0) {
+		$level = $memcache->get('curtail_level');
+		if ($level) {
+			$CONF['real_curtail_level'] = $CONF['curtail_level'];
+			$CONF['curtail_level'] = $level-1;
+		}
 	}
 } else {
 	//need lightweight fake object that does nothing!
