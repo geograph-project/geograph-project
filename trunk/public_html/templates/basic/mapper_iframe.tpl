@@ -55,7 +55,7 @@ function loadMap() {
 	map.addLayers([oslayer,glayer,player]); 
 	
 	ll = new OpenLayers.LonLat(lon, lat);
-	map.setCenter(ll, 2);
+	map.setCenter(ll, {/literal}{$z}{literal});
 
 	// Disable the scroll wheel - zooming breaks the map
 	var mousecontrol = new OpenLayers.Control.MouseDefaults();

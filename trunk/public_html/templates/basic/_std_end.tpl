@@ -6,7 +6,7 @@
     <li style="font-size:1.42em"><a accesskey="1" title="Home Page" href="/">Home</a></li>
     <li>View<ul>
      <li><a title="Find images" href="/search.php">Search</a></li>
-     <li><a title="View map of all submissions" href="/mapbrowse.php">Map</a></li>
+     <li><a title="View map of all submissions" href="/mapbrowse.php">Map</a> <small style="color:red">Updated!</small></li>
      <li><a title="Explore Images by Theme" href="/explore/">Explore</a></li>
      <li><a title="Submitted Content" href="/content/">Content</a></li>
     </ul></li>
@@ -26,7 +26,7 @@
     </ul></li>
     <li>Further Info<ul>
      <li><a title="FAQ" href="/faq.php">FAQ</a></li>
-     <li><a title="FAQ" href="/content/?docs&amp;order=title">Documents</a> <sup style="color:red">New!</sup></li>
+     <li><a title="Geograph Information Documents" href="/content/?docs&amp;order=title">Documents</a></li>
      <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
      <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a></li>
     </ul></li>

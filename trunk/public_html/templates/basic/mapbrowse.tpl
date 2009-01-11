@@ -226,15 +226,12 @@ table.navtable {
  
   <div style="line-height:1em;padding-top:6px;">Map width <b>{$mapwidth}&nbsp;<small>km</small></b></div>
  
- {if $mapwidth == 10 || $mapwidth == 100}
-  <div style="line-height:1em;padding-top:6px;"><a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}" style="color:#000066">print check sheet</a></div>
- {/if}
- 
+
  {if $token_big}
   <div style="line-height:1em;padding-top:6px;"><a href="/maplarge.php?t={$token_big}" style="color:#000066">bigger map</a></div>
  {/if}
  
-   <div style="line-height:1em;padding-top:6px;"><a href="/mapprint.php?t={$mosaic_token}" title="printable version" style="color:#000066">printable version</a></div>
+
  
  <br/>
    </td>
@@ -275,14 +272,9 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 
 
  <br style="clear:both;"/>
- 
-{if !$token_zoomin && !$realname && $mosaic_ri == 1}
-	<div style="adding-left:10px; width:{$mosaic_width}px;">Switch to <a href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">Draggable OS Map Checksheet</a> <sup style="color:red">New!</sup></div>
-{elseif $depth}
- 	<div style="padding-left:10px; width:{$mosaic_width}px; height:20px; float:left;position:relative">View as <a href="/map/{$mosaic_token}?depth=0">Coverage Map</a></div>
-{elseif $token_zoomin}
-	<div style="padding-left:10px; width:{$mosaic_width}px; height:20px">View as a <a href="/map/{$mosaic_token}?depth=1">Depth Map</a> <sup style="color:red">New!</sup></div>
-{/if}
+
+
+
  
 {if $token_zoomout || $realname}
 <div style="position:relative;">
@@ -293,9 +285,49 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 {/if}
 <br style="clear:both;"/><br/>
 
-<h2>Map{if $realname}, for <a title="view user profile" href="/profile/{$user_id}">{$realname}</a>  <small style="font-size:0.4em; font-weight:normal">[ <a title="Remove User Filter" href="/map/{$mosaic_token}?u=0">Remove User Filter</a> ]</small>{else} Browsing{dynamic}{if $user->registered} <small style="font-size:0.4em; font-weight:normal">[ <a title="Add User Filter" href="/map/{$mosaic_token}?mine">Personalise the map for you</a> ]</small>{/if}{/dynamic}{/if}</h2>
-<p>Here are a few tips for using our map - we're still developing and testing this, so if you
-notice any problems, do let us know.</p>
+{if $realname}
+	{assign var="tab" value="2"}
+{elseif $depth && $token_zoomin}
+	{assign var="tab" value="3"}
+{else}
+	{assign var="tab" value="1"}
+{/if}
+
+<div class="tabHolder" style="margin-top:3px">
+	Style: 
+	<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" href="/map/{$mosaic_token}?depth=0">Coverage</a>
+	{dynamic}
+	{if $realname}
+		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2">Personalised</a>
+	{elseif $user->registered}
+		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" href="/map/{$mosaic_token}?mine"> Personalised</a>
+	{/if}{/dynamic}
+	{if $token_zoomin}
+	<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" href="/map/{$mosaic_token}?depth=1">Depth</a>
+	{/if}
+	{if ($mapwidth == 100 || !$token_zoomin) && $mosaic_ri == 1}
+		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">Draggable OS
+		{if $mapwidth == 100}<sup style="color:red">New!</sup>{/if}</a>
+	{/if}
+	{if !$token_zoomin && $mosaic_ri == 1}
+	<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}&amp;centi=1">Centisquares Coverage</a>
+	{/if}
+	{if $mapwidth == 10 || $mapwidth == 100}
+		<a class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6" href="/mapsheet.php?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}" title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field">Check Sheet</a>
+	{/if}
+	<a class="tab{if $tab == 7}Selected{/if} nowrap" id="tab7" href="/mapprint.php?t={$mosaic_token}">Printable</a>
+	
+</div>
+<div class="interestBox">
+
+<h2 style="margin-bottom:0">Geograph Coverage Map{if $realname}, for <a title="view user profile" href="/profile/{$user_id}">{$realname}</a>{/if}</h2>
+</div>
+{if $mosaic_updated}
+	<p style="text-align:center; font-size:0.8em; margin-top:0">{$mosaic_updated}</p>
+{/if}
+
+<p>Here are a few tips for using our map:</p>
+
 <ul>
 {if !$token_zoomin}
 <li>Hover over an image for a description. Also right-click "open in new window"/tab should function at this scale.</li>
@@ -305,11 +337,11 @@ and - buttons to zoom in and out, or the keyboard shortcuts Alt+Q to zoom out an
 <li>Pan the map using the links at the edges of the map, or the 'N' 'E' 'S' 'W' buttons.
 You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the map</li>
 <li>You can also pan the map by clicking the smaller overview map</li>
+<li>Use the tabs under the map to change map style <sup style="color:red">new!</sup> </li>
+<li>The "Link to this Map" creates a nice accessible link to this map- which is tidier than many taken direct from the address bar.</li>
 </ul>
 
-{if $mosaic_updated}
-	<p style="text-align:center; font-size:0.8em">{$mosaic_updated}</p>
-{/if}
+
  
 <div class="copyright">Maps on this page, &copy; Copyright Geograph Project Ltd and  
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">Creative Commons Licence</a>.</div> 

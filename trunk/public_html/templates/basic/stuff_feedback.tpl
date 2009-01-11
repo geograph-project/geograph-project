@@ -66,7 +66,7 @@
 				<td width="50" align="center">Problematic</td>
 				<td width="50" align="center">Average</td>
 				<td width="50" align="center">Reasonable</td>
-				<td width="5 0" align="center">Very Easy</td>
+				<td width="50" align="center">Very Easy</td>
 			</tr></thead>
 			{assign var="lastcat" value=$row.category}
 		{/if}
