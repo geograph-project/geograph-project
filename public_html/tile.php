@@ -198,7 +198,7 @@ if (isset($_GET['map']))
 			$mustgenerate = false;
 			
 			if ($memcache->valid && !isset($_GET['refresh'])) {
-				$mkey = "{$_GET['l']},$e,$n,$reference_index,$widthdist";
+				$mkey = "{$_GET['l']}:$e,$n,$reference_index,$widthdist";
 				$lastmod =& $memcache->name_get('tl',$mkey);
 				if (!$lastmod) {
 					$lastmod = time();
@@ -277,6 +277,9 @@ if (isset($_GET['map']))
 					$colSea=imagecolorallocate($img, 0,0,0);
 					
 					$colour = getColorKey($img);
+					$k = array_keys($colour);
+					$lastcolour = $colour[$k[count($k)-1]];
+					$k = null;
 					
 					foreach ($arr as $i => $row) {
 						$x1 = (($row['nateastings'] - $e) / 100);
