@@ -31,7 +31,11 @@
      <label for="major">Major</label><input type="checkbox" name="a" id="major" {if $major} checked="checked"{/if}/> &nbsp;
      <label for="defer" style="color:gray">Deferred</label><input type="checkbox" name="defer" id="defer" {if $defer} checked="checked"{/if}/> &nbsp;
      <label for="locked" style="color:red">Locked</label><input type="checkbox" name="locked" id="locked" {if $locked} checked="checked"{/if}/> &nbsp;
-    <input type="submit" name="Submit" value="Update"/></div></form>
+    <input type="submit" name="Submit" value="Update"/>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    (Keywords Filter:<input type="text" name="q" value="{$q|escape:'html'}"> <sup><a href="#n1">1</a></sup>)
+    
+    </div></form>
 
 {if $newtickets}
 
@@ -76,10 +80,13 @@
 
 <p><small>KEY: |<span style="text-decoration:line-through">User opted out of receiving initial notification</span> | <img src="http://{$static_host}/img/star-light.png" width="14" height="14" title="Comment"/> User has left comment on this ticket | <input class="accept" type="button" value="D" style="width:10px;"> - Defer the ticket for 24 hours - the number after the defer button is days since last update | <span style="color:red">ticket is locked</span>|</small> </p>
 
+
+
 {else}
   <p>There are no tickets available to moderate at this time, please try again later.</p>
 {/if}
 
+<p><small><a name="n1">Note 1: Only works on active (not closed) tickets, and is <b>not updated live</b>. Uses same basic syntax as image/forum search, including negative keywords. Searches Grid Reference (4fig, hectad and myriad), Image Title/Comment, Ticket Note, Contributor Name and Suggestor Name. (but not changes themselves or replies yet)</small> </p>
 
 {/dynamic}    
 {include file="_std_end.tpl"}
