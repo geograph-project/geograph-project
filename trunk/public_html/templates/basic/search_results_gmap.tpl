@@ -63,10 +63,12 @@
 
 		map.setCenter(center, newZoom,mapType);
 
+
+		{/literal}
 		var xml = new GGeoXml("http://{$http_host}/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.kml");
 		map.addOverlay(xml);
 
-		{/literal}{if $markers} 
+		{if $markers} 
 			{foreach from=$markers item=marker}
 				map.addOverlay(createMarker(new GLatLng({$marker.1},{$marker.2}),'{$marker.0}'));
 			{/foreach}
