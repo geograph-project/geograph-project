@@ -401,3 +401,14 @@ ALTER TABLE  `vote_stat` ADD  `std` FLOAT NOT NULL AFTER  `avg` ;
 
 ALTER TABLE  `vote_stat` ADD  `users` MEDIUMINT UNSIGNED NOT NULL AFTER  `num` ;
 
+
+
+
+
+CREATE TABLE `gridimage_diversity` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `type` varchar(10) NOT NULL,
+  `ratio` float NOT NULL,
+  PRIMARY KEY  (`gridimage_id`,`type`)
+) ENGINE=MyISAM;
+
