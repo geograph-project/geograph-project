@@ -1,16 +1,15 @@
 <html>
 <head>
 <title>Search Results</title>
-<script src="{"/sorttable.js"|revision}"></script>
-<link rel="stylesheet" type="text/css" title="Monitor" href="/templates/basic/css/basic.css" media="screen" />
+<link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/basic/css/basic.css"|revision}" media="screen" />
 </head>
 <body style="background-color:black" text="#FFFFFF">
 
 {if $engine->resultCount}
-	<script type="text/javascript" src="http://www.nearby.org.uk/geograph/mootools/mootools-1.2-core.js"></script>
-	<script type="text/javascript" src="http://www.nearby.org.uk/geograph/mootools/mootools-1.2-more.js"></script>
-	<link rel="stylesheet" type="text/css" href="http://www.nearby.org.uk/geograph/mootools/MooFlow.css" />
-	<script type="text/javascript" src="http://www.nearby.org.uk/geograph/mootools/MooFlow.js"></script>
+	<script type="text/javascript" src="{"/js/mootools-1.2-core.js"|revision}"></script>
+	<script type="text/javascript" src="{"/js/mootools-1.2-more.js"|revision}"></script>
+	<link rel="stylesheet" type="text/css" href="{"/js/MooFlow.css"|revision}" />
+	<script type="text/javascript" src="{"/js/MooFlow.js"|revision}"></script>
 
 	<div id="MooFlow">
 	{foreach from=$engine->results item=image}
@@ -52,7 +51,5 @@
 	{include file="_search_noresults.tpl"}
 {/if}
 
-	
 </body>
 </html>
-

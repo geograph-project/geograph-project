@@ -6,13 +6,16 @@
 
 <p>There are {$pendingcount} images waiting to be displayed as picture of the day - add
 another one to the emergency kitty below - these are used whenever a new day dawns
-without a particular image assigned</p>
+without a particular image assigned.</p>
+
+<p>NOTE: the image will be cropped to landscape format - so for portrait format photos check that they still work when cropped to the central area.</p>
 
 <form method="post" action="pictureoftheday.php">
 
 <div>
 <label for="addimage">Image number</label>
 <input type="text" name="addimage" size="8" id="addimage" value="{$addimage}"/>
+<input type="button" value="Preview" onclick="window.open('/?potd='+this.form.addimage.value);">
 </div>
 
 <div>
@@ -45,7 +48,7 @@ with any <a href="http://www.gnu.org/software/tar/manual/html_node/tar_109.html"
 
 </form>
 
-<h2>Coming up...</h2>
+<h3>Coming up... <small>(<a href="/search.php?i=2136521">Preview</a> - don't disclose this url)</small></h3>
 
 <table>
 {foreach from=$coming_up key=date item=info}
@@ -53,7 +56,7 @@ with any <a href="http://www.gnu.org/software/tar/manual/html_node/tar_109.html"
 <td>{$date}</td>
 
 {if $info.gridimage_id}
-	<td><a href="/photo/{$info.gridimage_id}">photo {$info.gridimage_id}</a>
+	<td><a href="/photo/{$info.gridimage_id}">photo {$info.gridimage_id}</a> 
 		{if $info.pool}
 		 (from pool)
 		{/if}

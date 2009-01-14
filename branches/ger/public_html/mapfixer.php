@@ -22,15 +22,6 @@
  */
 
 
-/*
-couple of tools to add here....
-
-1. enter grid reference - system tells you if it exists, what the current %age land
-   is, and a link to the OS map - you can then update the %age land
-   
-2. list all '-1' squares for feeding into step 1
-*/
-
 require_once('geograph/global.inc.php');
 require_once('geograph/gridsquare.class.php');
 init_session();
@@ -42,14 +33,15 @@ if (isset($_GET['gridref']))
 {
 	$square=new GridSquare;
 
-		
-	
-	$ok=$square->validGridRef($_GET['gridref']);
-	if ($ok)
+	$ok=$square->setByFullGridRef($_GET['gridref'],false,true);
+	if ($ok || ($square->x && strlen($square->grid_reference) > 4))
 	{
-		$gridref=$_GET['gridref'];
+		$gridref=$square->grid_reference;
 		$smarty->assign_by_ref('gridref', $gridref);
 		$smarty->assign('showinfo', 1);
+	
+		$isadmin = (($USER->user_id == 10124) || $USER->hasPerm('moderator') )?1:0;
+		$smarty->assign_by_ref('isadmin', $isadmin);
 	
 		$db = NewADOConnection($GLOBALS['DSN']);
 
@@ -74,14 +66,18 @@ if (isset($_GET['gridref']))
 		//update?
 		if (isset($_GET['save']))
 		{
-			$percent=-1;
+			if ($isadmin) {
+				$percent=intval($_GET['percent_land']);
+			} else {
+				$percent=-1;
+			}
 			if (count($sq))
 			{
 				//update existing square
 				$db->Execute("update gridsquare set percent_land='{$percent}' where gridsquare_id='{$sq['gridsquare_id']}'");
 				$smarty->assign('status', "Existing gridsquare $gridref updated with new land percentage of $percent %");
 				
-				$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$sq['gridsquare_id']}, new_percent_land='{$percent}', old_percent_land='{$sq['percent_land']}',created=now()");
+				$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$sq['gridsquare_id']}, new_percent_land='{$percent}', old_percent_land='{$sq['percent_land']}',created=now(),comment=".$db->Quote($_GET['comment']));
 			}
 			else
 			{
@@ -107,7 +103,7 @@ if (isset($_GET['gridref']))
 
 					$smarty->assign('status', "New gridsquare $gridref created with new land percentage of $percent %");
 						
-					$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$gridsquare_id}, new_percent_land='{$percent}', old_percent_land='{$sq['percent_land']}',created=now()");
+					$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$gridsquare_id}, new_percent_land='{$percent}', old_percent_land='{$sq['percent_land']}',created=now(),comment=".$db->Quote($_GET['comment']));
 					
 				} else {
 					$smarty->assign('gridref_error', "Error, please try again later");

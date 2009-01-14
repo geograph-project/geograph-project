@@ -27,6 +27,8 @@
 		<label for="fq">Name</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 		<input type="submit" value="Search"/><br/>
 		<label for="fuzzy">Include 'fuzzy' matches?</label> <input type="checkbox" name="f" id="fuzzy" {if $fuzzy}checked{/if}/>
+		<!--<label for="loc">Search Localities?</label> <input type="checkbox" name="l" id="loc" {if $loc}checked{/if}/>
+		<label for="palce" style="color:lightgrey">Include other features?</label> <input type="checkbox" name="p" id="place" {if $place}checked{/if} disabled/>-->
 	</p>
 </form>
 
@@ -46,7 +48,7 @@
 	<tt>{$item.gr}</tt> <b><a href="/search.php?placename={$item.id}&amp;do=1" target="_top">{$item.name|escape:'html'|default:'unknown'}{if $item.name_2} <small>[{$item.name_2|escape:'html'}]</small>{/if}</a></b>
 	{if $item.localities}<small>{$item.localities|escape:'html'}</small>{/if}
 	{if $item.localities_2}<small>[{$item.localities_2|escape:'html'}]</small>{/if}
-	
+	<small><a href="/finder/search-maker.php?placename={$item.id}&amp;do=1" target="_top">Experimental Place Search</a></small>
 	</li>
 {foreachelse}
 	{if $q}

@@ -3,8 +3,8 @@
 
 {dynamic}
 {if $message_sent}
-	<h2>Thanks!</h2>
-	<p>Your message has been sent - you should hear back from us soon.</p>
+	<h3>Thank you for contacting the Geograph British Isles team.</h3>
+	<p>Your message has been sent - you should hear back from us soon. In the meantime you can read about the project <a href="/faq.php">here</a>.</p>
 {else}
     <h2>Contact Us</h2>
  

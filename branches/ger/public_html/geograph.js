@@ -72,20 +72,18 @@ function autoDisable(that) {
 function record_vote(type,id,vote) {
 	var i=new Image();
 	i.src= "/stuff/record_vote.php?t="+type+"&id="+id+"&v="+vote;
-	document.getElementById("votediv").innerHTML = "Thank you!";
+	document.getElementById("votediv"+id).innerHTML = "Thank you!";
 }
 
-function star_hover(vote,num) {
+function star_hover(id,vote,num) {
 	for (var i=1;i<=vote;i++) {
-		document.images['star'+i].src = document.images['star'+i].src.replace(/light/,'on');
+		document.images['star'+i+id].src = document.images['star'+i+id].src.replace(/light/,'on');
 	}
-	
 }
-function star_out(num) {
+function star_out(id,num) {
 	for (var i=1;i<=num;i++) {
-		document.images['star'+i].src = document.images['star'+i].src.replace(/-on/,'-light');
+		document.images['star'+i+id].src = document.images['star'+i+id].src.replace(/-on/,'-light');
 	}
-	
 }
 
 //	-	-	-	-	-	-	-	-
@@ -340,7 +338,7 @@ function importToMarkedImages() {
 	newCookie = readCookie('markedImages');
 	if (!newCookie)
 		newCookie = new String();
-	list = prompt('Paste your current list, either comma or space seperated\n or just surrounded with [[[ ]]] ','');
+	list = prompt('Paste your current list, either comma or space separated\n or just surrounded with [[[ ]]] ','');
 	if (list && list != '') {
 		splited = list.split(/[^\d]+/);
 		count=0;	

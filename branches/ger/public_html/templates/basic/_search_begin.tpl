@@ -20,6 +20,7 @@ Display:
 <select name="displayclass" size="1" onchange="this.form.submit()" style="font-size:0.9em"> 
 	{html_options options=$displayclasses selected=$engine->criteria->displayclass}
 </select>
+{if $legacy}<input type="hidden" name="legacy" value="1"/>{/if}
 <noscript>
 <input type="submit" value="Update"/>
 </noscript></div>
@@ -32,7 +33,7 @@ Display:
 	<div><b>Did you mean:</b>
 	<ul>
 	{foreach from=$suggestions item=row}
-		<li><b><a href="/search.php?q={$row.query|escape:'url'}+near+{$row.gr}">{$row.query}{if $row.name} <i>near</i> {$row.name}{/if}</a></b>? {if $row.localities}<small>({$row.localities})</small>{/if}</li>
+		<li><b><a href="{if $row.link}{$row.link}{else}/search.php?i={$i}&amp;text={$row.query|escape:'url'}&amp;gridref={$row.gr}&amp;redo=1{/if}">{$row.query}{if $row.name} <i>near</i> {$row.name}{/if}</a></b>? {if $row.localities}<small>({$row.localities})</small>{/if}</li>
 	{/foreach}
 	</ul></div>
 	<hr/>
@@ -45,12 +46,17 @@ Display:
 {if $engine->pageOneOnly && $engine->resultCount == $engine->numberofimages}
 	<acronym title="to keep server load under control, we delay calculating the total">many</acronym> images
 {else}{if $engine->islimited}
-	<b>{$engine->resultCount}</b> images
+	<b>{$engine->resultCount|number_format}</b> images
 {else}
 	the following
 {/if}{/if}:
 
-{if $engine->fullText && !strpos($engine->criteria->searchtext,':')}
+{if $engine->fullText && $engine->numberOfPages eq $engine->currentPage && $engine->criteria->sphinx.compatible && $engine->resultCount > $engine->maxResults}
+	<div class="interestBox" style="border:1px solid pink;">
+		You have reached the last page of results, this is due to the fact that the new search engine will only return at most {$engine->maxResults|number_format} results. However your search seems to be compatible with the lagacy engine. You can <a href="/search.php?i={$i}&amp;legacy=true&amp;page={$engine->currentPage+1}">view the next page in Legacy Mode</a> to continue. <b>Note, searches will be slower.</b>
+	</div>
+	
+{elseif $engine->fullText && (!$engine->criteria->sphinx.compatible || $engine->criteria->sphinx.no_legacy)}
 	<div class="interestBox" style="border:1px solid pink;display:none; " id="show1">
 		<h4>Not seeing the results you expect?</h4>
 		This search is powered by the new <a href="/help/search_new">experimental Full-Text search index</a>, which in some ways is less precise than the legacy search in text matching, e.g. similar words are automatically matched. However this index often results in quicker and more relevent results. 
@@ -58,7 +64,7 @@ Display:
 			You can access the <a href="/search.php?i={$i}&amp;legacy=true">old search here</a>.
 		
 			{if $enable_forums}
-				If you find yourself having to use this link, please tell us about it the forum. The legacy search will be phased out and it helps to know the functionality unintentionally broken in the new. 
+				If you find yourself having to use this link, please tell us about it the forum. Some features of legacy search will be phased out and it helps to know the functionality unintentionally broken in the new. 
 			{/if}
 		{/if}
 		

@@ -29,7 +29,7 @@ $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['t
 
 $date = (isset($_GET['date']) && ctype_lower($_GET['date']))?$_GET['date']:'submitted';
 
-if (isset($_GET['whenYear'])) {
+if (!empty($_GET['whenYear'])) {
 	if (!empty($_GET['whenMonth'])) {
 		$_GET['when'] = sprintf("%04d-%02d",$_GET['whenYear'],$_GET['whenMonth']);
 	} else {
@@ -42,6 +42,9 @@ $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
 
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(250,intval($_GET['limit'])):150;
+
+$myriad = (isset($_GET['myriad']) && ctype_upper($_GET['myriad']))?$_GET['myriad']:'';
+
 
 $minimum = (isset($_GET['minimum']) && is_numeric($_GET['minimum']))?intval($_GET['minimum']):25;
 $maximum = (isset($_GET['maximum']) && is_numeric($_GET['maximum']))?intval($_GET['maximum']):0;
@@ -56,8 +59,12 @@ if (isset($_GET['me']) && $USER->registered) {
 
 $smarty = new GeographPage;
 
-$template='statistics_leaderboard.tpl';
-$cacheid=$minimum.'-'.$maximum.$type.$date.$when.$limit.'.'.$ri.'.'.$u;
+if (isset($_GET['inner'])) {
+	$template='statistics_leaderboard_inner.tpl';
+} else {
+	$template='statistics_leaderboard.tpl';
+}
+$cacheid=$minimum.'-'.$maximum.$type.$date.$when.$limit.'.'.$ri.'.'.$u.$myriad;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*3; //3hour cache
@@ -68,7 +75,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');
 
-	$filtered = ($when || $ri);
+	$filtered = ($when || $ri || $myriad);
 	
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
@@ -279,6 +286,17 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "Centigraph<br/>Points";
 		$desc = "centigraph points awarded (centisquares photographed)";
 
+	} elseif ($type == 'content') {
+		if ($filtered) {
+			die("invalid request");
+		} else {
+			$sql_table = "user_stat i";
+			$sql_column = "content";
+			$sql_where = "content > 0";
+		}
+		$heading = "Content Items";
+		$desc = "items submitted";
+
 	} else { #if ($type == 'points') {
 		if ($filtered) {
 			$sql_where = "i.ftf=1 and i.moderation_status='geograph'";
@@ -301,6 +319,10 @@ if (!$smarty->is_cached($template, $cacheid))
 			$title = ($date == 'taken')?'taken':'submitted'; 
 			$desc .= ", <b>for images $title during ".getFormattedDate($when)."</b>";
 		}
+	}
+	if ($myriad) {
+		$sql_where .= " and grid_reference LIKE '{$myriad}____'";
+		$desc .= " in Myriad $myriad";
 	}
 	if ($ri) {
 		$sql_where .= " and reference_index = $ri";
@@ -368,7 +390,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$extra = array();
 	$extralink = '';
 	
-	foreach (array('when','date','ri') as $key) {
+	foreach (array('when','date','ri','myriad') as $key) {
 		if (isset($_GET[$key])) {
 			$extra[$key] = $_GET[$key];
 			$extralink .= "&amp;$key={$_GET[$key]}";

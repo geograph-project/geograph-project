@@ -52,7 +52,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	foreach ($CONF['references'] as $ri => $rname) {
 		$letterlength = $CONF['gridpreflen'][$ri];
 			
-		$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=$ri order by origin_x,origin_y limit 1");
+		$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=$ri and origin_x > 0 order by origin_x,origin_y limit 1");
 		
 			
 		$most = $db->GetAll("select 

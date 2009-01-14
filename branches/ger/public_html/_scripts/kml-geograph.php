@@ -75,11 +75,12 @@ $links = new kmlPrimative('Folder');
 $links->setItem('name','Next Level...');
 
 
+$names = $db->getAssoc("select prefix,title from gridprefix");
 
 foreach ($CONF['references'] as $ri => $rname) {
 	$letterlength = $CONF['gridpreflen'][$ri];
 
-	$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=$ri order by origin_x,origin_y limit 1");
+	$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=$ri and origin_x > 0 order by origin_x,origin_y limit 1");
 
 
 	$most = $db->GetAll("select 
@@ -147,7 +148,7 @@ foreach ($CONF['references'] as $ri => $rname) {
 		$networklink = new kmlNetworkLink(null,$entry['hunk_square']);
 		$file = getKmlFilepath($kml->extension,2,$square,$entry['hunk_square']);
 		$UrlTag = $networklink->useUrl("http://".$CONF['KML_HOST'].$file);
-		$html .= getHtmlLink($file,$entry['hunk_square']);
+		$html .= getHtmlLink($file,$entry['hunk_square'],'in Myriad'," (".$names[$entry['hunk_square']].")");
 		if (!isset($_GET['debug'])) {
 			if (isset($_GET['newonly'])) {
 				$db->Execute("insert ignore into kmlcache set `url` = 'myriad.php?gr={$entry['hunk_square']}',filename='$file',`level` = 2,`rendered` = 0");

@@ -1,12 +1,10 @@
-
 {include file="_search_begin.tpl"}
 
 {if $engine->resultCount}
-	<script type="text/javascript" src="http://www.nearby.org.uk/geograph/mootools/mootools-1.2-core.js"></script>
-	<script type="text/javascript" src="http://www.nearby.org.uk/geograph/mootools/mootools-1.2-more.js"></script>
-	<link rel="stylesheet" type="text/css" href="http://www.nearby.org.uk/geograph/mootools/MooFlow.css" />
-	<script type="text/javascript" src="http://www.nearby.org.uk/geograph/mootools/MooFlow.js"></script>
-
+	<script type="text/javascript" src="{"/js/mootools-1.2-core.js"|revision}"></script>
+	<script type="text/javascript" src="{"/js/mootools-1.2-more.js"|revision}"></script>
+	<link rel="stylesheet" type="text/css" href="{"/js/MooFlow.css"|revision}" />
+	<script type="text/javascript" src="{"/js/MooFlow.js"|revision}"></script>
 
 	<div id="MooFlow">
 	{foreach from=$engine->results item=image}

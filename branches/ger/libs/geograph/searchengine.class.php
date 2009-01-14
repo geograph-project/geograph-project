@@ -117,6 +117,49 @@ class SearchEngine
 			return $db->getOne("SELECT COUNT(*) FROM gridimage_query WHERE query_id = ?",$this->query_id);
 		}
 	}
+
+	function checkExplain($sql) {
+		$bad = 0;
+
+		if (strpos($sql,'gridimage_group') === FALSE) {
+			return;
+		}
+
+		 $db=$this->_getDB();
+		global $ADODB_FETCH_MODE;		
+		$oldmode = $ADODB_FETCH_MODE;
+		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+		$explain = $db->getAll("EXPLAIN $sql");
+		foreach ($explain as $i => $row) {
+			if ($row['type'] == 'ALL') {
+				//let this pass for NOW
+			} elseif ($row['rows'] == 0) {
+			
+			} elseif (empty($row['key']) || is_null($row['key'])) {
+				$bad = 1;
+			} elseif ($row['rows'] > 20000 && !empty($row['Extra'])) {
+				$bad = 1;
+			}
+		}
+		
+		if ($bad) {
+			unset($this->criteria->db);
+                	ob_start();
+        	        debug_print_backtrace();
+			print "\n\nHost: ".`hostname`."\n\n";
+			print_r($this->criteria);
+	                print_r($explain);
+        	        $con = ob_get_clean();
+        	        mail('geograph@barryhunter.co.uk','[Geograph Search Quota] '.date('r'),$con);
+		
+			global $smarty,$USER;
+			header("HTTP/1.1 503 Service Unavailable");
+			$smarty->assign('searchq',stripslashes($_GET['q']));
+			$smarty->display('search_unavailable.tpl');
+			exit;
+		}
+		$ADODB_FETCH_MODE = $oldmode;
+	}
 	
 	/**
 	 * run a search via the gridimage table
@@ -186,6 +229,9 @@ class SearchEngine
 				if (!empty($_GET['debug']))
 					print "<BR><BR>$sql";
 
+				$this->checkExplain($sql);
+				$doneexplain = 1;
+
 				$this->resultCount = $db->CacheGetOne(3600,$sql);
 				if (empty($_GET['BBOX']) && $this->display != 'reveal') {
 					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
@@ -213,6 +259,10 @@ LIMIT $page,$pgsize
 END;
 		if (!empty($_GET['debug']))
 			print "<BR><BR>$sql";
+
+		if (!isset($doneexplain)) {
+			$this->checkExplain($sql);
+		}
 		
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_before = ((float)$usec + (float)$sec);
@@ -229,7 +279,7 @@ END;
 			if ($count) {
 				$this->resultCount = $count;
 				$this->numberOfPages = ceil($this->resultCount/$pgsize);
-			} else {
+			} elseif (!empty($recordSet)) {
 				$this->resultCount = $recordSet->RecordCount();
 				if ($this->resultCount == $pgsize) {
 					$this->numberOfPages = 2;
@@ -240,6 +290,10 @@ END;
 						$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 					}
 				}
+			} else {
+				$this->resultCount = 0;
+				$this->numberOfPages = 0;
+				$this->pageOneOnly = 1;
 			}
 		}
 
@@ -263,14 +317,53 @@ END;
 
 		$sphinx->pageSize = $this->criteria->resultsperpage+0;
 
-
-	//look for suggestions - this needs to be done before the filters are added - the same filters wont work on the gaz index
-		if (empty($this->countOnly) && $sphinx->q && strlen($sphinx->q) < 64 && isset($GLOBALS['smarty'])) {
-			$GLOBALS['smarty']->assign("suggestions",$sphinx->didYouMean($sphinx->q));
-		} elseif ($this->criteria->searchclass == 'Placename' && strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE && isset($GLOBALS['smarty'])) {
-			$GLOBALS['smarty']->assign("suggestions",array(array('gr'=>'(anywhere)','localities'=>'as text search','query'=>$this->criteria->searchq) ));
+		$page = ($pg -1)* $sphinx->pageSize;
+		if ($page > 1000) { //todo - hard-coded 1000 needs autodetecting!
+			//lets jump to the last page of 'past results'
+			$pg = intval(ceil(1000/$sphinx->pageSize));
+			$this->currentPage = $pg;
 		}
 
+	//look for suggestions - this needs to be done before the filters are added - the same filters wont work on the gaz index
+		if (isset($GLOBALS['smarty'])) {
+		
+			$suggestions = array();
+			if (empty($this->countOnly) && $sphinx->q && strlen($sphinx->q) < 64 && empty($this->criteria->sphinx['x']) ) {
+				$suggestions = $sphinx->didYouMean($sphinx->q);
+			} elseif ($this->criteria->searchclass == 'Placename' && strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE && isset($GLOBALS['smarty'])) {
+				$suggestions = array(array('gr'=>'(anywhere)','localities'=>'as text search','query'=>$this->criteria->searchq) );
+			}
+			if (!empty($this->criteria->searchtext)) {
+
+				if (is_numeric($this->criteria->searchtext)) {
+
+					require_once('geograph/gridsquare.class.php');
+					require_once('geograph/gridimage.class.php');
+
+					$image=new GridImage();
+					$image->loadFromId($this->criteria->searchtext);
+
+					if ($image->isValid() && ( 
+						($image->moderation_status!='rejected' && $image->moderation_status!='pending')
+						|| $image->user_id == $GLOBALS['USER']->user_id
+					) ) {
+						$suggestions += array(array('link'=>"/photo/{$image->gridimage_id}",'gr'=>'(anywhere)','localities'=>"Image by ".htmlentities($image->realname).", ID: {$image->gridimage_id}",'query'=>htmlentities2($image->title)));
+					}
+				} else {
+					require_once("3rdparty/spellchecker.class.php");
+
+					$correction = SpellChecker::Correct($this->criteria->searchtext);
+
+					if ($correction != $this->criteria->searchtext && levenshtein($correction,$this->criteria->searchtext) < 0.25*strlen($correction)) {
+
+						$suggestions += array(array('gr'=>'(anywhere)','localities'=>'','query'=>$correction));
+					}
+				}
+			} 
+			if (!empty($suggestions) && count($suggestions)) {
+				$GLOBALS['smarty']->assign("suggestions",$suggestions);
+			}
+		}
 
 	//setup the sphinx wrapper 
 		if (!empty($this->criteria->sphinx['sort'])) {
@@ -315,8 +408,6 @@ END;
 
 		if ($this->countOnly || !$this->resultCount)
 			return 0;
-
-		$this->orderList = $ids;
 		
 		if ($sql_order == ' dist_sqd ') {
 			$this->sphinx_matches = $sphinx->res['matches'];
@@ -331,9 +422,10 @@ $sql = <<<END
 FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 	INNER JOIN user ON(gi.user_id=user.user_id)
 WHERE gi.gridimage_id IN ($id_list)
+ORDER BY FIELD(gi.gridimage_id,$id_list)
 END;
 		} else {
-			$sql = "/* i{$this->query_id} */ SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN ($id_list)";
+			$sql = "/* i{$this->query_id} */ SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN ($id_list) ORDER BY FIELD(gi.gridimage_id,$id_list)";
 		}
 		
 		if (!empty($_GET['debug']))
@@ -357,11 +449,11 @@ END;
 			$reply = $sphinx->BuildExcerpts($docs, empty($this->criteria->sphinx['exact'])?'gridimage':'gi_stemmmed', $sphinx->q);	
 		}
 
-		$this->querytime =  $querytime_after - $querytime_before + $sphinx->query_time;
+		$this->querytime = ($querytime_after - $querytime_before) + $sphinx->query_time;
 		
 		
 	//finish off
-		if (empty($_GET['BBOX']) && $this->display != 'reveal') {
+		if (!empty($recordSet) && empty($_GET['BBOX']) && $this->display != 'reveal') {
 			$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 		}
 
@@ -446,6 +538,9 @@ END;
 				if (!empty($_GET['debug']))
 					print "<BR><BR>$sql";
 
+                                $this->checkExplain($sql);
+                                $doneexplain = 1;
+
 				$this->resultCount = $db->CacheGetOne(3600,$sql);
 				if (empty($_GET['BBOX']) && $this->display != 'reveal') {
 					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
@@ -471,6 +566,10 @@ LIMIT $page,$pgsize
 END;
 		if (!empty($_GET['debug']))
 			print "<BR><BR>$sql";
+
+                if (!isset($doneexplain)) {
+                        $this->checkExplain($sql);
+                }
 		
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_before = ((float)$usec + (float)$sec);
@@ -487,7 +586,7 @@ END;
 			if ($count) {
 				$this->resultCount = $count;
 				$this->numberOfPages = ceil($this->resultCount/$pgsize);
-			} else {
+			} elseif (!empty($recordSet)) {
 				$this->resultCount = $recordSet->RecordCount();
 				if ($this->resultCount == $pgsize) {
 					$this->numberOfPages = 2;
@@ -498,6 +597,10 @@ END;
 						$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 					}
 				}
+			} else {
+				$this->resultCount = 0;
+				$this->numberOfPages = 0;
+				$this->pageOneOnly = 1;
 			}
 		}
 		
@@ -547,6 +650,7 @@ END;
 				$this->results[$i]=new GridImage;
 				$this->results[$i]->fastInit($recordSet->fields);
 
+				$this->results[$i]->dist_string = '';
 				if (!empty($recordSet->fields['dist_sqd'])) {
 					$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
 					
@@ -555,8 +659,9 @@ END;
 					} else {
 						$d = sqrt($recordSet->fields['dist_sqd']);
 					}
-					
-					$this->results[$i]->dist_string = sprintf($dist_format,$d,heading_string($angle));
+					if ($d >= 0.1) {
+						$this->results[$i]->dist_string = sprintf($dist_format,$d,heading_string($angle));
+					} 
 				}
 				if (empty($this->results[$i]->title))
 					$this->results[$i]->title="Untitled";
@@ -574,23 +679,6 @@ END;
 			}
 			$recordSet->Close(); 
 			$this->numberofimages = $i;
-			
-			if (!empty($this->orderList)) {
-				if (!empty($_GET['debug']))
-					print "REORDERING";
-				
-				//well we need to reorder...
-				$lookup = array();
-				foreach ($this->results as $gridimage_id => $image) {
-					$lookup[$image->gridimage_id] = $gridimage_id;
-				}
-				$newlist = array();
-				foreach ($this->orderList as $id) {
-					if (!empty( $this->results[$lookup[$id]]))
-						$newlist[] = $this->results[$lookup[$id]];
-				}
-				$this->results = $newlist;
-			}
 			
 			if (!$i && $this->resultCount) {
 				$pgsize = $this->criteria->resultsperpage;

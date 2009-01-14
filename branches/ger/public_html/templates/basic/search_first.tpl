@@ -33,8 +33,8 @@
 		 	 <td colspan="3" style="background:#dddddd;"><b>you can optionally limit to results to: </b></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="searchtext" id="l_searchtext"><b>containing text</b></label></td> 
-			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput"/><br/>
+			 <td><label for="searchtext" id="l_searchtext"><b>containing phrase</b></label></td> 
+			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput"/> (this is the old non-keyword search)<br/>
 			 <small>({newwin href="/help/search" text="open <b>text search help</b>"})</small></td> 
 			 <td>eg Bridge</td> 
 		  </tr> 

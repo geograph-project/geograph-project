@@ -257,7 +257,7 @@ if (!function_exists('mb_ucfirst') && function_exists('mb_substr')) {
 
 function recaps($in) {
 	$out = preg_replace('/(^|[ \/-])([^ \/-]{3,})/e','"$1".mb_ucfirst("$2")',mb_strtolower($in));
-	return preg_replace('/(^|\/)([^ \/-])/e','"$1".mb_strtoupper("$2")',$out);
+	return stripslashes(preg_replace('/(^|\/)([^ \/-])/e','"$1".mb_strtoupper("$2")',$out));
 }
 
 function smarty_function_place($params) {
@@ -296,7 +296,7 @@ function smarty_function_place($params) {
 	if (!empty($params['h3']) && strlen($params['h3']) > 1)
 		$t2 .= $params['h3'];
 	if ($place['hist_county']) {
-		$t2 .= " title=\"".substr($place['full_name'],0,10).": Historic County - {$place['hist_county']}";
+		$t2 .= " title=\"".substr($place['full_name'],0,12).": Historic County - {$place['hist_county']}";
 		if ($place['hist_county'] == $place['adm1_name'])
 			$t2 .= ", and modern Administrative Area of the same name";
 		else
@@ -380,6 +380,48 @@ function smarty_modifier_revision($filename) {
 }
 
 
+function getSitemapFilepath($level,$square = null,$gr='',$i = 0) {
+	#$i = 270727;
+	if (is_object($square)) {
+		$s = $square->gridsquare;
+		if ($level > 2) {
+			$n = sprintf("%d%d",intval($square->eastings/20)*2,intval($square->northings/20)*2);
+		}
+		if (empty($gr)) {
+			$gr = $square->grid_reference;
+		}
+	} elseif (!empty($gr)) {
+		preg_match('/^([A-Z]{1,2})([\d_]*)$/',strtoupper($gr),$m);
+		$s = $m[1];
+		if ($level > 2) {
+			$numbers = $m[2];
+			$numlen = strlen($m[2]);
+			$c = $numlen/2;
+			
+			$n = sprintf("%d%d",intval($numbers{0}/2)*2,intval($numbers{$c}/2)*2);
+		}
+	}
+	
+	$extension = 'html';
+	$prefix = "/sitemap";
+	
+	if ($i) {
+		$prefix .= "/$i";
+	} 
+
+	
+	if ($level == 3) {
+		return "$prefix/$s/$n.$extension";
+	} elseif ($level == 2) {
+		return "$prefix/$s.$extension";
+	} elseif ($level == 1) {
+		return "$prefix/geograph.$extension";
+	} else {
+		return "$prefix/$s/$n/$level/$gr.$extension";
+	}
+
+}
+
 /**
 * smarty wrapper to GeographLinks
 */
@@ -437,7 +479,10 @@ function GeographLinks(&$posterText,$thumbs = false) {
 			}
 		}
 	}
-
+	if ($CONF['CONTENT_HOST'] != $_SERVER['HTTP_HOST']) {
+		$posterText = str_replace($CONF['CONTENT_HOST'],$_SERVER['HTTP_HOST'],$posterText);
+	}
+	
 	$posterText = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"\$1\",'text'=>'Link','nofollow'=>1,'title'=>\"\$1\"))",$posterText);
 
 	$posterText = preg_replace('/(?<![\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"http://\$1\",'text'=>'Link','nofollow'=>1,'title'=>\"\$1\"))",$posterText);

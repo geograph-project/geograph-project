@@ -34,7 +34,7 @@ class sphinxwrapper {
 	public $qraw = '';
 	public $qoutput = '';
 	public $sort = '';
-	public $submitted_range;
+	public $pageSize = 15;
 
 	public $filters = array();
 
@@ -50,14 +50,21 @@ class sphinxwrapper {
 		$this->rawq = $q;
 		
 			//change OR to the right syntax
-		$q = preg_replace('/ OR /',' | ',$q);
+		$q = str_replace(' OR ',' | ',$q);
 		
 			//setup field: syntax
 		$q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
 		
 			//remove unsuitable chars
 		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'-]+/',' ',trim(strtolower($q))));
-		
+	
+	
+			//change it back to simple: syntax
+		$q2 = preg_replace('/(-?)[@]([a-z_]+) (-?)/','$1$3$2:',$q);
+		$q2 = str_replace('|',' OR ',$q2);
+		$this->qclean = trim(str_replace('  ',' ',$q2));
+	
+	
 			//make hyphenated words phrases
 		$q = preg_replace('/(\w+)(-[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2")',$q);
 		
@@ -71,9 +78,6 @@ class sphinxwrapper {
 		$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,3} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
 		
 		$this->q = $q;
-		
-			//change it back to simple: syntax
-		$this->qclean = preg_replace('/(-?)[@]([a-z_]+) (-?)/','$1$3$2:',$q);
 	}
 	
 	public function processQuery() {

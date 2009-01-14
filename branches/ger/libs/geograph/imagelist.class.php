@@ -157,9 +157,29 @@ class ImageList
 		return $this->_getImagesBySql($sql);
 	}
 	
+	/**
+	* get image list for particular query
+	*/
+	function getImagesBySphinx($q,$pgsize=15,$pg = 1) {
+		$sphinx = new sphinxwrapper($q);
+
+		$sphinx->pageSize = $pgsize;
+
+		$sphinx->processQuery();
+
+		$ids = $sphinx->returnIds($pg,'_images');
+		
+		if (count($ids)) {
+			$this->resultCount = $sphinx->resultCount;
+		
+			return $this->getImagesByIdList($ids);
+		} else {
+			return 0;
+		}
+	}
 	
 	/**
-	* get image list for particular user
+	* get image list for particular list
 	*/
 	function getImagesByIdList($ids) {
 		$sql = "SELECT * FROM gridimage_search WHERE gridimage_id IN(".join(",",$ids).") LIMIT ".count($ids);

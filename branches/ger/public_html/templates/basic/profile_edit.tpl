@@ -48,7 +48,27 @@
 	
 	<label for="email">Email:</label>
 	<input type="text" id="email" name="email" value="{$profile->email|escape:'html'}" size="35"/>
-	
+	<script type="text/javascript">{literal}
+		// really ugly 'fix' for http://code.google.com/p/chromium/issues/detail?id=1854
+		// the last text box before the first password field are assumed to be a username,
+		//   but the saved username COULD be a nickname OR email...
+		// ... so we take away those text boxes!
+		if (navigator && navigator.userAgent && navigator.userAgent.search(/Chrome/) != -1) {
+			document.getElementById('realname').disabled = true;
+			document.getElementById('nickname').disabled = true;
+			document.getElementById('email').disabled = true;
+			AttachEvent(window,'load',reEnableTextBoxes1,false);
+		}
+		function reEnableTextBoxes1() {
+			//autofill happens jsut after 'onload'
+			setTimeout("reEnableTextBoxes2()",400);
+		} 
+		function reEnableTextBoxes2() {
+			document.getElementById('realname').disabled = false;
+			document.getElementById('nickname').disabled = false;
+			document.getElementById('email').disabled = false;
+		}
+	{/literal}</script>
 	  <div class="fieldnotes">We need your email address to
 	  keep you notified about any changes requested or made to your
 	  submissions. It also allows anyone who is interested in your photos
@@ -92,12 +112,14 @@
 </fieldset>
 
 <fieldset>
-<legend>Password</legend>
+<legend>Change Password</legend>
+<p style="color:green">You only need to fill out this section if you wish to change your password</p>
+
 <div class="field">
 	{if $errors.oldpassword}<div class="formerror"><p class="error">{$errors.oldpassword}</p>{/if}
 		<label for="oldpassword">Current password:</label>
 		<input id="oldpassword" name="oldpassword" type="password" value="{$profile->oldpassword|escape:'html'}" size="35"/>
-		<div class="fieldnotes">Your old password is needed for changing your password.</div>
+		<div class="fieldnotes">Please enter your current password.</div>
 	{if $errors.oldpassword}</div>{/if}
 </div>
 <div class="field">
@@ -158,7 +180,7 @@
 	<label for="about_yourself">About Yourself:</label>
 	
 	 
-	<textarea name="about_yourself" id="about_yourself" rows="4" cols="60">{$profile->about_yourself|escape:'html'}</textarea>
+	<textarea name="about_yourself" id="about_yourself" rows="10" cols="85">{$profile->about_yourself|escape:'html'}</textarea>
 
 	<div class="fieldnotes"><span style="color:red">Note: HTML code will be removed, 
 	however basic URLs will be autolinked.</span><br/>
@@ -327,7 +349,7 @@
 
 	</fieldset>
 {/if}
-</div>
+
 
  </form>	
 

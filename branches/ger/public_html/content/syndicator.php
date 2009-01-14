@@ -44,7 +44,7 @@ if (!empty($_GET['format']) && in_array($_GET['format'], $valid_formats))
 $extension = ($format == 'KML')?'kml':'xml';
 
 
-$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/content-{$format}-".empty($_GET['admin']).".$extension";
+$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/content-{$format}-".md5(serialize($_GET)).".$extension";
 
 
 $rss = new UniversalFeedCreator();
@@ -71,13 +71,14 @@ if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 
 $db=NewADOConnection($GLOBALS['DSN']);
 	
+$limit = (isset($_GET['nolimit']))?9999:50;
 
 $sql="select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.source
 	from content 
 		left join user using (user_id)
 	where source != 'themed'
 	order by updated desc
-	limit 50";
+	limit $limit";
 
 $recordSet = &$db->Execute($sql);
 while (!$recordSet->EOF)

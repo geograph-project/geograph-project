@@ -138,12 +138,28 @@ if (isset($_GET['moderator']) && ($mid = intval($_GET['moderator']))) {
 }
 
 if (isset($_GET['q'])) {
-	if (strpos($_GET['q'],'!') === 0) {
-		$q = $db->Quote("%".preg_replace('/^!/','',$_GET['q'])."%");
-		$sql_where .= " and not (t.notes like $q or i.title like $q)";
+	if (isset($_GET['legacy'])) {
+		if (strpos($_GET['q'],'!') === 0) {
+			$q = $db->Quote("%".preg_replace('/^!/','',$_GET['q'])."%");
+			$sql_where .= " and not (t.notes like $q or i.title like $q)";
+		} else {
+			$q = $db->Quote("%{$_GET['q']}%");
+			$sql_where .= " and (t.notes like $q or i.title like $q)";
+		}
 	} else {
-		$q = $db->Quote("%{$_GET['q']}%");
-		$sql_where .= " and (t.notes like $q or i.title like $q)";
+		$sphinx = new sphinxwrapper($_GET['q']);
+
+		$sphinx->pageSize = $pgsize = 100;
+
+		$ids = $sphinx->returnIds(1,'tickets');	
+				
+		if (!empty($ids) && count($ids)) {
+			$sql_where .= " and t.gridimage_ticket_id IN(".join(",",$ids).")";
+		} else {
+			$sql_where .= " and 0";
+		}
+		$smarty->assign('q', $sphinx->qclean);
+
 	}
 }
 
@@ -166,13 +182,13 @@ if ($type != 'pending') {
 	$smarty->assign('col_moderator', 1);
 
 	if ($type == 'open') { 
-		$where_crit = "t.moderator_id>0 and t.status<>'closed'";
+		$where_crit = "t.moderator_id>0 and t.status in ('pending','open')";
 	} elseif ($type == 'closed') {
 		$where_crit = "t.status='closed'";
 	} elseif ($type == 'all') {
 		$where_crit = "1";
 	} else {//ongoing
-		$where_crit = "t.status<>'closed'";
+		$where_crit = "t.status in ('pending','open')";
 	}
 	
 	$rev = ($rev)?'':'desc';
@@ -180,7 +196,7 @@ if ($type != 'pending') {
 } else {
 	$type = 'pending';
 	
-	$where_crit = " t.moderator_id=0 and t.status<>'closed'";
+	$where_crit = " t.moderator_id=0 and t.status in ('pending','open')";
 
 	
 	$sql_where .= " and i.user_id != {$USER->user_id}";
@@ -259,7 +275,7 @@ if ($locked) {
 
 $smarty->assign('title', $title);
 
-$info = $db->getAssoc("select moderator_id>0,count(*) as c from gridimage_ticket where status<>'closed' and deferred < NOW() group by moderator_id=0");
+$info = $db->getAssoc("select moderator_id>0,count(*) as c from gridimage_ticket where status in ('pending','open') and deferred < NOW() group by moderator_id=0");
 
 $types['pending'] .= " [~ {$info['0']}]";
 $types['open'] .= " [~ {$info['1']}]";
@@ -303,8 +319,8 @@ if (empty($_GET['locked'])) {
 
 $newtickets=$db->GetAll($sql = 
 	"select t.*,suggester.realname as suggester, (i.user_id = t.user_id) as ownimage,
-		submitter.realname as submitter, submitter.ticket_option as submitter_ticket_option, 
-		i.title, 
+		submitter.realname as submitter, submitter.ticket_option as submitter_ticket_option, (submitter.rights LIKE '%dormant%') as submitter_dormant,
+		i.title, DATEDIFF(NOW(),t.updated) as days,
 		group_concat(if(c.user_id=i.user_id,c.comment,null)) as submitter_comment,
 		group_concat(if(c.user_id=t.user_id,c.comment,null)) as suggester_comment
 		$columns

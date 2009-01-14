@@ -29,9 +29,13 @@ $smarty = new GeographPage;
 //this page isnt actully heavy, but the searches generated could be!
 dieUnderHighLoad();
 
+if (isset($_GET['table'])) {
+	$template='explore_searches_table.tpl';
+} else {
+	$template='explore_searches.tpl';
+}
 
-$template='explore_searches.tpl';
-$cacheid = $is_mod=$USER->hasPerm('admin')?1:0;
+$cacheid = $is_mod=($USER->hasPerm('admin') && !isset($_GET['admin']))?1:0;
 
 $i = 0;
 if (isset($_REQUEST['i']) && is_numeric($_REQUEST['i'])) {
@@ -98,7 +102,7 @@ if ($is_mod) {
 	$smarty->caching = 0;
 } else {
 	$smarty->caching = 2; // lifetime is per cache
-	$smarty->cache_lifetime = 3600*24; //24hr cache
+	$smarty->cache_lifetime = 3600*6; //6hr cache
 }
 
 if (!$smarty->is_cached($template, $cacheid))
@@ -107,7 +111,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (!$db) die('Database connection failed');  
 	
 	$where = array();
-	if ($USER->hasPerm('moderator')) {
+	if ($is_mod ) {
 		$where[] = 'approved > -1';
 	} else {
 		$where[] = 'approved = 1';
@@ -116,10 +120,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (count($where))
 		$where_sql = " where ".join(' AND ',$where);
 
+	$dol = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$queries =& $db->getAll("
 	select
-		id,searchdesc,`count`,comment,created,approved
+		id,searchdesc,`count`,comment,created,approved,orderby
 	from
 		queries_featured
 		inner join queries using (id)
@@ -127,6 +132,32 @@ if (!$smarty->is_cached($template, $cacheid))
 	$where_sql
 	order by 
 		updated desc");
+	$ADODB_FETCH_MODE = $dol;
+	
+	if (!empty($CONF['memcache']['app'])) { //without memcache this would suck
+		require_once('geograph/searchcriteria.class.php');
+		require_once('geograph/searchengine.class.php');
+		
+		foreach ($queries as $idx => $row) {
+		
+			$mkey = $row['id'];
+			
+			$queries[$idx]['image'] =& $memcache->name_get('fse',$mkey);
+			if (empty($queries[$idx]['image'])) {
+			
+				$engine = new SearchEngine($row['id']);
+				$engine->criteria->resultsperpage = 1; //override it
+				$engine->Execute($pg);
+				if ($engine->resultCount && $engine->results) {
+					$queries[$idx]['image'] = $engine->results[0];
+					
+					$memcache->name_set('fse',$mkey,$queries[$idx]['image'],$memcache->compress,3600*6*rand(3,10));
+				}
+			}
+			
+		}
+	}
+	
 	
 	$smarty->assign_by_ref('queries',$queries);
 } 

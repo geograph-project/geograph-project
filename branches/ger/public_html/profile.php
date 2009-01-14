@@ -74,9 +74,6 @@ if (isset($_REQUEST['edit']))
 	else
 	{
 		$profile=new GeographUser($USER->user_id);
-		$profile->oldpassword='';
-		$profile->password1='';
-		$profile->password2='';
 	}
 	$smarty->assign('pagesizes', array(5,10,15,20,30,50));
 	$smarty->assign('delays', array(2,3,4,5,6,10,12));
@@ -193,7 +190,14 @@ if ($template=='profile.tpl')
 		if (!$profile) {
 			$profile=new GeographUser($uid);
 		}
-			
+		
+		if (!empty($_GET['a']) && $_GET['a'] == $profile->realname) {
+			header("HTTP/1.0 301 Moved Permanently");
+			header("Status: 301 Moved Permanently");
+			header("Location: /profile/{$uid}");
+			exit;
+		}
+		
 		if ($profile->user_id==0)
 		{
 			header("HTTP/1.0 404 Not Found");

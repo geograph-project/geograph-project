@@ -127,6 +127,7 @@ grid_reference,x,y,
 $sql_column as hunk_square,
 sum(has_geographs) as geograph_count,
 sum(percent_land >0) as land_count,
+sum(imagecount) as images,
 (sum(has_geographs) * 100 / sum(percent_land >0)) as percentage
 from gridsquare 
 where $sql_where
@@ -147,7 +148,7 @@ foreach($most as $id=>$entry)
 	$networklink = new kmlNetworkLink(null,$entry['hunk_square']);
 	$file = getKmlFilepath($kml->extension,4,$square,$entry['hunk_square']);
 	$UrlTag = $networklink->useUrl("http://".$CONF['KML_HOST'].$file);
-	$html .= getHtmlLink($file,$entry['hunk_square']);
+	$html .= getHtmlLink($file,$entry['hunk_square'],'in Hectad'," (at least {$entry['images']} images)");
 	if (!isset($_GET['debug'])) {
 		if (isset($_GET['newonly'])) {
 			$db->Execute("insert ignore into kmlcache set `url` = 'hectad.php?gr={$entry['hunk_square']}',filename='$file',`level` = 4,`rendered` = 0");
@@ -167,6 +168,12 @@ foreach($most as $id=>$entry)
 
 $folder->addChild($links);
 
-kmlPageFooter($kml,$square,$gr,'tile.php',3,$html);
+$grs= array();
+$grs[] = $square->gridsquare.floor($square->eastings/10).floor($square->northings/10);
+$grs[] = $square->gridsquare.(floor($square->eastings/10)+1).floor($square->northings/10);
+$grs[] = $square->gridsquare.(floor($square->eastings/10)+1).(floor($square->northings/10)+1);
+$grs[] = $square->gridsquare.floor($square->eastings/10).(floor($square->northings/10)+1);
+
+kmlPageFooter($kml,$square,$gr,'tile.php',3,$html,implode(',',$grs));
 
 ?>

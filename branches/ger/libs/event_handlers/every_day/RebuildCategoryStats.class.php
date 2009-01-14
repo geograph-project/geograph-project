@@ -47,7 +47,7 @@ class RebuildCategoryStats extends EventHandler
 		$db->Execute("CREATE TABLE category_stat_tmp
 				(INDEX (c))
 				ENGINE=MyISAM
-				SELECT imageclass,count(*) as c
+				SELECT imageclass,count(*) as c,gridimage_id
 				FROM gridimage_search
 				GROUP BY imageclass");
 		

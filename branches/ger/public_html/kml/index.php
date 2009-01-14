@@ -101,6 +101,15 @@ $networklink->setItem('open',0);
 $folder->addChild($networklink);
 
 
+$networklink = new kmlNetworkLink(null,'Recent Articles');
+$UrlTag = $networklink->useUrl("http://www.geograph.org.uk/article/feed/recent.kml");
+$UrlTag->setItem('refreshMode','onInterval');
+$UrlTag->setItem('refreshInterval',60*60);
+$networklink->setItem('visibility',0);
+$networklink->setItem('open',0);
+$folder->addChild($networklink);
+
+
 $networklink = new kmlNetworkLink(null,'Recent Grid Square Discussions');
 $UrlTag = $networklink->useUrl("http://www.geograph.org.uk/discuss/feed/forum5.kml");
 $UrlTag->setItem('refreshMode','onInterval');

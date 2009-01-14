@@ -74,9 +74,11 @@ Common Themes: (<a href="/content/themes.php">more...</a>)<br/>
  <ul>
   <li><a href="/article/">Articles</a></li>
   <li><a href="/gallery/">Galleries</a></li>
-  {if $enable_forums}
+{dynamic}
+  {if $enable_forums && $user->registered}
 	  <li><a href="/discuss/?action=vtopic&amp;forum={$forum_submittedarticles}">Themed Topics</a></li>
   {/if}
+{/dynamic}
   <li><a href="/help/sitemap">Help Documents</a></li>
  </ul>
  

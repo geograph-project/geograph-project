@@ -58,7 +58,7 @@ a Img
 #header h1
 {
 	margin:0px;
-	background-image: url('/templates/basic/img/logo1M.gif');
+	background-image: url('/templates/basic/img/logowinter.gif');
 	height:74px;
 	width:257px;
 	cursor:pointer;
@@ -205,13 +205,17 @@ body>#nav_block {width:128px;}
 
 .nav .newsbody
 {
+	border-top: 1px solid silver;
+	padding-top:3px;
 	font-size:0.8em;
 }
 
 .nav .newsfooter
 {
+	border-top: 1px solid silver;
+	padding-top:3px;
 	font-size:0.7em;
-	color:silver;
+	color:gray;
 }
 
 /*---------------------------------------------------------------*
@@ -245,6 +249,13 @@ body>#nav_block {width:128px;}
 	padding-left:10px;
 	font-weight:normal;
 	color:silver;
+}
+
+.content_photoblack .keywords {
+	color:#666666;
+	font-size: 0.8em;
+	margin-top:2px;
+	padding:2px;
 }
 
 .content_photoblack .interestBox {
@@ -308,6 +319,13 @@ body>#nav_block {width:128px;}
 	color:#999999;
 }
 
+.content_photogray .keywords {
+	color:#999999;
+	font-size: 0.8em;
+	margin-top:2px;
+	padding:2px;
+}
+
 .content_photogray .interestBox {
 	background-color:#cccccc;
 	color:#444444;
@@ -363,6 +381,14 @@ body>#nav_block {width:128px;}
 	color:silver;
 
 }
+
+.content_photowhite .keywords {
+	color:#cccccc;
+	font-size: 0.8em;
+	margin-top:2px;
+	padding:2px;
+}
+
 .content_photowhite .interestBox {
 	font-size:0.9em;
 }

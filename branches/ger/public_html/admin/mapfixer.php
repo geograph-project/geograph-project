@@ -98,7 +98,7 @@ elseif (isset($_GET['gridref']))
 				$db->Execute("update gridsquare set percent_land='{$percent}' where gridsquare_id='{$sq['gridsquare_id']}'");
 				$smarty->assign('status', "Existing gridsquare $gridref updated with new land percentage of $percent %");
 				
-				$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$sq['gridsquare_id']}, new_percent_land='{$percent}', old_percent_land='{$sq['percent_land']}',created=now()");
+				$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$sq['gridsquare_id']}, new_percent_land='{$percent}', old_percent_land='{$sq['percent_land']}',created=now(),comment=".$db->Quote($_GET['comment']));
 				
 				require_once('geograph/mapmosaic.class.php');
 				$mosaic = new GeographMapMosaic;
@@ -129,7 +129,7 @@ elseif (isset($_GET['gridref']))
 
 					$smarty->assign('status', "New gridsquare $gridref created with new land percentage of $percent %");
 					
-					$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$gridsquare_id}, new_percent_land='{$percent}', old_percent_land='{$sq['percent_land']}',created=now()");
+					$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$gridsquare_id}, new_percent_land='{$percent}', old_percent_land='{$sq['percent_land']}',created=now(),comment=".$db->Quote($_GET['comment']));
 					
 					require_once('geograph/mapmosaic.class.php');
 					$mosaic = new GeographMapMosaic;
@@ -162,7 +162,14 @@ if ($_GET['save']=='quick')
 else
 {
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$unknowns=$db->GetAll("select * from gridsquare where percent_land=-1 order by reference_index asc,imagecount desc");
+	$unknowns=$db->GetAll("select gridsquare_id,grid_reference,imagecount,
+		group_concat(comment order by mapfix_log_id SEPARATOR ' | ') as comments,
+		group_concat(concat(old_percent_land,'>',new_percent_land) order by mapfix_log_id SEPARATOR ', ') as percents		
+	from gridsquare 
+		left join mapfix_log using (gridsquare_id)
+	where percent_land=-1 
+	group by gridsquare_id
+	order by reference_index asc,imagecount desc");
 	
 	$smarty->assign_by_ref('unknowns', $unknowns);
 	

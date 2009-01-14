@@ -135,85 +135,46 @@ if ($image->isValid())
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$hash,($USER->user_id == 0));
 
+	if (!empty($CONF['sphinx_host']) 
+		&& stripos($_SERVER['HTTP_REFERER'],$CONF['CONTENT_HOST']) === FALSE 
+		&& stripos($_SERVER['HTTP_REFERER'],$_SERVER['HTTP_HOST']) === FALSE
+		&& preg_match('/\b(q|query|qry|search|su|searchfor|s|qs|p|key|buscar|w)=([\w%\+\.\(\)\"\':]+)(\&|$)/',$_SERVER['HTTP_REFERER'],$m) 
+		&& !is_numeric($m[2])
+		&& ($q = trim(preg_replace('/\b(geograph|photo|image|picture|site:[\w\.-]+|inurl:[\w\.-]+)s?\b/','',urldecode($m[2]) )) )
+		&& strlen($q) > 3 ) {
+		
+		$smarty->assign("search_keywords",$q);
+		
+		$mkey = $image->grid_reference.' '.$q;
+		$info =& $memcache->name_get('sn',$mkey);
+		
+		if (!empty($info)) {
+			list($count,$when) = $info;
+			
+			$smarty->assign("search_count",$count);
+			
+			$smarty->assign_by_ref("image",$image); //we dont need the full assignToSmarty
+		} else {
+			$sphinx = new sphinxwrapper($mkey);
+			
+			$sphinx->processQuery();
+
+			$count = $sphinx->countMatches('_images');
+			
+			$smarty->assign("search_count",$count);
+			
+			//fails quickly if not using memcached!
+			$info = array($count,time());
+			$memcache->name_set('sn',$mkey,$info,$memcache->compress,$memcache->period_med);
+			
+		}
+	}
+
 	if (!$smarty->is_cached($template, $cacheid))
 	{
-		$taken=$image->getFormattedTakenDate();
-
-		//get the grid references
-		$image->getSubjectGridref(true);
-		$image->getPhotographerGridref(true);
-
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
 
-
-		//remove grid reference from title
-		$image->bigtitle=trim(preg_replace("/^{$image->grid_reference}/", '', $image->title));
-		$image->bigtitle=preg_replace('/(?<![\.])\.$/', '', $image->bigtitle);
-
-		$smarty->assign('page_title', $image->bigtitle.":: OS grid {$image->grid_reference}");
-
-		$smarty->assign('image_taken', $taken);
-		$smarty->assign('ismoderator', $ismoderator);
-		$smarty->assign_by_ref('image', $image);
-
-		//get a token to show a suroudding geograph map
-		$mosaic=new GeographMapMosaic;
-		$smarty->assign('map_token', $mosaic->getGridSquareToken($image->grid_square));
-
-
-		//find a possible place within 25km
-		$place = $image->grid_square->findNearestPlace(75000);
-		$smarty->assign_by_ref('place', $place);
-
-		if (empty($image->comment)) {
-			$smarty->assign('meta_description', "{$image->grid_reference} :: {$image->bigtitle}, ".strip_tags(smarty_function_place(array('place'=>$place))) );
-		} else {
-			$smarty->assign('meta_description', $image->comment);
-		}
-
-		if ($CONF['forums']) {
-			//let's find posts in the gridref discussion forum
-			$image->grid_square->assignDiscussionToSmarty($smarty);
-		}
-
-		//count the number of photos in this square
-		$smarty->assign('square_count', $image->grid_square->imagecount);
-
-		//lets add an overview map too
-		$overview=new GeographMapMosaic('largeoverview');
-		$overview->setCentre($image->grid_square->x,$image->grid_square->y); //does call setAlignedOrigin
-		$overview->assignToSmarty($smarty, 'overview');
-		$smarty->assign('marker', $overview->getSquarePoint($image->grid_square));
-
-
-		require_once('geograph/conversions.class.php');
-		$conv = new Conversions;
-
-		list($lat,$long) = $conv->gridsquare_to_wgs84($image->grid_square);
-		$smarty->assign('lat', $lat);
-		$smarty->assign('long', $long);
-
-		list($latdm,$longdm) = $conv->wgs84_to_friendly($lat,$long);
-		$smarty->assign('latdm', $latdm);
-		$smarty->assign('longdm', $longdm);
-
-		//lets add an rastermap too
-		$rastermap = new RasterMap($image->grid_square,false);
-		$rastermap->addLatLong($lat,$long);
-		if (!empty($image->viewpoint_northings)) {
-			$rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings,$image->viewpoint_grlen,$image->view_direction);
-		} elseif (isset($image->view_direction) && strlen($image->view_direction) && $image->view_direction != -1) {
-			$rastermap->addViewDirection($image->view_direction);
-		}
-		$smarty->assign_by_ref('rastermap', $rastermap);
-
-
-		$smarty->assign('x', $image->grid_square->x);
-		$smarty->assign('y', $image->grid_square->y);
-
-		if ($image->view_direction > -1) {
-			$smarty->assign('view_direction', ($image->view_direction%90==0)?strtoupper(heading_string($image->view_direction)):ucwords(heading_string($image->view_direction)) );
-		}
+		$image->assignToSmarty($smarty);
 	}
 } elseif (!empty($rejected)) {
 	header("HTTP/1.0 410 Gone");
@@ -226,7 +187,10 @@ if ($image->isValid())
 	header("Status: 404 Not Found");
 }
 
-
+function smarty_function_hidekeywords($input) {
+	return preg_replace('/(^|[\n\r\s]+)(Keywords?[\s:][^\n\r>]+)$/','<span class="keywords">$2</span>',$input);
+}
+$smarty->register_modifier("hidekeywords", "smarty_function_hidekeywords");
 
 $smarty->display($template, $cacheid);
 

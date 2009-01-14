@@ -50,7 +50,7 @@ class Gazetteer
 	function findListByNational($reference_index,$e,$n,$radius = 1005) {
 		global $CONF,$memcache;
 		
-		$mkey = "$reference_index,$e,$n,$radius,-".'.v2';//need to invalidate the whole cache. 
+		$mkey = "$reference_index,$e,$n,$radius,-".'.v3';//need to invalidate the whole cache. 
 		//fails quickly if not using memcached!
 		$places =& $memcache->name_get('g',$mkey);
 		if ($places)
@@ -112,6 +112,10 @@ class Gazetteer
 
 
 		}
+	        if ($places && count($places))
+			foreach ($places as $i => $place) {
+        		        $places[$i]['full_name'] = _utf8_decode($place['full_name']);
+        		}
 
 		//fails quickly if not using memcached!
 		$memcache->name_set('g',$mkey,$places,$memcache->compress,$memcache->period_long);
@@ -419,7 +423,7 @@ class Gazetteer
 		global $USER;
 		global $CONF,$memcache;
 		
-		$mkey = strtolower(trim($placename)).'.v3';//need to invalidate the whole cache. 
+		$mkey = strtolower(trim($placename)).'.v4';//need to invalidate the whole cache. 
 		//fails quickly if not using memcached!
 		$places =& $memcache->name_get('g',$mkey);
 		if ($places)
@@ -636,6 +640,7 @@ class Gazetteer
 					if (empty($row['gridref'])) {
 						list($places[$id]['gridref'],) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
 					}
+			                $places[$id]['full_name'] = _utf8_decode($row['full_name']);
 				}
 				if ($c > 14) {
 					$placename = strtolower($placename);

@@ -1,14 +1,14 @@
 {assign var="page_title" value="API"}
 {include file="_std_begin.tpl"}
 
-	 <h2>Geograph API v0.8</h2> 
+	 <h2>Geograph API v0.81</h2> 
 	 <div
 	  style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;"><b>Contents</b><br/>
 		<ul style="margin-top:0;margin-left:0;padding:0 0 0 1em;"> 
 		  <li><a href="#api">API-key</a></li> 
 		  <li><a href="#rss">RSS feeds</a> 
 			 <ul> 
-				<li><a href="#rss_param">Parameters</a>, <a href="#rss_format">Formats</a></li> 
+				<li><a href="#rss_param">Types</a>, <a href="#rss_options">Options</a>, <a href="#rss_format">Formats</a></li> 
 			 </ul></li> 
 		  <li><a href="#rest">REST interface</a> 
 			 <ul> 
@@ -84,7 +84,7 @@
 		href="http://{$http_host}/syndicator.php?key=[apikey]">http://{$http_host}/syndicator.php?key=[apikey]</a><br/><br/>
 	 and by default returns obtains an up-to-date listing of the 20 latest
 		geograph submissions, you can however return different results as below</p> 
-	 <h4><a name="rss_param"></a>Extra Parameters</h4> 
+	 <h4><a name="rss_param"></a>Feed Type</h4> 
 	 <p>You should supply <b>one</b> of the following parameters to specify the type of
 		results you would like...</p> 
 	 <table cellpadding="3" cellspacing="0" border="1"> 
@@ -124,8 +124,8 @@
 			  href="http://{$http_host}/syndicator.php?key=[apikey]&amp;u=3">http://{$http_host}/syndicator.php?key=[apikey]&amp;u=3</a></td>
 		</tr> 
 		<tr> 
-		  <th rowspan="2">q=[location]</th> 
-		  <td>Returns 15 or all within 30km (which ever is less) of the specified location (Grid Reference, Postcode or Decimal Lat/Long) (see also <a href="#building">Building a query</a> for pitfals of the q paramater) - Will in fact create a i query on the fly, so you can use that to get page 2 etc of the results. Accepts additonal paramater:</span>
+		  <th rowspan="2">q=[query]</th> 
+		  <td>Tries deduce the type of search, either a text or a location search. can use the format {literal}q={what}+near+{where}{/literal} to be sure (or use seperate params as below) - Will in fact create a i query on the fly, so you can use that to get page 2 etc of the results. Accepts additonal paramater:</span>
 			 <table border="1" cellpadding="3" cellspacing="0"> 
 				<tr> 
 				  <th>u=[user_id]</th> 
@@ -136,11 +136,30 @@
 		<tr> 
 		  <td>
 			 <a title="Geograph RSS feed"
-			  href="http://{$http_host}/syndicator.php?key=[apikey]&amp;q=TQ7054">http://{$http_host}/syndicator.php?key=[apikey]&amp;q=TQ7054</a></td>
+			  href="http://{$http_host}/syndicator.php?key=[apikey]&amp;q=bridge+near+TQ7054">http://{$http_host}/syndicator.php?key=[apikey]&amp;q=bridge+near+TQ7054</a></td>
+		</tr> 
+		<tr> 
+		  <th rowspan="2">location=[location]</th> 
+		  <td>Returns 15 or all within 10km (which ever is less) of the specified location (Grid Reference, Postcode or Decimal Lat/Long) (see also <a href="#building">Building a query</a> for pitfals of the q paramater) - Will in fact create a i query on the fly, so you can use that to get page 2 etc of the results. Accepts additonal paramater:</span>
+			 <table border="1" cellpadding="3" cellspacing="0"> 
+				<tr> 
+				  <th>text=[text string]</th> 
+				  <td>returns only images matching this text search</td> 
+				</tr> 
+				<tr> 
+				  <th>u=[user_id]</th> 
+				  <td>limit results to particular user</td> 
+				</tr> 
+		 </table></td> 
+		</tr> 
+		<tr> 
+		  <td>
+			 <a title="Geograph RSS feed"
+			  href="http://{$http_host}/syndicator.php?key=[apikey]&amp;location=TQ7054">http://{$http_host}/syndicator.php?key=[apikey]&amp;location=TQ7054</a></td>
 		</tr> 
 		<tr> 
 		  <th rowspan="2">text=[text string]</th> 
-		  <td>Returns 15 results containing the text string in the image title - Will in fact create a i query on the fly, so you can use that to get page 2 etc of the results. Accepts additonal paramater:</span>
+		  <td>Returns 15 results matching the <a href="/help/search_new">word search</a> - Will in fact create a i query on the fly, so you can use that to get page 2 etc of the results. Accepts additonal paramater:</span>
 			 <table border="1" cellpadding="3" cellspacing="0"> 
 				<tr> 
 				  <th>u=[user_id]</th> 
@@ -154,6 +173,20 @@
 			  href="http://{$http_host}/syndicator.php?key=[apikey]&amp;text=bridge">http://{$http_host}/syndicator.php?key=[apikey]&amp;text=bridge</a></td>
 		</tr> 
 	 </table> 
+	 
+	 <h4><a name="rss_options"></a>Options</h4> 
+	 
+	 <table cellpadding="3" cellspacing="0" border="1"> 
+		<tr> 
+		  <th rowspan="2">expand=1</th> 
+		  <td>If present includes the thumbnail of the image in the description as html. (non applicable to KML format) </td> 
+		</tr> 
+		<tr> 
+		  <td>
+			 <a title="Geograph RSS feed"
+			  href="http://{$http_host}/syndicator.php?key=[apikey]&amp;expand=1">http://{$http_host}/syndicator.php?key=[apikey]&amp;expand=1</a></td>
+		</tr> 
+	 </table>  
 	 <h4><a name="rss_format"></a>Formats</h4> 
 	 <p>There is a number of standard formats the feed is available in</p> 
 	 <table cellpadding="3" cellspacing="0" border="1"> 
@@ -210,7 +243,7 @@
 		</tr> 
 		<tr> 
 		  <td>&lt;script
-			 src="http://{$http_host}/syndicator.php?key=[apikey]&key=[apikey]&amp;format=JS"
+			 src="http://{$http_host}/syndicator.php?key=[apikey]&amp;format=JS"
 			 type="text/javascript"&gt;&lt;/script&gt;</td> 
 		</tr> 
 		<tr> 

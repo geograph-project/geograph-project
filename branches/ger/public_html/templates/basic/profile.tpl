@@ -73,7 +73,9 @@
 		{/if}
 	</li>
  
-	{if $user->user_id ne $profile->user_id}
+ 	{if $profile->hasPerm('dormant',true)}
+ 		<!--<li><i>We do not hold contact details for this user.</i></li>-->
+ 	{elseif $user->user_id ne $profile->user_id}
 		{if $profile->public_email eq 1}
 			<li><b>Email</b>: {mailto address=$profile->email encode="javascript"}</li>
 		{/if}
@@ -146,6 +148,13 @@
 					</ul>
 				{/if}
 			</li>
+			{if $profile->stats.content}
+				<li style="margin-top:10px"><b>{$profile->stats.content}</b> items of <a href="/content/?user_id={$profile->user_id}" title="view content submitted by {$profile->realname|escape:'html'}">Content submitted</a>
+					{if $user->user_id eq $profile->user_id}
+						[<a href="/article/?user_id={$profile->user_id}">Article List</a>]
+					{/if}
+				</li>
+			{/if}
 		</ul>
 		<div style="float:right;font-size:0.8em; color:gray; margin-top:-20px">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
 	</div>
@@ -157,7 +166,12 @@
 {/if}
 
 {if $userimages}
-	<div style="float:right; position:relative; margin-top:20px; font-size:0.7em; padding:10px"><a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Find images by {$profile->realname|escape:'html'}</a> (<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs">Thumbnail Only</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide">Slide Show Mode</a>)</div>
+	<div style="float:right; position:relative; font-size:0.7em; padding:10px"><a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Find images by {$profile->realname|escape:'html'}</a> (<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs">Thumbnail Only</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide">Slide Show Mode</a>)<br/>
+	<form action="/search.php" style="display:inline">
+	<label for="fq">Search</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+	<input type="hidden" name="user_id" value="{$profile->user_id}"/>
+	<input type="submit" value="Find"/>
+	</form></div>
 	<h3 style="margin-bottom:0px">Photographs</h3>
 	
 	<p style="font-size:0.7em">Click column headers to sort in a different order</p>
@@ -165,7 +179,7 @@
 	{if $limit}
 		<p>This page shows the latest {$limit} images, more are available <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=text&amp;resultsperpage=100&amp;page=2">via the search interface</a></p>
 	{/if}
-	
+	<br style="clear:both"/>
 	<table class="report sortable" id="photolist" style="font-size:8pt;">
 	<thead><tr>
 		<td><img title="Any grid square discussions?" src="/templates/basic/img/discuss.gif" width="10" height="10"> ?</td>
@@ -202,7 +216,7 @@
 		
 		<li><b>Maps</b>: {if $profile->stats.images gt 10}<a href="/profile/{$profile->user_id}/map" rel="nofollow">Personalised Geograph Map</a> or {/if} Recent Photos on <a href="http://maps.google.co.uk/maps?q=http://{$http_host}/profile/{$profile->user_id}/feed/recent.kml&ie=UTF8&om=1">Google Maps</a></li>
 
-		<li><b>Recent Images</b>: <a title="View images by {$profile->realname} in Google Earth" href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;kml">as KML</a> or <a title="RSS Feed for images by {$profile->realname}" href="/profile/{$profile->user_id}/feed/recent.georss" class="xml-rss">RSS</a> or <a title="GPX file for images by {$profile->realname}" href="/profile/{$profile->user_id}/feed/recent.gpx" class="xml-gpx">GPX</a></li>
+		<li><b>Recent Images</b>: <a title="View images by {$profile->realname} in Google Earth" href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;kml">as KML</a> or <a title="RSS Feed for images by {$profile->realname}" href="/profile/{$profile->user_id}/feed/recent.rss" class="xml-rss">RSS</a> or <a title="GPX file for images by {$profile->realname}" href="/profile/{$profile->user_id}/feed/recent.gpx" class="xml-gpx">GPX</a></li>
 		{if $profile->stats.images gt 10}
 			{dynamic}{if $user->registered}
 				<li><b>Download</b>: 

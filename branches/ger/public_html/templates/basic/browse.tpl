@@ -139,7 +139,9 @@
 {if $rastermap->enabled}
 	<div class="rastermap" style="width:{$rastermap->width}px;position:relative;font-size:0.8em">
 	{$rastermap->getImageTag($gridrefraw)}
+	{if $rastermap->getFootNote()}
 	<div class="interestBox" style="margin-top:3px;margin-left:2px;padding:1px;"><small>{$rastermap->getFootNote()}</small></div>
+	{/if}
 	{$rastermap->getScriptTag()}	
 	</div>
 {/if}
@@ -287,16 +289,24 @@
 				<li><a href="/gridref/{$gridref}?by={$b.type}{$extra}">{$b.name}</a> [{$b.count}]</li>
 			{/foreach}
 
+			<li style="margin-top:10px;">Clustering: <a href="/search.php?gridref={$gridref}&amp;cluster2=1&amp;orderby=label">Automatic</a><sup style="color:red">Experimental</sup>, 
+				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imageclass%2B&amp;orderby=imageclass&amp;do=1">Category</a>, 
+				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=realname%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Contributor</a> or
+				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imagetaken%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Date Taken</a> <sup style="color:red">New!</sup></li>
+
 			<li style="margin-top:10px;">
 			<form method="get" action="/search.php">
-				Or <label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="30"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+				Or <b>search within images in this square</b>:<br/> 
+				<div class="interestBox" style="width:400px">
+				<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="30"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 				<input type="submit" value="Search"/><br/>
 				<input type="hidden" name="location" value="{$gridref}"/>
 				<input type="radio" name="distance" value="1" checked id="d1"/><label for="d1">In {$gridref} only</label> /
 				<input type="radio" name="distance" value="3" id="d3"/><label for="d1">including surrounding squares</label><br/>
-				<input type="checkbox" name="displayclass" value="thumbs" id="dc"/><label for="dc">Show thumbnails only</label>
+				<input type="checkbox" name="displayclass" value="thumbs" id="dc"/><label for="dc">Show thumbnails only</label> <small>(<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Direct Link</a>)</small>
 				<input type="hidden" name="do" value="1"/>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<small>Just click Search to list all images</small>)
+				</div>
+				<small>(leave keywords box blank to simply page though all images)</small><br/>
 			</form></li>
 
 			</ul>
@@ -316,6 +326,12 @@
 				</div>
 			{/foreach}
 			<br style="clear:left;"/>&nbsp;
+			
+			{if $mode eq 'takenfrom'}
+				<div class="interestBox">| <a href="/search.php?searchtext={$viewpoint_query}&amp;displayclass=gmap&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View these photos on a Map</a> |</div>
+			{elseif $mode eq 'mentioning'}
+				<div class="interestBox">| <a href="/search.php?searchtext={$gridref}+-gridref:{$gridref}&amp;displayclass=gmap&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1&amp;resultsperpage=50">View these photos on a Map</a> | <a href="/search.php?searchtext={$gridref}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Find all images about this square</a> |</div>
+			{/if}
 		{/if}
 	{/if}
 

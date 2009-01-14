@@ -62,6 +62,7 @@ class SearchCriteria
 		'query' => '',
 		'sort' => '@relevance DESC, @id DESC',
 		'impossible' => 0,
+		'compatible' => 1,
 		'no_legacy' => 0,
 		'filters' => array()
 	);
@@ -84,7 +85,7 @@ class SearchCriteria
 		$db = $this->_getDB();
 		$date = str_replace('-00','-01',$date);
 		return intval($db->GetOne('select to_days('.
-			(preg_match('/\)$/',$db->Quote($date))?$date:$db->Quote($date)).
+			(preg_match('/\)$/',$date)?$date:$db->Quote($date)).
 			')'));
 	}
 	
@@ -168,7 +169,7 @@ class SearchCriteria
 		
 		$x = $this->x;
 		$y = $this->y;
-		if ($x > 0 && $y > 0) {
+		if (!empty($x) && !empty($y)) {
 			if ($this->limit8 && $this->limit8 < 2000 && $this->limit8 > -2000) {//2000 is a special value for effectivly unlimted!
 				$d = abs(intval($this->limit8));
 				if ($sql_where) {
@@ -211,7 +212,8 @@ class SearchCriteria
 			switch ($this->orderby) {
 				case 'random':
 					$sql_order = ' crc32(concat("'.($this->crt_timestamp_ts).'",gi.gridimage_id)) ';
-					$this->sphinx['impossible']++;
+					$this->sphinx['compatible'] = 0;
+					$this->sphinx['sort'] = "@random";
 					break;
 				case 'dist_sqd':
 					break;
@@ -234,12 +236,15 @@ class SearchCriteria
 							$this->sphinx['sort'] = '@id';
 							break;
 						case 'x':
+							$this->sphinx['compatible'] = 0;
 							$this->sphinx['sort'] = 'wgs84_long';
 							break;
 						case 'y':
+							$this->sphinx['compatible'] = 0;
 							$this->sphinx['sort'] = 'wgs84_lat';
 							break;
 						case 'imagetaken':
+							$this->sphinx['compatible'] = 0;
 							$this->sphinx['sort'] = 'takendays';
 							break;
 						case 'realname':
@@ -256,6 +261,9 @@ class SearchCriteria
 					}
 			}
 			$sql_order = preg_replace('/^submitted/','gridimage_id',$sql_order);
+		} else {
+			//sphinx undefined is 'relevence' where mysql undefined is table order
+			$this->sphinx['compatible']=0;
 		}
 		if ($this->breakby) {
 			$breakby = preg_replace('/_(year|month|decade)$/','',$this->breakby);
@@ -274,12 +282,15 @@ class SearchCriteria
 					$sorder = '@id';
 					break;
 				case 'x':
+					$this->sphinx['compatible'] = 0;
 					$sorder = 'wgs84_long';
 					break;
 				case 'y':
+					$this->sphinx['compatible'] = 0;
 					$sorder = 'wgs84_lat';
 					break;
 				case 'imagetaken':
+					$this->sphinx['compatible'] = 0;
 					$sorder = 'takendays';
 					break;
 				case 'imageclass':
@@ -494,7 +505,7 @@ class SearchCriteria
 				//to
 				$sql_where .= "imagetaken != '0000-00-00' AND imagetaken <= '".$dates[1]."' ";
 				$days1 = $this->toDays($dates[1]);
-				$this->sphinx['filters']['takendays'] = array(0,$days1); 
+				$this->sphinx['filters']['takendays'] = array(1,$days1); //1 is just so doesnt match 0
 			}
 			
 			
@@ -540,6 +551,7 @@ class SearchCriteria
 		}
 		if (strpos($q,'=') === 0) {
 			$q = str_replace('=','',$q);
+			$this->sphinx['compatible'] = 0;
 			$this->sphinx['exact'] = 1;
 		}
 		if (preg_match("/\b(AND|OR|NOT)\b/",$q) || preg_match('/^\^.*\+$/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q)) {
@@ -620,6 +632,10 @@ class SearchCriteria
 		$this->sphinx['query'] = preg_replace('/\b(gridref):/','grid_reference:',$this->sphinx['query']);
 		$this->sphinx['query'] = preg_replace('/\b(category):/','imageclass:',$this->sphinx['query']);
 		$this->sphinx['query'] = preg_replace('/\b(description):/','comment:',$this->sphinx['query']);
+		if (strlen($this->sphinx['query'])) {
+			//really there is little chance its going to be compatible... 
+			$this->sphinx['compatible'] = 0;
+		}
 	}
 	
 	function countSingleSquares($radius = 4) {
@@ -815,7 +831,7 @@ class SearchCriteria_Placename extends SearchCriteria
 		
 		if (count($places) == 1) {
 			$db = $this->_getDB();
-			$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$places[0]['reference_index']." order by origin_x,origin_y limit 1");	
+			$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$places[0]['reference_index']." and origin_x > 0 order by origin_x,origin_y limit 1");	
 
 			$this->x = intval($places[0]['e']/1000) + $origin['origin_x'];
 			$this->y = intval($places[0]['n']/1000) + $origin['origin_y'];
@@ -842,7 +858,7 @@ class SearchCriteria_Postcode extends SearchCriteria
 			$postcode = $db->GetRow('select e,n,reference_index from loc_postcodes where code='.$db->Quote($code).' limit 1');	
 		}
 		if ($postcode['reference_index']) {
-			$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$postcode['reference_index'].' order by origin_x,origin_y limit 1');	
+			$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$postcode['reference_index'].' and origin_x > 0 order by origin_x,origin_y limit 1');	
 
 			$this->x = intval($postcode['e']/1000) + $origin['origin_x'];
 			$this->y = intval($postcode['n']/1000) + $origin['origin_y'];
@@ -870,7 +886,7 @@ class SearchCriteria_County extends SearchCriteria
 		//after ordering by x,y - you'll get the bottom
 		//left gridprefix, and hence the origin
 
-		$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$county['reference_index'].' order by origin_x,origin_y limit 1');	
+		$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$county['reference_index'].' and origin_x > 0 order by origin_x,origin_y limit 1');	
 
 		$this->x = intval($county['e']/1000) + $origin['origin_x'];
 		$this->y = intval($county['n']/1000) + $origin['origin_y'];

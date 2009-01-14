@@ -197,7 +197,7 @@ function getKmlFilepath($extension,$level,$square = null,$gr='',$i = 0) {
 		return "$prefix/$s/$n.$extension";
 	} elseif ($level == 2) {
 		return "$prefix/$s.$extension";
-	} elseif ($level == 1) {
+	} elseif ($level <= 1) {
 		return "$prefix/geograph.$extension";
 	} else {
 		if ($n && !is_dir("$base/$s/$n/$level"))
@@ -209,8 +209,8 @@ function getKmlFilepath($extension,$level,$square = null,$gr='',$i = 0) {
 
 }
 
-function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '') {
-	global $db;
+function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '',$list = '') {
+	global $db,$CONF;
 	
 	if (isset($_GET['debug'])) {
 		print "<a href=?download>Open in Google Earth</a><br/>";
@@ -232,10 +232,24 @@ function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '') {
 			$file = str_replace("kml",'sitemap',$file);
 			$file = str_replace("kmz",'html',$file);
 			
-			$html = "<html><head><title>{$square->grid_reference}</title></head>\n".
+			if (!empty($list)) {
+				$s = "Photos in ".$list." :: Geograph British Isles";
+			} elseif (isset($square->grid_reference)) {
+				$s = "Photos in {$square->grid_reference} :: Geograph British Isles";
+			} elseif (!empty($gr)) {
+				$s = "Photos near ".$gr." :: Geograph British Isles";
+			} else {
+				$s = "Photos in ".$CONF['references_all'][0];
+			}
+			
+			$file1 = getKmlFilepath($kml->extension,$level-1,$square,$gr);
+			$file1 = str_replace("kml",'sitemap',$file1);
+			$file1 = str_replace("kmz",'html',$file1);
+			
+			$html = "<html><head><title>{$s}</title></head>\n".
 			"<body>".
 			"<h3>Geograph British Isles</h3>".
-			"<p><a href=\"/\">Back to Homepage</a></p>".
+			"<p><a href=\"/\">Homepage</a> | <a href=\"/sitemap/\">Sitemap</a> | <a href=\"$file1\">Up one level</a> | $s</p>".
 			"<ul>\n$html</ul>".
 			"</body></html>";
 			
@@ -247,10 +261,10 @@ function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '') {
 function getHtmlLinkP($url,$text) {
 	return "<li><a title=\"View Full Size $text\" href=\"$url\">$text</a></li>\n";
 }
-function getHtmlLink($url,$text) {
+function getHtmlLink($url,$text,$prefix = 'in',$postfix='') {
 	$url = str_replace("kml",'sitemap',$url);
 	$url = str_replace("kmz",'html',$url);
-	return "<li><a title=\"List photographs in $text\" href=\"$url\">$text</a></li>\n";
+	return "<li><a title=\"List photographs $prefix $text\" href=\"$url\">View Photographs <b>$prefix $text</b>$postfix</a></li>\n";
 }
 
 ?>

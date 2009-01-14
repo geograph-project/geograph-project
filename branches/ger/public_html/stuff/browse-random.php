@@ -29,8 +29,12 @@ $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
 $andwhere = ($ri)?" and reference_index=$ri":'';	
 
-$gridref = $db->getOne("select grid_reference from gridsquare where percent_land > 0 $andwhere order by rand()"); //limit 1 is implied
+$count = $db->cacheGetOne(86400,"SELECT COUNT(*) FROM gridsquare WHERE percent_land > 0 $andwhere");
+	
+$offset = rand(0,$count);
 
-header("Location: /gridref/$gridref");
+$gridref = $db->getOne("SELECT grid_reference FROM gridsquare WHERE percent_land > 0 $andwhere AND gridsquare_id > $offset"); //limit 1 added automatically
+
+header("Location: /gridref/".$gridref);
 
 ?>

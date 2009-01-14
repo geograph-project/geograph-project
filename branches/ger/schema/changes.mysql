@@ -266,6 +266,14 @@ CREATE TABLE `vote_log` (
 
 
 
+CREATE TABLE `content_group` (
+  `content_id` int(10) unsigned NOT NULL,
+  `label` varchar(128) NOT NULL,
+  `score` float NOT NULL,
+  `sort_order` tinyint(3) unsigned NOT NULL,
+  `source` varchar(10) NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 
@@ -285,4 +293,111 @@ CHANGE `use` `type` ENUM( 'info', 'document' ) CHARACTER SET latin1 COLLATE lati
 
 
 
+
+alter table queries_archive change `displayclass` `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2') NOT NULL DEFAULT 'full';
+
+alter table queries change `displayclass` `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2') NOT NULL DEFAULT 'full';
+
+
+
+
+ALTER TABLE `queries` CHANGE `x` `x` SMALLINT( 5 ) NOT NULL DEFAULT '0',
+CHANGE `y` `y` SMALLINT( 5 ) NOT NULL DEFAULT '0';
+
+ALTER TABLE `queries_archive` CHANGE `x` `x` SMALLINT( 5 ) NOT NULL DEFAULT '0',
+CHANGE `y` `y` SMALLINT( 5 ) NOT NULL DEFAULT '0';
+
+
+
+
+CREATE TABLE `gridimage_group` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `label` varchar(128) NOT NULL,
+  `score` float NOT NULL,
+  `sort_order` tinyint(3) unsigned NOT NULL,
+  `source` varchar(10) NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY `label` (`label`),
+  KEY `gridimage_id` (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE `gridimage_group_stat` (
+  `gridimage_group_stat_id` int(11) NOT NULL AUTO_INCREMENT,
+  `label` varchar(128) NOT NULL,
+  `images` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`gridimage_group_stat_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+insert into gridimage_group_stat select NULL as gridimage_group_stat_id,label,count(distinct gridimage_id) as images from gridimage_group group by label;
+
+
+
+INSERT INTO `gridsquare` (`gridsquare_id`, `x`, `y`, `percent_land`, `imagecount`, `grid_reference`, `reference_index`, `has_geographs`, `point_xy`, `placename_id`) VALUES 
+(NULL, -91, 916, 1, 0, 'MC0316', 1, 0, 0x0000000001010000000000000000c056c00000000000a08c40, 0),
+(NULL, -89, 905, 0, 0, 'MC0505', 1, 0, 0x00000000010100000000000000004056c00000000000488c40, 0),
+(NULL, -89, 915, 0, 0, 'MC0515', 1, 0, 0x00000000010100000000000000004056c00000000000988c40, 0);
+
+
+
+INSERT INTO `gridprefix` (`reference_index`, `prefix`, `origin_x`, `origin_y`, `width`, `height`, `landcount`, `title`, `boundary`, `labelcentre`, `geometry_boundary`, `point_origin_xy`) VALUES 
+(1, 'MC', -94, 900, 100, 100, 1, 'GB grid square MC', NULL, NULL, 0x00000000010300000001000000050000000000000000c0694000000000000000000000000000c06940000000000000594000000000002073400000000000005940000000000020734000000000000000000000000000c069400000000000000000, 0x00000000010100000000000000008057c00000000000208c40);
+
+
+
+
+ALTER TABLE `mapfix_log` ADD `comment` VARCHAR( 128 ) NOT NULL AFTER `gridsquare_id` ;
+
+
+ALTER TABLE  `vote_log` CHANGE  `type`  `type` VARCHAR( 20 ) NOT NULL;
+
+
+
+alter table queries_archive change `displayclass` `displayclass`  enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2','vote') NOT NULL DEFAULT 'full';
+
+alter table queries change `displayclass` `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2','vote') NOT NULL DEFAULT 'full';
+
+
+
+
+ALTER TABLE `user` CHANGE `rights` `rights` SET( 'basic', 'moderator', 'admin', 'ticketmod', 'traineemod', 'suspicious', 'dormant') NULL DEFAULT NULL;
+
+UPDATE  `user` SET rights = concat(coalesce(rights,''),',dormant') WHERE email LIKE '%DORMANT%';
+UPDATE  `user` SET rights = concat(coalesce(rights,''),',dormant') WHERE email LIKE '%geograph.org.uk%';
+UPDATE  `user` SET rights = concat(coalesce(rights,''),',dormant') WHERE email LIKE '%geograph.co.uk%';
+UPDATE  `user` SET rights = concat(coalesce(rights,''),',dormant') WHERE email LIKE '%dev.null%';
+UPDATE  `user` SET rights = concat(coalesce(rights,''),',dormant') WHERE email LIKE '%deleted%';
+UPDATE  `user` SET rights = concat(coalesce(rights,''),',dormant') WHERE email LIKE '%localhost%';
+UPDATE  `user` SET rights = concat(coalesce(rights,''),',dormant') WHERE email LIKE '%127.0.0.1%';
+
+
+CREATE TABLE `feedback` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `category` varchar(32) NOT NULL,
+  `question` varchar(128) NOT NULL,
+  `enabled` tinyint(4) NOT NULL default '1',
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+
+CREATE TABLE `vote_stat` (
+  `type` varchar(20) NOT NULL,
+  `id` int(10) unsigned NOT NULL,
+  `num` mediumint(8) unsigned NOT NULL,
+  `avg` float NOT NULL,
+  `baysian` float NOT NULL,
+  `v1` mediumint(8) unsigned NOT NULL,
+  `v2` mediumint(8) unsigned NOT NULL,
+  `v3` mediumint(8) unsigned NOT NULL,
+  `v4` mediumint(8) unsigned NOT NULL,
+  `v5` mediumint(8) unsigned NOT NULL,
+  PRIMARY KEY (`type`,`id`)
+) ENGINE=MyISAM;
+
+ALTER TABLE  `vote_stat` ADD  `std` FLOAT NOT NULL AFTER  `avg` ;
+
+ALTER TABLE  `vote_stat` ADD  `users` MEDIUMINT UNSIGNED NOT NULL AFTER  `num` ;
 

@@ -766,7 +766,7 @@ class GeographUser
 		if (strlen($profile['password1'])) {
 			if (md5($profile['oldpassword']) != $this->password) {
 				$ok=false;
-				$errors['oldpassword']='Please enter your current password for changing it';
+				$errors['oldpassword']='Please enter your current password if you wish to change it';
 			} elseif ($profile['password1'] != $profile['password2']) {
 				$ok=false;
 				$errors['password2']='Passwords didn\'t match, please try again';
@@ -958,8 +958,27 @@ class GeographUser
 		//session id...
 		session_regenerate_id(); 
 		
+		//delete the autologin token - needed to prevent someone contining to use a highjacked cookie
+		if(isset($_COOKIE['autologin']))
+		{
+			$db = $this->_getDB();
+			
+			$bits=explode('_', $_COOKIE['autologin']);
+			if ((count($bits)==2) &&
+			    is_numeric($bits[0]) &&
+			    preg_match('/^[a-f0-9]{32}$/' , $bits[1]))
+			{
+				$clause="user_id='{$bits[0]}' and token='{$bits[1]}'";
+				
+				//delete the autologin, we've used it
+				$db->query("delete from autologin where $clause");
+
+			}
+		}
+
 		//also clear the autologin cookie as doesnt make sence to keep
 		setcookie('autologin', '', time()-3600*24*365,'/');  
+		setcookie('autologin', '', time()-3600*24*365);  
 
 	}
 
@@ -995,9 +1014,9 @@ class GeographUser
 	/**
 	* got perm?
 	*/
-	function hasPerm($perm)
+	function hasPerm($perm,$allowNonRef = false)
 	{
-		return $this->registered && (strpos($this->rights, $perm)!==false);
+		return (($this->registered || $allowNonRef) && (strpos($this->rights, $perm)!==false));
 	}
 	
 	function basicAuthLogin() {
@@ -1281,6 +1300,7 @@ class GeographUser
 			if (!$valid)
 			{
 				setcookie('autologin', '', time()-3600*24*365,'/');
+				setcookie('autologin', '', time()-3600*24*365);
 			}
 		}
 	}

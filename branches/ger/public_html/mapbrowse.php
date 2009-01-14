@@ -257,6 +257,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	{
 	#	$smarty->assign('token_big', $mosaic->getBigToken());
 	}
+} else {
+	$smarty->assign('mosaic_token', $mosaic->getToken());
 }
 
 $smarty->display($template, $cacheid);

@@ -68,8 +68,8 @@ class PictureOfTheDay
 			{
 				//ok, there is still no image for today, and we have a
 				//lock on the table - assign the first available image
-				//ordered by number
-				$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null order by moderation_status desc,gridimage_id");
+				//ordered by number - giving preference to geograph images
+				$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null order by moderation_status desc,crc32(gridimage_id)");
 
 				if (!empty($gridimage_id)) {
 					$db->Execute("update gridimage_daily set showday='$now' where gridimage_id = $gridimage_id");
@@ -94,9 +94,13 @@ class PictureOfTheDay
 		$this->gridimage_id=$gridimage_id;
 	}
 	
-	function assignToSmarty(&$smarty)
+	function assignToSmarty(&$smarty,$gridimage_id = 0)
 	{
-		$this->initToday();
+		if (empty($gridimage_id)) {
+			$this->initToday();
+		} else {
+			$this->gridimage_id = $gridimage_id;
+		}
 		
 		$pictureoftheday=array();
 		$pictureoftheday['gridimage_id']=$this->gridimage_id;
@@ -105,17 +109,6 @@ class PictureOfTheDay
 		$pictureoftheday['image']=new GridImage($this->gridimage_id);
 		$pictureoftheday['image']->compact();
 		
-		/*
-		$token=new Token;
-	    $token->setValue("w", $this->width);
-	    $token->setValue("h", $this->height);
-	    $token->setValue("i", $this->gridimage_id);
-	    $tokenstr=$token->getToken();
-		
-		//have we cached the picture? return direct url if we have
-		//otherwise send a dynamic one to recreate it
-		$pictureoftheday['url']="/pictureoftheday.php?t=$tokenstr";
-		*/
 		$smarty->assign('pictureoftheday', $pictureoftheday);
 	
 		$this->image =& $pictureoftheday['image'];

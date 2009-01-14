@@ -307,4 +307,29 @@
       <loc>http://www.geograph.org.uk/explore/routes.php</loc>
       <priority>0.7</priority>
    </url>
+   <url>
+      <loc>http://www.geograph.org.uk/explore/searches.php</loc>
+      <changefreq>daily</changefreq>
+      <priority>0.8</priority>
+   </url>
+   <url>
+      <loc>http://www.geograph.org.uk/explore/searches.rss.php</loc>
+      <changefreq>weekly</changefreq>
+      <priority>0.5</priority>
+   </url>
+   <url>
+      <loc>http://www.geograph.org.uk/content/feed/recent.rss</loc>
+      <changefreq>weekly</changefreq>
+      <priority>0.5</priority>
+   </url>
+   <url>
+      <loc>http://www.geograph.org.uk/article/feed/recent.rss</loc>
+      <changefreq>weekly</changefreq>
+      <priority>0.5</priority>
+   </url>
+   <url>
+      <loc>http://www.geograph.org.uk/events/feed.rss</loc>
+      <changefreq>weekly</changefreq>
+      <priority>0.5</priority>
+   </url>
 </urlset>

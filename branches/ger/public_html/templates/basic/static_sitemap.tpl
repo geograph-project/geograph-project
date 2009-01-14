@@ -41,7 +41,7 @@
 	<li><a title="Browse by Map" href="/mapbrowse.php">browse images on a <b>map</b></a></li>
 	<li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a></li>
 	<li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a></li>
-	<li><a title="Content" href="/content/">read <b>content</b> submitted by members</a></li>
+	<li><a title="Content" href="/content/">read <b>content</b> submitted by members</a> <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></li>
 	<li><a title="Education Area" href="/teachers/">Geograph for <b>teachers</b></a></li>
 </ul>
  
@@ -57,7 +57,7 @@
 	<li><a href="/activities/">explore our Activities section</a></li>
 	<li><a href="/help/imagine">Through The Square Window...</a></li>
 	<li><a href="/explore/places/">Explore the <b>placename gazetteer</b></a></li>
-	<li><a href="/explore/searches.php">A list of <b>featured searches</b></a> <sup style="color:red">New!</sup></li>
+	<li><a href="/explore/searches.php">A list of <b>featured searches</b></a> <a title="RSS Feed Featured Searches" href="/explore/searches.rss.php" class="xml-rss">RSS</a></li>
 </ul>
 
 {if $enable_forums}
@@ -65,9 +65,9 @@
 <ul>
 	<li><a title="Discussion forums" href="/discuss/"><b>discuss the site</b> on our forums</a></li>
 	<li><a title="IRC Chat" href="/chat/"><b>realtime chat</b> with other members</a></li>
-	<li><a title="Geograph Events" href="/events/"><b>meet other members</b> at local events</a> <sup style="color:red">New!</sup></li>
-	<li><a title="Articles" href="/article/">submit your own <b>article</b></a></li>
-	<li><a title="Galleries" href="/discuss/?action=vtopic&forum={$forum_gallery}">create <b>submitted galleries</b></a></li>
+	<li><a title="Geograph Events" href="/events/"><b>meet other members</b> at local events</a> <a title="geoRSS Feed for Geograph Events" href="/events/feed.rss" class="xml-rss">RSS</a></li>
+	<li><a title="Articles" href="/article/">submit your own <b>article</b></a> <a title="RSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-rss">RSS</a></li>
+	<li><a title="Galleries" href="/discuss/?action=vtopic&forum={$forum_gallery}">create <b>submitted galleries</b></a> <a title="RSS Feed for Geograph Galleries" href="/discuss/syndicator.php?forum={$forum_gallery}" class="xml-rss">RSS</a></li>
 </ul>
 {/if}
  
@@ -77,7 +77,7 @@
 	<li><a title="Geograph Feed" href="/faq.php#rss">get <b>RSS feeds</b> of images</a> <a title="RSS Feed of Recent Images" href="/feed/recent.rss" rel="RSS" class="xml-rss">RSS</a></li>
 	<li><a title="Memory Map Export" href="/memorymap.php">view squares in <b>Memory Map</b></a></li>
 	<li><a title="GPX File Export" href="/gpx.php">download squares in <b>GPX Format</b></a></li>
-	<li><a title="GeoRSS Geograph Feed" href="/feed/recent.georss">latest images in <b>GeoRSS</b> format</a> <a title="RSS Feed of Recent Images" href="/feed/recent.georss" rel="RSS" class="xml-geo">GeoRSS</a></li>
+	<li><a title="GeoRSS Geograph Feed" href="/feed/recent.rss">latest images in <b>GeoRSS</b> format</a> <a title="RSS Feed of Recent Images" href="/feed/recent.rss" rel="RSS" class="xml-geo">GeoRSS</a></li>
 	<li><a title="Developer API" href="/help/api">developer information on the <b>Geograph API</b></a></li>
 </ul>
 

@@ -30,7 +30,7 @@ init_session();
 
 if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 5 && strpos($_SERVER['HTTP_REFERER'],'editimage') === FALSE) {
 	header("HTTP/1.1 503 Service Unavailable");
-	die("server busy, please try later. (this is a emergency measure to curb server load!) ");
+	die("the servers are currently very busy - moderation is disabled to allow things to catch up, will be automatically re-enabled when load returns to normal");
 }
 
 customGZipHandlerStart();
@@ -321,6 +321,16 @@ if (isset($_GET['review'])) {
 } else {
 	$sql_where = "(moderation_status = 2)";
 	$sql_order = "gridimage_id asc";
+}
+
+if (isset($_GET['xmas'])) {
+	
+	$ii = $db->getAll("select gridsquare_id from gridimage as gi where imageclass like '%christmas%' and moderation_status = 'pending' and submitted > date_sub(now(),interval 1 day) limit 10");
+	
+	foreach ($ii as $i => $row) {
+		$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$row['gridsquare_id']}");
+	}
+	$sql_where .= " AND (lock_type = 'modding' OR imageclass like '%christmas%')";
 }
 
 

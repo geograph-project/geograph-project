@@ -31,7 +31,12 @@ customGZipHandlerStart();
 
 $template='homepage.tpl';
 if ($CONF['template']!='charcoal') {
- $cacheid=rand(1,5); //so we get a selection of homepages
+	$cacheid=rand(1,5); //so we get a selection of homepages
+}
+
+if (isset($_GET['potd'])) {
+	$USER->mustHavePerm("moderator");
+	$smarty->caching = 0;
 }
 
 //regenerate?
@@ -60,7 +65,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	require_once('geograph/pictureoftheday.class.php');
 	$potd=new PictureOfTheDay;
-	$potd->assignToSmarty($smarty); 
+	if (isset($_GET['potd'])) {
+		$potd->assignToSmarty($smarty,intval($_GET['potd'])); 
+	} else {
+		$potd->assignToSmarty($smarty); 
+	}
 	
 	
 	//lets find some recent photos

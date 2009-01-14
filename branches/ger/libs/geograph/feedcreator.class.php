@@ -27,6 +27,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 Changelog:
 
+v1.7.9(BH)	16-11-08
+	added ATOM10  (Barry Hunter)
+
 v1.7.8(BH)	31-12-07
 	added MediaRSS output (and georss to RSS2) (Barry Hunter)
 
@@ -398,6 +401,10 @@ class UniversalFeedCreator extends FeedCreator {
 				$this->format = $format;
 			case "ATOM":
 				// fall through: always the latest ATOM version
+				
+			case "ATOM1.0":
+				$this->_feed = new AtomCreator10();
+				break;
 				
 			case "ATOM0.3":
 				$this->_feed = new AtomCreator03();
@@ -799,6 +806,17 @@ class FeedDate {
 		$this->unix = 0;
 	}
 
+	/**
+	 * Gets the date stored in this FeedDate as an RFC 3339 date.
+	 *
+	 * @return a date in RFC 3339 format
+	 */
+	function rfc3339() {
+		$date = gmdate("Y-m-d\TH:i:sO",$this->unix);
+		$date = substr($date,0,22) . ':' . substr($date,-2);
+		return $date;
+	}
+	
 	/**
 	 * Gets the date stored in this FeedDate as an RFC 822 date.
 	 *
@@ -1379,6 +1397,85 @@ class PIECreator01 extends FeedCreator {
 			$feed.= "        <content type=\"text/html\" xml:lang=\"en-us\">\n";
 			$feed.= "            <div xmlns=\"http://www.w3.org/1999/xhtml\">".utf8_encode($this->items[$i]->getDescription())."</div>\n";
 			$feed.= "        </content>\n";
+			$feed.= "    </entry>\n";
+		}
+		$feed.= "</feed>\n";
+		return $feed;
+	}
+}
+
+
+/**
+ * AtomCreator10 is a FeedCreator that implements the atom specification,
+ * as in http://www.atomenabled.org/developers/syndication/atom-format-spec.php
+ *
+ * @since 1.7.9(BH)
+ * @author Barry Hunter
+ */
+class AtomCreator10 extends FeedCreator {
+
+	function AtomCreator10() {
+		$this->contentType = "application/atom+xml";
+		$this->encoding = "utf-8";
+	}
+	
+	function createFeed() {
+		$feed = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
+		$feed.= $this->_createGeneratorComment();
+		$feed.= $this->_createStylesheetReferences();
+		$feed.= "<feed xmlns=\"http://www.w3.org/2005/Atom\"";
+		if ($this->format=='TOOLBAR') {
+			$feed.= " xmlns:gtb=\"http://toolbar.google.com/custombuttons/\"";
+		}
+		if ($this->language!="") {
+			$feed.= " xml:lang=\"".$this->language."\"";
+		}
+		$feed.= ">\n"; 
+		$feed.= "    <title>".htmlspecialchars($this->title)."</title>\n";
+		$feed.= "    <subtitle>".htmlspecialchars($this->description)."</subtitle>\n";
+		$feed.= "    <link rel=\"alternate\" type=\"text/html\" href=\"".htmlspecialchars($this->link)."\"/>\n";
+		if ($this->syndicationURL != '') {
+			$feed.= "    <link href=\"".$this->syndicationURL."\" rel=\"self\" type=\"".$this->contentType."\"/>\n";
+		}
+		
+		$feed.= "    <id>".htmlspecialchars($this->link)."</id>\n";
+		$now = new FeedDate();
+		$feed.= "    <updated>".htmlspecialchars($now->rfc3339())."</updated>\n";
+		if ($this->editor!="") {
+			$feed.= "    <author>\n";
+			$feed.= "        <name>".$this->editor."</name>\n";
+			if ($this->editorEmail!="") {
+				$feed.= "        <email>".$this->editorEmail."</email>\n";
+			}
+			$feed.= "    </author>\n";
+		}
+		$feed.= "    <generator>".FEEDCREATOR_VERSION."</generator>\n";
+		$feed.= $this->_createAdditionalElements($this->additionalElements, "    ");
+		for ($i=0;$i<count($this->items);$i++) {
+			$feed.= "    <entry>\n";
+			$feed.= "        <title>".utf8_encode(htmlnumericentities(strip_tags($this->items[$i]->title)))."</title>\n";
+			$feed.= "        <link rel=\"alternate\" type=\"text/html\" href=\"".htmlspecialchars($this->items[$i]->link)."\"/>\n";
+			if ($this->items[$i]->date=="") {
+				$this->items[$i]->date = time();
+			}
+			$itemDate = new FeedDate($this->items[$i]->date);
+			$feed.= "        <updated>".htmlspecialchars($itemDate->rfc3339())."</updated>\n";
+			$feed.= "        <published>".htmlspecialchars($itemDate->rfc3339())."</published>\n";
+			$feed.= "        <id>".htmlspecialchars($this->items[$i]->link)."</id>\n";
+			$feed.= $this->_createAdditionalElements($this->items[$i]->additionalElements, "        ");
+			if ($this->items[$i]->author!="") {
+				$feed.= "        <author>\n";
+				$feed.= "            <name>".htmlnumericentities($this->items[$i]->author)."</name>\n";
+				$feed.= "        </author>\n";
+			}
+			if ($this->items[$i]->description!="") {
+				$feed.= "        <summary>".utf8_encode(htmlnumericentities($this->items[$i]->description))."</summary>\n";
+			}
+			if ($this->items[$i]->thumbdata) {
+				$feed.= "        <gtb:icon mode=\"base64\" type=\"image/jpeg\">\n";
+				$feed.= chunk_split(base64_encode($this->items[$i]->thumbdata))."\n";
+				$feed.= "        </gtb:icon>\n";
+			}
 			$feed.= "    </entry>\n";
 		}
 		$feed.= "</feed>\n";

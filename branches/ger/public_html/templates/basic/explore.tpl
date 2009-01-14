@@ -19,8 +19,10 @@
 	<li>{external href="http://www.nearby.org.uk/geograph/mosaic/" text="Mosaics of <b>Completed Myriads</b>"} (using a Flash based viewer)</li>
 
 </ul>
-<h3>Specialist locations...</h3>
+<h3>Selections...</h3>
 <ul class="explore">
+
+	<li><a href="/explore/searches.php"><b>Featured Searches</b></a> - hand picked example searches</li>
 
 	<li><a href="/explore/routes.php">Follow <b>National Routes</b></a>.</li>
 

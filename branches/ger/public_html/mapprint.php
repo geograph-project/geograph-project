@@ -29,7 +29,11 @@ require_once('geograph/map.class.php');
 require_once('geograph/mapmosaic.class.php');
 
 init_session();
-$template='mapprint.tpl';
+if (isset($_GET['inner'])) {
+	$template='mapprint_inner.tpl';
+} else {
+	$template='mapprint.tpl';
+}
 
 $smarty = new GeographPage;
 

@@ -35,7 +35,7 @@
 	<div class="tabHolder">
 		<a href="/search.php?form=simple" class="tab">simple search</a>
 		<span class="tabSelected">Advanced Search</span>
-		<a href="/search.php?form=advanced&amp;legacy=true" class="tab"><small>legacy advanced</small></a>
+		<a href="/search.php?form=advanced&amp;legacy=true" class="tab"><small>old advanced</small></a>
 		<a href="/search.php?form=first" class="tab">first geographs</a>
 	</div>
 	<div class="interestBox">
@@ -98,7 +98,7 @@
 			 <td>eg <tt>Bridge</tt></td> 
 		  </tr> 
 		  <tr> 
-			 <td colspan="3"><small>&middot; Currently searches the title, description, category, photographer name and image taken date (<tt>20071103</tt>, <tt>200711</tt> or just <tt>2007</tt>) fields, as well the subject grid-reference <span class="nowrap">(<tt>SH1234</tt>, <tt>SH13</tt> or just <tt>SH</tt>)</span>, seperate multiple keywords with spaces.</small></td> 
+			 <td colspan="3"><small>&middot; Currently searches the title, description, category, photographer name and image taken date (<tt>20071103</tt>, <tt>200711</tt> or just <tt>2007</tt>) fields, as well the subject grid-reference <span class="nowrap">(<tt>SH1234</tt>, <tt>SH13</tt> or just <tt>SH</tt>)</span>, separate multiple keywords with spaces.</small></td> 
 		  </tr> 
 		  <tr> 
 			 <td colspan="2"><small>
@@ -241,7 +241,7 @@ function updateBreakBy(that) {
 
 
 var isvalue;
-var iscenter;
+var iscenter = false;
 
 function onlyone(that) {
 	if (that.name == 'county_id') {
@@ -280,8 +280,7 @@ function onlyone_part2(f) {
 	classname = (iscenter)?'disabledLabel':'';
 
 	f.distance.disabled = !iscenter;
-	classname = (iscenter)?'':'disabledLabel';
-	document.getElementById('l_distance').className = classname;
+	document.getElementById('l_distance').className = (iscenter)?'':'disabledLabel';
 
 	if (f.distance.selectedIndex > 0) {
 		f.orderby.disabled = false;

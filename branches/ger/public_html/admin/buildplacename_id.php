@@ -84,7 +84,7 @@ if (isset($_POST['go']))
 
 	$recordSet = &$db->Execute("select * from $table $join where {$_POST['crit']} $limit");
 	if (!empty($_POST['file'])) {	
-		$handle = fopen("updates.sql",'a') or die("unable to open file");
+		$handle = fopen($_SERVER['DOCUMENT_ROOT']."/rss/placename_updates.sql",'a') or die("unable to open file");
 	}
 	
 	while (!$recordSet->EOF) 

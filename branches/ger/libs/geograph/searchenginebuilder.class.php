@@ -40,16 +40,7 @@
 */
 class SearchEngineBuilder extends SearchEngine
 {
-
-
-	/**
-	* create a simple search object
-	*/
-	
-	function buildSimpleQuery($q = '',$distance = 100,$autoredirect='auto',$userlimit = 0)
-	{
-		global $USER,$CONF;
-		
+	function getNearString($distance) {
 		if ($distance == 1) {
 			$nearstring = 'in';
 		} elseif ($distance > 1) {
@@ -59,12 +50,34 @@ class SearchEngineBuilder extends SearchEngine
 		} else {
 			$nearstring = 'near';
 		}
+		return $nearstring;
+	}
+
+	/**
+	* create a simple search object
+	*/
+	
+	function buildSimpleQuery($q = '',$distance = 100,$autoredirect='auto',$userlimit = 0)
+	{
+		global $USER,$CONF;
+		
+		$nearstring = $this->getNearString($distance);
+		
+		$has_location = preg_match('/\bnear\b/',$q);
 		
 		$searchclass = '';
 		$limit1 = '';
 		$location = '';
 		$q = trim(strip_tags($q));
-		if (preg_match("/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$q,$pc) 
+		
+		if ($has_location) {
+			$bits = preg_split('/\s*near\s+/',$q);
+			$qlocation = @$bits[1];
+		} else {
+			$qlocation = $q;
+		}
+		
+		if (preg_match("/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$qlocation,$pc) 
 		&& !in_array($pc[1],array('SV','SX','SZ','TV','SU','TL','TM','SH','SJ','TG','SC','SD','NX','NY','NZ','OV','NS','NT','NU','NL','NM','NO','NF','NH','NJ','NK','NA','NB','NC','ND','HW','HY','HZ','HT','Q','D','C','J','H','F','O','T','R','X','V')) ) {
 			//these prefixs are not postcodes but are valid gridsquares
 			$searchq = strtoupper($pc[1].$pc[2].($pc[3]?" ".$pc[3]:''));
@@ -79,7 +92,7 @@ class SearchEngineBuilder extends SearchEngine
 			} else {
 				$this->errormsg = "Invalid Postcode or a newer Postcode not in our database, please try a different search method.";
 			}
-		} elseif (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$q,$gr)) {
+		} elseif (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$qlocation,$gr)) {
 			require_once('geograph/gridsquare.class.php');
 			$square=new GridSquare;
 			$grid_ok=$square->setByFullGridRef($gr[1].$gr[2].$gr[3],false,true);
@@ -213,7 +226,7 @@ class SearchEngineBuilder extends SearchEngine
 			"searchdesc = ".$db->Quote($searchdesc).",".
 			"searchuse = ".$db->Quote($this->searchuse).",".
 			"searchq = ".$db->Quote($q);
-			if ($searchx > 0 && $searchy > 0)
+			if (!empty($searchx) && !empty($searchy))
 				$sql .= ",x = $searchx,y = $searchy,limit8 = $distance";
 			if ($limit1)
 				$sql .= ",limit1 = $limit1";
@@ -255,15 +268,8 @@ class SearchEngineBuilder extends SearchEngine
 		if (empty($dataarray['distance'])) {
 			$dataarray['distance'] = $CONF['default_search_distance'];
 		}
-		if ($dataarray['distance'] == 1) {
-			$nearstring = 'in';
-		} elseif ($dataarray['distance'] > 1) {
-			$nearstring = sprintf("within %dkm of",$dataarray['distance']);
-		} elseif ($dataarray['distance'] < 0) {
-			$nearstring = sprintf("within a %dkm square of",abs($dataarray['distance']));
-		} else {
-			$nearstring = 'near';
-		}
+		$nearstring = $this->getNearString($dataarray['distance']);
+		
 		$searchdesc = '';
 		if (!empty($dataarray['placename']) && ($dataarray['placename'] != '(anywhere)')) {
 			//check if we actully want to perform a textsearch (it comes through in the placename beucase of the way the multiple mathc page works)
@@ -387,11 +393,14 @@ class SearchEngineBuilder extends SearchEngine
 			$dataarray['description'] = trim($dataarray['description']);
 			$dataarray['searchq'] = trim($dataarray['searchq']);
 			$searchclass = 'Special';
+			if (!empty($dataarray['searchclass'])) {
+				$searchclass = $dataarray['searchclass'];
+			}
 			$searchq = $dataarray['searchq'];
 			if (preg_match("/;|update |delete |drop |replace |alter |password|email/i",$searchq))
 				die("Server Error");
 			$searchdesc = ", ".$dataarray['description'];	
-			if ($dataarray['x'] > 0 && $dataarray['y'] > 0) {
+			if (!empty($dataarray['x']) && !empty($dataarray['y'])) {
 				$searchx = $dataarray['x'];
 				$searchy = $dataarray['y'];
 			}
@@ -405,15 +414,20 @@ class SearchEngineBuilder extends SearchEngine
 
 		if (!empty($dataarray['searchtext'])) {
 			$dataarray['searchtext'] = trim($dataarray['searchtext']);
-			$searchtext = $dataarray['searchtext'];
-			if (preg_match('/[~\+\^\$:@ -]+/',$dataarray['searchtext'])) {
+			if (!empty($dataarray['ind_exact']) || preg_match('/^=/',$dataarray['searchtext'])) {
+				if (preg_match('/^=?~/',$dataarray['searchtext'])) {
+					$searchdesc = ", exactly matching any of [".preg_replace('/^=?~/','',$dataarray['searchtext'])."] ".$searchdesc;
+				} else {
+					$searchdesc = ", exactly matching [".preg_replace('/^=/','',$dataarray['searchtext'])."] ".$searchdesc;
+				}
+			} elseif (preg_match('/^~/',$dataarray['searchtext'])) {
+				$searchdesc = ", matching any of [".preg_replace('/^~/','',$dataarray['searchtext'])."] ".$searchdesc;
+			} elseif (preg_match('/[~\+\^\$:@ -]+/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching [".$dataarray['searchtext']."] ".$searchdesc;
 			} elseif (preg_match('/^".*"$/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching [\"".$dataarray['searchtext']."\"] ".$searchdesc;
 			} elseif (preg_match('/\+$/',$dataarray['searchtext'])) {
 				$searchdesc = ", all about [".preg_replace('/\+$/','',$dataarray['searchtext'])."] ".$searchdesc;
-			} elseif (preg_match('/^=/',$dataarray['searchtext']) || !empty($dataarray['ind_exact']) ) {
-				$searchdesc = ", exactly matching [".preg_replace('/^=/','',$dataarray['searchtext'])."] ".$searchdesc;
 			} elseif (preg_match('/^\^/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching whole word [".str_replace('^','',$dataarray['searchtext'])."] ".$searchdesc;
 			} else {
@@ -442,7 +456,7 @@ class SearchEngineBuilder extends SearchEngine
 			} elseif (isset($USER) && !empty($USER->search_results)) {
 				$sql .= ",resultsperpage = ".$db->Quote($USER->search_results);				
 			}
-			if (isset($searchx) && $searchx > 0 && $searchy > 0)
+			if (isset($searchx) && !empty($searchx) && !empty($searchy))
 				$sql .= ",x = $searchx,y = $searchy";
 			if (isset($USER) && $USER->registered)
 				$sql .= ",user_id = {$USER->user_id}";
@@ -635,8 +649,10 @@ class SearchEngineBuilder extends SearchEngine
 			
 			if (!empty($dataarray['breakby'])) {
 				$sql .= ",breakby = ".$db->Quote($dataarray['breakby']);
-				$searchdesc .= ", by ".($breakdowns[$dataarray['breakby']]);
-			}			
+				if (!empty($breakdowns[$dataarray['breakby']])) {
+					$searchdesc .= ", by ".($breakdowns[$dataarray['breakby']]);
+				}
+			}
 
 			$sql .= ",searchdesc = ".$db->Quote($searchdesc);
 

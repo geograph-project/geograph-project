@@ -181,7 +181,7 @@ if ($grid_given)
 		if (isset($_GET['takenfrom'])) {
 				
 			$ids = $sphinx->returnIdsViewpoint($square->getNatEastings(),$square->getNatNorthings(),$square->reference_index,$square->grid_reference);
-			
+			$smarty->assign('viewpoint_query', $sphinx->q);
 			
 			$viewpoint_count = 0; //set this to zero to suppress the prompt!
 			
@@ -302,6 +302,9 @@ if ($grid_given)
 				}
 			
 				preg_match('/^[A-Z]{1,3}\d\d(\d)\d\d(\d)$/',$_GET['centi'],$matches);
+				if (!isset($matches[2])) {
+					die("invalid Grid Reference");
+				}
 				$custom_where .= " and nateastings != 0";//to stop XX0XX0 matching 4fig GRs
 				$custom_where .= " and ((nateastings div 100) mod 10) = ".$matches[1];
 				$custom_where .= " and ((natnorthings div 100) mod 10) = ".$matches[2];
@@ -317,7 +320,7 @@ if ($grid_given)
 				$custom_where .= " and viewpoint_eastings = 0";
 			} else {
 				preg_match('/^[A-Z]{1,3}\d\d(\d)\d\d(\d)$/',$_GET['viewcenti'],$matches);
-				if (empty($matches[2])) {
+				if (!isset($matches[2])) {
 					die("invalid Grid Reference");
 				}
 				$custom_where .= " and viewpoint_eastings != 0";//to stop XX0XX0 matching 4fig GRs

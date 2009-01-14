@@ -57,24 +57,22 @@ if ($format == 'KML') {
 /**
  * We are building a text search for the first time
  */
-if (isset($_GET['text'])) {
-	$cacheid = getTextKey();
-	$pg = 1;
-	
-	$q = $_GET['text'].' near (anywhere)';
-
-} elseif (isset($_GET['q']) || !empty($_GET['location'])) {
+if (isset($_GET['q']) || !empty($_GET['location'])) {
 	if (!empty($_GET['lat']) && !empty($_GET['lon'])) {
 		$_GET['location'] = $_GET['lat'].','.$_GET['lon'];
 	}
+	if (!empty($_GET['BBOX'])) {
+		//this is treated special later...
+		$_GET['location'] = '(anywhere)';
+	}
 	if (!empty($_GET['location'])) {
-		if (!empty($_GET['q'])) {
+		if (!empty($_GET['text'])) {
+			$q=trim($_GET['text']).' near '.trim($_GET['location']);
+		} elseif (!empty($_GET['q'])) {
 			$q=trim($_GET['q']).' near '.trim($_GET['location']);
 		} else {
 			$q='near '.trim($_GET['location']);
 		}
-	} elseif (!empty($_GET['BBOX'])) {
-		$q=trim($_GET['q']).' near (anywhere)';
 	} else {
 		$q=trim($_GET['q']);
 	}
@@ -100,27 +98,35 @@ if (isset($_GET['text'])) {
 		
 		//$q is used below
 	}
-}
+} elseif (isset($_GET['text'])) {
+	$cacheid = getTextKey();
+	$pg = 1;
+	
+	$q = $_GET['text'].' near (anywhere)';
+
+} 
+
+$opt_expand = (!empty($_GET['expand']) && $format != 'KML')?1:0;
 
 if (isset($cacheid)) {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/$cacheid-{$pg}-{$format}.$extension";
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/$cacheid-{$pg}-{$format}{$opt_expand}.$extension";
 	$rss_timeout = 3600;
 } elseif (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):1;
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}.$extension";
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}{$opt_expand}.$extension";
 	$rss_timeout = 3600;
 } elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/u{$_GET['u']}-{$format}.$extension";
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/u{$_GET['u']}-{$format}{$opt_expand}.$extension";
 	$rss_timeout = 1800;
 } else {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$format}.$extension";
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$format}{$opt_expand}.$extension";
 	$rss_timeout = 900;
 }
 
 $rss = new UniversalFeedCreator(); 
 $rss->useCached($format,$rssfile,$rss_timeout); 
 $rss->title = 'Geograph British Isles'; 
-$rss->link = "http://{$_SERVER['HTTP_HOST']}";
+$rss->link = "http://{$_SERVER['HTTP_HOST']}/";
 
 
 /**
@@ -194,6 +200,9 @@ if (isset($sphinx)) {
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/feed/results/".$_GET['i'].(($pg>1)?"/$pg":'').".".strtolower($format);
 	
 	$images->Execute($pg);
+	if ($images->resultCount) {
+		$rss->description .= " ({$images->resultCount} in total)";
+	}
 	
 	if ($format == 'MEDIA') {
 		$rss->link =  "http://{$_SERVER['HTTP_HOST']}/search.php?i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
@@ -277,6 +286,10 @@ for ($i=0; $i<$cnt; $i++)
 		
 		if ($format == 'MEDIA') {
 			$item->content = $images->images[$i]->_getFullpath(true,true); 
+			if ($opt_expand) {
+				$item->description = '<a href="'.$item->link.'">'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
+				$item->descriptionHtmlSyndicated = true;
+			}
 		}
 	} elseif ($format == 'PHP') {
 		$item->thumb = $images->images[$i]->getThumbnail(120,120,true); 
@@ -284,6 +297,9 @@ for ($i=0; $i<$cnt; $i++)
 		ob_start();
 		imagejpeg($images->images[$i]->getSquareThumb(16));
 		$item->thumbdata = ob_get_clean();
+	} elseif ($opt_expand) {
+		$item->description = '<a href="'.$item->link.'">'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
+		$item->descriptionHtmlSyndicated = true;
 	}
 
 	//<license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />

@@ -64,6 +64,7 @@ $smarty->assign_by_ref('displayclasses',$displayclasses);
 
 if (isset($_GET['legacy']) && isset($CONF['curtail_level']) && $CONF['curtail_level'] > 4 ) {
         header("HTTP/1.1 503 Service Unavailable");
+	dieUnderHighLoad(0.1);
         die("server busy, please try later");
 }
 
@@ -71,11 +72,7 @@ if (isset($_GET['legacy']) && isset($CONF['curtail_level']) && $CONF['curtail_le
 
 
 
-if (isset($_GET['set_legacy'])) {
-	$_SESSION['legacy'] = intval($_GET['set_legacy']);
-	header("Location: /search.php");
-	exit;
-} else if (isset($_GET['fav']) && $i) {
+if (isset($_GET['fav']) && $i) {
 	if (!$db) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
@@ -198,22 +195,12 @@ if (isset($_GET['set_legacy'])) {
 		$smarty->assign('errormsg', $error);
 	}
 
-	$smarty->assign($data);
-	$_POST = $data;
-	$smarty->reassignPostedDate("submitted_start");
-	$smarty->reassignPostedDate("submitted_end");
-	$smarty->reassignPostedDate("taken_start");
-	$smarty->reassignPostedDate("taken_end");
-
- 	$db=NewADOConnection($GLOBALS['DSN']);
-	if (empty($db)) die('Database connection failed');
-
-	advanced_form($smarty,$db);
+	fallBackForm($data);
 
 } else if (!empty($_GET['marked']) && isset($_COOKIE['markedImages']) || isset($_GET['markedImages'])) { //
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
-	//  special handler to build a special query for marke list.
+	//  special handler to build a special query for marked list.
 	// -------------------------------
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
@@ -275,15 +262,7 @@ if (isset($_GET['set_legacy'])) {
 		$smarty->assign('errormsg', $error);
 	}
 
-	$smarty->assign($data);
-	$_POST = $data;
-	$smarty->reassignPostedDate("submitted_start");
-	$smarty->reassignPostedDate("submitted_end");
-	$smarty->reassignPostedDate("taken_start");
-	$smarty->reassignPostedDate("taken_end");
-
-
-	advanced_form($smarty,$db);
+	fallBackForm($data);
 
 } else if (!empty($_GET['article_id']) || !empty($_GET['profile_id'])) { //
 	dieUnderHighLoad(2,'search_unavailable.tpl');
@@ -359,14 +338,7 @@ if (isset($_GET['set_legacy'])) {
 		$smarty->assign('errormsg', $error);
 	}
 
-	$smarty->assign($data);
-	$_POST = $data;
-	$smarty->reassignPostedDate("submitted_start");
-	$smarty->reassignPostedDate("submitted_end");
-	$smarty->reassignPostedDate("taken_start");
-	$smarty->reassignPostedDate("taken_end");
-
-	advanced_form($smarty,$db);
+	fallBackForm($data);
 
 } elseif (is_int($i) && !empty($_GET['redo'])) {
 	// -------------------------------
@@ -375,54 +347,177 @@ if (isset($_GET['set_legacy'])) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	
-	$engine = new SearchEngine($i);
+	$engine = new SearchEngineBuilder($i);
 	
-	$engine->criteria->compact();
-	$updates = (array)$engine->criteria;
-
-	$updates['id'] = NULL;
-	unset($updates['crt_timestamp']);
-	$updates['use_timestamp'] = NULL;
-	$updates['user_id'] = $USER->user_id;
-	
-	
-	$exact = (strpos($_GET['text'],'=') === 0)?'exactly ':'';
-	
-	$sphinx = new sphinxwrapper($_GET['text']);
-	$sphinx->processQuery();
-	
-	if (empty($sphinx->qclean)) {
-		$updates['searchdesc'] = preg_replace('/(matching|all about|containing|exactly) .*?[\'"\[].*?[\'"\]]\s*(,|$)/',"",$updates['searchdesc']);
-	} else {
-		$updates['searchdesc'] = preg_replace('/(matching|all about|containing|exactly) .*?[\'"\[].*?[\'"\]]\s*(,|$)/',"{$exact}matching [{$sphinx->qclean}]\$2",$updates['searchdesc']);
-		if (strpos($updates['searchdesc'],$sphinx->qclean) === FALSE) {
-			$updates['searchdesc'] = ", {$exact}matching [{$sphinx->qclean}]".$updates['searchdesc'];
+	if (is_int($i)) {
+		
+		$data = array();
+		
+		if (empty($engine->criteria)) {
+			die("Invalid Search Parameter");
 		}
+
+		$query = $engine->criteria;
+		$data['searchclass'] = $query->searchclass;
+		
+		if (!empty($_GET['gridref'])) {
+			if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$_GET['gridref'],$gr)) {
+				$data['gridref'] = $gr[0];
+				$data['distance'] = $CONF['default_search_distance'];
+		 	}
+		} else {
+			switch ($query->searchclass) {
+				case "Special":
+					die("ERROR:Attempt to edit a locked search");
+					break;
+				case "Postcode":
+					$data['postcode'] = $query->searchq;
+					break;
+				case "Text":
+					$data['searchtext'] = $query->searchq;
+					break;
+				case "GridRef":
+					$data['gridref'] = $query->searchq;
+					break;
+				case "County":
+					$data['county_id'] = $query->searchq;
+					break;
+				case "Placename":
+					$data['placename'] = $query->searchq;
+					break;
+			}
+			$data['distance'] = $query->limit8;
+		}
+		
+		if (!empty($_GET['text'])) {
+			$exact = (strpos($_GET['text'],'=') === 0)?'exactly ':'';
+
+			$sphinx = new sphinxwrapper($_GET['text']);
+			#$sphinx->processQuery();
+			
+			$data['searchtext'] = (empty($exact)?'':'=').$sphinx->q;
+		}
+		
+
+		if (!empty($query->limit1)) {
+			$user_id = $query->limit1;
+			if (strpos($user_id,'!') === 0) {
+				$user_id = preg_replace('/^!/','',$user_id);
+				$data['user_invert_ind'] = 'on';
+			}
+			$data['user_id'] = $user_id;
+		}
+		$data['moderation_status'] = $query->limit2;
+		$data['imageclass'] = $query->limit3;
+		$data['reference_index'] = $query->limit4;
+		$data['gridsquare'] = $query->limit5;
+
+
+		if (!empty($query->limit6)) {
+			$dates = explode('^',$query->limit6);
+			if ($dates[0])
+				$data['submitted_start'] = $dates[0];
+			if ($dates[1])
+				$data['submitted_end'] = $dates[1];
+		}
+		if (!empty($query->limit7)) {
+			$dates = explode('^',$query->limit7);
+			if ($dates[0])
+				$data['taken_start'] = $dates[0];
+			if ($dates[1])
+				$data['taken_end'] = $dates[1];
+		}
+		
+
+		$data['topic_id'] = $query->limit9;
+
+		$query->orderby = preg_replace('/^submitted/','gridimage_id',$query->orderby);
+
+		if (strpos($query->orderby,' desc') > 0) {
+			$data['orderby'] = preg_replace('/ desc$/','',$query->orderby);
+			$data['reverse_order_ind'] = 'on';
+		} else {
+			$data['orderby'] = $query->orderby;
+		}
+		$data['breakby'] = $query->breakby;
+		$data['displayclass'] = $query->displayclass;
+		$data['resultsperpage'] = $query->resultsperpage;
+		
+		$engine->buildAdvancedQuery($data);
+	} 
+	
+	fallBackForm($data);
+	
+} else if (isset($_GET['cluster2'])) {
+	dieUnderHighLoad(2,'search_unavailable.tpl');
+	// -------------------------------
+	//  special handler to build a advanced query experimental cluster 
+	// -------------------------------
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+	require_once('geograph/searchenginebuilder.class.php');
+
+	$data = $_GET;
+	
+	$data['adminoverride'] = 1;
+	
+	//a few we dont want to allow overriding
+	$data['searchtext'] = '';
+	$data['q'] = '';
+	$data['location'] = '';
+		
+	
+	
+	
+	if (!empty($_GET['label'])) {
+		$data['description'] = "labeled [".strip_tags($_GET['label'])."]";
+	
+		$db=NewADOConnection($GLOBALS['DSN']);
+		$where = "label = ".$db->Quote($_GET['label']);
+	} else {
+		$data['description'] = "in a cluster";
+		$where = 1;
 	}
 	
-	if ($updates['searchclass'] == 'Text') {
-		//remove the old query from searchq (where it used to be stored before searchtext added) otherwise its 'hidden' but still used
-		$updates['searchq'] = '';
+	$data['searchq'] = "inner join gridimage_group using (gridimage_id) where $where group by gridimage_id";
+		
+	$data['distance'] = 1;
+	$nearstring = 'in';
+	if (!empty($data['gridref'])) {
+		require_once('geograph/gridsquare.class.php');
+		$square=new GridSquare;
+		if ($square->validGridRef(preg_replace('/[^\w]/','',$data['gridref']))) {
+			$grid_ok=$square->setByFullGridRef($data['gridref'],false,true);
+			if ($grid_ok || $square->x && $square->y) {
+				$data['description'] .= ", $nearstring grid reference ".$square->grid_reference;
+				$data['x'] = $square->x;
+				$data['y'] = $square->y;
+			} 
+		} 
+		unset($data['gridref']);
 	}
-	$updates['searchtext'] = (empty($exact)?'':'=').$sphinx->q;
 	
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (empty($db)) die('Database connection failed');
+	if (empty($data['displayclass']))
+		$data['displayclass'] = 'cluster2';
+
+	$data['breakby'] = 'label+';
 	
-	$db->Execute('INSERT INTO queries SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
-	$i = $db->Insert_ID();
+	switch ($data['orderby']) {
+		case 'label': 
+		case 'crc32(label)': 
+		case 'grid_reference': break;
+		default: $data['orderby'] = '';
+	}
 	
-	if (isset($_GET['page']))
-		$extra = "&page=".intval($_GET['page']);
-	if ($dataarray['submit'] == 'Count')
-		$extra .= '&count=1';
-	if (!empty($_GET['BBOX']))
-		$extra .= "&BBOX=".$_GET['BBOX'];
-	header("Location:http://{$_SERVER['HTTP_HOST']}/{$engine->page}?i={$i}$extra");
-	$extra = str_replace('&','&amp;',$extra);
-	print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$engine->page}?i={$i}$extra\">Your Search Results</a>";
-	exit;
-	
+	$engine = new SearchEngineBuilder('#');
+	$engine->buildAdvancedQuery($data);
+
+	//should never fail?? - but display form 'in case'
+
+	//if we get this far then theres a problem...
+	$smarty->assign('errormsg', $engine->errormsg);
+
+	fallBackForm($_GET);
 		
 } else if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || !empty($_GET['gridsquare'])) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
@@ -452,16 +547,7 @@ if (isset($_GET['set_legacy'])) {
 	//if we get this far then theres a problem...
 	$smarty->assign('errormsg', $engine->errormsg);
 
-	$smarty->assign($_GET);
-	$smarty->reassignPostedDate("submitted_start");
-	$smarty->reassignPostedDate("submitted_end");
-	$smarty->reassignPostedDate("taken_start");
-	$smarty->reassignPostedDate("taken_end");
-
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (empty($db)) die('Database connection failed');
-
-	advanced_form($smarty,$db);
+	fallBackForm($_GET);
 
 } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
@@ -502,30 +588,7 @@ if (isset($_GET['set_legacy'])) {
 		$smarty->assign('searchdesc', $engine->searchdesc);
 		$smarty->display('search_multiple.tpl');
 	} else {
-		$smarty->assign($_POST);
-		foreach (array('postcode','searchtext','gridref','county_id','placename','all_checked') as $key) {
-			if (isset($_POST[$key]))
-				$smarty->assign('elementused', $key);
-		}
-
-		$smarty->reassignPostedDate("submitted_start");
-		$smarty->reassignPostedDate("submitted_end");
-		$smarty->reassignPostedDate("taken_start");
-		$smarty->reassignPostedDate("taken_end");
-
-		if (!empty($_POST['exact_ind']))
-			$smarty->assign('exact_ind_checked', 'checked="checked"');
-		if (!empty($_POST['all_ind']))
-			$smarty->assign('all_checked', 'checked="checked"');
-		if (!empty($_POST['user_invert_ind']))
-			$smarty->assign('user_invert_checked', 'checked="checked"');
-		if (!empty($_POST['reverse_order_ind']))
-			$smarty->assign('reverse_order_ind', 'checked="checked"');
-
-		$db=NewADOConnection($GLOBALS['DSN']);
-		if (empty($db)) die('Database connection failed');
-
-		advanced_form($smarty,$db);
+		fallBackForm($_POST);
 	}
 } elseif ((!empty($_GET['q']) && $_GET['q'] != '(anything)') || !empty($_GET['text']) || (!empty($_GET['location']) && $_GET['location'] != '(anywhere)')) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
@@ -589,7 +652,7 @@ if (isset($_GET['set_legacy'])) {
 	} elseif (isset($_GET['kml'])) {
 		$engine->page = "kml.php";
 	}
- 	$engine->buildSimpleQuery($q,$CONF['default_search_distance'],(isset($_GET['form']) && $_GET['form'] == 'simple')?'simple':'auto');
+ 	$engine->buildSimpleQuery($q,$CONF['default_search_distance'],(isset($_GET['form']) && $_GET['form'] == 'simple')?'simple':'auto',(!empty($_GET['user_id']))?intval($_GET['user_id']):0);
  	if (isset($engine->criteria) && $engine->criteria->is_multiple) {
  		if (empty($_GET['distance']))
  			$_GET['distance'] = $CONF['default_search_distance'];
@@ -636,7 +699,7 @@ if (isset($_GET['set_legacy'])) {
 		$smarty->display('search.tpl');
 	}
 
-} else if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'text' || $_GET['form'] == 'first' || $_GET['form'] == 'check')) {
+} else if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'text' || $_GET['form'] == 'first' || $_GET['form'] == 'check' || $_GET['form'] == 'cluster2')) {
 	dieUnderHighLoad(1.5,'search_unavailable.tpl');
 	// -------------------------------
 	//  Advanced Form
@@ -684,7 +747,6 @@ if (isset($_GET['set_legacy'])) {
 				break;
 			case "Text":
 				$smarty->assign('searchtext', $query->searchq);
-				$smarty->assign('elementused', 'searchtext');
 				break;
 			case "GridRef":
 				$smarty->assign('gridref', $query->searchq);
@@ -700,7 +762,9 @@ if (isset($_GET['set_legacy'])) {
 				break;
 			case "All":
 				$smarty->assign('all_checked', 'checked="checked"');
-				$smarty->assign('elementused', 'all_ind');
+				if ($_GET['form'] != 'text') {
+					$smarty->assign('elementused', 'all_ind');
+				}
 				break;
 		}
 		
@@ -838,6 +902,7 @@ if (isset($_GET['set_legacy'])) {
 		$smarty->assign_by_ref('google_maps_api_key', $CONF['google_maps_api_key']);
 		
 		$smarty->register_function("searchbreak", "smarty_function_searchbreak");
+		$smarty->register_function("votestars", "smarty_function_votestars");
 
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
 		
@@ -865,7 +930,7 @@ if (isset($_GET['set_legacy'])) {
 			}
 		}
 		
-		if ($display == 'reveal') {
+		if ($display == 'reveal' && $engine->resultCount) {
 			foreach ($engine->results as $idx => $image) {
 			
 				if ($engine->results[$idx]->gridsquare_id) {
@@ -891,7 +956,7 @@ if (isset($_GET['set_legacy'])) {
 				}
 			}
 		}
-		if ($display == 'cluster') {
+		if ($display == 'cluster' && $engine->resultCount) {
 			foreach ($engine->results as $idx => $image) {
 				$engine->results[$idx]->simple_title = preg_replace('/\s*\(?\s*\d+\s*\)?\s*$/','',$engine->results[$idx]->title);
 				$found = -1;
@@ -914,6 +979,48 @@ if (isset($_GET['set_legacy'])) {
 					unset($engine->results[$idx]);
 				}
 			}
+		} elseif ($display == 'cluster2' && $engine->resultCount) {
+			$breakby = preg_replace('/_(year|month|decade)$/','',$engine->criteria->breakby);
+			if (preg_match('/^(\w+)\+$/i',$breakby,$m) ) {
+				$breakby  = $m[1];
+			}
+			foreach ($engine->results as $idx => $image) {
+				$found = -1;
+				for($ic = 0;$ic< $idx;$ic++) {
+					if ($engine->results[$ic] 
+						&& $engine->results[$ic]->{$breakby} == $engine->results[$idx]->{$breakby}
+						) {
+						$found = $ic;
+						break;
+					}
+				}
+				if ($found > -1) {
+					if (!isset($engine->results[$found]->cluster)) 
+						$engine->results[$found]->cluster = array();
+					
+					$engine->results[$found]->simple_title = $engine->results[$idx]->{$breakby};
+					array_push($engine->results[$found]->cluster,$image);
+					unset($engine->results[$idx]);
+				}
+			}
+		} elseif ($display == 'gmap' && $engine->resultCount) {
+			$markers = array();
+			$conv = new Conversions();
+			
+			if ($engine->criteria->x && $engine->criteria->y) {
+				list($lat,$long) = $conv->internal_to_wgs84($engine->criteria->x,$engine->criteria->y);
+				$markers[] = array('Center Point',$lat,$long);
+			}
+			if (preg_match_all('/\b([a-zA-Z]{1,2} ?\d{1,5}[ \.]?\d{1,5})\b/',$engine->criteria->searchdesc,$m)) {
+				$m = array_unique($m[1]);
+				foreach ($m as $gr) {
+					$sq = new GridSquare();
+					$sq->setByFullGridRef($gr,false,true);
+					list($lat,$long) = $conv->gridsquare_to_wgs84($sq);
+					$markers[] = array($gr,$lat,$long);
+				}
+			}
+			$smarty->assign_by_ref('markers',$markers);
 		}
 	}
 
@@ -1029,12 +1136,51 @@ if (isset($_GET['set_legacy'])) {
 	$smarty->display('search.tpl');
 }
 
+	function fallBackForm(&$data) {
+		global $smarty,$db;
+		$smarty->assign($data);
+		$_POST = $data;
+		
+		foreach (array('postcode','gridref','county_id','placename','all_checked') as $key) {
+			if (isset($_POST[$key]))
+				$smarty->assign('elementused', $key);
+		}
+		
+		$smarty->reassignPostedDate("submitted_start");
+		$smarty->reassignPostedDate("submitted_end");
+		$smarty->reassignPostedDate("taken_start");
+		$smarty->reassignPostedDate("taken_end");
+
+		if (!empty($_POST['searchtext']) && preg_match('/^=/',$_POST['searchtext'])) {
+			$smarty->assign('searchtext', preg_replace('/^=/','',$_POST['searchtext']));
+			$smarty->assign('ind_exact_checked', 'checked="checked"');
+		} else {
+			$smarty->assign('searchtext', $_POST['searchtext']);
+		}
+
+		if (!empty($_POST['exact_ind']))
+			$smarty->assign('exact_ind_checked', 'checked="checked"');
+		if (!empty($_POST['all_ind']))
+			$smarty->assign('all_checked', 'checked="checked"');
+		if (!empty($_POST['user_invert_ind']))
+			$smarty->assign('user_invert_checked', 'checked="checked"');
+		if (!empty($_POST['reverse_order_ind']))
+			$smarty->assign('reverse_order_checked', 'checked="checked"');
+		if (empty($db)) {
+			$db=NewADOConnection($GLOBALS['DSN']);
+			if (empty($db)) die('Database connection failed');
+		}
+		advanced_form($smarty,$db);
+	}
+	
 	function advanced_form(&$smarty,&$db,$is_cachable = false) {
 		global $CONF,$imagestatuses,$sortorders,$breakdowns,$USER;
 
 		if ($_GET['form'] == 'first') {
 			$template = 'search_first.tpl';
 			$smarty->assign('forum_topic_numsquare', $CONF['forum_topic_numsquare']);
+		} elseif ($_GET['form'] == 'cluster2') {
+			$template = 'search_cluster2.tpl';
 		} elseif ($_GET['form'] == 'check') {
 			$template = 'search_check.tpl';
 			if (!$_GET['i']) {
@@ -1083,6 +1229,7 @@ if (isset($_GET['set_legacy'])) {
 			unset($sortorders['realname']);
 			unset($sortorders['title']);
 			unset($sortorders['grid_reference']);
+			$sortorders['random'] = "Random";
 			
 			unset($breakdowns['imageclass']);
 			unset($breakdowns['realname']);
@@ -1108,7 +1255,7 @@ if (isset($_GET['set_legacy'])) {
 			function addkm($a) {
 				return $a."km";
 			}
-			if ($_GET['form'] == 'text') {
+			if ($_GET['form'] == 'text' || $_GET['form'] == 'cluster2') {
 				$d = array(1,2,3,4,5,7,8,10,20,30);
 				$d = array_combine($d,array_map('addkm',$d));
 			} else {
@@ -1165,6 +1312,22 @@ if (isset($_GET['set_legacy'])) {
 
 		$smarty->display($template, $is_cachable);
 	}
+
+function smarty_function_votestars($params) {
+	global $CONF;
+	static $last;
+	
+	$type = $params['type'];
+	$id = $params['id'];
+	$names = array('','Hmm','Below average','So So','Reasonable','Excellent');
+	foreach (range(1,5) as $i) {
+		print "<a href=\"javascript:void(record_vote('$type',$id,$i));\" title=\"{$names[$i]}\"><img src=\"http://{$CONF['STATIC_HOST']}/img/star-light.png\" width=\"14\" height=\"14\" alt=\"$i\" onmouseover=\"star_hover($id,$i,5)\" onmouseout=\"star_out($id,5)\" name=\"star$i$id\"/></a>";
+	}
+	if ($last != $type) {
+		print " (<a href=\"/help/voting\">about</a>)";
+	} 
+	$last = $type;
+}
 
 function smarty_function_searchbreak($params) {
 	global $engine;

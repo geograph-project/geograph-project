@@ -12,11 +12,11 @@ There is a better introduction to the new search here: <a href="/article/Searchi
 <br/>
 
 <div class="interestBox" style="padding:10px;border:1px solid yellow; font-size:0.8em; width:300px; float:right">
-	However the legacy search engine was powerful in the options offered on the advanced search form, allowing you refine the query quite a bit. For this reason the legacy search is still available, but where your search can be furfullied by the new index you will be automatically redirected to the new search. <br/><br/>
+	However the legacy search engine was powerful in the options offered on the advanced search form, allowing you refine the query quite a bit. For this reason the legacy search is still available, but where your search can be fulfilled by the new index you will be automatically redirected to the new search. <br/><br/>
 
 	Hopefully new users finding our search for the first time, should just find the new search works as is, and shouldn't have to worry about the clunky old system. If you are a returning user please take a moment to forget the old search system.<br/><br/>
 
-	We are still refining this intergration, and aim to make the transition as smooth as possible, but we welcome feedback!<br/><br/>
+	We are still refining this integration, and aim to make the transition as smooth as possible, but we welcome feedback!<br/><br/>
 	
 	
 	<h4>I have a question, what should I do?</h4>
@@ -25,7 +25,7 @@ There is a better introduction to the new search here: <a href="/article/Searchi
 </div>
 
 
-<p>Enter multiple keywords seperated by spaces, in any order:</p>
+<p>Enter multiple keywords separated by spaces, in any order:</p>
 <ul>
     	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">river bridge arch</tt></li>
     	<li style="padding:10px;">To exclude a word put a - in front <tt style="border:1px solid gray;padding:10px">bridge -river</tt></li>

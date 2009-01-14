@@ -4,7 +4,7 @@
 
 <h2>Welcome to Geograph British Isles</h2>
 
-<div style="position:relative;width:600px; background-color:white;">
+<div style="position:relative;background-color:white;">
 
 <div style="background-color:#eeeeee;padding:2px; text-align:center">
 The Geograph British Isles project aims to collect geographically
@@ -12,7 +12,7 @@ representative photographs and information for every square kilometre of <a href
 <a href="/explore/places/2/">Ireland</a>, and you can be part of it.</div>
 
 
-<div style="width:35%;float:left;position:relative;margin-right:20px">
+<div style="width:35%;float:left;position:relative;margin-right:10px">
 
 {if $overview2}
 
@@ -44,7 +44,7 @@ representative photographs and information for every square kilometre of <a href
 
 </div>
 
-<div style="width:370px;float:left;padding-right:5px;position:relative;text-align:center;margin-left:-20px">
+<div style="width:370px;float:left;padding-right:5px;position:relative;text-align:center;">
 
 	<div style="padding:2px;margin-top:8px;position:relative; text-align:center">
 
@@ -105,14 +105,14 @@ Recently completed hectads:
 <ul>
 	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a></li>
 	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
-	<li><a title="Submitted Content" href="/content/">view <b>submitted content and articles</b></a></li>
+	<li><a title="Submitted Content" href="/content/">view <b>content and articles</b></a> <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></li>
 	<li><a title="List of all pages" href="/help/sitemap">view the <b>full list</b> of pages</a></li>
-	<li><a title="Features Searches" href="/explore/searches.php">browse <b>featured collections</b> of images</a></li>
+	<li><a title="Features Searches" href="/explore/searches.php">browse <b>featured collections</b></a> <a title="RSS Feed Featured Searches" href="/explore/searches.rss.php" class="xml-rss">RSS</a></li>
 </ul>
 
 </div>
 
-<div style="width:40%;float:left;position:relative">
+<div style="width:300px;float:left;position:relative">
 
 <p><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how 
 many grid squares you submit! 

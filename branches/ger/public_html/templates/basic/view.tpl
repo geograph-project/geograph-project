@@ -22,6 +22,13 @@
 </div>
 <br/>
 {/if}
+{dynamic}
+{if $search_keywords && $search_count}
+	<div class="interestBox" style="text-align:center; font-size:0.9em">
+		We have a least <b>{$search_count} images</b> that match your query [{$search_keywords|escape:'html'}] in the area! <a href="/search.php?searchtext={$search_keywords|escape:'url'}&amp;gridref={$image->grid_reference}&amp;do=1">View them now</a>
+	</div>
+{/if}
+{/dynamic}
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
@@ -43,7 +50,7 @@
   <div class="caption"><b>{$image->title|escape:'html'}</b></div>
 
   {if $image->comment}
-  <div class="caption">{$image->comment|escape:'html'|nl2br|geographlinks}</div>
+  <div class="caption">{$image->comment|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
   {/if}
 
 </div>
@@ -65,7 +72,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <table style="width:100%">
 <tr>
-	<td colspan="6" align="center" style="background-color:#c0c0c0;font-size:0.7em;"><b><a href="/reuse.php?id={$image->gridimage_id}">Interested in reusing this image?</a></b> For example on your webpage, blog, a forum, or Wikipedia. </td>
+	<td colspan="6" align="center" style="background-color:#c0c0c0;font-size:0.7em;"><b><a href="/reuse.php?id={$image->gridimage_id}">Find out how to reuse this Image</a></b> For example on your webpage, blog, a forum, or Wikipedia. </td>
 </tr>
 <tr>
 {if $enable_forums}
@@ -82,14 +89,19 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <td style="width:50px"><a href="/editimage.php?id={$image->gridimage_id}"><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
-	<a href="/editimage.php?id={$image->gridimage_id}">Picture details need updating?</a>
+	{if $user->user_id eq $image->user_id}
+		<big><a href="/editimage.php?id={$image->gridimage_id}"><b>Change Image Details</b></a></big><br/>
+		(or raise a query with a moderator)
+	{else}
+		<a href="/editimage.php?id={$image->gridimage_id}">Suggest an Update to this Image</a>
+	{/if}
 </td>
-
+{if $user->user_id ne $image->user_id}
 <td style="width:50px"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="http://{$static_host}/templates/basic/img/icon_email.gif" alt="Email" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
 	<a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the contributor</a>
 </td>
-
+{/if}
 </tr>
 </table>
 
@@ -103,7 +115,9 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 {if $rastermap->enabled}
 	<div class="rastermap" style="width:{$rastermap->width}px;position:relative">
 	{$rastermap->getImageTag($image->subject_gridref)}
+	{if $rastermap->getFootNote()}
 	<div class="interestBox" style="margin-top:3px;margin-left:2px;padding:1px;"><small>{$rastermap->getFootNote()}</small></div>
+	{/if}
 	</div>
 
 	{$rastermap->getScriptTag()}
@@ -114,12 +128,12 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 	</div>
 {/if}
 
-<div style="float:left;position:relative"><dl class="picinfo">
+<div style="float:left;position:relative"><dl class="picinfo" style="margin-top:0px">
 
 
 
 <dt>Grid Square</dt>
- <dd><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $square_count gt 1}, {$square_count} images{/if} &nbsp; (<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}" rel="nofollow">find more images nearby</a>) 
+ <dd><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $square_count gt 1}, {$square_count} images{/if} &nbsp; (<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}" rel="nofollow">more nearby</a>) 
 </dd>
 
 {if $image->credit_realname}
@@ -154,7 +168,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 {if $image_taken}
 <dt>Date Taken</dt>
- <dd>{$image_taken} &nbsp; (<a title="pictures near {$image->grid_reference} taken on {$image_taken}" href="/search.php?gridref={$image->grid_reference}&amp;orderby=submitted&amp;taken_start={$image->imagetaken}&amp;taken_end={$image->imagetaken}&amp;do=1" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
+ <dd>{$image_taken} &nbsp; (<a title="pictures near {$image->grid_reference} taken on {$image_taken}" href="/search.php?gridref={$image->grid_reference}&amp;orderby=submitted&amp;taken_start={$image->imagetaken}&amp;taken_end={$image->imagetaken}&amp;do=1" class="nowrap" rel="nofollow">more nearby</a>)</dd>
 {/if}
 <dt>Submitted</dt>
 	<dd>{$image->submitted|date_format:"%A, %e %B, %Y"}</dd>
@@ -162,7 +176,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 <dt>Category</dt>
 
 <dd>{if $image->imageclass}
-	{$image->imageclass} &nbsp; (<a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:'url'}" rel="nofollow">find more nearby</a>)
+	{$image->imageclass} &nbsp; (<a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:'url'}" rel="nofollow">more nearby</a>)
 {else}
 	<i>n/a</i>
 {/if}</dd>
@@ -197,7 +211,10 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{include file="_overview.tpl"}
 	<div style="width:inherit;margin-left:20px;"><br/>
 
-	<a title="Send an Electronic Card" href="/ecard.php?image={$image->gridimage_id}">Forward to a<br/>Friend &gt; &gt;</a>
+	<a title="Send an Electronic Card" href="/ecard.php?image={$image->gridimage_id}">Forward to a<br/>Friend &gt; &gt;</a><br/><br/>
+
+	<a href="{$sitemap}">Text listing of Images in {$image->grid_reference}</a>
+
 
 	</div>
   </div>

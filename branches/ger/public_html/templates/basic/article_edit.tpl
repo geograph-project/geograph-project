@@ -10,7 +10,14 @@ function unloadMess() {
 	}
 	return "**************************\n\nYou have unsaved changes the content box.\n\n**************************\n";
 }
+//this is unreliable with AttachEvent
 window.onbeforeunload=unloadMess;
+
+function unloadDone() {
+	new Image().src = "/article/edit.php?page={/literal}{$url|escape:"url"}{literal}&release";
+}
+AttachEvent(window,'unload',unloadDone,false);
+
 
 function cancelMess() {
 	window.onbeforeunload=null;
@@ -32,6 +39,8 @@ AttachEvent(window,'load',setupSubmitForm,false);
 <fieldset>
 {if $approved == 2}
 <legend>Edit Public Article</legend>
+
+<p><a href="/article/edit.php?page={$url|escape:"url"}&amp;release=1">Close page without saving edits</a><small> (leaving this page open prevents others from editing)</small></p>
 
 {else}
 
@@ -102,10 +111,10 @@ AttachEvent(window,'load',setupSubmitForm,false);
 <div class="field">
 	{if $errors.grid_reference}<div class="formerror"><p class="error">{$errors.grid_reference}</p>{/if}
 	 
-	<label for="grid_reference">Relevent Grid Square:</label>
+	<label for="grid_reference">Relevant Grid Square:</label>
 	<input type="text" name="grid_reference" value="{$grid_reference|escape:"html"}" maxlength="12" size="6"/>
 	
-	<div class="fieldnotes">Optional, currently unused, to be used to help organise articles.</div>
+	<div class="fieldnotes">Optional, helps organise articles, such as been able to plot on map.</div>
 	
 	{if $errors.grid_reference}</div>{/if}
 </div>

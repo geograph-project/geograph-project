@@ -98,7 +98,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	//prepare output file and query
 	printf("Preparing sitemap %d of %d, %d%% complete...\r", $sitemap, $sitemaps,$percent);
 		
-	$filename=sprintf('%s/public_html/sitemap%04d.xml', $param['dir'], $sitemap); 
+	$filename=sprintf('%s/public_html/sitemap/root/sitemap%04d.xml', $param['dir'], $sitemap); 
 	$fh=fopen($filename, "w");
 	
 	fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
@@ -181,7 +181,7 @@ for ($sitemap=$sitemaps+1; $sitemap<=$sitemaps+$sitemaps2; $sitemap++)
 	//prepare output file and query
 	printf("Preparing user sitemap %d of %d, %d%% complete...\r", $sitemap, $sitemaps,$percent);
 		
-	$filename=sprintf('%s/public_html/sitemap%04d.xml', $param['dir'], $sitemap); 
+	$filename=sprintf('%s/public_html/sitemap/root/sitemap%04d.xml', $param['dir'], $sitemap); 
 	$fh=fopen($filename, "w");
 	
 	fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
@@ -247,7 +247,7 @@ $sitemaps+=$sitemaps2;
 
 //now we write an index file pointing to our hand edited sitemap sitemap0000.xml)
 //and our generated ones above
-$filename=sprintf('%s/public_html/sitemap.xml', $param['dir']); 
+$filename=sprintf('%s/public_html/sitemap/root/sitemap.xml', $param['dir']); 
 $fh=fopen($filename, "w");
 
 fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
@@ -260,7 +260,7 @@ for ($s=0; $s<=$sitemaps; $s++)
 	//first file is not compressed...
 	$fname=($s==0)?"sitemap0000.xml":sprintf("sitemap%04d.xml.gz", $s);
 	
-	$mtime=filemtime($param['dir']."/public_html/".$fname);
+	$mtime=filemtime($param['dir']."/public_html/sitemap/root/".$fname);
 	$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);
 	
 	fprintf($fh, "<loc>http://{$param['config']}/%s</loc>", $fname);

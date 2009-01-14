@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: rastermapOS.class.php 2239 2006-05-21 23:29:08Z barryhunter $
+ * $Id$
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005  Barry Hunter (geo@barryhunter.co.uk)
@@ -21,12 +21,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-define('TIFF_W',4000); 
-define('TIFF_KMW',20);
-define('TIFF_KMW_BY10',TIFF_KMW / 10);
-define('TIFF_PX_PER_KM',TIFF_W / TIFF_KMW);
 
 class RasterMapOS {
+	var $source = "OS50k";
+
+	var $TIFF_W = 4000; 
+	var $TIFF_KMW = 20;
+	var $TIFF_KMW_BY10 = 2; #TIFF_KMW / 10;
+	var $TIFF_PX_PER_KM = 200; #TIFF_W / TIFF_KMW);
 
 	function listTiles() {
 		global $CONF;
@@ -36,7 +38,7 @@ class RasterMapOS {
 		
 	#	$CONF['os50kimgpath'].$CONF['os50kepoch'].'tiffs/'.$ll.'/'.$tile.'.TIF';
 		
-		$root = $CONF['os50kimgpath'].$CONF['os50kepoch'].'tiffs/';
+		$root = $CONF['rastermap'][$this->source]['path'].$CONF['rastermap'][$this->source]['epoch'].'tiffs/';
 		$lldh = opendir($root);
 		$c = 1;
 		$cs = 0;
@@ -98,8 +100,8 @@ class RasterMapOS {
 										$le = $s->eastings;
 										$ln = $s->northings;							
 
-										$te = floor($le / TIFF_KMW) * TIFF_KMW_BY10;
-										$tn = floor($ln / TIFF_KMW) * TIFF_KMW_BY10;
+										$te = floor($le / $this->TIFF_KMW) * $this->TIFF_KMW_BY10;
+										$tn = floor($ln / $this->TIFF_KMW) * $this->TIFF_KMW_BY10;
 
 										$tile = sprintf("%s%01d%01d",$ll,$te,$tn);
 										print "FIX?: $tile<BR>";
@@ -174,7 +176,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 		$this->nateastings = $square->getNatEastings() - 5000;
 		$this->natnorthings = $square->getNatNorthings() - 5000;
 		
-		$CONF['os50kimgpath'] = "http://geograph.local/testtiles/";
+		$CONF['rastermap'][$this->source]['path'] = "http://geograph.local/testtiles/";
 		
 		$kmoffset = ($offset==100)?1000:2000; 
 		$c = 0;
@@ -218,7 +220,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 		$this->nateastings = $square->getNatEastings()-500;
 		$this->natnorthings = $square->getNatNorthings()-500;
 
-		$path = $CONF['os50kimgpath'].$CONF['os50kepoch'].$gr.'.png';
+		$path = $CONF['rastermap'][$this->source]['path'].$CONF['rastermap'][$this->source]['epoch'].$gr.'.png';
 	
 		if (strlen($CONF['imagemagick_path'])) {
 			$tilelist = array();
@@ -291,7 +293,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 		$this->nateastings = $square->getNatEastings() - 5000;
 		$this->natnorthings = $square->getNatNorthings() - 5000;
 
-		$path = $CONF['os50kimgpath'].$CONF['os50kepoch']."tmp/$tile-$width.png";
+		$path = $CONF['rastermap'][$this->source]['path'].$CONF['rastermap'][$this->source]['epoch']."tmp/$tile-$width.png";
 	
 	
 		$n = $this->natnorthings; 
@@ -312,7 +314,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 				isset($_GET['nice'])?'nice ':'',
 				$CONF['imagemagick_path'],
 				$this->getOSGBTilePath($ll,$tile),
-				TIFF_PX_PER_KM, TIFF_PX_PER_KM, 
+				$this->TIFF_PX_PER_KM, $this->TIFF_PX_PER_KM, 
 				$this->width, $this->width, 
 				$path    );
 				
@@ -377,7 +379,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 		$this->nateastings = $square->getNatEastings() - 5000;
 		$this->natnorthings = $square->getNatNorthings() - 5000;
 
-		$path = $CONF['os50kimgpath'].$CONF['os50kepoch']."tmp/$tile-$offsetX-$offsetY.png";
+		$path = $CONF['rastermap'][$this->source]['path'].$CONF['rastermap'][$this->source]['epoch']."tmp/$tile-$offsetX-$offsetY.png";
 	
 		$kmoffsetX = ($offsetX==100)?1000:2000; 
 		$kmoffsetY = ($offsetY==100)?1000:2000; 
@@ -398,9 +400,9 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 			$cmd = sprintf ('"%sconvert" tiff:%s -gravity SouthWest -crop %ldx%ld+%ld+%ld +repage -crop %ldx%ld +repage -thumbnail %ldx%ld -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 6,230 155,243 3,3" -fill "#000066" -pointsize 10 -draw "text 10,240 \'© Crown Copyright %s\'" png:%s', 
 				$CONF['imagemagick_path'],
 				$this->getOSGBTilePath($ll,$tile),
-				TIFF_W*0.9, TIFF_W*0.9, 
+				$this->TIFF_W*0.9, $this->TIFF_W*0.9, 
 				$offsetX, $offsetY, 
-				TIFF_PX_PER_KM*2, TIFF_PX_PER_KM*2, 
+				$this->TIFF_PX_PER_KM*2, $this->TIFF_PX_PER_KM*2, 
 				$this->width, $this->width, 
 				$CONF['imagemagick_font'],
 				$CONF['OS_licence'],
@@ -473,16 +475,16 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 		$this->width = 300;
 
 
-		$te = floor($le / TIFF_KMW) * TIFF_KMW_BY10;
-		$tn = floor($ln / TIFF_KMW) * TIFF_KMW_BY10;
+		$te = floor($le / $this->TIFF_KMW) * $this->TIFF_KMW_BY10;
+		$tn = floor($ln / $this->TIFF_KMW) * $this->TIFF_KMW_BY10;
 
 		$tile = sprintf("%s%01d%01d",$ll,$te,$tn);
 
 		$oe = $le - $te * 10;
 		$on = $ln - $tn * 10;
 
-		$pe = $oe * TIFF_PX_PER_KM;
-		$pn = $on * TIFF_PX_PER_KM;
+		$pe = $oe * $this->TIFF_PX_PER_KM;
+		$pn = $on * $this->TIFF_PX_PER_KM;
 
 		foreach (explode(' ','ll le ln e n te tn tile path out oe on pe pn') as $k){print "$k = '".$$k."'<br>";}
 
@@ -492,8 +494,8 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 
 			$cmd = sprintf ("\"%sconvert\" -gravity SouthWest -crop %ldx%ld+%ld+%ld -resize %ldx%ld tiff:%s png:%s", 
 				str_replace('"','',$CONF['imagemagick_path']),
-				TIFF_PX_PER_KM*2, TIFF_PX_PER_KM*2, 
-				$pe - TIFF_PX_PER_KM/2, $pn - TIFF_PX_PER_KM/2, 
+				$this->TIFF_PX_PER_KM*2, $this->TIFF_PX_PER_KM*2, 
+				$pe - $this->TIFF_PX_PER_KM/2, $pn - $this->TIFF_PX_PER_KM/2, 
 				$this->width, $this->width, 
 				$this->getOSGBTilePath($ll,$tile),
 				$this->getOSGBStorePath('pngs-2k-'.$this->width.'/'));
@@ -514,7 +516,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 		global $CONF;
 		if (!$ll) 
 			$ll = substr($tile,0,2);
-		return $CONF['os50kimgpath'].$CONF['os50kepoch'].'tiffs/'.$ll.'/'.$tile.'.TIF';
+		return $CONF['rastermap'][$this->source]['path'].$CONF['rastermap'][$this->source]['epoch'].'tiffs/'.$ll.'/'.$tile.'.TIF';
 	}
 
 	function getOSGBStorePath($folder = 'pngs-2k-250/',$e = 0,$n = 0) {
@@ -532,7 +534,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 			$n3 = floor($this->natnorthings /1000);
 		}
 
-		$dir=$CONF['os50kimgpath'].$CONF['os50kepoch'].$folder;
+		$dir=$CONF['rastermap'][$this->source]['path'].$CONF['rastermap'][$this->source]['epoch'].$folder;
 		
 		$dir.=$e2.'/';
 		if (!is_dir($dir))

@@ -146,7 +146,10 @@ geographing</a> first.</p>
 		Placename or Postcode.</b><br/> Once you have centred the map on the picture location, 
 		return here and enter the <i>Grid reference at centre</i> value shown into the box 
 		above.<br/><br/></li>
-		<li>{external href="http://www.multimap.com/map/browse.cgi?lat=54.5445&lon=-6.8228&scale=1000000" text="multimap.com"} now displays 1:50,000 <b>Mapping for Northern Ireland</b>. Use our handy <a href="/latlong.php">Lat/Long Convertor</a> to get the correct Grid Square for a picture.<br/><br/></li>
+		<li>{external href="http://www.multimap.com/map/browse.cgi?lat=54.5445&lon=-6.8228&scale=1000000" text="multimap.com"} now displays 1:50,000 <b>Mapping for Northern Ireland</b>. Use our handy <a href="/latlong.php">Lat/Long Convertor</a> to get the correct Grid Square for a picture.<br/><br/>
+		
+		Furthermore {external href="http://www.osni.gov.uk/mapstore" text="OSNI"} and {external href="http://www.osi.ie/" text="OSI"} now offer online mapping from their own websites. Coordinate conversion may not be easy - its porbably best to rely on visual estimation using the national grid projected on the map.
+		<br/><br/></li>
 		
 		<li><b>If you have a WGS84 latitude &amp; longitude coordinate</b>
 		(e.g. from a GPS receiver, or from multimap site), then see our 
@@ -273,7 +276,7 @@ geographing</a> first.</p>
 	{foreach from=$images item=image}
 
 	  <div class="photo33" style="float:left;width:150px; height:170px; background-color:white">{newwin title="`$image->title` by `$image->realname` - click to view full size image"|escape:'html' href="/photo/`$image->gridimage_id`" text=$image->getThumbnail(120,120,false,true)}
-	  <div class="caption">{newwin title="view full size image" href="/photo/`$image->gridimage_id`" text=$image->title|escape:'html'}</div>
+	  <div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}" target="_blank">{$image->title|escape:'html'}</a></div>
 	  </div>
 
 	{/foreach}
@@ -357,12 +360,12 @@ it was taken or other interesting geographical information. <span id="styleguide
 <p><label for="title"><b>Title</b></label> {if $error.title}
 	<br/><span class="formerror">{$error.title}</span>
 	{/if}<br/>
-<input size="50" id="title" name="title" value="{$title|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title',true);" onkeyup="checkstyle(this,'title',false);"/> <span class="formerror" style="display:none" id="titlestyle">Possible style issue. See Guide above. <span id="titlestylet" style="font-size:0.9em"></span></span></p>
+<input size="50" maxlength="128" id="title" name="title" value="{$title|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title',true);" onkeyup="checkstyle(this,'title',false);"/> <span class="formerror" style="display:none" id="titlestyle">Possible style issue. See Guide above. <span id="titlestylet" style="font-size:0.9em"></span></span></p>
  {if $place.distance}
  <p style="font-size:0.7em">Gazetteer info as will appear:<br/> <span style="color:silver;">{place place=$place}</span></p>
  {/if}
 
-<p style="clear:both"><label for="comment"><b>Comment</b></label> <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span></span><br/>
+<p style="clear:both"><label for="comment"><b>Description/Comment</b></label> <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span></span><br/>
 <textarea id="comment" name="comment" rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$comment|escape:'html'}</textarea></p>
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
 to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
@@ -530,8 +533,6 @@ AttachEvent(window,'load',onChangeImageclass,false);
 <p>Thank you very much - your photo has now been added to grid square 
 <a title="Grid Reference {$gridref}" href="/gridref/{$gridref}">{$gridref}</a>.</p>
 <p>Your photo has identification number [<a href="/photo/{$gridimage_id}">{$gridimage_id}</a>]</p>
-</form> 
-
 
 
 <p><a title="submit another photo" href="/submit.php">Click here to submit a new photo...</a></p>
@@ -556,6 +557,45 @@ have problems
 
 
 	</form> 
+
+{if $step eq 3}
+
+	<script type="text/javascript">{literal}
+	function previewImage() {
+		window.open('','_preview');//forces a new window rather than tab?
+		var f1 = document.forms['theForm'];
+		var f2 = document.forms['previewForm'];
+		for (q=0;q<f2.elements.length;q++) {
+			if (f2.elements[q].name && f1.elements[f2.elements[q].name]) {
+				f2.elements[q].value = f1.elements[f2.elements[q].name].value;
+			}
+		}
+		return true;
+	}
+	{/literal}</script>
+	<form action="/preview.php" method="post" name="previewForm" target="_preview" style="background-color:lightgreen; padding:10px; text-align:center">
+	<input type="hidden" name="grid_reference"/>
+	<input type="hidden" name="photographer_gridref"/>
+	<input type="hidden" name="view_direction"/>
+	<input type="hidden" name="use6fig"/>
+	<input type="hidden" name="title"/>
+	<textarea name="comment" style="display:none"/></textarea>
+	<input type="hidden" name="imageclass"/>
+	<input type="hidden" name="imageclassother"/>
+	<input type="hidden" name="imagetakenDay"/>
+	<input type="hidden" name="imagetakenMonth"/>
+	<input type="hidden" name="imagetakenYear"/>
+	<input type="hidden" name="upload_id"/>
+	<input type="submit" value="Preview Submission in a new window" onclick="previewImage()"/> 
+	
+	<input type="checkbox" name="spelling"/>Check Spelling
+	<sup style="color:red">Experimental!</sup>
+	</form>
+{/if}
+
+
+
+
 
 {/dynamic}
 {include file="_std_end.tpl"}

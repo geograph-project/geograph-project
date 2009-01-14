@@ -27,9 +27,27 @@ require_once('geograph/mapmosaic.class.php');
 init_session();
 
 $mosaic=new GeographMapMosaic;
-$overview=new GeographMapMosaic('overview');
 
-if (isset($_GET['t'])) {
+$mosaic->pixels_per_km = 40;
+
+if (isset($_GET['random'])) {
+	$db=NewADOConnection($GLOBALS['DSN']);
+	
+	$count = $db->cacheGetOne(86400,"SELECT COUNT(*) FROM gridsquare WHERE reference_index=1 AND percent_land = 100");
+	
+	$offset = rand(0,$count);
+
+	$str = $db->getOne("SELECT AsText(point_xy) FROM gridsquare WHERE reference_index=1 AND percent_land = 100 AND gridsquare_id > $offset"); //limit 1 is added automaticallu
+
+	preg_match('/\((\d+) (\d+)\)/',$str,$m);
+;
+	if ($str && $m[1]) {
+		$mapw=($mosaic->image_w/$mosaic->pixels_per_km)/2;
+		$mosaic->setOrigin($m[1]-$mapw,$m[2]-$mapw);
+	}
+	$token=$mosaic->getToken();
+	$cacheid='mapper|'.$token;
+} elseif (isset($_GET['t'])) {
 	$mosaic->setToken($_GET['t']);
 	
 	$token=$mosaic->getToken();
@@ -39,6 +57,18 @@ if (isset($_GET['t'])) {
 	$conv = new Conversions();
 
 	list($x,$y) = $conv->national_to_internal($_GET['lon'],$_GET['lat'],1);	
+	
+	if (isset($_GET['zoom'])) {
+		switch($_GET['zoom']) {
+			case 0: $mosaic->pixels_per_km =  4; break;
+			case 1: $mosaic->pixels_per_km = 40; break;//there isnt a direct equiv
+			case 2: $mosaic->pixels_per_km = 40; break;
+			case 3: $mosaic->pixels_per_km = 80; break;
+			default: die("invalid zoom");
+		} 
+	} else {
+		//legacy support for no zoom specified
+	} 
 	
 	$mapw=($mosaic->image_w/$mosaic->pixels_per_km)/2;
 	$mosaic->setOrigin($x-$mapw,$y-$mapw);
@@ -52,14 +82,17 @@ if (isset($_GET['t'])) {
 
 $smarty = new GeographPage;
 
+if (isset($_REQUEST['centi'])) {
+	$smarty->assign('centi',1);
+	$smarty->assign('extra','centi');
+	$cacheid.='|centi';
+} 
+
 if (isset($_REQUEST['inner'])) {
 	$template = 'mapper_iframe.tpl';
 } else {
 	$template = 'mapper.tpl';
 }
-
-$token=$mosaic->getToken();
-
 
 
 if (!$smarty->is_cached($template, $cacheid))
@@ -73,6 +106,16 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign('e',$e);
 	$smarty->assign('n',$n);
+	
+	switch($mosaic->pixels_per_km) {
+		case  1: $z = 0; break;//there isnt a direct equiv
+		case  4: $z = 0; break;
+	//	case ??: $z = 1; break;
+		case 40: $z = 2; break;
+		case 80: $z = 3; break;
+		default: $z = ($mosaic->pixels_per_km<1)?0:2;
+	} 
+	$smarty->assign('z',$z);
 	
 	$smarty->assign('token',$token);
 }

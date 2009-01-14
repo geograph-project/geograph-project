@@ -1,9 +1,9 @@
-{assign var="page_title" value="Names for Different Size Squares"}
+{assign var="page_title" value="Names for Different Sized Squares"}
 {include file="_std_begin.tpl"}
 
-<h2>Names for Different Size Squares</h2>
+<h2>Names for Different Sized Squares</h2>
 
-<p>This page is born out of the confusion of what to call different size squares. The proposal is to refer to the squares as referenced in the top line of the table below. Underneath is the various other names it could be called by, and actully how similar they can be so if they are abbreviated it actully leaves open to interpretation which exactly is meant. </p>
+<p>This page is born out of the confusion of what to call different sized squares. The proposal is to refer to the squares as referenced in the top line of the table below; included in the table are various other names it could be called by.</p>
 
  <table width="100%" border="1" cellpadding="5" cellspacing="0" class="report"> 
 	<thead>
@@ -31,7 +31,7 @@
 		  <td>10,000km&sup2;</td> 
 		</tr> 
 		<tr> 
-		  <td>Area in m (square meters)</td> 
+		  <td>Area in m (square metres)</td>
 		  <td>10,000m&sup2;</td> 
 		  <td>1,000,000m&sup2;</td> 
 		  <td>100,000,000m&sup2;</td> 
@@ -56,11 +56,11 @@
 		  <td>&nbsp;</td> 
 		  <td>&nbsp;</td> 
 		  <td>&nbsp;</td> 
-		  <td>100 000 meter square</td> 
+		  <td>100 000 metre square</td>
 		</tr> 
 		<tr> 
 		  <td><a
-			 href="http://www.ordnancesurvey.co.uk/oswebsite/gi/nationalgrid/nghelp1.html">Intereactive
+			href="http://www.ordnancesurvey.co.uk/oswebsite/gi/nationalgrid/nghelp1.html">Interactive
 			 Guide</a> <br/> &amp; One-Inch Maps</td> 
 		  <td>&nbsp;</td> 
 		  <td>1km squares</td> 
@@ -68,11 +68,11 @@
 		  <td>100km squares </td> 
 		</tr>
 		<tr>
-		  <td>Example Grid Refernce </td>
-		  <td>TQ562583</td>
-		  <td>TQ5658</td>
-		  <td>NH45</td>
-		  <td>SH</td>
+		  <td>Example Grid Reference</td>
+		  <td>TQ56<b>2</b>58<b>3</b></td>
+		  <td>TQ5<b>6</b>5<b>8</b></td>
+		  <td>TQ<b>55</b></td>
+		  <td><b>TQ</b></td>
 		</tr> 
 		<tr> 
 		  <td>Common Name</td> 
