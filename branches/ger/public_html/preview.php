@@ -93,10 +93,11 @@ if (!empty($_POST))
 	$image->fullpath = "/submit.php?preview=".strip_tags(trim(stripslashes($_POST['upload_id'])));
 
 
-if (!empty($_POST['spelling'])) {
+if (!empty($_POST['spelling'])) { //FIXME smarty
 	
 	require_once("3rdparty/spellchecker.class.php");
-	?>
+	/*? >*/
+	echo <<<EOT
 	<style type="text/css">
 		body { font-family:Georgia, Verdana, Arial, serif; }
 		u { color:red }
@@ -120,7 +121,8 @@ if (!empty($_POST['spelling'])) {
 			that.form.elements[name].value = str;
 		}
 	</script>
-	<?
+EOT;
+	/*< ?*/
 	$query = "{$image->title} {$image->comment} {$image->imageclass}"; 
 
 	$xml = new SimpleXMLElement(SpellChecker::GetSuggestions( $query )); 
