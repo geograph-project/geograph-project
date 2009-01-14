@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * $Project: GeoGraph $
  * $Id: rastermap.class.php 2876 2007-01-07 20:51:00Z barry $

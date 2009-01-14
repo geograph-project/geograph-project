@@ -37,10 +37,10 @@ ob_start();
 ?>
 <kml xmlns="http://earth.google.com/kml/2.0">
 <Document>
-<name>Geograph Hectads - <? echo $type; ?> :: Time Animation</name>
+<name>Geograph Hectads - <?php echo $type; ?> :: Time Animation</name>
 
 
-<?
+<?php
 foreach (range(2005,date('Y')) as $year) {
 	foreach (range(1,12) as $month) {
 		if (!($year == 2005 && $month == 1) && !($year == date('Y') && $month > date('n')) ) {
@@ -61,24 +61,24 @@ foreach (range(2005,date('Y')) as $year) {
 		
 ?>
 <NetworkLink>
-	<name><? echo $when; ?></name>
+	<name><?php echo $when; ?></name>
 	<open>0</open>
 	<Url>
-		<href><? echo $url; ?></href>
+		<href><?php echo $url; ?></href>
 	</Url>
 	<visibility>0</visibility>
 	
 	<TimeSpan>
-	  <begin><? echo $whenb; ?></begin>
-	  <end><? echo $when; ?></end>
+	  <begin><?php echo $whenb; ?></begin>
+	  <end><?php echo $when; ?></end>
 	</TimeSpan>
 </NetworkLink>
-<?
+<?php
 		}
 	}
 }
 ?>
-</Document></kml><?	
+</Document></kml><?php
 		
 $filedata = ob_get_contents();
 ob_end_clean();
