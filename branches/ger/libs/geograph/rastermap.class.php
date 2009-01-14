@@ -172,7 +172,7 @@ class RasterMap
 
 		if ($this->service == 'Google') {
 			if (!empty($this->inline) || !empty($this->issubmit)) {
-				return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\">Loading map...</div>";
+				return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\">Loading map... (JavaScript required)</div>";
 			} else {
 				$token=new Token;
 				
@@ -183,7 +183,7 @@ class RasterMap
 				}
 				$token = $token->getToken();
 				
-				return "<iframe src=\"/map_frame.php?t=$token\" id=\"map\" width=\"{$width}\" height=\"{$width}\">Loading map...</iframe>";
+				return "<iframe src=\"/map_frame.php?t=$token\" id=\"map\" width=\"{$width}\" height=\"{$width}\" scrolling=\"no\">Loading map... (JavaScript required)</iframe>";
 			}
 		} elseif ($this->service == 'OS50k-small') {
 			static $idcounter = 1;
