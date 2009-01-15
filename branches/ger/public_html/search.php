@@ -106,7 +106,7 @@ if (isset($_GET['fav']) && $i) {
 	} elseif (!empty($_GET['first'])) {
 		$_GET['first'] = strtoupper(preg_replace('/\s+/','',$_GET['first']));
 
-		if (preg_match('/^[A-Z_%]{0,2}[\d_%]{1,4}$/',$_GET['first']) ) {
+		if (preg_match('/^[A-Z_%]{0,3}[\d_%]{1,4}$/',$_GET['first']) ) {
 
 			//replace for myriads
 			$gr = preg_replace('/^([A-Z]{1,3}|%)(\d|_)(\d|_)$/','$1$2_$3_',$_GET['first']);//FIXME?
