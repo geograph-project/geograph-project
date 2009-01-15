@@ -96,8 +96,7 @@ if (!empty($_POST))
 if (!empty($_POST['spelling'])) { //FIXME smarty
 	
 	require_once("3rdparty/spellchecker.class.php");
-	/*? >*/
-	echo <<<EOT
+	?>
 	<style type="text/css">
 		body { font-family:Georgia, Verdana, Arial, serif; }
 		u { color:red }
@@ -121,8 +120,7 @@ if (!empty($_POST['spelling'])) { //FIXME smarty
 			that.form.elements[name].value = str;
 		}
 	</script>
-EOT;
-	/*< ?*/
+	<?php
 	$query = "{$image->title} {$image->comment} {$image->imageclass}"; 
 
 	$xml = new SimpleXMLElement(SpellChecker::GetSuggestions( $query )); 
