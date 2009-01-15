@@ -137,7 +137,7 @@ if (isset($_GET['moderator']) && ($mid = intval($_GET['moderator']))) {
 	$sql_where .= " and t.user_id=$mid";
 }
 
-if (isset($_GET['q'])) {
+if (!empty($_GET['q'])) {
 	if (isset($_GET['legacy'])) {
 		if (strpos($_GET['q'],'!') === 0) {
 			$q = $db->Quote("%".preg_replace('/^!/','',$_GET['q'])."%");
