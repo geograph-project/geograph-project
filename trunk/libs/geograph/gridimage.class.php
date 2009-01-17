@@ -386,6 +386,7 @@ class GridImage
 	}
 	
 	function assignToSmarty($smarty) {
+		global $CONF;
 		
 		$taken=$this->getFormattedTakenDate();
 
@@ -420,7 +421,7 @@ class GridImage
 			$smarty->assign('meta_description', $this->comment);
 		}
 
-		if ($CONF['forums']) {
+		if (!empty($CONF['forums'])) {
 			//let's find posts in the gridref discussion forum
 			$this->grid_square->assignDiscussionToSmarty($smarty);
 		}
