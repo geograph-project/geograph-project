@@ -38,6 +38,7 @@ class UpdateContentWithEditedReply extends EventHandler
 
 		$post=$db->GetRow("select forum_id,topic_id from geobb_posts where post_id=$post_id");
 
+		require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
 		if ($post['forum_id'] == $CONF['forum_submittedarticles'] || $post['forum_id'] == $CONF['forum_gallery']) {//todo gsd 
 			add_topic_to_content($post['topic_id'],$db);
 		}
