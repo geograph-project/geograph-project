@@ -203,10 +203,13 @@ class SearchCriteria
 			} else {
 				$this->sphinx['impossible']++;
 			}
-
-			//not using "power(gs.x -$x,2) * power( gs.y -$y,2)" beucause is testing could be upto 2 times slower!
-			$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
-			$sql_order = ' dist_sqd ';
+			if ($this->limit8 == 1) {
+				$sql_fields .= ", 0 as dist_sqd";
+			} else {
+				//not using "power(gs.x -$x,2) * power( gs.y -$y,2)" beucause is testing could be upto 2 times slower!
+				$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
+				$sql_order = ' dist_sqd ';
+			}
 		} 
 		if ((($x == 0 && $y == 0 ) || $this->limit8) && $this->orderby) {
 			switch ($this->orderby) {
@@ -266,7 +269,21 @@ class SearchCriteria
 			$this->sphinx['compatible']=0;
 		}
 		if ($this->breakby) {
-			$breakby = preg_replace('/_(year|month|decade)$/','',$this->breakby);
+			if (preg_match('/imagetaken_(year|month|decade)$/',$this->breakby) && strpos($sql_order,'imagetaken') === FALSE) {
+				switch ($this->breakby) {
+					case 'imagetaken_month':
+						$breakby = "SUBSTRING(imagetaken,1,7)";
+						break;
+					case 'imagetaken_year':
+						$breakby = "SUBSTRING(imagetaken,1,4)";
+						break;
+					case 'imagetaken_decade':
+						$breakby = "SUBSTRING(imagetaken,1,3)";
+						break;
+				}
+			} else {
+				$breakby = preg_replace('/_(year|month|decade)$/','',$this->breakby);
+			}
 			$breakby = preg_replace('/^submitted/','gridimage_id',$breakby);
 			
 			if (strpos($sql_order,' desc') !== FALSE) {
