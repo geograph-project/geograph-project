@@ -170,7 +170,7 @@ class SearchEngineBuilder extends SearchEngine
 			} elseif (preg_match('/^".*"$/',$q)) {
 				$searchtext = $q;
 				$searchdesc = ", matching \"".$q."\" ".$searchdesc;
-			} else {
+			} elseif (isset($GLOBALS['smarty'])) {
 		
 				//check if this is a user 
 				$criteria2 = new SearchCriteria_All();
@@ -193,6 +193,10 @@ class SearchEngineBuilder extends SearchEngine
 					$searchtext = $q;
 					$searchdesc = ", containing '{$q}' ".$searchdesc;
 				}
+			} else {
+				//asuume a text search - without smarty must be api/feed
+				$searchtext = $q;
+				$searchdesc = ", containing '{$q}' ".$searchdesc;
 			}
 		} elseif ($placename && !$searchdesc) {
 			$q = $searchtext = $placename;
