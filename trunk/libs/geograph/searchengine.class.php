@@ -192,18 +192,18 @@ class SearchEngine
 			return 0; 
 		}
 	
+		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=`]+) where/i",$sql_where,$matches)) {
+			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\'`]+) where/i",'',$sql_where);
+			$sql_from .= " {$matches[1]} join {$matches[2]}";
+		}
+		
 		//need to ensure rejected/pending images arent shown
 		if (empty($sql_where)) {
 			$sql_where = " moderation_status in ('accepted','geograph')";
 		} else {
 			$this->islimited = true;
 			if (strpos($sql_where,'moderation_status') === FALSE) 
-				$sql_where .= " and moderation_status in ('accepted','geograph')";
-		}
-		
-		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=`]+) where/i",$sql_where,$matches)) {
-			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\'`]+) where/i",'',$sql_where);
-			$sql_from .= " {$matches[1]} join {$matches[2]}";
+				$sql_where = " and moderation_status in ('accepted','geograph') $sql_where";
 		}
 		
 		$sql_from = str_replace('gridimage_query using (gridimage_id)','gridimage_query on (gi.gridimage_id = gridimage_query.gridimage_id)',$sql_from);
