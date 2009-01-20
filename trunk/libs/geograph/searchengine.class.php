@@ -203,7 +203,7 @@ class SearchEngine
 		} else {
 			$this->islimited = true;
 			if (strpos($sql_where,'moderation_status') === FALSE) 
-				$sql_where = " and moderation_status in ('accepted','geograph') $sql_where";
+				$sql_where = " moderation_status in ('accepted','geograph') and $sql_where";
 		}
 		
 		$sql_from = str_replace('gridimage_query using (gridimage_id)','gridimage_query on (gi.gridimage_id = gridimage_query.gridimage_id)',$sql_from);
