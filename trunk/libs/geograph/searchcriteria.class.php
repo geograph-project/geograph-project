@@ -856,6 +856,7 @@ class SearchCriteria_Placename extends SearchCriteria
 			$this->searchq = $placename;
 			$this->full_name = $places[0]['full_name'];
 			$this->reference_index = $places[0]['reference_index'];
+			$this->_matches = $places;
 		} elseif (count($places)) {
 			$this->matches = $places;
 			$this->is_multiple = true;
