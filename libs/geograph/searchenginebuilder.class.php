@@ -187,6 +187,10 @@ class SearchEngineBuilder extends SearchEngine
 						$this->criteria->is_multiple = true;
 						$this->criteria->ismore = true; #so doesnt display placename prompt
 						unset($searchclass);
+						
+						if (!empty($criteria->placename)) {
+							$this->criteria->matches = $criteria->_matches;
+						}
 					}
 				} else {
 					//asuume a text search
