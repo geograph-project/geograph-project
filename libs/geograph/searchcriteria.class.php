@@ -440,11 +440,11 @@ class SearchCriteria
 					if ($dates[0] == $dates[1]) {
 						//both the same
 						$sql_where .= "submitted LIKE '".$dates[0]."%' ";
-						$this->sphinx['filters']['submitted'] = array(strtotime($dates[0]),strtotime($dates[0]." 23:59")); 
+						$this->sphinx['filters']['submitted'] = array(strtotime($dates[0]),strtotime($dates[0]." 23:59:59")); 
 					} else {
 						//between
 						$sql_where .= "submitted BETWEEN '".$dates[0]."' AND DATE_ADD('".$dates[1]."',INTERVAL 1 DAY) ";
-						$this->sphinx['filters']['submitted'] = array(strtotime($dates[0]),strtotime($dates[1]." 23:59")); 
+						$this->sphinx['filters']['submitted'] = array(strtotime($dates[0]),strtotime($dates[1]." 23:59:59")); 
 					}
 				} else {
 					//from
@@ -454,7 +454,7 @@ class SearchCriteria
 			} else {
 				//to
 				$sql_where .= "submitted <= '".$dates[1]."' ";
-				$this->sphinx['filters']['submitted'] = array(strtotime("2005-01-01"),strtotime($dates[1]." 23:59")); 
+				$this->sphinx['filters']['submitted'] = array(strtotime("2005-01-01"),strtotime($dates[1]." 23:59:59")); 
 			}
 			
 			
