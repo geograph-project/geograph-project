@@ -4,16 +4,9 @@
 <div style="padding:10px;" class="searchresults">
 {if $engine->resultCount}
 
-{if strpos($engine->criteria->searchdesc,'with incomplete data') === FALSE}
-	{assign var="sidebarclass" value="search"}
-{else}
-	{assign var="sidebarclass" value="searchtext"}
-{/if}
-
 <div style="float:right;position:relative; font-size:0.9em">
 <form action="/search.php" method="get" style="display:inline">
-<div>Sidebar for:
-<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass={$sidebarclass}" target="_search" rel="nofollow">IE &amp; Firefox</a>, <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass={$sidebarclass}" rel="sidebar" rel="nofollow" title="Results">Opera</a>.
+<div>
 Display: 
 <input type="hidden" name="i" value="{$i}"/>
 {if $engine->currentPage > 1}<input type="hidden" name="page" value="{$engine->currentPage}"/>{/if}
@@ -57,6 +50,8 @@ Display:
 	</div>
 	
 {elseif $engine->fullText && (!$engine->criteria->sphinx.compatible || $engine->criteria->sphinx.no_legacy)}
+
+	{if $user->registered}
 	<div class="interestBox" style="border:1px solid pink;display:none; " id="show1">
 		<h4>Not seeing the results you expect?</h4>
 		This search is powered by the new <a href="/help/search_new">experimental Full-Text search index</a>, which in some ways is less precise than the legacy search in text matching, e.g. similar words are automatically matched. However this index often results in quicker and more relevent results. 
@@ -83,6 +78,7 @@ Display:
 	<div class="interestBox" style="border:1px solid pink; float:right; width:200px; position:relative; " id="hide1"><b>Not seeing the results you expect?</b>	<a href="javascript:void(show_tree(1));">expand...</a>
 		
 	</div>
+	{/if}
 {elseif strlen($engine->criteria->searchtext) && $engine->criteria->sphinx.impossible}
 	<div style="padding:2px;border:1px solid gray; font-size:0.7em;text-align:center">You have dropped back into <a href="/help/search_new">legacy search mode</a>, the search options you have selected are not supported in the new search,<br/> you can try simplifing the choosen options to change mode.
 	
