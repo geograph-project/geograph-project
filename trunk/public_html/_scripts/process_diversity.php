@@ -28,8 +28,7 @@ set_time_limit(5000);
 
 
 //need perms if not requested locally
-if ( ($_SERVER['REMOTE_ADDR'] == $_SERVER['SERVER_ADDR']) ||
-     (strpos($_SERVER['REMOTE_ADDR'],$CONF['server_ip']) === 0))
+if (isLocalIPAddress())
 {
         $smarty=null;
 }
