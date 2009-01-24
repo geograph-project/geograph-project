@@ -327,7 +327,12 @@ END;
 			$suggestions = array();
 			if (empty($this->countOnly) && $sphinx->q && strlen($sphinx->q) < 64 && empty($this->criteria->sphinx['x']) ) {
 				$suggestions = $sphinx->didYouMean($sphinx->q);
-			} elseif ($this->criteria->searchclass == 'Placename' && strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE && isset($GLOBALS['smarty'])) {
+			} elseif (
+					$this->criteria->searchclass == 'Placename' 
+					&& strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE 
+					&& (empty($this->criteria->searchtext) || ($this->criteria->searchq == $this->criteria->searchtext) )
+					&& isset($GLOBALS['smarty'])
+				) {
 				$suggestions = array(array('gr'=>'(anywhere)','localities'=>'as text search','query'=>$this->criteria->searchq) );
 			}
 			if (!empty($this->criteria->searchtext)) {
