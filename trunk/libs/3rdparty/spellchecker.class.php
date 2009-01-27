@@ -50,9 +50,18 @@ class SpellChecker
    */ 
   public static function Correct( $query, $lang='en', $hl='en' ) 
   { 
+
+	if (!function_exists('curl_init')) {
+		return $query;
+	}
+
     $result = $query; 
 
     $xml = new SimpleXMLElement(self::GetSuggestions( $query, $lang, $hl )); 
+
+	if (!$xml) {
+		return $query;
+	}
 
     $replacement = array(); 
     foreach($xml->c as $correction) 
@@ -91,6 +100,10 @@ class SpellChecker
 	if ($data)
 		return $data;
 
+	if (!function_exists('curl_init')) {
+		return false;
+	}
+
     $post = '<spellrequest textalreadyclipped="0" ignoredups="1" ignoredigits="1" ignoreallcaps="0"><text>'.htmlspecialchars($query).'</text></spellrequest>'; 
 
     $server = "www.google.com"; 
@@ -119,6 +132,7 @@ class SpellChecker
 
     $data = curl_exec($ch); 
     if (curl_errno($ch)) { 
+	return false;
         throw new Exception( curl_error($ch) ); 
     } else { 
         curl_close($ch); 
