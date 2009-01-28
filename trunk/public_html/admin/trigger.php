@@ -40,6 +40,7 @@ flush();
 if (!empty($_POST['save'])) {
 	apc_store($_POST['name'],$_POST['value'],intval($_POST['for']));
 	print "Saved!";
+	print "<hr/>";
 } elseif (!empty($_POST['fetch'])) {
 	$v = apc_fetch($_POST['name']);
 	print "value = ";
@@ -47,7 +48,8 @@ if (!empty($_POST['save'])) {
 	print "<hr/>";
 } 
 
-
+$hostname=trim(`hostname`);
+print "Host = $hostname";
 ?>
 <form method="post">
 
