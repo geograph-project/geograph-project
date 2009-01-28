@@ -318,7 +318,8 @@ class GeographPage extends Smarty
 					$this->disable_caching = 1; //just incase app later changes it. 
 
 					$this->assign('extra_meta', '<script src="http://asset.userfly.com/users/14743/userfly.js" type="text/javascript"></script>');
-
+					
+					apc_delete($_SERVER['REQUEST_URI']);
 				}
 
 				if (($value = apc_fetch('irc.seen')) === FALSE) {
