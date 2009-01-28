@@ -37,24 +37,31 @@ $db = NewADOConnection($GLOBALS['DSN']);
 $smarty->display('_std_begin.tpl');
 flush();
 	
-if ($_POST) {
+if (!empty($_POST['save'])) {
 	apc_store($_POST['name'],$_POST['value'],intval($_POST['for']));
 	print "Saved!";
+} elseif (!empty($_POST['fetch'])) {
+	$v = apc_fetch($_POST['name']);
+	print "value = ";
+	var_dump($v);
+	print "<hr/>";
 } 
+
 
 ?>
 <form method="post">
 
 <h3>APC Set</h3>
 
-Name: <input type="text" name="name" value=""/><br/>
+Name: <input type="text" name="name" value=""/> <input type=submit name="fetch" value="fetch">
+<br/>
 
 Value: <input type="text" name="value" value="1"><br/>
 
 For: <input type="text" name="for" value="30" size=3> seconds<br/>
 
 
-<input type=submit>
+<input type=submit name="save" value="save">
 
 </form>
 
