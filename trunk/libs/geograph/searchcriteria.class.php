@@ -63,6 +63,7 @@ class SearchCriteria
 		'sort' => '@relevance DESC, @id DESC',
 		'impossible' => 0,
 		'compatible' => 1,
+		'compatible_order' => 1,
 		'no_legacy' => 0,
 		'filters' => array()
 	);
@@ -215,7 +216,7 @@ class SearchCriteria
 			switch ($this->orderby) {
 				case 'random':
 					$sql_order = ' crc32(concat("'.($this->crt_timestamp_ts).'",gi.gridimage_id)) ';
-					$this->sphinx['compatible'] = 0;
+					$this->sphinx['compatible_order'] = 0;
 					$this->sphinx['sort'] = "@random";
 					break;
 				case 'dist_sqd':
@@ -239,15 +240,15 @@ class SearchCriteria
 							$this->sphinx['sort'] = '@id';
 							break;
 						case 'x':
-							$this->sphinx['compatible'] = 0;
+							$this->sphinx['compatible_order'] = 0;
 							$this->sphinx['sort'] = 'wgs84_long';
 							break;
 						case 'y':
-							$this->sphinx['compatible'] = 0;
+							$this->sphinx['compatible_order'] = 0;
 							$this->sphinx['sort'] = 'wgs84_lat';
 							break;
 						case 'imagetaken':
-							$this->sphinx['compatible'] = 0;
+							$this->sphinx['compatible_order'] = 0;
 							$this->sphinx['sort'] = 'takendays';
 							break;
 						case 'realname':
@@ -264,9 +265,9 @@ class SearchCriteria
 					}
 			}
 			$sql_order = preg_replace('/^submitted/','gridimage_id',$sql_order);
-		} else {
+		} elseif (empty($this->sphinx['sort']) || $this->sphinx['sort'] != "@geodist ASC, @relevance DESC, @id DESC") {
 			//sphinx undefined is 'relevence' where mysql undefined is table order
-			$this->sphinx['compatible']=0;
+			$this->sphinx['compatible_order']=0;
 		}
 		if ($this->breakby) {
 			if (preg_match('/imagetaken_(year|month|decade)$/',$this->breakby) && strpos($sql_order,'imagetaken') === FALSE) {
@@ -299,15 +300,15 @@ class SearchCriteria
 					$sorder = '@id';
 					break;
 				case 'x':
-					$this->sphinx['compatible'] = 0;
+					$this->sphinx['compatible_order'] = 0;
 					$sorder = 'wgs84_long';
 					break;
 				case 'y':
-					$this->sphinx['compatible'] = 0;
+					$this->sphinx['compatible_order'] = 0;
 					$sorder = 'wgs84_lat';
 					break;
 				case 'imagetaken':
-					$this->sphinx['compatible'] = 0;
+					$this->sphinx['compatible_order'] = 0;
 					$sorder = 'takendays';
 					break;
 				case 'imageclass':
