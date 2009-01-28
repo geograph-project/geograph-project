@@ -73,7 +73,7 @@
 			<p>Please enter <a href="/search.php">another search</a>, or select <a href="/kml.php">common exports</a></p>
 		{/if}
 		
-		{if $engine->fullText}
+		{if $engine->fullText && !$engine->criteria->sphinx.compatible}
 			<br/><br/>
 			<div style="padding:2px;border:1px solid gray; font-size:0.7em;text-align:center">
 			This search is powered by the new <a href="/help/search_new">experimental Full-Text search index</a>, which in some ways is less precise than the legacy search, but often results in quicker and more relevent results. However at this time its not fully compatible with all KML exports, such options are curretly hidden.</div>
