@@ -5,10 +5,12 @@
 <div class="interestBox">
 <h2 style="margin-bottom:0">User Contributed Content</h2>
 Documents are assigned automatically to groups, this is still experimental! <small>[
-{if $v}
-<a href="?">Short</a>/<b>Long</b> 
+{if $v eq 2}
+<a href="?">Short</a>/<b>Long</b>/<a href="?v=3">Alternative</a>
+{elseif $v eq 3}
+<a href="?">Short</a>/<a href="?v=2">Long</a>/<b>Alternative</b>
 {else}
-<b>Short</b>/<a href="?v=2">Long</a> 
+<b>Short</b>/<a href="?v=2">Long</a>/<a href="?v=3">Alternative</a> 
 {/if} ]
 Version
 </small>

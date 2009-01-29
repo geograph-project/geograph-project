@@ -37,7 +37,7 @@ $mtime = strtotime($data['Update_time']);
 //can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
-$template = 'content_themes2.tpl';
+$template = 'content_themes.tpl';
 
 if (!empty($_GET['v'])) {
 	switch ($_GET['v']) {
@@ -48,10 +48,16 @@ if (!empty($_GET['v'])) {
 } else {
 	$source = 'carrot2';
 }
-$cacheid = $source;
+$cacheid = $source.'.'.$USER->registered.'.'.$CONF['forums'];
+
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+	$where  = '';
+	if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
+		$where .= " AND content.`source` != 'themed'";
+	}
+	
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll($sql = "
@@ -59,8 +65,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	from content_group
 		inner join content using (content_id)
 		left join user using (user_id)
-		
-	where content_group.`source` like '$source' and `type` = 'info'
+	where content_group.`source` like '$source' and `type` = 'info' $where
 	group by content_id,label
 	order by label = '(Other)',content_group.label,content_group.score desc,content_group.sort_order
 	");
@@ -70,8 +75,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	#exit;
 	
 	$smarty->assign_by_ref('list', $list);
-	if (!empty($_GET['v']) && $_GET['v']==2) {
-		$smarty->assign('v', 2);
+	if (!empty($_GET['v'])) {
+		$smarty->assign('v', intval($_GET['v']));
 	}
 }
 
