@@ -426,5 +426,8 @@ UPDATE `vote_log`,vote_final SET vote_log.final = 1 WHERE `vote_log`.vote_id = v
 
 
 
+ALTER TABLE  `queries_featured` ADD  `stickied` TINYINT NOT NULL ;
+
+
 
 
