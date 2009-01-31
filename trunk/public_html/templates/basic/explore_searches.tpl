@@ -24,9 +24,9 @@
 	added {$row.created|date_format:"%a, %e %b %Y"}
 	{if $is_mod}
 		{if $row.approved}
-			<a href="{$script_name}?i={$row.id}&amp;a=0">Unpprove</a>
+			<a href="{$script_name}?i={$row.id}&amp;a=0">Unapprove</a>
 		{else}
-			<a href="{$script_name}?i={$row.id}&amp;a=1">Approve</a>
+			<a href="{$script_name}?i={$row.id}&amp;a=1">Approve</a> | <a href="{$script_name}?i={$row.id}&amp;a=-1">Dismiss</a>
 		{/if}
 	{/if}
 	
