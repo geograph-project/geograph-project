@@ -19,7 +19,7 @@
 		<a title="{$row.image->title|escape:'html'} by {$row.image->realname} - click to view full size image" href="/photo/{$row.image->gridimage_id}" target="_top">{$row.image->getSquareThumbnail(60,60)}</a>
 		{/if}
 	</div>
-	<b><a href="/results/{$row.id}" target="_top">{$row.searchdesc|escape:'html'}</a></b><br/>
+	<b><a href="/results/{$row.id}" target="_top">{$row.searchdesc|escape:'html'}</a></b> {if $row.stickied}<sup style="color:red">* popular *</sup>{/if}<br/>
 	<small><small style="color:gray">{if $row.count}with about {$row.count|thousends} results.{/if} 
 	added {$row.created|date_format:"%a, %e %b %Y"}
 	{if $is_mod}

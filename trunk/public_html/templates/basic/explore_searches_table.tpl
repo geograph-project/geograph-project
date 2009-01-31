@@ -24,7 +24,7 @@
 
 {foreach from=$queries item=row}
 <tr{if !$row.approved} style="color:gray;text-decoration:line-through"{/if}>
-	<td><a href="/results/{$row.id}">images{$row.searchdesc|escape:'html'}</a> {if $row.count}[{$row.count|thousends}]{/if}{if $row.comment}<br/><small><small>{$row.comment|escape:'html'}</small></small>{/if}</td>
+	<td><a href="/results/{$row.id}">images{$row.searchdesc|escape:'html'}</a> {if $row.count}[{$row.count|thousends}]{/if} {if $row.stickied}<sup style="color:red">* popular *</sup>{/if}{if $row.comment}<br/><small><small>{$row.comment|escape:'html'}</small></small>{/if}</td>
 	<td sortvalue="{$row.created}" style="font-size:0.8em">{$row.created|date_format:"%a, %e %b %Y"}</td>
 	{if $is_mod}
 	<td style="font-size:0.6em;">
