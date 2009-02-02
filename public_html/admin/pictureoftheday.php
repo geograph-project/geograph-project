@@ -191,7 +191,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 		}
 	}
-	
+	ksort($coming_up);
 	$smarty->assign_by_ref("coming_up", $coming_up);
 	$smarty->assign_by_ref("pending", $pending);
 	$smarty->assign_by_ref("pendingcount", count($pending));
