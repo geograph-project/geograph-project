@@ -159,14 +159,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	
 	//count how many are in the kitty
-	$pending=$db->GetCol("select gridimage_id from gridimage_daily where showday is null");
+	$pending=$db->GetCol("select gridimage_id from gridimage_daily where showday is null and (vote_baysian > 3)");
 	
 	//get the next 4 weeks of assignments
 	$days=28;
 	$coming_up=$db->GetAssoc("select showday,gridimage_id,1 as assigned from gridimage_daily where to_days(showday)-to_days(now()) between 0 and $days");
 	
 	//get ordered list of pool images
-	$pool=$db->GetCol("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null order by moderation_status+0 desc,crc32(gridimage_id) limit $days");
+	$pool=$db->GetCol("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null and (vote_baysian > 3) order by moderation_status+0 desc,crc32(gridimage_id) limit $days");
 	
 	
 	//fill in blanks
