@@ -8,9 +8,11 @@
 another one to the emergency kitty below - these are used whenever a new day dawns
 without a particular image assigned.</p>
 
-<p>NOTE: the image will be cropped to landscape format - so for portrait format photos check that they still work when cropped to the central area.</p>
 
 <form method="post" action="pictureoftheday.php">
+<div class="interestBox">
+
+<p>NOTE: the image will be cropped to landscape format - so for portrait format photos check that they still work when cropped to the central area.</p>
 
 <div>
 <label for="addimage">Image number</label>
@@ -23,6 +25,7 @@ without a particular image assigned.</p>
 <input type="text" name="when" size="16" id="when" value="{$when}"/>
 
 <input type="submit" name="add" value="Add"/>
+</div>
 
 {if $error}
 <div style="border:1px solid red;background:#ffeeee;padding:5px;margin-top:5px;">{$error}</div>
@@ -45,10 +48,14 @@ with any <a href="http://www.gnu.org/software/tar/manual/html_node/tar_109.html"
 
 </div>
 
+</div>
 
 </form>
 
 <h3>Coming up... <small>(<a href="/search.php?i=2136521">Preview</a> - don't disclose this url)</small></h3>
+
+    <p>Note: photos might only show on this list once they have been rated, so please check the preview link above and rate some images!</p>
+
 
 <table>
 {foreach from=$coming_up key=date item=info}
