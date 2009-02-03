@@ -33,7 +33,7 @@
 require_once("geograph/eventhandler.class.php");
 
 //filename of class file should correspond to class name, e.g.  myhandler.class.php
-class RebuildCategoryStats extends EventHandler
+class RebuildVoteStats extends EventHandler
 {
 	function processEvent(&$event)
 	{
