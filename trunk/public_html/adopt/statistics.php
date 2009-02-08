@@ -50,6 +50,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	
 	$smarty->assign_by_ref('stats', $stats);
+	
+	
+	$stats2= $db->GetRow("select count(distinct gridsquare_id) as squares,count(distinct hectad_assignment_id) as hectads from gridsquare_assignment");
+	
+	$smarty->assign_by_ref('squares', $stats2);
 }
 
 

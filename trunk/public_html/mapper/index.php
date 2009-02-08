@@ -104,8 +104,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	list($e,$n) = $conv->internal_to_national($mosaic->map_x+$mapw,$mosaic->map_y+$mapw,1);	
 	
-	$smarty->assign('e',$e);
-	$smarty->assign('n',$n);
+	$smarty->assign('e',$e-500); //remove centering
+ 	$smarty->assign('n',$n-500);
 	
 	switch($mosaic->pixels_per_km) {
 		case  1: $z = 0; break;//there isnt a direct equiv
