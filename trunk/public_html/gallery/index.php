@@ -48,27 +48,15 @@ if (!$smarty->is_cached($template, $cacheid))
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll("
-	select Gt.topic_id,topic_title,topic_poster,topic_poster_name,topic_time,topic_views,posts_count,count(*) as images_count,
-	(topic_last_post_id > last_post_id) as isnew,last_post_id
-	from geobb_topics Gt
+	select topic_id,topic_title,topic_poster,topic_poster_name,topic_time,topic_views,posts_count,count(*) as images_count
+	from geobb_topics
 	left join gridimage_post using (topic_id)
-	
-	left join geobb_lastviewed Tl on (Gt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})
-	
 	where forum_id = 11
 	group by topic_id
 	order by topic_last_post_id desc");
 	
 	foreach ($list as $i => $row) {
 		$list[$i]['url'] = trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode(preg_replace('/&#\d+;?/','_',$row['topic_title'])))),'_').'_'.$row['topic_id'];
-		
-		var_dump($row);
-		 
-		if ($row['isnew']) {
-			$list[$i]['updated'] = "topic_updated.gif";
-		} elseif (is_null($row['isnew'])) {
-			$list[$i]['updated'] = "topic_new.gif";
-		}
 	}
 	
 	$smarty->assign_by_ref('list', $list);

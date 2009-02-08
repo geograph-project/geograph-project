@@ -85,41 +85,6 @@ if (isset($_REQUEST['edit']))
 	$profile->md5_email = md5(strtolower($profile->email));
 	
 	$smarty->assign_by_ref('profile', $profile);	
-} 
-elseif (isset($_REQUEST['notifications']))
-{
-	//must be logged in to proceed with an edit
-	$USER->login();
-
-	$template='profile_notifications.tpl';
-
-	//save changes?
-	if (isset($_POST['savechanges']))
-	{
-		
-	} 
-	else
-	{
-		$profile=new GeographUser($USER->user_id);
-		
-		$db = NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');  
-
-		$subs = $db->getAll("select topic_id,topic_title from geobb_send_mails Ts inner join geobb_topics Tt using (topic_id) where user_id = {$USER->user_id}");		
-		$smarty->assign_by_ref("subs",$subs);
-		$smarty->assign("sub_count",count($subs));
-		
-		$arr = array('general','test');
-		
-		$n = array();
-		foreach($arr as $idx => $key) {
-			$n[$key] = 'checked="checked"';
-		}
-		
-		$smarty->assign_by_ref("notification",$n);
-		
-	}
-
 }
 
 

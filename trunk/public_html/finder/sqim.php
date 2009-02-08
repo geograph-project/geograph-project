@@ -53,10 +53,6 @@ if (!empty($_GET['q'])) {
 		if ($offset < (1000-$pgsize) ) { 
 			$sphinx->processQuery();
 		
-			$cl = $sphinx->_getClient();
-			
-			$cl->SetRankingMode(SPH_RANK_WORDCOUNT);
-			
 			$ids = $sphinx->returnIds($pg,'sqim');	
 			
 			

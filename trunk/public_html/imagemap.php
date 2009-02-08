@@ -29,7 +29,6 @@ require_once('geograph/mapmosaic.class.php');
 require_once('geograph/image.inc.php');
 init_session();
 
-set_time_limit(5000); 
 
 
 	$map=new GeographMap;
@@ -57,22 +56,6 @@ set_time_limit(5000);
 			unset($CONF['enable_newmap']);
 			
 			$map->type_or_user = -1;
-		} elseif (isset($_GET['groups'])) {
-			$map->setOrigin(0,-10);
-			$map->setImageSize(900,1300);
-			$map->setScale(1);
-			
-			unset($CONF['enable_newmap']);
-			
-			$map->type_or_user = -3;
-		} elseif (isset($_GET['fixes'])) {
-			$map->setOrigin(0,-10);
-			$map->setImageSize(900,1300);
-			$map->setScale(1);
-			
-			unset($CONF['enable_newmap']);
-			
-			$map->type_or_user = -4;
 		} elseif (isset($_GET['number'])) {
 			$map->setOrigin(0,-10);
 			$map->setImageSize(900,1300);
@@ -142,8 +125,8 @@ set_time_limit(5000);
 				
 				if (!file_exists($root.$target)) {
 					$map->_renderMap();	
-					print "{$map->mapDateStart} DONE<BR>";flush();
 				}
+				print "{$map->mapDateStart} DONE<BR>";flush();
 			}
 			exit;
 		}

@@ -142,50 +142,6 @@ if (isset($_POST['msg']))
 		
 	}
 	
-	if ($ok) 
-	{
-		###############################
-	
-	$_SERVER['HTTP_HOST'] = 'www.geograph.org.uk';
-	
-		require_once ( "3rdparty/class.microakismet.inc.php" );
-		$akismet = new MicroAkismet("845d0c6b4d4d","http://{$_SERVER['HTTP_HOST']}{$_SERVER['PHP_SELF']}","geograph.org.uk/1.0" );
-
-		// The array of data we need
-		$vars = array();
-
-		// Add the contents of the $_SERVER array, to help Akismet out
-		foreach ($_SERVER as $key => $val) { 
-			if (preg_match('/^(HTTP|REMOTE|REQUEST)/',$key) && $key != 'HTTP_COOKIE') {
-				$vars[$key] = $val;
-			}
-		}
-
-		// Mandatory fields of information
-		$vars["user_ip"] = $ip;
-		$vars["user_agent"] = $_SERVER["HTTP_USER_AGENT"];
-
-		// The body of the message to check, the name of the person who
-		// posted it, and their email address
-		$vars["comment_content"] = $msg;
-		$vars["comment_author"] = $from_name;
-		$vars["comment_author_email"]	= $from_email;
-		$vars["comment_type"] = 'form';
-print "<pre>";
-print_r($vars);
-print "</pre>";
-		// Check if it's spam
-		if ($akismet->check($vars)) {
-			die("The message was spam!");
-		} else {
-			// Do whatever we do if the message was OK
-		}
-		
-		
-		###############################
-		
-	}
-	
 	//still ok?
 	if ($ok)
 	{
@@ -257,7 +213,7 @@ elseif (isset($_POST['init']))
 	$msg=trim(stripslashes($_POST['init']));
 	$smarty->assign_by_ref('msg', $msg);
 }
-elseif (!empty($_GET['image']))
+elseif (isset($_GET['image']))
 {
 	//initialise message
 	require_once('geograph/gridsquare.class.php');
