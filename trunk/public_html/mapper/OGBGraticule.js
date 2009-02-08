@@ -1,8 +1,12 @@
+// File based on that from Bill Chadwick, adapted to use GeoTools. 
+////////////////////////////////////////////
+
 // This shows a lat/lon graticule on the map. Interval is automatic
 // Bill Chadwick, 
 
-function OGBGraticule() {
-}
+function OGBGraticule() {}
+
+
 OGBGraticule.prototype = new GOverlay();
 
 OGBGraticule.prototype.initialize = function(map) {
@@ -70,11 +74,11 @@ OGBGraticule.prototype.redraw = function(force) {
   //grid interval in km   
 
   var gr = this.enclosingOsgbRect(l,b,t,r);
-  
-  var west = gr.bl.east / 1000.0;
-  var south = gr.bl.north / 1000.0;
-  var east = gr.tr.east / 1000.0;
-  var north = gr.tr.north / 1000.0;
+
+  var west = gr.bl.eastings / 1000.0;
+  var south = gr.bl.northings / 1000.0;
+  var east = gr.tr.eastings / 1000.0;
+  var north = gr.tr.northings / 1000.0;
   
   var width = east-west;
   var height = north-south; 
@@ -173,7 +177,7 @@ OGBGraticule.prototype.redraw = function(force) {
 		 dv.style.fontFamily='Arial';
 		 dv.style.fontSize='x-small';
 		 dv.style.cursor = "help";
-		 dv.title = NE2NGR( (Math.floor(west+0.04)+d+d+0.4)*1000.0,(Math.floor(s+0.04)+0.4)*1000.0 ).substr(0,2) + " (" + Math.floor(s+0.04).toString() + " km North)";
+		 dv.title = this.NE2NGR( (Math.floor(west+0.04)+d+d+0.4)*1000.0,(Math.floor(s+0.04)+0.4)*1000.0 ).substr(0,2) + " (" + Math.floor(s+0.04).toString() + " km North)";
 		 var km = (Math.round(s)%100).toString();
 		 if (km.length < 2)
 			km = "0" + km;
@@ -195,6 +199,7 @@ OGBGraticule.prototype.redraw = function(force) {
 		 j++;
 		 }
 		 catch(ex){
+		 	Glog.write(ex);
 		 }
 
 
@@ -245,7 +250,7 @@ OGBGraticule.prototype.redraw = function(force) {
 			dv.style.fontFamily='Arial';
 			dv.style.fontSize='x-small';
 		    dv.style.cursor = "help";
-		    dv.title = NE2NGR( (Math.floor(e+0.04)+0.4)*1000.0,(Math.floor(south+0.04)+d+d+0.4)*1000.0 ).substr(0,2) + " (" + Math.floor(e+0.04).toString() + " km East)";
+		    dv.title = this.NE2NGR( (Math.floor(e+0.04)+0.4)*1000.0,(Math.floor(south+0.04)+d+d+0.4)*1000.0 ).substr(0,2) + " (" + Math.floor(e+0.04).toString() + " km East)";
 			var km = (Math.round(e)%100).toString();
 			if (km.length < 2)
 				km = "0" + km;
@@ -268,6 +273,7 @@ OGBGraticule.prototype.redraw = function(force) {
 				}
 			}
 			catch(ex){
+				Glog.write(ex);
 			}
 			
 
@@ -280,36 +286,74 @@ OGBGraticule.prototype.redraw = function(force) {
 
 //from OS east, north in KM to WGS84 Lat/Lon in a GLatLng
 OGBGraticule.prototype.GLatLngFromEN = function(eastKm,northKm) {
-		 var ogb = NEtoLL(eastKm*1000.0,northKm*1000.0);
-		 var wg84 = OGBToWGS84(ogb.lat,ogb.lon,0);
-		 return new GLatLng(wg84.lat,wg84.lon);
+	 var ogb=new GT_OSGB();
+	 ogb.setGridCoordinates(eastKm*1000.0,northKm*1000.0);
+	 var wg84 = ogb.getWGS84();
+	 GLog.write(wg84.latitude);
+	 return new GLatLng(wg84.latitude,wg84.longitude);
+}
+
+OGBGraticule.prototype.WGS84ToOGB = function(WGlat, WGlon, height) {
+	 var wgs84=new GT_WGS84();
+	 wgs84.setDegrees(52.92281, -5.39794);
+	 return wgs84.getOSGB();
 }
 
 //return rect in OSGB N/E coords that encloses the given wgs84 rect
 OGBGraticule.prototype.enclosingOsgbRect = function(WGleft,WGbottom,WGtop,WGright){
 
-	var blOGB = WGS84ToOGB(WGbottom,WGleft,0);
-	var trOGB = WGS84ToOGB(WGtop,WGright,0);
-	var brOGB = WGS84ToOGB(WGbottom,WGright,0);
-	var tlOGB = WGS84ToOGB(WGtop,WGleft,0);
+	var blOGB = this.WGS84ToOGB(WGbottom,WGleft,0);
+	var trOGB = this.WGS84ToOGB(WGtop,WGright,0);
+	var brOGB = this.WGS84ToOGB(WGbottom,WGright,0);
+	var tlOGB = this.WGS84ToOGB(WGtop,WGleft,0);
+		
+	var e = Math.min(blOGB.eastings,tlOGB.eastings); 
+	var w = Math.max(brOGB.eastings,trOGB.eastings); 
+	var s = Math.min(blOGB.northings,brOGB.northings); 
+	var n = Math.max(trOGB.northings,tlOGB.northings); 
 	
-	var blEN = LLtoNE(blOGB.lat,blOGB.lon);
-	var trEN = LLtoNE(trOGB.lat,trOGB.lon);
-	var brEN = LLtoNE(brOGB.lat,brOGB.lon);
-	var tlEN = LLtoNE(tlOGB.lat,tlOGB.lon);
+	var ogb1=new GT_OSGB();
+	ogb1.setGridCoordinates(e,s);
 	
-	var e = Math.min(blEN.east,tlEN.east); 
-	var w = Math.max(brEN.east,trEN.east); 
-	var s = Math.min(blEN.north,brEN.north); 
-	var n = Math.max(trEN.north,tlEN.north); 
+	var ogb2=new GT_OSGB();
+	ogb2.setGridCoordinates(w,n);
 	
-	return new OGBRect(new OGBNorthEast(e,s),new OGBNorthEast(w,n));
+	return new OGBRect(ogb1,ogb2);
 }
   
+function OGBRect(bottomLeft, topRight)
+{
+	this.bl = bottomLeft;
+	this.tr = topRight;
+}
 
 
 
 
 
 
+OGBGraticule.prototype.NE2NGR = function( east,  north)
+{
+var eX = east / 500000;
+var nX = north / 500000;
+var tmp = Math.floor(eX) - 5.0 * Math.floor(nX) + 17.0; 
+nX = 5 * (nX - Math.floor(nX));
+eX = 20 - 5.0 * Math.floor(nX) + Math.floor(5.0 * (eX - Math.floor(eX)));
+if (eX > 7.5) eX = eX + 1; // I is not used
+if (tmp > 7.5) tmp = tmp + 1; // I is not used
 
+var eing = east - (Math.floor(east / 100000)*100000);
+var ning = north - (Math.floor(north / 100000)*100000);
+var estr = eing.toString();
+var nstr = ning.toString();
+while(estr.length < 5)
+	estr = "0" + estr;
+while(nstr.length < 5)
+	nstr = "0" + nstr;
+
+var ngr = String.fromCharCode(tmp + 65) + 
+          String.fromCharCode(eX + 65) + 
+          " " + estr + " " + nstr;
+
+return ngr;
+}

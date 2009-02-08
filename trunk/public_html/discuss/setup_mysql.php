@@ -34,6 +34,11 @@ return $xtr;
 }
 
 function db_simpleSelect($sus,$table='',$fields='',$uniF='',$uniC='',$uniV='',$orderby='',$limit='',$uniF2='',$uniC2='',$uniV2='',$and2=true,$groupBy=''){
+static $file;
+if (!$file) {
+	$file = fopen("mysql.log",'a');
+	fwrite($file,"--------------------\n\n");
+}
 if(!$sus){
 $where='';
 if($uniF!='') $where=' where '.$uniF.$uniC."'".$uniV."'";
@@ -47,7 +52,8 @@ if($orderby!='') $orderby='order by '.$orderby;
 if($groupBy!='') $groupBy='group by '.$groupBy;
 $xtr=(!isset($GLOBALS['xtr'])?'':$GLOBALS['xtr']);
 $sql='SELECT '.$fields.' FROM '.$table.$where.' '.$xtr.' '.$groupBy.' '.$orderby.' '.$limit;
-
+#print $sql;
+fwrite($file,"$sql\n\n");
 $result=mysql_query($sql,$GLOBALS['minibb_link']);
 if($result) {
 $GLOBALS['countRes']=mysql_num_rows($result);

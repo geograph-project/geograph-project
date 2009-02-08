@@ -37,7 +37,7 @@
 	{/foreach}
 	<br style="clear:left;"/>
 	{if $item.resultCount > 5}
-	<a href="/search.php?searchtext={$item.grid_reference}+{$q|escape:'url'}&amp;do=1">View all {$item.resultCount} results</a>
+	<a href="/search.php?gridref={$item.grid_reference}&amp;searchtext={$q|escape:'url'}&amp;do=1&amp;distance=1">View all {$item.resultCount} results</a>
 	{/if}
 	
 	
