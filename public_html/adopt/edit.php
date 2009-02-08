@@ -22,6 +22,7 @@
  */
 
 require_once('geograph/global.inc.php');
+require_once('geograph/mapmosaic.class.php');
 init_session();
 
 
@@ -168,6 +169,11 @@ if (isset($_GET['gsid'])) {
 	$smarty->assign_by_ref('xs',$xs);
 
 	$smarty->assign('stats',$stats);
+	
+	//get a token to show a suroudding geograph map
+	$mosaic=new GeographMapMosaic;
+	$smarty->assign('map_token', $mosaic->getGridSquareToken($square));
+	$smarty->assign_by_ref('square',$square);
 
 } else {
 	$template="static_404.tpl";
