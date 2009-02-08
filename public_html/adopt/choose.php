@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: view_direction_filler.php 2978 2007-01-17 21:49:56Z barry $
+ * $Id$
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
@@ -40,8 +40,7 @@ if (isset($_POST['submit']) && !empty($_POST['hectads'])) {
 	$hectads = $db->getAssoc("
 	SELECT hectad,hectad_assignment_id
 	FROM hectad_assignment
-	WHERE user_id = {$USER->user_id}
-	ORDER BY sort_order");
+	WHERE user_id = {$USER->user_id}");
 
 
 	$list = explode("\n",str_replace("\r",'',$_POST['hectads']));
@@ -51,7 +50,6 @@ if (isset($_POST['submit']) && !empty($_POST['hectads'])) {
 		if ($hectad) {
 			if (isset($hectads[$hectad]) && $id = $hectads[$hectad]) {
 				$updates = array();
-				$updates['status'] = 'new';
 				$updates['sort_order'] = $sort_order;
 				
 				$db->Execute('UPDATE hectad_assignment SET `'.implode('` = ?,`',array_keys($updates)).'` = ? WHERE hectad_assignment_id = '.$id,array_values($updates));
@@ -82,7 +80,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 $hectads = $db->getAll("
 SELECT *
 FROM hectad_assignment
-WHERE user_id = {$USER->user_id} AND status = 'new'
+WHERE user_id = {$USER->user_id} AND status IN ('new','offered')
 ORDER BY sort_order");
 $smarty->assign_by_ref('hectads',$hectads);
 
