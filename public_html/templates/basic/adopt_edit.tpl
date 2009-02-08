@@ -1,8 +1,6 @@
 {assign var="page_title" value="Hectad Adoptions"}
 {include file="_std_begin.tpl"}
 
-<h2>Hectad Adoptions </h2>
- 
 {literal}<style type="text/css">
         .black_overlay{
             display: none;
@@ -101,16 +99,16 @@ function useimage(id) {
 </script>
 
 {/literal}
+{dynamic}
 
+<h2><a href="/adopt/">Hectad Adoptions</a> - Editing {$hectad}</h2>
+ 
 <div id="light" class="white_content">
-
 <iframe src="about:blank" id="iframe" width="100%" height="95%"></iframe>
-
 <div style="text-align:right;"><a href="javascript:void(0)" onclick="document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'">Close</a></div>
-
 </div><div id="fade" class="black_overlay"></div>
 
-{dynamic}
+
 <table style="background-color:white;font-family:courier;font-size:0.7em" border=0 cellspacing=0 cellpadding=1> <tbody>
 
 {foreach from=$ys name=y item=y}
@@ -132,12 +130,12 @@ function useimage(id) {
 {if $stats}
 	<p>&nbsp;</p>
 	<div class="interestBox">
-	<p>To help prevent contributor bias here is some statistics of the contributors on last page load (<a href="?hectad={$hectad}">reload</a>)</p>
-	<ol>
-	{foreach from=$stats name=x key=n item=c}
-		<li value="{$c}">{$n|escape:'html'}</li>
-	{/foreach}
-	</ol>
+		<p>To help prevent contributor bias here is some statistics of the contributors on last page load (<a href="?hectad={$hectad}">reload</a>)</p>
+		<ol>
+		{foreach from=$stats name=x key=n item=c}
+			<li value="{$c}">{$n|escape:'html'}</li>
+		{/foreach}
+		</ol>
 	</div>
 {/if}
 

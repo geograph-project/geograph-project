@@ -32,7 +32,7 @@ $template='adopt_statistics.tpl';
 $cacheid='';
 
 $smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*6; //6hour cache
+$smarty->cache_lifetime = 600; //10min cache
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -42,11 +42,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	#$db->debug = true;
 
 
-	$stats= $db->GetRow("select 
-			count(*) as new_count, 
-			count(distinct user_id) as new_users, 
-			count(distinct hectad) as new_hectads 
-		from hectad_assignment where `status` = 'new'");
+	$stats= $db->GetAssoc("select status,
+			count(*) as count, 
+			count(distinct user_id) as users, 
+			count(distinct hectad) as hectads 
+		from hectad_assignment group by status");
 	
 	
 	$smarty->assign_by_ref('stats', $stats);
