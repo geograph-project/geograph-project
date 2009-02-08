@@ -39,7 +39,7 @@ $db=NewADOConnection($GLOBALS['DSN']);
 if (!$db) die('Database connection failed');  
 $smarty = new GeographPage;
 
-$all = $db->getAll("SELECT ha.*,u.realname,expiry > now() as indate
+$all = $db->getAll("SELECT ha.*,u.realname,u.email,expiry > now() as indate
 FROM hectad_assignment ha 
 INNER JOIN user u USING (user_id) 
 WHERE status IN ('new','offered') 
@@ -64,14 +64,14 @@ foreach ($all as $id => $row) {
 			$headers = array();
 			$headers[] = "From: Geograph <noreply@geograph.org.uk>";
 
-
 			print " email sent";
-			//@mail("$to_name <$to_email>", $subject, $body, implode("\n",$headers));
-			
+
+			@mail("{$row['realname']} <{$row['email']}>", $subject, $body, implode("\n",$headers));
+
 			@$count[$row['user_id']]++;
 		}
 		print "<BR>";
-		
+
 	} elseif ($row['status'] == 'new') {
 		print "{$row['hectad']} to {$row['user_id']}/{$row['realname']} has already gone";
 		$d = $done[$row['hectad']];
