@@ -31,8 +31,8 @@ set_time_limit(5000);
 if (!isLocalIPAddress())
 {
 	init_session();
-        $smarty = new GeographPage;
-        $USER->mustHavePerm("admin");
+	$smarty = new GeographPage;
+	$USER->mustHavePerm("admin");
 }
 
 $db=NewADOConnection($GLOBALS['DSN']);
@@ -42,7 +42,7 @@ $smarty = new GeographPage;
 $all = $db->getAll("SELECT ha.*,u.realname,u.email,expiry > now() as indate
 FROM hectad_assignment ha 
 INNER JOIN user u USING (user_id) 
-WHERE status IN ('new','offered') 
+WHERE status != 'deleted' 
 ORDER BY status+0 desc, sort_order,created"); //todo more sorting!
 
 $count = $done = array();
@@ -80,7 +80,7 @@ foreach ($all as $id => $row) {
 		}
 		print "<BR>";
 	}
-	if ($row['status'] == 'new' || ($row['status'] == 'offered' && $row['indate']) ) {
+	if ($row['status'] == 'new' || ($row['status'] == 'offered' && $row['indate']) || $row['status'] == 'accepted') {
 		$done[$row['hectad']] = $row;
 	}
 }
