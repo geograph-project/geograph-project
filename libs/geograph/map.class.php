@@ -848,14 +848,6 @@ class GeographMap
 			$sql="select x,y,gridsquare_id,has_geographs from gridsquare where 
 				CONTAINS( GeomFromText($rectangle),	point_xy)
 				and imagecount>$number";
-			$sql="select x,y,gs.gridsquare_id,count(*) as has_geographs
-				from 
-				gridsquare2 gs 
-				inner join gridimage2 gi using(gridsquare_id)
-				where 
-				1
-				group by gi.gridsquare_id ";
-		
 		}
 
 		$recordSet = &$db->Execute($sql);
@@ -1128,13 +1120,6 @@ class GeographMap
 			where CONTAINS( GeomFromText($rectangle),	point_xy) and
 			submitted < '{$this->mapDateStart}'
 			group by gi.gridsquare_id ";
-		$sql="select x,y,gs.gridsquare_id,count(*) as imagecount
-			from 
-			gridsquare2 gs 
-			inner join gridimage2 gi using(gridsquare_id)
-			where 
-			submitted < '{$this->mapDateStart}'
-			group by gi.gridsquare_id ";
 		} else {
 		$sql="select x,y,gridsquare_id,imagecount from gridsquare where 
 			CONTAINS( GeomFromText($rectangle),	point_xy)
@@ -1281,18 +1266,11 @@ class GeographMap
 				group by gi.gridsquare_id ";
 		
 		} else {
-			$sql="select x,y,sum(submitted > '{$this->mapDateCrit}')
+			$sql="select x,y,sum(submitted > '$mapDateCrit')
 				from 
 				gridsquare gs 
 				inner join gridimage gi using(gridsquare_id)
 				where CONTAINS( GeomFromText($rectangle),	point_xy) and
-				submitted < '{$this->mapDateStart}'
-				group by gi.gridsquare_id ";
-			$sql="select x,y,sum(submitted > '{$this->mapDateCrit}')
-				from 
-				gridsquare2 gs 
-				inner join gridimage2 gi using(gridsquare_id)
-				where
 				submitted < '{$this->mapDateStart}'
 				group by gi.gridsquare_id ";
 		}
