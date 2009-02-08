@@ -66,7 +66,7 @@ foreach ($all as $id => $row) {
 
 			print " email sent";
 
-			@mail("{$row['realname']} <{$row['email']}>", $subject, $body, implode("\n",$headers));
+			@mail("{$row['realname']} <{$row['email']}>", $subject, str_replace("\r",'',$body), implode("\n",$headers));
 
 			@$count[$row['user_id']]++;
 		}

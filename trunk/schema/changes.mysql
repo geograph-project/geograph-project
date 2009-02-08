@@ -438,9 +438,20 @@ ALTER TABLE  `gridimage_daily` ADD  `vote_baysian` FLOAT NOT NULL ;
 
 ALTER TABLE  `hectad_assignment` ADD  `expiry` DATETIME NOT NULL AFTER  `updated` ;
 
-ALTER TABLE  `hectad_assignment` CHANGE  `status`  `status` ENUM(  'deleted',  'new',  'offered',  'accepted' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'new'
+ALTER TABLE  `hectad_assignment` CHANGE  `status`  `status` ENUM(  'deleted',  'new',  'offered',  'accepted' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'new';
+
+ALTER TABLE  `hectad_assignment` DROP INDEX  `user_id`;
 
 ALTER IGNORE TABLE  `hectad_assignment` ADD UNIQUE (
 `user_id` ,
 `hectad`
 );
+
+
+CREATE TABLE `gridsquare_assignment` (
+  `hectad_assignment_id` int(10) unsigned NOT NULL,
+  `gridsquare_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`hectad_assignment_id`,`gridsquare_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
