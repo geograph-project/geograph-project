@@ -1,5 +1,6 @@
 {assign var="page_title" value="Hectad Adoptions"}
 {include file="_std_begin.tpl"}
+{dynamic}
 
 {literal}<style type="text/css">
         .black_overlay{
@@ -99,7 +100,7 @@ function useimage(id) {
 </script>
 
 {/literal}
-{dynamic}
+
 
 <h2><a href="/adopt/">Hectad Adoptions</a> - Editing {$hectad}</h2>
  

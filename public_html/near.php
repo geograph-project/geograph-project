@@ -132,10 +132,10 @@ if ($grid_given)
 		if ($square->reference_index == 1) {
 			$places[] = $square->findNearestPlace(75000,'OS');
 			$places[] = $square->findNearestPlace(75000,'OS250');
-			$places[] = $square->findNearestPlace(75000,'hist');
-			$places[] = $square->findNearestPlace(75000,'towns');
+		#	$places[] = $square->findNearestPlace(75000,'hist');
+		#	$places[] = $square->findNearestPlace(75000,'towns');
 		}
-		$places[] = $square->findNearestPlace(75000,'geonames');
+		#$places[] = $square->findNearestPlace(75000,'geonames');
 		
 		
 		$smarty->assign_by_ref('places', $places);
