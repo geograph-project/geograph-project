@@ -33,8 +33,6 @@ if (isset($_GET['map']))
 	require_once('geograph/map.class.php');
 	require_once('geograph/mapmosaic.class.php');
 	require_once('geograph/gridimage.class.php');
-
-	require_once('geograph/image.inc.php');
 					
 	//render and return a map with token $_GET['map'];
 	$map=new GeographMap;

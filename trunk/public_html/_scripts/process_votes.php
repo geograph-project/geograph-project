@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: process_events.php 3442 2007-06-18 23:05:22Z barry $
+ * $Id$
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2008 Barry Hunter (geo@barryhunter.co.uk)
@@ -83,6 +83,8 @@ foreach ($types as $type => $avg) {
 $db->Execute("ALTER TABLE vote_stat ENABLE KEYS");
 
 $db->Execute("UNLOCK TABLES");
+
+		$db->Execute("UPDATE gridimage_daily,vote_stat SET vote_baysian = baysian WHERE vote_stat.id = gridimage_id AND type = 'i2136521'");
 
 print "<hr/>done";
 ?>

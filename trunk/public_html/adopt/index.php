@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: faq.php 15 2005-02-16 12:23:35Z lordelph $
+ * $Id$
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -28,6 +28,35 @@ init_session();
 
 
 $smarty = new GeographPage;
+
+if ($USER->user_id) {
+	$db = NewADOConnection($GLOBALS['DSN']);
+
+	if (isset($_GET['accept'])) {
+		$hectad = strtoupper(preg_replace('/[^\w]/','',$_GET['accept']));
+		
+		if($db->Execute("
+			UPDATE hectad_assignment
+			SET status = 'accepted',expiry = DATE_ADD(NOW(),INTERVAL 1 YEAR)
+			WHERE user_id = {$USER->user_id} AND status IN ('offered','accepted')
+			AND hectad = '$hectad'")) {
+				
+			$smarty->assign('message','Offer Accepted for '.$hectad);
+		}
+		
+	}
+
+
+
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+	$hectads = $db->getAll("
+	SELECT *,expiry > now() as indate
+	FROM hectad_assignment
+	WHERE user_id = {$USER->user_id} AND status IN ('offered','accepted')
+	ORDER BY sort_order");
+	$smarty->assign_by_ref('hectads',$hectads);
+}
+
 $smarty->display('adopt.tpl');
 
 	

@@ -431,3 +431,16 @@ ALTER TABLE  `queries_featured` ADD  `stickied` TINYINT NOT NULL ;
 
 
 
+
+ALTER TABLE  `gridimage_daily` ADD  `vote_baysian` FLOAT NOT NULL ;
+
+
+
+ALTER TABLE  `hectad_assignment` ADD  `expiry` DATETIME NOT NULL AFTER  `updated` ;
+
+ALTER TABLE  `hectad_assignment` CHANGE  `status`  `status` ENUM(  'deleted',  'new',  'offered',  'accepted' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'new'
+
+ALTER IGNORE TABLE  `hectad_assignment` ADD UNIQUE (
+`user_id` ,
+`hectad`
+);
