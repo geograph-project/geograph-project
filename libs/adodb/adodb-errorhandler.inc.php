@@ -74,6 +74,11 @@ function ADODB_Error_Handler($dbms, $fn, $errno, $errmsg, $p1, $p2, &$thisConnec
 
 
 	//print "<p>$s</p>";
+	
+	print "<pre>";
+	debug_print_backtrace();
+	print "</pre>";
+	
 	trigger_error($s,ADODB_ERROR_HANDLER_TYPE); 
 }
 ?>

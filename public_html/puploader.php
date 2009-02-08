@@ -131,7 +131,7 @@ if (isset($_GET['success'])) {
 	print "http://{$_SERVER['HTTP_HOST']}/puploader.php?success&t=$t";
 	exit;
 } elseif (isset($_REQUEST['inner'])) {
-	#print_r($_SERVER);
+	#print_r($_REQUEST);
 	$template='puploader_inner.tpl';
 	$step = 1;
 	

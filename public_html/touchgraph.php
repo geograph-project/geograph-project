@@ -26,16 +26,6 @@ require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
 init_session();
 
-if (empty($_GET)) {
-	$template = 'touchgraph.tpl';
-	
-	$smarty = new GeographPage;
-	$smarty->display($template);
-
-	exit;
-} 
-
-$d=(isset($_REQUEST['d']))?min(30,intval(stripslashes($_REQUEST['d']))):1;
 			
 
 $square=new GridSquare;
@@ -59,7 +49,7 @@ if ($grid_ok)
 {
 	$x = $square->x;
 	$y = $square->y;
-	
+
 	$sql_where = '';
 
 	$left=$x-$d;
@@ -76,57 +66,25 @@ if ($grid_ok)
 		$sql_where .= " and ((gi.x - $x) * (gi.x - $x) + (gi.y - $y) * (gi.y - $y)) < ".($d*$d);
 	}
 
-	$sql = "SELECT gridimage_id,grid_reference,title,realname,user_id,imageclass,imagetaken,label
+	$sql = "SELECT gridimage_id,grid_reference,title,realname,user_id,imageclass,imagetaken
 	FROM gridimage_search gi
-	LEFT JOIN gridimage_group USING (gridimage_id)
 	WHERE $sql_where
-	GROUP BY gridimage_id 
-	ORDER BY NULL
-	LIMIT 150"; ##limt just to make sure
-
+	LIMIT 25"; ##limt just to make sure
 
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 
 	$photos = $db->getAssoc($sql);
 
-} elseif (!empty($_GET['user_id'])) {
-	$u = intval($_GET['user_id']);
-	
-	$sql_where = "user_id = $u";
-	
-	$sql = "SELECT gridimage_id,grid_reference,title,realname,user_id,imageclass,imagetaken,label
-	FROM gridimage_search gi
-	LEFT JOIN gridimage_group USING (gridimage_id)
-	WHERE $sql_where
-	GROUP BY gridimage_id 
-	ORDER BY NULL"; ##limt just to make sure
-
-	
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
-	
-	$photos = $db->getAssoc($sql);
 }
 
 ###################
 
-$inc = $_GET['inc'];
-
 $relations = array();
 foreach ($photos as $id => $row) {
-	if ($inc['imageclass']) 
-		$relations[] = array($id,$row['imageclass'],'Category');
-	if ($inc['realname']) 
-		$relations[] = array($id,$row['realname'],'Contributor');
-	if ($inc['year']) 
-		$relations[] = array($id,substr($row['imagetaken'],0,4),'Year');
-	if ($inc['month']) 
-		$relations[] = array($id,substr($row['imagetaken'],0,7),'Month');
-	if ($inc['imagetaken'] && strpos($row['imagetaken'],'-00') === FALSE)
-		$relations[] = array($id,$row['imagetaken'],'Taken');
-	if ($inc['label'] && !empty($row['label']))
-		$relations[] = array($id,$row['label'],'Label');
+	$relations[] = array($id,$row['imageclass']);
+	$relations[] = array($id,$row['realname']);
+	$relations[] = array($id,$row['imagetaken']);
 }
 
 ###################
@@ -138,40 +96,15 @@ $sxe_config = $sxe->addChild('Configuration');
 	$sxe_names = $sxe_config->addChild('Names');
 	$sxe_names->addChild('ItemName','Photo');
 	$sxe_names->addChild('ItemIdName','Photo');
-	$sxe_names->addChild('GroupName','Feature');
+	$sxe_names->addChild('GroupName','Category');
 	
 	$sxe_att = $sxe_config->addChild('Attributes');
-	$sxe_iatt = $sxe_att->addChild('ItemAttributes');
-	$att = $sxe_iatt->addChild('Attribute');
+	$att = $sxe_att->addChild('Attribute');
 		$att->addAttribute('name', 'Title');
-		$att->addAttribute('type', 'Text');
-	$att = $sxe_iatt->addChild('Attribute');
-		$att->addAttribute('name', 'Taken');
-		$att->addAttribute('type', 'Text');
-	$att = $sxe_iatt->addChild('Attribute');
+		$att->addAttribute('Type', 'Text');
+	$att = $sxe_att->addChild('Attribute');
 		$att->addAttribute('name', 'URL');
-		$att->addAttribute('type', 'URI');
-	$att = $sxe_iatt->addChild('Attribute');
-		$att->addAttribute('name', 'Thumbnail');
-		$att->addAttribute('type', 'Image');
-	$att = $sxe_iatt->addChild('Attribute');
-		$att->addAttribute('name', 'Contributor');
-		$att->addAttribute('type', 'Text');
-			
-/*		$att = $sxe_iatt->addChild('Attribute');
-			$att->addAttribute('name', 'Taken');
-			$att->addAttribute('type', 'Category');
-		$att = $sxe_iatt->addChild('Attribute');
-			$att->addAttribute('name', 'Contributor');
-			$att->addAttribute('type', 'Category');
-		$att = $sxe_iatt->addChild('Attribute');
-			$att->addAttribute('name', 'Category');
-			$att->addAttribute('type', 'Category');*/
-
-	$sxe_gatt = $sxe_att->addChild('GroupRelationAttributes');
-	$att = $sxe_gatt->addChild('Attribute');
-		$att->addAttribute('name', 'Type');
-		$att->addAttribute('type', 'Text');
+		$att->addAttribute('Type', 'Text');
 
 ###########
 $sxe_data = $sxe->addChild('Data');
@@ -182,33 +115,18 @@ $sxe_data = $sxe->addChild('Data');
 		$sxe_item->addAttribute('id', $id);
 		$sxe_item->addChild('Attribute', $row['title'])->addAttribute('name', 'Title');
 		$sxe_item->addChild('Attribute', "http://".$_SERVER['HTTP_HOST']."/photo/".$id)->addAttribute('name', 'URL');
-		$sxe_item->addChild('Attribute', $row['imagetaken'])->addAttribute('name', 'Taken');
-		$sxe_item->addChild('Attribute', $row['realname'])->addAttribute('name', 'Taken');
-		
-		$row += array('gridimage_id'=>$id);
-		$image=new GridImage;
-		$image->fastInit($row);
-		$details = $image->getThumbnail(120,120,2);
-		$sxe_item->addChild('Attribute', $details['server'].$details['url'])->addAttribute('name', 'Thumbnail');
-		
-		/*$sxe_item->addChild('Attribute', $row['imagetaken'])->addAttribute('name', 'Taken');
-		$sxe_item->addChild('Attribute', $row['realname'])->addAttribute('name', 'Contributor');
-		$sxe_item->addChild('Attribute', $row['imageclass'])->addAttribute('name', 'Category');*/
-		
-		
 	}
 
 	$sxe_relations = $sxe_data->addChild('ItemRelations');
 	$sxe_relations->addAttribute('directed', 'false');
-	
-	$sxe_groups = $sxe_data->addChild('GroupRelations');
 	foreach ($relations as $c => $row) {
-		$ret = $sxe_groups->addChild('GroupRelation');
+		$ret = $sxe_relations->addChild('GroupRelation');
 			$ret->addAttribute('itmId', $row[0]);
 			$ret->addAttribute('grpId', $row[1]);
-		$ret->addChild('Attribute', $row[2])->addAttribute('name', 'Type');
 	}
 	
+	$sxe_groups = $sxe_data->addChild('GroupRelations');
+
 
 ###################
 
@@ -220,7 +138,7 @@ if (empty($_GET['html'])) {
 	$dom->formatOutput = true;
 
 	print "<pre>";
-	echo htmlentities(_utf8_decode($dom->saveXML()));	
+	echo htmlentities($dom->saveXML());	
 	print "</pre>";
 }
 ?>

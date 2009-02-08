@@ -997,7 +997,7 @@ form.simpleform fieldset legend {
   padding: 0 5px;
 }
 
-form.simpleform div.field label {
+form.simpleform label {
   font-size: 100%;
   
   width:10em;
@@ -1008,11 +1008,6 @@ form.simpleform div.field label {
 form.simpleform div.field {
  margin-bottom:16px;
 }
-
-form.simpleform div.field_tick label {
-  
-}
-
 
 form.simpleform div.fieldnotes {
 
