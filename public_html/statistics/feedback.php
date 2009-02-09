@@ -42,6 +42,10 @@ if (isset($_GET['output']) && $_GET['output'] == 'csv') {
 	$cacheid='statistics|feedback';
 }
 
+if (!isset($_GET['real'])) {
+	$cacheid .= ".p";
+}
+
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
@@ -59,10 +63,21 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	$table = array();
 	
 		$table['title'] = "Part A - Experience";
-
+		
+	if (isset($_GET['real'])) {
 		$table['table']=$db->GetAll("
-			select category,question,count(*) as replies,sum(vote=1) as `1`,sum(vote=2) as `2`,sum(vote=3) as `3`,sum(vote=4) as `4`,sum(vote=5) as `5` from feedback inner join vote_log using (id) where type = 'f' and category = 'Experience' group by id order by 4
+			select category,question,count(*) as Answered,avg(vote) as Average,sum(vote=1) as `1`,sum(vote=2) as `2`,sum(vote=3) as `3`,sum(vote=4) as `4` from feedback inner join vote_log using (id) where type = 'f' and `final` = 1 and category = 'Experience' group by id order by 4
 			" );
+	} else {
+		$replies = $db->GetOne("select count(distinct user_id,ipaddr) from vote_log where type = 'f' and final = 1");
+		
+		$replies100 = $replies/100;
+		
+		$table['table']=$db->GetAll("
+			select category,question,concat(round(count(*)/$replies100),'%') as Answered,round(avg(vote),2) as Average,concat(round(sum(vote=1)/$replies100),'%') as `1`,concat(round(sum(vote=2)/$replies100),'%') as `2`,concat(round(sum(vote=3)/$replies100),'%') as `3`,concat(round(sum(vote=4)/$replies100),'%') as `4` from feedback inner join vote_log using (id) where type = 'f' and `final` = 1 and category = 'Experience' group by id order by 4
+			" );
+		
+	}
 	
 		$table['total'] = count($table['table']);
 		
@@ -74,11 +89,17 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 	$table = array();
 	
-		$table['title'] = "Part B - Results";
+		$table['title'] = "Part B - Results - $replies";
 
+	if (isset($_GET['real'])) {
 		$table['table']=$db->GetAll("
-		select category,question,sum(vote=-2) as 'Didn\'t Know',sum(vote=-1) as 'Not Tried',sum(vote>0) as Votes,sum(if(vote>0,vote,0))/sum(vote>0) as Average,std(vote) as `Std Dev` from feedback inner join vote_log using (id) where type = 'f' and category != 'Experience' group by id order by 4
-		");
+			select category,question,sum(vote=-2) as 'Didn\'t Know',sum(vote=-1) as 'Not Tried',sum(vote>0) as Answered,sum(if(vote>0,vote,0))/sum(vote>0) as Average,std(vote) as `Std Dev` from feedback inner join vote_log using (id) where type = 'f' and `final` = 1 and category != 'Experience' group by id order by 4
+			");
+	} else {
+		$table['table']=$db->GetAll("
+			select category,question,concat(round(sum(vote=-2)/$replies100),'%') as 'Didn\'t Know',concat(round(sum(vote=-1)/$replies100),'%') as 'Not Tried',concat(round(sum(vote>0)/$replies100),'%') as Answered,round(sum(if(vote>0,vote,0))/sum(vote>0),2) as Average,round(std(vote),2) as `Std Dev` from feedback inner join vote_log using (id) where type = 'f' and `final` = 1 and category != 'Experience' group by id order by 4
+			");
+	}
 
 		$table['total'] = count($table['table']);
 
@@ -89,6 +110,8 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	$smarty->assign_by_ref('tables', $tables);
 				
 	$smarty->assign("h2title",'Feedback results');
+	$smarty->assign("headnote",'Note: Due to an error in the feedback form, all scales (including `average`) are effectively 1-4<small>');
+	$smarty->assign("footnote",'</small>');
 } 
 
 $smarty->display($template, $cacheid);
