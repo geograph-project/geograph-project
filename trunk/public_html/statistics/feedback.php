@@ -102,7 +102,8 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	}
 
 		$table['total'] = count($table['table']);
-
+		$table["footnote"] = '</small>';
+		
 	$tables[] = $table;
 
 	###################
@@ -111,7 +112,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				
 	$smarty->assign("h2title",'Feedback results');
 	$smarty->assign("headnote",'Note: Due to an error in the feedback form, all scales (including `average`) are effectively 1-4<small>');
-	$smarty->assign("footnote",'</small>');
+	
 } 
 
 $smarty->display($template, $cacheid);
