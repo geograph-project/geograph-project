@@ -104,7 +104,8 @@ if (isset($_GET['gsid'])) {
 	$square = new GridSquare();
 	$grid_ok=$square->setByFullGridRef($hectad,false,true);
 
-	if (!$grid_ok) {
+	if (empty($square->x) && empty($square->y)) {
+		//even all at sea squares return a X & Y
 		die("invalid hectad, please contact us if this is unexpected");
 	}
 
