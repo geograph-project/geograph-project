@@ -52,7 +52,7 @@ if (isset($_POST['submit']) && !empty($_POST['hectads'])) {
 				$updates = array();
 				$updates['sort_order'] = $sort_order;
 				
-				$db->Execute('UPDATE hectad_assignment SET `'.implode('` = ?,`',array_keys($updates)).'` = ? WHERE hectad_assignment_id = '.$id,array_values($updates));
+				$db->Execute("UPDATE hectad_assignment SET status = if(status='deleted','new',status),`".implode('` = ?,`',array_keys($updates)).'` = ? WHERE hectad_assignment_id = '.$id,array_values($updates));
 
 				unset($hectads[$hectad]);
 			} else {
@@ -71,7 +71,7 @@ if (isset($_POST['submit']) && !empty($_POST['hectads'])) {
 	
 	if (count($hectads)) {
 		//'remove' any that are left.
-		$db->Execute("UPDATE hectad_assignment SET status = 'deleted' WHERE hectad_assignment_id IN (".implode(',',array_values($hectads)).')');
+		$db->Execute("UPDATE hectad_assignment SET status = 'deleted' WHERE status IN ('new','offered') AND hectad_assignment_id IN (".implode(',',array_values($hectads)).')');
 	}
 	$smarty->assign('saved',$sort_order-1);
 }
