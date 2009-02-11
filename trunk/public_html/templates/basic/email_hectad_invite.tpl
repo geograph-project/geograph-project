@@ -12,23 +12,26 @@ Upon accepting this invite you informally agree to:
 
  * Create and maintain a representative mosaic, this includes:
    * Choose a representative photo for each square in the hectad
-   * Act as final arbirator in cases where others wish to suggest alternatives 
+   * Act as final arbitrator in cases where others wish to suggest alternatives 
    * Check back on the square from time to time to check if new alternatives are available
  
  * Check the land/sea percentage for the squares
    * A tool for this purpose will be made available
 
- * Formally mark appriiate squares as 'impossible' 
+ * Formally mark appropriate squares as 'impossible' 
    * if/when we introduce such a facility
  
  * Have your name, and link to your profile, listed on the mosaic page, as a contact for dealing with queries. 
  
-The latest version of this list will always be available at:
+The latest version of this list will be available at:
 http://{$http_host}/help/hectad_adopt_duties
 
 
 Regards, 
 
 Geograph Team
+
+P.S. To avoid spamming we will only send out emails for the first few offers, the Adoption page will allow you to accept others:
+http://{$http_host}/adopt/
 
 {/dynamic}
