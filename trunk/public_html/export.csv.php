@@ -72,9 +72,11 @@ while (!$recordSet->EOF)
 			$gridimage->grid_square->natnorthings=$gridimage->natnorthings;
 			$gridimage->grid_square->reference_index=$gridimage->reference_index;
 			echo ",".$gridimage->getSubjectGridref();
+			$gridimage->subject_gridref = ''; // so it not reused!
 		}
 		if (!empty($_GET['ppos'])) {
 			echo ",".$gridimage->getPhotographerGridref();
+			$gridimage->photographer_gridref = ''; // so it not reused!
 		}
 	} elseif (!empty($_GET['en'])) {
 		if (empty($image['nateastings']) && isset($_GET['coords'])) {
