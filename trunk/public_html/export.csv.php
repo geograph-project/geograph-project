@@ -70,6 +70,7 @@ while (!$recordSet->EOF)
 			$gridimage->grid_square->natgrlen=$gridimage->natgrlen;
 			$gridimage->grid_square->nateastings=$gridimage->nateastings;
 			$gridimage->grid_square->natnorthings=$gridimage->natnorthings;
+			$gridimage->grid_square->reference_index=$gridimage->reference_index;
 			echo ",".$gridimage->getSubjectGridref();
 		}
 		if (!empty($_GET['ppos'])) {
