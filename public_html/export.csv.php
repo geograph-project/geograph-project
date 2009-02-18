@@ -61,7 +61,21 @@ while (!$recordSet->EOF)
 		$gridimage->fastInit($image);
 		echo ','.$gridimage->getThumbnail(120,120,true);
 	}
-	if (!empty($_GET['en'])) {
+	if (!empty($_GET['gr'])) {
+		if (empty($image['nateastings'])) {
+			echo ",{$image['grid_reference']}";
+		} else {
+			$gridimage->grid_square = new GridSquare();
+			$gridimage->grid_square->natspecified = 1;
+			$gridimage->grid_square->natgrlen=$gridimage->natgrlen;
+			$gridimage->grid_square->nateastings=$gridimage->nateastings;
+			$gridimage->grid_square->natnorthings=$gridimage->natnorthings;
+			echo ",".$gridimage->getSubjectGridref();
+		}
+		if (!empty($_GET['ppos'])) {
+			echo ",".$gridimage->getPhotographerGridref();
+		}
+	} elseif (!empty($_GET['en'])) {
 		if (empty($image['nateastings']) && isset($_GET['coords'])) {
 			list($e,$n) = $conv->internal_to_national($image['x'],$image['y'],$image['reference_index']);
 			
