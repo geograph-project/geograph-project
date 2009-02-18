@@ -55,6 +55,7 @@ if (!empty($_GET['thumb'])) {
 }
 if (!empty($_GET['gr'])) {
 	$csvhead .= ",Subject";
+	$sql_from = ',reference_index';
 	if (!empty($_GET['ppos'])) {
 		$csvhead .= ",Photographer";
 		$sql_from .= ",viewpoint_eastings,viewpoint_northings,if(use6fig=1,6,viewpoint_grlen) as viewpoint_grlen";
