@@ -455,3 +455,13 @@ CREATE TABLE `gridsquare_assignment` (
   `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`hectad_assignment_id`,`gridsquare_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+
+
+CREATE TABLE  `user_change` (
+ `user_id` INT UNSIGNED NOT NULL ,
+ `field` ENUM(  'realname',  'nickname' ) NOT NULL ,
+ `value` VARCHAR( 128 ) NOT NULL ,
+ `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE = MYISAM ;
