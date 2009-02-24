@@ -138,12 +138,13 @@ if (isset($q)) {
 	require_once('geograph/searchenginebuilder.class.php');
 	
 	$engine = new SearchEngineBuilder('#'); 
+	$engine->searchuse = "syndicator";
 	$_GET['i'] = $engine->buildSimpleQuery($q,$CONF['default_search_distance'],false,isset($_GET['u'])?$_GET['u']:0);
 
-	if (function_exists('symlink')) {
+	if (function_exists('symlink') && isset($cacheid)) {
 		//create a link so cache can be access as original query(cacheid) or directly via its 'i' number later...
-		symlink($_SERVER['DOCUMENT_ROOT']."/rss/$cacheid-{$pg}-{$format}.$extension",
-		        $_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}.$extension");
+		symlink($_SERVER['DOCUMENT_ROOT']."/rss/$cacheid-{$pg}-{$format}{$opt_expand}.$extension",
+		        $_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}{$opt_expand}.$extension");
 	}
 
 	if (!empty($engine->errormsg) && !empty($_GET['fatal'])) {

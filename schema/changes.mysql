@@ -465,3 +465,11 @@ CREATE TABLE  `user_change` (
  `value` VARCHAR( 128 ) NOT NULL ,
  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE = MYISAM ;
+
+
+
+ALTER TABLE `queries` CHANGE `searchuse` `searchuse` ENUM( 'search', 'flickr', 'gazetteer', 'discuss', 'syndicator' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'search';
+
+ALTER TABLE `queries_archive` CHANGE `searchuse` `searchuse` ENUM( 'search', 'flickr', 'gazetteer', 'discuss', 'syndicator' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'search';
+
+
