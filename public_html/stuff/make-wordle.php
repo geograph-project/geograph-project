@@ -42,7 +42,7 @@ $wordcount = array();
 
 $recordSet = &$db->Execute($sql);
 while (!$recordSet->EOF) {
-	$words = preg_split('/[^a-zA-Z0-9]+/',str_replace("'",'',$recordSet->fields['title']));
+	$words = preg_split('/[^a-zA-Z0-9]+/',trim(str_replace("'",'',$recordSet->fields['title'])));
 
 	foreach ($words as $word) {
 		@$wordcount[$word]++;	
@@ -51,7 +51,7 @@ while (!$recordSet->EOF) {
 	$recordSet->MoveNext();
 }
 $recordSet->Close(); 
-
+unset($wordcount['']);
 arsort($wordcount,SORT_NUMERIC);
 
 ?>
