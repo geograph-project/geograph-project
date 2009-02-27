@@ -29,9 +29,44 @@ init_session();
 
 $db = NewADOConnection($GLOBALS['DSN']);
 
-
+$where = array();
 if (isset($_GET['mine']) && $USER->user_id) {
-	$sql = "select title from gridimage_search where user_id = {$USER->user_id}";
+	$where[] = "user_id = {$USER->user_id}";
+} 
+
+if (!empty($_GET['u'])) {
+	$where[] = "user_id = ".intval($_GET['u']);
+}
+
+if (!empty($_GET['myriad']) && preg_match('/^\w{1,3}$/',$_GET['myriad'])) {
+	$where[] = "grid_reference like '{$_GET['myriad']}____'";
+}
+
+if (!empty($_GET['hectad']) && preg_match('/^(\w{1,3}\d)(\d)$/',$_GET['hectad'],$m)) {
+	$where[] = "grid_reference like '{$m[1]}_{$m[2]}_'";	
+}
+
+if (!empty($_GET['gridref']) && preg_match('/^(\w{1,3})(\d{4})$/',$_GET['gridref'],$m)) {
+	$where[] = "grid_reference = '{$_GET['gridref']}'";
+}
+
+if (!empty($_GET['category'])) {
+	$where[] = "imageclass = ".$db->Quote($_GET['category']);	
+}
+
+if (!empty($_GET['when']) && preg_match('/^\d{4}-\d{2}(-\d{2}|)$/',$_GET['when'])) {
+	if (strlen($_GET['myriad']) == 10) {
+		$where[] = "imagetaken = '{$_GET['when']}'";
+	} else {
+		$where[] = "imagetaken like '{$_GET['when']}%'";
+	}
+}
+
+if (count($where)) {	
+	$sql = "select title from gridimage_search where ".implode(' and ',$where);
+	if (empty($_GET['u']) && empty($_GET['mine'])) {
+		$sql .= " limit 10000";
+	}
 } else {
 	$max = $db->getOne("select max(gridimage_id) from gridimage_search"); //Select tables optimized away
 
