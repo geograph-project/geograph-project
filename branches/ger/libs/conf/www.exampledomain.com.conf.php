@@ -51,6 +51,11 @@ $CONF['db_persist']=''; //'?persist';
 ##$CONF['memcache']['smarty'] =& $CONF['memcache']['app'];
 
 
+$CONF['forum_lang'] = 'eng';
+$CONF['forum_date'] = 'j F Y H:i:s';
+$CONF['forum_templates'] = 'templates';
+$CONF['forum_title'] = 'Discuss';
+
 $CONF['sphinx_host'] = "localhost";
 $CONF['sphinx_port'] = 3312;
 $CONF['sphinx_cache'] = $_SERVER['DOCUMENT_ROOT'].'/../sphinxcache/';

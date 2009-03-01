@@ -30,10 +30,10 @@ $GLOBALS['http_host'] = $_SERVER['HTTP_HOST'];
 
 $bb_admin='bb_admin.php?';
 
-$lang='eng';
+$lang=$CONF['forum_lang'];
 $skin='default';
 $main_url='http://'.$_SERVER['HTTP_HOST'].'/discuss';
-$sitename='Discuss';
+$sitename=$CONF['forum_title'];
 $emailadmin=0;
 $emailusers=1;
 $userRegName='_A-Za-z0-9 ';
@@ -54,7 +54,7 @@ $protectWholeForumPwd='pwd';
 
 $postRange=20;
 
-$dateFormat='j F Y H:i:s';
+$dateFormat=$CONF['forum_date'];
 
 $cookiedomain='';
 $cookiename='geographbb';
@@ -121,6 +121,7 @@ $indexphp='index.php?';
 $useSessions=true;
 $usersEditTopicTitle=true;
 $pathToFiles='./';
+$templateDir=$CONF['forum_templates'];
 //$includeHeader='header.php';
 //$includeFooter='footer.php';
 //$emptySubscribe=TRUE;
