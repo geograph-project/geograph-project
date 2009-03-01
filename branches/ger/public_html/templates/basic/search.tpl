@@ -12,7 +12,11 @@
 <form method="get" action="/search.php">
 <div class="tabHolder">
 	<span class="tabSelected">Simple Search</span>
+	{if $noSphinx}
+	<a href="/search.php?form=advanced&amp;legacy=true" class="tab">advanced search</a>
+	{else}
 	<a href="/search.php?form=text" class="tab">advanced search</a>
+	{/if}
 	<a href="/search.php?form=first" class="tab">first geographs</a>
 	{if $user->registered}
 		<a href="/search.php?form=check" class="tab">check submissions</a>
