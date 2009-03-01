@@ -29,7 +29,7 @@
 {/foreach}
 
 {if count($onekm)}
-<div style="float:left;position:relative;width:35%;background-color:#dddddd; padding:10px">
+<div style="float:left;position:relative;width:32%;background-color:#dddddd; padding:10px">
 <h3>1km Grid Squares</h3>
 <table class="report"> 
 <thead><tr><td>Rank</td><td>Square</td><td>Images</td></tr></thead>
