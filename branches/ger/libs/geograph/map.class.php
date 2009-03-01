@@ -1539,11 +1539,24 @@ class GeographMap
 			$cityfont = 3;
 		}
 
+		$intleft=$scanleft*1000;
+		$intright=$scanright*1000;
+		$intbottom=$scanbottom*1000;
+		$inttop=$scantop*1000;
 		$rectangle = "'POLYGON(($natleft $natbottom,$natright $natbottom,$natright $nattop,$natleft $nattop,$natleft $natbottom))'";
+		$rectanglexy = "'POLYGON(($intleft $intbottom,$intright $intbottom,$intright $inttop,$intleft $inttop,$intleft $intbottom))'";
+		#trigger_error($rectanglexy, E_USER_NOTICE);
 		
 
 if ($reference_index == 1 || ($reference_index == 2 && $this->pixels_per_km == 1 )) {
 	//$countries = "'EN','WA','SC'";
+	//FIXME either use 
+        //   CONTAINS( GeomFromText($rectangle),	point_en) 
+        //   AND reference_index = $reference_index
+	//(some towns are missing, then) or
+        //   CONTAINS( GeomFromText($rectanglexy),	point_xy) 
+#CONTAINS( GeomFromText($rectangle),	point_en) 
+#AND reference_index = $reference_index
 $sql = <<<END
 SELECT name,e,n,s,quad,reference_index
 FROM loc_towns
@@ -1563,7 +1576,7 @@ FROM loc_placenames
 INNER JOIN `loc_wikipedia` ON ( full_name = text ) 
 WHERE dsg = 'PPL' AND
 loc_wikipedia.country IN ($countries) AND 
-CONTAINS( GeomFromText($rectangle),	point_en) 
+CONTAINS( GeomFromText($rectanglexy),	point_xy) 
 GROUP BY gns_ufi
 ORDER BY RAND()
 END;
