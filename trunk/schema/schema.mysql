@@ -264,55 +264,6 @@ CREATE TABLE `event_log` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
--- Table structure for table `flickr_photos`
---
-
-DROP TABLE IF EXISTS `flickr_photos`;
-CREATE TABLE `flickr_photos` (
-  `id` int(11) NOT NULL DEFAULT '0',
-  `upd_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `owner` varchar(15) NOT NULL DEFAULT '',
-  `secret` varchar(12) NOT NULL DEFAULT '',
-  `server` char(3) NOT NULL DEFAULT '',
-  `title` varchar(64) NOT NULL DEFAULT '',
-  `ispublic` enum('0','1') NOT NULL DEFAULT '0',
-  `isfriend` enum('0','1') NOT NULL DEFAULT '0',
-  `isfamily` enum('0','1') NOT NULL DEFAULT '0',
-  `dateadded` int(11) NOT NULL DEFAULT '0',
-  `isgeograph` enum('0','1') NOT NULL DEFAULT '0',
-  `gridsquare_id` int(11) NOT NULL DEFAULT '0',
-  `nateastings` mediumint(9) NOT NULL DEFAULT '0',
-  `natnorthings` mediumint(9) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `flickr_tags`
---
-
-DROP TABLE IF EXISTS `flickr_tags`;
-CREATE TABLE `flickr_tags` (
-  `id` int(11) NOT NULL DEFAULT '0',
-  `photo_id` int(11) NOT NULL DEFAULT '0',
-  `author` varchar(15) NOT NULL DEFAULT '',
-  `raw` varchar(64) NOT NULL DEFAULT '',
-  `tag_tidy` varchar(64) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`),
-  KEY `photo_id` (`photo_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `flickr_users`
---
-
-DROP TABLE IF EXISTS `flickr_users`;
-CREATE TABLE `flickr_users` (
-  `owner` varchar(15) NOT NULL DEFAULT '',
-  `ownername` varchar(64) NOT NULL DEFAULT '',
-  PRIMARY KEY (`owner`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
 -- Table structure for table `game_image_rate`
 --
 
@@ -1334,36 +1285,6 @@ CREATE TABLE `recent_gridimage` (
   `gridimage_id` int(11) NOT NULL DEFAULT '0',
   `added` datetime DEFAULT NULL,
   PRIMARY KEY (`gridimage_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `route`
---
-
-DROP TABLE IF EXISTS `route`;
-CREATE TABLE `route` (
-  `route_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(60) NOT NULL DEFAULT '',
-  `reference_index` tinyint(3) unsigned NOT NULL DEFAULT '1',
-  `orderby` varchar(32) NOT NULL DEFAULT '',
-  `enabled` tinyint(3) unsigned NOT NULL DEFAULT '1',
-  `crt_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `route_group` varchar(32) NOT NULL DEFAULT '',
-  PRIMARY KEY (`route_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `route_item`
---
-
-DROP TABLE IF EXISTS `route_item`;
-CREATE TABLE `route_item` (
-  `gridref` varchar(6) NOT NULL DEFAULT '',
-  `route_id` mediumint(8) unsigned NOT NULL DEFAULT '1',
-  `routeitem_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`routeitem_id`),
-  KEY `route_id` (`route_id`),
-  KEY `gridref` (`gridref`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
