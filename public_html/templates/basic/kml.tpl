@@ -21,15 +21,7 @@
 	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=http://$http_host/discuss/feed/forum5.kml" text="Google Maps"}<br/>
 	{/if}
 	<br/> 
-	<b>Hectad<a href="/help/squares">?</a> 3D Coverage Graph</b>:<br/> 
-	&nbsp;&nbsp;&nbsp;<a href="/kml/hectads-points.kmz" title="Geograph 3D Coverage Graph" class="xml-kml" type="application/vnd.google-earth.kmz+xml">KMZ</a> (about 200 kilobytes)<br/>
-	{if $user->registered}
-	&nbsp;&nbsp;&nbsp;<a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=2&topic=4415"><i>More <small>including time animation</small></i></a><br/>
-	{/if}
-	<small><small><i>Last updated: {$coverage_updated}</i></small></small><br/> 
-	<br/> 
-	<b>Geograph Layer Collection</b>:<br/>
-	&nbsp;&nbsp;&nbsp;<a href="/kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> <small><small>- includes access to<br/> nearly all the features on this page and more!</small></small></span>
+	</span>
 	</div>
 	 
 	 <h2>View Geograph Images using KML</h2> 
