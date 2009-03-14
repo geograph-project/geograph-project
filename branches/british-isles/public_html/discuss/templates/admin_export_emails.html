@@ -1,0 +1,28 @@
+<div align=center>
+<form action="{$bb_admin}" method=post class=formStyle>
+<table class=tbTransparent>
+<tr>
+<td class=tbTransparent>
+
+<div class=warning><b>{$warning}</b></div>
+<p></p>{$l_exportEmails}
+<br><br>
+{$l_usrInfo[4]} <input type=checkbox name=expEmail checked>
+{$l_usrInfo[1]} <input type=checkbox name=expLogin>
+<br><br>
+{$l_separator}:
+<br>
+{$l_comma} <input type=radio name=separate value=comma checked>
+{$l_tab} <input type=radio name=separate value=tab>
+<br><br>
+{$l_screen} <input type=radio name=screen value=1 checked>
+{$l_attach} <input type=radio name=screen value=0>
+<input type=hidden name=action value=exportemails2>
+<br><br>
+<input type=submit value="{$l_exportEmails}" class=inputButton>
+
+</td>
+</tr>
+</table>
+</form>
+</div>
