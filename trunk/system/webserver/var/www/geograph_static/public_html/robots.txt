@@ -1,1 +1,0 @@
-/var/www/geograph_live/public_html/./robots.txt
