@@ -72,6 +72,18 @@ width:90%;
 
 }
 
+.please 
+{
+background:pink;
+margin-left:auto;
+margin-right:auto;
+margin-top:10px;
+margin-bottom:60px;
+padding:10px;
+width:700px;
+margin-bottom:10px;
+text-align:center;
+}
 
 th { /* Table Header */
 	background-color: #6B818F;

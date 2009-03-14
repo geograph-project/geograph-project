@@ -89,8 +89,11 @@ if (!isset($GLOBALS["countbytes"]))
   
       var myBoxObject2 = new curvyCorners(settings, "intro2");
       myBoxObject2.applyCornersToAll();
-     var myBoxObject3 = new curvyCorners(settings, "helpful");
+      var myBoxObject3 = new curvyCorners(settings, "helpful");
       myBoxObject3.applyCornersToAll();
+      var myBoxObject4 = new curvyCorners(settings, "please");
+      myBoxObject4.applyCornersToAll();
+
   }
   
 </script>
@@ -134,12 +137,6 @@ if (file_exists("rss/rss.xml"))
     the licence terms for each item in the volume. Please take care to
     respect these licences when re-using this data.</p>
     
-
-<p>Finally, if you are able <b>please seed these torrents</b> - even a small amount of bandwidth
-	can help. This will also help ensure the torrents are available for others in the future.</p>
-
-
-
 </div>
 
 <div class="intro2">  
@@ -152,7 +149,7 @@ you are uploading chunks to those people who need a chunk you have.</p>
 <p>This means we can offer these large archives without incurring
 huge bandwidth bills.</p>
 
-<p>Get yourself a <a href="http://en.wikipedia.org/wiki/BitTorrent_client">BitTorrent client</a> and join in!</p>
+<div>Get yourself a <a href="http://en.wikipedia.org/wiki/BitTorrent_client">BitTorrent client</a> and join in!</div>
 
 
 </div>
@@ -160,9 +157,14 @@ huge bandwidth bills.</p>
 
 <br style="clear:both"/>
 
+<div style="width:90%">
+<div class="please">
+	<img src="http://s0.geograph.org.uk/templates/basic/img/icon_alert.gif" style="float:left">
+<b>Please continue to seed these torrents for as long as possible even after you have<br/>
+ finished downloading</b> - <i>even a small amount of bandwidth can help</i>.<br/><br/>
+If nobody is willing to help with long term seeding, <br/>then offering this service is unsustainable. <a href="http://www.nearby.org.uk/blog/2009/02/06/how-to-promote-long-term-seeding/">read why</a>.</div>
 
-
-
+</div>
 
 <?php
 if ($GLOBALS["persist"])
@@ -284,7 +286,7 @@ $query = "SELECT ".$prefix."summary.info_hash, ".
 		$prefix."summary.speed ".
 		"FROM ".$prefix."summary ".
 		"LEFT JOIN ".$prefix."namemap ON ".$prefix."summary.info_hash = ".$prefix."namemap.info_hash ".
-		"$where ORDER BY ".$prefix."namemap.filename ";
+		"$where ORDER BY STR_TO_DATE(pubDate,'%a, %e %b %Y %T') ";
 		
 if (isset($_GET["page_number"]))
 	$query.= "LIMIT 0,10";
@@ -410,7 +412,7 @@ if ($GLOBALS["countbytes"]) //stop count bytes variable
 
 <div class="helpful"> 
 
-<p style="color:#880000"><b>These torrents are large!</b> Ensure than downloading and
+<p style="color:#880000"><b>These torrents are huge!</b> Ensure than downloading and
 	seeding them will not put you over your Internet provider's bandwidth limits.</p>
 
 <p><small><tt>Geograph-Dev0.1</tt> is a WMware based virtual machine setup as a pre-configured Development Enviroment - probably only of 
