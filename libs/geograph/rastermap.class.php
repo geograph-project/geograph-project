@@ -412,7 +412,7 @@ class RasterMap
 
 				$iframe = rawurlencode("<iframe src=\"/map_frame.php?t=$token\" id=\"map\" width=\"{$width}\" height=\"{$width}\" scrolling=\"no\">Loading map...</iframe>");
 
-				$str .= "<br/><br/><a href=\"#\" onclick=\"document.getElementById('rastermap').innerHTML = rawurldecode('$iframe'); document.getElementById('mapFootNoteOS50k').style.display = 'none'; return false;\">Change to interactive Map</a>";
+				$str .= "<br/><br/><a href=\"#\" onclick=\"document.getElementById('rastermap').innerHTML = rawurldecode('$iframe'); if (document.getElementById('mapFootNoteOS50k')) { document.getElementById('mapFootNoteOS50k').style.display = 'none';} return false;\">Change to interactive Map</a>";
 			}
 			
 			$str .= "</div>";

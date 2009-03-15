@@ -534,8 +534,8 @@ function rawurldecode( str ) {
     histogram['!']   = '%21';
 
     for (replace in histogram) {
-	search = histogram[replace]; // Switch order when decoding
-	ret = replacer(search, replace, ret) // Custom replace. No regexing
+	searchstr = histogram[replace]; // Switch order when decoding
+	ret = replacer(searchstr, replace, ret) // Custom replace. No regexing
     }
 
     // End with decodeURIComponent, which most resembles PHP's encoding functions
