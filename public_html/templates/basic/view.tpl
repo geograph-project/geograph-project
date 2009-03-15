@@ -33,20 +33,6 @@
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
   
-  {literal}
-  <script type="text/javascript">
-  
-  function redrawMainImage() {
-  	el = document.getElementById('mainphoto');
-  	el.style.display = 'none';
-  	el.style.display = '';
-  }
-  AttachEvent(window,'load',redrawMainImage,false);
-  AttachEvent(window,'load',showMarkedImages,false);
-  
-  </script>
-  {/literal}
-  
   <div class="caption"><b>{$image->title|escape:'html'}</b></div>
 
   {if $image->comment}
@@ -254,8 +240,18 @@ function addStyleLinks() {
 	document.getElementById('styleLinks').innerHTML = 'Background for photo viewing: {if $maincontentclass eq "content_photowhite"}<b>white</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=white" rel="nofollow" class="robots-nofollow robots-noindex">White</a>{/if}/{if $maincontentclass eq "content_photoblack"}<b>black</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=black" rel="nofollow" class="robots-nofollow robots-noindex">Black</a>{/if}/{if $maincontentclass eq "content_photogray"}<b>grey</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=gray" rel="nofollow" class="robots-nofollow robots-noindex">Grey</a>{/if}';
 {literal}
 }
-{/literal}
  AttachEvent(window,'load',addStyleLinks,false);
+
+
+function redrawMainImage() {
+	el = document.getElementById('mainphoto');
+	el.style.display = 'none';
+	el.style.display = '';
+}
+ AttachEvent(window,'load',redrawMainImage,false);
+ AttachEvent(window,'load',showMarkedImages,false);
+
+{/literal}
 /* ]]> */
 </script>
 

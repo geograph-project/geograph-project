@@ -172,7 +172,7 @@ class RasterMap
 
 		if ($this->service == 'Google') {
 			if (!empty($this->inline) || !empty($this->issubmit)) {
-				return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\">Loading map...</div>";
+				return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\">Loading map... (JavaScript required)</div>";
 			} else {
 				$token=new Token;
 				
@@ -183,7 +183,7 @@ class RasterMap
 				}
 				$token = $token->getToken();
 				
-				return "<iframe src=\"/map_frame.php?t=$token\" id=\"map\" width=\"{$width}\" height=\"{$width}\">Loading map...</iframe>";
+				return "<iframe src=\"/map_frame.php?t=$token\" id=\"map\" width=\"{$width}\" height=\"{$width}\" scrolling=\"no\">Loading map... (JavaScript required)</iframe>";
 			}
 		} elseif ($this->service == 'OS50k-small') {
 			static $idcounter = 1;
@@ -399,6 +399,21 @@ class RasterMap
 			}
 			$str .= "</div>";
 			
+			if (empty($this->service2) && empty($this->issubmit)) {
+				$token=new Token;
+
+				foreach ($this as $key => $value) {
+					if (is_scalar($value)) {
+						$token->setValue($key, $value);
+					}
+				}
+				$token->setValue("service",'Google');
+				$token = $token->getToken();
+
+				$iframe = rawurlencode("<iframe src=\"/map_frame.php?t=$token\" id=\"map\" width=\"{$width}\" height=\"{$width}\" scrolling=\"no\">Loading map...</iframe>");
+
+				$str .= "<br/><br/><a href=\"#\" onclick=\"document.getElementById('rastermap').innerHTML = rawurldecode('$iframe'); document.getElementById('mapFootNoteOS50k').style.display = 'none'; return false;\">Change to interactive Map</a>";
+			}
 			
 			$str .= "</div>";
 
@@ -497,14 +512,14 @@ class RasterMap
 					$show_viewpoint = (intval($this->viewpoint_grlen) > 4) || ($different_square_true && ($this->viewpoint_grlen == '4'));
 
 					if ($show_viewpoint) {
-						$e = $this->viewpoint_eastings;	$n = $this->viewpoint_northings;
+						$ve = $this->viewpoint_eastings;	$vn = $this->viewpoint_northings;
 						if ($this->viewpoint_grlen == '4') {
-							$e +=500; $n += 500;
+							$ve +=500; $vn += 500;
 						}
 						if ($this->viewpoint_grlen == '6') {
-							$e +=50; $n += 50;
+							$ve +=50; $vn += 50;
 						}
-						list($lat,$long) = $conv->national_to_wgs84($e,$n,$this->reference_index);
+						list($lat,$long) = $conv->national_to_wgs84($ve,$vn,$this->reference_index);
 						$block .= "
 						var ppoint = new GLatLng({$lat},{$long});
 						map.addOverlay(createPMarker(ppoint));\n";
@@ -557,7 +572,7 @@ class RasterMap
 							map.addMapType(G_PHYSICAL_MAP);
 							map.addControl(new GSmallZoomControl());
 							map.addControl(new GMapTypeControl(true));
-							map.disableDragging();
+							//map.disableDragging();
 							var point = new GLatLng({$this->lat},{$this->long});
 							map.setCenter(point, 13, G_PHYSICAL_MAP);
 							$block 

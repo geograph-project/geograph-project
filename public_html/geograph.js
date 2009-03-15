@@ -511,6 +511,41 @@ function overlayHideMarkers(e) {
 
 //	-	-	-	-	-	-	-	-
 
+
+function rawurldecode( str ) {
+    // http://kevin.vanzonneveld.net
+    // +   original by: Brett Zamir
+
+    var histogram = {};
+    var ret = str.toString(); 
+
+    var replacer = function(search, replace, str) {
+	var tmp_arr = [];
+	tmp_arr = str.split(search);
+	return tmp_arr.join(replace);
+    };
+
+    // The histogram is identical to the one in urlencode.
+    histogram["'"]   = '%27';
+    histogram['(']   = '%28';
+    histogram[')']   = '%29';
+    histogram['*']   = '%2A';
+    histogram['~']   = '%7E';
+    histogram['!']   = '%21';
+
+    for (replace in histogram) {
+	search = histogram[replace]; // Switch order when decoding
+	ret = replacer(search, replace, ret) // Custom replace. No regexing
+    }
+
+    // End with decodeURIComponent, which most resembles PHP's encoding functions
+    ret = decodeURIComponent(ret);
+
+    return ret;
+}
+
+//	-	-	-	-	-	-	-	-
+
 //*** This code is copyright 2003 by Gavin Kistner, gavin@refinery.com
 //*** It is covered under the license viewable at http://phrogz.net/JS/_ReuseLicense.txt
 //*** Reuse or modification is free provided you abide by the terms of that license.
