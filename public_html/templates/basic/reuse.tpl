@@ -38,22 +38,41 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 <h2 style="margin-bottom:0px" class="nowrap"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></h2>
 <div>by <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></div>
 
+<br style="clear:both;"/>
 
-<p>Thank you for your interest in this photo, you are more than welcome to use this image as long as you follow a few basic requirements:</p>
+<div class="photoguide" style="margin-left:auto;margin-right:auto; ">
+	<div style="float:left;width:213px">
+		<a title="view full size image" href="/photo/{$image->gridimage_id}">
+		{$image->getThumbnail(213,160)}
+		</a><div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a> for <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></div>
+	</div>
+	<div style="float:left;padding-left:20px; width:400px;">
+		<span style="font-size:0.8em">{$image->comment|escape:'html'|nl2br|geographlinks|default:"<tt>no description for this image</tt>"}</span><br/>
+		<br/>
+		<small><b>&nbsp; &copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
+		licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a></b></small>
+	</div>
+	
+	<br style="clear:both"/>
+</div>
+
+
+
+<p><i>Thank you for your interest in this photo, you are more than welcome to use it as long as you follow a few basic requirements:</i></p>
 
 <ul class="checklist">
 
-<li style="font-size:1.1em; background-color:pink;"><b>Under the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image MUST be credited as specified by the contributor ({if $image->credit_realname}<tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>{else}{$image->realname|escape:'html'}{/if}).</b></li>
+<li style="border: 3px solid pink;"><b>Under the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image <b>must</b> be credited as specified by the contributor <small><br/>({if $image->credit_realname}<tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>{else} in this case <tt style="color:red;font-size:1.3em">{$image->realname|escape:'html'}</tt>{/if}).</small></b></li>
 
-<li><b>You should also mention that the photo is copyrighted but licensed as such for further reuse.</b> If you alter, transform, or build upon this work, you may distribute the resulting work only under a similar licence.</li>
+<li><b>You should also mention that the photo is copyrighted but licensed as such for further reuse.</b> If you alter, transform, or build upon this work, you may distribute the resulting work only under a similar licence.<br/>The URL for the licence is <a href="http://creativecommons.org/licenses/by-sa/2.0/">http://creativecommons.org/licenses/by-sa/2.0/</a></li>
 
 </ul>
 
-and if a web based project:
+<p><i>and if a web based project:</i></p>
 
 <ul class="checklist">
 
-<li style="background-color: yellow;"><b>We do ask you be polite and not abuse Geograph's resources in using the image irresponsibly.</b> <br/>
+<li style="border: 3px solid yellow;"><b>We do ask you be polite and not abuse Geograph's resources in using the image irresponsibly.</b> <br/>
 So <b>do not {external href="http://en.wikipedia.org/wiki/Inline_linking" text="hotlink"}</b> the fullsize image directly off our servers, this will likely be blocked.<br/>
 Instead download a copy, and upload it to your own webspace. Click: <b><a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">Download Fullsize .jpg file</a></b></li>
 
@@ -62,23 +81,6 @@ Instead download a copy, and upload it to your own webspace. Click: <b><a href="
 
 <div style="text-align:right; border-bottom:1px solid gray"><i>Thank you for your attention in this matter.</i></div>
 <br/><br/>
-
-<div style="width:300px;margin-left:auto;margin-right:auto; text-align:center">Preview of this image</div>
-<div class="photoguide" style="margin-left:auto;margin-right:auto">
-	<div style="float:left;width:213px">
-		<a title="view full size image" href="/photo/{$image->gridimage_id}">
-		{$image->getThumbnail(213,160)}
-		</a><div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a> for <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></div>
-	</div>
-	<div style="float:left;padding-left:20px; width:400px;">
-		{$image->comment|escape:'html'|nl2br|geographlinks|default:"<tt>no description for this image</tt>"}<br/>
-		<br/>
-		<small>&nbsp; &copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
-		licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a></small>
-	</div>
-	
-	<br style="clear:both"/>
-</div>
 
 <p>We have created some snippets of code to make using the photo easy on various websites or similar:</p>
 <br/>
