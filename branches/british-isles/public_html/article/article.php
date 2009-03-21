@@ -241,6 +241,8 @@ if (count($page)) {
 	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
 } else {
+	header("HTTP/1.0 404 Not Found");
+	header("Status: 404 Not Found");
 	$template = 'static_404.tpl';
 }
 
