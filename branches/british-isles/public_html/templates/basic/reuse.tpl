@@ -56,7 +56,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 	<br style="clear:both"/>
 </div>
 
-   <div style="width:200px;position:relative;text-align:center; text-size:0.8em">
+   <div style="width:200px;float:right;position:relative;text-align:center; text-size:0.7em">
    	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img src="http://{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed"/></a><br/>
    	[ Click to see full Licence Deed ]
    </div>
@@ -67,7 +67,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 
 <li style="border: 3px solid pink;"><b>Under the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image <b>must</b> be credited as specified by the contributor <small><br/>({if $image->credit_realname}<tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>{else} in this case <tt style="color:red;font-size:1.3em">{$image->realname|escape:'html'}</tt>{/if}).</small></b></li>
 
-<li><b>You should also mention that the photo is copyrighted but licensed as such for further reuse.</b> If you alter, transform, or build upon this work, you may distribute the resulting work only under a similar licence.<br/>The URL for the licence is <a href="http://creativecommons.org/licenses/by-sa/2.0/">http://creativecommons.org/licenses/by-sa/2.0/</a></li>
+<li><b>You should also mention that the photo is copyrighted but also licensed for further reuse.</b> If you alter, transform, or build upon this work, you may distribute the resulting work only under a similar licence.<br/><br/>The URL for the licence is <a href="http://creativecommons.org/licenses/by-sa/2.0/">http://creativecommons.org/licenses/by-sa/2.0/</a></li>
 
 </ul>
 
