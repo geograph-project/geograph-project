@@ -47,7 +47,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 		</a><div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a> for <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></div>
 	</div>
 	<div style="float:left;padding-left:20px; width:400px;">
-		<span style="font-size:0.8em">{$image->comment|escape:'html'|nl2br|geographlinks|default:"<tt>no description for this image</tt>"}</span><br/>
+		<span style="font-size:0.7em">{$image->comment|escape:'html'|nl2br|geographlinks|default:"<tt>no description for this image</tt>"}</span><br/>
 		<br/>
 		<small><b>&nbsp; &copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
 		licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a></b></small>
@@ -56,7 +56,10 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 	<br style="clear:both"/>
 </div>
 
-
+   <div style="width:200px;position:relative;text-align:center; text-size:0.8em">
+   	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img src="http://{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed"/></a><br/>
+   	[ Click to see full Licence Deed ]
+   </div>
 
 <p><i>Thank you for your interest in this photo, you are more than welcome to use it as long as you follow a few basic requirements:</i></p>
 
