@@ -37,9 +37,9 @@ if (isset($_REQUEST['id']))
 	require_once('geograph/gridimage.class.php');
 
 	$image=new GridImage();
-	$image->loadFromId($_REQUEST['id']);
+	$ok = $image->loadFromId($_REQUEST['id']);
 	
-	if ($image->moderation_status=='rejected') {
+	if (!$ok || $image->moderation_status=='rejected') {
 		//clear the image
 		$image=new GridImage;
 		header("HTTP/1.0 410 Gone");
