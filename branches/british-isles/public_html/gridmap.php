@@ -123,6 +123,7 @@ if ($grid_given)
 		//lets add an rastermap too
 		$rastermap = new RasterMap($square,false,$square->natspecified);
 		$rastermap->service = 'Google';
+		$rastermap->inline = true;
 		$rastermap->addLatLong($lat,$long);
 		$smarty->assign_by_ref('rastermap', $rastermap);
 	
