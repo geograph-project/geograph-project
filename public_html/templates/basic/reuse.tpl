@@ -56,7 +56,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 	<br style="clear:both"/>
 </div>
 
-   <div style="width:200px;float:right;position:relative;text-align:center; text-size:0.7em">
+   <div style="width:230px;float:right;position:relative;text-align:center;font-size:0.7em">
    	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img src="http://{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed"/></a><br/>
    	[ Click to see full Licence Deed ]
    </div>
