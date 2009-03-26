@@ -36,14 +36,14 @@ if (isset($_REQUEST['code']) && trim(strtoupper($_REQUEST['code'])) == 'MN1') {
 		require_once('geograph/gridimage.class.php');
 
 		$image=new GridImage();
-		$image->loadFromId($_REQUEST['id']);
+		$ok = $image->loadFromId($_REQUEST['id']);
 
-		if ($image->moderation_status=='rejected') {
+		if (!$ok || $image->moderation_status=='rejected') {
 			//clear the image
 			$image=new GridImage;
 			header("HTTP/1.0 410 Gone");
 			header("Status: 410 Gone");
-			$template = "view.tpl";
+			$template = "static_404.tpl";
 		} elseif (!empty($_REQUEST['finalise'])) {
 			$db=NewADOConnection($GLOBALS['DSN']);
 
