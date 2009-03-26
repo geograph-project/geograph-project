@@ -44,7 +44,7 @@ if (isset($_REQUEST['id']))
 		$image=new GridImage;
 		header("HTTP/1.0 410 Gone");
 		header("Status: 410 Gone");
-		$template = "view.tpl";
+		$template = "static_404.tpl";
 	} else {
 		if (isset($_REQUEST['download']) && $_REQUEST['download'] == $image->_getAntiLeechHash()) {
 			$filepath = $image->_getFullpath();
@@ -88,7 +88,7 @@ if (isset($_REQUEST['id']))
 } else {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");
-	$template = "view.tpl";
+	$template = "static_404.tpl";
 }
 
 
