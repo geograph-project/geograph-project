@@ -16,7 +16,6 @@ my $apache=0;
 my $mysql=0;
 my $fast=0;
 my $revision='';
-my $tracker=0;
 my $today=0;
 my $filesonly=0;
 
@@ -27,7 +26,6 @@ GetOptions
     'svnupdate!', \$cvsupdate,
     'makelive!', \$makelive,  
     'apache!', \$apache,
-    'tracker!', \$tracker,
     'today!', \$today,
     'filesonly!',\$filesonly,
     'mysql!', \$mysql,
@@ -43,7 +41,7 @@ GetOptions
 @exfilelist = split(/,/,join(',',@exfilelist));
 
 #any command specified?
-if (!$mysql && !$apache && !$today && !$tracker && !$cvsupdate && !$makelive && !$show_help)
+if (!$mysql && !$apache && !$today && !$cvsupdate && !$makelive && !$show_help)
 {
    print "No action specified, try geograph --help\n\n";
    exit;
@@ -87,9 +85,6 @@ geograph --makelive [options]
                           below a base directory called foo 
   --include "/foo/**/bar" would include any file called bar two or more 
                           levels below a base directory called foo 
-
-geograph --tracker
-  Updates torrents.geograph.org.uk with latest code from SVN 
 
 geograph --apache syntax|start|stop|restart|reload|force-reload [--fast]
   Starts, stops or restarts the geograph apache server
@@ -220,17 +215,6 @@ if (my @files = ($update_out =~ /([^ ]+\.js|[^ ]+?\.css)'?$/mg)) {
 #}
 
 
-   print "\nDone.\n\n";
-}
-
-
-
-if ($tracker) {
-   print "Updating tracker staging area...\n";
-   my $rev = ($revision)?" -r $revision":'';
-   my $update_out = `cd /var/www/geograph_svn/apps/tracker/ && sudo -u geograph svn update $rev`;
-   print "$update_out\n\n";
-
    #sync tracker site
     my $cmd="rsync ".
         "--verbose ".
@@ -239,7 +223,7 @@ if ($tracker) {
         "--cvs-exclude ".
         "--exclude-from=/var/www/geograph_svn/scripts/makelive-exclusion ".
 	"--exclude=torrents ".
-        "/var/www/geograph_svn/apps/tracker/ ".
+        "/var/www/geograph_svn/tracker/ ".
         "/var/www/rivettracker/";
 
        print "Copying torrent tracker updates\n";

@@ -101,14 +101,14 @@ function smarty_function_mailto($params, &$smarty)
     }
 
     if ($encode == 'javascript' ) {
-        $string = str_rot13('document.write(\'<a href="mailto:'.$address.'" '.$extra.'>'.$text.'</a>\');');
+        $string = 'document.write(\'<a href="mailto:'.$address.'" '.$extra.'>'.$text.'</a>\');';
 
         $js_encode = '';
         for ($x=0; $x < strlen($string); $x++) {
             $js_encode .= '%' . bin2hex($string[$x]);
         }
 
-        return '<script type="text/javascript">String.prototype.rot13 = function(){return this.replace(/[a-zA-Z]/g, function(c){return String.fromCharCode((c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26);});};eval(unescape(\''.$js_encode.'\').rot13())</script>';
+        return '<script type="text/javascript">eval(unescape(\''.$js_encode.'\'))</script>';
 
     } elseif ($encode == 'javascript_charcode' ) {
         $string = '<a href="mailto:'.$address.'" '.$extra.'>'.$text.'</a>';

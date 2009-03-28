@@ -16,11 +16,15 @@
 
 	<li><a href="/statistics/fully_geographed.php">List <b>Fully Geographed Hectads</b></a> <small>(10 x 10 Gridsquares)</small> - include Image Mosaics!</li>
 
+	<li>{external href="http://www.nearby.org.uk/geograph/mosaic/" text="Mosaics of <b>Completed Myriads</b>"} (using a Flash based viewer)</li>
+
 </ul>
 <h3>Selections...</h3>
 <ul class="explore">
 
 	<li><a href="/explore/searches.php"><b>Featured Searches</b></a> - hand picked example searches</li>
+
+	<li><a href="/explore/routes.php">Follow <b>National Routes</b></a>.</li>
 
 	<li><a name="counties"></a>View Photographs at <b>Centre Points</b>: <ul>
 		<li><a href="/explore/counties.php?type=modern">Modern Administrative Counties</a>,

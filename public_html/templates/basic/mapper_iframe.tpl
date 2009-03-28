@@ -64,7 +64,7 @@ function loadMap() {
 	mousecontrol.defaultMouseDown = mouseDefaultMouseDown;
 	map.addControl( mousecontrol );
 	
-	var panzoom = new OpenLayers.Control.PanZoomBar();
+	var panzoom = new OpenLayers.Control.PanZoom();
 	//panzoom.draw = drawNoZoom;
 	map.addControl( panzoom );
 	

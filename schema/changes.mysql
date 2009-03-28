@@ -34,6 +34,49 @@ ALTER TABLE `moderation_log` ADD `type` ENUM( 'dummy', 'real' ) NOT NULL DEFAULT
 
 
 
+CREATE TABLE `gridimage_link` (
+  `gridimage_link_id` int(10) unsigned NOT NULL auto_increment,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `HTTP_Status` smallint(5) unsigned NOT NULL,
+  `HTTP_Last_Modified` varchar(64) NOT NULL,
+  `HTTP_Location` varchar(255) NOT NULL,
+  `match_score` smallint(6) NOT NULL,
+  `page_title` varchar(255) NOT NULL,
+  `last_checked` datetime NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`gridimage_link_id`),
+  KEY `gridimage_id` (`gridimage_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+
+
+
+ALTER TABLE `gridimage_link` ADD `next_check` DATETIME NOT NULL AFTER `last_checked` ;
+
+
+
+UPDATE `gridimage_link` SET next_check = date_add(last_checked,interval 90 day) WHERE HTTP_Status = 200;
+
+UPDATE `gridimage_link` SET next_check = date_add(last_checked,interval 10 day) WHERE HTTP_Status > 0 AND HTTP_Status != 200;
+
+
+ ALTER IGNORE TABLE `gridimage_link` ADD UNIQUE (
+`gridimage_id` ,
+`url`
+) ;
+
+
+
+ALTER TABLE `gridimage_link` ADD `parent_link_id` INT UNSIGNED NOT NULL ;
+
+
+ALTER TABLE `gridimage_link` ADD `failure_count` SMALLINT NOT NULL ;
+
+
+
+
 
 CREATE TABLE `_tables` (
   `table_name` varchar(64) NOT NULL,
@@ -123,7 +166,18 @@ insert into os_gaz select * from geograph_staging.os_gaz;
 
 CREATE VIEW `user_stat_view` AS SELECT user_id,images,pow(10,floor(log10(images))+1) as images_d FROM user_stat;
 
+CREATE TABLE `milestone` (
+  `user_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `gridimage_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `milestone` mediumint(6) unsigned NOT NULL DEFAULT '0',
+  KEY `user_id` (`user_id`),
+  KEY `gridimage_id` (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
+
+
+INSERT INTO `queries` (`id`, `searchdesc`, `searchclass`, `searchq`, `searchtext`, `limit1`, `limit2`, `limit3`, `limit4`, `limit5`, `limit6`, `limit7`, `limit8`, `limit9`, `limit10`, `x`, `y`, `displayclass`, `resultsperpage`, `orderby`, `breakby`, `crt_timestamp`, `user_id`, `searchuse`, `use_timestamp`, `favorite`) VALUES 
+(NULL, ', celebrating a milestone, newest first', 'Special', 'inner join milestone using (gridimage_id) where milestone.user_id > 0', '', '', '', '', '', '', '', '', 0, 0, 0, 0, 0, 'thumbs', 15, 'gridimage_id desc', 'milestone+', '2008-09-23 21:56:19', 3, 'search', '2008-09-23 22:20:21', 'N');
 
 
 
@@ -357,45 +411,4 @@ CREATE TABLE `gridimage_diversity` (
   `ratio` float NOT NULL,
   PRIMARY KEY  (`gridimage_id`,`type`)
 ) ENGINE=MyISAM;
-
-
-
-
-ALTER TABLE  `vote_log` ADD  `vote_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST ;
-ALTER TABLE  `vote_log` ADD  `final` TINYINT UNSIGNED NOT NULL DEFAULT  '0';
-
-
-CREATE TEMPORARY TABLE vote_final AS SELECT MAX(vote_id) as vote_id FROM vote_log GROUP BY type,id,user_id,ipaddr;
-UPDATE `vote_log` SET `final` = 0;
-UPDATE `vote_log`,vote_final SET vote_log.final = 1 WHERE `vote_log`.vote_id = vote_final.vote_id;
-
-
-
-
-ALTER TABLE  `queries_featured` ADD  `stickied` TINYINT NOT NULL ;
-
-
-
-
-
-ALTER TABLE  `gridimage_daily` ADD  `vote_baysian` FLOAT NOT NULL ;
-
-
-
-
-
-
-CREATE TABLE  `user_change` (
- `user_id` INT UNSIGNED NOT NULL ,
- `field` ENUM(  'realname',  'nickname' ) NOT NULL ,
- `value` VARCHAR( 128 ) NOT NULL ,
- `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE = MYISAM ;
-
-
-
-ALTER TABLE `queries` CHANGE `searchuse` `searchuse` ENUM( 'search', 'flickr', 'gazetteer', 'discuss', 'syndicator' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'search';
-
-ALTER TABLE `queries_archive` CHANGE `searchuse` `searchuse` ENUM( 'search', 'flickr', 'gazetteer', 'discuss', 'syndicator' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'search';
-
 

@@ -225,49 +225,49 @@ if ($grid_given)
 		if (!empty($_GET['user'])) {
 			$custom_where .= " and gi.user_id = ".intval($_GET['user']);
 			$profile=new GeographUser($_GET['user']);
-			$filtered_title .= " by ".htmlentities2($profile->realname);
+			$filtered_title = "by ".htmlentities2($profile->realname);
 		}
 		if (!empty($_GET['status'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
-			$filtered_title .= " moderated as '".htmlentities2($_GET['status'])."'";
+			$filtered_title = "moderated as '".htmlentities2($_GET['status'])."'";
 			$_GET['status'] = str_replace('supplemental','accepted',$_GET['status']);
 			$custom_where .= " and moderation_status = ".$db->Quote($_GET['status']);
 		}
 		if (!empty($_GET['class'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$custom_where .= " and imageclass = ".$db->Quote($_GET['class']);
-			$filtered_title .= " categorised as '".htmlentities2($_GET['class'])."'";
+			$filtered_title = "categorised as '".htmlentities2($_GET['class'])."'";
 		}
 		if (!empty($_GET['taken'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$custom_where .= " and imagetaken LIKE ".$db->Quote($_GET['taken']."%");
 			$date = getFormattedDate($_GET['taken']);
-			$filtered_title .= " Taken in $date";
+			$filtered_title = "Taken in $date";
 		}
 		if (!empty($_GET['takenyear'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$custom_where .= " and imagetaken LIKE ".$db->Quote($_GET['takenyear']."%");
 			$date = getFormattedDate($_GET['takenyear']);
-			$filtered_title .= " Taken in $date";
+			$filtered_title = "Taken in $date";
 		}
 		if (!empty($_GET['submitted'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$custom_where .= " and submitted LIKE ".$db->Quote($_GET['submitted']."%");
 			$date = getFormattedDate($_GET['submitted']);
-			$filtered_title .= " Submitted in $date";
+			$filtered_title = "Submitted in $date";
 		}
 		if (!empty($_GET['submittedyear'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$custom_where .= " and submitted LIKE ".$db->Quote($_GET['submittedyear']."%");
 			$date = getFormattedDate($_GET['submittedyear']);
-			$filtered_title .= " Submitted in $date";
+			$filtered_title = "Submitted in $date";
 		}
 		if (isset($_GET['direction']) && strlen($_GET['direction'])) {
 			$direction = intval($_GET['direction']);
 			$custom_where .= " and view_direction = $direction";
 			
 			$view_direction = ($direction%90==0)?strtoupper(heading_string($direction)):ucwords(heading_string($direction)) ;
-			$filtered_title .= " Looking $view_direction";
+			$filtered_title = "Looking $view_direction";
 		}
 		if (!empty($_GET['viewpoint'])) {
 			$viewpoint_square = new GridSquare;
@@ -281,7 +281,7 @@ if ($grid_given)
 				$n = intval($viewpoint_square->natnorthings /1000);
 				$custom_where .= " and viewpoint_eastings DIV 1000 = $e AND viewpoint_northings DIV 1000 = $n";
 
-				$filtered_title .= " Taken in ".$viewpoint_square->grid_reference;
+				$filtered_title = "Taken in ".$viewpoint_square->grid_reference;
 			}
 		}
 		if (!empty($_GET['centi'])) {
@@ -309,7 +309,7 @@ if ($grid_given)
 				$grid_ok=$square->setByFullGridRef($_GET['centi'],false,true);
 				$smarty->assign('gridrefraw', stripslashes($_GET['centi']));
 			}
-			$filtered_title .= " in ".htmlentities2($_GET['centi'])." Centisquare<a href=\"/help/squares\">?</a>";
+			$filtered_title = "in ".htmlentities2($_GET['centi'])." Centisquare<a href=\"/help/squares\">?</a>";
 		}
 		if (!empty($_GET['viewcenti'])) {
 			if ($_GET['viewcenti'] == 'unspecified') {
@@ -331,7 +331,7 @@ if ($grid_given)
 				
 				$smarty->assign('gridrefraw', stripslashes($_GET['viewcenti']));
 			}
-			$filtered_title .= " photographer in ".htmlentities2($_GET['viewcenti'])." Centisquare<a href=\"/help/squares\">?</a>";
+			$filtered_title = " photographer in ".htmlentities2($_GET['viewcenti'])." Centisquare<a href=\"/help/squares\">?</a>";
 		}
 		if ($custom_where) {
 			$smarty->assign('filtered_title', $filtered_title);
@@ -431,7 +431,7 @@ if ($grid_given)
 				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname
 				FROM gridimage gi inner join user using(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
-				AND $user_crit $custom_where
+				AND $user_crit
 				GROUP BY imageclass");
 				$start = rand(0,max(0,count($all)-20));
 				$end = $start + 20;
@@ -457,7 +457,7 @@ if ($grid_given)
 				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname
 				FROM gridimage gi inner join user using(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
-				AND $user_crit $custom_where
+				AND $user_crit
 				GROUP BY moderation_status 
 				ORDER BY ftf DESC,moderation_status+0 DESC");
 				foreach ($all as $row) {
@@ -488,7 +488,7 @@ if ($grid_given)
 				FROM gridimage gi
 				INNER JOIN user USING(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
-				AND $user_crit $custom_where
+				AND $user_crit
 				GROUP BY user_id
 				ORDER BY user.realname");
 				$start = rand(0,max(0,count($all)-20));
@@ -515,7 +515,7 @@ if ($grid_given)
 				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname
 				FROM gridimage gi inner join user using(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
-				AND $user_crit $custom_where
+				AND $user_crit
 				GROUP BY view_direction");
 				$br = empty($_GET['ht'])?'<br/>':'';
 				$start = rand(0,max(0,count($all)-20));
@@ -545,7 +545,7 @@ if ($grid_given)
 				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname
 				FROM gridimage gi inner join user using(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
-				AND $user_crit $custom_where
+				AND $user_crit
 				GROUP BY viewpoint_eastings DIV 1000, viewpoint_northings DIV 1000");
 				$conv = new Conversions('');
 				$start = rand(0,max(0,count($all)-20));
@@ -583,7 +583,7 @@ if ($grid_given)
 				$all = $db->cacheGetAll($cacheseconds,"SELECT (nateastings = 0),count(*),gridimage_id,nateastings DIV 100, natnorthings DIV 100
 				FROM gridimage gi
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
-				AND $user_crit $custom_where
+				AND $user_crit
 				GROUP BY nateastings DIV 100, natnorthings DIV 100,(nateastings = 0)");
 				
 				$maximages = 0;
@@ -622,7 +622,7 @@ if ($grid_given)
 				$all = $db->cacheGetAll($cacheseconds,"SELECT (viewpoint_eastings = 0),count(*),gridimage_id,viewpoint_eastings DIV 100, viewpoint_northings DIV 100
 				FROM gridimage gi
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
-				AND $user_crit $custom_where
+				AND $user_crit
 				AND ((viewpoint_eastings DIV 1000 = $e AND viewpoint_northings DIV 1000 = $n) OR viewpoint_eastings = 0)
 				GROUP BY viewpoint_eastings DIV 100, viewpoint_northings DIV 100,(viewpoint_eastings = 0)");
 				$maximages = 0;
@@ -663,7 +663,7 @@ if ($grid_given)
 				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname
 				FROM gridimage gi inner join user using(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
-				AND $user_crit $custom_where
+				AND $user_crit
 				GROUP BY SUBSTRING($column,1,$length)");
 				$column = (preg_match('/^taken/',$_GET['by']))?'taken':'submitted';
 				$start = rand(0,max(0,count($all)-20));

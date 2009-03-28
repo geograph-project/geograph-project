@@ -466,6 +466,10 @@ if (isset($_POST['gridsquare']))
 				if (!$err)
 					$smarty->assign('gridimage_id', $uploadmanager->gridimage_id);
 					
+					
+				if (in_array($USER->age_group,array('',11,18))) {
+					$smarty->assign('show_comp',1); 
+				}
 			}
 			
 			$step=($err)?7:5;

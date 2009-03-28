@@ -28,7 +28,8 @@ require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/map.class.php');
 
-if (!isLocalIPAddress())
+if ( ($_SERVER['REMOTE_ADDR'] != $_SERVER['SERVER_ADDR']) &&
+     (strpos($_SERVER['HTTP_X_FORWARDED_FOR'],$CONF['server_ip']) !== 0) )  //begins with
 {
 	init_session();
         $USER->mustHavePerm("admin");

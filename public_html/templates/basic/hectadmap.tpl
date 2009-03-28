@@ -30,7 +30,6 @@
 {section name=y loop=$h start=$y2 step=-1}
 	{assign var="y" value=$smarty.section.y.index}
 
-	<tr>
 	{section name=x loop=$w start=$x1 step=1}
 		{assign var="x" value=$smarty.section.x.index}
 		
@@ -45,7 +44,6 @@
 	
 	</tr>
 {/section}
-</tbody>
 </table>
 
 <p><i>Hover over square to see statistics</i></p>

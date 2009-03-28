@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<buttons format="1" version="1">
+  <button id="custombutton/geograph" type="dynamic">
+    <placement>6.0</placement>
+    <label>Geograph</label>
+    <icon name="{1563f71e-b0c6-4ff5-a3e0-402a70bc357d}/Layer 1" src="pbz"/>
+    <tooltip>Post photos to Geograph British Isles</tooltip>
+    
+    <action verb="hybrid">
+      <param name="url" value="http://domain.com/puploader.php"/>
+    </action>
+  </button>
+</buttons>

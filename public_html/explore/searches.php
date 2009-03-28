@@ -124,14 +124,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$queries =& $db->getAll("
 	select
-		id,searchdesc,`count`,comment,created,approved,orderby,stickied
+		id,searchdesc,`count`,comment,created,approved,orderby
 	from
 		queries_featured
 		inner join queries using (id)
 		left join queries_count using (id)
 	$where_sql
 	order by 
-		stickied desc, updated desc");
+		updated desc");
 	$ADODB_FETCH_MODE = $dol;
 	
 	if (!empty($CONF['memcache']['app'])) { //without memcache this would suck

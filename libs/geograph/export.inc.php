@@ -53,14 +53,7 @@ if (!empty($_GET['thumb'])) {
 	$csvhead .= ",Thumb URL";
 	$sql_from = ',gi.user_id,x,y,reference_index';
 }
-if (!empty($_GET['gr'])) {
-	$csvhead .= ",Subject";
-	$sql_from = ',reference_index';
-	if (!empty($_GET['ppos'])) {
-		$csvhead .= ",Photographer";
-		$sql_from .= ",viewpoint_eastings,viewpoint_northings,if(use6fig=1,6,viewpoint_grlen) as viewpoint_grlen";
-	}
-} elseif (!empty($_GET['en'])) {
+if (!empty($_GET['en'])) {
 	$csvhead .= ",Easting,Northing,Figures";
 	if (isset($_GET['coords']) && empty($_GET['thumb'])) {
 		$sql_from = ',x,y,reference_index';

@@ -167,7 +167,8 @@ function __autoload($class_name) {
                 $con = ob_get_clean();
                 mail('geograph@barryhunter.co.uk','[Geograph Error] '.date('r'),$con);
 		header("HTTP/1.1 505 Server Error");
-                die('Fatal Internal Error, the developers have been notified, if possible please <a href="mailto:geograph@barryhunter.co.uk">let us know</a> what you where doing that lead up to this error');
+                die('Fatal Internal Error, the developers have been notified, if possible please <a
+href="mailto:geograph@barryhunter.co.uk">let us know</a> what you where doing that lead up to this error');
         }
 
 	require_once('geograph/'.strtolower($class_name).'.class.php');
@@ -313,15 +314,6 @@ class GeographPage extends Smarty
 		//show more links in template?
 		if (isset($GLOBALS['USER']) && $GLOBALS['USER']->user_id > 0) {
 			if (function_exists('apc_fetch')) {
-				if (apc_fetch($_SERVER['REQUEST_URI']))  {
-					$this->caching = 0;
-					$this->disable_caching = 1; //just incase app later changes it. 
-
-					$this->assign('extra_meta', '<script src="http://asset.userfly.com/users/14743/userfly.js" type="text/javascript"></script>');
-					
-					apc_delete($_SERVER['REQUEST_URI']);
-				}
-
 				if (($value = apc_fetch('irc.seen')) === FALSE) {
 					if (@filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
 						$value = @file_get_contents($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen');
@@ -358,9 +350,6 @@ class GeographPage extends Smarty
 	function is_cached($template, $cache_id = null, $compile_id = null)
 	{
 		global $USER,$CONF;
-		if (!empty($this->disable_caching)) {
-			$this->caching = 0;
-		}
 		$filename = str_replace("|","___","{$this->cache_dir}/lock_$template-$cache_id.tmp");
 		if (isset($_GET['refresh']) && $USER->hasPerm('admin')) {
 			$this->clear_cache($template, $cache_id, $compile_id);
@@ -406,9 +395,6 @@ class GeographPage extends Smarty
 	function display($template, $cache_id = null, $compile_id = null)
 	{
 		global $CONF;
-		if (!empty($this->disable_caching)) {
-			$this->caching = 0;
-		}
 		$ret = parent::display($template, $cache_id, $compile_id);
 
 		//we finished so remove the lock file

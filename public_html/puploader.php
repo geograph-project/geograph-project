@@ -40,6 +40,9 @@ if (isset($_GET['success'])) {
 		$smarty->assign('status', unserialize($token->getValueBinary("s")));
 		$smarty->assign('filenames', unserialize($token->getValueBinary("f")));
 	}
+	if (in_array($USER->age_group,array('',11,18))) {
+		$smarty->assign('show_comp',1); 
+	}
 	
 } elseif (isset($_POST['selected'])) {  //we dont get the button :(
 	$status = array();

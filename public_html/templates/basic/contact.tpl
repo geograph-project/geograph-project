@@ -4,14 +4,9 @@
 {dynamic}
 {if $message_sent}
 	<h3>Thank you for contacting the Geograph British Isles team.</h3>
-	<p>Your message has been sent - you should hear back from us soon.</p>
+	<p>Your message has been sent - you should hear back from us soon. In the meantime you can read about the project <a href="/faq.php">here</a>.</p>
 {else}
     <h2>Contact Us</h2>
- 
- 	<div style="background-color:#eeeeee;padding:2px; text-align:center">
-	The Geograph British Isles project aims to collect geographically
-	representative photographs and information for every square kilometre of Great Britain</a> and 
-	Ireland.</div>
  
  	<p>Got something to tell us? Then fire away - we try to respond within 24 hours, often much quicker.</p>
  
@@ -30,8 +25,6 @@
 	<textarea id="msg" name="msg" rows="10" cols="50">{$msg|escape:'html'}</textarea>
     	<br /><span class="formerror">{$msg_error}</span> 
     <br />
-        <small>If you are writing in relation to a particular image, don't forget to mention which!</small>
-    
     <input type="submit" name="send" value="Send"/></p>
     </form>
 {/if} 

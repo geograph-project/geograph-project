@@ -156,7 +156,7 @@ if (isset($_POST['msg']))
 			"with HTTP;".
 			strftime("%d %b %Y %H:%M:%S -0000", time())."\n";
 
-		if (preg_match('/(DORMANT|DELETED|@.*geograph\.org\.uk|@.*geograph\.co\.uk)/i',$recipient->email) || strpos($recipient->rights,'dormant') !== FALSE) {
+		if (preg_match('/(DORMANT|geograph\.org\.uk|geograph\.co\.uk|dev\.null|deleted|localhost|127\.0\.0\.1)/',$recipient->email)) {
 			$smarty->assign('invalid_email', 1);
 			
 			$email = $CONF['contact_email'];
@@ -230,7 +230,7 @@ elseif (isset($_GET['image']))
 	$smarty->assign_by_ref('msg', $msg);
 }
 
-if (preg_match('/(DORMANT|DELETED|@.*geograph\.org\.uk|@.*geograph\.co\.uk)/i',$recipient->email) || strpos($recipient->rights,'dormant') !== FALSE) {
+if (preg_match('/(DORMANT|geograph\.org\.uk|geograph\.co\.uk|dev\.null|deleted|localhost|127\.0\.0\.1)/',$recipient->email)) {
 	$smarty->assign('invalid_email', 1);
 	if ($recipient->public_email) {
 		$smarty->assign_by_ref('public_email', $recipient->public_email);

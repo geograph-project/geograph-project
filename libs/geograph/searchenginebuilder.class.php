@@ -90,10 +90,7 @@ class SearchEngineBuilder extends SearchEngine
 				$searchy = $criteria->y;
 				$location = $pc[0];
 			} else {
-				$this->errormsg = "Invalid Postcode or a newer Postcode not in our database, please try a different search method";
-				if ($pc[3]) {
-					$this->errormsg .= ", or use just the outcode [ {$pc[1]}{$pc[2]} ]";
-				}
+				$this->errormsg = "Invalid Postcode or a newer Postcode not in our database, please try a different search method.";
 			}
 		} elseif (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$qlocation,$gr)) {
 			require_once('geograph/gridsquare.class.php');
@@ -173,7 +170,7 @@ class SearchEngineBuilder extends SearchEngine
 			} elseif (preg_match('/^".*"$/',$q)) {
 				$searchtext = $q;
 				$searchdesc = ", matching \"".$q."\" ".$searchdesc;
-			} elseif (isset($GLOBALS['smarty'])) {
+			} else {
 		
 				//check if this is a user 
 				$criteria2 = new SearchCriteria_All();
@@ -190,20 +187,12 @@ class SearchEngineBuilder extends SearchEngine
 						$this->criteria->is_multiple = true;
 						$this->criteria->ismore = true; #so doesnt display placename prompt
 						unset($searchclass);
-						
-						if (!empty($criteria->placename)) {
-							$this->criteria->matches = $criteria->_matches;
-						}
 					}
 				} else {
 					//asuume a text search
 					$searchtext = $q;
 					$searchdesc = ", containing '{$q}' ".$searchdesc;
 				}
-			} else {
-				//asuume a text search - without smarty must be api/feed
-				$searchtext = $q;
-				$searchdesc = ", containing '{$q}' ".$searchdesc;
 			}
 		} elseif ($placename && !$searchdesc) {
 			$q = $searchtext = $placename;
@@ -346,10 +335,7 @@ class SearchEngineBuilder extends SearchEngine
 					$searchx = $criteria->x;
 					$searchy = $criteria->y;	
 				} else {
-					$this->errormsg = "Invalid Postcode or a newer Postcode not in our database, please try a different search method";
-					if ($pc[3]) {
-						$this->errormsg .= ", or use just the outcode [ {$pc[1]}{$pc[2]} ]";
-					}
+					$this->errormsg = "Invalid Postcode or a newer Postcode not in our database, please try a different search method.";
 				}
 			} else {
 				$this->errormsg = "Does not appear to be a valid Postcode";

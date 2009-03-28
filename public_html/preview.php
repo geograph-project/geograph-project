@@ -124,9 +124,7 @@ if (!empty($_POST['spelling'])) {
 	$query = "{$image->title} {$image->comment} {$image->imageclass}"; 
 
 	$xml = new SimpleXMLElement(SpellChecker::GetSuggestions( $query )); 
-	if (!$xml) {
-		die("unable to contact spelling service");
-	}
+
 	$replacements = array(); 
 	foreach($xml->c as $correction) { 
 		$suggestions = explode("\t", (string)$correction); 

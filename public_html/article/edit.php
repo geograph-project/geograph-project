@@ -119,7 +119,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		$_POST['url'] = $_POST['title'];
 	}
 	$_POST['url'] = preg_replace('/ /','-',trim($_POST['url']));
-	$_POST['url'] = preg_replace('/[^\w-]+/','',$_POST['url']);
+	$_POST['url'] = preg_replace('/[^\w\.,-]+/','',$_POST['url']);
 	
 	if ($_POST['title'] == "New Article")
 		$errors['title'] = "Please give a meaningful title";

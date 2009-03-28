@@ -423,7 +423,7 @@ class Gazetteer
 		global $USER;
 		global $CONF,$memcache;
 		
-		$mkey = strtolower(trim($placename)).'.v5';//need to invalidate the whole cache. 
+		$mkey = strtolower(trim($placename)).'.v4';//need to invalidate the whole cache. 
 		//fails quickly if not using memcached!
 		$places =& $memcache->name_get('g',$mkey);
 		if ($places)
@@ -447,7 +447,7 @@ class Gazetteer
 			if (!empty($county)) {
 				$qcount = $db->Quote($county);
 				
-				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name,code_name as dsg_name,(seq + 1000000) as id,km_ref as gridref from os_gaz inner join os_gaz_code using (f_code) where def_nam=".$db->Quote($placename)." and (full_county = $qcount OR hcounty = $qcount)");
+				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where def_nam=".$db->Quote($placename)." and (full_county = $qcount OR hcounty = $qcount)");
 			} else {
 				$qplacename = $db->Quote($placename);
 				$sql_where  = "def_nam=$qplacename";
@@ -465,20 +465,9 @@ class Gazetteer
 					}
 				} 
 				//todo need to 'union'  with other gazetterr! (as if one match in each then will no work!) 
-				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name,code_name as dsg_name,(seq + 1000000) as id,km_ref as gridref from os_gaz inner join os_gaz_code using (f_code) where $sql_where");
+				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where $sql_where");
 				if (count($places) == 0) {
-					$places = $db->GetAll("select full_name,dsg,e,n,reference_index,id,loc_dsg.name as dsg_name from loc_placenames inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) where full_name=$qplacename");
-					
-					if ($c = count($places)) {
-						require_once('geograph/conversions.class.php');
-						$conv = new Conversions;
-						foreach($places as $id => $row) {
-							if (empty($row['gridref'])) {
-								list($places[$id]['gridref'],) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
-							}
-							$places[$id]['full_name'] = _utf8_decode($row['full_name']);
-						}
-					}
+					$places = $db->GetAll("select full_name,dsg,e,n,reference_index from loc_placenames where full_name=$qplacename");
 				}
 			}
 		}

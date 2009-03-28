@@ -111,7 +111,7 @@ function isSpam($msg)
 function getRemoteIP()
 {
 	//get IP address of user
-	if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+	if (strlen($_SERVER['HTTP_X_FORWARDED_FOR']))
 	{
 		$ips=explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
 		$ip=trim($ips[count($ips)-1]);
@@ -121,29 +121,6 @@ function getRemoteIP()
 		$ip=$_SERVER['REMOTE_ADDR'];
 	}
 	return $ip;
-}
-
-
-/**
- * 
- * 
- */
-function isLocalIPAddress()
-{
-	global $CONF;
-	
-	if ($_SERVER['REMOTE_ADDR'] == $_SERVER['SERVER_ADDR'])
-	{
-		//is from self
-		return true;
-	} 
-	elseif (!empty($CONF['server_ip']) && strpos($_SERVER['REMOTE_ADDR'],$CONF['server_ip']) === 0 && strpos(getRemoteIP(),$CONF['server_ip']) === 0) 
-	{
-		//its our server calling direct/our gateway is forwarding for our server
-		//(note as getRemoteIP return the LAST ip from HTTP_X_FORWARDED_FOR its the first one away - ie its the IP our server added- the most trusted. 
-		return true;
-	} 
-	return false;
 }
 
 ?>

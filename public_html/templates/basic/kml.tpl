@@ -21,7 +21,15 @@
 	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=http://$http_host/discuss/feed/forum5.kml" text="Google Maps"}<br/>
 	{/if}
 	<br/> 
-	</span>
+	<b>Hectad<a href="/help/squares">?</a> 3D Coverage Graph</b>:<br/> 
+	&nbsp;&nbsp;&nbsp;<a href="/kml/hectads-points.kmz" title="Geograph 3D Coverage Graph" class="xml-kml" type="application/vnd.google-earth.kmz+xml">KMZ</a> (about 200 kilobytes)<br/>
+	{if $user->registered}
+	&nbsp;&nbsp;&nbsp;<a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=2&topic=4415"><i>More <small>including time animation</small></i></a><br/>
+	{/if}
+	<small><small><i>Last updated: {$coverage_updated}</i></small></small><br/> 
+	<br/> 
+	<b>Geograph Layer Collection</b>:<br/>
+	&nbsp;&nbsp;&nbsp;<a href="/kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> <small><small>- includes access to<br/> nearly all the features on this page and more!</small></small></span>
 	</div>
 	 
 	 <h2>View Geograph Images using KML</h2> 
@@ -65,7 +73,7 @@
 			<p>Please enter <a href="/search.php">another search</a>, or select <a href="/kml.php">common exports</a></p>
 		{/if}
 		
-		{if $engine->fullText && !$engine->criteria->sphinx.compatible}
+		{if $engine->fullText}
 			<br/><br/>
 			<div style="padding:2px;border:1px solid gray; font-size:0.7em;text-align:center">
 			This search is powered by the new <a href="/help/search_new">experimental Full-Text search index</a>, which in some ways is less precise than the legacy search, but often results in quicker and more relevent results. However at this time its not fully compatible with all KML exports, such options are curretly hidden.</div>

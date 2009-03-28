@@ -32,6 +32,8 @@ $template='profile.tpl';
 $cacheid='';
 $profile = array();
 
+//this script works in two modes - editing the currently logged in users profile
+//or viewing any users profile in read-only fashion - here we decide which to do
 if (isset($_REQUEST['edit']))
 {
 	//must be logged in to proceed with an edit

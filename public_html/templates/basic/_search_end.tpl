@@ -4,25 +4,14 @@
 	
 {if $engine->resultCount}
 
-	{if $engine->fullText && $engine->numberOfPages eq $engine->currentPage && $engine->criteria->sphinx.compatible && $engine->criteria->sphinx.compatible_order && $engine->resultCount > $engine->maxResults}
-		<div class="interestBox" style="border:1px solid pink;">
-			You have reached the last page of results, this is due to the fact that the new search engine will only return at most {$engine->maxResults|number_format} results. However your search seems to be compatible with the lagacy engine. You can <a href="/search.php?i={$i}&amp;legacy=true&amp;page={$engine->currentPage+1}">view the next page in Legacy Mode</a> to continue. <b>Note, searches will be slower.</b>
-		</div>
-	{/if}
+<div class="interestBox" style="text-align:center">
+<a href="/explore/searches.php?i={$i}">Feature this search!</a> <sup style="color:red">new!</sup>
+&nbsp;&nbsp; | &nbsp;&nbsp;
+<span id="votediv{$i}"><b>Rate this Search Result</b>: {votestars id=$i type="q"}</span>
 
+</div>
 
-{if strpos($engine->criteria->searchdesc,'with incomplete data') === FALSE}
-	{assign var="sidebarclass" value="search"}
-{else}
-	{assign var="sidebarclass" value="searchtext"}
-{/if}
-
-
-<div align="right" style="clear:both">Sidebar for:
-<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass={$sidebarclass}" target="_search" rel="nofollow">IE &amp; Firefox</a>, <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass={$sidebarclass}" rel="sidebar" rel="nofollow" title="Results">Opera</a>.
-
-
-View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteria->sphinx.compatible)}<a title="Breakdown for images{$engine->criteria->searchdesc|escape:"html"}" href="/statistics/breakdown.php?i={$i}">Statistics</a> {/if}<a title="Google Earth Or Google Maps Feed for images{$engine->criteria->searchdesc|escape:"html"}" href="/kml.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}">as KML</a> <a title="geoRSS Feed for images{$engine->criteria->searchdesc|escape:"html"}" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.rss" class="xml-geo">geo RSS</a> <a title="GPX file for images{$engine->criteria->searchdesc|escape:"html"}" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.gpx" class="xml-gpx">GPX</a></div>
+<p align="right" style="clear:both">View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteria->sphinx.compatible)}<a title="Breakdown for images{$engine->criteria->searchdesc|escape:"html"}" href="/statistics/breakdown.php?i={$i}">Statistics</a> {/if}<a title="Google Earth Or Google Maps Feed for images{$engine->criteria->searchdesc|escape:"html"}" href="/kml.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}">as KML</a> <a title="geoRSS Feed for images{$engine->criteria->searchdesc|escape:"html"}" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.rss" class="xml-geo">geo RSS</a> <a title="GPX file for images{$engine->criteria->searchdesc|escape:"html"}" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.gpx" class="xml-gpx">GPX</a></p>
 {else}
 <p align="right" style="clear:both"><small>Subscribe to find images submitted in future:</small> <a title="geoRSS Feed for images{$engine->criteria->searchdesc|escape:"html"}" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.rss" class="xml-geo">geo RSS</a></p>
 {/if}
@@ -47,10 +36,6 @@ View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteri
 
 <div class="interestBox" style="text-align:center">
 
-<div style="border-bottom:1px solid silver; padding-bottom:5px;margin-bottom:5px;"><a href="/explore/searches.php?i={$i}">Feature this search!</a>
-&nbsp;&nbsp; | &nbsp;&nbsp;
-<span id="votediv{$i}"><b>Rate this Search Result</b>: {votestars id=$i type="q"}</span></div>
-
 <form action="/search.php" method="get" style="display:inline">
 <input type="hidden" name="i" value="{$i}"/>
 {if $engine->currentPage > 1}<input type="hidden" name="page" value="{$engine->currentPage}"/>{/if}
@@ -62,9 +47,9 @@ View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteri
 <noscript>
 <input type="submit" value="Update"/>
 </noscript>
-</form> &nbsp;&nbsp; | &nbsp;&nbsp;
+</form> &nbsp;&nbsp;
 
-Background Color: [
+Background Color:
 {if $maincontentclass eq "content_photowhite"}
 	<b>white</b>
 {else}
@@ -79,7 +64,7 @@ Background Color: [
 	<b>grey</b>
 {else}
 	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=gray" rel="nofollow" class="robots-nofollow robots-noindex">Grey</a>
-{/if} ]
+{/if}
 </div>
 
 {include file="_std_end.tpl"}

@@ -1241,7 +1241,7 @@ if (isset($_GET['fav']) && $i) {
 		} else {
 			$template = 'search_advanced.tpl';
 		}
-		if ($is_cachable && $smarty->caching) {
+		if ($is_cachable) {
 			$smarty->caching = 2; // lifetime is per cache
 			$smarty->cache_lifetime = 3600*3; //3hr cache
 		} else {

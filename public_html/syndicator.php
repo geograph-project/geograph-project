@@ -138,13 +138,12 @@ if (isset($q)) {
 	require_once('geograph/searchenginebuilder.class.php');
 	
 	$engine = new SearchEngineBuilder('#'); 
-	$engine->searchuse = "syndicator";
 	$_GET['i'] = $engine->buildSimpleQuery($q,$CONF['default_search_distance'],false,isset($_GET['u'])?$_GET['u']:0);
 
-	if (function_exists('symlink') && isset($cacheid)) {
+	if (function_exists('symlink')) {
 		//create a link so cache can be access as original query(cacheid) or directly via its 'i' number later...
-		symlink($_SERVER['DOCUMENT_ROOT']."/rss/$cacheid-{$pg}-{$format}{$opt_expand}.$extension",
-		        $_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}{$opt_expand}.$extension");
+		symlink($_SERVER['DOCUMENT_ROOT']."/rss/$cacheid-{$pg}-{$format}.$extension",
+		        $_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}.$extension");
 	}
 
 	if (!empty($engine->errormsg) && !empty($_GET['fatal'])) {
@@ -288,8 +287,7 @@ for ($i=0; $i<$cnt; $i++)
 		if ($format == 'MEDIA') {
 			$item->content = $images->images[$i]->_getFullpath(true,true); 
 			if ($opt_expand) {
-				$title=$this->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
-				$item->description = '<a href="'.$item->link.'" title="'.$title.'">'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
+				$item->description = '<a href="'.$item->link.'">'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
 				$item->descriptionHtmlSyndicated = true;
 			}
 		}
@@ -300,8 +298,7 @@ for ($i=0; $i<$cnt; $i++)
 		imagejpeg($images->images[$i]->getSquareThumb(16));
 		$item->thumbdata = ob_get_clean();
 	} elseif ($opt_expand) {
-		$title=$this->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
-		$item->description = '<a href="'.$item->link.'" title="'.$title.'">'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
+		$item->description = '<a href="'.$item->link.'">'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
 		$item->descriptionHtmlSyndicated = true;
 	}
 
