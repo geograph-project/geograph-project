@@ -11,12 +11,7 @@
      <li><a title="Submitted Content" href="/content/">Content</a></li>
     </ul></li>
     <li>Interact<ul>
-     <li><a title="Play Games" href="/games/">Games</a></li>
-     <li><a title="Activities" href="/activities/">Activities</a> </li>
      <li><a title="Discuss" href="/discuss/">Discuss</a></li>
-     {dynamic}{if $user->registered}
-     <li><a title="Find out about local Events" href="/events/">Events</a></li>
-     {/if}{/dynamic}
     </ul></li>
     <li>Contributors<ul>
      <li><a title="Submit" href="/submit.php">Submit</a></li>

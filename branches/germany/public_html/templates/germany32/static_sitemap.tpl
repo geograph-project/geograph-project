@@ -45,9 +45,6 @@
 	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
 	<li><a title="Photo Gallery" href="/gallery/">view some <b>themed galleries</b></a></li>
 	<li><a title="List of all images" href="/sitemap/geograph.html">view the <b>full list</b> of images</a></li>
-	<li><a title="Games" href="/games/"><b>play</b> with geograph images</a></li>
-	<li><a title="Draggable Map" href="/mapper/">interactive <b>draggable map</b></a></li>
-	<li><a href="/activities/">explore our Activities section</a></li>
 	<li><a href="/help/imagine">Through The Square Window...</a></li>
 	<li><a href="/explore/places/">Explore the <b>placename gazetteer</b></a></li>
 	<li><a href="/explore/searches.php">A list of <b>featured searches</b></a> <a title="RSS Feed Featured Searches" href="/explore/searches.rss.php" class="xml-rss">RSS</a></li>
@@ -226,7 +223,7 @@ Refine:
 
 <ul>
 	<li><a href="/latlong.php">Lat/Long Entry Form</a></li>
-	<li><a href="/conversion.php">Coordinate Conversion</a></li>
+	<!--<li><a href="/stuff/conversion.php">Coordinate Conversion</a></li>-->
 </ul>
 
 
