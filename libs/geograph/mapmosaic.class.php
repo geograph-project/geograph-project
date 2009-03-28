@@ -520,29 +520,35 @@ class GeographMapMosaic
 			if (isset($this->old_centrex)) {
 				//if zooming out use the old grid!
 				//or in then use the click point grid
-				$point = "'POINT({$this->old_centrex} {$this->old_centrey})'";
+				$x_point=$this->old_centrex;
+				$y_point=$this->old_centrey;
 			} else {
-				$point = "'POINT($x_km $y_km)'";
+				$x_point=$x_km;
+				$y_point=$y_km;
 			}
+			$x_lim=$x_point-100;
+			$y_lim=$y_point-100;
+			$point = "'POINT($x_point $y_point)'";
 			$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
-				where CONTAINS(geometry_boundary, GeomFromText($point))
+				where CONTAINS(geometry_boundary, GeomFromText($point)) and (origin_x > $x_lim) and (origin_y > $y_lim)
 				order by landcount desc, reference_index desc limit 1";
+			$prefix=$db->GetRow($sql);
 			
-			if (empty($prefix['prefix'])) { 
-				//if fails try a less restrictive search
-				if (isset($this->old_centrex)) {
-					$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
-						where {$this->old_centrex} between origin_x and (origin_x+width-1) and 
-						{$this->old_centrey} between origin_y and (origin_y+height-1)
-						order by landcount desc, reference_index limit 1";
-				} else {
-					$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
-						where $x_km between origin_x and (origin_x+width-1) and 
-						$y_km between origin_y and (origin_y+height-1)
-						order by landcount desc, reference_index limit 1";
-				}
-				$prefix=$db->GetRow($sql);
-			}
+			#if (empty($prefix['prefix'])) { 
+			#	//if fails try a less restrictive search
+			#	if (isset($this->old_centrex)) {
+			#		$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
+			#			where {$this->old_centrex} between origin_x and (origin_x+width-1) and 
+			#			{$this->old_centrey} between origin_y and (origin_y+height-1)
+			#			order by landcount desc, reference_index limit 1";
+			#	} else {
+			#		$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
+			#			where $x_km between origin_x and (origin_x+width-1) and 
+			#			$y_km between origin_y and (origin_y+height-1)
+			#			order by landcount desc, reference_index limit 1";
+			#	}
+			#	$prefix=$db->GetRow($sql);
+			#}
 							
 			if (!empty($prefix['prefix'])) { 
 				$n=$y_km-$prefix['origin_y'];
