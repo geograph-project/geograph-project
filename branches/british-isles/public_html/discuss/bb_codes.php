@@ -19,8 +19,14 @@ $replacement[]="<a href=\"mailto:\\1\">\\2</a>";
 $pattern[]="/\[img(left|right)?\]http:\/\/{$_SERVER['HTTP_HOST']}\/photo\/(\d+)\[\/img\]/i";
 $replacement[]='[[[\\2]]]';
 
-$pattern[]="/\[img(left|right)?\]http:\/\/{$_SERVER['HTTP_HOST']}\/photos\/\w+\/\w+\/(\d+)_([\w_]+)\.jpg\[\/img\]/i";
-$replacement[]='[[[\\2]]]';
+$pattern[]="/\[img(left|right)?\]http:\/\/{$_SERVER['HTTP_HOST']}\/(geophotos\/\w+|photos)\/\w+\/\w+\/(\d+)_([\w_]+)\.jpg\[\/img\]/i";
+$replacement[]='[[[\\3]]]';
+
+$pattern[]="/\[img(left|right)?\]http:\/\/geo(-en|)\.hlipp\.de\/photo\/(\d+)\[\/img\]/i";
+$replacement[]='[[[de:\\3]]]';
+
+$pattern[]="/\[img(left|right)?\]http:\/\/geo(-en|)\.hlipp\.de\/photos\/\w+\/\w+\/(\d+)_([\w_]+)\.jpg\[\/img\]/i";
+$replacement[]='[[[de:\\3]]]';
 
 
 $pattern[]="/\[img(left|right)?\](http:\/\/([^<> \n]+?)\.(gif|jpg|jpeg|png))\[\/img\]/i";
