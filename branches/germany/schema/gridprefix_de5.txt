@@ -1,0 +1,10 @@
+replace into gridprefix(prefix, reference_index, origin_x,origin_y, point_origin_xy, geometry_boundary) values
+('ULA',     3,  100,  300, GeomFromText('POINT( 100  300)'), GeomFromText('POLYGON(( 100  300,  100  400,  200  400,  200  300,  100  300))')),
+('UMA',     3,  200,  300, GeomFromText('POINT( 200  300)'), GeomFromText('POLYGON(( 200  300,  200  400,  300  400,  300  300,  200  300))')),
+('UPA',     3,  400,  300, GeomFromText('POINT( 400  300)'), GeomFromText('POLYGON(( 400  300,  400  400,  500  400,  500  300,  400  300))')),
+('UQA',     3,  500,  300, GeomFromText('POINT( 500  300)'), GeomFromText('POLYGON(( 500  300,  500  400,  600  400,  600  300,  500  300))')),
+('TKT',     3,    0,    0, GeomFromText('POINT(   0    0)'), GeomFromText('POLYGON((   0    0,    0  100,  100  100,  100    0,    0    0))')),
+('UKU',     3,    0,  100, GeomFromText('POINT(   0  100)'), GeomFromText('POLYGON((   0  100,    0  200,  100  200,  100  100,    0  100))')),
+('UKV',     3,    0,  200, GeomFromText('POINT(   0  200)'), GeomFromText('POLYGON((   0  200,    0  300,  100  300,  100  200,    0  200))')),
+('UKA',     3,    0,  300, GeomFromText('POINT(   0  300)'), GeomFromText('POLYGON((   0  300,    0  400,  100  400,  100  300,    0  300))'));
+update gridprefix set title=concat('Deutschland (Zone 32) Quadrat ', prefix) where reference_index=3 and title is null;
