@@ -749,6 +749,7 @@ class RasterMap
 				<script type=\"text/javascript\">
 				//<![CDATA[
 					var issubmit = {$this->issubmit}+0;
+					var ri = {$this->reference_index};
 					var map = null;
 					function loadmap() {
 						if (GBrowserIsCompatible()) {

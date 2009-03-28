@@ -14,6 +14,7 @@
 	<script type="text/javascript">
 	//<![CDATA[
 		var issubmit = 1;
+		var ri = -1;
 		var themarker;
 		
 		//the google map object
