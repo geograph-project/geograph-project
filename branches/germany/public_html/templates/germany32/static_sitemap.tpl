@@ -30,6 +30,7 @@
  {/if}
  <li><a href="/help/freedom">Geograph Freedom</a></li>
  <li><a href="/help/terms">Terms &amp; Conditions</a><br/><br/></li>
+ <li><a href="http://www.hlipp.de/contact.html">Impressum</a><br/><br/></li>
  <li><a href="/contact.php">Contact Us</a><br/><br/></li>
  <li><a href="/admin/team.php">The Team</a> &amp; <a href="/help/credits">Credits</a><br/><br/></li>
  <li>... <b>more in the <a href="/article/?cat_word=Geograph">Articles Section</a></b></li>
