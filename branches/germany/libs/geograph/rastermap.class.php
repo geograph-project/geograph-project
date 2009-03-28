@@ -578,6 +578,8 @@ class RasterMap
 				var cenn = {$nort};
 				var maph = {$this->width};
 				var mapw = {$this->width};
+				var rot  = 0;
+				var ri   = {$this->reference_index};
 				var mapb = 1;
 				var static_host = '{$CONF['STATIC_HOST']}';
 			</script>";

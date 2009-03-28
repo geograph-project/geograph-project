@@ -33,10 +33,10 @@
 
 <script>
 	var map = new GMap2();
-	var point = new GLatLng(53.13359, -2.504883);
+	var point = new GLatLng(48.75, 9.25);
 	map.setCenter(point, 6);
 	var geoXml = null;
-	var britishisles = new GLatLngBounds(new GLatLng(49, -12.2),new GLatLng(62, 2.3));
+	var britishisles = new GLatLngBounds(new GLatLng(47, 4),new GLatLng(56, 16));
 
 	function updateMessage() {
 		document.getElementById('message').innerHTML = "Layer Loaded.";
