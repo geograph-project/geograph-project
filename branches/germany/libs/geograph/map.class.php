@@ -1752,6 +1752,7 @@ END;
 			$origin_y=$recordSet->fields['origin_y'];
 			$w=$recordSet->fields['width'];
 			$h=$recordSet->fields['height'];
+			$labelminwidth=$recordSet->fields['labelminwidth'];
 
 			//get polygon of boundary relative to corner of square
 			if (strlen($recordSet->fields['boundary']))
@@ -1783,7 +1784,7 @@ END;
 
 
 
-			if($this->pixels_per_km>=0.3)
+			if($this->pixels_per_km>=0.3 && 100*$this->pixels_per_km>=$labelminwidth)
 			{
 				//font size 1= 4x6
 				//font size 2= 6x8 normal
