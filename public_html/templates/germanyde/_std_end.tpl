@@ -3,26 +3,26 @@
 <div id="nav_block" class="no_print">
  <div class="nav">
   <ul>
-    <li style="font-size:1.42em"><a accesskey="1" title="Home Page" href="/">Home</a></li>
-    <li>View<ul>
-     <li><a title="Find images" href="/search.php">Search</a></li>
-     <li><a title="View map of all submissions" href="/mapbrowse.php">Map</a> <small style="color:red">Updated!</small></li>
-     <li><a title="Explore Images by Theme" href="/explore/">Explore</a></li>
-     <li><a title="Submitted Content" href="/content/">Content</a></li>
+    <li style="font-size:1.42em"><a accesskey="1" title="Startseite" href="/">Startseite</a></li>
+    <li>Ansicht<ul>
+     <li><a title="Bildersuche" href="/search.php">Suche</a></li>
+     <li><a title="Karte aller Bilder anzeigen" href="/mapbrowse.php">Karte</a> <small style="color:red">Aktualisiert!</small></li>
+     <li><a title="Verschieden Zusammenstellungen von Bildern" href="/explore/">Stöbern</a></li>
+     <li><a title="Nutzerbeiträge" href="/content/">Beiträge</a></li>
     </ul></li>
-    <li>Interact<ul>
-     <li><a title="Discuss" href="/discuss/">Discuss</a></li>
+    <li>Interaktion<ul>
+     <li><a title="Forum" href="/discuss/">Forum</a></li>
     </ul></li>
-    <li>Contributors<ul>
-     <li><a title="Submit" href="/submit.php">Submit</a></li>
-     <li><a title="Statistics" href="/numbers.php">Statistics</a></li>
-     <li><a title="Leaderboard" href="/statistics/moversboard.php">Leaderboard</a></li>
+    <li>Teilnehmer<ul>
+     <li><a title="Bild einreichen" href="/submit.php">Einreichen</a></li>
+     <li><a title="Statistiken" href="/numbers.php">Statistik</a></li>
+     <li><a title="Rangliste" href="/statistics/moversboard.php">Rangliste</a></li>
     </ul></li>
-    <li>Further Info<ul>
+    <li>Informationen<ul>
      <li><a title="FAQ" href="/faq.php">FAQ</a></li>
-     <li><a title="Geograph Information Documents" href="/content/?docs&amp;order=title">Documents</a></li>
+     <li><a title="Projektbezogene Informationen" href="/content/?docs&amp;order=title">Dokumente</a></li>
      <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
-     <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a></li>
+     <li><a accesskey="9" title="Kontaktformular" href="/contact.php">Kontakt</a></li>
      <li><a title="Impressum" href="http://www.hlipp.de/contact.html">Impressum</a></li>
     </ul></li>
   {dynamic}
@@ -71,26 +71,26 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
   <div id="search">
     <div id="searchform">
     <form method="get" action="/search.php">
-    <div id="searchfield"><label for="searchterm">Search</label> 
+    <div id="searchfield"><label for="searchterm">Suche</label> 
     <input type="hidden" name="form" value="simple"/>
-    {dynamic}<input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10" title="Enter a Postcode, Grid Reference, Placename or a text search"/>{/dynamic}
-    <input id="searchbutton" type="submit" name="go" value="Find"/></div>
+    {dynamic}<input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10" title="Suche Bilder nach Text oder Koordinaten"/>{/dynamic}
+    <input id="searchbutton" type="submit" name="go" value="los"/></div>
     </form>
     </div>
   </div>
   <div id="login">
   {dynamic}
   {if $user->registered}
-  	  Logged in as {$user->realname|escape:'html'}
+  	  Angemeldet als {$user->realname|escape:'html'}
   	  <span class="sep">|</span>
-  	  <a title="Profile" href="/profile/{$user->user_id}">profile</a>
+  	  <a title="Profil" href="/profile/{$user->user_id}">Profil</a>
   	  <span class="sep">|</span>
-  	  <a title="Log out" href="/logout.php">logout</a>
+  	  <a title="Ausloggen" href="/logout.php">Abmelden</a>
   {else}
-	  You are not logged in
-	  <a title="Already registered? Login in here" href="/login.php">login</a>
+	  Nicht angemeldet:
+	  <a title="Schon registriert? Hier einloggen." href="/login.php">Anmelden</a>
 		<span class="sep">|</span>
-	  <a title="Register to upload photos" href="/register.php">register</a>
+	  <a title="Registrieren um Fotos hochzuladen" href="/register.php">Registrieren</a>
   {/if}
   {/dynamic}
   </div>
@@ -102,7 +102,7 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
 	<div class="content2" id="footer_block">
 {/if}
   <div id="footer" class="no_print">
-     <p style="color:#AAAABB;float:left">Page updated at {$smarty.now|date_format:"%H:%M"}</p>
+     <p style="color:#AAAABB;float:left">Letzte Änderung: {$smarty.now|date_format:"%H:%M"}</p>
    <p><a href="/help/sitemap" title="Listing of site pages">Sitemap</a>
        <span class="sep">|</span>
        <a href="/help/credits" title="Who built this and how?">Credits</a>
