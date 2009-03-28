@@ -58,9 +58,10 @@ a Img
 #header h1
 {
 	margin:0px;
-	background-image: url('/templates/basic/img/logowinter.gif');
+	background-image: url('/templates/germany32/img/logode3.gif');
 	height:74px;
-	width:257px;
+	/*width:257px;*/
+	width:350px;
 	cursor:pointer;
 	/*cursor:hand;*/
 }

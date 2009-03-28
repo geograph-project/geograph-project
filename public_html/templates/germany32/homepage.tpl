@@ -2,14 +2,25 @@
 {include file="_std_begin.tpl"}
 
 
-<h2>Welcome to Geograph British Isles</h2>
+<h2>Welcome to Geograph Deutschland</h2>
 
 <div style="position:relative;background-color:white;">
 
-<div style="background-color:#eeeeee;padding:2px; text-align:center">
-The Geograph British Isles project aims to collect geographically
-representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and 
-<a href="/explore/places/2/">Ireland</a>, and you can be part of it.</div>
+<div style="background-color:#eeeeee;padding:2px; text-align:justify">
+<p>
+The Geograph project aims to collect geographically representative photographs and information for every square kilometre of Germany.
+We use <a href="http://en.wikipedia.org/wiki/Military_grid_reference_system">MGRS coordinates</a> (<a href="http://upload.wikimedia.org/wikipedia/commons/1/19/Utmzonenugitterp.png">grid in Germany</a>) in UTM zones 31, 32, and 33.
+</p>
+<p>
+The project uses code, which is kindly provided by the maintainers of the <a href="http://www.geograph.org.uk">British Geograph project</a>.
+More information about using the code can be found in the <a href="/howto/">HOWTO</a> and in the <a href="/code/">code area</a>. Please note that the project
+is still at a very early stage, so many pages are not yet translated or even not available at all.
+</p>
+<p>
+Although the implementation is still incomplete, your contribution to the project is welcome. Feedback is possible via our
+<a href="/contact.php">contact form</a> or <a href="mailto:geo@hlipp.de">mail</a>.
+</p>
+</div>
 
 
 <div style="width:35%;float:left;position:relative;margin-right:10px">
@@ -57,7 +68,7 @@ representative photographs and information for every square kilometre of <a href
 
 	<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/80x15.png" /></a>
 	&nbsp;&nbsp;
-	by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname|escape:'html'}</a> for <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></div>
+	by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname|escape:'html'}</a> for grid square <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></div>
 
 	</div>
 
