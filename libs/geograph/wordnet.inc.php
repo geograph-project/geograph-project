@@ -44,7 +44,7 @@ function addThreeLetterPhrase($phrase) {
 function updateWordnet(&$db,$text,$field,$id) {
 	global $w1,$w2,$w3;
 	
-	$alltext = strtolower(preg_replace('/[^a-zA-Z0-9]+/',' ',str_replace("'",'',$text)));
+	$alltext = strtolower(preg_replace('/\W+/',' ',str_replace("'",'',$text)));
 	
 
 	if (strlen($text)< 1)
