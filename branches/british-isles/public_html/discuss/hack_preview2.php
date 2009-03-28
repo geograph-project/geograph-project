@@ -9,11 +9,11 @@ $postText2=stripslashes(textFilter($_POST['postText'],$post_text_maxlength,$post
 
 if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$postText2,$g_matches)) {
 	$thumb_count = 0;
-	foreach ($g_matches[3] as $i => $g_id) {
+	foreach ($g_matches[3] as $g_i => $g_id) {
 		$server = $_SERVER['HTTP_HOST'];
 		$ext = false;
 		$prefix = '';
-		if ($g_matches[2][$i] == 'de:') {
+		if ($g_matches[2][$g_i] == 'de:') {
 			$server = 'geo.hlipp.de';
 			$ext = true;
 			$prefix = 'de:';
@@ -35,7 +35,7 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)([a-z]+:
 				if ($ok && $g_image->moderation_status == 'rejected' && (!isset($userRanks[$cc]) || $userRanks[$cc] == 'Member'))
 					$ok = false;
 				if ($ok) {
-					if ($g_matches[1][$i]) {
+					if ($g_matches[1][$g_i]) {
 						$g_img = $g_image->getThumbnail(120,120,false,true);
 						#$g_img = preg_replace('/alt="(.*?)"/','alt="'.$g_image->grid_reference.' : \1 by '.$g_image->realname.'"',$g_img);
 						$g_title=$g_image->grid_reference.' : '.htmlentities($g_image->title).' by '.$g_image->realname;

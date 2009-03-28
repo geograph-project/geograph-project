@@ -437,11 +437,11 @@ function GeographLinks(&$posterText,$thumbs = false) {
 	//look for [[gridref_or_photoid]] and [[[gridref_or_photoid]]]
 	if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
 		$thumb_count = 0;
-		foreach ($g_matches[3] as $i => $g_id) {
+		foreach ($g_matches[3] as $g_i => $g_id) {
 			$server = $_SERVER['HTTP_HOST'];
 			$ext = false;
 			$prefix = '';
-			if ($g_matches[2][$i] == 'de:') {
+			if ($g_matches[2][$g_i] == 'de:') {
 				$server = 'geo.hlipp.de';
 				$ext = true;
 				$prefix = 'de:';
@@ -463,7 +463,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 						$posterText = str_replace("[[[$prefix$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
 					} elseif ($ok) {
 						$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title);
-						if ($g_matches[1][$i]) {
+						if ($g_matches[1][$g_i]) {
 							if ($thumbs) {
 								$g_title.=' by '.htmlentities($g_image->realname);
 								$g_img = $g_image->getThumbnail(120,120,false,true);
