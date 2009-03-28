@@ -309,7 +309,7 @@ function checkGridReferences(that_form) {
 } 
 
 function checkGridReference(that,showmessage) {
-	GridRef = /\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/;
+	GridRef = /\b([a-zA-Z]{1,3}) ?(\d{2,5})[ \.]?(\d{2,5})\b/;
 	ok = true;
 	if (that.value.length > 0) {
 		myArray = GridRef.exec(that.value); 
@@ -350,9 +350,9 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 		}
 		gr = that.value;
 
-		GridRef = /\b([a-zA-Z]{2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/;
+		GridRef = /\b([a-zA-Z]{1,3}) ?(\d{2,5})[ \.]?(\d{2,5})\b/;
 
-		if (gr.length > 5) {
+		if (gr.length > 5) { // FIXME
 			myArray = GridRef.exec(gr);
 			letters = myArray[1];
 			numbers = myArray[2]+myArray[3];

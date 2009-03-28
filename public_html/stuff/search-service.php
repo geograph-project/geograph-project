@@ -42,7 +42,7 @@ $q = trim(preg_replace('/[^\w~\|\(\)@"\/\*-]+/',' ',trim(strtolower($q))));
 
 $q = preg_replace('/(\w+)(-\w+[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\""',$q);
 
-$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,2} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
+$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,3} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
 //todo - handle full placenames with near, by looking up in gaz :)
 
 if (empty($q)) {
@@ -56,7 +56,7 @@ if (!$smarty->is_cached($template, $cacheid))
 {
 
 #location
-	if (preg_match('/^([a-zA-Z]{1,2}) +(\d{1,5})(\.\d*|) +(\d{1,5})(\.*\d*|)/',$q,$matches) && $matches[1] != 'tp') {
+	if (preg_match('/^([a-zA-Z]{1,3}) +(\d{1,5})(\.\d*|) +(\d{1,5})(\.*\d*|)/',$q,$matches) && $matches[1] != 'tp') {
 		$square=new GridSquare;
 		$grid_ok=$square->setByFullGridRef($matches[0],true);
 
@@ -70,7 +70,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$nocache = 1;
 		}
 		
-	} else if (preg_match('/^([a-zA-Z]{1,2})(\d{2,10})\b/',$q,$matches) && $matches[1] != 'tp') {
+	} else if (preg_match('/^([a-zA-Z]{1,3})(\d{2,10})\b/',$q,$matches) && $matches[1] != 'tp') {
 	
 		$square=new GridSquare;
 		$grid_ok=$square->setByFullGridRef($matches[0],true);

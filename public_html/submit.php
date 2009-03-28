@@ -115,9 +115,9 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 					$_POST['gridsquare'] = preg_replace('/^([A-Z]+).*$/','',$_POST['grid_reference']);
 					
 				
-				} elseif (preg_match("/\b([a-zA-Z]{1,2})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
+				} elseif (preg_match("/\b([a-zA-Z]{1,3})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
 					if (strlen($m[2]) != strlen($m[3])) {
-						if (preg_match("/\b([a-zA-Z]{1,2})[ \._-]?(\d{4,10})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {						
+						if (preg_match("/\b([a-zA-Z]{1,3})[ \._-]?(\d{4,10})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {						
 							$_POST['gridsquare'] = $m[1];
 	                                                $_POST['grid_reference'] = $m[1].$m[2];
 						}
@@ -126,7 +126,7 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 						$_POST['grid_reference'] = $m[1].$m[2].$m[3];
 					}
 		
-				} elseif (!empty($exif['COMMENT']) && preg_match("/\b([a-zA-Z]{1,2})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",implode(' ',$exif['COMMENT']),$m)) {
+				} elseif (!empty($exif['COMMENT']) && preg_match("/\b([a-zA-Z]{1,3})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",implode(' ',$exif['COMMENT']),$m)) {
 					$_POST['gridsquare'] = $m[1];
 					$_POST['grid_reference'] = $m[1].$m[2].$m[3];
 				}

@@ -68,10 +68,10 @@ $c=0;
 $host = "http:\/\/".str_replace('.','\.',$_SERVER['HTTP_HOST']);
 $words[$i]=preg_replace("/(^|\[)$host\/photo\/(\d+)/",'\1[[\2]]',$words[$i]);
 $words[$i]=preg_replace("/(^|\[)$host\/view\.php\?id=(\d+)/",'\1[[\2]]',$words[$i]);
-$words[$i]=preg_replace("/^$host\/gridref\/([STNH]?[A-Z]{1}\d{2,10})/",'[[\1]]',$words[$i]);
+$words[$i]=preg_replace("/^$host\/gridref\/([STNH]?[A-Z]{1}\d{2,10}|[A-Z]{3}\d{2,10})/",'[[\1]]',$words[$i]);
 
 
-$words[$i]=preg_replace("/^(\!?)([STNH]?[A-Z]{1})(\d{2,10})([^\w]?)$/e",'((!"$1"&&strlen("$3")%2==0&&$prefixes["$2"])?"[[$2$3]]":"$2$3")."$4"',$words[$i]);
+$words[$i]=preg_replace("/^(\!?)([STNH]?[A-Z]{1}|[A-Z]{3})(\d{2,10})([^\w]?)$/e",'((!"$1"&&strlen("$3")%2==0&&$prefixes["$2"])?"[[$2$3]]":"$2$3")."$4"',$words[$i]);
 //todo? strip the ! even if wont fire for another reason eg [b]on the !B5467[/b]
 
 
