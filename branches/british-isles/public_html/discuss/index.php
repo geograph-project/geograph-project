@@ -437,7 +437,11 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 	if ($viewlastdiscussions!=0) {
 		require($pathToFiles.'bb_func_ldisc.php');
 		$listTopics=$list_topics;
-		if($list_topics!='') echo ParseTpl(makeUp('main_last_discussions'));
+		if ($sortByNew==0) {
+			if($list_topics!='') echo ParseTpl(makeUp('main_last_discussions'));
+		} else {
+			if($list_topics!='') echo ParseTpl(makeUp('main_last_discussions_tip'));
+		}
 		print "<div style=\"text-align:center\">Show: ";
 		foreach (array(5,10,20,30,40,80,100) as $n) {
 			if ($viewlastdiscussions == $n) {
