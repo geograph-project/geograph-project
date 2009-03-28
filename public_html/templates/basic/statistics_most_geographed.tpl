@@ -8,7 +8,7 @@
 
 {foreach from=$references_real item=ref key=ri}
 {if count($most[$ri])}
-<div style="float:left;position:relative;width:33%">
+<div style="float:left;position:relative;width:24%">
 <h3>10km x 10km Squares</h3>
 <h4>{$ref}</h4>
 <table class="report"> 
@@ -29,7 +29,7 @@
 {/foreach}
 
 {if count($onekm)}
-<div style="float:left;position:relative;width:32%;background-color:#dddddd; padding:10px">
+<div style="float:left;position:relative;width:24%;background-color:#dddddd; padding:10px">
 <h3>1km Grid Squares</h3>
 <table class="report"> 
 <thead><tr><td>Rank</td><td>Square</td><td>Images</td></tr></thead>
