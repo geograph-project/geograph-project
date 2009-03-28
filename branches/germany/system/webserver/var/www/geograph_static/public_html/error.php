@@ -1,4 +1,4 @@
-<?
+<?php
 
 $p = $_SERVER['REQUEST_URI'];
 

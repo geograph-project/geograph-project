@@ -109,7 +109,7 @@ foreach ($locations as $lon => $row) {
 			map.disableDoubleClickZoom(); //(due to become on by default in 2.89)
 			map.enableContinuousZoom();
 			map.enableScrollWheelZoom();
-<? 
+<?php
 echo implode("\n",$markers); 
 ?>
 			

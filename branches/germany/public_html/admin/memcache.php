@@ -171,7 +171,7 @@ post_id: <input type="text" name="image_id" value="" size="7"/> <input type="sub
 <h3>Flush Memcache</h3>
 <input type=submit name="flushMemcache" value="Go"> (NOT recommended)
 </form>
-<?
+<?php
 
 }
 $smarty->display('_std_end.tpl');

@@ -48,7 +48,7 @@ else
 <h2>placename_id Rebuild Tool</h2>
 <form action="buildplacename_id.php" method="post">
 select * from <select name="table"><option>gridimage</option>
-<option<? if ($_POST['table'] == 'gridsquare') echo " selected"; ?>>gridsquare</option></select> where <input type="text" name="crit" size="60" value="<? echo $crit; ?>"/><br/>
+<option<?php if ($_POST['table'] == 'gridsquare') echo " selected"; ?>>gridsquare</option></select> where <input type="text" name="crit" size="60" value="<?php echo $crit; ?>"/><br/>
 (if reference gs will join gridsquare gs)<br/>
 <input type="submit" name="go" value="Start"/>
 <input type="checkbox" name="file"/> Write results to file (otherwise writes to DB)
