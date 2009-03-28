@@ -1,0 +1,8 @@
+replace into loc_towns(name, e, n, s, reference_index, quad, point_en) values
+('Lindau',                 551470, 5266090, 3, 3, 0, GeomFromText('POINT(551470 5266090)')),
+('Sonthofen',              596530, 5263030, 3, 3, 0, GeomFromText('POINT(596530 5263030)')),
+('Marktoberdorf',          621260, 5292910, 3, 3, 0, GeomFromText('POINT(621260 5292910)')),
+('Kaufbeuren',             621210, 5304190, 3, 3, 0, GeomFromText('POINT(621210 5304190)')),
+('Memmingen',              588130, 5315460, 3, 3, 0, GeomFromText('POINT(588130 5315460)')),
+('Mindelheim',             610920, 5322540, 3, 3, 0, GeomFromText('POINT(610920 5322540)')),
+('Weißenburg',            644140, 5432730, 3, 3, 0, GeomFromText('POINT(644140 5432730)'));

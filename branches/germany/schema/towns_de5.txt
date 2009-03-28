@@ -1,0 +1,5 @@
+replace into loc_towns(name, e, n, s, reference_index, quad, point_en) values
+('Waiblingen',             523200, 5408900, 3, 3, 0, GeomFromText('POINT(523200 5408900)')),
+('Göppingen',             548130, 5394680, 3, 3, 0, GeomFromText('POINT(548130 5394680)')),
+('Aalen',                  580200, 5409980, 3, 3, 0, GeomFromText('POINT(580200 5409980)')),
+('Heidenheim',             584780, 5392120, 3, 3, 0, GeomFromText('POINT(584780 5392120)'));

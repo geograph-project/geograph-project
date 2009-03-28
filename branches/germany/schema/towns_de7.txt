@@ -1,0 +1,5 @@
+replace into loc_towns(name, e, n, s, reference_index, quad, point_en) values
+('Landsberg',              639870, 5323530, 3, 3, 0, GeomFromText('POINT(639870 5323530)')),
+('Günzburg',              594290, 5367660, 3, 3, 0, GeomFromText('POINT(594290 5367660)')),
+('Dillingen',              610220, 5381540, 3, 3, 0, GeomFromText('POINT(610220 5381540)')),
+('Donauwörth',            630970, 5397650, 3, 3, 0, GeomFromText('POINT(630970 5397650)'));
