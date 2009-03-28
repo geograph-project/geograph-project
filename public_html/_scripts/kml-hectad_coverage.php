@@ -43,7 +43,7 @@ $filename = $_SERVER['DOCUMENT_ROOT']."/kml/hectads-$type".($when?"-$when":'')."
 if (file_exists($filename) && empty($_GET['over']))
 	die("done");
 	
-	foreach (array(1,2) as $ri) {
+	foreach ($CONF['references'] as $ri => $rname) {
 		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 			
 		$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=$ri and origin_x > 0 order by origin_x,origin_y limit 1");

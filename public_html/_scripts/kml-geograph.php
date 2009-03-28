@@ -78,7 +78,7 @@ $links->setItem('name','Next Level...');
 $names = $db->getAssoc("select prefix,title from gridprefix");
 
 
-foreach (array(1,2) as $ri) {
+foreach ($CONF['references'] as $ri => $rname) {
 	$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 
 	$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=$ri and origin_x > 0 order by origin_x,origin_y limit 1");
