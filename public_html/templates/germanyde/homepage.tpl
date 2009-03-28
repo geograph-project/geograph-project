@@ -2,23 +2,23 @@
 {include file="_std_begin.tpl"}
 
 
-<h2>Welcome to Geograph Deutschland</h2>
+<h2>Willkommen bei Geograph Deutschland</h2>
 
 <div style="position:relative;background-color:white;">
 
 <div style="background-color:#eeeeee;padding:2px; text-align:justify">
 <p>
-The Geograph project aims to collect geographically representative photographs and information for every square kilometre of Germany.
-We use <a href="http://en.wikipedia.org/wiki/Military_grid_reference_system">MGRS coordinates</a> (<a href="http://upload.wikimedia.org/wikipedia/commons/1/19/Utmzonenugitterp.png">grid in Germany</a>) in UTM zones 31, 32, and 33.
+Das Geograph-Projekt hat das Ziel, geographisch repräsentative Photos für jeden Quadratkilometer Deutschlands zu sammeln.
+Dabei werden für die Planquadrate  <a href="http://de.wikipedia.org/wiki/MGRS">MGRS-Koordinaten</a> für die UTM-Zonen 31, 32 und 33 verwendet.
 </p>
 <p>
-The project uses code, which is kindly provided by the maintainers of the <a href="http://www.geograph.org.uk">British Geograph project</a>.
-More information about using the code can be found in the <a href="/howto/">HOWTO</a> and in the <a href="/code/">code area</a>. Please note that the project
-is still at a very early stage, so many pages are not yet translated or even not available at all.
+Das Projekt nutzt den Programmcode, der großzügigerweise von den Betreibern des <a href="http://www.geograph.org.uk">britischen Geograph-Projekts</a>
+zur Verfügung gestellt wird. Mehr Informationen hierzu sind im <a href="/howto/">HOWTO</a> und im <a href="/code/">Code-Bereich</a> zu finden. Da sich
+das Projekt noch in einem sehr frühen Stadium befindet, sind allerdings viele Unterseiten noch nicht übersetzt und andere Bereiche noch gar nicht verfügbar.
 </p>
 <p>
-Although the implementation is still incomplete, your contribution to the project is welcome. Feedback is possible via our
-<a href="/contact.php">contact form</a> or <a href="mailto:geo@hlipp.de">mail</a>.
+Trotz der noch unvollständigen Umsetzung ist Teilnahme am Projekt sehr erwünscht; Rückmeldung ist über das <a href="/contact.php">Kontaktformular</a>
+oder per <a href="mailto:geo@hlipp.de">Mail</a> möglich.
 </p>
 </div>
 
@@ -27,7 +27,7 @@ Although the implementation is still incomplete, your contribution to the projec
 
 {if $overview2}
 
-	<h3 style="margin-bottom:4px;margin-top:8px;text-align:center">Coverage Map</h3>
+	<h3 style="margin-bottom:4px;margin-top:8px;text-align:center">Abdeckung</h3>
 	
 	<div class="map" style="margin-left:auto;margin-right:auto;border:2px solid black; height:{$overview2_height}px;width:{$overview2_width}px">
 
@@ -37,18 +37,27 @@ Although the implementation is still incomplete, your contribution to the projec
 		<div>
 		{foreach from=$maprow key=x item=mapcell}
 		<a href="/mapbrowse.php?o={$overview2_token}&amp;i={$x}&amp;j={$y}&amp;center=1&amp;m={$m}"><img 
-		alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+		alt="Klickbare Karte" ismap="ismap" title="zum Vergrößern anklicken" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 		{/foreach}
 		</div>
 	{/foreach}
 
 	{if $marker}
-	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Location of the Photo of the Day"><img src="http://{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
+	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Bild des Tages von hier"><img src="http://{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
 	{/if}
 
 	</div>
 	</div>
-	<div style="font-size:0.9em;text-align:center;position:relative">{$messages.$m}</div>
+	<div style="font-size:0.9em;text-align:center;position:relative">
+            {if $m == 0}Zum Vergrößern anklicken.
+            {elseif $m == 1}Anklicken für Details.
+            {elseif $m == 2}Anklicken um hereinzuzoomen.
+            {elseif $m == 3}
+            {elseif $m == 4}Anklicken um größere Karte zu sehen.
+            {elseif $m == 5}
+            {elseif $m == 6}
+            {/if}
+        </div>
 
 {/if}
 
@@ -59,16 +68,16 @@ Although the implementation is still incomplete, your contribution to the projec
 
 	<div style="padding:2px;margin-top:8px;position:relative; text-align:center">
 
-	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day</h3>
+	<h3 style="margin-bottom:2px;margin-top:2px;">Bild des Tages</h3>
 	<a href="/photo/{$pictureoftheday.gridimage_id}" 
-	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(360,263)}</a><br/>
+	title="zum Vergrößern anklicken">{$pictureoftheday.image->getFixedThumbnail(360,263)}</a><br/>
 
 
 	<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a>
 
 	<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/80x15.png" /></a>
 	&nbsp;&nbsp;
-	by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname|escape:'html'}</a> for grid square <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></div>
+	von <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname|escape:'html'}</a> für Planquadrat <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></div>
 
 	</div>
 
@@ -89,7 +98,7 @@ Although the implementation is still incomplete, your contribution to the projec
 	
 </div>
 <br style="clear:both"/>
-<div style="font-size:0.8em; text-align:center; border: 1px solid silver; padding:5px"><b class="nowrap">{$stats.users|thousends} users</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total</span>.<br/>
+<div style="font-size:0.8em; text-align:center; border: 1px solid silver; padding:5px"><b class="nowrap">{$stats.users|thousends} Benutzer</b> haben <b class="nowrap">{$stats.images|thousends} Bilder</b> eingereicht, die <span  class="nowrap"><b class="nowrap">{$stats.squares|thousends} Planquadrate</b>, d.h. <b class="nowrap">{$stats.percentage}%</b> aller Quadrate, abdecken</span>.<br/>
 
 {if count($hectads)}
 Recently completed hectads: 
@@ -99,7 +108,7 @@ Recently completed hectads:
 <a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">more...</a><br/>
 {/if}
 
-<b class="nowrap">{$stats.fewphotos|thousends} photographed squares</b> with <b class="nowrap">fewer than 4 photos</b>, add yours now!
+<b class="nowrap">{$stats.fewphotos|thousends} fotografierte Quadrate</b> haben <b class="nowrap">weniger als 4 Fotos</b>, wir bitten um Einreichungen!
 
 </div><br style="clear:both"/>
 
