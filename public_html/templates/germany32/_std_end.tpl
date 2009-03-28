@@ -29,6 +29,7 @@
      <li><a title="Geograph Information Documents" href="/content/?docs&amp;order=title">Documents</a></li>
      <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
      <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a></li>
+     <li><a title="Impressum" href="http://www.hlipp.de/contact.html">Impressum</a></li>
     </ul></li>
   {dynamic}
   {if $is_mod || $is_admin || $is_tickmod}
