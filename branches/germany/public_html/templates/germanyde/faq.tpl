@@ -14,8 +14,8 @@ div:target { background-color:orange;padding-bottom:10px; }
 <a name="top"></a>
 
  <div class="helpbox">
- <h3>Useful Links</h3>
- <b>Contributing</b> photos:
+ <h3>N&uuml;tzliche Links</h3>
+ <b>Einreichen</b> von Fotos:
  <ul>
  <li><a href="/help/guide">Geograph Guide</a></li>
  <li><a href="http://www.geograph.org.uk/article/Geograph-or-supplemental">Moderation Guide</a></li>
@@ -23,7 +23,7 @@ div:target { background-color:orange;padding-bottom:10px; }
  <li><a href="/help/style">Submission Style Guide</a><br/><br/></li>
  <li><a href="/help/changes">Change Request System</a><br/><br/></li>
  </ul>
- <b>Browsing</b> the site:
+ <b>Betrachten</b> der Seite:
  <ul>
  <li><a href="/help/squares">Square Definitions</a><br/><br/></li>
  <li><a href="http://www.geograph.org.uk/article/Searching-on-Geograph">Search Help</a></li>
@@ -32,36 +32,36 @@ div:target { background-color:orange;padding-bottom:10px; }
  <li><a href="/help/bbcodes">Forum BBcodes Help</a><br/><br/></li>
  {/if}
  </ul>
- The <b>Geograph Website</b>:
+ Die <b>Geograph Website</b>:
  <ul>
  <li><a href="/help/freedom">Geograph Freedom</a></li>
  <li><a href="/help/terms">Terms &amp; Conditions</a><br/><br/></li>
  <li><a href="/contact.php">Contact Us</a></li>
  <li><a href="/admin/team.php">The Team</a> &amp; <a href="/help/credits">Credits</a><br/><br/></li>
  </ul>
- <b>Further Resources</b>:
+ <b>Weitere Informationen</b>:
  <ul>
  <li><a href="/article/?cat_word=Geograph">Geograph Articles</a></li>
  <li><a href="/help/sitemap">Sitemap</a><br/><br/></li>
  </ul></div>
 
 
-    <h2>FAQ - Frequently Asked Questions</h2>
+    <h2>FAQ - H&auml;ufig gestellte Fragen</h2>
 
 <div style="position:relative" class="contents">
-<b>Contributing</b> photos:
+<b>Einreichen</b> von Fotos:
  <ul>
- <li><a href="#what">What is <b>Geographing</b>?</a></li>
- <li><a href="#goodgeograph">What makes a good <b>Geograph</b>?</a></li>
- <li><a href="#points">How do I get a geograph <b>point</b> for my image?</a></li>
- <li><a href="#supplemental">What is a <b>supplemental</b> image?</a></li>
- <li><a href="#language">Do you only accept descriptions in <b>German</b>?</a></li>
- <li><a href="#multiple">Do you accept <b>multiple images</b> per square</a></li>
- <li><a href="#resize">Do I need to <b>resize</b> my photos? Are there size limits?</a></li>
+ <li><a href="#what">Was ist <b>Geograph</b>?</a></li>
+ <li><a href="#goodgeograph">Was macht ein gutes <b>Geograph</b>-Bild aus?</a></li>
+ <li><a href="#points">Wie bekomme ich <b>Punkte</b> für meine Bilder?</a></li>
+ <li><a href="#supplemental">Was heißt <b>"supplemental"</b>?</a></li>
+ <li><a href="#language">Muss die Bildbeschreibung <b>deutsch</b> sein?</a></li>
+ <li><a href="#multiple">Sind <b>mehrere Bilder</b> pro Quadrat erlaubt?</a></li>
+ <li><a href="#resize">Muss ich die <b>Größe</b> der Bilder ändern? Gibt es Größenbeschränkungen?</a></li>
  <li><a href="#licence">Why must I agree to allow <b>commercial use</b> of my image?</a></li>
  <li><a href="#legal">What are my <b>legal rights</b> when taking photographs?</a></li>
  </ul>
-<b>Browsing</b> the site:
+<b>Betrachten</b> der Seite:
  <ul>
  <li><a href="#use">I would be interested in <b>reusing</b> Geograph content, is that possible?</a></li>
  <li><a href="#change">I <b>disagree</b> with the location or title of an image - what can I do?</a></li>
@@ -69,22 +69,22 @@ div:target { background-color:orange;padding-bottom:10px; }
  <li><a href="#counties"><b>Counties</b>, I'm confused, which do you display?</a></li>
  <li><a href="#geographism">What do all these <b>strange words</b> mean?</a></li>
  </ul>
-The <b>Geograph Website</b>:
+Die <b>Geograph Website</b>:
  <ul>
  <li><a href="#pages">Theres a page I once saw on geograph, and I <b>can't find</b> it again!</a></li>
  <li><a href="#rss">Do you <b>RSS</b> feeds available?</a></li>
  <li><a href="#opensource"><b>Open source? Creative Commons?</b> What's that all about?</a></li>
  <li><a href="#built"><b>Who</b> built this marvellous site?</a></li>
  </ul>
-<b>Issues</b> in using the Geograph Site:
+<b>Probleme</b> beim Benutzen der Geograph-Seite:
  <ul>
  <li><a href="#aol">I use AOL, and the images look terrible!</a></li>
  <li class="last"><a href="#missing">Many thumbnails seem to be missing, any idea of the cause?</a></li>
  </ul>
  <hr style="clear:both"/>
- You may also find answers to questions not answered here in the Help pages mentioned on the right, or the <a href="/article/?cat_word=Geograph" style="text-decoration:underline;">Geograph Website</a> section of the Articles, otherwise:
+ Auf hier nicht behandelte Fragen könnten die rechts aufgeführten Hilfeseiten oder Artikel der Kategorie <a href="/article/?cat_word=Geograph" style="text-decoration:underline;">Geograph Website</a> Antwort geben. Anderenfalls:
  <ul>
- <li><a href="#question"><b>I have a further question</b>, what should I do?</a></li>
+ <li><a href="#question"><b>Ich habe eine andere Frage</b>, was soll ich tun?</a></li>
  </ul>
  
 </div>
@@ -94,14 +94,14 @@ The <b>Geograph Website</b>:
 
 <div id="what">
 <a name="what"></a>
-<h3>What is Geographing?</h3>
+<h3>Was ist Geograph?</h3>
 
 	<ul>
-	<li>It's a game - how many grid squares will you contribute?</li>
-	<li>It's a geography project for the people</li>
-	<li>It's a national photography project</li>
-	<li>It's a good excuse to get out more!</li>
-	<li>It's a free and <a href="#opensource">open online community</a> project for all</li>
+	<li>Es ist ein Spiel: Wie viele Quadrate kann ich beitragen?</li>
+	<li>Es ist ein Geographie-Projekt für alle.</li>
+	<li>Es ist ein Fotografie-Projekt.</li>
+	<li>Es ist eine gute Gelegenheit, mal raus zu gehen.</li>
+	<li>Es ist ein freies <a href="#opensource">Opensource</a>-Projekt.</li>
 	</ul>
 	
 	<p>See the original <a title="guide to geographing" href="/help/guide">guide to good geographing</a>, and <a title="Geograph Quickstart Guide" href="http://www.geograph.org.uk/article/Geograph-Quickstart-Guide">contributors quickstart guide</a>.</p>
@@ -110,44 +110,46 @@ The <b>Geograph Website</b>:
 
 <div id="goodgeograph">
 <a name="goodgeograph"></a>
-<h3>What makes a good Geograph image?</h3>
+<h3>Was macht ein gutes Geograph-Bild aus?</h3>
 	<ul>
-<li>You must clearly show one of the main geographical features of the square</li>
-	<li>You should include a short description relating the image to the map square</li>
-	<li>Your submission makes a person who does not know this place think "Oh, that's how it looks there."</li>
-	<li>Photographing a subject that could be useful to the child in interpreting a map</li>
-	<li>The photo should also show some of the surroundings of the subject.</li>
-	<li>We want to be fair when giving points:
+	<li>Das Bild muss ein wichtiges geographisches Merkmal des Planquadrats deutlich zeigen.</li>
+	<li>Es sollte eine Kurzbeschreibung erstellt werden, die das Bild mit dem Planquadrat in Beziehung setzt.</li>
+	<li>Jemand, der noch nie an der Stelle war, weiß nun: "So sieht es dort also aus."</li>
+	<li>Das Bild könnte einem Kind helfen, eine Landkarte zu interpretieren.</li>
+	<li>Es sollte auch die Umgebung des Motivs erkennbar sein.</li>
+	<li>Um Punkte fair zu vergeben:
 		<ul>
-		<li>The picture must be taken close to the subject, preferably in the same square. So, the rules here are not as strict as on <a href="http://www.geograph.org.uk">www.geograph.org.uk</a> but you won't get many points by
-		using your telephoto lens from a distant tower.</li>
-		<li>If there is a possible subject in the foreground, you can't get points for another subject in the next square (no two points for simmilar pictures).</li>
-		<li>The photographer location must not be some unusual "technical device" (plane, ...) if you want to get points. Pictures taken from a ship are okay, though.</li>
+		<li>Das Bild sollte aus unmittelbarer Nähe aufgenommen sein, möglichst noch im selben Planquadrat
+		(hier sind die Regeln also nicht so strikt wie auf <a href="http://www.geograph.org.uk">www.geograph.org.uk</a>; aber Punkte durch
+		Tele-Aufnahmen vom weit entfernten Turm sollte es nicht geben).</li>
+		<li>Wenn sich schon ein Motiv im Vordergrund befindet, kann es keinen Punkt für
+		ein sich im nächsten Quadrat befindendes weiteres Motiv geben (also gibt es auch für praktisch gleiche Bilder keine zwei Punkte).</li>
+		<li>Der Aufnahmestandpunkt sollte kein spezielles technisches Hilfsmittel o.ä. sein (Flugzeug, ...). Von einem Schiff aus aufgenommene Aufnahmen sind aber in Ordnung.</li>
 		</ul>
-		Pictures which do not fulfill these criteria are still highly appreciated&mdash;you just won't get points for them (classification: "supplemental"). As these criteria have changed at the beginning, some old pictures might have been classified incorrectly, but this will be corrected gradually by remoderation.
-		</li>
+	   Bilder die diese Kriterien nicht erfüllen, sind durchaus erwünscht, können aber keine Punkte bekommen (Klassifikation "Supplemental"). Da sich diese Kriterien erst im Laufe der Zeit konkretisiert haben, kann es sein, dass ältere Bilder noch nicht entsprechend klassifiziert sind, was aber nach und nach durch Nachmoderieren korrigiert wird.</li>
 	</ul>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
 <div id="points">
 <a name="points"></a>
-<h3>How do I get a geograph point for my image?</h3>
-	<p>If you're the first to submit a proper &quot;geograph&quot; for the grid square
-	you'll get a geograph point added to your profile and the warm glow that comes
-	with it.</p>
-	
-	<p>We welcome many Geograph images per square, so even if you don't get the point, you are still making a valuable contribution to the project.</p>
+<h3>Wie bekomme ich Punkte für meine Bilder?</h3>
+	<p>Der Fotograf des ersten Bilds, das obige Kriterien erfüllt, bekommt einen Punkt für dieses Quadrat.</p>
+
+	<p>Trotzdem sind weitere Bilder für ein Quadrat durchaus erwünscht, es gibt lediglich keine Punkte mehr dafür.
+	Die Punkte sollen als Anreiz dienen, dass auch weniger touristisch interessante, ungünstig gelegene, ... Quadrate
+	fotografiert werden.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
 <div id="supplemental">	
 <a name="supplemental"></a>
-<h3>What is a supplemental image?</h3>
-	<p>If an image doesn't quite fulfill the geograph criteria above, but is still a good
-	image, we'll accept it as &quot;supplemental image&quot; - no geograph points are awarded,
-	but the image will still appear on the selected grid square. A square that just contains
-	supplemental images is still open to be claimed as a geograph though!</p>
+<h3>Was heißt "supplemental"?</h3>
+	<p>Ein Bild, das zwar ein für das Quadrat repräsentatives bzw. informatives Motiv zeigt,
+	aber obige Kriterien nicht vollständig erfüllt, insbesondere bezüglich Aufnahmestandort und erkennbarer Umgebung,
+	bekommt die Klassifikation "supplemental". Solche Bilder sind durchaus erwünscht, man erhält aber keine Punkte
+	für sie. Ein Quadrat, für das bisher nur solche Bilder eingereicht wurden, ist also noch immer ein lohnendes Ziel
+	für Punktejäger.</p>
 
 	<!--p><img src="/templates/basic/img/icon_alert.gif" alt="Note" width="25" height="22" align="absmiddle"/> Follow this link for a <a title="geograph and supplemental guide" href="http://www.geograph.org.uk/article/Geograph-or-supplemental">more in depth discussion</a> on the finer points of moderation.</p-->
 </div>
@@ -155,35 +157,36 @@ The <b>Geograph Website</b>:
 
 <div id="language">
 <a name="language"></a>
-<h3>Do you only accept descriptions in German?</h3>
-<p>We also accept English descriptions and titles, which will be translated by a moderator if possible. We try to keep
-the English version, too: we'll put it at the end of the title or description, enclosed in parentheses.</p>
+<h3>Muss die Bildbeschreibung deutsch sein?</h3>
+<p>Es sind auch englische Bildbeschreibungen und -titel möglich: Der Moderator wird diese nach Möglichkeit übersetzen.
+Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingeklammert nach dem deutschen Text.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
 <div id="multiple">
 <a name="multiple"></a>
-<h3>Do you accept multiple images per square?</h3>
-	<p>Certainly - the points system is there to encourage people to make that extra effort 
-	to capture squares we don't have photos for yet - but we welcome additional 
-	geograph or supplemental images, perhaps showing a different subject, or a different time of year. Everyone sees 
-	things differently - feel free to give us your take on any square. Some squares have 
-	been done in considerable <a href="/statistics/most_geographed.php" title="squares with good overage">detail</a> - helping to more fully document and add <a href="/statistics/moversboard.php?type=depth" title="Depth Weekly Leaderboard">depth</a> to a square.</p>
+<h3>Sind mehrere Bilder pro Quadrat erlaubt?</h3>
+	<p>Sicher, allerdings sollen die Punkte dazu ermutigen, den zusätzlichen Aufwand in Kauf zu nehmen,
+	Quadrate aufzunehmen, für die es noch keine Fotos gibt. Zusätzliche Bilder (geograph und supplemental)
+	sind dennoch erwünscht, insbesondere, wenn sie ein anderes Motiv, anderes Wetter, eine andere
+	Jahreszeit oder eine Veränderung im Laufe vieler Jahre zeigen.
+	Einige Quadrate wurden schon
+	<a href="/statistics/most_geographed.php" title="Häufig fotografierte Quadrate">detailliert</a> fotografiert
+	und so genauer dokumentiert, also mit mehr <a href="/statistics/moversboard.php?type=depth" title="Wochenrangliste: Depth">"Tiefe"</a> versehen.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
 <div id="resize">
 <a name="resize"></a>
-<h3>Do I need to resize my photos? Are there size limits?</h3>
-	<p>You can upload images of any size, portrait or landscape, but we do resize them so their
-	longest dimension is 640 pixels. We do not keep your original print quality image,
-	only our resized screen-quality version.</p>
+<h3>Muss ich die <b>Größe</b> der Bilder ändern? Gibt es Größenbeschränkungen?</h3>
+	<p>Es können Bilder jeder Größe (bis zu einer sehr hohen Grenze des Servers) hochgeladen werden, sowohl im Quer- als auch im Hochformat.
+	Allerdings verkleinern wir Bilder auf 640 Pixel an der längsten Kante, das größere Originalbild wird nicht gespeichert.</p>
 
-	<p>Ideally images shouldn't have the longest dimension less than 480 pixels, while we might accept such images if they hold particular interest, we would really prefer a larger image.</p>
+	<p>Im Idealfall sollten Bilder entlang der längsten Kante nicht weniger als 480 Pixel haben. Ein kleineres Bild muss uns als besonders wichtig für ein Quadrat
+	erscheinen, damit wir es akzeptieren.</p>
 
-	<p>We do preserve the EXIF headers from your original image, so it is
-	advantageous to upload your original camera image if you want this information
-	to be kept.</p>
+	<p>Wir speichern die EXIF-Daten des Originalbildes. Wenn darauf wert gelegt wird,
+	kann es daher sinnvoll sein, das Originalbild hochzuladen.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
@@ -370,8 +373,8 @@ the English version, too: we'll put it at the end of the title or description, e
 
 <div id="question">
 <a name="question"></a>
-<h3 style="padding-top:0px;">I have a further question, what should I do?</h3>
-	<p>Please <a title="Contact Us" href="contact.php">Contact Us</a>{if $enable_forums}, or drop in on our friendly Discussion Forum.{/if}</p>
+<h3 style="padding-top:0px;">Ich habe eine andere Frage, was soll ich tun?</h3>
+	<p>Fragen können über das <a title="Kontakt" href="contact.php">Kontaktformular</a> gestellt werden{if $enable_forums}, oder aber im Forum zur Diskussion gestellt werden{/if}.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
