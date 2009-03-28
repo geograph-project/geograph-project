@@ -27,14 +27,29 @@ String.prototype.trim = function () {
 function doMove(obj,e,n) {
 	gridref = document.getElementById(obj).value.trim().toUpperCase();
 
-	var grid=new GT_OSGB();
+	/*var grid=new GT_OSGB();*/
 	var ok = false;
-	if (grid.parseGridRef(gridref)) {
+	/*if (grid.parseGridRef(gridref)) {
 		ok = true;
 	} else {
 		grid=new GT_Irish();
-		ok = grid.parseGridRef(gridref)
-	}
+		if (grid.parseGridRef(gridref)) {
+			ok = true;
+		} else {*/
+			grid=new GT_German32();
+			if (grid.parseGridRef(gridref)) {
+				ok = true;
+			} else {
+				grid=new GT_German33();
+				if (grid.parseGridRef(gridref)) {
+					ok = true;
+				} else {
+					grid=new GT_German31();
+					ok = grid.parseGridRef(gridref)
+				}
+			}
+		/*}
+	}*/
 	
 	if (ok) {
 		grid.eastings = grid.eastings + (e*1000);
@@ -53,14 +68,29 @@ function doMove2(e,n) {
 	ob3 = document.getElementById('northings');
 	gridref = ob1.options[ob1.selectedIndex].value+ob2.options[ob2.selectedIndex].text+ob3.options[ob3.selectedIndex].text;
 
-	var grid=new GT_OSGB();
+	/*var grid=new GT_OSGB();*/
 	var ok = false;
-	if (grid.parseGridRef(gridref)) {
+	/*if (grid.parseGridRef(gridref)) {
 		ok = true;
 	} else {
 		grid=new GT_Irish();
-		ok = grid.parseGridRef(gridref)
-	}
+		if (grid.parseGridRef(gridref)) {
+			ok = true;
+		} else {*/
+			grid=new GT_German32();
+			if (grid.parseGridRef(gridref)) {
+				ok = true;
+			} else {
+				grid=new GT_German33();
+				if (grid.parseGridRef(gridref)) {
+					ok = true;
+				} else {
+					grid=new GT_German31();
+					ok = grid.parseGridRef(gridref)
+				}
+			}
+		/*}
+	}*/
 	
 	if (ok) {
 		grid.eastings = grid.eastings + (e*1000);

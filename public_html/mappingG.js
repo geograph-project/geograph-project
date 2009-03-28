@@ -47,13 +47,22 @@
 			wgs84=new GT_WGS84();
 			wgs84.setDegrees(pp.lat(), pp.lng());
 			
-			if (wgs84.isIreland()) {
+			/*if (wgs84.isIreland()) {
 				//convert to Irish
 				var grid=wgs84.getIrish(true);
 			
 			} else if (wgs84.isGreatBritain()) {
 				//convert to OSGB
 				var grid=wgs84.getOSGB();
+			} else*/ if (wgs84.isGermany32()) {
+				//convert to German
+				var grid=wgs84.getGerman32();
+			} else if (wgs84.isGermany33()) {
+				//convert to German
+				var grid=wgs84.getGerman33();
+			} else if (wgs84.isGermany31()) {
+				//convert to German
+				var grid=wgs84.getGerman31();
 			}  
 			
 			//get a grid reference with 4 digits of precision
@@ -183,14 +192,29 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 	
 	gridref = that.value.trim().toUpperCase();
 	
-	var grid=new GT_OSGB();
+	/*var grid=new GT_OSGB();*/
 	var ok = false;
-	if (grid.parseGridRef(gridref)) {
+	/*if (grid.parseGridRef(gridref)) {
 		ok = true;
 	} else {
 		grid=new GT_Irish();
-		ok = grid.parseGridRef(gridref)
-	}
+		if (grid.parseGridRef(gridref)) {
+			ok = true;
+		} else {*/
+			grid=new GT_German32();
+			if (grid.parseGridRef(gridref)) {
+				ok = true;
+			} else {
+				grid=new GT_German33();
+				if (grid.parseGridRef(gridref)) {
+					ok = true;
+				} else {
+					grid=new GT_German31();
+					ok = grid.parseGridRef(gridref)
+				}
+			}
+		/*}
+	}*/
 	
 	if (ok) {
 		//convert to a wgs84 coordinate

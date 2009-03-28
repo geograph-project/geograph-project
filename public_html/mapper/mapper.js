@@ -114,7 +114,7 @@ String.prototype.trim = function () {
 function parseLocation() {
 	var coordstr = document.getElementById('coordin').value.trim().toUpperCase();
 	var coord = new GT_OSGB();
-	if(coord.parseGridRef(coordstr)) {
+	/*if(coord.parseGridRef(coordstr)) {
 		ll = new OpenLayers.LonLat(coord.eastings, coord.northings);
 		//ml.addMarker(new OpenLayers.Marker(ll));
 		map.setCenter(ll);
@@ -122,6 +122,21 @@ function parseLocation() {
 		coord = new GT_Irish();
 		if(coord.parseGridRef(coordstr)) {
 			window.location = "/gridref/"+coordstr;
-		}
-	}
+		} else {*/
+			coord = new GT_German32();
+			if(coord.parseGridRef(coordstr)) {
+				window.location = "/gridref/"+coordstr;
+			} else {
+				coord = new GT_German33();
+				if(coord.parseGridRef(coordstr)) {
+					window.location = "/gridref/"+coordstr;
+				} else {
+					coord = new GT_German31();
+					if(coord.parseGridRef(coordstr)) {
+						window.location = "/gridref/"+coordstr;
+					}
+				}
+			}
+		/*}
+	}*/
 }

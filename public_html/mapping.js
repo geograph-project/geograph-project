@@ -28,19 +28,21 @@ if (IE) {
 	//mozilla based do this by returning false from onmousedown
 }
 
-// These arrays hold the valid 100km references
-var GBGridLetters = new Array (2);
+if (ri == 1) {
 
-GBGridLetters[0] = ["SV", "SQ", "SL", "SF", "SA", "NV", "NQ", "NL", "NF", "NA", "HV", "HQ", "HL", "HF", "HA"];
-GBGridLetters[1] = ["SW", "SR", "SM", "SG", "SB", "NW", "NR", "NM", "NG", "NB", "HW", "HR", "HM", "HG", "HB"];
-GBGridLetters[2] = ["SX", "SS", "SN", "SH", "SC", "NX", "NS", "NN", "NH", "NC", "HX", "HS", "HN", "HH", "HC"];
-GBGridLetters[3] = ["SY", "ST", "SO", "SJ", "SD", "NY", "NT", "NO", "NJ", "ND", "HY", "HT", "HO", "HJ", "HD"];
-GBGridLetters[4] = ["SZ", "SU", "SP", "SK", "SE", "NZ", "NU", "NP", "NK", "NE", "HZ", "HU", "HP", "HK", "HE"];
-GBGridLetters[5] = ["TV", "TQ", "TL", "TF", "TA", "OV", "OQ", "OL", "OF", "OA", "JV", "JQ", "JL", "JF", "JA"];
-GBGridLetters[6] = ["TW", "TR", "TM", "TG", "TB", "OW", "OR", "OM", "OG", "OB", "JW", "JR", "JM", "JG", "JB"];
-GBGridLetters[7] = ["TX", "TS", "TN", "TH", "TC", "OX", "OS", "ON", "OH", "OC", "JX", "JS", "JN", "JH", "JC"];
-GBGridLetters[8] = ["TY", "TT", "TO", "TJ", "TD", "OY", "OT", "OO", "OJ", "OD", "JY", "JT", "JO", "JJ", "JD"];
-GBGridLetters[9] = ["TZ", "TU", "TP", "TK", "TE", "OZ", "OU", "OP", "OK", "OE", "JZ", "JU", "JP", "JK", "JE"];
+// These arrays hold the valid 100km references
+var GridLetters = new Array (2);
+
+GridLetters[0] = ["SV", "SQ", "SL", "SF", "SA", "NV", "NQ", "NL", "NF", "NA", "HV", "HQ", "HL", "HF", "HA"];
+GridLetters[1] = ["SW", "SR", "SM", "SG", "SB", "NW", "NR", "NM", "NG", "NB", "HW", "HR", "HM", "HG", "HB"];
+GridLetters[2] = ["SX", "SS", "SN", "SH", "SC", "NX", "NS", "NN", "NH", "NC", "HX", "HS", "HN", "HH", "HC"];
+GridLetters[3] = ["SY", "ST", "SO", "SJ", "SD", "NY", "NT", "NO", "NJ", "ND", "HY", "HT", "HO", "HJ", "HD"];
+GridLetters[4] = ["SZ", "SU", "SP", "SK", "SE", "NZ", "NU", "NP", "NK", "NE", "HZ", "HU", "HP", "HK", "HE"];
+GridLetters[5] = ["TV", "TQ", "TL", "TF", "TA", "OV", "OQ", "OL", "OF", "OA", "JV", "JQ", "JL", "JF", "JA"];
+GridLetters[6] = ["TW", "TR", "TM", "TG", "TB", "OW", "OR", "OM", "OG", "OB", "JW", "JR", "JM", "JG", "JB"];
+GridLetters[7] = ["TX", "TS", "TN", "TH", "TC", "OX", "OS", "ON", "OH", "OC", "JX", "JS", "JN", "JH", "JC"];
+GridLetters[8] = ["TY", "TT", "TO", "TJ", "TD", "OY", "OT", "OO", "OJ", "OD", "JY", "JT", "JO", "JJ", "JD"];
+GridLetters[9] = ["TZ", "TU", "TP", "TK", "TE", "OZ", "OU", "OP", "OK", "OE", "JZ", "JU", "JP", "JK", "JE"];
 
 //if (mapb > 100) {
 //	grlen = 3;
@@ -52,6 +54,93 @@ GBGridLetters[9] = ["TZ", "TU", "TP", "TK", "TE", "OZ", "OU", "OP", "OK", "OE", 
 //	grlen = 5;
 //	mult = 1;
 //}
+
+gridly = 15;
+gridlx = 10;
+gridpreflen = 2;
+griddele = 0;
+griddeln = 0;
+} else if (ri == 3) {
+	var GridLetters = new Array (2);
+	// --> north
+	// |
+	// V east
+	GridLetters[0] = ["TKT", "UKU", "UKV", "UKA", "UKB", "UKC", "UKD", "UKE", "UKF", "UKG"];
+	GridLetters[1] = ["TLT", "ULU", "ULV", "ULA", "ULB", "ULC", "ULD", "ULE", "ULF", "ULG"];
+	GridLetters[2] = ["TMT", "UMU", "UMV", "UMA", "UMB", "UMC", "UMD", "UME", "UMF", "UMG"];
+	GridLetters[3] = ["TNT", "UNU", "UNV", "UNA", "UNB", "UNC", "UND", "UNE", "UNF", "UNG"];
+	GridLetters[4] = ["TPT", "UPU", "UPV", "UPA", "UPB", "UPC", "UPD", "UPE", "UPF", "UPG"];
+	GridLetters[5] = ["TQT", "UQU", "UQV", "UQA", "UQB", "UQC", "UQD", "UQE", "UQF", "UQG"];
+
+	//if (mapb > 100) {
+	//	grlen = 3;
+	//	mult = 100;
+	//} else if (mapb > 50) {
+		grlen = 4;
+		mult = 10;
+	//} else {
+	//	grlen = 5;
+	//	mult = 1;
+	//}
+
+	gridly = 10
+	gridlx = 6;
+	gridpreflen = 3;
+	griddele = 2;
+	griddeln = 52;
+
+} else if (ri == 4) {
+	var GridLetters = new Array (2);
+	// --> north
+	// |
+	// V east
+	GridLetters[0] = ["TTN", "UTP", "UTQ", "UTR", "UTS", "UTT", "UTU", "UTV", "UTA", "UTB"];
+	GridLetters[1] = ["TUN", "UUP", "UUQ", "UUR", "UUS", "UUT", "UUU", "UUV", "UUA", "UUB"];
+	GridLetters[2] = ["TVN", "UVP", "UVQ", "UVR", "UVS", "UVT", "UVU", "UVV", "UVA", "UVB"];
+	GridLetters[3] = ["TWN", "UWP", "UWQ", "UWR", "UWS", "UWT", "UWU", "UWV", "UWA", "UWB"];
+
+	//if (mapb > 100) {
+	//	grlen = 3;
+	//	mult = 100;
+	//} else if (mapb > 50) {
+		grlen = 4;
+		mult = 10;
+	//} else {
+	//	grlen = 5;
+	//	mult = 1;
+	//}
+
+	gridly = 10
+	gridlx = 4;
+	gridpreflen = 3;
+	griddele = 2;
+	griddeln = 52;
+
+} else if (ri == 5) {
+	var GridLetters = new Array (2);
+	// --> north
+	// |
+	// V east
+	GridLetters[0] = ["TFN", "UFP", "UFQ", "UFR", "UFS", "UFT", "UFU", "UFV", "UFA", "UFB"];
+	GridLetters[1] = ["TGN", "UGP", "UGQ", "UGR", "UGS", "UGT", "UGU", "UGV", "UGA", "UGB"];
+
+	//if (mapb > 100) {
+	//	grlen = 3;
+	//	mult = 100;
+	//} else if (mapb > 50) {
+		grlen = 4;
+		mult = 10;
+	//} else {
+	//	grlen = 5;
+	//	mult = 1;
+	//}
+
+	gridly = 10
+	gridlx = 2;
+	gridpreflen = 3;
+	griddele = 6;
+	griddeln = 52;
+}
 
 var marker1left = 14;
 var marker1top = 14;
@@ -65,6 +154,10 @@ var offY = 0;
 
 var w2 = mapw / 2;
 var h2 = maph / 2;
+
+var rotrad = rot * Math.PI / 180;
+var cosrot = Math.cos(rotrad);
+var sinrot = Math.sin(rotrad);
 
 var ratw = (mapb / w2) * 1000;
 var rath = (mapb / h2) * 1000;
@@ -221,18 +314,18 @@ function overlayMouseMove(e) {
 	tempX = tempX - w2 - offX;
 	tempY = tempY - h2 - offY;
 	
-	var easting = cene + Math.round(tempX * ratw);
-	var northing = cenn - Math.round(tempY * rath);
+	var easting  = cene + Math.round((tempX * cosrot - tempY * sinrot) * ratw);
+	var northing = cenn - Math.round((tempX * sinrot + tempY * cosrot) * rath);
 
 	var cenXhun = "00000" + (easting % 100000);
 	var cenYhun = "00000" + (northing % 100000);
 	cenXhun = cenXhun.substr(cenXhun.length - 5, grlen);
 	cenYhun = cenYhun.substr(cenYhun.length - 5, grlen);
 
-	var cenXblock = Math.floor(easting / 100000);
-	var cenYblock = Math.floor(northing / 100000);
+	var cenXblock = Math.floor(easting / 100000) - griddele;
+	var cenYblock = Math.floor(northing / 100000) - griddeln;
 
-	if(cenXblock < 0 || cenYblock < 0 || cenXblock > 9 || cenYblock > 15) {
+	if(cenXblock < 0 || cenYblock < 0 || cenXblock >= gridlx || cenYblock >= gridly) {
 		if (currentelement != null) {
 			if (currentelement.id == 'marker1') {
 				eastings1 = 0;
@@ -246,7 +339,7 @@ function overlayMouseMove(e) {
 		}
 		document.images['map'].alt = "-Invalid Grid Ref-"
 	} else {
-		grstr = GBGridLetters[cenXblock][cenYblock] + cenXhun + cenYhun;
+		grstr = GridLetters[cenXblock][cenYblock] + cenXhun + cenYhun;
 		if (currentelement != null) {
 			if (currentelement.id == 'marker1') {
 				eastings1 = easting;
@@ -352,7 +445,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 
 		GridRef = /\b([a-zA-Z]{1,3}) ?(\d{2,5})[ \.]?(\d{2,5})\b/;
 
-		if (gr.length > 5) { // FIXME
+		if (gr.length >= 4 + gridpreflen) { // FIXME
 			myArray = GridRef.exec(gr);
 			letters = myArray[1];
 			numbers = myArray[2]+myArray[3];
@@ -366,19 +459,19 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 				cenXhun = cenXhun.substr(0, 5);
 				cenYhun = cenYhun.substr(0, 5);
 
-				var cenXblock = 0;
+				var cenXblock = -1;
 				letters = letters.toUpperCase();
-				for(x=0;x<10;x++)
-					for(y=0;y<15;y++)
-						if (GBGridLetters[x][y] == letters) {
+				for(x=0;x<gridlx;x++)
+					for(y=0;y<gridly;y++)
+						if (GridLetters[x][y] == letters) {
 							cenXblock = x*100000;
 							cenYblock = y*100000;
 						}
 
 				if (cenXblock > 0) {
 					//we use parseFloat to avoid issues with 0 prefixed numbers!
-					easting = parseInt(cenXblock) + parseFloat(cenXhun);
-					northing = parseInt(cenYblock) + parseFloat(cenYhun);
+					easting = parseInt(cenXblock) + parseFloat(cenXhun) + griddele*100000;
+					northing = parseInt(cenYblock) + parseFloat(cenYhun) + griddeln*100000;
 					
 					if (halve == 3) {
 					//	easting = easting + 50;
@@ -386,11 +479,11 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 					}
 					
 					
-					tempX = (easting - cene) / ratw;
-					tempY = (cenn - northing) / rath;
+					dX = (easting - cene) / ratw;
+					dY = (cenn - northing) / rath;
 
-					tempX = tempX + w2;
-					tempY = tempY + h2;
+					tempX = ( dX * cosrot + dY * sinrot) + w2;
+					tempY = (-dX * sinrot + dY * cosrot) + h2;
 					if (currentelement.id == 'marker2' && ( (tempX < 0) || (tempX > mapw) || (tempY < 0) || (tempY > maph) ) ) {
 						currentelement.style.left = (15 -marker2left) +'px';
 						currentelement.style.top = (maph + 25 - marker2top)+'px';

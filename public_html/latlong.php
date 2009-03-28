@@ -47,6 +47,12 @@ if (!empty($_GET['To'])) { //to lat/long
 		$latlong = $conv->osgb36_to_wgs84($_GET['e'],$_GET['n']);
 	} else if ($_GET['datum'] == 'irish') {
 		$latlong = $conv->irish_to_wgs84($_GET['e'],$_GET['n'],$_GET['usehermert']);
+	} else if ($_GET['datum'] == 'german32') {
+		$latlong = $conv->utm_to_wgs84($_GET['e'],$_GET['n']);
+	} else if ($_GET['datum'] == 'german33') {
+		$latlong = $conv->utm_to_wgs84($_GET['e'],$_GET['n'],33);
+	} else if ($_GET['datum'] == 'german31') {
+		$latlong = $conv->utm_to_wgs84($_GET['e'],$_GET['n'],31);
 	} else {
 		//todo: make an educated guess - basically if could be irish then use that otherwise gb ?!? - probably not...
 	}
@@ -82,6 +88,12 @@ if (!empty($_GET['To'])) { //to lat/long
 	} else if ($_GET['datum'] == 'irish') {
 		$en = $conv->wgs84_to_irish($_GET['lat'],$_GET['long'],$_GET['usehermert']);
         
+	} else if ($_GET['datum'] == 'german32') {
+		$en = $conv->wgs84_to_utm($_GET['lat'],$_GET['long']);
+	} else if ($_GET['datum'] == 'german33') {
+		$en = $conv->wgs84_to_utm($_GET['lat'],$_GET['long'], 33);
+	} else if ($_GET['datum'] == 'german31') {
+		$en = $conv->wgs84_to_utm($_GET['lat'],$_GET['long'], 31);
 	} else {
 		list($e,$n,$reference_index) = $conv->wgs84_to_national($_GET['lat'],$_GET['long'],$_GET['usehermert']);
 		if ($reference_index == 1) {
@@ -90,6 +102,15 @@ if (!empty($_GET['To'])) { //to lat/long
 		} else if ($reference_index == 2) {
 			$en = array($e,$n);
 			$_GET['datum'] = "irish";
+		} else if ($reference_index == 3) {
+			$en = array($e,$n);
+			$_GET['datum'] = "german32";
+		} else if ($reference_index == 4) {
+			$en = array($e,$n);
+			$_GET['datum'] = "german33";
+		} else if ($reference_index == 5) {
+			$en = array($e,$n);
+			$_GET['datum'] = "german31";
 		}
 	}
 	if (isset($en) && count($en)) {
