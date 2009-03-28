@@ -198,7 +198,7 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)([a-z]+:
 			$server = $_SERVER['HTTP_HOST'];
 			$ext = false;
 			$prefix = '';
-			if ($g_matches[2][$i] == 'de:') {
+			if ($g_matches[2][$g_i] == 'de:') {
 				$server = 'geo.hlipp.de';
 				$ext = true;
 				$prefix = 'de:';
