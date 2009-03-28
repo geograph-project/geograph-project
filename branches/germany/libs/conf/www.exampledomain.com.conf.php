@@ -72,6 +72,11 @@ $CONF['forum_to_template'][$CONF['forum_submittedarticles']] = '6';
 $CONF['forum_to_template'][$CONF['forum_gallery']] = '11';
 $CONF['forum_to_template'][$CONF['forum_bugreports']] = '4';
 
+$CONF['forum_lang'] = 'eng';
+$CONF['forum_date'] = 'j F Y H:i:s';
+$CONF['forum_templates'] = 'templates';
+$CONF['forum_title'] = 'Discuss';
+
 //path to php binary
 $CONF['phpdir']='/usr/bin/';
 
