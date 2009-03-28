@@ -1,0 +1,2 @@
+replace into loc_towns(name, e, n, s, reference_index, quad, point_en) values
+('Schwäbisch Hall',       553810, 5440220, 3, 3, 0, GeomFromText('POINT(553810 5440220)'));

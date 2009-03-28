@@ -1,0 +1,8 @@
+replace into loc_towns(name, e, n, s, reference_index, quad, point_en) values
+('Rottweil',               472260, 5335020, 3, 3, 0, GeomFromText('POINT(472260 5335020)')),
+('Baden-Baden',            444240, 5401410, 3, 3, 0, GeomFromText('POINT(444240 5401410)')),
+('Lörrach',               399380, 5274010, 3, 3, 0, GeomFromText('POINT(399380 5274010)')),
+('Emmendingen',            414390, 5330330, 3, 3, 0, GeomFromText('POINT(414390 5330330)')),
+('Offenburg',              421860, 5368970, 3, 3, 0, GeomFromText('POINT(421860 5368970)')),
+('Freudenstadt',           456480, 5368030, 3, 3, 0, GeomFromText('POINT(456480 5368030)')),
+('Rastatt',                441500, 5411950, 3, 3, 0, GeomFromText('POINT(441500 5411950)'));
