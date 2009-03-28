@@ -229,6 +229,7 @@ class GeographMap
 		$this->colour['suppmarker']=array(236,206,64);
 		$this->colour['border']=array(255,255,255);
 		$this->colour['land']=array(117,255,101);
+		//$this->colour['land']=array(102,204,102);
 		
 		//specific to a palette...
 		switch ($idx)
@@ -981,9 +982,12 @@ class GeographMap
 		foreach (array(0,1,2,3,4,5,7,10,20,40) as $idx => $o) {
 			switch (true) {
 				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break; 
-				case $o == 1: $r=255; $g=255; $b=0; break; 
-				case $o == 2: $r=255; $g=196; $b=0; break; 
-				case $o == 3: $r=255; $g=132; $b=0; break; 
+				//case $o == 1: $r=255; $g=255; $b=0; break; 
+				//case $o == 2: $r=255; $g=196; $b=0; break; 
+				//case $o == 3: $r=255; $g=132; $b=0; break; 
+				case $o == 1: $r=255; $g=196; $b=0; break; 
+				case $o == 2: $r=255; $g=154; $b=0; break; 
+				case $o == 3: $r=255; $g=110; $b=0; break; 
 				case $o == 4: $r=255; $g=64; $b=0; break; 
 				case $o <  7: $r=225; $g=0; $b=0; break; 
 				case $o < 10: $r=200; $g=0; $b=0; break; 
@@ -1053,9 +1057,12 @@ class GeographMap
 			//standard green, yellow => red
 			switch (true) {
 				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break; 
-				case $o == 1: $r=255; $g=255; $b=0; break; 
-				case $o == 2: $r=255; $g=196; $b=0; break; 
-				case $o == 3: $r=255; $g=132; $b=0; break; 
+				//case $o == 1: $r=255; $g=255; $b=0; break; 
+				//case $o == 2: $r=255; $g=196; $b=0; break; 
+				//case $o == 3: $r=255; $g=132; $b=0; break; 
+				case $o == 1: $r=255; $g=196; $b=0; break; 
+				case $o == 2: $r=255; $g=154; $b=0; break; 
+				case $o == 3: $r=255; $g=110; $b=0; break; 
 				case $o == 4: $r=255; $g=64; $b=0; break; 
 				case $o <  7: $r=225; $g=0; $b=0; break; #5-6
 				case $o < 10: $r=200; $g=0; $b=0; break; #7-9
@@ -1680,6 +1687,7 @@ END;
 			if ($this->pixels_per_km >= 40) {
 				$gridcol=imagecolorallocate ($img, 89,126,118);
 				$gridcol2=imagecolorallocate ($img, 60,205,252);
+				//$gridcol2=imagecolorallocate ($img, 102,173,166);
 				
 				//plot the individual lines
 				for($i=0;$i<$this->image_w;$i+=$this->pixels_per_km) {
@@ -1695,6 +1703,7 @@ END;
 				
 				$gridcol=imagecolorallocate ($img, 89,126,118);
 				$gridcol2=imagecolorallocate ($img, 60,205,252);
+				//$gridcol2=imagecolorallocate ($img, 102,173,166);
 				
 				if (!$this->reference_index) {
 					$this->getGridRef(-1,-1);

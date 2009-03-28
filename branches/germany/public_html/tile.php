@@ -399,9 +399,12 @@ function getColorKey(&$img) {
 		$o = $counts[$p];
 		//standard green, yellow => red
 		switch (true) {
-			case $o == 1: $r=255; $g=255; $b=0; break; 
-			case $o == 2: $r=255; $g=196; $b=0; break; 
-			case $o == 3: $r=255; $g=132; $b=0; break; 
+			//case $o == 1: $r=255; $g=255; $b=0; break; 
+			//case $o == 2: $r=255; $g=196; $b=0; break; 
+			//case $o == 3: $r=255; $g=132; $b=0; break; 
+			case $o == 1: $r=255; $g=196; $b=0; break; 
+			case $o == 2: $r=255; $g=154; $b=0; break; 
+			case $o == 3: $r=255; $g=110; $b=0; break; 
 			case $o == 4: $r=255; $g=64; $b=0; break; 
 			case $o <  7: $r=225; $g=0; $b=0; break; #5-6
 			case $o < 10: $r=200; $g=0; $b=0; break; #7-9
