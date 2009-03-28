@@ -32,6 +32,9 @@ if it doesn't already exist, and assign a land percentage to that square.</p>
 <input type="checkbox" name="ignore100" id="ignore100" value="1" {if $ignore100}checked{/if}>
 <label for="ignore100">Ignore 100% squares, useful for makeing lakes where the map doesnt include sea</label><br />
 
+<input type="checkbox" name="dryrun" id="dryrun" value="1" {if $dryrun}checked{/if}>
+<label for="dryrun">Dry run: Don't touch the database</label><br />
+
 <input type="submit" name="shader" value="Build Grid">
 
 
