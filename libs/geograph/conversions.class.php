@@ -159,6 +159,9 @@ function internal_to_gridref($x,$y,$gr_length,$reference_index = 0) {
 //use:    list($gr,$len) = national_to_gridref($e,$n,$gr_length,$reference_index);
 
 function national_to_gridref($e,$n,$gr_length,$reference_index,$spaced = false) {
+	if (!$reference_index) {
+		return array("",0);
+	}
 	list($x,$y) = $this->national_to_internal($e,$n,$reference_index );
 
 	$db = $this->_getDB();
