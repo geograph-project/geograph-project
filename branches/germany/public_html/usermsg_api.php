@@ -131,7 +131,7 @@ if (preg_match('/(DORMANT|geograph\.org\.uk|geograph\.co\.uk|dev\.null|deleted|l
 } else {
 	$email = $recipient->email;
 }
-if (@mail($email, $subject, $body, $received."From: $from_name <$from_email>")) 
+if (@mail($email, $subject, $body, $received."From: $from_name <$from_email>", "-f geo@hlipp.de")) #FIXME conf var
 {
 
 
@@ -146,7 +146,7 @@ else
 		"Original To: {$recipient->email}\n".
 		"Original From: $from_name <$from_email>\n".
 		"Original Subject:\n\n$body",
-		'From:webserver@'.$_SERVER['HTTP_HOST']);	
+		"From: geo@hlipp.de", "-f geo@hlipp.de"); #FIXME conf var
 
 	die("ERROR: fatal error, Please let us know");
 }

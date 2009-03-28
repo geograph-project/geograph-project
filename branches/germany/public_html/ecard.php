@@ -170,7 +170,7 @@ if (!$throttle && isset($_POST['msg']))
 				"with HTTP;".
 				strftime("%d %b %Y %H:%M:%S -0000", time())."\n";
 			
-			@mail("$to_name <$to_email>", $subject, $body, $received.implode("\n",$headers));
+			@mail("$to_name <$to_email>", $subject, $body, $received.implode("\n",$headers), "-f mail@hlipp.de");//FIXME env from
 
 			$smarty->assign('sent', 1);
 		}

@@ -381,12 +381,14 @@ class GeographUser
 					
 					$msg.="We hope you enjoy using and contributing to the site\n\n";
 					$msg.="Kind Regards,\n\n";
-					$msg.="The Geograph.org.uk Team";
+					$msg.="The Geograph.org.uk Team"; #FIXME variable? #TODO
 					
 					
-					@mail($email, '[geograph] Confirm registration', $msg,
-						"From: Geograph Website <noreply@geograph.org.uk>");
+					#@mail($email, '[geograph] Confirm registration', $msg,
+					#	"From: geo.hlipp.de <mail@hlipp.de>"); #FIXME variable?
 				
+					@mail($email, '[geograph] Confirm registration', $msg,
+						"From: geo.hlipp.de <mail@hlipp.de>","-f mail@hlipp.de"); #FIXME variable from/env from?
 				}
 			}
 		}
@@ -506,7 +508,7 @@ class GeographUser
 				"If you do not wish to change your password, simply disregard this message";
 
 				@mail($email, 'Password Reminder for '.$_SERVER['HTTP_HOST'], $msg,
-				"From: Geograph Website <noreply@geograph.org.uk>");
+				"From: geo.hlipp.de <mail@hlipp.de>","-f mail@hlipp.de"); #FIXME variable from/env from?
 				$ok=true;
 			}
 			else
@@ -812,7 +814,7 @@ class GeographUser
 				"If you do not wish to change your address, simply disregard this message";
 				
 				@mail($profile['email'], 'Please confirm your email address change', $msg,
-				"From: Geograph Website <noreply@geograph.org.uk>");
+				"From: geo.hlipp.de <mail@hlipp.de>","-f mail@hlipp.de"); #FIXME variable from/env from?
 				
 				
 			}

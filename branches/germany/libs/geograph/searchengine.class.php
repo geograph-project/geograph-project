@@ -150,7 +150,7 @@ class SearchEngine
 			print_r($this->criteria);
 	                print_r($explain);
         	        $con = ob_get_clean();
-        	        mail('geograph@barryhunter.co.uk','[Geograph Search Quota] '.date('r'),$con);
+        	        mail('geo@hlipp.de','[Geograph Search Quota] '.date('r'),$con, "From: geo.hlipp.de <mail@hlipp.de>","-f mail@hlipp.de"); # FIXME conf var
 		
 			global $smarty,$USER;
 			header("HTTP/1.1 503 Service Unavailable");

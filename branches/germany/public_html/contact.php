@@ -58,7 +58,7 @@ if (isset($_POST['msg']))
 			mail($CONF['contact_email'], 
 				'[Geograph] '.$subject,
 				$msg,
-				'From:'.$from);	
+				'From:'.$from, "-f geo@hlipp.de");	//FIXME env from
 
 			$smarty->assign('message_sent', true);
 		}

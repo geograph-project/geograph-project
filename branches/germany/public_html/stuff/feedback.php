@@ -58,14 +58,14 @@ if (!empty($_POST['submit'])) {
 			$msg.="User profile: http://{$_SERVER['HTTP_HOST']}/profile/{$_SESSION['user']->user_id}\n";
 			$from = $_SESSION['user']->email;
 		} else {
-			$from = "anon@geograph.org.uk";
+			$from = "geo@hlipp.de";
 		}
 		$msg.="Browser: ".$_SERVER['HTTP_USER_AGENT']."\n";
 
 		mail($CONF['contact_email'], 
 			'[Geograph] '.$subject,
 			$msg,
-			'From:'.$from);	
+			'From:'.$from, "-f mail@hlipp.de");  //FIXME conf var
 	}
 	
 	$smarty->assign('thanks', 1);
