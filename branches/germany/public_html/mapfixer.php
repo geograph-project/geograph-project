@@ -83,7 +83,7 @@ if (isset($_GET['gridref']))
 			{
 				//we need to create a square
 				$matches=array();
-				preg_match('/^([A-Z]{1,2})(\d\d)(\d\d)$/',$gridref, $matches);
+				preg_match('/^([A-Z]{1,3})(\d\d)(\d\d)$/',$gridref, $matches);
 						
 				$gridsquare=$matches[1];
 				$eastings=$matches[2];

@@ -49,7 +49,7 @@ if (!empty($_GET['q'])) {
 	if (!$smarty->is_cached($template, $cacheid)) {
 		
 		$offset = (($pg -1)* $sphinx->pageSize)+1;
-		if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/",$sphinx->q,$m)) {
+		if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{2,5})[ \.]?(\d{2,5})\b/",$sphinx->q,$m)) {
 			$smarty->assign('gridref',$m[1].$m[2].$m[3]);
 			$sphinx->q = " ".$sphinx->q;
 		}

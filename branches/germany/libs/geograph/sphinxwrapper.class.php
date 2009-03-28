@@ -75,7 +75,7 @@ class sphinxwrapper {
 		$q = preg_replace('/(^|\s)\b\'([\w ]+)\'\b(\s|$)/','$1"$2"$3',$q);
 		
 			//transform 'near gridref' to the put the GR first (thats how processQuery expects it) 
-		$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,2} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
+		$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,3} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
 		
 		$this->q = $q;
 	}
@@ -83,7 +83,7 @@ class sphinxwrapper {
 	public function processQuery() {
 		$q = $this->q;
 
-		if (preg_match('/^([a-zA-Z]{1,2}) +(\d{1,5})(\.\d*|) +(\d{1,5})(\.*\d*|)/',$q,$matches) && $matches[1] != 'tp') {
+		if (preg_match('/^([a-zA-Z]{1,3}) +(\d{1,5})(\.\d*|) +(\d{1,5})(\.*\d*|)/',$q,$matches) && $matches[1] != 'tp') {
 			$square=new GridSquare;
 			$grid_ok=$square->setByFullGridRef($matches[0],true);
 
@@ -96,7 +96,7 @@ class sphinxwrapper {
 				$r = "\t--invalid Grid Ref--";
 			}
 
-		} else if (preg_match('/^([a-zA-Z]{1,2})(\d{2,10})\b/',$q,$matches) && $matches[1] != 'tp') {
+		} else if (preg_match('/^([a-zA-Z]{1,3})(\d{2,10})\b/',$q,$matches) && $matches[1] != 'tp') {
 
 			$square=new GridSquare;
 			$grid_ok=$square->setByFullGridRef($matches[0],true);

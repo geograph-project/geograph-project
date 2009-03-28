@@ -186,7 +186,7 @@ $posterText=$cols[3];
 if (($topicDesc && !$postID) || !$topicDesc)
 	$postID = $cols[6];
 
-if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
+if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
 	global $memcache;
 	$mkey = $cols[6].((!empty($_GET['l']))?'y':'');
 	//fails quickly if not using memcached!

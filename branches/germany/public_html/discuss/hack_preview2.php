@@ -7,7 +7,7 @@ $disbbcode=(isset($_POST['disbbcode']) and $_POST['disbbcode']==1?1:0);
 $topicTitle2=stripslashes(textFilter($_POST['topicTitle'],$topic_max_length,$post_word_maxlength,0,1,0,0));
 $postText2=stripslashes(textFilter($_POST['postText'],$post_text_maxlength,$post_word_maxlength,1,$disbbcode,1,$logged_admin));
 
-if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/',$postText2,$g_matches)) {
+if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$postText2,$g_matches)) {
 	$thumb_count = 0;
 	foreach ($g_matches[2] as $i => $g_id) {
 		if (is_numeric($g_id)) {

@@ -92,7 +92,7 @@ class SearchEngineBuilder extends SearchEngine
 			} else {
 				$this->errormsg = "Invalid Postcode or a newer Postcode not in our database, please try a different search method.";
 			}
-		} elseif (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$qlocation,$gr)) {
+		} elseif (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$qlocation,$gr)) {
 			require_once('geograph/gridsquare.class.php');
 			$square=new GridSquare;
 			$grid_ok=$square->setByFullGridRef($gr[1].$gr[2].$gr[3],false,true);
@@ -315,7 +315,7 @@ class SearchEngineBuilder extends SearchEngine
 					&& !in_array($pc[1],array('SV','SX','SZ','TV','SU','TL','TM','SH','SJ','TG','SC','SD','NX','NY','NZ','OV','NS','NT','NU','NL','NM','NO','NF','NH','NJ','NK','NA','NB','NC','ND','HW','HY','HZ','HT','Q','D','C','J','H','F','O','T','R','X','V')) ) {
 				$dataarray['postcode'] = $dataarray['placename'];
 				unset($dataarray['placename']);
-			} elseif (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$dataarray['placename'],$gr)) {
+			} elseif (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$dataarray['placename'],$gr)) {
 				$dataarray['gridref'] = $dataarray['placename'];
 				unset($dataarray['placename']);
 			} elseif ($dataarray['placename'] == '(anywhere)') {
@@ -341,7 +341,7 @@ class SearchEngineBuilder extends SearchEngine
 				$this->errormsg = "Does not appear to be a valid Postcode";
 			}
 		} else if (!empty($dataarray['gridref'])) {
-			if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$dataarray['gridref'],$gr)) {
+			if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$dataarray['gridref'],$gr)) {
 				require_once('geograph/gridsquare.class.php');
 				$square=new GridSquare;
 				$grid_ok=$square->setByFullGridRef($dataarray['gridref'],false,true);

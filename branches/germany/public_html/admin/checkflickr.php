@@ -134,7 +134,7 @@ function _precess_photo(&$photo) {
 			if ($authorname) 
 				$owners[$author] = $authorname;
 			
-			if (preg_match("/^([a-zA-Z]{1,2})(\d+)$/","$tag")) {
+			if (preg_match("/^([a-zA-Z]{1,3})(\d+)$/","$tag")) {
 				$square=new GridSquare;
 				$grid_ok=$square->setByFullGridRef($tag);
 				if ($grid_ok) {
