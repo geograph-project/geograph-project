@@ -1,4 +1,4 @@
-<?
+<?php
 
 // +----------------------------------------------------------------------+
 // | Extension of File_Bittorrent2_MakeTorrent to include specific files  |

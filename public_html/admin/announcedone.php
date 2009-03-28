@@ -52,9 +52,9 @@ if ($_POST) {
 ?>
 <form method="post">
 
-Date: <input type="text" name="date" value="<? echo empty($_POST['date'])?date('Y-m-d'):$_POST['date']; ?>"/><br/>
+Date: <input type="text" name="date" value="<?php echo empty($_POST['date'])?date('Y-m-d'):$_POST['date']; ?>"/><br/>
 
-Title: <input type="text" name="title" value="<? echo empty($_POST['title'])?'':$_POST['title']; ?>" size=50/><br/>
+Title: <input type="text" name="title" value="<?php echo empty($_POST['title'])?'':$_POST['title']; ?>" size=50/><br/>
 
 Entry: <textarea name="entry" rows="4" cols="80"/></textarea> 
 
@@ -62,7 +62,7 @@ Entry: <textarea name="entry" rows="4" cols="80"/></textarea>
 
 </form>
 
-<?
+<?php
 $smarty->display('_std_end.tpl');
 exit;
 ?>

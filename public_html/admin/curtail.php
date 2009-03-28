@@ -67,17 +67,17 @@ $a[$level] = " checked";
 
 <b>Set temporally to:</b> (setting to a level applies all the limitations above too) 
 <ol start="0">
-	<li><input type="radio" name="level" value="0" <? echo $a[0]; ?>/>  -all normal-</li>
-	<li><input type="radio" name="level" value="1" <? echo $a[1]; ?>/>  -unused-</li>
-	<li><input type="radio" name="level" value="2" <? echo $a[2]; ?>/>  Redirect GridImages (thumbs&amp;full) <small>- only applies to NON signed in users</small></li>
-	<li><input type="radio" name="level" value="3" <? echo $a[3]; ?>/>  Redirect Coverage Maps <small>- only applies to NON signed in users</small></li>
-	<li><input type="radio" name="level" value="4" <? echo $a[4]; ?>/>  Redirect Raster Maps <small>- only applies to NON signed in users</small></li>
-	<li><input type="radio" name="level" value="5" <? echo $a[5]; ?>/>  Redirect Javascript &amp; Disable Legacy Search</li>
-	<li><input type="radio" name="level" value="6" <? echo $a[6]; ?>/>  Disable Admin/Moderation</li>
-	<li><input type="radio" name="level" value="7" <? echo $a[7]; ?>/>  Disable all (non cached) Statistics pages</li>
-	<li><input type="radio" name="level" value="8" <? echo $a[8]; ?>/>  -unused-</li>
-	<li><input type="radio" name="level" value="9" <? echo $a[9]; ?>/>  Disable Games</li>
-	<li><input type="radio" name="level" value="10" <? echo $a[10]; ?>/> Disable Forum</li>
+	<li><input type="radio" name="level" value="0" <?php echo $a[0]; ?>/>  -all normal-</li>
+	<li><input type="radio" name="level" value="1" <?php echo $a[1]; ?>/>  -unused-</li>
+	<li><input type="radio" name="level" value="2" <?php echo $a[2]; ?>/>  Redirect GridImages (thumbs&amp;full) <small>- only applies to NON signed in users</small></li>
+	<li><input type="radio" name="level" value="3" <?php echo $a[3]; ?>/>  Redirect Coverage Maps <small>- only applies to NON signed in users</small></li>
+	<li><input type="radio" name="level" value="4" <?php echo $a[4]; ?>/>  Redirect Raster Maps <small>- only applies to NON signed in users</small></li>
+	<li><input type="radio" name="level" value="5" <?php echo $a[5]; ?>/>  Redirect Javascript &amp; Disable Legacy Search</li>
+	<li><input type="radio" name="level" value="6" <?php echo $a[6]; ?>/>  Disable Admin/Moderation</li>
+	<li><input type="radio" name="level" value="7" <?php echo $a[7]; ?>/>  Disable all (non cached) Statistics pages</li>
+	<li><input type="radio" name="level" value="8" <?php echo $a[8]; ?>/>  -unused-</li>
+	<li><input type="radio" name="level" value="9" <?php echo $a[9]; ?>/>  Disable Games</li>
+	<li><input type="radio" name="level" value="10" <?php echo $a[10]; ?>/> Disable Forum</li>
 </ol>
 
 <b>For:</b>

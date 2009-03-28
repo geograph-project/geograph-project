@@ -1,4 +1,4 @@
-<?
+<?php
 /*
 $Lang:English:$
 eng.php : ENGLISH language pack for miniBB.

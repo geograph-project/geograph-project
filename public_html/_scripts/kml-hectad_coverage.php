@@ -124,7 +124,7 @@ ob_start();
 ?>
 <kml xmlns="http://earth.google.com/kml/2.0">
 <Document>
-<name>Geograph Hectads - <? echo $type; if ($when) echo " - upto $when"; ?></name>
+<name>Geograph Hectads - <?php echo $type; if ($when) echo " - upto $when"; ?></name>
 <Style id="Style1">
 	<IconStyle>
 		<scale>0</scale>
@@ -134,7 +134,7 @@ ob_start();
 <name>Labels</name>
 <visibility>0</visibility>
 
-<?
+<?php
 	foreach ($hectads as $square) {
 	
 		list($lat,$long) = $conv->internal_to_wgs84($square['x']+5,$square['y']+5,$square['reference_index']);
@@ -142,35 +142,35 @@ ob_start();
 		$height = $square['image_count'] * 200;
 ?>
   <Placemark>
-  	<name><? echo $square['tenk_square']; ?></name>
+  	<name><?php echo $square['tenk_square']; ?></name>
     <visibility>0</visibility>
     <styleUrl>#Style1</styleUrl>
 	<Point>
-		<coordinates><? echo "$long,$lat,$height"; ?></coordinates>
+		<coordinates><?php echo "$long,$lat,$height"; ?></coordinates>
 		<altitudeMode>relativeToGround</altitudeMode>
 	</Point>
   </Placemark>
-<?
+<?php
 	}
 ?>
-<? if ($when) { ?>
+<?php if ($when) { ?>
 	<TimeSpan>
-	  <begin><? echo $whenb; ?></begin>
-	  <end><? echo $when; ?></end>
+	  <begin><?php echo $whenb; ?></begin>
+	  <end><?php echo $when; ?></end>
 	</TimeSpan>
-<? } ?>
+<?php } ?>
 </Folder>
 <Placemark>
 <name>Bars</name>
 <visibility>1</visibility>
-<? if ($when) { ?>
+<?php if ($when) { ?>
 	<TimeSpan>
-	  <begin><? echo $whenb; ?></begin>
-	  <end><? echo $when; ?></end>
+	  <begin><?php echo $whenb; ?></begin>
+	  <end><?php echo $when; ?></end>
 	</TimeSpan>
-<? } ?>
+<?php } ?>
 <MultiGeometry>
-<?
+<?php
 
 	$done = array();
 	function getll($x,$y,$ri) {
@@ -202,7 +202,7 @@ ob_start();
 			<outerBoundaryIs>
 				<LinearRing>
 					<coordinates>
-					<? 
+					<?php
 					foreach ($bits as $bit) {
 						echo "{$bit['long']},{$bit['lat']},$height ";
 					}
@@ -213,12 +213,12 @@ ob_start();
 				</LinearRing>
 			</outerBoundaryIs>
 		</Polygon>
-  <?
+  <?php
   	}
 ?>
 </MultiGeometry>
 </Placemark>
-</Document></kml><?	
+</Document></kml><?php
 		
 $filedata = ob_get_contents();
 ob_end_clean();

@@ -120,7 +120,7 @@ if (!empty($_POST['spelling'])) {
 			that.form.elements[name].value = str;
 		}
 	</script>
-	<?
+	<?php
 	$query = "{$image->title} {$image->comment} {$image->imageclass}"; 
 
 	$xml = new SimpleXMLElement(SpellChecker::GetSuggestions( $query )); 
