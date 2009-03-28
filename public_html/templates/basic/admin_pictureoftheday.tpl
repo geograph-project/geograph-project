@@ -10,7 +10,6 @@ without a particular image assigned.</p>
 
 
 <form method="post" action="pictureoftheday.php">
-<div class="interestBox">
 
 <p>NOTE: the image will be cropped to landscape format - so for portrait format photos check that they still work when cropped to the central area.</p>
 
@@ -22,7 +21,7 @@ without a particular image assigned.</p>
 
 <div>
 <label for="when">When?</label>
-<input type="text" name="when" size="16" id="when" value="{$when}"/>
+<input type="text" name="when" size="16" id="when" value="{$when}"/> (optional)<br/>
 
 <input type="submit" name="add" value="Add"/>
 </div>
@@ -46,7 +45,6 @@ with any <a href="http://www.gnu.org/software/tar/manual/html_node/tar_109.html"
 <li>this friday</li>
 </ul>
 
-</div>
 
 </div>
 
