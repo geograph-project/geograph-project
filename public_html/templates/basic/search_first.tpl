@@ -9,7 +9,11 @@
 <form action="/search.php" method="get" name="theForm">
 	<div class="tabHolder">
 		<a href="/search.php?form=simple" class="tab">simple search</a>
+		{if $noSphinx}
+		<a href="/search.php?form=advanced&amp;legacy=true" class="tab">advanced search</a>
+		{else}
 		<a href="/search.php?form=text" class="tab">advanced search</a>
+		{/if}
 		<span class="tabSelected">First Geographs</span>
 	</div>
 	<div class="interestBox">
@@ -49,7 +53,12 @@
 				{/if}
 				{/dynamic}
 				<input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label><br/>
-				<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"})</small></td> 
+				{if $noSphinx}
+				<small>({newwin href="/statistics/breakdown.php?by=user" onclick="window.open(this.href,this.target); return false;" text="open contributor list"})</small>
+				{else}
+				<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"})</small>
+				{/if}
+			</td>
 		  </tr> 
 		  <tr> 
 			 <td><label for="moderation_status">classification</label></td> 

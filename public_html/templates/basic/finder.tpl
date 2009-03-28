@@ -66,7 +66,11 @@ h4.title {
 		</div>
 		</form>
 		
-		<p>&middot; <a href="/search.php?form=text">More Options...</a></p>
+		{if $noSphinx}
+			<p>&middot; <a href="/search.php?form=advanced&amp;legacy=true">More Options...</a></p>
+		{else}
+			<p>&middot; <a href="/search.php?form=text">More Options...</a></p>
+		{/if}
 		
 		<h4 class="title">Quick Search</h4>
 		<form method="get" action="/full-text.php">
@@ -84,7 +88,12 @@ h4.title {
 			<input type="submit" name="btnG" value="Search"/></div>
 		</form>
 		
+		{if $noSphinx}
+		<p>see also <a href="/search.php">search page</a>
+		{else}
 		<p>see also <a href="/search.php?form=advanced">advanced search</a>, and <a href="/search.php">more</a>
+		{/if}
+		
 	</div>
 
 	<div style="position:relative;{if $tab != 2}display:none{/if}" class="interestBox" id="div2">

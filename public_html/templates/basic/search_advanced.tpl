@@ -87,7 +87,12 @@
 				{/if}
 				{/dynamic}
 				<input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label><br/>
-				<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"})</small></td> 
+				{if $noSphinx}
+				<small>({newwin href="/statistics/breakdown.php?by=user" onclick="window.open(this.href,this.target); return false;" text="open contributor list"})</small>
+				{else}
+				<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"})</small>
+				{/if}
+			</td>
 		  </tr> 
 		  <tr> 
 			 <td><label for="moderation_status">classification</label></td> 

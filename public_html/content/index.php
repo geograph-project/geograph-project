@@ -49,6 +49,8 @@ $mtime = strtotime($data['Update_time']);
 //can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
+$smarty->assign('noSphinx', empty($CONF['sphinx_host'])); // FIXME -> global?
+
 if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid))
 {
 	$extra = 'inner';
@@ -90,7 +92,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		$profile=new GeographUser($_GET['user_id']);
 		$title = "By ".($profile->realname);
 		
-	} elseif (!empty($_GET['q'])) {
+	} elseif (!empty($_GET['q']) && !empty($CONF['sphinx_host'])) {
 
 		// --------------
 		
@@ -119,7 +121,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		$smarty->assign("query_info",$sphinx->query_info);
 		
 		if (count($ids)) {
-			$where = "content_id IN(".join(",",$ids).")";
+			$where = "content_id IN(".join(",",$ids).")"; //FIXME crash: ... IN() ...
 		} else {
 			$where = "0";
 		}

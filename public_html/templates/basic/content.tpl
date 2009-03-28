@@ -48,6 +48,7 @@
 <iframe src="/content/?inner{$extra}" width="100%" height="100%" frameborder="0" name="content"></iframe>
 			</td>
 			<td valign="top" class="helpbox">
+{if !$noSphinx}
 <form action="/content/" method="get" target="content">
 <input type="hidden" name="inner" value="1"/>
 <div style="float:right">
@@ -56,6 +57,7 @@
 <lable for="qs">Search Content:</label> <br/>
 <input type="text" name="q" id="qs" size="30"/>
 </form><hr/>
+{/if}
 Shortcuts:
 <ul>
 	<li><a href="/content/?inner" target="content">Recently Updated</a></li>
@@ -64,11 +66,13 @@ Shortcuts:
 	<li><a href="/content/?inner&amp;loc" target="content">Location Specific</a></li>
 	<li><a href="/content/?inner&amp;docs&amp;order=title" target="content">Geograph Documents</a></li>
 </ul><hr/>
+{if !$noSphinx}
 Common Themes: (<a href="/content/themes.php">more...</a>)<br/>
 {foreach from=$words key=word item=count}
 	<span class="nowrap">&middot; <a href="/content/?inner&amp;q={$word}" target="content" onclick="document.getElementById('qs').value='{$word}'" style="font-size:{math equation="log(c)" c=$count}em">{$word}</a></span>
 {/foreach}
 <hr/>
+{/if}
 
 <b>Content Comprises:</b>
  <ul>
