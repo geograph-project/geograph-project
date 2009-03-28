@@ -55,9 +55,10 @@ div:target { background-color:orange;padding-bottom:10px; }
  <li><a href="#goodgeograph">What makes a good <b>Geograph</b>?</a></li>
  <li><a href="#points">How do I get a geograph <b>point</b> for my image?</a></li>
  <li><a href="#supplemental">What is a <b>supplemental</b> image?</a></li>
+ <li><a href="#language">Do you only accept descriptions in <b>German</b>?</a></li>
  <li><a href="#multiple">Do you accept <b>multiple images</b> per square</a></li>
  <li><a href="#resize">Do I need to <b>resize</b> my photos? Are there size limits?</a></li>
- <li><a href="#commercial">Why must I agree to allow <b>commercial use</b> of my image?</a></li>
+ <li><a href="#licence">Why must I agree to allow <b>commercial use</b> of my image?</a></li>
  <li><a href="#legal">What are my <b>legal rights</b> when taking photographs?</a></li>
  </ul>
 <b>Browsing</b> the site:
@@ -111,9 +112,20 @@ The <b>Geograph Website</b>:
 <a name="goodgeograph"></a>
 <h3>What makes a good Geograph image?</h3>
 	<ul>
-	<li>You must clearly show at close range one of the main geographical features within the square</li>
+<li>You must clearly show one of the main geographical features of the square</li>
 	<li>You should include a short description relating the image to the map square</li>
+	<li>Your submission makes a person who does not know this place think "Oh, that's how it looks there."</li>
 	<li>Photographing a subject that could be useful to the child in interpreting a map</li>
+	<li>The photo should also show some of the surroundings of the subject.</li>
+	<li>We want to be fair when giving points:
+		<ul>
+		<li>The picture must be taken close to the subject, preferably in the same square. So, the rules here are not as strict as on <a href="http://www.geograph.org.uk">www.geograph.org.uk</a> but you won't get many points by
+		using your telephoto lens from a distant tower.</li>
+		<li>If there is a possible subject in the foreground, you can't get points for another subject in the next square (no two points for simmilar pictures).</li>
+		<li>The photographer location must not be some unusual "technical device" (plane, ...) if you want to get points. Pictures taken from a ship are okay, though.</li>
+		</ul>
+		Pictures which do not fulfill these criteria are still highly appreciated&mdash;you just won't get points for them (classification: "supplemental"). As these criteria have changed at the beginning, some old pictures might have been classified incorrectly, but this will be corrected gradually by remoderation.
+		</li>
 	</ul>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
@@ -137,7 +149,15 @@ The <b>Geograph Website</b>:
 	but the image will still appear on the selected grid square. A square that just contains
 	supplemental images is still open to be claimed as a geograph though!</p>
 
-	<p><img src="http://www.geograph.org.uk/templates/basic/img/icon_alert.gif" alt="Note" width="25" height="22" align="absmiddle"/> Follow this link for a <a title="geograph and supplemental guide" href="/article/Geograph-or-supplemental">more in depth discussion</a> on the finer points of moderation.</p>
+	<!--p><img src="/templates/basic/img/icon_alert.gif" alt="Note" width="25" height="22" align="absmiddle"/> Follow this link for a <a title="geograph and supplemental guide" href="http://www.geograph.org.uk/article/Geograph-or-supplemental">more in depth discussion</a> on the finer points of moderation.</p-->
+</div>
+<div class="top"><a href="#top">back to top</a></div>
+
+<div id="language">
+<a name="language"></a>
+<h3>Do you only accept descriptions in German?</h3>
+<p>We also accept English descriptions and titles, which will be translated by a moderator if possible. We try to keep
+the English version, too: we'll put it at the end of the title or description, enclosed in parentheses.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
@@ -148,7 +168,7 @@ The <b>Geograph Website</b>:
 	to capture squares we don't have photos for yet - but we welcome additional 
 	geograph or supplemental images, perhaps showing a different subject, or a different time of year. Everyone sees 
 	things differently - feel free to give us your take on any square. Some squares have 
-	been done in considerable <a href="/statistics/most_geographed.php" title="squares with good overage">detail</a> - helping to more fully document and add <a href="/moversboard.php?type=depth" title="Depth Weekly Leaderboard">depth</a> to a square.</p>
+	been done in considerable <a href="/statistics/most_geographed.php" title="squares with good overage">detail</a> - helping to more fully document and add <a href="/statistics/moversboard.php?type=depth" title="Depth Weekly Leaderboard">depth</a> to a square.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
@@ -318,8 +338,8 @@ The <b>Geograph Website</b>:
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
-<div id="commercial">
-<a name="commercial"></a>
+<div id="licence">
+<a name="licence"></a>
 <h3>Why must I agree to allow commercial use of my image?</h3>
 	<p>Running this site costs money, particularly over time as the storage
 	requirements are quite large. We require commercial rights to enable us to
