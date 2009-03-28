@@ -26,17 +26,17 @@
 
  {if $recentcount}
   
-  	<h3 {if $overview} style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;"{/if}>Recent Photos <small>[<a href="/search.php?displayclass=full&amp;orderby=submitted&amp;breakby=submitted&amp;reverse_order_ind=1&amp;resultsperpage=15&amp;do=1" title="Show the most recent submissions">more...</a>]</small></h3>
+  	<h3 {if $overview} style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;"{/if}>Neue Bilder <small>[<a href="/search.php?displayclass=full&amp;orderby=submitted&amp;breakby=submitted&amp;reverse_order_ind=1&amp;resultsperpage=15&amp;do=1" title="Aktuelle Fotos anzeigen">mehr...</a>]</small></h3>
   	
   	{foreach from=$recent item=image}
   
   	  <div style="text-align:center;padding-bottom:1em;">
-  	  <a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
+  	  <a title="{$image->title|escape:'html'} - Zum Vergrößern anklicken" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
   	  
   	  <div>
-  	  <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
-  	  by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a>
-	  for grid square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
+  	  <a title="Vollbild" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
+  	  von <a title="Profil anzeigen" href="{$image->profile_link}">{$image->realname}</a>
+	  für Planquadrat <a title="Seite für {$image->grid_reference} anzeigen" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
 	  
 	  </div>
   	  
