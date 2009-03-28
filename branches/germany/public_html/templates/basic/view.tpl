@@ -72,7 +72,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <table style="width:100%">
 <tr>
-	<td colspan="6" align="center" style="background-color:lightgrey;font-size:0.7em;"><b><a href="/reuse.php?id={$image->gridimage_id}">Find out how to reuse this Image</a></b> For example on your webpage, blog, a forum, or Wikipedia. </td>
+	<td colspan="6" align="center" style="background-color:#c0c0c0;font-size:0.7em;"><b><a href="/reuse.php?id={$image->gridimage_id}">Find out how to reuse this Image</a></b> For example on your webpage, blog, a forum, or Wikipedia. </td>
 </tr>
 <tr>
 {if $enable_forums}
@@ -183,7 +183,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <dt>Subject Location</dt>
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
-{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->subject_gridref}/links">{$image->subject_gridref}</a> [{$image->subject_gridref_precision}m precision]<br/>
+{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" alt="geotagged!" style="vertical-align:middle;" /> <a href="/gridref/{$image->subject_gridref}/links">{$image->subject_gridref}</a> [{$image->subject_gridref_precision}m precision]<br/>
 WGS84: <span class="geo"><abbr class="latitude" title="{$lat|string_format:"%.5f"}">{$latdm}</abbr> <abbr class="longitude" 
 title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </dd>
@@ -192,7 +192,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 <dt>Photographer Location</dt>
 
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
-{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->photographer_gridref}/links">{$image->photographer_gridref}</a></dd>
+{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" alt="geotagged!" style="vertical-align:middle;" /> <a href="/gridref/{$image->photographer_gridref}/links">{$image->photographer_gridref}</a></dd>
 {/if}
 
 {if $view_direction && $image->view_direction != -1}
@@ -241,7 +241,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{assign var="imagetakenurl" value=$image_taken|date_format:"&amp;taken=%Y-%m-%d"}
 {/if}
 
-<span class="nowrap"><img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->subject_gridref}/links?{$imagetakenurl}&amp;title={$image->title|escape:'url'}&id={$image->gridimage_id}"><b>More Links for this image</b></a></span>
+<span class="nowrap"><img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" alt="geotagged!" style="vertical-align:middle;" /> <a href="/gridref/{$image->subject_gridref}/links?{$imagetakenurl}&amp;title={$image->title|escape:'url'}&amp;id={$image->gridimage_id}"><b>More Links for this image</b></a></span>
 </div>
 
 
