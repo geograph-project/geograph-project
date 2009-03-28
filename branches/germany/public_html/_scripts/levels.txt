@@ -1,0 +1,84 @@
+For Icons/Photos:
+$Region->setPoint($point,0.01);
+$delta = $entry['gridimage_id']%30;
+
+
++-------+-----------------------------+---------------------------+----------+
+| level | url                         | filename                  | count(*) |
++-------+-----------------------------+---------------------------+----------+
+|     1 | geograph.php?gr=            | /kml/geograph.kmz         |        1 |
+
+    > Coverage Circles for each myriad
+		$Region->setLod(10,600);
+		$Region->setFadeExtent(50,200);
+	> NetworkLink for each myriad
+		$Region2->setLod(450,-1);
+		$Region2->setFadeExtent(100,0);
+
++-------+-----------------------------+---------------------------+----------+
+	
+|     2 | myriad.php?gr=HP            | /kml/HP.kmz               |       74 |
+
+    > Coverage Circles for each 'tile'
+		$Region->setLod(100,650);
+		$Region->setFadeExtent(50,150);
+	> NetworkLink for each tile
+		$Region2->setLod(450,-1);
+		$Region2->setFadeExtent(10,0);
+
++-------+-----------------------------+---------------------------+----------+
+|     3 | tile.php?gr=X06             | /kml/X/06.kmz             |     1052 |
+
+    > Icon where tile = 1 (choose icon and add heading if c=1)
+		$Region->setLod(50+$delta,1300+($delta*$delta));
+		$Region->setFadeExtent(10,100);
+	> NetworkLink for each hectad
+		$Region2->setLod(450,-1);
+		$Region2->setFadeExtent(100,0);
+
++-------+-----------------------------+---------------------------+----------+
+|     4 | hectad.php?gr=X17           | /kml/X/06/4/X17.kmz       |     3443 |
+
+    > Icon where tile = 0 (choose icon and add heading if c=1)
+		$Region->setLod(80+$delta,1300+($delta*$delta));
+		$Region->setFadeExtent(10,100);
+	> NetworkLink for each mosiac
+		$Region2->setLod(450,-1);
+		$Region2->setFadeExtent(100,0);
+
++-------+-----------------------------+---------------------------+----------+
+|     5 | mosaic.php?gr=X1075         | /kml/X/06/5/X1075.kmz     |    11518 |
+
+    > Photo where c = 1
+		$Region->setLod(1200+($delta*$delta),-1);
+		$Region->setFadeExtent(100,0);
+	> NetworkLink for each square where  c > 1
+		$Region2->setLod(450,-1);
+		$Region2->setFadeExtent(100,0);
+
++-------+-----------------------------+---------------------------+----------+
+|     6 | square.php?gr=X0498         | /kml/X/08/6/X0498.kmz     |    70543 |
+
+    > Photos when c <= 20
+		$Region->setLod(1200+($delta*$delta),-1);
+		$Region->setFadeExtent(100,0);
+    > Coverage Circles for each centisquare where  c > 20
+		$Region->setLod(10,600);
+		$Region->setFadeExtent(50,200);
+	> NetworkLink for each centisquare where  c > 20
+		$Region2->setLod(500,-1);
+		$Region2->setFadeExtent(100,0);
+
++-------+-----------------------------+---------------------------+----------+
+|     7 | centisquare.php?gr=TQ162493 | /kml/TQ/04/7/TQ162493.kmz |    11418 |
+|     7 | centisquare.php?gr=TQ16_49_ | /kml/TQ/04/7/TQ16_49_.kmz |      474 |
+	> All Photos 
+		$Region->setLod(1200+($delta*$delta),-1);
+		$Region->setFadeExtent(100,0);
+
++-------+-----------------------------+---------------------------+----------+
+| level | url                         | filename                  | count(*) |
++-------+-----------------------------+---------------------------+----------+
+
+
+select level,url,filename,count(*) from kmlcache group by level,url like '%\_' order by level;

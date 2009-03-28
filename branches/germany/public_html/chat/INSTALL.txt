@@ -1,0 +1,10 @@
+Installing Chat Applet into Geograph
+------------------------------------
+
+To install the chat applet, simply download PJIRC from
+http://www.pjirc.com/downloads.php
+
+Unzip the contents here. You should end up with the .jar files in
+this directory, with some subdirectories such as img/ and snd/
+
+
