@@ -64,7 +64,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$mostarray = array();
 
 	foreach ($CONF['references'] as $ri => $rname) {
-		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
+		$letterlength = $CONF['gridpreflen'][$ri];
 		
 		$prev_fetch_mode = $ADODB_FETCH_MODE;
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;	

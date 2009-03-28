@@ -100,15 +100,15 @@ if (!$smarty->is_cached($template, $cacheid))
 		$by = 'myriad';
 		$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."gridsquare=");
 		if ($ri) {
-			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
+			$letterlength = $CONF['gridpreflen'][$ri];
 			$sql_group = $sql_fieldname = "SUBSTRING(gi.grid_reference,1,$letterlength)";
 		} else {
-			$sql_group = $sql_fieldname = "SUBSTRING(gi.grid_reference,1,3 - reference_index)";
+			$sql_group = $sql_fieldname = "SUBSTRING(gi.grid_reference,1,length(gi.grid_reference)-4)";
 		}
 	} else if ($by == 'hectad') {
 		$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."first=");
 		if ($ri) {
-			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
+			$letterlength = $CONF['gridpreflen'][$ri];
 			$ll1 = $letterlength+1;
 			$ll3 = $letterlength+3;
 			$sql_group = $sql_fieldname = "concat(substring(gi.grid_reference,1,$ll1),substring(gi.grid_reference,$ll3,1))";

@@ -114,7 +114,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$desc = "depth score";
 	} elseif ($type == 'myriads') {
 		//we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
-		$sql_column = "count(distinct substring(grid_reference,1,3 - reference_index))";
+		$sql_column = "count(distinct substring(grid_reference,1,length(grid_reference)-4))";
 		$sql_table = " gridimage_search i ";
 		$heading = "Myriads";
 		$desc = "different myriads";

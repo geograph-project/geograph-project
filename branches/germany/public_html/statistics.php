@@ -79,7 +79,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$stats[$ri] = array();
 	}
 	foreach ($CONF['references'] as $ri => $rname) {
-		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
+		$letterlength = $CONF['gridpreflen'][$ri];
 
 		$newstats = $db->CacheGetRow(3*3600,"select 
 			count(*) as squares_total,
