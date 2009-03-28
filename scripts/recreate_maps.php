@@ -138,7 +138,7 @@ $start_time = time();
 
 $end_time = $start_time + (60*$param['timeout']);
 
-$map=new GeographMap;
+#$map=new GeographMap;
 			
 while (1) {
 
@@ -161,6 +161,8 @@ while (1) {
 
 				}
 			}
+
+			$map=new GeographMap;
 			
 			foreach($recordSet->fields as $name=>$value)
 			{
