@@ -138,8 +138,8 @@ class GridShader
 						
 						if (is_array($square) && count($square))
 						{
-							if (($square['percent_land']!=$percent_land) ||
-							    ($clearexisting && ($square['percent_land']==0)))
+							if (($square['percent_land']!=$percent_land) &&
+							    ($clearexisting || ($percent_land!=0)))
 							{
 								
 								$sql="update gridsquare set grid_reference='{$gridref}', ".
@@ -162,8 +162,8 @@ class GridShader
 							//we only create squares for land
 							if ($percent_land>0)
 							{
-								$sql="insert into gridsquare (grid_reference,reference_index,x,y,percent_land) ".
-									"values('{$gridref}','{$reference_index}',$gridx,$gridy,$percent_land)";
+								$sql="insert into gridsquare (grid_reference,reference_index,x,y,percent_land,point_xy) ".
+									"values('{$gridref}','{$reference_index}',$gridx,$gridy,$percent_land,GeomFromText('POINT($gridx $gridy)'))";
 								$this->db->Execute($sql);
 
 								$created++;
