@@ -6,7 +6,7 @@ $version='2.0 RC2a';
 
 //--------------->
 function makeUp($name,$addDir='') {
-if($addDir=='') $addDir=$GLOBALS['pathToFiles'].'templates/';
+if($addDir=='') $addDir=$GLOBALS['pathToFiles'].$GLOBALS['templateDir'].'/';
 if (substr($name,0,5)=='email') $ext='txt'; else $ext='html';
 if (file_exists($addDir."{$name}.{$ext}")) { 
 $tpl='';
