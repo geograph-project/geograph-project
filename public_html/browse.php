@@ -84,6 +84,7 @@ if (isset($_GET['p']))
 	$grid_ok=$square->loadFromPosition($x, $y, true);
 	$grid_given=true;
 	$smarty->assign('gridrefraw', $square->grid_reference);
+	$smarty->assign('gridref2', strlen($square->grid_reference) <= 2 + $CONF['gridpreflen'][$square->reference_index]);
 }
 
 //set by grid components?
@@ -92,6 +93,7 @@ elseif (isset($_GET['setpos']))
 	$grid_given=true;
 	$grid_ok=$square->setGridPos($_GET['gridsquare'], $_GET['eastings'], $_GET['northings'],true);
 	$smarty->assign('gridrefraw', $square->grid_reference);
+	$smarty->assign('gridref2', strlen($square->grid_reference) <= 2 + $CONF['gridpreflen'][$square->reference_index]);
 }
 
 //set by grid ref?
@@ -104,6 +106,7 @@ elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 	if ($grid_ok)
 	{
 		$smarty->assign('gridrefraw', stripslashes($_GET['gridref']));
+		$smarty->assign('gridref2', strlen($square->grid_reference) <= 2 + $CONF['gridpreflen'][$square->reference_index]);
 	}
 	else
 	{
@@ -308,6 +311,7 @@ if ($grid_given)
 				
 				$grid_ok=$square->setByFullGridRef($_GET['centi'],false,true);
 				$smarty->assign('gridrefraw', stripslashes($_GET['centi']));
+				$smarty->assign('gridref2', strlen($square->grid_reference) <= 2 + $CONF['gridpreflen'][$square->reference_index]);
 			}
 			$filtered_title = "in ".htmlentities2($_GET['centi'])." Centisquare<a href=\"/help/squares\">?</a>";
 		}
@@ -330,6 +334,7 @@ if ($grid_given)
 				$custom_where .= " and viewpoint_eastings DIV 1000 = $e AND viewpoint_northings DIV 1000 = $n";
 				
 				$smarty->assign('gridrefraw', stripslashes($_GET['viewcenti']));
+				$smarty->assign('gridref2', strlen($square->grid_reference) <= 2 + $CONF['gridpreflen'][$square->reference_index]);
 			}
 			$filtered_title = " photographer in ".htmlentities2($_GET['viewcenti'])." Centisquare<a href=\"/help/squares\">?</a>";
 		}

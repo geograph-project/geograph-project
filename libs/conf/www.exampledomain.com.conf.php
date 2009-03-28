@@ -194,6 +194,8 @@ $CONF['references_all'] = array(0=>'British Isles')+$CONF['references'];
 //false origins for the internal grid
 $CONF['origins'] = array(1 => array(206,0),2 => array(10,149));
 
+//number of characters in the grid prefix
+$CONF['gridpreflen'] = array(1 => 2, 2 => 1);
 
 ## search setup
 
