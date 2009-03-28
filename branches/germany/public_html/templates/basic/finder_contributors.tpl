@@ -31,6 +31,7 @@
 
 <h2><a href="/finder/">Finder</a> :: Contributors</h2>
 
+{if !$noSphinx}
 <form action="{$script_name}" method="get" onsubmit="focusBox()">
 	<p>
 		<label for="fq">Name</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
@@ -86,6 +87,6 @@
 		<li>can use OR (Uppercase only!) to match <b>either/or</b> keywords; example: <tt>john OR joan</tt></li>
 	</ul>
 </div>
-
+{/if}
 
 {include file="_std_end.tpl"}

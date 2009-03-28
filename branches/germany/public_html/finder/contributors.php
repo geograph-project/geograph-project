@@ -28,9 +28,10 @@ init_session();
 
 
 $smarty = new GeographPage;
+$smarty->assign('noSphinx', empty($CONF['sphinx_host']));
 $template = 'finder_contributors.tpl';
 
-if (!empty($_GET['q'])) {
+if (!empty($_GET['q']) && !empty($CONF['sphinx_host'])) {
 	$q=trim($_GET['q']);
 
 	$sphinx = new sphinxwrapper($q);
