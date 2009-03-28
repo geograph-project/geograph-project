@@ -132,7 +132,7 @@ class RasterMap
 					$this->service = 'VoB';
 				} 
 			} elseif(($this->exactPosition || in_array('Grid',$services)) && in_array('Google',$services)) {
-				//$this->enabled = true;
+				#$this->enabled = true; ##FIXME
 				$this->service = 'Google';
 			} 
 			if (isset($this->tilewidth[$this->service])) {
@@ -446,15 +446,33 @@ class RasterMap
 		}
 	}
 
-	function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2) {
+	function getMeriBlock($long,$lat1,$lat2,$op=1) {
+		return "			var polyline = new GPolyline([
+				new GLatLng($lat1,$long),
+				new GLatLng($lat2,$long)
+			], \"#FF0000\", 1, $op);
+			map.addOverlay(polyline);\n";
+	}
+
+	function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2,$op=1) {
 		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
 		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
 		return "			var polyline = new GPolyline([
 				new GLatLng($lat1,$long1),
 				new GLatLng($lat2,$long2)
-			], \"#0000FF\", 1);
+			], \"#0000FF\", 1, $op);
 			map.addOverlay(polyline);\n";
 	}
+
+#	function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2) {
+#		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
+#		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
+#		return "			var polyline = new GPolyline([
+#				new GLatLng($lat1,$long1),
+#				new GLatLng($lat2,$long2)
+#			], \"#0000FF\", 1);
+#			map.addOverlay(polyline);\n";
+#	}
 	
 	function getPolySquareBlock(&$conv,$e1,$n1,$e2,$n2) {
 		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
@@ -529,10 +547,30 @@ class RasterMap
 					map.addOverlay(createMarker(point2));\n";
 			}
 			if ($this->issubmit) {
+				$zoom=13;
+			} else {
+				$zoom=14;
+			}
+			if ($this->issubmit) {
 				$block .= $this->getPolySquareBlock($conv,$e-800,$n-600,$e-200,$n-100);
+			}
+			if ($this->issubmit) {
+				for ($i=100; $i<=900; $i+=100) {
+					$block .= $this->getPolyLineBlock($conv,$e,   $n+$i,$e+1000,$n+$i,   0.25);
+					$block .= $this->getPolyLineBlock($conv,$e+$i,$n,   $e+$i,  $n+1000, 0.25);
+				}
 			}
 			if (empty($this->lat)) {
 				list($this->lat,$this->long) = $conv->national_to_wgs84($this->nateastings,$this->natnorthings,$this->reference_index);
+			}
+			if ($CONF['showmeridian'] != 0) {
+				list($centlat,$centlong) = $conv->national_to_wgs84($e+500,$n+500,$this->reference_index);
+				$merilong = round($centlong/$CONF['showmeridian']) * $CONF['showmeridian'];
+				$meridist = deg2rad(abs($centlong-$merilong)) * cos(deg2rad($centlat)) * 6371;
+				if ($meridist < 3) { # only show meridian if closer than 3 km to center of square
+					$deltalat = rad2deg(3.0/6371); # show approx 2*3km
+					$block .= $this->getMeriBlock($merilong,$centlat-$deltalat,$centlat+$deltalat);
+				}
 			}
 			if ($this->issubmit) {
 				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapper/geotools2.js")."\"></script>";
@@ -557,9 +595,10 @@ class RasterMap
 							map.addMapType(G_PHYSICAL_MAP);
 							map.addControl(new GSmallZoomControl());
 							map.addControl(new GMapTypeControl(true));
-							map.disableDragging();
+							//map.disableDragging();
 							var point = new GLatLng({$this->lat},{$this->long});
-							map.setCenter(point, 13, G_PHYSICAL_MAP);
+							//map.setCenter(point, 13, G_PHYSICAL_MAP);
+							map.setCenter(point, $zoom, G_SATELLITE_MAP);
 							$block 
 							
 							AttachEvent(window,'unload',GUnload,false);
