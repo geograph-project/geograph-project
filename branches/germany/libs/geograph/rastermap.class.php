@@ -497,14 +497,14 @@ class RasterMap
 					$show_viewpoint = (intval($this->viewpoint_grlen) > 4) || ($different_square_true && ($this->viewpoint_grlen == '4'));
 
 					if ($show_viewpoint) {
-						$e = $this->viewpoint_eastings;	$n = $this->viewpoint_northings;
+						$ve = $this->viewpoint_eastings;	$vn = $this->viewpoint_northings;
 						if ($this->viewpoint_grlen == '4') {
-							$e +=500; $n += 500;
+							$ve +=500; $vn += 500;
 						}
 						if ($this->viewpoint_grlen == '6') {
-							$e +=50; $n += 50;
+							$ve +=50; $vn += 50;
 						}
-						list($lat,$long) = $conv->national_to_wgs84($e,$n,$this->reference_index);
+						list($lat,$long) = $conv->national_to_wgs84($ve,$vn,$this->reference_index);
 						$block .= "
 						var ppoint = new GLatLng({$lat},{$long});
 						map.addOverlay(createPMarker(ppoint));\n";
