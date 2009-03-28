@@ -304,7 +304,18 @@ class GeographPage extends Smarty
 		$this->assign_by_ref('script_uri', $_SERVER['REQUEST_URI']);
 		$this->assign_by_ref('searchq', $_SESSION['searchq']);
 		$this->assign_by_ref('enable_forums', $CONF['forums']);
-		
+
+		$this->assign('forum_announce',         $CONF['forum_announce']);
+		$this->assign('forum_generaldiscussion',$CONF['forum_generaldiscussion']);
+		$this->assign('forum_suggestions',      $CONF['forum_suggestions']);
+		$this->assign('forum_bugreports',       $CONF['forum_bugreports']);
+		$this->assign('forum_gridsquare',       $CONF['forum_gridsquare']);
+		$this->assign('forum_submittedarticles',$CONF['forum_submittedarticles']);
+		$this->assign('forum_teaching',         $CONF['forum_teaching']);
+		$this->assign('forum_moderator',        $CONF['forum_moderator']);
+		$this->assign('forum_gallery',          $CONF['forum_gallery']);
+		$this->assign('forum_devel',            $CONF['forum_devel']);
+		$this->assign('forum_privacy',          $CONF['forum_privacy']);
 
 
 		$this->assign('session_id', session_id());

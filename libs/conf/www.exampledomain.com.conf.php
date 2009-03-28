@@ -50,6 +50,27 @@ $CONF['db_persist']=''; //'?persist';
 //not yet implemented:
 ##$CONF['memcache']['smarty'] =& $CONF['memcache']['app'];
 
+// forum ids
+$CONF['forum_announce']          = 1;
+$CONF['forum_generaldiscussion'] = 2;
+$CONF['forum_suggestions']       = 3;
+$CONF['forum_bugreports']        = 4;
+$CONF['forum_gridsquare']        = 5;
+$CONF['forum_submittedarticles'] = 6;
+$CONF['forum_gallery']           = 7;  #11;
+$CONF['forum_moderator']         = -1; #9;
+$CONF['forum_privacy']           = -1; #14;
+$CONF['forum_teaching']          = -1; #8;
+$CONF['forum_devel']             = -1; #12;
+
+// topic ids
+$CONF['forum_topic_announce'] =  -1; #5808;
+$CONF['forum_topic_numsquare'] = -1; #1235;
+
+// forums which need custom templates
+$CONF['forum_to_template'][$CONF['forum_submittedarticles']] = '6';
+$CONF['forum_to_template'][$CONF['forum_gallery']] = '11';
+$CONF['forum_to_template'][$CONF['forum_bugreports']] = '4';
 
 $CONF['sphinx_host'] = "localhost";
 $CONF['sphinx_port'] = 3312;

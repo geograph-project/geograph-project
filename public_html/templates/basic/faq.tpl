@@ -256,7 +256,7 @@ The <b>Geograph Website</b>:
 		<ul>
 			<li>You will find an <a class="xml-rss">RSS</a> button at the bottom of <a href="/search.php" title="photograph search">search results</a>, useful to keep updated on local images.</li>
 			{if $enable_forums}<li>Registered users can access RSS feed of the latest Topics in the Discussion Forum, and even subscribe to an individual Topic, just look for the <a class="xml-rss">RSS</a> button!</li>
-			<li>the Grid Square Discussions even supports <a class="xml-geo" title="Geograph Grid Square Discussions" href="http://{$http_host}/discuss/syndicator.php?forum=5&amp;format=GeoRSS">GeoRSS</a>.</li>{/if}
+			<li>the Grid Square Discussions even supports <a class="xml-geo" title="Geograph Grid Square Discussions" href="http://{$http_host}/discuss/syndicator.php?forum={$forum_gridsquare}&amp;format=GeoRSS">GeoRSS</a>.</li>{/if}
 			<li>Get a <a class="xml-rss" href="/article/feed/recent.rss">RSS</a> feed of recently updated <a href="/article/">Articles</a>.</li>
 			<li>The newer <a href="/content/">Content</a> section has a <a class="xml-rss" href="/content/feed/recent.rss">RSS</a> Feed.</li>
 			<li>Find out about <a href="/events/">organized meets</a> by following the <a class="xml-rss" href="/events/feed.rss">RSS</a> Feed.</li>

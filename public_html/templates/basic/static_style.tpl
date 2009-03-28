@@ -5,7 +5,7 @@
 
 
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px; font-size:0.8em">
-{if $enable_forums}This guide is result of a discussion in the <a href="/discuss/index.php?&action=vthread&forum=3&topic=1157">Forum</a>.<br/>{/if} Remember images are used in lots of difference contexts, so consistent style helps keep everything looking tidy.
+This guide is result of a discussion in the <a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=3&topic=1157">Forum</a>.<br/> Remember images are used in lots of difference contexts, so consistent style helps keep everything looking tidy.
 </div>
 
 <p>Sentence case is recommended for titles and comments, with only the first character capitalised. However, capitalise proper nouns (names of people, organisations or places), postcodes or grid references.</p>
