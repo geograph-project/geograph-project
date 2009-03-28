@@ -102,19 +102,18 @@ if (isset($_GET['id']))
 
 	$cacheid="img$ab|{$_GET['id']}|{$isowner}_{$ismoderator}";
 
-	//is the image rejected? - only the owner and administrator should see it
-	if ($image->moderation_status=='rejected')
-	{
-		if ($isowner||$ismoderator)
-		{
-			//ok, we'll let it lie...
-		}
-		else
-		{
+	//is the image accepted? - otherwise, only the owner and administrator should see it
+	if (!$isowner&&!$ismoderator) {
+		if ($image->moderation_status=='rejected') {
 			//clear the image
 			$image=new GridImage;
 			$cacheid=0;
 			$rejected = true;
+		} elseif ($image->moderation_status=='pending') {
+			//clear the image
+			$image=new GridImage;
+			$cacheid=0;
+			$pending = true;
 		}
 	}
 }
@@ -180,6 +179,9 @@ if ($image->isValid())
 } elseif (!empty($rejected)) {
 	header("HTTP/1.0 410 Gone");
 	header("Status: 410 Gone");
+} elseif (!empty($pending)) {
+	header("HTTP/1.0 403 Forbidden");
+	header("Status: 403 Forbidden");
 } else {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");
