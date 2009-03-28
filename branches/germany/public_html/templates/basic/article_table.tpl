@@ -11,8 +11,8 @@
 	<span class="tabSelected">Article List</span>
 	<a href="/gallery/" class="tab">Galleries</a>
 	{if $enable_forums}
-		<a href="/discuss/index.php?action=vtopic&amp;forum=6" class="tab">Themed Topics</a>
-		<a href="/discuss/index.php?action=vtopic&amp;forum=5" class="tab">Grid Square Discussions</a>
+		<a href="/discuss/index.php?action=vtopic&amp;forum={$forum_submittedarticles}" class="tab">Themed Topics</a>
+		<a href="/discuss/index.php?action=vtopic&amp;forum={$forum_gridsquare}" class="tab">Grid Square Discussions</a>
 		<a href="/article/Content-on-Geograph" class="tab">Contribute...</a>
 	{/if}	
 </div>

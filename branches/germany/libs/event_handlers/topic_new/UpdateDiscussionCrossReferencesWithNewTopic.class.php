@@ -45,7 +45,8 @@ class UpdateDiscussionCrossReferencesWithNewTopic extends EventHandler
 		
 		$db=&$this->_getDB();
 		
-		$topic=$db->GetRow("select topic_title,forum_id,topic_time from geobb_topics where topic_id='$topic_id' and forum_id = 5");
+		require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
+		$topic=$db->GetRow("select topic_title,forum_id,topic_time from geobb_topics where topic_id='$topic_id' and forum_id = {$CONF['forum_gridsquare']}");
 		
 		//get title of topic
 		$title=strtoupper(trim($topic['topic_title']));

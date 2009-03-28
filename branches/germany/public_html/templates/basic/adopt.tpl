@@ -3,7 +3,7 @@
 
 <h2>Hectad Adoptions <sup style="color:red">Alpha</sup></h2>
  
-<p>This section is new and quickly evolving, we don't even know ourselves how this section is going to operate{if $enable_forums}, to offer feedback please visit <a href="/discuss/index.php?&action=vtopic&amp;forum=12">the forum</a>{/if}.</p>
+<p>This section is new and quickly evolving, we don't even know ourselves how this section is going to operate{if $enable_forums && $forum_devel >= 0}, to offer feedback please visit <a href="/discuss/index.php?&action=vtopic&amp;forum={$forum_devel}">the forum</a>{/if}.</p>
 
 
 <h3>Pre Registration</h3>

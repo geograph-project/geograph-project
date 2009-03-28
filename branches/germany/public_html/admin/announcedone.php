@@ -33,17 +33,17 @@ $db = NewADOConnection($GLOBALS['DSN']);
 $smarty->display('_std_begin.tpl');
 flush();
 	
-if ($_POST) {
+if ($_POST && $CONF['forum_topic_announce'] >= 0) {
 	$text = str_replace("\n","<br>\n","<b>{$_POST['title']}</b><br><br>{$_POST['entry']}");
 
-	$sql = "INSERT INTO geobb_posts SET topic_id = 5808,forum_id=1,poster_id={$USER->user_id},poster_name='{$USER->nickname}'";
+	$sql = "INSERT INTO geobb_posts SET topic_id = {$CONF['forum_topic_announce']},forum_id={$CONF['forum_announce']},poster_id={$USER->user_id},poster_name='{$USER->nickname}'";
 	$sql .= ",post_time = '".mysql_real_escape_string($_POST['date'])."'";
 	$sql .= ",post_text = '".mysql_real_escape_string($text)."'";
 
 	$result = mysql_query($sql) or die ("Couldn't insert : $sql " . mysql_error() . "\n");
 	$id = mysql_insert_id();
 	
-	$sql = "UPDATE geobb_topics SET topic_last_post_id = $id,posts_count=posts_count+1 WHERE topic_id = 5808";
+	$sql = "UPDATE geobb_topics SET topic_last_post_id = $id,posts_count=posts_count+1 WHERE topic_id = $CONF['forum_topic_announce']";
 	$result = mysql_query($sql) or die ("Couldn't insert : $sql " . mysql_error() . "\n");
 	
 	print "SAVED {$_POST['title']}";

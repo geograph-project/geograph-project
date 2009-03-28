@@ -24,7 +24,7 @@
 	<a href="/article/?table" class="tab">Article List</a>
 	<a href="/gallery/" class="tab">Galleries</a>
 	{if $enable_forums}
-		<a href="/discuss/index.php?action=vtopic&amp;forum=6" class="tab">Themed Topics</a>
+		<a href="/discuss/index.php?action=vtopic&amp;forum={$forum_submittedarticles}" class="tab">Themed Topics</a>
 		<a href="/article/Content-on-Geograph" class="tab">Contribute...</a>
 	{/if}	
 </div>
@@ -76,7 +76,7 @@ Common Themes: (<a href="/content/themes.php">more...</a>)<br/>
   <li><a href="/gallery/">Galleries</a></li>
 {dynamic}
   {if $enable_forums && $user->registered}
-	  <li><a href="/discuss/?action=vtopic&amp;forum=6">Themed Topics</a></li>
+	  <li><a href="/discuss/?action=vtopic&amp;forum={$forum_submittedarticles}">Themed Topics</a></li>
   {/if}
 {/dynamic}
   <li><a href="/help/sitemap">Help Documents</a></li>

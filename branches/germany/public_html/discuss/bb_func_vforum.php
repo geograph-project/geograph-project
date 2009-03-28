@@ -23,7 +23,7 @@ unset($xtr);
 $keyAr=0;
 $list_forums='';
 
-if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_name, forum_desc, forum_icon, topics_count, posts_count','forum_id','!=','11','forum_order')){
+if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_name, forum_desc, forum_icon, topics_count, posts_count','forum_id','!=',strval($CONF['forum_gallery']),'forum_order')){
 $i=1;
 $tpl=makeUp('main_forums_cell');
 do{
