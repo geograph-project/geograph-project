@@ -6,7 +6,7 @@
 {else}<title>Geograph Deutschland</title>{/if}
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 {if $meta_description}<meta name="description" content="{$meta_description|escape:'html'|truncate:240:"... more"}" />
-{else}<meta name="description" content="Geograph is a web based project to collect and reference geographically representative images of every square kilometre of the region."/>{/if}
+{else}<meta name="description" content="Das Geograph-Projekt hat das Ziel, geographisch repräsentative Photos für jeden Quadratkilometer der Region zu sammeln."/>{/if}
 {if $lat && $long}<meta name="ICBM" content="{$lat}, {$long}"/>{/if}
 <meta name="DC.title" content="Geograph{if $page_title}:: {$page_title|escape:'html'}{/if}"/>
 {$extra_meta}
@@ -44,7 +44,7 @@ title="Geograph search" href="/stuff/osd.xml" />
 <body>
 <div id="header_block">
   <div id="header">
-    <h1 onclick="document.location='/';"><a title="Geograph home page" href="/">Geograph</a></h1>
+    <h1 onclick="document.location='/';"><a title="Geograph Startseite" href="/">Geograph</a></h1>
   </div>
 </div>
 {if $right_block}
