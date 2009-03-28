@@ -99,14 +99,14 @@ function smarty_function_getamap($params)
 
 	//get params
 	$matches=array();
-	$gridref4=preg_replace('/^([A-Z]{1,2})\s*(\d{2,5})\s*(\d{2,5})$/i','$1$2$3',$params['gridref']);
+	$gridref4=preg_replace('/^([A-Z]{1,3})\s*(\d{2,5})\s*(\d{2,5})$/i','$1$2$3',$params['gridref']);
 	if (preg_match('/^document\./i', $gridref4))
 	{
 		if (!empty($params['gridref2']))
 			$gridref4 .= ",'{$params['gridref2']}'";
 		return "<a title=\"Ordnance Survey Get-a-Map\" href=\"javascript:popupOSMap($gridref4)\">{$params['text']}</a>$icon";
 	}
-	else if (preg_match('/^([A-Z]{1,2})(\d{4,10})$/i', $gridref4, $matches))
+	else if (preg_match('/^([A-Z]{1,3})(\d{4,10})$/i', $gridref4, $matches))
 	{
 		if (!empty($params['text']))
 			$text=$params['text'];
@@ -391,7 +391,7 @@ function getSitemapFilepath($level,$square = null,$gr='',$i = 0) {
 			$gr = $square->grid_reference;
 		}
 	} elseif (!empty($gr)) {
-		preg_match('/^([A-Z]{1,2})([\d_]*)$/',strtoupper($gr),$m);
+		preg_match('/^([A-Z]{1,3})([\d_]*)$/',strtoupper($gr),$m);
 		$s = $m[1];
 		if ($level > 2) {
 			$numbers = $m[2];
@@ -433,22 +433,34 @@ function smarty_function_geographlinks($input,$thumbs = false) {
 
 //replace geograph links
 function GeographLinks(&$posterText,$thumbs = false) {
-	global $imageCredits,$CONF,$global_thumb_count;
+	global $imageCredits,$CONF;
 	//look for [[gridref_or_photoid]] and [[[gridref_or_photoid]]]
-	if (preg_match_all('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
+	if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
 		$thumb_count = 0;
-		foreach ($g_matches[2] as $i => $g_id) {
+		foreach ($g_matches[3] as $i => $g_id) {
+			$server = $_SERVER['HTTP_HOST'];
+			$ext = false;
+			$prefix = '';
+			if ($g_matches[2][$i] == 'de:') {
+				$server = 'geo.hlipp.de';
+				$ext = true;
+				$prefix = 'de:';
+			}
 			//photo id?
 			if (is_numeric($g_id)) {
 				if ($global_thumb_count > $CONF['global_thumb_limit'] || $thumb_count > $CONF['post_thumb_limit']) {
-					$posterText = preg_replace("/\[?\[\[$g_id\]\]\]?/","[[<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_id</a>]]",$posterText);
+					$posterText = preg_replace("/\[?\[\[$prefix$g_id\]\]\]?/","[[<a href=\"http://{$server}/photo/$g_id\">$prefix$g_id</a>]]",$posterText);
 				} else {
 					if (!isset($g_image)) {
 						$g_image=new GridImage;
 					}
-					$ok = $g_image->loadFromId($g_id);
+					if ($ext) {
+						$ok = $g_image->loadFromServer($server, $g_id);
+					} else {
+						$ok = $g_image->loadFromId($g_id);
+					}
 					if ($g_image->moderation_status == 'rejected') {
-						$posterText = str_replace("[[[$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
+						$posterText = str_replace("[[[$prefix$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
 					} elseif ($ok) {
 						$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title);
 						if ($g_matches[1][$i]) {
@@ -456,7 +468,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 								$g_title.=' by '.htmlentities($g_image->realname);
 								$g_img = $g_image->getThumbnail(120,120,false,true);
 
-								$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
+								$posterText = str_replace("[[[$prefix$g_id]]]","<a href=\"http://{$server}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
 								if (isset($imageCredits[$g_image->realname])) {
 									$imageCredits[$g_image->realname]++;
 								} else {
@@ -464,10 +476,10 @@ function GeographLinks(&$posterText,$thumbs = false) {
 								}
 							} else {
 								//we don't place thumbnails in non forum links
-								$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_title</a>",$posterText);
+								$posterText = str_replace("[[[$prefix$g_id]]]","<a href=\"http://{$server}/photo/$g_id\">$g_title</a>",$posterText);
 							}
 						} else {
-							$posterText = preg_replace("/(?<!\[)\[\[$g_id\]\]/","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_title</a>",$posterText);
+							$posterText = preg_replace("/(?<!\[)\[\[$prefix$g_id\]\]/","<a href=\"http://{$server}/photo/$g_id\">$g_title</a>",$posterText);
 						}
 					}
 					$global_thumb_count++;
@@ -475,7 +487,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 				$thumb_count++;
 			} else {
 				//link to grid ref
-				$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/$g_id\">".str_replace(' ','+',$g_id)."</a>",$posterText);
+				$posterText = str_replace("[[$prefix$g_id]]","<a href=\"http://{$server}/gridref/$g_id\">".str_replace(' ','+',$g_id)."</a>",$posterText);
 			}
 		}
 	}
@@ -507,13 +519,15 @@ function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl')
 		}
 		//check load average, abort if too high
 		$buffer = "0 0 0";
-		$f = fopen("/proc/loadavg","r");
-		if ($f)
-		{
-			if (!feof($f)) {
-				$buffer = fgets($f, 1024);
+		if (is_readable("/proc/loadavg")) {
+			$f = fopen("/proc/loadavg","r");
+			if ($f)
+			{
+				if (!feof($f)) {
+					$buffer = fgets($f, 1024);
+				}
+				fclose($f);
 			}
-			fclose($f);
 		}
 		$loads = explode(" ",$buffer);
 		$load=(float)$loads[0];
@@ -567,7 +581,7 @@ function connectToURL($addr, $port, $path, $userpass="", $timeout="30") {
 	if ($urlHandle)	{
 		socket_set_timeout($urlHandle, $timeout);
 		if ($path) {
-			$urlString = "GET $path HTTP/1.1\r\nHost: $addr\r\nConnection: keep-alive\r\nUser-Agent: www.geograph.org.uk\r\n";
+			$urlString = "GET $path HTTP/1.1\r\nHost: $addr\r\nConnection: keep-alive\r\nUser-Agent: {$_SERVER['HTTP_HOST']}\r\n";
 			if ($userpass)
 				$urlString .= "Authorization: Basic ".base64_encode("$userpass")."\r\n";
 			$urlString .= "\r\n";
