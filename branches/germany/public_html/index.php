@@ -56,7 +56,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	$overview=new GeographMapMosaic($preset);
 	$overview->type_or_user = -1;
-	if ($CONF['template'] == 'basic') {
+	if ($preset == 'overview_large') {
 		$overview->assignToSmarty($smarty, 'overview2');
 	} else {
 		$overview->assignToSmarty($smarty, 'overview');
