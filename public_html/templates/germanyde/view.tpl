@@ -4,7 +4,7 @@
 <div style="float:right; position:relative; width:5em; height:4em;"></div>
 <div style="float:right; position:relative; width:2.5em; height:1em;"></div>
 
-<h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
+<h2><a title="Planquadrat {$image->grid_reference}{if $square_count gt 1} :: {$square_count} Bilder{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
 {if $place.distance}
  {place place=$place h3=true}
 {/if}
@@ -141,7 +141,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 
 
-<dt>Grid Square</dt>
+<dt>Planquadrat</dt>
  <dd><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $square_count gt 1}, {$square_count} images{/if} &nbsp; (<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}" rel="nofollow">more nearby</a>) 
 </dd>
 
@@ -149,14 +149,14 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 	<dt>Photographer</dt>
 	 <dd>{$image->realname|escape:'html'}</dd>
 
-	<dt>Contributed by</dt>
+	<dt>Eingereicht von</dt>
 	 <dd><a title="View profile" href="/profile/{$image->user_id}">{$image->user_realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->user_realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {else}
-	<dt>Photographer</dt>
+	<dt>Fotograf</dt>
 	 <dd><a title="View profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {/if}
 
-<dt>Image classification</dt>
+<dt>Klassifikation</dt>
 <dd>{if $image->ftf}
 	Geograph (First for {$image->grid_reference})
 {else}
@@ -176,13 +176,13 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 
 {if $image_taken}
-<dt>Date Taken</dt>
+<dt>Aufgenommen</dt>
  <dd>{$image_taken} &nbsp; (<a title="pictures near {$image->grid_reference} taken on {$image_taken}" href="/search.php?gridref={$image->grid_reference}&amp;orderby=submitted&amp;taken_start={$image->imagetaken}&amp;taken_end={$image->imagetaken}&amp;do=1" class="nowrap" rel="nofollow">more nearby</a>)</dd>
 {/if}
-<dt>Submitted</dt>
+<dt>Eingereicht</dt>
 	<dd>{$image->submitted|date_format:"%A, %e %B, %Y"}</dd>
 
-<dt>Category</dt>
+<dt>Kategorie</dt>
 
 <dd>{if $image->imageclass}
 	{$image->imageclass} &nbsp; (<a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:'url'}" rel="nofollow">more nearby</a>)
@@ -190,7 +190,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 	<i>n/a</i>
 {/if}</dd>
 
-<dt>Subject Location</dt>
+<dt>Koordinaten des Motivs</dt>
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
 {if $image->grid_square->reference_index eq 1}OSGB36{elseif $image->grid_square->reference_index eq 2}Irish{elseif $image->grid_square->reference_index eq 3}Germany, MGRS 32{elseif $image->grid_square->reference_index eq 4}Germany, MGRS 33{elseif $image->grid_square->reference_index eq 5}Germany, MGRS 31{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" alt="geotagged!" style="vertical-align:middle;" /> <a href="/gridref/{$image->subject_gridref}/links">{$image->subject_gridref}</a> [{$image->subject_gridref_precision}m precision]<br/>
 WGS84: <span class="geo"><abbr class="latitude" title="{$lat|string_format:"%.5f"}">{$latdm}</abbr> <abbr class="longitude" 
@@ -198,14 +198,14 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </dd>
 
 {if $image->photographer_gridref}
-<dt>Photographer Location</dt>
+<dt>Koordinaten des Fotografen</dt>
 
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
 {if $image->grid_square->reference_index eq 1}OSGB36{elseif $image->grid_square->reference_index eq 2}Irish{elseif $image->grid_square->reference_index eq 3}Germany, MGRS 32{elseif $image->grid_square->reference_index eq 4}Germany, MGRS 33{elseif $image->grid_square->reference_index eq 5}Germany, MGRS 31{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" alt="geotagged!" style="vertical-align:middle;" /> <a href="/gridref/{$image->photographer_gridref}/links">{$image->photographer_gridref}</a></dd>
 {/if}
 
 {if $view_direction && $image->view_direction != -1}
-<dt>View Direction</dt>
+<dt>Blickrichtung</dt>
 
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
 {$view_direction} (about {$image->view_direction} degrees)</dd>
