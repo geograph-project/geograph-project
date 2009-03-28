@@ -517,15 +517,15 @@ class GeographMapMosaic
 		
 			//when not on land just try any square, but why not use land to decide if the square is in use? (works well with the spatial index)
 			// but favour the _smaller_ grid 
-			if (isset($this->old_centrex)) {
-				//if zooming out use the old grid!
-				//or in then use the click point grid
-				$x_point=$this->old_centrex;
-				$y_point=$this->old_centrey;
-			} else {
+			#if (isset($this->old_centrex)) {
+			#	//if zooming out use the old grid!
+			#	//or in then use the click point grid
+			#	$x_point=$this->old_centrex;
+			#	$y_point=$this->old_centrey;
+			#} else {
 				$x_point=$x_km;
 				$y_point=$y_km;
-			}
+			#}
 			$x_lim=$x_point-100;
 			$y_lim=$y_point-100;
 			$point = "'POINT($x_point $y_point)'";
@@ -553,6 +553,12 @@ class GeographMapMosaic
 			if (!empty($prefix['prefix'])) { 
 				$n=$y_km-$prefix['origin_y'];
 				$e=$x_km-$prefix['origin_x'];
+				#trigger_error("E/N: " . $e . "/" . $n ." <-- ".$x_point. "/" .$y_point."  |  " . $x_km . "/" . $y_km."  |  " .$this->old_centrex."/" .$this->old_centrey , E_USER_NOTICE);
+				# [Mon Mar 02 09:24:22 2009] [error] [client 129.69.47.178] PHP Notice:  E/N: 0/100 [-- 601/396  |  600/400  |  601/396 in /is/htdocs/wp1036181_DDJ1DZ0I8N/geo/libs/geograph/mapmosaic.class.php on line 556, referer: http://geo.hlipp.de/mapbrowse.php
+				# http://geo.hlipp.de/mapbrowse.php?t=toVJ5oOXXJ0oX.VJFoOXXJfo-lNXJqo-NMJL5405olhNNhOV8wjNbjXww&i=1&j=2&zoomin=1?110,10
+				#  Grid Reference at centre UUR00100
+				#  Map width 400 km
+				#  => prefix must not be calculated from old_centre, or use x_point/y_point instead of x_km,y_km
 				$this->gridref = sprintf('%s%02d%02d', $prefix['prefix'], $e, $n);
 				$this->reference_index = $prefix['reference_index'];
 			} else {
