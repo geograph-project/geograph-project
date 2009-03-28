@@ -385,7 +385,7 @@ class GridImage
 		return substr(md5($this->gridimage_id.$this->user_id.$CONF['photo_hashing_secret']), 0, 8);
 	}
 	
-	function assignToSmarty($smarty) {
+	function assignToSmarty($smarty, $sid=-1) {
 		
 		$taken=$this->getFormattedTakenDate();
 
@@ -447,7 +447,7 @@ class GridImage
 		$smarty->assign('longdm', $longdm);
 
 		//lets add an rastermap too
-		$rastermap = new RasterMap($this->grid_square,false);
+		$rastermap = new RasterMap($this->grid_square,false,true,false,'latest',$sid);
 		$rastermap->addLatLong($lat,$long);
 		if (!empty($this->viewpoint_northings)) {
 			$rastermap->addViewpoint($this->viewpoint_eastings,$this->viewpoint_northings,$this->viewpoint_grlen,$this->view_direction);

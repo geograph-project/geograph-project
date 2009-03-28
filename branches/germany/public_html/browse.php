@@ -804,7 +804,22 @@ if (!isset($_GET['inner'])) {
 //TODO if centisquare is specified use that to plot a circle!
 
 		//lets add an rastermap too
-		$rastermap = new RasterMap($square,false,$square->natspecified);
+		if (isset($_GET['sid']) && isset($square->services[intval($_GET['sid'])])) {
+			$sid = intval($_GET['sid']);
+		} elseif (count($square->services) != 0) {
+			$sids = array_keys($square->services);
+			$sid = $sids[0];
+		} else {
+			$sid = -1;
+		}
+		$cacheid.=".".$sid;
+		$smarty->assign('sid', $sid);
+		$rastermap = new RasterMap($square,false,$square->natspecified, false, 'latest', $sid);
+		#if ($square->grid_reference == "UNV1930" || $square->grid_reference == "TNT8481") { //FIXME
+		#	$rastermap = new RasterMap($square,false,$square->natspecified, false, 'latest', 1);
+		#} else {
+		#	$rastermap = new RasterMap($square,false,$square->natspecified);
+		#}
 		$rastermap->addLatLong($lat,$long);
 		$smarty->assign_by_ref('rastermap', $rastermap);
 

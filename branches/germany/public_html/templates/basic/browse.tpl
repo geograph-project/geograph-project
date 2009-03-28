@@ -142,6 +142,14 @@
 	{if $rastermap->getFootNote()}
 	<div class="interestBox" style="margin-top:3px;margin-left:2px;padding:1px;"><small>{$rastermap->getFootNote()}</small></div>
 	{/if}
+	{if count($square->services) > 1}
+	<form method="get" action="/gridref/{$gridref}">{*FIXME*}
+	<p>Karte:
+	<select name="sid">
+	{html_options options=$square->services selected=$sid}
+	</select>
+	<input type="submit" value="Los"/></p></form>
+	{/if}
 	{$rastermap->getScriptTag()}	
 	</div>
 {/if}

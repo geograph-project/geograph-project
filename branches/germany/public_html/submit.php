@@ -282,7 +282,7 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->reReadExifFile();
 				
 				//we ok to continue
-				if (isset($_POST['photographer_gridref'])) {
+				if (isset($_POST['photographer_gridref']) && !isset($_POST['newmap'])) {
 					$step=3;
 				} else {
 					$step=2;
@@ -301,7 +301,7 @@ if (isset($_POST['gridsquare']))
 			{
 				$smarty->assign('upload_id', $uploadmanager->upload_id);
 				//we ok to continue
-				$step=3;
+				if (!isset($_POST['newmap'])) $step=3;
 			} else {
 				$smarty->assign('error', $uploadmanager->errormsg);
 				$uploadmanager->errormsg = '';
@@ -318,13 +318,14 @@ if (isset($_POST['gridsquare']))
 				case 0:
 					if (!filesize($_FILES['jpeg']['tmp_name'])) 
 					{
+						//if (!isset($_POST['newmap'])) 
 						$smarty->assign('error', 'Sorry, no file was received - please try again');
 					} 
 					elseif ($uploadmanager->processUpload($_FILES['jpeg']['tmp_name']))
 					{
 						$smarty->assign('upload_id', $uploadmanager->upload_id);
 						//we ok to continue
-						$step=3;
+						if (!isset($_POST['newmap'])) $step=3;
 					} else {
 						$smarty->assign('error', $uploadmanager->errormsg);
 						$uploadmanager->errormsg = '';
@@ -338,7 +339,7 @@ if (isset($_POST['gridsquare']))
 					$smarty->assign('error', 'Your file was only partially uploaded - please try again');
 					break;
 				case UPLOAD_ERR_NO_FILE:
-					$smarty->assign('error', 'No file was uploaded - please try again');
+					if (!isset($_POST['newmap']))  $smarty->assign('error', 'No file was uploaded - please try again');
 					break;
 				case UPLOAD_ERR_NO_TMP_DIR:
 					$smarty->assign('error', 'System Error: Folder missing - please let us know');
@@ -564,7 +565,23 @@ if (isset($_POST['gridsquare']))
 		} elseif ($step == 2) {
 			require_once('geograph/rastermap.class.php');
 
-			$rastermap = new RasterMap($square,true);
+			#if ($square->grid_reference == "UNV1930") { //FIXME
+			#	$rastermap = new RasterMap($square, true, false, false, 'latest', 21);
+			#} elseif ($square->grid_reference == "TPT2870") { //FIXME
+			#	$rastermap = new RasterMap($square, true, false, false, 'latest', 23);
+			#} else {
+			#	$rastermap = new RasterMap($square,true);
+			#}
+			if (isset($_POST['sid']) && isset($square->services[intval($_POST['sid'])])) {
+				$sid = intval($_POST['sid']);
+			} elseif (count($square->services) != 0) {
+				$sids = array_keys($square->services);
+				$sid = $sids[0];
+			} else {
+				$sid = -1;
+			}
+			$rastermap = new RasterMap($square, true, false, false, 'latest', $sid);
+			$smarty->assign('sid', $sid);
 			
 			if (isset($_POST['photographer_gridref'])) {
 				$square2=new GridSquare;
