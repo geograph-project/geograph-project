@@ -455,8 +455,8 @@ class GeographPage extends Smarty
 //this is a bit cheeky - if the xhtml validator calls, turn off the automatic
 //session id insertion, as it uses & instead of &amp; in urls
 //we also turn it off for bots, as session ids can bugger it up
-if ( (strpos($_SERVER['HTTP_USER_AGENT'], 'W3C_Validator')!==FALSE) ||
-    (strpos($_SERVER['HTTP_USER_AGENT'], 'bot')>0) )
+if ( isset($_SERVER['HTTP_USER_AGENT']) && ((strpos($_SERVER['HTTP_USER_AGENT'], 'W3C_Validator')!==FALSE) ||
+    (strpos($_SERVER['HTTP_USER_AGENT'], 'bot')>0) ))
 {
 	ini_set ('url_rewriter.tags', '');
 }
