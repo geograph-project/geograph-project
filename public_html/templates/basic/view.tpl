@@ -118,9 +118,18 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 	{if $rastermap->getFootNote()}
 	<div class="interestBox" style="margin-top:3px;margin-left:2px;padding:1px;"><small>{$rastermap->getFootNote()}</small></div>
 	{/if}
+	{if count($image->grid_square->services) > 1}
+	<form method="get" action="/photo/{$image->gridimage_id}">
+	<p>Karte:
+	<select name="sid">
+	{html_options options=$image->grid_square->services selected=$sid}
+	</select>
+	<input type="submit" value="Los"/></p></form>
+	{/if}
 	</div>
 
 	{$rastermap->getScriptTag()}
+    
 {else}
 	<div class="rastermap" style="width:{$rastermap->width}px;height:{$rastermap->width}px;position:relative">
 		Map Coming Soon...

@@ -101,7 +101,7 @@ class RasterMap
 	/**
 	* setup the values
 	*/
-	function RasterMap(&$square,$issubmit = false, $useExact = true,$includeSecondService = false,$epoch = 'latest')
+	function RasterMap(&$square,$issubmit = false, $useExact = true,$includeSecondService = false,$epoch = 'latest',$serviceid = -1)
 	{
 		global $CONF;
 		$this->enabled = false;
@@ -117,29 +117,140 @@ class RasterMap
 			$this->reference_index = $square->reference_index;
 			
 			$this->issubmit = $issubmit;
+			$this->serviceid = '';
+			$this->maplink = true;
+			$this->grid = false;
 			$services = explode(',',$CONF['raster_service']);
 
-			if ($square->reference_index == 1) {
-				if (in_array('OS50k',$services)) {
-					$this->enabled = true;
-					$this->service = 'OS50k';
-					
-					if (($this->issubmit === true || $includeSecondService) && in_array('VoB',$services)) {
-						$this->service2 = 'VoB';
-					}
-				} elseif($this->issubmit && in_array('VoB',$services)) {
-					$this->enabled = true;
-					$this->service = 'VoB';
+			if ($serviceid == -1) {
+				if ($square->reference_index == 1) {
+					if (in_array('OS50k',$services)) {
+						$this->enabled = true;
+						$this->service = 'OS50k';
+						
+						if (($this->issubmit === true || $includeSecondService) && in_array('VoB',$services)) {
+							$this->service2 = 'VoB';
+						}
+					} elseif($this->issubmit && in_array('VoB',$services)) {
+						$this->enabled = true;
+						$this->service = 'VoB';
+					} 
+				} elseif(($this->exactPosition || in_array('Grid',$services)) && in_array('Google',$services)) {
+					#$this->enabled = true; ##FIXME
+					$this->service = 'Google';
 				} 
-			} elseif(($this->exactPosition || in_array('Grid',$services)) && in_array('Google',$services)) {
-				#$this->enabled = true; ##FIXME
-				$this->service = 'Google';
-			} 
-			if (isset($this->tilewidth[$this->service])) {
-				$this->width = $this->tilewidth[$this->service];
-			}
-			if (!empty($epoch) && $epoch != 'latest' && preg_match('/^[\w]+$/',$epoch) ) {
-				$this->epoch = $epoch;
+				if (isset($this->tilewidth[$this->service])) {
+					$this->width = $this->tilewidth[$this->service];
+				}
+				if (!empty($epoch) && $epoch != 'latest' && preg_match('/^[\w]+$/',$epoch) ) {
+					$this->epoch = $epoch;
+				}
+			} elseif ($serviceid >= 0) { //FIXME $serviceid in CONF?
+				foreach($CONF['mapservices'][$serviceid] as $name=>$value) // FIXME database?
+				{
+					if (!is_numeric($name))
+						$this->$name=$value;
+				}
+				#$this->enabled = true;
+				$this->serviceid = $serviceid;
+				if ($square->reference_index == 3) {
+					$this->zone = 32;
+				} elseif ($square->reference_index == 4) {
+					$this->zone = 33;
+				} elseif ($square->reference_index == 5) {
+					$this->zone = 31;
+				}
+				if ($this->service == 'WMS') {
+					if ($this->servicegk === false) {
+						$this->delmeri = 0;
+					} else {
+						$this->delmeri = (2 * $this->zone - $this->servicegk - 61) * 3;
+					}
+				}
+				if ($this->service != 'Google') {
+					$this->enabled = true;
+				}
+				if (isset($this->tilewidth[$this->service])) {
+					$this->width = $this->tilewidth[$this->service];
+				}
+				#$this->divisor = 1000;
+			} elseif (0)/*($serviceid == 0)*/ {
+					#$this->enabled = true; ##FIXME
+					$this->service = 'Google';
+			} elseif (0) { #FIXME
+				if ($serviceid == 1) {
+					$this->service = 'WMS';
+					$this->servicegk = 3;
+					$this->serviceurl='http://www.lv-bw.de/dv/service/getrds.asp?request=GetMap&layers=DVTK50K&format=PNG&width=%s&height=%s&srs=EPSG:31467&bbox=%s,%s,%s,%s&login=dv&pw=anonymous';
+					$this->width = 300;
+					$this->title = 'TK 1:50000 &copy; Landesvermessungsamt Baden-W&uuml;rttemberg';
+					$this->footnote = 'TK 1:50000 &copy; Landesvermessungsamt Baden-W&uuml;rttemberg';
+					$this->maplink = false;
+					$this->grid = true;
+				} elseif ($serviceid == 2) {
+					$this->service = 'WMS';
+					$this->servicegk = 3;
+					$this->serviceurl='http://www.geodaten.bayern.de/ogc/getogc.cgi?REQUEST=GetMap&VERSION=1.1.1&LAYERS=TK50&SRS=EPSG:31467&WIDTH=%s&HEIGHT=%s&BBOX=%s,%s,%s,%s&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=';
+					$this->width = 300;
+					$this->title = 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung';
+					$this->footnote = 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung';
+					$this->maplink = false;
+					$this->grid = true;
+				} elseif ($serviceid == 3) {
+					$this->service = 'WMS';
+					$this->servicegk = 4;
+					$this->serviceurl='http://www.geodaten.bayern.de/ogc/getogc.cgi?REQUEST=GetMap&VERSION=1.1.1&LAYERS=TK50&SRS=EPSG:31468&WIDTH=%s&HEIGHT=%s&BBOX=%s,%s,%s,%s&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=';
+					$this->width = 300;
+					$this->title = 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung';
+					$this->footnote = 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung';
+					$this->maplink = false;
+					$this->grid = true;
+				} elseif ($serviceid == 4) {
+					$this->service = 'WMS';
+					$this->servicegk = false;
+					$this->serviceurl='http://www.geodaten.bayern.de/ogc/getogc.cgi?REQUEST=GetMap&VERSION=1.1.1&LAYERS=TK50&SRS=EPSG:25832&WIDTH=%s&HEIGHT=%s&BBOX=%s,%s,%s,%s&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=';
+					$this->width = 300;
+					$this->title = 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung';
+					$this->footnote = 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung';
+					$this->maplink = false;
+					$this->grid = true;
+				} elseif ($serviceid == 23) {
+					$this->service = 'WMS';
+					$this->servicegk = 4;
+					$this->serviceurl='http://localhost/img/testmap2.png?ignore=%s,%s,%s,%s,%s,%s';
+					$this->width = 300;
+					$this->title = 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung';
+					$this->footnote = 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung';
+					$this->maplink = false;
+					$this->grid = true;
+					# TPT2870 photo/29
+				} elseif ($serviceid == 21) {
+					$this->service = 'WMS';
+					$this->servicegk = 3;
+					$this->serviceurl='http://localhost/img/testmap.png?ignore=%s,%s,%s,%s,%s,%s';
+					$this->width = 300;
+					$this->title = 'TK 1:50000 &copy; Landesvermessungsamt Baden-W&uuml;rttemberg';
+					$this->footnote = 'TK 1:50000 &copy; Landesvermessungsamt Baden-W&uuml;rttemberg';
+					$this->maplink = false;
+					$this->grid = true;
+					# UNV1930 photo/2
+				}
+
+				$this->enabled = true;
+				$this->serviceid = $serviceid;
+				if ($square->reference_index == 3) {
+					$this->zone = 32;
+				} elseif ($square->reference_index == 4) {
+					$this->zone = 33;
+				} elseif ($square->reference_index == 5) {
+					$this->zone = 31;
+				}
+				if ($this->servicegk === false) {
+					$this->delmeri = 0;
+				} else {
+					$this->delmeri = (2 * $this->zone - $this->servicegk - 61) * 3;
+				}
+				#$this->divisor = 1000;
 			}
 		}
 	} 
@@ -264,6 +375,17 @@ class RasterMap
 			}
 			#$this->mapurl = $mapurl;
 			$title = "1:50,000 Modern Day Landranger(TM) Map &copy; Crown Copyright";
+		} elseif ($this->service == 'WMS') { #FIXME
+			if ($this->servicegk === false) {
+				$mapurl=sprintf($this->serviceurl, $width, $width, $east - 500, $nort - 500, $east + 1500, $nort + 1500);
+			} else {
+				require_once('geograph/conversionslatlong.class.php');
+				$conv = new ConversionsLatLong;
+				list ($lat,$long) = $conv->national_to_wgs84($east+500,$nort+500,$this->reference_index);
+				list ($ge, $gn) = $conv->wgs84_to_gk($lat,$long, $this->servicegk);
+				$mapurl=sprintf($this->serviceurl, $width, $width, $ge - 1000, $gn - 1000, $ge + 1000, $gn + 1000);
+			}
+			$title = $this->title;
 		}
 		if ($this->service == 'VoB' || $this->service2 == 'VoB' ) {
 			$e1 = $east - 500;
@@ -284,6 +406,9 @@ class RasterMap
 		}
 
 		if (isset($title)) {
+			$mericonv = $this->delmeri * sin(deg2rad($this->lat));// FIXME is lat always set?
+			$cosrot = cos(deg2rad($mericonv));
+			$sinrot = sin(deg2rad($mericonv));
 			$extra = ($this->issubmit === true)?44:(($this->issubmit)?22:0);
 
 	//container
@@ -310,8 +435,12 @@ class RasterMap
 				if ($this->natgrlen == '6' && $this->exactPosition) {
 					$e +=50; $n += 50;
 				}
-				$left = ($width/4) + ( ($e - $east) * $widthby2 / 1000 );
-				$top = $width - ( ($width/4) + ( ($n - $nort) * $widthby2 / 1000 ) );
+				#$left = ($width/4) + ( ($e - $east) * $widthby2 / 1000 );
+				#$top = $width - ( ($width/4) + ( ($n - $nort) * $widthby2 / 1000 ) );
+				$dx = ($e - 500 - $east) * $widthby2 / 1000;
+				$dy = ($n - 500 - $nort) * $widthby2 / 1000;
+				$left = $widthby2 + ($dx*$cosrot - $dy*$sinrot);
+				$top  = $widthby2 - ($dx*$sinrot + $dy*$cosrot);
 			}
 
 	//choose photographer icon
@@ -335,8 +464,12 @@ class RasterMap
 				if ($this->viewpoint_grlen == '6') {
 					$e +=50; $n += 50;
 				}
-				$vleft = ($width/4) + ( ($e - $east) * $widthby2 / 1000 );
-				$vtop = $width - ( ($width/4) + ( ($n - $nort) * $widthby2 / 1000 ) );
+				#$vleft = ($width/4) + ( ($e - $east) * $widthby2 / 1000 );
+				#$vtop = $width - ( ($width/4) + ( ($n - $nort) * $widthby2 / 1000 ) );
+				$dx = ($e - 500 - $east) * $widthby2 / 1000;
+				$dy = ($n - 500 - $nort) * $widthby2 / 1000;
+				$vleft = $widthby2 + ($dx*$cosrot - $dy*$sinrot);
+				$vtop  = $widthby2 - ($dx*$sinrot + $dy*$cosrot);
 
 				if ( ($vleft < -8) || ($vleft > ($width+8)) || ($vtop < -8) || ($vtop > ($width+8)) || ($different_square_true && $this->viewpoint_grlen == '4') ) {
 		//if outside the map extents clamp to an edge
@@ -377,7 +510,35 @@ class RasterMap
 			} else {
 				$subfile = 'circle.png';
 			}
-			
+
+	//grid
+			if ($this->grid) {
+				$gridfile = "grid_$width";
+				// we only have +3, 0, -3, here. latitude is approx. 47°...56° => 3°*sin(lat) approx. 2.34°
+				if ($this->delmeri < 0) {
+					$gridfile .= "_-2.34";
+				} elseif ($this->delmeri > 0) {
+					$gridfile .= "_+2.34";
+				} else {
+				}
+				#trigger_error("--- >{$_SERVER['HTTP_USER_AGENT']}< ", E_USER_NOTICE);
+				if (preg_match('#^Mozilla/4\.0 \(compatible; MSIE [56]\.#', $_SERVER['HTTP_USER_AGENT'])) {
+					$gridfile .= ".gif"; # IE 6 :-(
+				} else {
+					$gridfile .= ".png";
+				}
+				$str .= "<div style=\"position:absolute;top:1px;left:1px;\" id=\"grid\"><img src=\"http://{$CONF['STATIC_HOST']}/img/$gridfile\" alt=\"\" width=\"$width\" height=\"$width\" name=\"grid\"/></div>";
+			#	$gxy0 = 1;
+			#	$gx1 = $width/4 + 1;
+			#	$gx2 = $width-$width/4 + 1;
+			#	$gy1 = $width/4 - 9;        # FIXME?
+			#	$gy2 = $width-$width/4 - 9; # FIXME?
+			#	$str .= "<div style=\"position:absolute;top:".$gxy0."px;left:".$gx1."px;\" id=\"gridw\"><img src=\"http://{$CONF['STATIC_HOST']}/img/bluetransp.png\" alt=\"\" width=\"1\" height=\"$width\" name=\"gridw\"/></div>";
+			#	$str .= "<div style=\"position:absolute;top:".$gxy0."px;left:".$gx2."px;\" id=\"gride\"><img src=\"http://{$CONF['STATIC_HOST']}/img/bluetransp.png\" alt=\"\" width=\"1\" height=\"$width\" name=\"gride\"/></div>";
+			#	$str .= "<div style=\"position:absolute;top:".$gy1."px;left:".$gxy0."px;\" id=\"gridn\"><img src=\"http://{$CONF['STATIC_HOST']}/img/bluetransp.png\" alt=\"\" width=\"$width\" height=\"1\" name=\"gridn\"/></div>";
+			#	$str .= "<div style=\"position:absolute;top:".$gy2."px;left:".$gxy0."px;\" id=\"grids\"><img src=\"http://{$CONF['STATIC_HOST']}/img/bluetransp.png\" alt=\"\" width=\"$width\" height=\"1\" name=\"grids\"/></div>";
+			}
+
 	//subject icon
 			$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;".( $this->displayMarker1 ?'':'display:none')."\" id=\"marker1\"><img src=\"http://{$CONF['STATIC_HOST']}/img/icons/$subfile\" alt=\"+\" width=\"29\" height=\"29\" name=\"subicon\"/></div>";
 
@@ -391,7 +552,7 @@ class RasterMap
 	//overlay (for dragging)
 			$str .= "<div style=\"position:absolute;top:0px;left:0px;z-index:3\">";
 			$imagestr = "<img src=\"http://{$CONF['STATIC_HOST']}/img/blank.gif\" class=\"mapmask\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/>";
-			if (!empty($gridref)) {
+			if ($this->maplink&&!empty($gridref)) {
 				$this->clickable = true;
 				$str .= smarty_function_getamap(array('text'=>$imagestr,'gridref'=>$gridref,'title'=>$title,'icon'=>'no'));
 			} else {
@@ -611,13 +772,14 @@ class RasterMap
 		} else {
 				$east = (floor($this->nateastings/1000) * 1000) + 500;
 				$nort = (floor($this->natnorthings/1000) * 1000) + 500;
+				$mericonv = $this->delmeri * sin(deg2rad($this->lat));// FIXME is lat always set?
 			$str = "
 			<script type=\"text/javascript\">
 				var cene = {$east};
 				var cenn = {$nort};
 				var maph = {$this->width};
 				var mapw = {$this->width};
-				var rot  = 0;
+				var rot  = {$mericonv};
 				var ri   = {$this->reference_index};
 				var mapb = 1;
 				var static_host = '{$CONF['STATIC_HOST']}';
@@ -647,7 +809,9 @@ class RasterMap
 	{
 		if ($this->service == 'Google') {
 			return '';
-		} 
+		} elseif ($this->service == 'WMS') { //FIXME id
+			return "<span id=\"mapTitleVoB\">".$this->title."</span>";
+		}
 		return "<span id=\"mapTitleOS50k\"".($this->service == 'OS50k'?'':' style="display:none"').">1:50,000 Modern Day Landranger&trade; Map</span>".
 		"<span id=\"mapTitleVoB\"".($this->service == 'VoB'?'':' style="display:none"').">1940s OS New Popular Edition".(($this->issubmit)?"<span style=\"font-size:0.8em;color:red\"><br/><b>Please confirm positions on the modern map, as accuracy may be limited.</b></span>":'')."</span>";
 	}
@@ -656,6 +820,12 @@ class RasterMap
 	{
 		if ($this->service == 'Google') {
 			return '';
+		} elseif ($this->service == 'WMS') {
+			if ($this->issubmit) {
+				return '';#FIXME
+			} else {
+				return $this->footnote;#FIXME
+			}
 		} elseif ($this->issubmit) {
 			return "<span id=\"mapFootNoteOS50k\"".(($this->service == 'OS50k' && $this->issubmit)?'':' style="display:none"')."><br/>Centre the blue circle on the subject and mark the photographer position with the black circle. <b style=\"color:red\">The circle centre marks the spot.</b> The red arrow will then show view direction.</span>".
 			"<span id=\"mapFootNoteVoB\"".($this->service == 'VoB'?'':' style="display:none"')."><br/>Historical Map provided by <a href=\"http://www.visionofbritain.org.uk/\" title=\"Vision of Britain\">VisionOfBritain.org.uk</a></span>";
@@ -955,6 +1125,7 @@ class RasterMap
 		$token->setValue("e", floor($this->nateastings /$this->divisor[$this->service]));
 		$token->setValue("n", floor($this->natnorthings /$this->divisor[$this->service]));
 		$token->setValue("s", $this->service);
+		$token->setValue("i", $this->serviceid);
 		if ($this->epoch != 'latest') {
 			$token->setValue("r", $this->epoch);
 		} 
@@ -973,9 +1144,11 @@ class RasterMap
 		{
 			$ok=$token->hasValue("e") &&
 				$token->hasValue("n") &&
-				$token->hasValue("s");
+				$token->hasValue("s") &&
+				$token->hasValue("i");
 			if ($ok)
 			{
+				$this->serviceid = $token->getValue("i");
 				$this->service = $token->getValue("s");
 				$this->nateastings = $token->getValue("e") * $this->divisor[$this->service];
 				$this->natnorthings = $token->getValue("n") * $this->divisor[$this->service];
@@ -983,6 +1156,29 @@ class RasterMap
 				
 				if ($token->hasValue("r")) {
 					$this->epoch = $token->getValue("r");
+				}
+				if ($this->serviceid >= 0) {
+					foreach($CONF['mapservices'][$this->serviceid] as $name=>$value) // FIXME database?
+					{
+						if (!is_numeric($name))
+							$this->$name=$value;
+					}
+					#$this->enabled = true;
+					#$this->serviceid = $serviceid;
+					if ($square->reference_index == 3) {
+						$this->zone = 32;
+					} elseif ($square->reference_index == 4) {
+						$this->zone = 33;
+					} elseif ($square->reference_index == 5) {
+						$this->zone = 31;
+					}
+					if ($this->service == 'WMS') {
+						if ($this->servicegk === false) {
+							$this->delmeri = 0;
+						} else {
+							$this->delmeri = (2 * $this->zone - $this->servicegk - 61) * 3;
+						}
+					}
 				}
 			}
 		}

@@ -179,6 +179,38 @@ $CONF['rastermap'] = array(
 			)	
 );
 
+$CONF['mapservices'] = array( /*
+	0 => array (
+		'active' => true,
+		'menuname' => 'Google Maps',
+		'service' => 'Google'
+	),
+	2 => array (
+		'active' => true,
+		'menuname' => 'TK 1:50000 Bayern (GK 3)',
+		'service' => 'WMS',
+		'servicegk' => 3,
+		'serviceurl' => 'http://www.geodaten.bayern.de/ogc/getogc.cgi?REQUEST=GetMap&VERSION=1.1.1&LAYERS=TK50&SRS=EPSG:31467&WIDTH=%s&HEIGHT=%s&BBOX=%s,%s,%s,%s&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=',
+		'width' => 300,
+		'title' => 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung',
+		'footnote' => 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung',
+		'maplink' => false,
+		'grid' => true
+	),
+	4 => array (
+		'active' => true,
+		'menuname' => 'TK 1:50000 Bayern (UTM 32)',
+		'service' => 'WMS',
+		'servicegk' => false,
+		'serviceurl' => 'http://www.geodaten.bayern.de/ogc/getogc.cgi?REQUEST=GetMap&VERSION=1.1.1&LAYERS=TK50&SRS=EPSG:25832&WIDTH=%s&HEIGHT=%s&BBOX=%s,%s,%s,%s&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=',
+		'width' => 300,
+		'title' => 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung',
+		'footnote' => 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung',
+		'maplink' => false,
+		'grid' => true
+	)*/
+);
+
 //Username/Passowrd for the metacarta webservices api
 //http://developers.metacarta.com/register/
 #$CONF['metacarta_auth'] = 'user@domain.com:password';

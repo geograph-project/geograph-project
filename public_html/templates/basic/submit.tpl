@@ -243,6 +243,14 @@ geographing</a> first.</p>
 		<b>{$rastermap->getTitle($gridref)}</b><br/><br/>
 		{$rastermap->getImageTag()}<br/>
 		<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
+		{if count($square->services) > 1}
+		{*<form method="get" action="/gridref/{$gridref}">*}{*FIXME*}
+		<p>Karte:
+		<select name="sid">
+		{html_options options=$square->services selected=$sid}
+		</select>
+		<input type="submit" name="newmap" value="Los"/></p>{*</form>*}
+		{/if}
 		
 		</div>
 		

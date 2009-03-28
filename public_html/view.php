@@ -128,9 +128,34 @@ if ($image->isValid())
 
 	//when this image was modified
 	$mtime = strtotime($image->upd_timestamp);
+	#$image->loadFromId(intval($_GET['id']));
+	#$isowner=($image->user_id==$USER->user_id)?1:0;
+	#trigger_error("sids: " . implode(', ', array_keys($image->grid_square->services)), E_USER_NOTICE);
+	
+	if (isset($_GET['sid']) && isset($image->grid_square->services[intval($_GET['sid'])])) {
+		$sid = intval($_GET['sid']);
+		#trigger_error("sid: g: " . $sid, E_USER_NOTICE);
+	} elseif (count($image->grid_square->services) != 0) {
+		$sids = array_keys($image->grid_square->services);
+		$sid = $sids[0];
+		#trigger_error("sid: s: " . $sid, E_USER_NOTICE);
+	} else {
+		$sid = -1;
+		#trigger_error("sid: x: " . $sid, E_USER_NOTICE);
+	}
+	#if ($image->gridimage_id == 2 && $USER->user_id == 1)
+	#	$sid = 21;/*1;*/
+	#elseif (($image->gridimage_id == 29 /*|| $image->gridimage_id == 34*/ /*34*/ /*25*/) && $USER->user_id == 1)
+	#	$sid = 23;
+	#elseif ((/*$image->gridimage_id == 29 ||*/ $image->gridimage_id == 34 /*34*/ /*25*/) && $USER->user_id == 1)
+	#	$sid = 3;
+	#elseif ($image->gridimage_id == 40 && $USER->user_id == 1)
+	#	$sid = 4;
+	#else
+	#	$sid = -1;
 
 	//page is unqiue per user (the profile and links)
-	$hash = $cacheid.'.'.$USER->user_id;
+	$hash = $cacheid.'.'.$USER->user_id.'.'.$sid;
 
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$hash,($USER->user_id == 0));
@@ -173,8 +198,9 @@ if ($image->isValid())
 	if (!$smarty->is_cached($template, $cacheid))
 	{
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
+		$smarty->assign("sid",$sid);
 
-		$image->assignToSmarty($smarty);
+		$image->assignToSmarty($smarty, $sid);
 	}
 } elseif (!empty($rejected)) {
 	header("HTTP/1.0 410 Gone");
