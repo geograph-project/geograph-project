@@ -43,13 +43,15 @@ $forumName=$row[0]; $forumIcon=$row[1];
                 }
                 //check load average, abort if too high
                 $buffer = "0 0 0";
-                $f = fopen("/proc/loadavg","r");
-                if ($f)
-                {
-                        if (!feof($f)) {
-                                $buffer = fgets($f, 1024);
+                if (is_readable("/proc/loadavg")) {
+                        $f = fopen("/proc/loadavg","r");
+                        if ($f)
+                        {
+                                if (!feof($f)) {
+                                        $buffer = fgets($f, 1024);
+                                }
+                                fclose($f);
                         }
-                        fclose($f);
                 }
                 $loads = explode(" ",$buffer);
                 $load=(float)$loads[0];
