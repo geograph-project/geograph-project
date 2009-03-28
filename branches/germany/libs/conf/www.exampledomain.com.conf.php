@@ -72,6 +72,9 @@ $CONF['forum_to_template'][$CONF['forum_submittedarticles']] = '6';
 $CONF['forum_to_template'][$CONF['forum_gallery']] = '11';
 $CONF['forum_to_template'][$CONF['forum_bugreports']] = '4';
 
+//path to php binary
+$CONF['phpdir']='/usr/bin/';
+
 $CONF['sphinx_host'] = "localhost";
 $CONF['sphinx_port'] = 3312;
 $CONF['sphinx_cache'] = $_SERVER['DOCUMENT_ROOT'].'/../sphinxcache/';
