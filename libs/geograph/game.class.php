@@ -98,7 +98,7 @@ class game {
 			
 			$mods=$db->GetCol("select email from user where FIND_IN_SET('admin',rights)>0;");			
 			
-			mail(implode(',',$mods), "[Geograph] Scoreboard approval required","Click the following link to review current list\n\nhttp://{$_SERVER['HTTP_HOST']}/games/approve.php","From: Geograph <lordelph@gmail.com>");
+			mail(implode(',',$mods), "[Geograph] Scoreboard approval required","Click the following link to review current list\n\nhttp://{$_SERVER['HTTP_HOST']}/games/approve.php","From: Geograph <mail@hlipp.de>", "-f mail@hlipp.de"); //FIXME from+env from
 		}
 		if (!empty($username)) {
 			$updates['username'] = $username;

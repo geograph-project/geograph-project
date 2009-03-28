@@ -5,7 +5,7 @@
 
 
 ------------------------------------------------------------
-Forward abuse complaints to: rogersgm@gmail.com
+Forward abuse complaints to: geo@hlipp.de
 {/dynamic}
  	
 

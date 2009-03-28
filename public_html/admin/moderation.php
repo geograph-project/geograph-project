@@ -173,7 +173,7 @@ $url
 Regards, 
 
 {$USER->realname}".($USER->nickname?" (aka {$USER->nickname})":''),
-				"From: {$USER->realname} <{$USER->email}>");
+				"From: {$USER->realname} <{$USER->email}>", "-f mail@hlipp.de"); //FIXME env from
 				
 		header("Location: /profile.php");
 		exit;

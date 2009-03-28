@@ -653,7 +653,7 @@ class GridImageTroubleTicket
 	function _sendMail($to, &$msg)
 	{
 		mail($to, $msg['subject'], $msg['body'],
-				"From: Geograph - Reply Using Link <lordelph@gmail.com>");
+				"From: Geograph - Reply Using Link <mail@hlipp.de>", "-f mail@hlipp.de"); #FIXME conf var
 		
 	}
 	

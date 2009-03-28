@@ -166,7 +166,7 @@ if (isset($_POST['msg']))
 			$email = $recipient->email;
 		}
 
-		if (@mail($email, $subject, $body, $received."From: $from_name <$from_email>")) 
+		if (@mail($email, $subject, $body, $received."From: $from_name <$from_email>", "-f geo@hlipp.de")) //FIXME env from
 		{
 			$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
 		
@@ -181,7 +181,7 @@ if (isset($_POST['msg']))
 				"Original To: {$recipient->email}\n".
 				"Original From: $from_name <$from_email>\n".
 				"Original Subject:\n\n$body",
-				'From:webserver@'.$_SERVER['HTTP_HOST']);	
+				"From: geo@hlipp.de", "-f geo@hlipp.de");	//FIMXE from + env from
 
 
 			$smarty->assign('error', "<a href=\"/contact.php\">Please let us know</a>");
@@ -190,7 +190,7 @@ if (isset($_POST['msg']))
 		if ($sendcopy) {
 			$subject="[Geograph] Copy of message sent to {$recipient->realname}";
 		
-			if (!@mail($from_email, $subject, $body, "From: $from_name <$from_email>")) {
+			if (!@mail($from_email, $subject, $body, "From: $from_name <$from_email>", "-f mail@hlipp.de")) { //FIXME env from
 				@mail($CONF['contact_email'], 
 					'Mail Error Report from '.$_SERVER['HTTP_HOST'],
 					"Original Subject: $subject\n".
@@ -198,7 +198,7 @@ if (isset($_POST['msg']))
 					"Original From: $from_name <$from_email>\n".
 					"Copy of message sent to {$recipient->realname}\n".
 					"Original Subject:\n\n$body",
-					'From:webserver@'.$_SERVER['HTTP_HOST']);	
+					"From: geo@hlipp.de", "-f geo@hlipp.de");	//FIMXE from + env from
 
 
 				$smarty->assign('error', "<a href=\"/contact.php\">Please let us know</a>");
