@@ -186,7 +186,7 @@ $posterText=$cols[3];
 if (($topicDesc && !$postID) || !$topicDesc)
 	$postID = $cols[6];
 
-if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
+if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
 	global $memcache;
 	$mkey = $cols[6].((!empty($_GET['l']))?'y':'');
 	//fails quickly if not using memcached!
@@ -194,22 +194,34 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,3}
 		$posterText = $memtext;
 	} else {
 		$thumb_count = 0;
-		foreach ($g_matches[2] as $g_i => $g_id) {
+		foreach ($g_matches[3] as $g_i => $g_id) {
+			$server = $_SERVER['HTTP_HOST'];
+			$ext = false;
+			$prefix = '';
+			if ($g_matches[2][$g_i] == 'bi:') {
+				$server = 'www.geograph.org.uk';
+				$ext = true;
+				$prefix = 'bi:';
+			}
 			if (is_numeric($g_id)) {
 				if ($global_thumb_count >= $CONF['global_thumb_limit'] || $thumb_count >= $CONF['post_thumb_limit']) {
-					$posterText = preg_replace("/\[?\[\[$g_id\]\]\]?/","[[<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_id</a>]]",$posterText);
+					$posterText = preg_replace("/\[?\[\[$prefix$g_id\]\]\]?/","[[<a href=\"http://{$server}/photo/$g_id\">$prefix$g_id</a>]]",$posterText);
 				} else {
 					if (!isset($g_image)) {
 						require_once('geograph/gridimage.class.php');
 						require_once('geograph/gridsquare.class.php');
 						$g_image=new GridImage;
 					}
-					$g_ok = $g_image->loadFromId($g_id);
+					if ($ext) {
+						$g_ok = $g_image->loadFromServer($server, $g_id);
+					} else {
+						$g_ok = $g_image->loadFromId($g_id);
+					}
 					if ($g_ok && $g_image->moderation_status == 'rejected' && (!isset($userRanks[$cc]) || $userRanks[$cc] == 'Member')) {
 						if ($g_matches[1][$g_i]) {
-							$posterText = str_replace("[[[$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available ['.$g_id.']" />',$posterText);
+							$posterText = str_replace("[[[$prefix$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available ['.$g_id.']" />',$posterText);
 						} else {
-							$posterText = preg_replace("/(?<!\[)\[\[$g_id\]\]/","{<span title=\"[$g_id]\">image no longer available</span>}",$posterText);
+							$posterText = preg_replace("/(?<!\[)\[\[$prefix$g_id\]\]/","{<span title=\"[$g_id]\">image no longer available</span>}",$posterText);
 						}
 					} elseif ($g_ok) {
 						$postfix = empty($_GET['l'])?'':"<input value='{$g_matches[0][$g_i]}' ondblclick='this.select()' class='imageselect'/>";
@@ -217,16 +229,16 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,3}
 							$g_img = $g_image->getThumbnail(120,120,false,true);
 							#$g_img = preg_replace('/alt="(.*?)"/','alt="'.$g_image->grid_reference.' : \1 by '.$g_image->realname.'"',$g_img);
 							$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title).' by '.$g_image->realname;
-							$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>".$postfix,$posterText);
+							$posterText = str_replace("[[[$prefix$g_id]]]","<a href=\"http://{$server}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>".$postfix,$posterText);
 						} else {
-							$posterText = preg_replace("/(?<!\[)\[\[$g_id\]\]/","{<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\">{$g_image->grid_reference} : {$g_image->title}</a>}".$postfix,$posterText);
+							$posterText = preg_replace("/(?<!\[)\[\[$prefix$g_id\]\]/","{<a href=\"http://{$server}/photo/$g_id\" target=\"_blank\">{$g_image->grid_reference} : {$g_image->title}</a>}".$postfix,$posterText);
 						}
 					}
 					$global_thumb_count++;
 				}
 				$thumb_count++;
 			} else {
-				$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/".str_replace(' ','+',$g_id)."\" target=\"_blank\">$g_id</a>",$posterText);
+				$posterText = str_replace("[[$prefix$g_id]]","<a href=\"http://{$server}/gridref/".str_replace(' ','+',$g_id)."\" target=\"_blank\">$g_id</a>",$posterText);
 			}
 		}
 		
