@@ -380,7 +380,7 @@ class GridSquare
 			}
 		} else {
 			$ok=false;
-			$this->_error(htmlentities($gridreference).' is not a valid grid reference');
+			$this->_error(htmlentities($gridreference).' ist keine gültige Koordinate'); # FIXME translation?
 
 		}
 				
@@ -463,11 +463,11 @@ class GridSquare
 			if (preg_match('/^([A-Z]{1,3})(\d\d)\d(\d\d)\d$/',$gridref,$matches))
 			{
 				$fixed=$matches[1].$matches[2].$matches[3];
-				$this->_error('Please enter a 4 figure reference, i.e. '.$fixed.' instead of '.$gridref);
+				$this->_error('Bitte eine Koordinate mit vier Ziffern eingeben, z.B. '.$fixed.' statt '.$gridref); # FIXME translation?
 			}
 			else
 			{
-				$this->_error(htmlentities($gridref).' is not a valid grid reference');
+				$this->_error(htmlentities($gridref).' ist keine gültige Koordinate'); # FIXME translation?
 			}
 		}
 		
@@ -530,7 +530,7 @@ class GridSquare
 				$this->findNearby($square['x'], $square['y'], 100);
 			}
 		} else {
-			$this->_error("This location seems to be all at sea! Please contact us if you think this is in error");
+			$this->_error("Dieser Ort scheint außerhalb des Landes/der Zone zu liegen! Wir bitten um Rückmeldung, falls dies nicht der Fall sein sollte."); # FIXME translation?
 		}
 		return $ok;
 	}
@@ -563,7 +563,7 @@ class GridSquare
 			
 			if ($this->percent_land==0 && (!$allowzeropercent || $this->imagecount==0) )
 			{
-				$this->_error("$gridref seems to be all at sea! Please <a href=\"/mapfixer.php?gridref=$gridref\">contact us</a> if you think this is in error.");
+				$this->_error("$gridref scheint außerhalb des Landes/der Zone zu liegen! Wir bitten um <a href=\"/mapfixer.php?gridref=$gridref\">Rückmeldung</a>, falls dies nicht der Fall sein sollte."); # FIXME translation?
 				$ok=false;
 
 			}
@@ -627,7 +627,7 @@ class GridSquare
 			
 			
 			if (!$ok)
-				$this->_error("$gridref seems to be all at sea! Please contact us if you think this is in error");
+				$this->_error("$gridref scheint außerhalb des Landes/der Zone zu liegen! Wir bitten um Rückmeldung, falls dies nicht der Fall sein sollte."); # FIXME translation?
 
 		}
 
