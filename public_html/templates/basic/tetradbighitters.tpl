@@ -3,7 +3,7 @@
 
 <h2>Tetrad Contributions</h2>
 
-<p>Listed below are the contributors by the number of <a href="/discuss/index.php?&action=vthread&forum=4&topic=1562">Tetrad's they contributed most to</a>. Basically counts the number of Tetrads that that user has been the top contributor.</p>
+<p>Listed below are the contributors by the number of <a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=4&topic=1562">Tetrad's they contributed most to</a>. Basically counts the number of Tetrads that that user has been the top contributor.</p>
 
 
 

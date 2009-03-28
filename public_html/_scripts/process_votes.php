@@ -29,7 +29,7 @@ set_time_limit(5000);
 
 //need perms if not requested locally
 if ( ($_SERVER['REMOTE_ADDR'] == $_SERVER['SERVER_ADDR']) ||
-     ($_SERVER['HTTP_X_FORWARDED_FOR']=='87.124.24.35'))
+     ($_SERVER['HTTP_X_FORWARDED_FOR']=='87.230.106.193')) // FIXME 
 {
         $smarty=null;
 }

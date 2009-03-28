@@ -43,7 +43,7 @@ $folder->setItemCDATA('description',<<<END_HTML
 
 <p><i>The Geograph British Isles project aims to collect geographically representative photographs and information for every square kilometre of the UK and the Republic of Ireland, and you can be part of it.</i></p>
 
-<p><b>Join us now at: <a href="http://www.geograph.org.uk/">www.geograph.org.uk</a></b>, and read more about the <a href="http://www.geograph.org.uk/kml.php">Google Earth intergration</a>.</p>
+<p><b>Join us now at: <a href="http://geo.hlipp.de/">geo.hlipp.de</a></b>, and read more about the <a href="http://geo.hlipp.de/kml.php">Google Earth intergration</a>.</p>
 END_HTML
 );
 $folder->setItem('Snippet','Explore Geograph Content...');
@@ -66,7 +66,7 @@ $networklink->setItemCDATA('description',<<<END_HTML
 END_HTML
 );
 $networklink->setItem('Snippet','move...scroll...rotate...tilt, to view the Geograph Archive...');
-$UrlTag = $networklink->useUrl("http://www.geograph.org.uk/kml-superlayer.php?download");
+$UrlTag = $networklink->useUrl("http://geo.hlipp.de/kml-superlayer.php?download");
 $UrlTag->setItem('refreshMode','onInterval');
 $UrlTag->setItem('refreshInterval',60*60*24);
 $networklink->setItem('visibility',0);
@@ -82,7 +82,7 @@ $NetworkLink->setItem('name','Geograph NetworkLink');
 $NetworkLink->setItemCDATA('description',"View-Based NetworkLink to view many images - always show recent images, for Google Earth Version 4+ the SuperLayer recommended instead");
 $NetworkLink->setItem('open',0);
 $NetworkLink->setItem('visibility',0);
-$UrlTag = $NetworkLink->useUrl("http://www.geograph.org.uk/earth.php?simple=1");
+$UrlTag = $NetworkLink->useUrl("http://geo.hlipp.de/earth.php?simple=1");
 $UrlTag->setItem('viewRefreshMode','onStop');
 $UrlTag->setItem('viewRefreshTime',4);
 $UrlTag->setItem('viewFormat','BBOX=[bboxWest],[bboxSouth],[bboxEast],[bboxNorth]&amp;LOOKAT=[lookatLon],[lookatLat],[lookatRange],[lookatTilt],[lookatHeading],[horizFov],[vertFov]');
@@ -93,7 +93,7 @@ $UrlTag->setItem('viewFormat','BBOX=[bboxWest],[bboxSouth],[bboxEast],[bboxNorth
 
 $networklink = new kmlNetworkLink(null,'Recent Images');
 $networklink->setItemCDATA('description',"15 recently submitted images");
-$UrlTag = $networklink->useUrl("http://www.geograph.org.uk/feed/recent.kml");
+$UrlTag = $networklink->useUrl("http://geo.hlipp.de/feed/recent.kml");
 $UrlTag->setItem('refreshMode','onInterval');
 $UrlTag->setItem('refreshInterval',60*60);
 $networklink->setItem('visibility',0);
@@ -102,7 +102,7 @@ $folder->addChild($networklink);
 
 
 $networklink = new kmlNetworkLink(null,'Recent Articles');
-$UrlTag = $networklink->useUrl("http://www.geograph.org.uk/article/feed/recent.kml");
+$UrlTag = $networklink->useUrl("http://geo.hlipp.de/article/feed/recent.kml");
 $UrlTag->setItem('refreshMode','onInterval');
 $UrlTag->setItem('refreshInterval',60*60);
 $networklink->setItem('visibility',0);
@@ -111,7 +111,7 @@ $folder->addChild($networklink);
 
 
 $networklink = new kmlNetworkLink(null,'Recent Grid Square Discussions');
-$UrlTag = $networklink->useUrl("http://www.geograph.org.uk/discuss/feed/forum5.kml");
+$UrlTag = $networklink->useUrl("http://geo.hlipp.de/discuss/feed/forum5.kml"); // FIXME forum id?
 $UrlTag->setItem('refreshMode','onInterval');
 $UrlTag->setItem('refreshInterval',60*60);
 $networklink->setItem('visibility',0);
@@ -140,7 +140,7 @@ $folder->addChild($networklink);
 
 $nufolder = $folder->addChild('Folder');
 $nufolder->setItem('name','3D Coverage Animation');
-$nufolder->setItemCDATA('description',"Please visit the <a href=\"http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=2&topic=4415\">forum for more information</a>.");
+$nufolder->setItemCDATA('description',"Please visit the <a href=\"http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=2&topic=4415\">forum for more information</a>."); //FIXME
 $nufolder->setItem('open',0);
 $nufolder->setItem('visibility',0);
 

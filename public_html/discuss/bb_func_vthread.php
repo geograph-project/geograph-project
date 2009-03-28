@@ -239,7 +239,7 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,3}
 //no external images
 // the callback function
 $fixExternalImages= <<<FUNC
-	if ((\$matches[2] == 'www.geograph.org.uk') || (\$matches[2] == 'www.geograph.co.uk') || (\$matches[2] == 'chart.apis.google.com') || 
+	if ((\$matches[2] == 'geo.hlipp.de') || (\$matches[2] == 'www.geograph.org.uk') || (\$matches[2] == 'www.geograph.co.uk') || (\$matches[2] == 'chart.apis.google.com') || 
 	 (\$matches[2] == 'geodatastore2.appspot.com')  || (\$matches[2] == 'wordle.net') )
 	{
 		//this is fine
