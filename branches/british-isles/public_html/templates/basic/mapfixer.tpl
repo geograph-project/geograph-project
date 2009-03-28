@@ -29,10 +29,10 @@
 <!-- {$status} -->
 
 {if $percent_land == -1} 
-	<div class="interestBox"><b><a href="/gridref/">{$gridref|escape:html}</a></b> is in the queue for checking, it will be checked in due course.</div>
+	<div class="interestBox"><b><a href="/gridref/{$gridref|escape:html}">{$gridref|escape:html}</a></b> is in the queue for checking, it will be checked in due course.</div>
 
 {elseif $percent_land > -1} 
-	<div class="interestBox"><b><a href="/gridref/">{$gridref|escape:html}</a></b> has a land percentage of <b>{$percent_land}%</b>. Note this figure is very approximate and intertidal areas only count half when producing the percentage for colour shading reasons</div>
+	<div class="interestBox"><b><a href="/gridref/{$gridref|escape:html}">{$gridref|escape:html}</a></b> has a land percentage of <b>{$percent_land}%</b>. Note this figure is very approximate and intertidal areas only count half when producing the percentage for colour shading reasons</div>
 	<br/>
 	{if $check_count}
 		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">

@@ -85,14 +85,16 @@ $template='view.tpl';
 
 $cacheid=0;
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*3; //3hour cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*3; //3hour cache
+}
 
 $image=new GridImage;
 
 if (isset($_GET['id']))
 {
-	$image->loadFromId($_GET['id']);
+	$image->loadFromId(intval($_GET['id']));
 	$isowner=($image->user_id==$USER->user_id)?1:0;
 	$ismoderator=$USER->hasPerm('moderator')?1:0;
 

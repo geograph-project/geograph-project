@@ -96,10 +96,10 @@ if (isset($_GET['gridref']))
 					$x=$prefix['origin_x'] + $eastings;
 					$y=$prefix['origin_y'] + $northings;
 
-					$sql="insert into gridsquare(x,y,percent_land,grid_reference,reference_index) ".
-						"values($x,$y,$percent,'$gridref',{$prefix['reference_index']})";
+					$sql="insert into gridsquare(x,y,percent_land,grid_reference,reference_index,point_xy) ".
+						"values($x,$y,$percent,'$gridref',{$prefix['reference_index']},GeomFromText('POINT($x $y)') )";
 					$db->Execute($sql);
-					$gridimage_id=$db->Insert_ID();
+					$gridsquare_id=$db->Insert_ID();
 
 					$smarty->assign('status', "New gridsquare $gridref created with new land percentage of $percent %");
 						

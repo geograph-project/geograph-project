@@ -614,6 +614,7 @@ class GeographMap
 			$land[$p]=imagecolorallocate($img, $r,$g,$b);
 
 		}
+		$land[-1]=imagecolorallocate($img, $rmin,$gmin,$bmin);
 		
 		//paint the land
 		$db=&$this->_getDB();
