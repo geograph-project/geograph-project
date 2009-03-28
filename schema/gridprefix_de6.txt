@@ -1,0 +1,19 @@
+replace into gridprefix(prefix, reference_index, origin_x,origin_y, point_origin_xy, geometry_boundary) values
+('TTN',     4,  600,    0, GeomFromText('POINT( 600    0)'), GeomFromText('POLYGON(( 600    0,  600  100,  700  100,  700    0,  600    0))')),
+('UTP',     4,  600,  100, GeomFromText('POINT( 600  100)'), GeomFromText('POLYGON(( 600  100,  600  200,  700  200,  700  100,  600  100))')),
+('UTQ',     4,  600,  200, GeomFromText('POINT( 600  200)'), GeomFromText('POLYGON(( 600  200,  600  300,  700  300,  700  200,  600  200))')),
+('UTR',     4,  600,  300, GeomFromText('POINT( 600  300)'), GeomFromText('POLYGON(( 600  300,  600  400,  700  400,  700  300,  600  300))')),
+('TUN',     4,  700,    0, GeomFromText('POINT( 700    0)'), GeomFromText('POLYGON(( 700    0,  700  100,  800  100,  800    0,  700    0))')),
+('UUP',     4,  700,  100, GeomFromText('POINT( 700  100)'), GeomFromText('POLYGON(( 700  100,  700  200,  800  200,  800  100,  700  100))')),
+('UUQ',     4,  700,  200, GeomFromText('POINT( 700  200)'), GeomFromText('POLYGON(( 700  200,  700  300,  800  300,  800  200,  700  200))')),
+('UUR',     4,  700,  300, GeomFromText('POINT( 700  300)'), GeomFromText('POLYGON(( 700  300,  700  400,  800  400,  800  300,  700  300))')),
+('TVN',     4,  800,    0, GeomFromText('POINT( 800    0)'), GeomFromText('POLYGON(( 800    0,  800  100,  900  100,  900    0,  800    0))')),
+('UVP',     4,  800,  100, GeomFromText('POINT( 800  100)'), GeomFromText('POLYGON(( 800  100,  800  200,  900  200,  900  100,  800  100))')),
+('UVQ',     4,  800,  200, GeomFromText('POINT( 800  200)'), GeomFromText('POLYGON(( 800  200,  800  300,  900  300,  900  200,  800  200))')),
+('UVR',     4,  800,  300, GeomFromText('POINT( 800  300)'), GeomFromText('POLYGON(( 800  300,  800  400,  900  400,  900  300,  800  300))')),
+('TWN',     4,  900,    0, GeomFromText('POINT( 900    0)'), GeomFromText('POLYGON(( 900    0,  900  100, 1000  100, 1000    0,  900    0))')),
+('UWP',     4,  900,  100, GeomFromText('POINT( 900  100)'), GeomFromText('POLYGON(( 900  100,  900  200, 1000  200, 1000  100,  900  100))')),
+('UWQ',     4,  900,  200, GeomFromText('POINT( 900  200)'), GeomFromText('POLYGON(( 900  200,  900  300, 1000  300, 1000  200,  900  200))')),
+('UWR',     4,  900,  300, GeomFromText('POINT( 900  300)'), GeomFromText('POLYGON(( 900  300,  900  400, 1000  400, 1000  300,  900  300))'));
+
+update gridprefix set title=concat('Deutschland (Zone 33) Quadrat ', prefix) where reference_index=4 and title is null;

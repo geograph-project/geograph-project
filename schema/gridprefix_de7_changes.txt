@@ -1,0 +1,38 @@
+ALTER TABLE  `gridprefix` ADD  `labelminwidth` MEDIUMINT(4) UNSIGNED NOT NULL DEFAULT '0' AFTER  `labelcentre` ;
+
+#Aus
+replace into gridprefix(prefix, reference_index, origin_x,origin_y, point_origin_xy, geometry_boundary) values
+#wird
+replace into gridprefix(prefix, reference_index, origin_x,origin_y, point_origin_xy, geometry_boundary, labelcentre, boundary, labelminwidth) values
+
+#UPDATE `gridprefix` SET `origin_x`='600',`geometry_boundary` = '62,0,62,100,100,100,100,0',`labelminwidth`='100',`labelcentre`='81,50',geometry_boundary=GeomFromText(CONCAT('POLYGON(( 662    ',`origin_y`,',  662  ',100+`origin_y`,',  700  ',100+`origin_y`,',  700    ',`origin_y`,',  662    ',`origin_y`,'))')) WHERE `prefix` IN ( 'TTN','UTP','UTQ','UTR');
+#
+#UPDATE `gridprefix` SET `origin_x`='600',`boundary` = '62,0,62,100,100,100,100,0',`labelminwidth`='100',`labelcentre`='81,50',geometry_boundary=GeomFromText(CONCAT('POLYGON(( 662    ',CAST(`origin_y` AS CHAR),',  662  ',CAST((100+`origin_y`) AS CHAR),',  700  ',CAST((100+`origin_y`) AS CHAR),',  700    ',CAST(`origin_y` AS CHAR),',  662    ',CAST(`origin_y` AS CHAR),'))')) WHERE `prefix` IN ( 'TTN','UTP','UTQ','UTR');
+#
+#SELECT CONCAT('POLYGON(( 662    ',CAST(`origin_y` AS CHAR),',  662  ',CAST((100+`origin_y`) AS CHAR),',  700  ',CAST((100+`origin_y`) AS CHAR),',  700    ',CAST(`origin_y` AS CHAR),',  662    ',CAST(`origin_y` AS CHAR),'))') FROM `gridprefix` AS xx WHERE `prefix` IN ( 'TTN','UTP','UTQ','UTR');
+
+
+UPDATE `gridprefix` SET `origin_x`='600',`boundary` = '62,0,62,100,100,100,100,0',`labelminwidth`='100',`labelcentre`='81,50',geometry_boundary=GeomFromText(CONCAT('POLYGON(( 662    ',CAST(`origin_y` AS CHAR),',  662  ',CAST((100+`origin_y`) AS CHAR),',  700  ',CAST((100+`origin_y`) AS CHAR),',  700    ',CAST(`origin_y` AS CHAR),',  662    ',CAST(`origin_y` AS CHAR),'))')) WHERE `prefix` IN ( 'TTN','UTP','UTQ','UTR');
+
+UPDATE `gridprefix` SET `boundary` = '0,0,0,100,38,100,38,0',`labelminwidth`='100',`labelcentre`='19,50',geometry_boundary=GeomFromText(CONCAT('POLYGON(( 500    ',CAST(`origin_y` AS CHAR),',  500  ',CAST((100+`origin_y`) AS CHAR),',  538  ',CAST((100+`origin_y`) AS CHAR),',  538    ',CAST(`origin_y` AS CHAR),',  500    ',CAST(`origin_y` AS CHAR),'))')) WHERE `prefix` IN ( 'TQT','UQU','UQV','UQA');
+
+
+UPDATE `gridprefix` SET `origin_x`='500',`boundary` = '62,0,62,100,100,100,100,0',`labelminwidth`='100',`labelcentre`='81,50',geometry_boundary=GeomFromText(CONCAT('POLYGON(( 562    ',CAST(`origin_y` AS CHAR),',  562  ',CAST((100+`origin_y`) AS CHAR),',  600  ',CAST((100+`origin_y`) AS CHAR),',  600    ',CAST(`origin_y` AS CHAR),',  562    ',CAST(`origin_y` AS CHAR),'))')) WHERE `prefix` IN ( 'TTN','UTP','UTQ','UTR');
+
+$CONF['origins'] = array(3 => array(-200,-5200), 4 => array(400,-5200));
+#wird zu
+$CONF['origins'] = array(3 => array(-200,-5200), 4 => array(300,-5200));
+
+UPDATE `gridprefix` SET `origin_x`=`origin_x`-100 WHERE `reference_index`='4' AND `origin_x` > '600';
+UPDATE `gridprefix` SET `geometry_boundary`=GeomFromText(CONCAT('POLYGON(( ',CAST(`origin_x` AS CHAR),'    ',CAST(`origin_y` AS CHAR),',  ',CAST(`origin_x` AS CHAR),'  ',CAST((100+`origin_y`) AS CHAR),',  ',CAST((100+`origin_x`) AS CHAR),'  ',CAST((100+`origin_y`) AS CHAR),',  ',CAST((100+`origin_x`) AS CHAR),'    ',CAST(`origin_y` AS CHAR),',  ',CAST(`origin_x` AS CHAR),'    ',CAST(`origin_y` AS CHAR),'))')) WHERE `reference_index`='4' AND `origin_x` > '500';
+UPDATE `gridprefix` SET `point_origin_xy`=GeomFromText(CONCAT('POINT(',`origin_x`,' ',`origin_y`,')')) WHERE `reference_index`='4';
+
+
+UPDATE `gridsquare` SET `x`=`x`-100 WHERE `reference_index`='4';
+UPDATE `gridsquare` SET `point_xy`=GeomFromText(CONCAT('POINT(',`x`,' ',`y`,')')) WHERE `reference_index`='4';
+
+UPDATE `gridimage_recent` SET `x`=`x`-100 WHERE `reference_index`='4';
+UPDATE `gridimage_recent` SET `point_xy`=GeomFromText(CONCAT('POINT(',`x`,' ',`y`,')')) WHERE `reference_index`='4';
+UPDATE `gridimage_search` SET `x`=`x`-100 WHERE `reference_index`='4';
+UPDATE `gridimage_search` SET `point_xy`=GeomFromText(CONCAT('POINT(',`x`,' ',`y`,')')) WHERE `reference_index`='4';
+
