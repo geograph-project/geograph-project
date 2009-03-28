@@ -352,7 +352,7 @@ END;
 				} else {
 					require_once("3rdparty/spellchecker.class.php");
 
-					$correction = SpellChecker::Correct($this->criteria->searchtext);
+					$correction = SpellChecker::Correct($this->criteria->searchtext, 'de', 'de'); // FIXME language => conf var
 
 					if ($correction != $this->criteria->searchtext && levenshtein($correction,$this->criteria->searchtext) < 0.25*strlen($correction)) {
 
