@@ -2,74 +2,6 @@
 {assign var="meta_description" value="Short overview in numbers of the progress in photographing every grid square of the British Isles."}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
-{literal}<style type="text/css">
-.greenbar {
-	position:relative; width:100%; background-color:#75FF65; border:1px solid blue; margin-bottom:10px; 
-}
-.redbar {
-	position:relative; float:left; background-color:#FF0000; border-right:1px solid blue; 
-}
-.righttextbox {
-	position:relative; float:right; text-align:right; color:#000066; padding-right: 5px; padding-top:10px; padding-bottom:10px
-}
-.greenbar .redbar .righttextbox {
-	color: white;
-}
-.lefttextbox {
-	position:relative; float:left; color:yellow; padding-left: 5px; padding-top:10px; padding-bottom:10px; 
-	background-image: url('/templates/basic/img/numbers-arrow.gif');
-	background-position: center left;
-	background-repeat: no-repeat;
-}
-.innerlefttextbox {
-	position:absolute; top:1px; left:1px; color:#000066; padding-left: 5px; padding-top:10px; padding-bottom:10px; white-space:nowrap; 
-}
-
-.statsbox {
-	position:relative; width:70%; float:left
-}
-
-.statsbox div {
-	position:relative; width:150px; background-color:#dddddd; float:left; padding:10px; margin-right:20px; margin-bottom:20px; text-align:center
-}
-.recentbox {
-	position:relative; width:25%; float:left; background-color:#dddddd; padding:10px;
-}
-.recentbox h4 {
-	font-size:0.9em; text-align: center; margin-bottom:3px; margin-top:0px; 
-}
-.recentbox .halvebox {
-	position:relative; width:45%; float:left; padding:3px;
-}
-
-.finalboxframe {
-	position:relative; width:100%; color:#000066; background-color:white; border: 1px solid #000066
-}
-
-.finalbox {
-	position:relative; background-color:#000066; color:white; float:left; text-align:center; padding-top:10px; padding-bottom:10px; line-height:1.5em; font-size:1.1em;
-	/*border-left:1px solid #000066; border-top:1px solid #000066; border-bottom:1px solid #000066;*/ /*margin:-1px;*/
-	border-right:1px solid #000066;
-	background-image: url('/templates/basic/img/numbers-arrow-down.gif');
-	background-position: center right;
-	background-repeat: no-repeat;
-}
-.finalbox2 {
-	position:relative; color:#000066; /*background-color:white;*/ /*float:left;*/ text-align:center; padding-top:10px; padding-bottom:10px; line-height:1.5em; font-size:1.1em; 
-	width: auto;
-	margin-left: auto; margin-right: auto;
-	/*border-right:1px solid #000066; border-top:1px solid #000066; border-bottom:1px solid #000066;*/ /*margin:-1px;*/
-}
-.finalbox2 A {
-	color: red;
-}
-.linksbox {
-	position:relative; width:100%; background-color:yellow; float:left; text-align:center; padding-top:10px; padding-bottom:10px;
-}
-.linksbox h3 {
-	margin-top:0px; text-align: center; margin-bottom:0px;
-}
-</style>{/literal}
 
 <div style="position:relative; float:right">
 	&lt; <a href="/statistics.php">More Statistics</a> | <a href="/statistics/moversboard.php">Leaderboard</a> &gt;
@@ -155,7 +87,7 @@
 	<div class="finalbox" style="width:{$stats.fewpercentage}%;">
 		{if $stats.fewpercentage >= 50 }
 		<b class="nowrap">{$stats.fewphotos|thousends}</b>
-		 photographed<br/> squares</b>... <br/> 
+		 photographed<br/> squares... <br/> 
 		{else}
 		<br/><br/>
 		{/if}
@@ -167,7 +99,7 @@
 		<a href="/submit.php">add yours now!</a></b>
 		{else}
 		<b class="nowrap">{$stats.fewphotos|thousends}</b>
-		 photographed squares</b>... <br/> 
+		 photographed squares... <br/> 
 		... with <b>fewer than 4 photos,
 		<a href="/submit.php">add yours now!</a></b>
 		{/if}

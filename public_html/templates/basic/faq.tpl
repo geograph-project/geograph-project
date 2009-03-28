@@ -246,7 +246,7 @@ The <b>Geograph Website</b>:
 	<li>simple <a class="xml-geo" title="Geograph GeoRSS feed" href="http://{$http_host}/feed/recent.rss">GeoRSS</a></li>
 	<li><a title="Geograph GeoRSS and PhotoRSS feed" href="http://{$http_host}/feed/recent.geophotorss">GeoPhotoRSS</a></li>
 	<li>and <a title="Geograph GPX feed" href="http://{$http_host}/feed/recent.gpx">GPX1.0</a></li>
-	formats.</ul></div>
+	</ul>formats.</div>
 
 	<p>We provide an GeoRSS (RSS1.0) feed at 
 	<a title="Geograph RSS feed" href="http://{$http_host}/feed/recent.rss">http://{$http_host}/feed/recent.rss</a>

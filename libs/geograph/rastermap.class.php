@@ -539,12 +539,12 @@ class RasterMap
 			} else {
 				$p1 = '';
 			}
+			#	<style type=\"text/css\">
+			#	v\:* {
+			#		behavior:url(#default#VML);
+			#	}
+			#	</style>
 			return "
-				<style type=\"text/css\">
-				v\:* {
-					behavior:url(#default#VML);
-				}
-				</style>
 				$p1
 				<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mappingG.js")."\"></script>
 				<script type=\"text/javascript\">
