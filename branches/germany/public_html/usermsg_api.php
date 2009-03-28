@@ -123,7 +123,7 @@ if (!empty($_REQUEST['client_ip']) && preg_match("/^[\w\.]+$/",$_REQUEST['client
 }
 
 
-if (preg_match('/(DORMANT|geograph\.org\.uk|geograph\.co\.uk|dev\.null|deleted|localhost|127\.0\.0\.1)/',$recipient->email)) {
+if (preg_match('/(DORMANT|geo\.hlipp\.de|dev\.null|deleted|localhost|127\.0\.0\.1)/',$recipient->email)) {
 
 	$email = $CONF['contact_email'];
 

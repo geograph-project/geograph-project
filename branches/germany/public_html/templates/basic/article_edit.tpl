@@ -147,7 +147,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 </form>
 <br/><br/><br/>
 <div style="padding:5px; border: 1px solid gray; background-color:silver; font-size:0.9em">
-| <b>Quick Reference</b> | {newwin href="/article/Help_on_formatting_of_articles" text="Full Reference"} |
+| <b>Quick Reference</b> | {newwin href="http://www.geograph.org.uk/article/Help_on_formatting_of_articles" text="Full Reference"} |
 <hr/>
 
 <h2><tt>[h2]Big Title[/h2]</tt></h2>

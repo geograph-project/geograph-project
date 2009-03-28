@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-<ModulePrefs title="Geograph Photo of the Day" scrolling="true" description="Displays the Geograph Photo of the Day" title_url="http://www.geograph.org.uk/" author="Barry Hunter" author_affiliation="Developer" author_email="geograph@barryhunter.co.uk" author_link="http://www.nearby.org.uk/blog/" screenshot="http://www.geograph.org.uk/img/ggadget0.png" thumbnail="http://www.geograph.org.uk/img/ggadget0-thumb.png" width="250" height="250">
+<ModulePrefs title="Geograph Photo of the Day" scrolling="true" description="Displays the Geograph Photo of the Day" title_url="http://geo.hlipp.de/" author="Hansjoerg Lipp" author_affiliation="Developer" author_email="mail@hlipp.de" author_link="http://www.nearby.org.uk/blog/" screenshot="http://geo.hlipp.de/img/ggadget0.png" thumbnail="http://geo.hlipp.de/img/ggadget0-thumb.png" width="250" height="250">
 	<Require feature="analytics"/>
 </ModulePrefs>
 <UserPref name="inumber" display_name="Search Results number" default_value="2087426" datatype="hidden"/>
@@ -14,7 +14,7 @@
 
 		var inumber = prefs.getString("inumber");
 
-		var url = "http://www.geograph.org.uk/feed/results/"+inumber+".geophotorss";
+		var url = "http://geo.hlipp.de/feed/results/"+inumber+".geophotorss";
 
 		var results = prefs.getString("results");
 

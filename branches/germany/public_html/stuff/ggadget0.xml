@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-<ModulePrefs title="Geograph Images" scrolling="true" description="Displays Geograph pictures - Edit settings to choose what pictures to display, can display the images from any search, by copying the 'i' number from the url on a search results page" title_url="http://www.geograph.org.uk/" author="Barry Hunter" author_affiliation="Developer" author_email="geograph@barryhunter.co.uk" author_link="http://www.nearby.org.uk/blog/" screenshot="http://www.geograph.org.uk/img/ggadget0.png" thumbnail="http://www.geograph.org.uk/img/ggadget0-thumb.png" width="290" height="300" singleton ="false">
+<ModulePrefs title="Geograph Images" scrolling="true" description="Displays Geograph pictures - Edit settings to choose what pictures to display, can display the images from any search, by copying the 'i' number from the url on a search results page" title_url="http://geo.hlipp.de/" author="Hansjoerg Lipp" author_affiliation="Developer" author_email="mail@hlipp.de" author_link="http://www.nearby.org.uk/blog/" screenshot="http://geo.hlipp.de/img/ggadget0.png" thumbnail="http://geo.hlipp.de/img/ggadget0-thumb.png" width="290" height="300" singleton ="false">
 	<Require feature="analytics"/>
 </ModulePrefs>
 <UserPref name="inumber" display_name="Search Results number" default_value="1522" required="true"/>
@@ -14,7 +14,7 @@
 
 		var inumber = prefs.getString("inumber");
 
-		var url = "http://www.geograph.org.uk/feed/results/"+inumber+".geophotorss";
+		var url = "http://geo.hlipp.de/feed/results/"+inumber+".geophotorss";
 
 		var results = prefs.getString("results");
 
@@ -81,7 +81,7 @@
 			}
 		}
 		html += '<br style="clear:both"/>';
-		html += '<div style="text-align:right; background-color:#000066; "><a href="http://www.geograph.org.uk/results/'+inumber+'" target="_blank" style="color:white">More Results...</a></div>';
+		html += '<div style="text-align:right; background-color:#000066; "><a href="http://geo.hlipp.de/results/'+inumber+'" target="_blank" style="color:white">More Results...</a></div>';
 		html +='<div style="text-align:center; background-color:#EEEEEE; font-size:0.8em;">photos licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">Creative Commons Licence</a></div>';
 
 		_gel('content_div').innerHTML = html;

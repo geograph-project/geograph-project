@@ -12,7 +12,7 @@
 <p>Colour Key: <span style="background-color:pink">Without Photos</span> - <span style="background-color:red">abnormally long jump</span>, this page only updates once every 24 hours, last time: {$smarty.now|date_format:"%H:%M"}</p>
 
 {foreach from=$posts key=id item=row}
-	<h4>{$row.poster_name} <sup>{$row.post_time}</sup> <a href="/discuss/?action=vpost&amp;forum=6&amp;topic=822&amp;post={$id}">Open &gt;&gt;</a></h4>
+	<h4>{$row.poster_name} <sup>{$row.post_time}</sup> <a href="http://www.geograph.org.uk/discuss/?action=vpost&amp;forum=6&amp;topic=822&amp;post={$id}">Open &gt;&gt;</a></h4>
 
 	<table border="1" cellspacing="0" cellpadding="3">
 		<tr><th>GridSquare</th><th>Mentions</th><th>Photos</th><th>Submitted</th><th>Distance</th></tr>

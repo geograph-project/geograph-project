@@ -40,8 +40,8 @@
 				online project called <br/><span style="color:#000066; font-weight:bold">Geograph British Isles</span>. 
 				We are attempting to collect photographs for every
 				one kilometre grid square in the British Isles.<small><br style="clear:right"/></small>
-				See my page at <tt><span style="color:#000066; font-weight:bold">www.geograph.org.uk/u/{$user->user_id}</span></tt><br/>
-				or <tt><span style="color:#000066; font-weight:bold">www.geograph.org.uk/g/{section name=g loop=6}<span style="border-bottom:1px solid silver;border-right:1px solid silver">&nbsp;&nbsp;</span>{/section}</span></tt>
+				See my page at <tt><span style="color:#000066; font-weight:bold">geo.hlipp.de/u/{$user->user_id}</span></tt><br/>
+				or <tt><span style="color:#000066; font-weight:bold">geo.hlipp.de/g/{section name=g loop=6}<span style="border-bottom:1px solid silver;border-right:1px solid silver">&nbsp;&nbsp;</span>{/section}</span></tt>
 			</div>
 			{elseif $v eq 2}
 			<div style="font-family:Georgia; text-align:center;font-size:12px;padding:5px">
@@ -49,8 +49,8 @@
 				online project called <br/><span style="color:#000066; font-weight:bold">Geograph British Isles</span><br/>
 				We are attempting to collect photographs for every<br/>
 				one kilometre grid square in the British Isles.<small><br/><br style="clear:right"/></small>
-				See my page at <tt><span style="color:#000066; font-weight:bold">www.geograph.org.uk/u/{$user->user_id}</span></tt><br/>
-				or visit <tt><span style="color:#000066; font-weight:bold">www.geograph.org.uk/g/{section name=g loop=6}<span style="border:1px solid silver">&nbsp;&nbsp;</span>{/section}</span></tt>
+				See my page at <tt><span style="color:#000066; font-weight:bold">geo.hlipp.de/u/{$user->user_id}</span></tt><br/>
+				or visit <tt><span style="color:#000066; font-weight:bold">geo.hlipp.de/g/{section name=g loop=6}<span style="border:1px solid silver">&nbsp;&nbsp;</span>{/section}</span></tt>
 			</div>
 			{else}
 			<div style="font-family:Georgia; text-align:center;font-size:12px;padding:5px">
@@ -60,7 +60,7 @@
 				one kilometre grid square in the British Isles.<small><br/><br style="clear:right"/></small>
 				To find my photographs, look for images by<br/>
 				<b style="font-size:1.1em">{$user->realname|escape:'html'}</b><br/>
-				See my page at <tt style="text-decoration:underline"><span style="color:#000066; font-weight:bold">www.geograph.org.uk</span>/u/{$user->user_id}
+				See my page at <tt style="text-decoration:underline"><span style="color:#000066; font-weight:bold">geo.hlipp.de</span>/u/{$user->user_id}
 			</div>
 			{/if}
 		</td>

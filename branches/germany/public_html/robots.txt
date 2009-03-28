@@ -167,4 +167,4 @@ Disallow: /article/history.php
 User-agent: Fasterfox
 Disallow: /
 
-Sitemap: http://www.geograph.org.uk/sitemap.xml
+Sitemap: http://geo.hlipp.de/sitemap.xml
