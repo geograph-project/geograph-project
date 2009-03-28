@@ -341,7 +341,7 @@ class Gazetteer
 						GeomFromText($rectangle),
 						point_en)
 				order by distance asc limit 1");
-		} else if ($gazetteer == 'towns' && $reference_index == 1) {
+		} else if ($gazetteer == 'towns' /*&& $reference_index == 1*/) {
 			$places = $db->GetRow("select
 					name as full_name,
 					'PPL' as dsg,
