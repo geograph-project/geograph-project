@@ -829,28 +829,31 @@ GT_WGS84.prototype.isGreatBritain = function()
 		this.longitude < 2.3;
 }
 
-GT_WGS84.prototype.isGermany32 = function()
+GT_WGS84.prototype.isGermany32 = function(sloppy)
 {
+	var delta = (sloppy == null || !sloppy) ? 0 : 1;
 	return this.latitude > 47 &&
 		this.latitude < 56 &&
-		this.longitude >= 6 &&
-		this.longitude <= 12; //FIXME
+		this.longitude >= 6 - delta &&
+		this.longitude <= 12 + delta; //FIXME
 }
 
-GT_WGS84.prototype.isGermany33 = function()
+GT_WGS84.prototype.isGermany33 = function(sloppy)
 {
+	var delta = (sloppy == null || !sloppy) ? 0 : 1;
 	return this.latitude > 47 &&
 		this.latitude < 56 &&
-		this.longitude > 12 &&
+		this.longitude > 12 - delta &&
 		this.longitude < 16; //FIXME
 }
 
-GT_WGS84.prototype.isGermany31 = function()
+GT_WGS84.prototype.isGermany31 = function(sloppy)
 {
+	var delta = (sloppy == null || !sloppy) ? 0 : 1;
 	return this.latitude > 47 &&
 		this.latitude < 56 &&
 		this.longitude > 4 &&
-		this.longitude < 6; //FIXME
+		this.longitude < 6 + delta; //FIXME
 }
 
 GT_WGS84.prototype.isIreland = function()
@@ -905,10 +908,10 @@ GT_WGS84.prototype.getIrish = function(uselevel2)
 	return irish;
 }
 
-GT_WGS84.prototype.getGerman32 = function(uselevel2)
+GT_WGS84.prototype.getGerman32 = function(uselevel2, sloppy)
 {
 	var german=new GT_German32();
-	if (this.isGermany32())
+	if (this.isGermany32(sloppy))
 	{
 		var coord = GT_Math.wgs84_to_utm(this.latitude, this.longitude, 32);
 		german.setGridCoordinates(Math.round(coord[0]), Math.round(coord[1]));
@@ -921,10 +924,10 @@ GT_WGS84.prototype.getGerman32 = function(uselevel2)
 	return german;
 }
 
-GT_WGS84.prototype.getGerman33 = function(uselevel2)
+GT_WGS84.prototype.getGerman33 = function(uselevel2, sloppy)
 {
 	var german=new GT_German33();
-	if (this.isGermany33())
+	if (this.isGermany33(sloppy))
 	{
 		var coord = GT_Math.wgs84_to_utm(this.latitude, this.longitude, 33);
 		german.setGridCoordinates(Math.round(coord[0]), Math.round(coord[1]));
@@ -937,10 +940,10 @@ GT_WGS84.prototype.getGerman33 = function(uselevel2)
 	return german;
 }
 
-GT_WGS84.prototype.getGerman31 = function(uselevel2)
+GT_WGS84.prototype.getGerman31 = function(uselevel2, sloppy)
 {
 	var german=new GT_German31();
-	if (this.isGermany31())
+	if (this.isGermany31(sloppy))
 	{
 		var coord = GT_Math.wgs84_to_utm(this.latitude, this.longitude, 31);
 		german.setGridCoordinates(Math.round(coord[0]), Math.round(coord[1]));

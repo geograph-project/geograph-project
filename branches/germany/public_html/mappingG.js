@@ -46,15 +46,15 @@
 			//create a wgs84 coordinate
 			wgs84=new GT_WGS84();
 			wgs84.setDegrees(pp.lat(), pp.lng());
-			
-			/*if (wgs84.isIreland()) {
+			if (ri == -1) {
+			if (wgs84.isIreland()) {
 				//convert to Irish
 				var grid=wgs84.getIrish(true);
 			
 			} else if (wgs84.isGreatBritain()) {
 				//convert to OSGB
 				var grid=wgs84.getOSGB();
-			} else*/ if (wgs84.isGermany32()) {
+			} else if (wgs84.isGermany32()) {
 				//convert to German
 				var grid=wgs84.getGerman32();
 			} else if (wgs84.isGermany33()) {
@@ -63,7 +63,18 @@
 			} else if (wgs84.isGermany31()) {
 				//convert to German
 				var grid=wgs84.getGerman31();
-			}  
+			}
+			}
+			else if (ri == 1)
+				var grid=wgs84.getOSGB();
+			else if (ri == 2)
+				var grid=wgs84.getIrish();
+			else if (ri == 3)
+				var grid=wgs84.getGerman32(true, true);
+			else if (ri == 4)
+				var grid=wgs84.getGerman33(true, true);
+			else if (ri == 5)
+				var grid=wgs84.getGerman31(true, true);
 			
 			//get a grid reference with 4 digits of precision
 			var gridref = grid.getGridRef(4);
@@ -191,16 +202,19 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 	}
 	
 	gridref = that.value.trim().toUpperCase();
-	
-	/*var grid=new GT_OSGB();*/
+	var grid;
 	var ok = false;
-	/*if (grid.parseGridRef(gridref)) {
+	
+	if (ri == -1) {
+	
+	grid=new GT_OSGB();
+	if (grid.parseGridRef(gridref)) {
 		ok = true;
 	} else {
 		grid=new GT_Irish();
 		if (grid.parseGridRef(gridref)) {
 			ok = true;
-		} else {*/
+		} else {
 			grid=new GT_German32();
 			if (grid.parseGridRef(gridref)) {
 				ok = true;
@@ -213,8 +227,22 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 					ok = grid.parseGridRef(gridref)
 				}
 			}
-		/*}
-	}*/
+		}
+	}
+	}
+	else if (ri == 1)
+		grid=new GT_OSGB();
+	else if (ri == 2)
+		grid=new GT_Irish();
+	else if (ri == 3)
+		grid=new GT_German32();
+	else if (ri == 4)
+		grid=new GT_German33();
+	else if (ri == 5)
+		grid=new GT_German31();
+	else
+		return;
+	ok = grid.parseGridRef(gridref); // FIXME needed?
 	
 	if (ok) {
 		//convert to a wgs84 coordinate
