@@ -394,18 +394,21 @@ class GridImage
 	*/
 	function loadFromServer($server, $gridimage_id)
 	{
-		//todo memcache
-		
 		$this->_clear();
 		if (preg_match('/^\d+$/', $gridimage_id))
 		{
-			# http://www.geograph.org.uk/api/Photo/419440
-			$url = "http://$server/api/Photo/$gridimage_id";
-#			$xml_str=<<<EOF
-#< ?xml version="1.0" encoding="UTF-8"? ><geograph><status state="ok"/><title>Marble Arch</title><gridref>TQ2780</gridref><user profile="http://www.geograph.org.uk/profile/1621">Stephen McKay</user><img src="http://www.geograph.org.uk/photos/41/94/419440_df5f4e31.jpg" width="640" height="479"/><thumbnail>http://s0.geograph.org.uk/photos/41/94/419440_df5f4e31_120x120.jpg</thumbnail><taken>2007-04-30</taken><submitted>2007-05-01 09:55:32</submitted><category>Arch</category><comment><![CDATA[This grand edifice stands in the centre of one of London's busiest road junctions, where Oxford Street, Park Lane, Bayswater Road and Edgware Road meet. It was designed by John Nash in 1828 as a gateway to Buckingham Palace, but was removed to its present site in 1851. It is built of white Carrara marble, the design taken from the triumphal arch of Constantine in Rome.]]></comment></geograph>
-#EOF;
-			#$xml = new SimpleXMLElement($xml_str);
-			$xml = simplexml_load_file($url);
+			global $memcache;
+			$mkey = "$server:$gridimage_id";
+			//fails quickly if not using memcached!
+			$xml =& $memcache->name_get('e',$mkey);
+			
+			if (empty($xml)) {
+				$url = "http://$server/restapi.php/api/Photo/$gridimage_id";
+				$xml = simplexml_load_file($url);
+				
+				//fails quickly if not using memcached!
+				$memcache->name_set('e',$mkey,$xml,$memcache->compress,$memcache->period_long);
+			}
 			if ($xml !== false && $xml->status['state'] == 'ok') {
 				$this->grid_reference    = (string)$xml->gridref;
 				$this->title             = (string)$xml->title;
@@ -415,7 +418,7 @@ class GridImage
 				$this->ext_thumb_url     = (string)$xml->thumbnail;
 				$this->ext               = true;
 				$this->ext_server        = $server;
-				$this->moderation_status = 'geograph';
+				$this->moderation_status = 'geograph'; //todo
 				$this->submitted         = (string)$xml->submitted;
 				$this->imagetaken        = (string)$xml->taken;
 				$this->imageclass        = (string)$xml->category;
@@ -423,18 +426,9 @@ class GridImage
 				$this->gridimage_id      = 0;
 				$this->ext_gridimage_id  = $gridimage_id;
 				$this->grid_square       = null;
-				# getThumbnail(120,120,false,true);
-				#
-				# photographer_gridref_precision
-				# photographer_gridref
-				# subject_gridref
-				# $gridimage_id
-
+		
 				$this->profile_link = $this->ext_profile_url;
 				
-				#if (!empty($this->credit_realname))
-				#	$this->profile_link .= "?a=".urlencode($this->realname);
-
 				if (empty($this->title))
 					$this->title="Untitled photograph for {$this->grid_reference}";
 				return true;
@@ -442,7 +436,6 @@ class GridImage
 
 
 		}
-		//todo memcache (probably make sure dont serialise the dbs!) 
 		
 		return false;
 	}
