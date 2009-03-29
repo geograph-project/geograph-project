@@ -74,7 +74,7 @@ geographing</a> first.</p>
 		<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}or <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>{/if}
 		</p>
 		
-		<p>Clicking the <i>Upload via Picnik</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transfering it to Geograph.</p>
+		<p>Clicking the <i>Upload via Picnik</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transferring it to Geograph.</p>
 	</div>		
 
 	<div style="position:relative;{if $tab != 2}display:none{/if}" class="interestBox" id="div2">
@@ -148,7 +148,7 @@ geographing</a> first.</p>
 		above.<br/><br/></li>
 		<li>{external href="http://www.multimap.com/map/browse.cgi?lat=54.5445&lon=-6.8228&scale=1000000" text="multimap.com"} now displays 1:50,000 <b>Mapping for Northern Ireland</b>. Use our handy <a href="/latlong.php">Lat/Long Convertor</a> to get the correct Grid Square for a picture.<br/><br/>
 		
-		Furthermore {external href="http://www.osni.gov.uk/mapstore" text="OSNI"} and {external href="http://www.osi.ie/" text="OSI"} now offer online mapping from their own websites. Coordinate conversion may not be easy - its porbably best to rely on visual estimation using the national grid projected on the map.
+		Furthermore {external href="http://www.osni.gov.uk/mapstore" text="OSNI"} and {external href="http://www.osi.ie/" text="OSI"} now offer online mapping from their own websites. Coordinate conversion may not be easy - its probably best to rely on visual estimation using the national grid projected on the map.
 		<br/><br/></li>
 		
 		<li><b>If you have a WGS84 latitude &amp; longitude coordinate</b>
