@@ -581,7 +581,7 @@ function connectToURL($addr, $port, $path, $userpass="", $timeout="30") {
 	if ($urlHandle)	{
 		socket_set_timeout($urlHandle, $timeout);
 		if ($path) {
-			$urlString = "GET $path HTTP/1.1\r\nHost: $addr\r\nConnection: keep-alive\r\nUser-Agent: {$_SERVER['HTTP_HOST']}\r\n";
+			$urlString = "GET $path HTTP/1.0\r\nHost: $addr\r\nUser-Agent: {$_SERVER['HTTP_HOST']}\r\n";
 			if ($userpass)
 				$urlString .= "Authorization: Basic ".base64_encode("$userpass")."\r\n";
 			$urlString .= "\r\n";

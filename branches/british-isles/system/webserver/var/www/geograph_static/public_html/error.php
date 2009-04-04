@@ -51,10 +51,9 @@ if (preg_match('/^\/photos\/(\d{2,3})\/(\d{2})\/\d{6,7}_(\w+)\.jpg$/',$p,$m)
 
 	$size=filesize('.'.$p);
 	if (!$size) {	
-	        header("HTTP/1.0 404 Not Found");
-        	header("Status: 404 Not Found");
-        	print 'Not Found. <a href="http://www.geograph.org.uk/">Visit our homepage</a>';
-        	exit;
+		header("HTTP/1.1 503 Service Unavailable");
+		print 'Not available, <a href="http://www.geograph.org.uk/">Visit our homepage</a>';
+		exit;
 	}
 
 	$t=filemtime('.'.$p);

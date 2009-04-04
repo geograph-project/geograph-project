@@ -147,7 +147,7 @@ if (!empty($_POST['update']))
 			list($lat,$long) = $conv->internal_to_wgs84($image['x'],$image['y'],$image['reference_index']);
 		}
 	
-		$db2->Execute("UPDATE LOW_PRIORITY gridimage_search SET wgs84_lat = $lat, wgs84_long = $long,point_ll = GeomFromText('POINT($long $lat)') WHERE gridimage_id = ".$image['gridimage_id']);
+		$db2->Execute("UPDATE LOW_PRIORITY gridimage_search SET wgs84_lat = $lat, wgs84_long = $long,point_ll = GeomFromText('POINT($long $lat)'),upd_timestamp=upd_timestamp WHERE gridimage_id = ".$image['gridimage_id']);
 		
 		if (++$count%500==0) {
 				printf("done %d at <b>%d</b> seconds<br/>",$count,time()-$start);
