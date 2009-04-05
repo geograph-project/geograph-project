@@ -473,3 +473,12 @@ ALTER TABLE `queries` CHANGE `searchuse` `searchuse` ENUM( 'search', 'flickr', '
 ALTER TABLE `queries_archive` CHANGE `searchuse` `searchuse` ENUM( 'search', 'flickr', 'gazetteer', 'discuss', 'syndicator' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'search';
 
 
+
+
+
+
+alter table mapcache add `palette`  smallint(6) NOT NULL DEFAULT '0';
+
+alter table mapcache drop PRIMARY KEY, add PRIMARY KEY (`map_x`,`map_y`,`image_w`,`image_h`,`pixels_per_km`,`type_or_user`,`palette`);
+
+alter table mapcache add index (`age`,`type_or_user`);
