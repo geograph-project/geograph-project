@@ -1,6 +1,18 @@
 #!/bin/bash
 #find /var/www/geograph_live/public_html/templates/basic/cache -mtime +2 | xargs rm
 
+#########################
+# Grab a random value between 0-240.
+value=$RANDOM
+while [ $value -gt 240 ] ; do
+  value=$RANDOM
+done
+
+# Sleep for that time.
+sleep $value
+#########################
+
+
 cd /var/www/geograph_live/public_html/templates/basic/cache
 
 mkdir _attic
@@ -8,9 +20,23 @@ mkdir _attic
 mv search/ _attic/
 mv img*/ _attic/
 
-nice rm -Rf _attic
+nice nice rm -Rf _attic
 
-nice find . -mtime +2 -print0 | xargs -n500 -0 rm -f
 
-nice find -depth -type d -empty | xargs rmdir
+#########################
+# Grab a random value between 0-240.
+value=$RANDOM
+while [ $value -gt 120 ] ; do
+  value=$RANDOM
+done
+
+# Sleep for that time.
+sleep $value
+#########################
+
+
+
+nice nice find . -mtime +2 -print0 | nice xargs -n500 -0 rm -f
+
+nice nice find -depth -type d -empty | nice xargs rmdir
 

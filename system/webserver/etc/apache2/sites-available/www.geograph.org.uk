@@ -139,6 +139,7 @@
     RewriteRule ^/get-juppy.jnlp /get-juppy.php [qsa]
 
     RewriteRule ^/(sitemap(\d*)\.xml.*)$ /sitemap/root/$1 [L]
+    RewriteRule ^/(sitemap_content.txt)$ /sitemap/root/$1 [L]
 
     #rewrite imagemap clicks as regular urls - must do this otherwise
     #php's use_trans_sid will break the urls
@@ -147,6 +148,10 @@
 
 
     RewriteRule ^/(.*)\.v[0-9]+\.(css|js)$ /$1.$2 [L]
+
+    RewriteRule /g/(.*) http://%{HTTP_HOST}/gridref/$1 [qsa,L,R=permanent]
+    RewriteRule /u/(.*) http://%{HTTP_HOST}/profile/$1 [qsa,L,R=permanent]
+    RewriteRule /p/(.*) http://%{HTTP_HOST}/photo/$1 [qsa,L,R=permanent]
 
     ErrorDocument 404 /staticpage.php?page=404
 
