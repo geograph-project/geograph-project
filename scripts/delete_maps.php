@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: recreate_maps.php 3865 2007-10-23 20:20:52Z geograph $
+ * $Id$
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
@@ -73,9 +73,8 @@ $param=array(
 	'timeout'=>14, //timeout in minutes
 	'sleep'=>10,	//sleep time in seconds
 	'load'=>100,	//maximum load average
-	'load'=>100,	//maximum load average
-	'base'=>1,	//maximum load average
-	'dryrun'=>0,	//maximum load average
+	'base'=>1,	//delete the basemaps?
+	'dryrun'=>0,	//test only?
 	'help'=>0,		//show script help?
 );
 
@@ -149,6 +148,7 @@ $prefixes = $db->GetAll("select * from gridprefix order by rand();");
 
 
 foreach($prefixes as $idx=>$prefix) {
+		
 	//sleep until calm if we've specified a load average
 	if ($param['load']<100)
 	{
