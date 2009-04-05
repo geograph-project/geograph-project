@@ -3,8 +3,14 @@
 $p = $_SERVER['REQUEST_URI'];
 
 if (preg_match('/(ie|ff)\.gif$/',$p)) {
+	header("HTTP/1.1 410 Gone");
         //you can just go away - Gmaps seem to lookup these urls via GGeoXML for somereason...
         header('Content-Length: 0');
+	$diff = 3600*24*356;
+	$expires=gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+$diff);
+	header("Expires: $expires");
+	header("Cache-Control: max-age=$diff",false);
+	header("Cache-Control: Public",false);
         exit;
 }
 
