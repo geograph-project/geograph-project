@@ -482,3 +482,15 @@ alter table mapcache add `palette`  smallint(6) NOT NULL DEFAULT '0';
 alter table mapcache drop PRIMARY KEY, add PRIMARY KEY (`map_x`,`map_y`,`image_w`,`image_h`,`pixels_per_km`,`type_or_user`,`palette`);
 
 alter table mapcache add index (`age`,`type_or_user`);
+
+
+
+alter table mapcache add key (map_x,map_y);
+
+/* explain select * from mapcache where map_x between 306 and 405 and map_y between 0 and 99 and pixels_per_km >= 40 and ((map_x-306) mod 5) != 0 and ((map_y-0) mod 5) != 0;
++----+-------------+----------+-------+---------------+-------+---------+------+-------+-------------+
+| id | select_type | table    | type  | possible_keys | key   | key_len | ref  | rows  | Extra       |
++----+-------------+----------+-------+---------------+-------+---------+------+-------+-------------+
+|  1 | SIMPLE      | mapcache | range | PRIMARY,map_x | map_x | 4       | NULL | 28193 | Using where |
++----+-------------+----------+-------+---------------+-------+---------+------+-------+-------------+
+*/
