@@ -213,7 +213,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 {if $image->moderation_status eq "geograph" || $image->moderation_status eq "accepted"}
 
 <small><a title="Open in Google Earth" href="http://{$http_host}/photo/{$image->gridimage_id}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</small>, 
-{external title="Open in Google Maps" href="http://maps.google.co.uk/maps?q=http://`$http_host`/photo/`$image->gridimage_id`.kml" text="Google Maps"}, 
+{external title="Open in Google Maps" href="http://maps.google.co.uk/maps?q=http://`$http_host`/photo/`$image->gridimage_id`.kml&amp;z=13" text="Google Maps"}, 
 
 {/if}
 
