@@ -928,7 +928,7 @@ class GeographMapMosaic
 		$and_crit .= ")";
 		
 		$deleted = 0;
-		$root=&$_SERVER['DOCUMENT_ROOT'];
+		$root=preg_replace('/\/$/','',$_SERVER['DOCUMENT_ROOT']);
 
 		if ($memcache->valid) {
 			$sql="select * from mapcache
@@ -991,7 +991,7 @@ class GeographMapMosaic
 		global $memcache;
 		$db=&$this->_getDB();
 		
-		$root=&$_SERVER['DOCUMENT_ROOT'];
+		$root=preg_replace('/\/$/','',$_SERVER['DOCUMENT_ROOT']);
 
 		$sql="select * from mapcache where $crit";
 		$deleted = 0;
