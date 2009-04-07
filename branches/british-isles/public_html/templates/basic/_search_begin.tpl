@@ -1,3 +1,8 @@
+{if $engine->currentPage > 1}
+{assign var="extra_meta" value="<link rel=\"short_url\" href=\"http://geograph.org.uk/r/`$i`/`$engine->currentPage`" />\"}
+{else}
+{assign var="extra_meta" value="<link rel=\"short_url\" href=\"http://geograph.org.uk/r/`$i`" />\"}
+{/if}
 {assign var="page_title" value="Search Results`$engine->criteria->searchdesc`"|escape:"html"}
 {include file="_std_begin.tpl"}
 
