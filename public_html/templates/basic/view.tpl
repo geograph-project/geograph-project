@@ -1,4 +1,4 @@
-{assign var="extra_meta" value="<link rel=\"short_url\" href=\"http://geograph.org.uk/p/`$image->gridimage_id`" />\"}
+{assign var="extra_meta" value="<link rel=\"short_url\" href=\"http://geograph.org.uk/p/`$image->gridimage_id`\" />"}
 {include file="_std_begin.tpl"}
 
 {if $image}
