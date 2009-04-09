@@ -23,7 +23,7 @@
 
 	</form>
 	
-	<div style="text-align:right" id="countDiv"></div>
+	<div style="clear:both;text-align:right;position:relative" id="countDiv"></div>
 	<div id="map" style="width:100%; height:600px; position:relative;"></div>
 	{literal}
 	<script type="text/javascript">
@@ -123,11 +123,11 @@
 			map.openInfoWindowHtml(marker.getLatLng(),myHtml);
 		});
 
-		gcGridObj.setCallback(GC_CB_ONLOADSTART, function ()
+		gc.setCallback(GC_CB_ONLOADSTART, function ()
 		{
 			document.getElementById('countDiv').innerHTML = "loading photos...";
 		});
-		gcGridObj.setCallback(GC_CB_ONLOADEND, function ()
+		gc.setCallback(GC_CB_ONLOADEND, function ()
 		{
 			document.getElementById('countDiv').innerHTML = gc.getTotalCount() + " photos in current map";
 		});
@@ -179,7 +179,7 @@
 	{/literal}
 	
 	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}&amp;sensor=false" type="text/javascript"></script>
-	<script src="http://api.geocubes.com/api/geocubes.js?v=1.1" type="text/javascript"></script>
+	<script src="http://api.geocubes.com/api/geocubes.js?v=1&amp;r=1" type="text/javascript"></script>
 
 {else}
 	{include file="_search_noresults.tpl"}
