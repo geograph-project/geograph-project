@@ -3,28 +3,23 @@
 
 
 {if $google_maps_api_key}
+	<h2>Draggable Interactive Map</h2>
+	
 	<form action="" onsubmit="return updateFilters(this);" name="theForm">
-	<div style="float:left">
+	<div style="float:left;position:relative;padding:10px;">
 	Title Keyword:<br/> <input type="text" name="q" value="" id="q"/><br/>
 	<small>(Example: <tt>river</tt> - single keyword only)</small>
 	</div>
 
-	<div style="float:left">
+	<div style="float:left;position:relative;padding:10px;">
 	User ID:<br/> <input type="text" name="user_id" value="" id="user_id" size="3"/><br/>
-	<small>(Example: <tt>3</tt>)</small>
+	<small>(Example: <tt>{$user->user_id|default:123}{literal}</tt>)</small>
 	</div>
 
-	<div style="float:left">
-	Category:<br/> <input type="text" name="imageclass" value="" id="imageclass"/><br/>
-	<small>(Example: <tt>Road Junction</tt> <br/>- exact match only and case sensitive)</small>
-	</div>
-
-	<div style="float:left">
+	<div style="float:left;position:relative;padding:10px;">
 	<br/>
 	<input type="submit" value="Update"/>
 	</div>
-
-
 
 	<br style="clear:both" />
 	</form>
@@ -168,6 +163,10 @@
 	//]]>
 	</script>
 	{/literal}
+	
+	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}&amp;sensor=false" type="text/javascript"></script>
+	<script src="http://api.geocubes.com/api/geocubes.js?v=1" type="text/javascript"></script>
+
 {else}
 	{include file="_search_noresults.tpl"}
 {/if}
