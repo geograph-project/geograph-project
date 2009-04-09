@@ -3,7 +3,7 @@
 
 
 {if $google_maps_api_key}
-	<h2>Draggable Interactive Map</h2>
+	<h2>Draggable Interactive Map <sup style="color:red">Beta!</sup></h2>
 	
 	<form action="" onsubmit="return updateFilters(this);" name="theForm">
 	<div style="float:left;position:relative;padding:10px;">
@@ -38,12 +38,12 @@
 		map.addControl(new GLargeMapControl());
 		map.addControl(new GMapTypeControl());
 	
-		gc = new gcGrid(map, "{/literal}{$geocubes_api_key}{literal}");
-
 	//
 		var mapType = G_PHYSICAL_MAP;
 		var newZoom = 6;
 		var center = new GLatLng(54.55,-3.88);
+		
+		var filter = false;
 		
 		if (location.hash.length) {
 			// If there are any parameters at the end of the URL, they will be in location.search
@@ -53,7 +53,6 @@
 			var query = location.hash.substring(1);
 
 			var pairs = query.split("&");
-			var filter = false;
 			for (var i=0; i<pairs.length; i++) {
 				// break each pair at the first "=" to obtain the argname and value
 				var pos = pairs[i].indexOf("=");
@@ -76,9 +75,6 @@
 				if (argname == "u") {document.theForm.elements['user_id'].value = decodeURI(value); filter = true;}
 				if (argname == "c") {document.theForm.elements['imageclass'].value = decodeURI(value); filter = true;}
 			}
-			if (filter) {
-				updateFilters(document.theForm);
-			}
 		}
 
 		map.setCenter(center, newZoom, mapType);
@@ -89,6 +85,8 @@
 	
 	
 	// 
+		gc = new gcGrid(map, "{/literal}{$geocubes_api_key}{literal}");
+
 		gc.setOption(GC_OP_DEBUG, 1);
 		gc.setOption(GC_OP_CLUSTERCOUNT, 1);
 
@@ -124,6 +122,10 @@
 			var myHtml = "<b><a href='/photo/" + point_id + "' target='_blank'>" + freetext + "</a></b><br/><br/><a href='/profile/" + opt_field1 + "' target='_blank'>User Profile</a>";
 			map.openInfoWindowHtml(marker.getLatLng(),myHtml);
 		});
+
+		if (filter) {
+			updateFilters(document.theForm);
+		}
 
 		gc.enableRenderGrid();
 
