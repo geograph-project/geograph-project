@@ -13,7 +13,7 @@
 
 	<div style="float:left;position:relative;padding:10px;">
 	User ID:<br/> <input type="text" name="user_id" value="" id="user_id" size="3"/><br/>
-	<small>(Example: <tt>{$user->user_id|default:123}{literal}</tt>)</small>
+	<small>(Example: <tt>{dynamic}{$user->user_id|default:123}{/dynamic}</tt>)</small>
 	</div>
 
 	<div style="float:left;position:relative;padding:10px;">
@@ -89,6 +89,7 @@
 	// 
 		gc = new gcGrid(map, "{/literal}{$geocubes_api_key}{literal}");
 
+		gc.setOption(GC_OP_DEBUG, 1);
 		gc.setOption(GC_OP_CLUSTERCOUNT, 1);
 
 		gc.setIcon(GC_IC_CLUSTERMOUSEOVER, 0);
@@ -139,11 +140,13 @@
 
 		gc.releaseFilters();
 		var render = false;
-		var filterUrl = '';
+		filterUrl = '';
 
 		if (f.q.value != '') {
 			gc.textFilter (f.q.value);
 			filterUrl = filterUrl + "&q=" + encodeURIComponent(f.q.value);
+		} else {
+			gc.textFilterRelease();
 		}
 
 		if (f.user_id.value != '') {
