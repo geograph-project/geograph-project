@@ -143,12 +143,12 @@
 
 		if (f.q.value != '') {
 			gc.textFilter (f.q.value);
-			filterUrl = filterUrl + "&q=".encodeURIComponent(f.q.value);
+			filterUrl = filterUrl + "&q=" + encodeURIComponent(f.q.value);
 		}
 
 		if (f.user_id.value != '') {
 			gc.andFilter (GC_FD1, GC_EQ, parseInt(f.user_id.value,10));
-			filterUrl = filterUrl + "&u=".parseInt(f.user_id.value,10);
+			filterUrl = filterUrl + "&u=" + parseInt(f.user_id.value,10);
 		}
 
 		if (filterUrl.length > 0) {
