@@ -38,8 +38,10 @@
 		map.addControl(new GLargeMapControl());
 		map.addControl(new GMapTypeControl());
 	
+		gc = new gcGrid(map, "{/literal}{$geocubes_api_key}{literal}");
+
 	//
-		var mapType = G_NORMAL_MAP;
+		var mapType = G_PHYSICAL_MAP;
 		var newZoom = 6;
 		var center = new GLatLng(54.55,-3.88);
 		
@@ -87,8 +89,6 @@
 	
 	
 	// 
-		gc = new gcGrid(map, "{/literal}{$geocubes_api_key}{literal}");
-
 		gc.setOption(GC_OP_DEBUG, 1);
 		gc.setOption(GC_OP_CLUSTERCOUNT, 1);
 
