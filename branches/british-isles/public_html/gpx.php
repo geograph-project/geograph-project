@@ -94,9 +94,11 @@ if (isset($_GET['id']))  {
 				
 		$type=(isset($_REQUEST['type']))?stripslashes($_REQUEST['type']):'few';
 		switch($type) {
-			case 'with': $typename = 'with'; $crit = 'imagecount>0'; break;
-			case 'few': $typename = 'with few'; $crit = 'imagecount<2 and (percent_land > 0 || imagecount>1)'; break;
-			default: $type = $typename = 'without'; $crit = 'imagecount=0 and percent_land > 0'; break;
+			case 'withgeos': $typename = 'with geographs'; $crit = 'has_geographs>0'; break;
+			case 'with': $typename = 'with photographs'; $crit = 'imagecount>0'; break;
+			case 'few': $typename = 'with few photographs'; $crit = 'imagecount<2 and (percent_land > 0 || imagecount>1)'; break;
+			case 'nogeos': $typename = 'without geographs'; $crit = 'has_geographs=0 and percent_land > 0'; break;
+			default: $type 'without'; $typename = 'without photographs'; $crit = 'imagecount=0 and percent_land > 0'; break;
 		}
 	
 		$square=new GridSquare;
@@ -117,7 +119,7 @@ if (isset($_GET['id']))  {
 			//regenerate?
 			if (!$smarty->is_cached($template, $cacheid))
 			{
-				$searchdesc = "squares within {$d}km of {$square->grid_reference} $typename photographs";
+				$searchdesc = "squares within {$d}km of {$square->grid_reference} $typename";
 				
 				$x = $square->x;
 				$y = $square->y;
