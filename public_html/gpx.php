@@ -98,7 +98,7 @@ if (isset($_GET['id']))  {
 			case 'with': $typename = 'with photographs'; $crit = 'imagecount>0'; break;
 			case 'few': $typename = 'with few photographs'; $crit = 'imagecount<2 and (percent_land > 0 || imagecount>1)'; break;
 			case 'nogeos': $typename = 'without geographs'; $crit = 'has_geographs=0 and percent_land > 0'; break;
-			default: $type 'without'; $typename = 'without photographs'; $crit = 'imagecount=0 and percent_land > 0'; break;
+			default: $type = 'without'; $typename = 'without photographs'; $crit = 'imagecount=0 and percent_land > 0'; break;
 		}
 	
 		$square=new GridSquare;
