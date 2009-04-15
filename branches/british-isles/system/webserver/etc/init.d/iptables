@@ -47,6 +47,10 @@ iptables -A OUTPUT -d 87.124.24.35 -p udp -m udp --dport 137 -j ACCEPT
 iptables -A OUTPUT -d 87.124.24.35 -p udp -m udp --dport 138 -j ACCEPT
 iptables -A OUTPUT -d 87.124.24.35 -p tcp -m tcp --dport 139 -j ACCEPT
 
+iptables -A OUTPUT -d 192.168.77.35 -p udp -m udp --dport 137 -j ACCEPT
+iptables -A OUTPUT -d 192.168.77.35 -p udp -m udp --dport 138 -j ACCEPT
+iptables -A OUTPUT -d 192.168.77.35 -p tcp -m tcp --dport 139 -j ACCEPT
+
 #ntp
 iptables -A OUTPUT -p udp --dport 123 -j ACCEPT
 
@@ -54,12 +58,20 @@ iptables -A OUTPUT -p udp --dport 123 -j ACCEPT
 iptables -A OUTPUT -d 87.124.24.35 -p tcp --dport 3306 -j ACCEPT
 iptables -A OUTPUT -d 87.124.24.34 -p tcp --dport 3306 -j ACCEPT
 
+iptables -A OUTPUT -d 192.168.77.35 -p tcp --dport 3306 -j ACCEPT
+iptables -A OUTPUT -d 192.168.77.34 -p tcp --dport 3306 -j ACCEPT
+
 #nfs to jam (well, anything to jam really)
 iptables -A OUTPUT -d 87.124.24.35 -p tcp -j ACCEPT
 iptables -A OUTPUT -d 87.124.24.35 -p udp -j ACCEPT
 
+iptables -A OUTPUT -d 192.168.77.35 -p tcp -j ACCEPT
+iptables -A OUTPUT -d 192.168.77.35 -p udp -j ACCEPT
+
 #memcache
 iptables -A OUTPUT -p tcp -s 87.124.24.32/23 --dport 11211 -j ACCEPT
+
+iptables -A OUTPUT -p tcp -s 192.168.77.32/23 --dport 11211 -j ACCEPT
 
 
 #--------------------------------
@@ -92,9 +104,12 @@ iptables -A INPUT -p icmp -j ACCEPT
 #munin
 iptables -A INPUT -p tcp -s 87.124.24.32/23 --dport 4949 -j ACCEPT
 
+iptables -A INPUT -p tcp -s 192.168.77.32/23 --dport 4949 -j ACCEPT
+
 #memcache
 iptables -A INPUT -p tcp -s 87.124.24.32/23 --dport 11211 -j ACCEPT
 
+iptables -A INPUT -p tcp -s 192.168.77.32/23 --dport 11211 -j ACCEPT
 
 #--------------------------------
 # restricted ports
