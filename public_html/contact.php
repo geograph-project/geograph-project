@@ -86,6 +86,18 @@ if (isset($_REQUEST['referring_page']))
 elseif (isset($_SERVER['HTTP_REFERER']))
 	$referring_page=$_SERVER['HTTP_REFERER'];
 	
+if (preg_match("/photo\/(\d+)/",$referring_page,$m)) {
+
+	require_once('geograph/gridsquare.class.php');
+	require_once('geograph/gridimage.class.php');
+
+	$image=new GridImage();
+	$image->loadFromId($m[1]);
+	
+	$smarty->assign_by_ref('image', $image);
+}
+	
+	
 $smarty->assign('referring_page',$referring_page);
 	
 $smarty->display('contact.tpl');

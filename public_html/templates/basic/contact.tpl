@@ -6,19 +6,39 @@
 	<h3>Thank you for contacting the Geograph British Isles team.</h3>
 	<p>Your message has been sent - you should hear back from us soon.</p>
 {else}
-    <h2>Contact Geograph Developers</h2>
+    <h2>Contact Us</h2>
 
-  <br/><br/>
+{if !$user->registered}
+	{if $image}
+	    <form onsubmit="return false" action="#" style="text-align:center; background-color:#f9f9f9">
+		<hr/><br/>
+		First we just need to clarify who you would like to contact, please click one:
 
-	<div class="interestBox" style="border:3px solid yellow;padding:20px;text-align:center;background-color:#eeeeee">
-	 We do <b>not represent the locations</b> our <i>contributors</i> have photographed <br/> and submitted in our mission to collect<br/>
- <span style="color:blue">geographically representative photographs and information for <br/><b>every square kilometre of Great Britain and Ireland</b></span>.
-<small><br/><br/>You can read about the project on Wikipedia: {external href="http://en.wikipedia.org/wiki/Geograph_British_Isles" text="Geograph British Isles"},<br/> please do make sure you really do mean to contact us before using the form below.</small>
+		<br/><br/><br/>
 
-	</div>
-  <br/><br/><br/>
+		<button style="font-size:1.1em" onclick="alert('********************************\n\nSorry we do NOT represent the locations\n\n our contributors have photographed.\n\n********************************\n\nAnd therefore probably unable to help with your enquiry.\n\nYou will be returned to the photo page.'); history.go(-1)">I'm trying to contact <b>{$image->title|escape:'html'}</b></button><br/><br/>
+
+		<button onclick="alert('We provide a form for this purpose, click OK to go there...');location.href='/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}';">I'm trying to contact the photographer of <b>{$image->grid_reference|escape:'html'} :: {$image->title|escape:'html'}</b></button><br/> (image id <tt>{$image->gridimage_id}</tt>) by <a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">{$image->realname|escape:'html'}</a> <br/><br/>
+
+		<button style="font-size:1.1em"  onclick="alert('Congratualations, you\'ve come to the right place, please use the form below!')">The developers of the Geograph Project website</button><br/><br/>
+
+		<br/><hr/>
+	    </form>
+	  <br/><br/><br/><br/><br/>
+	{else}
+	  <br/>
+
+		<div class="interestBox" style="border:3px solid yellow;padding:20px;text-align:center;background-color:#eeeeee">
+		 We do <b>not represent the locations</b> our <i>contributors</i> have photographed <br/> and submitted in our mission to collect<br/>
+	 <span style="color:blue">geographically representative photographs and information for <br/><b>every square kilometre of Great Britain and Ireland</b></span>.
+	<small><br/><br/>You can read about the project on Wikipedia: {external href="http://en.wikipedia.org/wiki/Geograph_British_Isles" text="Geograph British Isles"},<br/> please do make sure you really do mean to contact us before using the form below.</small>
+
+		</div>
+	  <br/>
+	{/if}
+{/if}
  
- 	<p>Got something to tell the Geograph developers? Then fire away - we try to respond within 24 hours, often much quicker.</p>
+  <p><b>Got something to tell the Geograph developers?</b> Then fire away - we try to respond within 24 hours, often much quicker.</p>
   <br/>
  
     <form action="contact.php" method="post">
@@ -36,7 +56,7 @@
 	<textarea id="msg" name="msg" rows="10" cols="50">{$msg|escape:'html'}</textarea>
     	<br /><span class="formerror">{$msg_error}</span> 
     <br />
-        <small style="font-size:0.9em">If you are writing in relation to a particular image, please be specific as to which image you are referring! Please copy &amp; paste a link to the photo page.</small><br /><br />
+        <small style="font-size:0.9em">If you are writing in relation to a particular image, please be specific as to which image you are referring!<br/> Please copy &amp; paste a link (from your browser address bar) to the photo page.</small><br /><br />
 
     
     <input type="submit" name="send" value="Send"/></p>
