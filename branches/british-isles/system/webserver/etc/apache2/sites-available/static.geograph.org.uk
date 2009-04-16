@@ -39,6 +39,20 @@
 
     RewriteRule ^/(.*)\.v[0-9]+\.(css|js)$ /staticfile.php [qsa,L]
 
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?myspace\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?facebook\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?blogspot\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?livejournal\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?28dayslater\.co\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?keyhole\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?hbwalkersaction\.org\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?secretscotland\.org\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?phlap\.net/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?valendale\.myby\.co\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?youtube\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} (thread|topic|forum|blog) [NC]    
+    RewriteRule /(geo|)photos/\d.*\.jpg$ http://s9.geograph.org.uk$0 [R=307,L]
+
     ErrorDocument 404 /error.php
     ErrorDocument 403 /error.php
 
