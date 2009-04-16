@@ -494,3 +494,15 @@ alter table mapcache add key (map_x,map_y);
 |  1 | SIMPLE      | mapcache | range | PRIMARY,map_x | map_x | 4       | NULL | 28193 | Using where |
 +----+-------------+----------+-------+---------------+-------+---------+------+-------+-------------+
 */
+
+
+
+CREATE TABLE  `gridimage_size` (
+ `gridimage_id` INT UNSIGNED NOT NULL ,
+ `width` SMALLINT UNSIGNED NOT NULL ,
+ `height` SMALLINT UNSIGNED NOT NULL ,
+PRIMARY KEY (  `gridimage_id` )
+) ENGINE = MYISAM ;
+
+
+
