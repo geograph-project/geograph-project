@@ -633,7 +633,6 @@ class GridImage
 			return $this->fullpath;
 		}
 		
-		$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
 		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
 		$abcdef=sprintf("%06d", $this->gridimage_id);
@@ -641,6 +640,7 @@ class GridImage
 		if ($this->gridimage_id<1000000) {
 			$fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}.jpg";
 		} else {
+			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
 			$fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}.jpg";
 		}
 		$ok=file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath);
@@ -712,8 +712,18 @@ class GridImage
 			//fails quickly if not using memcached!
 			$size =& $memcache->name_get('is',$mkey);
 			if (!$size) {
-				$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
-			
+				$db=&$this->_getDB();
+				
+				$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
+				$size = $db->getRow("select width,height from gridimage_size where gridimage_id = {$this->gridimage_id}");
+				$db->SetFetchMode($prev_fetch_mode);
+				$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
+
+				if (!$size) {
+					$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
+				
+					$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]}");
+				}
 				//fails quickly if not using memcached!
 				$memcache->name_set('is',$mkey,$places,$memcache->compress,$memcache->period_long);
 			}
@@ -726,9 +736,9 @@ class GridImage
 		$title=htmlentities2($this->title);
 		
 		if (!empty($CONF['curtail_level']) && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
-			$fullpath = cachize_url("http://".$CONF['CONTENT_HOST'].$fullpath);
+			$fullpath = cachize_url("http://".$CONF['STATIC_HOST'].$fullpath);
 		} elseif ($returntotalpath)
-			$fullpath="http://".$CONF['CONTENT_HOST'].$fullpath;
+			$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
 		
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
 		
@@ -753,8 +763,21 @@ class GridImage
 		//fails quickly if not using memcached!
 		$size =& $memcache->name_get('is',$mkey);
 		if (!$size) {
-			$fullpath=$this->_getFullpath();
-			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
+			$db=&$this->_getDB();
+			if ($this->gridimage_id) {
+				$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
+				$size = $db->getRow("select width,height from gridimage_size where gridimage_id = {$this->gridimage_id}");
+				$db->SetFetchMode($prev_fetch_mode);
+			}
+			
+			if (!$size) {
+				$fullpath=$this->_getFullpath();
+				$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
+				
+				if ($this->gridimage_id) {
+					$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]}");
+				}
+			}
 			
 			//fails quickly if not using memcached!
 			$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long);
@@ -1051,6 +1074,32 @@ class GridImage
 		$mkey = "{$this->gridimage_id}:{$maxw}x{$maxh}";
 		//fails quickly if not using memcached!
 		$size =& $memcache->name_get('is',$mkey);
+		if (!$size && file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath)) {
+			$db=&$this->_getDB();
+			$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
+			$size = $db->getRow("select width,height from gridimage_size where gridimage_id = {$this->gridimage_id}");
+			$db->SetFetchMode($prev_fetch_mode);
+
+			if ($size) {
+				//figure out size of image we'll keep
+				if ($size[0]>$size[1])
+				{
+					//landscape
+					$destw=$maxw;
+					$desth=round(($destw * $size[1])/$size[0]);
+				}
+				else
+				{
+					//portrait
+					$desth=$maxh;
+					$destw=round(($desth * $size[0])/$size[1]);
+					print "$destw=round(($desth * {$size[0]})/{$size[1]})";
+				}
+				$size[0] = $destw; 
+				$size[1] = $desth;
+				$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
+			}
+		}
 		if ($size) {
 			$return=array();
 			$return['url']=$thumbpath;
