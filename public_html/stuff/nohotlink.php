@@ -85,8 +85,8 @@ if (empty($_SERVER["PATH_INFO"])) {
 }
 
 if ( (preg_match('/thread|topic|forum|28dayslater|secretscotland|geograph\.org\.uk|hbwalkersaction/',$_SERVER['HTTP_REFERER']) || !empty($_SERVER["PATH_INFO"]))
-	&& (preg_match('/^\/photos\/\d+\/\d+\/\d{1,6}_(\w+)\.jpg$/',$filename,$m) || preg_match('/^\/geophotos\/\d+\/\d+\/\d+\/\d{1,6}_(\w+)\.jpg$/',$filename,$m) )
-	&& strpos($m[1],'_') === FALSE && file_exists($_SERVER['DOCUMENT_ROOT'].$filename)) {
+	&& preg_match('/^\/(geo|)photos\/(\d+\/|)\d+\/\d+\/\d{6,}_(\w+)\.jpg$/',$filename,$m) 
+	&& strpos($m[3],'_') === FALSE && file_exists($_SERVER['DOCUMENT_ROOT'].$filename)) {
 	$fullimg = imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$filename); 
 	$fullw=imagesx($fullimg);
 	$fullh=imagesy($fullimg);
