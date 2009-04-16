@@ -4,21 +4,19 @@
     ServerAlias s1.www.geograph.org.uk
     ServerAlias s2.www.geograph.org.uk
     ServerAlias s3.www.geograph.org.uk
-    ServerAlias s9.www.geograph.org.uk
     ServerAlias s0.geograph.org.uk
     ServerAlias s1.geograph.org.uk
     ServerAlias s2.geograph.org.uk
     ServerAlias s3.geograph.org.uk
-    ServerAlias s9.geograph.org.uk
     ServerAlias cluster3.geograph.org.uk
     ServerAlias s0.www.scone.geograph.org.uk
     ServerAlias s0.www.toast.geograph.org.uk
     ServerAlias s0.www.crumpet.geograph.org.uk
 
-    #create logformat like combined but with our user id and script timing
-    LogFormat "%{X-Forwarded-For}i %l %{user_id}n %t \"%r\" \"%v\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{php_timing}n" geograph
+    #create logformat like combined but with x-forwarded-for
+    LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" \"%v\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" geograph_static
 
-    CustomLog /var/www/geograph_static/logs/access_log geograph
+    CustomLog /var/www/geograph_static/logs/access_log geograph_static
     ErrorLog /var/www/geograph_static/logs/error_log
 
     <Directory /var/www/geograph_static/public_html/>

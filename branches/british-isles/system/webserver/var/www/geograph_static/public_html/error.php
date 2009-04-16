@@ -20,13 +20,6 @@ if (preg_match('/^\/photos\/(\d{2,3})\/(\d{2})\/\d{6,7}_(\w+)\.jpg$/',$p,$m)
 #http://s1.www.geograph.org.uk/geophotos/01/50/64/506453_c5b9915b_120x120.jpg
 	|| preg_match('/^\/geophotos\/(\d{2})\/(\d{2})\/(\d{2})\/\d{6,}_(\w+)\.jpg$/',$p,$m) ) {
 
-	
-
-
-#	#give them something quick 
-#	header("HTTP/1.1 302 Found");
-#	header("Location: http://www.geograph.org.uk$p");
-#	#but lets cache it for next time.
 
 	if (!empty($m[4])) {
 		$base=$_SERVER['DOCUMENT_ROOT'].'/geophotos';
@@ -46,15 +39,9 @@ if (preg_match('/^\/photos\/(\d{2,3})\/(\d{2})\/\d{6,7}_(\w+)\.jpg$/',$p,$m)
 	}
 
 
-	if (preg_match('/_\d+(x|XX)\d+$/',$m[3])) { 
-		#the -p is important to maintain the mod date
-		system("cp -p /var/www/geograph_live/public_html$p .$p");
-	} else {
-		#but here touch isnt wanted as want to mark it as a different file
-		$data = file_get_contents("http://www.geograph.org.uk/stuff/nohotlink.php$p");
-		file_put_contents('.'.$p,$data);
-	}
-
+	#the -p is important to maintain the mod date
+	system("cp -p /var/www/geograph_live/public_html$p .$p");
+	
 	$size=filesize('.'.$p);
 	if (!$size) {	
 		header("HTTP/1.1 503 Service Unavailable");
