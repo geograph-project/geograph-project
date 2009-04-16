@@ -1093,7 +1093,6 @@ class GridImage
 					//portrait
 					$desth=$maxh;
 					$destw=round(($desth * $size[0])/$size[1]);
-					print "$destw=round(($desth * {$size[0]})/{$size[1]})";
 				}
 				$size[0] = $destw; 
 				$size[1] = $desth;
