@@ -51,7 +51,7 @@
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?valendale\.myby\.co\.uk/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?youtube\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} (thread|topic|forum|blog) [NC]    
-    RewriteRule /(geo|)photos/\d.*\.jpg$ http://s9.geograph.org.uk$0 [R=307,L]
+    RewriteRule /(geo|)photos/\d.*\d{6}_\w{8}\.jpg$ http://s9.geograph.org.uk$0 [R=307,L]
 
     ErrorDocument 404 /error.php
     ErrorDocument 403 /error.php
