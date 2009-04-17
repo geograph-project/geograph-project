@@ -30,7 +30,7 @@
 
 {elseif $confirmation_status eq "fail"}
 	<p>Sorry, there was a problem confirming your registration.
-	Please <a href="contact.php">contact us</a> if the problem persists.</p>
+	Please <a href="/contact.php">contact us</a> if the problem persists.</p>
 {else}
 
 	<form action="register.php" method="post">

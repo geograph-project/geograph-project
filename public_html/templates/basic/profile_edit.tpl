@@ -233,6 +233,15 @@
 
 
 <div class="field"> 
+	<label for="expand_about" class="nowrap">Expand Profile Pages</label>
+	
+	<input type="checkbox" name="expand_about" id="expand_about"{if $profile->expand_about} checked="checked"{/if} value="1"/>
+	
+	<div class="fieldnotes">Show the full expanded 'About Me' box when viewing other's profile, otherwise can click to expand an individual profile.</div>
+</div>
+
+
+<div class="field"> 
 	<label for="ticket_public" class="nowrap">Ticket Anonymity</label>
 	
 	<select name="ticket_public" id="ticket_public">
