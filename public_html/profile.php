@@ -295,21 +295,21 @@ if ($template=='profile.tpl')
 	}
 }
 
-function smarty_function_TruncateWithExpand($input) {
+function smarty_function_TruncateWithExpand($input,$more) {
 	
-	if (strlen($input) > 250 && empty($_GET['expand'])) {
+	if (strlen($input) > 300 && empty($_GET['expand'])) {
 	
 		if (strpos($input,'[--more--]') !== FALSE) {
 			$bits = explode('[--more--]',$input,2);
 			$input = $bits[0];
 		} else {
-			preg_match('/^(.{250,}?)\b/s',$input,$m);
+			preg_match('/^(.{300,}?)\b/s',$input,$m);
 			$input = $m[1];
 			if (!preg_match("/[\.\n]+\$/",$input)) {
 				$input .= " ...";
 			}
 		}
-		$input .= "<div align=\"right\"><a href=\"?expand=1\"><b>more</b>...</a></div>";
+		$input .= "<div align=\"right\"><a href=\"?expand=1\">$more</a></div>";
 	}
 	
 	return $input;

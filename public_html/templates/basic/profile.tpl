@@ -99,8 +99,8 @@
 
 {if $profile->about_yourself && $profile->public_about}
 	<div class="caption" style="background-color:#dddddd; padding:10px;">
-	<h3 style="margin-top:0px;margin-bottom:0px">More about me</h3>
-	{$profile->about_yourself|TruncateWithExpand|nl2br|GeographLinks:true}</div>
+	<h3 style="margin-top:0px;margin-bottom:0px">About Me</h3>
+	{$profile->about_yourself|TruncateWithExpand:'(<small>this is a content preview only</small>) <big>Click here to <b>Read More</b></big>...'|nl2br|GeographLinks:true}</div>
 {/if}
 
 {if $user->user_id eq $profile->user_id}
