@@ -725,7 +725,7 @@ class GridImage
 					$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]}");
 				}
 				//fails quickly if not using memcached!
-				$memcache->name_set('is',$mkey,$places,$memcache->compress,$memcache->period_long);
+				$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long);
 			}
 			$this->cached_size = $size;
 		} else {
