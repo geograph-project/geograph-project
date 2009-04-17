@@ -85,6 +85,41 @@ if (isset($_REQUEST['edit']))
 	$profile->md5_email = md5(strtolower($profile->email));
 	
 	$smarty->assign_by_ref('profile', $profile);	
+} 
+elseif (isset($_REQUEST['notifications']))
+{
+	//must be logged in to proceed with an edit
+	$USER->login();
+
+	$template='profile_notifications.tpl';
+
+	//save changes?
+	if (isset($_POST['savechanges']))
+	{
+		
+	} 
+	else
+	{
+		$profile=new GeographUser($USER->user_id);
+		
+		$db = NewADOConnection($GLOBALS['DSN']);
+		if (!$db) die('Database connection failed');  
+
+		$subs = $db->getAll("select topic_id,topic_title from geobb_send_mails Ts inner join geobb_topics Tt using (topic_id) where user_id = {$USER->user_id}");		
+		$smarty->assign_by_ref("subs",$subs);
+		$smarty->assign("sub_count",count($subs));
+		
+		$arr = array('general','test');
+		
+		$n = array();
+		foreach($arr as $idx => $key) {
+			$n[$key] = 'checked="checked"';
+		}
+		
+		$smarty->assign_by_ref("notification",$n);
+		
+	}
+
 }
 
 
@@ -174,6 +209,9 @@ if ($template=='profile.tpl')
 		$limit = 100;
 	}
 	$cacheid.="_$limit";
+	if (!empty($_GET['expand'])) {
+		$cacheid .= "E";
+	}
 
 	if (!$smarty->is_cached($template, $cacheid))
 	{
@@ -256,6 +294,28 @@ if ($template=='profile.tpl')
 		$smarty->assign_by_ref('profile', $profile);
 	}
 }
+
+function smarty_function_TruncateWithExpand($input) {
+	
+	if (strlen($input) > 250 && empty($_GET['expand'])) {
+	
+		if (strpos($input,'[--more--]') !== FALSE) {
+			$bits = explode('[--more--]',$input,2);
+			$input = $bits[0];
+		} else {
+			preg_match('/^(.{250,}?)\b/s',$input,$m);
+			$input = $m[1];
+			if (!preg_match("/[\.\n]+\$/",$input)) {
+				$input .= " ...";
+			}
+		}
+		$input .= "<div align=\"right\"><a href=\"?expand=1\"><b>more</b>...</a></div>";
+	}
+	
+	return $input;
+}
+$smarty->register_modifier("TruncateWithExpand", "smarty_function_TruncateWithExpand");
+
 
 if (!empty($_GET['a']))
 	$smarty->assign('credit_realname', $_GET['a']);
