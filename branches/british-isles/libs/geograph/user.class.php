@@ -784,6 +784,7 @@ class GeographUser
 				ticket_public=%s,
 				ticket_option=%s,
 				message_sig=%s,
+				expand_about=%d,
 				password=%s
 				where user_id=%d",
 				$db->Quote($profile['realname']),
@@ -800,6 +801,7 @@ class GeographUser
 				$db->Quote($profile['ticket_public']),
 				$db->Quote($profile['ticket_option']),
 				$db->Quote(stripslashes($profile['message_sig'])),
+				$db->Quote(intval($profile['expand_about'])),
 				$db->Quote($password),
 				$this->user_id
 				);
