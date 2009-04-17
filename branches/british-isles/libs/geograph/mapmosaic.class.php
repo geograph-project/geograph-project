@@ -907,7 +907,7 @@ class GeographMapMosaic
 
 		$this->setScale($scale);
 		$this->setMosaicFactor(2);
-		$this->setAlignedOrigin($bestoriginx, $bestoriginy);
+		$this->setAlignedOrigin($bestoriginx, $bestoriginy,true);
 	}
 
 	/**
