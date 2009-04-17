@@ -311,6 +311,8 @@ function smarty_function_TruncateWithExpand($input,$more) {
 			}
 		}
 		$input .= "<div align=\"right\"><a href=\"?expand=1\">$more</a></div>";
+	} else {
+		$input = str_replace('[--more--]',' ',$input);
 	}
 	
 	return $input;
