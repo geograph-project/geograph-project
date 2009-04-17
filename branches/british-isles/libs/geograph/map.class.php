@@ -512,11 +512,11 @@ class GeographMap
 		} else if ($this->type_or_user < 0) {
 	
 	
-	#TEMPORYAY
+	#GROUP DEPTH - (via gridimage_group/gridsquare_group_count) 
 			if ($this->type_or_user == -3) {
 				$ok = $this->_renderDepthImage();
 				
-	#TEMPORYAY
+	#MAP FIXING ACTIVITY  (via mapfix_log) 
 			} elseif ($this->type_or_user == -4) {
 				$ok = $this->_renderImage();
 				
@@ -836,26 +836,65 @@ class GeographMap
 				$sql = "select 0 limit 0";
 			} elseif ($this->type_or_user == -4) {
 				//todo doesnt use the where clause!
-				$sql="select x,y,gridsquare_id,max(created) > date_sub(now(),interval 30 day) as has_geographs from gridsquare3
+				$sql="select x,y,max(created) > date_sub(now(),interval 30 day) as has_geographs from gridsquare3
 					inner join mapfix_log using (gridsquare_id)  
 					group by gridsquare_id";
 			} else {
-				$sql="select x,y,grid_reference,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where 
-					CONTAINS( GeomFromText($rectangle),	point_xy) and
-					user_id = {$this->type_or_user} group by grid_reference";
+				if ($this->pixels_per_km<40) {
+					$sql="select x,y,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where 
+						CONTAINS( GeomFromText($rectangle),	point_xy) and
+						user_id = {$this->type_or_user} group by x,y";
+				} else {
+					$table = "gi".md5($rectangle);
+					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
+						SELECT gridimage_id,grid_reference,x,y FROM gridimage_search WHERE 
+						CONTAINS( GeomFromText($rectangle),	point_xy) AND user_id = {$this->type_or_user}
+						ORDER BY moderation_status+0 DESC,seq_no";
+					$db->Execute($sql);
+
+					$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y),ADD UNIQUE (gridimage_id)";
+					$db->Execute($sql);
+					
+					//if the image is a sup then there cant be any geos, due to sort order!
+					$sql="SELECT x,y,(moderation_status = 'geograph') as has_geographs,{$this->type_or_user} as user_id,gridimage_id
+						FROM gridsquare 
+						INNER JOIN $table USING (grid_reference)
+						WHERE 
+							CONTAINS( GeomFromText($rectangle),	point_xy)";
+				}
 			}
 		} else {
 			$number = !empty($this->minimum)?intval($this->minimum):0;
-			$sql="select x,y,gridsquare_id,has_geographs from gridsquare where 
-				CONTAINS( GeomFromText($rectangle),	point_xy)
-				and imagecount>$number";
-		}
+			if ($this->pixels_per_km<40) {
+				$sql="select x,y,gridsquare_id,has_geographs from gridsquare where 
+					CONTAINS( GeomFromText($rectangle),	point_xy)
+					and imagecount>$number";
+			} else {
+				$table = "gi".md5($rectangle);
+				$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
+					SELECT gridimage_id,grid_reference,user_id,x,y FROM gridimage_search WHERE 
+					CONTAINS( GeomFromText($rectangle),	point_xy)
+					ORDER BY moderation_status+0 DESC,seq_no";
+				$db->Execute($sql);
 
+				$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y),ADD UNIQUE (gridimage_id)";
+				$db->Execute($sql);
+				
+				$sql="SELECT x,y,has_geographs,user_id,gridimage_id
+				FROM gridsquare 
+				INNER JOIN $table USING (grid_reference)
+				WHERE 
+					CONTAINS( GeomFromText($rectangle),	point_xy)
+					AND imagecount>$number";
+			}
+		}
+		$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_ASSOC);
 		$recordSet = &$db->Execute($sql);
+		$db->SetFetchMode($prev_fetch_mode);
 		while (!$recordSet->EOF) 
 		{
-			$gridx=$recordSet->fields[0];
-			$gridy=$recordSet->fields[1];
+			$gridx=$recordSet->fields['x'];
+			$gridy=$recordSet->fields['y'];
 
 			$imgx1=($gridx-$left) * $this->pixels_per_km;
 			$imgy1=($this->image_h-($gridy-$bottom+1)* $this->pixels_per_km);
@@ -866,7 +905,7 @@ class GeographMap
 			$imgx2=$imgx1 + $this->pixels_per_km;
 			$imgy2=$imgy1 + $this->pixels_per_km;
 				
-			$color = ($recordSet->fields[3])?$colMarker:$colSuppMarker;	
+			$color = ($recordSet->fields['has_geographs'])?$colMarker:$colSuppMarker;
 				
 			//if less than 1 pixel per km, use our aliasing scheme	
 			if ($this->pixels_per_km<1)
@@ -892,51 +931,31 @@ class GeographMap
 				//nice large marker
 				imagefilledrectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $color);
 			}
-			else
+			elseif ($recordSet->fields['gridimage_id']) 
 			{
 				//thumbnail
-				if (!empty($this->type_or_user)) {
-					$grid_reference=$recordSet->fields[2];
-			
-					$sql="select * from gridimage_search where grid_reference='$grid_reference' 
-					and user_id = {$this->type_or_user} order by moderation_status+0 desc,seq_no limit 1";
-				} else {
-					$gridsquare_id=$recordSet->fields[2];
-			
-					$sql="select * from gridimage where gridsquare_id=$gridsquare_id 
-					and moderation_status in ('accepted','geograph') order by moderation_status+0 desc,seq_no limit 1";
-				
-				}
-				
-				//echo "$sql\n";	
-				$rec=$dbImg->GetRow($sql);
-				if (count($rec))
+
+				$gridimage=new GridImage;
+				$gridimage->fastInit($recordSet->fields);
+
+				$photo=$gridimage->getSquareThumb($this->pixels_per_km);
+				if (!is_null($photo))
 				{
-					$gridimage=new GridImage;
-					$gridimage->fastInit($rec);
+					imagecopy ($img, $photo, $imgx1, $imgy1, 0,0, $this->pixels_per_km,$this->pixels_per_km);
+					imagedestroy($photo);
 
-					$photo=$gridimage->getSquareThumb($this->pixels_per_km);
-					if (!is_null($photo))
-					{
-						imagecopy ($img, $photo, $imgx1, $imgy1, 0,0, $this->pixels_per_km,$this->pixels_per_km);
-						imagedestroy($photo);
+				//	imagerectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $colBorder);
+				//	imagerectangle ($img, $imgx1+1, $imgy1+1, $imgx2-1, $imgy2-1, $colBorder);
 
-					//	imagerectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $colBorder);
-					//	imagerectangle ($img, $imgx1+1, $imgy1+1, $imgx2-1, $imgy2-1, $colBorder);
-
-						if (!$recordSet->fields[3]) {
-							imagefilledrectangle ($img, $imgx1+2, $imgy1-4, $imgx1+6, $imgy1-6, $colSuppMarker);
-							imagefilledrectangle ($img, $imgx1+3, $imgy1-3, $imgx1+5, $imgy1-7, $colSuppMarker);
-						}
-					} else {
-						$ok = false;
+					if (!$recordSet->fields['has_geographs']) {
+						imagefilledrectangle ($img, $imgx1+2, $imgy1-4, $imgx1+6, $imgy1-6, $colSuppMarker);
+						imagefilledrectangle ($img, $imgx1+3, $imgy1-3, $imgx1+5, $imgy1-7, $colSuppMarker);
 					}
-
-
+				} else {
+					$ok = false;
 				}
 
 			}
-			
 			
 			
 			$recordSet->MoveNext();
@@ -1267,7 +1286,7 @@ class GeographMap
 				group by gi.gridsquare_id ";
 		
 		} else {
-			$sql="select x,y,sum(submitted > '$mapDateCrit')
+			$sql="select x,y,sum(submitted > '{$this->mapDateCrit}')
 				from 
 				gridsquare gs 
 				inner join gridimage gi using(gridsquare_id)
@@ -1809,7 +1828,7 @@ END;
 		//plot the number labels
 		if ($this->pixels_per_km >= 40) {
 			$gridref = $this->getGridRef(0, $this->image_h); //origin of image is tl, map is bl
-			if (preg_match('/^([A-Z]{1,2})(\d\d)(\d\d)$/',$gridref, $matches))
+			if (preg_match('/^([A-Z]{1,3})(\d\d)(\d\d)$/',$gridref, $matches))
 			{
 				$gridsquare=$matches[1];
 				$eastings=$matches[2];
@@ -1886,35 +1905,54 @@ END;
 		$scantop=$top+$overscan;
 		
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
-		if (!empty($this->type_or_user) && $this->type_or_user > 0) {
-			$where_crit = " and gi2.user_id = {$this->type_or_user}";
-			$where_crit2 = " and gi.user_id = {$this->type_or_user}";
-			$columns = ", sum(moderation_status='geograph') as has_geographs, sum(moderation_status IN ('accepted','geograph')) as imagecount";
-		} else {
-			$where_crit = '';
-			$where_crit2 = '';
-			$columns = '';
-		}
+		$where_crit = '';
+		$columns = '';
 		if ($isimgmap) {
-			//yes I know the imagecount is possibly strange in the join, but does speeds it up, having it twice speeds it up even more! (by preference have the second one, speed wise!), also keeping the join on gridsquare_id really does help too for some reason! 
-			$sql="select gs.*,gridimage_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,title 
-				from gridsquare gs
-				left join gridimage gi ON 
-				(imagecount > 0 AND gi.gridsquare_id = gs.gridsquare_id $where_crit2 AND imagecount > 0 AND gridimage_id = 
-					(select gridimage_id from gridimage_search gi2 where gi2.grid_reference=gs.grid_reference 
-					 $where_crit order by moderation_status+0 desc,seq_no limit 1)
-				) 
-				left join user using(user_id)
-				where 
+			if (!empty($this->type_or_user) && $this->type_or_user > 0) {
+				$where_crit = " and user_id = {$this->type_or_user}";
+				$columns = ',0 as imagecount';
+			}
+			$table = "gi".md5($rectangle);
+			$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
+				SELECT gridimage_id,grid_reference,x,y $columns FROM gridimage_search WHERE 
+				CONTAINS( GeomFromText($rectangle),	point_xy) $where_crit
+				ORDER BY moderation_status+0 DESC,seq_no";
+			$db->Execute($sql);
+			
+			if (!empty($this->type_or_user) && $this->type_or_user > 0) {
+				$sql="CREATE TEMPORARY TABLE tmp$table ENGINE HEAP 
+					SELECT x,y,count(*) as imagecount 
+					FROM $table GROUP BY x,y ORDER BY null";
+				$db->Execute($sql);
+	
+				$sql="UPDATE tmp$table,$table SET $table.imagecount = tmp$table.imagecount 
+					WHERE $table.x = tmp$table.x AND $table.y = tmp$table.y";
+				$db->Execute($sql);
+				$columns = ", $table.imagecount";
+			}
+			
+			$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y),ADD UNIQUE (gridimage_id)";
+			$db->Execute($sql);
+			
+			$sql="SELECT gs.* $columns,gi.gridimage_id,gi.realname AS credit_realname,IF(gi.realname!='',gi.realname,user.realname) AS realname,title 
+				FROM gridsquare gs
+				LEFT JOIN gridimage gi USING (gridsquare_id)
+				INNER JOIN $table USING (gridimage_id)
+				INNER JOIN user ON(gi.user_id = user.user_id)
+				WHERE 
 				CONTAINS( GeomFromText($rectangle),	point_xy)
-				and percent_land<>0 
-				group by gs.grid_reference order by y,x";
+				AND percent_land<>0 
+				GROUP BY gs.grid_reference ORDER BY y,x";
 		} else {
+			if (!empty($this->type_or_user) && $this->type_or_user > 0) {
+				$where_crit = " and gi.user_id = {$this->type_or_user}";
+				$columns = ", sum(moderation_status='geograph') as has_geographs, sum(moderation_status IN ('accepted','geograph')) as imagecount";
+			}
 			$sql="select gs.* $columns,
 				sum(moderation_status='accepted') as accepted, sum(moderation_status='pending') as pending,
 				DATE_FORMAT(MAX(if(moderation_status!='rejected',imagetaken,null)),'%d/%m/%y') as last_date
 				from gridsquare gs
-				left join gridimage gi on(gi.gridsquare_id = gs.gridsquare_id $where_crit2 )
+				left join gridimage gi on(gi.gridsquare_id = gs.gridsquare_id $where_crit )
 				where 
 				CONTAINS( GeomFromText($rectangle),	point_xy)
 				and percent_land<>0 
@@ -2023,22 +2061,8 @@ function imageGlowString($img, $font, $xx, $yy, $text, $color) {
 
 
 function rectinterrect($a1,$a2) {
-	if (pointinrect(array($a1[0],$a1[1]),$a2))
-		return true;
-	if (pointinrect(array($a1[0],$a1[3]),$a2))
-		return true;
-	if (pointinrect(array($a1[2],$a1[1]),$a2))
-		return true;
-	if (pointinrect(array($a1[2],$a1[3]),$a2))
-		return true;
-	return false;
-}
-
-function pointinrect($p,$a) {
-	if ( ($p[0] > $a[0] && $p[0] < $a[2]) &&
-		 ($p[1] > $a[1] && $p[1] < $a[3]) )
-		return true;
-	return false;
+	return !($a1[0] > $a2[2] || $a1[2] < $a2[0] ||
+	         $a1[1] > $a2[3] || $a1[3] < $a2[1]);
 }
 
 ?>

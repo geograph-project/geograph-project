@@ -659,14 +659,21 @@ class GridImage
 					$target=$_SERVER['DOCUMENT_ROOT'].$fullpath;
 					
 					//create target dir
-					$base=$_SERVER['DOCUMENT_ROOT'].'/geophotos';
-					if (!is_dir("$base/$yz"))
-						mkdir("$base/$yz");
-					if (!is_dir("$base/$yz/$ab"))
-						mkdir("$base/$yz/$ab");
-					if (!is_dir("$base/$yz/$ab/$cd"))
-						mkdir("$base/$yz/$ab/$cd");
-			
+					if ($this->gridimage_id<1000000) {
+						$base=$_SERVER['DOCUMENT_ROOT'].'/photos';
+						if (!is_dir("$base/$ab"))
+							mkdir("$base/$ab");
+						if (!is_dir("$base/$ab/$cd"))
+							mkdir("$base/$ab/$cd");
+					} else {
+						$base=$_SERVER['DOCUMENT_ROOT'].'/geophotos';
+						if (!is_dir("$base/$yz"))
+							mkdir("$base/$yz");
+						if (!is_dir("$base/$yz/$ab"))
+							mkdir("$base/$yz/$ab");
+						if (!is_dir("$base/$yz/$ab/$cd"))
+							mkdir("$base/$yz/$ab/$cd");
+					}
 					$fout=fopen($target, 'wb');
 					if ($fout)
 					{
