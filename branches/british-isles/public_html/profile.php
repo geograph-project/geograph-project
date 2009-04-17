@@ -209,7 +209,7 @@ if ($template=='profile.tpl')
 		$limit = 100;
 	}
 	$cacheid.="_$limit";
-	if (!empty($_GET['expand']) xor $USER->expand_about) {
+	if (!empty($_GET['expand']) || $USER->expand_about) {
 		$cacheid .= "E";
 	}
 
@@ -298,7 +298,7 @@ if ($template=='profile.tpl')
 function smarty_function_TruncateWithExpand($input,$more) {
 	global $USER;
 	
-	if (strlen($input) > 300 && (empty($_GET['expand']) xor $USER->expand_about)) {
+	if (strlen($input) > 300 && (empty($_GET['expand']) || $USER->expand_about)) {
 	
 		if (strpos($input,'[--more--]') !== FALSE) {
 			$bits = explode('[--more--]',$input,2);
