@@ -301,9 +301,10 @@ function smarty_function_TruncateWithExpand($input,$more) {
 	
 		if (strpos($input,'[--more--]') !== FALSE) {
 			$bits = explode('[--more--]',$input,2);
-			$input = $bits[0];
+			preg_match('/^(.{1000,}?)(?![\w\d\[\]\'])/s',$bits[0],$m); //still impose a hard limit of 1000 chars!
+			$input = $m[1]?$m[1]:$bits[0];
 		} else {
-			preg_match('/^(.{300,}?)\b/s',$input,$m);
+			preg_match('/^(.{300,}?)(?![\w\d\[\]\'])/s',$input,$m);
 			$input = $m[1];
 			if (!preg_match("/[\.\n]+\$/",$input)) {
 				$input .= " ...";
