@@ -302,7 +302,7 @@ if ($template=='profile.tpl')
 	}
 }
 
-function smarty_function_TruncateWithExpand($input,$more) {
+function smarty_function_TruncateWithExpand($input,$more = 'Click here to Read More...') {
 	global $USER;
 	
 	if (strlen($input) > 300 && (empty($_GET['expand']) && empty($USER->expand_about))) {
@@ -311,14 +311,27 @@ function smarty_function_TruncateWithExpand($input,$more) {
 			$bits = explode('[--more--]',$input,2);
 			preg_match('/^(.{2000,}?)(?![\w\d\[\]\'])/s',$bits[0],$m); //still impose a hard limit of 2000 chars!
 			$input = $m[1]?$m[1]:$bits[0];
+			$after = $bits[1];
 		} else {
-			preg_match('/^(.{300,}?)(?![\w\d\[\]\'])/s',$input,$m);
+			preg_match('/^(.{300,}?)(?![\w\d\[\]\'])(.*)/s',$input,$m);
 			$input = $m[1];
 			if (!preg_match("/[\.\n]+\$/",$input)) {
 				$input .= " ...";
 			}
+			$after = $m[2];
 		}
-		$input .= "<div align=\"right\"><a href=\"?expand=1\">$more</a></div>";
+		if (trim($after)) {
+			if (preg_match('/\(<small>(.*)<\/small>\)\s*/',$more,$m)) {
+				$more = preg_replace('/\(<small>.*<\/small>\)\s*/','',$more);
+				$before = $m[0];
+			}
+			if (!trim($input)) {
+				$before = "";
+			} 
+			
+			$input .= "<div align=\"right\">$before<a href=\"?expand=1\">$more</a></div>";
+		
+		}
 	} else {
 		$input = str_replace('[--more--]',' ',$input);
 	}
