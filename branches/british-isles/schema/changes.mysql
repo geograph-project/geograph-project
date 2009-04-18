@@ -506,3 +506,9 @@ PRIMARY KEY (  `gridimage_id` )
 
 
 
+
+ALTER TABLE  `user` ADD  `expand_about` TINYINT UNSIGNED NOT NULL DEFAULT  '0';
+
+
+
+
