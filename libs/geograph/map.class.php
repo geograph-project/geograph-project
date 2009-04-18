@@ -856,7 +856,7 @@ class GeographMap
 					$db->Execute($sql);
 					
 					//if the image is a sup then there cant be any geos, due to sort order!
-					$sql="SELECT x,y,(moderation_status = 'geograph') as has_geographs,{$this->type_or_user} as user_id,gridimage_id
+					$sql="SELECT gridsquare.x,gridsquare.y,(moderation_status = 'geograph') as has_geographs,{$this->type_or_user} as user_id,gridimage_id
 						FROM gridsquare 
 						INNER JOIN $table USING (grid_reference)
 						WHERE 
@@ -880,7 +880,7 @@ class GeographMap
 				$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y),ADD UNIQUE (gridimage_id)";
 				$db->Execute($sql);
 				
-				$sql="SELECT x,y,has_geographs,user_id,gridimage_id
+				$sql="SELECT gridsquare.x,gridsquare.y,has_geographs,user_id,gridimage_id
 				FROM gridsquare 
 				INNER JOIN $table USING (grid_reference)
 				WHERE 
