@@ -201,7 +201,7 @@ if ($template=='profile.tpl')
 	
 	$cacheid="user$ab|{$uid}|{$level}";
 	
-	if (isset($_GET['all'])) {
+	if (isset($_GET['all']) && $USER->registered) {
 		$limit = 5000;
 	} elseif (isset($_GET['more'])) {
 		$limit = 1000;
@@ -331,7 +331,7 @@ function smarty_function_TruncateWithExpand($input,$more = 'Click here to Read M
 				$before = "";
 			} 
 			
-			$input .= "<div align=\"right\">$before<a href=\"?expand=1\">$more</a></div>";
+			$input .= "<div style=\"text-align:center;border-top:1px solid silver;margin-top:10px\">$before<a href=\"?expand=1\">$more</a></div>";
 		
 		}
 	} else {

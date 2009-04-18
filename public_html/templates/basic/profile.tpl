@@ -95,8 +95,8 @@
 
 {if $profile->about_yourself && $profile->public_about}
 	<div class="caption" style="background-color:#dddddd; padding:10px;">
-	<h3 style="margin-top:0px;margin-bottom:0px">About Me</h3>
-	{$profile->about_yourself|TruncateWithExpand:'(<small>this is a content preview only</small>) <big>Click here to <b>Read More</b></big>...'|nl2br|GeographLinks:true}</div>
+	<h2 style="margin-top:0px;margin-bottom:0px">About Me</h2>
+	{$profile->about_yourself|TruncateWithExpand:'(<small>this is a preview only</small>) <big>Click here to <b>Read More</b></big>...'|nl2br|GeographLinks:true}</div>
 {/if}
 
 {if $user->user_id eq $profile->user_id}
@@ -131,8 +131,13 @@
 					{/if}
 				</li>
 			{/if}
-			
-			
+			{if $profile->stats.geographs}
+				<li><b>{$profile->stats.geographs}</b> Geograph{if $profile->stats.geographs ne 1}s{/if}
+				{if $profile->stats.geographs != $profile->stats.images}
+					and <b>{$profile->stats.images-$profile->stats.geographs}</b> Supplemental
+				{/if}
+				</li>
+			{/if}
 			<li><b>{$profile->stats.images}</b> Photograph{if $profile->stats.images ne 1}s{/if}
 				{if $profile->stats.squares gt 1}
 					<ul style="font-size:0.8em;margin-bottom:2px">
