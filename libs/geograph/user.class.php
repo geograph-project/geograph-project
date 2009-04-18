@@ -801,7 +801,7 @@ class GeographUser
 				$db->Quote($profile['ticket_public']),
 				$db->Quote($profile['ticket_option']),
 				$db->Quote(stripslashes($profile['message_sig'])),
-				$profile['expand_about']?1:0,
+				intval($profile['expand_about']),
 				$db->Quote($password),
 				$this->user_id
 				);
@@ -840,7 +840,7 @@ class GeographUser
 				$this->ticket_public=stripslashes($profile['ticket_public']);
 				$this->ticket_option=stripslashes($profile['ticket_option']);				
 				$this->message_sig=stripslashes($profile['message_sig']);
-				$this->expand_about=stripslashes($profile['expand_about']);
+				$this->expand_about=intval($profile['expand_about']);
 				$this->_forumUpdateProfile();
 				$this->_forumLogin();
 				
