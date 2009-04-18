@@ -235,9 +235,13 @@
 <div class="field"> 
 	<label for="expand_about" class="nowrap">Expand Profile Pages</label>
 	
-	<input type="checkbox" name="expand_about" id="expand_about"{if $profile->expand_about} checked="checked"{/if} value="1"/>
+	<select name="expand_about" id="expand_about"> 
+	<option value="0" {if $profile->expand_about == 0} selected="selected"{/if}>Show variable length preview</option>
+	<option value="1" {if $profile->expand_about == 1} selected="selected"{/if}>Always show full Expanded version</option>
+	<option value="2" {if $profile->expand_about == 2} selected="selected"{/if}>Always show short preview, with click to expand</option>
+	</select>
 	
-	<div class="fieldnotes">Show the full expanded 'About Me' box when viewing other's profile, otherwise can click to expand an individual profile.</div>
+	<div class="fieldnotes">How the 'About Me' box displays when viewing contributor profile pages.</div>
 </div>
 
 

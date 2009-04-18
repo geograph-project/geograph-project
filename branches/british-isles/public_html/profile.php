@@ -209,7 +209,7 @@ if ($template=='profile.tpl')
 		$limit = 100;
 	}
 	$cacheid.="_$limit";
-	if (!empty($_GET['expand']) || $USER->expand_about) {
+	if (!empty($_GET['expand']) || $USER->expand_about == 1) {
 		$cacheid .= "E";
 	}
 	if (isset($_GET['reject']) && empty($_GET['reject'])) {
@@ -305,9 +305,11 @@ if ($template=='profile.tpl')
 function smarty_function_TruncateWithExpand($input,$more = 'Click here to Read More...') {
 	global $USER;
 	
-	if (strlen($input) > 300 && (empty($_GET['expand']) && empty($USER->expand_about))) {
+	if (strlen($input) > 300 && empty($_GET['expand'])
+			&& (empty($USER->expand_about) || $USER->expand_about == 2)
+		) {
 	
-		if (strpos($input,'[--more--]') !== FALSE) {
+		if (strpos($input,'[--more--]') !== FALSE && $USER->expand_about != 2) {
 			$bits = explode('[--more--]',$input,2);
 			preg_match('/^(.{2000,}?)(?![\w\d\[\]\'])/s',$bits[0],$m); //still impose a hard limit of 2000 chars!
 			$input = $m[1]?$m[1]:$bits[0];
