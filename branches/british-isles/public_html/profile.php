@@ -212,6 +212,9 @@ if ($template=='profile.tpl')
 	if (!empty($_GET['expand']) || $USER->expand_about) {
 		$cacheid .= "E";
 	}
+	if (isset($_GET['reject']) && empty($_GET['reject'])) {
+		$cacheid .= "N";
+	}
 
 	if (!$smarty->is_cached($template, $cacheid))
 	{
@@ -264,12 +267,16 @@ if ($template=='profile.tpl')
 		
 		$images=new ImageList;
 		
-		if ($uid==$USER->user_id || $USER->hasPerm('moderator'))
-			$statuses='';
-		else
+		if ($uid==$USER->user_id || $USER->hasPerm('moderator')) {
+			if (isset($_GET['reject']) && empty($_GET['reject'])) {
+				$statuses=array('pending', 'accepted', 'geograph');
+			} else {
+				$statuses='';//all
+			} 
+		} else
 			$statuses=array('accepted', 'geograph');
 		
- 		$images->getImagesByUser($uid, $statuses,'gridimage_id desc',$limit,true);
+		$images->getImagesByUser($uid, $statuses,'gridimage_id desc',$limit,true);
 		$images->assignSmarty($smarty, 'userimages');
 		
 		if (count($images->images) == $limit) {
