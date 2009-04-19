@@ -847,7 +847,7 @@ class GeographMap
 				} else {
 					$table = "gi".md5($rectangle);
 					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
-						SELECT gridimage_id,grid_reference,x,y FROM gridimage_search WHERE 
+						SELECT gridimage_id,grid_reference,x,y,moderation_status FROM gridimage_search WHERE 
 						CONTAINS( GeomFromText($rectangle),	point_xy) AND user_id = {$this->type_or_user}
 						ORDER BY moderation_status+0 DESC,seq_no";
 					$db->Execute($sql);
