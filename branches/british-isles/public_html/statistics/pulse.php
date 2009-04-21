@@ -132,10 +132,7 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 	
 	$sql = "SELECT count(*) FROM event WHERE status='pending'";
 	calc("Pending Hamster Tasks",$sql);
-	
-	$sql = "SELECT COUNT(*) FROM mapcache WHERE age > 0 AND type_or_user >= -1";
-	calc("Map tiles to redraw",$sql);
-	
+		
 	$sql = "SELECT COUNT(*) FROM kmlcache WHERE rendered = 0";
 	calc("Superlayers tiles to update",$sql);
 	
