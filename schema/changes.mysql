@@ -512,3 +512,10 @@ ALTER TABLE  `user` ADD  `expand_about` TINYINT UNSIGNED NOT NULL DEFAULT  '0';
 
 
 
+
+
+alter table mapcache change `type_or_user` `type_or_user` int(11)  NOT NULL DEFAULT '0';
+
+
+
+
