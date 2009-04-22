@@ -106,15 +106,12 @@ $limit = (isset($_GET['nolimit']))?1000:50;
 		
 		$ids = $sphinx->returnIds($pg,'content_stemmed');
 		
-		$smarty->assign("query_info",$sphinx->query_info);
-		
 		if (count($ids)) {
 			$where = "content_id IN(".join(",",$ids).")";
 		} else {
 			$where = "0";
 		}
 		$resultCount = $sphinx->resultCount;
-		$numberOfPages = $sphinx->numberOfPages;
 		
 		$rss->title .= " ($resultCount results)";
 		
