@@ -89,7 +89,7 @@ $limit = (isset($_GET['nolimit']))?1000:50;
 			$sphinx->q = preg_replace('/\bp(age|)\d+\s*$/','',$sphinx->q);
 		}
 		
-		$rss->title . = " matching [ ".htmlentities($sphinx->q)." ]";
+		$rss->title .= " matching [ ".htmlentities($sphinx->q)." ]";
 		
 		#$sphinx->processQuery();
 		
