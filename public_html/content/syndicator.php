@@ -31,6 +31,7 @@ $valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3',
 if (isset($_GET['extension']) && !isset($_GET['format']))
 {
 	$_GET['format'] = strtoupper($_GET['extension']);
+	$_GET['format'] = str_replace('_','.',$_GET['format']);
 	$_GET['format'] = str_replace('GEO','Geo',$_GET['format']);
 	$_GET['format'] = str_replace('PHOTO','Photo',$_GET['format']);
 }
@@ -43,6 +44,7 @@ if (!empty($_GET['format']) && in_array($_GET['format'], $valid_formats))
 
 $extension = ($format == 'KML')?'kml':'xml';
 
+$format_extension = strtolower(str_replace('.','_',$format));
 
 $rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/content-{$format}-".md5(serialize($_GET)).".$extension";
 
@@ -58,7 +60,7 @@ $rss->link = "http://{$_SERVER['HTTP_HOST']}/content/";
 $rss->description = "Recently updated content on Geograph British Isles"; 
 
 
-$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/content/syndicator.php?format=$format";
+$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/content/feed/recent.$format_extension";
 
 
 if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
@@ -71,12 +73,55 @@ if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 
 $db=NewADOConnection($GLOBALS['DSN']);
 	
-$limit = (isset($_GET['nolimit']))?9999:50;
+$limit = (isset($_GET['nolimit']))?1000:50;
 
+
+// --------------
+		
+	if (!empty($_GET['q'])) {
+		$q=trim($_GET['q']);
+		
+		$sphinx = new sphinxwrapper($q);
+		$sphinx->pageSize = $pgsize = $limit;
+		
+		if (preg_match('/\bp(age|)(\d+)\s*$/',$q,$m)) {
+			$pg = intval($m[2]);
+			$sphinx->q = preg_replace('/\bp(age|)\d+\s*$/','',$sphinx->q);
+		}
+		
+		$rss->title . = " matching [ ".htmlentities($sphinx->q)." ]";
+		
+		#$sphinx->processQuery();
+		
+		//if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
+			$sphinx->qoutput = $sphinx->q;
+			$sphinx->q .= " @source -themed";
+		//}
+		
+		$ids = $sphinx->returnIds($pg,'content_stemmed');
+		
+		$smarty->assign("query_info",$sphinx->query_info);
+		
+		if (count($ids)) {
+			$where = "content_id IN(".join(",",$ids).")";
+		} else {
+			$where = "0";
+		}
+		$resultCount = $sphinx->resultCount;
+		$numberOfPages = $sphinx->numberOfPages;
+		
+		$rss->title .= " ($resultCount results)".
+		
+		// --------------
+	} else {
+		$where = 1;
+	}
+	
+	
 $sql="select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.source
 	from content 
 		left join user using (user_id)
-	where source != 'themed'
+	where source != 'themed' and $where
 	order by updated desc
 	limit $limit";
 

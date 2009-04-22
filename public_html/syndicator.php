@@ -33,6 +33,7 @@ $valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3',
 if (isset($_GET['extension']) && !isset($_GET['format']))
 {
 	$_GET['format'] = strtoupper($_GET['extension']);
+	$_GET['format'] = str_replace('_','.',$_GET['format']);
 	$_GET['format'] = str_replace('GEO','Geo',$_GET['format']);
 	$_GET['format'] = str_replace('PHOTO','Photo',$_GET['format']);
 }
@@ -53,6 +54,7 @@ if ($format == 'KML') {
 	$extension = 'xml';
 }
 
+$format_extension = strtolower(str_replace('.','_',$format));
 
 /**
  * We are building a text search for the first time
@@ -198,7 +200,7 @@ if (isset($sphinx)) {
 	$images = new SearchEngine($_GET['i']);
 	
 	$rss->description = "Images".$images->criteria->searchdesc; 
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/feed/results/".$_GET['i'].(($pg>1)?"/$pg":'').".".strtolower($format);
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/feed/results/".$_GET['i'].(($pg>1)?"/$pg":'').".$format_extension";
 	
 	$images->Execute($pg);
 	if ($images->resultCount) {
@@ -209,7 +211,7 @@ if (isset($sphinx)) {
 		$rss->link =  "http://{$_SERVER['HTTP_HOST']}/search.php?i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
 		if ($pg>1) {
 			$prev = $pg - 1;
-			$rss->prevURL = "http://{$_SERVER['HTTP_HOST']}/feed/results/".$_GET['i'].(($prev>1)?"/$prev":'').".".strtolower($format);
+			$rss->prevURL = "http://{$_SERVER['HTTP_HOST']}/feed/results/".$_GET['i'].(($prev>1)?"/$prev":'').".$format_extension";
 		}
 		$pgsize = $images->criteria->resultsperpage;
 			
@@ -218,7 +220,7 @@ if (isset($sphinx)) {
 		$offset = ($pg -1)* $pgsize;
 		if ($pg < 10 && $offset < 250 && $images->numberOfPages > $pg) {
 			$next = $pg + 1;
-			$rss->nextURL = "http://{$_SERVER['HTTP_HOST']}/feed/results/".$_GET['i'].(($next>1)?"/$next":'').".".strtolower($format);
+			$rss->nextURL = "http://{$_SERVER['HTTP_HOST']}/feed/results/".$_GET['i'].(($next>1)?"/$next":'').".$format_extension";
 		}
 		$rss->icon = "http://{$CONF['STATIC_HOST']}/templates/basic/img/logo.gif";
 	} 
@@ -231,7 +233,7 @@ if (isset($sphinx)) {
 } elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
 	$profile=new GeographUser($_GET['u']);
 	$rss->description = 'Latest Images by '.$profile->realname; 
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/profile/".intval($_GET['u'])."/feed/recent.".strtolower($format);
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/profile/".intval($_GET['u'])."/feed/recent.$format_extension";
 
 
 	//lets find some recent photos
@@ -243,7 +245,7 @@ if (isset($sphinx)) {
  */
 } else {
 	$rss->description = 'Latest Images'; 
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/feed/recent.".strtolower($format);
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/feed/recent.$format_extension";
 
 	//lets find some recent photos
 	$images=new ImageList(array('accepted', 'geograph'), 'gridimage_id desc', 15);

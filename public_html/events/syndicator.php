@@ -31,6 +31,7 @@ $valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3',
 if (isset($_GET['extension']) && !isset($_GET['format']))
 {
 	$_GET['format'] = strtoupper($_GET['extension']);
+	$_GET['format'] = str_replace('_','.',$_GET['format']);
 	$_GET['format'] = str_replace('GEO','Geo',$_GET['format']);
 	$_GET['format'] = str_replace('PHOTO','Photo',$_GET['format']);
 }
@@ -51,6 +52,9 @@ if ($format == 'KML') {
 	$extension = 'xml';
 }
 
+$format_extension = strtolower(str_replace('.','_',$format));
+
+
 $rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/events-{$format}-".empty($_GET['admin']).".$extension";
 
 
@@ -66,12 +70,12 @@ $rss->description = "Upcoming Geograph British Isles Events";
 
 if (empty($_GET['admin'])) {
 	$isadmin= 0;
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/events/syndicator.php?format=$format";
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/events/feed.$format_extension";
 
 } else {
 	$isadmin= 1;
-	$rss->title = 'Geograph Pending Articles'; 
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/syndicator.php?format=$format&amp;admin=1";
+	$rss->title = 'Geograph Pending Events'; 
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/events/syndicator.php?format=$format&amp;admin=1";
 }
 
 if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
