@@ -41,6 +41,7 @@ if (!empty($_GET['forum']) && $_GET['forum'] == 5 && empty($_GET['topic']) )
 if (isset($_GET['extension']) && !isset($_GET['format']))
 {
 	$_GET['format'] = strtoupper($_GET['extension']);
+	$_GET['format'] = str_replace('_','.',$_GET['format']);
 	$_GET['format'] = str_replace('GEO','Geo',$_GET['format']);
 	$_GET['format'] = str_replace('PHOTO','Photo',$_GET['format']);
 }

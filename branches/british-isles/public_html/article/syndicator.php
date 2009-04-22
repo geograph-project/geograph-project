@@ -31,6 +31,7 @@ $valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3',
 if (isset($_GET['extension']) && !isset($_GET['format']))
 {
 	$_GET['format'] = strtoupper($_GET['extension']);
+	$_GET['format'] = str_replace('_','.',$_GET['format']);
 	$_GET['format'] = str_replace('GEO','Geo',$_GET['format']);
 	$_GET['format'] = str_replace('PHOTO','Photo',$_GET['format']);
 }
@@ -42,6 +43,8 @@ if (!empty($_GET['format']) && in_array($_GET['format'], $valid_formats))
 }
 
 $extension = ($format == 'KML')?'kml':'xml';
+
+$format_extension = strtolower(str_replace('.','_',$format));
 
 
 $rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/article-{$format}-".md5(serialize($_GET)).".$extension";
@@ -68,7 +71,7 @@ if (!empty($_GET['admin'])) {
 
 } else {
 	$sql_where = "licence != 'none' and approved > 0";
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/feed/recent.".strtolower($format);
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/feed/recent.$format_extension";
 	
 
 }
