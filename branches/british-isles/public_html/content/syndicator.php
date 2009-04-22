@@ -81,6 +81,12 @@ $limit = (isset($_GET['nolimit']))?1000:50;
 	if (!empty($_GET['q'])) {
 		$q=trim($_GET['q']);
 		
+		if (!empty($_GET['page'])) {
+			$pg = intval($_GET['page']);
+		} else {
+			$pg = 1;
+		}
+		
 		$sphinx = new sphinxwrapper($q);
 		$sphinx->pageSize = $pgsize = $limit;
 		
@@ -110,7 +116,7 @@ $limit = (isset($_GET['nolimit']))?1000:50;
 		$resultCount = $sphinx->resultCount;
 		$numberOfPages = $sphinx->numberOfPages;
 		
-		$rss->title .= " ($resultCount results)".
+		$rss->title .= " ($resultCount results)";
 		
 		// --------------
 	} else {
