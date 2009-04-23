@@ -209,6 +209,9 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 </div>
 <br style="clear:both"/>
+{if $image->hits}
+	<div style="text-align">This page has been viewed about <b>{$image->hits}</b> times. <a href="/help/hit_counter">Read more</a></div>
+{/if}
 <div class="interestBox" style="text-align:center">View this location: 
 
 {if $image->moderation_status eq "geograph" || $image->moderation_status eq "accepted"}

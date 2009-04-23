@@ -519,3 +519,28 @@ alter table mapcache change `type_or_user` `type_or_user` int(11)  NOT NULL DEFA
 
 
 
+CREATE TABLE  `gridimage_log` (
+ `gridimage_id` INT UNSIGNED NOT NULL ,
+ `hits` MEDIUMINT UNSIGNED NOT NULL ,
+ `hits_archive` INT UNSIGNED NOT NULL ,
+ `last_hit` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+PRIMARY KEY (  `gridimage_id` )
+) ENGINE = MYISAM ;
+
+
+CREATE TABLE `photo_log` (
+  `month` varchar(7) NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `views` mediumint(8) unsigned NOT NULL,
+  `entry` mediumint(8) unsigned NOT NULL,
+  `exits` mediumint(8) unsigned NOT NULL,
+  KEY `gridimage_id` (`gridimage_id`),
+  KEY `month` (`month`(4))
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+INSERT INTO photo_log SELECT gridimage_id,0 as hits,sum(views) as hits_archive,'0000-00-00 00:00:00' as last_hit FROM photo_log GROUP BY gridimage_id ORDER BY NULL;
+
+
+
+

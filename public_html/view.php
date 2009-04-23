@@ -136,6 +136,18 @@ if ($image->isValid())
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$hash,($USER->user_id == 0));
 
+
+	if ( (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE) &&
+	    (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE) &&
+	    empty($_SESSION['photos'][$image->gridimage_id]) )
+	{
+		$db=NewADOConnection($GLOBALS['DSN']);
+		
+		$db->Query("INSERT LOW_PRIORITY INTO gridimage_log VALUES({$image->gridimage_id},1,0,now()) ON duplicate KEY UPDATE hits=hits+1");
+		
+	}
+	@$_SESSION['photos'][$image->gridimage_id]++;
+
 	if (!empty($CONF['sphinx_host']) 
 		&& stripos($_SERVER['HTTP_REFERER'],$CONF['CONTENT_HOST']) === FALSE 
 		&& stripos($_SERVER['HTTP_REFERER'],$_SERVER['HTTP_HOST']) === FALSE
@@ -174,6 +186,13 @@ if ($image->isValid())
 	if (!$smarty->is_cached($template, $cacheid))
 	{
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
+
+		if (empty($db)) {
+			$db=NewADOConnection($GLOBALS['DSN']);
+		}
+		
+		$image->hits = $db->getOne("SELECT hits+hits_archive FROM gridimage_log WHERE gridimage_id = {$image->gridimage_id}");
+		
 
 		$image->assignToSmarty($smarty);
 	}
