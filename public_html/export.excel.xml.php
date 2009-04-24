@@ -78,7 +78,24 @@ while (!$recordSet->EOF)
 		$gridimage->fastInit($image);
 		print "<Cell><Data ss:Type=\"String\">".$gridimage->getThumbnail(120,120,true)."</Data></Cell>";
 	}
-	if (!empty($_GET['en'])) {
+	if (!empty($_GET['gr'])) {
+		if (empty($image['nateastings'])) {
+			echo "<Cell><Data ss:Type=\"String\">".$image['grid_reference']."</Data></Cell>";
+		} else {
+			$gridimage->grid_square = new GridSquare();
+			$gridimage->grid_square->natspecified = 1;
+			$gridimage->grid_square->natgrlen=$gridimage->natgrlen;
+			$gridimage->grid_square->nateastings=$gridimage->nateastings;
+			$gridimage->grid_square->natnorthings=$gridimage->natnorthings;
+			$gridimage->grid_square->reference_index=$gridimage->reference_index;
+			echo "<Cell><Data ss:Type=\"String\">".$gridimage->getSubjectGridref()."</Data></Cell>";;
+			$gridimage->subject_gridref = ''; // so it not reused!
+		}
+		if (!empty($_GET['ppos'])) {
+			echo "<Cell><Data ss:Type=\"String\">".$gridimage->getPhotographerGridref()."</Data></Cell>";;
+			$gridimage->photographer_gridref = ''; // so it not reused!
+		}
+	} elseif (!empty($_GET['en'])) {
 		print "<Cell><Data ss:Type=\"Number\">{$image['nateastings']}</Data></Cell>\n";
 		print "<Cell><Data ss:Type=\"Number\">{$image['natnorthings']}</Data></Cell>\n";
 		print "<Cell><Data ss:Type=\"Number\">{$image['natgrlen']}</Data></Cell>\n";
@@ -99,6 +116,8 @@ while (!$recordSet->EOF)
 	}
 	if (!empty($_GET['dir']))
 		print "<Cell><Data ss:Type=\"Number\">{$image['view_direction']}</Data></Cell>\n";
+	if (!empty($_GET['hits']))
+		print "<Cell><Data ss:Type=\"Number\">{$image['hits']}</Data></Cell>\n";
 	
 	echo "</Row>\n";
 	$recordSet->MoveNext();
