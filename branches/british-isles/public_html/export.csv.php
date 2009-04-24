@@ -94,6 +94,8 @@ while (!$recordSet->EOF)
 		echo ",{$image['imagetaken']}";
 	if (!empty($_GET['dir']))
 		echo ",{$image['view_direction']}";
+	if (!empty($_GET['hits']))
+		echo ",{$image['hits']}";
 
 	echo "\n";
 	$recordSet->MoveNext();

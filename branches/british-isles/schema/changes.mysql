@@ -539,7 +539,9 @@ CREATE TABLE `photo_log` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
-INSERT INTO photo_log SELECT gridimage_id,0 as hits,sum(views) as hits_archive,'0000-00-00 00:00:00' as last_hit FROM photo_log GROUP BY gridimage_id ORDER BY NULL;
+alter table `photo_log` ADD KEY `gridimage_id` (`gridimage_id`);
+
+INSERT INTO gridimage_log SELECT gridimage_id,0 as hits,sum(views) as hits_archive,'0000-00-00 00:00:00' as last_hit FROM photo_log GROUP BY gridimage_id ORDER BY NULL;
 
 
 
