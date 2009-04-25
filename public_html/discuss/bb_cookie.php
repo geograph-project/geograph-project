@@ -49,7 +49,7 @@ function user_logged_in()
 
 	} 
 	elseif ($userpassword!='' and 
-		$row=db_simpleSelect(0,$GLOBALS['Tu'],$GLOBALS['dbUserId'].','. $GLOBALS['dbUserSheme']['user_sorttopics'][1].','. $GLOBALS['dbUserSheme']['language'][1].','. $GLOBALS['dbUserAct'],$GLOBALS['dbUserSheme']['username'][1],'=',mysql_escape_string($username),'',1, $GLOBALS['dbUserSheme']['user_password'][1],'=',$userpassword))
+		$row=db_simpleSelect(0,$GLOBALS['Tu'],$GLOBALS['dbUserId'].','. $GLOBALS['dbUserSheme']['user_sorttopics'][1].','. $GLOBALS['dbUserSheme']['language'][1].','. $GLOBALS['dbUserAct'],$GLOBALS['dbUserId'],'=',$GLOBALS['USER']->user_id,'',1))
 	{
 		$returned=TRUE;
 		$GLOBALS['user_id']=$row[0]; 
