@@ -9,9 +9,14 @@ $roForums=array();
 $poForums=array();
 $regUsrForums=array();
 
-$userRanks=array();
 
-if($cols=db_simpleSelect(0,'user','user_id,rights,role','role != \'\' OR rights LIKE \'%admin%\' OR rights',' LIKE ','%moderator%')) {
+
+$mkey = "userRanks";
+$userRanks =& $memcache->get($mkey);
+
+if(empty($userRanks) && $cols=db_simpleSelect(0,'user','user_id,rights,role','role != \'\' OR rights LIKE \'%admin%\' OR rights',' LIKE ','%moderator%')) {
+	$userRanks=array();
+	
 	do {
 		if ($cols[2])
 			$userRanks[$cols[0]]=$cols[2];
@@ -21,6 +26,8 @@ if($cols=db_simpleSelect(0,'user','user_id,rights,role','role != \'\' OR rights 
 			$userRanks[$cols[0]]='Moderator';
 	} while($cols=db_simpleSelect(1));
 }
+
+$memcache->set($mkey,$userRanks,$memcache->compress,$memcache->period_short);
 
 $mods=array();
 
