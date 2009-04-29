@@ -1309,7 +1309,7 @@ class GridImage
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 			
 			//fails quickly if not using memcached!
-			$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_med);
+			$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long*10);
 		}
 		
 		$return['html']=$html;
