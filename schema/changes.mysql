@@ -544,5 +544,19 @@ alter table `photo_log` ADD KEY `gridimage_id` (`gridimage_id`);
 INSERT INTO gridimage_log SELECT gridimage_id,0 as hits,sum(views) as hits_archive,'0000-00-00 00:00:00' as last_hit FROM photo_log GROUP BY gridimage_id ORDER BY NULL;
 
 
+#it just duplicates the primary key
+ALTER TABLE geobb_posts DROP KEY `post_id`;
+
+ALTER TABLE geobb_topics DROP KEY `topic_id`;
 
 
+#Good for selecting latest topics (in last post order), example:  SELECT topic_last_post_id FROM geobb_topics where forum_id!='5' AND forum_id!='11'   order by topic_last_post_id DESC limit 40;
+ALTER TABLE geobb_topics ADD KEY (`forum_id`,`topic_last_post_id` DESC);
+
+
+#Good for selecting latest topics (in topic order)
+ALTER TABLE geobb_topics ADD KEY (`forum_id`,`topic_id` DESC);
+
+
+#good for viewing a forum page
+ALTER TABLE geobb_topics ADD KEY (`forum_id`,sticky DESC,`topic_last_post_id` DESC);

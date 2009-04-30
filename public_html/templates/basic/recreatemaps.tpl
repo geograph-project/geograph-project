@@ -2,7 +2,7 @@
 {dynamic}
 
 <h2>Update Maps</h2>
-<p>Use this page to let the system know that a map doesn't appear to be updating. You should normally wait at least 3 hours after submitting before visiting this page...</p>
+<p>Use this page to let the system know that a map doesn't appear to be updating. You should normally wait at least 3 hours after image has been moderated before visiting this page...</p>
 
 {if $invalid_maps > 0}
 	<p>There are currently <b>{$invalid_maps}</b> tiles in the process queue.</p>
@@ -13,8 +13,6 @@
 
 <p>If the number above is high (say above 100), then the site is busy, maps will be processed in due time, please be patient!</p> 
 
-<p>Otherwise if showing a low number (or 0) then its possible that your map has been missed, it would probably be worth submitting the Grid-Reference below, thanks!</p>
-
 <hr> 
 	
 {if ($invalid_maps < 500) || ($is_mod && ($invalid_maps < 2500))}
@@ -22,13 +20,13 @@
 
 	<p>You can use the following form to request an update for a particular square.</p>
 
-	<p>* Only submit a square here if the queue is relatively empty (say below 150), and the map still hasn't updated (after at least 3 hours).</p>
-
 	<p>{$errormsg}</p>
 
 	<p>4-Figure Grid Reference: <input type="text" name="gridref" value="" size="10"/>
 
 	<input type="submit" name="inv" value="Request Update"/></p>
+
+	<p>Optional Geograph User ID: <input type="text" name="user_id" value="{$user->user_id}" size="3"/> (to also refresh Personalised Map)
 
 	</form>
 

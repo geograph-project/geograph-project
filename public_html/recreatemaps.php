@@ -40,12 +40,14 @@ if (isset($_POST['inv']))
 		
 	if ($grid_ok) {
 		
+		$user_id = intval($_POST['user_id']);
+		
 		$x = $square->x;
 		$y = $square->y;
 
 		require_once('geograph/mapmosaic.class.php');
 		$mosaic = new GeographMapMosaic;
-		$mosaic->expirePosition($x,$y);
+		$mosaic->expirePosition($x,$y,$user_id);
 
 		$smarty->assign('gridref', $_POST['gridref'] );
 	} else {
