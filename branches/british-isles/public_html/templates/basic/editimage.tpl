@@ -252,7 +252,7 @@
 				<div class="ticketnote">
 					<div class="ticketnotehdr">
 					{if $comment.user_id ne $ticket->user_id or ($isadmin || $ticket->public eq 'everyone' || ($isowner && $ticket->public eq 'owner')) }
-						{$comment.realname} {if $ticket->public ne 'everyone'}(anonymously){/if}
+						{$comment.realname} {if $ticket->public ne 'everyone' && $ticket->user_id eq $comment.user_id}(anonymously){/if}
 					{else}
 						ticket suggestor
 					{/if} 
