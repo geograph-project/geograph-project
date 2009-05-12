@@ -99,6 +99,7 @@ $db = NewADOConnection($GLOBALS['DSN']);
 	flush();
 
 	# /maps/detail/741/120/detail_741_120_200_200_40_0.png
+	# or /maps/detail/741/120/detail_741_120_200_200_40_0_1.png
 	
 function recurse_maps($folder) {	
 	global $db;
@@ -109,9 +110,14 @@ function recurse_maps($folder) {
 		if (is_dir($root.$folder.$file) && strpos($file,'.') !== 0) {
 			recurse_maps($folder.$file.'/');
 			print "done $folder $file\n";
-		} elseif (preg_match("/detail_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)\./",$file,$m)) {
-			array_shift($m);
-			$sql = "INSERT DELAYED IGNORE INTO mapcache2 VALUES(".join(',',$m).",0)";
+		} elseif (preg_match("/detail_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)_?(\d*)\./",$file,$m)) {
+			array_shift($m);//remove $0
+			
+			$pallete = array_pop($m); //remove optional pallete - because it will always set even if empty. 
+			
+			$pallete += 0; //turn into a number 
+			
+			$sql = "INSERT DELAYED IGNORE INTO mapcache2 VALUES(".join(',',$m).",0,$pallete)";
 			$db->Execute($sql);
 		}		
 	}
