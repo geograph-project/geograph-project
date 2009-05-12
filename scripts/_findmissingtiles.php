@@ -117,7 +117,7 @@ function recurse_maps($folder) {
 			
 			$pallete += 0; //turn into a number 
 			
-			$sql = "INSERT DELAYED IGNORE INTO mapcache2 VALUES(".join(',',$m).",0,$pallete)";
+			$sql = "INSERT DELAYED IGNORE INTO mapcache2 VALUES(".join(',',$m).",0,now(),$pallete)";
 			$db->Execute($sql);
 		}		
 	}
