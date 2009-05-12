@@ -6,7 +6,7 @@
 	<p>{$errormsg}</p>
 {else}
 
-
+{if $gridref} 
 <dl style="float:right; margin:0px; position:relative">
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
 {if $square->reference_index eq 1}OSGB36{else}Irish{/if}: {getamap gridref=$gridrefraw text=$gridrefraw} [{$square->precision}m precision]<br/>
@@ -162,7 +162,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{/if}
 </ul>
 </div>
-<br style="clear:both"/>
+<br style="clear:both"/>{/if}
 <hr/>
 <form action="/location.php" method="get">
 <div>
