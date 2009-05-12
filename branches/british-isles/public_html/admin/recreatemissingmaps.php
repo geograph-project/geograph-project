@@ -104,9 +104,13 @@ function recurse_maps($folder) {
 		if (is_dir($root.$folder.$file) && strpos($file,'.') !== 0) {
 			recurse_maps($folder.$file.'/');
 			print "done $folder $file<br/>";
-		} elseif (preg_match("/detail_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)\./",$file,$m)) {
-			array_shift($m);
-			$sql = "INSERT DELAYED IGNORE INTO mapcache2 VALUES(".join(',',$m).",0)";
+		} elseif (preg_match("/detail_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)_?(\d*)\./",$file,$m)) {
+			array_shift($m);//remove $0
+						
+			$pallete = array_pop($m); //remove optional pallete - because it will always set even if empty. 
+			$pallete += 0; //turn into a number 
+			
+			$sql = "INSERT DELAYED IGNORE INTO mapcache2 VALUES(".join(',',$m).",0,$pallete)";
 			$db->Execute($sql);
 		}		
 	}
@@ -154,16 +158,7 @@ function recurse_maps($folder) {
 	exit;
 	
 } elseif (isset($_GET['setup'])) {
-$db->Execute("CREATE TABLE `mapcache2` (
-			    `map_x` smallint(6) NOT NULL default '0',
-			    `map_y` smallint(6) NOT NULL default '0',
-			    `image_w` smallint(6) unsigned NOT NULL default '0',
-			    `image_h` smallint(6) unsigned NOT NULL default '0',
-			    `pixels_per_km` float NOT NULL default '0',
-			    `type_or_user` smallint(6) NOT NULL default '0',
-			    `age` smallint(5) unsigned NOT NULL default '0',
-			    PRIMARY KEY  (`map_x`,`map_y`,`image_w`,`image_h`,`pixels_per_km`,`type_or_user`)
-			  ) TYPE=MyISAM ");
+	$db->Execute("CREATE TABLE `mapcache2` LIKE `mapcache`");
 } elseif (isset($_GET['remove'])) {
 	$db->Execute("DROP TABLE `mapcache2`");
 
