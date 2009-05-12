@@ -50,7 +50,9 @@ $template='location.tpl';
 $grid_given=false;
 $grid_ok=false;
 
-
+$smarty->assign('prefixes', $square->getGridPrefixes());
+$smarty->assign('kmlist', $square->getKMList());
+	
 //set by grid components?
 if (isset($_GET['p']))
 {	
