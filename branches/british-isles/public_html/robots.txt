@@ -43,6 +43,8 @@ Disallow: /article/history.php
 
 
 User-Agent: Googlebot
+Disallow: /profile/*/map
+Disallow: /photo/*?style=*
 Disallow: /mapbrowse.php?
 Disallow: /map/
 Disallow: /mapper/
