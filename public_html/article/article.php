@@ -27,6 +27,8 @@ init_session();
 $smarty = new GeographPage;
 
 if (empty($_GET['page']) || preg_match('/[^\w\.\,-]/',$_GET['page'])) {
+	header("HTTP/1.0 404 Not Found");
+	header("Status: 404 Not Found");
 	$smarty->display('static_404.tpl');
 	exit;
 }

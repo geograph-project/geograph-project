@@ -65,6 +65,8 @@ $cacheid = '';
 			$smarty->assign($page);
 			$smarty->assign('id', $page['geoevent_id']);
 		} else {
+			header("HTTP/1.0 404 Not Found");
+			header("Status: 404 Not Found");
 			$template = 'static_404.tpl';
 		}
 	}
