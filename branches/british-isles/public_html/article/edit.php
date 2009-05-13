@@ -30,6 +30,8 @@ $USER->mustHavePerm('basic');
 $isadmin=$USER->hasPerm('moderator')?1:0;
 
 if (empty($_REQUEST['article_id']) && (empty($_REQUEST['page']) || preg_match('/[^\w\.\,-]/',$_REQUEST['page']))) {
+	header("HTTP/1.0 404 Not Found");
+	header("Status: 404 Not Found");
 	$smarty->display('static_404.tpl');
 	exit;
 }
@@ -105,6 +107,8 @@ $cacheid = '';
 			$smarty->assign($page);
 			$db->Execute("REPLACE INTO article_lock SET user_id = {$USER->user_id}, article_id = {$page['article_id']}");
 		} else {
+			header("HTTP/1.0 404 Not Found");
+			header("Status: 404 Not Found");
 			$template = 'static_404.tpl';
 		}
 	}

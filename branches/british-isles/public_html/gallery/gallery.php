@@ -87,6 +87,8 @@ if (count($page)) {
 		$db->Execute($sql = "insert into geobb_lastviewed set topic_id=$topic_id,user_id={$USER->user_id},last_post_id = $postID on duplicate key update last_post_id = if(last_post_id < $postID,$postID,last_post_id)");
 	}
 } else {
+	header("HTTP/1.0 404 Not Found");
+	header("Status: 404 Not Found");
 	$template = 'static_404.tpl';
 }
 

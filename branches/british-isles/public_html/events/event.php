@@ -148,6 +148,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 	} else {
 		$template = 'static_404.tpl';
+		header("HTTP/1.0 404 Not Found");
+		header("Status: 404 Not Found");
 	}
 } else {
 	$smarty->assign('user_id', $page['user_id']);

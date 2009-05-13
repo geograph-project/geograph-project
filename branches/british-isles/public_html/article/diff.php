@@ -27,6 +27,8 @@ init_session();
 $smarty = new GeographPage;
 
 if (empty($_GET['page']) || preg_match('/[^\w-\.]/',$_GET['page'])) {
+	header("HTTP/1.0 404 Not Found");
+	header("Status: 404 Not Found");
 	$smarty->display('static_404.tpl');
 	exit;
 }
@@ -81,6 +83,8 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign_by_ref('output', arr_diff($a1,$a2,1));
 		}
 	} else {
+		header("HTTP/1.0 404 Not Found");
+		header("Status: 404 Not Found");
 		$template = 'static_404.tpl';
 	}
 } else {
