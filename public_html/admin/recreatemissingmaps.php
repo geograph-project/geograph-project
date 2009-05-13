@@ -104,7 +104,7 @@ function recurse_maps($folder) {
 		if (is_dir($root.$folder.$file) && strpos($file,'.') !== 0) {
 			recurse_maps($folder.$file.'/');
 			print "done $folder $file<br/>";
-		} elseif (preg_match("/detail_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)_?(\d*)\./",$file,$m)) {
+		} elseif (preg_match("/detail_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)_(-?\d+)_?(\d*)\./",$file,$m)) {
 			array_shift($m);//remove $0
 						
 			$pallete = array_pop($m); //remove optional pallete - because it will always set even if empty. 
@@ -135,7 +135,7 @@ function recurse_maps($folder) {
 	flush();
 	
 
-	$sql = "SELECT mapcache2.* FROM mapcache2 NATURAL LEFT JOIN mapcache WHERE mapcache.map_x IS NULL";
+	$sql = "SELECT mapcache2.* FROM mapcache2 LEFT JOIN mapcache  USING (map_x,map_y,image_w,image_h,pixels_per_km,type_or_user,palette) WHERE mapcache.map_x IS NULL";
 	$recordSet = &$db->Execute("$sql");
 	while (!$recordSet->EOF) 
 	{

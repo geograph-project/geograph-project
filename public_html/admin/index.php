@@ -58,7 +58,7 @@ if ($USER->hasPerm("moderator")) {
 	$smarty->assign('gridsquares_sea', $db->GetAssoc("select reference_index,count(*) from gridsquare where percent_land=-1 group by reference_index"));
 
 
-	$smarty->assign('images_pending_available', $db->GetOne("select count(distinct gridimage_id) from gridimage as gi left join gridsquare_moderation_lock as l on(gi.gridsquare_id=l.gridsquare_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) ) where submitted > date_sub(now(), interval 7 day) and (moderation_status = 2) and (l.gridsquare_id is null OR (l.user_id = {$USER->user_id} AND lock_type = 'modding') OR (l.user_id != {$USER->user_id} AND lock_type = 'cantmod') )"));
+	$smarty->assign('images_pending_available', $db->GetOne("select count(distinct gridimage_id) from gridimage as gi left join gridsquare_moderation_lock as l on(gi.gridsquare_id=l.gridsquare_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) ) where submitted > date_sub(now(), interval 7 day) and submitted < date_sub(now(),interval 30 minute) and (moderation_status = 2) and (l.gridsquare_id is null OR (l.user_id = {$USER->user_id} AND lock_type = 'modding') OR (l.user_id != {$USER->user_id} AND lock_type = 'cantmod') )"));
 
 	$smarty->assign('gridsquares_sea_test', $db->GetOne("select count(*) from mapfix_log where old_percent_land=-1 and created > date_sub(now(),interval 30 minute) and user_id != {$USER->user_id}"));
 

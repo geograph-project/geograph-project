@@ -110,7 +110,7 @@ function recurse_maps($folder) {
 		if (is_dir($root.$folder.$file) && strpos($file,'.') !== 0) {
 			recurse_maps($folder.$file.'/');
 			print "done $folder $file\n";
-		} elseif (preg_match("/detail_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)_?(\d*)\./",$file,$m)) {
+		} elseif (preg_match("/detail_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)_(-?\d+)_?(\d*)\./",$file,$m)) {
 			array_shift($m);//remove $0
 			
 			$pallete = array_pop($m); //remove optional pallete - because it will always set even if empty. 
