@@ -6,10 +6,11 @@
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
  *
- * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
+ * This file copyright (C) 2009 Barry Hunter (geo@barryhunter.co.uk)
  *   adapted from OSGB spreadsheet (www.gps.gov.uk)
  *    by Ian Harris 2004 (ian@teasel.org)
- *     added Irish Grid References by Barry Hunter
+ *     added Irish Grid References by Barry Hunter (2005)
+ *     added ITM by Barry Hunter (May 2009)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,8 +28,9 @@
  */
 
 /**
-* Perform WGS84 Lat/Long <=> OSGB36 Grid Reference 
-*  and WGS84 Lat/Long <=> Irish Grid Reference Conversion
+* Perform WGS84 Lat/Long <=> OSGB36 Grid Reference Conversion
+*  and WGS84 Lat/Long <=> "Irish Grid" (IG) Conversion
+*  and WGS84 Lat/Long <=> "Irish Transverse Mercator" (ITM) Conversion
 *
 * @package Geograph
 * @author Barry Hunter <geo@barryhunter.co.uk>
