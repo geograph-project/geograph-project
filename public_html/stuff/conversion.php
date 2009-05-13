@@ -38,6 +38,8 @@ $cacheid='';
 if ($_GET['To']) { //to lat/long
 	if ($_GET['datum'] == 'osgb36') {
 		$latlong = $conv->osgb36_to_wgs84($_GET['e'],$_GET['n']);
+	} else if ($_GET['datum'] == 'itm') {
+		$latlong = $conv->itm_to_wgs84($_GET['e'],$_GET['n']);
 	} else if ($_GET['datum'] == 'irish') {
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_before = ((float)$usec + (float)$sec);
@@ -63,6 +65,8 @@ if ($_GET['To']) { //to lat/long
 } else if ($_GET['From']) { //from lat/long
 	if ($_GET['datum'] == 'osgb36') {
 		$en = $conv->wgs84_to_osgb36($_GET['lat'],$_GET['long']);
+	} else if ($_GET['datum'] == 'itm') {
+		$en = $conv->wgs84_to_itm($_GET['lat'],$_GET['long']);
 	} else if ($_GET['datum'] == 'irish') {
 		list($usec, $sec) = explode(' ',microtime());
         $querytime_before = ((float)$usec + (float)$sec);

@@ -44,6 +44,30 @@ function distance ($lat1, $lon1, $lat2, $lon2) {
 }
 
 /**************************
+* ITM Functions
+***************************/
+
+# www.osi.ie/GetAttachment.aspx?id=8ec9f05d-d698-488e-a4f5-07227854d10b
+
+#ITM uses GRS80 which is equivilent to WGS84 so no need for datum transformations!
+
+function wgs84_to_itm($lat,$long) {
+    
+    $e = $this->Lat_Long_to_East ($lat,$long,6378137,6356752.314, 600000,       0.999820,53.50000,-8.00000);
+    $n = $this->Lat_Long_to_North($lat,$long,6378137,6356752.314, 600000,750000,0.999820,53.50000,-8.00000);
+
+    return array($e,$n);
+}
+
+function itm_to_wgs84($e,$n) {
+ 
+    $lat = $this->E_N_to_Lat ($e,$n,6378137,6356752.314,600000,750000,0.999820,53.50000,-8.00000);
+    $lon = $this->E_N_to_Long($e,$n,6378137,6356752.314,600000,750000,0.999820,53.50000,-8.00000);
+
+    return array($lat,$lon);
+}
+
+/**************************
 * Irish Functions
 ***************************/
 

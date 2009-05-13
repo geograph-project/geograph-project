@@ -19,11 +19,16 @@
 		  </TR> 
 		  <TR> 
 			 <TD><INPUT TYPE="RADIO" NAME="datum" VALUE="irish" ALT="{if $datum == "irish"}" CHECKED="CHECKED{/if}"></TD> 
-			 <TD>irish</TD>
+			 <TD>irish grid</TD>
 			 <TD ALIGN="RIGHT">northing:</TD> 
 			 <TD><INPUT TYPE="TEXT" NAME="n" SIZE="10" VALUE="{$n}"></TD> 
 			 <TD ALIGN="RIGHT">long</TD> 
 			 <TD><INPUT TYPE="TEXT" NAME="long" SIZE="10" VALUE="{$long}"></TD> 
+		  </TR>
+		  <TR> 
+			 <TD><INPUT TYPE="RADIO" NAME="datum" VALUE="itm" ALT="{if $datum == "itm"}" CHECKED="CHECKED{/if}"></TD> 
+			 <TD>itm</TD>
+			 <TD COLSPAN="4">&nbsp;</TD> 
 		  </TR>
 		  <TR>
 			 <TD COLSPAN="2" ALIGN="CENTER"><INPUT TYPE="BUTTON"
