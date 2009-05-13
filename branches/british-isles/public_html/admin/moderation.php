@@ -347,6 +347,7 @@ from
 where
 	$sql_where
 	$sql_where2
+	and submitted < date_sub(now(),interval 30 minute)
 group by gridimage_id
 order by
 	$sql_order

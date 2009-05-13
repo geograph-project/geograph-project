@@ -505,6 +505,15 @@ class GeographMap
 	* @access private
 	*/
 	function& _renderMap() {
+
+		//save it for rerendering later. 
+		if ($ok) {
+			$db=&$this->_getDB();
+
+			$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%f,type_or_user=%d,palette=%d",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->palette);
+
+			$db->Execute($sql);
+		}
 	
 	#STANDARD MAP
 		if ($this->type_or_user == 0) {
@@ -550,14 +559,6 @@ class GeographMap
 			$ok = $this->_renderImage();
 		} 
 
-		//save it for rerendering later. 
-		if ($ok) {
-			$db=&$this->_getDB();
-
-			$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%f,type_or_user=%d,palette=%d",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->palette);
-
-			$db->Execute($sql);
-		}
 		return $ok;
 	}
 	
