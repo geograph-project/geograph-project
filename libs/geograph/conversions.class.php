@@ -106,6 +106,7 @@ function wgs84_to_national($lat,$long,$usehermert = true) {
 	} else if ($uk) {
 		return array_merge($conv->wgs84_to_osgb36($lat,$long),array(1));
 	}
+	return array(0,0,0);
 }
 
 
@@ -175,7 +176,9 @@ function national_to_gridref($e,$n,$gr_length,$reference_index,$spaced = false) 
 	$northings = sprintf("%05d",$n % 100000);
 	
 
-	if ($gr_length) {
+	if ($gr_length == -1) { 
+		return array("$prefix",$len);
+	} elseif ($gr_length) {
 		$len = intval($gr_length/2);
 	} else {
 		//try to work out the shortest grid ref length

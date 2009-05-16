@@ -47,6 +47,8 @@ if (!empty($_GET['To'])) { //to lat/long
 		$latlong = $conv->osgb36_to_wgs84($_GET['e'],$_GET['n']);
 	} else if ($_GET['datum'] == 'irish') {
 		$latlong = $conv->irish_to_wgs84($_GET['e'],$_GET['n'],$_GET['usehermert']);
+	} else if ($_GET['datum'] == 'itm') {
+		$latlong = $conv->itm_to_wgs84($_GET['e'],$_GET['n']);
 	} else {
 		//todo: make an educated guess - basically if could be irish then use that otherwise gb ?!? - probably not...
 	}
@@ -81,6 +83,9 @@ if (!empty($_GET['To'])) { //to lat/long
 		$en = $conv->wgs84_to_osgb36($_GET['lat'],$_GET['long']);
 	} else if ($_GET['datum'] == 'irish') {
 		$en = $conv->wgs84_to_irish($_GET['lat'],$_GET['long'],$_GET['usehermert']);
+        
+	} else if ($_GET['datum'] == 'itm') {
+		$en = $conv->wgs84_to_itm($_GET['lat'],$_GET['long']);
         
 	} else {
 		list($e,$n,$reference_index) = $conv->wgs84_to_national($_GET['lat'],$_GET['long'],$_GET['usehermert']);

@@ -108,7 +108,7 @@ class ImageList
 	/**
 	* get image list for particular user
 	*/
-	function getImagesByUser($user_id, $statuses, $sort = 'submitted', $count=null,$advanced = false)
+	function getImagesByUser($user_id, $statuses, $sort = 'gridimage_id', $count=null,$advanced = false)
 	{
 		//we accept an array or a single status...
 		if (is_array($statuses))
