@@ -60,6 +60,8 @@ Disallow: /places.php
 Disallow: /explore/places.php
 Disallow: /usermsg.php
 Disallow: /statistics/breakdown.php
+Disallow: /statistics/leaderboard.php?*when*
+Disallow: /statistics/moversboard.php?*when*
 Disallow: /submit.php
 Disallow: /submit_popup.php
 Disallow: /map_frame.php
