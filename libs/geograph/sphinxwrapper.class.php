@@ -193,6 +193,12 @@ class sphinxwrapper {
 				}
 			}
 			
+			if (count($grs) > 100) {
+				//if we have that many it really doesnt matter if we miss a few!
+				shuffle($grs);
+				$grs = array_slice($grs,0,100);
+			}
+			
 			if (count($grs) == 0) {
 				//somethig went wrong... 
 				
