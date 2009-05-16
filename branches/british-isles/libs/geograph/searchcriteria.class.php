@@ -159,11 +159,31 @@ class SearchCriteria
 				}
 			}
 			
-			$rectangle = "'POLYGON(($west $south,$east $south,$east $north,$west $north,$west $south))'";
+			$span = max($east - $west,$north - $south); 
 			
-			$sql_where = "CONTAINS(GeomFromText($rectangle),point_ll)";
-			
-			$this->sphinx['impossible']++; //todo we might be able to transform it to a set of GR's?
+			if ($span > 8) {
+				$sql_where = ''; //outside our area, so return unfiltered
+			} else {			
+				$conv = new ConversionsLatLong;
+
+				list($e1,$n1,$ri1) = $conv->wgs84_to_national($south,$west,false);
+				list($e2,$n2,$ri2) = $conv->wgs84_to_national($north,$east,false);
+
+				if (!$ri1 || !$ri2) {
+					$sql_where = ''; //outside our area, so return unfiltered
+				} else {
+					$rectangle = "'POLYGON(($west $south,$east $south,$east $north,$west $north,$west $south))'";
+
+					$sql_where = "CONTAINS(GeomFromText($rectangle),point_ll)";
+					
+					if ($ri1 == $ri2) {
+						//now possible, but calculate it JIT
+						$this->sphinx['bbox'] = array($e1,$n1,$ri1,$e2,$n2,$ri2);
+					} else {
+						$this->sphinx['impossible']++;
+					}
+				}
+			}
 		} else {
 			$sql_where = '';
 		}
