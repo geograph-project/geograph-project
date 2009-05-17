@@ -373,6 +373,42 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 
 <h3>Further Information</h3>
 
+{if $use_autocomplete}
+
+<p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
+	<br/><span class="formerror">{$error.imageclass}</span>
+	{/if}</p>
+	<div style="position:relative">
+	<input size="32" id="imageclass" name="imageclass" value="{$imageclass|escape:'html'}" maxlength="32" spellcheck="true"/>
+	</div>
+{literal}
+<script type="text/javascript">
+<!--
+
+AttachEvent(window,'load', function() {
+ 	var inputWord = $('imageclass');
+ 	
+    new Autocompleter.Request.JSON(inputWord, '/finder/categories.json.php', {
+        'postVar': 'q',
+        'minLength': 2
+    });
+    
+},false);
+
+//-->
+</script>
+{/literal}
+
+	<!-- dynamic assets --> 
+	<link rel="stylesheet" type="text/css" href="{"/js/Autocompleter.css"|revision}" /> 
+
+	<script type="text/javascript" src="{"/js/mootools-1.2-core.js"|revision}"></script> 
+	<script type="text/javascript" src="{"/js/Observer.js"|revision}"></script> 
+	<script type="text/javascript" src="{"/js/Autocompleter.js"|revision}"></script> 
+	<script type="text/javascript" src="{"/js/Autocompleter.Request.js"|revision}"></script> 
+
+{else}
+
 {literal}
 <script type="text/javascript">
 <!--
@@ -418,7 +454,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/>
 	</span></p>
 	
-	
+{/if}	
 	
 	
 <p><label><b>Date photo taken</b></label> {if $error.imagetaken}
@@ -458,8 +494,10 @@ AttachEvent(window,'load',onChangeImageclass,false);
 <input type="submit" name="goback" value="&lt; Back"/>
 <input type="submit" name="next" value="Next &gt;"/></p>
 
+{if !$use_autocomplete}
 <script type="text/javascript" src="/categories.js.php"></script>
 <script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>
+{/if}
 
 {else}
 	<input type="hidden" name="title" value="{$title|escape:'html'}"/>

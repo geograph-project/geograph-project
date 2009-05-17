@@ -525,7 +525,8 @@ if (isset($_POST['gridsquare']))
 		
 			//find a possible place within 25km
 			$smarty->assign('place', $square->findNearestPlace(25000));
-			
+
+			$smarty->assign('use_autocomplete', $USER->use_autocomplete);		
 			
 			$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
 			$smarty->assign('preview_url', $preview_url);

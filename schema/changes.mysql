@@ -560,3 +560,7 @@ ALTER TABLE geobb_topics ADD KEY (`forum_id`,`topic_id` DESC);
 
 #good for viewing a forum page
 ALTER TABLE geobb_topics ADD KEY (`forum_id`,sticky DESC,`topic_last_post_id` DESC);
+
+
+
+ALTER TABLE  `user` ADD  `use_autocomplete` TINYINT UNSIGNED NOT NULL DEFAULT  '0';
