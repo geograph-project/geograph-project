@@ -377,10 +377,9 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 
 <p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
 	<br/><span class="formerror">{$error.imageclass}</span>
-	{/if}</p>
-	<div style="position:relative">
+	{/if}<br />
 	<input size="32" id="imageclass" name="imageclass" value="{$imageclass|escape:'html'}" maxlength="32" spellcheck="true"/>
-	</div>
+	</p>
 {literal}
 <script type="text/javascript">
 <!--
@@ -399,14 +398,6 @@ AttachEvent(window,'load', function() {
 //-->
 </script>
 {/literal}
-
-	<!-- dynamic assets --> 
-	<link rel="stylesheet" type="text/css" href="{"/js/Autocompleter.css"|revision}" /> 
-
-	<script type="text/javascript" src="{"/js/mootools-1.2-core.js"|revision}"></script> 
-	<script type="text/javascript" src="{"/js/Observer.js"|revision}"></script> 
-	<script type="text/javascript" src="{"/js/Autocompleter.js"|revision}"></script> 
-	<script type="text/javascript" src="{"/js/Autocompleter.Request.js"|revision}"></script> 
 
 {else}
 
@@ -495,7 +486,14 @@ AttachEvent(window,'load',onChangeImageclass,false);
 <input type="submit" name="goback" value="&lt; Back"/>
 <input type="submit" name="next" value="Next &gt;"/></p>
 
-{if !$use_autocomplete}
+{if $use_autocomplete}
+	<link rel="stylesheet" type="text/css" href="{"/js/Autocompleter.css"|revision}" /> 
+
+	<script type="text/javascript" src="{"/js/mootools-1.2-core.js"|revision}"></script> 
+	<script type="text/javascript" src="{"/js/Observer.js"|revision}"></script> 
+	<script type="text/javascript" src="{"/js/Autocompleter.js"|revision}"></script> 
+	<script type="text/javascript" src="{"/js/Autocompleter.Request.js"|revision}"></script> 
+{else}
 <script type="text/javascript" src="/categories.js.php"></script>
 <script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>
 {/if}

@@ -531,6 +531,8 @@ if (isset($_REQUEST['id']))
 			}
 		}
 		
+		$smarty->assign('use_autocomplete', $USER->use_autocomplete);
+		
 		require_once('geograph/rastermap.class.php');
 
 		$rastermap = new RasterMap($image->grid_square,true);

@@ -58,6 +58,7 @@ Autocompleter.Request.JSON = new Class({
 	initialize: function(el, url, options) {
 		this.parent(el, options);
 		this.request = new Request.JSON($merge({
+			method: 'get',
 			'url': url,
 			'link': 'cancel'
 		}, this.options.ajaxOptions)).addEvent('onComplete', this.queryResponse.bind(this));
