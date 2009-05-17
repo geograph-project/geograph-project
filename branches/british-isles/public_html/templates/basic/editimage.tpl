@@ -482,29 +482,62 @@ AttachEvent(window,'load',onChangeImageclass,false);
 </script>
 {/literal}
 {/if}
-<p><label for="imageclass"><b>Image Category</b> {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />	
+
+{if $use_autocomplete}
+
+<p><label for="imageclass"><b>Image Category</b></label> {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />
 	{if $error.imageclass}
 	<span class="formerror">{$error.imageclass}</span><br/>
 	{/if}
 	
-	{if $error.imageclassother}
-	<span class="formerror">{$error.imageclassother}</span><br/>
-	{/if}
-	
-	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onmouseover="prePopulateImageclass()" disabled="disabled">
-		<option value="">--please select feature--</option>
-		{if $image->imageclass}
-			<option value="{$image->imageclass}" selected="selected">{$image->imageclass}</option>
+	<input size="32" id="imageclass" name="imageclass" value="{$imageclass|escape:'html'}" maxlength="32" spellcheck="true"/>
+	</p>
+{literal}
+<script type="text/javascript">
+<!--
+
+AttachEvent(window,'load', function() {
+ 	var inputWord = $('imageclass');
+ 	
+    new Autocompleter.Request.JSON(inputWord, '/finder/categories.json.php', {
+        'postVar': 'q',
+        'minLength': 2,
+        maxChoices: 60
+    });
+    
+},false);
+
+//-->
+</script>
+{/literal}
+
+
+{else}
+
+	<p><label for="imageclass"><b>Image Category</b> {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />	
+		{if $error.imageclass}
+		<span class="formerror">{$error.imageclass}</span><br/>
 		{/if}
-		<option value="Other">Other...</option>
-	</select><input type="button" name="imageclass_enable_button" value="change" onclick="prePopulateImageclass()"/>
-	
-	
-	<span id="otherblock"><br/>
-	<label for="imageclassother">Please specify </label> 
-	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/></p>
-	</span>
-</p>	
+
+		{if $error.imageclassother}
+		<span class="formerror">{$error.imageclassother}</span><br/>
+		{/if}
+
+		<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onmouseover="prePopulateImageclass()" disabled="disabled">
+			<option value="">--please select feature--</option>
+			{if $image->imageclass}
+				<option value="{$image->imageclass}" selected="selected">{$image->imageclass}</option>
+			{/if}
+			<option value="Other">Other...</option>
+		</select><input type="button" name="imageclass_enable_button" value="change" onclick="prePopulateImageclass()"/>
+
+
+		<span id="otherblock"><br/>
+		<label for="imageclassother">Please specify </label> 
+		<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/></p>
+		</span>
+	</p>	
+{/if}
 
 {if $user->user_id eq $image->user_id || $isadmin}
 	<p><label><b>Date picture taken</b> {if $moderated.imagetaken}<span class="moderatedlabel">(moderated)</span>{/if}</label> <br/>
@@ -579,7 +612,16 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 
 {/if}
 
+{if $use_autocomplete}
+	<link rel="stylesheet" type="text/css" href="{"/js/Autocompleter.css"|revision}" /> 
+
+	<script type="text/javascript" src="{"/js/mootools-1.2-core.js"|revision}"></script> 
+	<script type="text/javascript" src="{"/js/Observer.js"|revision}"></script> 
+	<script type="text/javascript" src="{"/js/Autocompleter.js"|revision}"></script> 
+	<script type="text/javascript" src="{"/js/Autocompleter.Request.js"|revision}"></script> 
+{else}
 <script type="text/javascript" src="/categories.js.php"></script>
+{/if}
 {if $rastermap->enabled}
 	{$rastermap->getFooterTag()}
 {/if}
