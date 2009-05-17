@@ -390,7 +390,8 @@ AttachEvent(window,'load', function() {
  	
     new Autocompleter.Request.JSON(inputWord, '/finder/categories.json.php', {
         'postVar': 'q',
-        'minLength': 2
+        'minLength': 2,
+        maxChoices: 60
     });
     
 },false);
