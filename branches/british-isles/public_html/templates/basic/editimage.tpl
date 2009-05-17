@@ -490,7 +490,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<span class="formerror">{$error.imageclass}</span><br/>
 	{/if}
 	
-	<input size="32" id="imageclass" name="imageclass" value="{$imageclass|escape:'html'}" maxlength="32" spellcheck="true"/>
+	<input size="32" id="imageclass" name="imageclass" value="{$image->imageclass|escape:'html'}" maxlength="32" spellcheck="true"/>
 	</p>
 {literal}
 <script type="text/javascript">
