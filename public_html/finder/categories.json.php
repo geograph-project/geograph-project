@@ -58,11 +58,11 @@ if (!empty($_REQUEST['q'])) {
 
 		if ($fuzzy) {
 			$sphinx->_getClient()->SetIndexWeights(array('gaz'=>10,'gaz_meta'=>1));
-		#	$ids = $sphinx->returnIds($pg,'gaz,gaz_meta');	
+			$ids = $sphinx->returnIds($pg,'gaz,gaz_meta');	
 		} else {
-		#	$ids = $sphinx->returnIds($pg,'category');	
+			$ids = $sphinx->returnIds($pg,'category');	
 		}
-$ids = array(1,2,3,4,13);
+
 		if (!empty($ids) && count($ids)) {
 
 			$where = "category_id IN(".join(",",$ids).")";
