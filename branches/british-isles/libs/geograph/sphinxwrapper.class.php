@@ -157,7 +157,7 @@ class sphinxwrapper {
 			list($e1,$n1,$ri1,$e2,$n2,$ri2) = $data['bbox'];
 			
 			$span = max($e2-$e1,$n2-$n1);
-			
+			//todo-decide-o-area?
 			if ($span > 250000) { //100k ie 1 myriad
 				$mod = 100000;
 				$grlen = -1;

@@ -44,10 +44,15 @@ class RebuildCategoryStats extends EventHandler
 		$db->Execute("DROP TABLE IF EXISTS category_stat_tmp");
 		
 		
-		$db->Execute("CREATE TABLE category_stat_tmp
-				(INDEX (c))
+		$db->Execute("CREATE TABLE category_stat_tmp (
+					`category_id` int(11) NOT NULL AUTO_INCREMENT,
+					`imageclass` varchar(32) NOT NULL DEFAULT '',
+					`c` int(11) NOT NULL DEFAULT '0',
+					`gridimage_id` int(11) NOT NULL ,
+					PRIMARY KEY (`category_id`),
+					INDEX (c))
 				ENGINE=MyISAM
-				SELECT imageclass,count(*) as c,gridimage_id
+				SELECT null,imageclass,count(*) as c,gridimage_id
 				FROM gridimage_search
 				GROUP BY imageclass");
 		
