@@ -43,7 +43,11 @@ $square=new GridSquare;
 if (isset($_GET['inner'])) {
 	$template='browse_inner.tpl';
 } else {
-	$template='browse.tpl';
+	if (isset($_GET['t']) && $_GET['t'] > 1) {
+		$template='browse2.tpl';
+	} else {
+		$template='browse.tpl';
+	}
 	$smarty->assign('prefixes', $square->getGridPrefixes());
 	$smarty->assign('kmlist', $square->getKMList());
 }
@@ -373,6 +377,13 @@ if ($grid_given)
 			
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			
+			if ($template=='browse2.tpl' && $square->imagecount > 15 && $_GET['by'] !== '1') {
+				$images=$square->getImages($inc_all_user,$custom_where,'order by ftf desc,gridimage_id limit 15');
+				
+				$smarty->assign_by_ref('images', $images);
+				$smarty->assign('sample', 1);
+			} else {
+			
 			$row = $db->cacheGetRow($cacheseconds,"SELECT 
 			count(distinct user_id) as user,
 			count(distinct imageclass) as class,
@@ -417,6 +428,7 @@ if ($grid_given)
 				$image=new GridImage;
 				$image->fastInit($rec);
 				$smarty->assign_by_ref('image', $image);
+			}
 			}
 		} elseif (!empty($_GET['by'])) {
 			$square->totalimagecount = $square->imagecount;
