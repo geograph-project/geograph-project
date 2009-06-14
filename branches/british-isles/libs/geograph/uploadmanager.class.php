@@ -320,7 +320,7 @@ class UploadManager
 				return false;
 			}
 
-		if (preg_match('/^http:\/\/[\w\.]+\/[\w\.\/]+\.jpg$/',$url) || preg_match('/^http:\/\/www\.picnik\.com\/file\/\d+$/',$url)) 
+		if (preg_match('/^http:\/\/[\w\.-]+\/[\w\.\/-]+\.jpg$/',$url) || preg_match('/^http:\/\/www\.picnik\.com\/file\/\d+$/',$url)) 
 		{	
 			if (fetch_remote_file($url, $pendingfile)) 
 			{	
