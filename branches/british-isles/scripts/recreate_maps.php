@@ -146,7 +146,7 @@ $end_time = $start_time + (60*$param['timeout']);
 
 while (1) {
 
-	$invalid_maps = $db->GetOne("select count(*) from mapcache where age > 0 and type_or_user >= -1");
+	$invalid_maps = $db->GetOne("select age from mapcache where age > 0 and type_or_user >= -1"); //we only need to know there is one or more, not how many
 
 	if ($invalid_maps) {
 		
