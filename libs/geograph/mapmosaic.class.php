@@ -1016,8 +1016,13 @@ class GeographMapMosaic
 			$recordSet->MoveNext();
 		}
 		$recordSet->Close();
-		if (!$dummy)
+		if (!$dummy) {
+			//takes a long time..
+			unset($this->db);
+			$db=&$this->_getDB();
+			
 			$db->Execute("delete from mapcache where $crit");
+		}
 		return $deleted;
 	}
 	
