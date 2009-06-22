@@ -61,7 +61,7 @@ corrected</small><br/>
    {elseif $pics_pending < 5}
    	<br/><small><b>There are only {$pics_pending} images waiting to be displayed as picture of the day, please consider adding some!</b></small>
    {else}
-   	(<b><a href="/search.php?i=2136521&amp;temp_displayclass=vote">Vote now!</a></b> - don't disclose this url)
+   	(<b><a href="/search.php?i=5761957&amp;temp_displayclass=vote">Vote now!</a></b> - don't disclose this url)
    {/if}</li>
 {/if}
 
