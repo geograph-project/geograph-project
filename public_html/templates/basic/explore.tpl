@@ -14,9 +14,11 @@
 <h3>Outstanding achievement...</h3>
 <ul class="explore">
 
-	<li><a href="/statistics/fully_geographed.php">List <b>Fully Geographed Hectads</b></a> <small>(10 x 10 Gridsquares)</small> - include Image Mosaics!</li>
+	<li><a href="/statistics/fully_geographed.php">List <b>Fully Geographed Hectads</b></a> <small>(10 x 10 km squares)</small> - links to large Image Mosaics</li>
 
-	<li>{external href="http://www.nearby.org.uk/geograph/mosaic/" text="Mosaics of <b>Completed Myriads</b>"} (using a Flash based viewer)</li>
+	<li>{external href="http://www.nearby.org.uk/geograph/mosaic/" text="Mosaics of <b>Completed Myriads</b>"} <small>(100 x 100 km squares)</small> - using a Flash based viewer</li>
+
+        <li>{external href="http://www.nearby.org.uk/geograph/coverage/" text="<b>Historic Coverage Maps</b>"} <sup style="color:red">NEW!</sup> - includes buildup animations!</li>
 
 </ul>
 <h3>Selections...</h3>

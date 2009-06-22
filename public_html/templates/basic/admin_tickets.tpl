@@ -33,7 +33,7 @@
      <label for="locked" style="color:red">Locked</label><input type="checkbox" name="locked" id="locked" {if $locked} checked="checked"{/if}/> &nbsp;
     <input type="submit" name="Submit" value="Update"/>
     &nbsp;&nbsp;&nbsp;&nbsp;
-    (Keywords Filter:<input type="text" name="q" value="{$q|escape:'html'}"> <sup><a href="#n1">1</a></sup>)
+    (Keywords Search:<input type="text" name="q" value="{$q|escape:'html'}"> <sup><a href="#n1">1</a></sup>)
     
     </div></form>
 
