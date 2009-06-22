@@ -55,6 +55,10 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 -->
 
+{if $image_taken && $image->imagetaken < 2009}
+<div class="keywords" style="top:-3em;float:right;position:relative;font-size:0.8em;height:0em;z-index:-10" title="year photo was taken">year taken <div style="font-size:3em;line-height:0.5em">{$image->imagetaken|truncate:4:''}</div></div>
+{/if}
+
 <div class="buttonbar">
 
 <table style="width:100%">
@@ -210,7 +214,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </div>
 <br style="clear:both"/>
 {if $image->hits}
-	<div style="text-align">This page has been viewed about <b>{$image->hits}</b> times. <a href="/help/hit_counter">Read more</a></div>
+	<div style="text-align:right;font-size:0.8em">This page has been viewed about <b>{$image->hits}</b> times. <a href="/help/hit_counter">Read more</a></div>
 {/if}
 <div class="interestBox" style="text-align:center">View this location: 
 
