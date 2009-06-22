@@ -25,6 +25,10 @@ require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 init_session();
 
+if (!empty($_GET['debug'])) {
+	ini_set("display_errors",true);
+}
+
 if (!empty($_GET['style'])) {
 	$USER->getStyle();
 	if (!empty($_SERVER['QUERY_STRING'])) {
@@ -682,6 +686,9 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign_by_ref('post', $_GET);
 		$smarty->assign_by_ref('references',$CONF['references']);
 		$smarty->assign('searchdesc', $engine->searchdesc);
+		if (isset($_GET['form']) && $_GET['form'] == 'simple') {
+			$smarty->assign('form','simple');
+		}
 		$smarty->display('search_multiple.tpl');
 	} else {
 

@@ -81,6 +81,15 @@ set_time_limit(5000);
 			$map->minimum = intval($_GET['number']);
 			
 			unset($CONF['enable_newmap']);
+		} elseif (isset($_GET['hits'])) {
+			$map->setOrigin(0,-10);
+			$map->setImageSize(900,1300);
+			$map->setScale(1);
+			
+			$map->type_or_user = -5;
+
+			print $map->getToken();
+			exit;			
 		} elseif (isset($_GET['plain'])) {
 			$map->setOrigin(0,-10);
 			$map->setImageSize(900,1300);

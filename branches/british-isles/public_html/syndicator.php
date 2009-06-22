@@ -1,4 +1,7 @@
 <?php
+
+ini_set("display_errors",1);
+
 /**
  * $Project: GeoGraph $
  * $Id$
@@ -112,14 +115,14 @@ $opt_expand = (!empty($_GET['expand']) && $format != 'KML')?1:0;
 
 if (isset($cacheid)) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/$cacheid-{$pg}-{$format}{$opt_expand}.$extension";
-	$rss_timeout = 3600;
+	$rss_timeout = 3600*6;
 } elseif (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):1;
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}{$opt_expand}.$extension";
-	$rss_timeout = 3600;
+	$rss_timeout = 3600*6;
 } elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/u{$_GET['u']}-{$format}{$opt_expand}.$extension";
-	$rss_timeout = 1800;
+	$rss_timeout = 1800*6;
 } else {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$format}{$opt_expand}.$extension";
 	$rss_timeout = 900;
@@ -290,7 +293,7 @@ for ($i=0; $i<$cnt; $i++)
 		if ($format == 'MEDIA') {
 			$item->content = $images->images[$i]->_getFullpath(true,true); 
 			if ($opt_expand) {
-				$title=$this->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
+				$title=$images->images[$i]->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
 				$item->description = '<a href="'.$item->link.'" title="'.$title.'">'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
 				$item->descriptionHtmlSyndicated = true;
 			}
@@ -302,7 +305,7 @@ for ($i=0; $i<$cnt; $i++)
 		imagejpeg($images->images[$i]->getSquareThumb(16));
 		$item->thumbdata = ob_get_clean();
 	} elseif ($opt_expand) {
-		$title=$this->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
+		$title=$images->images[$i]->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
 		$item->description = '<a href="'.$item->link.'" title="'.$title.'">'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
 		$item->descriptionHtmlSyndicated = true;
 	}

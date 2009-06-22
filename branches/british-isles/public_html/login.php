@@ -31,6 +31,34 @@ init_session();
 $USER->login(false);
 
 $smarty = new GeographPage;
+
+        $db=NewADOConnection($GLOBALS['DSN']);
+
+        if ($CONF['forums']) {
+                //let's find recent posts in the announcements forum made by
+                //administrators
+                $sql="select u.user_id,u.realname,t.topic_title,p.post_text,t.topic_id,t.topic_time, posts_count - 1 as comments
+                        from geobb_topics as t
+                        inner join geobb_posts as p on(t.topic_id=p.topic_id)
+                        inner join user as u on (p.poster_id=u.user_id)
+                        where find_in_set('admin',u.rights)>0 and
+                        abs(unix_timestamp(t.topic_time) - unix_timestamp(p.post_time) ) < 10 and
+                        t.forum_id=1
+                        order by t.topic_time desc limit 3";
+                $news=$db->GetAll($sql);
+                if ($news)
+                {
+                        foreach($news as $idx=>$item)
+                        {
+                                $news[$idx]['post_text']=str_replace('<br>', '<br/>', GeographLinks($news[$idx]['post_text'],true));
+                        }
+                }
+
+
+                $smarty->assign_by_ref('news2', $news);
+        }
+
+
 $smarty->display('login_success.tpl');
 
 	
