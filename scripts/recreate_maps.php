@@ -168,7 +168,9 @@ while (1) {
 			order by pixels_per_km desc, age desc limit 50";
 
 		$count = $mosaic->deleteBySql($crit,$param['dryrun'],$param['base']);
+		print date('r')."\n";
 		print "Deleted $count\n";
+		print "Records {$GLOBALS['deleted_records']}\n\n";
 
 		if (time()>$end_time) {
 			//well come to the end of the scripts useful life
