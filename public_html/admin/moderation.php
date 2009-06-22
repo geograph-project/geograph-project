@@ -354,6 +354,7 @@ limit $limit";
 //implied: and user_id != {$USER->user_id}
 // -> because squares with users images are locked
 
+#trigger_error("sql: ".$sql, E_USER_NOTICE);
 
 #############################
 # fetch the list of images...
@@ -371,6 +372,7 @@ foreach ($images->images as $i => $image) {
 		$images->images[$i]->use6fig = 0;
 	}
 	$token->setValue("g", $images->images[$i]->getSubjectGridref(true));
+	#trigger_error("<-image->", E_USER_NOTICE);
 	if ($image->viewpoint_eastings) {
 		//note $image DOESNT work non php4, must use $images->images[$i]
 		//move the photographer into the center to match the same done for the subject

@@ -30,6 +30,7 @@ if (IE) {
 
 if (ri == 1) {
 
+//// FIXME <- germany
 // These arrays hold the valid 100km references
 var GridLetters = new Array (2);
 
@@ -424,6 +425,10 @@ function checkGridReference(that,showmessage) {
 		that.focus();
 	}
 	return ok;
+}
+
+function mapMarkerToCenter(that) {
+	//TODO
 }
 
 function updateMapMarker(that,showmessage,dontcalcdirection) {

@@ -4,7 +4,7 @@
 
 	<div style="padding:5px;background:#dddddd;position:relative; float:right;"><form method="get" action="/browse.php" style="display:inline">
 	<label for="gridref1">Jump</label> to <b>Grid Reference</b>: <br/>
-	<input id="gridref1" type="text" name="gridref" value="ST8751" size="15" style="color:gray" onfocus="{literal}if (this.value=='ST8751') { this.value='';this.style.color='';}{/literal}"/>
+	<input id="gridref1" type="text" name="gridref" value="TPT2769" size="15" style="color:gray" onfocus="{literal}if (this.value=='TPT2769') { this.value='';this.style.color='';}{/literal}"/>
 	<input id="searchgo1" type="submit" value="Go"/>
 	</form></div>
 
@@ -16,26 +16,19 @@
 
 	<li><a href="/statistics/fully_geographed.php">List <b>Fully Geographed Hectads</b></a> <small>(10 x 10 Gridsquares)</small> - include Image Mosaics!</li>
 
-	<li>{external href="http://www.nearby.org.uk/geograph/mosaic/" text="Mosaics of <b>Completed Myriads</b>"} (using a Flash based viewer)</li>
-
 </ul>
 <h3>Selections...</h3>
 <ul class="explore">
 
 	<li><a href="/explore/searches.php"><b>Featured Searches</b></a> - hand picked example searches</li>
 
-	<li><a href="/explore/routes.php">Follow <b>National Routes</b></a>.</li>
-
 	<li><a name="counties"></a>View Photographs at <b>Centre Points</b>: <ul>
-		<li><a href="/explore/counties.php?type=modern">Modern Administrative Counties</a>,
-		<a href="/explore/counties.php">Ceremonial (Pre 1994) Counties</a>,
-		<a href="/explore/counties.php?type=pre74">Historic (Pre 1974) Counties</a></li>
-		<li><a href="/explore/counties.php?type=capital">(Irish) County Capitals</a>, <a href="/explore/cities.php">Cities and Large Towns</a></li>
+		<li><a href="/explore/cities.php">Cities and Large Towns</a></li>
 	</ul></li>
 
 	<li><a href="/gallery/"><b>Galleries</b></a> - hand picked images on varies themes</li>
 
-	<li><a href="/explore/places/" title="Explore by Place">Explore the <b>placename gazetteer</b></a> <sup style="color:red">New!</sup></li>
+	<!--li><a href="/explore/places/" title="Explore by Place">Explore the <b>placename gazetteer</b></a> <sup style="color:red">New!</sup></li-->
 
 </ul>
 <h3>Breakdowns...</h3>
@@ -53,15 +46,13 @@
 
 	<li><form method="get" action="/browse.php" style="display:inline">
 	<label for="gridref">Browse</label> by <b>Grid Reference</b>: 
-	<input id="gridref" type="text" name="gridref" value="ST8751" size="15" style="color:gray" onfocus="{literal}if (this.value=='ST8751') { this.value='';this.style.color='';}{/literal}"/>
+	<input id="gridref" type="text" name="gridref" value="TPT2769" size="15" style="color:gray" onfocus="{literal}if (this.value=='TPT2769') { this.value='';this.style.color='';}{/literal}"/>
 	<input id="searchgo" type="submit" value="Go"/>
 	</form></li>
 
 	<li><a href="/stuff/browse-random.php">Jump to a <b>Random</b> Gridsquare</a>.</li>
 
 	<li><a href="/mapbrowse.php">Explore a Zoomable <b>Map</b></a>.</li>
-
-	<li><a href="/mapper/">View a <b>Draggable Map</b> checksheet</a>. (use the Grid Reference box to jump to your area of interest)</li>
 
 	<li><form method="get" action="/search.php" style="display:inline">
 	<label for="searchterm"><b>Search</b> by keyword, place, postcode or contributor</label>: <br/>

@@ -76,7 +76,7 @@ class RebuildUserStats extends EventHandler
 					sum(moderation_status = 'geograph') as geographs,
 					count(distinct imagetaken) as days,
 					count(*)/count(distinct grid_reference) as depth,
-					count(distinct substring(grid_reference,1,3 - reference_index)) as myriads,
+					count(distinct substring(grid_reference,1,length(grid_reference)-4)) as myriads,
 					count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) ) as hectads,
 					max(gridimage_id) as last,
 					0 as `content`

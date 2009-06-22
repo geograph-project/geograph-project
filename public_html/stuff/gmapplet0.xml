@@ -71,7 +71,7 @@
 		} else {
 			document.getElementById('message').innerHTML = "Zoom in on British Isles to see thumbnails.";
 		}
-		_IG_Analytics("UA-172738-3", url);
+		//_IG_Analytics("UA-172738-3", url);
 	}
 	
 	map.getBoundsAsync(updateMapView);
@@ -81,7 +81,7 @@
 	});
 	
 	
-	_IG_Analytics("UA-172738-3", "/stuff/gmapplet0.xml");
+	//_IG_Analytics("UA-172738-3", "/stuff/gmapplet0.xml");
 </script>
 
 ]]></Content>

@@ -29,16 +29,16 @@
 <div style="width:180px;margin-left:10px;margin-bottom:100px;float:right;font-size:0.8em;padding:10px;background:#dddddd;position:relative; border:1px solid gray; z-index:100">
 <h3 style="margin-bottom:0;margin-top:0">Need Help?</h3>
 
-<p>If you enter the exact location, e.g. <b>TL 246329</b> we'll figure 
-out that it's in the <b>TL 2432</b> 1km square, but we'll also retain 
+<p>If you enter the exact location, e.g. <b>TPT 278695</b> we'll figure 
+out that it's in the <b>TPT 2769</b> 1km square, but we'll also retain 
 the more precise coordinate for accurately mapping the location of the 
 photograph.</p>
 
 <p>When you press Next, we'll find out if there are any existing photographs 
 for that square</p>
 
-<p>If you're new, you may like to check our <a href="/help/guide">guide to 
-geographing</a> first.</p>
+<p>If you're new, you may like to check our <a href="/article/Anleitung">guide to 
+geographing (German)</a> first.</p>
 
 </div>
 {/if} 
@@ -51,11 +51,10 @@ geographing</a> first.</p>
 	
 <div style="position:relative;">
 	<div class="tabHolder">
-		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,5)">Enter Grid Reference</a>
-		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,5)">Choose Square</a>
-		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,5)">Tagged Image</a>
-		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,5); if (!document.getElementById('innerFrame4').src) document.getElementById('innerFrame4').src = '/submitmap.php?inner'">Map/Placename</a>
-		<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" onclick="tabClick('tab','div',5,5)">Application<sup style="color:red">New!</sup></a>
+		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,4)">Enter Grid Reference</a>
+		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,4)">Choose Square</a>
+		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,4)">Tagged Image</a>
+		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,4); if (!document.getElementById('innerFrame4').src) document.getElementById('innerFrame4').src = '/submitmap.php?inner'">Map/Placename</a>
 	</div>
 
 	<div style="position:relative;{if $tab != 1}display:none{/if}" class="interestBox" id="div1">
@@ -74,7 +73,7 @@ geographing</a> first.</p>
 		<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}or <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>{/if}
 		</p>
 		
-		<p>Clicking the <i>Upload via Picnik</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transfering it to Geograph.</p>
+		{if $picnik_api_key}<p>Clicking the <i>Upload via Picnik</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transfering it to Geograph.</p>{/if}
 	</div>		
 
 	<div style="position:relative;{if $tab != 2}display:none{/if}" class="interestBox" id="div2">
@@ -125,41 +124,9 @@ geographing</a> first.</p>
 		<iframe {if $tab == 4}src="/submitmap.php?inner"{/if} id="innerFrame4" width="613" height="660" frameborder="0"><a href="/submitmap.php">Click here to open a Draggable Interactive Google Map</a></iframe>
 	</div>
 	
-	<div style="position:relative;{if $tab != 5}display:none{/if}" class="interestBox" id="div5">
-
-		<h3>JUppy Java&trade; Client</h3>
-		<p><a href="/juppy.php">JUppy</a> is coded in cross-platform Java, and is an ideal solution to upload many images, allowing you to prepare the images without an internet connection. <b><a href="/juppy.php">Read More, and Get it Now!</a></b></p>
-		<hr/>
-		<h3>Picasa Plugin<sup style="color:red">New!</sup></h3>	
-		<p>We have recently created a new submission process that intergrates into the {external href="http://picasa.google.com/" text="Picasa"} image mananagement program. With this button installed can use the selection tools in Picasa to upload photos in bulk, the submission process matches the online upload allowing selection with maps etc. Picasa automatically resizes the photo to Geograph specifications before upload, EXIF data is preserved however its only provided to Geograph at the end so it can't be used to find geolocation or dates embedded in the file. <br/>
-		<b><a href="picasa://importbutton/?url=http://{$http_host}/stuff/geograph-for-picasa.pbz.php/geograph-for-picasa.pbz">Install the Geograph Uploader, Picasa Button</a></b>.<br/> (You will be asked to confirm this action, <b>only works if have Picasa installed!)</b></p>
-		<hr/>
-		<p>Note while JUppy is an Offline Application, with which you can prepare the upload in advance of connecting; the Picasa button requires a Internet Connection to work as it integrates the interactive maps and other aids from the Geograph website.</p>
-	</div>
 </div>
 	<br/><br/><br/>
-	<p>If you are unsure of the photo location there are a number of online 
-		sources available to help:</p>
-		
-	<ul>
-		<li><b>{getamap} provides a search by 
-		Placename or Postcode.</b><br/> Once you have centred the map on the picture location, 
-		return here and enter the <i>Grid reference at centre</i> value shown into the box 
-		above.<br/><br/></li>
-		<li>{external href="http://www.multimap.com/map/browse.cgi?lat=54.5445&lon=-6.8228&scale=1000000" text="multimap.com"} now displays 1:50,000 <b>Mapping for Northern Ireland</b>. Use our handy <a href="/latlong.php">Lat/Long Convertor</a> to get the correct Grid Square for a picture.<br/><br/>
-		
-		Furthermore {external href="http://www.osni.gov.uk/mapstore" text="OSNI"} and {external href="http://www.osi.ie/" text="OSI"} now offer online mapping from their own websites. Coordinate conversion may not be easy - its porbably best to rely on visual estimation using the national grid projected on the map.
-		<br/><br/></li>
-		
-		<li><b>If you have a WGS84 latitude &amp; longitude coordinate</b>
-		(e.g. from a GPS receiver, or from multimap site), then see our 
-		<a href="/latlong.php">Lat/Long to Grid Reference Convertor</a><br/><br/></li>
-		<li><b>For information on {external href="http://en.wikipedia.org/wiki/Grid_reference" text="Grid References"}</b> <br/>see 
-		{external title="Guide to the National Grid" text="Interactive Guide to the National Grid in Great Britain" href="http://www.ordnancesurvey.co.uk/oswebsite/gi/nationalgrid/nghelp1.html"}.
-		The {external href="http://en.wikipedia.org/wiki/Irish_national_grid_reference_system" text="Irish National Grid"} is very similar, but using a single letter prefix, 
-		see <a href="/mapbrowse.php">Overview Map</a> for the layout of the squares.
-		</li>
-	</ul>
+	<p>If you are unsure of the photo location reading the <a href="article/Anleitung">guide</a> (currently only available in German) might help.</p>
 
 	<script type="text/javascript" src="{"/mapping1.js"|revision}"></script>
 	<script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
@@ -211,17 +178,17 @@ geographing</a> first.</p>
 		<div><small><small style="color:gray"><i>If your image is over 640 pixels in either direction, it will be resized. If you have presized please aim to have the filesize under 100kb and in anycase under 200kb, thanks!</i></small></small></div>
 		{if $error}<br /><p style="color:#990000;font-weight:bold;">{$error}</p>{/if}
 		<br />
-		<p>You might like to check you've selected the correct square<br/> by
-		viewing the Modern {getamap gridref="document.theForm.grid_reference.value" gridref2=$gridref text="OS Get-a-map&trade;"}</p>
 
 		{if $reference_index == 2} 
 		{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
 		{/if}
 		
 		<h4><b>Grid References:</b> (recommended)</h4>
-		<p><label for="grid_reference"><b style="color:#0018F8">Primary Photo Subject</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{/if}</p>
+		<p><label for="grid_reference"><b style="color:#0018F8">Primary Photo Subject</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{/if}
+		<span style="font-size:0.8em"><br/><a href="javascript:void(mapMarkerToCenter(document.theForm.grid_reference));void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Marker to Center</a></span>
+		</p>
 	
-		<p><label for="photographer_gridref"><b style="color:#002E73">Photographer Position</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon.png" alt="Marks the Photographer" width="12" height="20" align="middle"/>{/if}
+		<p><label for="photographer_gridref"><b style="color:#002E73">Photographer Position</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon.png" alt="Marks the Photographer" width="20" height="34" align="middle"/>{/if}
 		
 		<span style="font-size:0.8em"><br/><a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Copy from Subject</a></span>
 		
@@ -358,24 +325,30 @@ for {$gridref} provided they are accurately located, but may not qualify as geog
 can be edited at any time) but to activate a square you need to be first to meet the
 criteria above!</p>
 
-<div class="interestBox" style="width:30em;z-index:0"><a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> (and view list of placenames)<br/>
-{getamap gridref=$gridref text="Open Get-a-Map"}, {newwin href="/gridref/`$gridref`" text="Open `$gridref` Page"}</div>
+<div class="interestBox" style="width:30em;z-index:0"><a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a><br/>
+{newwin href="/gridref/`$gridref`" text="Open `$gridref` Page"}</div>
 
 <h3>Title and Comments</h3>
 <p>Please provide a short title for the image, and any other comments about where
-it was taken or other interesting geographical information. <span id="styleguidelink">({newwin href="/help/style" text="Open Style Guide"})</span></p>
+it was taken or other interesting geographical information. It is not required to provide texts in both languages. English texts may be translated by a moderator. <span id="styleguidelink">({newwin href="/help/style" text="Open Style Guide"})</span></p>
 
-<p><label for="title"><b>Title</b></label> {if $error.title}
+<p><label for="title"><b>German Title</b></label> {if $error.title}
 	<br/><span class="formerror">{$error.title}</span>
 	{/if}<br/>
 <input size="50" maxlength="128" id="title" name="title" value="{$title|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title',true);" onkeyup="checkstyle(this,'title',false);"/> <span class="formerror" style="display:none" id="titlestyle">Possible style issue. See Guide above. <span id="titlestylet" style="font-size:0.9em"></span></span></p>
+<p><label for="title2"><b>English Title</b></label> {if $error.title2}
+	<br/><span class="formerror">{$error.title2}</span>
+	{/if}<br/>
+<input size="50" maxlength="128" id="title2" name="title2" value="{$title2|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title2',true);" onkeyup="checkstyle(this,'title2',false);"/> <span class="formerror" style="display:none" id="title2style">Possible style issue. See Guide above. <span id="title2stylet" style="font-size:0.9em"></span></span></p>
  {if $place.distance}
  <p style="font-size:0.7em">Gazetteer info as will appear:<br/> <span style="color:silver;">{place place=$place}</span></p>
  {/if}
 
-<p style="clear:both"><label for="comment"><b>Description/Comment</b></label> <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span></span><br/>
+<p style="clear:both"><label for="comment"><b>German Description/Comment</b></label> <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span></span><br/>
 <textarea id="comment" name="comment" rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$comment|escape:'html'}</textarea></p>
-<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
+<p style="clear:both"><label for="comment2"><b>English Description/Comment</b></label> <span class="formerror" style="display:none" id="comment2style">Possible style issue. See Guide above. <span id="comment2stylet"></span></span><br/>
+<textarea id="comment2" name="comment2" rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment2',true);" onkeyup="checkstyle(this,'comment2',false);">{$comment2|escape:'html'}</textarea></p>
+<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TPT2769]]</span> or <span style="color:blue">[[34]]</span> to link 
 to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 
 
@@ -457,7 +430,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 <p>Tick this box only if you believe your photograph is not a 'geograph'. The moderator will just use the box as a suggestion, so if you are not sure, leave it unticked. Note: There can be many geograph images per square.</p>
 
-<p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in this {newwin href="/article/Geograph-or-supplemental" text="article on how images are moderated"}.</span></p>
+<p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in the {newwin href="/faq.php#goodgeograph" text="FAQ"} or in this {newwin href="http://www.geograph.org.uk/article/Geograph-or-supplemental" text="article on how images are moderated"}.</span></p>
 </div>
 
 <p>
@@ -471,7 +444,9 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 {else}
 	<input type="hidden" name="title" value="{$title|escape:'html'}"/>
+	<input type="hidden" name="title2" value="{$title2|escape:'html'}"/>
 	<input type="hidden" name="comment" value="{$comment|escape:'html'}"/>
+	<input type="hidden" name="comment2" value="{$comment2|escape:'html'}"/>
 	<input type="hidden" name="imageclass" value="{$imageclass|escape:'html'}"/>
 	<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
 	<input type="hidden" name="user_status" value="{$user_status|escape:'html'}"/>
@@ -480,7 +455,9 @@ AttachEvent(window,'load',onChangeImageclass,false);
 {if $step eq 4}
 	<input type="hidden" name="upload_id" value="{$upload_id}"/>
 	<input type="hidden" name="title" value="{$title|escape:'html'}"/>
+	<input type="hidden" name="title2" value="{$title2|escape:'html'}"/>
 	<input type="hidden" name="comment" value="{$comment|escape:'html'}"/>
+	<input type="hidden" name="comment2" value="{$comment2|escape:'html'}"/>
 	<input type="hidden" name="imageclass" value="{$imageclass|escape:'html'}"/>
 	<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
 	<input type="hidden" name="user_status" value="{$user_status|escape:'html'}"/>
@@ -501,15 +478,14 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	licence, including accompanying metadata.</p>
 	
 	<p>With a Creative Commons licence, the photographer <b>keeps the copyright</b> but allows 
-	people to copy and distribute the work provided they <b>give credit</b>.</p>
+	people to copy, modify and distribute the work provided they <b>give credit</b>.</p>
 	
-	<p>Since we want to ensure we can use your work to fund the running costs of
-	this site, and allow us to create montages of grid images, we ask that you
+	<p>Therefore, we ask that you
 	allow the following</p>
 	
 	<ul>
-	<li>The right to use the work commercially</li>
 	<li>The right to modify the work to create derivative works</li>
+	<li>The right to distribute the work and derivative works</li>
 	</ul>
 	
 	<p>{external title="View licence" href="http://creativecommons.org/licenses/by-sa/2.0/" text="Here is the Commons Deed outlining the licence terms" target="_blank"}</p>
@@ -587,7 +563,9 @@ have problems
 	<input type="hidden" name="view_direction"/>
 	<input type="hidden" name="use6fig"/>
 	<input type="hidden" name="title"/>
+	<input type="hidden" name="title2"/>
 	<textarea name="comment" style="display:none"/></textarea>
+	<textarea name="comment2" style="display:none"/></textarea>
 	<input type="hidden" name="imageclass"/>
 	<input type="hidden" name="imageclassother"/>
 	<input type="hidden" name="imagetakenDay"/>

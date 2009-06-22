@@ -85,7 +85,7 @@
 
 		_gel('content_div').innerHTML = html;
 		
-		_IG_Analytics("UA-172738-3", "/stuff/ggadget1.xml");
+		//_IG_Analytics("UA-172738-3", "/stuff/ggadget1.xml");
 		});
 	}
 	_IG_RegisterOnloadHandler(displayMenu);

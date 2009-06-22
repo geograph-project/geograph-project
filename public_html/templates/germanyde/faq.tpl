@@ -1,22 +1,13 @@
 {assign var="page_title" value="FAQ"}
 {include file="_std_begin.tpl"}
-{literal}<style type="text/css">
-.helpbox { float:right;padding:5px;background:#dddddd;position:relative;font-size:0.8em;margin-left:20px;z-index:10; }
-.helpbox UL { margin-top:2px;margin-bottom:0;padding:0 0 0 1em; }
-.contents A { text-decoration:none; }
-.contents LI { padding-bottom:2px; }
-.answers h3 { padding:10px;border-top: 1px solid lightgrey;background-color:#f9f9f9; }
-.answers p { padding-left:20px; }
-div:target { background-color:orange;padding-bottom:10px; }
-.top { text-align:right;font-size:0.7em; }
-.top A { text-decoration:none; }
-</style>{/literal}
+<div id="faq">
 <a name="top"></a>
 
  <div class="helpbox">
  <h3>N&uuml;tzliche Links</h3>
  <b>Einreichen</b> von Fotos:
  <ul>
+ <li><a href="/article/Anleitung">Anleitung</a></li>
  <li><a href="/help/guide">Geograph Guide</a></li>
  <li><a href="http://www.geograph.org.uk/article/Geograph-or-supplemental">Moderation Guide</a></li>
  <li><a href="http://www.geograph.org.uk/article/Which-Square">Locating your Image</a></li>
@@ -58,22 +49,20 @@ div:target { background-color:orange;padding-bottom:10px; }
  <li><a href="#language">Muss die Bildbeschreibung <b>deutsch</b> sein?</a></li>
  <li><a href="#multiple">Sind <b>mehrere Bilder</b> pro Quadrat erlaubt?</a></li>
  <li><a href="#resize">Muss ich die <b>Größe</b> der Bilder ändern? Gibt es Größenbeschränkungen?</a></li>
- <li><a href="#licence">Why must I agree to allow <b>commercial use</b> of my image?</a></li>
- <li><a href="#legal">What are my <b>legal rights</b> when taking photographs?</a></li>
+ <li><a href="#licence">Wie dürfen meine Bilder <b>verwertet</b> werden?</a></li>
  </ul>
 <b>Betrachten</b> der Seite:
  <ul>
  <li><a href="#use">I would be interested in <b>reusing</b> Geograph content, is that possible?</a></li>
  <li><a href="#change">I <b>disagree</b> with the location or title of an image - what can I do?</a></li>
  <li><a href="#concern">I'm <b>concerned</b> about a photo or comment I have seen on the site.</a></li>
- <li><a href="#counties"><b>Counties</b>, I'm confused, which do you display?</a></li>
  <li><a href="#geographism">What do all these <b>strange words</b> mean?</a></li>
  </ul>
 Die <b>Geograph Website</b>:
  <ul>
  <li><a href="#pages">Theres a page I once saw on geograph, and I <b>can't find</b> it again!</a></li>
  <li><a href="#rss">Do you <b>RSS</b> feeds available?</a></li>
- <li><a href="#opensource"><b>Open source? Creative Commons?</b> What's that all about?</a></li>
+ <li><a href="#opensource"><b>Open source? Creative Commons?</b> Was bedeutet das alles?</a></li>
  <li><a href="#built"><b>Who</b> built this marvellous site?</a></li>
  </ul>
 <b>Probleme</b> beim Benutzen der Geograph-Seite:
@@ -200,46 +189,10 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
-<div id="legal">
-<a name="legal"></a>
-<h3>What are my legal rights when taking photographs?</h3>
-	<p>Let's preface this by stating <b>We Are Not Lawyers</b>, and if you have any doubts
-	about your right to take picture, then you're probably better off not submitting it to us.
-	However, there is a 
-	{external href="http://www.sirimo.co.uk/ukpr.php" text="useful guide"}
-	available which outlines your rights in the UK fairly concisely. 
-	</p>
-</div>
-<div class="top"><a href="#top">back to top</a></div>
-
 <div id="pages">
 <a name="pages"></a>
 <h3>Theres a page I once saw on geograph, and I <b>can't find</b> it again!</h3>
 	<p>Have a look at <a href="/help/more_pages">More Pages</a> and our <a href="/help/sitemap">Sitemap</a>, between them should give access to many a page</p>
-</div>
-<div class="top"><a href="#top">back to top</a></div>
-
-<div id="counties">
-<a name="counties"></a>
-<h3>Counties, I'm confused, which do you display?</h3>
-	<p>We use county information to aid recognition of place names on photo pages and other areas of the site, like helping to disambiguate search terms (e.g. a search for "Gillingham")</p>
-	
-	<p>For Ireland, it's simple; we just use the traditional counties. Great Britain isn't so easy, which has seen three <i>major</i> county structures;</p>
-
-	<dl class="picinfo">
-		<dt>Ceremonial Counties (sometimes known as Geographic)</dt>
-		<dd>These were introduced in 1974 primarily as a way to define areas for County Councils. Although these are possibly what most people recognize as counties, a suitable dataset to allow us to use these counties would be too costly for us to bear. So we must compromise a little...</dd>
-
-		<dt>Administrative Counties (also known as District/Unitary Authorities)</dt>
-		<dd>These are the modern 'counties' in use by the current government (since 1997). This is the best dataset we have available, so we display it prominently in the gazetteer line on photo pages. It is also useful for identifying the council responsible for the area. However for large towns/cities, for example Sheffield, which are in their own Authority (therefore the 'county' of Sheffield), we attempt to be clever and display the Historic County instead.</dd>
-
-		<dt>Historic Counties</dt>
-		<dd>These are the counties that have evolved over many hundreds of years and were in active use until 1974. We use this data as a fallback - where we've opted to display the administrative country on a photo page, you can often find the historic county by hovering over this title.</dd>
-	</dl>
-
-	<p>For a more in depth explanation, see {external href="http://www.abcounties.co.uk/" text="abcounties.org.uk"}. <span class="nowrap">(however beware that the site doesn't use the exact same terms)</span></p>
-	
-	<p>To see lists of counties in each structure see the <a href="/explore/#counties">Explore Section</a>.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
@@ -316,7 +269,7 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 
 <div id="opensource">
 <a name="opensource"></a>
-<h3>Open source? Creative Commons? What's that all about?</h3>
+<h3>Open source? Creative Commons? Was bedeutet das alles?</h3>
 	<p>Putting this together requires many people to donate their
 	time or resources, and we wanted to be sure that we created a resource
 	free from commercial exploitation in future. To that end, the site software
@@ -328,10 +281,8 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 
 	<p>In addition, we require all submitters to adopt a 
 	{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Attribution-ShareAlike"} 
-	licence on their photographic submissions. While our volunteer photographers
-	keep copyright on their photos, they also grant the use of their photographs
-	in return for attribution (take a look at a <a title="View a typical photograph" href="/photo/14">typical 
-	submission</a> for more details).</p>
+	licence on their photographic submissions (see next FAQ entry).
+	</p>
 
 	<p>In a nutshell, we wanted to build a true community project that won't 
 	leave a nasty taste in the mouth by getting sold for shedloads of cash and
@@ -343,16 +294,25 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 
 <div id="licence">
 <a name="licence"></a>
-<h3>Why must I agree to allow commercial use of my image?</h3>
-	<p>Running this site costs money, particularly over time as the storage
-	requirements are quite large. We require commercial rights to enable us to
-	support the running costs. One way we may do this is through sales of 
-	montage posters once we reach a critical mass of submissions.</p>
-
-	<p>Granting everyone the same rights actually protects the site community
-	from exploitation (see previous FAQ entry), but do bear in mind that we only
-	retain a screen-quality version of your image, and that under the terms of 
-	the Creative Commons licence, you must be credited for any use of your image</p>
+<h3>Wie dürfen meine Bilder verwertet werden?</h3>
+	<p>Beim Einreichen von Bildern müssen die Einreicher bestätigen, dass die Fotos unter einer
+	{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Attribution-ShareAlike"}-Lizenz
+	veröffentlicht werden. Während die Fotografen weiterhin ihre Rechte an den Bildern behalten, erlauben
+	sie zusätzlich, dass ihre Fotos auch von anderen genutzt und verbreitet werden, wobei die
+	Urheber der Fotos genannt werden müssen. Siehe
+	<a title="Ein typisches Foto anzeigen" href="/photo/1">eine typisches Beispielfoto</a> für weitere Details.</p>
+	<p>Kurz gesagt: Jeder darf alle Fotos benutzen und weiterverwerten, <b>aber</b>
+	es muss der Urheber genannt werden <b>und</b> das Foto und abgeleitete Werke dürfen nur
+	unter der obengenannten Lizenz verbreitet werden.</p>
+	<p>Ähnlich wie bei anderen freien Projekten wie Wikipedia oder Linux ist dabei auch
+	der kommerzielle Gebrauch erlaubt (beispielsweise könnte eine Zeitung ein Bild nutzen),
+	die Lizenz garantiert aber, dass der Urheber genannt wird und dass die Weitergabe nur
+	unter dieser freien Lizenz möglich ist.
+	</p>
+	<p>Die Tatsache, dass jeder dieselben Rechte bekommt, schützt die Beitragenden
+	davor, dass ihr Beitrag ausgenutzt wird (siehe voriger Punkt der FAQ); dabei ist auch zu beachten,
+	dass wir nur eine Bildversion in Bildschirmqualität speichern und dass wegen der
+	the Creative-Commons-Lizenz der Urheber eines Fotos genannt werden muss.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
@@ -400,6 +360,7 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
+</div>
 </div>
 
 {include file="_std_end.tpl"}
