@@ -92,9 +92,15 @@ while (!$recordSet->EOF)
 	if (file_exists($dir.'/'.$file)) {
 		$files[] = $file;
 		
+		if (empty($image['title2']))
+			$title = $image['title'];
+		elseif (empty($image['title']))
+			$title = $image['title2'];
+		else
+			$title = $image['title'] . ' (' . $image['title2'] . ')';
 fwrite ($rdf,
 '<Work rdf:about="'.$file.'">
-     <dc:title>'.$image['grid_reference'].' : '.htmlspecialchars2($image['title']).'</dc:title>
+     <dc:title>'.$image['grid_reference'].' : '.htmlspecialchars2($title).'</dc:title>
      <dc:identifier>http://'.$_SERVER['HTTP_HOST'].'/photo/'.$image['gridimage_id'].'</dc:identifier>
      <dc:creator><Agent>
 	<dc:title>'.htmlspecialchars2($image['realname']).'</dc:title>

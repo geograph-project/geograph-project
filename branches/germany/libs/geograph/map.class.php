@@ -950,6 +950,8 @@ class GeographMap
 		$recordSet->Close(); 
 
 		if ($img) {
+			//trigger_error("->img: pix: " . $this->pixels_per_km .", newmap: " . $CONF['enable_newmap'], E_USER_NOTICE);
+
 			//ok being false isnt fatal, as we can create a tile, however we should use it to try again later!
 			
 			//plot grid square?
@@ -973,6 +975,7 @@ class GeographMap
 			imagedestroy($img);
 			return $ok;
 		} else {
+			//trigger_error("->!img: pix: " . $this->pixels_per_km .", newmap: " . $CONF['enable_newmap'], E_USER_NOTICE);
 			return false;
 		}
 	}	
@@ -1605,6 +1608,7 @@ END;
 				$imgx1=($x-$left) * $this->pixels_per_km;
 				$imgy1=($this->image_h-($y-$bottom+1)* $this->pixels_per_km);
 				
+				//trigger_error("---->city: " . ($recordSet->fields['name']) . " w/h: " . ($this->image_w) . "/" . ($this->image_h) . " x/y: " . $imgx1 . "/" . $imgy1, E_USER_NOTICE);
 				if ($this->pixels_per_km<=4) {				
 					imagefilledrectangle ($img, $imgx1-1, $imgy1-2, $imgx1+1, $imgy1+2, $black);
 					imagefilledrectangle ($img, $imgx1-2, $imgy1-1, $imgx1+2, $imgy1+1, $black);
@@ -1613,7 +1617,8 @@ END;
 				$img1 = $this->_posText( $imgx1, $imgy1, $font, $recordSet->fields['name'],$recordSet->fields['quad']);
 				if (count($img1))
 					imageGlowString($img, $font, $img1[0], $img1[1], $recordSet->fields['name'], $gridcol);
-			}
+				//else trigger_error("------>fail", E_USER_NOTICE);
+			} //else trigger_error("---->skip: " . ($recordSet->fields['name']), E_USER_NOTICE);
 			
 			$recordSet->MoveNext();
 		}
@@ -1629,6 +1634,11 @@ END;
 	function _posText($x,$y,$font,$text,$quad = 0) {
 		$stren = imagefontwidth($font)*strlen($text);
 		$strhr = imagefontheight($font);
+		//trigger_error("--------> w/h: " . $stren . "/" . $strhr .  ", labels: " . count($this->labels), E_USER_NOTICE);
+		//reset($this->labels);
+		//foreach ($this->labels as $a1) {
+		//	trigger_error("-----------> " . $a1[0] . "/" .  $a1[1] . "/" . $a1[2] . "/" . $a1[3], E_USER_NOTICE);
+		//}
 		$xy = array($x,$y);
 		if ($quad == 0) {
 			for ($quad = 1; $quad < 5; ++$quad) {
@@ -1660,6 +1670,7 @@ END;
 			}
 			if ($intersect) {
 				#$quad=0;
+				//trigger_error("------>intersect", E_USER_NOTICE);
 				return array();
 			}
 		}
@@ -1690,6 +1701,7 @@ END;
 
 			return array($x,$y);
 		} else {
+			//trigger_error("------>bound", E_USER_NOTICE);
 			return array();
 		}
 	}
@@ -2045,6 +2057,7 @@ function imageGlowString($img, $font, $xx, $yy, $text, $color) {
         }
 
 	imagestring($out_image, $font, 3, 3, $text, $black);
+	#imagestring($out_image, $font, 3, 3, utf8_encode($text), $black);
 
 	imagecopymerge($img, $out_image, $xx-3, $yy-3, 0, 0, $width+6, $height+6,90);
 	

@@ -691,7 +691,7 @@ class RasterMap
 				}
 
 				if (empty($lat) && $this->issubmit) {
-					list($lat,$long) = $conv->national_to_wgs84($e-700,$n-400,$this->reference_index);
+					list($lat,$long) = $conv->national_to_wgs84($e-700,$n-500,$this->reference_index);
 					$block .= "
 						var ppoint = new GLatLng({$lat},{$long});
 						map.addOverlay(createPMarker(ppoint));\n";
@@ -760,7 +760,8 @@ class RasterMap
 							//map.disableDragging();
 							var point = new GLatLng({$this->lat},{$this->long});
 							//map.setCenter(point, 13, G_PHYSICAL_MAP);
-							map.setCenter(point, $zoom, G_SATELLITE_MAP);
+							map.setCenter(point, $zoom, G_HYBRID_MAP);
+							//map.setCenter(point, $zoom, G_SATELLITE_MAP);
 							$block 
 							
 							AttachEvent(window,'unload',GUnload,false);

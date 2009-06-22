@@ -130,6 +130,22 @@ class UploadManager
 	}
 	
 	/**
+	* set title 2
+	*/
+	function setTitle2($title)
+	{
+		$this->title2=$title;
+	}
+	
+	/**
+	* set comment 2
+	*/
+	function setComment2($comment)
+	{
+		$this->comment2=$comment;
+	}
+	
+	/**
 	* set image taken date
 	*/
 	function setTaken($taken)
@@ -567,13 +583,14 @@ class UploadManager
 		// nateasting/natnorthings will only have values if getNatEastings has been called (in this case because setByFullGridRef has been called IF an exact location is specifed)
 		$sql=sprintf("insert into gridimage(".
 			"gridsquare_id, seq_no, user_id, ftf,".
-			"moderation_status,title,comment,nateastings,natnorthings,natgrlen,imageclass,imagetaken,".
+			"moderation_status,title,comment,title2,comment2,nateastings,natnorthings,natgrlen,imageclass,imagetaken,".
 			"submitted,viewpoint_eastings,viewpoint_northings,viewpoint_grlen,view_direction,use6fig,user_status,realname) values ".
 			"(%d,%d,%d,%d,".
-			"'pending',%s,%s,%d,%d,'%d',%s,%s,".
+			"'pending',%s,%s,%s,%s,%d,%d,'%d',%s,%s,".
 			"now(),%d,%d,'%d',%d,%d,%s,%s)",
 			$this->square->gridsquare_id, $seq_no,$USER->user_id, $ftf,
 			$this->db->Quote($this->title), $this->db->Quote($this->comment), 
+			$this->db->Quote($this->title2), $this->db->Quote($this->comment2), 
 			$this->square->nateastings,$this->square->natnorthings,$this->square->natgrlen,
 			$this->db->Quote($this->imageclass), $this->db->Quote($this->imagetaken),
 			$viewpoint->nateastings,$viewpoint->natnorthings,$viewpoint->natgrlen,$this->view_direction,

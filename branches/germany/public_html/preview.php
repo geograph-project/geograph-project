@@ -56,6 +56,7 @@ if (!empty($_POST))
 
 	$image->title = strip_tags(trim(stripslashes($_POST['title'])));
 	$image->comment = strip_tags(trim(stripslashes($_POST['comment'])));
+	# FIXME title2, comment2, title1, comment1
 	
 	$image->imageclass=strip_tags(trim(stripslashes($_POST['imageclass'])));
 	
@@ -121,7 +122,7 @@ if (!empty($_POST['spelling'])) { //FIXME smarty
 		}
 	</script>
 	<?php
-	$query = "{$image->title} {$image->comment} {$image->imageclass}"; 
+	$query = "{$image->title} {$image->comment} {$image->imageclass}"; // FIXME title2, comment2
 
 	$xml = new SimpleXMLElement(SpellChecker::GetSuggestions( $query, 'de', 'de' )); // FIXME language => conf var
 
@@ -135,7 +136,7 @@ if (!empty($_POST['spelling'])) { //FIXME smarty
 	} 
 
 	print "<form>";
-	foreach (array('title'=>'Title','comment'=>'Description/Comment','imageclass'=>'Category') as $key => $name) {
+	foreach (array('title'=>'Title','comment'=>'Description/Comment','imageclass'=>'Category') as $key => $name) { // FIXME title2, comment2
 		print "<h3>$name</h3><blockquote>";
 		$result = $select = $original = htmlentities2($image->$key);
 		if (!empty($original)) {

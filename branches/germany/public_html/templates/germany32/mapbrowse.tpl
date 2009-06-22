@@ -332,7 +332,7 @@ You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the
 
 
  <hr/>
-<div class="copyright">Maps on this page, &copy; Copyright Geograph Project Ltd and  
+<div class="copyright">Maps on this page, &copy; Copyright Hansj&ouml;rg Lipp and  <a href="osm_users.txt">many OpenStreetMap users</a> and  
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">Creative Commons Licence</a>.</div> 
 
  

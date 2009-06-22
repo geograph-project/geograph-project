@@ -10,7 +10,10 @@
 		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
 	  </div>
 	  <div style="float:left; position:relative">
-		<a name="{$image->gridimage_id}"><input type="text" name="title" size="80" value="{$image->title|escape:'html'}" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''"/></a> [<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>]
+		<a name="{$image->gridimage_id}">
+		<input type="text" name="title" size="80" value="{$image->title1|escape:'html'}" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''"/><br />
+		<input type="text" name="title2" size="80" value="{$image->title2|escape:'html'}" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''"/>
+		</a> [<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>]
 		<br/>
 		for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a>
 		<i>{$image->dist_string}</i><br/>
@@ -18,7 +21,11 @@
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 		
 		
-		<div>{if $image->comment}<textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea>{/if}<input type="submit" name="create" value="create ticket"/></div>
+		<div>
+			<textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment1|escape:'html'}</textarea><br />
+			<textarea name="comment2" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment2|escape:'html'}</textarea>
+			<input type="submit" name="create" value="create ticket"/>
+		</div>
 		
 	  </div><br style="clear:both;"/>
 	  </form><br/>

@@ -29,6 +29,7 @@ require_once('geograph/mapmosaic.class.php');
 
 init_session();
 
+## TODO -> german
 
 $conv = new ConversionsLatLong;
 

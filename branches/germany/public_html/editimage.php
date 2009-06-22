@@ -135,6 +135,8 @@ if (isset($_REQUEST['id']))
 		//assume everything is moderated
 		$moderated["title"]=true;
 		$moderated["comment"]=true;
+		$moderated["title2"]=true;
+		$moderated["comment2"]=true;
 		$moderated["imageclass"]=true;
 		$moderated["imagetaken"]=true;
 		$moderated["grid_reference"]=true;
@@ -148,6 +150,8 @@ if (isset($_REQUEST['id']))
 		{
 			$moderated["title"]=false;
 			$moderated["comment"]=false;
+			$moderated["title2"]=false;
+			$moderated["comment2"]=false;
 			$moderated["imageclass"]=false;
 			$moderated["imagetaken"]=false;
 			$moderated["grid_reference"]=false;
@@ -159,6 +163,8 @@ if (isset($_REQUEST['id']))
 		{
 			$moderated["title"]=false;
 			$moderated["comment"]=false;
+			$moderated["title2"]=false;
+			$moderated["comment2"]=false;
 			$moderated["imageclass"]=false;
 			$moderated["imagetaken"]=false;
 
@@ -299,7 +305,9 @@ if (isset($_REQUEST['id']))
 			//get and parse the form fields
 			$title=trim(stripslashes($_POST['title']));
 			$title=strip_tags($title);
-			if (strlen($title)==0)
+			$title2=trim(stripslashes($_POST['title2']));
+			$title2=strip_tags($title2);
+			if (strlen($title)==0 && strlen($title2)==0)
 			{
 				$ok=false;
 				$error['title']="Please specify an image title";
@@ -317,6 +325,8 @@ if (isset($_REQUEST['id']))
 
 			$comment=trim(stripslashes($_POST['comment']));
 			$comment=strip_tags($comment);
+			$comment2=trim(stripslashes($_POST['comment2']));
+			$comment2=strip_tags($comment2);
 
 			$imageclass=trim(stripslashes($_POST['imageclass']));
 			$imageclass=strip_tags($imageclass);
@@ -430,8 +440,10 @@ if (isset($_REQUEST['id']))
 					$imageclass=$imageclassother;
 
 				//attach the various field changes
-				$ticket->updateField("title", $image->title, $title, $moderated["title"]);
-				$ticket->updateField("comment", $image->comment, $comment, $moderated["comment"]);
+				$ticket->updateField("title1", $image->title1, $title, $moderated["title"]);
+				$ticket->updateField("comment1", $image->comment1, $comment, $moderated["comment"]);
+				$ticket->updateField("title2", $image->title2, $title2, $moderated["title2"]);
+				$ticket->updateField("comment2", $image->comment2, $comment2, $moderated["comment2"]);
 				$ticket->updateField("imageclass", $image->imageclass, $imageclass, $moderated["imageclass"]);
 				$ticket->updateField("imagetaken", $image->imagetaken, $imagetaken, $moderated["imagetaken"]);
 				$ticket->updateField("grid_reference", $image->subject_gridref, $grid_reference, $moderated["grid_reference"]);
@@ -487,8 +499,12 @@ if (isset($_REQUEST['id']))
 			{
 				//update the image with submitted data - smarty uses it to
 				//populate fields
-				$image->title=$title;
-				$image->comment=$comment;
+				$image->title1=$title;
+				$image->comment1=$comment;
+				$image->title2=$title2;
+				$image->comment2=$comment2;
+				$image->title = $image->_combineTitle($title, $title2);
+				$image->comment = $image->_combineComment($comment, $comment2);
 				$image->imageclass=$imageclass;
 				$image->imagetaken=$imagetaken;
 				$image->subject_gridref=$grid_reference;
@@ -585,12 +601,21 @@ if (isset($_REQUEST['id']))
 		{
 			$title=trim(stripslashes($_POST['title']));
 			$title=strip_tags($title);
+			$title2=trim(stripslashes($_POST['title2']));
+			$title2=strip_tags($title2);
 
 			$comment=trim(stripslashes($_POST['comment']));
 			$comment=strip_tags($comment);
+			$comment2=trim(stripslashes($_POST['comment2']));
+			$comment2=strip_tags($comment2);
 			
-			$image->title=$title;
-			$image->comment=$comment;
+			$image->title1=$title;
+			$image->comment1=$comment;
+			$image->title2=$title2;
+			$image->comment2=$comment2;
+
+			$image->title = $image->_combineTitle($title, $title2);
+			$image->comment = $image->_combineComment($comment, $comment2);
 		}
 		//strip out zeros from date
 		#$image->imagetaken=str_replace('0000-', '-', $image->imagetaken);

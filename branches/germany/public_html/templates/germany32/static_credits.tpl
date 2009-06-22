@@ -29,6 +29,12 @@
     Many thanks also to <a href=http://www.geoclub.de/>geoclub</a> user "flopp" for his help.
     </p>
 
+    <h3>Towns</h3>
+
+    <p>
+    The coordinates of the towns have been partially taken from <a href="http://opengeodb.hoppe-media.com/">OpenGeoDB</a>.
+    </p>
+
     <h2>Credits page of <a href="http://www.geograph.org.uk/help/credits">www.geograph.org.uk</a></h2>
  
     Here's all the people and technologies that make this site possible...

@@ -141,10 +141,12 @@ if (isset($_GET['q'])) {
 	if (isset($_GET['legacy'])|| empty($CONF['sphinx_host'])) {
 		if (strpos($_GET['q'],'!') === 0) {
 			$q = $db->Quote("%".preg_replace('/^!/','',$_GET['q'])."%");
-			$sql_where .= " and not (t.notes like $q or i.title like $q)";
+			#$sql_where .= " and not (t.notes like $q or i.title like $q)";
+			$sql_where .= " and not (t.notes like $q or i.title like $q or i.title2 like $q)";
 		} else {
 			$q = $db->Quote("%{$_GET['q']}%");
-			$sql_where .= " and (t.notes like $q or i.title like $q)";
+			#$sql_where .= " and (t.notes like $q or i.title like $q)";
+			$sql_where .= " and (t.notes like $q or i.title like $q or i.title2 like $q)";
 		}
 	} else {
 		$sphinx = new sphinxwrapper($_GET['q']);
@@ -316,11 +318,12 @@ if (empty($_GET['locked'])) {
 } else {
 	$columns .= ", $available as available";
 }
-
+#		i.title,i.title2, DATEDIFF(NOW(),t.updated) as days,
+#		i.title,DATEDIFF(NOW(),t.updated) as days,
 $newtickets=$db->GetAll($sql = 
 	"select t.*,suggester.realname as suggester, (i.user_id = t.user_id) as ownimage,
 		submitter.realname as submitter, submitter.ticket_option as submitter_ticket_option, (submitter.rights LIKE '%dormant%') as submitter_dormant,
-		i.title, DATEDIFF(NOW(),t.updated) as days,
+		i.title,i.title2, DATEDIFF(NOW(),t.updated) as days,
 		group_concat(if(c.user_id=i.user_id,c.comment,null)) as submitter_comment,
 		group_concat(if(c.user_id=t.user_id,c.comment,null)) as suggester_comment
 		$columns
@@ -340,6 +343,18 @@ $newtickets=$db->GetAll($sql =
 	limit $limit");
 if (!empty($_GET['debug']))
 	print $sql;
+foreach ($newtickets as &$row) {
+#foreach ($newtickets as $i => $row) {
+	#	$db->Execute("REPLACE INTO gridimage_moderation_lock SET user_id = {$USER->user_id}, gridimage_id = {$row['gridimage_id']}");
+	if (empty($row['title2']))
+		$ctitle = $row['title'];
+	elseif (empty($row['title']))
+		$ctitle = $row['title2'];
+	else
+		$ctitle = $row['title'] . ' (' . $row['title2'] . ')';
+	$row['title1'] = $row['title'];
+	$row['title'] = $ctitle;
+}
 
 $smarty->assign_by_ref('newtickets', $newtickets);
 

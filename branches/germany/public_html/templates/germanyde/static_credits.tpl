@@ -29,6 +29,12 @@
     Vielen Dank auch an <a href=http://www.geoclub.de/>geoclub</a>-User "flopp" für seine Mithilfe.
     </p>
 
+    <h3>Städte</h3>
+
+    <p>
+    Ein Teil der Städtekoordinaten wurde der <a href="http://opengeodb.hoppe-media.com/">OpenGeoDB</a> entnommen.
+    </p>
+
     <h2>Credits-Seite von <a href="http://www.geograph.org.uk/help/credits">www.geograph.org.uk</a></h2>
  
     Here's all the people and technologies that make this site possible...

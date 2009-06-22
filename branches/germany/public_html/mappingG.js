@@ -115,9 +115,9 @@ function createPMarker(ppoint) {
 	var picon = new GIcon();
 	picon.image = "http://"+static_host+"/img/icons/camicon.png";
 	picon.shadow = "http://"+static_host+"/img/icons/cam-s.png";
-	picon.iconSize = new GSize(12, 20);
-	picon.shadowSize = new GSize(22, 20);
-	picon.iconAnchor = new GPoint(6, 20);
+	picon.iconSize = new GSize(20, 34);
+	picon.shadowSize = new GSize(37, 34);
+	picon.iconAnchor = new GPoint(10, 34);
 	return createMarker(ppoint,picon)
 }
 
@@ -185,6 +185,21 @@ function checkGridReference(that,showmessage) {
 String.prototype.trim = function () {
 	return this.replace(/^\s+|\s+$/g,"");
 }
+
+/*function getMapCenter() {
+	latlon = map.getCenter();
+}*/
+function mapMarkerToCenter(that) {
+	latlon = map.getCenter();
+	if (that.name == 'photographer_gridref') {
+		currentelement = marker2;
+	} else {
+		currentelement = marker1;
+	}
+	currentelement.setPoint(latlon);
+	GEvent.trigger(currentelement,'drag');
+}
+
 
 function updateMapMarker(that,showmessage,dontcalcdirection) {
 	if (!checkGridReference(that,showmessage)) {

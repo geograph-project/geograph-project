@@ -1,9 +1,11 @@
 # www.geograph.org.uk robot exclusion file
-# * $Id$
+# * $Id: robots.txt 5125 2008-12-25 23:44:01Z geograph $
 
 User-agent: *
 Disallow: /mapbrowse.php
 Disallow: /map/
+Disallow: /photo/
+Disallow: /kml/
 Disallow: /mapper/
 Disallow: /maplarge.php
 Disallow: /mapprint.php
@@ -167,7 +169,4 @@ Disallow: /article/history.php
 User-agent: Fasterfox
 Disallow: /
 
-User-agent: Browsershots
-Disallow:
-
-Sitemap: http://geo.hlipp.de/sitemap.xml
+Sitemap: http://geo-en.hlipp.de/sitemap.xml
