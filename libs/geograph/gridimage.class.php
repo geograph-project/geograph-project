@@ -1078,6 +1078,17 @@ class GridImage
 			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$maxw}x{$maxh}.jpg";
 		}
 
+		if (!empty($params['urlonly']) && $params['urlonly'] !== 2 && file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath)) {
+			$return=array();
+			$return['url']=$thumbpath;
+			if (!empty($CONF['enable_cluster'])) {
+				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
+			} else {
+				$return['server']= "http://".$CONF['CONTENT_HOST'];
+			}
+			return $return;
+		}
+
 		$mkey = "{$this->gridimage_id}:{$maxw}x{$maxh}";
 		//fails quickly if not using memcached!
 		$size =& $memcache->name_get('is',$mkey);
@@ -1337,9 +1348,10 @@ class GridImage
 		$params['maxw']=$maxw;
 		$params['maxh']=$maxh;
 		$params['attribname']=$attribname;
+		$params['urlonly']=$urlonly;
 		$resized=$this->_getResized($params);
 		
-		if ($urlonly) {
+		if (!empty($urlonly)) {
 			if ($urlonly === 2) 
 				return $resized;
 			else 
