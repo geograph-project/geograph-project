@@ -33,6 +33,7 @@ Disallow: /gridref/
 Disallow: /ecard.php
 Disallow: /export.
 Disallow: /tile.php
+Disallow: /auth.php
 Disallow: /feed/userid/
 Disallow: /feed/results
 Disallow: /export.excel.xml.php
@@ -81,6 +82,7 @@ Disallow: /gridref/
 Disallow: /ecard.php
 Disallow: /export.
 Disallow: /tile.php
+Disallow: /auth.php
 Disallow: /feed/userid/
 Disallow: /feed/results
 Disallow: /export.excel.xml.php
