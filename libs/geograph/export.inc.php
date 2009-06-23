@@ -47,6 +47,10 @@ if ($profile['apikey']) {
 $sql_from = $sql_crit = $sql_tables = '';
 
 $csvhead = "Id,Name,Grid Ref,Submitter,Image Class";
+if (!empty($_GET['desc'])) {
+	$csvhead .= ",Description";
+	$sql_from .= ',comment';
+}
 if (!empty($_GET['thumb'])) {
 	require_once('geograph/gridimage.class.php');
 	$gridimage = new GridImage;
