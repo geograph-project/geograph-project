@@ -24,23 +24,25 @@
  
 $db=NewADOConnection($GLOBALS['DSN']);
 
-if ((empty($_GET['key']) || preg_match("/[^\w\.@]/",$_GET['key'])) && empty($_GET['u']))
-	die("ERROR: no api key or email address");
-	
-$sql = "SELECT * FROM `apikeys` WHERE `apikey` = ".$db->Quote($_GET['key'])." AND (`ip` = INET_ATON('{$_SERVER['REMOTE_ADDR']}') OR `ip` = 0) AND `enabled` = 'Y'";
+if (isset($_SERVER['REMOTE_ADDR'])) {
+	if ((empty($_GET['key']) || preg_match("/[^\w\.@]/",$_GET['key'])) && empty($_GET['u']))
+		die("ERROR: no api key or email address");
 
-$profile = $db->GetRow($sql);
+	$sql = "SELECT * FROM `apikeys` WHERE `apikey` = ".$db->Quote($_GET['key'])." AND (`ip` = INET_ATON('{$_SERVER['REMOTE_ADDR']}') OR `ip` = 0) AND `enabled` = 'Y'";
 
-if ($profile['apikey']) {
-	$hardlimit = 2500;
-	$sql_hardlimit = " LIMIT $hardlimit";
-} elseif (!empty($_GET['u']) && preg_match("/^\d+$/",$_GET['u']) && (init_session() || true) && $USER->hasPerm('basic')) {
-	$sql_hardlimit = $hardlimit = '';
-} else {
-	#die("ERROR: invalid api key. contact support at geograph dot co dot uk");
-	$hardlimit = 250;
-	$sql_hardlimit = " LIMIT $hardlimit";
-} 
+	$profile = $db->GetRow($sql);
+
+	if ($profile['apikey']) {
+		$hardlimit = 2500;
+		$sql_hardlimit = " LIMIT $hardlimit";
+	} elseif (!empty($_GET['u']) && preg_match("/^\d+$/",$_GET['u']) && (init_session() || true) && $USER->hasPerm('basic')) {
+		$sql_hardlimit = $hardlimit = '';
+	} else {
+		#die("ERROR: invalid api key. contact support at geograph dot co dot uk");
+		$hardlimit = 250;
+		$sql_hardlimit = " LIMIT $hardlimit";
+	} 
+}
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
@@ -120,7 +122,7 @@ if (!empty($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 		}
 	}
 	$sql_crit .= " ORDER BY upd_timestamp DESC LIMIT {$_GET['limit']}";
-} elseif (empty($_GET['i']) && empty($_GET['u'])) {
+} elseif (empty($_GET['i']) && empty($_GET['u']) && isset($_SERVER['REMOTE_ADDR'])) {
 	die("ERROR: whole db export disabled. contact support at geograph dot co dot uk");
 	$sql_crit .= " $sql_hardlimit";
 }
