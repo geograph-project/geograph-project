@@ -55,7 +55,7 @@ if (!empty($_GET['thumb'])) {
 	require_once('geograph/gridimage.class.php');
 	$gridimage = new GridImage;
 	$csvhead .= ",Thumb URL";
-	$sql_from = ',gi.user_id,x,y,reference_index';
+	$sql_from .= ',gi.user_id,x,y,reference_index';
 }
 if (!empty($_GET['gr'])) {
 	$csvhead .= ",Subject";
