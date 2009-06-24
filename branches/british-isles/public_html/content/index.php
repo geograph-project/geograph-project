@@ -229,7 +229,7 @@ if (!empty($_GET['debug'])) {
 	$smarty->assign('extra', $extra);
 	
 	if (!empty($_SERVER['QUERY_STRING']) && preg_match("/^[\w&;=+ %]/",$_SERVER['QUERY_STRING'])) {
-		$smarty->assign('extra_raw', "&amp;".htmlentities($_SERVER['QUERY_STRING']));
+		$smarty->assign('extra_raw', "&amp;".htmlentities(preg_replace('/^(&amp;)+/','',$_SERVER['QUERY_STRING'])));
 	}
 	
 } 
@@ -296,7 +296,7 @@ if (($template == 'content.tpl' || $inline)  && !$smarty->is_cached($template, $
 		}
 	
 		$smarty->assign('title', $title);
-		$smarty->assign('extra', "&amp;".htmlentities($_SERVER['QUERY_STRING']));
+		$smarty->assign('extra', "&amp;".htmlentities(preg_replace('/^(&amp;)+/','',$_SERVER['QUERY_STRING'])));
 	}
 }
 if ($template == 'content.tpl' && $USER->registered) {
