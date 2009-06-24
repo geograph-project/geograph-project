@@ -244,10 +244,10 @@ if (($template == 'content.tpl' || $inline)  && !$smarty->is_cached($template, $
 		$where = " WHERE `source` != 'themed'";
 	}
 	
-	$list = $db->getAll("select title from content $where");
+	$listall = $db->getAll("select title from content $where");
 
 	$a = array();
-	foreach ($list as $i => $row) {
+	foreach ($listall as $i => $row) {
 		$alltext = preg_replace('/[^a-zA-Z0-9]+/',' ',str_replace("'",'',$row['title']));
 
 		$words = preg_split('/ +/',trim($alltext));
