@@ -48,11 +48,17 @@
 	<tbody>
 		<tr>
 			<td width="80%" valign="top" height="2000">
-<iframe src="/content/?inner{$extra}" width="100%" height="100%" frameborder="0" name="content"></iframe>
+{if $inline}
+{include file="content_iframe.tpl"}
+{else}
+<iframe src="/content/?{$inner}{$extra}" width="100%" height="100%" frameborder="0" name="content"></iframe>
+{/if}
 			</td>
 			<td valign="top" class="helpbox">
-<form action="/content/" method="get" target="content">
+<form action="/content/" method="get" target="{$target}">
+{if $inner}
 <input type="hidden" name="inner" value="1"/>
+{/if}
 <div style="float:right">
 <input type="submit" value="Find"/>
 </div>
@@ -61,15 +67,15 @@
 </form><hr/>
 Shortcuts:
 <ul>
-	<li><a href="/content/?inner" target="content">Recently Updated</a></li>
-	<li><a href="/content/?inner&amp;order=created" target="content">Recently Created</a></li>
-	<li><a href="/content/?inner&amp;order=views" target="content">Most Viewed</a></li>
-	<li><a href="/content/?inner&amp;loc" target="content">Location Specific</a></li>
-	<li><a href="/content/?inner&amp;docs&amp;order=title" target="content">Geograph Documents</a></li>
+	<li><a href="/content/?{$inner}" target="{$target}">Recently Updated</a></li>
+	<li><a href="/content/?{$inner}&amp;order=created" target="{$target}">Recently Created</a></li>
+	<li><a href="/content/?{$inner}&amp;order=views" target="{$target}">Most Viewed</a></li>
+	<li><a href="/content/?{$inner}&amp;loc" target="v">Location Specific</a></li>
+	<li><a href="/content/?{$inner}&amp;docs&amp;order=title" target="{$target}">Geograph Documents</a></li>
 </ul><hr/>
 Common Themes: (<a href="/content/themes.php">more...</a>)<br/>
 {foreach from=$words key=word item=count}
-	<span class="nowrap">&middot; <a href="/content/?inner&amp;q={$word}" target="content" onclick="document.getElementById('qs').value='{$word}'" style="font-size:{math equation="log(c)" c=$count}em">{$word}</a></span>
+	<span class="nowrap">&middot; <a href="/content/?{$inner}&amp;q={$word}" target="{$target}" onclick="document.getElementById('qs').value='{$word}'" style="font-size:{math equation="log(c)" c=$count}em">{$word}</a></span>
 {/foreach}
 <hr/>
 

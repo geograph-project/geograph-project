@@ -33,10 +33,22 @@ if (!empty($_GET)) {
 	$cacheid .= ".".md5(serialize($_GET));
 }
 
-if (isset($_REQUEST['inner'])) {
-	$template = 'content_iframe.tpl';
-} else {
+if (empty($_GET['inline']) && !isset($_REQUEST['inner'])) {
+	$inline = 'true';
+	$smarty->assign("inner",'');
+	$smarty->assign("target",'_self');
+	
 	$template = 'content.tpl';
+} else {
+	$inline = false;
+	$smarty->assign("inner",'inner');
+	$smarty->assign("target",'content');
+
+	if (isset($_REQUEST['inner'])) {
+		$template = 'content_iframe.tpl';
+	} else {
+		$template = 'content.tpl';
+	}
 }
 
 $db=NewADOConnection($GLOBALS['DSN']);
@@ -49,9 +61,11 @@ $mtime = strtotime($data['Update_time']);
 //can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
-if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid))
+$smarty->assign("inline",$inline);
+
+if (($template == 'content_iframe.tpl' || $inline) && !$smarty->is_cached($template, $cacheid))
 {
-	$extra = 'inner';
+	$extra = $inline?'':'inner';
 	
 	$pageSize = 25;
 	
@@ -218,7 +232,9 @@ if (!empty($_GET['debug'])) {
 		$smarty->assign('extra_raw', "&amp;".htmlentities($_SERVER['QUERY_STRING']));
 	}
 	
-} else if ($template == 'content.tpl' && !$smarty->is_cached($template, $cacheid)) {
+} 
+
+if (($template == 'content.tpl' || $inline)  && !$smarty->is_cached($template, $cacheid)) {
 	
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;

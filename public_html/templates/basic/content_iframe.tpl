@@ -1,19 +1,16 @@
+{if !$inline}
 {assign var="page_title" value=$title}
 {include file="_basic_begin.tpl"}
-{literal}<style type="text/css">
-h2 { padding: 5px; margin-top:0px; background-color: black; color:white}
-
-</style>
-
-<script language="JavaScript" type="text/javascript">
+{literal}<script language="JavaScript" type="text/javascript">
 
   if (top.location == location) {
     top.location.href = document.location.href.replace(/inner/,'');
   }
 
 </script>{/literal}
+{/if}
 
-<h2 style="margin-bottom:0px">{$title|escape:"html"}</h2>
+<h2 style="margin-bottom:0px; padding:5px; margin-top:0px; background-color:black; color:white">{$title|escape:"html"}</h2>
 <div style="text-align:right;font-size:0.8em;margin-top:0px;">Order by : | {foreach from=$orders item=name key=key}
 	{if $order eq $key}
 		<b>{$name}</b>
