@@ -108,7 +108,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	$fh2=fopen($filename2, "w");
 
 	fprintf($fh2, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
-	fprintf($fh2, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:geo="http://www.google.com/geo/schemas/sitemap/1.0>'."\n");
+	fprintf($fh2, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:geo="http://www.google.com/geo/schemas/sitemap/1.0">'."\n");
 	
 	
 	$maxdate="";
