@@ -74,7 +74,7 @@
 	<p align="center" style="font-size:0.8em">{$mosaic_updated}</p>
 {/if}
 
-<p align="center"><a href="/mapprint.php?t={$mosaic_token}">Printable version of this map</a></p>
+<p align="center"><a href="/mapprint.php?t={$mosaic_token}">Printable version of this map</a> | <a href="/mapsheet.php?t={$mosaic_token}">Printable Checksheet for this square</a></p>
 
 <br/>
 <div class="copyright">Maps on this page, &copy; Copyright Geograph Project Ltd and  

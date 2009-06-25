@@ -45,6 +45,11 @@ if (isset($_GET['t'])) {
 	die("Missing Token");
 }
 
+if ($map->pixels_per_km > 40) {
+	$map->pixels_per_km = 40;
+	$mosaic->image_w /= 2;
+	$mosaic->image_h /= 2;
+}
 
 if ($map->pixels_per_km != 40 && $map->pixels_per_km != 4)
 	die("Invalid Parameter");
