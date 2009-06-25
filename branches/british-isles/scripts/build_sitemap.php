@@ -110,8 +110,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	$offset=($sitemap-1)*$urls_per_sitemap;
 	$recordSet = &$db->Execute(
 		"select i.gridimage_id,date(upd_timestamp) as moddate ".
-		"from gridimage as i ".
-		"where i.moderation_status in ('accepted', 'geograph') ".
+		"from gridimage_search as i ".
 		"order by i.gridimage_id ".
 		"limit $offset,$urls_per_sitemap");
 	
@@ -127,12 +126,12 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 		fprintf($fh,"<url>".
 			"<loc>http://{$param['config']}/photo/%d</loc>".
 			"<lastmod>%s</lastmod>".
-			"<changefreq>monthly</changefreq><priority>0.8</priority>".
+			"<changefreq>yearly</changefreq><priority>0.8</priority>".
 			"</url>\n".
 			"<url>".
 			"<loc>http://{$param['config']}/photo/%d.kml</loc>".
 			"<lastmod>%s</lastmod>".
-			"<changefreq>monthly</changefreq><priority>0.5</priority>".
+			"<changefreq>yearly</changefreq><priority>0.5</priority>".
 			"</url>\n",
 			$recordSet->fields['gridimage_id'],
 			$date,
@@ -159,7 +158,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	fclose($fh); 
 	
 	//set datestamp on file
-	$unixtime=strtotime($maxdate);
+	$unixtime=strtotime("$maxdate 00:00:00");
 	touch($filename,$unixtime);
 	
 	//gzip it
