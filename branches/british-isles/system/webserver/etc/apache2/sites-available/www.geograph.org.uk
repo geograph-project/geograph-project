@@ -138,8 +138,7 @@
 
     RewriteRule ^/get-juppy.jnlp /get-juppy.php [qsa]
 
-    RewriteRule ^/(sitemap(\d*)\.xml.*)$ /sitemap/root/$1 [L]
-    RewriteRule ^/(sitemap_content.txt)$ /sitemap/root/$1 [L]
+    RewriteRule ^/(sitemap[\d\w-]*\.xml.*)$ /sitemap/root/$1 [L]
 
     #rewrite imagemap clicks as regular urls - must do this otherwise
     #php's use_trans_sid will break the urls
