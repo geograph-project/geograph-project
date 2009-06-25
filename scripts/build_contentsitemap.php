@@ -126,7 +126,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 			"<lastmod>%s</lastmod>".
 			"<changefreq>monthly</changefreq>".
 			"</url>\n",
-			$recordSet->fields['user_id'],
+			$recordSet->fields['url'],
 			$date
 			);
 			
