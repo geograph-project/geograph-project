@@ -127,7 +127,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 			"<loc>%s</loc>".
 			"<lastmod>%s</lastmod>".
 			"<changefreq>monthly</changefreq>".
-			"<geo:geo><geo:format>kml</geo:format></geo:geo>".
+			"<geo:geo><geo:format>kmz</geo:format></geo:geo>".
 			"</url>\n",
 			"http://".$CONF['KML_HOST'].$recordSet->fields['filename'],
 			$date
