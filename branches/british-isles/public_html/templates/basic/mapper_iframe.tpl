@@ -20,7 +20,7 @@ var map, osposition, ml;
 var maxOpacity = 0.9;
 var minOpacity = 0.1;
 
-var glayer,player,slayer;
+var oslayer,glayer,player,slayer;
 
 {literal}
 
@@ -40,11 +40,16 @@ function changeOpacity(byOpacity) {
 	}
 }
 
+function fadeBackground() {
+	var newOpacity = (parseFloat(oslayer.opacity) == 1)?0.3:1;
+	oslayer.setOpacity(newOpacity);
+}
+
 function loadMap() {
 	map = new OpenLayers.Map('mapbox', {controls:[], maxExtent: new OpenLayers.Bounds(0, 0, 700000, 1300000), resolutions: [40000/250,10000/250,4000/250,2000/250], units: 'meters', projection: "EPSG:27700"});
 	
 	//Great Britain 1:50 000 Scale Colour Raster Mapping &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.
-	var oslayer = new OpenLayers.Layer.WMS("OSGB Landranger", tileurl+"?l=o", {}, {projection: "EPSG:27700", buffer:0});
+	oslayer = new OpenLayers.Layer.WMS("OSGB Landranger", tileurl+"?l=o", {}, {projection: "EPSG:27700", buffer:0});
 	oslayer.tileSize = new OpenLayers.Size(250,250);
 	oslayer.getURL = geographURL;
 	
@@ -101,7 +106,7 @@ AttachEvent(window,'load',loadMap,false);
 
 <div id="mapcontainer">
 	<div style="position:absolute">
-		<div id="mapbox"></div>
+		<div id="mapbox" style="background-color:lightgrey"></div>
 
 		<div id="mapfooter">
 			&nbsp; &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616. 
@@ -117,16 +122,16 @@ AttachEvent(window,'load',loadMap,false);
 
 <div style="width:660px; border-top:1px solid lightgrey; text-align:center; padding-top:3px;margin-top:3px">
 	Click map to view photo(s) in <input type="radio" name="clickto" {if !$centi}checked{/if} id="clickto"/>Grid-Square / <input type="radio" {if $centi}checked{/if} name="clickto"/>Centi-Square 
-
+	<small><br/><a href="javascript: fadeBackground();">Fade background Map</a></small>
 </div>
 
 <div class="interestBox" style="padding:0px; margin-top:6px">
 <h3 style="text-align:center;">Draggable Geograph Map of Great Britain <sup>(beta)</sup></h3>
 </div>
 
-<div class="copyright">Great Britain 1:50 000 Scale Colour Raster Mapping &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.<br/>
-Photographs and coverages are available under a seperate <a href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.<br/>
-{external href="http://scenic.mysociety.org/faq" text="ScenicOrNot"} dataset &copy; mySociety and licenced for reuse under this <a href="http://creativecommons.org/licenses/by-nc/3.0/" class="nowrap">Creative Commons Licence</a>.<br/>
+<div class="copyright">&middot; Great Britain 1:50 000 Scale Colour Raster Mapping &copy; Crown copyright Ordnance Survey.<br/> All Rights Reserved. Educational licence 100045616 &middot;<br/>
+&middot; Photographs and coverages are available under a seperate <a href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a> &middot;<br/>
+&middot; {external href="http://scenic.mysociety.org/faq" text="ScenicOrNot"} dataset &copy; mySociety and licenced for reuse under this <a href="http://creativecommons.org/licenses/by-nc/3.0/" class="nowrap">Creative Commons Licence</a> &middot;<br/><br/>
 For the purposes of the Creative Commons Licence this page should be considered a "Collective Work", and as such is not available in its entirety for reuse.
 </div>
 
