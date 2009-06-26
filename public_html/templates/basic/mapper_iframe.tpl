@@ -20,7 +20,7 @@ var map, osposition, ml;
 var maxOpacity = 0.9;
 var minOpacity = 0.1;
 
-var glayer,player;
+var glayer,player,slayer;
 
 {literal}
 
@@ -32,6 +32,11 @@ function changeOpacity(byOpacity) {
 		var newOpacity = (parseFloat(player.opacity) + byOpacity).toFixed(1);
 		newOpacity = Math.min(maxOpacity, Math.max(minOpacity, newOpacity));
 		player.setOpacity(newOpacity);
+	}
+	if (slayer) {
+		var newOpacity = (parseFloat(slayer.opacity) + byOpacity).toFixed(1);
+		newOpacity = Math.min(maxOpacity, Math.max(minOpacity, newOpacity));
+		slayer.setOpacity(newOpacity);
 	}
 }
 
@@ -52,7 +57,11 @@ function loadMap() {
 	player.tileSize = new OpenLayers.Size(250,250);	
 	player.getURL = geographURL;
 	
-	map.addLayers([oslayer,glayer,player]); 
+	slayer = new OpenLayers.Layer.WMS("ScenicOrNot Data", ttileurl+"?l=s", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, resolutions: [40000/250,10000/250,4000/250], buffer:0, visibility:false, opacity: 0.9});	
+	slayer.tileSize = new OpenLayers.Size(250,250);	
+	slayer.getURL = geographURL;
+	
+	map.addLayers([oslayer,glayer,player,slayer]); 
 	
 	ll = new OpenLayers.LonLat(lon, lat);
 	map.setCenter(ll, {/literal}{$z}{literal});

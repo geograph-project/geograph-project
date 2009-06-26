@@ -243,7 +243,13 @@ if (isset($_GET['map']))
 
 			$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 		
-			if ($_GET['l'] == 'p') {
+			if ($_GET['l'] == 's') {
+				$sql="select x,y,round(average) as imagecount,1 as has_geographs from
+					scenic_votes
+					inner join gridimage_search using (gridimage_id)
+					where CONTAINS( GeomFromText($rectangle),	point_xy)
+				";
+			} elseif ($_GET['l'] == 'p') {
 				$sql="select (nateastings DIV 100 * 100) AS nateastings,
 					(natnorthings DIV 100 * 100) AS natnorthings,
 					count(*) as imagecount 
@@ -319,7 +325,11 @@ if (isset($_GET['map']))
 					$colSuppBack=imagecolorallocate($img, 192,158,0);
 					
 					if ($widthdist > 4) {
-						$colour = getColorKey($img);
+						if ($_GET['l'] == 's') { 
+							$colour = getStaticColorKey($img);
+						} else {
+							$colour = getColorKey($img);
+						}
 					}
 					foreach ($arr as $i => $row) {
 
@@ -384,6 +394,27 @@ if (isset($_GET['map']))
 
 
 ////////////////////////////////////
+
+function getStaticColorKey(&$img) {
+	$colour=array();
+
+	for ($p=1; $p<=10; $p++) {
+		switch (true) {
+			case $p ==10: $r=255; $g=255; $b=0; break; 
+			case $p == 9: $r=255; $g=196; $b=0; break; 
+			case $p == 8: $r=255; $g=132; $b=0; break; 
+			case $p == 7: $r=255; $g=64; $b=0; break; 
+			case $p == 6: $r=225; $g=0; $b=0; break;
+			case $p == 5: $r=200; $g=0; $b=0; break;
+			case $p == 4: $r=168; $g=0; $b=0; break;
+			case $p == 3: $r=136; $g=0; $b=0; break;
+			case $p == 2: $r=112; $g=0; $b=0; break;
+			default: $r=80; $g=0; $b=0; break;
+		}
+		$colour[$p]=imagecolorallocate($img, $r,$g,$b);
+	}
+	return $colour;
+}
 
 function getColorKey(&$img) {
 	global $db;
