@@ -125,9 +125,8 @@ AttachEvent(window,'load',loadMap,false);
 </div>
 
 <div class="copyright">Great Britain 1:50 000 Scale Colour Raster Mapping &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.<br/>
-<br/>
-Photographs and coverages are available under a seperate <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.<br/>
-<br/>
+Photographs and coverages are available under a seperate <a href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.<br/>
+{external href="http://scenic.mysociety.org/faq" text="ScenicOrNot"} dataset &copy; mySociety and licenced for reuse under this <a href="http://creativecommons.org/licenses/by-nc/3.0/" class="nowrap">Creative Commons Licence</a>.<br/>
 For the purposes of the Creative Commons Licence this page should be considered a "Collective Work", and as such is not available in its entirety for reuse.
 </div>
 

@@ -244,7 +244,7 @@ if (isset($_GET['map']))
 			$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 		
 			if ($_GET['l'] == 's') {
-				$sql="select x,y,round(average) as imagecount,1 as has_geographs from
+				$sql="select x,y,round(average) as imagecount,1 as percent_land,1 as has_geographs from
 					scenic_votes
 					inner join gridimage_search using (gridimage_id)
 					where CONTAINS( GeomFromText($rectangle),	point_xy)
