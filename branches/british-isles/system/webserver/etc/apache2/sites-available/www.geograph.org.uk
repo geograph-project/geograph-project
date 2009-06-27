@@ -77,6 +77,8 @@
     RewriteRule ^/robots.txt   /robots-none.txt [qsa]
 
 
+	RewriteRule ^/(feed|profile)/(.*)\.georss$   /$1/$2.rss [L,R=permanent]
+
     #the following includes a fix as some useragents auto add a / to what it thinks is a folder
 
 
