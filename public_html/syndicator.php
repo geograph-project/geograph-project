@@ -254,6 +254,7 @@ if (isset($sphinx)) {
 	$images=new ImageList(array('accepted', 'geograph'), 'gridimage_id desc', 15);
 }
 
+$rss->title .= ", ".preg_replace('/\(.*?\)$/','',$rss->description);
 
 $cnt=count($images->images);
 
