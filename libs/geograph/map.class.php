@@ -506,14 +506,6 @@ class GeographMap
 	*/
 	function& _renderMap() {
 
-		//save it for rerendering later. 
-		#if ($ok) {
-			$db=&$this->_getDB();
-
-			$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%f,type_or_user=%d,palette=%d",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->palette);
-
-			$db->Execute($sql);
-		#}
 	
 	#STANDARD MAP
 		if ($this->type_or_user == 0) {
@@ -559,6 +551,14 @@ class GeographMap
 			$ok = $this->_renderImage();
 		} 
 
+		//save it for rerendering later. 
+		if ($ok) {
+			$db=&$this->_getDB();
+
+			$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%f,type_or_user=%d,palette=%d",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->palette);
+
+			$db->Execute($sql);
+		}
 		return $ok;
 	}
 	
@@ -649,7 +649,8 @@ class GeographMap
 			
 			$recordSet->MoveNext();
 		}
-		$recordSet->Close(); 
+		if (!empty($recordSet))
+			$recordSet->Close(); 
 		
 		//resample?
 		if ($imgw!=$this->image_w)
@@ -961,7 +962,8 @@ class GeographMap
 			
 			$recordSet->MoveNext();
 		}
-		$recordSet->Close(); 
+		if (!empty($recordSet))
+			$recordSet->Close(); 
 
 		if ($img) {
 			//ok being false isnt fatal, as we can create a tile, however we should use it to try again later!
@@ -1170,7 +1172,8 @@ class GeographMap
 	
 			$recordSet->MoveNext();
 		}
-		$recordSet->Close(); 
+		if (!empty($recordSet))
+			$recordSet->Close(); 
 
 		if (isset($this->real_pixels_per_km) && $this->real_pixels_per_km < 1) {
 			//render at 1px/km and scale...
@@ -1318,7 +1321,8 @@ class GeographMap
 
 			$recordSet->MoveNext();
 		}
-		$recordSet->Close(); 
+		if (!empty($recordSet))
+			$recordSet->Close(); 
 
 		if ($img) {
 			if (empty($this->displayYear)) {
@@ -1490,7 +1494,8 @@ class GeographMap
 			
 			$recordSet->MoveNext();
 		}
-		$recordSet->Close(); 
+		if (!empty($recordSet))
+			$recordSet->Close(); 
 			
 			fwrite($imagemap,implode("\n",array_reverse($lines)));
 			fwrite($imagemap,"</map>\n");
@@ -1614,7 +1619,8 @@ END;
 		}
 		if ($_GET['d'])
 			exit;
-		$recordSet->Close(); 
+		if (!empty($recordSet))
+			$recordSet->Close(); 
 	}
 	
 	/*********************************************
@@ -1824,7 +1830,8 @@ END;
 			$recordSet->MoveNext();
 		}
 
-		$recordSet->Close(); 		
+		if (!empty($recordSet))
+			$recordSet->Close();
 		
 		//plot the number labels
 		if ($this->pixels_per_km >= 40) {
@@ -1972,7 +1979,8 @@ END;
 			
 			$recordSet->MoveNext();
 		}
-		$recordSet->Close();
+		if (!empty($recordSet))
+			$recordSet->Close();
 
 		if ($memcache->valid)
 			$memcache->name_set($mnamespace,$mkey,$grid,$memcache->compress,$mperiod);
