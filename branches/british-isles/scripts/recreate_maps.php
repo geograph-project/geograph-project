@@ -150,31 +150,45 @@ while (1) {
 
 	if ($invalid_maps) {
 		
-		//sleep until calm if we've specified a load average
-		if ($param['load']<100)
+		//done as many small select statements to allow new maps to be processed 
+		$recordSet = &$db->Execute("select * from mapcache where age > 0 and type_or_user >= -1
+			order by pixels_per_km desc, age desc limit 50");
+		while (!$recordSet->EOF) 
 		{
-			while (get_loadavg() > $param['load'])
+			//sleep until calm if we've specified a load average
+			if ($param['load']<100)
 			{
-				sleep($param['sleep']);
-				if (time()>$end_time) 
-					exit;
+				while (get_loadavg() > $param['load'])
+				{
+					sleep($param['sleep']);
+					if (time()>$end_time) 
+						exit;	
+
+				}
 			}
-		}
 
-		//mysql might of closed the connection in the meantime if we reuse the same object
-		$mosaic = new GeographMapMosaic;
-		
-		$crit = " age > 0 and type_or_user >= -1
-			order by pixels_per_km desc, age desc limit 50";
+			$map=new GeographMap;
+			
+			foreach($recordSet->fields as $name=>$value)
+			{
+				if (!is_numeric($name))
+					$map->$name=$value;
+			}
 
-		$count = $mosaic->deleteBySql($crit,$param['dryrun'],$param['base']);
-		print date('r')."\n";
-		print "Deleted $count\n";
-		print "Records {$GLOBALS['deleted_records']}\n\n";
+			$ok = $map->_renderMap();
+				
+			echo (($ok?'re-rendered ':'FAILED: ').$map->getImageFilename()."\n");
+			flush();
+			
+			
+			if (time()>$end_time) {
+				$recordSet->Close(); 
+				//well come to the end of the scripts useful life
+				exit;	
+			}
 
-		if (time()>$end_time) {
-			//well come to the end of the scripts useful life
-			exit;
+			$recordSet->MoveNext();
+
 		}
 
 	} else {
