@@ -46,6 +46,10 @@ if (isset($_POST['msg']))
 	{
 		if (strlen($msg))
 		{
+			if ($_POST['referring_page'] == 'n/a' && !empty($_POST['name'])) {
+				die("Spam, Spam, Eggs, Spam, Cheese and Spam!");
+			}
+		
 			if (strlen($subject)==0)
 				$subject='Re: '.$_SERVER['HTTP_HOST'];
 			

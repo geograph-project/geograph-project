@@ -46,6 +46,12 @@
     <label for="from">Your email address</label><br/>
 	<input size="40" id="from" name="from" value="{$from|escape:'html'}"/><span class="formerror">{$from_error}</span>
     
+    <div style="display:none">
+    <br /><br />
+    <label for="name">Leave Blank!</label><br/>   
+	<input size="40" id="name" name="name" value=""/>
+    </div>
+
     <br /><br />
     
     <label for="subject">Subject</label><br/>
@@ -58,8 +64,7 @@
     <br />
         <small style="font-size:0.9em">If you are writing in relation to a particular image, please be specific as to which image you are referring!<br/> Please copy &amp; paste a link (from your browser address bar) to the photo page.</small><br /><br />
 
-    
-    <input type="submit" name="send" value="Send"/></p>
+	<input type="submit" name="send" value="Send"/></p>
     </form>
 {/if} 
 {/dynamic}    
