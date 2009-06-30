@@ -66,9 +66,9 @@ if (isset($_REQUEST['id']))
 			
 		$db=NewADOConnection($GLOBALS['DSN']);
 		
-		$exif = $db->getOne("SELECT exif FROM gridimage_exif WHERE gridimage_id = ".$iamge->gridimage_id);
+		$exif = $db->getOne("SELECT exif FROM gridimage_exif WHERE gridimage_id = ".$image->gridimage_id);
 		if (empty($exif)) {
-			$exif = $db->getOne("SELECT exif FROM gridimage_exif1 WHERE gridimage_id = ".$iamge->gridimage_id);
+			$exif = $db->getOne("SELECT exif FROM gridimage_exif1 WHERE gridimage_id = ".$image->gridimage_id);
 		}
 		
 		$smarty->assign_by_ref('exif', $exif);
