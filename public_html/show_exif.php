@@ -71,7 +71,10 @@ if (isset($_REQUEST['id']))
 			$exif = $db->getOne("SELECT exif FROM gridimage_exif1 WHERE gridimage_id = ".$image->gridimage_id);
 		}
 		
-		$smarty->assign_by_ref('exif', $exif);
+		if (!empty($exif)) {
+			$exif = unserialize($exif);
+			$smarty->assign_by_ref('exif', $exif);
+		}
 	}
 	
 } else {
