@@ -544,6 +544,10 @@ div.photolandscape
 	margin:10px;
 }
 
+div.img-shadow {
+	overflow:auto;
+}
+
 .img-shadow img {
 	/*
 	width:100%;
