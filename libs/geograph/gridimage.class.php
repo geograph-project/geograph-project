@@ -511,6 +511,7 @@ class GridImage
 	}
 	
 	function assignToSmarty($smarty, $sid=-1) {
+		global $CONF;
 		
 		$taken=$this->getFormattedTakenDate();
 
@@ -525,15 +526,7 @@ class GridImage
 		$this->bigtitle=preg_replace('/(?<![\.])\.$/', '', $this->bigtitle);
 
 		$rid = $this->grid_square->reference_index;
-		if ($rid < 3) { # FIXME configuration variable!
-			$gridrefpref = 'OS grid ';
-		} elseif ($rid == 3) {
-			$gridrefpref = 'MGRS 32';
-		} elseif ($rid == 4) {
-			$gridrefpref = 'MGRS 33';
-		} elseif ($rid == 5) {
-			$gridrefpref = 'MGRS 31';
-		}
+		$gridrefpref=$CONF['gridrefname'][$rid];
 		$smarty->assign('page_title', $this->bigtitle.":: {$gridrefpref}{$this->grid_reference}");
 
 		$smarty->assign('image_taken', $taken);
@@ -1159,18 +1152,21 @@ class GridImage
 					} else {
 						list($width, $height, $type, $attr) = $info;
 						
-						if (($width>$maxw) || ($height>$maxh)) {
-							$operation = ($maxw+$maxh < 400)?'thumbnail':'resize';
-						} elseif (!$bestfit) {
-							$operation = 'adaptive-resize';
-						}
+						if (($width>$maxw) || ($height>$maxh) || !$bestfit) {
 						
-						if (isset($operation)) {
 							$unsharpen=$unsharp?"-unsharp 0x1+0.8+0.1":"";
 							
 							$raised=$bevel?"-raise 2x2":"";
 							
 							$operation = ($maxw+$maxh < 400)?'thumbnail':'resize';
+							$aspect_src=$width/$height;
+							$aspect_dest=$maxw/$maxh;
+
+							if ($bestfit && $aspect_src > 2 && $aspect_dest < 2) {
+								$bestfit = false;
+								$maxh = round($maxw/2);
+								$aspect_dest= 2;
+							}
 							
 							if ($bestfit)
 							{
@@ -1185,8 +1181,6 @@ class GridImage
 							}
 							else
 							{
-								$aspect_src=$width/$height;
-								$aspect_dest=$maxw/$maxh;
 								
 								if ($aspect_src > $aspect_dest)
 								{
@@ -1215,7 +1209,7 @@ class GridImage
 								
 								passthru ($cmd);
 								
-								//now resize
+								//now resize // FIXME: one step!
 								$cmd = sprintf ("\"%smogrify\" -$operation %ldx%ld $unsharpen $raised -quality 87 jpg:%s", 
 								$CONF['imagemagick_path'],
 								$maxw, $maxh, 
@@ -1232,7 +1226,7 @@ class GridImage
 							copy($_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
 						}	
 					}
-				} else {
+				} else { // FIXME not the same as above
 					//generate resized image
 					$fullimg = @imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$fullpath); 
 					if ($fullimg)

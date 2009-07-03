@@ -50,10 +50,13 @@ class PictureOfTheDay
 	
 	function initToday()
 	{
+		global $CONF;
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');  
+		$upper=$CONF['potd_daysperimage']-1;
 	
-		$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where to_days(showday)=to_days(now())");
+		#$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where to_days(showday)=to_days(now())");
+		$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where (to_days(now())-to_days(showday)) between 0 and $upper order by (to_days(now())-to_days(showday))");
 		if (empty($gridimage_id))
 		{
 			//get timestamp from db server
@@ -63,7 +66,8 @@ class PictureOfTheDay
 			$db->Execute("lock tables gridimage_daily write,gridimage_search write");
 			
 			//we've got our lock, so lets check we weren't beaten to the punch
-			$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where to_days(showday)=to_days(now())");
+			#$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where to_days(showday)=to_days(now())");
+			$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where (to_days(now())-to_days(showday)) between 0 and $upper order by (to_days(now())-to_days(showday))");
 			if (empty($gridimage_id))
 			{
 				//ok, there is still no image for today, and we have a

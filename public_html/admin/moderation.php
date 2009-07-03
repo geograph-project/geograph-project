@@ -406,7 +406,7 @@ foreach ($images->images as $i => $image) {
 
 	$fullpath=$images->images[$i]->_getFullpath();
 	list($width, $height, $type, $attr)=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
-	if (max($width,$height) < 500)
+	if (max($width,$height) < 500 || min($width,$height) < 100)
 		$images->images[$i]->sizestr = $attr;
 }
 

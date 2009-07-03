@@ -237,8 +237,22 @@ $CONF['origins'] = array(1 => array(206,0),2 => array(10,149));
 //number of characters in the grid prefix
 $CONF['gridpreflen'] = array(1 => 2, 2 => 1);
 
+//name of the grids (shown in page title)
+$CONF['gridrefname'] = array(1 => 'OS grid ', 2 => 'OS grid ');
+
 // google maps: show meridians n*$CONF['showmeridian'] degrees (0: don't show any meridian)
 $CONF['showmeridian'] = 0;
+
+// picture of the day
+
+$CONF['potd_daysperimage'] = 7;
+$CONF['potd_listlen'] = 20;
+
+// picture size
+
+$CONF['pano_upper_limit'] = 0.5;
+$CONF['pano_lower_limit'] = 0.25;
+$CONF['img_max_size'] = 640;
 
 ## search setup
 

@@ -49,6 +49,9 @@ $smarty->caching=0;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+	$daysperimg=$CONF['potd_daysperimage'];
+	$upper=$daysperimg-1;
+	$lower=-$daysperimg+1;
 	//lets get some stats
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
@@ -161,21 +164,25 @@ if (!$smarty->is_cached($template, $cacheid))
 	//count how many are in the kitty
 	$pending=$db->GetCol("select gridimage_id from gridimage_daily where showday is null");
 	
-	//get the next 4 weeks of assignments
-	$days=28;
-	$coming_up=$db->GetAssoc("select showday,gridimage_id,1 as assigned from gridimage_daily where to_days(showday)-to_days(now()) between 0 and $days");
+	//get the next $listlen entries of assignments
+	$listlen=$CONF['potd_listlen'];#$CONF['potd_listlen']-1?
+	$days=$listlen*$daysperimg;
+	$image_list=$db->GetAssoc("select showday,gridimage_id,1 as assigned from gridimage_daily where to_days(showday)-to_days(now()) between $lower and $days");
 	
 	//get ordered list of pool images
-	$pool=$db->GetCol("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null order by moderation_status+0 desc,crc32(gridimage_id) limit $days");
-	
+	$pool=$db->GetCol("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null order by moderation_status+0 desc,crc32(gridimage_id) limit $listlen");
+	$coming_up=array();
 	
 	//fill in blanks
-	for ($d=0; $d<$days; $d++)
+	$prev=-$daysperimg;
+	for ($d=$lower; $d<$days; $d++)
 	{
 		$t=strtotime("+{$d} days");
 		$showday=strftime("%Y-%m-%d", $t);
-		if (!isset($coming_up[$showday]))
-		{
+		if (isset($image_list[$showday])) {
+			if ($d>=0) { $coming_up[$showday]=$image_list[$showday]; }
+			$prev=$d;
+		} else if ($d>=0 && $d-$prev >= $daysperimg) {
 			if (count($pool))
 			{
 				$image=array_shift($pool);
@@ -189,6 +196,11 @@ if (!$smarty->is_cached($template, $cacheid))
 				$coming_up[$showday]=array(
 					'gridimage_id'=>0);
 			}
+			$prev=$d;
+		} else if ($d==0 && $prev != -$daysperimg) {
+			$t=strtotime("+{$prev} days");
+			$showday=strftime("%Y-%m-%d", $t);
+			$coming_up[$showday]=$image_list[$showday];
 		}
 	}
 	
