@@ -128,7 +128,40 @@ if (isset($_POST['check']))
 		echo "</ul>";
 		$recordSet->Close(); 
 		echo "<script language=\"javascript\">completed.innerHTML='Completed';</script>\n";
-	}		
+	}	
+	
+	if (isset($_POST['compare']))
+	{
+		echo "<h3>Comparing gridimage_search/gridimage</h3>";
+	
+		$sql = "select 
+				gi.gridimage_id as gi_id,gis.gridimage_id as gis_id,
+				gi.moderation_status as gi_m,gis.moderation_status as gis_m, 
+				gi.ftf as gi_ftf,gis.ftf as gis_ftf
+			from gridimage gi 
+			left join gridimage_search gis using (gridimage_id) 
+			where (gis.gridimage_id IS NULL or gi.moderation_status != gis.moderation_status OR gi.ftf != gis.ftf) 
+			and gi.moderation_status in ('geograph','accepted')";
+
+		dump_sql_table($sql,"Incorrect in gridimage_search");
+		flush();
+		
+		print "Any results above should be cleaned up with buildgridimage_search.php (paste the first column into the box)";
+		
+		$sql = "select 
+				gi.gridimage_id as gi_id,gis.gridimage_id as gis_id,
+				gi.moderation_status as gi_m,gis.moderation_status as gis_m, 
+				gi.ftf as gi_ftf,gis.ftf as gis_ftf
+			from gridimage gi 
+			inner join gridimage_search gis using (gridimage_id) 
+			where gi.moderation_status not in ('geograph','accepted')";
+
+		dump_sql_table($sql,"Shouldn't be in gridimage_search");
+		flush();
+		
+		print "Any results above should be deleted from gridimage_search";
+	}
+	
 	if (isset($_POST['geographs']))
 	{
 		echo "<h3>Geographs Per Square</h3><table class=\"report\">";
@@ -136,16 +169,16 @@ if (isset($_POST['check']))
 		echo "<thead><tr><td>Square</td><td>Number of Geographs</td><td>Number of Firsts</td></tr></thead><tbody>";
 		
 		if ($_POST['table'] == 'gridimage_search') {
-			$table = "inner join gridimage_search as gi using (grid_reference)";
+			$table = "gridimage_search as gi";
 			$group = "grid_reference";
 		} else {
-			$table = "inner join gridimage as gi using (gridsquare_id)";
-			$group = "gridsquare_id";			
+			$table = "gridsquare as gs inner join gridimage as gi using (gridsquare_id)";
+			$group = "gridsquare_id";
 		}
 		
 		$squares=$db->getAll("select
-		gs.grid_reference,count(gridimage_id) as geographs,sum(ftf = 1) as firsts
-		from gridsquare as gs
+		grid_reference,count(gridimage_id) as geographs,sum(ftf = 1) as firsts
+		from 
 			$table
 		where moderation_status = 'geograph'
 		group by gi.$group
@@ -167,5 +200,32 @@ if (isset($_POST['check']))
 
 $smarty->display('admin_dbcheck.tpl');
 
+
+function dump_sql_table($sql,$title) {
+	
+	$result = mysql_query($sql) or die ("Couldn't select : $sql " . mysql_error() . "\n");
+	
+	$row = mysql_fetch_array($result,MYSQL_ASSOC);
+
+	print "<H4>$title</H4>";
+	
+	print "<TABLE border='1' cellspacing='0' cellpadding='2' class=\"report\"><TR>";
+	foreach ($row as $key => $value) {
+		print "<TH>$key</TH>";
+	}
+	print "</TR><TR>";
+	foreach ($row as $key => $value) {
+		print "<TD>$value</TD>";
+	}
+	print "</TR>";
+	while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
+		print "<TR>";
+		foreach ($row as $key => $value) {
+			print "<TD>$value</TD>";
+		}
+		print "</TR>";
+	}
+	print "</TR></TABLE>";
+}
 	
 ?>

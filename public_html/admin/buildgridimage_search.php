@@ -40,14 +40,21 @@ $smarty->display('_std_begin.tpl');
 ?>
 <h2>gridimage_search Rebuild Tool</h2>
 <form action="buildgridimage_search.php" method="post">
-<input type="checkbox" id="recreate" name="recreate" value="1" disabled>
-<label for="recreate">Recreate entire gridimage_search table from gridimage table</label> THIS IS TOO DANGEROUS - disabled for your own safety<br>
-&nbsp;<input type="checkbox" id="use_new" name="use_new" value="1" checked="checked">
-<label for="use_new">Use multi-stage copy (recommended on a live site)</label><br>
+<input type="checkbox" id="recreate" name="recreate" value="1" disabled> <label for="recreate">Recreate entire gridimage_search table from gridimage table</label><br>
+&nbsp;&nbsp;&nbsp;<input type="checkbox" id="use_new" name="use_new" value="1" checked="checked"> <label for="use_new">Use multi-stage copy (recommended on a live site)</label><br>
+ [[THIS IS VERY DANGEROUS - disabled for your own safety, see source code for more info]]<br>
+<br>
+<br>-and/or-<br>
+<br>
+<input type="checkbox" id="replace" name="replace" value="1"> <label for="update">REPLACE INTO gridimage_search</label> (only works if specify ids)<br>
 <br>
 <br>-and/or-<br>
 <br>
 <input type="checkbox" id="update" name="update" value="1"> <label for="update">Update lat/long values in gridimage_search</label><br>
+<br><br>
+
+Optionally, run only on the folowing gridimage_id's:<br/>
+<input type="text" id="ids" name="ids" value="" size="80">
 <br><br>
 <input type="submit" name="go" value="Start">
 </form>
@@ -125,6 +132,27 @@ if (isset($_POST['recreate']))
 
 }
 
+if (!empty($_POST['replace']) && !empty($_POST['ids']))
+{
+	echo "<h3>Replacing into</h3>";
+	flush();
+
+	if (!empty($_POST['ids'])) {
+		$ids = trim(preg_replace('/[^\d,]+/',' ',$_POST['ids']));
+	}
+
+	$db->Execute("REPLACE INTO gridimage_search
+			SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,0,0,ftf,seq_no,point_xy,GeomFromText('POINT(0 0)')
+			FROM gridimage AS gi
+			INNER JOIN gridsquare AS gs
+			USING ( gridsquare_id )
+			INNER JOIN user ON ( gi.user_id = user.user_id )
+			WHERE moderation_status in ('accepted','geograph') 
+			AND gridimage_id IN ($ids)");
+
+	echo "<h3>Replace into completed</h3>";
+}
+
 if (!empty($_POST['update']))
 {
 	echo "<h3>Updating Lat/Long</h3>";
@@ -132,10 +160,17 @@ if (!empty($_POST['update']))
 
 	$start = time();
 
+	$andwhere = '';
+	if (!empty($_POST['ids'])) {
+		$ids = trim(preg_replace('/[^\d,]+/',' ',$_POST['ids']));
+		$andwhere = " AND gridimage_id IN ($ids) ";
+	}
+
 	$recordSet = &$db->Execute("select gridimage_id,x,y,reference_index,nateastings,natnorthings
 		from gridimage
 		INNER JOIN gridsquare AS gs USING ( gridsquare_id )
-		where moderation_status in ('accepted','geograph')");
+		where moderation_status in ('accepted','geograph')
+		$andwhere");
 	$count=0;
 	while (!$recordSet->EOF) 
 	{
@@ -150,8 +185,8 @@ if (!empty($_POST['update']))
 		$db2->Execute("UPDATE LOW_PRIORITY gridimage_search SET wgs84_lat = $lat, wgs84_long = $long,point_ll = GeomFromText('POINT($long $lat)'),upd_timestamp=upd_timestamp WHERE gridimage_id = ".$image['gridimage_id']);
 		
 		if (++$count%500==0) {
-				printf("done %d at <b>%d</b> seconds<br/>",$count,time()-$start);
-				flush();
+			printf("done %d at <b>%d</b> seconds<br/>",$count,time()-$start);
+			flush();
 		}
 		$recordSet->MoveNext();
 	}
@@ -161,10 +196,7 @@ if (!empty($_POST['update']))
 }
 
 
-	$smarty->display('_std_end.tpl');
-	exit;
-	
+$smarty->display('_std_end.tpl');
+exit;
 
-
-	
 ?>
