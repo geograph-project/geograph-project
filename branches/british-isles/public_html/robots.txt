@@ -31,6 +31,7 @@ Disallow: /browse.php
 Disallow: /location.php
 Disallow: /gridref/
 Disallow: /ecard.php
+Disallow: /show_exif.php
 Disallow: /export.
 Disallow: /tile.php
 Disallow: /auth.php
@@ -80,6 +81,7 @@ Disallow: /browse.php?
 Disallow: /location.php
 Disallow: /gridref/
 Disallow: /ecard.php
+Disallow: /show_exif.php
 Disallow: /export.
 Disallow: /tile.php
 Disallow: /auth.php
