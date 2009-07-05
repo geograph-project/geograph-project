@@ -124,18 +124,18 @@
 
 			var div = cl.getClusterCountDIV();
 
-			if (cl.count >= 1000) {
+			if (cl.count >= 10000) {
 				div.style.fontSize = "14px";
-				cl.setImage('http://www.geocubes.com/bla/bubble_4.png');
-			} else if (cl.count >= 100) {
+				cl.setImage('http://{/literal}{$static_host}{literal}/img/bubble_4.png');
+			} else if (cl.count >= 1000) {
 				div.style.fontSize = "13px";
-				cl.setImage('http://www.geocubes.com/bla/bubble_3.png');
-			} else if (cl.count >= 10) {
+				cl.setImage('http://{/literal}{$static_host}{literal}/img/bubble_3.png');
+			} else if (cl.count >= 100) {
 				div.style.fontSize = "12px";
-				cl.setImage('http://www.geocubes.com/bla/bubble_2.png');
+				cl.setImage('http://{/literal}{$static_host}{literal}/img/bubble_2.png');
 			} else if (cl.count >= 0) {
 				div.style.fontSize = "11px";
-				cl.setImage('http://www.geocubes.com/bla/bubble_1.png');
+				cl.setImage('http://{/literal}{$static_host}{literal}/img/bubble_1.png');
 			}
 		});
 
