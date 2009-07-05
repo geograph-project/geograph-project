@@ -117,7 +117,7 @@ $sql = "SELECT geocubes.gridimage_id, wgs84_lat, wgs84_long, title, user_id, crc
 	LIMIT 1000";
 $recordSet = &$db->Execute($sql);
 
-while (($rows = $recordSet->RecordCount()) > 0) {
+while (($recordSet && ($rows = $recordSet->RecordCount())) > 0) {
 	
 	//recreate it each time to be sure. (descruture is called which disconnects previous connection
 	$gc = new geocubes($CONF['GEOCUBES_API_KEY'], $CONF['GEOCUBES_API_TOKEN']);

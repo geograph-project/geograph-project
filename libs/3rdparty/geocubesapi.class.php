@@ -1,6 +1,7 @@
 <?php
 
-//retreived from http://geocubes.com/client-library-php
+//retreived from http://geocubes.com/client-library-php 
+//version 1.3
 //open licence
 
 class geocubes {
@@ -79,11 +80,8 @@ class geocubes {
 
 
         function _auth() {
-                print "AUTH TOK\n";
                 if ($this->_sendTo("AUTH TOK", $ret) == 1) {
-                        print "AUTH TOK " . $ret[1]."\n";
                         if ($this->_sendTo("AUTH TOK " . $ret[1], $ret2) == 1) {
-                                print "AUTH CST " . $this->api_key . " " . $this->api_token."\n";
                                 if ($this->_sendTo("AUTH CST " . $this->api_key . " " . $this->api_token, $ret) == 1) {
                                         $this->isAuth = 1;
                                 } else {
