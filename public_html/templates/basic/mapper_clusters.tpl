@@ -31,7 +31,8 @@
 	var map;
 	var gc;
 	var filterUrl = '';
-
+	var clouds = false;
+	
 	function onLoad() {
 		map = new GMap2(document.getElementById("map"));
 		map.addMapType(G_PHYSICAL_MAP);
@@ -74,6 +75,9 @@
 				if (argname == "q") {document.theForm.elements['q'].value = decodeURI(value); filter = true;}
 				if (argname == "u") {document.theForm.elements['user_id'].value = decodeURI(value); filter = true;}
 				if (argname == "c") {document.theForm.elements['imageclass'].value = decodeURI(value); filter = true;}
+				if (argname == "r") {
+					if (value == "c") {clouds = true}
+				}
 			}
 		}
 
@@ -90,32 +94,49 @@
 		gc.setOption(GC_OP_DEBUG, 1);
 		gc.setOption(GC_OP_CLUSTERCOUNT, 1);
 
+		if (clouds) {
+			gcGridObj.setRendering(GC_RND_CLOUDS);
+		}
+
 		gc.setIcon(GC_IC_CLUSTERMOUSEOVER, 0);
 		gc.setVar(GC_VR_COUNTDESCR, 0);
 
 		gc.setCallback(GC_CB_ONCREATECLUSTER, function (cl, latNE, lngNE, latSW, lngSW) {
 
-			cl.cclayer.div_.style.marginTop = 0;
-			cl.cclayer.div_.style.fontSize = "20px";
-			cl.cclayer.div_.style.fontWeight = "bold";
+			var div = cl.getClusterCountDIV();
+			div.style.marginTop = 0;
+			div.style.fontSize = "20px";
+			div.style.fontWeight = "bold";
 
 			if (cl.count > 1000) {
-
-				cl.cclayer.div_.style.fontSize = "16px";
+				div.style.fontSize = "16px";
 				cl.setImage('http://www.geocubes.com/bla/cube1.png');
-
 			} else if (cl.count > 100) {
-
-				cl.cclayer.div_.style.fontSize = "14px";
+				div.style.fontSize = "14px";
 				cl.setImage('http://www.geocubes.com/bla/cube2.png');
-
 			} else {
-
-				cl.cclayer.div_.style.fontSize = "12px";
+				div.style.fontSize = "12px";
 				cl.setImage('http://www.geocubes.com/bla/cube3.png');
-
 			}
+		});
 
+		gc.setCallback(GC_CB_ONCREATECLOUD, function (cl, latNE, NE, SW, weight) {
+
+			var div = cl.getClusterCountDIV();
+
+			if (cl.count >= 1000) {
+				div.style.fontSize = "14px";
+				cl.setImage('http://www.geocubes.com/bla/bubble_4.png');
+			} else if (cl.count >= 100) {
+				div.style.fontSize = "13px";
+				cl.setImage('http://www.geocubes.com/bla/bubble_3.png');
+			} else if (cl.count >= 10) {
+				div.style.fontSize = "12px";
+				cl.setImage('http://www.geocubes.com/bla/bubble_2.png');
+			} else if (cl.count >= 0) {
+				div.style.fontSize = "11px";
+				cl.setImage('http://www.geocubes.com/bla/bubble_1.png');
+			}
 		});
 
 		gc.setCallback(GC_CB_POINTCLICK, function (marker, point_id, freetext, opt_field1, opt_field2) {
@@ -144,7 +165,7 @@
 		var ll = map.getCenter().toUrlValue(6);
 		var z = map.getZoom();
 		var t = map.getCurrentMapType().getUrlArg();
-		window.location.hash = '#ll='+ll+'&z='+z+'&t='+t+filterUrl;
+		window.location.hash = '#ll='+ll+'&z='+z+'&t='+t+filterUrl+(clouds?'&r=c':'');
 	}
 
 	function updateFilters(f) {

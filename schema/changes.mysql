@@ -564,3 +564,16 @@ ALTER TABLE geobb_topics ADD KEY (`forum_id`,sticky DESC,`topic_last_post_id` DE
 
 
 ALTER TABLE  `user` ADD  `use_autocomplete` TINYINT UNSIGNED NOT NULL DEFAULT  '0';
+
+
+alter table mapcache change age age mediumint NOT NULL DEFAULT '0';
+alter table mapcache2 change age age mediumint NOT NULL DEFAULT '0';
+
+
+CREATE TABLE `geocubes` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `lastsent` datetime DEFAULT NULL,
+  `outstanding` tinyint(3) unsigned DEFAULT '0',
+  PRIMARY KEY (`gridimage_id`),
+  KEY `outstanding` (`outstanding`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
