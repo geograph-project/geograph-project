@@ -847,7 +847,7 @@ class GeographMap
 						CONTAINS( GeomFromText($rectangle),	point_xy) and
 						user_id = {$this->type_or_user} group by x,y";
 				} else {
-					$table = "gi".md5($rectangle);
+					$table = "gi".md5($rectangle).$this->type_or_user;
 					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
 						SELECT gridimage_id,grid_reference,x,y,moderation_status FROM gridimage_search WHERE 
 						CONTAINS( GeomFromText($rectangle),	point_xy) AND user_id = {$this->type_or_user}
