@@ -95,7 +95,7 @@
 		gc.setOption(GC_OP_CLUSTERCOUNT, 1);
 
 		if (clouds) {
-			gcGridObj.setRendering(GC_RND_CLOUDS);
+			gc.setRendering(GC_RND_CLOUDS);
 		}
 
 		gc.setIcon(GC_IC_CLUSTERMOUSEOVER, 0);
