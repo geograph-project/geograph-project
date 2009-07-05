@@ -214,7 +214,7 @@ if (isset($_GET['coast_GB_40'])) {
 		$x = $square->x;
 		$y = $square->y;
 
-		print "<h3>$gridref</h3>";
+		print "<h3>$gridref [$x,$y]</h3>";
 		if (count($squares) < 5) {
 			$sql="select * from mapcache 
 					where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
