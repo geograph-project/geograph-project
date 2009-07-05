@@ -69,7 +69,7 @@ if (isset($_POST['recreate']))
 	
 	
 	
-	echo "<h3>Rebuilding gridimage_search from gridimage</h3>";
+	echo "<hr/><h3>Rebuilding gridimage_search from gridimage</h3>";
 	flush();
 	
 	if ($_POST['use_new']) {
@@ -134,7 +134,7 @@ if (isset($_POST['recreate']))
 
 if (!empty($_POST['replace']) && !empty($_POST['ids']))
 {
-	echo "<h3>Replacing into</h3>";
+	echo "<hr/><h3>Replacing into</h3>";
 	flush();
 
 	if (!empty($_POST['ids'])) {
@@ -150,12 +150,12 @@ if (!empty($_POST['replace']) && !empty($_POST['ids']))
 			WHERE moderation_status in ('accepted','geograph') 
 			AND gridimage_id IN ($ids)");
 
-	echo "<h3>Replace into completed</h3>";
+	echo "<p>Replace into completed</p>";
 }
 
 if (!empty($_POST['update']))
 {
-	echo "<h3>Updating Lat/Long</h3>";
+	echo "<hr/><h3>Updating Lat/Long</h3>";
 	flush();
 
 	$start = time();
