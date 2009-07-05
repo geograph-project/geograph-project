@@ -508,14 +508,17 @@ class GridImageTroubleTicket
 				}
 			}
 		
-			if ($this->status=="pending")
+			if ($this->status=="pending" || $this->status=="open")
 			{
 				$ttype = ($this->type == 'minor')?' Minor':'';
 					
-				//email alert to moderators
-				$msg =& $this->_buildEmail("A new$ttype change request has been submitted.\n\n".$this->notes);
-				$this->_sendModeratorMail($msg);
-
+				if ($this->status=="pending")  //A open ticker can only be created by moderators so no need to notify
+				{
+					//email alert to moderators
+					$msg =& $this->_buildEmail("A new$ttype change request has been submitted.\n\n".$this->notes);
+					$this->_sendModeratorMail($msg);
+				}
+				
 				//if suggester isn't the owner of the image, alert the owner too
 				if ($this->user_id != $img->user_id)
 				{
