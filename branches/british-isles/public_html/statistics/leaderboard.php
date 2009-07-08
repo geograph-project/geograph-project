@@ -193,6 +193,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_column = "round(pow(count(*),2)/count(distinct grid_reference))";
 			$sql_having_having = "having count(*) > $minimum";
 		} else {
+			$sql_table = "user_stat i";
 			$sql_column = "round(pow(images,2)/squares";
 			$sql_having_having = "having images > $minimum";
 		}
@@ -226,7 +227,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		} else {
 			$sql_table = "user_stat i";
 			$sql_column = "hectads/images";
-			$sql_having_having = "having count(*) > $minimum";
+			$sql_having_having = "having images > $minimum";
 		}
 		$heading = "Spread Score";
 		$desc = "spread score (hectads/images), and having submitted over $minimum images";
