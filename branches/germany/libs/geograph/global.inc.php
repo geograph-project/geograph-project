@@ -167,8 +167,7 @@ function __autoload($class_name) {
                 $con = ob_get_clean();
                 mail('geo@hlipp.de','[Geograph Error] '.date('r'),$con,"From: geo.hlipp.de <geo@hlipp.de>","-f geo@hlipp.de"); //FIXME mail=>variable
 		header("HTTP/1.1 505 Server Error");
-                die('Fatal Internal Error, the developers have been notified, if possible please <a
-href="mailto:geo@hlipp.de">let us know</a> what you where doing that lead up to this error');
+                die('Fatal Internal Error, the developers have been notified, if possible please <a href="mailto:mailto:geo@hlipp.de">let us know</a> what you where doing that lead up to this error');
         }
 
 	require_once('geograph/'.strtolower($class_name).'.class.php');
@@ -343,6 +342,9 @@ class GeographPage extends Smarty
 	function is_cached($template, $cache_id = null, $compile_id = null)
 	{
 		global $USER,$CONF;
+		if (!empty($this->disable_caching)) {
+			$this->caching = 0;
+		}
 		$filename = str_replace("|","___","{$this->cache_dir}/lock_$template-$cache_id.tmp");
 		if (isset($_GET['refresh']) && $USER->hasPerm('admin')) {
 			$this->clear_cache($template, $cache_id, $compile_id);
@@ -388,6 +390,9 @@ class GeographPage extends Smarty
 	function display($template, $cache_id = null, $compile_id = null)
 	{
 		global $CONF;
+		if (!empty($this->disable_caching)) {
+			$this->caching = 0;
+		}
 		$ret = parent::display($template, $cache_id, $compile_id);
 
 		//we finished so remove the lock file

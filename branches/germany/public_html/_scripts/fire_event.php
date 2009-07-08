@@ -30,8 +30,7 @@ require_once('geograph/global.inc.php');
 require_once('geograph/event.class.php');
 
 //need perms if not requested locally
-if (($_SERVER['REMOTE_ADDR'] != $_SERVER['SERVER_ADDR']) &&
-     ($_SERVER['HTTP_X_FORWARDED_FOR']!='87.124.24.35'))
+if (!isLocalIPAddress())
 {
 	die("Can only request this from localhost");
 }

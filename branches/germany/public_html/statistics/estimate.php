@@ -27,7 +27,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))&& array_key_exists($ri, $CONF['references_all']) ?intval($_GET['ri']):0;
+$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))&& array_key_exists(intval($_GET['ri']), $CONF['references_all']) ?intval($_GET['ri']):0;
 
 $days = (isset($_GET['days']) && is_numeric($_GET['days']))?intval($_GET['days']):7;
 
@@ -36,8 +36,10 @@ $days = (isset($_GET['days']) && is_numeric($_GET['days']))?intval($_GET['days']
 $template='statistics_estimate.tpl';
 $cacheid='statistics|estimate'.$ri.'.'.$days;
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hr cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*24; //24hr cache
+}
 
 if (!$smarty->is_cached($template, $cacheid))
 {

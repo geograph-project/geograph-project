@@ -145,7 +145,6 @@ Refine:
 	<li><a href="/statistics/leaderhectad.php"><b>Hectad</b> Leaderboard for <b>First Geographs</b></a></li>
 	<li><a href="/statistics/leaderallhectad.php"><b>Hectad</b> Leaderboard all Images</a></li>
 </ul>
-<i>{external href="http://www.nearby.org.uk/geograph/leaderboards.html" text="Rough and ready page giving a few more examples"}</i>
 
 
 <h3><a name="stats"></a>More Statistics...</h3>

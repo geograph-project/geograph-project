@@ -304,7 +304,7 @@ class GeographUser
 			$db = $this->_getDB();
 
 			# no need to call connect/pconnect!
-			$arr = $db->GetRow('select * from user where email='.$db->Quote($email).' and rights is not null limit 1');	
+			$arr = $db->GetRow('select * from user where email='.$db->Quote($email).' and rights is not null limit 1');
 			if (count($arr))
 			{
 				//email address already exists in database
@@ -320,7 +320,7 @@ class GeographUser
 				{
 					//user already exists, but didn't respond to email - probably trying
 					//to send a fresh one so lets just refresh the existing record
-					$user_id=$arr['user_id'];	
+					$user_id=$arr['user_id'];
 					
 					$sql = sprintf("update user set realname=%s,email=%s,password=%s,signup_date=now(),http_host=%s where user_id=%s",
 						$db->Quote($name),
@@ -345,7 +345,6 @@ class GeographUser
 						$db->Quote($email),
 						$db->Quote(md5($password1)),
 						$db->Quote($_SERVER['HTTP_HOST']));
-				
 					
 					if ($db->Execute($sql) === false) 
 					{
@@ -354,12 +353,21 @@ class GeographUser
 					}
 					else
 					{
-						$user_id=$db->Insert_ID();	
+						$user_id=$db->Insert_ID();
 					}
 				}
 				
 				if ($ok)
 				{
+					$db->Execute(sprintf("insert into user_change set 
+						user_id = %d,
+						field = 'realname',
+						value = %s
+						",
+						$user_id,
+						$db->Quote($name)
+						));
+					
 					//put the user_id into this user object
 					$this->user_id=$user_id;
 					
@@ -836,7 +844,29 @@ class GeographUser
 			//age info is useless to others, nice for us, no need
 			//to give use a public option
 			
-			//todo if nickname changed, add old one to seperate table
+			if ($this->realname != $profile['realname']) 
+			{
+				$db->Execute(sprintf("insert into user_change set 
+					user_id = %d,
+					field = 'realname',
+					value = %s
+					",
+					$this->user_id,
+					$db->Quote($profile['realname'])
+					));
+			}
+			if ($this->nickname != $profile['nickname']) 
+			{
+				$db->Execute(sprintf("insert into user_change set 
+					user_id = %d,
+					field = 'nickname',
+					value = %s
+					",
+					$this->user_id,
+					$db->Quote($profile['nickname'])
+					));
+			}
+			
 			
 			$sql = sprintf("update user set 
 				realname=%s,

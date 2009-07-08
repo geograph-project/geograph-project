@@ -63,6 +63,7 @@ class SearchCriteria
 		'sort' => '@relevance DESC, @id DESC',
 		'impossible' => 0,
 		'compatible' => 1,
+		'compatible_order' => 1,
 		'no_legacy' => 0,
 		'filters' => array()
 	);
@@ -203,16 +204,19 @@ class SearchCriteria
 			} else {
 				$this->sphinx['impossible']++;
 			}
-
-			//not using "power(gs.x -$x,2) * power( gs.y -$y,2)" beucause is testing could be upto 2 times slower!
-			$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
-			$sql_order = ' dist_sqd ';
+			if ($this->limit8 == 1) {
+				$sql_fields .= ", 0 as dist_sqd";
+			} else {
+				//not using "power(gs.x -$x,2) * power( gs.y -$y,2)" beucause is testing could be upto 2 times slower!
+				$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
+				$sql_order = ' dist_sqd ';
+			}
 		} 
 		if ((($x == 0 && $y == 0 ) || $this->limit8) && $this->orderby) {
 			switch ($this->orderby) {
 				case 'random':
 					$sql_order = ' crc32(concat("'.($this->crt_timestamp_ts).'",gi.gridimage_id)) ';
-					$this->sphinx['compatible'] = 0;
+					$this->sphinx['compatible_order'] = 0;
 					$this->sphinx['sort'] = "@random";
 					break;
 				case 'dist_sqd':
@@ -236,15 +240,15 @@ class SearchCriteria
 							$this->sphinx['sort'] = '@id';
 							break;
 						case 'x':
-							$this->sphinx['compatible'] = 0;
+							$this->sphinx['compatible_order'] = 0;
 							$this->sphinx['sort'] = 'wgs84_long';
 							break;
 						case 'y':
-							$this->sphinx['compatible'] = 0;
+							$this->sphinx['compatible_order'] = 0;
 							$this->sphinx['sort'] = 'wgs84_lat';
 							break;
 						case 'imagetaken':
-							$this->sphinx['compatible'] = 0;
+							$this->sphinx['compatible_order'] = 0;
 							$this->sphinx['sort'] = 'takendays';
 							break;
 						case 'realname':
@@ -261,12 +265,26 @@ class SearchCriteria
 					}
 			}
 			$sql_order = preg_replace('/^submitted/','gridimage_id',$sql_order);
-		} else {
+		} elseif (empty($this->sphinx['sort']) || $this->sphinx['sort'] != "@geodist ASC, @relevance DESC, @id DESC") {
 			//sphinx undefined is 'relevence' where mysql undefined is table order
-			$this->sphinx['compatible']=0;
+			$this->sphinx['compatible_order']=0;
 		}
 		if ($this->breakby) {
-			$breakby = preg_replace('/_(year|month|decade)$/','',$this->breakby);
+			if (preg_match('/imagetaken_(year|month|decade)$/',$this->breakby) && strpos($sql_order,'imagetaken') === FALSE) {
+				switch ($this->breakby) {
+					case 'imagetaken_month':
+						$breakby = "SUBSTRING(imagetaken,1,7)";
+						break;
+					case 'imagetaken_year':
+						$breakby = "SUBSTRING(imagetaken,1,4)";
+						break;
+					case 'imagetaken_decade':
+						$breakby = "SUBSTRING(imagetaken,1,3)";
+						break;
+				}
+			} else {
+				$breakby = preg_replace('/_(year|month|decade)$/','',$this->breakby);
+			}
 			$breakby = preg_replace('/^submitted/','gridimage_id',$breakby);
 			
 			if (strpos($sql_order,' desc') !== FALSE) {
@@ -282,15 +300,15 @@ class SearchCriteria
 					$sorder = '@id';
 					break;
 				case 'x':
-					$this->sphinx['compatible'] = 0;
+					$this->sphinx['compatible_order'] = 0;
 					$sorder = 'wgs84_long';
 					break;
 				case 'y':
-					$this->sphinx['compatible'] = 0;
+					$this->sphinx['compatible_order'] = 0;
 					$sorder = 'wgs84_lat';
 					break;
 				case 'imagetaken':
-					$this->sphinx['compatible'] = 0;
+					$this->sphinx['compatible_order'] = 0;
 					$sorder = 'takendays';
 					break;
 				case 'imageclass':
@@ -423,11 +441,11 @@ class SearchCriteria
 					if ($dates[0] == $dates[1]) {
 						//both the same
 						$sql_where .= "submitted LIKE '".$dates[0]."%' ";
-						$this->sphinx['filters']['submitted'] = array(strtotime($dates[0]),strtotime($dates[0]." 23:59")); 
+						$this->sphinx['filters']['submitted'] = array(strtotime($dates[0]),strtotime($dates[0]." 23:59:59")); 
 					} else {
 						//between
 						$sql_where .= "submitted BETWEEN '".$dates[0]."' AND DATE_ADD('".$dates[1]."',INTERVAL 1 DAY) ";
-						$this->sphinx['filters']['submitted'] = array(strtotime($dates[0]),strtotime($dates[1]." 23:59")); 
+						$this->sphinx['filters']['submitted'] = array(strtotime($dates[0]),strtotime($dates[1]." 23:59:59")); 
 					}
 				} else {
 					//from
@@ -437,7 +455,7 @@ class SearchCriteria
 			} else {
 				//to
 				$sql_where .= "submitted <= '".$dates[1]."' ";
-				$this->sphinx['filters']['submitted'] = array(strtotime("2005-01-01"),strtotime($dates[1]." 23:59")); 
+				$this->sphinx['filters']['submitted'] = array(strtotime("2005-01-01"),strtotime($dates[1]." 23:59:59")); 
 			}
 			
 			
@@ -850,6 +868,7 @@ class SearchCriteria_Placename extends SearchCriteria
 			$this->searchq = $placename;
 			$this->full_name = $places[0]['full_name'];
 			$this->reference_index = $places[0]['reference_index'];
+			$this->_matches = $places;
 		} elseif (count($places)) {
 			$this->matches = $places;
 			$this->is_multiple = true;

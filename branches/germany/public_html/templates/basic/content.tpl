@@ -33,10 +33,13 @@
 </div>
 <br/>
 {else}
-<h2>Content submitted to Geograph</h2>
+	<div style="float:left">
+		<h2>Content submitted to Geograph &nbsp; &nbsp;</h2>
+	</div>
 	{if $user->registered && $enable_forums}
-		&middot; <a href="/article/Content-on-Geograph">Contribute your own Content...</a><br/><br/>
+		&nbsp; &middot; <a href="/article/Content-on-Geograph">Contribute your own Content...</a><br/>
 	{/if}
+	<br style="clear:both"/>
 {/if}
 {/dynamic}
 

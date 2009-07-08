@@ -21,32 +21,72 @@
 		map.addMapType(G_PHYSICAL_MAP);
 		map.addControl(new GSmallMapControl());
 		map.addControl(new GMapTypeControl());
-		{/literal}
-		
+		var mapType = G_NORMAL_MAP;
+
 		var bounds = new GLatLngBounds();
-		
-		{foreach from=$engine->results item=image}
+
+		{/literal}{foreach from=$engine->results item=image}
 			bounds.extend(new GLatLng({$image->wgs84_lat}, {$image->wgs84_long}));
-		{/foreach}
+		{/foreach}{literal}
 
 		var newZoom = map.getBoundsZoomLevel(bounds);
 		var center = bounds.getCenter();
-		map.setCenter(center, newZoom);
 		
+		if (location.hash.length) {
+			// If there are any parameters at the end of the URL, they will be in location.search
+			// looking something like  "#ll=50,-3&z=10&t=h"
+
+			// skip the first character, we are not interested in the "#"
+			var query = location.hash.substring(1);
+
+			var pairs = query.split("&");
+			for (var i=0; i<pairs.length; i++) {
+				// break each pair at the first "=" to obtain the argname and value
+				var pos = pairs[i].indexOf("=");
+				var argname = pairs[i].substring(0,pos).toLowerCase();
+				var value = pairs[i].substring(pos+1).toLowerCase();
+
+				if (argname == "ll") {
+					var bits = value.split(',');
+					center = new GLatLng(parseFloat(bits[0]),parseFloat(bits[1]));
+				}
+				if (argname == "z") {newZoom = parseInt(value);}
+				if (argname == "t") {
+					if (value == "m") {mapType = G_NORMAL_MAP;}
+					if (value == "k") {mapType = G_SATELLITE_MAP;}
+					if (value == "h") {mapType = G_HYBRID_MAP;}
+					if (value == "p") {mapType = G_PHYSICAL_MAP;}
+					if (value == "e") {mapType = G_SATELLITE_3D_MAP; map.addMapType(G_SATELLITE_3D_MAP);}
+				}
+			}
+		}
+
+		map.setCenter(center, newZoom,mapType);
+
+
+		{/literal}
 		var xml = new GGeoXml("http://{$http_host}/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.kml");
 		map.addOverlay(xml);
-		
+
 		{if $markers} 
 			{foreach from=$markers item=marker}
 				map.addOverlay(createMarker(new GLatLng({$marker.1},{$marker.2}),'{$marker.0}'));
 			{/foreach}
-		{/if}
-		{literal}
-		
+		{/if}{literal}
+
+		GEvent.addListener(map, "moveend", makeHash);
+		GEvent.addListener(map, "zoomend", makeHash);
+		GEvent.addListener(map, "maptypechanged", makeHash);
 	}
 
-	 function createMarker(point,myHtml) {
+	function makeHash() {
+		var ll = map.getCenter().toUrlValue(6);
+		var z = map.getZoom();
+		var t = map.getCurrentMapType().getUrlArg();
+		window.location.hash = '#ll='+ll+'&z='+z+'&t='+t;
+	}
 
+	function createMarker(point,myHtml) {
 		var marker = new GMarker(point, {draggable: true});
 
 		GEvent.addListener(marker, "click", function() {
