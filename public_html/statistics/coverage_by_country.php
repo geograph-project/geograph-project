@@ -63,10 +63,11 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$table['table']=$db->GetAll("
 		select 
 			loc_country.name as Country,
-			count(*) as `Grid Squares`,
-			sum(has_geographs) as `Geographed`,
-			sum(has_geographs)/count(*)*100 as Percentage,
-			sum(imagecount) as 'Total Photos'
+			format(count(*),0) as `Grid Squares`,
+			format(sum(has_geographs),0) as `Geographed`,
+			format(count(*)-sum(has_geographs),0) as `To Do`,
+			format(sum(has_geographs)/count(*)*100,2) as Percentage,
+			format(sum(imagecount),0) as 'Total Photos'
 		from gridsquare gs
 			inner join os_gaz on (placename_id-1000000 = os_gaz.seq)
 			inner join os_gaz_county on (os_gaz.co_code = os_gaz_county.co_code)
@@ -94,10 +95,11 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$table['table']=$db->GetAll("
 		select 
 			loc_country.name as Country,
-			count(*) as `Grid Squares`,
-			sum(has_geographs) as `Geographed`,
-			sum(has_geographs)/count(*)*100 as Percentage,
-			sum(imagecount) as 'Total Photos'
+			format(count(*),0) as `Grid Squares`,
+			format(sum(has_geographs),0) as `Geographed`,
+			format(count(*)-sum(has_geographs),0) as `To Do`,
+			format(sum(has_geographs)/count(*)*100,2) as Percentage,
+			format(sum(imagecount),0) as 'Total Photos'
 		from gridsquare gs
 			inner join loc_placenames on (placename_id = id)
 			inner join loc_country on (country = loc_country.code)
