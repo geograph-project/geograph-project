@@ -194,7 +194,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_having_having = "having count(*) > $minimum";
 		} else {
 			$sql_table = "user_stat i";
-			$sql_column = "round(pow(images,2)/squares";
+			$sql_column = "images, round(pow(images,2)/squares";
 			$sql_having_having = "having images > $minimum";
 		}
 		$heading = "High Depth";
@@ -226,7 +226,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_having_having = "having count(*) > $minimum";
 		} else {
 			$sql_table = "user_stat i";
-			$sql_column = "hectads/images";
+			$sql_column = "images, hectads/images";
 			$sql_having_having = "having images > $minimum";
 		}
 		$heading = "Spread Score";
