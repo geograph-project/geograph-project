@@ -11,17 +11,20 @@
 
   <Developer>Geograph</Developer>
   <Attribution>
-    Copyright (c) 2007 Geograph Project Ltd and licensed for reuse under CC-by-sa 2.5
+    Copyright (c) 2009 Geograph Project Ltd and licensed for reuse under CC-by-sa 2.5
   </Attribution>
   <Image height="16" width="16" type="image/vnd.microsoft.icon">http://www.geograph.org.uk/favicon.ico</Image>
 
-  <moz:SearchForm>http://www.geograph.org.uk/</moz:SearchForm>
-
+  <moz:SearchForm>http://www.geograph.org.uk/search.php</moz:SearchForm>
+  
+  <Url type="application/vnd.google-earth.kml+xml"
+       template="http://www.geograph.org.uk/syndicator.php?q={searchTerms}&amp;location={geo:locationString?}&amp;lat={geo:lat?}&amp;lon={geo:lon?}&amp;BBOX={geo:box?}&amp;output=kml">
+  </Url>
   <Url type="application/rss+xml" 
-       template="http://www.geograph.org.uk/syndicator.php?q={searchTerms}&amp;location={geo:locationString?}&amp;lat={geo:lat?}&amp;lon={geo:lon?}&amp;BBOX={geo:bbox?}">
+       template="http://www.geograph.org.uk/syndicator.php?q={searchTerms}&amp;location={geo:locationString?}&amp;lat={geo:lat?}&amp;lon={geo:lon?}&amp;BBOX={geo:box?}">
   </Url>
   <Url type="text/html" 
-       template="http://www.geograph.org.uk/search.php?q={searchTerms}&amp;location={geo:locationString?}&amp;lat={geo:lat?}&amp;lon={geo:lon?}&amp;BBOX={geo:bbox?}">
+       template="http://www.geograph.org.uk/search.php?q={searchTerms}&amp;location={geo:locationString?}&amp;lat={geo:lat?}&amp;lon={geo:lon?}&amp;BBOX={geo:box?}">
   </Url>
   <Query role="example" searchTerms="Liverpool" />
 

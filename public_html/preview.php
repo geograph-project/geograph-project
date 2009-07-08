@@ -125,7 +125,9 @@ if (!empty($_POST['spelling'])) { //FIXME smarty
 	$query = "{$image->title} {$image->comment} {$image->imageclass}"; // FIXME title2, comment2
 
 	$xml = new SimpleXMLElement(SpellChecker::GetSuggestions( $query, 'de', 'de' )); // FIXME language => conf var
-
+	if (!$xml) {
+		die("unable to contact spelling service");
+	}
 	$replacements = array(); 
 	foreach($xml->c as $correction) { 
 		$suggestions = explode("\t", (string)$correction); 

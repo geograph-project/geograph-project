@@ -57,13 +57,35 @@ if (count($page)) {
 	$page['url'] = trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode(preg_replace('/&#\d+;?/','_',$page['topic_title'])))),'_').'_'.$page['topic_id'];
 
 	
-	if (@strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE) {
+	if (!isset($_GET['dontcount']) && @strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE) {
 		$db->Execute("UPDATE LOW_PRIORITY geobb_topics SET topic_views=topic_views+1 WHERE topic_id = $topic_id");
 	}
 	
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
+
+	if (empty($pgsize)) {$pgsize = 10;}
+	if (!$pg or $pg < 1) {$pg = 1;}
+
+	$pagelimit = ($pg -1)* $pgsize;	
+
+	if ($USER->user_id && count($page)) {
+		
+		$prev_fetch_mode = $ADODB_FETCH_MODE;
+		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+		$list = $db->getAll("
+		select post_id,poster_id,poster_name,post_text,post_time
+		from geobb_posts
+		where topic_id = $topic_id
+		order by post_id
+		limit $pagelimit,$pgsize");
+	
+		$last = count($list)-1;
+		$postID = $list[$last]['post_id'];
+		
+		$db->Execute($sql = "insert into geobb_lastviewed set topic_id=$topic_id,user_id={$USER->user_id},last_post_id = $postID on duplicate key update last_post_id = if(last_post_id < $postID,$postID,last_post_id)");
+	}
 } else {
 	$template = 'static_404.tpl';
 }
@@ -76,19 +98,16 @@ if (!$smarty->is_cached($template, $cacheid))
 
 		$smarty->assign($page);
 
-		if (empty($pgsize)) {$pgsize = 10;}
-		if (!$pg or $pg < 1) {$pg = 1;}
-
-		$pagelimit = ($pg -1)* $pgsize;	
-		
-		$prev_fetch_mode = $ADODB_FETCH_MODE;
-		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-		$list = $db->getAll("
-		select post_id,poster_id,poster_name,post_text,post_time
-		from geobb_posts
-		where topic_id = $topic_id
-		order by post_id
-		limit $pagelimit,$pgsize");
+		if (empty($list)) {
+			$prev_fetch_mode = $ADODB_FETCH_MODE;
+			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+			$list = $db->getAll("
+			select post_id,poster_id,poster_name,post_text,post_time
+			from geobb_posts
+			where topic_id = $topic_id
+			order by post_id
+			limit $pagelimit,$pgsize");
+		}
 
 		$smarty->assign_by_ref('list', $list);
 		

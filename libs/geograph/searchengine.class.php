@@ -188,25 +188,25 @@ class SearchEngine
 			(strlen($this->criteria->sphinx['query']) || !empty($this->criteria->sphinx['d']) || !empty($this->criteria->sphinx['filters']))
 			&& $this->criteria->sphinx['impossible'] == 0) {
 			$this->noCache = 1;
-			return $this->ExecuteSphinxRecordSet($pg,$sql_fields,$sql_order);
+			return $this->ExecuteSphinxRecordSet($pg);
 		} elseif ($this->criteria->sphinx['no_legacy']) {
 			//oh dear, no point even trying :(
 			$this->resultCount = 0;
 			return 0; 
 		}
 	
+		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=`]+) where/i",$sql_where,$matches)) {
+			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\'`]+) where/i",'',$sql_where);
+			$sql_from .= " {$matches[1]} join {$matches[2]}";
+		}
+		
 		//need to ensure rejected/pending images arent shown
 		if (empty($sql_where)) {
 			$sql_where = " moderation_status in ('accepted','geograph')";
 		} else {
 			$this->islimited = true;
 			if (strpos($sql_where,'moderation_status') === FALSE) 
-				$sql_where .= " and moderation_status in ('accepted','geograph')";
-		}
-		
-		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=`]+) where/i",$sql_where,$matches)) {
-			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\'`]+) where/i",'',$sql_where);
-			$sql_from .= " {$matches[1]} join {$matches[2]}";
+				$sql_where = " moderation_status in ('accepted','geograph') and $sql_where";
 		}
 		
 		$sql_from = str_replace('gridimage_query using (gridimage_id)','gridimage_query on (gi.gridimage_id = gridimage_query.gridimage_id)',$sql_from);
@@ -330,7 +330,12 @@ END;
 			$suggestions = array();
 			if (empty($this->countOnly) && $sphinx->q && strlen($sphinx->q) < 64 && empty($this->criteria->sphinx['x']) ) {
 				$suggestions = $sphinx->didYouMean($sphinx->q);
-			} elseif ($this->criteria->searchclass == 'Placename' && strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE && isset($GLOBALS['smarty'])) {
+			} elseif (
+					$this->criteria->searchclass == 'Placename' 
+					&& strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE 
+					&& (empty($this->criteria->searchtext) || ($this->criteria->searchq == $this->criteria->searchtext) )
+					&& isset($GLOBALS['smarty'])
+				) {
 				$suggestions = array(array('gr'=>'(anywhere)','localities'=>'as text search','query'=>$this->criteria->searchq) );
 			}
 			if (!empty($this->criteria->searchtext)) {

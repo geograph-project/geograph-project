@@ -26,8 +26,7 @@ require_once('geograph/kmlfile.class.php');
 require_once('geograph/kmlfile2.class.php');
 require_once('geograph/conversions.class.php');
 
-if ( ($_SERVER['REMOTE_ADDR'] != $_SERVER['SERVER_ADDR']) &&
-     (strpos($_SERVER['HTTP_X_FORWARDED_FOR'],$CONF['server_ip']) !== 0) )  //begins with
+if (!isLocalIPAddress())
 {
 	init_session();
         $USER->mustHavePerm("admin");

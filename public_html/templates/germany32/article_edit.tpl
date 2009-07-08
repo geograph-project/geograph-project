@@ -35,7 +35,10 @@ AttachEvent(window,'load',setupSubmitForm,false);
 
 <input type="hidden" name="article_id" value="{$article_id|escape:"html"}"/>
 
- 
+	<div style="float:right;position:relative">
+		New to articles? See the {newwin href="http://www.geograph.org.uk/article/Help_on_formatting_of_articles" text="Overview Guide"}
+	</div>
+
 <fieldset>
 {if $approved == 2}
 <legend>Edit Public Article</legend>

@@ -28,16 +28,15 @@ set_time_limit(5000);
 
 
 //need perms if not requested locally
-if ( ($_SERVER['REMOTE_ADDR'] == $_SERVER['SERVER_ADDR']) ||
-     ($_SERVER['HTTP_X_FORWARDED_FOR']=='87.230.106.193')) // FIXME 
+if (isLocalIPAddress())
 {
-        $smarty=null;
+	$smarty=null;
 }
 else
 {
 	init_session();
-        $smarty = new GeographPage;
-        $USER->mustHavePerm("admin");
+	$smarty = new GeographPage;
+	$USER->mustHavePerm("admin");
 }
 
 $db=NewADOConnection($GLOBALS['DSN']);
@@ -45,10 +44,16 @@ if (!$db) die('Database connection failed');
 
 $wm = 1; #minimum votes required to be listed (//todo if change need to add a having to clause below!) 
 
+
+$db->Execute("CREATE TEMPORARY TABLE vote_final AS SELECT MAX(vote_id) AS vote_id FROM vote_log GROUP BY type,id,user_id,ipaddr");
+$db->Execute("UPDATE `vote_log` SET `final` = 0");
+$db->Execute("UPDATE `vote_log`,vote_final SET vote_log.final = 1 WHERE `vote_log`.vote_id = vote_final.vote_id");
+
+
 $db->Execute("TRUNCATE vote_stat");
 $db->Execute("LOCK TABLE vote_stat WRITE, vote_log READ");
 
-$types = $db->getAssoc("SELECT type,avg(vote) FROM vote_log WHERE vote > 0 GROUP BY type ORDER BY NULL");
+$types = $db->getAssoc("SELECT type,avg(vote) FROM vote_log WHERE vote > 0 AND `final` = 1 GROUP BY type ORDER BY NULL");
 
 $db->Execute("ALTER TABLE vote_stat DISABLE KEYS");
 	
@@ -68,9 +73,10 @@ foreach ($types as $type => $avg) {
 			SUM(vote=4) AS v4,
 			SUM(vote=5) AS v5
 		FROM vote_log
-		WHERE type = '$type' AND vote > 0
+		WHERE type = '$type' AND vote > 0 AND `final` = 1
 		GROUP BY id
 		ORDER BY NULL");
+	print "$type ";
 }
 
 
@@ -78,5 +84,7 @@ $db->Execute("ALTER TABLE vote_stat ENABLE KEYS");
 
 $db->Execute("UNLOCK TABLES");
 
-print "done";
+		$db->Execute("UPDATE gridimage_daily,vote_stat SET vote_baysian = baysian WHERE vote_stat.id = gridimage_id AND type = 'i2136521'");
+
+print "<hr/>done";
 ?>
