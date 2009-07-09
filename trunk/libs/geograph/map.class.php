@@ -765,13 +765,14 @@ class GeographMap
 			$alias_count = ceil(1/$this->pixels_per_km);
 			
 			//seems to help
+			/*
 			if ($this->type_or_user > 0)
 				$alias_count/=2;
 			elseif ($this->pixels_per_km<=0.18)
 				$alias_count*=7;
 			elseif ($this->pixels_per_km==0.3)
 				$alias_count*=3;
-			
+			*/
 			
 			$colAliasedMarker=array();
 			for ($p=0; $p<$alias_count; $p++)
