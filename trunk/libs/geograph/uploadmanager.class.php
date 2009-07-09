@@ -382,6 +382,67 @@ class UploadManager
 	}
 			
 
+	function _new_size($width, $height) {
+		global $CONF;
+		#$CONF['pano_upper_limit'] = .25;
+		#$CONF['pano_lower_limit'] = .5;
+		#$CONF['img_max_size'] = 640;
+		$destwidth = $width;
+		$destheight = $height;
+		$changedim = false;
+		trigger_error("--: $destwidth, $destheight", E_USER_NOTICE);
+		if ($height == 0)
+			return array($width, $height, $width, false);//$destdim = $width;
+		elseif ($width == 0)
+			return array($width, $height, $height, false);//$destdim = $height;
+		else {
+			$ratio = $height/$width;
+			if ($ratio >= 1) { // portrait
+				if ($height <= $CONF['img_max_size'])
+					return array($width, $height, $height, false);//$destdim = $height;
+				else {
+					$destheight = $CONF['img_max_size'];
+					$destwidth = round($destheight/$ratio);
+					$destdim = $destheight;
+					$changedim = true;
+				}
+			} elseif ($ratio >= $CONF['pano_upper_limit']) { // landscape
+				if ($width <= $CONF['img_max_size'])
+					return array($width, $height, $width, false);//$destdim = $width;
+				else {
+					$destwidth = $CONF['img_max_size'];
+					$destheight = round($destwidth*$ratio);
+					$destdim = $destwidth;
+					$changedim = true;
+				}
+			} elseif ($ratio >= $CONF['pano_lower_limit']) { // panorama: try to keep height constant for lower ratios
+				$destheight = $CONF['pano_upper_limit']*$CONF['img_max_size'];
+				$destwidth = $destheight/$ratio;
+				$destheight = round($destheight);
+				$destwidth = round($destwidth);
+				if ($width <= $destwidth)
+					return array($width, $height, $width, false);//$destdim = $width;
+				else {
+					$destdim = $destwidth;
+					$changedim = true;
+				}
+			} else { // panoraaaaama: try to keep size constant
+				$destheight = $CONF['pano_upper_limit']*$CONF['img_max_size']*sqrt($ratio/$CONF['pano_lower_limit']);
+				$destwidth = $destheight/$ratio;
+				$destheight = round($destheight);
+				$destwidth = round($destwidth);
+				if ($width <= $destwidth)
+					return array($width, $height, $width, false);//$destdim = $width;
+				else {
+					$destdim = $destwidth;
+					$changedim = true;
+				}
+			}
+		}
+		trigger_error("----: $destwidth, $destheight, $destdim", E_USER_NOTICE);
+		return array($destwidth, $destheight, $destdim, $changedim);
+	}
+
 	function _processFile($upload_id,$pendingfile) {
 		global $USER,$CONF;
 		$ok = false;
@@ -407,19 +468,23 @@ class UploadManager
 					//try imagemagick first
 					list($width, $height, $type, $attr) = getimagesize($pendingfile);
 				
-					if ($width > $max_dimension || $height > $max_dimension) {
+					list($destwidth, $destheight, $destdim, $changedim) = $this->_new_size($width, $height);
+					//if ($width > $max_dimension || $height > $max_dimension) {
+					if ($changedim) {
+						trigger_error("------: im", E_USER_NOTICE);
 
 						//removed the unsharp as it makes some images worse - needs to be optional
 						// best fit found so far: -unsharp 0x1+0.8+0.1 -blur 0x.1
-						$cmd = sprintf ("\"%smogrify\" -resize %ldx%ld -quality 87 -strip jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $pendingfile);
+						$cmd = sprintf ("\"%smogrify\" -resize %ldx%ld -quality 87 -strip jpg:%s", $CONF['imagemagick_path'],$destdim, $destdim, $pendingfile);
 
 						passthru ($cmd);
 						
 						list($width, $height, $type, $attr) = getimagesize($pendingfile);
 					}
 					
-					if ($width && $height && $width <= $max_dimension && $height <= $max_dimension) {
+					if ($width && $height && $width <= $destdim && $height <= $destdim) {
 						//check it did actully work
+						trigger_error("------: im ok", E_USER_NOTICE);
 					
 						//remember useful stuff
 						$this->upload_id=$upload_id;
@@ -430,17 +495,21 @@ class UploadManager
 				} 
 				
 				if (!$ok) {
+					trigger_error("------: no im !--------------------------!", E_USER_NOTICE);
 					//generate a resized image
 					$uploadimg = @imagecreatefromjpeg ($pendingfile); 
 					if ($uploadimg)
 					{
 						$srcw=imagesx($uploadimg);
 						$srch=imagesy($uploadimg);
+						list($destw, $desth, $destdim, $changedim) = $this->_new_size($srcw, $srch);
 
 						
-						if (($srcw>$max_dimension) || ($srch>$max_dimension))
+						//if (($srcw>$max_dimension) || ($srch>$max_dimension))
+						if ($changedim)
 						{
 							//figure out size of image we'll keep
+							/*
 							if ($srcw>$srch)
 							{
 								//landscape
@@ -453,6 +522,7 @@ class UploadManager
 								$desth=$max_dimension;
 								$destw=round(($desth * $srcw)/$srch);
 							}
+							 */
 
 
 							$resized = imagecreatetruecolor($destw, $desth);
@@ -474,8 +544,10 @@ class UploadManager
 						{
 							//don't need it anymore
 							imagedestroy($uploadimg);
+							/*
 							$desth=$srch;
 							$destw=$srcw;
+							*/
 
 						}
 
