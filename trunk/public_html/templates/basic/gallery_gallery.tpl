@@ -1,5 +1,5 @@
 {assign var="page_title" value=$topic_title}
-{assign var="rss_url" value="/discuss/syndicator.php?forum=11&amp;topic=`$topic_id`"}
+{assign var="rss_url" value="/discuss/syndicator.php?forum=`$forum_gallery`&amp;topic=`$topic_id`"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
 #maincontent h1 { padding: 5px; margin-top:0px; background-color: black; color:white}
@@ -32,7 +32,7 @@
 }
 </style>{/literal}
 
-<div style="float:right"><a title="RSS Feed for {$topic_title}" href="/discuss/syndicator.php?forum=11&amp;topic={$topic_id}" class="xml-rss">RSS</a></div>
+<div style="float:right"><a title="RSS Feed for {$topic_title}" href="/discuss/syndicator.php?forum={$forum_gallery}&amp;topic={$topic_id}" class="xml-rss">RSS</a></div>
 
 <h1 style="margin-bottom:0px;">{$topic_title}</h1>
 <div style="margin-top:0px"> 
@@ -60,12 +60,12 @@
 
 <br style="clear:both"/>
 
-<div style="text-align:right"><a title="RSS Feed for {$topic_title}" href="/discuss/syndicator.php?forum=11&amp;topic={$topic_id}" class="xml-rss">RSS</a></div>
+<div style="text-align:right"><a title="RSS Feed for {$topic_title}" href="/discuss/syndicator.php?forum={$forum_gallery}&amp;topic={$topic_id}" class="xml-rss">RSS</a></div>
 
 {dynamic}
 {if $user->registered && $enable_forums}
 	<div class="interestBox">
-		<a href="/discuss/?action=vthread&amp;forum=11&amp;topic={$topic_id}">Switch to Edit mode</a> (Registered Users Only)
+		<a href="/discuss/?action=vthread&amp;forum={$forum_gallery}&amp;topic={$topic_id}">Switch to Edit mode</a> (Registered Users Only)
 	</div>
 {/if}
 {/dynamic}

@@ -84,7 +84,7 @@ return intval(($i-1)/$GLOBALS['viewmaxtopic']);
 else{
 $sign=(isset($GLOBALS['themeDesc'])&&in_array($GLOBALS['topic'],$GLOBALS['themeDesc'])?'>=':'<=');
 $i=db_simpleSelect(2,$GLOBALS['Tp'],'count(*)','topic_id','=',$GLOBALS['topic'],'','','post_id',$sign,$id);
-$vmax = ($GLOBALS['forum'] == 6||$GLOBALS['forum'] == 11)?10:$GLOBALS['viewmaxreplys'];
+$vmax = ($GLOBALS['forum'] == $CONF['forum_submittedarticles']||$GLOBALS['forum'] == $CONF['forum_gallery'])?10:$GLOBALS['viewmaxreplys'];
 $pageAnchor[0]=intval(($i-1)/$vmax);
 $a=$i-intval($i/$vmax)*$vmax;
 if($i>0&&$a==0) $a=$vmax;

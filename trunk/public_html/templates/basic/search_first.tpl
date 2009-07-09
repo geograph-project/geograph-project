@@ -24,7 +24,7 @@
 		  </tr> 
 		  <tr> 
 			 <td colspan="3" style="font-size:0.7em">Enter either<br/> A) <i>Hectad Reference</i> like <b>SH56</b>, to find images within that Hectad<a href="/help/squares">?</a><br/> B)
-			 <i>Numerical Square</i>{if $enable_forums}<a href="/discuss/index.php?action=vthread&amp;forum=2&amp;topic=1235">?</a>{/if} like <b>5546</b>, which matches those numbers in any Myriad or<br/> C) <i>4fig GR - Wildcard Search</i> like <b>SH6_56</b> where _ matches any digit, can also use % to match zero or more characters (useful for matching GB or Irish Grids).<br/> D) <i>Hectad - Wildcard Search</i> like <b>SH6_</b> where _ matches any digit</td> 
+			 <i>Numerical Square</i>{if $enable_forums && $forum_topic_numsquare >= 0}<a href="/discuss/index.php?action=vthread&amp;forum={$forum_generaldiscussion}&amp;topic={$forum_numsquare}">?</a>{/if} like <b>5546</b>, which matches those numbers in any Myriad or<br/> C) <i>4fig GR - Wildcard Search</i> like <b>SH6_56</b> where _ matches any digit, can also use % to match zero or more characters (useful for matching GB or Irish Grids).<br/> D) <i>Hectad - Wildcard Search</i> like <b>SH6_</b> where _ matches any digit</td> 
 		  </tr> 
 		  <tr> 
 			 <td colspan="3">&nbsp;</td> 
