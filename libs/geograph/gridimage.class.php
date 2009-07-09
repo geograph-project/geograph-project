@@ -1025,18 +1025,21 @@ class GridImage
 					} else {
 						list($width, $height, $type, $attr) = $info;
 						
-						if (($width>$maxw) || ($height>$maxh)) {
-							$operation = ($maxw+$maxh < 400)?'thumbnail':'resize';
-						} elseif (!$bestfit) {
-							$operation = 'adaptive-resize';
-						}
+						if (($width>$maxw) || ($height>$maxh) || !$bestfit) {
 						
-						if (isset($operation)) {
 							$unsharpen=$unsharp?"-unsharp 0x1+0.8+0.1":"";
 							
 							$raised=$bevel?"-raise 2x2":"";
 							
 							$operation = ($maxw+$maxh < 400)?'thumbnail':'resize';
+							$aspect_src=$width/$height;
+							$aspect_dest=$maxw/$maxh;
+
+							if ($bestfit && $aspect_src > 2 && $aspect_dest < 2) {
+								$bestfit = false;
+								$maxh = round($maxw/2);
+								$aspect_dest= 2;
+							}
 							
 							if ($bestfit)
 							{
@@ -1051,8 +1054,6 @@ class GridImage
 							}
 							else
 							{
-								$aspect_src=$width/$height;
-								$aspect_dest=$maxw/$maxh;
 								
 								if ($aspect_src > $aspect_dest)
 								{
@@ -1081,7 +1082,7 @@ class GridImage
 								
 								passthru ($cmd);
 								
-								//now resize
+								//now resize // FIXME: one step!
 								$cmd = sprintf ("\"%smogrify\" -$operation %ldx%ld $unsharpen $raised -quality 87 jpg:%s", 
 								$CONF['imagemagick_path'],
 								$maxw, $maxh, 
@@ -1098,7 +1099,7 @@ class GridImage
 							copy($_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
 						}	
 					}
-				} else {
+				} else { // FIXME not the same as above
 					//generate resized image
 					$fullimg = @imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$fullpath); 
 					if ($fullimg)
