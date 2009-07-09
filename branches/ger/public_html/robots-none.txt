@@ -1,6 +1,0 @@
-# ALL crawling should be done on www.geograph.org.uk instead
-
-User-agent: *
-Disallow: /
-Allow: /$
-
