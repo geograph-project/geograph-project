@@ -1605,34 +1605,39 @@ END;
 		$strhr = imagefontheight($font);
 		$xy = array($x,$y);
 		if ($quad == 0) {
-			$intersect = true;
-			$thisrect = array($x,$y,$x + $stren,$y + $strhr);
-			while ($quad < 5 && $intersect) {
-				$intersect = false;
-				reset($this->labels);
-				foreach ($this->labels as $a1) {
-					if (rectinterrect($a1,$thisrect)) {
-						$intersect = true;
-						break;
+			for ($quad = 1; $quad < 5; ++$quad) {
+				list($x,$y) = $xy;
+				if ($quad%2 != 1) {
+					$x = $x - $stren; //FIXME one pixel too much
+				}
+				if ($quad <= 2) {
+					$y = $y - $strhr; //FIXME one pixel too much
+				}
+				$thisrect = array($x,$y,$x + $stren,$y + $strhr); //FIXME one pixel too much
+				//$thisrect = array($x-3,$y-3,$x + $stren+3,$y + $strhr+3);
+				if ($x <= 0 || $y <= 0 || $x + $stren >= $this->image_w || $y + $strhr >= $this->image_h) { // "=" => one pixel more than neccessary
+					$intersect = true;
+				} else {
+					$intersect = false;
+					reset($this->labels);
+					foreach ($this->labels as $a1) {
+						if (rectinterrect($a1,$thisrect)) {
+							$intersect = true;
+							break;
+						}
 					}
 				}
-
-				if ($intersect) {
-					$quad++;
-					list($x,$y) = $xy;
-					if ($quad%2 == 1) {
-					} else {
-						$x = $x - $stren;
-					}
-					if ($quad > 2) {
-					} else {
-						$y = $y - imagefontheight($font); 
-					}
-					$thisrect = array($x,$y,$x + $stren,$y + $strhr);
-					//$thisrect = array($x-3,$y-3,$x + $stren+3,$y + $strhr+3);
+				if (!$intersect) {
+					#trigger_error("label: " . $text . ": " . $stren . "px: " . $x . "..." . ($x + $stren - 1) . " / " . $y . "..." . ($y + $strhr - 1), E_USER_NOTICE);
+					break;
 				}
 			}
+			if ($intersect) {
+				#$quad=0;
+				return array();
+			}
 		}
+		list($x,$y) = $xy;
 		if (
 		($quad%2 == 1)
 			||
@@ -1655,6 +1660,7 @@ END;
 			$thisrect = array($x-3,$y-3,$x + $stren+3,$y + $strhr+3);
 
 			array_push($this->labels,$thisrect);
+			#trigger_error("label pushed: " . $text . ": " . $stren . "px: " . $x . "..." . ($x + $stren - 1) . " / " . $y . "..." . ($y + $strhr - 1), E_USER_NOTICE);
 
 			return array($x,$y);
 		} else {
@@ -2022,22 +2028,13 @@ function imageGlowString($img, $font, $xx, $yy, $text, $color) {
 
 
 function rectinterrect($a1,$a2) {
-	if (pointinrect(array($a1[0],$a1[1]),$a2))
-		return true;
-	if (pointinrect(array($a1[0],$a1[3]),$a2))
-		return true;
-	if (pointinrect(array($a1[2],$a1[1]),$a2))
-		return true;
-	if (pointinrect(array($a1[2],$a1[3]),$a2))
-		return true;
-	return false;
-}
-
-function pointinrect($p,$a) {
-	if ( ($p[0] > $a[0] && $p[0] < $a[2]) &&
-		 ($p[1] > $a[1] && $p[1] < $a[3]) )
-		return true;
-	return false;
+	return !($a1[0] > $a2[2] || $a1[2] < $a2[0] ||
+	         $a1[1] > $a2[3] || $a1[3] < $a2[1]);
+	#$xl = max($a1[0], $a2[0]);
+	#$xr = min($a1[2], $a2[2]);
+	#$yt = max($a1[1], $a2[1]);
+	#$yb = min($a1[3], $a2[3]);
+	#return $yt <= $yb && $xl <= $xr;
 }
 
 ?>
