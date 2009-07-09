@@ -47,6 +47,7 @@
 			wgs84=new GT_WGS84();
 			wgs84.setDegrees(pp.lat(), pp.lng());
 			
+			if (ri == -1) {
 			if (wgs84.isIreland()) {
 				//convert to Irish
 				var grid=wgs84.getIrish(true);
@@ -54,7 +55,12 @@
 			} else if (wgs84.isGreatBritain()) {
 				//convert to OSGB
 				var grid=wgs84.getOSGB();
-			}  
+			}
+			}
+			else if (ri == 1)
+				var grid=wgs84.getOSGB();
+			else if (ri == 2)
+				var grid=wgs84.getIrish(true);
 			
 			//get a grid reference with 4 digits of precision
 			var gridref = grid.getGridRef(4);
@@ -183,14 +189,26 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 	
 	gridref = that.value.trim().toUpperCase();
 	
-	var grid=new GT_OSGB();
+	var grid;
 	var ok = false;
+
+	if (ri == -1) {
+
+	grid=new GT_OSGB();
 	if (grid.parseGridRef(gridref)) {
 		ok = true;
 	} else {
 		grid=new GT_Irish();
 		ok = grid.parseGridRef(gridref)
 	}
+	}
+	else if (ri == 1)
+		grid=new GT_OSGB();
+	else if (ri == 2)
+		grid=new GT_Irish();
+	else
+		return;
+	ok = grid.parseGridRef(gridref);
 	
 	if (ok) {
 		//convert to a wgs84 coordinate
