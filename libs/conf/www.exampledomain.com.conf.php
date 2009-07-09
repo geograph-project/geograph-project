@@ -204,6 +204,11 @@ $CONF['gridpreflen'] = array(1 => 2, 2 => 1);
 // google maps: show meridians n*$CONF['showmeridian'] degrees (0: don't show any meridian)
 $CONF['showmeridian'] = 0;
 
+// picture of the day
+
+$CONF['potd_daysperimage'] = 7;
+$CONF['potd_listlen'] = 20;
+
 ## search setup
 
 //the radius for simple searches in km, set high to begin with but set low once number of submissions
