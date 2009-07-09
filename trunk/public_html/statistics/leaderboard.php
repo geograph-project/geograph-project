@@ -201,7 +201,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	} elseif ($type == 'myriads') {
 		if ($filtered) {
-			$sql_column = "count(distinct substring(grid_reference,1,3 - reference_index))";
+			$sql_column = "count(distinct substring(grid_reference,1,length(grid_reference) - 4))";
 		} else {
 			$sql_table = "user_stat i";
 			$sql_column = "myriads";

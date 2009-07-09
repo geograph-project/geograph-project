@@ -116,7 +116,7 @@ foreach($photos as $id=>$entry)
 
 
 
-$letterlength = 3 - $prefix['reference_index']; #should this be auto-realised by selecting a item from gridprefix?
+$letterlength = $CONF['gridpreflen'][$prefix['reference_index']];
 
 $sql_column = "concat(
 substring(grid_reference,1,$letterlength),
