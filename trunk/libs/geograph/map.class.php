@@ -318,20 +318,23 @@ class GeographMap
 				$order_by = "landcount desc, reference_index";
 			}
 			
+			$x_lim=$x_km-100;
+			$y_lim=$y_km-100;
 			$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
 				where CONTAINS( geometry_boundary,	GeomFromText('POINT($x_km $y_km)'))
+				and (origin_x > $x_lim) and (origin_y > $y_lim)
 				order by $order_by limit 1";
 
 			$prefix=$db->GetRow($sql);
 
-			if (empty($prefix['prefix'])) { 
-				//if fails try a less restrictive search
-				$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
-					where $x_km between origin_x and (origin_x+width-1) and 
-					$y_km between origin_y and (origin_y+height-1)
-					order by landcount desc, reference_index limit 1";
-				$prefix=$db->GetRow($sql);
-			}
+			#if (empty($prefix['prefix'])) { 
+			#	//if fails try a less restrictive search
+			#	$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
+			#		where $x_km between origin_x and (origin_x+width-1) and 
+			#		$y_km between origin_y and (origin_y+height-1)
+			#		order by landcount desc, reference_index limit 1";
+			#	$prefix=$db->GetRow($sql);
+			#}
 			
 			if (!empty($prefix['prefix'])) { 
 				$n=$y_km-$prefix['origin_y'];
@@ -836,6 +839,7 @@ class GeographMap
 				$sql = "select 0 limit 0";
 			} elseif ($this->type_or_user == -4) {
 				//todo doesnt use the where clause!
+				//FIXME what is gridsquare3?
 				$sql="select x,y,gridsquare_id,max(created) > date_sub(now(),interval 30 day) as has_geographs from gridsquare3
 					inner join mapfix_log using (gridsquare_id)  
 					group by gridsquare_id";
