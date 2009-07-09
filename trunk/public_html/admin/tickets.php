@@ -138,7 +138,7 @@ if (isset($_GET['moderator']) && ($mid = intval($_GET['moderator']))) {
 }
 
 if (!empty($_GET['q'])) {
-	if (isset($_GET['legacy'])) {
+	if (isset($_GET['legacy'])|| empty($CONF['sphinx_host'])) {
 		if (strpos($_GET['q'],'!') === 0) {
 			$q = $db->Quote("%".preg_replace('/^!/','',$_GET['q'])."%");
 			$sql_where .= " and not (t.notes like $q or i.title like $q)";
