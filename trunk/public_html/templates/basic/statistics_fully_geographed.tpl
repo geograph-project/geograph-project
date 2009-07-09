@@ -10,7 +10,7 @@
 <p style="font-size:0.8em">The # number column is the number of squares with (at least) a geograph, Click Mosaic for a large Map. Click a column header to change sort order.</p>
 
 {foreach from=$references_real item=ref key=ri}
-<div style="float:left;position:relative;width:50%">
+<div style="float:left;position:relative;width:33%">
 <h4 style="padding-left:10px">{$ref}</h4>
 <table class="report sortable" id="table{$ri}"> 
 <thead><tr><td>Hectad</td><td sorted="desc">Date Completed</td><td>#</td><td>Mosaic</td></tr></thead>
