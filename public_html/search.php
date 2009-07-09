@@ -39,6 +39,7 @@ if (!empty($_GET['style'])) {
 }
 
 $smarty = new GeographPage;
+$smarty->assign('noSphinx', empty($CONF['sphinx_host']));
 
 $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
