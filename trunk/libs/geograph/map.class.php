@@ -1547,7 +1547,7 @@ class GeographMap
 		$rectanglexy = "'POLYGON(($intleft $intbottom,$intright $intbottom,$intright $inttop,$intleft $inttop,$intleft $intbottom))'";
 		
 
-if ($reference_index == 1 || ($reference_index == 2 && $this->pixels_per_km == 1 )) {
+if ($reference_index == 1 || ($reference_index == 2 && $this->pixels_per_km == 1 ) || $reference_index >= 3) {
 	//$countries = "'EN','WA','SC'";
 $sql = <<<END
 SELECT name,e,n,s,quad,reference_index
