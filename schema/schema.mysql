@@ -1057,13 +1057,17 @@ CREATE TABLE `loc_towns` (
   `name` varchar(50) NOT NULL DEFAULT '',
   `e` mediumint(6) unsigned NOT NULL DEFAULT '0',
   `n` mediumint(7) unsigned NOT NULL DEFAULT '0',
+  `x` int(11) NOT NULL DEFAULT '0',
+  `y` int(11) NOT NULL DEFAULT '0',
   `s` enum('1','2','3','') NOT NULL DEFAULT '1',
   `reference_index` tinyint(4) NOT NULL DEFAULT '0',
   `quad` tinyint(4) NOT NULL DEFAULT '0',
   `point_en` point NOT NULL DEFAULT '',
+  `point_xy` point NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `gis` (`e`,`n`,`reference_index`),
-  SPATIAL KEY `point_en` (`point_en`)
+  SPATIAL KEY `point_en` (`point_en`),
+  SPATIAL KEY `point_xy` (`point_xy`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
