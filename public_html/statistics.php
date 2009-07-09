@@ -35,8 +35,10 @@ $smarty = new GeographPage;
 $template='statistics.tpl';
 $cacheid='statistics|main';
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*3; //3hr cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*3; //3hr cache
+}
 
 $smarty->assign_by_ref('references',$CONF['references_all']);		
 

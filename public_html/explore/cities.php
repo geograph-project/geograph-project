@@ -34,8 +34,10 @@ $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['t
 $template='explore_counties.tpl';
 $cacheid='explore|counties'.$type;
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hr cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*24; //24hr cache
+}
 
 if (!$smarty->is_cached($template, $cacheid))
 {
