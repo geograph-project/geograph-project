@@ -298,7 +298,7 @@ if ($grid_given)
 					$square->reference_index,$spaced);
 				}
 			
-				preg_match('/^[A-Z]{1,2}\d\d(\d)\d\d(\d)$/',$_GET['centi'],$matches);
+				preg_match('/^[A-Z]{1,3}\d\d(\d)\d\d(\d)$/',$_GET['centi'],$matches);
 				if (!isset($matches[2])) {
 					die("invalid Grid Reference");
 				}
@@ -315,7 +315,7 @@ if ($grid_given)
 			if ($_GET['viewcenti'] == 'unspecified') {
 				$custom_where .= " and viewpoint_eastings = 0";
 			} else {
-				preg_match('/^[A-Z]{1,2}\d\d(\d)\d\d(\d)$/',$_GET['viewcenti'],$matches);
+				preg_match('/^[A-Z]{1,3}\d\d(\d)\d\d(\d)$/',$_GET['viewcenti'],$matches);
 				if (!isset($matches[2])) {
 					die("invalid Grid Reference");
 				}

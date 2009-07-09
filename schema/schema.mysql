@@ -655,7 +655,7 @@ CREATE TABLE `gridimage_recent` (
   `upd_timestamp` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `x` smallint(3) NOT NULL DEFAULT '0',
   `y` smallint(4) NOT NULL DEFAULT '0',
-  `grid_reference` varchar(6) NOT NULL DEFAULT '',
+  `grid_reference` varchar(7) NOT NULL DEFAULT '',
   `credit_realname` tinyint(4) NOT NULL DEFAULT '0',
   `realname` varchar(128) NOT NULL DEFAULT '',
   `reference_index` tinyint(1) NOT NULL DEFAULT '0',
@@ -687,7 +687,7 @@ CREATE TABLE `gridimage_search` (
   `upd_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `x` smallint(3) NOT NULL DEFAULT '0',
   `y` smallint(4) NOT NULL DEFAULT '0',
-  `grid_reference` varchar(6) NOT NULL DEFAULT '',
+  `grid_reference` varchar(7) NOT NULL DEFAULT '',
   `credit_realname` tinyint(4) NOT NULL DEFAULT '0',
   `realname` varchar(128) NOT NULL DEFAULT '',
   `reference_index` tinyint(1) NOT NULL DEFAULT '0',
@@ -804,7 +804,7 @@ CREATE TABLE `gridsquare` (
   `y` int(11) NOT NULL DEFAULT '0',
   `percent_land` tinyint(4) NOT NULL DEFAULT '100',
   `imagecount` int(11) NOT NULL DEFAULT '0',
-  `grid_reference` varchar(6) NOT NULL DEFAULT '',
+  `grid_reference` varchar(7) NOT NULL DEFAULT '',
   `reference_index` tinyint(4) DEFAULT '1',
   `has_geographs` tinyint(4) NOT NULL DEFAULT '0',
   `point_xy` point NOT NULL DEFAULT '',
@@ -867,7 +867,7 @@ CREATE TABLE `hectad_assignment` (
 
 DROP TABLE IF EXISTS `hectad_complete`;
 CREATE TABLE `hectad_complete` (
-  `hectad_ref` varchar(6) NOT NULL DEFAULT '',
+  `hectad_ref` varchar(7) NOT NULL DEFAULT '',
   `completed` date NOT NULL DEFAULT '0000-00-00',
   `landcount` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `reference_index` tinyint(3) unsigned NOT NULL DEFAULT '0',
@@ -900,7 +900,7 @@ DROP TABLE IF EXISTS `loc_abgaz`;
 CREATE TABLE `loc_abgaz` (
   `gaz_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `full_name` varchar(128) NOT NULL DEFAULT '',
-  `gridref` varchar(6) NOT NULL DEFAULT '',
+  `gridref` varchar(7) NOT NULL DEFAULT '',
   `hcounty` varchar(64) NOT NULL DEFAULT '',
   `acounty` varchar(64) NOT NULL DEFAULT '',
   `district` varchar(64) NOT NULL DEFAULT '',
@@ -1134,7 +1134,7 @@ CREATE TABLE `moderation_log` (
 DROP TABLE IF EXISTS `os_gaz`;
 CREATE TABLE `os_gaz` (
   `seq` int(11) NOT NULL DEFAULT '0',
-  `km_ref` varchar(6) NOT NULL DEFAULT '',
+  `km_ref` varchar(7) NOT NULL DEFAULT '',
   `def_nam` varchar(60) NOT NULL DEFAULT '',
   `tile_ref` varchar(4) NOT NULL DEFAULT '',
   `lat_deg` tinyint(4) NOT NULL DEFAULT '0',
@@ -1206,7 +1206,7 @@ CREATE TABLE `queries` (
   `limit2` enum('','geograph','geograph,accepted','geograph,accepted,pending','pending','accepted','rejected') NOT NULL DEFAULT '',
   `limit3` varchar(32) NOT NULL DEFAULT '',
   `limit4` char(1) NOT NULL DEFAULT '',
-  `limit5` char(2) NOT NULL DEFAULT '',
+  `limit5` char(3) NOT NULL DEFAULT '',
   `limit6` varchar(32) NOT NULL DEFAULT '',
   `limit7` varchar(32) NOT NULL DEFAULT '',
   `limit8` smallint(5) NOT NULL DEFAULT '0',
@@ -1242,7 +1242,7 @@ CREATE TABLE `queries_archive` (
   `limit2` enum('','geograph','geograph,accepted','geograph,accepted,pending','pending','accepted','rejected') NOT NULL DEFAULT '',
   `limit3` varchar(32) NOT NULL DEFAULT '',
   `limit4` char(1) NOT NULL DEFAULT '',
-  `limit5` char(2) NOT NULL DEFAULT '',
+  `limit5` char(3) NOT NULL DEFAULT '',
   `limit6` varchar(32) NOT NULL DEFAULT '',
   `limit7` varchar(32) NOT NULL DEFAULT '',
   `limit8` smallint(5) NOT NULL DEFAULT '0',
@@ -1388,7 +1388,7 @@ CREATE TABLE `user_emailchange` (
 DROP TABLE IF EXISTS `user_gridsquare`;
 CREATE TABLE `user_gridsquare` (
   `user_id` int(11) NOT NULL DEFAULT '0',
-  `grid_reference` varchar(6) NOT NULL DEFAULT '',
+  `grid_reference` varchar(7) NOT NULL DEFAULT '',
   KEY `user_id` (`user_id`,`grid_reference`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 

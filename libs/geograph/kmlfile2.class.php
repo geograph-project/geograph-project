@@ -165,7 +165,7 @@ function getKmlFilepath($extension,$level,$square = null,$gr='',$i = 0) {
 		}
 		
 	} elseif (!empty($gr)) {
-		preg_match('/^([A-Z]{1,2})([\d_]*)$/',strtoupper($gr),$m);
+		preg_match('/^([A-Z]{1,3})([\d_]*)$/',strtoupper($gr),$m);
 		$s = $m[1];
 		if ($level > 2) {
 			$numbers = $m[2];

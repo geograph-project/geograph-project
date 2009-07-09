@@ -99,14 +99,14 @@ function smarty_function_getamap($params)
 
 	//get params
 	$matches=array();
-	$gridref4=preg_replace('/^([A-Z]{1,2})\s*(\d{2,5})\s*(\d{2,5})$/i','$1$2$3',$params['gridref']);
+	$gridref4=preg_replace('/^([A-Z]{1,3})\s*(\d{2,5})\s*(\d{2,5})$/i','$1$2$3',$params['gridref']);
 	if (preg_match('/^document\./i', $gridref4))
 	{
 		if (!empty($params['gridref2']))
 			$gridref4 .= ",'{$params['gridref2']}'";
 		return "<a title=\"Ordnance Survey Get-a-Map\" href=\"javascript:popupOSMap($gridref4)\">{$params['text']}</a>$icon";
 	}
-	else if (preg_match('/^([A-Z]{1,2})(\d{4,10})$/i', $gridref4, $matches))
+	else if (preg_match('/^([A-Z]{1,3})(\d{4,10})$/i', $gridref4, $matches))
 	{
 		if (!empty($params['text']))
 			$text=$params['text'];
@@ -391,7 +391,7 @@ function getSitemapFilepath($level,$square = null,$gr='',$i = 0) {
 			$gr = $square->grid_reference;
 		}
 	} elseif (!empty($gr)) {
-		preg_match('/^([A-Z]{1,2})([\d_]*)$/',strtoupper($gr),$m);
+		preg_match('/^([A-Z]{1,3})([\d_]*)$/',strtoupper($gr),$m);
 		$s = $m[1];
 		if ($level > 2) {
 			$numbers = $m[2];
@@ -435,7 +435,7 @@ function smarty_function_geographlinks($input,$thumbs = false) {
 function GeographLinks(&$posterText,$thumbs = false) {
 	global $imageCredits,$CONF,$global_thumb_count;
 	//look for [[gridref_or_photoid]] and [[[gridref_or_photoid]]]
-	if (preg_match_all('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
+	if (preg_match_all('/\[\[(\[?)(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
 		$thumb_count = 0;
 		foreach ($g_matches[2] as $i => $g_id) {
 			//photo id?
