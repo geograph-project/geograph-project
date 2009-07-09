@@ -196,6 +196,9 @@ $CONF['origins'] = array(1 => array(206,0),2 => array(10,149));
 //number of characters in the grid prefix
 $CONF['gridpreflen'] = array(1 => 2, 2 => 1);
 
+// google maps: show meridians n*$CONF['showmeridian'] degrees (0: don't show any meridian)
+$CONF['showmeridian'] = 0;
+
 ## search setup
 
 //the radius for simple searches in km, set high to begin with but set low once number of submissions
