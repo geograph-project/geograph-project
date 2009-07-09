@@ -40,7 +40,7 @@ if (isset($_GET['gridref']))
 		$smarty->assign_by_ref('gridref', $gridref);
 		$smarty->assign('showinfo', 1);
 	
-		$isadmin = (($USER->user_id == 10124) || $USER->hasPerm('moderator') )?1:0;
+		$isadmin = $USER->hasPerm('moderator')?1:0;
 		$smarty->assign_by_ref('isadmin', $isadmin);
 	
 		$db = NewADOConnection($GLOBALS['DSN']);
