@@ -52,7 +52,7 @@ with any <a href="http://www.gnu.org/software/tar/manual/html_node/tar_109.html"
 
 </form>
 
-<h3>Coming up... <small>(<a href="/search.php?i=2136521">Preview</a> - don't disclose this url)</small></h3>
+<h3>Coming up...</h3>
 
     <p>Note: photos might only show on this list once they have been rated, so please check the preview link above and rate some images!</p>
 
