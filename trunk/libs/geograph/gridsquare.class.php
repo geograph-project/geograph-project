@@ -297,26 +297,26 @@ class GridSquare
 		$matches=array();
 		$isfour=false;
 		
-		if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{5})[ \.]?(\d{5})\b/",$gridreference,$matches)) {
+		if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{5})[ \.]?(\d{5})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],$matches[2],$matches[3]);
 			$this->natspecified = 1;
 			$natgrlen = $this->natgrlen = 10;
-		} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{4})[ \.]?(\d{4})\b/",$gridreference,$matches)) {
+		} else if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{4})[ \.]?(\d{4})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],"$matches[2]0","$matches[3]0");
 			$this->natspecified = 1;
 			$natgrlen = $this->natgrlen = 8;
-		} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{3})[ \.]*(\d{3})\b/",$gridreference,$matches)) {
+		} else if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{3})[ \.]*(\d{3})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],"$matches[2]00","$matches[3]00");
 			$this->natspecified = 1;
 			$natgrlen = $this->natgrlen = 6;
-		} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{2})[ \.]?(\d{2})\b/",$gridreference,$matches)) {
+		} else if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{2})[ \.]?(\d{2})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],"$matches[2]000","$matches[3]000");
 			$isfour = true;
 			$natgrlen = $this->natgrlen = 4;
-		} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1})[ \.]*(\d{1})\b/",$gridreference,$matches)) {
+		} else if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{1})[ \.]*(\d{1})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],"$matches[2]5000","$matches[3]5000");
 			$natgrlen = $this->natgrlen = 2;
-		} else if (preg_match("/\b([a-zA-Z]{1,2})\b/",$gridreference,$matches)) {
+		} else if (preg_match("/\b([a-zA-Z]{1,3})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],"50000","50000");
 			$natgrlen = $this->natgrlen = 0;
 		} 		
@@ -358,7 +358,7 @@ class GridSquare
 	function _storeGridRef($gridref)
 	{
 		$this->grid_reference=$gridref;
-		if (preg_match('/^([A-Z]{1,2})(\d\d)(\d\d)$/',$this->grid_reference, $matches))
+		if (preg_match('/^([A-Z]{1,3})(\d\d)(\d\d)$/',$this->grid_reference, $matches))
 		{
 			$this->gridsquare=$matches[1];
 			$this->eastings=$matches[2];
@@ -376,7 +376,7 @@ class GridSquare
 	function validGridPos($gridsquare, $eastings, $northings)
 	{
 		$ok=true;
-		$ok=$ok && preg_match('/^[A-Z]{1,2}$/',$gridsquare);
+		$ok=$ok && preg_match('/^[A-Z]{1,3}$/',$gridsquare);
 		$ok=$ok && preg_match('/^[0-9]{1,2}$/',$eastings);
 		$ok=$ok && preg_match('/^[0-9]{1,2}$/',$northings);
 		return $ok;
@@ -405,7 +405,7 @@ class GridSquare
 	*/
 	function validGridRef($gridref, $figures=4)
 	{
-		return preg_match('/^[A-Z]{1,2}[0-9]{'.$figures.'}$/',$gridref);
+		return preg_match('/^[A-Z]{1,3}[0-9]{'.$figures.'}$/',$gridref);
 	}
 
 
@@ -425,7 +425,7 @@ class GridSquare
 		{
 			//six figures?
 			$matches=array();
-			if (preg_match('/^([A-Z]{1,2})(\d\d)\d(\d\d)\d$/',$gridref,$matches))
+			if (preg_match('/^([A-Z]{1,3})(\d\d)\d(\d\d)\d$/',$gridref,$matches))
 			{
 				$fixed=$matches[1].$matches[2].$matches[3];
 				$this->_error('Please enter a 4 figure reference, i.e. '.$fixed.' instead of '.$gridref);

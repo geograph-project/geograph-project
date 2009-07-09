@@ -1814,7 +1814,7 @@ END;
 		//plot the number labels
 		if ($this->pixels_per_km >= 40) {
 			$gridref = $this->getGridRef(0, $this->image_h); //origin of image is tl, map is bl
-			if (preg_match('/^([A-Z]{1,2})(\d\d)(\d\d)$/',$gridref, $matches))
+			if (preg_match('/^([A-Z]{1,3})(\d\d)(\d\d)$/',$gridref, $matches))
 			{
 				$gridsquare=$matches[1];
 				$eastings=$matches[2];

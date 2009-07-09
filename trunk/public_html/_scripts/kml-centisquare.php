@@ -43,7 +43,7 @@ $conv = new Conversions;
 $gr = $_GET['gr'];
 
 
-preg_match('/^([A-Z]{1,2})(\d\d)(\d|_)(\d\d)(\d|_)$/',strtoupper($gr),$matches);
+preg_match('/^([A-Z]{1,3})(\d\d)(\d|_)(\d\d)(\d|_)$/',strtoupper($gr),$matches);
 if ($matches[3] == '_') {
 	$sql_where = " and nateastings = 0";
 	$gr2 = $matches[1].$matches[2].$matches[4];
