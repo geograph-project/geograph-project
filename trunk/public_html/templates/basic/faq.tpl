@@ -1,16 +1,6 @@
 {assign var="page_title" value="FAQ"}
 {include file="_std_begin.tpl"}
-{literal}<style type="text/css">
-.helpbox { float:right;padding:5px;background:#dddddd;position:relative;font-size:0.8em;margin-left:20px;z-index:10; }
-.helpbox UL { margin-top:2px;margin-bottom:0;padding:0 0 0 1em; }
-.contents A { text-decoration:none; }
-.contents LI { padding-bottom:2px; }
-.answers h3 { padding:10px;border-top: 1px solid lightgrey;background-color:#f9f9f9; }
-.answers p { padding-left:20px; }
-div:target { background-color:orange;padding-bottom:10px; }
-.top { text-align:right;font-size:0.7em; }
-.top A { text-decoration:none; }
-</style>{/literal}
+<div id="faq">
 <a name="top"></a>
 
  <div class="helpbox">
@@ -246,7 +236,7 @@ The <b>Geograph Website</b>:
 	<li>simple <a class="xml-geo" title="Geograph GeoRSS feed" href="http://{$http_host}/feed/recent.rss">GeoRSS</a></li>
 	<li><a title="Geograph GeoRSS and PhotoRSS feed" href="http://{$http_host}/feed/recent.geophotorss">GeoPhotoRSS</a></li>
 	<li>and <a title="Geograph GPX feed" href="http://{$http_host}/feed/recent.gpx">GPX1.0</a></li>
-	formats.</ul></div>
+	</ul>formats.</div>
 
 	<p>We provide an GeoRSS (RSS1.0) feed at 
 	<a title="Geograph RSS feed" href="http://{$http_host}/feed/recent.rss">http://{$http_host}/feed/recent.rss</a>
@@ -377,6 +367,7 @@ The <b>Geograph Website</b>:
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
+</div>
 </div>
 
 {include file="_std_end.tpl"}
