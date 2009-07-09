@@ -64,7 +64,7 @@ $forumName=$row[0]; $forumIcon=$row[1];
 if (!empty($CONF['disable_discuss_thumbs'])) {
 	$gridThumbs = "<h4 style=\"color:red\">During times of heavy load we limit the display of thumbnails in the posts.<br/>Sorry for the loss of this feature.</h4>";
 } else {
-	if ($gridref || ($forum == 5 && $gridref = $topicName)) {
+	if ($gridref || ($forum == $CONF['forum_gridsquare'] && $gridref = $topicName)) {
 	
 		require_once('geograph/gridimage.class.php');
 		require_once('geograph/gridsquare.class.php');
@@ -281,7 +281,7 @@ if ($USER->user_id) {
 
 unset($result);unset($countRes);
 
-$l_messageABC=($forum==11)?$l_sub_answer11:$l_sub_answer;
+$l_messageABC=($forum==$CONF['forum_gallery'])?$l_sub_answer11:$l_sub_answer;
 if ($topicStatus!=1) {
 $emailCheckBox=emailCheckBox();
 
@@ -296,8 +296,8 @@ $nTop=0;
 $listPosts=str_replace('getQuotation();','',$listPosts);
 }else{
 $mainPostForm=ParseTpl(makeUp('main_post_form'));
-if (file_exists("templates/main_post_area_{$forum}.html")) {
-	$templatename = "main_post_area_{$forum}";
+if (file_exists("templates/main_post_area_{$CONF['forum_to_template'][$forum]}.html")) {
+	$templatename = "main_post_area_{$CONF['forum_to_template'][$forum]}";
 } else {
 	$templatename = "main_post_area";
 } 
@@ -345,10 +345,10 @@ include ($pathToFiles.'bb_func_forums.php');
 
 if(isset($mod_rewrite) and $mod_rewrite) $linkToForums="{$main_url}/{$forum}_0.html"; else $linkToForums="{$main_url}/{$indexphp}action=vtopic&amp;forum={$forum}";
 
-if (!$USER->hasPerm("basic") && file_exists("templates/main_posts_{$forum}_anon.html")) {
-	$templatename = "main_posts_{$forum}_anon";
-} elseif (file_exists("templates/main_posts_{$forum}.html")) {
-	$templatename = "main_posts_{$forum}";
+if (!$USER->hasPerm("basic") && file_exists("templates/main_posts_{$CONF['forum_to_template'][$forum]}_anon.html")) {
+	$templatename = "main_posts_{$CONF['forum_to_template'][$forum]}_anon";
+} elseif (file_exists("templates/main_posts_{$CONF['forum_to_template'][$forum]}.html")) {
+	$templatename = "main_posts_{$CONF['forum_to_template'][$forum]}";
 } else {
 	$templatename = 'main_posts';
 }

@@ -35,7 +35,7 @@ if ( (!empty($_GET['topic']) && is_numeric($_GET['topic'])) || (!empty($_GET['fo
 */
 
 $valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP');
-if (!empty($_GET['forum']) && $_GET['forum'] == 5 && empty($_GET['topic']) )
+if (!empty($_GET['forum']) && $_GET['forum'] == $CONF['forum_gridsquare'] && empty($_GET['topic']) )
 	$valid_formats=array_merge($valid_formats,array('KML','GeoRSS','GPX'));
 
 if (isset($_GET['extension']) && !isset($_GET['format']))
@@ -45,7 +45,7 @@ if (isset($_GET['extension']) && !isset($_GET['format']))
 	$_GET['format'] = str_replace('PHOTO','Photo',$_GET['format']);
 }
 
-if ((!empty($_GET['forum']) && $_GET['forum'] == 5) || isset($_GET['gridref'])) {
+if ((!empty($_GET['forum']) && $_GET['forum'] == $CONF['forum_gridsquare']) || isset($_GET['gridref'])) {
 	$format="GeoRSS";
 } else {
 	$format="RSS1.0";
@@ -69,7 +69,7 @@ if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-t{$_GET['topic']}-{$format}-{$opt_expand}-{$opt_noLimit}-{$opt_when}.$extension";
 } elseif (!empty($_GET['gridref']) && preg_match('/^([A-Z]{1,2})(\d\d)(\d\d)$/',$_GET['gridref'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-f{$_GET['gridref']}-{$format}-{$opt_sortBy}-{$opt_first}-{$opt_when}.$extension";
-	$_GET['forum'] = 5;
+	$_GET['forum'] = $CONF['forum_gridsquare'];
 } elseif (!empty($_GET['forum']) && is_numeric($_GET['forum'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-f{$_GET['forum']}-{$format}-{$opt_sortBy}-{$opt_first}-{$opt_when}.$extension";
 } else {
@@ -93,7 +93,7 @@ if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
 
 	$posts = $db->getOne("SELECT COUNT(*) FROM `geobb_posts` WHERE `topic_id` = {$_GET['topic']}");
 
-	$perpage = ($forrom == 6 || $forrom == 11)?10:30;
+	$perpage = ($forrom == $CONF['forum_submittedarticles'] || $forrom == $CONF['forum_gallery'])?10:30;
 
 	$hash = $posts % $perpage;
 	$page = floor($posts / $perpage);
@@ -167,7 +167,7 @@ if (!$opt_noLimit) {
 		$title = '';
 		$synd = '';
 		$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/";
-		$sql_where = 'WHERE geobb_topics.forum_id NOT IN (5,11)'; //we exclude Grid Ref discussions and Gallery...
+		$sql_where = "WHERE geobb_topics.forum_id NOT IN ({$CONF['forum_gridsquare']},{$CONF['forum_gallery']})"; //we exclude Grid Ref discussions and Gallery...
 	}
 	$sql_where .= $opt_when?" AND post_time > '$opt_when'":'';
 	

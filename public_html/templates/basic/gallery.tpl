@@ -1,11 +1,11 @@
 {assign var="page_title" value="Galleries"}
-{assign var="rss_url" value="/discuss/syndicator.php?forum=11"}
+{assign var="rss_url" value="/discuss/syndicator.php?forum=`$forum_gallery`"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
 ul.explore li {	padding:3px; }
 </style>{/literal}
 
-<div style="float:right"><a title="RSS Feed for Geograph Galleries" href="/discuss/syndicator.php?forum=11" class="xml-rss">RSS</a></div>
+<div style="float:right"><a title="RSS Feed for Geograph Galleries" href="/discuss/syndicator.php?forum={$forum_gallery}" class="xml-rss">RSS</a></div>
 
 <div class="tabHolder">
 	<a href="/content/" class="tab">Content</a>
@@ -13,8 +13,8 @@ ul.explore li {	padding:3px; }
 	<a href="/article/?table" class="tab">Article List</a>
 	<span class="tabSelected">Galleries</span>
 	{if $enable_forums}
-		<a href="/discuss/index.php?action=vtopic&amp;forum=6" class="tab">Themed Topics</a>
-		<a href="/discuss/index.php?action=vtopic&amp;forum=5" class="tab">Grid Square Discussions</a>
+		<a href="/discuss/index.php?action=vtopic&amp;forum={$forum_submittedarticles}" class="tab">Themed Topics</a>
+		<a href="/discuss/index.php?action=vtopic&amp;forum={$forum_gridsquare}" class="tab">Grid Square Discussions</a>
 		<a href="/article/Content-on-Geograph" class="tab">Contribute...</a>
 	{/if}	
 </div>
@@ -41,12 +41,12 @@ ul.explore li {	padding:3px; }
 
 <br style="clear:both"/>
 
-<div style="text-align:right"><a title="RSS Feed for Geograph Galleries" href="/discuss/syndicator.php?forum=11" class="xml-rss">RSS</a></div>
+<div style="text-align:right"><a title="RSS Feed for Geograph Galleries" href="/discuss/syndicator.php?forum={$forum_gallery}" class="xml-rss">RSS</a></div>
 
 {if $enable_forums}
 	<div class="interestBox">
 	{if $user->registered} 
-		<a href="/discuss/?action=vtopic&forum=11">Submit a new Gallery</a> (Registered Users Only)
+		<a href="/discuss/?action=vtopic&forum={$forum_gallery}">Submit a new Gallery</a> (Registered Users Only)
 	{else}
 		<a href="/login.php">Login</a> to Submit your own gallery!
 	{/if}

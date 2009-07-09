@@ -18,11 +18,11 @@ if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 9 ) {
 	die("server busy, please try later");
 }
 
-if (!isset($_GET['forum']) || $_GET['forum'] != 11)
+if (!isset($_GET['forum']) || $_GET['forum'] != $CONF['forum_gallery'])
 	$USER->mustHavePerm("basic");
 
 if (empty($CONF['forums'])) {
-	if (!$USER->hasPerm("admin") && $_GET['forum'] == 11) {
+	if (!$USER->hasPerm("admin") && $_GET['forum'] == $CONF['forum_gallery']) {
 		if (!empty($_GET['topic'])) {
 			header("Location: /gallery/__".intval($_GET['topic']));
 		} else {
@@ -100,7 +100,7 @@ $topic=0;
 
 if(isset($_GET['gridref'])) {
 	$gridref=$_GET['gridref']; 
-	$forum = 5;
+	$forum = $CONF['forum_gridsquare'];
 	
 
 	$result=mysql_query("SELECT topic_id FROM $Tt WHERE forum_id = $forum AND topic_title = '".mysql_escape_string($gridref)."'",$GLOBALS['minibb_link']);
@@ -122,7 +122,7 @@ if(isset($_GET['topic'])) $topic=$_GET['topic']; elseif(isset($_POST['topic'])) 
 
 if (isset($_POST['action'])) $action=$_POST['action']; elseif (isset($_GET['action'])) $action=$_GET['action'];
 
-if ($forum == 6 || $forum == 11) {
+if ($forum == $CONF['forum_submittedarticles'] || $forum == $CONF['forum_gallery']) {
 	$viewmaxreplys=10;
 }
 
@@ -174,7 +174,7 @@ $loginLogout=ParseTpl(makeUp('user_logged_in'));
 $user_logging=$loginLogout;
 }
 else {
-if (!isset($_GET['forum']) || $_GET['forum'] != 11)
+if (!isset($_GET['forum']) || $_GET['forum'] != $CONF['forum_gallery'])
 	$USER->mustHavePerm("admin");
 
 if($sdef==0) $user_sort=$sortingTopics; else $user_sort=$sortBy;
@@ -216,7 +216,7 @@ else $l_adminpanel_link='';
 if($action=='vthread' || $action=='pthread'){
 $topicData=db_simpleSelect(0,$Tt,'topic_title, topic_status, topic_poster, topic_poster_name, forum_id, posts_count, sticky, topic_views','topic_id','=',$topic);
 if($topicData and $topicData[4]!=$forum) $forum=$topicData[4];
-if ($forum == 6 || $forum == 11) {
+if ($forum == $CONF['forum_submittedarticles'] || $forum == $CONF['forum_gallery']) {
 	$viewmaxreplys=10;
 }
 unset($result);unset($countRes);
@@ -322,7 +322,7 @@ elseif($action=='search') {if($reqTxt!=1)require($pathToFiles.'bb_func_txt.php')
 elseif($action=='wait') {
 	if ($user_sort==1) $orderBy='topic_id DESC'; else $orderBy='topic_last_post_id DESC';
 
-	if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','forum_id','!=','5',$orderBy,1,'forum_id','!=','11')){
+	if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','forum_id','!=',strval($CONF['forum_gridsquare']),$orderBy,1,'forum_id','!=',strval($CONF['forum_gallery']))){
 		if ($cols[9]) {
 			print "<title>Updated Since Last Visit</title>";
 			print "<b>Updated Since Last Visit</b>";
@@ -423,7 +423,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 		echo load_header();
                 print "<div style=\"float:left\"><a href=\"index.php\">Reload</a></div>";
  		print "<div style=\"float:right\"><a href=\"index.php?action=wait&amp;countdown=100\">Watch</a></div>";
-		print "<div style=\"text-align:center\">Show <a href=\"index.php?forums=1\">Forum List</a> | View <a href=\"index.php?action=vtopic&amp;forum=5\">Recent Grid Square Discussions</a></div>";
+		print "<div style=\"text-align:center\">Show <a href=\"index.php?forums=1\">Forum List</a> | View <a href=\"index.php?action=vtopic&amp;forum={$CONF['forum_gridsquare']}\">Recent Grid Square Discussions</a></div>";
 	} else {
 		require($pathToFiles.'bb_func_vforum.php');
 	}

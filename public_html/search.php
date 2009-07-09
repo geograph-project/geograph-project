@@ -1178,6 +1178,7 @@ if (isset($_GET['fav']) && $i) {
 
 		if ($_GET['form'] == 'first') {
 			$template = 'search_first.tpl';
+			$smarty->assign('forum_topic_numsquare', $CONF['forum_topic_numsquare']);
 		} elseif ($_GET['form'] == 'cluster2') {
 			$template = 'search_cluster2.tpl';
 		} elseif ($_GET['form'] == 'check') {

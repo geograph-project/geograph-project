@@ -51,7 +51,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	select topic_id,topic_title,topic_poster,topic_poster_name,topic_time,topic_views,posts_count,count(*) as images_count
 	from geobb_topics
 	left join gridimage_post using (topic_id)
-	where forum_id = 11
+	where forum_id = {$CONF['forum_gallery']}
 	group by topic_id
 	order by topic_last_post_id desc");
 	
