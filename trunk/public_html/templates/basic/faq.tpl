@@ -42,7 +42,7 @@
 <b>Contributing</b> photos:
  <ul>
  <li><a href="#what">What is <b>Geographing</b>?</a></li>
- <li><a href="#geograph">What makes a good <b>Geograph</b>?</a></li>
+ <li><a href="#goodgeograph">What makes a good <b>Geograph</b>?</a></li>
  <li><a href="#points">How do I get a geograph <b>point</b> for my image?</a></li>
  <li><a href="#supplemental">What is a <b>supplemental</b> image?</a></li>
  <li><a href="#multiple">Do you accept <b>multiple images</b> per square</a></li>
@@ -97,8 +97,8 @@ The <b>Geograph Website</b>:
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
-<div id="geograph">
-<a name="geograph"></a>
+<div id="goodgeograph">
+<a name="goodgeograph"></a>
 <h3>What makes a good Geograph image?</h3>
 	<ul>
 	<li>You must clearly show at close range one of the main geographical features within the square</li>
@@ -113,7 +113,7 @@ The <b>Geograph Website</b>:
 <h3>How do I get a geograph point for my image?</h3>
 	<p>If you're the first to submit a proper &quot;geograph&quot; for the grid square
 	you'll get a geograph point added to your profile and the warm glow that comes
-	with it. 
+	with it.</p>
 	
 	<p>We welcome many Geograph images per square, so even if you don't get the point, you are still making a valuable contribution to the project.</p>
 </div>
