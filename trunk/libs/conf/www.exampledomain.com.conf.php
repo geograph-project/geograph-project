@@ -201,6 +201,9 @@ $CONF['origins'] = array(1 => array(206,0),2 => array(10,149));
 //number of characters in the grid prefix
 $CONF['gridpreflen'] = array(1 => 2, 2 => 1);
 
+//name of the grids (shown in page title)
+$CONF['gridrefname'] = array(1 => 'OS grid ', 2 => 'OS grid ');
+
 // google maps: show meridians n*$CONF['showmeridian'] degrees (0: don't show any meridian)
 $CONF['showmeridian'] = 0;
 
