@@ -136,7 +136,7 @@ function smarty_function_articletext($input) {
 	//fix a bug where double spacing on a previous match would swallow the newline needed for the next
 	$pattern[]='/\n\n(<\w{1,3}>)\#/';
 	$replacement[]="\n\$1#";
-	
+
 	$pattern[]='/\n\n\#/';
 	$replacement[]="\n\r\n\$1#";
 	
