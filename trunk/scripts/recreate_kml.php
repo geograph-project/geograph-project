@@ -192,7 +192,7 @@ while (1) {
 	} else {
 		//nothing more to do here
 
-		die('E');
+		exit;//die('E');
 	}
 
 	//sleep anyway for a bit
