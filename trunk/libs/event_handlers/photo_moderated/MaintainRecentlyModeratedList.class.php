@@ -69,8 +69,8 @@ class MaintainRecentlyModeratedList extends EventHandler
 			
 			if (rand(1,10) < 3) 
 			{
-				//get the date for the 250th image
-				$row=$db->GetRow("select recent_id from gridimage_recent order by recent_id desc limit 250,1");
+				//get the date for the 100th image
+				$row=$db->GetRow("select recent_id from gridimage_recent order by recent_id desc limit 100,1");
 				if ($oldest = $row['recent_id'])
 				{
 					//delete anything older
