@@ -12,10 +12,6 @@ $CONF['server_ip'] = '127.0.0.';
 
 //set to X to server from http://s[0-X].$domain/photos/....
 $CONF['enable_cluster'] = 2;
-$CONF['STATIC_HOST'] = "s0.geograph.mobile";
-
-$CONF['CONTENT_HOST'] = "geograph.mobile";
-$CONF['TILE_HOST'] = "t0.geograph.mobile";
 
 //this can be different to your main hostname if want to seperate out the hosting of the Google Earth Superlayer. 
 $CONF['KML_HOST'] = $_SERVER['HTTP_HOST'];
@@ -132,6 +128,7 @@ $CONF['raster_service']='';
 // 'vob' - VisionOfBritain Historical Maps - Permission MUST be sought from the visionofbritain.org.uk webmaster before enableing this feature!
 // 'OS50k' - OSGB 50k Mapping - Licence Required (see next)
 // 'Google' - Use Google Mapping (api key required below)
+// 'Grid' - Should be used with 'Google'
 
 $CONF['google_maps_api_key'] = 'XXXXXXX';
 
@@ -167,7 +164,7 @@ $CONF['use_gazetteer'] = 'towns'; //OS/hist/towns/default
 $CONF['references'] = array(1 => 'Great Britain',2 => 'Ireland');
 
 //including the 'non filted version'
-$CONF['references_all'] = array_merge(array(0=>'British Isles'),$CONF['references']);
+$CONF['references_all'] = array(0=>'British Isles')+$CONF['references'];
 
 //false origins for the internal grid
 $CONF['origins'] = array(1 => array(206,0),2 => array(10,149));
@@ -222,6 +219,10 @@ $CONF['picnik_method'] = 'inabox'; //'inabox'|'redirect'
 
 
 
+
+$CONF['TILE_HOST'] = $_SERVER['HTTP_HOST'];
+$CONF['STATIC_HOST'] = $_SERVER['HTTP_HOST'];
+$CONF['CONTENT_HOST'] = $_SERVER['HTTP_HOST'];
 
 ##limits on numbers of thumbnails per page, and 'single item'
 $CONF['global_thumb_limit'] = 300;
