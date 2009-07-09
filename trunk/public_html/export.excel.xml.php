@@ -56,7 +56,7 @@ print "<?mso-application progid=\"Excel.Sheet\"?>\n";
  <Worksheet ss:Name="geograph">
   <Table>
    <Row>
-<?
+<?php
 	foreach (explode(',',$csvhead) as $col) {
 		print "<Cell><Data ss:Type=\"String\">$col</Data></Cell>";
 	}
@@ -109,7 +109,7 @@ $recordSet->Close();
 ?>
   </Table>
  </Worksheet>
-</Workbook><?
+</Workbook><?php
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 	
