@@ -6,7 +6,7 @@
 <p>These are the Hectad with the least coverage so far, that is without any photos yet, go on photograph one!</p>
 
 {foreach from=$references_real item=ref key=ri}
-<div style="float:left;position:relative;width:50%">
+<div style="float:left;position:relative;width:33%">
 <h4>{$ref}</h4>
 <table class="report"> 
 <thead><tr><td>Square</td><td>Land Squares</td></tr></thead>
