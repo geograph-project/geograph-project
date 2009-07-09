@@ -57,7 +57,7 @@ function isValidEmailAddress($email)
 */
 function isValidRealName($name) 
 {
-	return preg_match('/^[a-zA-Z0-9\-\s\']+$/' , $name)?true:false; 
+	return preg_match("/^[\\w'][-'\\w\\s]*$/" , $name)?true:false; 
 }
 
 /**
