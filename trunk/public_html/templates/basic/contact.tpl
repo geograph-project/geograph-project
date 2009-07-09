@@ -10,7 +10,7 @@
  
  	<div style="background-color:#eeeeee;padding:2px; text-align:center">
 	The Geograph British Isles project aims to collect geographically
-	representative photographs and information for every square kilometre of Great Britain</a> and 
+	representative photographs and information for every square kilometre of Great Britain and 
 	Ireland.</div>
  
  	<p>Got something to tell us? Then fire away - we try to respond within 24 hours, often much quicker.</p>
