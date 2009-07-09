@@ -36,7 +36,7 @@ $main_url='http://'.$_SERVER['HTTP_HOST'].'/discuss';
 $sitename='Discuss';
 $emailadmin=0;
 $emailusers=1;
-$userRegName='_A-Za-z0-9 ';
+$userRegName="-'\\w\\s";
 $l_sepr='<span style="color:#006699">&nbsp;-&nbsp;</span>';
 
 $post_text_maxlength=32640;
