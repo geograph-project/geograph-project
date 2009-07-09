@@ -1,4 +1,4 @@
-<?
+<?php
 #
 #
 # xmlhandler class
