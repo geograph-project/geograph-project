@@ -74,7 +74,7 @@ geographing</a> first.</p>
 		<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}or <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>{/if}
 		</p>
 		
-		<p>Clicking the <i>Upload via Picnik</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transfering it to Geograph.</p>
+		{if $picnik_api_key}<p>Clicking the <i>Upload via Picnik</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transfering it to Geograph.</p>{/if}
 	</div>		
 
 	<div style="position:relative;{if $tab != 2}display:none{/if}" class="interestBox" id="div2">
