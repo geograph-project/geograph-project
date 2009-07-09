@@ -69,8 +69,8 @@
 				document.theForm.grid_reference.value = gridref;
 			}  
 			
-			if (document.theForm.use6fig)
-				document.theForm.use6fig.checked = true;
+			//if (document.theForm.use6fig)
+			//	document.theForm.use6fig.checked = true;
 			
 			if (eastings1 > 0 && eastings2 > 0 && pickupbox != null) {
 				map.removeOverlay(pickupbox);
