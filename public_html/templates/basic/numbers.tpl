@@ -22,7 +22,7 @@
 	background-repeat: no-repeat;
 }
 .innerlefttextbox {
-	position:absolute; top:1px; left:1px; color:#000066; padding-left: 5px; padding-top:10px; padding-bottom:10px; 
+	position:absolute; top:1px; left:1px; color:#000066; padding-left: 5px; padding-top:10px; padding-bottom:10px; white-space:nowrap; 
 }
 
 .statsbox {
@@ -41,16 +41,24 @@
 .recentbox .halvebox {
 	position:relative; width:45%; float:left; padding:3px;
 }
+
+.finalboxframe {
+	position:relative; width:100%; color:#000066; background-color:white; border: 1px solid #000066
+}
+
 .finalbox {
 	position:relative; background-color:#000066; color:white; float:left; text-align:center; padding-top:10px; padding-bottom:10px; line-height:1.5em; font-size:1.1em;
-	border-left:1px solid #000066; border-top:1px solid #000066; border-bottom:1px solid #000066; margin:-1px;
+	/*border-left:1px solid #000066; border-top:1px solid #000066; border-bottom:1px solid #000066;*/ /*margin:-1px;*/
+	border-right:1px solid #000066;
 	background-image: url('/templates/basic/img/numbers-arrow-down.gif');
 	background-position: center right;
 	background-repeat: no-repeat;
 }
 .finalbox2 {
-	position:relative; color:#000066; background-color:white; float:left; text-align:center; padding-top:10px; padding-bottom:10px; line-height:1.5em; font-size:1.1em; 
-	border-right:1px solid #000066; border-top:1px solid #000066; border-bottom:1px solid #000066; margin:-1px;
+	position:relative; color:#000066; /*background-color:white;*/ /*float:left;*/ text-align:center; padding-top:10px; padding-bottom:10px; line-height:1.5em; font-size:1.1em; 
+	width: auto;
+	margin-left: auto; margin-right: auto;
+	/*border-right:1px solid #000066; border-top:1px solid #000066; border-bottom:1px solid #000066;*/ /*margin:-1px;*/
 }
 .finalbox2 A {
 	color: red;
@@ -75,22 +83,34 @@
 		<br/>
 	</div>
 	<div class="redbar" style="width:{$stats.percentage}%;">
-
 		<div class="righttextbox">
+		{if $stats.percentage >= 50 }
 			<b class="nowrap">{$stats.squares|thousends}</b> Squares photographed<br/>
+		{else}
+			<br/>
+		{/if}
 			<br/>
 		</div>
 		<br style="clear:both"/>
 	</div>
 	<div class="lefttextbox">
+		{if $stats.percentage >= 50 }
 		<div class="innerlefttextbox">
 		<br/>
 		<b class="nowrap">{$stats.percentage}%</b>
 		</div>
 		<br/>
 		<b class="nowrap">{$stats.percentage}%</b><br/>
+		{else}
+		<div class="innerlefttextbox">
+		<b class="nowrap">{$stats.squares|thousends}</b> Squares photographed<br/>
+		<b class="nowrap">{$stats.percentage}%</b><br/>
+		</div>
+		<b class="nowrap">{$stats.squares|thousends}</b> Squares photographed<br/>
+		<b class="nowrap">{$stats.percentage}%</b><br/>
+		{/if}
 	</div>
-	<br style="clear:both"/>	
+	<br style="clear:both"/>
 </div>
 <br style="clear:both"/>
 <div style="position:relative; width: 100%;">
@@ -131,15 +151,28 @@
 </div>
 
 <small><br style="clear:both"/><br/></small>
-<div style="position:relative; width:100%">
+<div class="finalboxframe">
 	<div class="finalbox" style="width:{$stats.fewpercentage}%;">
+		{if $stats.fewpercentage >= 50 }
 		<b class="nowrap">{$stats.fewphotos|thousends}</b>
 		 photographed<br/> squares</b>... <br/> 
+		{else}
+		<br/><br/>
+		{/if}
 	</div>
-	<div class="finalbox2" style="width:{$stats.negfewpercentage}%;">
+	<!--div class="finalbox2" style="width:{$stats.negfewpercentage}%;"-->
+	<div class="finalbox2">
+		{if $stats.fewpercentage >= 50 }
 		... with <b>fewer than 4 photos,<br/>
 		<a href="/submit.php">add yours now!</a></b>
+		{else}
+		<b class="nowrap">{$stats.fewphotos|thousends}</b>
+		 photographed squares</b>... <br/> 
+		... with <b>fewer than 4 photos,
+		<a href="/submit.php">add yours now!</a></b>
+		{/if}
 	</div>
+	<!--br style="clear:both"/-->
 </div>
 
 <small><br style="clear:both"/><br/></small>
