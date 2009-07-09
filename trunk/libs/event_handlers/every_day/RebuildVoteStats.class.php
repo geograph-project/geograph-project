@@ -40,7 +40,9 @@ class RebuildVoteStats extends EventHandler
 		//perform actions
 		
 		$db=&$this->_getDB();
-		
+
+		$wm = 1; #minimum votes required to be listed (//todo if change need to add a having to clause below!) 
+
 		$db->Execute("CREATE TEMPORARY TABLE vote_final AS SELECT MAX(vote_id) AS vote_id FROM vote_log GROUP BY type,id,user_id,ipaddr");
 		$db->Execute("UPDATE `vote_log` SET `final` = 0");
 		$db->Execute("UPDATE `vote_log`,vote_final SET vote_log.final = 1 WHERE `vote_log`.vote_id = vote_final.vote_id");
