@@ -1364,7 +1364,8 @@ function smarty_function_searchbreak($params) {
 		case 'submitted':
 			$s = substr($image->submitted,0,10);
 			if ($last != $s)
-				$b = getFormattedDate($image->submitted);
+				$b = getFormattedDate($s); // FIXME?
+				//$b = getFormattedDate($image->submitted);
 			$last = $s;
 			break;
 		case 'submitted_month':
