@@ -783,6 +783,7 @@ CREATE TABLE `gridprefix` (
   `title` varchar(128) DEFAULT NULL,
   `boundary` varchar(128) DEFAULT NULL,
   `labelcentre` varchar(16) DEFAULT NULL,
+  `labelminwidth` MEDIUMINT(4) UNSIGNED NOT NULL DEFAULT '0',
   `geometry_boundary` geometry NOT NULL DEFAULT '',
   `point_origin_xy` point NOT NULL DEFAULT '',
   PRIMARY KEY (`reference_index`,`prefix`),
