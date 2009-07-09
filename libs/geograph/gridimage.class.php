@@ -400,7 +400,9 @@ class GridImage
 		$this->bigtitle=trim(preg_replace("/^{$this->grid_reference}/", '', $this->title));
 		$this->bigtitle=preg_replace('/(?<![\.])\.$/', '', $this->bigtitle);
 
-		$smarty->assign('page_title', $this->bigtitle.":: OS grid {$this->grid_reference}");
+		$rid = $this->grid_square->reference_index;
+		$gridrefpref=$CONF['gridrefname'][$rid];
+		$smarty->assign('page_title', $this->bigtitle.":: {$gridrefpref}{$this->grid_reference}");
 
 		$smarty->assign('image_taken', $taken);
 		$smarty->assign('ismoderator', $ismoderator);
