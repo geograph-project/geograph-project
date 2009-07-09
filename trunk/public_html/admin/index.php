@@ -68,7 +68,7 @@ if ($USER->hasPerm("moderator")) {
 
 $smarty->assign('names_pending', $db->GetOne("select count(*) from game_score where approved=0"));
 
-$smarty->assign('pics_pending', $db->GetOne("select count(*) from gridimage_daily where showday is null and (vote_baysian > 3)"));
+$smarty->assign('pics_pending', $db->GetOne("select count(*) from gridimage_daily where showday is null"));
 
 $smarty->display($template,$cacheid);
 
