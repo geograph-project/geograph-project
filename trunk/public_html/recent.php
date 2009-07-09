@@ -50,8 +50,10 @@ $style = $USER->getStyle();
 $cacheid.=$style;
 
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 600; //10min cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 600; //10min cache
+}
 
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))

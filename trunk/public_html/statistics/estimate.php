@@ -36,8 +36,10 @@ $days = (isset($_GET['days']) && is_numeric($_GET['days']))?intval($_GET['days']
 $template='statistics_estimate.tpl';
 $cacheid='statistics|estimate'.$ri.'.'.$days;
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hr cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*24; //24hr cache
+}
 
 if (!$smarty->is_cached($template, $cacheid))
 {
