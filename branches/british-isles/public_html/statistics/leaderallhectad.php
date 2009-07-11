@@ -93,8 +93,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		} elseif ($type == 'most') {
 			$max = 0;
 			foreach ($users as $i => $user) {
-				if ($user['count'] > $max) {
-					$max = $user['count'];
+				if ($user['squares'] > $max) {
+					$max = $user['squares'];
 					$best_user = $user;
 				}
 			}
