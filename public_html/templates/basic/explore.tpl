@@ -35,7 +35,7 @@
 		<li><a href="/explore/counties.php?type=capital">(Irish) County Capitals</a>, <a href="/explore/cities.php">Cities and Large Towns</a></li>
 	</ul></li>
 
-	<li><a href="/gallery/"><b>Galleries</b></a> - hand picked images on varies themes</li>
+	<li><a href="/gallery/"><b>Galleries</b></a> - hand picked images on various themes</li>
 
 	<li><a href="/explore/places/" title="Explore by Place">Explore the <b>placename gazetteer</b></a> <sup style="color:red">New!</sup></li>
 
