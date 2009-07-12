@@ -65,6 +65,10 @@ if (!empty($_GET['admin'])) {
 	$rss->title = 'Geograph Pending Articles'; 
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/syndicator.php?format=$format&amp;admin=1";
 
+} elseif (!empty($_GET['revdocs'])) {
+	$sql_where = "approved > 0 && article_cat_id = 7"; #Geograph Project - Information Documents
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/syndicator.php?format=$format&amp;revdocs=1";
+
 } elseif (!empty($_GET['revisions'])) {
 	$sql_where = "approved > -1";
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/syndicator.php?format=$format&amp;revisions=1";
@@ -72,7 +76,6 @@ if (!empty($_GET['admin'])) {
 } else {
 	$sql_where = "licence != 'none' and approved > 0";
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/feed/recent.$format_extension";
-	
 
 }
 
@@ -109,7 +112,7 @@ while (!$recordSet->EOF)
 	
 	$item->title = $recordSet->fields['title'];
 	
-	if (!empty($_GET['revisions'])) {
+	if (!empty($_GET['revisions']) || !empty($_GET['revdocs'])) {
 		$realname = $db->getOne("
 			select realname
 			from article_revisions
