@@ -66,7 +66,7 @@ if (!empty($_GET['admin'])) {
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/syndicator.php?format=$format&amp;admin=1";
 
 } elseif (!empty($_GET['revdocs'])) {
-	$sql_where = "approved > 0 && article_cat_id = 7"; #Geograph Project - Information Documents
+	$sql_where = "approved > 0 and article.article_cat_id = 7"; #Geograph Project - Information Documents
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/syndicator.php?format=$format&amp;revdocs=1";
 
 } elseif (!empty($_GET['revisions'])) {
