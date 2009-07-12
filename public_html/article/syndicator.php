@@ -121,7 +121,13 @@ while (!$recordSet->EOF)
 	
 		$item->title .= " [rev #$version by $realname]";
 		$recordSet->fields['url'] = "history.php?page={$recordSet->fields['url']}";
-	} 
+		
+		$item->author = $realname;
+		$item->date = strtotime($recordSet->fields['update_time']);
+	} else {
+		$item->author = $recordSet->fields['realname'];
+		$item->date = strtotime($recordSet->fields['publish_date']);
+	}
 
 	//htmlspecialchars is called on link so dont use &amp;
 	$item->link = "http://{$_SERVER['HTTP_HOST']}/article/{$recordSet->fields['url']}";
@@ -133,8 +139,6 @@ while (!$recordSet->EOF)
 	if (strlen($description) > 160)
 		$description = substr($description,0,157)."...";
 	$item->description = $description;
-	$item->date = strtotime($recordSet->fields['publish_date']);
-	$item->author = $recordSet->fields['realname'];
 	$item->category = $recordSet->fields['category_name'];
 
 	if (($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') && $recordSet->fields['gridsquare_id']) {
