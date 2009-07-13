@@ -150,6 +150,9 @@ while (($recordSet && ($rows = $recordSet->RecordCount())) > 0) {
 		$recordSet->MoveNext();
 	}
 	$recordSet->Close();
+
+	//connection died in meantime
+	$db = NewADOConnection($GLOBALS['DSN'].'?new=1');
 	
 	$uids = implode(',',$uids);
 	$updatesql = "UPDATE geocubes SET outstanding = 0 WHERE gridimage_id IN ($uids)";
