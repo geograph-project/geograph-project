@@ -155,7 +155,7 @@ while (($recordSet && ($rows = $recordSet->RecordCount())) > 0) {
 	$db = NewADOConnection($GLOBALS['DSN'].'?new=1');
 	
 	$uids = implode(',',$uids);
-	$updatesql = "UPDATE geocubes SET outstanding = 0 WHERE gridimage_id IN ($uids)";
+	$updatesql = "UPDATE geocubes SET outstanding = 0,lastsent = NOW() WHERE gridimage_id IN ($uids)";
 		$db->Execute($updatesql);
 		print "Records Updated: ".$db->Affected_Rows()."/$rows\n\n";
 	
