@@ -126,7 +126,12 @@ class RestAPI
 		}
 	}
 	
-	function handleGridref()
+	function handleGridrefMore()
+	{
+		return $this->handleGridref(true);
+	}
+	
+	function handleGridref($more = false)
 	{
 		$square=new GridSquare;
 		$grid_given=true;
@@ -153,6 +158,13 @@ class RestAPI
 						echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".htmlentities($image->realname).'</user>';
 
 						echo ' '.preg_replace('/alt=".*?" /','',$image->getThumbnail(120,120));
+
+						if ($more) {
+							echo '<taken>'.htmlentities($image->imagetaken).'</taken>';
+							echo '<submitted>'.htmlentities($image->submitted).'</submitted>';
+							echo '<category>'.htmlentities2($image->imageclass).'</category>';
+							echo '<comment><![CDATA['.htmlentities2($image->comment).']]></comment>';
+						}
 
 						echo ' <location grid="'.($square->reference_index).'" eastings="'.($image->nateastings).'" northings="'.($image->natnorthings).'" figures="'.($image->natgrlen).'"/>';
 						echo '</image>';
