@@ -330,7 +330,7 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 
 <ul>
 {if !$token_zoomin}
-<li>Hover over an image for a description. Also right-click "open in new window"/tab should function at this scale.</li>
+<li>Hover over an image for a description.</li>
 {/if}
 <li>Click on the large map to zoom in on an area of interest. You can also use the +
 and - buttons to zoom in and out, or the keyboard shortcuts Alt+Q to zoom out and Alt+S to zoom in</li>
@@ -338,10 +338,9 @@ and - buttons to zoom in and out, or the keyboard shortcuts Alt+Q to zoom out an
 You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the map</li>
 <li>You can also pan the map by clicking the smaller overview map</li>
 <li>Use the tabs under the map to change map style</li>
-<li>The "Link to this Map" creates a nice accessible link to this map- which is tidier than many taken direct from the address bar.</li>
-{if $token_zoomin}
-	<li>NOTE: "open in new window"/tab does NOT function with this map correctly</li>
-{/if}
+<li>The "Link to this Map" creates a nice accessible link to this map - which is tidier than many taken direct from the address bar.</li>
+<li>NOTE: "open in new window"/tab does NOT function well with this map</li>
+
 </ul>
 
 
