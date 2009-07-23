@@ -3,9 +3,12 @@
 
 
 {if $google_maps_api_key}
-	<h2>Geograph <a href="/kml.php">SuperLayer</a> for Google Maps <sup style="color:red">Beta!</sup></h2>
+	<h2>Geograph Map Clusters</h2>
+	
+	<div style="text-align:right"><a title="Geograph Google Earth Clusters" href="http://gokml.net/2kf.kml" class="xml-kml">KML</a> {external href="http://gokml.net/2kf.kml" text="Download the Google Earth Version"} <sup style="color:red">NEW!</sup></div> 
 	
 	<form action="" onsubmit="return updateFilters(this);" name="theForm">
+	<h3>Apply Optional Filters</h3>
 	<div style="float:left;position:relative;padding:10px;">
 	Title Keyword:<br/> <input type="text" name="q" value="" id="q"/><br/>
 	<small>(Example: <tt>river</tt> - single keyword only)</small>
@@ -18,7 +21,7 @@
 
 	<div style="float:left;position:relative;padding:10px;">
 	<br/>
-	<input type="submit" value="Update"/>
+	<input type="submit" value="Update Map"/>
 	</div>
 
 	</form>
