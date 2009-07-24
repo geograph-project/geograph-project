@@ -378,9 +378,23 @@ if ($grid_given)
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			
 			if ($template=='browse2.tpl' && $square->imagecount > 15 && $_GET['by'] !== '1') {
-				$images=$square->getImages($inc_all_user,$custom_where,'order by ftf desc,gridimage_id limit 15');
+			
+				//http://stackoverflow.com/questions/1138006/multi-column-distinct-in-mysql
 				
-				$smarty->assign_by_ref('images', $images);
+				$table = "tmp_".md5(uniqid());
+				
+				$db->Execute("CREATE TEMPORARY TABLE $table ENGINE HEAP SELECT * FROM gridimage_search WHERE grid_reference = '{$square->grid_reference}' ORDER BY RAND()");
+				
+				$db->Execute("ALTER IGNORE TABLE $table ADD UNIQUE (user_id),ADD UNIQUE (imageclass)");
+				
+				$sql = "SELECT * FROM $table LIMIT 20";
+				
+				$imagelist = new ImageList();
+				$imagelist->_getImagesBySql($sql);
+				$smarty->assign_by_ref('images', $imagelist->images);
+				
+				#$images=$square->getImages($inc_all_user,$custom_where,'order by ftf desc,gridimage_id limit 15');
+				#$smarty->assign_by_ref('images', $images);
 				$smarty->assign('sample', 1);
 			} else {
 			
