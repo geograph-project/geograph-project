@@ -395,7 +395,7 @@ if ($grid_given)
 				
 				#$images=$square->getImages($inc_all_user,$custom_where,'order by ftf desc,gridimage_id limit 15');
 				#$smarty->assign_by_ref('images', $images);
-				$smarty->assign('sample', 1);
+				$smarty->assign('sample', count($imagelist->images) );
 			} else {
 			
 			$row = $db->cacheGetRow($cacheseconds,"SELECT 

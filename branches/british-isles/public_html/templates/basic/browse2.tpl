@@ -89,7 +89,7 @@
 		<ul style="margin-top:5px; padding-left:24px">
 		
 		<li>We have 
-			{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
+			{if $imagecount eq 1}just one image{else}{$imagecount|thousends} images{/if} 
 			{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
 			{if $mode eq 'takenfrom'}
 				taken from <b>{$gridref}</b>
@@ -104,8 +104,6 @@
 			{/if}
 		</li>
 
-		<li style="margin-top:10px;"><a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show" class="nowrap">Click to scroll through the <b>pictures one by one</b></a></li>
-
 		<li style="margin-top:10px;">
 		<form method="get" action="/search.php">
 			<div class="interestBox" style="width:320px">
@@ -119,9 +117,19 @@
 			</div> 
 		</form></li>
 		
-		<li style="margin-top:10px"><a href="{linktoself name="by" value="centi"}">See <b>distribution of pictures</b> across the grid square.</a></li>
+		{if $by eq 'centi' || $by eq 'viewcenti' }
+		<li style="margin-top:10px"><b>distribution of pictures</b> across the grid square.</b></li>
+		{else}
+		<li style="margin-top:10px"><a href="{linktoself name="by" value="centi"}">See <b>geographical distribution</b> of pictures</a></li>
+		{/if}
 		
-		<li style="margin-top:10px"><a href="{linktoself name="by" value="1"}">Access <b>advanced filtering options</b></a></li>
+		{if $by}
+		<li style="margin-top:10px"><a href="{linktoself name="by" value="1"}"><b>reset filtering options</b></a></li>
+		{else}
+		<li style="margin-top:10px"><a href="{linktoself name="by" value="1"}">Access <b>more filtering options</b></a></li>
+		{/if}
+		
+		<li style="margin-top:10px;"><a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show" class="nowrap">View images in a <b>slideshow</b></a></li>
 		
 	{else}
 		{* There are no images in this square (yet) *}
@@ -162,9 +170,13 @@
 	<div class="rastermap" style="width:{$rastermap->width}px;position:relative;font-size:0.8em">
 	{$rastermap->getImageTag($gridrefraw)}
 	{if $rastermap->getFootNote()}
-	<div class="interestBox" style="margin-top:3px;margin-left:2px;padding:1px;"><small>{$rastermap->getFootNote()}</small></div>
+	<div class="interestBox" style="margin-top:3px;margin-left:2px;padding:1px;"><small>{$rastermap->getFootNote()}</small>
+	
+	{if $square->reference_index == 1}<br/><a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}&amp;centi=1">Open <b>Interactive OS Map Overlay</b></a><sup style="color:red">New!</sup>{/if}
+	
+	</div>
 	{/if}
-	{$rastermap->getScriptTag()}	
+	{$rastermap->getScriptTag()}
 	</div>
 {/if}
 
@@ -174,9 +186,14 @@
 {if $showresult}
 	{* We have a valid GridRef *}
 	
-	<div class="interestBox" style="position:relative; margin-left:10px">We have 
+	<div class="interestBox" style="position:relative; margin-left:10px">
+	{if $sample}
+	Ramdom <b>sample</b> of photos ({$sample|thousends}/{$imagecount|thousends})
+	{else}
+	We have 
 	{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
 	{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
+	{/if}
 	
 	{if $mode eq 'takenfrom'}
 		taken from <b>{$gridref}</b>
@@ -185,7 +202,6 @@
 	{else}
 		for <b>{$gridref}</b>
 	{/if}
-	{if $sample} (Sample shown below){/if}
 	{if !$breakdown && !$breakdowns && $totalimagecount > 0}<span style="font-size:0.8em;">- click for larger version</span>{/if}</div>
 
 	<div style="position:relative;float:right; text-align:right; font-size:0.7em">
@@ -217,8 +233,6 @@
 
 		{if $by eq 'centi' || $by eq 'viewcenti' }
 			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6figure grid reference.</small></p>
-			
-			{if $square->reference_index == 1}<div class="interestBox"><a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}&amp;centi=1"><b>View this Square as a interactive OS Map overlay</b></a><sup style="color:red">New!</sup></div><br/><br/>{/if}
 			
 	<table border="0" cellspacing="0" cellpadding="2">
 		<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}&amp;by={$by}">NW</a></td>
