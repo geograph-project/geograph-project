@@ -192,6 +192,7 @@ Refine:
 	<li>Past Activity: <ul>
 	   <li><a href="/statistics/overtime.php">Photo Submission Activity Breakdown</a></li>
 	   <li><a href="/statistics/overtime.php?date=taken">Photo Taken Activity Breakdown</a></li>
+	   <li><a href="/statistics/overtime_users.php" title="Monthly Breakdown new User Signups">User Signups</a></li>
 	   <li><a href="/statistics/overtime_forum.php">Forum Posting Breakdown</a></li>
 	   <li><a href="/statistics/overtime_tickets.php">Change Suggestions</a></li>
 	   <li><a href="/statistics/busyday.php">Most taken in a day</a></li>
