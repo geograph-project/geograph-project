@@ -383,7 +383,7 @@ if ($grid_given)
 				
 				$table = "tmp_".md5(uniqid());
 				
-				$db->Execute("CREATE TEMPORARY TABLE $table ENGINE HEAP SELECT * FROM gridimage_search WHERE grid_reference = '{$square->grid_reference}' ORDER BY RAND()");
+				$db->Execute("CREATE TEMPORARY TABLE $table ENGINE HEAP SELECT * FROM gridimage_search WHERE grid_reference = '{$square->grid_reference}' ORDER BY ftf DESC, RAND()");
 				
 				$db->Execute("ALTER IGNORE TABLE $table ADD UNIQUE (user_id),ADD UNIQUE (imageclass)");
 				
