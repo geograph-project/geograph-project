@@ -629,16 +629,17 @@ class RasterMap
 				}
 				$token->setValue("service",'Google');
 				$token = $token->getToken();
-
+				
+				$width = $this->width;
 				$iframe = rawurlencode("<iframe src=\"/map_frame.php?t=$token\" id=\"map\" width=\"{$width}\" height=\"{$width}\" scrolling=\"no\">Loading map...</iframe>");
 
-				$str = "<a href=\"#\" onclick=\"document.getElementById('rastermap').innerHTML = rawurldecode('$iframe'); if (document.getElementById('mapFootNoteOS50k')) { document.getElementById('mapFootNoteOS50k').style.display = 'none';} return false;\">Change to interactive Map</a><br>";
+				$str = "<br><a href=\"#\" onclick=\"document.getElementById('rastermap').innerHTML = rawurldecode('$iframe'); if (document.getElementById('mapFootNoteOS50k')) { document.getElementById('mapFootNoteOS50k').style.display = 'none';} return false;\">Change to interactive Map &gt;</a>";
 			}
 		
 			if (!empty($this->clickable)) {
-				return $str."<span id=\"mapFootNoteOS50k\">TIP: Click the map to open OS Get-a-Map</span><span id=\"mapFootNoteVoB\"></span>";
+				return "<span id=\"mapFootNoteOS50k\">TIP: Click the map to open OS Get-a-Map$str</span><span id=\"mapFootNoteVoB\"></span>";
 			} else {
-				return $str."<span id=\"mapFootNoteOS50k\"".(($this->displayMarker1 || $this->displayMarker2)?'':' style="display:none"').">TIP: Hover over the icons to hide</span><span id=\"mapFootNoteVoB\"></span>";
+				return "<span id=\"mapFootNoteOS50k\"".(($this->displayMarker1 || $this->displayMarker2)?'':' style="display:none"').">TIP: Hover over the icons to hide$str</span><span id=\"mapFootNoteVoB\"></span>";
 			}
 		}
 	}
