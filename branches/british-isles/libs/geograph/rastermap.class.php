@@ -399,22 +399,6 @@ class RasterMap
 			}
 			$str .= "</div>";
 			
-			if (empty($this->service2) && empty($this->issubmit)) {
-				$token=new Token;
-
-				foreach ($this as $key => $value) {
-					if (is_scalar($value)) {
-						$token->setValue($key, $value);
-					}
-				}
-				$token->setValue("service",'Google');
-				$token = $token->getToken();
-
-				$iframe = rawurlencode("<iframe src=\"/map_frame.php?t=$token\" id=\"map\" width=\"{$width}\" height=\"{$width}\" scrolling=\"no\">Loading map...</iframe>");
-
-				$str .= "<br/><br/><a href=\"#\" onclick=\"document.getElementById('rastermap').innerHTML = rawurldecode('$iframe'); if (document.getElementById('mapFootNoteOS50k')) { document.getElementById('mapFootNoteOS50k').style.display = 'none';} return false;\">Change to interactive Map</a>";
-			}
-			
 			$str .= "</div>";
 
 	//map switcher
@@ -634,10 +618,27 @@ class RasterMap
 			return "<span id=\"mapFootNoteOS50k\"".(($this->service == 'OS50k' && $this->issubmit)?'':' style="display:none"')."><br/>Centre the blue circle on the subject and mark the photographer position with the black circle. <b style=\"color:red\">The circle centre marks the spot.</b> The red arrow will then show view direction.</span>".
 			"<span id=\"mapFootNoteVoB\"".($this->service == 'VoB'?'':' style="display:none"')."><br/>Historical Map provided by <a href=\"http://www.visionofbritain.org.uk/\" title=\"Vision of Britain\">VisionOfBritain.org.uk</a></span>";
 		} elseif ($this->service == 'OS50k') {
+			$str = '';
+			if (empty($this->service2)) {
+				$token=new Token;
+
+				foreach ($this as $key => $value) {
+					if (is_scalar($value)) {
+						$token->setValue($key, $value);
+					}
+				}
+				$token->setValue("service",'Google');
+				$token = $token->getToken();
+
+				$iframe = rawurlencode("<iframe src=\"/map_frame.php?t=$token\" id=\"map\" width=\"{$width}\" height=\"{$width}\" scrolling=\"no\">Loading map...</iframe>");
+
+				$str = "<a href=\"#\" onclick=\"document.getElementById('rastermap').innerHTML = rawurldecode('$iframe'); if (document.getElementById('mapFootNoteOS50k')) { document.getElementById('mapFootNoteOS50k').style.display = 'none';} return false;\">Change to interactive Map</a><br>";
+			}
+		
 			if (!empty($this->clickable)) {
-				return "<span id=\"mapFootNoteOS50k\">TIP: Click the map to open OS Get-a-Map</span><span id=\"mapFootNoteVoB\"></span>";
+				return $str."<span id=\"mapFootNoteOS50k\">TIP: Click the map to open OS Get-a-Map</span><span id=\"mapFootNoteVoB\"></span>";
 			} else {
-				return "<span id=\"mapFootNoteOS50k\"".(($this->displayMarker1 || $this->displayMarker2)?'':' style="display:none"').">TIP: Hover over the icons to hide</span><span id=\"mapFootNoteVoB\"></span>";
+				return $str."<span id=\"mapFootNoteOS50k\"".(($this->displayMarker1 || $this->displayMarker2)?'':' style="display:none"').">TIP: Hover over the icons to hide</span><span id=\"mapFootNoteVoB\"></span>";
 			}
 		}
 	}
