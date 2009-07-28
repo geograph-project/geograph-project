@@ -65,9 +65,9 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 
 <ul class="checklist">
 
-<li style="border: 3px solid pink;"><b>Under the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image <b>must</b> be credited as specified by the contributor <small><br/>({if $image->credit_realname}<tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>{else} in this case <tt style="color:red;font-size:1.3em">{$image->realname|escape:'html'}</tt>{/if}).</small></b></li>
+<li style="border: 3px solid pink;"><b>Under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image <b>must</b> be credited as specified by the contributor, an example of good wording is shown above.<small><br/>({if $image->credit_realname}The contributor <tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>{else}The contributor of this photos is <tt style="color:red;font-size:1.3em">{$image->realname|escape:'html'}</tt>{/if})</small></b></li>
 
-<li><b>You should also mention that the photo is copyrighted but also licensed for further reuse.</b> If you alter, transform, or build upon this work, you may distribute the resulting work only under a similar licence.<br/><br/>The URL for the licence is <a href="http://creativecommons.org/licenses/by-sa/2.0/">http://creativecommons.org/licenses/by-sa/2.0/</a></li>
+<li><b>You should also mention that the photo is copyrighted but also licensed for further reuse.</b> <small>If you alter, transform, or build upon this work, you may distribute the resulting work only under a similar licence.</small></li>
 
 </ul>
 
@@ -75,12 +75,18 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 
 <ul class="checklist">
 
-<li style="border: 3px solid yellow;"><b>We do ask you be polite and not abuse Geograph's resources in using the image irresponsibly.</b> <br/>
-So <b>do not {external href="http://en.wikipedia.org/wiki/Inline_linking" text="hotlink"}</b> the fullsize image directly off our servers, this will likely be blocked.<br/>
-Instead download a copy, and upload it to your own webspace. Click: <b><a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">Download Fullsize .jpg file</a></b></li>
+<li style="border: 3px solid pink;"><b>We do ask you be polite and not abuse the Geograph website resources.</b> <br/>
+<i>Please do not {external href="http://en.wikipedia.org/wiki/Inline_linking" text="hotlink"} the fullsize image directly off our servers, this will likely be blocked.</i><br/>
+Instead download a copy, and upload it to your own webspace. <b><a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">Download Fullsize .jpg file</a></b></li>
 
-<li>Ideally you could link back to the main photo page, at <a href="http://{$http_host}/photo/{$image->gridimage_id}">http://{$http_host}/photo/{$image->gridimage_id}</a></li>
+<li><small>Ideally you should link back to the main photo page, at <a href="http://{$http_host}/photo/{$image->gridimage_id}">http://{$http_host}/photo/{$image->gridimage_id}</a>, where the latest information for the photo will be available.</small></li>
 </ul>
+
+<p><i>For offline reproduction, wording similar to the following is recommended:</i></p>
+
+<form><textarea rows="3">Image Copyright {$image->realname|escape:'html'}. This work is licensed under the Creative Commons Attribution-Share Alike 2.0 Generic License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/2.0/ or send a letter to Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.</textarea></form>
+
+<br/><br/>
 
 <div style="text-align:right; border-bottom:1px solid gray"><i>Thank you for your attention in this matter.</i></div>
 <br/><br/>
@@ -89,6 +95,8 @@ Instead download a copy, and upload it to your own webspace. Click: <b><a href="
 <br/>
 <div class="interestBox">Jump snippets for: <a href="#html">HTML</a>, <a href="#bbcode">Forums</a> or <a href="#wikipedia">Wikipedia</a>. Or get <a href="#meta">CC-metadata</a> (RDF) or <a href="#kml">KML File</a></div>
 <br/>
+
+
 
 <div id="html">
 <a name="html"></a>
@@ -144,7 +152,7 @@ licensed for reuse under this [url=http://creativecommons.org/licenses/by-sa/2.0
 
 The following is the recommended template for using on the photo page. You should <a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">download the image</a>, and upload to {external href="http://commons.wikimedia.org/wiki/Main_Page" text="wikimedia commons"}.
 
-<form><textarea rows="5" style="font-size:0.8em">== Summary ==
+<form><textarea rows="7" style="font-size:0.8em">== Summary ==
 {literal}{{{/literal}Information
 |Description={$image->title|escape:'html'}
 |Source=From [http://{$http_host}/photo/{$image->gridimage_id} geograph.org.uk]
