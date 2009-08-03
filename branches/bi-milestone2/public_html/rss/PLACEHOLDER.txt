@@ -1,0 +1,1 @@
+Generated RSS dir - should be writable by webserver

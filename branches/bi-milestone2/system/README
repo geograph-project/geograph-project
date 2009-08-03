@@ -1,0 +1,15 @@
+The system folder contains system settings for replication to cluster servers
+
+webserver - common configuration files for all webservers (e.g. scone, toast, crumpet)
+
+dataserver - the main database server (eg jam) - also serves as the common hub for controlling the others
+
+sphinxserver - the sphinx text search server(s) (eg tea)
+
+proxyserver - the load balancer (eg tea)
+
+
+NOTE: webserver should be setup for direct copying to webservers using config_cluster
+
+whereas the others may have been stripped of passwords, so will need manually merging!
+
