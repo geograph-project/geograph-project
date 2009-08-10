@@ -399,3 +399,6 @@ ALTER TABLE `queries` CHANGE `searchuse` `searchuse` ENUM( 'search', 'flickr', '
 ALTER TABLE `queries_archive` CHANGE `searchuse` `searchuse` ENUM( 'search', 'flickr', 'gazetteer', 'discuss', 'syndicator' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'search';
 
 
+ALTER TABLE `gridimage`        ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`;
+ALTER TABLE `gridimage_recent` ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`;
+ALTER TABLE `gridimage_search` ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`, DROP INDEX `title` , ADD INDEX `title` (`title`, `title2`), DROP INDEX `title_2` , ADD INDEX `title_2` (`title`, `title2`, `comment`(300), `comment2`(300), `imageclass`);
