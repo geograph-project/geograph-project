@@ -323,33 +323,6 @@ class GeographPage extends Smarty
 
 		//show more links in template?
 		if (isset($GLOBALS['USER']) && $GLOBALS['USER']->user_id > 0) {
-			if (function_exists('apc_fetch')) {
-				if (apc_fetch($_SERVER['REQUEST_URI']))  {
-					$this->caching = 0;
-					$this->disable_caching = 1; //just incase app later changes it. 
-
-					$this->assign('extra_meta', '<script src="http://asset.userfly.com/users/14743/userfly.js" type="text/javascript"></script>');
-					
-					apc_delete($_SERVER['REQUEST_URI']);
-				}
-
-				if (($value = apc_fetch('irc.seen')) === FALSE) {
-					if (@filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
-						$value = @file_get_contents($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen');
-					} else {
-						$value = '?';
-					}
-					apc_store('irc.seen',$value,30);
-				}  
-			} else {
-				if (@filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
-					$value = @file_get_contents($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen');
-				} else {
-					$value = '?';
-				}
-			}
-			$this->assign('irc_seen',$value);
-
 			if ($GLOBALS['USER']->hasPerm('admin'))
 			{
 				$this->assign('is_admin', true);
