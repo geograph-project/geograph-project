@@ -52,6 +52,14 @@ $counter = -1;
 while (!$recordSet->EOF) 
 {
 	$image = $recordSet->fields;
+	if (empty($image['title2']))
+		$title = $image['title'];
+	elseif (empty($image['title']))
+		$title = $image['title2'];
+	else
+		$title = $image['title'] . ' (' . $image['title2'] . ')';
+	$image['title'] = $title;
+	
 	if (strpos($image['title'],',') !== FALSE || strpos($image['title'],'"') !== FALSE)
 		$image['title'] = '"'.str_replace('"', '""', $image['title']).'"';
 	if (strpos($image['imageclass'],',') !== FALSE || strpos($image['imageclass'],'"') !== FALSE)

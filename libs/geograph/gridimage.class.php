@@ -84,6 +84,26 @@ class GridImage
 	var $comment;
 
 	/**
+	* image title (language 1)
+	*/
+	var $title1;
+
+	/**
+	* image comment (language 1)
+	*/
+	var $comment1;
+
+	/**
+	* image title (language 2)
+	*/
+	var $title2;
+
+	/**
+	* image comment (language 2)
+	*/
+	var $comment2;
+
+	/**
 	* serialize exif data
 	*/
 	var $exif;
@@ -262,7 +282,27 @@ class GridImage
 				unset($this->$name);
 		}
 	}
-	
+
+	function _combineComment($a, $b)
+	{
+		if (empty($b))
+			return $a;
+		elseif (empty($a))
+			return $b;
+		else
+			return $a . ' (' . $b . ')';
+	}
+
+	function _combineTitle($a, $b)
+	{
+		if (empty($b))
+			return $a;
+		elseif (empty($a))
+			return $b;
+		else
+			return $a . ' (' . $b . ')';
+	}
+
 	/**
 	* assign members from array containing required members
 	*/
@@ -292,6 +332,11 @@ class GridImage
 		
 		if (!empty($this->credit_realname))
 			$this->profile_link .= "?a=".urlencode($this->realname);
+
+		$this->title1 = $this->title;
+		$this->comment1 = $this->comment;
+		$this->title = $this->_combineTitle($this->title1, $this->title2);
+		$this->comment = $this->_combineComment($this->comment1, $this->comment2);
 		
 		if (empty($this->title))
 			$this->title="Untitled photograph for {$this->grid_reference}";
@@ -316,6 +361,11 @@ class GridImage
 		
 		if (!empty($this->credit_realname))
 			$this->profile_link .= "?a=".urlencode($this->realname);
+
+		$this->title1 = $this->title;
+		$this->comment1 = $this->comment;
+		$this->title = $this->_combineTitle($this->title1, $this->title2);
+		$this->comment = $this->_combineComment($this->comment1, $this->comment2);
 	}
 	
 	/**
@@ -1556,8 +1606,10 @@ class GridImage
 	{
 		$db=&$this->_getDB();
 		
-		$sql="update gridimage set title=".$db->Quote($this->title).
-			", comment=".$db->Quote($this->comment).
+		$sql="update gridimage set title=".$db->Quote($this->title1).
+			", comment=".$db->Quote($this->comment1).
+			", title2=".$db->Quote($this->title2).
+			", comment2=".$db->Quote($this->comment2).
 			", imageclass=".$db->Quote($this->imageclass).
 			", imagetaken=".$db->Quote($this->imagetaken).
 			", viewpoint_eastings=".$db->Quote($this->viewpoint_eastings).
@@ -1612,7 +1664,7 @@ class GridImage
 			}
 	
 			$sql="REPLACE INTO gridimage_search
-			SELECT gridimage_id,gi.user_id,moderation_status,title,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)')
+			SELECT gridimage_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,comment2,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)')
 			FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 			INNER JOIN user ON(gi.user_id=user.user_id)
 			WHERE gridimage_id = '{$this->gridimage_id}'";

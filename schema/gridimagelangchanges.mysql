@@ -1,0 +1,24 @@
+-- must handle:
+--   gridimage
+--   wordnet creation
+--   submission
+--   moderation
+--   ticket changes
+
+-- ALTER TABLE `gridimage` ADD `title2` varchar(128) DEFAULT NULL AFTER `title`;
+-- ALTER TABLE `gridimage` ADD `comment2` text AFTER `comment`;
+-- ALTER TABLE `gridimage_recent` ADD `title2` varchar(128) DEFAULT NULL AFTER `title`;
+-- ALTER TABLE `gridimage_recent` ADD `comment2` text AFTER `comment`;
+-- ALTER TABLE `gridimage_search` ADD `title2` varchar(128) DEFAULT NULL AFTER `title`;
+-- ALTER TABLE `gridimage_search` ADD `comment2` text AFTER `comment`;
+-- --  KEY `title` (`title`),
+-- --  KEY `title_2` (`title`,`comment`(500),`imageclass`)
+-- --  KEY `title` (`title`, `title2`);
+-- --  KEY `title_2` (`title`, `title2`, `comment`(500), `comment2`(500), `imageclass`);
+-- ALTER TABLE `gridimage_search` DROP INDEX `title` , ADD INDEX `title` (`title`, `title2`);
+-- ALTER TABLE `gridimage_search` DROP INDEX `title_2` , ADD INDEX `title_2` (`title`, `title2`, `comment`(500), `comment2`(500), `imageclass`);
+
+
+ALTER TABLE `gridimage`        ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`;
+ALTER TABLE `gridimage_recent` ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`;
+ALTER TABLE `gridimage_search` ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`, DROP INDEX `title` , ADD INDEX `title` (`title`, `title2`), DROP INDEX `title_2` , ADD INDEX `title_2` (`title`, `title2`, `comment`(300), `comment2`(300), `imageclass`);

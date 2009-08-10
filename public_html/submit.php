@@ -259,10 +259,12 @@ if (isset($_POST['gridsquare']))
 				$smarty->assign('jpeg_url', $_POST['jpeg_url']);
 			}
 			
-			if (isset($_POST['title'])) {
+			if (isset($_POST['title']) || isset($_POST['title2'])) {
 				//preserve stuff
 				$smarty->assign('title', stripslashes($_POST['title']));
+				$smarty->assign('title2', stripslashes($_POST['title2']));
 				$smarty->assign('comment', stripslashes($_POST['comment']));
+				$smarty->assign('comment2', stripslashes($_POST['comment2']));
 				$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
 				$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
 				$smarty->assign('user_status', stripslashes($_POST['user_status']));
@@ -399,7 +401,9 @@ if (isset($_POST['gridsquare']))
 				
 				$title=trim(stripslashes($_POST['title']));
 				$title=strip_tags($title);
-				if (strlen($title)==0)
+				$title2=trim(stripslashes($_POST['title2']));
+				$title2=strip_tags($title2);
+				if (strlen($title)==0 && strlen($title2)==0)
 				{
 					$ok=false;
 					$error['title']="Please specify an image title";
@@ -407,6 +411,8 @@ if (isset($_POST['gridsquare']))
 				//preserve title and comment
 				$smarty->assign('title', $title);
 				$smarty->assign('comment', trim(stripslashes($_POST['comment'])));
+				$smarty->assign('title2', $title2);
+				$smarty->assign('comment2', trim(stripslashes($_POST['comment2'])));
 
 				$smarty->assign('user_status', stripslashes($_POST['user_status']));
 
@@ -426,6 +432,8 @@ if (isset($_POST['gridsquare']))
 			{
 				$uploadmanager->setTitle(stripslashes(trim($_POST['title'])));
 				$uploadmanager->setComment(stripslashes(trim($_POST['comment'])));
+				$uploadmanager->setTitle2(stripslashes(trim($_POST['title2'])));
+				$uploadmanager->setComment2(stripslashes(trim($_POST['comment2'])));
 				$uploadmanager->setTaken(stripslashes($_POST['imagetaken']));
 				$uploadmanager->setClass(stripslashes(trim($_POST['imageclass'])));
 				$uploadmanager->setViewpoint(stripslashes($_POST['photographer_gridref']));
@@ -488,6 +496,8 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('upload_id', $_POST['upload_id']);
 			$smarty->assign('title', stripslashes($_POST['title']));
 			$smarty->assign('comment', stripslashes($_POST['comment']));
+			$smarty->assign('title2', stripslashes($_POST['title2']));
+			$smarty->assign('comment2', stripslashes($_POST['comment2']));
 			$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
 			$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
 			$smarty->assign('user_status', stripslashes($_POST['user_status']));
@@ -504,6 +514,8 @@ if (isset($_POST['gridsquare']))
 		} elseif ($step == 3) {
 			$smarty->assign('title', stripslashes($_POST['title']));
 			$smarty->assign('comment', stripslashes($_POST['comment']));
+			$smarty->assign('title2', stripslashes($_POST['title2']));
+			$smarty->assign('comment2', stripslashes($_POST['comment2']));
 			$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
 			$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
 			$smarty->assign('user_status', stripslashes($_POST['user_status']));

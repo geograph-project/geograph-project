@@ -27,10 +27,16 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.or
 	//die as quickly as possible with the minimum html (with the approval of geourl owner)
 	$db = NewADOConnection($GLOBALS['DSN']);
 
-	$row =& $db->getRow("select gridimage_id,wgs84_lat,wgs84_long,title,grid_reference from gridimage_search where gridimage_id=".intval($_GET['id']) );
+	$row =& $db->getRow("select gridimage_id,wgs84_lat,wgs84_long,title,title2,grid_reference from gridimage_search where gridimage_id=".intval($_GET['id']) );
 
 	if ($row['wgs84_lat']) {
-		$title = htmlentities($row['title']."::".$row['grid_reference']);
+		if (empty($row['title2']))
+			$title = $row['title'];
+		elseif (empty($row['title']))
+			$title = $row['title2'];
+		else
+			$title = $row['title'] . ' (' . $row['title2'] . ')';
+		$title = htmlentities($title."::".$row['grid_reference']);
 
 		print "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/>\n";
 		print "<title>$title</title>\n";

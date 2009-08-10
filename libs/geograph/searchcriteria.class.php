@@ -592,11 +592,14 @@ class SearchCriteria
 							}
 							
 							if (preg_match('/\~$/',$terms)) {								
-								$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.')';
+								$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.title2 '.$words.' OR gi.comment2 '.$words.')';
+								#$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.')';
 							} elseif (preg_match('/\+$/',$terms)) {								
-								$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.imageclass '.$words.')';
+								$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.title2 '.$words.' OR gi.comment2 '.$words .' OR gi.imageclass '.$words.')';
+								#$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.imageclass '.$words.')';
 							} else {
-								$sql_where .= " gi.title $prefix ".$words;
+								$sql_where .= " $prefix (gi.title ".$words.' OR gi.title2 '.$words.')';
+								#$sql_where .= " gi.title $prefix ".$words;
 							}
 							$sql_where .= " $postfix $token ";
 							$terms = $prefix = $postfix = '';
@@ -630,19 +633,27 @@ class SearchCriteria
 			
 		} elseif (strpos($q,'^') === 0) {
 			$words = str_replace('^','',$q);
-			$sql_where .= ' title REGEXP '.$db->Quote('[[:<:]]'.preg_replace('/\+$/','',$words).'[[:>:]]');
+			#$sql_where .= ' title REGEXP '.$db->Quote('[[:<:]]'.preg_replace('/\+$/','',$words).'[[:>:]]');
+			$sql_where .= ' (gi.title REGEXP '.$db->Quote('[[:<:]]'.preg_replace('/\+$/','',$words).'[[:>:]]').
+			              ' OR gi.title2 REGEXP '.$db->Quote('[[:<:]]'.preg_replace('/\+$/','',$words).'[[:>:]]').')';
 			$this->sphinx['query'] .= " ".$words;
 		} elseif (preg_match('/\+$/',$q)) {
 			$words = $db->Quote('%'.preg_replace("/\+$/",'',$q).'%');
-			$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';
+			#$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';
+			$sql_where .= ' (gi.title LIKE '.$words. ' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.
+			            ' OR gi.title2 LIKE '.$words.' OR gi.comment2 LIKE '.$words.')';
 			$this->sphinx['query'] .= " ".preg_replace("/\+$/",'',$q);
 			$this->isallsearch = 1;
 		} elseif (preg_match('/[:@]/',$q)) {
-			$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$q.'%');//todo, maybe better handle this - jsut for legacy searches...
+			#$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$q.'%');//todo, maybe better handle this - jsut for legacy searches...
+			$sql_where .= ' (gi.title LIKE '.$db->Quote('%'.$q.'%'). //todo, maybe better handle this - jsut for legacy searches...
+			            ' OR gi.title2 LIKE '.$db->Quote('%'.$q.'%').')';//todo, maybe better handle this - jsut for legacy searches...
 			$this->sphinx['query'] .= " ".$q;
 			$this->sphinx['no_legacy']++;
 		} else {
-			$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$q.'%');
+			#$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$q.'%');
+			$sql_where .= ' (gi.title LIKE '.$db->Quote('%'.$q.'%').
+			              ' OR gi.title2 LIKE '.$db->Quote('%'.$q.'%').')';
 			$this->sphinx['query'] .= " ".$q; //todo this is defaulting to searching all 
 			$this->changeindefault = 1;
 		}

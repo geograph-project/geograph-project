@@ -45,12 +45,20 @@
 	  
 	  <div style="margin-left:233px"> 
 	  
-	  square: <b><a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></b> ({$image->imagecount} images) &nbsp;&nbsp; category: <b style="color:blue">{$image->imageclass}</b><br/>
+	  square: <b><a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></b> ({$image->imagecount} images) &nbsp;&nbsp; category: <b style="color:blue">{$image->imageclass}</b> &nbsp;&nbsp; (<a href="/editimage.php?id={$image->gridimage_id}">edit</a>)<br/>
 	  by: <b><a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></b><br/>
-	  title: <b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></b> (<a href="/editimage.php?id={$image->gridimage_id}">edit</a>)<br/>
+	  {if $image->title1}
+	  title: <b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title1|escape:'html'}</a></b><br/>
+	  {/if}
+	  {if $image->title2}
+	  Non-English title: <b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title2|escape:'html'}</a></b><br/>
+	  {/if}
 	  
-	  {if $image->comment}
-	  comments: <i style="font-size:0.8em">{$image->comment|escape:'html'|geographlinks}</i><br/>
+	  {if $image->comment1}
+	  comments: <i style="font-size:0.8em">{$image->comment1|escape:'html'|geographlinks}</i><br/>
+	  {/if}
+	  {if $image->comment2}
+	  Non-English comments: <i style="font-size:0.8em">{$image->comment2|escape:'html'|geographlinks}</i><br/>
 	  {/if}
 	  
 	  <br/>
