@@ -10,8 +10,8 @@
  <h3>Help and Info...</h3>
  <ul style="margin-top:0;padding:0 0 0 1em;">
  <li><a href="/help/guide">Geograph Guide</a></li>
- <li><a href="/article/Geograph-or-supplemental">Moderation Guide</a></li>
- <li><a href="/article/Which-Square">Locating your Image</a></li>
+ <li><a href="http://www.geograph.org.uk/article/Geograph-or-supplemental">Moderation Guide</a></li>
+ <li><a href="http://www.geograph.org.uk/article/Which-Square">Locating your Image</a></li>
  <li><a href="/help/style">Submission Style Guide</a><br/><br/></li>
  <li><a href="/help/changes">Change Request System</a><br/><br/></li>
  <li><a href="/help/squares">Square Definitions</a><br/><br/></li>

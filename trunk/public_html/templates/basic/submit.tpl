@@ -453,7 +453,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 <p>Tick this box only if you believe your photograph is not a 'geograph'. The moderator will just use the box as a suggestion, so if you are not sure, leave it unticked. Note: There can be many geograph images per square.</p>
 
-<p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in this {newwin href="/article/Geograph-or-supplemental" text="article on how images are moderated"}.</span></p>
+<p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in this {newwin href="http://www.geograph.org.uk/article/Geograph-or-supplemental" text="article on how images are moderated"}.</span></p>
 </div>
 
 <p>

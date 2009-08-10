@@ -25,7 +25,7 @@
 	<a href="/gallery/" class="tab">Galleries</a>
 	{if $enable_forums}
 		<a href="/discuss/index.php?action=vtopic&amp;forum={$forum_submittedarticles}" class="tab">Themed Topics</a>
-		<a href="/article/Content-on-Geograph" class="tab">Contribute...</a>
+		<a href="http://www.geograph.org.uk/article/Content-on-Geograph" class="tab">Contribute...</a>
 	{/if}	
 </div>
 <div class="interestBox">
@@ -37,7 +37,7 @@
 		<h2>Content submitted to Geograph &nbsp; &nbsp;</h2>
 	</div>
 	{if $user->registered && $enable_forums}
-		&nbsp; &middot; <a href="/article/Content-on-Geograph">Contribute your own Content...</a><br/>
+		&nbsp; &middot; <a href="http://www.geograph.org.uk/article/Content-on-Geograph">Contribute your own Content...</a><br/>
 	{/if}
 	<br style="clear:both"/>
 {/if}
@@ -89,7 +89,7 @@ Common Themes: (<a href="/content/themes.php">more...</a>)<br/>
   <li><a href="/help/sitemap">Help Documents</a></li>
  </ul>
  
- <p><b>Interested in Submitting Content?</b> See <a href="/article/Content-on-Geograph">this article</a> for where to do it</p>
+ <p><b>Interested in Submitting Content?</b> See <a href="http://www.geograph.org.uk/article/Content-on-Geograph">this article</a> for where to do it</p>
 
 
 </td>
