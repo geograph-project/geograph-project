@@ -47,10 +47,38 @@
   </script>
   {/literal}
   
-  <div class="caption"><b>{$image->title|escape:'html'}</b></div>
 
-  {if $image->comment}
-  <div class="caption">{$image->comment|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
+  {if $image->comment1 && $image->comment2 }
+     {if ! $image->title1 }
+       <div class="caption"><b>{$image->title2|escape:'html'}</b></div>
+       <div class="caption">{$image->comment2|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
+       <hr style="width:3em" />
+       <div class="caption">{$image->comment1|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
+     {else}
+       <div class="caption"><b>{$image->title1|escape:'html'}</b></div>
+       <div class="caption">{$image->comment1|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
+       <hr style="width:3em" />
+       {if $image->title2 }
+       <div class="caption"><b>{$image->title2|escape:'html'}</b></div>
+       {/if}
+       <div class="caption">{$image->comment2|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
+     {/if}
+  {else}
+     {if $image->title1 }
+       {if $image->title2 }
+       <div class="caption"><b>{$image->title1|escape:'html'} ({$image->title2|escape:'html'})</b></div>
+       {else}
+       <div class="caption"><b>{$image->title1|escape:'html'}</b></div>
+       {/if}
+     {else}
+       <div class="caption"><b>{$image->title2|escape:'html'}</b></div>
+     {/if}
+     {if $image->comment1}
+       <div class="caption">{$image->comment1|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
+     {/if}
+     {if $image->comment2}
+       <div class="caption">{$image->comment2|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
+     {/if}
   {/if}
 
 </div>

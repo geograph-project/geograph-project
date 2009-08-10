@@ -67,6 +67,13 @@ while (!$recordSet->EOF)
 {
 	print "<Row>\n";
 	$image = $recordSet->fields;
+	if (empty($image['title2']))
+		$title = $image['title'];
+	elseif (empty($image['title']))
+		$title = $image['title2'];
+	else
+		$title = $image['title'] . ' (' . $image['title2'] . ')';
+	$image['title'] = $title;
 
 	print "<Cell ss:StyleID=\"sHy\" ss:HRef=\"http://{$_SERVER['HTTP_HOST']}/photo/{$image['gridimage_id']}\"><Data ss:Type=\"Number\">{$image['gridimage_id']}</Data></Cell>\n";
 	print "<Cell><Data ss:Type=\"String\">{$image['title']}</Data></Cell>";

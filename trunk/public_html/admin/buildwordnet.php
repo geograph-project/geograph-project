@@ -44,7 +44,7 @@ $db = NewADOConnection($GLOBALS['DSN']);
 
 	$tim = time();
 	
-	$recordSet = &$db->Execute("select gridimage_id,title from gridimage where moderation_status != 'rejected'");
+	$recordSet = &$db->Execute("select gridimage_id,title,title2 from gridimage where moderation_status != 'rejected'");
 	
 	$db->Execute("truncate wordnet1");
 	$db->Execute("truncate wordnet2");
@@ -58,7 +58,13 @@ $db = NewADOConnection($GLOBALS['DSN']);
 	
 	while (!$recordSet->EOF) 
 	{
-		updateWordnet($db,$recordSet->fields['title'],'title',$recordSet->fields['gridimage_id']);
+		if (empty($recordSet->fields['title2']))
+			$title = $recordSet->fields['title'];
+		elseif (empty($recordSet->fields['title']))
+			$title = $recordSet->fields['title2'];
+		else
+			$title = $recordSet->fields['title'] . ' (' . $recordSet->fields['title2'] . ')';
+		updateWordnet($db,$title,'title',$recordSet->fields['gridimage_id']);
 		//the comments arent searched yet anyway...
 		//if ($_GET['comments']) 
 		//	updateWordnet($db,$recordSet->fields['comment'],'comment',$recordSet->fields['gridimage_id']);

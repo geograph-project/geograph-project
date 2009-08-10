@@ -286,13 +286,23 @@ function checkstyle(that,name,finalize) {
 			valid = false;
 			type = 'full stop';
 		}
-		
+
+		if (name == 'title2' && l == '.' && l3 != '...') {
+			valid = false;
+			type = 'full stop';
+		}
+
 		if (finalize && !v.match(/ /)) {
 			valid = false;
 			type = 'very short';
 		}
 		
 		if (name == 'comment' && that.form.title.value == v) {
+			valid = false;
+			type = 'duplicate of title';
+		}
+
+		if (name == 'comment2' && that.form.title2.value == v) {
 			valid = false;
 			type = 'duplicate of title';
 		}
