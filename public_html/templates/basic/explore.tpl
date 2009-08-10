@@ -23,15 +23,12 @@
 	<li><a href="/explore/searches.php"><b>Featured Searches</b></a> - hand picked example searches</li>
 
 	<li><a name="counties"></a>View Photographs at <b>Centre Points</b>: <ul>
-		<li><a href="/explore/counties.php?type=modern">Modern Administrative Counties</a>,
-		<a href="/explore/counties.php">Ceremonial (Pre 1994) Counties</a>,
-		<a href="/explore/counties.php?type=pre74">Historic (Pre 1974) Counties</a></li>
-		<li><a href="/explore/counties.php?type=capital">(Irish) County Capitals</a>, <a href="/explore/cities.php">Cities and Large Towns</a></li>
+		<li><a href="/explore/cities.php">Cities and Large Towns</a></li>
 	</ul></li>
 
 	<li><a href="/gallery/"><b>Galleries</b></a> - hand picked images on varies themes</li>
 
-	<li><a href="/explore/places/" title="Explore by Place">Explore the <b>placename gazetteer</b></a> <sup style="color:red">New!</sup></li>
+	<!--li><a href="/explore/places/" title="Explore by Place">Explore the <b>placename gazetteer</b></a> <sup style="color:red">New!</sup></li-->
 
 </ul>
 <h3>Breakdowns...</h3>
@@ -56,8 +53,6 @@
 	<li><a href="/stuff/browse-random.php">Jump to a <b>Random</b> Gridsquare</a>.</li>
 
 	<li><a href="/mapbrowse.php">Explore a Zoomable <b>Map</b></a>.</li>
-
-	<li><a href="/mapper/">View a <b>Draggable Map</b> checksheet</a>. (use the Grid Reference box to jump to your area of interest)</li>
 
 	<li><form method="get" action="/search.php" style="display:inline">
 	<label for="searchterm"><b>Search</b> by keyword, place, postcode or contributor</label>: <br/>
