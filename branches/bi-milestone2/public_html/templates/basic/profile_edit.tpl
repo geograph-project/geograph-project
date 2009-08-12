@@ -73,25 +73,26 @@
 	  keep you notified about any changes requested or made to your
 	  submissions. It also allows anyone who is interested in your photos
 	  to contact you, but you can control whether you make your address
-	  public or not...</div>
+	  public or not...<br/>
+	  <span style="padding:2px;background-color:yellow">NEW: <a href="/profile.php?notifications=1" target="_blank">Control exactly what emails you receive</a></span></div>
 	
 	{if $errors.email}</div>{/if}
 	
     <fieldset>
     <legend>Email privacy</legend>
     
-	    <input {if $profile->public_email eq 0}checked{/if} type="radio" name="public_email" id="public_email_no" value="0">
-	    <label for="public_email_no">Hide my email address 
-	    (people can still contact you through the site, but will not discover
+	    <input {$contact_options.show_email} type="checkbox" name="contact_options[]" id="show_email" value="show_email">
+	    <label for="show_email">Show my email address 
+	    </label>
+	    
+	    <br/><br/>
+	    
+	    <input {$contact_options.usermsg} type="checkbox" name="contact_options[]" id="usermsg" value="usermsg">
+	    <label for="usermsg">Allow visitors to contact me 
+	    </label>
+   	    <br/><br/>
+	    (people contacting you through the site, will not discover
 	    your email address unless you reply).
-	    </label>
-	    
-	    <br/>
-	    
-	    <input {if $profile->public_email eq 1}checked{/if} type="radio" name="public_email" id="public_email_yes" value="1">
-	    <label for="public_email_yes">Show my email address. 
-	    </label>
-   
     
     </fieldset>
     
@@ -246,41 +247,23 @@
 
 
 <div class="field"> 
-	<label for="ticket_public" class="nowrap">Ticket Anonymity</label>
+	<label for="ticket_public" class="nowrap">Suggestion Anonymity</label>
 	
 	<select name="ticket_public" id="ticket_public">
 		<option value="no">Do not disclose my name</option>
 		<option value="owner" {if $profile->ticket_public eq 'owner'} selected{/if}>Show my name to the photo owner</option>
-		<option value="everyone" {if $profile->ticket_public eq 'everyone'} selected{/if}>Show my name against the ticket</option>
+		<option value="everyone" {if $profile->ticket_public eq 'everyone'} selected{/if}>Show my name against the Suggestion</option>
 	</select>
 	 
-	<div class="fieldnotes">Change how your name is disclosed on tickets your create from now on.</div>
+	<div class="fieldnotes">Change how your name is disclosed on suggestion your create.</div>
 </div>
 
 
-<div class="field"> 
-	<label for="ticket_public_change" class="nowrap">Anonymity for previous tickets</label>
-	<br/>
-	<select name="ticket_public_change" id="ticket_public_change" style="margin-left:10em;">
-		<option value="">- no change - leave previous tickets as is</option>
-		<option value="no">Do not disclose my name</option>
-		<option value="owner">Show my name to the photo owner</option>
-		<option value="everyone">Show my name against the ticket</option>
-	</select>
-	 
-	<div class="fieldnotes">Optionally use this box to change all your previous tickets to a new setting.</div>
-</div>
-
-
-<div class="field"> 
-	<label for="ticket_option" class="nowrap">Trouble Ticket Emails</label>
+  <div style="padding:2px;background-color:yellow">NEW: <a href="/profile.php?notifications=1" target="_blank">Control exactly what emails you receive</a> 
+  This option replaces the old suggestion notification settings</div>
+  <br/><br/>
 	
-	<select name="ticket_option" id="ticket_option" size="1"> 
-		{html_options options=$ticket_options selected=$profile->ticket_option}
-	</select>
-	 
-	<div class="fieldnotes">Allows opting out of receiving initial notification of certain suggestions. Note you however receive follow up comments and notification of the closure - in-case there is information needed by a moderator.</div>
-</div>
+
 
 
 <div class="field"> 

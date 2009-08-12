@@ -75,11 +75,11 @@ if (isset($_REQUEST['edit']))
 	}
 	$smarty->assign('pagesizes', array(5,10,15,20,30,50));
 	$smarty->assign('delays', array(2,3,4,5,6,10,12));
-	$smarty->assign('ticket_options', array(
-	'all' => 'Notifications for all suggestions' ,
-	'major' => 'Only Major suggestions', 
-	//'digest' => 'Receive Digest emails Once per Day',
-	'none' => 'No Initial Notifications' ));
+
+	foreach(explode(',',$profile->contact_options) as $idx => $key) {
+		$n[$key] = 'checked="checked"';
+	}
+	$smarty->assign_by_ref("contact_options",$n);
 	
 	$profile->getStats();
 	$profile->md5_email = md5(strtolower($profile->email));
@@ -93,33 +93,134 @@ elseif (isset($_REQUEST['notifications']))
 
 	$template='profile_notifications.tpl';
 
+	$db = NewADOConnection($GLOBALS['DSN']);
+	if (!$db) die('Database connection failed');  
+
+	$subs = $db->getAll("select topic_id,topic_title from geobb_send_mails Ts inner join geobb_topics Tt using (topic_id) where user_id = {$USER->user_id}");		
+	
+	
 	//save changes?
 	if (isset($_POST['savechanges']))
 	{
+		$ok = true;
+		##########################
+		//ticket notidications
 		
+		if ($_POST['selection'] == 'all') {
+			$_POST['notifications'] = '-all-';
+		} elseif ($_POST['selection'] == 'none') {
+			$_POST['notifications'] = '-none-';
+		} elseif ($_POST['selection'] == 'some') {
+			$_POST['notifications'] = implode(',',array_keys($_POST['notifications']));
+			$_POST['notifications'] = preg_replace('/[^\w,]+/','',$_POST['notifications']);
+			if (empty($_POST['notifications'])) {
+				$_POST['notifications'] = '-none-';
+			}
+		}  
+		
+	
+		##########################
+		//topic notifications
+		
+		if (empty($_POST['topic'])) {
+			$sql = "DELETE FROM geobb_send_mails WHERE user_id = {$USER->user_id}";
+		} else {
+			$ids = implode(',',array_keys($_POST['topic']));
+			$ids = preg_replace('/[^\d,]+/','',$ids);
+			
+			//delete all EXCEPT those still ticked
+			$sql = "DELETE FROM geobb_send_mails WHERE user_id = {$USER->user_id} AND topic_id NOT IN ($ids)";
+		}
+		if ($db->Execute($sql) === false) {
+			$errors['general']='error updating: '.$db->ErrorMsg();
+			$ok=false;
+		} else {
+			$subs = $db->getAll("select topic_id,topic_title from geobb_send_mails Ts inner join geobb_topics Tt using (topic_id) where user_id = {$USER->user_id}");		
+		}
+		
+		##########################
+		//update contact options
+		
+		if (is_array($_POST['contact_options'])) {
+			$_POST['contact_options'] = implode(',',$_POST['contact_options']);
+		}
+		$_POST['contact_options'] = preg_replace('/[^\w,]+/','',$_POST['contact_options']);
+		$_POST['ticket_when'] = preg_replace('/[^\w,]+/','',$_POST['ticket_when']);
+		
+		$sql = sprintf("update user set 
+			notifications=%s,
+			ticket_when=%s,
+			contact_options=%s
+			where user_id=%d",
+			$db->Quote($_POST['notifications']),
+			$db->Quote($_POST['ticket_when']),
+			$db->Quote($_POST['contact_options']),
+			$USER->user_id
+		);
+		
+		
+		if ($db->Execute($sql) === false) {
+			$errors['general']='error updating: '.$db->ErrorMsg();
+			$ok=false;
+		} else {
+			$USER->notifications = $_POST['notifications'];
+			$USER->ticket_when = $_POST['ticket_when'];
+			$USER->contact_options = $_POST['contact_options'];
+		}
+		
+
+		if ($ok) {
+			//show the user their new settings
+			
+			$errors['general']='Settings Saved!';
+			$smarty->assign('errors', $errors);
+			
+			$profile =& $USER;
+		} else {
+			$profile=new GeographUser($USER->user_id);
+		
+			$smarty->assign('errors', $errors);
+			//ensure we keep submission intact
+			foreach($_POST as $name=>$value)
+			{
+				$profile->$name=strip_tags(stripslashes($value));
+			}
+		
+		}	
 	} 
 	else
 	{
 		$profile=new GeographUser($USER->user_id);
-		
-		$db = NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');  
+	}	
 
-		$subs = $db->getAll("select topic_id,topic_title from geobb_send_mails Ts inner join geobb_topics Tt using (topic_id) where user_id = {$USER->user_id}");		
-		$smarty->assign_by_ref("subs",$subs);
-		$smarty->assign("sub_count",count($subs));
-		
-		$arr = array('general','test');
-		
-		$n = array();
-		foreach($arr as $idx => $key) {
-			$n[$key] = 'checked="checked"';
-		}
-		
-		$smarty->assign_by_ref("notification",$n);
-		
+	$smarty->assign_by_ref("subs",$subs);
+	$smarty->assign("sub_count",count($subs));
+
+	if ($profile->notifications == '-all-') {
+		$profile->notifications .= ",all";
+		$selection = 'all';
+	} elseif ($profile->notifications == '-none-') {
+		$selection = 'none';
+	} else {
+		$selection = 'some';
+	}  
+	$a = array();
+	$a[$selection] = 'checked="checked"';
+	$smarty->assign_by_ref("selection",$a);
+
+	$nn = array();
+	foreach(explode(',',$profile->notifications) as $idx => $key) {
+		$nn[$key] = 'checked="checked"';
 	}
+	$smarty->assign_by_ref("notifications",$nn);
 
+	$n = array();
+	foreach(explode(',',$profile->contact_options) as $idx => $key) {
+		$n[$key] = 'checked="checked"';
+	}
+	$smarty->assign_by_ref("contact_options",$n);
+
+	$smarty->assign_by_ref('profile', $profile);	
 }
 
 

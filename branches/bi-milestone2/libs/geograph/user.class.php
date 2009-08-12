@@ -587,9 +587,8 @@ class GeographUser
 	
 	/**
 	* update user profile
-	* profile array should contain website, nickname, realname flag. A
-	* public_email entry, if present, will cause the public_email flag
-	* to be set. The idea is to simply pass the $_POST array - all values
+	* profile array should contain website, nickname, realname. 
+	* The idea is to simply pass the $_POST array - all values
 	* are checked for validity
 	*/
 	function updateProfile(&$profile, &$errors)
@@ -738,13 +737,9 @@ class GeographUser
 		
 		if ($ok)
 		{
-			//about box is always public - col to be removed
-			$profile['public_about']=1;
-			$profile['use_age_group']=0;
-			
-			//age info is useless to others, nice for us, no need
-			//to give use a public option
-			
+			if (is_array($profile['contact_options'])) {
+				$profile['contact_options'] = implode(',',$profile['contact_options']);
+			}
 			if ($this->realname != $profile['realname']) 
 			{
 				$db->Execute(sprintf("insert into user_change set 
@@ -773,13 +768,11 @@ class GeographUser
 				realname=%s,
 				nickname=%s,
 				website=%s,
-				public_email=%d,
+				contact_options=%s,
 				search_results=%d,
 				slideshow_delay=%d,
 				about_yourself=%s,
-				public_about=%d,
 				age_group=%d,
-				use_age_group=%d,
 				home_gridsquare=%s,
 				ticket_public=%s,
 				ticket_option=%s,
@@ -791,13 +784,11 @@ class GeographUser
 				$db->Quote($profile['realname']),
 				$db->Quote($profile['nickname']),
 				$db->Quote($profile['website']),
-				empty($profile['public_email'])?0:1,
+				$db->Quote($profile['contact_options']),
 				$profile['search_results'],
 				$profile['slideshow_delay'],
 				$db->Quote(strip_tags(stripslashes($profile['about_yourself']))),
-				$profile['public_about']?1:0,
 				$profile['age_group'],
-				$profile['use_age_group']?1:0,
 				$gs->gridsquare_id,
 				$db->Quote($profile['ticket_public']),
 				$db->Quote($profile['ticket_option']),
@@ -829,15 +820,13 @@ class GeographUser
 				$this->nickname=$profile['nickname'];
 				$this->password=$password;
 				$this->website=$profile['website'];
-				$this->public_email=isset($profile['public_email'])?1:0;
+				$this->contact_options=$profile['contact_options'];
 				if (isset($profile['sortBy'])) 
 					$this->sortBy=stripslashes($profile['sortBy']);
 				$this->search_results=stripslashes($profile['search_results']);
 				$this->slideshow_delay=stripslashes($profile['slideshow_delay']);
 				$this->about_yourself=stripslashes($profile['about_yourself']);
-				$this->public_about=stripslashes($profile['public_about']);
 				$this->age_group=stripslashes($profile['age_group']);
-				$this->use_age_group=stripslashes($profile['use_age_group']);
 				$this->grid_reference=$gs->grid_reference;	
 				$this->ticket_public=stripslashes($profile['ticket_public']);
 				$this->ticket_option=stripslashes($profile['ticket_option']);				
@@ -1263,7 +1252,7 @@ class GeographUser
 				", user_email=".$db->Quote($this->email).
 				", user_password=md5(".$db->Quote($this->password).")".
 				", user_website=".$db->Quote($this->website).
-				", user_viewemail=".$this->public_email.
+				", user_viewemail=".((strpos($this->contact_options,'show_email')!==FALSE)?1:0).
 				(isset($this->sortBy)?', user_sorttopics = '.$this->sortBy:'').
 				" where user_id={$this->user_id}";
 				
@@ -1279,7 +1268,7 @@ class GeographUser
 				"md5(".$db->Quote($this->password)."),".
 				$db->Quote($this->email).",".
 				$db->Quote($this->website).",".
-				$this->public_email.")";
+				((strpos($this->contact_options,'show_email')!==FALSE)?1:0).")";
 
 			
 			

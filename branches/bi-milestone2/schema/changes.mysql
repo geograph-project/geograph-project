@@ -577,3 +577,45 @@ CREATE TABLE `geocubes` (
   PRIMARY KEY (`gridimage_id`),
   KEY `outstanding` (`outstanding`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+
+
+
+################################################
+
+ALTER TABLE `user`
+  DROP `rank`,
+  DROP `to_rise_rank`,
+  DROP `public_about`,
+  DROP `use_age_group`;
+
+##
+
+ALTER TABLE  `user` ADD  `contact_options` SET(  'show_email',  'usermsg' ) NOT NULL AFTER  `public_email` ;
+
+UPDATE user SET `contact_options` = 'show_email' WHERE public_email = 1;
+
+ALTER TABLE  `user` DROP `public_email`;
+
+##
+
+ALTER TABLE  `user` ADD  `notifications` SET(  '-all-',  '-none-',  'minor_initial',  'minor_comment',  'minor_changes',  'minor_nothing',  'normal_initial',  'normal_comment',  'normal_changes',  'normal_nothing',  'moderator_initial', 'moderator_comment',  'moderator_changes',  'moderator_nothing',  'change_changes' ) NOT NULL DEFAULT  '-all-' AFTER  `contact_options` ;
+
+ALTER TABLE  `user` ADD  `ticket_when` ENUM(  'happens',  'digest' ) NOT NULL DEFAULT  'happens' AFTER  `ticket_option` ;
+
+##
+
+UPDATE user SET `notifications` = 'minor_initial,minor_comment,minor_changes,minor_nothing,normal_initial,normal_comment,normal_changes,normal_nothing,moderator_initial,moderator_comment,moderator_changes,moderator_nothing,change_changes' WHERE ticket_option = 'major';
+
+UPDATE user SET `notifications` = '-none-' WHERE ticket_option = 'none';
+
+UPDATE user SET `ticket_when` = 'digest' WHERE ticket_option = 'digest'; #not used?
+
+##
+
+ALTER TABLE  `user` DROP `ticket_option`;
+
+################################################
+
+
