@@ -947,6 +947,15 @@ class GeographUser
 		return (($this->registered || $allowNonRef) && (strpos($this->rights, $perm)!==false));
 	}
 	
+	/**
+	* Does the user want this notification?
+	*/
+	function shouldSend($token)
+	{
+		$tokens = explode(',',$this->notifications);
+		return ($this->registered) && (in_array($token,$tokens) || in_array('-all-',$tokens));
+	}
+	
 	function basicAuthLogin() {
 		if (isset($_SERVER['PHP_AUTH_USER']))
 		{

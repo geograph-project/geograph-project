@@ -45,57 +45,6 @@ other user: moderated: everything
 
 Every unmoderated edits can be tracked with this system as a changelog feature
 
-
-create table gridimage_ticket
-(
-	gridimage_ticket_id int not null auto_increment,
-
-	gridimage_id int,
-	suggested datetime,
-	user_id int,
-	moderator_id int,
-
-	updated datetime,
-	status enum('pending', 'open', 'closed'),
-	type enum('normal', 'minor') default 'normal',
-	
-	notes text,
-	
-	primary key(gridimage_ticket_id),
-	index(gridimage_id)
-);
-
-create table gridimage_ticket_item
-(
-	gridimage_ticket_item_id int not null auto_increment,
-
-	gridimage_ticket_id int not null,
-
-	approver_id int,
-	
-	
-	field varchar(64),
-	oldvalue text,
-	newvalue text,
-	
-	status enum('pending', 'immediate', 'approved', 'rejected'),
-	
-	primary key(gridimage_ticket_item_id),
-	index(gridimage_ticket_id)
-);
-
-create table gridimage_ticket_comment
-(
-	gridimage_ticket_comment_id int not null auto_increment,
-	gridimage_ticket_id int not null,
-	user_id int,
-	comment text,
-	added  datetime,
-	primary key(gridimage_ticket_comment_id),
-	index(gridimage_ticket_id)
-);
-
-
 */
 
 class GridImageTroubleTicket
@@ -530,8 +479,7 @@ class GridImageTroubleTicket
 					
 					$comment .= " has suggested$ttype changes to this photo submission. ".
 						"The changes will be reviewed by site moderators, who may need to contact you ".
-						"if further information is required. If you wish, you can review and comment on these ".
-						"changes by following the links in this message. ";
+						"if further information is required.";
 					if (!empty($changes))
 					{
 						$comment.="\n\n\nThe following changes have been suggested:\n\n";
@@ -540,13 +488,10 @@ class GridImageTroubleTicket
 					if (!empty($this->notes)) {
 						$comment.="\n\nComment: {$this->notes}";
 					}
-				
-					$msg =& $this->_buildEmail($comment);
-					$submitter=new GeographUser($img->user_id);
-					if ( ($submitter->ticket_option == 'all') || 
-							( ($this->type=='normal') && $submitter->ticket_option == 'major')
-						)
-						$this->_sendMail($submitter->email, $msg);
+					
+					//notify the owner
+					$token1 = ($this->user_id == $this->moderator_id)?'moderator':(($this->type == 'minor')?'minor':'normal');
+					$this->_sendMessage($img->user_id,$token1.'_initial',$comment);
 				}
 			}
 			elseif ($this->status=="closed")
@@ -556,11 +501,9 @@ class GridImageTroubleTicket
 				if ($this->user_id != $img->user_id)
 				{
 					if ($this->type == 'minor') {
-						$comment="A site moderator has made minor modifications to this photo submission. ".
-							"You can review these changes by following the links in this message. ";
+						$comment="A site moderator has made minor modifications to this photo submission. ";
 					} else {
-						$comment="A site moderator has modified this photo submission. ".
-							"You can review these changes by following the links in this message. ";
+						$comment="A site moderator has modified this photo submission. ";
 					}
 					if (!empty($changes))
 					{
@@ -570,13 +513,8 @@ class GridImageTroubleTicket
 					if (strlen($this->notes))
 						$comment.="\n\nModerator Comment: {$this->notes}";
 						
-					$msg =& $this->_buildEmail($comment);
-					$submitter=new GeographUser($img->user_id);
-					if ( ($submitter->ticket_option == 'all') || 
-							( ($this->type=='normal') && $submitter->ticket_option == 'major')
-						)
-						$this->_sendMail($submitter->email, $msg);
-				
+					//notify the owner
+					$this->_sendMessage($img->user_id,($this->type == 'minor')?'minor_modchanges':'normal_modchanges',$comment);
 				}
 				
 			}
@@ -595,7 +533,7 @@ class GridImageTroubleTicket
 	*/
 	function _touch()
 	{
-		//we're updating	
+		//we're updating
 		$db=&$this->_getDB();
 		$db->Execute("update gridimage_ticket set updated=now() where gridimage_ticket_id={$this->gridimage_ticket_id}");
 	}
@@ -621,6 +559,42 @@ class GridImageTroubleTicket
 		
 		$this->_touch();
 	}
+	
+	function _sendMessage($user_id,$token,$comment) {
+		
+		$profile=new GeographUser($user_id);
+	
+		if ($profile->shouldSend($token)) {
+			if ($profile->ticket_when == 'happens') {
+			
+				$msg =& $this->_buildEmail($comment);
+				
+				$this->_sendMail($profile->email, $msg);
+				
+			} elseif ($profile->ticket_when == 'digest' || $profile->ticket_when == 'htmldigest') {
+			
+				//todo - set defer in the current ticket!!
+			
+				//insert into message queue
+				$updates = array();
+				$updates['gridimage_ticket_id'] = $this->gridimage_ticket_id;
+				$updates['user_id'] = $user_id;
+				$updates['gridimage_id'] = $this->gridimage_id; //we dont *need* to store this, but a ticket will never change image, so avoids a join
+				$updates['message'] = $comment;
+				$updates['token'] = $token;
+				$updates['ticket_when'] = $profile->ticket_when; //we can use this to batch 'happens'
+				$updates['created'] = NULL;
+
+				$this->_getDB()->Execute('INSERT INTO gridimage_ticket_message SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+			}
+		} else {
+			print "$user_id,$token SKIPPED<br>";
+			//todo debug only!
+		}
+	}
+	
+	
+	
 	
 	/**
 	* returns an array containing email body and subject
@@ -655,9 +629,15 @@ class GridImageTroubleTicket
 	*/
 	function _sendMail($to, &$msg)
 	{
+		print "<div style=\"margin:10px;padding:10px;border:2px solid black\">";
+		print "<h3>TO: $to</h3>";
+		print "<h2>{$msg['subject']}</h2>";
+		print "<pre>{$msg['body']}</pre>";
+		print "</div>";
+		return;
+		
 		mail($to, $msg['subject'], $msg['body'],
 				"From: Geograph - Reply Using Link <lordelph@gmail.com>");
-		
 	}
 	
 	/**
@@ -674,7 +654,15 @@ class GridImageTroubleTicket
 		if ($this->moderator_id)
 		{
 			$mod=new GeographUser($this->moderator_id);
-			$mods[]=$mod->email;
+			if ($mod->shouldSend('mod_comment')) {
+				$mods[]=$mod->email;
+				
+				//todo? check for digest mode and add to table instead?
+				
+			} else {
+				//lets not send the email!
+				return;
+			}
 		}
 		else
 		{
@@ -689,8 +677,7 @@ class GridImageTroubleTicket
 			}
 		}
 		
-		
-		$this->_sendMail(implode(',',$mods), $msg);	
+		$this->_sendMail(implode(',',$mods), $msg);
 	}
 	
 	
@@ -724,20 +711,18 @@ class GridImageTroubleTicket
 		$moderator=new GeographUser($user_id);
 		$comment.="\n\n".$moderator->realname."\nGeograph Moderator\n";
 		
-		//email comment to submitter
-		$msg =& $this->_buildEmail($comment);
+		
 		$image=& $this->_getImage();
-		$submitter=new GeographUser($image->user_id);
 		
-		$this->_sendMail($submitter->email, $msg);
+		//notify the owner
+		$token1 = ($this->user_id == $this->moderator_id)?'moderator':(($this->type == 'minor')?'minor':'normal');
+		$this->_sendMessage($image->user_id,$token1.'_comment',$comment);
 		
-		if ($this->notify == 'suggestor' && $image->user_id != $this->user_id) {
-			//email comment to suggestor
-			$suggestor=new GeographUser($this->user_id);
-				
-			$this->_sendMail($suggestor->email, $msg);
+		
+		if ($this->notify == 'suggestor' && $image->user_id != $this->user_id && $user_id != $this->moderator_id) {
+			//notify the suggestor
+			$this->_sendMessage($this->user_id,'your_comment',$comment);
 		}
-		
 	}
 	
 	/**
@@ -767,10 +752,8 @@ class GridImageTroubleTicket
 		$db->Execute("update gridimage_ticket set notify = '{$this->notify}' where gridimage_ticket_id={$this->gridimage_ticket_id}");
 			
 		if ($this->notify == 'suggestor' && $image->user_id != $this->user_id) {
-			//email comment to suggestor
-			$suggestor=new GeographUser($this->user_id);
-				
-			$this->_sendMail($suggestor->email, $msg);
+			//notify the suggestor
+			$this->_sendMessage($this->user_id,'your_comment',$comment);
 		}
 	}
 	
@@ -801,13 +784,11 @@ class GridImageTroubleTicket
 		$this->_sendModeratorMail($msg);
 		
 		$image=& $this->_getImage();
-		$submitter=new GeographUser($image->user_id);		
 		
-		if ( ($submitter->ticket_option == 'all') || 
-			( ($this->type=='normal') && $submitter->ticket_option == 'major')
-			)
-			$this->_sendMail($submitter->email, $msg);
-	}	
+		//notify the owner
+		$token1 = ($this->user_id == $this->moderator_id)?'moderator':(($this->type == 'minor')?'minor':'normal');
+		$this->_sendMessage($image->user_id,$token1.'_comment',$comment);
+	}
 	
 	/**
 	 * ticket is closed, the comment is sent to owner and suggester
@@ -820,8 +801,6 @@ class GridImageTroubleTicket
 		$db=&$this->_getDB();
 		if (!$this->isValid())
 			die("closeTicket - bad ticket");
-
-
 
 		//add comment to ticket
 		$comment=trim($comment);
@@ -881,12 +860,9 @@ class GridImageTroubleTicket
 				$suggester_msg.=$dbcomment;
 			}
 
-			$msg =& $this->_buildEmail($suggester_msg);
-			$suggester=new GeographUser($this->user_id);
-
-			$this->_sendMail($suggester->email, $msg);
-
-
+			//notify the suggester
+			$token = 'your'.'_'.((!empty($changes))?'changes':'nothing');
+			$this->_sendMessage($this->user_id,($this->type == 'minor')?'minor_modchanges':'normal_modchanges',$suggester_msg);
 		}
 
 		//message to owner
@@ -901,12 +877,13 @@ class GridImageTroubleTicket
 			$owner_msg.="\n Moderators Comment:\n\n";
 			$owner_msg.=$dbcomment;
 		}
-		$msg =& $this->_buildEmail($owner_msg);
-		$owner=new GeographUser($image->user_id);
-		$this->_sendMail($owner->email, $msg);
+		
+		//notify the owner
+		$token1 = ($this->user_id == $this->moderator_id)?'moderator':(($this->type == 'minor')?'minor':'normal');
+		$token = $token1.'_'.((!empty($changes))?'changes':'nothing');
+		$this->_sendMessage($image->user_id,$token,$owner_msg);
 		
 		$db->Execute("DELETE FROM gridimage_moderation_lock WHERE user_id = {$this->moderator_id} AND gridimage_id = {$this->gridimage_id}");
-
 	}
 
 	/**
@@ -919,7 +896,7 @@ class GridImageTroubleTicket
 		{
 			$this->gridimage=new GridImage();
 			$this->gridimage->loadFromId($this->gridimage_id);
-		}	
+		}
 		return $this->gridimage;
 	}
 	
@@ -934,7 +911,7 @@ class GridImageTroubleTicket
 		if (!$this->db) die('Database connection failed');  
 		return $this->db;
 	}
-
+	
 	/**
 	 * set stored db object
 	 * @access private
@@ -943,8 +920,7 @@ class GridImageTroubleTicket
 	{
 		$this->db=$db;
 	}
-
-
+	
 	/**
 	 * clear all member vars
 	 * @access private
@@ -971,7 +947,6 @@ class GridImageTroubleTicket
 		{
 			if (!is_numeric($name))
 				$this->$name=$value;
-													
 		}
 	}
 	
@@ -1066,5 +1041,5 @@ class GridImageTroubleTicket
 			}
 		}
 		return $this->isValid();
-	}	
+	}
 }

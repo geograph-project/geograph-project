@@ -600,13 +600,13 @@ ALTER TABLE  `user` DROP `public_email`;
 
 ##
 
-ALTER TABLE  `user` ADD  `notifications` SET(  '-all-',  '-none-',  'minor_initial',  'minor_comment',  'minor_changes',  'minor_nothing',  'normal_initial',  'normal_comment',  'normal_changes',  'normal_nothing',  'moderator_initial', 'moderator_comment',  'moderator_changes',  'moderator_nothing',  'change_changes' ) NOT NULL DEFAULT  '-all-' AFTER  `contact_options` ;
+ALTER TABLE  `user` ADD  `notifications` SET(  '-all-',  '-none-',  'minor_initial',  'minor_comment',  'minor_changes',  'minor_nothing',  'normal_initial',  'normal_comment',  'normal_changes',  'normal_nothing',  'moderator_initial', 'moderator_comment',  'moderator_changes',  'moderator_nothing',  'change_changes',  'minor_modchanges',  'normal_modchanges',  'your_comment',  'your_changes',  'your_nothing',  'mod_comment' ) NOT NULL DEFAULT  '-all-' AFTER  `contact_options` ;
 
-ALTER TABLE  `user` ADD  `ticket_when` ENUM(  'happens',  'digest' ) NOT NULL DEFAULT  'happens' AFTER  `ticket_option` ;
+ALTER TABLE  `user` ADD  `ticket_when` ENUM(  'happens',  'digest' ,  'htmldigest' ) NOT NULL DEFAULT  'happens' AFTER  `ticket_option` ;
 
 ##
 
-UPDATE user SET `notifications` = 'minor_initial,minor_comment,minor_changes,minor_nothing,normal_initial,normal_comment,normal_changes,normal_nothing,moderator_initial,moderator_comment,moderator_changes,moderator_nothing,change_changes' WHERE ticket_option = 'major';
+UPDATE user SET `notifications` = 'minor_comment,minor_changes,minor_nothing,normal_initial,normal_comment,normal_changes,normal_nothing,moderator_initial,moderator_comment,moderator_changes,moderator_nothing,minor_modchanges,normal_modchanges,your_comment,your_changes,your_nothing,mod_comment' WHERE ticket_option = 'major'; ##ONLY removes minor_initial !!!!!
 
 UPDATE user SET `notifications` = '-none-' WHERE ticket_option = 'none';
 
@@ -617,5 +617,23 @@ UPDATE user SET `ticket_when` = 'digest' WHERE ticket_option = 'digest'; #not us
 ALTER TABLE  `user` DROP `ticket_option`;
 
 ################################################
+
+
+CREATE TABLE `gridimage_ticket_message` (
+  `gridimage_ticket_message_id` int(10) unsigned NOT NULL auto_increment,
+  `gridimage_ticket_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `message` text NOT NULL,
+  `token` enum('-all-','-none-','minor_initial','minor_comment','minor_changes','minor_nothing','normal_initial','normal_comment','normal_changes','normal_nothing','moderator_initial','moderator_comment','moderator_changes','moderator_nothing','change_changes','minor_modchanges','normal_modchanges','your_comment','your_changes','your_nothing','mod_comment') NOT NULL,
+  `ticket_when` enum('happens','digest','htmldigest') NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `created` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `status` enum('new','sent') NOT NULL,
+  PRIMARY KEY  (`gridimage_ticket_message_id`),
+  KEY `status` (`status`,`user_id`)
+) ENGINE=MyISAM;
+
+
 
 
