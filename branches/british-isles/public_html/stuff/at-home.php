@@ -110,9 +110,9 @@ if (isset($_GET['getJob'])) {
 
 	if (count($row)) {
 		if ($max = $db->getOne("SELECT MAX(gridimage_id) FROM at_home_result WHERE gridimage_id BETWEEN {$row['start_gridimage_id']} AND {$row['end_gridimage_id']}") ) {
-			$row['start_gridimage_id'] = $max;
+			$row['start_gridimage_id'] = $max+1;
 		}
-		$sql = "SELECT gridimage_id,title,comment,imageclass FROM gridimage_search WHERE gridimage_id BETWEEN {$row['start_gridimage_id']} AND {$row['end_gridimage_id']} AND LENGTH(comment) > 10 ORDER BY gridimage_id LIMIT 3";
+		$sql = "SELECT gridimage_id,title,comment,imageclass FROM gridimage_search WHERE gridimage_id BETWEEN {$row['start_gridimage_id']} AND {$row['end_gridimage_id']} AND LENGTH(comment) > 10 ORDER BY gridimage_id";
 		
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		$recordSet = &$db->Execute($sql);
