@@ -85,7 +85,7 @@ if (!empty($_GET['worker'])) {
 
 if (isset($_GET['getJob'])) {
 	
-	if ($jid = $db->getOne("SELECT at_home_job_id FROM at_home_job WHERE at_home_worker_id = $worker AND sent > DATE_SUB(NOW(),INTERVAL 24 HOUR)")) { 
+	if ($jid = $db->getOne("SELECT at_home_job_id FROM at_home_job WHERE at_home_worker_id = $worker AND sent > DATE_ADD(DATE_SUB(NOW(),INTERVAL 24 HOUR),INTERVAL 10 MINUTE)")) { 
 		print "Success:{$jid}";
 		exit;
 	}
