@@ -65,10 +65,7 @@ print "Time: ".date('r')."\n-------\n";
 
 ####################
 
-//todo - maybe check if we have a job already? but where to save state?
-
 list($message,$jid) = explode(':',contactGeograph('getJob'),2);
-#$jid = 5; $message = 'Success';
 
 if ($message != 'Success') {
 	terminate_script("Message returned from Geograph:\n\n$message,$jid");
@@ -103,8 +100,6 @@ print "\n-------\n";
 
 $c = 0;
 while (($data = fgetcsv($temp, 1000, ",")) !== FALSE) {
-	//todo - if resume a interupted job, need to check not reprocessing batch already done
-
 	list($gridimage_id,$title,$comment,$imageclass) = $data;
 
 	print "Starting Image #$gridimage_id\n";

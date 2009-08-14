@@ -86,7 +86,8 @@ if (!empty($_GET['worker'])) {
 if (isset($_GET['getJob'])) {
 	
 	if ($jid = $db->getOne("SELECT at_home_job_id FROM at_home_job WHERE at_home_worker_id = $worker AND sent > DATE_SUB(NOW(),INTERVAL 24 HOUR)")) { 
-		die("Error:You already have a job allocated (id:$jid) in the last 24 hours - we only want one job per worker per 24 hours");
+		print "Success:{$jid}";
+		exit;
 	}
 	
 	//atomic claim! - looks messy, but avoids locks
@@ -108,8 +109,10 @@ if (isset($_GET['getJob'])) {
 	$row = $db->getRow("SELECT * FROM at_home_job WHERE at_home_job_id = $jid AND at_home_worker_id = $worker AND sent != '0000-00-00 00:00:00'");
 
 	if (count($row)) {
-	
-		$sql = "SELECT gridimage_id,title,comment,imageclass FROM gridimage_search WHERE gridimage_id BETWEEN {$row['start_gridimage_id']} AND {$row['end_gridimage_id']} AND LENGTH(comment) > 10 ORDER BY gridimage_id";
+		if ($max = $db->getOne("SELECT MAX(gridimage_id) FROM at_home_result WHERE gridimage_id BETWEEN {$row['start_gridimage_id']} AND {$row['end_gridimage_id']}") ) {
+			$row['start_gridimage_id'] = $max;
+		}
+		$sql = "SELECT gridimage_id,title,comment,imageclass FROM gridimage_search WHERE gridimage_id BETWEEN {$row['start_gridimage_id']} AND {$row['end_gridimage_id']} AND LENGTH(comment) > 10 ORDER BY gridimage_id LIMIT 3";
 		
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		$recordSet = &$db->Execute($sql);
