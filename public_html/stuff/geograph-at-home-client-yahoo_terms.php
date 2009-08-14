@@ -131,7 +131,7 @@ while (($data = fgetcsv($temp, 1000, ",")) !== FALSE) {
 		$message = contactGeograph("submitJobResults=$jid",array('results'=>$results));
 		print " Return message: $message\n";
 		$results = array();
-		sleep(10);(
+		sleep(10);
 	}
 }
 fclose($temp); 
