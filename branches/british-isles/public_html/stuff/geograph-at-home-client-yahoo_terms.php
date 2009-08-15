@@ -151,9 +151,9 @@ function contactGeograph($action,$post = '',$task = 'yahoo_terms') {
 	global $geograph_domain;
 	global $worker_token;
 	global $VERSION;
-	
+
 	$request =  "http://$geograph_domain/stuff/at-home.php?$action&task=$task&worker=$worker_token";
-	
+
 	// Get the curl session object
 	$session = curl_init($request);
 
@@ -164,12 +164,12 @@ function contactGeograph($action,$post = '',$task = 'yahoo_terms') {
 	}
 	curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($session, CURLOPT_USERAGENT, "Geograph-At-Home/$VERSION $task");
-	
+
 	// Do the request and then close the session
 	$response = curl_exec($session);
 	curl_close($session);
-      
-        return ($response);
+
+	return ($response);
 }
 
 function terminate_script($message) {
@@ -179,14 +179,15 @@ function terminate_script($message) {
 	print "\n-------\nGeograph Worker/$VERSION [$worker_token] Terminating\n";
 	print "Time: ".date('r')."\n-------\n\n";
 
-	exit;	
+	exit;
 }
 
 function termExtraction($context,$query = '') {
- 	global $yahoo_appid;
+        global $yahoo_appid;
+        global $VERSION;
+
         // The POST URL and parameters
         $request =  'http://search.yahooapis.com/ContentAnalysisService/V1/termExtraction';
-        
 
         $postargs = 'output=php&appid='.$yahoo_appid.'&context='.urlencode($context).'&query='.urlencode($query);
 
@@ -229,7 +230,7 @@ function termExtraction($context,$query = '') {
         }
         $response = strstr($response, 'a:');
 
-	return unserialize($response);
+        return unserialize($response);
 }
 
 
