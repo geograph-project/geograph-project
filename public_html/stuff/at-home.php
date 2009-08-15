@@ -137,7 +137,7 @@ if (isset($_GET['getJob'])) {
 		}
 		while (!$recordSet->EOF) 
 		{
-			$recordSet->fields['comment'] = trim(str_replace(array(chr(150),chr(160),chr(145),chr(146)),' ',$recordSet->fields['comment']));
+			$recordSet->fields['comment'] = trim(str_replace(array(chr(150),chr(160),chr(145),chr(146),chr(147),chr(148)),' ',$recordSet->fields['comment']));
 			fputcsv($f,$recordSet->fields);
 			$recordSet->MoveNext();
 		}
