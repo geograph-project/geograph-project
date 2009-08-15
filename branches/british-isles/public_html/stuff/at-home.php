@@ -137,6 +137,7 @@ if (isset($_GET['getJob'])) {
 		}
 		while (!$recordSet->EOF) 
 		{
+			$recordSet->fields['comment'] = trim(str_replace(array(chr(150),chr(160)),' ',$recordSet->fields['comment']));
 			fputcsv($f,$recordSet->fields);
 			$recordSet->MoveNext();
 		}
@@ -198,10 +199,15 @@ if (isset($_GET['getJob'])) {
 	$USER->mustHavePerm("admin");
 	  
 	  
+	$min = $db->getOne("SELECT MAX(end_gridimage_id) FROM at_home_job")+0;
 	$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 	
+	if ($min > $max) {
+		die("<H3>Nothing to create</h3> last id is $max, but we have a job upto $min");
+	}
 	
-	foreach (range(0,$max,5000) as $start) { 
+	print "<h2>Creating $min..$max</h2>";
+	foreach (range($min,$max,5000) as $start) { 
 	
 		$updates = array();
 		
