@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$VERSION = 0.1;
+$VERSION = 0.2;
 
 ####################################
 # Config Section
@@ -99,7 +99,7 @@ fseek($temp, 0);
 print "\n-------\n";
 
 $c = 0;
-while (($data = fgetcsv($temp, 1000, ",")) !== FALSE) {
+while (($data = fgetcsv($temp)) !== FALSE) {
 	list($gridimage_id,$title,$comment,$imageclass) = $data;
 
 	print "Starting Image #$gridimage_id\n";
