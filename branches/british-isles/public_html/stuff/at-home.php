@@ -82,10 +82,12 @@ if (!empty($_GET['worker'])) {
 }
 
 #########################################
+#########################################
 
 if (isset($_GET['getJob'])) {
 	
-	if ($jid = $db->getOne("SELECT at_home_job_id FROM at_home_job WHERE at_home_worker_id = $worker AND sent > DATE_ADD(DATE_SUB(NOW(),INTERVAL 24 HOUR),INTERVAL 10 MINUTE)")) { 
+	//find any jobs not completed - so can be resumed
+	if ($jid = $db->getOne("SELECT at_home_job_id FROM at_home_job WHERE at_home_worker_id = $worker AND completed = '0000-00-00 00:00:00'")) { 
 		print "Success:{$jid}";
 		exit;
 	}
@@ -104,14 +106,21 @@ if (isset($_GET['getJob'])) {
 		die("Error:Unable to allocate job, maybe no outstanding jobs, otherwise try later...");
 	}
 
+#########################################
+
 } elseif (isset($_GET['downloadJobData'])) {
 	$jid = intval($_GET['downloadJobData']);
-	$row = $db->getRow("SELECT * FROM at_home_job WHERE at_home_job_id = $jid AND at_home_worker_id = $worker AND sent != '0000-00-00 00:00:00'");
+	
+	//check a valid job
+	$row = $db->getRow("SELECT * FROM at_home_job WHERE at_home_job_id = $jid AND at_home_worker_id = $worker AND sent != '0000-00-00 00:00:00' AND completed = '0000-00-00 00:00:00' ");
 
 	if (count($row)) {
+		//exclude progress so far
 		if ($max = $db->getOne("SELECT MAX(gridimage_id) FROM at_home_result WHERE gridimage_id BETWEEN {$row['start_gridimage_id']} AND {$row['end_gridimage_id']}") ) {
 			$row['start_gridimage_id'] = $max+1;
 		}
+		
+		//fetch the actual data
 		$sql = "SELECT gridimage_id,title,comment,imageclass FROM gridimage_search WHERE gridimage_id BETWEEN {$row['start_gridimage_id']} AND {$row['end_gridimage_id']} AND LENGTH(comment) > 10 ORDER BY gridimage_id";
 		
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
@@ -132,8 +141,12 @@ if (isset($_GET['getJob'])) {
 		die("ERROR:unable to fetch data");
 	}
 
+#########################################
+
 } elseif (isset($_GET['submitJobResults'])) {
 	$jid = intval($_GET['submitJobResults']);
+	
+	//check a valid job
 	$row = $db->getRow("SELECT * FROM at_home_job WHERE at_home_job_id = $jid AND at_home_worker_id = $worker AND sent != '0000-00-00 00:00:00'");
 
 	if (count($row)) {
@@ -157,12 +170,14 @@ if (isset($_GET['getJob'])) {
 		die("ERROR:unable to identify job");
 	}
 	
+#########################################
+
 } elseif (isset($_GET['finalizeJob'])) {
 	$jid = intval($_GET['finalizeJob']);
 	$row = $db->getRow("SELECT * FROM at_home_job WHERE at_home_job_id = $jid AND at_home_worker_id = $worker AND sent != '0000-00-00 00:00:00'");
 
 	if (count($row)) {
-		//todo - maybe we should validate?
+		//todo - maybe we should validate job really complete?
 		
 		$db->Execute("UPDATE at_home_job SET `completed`=NOW() WHERE at_home_job_id = {$row['at_home_job_id']} LIMIT 1");
 	
@@ -170,7 +185,9 @@ if (isset($_GET['getJob'])) {
 	} else {
 		die("ERROR:unable to identify job");
 	}
-	
+
+#########################################
+
 } elseif (isset($_GET['createJobs'])) {
 	init_session();
 	$USER->mustHavePerm("admin");
@@ -192,6 +209,8 @@ if (isset($_GET['getJob'])) {
 		$db->Execute('INSERT INTO at_home_job SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 		print "crated {$updates['start_gridimage_id']} --&gt; {$updates['end_gridimage_id']}<br/>";
 	}
+
+#########################################
 
 } else {
 	die("ERROR:specify action");
