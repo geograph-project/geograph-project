@@ -92,6 +92,11 @@ if (isset($_GET['getJob'])) {
 		exit;
 	}
 	
+	//If there is a recent job die - dont want it too often. (but a part completed job is caught above) 	
+	if ($jid = $db->getOne("SELECT at_home_job_id FROM at_home_job WHERE at_home_worker_id = $worker AND sent > DATE_ADD(DATE_SUB(NOW(),INTERVAL 24 HOUR),INTERVAL 10 MINUTE)")) { 
+		die("Error:You already have a job allocated (id:$jid) in the last 24 hours - we only want one job per worker per 24 hours");
+	}
+	
 	//atomic claim! - looks messy, but avoids locks
 	$pid = 999999+getmypid(); //something reasonably unique
 	$db->Execute("UPDATE at_home_job SET at_home_worker_id = $pid WHERE sent = '0000-00-00 00:00:00' LIMIT 1");
