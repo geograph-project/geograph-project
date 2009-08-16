@@ -65,6 +65,14 @@ if (!$db) die('Database connection failed');
 		}
 	}
 
+
+	$contents = file_get_contents("../../scripts/backup_geograph_db");
+	preg_match_all('/--ignore-table=geograph_live.(\w+)/',$contents,$m);
+	foreach ($m[1] as $t) {
+		$arr[$t]['skipped'] = 1;
+	}
+	
+	
 #print_r($arr);	exit;
 	if (isset($_GET['table'])) {
 		$smarty->assign('table', $_GET['table']);
