@@ -216,17 +216,17 @@ function termExtraction($context,$query = '') {
                         // Success
                         break;
                 case 503:
-                        die('Your call to Yahoo Web Services failed and returned an HTTP status of 503. That means: Service unavailable. An internal problem prevented us from  returning data to you.');
+                        die('Your call to Yahoo Web Services failed and returned an HTTP status of 503. That means: Service unavailable. An internal problem prevented us from returning data to you.'."\n");
                         break;
                 case 403:
-                        die('Your call to Yahoo Web Services failed and returned an HTTP status of 403. That means: Forbidden. You do not have permission to access this resource, or are over your rate limit.');
+                        die('Your call to Yahoo Web Services failed and returned an HTTP status of 403. That means: Forbidden. You do not have permission to access this resource, or are over your rate limit.'."\n");
                         break;
                 case 400:
                         // You may want to fall through here and read the specific XML error
-                        die('Your call to Yahoo Web Services failed and returned an HTTP status of 400. That means:  Bad request. The parameters passed to the service did not  match as expected. The exact error is returned in the XML response.');
+                        die('Your call to Yahoo Web Services failed and returned an HTTP status of 400. That means: Bad request. The parameters passed to the service did not match as expected. The exact error is returned in the XML response.'."\n");
                         break;
                 default:
-                        die('Your call to Yahoo Web Services returned an unexpected HTTP status of:' . $status_code[1]);
+                        die('Your call to Yahoo Web Services returned an unexpected HTTP status of:' . $status_code[1]."\n");
         }
         $response = strstr($response, 'a:');
 
