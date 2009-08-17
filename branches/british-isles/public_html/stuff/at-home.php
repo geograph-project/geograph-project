@@ -167,7 +167,7 @@ if (isset($_GET['getJob'])) {
 			while (!$recordSet->EOF) 
 			{
 				$r = $recordSet->fields;
-				$r['comment'] = trim(str_replace(array(chr(150),chr(160)),' ',$r['comment']));
+				$r['comment'] = trim(str_replace(array(chr(150),chr(160),chr(145),chr(146),chr(147),chr(148),chr(163)),' ',$r['comment']));
 				$a[] = array('i'=>$r['gridimage_id'],'d'=>$r['comment'],'c'=>$r['imageclass']);
 				$recordSet->MoveNext();
 			}
@@ -185,7 +185,7 @@ if (isset($_GET['getJob'])) {
 			}
 			while (!$recordSet->EOF) 
 			{
-				$recordSet->fields['comment'] = trim(str_replace(array(chr(150),chr(160)),' ',$recordSet->fields['comment']));
+				$recordSet->fields['comment'] = trim(str_replace(array(chr(150),chr(160),chr(145),chr(146),chr(147),chr(148),chr(163)),' ',$recordSet->fields['comment']));
 				fputcsv($f,$recordSet->fields);
 				$recordSet->MoveNext();
 			}
