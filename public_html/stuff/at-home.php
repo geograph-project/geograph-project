@@ -34,7 +34,7 @@ if (!$db) {
 
 if (isset($_GET['getWorkerToken'])) {
 
-	if ($wid = $db->getOne("SELECT at_home_worker_id FROM at_home_worker WHERE `ip` = INET_ATON('".getRemoteIP()."')")) { 
+	if ($wid = $db->getOne("SELECT at_home_worker_id FROM at_home_worker WHERE `ip` = INET_ATON('".mysql_real_escape_string(getRemoteIP())."')")) { 
 		die("Error:You already have a worker created for this IP address - please use that! If not created by you perhaps you are using a shared IP - which is NOT recommended for using this application");
 	}
 	
@@ -47,7 +47,7 @@ if (isset($_GET['getWorkerToken'])) {
 		die("Error:Please specify a useragent");
 	}
 	$updates['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
-	$db->Execute('INSERT INTO at_home_worker SET `ip` = INET_ATON(\''.getRemoteIP().'\'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+	$db->Execute('INSERT INTO at_home_worker SET `ip` = INET_ATON(\''.mysql_real_escape_string(getRemoteIP()).'\'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 	
 	$id = $db->Insert_ID();
 	
@@ -57,8 +57,14 @@ if (isset($_GET['getWorkerToken'])) {
 	$token=new Token;
 	$token->setValue("id", $id);
 	
-	print "TOKEN: <TT>".$token->getToken()."</TT><BR>\n\n";
-	print "<p>Put this in the script - its unique to you. If running multiple workers, get a token for each one!</p>";
+	if (isset($_GET['output']) && $_GET['output']=='text') {
+		setcookie('workerToken', $token->getToken(), time()+3600*24*365,'/');
+		print "Thank You. You may now begin processing jobs.";
+		
+	} else {
+		print "TOKEN: <TT>".$token->getToken()."</TT><BR>\n\n";
+		print "<p>Put this in the script - its unique to you. If running multiple workers, get a token for each one!</p>";
+	}
 	exit;
 }
 
@@ -88,13 +94,21 @@ if (isset($_GET['getJob'])) {
 	
 	//find any jobs not completed - so can be resumed
 	if ($jid = $db->getOne("SELECT at_home_job_id FROM at_home_job WHERE at_home_worker_id = $worker AND completed = '0000-00-00 00:00:00'")) { 
-		print "Success:{$jid}";
+		if (isset($_GET['output']) && $_GET['output']=='json') {
+			print "{jobId: $jid}";
+		} else {
+			print "Success:{$jid}";
+		}
 		exit;
 	}
 	
 	//If there is a recent job die - dont want it too often. (but a part completed job is caught above) 	
 	if ($jid = $db->getOne("SELECT at_home_job_id FROM at_home_job WHERE at_home_worker_id = $worker AND sent > DATE_ADD(DATE_SUB(NOW(),INTERVAL 24 HOUR),INTERVAL 10 MINUTE)")) { 
-		die("Error:You already have a job allocated (id:$jid) in the last 24 hours - we only want one job per worker per 24 hours");
+		if (isset($_GET['output']) && $_GET['output']=='json') {
+			die("{error: 'You already have a job allocated (id:$jid) in the last 24 hours - we only want one job per worker per 24 hours'}");
+		} else {
+			die("Error:You already have a job allocated (id:$jid) in the last 24 hours - we only want one job per worker per 24 hours");
+		}
 	}
 	
 	//atomic claim! - looks messy, but avoids locks
@@ -102,13 +116,22 @@ if (isset($_GET['getJob'])) {
 	$db->Execute("UPDATE at_home_job SET at_home_worker_id = $pid WHERE sent = '0000-00-00 00:00:00' LIMIT 1");
 	$row = $db->getRow("SELECT * FROM at_home_job WHERE at_home_worker_id = $pid");
 	if (count($row)) {
-		$db->Execute("UPDATE at_home_job SET at_home_worker_id = $worker,`sent`=NOW() WHERE at_home_job_id = {$row['at_home_job_id']} LIMIT 1");
+		$jid = $row['at_home_job_id'];
+		$db->Execute("UPDATE at_home_job SET at_home_worker_id = $worker,`sent`=NOW() WHERE at_home_job_id = $jid LIMIT 1");
 	
-		print "Success:{$row['at_home_job_id']}";
-		
+		if (isset($_GET['output']) && $_GET['output']=='json') {
+			setcookie('workerActive', date('r'), time()+600,'/');
+			print "{jobId: $jid}";
+		} else {
+			print "Success:$jid";
+		}
 		exit;
 	} else {
-		die("Error:Unable to allocate job, maybe no outstanding jobs, otherwise try later...");
+		if (isset($_GET['output']) && $_GET['output']=='json') {
+			die("{error: 'Unable to allocate job, maybe no outstanding jobs, otherwise try later...'}");
+		} else {
+			die("Error:Unable to allocate job, maybe no outstanding jobs, otherwise try later...");
+		}
 	}
 
 #########################################
@@ -116,35 +139,66 @@ if (isset($_GET['getJob'])) {
 } elseif (isset($_GET['downloadJobData'])) {
 	$jid = intval($_GET['downloadJobData']);
 	
+	if (isset($_GET['output']) && $_GET['output']=='json') {
+		require_once '3rdparty/JSON.php';
+		$json = new Services_JSON();
+	}
+	
 	//check a valid job
 	$row = $db->getRow("SELECT * FROM at_home_job WHERE at_home_job_id = $jid AND at_home_worker_id = $worker AND sent != '0000-00-00 00:00:00' AND completed = '0000-00-00 00:00:00' ");
 
 	if (count($row)) {
 		//exclude progress so far
-		if ($max = $db->getOne("SELECT MAX(gridimage_id) FROM at_home_result WHERE gridimage_id BETWEEN {$row['start_gridimage_id']} AND {$row['end_gridimage_id']}") ) {
+		if ($max = $db->getOne("SELECT MAX(gridimage_id) FROM at_home_result WHERE gridimage_id BETWEEN {$row['start_gridimage_id']} AND {$row['end_gridimage_id']} AND at_home_job_id = $jid") ) {
 			$row['start_gridimage_id'] = $max+1;
 		}
 		
 		//fetch the actual data
-		$sql = "SELECT gridimage_id,title,comment,imageclass FROM gridimage_search WHERE gridimage_id BETWEEN {$row['start_gridimage_id']} AND {$row['end_gridimage_id']} AND LENGTH(comment) > 10 ORDER BY gridimage_id";
+		if (isset($_GET['output']) && $_GET['output']=='json') {
+			setcookie('workerActive', date('r'), time()+600,'/');
+			
+			$sql = "SELECT gridimage_id,comment,imageclass FROM gridimage_search WHERE gridimage_id BETWEEN {$row['start_gridimage_id']} AND {$row['end_gridimage_id']} AND LENGTH(comment) BETWEEN 10 AND 1000 ORDER BY gridimage_id";
+			//yahoo api via jsonp will not manage long descriptions - will do them as a seperate job
+
+			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+			$recordSet = &$db->Execute($sql);
 		
-		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-		$recordSet = &$db->Execute($sql);
-		
-		$f = fopen("php://output", "w");
-		if (!$f) {
-			die("ERROR:unable to open output stream");
-		}
-		while (!$recordSet->EOF) 
-		{
-			$recordSet->fields['comment'] = trim(str_replace(array(chr(150),chr(160),chr(145),chr(146),chr(147),chr(148)),' ',$recordSet->fields['comment']));
-			fputcsv($f,$recordSet->fields);
-			$recordSet->MoveNext();
+			$a = array();
+			while (!$recordSet->EOF) 
+			{
+				$r = $recordSet->fields;
+				$r['comment'] = trim(str_replace(array(chr(150),chr(160)),' ',$r['comment']));
+				$a[] = array('i'=>$r['gridimage_id'],'d'=>$r['comment'],'c'=>$r['imageclass']);
+				$recordSet->MoveNext();
+			}
+			print $json->encode($a);
+		} else {
+			$sql = "SELECT gridimage_id,'' as title,comment,imageclass FROM gridimage_search WHERE gridimage_id BETWEEN {$row['start_gridimage_id']} AND {$row['end_gridimage_id']} AND LENGTH(comment) > 10 ORDER BY gridimage_id";
+			//title is not actully needed - but php clients expect the column. 
+			
+			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+			$recordSet = &$db->Execute($sql);
+			
+			$f = fopen("php://output", "w");
+			if (!$f) {
+				die("ERROR:unable to open output stream");
+			}
+			while (!$recordSet->EOF) 
+			{
+				$recordSet->fields['comment'] = trim(str_replace(array(chr(150),chr(160)),' ',$recordSet->fields['comment']));
+				fputcsv($f,$recordSet->fields);
+				$recordSet->MoveNext();
+			}
 		}
 		$recordSet->Close(); 
 	
 	} else {
-		die("ERROR:unable to fetch data");
+		if (isset($_GET['output']) && $_GET['output']=='json') {
+			print $json->encode(array('error'=>'unable to fetch data'));
+			exit;
+		} else {
+			die("ERROR:unable to fetch data");
+		}
 	}
 
 #########################################
@@ -157,7 +211,11 @@ if (isset($_GET['getJob'])) {
 
 	if (count($row)) {
 		if (!count($_POST['results'])) {
-			die("ERROR:nothing submitted?");
+			if (isset($_GET['output']) && $_GET['output']=='json') {
+				die("{error: 'nothing submitted?'}");
+			} else {
+				die("ERROR:nothing submitted?");
+			}
 		}
 		foreach ($_POST['results'] as $gid => $str) {
 			if (!empty($str))
@@ -171,9 +229,18 @@ if (isset($_GET['getJob'])) {
 					$db->Execute('INSERT INTO at_home_result SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 				}
 		}
-		print "Success:$c saved";
+		if (isset($_GET['output']) && $_GET['output']=='json') {
+			setcookie('workerActive', date('r'), time()+600,'/');
+			print ("{message: '$c saved'}");
+		} else {
+			print "Success:$c saved";
+		}
 	} else {
-		die("ERROR:unable to identify job");
+		if (isset($_GET['output']) && $_GET['output']=='json') {
+			die("{error: 'unable to identify job'}");
+		} else {
+			die("ERROR:unable to identify job");
+		}
 	}
 	
 #########################################
@@ -187,6 +254,7 @@ if (isset($_GET['getJob'])) {
 		
 		$db->Execute("UPDATE at_home_job SET `completed`=NOW() WHERE at_home_job_id = {$row['at_home_job_id']} LIMIT 1");
 	
+		setcookie('workerActive', 'deleted', time()-3600,'/');
 		print "Success:Thank you!";
 	} else {
 		die("ERROR:unable to identify job");
