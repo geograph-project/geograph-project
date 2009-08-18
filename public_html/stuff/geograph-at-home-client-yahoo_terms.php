@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$VERSION = 0.2;
+$VERSION = 0.3;
 
 ####################################
 # Config Section
@@ -64,81 +64,94 @@ print "\n-------\nGeograph Worker/$VERSION [$worker_token] Starting\n";
 print "Time: ".date('r')."\n-------\n";
 
 ####################
-
-list($message,$jid) = explode(':',contactGeograph('getJob'),2);
-
-if ($message != 'Success') {
-	terminate_script("Message returned from Geograph:\n\n$message,$jid");
-	exit;
-}
-
-print "Starting on job #$jid\n";
-print "Time: ".date('r')."\n\n";
-
-print "Downloading data for #$jid\n";
-print "Time: ".date('r')."\n\n";
-$csvdata = contactGeograph("downloadJobData=$jid");
-
-if (empty($csvdata)) {
-	terminate_script("No data received");
-	exit;
-} 
-
-if (strpos($csvdata,'ERROR') === 0) {
-	terminate_script("Message returned from Geograph:\n\n$csvdata");
-	exit;
-} 
-
-$results = array();
-
-//we need to write to a temporay file for use with fgetcsv
-$temp = tmpfile();
-fwrite($temp, $csvdata);
-fseek($temp, 0);
-
-print "\n-------\n";
-
 $c = 0;
-while (($data = fgetcsv($temp)) !== FALSE) {
-	list($gridimage_id,$title,$comment,$imageclass) = $data;
+$fail = 0;
 
-	print "Starting Image #$gridimage_id\n";
-	print "  Time: ".date('r')."\n";
+while (1) {
 
-	###########################
-	$terms = termExtraction($comment,$imageclass);
-	###########################
-	
-	if (isset($terms['ResultSet']['Result'])) {
-		if (is_array($terms['ResultSet']['Result'])) {
-			$results[$gridimage_id] = implode('|',$terms['ResultSet']['Result']);
-		} elseif (strlen($terms['ResultSet']['Result'])) {
-			$results[$gridimage_id] = $terms['ResultSet']['Result'];
+	list($message,$jid) = explode(':',contactGeograph('getJob'),2);
+
+	if ($message != 'Success') {
+		print "Message returned from Geograph:\n\n$message,$jid\n";
+
+		if ($fail > 10) {
+			break;
 		}
-	} else {
-		print "no results\n";
+
+		print "Sleeping for 1 hour\n";
+		sleep(3600);
+
+		$fail++;
+		continue; //try getting a new job!
 	}
-	$c++;
-	sleep(10);
-	
-	if ($c%10 == 0 && count($results)) {
-		print " Submitting progress to Geograph\n";
+
+	print "Starting on job #$jid\n";
+	print "Time: ".date('r')."\n\n";
+
+	print "Downloading data for #$jid\n";
+	print "Time: ".date('r')."\n\n";
+
+	$results = array();
+
+	//we need to write to a temporay file for use with fgetcsv
+	$temp = tmpfile();
+
+	$csvdata = contactGeograph("downloadJobData=$jid",'','yahoo_terms',$temp);
+
+	fseek($temp, 0);
+
+	print "\n-------\n";
+
+	while (($data = fgetcsv($temp)) !== FALSE) {
+		list($gridimage_id,$title,$comment,$imageclass) = $data;
+
+		print "Starting Image #$gridimage_id\n";
+		print "  Time: ".date('r')."\n";
+
+		###########################
+		$terms = termExtraction($comment,$imageclass);
+		###########################
+
+		if (is_numeric($terms) && $terms < 0) {
+			print "failure from Yahoo, sleeping for a bit:$terms seconds\n";
+			//this means this image never get retried, but we going to retry all failures later anyway!
+			#sleep($terms*-1); //do it at the end of the loop instead now!
+		} else if (isset($terms['ResultSet']['Result'])) {
+			if (is_array($terms['ResultSet']['Result'])) {
+				$results[$gridimage_id] = implode('|',$terms['ResultSet']['Result']);
+			} elseif (strlen($terms['ResultSet']['Result'])) {
+				$results[$gridimage_id] = $terms['ResultSet']['Result'];
+			}
+		} else {
+			print "no results\n";
+		}
+		$c++;
+		sleep(10);
+
+		if ($c%10 == 0 && count($results)) {
+			print " Submitting progress to Geograph\n";
+			$message = contactGeograph("submitJobResults=$jid",array('results'=>$results));
+			print " Return message: $message\n";
+			$results = array();
+			sleep(10);
+		}
+		if (is_numeric($terms) && $terms < 0) {
+			//do it here in case end up submitting to geograph, image didnt work anyway.
+			sleep($terms*-1);
+		}
+	}
+	fclose($temp); 
+
+	if (count($results)) {
+		print "Submitting progress to Geograph\n";
 		$message = contactGeograph("submitJobResults=$jid",array('results'=>$results));
 		print " Return message: $message\n";
-		$results = array();
-		sleep(10);
 	}
-}
-fclose($temp); 
 
-if (count($results)) {
-	print "Submitting progress to Geograph\n";
-	$message = contactGeograph("submitJobResults=$jid",array('results'=>$results));
-	print " Return message: $message\n";
-}
+	print "\n-------\nMarking job #$jid as finished\n\n";
+	contactGeograph("finalizeJob=$jid");
 
-print "\n-------\nMarking job #$jid as finished\n\n";
-contactGeograph("finalizeJob=$jid");
+}
 
 print "\n-------\nGeograph Worker [$worker_token] Finished\n";
 print "Time: ".date('r')."\n-------\n\n";
@@ -147,7 +160,7 @@ exit;
 
 ####################
 
-function contactGeograph($action,$post = '',$task = 'yahoo_terms') {
+function contactGeograph($action,$post = '',$task = 'yahoo_terms',$f = null) {
 	global $geograph_domain;
 	global $worker_token;
 	global $VERSION;
@@ -162,7 +175,11 @@ function contactGeograph($action,$post = '',$task = 'yahoo_terms') {
 		curl_setopt ($session, CURLOPT_POST, true);
 		curl_setopt ($session, CURLOPT_POSTFIELDS, http_build_query($post));
 	}
-	curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+	if (empty($f)) {
+		curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+	} else {
+		curl_setopt($session, CURLOPT_FILE, $f);
+	}
 	curl_setopt($session, CURLOPT_USERAGENT, "Geograph-At-Home/$VERSION $task");
 
 	// Do the request and then close the session
@@ -216,16 +233,20 @@ function termExtraction($context,$query = '') {
                         // Success
                         break;
                 case 503:
+			return -600; //sleep for 10 minutes...
                         die('Your call to Yahoo Web Services failed and returned an HTTP status of 503. That means: Service unavailable. An internal problem prevented us from returning data to you.'."\n");
                         break;
                 case 403:
+			return -3600; //sleep for an hour...
                         die('Your call to Yahoo Web Services failed and returned an HTTP status of 403. That means: Forbidden. You do not have permission to access this resource, or are over your rate limit.'."\n");
                         break;
                 case 400:
+			return -60; //probably never going to work, but wait up for a bit anyway... 
                         // You may want to fall through here and read the specific XML error
                         die('Your call to Yahoo Web Services failed and returned an HTTP status of 400. That means: Bad request. The parameters passed to the service did not match as expected. The exact error is returned in the XML response.'."\n");
                         break;
                 default:
+			return -600; //wait for 10 minutes
                         die('Your call to Yahoo Web Services returned an unexpected HTTP status of:' . $status_code[1]."\n");
         }
         $response = strstr($response, 'a:');
