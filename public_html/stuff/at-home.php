@@ -236,7 +236,7 @@ if (isset($_GET['getJob'])) {
 		
 		$updates['terms'] = $c;
 		$updates['images'] = count($ids); 
-		$updates['last_gridimage_id'] = $result; 
+		$updates['last_gridimage_id'] = max($ids); 
 		$updates['at_home_job_id'] = $jid; 
 
 		$db->Execute('UPDATE at_home_job SET terms=terms+?,images=images+?,last_gridimage_id=?,last_contact=NOW() WHERE at_home_job_id = ?',array_values($updates));
