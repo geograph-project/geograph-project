@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$VERSION = 0.3;
+$VERSION = 0.4;
 
 ####################################
 # Config Section
@@ -97,8 +97,9 @@ while (1) {
 	//we need to write to a temporay file for use with fgetcsv
 	$temp = tmpfile();
 
-	$csvdata = contactGeograph("downloadJobData=$jid",'','yahoo_terms',$temp);
+	$csvdata = contactGeograph("downloadJobData=$jid",'','yahoo_terms');
 
+	fwrite($temp,$csvdata);
 	fseek($temp, 0);
 
 	print "\n-------\n";
