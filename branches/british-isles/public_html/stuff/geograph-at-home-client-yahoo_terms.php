@@ -84,6 +84,7 @@ while (1) {
 		$fail++;
 		continue; //try getting a new job!
 	}
+	$fail=0;
 
 	print "Starting on job #$jid\n";
 	print "Time: ".date('r')."\n\n";
