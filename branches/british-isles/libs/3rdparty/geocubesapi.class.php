@@ -4,52 +4,44 @@
 //version 1.3
 //open licence
 
-//updated to use Rest API by Barry Hunter
-
-
 class geocubes {
 
         var $buflen             = 1024;
         var $isConnected        = 0;
         var $sock               = 0;
 
-        function __construct ($api_key = "", $api_token = "", $use_rest = true) {
+        function __construct ($api_key = "", $api_token = "") {
 
                 // connect
 
                 $this->api_key          = $api_key;
                 $this->api_token        = $api_token;
-                $this->use_rest         = $use_rest?true:false;
 
-		if ($this->use_rest) {
-			$this->isAuth = 1; //we fail at add time...
-		} else {
+                $this->sock             = fsockopen("api.geocubes.com", 5000, $this->errno, $this->errstr);
 
-			$this->sock             = fsockopen("api.geocubes.com", 5000, $this->errno, $this->errstr);
+                if ($this->sock) {
 
-			if ($this->sock) {
+                        $this->gcd_version      = fgets($this->sock, $this->buflen);
+                        $this->isConnected      = 1;
 
-				$this->gcd_version      = fgets($this->sock, $this->buflen);
-				$this->isConnected      = 1;
+                        $this->_auth();
 
-				$this->_auth();
+                } else {
+                        print "geocubes error: failed socket";
+                }
 
-			} else {
-				print "geocubes error: failed socket";
-			}
-		}
         }
 
 
         function __destruct () {
-		if (!$this->use_rest) {
-			// disconnect
 
-			if ($this->sock)
-				fclose($this->sock);
+                // disconnect
 
-			$this->isConnected = 0;
-		}
+                if ($this->sock)
+                        fclose($this->sock);
+
+                $this->isConnected = 0;
+
         }
 
 
@@ -107,35 +99,8 @@ class geocubes {
 
 
         function addPoint ($id, $lat = 0, $lng = 0, $ft = "", $fd1 = 0, $fd2 = 0) {
-                if ($this->use_rest) {
-			$data = array('o'=>'add',
-				      'k'=>$this->api_key,
-				      't'=>$this->api_token,
-				      'id'=>$id,
-				      'lt'=>$lat,
-				      'lg'=>$lng);
-			
-			if ($ft) {
-				$data['ft'] = $ft;
-			}
-			if ($fd1) {
-				$data['f1'] = $fd1;
-			}
-			if ($fd2) {
-				$data['f2'] = $fd2;
-			}
-			$url = "http://api.geocubes.com/bin/rest?".http_build_query($data); 
-			$http_response_header = array();
-			file_get_contents($url);
-			foreach ($http_response_header as $c => $header) {
-				if (preg_match('/^HTTP\/\d+.\d+ +(\d+)/i',$header,$m)) {
-					$status = $m[1];
-					break;
-				}
-			}
-			return ($status == 200)?$id:0;
 
-                } elseif ($this->isAuth == 1) {
+                if ($this->isAuth == 1) {
 
                         if ($id > 0) {
 
@@ -175,26 +140,8 @@ class geocubes {
 
 
         function removePoint ($id) {
-		if ($id = 0) {
-			return 0;
-		} elseif ($this->use_rest) {
-			$data = array('o'=>'remove',
-				      'k'=>$this->api_key,
-				      't'=>$this->api_token,
-				      'id'=>$id);
 
-			$url = "http://api.geocubes.com/bin/rest?".http_build_query($data); 
-			$http_response_header = array();
-			file_get_contents($url);
-			foreach ($http_response_header as $c => $header) {
-				if (preg_match('/^HTTP\/\d+.\d+ +(\d+)/i',$header,$m)) {
-					$status = $m[1];
-					break;
-				}
-			}
-			return ($status == 201)?$id:0;
-
-                } elseif ($this->isAuth == 1) {
+                if ($this->isAuth == 1 && $id > 0) {
 
                         if ($this->_sendTo("GEO DEL ID " . $id, $ret) == 1)
                                 return $ret[1];
