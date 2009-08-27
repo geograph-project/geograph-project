@@ -21,6 +21,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (strpos($_SERVER['QUERY_STRING'],'amp') !== FALSE) {
+	die();
+}
+
 require_once('geograph/global.inc.php');
 require_once('geograph/kmlfile.class.php');
 

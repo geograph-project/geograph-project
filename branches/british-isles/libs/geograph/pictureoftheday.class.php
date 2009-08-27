@@ -69,7 +69,7 @@ class PictureOfTheDay
 				//ok, there is still no image for today, and we have a
 				//lock on the table - assign the first available image
 				//ordered by number - giving preference to geograph and highly voted images 
-				$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null order by moderation_status desc,(abs(datediff(now(),imagetaken)) mod 365 div 14) asc,(vote_baysian > 3) desc,crc32(gridimage_id) desc");
+				$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null order by (vote_baysian > 3.5) desc,moderation_status+0 desc,(abs(datediff(now(),imagetaken)) mod 365 div 14)-if(rand()> 0.7,7,0) asc,crc32(gridimage_id) desc");
 
 				if (!empty($gridimage_id)) {
 					$db->Execute("update gridimage_daily set showday='$now' where gridimage_id = $gridimage_id");

@@ -94,7 +94,7 @@ Recently completed hectads:
 
 
 <div class="interestBox">
-	<b>Geograph Ireland</b> is a sub-project of {external href="http://www.geograph.org.uk/" text="Geograph British Isles"} which collects photos of Great Britain and Ireland, the two sites share a common database. Photos submitted to one will always be available on the other.
+        <b>Geograph Ireland</b> is a currently sub-project of {external href="http://www.geograph.org.uk/" text="Geograph British Isles"} which collects photos of Great Britain and Ireland, the two sites share a common database for now. Photos submitted to one will be available on the other. Geograph Ireland is likely to become a totally separate entity.
 </div>
 
 {include file="_std_end.tpl"}

@@ -698,7 +698,7 @@ class GridImage
 			$fullpath="/photos/error.jpg";
 
 		if ($returntotalpath)
-			$fullpath="http://".$CONF['CONTENT_HOST'].$fullpath;
+			$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
 
 		return $fullpath;
 	}
@@ -724,9 +724,9 @@ class GridImage
 				$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
 				$size = $db->getRow("select width,height from gridimage_size where gridimage_id = {$this->gridimage_id}");
 				$db->SetFetchMode($prev_fetch_mode);
-				$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
-
-				if (!$size) {
+				if ($size) {
+					$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
+				} else {
 					$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
 				
 					$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]}");
@@ -740,6 +740,10 @@ class GridImage
 			$size[3] = '';
 		}
 		
+		if (!empty($size[1]) && empty($size[3])) {//todo - temporally while some results in memcache are broken
+			$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
+		}
+
 		$title=htmlentities2($this->title);
 		
 		if (!empty($CONF['curtail_level']) && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
@@ -777,7 +781,10 @@ class GridImage
 				$db->SetFetchMode($prev_fetch_mode);
 			}
 			
-			if (!$size) {
+			if ($size) { 
+				//store this because we want it in cached_size and memcache
+				$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
+			} else {
 				$fullpath=$this->_getFullpath();
 				$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
 				
@@ -1092,7 +1099,7 @@ class GridImage
 		$mkey = "{$this->gridimage_id}:{$maxw}x{$maxh}";
 		//fails quickly if not using memcached!
 		$size =& $memcache->name_get('is',$mkey);
-		if (!$size && file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath)) {
+		if (false && !$size && file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath)) {
 			$db=&$this->_getDB();
 			$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
 			$size = $db->getRow("select width,height from gridimage_size where gridimage_id = {$this->gridimage_id}");

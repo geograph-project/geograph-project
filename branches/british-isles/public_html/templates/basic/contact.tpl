@@ -24,7 +24,13 @@
 
 		<br/><hr/>
 	    </form>
-	  <br/><br/><br/><br/><br/>
+	  <br/><br/>
+                <div style="text-align:center;position:relative">
+		 We do <b>not represent the locations</b> our <i>contributors</i> have photographed <br/> and submitted in our mission to collect<br/>
+	 <span style="color:blue">geographically representative photographs and information for <br/><b>every square kilometre of Great Britain and Ireland</b></span>.
+	<small><br/><br/>You can read about the project on Wikipedia: {external href="http://en.wikipedia.org/wiki/Geograph_British_Isles" text="Geograph British Isles"},<br/> please do make sure you really do mean to contact us before using the form below.</small>
+		</div>
+          <br/><br/><br/>
 	{else}
 	  <br/>
 
@@ -38,7 +44,7 @@
 	{/if}
 {/if}
  
-  <p><b>Got something to tell the Geograph developers?</b> Then fire away - we try to respond within 24 hours, often much quicker.</p>
+  <p><b>Got something to tell the <u>Geograph Website</u> developers?</b> Then fire away - we try to respond within 24 hours, often much quicker.</p>
   <br/>
  
     <form action="contact.php" method="post">

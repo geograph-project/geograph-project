@@ -184,7 +184,7 @@
 
 	<div class="fieldnotes"><span style="color:red">Note: HTML code will be removed, 
 	however basic URLs will be autolinked.</span><br/>
-	The main profile page will only show the first 300 characters, with a link to show the full details.<br/>
+	The main profile page will only show the first 300 charactors, (or use <tt>[--more--]</tt> to specify the break point) with a link to show the full details.<br/>
 	TIP: use <span style="color:blue">[[TQ7506]]</span> or 
 	<span style="color:blue">[[5463]]</span> to link to a Grid Square or another Image.
 	</div>

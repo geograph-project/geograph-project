@@ -44,7 +44,7 @@
 	</thead>
 	<tbody>
 	{foreach key=table item=row from=$arr name=loop}
-		<tr>
+		<tr{if $row.skipped} style="color:gray;text-decoration:line-through"{/if}>
 		<td><tt>{$table}</td>
 		<td><tt>{$row.type}</td>
 		<td align=right>{$row.Rows}</td>

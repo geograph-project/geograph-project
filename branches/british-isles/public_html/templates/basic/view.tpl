@@ -26,7 +26,9 @@
 {dynamic}
 {if $search_keywords && $search_count}
 	<div class="interestBox" style="text-align:center; font-size:0.9em">
-		We have a least <b>{$search_count} images</b> that match your query [{$search_keywords|escape:'html'}] in the area! <a href="/search.php?searchtext={$search_keywords|escape:'url'}&amp;gridref={$image->grid_reference}&amp;do=1">View them now</a>
+		<div style="width:640px;margin-left:auto;margin-right:auto"><i>The Geograph British Isles project aims to collect geographically representative photographs and information for every square kilometre of Great Britain and Ireland, and you can be part of it.</i> <br/><a href="/faq.php">Read more...</a></div><br/>
+
+		<b>We have at least <b>{$search_count} images</b> that match your query [{$search_keywords|escape:'html'}] in the area! <a href="/search.php?searchtext={$search_keywords|escape:'url'}&amp;gridref={$image->grid_reference}&amp;do=1">View them now</a></b>
 	</div>
 {/if}
 {/dynamic}
@@ -195,6 +197,10 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 </dl>
 
+{if $image->grid_square->reference_index eq 1}
+<div style="font-size:0.8em;text-align:center">Looking for a postcode? {external href="http://www.nearby.org.uk/coord.cgi?p=`$image->subject_gridref`&amp;f=lookup" text="Try this page"}</div>
+{/if}
+
 </div>
 
 {if $overview}
@@ -235,7 +241,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{assign var="imagetakenurl" value=$image_taken|date_format:"&amp;taken=%Y-%m-%d"}
 {/if}
 
-<span class="nowrap"><img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->subject_gridref}/links?{$imagetakenurl}&amp;title={$image->title|escape:'url'}&id={$image->gridimage_id}"><b>More Links for this image</b></a></span>
+<span class="nowrap"><img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->subject_gridref}/links?{$imagetakenurl}&amp;title={$image->title|escape:'url'}&amp;id={$image->gridimage_id}"><b>More Links for this image</b></a></span>
 </div>
 
 

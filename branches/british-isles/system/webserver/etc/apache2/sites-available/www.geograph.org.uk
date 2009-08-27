@@ -9,6 +9,8 @@
     ServerAlias ireland.geograph.org.uk
     ServerAlias t0.www.geograph.org.uk
     ServerAlias t0.geograph.org.uk
+    ServerAlias new.geograph.org.uk
+    ServerAlias new.geograph.co.uk
 
     ServerAlias www.geograph.ie
     ServerAlias geograph.ie
@@ -153,6 +155,7 @@
     RewriteRule /g/(.*) http://%{HTTP_HOST}/gridref/$1 [qsa,L,R=permanent]
     RewriteRule /u/(.*) http://%{HTTP_HOST}/profile/$1 [qsa,L,R=permanent]
     RewriteRule /p/(.*) http://%{HTTP_HOST}/photo/$1 [qsa,L,R=permanent]
+    RewriteRule /r/(.*) http://%{HTTP_HOST}/results/$1 [qsa,L,R=permanent]
 
     ErrorDocument 404 /staticpage.php?page=404
 

@@ -24,7 +24,7 @@
 	{elseif $moderator}
 		The following images have been recently moderated by the selected moderator. There is no need to do anything, but if you beleive the original moderation was wrong just use the moderation buttons as normal. 
 	{elseif $remoderate}
-		<div style="font-weight:bold; border:1px solid red; background-color:yellow; padding:10px">As a quick spotcheck you are asked to make a suggestion for these recently moderated images.</div><br/><br/>
+		<div class="interestBox" style="font-size:1.3em">As a quick spotcheck you are asked to make a suggestion for these recently moderated images.</div><br/><br/>
 	{else}
 		The following images have been submitted recently. 
 	{/if}
@@ -45,7 +45,7 @@
 	  
 	  <div style="margin-left:233px"> 
 	  
-	  square: <b><a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></b> ({$image->imagecount} images) &nbsp;&nbsp; category: <b style="color:blue">{$image->imageclass}</b><br/>
+	  square: <b><a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></b> ({$image->imagecount} images) &nbsp;&nbsp; category: <b><a href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:'url'}&amp;do=1">{$image->imageclass}</a></b><br/>
 	  by: <b><a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></b><br/>
 	  title: <b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></b> (<a href="/editimage.php?id={$image->gridimage_id}">edit</a>)<br/>
 	  
@@ -62,7 +62,7 @@
 	  {/if}
 	  {if $image->viewpoint_eastings}
 	  	| photographer: <b>{getamap gridref=$image->getPhotographerGridref(true) title="(`$image->photographer_gridref_precision`m precision)"}</b>{if $image->different_square_true}(diff){/if}
-	  	| <span{if $image->different_square} style="background-color:yellow"{/if}>distance: <b style="color:blue">{$image->distance}</b>km</span>
+	  	| <span{if $image->different_square} class="interestBox"{/if}>distance: <b><a>{$image->distance}</a></b>km</span>
 	  {/if}
 	  </span>
 		{if $image->reopenmaptoken}

@@ -805,7 +805,7 @@ class SearchCriteria_Special extends SearchCriteria
 			$this->sphinx['impossible']++; //will never be possible?
 		}
 		
-		if (preg_match('/^(\w+)\+$/i',$this->breakby,$matches)) {
+		if (preg_match('/^(\w+)\+$/i',$this->breakby,$matches) && !in_array($matches[1],array('email','password','age_group')) ) { #todo untimately check what table it comes from
 			$sql_fields .= ", ".$matches[1];
 		}
 	}

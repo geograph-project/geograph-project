@@ -33,6 +33,19 @@ if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 5 && strpos($_SERV
 	die("the servers are currently very busy - moderation is disabled to allow things to catch up, will be automatically re-enabled when load returns to normal");
 }
 
+if (!empty($_GET['style'])) {
+	$USER->getStyle();
+	if (!empty($_SERVER['QUERY_STRING'])) {
+		$query = preg_replace('/style=(\w+)/','',$_SERVER['QUERY_STRING']);
+		header("HTTP/1.0 301 Moved Permanently");
+		header("Status: 301 Moved Permanently");
+		header("Location: /admin/moderation.php?".$query);
+		exit;
+	}
+	header("Location: /admin/moderation.php");
+	exit;
+}
+
 customGZipHandlerStart();
 
 $db = NewADOConnection($GLOBALS['DSN']);
@@ -416,7 +429,11 @@ $db->Execute("UNLOCK TABLES");
 #############################
 
 $images->assignSmarty($smarty, 'unmoderated');
+
+//what style should we use?
+$style = $USER->getStyle();
+$smarty->assign('maincontentclass', 'content_photo'.$style);
 		
-$smarty->display('admin_moderation.tpl');
+$smarty->display('admin_moderation.tpl',$style);
 	
 ?>

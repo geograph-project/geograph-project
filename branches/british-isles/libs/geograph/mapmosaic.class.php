@@ -1022,6 +1022,7 @@ class GeographMapMosaic
 			$db=&$this->_getDB();
 			
 			$db->Execute("delete from mapcache where $crit");
+                        $GLOBALS['deleted_records'] = mysql_affected_rows();
 		}
 		return $deleted;
 	}

@@ -437,7 +437,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 	if ($viewlastdiscussions!=0) {
 		require($pathToFiles.'bb_func_ldisc.php');
 		$listTopics=$list_topics;
-		if ($sortByNew==0) {
+		if ($sortByNew==0 && rand(1,5) < 3) {
 			if($list_topics!='') echo ParseTpl(makeUp('main_last_discussions_tip'));
 		} else {
 			if($list_topics!='') echo ParseTpl(makeUp('main_last_discussions'));

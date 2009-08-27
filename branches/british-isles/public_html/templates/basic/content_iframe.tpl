@@ -15,7 +15,7 @@
 	{if $order eq $key}
 		<b>{$name}</b>
 	{else}
-		<a href="?{$extra|replace:'order=':'old='}&amp;order={$key}">{$name}</a>
+		<a href="?{$extra|replace:'order=':'old='}&amp;order={$key}" rel="nofollow">{$name}</a>
 	{/if} |
 {/foreach}</div>
 

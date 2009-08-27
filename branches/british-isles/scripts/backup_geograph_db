@@ -25,13 +25,32 @@ $cmd="/usr/bin/mysqldump --no-defaults --opt ".
         "--ignore-table=geograph_live.user_gridsquare ".
         "--ignore-table=geograph_live.user_stat ".
         "--ignore-table=geograph_live.user_quadsquare ".
+        "--ignore-table=geograph_live.vote_stat ".
+        "--ignore-table=geograph_live.game_image_rate ".
+        "--ignore-table=geograph_live.gridimage_group_stat ".
+        "--ignore-table=geograph_live.gridsquare_log ".
+        "--ignore-table=geograph_live.gridimage_size ".
+        "--ignore-table=geograph_live.gridimage_exif_size ".
 
 #large tables - not worth backing up
+        "--ignore-table=geograph_live.scenic_votes ".
 	"--ignore-table=geograph_live.gridimage_exif1 ".
 	"--ignore-table=geograph_live.gridimage_exif ".
+        "--ignore-table=geograph_live.photo_log ".
+        "--ignore-table=geograph_live.gridimage_diversity ".
+        "--ignore-table=geograph_live.geocubes ".
+        "--ignore-table=geograph_live.event_log ".
+        "--ignore-table=geograph_live.gridimage_group ".
+        "--ignore-table=geograph_live.gridimage_scale ".
 
-#static tables  - not worth backing up
+#various exports
+        "--ignore-table=geograph_live.gridimage_groupby ".
+        "--ignore-table=geograph_live.gridimage_search_extract ".
+
+#static tables  - not worth backing up EVERY DAY
         "--ignore-table=geograph_live.os_gaz ".
+        "--ignore-table=geograph_live.os_gaz_new ".
+        "--ignore-table=geograph_live.os_gaz_old ".
         "--ignore-table=geograph_live.placename_index ".
         "--ignore-table=geograph_live.loc_placenames ".
         "--ignore-table=geograph_live.loc_abgaz ".
@@ -41,12 +60,27 @@ $cmd="/usr/bin/mysqldump --no-defaults --opt ".
 
 #various tmp tables - some are big!
         "--ignore-table=geograph_live.aagaz ".
+        "--ignore-table=geograph_live.cent1 ".
+        "--ignore-table=geograph_live.gridimage2 ".
+        "--ignore-table=geograph_live.gridsquare2 ".
         "--ignore-table=geograph_live.gridimage_land ".
         "--ignore-table=geograph_live.tmp_percentage ".
         "--ignore-table=geograph_live.tmplook ".
+        "--ignore-table=geograph_live.tmppost ".
+        "--ignore-table=geograph_live.tmp_post_times ".
+        "--ignore-table=geograph_live.user2 ".
         "--ignore-table=geograph_live.user_dev ".
         "--ignore-table=geograph_live.devuser ".
         "--ignore-table=geograph_live.gridsquare_land ".
+        "--ignore-table=geograph_live.gridimage_group_old ".
+        "--ignore-table=geograph_live.gridimage_exif_size ".
+        "--ignore-table=geograph_live.gridimage_map ".
+        "--ignore-table=geograph_live.mapcacheold1 ".
+        "--ignore-table=geograph_live.mapcache3 ".
+        "--ignore-table=geograph_live.mapcache2old4 ".
+        "--ignore-table=geograph_live.mapcache2old3 ".
+        "--ignore-table=geograph_live.mapcache2old2 ".
+        "--ignore-table=geograph_live.mapcache2old ".
 
 	"-ugeograph -pm4pp3r geograph_live | gzip > $outfile";
 `$cmd`;
