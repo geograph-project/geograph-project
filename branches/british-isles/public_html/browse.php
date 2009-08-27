@@ -43,10 +43,20 @@ $square=new GridSquare;
 if (isset($_GET['inner'])) {
 	$template='browse_inner.tpl';
 } else {
+	if (isset($_GET['old'])) {
+		$_SESSION['old_browse'] = 1;
+		if (isset($_GET['t'])) {
+			$_GET['t'] = 0;
+		}
+	}
+
 	if (isset($_GET['t']) && $_GET['t'] > 1) {
 		$template='browse2.tpl';
-	} else {
+		$_SESSION['old_browse'] = 0;
+	} elseif (isset($_SESSION['old_browse']) && $_SESSION['old_browse']) {
 		$template='browse.tpl';
+	} else {
+		$template='browse2.tpl';
 	}
 	$smarty->assign('prefixes', $square->getGridPrefixes());
 	$smarty->assign('kmlist', $square->getKMList());
@@ -378,23 +388,28 @@ if ($grid_given)
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			
 			if ($template=='browse2.tpl' && $square->imagecount > 15 && $_GET['by'] !== '1') {
-			
-				//http://stackoverflow.com/questions/1138006/multi-column-distinct-in-mysql
-				
-				$table = "tmp_".md5(uniqid());
-				
-				$db->Execute("CREATE TEMPORARY TABLE $table ENGINE HEAP SELECT * FROM gridimage_search WHERE grid_reference = '{$square->grid_reference}' ORDER BY ftf DESC, RAND()");
-				
-				$db->Execute("ALTER IGNORE TABLE $table ADD UNIQUE (user_id),ADD UNIQUE (imageclass)");
-				
-				$sql = "SELECT * FROM $table LIMIT 20";
-				
 				$imagelist = new ImageList();
-				$imagelist->_getImagesBySql($sql);
-				$smarty->assign_by_ref('images', $imagelist->images);
 				
-				#$images=$square->getImages($inc_all_user,$custom_where,'order by ftf desc,gridimage_id limit 15');
-				#$smarty->assign_by_ref('images', $images);
+				$mkey = $square->grid_reference;
+				$imagelist->images =& $memcache->name_get('bx',$mkey);
+				
+				if (empty($imagelist->images)) {
+					//http://stackoverflow.com/questions/1138006/multi-column-distinct-in-mysql
+
+					$table = "tmp_".md5(uniqid());
+
+					$db->Execute("CREATE TEMPORARY TABLE $table ENGINE HEAP SELECT gridimage_id,user_id,realname,credit_realname,title,grid_reference,imageclass FROM gridimage_search WHERE grid_reference = '{$square->grid_reference}' ORDER BY ftf DESC, REVERSE(gridimage_id)");
+
+					$db->Execute("ALTER IGNORE TABLE $table ADD UNIQUE (user_id),ADD UNIQUE (imageclass)");
+
+					$sql = "SELECT * FROM $table LIMIT 9";
+
+					$imagelist->_getImagesBySql($sql);
+					
+					$memcache->name_set('bx',$mkey,$imagelist->images,$memcache->compress,$memcache->period_med);
+				}
+				
+				$smarty->assign_by_ref('images', $imagelist->images);
 				$smarty->assign('sample', count($imagelist->images) );
 			} else {
 			
@@ -414,17 +429,17 @@ if ($grid_given)
 			AND $user_crit");
 			
 			$breakdowns = array();
-			$breakdowns[] = array('type'=>'user','name'=>'Contributors','count'=>$row['user']);
-			$breakdowns[] = array('type'=>'centi','name'=>'Centisquares','count'=>$row['centi']);
-			$breakdowns[] = array('type'=>'class','name'=>'Categories','count'=>$row['class']);
-			$breakdowns[] = array('type'=>'taken','name'=>'Taken Months','count'=>$row['taken']);
-			$breakdowns[] = array('type'=>'takenyear','name'=>'Taken Years','count'=>$row['takenyear']);
-			$breakdowns[] = array('type'=>'submitted','name'=>'Submitted Months','count'=>$row['submitted']);
-			$breakdowns[] = array('type'=>'submittedyear','name'=>'Submitted Years','count'=>$row['submittedyear']);
-			$breakdowns[] = array('type'=>'direction','name'=>'View Directions','count'=>$row['direction']);
-			$breakdowns[] = array('type'=>'viewpoint','name'=>'Photographer Gridsquares','count'=>$row['viewpoints']);
-			$breakdowns[] = array('type'=>'viewcenti','name'=>'Photographer Centisquares','count'=>'?');
-			$breakdowns[] = array('type'=>'status','name'=>'Classifications','count'=>$row['status']);
+                        $breakdowns[] = array('type'=>'user','name'=>'Contributor','count'=>$row['user'].' Contributors');
+                        $breakdowns[] = array('type'=>'centi','name'=>'Centisquare','count'=>$row['centi'].' Centisquares');
+                        $breakdowns[] = array('type'=>'class','name'=>'Category','count'=>$row['class'].' Categories');
+                        $breakdowns[] = array('type'=>'taken','name'=>'Month Taken','count'=>$row['taken'].' Months');
+                        $breakdowns[] = array('type'=>'takenyear','name'=>'Year Taken','count'=>$row['takenyear'].' Years');
+                        $breakdowns[] = array('type'=>'direction','name'=>'View Direction','count'=>$row['direction'].' Directions');
+                        $breakdowns[] = array('type'=>'viewpoint','name'=>'Photographer Location','count'=>$row['viewpoints'].' Gridsquares');
+                        $breakdowns[] = array('type'=>'viewcenti','name'=>'Photographer Centisquare','count'=>'unknown');
+                        $breakdowns[] = array('type'=>'status','name'=>'Classification','count'=>$row['status'].' Classifications');
+                        $breakdowns[] = array('type'=>'submitted','name'=>'Month Submitted','count'=>$row['submitted'].' Months');
+                        $breakdowns[] = array('type'=>'submittedyear','name'=>'Year Submitted','count'=>$row['submittedyear'].' Years');
 			$smarty->assign_by_ref('breakdowns', $breakdowns);
 			
 			if (rand(1,10) > 7) {

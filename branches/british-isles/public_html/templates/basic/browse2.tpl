@@ -98,7 +98,7 @@
 			{else}
 				for <b>{$gridref}</b>
 			{/if}
-			{if $imagecount > 15}
+			{if false && $imagecount > 15}
 				<br/>&nbsp;&nbsp;&nbsp;
 				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View all images page by page</a>
 			{/if}
@@ -107,7 +107,7 @@
 		<li style="margin-top:10px;">
 		<form method="get" action="/search.php">
 			<div class="interestBox" style="width:320px">
-			<b>Search for images in this square</b>:<br/> 
+			<b>Search images in this square</b>:<br/> 
 			<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 			<input type="submit" value="Search"/><br/>
 			<input type="hidden" name="location" value="{$gridref}"/>
@@ -286,16 +286,16 @@
 			{/if}
 		{else}
 			{if !$ht}
-				<span style="color:gray; font-size:0.8em">{if $breakdown_count> 20}Random 20 groupings{else}The groupings will{/if} show an example image [total number in brackets].</span>
+				<p align="center" style="color:gray; font-size:0.8em">{if $breakdown_count> 20}Random 20 groupings{else}The groupings will{/if} show an example image [total number in brackets].</p>
 			{/if}
 			<table>
 			{foreach from=$breakdown item=b}
 				
 				{if $b.image}
-					<tr><td><a href="{$b.link}">{$b.name}</a> <b>[{$b.count}]</b></td>
+					<tr><td>&middot; <a href="{$b.link}">{$b.name}</a> <b>[{$b.count}]</b></td>
 					
 					
-					<td><a title="{$b.image->grid_reference} : {$b.image->title|escape:'html'} by {$b.image->realname} {$b.image->dist_string} - click to view full size image" href="/photo/{$b.image->gridimage_id}">{$b.image->getThumbnail($thumbw,$thumbh,false,true)}</a></td>
+					<td align="middle"><a title="{$b.image->grid_reference} : {$b.image->title|escape:'html'} by {$b.image->realname} {$b.image->dist_string} - click to view full size image" href="/photo/{$b.image->gridimage_id}">{$b.image->getThumbnail($thumbw,$thumbh,false,true)}</a></td>
 					<td><div class="caption">{if $mode != 'normal'}<a href="/gridref/{$b.image->grid_reference}">{$b.image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$b.image->gridimage_id}">{$b.image->title|escape:'html'}</a></div>
 					<div class="statuscaption">by <a href="{$b.image->profile_link}">{$b.image->realname}</a></div></td>
 					</tr>
@@ -325,13 +325,14 @@
 			
 			<ul>
 			{foreach from=$breakdowns item=b}
-				<li>by <a href="/gridref/{$gridref}?by={$b.type}{$extra}">{$b.name}</a> [{$b.count}]</li>
+				<li style="padding:2px"><small>by </small><a href="/gridref/{$gridref}?by={$b.type}{$extra}"><b>{$b.name}</b></a> <small>[{$b.count}]</small></li>
 			{/foreach}
 
-			<li style="margin-top:10px;">Clustering: <a href="/search.php?gridref={$gridref}&amp;cluster2=1&amp;orderby=label">Automatic</a><sup style="color:red">Experimental</sup>, 
+			<li style="margin-top:10px;">or Clustering Options:<br/>
+				&nbsp; &middot; <a href="/search.php?gridref={$gridref}&amp;cluster2=1&amp;orderby=label">Automatic</a>, 
 				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imageclass%2B&amp;orderby=imageclass&amp;do=1">Category</a>, 
 				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=realname%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Contributor</a> or
-				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imagetaken%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Date Taken</a> <sup style="color:red">New!</sup></li>
+				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imagetaken%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Date Taken</a></li>
 
 			</ul>
 			<br style="clear:both"/>
@@ -343,12 +344,23 @@
 				<blockquote><p>{$totalimagecount} Images, {$filtered_title}... (<a href="/gridref/{$gridref}{if $extra}?{$extra}{/if}">Remove Filter</a>)</p></blockquote>
 			{/if}
 
-			{foreach from=$images item=image}
-				<div style="float:left;" class="photo33"><div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
-				<div class="caption"><div class="minheightprop" style="height:2.5em"></div>{if $mode != 'normal'}<a title="view full size image" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
-				<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
-				</div>
-			{/foreach}
+			{if $sample}
+				<br/><br/>
+				{foreach from=$images item=image}
+					<div class="photo33" style="float:left;text-align:left;width:420px;height:{$thumbh}px;padding:5px">
+					<div style="height:{$thumbh}px;vertical-align:middle;float:left;position:relative;padding:3px"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
+					<div class="caption" style="clear:none">{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
+					<div class="statuscaption" style="clear:none">by <a href="{$image->profile_link}">{$image->realname}</a></div>
+					</div>
+				{/foreach}			
+			{else}
+				{foreach from=$images item=image}
+					<div style="float:left;" class="photo33"><div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
+					<div class="caption"><div class="minheightprop" style="height:2.5em"></div>{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
+					<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
+					</div>
+				{/foreach}
+			{/if}
 			<br style="clear:left;"/>&nbsp;
 			
 			{if $mode eq 'takenfrom'}
@@ -357,7 +369,7 @@
 				<div class="interestBox">| <a href="/search.php?searchtext={$gridref}+-gridref:{$gridref}&amp;displayclass=gmap&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1&amp;resultsperpage=50">View these photos on a Map</a> | <a href="/search.php?searchtext={$gridref}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Find all images about this square</a> |</div>
 			{/if}
 			{if $sample}
-				<div class="interestBox">|  <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View all {$imagecount} images page by page &gt;&gt;&gt;</a> |</div><br/>
+				<div class="interestBox"> Explore more images in this square: | <a href="{linktoself name="by" value="1"}">View <b>Filtering options</b></a> | <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View all {$imagecount} images page by page &gt;&gt;&gt;</a> |</div><br/>
 			{/if}
 		{/if}
 	{/if}
@@ -387,5 +399,8 @@
 	{/if}
 	</ul>
 {/if}
+
+<p>&nbsp;&middot; <small>This is an experiment with a new style browse page, <a href="{linktoself name="old" value="1"}">revert to old style page</a>.</small></p>
+
 {include file="_std_end.tpl"}
 {/dynamic}
