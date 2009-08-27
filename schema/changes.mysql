@@ -577,3 +577,6 @@ CREATE TABLE `geocubes` (
   PRIMARY KEY (`gridimage_id`),
   KEY `outstanding` (`outstanding`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+alter table user add deceased_date date DEFAULT NULL;

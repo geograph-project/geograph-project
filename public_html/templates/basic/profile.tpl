@@ -54,21 +54,13 @@
 <ul>
 	<li><b>Name</b>: {$profile->realname|escape:'html'}</li>
 
-	<li><b>Nickname</b>: 
-		{if $profile->nickname}
-			{$profile->nickname|escape:'html'} 
-		{else}
-			<i>n/a</i>
-		{/if}
-	</li>
+	{if $profile->nickname}
+		<li><b>Nickname</b>:{$profile->nickname|escape:'html'}</li>
+	{/if}
 
-	<li><b>Website</b>: 
-		{if $profile->website}
-			{external href=$profile->website}
-		{else}
-			<i>n/a</i>
-		{/if}
-	</li>
+	{if $profile->website}
+		<li><b>Website</b>:{external href=$profile->website}</li>
+	{/if}
  
  	{if $profile->hasPerm('dormant',true)}
  		<!--<li><i>We do not hold contact details for this user.</i></li>-->
@@ -83,19 +75,25 @@
 		</li>
 	{/if}
 
-	{if $profile->grid_reference}
-		<li><b>Home grid reference</b>: 
-		<a href="/gridref/{$profile->grid_reference|escape:'html'}">{$profile->grid_reference|escape:'html'}</a>
-	{/if}
+	{if $profile->deceased_date}
+		<li><b>Member</b>:  {$profile->signup_date|date_format:"%B %Y"} - {$profile->deceased_date|date_format:"%B %Y"}</li>
+	{else}
+		{if $profile->grid_reference}
+			<li><b>Home grid reference</b>: 
+			<a href="/gridref/{$profile->grid_reference|escape:'html'}">{$profile->grid_reference|escape:'html'}</a>
+		{/if}
 	
-	<li><b>Member since</b>: 
-		{$profile->signup_date|date_format:"%B %Y"}
-	</li>
+		<li><b>Member since</b>: 
+			{$profile->signup_date|date_format:"%B %Y"}
+		</li>
+	{/if}
 </ul>
 
 {if $profile->about_yourself && $profile->public_about}
 	<div class="caption" style="background-color:#dddddd; padding:10px;">
+	{if !$profile->deceased_date}
 	<h2 style="margin-top:0px;margin-bottom:0px">About Me</h2>
+	{/if}
 	{$profile->about_yourself|TruncateWithExpand:'(<small>this is a preview only</small>) <big>Click here to <b>Read More</b></big>...'|nl2br|GeographLinks:true}</div>
 {/if}
 
@@ -111,7 +109,11 @@
  		{if $profile->stats.images > 2}
 		<div style="float:right; position:relative; margin-top:0px; font-size:0.7em">View Breakdown by <a href="/statistics/breakdown.php?by=status&u={$profile->user_id}" rel="nofollow">Classification</a>, <a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}" rel="nofollow">Date Taken</a> or <a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}" rel="nofollow">Myriad</a><sup><a href="/help/squares" title="What is a Myriad?">?</a></sup>.</div>
 		{/if}
+		{if $profile->deceased_date}
+		<h3 style="margin-top:0px;margin-bottom:0px">Statistics</h3>
+		{else}
 		<h3 style="margin-top:0px;margin-bottom:0px">My Statistics</h3>
+		{/if}
 		<ul>
 			{if $profile->stats.points}
 				<li><b>{$profile->stats.points}</b> Geograph points <sup>(see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)</sup>
@@ -212,8 +214,10 @@
 		{/if}
 		{/dynamic}
 	{/if}
-	<h3 style="margin-bottom:0px">Explore My Images</h3>
 
+	{if !$profile->deceased_date}
+		<h3 style="margin-bottom:0px">Explore My Images</h3>
+	{/if}
 	<ul>
 		
 		<li><b>Maps</b>: {if $profile->stats.images gt 10}<a href="/profile/{$profile->user_id}/map" rel="nofollow">Personalised Geograph Map</a> or {/if} Recent Photos on <a href="http://maps.google.co.uk/maps?q=http://{$http_host}/profile/{$profile->user_id}/feed/recent.kml&ie=UTF8&om=1">Google Maps</a></li>
