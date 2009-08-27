@@ -229,7 +229,7 @@
 	{if $breakdown}
 		{* We want to display a breakdown list *}
 		<blockquote>
-		<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images <b>{if filtered_title}{$filtered_title},{/if} by {$breakdown_title}</b>:</p>
+		<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images <b>{if $filtered_title}{$filtered_title},{/if} by {$breakdown_title}</b>:</p>
 
 		{if $by eq 'centi' || $by eq 'viewcenti' }
 			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6figure grid reference.</small></p>
@@ -285,26 +285,25 @@
 				</ul>
 			{/if}
 		{else}
-		{if !$ht}
-			<span style="color:gray; font-size:0.8em">{if $breakdown_count> 20}Random 20 groupings{else}The groupings will{/if} show an example image [total number in brackets].</span>
-		{/if}
-			<ul style="margin-top:0">
+			{if !$ht}
+				<span style="color:gray; font-size:0.8em">{if $breakdown_count> 20}Random 20 groupings{else}The groupings will{/if} show an example image [total number in brackets].</span>
+			{/if}
+			<table>
 			{foreach from=$breakdown item=b}
 				
 				{if $b.image}
-					<div class="photo33" style="float:left;padding:2px;margin:2px">
-					<div class="interestBox" style="height:2.4em;padding:1px;margin:-2px"><a href="{$b.link}">{$b.name}</a> <b>[{$b.count}]</b></div><br/><br/>
+					<tr><td><a href="{$b.link}">{$b.name}</a> <b>[{$b.count}]</b></td>
 					
 					
-					<div style="height:{$thumbh}px;vertical-align:middle"><a title="{$b.image->grid_reference} : {$b.image->title|escape:'html'} by {$b.image->realname} {$b.image->dist_string} - click to view full size image" href="/photo/{$b.image->gridimage_id}">{$b.image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
-					<div class="caption"><div class="minheightprop" style="height:2.5em"></div>{if $mode != 'normal'}<a title="view full size image" href="/gridref/{$b.image->grid_reference}">{$b.image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$b.image->gridimage_id}">{$b.image->title|escape:'html'}</a><div class="minheightclear"></div></div>
-					<div class="statuscaption">by <a href="{$b.image->profile_link}">{$b.image->realname}</a></div>
-					</div>
+					<td><a title="{$b.image->grid_reference} : {$b.image->title|escape:'html'} by {$b.image->realname} {$b.image->dist_string} - click to view full size image" href="/photo/{$b.image->gridimage_id}">{$b.image->getThumbnail($thumbw,$thumbh,false,true)}</a></td>
+					<td><div class="caption">{if $mode != 'normal'}<a href="/gridref/{$b.image->grid_reference}">{$b.image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$b.image->gridimage_id}">{$b.image->title|escape:'html'}</a></div>
+					<div class="statuscaption">by <a href="{$b.image->profile_link}">{$b.image->realname}</a></div></td>
+					</tr>
 				{else}
-					<li style="clear:both"><a href="{$b.link}">{$b.name}</a> [{$b.count}]</li>
+					<tr><td colspan="3">&middot; <a href="{$b.link}">{$b.name}</a> [{$b.count}]</td></tr>
 				{/if}
 			{/foreach}
-			</ul>	
+			</table>	
 		{/if}
 		<br style="clear:both" />
 		<p>{if $imagecount < 15}<a href="/gridref/{$gridref}?by=1{if $extra}?{$extra}{/if}">&lt;&lt; Choose a different filter method</a></p>{/if}
@@ -314,7 +313,7 @@
 		{if $breakdowns}
 			{* We want to choose a breakdown criteria to show *}
 
-			<blockquote><p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select how you would like to view the images</p></blockquote>
+			<blockquote><p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select a method to browse the images:</p></blockquote>
 
 			{if $image}
 			<div style="float:right;" class="photo33"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160,false,true)}</a>
@@ -326,28 +325,13 @@
 			
 			<ul>
 			{foreach from=$breakdowns item=b}
-				<li><a href="/gridref/{$gridref}?by={$b.type}{$extra}">{$b.name}</a> [{$b.count}]</li>
+				<li>by <a href="/gridref/{$gridref}?by={$b.type}{$extra}">{$b.name}</a> [{$b.count}]</li>
 			{/foreach}
 
 			<li style="margin-top:10px;">Clustering: <a href="/search.php?gridref={$gridref}&amp;cluster2=1&amp;orderby=label">Automatic</a><sup style="color:red">Experimental</sup>, 
 				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imageclass%2B&amp;orderby=imageclass&amp;do=1">Category</a>, 
 				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=realname%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Contributor</a> or
 				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imagetaken%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Date Taken</a> <sup style="color:red">New!</sup></li>
-
-			<li style="margin-top:10px;">
-			<form method="get" action="/search.php">
-				Or <b>search within images in this square</b>:<br/> 
-				<div class="interestBox" style="width:400px">
-				<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="30"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
-				<input type="submit" value="Search"/><br/>
-				<input type="hidden" name="location" value="{$gridref}"/>
-				<input type="radio" name="distance" value="1" checked id="d1"/><label for="d1">In {$gridref} only</label> /
-				<input type="radio" name="distance" value="3" id="d3"/><label for="d1">including surrounding squares</label><br/>
-				<input type="checkbox" name="displayclass" value="thumbs" id="dc"/><label for="dc">Show thumbnails only</label> <small>(<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Direct Link</a>)</small>
-				<input type="hidden" name="do" value="1"/>
-				</div>
-				<small>(leave keywords box blank to simply page though all images)</small><br/>
-			</form></li>
 
 			</ul>
 			<br style="clear:both"/>

@@ -190,7 +190,7 @@
 	{if $breakdown}
 		{* We want to display a breakdown list *}
 		<blockquote>
-		<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images <b>{if filtered_title}{$filtered_title},{/if} by {$breakdown_title}</b>:</p>
+		<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images <b>{if $filtered_title}{$filtered_title},{/if} by {$breakdown_title}</b>:</p>
 
 		{if $by eq 'centi' || $by eq 'viewcenti' }
 			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6figure grid reference.</small></p>
