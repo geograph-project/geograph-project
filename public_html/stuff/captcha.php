@@ -46,7 +46,18 @@ if (!empty($_GET['token'])) {
 			customExpiresHeader(3600*24*48,true);
 			
 			$image = new GridImage;
-			$image->loadFromId($id);
+			$ok = $image->loadFromId($id);
+
+	if (!$ok || $image->moderation_status=='rejected') {
+		//clear the image
+		$image=new GridImage;
+		header("HTTP/1.0 410 Gone");
+		header("Status: 410 Gone");
+		$template = "static_404.tpl";
+		exit;
+	}
+
+
 			$details = $image->getThumbnail(213,160,2);
 			$url = $details['url'];
 			
@@ -60,7 +71,11 @@ if (!empty($_GET['token'])) {
 	$token=new Token;
 	$token->setValue("id", intval($_GET['id']));
 
-	print "TOKEN: <TT>".$token->getToken()."</TT>";
+#	print "TOKEN: <TT>".$token->getToken()."</TT>";
+
+	print "<p>Copy/Paste all this into a forum thread..</p>";
+	print "<p><input size=110 value=\"[img]http://www.geograph.org.uk/stuff/captcha.php?token=".$token->getToken()."&amp;/med.jpg[/img]\"></p>";
+
 	exit;
 }
 

@@ -48,6 +48,10 @@ if (!$USER->hasPerm("basic")) {
 	exit;
 }
 
+if (!empty($_REQUEST['use_autocomplete'])) {
+	$USER->use_autocomplete = 1;
+}
+
 if (isset($_SESSION['tab'])) {
 	$selectedtab=$_SESSION['tab'];
 } else {
@@ -450,18 +454,7 @@ if (isset($_POST['gridsquare']))
 					$_SESSION['last_imagetaken'] = $_POST['imagetaken'];
 				}
 				
-				//clear user profile
-				$ab=floor($USER->user_id/10000);
-				$smarty->clear_cache(null, "user$ab|{$USER->user_id}");
-				
-				if ($memcache->valid) {
-					//the submit list
-					$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by submitted desc limit 6");
-					$memcache->name_delete('gi',$mkey);
-					//the browse page for the user (to show pending)
-					$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by ftf desc,gridimage_id");
-					$memcache->name_delete('gi',$mkey);
-				}
+				$clear_cache = 1;
 				
 				if (!$err)
 					$smarty->assign('gridimage_id', $uploadmanager->gridimage_id);
@@ -696,5 +689,23 @@ $smarty->assign('step', $step);
 
 $smarty->display('submit.tpl');
 
+if (!empty($clear_cache)) {
+
+	flush();
+
+	//clear user profile
+	$ab=floor($USER->user_id/10000);
+	$smarty->clear_cache(null, "user$ab|{$USER->user_id}");
+		
+	if ($memcache->valid) {
+		//the submit list
+		$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by submitted desc limit 6");
+		$memcache->name_delete('gi',$mkey);
+		//the browse page for the user (to show pending)
+		$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by ftf desc,gridimage_id");
+		$memcache->name_delete('gi',$mkey);
+	}
+
+}
 	
 ?>

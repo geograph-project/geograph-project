@@ -27,6 +27,12 @@ init_session();
 
 $smarty = new GeographPage;
 
+	//lets hobble this!
+	header("HTTP/1.1 503 Service Unavailable");
+	$smarty->display('function_disabled.tpl');
+	exit;
+
+
 $template='stuff_feedback.tpl';
 
 $cacheid='';

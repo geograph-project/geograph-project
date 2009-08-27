@@ -172,7 +172,7 @@ if (isset($sphinx)) {
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?q=".urlencode($sphinx->q).(($pg>1)?"&amp;page=$pg":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
 
 	if ($format == 'MEDIA') {
-		$rss->link =  "http://{$_SERVER['HTTP_HOST']}/search.php?q=".urlencode($sphinx->$q).(($pg>1)?"&amp;page=$pg":'');
+		$rss->link =  "http://{$_SERVER['HTTP_HOST']}/search.php?q=".urlencode($sphinx->q).(($pg>1)?"&amp;page=$pg":'');
 		if ($pg>1) {
 			$prev = $pg - 1;
 			$rss->prevURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?q=".urlencode($sphinx->q).(($prev>1)?"&amp;page=$prev":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');

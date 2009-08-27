@@ -21,6 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+ini_set("display_errors",true);
+
 require_once('geograph/global.inc.php');
 init_session();
 
@@ -138,12 +140,13 @@ if (!$smarty->is_cached($template, $cacheid))
 		require_once('geograph/searchcriteria.class.php');
 		require_once('geograph/searchengine.class.php');
 		
+		$checked = 0 ;
+
 		foreach ($queries as $idx => $row) {
 		
 			$mkey = $row['id'];
-			
 			$queries[$idx]['image'] =& $memcache->name_get('fse',$mkey);
-			if (empty($queries[$idx]['image'])) {
+			if (empty($queries[$idx]['image']) && $checked < 10) {
 			
 				$engine = new SearchEngine($row['id']);
 				$engine->criteria->resultsperpage = 1; //override it
@@ -153,6 +156,7 @@ if (!$smarty->is_cached($template, $cacheid))
 					
 					$memcache->name_set('fse',$mkey,$queries[$idx]['image'],$memcache->compress,3600*6*rand(3,10));
 				}
+				$checked++;
 			}
 			
 		}

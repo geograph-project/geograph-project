@@ -119,6 +119,8 @@ geographing</a> first.</p>
 		<li>Subject grid-reference from the name of the file (eg "<tt>photo-<b style="padding:1px">TQ435646</b>A.jpg</tt>")</li>
 		<li>Subject grid-reference in EXIF Comment tag</li>
 		</ul></div>
+			
+		<p><sup style=color:red>New!</sup> the <a href="#" onclick="tabClick('tab','div',6,6); return false">experimental Multi-Upload tool</a>, now understands tagged images like this upload box does.</p>
 	</div>
 
 	<div style="position:relative;{if $tab != 4}display:none{/if}" class="interestBox" id="div4">
@@ -147,6 +149,10 @@ geographing</a> first.</p>
 	</div>
 	
 </div>
+	{if !$user->use_autocomplete}
+	(<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Tick this box, to try a new auto-complete text entry for image category selection, rather than dropdown. Change permanently on your <a href="/profile.php?edit=1">profile settings page</a></label>)	
+	{/if}
+
 	<br/><br/><br/>
 	<p>If you are unsure of the photo location there are a number of online 
 		sources available to help:</p>
@@ -214,8 +220,6 @@ geographing</a> first.</p>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
 		<label for="jpeg"><b>JPEG Image File</b></label>
 		<input id="jpeg" name="jpeg" type="file" />
-		
-		{if $picnik_api_key}<br/><br/>or <input type="submit" name="picnik" value="Upload Image via Picnik.com"/>{/if}
 		
 		{/if}
 		<div><small><small style="color:gray"><i>If your image is over 640 pixels in either direction, it will be resized. If you have presized please aim to have the filesize under 100kb and in anycase under 200kb, thanks!</i></small></small></div>

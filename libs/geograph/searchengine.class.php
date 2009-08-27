@@ -137,7 +137,7 @@ class SearchEngine
 			
 			} elseif (empty($row['key']) || is_null($row['key'])) {
 				$bad = 1;
-			} elseif ($row['rows'] > 20000 && !empty($row['Extra'])) {
+			} elseif ($row['rows'] > 20000 && !empty($row['Extra']) && $row['key'] != 'label') {
 				$bad = 1;
 			}
 		}

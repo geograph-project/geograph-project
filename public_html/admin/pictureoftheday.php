@@ -135,7 +135,7 @@ if (!$smarty->is_cached($template, $cacheid))
 					//woo yay - go for it
 					$db->Execute("insert into gridimage_daily(gridimage_id,showday)values($gridimage_id,$showday)");
 					if ($showday=="NULL")
-						$smarty->assign("confirm","Image $gridimage_id will be shown on a day when no image has been assigned");
+						$smarty->assign("confirm","Image $gridimage_id has been added to the pool");
 					else
 						$smarty->assign("confirm","Image $gridimage_id will be shown on $d");
 				}
@@ -166,7 +166,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$coming_up=$db->GetAssoc("select showday,gridimage_id,1 as assigned from gridimage_daily where to_days(showday)-to_days(now()) between 0 and $days");
 	
 	//get ordered list of pool images
-	$pool=$db->GetCol("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null and (vote_baysian > 3) order by moderation_status+0 desc,(abs(datediff(now(),imagetaken)) mod 365 div 14) asc,crc32(gridimage_id) desc limit $days");
+	$pool=$db->GetCol("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null and (vote_baysian > 3.5) order by moderation_status+0 desc,(abs(datediff(now(),imagetaken)) mod 365 div 14)-if(rand()>0.7,7,0) asc,crc32(gridimage_id) desc limit $days");
 	
 	
 	//fill in blanks
