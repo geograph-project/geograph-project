@@ -129,13 +129,13 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 {if $image->credit_realname}
 	<dt>Photographer</dt>
-	 <dd>{$image->realname|escape:'html'}</dd>
+	 <dd property="dc:creator">{$image->realname|escape:'html'}</dd>
 
 	<dt>Contributed by</dt>
 	 <dd><a title="View profile" href="/profile/{$image->user_id}">{$image->user_realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->user_realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {else}
 	<dt>Photographer</dt>
-	 <dd><a title="View profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
+	 <dd><a title="View profile" href="{$image->profile_link}" property="dc:creator">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {/if}
 
 <dt>Image classification</dt>
