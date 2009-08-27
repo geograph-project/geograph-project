@@ -148,13 +148,28 @@ if ($image->isValid())
 	}
 	@$_SESSION['photos'][$image->gridimage_id]++;
 
+	$ref = @parse_url($_SERVER['HTTP_REFERER']);
+	if (!empty($ref['query'])) {
+		$ref_query = array();
+		parse_str($ref['query'], $ref_query);
+		
+		if (strpos($ref['host'],'images.google.') === 0 && !empty($ref_query['prev'])) {
+			$ref = @parse_url('http://'.$ref['host'].urldecode($ref_query['prev']));
+			parse_str($ref['query'], $ref_query);
+		}
+	}
+
 	if (!empty($CONF['sphinx_host']) 
-		&& stripos($_SERVER['HTTP_REFERER'],$CONF['CONTENT_HOST']) === FALSE 
-		&& stripos($_SERVER['HTTP_REFERER'],$_SERVER['HTTP_HOST']) === FALSE
-		&& preg_match('/\b(q|query|qry|search|su|searchfor|s|qs|p|key|buscar|w)=([\w%\+\.\(\)\"\':]+)(\&|$)/',$_SERVER['HTTP_REFERER'],$m) 
-		&& !is_numeric($m[2])
-		&& ($q = trim(preg_replace('/\b(geograph|photo|image|picture|site:[\w\.-]+|inurl:[\w\.-]+)s?\b/','',urldecode($m[2]) )) )
+		&& count($ref_query) > 0
+		&& ( $intersect = array_intersect(array('q','query','qry','search','su','searchfor','s','qs','p','key','buscar','w'),array_keys($ref_query)) )
+		&& ( $key = @array_shift($intersect) )
+		&& !is_numeric($ref_query[$key])
+		&& ($q = trim(preg_replace('/\b(geograph|photo|image|picture|site:[\w\.-]+|inurl:[\w\.-]+)s?\b/','',$ref_query[$key] )) )
 		&& strlen($q) > 3 ) {
+		
+		if ($m[1] == 'prev' && preg_match('/\b(q|query|qry)=([\w%\+\.\(\)\"\':]+)(\&|$)/',$q,$m)) {
+			$q = trim(urldecode($m[2]));
+		}
 		
 		$smarty->assign("search_keywords",$q);
 		
@@ -210,6 +225,5 @@ function smarty_function_hidekeywords($input) {
 $smarty->register_modifier("hidekeywords", "smarty_function_hidekeywords");
 
 $smarty->display($template, $cacheid);
-
 
 ?>
