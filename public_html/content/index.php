@@ -63,6 +63,27 @@ customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
 $smarty->assign("inline",$inline);
 
+
+$order = (isset($_GET['order']) && ctype_lower($_GET['order']))?$_GET['order']:'updated';
+
+switch ($order) {
+	case 'relevance': $sql_order = "NULL"; //will be fixed later
+		$title = "Relevance"; break;
+	case 'views': $sql_order = "views desc";
+		$title = "Most Viewed"; break;
+	case 'created': $sql_order = "created desc";
+		$title = "Recently Created"; break;
+	case 'title': $sql_order = "title";
+		$title = "By Content Title";break;
+	case 'updated':
+	default: $sql_order = "updated desc";
+		$title = "Recently Updated";
+		$order = 'updated';
+}
+$smarty->assign("order",$order);
+$orders = array('views'=>'Most Viewed','created'=>'Recently Created','title'=>'Alphabetical','updated'=>'Last Updated');
+
+
 if (($template == 'content_iframe.tpl' || $inline) && !$smarty->is_cached($template, $cacheid))
 {
 	$extra = $inline?'':'inner';
@@ -71,24 +92,7 @@ if (($template == 'content_iframe.tpl' || $inline) && !$smarty->is_cached($templ
 	
 	#$pg = empty($_GET['page'])?1:intval($_GET['page']);
 	
-	$order = (isset($_GET['order']) && ctype_lower($_GET['order']))?$_GET['order']:'updated';
 
-	
-	switch ($order) {
-		case 'views': $sql_order = "views desc";
-			$title = "Most Viewed"; break;
-		case 'created': $sql_order = "created desc";
-			$title = "Recently Created"; break;
-		case 'title': $sql_order = "title";
-			$title = "By Content Title";break;
-		case 'updated':
-		default: $sql_order = "updated desc";
-			$title = "Recently Updated";
-			$order = 'updated';
-	}
-	$smarty->assign("order",$order);
-	$orders = array('views'=>'Most Viewed','created'=>'Recently Created','title'=>'Alphabetical','updated'=>'Last Updated');
-	$smarty->assign_by_ref("orders",$orders);
 	$extra .= "&amp;order={$order}";
 	
 	
@@ -134,11 +138,16 @@ if (($template == 'content_iframe.tpl' || $inline) && !$smarty->is_cached($templ
 		
 		if (count($ids)) {
 			$where = "content_id IN(".join(",",$ids).")";
+			if ($order == 'relevance') {
+				$sql_order = "FIELD(content_id,".join(",",$ids).")";
+			}
 		} else {
 			$where = "0";
 		}
 		$resultCount = $sphinx->resultCount;
 		$numberOfPages = $sphinx->numberOfPages;
+		
+		$orders['relevance'] = 'Relevance';
 		
 		// --------------
 	} elseif (isset($_GET['docs'])) {
@@ -227,6 +236,8 @@ if (!empty($_GET['debug'])) {
 	$smarty->assign_by_ref('list', $list);
 	$smarty->assign_by_ref('title', $title);
 	$smarty->assign('extra', $extra);
+	$smarty->assign_by_ref("orders",$orders);
+	
 	
 	if (!empty($_SERVER['QUERY_STRING']) && preg_match("/^[\w&;=+ %]/",$_SERVER['QUERY_STRING'])) {
 		$smarty->assign('extra_raw', "&amp;".htmlentities(preg_replace('/^&+/','',$_SERVER['QUERY_STRING'])));
@@ -269,20 +280,7 @@ if (($template == 'content.tpl' || $inline)  && !$smarty->is_cached($template, $
 	$smarty->assign('words', array_slice($a,0,50));
 
 	if (!empty($_SERVER['QUERY_STRING']) && preg_match("/^[\w&;=+ %]/",$_SERVER['QUERY_STRING'])) {
-	
-		$order = (isset($_GET['order']) && ctype_lower($_GET['order']))?$_GET['order']:'updated';
-		switch ($order) {
-			case 'views': 
-				$title = "Most Viewed"; break;
-			case 'created':
-				$title = "Recently Created"; break;
-			case 'title':
-				$title = "By Content Title";break;
-			case 'updated':
-			default: 
-				$title = "Recently Updated";
-		}
-		
+			
 		if (!empty($_GET['user_id']) && preg_match('/^\d+$/',$_GET['user_id'])) {
 			$profile=new GeographUser($_GET['user_id']);
 			$title = "By ".($profile->realname);
