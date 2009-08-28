@@ -27,12 +27,6 @@ init_session();
 
 $smarty = new GeographPage;
 
-	//lets hobble this!
-	header("HTTP/1.1 503 Service Unavailable");
-	$smarty->display('function_disabled.tpl');
-	exit;
-
-
 $template='stuff_feedback.tpl';
 
 $cacheid='';
@@ -60,6 +54,13 @@ if (!empty($_POST['submit'])) {
 	$msg=stripslashes(trim($_POST['comments']));
 	if (!empty($msg)) {
 		$msg.="\n\n-------------------------------\n";
+		if (!empty($_POST['template'])) {
+			$msg.="Template: {$_POST['template']}\n";
+			if (!empty($_POST['referring_page'])) {
+				$msg.="Referring page: ".$_POST['referring_page']."\n";
+			}
+			$msg.="Page: {$_SERVER['HTTP_REFERER']}\n";
+		}
 		if (!empty($_POST['nonanon']) && $_SESSION['user']->user_id) {
 			$msg.="User profile: http://{$_SERVER['HTTP_HOST']}/profile/{$_SESSION['user']->user_id}\n";
 			$from = $_SESSION['user']->email;

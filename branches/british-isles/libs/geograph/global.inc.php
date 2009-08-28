@@ -409,6 +409,7 @@ class GeographPage extends Smarty
 		if (!empty($this->disable_caching)) {
 			$this->caching = 0;
 		}
+		parent::assign("smarty_template",$template);
 		$ret = parent::display($template, $cache_id, $compile_id);
 
 		//we finished so remove the lock file
