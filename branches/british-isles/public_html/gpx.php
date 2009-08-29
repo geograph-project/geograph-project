@@ -34,59 +34,14 @@ $smarty = new GeographPage;
 $template='gpx.tpl';
 $cacheid = '';
 
-if (isset($_GET['id']))  {
-	init_session();
-
-	$image=new GridImage;
-	
-	$ok = $image->loadFromId($_GET['id'],true);
-
-	if ($ok) {
-		//todo non functionional!
-		$template='gpx_download_gpx.tpl';
-		$cacheid = $image->gridimage_id;
-		
-		//regenerate?
-		if (!$smarty->is_cached($template, $cacheid))
-		{
-			$searchdesc = "squares within {$d}km of {$square->grid_reference} ".(($_REQUEST['type'] == 'with')?'with':'without')." photographs";
-
-
-			$sql = "SELECT grid_reference,x,y,imagecount $sql_fields
-			FROM gridsquare gs
-			WHERE $sql_where
-			ORDER BY $sql_order";
-
-			$db=NewADOConnection($GLOBALS['DSN']);
-			if (!$db) die('Database connection failed');  
-
-			$data = $db->getAll($sql);
-
-			require_once('geograph/conversions.class.php');
-			$conv = new Conversions;				
-			foreach ($data as $q => $row) {
-				list($data[$q]['lat'],$data[$q]['long']) = $conv->internal_to_wgs84($row['x'],$row['y']);
-			}
-
-			$smarty->assign_by_ref('data', $data);
-			$smarty->assign_by_ref('searchdesc', $searchdesc);
-
-		}
-
-		header("Content-type: application/octet-stream");
-		header("Content-Disposition: attachment; filename=\"Geograph{$image->gridimage_id}.gpx\"");
-		customExpiresHeader(3600*24*14,true);
-		
-		$smarty->display($template, $cacheid);
-		exit;
-		
-		
-		exit;
-	} else {
-		
-	}
-}		
-
+$types = array(
+	'all'=>'regardless of',
+	'with'=>'with',
+	'few'=>'with few',
+	'nogeos'=>'without geograph',
+	'norecent'=>'with no recent',
+	'without'=>'with no'
+);
 
 	
 	if (isset($_REQUEST['submit'])) {
@@ -94,12 +49,16 @@ if (isset($_GET['id']))  {
 				
 		$type=(isset($_REQUEST['type']))?stripslashes($_REQUEST['type']):'few';
 		switch($type) {
-			case 'withgeos': $typename = 'with geographs'; $crit = 'has_geographs>0'; break;
-			case 'with': $typename = 'with photographs'; $crit = 'imagecount>0'; break;
-			case 'few': $typename = 'with few photographs'; $crit = 'imagecount<2 and (percent_land > 0 || imagecount>1)'; break;
-			case 'nogeos': $typename = 'without geographs'; $crit = 'has_geographs=0 and percent_land > 0'; break;
-			default: $type = 'without'; $typename = 'without photographs'; $crit = 'imagecount=0 and percent_land > 0'; break;
+			case 'all': $crit = 'percent_land>0'; $d = min($d,10); break;
+			case 'withgeos': $crit = 'has_geographs>0'; break;
+			case 'with': $crit = 'imagecount>0'; break;
+			case 'few': $crit = 'imagecount<2 and (percent_land > 0 || imagecount>1)'; break;
+			case 'nogeos': $crit = 'has_geographs=0 and percent_land > 0'; break;
+			case 'recent': $crit = 'recent_only.gridsquare_id IS NOT NULL'; break;
+			case 'norecent': $crit = 'recent_only.gridsquare_id IS NULL'; break;
+			default: $type = 'without'; $crit = 'imagecount=0 and percent_land > 0'; break;
 		}
+		$typename = $types[$type];
 	
 		$square=new GridSquare;
 		if (!empty($_REQUEST['ll']) && preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$_REQUEST['ll'],$ll)) {
@@ -119,7 +78,7 @@ if (isset($_GET['id']))  {
 			//regenerate?
 			if (!$smarty->is_cached($template, $cacheid))
 			{
-				$searchdesc = "squares within {$d}km of {$square->grid_reference} $typename";
+				$searchdesc = "squares within {$d}km of {$square->grid_reference} $typename photographs";
 				
 				$x = $square->x;
 				$y = $square->y;
@@ -142,10 +101,20 @@ if (isset($_GET['id']))  {
 				$sql_order = ' dist_sqd ';
 
 				
-				$sql = "SELECT grid_reference,x,y,imagecount $sql_fields
-				FROM gridsquare gs
-				WHERE $sql_where
-				ORDER BY $sql_order";
+				if ($type=='norecent' || $type=='recent') {
+	
+					$sql = "SELECT grid_reference,x,y,coalesce(images,0) as imagecount $sql_fields
+					FROM gridsquare gs
+					LEFT JOIN recent_only USING (gridsquare_id)
+					WHERE $sql_where
+					GROUP BY gridsquare_id
+					ORDER BY $sql_order"; 
+				} else {
+					$sql = "SELECT grid_reference,x,y,imagecount $sql_fields
+					FROM gridsquare gs
+					WHERE $sql_where
+					ORDER BY $sql_order";
+				}
 				
 				$db=NewADOConnection($GLOBALS['DSN']);
 				if (!$db) die('Database connection failed');  
@@ -195,6 +164,7 @@ if (isset($_GET['id']))  {
 		}
 	}
 	$smarty->assign('distances', array(1,3,5,10,15,20,30,50,75,100));
+	$smarty->assign_by_ref('types', $types);
 		
 //lets find some recent photos
 new RecentImageList($smarty);
