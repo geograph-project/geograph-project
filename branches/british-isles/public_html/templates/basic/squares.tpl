@@ -48,6 +48,8 @@
 </tbody>
 </table>
  
+ <p><small>'No recent' uses an artbitary cutoff of 5 years, and is only updated on a weekly basis.</small></p>
+ 
  <br style="clear:both"/>
  
 {if $square->reference_index eq 1}
