@@ -32,22 +32,38 @@ init_session();
 $smarty = new GeographPage;
 
 $template = "squares.tpl";
-$cacheid = '';
+$cacheid = 'no';
 
 $max = (isset($_GET['s']) && isset($_GET['p']))?50:30;
 
 $d=(!empty($_REQUEST['distance']))?min($max,intval(stripslashes($_REQUEST['distance']))):5;
-		
+
+$types = array(
+	'all'=>'regardless of',
+	'with'=>'with',
+	'few'=>'with few',
+	'nogeos'=>'without geographs',
+	'norecent'=>'with no recent',
+	'without'=>'with no'
+);
+
 $type=(isset($_REQUEST['type']))?stripslashes($_REQUEST['type']):'few';
 switch($type) {
-	case 'with': $typename = 'with'; $crit = 'imagecount>0'; break;
-	case 'few': $typename = 'with few'; $crit = 'imagecount<2 and (percent_land > 0 || imagecount>1)'; break;
-	default: $type = $typename = 'without'; $crit = 'imagecount=0 and percent_land > 0'; break;
+	case 'all': $crit = 'percent_land>0'; $d = min($d,10); break;
+	case 'with': $crit = 'imagecount>0'; break;
+	case 'few': $crit = 'imagecount<3 and (percent_land > 0 || imagecount>1)'; break;
+	case 'nogeos': $crit = 'has_geographs=0 and percent_land > 0'; break;
+	case 'recent': $crit = 'recent_only.gridsquare_id IS NOT NULL'; break;
+	case 'norecent': $crit = 'recent_only.gridsquare_id IS NULL'; break;
+	default: $type = 'without'; $crit = 'imagecount=0 and percent_land > 0'; break;
 }
+$typename = $types[$type];
+
+	
 	
 $smarty->assign('d', $d);
 $smarty->assign('type', $type);
-			
+$smarty->assign_by_ref('types', $types);			
 
 $square=new GridSquare;
 //set by grid components?
@@ -73,7 +89,7 @@ if ($grid_ok)
 	//regenerate?
 	if (!$smarty->is_cached($template, $cacheid))
 	{
-		$searchdesc = "squares within {$d}km of {$square->grid_reference} $typename photographs";
+		$searchdesc = "Squares within {$d}km of {$square->grid_reference} $typename photographs";
 
 		$x = $square->x;
 		$y = $square->y;
@@ -96,20 +112,30 @@ if ($grid_ok)
 
 		$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
 		$sql_order = ' dist_sqd ';
-
-
-		$sql = "SELECT grid_reference as id,grid_reference,x,y,imagecount $sql_fields
-		FROM gridsquare gs
-		WHERE $sql_where
-		ORDER BY $sql_order
-		LIMIT 250"; ##limt just to make sure
-
+		
+		if ($type=='norecent' || $type=='recent') {
+	
+			$sql = "SELECT grid_reference as id,grid_reference,x,y,images as imagecount $sql_fields
+			FROM gridsquare gs
+			LEFT JOIN recent_only USING (gridsquare_id)
+			WHERE $sql_where
+			GROUP BY gridsquare_id
+			ORDER BY $sql_order
+			LIMIT 1000"; 
+		} else {
+			$sql = "SELECT grid_reference as id,grid_reference,x,y,imagecount $sql_fields
+			FROM gridsquare gs
+			WHERE $sql_where
+			ORDER BY $sql_order
+			LIMIT 1000"; ##limt just to make sure
+		}
+		#print $sql;exit;
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');  
 
 		$data = $db->getAssoc($sql);
 
-		if (($CONF['use_gazetteer'] == 'OS' || $CONF['use_gazetteer'] == 'OS250') && $square->reference_index == 1) {
+		if ($type != 'all' && ($CONF['use_gazetteer'] == 'OS' || $CONF['use_gazetteer'] == 'OS250') && $square->reference_index == 1) {
 			$square->getNatEastings();
 			$gaz = new Gazetteer();
 			$places = $gaz->findListByNational($square->reference_index,$square->nateastings,$square->natnorthings,$d*1000);	
