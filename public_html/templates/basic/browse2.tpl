@@ -104,7 +104,7 @@
 			{/if}
 		</li>
 
-		<li style="margin-top:10px;">
+		<li style="margin-top:4px;">
 		<form method="get" action="/search.php">
 			<div class="interestBox" style="width:320px">
 			<b>Search images in this square</b>:<br/> 
@@ -118,18 +118,18 @@
 		</form></li>
 		
 		{if $by eq 'centi' || $by eq 'viewcenti' }
-		<li style="margin-top:10px"><b>distribution of pictures</b> across the grid square.</b></li>
+		<li style="margin-top:4px"><b>distribution of pictures</b> across the grid square.</b></li>
 		{else}
-		<li style="margin-top:10px"><a href="{linktoself name="by" value="centi"}">See <b>geographical distribution</b> of pictures</a></li>
+		<li style="margin-top:4px"><a href="{linktoself name="by" value="centi"}">See <b>geographical distribution</b> of pictures</a></li>
 		{/if}
 		
 		{if $by}
-		<li style="margin-top:10px"><a href="{linktoself name="by" value="1"}"><b>reset filtering options</b></a></li>
+		<li style="margin-top:4px"><a href="{linktoself name="by" value="1"}"><b>reset filtering options</b></a></li>
 		{else}
-		<li style="margin-top:10px"><a href="{linktoself name="by" value="1"}">Access <b>more filtering options</b></a></li>
+		<li style="margin-top:4px"><a href="{linktoself name="by" value="1"}">Access <b>more filtering options</b></a></li>
 		{/if}
 		
-		<li style="margin-top:10px;"><a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show" class="nowrap">View images in a <b>slideshow</b></a></li>
+		<li style="margin-top:4px">View all images: <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show" class="nowrap"><b>slideshow</b></a>, <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;orderby=submitted&amp;do=1" title="View just thumbnails" class="nowrap"><b>thumbnails</b></a></li>
 		
 	{else}
 		{* There are no images in this square (yet) *}
@@ -147,15 +147,28 @@
 			<ul style="margin-top:5px; padding-left:24px">
 		{/if}
 	{/if}
-		<li style="margin-top:10px"><a href="/submit.php?gridreference={$gridrefraw}"><b>Submit your own picture</b> for {$gridref}</a></li>
+		<li style="margin-top:4px"><a href="/submit.php?gridreference={$gridrefraw}"><b>Submit your own picture</b> for {$gridref}</a></li>
 
-	
+		{if $enable_forums}
+			<li style="margin-top:4px">
+			{if $discuss}
+				There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a 
+				<a href="/discuss/index.php?gridref={$gridref}"><b>discussion</b> about {$gridref}</a> (preview on the left)
+			{else}
+				{if $user->registered} 
+					<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a <b>discussion</b> about {$gridref}</a>
+				{else}
+					<a href="/discuss/index.php?gridref={$gridref}#newtopic">login</a> to start a <b>discussion</b> about {$gridref}</a>
+				{/if}
+			{/if}</li>
+		{/if}
+		
 		{if $gridref6}
-			<li style="margin-top:10px">View <a href="/gridref/{$gridref}?viewcenti={$gridref6}">image(s) <b>taken in {$gridref6}</b></b></a> / <span class="nowrap"><a href="/gridref/{$gridref}?centi={$gridref6}">of <b>subjects in {$gridref6}</b></a> (if any)</span> <sup style="color:red">new!</sup></li>
+			<li style="margin-top:4px">View <a href="/gridref/{$gridref}?viewcenti={$gridref6}">image(s) <b>taken in {$gridref6}</b></b></a> / <span class="nowrap"><a href="/gridref/{$gridref}?centi={$gridref6}">of <b>subjects in {$gridref6}</b></a> (if any)</span> <sup style="color:red">new!</sup></li>
 		{/if}
 		
 		{if $viewpoint_count}
-			<li style="margin-top:10px"><a href="/gridref/{$gridref}?takenfrom">View <b>{$viewpoint_count} images taken <i>from</i> {$gridref}</b></a></li>
+			<li style="margin-top:4px"><a href="/gridref/{$gridref}?takenfrom">View <b>{$viewpoint_count} images taken <i>from</i> {$gridref}</b></a></li>
 		{/if}
 		{if $mention_count}
 			<li><a href="/gridref/{$gridref}?mentioning">View <b>{$mention_count} images <i>mentioning</i> {$gridref}</b></a> <sup style="color:red">new!</sup></li>
