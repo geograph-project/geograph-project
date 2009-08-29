@@ -273,10 +273,10 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 		if (preg_match('/\bgeograph\b/i',$page['category_name'])) {
 			$db->Execute("set @last=0");
-			$users = $db->getAll("select realname,modifier,update_time,if(approved = @last,1,0) as same,@last := approved 
+			$users = $db->getAll("select realname,modifier,if(approved = @last,1,least(@last := approved,0)) as same 
 			from article_revisions 
 			left join user on (article_revisions.modifier = user.user_id)
-			where article_id = {$page['article_id']}");
+			where article_id = {$page['article_id']} order by article_revision_id");
 			$arr = array();
 			foreach ($users as $idx => $row) {
 				if ($row['same'] == 1 && $row['modifier'] != $page['user_id'] && !isset($arr[$row['modifier']])) {
