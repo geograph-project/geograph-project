@@ -48,7 +48,7 @@
 </tbody>
 </table>
  
- <p><small>'No recent' uses an artbitary cutoff of 5 years, and is only updated on a weekly basis.</small></p>
+ <p><small>'with no recent' uses an artbitary cutoff of 5 years, and the list is only updated weekly.</small></p>
  
  <br style="clear:both"/>
  
@@ -59,5 +59,9 @@ and enhanced with the Gazetteer of British Place Names, &copy; Association of Br
 {/if}
 
 <script src="{"/sorttable.js"|revision}"></script>
+{else}
+	{dynamic}
+	<p style="color:red">{$error|escape:'html'}</p>
+	{/dynamic}
 {/if}
 {include file="_std_end.tpl"}

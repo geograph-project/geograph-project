@@ -53,8 +53,8 @@ switch($type) {
 	case 'with': $crit = 'imagecount>0'; break;
 	case 'few': $crit = 'imagecount<3 and (percent_land > 0 || imagecount>1)'; break;
 	case 'nogeos': $crit = 'has_geographs=0 and percent_land > 0'; break;
-	case 'recent': $crit = 'recent_only.gridsquare_id IS NOT NULL'; break;
-	case 'norecent': $crit = 'recent_only.gridsquare_id IS NULL'; break;
+	case 'recent': $crit = 'percent_land > 0 and recent_only.gridsquare_id IS NOT NULL'; break;
+	case 'norecent': $crit = 'percent_land > 0 and recent_only.gridsquare_id IS NULL'; break;
 	default: $type = 'without'; $crit = 'imagecount=0 and percent_land > 0'; break;
 }
 $typename = $types[$type];
@@ -180,8 +180,9 @@ if ($grid_ok)
 
 		$overview->assignToSmarty($smarty, 'overview');
 	} 
-} 
-
+} else {
+	$smarty->assign('error', $square->errormsg);
+}
 
 $smarty->display($template, $cacheid);
 
