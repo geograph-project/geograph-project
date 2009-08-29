@@ -129,7 +129,7 @@ if ($grid_ok)
 			ORDER BY $sql_order
 			LIMIT 1000"; ##limt just to make sure
 		}
-		#print $sql;exit;
+		
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');  
 
