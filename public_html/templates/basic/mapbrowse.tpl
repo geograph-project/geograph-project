@@ -308,6 +308,8 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 	{if ($mapwidth == 100 || !$token_zoomin) && $mosaic_ri == 1}
 		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">Draggable OS
 		{if $mapwidth == 100}<sup style="color:red">New!</sup>{/if}</a>
+	{elseif $mosaic_ri == 1}
+		<a class="tab" id="tab4">Draggable OS <sup style="font-size:0.7em;color:blue">[Zoom in to enable]</sup></a>
 	{/if}
 	{if !$token_zoomin && $mosaic_ri == 1}
 	<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}&amp;centi=1">Centisquares Coverage</a>
