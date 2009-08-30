@@ -101,6 +101,8 @@
 	{if !$moderator && !$remoderate}		
 		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php">Continue &gt;</a>
 		or <a href="/admin/moderation.php?abandon=1">Finish</a> the current moderation session</div>
+	{elseif $remoderate}
+		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php">Continue &gt;</a></div>
 	{/if}
 {else}
 

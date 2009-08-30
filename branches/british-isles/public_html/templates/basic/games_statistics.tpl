@@ -13,7 +13,7 @@
 {if $stats.images}
 <h3>Images</h3>
 
-<p>We currently have <b class="nowrap">{$stats.images|thousends} images</b> playable in the pool, with more being added all the time, a total of <b class="nowrap">{$stats.rates|thousends} ratings</b> have been recorded by <b class="nowrap">{$stats.raters|thousends} volenteers</b>. A further <b class="nowrap">{$stats.gone|thousends} images</b> have been classified as not suitable for game play.</p>
+<p>We currently have <b class="nowrap">{$stats.images|thousends} images</b> playable in the pool, with more being added all the time, a total of <b class="nowrap">{$stats.rates|thousends} ratings</b> have been recorded by <b class="nowrap">{$stats.raters|thousends} volunteers</b>. A further <b class="nowrap">{$stats.gone|thousends} images</b> have been classified as not suitable for game play.</p>
 {/if}
 
 <h3>Games</h3>
