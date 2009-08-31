@@ -32,6 +32,11 @@ print "<script src=\"/sorttable.js\"></script>";
 
 $db = NewADOConnection($GLOBALS['DSN']);
 
+$task = isset($_GET['task'])?$_GET['task']:'yahoo_terms';
+if (!in_array($task,array('yahoo_terms','carrot2'))) {
+	die('ERROR:invalid task');
+}
+
 $tabs = array(
 'all'=>'All Time',
 '24'=>'Last 24 Hours',
@@ -44,42 +49,45 @@ foreach ($tabs as $key => $value) {
 	if (isset($_GET['tab']) && $_GET['tab'] == $key) {
 		print " <b>$value</b> | ";
 	} else {
-		print " <a href=\"?tab=$key\">$value</a> | ";
+		print " <a href=\"?tab=$key&task=$task\">$value</a> | ";
 	}
 }
 print "</p>";
 
 if (isset($_GET['tab']) && $_GET['tab'] == 'all') {
 
-dump_sql_table('
+dump_sql_table("
 select team,sum(terms) as terms,sum(images) as images 
 from at_home_job inner join at_home_worker using(at_home_worker_id) 
-group by team with rollup','All Time');
+where task = '$task'
+group by team with rollup",'All Time');
 
 } elseif (isset($_GET['tab']) && $_GET['tab'] == '24') {
 
-dump_sql_table('select * from (
+dump_sql_table("select * from (
 select at_home_worker_id as worker,team,max(last_contact) as last_contact,sum(terms) as terms,sum(images) as images 
 from at_home_job inner join at_home_worker using(at_home_worker_id)
-where last_contact > date_sub(now(),interval 24 hour) 
+where last_contact > date_sub(now(),interval 24 hour) and task = '$task'
 group by at_home_worker_id) as i
-order by last_contact desc,worker','Last 24 Hours');
-
+order by last_contact desc,worker",'Last 24 Hours');
 
 } elseif (isset($_GET['tab']) && $_GET['tab'] == 'alive') {
 
-dump_sql_table('select at_home_worker_id as worker,team,max(last_contact) as last_contact
+dump_sql_table("select at_home_worker_id as worker,team,max(last_contact) as last_contact
 from at_home_job inner join at_home_worker using(at_home_worker_id)
-where at_home_job.sent > date_sub(now(),interval 2 day)
-group by at_home_worker_id order by last_contact desc,worker','Last Contact');
+where at_home_job.sent > date_sub(now(),interval 2 day) and task = '$task'
+group by at_home_worker_id order by last_contact desc,worker",'Last Contact');
 
 } elseif (isset($_GET['tab']) && $_GET['tab'] == 'joblist') {
 
 dump_sql_table("select at_home_job_id as job,team,at_home_worker_id as wor,images,sent,completed,
 if(last_gridimage_id>0,end_gridimage_id-last_gridimage_id,'?') as togo,repeat('*',if(images>5000,images div (100*((end_gridimage_id-start_gridimage_id+1)/5000)), images div 100)) as progress 
-from at_home_job left join at_home_worker using(at_home_worker_id)",'Lob List');
+from at_home_job left join at_home_worker using(at_home_worker_id)
+where task = '$task'",'Lob List');
 
 } else {
+
+	if ($task == 'yahoo_terms') {
 
 dump_sql_table("
 select if(sent='0000-00-00 00:00:00','Outstanding',if(completed='0000-00-00 00:00:00','In Progress','Finished')) as 'Status',
@@ -87,9 +95,21 @@ count(*) as Jobs,count(distinct if(at_home_worker_id=0,null,at_home_worker_id)) 
 sum(end_gridimage_id-start_gridimage_id+1) as Images,
 sum(images) as 'Processed Images' 
 from at_home_job 
+where task = '$task'
 group by (sent='0000-00-00 00:00:00'),(completed='0000-00-00 00:00:00')",'Job Breakdown');
 
 print "<p>Note: not all jobs are of equal size. Mostly 5000 images, but some are bigger for use by the more powerful clients. Also some clients can work on multiple jobs at once.</p>";
+
+	} else {
+
+dump_sql_table("
+select if(sent='0000-00-00 00:00:00','Outstanding',if(completed='0000-00-00 00:00:00','In Progress','Finished')) as 'Status',
+count(*) as 'Jobs/Squares',count(distinct if(at_home_worker_id=0,null,at_home_worker_id)) as Workers
+from at_home_job 
+where task = '$task'
+group by (sent='0000-00-00 00:00:00'),(completed='0000-00-00 00:00:00')",'Job Breakdown');
+		
+	}
 }
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
