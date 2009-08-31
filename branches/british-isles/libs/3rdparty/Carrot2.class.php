@@ -45,7 +45,7 @@ class Carrot2
 
   public static function createDefault()
   {
-    $carrot = new self('http://localhost:8080/rest/processor');
+    $carrot = new self('http://localhost:8080/dcs/rest');
     return $carrot;
   }
 
@@ -58,19 +58,19 @@ class Carrot2
   {
     $curl   = curl_init($this->baseurl);
     $fields = array(
-      'dcs.default.output' => 'xml',
+      'dcs.output.format' => 'XML',
       'dcs.clusters.only'  => 'true',
-      'c2stream'           => $this->generateXml($query_hint)
+      'dcs.c2stream'           => $this->generateXml($query_hint)
     );
     curl_setopt_array($curl,
       array(
         CURLOPT_POST           => true,
-        CURLOPT_HTTPHEADER     => array('Content-Type: multipart/formdata'),
         CURLOPT_HEADER         => false,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POSTFIELDS     => $fields
       )
     );
+    curl_setopt($curl, CURLOPT_VERBOSE, 1);
     $response = curl_exec($curl);
 
     return $this->extractClusters($response);
