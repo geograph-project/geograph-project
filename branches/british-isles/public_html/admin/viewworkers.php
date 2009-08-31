@@ -57,7 +57,7 @@ print "</p>";
 if (isset($_GET['tab']) && $_GET['tab'] == 'all') {
 
 dump_sql_table("
-select team,sum(terms) as terms,sum(images) as images 
+select team,sum(terms) as terms,sum(images) as images,count(*) as jobs 
 from at_home_job inner join at_home_worker using(at_home_worker_id) 
 where task = '$task'
 group by team with rollup",'All Time');
@@ -65,7 +65,7 @@ group by team with rollup",'All Time');
 } elseif (isset($_GET['tab']) && $_GET['tab'] == '24') {
 
 dump_sql_table("select * from (
-select at_home_worker_id as worker,team,max(last_contact) as last_contact,sum(terms) as terms,sum(images) as images 
+select at_home_worker_id as worker,team,max(last_contact) as last_contact,count(*) as jobs,sum(terms) as terms,sum(images) as images 
 from at_home_job inner join at_home_worker using(at_home_worker_id)
 where last_contact > date_sub(now(),interval 24 hour) and task = '$task'
 group by at_home_worker_id) as i
@@ -83,7 +83,7 @@ group by at_home_worker_id order by last_contact desc,worker",'Last Contact');
 dump_sql_table("select at_home_job_id as job,team,at_home_worker_id as wor,images,sent,completed,
 if(last_gridimage_id>0,end_gridimage_id-last_gridimage_id,'?') as togo,repeat('*',if(images>5000,images div (100*((end_gridimage_id-start_gridimage_id+1)/5000)), images div 100)) as progress 
 from at_home_job left join at_home_worker using(at_home_worker_id)
-where task = '$task'",'Lob List');
+where task = '$task' limit 1000",'Lob List');
 
 } else {
 
@@ -93,6 +93,7 @@ dump_sql_table("
 select if(sent='0000-00-00 00:00:00','Outstanding',if(completed='0000-00-00 00:00:00','In Progress','Finished')) as 'Status',
 count(*) as Jobs,count(distinct if(at_home_worker_id=0,null,at_home_worker_id)) as Workers,
 sum(end_gridimage_id-start_gridimage_id+1) as Images,
+sum(terms) as 'Terms Found', 
 sum(images) as 'Processed Images' 
 from at_home_job 
 where task = '$task'
@@ -104,7 +105,9 @@ print "<p>Note: not all jobs are of equal size. Mostly 5000 images, but some are
 
 dump_sql_table("
 select if(sent='0000-00-00 00:00:00','Outstanding',if(completed='0000-00-00 00:00:00','In Progress','Finished')) as 'Status',
-count(*) as 'Jobs/Squares',count(distinct if(at_home_worker_id=0,null,at_home_worker_id)) as Workers
+count(*) as 'Jobs/Squares',count(distinct if(at_home_worker_id=0,null,at_home_worker_id)) as Workers,
+sum(terms) as 'Clusters Found', 
+sum(images) as 'Processed Images' 
 from at_home_job 
 where task = '$task'
 group by (sent='0000-00-00 00:00:00'),(completed='0000-00-00 00:00:00')",'Job Breakdown');
