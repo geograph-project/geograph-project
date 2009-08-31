@@ -76,6 +76,11 @@ if (!in_array($task,array('yahoo_terms','carrot2'))) {
 }
 
 if (!empty($_GET['worker'])) {
+	
+	if ($_GET['worker'] == 'cookie') {
+		$_GET['worker'] = $_COOKIE['workerToken'];
+	}
+
 	$ok=false;
 	$token=new Token;
 
@@ -101,14 +106,30 @@ if (isset($_GET['getJob'])) {
 		}
 		exit;
 	}
-	
+
 	if ($task == 'yahoo_terms') {
+		if (strpos($_SERVER['HTTP_USER_AGENT'],"Geograph-At-Home") !== 0) {
+                	if (isset($_GET['output']) && $_GET['output']=='json') {
+	                        die("{error: 'There are no jobs left for the Javascript client to work on!'}");
+        	        } else {
+                	        die("Error:There are no jobs left for the Javascript client to work on!");
+	                }
+		}
+
+		if ($worker == 8) {
+			$hours = floor(24/10);
+		} elseif ($worker == 11) {
+			$hours = ceil(24/5);
+		} else {
+			$hours = 24;
+		}
+		
 		//If there is a recent job die - dont want it too often. (but a part completed job is caught above) 	
-		if ($jid = $db->getOne("SELECT at_home_job_id FROM at_home_job WHERE `task` = '$task' AND at_home_worker_id = $worker AND sent > DATE_ADD(DATE_SUB(NOW(),INTERVAL 24 HOUR),INTERVAL 10 MINUTE)")) { 
+		if (empty($_GET['force']) && ($jid = $db->getOne("SELECT at_home_job_id FROM at_home_job WHERE at_home_worker_id = $worker AND sent > DATE_ADD(DATE_SUB(NOW(),INTERVAL $hours HOUR),INTERVAL 10 MINUTE)"))) { 
 			if (isset($_GET['output']) && $_GET['output']=='json') {
-				die("{error: 'You already have a job allocated (id:$jid) in the last 24 hours - we only want one job per worker per 24 hours'}");
+				die("{error: 'You already have a job allocated (id:$jid) in the last $hours hours - we only want one job per worker per $hours hours'}");
 			} else {
-				die("Error:You already have a job allocated (id:$jid) in the last 24 hours - we only want one job per worker per 24 hours");
+				die("Error:You already have a job allocated (id:$jid) in the last $hours hours - we only want one job per worker per $hours hours");
 			}
 		}
 	}
@@ -337,7 +358,7 @@ if (isset($_GET['getJob'])) {
 	$USER->mustHavePerm("admin");
 	  
 	if ($task == 'yahoo_terms') {  
-		$min = $db->getOne("SELECT MAX(end_gridimage_id) FROM at_home_job")+0;
+		$min = $db->getOne("SELECT MAX(end_gridimage_id) FROM at_home_job WHERE (end_gridimage_id-start_gridimage_id+1) >= 5000")+0;
 		$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 
 		if ($min > $max) {
