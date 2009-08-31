@@ -6,40 +6,40 @@
 {dynamic}{if $user->registered}<br/>
 <small>(<input type="checkbox" name="nonanon"/> <i>Tick here to include your name with this comment, so we can then reply</i>)</small>
 {/if}{/dynamic}
-<input type="text" name="template" value="{$smarty_template}|{$smarty.template}"/>
-<input type="text" name="referring_page" value="{$smarty.server.HTTP_REFERER}"/>
+<input type="hidden" name="template" value="{$smarty_template}"/>
+<input type="hidden" name="referring_page" value="{$smarty.server.HTTP_REFERER}"/>
 </form></div>{/if}
 </div>
 </div>
 <div id="nav_block" class="no_print">
  <div class="nav">
   <ul>
-    <li style="font-size:1.42em"><a accesskey="1" title="Home Page" href="/">Home</a></li>
+    <li style="font-size:1.42em"><a accesskey="1" title="Return to the Home Page" href="/">Home</a></li>
     <li>View<ul>
-     <li><a title="Find images" href="/search.php">Search</a></li>
-     <li><a title="View map of all submissions" href="/mapbrowse.php">Map</a> <small style="color:red">Updated!</small></li>
-     <li><a title="Explore Images by Theme" href="/explore/">Explore</a></li>
-     <li><a title="Submitted Content" href="/content/">Content</a></li>
+     <li><a title="Find and locate images" href="/search.php">Search</a></li>
+     <li><a title="View map of all submissions" href="/mapbrowse.php">Maps</a></li>
+     <li><a title="Explore images by theme" href="/explore/">Explore</a></li>
+     <li><a title="Submitted Pages, Galleries and Articles" href="/content/">Collections</a></li>
     </ul></li>
     <li>Interact<ul>
-     <li><a title="Play Games" href="/games/">Games</a></li>
-     <li><a title="Activities" href="/activities/">Activities</a> </li>
-     <li><a title="Discuss" href="/discuss/">Discuss</a></li>
+     <li><a title="Geographical games to play" href="/games/">Games</a></li>
+     <li><a title="Activities on the site" href="/activities/">Activities</a> </li>
+     <li><a title="Discussion Forum" href="/discuss/">Discuss</a></li>
      {dynamic}{if $user->registered}
-     <li><a title="Chat" href="/chat/">Chat</a> {if $irc_seen}<span style="color:gray">({$irc_seen} online)</span>{/if}</li>
-     <li><a title="Find out about local Events" href="/events/">Events</a></li>
+     <li><a title="Chat with other members" href="/chat/">Chat</a> {if $irc_seen}<span style="color:gray">({$irc_seen} online)</span>{/if}</li>
+     <li><a title="Find out about local meetups" href="/events/">Events</a></li>
      {/if}{/dynamic}
     </ul></li>
     <li>Contributors<ul>
-     <li><a title="Submit" href="/submit.php">Submit</a></li>
-     <li><a title="Statistics" href="/numbers.php">Statistics</a></li>
-     <li><a title="Leaderboard" href="/statistics/moversboard.php">Leaderboard</a></li>
+     <li><a title="Submit your photos" href="/submit.php">Submit</a></li>
+     <li><a title="Interesting facts and figures" href="/numbers.php">Statistics</a></li>
+     <li><a title="Contributor leaderboards" href="/statistics/moversboard.php">Leaderboards</a></li>
     </ul></li>
     <li>Further Info<ul>
-     <li><a title="FAQ" href="/faq.php">FAQ</a></li>
-     <li><a title="Geograph Information Documents" href="/content/?docs&amp;order=title">Documents</a></li>
-     <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
-     <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a></li>
+     <li><a title="Frequently Asked Questions" href="/faq.php">FAQ</a></li>
+     <li><a title="Information documents" href="/content/?docs&amp;order=views">Guides, Tutorials</a></li>
+     <li><a title="View a list of all pages" href="/help/sitemap">Sitemap</a></li>
+     <li><a accesskey="9" title="Contact the Geograph Team" href="/contact.php">Contact Us</a></li>
     </ul></li>
   {dynamic}
   {if $is_mod || $is_admin || $is_tickmod}
