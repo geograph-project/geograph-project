@@ -26,7 +26,7 @@ $VERSION = 0.1;
 ####################################
 # Config Section
 
-$geograph_domain = "www.geograph.virtual";
+$geograph_domain = "www.geograph.org.uk";
 
 $worker_token = "";
 #The first time you run script will create a token for you, which will need to enter here
