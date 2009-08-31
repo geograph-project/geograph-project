@@ -45,7 +45,7 @@ class Carrot2
 
   public static function createDefault()
   {
-    $carrot = new self('http://localhost:12345/rest/processor');
+    $carrot = new self('http://localhost:8080/rest/processor');
     return $carrot;
   }
 

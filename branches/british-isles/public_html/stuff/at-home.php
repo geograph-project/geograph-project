@@ -381,7 +381,7 @@ if (isset($_GET['getJob'])) {
 	
 	} elseif ($task == 'carrot2') {
 	
-		$sql = "SELECT gridsquare_id FROM gridsquare_id WHERE imagecount > 2";
+		$sql = "SELECT gridsquare_id FROM gridsquare WHERE imagecount > 2";
 					
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		$recordSet = &$db->Execute($sql);
