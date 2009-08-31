@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$VERSION = 0.1;
+$VERSION = 0.11;
 
 ####################################
 # Config Section
@@ -124,22 +124,28 @@ while (1) {
 	
 	print "\nProcessing Results...\n";
 	
-	$results = $score = $ids = array();
-	foreach ($c as $idx => $cluster) {
-	
-		$results[$idx] = $cluster->label;
-		$score[$idx] = $cluster->score;
-		
-		$ids[$idx] = array();	
-		//covert document_id back to gridimage_id
-		foreach ($cluster->document_ids as $sort_order => $document_id) {
-			$ids[$idx][$sort_order] = $lookup[$document_id];
-		}
-	}
+	if (count($c)) {
+		$results = $score = $ids = array();
+		foreach ($c as $idx => $cluster) {
 
-	print "\n-------\nSubmitting Results and Marking job #$jid as finished\n\n";
-	$message = contactGeograph("submitJobResults=$jid&finalizeJob",array('results'=>$results,'score'=>$score,'ids'=>$ids));
+			$results[$idx] = $cluster->label;
+			$score[$idx] = $cluster->score;
+
+			$ids[$idx] = array();	
+			//covert document_id back to gridimage_id
+			foreach ($cluster->document_ids as $sort_order => $document_id) {
+				$ids[$idx][$sort_order] = $lookup[$document_id];
+			}
+		}
+	
+		print "\n-------\nSubmitting Results and Marking job #$jid as finished\n\n";
+		$message = contactGeograph("submitJobResults=$jid&finalizeJob=$jid",array('results'=>$results,'score'=>$score,'ids'=>$ids));
+	} else {
+		print "\n-------\nMarking job #$jid as finished (as empty)\n\n";
+		$message = contactGeograph("finalizeJob=$jid");
+	}
 	print "$message\n\n";
+	
 	
 	sleep(60);
 }
