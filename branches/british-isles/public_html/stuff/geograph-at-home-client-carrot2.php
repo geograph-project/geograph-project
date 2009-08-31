@@ -139,6 +139,7 @@ while (1) {
 
 	print "\n-------\nSubmitting Results and Marking job #$jid as finished\n\n";
 	$message = contactGeograph("submitJobResults=$jid&finalizeJob",array('results'=>$results,'score'=>$score,'ids'=>$ids));
+	print "$message\n\n";
 	
 	sleep(60);
 }

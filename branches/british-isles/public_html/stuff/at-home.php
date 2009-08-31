@@ -215,8 +215,8 @@ if (isset($_GET['getJob'])) {
 				}
 			}
 			$recordSet->Close(); 
-		} elseif ($task == 'carrot2') {
 		
+		} elseif ($task == 'carrot2') {
 			if (isset($_GET['output']) && $_GET['output']=='json') {
 				die($json->encode(array('error'=>'json not supported')));
 			} else {
@@ -235,7 +235,6 @@ if (isset($_GET['getJob'])) {
 				}
 				while (!$recordSet->EOF) 
 				{
-				
 					$recordSet->fields['comment'] = trim(str_replace(array(chr(150),chr(160),chr(145),chr(146),chr(147),chr(148),chr(163)),' ',$recordSet->fields['comment']));
 					fputcsv($f,$recordSet->fields);
 					$recordSet->MoveNext();
@@ -299,12 +298,12 @@ if (isset($_GET['getJob'])) {
 			$db->Execute("delete gridimage_group.* from gridimage inner join gridimage_group using (gridimage_id) where gridsquare_id = $gridsquare_id and source='carrot2'");
 		
 			foreach ($_POST['results'] as $idx => $str) {
-				foreach ($_POST['ids'] as $sort_order => $gridimage_id) {
-				$updates = array();
+				foreach ($_POST['ids'][$idx] as $sort_order => $gridimage_id) {
+					$updates = array();
 				
 					$updates['gridimage_id'] = $gridimage_id;
 					$updates['label'] = $str;
-					$updates['score'] = $_POST['score'][$idx];
+					$updates['score'] = floatval($_POST['score'][$idx]);
 					$updates['sort_order'] = $sort_order;
 					$updates['source'] = 'carrot2';
 
