@@ -297,6 +297,7 @@ if (isset($_GET['getJob'])) {
 			//delete all current ones.... 
 			$db->Execute("delete gridimage_group.* from gridimage inner join gridimage_group using (gridimage_id) where gridsquare_id = $gridsquare_id and source='carrot2'");
 		
+			$ids = array();
 			foreach ($_POST['results'] as $idx => $str) {
 				foreach ($_POST['ids'][$idx] as $sort_order => $gridimage_id) {
 					$updates = array();
@@ -309,13 +310,17 @@ if (isset($_GET['getJob'])) {
 
 					$db->Execute('INSERT INTO gridimage_group SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 					$c++;
+					$ids[$gridimage_id]=1;
 				}
 			}
 			
 		
 			//finalise in one request!
 			if (isset($_GET['finalizeJob'])) {
-				$db->Execute("UPDATE at_home_job SET `completed`=NOW() WHERE at_home_job_id = {$row['at_home_job_id']} LIMIT 1");
+				$terms = count($_POST['results']);
+				$images = count($ids);
+				
+				$db->Execute("UPDATE at_home_job SET `completed`=NOW(),`last_contact`=NOW(),terms=$terms,images=$images WHERE at_home_job_id = {$row['at_home_job_id']} LIMIT 1");
 			}
 		}
 		
