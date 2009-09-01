@@ -97,8 +97,10 @@ if (!empty($_GET['worker'])) {
 
 if (isset($_GET['getJob'])) {
 	
+	$timeout = ($task == 'yahoo_terms')?'1 MINUTE':"10 MINUTE";
+	
 	//find any jobs not completed - so can be resumed
-	if ($jid = $db->getOne("SELECT at_home_job_id FROM at_home_job WHERE `task` = '$task' AND at_home_worker_id = $worker AND completed = '0000-00-00 00:00:00'")) { 
+	if ($jid = $db->getOne("SELECT at_home_job_id FROM at_home_job WHERE `task` = '$task' AND at_home_worker_id = $worker AND completed = '0000-00-00 00:00:00' AND sent < DATE_SUB(NOW(),INTERVAL $timeout) ")) { 
 		if (isset($_GET['output']) && $_GET['output']=='json') {
 			print "{jobId: $jid}";
 		} else {
