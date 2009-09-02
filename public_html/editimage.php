@@ -324,6 +324,7 @@ if (isset($_REQUEST['id']))
 			$imageclassother=trim(stripslashes($_POST['imageclassother']));
 			$imageclassother=strip_tags($imageclassother);
 
+			$tmp_class = $imageclass;
 			if (strlen($imageclass)==0)
 			{
 				$ok=false;
@@ -332,6 +333,7 @@ if (isset($_REQUEST['id']))
 
 			if ($imageclass=="Other")
 			{
+				$tmp_class = $imageclassother;
 				if (strlen($imageclassother)==0)
 				{
 					$ok=false;
@@ -342,7 +344,11 @@ if (isset($_REQUEST['id']))
 			{
 				$imageclassother="";
 			}
-
+			if (preg_match('/^(Supplemental|Geograph\b|Accept)/i',$tmp_class) && $tmp_class != 'Geograph meet') {
+				$ok=false;
+				$error['imageclass']="Please choose a geographical feature";
+			}
+						
 			//can't always specify this...
 			if (isset($_POST['imagetakenYear']))
 			{

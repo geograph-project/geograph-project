@@ -82,11 +82,13 @@ if (!empty($_REQUEST['q'])) {
 			$results = array();
 			foreach ($ids as $c => $id) {
 				$row = $rows[$id];
-			
-				print $sep;
-				print '"'.trim(addslashes($row)).'"';
+				if (!preg_match('/^(Supplemental|Geograph|Accept)/i',$row['imageclass'])) {
 				
-				$sep = ",";
+					print $sep;
+					print '"'.trim(addslashes($row)).'"';
+
+					$sep = ",";
+				}
 			}
 			print "]\n";
 			

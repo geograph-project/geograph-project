@@ -49,15 +49,17 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (empty($db)) die('Database connection failed');
 
+	$filter = "(imageclass NOT LIKE 'Supplemental%' AND imageclass NOT LIKE 'Geograph%' AND imageclass NOT LIKE 'Accept%')";
+
 	if ($u) {
 		$where = "where submitted > date_sub(now(),interval {$_GET['days']} day) and user_id = $u";
-		$having = isset($_GET['full'])?'':'having cnt>5';
+		$having = isset($_GET['full'])?'':"having cnt>5 and $filter";
 		$table = 'gridimage';
 		$smarty->assign('varname','catListUser');
 		
 		$arr = $db->getCol("select imageclass,count(*) as cnt from $table $where group by imageclass $having");
 	} else {
-		$where = isset($_GET['full'])?'':'where c>5';
+		$where = isset($_GET['full'])?'':"where c>5 and $filter";
 		$table = 'category_stat';
 		$smarty->assign('varname','catList');
 	
