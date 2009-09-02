@@ -399,7 +399,7 @@ if (isset($_GET['fav']) && $i) {
 			$sphinx = new sphinxwrapper($_GET['text']);
 			#$sphinx->processQuery();
 			
-			$data['searchtext'] = (empty($exact)?'':'=').$sphinx->q;
+			$data['searchtext'] = (empty($exact)?'':'=').$sphinx->qclean;
 		}
 		
 
@@ -509,8 +509,13 @@ if (isset($_GET['fav']) && $i) {
 	switch ($data['orderby']) {
 		case 'label': 
 		case 'crc32(label)': 
+		case 'score': 
+		case 'score desc': 
 		case 'grid_reference': break;
 		default: $data['orderby'] = '';
+	}
+	if ($data['orderby'] == 'score desc') {
+		$data['orderby'] = 'score desc,label,sort_order';
 	}
 	
 	$engine = new SearchEngineBuilder('#');
