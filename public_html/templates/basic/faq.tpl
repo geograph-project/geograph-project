@@ -59,6 +59,7 @@ div:target { background-color:orange;padding-bottom:10px; }
  <li><a href="#resize">Do I need to <b>resize</b> my photos? Are there size limits?</a></li>
  <li><a href="#commercial">Why must I agree to allow <b>commercial use</b> of my image?</a></li>
  <li><a href="#legal">What are my <b>legal rights</b> when taking photographs?</a></li>
+ <li><a href="#update">I made a <b>mistake</b> on my submission, how do I <b>change</b> it?</a></li>
  </ul>
 <b>Browsing</b> the site:
  <ul>
@@ -103,7 +104,7 @@ The <b>Geograph Website</b>:
 	<li>It's a free and <a href="#opensource">open online community</a> project for all</li>
 	</ul>
 	
-	<p>See the original <a title="guide to geographing" href="/help/guide">guide to good geographing</a>, and <a title="Geograph Quickstart Guide" href="/article/Geograph-Quickstart-Guide">contributors quickstart guide</a>.</p>
+	<p>See the original <a title="guide to geographing" href="/help/guide">guide to good geographing</a>, <a title="Geograph Quickstart Guide" href="/article/Geograph-Quickstart-Guide"><b>contributors quickstart guide</b></a>, and the <a href="/article/Geograph-Introductory-letter">welcome letter</a>.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
@@ -111,9 +112,9 @@ The <b>Geograph Website</b>:
 <a name="goodgeograph"></a>
 <h3>What makes a good Geograph image?</h3>
 	<ul>
-	<li>You must clearly show at close range one of the main geographical features within the square</li>
-	<li>You should include a short description relating the image to the map square</li>
-	<li>Photographing a subject that could be useful to the child in interpreting a map</li>
+	<li>You must clearly show at close range one of the main geographical features within the square<br/><br/></li>
+	<li>You should include a short description relating the image to the map square<br/><br/></li>
+	<li>Photographing a subject that could be useful to the child in interpreting a map<br/><br/></li>
 	</ul>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
@@ -123,9 +124,9 @@ The <b>Geograph Website</b>:
 <h3>How do I get a geograph point for my image?</h3>
 	<p>If you're the first to submit a proper &quot;geograph&quot; for the grid square
 	you'll get a geograph point added to your profile and the warm glow that comes
-	with it.</p>
+	with it; because many of the easy ones have already been grabbed, getting a geograph point today is a real achievement.</p>
 	
-	<p>We welcome many Geograph images per square, so even if you don't get the point, you are still making a valuable contribution to the project.</p>
+	<p>We welcome many Geograph images per square, so even if you don't get the point, you are still making a valuable contribution to the project. You can earn yourself a personal point by submitting a &quot;geograph&quot; for a square that is new to you.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
@@ -146,9 +147,11 @@ The <b>Geograph Website</b>:
 <h3>Do you accept multiple images per square?</h3>
 	<p>Certainly - the points system is there to encourage people to make that extra effort 
 	to capture squares we don't have photos for yet - but we welcome additional 
-	geograph or supplemental images, perhaps showing a different subject, or a different time of year. Everyone sees 
-	things differently - feel free to give us your take on any square. Some squares have 
-	been done in considerable <a href="/statistics/most_geographed.php" title="squares with good overage">detail</a> - helping to more fully document and add <a href="/moversboard.php?type=depth" title="Depth Weekly Leaderboard">depth</a> to a square.</p>
+	geograph or supplemental images, perhaps showing a different subject, or a different time of year. 
+	You could be gaining yourself a personal point too.</p>
+	
+	<p>Everyone sees things differently - feel free to give us your take on any square. Some squares have 
+	been done in considerable <a href="/statistics/most_geographed.php" title="squares with good overage">detail</a> - helping to more fully document and add <a href="/moversboard.php?type=depth" title="Depth Weekly Leaderboard">depth</a> to a square. In particular watch out for things others may have missed - the coverage maps can help with this.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
@@ -170,7 +173,7 @@ The <b>Geograph Website</b>:
 <div id="change">
 <a name="change"></a>
 <h3>I disagree with the location or title of an image - what can I do?</h3>
-	<p>Our <a href="/help/changes">"Change Request Tickets"</a> allow any registered user 
+	<p>Our <a href="/help/changes">"Change Suggestions"</a> allow any registered user 
 	to suggest a change of grid reference or title/comment
 	information - simply view the full size image and click the "report a problem" link.
 	</p>
@@ -188,6 +191,15 @@ The <b>Geograph Website</b>:
 	</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
+
+<div id="update">
+<a name="update"></a>
+<h3>I made a mistake on my submission, how do I change it?</h3>
+	<p>In the gray bar near the center of the photo page, 
+	is a link &quot;<i>Change Image Details</i>&quot; - click that and fill out the form.</p>
+</div>
+<div class="top"><a href="#top">back to top</a></div>
+
 
 <div id="pages">
 <a name="pages"></a>
@@ -272,20 +284,22 @@ The <b>Geograph Website</b>:
 <div id="use">
 <a name="use"></a>
 <h3>I would be interested in using Geograph content, is that possible?</h3>
-	<p>Please get in <a title="Contact Us" href="/contact.php">contact</a> if you have an idea for reusing images, 
-	beyond what's available via the RSS feeds above, in all likelihood we can provide a <a href="/help/api">feed</a> 
-	to suit your requirements.</p>
+	<div style="float:right"><a href="http://creativecommons.org/licenses/by-sa/2.0/"><img src="http://{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed"/></a></div>
 
-	<p>Images are licensed for re-use under a <a href="#opensource">Creative Commons Licence</a>, see
-	licence details by viewing a full size image. Also look for the "Interested in reusing this image?" link under each image on the main photo page, which outlines easy ways to reuse the image.</p>
+	<p><b>All images are licensed for re-use under a <a href="#opensource">Creative Commons Licence</a></b>, see
+	licence details by viewing a full size image. Also look for the &quot;<i>Interested in reusing this image?</i>&quot; link under each image on the main photo page, which outlines easy ways to reuse the image.</p>
 
-	<p>The entire archive is also available for download via bittorrent - see 
-	{external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk" text="http://torrents.geograph.org.uk"}
-	for details.</p>
+	<blockquote>
+		<p><b>Are you a developer?</b> <br/>maybe looking for <a href="/article/Ways-to-view-Geograph-Images">ways to access images outside the website</a></p>
+	
+		<p>Please get in <a title="Contact Us" href="/contact.php">contact</a> if you have an idea for reusing images, 
+		beyond what's available via the RSS feeds above, in all likelihood we can provide a <a href="/help/api">feed</a> 
+		to suit your requirements.</p>
 
-	<ul>
-	<li>Are you a developer and maybe looking for <a href="/article/Ways-to-view-Geograph-Images">ways to access images outside the website</a>.</li>
-	</ul>
+		<p>The entire archive is also available for download via bittorrent - see 
+		{external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk" text="http://torrents.geograph.org.uk"}
+		for details.</p>
+	</blockquote>
 	
 	<p>We also have a Google Gadget: * {external href="http://www.google.com/ig/add?moduleurl=http%3A%2F%2Fwww.geograph.org.uk%2Fstuff%2Fggadget0.xml" target="_blank" text="Add to my iGoogle page"} * {external href="http://www.google.com/ig/creator?url=http%3A%2F%2Fwww.geograph.org.uk%2Fstuff%2Fggadget0.xml" text="Add to any webpage"} *</p>
 </div>
@@ -294,14 +308,15 @@ The <b>Geograph Website</b>:
 <div id="opensource">
 <a name="opensource"></a>
 <h3>Open source? Creative Commons? What's that all about?</h3>
+
+	<div class="interestBox" style="float:right;width:200px">
+		<b>Find out about <a href="/article/Geograph-for-Developers">getting involved as a developer</a></b>.
+	</div>
+
 	<p>Putting this together requires many people to donate their
 	time or resources, and we wanted to be sure that we created a resource
 	free from commercial exploitation in future. To that end, the site software
 	is available for re-use under the terms of the GNU Public Licence (GPL).</p>
-
-	<ul>
-	<li>If you want to get involved as a developer, <a href="/article/Geograph-for-Developers">see this article</a>.</li>
-	</ul>
 
 	<p>In addition, we require all submitters to adopt a 
 	{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Attribution-ShareAlike"} 
