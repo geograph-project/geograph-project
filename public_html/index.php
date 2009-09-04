@@ -93,7 +93,8 @@ if (!$smarty->is_cached($template, $cacheid))
 			where find_in_set('admin',u.rights)>0 and
 			abs(unix_timestamp(t.topic_time) - unix_timestamp(p.post_time) ) < 10 and
 			t.forum_id=1
-			order by t.topic_time desc limit 3";
+			group by t.topic_id
+                        order by t.topic_time desc limit 3";
 		$news=$db->GetAll($sql);
 		if ($news) 
 		{
