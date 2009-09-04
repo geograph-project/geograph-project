@@ -67,53 +67,54 @@
 {/if}
 {/dynamic}
 
-<form action="{$script_name}?id={$geoevent_id}" method="post">
+{if $item.type == 'signup'}
+	<form action="{$script_name}?id={$geoevent_id}" method="post">
 
-<table class="report sortable" id="events">
-<thead><tr>
-	<td style="width:130px;font-size:0.9em" sorted="asc">Updated</td>
-	<td>Who</td>
-	<td>Message{dynamic}{if $user->registered} <small>(<i>optional</i>, 160 characters max)</small>{/if}{/dynamic}</td>
-	<td>Intention</td>
-</tr></thead>
-<tbody>
-{dynamic}
-{if $user->registered}
-<tr>
-	<td style="font-size:0.9em">{$attendee.updated|date_format:"%a, %e %b %Y"|default:"-"}</td>
-	<td>{$user->realname|escape:"html"}<input type="hidden" name="id" value="{$geoevent_id}"/><input type="hidden" name="attendee" value="{$attendee.geoevent_attendee_id}"/></td>
-	<td><input type="text" name="message" value="{$attendee.message|escape:"html"}" size="64" maxlength="160"/></td>
-	<td><select name="type">
-	{html_options options=$types selected=$attendee.type}
-	</select> </td>
-	<td><input type="submit" value="save"/></td>
-</tr>
-{/if}
-
-{if $list}
-{foreach from=$list item=item}
-	{if $item.geoevent_attendee_id != $attendee.geoevent_attendee_id}
-		{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
-		<tr bgcolor="{$bgcolor}"{if $item.type == 'unable to attend'} class="unable"{/if}>
-			<td sortvalue="{$item.updated}" class="nowrap" style="font-size:0.9em"><b>{$item.updated|date_format:"%a, %e %b %Y"}</b></td>
-			<td sortvalue="{$item.realname|escape:"html"}"><a href="/profile/{$item.user_id}">{$item.realname|escape:"html"}</a></td>
-			<td>{$item.message|escape:"html"|default:'--None--'}</td>
-			<td>{$item.type}</td>
-		</tr>
+	<table class="report sortable" id="events">
+	<thead><tr>
+		<td style="width:130px;font-size:0.9em" sorted="asc">Updated</td>
+		<td>Who</td>
+		<td>Message{dynamic}{if $user->registered} <small>(<i>optional</i>, 160 characters max)</small>{/if}{/dynamic}</td>
+		<td>Intention</td>
+	</tr></thead>
+	<tbody>
+	{dynamic}
+	{if $user->registered}
+	<tr>
+		<td style="font-size:0.9em">{$attendee.updated|date_format:"%a, %e %b %Y"|default:"-"}</td>
+		<td>{$user->realname|escape:"html"}<input type="hidden" name="id" value="{$geoevent_id}"/><input type="hidden" name="attendee" value="{$attendee.geoevent_attendee_id}"/></td>
+		<td><input type="text" name="message" value="{$attendee.message|escape:"html"}" size="64" maxlength="160"/></td>
+		<td><select name="type">
+		{html_options options=$types selected=$attendee.type}
+		</select> </td>
+		<td><input type="submit" value="save"/></td>
+	</tr>
 	{/if}
-{/foreach}
-{else}
-	<tr><td colspan="2">- there are no registered attendees -</td></tr>
+
+	{if $list}
+	{foreach from=$list item=item}
+		{if $item.geoevent_attendee_id != $attendee.geoevent_attendee_id}
+			{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
+			<tr bgcolor="{$bgcolor}"{if $item.type == 'unable to attend'} class="unable"{/if}>
+				<td sortvalue="{$item.updated}" class="nowrap" style="font-size:0.9em"><b>{$item.updated|date_format:"%a, %e %b %Y"}</b></td>
+				<td sortvalue="{$item.realname|escape:"html"}"><a href="/profile/{$item.user_id}">{$item.realname|escape:"html"}</a></td>
+				<td>{$item.message|escape:"html"|default:'--None--'}</td>
+				<td>{$item.type}</td>
+			</tr>
+		{/if}
+	{/foreach}
+	{else}
+		<tr><td colspan="2">- there are no registered attendees -</td></tr>
+	{/if}
+	{/dynamic}
+	</tbody>
+	<tfoot>
+
+	</tfoot>
+	</table>
+
+	</form>
 {/if}
-{/dynamic}
-</tbody>
-<tfoot>
-
-</tfoot>
-</table>
-
-</form>
-
 
 {if $lat && $google_maps_api_key}
 	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>
