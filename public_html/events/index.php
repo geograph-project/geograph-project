@@ -60,7 +60,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		realname,
 		(event_time > now()) as future,
 		grid_reference,x,y,
-		sum(type='attend') as attendees
+		sum(geoevent.type='attend') as attendees
 	from geoevent 
 		inner join user using (user_id)
 		inner join gridsquare using (gridsquare_id)
