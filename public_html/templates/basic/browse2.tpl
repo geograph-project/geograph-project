@@ -86,7 +86,7 @@
 	{if $imagecount}
 		{* There are some thumbnails to display *}
 		
-		<ul style="margin-top:5px; padding-left:24px">
+		<ul style="margin-top:5px;">
 		
 		<li>We have 
 			{if $imagecount eq 1}just one image{else}{$imagecount|thousends} images{/if} 
@@ -106,7 +106,7 @@
 
 		<li style="margin-top:4px;">
 		<form method="get" action="/search.php">
-			<div class="interestBox" style="width:320px">
+			<div class="interestBox" style="width:290px">
 			<b>Search images in this square</b>:<br/> 
 			<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 			<input type="submit" value="Search"/><br/>
@@ -362,7 +362,7 @@
 				{foreach from=$images item=image}
 					<div class="photo33" style="float:left;text-align:left;width:420px;height:{$thumbh}px;padding:5px">
 					<div style="height:{$thumbh}px;vertical-align:middle;float:left;position:relative;padding:3px"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
-					<div class="caption" style="clear:none">{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
+					<div style="position:relative">{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
 					<div class="statuscaption" style="clear:none">by <a href="{$image->profile_link}">{$image->realname}</a></div>
 					</div>
 				{/foreach}			
