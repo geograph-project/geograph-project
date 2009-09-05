@@ -158,9 +158,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	
 	
-	//count how many are in the kitty
-	$pending=$db->GetCol("select gridimage_id from gridimage_daily where showday is null and (vote_baysian > 3)");
-	
 	//get the next 4 weeks of assignments
 	$days=28;
 	$coming_up=$db->GetAssoc("select showday,gridimage_id,1 as assigned from gridimage_daily where to_days(showday)-to_days(now()) between 0 and $days");
@@ -193,8 +190,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	ksort($coming_up);
 	$smarty->assign_by_ref("coming_up", $coming_up);
-	$smarty->assign_by_ref("pending", $pending);
-	$smarty->assign_by_ref("pendingcount", count($pending));
+
 }
 
 $smarty->display($template,$cacheid);
