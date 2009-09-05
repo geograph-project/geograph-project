@@ -335,11 +335,12 @@ class GeographMapMosaic
 		$token->setValue("s",  $this->pixels_per_km);
 		$token->setValue("f",  $this->mosaic_factor);
 		
-		if ($this->palette)
+		if (!empty($this->palette))
 			$token->setValue("p",  $this->palette);
-		
 		if (!empty($this->type_or_user))
 			$token->setValue("t",  $this->type_or_user);
+		if (!empty($this->numberOfDays))
+			$token->setValue("d",  $this->numberOfDays);
 		return $token->getToken();
 	}
 
@@ -368,6 +369,7 @@ class GeographMapMosaic
 				$this->setMosaicFactor(($token->hasValue("f"))?$token->getValue("f"):2);
 				$this->type_or_user = ($token->hasValue("t"))?$token->getValue("t"):0;
 				$this->palette = ($token->hasValue("p"))?$token->getValue("p"):0;
+				$this->numberOfDays = ($token->hasValue("d"))?$token->getValue("d"):0;
 			}
 			else
 			{
@@ -741,7 +743,9 @@ class GeographMapMosaic
 		//start with same params
 		$out->setScale(40);
 		$out->setMosaicFactor(2);
-
+		if (!empty($this->type_or_user)) {
+			$out->type_or_user = $this->type_or_user;
+		}
 		$out->setCentre($gridsquare->x,$gridsquare->y,true); //true to align to 10x10 map
 	
 		return $out->getToken();		

@@ -525,6 +525,10 @@ class GeographMap
 			} elseif ($this->type_or_user == -5) {
 				$ok = $this->_renderDepthImage();
 				
+	#RECENT ONLY MAP
+			} elseif ($this->type_or_user == -6) {
+				$ok = $this->_renderImage();
+
 	#DEPTH MAP (_renderDepthImage also understands date maps)
 			} elseif ($this->type_or_user == -1) {
 				//if thumbs level can just use normal render. 
@@ -848,26 +852,34 @@ class GeographMap
 					group by gridsquare_id";
 			} else {
 				if ($this->pixels_per_km<40) {
-					$sql="select x,y,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where 
-						CONTAINS( GeomFromText($rectangle),	point_xy) and
-						user_id = {$this->type_or_user} group by x,y";
+					if ($this->type_or_user == -6) {
+						$sql="select x,y,gridsquare_id,has_recent as has_geographs from gridsquare where 
+							CONTAINS( GeomFromText($rectangle),	point_xy)
+							and imagecount>0";					
+					} else {//type_or_user > 0
+						$sql="select x,y,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where 
+							CONTAINS( GeomFromText($rectangle),	point_xy) and
+							user_id = {$this->type_or_user} group by x,y";
+					}
 				} else {
-					$table = "gi".md5($rectangle).$this->type_or_user;
+					if ($this->type_or_user == -6) {
+						$crit = "imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))";
+					} else {//type_or_user > 0
+						$crit = "user_id = {$this->type_or_user}";
+					}
+					$table = "gi".md5($rectangle.$crit);
 					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
-						SELECT gridimage_id,grid_reference,x,y,moderation_status FROM gridimage_search WHERE 
-						CONTAINS( GeomFromText($rectangle),	point_xy) AND user_id = {$this->type_or_user}
+						SELECT gridimage_id,grid_reference,x,y,user_id,moderation_status FROM gridimage_search WHERE 
+						CONTAINS( GeomFromText($rectangle),	point_xy) AND $crit
 						ORDER BY moderation_status+0 DESC,seq_no";
 					$db->Execute($sql);
 
-					$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y),ADD UNIQUE (gridimage_id)";
+					$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y)";
 					$db->Execute($sql);
 					
 					//if the image is a sup then there cant be any geos, due to sort order!
-					$sql="SELECT gridsquare.x,gridsquare.y,(moderation_status = 'geograph') as has_geographs,{$this->type_or_user} as user_id,gridimage_id
-						FROM gridsquare 
-						INNER JOIN $table USING (grid_reference)
-						WHERE 
-							CONTAINS( GeomFromText($rectangle),	point_xy)";
+					$sql="SELECT x,y,(moderation_status = 'geograph') as has_geographs,user_id,gridimage_id
+						FROM $table";
 				}
 			}
 		} else {
@@ -879,20 +891,25 @@ class GeographMap
 			} else {
 				$table = "gi".md5($rectangle);
 				$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
-					SELECT gridimage_id,grid_reference,user_id,x,y FROM gridimage_search WHERE 
+					SELECT gridimage_id,grid_reference,moderation_status,user_id,x,y FROM gridimage_search WHERE 
 					CONTAINS( GeomFromText($rectangle),	point_xy)
 					ORDER BY moderation_status+0 DESC,seq_no";
 				$db->Execute($sql);
 
-				$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y),ADD UNIQUE (gridimage_id)";
+				$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y)";
 				$db->Execute($sql);
 				
-				$sql="SELECT gridsquare.x,gridsquare.y,has_geographs,user_id,gridimage_id
-				FROM gridsquare 
-				INNER JOIN $table USING (grid_reference)
-				WHERE 
-					CONTAINS( GeomFromText($rectangle),	point_xy)
-					AND imagecount>$number";
+				if ($number) {
+					$sql="SELECT gridsquare.x,gridsquare.y,has_geographs,user_id,gridimage_id
+					FROM gridsquare 
+					INNER JOIN $table USING (grid_reference)
+					WHERE 
+						CONTAINS( GeomFromText($rectangle),	point_xy)
+						AND imagecount>$number";
+				} else {
+					$sql="SELECT x,y,(moderation_status = 'geograph') as has_geographs,user_id,gridimage_id
+					FROM $table";
+				}
 			}
 		}
 		$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_ASSOC);
@@ -1928,9 +1945,14 @@ END;
 		$where_crit = '';
 		$columns = '';
 		if ($isimgmap) {
-			if (!empty($this->type_or_user) && $this->type_or_user > 0) {
-				$where_crit = " and user_id = {$this->type_or_user}";
-				$columns = ',0 as imagecount';
+			if (!empty($this->type_or_user)) {
+				if ($this->type_or_user > 0) {
+					$where_crit = " and user_id = {$this->type_or_user}";
+					$columns = ',0 as imagecount';
+				} elseif ($this->type_or_user == -6) {
+					$where_crit = " and imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))";
+					$columns = ',0 as imagecount';
+				} 
 			}
 			$table = "gi".md5($rectangle);
 			$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
@@ -1939,7 +1961,7 @@ END;
 				ORDER BY moderation_status+0 DESC,seq_no";
 			$db->Execute($sql);
 			
-			if (!empty($this->type_or_user) && $this->type_or_user > 0) {
+			if (!empty($this->type_or_user) && ($this->type_or_user > 0 || $this->type_or_user == -6)) {
 				$sql="CREATE TEMPORARY TABLE tmp$table ENGINE HEAP 
 					SELECT x,y,count(*) as imagecount 
 					FROM $table GROUP BY x,y ORDER BY null";
@@ -1964,9 +1986,14 @@ END;
 				AND percent_land<>0 
 				GROUP BY gs.grid_reference ORDER BY y,x";
 		} else {
-			if (!empty($this->type_or_user) && $this->type_or_user > 0) {
-				$where_crit = " and gi.user_id = {$this->type_or_user}";
-				$columns = ", sum(moderation_status='geograph') as has_geographs, sum(moderation_status IN ('accepted','geograph')) as imagecount";
+			if (!empty($this->type_or_user)) {
+				if ($this->type_or_user > 0) {
+					$where_crit = " and gi.user_id = {$this->type_or_user}";
+					$columns = ", sum(moderation_status='geograph') as has_geographs, sum(moderation_status IN ('accepted','geograph')) as imagecount";
+				} elseif ($this->type_or_user == -6) {
+					$where_crit = " and imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))";
+					$columns = ", sum(moderation_status='geograph') as has_geographs, sum(moderation_status IN ('accepted','geograph')) as imagecount";
+				} 
 			}
 			$sql="select gs.* $columns,
 				sum(moderation_status='accepted') as accepted, sum(moderation_status='pending') as pending,
@@ -1978,6 +2005,7 @@ END;
 				and percent_land<>0 
 				group by gs.gridsquare_id order by y,x";
 		}
+		
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
