@@ -97,7 +97,7 @@
 			 <td>eg <tt>bridge</tt></td> 
 		  </tr> 
 		  <tr> 
-			 <td colspan="2"><small>&middot; <b>Looking for exact match?</b> Prefix each keyword with <tt>=</tt>
+			 <td colspan="2"><small>&middot; <b>Looking for exact match?</b> Prefix a keyword with <tt>=</tt>
 			 (otherwise <tt>bridge</tt> matches bridges, bridging etc)</small></td> 
 			 <td>eg <tt>road =bridge</tt></td> 
 		  </tr> 
