@@ -1,0 +1,2455 @@
+-- phpMyAdmin SQL Dump
+-- version 2.9.0.3
+-- http://www.phpmyadmin.net
+-- 
+-- Host: localhost
+-- Generation Time: Sep 05, 2009 at 12:59 PM
+-- Server version: 5.0.27
+-- PHP Version: 5.2.0
+-- 
+-- Database: `geograph_live`
+-- 
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `_tables`
+-- 
+
+CREATE TABLE `_tables` (
+  `table_name` varchar(64) NOT NULL,
+  `description` text NOT NULL,
+  `type` enum('primary','secondary','derivied','temp','static','archive') NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`table_name`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `apikeys`
+-- 
+
+CREATE TABLE `apikeys` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `apikey` varchar(32) NOT NULL default '',
+  `ip` int(11) unsigned NOT NULL default '0',
+  `enabled` enum('Y','N') NOT NULL default 'Y',
+  `homepage_url` varchar(128) NOT NULL default '',
+  `comments` text NOT NULL,
+  `accesses` int(11) unsigned NOT NULL default '0',
+  `records` int(11) unsigned NOT NULL default '0',
+  `last_use` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `added_by` int(11) NOT NULL default '0',
+  `upd_timestamp` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `crt_timestamp` timestamp NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=12 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `article`
+-- 
+
+CREATE TABLE `article` (
+  `article_id` int(10) unsigned NOT NULL auto_increment,
+  `article_cat_id` smallint(5) unsigned NOT NULL default '0',
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `url` varchar(64) NOT NULL default '',
+  `title` varchar(64) NOT NULL default '',
+  `content` longtext NOT NULL,
+  `gridsquare_id` int(10) unsigned NOT NULL default '0',
+  `extract` varchar(255) NOT NULL default '',
+  `licence` enum('none','pd','cc-by-sa/2.0','copyright') NOT NULL default 'none',
+  `publish_date` date NOT NULL default '0000-00-00',
+  `approved` tinyint(4) NOT NULL default '0',
+  `update_time` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `create_time` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `article_sort_order` tinyint(4) NOT NULL default '0',
+  PRIMARY KEY  (`article_id`),
+  UNIQUE KEY `title` (`title`),
+  UNIQUE KEY `url` (`url`),
+  KEY `article_cat_id` (`article_cat_id`,`user_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=62 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `article_cat`
+-- 
+
+CREATE TABLE `article_cat` (
+  `article_cat_id` smallint(5) unsigned NOT NULL auto_increment,
+  `category_name` varchar(64) NOT NULL default '',
+  `sort_order` tinyint(4) NOT NULL default '0',
+  PRIMARY KEY  (`article_cat_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `article_lock`
+-- 
+
+CREATE TABLE `article_lock` (
+  `article_id` int(10) unsigned NOT NULL default '0',
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `lock_obtained` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`article_id`,`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `article_log`
+-- 
+
+CREATE TABLE `article_log` (
+  `month` varchar(7) NOT NULL,
+  `article_url` varchar(255) NOT NULL,
+  `views` mediumint(8) unsigned NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `article_revisions`
+-- 
+
+CREATE TABLE `article_revisions` (
+  `article_id` int(10) unsigned NOT NULL default '0',
+  `article_cat_id` smallint(5) unsigned NOT NULL default '0',
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `url` varchar(64) NOT NULL default '',
+  `title` varchar(64) NOT NULL default '',
+  `content` longtext NOT NULL,
+  `gridsquare_id` int(10) unsigned NOT NULL default '0',
+  `extract` varchar(255) NOT NULL default '',
+  `licence` enum('none','pd','cc-by-sa/2.0','copyright') NOT NULL default 'none',
+  `publish_date` date NOT NULL default '0000-00-00',
+  `approved` tinyint(4) NOT NULL default '1',
+  `update_time` datetime default '0000-00-00 00:00:00',
+  `create_time` datetime default '0000-00-00 00:00:00',
+  `article_sort_order` tinyint(4) NOT NULL default '0',
+  `article_revision_id` int(10) unsigned NOT NULL auto_increment,
+  `modifier` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`article_revision_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=931 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `article_stat`
+-- 
+
+CREATE TABLE `article_stat` (
+  `article_id` int(10) unsigned NOT NULL,
+  `views` mediumint(8) unsigned NOT NULL,
+  `images` mediumint(8) unsigned NOT NULL,
+  `words` mediumint(8) unsigned NOT NULL,
+  PRIMARY KEY  (`article_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `at_home_job`
+-- 
+
+CREATE TABLE `at_home_job` (
+  `at_home_job_id` int(10) unsigned NOT NULL auto_increment,
+  `start_gridimage_id` int(10) unsigned NOT NULL,
+  `end_gridimage_id` int(10) unsigned NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `created` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `sent` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `completed` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `at_home_worker_id` int(10) unsigned NOT NULL,
+  `last_contact` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `last_gridimage_id` int(10) unsigned NOT NULL,
+  `images` int(10) unsigned NOT NULL,
+  `terms` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`at_home_job_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=103 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `at_home_result`
+-- 
+
+CREATE TABLE `at_home_result` (
+  `at_home_result_id` int(10) unsigned NOT NULL auto_increment,
+  `at_home_job_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `result` varchar(255) NOT NULL,
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`at_home_result_id`),
+  KEY `gridimage_id` (`gridimage_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=347090 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `at_home_temp`
+-- 
+
+CREATE TABLE `at_home_temp` (
+  `at_home_job_id` int(10) unsigned NOT NULL,
+  `last_contact` timestamp NULL default NULL,
+  `terms` bigint(21) NOT NULL default '0',
+  `images` bigint(21) NOT NULL default '0',
+  `last_gridimage_id` int(10) unsigned
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `at_home_worker`
+-- 
+
+CREATE TABLE `at_home_worker` (
+  `at_home_worker_id` int(10) unsigned NOT NULL auto_increment,
+  `team` varchar(64) NOT NULL,
+  `ip` int(10) unsigned NOT NULL,
+  `user_agent` varchar(255) NOT NULL,
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`at_home_worker_id`),
+  UNIQUE KEY `ip` (`ip`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `autologin`
+-- 
+
+CREATE TABLE `autologin` (
+  `user_id` int(11) NOT NULL default '0',
+  `token` char(32) NOT NULL default '',
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`user_id`,`token`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `category_pair`
+-- 
+
+CREATE TABLE `category_pair` (
+  `link_id` int(10) unsigned NOT NULL default '0',
+  `cat1` varchar(32) NOT NULL default '',
+  `cat2` varchar(32) NOT NULL default '',
+  `num` mediumint(9) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `category_pairs_test1`
+-- 
+
+CREATE TABLE `category_pairs_test1` (
+  `link_id` int(10) unsigned NOT NULL default '0',
+  `cat1` varchar(32) NOT NULL default '',
+  `cat2` varchar(32) NOT NULL default '',
+  `num` mediumint(9) NOT NULL,
+  UNIQUE KEY `cat1` (`cat1`),
+  UNIQUE KEY `cat2` (`cat2`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `category_stat`
+-- 
+
+CREATE TABLE `category_stat` (
+  `category_id` int(11) NOT NULL auto_increment,
+  `NULL` binary(0) default NULL,
+  `imageclass` varchar(32) NOT NULL default '',
+  `c` int(11) NOT NULL default '0',
+  `gridimage_id` int(11) NOT NULL,
+  PRIMARY KEY  (`category_id`),
+  KEY `c` (`c`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3104 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `category_stat_tmp`
+-- 
+
+CREATE TABLE `category_stat_tmp` (
+  `category_id` int(11) NOT NULL auto_increment,
+  `imageclass` varchar(32) NOT NULL default '',
+  `c` int(11) NOT NULL default '0',
+  `gridimage_id` int(11) NOT NULL,
+  PRIMARY KEY  (`category_id`),
+  KEY `c` (`c`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3104 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `compare_done`
+-- 
+
+CREATE TABLE `compare_done` (
+  `compare_pair_id` int(10) unsigned NOT NULL,
+  `ipaddr` int(10) unsigned NOT NULL,
+  `ua` varchar(128) NOT NULL,
+  `when` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `user_id` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`compare_pair_id`,`ipaddr`,`ua`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `compare_pair`
+-- 
+
+CREATE TABLE `compare_pair` (
+  `compare_pair_id` int(10) unsigned NOT NULL auto_increment,
+  `gridimage_id1` int(10) unsigned NOT NULL,
+  `gridimage_id2` int(10) unsigned NOT NULL,
+  `topic_id` int(10) unsigned NOT NULL,
+  `post_id` int(10) unsigned NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `status` enum('new','confirmed','rejected') NOT NULL,
+  PRIMARY KEY  (`compare_pair_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `competition_code`
+-- 
+
+CREATE TABLE `competition_code` (
+  `competition_code_id` int(10) unsigned NOT NULL auto_increment,
+  `user_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `code` varchar(6) NOT NULL,
+  `submitted` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`competition_code_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `content`
+-- 
+
+CREATE TABLE `content` (
+  `content_id` int(10) unsigned NOT NULL auto_increment,
+  `foreign_id` int(10) unsigned NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `gridsquare_id` int(10) unsigned NOT NULL,
+  `extract` varchar(255) NOT NULL,
+  `titles` text NOT NULL,
+  `tags` text NOT NULL,
+  `words` text NOT NULL,
+  `source` enum('article','gallery','gsd','themed','help','other') NOT NULL,
+  `type` enum('info','document') NOT NULL default 'info',
+  `updated` datetime NOT NULL,
+  `created` datetime NOT NULL,
+  PRIMARY KEY  (`content_id`),
+  UNIQUE KEY `foreign_id` (`foreign_id`,`source`),
+  KEY `title` (`title`),
+  KEY `type` (`source`),
+  KEY `updated` (`updated`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='consolidated index of geograph content' AUTO_INCREMENT=3657 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `content_dev`
+-- 
+
+CREATE TABLE `content_dev` (
+  `content_id` int(10) unsigned NOT NULL auto_increment,
+  `foreign_id` int(10) unsigned NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `gridsquare_id` int(10) unsigned NOT NULL,
+  `extract` varchar(255) NOT NULL,
+  `titles` text NOT NULL,
+  `tags` text NOT NULL,
+  `words` text NOT NULL,
+  `type` enum('article','gallery','gsd','themed','help','other') NOT NULL,
+  `use` enum('info','document') NOT NULL default 'info',
+  `updated` datetime NOT NULL,
+  `created` datetime NOT NULL,
+  PRIMARY KEY  (`content_id`),
+  UNIQUE KEY `foreign_id` (`foreign_id`,`type`),
+  KEY `title` (`title`),
+  KEY `type` (`type`),
+  KEY `updated` (`updated`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='consolidated index of geograph content' AUTO_INCREMENT=551 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `content_group`
+-- 
+
+CREATE TABLE `content_group` (
+  `content_id` int(10) unsigned NOT NULL,
+  `label` varchar(128) NOT NULL,
+  `score` float NOT NULL,
+  `sort_order` tinyint(3) unsigned NOT NULL,
+  `source` varchar(10) NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `event`
+-- 
+
+CREATE TABLE `event` (
+  `event_id` int(11) NOT NULL auto_increment,
+  `event_name` varchar(64) default NULL,
+  `event_param` text,
+  `posted` datetime default NULL,
+  `processed` datetime default NULL,
+  `instances` int(11) default '1',
+  `priority` int(11) default NULL,
+  `status` enum('pending','in_progress','completed') default 'pending',
+  PRIMARY KEY  (`event_id`),
+  KEY `status` (`status`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=291 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `event_handled_by`
+-- 
+
+CREATE TABLE `event_handled_by` (
+  `event_id` int(11) NOT NULL default '0',
+  `class_name` varchar(64) NOT NULL default '',
+  PRIMARY KEY  (`event_id`,`class_name`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `event_log`
+-- 
+
+CREATE TABLE `event_log` (
+  `event_log_id` int(11) NOT NULL auto_increment,
+  `event_id` int(11) NOT NULL default '0',
+  `logtime` datetime default NULL,
+  `verbosity` enum('error','warning','trace','verbose') default NULL,
+  `log` text,
+  PRIMARY KEY  (`event_log_id`),
+  KEY `event_id` (`event_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=9004 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `feedback`
+-- 
+
+CREATE TABLE `feedback` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `category` varchar(32) NOT NULL,
+  `question` varchar(128) NOT NULL,
+  `enabled` tinyint(4) NOT NULL default '1',
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=45 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `game_image_rate`
+-- 
+
+CREATE TABLE `game_image_rate` (
+  `gridimage_id` int(10) unsigned NOT NULL default '0',
+  `game_id` tinyint(4) NOT NULL default '0',
+  `rating` decimal(4,0) default NULL,
+  `ratings` bigint(21) NOT NULL default '0',
+  PRIMARY KEY  (`gridimage_id`,`game_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `game_image_score`
+-- 
+
+CREATE TABLE `game_image_score` (
+  `game_image_score_id` int(10) unsigned NOT NULL auto_increment,
+  `game_id` tinyint(4) NOT NULL default '0',
+  `level` tinyint(4) NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL default '0',
+  `score` tinyint(4) NOT NULL default '0',
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`game_image_score_id`),
+  KEY `game_id` (`game_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4785 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `game_quiz_answer`
+-- 
+
+CREATE TABLE `game_quiz_answer` (
+  `answer_id` int(10) unsigned NOT NULL auto_increment,
+  `question_id` int(10) unsigned NOT NULL,
+  `content` varchar(64) NOT NULL,
+  `correct` enum('0','1') NOT NULL default '0',
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `created` timestamp NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`answer_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `game_quiz_cat`
+-- 
+
+CREATE TABLE `game_quiz_cat` (
+  `question_cat_id` smallint(5) unsigned NOT NULL auto_increment,
+  `category_name` varchar(64) NOT NULL default '',
+  `sort_order` tinyint(4) NOT NULL default '0',
+  PRIMARY KEY  (`question_cat_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `game_quiz_question`
+-- 
+
+CREATE TABLE `game_quiz_question` (
+  `question_id` int(10) unsigned NOT NULL auto_increment,
+  `content` text NOT NULL,
+  `type` enum('one','multi','threeof') NOT NULL,
+  `question_cat_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `hide_option` enum('0','1') NOT NULL default '0',
+  `user_id` int(10) unsigned NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `created` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `approved` tinyint(3) NOT NULL default '0',
+  PRIMARY KEY  (`question_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `game_rate`
+-- 
+
+CREATE TABLE `game_rate` (
+  `game_rate_id` int(10) unsigned NOT NULL auto_increment,
+  `game_id` tinyint(4) NOT NULL default '0',
+  `gridimage_id` int(10) unsigned NOT NULL default '0',
+  `queries_id` int(10) unsigned NOT NULL default '0',
+  `rating` tinyint(4) NOT NULL default '-2',
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`game_rate_id`),
+  KEY `game_id` (`game_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4396 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `game_score`
+-- 
+
+CREATE TABLE `game_score` (
+  `game_score_id` int(10) unsigned NOT NULL auto_increment,
+  `game_id` tinyint(4) NOT NULL default '0',
+  `level` tinyint(4) NOT NULL,
+  `score` mediumint(9) NOT NULL default '0',
+  `games` mediumint(8) unsigned NOT NULL default '0',
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `username` varchar(64) NOT NULL default '',
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `approved` tinyint(3) NOT NULL default '1',
+  `ipaddr` int(10) unsigned NOT NULL,
+  `ua` varchar(128) NOT NULL,
+  `session` varchar(32) NOT NULL,
+  PRIMARY KEY  (`game_score_id`),
+  KEY `game_id` (`game_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=598 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gazetteer_full_ie`
+-- 
+
+CREATE TABLE `gazetteer_full_ie` (
+  `RC` char(1) NOT NULL default '',
+  `UFI` int(11) NOT NULL default '0',
+  `UNI` int(11) NOT NULL default '0',
+  `LAT` decimal(12,7) NOT NULL default '0.0000000',
+  `LONG` decimal(12,7) NOT NULL default '0.0000000',
+  `DMS_LAT` mediumint(9) NOT NULL default '0',
+  `DMS_LONG` mediumint(9) NOT NULL default '0',
+  `UTM` varchar(4) NOT NULL default '',
+  `JOG` varchar(7) NOT NULL default '',
+  `FC` char(1) NOT NULL default '',
+  `DSG` varchar(5) NOT NULL default '',
+  `PC` char(1) NOT NULL default '',
+  `CC1` char(2) NOT NULL default '',
+  `ADM1` char(2) NOT NULL default '',
+  `ADM2` varchar(200) NOT NULL default '',
+  `DIM` int(11) NOT NULL default '0',
+  `CC2` char(1) NOT NULL default '',
+  `NT` char(1) NOT NULL default '',
+  `LC` char(3) NOT NULL default '',
+  `SHORT_FORM` varchar(128) NOT NULL default '',
+  `GENERIC` varchar(128) NOT NULL default '',
+  `SORT_NAME` varchar(200) NOT NULL default '',
+  `FULL_NAME` varchar(200) NOT NULL default '',
+  `FULL_NAME_ND` varchar(200) character set utf8 collate utf8_bin NOT NULL,
+  `MOD_DATE` date NOT NULL default '0000-00-00',
+  PRIMARY KEY  (`UNI`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Full database as at 30-03-2006';
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gazetteer_full_uk`
+-- 
+
+CREATE TABLE `gazetteer_full_uk` (
+  `RC` char(1) NOT NULL default '',
+  `UFI` int(11) NOT NULL default '0',
+  `UNI` int(11) NOT NULL default '0',
+  `LAT` decimal(12,7) NOT NULL default '0.0000000',
+  `LONG` decimal(8,7) NOT NULL default '0.0000000',
+  `DMS_LAT` mediumint(9) NOT NULL default '0',
+  `DMS_LONG` mediumint(9) NOT NULL default '0',
+  `UTM` varchar(4) NOT NULL default '',
+  `JOG` varchar(7) NOT NULL default '',
+  `FC` char(1) NOT NULL default '',
+  `DSG` varchar(5) NOT NULL default '',
+  `PC` char(1) NOT NULL default '',
+  `CC1` char(2) NOT NULL default '',
+  `ADM1` char(2) NOT NULL default '',
+  `ADM2` varchar(200) NOT NULL default '',
+  `DIM` int(11) NOT NULL default '0',
+  `CC2` char(1) NOT NULL default '',
+  `NT` char(1) NOT NULL default '',
+  `LC` char(3) NOT NULL default '',
+  `SHORT_FORM` varchar(128) NOT NULL default '',
+  `GENERIC` varchar(128) NOT NULL default '',
+  `SORT_NAME` varchar(200) NOT NULL default '',
+  `FULL_NAME` varchar(200) NOT NULL default '',
+  `FULL_NAME_ND` varchar(200) character set utf8 collate utf8_bin NOT NULL,
+  `MOD_DATE` date NOT NULL default '0000-00-00',
+  PRIMARY KEY  (`UNI`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Full database as at 30-03-2006';
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gazetteer_ppl_ie`
+-- 
+
+CREATE TABLE `gazetteer_ppl_ie` (
+  `UFI` int(11) NOT NULL default '0',
+  `UNI` int(11) NOT NULL default '0',
+  `LAT` decimal(9,7) NOT NULL default '0.0000000',
+  `LONG` decimal(9,7) NOT NULL default '0.0000000',
+  `DSG` varchar(5) NOT NULL default '',
+  `ADM1` char(2) NOT NULL default '',
+  `NT` char(1) NOT NULL default '',
+  `FULL_NAME_ND` varchar(200) NOT NULL default '',
+  `full_name_soundex` varchar(32) NOT NULL,
+  `e` mediumint(8) unsigned NOT NULL,
+  `n` mediumint(8) unsigned NOT NULL,
+  `reference_index` tinyint(4) NOT NULL,
+  PRIMARY KEY  (`UNI`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gazetteer_ppl_uk`
+-- 
+
+CREATE TABLE `gazetteer_ppl_uk` (
+  `UFI` int(11) NOT NULL default '0',
+  `UNI` int(11) NOT NULL default '0',
+  `LAT` decimal(9,7) NOT NULL default '0.0000000',
+  `LONG` decimal(8,7) NOT NULL default '0.0000000',
+  `DSG` varchar(5) NOT NULL default '',
+  `NT` char(1) NOT NULL default '',
+  `FULL_NAME_ND` varchar(200) NOT NULL default '',
+  `full_name_soundex` varchar(32) NOT NULL,
+  `e` mediumint(8) unsigned NOT NULL,
+  `n` mediumint(8) unsigned NOT NULL,
+  `reference_index` tinyint(4) NOT NULL,
+  PRIMARY KEY  (`UNI`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `geobb_banned`
+-- 
+
+CREATE TABLE `geobb_banned` (
+  `id` int(10) NOT NULL auto_increment,
+  `banip` varchar(15) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `geobb_forums`
+-- 
+
+CREATE TABLE `geobb_forums` (
+  `forum_id` int(10) NOT NULL auto_increment,
+  `forum_name` varchar(150) NOT NULL default '',
+  `forum_desc` text NOT NULL,
+  `forum_order` int(10) NOT NULL default '0',
+  `forum_icon` varchar(255) NOT NULL default 'default.gif',
+  `topics_count` int(10) NOT NULL default '0',
+  `posts_count` int(10) NOT NULL default '0',
+  PRIMARY KEY  (`forum_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=12 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `geobb_lastviewed`
+-- 
+
+CREATE TABLE `geobb_lastviewed` (
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `topic_id` int(10) unsigned NOT NULL default '0',
+  `last_post_id` int(10) unsigned NOT NULL default '0',
+  `ts` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`user_id`,`topic_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `geobb_posts`
+-- 
+
+CREATE TABLE `geobb_posts` (
+  `post_id` int(10) NOT NULL auto_increment,
+  `forum_id` int(10) NOT NULL default '1',
+  `topic_id` int(10) NOT NULL default '1',
+  `poster_id` int(10) NOT NULL default '0',
+  `poster_name` varchar(40) NOT NULL default 'Anonymous',
+  `post_text` text NOT NULL,
+  `post_time` datetime NOT NULL default '0000-00-00 00:00:00',
+  `poster_ip` varchar(15) NOT NULL default '',
+  `post_status` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`post_id`),
+  KEY `post_id` (`post_id`),
+  KEY `forum_id` (`forum_id`),
+  KEY `topic_id` (`topic_id`),
+  KEY `poster_id` (`poster_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16718 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `geobb_send_mails`
+-- 
+
+CREATE TABLE `geobb_send_mails` (
+  `id` int(11) NOT NULL auto_increment,
+  `user_id` int(11) NOT NULL default '1',
+  `topic_id` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `topic_id` (`topic_id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1701 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `geobb_topics`
+-- 
+
+CREATE TABLE `geobb_topics` (
+  `topic_id` int(10) NOT NULL auto_increment,
+  `topic_title` varchar(100) NOT NULL default '',
+  `topic_poster` int(10) NOT NULL default '0',
+  `topic_poster_name` varchar(40) NOT NULL default 'Anonymous',
+  `topic_time` datetime NOT NULL default '0000-00-00 00:00:00',
+  `topic_views` int(10) NOT NULL default '0',
+  `forum_id` int(10) NOT NULL default '1',
+  `topic_status` tinyint(1) NOT NULL default '0',
+  `topic_last_post_id` int(10) NOT NULL default '1',
+  `posts_count` int(10) NOT NULL default '0',
+  `sticky` int(1) NOT NULL default '0',
+  PRIMARY KEY  (`topic_id`),
+  KEY `topic_id` (`topic_id`),
+  KEY `forum_id` (`forum_id`),
+  KEY `topic_last_post_id` (`topic_last_post_id`),
+  KEY `sticky` (`sticky`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2534 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `geobb_users`
+-- 
+
+CREATE TABLE `geobb_users` (
+  `user_id` int(10) NOT NULL auto_increment,
+  `username` varchar(40) NOT NULL default '',
+  `user_regdate` datetime NOT NULL default '0000-00-00 00:00:00',
+  `user_password` varchar(32) NOT NULL default '',
+  `user_email` varchar(50) NOT NULL default '',
+  `user_icq` varchar(50) NOT NULL default '',
+  `user_website` varchar(100) NOT NULL default '',
+  `user_occ` varchar(100) NOT NULL default '',
+  `user_from` varchar(100) NOT NULL default '',
+  `user_interest` varchar(150) NOT NULL default '',
+  `user_viewemail` tinyint(1) NOT NULL default '0',
+  `user_sorttopics` tinyint(1) NOT NULL default '1',
+  `user_forums` tinyint(1) unsigned NOT NULL default '1',
+  `user_latest` enum('5','10','20','30','40') NOT NULL default '30',
+  `user_newpwdkey` varchar(32) NOT NULL default '',
+  `user_newpasswd` varchar(32) NOT NULL default '',
+  `language` char(3) NOT NULL default '',
+  `activity` int(1) NOT NULL default '1',
+  `user_custom1` varchar(255) NOT NULL default '',
+  `user_custom2` varchar(255) NOT NULL default '',
+  `user_custom3` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`user_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=21211 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `geoevent`
+-- 
+
+CREATE TABLE `geoevent` (
+  `geoevent_id` int(10) unsigned NOT NULL auto_increment,
+  `title` varchar(128) character set utf8 NOT NULL,
+  `description` varchar(255) character set utf8 NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `gridsquare_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `event_time` datetime NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `approved` tinyint(3) unsigned NOT NULL default '1',
+  PRIMARY KEY  (`geoevent_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `geoevent_attendee`
+-- 
+
+CREATE TABLE `geoevent_attendee` (
+  `geoevent_attendee_id` int(10) unsigned NOT NULL auto_increment,
+  `geoevent_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `message` varchar(160) NOT NULL,
+  `type` enum('attend','maybe','not') NOT NULL default 'attend',
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`geoevent_attendee_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `geonames`
+-- 
+
+CREATE TABLE `geonames` (
+  `geonameid` int(10) unsigned NOT NULL default '0',
+  `name` varchar(200) NOT NULL default '',
+  `ansiname` varchar(200) NOT NULL default '',
+  `alternames` varchar(200) NOT NULL default '',
+  `latitude` double NOT NULL default '0',
+  `longitude` double NOT NULL default '0',
+  `feature_class` char(1) default NULL,
+  `feature_code` varchar(10) default NULL,
+  `country_code` char(2) default NULL,
+  `cc2` varchar(60) default NULL,
+  `admin1_code` varchar(20) default '',
+  `admin2_code` varchar(80) default '',
+  `admin3_code` varchar(20) default '',
+  `admin4_code` varchar(20) default '',
+  `population` int(11) default '0',
+  `elevation` int(11) default '0',
+  `gtopo30` int(11) default '0',
+  `timezone` varchar(40) default NULL,
+  `modification_date` date default '0000-00-00',
+  PRIMARY KEY  (`geonameid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `geonames_codes`
+-- 
+
+CREATE TABLE `geonames_codes` (
+  `shortcode` varchar(1) NOT NULL,
+  `feature_code` varchar(10) NOT NULL,
+  `shortname` varchar(64) NOT NULL,
+  `longname` varchar(255) NOT NULL,
+  `sort_order` tinyint(3) unsigned NOT NULL,
+  PRIMARY KEY  (`feature_code`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gi988382e0e91704de72c06d3b7751bddd`
+-- 
+
+CREATE TABLE `gi988382e0e91704de72c06d3b7751bddd` (
+  `gridimage_id` int(11) NOT NULL default '0',
+  `grid_reference` varchar(6) NOT NULL default '',
+  `x` smallint(3) NOT NULL default '0',
+  `y` smallint(4) NOT NULL default '0',
+  `imagecount` int(1) NOT NULL default '0'
+) ENGINE=MEMORY DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `glossary`
+-- 
+
+CREATE TABLE `glossary` (
+  `glossery_id` mediumint(8) unsigned NOT NULL auto_increment,
+  `source_lang` char(2) NOT NULL default '',
+  `source_dialect` varchar(30) NOT NULL default '',
+  `source_word` varchar(64) NOT NULL default '',
+  `tran_lang` char(2) NOT NULL default '',
+  `tran_dialect` varchar(30) NOT NULL default '',
+  `tran_word` varchar(64) NOT NULL default '',
+  `tran_definition` varchar(255) NOT NULL default '',
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `created_by` mediumint(8) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`glossery_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='regional word glossery' AUTO_INCREMENT=16 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage`
+-- 
+
+CREATE TABLE `gridimage` (
+  `gridimage_id` int(11) NOT NULL auto_increment,
+  `gridsquare_id` int(11) NOT NULL default '0',
+  `seq_no` int(11) NOT NULL default '0',
+  `user_id` int(11) NOT NULL default '0',
+  `realname` varchar(128) NOT NULL,
+  `ftf` int(11) NOT NULL default '0',
+  `moderation_status` enum('rejected','pending','accepted','geograph') default NULL,
+  `title` varchar(128) default NULL,
+  `comment` text,
+  `submitted` datetime default NULL,
+  `nateastings` mediumint(8) unsigned NOT NULL default '0',
+  `natnorthings` mediumint(8) unsigned NOT NULL default '0',
+  `natgrlen` enum('10','8','6','4','2') NOT NULL default '4',
+  `imageclass` varchar(32) NOT NULL default '',
+  `imagetaken` date NOT NULL default '0000-00-00',
+  `moderator_id` int(11) NOT NULL default '0',
+  `moderated` datetime default NULL,
+  `upd_timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `placename_id` int(10) unsigned NOT NULL default '0',
+  `viewpoint_eastings` mediumint(8) unsigned NOT NULL default '0',
+  `viewpoint_northings` mediumint(8) unsigned NOT NULL default '0',
+  `viewpoint_grlen` enum('10','8','6','4','2','0') NOT NULL default '0',
+  `view_direction` smallint(6) NOT NULL default '-1',
+  `use6fig` tinyint(3) unsigned NOT NULL default '0',
+  `user_status` enum('','accepted','rejected') NOT NULL default '',
+  PRIMARY KEY  (`gridimage_id`),
+  UNIQUE KEY `gridsquare_id` (`gridsquare_id`,`seq_no`),
+  KEY `user_id` (`user_id`),
+  KEY `imageclass` (`imageclass`),
+  KEY `placename_id` (`placename_id`),
+  KEY `moderation_status` (`moderation_status`),
+  KEY `submitted` (`submitted`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1000206 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage2`
+-- 
+
+CREATE TABLE `gridimage2` (
+  `gridimage_id` int(11) NOT NULL default '0',
+  `gridsquare_id` int(11) NOT NULL default '0',
+  `user_id` int(11) NOT NULL default '0',
+  `title` varchar(128) default NULL,
+  `submitted` datetime default NULL,
+  `imagetaken` date default NULL,
+  `moderation_status` enum('rejected','pending','accepted','geograph') default NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_daily`
+-- 
+
+CREATE TABLE `gridimage_daily` (
+  `gridimage_id` int(11) NOT NULL default '0',
+  `showday` date default NULL,
+  `vote_baysian` float NOT NULL,
+  PRIMARY KEY  (`gridimage_id`),
+  KEY `showday` (`showday`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_diversity`
+-- 
+
+CREATE TABLE `gridimage_diversity` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `type` varchar(10) NOT NULL,
+  `ratio` float NOT NULL,
+  PRIMARY KEY  (`gridimage_id`,`type`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_exif`
+-- 
+
+CREATE TABLE `gridimage_exif` (
+  `gridimage_id` int(10) unsigned NOT NULL default '0',
+  `exif` text NOT NULL,
+  PRIMARY KEY  (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_group`
+-- 
+
+CREATE TABLE `gridimage_group` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `label` varchar(128) NOT NULL,
+  `score` float NOT NULL,
+  `sort_order` tinyint(3) unsigned NOT NULL,
+  `source` varchar(10) NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  KEY `label` (`label`),
+  KEY `gridimage_id` (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_kml`
+-- 
+
+CREATE TABLE `gridimage_kml` (
+  `gridimage_id` int(11) NOT NULL default '0',
+  `x` smallint(3) NOT NULL default '0',
+  `y` smallint(4) NOT NULL default '0',
+  `grid_reference` varchar(6) NOT NULL default '',
+  `title` varchar(128) default NULL,
+  `credit_realname` tinyint(4) NOT NULL default '0',
+  `realname` varchar(128) NOT NULL default '',
+  `user_id` int(11) NOT NULL default '0',
+  `wgs84_lat` decimal(10,6) NOT NULL default '0.000000',
+  `wgs84_long` decimal(10,6) NOT NULL default '0.000000',
+  `natgrlen` enum('10','8','6','4','2') NOT NULL default '4',
+  `view_direction` smallint(6) NOT NULL default '-1',
+  `point_xy` point NOT NULL default '',
+  `tile` int(1) NOT NULL default '0',
+  `imagecount` int(11) NOT NULL default '0',
+  UNIQUE KEY `x` (`x`,`y`),
+  SPATIAL KEY `point_xy` (`point_xy`(32))
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_link`
+-- 
+
+CREATE TABLE `gridimage_link` (
+  `gridimage_link_id` int(10) unsigned NOT NULL auto_increment,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `HTTP_Status` smallint(5) unsigned NOT NULL,
+  `HTTP_Last_Modified` varchar(64) NOT NULL,
+  `HTTP_Location` varchar(255) NOT NULL,
+  `match_score` smallint(6) NOT NULL,
+  `page_title` varchar(255) NOT NULL,
+  `last_checked` datetime NOT NULL,
+  `next_check` datetime NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `parent_link_id` int(10) unsigned NOT NULL,
+  `failure_count` smallint(6) NOT NULL,
+  PRIMARY KEY  (`gridimage_link_id`),
+  UNIQUE KEY `gridimage_id_2` (`gridimage_id`,`url`),
+  KEY `gridimage_id` (`gridimage_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3099 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_log`
+-- 
+
+CREATE TABLE `gridimage_log` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `hits` mediumint(8) unsigned NOT NULL,
+  `hits_archive` int(10) unsigned NOT NULL,
+  `last_hit` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_map`
+-- 
+
+CREATE TABLE `gridimage_map` (
+  `gridimage_id` int(11) NOT NULL default '0',
+  `gridsquare_id` int(11) NOT NULL default '0',
+  `moderation_status` enum('rejected','pending','accepted','geograph') default NULL,
+  `seq_no` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`gridsquare_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_moderation_lock`
+-- 
+
+CREATE TABLE `gridimage_moderation_lock` (
+  `gridimage_id` int(10) unsigned NOT NULL default '0',
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `lock_obtained` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `lock_type` enum('modding','cantmod') NOT NULL default 'modding',
+  PRIMARY KEY  (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_post`
+-- 
+
+CREATE TABLE `gridimage_post` (
+  `seq_id` int(10) unsigned NOT NULL auto_increment,
+  `post_id` int(10) unsigned NOT NULL default '0',
+  `gridimage_id` int(10) unsigned NOT NULL default '0',
+  `topic_id` int(10) unsigned NOT NULL default '0',
+  `type` enum('T','I') NOT NULL default 'T',
+  PRIMARY KEY  (`seq_id`),
+  UNIQUE KEY `seq_id` (`seq_id`,`post_id`),
+  KEY `post_id` (`post_id`,`gridimage_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=28699 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_post_stat`
+-- 
+
+CREATE TABLE `gridimage_post_stat` (
+  `gridimage_id` int(10) unsigned NOT NULL default '0',
+  `images` bigint(21) NOT NULL default '0',
+  KEY `gridimage_id` (`gridimage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_query`
+-- 
+
+CREATE TABLE `gridimage_query` (
+  `seq_id` int(10) unsigned NOT NULL auto_increment,
+  `query_id` int(10) unsigned NOT NULL default '0',
+  `gridimage_id` int(10) unsigned NOT NULL default '0',
+  `crt_timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`seq_id`),
+  KEY `query_id` (`query_id`),
+  KEY `gridimage_id` (`gridimage_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=154 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_recent`
+-- 
+
+CREATE TABLE `gridimage_recent` (
+  `gridimage_id` int(11) NOT NULL default '0',
+  `user_id` int(11) NOT NULL default '0',
+  `moderation_status` enum('rejected','pending','accepted','geograph') default NULL,
+  `title` varchar(128) default NULL,
+  `submitted` datetime default NULL,
+  `imageclass` varchar(32) NOT NULL default '',
+  `imagetaken` date NOT NULL default '0000-00-00',
+  `upd_timestamp` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `x` smallint(3) NOT NULL default '0',
+  `y` smallint(4) NOT NULL default '0',
+  `grid_reference` varchar(6) NOT NULL default '',
+  `credit_realname` tinyint(4) NOT NULL default '0',
+  `realname` varchar(128) NOT NULL default '',
+  `reference_index` tinyint(1) NOT NULL default '0',
+  `comment` text,
+  `wgs84_lat` decimal(10,6) NOT NULL default '0.000000',
+  `wgs84_long` decimal(10,6) NOT NULL default '0.000000',
+  `ftf` tinyint(3) unsigned NOT NULL default '0',
+  `seq_no` smallint(5) unsigned NOT NULL default '0',
+  `point_xy` point NOT NULL default '',
+  `point_ll` point NOT NULL default '',
+  `recent_id` int(3) unsigned NOT NULL auto_increment,
+  PRIMARY KEY  (`recent_id`),
+  UNIQUE KEY `gridimage_id` (`gridimage_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=158 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_search`
+-- 
+
+CREATE TABLE `gridimage_search` (
+  `gridimage_id` int(11) NOT NULL default '0',
+  `user_id` int(11) NOT NULL default '0',
+  `moderation_status` enum('rejected','pending','accepted','geograph') default NULL,
+  `title` varchar(128) default NULL,
+  `submitted` datetime default NULL,
+  `imageclass` varchar(32) NOT NULL default '',
+  `imagetaken` date NOT NULL default '0000-00-00',
+  `upd_timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `x` smallint(3) NOT NULL default '0',
+  `y` smallint(4) NOT NULL default '0',
+  `grid_reference` varchar(6) NOT NULL default '',
+  `credit_realname` tinyint(4) NOT NULL default '0',
+  `realname` varchar(128) NOT NULL default '',
+  `reference_index` tinyint(1) NOT NULL default '0',
+  `comment` text,
+  `wgs84_lat` decimal(10,6) NOT NULL default '0.000000',
+  `wgs84_long` decimal(10,6) NOT NULL default '0.000000',
+  `ftf` tinyint(3) unsigned NOT NULL default '0',
+  `seq_no` smallint(5) unsigned NOT NULL default '0',
+  `point_xy` point NOT NULL default '',
+  `point_ll` point NOT NULL default '',
+  PRIMARY KEY  (`gridimage_id`),
+  KEY `user_id` (`user_id`),
+  KEY `imageclass` (`imageclass`),
+  KEY `imagetaken` (`imagetaken`),
+  KEY `submitted` (`submitted`),
+  KEY `x` (`x`,`y`),
+  KEY `moderation_status` (`moderation_status`),
+  KEY `title` (`title`),
+  KEY `grid_reference` (`grid_reference`),
+  KEY `realname` (`realname`),
+  KEY `title_2` (`title`,`comment`(500),`imageclass`),
+  SPATIAL KEY `point_xy` (`point_xy`(32)),
+  SPATIAL KEY `point_ll` (`point_ll`(32))
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_size`
+-- 
+
+CREATE TABLE `gridimage_size` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `width` smallint(5) unsigned NOT NULL,
+  `height` smallint(5) unsigned NOT NULL,
+  PRIMARY KEY  (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_stats`
+-- 
+
+CREATE TABLE `gridimage_stats` (
+  `user_id` int(11) NOT NULL default '0',
+  `realname` varchar(128) NOT NULL default '',
+  `grid_reference` varchar(6) NOT NULL default '',
+  `moderation_status` enum('rejected','pending','accepted','geograph') default NULL,
+  `last` int(11) default NULL,
+  `count` bigint(21) NOT NULL default '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_ticket`
+-- 
+
+CREATE TABLE `gridimage_ticket` (
+  `gridimage_ticket_id` int(11) NOT NULL auto_increment,
+  `gridimage_id` int(11) default NULL,
+  `suggested` datetime default NULL,
+  `user_id` int(11) default NULL,
+  `moderator_id` int(11) default NULL,
+  `updated` datetime default NULL,
+  `status` enum('pending','open','closed') default NULL,
+  `notes` text,
+  `type` enum('normal','minor') NOT NULL default 'normal',
+  `notify` enum('','suggestor') NOT NULL default 'suggestor',
+  `deferred` datetime NOT NULL,
+  `public` enum('no','owner','everyone') NOT NULL default 'everyone',
+  PRIMARY KEY  (`gridimage_ticket_id`),
+  KEY `gridimage_id` (`gridimage_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15563 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_ticket_comment`
+-- 
+
+CREATE TABLE `gridimage_ticket_comment` (
+  `gridimage_ticket_comment_id` int(11) NOT NULL auto_increment,
+  `gridimage_ticket_id` int(11) NOT NULL default '0',
+  `user_id` int(11) default NULL,
+  `comment` text,
+  `added` datetime default NULL,
+  PRIMARY KEY  (`gridimage_ticket_comment_id`),
+  KEY `gridimage_ticket_id` (`gridimage_ticket_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5653 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_ticket_item`
+-- 
+
+CREATE TABLE `gridimage_ticket_item` (
+  `gridimage_ticket_item_id` int(11) NOT NULL auto_increment,
+  `gridimage_ticket_id` int(11) NOT NULL default '0',
+  `approver_id` int(11) default NULL,
+  `field` varchar(64) default NULL,
+  `oldvalue` text,
+  `newvalue` text,
+  `status` enum('pending','immediate','approved','rejected') default NULL,
+  PRIMARY KEY  (`gridimage_ticket_item_id`),
+  KEY `gridimage_ticket_id` (`gridimage_ticket_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16984 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridimage_ticket_message`
+-- 
+
+CREATE TABLE `gridimage_ticket_message` (
+  `gridimage_ticket_message_id` int(10) unsigned NOT NULL auto_increment,
+  `gridimage_ticket_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `message` text NOT NULL,
+  `token` enum('-all-','-none-','minor_initial','minor_comment','minor_changes','minor_nothing','normal_initial','normal_comment','normal_changes','normal_nothing','moderator_initial','moderator_comment','moderator_changes','moderator_nothing','change_changes','minor_modchanges','normal_modchanges','your_comment','your_changes','your_nothing','mod_comment') NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `created` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `status` enum('new','sent') NOT NULL,
+  `ticket_when` enum('happens','digest','htmldigest') NOT NULL,
+  PRIMARY KEY  (`gridimage_ticket_message_id`),
+  KEY `status` (`status`,`user_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridprefix`
+-- 
+
+CREATE TABLE `gridprefix` (
+  `reference_index` int(11) NOT NULL default '0',
+  `prefix` varchar(4) NOT NULL default '',
+  `origin_x` int(11) NOT NULL default '0',
+  `origin_y` int(11) NOT NULL default '0',
+  `width` int(11) NOT NULL default '100',
+  `height` int(11) NOT NULL default '100',
+  `landcount` int(11) default '0',
+  `title` varchar(128) default NULL,
+  `boundary` varchar(128) default NULL,
+  `labelcentre` varchar(16) default NULL,
+  `geometry_boundary` geometry NOT NULL default '',
+  `point_origin_xy` point NOT NULL,
+  PRIMARY KEY  (`reference_index`,`prefix`),
+  SPATIAL KEY `geometry_boundary` (`geometry_boundary`(32)),
+  KEY `origin_x` (`origin_x`,`origin_y`),
+  KEY `prefix` (`prefix`),
+  SPATIAL KEY `point_origin_xy` (`point_origin_xy`(32))
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridsquare`
+-- 
+
+CREATE TABLE `gridsquare` (
+  `gridsquare_id` int(11) NOT NULL auto_increment,
+  `x` int(11) NOT NULL default '0',
+  `y` int(11) NOT NULL default '0',
+  `percent_land` tinyint(4) NOT NULL default '100',
+  `imagecount` int(11) NOT NULL default '0',
+  `grid_reference` varchar(6) NOT NULL default '',
+  `reference_index` tinyint(4) default '1',
+  `has_geographs` tinyint(4) NOT NULL default '0',
+  `point_xy` point NOT NULL default '',
+  `placename_id` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`gridsquare_id`),
+  UNIQUE KEY `grid_reference` (`grid_reference`),
+  KEY `x` (`x`),
+  KEY `y` (`y`),
+  SPATIAL KEY `point_xy` (`point_xy`(32))
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=341181 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridsquare2`
+-- 
+
+CREATE TABLE `gridsquare2` (
+  `gridsquare_id` int(11) NOT NULL default '0',
+  `x` int(11) NOT NULL default '0',
+  `y` int(11) NOT NULL default '0',
+  `percent_land` tinyint(4) NOT NULL default '100',
+  `imagecount` int(11) NOT NULL default '0',
+  `has_geographs` tinyint(4) NOT NULL default '0',
+  PRIMARY KEY  (`gridsquare_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridsquare_assignment`
+-- 
+
+CREATE TABLE `gridsquare_assignment` (
+  `hectad_assignment_id` int(10) unsigned NOT NULL,
+  `gridsquare_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`hectad_assignment_id`,`gridsquare_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridsquare_group_count`
+-- 
+
+CREATE TABLE `gridsquare_group_count` (
+  `x` int(11) NOT NULL default '0',
+  `y` int(11) NOT NULL default '0',
+  `gridsquare_id` int(11) NOT NULL default '0',
+  `imagecount` bigint(21) NOT NULL default '0'
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridsquare_moderation_lock`
+-- 
+
+CREATE TABLE `gridsquare_moderation_lock` (
+  `gridsquare_id` int(10) unsigned NOT NULL default '0',
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `lock_obtained` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `lock_type` enum('modding','cantmod') NOT NULL default 'modding',
+  PRIMARY KEY  (`gridsquare_id`,`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `gridsquare_topic`
+-- 
+
+CREATE TABLE `gridsquare_topic` (
+  `gridsquare_id` int(11) NOT NULL default '0',
+  `topic_id` int(11) NOT NULL default '0',
+  `forum_id` int(11) NOT NULL default '0',
+  `last_post` datetime default NULL,
+  PRIMARY KEY  (`gridsquare_id`,`topic_id`),
+  KEY `topic_id` (`topic_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `hectad_assignment`
+-- 
+
+CREATE TABLE `hectad_assignment` (
+  `hectad_assignment_id` int(10) unsigned NOT NULL auto_increment,
+  `user_id` int(10) unsigned NOT NULL,
+  `hectad` varchar(4) NOT NULL,
+  `status` enum('deleted','new','offered','accepted') NOT NULL default 'new',
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `expiry` datetime NOT NULL,
+  `sort_order` tinyint(3) unsigned NOT NULL,
+  PRIMARY KEY  (`hectad_assignment_id`),
+  UNIQUE KEY `user_id_2` (`user_id`,`hectad`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=188 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `hectad_complete`
+-- 
+
+CREATE TABLE `hectad_complete` (
+  `hectad_ref` varchar(6) NOT NULL default '',
+  `completed` date NOT NULL default '0000-00-00',
+  `landcount` tinyint(3) unsigned NOT NULL default '0',
+  `reference_index` tinyint(3) unsigned NOT NULL default '0',
+  `largemap_token` varchar(128) NOT NULL default '',
+  PRIMARY KEY  (`hectad_ref`),
+  KEY `completed` (`completed`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `kmlcache`
+-- 
+
+CREATE TABLE `kmlcache` (
+  `url` varchar(64) NOT NULL,
+  `filename` varchar(64) NOT NULL,
+  `filesize` mediumint(8) unsigned NOT NULL,
+  `ts` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `level` tinyint(3) unsigned NOT NULL,
+  `rendered` tinyint(3) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`url`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `loc_abgaz`
+-- 
+
+CREATE TABLE `loc_abgaz` (
+  `gaz_id` int(10) unsigned NOT NULL auto_increment,
+  `full_name` varchar(128) NOT NULL default '',
+  `gridref` varchar(6) NOT NULL default '',
+  `hcounty` varchar(64) NOT NULL default '',
+  `acounty` varchar(64) NOT NULL default '',
+  `district` varchar(64) NOT NULL default '',
+  `ua` varchar(64) NOT NULL default '',
+  `police` varchar(64) NOT NULL default '',
+  `region` varchar(64) NOT NULL default '',
+  `e` mediumint(8) unsigned NOT NULL default '0',
+  `n` mediumint(8) unsigned NOT NULL default '0',
+  `point_en` point NOT NULL default '',
+  PRIMARY KEY  (`gaz_id`),
+  KEY `gridref` (`gridref`),
+  SPATIAL KEY `point_en` (`point_en`(32))
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=51594 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `loc_adm1`
+-- 
+
+CREATE TABLE `loc_adm1` (
+  `country` varchar(2) NOT NULL,
+  `adm1` char(2) NOT NULL default '0',
+  `name` varchar(32) NOT NULL default '',
+  `reference_index` tinyint(3) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`adm1`,`reference_index`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `loc_counties`
+-- 
+
+CREATE TABLE `loc_counties` (
+  `county_id` smallint(6) NOT NULL auto_increment,
+  `e` int(11) NOT NULL default '0',
+  `n` int(11) NOT NULL default '0',
+  `name` varchar(64) NOT NULL default '',
+  `reference_index` tinyint(4) NOT NULL default '0',
+  `point_en` point NOT NULL default '',
+  PRIMARY KEY  (`county_id`),
+  SPATIAL KEY `point_en` (`point_en`(32))
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=97 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `loc_counties_pre74`
+-- 
+
+CREATE TABLE `loc_counties_pre74` (
+  `county_id` smallint(6) NOT NULL auto_increment,
+  `e` int(11) NOT NULL default '0',
+  `n` int(11) NOT NULL default '0',
+  `name` varchar(64) NOT NULL default '',
+  `reference_index` tinyint(4) NOT NULL default '0',
+  `wgs84_lat` decimal(10,6) NOT NULL default '0.000000',
+  `wgs84_long` decimal(10,6) NOT NULL default '0.000000',
+  `point_en` point NOT NULL default '',
+  PRIMARY KEY  (`county_id`),
+  SPATIAL KEY `point_en` (`point_en`(32))
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=111 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `loc_country`
+-- 
+
+CREATE TABLE `loc_country` (
+  `code` varchar(2) NOT NULL,
+  `name` varchar(30) NOT NULL,
+  PRIMARY KEY  (`code`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `loc_dsg`
+-- 
+
+CREATE TABLE `loc_dsg` (
+  `code` enum('ADM1','ADM2','ADM3','ADMD','AGRF','AIRF','AIRQ','ANCH','ANS','ARCH','AREA','BAR','BAY','BCH','BDG','BLDG','BNK','BOG','BTL','CAPE','CARN','CAVE','CHN','CHNM','CHNN','CLF','CMP','CNL','COVE','CRNT','CSTL','CSWY','DCK','DCKB','DEPU','DPR','EST','ESTY','FLLS','FLTT','FRM','FRST','FT','GAP','GDN','GRGE','HBR','HDLD','HLL','HLLS','HSE','HSEC','HSTS','HTH','HTL','INLT','ISL','ISLS','ISLT','LCTY','LDGU','LGN','LK','LKS','LOCK','LTHSE','MDW','MNMT','MOOR','MRSH','MT','MTS','NRWS','NVB','OVF','PAL','PASS','PEN','PIER','PK','PKS','PLN','PND','POOL','PPL','PPLC','PPLL','PPLX','PRK','PROM','PRSH','PRT','PT','RCH','RD','RDA','RDGE','RDST','RECR','RESN','RF','RGN','RK','RKS','RR','RSTN','RSV','RUIN','SAND','SD','SHOL','SLCE','SLP','SPIT','ST','STM','STMC','STMM','STMX','STRT','TNL','TOWR','UPLD','VAL','WHRL') NOT NULL default 'ADM1',
+  `name` varchar(64) NOT NULL default '',
+  `text` varchar(64) NOT NULL default '',
+  `class` varchar(64) NOT NULL default '',
+  KEY `code` (`code`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `loc_placenames`
+-- 
+
+CREATE TABLE `loc_placenames` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `dsg` enum('ADM1','ADMD','ANCH','ANS','AREA','BAR','BAY','BCH','BDG','BLDG','BNK','BOG','BRKS','BRKW','CAPE','CARN','CAVE','CH','CHN','CHNM','CLF','CMP','CNFL','CNL','COVE','CRKT','CSTL','DCK','DCKB','DCKY','DPR','EST','ESTY','FLD','FLLS','FLTT','FORD','FRM','FRST','FSR','FT','GAP','GASF','GRGE','GRVE','HBR','HDLD','HLL','HLLS','HMCK','HSE','HSEC','HSP','HTL','INDS','INLT','ISL','ISLS','ISLT','LCTY','LGN','LK','LKS','MDW','MN','MNMT','MOOR','MRSH','MSTY','MT','MTS','MUS','NRWS','OBPT','OILR','PASS','PCLI','PEN','PIER','PK','PLDR','PLN','PND','POOL','PPL','PPLA','PPLC','PPLL','PPLX','PRK','PRN','PRSH','PRT','PS','PT','QUAY','RD','RDGE','RDST','RF','RGN','RJCT','RK','RKS','RNGA','RPDS','RSTN','RSTP','RSV','RUIN','SAND','SCH','SCHC','SD','SEA','SHOL','SLP','SPIT','SPNG','SPUR','STM','STMA','STMM','STNE','STRT','TMB','TOWR','TRL','TRMO','VAL','WEIR','WLL','WTRW','ZZZZZ') NOT NULL default 'ADM1',
+  `adm1` char(2) NOT NULL default '',
+  `full_name` varchar(64) NOT NULL default '',
+  `full_name_soundex` varchar(32) NOT NULL default '',
+  `gns_ufi` int(11) NOT NULL,
+  `gns_uni` int(11) NOT NULL,
+  `nametype` char(1) NOT NULL,
+  `e` int(11) NOT NULL default '0',
+  `n` int(11) NOT NULL default '0',
+  `reference_index` tinyint(4) NOT NULL default '1',
+  `country` enum('uk','ie') NOT NULL,
+  `point_en` point NOT NULL default '',
+  PRIMARY KEY  (`id`),
+  KEY `full_name` (`full_name`),
+  SPATIAL KEY `point_en` (`point_en`(32)),
+  KEY `gns_ufi` (`gns_ufi`),
+  KEY `dsg` (`dsg`,`reference_index`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=56428 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `loc_postcodes`
+-- 
+
+CREATE TABLE `loc_postcodes` (
+  `e` int(11) NOT NULL default '0',
+  `n` int(11) NOT NULL default '0',
+  `code` varchar(7) NOT NULL default '',
+  `reference_index` tinyint(4) NOT NULL default '1',
+  PRIMARY KEY  (`code`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `loc_towns`
+-- 
+
+CREATE TABLE `loc_towns` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(50) NOT NULL default '',
+  `e` mediumint(6) unsigned NOT NULL default '0',
+  `n` mediumint(7) unsigned NOT NULL default '0',
+  `s` enum('1','2','3','') NOT NULL default '1',
+  `reference_index` tinyint(4) NOT NULL default '0',
+  `quad` tinyint(4) NOT NULL default '0',
+  `wgs84_lat` decimal(10,6) NOT NULL default '0.000000',
+  `wgs84_long` decimal(10,6) NOT NULL default '0.000000',
+  `point_en` point NOT NULL default '',
+  PRIMARY KEY  (`id`),
+  KEY `gis` (`e`,`n`,`reference_index`),
+  SPATIAL KEY `point_en` (`point_en`(32))
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1144 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `loc_wikipedia`
+-- 
+
+CREATE TABLE `loc_wikipedia` (
+  `url` varchar(255) NOT NULL default '',
+  `exists` char(1) NOT NULL default '',
+  `title` varchar(255) NOT NULL default '',
+  `text` varchar(255) NOT NULL default '',
+  `iscity` varchar(255) NOT NULL default '',
+  `country` char(2) NOT NULL default ''
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `mapcache`
+-- 
+
+CREATE TABLE `mapcache` (
+  `map_x` smallint(6) NOT NULL default '0',
+  `map_y` smallint(6) NOT NULL default '0',
+  `image_w` smallint(6) unsigned NOT NULL default '0',
+  `image_h` smallint(6) unsigned NOT NULL default '0',
+  `pixels_per_km` float NOT NULL default '0',
+  `type_or_user` smallint(6) NOT NULL default '0',
+  `age` smallint(5) unsigned NOT NULL default '0',
+  `ts` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `palette` smallint(6) NOT NULL default '0',
+  PRIMARY KEY  (`map_x`,`map_y`,`image_w`,`image_h`,`pixels_per_km`,`type_or_user`,`palette`),
+  KEY `age` (`age`,`type_or_user`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `mapcache2`
+-- 
+
+CREATE TABLE `mapcache2` (
+  `map_x` smallint(6) NOT NULL default '0',
+  `map_y` smallint(6) NOT NULL default '0',
+  `image_w` smallint(6) unsigned NOT NULL default '0',
+  `image_h` smallint(6) unsigned NOT NULL default '0',
+  `pixels_per_km` float NOT NULL default '0',
+  `type_or_user` smallint(6) NOT NULL default '0',
+  `age` smallint(5) unsigned NOT NULL default '0',
+  `ts` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `palette` smallint(6) NOT NULL default '0',
+  PRIMARY KEY  (`map_x`,`map_y`,`image_w`,`image_h`,`pixels_per_km`,`type_or_user`,`palette`),
+  KEY `age` (`age`,`type_or_user`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `mapfix_log`
+-- 
+
+CREATE TABLE `mapfix_log` (
+  `mapfix_log_id` int(10) unsigned NOT NULL auto_increment,
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `gridsquare_id` int(10) unsigned NOT NULL default '0',
+  `comment` varchar(128) NOT NULL,
+  `new_percent_land` tinyint(4) default NULL,
+  `old_percent_land` tinyint(4) default NULL,
+  `created` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`mapfix_log_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=12080 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `milestone`
+-- 
+
+CREATE TABLE `milestone` (
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `gridimage_id` int(10) unsigned NOT NULL default '0',
+  `milestone` mediumint(6) unsigned NOT NULL default '0',
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `moderation_log`
+-- 
+
+CREATE TABLE `moderation_log` (
+  `moderation_log_id` int(10) unsigned NOT NULL auto_increment,
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `gridimage_id` int(10) unsigned NOT NULL default '0',
+  `new_status` enum('rejected','pending','accepted','geograph') NOT NULL default 'rejected',
+  `old_status` enum('rejected','pending','accepted','geograph','') NOT NULL default 'rejected',
+  `created` datetime NOT NULL default '0000-00-00 00:00:00',
+  `type` enum('dummy','real') NOT NULL default 'dummy',
+  PRIMARY KEY  (`moderation_log_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=47 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `os_gaz`
+-- 
+
+CREATE TABLE `os_gaz` (
+  `seq` mediumint(6) unsigned NOT NULL,
+  `km_ref` varchar(6) NOT NULL default '',
+  `def_nam` varchar(60) NOT NULL default '',
+  `tile_ref` varchar(4) NOT NULL default '',
+  `lat_deg` tinyint(4) NOT NULL default '0',
+  `lat_min` double(3,1) NOT NULL default '0.0',
+  `long_deg` tinyint(4) NOT NULL default '0',
+  `long_min` double(3,1) NOT NULL default '0.0',
+  `north` mediumint(7) unsigned NOT NULL,
+  `east` mediumint(6) unsigned NOT NULL,
+  `gmt` enum('E','W') NOT NULL,
+  `co_code` enum('AB','AG','AN','AR','BA','BB','BC','BD','BE','BF','BG','BH','BI','BL','BM','BN','BO','BP','BR','BS','BT','BU','BX','BY','BZ','CA','CB','CD','CE','CF','CH','CL','CM','CN','CT','CU','CV','CW','CY','DB','DD','DE','DG','DL','DN','DR','DT','DU','DY','DZ','EA','EB','ED','EG','EL','EN','ER','ES','EX','EY','FA','FF','FL','GH','GL','GR','GW','GY','HA','HD','HE','HF','HG','HI','HL','HN','HP','HR','HS','HT','HV','IA','IL','IM','IN','IS','IW','KC','KG','KH','KL','KN','KT','LA','LB','LC','LD','LL','LN','LO','LP','LS','LT','MA','MB','ME','MI','MK','MM','MO','MR','MT','NA','NC','ND','NE','NG','NH','NI','NK','NL','NN','NP','NR','NS','NT','NW','NY','OH','OK','ON','PB','PE','PK','PL','PO','PW','PY','RB','RC','RD','RE','RG','RH','RL','RO','RT','SA','SB','SC','SD','SE','SF','SG','SH','SI','SJ','SK','SL','SM','SN','SO','SP','SQ','SR','SS','ST','SU','SV','SW','SX','SY','SZ','TB','TF','TH','TR','TS','TU','VG','WA','WB','WC','WD','WE','WF','WG','WH','WI','WJ','WK','WL','WM','WN','WO','WP','WR','WS','WT','WW','WX','XX','YK','YS','YT','YY') NOT NULL,
+  `county` enum('0','Aberd','Angus','Arg & Bt','Bark & Dag','Barnet','Barns','Bath & NE Somer','Beds','Bexley','Birm','Black w Dar','Blackp','Blae Gw','Bolton','Bourne','Brackn','Brad','Brent','Brig','Brom','Bucks','Bury','C of Aber','C of Bri & Hov','C of Bris','C of Derb','C of Dun','C of Edin','C of Glas','C of K upon H','C of Leic','C of Lon','C of Nott','C of Peterb','C of Plym','C of Port','C of Soton','C of Stoke','C of West','C of Wolv','Caer','Cald','Cambs','Camden','Card','Carm','Cered','Ches','Clackm','Conwy','Corn','Cov','Croy','Cumbr','D & G','Darl','Denb','Derby','Devon','Donc','Dorset','Dudley','Durham','E Ayr','E Dunb','E Loth','E Renf','E Susx','E Yorks','Ealing','Enf','Essex','Falk','Fife','Flint','Ghead','Glos','Gren','Gwyn','Hack','Halton','Ham & Ful','Hants','Hargy','Harrow','Hartpl','Hav','Heref','Herts','Highld','Hill','Houns','I of Angl','I of M','I of W','I Scilly','Inverc','Isling','Ken & Ch','Kent','King','Kirk','Know','Lam','Lancs','Leeds','Leic','Lew','Lincs','Liv','Luton','Man','Medway','Merth Tyd','Merton','Midd','Midlo','Mil Key','Monm','Moray','N Ayr','N Eil','N Lanak','N Lincs','N Som','N Tyne','N upon Ty','N Yks','NE Lincs','Newham','Newp','Norf','Northnts','Northum','Notts','Nth Pt Talb','Oldham','Orkney','Oxon','Pemb','Poole','Powys','Pth & Kin','Read','Red & Cl','Redbr','Renf','Rho Cyn Taf','Rich','Roch','Roth','Rut','S Ayr','S Glos','S Lanak','S Tyne','Salf','Sand','Scot Bord','Sefton','Sheff','Shetld','Shrops','Slough','Sol','Somer','Sou-on-Sea','St Hel','Staffs','Sthwk','Stir','Stock','Stock on T','Suff','Sund','Surrey','Sutton','Swan','Swin','T Ham','Tames','Thurr','Torbay','Torf','Traf','V of Glam','W Berks','W Dunb','W Loth','W Susx','Wakf','Wal F','Wals','Wan','Warr','Warw','Wigan','Wilts','Win & Maid','Wirral','Wok','Worcs','Wrekin','Wrex','York') NOT NULL,
+  `full_county` enum('Aberdeen City','Aberdeenshire','Angus','Argyll and Bute','Barking & Dagenham','Barnet','Barnsley','Bath and North East Somerset','Bedfordshire','Bexley','Birmingham','Blackburn with Darwen','Blackpool','Blaenau Gwent','Bolton','Bournemouth','Bracknell Forest','Bradford','Brent','Bridgend','Bromley','Buckinghamshire','Bury','Caerphilly','Calderdale','Cambridgeshire','Camden','Cardiff','Carmarthenshire','Ceredigion','Cheshire','City of Brighton and Hove','City of Bristol','City of Derby','City of Edinburgh','City of Kingston upon Hull','City of Leicester','City of London','City of Nottingham','City of Peterborough','City of Plymouth','City of Portsmouth','City of Southampton','City of Stoke-on-Trent','City of Westminster','City of Wolverhampton','Clackmannanshire','Conwy','Cornwall','Coventry','Croydon','Cumbria','Darlington','Denbighshire','Derbyshire','Devon','Doncaster','Dorset','Dudley','Dumfries and Galloway','Dundee City','Durham','Ealing','East Ayrshire','East Dunbartonshire','East Lothian','East Renfrewshire','East Riding of Yorkshire','East Sussex','Enfield','Essex','Falkirk','Fife','Flintshire','Gateshead','Glasgow City','Gloucestershire','Greenwich','Gwynedd','Hackney','Halton','Hammersmith &Fulham','Hampshire','Haringey','Harrow','Hartlepool','Havering','Herefordshire','Hertfordshire','Highland','Hillingdon','Hounslow','Inverclyde','Isle of Anglesey','Isle of Man','Isle of Wight','Isles of Scilly','Islington','Kent','Kingston upon Thames','Kirklees','Knowsley','Lambeth','Lancashire','Leeds','Leicestershire','Lewisham','Lincolnshire','Liverpool','Luton','Manchester','Medway','Merthyr Tydfil','Merton','Middlesbrough','Midlothian','Milton Keynes','Monmouthshire','Moray','Na h-Eileanan an Iar','Neath Port Talbot','Newcastle upon Tyne','Newham','Newport','Norfolk','North Ayrshire','North East Lincolnshire','North Lanarkshire','North Lincolnshire','North Somerset','North Tyneside','North Yorkshire','Northamptonshire','Northumberland','Nottinghamshire','Oldham','Orkney Islands','Oxfordshire','Pembrokeshire','Perth and Kinross','Poole','Powys','Reading','Redbridge','Redcar & Cleveland','Renfrewshire','Rhondda,Cynon,Taff','Richmond upon Thames','Rochdale','Rotherham','Royal Borough of Kensington & Chelsea','Rutland','Salford','Sandwell','Scottish Borders','Sefton','Sheffield','Shetland Islands','Shropshire','Slough','Solihull','Somerset','South Ayrshire','South Gloucestershire','South Lanarkshire','South Tyneside','Southend-on-Sea','Southwark','St Helens','Staffordshire','Stirling','Stockport','Stockton on Tees','Suffolk','Sunderland','Surrey','Sutton','Swansea','Swindon','Tameside','Telford and Wrekin','The Vale of Glamorgan','Thurrock','Torbay','Torfaen','Tower Hamlets','Trafford','Wakefield','Walsall','Waltham Forest','Wandsworth','Warrington','Warwickshire','West Berkshire','West Dunbartonshire','West Lothian','West Sussex','Wigan','Wiltshire','Windsor and Maidenhead','Wirral','Wokingham','Worcestershire','Wrexham','XXXXXXXX','York') NOT NULL,
+  `f_code` enum('C','T','O','A','F','FM','H','R','W','X') NOT NULL default 'C',
+  `e_date` varchar(11) NOT NULL default '',
+  `update_co` enum('I','U') NOT NULL,
+  `sheet_1` smallint(6) NOT NULL default '0',
+  `sheet_2` smallint(6) NOT NULL default '0',
+  `sheet_3` smallint(6) NOT NULL default '0',
+  `def_nam_soundex` varchar(32) NOT NULL default '',
+  `point_en` point NOT NULL default '',
+  `hcounty` enum('','Aberdeenshire','Anglesey','Angus','Argyllshire','Ayrshire','Banffshire','Bedfordshire','Bedfordshire / Hertfordshire','Beds, pre-1844 part in det pt of Hunts','Berks, pre-1844 in det pt of Wilts','Berks, pre-1844 part in det pt of Wilts','Berkshire','Berwickshire','Brecknockshire','Brecknockshire / Monmouthshire','Brecknockshire / Radnorshire','Buckinghamshire','Bucks, pre-1844 in det pt of Herts','Bucks, pre-1844 in det pt of Oxon','Buteshire','Caernarfon (det), locally in Denbighs','Caernarfonshire','Caernarfonshire / Merioneth','Caithness','Cambridgeshire','Cambridgeshire / Hertfordshire','Cambridgeshire / Hunts','Cambridgeshire / Norfolk','Cambridgeshire / Suffolk','Cardiganshire','Carmarthenshire','Carmarthenshire / Brecknock','Cheshire','Cheshire / Flintshire','Clackmannanshire','Cornwall','Cornwall, pre-1884 in det pt of Devon','Cromartyshire','Cromartyshire / Ross-shire','Cumberland','Denbighshire','Denbighshire / Caernarfons','Denbighshire / Flintshire','Denbighshire / Montgomeryshire','Derbys (det), locally in Leics','Derbyshire','Derbyshire / Leicestershire','Derbyshire / Nottinghamshire','Devon','Devon / Dorset','Devon / Somerset','Devon, pre-1844 in det pt of Dorset','Dorset','Dorset / Hampshire','Dorset, pre-1844 in det pt of Devon','Dorset, pre-1844 in det pt of Som''set','Dumfriesshire','Dunbartonshire','Durham','East Lothian','Essex','Fife','Flints (det), locally in Denbighs','Flintshire','Flintshire / Denbighshire','Glamorgan','Glamorgan / Brecknockshire','Gloucestershire','Gloucestershire / Herefords','Gloucs, pre-1844 in det pt of Wilts','Gloucs, pre-1844 in det pt of Worcs','Hampshire','Hampshire / Berkshire','Hampshire / Sussex','Hampshire / Wiltshire','Herefds, pre-1844 in det pt of Gloucs','Herefordshire','Herefordshire / Gloucestershire','Hertfordshire','Hertfordshire / Bedfordshire','Hertfordshire / Buckinghams','Hertfordshire / Middlesex','Huntingdonshire','Hunts (det), locally in Beds','Inverness (det), locally in Moray','Inverness-shire','Isles of Scilly','Kent','Kent / Surrey','Kent / Sussex','Kincardineshire','Kinross-shire','Kirkcudbrightshire','Lanarkshire','Lancashire','Lancs / Ches / Yorks, W.R.','Leicestershire','Leicestershire / Derbyshire','Leicestershire / Lincolnshire','Leicestershire / Northants','Lincolnshire','Lincolnshire / Cambridgeshire','Lincolnshire / Yorks, West Riding','Merioneth','Merioneth / Montgomeryshire','Middlesex','Middlesex / Hertfordshire','Midlothian','Monmouthshire','Montgomeryshire','Moray (det), locally in Inverness','Morayshire','Morayshire / Inverness-shir','N''thumb, pre-1844 in det pt of Durham','Nairnshire','Norfolk','Norfolk / Cambridgeshire','Norfolk / Suffolk','Northamptonshire','Northumberland','Nottinghamshire','Orkney','Oxfordshire','Oxon, pre-1844 in det pt of Bucks','Peeblesshire','Pembrokeshire','Perthshire','Perthshire (det), locally in Fife','Radnorshire','Renfrewshire','Ross-shire','Roxburghshire','Rutland','Selkirk (det), locally in Roxburgh','Selkirkshire','Selkirkshire / Roxburghshire','Shetland','Shropshire','Shropshire / Montgomeryshire','Shropshire / Staffordshire','Somerset','Somerset / Devon','Somerset / Dorset','Staffordshire','Staffordshire / Cheshire','Staffordshire / Warwickshire','Staffordshire / Worcestershire','Stirling (det), locally in Clackman','Stirlingshire','Suffolk','Suffolk / Cambridgeshire','Suffolk / Essex','Suffolk / Norfolk','Surrey','Surrey / Kent','Surrey / Sussex','Sussex','Sussex / Hampshire','Sussex / Surrey','Sussex, pre-1844 in det pt of Hants','Sutherland','Warks, pre-1844 in det pt of Gloucs','Warwickshire','Warwickshire / Leicestershire','Warwickshire / Staffordshire','Warwickshire / Worcestershire','West Lothian','Westmorland','Wigtownshire','Wilts, pre-1844 in det pt of Gloucs','Wiltshire','Wiltshire / Berkshire','Wiltshire / Hampshire','Worcestershire','Worcestershire / Shropshire','Worcestershire / Warwickshire','Worcs (det), locally in Gloucs','Worcs (det), locally in Herefds','Worcs (det), locally in Staffs','Worcs (det), locally in Warks','Worcs, pre-1844 in det pt of Herefds','Worcs, pre-1844 in det pt of Shrops','Worcs, pre-1844 in det pt of Staffs','Worcs, pre-1844 in det pt of Warks','Yorkshire, East Riding','Yorkshire, North Riding','Yorkshire, W.R.','Yorkshire, West Riding','Yorkshire, West Riding / Li','Yorkshire, West Riding / Notts') NOT NULL,
+  `name` varchar(64) NOT NULL,
+  `name_2` varchar(64) NOT NULL,
+  PRIMARY KEY  (`seq`),
+  KEY `east` (`east`,`north`,`f_code`),
+  KEY `co_code` (`co_code`),
+  KEY `tile_ref` (`tile_ref`),
+  KEY `def_nam` (`def_nam`),
+  SPATIAL KEY `point_en` (`point_en`(32)),
+  KEY `def_nam_soundex` (`def_nam_soundex`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `os_gaz_250`
+-- 
+
+CREATE TABLE `os_gaz_250` (
+  `seq` int(10) unsigned NOT NULL auto_increment,
+  `def_nam` varchar(250) NOT NULL,
+  `full_county` varchar(250) NOT NULL,
+  `east` mediumint(8) unsigned NOT NULL,
+  `north` mediumint(8) unsigned NOT NULL,
+  `def_nam_soundex` varchar(32) NOT NULL default '',
+  `point_en` point NOT NULL default '',
+  `name` varchar(64) NOT NULL,
+  `name_2` varchar(64) NOT NULL,
+  PRIMARY KEY  (`seq`),
+  SPATIAL KEY `point_en` (`point_en`(32)),
+  KEY `def_nam_soundex` (`def_nam_soundex`),
+  KEY `east` (`east`),
+  KEY `def_nam` (`def_nam`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=25547 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `os_gaz_code`
+-- 
+
+CREATE TABLE `os_gaz_code` (
+  `f_code` char(2) NOT NULL default '',
+  `code_name` varchar(32) NOT NULL,
+  PRIMARY KEY  (`f_code`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `os_gaz_county`
+-- 
+
+CREATE TABLE `os_gaz_county` (
+  `name` varchar(60) NOT NULL default '',
+  `c` bigint(21) NOT NULL default '0',
+  `e` mediumint(8) unsigned NOT NULL default '0',
+  `n` mediumint(8) unsigned NOT NULL default '0',
+  `reference_index` tinyint(3) unsigned NOT NULL default '0',
+  `country` varchar(1) NOT NULL,
+  PRIMARY KEY  (`name`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `pagestats`
+-- 
+
+CREATE TABLE `pagestats` (
+  `url` varchar(255) NOT NULL,
+  `viewed` int(10) unsigned NOT NULL,
+  `average_size` varchar(20) NOT NULL,
+  `entry` int(10) unsigned NOT NULL,
+  `exit` int(10) unsigned NOT NULL,
+  `type` enum('','sys','user','add','photo','admin','kml','article','stats') NOT NULL,
+  PRIMARY KEY  (`url`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `photo_log`
+-- 
+
+CREATE TABLE `photo_log` (
+  `month` varchar(7) NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `views` mediumint(8) unsigned NOT NULL,
+  `entry` mediumint(8) unsigned NOT NULL,
+  `exits` mediumint(8) unsigned NOT NULL,
+  KEY `gridimage_id` (`gridimage_id`),
+  KEY `month` (`month`(4))
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `placename_index`
+-- 
+
+CREATE TABLE `placename_index` (
+  `id` int(10) unsigned NOT NULL,
+  `name` varchar(128) NOT NULL,
+  `name_2` varchar(64) NOT NULL,
+  `gr` varchar(6) NOT NULL,
+  `localities` varchar(255) NOT NULL,
+  `localities_2` varchar(64) NOT NULL,
+  `grs` varchar(128) NOT NULL,
+  `score` tinyint(3) unsigned NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`),
+  KEY `name` (`name`),
+  KEY `localities` (`localities`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `queries`
+-- 
+
+CREATE TABLE `queries` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `searchdesc` varchar(255) NOT NULL default '',
+  `searchclass` enum('County','GridRef','Placename','Postcode','Random','Text','All','Special') NOT NULL default 'All',
+  `searchq` varchar(255) NOT NULL default '',
+  `searchtext` varchar(255) NOT NULL,
+  `limit1` varchar(7) NOT NULL,
+  `limit2` enum('','geograph','geograph,accepted','geograph,accepted,pending','pending','accepted','rejected') NOT NULL default '',
+  `limit3` varchar(32) NOT NULL default '',
+  `limit4` char(1) NOT NULL default '',
+  `limit5` char(2) NOT NULL default '',
+  `limit6` varchar(32) NOT NULL default '',
+  `limit7` varchar(32) NOT NULL default '',
+  `limit8` smallint(5) NOT NULL default '0',
+  `limit9` int(10) unsigned NOT NULL default '0',
+  `limit10` mediumint(8) unsigned NOT NULL default '0',
+  `x` smallint(5) NOT NULL default '0',
+  `y` smallint(5) NOT NULL default '0',
+  `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens') NOT NULL default 'full',
+  `resultsperpage` smallint(5) NOT NULL default '15',
+  `orderby` varchar(32) NOT NULL default '',
+  `breakby` varchar(32) NOT NULL default '',
+  `crt_timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `user_id` int(11) NOT NULL default '0',
+  `searchuse` enum('search','flickr','gazetteer','discuss') NOT NULL default 'search',
+  `use_timestamp` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `favorite` enum('Y','N') NOT NULL default 'N',
+  PRIMARY KEY  (`id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=958457 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `queries2`
+-- 
+
+CREATE TABLE `queries2` (
+  `searchclass` enum('County','GridRef','Placename','Postcode','Random','Text','All','Special') NOT NULL default 'All',
+  `searchq` varchar(255) NOT NULL default '',
+  `searchtext` varchar(255) NOT NULL default '',
+  `crt_timestamp` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `user_id` int(11) NOT NULL default '0'
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `queries_archive`
+-- 
+
+CREATE TABLE `queries_archive` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `searchdesc` varchar(255) NOT NULL default '',
+  `searchclass` enum('County','GridRef','Placename','Postcode','Random','Text','All','Special') NOT NULL default 'All',
+  `searchq` varchar(255) NOT NULL default '',
+  `searchtext` varchar(255) NOT NULL,
+  `limit1` varchar(7) NOT NULL,
+  `limit2` enum('','geograph','geograph,accepted','geograph,accepted,pending','pending','accepted','rejected') NOT NULL default '',
+  `limit3` varchar(32) NOT NULL default '',
+  `limit4` char(1) NOT NULL default '',
+  `limit5` char(2) NOT NULL default '',
+  `limit6` varchar(32) NOT NULL default '',
+  `limit7` varchar(32) NOT NULL default '',
+  `limit8` smallint(5) unsigned NOT NULL default '0',
+  `limit9` int(10) unsigned NOT NULL default '0',
+  `limit10` mediumint(8) unsigned NOT NULL default '0',
+  `x` smallint(5) unsigned NOT NULL default '0',
+  `y` smallint(5) unsigned NOT NULL default '0',
+  `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext') NOT NULL default 'full',
+  `resultsperpage` smallint(5) NOT NULL default '15',
+  `orderby` varchar(32) NOT NULL default '',
+  `breakby` varchar(32) NOT NULL default '',
+  `crt_timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `user_id` int(11) NOT NULL default '0',
+  `searchuse` enum('search','flickr','gazetteer','discuss') NOT NULL default 'search',
+  `use_timestamp` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `favorite` enum('Y','N') NOT NULL default 'N',
+  PRIMARY KEY  (`id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `queries_count`
+-- 
+
+CREATE TABLE `queries_count` (
+  `id` int(10) unsigned NOT NULL default '0',
+  `count` int(10) unsigned NOT NULL default '0',
+  `ts` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `queries_featured`
+-- 
+
+CREATE TABLE `queries_featured` (
+  `id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `comment` varchar(100) NOT NULL,
+  `approved` tinyint(4) NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `stickied` tinyint(4) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `recent_gridimage`
+-- 
+
+CREATE TABLE `recent_gridimage` (
+  `gridimage_id` int(11) NOT NULL default '0',
+  `added` datetime default NULL,
+  PRIMARY KEY  (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `route`
+-- 
+
+CREATE TABLE `route` (
+  `route_id` mediumint(8) unsigned NOT NULL auto_increment,
+  `name` varchar(60) NOT NULL default '',
+  `reference_index` tinyint(3) unsigned NOT NULL default '1',
+  `orderby` varchar(32) NOT NULL default '',
+  `enabled` tinyint(3) unsigned NOT NULL default '1',
+  `crt_timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `route_group` varchar(32) NOT NULL default '',
+  PRIMARY KEY  (`route_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=18 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `route_item`
+-- 
+
+CREATE TABLE `route_item` (
+  `gridref` varchar(6) NOT NULL default '',
+  `route_id` mediumint(8) unsigned NOT NULL default '1',
+  `routeitem_id` mediumint(8) unsigned NOT NULL auto_increment,
+  `osgb_eastings` mediumint(6) unsigned NOT NULL default '0',
+  `osgb_northings` mediumint(7) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`routeitem_id`),
+  KEY `route_id` (`route_id`),
+  KEY `gridref` (`gridref`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=11549 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `sessions`
+-- 
+
+CREATE TABLE `sessions` (
+  `SESSKEY` varchar(32) NOT NULL default '',
+  `EXPIRY` int(11) unsigned NOT NULL default '0',
+  `EXPIREREF` varchar(64) default NULL,
+  `DATA` text NOT NULL,
+  `ipaddr` varchar(20) NOT NULL default '',
+  PRIMARY KEY  (`SESSKEY`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `smarty_cache_page`
+-- 
+
+CREATE TABLE `smarty_cache_page` (
+  `CacheID` varchar(255) NOT NULL,
+  `TemplateFile` varchar(255) NOT NULL,
+  `GroupCache` varchar(255) NOT NULL,
+  PRIMARY KEY  (`CacheID`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `sphinx_test`
+-- 
+
+CREATE TABLE `sphinx_test` (
+  `id` int(1) NOT NULL default '0',
+  `str` varchar(30) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `sphinxhelp`
+-- 
+
+CREATE TABLE `sphinxhelp` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `version` smallint(6) NOT NULL,
+  `title` varchar(128) NOT NULL,
+  `anchor` varchar(64) NOT NULL,
+  `content` text NOT NULL,
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=160 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `throttle`
+-- 
+
+CREATE TABLE `throttle` (
+  `used` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `feature` enum('ecard','usermsg') NOT NULL default 'ecard',
+  KEY `user_id` (`user_id`,`feature`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `user`
+-- 
+
+CREATE TABLE `user` (
+  `user_id` int(11) NOT NULL auto_increment,
+  `password` varchar(64) default NULL,
+  `realname` varchar(128) default NULL,
+  `credit_realname` varchar(128) NOT NULL,
+  `email` varchar(128) default NULL,
+  `website` varchar(255) default NULL,
+  `rights` set('basic','moderator','admin','ticketmod','traineemod','suspicious','dormant') default NULL,
+  `signup_date` datetime default NULL,
+  `nickname` varchar(128) default NULL,
+  `contact_options` set('show_email','usermsg') NOT NULL default 'usermsg',
+  `notifications` set('-all-','-none-','minor_initial','minor_comment','minor_changes','minor_nothing','normal_initial','normal_comment','normal_changes','normal_nothing','moderator_initial','moderator_comment','moderator_changes','moderator_nothing','change_changes','minor_modchanges','normal_modchanges','your_comment','your_changes','your_nothing','mod_comment') NOT NULL default '-all-',
+  `slideshow_delay` tinyint(3) unsigned NOT NULL default '5',
+  `search_results` tinyint(3) unsigned NOT NULL default '15',
+  `about_yourself` text NOT NULL,
+  `age_group` tinyint(3) unsigned NOT NULL default '0',
+  `home_gridsquare` mediumint(8) unsigned default NULL,
+  `ticket_option` enum('all','major','digest','none') NOT NULL default 'all',
+  `ticket_when` enum('happens','digest','htmldigest') NOT NULL default 'happens',
+  `default_style` enum('white','black','gray') NOT NULL default 'white',
+  `role` varchar(32) NOT NULL default '',
+  `message_sig` varchar(250) NOT NULL default '',
+  `ticket_public` enum('no','owner','everyone') NOT NULL default 'everyone',
+  `http_host` varchar(64) NOT NULL,
+  `expand_about` tinyint(3) unsigned NOT NULL default '0',
+  `use_autocomplete` tinyint(3) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`user_id`),
+  KEY `rights` (`rights`,`role`),
+  KEY `realname` (`realname`),
+  KEY `nickname` (`nickname`),
+  KEY `email` (`email`),
+  FULLTEXT KEY `realname_2` (`realname`,`nickname`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=21211 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `user_gridsquare`
+-- 
+
+CREATE TABLE `user_gridsquare` (
+  `user_id` int(11) NOT NULL default '0',
+  `grid_reference` varchar(6) NOT NULL default '',
+  KEY `user_id` (`user_id`,`grid_reference`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `user_mine`
+-- 
+
+CREATE TABLE `user_mine` (
+  `user_id` int(11) NOT NULL auto_increment,
+  `password` varchar(64) default NULL,
+  `realname` varchar(128) default NULL,
+  `credit_realname` varchar(128) NOT NULL,
+  `email` varchar(128) default NULL,
+  `website` varchar(255) default NULL,
+  `rights` set('basic','moderator','admin','ticketmod','traineemod') default NULL,
+  `signup_date` datetime default NULL,
+  `nickname` varchar(128) default NULL,
+  `public_email` int(11) default '0',
+  `rank` int(10) unsigned NOT NULL default '0',
+  `to_rise_rank` mediumint(8) unsigned NOT NULL default '0',
+  `slideshow_delay` tinyint(3) unsigned NOT NULL default '5',
+  `search_results` tinyint(3) unsigned NOT NULL default '15',
+  `about_yourself` text NOT NULL,
+  `public_about` tinyint(3) unsigned NOT NULL default '1',
+  `age_group` tinyint(3) unsigned NOT NULL default '0',
+  `use_age_group` tinyint(3) unsigned NOT NULL default '0',
+  `home_gridsquare` mediumint(8) unsigned default NULL,
+  `ticket_option` enum('all','major','digest','none') NOT NULL default 'all',
+  `default_style` enum('white','black','gray') NOT NULL default 'white',
+  `role` varchar(32) NOT NULL,
+  PRIMARY KEY  (`user_id`),
+  KEY `rights` (`rights`,`role`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6708 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `user_stat`
+-- 
+
+CREATE TABLE `user_stat` (
+  `user_id` int(11) unsigned NOT NULL default '0',
+  `images` mediumint(5) unsigned NOT NULL default '0',
+  `squares` mediumint(5) unsigned NOT NULL default '0',
+  `geosquares` smallint(5) unsigned NOT NULL default '0',
+  `geo_rank` smallint(5) unsigned NOT NULL default '0',
+  `geo_rise` smallint(5) unsigned NOT NULL default '0',
+  `points` mediumint(5) unsigned NOT NULL default '0',
+  `points_rank` smallint(5) unsigned NOT NULL default '0',
+  `points_rise` smallint(5) unsigned NOT NULL default '0',
+  `geographs` mediumint(5) unsigned NOT NULL default '0',
+  `days` smallint(5) unsigned NOT NULL default '0',
+  `depth` decimal(6,2) NOT NULL default '0.00',
+  `myriads` tinyint(5) unsigned NOT NULL default '0',
+  `hectads` smallint(3) unsigned NOT NULL default '0',
+  `last` int(11) unsigned NOT NULL default '0',
+  `content` mediumint(5) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`user_id`),
+  KEY `points` (`points`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `usersort_image`
+-- 
+
+CREATE TABLE `usersort_image` (
+  `v` tinyint(3) unsigned NOT NULL default '0',
+  `gridimage_id` int(10) unsigned NOT NULL default '0',
+  `score` mediumint(8) unsigned NOT NULL default '0',
+  `upd_timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `usersort_vector`
+-- 
+
+CREATE TABLE `usersort_vector` (
+  `v` tinyint(3) unsigned NOT NULL auto_increment,
+  `name` varchar(64) NOT NULL default '',
+  `that` varchar(64) NOT NULL default '',
+  PRIMARY KEY  (`v`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `usersort_vote`
+-- 
+
+CREATE TABLE `usersort_vote` (
+  `v` tinyint(3) unsigned NOT NULL default '0',
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `id1` int(10) unsigned NOT NULL default '0',
+  `id2` int(10) unsigned NOT NULL default '0',
+  `upd_timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `vote_log`
+-- 
+
+CREATE TABLE `vote_log` (
+  `vote_id` int(10) unsigned NOT NULL auto_increment,
+  `type` varchar(20) NOT NULL,
+  `id` int(10) unsigned NOT NULL,
+  `vote` tinyint(4) NOT NULL,
+  `ts` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `user_id` int(10) unsigned NOT NULL,
+  `ipaddr` int(10) unsigned NOT NULL,
+  `final` tinyint(3) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`vote_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1046 ;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `vote_stat`
+-- 
+
+CREATE TABLE `vote_stat` (
+  `type` varchar(20) NOT NULL,
+  `id` int(10) unsigned NOT NULL,
+  `num` mediumint(8) unsigned NOT NULL,
+  `users` mediumint(8) unsigned NOT NULL,
+  `avg` float NOT NULL,
+  `std` float NOT NULL,
+  `baysian` float NOT NULL,
+  `v1` mediumint(8) unsigned NOT NULL,
+  `v2` mediumint(8) unsigned NOT NULL,
+  `v3` mediumint(8) unsigned NOT NULL,
+  `v4` mediumint(8) unsigned NOT NULL,
+  `v5` mediumint(8) unsigned NOT NULL,
+  PRIMARY KEY  (`type`,`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `wordnet1`
+-- 
+
+CREATE TABLE `wordnet1` (
+  `gid` int(11) NOT NULL default '0',
+  `words` varchar(64) NOT NULL default '',
+  `title` smallint(6) NOT NULL default '0',
+  KEY `gid_2` (`gid`,`words`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `wordnet2`
+-- 
+
+CREATE TABLE `wordnet2` (
+  `gid` int(11) NOT NULL default '0',
+  `words` varchar(64) NOT NULL default '',
+  `title` smallint(6) NOT NULL default '0',
+  KEY `gid_2` (`gid`,`words`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `wordnet3`
+-- 
+
+CREATE TABLE `wordnet3` (
+  `gid` int(11) NOT NULL default '0',
+  `words` varchar(64) NOT NULL default '',
+  `title` smallint(6) NOT NULL default '0',
+  KEY `gid_2` (`gid`,`words`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `user_stat_view`
+-- 
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `geograph_live`.`user_stat_view` AS select `geograph_live`.`user_stat`.`user_id` AS `user_id`,`geograph_live`.`user_stat`.`images` AS `images`,pow(10,(floor(log10(`geograph_live`.`user_stat`.`images`)) + 1)) AS `images_d` from `geograph_live`.`user_stat`;
