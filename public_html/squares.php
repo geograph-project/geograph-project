@@ -163,6 +163,9 @@ if ($grid_ok)
 
 		//get a token to show a suroudding geograph map
 		$mosaic=new GeographMapMosaic;
+		if ($type=='norecent' || $type=='recent') {
+			$mosaic->type_or_user = -6;
+		}
 		$smarty->assign('map_token', $mosaic->getGridSquareToken($square));
 
 		//lets add an overview map too
