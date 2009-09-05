@@ -56,7 +56,7 @@ class sphinxwrapper {
 		$q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
 		
 			//remove unsuitable chars
-		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'-]+/',' ',trim(strtolower($q))));
+		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'=-]+/',' ',trim(strtolower($q))));
 	
 	
 			//change it back to simple: syntax
