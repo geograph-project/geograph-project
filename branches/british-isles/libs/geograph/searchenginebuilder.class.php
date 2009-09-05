@@ -428,15 +428,9 @@ class SearchEngineBuilder extends SearchEngine
 
 		if (!empty($dataarray['searchtext'])) {
 			$dataarray['searchtext'] = trim($dataarray['searchtext']);
-			if (!empty($dataarray['ind_exact']) || preg_match('/^=/',$dataarray['searchtext'])) {
-				if (preg_match('/^=?~/',$dataarray['searchtext'])) {
-					$searchdesc = ", exactly matching any of [".preg_replace('/^=?~/','',$dataarray['searchtext'])."] ".$searchdesc;
-				} else {
-					$searchdesc = ", exactly matching [".preg_replace('/^=/','',$dataarray['searchtext'])."] ".$searchdesc;
-				}
-			} elseif (preg_match('/^~/',$dataarray['searchtext'])) {
+			if (preg_match('/^~/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching any of [".preg_replace('/^~/','',$dataarray['searchtext'])."] ".$searchdesc;
-			} elseif (preg_match('/[~\+\^\$:@ -]+/',$dataarray['searchtext'])) {
+			} elseif (preg_match('/[~\+\^\$:@ =-]+/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching [".$dataarray['searchtext']."] ".$searchdesc;
 			} elseif (preg_match('/^".*"$/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching [\"".$dataarray['searchtext']."\"] ".$searchdesc;
@@ -448,10 +442,7 @@ class SearchEngineBuilder extends SearchEngine
 				$searchdesc = ", containing [".$dataarray['searchtext']."] ".$searchdesc;	
 			}
 		} 
-		if (!empty($dataarray['ind_exact'])) {
-			$dataarray['searchtext'] = "=".$dataarray['searchtext'];
-		}
-
+		
 		if (isset($searchclass)) {
 			$db=NewADOConnection($GLOBALS['DSN']);
 			if (empty($db)) die('Database connection failed'); 

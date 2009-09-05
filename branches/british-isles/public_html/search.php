@@ -394,12 +394,10 @@ if (isset($_GET['fav']) && $i) {
 		}
 		
 		if (!empty($_GET['text'])) {
-			$exact = (strpos($_GET['text'],'=') === 0)?'exactly ':'';
-
 			$sphinx = new sphinxwrapper($_GET['text']);
 			#$sphinx->processQuery();
 			
-			$data['searchtext'] = (empty($exact)?'':'=').$sphinx->qclean;
+			$data['searchtext'] = $sphinx->qclean;
 		}
 		
 
@@ -781,12 +779,7 @@ if (isset($_GET['fav']) && $i) {
 		}
 		
 		if (!empty($query->searchtext)) {
-			if ($_GET['form'] == 'text' && (preg_match('/^=/',$query->searchtext) || !empty($query->ind_exact)) ) {
-				$smarty->assign('searchtext', preg_replace('/^=/','',$query->searchtext));
-				$smarty->assign('ind_exact_checked', 'checked="checked"');
-			} else {
-				$smarty->assign('searchtext', $query->searchtext);
-			}
+			$smarty->assign('searchtext', $query->searchtext);
 		}
 				
 		if (!empty($query->limit1)) {
@@ -1163,15 +1156,10 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->reassignPostedDate("taken_start");
 		$smarty->reassignPostedDate("taken_end");
 
-		if (!empty($_POST['searchtext']) && preg_match('/^=/',$_POST['searchtext'])) {
-			$smarty->assign('searchtext', preg_replace('/^=/','',$_POST['searchtext']));
-			$smarty->assign('ind_exact_checked', 'checked="checked"');
-		} else {
+		if (!empty($_POST['searchtext'])) {
 			$smarty->assign('searchtext', $_POST['searchtext']);
 		}
 
-		if (!empty($_POST['exact_ind']))
-			$smarty->assign('exact_ind_checked', 'checked="checked"');
 		if (!empty($_POST['all_ind']))
 			$smarty->assign('all_checked', 'checked="checked"');
 		if (!empty($_POST['user_invert_ind']))

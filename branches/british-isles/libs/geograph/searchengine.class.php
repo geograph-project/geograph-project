@@ -398,7 +398,7 @@ END;
 		}
 		
 	//run the sphinx search
-		$ids = $sphinx->returnIds($pg,empty($this->criteria->sphinx['exact'])?'_images':'_images_exact');
+		$ids = $sphinx->returnIds($pg,'_images');
 
 		$this->resultCount = $sphinx->resultCount;
 		$this->numberOfPages = $sphinx->numberOfPages;
@@ -452,7 +452,7 @@ END;
 				$row = $rows[$id];
 				$docs[$c] = strip_tags(preg_replace('/<i>.*?<\/i>/',' ',$row['post_text']));
 			}
-			$reply = $sphinx->BuildExcerpts($docs, empty($this->criteria->sphinx['exact'])?'gridimage':'gi_stemmmed', $sphinx->q);	
+			$reply = $sphinx->BuildExcerpts($docs, 'gi_stemmmed', $sphinx->q);	
 		}
 
 		$this->querytime = ($querytime_after - $querytime_before) + $sphinx->query_time;
