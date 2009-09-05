@@ -669,6 +669,7 @@ class SearchCriteria
 		$this->sphinx['query'] = preg_replace('/\b(gridref):/','grid_reference:',$this->sphinx['query']);
 		$this->sphinx['query'] = preg_replace('/\b(category):/','imageclass:',$this->sphinx['query']);
 		$this->sphinx['query'] = preg_replace('/\b(description):/','comment:',$this->sphinx['query']);
+		$this->sphinx['query'] = preg_replace('/\b(name):/','realname:',$this->sphinx['query']);
 		if (strlen($this->sphinx['query'])) {
 			//really there is little chance its going to be compatible... 
 			$this->sphinx['compatible'] = 0;

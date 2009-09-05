@@ -161,9 +161,9 @@ The <b>Geograph Website</b>:
 <h3>How do I find what squares need photographing?</h3>
 	<p>If you are looking for squares to obtain a point, try the <a href="/mapbrowse.php">coverage maps</a>, and look for green squares; also accessible from that page are various printable checksheets for easy reference in print form. More technical users might enjoy <a href="/gpx.php">GPX</a>, or <a href="/memorymap.php">Memory Map</a> downloads. </p>
 
-	<p>Many of the squares have been captured but with only have a few photos; checkout the <a href="/mapbrowse.php?depth=1">depth map</a>, from this you can find under-represented squares. In the same vain we have a number of maps to show the distribution of photos within a square, usually on a centisquare grid, which divides a gridsquare into 100 squares, each 100m by 100m.</p>
+	<p>Many of the squares have been captured but with only have a few photos; checkout the <a href="/mapbrowse.php?depth=1">depth map</a>, from this you can find under-represented squares. In the same vein we have a number of maps to show the distribution of photos within a square, usually on a centisquare grid, which divides a gridsquare into 100 squares, each 100m by 100m.</p>
 
-	<p>We have also recently introduced a new map, &quot;<a href="/mapbrowse.php?recent=1">Recent Only</a>&quot; this shows squares recent photos. Help us keep the coverage current by photographing squares with only older photos (orange or green).</p>
+	<p>We have also recently introduced a new map, &quot;<a href="/mapbrowse.php?recent=1">Recent Only</a>&quot; this shows squares recent photos. Help us keep the coverage current by photographing squares without any recent photos (orange or green).</p>
 
 	<p>Also look out for <img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged icon"/> icons around the site, click them to take you to the links page for the location. From that page you can access textual lists of squares in need of photos. (as well as direct links to <a href="/article/Mapping-on-Geograph">many of the maps the site has</a>)</p>
 </div>
