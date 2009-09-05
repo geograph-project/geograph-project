@@ -47,7 +47,7 @@ function mouseDefaultClick(evt) {
 			}
 		} else {
 			osposition.update = 1;
-			parent.frames.browseframe.location.replace("about:blank");
+			parent.frames.browseframe.location.replace("/mapper/blank.html");
 			osposition.lastXy = new OpenLayers.Pixel(); //can't use null
 			osposition.redraw(evt);
 		}

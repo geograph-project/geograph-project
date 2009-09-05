@@ -41,6 +41,9 @@ function changeOpacity(byOpacity) {
 }
 
 function fadeBackground() {
+	if (typeof oslayer.opacity == 'undefined') {
+		oslayer.opacity = 1;
+	}
 	var newOpacity = (parseFloat(oslayer.opacity) == 1)?0.3:1;
 	oslayer.setOpacity(newOpacity);
 }
@@ -100,9 +103,9 @@ AttachEvent(window,'load',loadMap,false);
 </script>{/literal}
 
 {dynamic}{if $user->registered}
-<div style="float:left; font-size:0.9em; color:gray;">If parts of the map stop displaying, then <a href="/mapper/captcha.php?token={$token}" style="color:gray;" target="_top">visit this page to continue</a></div>{/if}
+<div style="float:left; font-size:0.9em; color:gray;">Getting 'Quota Exceeded'? <a href="/mapper/captcha.php?token={$token}" style="color:gray;" target="_top">refresh your quota</a></div>{/if}{/dynamic}
 
-<div style="text-align:right; width:660px; font-size:0.7em;margin-bottom:3px" class="nowrap">Change Overlay Opacity: [<a title="increase opacity" href="javascript: changeOpacity(0.1);">+</a>] [<a title="decrease opacity" href="javascript: changeOpacity(-0.1);">-</a>]</div>{/dynamic}
+<div style="text-align:right; width:660px; font-size:0.7em;margin-bottom:3px" class="nowrap">Change Overlay Opacity: [<a title="increase opacity" href="javascript: changeOpacity(0.1);">+</a>] [<a title="decrease opacity" href="javascript: changeOpacity(-0.1);">-</a>], [<a href="javascript: fadeBackground();">Toggle background</a>]</div>
 
 <div id="mapcontainer">
 	<div style="position:absolute">
@@ -121,8 +124,7 @@ AttachEvent(window,'load',loadMap,false);
 <div style="width:660px; text-align:right; font-size:0.9em;">Jump to Grid Reference: <input type="text" size="8" id="coordin" /><input type="button" onclick="parseLocation()" value="Go" /></div>
 
 <div style="width:660px; border-top:1px solid lightgrey; text-align:center; padding-top:3px;margin-top:3px">
-	Click map to view photo(s) in <input type="radio" name="clickto" {if !$centi}checked{/if} id="clickto"/>Grid-Square / <input type="radio" {if $centi}checked{/if} name="clickto"/>Centi-Square 
-	<small><br/><a href="javascript: fadeBackground();">Fade background Map</a></small>
+	Click map to view photo(s) in <input type="radio" name="clickto" {if !$centi}checked{/if} id="clickto"/>GridSquare / <input type="radio" {if $centi}checked{/if} name="clickto"/>CentiSquare 
 </div>
 
 <div class="interestBox" style="padding:0px; margin-top:6px">
