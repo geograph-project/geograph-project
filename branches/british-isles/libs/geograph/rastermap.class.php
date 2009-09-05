@@ -971,7 +971,7 @@ class RasterMap
 		$folder = $this->folders[$service];
 		$div = $this->divisor[$service];
 		$div2 = max(10000,$div*10);
-		if ($e && $n) {
+		if ($e || $n) {
 			$e2 = floor($e /$div2);
 			$n2 = floor($n /$div2);
 			$e3 = floor($e /$div);
