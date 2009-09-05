@@ -67,7 +67,7 @@
 {/if}
 {/dynamic}
 
-{if $item.type == 'signup'}
+{if $type == 'signup'}
 	<form action="{$script_name}?id={$geoevent_id}" method="post">
 
 	<table class="report sortable" id="events">

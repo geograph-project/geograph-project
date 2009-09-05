@@ -3,12 +3,10 @@
 
 
 {if $google_maps_api_key}
+	<div style="float:right;position:relative"><a title="Geograph Google Earth Clusters" href="http://gokml.net/2kf.kml" class="xml-kml">KML</a> {external href="http://gokml.net/2kf.kml" text="Download the Google Earth Version"} <sup style="color:red">NEW!</sup></div> 
+		
 	<h2>Geograph Map Clusters</h2>
 
-	<div style="text-align:right"><a title="Geograph Google Earth Clusters" href="http://gokml.net/2kf.kml" class="xml-kml">KML</a> {external href="http://gokml.net/2kf.kml" text="Download the Google Earth Version"} <sup style="color:red">NEW!</sup></div> 
-		
-	<div style="text-align:right"><a title="Geograph Google Earth Clusters" href="http://gokml.net/2kf.kml" class="xml-kml">KML</a> {external href="http://gokml.net/2kf.kml" text="Download the Google Earth Version"} <sup style="color:red">NEW!</sup></div> 
-	
 	<form action="" onsubmit="return updateFilters(this);" name="theForm">
 	<h3>Apply Optional Filters</h3>
 	<div style="float:left;position:relative;padding:10px;">

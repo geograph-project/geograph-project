@@ -359,7 +359,7 @@ END;
 
 					$correction = SpellChecker::Correct($this->criteria->searchtext);
 
-					if (strcasecmp($correction,$this->criteria->searchtext) <> 0 && levenshtein($correction,$this->criteria->searchtext) < 0.25*strlen($correction)) {
+					if (strcasecmp($correction,$this->criteria->searchtext) != 0 && levenshtein($correction,$this->criteria->searchtext) < 0.25*strlen($correction)) {
 
 						$suggestions += array(array('gr'=>'(anywhere)','localities'=>'','query'=>$correction));
 					}
