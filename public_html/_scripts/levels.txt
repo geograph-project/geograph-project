@@ -48,6 +48,7 @@ $delta = $entry['gridimage_id']%30;
 
 +-------+-----------------------------+---------------------------+----------+
 |     5 | mosaic.php?gr=X1075         | /kml/X/06/5/X1075.kmz     |    11518 |
+          mosaic.php?gr=X17NW           /kml/X/06/5/X17NW.kmz
 
     > Photo where c = 1
 		$Region->setLod(1200+($delta*$delta),-1);
