@@ -52,6 +52,7 @@ class RebuildRecentSquares extends EventHandler
 				SELECT gridsquare_id,COUNT(*) AS images 
 				FROM gridimage gi 
 				WHERE imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR)) 
+				AND moderation_status IN ('geograph','accepted')
 				GROUP BY gi.gridsquare_id"); 
 		
 		$db->Execute("DROP TABLE IF EXISTS recent_only");

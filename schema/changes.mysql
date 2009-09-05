@@ -591,16 +591,21 @@ ALTER TABLE at_home_job ADD `task` ENUM('yahoo_terms','carrot2') DEFAULT 'yahoo_
 ################################################
 
 
-alter table gridsquare add `has_recent` tinyint(4) NOT NULL default '0';
+ALTER TABLE gridsquare ADD `has_recent` TINYINT(4) NOT NULL default '0';
 
-update gridsquare set has_recent = 0;
+#UPDATE gridsquare SET has_recent = 0;
 #update gridsquare inner join gridimage_search using (grid_reference) set gridsquare.has_recent = 1 where imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR));
 
+DROP TABLE IF EXISTS recent_only;
+CREATE TABLE recent_only (
+  `gridsquare_id` int(11) NOT NULL default '0',
+  `images` smallint NOT NULL default '0',
+  PRIMARY KEY  (`gridsquare_id`)
+) SELECT gridsquare_id,COUNT(*) AS images 
+FROM gridimage gi WHERE imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR)) GROUP BY gi.gridsquare_id;
 
-create table recent_only select gridsquare_id,count(*) as images from gridimage gi where imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR)) group by gi.gridsquare_id;
-alter table recent_only add primary key (`gridsquare_id`);
 
-update gridsquare inner join recent_only using (gridsquare_id) set gridsquare.has_recent = 1;
+UPDATE gridsquare INNER JOIN recent_only USING (gridsquare_id) SET gridsquare.has_recent = 1;
 
 
 ################################################
