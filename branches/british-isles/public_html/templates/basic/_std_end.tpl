@@ -1,10 +1,12 @@
-{if $smarty.server.REQUEST_METHOD == 'GET'}
+{if $smarty.server.REQUEST_METHOD == 'GET' && $smarty_template != 'view.tpl' && $smarty_template != 'editimage.tpl'}
 <div id="hidefeed" style="text-align:center"><a href="javascript:void(show_tree('feed'));">&middot; Give Feedback &middot;</a></div>
 <div id="showfeed" class="interestBox" style="display:none"><form method="post" action="/stuff/feedback.php">
 <label for="feedback_comments">What do you like, dislike or otherwise want to comment on about <b>this</b> page:</label><br/>
 <input type="text" name="comments" size="80" id="feedback_comments"/><input type="submit" name="submit" value="send"/>
 {dynamic}{if $user->registered}<br/>
 <small>(<input type="checkbox" name="nonanon"/> <i>Tick here to include your name with this comment, so we can then reply</i>)</small>
+{else}<br/>
+<i><small>If you want a reply please use the <a href="/contact.php">Contact Us</a> page. We are unable to reply to comments left here.</small></i>
 {/if}{/dynamic}
 <input type="hidden" name="template" value="{$smarty_template}"/>
 <input type="hidden" name="referring_page" value="{$smarty.server.HTTP_REFERER}"/>
