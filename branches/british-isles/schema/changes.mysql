@@ -509,14 +509,11 @@ PRIMARY KEY (  `gridimage_id` )
 
 ALTER TABLE  `user` ADD  `expand_about` TINYINT UNSIGNED NOT NULL DEFAULT  '0';
 
-
-
-
-
+################################################
 
 alter table mapcache change `type_or_user` `type_or_user` int(11)  NOT NULL DEFAULT '0';
 
-
+################################################
 
 
 CREATE TABLE  `gridimage_log` (
@@ -543,6 +540,7 @@ alter table `photo_log` ADD KEY `gridimage_id` (`gridimage_id`);
 
 INSERT INTO gridimage_log SELECT gridimage_id,0 as hits,sum(views) as hits_archive,'0000-00-00 00:00:00' as last_hit FROM photo_log GROUP BY gridimage_id ORDER BY NULL;
 
+################################################
 
 #it just duplicates the primary key
 ALTER TABLE geobb_posts DROP KEY `post_id`;
@@ -561,14 +559,16 @@ ALTER TABLE geobb_topics ADD KEY (`forum_id`,`topic_id` DESC);
 #good for viewing a forum page
 ALTER TABLE geobb_topics ADD KEY (`forum_id`,sticky DESC,`topic_last_post_id` DESC);
 
-
+################################################
 
 ALTER TABLE  `user` ADD  `use_autocomplete` TINYINT UNSIGNED NOT NULL DEFAULT  '0';
 
+################################################
 
 alter table mapcache change age age mediumint NOT NULL DEFAULT '0';
 alter table mapcache2 change age age mediumint NOT NULL DEFAULT '0';
 
+################################################
 
 CREATE TABLE `geocubes` (
   `gridimage_id` int(10) unsigned NOT NULL,
@@ -578,5 +578,29 @@ CREATE TABLE `geocubes` (
   KEY `outstanding` (`outstanding`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
+################################################
+
 
 alter table user add deceased_date date DEFAULT NULL;
+
+################################################
+
+
+ALTER TABLE at_home_job ADD `task` ENUM('yahoo_terms','carrot2') DEFAULT 'yahoo_terms';
+
+################################################
+
+
+alter table gridsquare add `has_recent` tinyint(4) NOT NULL default '0';
+
+update gridsquare set has_recent = 0;
+#update gridsquare inner join gridimage_search using (grid_reference) set gridsquare.has_recent = 1 where imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR));
+
+
+create table recent_only select gridsquare_id,count(*) as images from gridimage gi where imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR)) group by gi.gridsquare_id;
+alter table recent_only add primary key (`gridsquare_id`);
+
+update gridsquare inner join recent_only using (gridsquare_id) set gridsquare.has_recent = 1;
+
+
+################################################

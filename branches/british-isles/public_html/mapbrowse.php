@@ -98,11 +98,22 @@ if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
 		$mosaic->type_or_user = 0;
 		$overview->type_or_user = 0;
 	}
+} elseif (isset($_GET['recent'])) {
+	if ($_GET['recent']) {
+		$smarty->assign('recent', 1);
+		$mosaic->type_or_user = -6;
+		$overview->type_or_user = -6;
+	} else {
+		$mosaic->type_or_user = 0;
+		$overview->type_or_user = 0;
+	}
 } elseif ($mosaic->type_or_user == -1) {
 	$smarty->assign('depth', 1);
 	$overview->type_or_user = -1;
+} elseif ($mosaic->type_or_user == -6) {
+	$smarty->assign('recent', 1);
+	$overview->type_or_user = -6;
 }
-
 
 //are we zooming in on an image map? we'll have a url like this
 //i and j give the index of the mosaic image

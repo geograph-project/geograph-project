@@ -29,98 +29,107 @@ require_once('geograph/mapmosaic.class.php');
 require_once('geograph/image.inc.php');
 init_session();
 
-set_time_limit(5000); 
 
 
-	$map=new GeographMap;
-	
-	if (isset($_GET['key'])) 
-		$map->_outputDepthKey();
-	
-	if (isset($_GET['refresh']) && $_GET['refresh'] == 2 && $USER->hasPerm('admin'))
-		$map->caching=false;
-	
+		$map=new GeographMap;
 
+		if (isset($_GET['key'])) 
+			$map->_outputDepthKey();
+
+		if (isset($_GET['refresh']) && $_GET['refresh'] == 2 && $USER->hasPerm('admin'))
+			$map->caching=false;
+	
+		//standard 1px national map
 		$map->setOrigin(0,-10);
-		$map->setImageSize(1200/2,1700/2);
-		$map->setScale(1.3/2);
+		$map->setImageSize(900,1300);
+		$map->setScale(1);
 
 		$year = !empty($_GET['year'])?intval($_GET['year']):date('Y');
 
+	#XMAS map for a year
 		if ((!isset($_GET['year']) || !empty($_GET['year'])) && $year >= 2004 && $year <= date('Y')) {
-			$map->type_or_user = -1 * $year;
-		} elseif (isset($_GET['depth'])) {
 			$map->setOrigin(0,-10);
-			$map->setImageSize(900,1300);
-			$map->setScale(1);
+			$map->setImageSize(1200/2,1700/2);
+			$map->setScale(1.3/2);
+		
+			$map->type_or_user = -1 * $year;
+
+	#DEPTH MAP			
+		} elseif (isset($_GET['depth'])) {
 			
-			unset($CONF['enable_newmap']);
+			unset($CONF['enable_newmap']); //hide placenames
 			
 			$map->type_or_user = -1;
+	
+	#NUMOBER OF GROUPINGS
 		} elseif (isset($_GET['groups'])) {
-			$map->setOrigin(0,-10);
-			$map->setImageSize(900,1300);
-			$map->setScale(1);
 			
-			unset($CONF['enable_newmap']);
+			unset($CONF['enable_newmap']); //hide placenames
 			
 			$map->type_or_user = -3;
+	
+	#NUMBER OF LAND MAP FIXES
 		} elseif (isset($_GET['fixes'])) {
-			$map->setOrigin(0,-10);
-			$map->setImageSize(900,1300);
-			$map->setScale(1);
 			
-			unset($CONF['enable_newmap']);
+			unset($CONF['enable_newmap']); //hide placenames
 			
 			$map->type_or_user = -4;
+	
+	#NEEDS AT LEAST X IMAGES TO MARK READ
 		} elseif (isset($_GET['number'])) {
-			$map->setOrigin(0,-10);
-			$map->setImageSize(900,1300);
-			$map->setScale(1);
 			
 			$map->minimum = intval($_GET['number']);
 			
-			unset($CONF['enable_newmap']);
+			unset($CONF['enable_newmap']); //hide placenames
+	
+	#COLOURED BY VISITS
 		} elseif (isset($_GET['hits'])) {
-			$map->setOrigin(0,-10);
-			$map->setImageSize(900,1300);
-			$map->setScale(1);
 			
 			$map->type_or_user = -5;
 
 			print $map->getToken();
 			exit;			
+	
+	#BOG STANDARD RED/GREEN MAP
 		} elseif (isset($_GET['plain'])) {
-			$map->setOrigin(0,-10);
-			$map->setImageSize(900,1300);
-			$map->setScale(1);
+	
+	#ONLY MARKS SQUARES WITH PHOTOS IN LAST X DAYS
+		} elseif (isset($_GET['since'])) {
 			
+			$map->numberOfDays = $_GET['since'];
+			$map->type_or_user = -2;
+			
+	#RECENT ONLY MAP
+		} elseif (isset($_GET['recent'])) {
+			
+			$map->type_or_user = -6;
+			
+	#EXTEA BIG MAP
 		} elseif (isset($_GET['big'])) {
 			$map->setOrigin(0,-10);
 			$map->setImageSize(1200,1700);
 			$map->setScale(1.3);
 			
 			$map->type_or_user = -10;
+			
+	#EXAMPLE DATE MAP
 		} elseif (isset($_GET['date'])) {
-			$map->setOrigin(0,-10);
-			$map->setImageSize(900,1300);
-			$map->setScale(1);
 			
 			$map->mapDateStart = "2005-06-07";
 			$map->mapDateCrit = "2005-06-01";
 			
 			$map->type_or_user = -1;
-		} elseif (isset($_GET['years']) && $USER->hasPerm("admin")) {
-			$map->setOrigin(0,-10);
-			$map->setImageSize(900,1300);
-			$map->setScale(1);
+		
+	#COVERAGE OVERLAYS BY MONTH
+		} elseif (isset($_GET['months']) && $USER->hasPerm("admin")) {
+
 			$map->type_or_user = -2;
 			
 			set_time_limit(3600*3);
 			
 			$root=&$_SERVER['DOCUMENT_ROOT'];
 			$n = time()-(60*60*24*7);
-			for($t=2000; $t<2009; $t++) {
+			for($t=date('Y'); $t>=2000; $t--) {
 				foreach (range(1,12) as $m) {
 					$map->displayYear = sprintf("%04d-%02d",$t,$m);
 
@@ -132,18 +141,63 @@ set_time_limit(5000);
 					print "{$map->displayYear} DONE<BR>";flush();
 				}
 			}
+			print "All DONE";
 			exit;
+			
+	#COVERAGE OVERLAYS BY YEAR
+		} elseif (isset($_GET['years']) && $USER->hasPerm("admin")) {
+
+			$map->type_or_user = -2;
+			
+			set_time_limit(3600*3);
+			
+			$root=&$_SERVER['DOCUMENT_ROOT'];
+			$n = time()-(60*60*24*7);
+			for($t=date('Y'); $t>=1900; $t--) {
+				$map->displayYear = sprintf("%04d",$t);
+
+				$target=$map->getImageFilename();
+
+				if (!file_exists($root.$target)) {
+					$map->_renderMap();	
+				}
+				print "{$map->displayYear} DONE<BR>";flush();
+			}
+			print "All DONE";
+			exit;
+			
+	#MULITPLE "ONLY MARKS SQUARES WITH PHOTOS IN LAST X DAYS" MAPS
+		} elseif (isset($_GET['days']) && $USER->hasPerm("admin")) {
+
+			$map->type_or_user = -2;
+			
+			set_time_limit(3600*3);
+			
+			$root=&$_SERVER['DOCUMENT_ROOT'];
+			$n = time()-(60*60*24*7);
+			for($t=0; $t<=2400; $t+=30) {
+				$map->numberOfDays = $t;
+
+				$target=$map->getImageFilename();
+
+				if (!file_exists($root.$target)) {
+					$map->_renderMap();	
+					print "{$map->numberOfDays} DONE<BR>";flush();
+				}
+			}
+			print "All DONE";
+			exit;
+			
+	#COVERAGE ANIMATION BUILDUP TILES
 		} elseif (isset($_GET['dates']) && $USER->hasPerm("admin")) {
-			$map->setOrigin(0,-10);
-			$map->setImageSize(900,1300);
-			$map->setScale(1);
+
 			$map->type_or_user = ($_GET['dates'] == -2)?-2:-1;
 			
 			set_time_limit(3600*3);
 			
 			$root=&$_SERVER['DOCUMENT_ROOT'];
 			$n = time()-(60*60*24*7);
-			for($t=strtotime("10 March 2005"); $t<$n; $t+=(60*60*24*7) ) {
+			for($t=strtotime("2008-12-11"); $t<$n; $t+=(60*60*24*7) ) {
 				$map->mapDateStart = date('Y-m-d',$t);
 				$map->mapDateCrit = date('Y-m-d',$t-(60*60*24*7));
 			
@@ -154,16 +208,14 @@ set_time_limit(5000);
 					print "{$map->mapDateStart} DONE<BR>";flush();
 				}
 			}
+			print "All DONE";
 			exit;
 		}
 	
-			//force render of this map 
-			//$map->_renderRandomGeographMap();
-				//now done with type_or_user = -1
 	
-	if (count($_GET))
-		$map->returnImage();
-	exit;
+		if (count($_GET))
+			$map->returnImage();
+		exit;
 
 
 	
