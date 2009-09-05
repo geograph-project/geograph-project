@@ -113,6 +113,7 @@ AttachEvent(window,'load',focusBox,false);
 		<li>can find only posts by a user with by:&lt;nickname&gt; : <tt>railway by:fred</tt> or exclude <tt>railway -by:fred</tt></li>
 		<li>find discussions by date: <tt>day:20061225</tt>, <tt>month:200612</tt>  or <tt>year:2006</tt>  </li>
 		<li>prefix a keyword with - to <b>exclude</b> that word from the match; example : <tt>railway -track</tt> <tt>railway -title:track</tt></li>
+		<li>prefix a keyword with = to match <b>exactly</b>; otherwise we match similar words at the same time</li>
 		<li>can use OR (case sensitive) to match <b>either/or</b> keywords; example: <tt>train OR railway</tt></li>
 	</ul>
 </div>
