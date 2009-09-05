@@ -204,10 +204,10 @@ class RestAPI
 					$date = mktime(0,0,0,$bits[1],$bits[2],$bits[0]);
 					printf("	<event start=\"%s\" title=\"%s\">%s &lt;b&gt;%s&lt;/b&gt;&lt;br/&gt; %s</event>\n",
 						date('M d Y 00:00:00',$date).' GMT',
-						htmlentities($image->title),
+						htmlentities2($image->title),
 						htmlentities("<a href=\"/photo/{$image->gridimage_id}\">".$image->getThumbnail(120,120)."</a>"),
 						$image->grid_reference,
-						htmlentities(GeographLinks($image->comment))
+						htmlentities2(GeographLinks($image->comment))
 					);
 				}
 			}
