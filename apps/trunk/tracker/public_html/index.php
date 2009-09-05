@@ -125,9 +125,9 @@ if (file_exists("rss/rss.xml"))
 
 <div class="intro">  
 
-<p>Here you will find the entire
-	archive of the <a href="http://www.geograph.org.uk">Geograph British Isles</a> project readily downloadable in volumes each 
-	comprising around 50,000 images plus RDF formatted metadata.</p>
+<p>Here you will find a <b>preview sample</b> of the
+        <a href="http://www.geograph.org.uk">Geograph British Isles</a> project's image archive readily downloadable in volumes each
+        comprising around 50,000 images plus RDF formatted metadata. We will release more data later</p>
 
 
 <p>Everything in the torrents -- images and
