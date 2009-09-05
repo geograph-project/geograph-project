@@ -120,7 +120,7 @@ $recordSet = &$db->Execute($sql);
 while (($recordSet && ($rows = $recordSet->RecordCount())) > 0) {
 	
 	//recreate it each time to be sure. (descruture is called which disconnects previous connection
-	$gc = new geocubes($CONF['GEOCUBES_API_KEY'], $CONF['GEOCUBES_API_TOKEN']);
+	$gc = new geocubes($CONF['GEOCUBES_API_KEY'], $CONF['GEOCUBES_API_TOKEN'],false);
 	
 	print "UPDATING $rows records\n\n";
 	

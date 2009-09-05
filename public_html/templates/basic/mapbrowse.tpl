@@ -318,7 +318,9 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 		<a class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6" href="/mapsheet.php?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}" title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field">Check Sheet</a>
 	{/if}
 	<a class="tab{if $tab == 7}Selected{/if} nowrap" id="tab7" href="/mapprint.php?t={$mosaic_token}">Printable</a>
-	
+	{if !$token_zoomout}
+	 <a class="tab{if $tab == 9}Selected{/if} nowrap" id="tab9" href="/mapper/clusters.php#r=c">Interactive Clusters</a>
+	{/if}
 </div>
 <div class="interestBox">
 

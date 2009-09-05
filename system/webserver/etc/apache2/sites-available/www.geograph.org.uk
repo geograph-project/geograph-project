@@ -174,7 +174,7 @@
     RewriteRule /(geo|)photos/\d.*\.jpg$ http://s9.geograph.org.uk$0 [R=307,L]
 
 <Location /sitemap/>
-    DirectoryIndex geograph.html
+    DirectoryIndex index.html
     ErrorDocument 404 /sitemap/later.php?page=404
 </Location>
 
