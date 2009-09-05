@@ -42,7 +42,7 @@ $conv = new Conversions;
 
 $gr = $_GET['gr'];
 
-if (!preg_match('/^([A-Z]{1,3})([\d_]*)([NS]*)([EW]*)$/',strtoupper($gr)) {
+if (!preg_match('/^([A-Z]{1,3})([\d_]*)([NS]*)([EW]*)$/',strtoupper($gr))) {
 	die("invalid gr");
 }
 
