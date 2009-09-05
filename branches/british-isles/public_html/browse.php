@@ -398,15 +398,16 @@ if ($grid_given)
 
 					$table = "tmp_".md5(uniqid());
 
-					$db->Execute("CREATE TEMPORARY TABLE $table ENGINE HEAP SELECT gridimage_id,user_id,realname,credit_realname,title,grid_reference,imageclass FROM gridimage_search WHERE grid_reference = '{$square->grid_reference}' ORDER BY ftf DESC, REVERSE(gridimage_id)");
+					$db->Execute("CREATE TEMPORARY TABLE $table SELECT gridimage_id,user_id,realname,credit_realname,title,grid_reference,imageclass FROM gridimage_search WHERE grid_reference = '{$square->grid_reference}' ORDER BY ftf DESC, REVERSE(gridimage_id)");
 
 					$db->Execute("ALTER IGNORE TABLE $table ADD UNIQUE (user_id),ADD UNIQUE (imageclass)");
 
 					$sql = "SELECT * FROM $table LIMIT 9";
+					#$sql = "SELECT gridimage_id,user_id,realname,credit_realname,title,imageclass,grid_reference FROM gridimage_search WHERE grid_reference = '{$square->grid_reference}' ORDER BY seq_no LIMIT 9";
 
 					$imagelist->_getImagesBySql($sql);
 					
-					$memcache->name_set('bx',$mkey,$imagelist->images,$memcache->compress,$memcache->period_med);
+					$memcache->name_set('bx',$mkey,$imagelist->images,$memcache->compress,$memcache->period_long);
 				}
 				
 				$smarty->assign_by_ref('images', $imagelist->images);
