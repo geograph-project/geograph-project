@@ -520,7 +520,10 @@ class GeographMap
 	#MAP FIXING ACTIVITY  (via mapfix_log) 
 			} elseif ($this->type_or_user == -4) {
 				$ok = $this->_renderImage();
-				
+
+	#PHOTO VIEWING  (via gridimage_log) 
+			} elseif ($this->type_or_user == -5) {
+				$ok = $this->_renderDepthImage();
 				
 	#DEPTH MAP (_renderDepthImage also understands date maps)
 			} elseif ($this->type_or_user == -1) {
@@ -1063,8 +1066,9 @@ class GeographMap
 		$db=&$this->_getDB();
 		
 		if ($this->type_or_user == -3) {
-			
-			$sql="select imagecount from gridsquare_group_count group by imagecount";
+                        $sql="select imagecount from gridsquare_group_count group by imagecount";
+                } elseif ($this->type_or_user == -5) {
+			$sql="select distinct round(log10(hits)*2) from gridsquare_log order by hits";
 		} else {
 			$sql="select imagecount from gridsquare group by imagecount";
 		}
@@ -1137,7 +1141,13 @@ class GeographMap
 			
 			$sql="select * from gridsquare_group_count";
 			
-		} elseif (!empty($this->mapDateCrit)) {
+		} elseif ($this->type_or_user == -5) {
+                        $sql="select x,y,gs.gridsquare_id,round(log10(hits)*2) as imagecount
+                                from
+                                gridsquare gs
+                                inner join gridsquare_log using (gridsquare_id)"; 
+
+                } elseif (!empty($this->mapDateCrit)) {
 		$sql="select x,y,gs.gridsquare_id,count(*) as imagecount
 			from 
 			gridsquare gs 

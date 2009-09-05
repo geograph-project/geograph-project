@@ -39,7 +39,7 @@
 			<img src="/stuff/captcha.jpg.php?{$verification|escape:'html'}" style="padding:20px; border:1px solid silver"/><br />
 			<br />
 
-			<label for="verify">To continue, enter the letters shown above:</label>
+			<label for="verify">To continue, enter the <i>big letters and numbers</i> shown in the image above:</label><br/>
 			<input type="text" name="verify" id="verify"/><br />
 		</div>
 		<br />
