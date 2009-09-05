@@ -49,7 +49,11 @@ if (empty($q)) {
 	die('no query');
 }
 
-$template = "search_service.tpl";
+if (isset($_GET['output']) && $_GET['output'] == 'location') {
+	$template = "search_service_location.tpl";
+} else {
+	$template = "search_service.tpl";
+}
 $cacheid = md5($q);
 
 if (!$smarty->is_cached($template, $cacheid))
