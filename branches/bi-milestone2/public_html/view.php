@@ -23,6 +23,9 @@
 
 require_once('geograph/global.inc.php');
 
+############################################
+# few methods to quickly execute and die
+
 if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.org/bot')!==FALSE) ) {
 	//die as quickly as possible with the minimum html (with the approval of geourl owner)
 	$db = NewADOConnection($GLOBALS['DSN']);
@@ -57,6 +60,8 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.or
 	exit;
 }
 
+############################################
+# normal setup
 
 require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
@@ -90,6 +95,9 @@ if ($smarty->caching) {
 	$smarty->cache_lifetime = 3600*3; //3hour cache
 }
 
+############################################
+# load the image
+
 $image=new GridImage;
 
 if (isset($_GET['id']))
@@ -122,6 +130,9 @@ if (isset($_GET['id']))
 //do we have a valid image?
 if ($image->isValid())
 {
+	############################################
+	# setup caching headers
+	
 	//what style should we use?
 	$style = $USER->getStyle();
 	$cacheid.=$style;
@@ -136,8 +147,11 @@ if ($image->isValid())
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$hash,($USER->user_id == 0));
 
+	############################################
+	# run the query from referrer locally and prompt the user...
 
 	if ( (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE) &&
+	    (stripos($_SERVER['HTTP_USER_AGENT'], 'PHP')===FALSE) &&
 	    (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE) &&
 	    empty($_SESSION['photos'][$image->gridimage_id]) )
 	{
@@ -148,14 +162,25 @@ if ($image->isValid())
 	}
 	@$_SESSION['photos'][$image->gridimage_id]++;
 
-	if (!empty($CONF['sphinx_host']) 
-		&& stripos($_SERVER['HTTP_REFERER'],$CONF['CONTENT_HOST']) === FALSE 
-		&& stripos($_SERVER['HTTP_REFERER'],$_SERVER['HTTP_HOST']) === FALSE
-		&& preg_match('/\b(q|query|qry|search|su|searchfor|s|qs|p|key|buscar|w)=([\w%\+\.\(\)\"\':]+)(\&|$)/',$_SERVER['HTTP_REFERER'],$m) 
-		&& !is_numeric($m[2])
-		&& ($q = trim(preg_replace('/\b(geograph|photo|image|picture|site:[\w\.-]+|inurl:[\w\.-]+)s?\b/','',urldecode($m[2]) )) )
-		&& strlen($q) > 3 ) {
+	$ref = @parse_url($_SERVER['HTTP_REFERER']);
+	if (!empty($ref['query'])) {
+		$ref_query = array();
+		parse_str($ref['query'], $ref_query);
 		
+		if (strpos($ref['host'],'images.google.') === 0 && !empty($ref_query['prev'])) {
+			$ref = @parse_url('http://'.$ref['host'].urldecode($ref_query['prev']));
+			parse_str($ref['query'], $ref_query);
+		}
+	}
+
+	if (!empty($CONF['sphinx_host']) 
+		&& count($ref_query) > 0
+		&& ( $intersect = array_intersect(array('q','query','qry','search','su','searchfor','s','qs','p','key','buscar','w'),array_keys($ref_query)) )
+		&& ( $key = @array_shift($intersect) )
+		&& !is_numeric($ref_query[$key])
+		&& ($q = trim(preg_replace('/\b(geograph|photo|image|picture|site:[\w\.-]+|inurl:[\w\.-]+)s?\b/','',$ref_query[$key] )) )
+		&& strlen($q) > 3 ) {
+
 		$smarty->assign("search_keywords",$q);
 		
 		$mkey = $image->grid_reference.' '.$q;
@@ -183,6 +208,9 @@ if ($image->isValid())
 		}
 	}
 
+	############################################
+	# render the page...
+
 	if (!$smarty->is_cached($template, $cacheid))
 	{
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
@@ -192,9 +220,101 @@ if ($image->isValid())
 		}
 		
 		$image->hits = $db->getOne("SELECT hits+hits_archive FROM gridimage_log WHERE gridimage_id = {$image->gridimage_id}");
-		
 
 		$image->assignToSmarty($smarty);
+		
+		############################################
+		# lookup some related images.... 
+		//todo : lookup images from the image description, and maybe related images from articles/galleries and themed topics?
+
+		if (!empty($CONF['sphinx_host']) && $CONF['template']=='basic') {
+			$words = $db->getCol("SELECT result FROM at_home_result WHERE gridimage_id = {$image->gridimage_id}");
+			if (empty($col)) {
+				$words = array();
+			}
+			
+			if (preg_match('/\s*\(?\s*\d+\s*\)?\s*$/',$image->title)) {
+				$words+=explode(" ",preg_replace('/\s*\(?\s*\d+\s*\)?\s*$/','',$image->title));
+			}
+			
+			if (empty($col) && strlen($image->comment) > 50) { //should have plenty of words...
+				//strip any links. 
+				$q = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/'," ",$image->comment);
+				$q = preg_replace('/(?<![\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/'," ",$q);
+				
+				$q = preg_replace('/\b\w{1,3}\b/',' ',$q);
+				$q = preg_replace('/ [^\w]+ /',' ',$q);
+				
+				$lines = explode("\n",wordwrap($q,200,"\n",0));
+				$words+=explode(" ",$lines[0]);
+			}
+			
+			if (count($words) < 3 &&  strpos($image->imagetaken,'-00') === FALSE) {
+				$words[] = str_replace('-','',$image->imagetaken);
+			}
+			
+			if (count($words) < 3) {
+				$words+=explode(" ",$image->realname." ".$image->imageclass." ".$image->title);
+			}
+			if (count($words) < 3) {
+				$words+=explode(" ",$image->title);
+			}
+			$q = str_replace(array('(',')','|','&'),' ',implode(' ',$words));
+			$q = "~".trim(preg_replace('/\s+/',' ',$q));
+
+			print_r($q);
+			$mkey = $image->grid_reference.' '.md5($q);
+			$ids =& $memcache->name_get('sn',$mkey);
+			if (empty($ids)) {
+				$pg = 1; //todo - maybe allow pagin?
+				$sphinx = new sphinxwrapper($image->grid_reference.' '.$q);
+
+				$sphinx->processQuery();
+
+				$ids = $sphinx->returnIds($pg,'_images');
+				print "<hr>";
+			print_r($ids);	
+				if (empty($ids)) {
+					//remove the terms and just show any nearby images. 
+					$sphinx = new sphinxwrapper($image->grid_reference.' ');
+					$sphinx->processQuery();
+					$ids = $sphinx->returnIds($pg,'_images');
+				}
+				
+				$memcache->name_set('sn',$mkey,$ids,$memcache->compress,$memcache->period_long);
+			}
+			print "<br>";
+			print_r($sphinx->qclean);
+			if (!empty($ids) && ($id = array_search($image->gridimage_id,$ids)) !== FALSE) {
+				unset($ids[$id]);//remove self
+			}
+	
+			if (!empty($ids) && count($ids)) {
+				$smarty->assign('maincontentclass', 'content_photo'.$style.'" style="margin:4px 210px 0px 170px;');
+				$smarty->assign("right_block","_block_related.tpl");
+				require_once('geograph/imagelist.class.php');
+				
+				$images=new ImageList();
+				
+				if (0 && count($ids) > 10) {
+					//try a crossection
+					$table = "tmp_".md5(uniqid());
+					$id_list = join(",",$ids);
+					
+					$db->Execute("CREATE TEMPORARY TABLE $table ENGINE HEAP SELECT gridimage_id,title,grid_reference,user_id,realname,imageclass FROM gridimage_search WHERE gridimage_id IN($id_list) ORDER BY FIELD(gridimage_id,$id_list)");
+					$db->Execute("ALTER IGNORE TABLE $table ADD UNIQUE (user_id),ADD UNIQUE (imageclass)");
+					$sql = "SELECT * FROM $table LIMIT 20";
+					$images->_getImagesBySql($sql);
+				} else {
+					$images->getImagesByIdList($ids);
+				}
+				$images->assignSmarty($smarty, 'related');
+				print count($images->images);
+				if (!empty($sphinx->qclean)) {
+					$smarty->assign("related_keywords",$sphinx->qclean);
+				}
+			}
+		}
 	}
 } elseif (!empty($rejected)) {
 	header("HTTP/1.0 410 Gone");
