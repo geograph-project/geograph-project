@@ -1,8 +1,8 @@
 {if $title}
-{assign var="page_title" value="Geograph Content, `$title`"}
+{assign var="page_title" value="$title :: Collections"}
 {assign var="meta_description" value="User contributed images collections, `$title`. "}
 {else}
-{assign var="page_title" value="Content submitted to Geograph"}
+{assign var="page_title" value="Collections"}
 {assign var="meta_description" value="User contributed images collections. Showcasing a wide range of subject areas, from map symbols to lighthouses!"}
 {/if}
 {assign var="rss_url" value="/content/feed/recent.rss"}
@@ -19,7 +19,7 @@
 {dynamic}
 {if $user->registered && $content_count}
 <div class="tabHolder">
-	<span class="tabSelected">Content</span>
+	<span class="tabSelected">All Collections</span>
 	<a href="/article/" class="tab">Articles</a>
 	<a href="/article/?table" class="tab">Article List</a>
 	<a href="/gallery/" class="tab">Galleries</a>
@@ -29,12 +29,12 @@
 	{/if}	
 </div>
 <div class="interestBox">
-<h2 style="margin-bottom:0">Content submitted to Geograph</h2>
+<h2 style="margin-bottom:0">Collections and Articles</h2>
 </div>
 <br/>
 {else}
 	<div style="float:left">
-		<h2>Content submitted to Geograph &nbsp; &nbsp;</h2>
+		<h2>Collections on Geograph &nbsp; &nbsp;</h2>
 	</div>
 	{if $user->registered && $enable_forums}
 		&nbsp; &middot; <a href="/article/Content-on-Geograph">Contribute your own Content...</a><br/>
