@@ -137,6 +137,11 @@ if (isset($_GET['success'])) {
 	
 	$square=new GridSquare;
 	
+	if (!empty($_REQUEST['photographer_gridref']) && empty($_REQUEST['grid_reference'])) 
+	{
+		$_REQUEST['grid_reference'] = $_REQUEST['photographer_gridref'];
+	}
+	
 	if (!empty($_REQUEST['grid_reference'])) 
 	{
 		$ok= $square->setByFullGridRef($_REQUEST['grid_reference']);
