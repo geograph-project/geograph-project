@@ -136,7 +136,7 @@ class sphinxwrapper {
 			}
 			if (strpos($q,'~') === 0) {
 				$q = preg_replace('/^\~/','',$q);
-				$q = "(".str_replace(" "," | ",$q).") (".join(" | ",$grs).")";
+				$q = "(".str_replace(" "," | ",trim($q)).") (".join(" | ",$grs).")";
 			} else {
 				$q .= " (".join(" | ",$grs).")";
 			}

@@ -160,6 +160,7 @@ require_once('geograph/user.class.php');
 function __autoload($class_name) {
         if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/../libs/geograph/'.strtolower($class_name).'.class.php')) {
                 ob_start();
+               print "class=$class_name\n\n";
                 debug_print_backtrace();
 		print "\n\nHost: ".`hostname`."\n\n";
                 print_r($GLOBALS);
