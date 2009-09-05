@@ -55,7 +55,8 @@ div:target { background-color:orange;padding-bottom:10px; }
  <li><a href="#goodgeograph">What makes a good <b>Geograph</b>?</a></li>
  <li><a href="#points">How do I get a geograph <b>point</b> for my image?</a></li>
  <li><a href="#supplemental">What is a <b>supplemental</b> image?</a></li>
- <li><a href="#multiple">Do you accept <b>multiple images</b> per square</a></li>
+ <li><a href="#multiple">Do you accept <b>multiple images</b> per square?</a></li>
+ <li><a href="#findsquares">How do I <b>find what squares need photographing</b>?</a></li>
  <li><a href="#resize">Do I need to <b>resize</b> my photos? Are there size limits?</a></li>
  <li><a href="#commercial">Why must I agree to allow <b>commercial use</b> of my image?</a></li>
  <li><a href="#legal">What are my <b>legal rights</b> when taking photographs?</a></li>
@@ -152,6 +153,19 @@ The <b>Geograph Website</b>:
 	
 	<p>Everyone sees things differently - feel free to give us your take on any square. Some squares have 
 	been done in considerable <a href="/statistics/most_geographed.php" title="squares with good overage">detail</a> - helping to more fully document and add <a href="/moversboard.php?type=depth" title="Depth Weekly Leaderboard">depth</a> to a square. In particular watch out for things others may have missed - the coverage maps can help with this.</p>
+</div>
+<div class="top"><a href="#top">back to top</a></div>
+
+<div id="findsquares">
+<a name="findsquares"></a>
+<h3>How do I find what squares need photographing?</h3>
+	<p>If you are looking for squares to obtain a point, try the <a href="/mapbrowse.php">coverage maps</a>, and look for green squares; also accessible from that page are various printable checksheets for easy reference in print form. More technical users might enjoy <a href="/gpx.php">GPX</a>, or <a href="/memorymap.php">Memory Map</a> downloads. </p>
+
+	<p>Many of the squares have been captured but with only have a few photos; checkout the <a href="/mapbrowse.php?depth=1">depth map</a>, from this you can find under-represented squares. In the same vain we have a number of maps to show the distribution of photos within a square, usually on a centisquare grid, which divides a gridsquare into 100 squares, each 100m by 100m.</p>
+
+	<p>We have also recently introduced a new map, &quot;<a href="/mapbrowse.php?recent=1">Recent Only</a>&quot; this shows squares recent photos. Help us keep the coverage current by photographing squares with only older photos (orange or green).</p>
+
+	<p>Also look out for <img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged icon"/> icons around the site, click them to take you to the links page for the location. From that page you can access textual lists of squares in need of photos. (as well as direct links to <a href="/article/Mapping-on-Geograph">many of the maps the site has</a>)</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
