@@ -87,6 +87,11 @@ if (isset($_REQUEST['centi'])) {
 	$smarty->assign('extra','centi');
 	$cacheid.='|centi';
 } 
+if (isset($_REQUEST['scenic'])) {
+	$smarty->assign('scenic',1);
+	$smarty->assign('extra','scenic');
+	$cacheid.='|scenic';
+} 
 
 if (isset($_REQUEST['inner'])) {
 	$template = 'mapper_iframe.tpl';
