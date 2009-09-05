@@ -178,6 +178,20 @@ function getKmlFilepath($extension,$level,$square = null,$gr='',$i = 0) {
 		}
 	}
 	
+	if ($level == 5) {
+		//if level 5 quantize to subhectad/mosaic (and define gr to be in SH43NW format) 
+		//importantly doesnt affect a gr already in this format.
+		
+		//SH4(0)35  -> SH435(W) 
+		$gr = preg_replace('/^(.+)[5-9](\d)(\d)$/','$1$2$3E',$gr);
+		$gr = preg_replace('/^(.+)[0-4](\d)(\d)$/','$1$2$3W',$gr);
+		//SH43(5)E  -> SH43(N)E 
+		$gr = preg_replace('/^(.+)[5-9]([EW])$/e','$1."N".$2',$gr);
+		$gr = preg_replace('/^(.+)[0-4]([EW])$/e','$1."S".$2',$gr);
+	}
+			
+	
+	
 	$base=$_SERVER['DOCUMENT_ROOT'].'/kml';
 	$prefix = "/kml";
 	$base2=$_SERVER['DOCUMENT_ROOT'].'/sitemap';
@@ -236,6 +250,8 @@ function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '',$list = '') {
 			
 			if (!empty($list)) {
 				$s = "Photos in ".$list." :: Geograph British Isles";
+			} elseif (!empty($gr) && $level == 5) {
+				$s = "Photos in ".$gr." :: Geograph British Isles";
 			} elseif (isset($square->grid_reference)) {
 				$s = "Photos in {$square->grid_reference} :: Geograph British Isles";
 			} elseif (!empty($gr)) {
