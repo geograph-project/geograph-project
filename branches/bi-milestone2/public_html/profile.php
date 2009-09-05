@@ -121,21 +121,22 @@ elseif (isset($_REQUEST['notifications']))
 	
 		##########################
 		//topic notifications
-		
-		if (empty($_POST['topic'])) {
-			$sql = "DELETE FROM geobb_send_mails WHERE user_id = {$USER->user_id}";
-		} else {
-			$ids = implode(',',array_keys($_POST['topic']));
-			$ids = preg_replace('/[^\d,]+/','',$ids);
-			
-			//delete all EXCEPT those still ticked
-			$sql = "DELETE FROM geobb_send_mails WHERE user_id = {$USER->user_id} AND topic_id NOT IN ($ids)";
-		}
-		if ($db->Execute($sql) === false) {
-			$errors['general']='error updating: '.$db->ErrorMsg();
-			$ok=false;
-		} else {
-			$subs = $db->getAll("select topic_id,topic_title from geobb_send_mails Ts inner join geobb_topics Tt using (topic_id) where user_id = {$USER->user_id}");		
+		if (!empty($CONF['forums'])) {
+			if (empty($_POST['topic'])) {
+				$sql = "DELETE FROM geobb_send_mails WHERE user_id = {$USER->user_id}";
+			} else {
+				$ids = implode(',',array_keys($_POST['topic']));
+				$ids = preg_replace('/[^\d,]+/','',$ids);
+
+				//delete all EXCEPT those still ticked
+				$sql = "DELETE FROM geobb_send_mails WHERE user_id = {$USER->user_id} AND topic_id NOT IN ($ids)";
+			}
+			if ($db->Execute($sql) === false) {
+				$errors['general']='error updating: '.$db->ErrorMsg();
+				$ok=false;
+			} else {
+				$subs = $db->getAll("select topic_id,topic_title from geobb_send_mails Ts inner join geobb_topics Tt using (topic_id) where user_id = {$USER->user_id}");		
+			}
 		}
 		
 		##########################
@@ -391,6 +392,13 @@ if ($template=='profile.tpl')
 		}
 		
 		$profile->md5_email = md5(strtolower($profile->email));
+		
+		$n = array();
+		foreach(explode(',',$profile->contact_options) as $idx => $key) {
+			$n[$key] = 'checked="checked"';
+		}
+		$smarty->assign_by_ref("contact_options",$n);
+		
 	} else {
 		$profile=new GeographUser();
 		$profile->user_id = $uid;

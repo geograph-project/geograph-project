@@ -169,7 +169,7 @@ function send_message(&$rows) {
 	
 	
 	if (isset($_GET['send'])) {
-		$mail             = new PHPMailer(); // defaults to using php "mail()"
+		$mail = new PHPMailer(); // defaults to using php "mail()"
 		$mail->SetFrom('lordelph@gmail.com', 'Geograph - Reply Using Link');
 		$mail->AddAddress($row['email'], $row['realname']);
 		$mail->Subject    = $subject;

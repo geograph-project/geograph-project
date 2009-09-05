@@ -54,6 +54,10 @@ if (isset($_SESSION['tab'])) {
 	$selectedtab =1;
 }
 
+if (!empty($_REQUEST['use_autocomplete'])) {
+	$USER->use_autocomplete = 1;
+}
+
 $step=isset($_POST['step'])?intval($_POST['step']):1;
 
 if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_NO_FILE)
@@ -526,8 +530,6 @@ if (isset($_POST['gridsquare']))
 			//find a possible place within 25km
 			$smarty->assign('place', $square->findNearestPlace(25000));
 
-			$smarty->assign('use_autocomplete', $USER->use_autocomplete);		
-			
 			$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
 			$smarty->assign('preview_url', $preview_url);
 			$smarty->assign('preview_width', $uploadmanager->upload_width);

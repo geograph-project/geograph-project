@@ -15,12 +15,12 @@
 	<div id="ticket_message">
 		{if $profile->last_ticket_time}
 			<div class="interestBox" style="background-color:yellow; color:black; border:2px solid orange; padding:5px; font-size:0.9em">
-			You have <b>{$profile->tickets}</b> ongoing tickets on your images, please goto <a href="/tickets.php">your tickets page</a> to review them.
-			<small><br/><br/>We are aware of some issues with ticket notification emails - hence the reason for this message. <a href="javascript:void(hide_message())">I've read this, please hide</a> </small>
+			You have <b>{$profile->tickets}</b> ongoing tickets on your images, please goto <a href="/suggestions.php">your suggestions page</a> to review them.
+			<small><br/><br/><a href="javascript:void(hide_message())">I've read this, please hide</a> </small>
 			</div>
 			<br/><br/>
 		{else}
-			<div style="text-align:center;color:gray">You have <b>{$profile->tickets}</b> ongoing tickets on your images, please goto <a href="/tickets.php">your tickets page</a> to review them. <a href="javascript:void(hide_message())">hide this</a></div>
+			<div style="text-align:center;color:gray">You have <b>{$profile->tickets}</b> ongoing tickets on your images, please goto <a href="/suggestions.php">your suggestions page</a> to review them. <a href="javascript:void(hide_message())">hide this</a></div>
 		{/if}
 	</div>
 	<script type="text/javascript">{literal}
@@ -73,13 +73,15 @@
  	{if $profile->hasPerm('dormant',true)}
  		<!--<li><i>We do not hold contact details for this user.</i></li>-->
  	{elseif $user->user_id ne $profile->user_id}
-		{if $profile->public_email eq 1}
+		{if $contact_options.show_email}
 			<li><b>Email</b>: {mailto address=$profile->email encode="javascript"}</li>
 		{/if}
-		<li><a title="Contact {$profile->realname|escape:'html'}" href="/usermsg.php?to={$profile->user_id}">Send message to {$profile->realname|escape:'html'}</a></li>
+		{if $contact_options.usermsg}
+			<li><a title="Contact {$profile->realname|escape:'html'}" href="/usermsg.php?to={$profile->user_id}">Send message to {$profile->realname|escape:'html'}</a></li>
+		{/if}
 	{else}
 		<li><b>Email</b>: {mailto address=$profile->email encode="javascript"}
-		{if $profile->public_email ne 1} <em>(not displayed to other users)</em>{/if}
+		{if !$contact_options.show_email} <em>(not displayed to other users)</em>{/if}
 		</li>
 	{/if}
 
@@ -230,7 +232,7 @@
 		{/if}
 		{if $user->user_id eq $profile->user_id}
 			<li><b>Wordle</b>: {external href="http://`$http_host`/stuff/make-wordle.php?u=`$profile->user_id`" text="View all your image titles as a <i>Wordle</i>"}</li>
-			<li><b>Change Requests</b>: <a href="/tickets.php" rel="nofollow">View Recent Tickets</a></li>
+			<li><b>Change Requests</b>: <a href="/suggestions.php" rel="nofollow">View Recent Suggestions</a></li>
 		{/if}
 	</ul>
 	{if $user->user_id eq $profile->user_id}

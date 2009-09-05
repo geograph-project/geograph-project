@@ -88,7 +88,7 @@
 	<li><a href="/forgotten.php">Forgotten Password</a></li>
 	<li><a href="/contact.php">Contact Us</a></li>
 	<li><a href="/profile.php">Your Profile</a> (for registered users only)</li>
-	<li><a href="/tickets.php">Review Your Recent Change Suggestions</a></li>
+	<li><a href="/suggestions.php">Review Your Recent Change Suggestions</a></li>
 </ul>
 
 <h3><a name="users"></a>Contributors...</h3>

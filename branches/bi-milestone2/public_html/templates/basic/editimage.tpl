@@ -102,7 +102,7 @@
 	<h2 class="titlebar">
 	{if $isadmin}<a href="/admin/tickets.php" title="Ticket Admin Listing">&lt;&lt;&lt;</a>{/if}
 	All Change Requests
-	{if $isowner}<small>(<a href="/tickets.php" title="Ticket Listing">back to listing</a>)</small>{/if}
+	{if $isowner}<small>(<a href="/suggestions.php" title="Ticket Listing">back to listing</a>)</small>{/if}
 	</h2>
 	
 	{if $opentickets}	
@@ -116,7 +116,7 @@
 	<h2 class="titlebar">
 	{if $isadmin}<a href="/admin/tickets.php" title="Ticket Admin Listing">&lt;&lt;&lt;</a>{/if}
 	Open Change Requests
-	{if $isowner}<small>(<a href="/tickets.php" title="Ticket Listing">back to listing</a>)</small>{/if}
+	{if $isowner}<small>(<a href="/suggestions.php" title="Ticket Listing">back to listing</a>)</small>{/if}
 	</h2>
 	{if $opentickets}	
 	<p>Any open change requests are listed below. 
@@ -137,6 +137,7 @@
 
 {foreach from=$opentickets item=ticket}
 <form action="/editimage.php" method="post" name="ticket{$ticket->gridimage_ticket_id}">
+<a name="{$ticket->gridimage_ticket_id}"></a>
 <input type="hidden" name="gridimage_ticket_id" value="{$ticket->gridimage_ticket_id}"/>
 <input type="hidden" name="id" value="{$ticket->gridimage_id}"/>
 

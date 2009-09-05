@@ -573,7 +573,8 @@ class GridImageTroubleTicket
 				
 			} elseif ($profile->ticket_when == 'digest' || $profile->ticket_when == 'htmldigest') {
 			
-				//todo - set defer in the current ticket!!
+				//give the user time to see the digest before processing the ticket. 
+				$this->setDefer("GREATEST(deferred,DATE_ADD(NOW(),INTERVAL 24 HOUR))");
 			
 				//insert into message queue
 				$updates = array();
@@ -609,8 +610,10 @@ class GridImageTroubleTicket
 		$ttype = ($this->type == 'minor')?' Minor':'';
 		$msg['subject']="[Geograph]$ttype Suggestion for {$image->grid_reference} {$image->title} [#{$this->gridimage_ticket_id}]";
 		
-		$msg['body']="Re: {$image->grid_reference} {$image->title}\n";
-		$msg['body'].="http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$this->gridimage_id}\n";
+		$msg['body']="";
+		
+		{$image->grid_reference} :: {$image->title}\n";
+		$msg['body'].="http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$this->gridimage_id}#{$this->gridimage_ticket_id}\n";
 		$msg['body'].="---------------------------------------\n";
 		$msg['body'].=$comment."\n";
 		$msg['body'].="---------------------------------------\n";

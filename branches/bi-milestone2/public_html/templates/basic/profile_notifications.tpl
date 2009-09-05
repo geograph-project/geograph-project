@@ -72,11 +72,32 @@
 	<fieldset>
 		<legend><b>Moderator Changes</b></legend>
 
-		<input type="checkbox" onclick="change_notifications(this)" name="notifications[change_changes]" id="notifications_change_changes" {$notifications.change_changes} {$notifications.all}/>
-		<label for="notifications_change_changes">Changes Applied Directly</label><br/>
+		<input type="checkbox" onclick="change_notifications(this)" name="notifications[minor_modchanges]" id="notifications_minor_modchanges" {$notifications.minor_modchanges} {$notifications.all}/>
+		<label for="notifications_minor_modchanges">Minor Changes Applied Directly</label><br/>
+		<input type="checkbox" onclick="change_notifications(this)" name="notifications[normal_modchanges]" id="notifications_normal_modchanges" {$notifications.normal_modchanges} {$notifications.all}/>
+		<label for="notifications_normal_modchanges">Normal Changes Applied Directly</label><br/>
 
 	</fieldset>
 	<div class="fieldnotes">Moderators can make changes directly, use this box to be notified when these changes are made</div>
+
+	<fieldset>
+		<legend><b>Your Suggestions</b></legend>
+		<i>including on your own images</i><br/>
+		<input type="checkbox" onclick="change_notifications(this)" name="notifications[your_comment]" id="notifications_your_comment" {$notifications.your_comment} {$notifications.all}/>
+		<label for="notifications_your_comment">Follow Up Comments</label><br/>
+		<input type="checkbox" onclick="change_notifications(this)" name="notifications[your_changes]" id="notifications_your_changes" {$notifications.your_changes} {$notifications.all}/>
+		<label for="notifications_your_changes">Closed with Changes</label><br/>
+		<input type="checkbox" onclick="change_notifications(this)" name="notifications[your_nothing]" id="notifications_your_nothing" {$notifications.your_nothing} {$notifications.all}/>
+		<label for="notifications_your_nothing">Closed without Changes</label><br/>
+	</fieldset>
+	
+	{if $is_mod}
+	<fieldset>
+		<legend><b>Moderator Messages</b></legend>
+		<input type="checkbox" onclick="change_notifications(this)" name="notifications[mod_comment]" id="notifications_mod_comment" {$notifications.mod_comment} {$notifications.all}/>
+		<label for="notifications_mod_comment">Comments on your open suggestions</label><br/>
+	</fieldset>
+	{/if}
 	
 	<a href="javascript:void(hide_tree(102));">close</a>
 </div>
@@ -86,7 +107,7 @@
 
 
 
-
+{if $enable_forums}
 <fieldset>
 <legend>Forum Subscriptions ({$sub_count})</legend>
 
@@ -105,7 +126,7 @@
 </div>
 
 </fieldset>
-
+{/if}
 
  
 <fieldset>

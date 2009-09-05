@@ -581,6 +581,82 @@ CREATE TABLE `geocubes` (
 
 
 
+CREATE TABLE `at_home_job` (
+  `at_home_job_id` int(10) unsigned NOT NULL auto_increment,
+  `start_gridimage_id` int(10) unsigned NOT NULL,
+  `end_gridimage_id` int(10) unsigned NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `created` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `sent` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `completed` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `at_home_worker_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`at_home_job_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+CREATE TABLE `at_home_result` (
+  `at_home_result_id` int(10) unsigned NOT NULL auto_increment,
+  `at_home_job_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `result` varchar(255) NOT NULL,
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`at_home_result_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+CREATE TABLE `at_home_worker` (
+  `at_home_worker_id` int(10) unsigned NOT NULL auto_increment,
+  `team` varchar(64) NOT NULL,
+  `ip` int(10) unsigned NOT NULL,
+  `user_agent` varchar(255) NOT NULL,
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`at_home_worker_id`),
+  UNIQUE KEY `ip` (`ip`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+
+
+ALTER TABLE at_home_job 
+ADD `last_contact` timestamp NOT NULL default '0000-00-00 00:00:00',
+ADD `last_gridimage_id` int(10) unsigned NOT NULL,
+ADD `images` int(10) unsigned NOT NULL,
+ADD `terms` int(10) unsigned NOT NULL;
+
+
+CREATE TABLE `at_home_temp` 
+SELECT at_home_job_id,
+MAX(created) AS last_contact,
+COUNT(*) as terms,
+COUNT(DISTINCT gridimage_id) as images,
+MAX(gridimage_id) as last_gridimage_id
+FROM at_home_result
+GROUP BY at_home_job_id
+ORDER BY NULL
+LIMIT 0;
+
+LOCK TABLES at_home_result WRITE,at_home_job WRITE,at_home_temp WRITE;
+
+INSERT INTO `at_home_temp` 
+SELECT at_home_job_id,
+MAX(created) AS last_contact,
+COUNT(*) as terms,
+COUNT(DISTINCT gridimage_id) as images,
+MAX(gridimage_id) as last_gridimage_id
+FROM at_home_result
+GROUP BY at_home_job_id
+ORDER BY NULL;
+
+UPDATE at_home_job,at_home_temp 
+SET at_home_job.last_contact = at_home_temp.last_contact,
+at_home_job.last_gridimage_id = at_home_temp.last_gridimage_id,
+at_home_job.images = at_home_temp.images,
+at_home_job.terms = at_home_temp.terms
+WHERE at_home_job.at_home_job_id = at_home_temp.at_home_job_id;
+
+UNLOCK TABLES;
+
+DROP TABLE at_home_temp;
+
+
+
 
 ################################################
 
@@ -592,9 +668,9 @@ ALTER TABLE `user`
 
 ##
 
-ALTER TABLE  `user` ADD  `contact_options` SET(  'show_email',  'usermsg' ) NOT NULL AFTER  `public_email` ;
+ALTER TABLE  `user` ADD  `contact_options` SET(  'show_email',  'usermsg' ) NOT NULL DEFAULT 'usermsg' AFTER  `public_email` ;
 
-UPDATE user SET `contact_options` = 'show_email' WHERE public_email = 1;
+UPDATE user SET `contact_options` = 'show_email,usermsg' WHERE public_email = 1;
 
 ALTER TABLE  `user` DROP `public_email`;
 

@@ -77,7 +77,7 @@ change tickets. If the picture is yours, you can see full details and are
 able to leave comments. For someone else's picture, all you see is the basic 
 change request.</p>
 
-<p>You can also find a list of <a href="/tickets.php">recent tickets</a> on your own 
+<p>You can also find a list of <a href="/suggestions.php">recent tickets</a> on your own 
 images, using the link at the bottom of your profile page.</p>
 
 {include file="_std_end.tpl"}
