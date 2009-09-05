@@ -103,15 +103,20 @@ table.navtable {
 {/if}
 
 {if $depth}
-	<img src="/img/depthkey.png" width="{$mosaic_width}" height="20" style="padding-left:10px;"/>
+	<img src="http://{$static_host}/img/depthkey.png" width="{$mosaic_width}" height="20" style="padding-left:10px;"/>
+{elseif !$token_zoomin}
+	<div style="background-color:#000066;text-align:center;font-size:0.7em;color:white;border-top:1px solid silver">Key
+	| <img src="http://{$static_host}/templates/basic/img/supp_dot.gif"/> Supplemental only
+	| <span style="color:#75FF65">No photos</span> |
+	</div>
 {elseif $recent}
-	<div style="background-color:#000066; text-align:center;font-size:0.7em;color:white;border-top:1px solid silver">Key
+	<div style="background-color:#000066;text-align:center;font-size:0.7em;color:white;border-top:1px solid silver">Key
 	| <span style="color:#FF0000">Recent photos</span> 
 	| <span style="color:#ECCE40">Any photos</span>
 	| <span style="color:#75FF65">No photos</span> |
 	</div>
 {else}
-	<div style="background-color:#000066; text-align:center;font-size:0.7em;color:white;border-top:1px solid silver">Key
+	<div style="background-color:#000066;text-align:center;font-size:0.7em;color:white;border-top:1px solid silver">Key
 	| <span style="color:#FF0000">Geograph(s)</span> 
 	| <span style="color:#ECCE40">Supplemental only</span>
 	| <span style="color:#75FF65">No photos</span> |
