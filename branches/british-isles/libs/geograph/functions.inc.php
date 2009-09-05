@@ -391,7 +391,7 @@ function getSitemapFilepath($level,$square = null,$gr='',$i = 0) {
 			$gr = $square->grid_reference;
 		}
 	} elseif (!empty($gr)) {
-		preg_match('/^([A-Z]{1,3})([\d_]*)$/',strtoupper($gr),$m);
+		preg_match('/^([A-Z]{1,3})([\d_]*)([NS]*)([EW]*)$/',strtoupper($gr),$m);
 		$s = $m[1];
 		if ($level > 2) {
 			$numbers = $m[2];
@@ -401,6 +401,19 @@ function getSitemapFilepath($level,$square = null,$gr='',$i = 0) {
 			$n = sprintf("%d%d",intval($numbers{0}/2)*2,intval($numbers{$c}/2)*2);
 		}
 	}
+	
+	if ($level == 5) {
+		//if level 5 quantize to subhectad/mosaic (and define gr to be in SH43NW format) 
+		
+		//SH4(0)35  -> SH435(W) 
+		$gr = preg_replace('/^(.+)[5-9](\d)(\d)$/','$1$2$3E',$gr);
+		$gr = preg_replace('/^(.+)[0-4](\d)(\d)$/','$1$2$3W',$gr);
+		//SH43(5)E  -> SH43(N)E 
+		$gr = preg_replace('/^(.+)[5-9]([EW])$/e','$1."N".$2',$gr);
+		$gr = preg_replace('/^(.+)[0-4]([EW])$/e','$1."S".$2',$gr);
+	}
+		
+	
 	
 	$extension = 'html';
 	$prefix = "/sitemap";
