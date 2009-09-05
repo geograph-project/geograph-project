@@ -586,7 +586,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 <p>Your photo has identification number [<a href="/photo/{$gridimage_id}">{$gridimage_id}</a>]</p>
 
 
-<p><a title="submit another photo" href="/submit.php">Click here to submit a new photo...</a></p>
+<p><a title="submit another photo" href="/submit.php">Submit another photo...</a></p>
 {/if}
 
 {if $step eq 6}
