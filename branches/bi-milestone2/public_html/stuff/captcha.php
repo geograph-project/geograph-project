@@ -47,9 +47,31 @@ if (!empty($_GET['token'])) {
 			
 			$image = new GridImage;
 			$image->loadFromId($id);
+			
+			if (!empty($CONF['fetch_on_demand'])) {
+				//we do this becase gridimage class cant produce a url without creating thumbnail
+				function getGeographUrl($gridimage_id,$hash,$size ='small') { 
+				       $yz=sprintf("%02d", floor($gridimage_id/1000000)); 
+				       $ab=sprintf("%02d", floor(($gridimage_id%1000000)/10000)); 
+				       $cd=sprintf("%02d", floor(($gridimage_id%10000)/100)); 
+				       $abcdef=sprintf("%06d", $gridimage_id); 
+				       $fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}"; 
+				       $server =  "http://s".($gridimage_id%4).".geograph.org.uk"; 
+				       switch($size) { 
+					       case 'full': return "http://{$CONF['fetch_on_demand']}$fullpath.jpg"; break; 
+					       case 'med': return "$server{$fullpath}_213x160.jpg"; break; 
+					       case 'small': 
+					       default: return "$server{$fullpath}_120x120.jpg"; 
+				       } 
+				} 
+
+				header("Location: ".getGeographUrl($id,$image->_getAntiLeechHash(),'small'));
+
+				exit;
+			}
+			
 			$details = $image->getThumbnail(213,160,2);
 			$url = $details['url'];
-			
 			header("Content-Type: image/jpeg");
 			@readfile('..'.$url);
 			exit;
@@ -95,48 +117,81 @@ if ($_POST['choice']) {
 	
 	$_SESSION['pos'] = ''; //prevent retry
 	$_SESSION['id'] = ''; 
+	
 } else {
-	$idarray = $db->getAssoc("select gridimage_id,imageclass from category_stat order by rand() limit 5");
+
+	$initalrows = $db->getAll("SELECT * FROM category_pair INNER JOIN category_stat ON (cat1 = imageclass) WHERE c > 100 ORDER BY RAND() LIMIT 10");
+	$found = 0;
 	
-	$ids = array_keys($idarray);
-
-	$id = $ids[2];
+	#$initalrows = array(array('cat1' => 'Marker'));
 	
-	$image = new GridImage;
-
-	$image->loadFromId($id);
-	$html = $image->getThumbnail(213,160);
-
-	$html = preg_replace("/alt=\".*?\"/",'align="right"',$html);
-
-	$cache = md5(time()); //cache defeat & red hearing ;-)
-	$html = preg_replace("/src=\".*?\"/","src=\"?image=$cache\"",$html);
-	#print $cache.' '.$id;
+	while (!$found && count($initalrows)) {
+		$row1 = array_pop($initalrows);
 	
-	//can never be too careful!
-	srand(time());
+		$cat = "'".mysql_real_escape_string($row1['cat1'])."'";
+		
+		$pairrows = $db->getAll("SELECT * FROM category_pair WHERE (cat1 = $cat OR cat2 = $cat) AND num = 7 LIMIT 30");
+		
+		if (count($pairrows)) {
+			$list = array();
+			foreach ($pairrows as $row2) {
+				if ($row2['cat1'] == $row1['cat1']) {
+					$list[] = mysql_real_escape_string($row2['cat2']);
+				} else {
+					$list[] = mysql_real_escape_string($row2['cat1']);
+				}
+			}
+			print_r($list);
+			$images = $db->getCol("SELECT gridimage_id FROM gridimage_search s WHERE s.imageclass IN ('".implode("','",$list)."') ORDER BY imageclass LIMIT 15");
+			
+			if (count($images) >= 15) {
+				$found = 1;
+			}
+		}
+	}
+	
+	if (!$found) {
+		die("error, please try again later...");
+	}
+	
+	$answers = $db->getCol("SELECT gridimage_id FROM gridimage_search s WHERE imageclass = $cat LIMIT 10");
+	$category = $row1['cat1'];
+	
+	$_SESSION['ids'] = $answers;
+	
+	
+	$ids = array_merge($images,$answers);
 	shuffle($ids);
-	
-	$position = array_search($id,$ids);
-	
-	$_SESSION['pos'] = $position;
-	$_SESSION['id'] = $id;
 	
 	print "<title>Geograph Captcha Test - Proof of concept</title>";
 	print "<h2>Geograph Captcha Test - Proof of concept</h2>";
 	
 	print $html;
 	
-	print "<p><b>To continue please identify the subject of the photo on the right...</b></p>";
+	print "<p>To continue please select the <b>5</b> images of '<b>".htmlentities($category)."</b>'...</p>";
 	
 	
-	print "<form method=\"post\"><p>";
+	print "<form method=\"post\"><table><tr>";
 	$i = 0;
 	foreach ($ids as $id) {
-		print "<input type=\"radio\" name=\"choice\" value=\"$i\"/> {$idarray[$id]}<br/>";
+		$token=new Token;
+		$token->setValue("id", intval($id));
+		$t = $token->getToken();
+	
+		print "<td><img src=\"captcha.php?token=$t&\"><br/>";
+		
+		print "<input type=checkbox name=choice[] value=\"$t\"/>";
+		
+		print "</td>";
+		
 		$i++;
+		
+		if ($i%5==0) {
+			print "</tr><tr>";
+		}
+		
 	}
-	print "<input type=\"submit\"/></p>";
+	print "</tr></table><p><input type=\"submit\"/></p>";
 	print "</form>";
 }
 
