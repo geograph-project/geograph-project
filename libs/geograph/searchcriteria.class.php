@@ -587,10 +587,9 @@ class SearchCriteria
 		if ($sql_where) {
 			$sql_where .= ' and ';
 		}
-		if (strpos($q,'=') === 0) {
-			$q = str_replace('=','',$q);
+		if (preg_match('/\b=\w/',$q)) {
+			// = in latest sphinx turns on exact keyword matching (no stemming) 
 			$this->sphinx['compatible'] = 0;
-			$this->sphinx['exact'] = 1;
 		}
 		if (preg_match("/\b(AND|OR|NOT)\b/",$q) || preg_match('/^\^.*\+$/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q)) {
 			$sql_where .= " (";

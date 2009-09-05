@@ -92,17 +92,21 @@
 		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="searchtext" id="l_searchtext">keywords</label></td> 
-			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput" size="60" style="width:400px" maxlength="250"/><br/>
-			 <small><label for="ind_exact">Exact matches?</label> <input type="checkbox" name="ind_exact" id="ind_exact" {$ind_exact_checked}/> (otherwise <tt>bridge</tt> matches bridges, bridging etc)</small>
+			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput" size="60" style="width:400px" maxlength="250"/>
 			 </td> 
-			 <td>eg <tt>Bridge</tt></td> 
+			 <td>eg <tt>bridge</tt></td> 
+		  </tr> 
+		  <tr> 
+			 <td colspan="2"><small>&middot; <b>Looking for exact match?</b> Prefix each keyword with <tt>=</tt>
+			 (otherwise <tt>bridge</tt> matches bridges, bridging etc)</small></td> 
+			 <td>eg <tt>road =bridge</tt></td> 
 		  </tr> 
 		  <tr> 
 			 <td colspan="3"><small>&middot; Currently searches the title, description, category, photographer name and image taken date (<tt>20071103</tt>, <tt>200711</tt> or just <tt>2007</tt>) fields, as well the subject grid-reference <span class="nowrap">(<tt>SH1234</tt>, <tt>SH13</tt> or just <tt>SH</tt>)</span>, separate multiple keywords with spaces.</small></td> 
 		  </tr> 
 		  <tr> 
 			 <td colspan="2"><small>
-			 &middot; Only matches whole words, punctuation is ignored, can match phrases (<tt>"road bridge"</tt>), allows the OR keyword <span class="nowrap">(<tt>bridge OR bont OR pont</tt>)</span>, can exclude words (<tt>-river</tt>), and is not case sensitive.</small><br/>
+			 &middot; Only matches whole words, punctuation is ignored, can match phrases [ <tt>"road bridge"</tt> ], allows the OR keyword <span class="nowrap">[ <tt>bridge OR bont OR pont</tt> ]</span>, can exclude words [ <tt>-river</tt> ], and is not case sensitive.</small><br/>
 			 <br/></td> 
 			 <td>&nbsp;<input type="submit" value="Find"/></td> 
 		  </tr> 
