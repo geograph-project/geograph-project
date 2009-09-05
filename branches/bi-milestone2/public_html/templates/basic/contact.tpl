@@ -50,9 +50,9 @@
     <br /><br />
     <label for="name">Leave Blank!</label><br/>   
 	<input size="40" id="name" name="name" value=""/>
+    <br /><br />
     </div>
 
-    <br /><br />
     
     <label for="subject">Subject</label><br/>
 	<input size="40" id="subject" name="subject" value="{$subject|escape:'html'}"/>
@@ -64,7 +64,7 @@
     <br />
         <small style="font-size:0.9em">If you are writing in relation to a particular image, please be specific as to which image you are referring!<br/> Please copy &amp; paste a link (from your browser address bar) to the photo page.</small><br /><br />
 
-	<input type="submit" name="send" value="Send"/></p>
+	<input type="submit" name="send" value="Send your message to the Geograph Website Team &gt; &gt;"/></p>
     </form>
 {/if} 
 {/dynamic}    
