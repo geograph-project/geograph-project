@@ -44,7 +44,7 @@ class RebuildRecentSquares extends EventHandler
 		$db->Execute("DROP TABLE IF EXISTS recent_only_tmp");
 		
 		
-		$db->Execute("CREATE TABLE recent_only (
+		$db->Execute("CREATE TABLE recent_only_tmp (
 				  `gridsquare_id` int(11) NOT NULL default '0',
 				  `images` smallint NOT NULL default '0',
 				  PRIMARY KEY  (`gridsquare_id`)
