@@ -30,8 +30,6 @@ require_once('geograph/gridsquare.class.php');
 
 $db=NewADOConnection($GLOBALS['DSN']);
 
-
-
 if (!empty($_GET['token'])) {
 	$ok=false;
 	$token=new Token;
@@ -47,7 +45,7 @@ if (!empty($_GET['token'])) {
 			
 			$image = new GridImage;
 			$ok = $image->loadFromId($id);
-
+			
 	if (!$ok || $image->moderation_status=='rejected') {
 		//clear the image
 		$image=new GridImage;
@@ -57,8 +55,11 @@ if (!empty($_GET['token'])) {
 		exit;
 	}
 
-
-			$details = $image->getThumbnail(213,160,2);
+			if ($token->hasValue("small")) {
+				$details = $image->getThumbnail(120,120,2);
+			} else {
+				$details = $image->getThumbnail(213,160,2);
+			}
 			$url = $details['url'];
 			
 			header("Content-Type: image/jpeg");
@@ -98,61 +99,118 @@ if (!empty($_GET['image'])) {
 	
 
 if ($_POST['choice']) {
-	if (!$_SESSION['pos']) {
+	if (!$_SESSION['ids']) {
 		print "<h2 style=\"background-color:#ff9999\">Nope!</h2>";
-	} elseif ($_POST['choice'] == $_SESSION['pos']) {
-
-		print "<h2 style=\"background-color:lightgreen\">Hello Human! Come on inside...</h2>";
 	} else {
-		print "<h2 style=\"background-color:#ff9999\">Failed...</h2>";
+		foreach ($_POST['choice'] as $t) {
+			$token=new Token;
+			if ($token->parse($t)) {
+				$id = $token->hasValue("id")?$token->getValue("id"):0;
+				$sent[$id] = 1;
+			}
+		}
+		
+		$found = 0;
+		foreach ($_SESSION['ids'] as $id) {
+			if (isset($sent[$id])) {
+				$found++;
+			}
+		}
+		
+		if ($found == 5) {
+			print "<h2 style=\"background-color:lightgreen\">Hello Human! Come on inside...</h2>";
+		} else {
+			print "<h2 style=\"background-color:#ff9999\">Failed...</h2>";
+			
+			$o = fopen('/tmp/capfailed','a');
+			fwrite($o,"-----------------------------\n");
+			fwrite($o,date('r')."\n");
+			fwrite($o,print_r($_SESSION['ids'],1)."\n");
+			fwrite($o,print_r($sent,1)."\n");
+			fwrite($o,"FOUND=$found\n");
+			fwrite($o,print_r($_SESSION['all_ids'],1)."\n");
+			fwrite($o,print_r($_POST['choice'],1)."\n\n");
+			fclose($o);
+			
+		}
 	}
 	print "<a href=\"captcha.php?\">Try again</a>";
 	
-	$_SESSION['pos'] = ''; //prevent retry
-	$_SESSION['id'] = ''; 
+	$_SESSION['ids'] = ''; //prevent retry
+	
 } else {
-	$idarray = $db->getAssoc("select gridimage_id,imageclass from category_stat order by rand() limit 5");
-	
-	$ids = array_keys($idarray);
 
-	$id = $ids[2];
+	$category = 'Butterfly';
 	
-	$image = new GridImage;
+	#if (false) {
+		$offset = rand(0,500);//todo hardcoded...
 
-	$image->loadFromId($id);
-	$html = $image->getThumbnail(213,160);
+		$answers = $db->getCol("SELECT gridimage_id FROM gridimage_search s WHERE imageclass = '$category' AND moderation_status = 'accepted' LIMIT $offset,20");
+		shuffle($answers);
+		$answers = array_slice($answers,0,5);
 
-	$html = preg_replace("/alt=\".*?\"/",'align="right"',$html);
+		$_SESSION['ids'] = $answers;
 
-	$cache = md5(time()); //cache defeat & red hearing ;-)
-	$html = preg_replace("/src=\".*?\"/","src=\"?image=$cache\"",$html);
-	#print $cache.' '.$id;
-	
-	//can never be too careful!
-	srand(time());
-	shuffle($ids);
-	
-	$position = array_search($id,$ids);
-	
-	$_SESSION['pos'] = $position;
-	$_SESSION['id'] = $id;
+		$offset = rand(0,1000000);//todo hardcoded...
+		$offset_end = $offset+150;
+		$ids = $db->getCol("SELECT gridimage_id FROM gridimage_search s WHERE imageclass != '$category' AND moderation_status = 'geograph' AND gridimage_id BETWEEN $offset AND $offset_end GROUP BY imageclass LIMIT 30");
+
+		shuffle($ids);
+		$ids = array_slice($ids,0,20);
+
+
+		$ids = array_merge($ids,$answers);
+		shuffle($ids);
+		
+		$_SESSION['all_ids'] = $ids;
+		
+	#	print_r(join(',',$ids));
+	#} else {
+	#	$ids = array(294197,294183,294156,294150,294195,294193,294152,294158,294141,294182,148018,294213,294216,208125,294173,294211,294165,294189,294246,207561,294204,294168,207539,217819,294202);
+	#}
 	
 	print "<title>Geograph Captcha Test - Proof of concept</title>";
 	print "<h2>Geograph Captcha Test - Proof of concept</h2>";
 	
 	print $html;
 	
-	print "<p><b>To continue please identify the subject of the photo on the right...</b></p>";
+	print "<p>To continue, please select the <b>5</b> image(s) of '<b>".htmlentities($category)."</b>'... (click an image to select)</p>";
 	
 	
-	print "<form method=\"post\"><p>";
+	print "<form method=\"post\"><table><tr>";
 	$i = 0;
 	foreach ($ids as $id) {
-		print "<input type=\"radio\" name=\"choice\" value=\"$i\"/> {$idarray[$id]}<br/>";
+		$token=new Token;
+		$token->setValue("id", intval($id));
+		$token->setValue("small", 1);
+		$t = $token->getToken();
+	
+		print "<td id='td$t' align=center><label for=\"$t\"><img src=\"captcha.php?token=$t&\"></label><br/>";
+		
+		print "<input type=checkbox name=choice[] value=\"$t\" id=\"$t\" onchange='changeBackground(this)'/>";
+		
+		print "</td>";
+		
 		$i++;
+		
+		if ($i%5==0) {
+			print "</tr><tr>";
+		}
+		
 	}
-	print "<input type=\"submit\"/></p>";
+	print "</tr></table><p><input type=\"submit\"/></p>";
 	print "</form>";
+	
+	?>
+	<script>
+		function changeBackground(that) {
+			
+			document.getElementById('td'+that.id).style.backgroundColor=(that.checked)?'red':'white';
+			
+		}
+	</script>
+	
+	<?
 }
 
 #$smarty->display('_std_end.tpl');
