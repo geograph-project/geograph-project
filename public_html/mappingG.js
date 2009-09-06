@@ -250,6 +250,14 @@ function updateViewDirection() {
 				if (ele.options[q].value == newangle)
 					ele.selectedIndex = q;
 
+			if (distance < 100) {
+				distance = Math.round(distance);
+			} else if (distance < 1000) {
+				distance = Math.round(distance/5)*5;
+			} else{
+				distance = Math.round(distance/50)*50;
+			}
+			document.getElementById("dist_message").innerHTML = "range about "+distance+" meters";
 		}
 	}
 }

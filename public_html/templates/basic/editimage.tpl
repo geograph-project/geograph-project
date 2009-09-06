@@ -424,7 +424,7 @@
 {getamap gridref="document.theForm.photographer_gridref.value" gridref2=$image->photographer_gridref text="OS Get-a-map&trade;"}<br/>
 <span style="font-size:0.6em">
 | <a href="javascript:void(copyGridRef());">Copy from Subject</a> | 
-<a href="javascript:void(resetGridRefs());">Reset to initial values</a> |<br/></span>
+<a href="javascript:void(resetGridRefs());">Reset to initial values</a> |  <span id="dist_message" style="padding-left:20px"></span><br/></span>
 
 	{literal}
 	<script type="text/javascript">
