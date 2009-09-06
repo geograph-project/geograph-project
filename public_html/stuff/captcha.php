@@ -96,7 +96,14 @@ if (!empty($_GET['image'])) {
 
 
 #$smarty->display('_std_begin.tpl');
-	
+
+if (isset($_GET['report'])) {
+	$o = fopen('/tmp/capfailed','a');
+	fwrite($o,"-----------------------------\n");
+	fwrite($o,date('r')."\n");
+	fwrite($o,"REPORT:".getRemoteIP()."\n");
+	fclose($o);
+} 
 
 if ($_POST['choice']) {
 	if (!$_SESSION['ids']) {
@@ -125,12 +132,15 @@ if ($_POST['choice']) {
 			$o = fopen('/tmp/capfailed','a');
 			fwrite($o,"-----------------------------\n");
 			fwrite($o,date('r')."\n");
+			fwrite($o,"IP:".getRemoteIP()."\n");
 			fwrite($o,print_r($_SESSION['ids'],1)."\n");
 			fwrite($o,print_r($sent,1)."\n");
 			fwrite($o,"FOUND=$found\n");
 			fwrite($o,print_r($_SESSION['all_ids'],1)."\n");
 			fwrite($o,print_r($_POST['choice'],1)."\n\n");
 			fclose($o);
+			
+			print "<p><a href=\"?report=1\">Click here if you think you did fill it out correctly</a> (otherwise we will assume you just playing)</p>";
 			
 		}
 	}
