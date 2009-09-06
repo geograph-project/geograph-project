@@ -357,23 +357,12 @@
 				<blockquote><p>{$totalimagecount} Images, {$filtered_title}... (<a href="/gridref/{$gridref}{if $extra}?{$extra}{/if}">Remove Filter</a>)</p></blockquote>
 			{/if}
 
-			{if $sample}
-				<br/><br/>
-				{foreach from=$images item=image}
-					<div class="photo33" style="float:left;text-align:left;width:420px;height:{$thumbh}px;padding:5px">
-					<div style="height:{$thumbh}px;vertical-align:middle;float:left;position:relative;padding:3px"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
-					<div style="position:relative">{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
-					<div class="statuscaption" style="clear:none">by <a href="{$image->profile_link}">{$image->realname}</a></div>
-					</div>
-				{/foreach}			
-			{else}
-				{foreach from=$images item=image}
-					<div style="float:left;" class="photo33"><div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
-					<div class="caption"><div class="minheightprop" style="height:2.5em"></div>{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
-					<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
-					</div>
-				{/foreach}
-			{/if}
+			{foreach from=$images item=image}
+				<div style="float:left;" class="photo33"><div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
+				<div class="caption"><div class="minheightprop" style="height:2.5em"></div>{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
+				<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
+				</div>
+			{/foreach}
 			<br style="clear:left;"/>&nbsp;
 			
 			{if $mode eq 'takenfrom'}
