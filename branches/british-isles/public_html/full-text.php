@@ -33,7 +33,7 @@ if (!empty($_GET['q'])) {
 
 	$q = preg_replace('/ OR /',' | ',$q);
 
-	$q = preg_replace('/[^\w~\|\(\)@"\/:=-]+/',' ',trim(strtolower($q)));
+	$q = preg_replace('/[^\w~\|\(\)@"\/:=<^$-]+/',' ',trim(strtolower($q)));
 	$smarty->assign("q",$q);
 }
 

@@ -38,7 +38,7 @@ $q = preg_replace('/ OR /',' | ',$q);
 
 $q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
 
-$q = trim(preg_replace('/[^\w~\|\(\)@"\/\*=-]+/',' ',trim(strtolower($q))));
+$q = trim(preg_replace('/[^\w~\|\(\)@"\/\*=<^$-]+/',' ',trim(strtolower($q))));
 
 $q = preg_replace('/(\w+)(-\w+[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\""',$q);
 
