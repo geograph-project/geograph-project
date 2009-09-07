@@ -394,18 +394,80 @@ if ($grid_given)
 				$imagelist->images =& $memcache->name_get('bx',$mkey);
 				
 				if (empty($imagelist->images)) {
-					//http://stackoverflow.com/questions/1138006/multi-column-distinct-in-mysql
+				
+					$columns = "gridimage_id,user_id,realname,credit_realname,title,imageclass,grid_reference";
+					$gis_where = "grid_reference = '{$square->grid_reference}'";
+					$limit = 12;
+					
+					$methods = array('category','user+category','any','random','latest','few','spaced','groups'); //groups MUST be last.
+					
+					//todo we could do this more inteligently!;
+					$method = $methods[rand(0,count($methods)-1)];
+					
+					if ($method == 'groups') {
+						$c = $db->getOne("SELECT c FROM gridsquare_group_stat WHERE gridsquare_id = {$square->gridsquare_id}");
+						if (!$c || $c < 4) {
+							array_pop($methods);
+							$method = $methods[rand(0,count($methods)-1)];
+						}
+					}
+					
+					
+					list($usec, $sec) = explode(' ',microtime());
+					$starttime = ((float)$usec + (float)$sec);
+					
+					switch ($method) {
+						case 'category':
+							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where GROUP BY imageclass ORDER BY seq_no LIMIT $limit";
+						
+						case 'groups':
+							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search INNER JOIN gridimage_group USING (gridimage_id) WHERE $gis_where GROUP BY label ORDER BY seq_no LIMIT $limit";
+						
+						case 'user+category': 
+							//http://stackoverflow.com/questions/1138006/multi-column-distinct-in-mysql
 
-					$table = "tmp_".md5(uniqid());
+							$table = "tmp_".md5(uniqid());
 
-					$db->Execute("CREATE TEMPORARY TABLE $table SELECT gridimage_id,user_id,realname,credit_realname,title,grid_reference,imageclass FROM gridimage_search WHERE grid_reference = '{$square->grid_reference}' ORDER BY ftf DESC, REVERSE(gridimage_id)");
+							$db->Execute("CREATE TEMPORARY TABLE $table SELECT $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf DESC, REVERSE(gridimage_id)");
 
-					$db->Execute("ALTER IGNORE TABLE $table ADD UNIQUE (user_id),ADD UNIQUE (imageclass)");
+							$db->Execute("ALTER IGNORE TABLE $table ADD UNIQUE (user_id),ADD UNIQUE (imageclass)");
 
-					$sql = "SELECT * FROM $table LIMIT 9";
-					#$sql = "SELECT gridimage_id,user_id,realname,credit_realname,title,imageclass,grid_reference FROM gridimage_search WHERE grid_reference = '{$square->grid_reference}' ORDER BY seq_no LIMIT 9";
+							$sql = "SELECT SQL_CALC_FOUND_ROWS * FROM $table LIMIT $limit";
+							break;
+							
+						case 'spaced': 
+							$db->Execute("set @c := -1");
+							$space = max(1,floor($square->imagecount/$limit));
+							
+							$sql = "select SQL_CALC_FOUND_ROWS $columns,if(@c=$space,@c:=0,@c:=@c+1) AS c FROM gridimage_search WHERE $gis_where HAVING c=0 ORDER by seq_no";
 
+						case 'any':
+							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf DESC LIMIT $limit";
+					
+						case 'random':
+							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf DESC, REVERSE(gridimage_id) LIMIT $limit";
+					
+						case 'latest':
+							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf DESC, seq_no DESC LIMIT $limit";
+					
+						case 'few':
+						default:
+							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY seq_no LIMIT $limit";
+						
+					}
 					$imagelist->_getImagesBySql($sql);
+					
+					list($usec, $sec) = explode(' ',microtime());
+					$endtime = ((float)$usec + (float)$sec);
+					$timetaken = $endtime - $starttime;
+					
+					$total = $db->getOne("SELECT FOUND_ROWS()"); 
+					
+					$updates = "timetaken = $timetaken,total = $total,results = ".count($imagelist->images);
+					
+					$db->Execute("INSERT INTO browse_cluster 
+							SET gridsquare_id = {$square->gridsquare_id},method = '$method',$updates,created=NOW()
+							ON DUPLICATE KEY UPDATE uses=uses+1,$updates");
 					
 					$memcache->name_set('bx',$mkey,$imagelist->images,$memcache->compress,$memcache->period_long);
 				}

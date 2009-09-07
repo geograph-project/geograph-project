@@ -609,3 +609,34 @@ UPDATE gridsquare INNER JOIN recent_only USING (gridsquare_id) SET gridsquare.ha
 
 
 ################################################
+
+
+ALTER TABLE gridimage ADD distance MEDIUMINT(8) UNSIGNED NULL default NULL;
+
+UPDATE `gridimage`
+SET `distance` = SQRT((nateastings - viewpoint_eastings) * (nateastings - viewpoint_eastings) + (natnorthings - viewpoint_northings) * (natnorthings - viewpoint_northings))
+WHERE `viewpoint_grlen` IN ('10','8','6') AND natgrlen IN ('10','8','6')
+AND nateastings > 0 AND viewpoint_eastings > 0;
+
+
+################################################
+
+
+CREATE TABLE IF NOT EXISTS `browse_cluster` (
+  `gridsquare_id` int(10) unsigned NOT NULL,
+  `method` enum('','category','user+category','any','random','latest','few','spaced','groups') NOT NULL,
+  `uses` smallint(5) unsigned NOT NULL default '1',
+  `timetaken` float unsigned NOT NULL,
+  `total` smallint(5) unsigned NOT NULL,
+  `results` tinyint(3) unsigned NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`gridsquare_id`,`method`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+################################################
+
+
+
+
