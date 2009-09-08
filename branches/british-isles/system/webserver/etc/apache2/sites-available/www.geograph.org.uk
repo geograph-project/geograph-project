@@ -82,10 +82,13 @@
     RewriteCond %{HTTP_HOST}   ^www\.geograph\.ie [NC]
     RewriteRule ^/robots.txt   /robots.ie.txt [qsa]
 
+    RewriteCond %{HTTP_HOST}   ^www\.geograph\.ie [NC]
+    RewriteRule ^/sitemap/(geograph.html|index.html|)$   http://www.geograph.ie/sitemap/ireland.html [L,R=permanent]
+
+
     RewriteRule ^/(feed|profile)/(.*)\.georss$   /$1/$2.rss [L,R=permanent]
 
     #the following includes a fix as some useragents auto add a / to what it thinks is a folder
-
 
     RewriteRule ^/photo/([0-9]+)\.xml /api/photo/$1 [qsa]
     RewriteRule ^/api/.* /restapi.php [qsa]
