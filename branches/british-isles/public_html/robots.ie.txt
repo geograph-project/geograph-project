@@ -51,6 +51,7 @@ Disallow: /gallery/
 Disallow: /kml/
 Disallow: /statistics/
 Disallow: /results/
+Disallow: /feed/
 
 User-Agent: Googlebot
 User-agent: Slurp
@@ -112,6 +113,7 @@ Disallow: /gallery/
 Disallow: /kml/
 Disallow: /statistics/
 Disallow: /results/
+Disallow: /feed/
 
 
 

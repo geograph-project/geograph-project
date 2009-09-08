@@ -201,7 +201,7 @@
 	
 	<div class="interestBox" style="position:relative; margin-left:10px">
 	{if $sample}
-	Random <b>sample</b> of photos ({$sample|thousends}/{$imagecount|thousends})
+	Random <b>sample</b> of photos ({$sample|thousends}/<b>{$imagecount|thousends}</b>)
 	{else}
 	We have 
 	{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
@@ -217,25 +217,25 @@
 	{/if}
 	{if !$breakdown && !$breakdowns && $totalimagecount > 0}<span style="font-size:0.8em;">- click for larger version</span>{/if}</div>
 
-	<div style="position:relative;float:right; text-align:right; font-size:0.7em">
+	<div style="position:relative; text-align:right; font-size:0.7em">
 	{if !$breakdown && !$breakdowns && $totalimagecount > 0 &&  $totalimagecount > 1}
-		<a href="{linktoself name="by" value="1"}">View as <b>breakdown list</b></a>&nbsp;<br/>
+		[ <a href="{linktoself name="by" value="1"}">View as <b>breakdown list</b></a> ] &nbsp; 
 	
 	{/if}	
 	{if $user->registered && $mode eq 'normal'}
-		{if !$nl}
-			<a href="{linktoself name="nl" value="1"}">Include <b>pending and rejected</b> images</a>&nbsp;<br/>
+		[{if !$nl}
+			<a href="{linktoself name="nl" value="1"}">Include <b>pending and rejected</b> images</a> 
 		{else}
-			<a href="{linktoself name="nl" value="0"}">Exclude <b>pending and rejected</b> images</a>&nbsp;<br/>
-		{/if}
+			<a href="{linktoself name="nl" value="0"}">Exclude <b>pending and rejected</b> images</a> 
+		{/if}] &nbsp;
 	{/if}
 	{if $breakdown}
-		{if !$ht}
-			<a href="{linktoself name="ht" value="1"}">Hide <b>thumbnail</b> images</a>&nbsp;<br/>
+		[{if !$ht}
+			<a href="{linktoself name="ht" value="1"}">Hide <b>thumbnail</b> images</a>  
 		{else}
 			
-			<a href="{linktoself name="ht" value="0"}">Show <b>thumbnail</b> images</a>&nbsp;<br/>
-		{/if}
+			<a href="{linktoself name="ht" value="0"}">Show <b>thumbnail</b> images</a> 
+		{/if}] &nbsp;
 	{/if}
 	</div>
 	
@@ -358,7 +358,7 @@
 			{/if}
 
 			{foreach from=$images item=image}
-				<div style="float:left;" class="photo33"><div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
+				<div class="photo33" style="float:left; {if $sample}width:180px{/if}"><div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
 				<div class="caption"><div class="minheightprop" style="height:2.5em"></div>{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
 				<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
 				</div>
@@ -371,7 +371,7 @@
 				<div class="interestBox">| <a href="/search.php?searchtext={$gridref}+-gridref:{$gridref}&amp;displayclass=gmap&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1&amp;resultsperpage=50">View these photos on a Map</a> | <a href="/search.php?searchtext={$gridref}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Find all images about this square</a> |</div>
 			{/if}
 			{if $sample}
-				<div class="interestBox"> Explore more images in this square: | <a href="{linktoself name="by" value="1"}">View <b>Filtering options</b></a> | <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View all {$imagecount} images page by page &gt;&gt;&gt;</a> |</div><br/>
+				<div class="interestBox"> Explore more images in this square: | <a href="{linktoself name="by" value="1"}">View <b>Filtering options</b></a> | <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View <b>all {$imagecount} images</b> page by page &gt;&gt;&gt;</a> |</div><br/>
 			{/if}
 		{/if}
 	{/if}

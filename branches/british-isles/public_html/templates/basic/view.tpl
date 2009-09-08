@@ -1,4 +1,4 @@
-{assign var="extra_meta" value="<link rel=\"short_url\" href=\"http://geograph.org.uk/p/`$image->gridimage_id`\" />"}
+{if $ireland_prompt}{assign var="extra_meta" value="<link rel=\"canonical\" href=\"http://www.geograph.ie/photo/`$image->gridimage_id`\" />"}{else}{assign var="extra_meta" value="<link rel=\"short_url\" href=\"http://geograph.org.uk/p/`$image->gridimage_id`\" />"}{/if}
 {include file="_std_begin.tpl"}
 
 {if $image}
@@ -32,6 +32,11 @@
 	</div>
 {/if}
 {/dynamic}
+{if $ireland_prompt}
+	<div class="interestBox" style="text-align:center; font-size:0.9em">
+		<a href="http://www.geograph.ie/photo/{$image->gridimage_id}" title="View {$image->bigtitle|escape:'html'} on Geograph Ireland">View this photo on Geograph Ireland</a>
+	</div>
+{/if}
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
