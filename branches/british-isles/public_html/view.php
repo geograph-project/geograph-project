@@ -130,7 +130,7 @@ if ($image->isValid())
 		header("Status: 301 Moved Permanently");
 		header("Location: http://www.geograph.org.uk/photo/".intval($_GET['id']));
 		exit;
-	} elseif ($image->grid_square->reference_index == 2) {
+	} elseif ($image->grid_square->reference_index == 2 && $_SERVER['HTTP_HOST'] != 'www.geograph.ie') {
 		$smarty->assign("ireland_prompt",1);
 	}
 
