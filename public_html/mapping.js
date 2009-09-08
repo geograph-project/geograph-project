@@ -457,6 +457,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 
 
 function updateViewDirection() {
+	document.getElementById("dist_message").innerHTML = '';
 	if (eastings1 > 0 && eastings2 > 0) {
 		
 		distance = Math.sqrt( Math.pow(eastings1 - eastings2,2) + Math.pow(northings1 - northings2,2) );

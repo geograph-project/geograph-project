@@ -109,7 +109,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	$offset=($sitemap-1)*$urls_per_sitemap;
 	$recordSet = &$db->Execute(
 		"select user_id,date(max(upd_timestamp)) as moddate ".
-		"gridimage_search gi ".
+		"from gridimage_search gi ".
 		"where reference_index = 2 ".
 		"group by user_id ".
 		"limit $offset,$urls_per_sitemap");

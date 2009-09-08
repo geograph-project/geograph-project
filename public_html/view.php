@@ -122,6 +122,18 @@ if (isset($_GET['id']))
 //do we have a valid image?
 if ($image->isValid())
 {
+	if ($image->grid_square->reference_index == 1 
+		&& $_SERVER['HTTP_HOST'] == 'www.geograph.ie' &&  
+			((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
+			(stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) ) {
+		header("HTTP/1.0 301 Moved Permanently");
+		header("Status: 301 Moved Permanently");
+		header("Location: http://www.geograph.org.uk/photo/".intval($_GET['id']));
+		exit;
+	} elseif ($image->grid_square->reference_index == 2) {
+		$smarty->assign("ireland_prompt",1);
+	}
+
 	//what style should we use?
 	$style = $USER->getStyle();
 	$cacheid.=$style;
