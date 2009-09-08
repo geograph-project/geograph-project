@@ -19,6 +19,14 @@ sudo -u www-data /usr/bin/php /var/www/geograph_live/scripts/build_user2sitemap.
 GET http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Fwww.geograph.org.uk%2Fsitemap-usermap.xml > /dev/null
 
 
+sudo -u www-data /usr/bin/php /var/www/geograph_live/scripts/build_sitemap.ie.php --dir=/var/www/geograph_live --config=www.geograph.ie
+GET http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Fwww.geograph.ie%2Fsitemap.ie.xml > /dev/null
+GET http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Fwww.geograph.ie%2Fsitemap-geo.ie.xml > /dev/null
+
+sudo -u www-data /usr/bin/php /var/www/geograph_live/scripts/build_usersitemap.ie.php --dir=/var/www/geograph_live --config=www.geograph.ie
+GET http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Fwww.geograph.ie%2Fsitemap-user.ie.xml > /dev/null
+
+
 ############
 
 #these dont update that often

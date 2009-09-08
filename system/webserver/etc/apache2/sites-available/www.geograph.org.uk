@@ -76,10 +76,13 @@
 
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^kml\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !^www\.geograph\.ie [NC]
     RewriteRule ^/robots.txt   /robots-none.txt [qsa]
 
+    RewriteCond %{HTTP_HOST}   ^www\.geograph\.ie [NC]
+    RewriteRule ^/robots.txt   /robots.ie.txt [qsa]
 
-	RewriteRule ^/(feed|profile)/(.*)\.georss$   /$1/$2.rss [L,R=permanent]
+    RewriteRule ^/(feed|profile)/(.*)\.georss$   /$1/$2.rss [L,R=permanent]
 
     #the following includes a fix as some useragents auto add a / to what it thinks is a folder
 
@@ -142,7 +145,7 @@
 
     RewriteRule ^/get-juppy.jnlp /get-juppy.php [qsa]
 
-    RewriteRule ^/(sitemap[\d\w-]*\.xml.*)$ /sitemap/root/$1 [L]
+    RewriteRule ^/(sitemap[\d\w\.-]*\.xml.*)$ /sitemap/root/$1 [L]
 
     #rewrite imagemap clicks as regular urls - must do this otherwise
     #php's use_trans_sid will break the urls
