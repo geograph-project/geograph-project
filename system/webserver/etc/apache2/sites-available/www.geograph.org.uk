@@ -16,7 +16,7 @@
     ServerAlias geograph.ie
 
     #create logformat like combined but with our user id and script timing
-    LogFormat "%{X-Forwarded-For}i %l %{user_id}n %t \"%r\" \"%{host}\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{php_timing}n" geograph
+    LogFormat "%{X-Forwarded-For}i %l %{user_id}n %t \"%r\" \"%{host}i\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{php_timing}n" geograph
 
     #don't log heartbeat requests
     SetEnvIf Request_Method "OPTIONS" dontlog
