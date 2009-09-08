@@ -27,7 +27,7 @@
 //these are the arguments we expect
 $param=array(
 	'dir'=>'/var/www/geograph_live/',		//base installation dir
-	'config'=>'www.geograph.org.uk', //effective config
+	'config'=>'www.geograph.ie', //effective config
 	'help'=>0,		//show script help?
 );
 
@@ -57,7 +57,7 @@ if ($param['help'])
 {
 	echo <<<ENDHELP
 ---------------------------------------------------------------------
-build_sitemap.php 
+build_sitemap.ie.php 
 ---------------------------------------------------------------------
     --dir=<dir>         : base directory (/var/www/geograph_live/)
     --config=<domain>   : effective domain config (www.geograph.org.uk)
@@ -86,7 +86,7 @@ $urls_per_sitemap=50000;
 
 //how many sitemap files must we write?
 printf("Counting images...\r");
-$images=$db->GetOne("select count(*) from gridimage_search where reference_index = 1");
+$images=$db->GetOne("select count(*) from gridimage_search where reference_index = 2");
 $sitemaps=ceil($images / $urls_per_sitemap);
 
 //go through each sitemap file...
@@ -97,14 +97,14 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	//prepare output file and query
 	printf("Preparing sitemap %d of %d, %d%% complete...\r", $sitemap, $sitemaps,$percent);
 		
-	$filename=sprintf('%s/public_html/sitemap/root/sitemap%04d.xml', $param['dir'], $sitemap); 
+	$filename=sprintf('%s/public_html/sitemap/root/sitemap%04d.ie.xml', $param['dir'], $sitemap); 
 	$fh=fopen($filename, "w");
 	
 	fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
 	fprintf($fh, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
 	
 	
-	$filename2=sprintf('%s/public_html/sitemap/root/sitemap-geo%04d.xml', $param['dir'], $sitemap); 
+	$filename2=sprintf('%s/public_html/sitemap/root/sitemap-geo%04d.ie.xml', $param['dir'], $sitemap); 
 	$fh2=fopen($filename2, "w");
 
 	fprintf($fh2, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
@@ -117,7 +117,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	$recordSet = &$db->Execute(
 		"select i.gridimage_id,date(upd_timestamp) as moddate ".
 		"from gridimage_search as i ".
-		"where reference_index = 1 ".
+		"where reference_index = 2 ".
 		"order by i.gridimage_id ".
 		"limit $offset,$urls_per_sitemap");
 	
@@ -183,7 +183,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 
 //now we write an index file pointing to our hand edited sitemap sitemap0000.xml)
 //and our generated ones above
-$filename=sprintf('%s/public_html/sitemap/root/sitemap.xml', $param['dir']); 
+$filename=sprintf('%s/public_html/sitemap/root/sitemap.ie.xml', $param['dir']); 
 $fh=fopen($filename, "w");
 
 fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
@@ -194,7 +194,7 @@ for ($s=0; $s<=$sitemaps; $s++)
 	fprintf($fh, "<sitemap>");
 	
 	//first file is not compressed...
-	$fname=($s==0)?"sitemap0000.xml":sprintf("sitemap%04d.xml.gz", $s);
+	$fname=($s==0)?"sitemap0000.xml":sprintf("sitemap%04d.ie.xml.gz", $s);
 	
 	$mtime=filemtime($param['dir']."/public_html/sitemap/root/".$fname);
 	$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);
@@ -209,7 +209,7 @@ fclose($fh);
 
 
 //now we write an index file pointing to our generated ones above
-$filename=sprintf('%s/public_html/sitemap/root/sitemap-geo.xml', $param['dir']); 
+$filename=sprintf('%s/public_html/sitemap/root/sitemap-geo.ie.xml', $param['dir']); 
 $fh=fopen($filename, "w");
 
 fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
@@ -219,7 +219,7 @@ for ($s=1; $s<=$sitemaps; $s++)
 {
 	fprintf($fh, "<sitemap>");
 	
-	$fname=sprintf("sitemap-geo%04d.xml.gz", $s);
+	$fname=sprintf("sitemap-geo%04d.ie.xml.gz", $s);
 	
 	$mtime=filemtime($param['dir']."/public_html/sitemap/root/".$fname);
 	$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);
