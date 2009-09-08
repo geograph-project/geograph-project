@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$VERSION = 0.11;
+$VERSION = 0.2;
 
 ####################################
 # Config Section
@@ -69,7 +69,7 @@ $fail = 0;
 
 while (1) {
 
-	list($message,$jid) = explode(':',contactGeograph('getJob'),2);
+	list($message,$jid,$csvdata) = explode(':',contactGeograph('getJob&downloadJobData'),3);
 
 	if ($message != 'Success') {
 		print "Message returned from Geograph:\n\n$message,$jid\n";
@@ -79,6 +79,7 @@ while (1) {
 		}
 
 		print "Sleeping for 1 hour\n";
+		print "Time: ".date('r')."\n\n";
 		sleep(3600);
 
 		$fail++;
@@ -96,8 +97,6 @@ while (1) {
 
 	//we need to write to a temporay file for use with fgetcsv
 	$temp = tmpfile();
-
-	$csvdata = contactGeograph("downloadJobData=$jid");
 
 	fwrite($temp,$csvdata);
 	fseek($temp, 0);
@@ -117,7 +116,8 @@ while (1) {
 			strip_tags(str_replace('<br>',' ',utf8_encode(htmlentities($comment))))
 		);
 	}
-
+	fclose($temp); 
+	
 	print "\nSubmitting query...\n";
 
 	$c = $carrot->clusterQuery();
@@ -147,7 +147,7 @@ while (1) {
 	print "$message\n\n";
 	
 	
-	sleep(60);
+	sleep(20);
 }
 
 print "\n-------\nGeograph Worker [$worker_token] Finished\n";

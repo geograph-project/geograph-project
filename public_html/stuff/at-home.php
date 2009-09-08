@@ -97,6 +97,7 @@ if (!empty($_GET['worker'])) {
 
 if (isset($_GET['getJob'])) {
 	
+	//yahoo should only ever have one worker!
 	$timeout = ($task == 'yahoo_terms')?'1 MINUTE':"10 MINUTE";
 	
 	//find any jobs not completed - so can be resumed
@@ -106,62 +107,74 @@ if (isset($_GET['getJob'])) {
 		} else {
 			print "Success:{$jid}";
 		}
-		exit;
-	}
-
-	if ($task == 'yahoo_terms') {
-		if (strpos($_SERVER['HTTP_USER_AGENT'],"Geograph-At-Home") !== 0) {
-                	if (isset($_GET['output']) && $_GET['output']=='json') {
-	                        die("{error: 'There are no jobs left for the Javascript client to work on!'}");
-        	        } else {
-                	        die("Error:There are no jobs left for the Javascript client to work on!");
-	                }
-		}
-
-		if ($worker == 8) {
-			$hours = floor(24/10);
-		} elseif ($worker == 11) {
-			$hours = ceil(24/5);
+		if (isset($_GET['downloadJobData'])) {
+			$_GET['downloadJobData'] = $jid;
+			print ":";
 		} else {
-			$hours = 24;
+			exit;
 		}
-		
-		//If there is a recent job die - dont want it too often. (but a part completed job is caught above) 	
-		if (empty($_GET['force']) && ($jid = $db->getOne("SELECT at_home_job_id FROM at_home_job WHERE at_home_worker_id = $worker AND sent > DATE_ADD(DATE_SUB(NOW(),INTERVAL $hours HOUR),INTERVAL 10 MINUTE)"))) { 
-			if (isset($_GET['output']) && $_GET['output']=='json') {
-				die("{error: 'You already have a job allocated (id:$jid) in the last $hours hours - we only want one job per worker per $hours hours'}");
+	} else {
+
+		if ($task == 'yahoo_terms') {
+			if (strpos($_SERVER['HTTP_USER_AGENT'],"Geograph-At-Home") !== 0) {
+				if (isset($_GET['output']) && $_GET['output']=='json') {
+					die("{error: 'There are no jobs left for the Javascript client to work on!'}");
+				} else {
+					die("Error:There are no jobs left for the Javascript client to work on!");
+				}
+			}
+
+			if ($worker == 8) {
+				$hours = floor(24/10);
+			} elseif ($worker == 11) {
+				$hours = ceil(24/5);
 			} else {
-				die("Error:You already have a job allocated (id:$jid) in the last $hours hours - we only want one job per worker per $hours hours");
+				$hours = 24;
+			}
+
+			//If there is a recent job die - dont want it too often. (but a part completed job is caught above) 	
+			if (empty($_GET['force']) && ($jid = $db->getOne("SELECT at_home_job_id FROM at_home_job WHERE at_home_worker_id = $worker AND sent > DATE_ADD(DATE_SUB(NOW(),INTERVAL $hours HOUR),INTERVAL 10 MINUTE)"))) { 
+				if (isset($_GET['output']) && $_GET['output']=='json') {
+					die("{error: 'You already have a job allocated (id:$jid) in the last $hours hours - we only want one job per worker per $hours hours'}");
+				} else {
+					die("Error:You already have a job allocated (id:$jid) in the last $hours hours - we only want one job per worker per $hours hours");
+				}
+			}
+		}
+
+		//atomic claim! - looks messy, but avoids locks
+		$pid = 99999+(getmypid()*$worker); //something reasonably unique
+		$db->Execute("UPDATE at_home_job SET at_home_worker_id = $pid WHERE `task` = '$task' AND sent = '0000-00-00 00:00:00' LIMIT 1");
+		$row = $db->getRow("SELECT * FROM at_home_job WHERE at_home_worker_id = $pid");
+		if (count($row)) {
+			$jid = $row['at_home_job_id'];
+			$db->Execute("UPDATE at_home_job SET at_home_worker_id = $worker,`sent`=NOW() WHERE at_home_job_id = $jid LIMIT 1");
+
+			if (isset($_GET['output']) && $_GET['output']=='json') {
+				setcookie('workerActive', date('r'), time()+600,'/');
+				print "{jobId: $jid}";
+			} else {
+				print "Success:$jid";
+			}
+			if (isset($_GET['downloadJobData'])) {
+				$_GET['downloadJobData'] = $jid;
+				print ":";
+			} else {
+				exit;
+			}
+		} else {
+			if (isset($_GET['output']) && $_GET['output']=='json') {
+				die("{error: 'Unable to allocate job, maybe no outstanding jobs, otherwise try later...'}");
+			} else {
+				die("Error:Unable to allocate job, maybe no outstanding jobs, otherwise try later...");
 			}
 		}
 	}
-	
-	//atomic claim! - looks messy, but avoids locks
-	$pid = 99999+(getmypid()*$worker); //something reasonably unique
-	$db->Execute("UPDATE at_home_job SET at_home_worker_id = $pid WHERE `task` = '$task' AND sent = '0000-00-00 00:00:00' LIMIT 1");
-	$row = $db->getRow("SELECT * FROM at_home_job WHERE at_home_worker_id = $pid");
-	if (count($row)) {
-		$jid = $row['at_home_job_id'];
-		$db->Execute("UPDATE at_home_job SET at_home_worker_id = $worker,`sent`=NOW() WHERE at_home_job_id = $jid LIMIT 1");
-	
-		if (isset($_GET['output']) && $_GET['output']=='json') {
-			setcookie('workerActive', date('r'), time()+600,'/');
-			print "{jobId: $jid}";
-		} else {
-			print "Success:$jid";
-		}
-		exit;
-	} else {
-		if (isset($_GET['output']) && $_GET['output']=='json') {
-			die("{error: 'Unable to allocate job, maybe no outstanding jobs, otherwise try later...'}");
-		} else {
-			die("Error:Unable to allocate job, maybe no outstanding jobs, otherwise try later...");
-		}
-	}
-
 #########################################
 
-} elseif (isset($_GET['downloadJobData'])) {
+} 
+
+if (isset($_GET['downloadJobData'])) {
 	$jid = intval($_GET['downloadJobData']);
 	
 	if (isset($_GET['output']) && $_GET['output']=='json') {
