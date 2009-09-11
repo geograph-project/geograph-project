@@ -68,7 +68,7 @@ print "<hr/>";
 	
 if ($memcache->valid) {
 	print "<h2>Overview Memcache Statistics</h2>";
-	#memcache_status();
+	memcache_status();
 } else {
 	print "<h1>Memcache NOT valid</h1>";
 }
@@ -81,8 +81,18 @@ if (!empty($CONF['sphinx_host'])) {
 	
 	$ids = $sphinx->returnIds(1,'gaz');
 	
-	print "<p>Ids returned: ".count($ids)."</p>";
+	$cl = $sphinx->_getClient();
 	
+	if (!empty($ids) && count($ids)) {
+		print "<p>Ids returned: ".count($ids)."</p>";
+		
+		print "<pre>";
+		print_r($cl->Status());
+		print "</pre>";
+	} else {
+		
+		print "<h1>".$cl->GetLastError()."</h1>";
+	}
 } else {
 	print "<h4 style='color:gray'>Sphinx not enabled</h4>";
 }
@@ -102,7 +112,7 @@ function database_status($DSN) {
 	
 	if (!$db) {
 		print "<h1>Unable to connect</h1>";
-		print "<p>".$db->ErrorMsg()."</p>";
+		return;
 	}
 	
 	$data = $db->getAssoc("SHOW STATUS");
@@ -110,6 +120,7 @@ function database_status($DSN) {
 	if ($db->ErrorNo()) {
 		print "<h1>Error</h1>";
 		print "<p>".$db->ErrorMsg()."</p>";
+		return;
 	}
 	
 	

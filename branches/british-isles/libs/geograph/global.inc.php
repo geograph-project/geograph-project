@@ -77,6 +77,10 @@ if (isset($CONF['db_read_driver'])) {
 	#$DSN_READ = $DSN;
 }
 
+if (empty($CONF['db_tempdb'])) {
+	$CONF['db_tempdb']=$CONF['db_db'];
+}
+
 function GeographDatabaseConnection($allow_readonly = false) {
 	if ($allow_readonly && !empty($GLOBALS['DSN_READ']) && $GLOBALS['DSN'] != $GLOBALS['DSN_READ']) {
 		$db=NewADOConnection($GLOBALS['DSN_READ']);
