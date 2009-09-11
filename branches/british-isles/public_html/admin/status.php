@@ -31,6 +31,9 @@ $smarty = new GeographPage;
 $smarty->assign("page_title",'System Status');
 $smarty->display('_std_begin.tpl');
 flush();
+
+$hostname=trim(`hostname`);
+print "Host = $hostname";
 	
 print "<hr/>";
 	
