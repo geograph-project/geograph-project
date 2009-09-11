@@ -32,12 +32,16 @@
 */
 
 
+#################################################
+
 //include domain specific configuration - if your install fails on
 //this line, copy and adapt one of the existing configuration
 //files in /libs/conf
 require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
 
 @include('conf/revisions.conf.php');
+
+#################################################
 
 //adodb configuration
 require_once('adodb/adodb.inc.php');
@@ -47,13 +51,13 @@ if ($CONF['adodb_debugging'])
 $ADODB_CACHE_DIR =& $CONF['adodb_cache_dir'];
 
 
-
 //build DSN
 $DSN = $CONF['db_driver'].'://'.
 	$CONF['db_user'].':'.$CONF['db_pwd'].
 	'@'.$CONF['db_connect'].
 	'/'.$CONF['db_db'].$CONF['db_persist'];
 
+//optional second database
 if (isset($CONF['db_driver2'])) {
 	$DSN2 = $CONF['db_driver2'].'://'.
 		$CONF['db_user2'].':'.$CONF['db_pwd2'].
@@ -62,6 +66,30 @@ if (isset($CONF['db_driver2'])) {
 } else {
 	$DSN2 = $DSN;
 }
+
+//optional slave and read only database
+if (isset($CONF['db_read_driver'])) {
+	$DSN_READ = $CONF['db_read_driver'].'://'.
+		$CONF['db_read_user'].':'.$CONF['db_read_pwd'].
+		'@'.$CONF['db_read_connect'].
+		'/'.$CONF['db_read_db'].$CONF['db_read_persist'];
+} else {
+	#$DSN_READ = $DSN;
+}
+
+function GeographDatabaseConnection($allow_readonly = false) {
+	if ($allow_readonly && !empty($GLOBALS['DSN']) && $GLOBALS['DSN'] != $GLOBALS['DSN_READ']) {
+		$db=NewADOConnection($GLOBALS['DSN_READ']);
+	} else {
+		$db=NewADOConnection($GLOBALS['DSN']);
+	} 
+	if (!$db) {
+		die("Database connection failed");
+	}
+	return $db;
+}
+
+#################################################
 
 if (!empty($CONF['memcache']['app'])) {
 	
@@ -98,9 +126,12 @@ if (!empty($CONF['memcache']['app'])) {
 	$memcache->valid = false;
 }
 
+#################################################
+
 //global security routines
 require_once('geograph/security.inc.php');
 
+#################################################
 
 if (!empty($CONF['memcache']['adodb'])) {
 	if ($CONF['memcache']['adodb'] != $CONF['memcache']['app']) {
@@ -109,7 +140,6 @@ if (!empty($CONF['memcache']['adodb'])) {
 		$ADODB_MEMCACHE_OBJECT =& $memcache;
 	}
 }
-
 
 if (!empty($CONF['memcache']['sessions'])) {
 
@@ -143,7 +173,7 @@ if (!empty($CONF['memcache']['sessions'])) {
 		adodb_sess_open(false,false,false);
 }
 
-
+#################################################
 
 //global routines
 require_once('geograph/functions.inc.php');
@@ -154,6 +184,7 @@ require_once('smarty/libs/Smarty.class.php');
 //and our user class
 require_once('geograph/user.class.php');
 
+#################################################
 
 //function to replace having to have loads of require_once's
 // PHP5 ONLY
@@ -173,6 +204,8 @@ function __autoload($class_name) {
 	require_once('geograph/'.strtolower($class_name).'.class.php');
 }
 
+#################################################
+
 //remember start time of script for logging
 if (isset($CONF['log_script_timing']))
 {
@@ -181,6 +214,7 @@ if (isset($CONF['log_script_timing']))
 	register_shutdown_function('log_script_timing');
 }
 
+#################################################
 
 //global page initialisation
 function init_session()
@@ -209,7 +243,7 @@ function init_session()
 	@apache_note('user_id', $GLOBALS['USER']->user_id);
 }
 
-
+#################################################
 
 /**
 * Smarty derivation for Geograph
@@ -429,6 +463,15 @@ class GeographPage extends Smarty
 		return file_exists($this->template_dir.'/'.$file) || file_exists($basic);
 	}
 
+	function templateDate($file)
+	{
+		if (file_exists($this->template_dir.'/'.$file)) {
+			return filemtime($this->template_dir.'/'.$file);
+		} else {
+			return filemtime($_SERVER['DOCUMENT_ROOT'].'/templates/basic/'.$file);
+		}
+	}
+
 	function reassignPostedDate($which)
 	{
 		$_POST[$which] = sprintf("%04d-%02d-%02d",$_POST[$which.'Year'],$_POST[$which.'Month'],$_POST[$which.'Day']);
@@ -465,7 +508,7 @@ class GeographPage extends Smarty
 
 }
 
-
+#################################################
 
 //this is a bit cheeky - if the xhtml validator calls, turn off the automatic
 //session id insertion, as it uses & instead of &amp; in urls
