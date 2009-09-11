@@ -637,6 +637,25 @@ CREATE TABLE IF NOT EXISTS `browse_cluster` (
 
 ################################################
 
+CREATE TABLE gridsquare_group_stat
+	SELECT gridsquare_id,COUNT(DISTINCT label) AS c
+	FROM gridimage
+	INNER JOIN gridimage_group USING (gridimage_id)
+	WHERE source = 'carrot2'
+	GROUP BY gridsquare_id;
+
+ALTER TABLE  `gridsquare_group_stat` ADD PRIMARY KEY (  `gridsquare_id` );
 
 
+################################################
 
+
+CREATE USER 'geograph_read'@'%' IDENTIFIED BY 'banjo';
+
+GRANT SELECT ON  `geograph_live` . * TO  'geograph_read'@'%';
+
+CREATE DATABASE  `geograph_tmp` ;
+
+GRANT SELECT , INSERT , UPDATE , DELETE , CREATE , DROP , INDEX , ALTER , CREATE TEMPORARY TABLES , CREATE VIEW , SHOW VIEW ON  `geograph\_tmp` . * TO 'geograph_read'@'%';
+
+GRANT SELECT , INSERT , UPDATE , DELETE , CREATE , DROP , INDEX , ALTER , CREATE TEMPORARY TABLES , CREATE VIEW , SHOW VIEW ON  `geograph\_tmp` . * TO 'geograph'@'%';

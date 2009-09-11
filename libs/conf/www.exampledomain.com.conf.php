@@ -29,6 +29,26 @@ $CONF['db_pwd']='banjo';
 $CONF['db_db']='geograph';
 $CONF['db_persist']=''; //'?persist';
 
+//optional second database, used for sessions and gazetteer tables (need to contain a copy) 
+#$CONF['db_driver2']='mysql';
+#$CONF['db_connect2']='second.server';
+#$CONF['db_user2']='geograph';
+#$CONF['db_pwd2']='banjo';
+#$CONF['db_db2']='geograph';
+#$CONF['db_persist2']=''; //'?persist';
+
+//optional slave database (with `db_db` as the master)
+#$CONF['db_read_driver']='mysql';
+#$CONF['db_read_connect']='slave.server';
+#$CONF['db_read_user']='geograph_read';
+#$CONF['db_read_pwd']='banjo';
+#$CONF['db_read_db']='geograph';
+#$CONF['db_read_persist']=''; //'?persist';
+
+#this is the database where temporally tables are created, normally left as main database, but in replication need a seperate database. 
+#the geograph AND geograph_read user should have full access to this database. whereas the geograph_read only needs SELECT priv on `geograph` db. 
+$CONF['db_tempdb']=$CONF['db_db'];
+
 
 ##optional memcache
 
@@ -54,6 +74,7 @@ $CONF['db_persist']=''; //'?persist';
 $CONF['sphinx_host'] = "localhost";
 $CONF['sphinx_port'] = 3312;
 $CONF['sphinx_cache'] = $_SERVER['DOCUMENT_ROOT'].'/../sphinxcache/';
+$CONF['sphinx_prefix'] = ""; //prefix for index names, if only one instance of geograph probably leave blank
 
 
 
