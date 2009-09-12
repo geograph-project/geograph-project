@@ -130,7 +130,7 @@ if ($grid_given)
 		
 		$blocks = array();
 		
-		$db = GeographDatabaseConnection(true);  
+		$db = GeographDatabaseConnection(true);
 		
 		
 		$rows = $db->cacheGetAll(3600,"SELECT 

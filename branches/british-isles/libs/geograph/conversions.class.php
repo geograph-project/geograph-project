@@ -313,9 +313,7 @@ function wgs84_to_friendly_smarty_parts($lat,$long,&$smarty) {
 	 */
 	function &_getDB()
 	{
-		if (!is_object($this->db))
-			$this->db=NewADOConnection($GLOBALS['DSN']);
-		if (!$this->db) die('Database connection failed');
+		$this->db = GeographDatabaseConnection(true);
 		return $this->db;
 	}
 

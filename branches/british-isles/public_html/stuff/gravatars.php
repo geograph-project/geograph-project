@@ -30,7 +30,7 @@ $smarty = new GeographPage;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db = NewADOConnection($GLOBALS['DSN']);
+	$db = GeographDatabaseConnection(true);
 
 	$list = $db->getAll("SELECT user.user_id,realname,MD5(LOWER(email)) AS md5_email FROM user INNER JOIN user_stat s USING(user_id) WHERE rights IS NOT NULL AND s.images > 0 ORDER by user_id");
 	$smarty->assign_by_ref('list', $list);

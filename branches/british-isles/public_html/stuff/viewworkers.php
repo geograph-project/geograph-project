@@ -30,7 +30,7 @@ $USER->mustHavePerm("basic");
 print "<script src=\"/geograph.js\"></script>";
 print "<script src=\"/sorttable.js\"></script>";
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(true);
 
 $task = isset($_GET['task'])?$_GET['task']:'yahoo_terms';
 if (!in_array($task,array('yahoo_terms','carrot2'))) {
