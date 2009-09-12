@@ -67,7 +67,7 @@ if (!empty($_REQUEST['q'])) {
 
 			$where = "category_id IN(".join(",",$ids).")";
 
-			$db=NewADOConnection($GLOBALS['DSN']);
+			$db = GeographDatabaseConnection(true);
 
 			$limit = 60;
 

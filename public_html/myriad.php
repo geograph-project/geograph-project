@@ -34,7 +34,7 @@ $template='myriad.tpl';
 $myriad = (isset($_GET['myriad']) && ctype_upper($_GET['myriad']))?$_GET['myriad']:'';
 
 if (empty($myriad)) {
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db = GeographDatabaseConnection(true);
 	
 	$myriad = $db->getOne("select prefix from gridprefix where landcount > 0 order by rand()");
 }
@@ -48,7 +48,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/mapmosaic.class.php');
 
 	if (!$db) {
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db = GeographDatabaseConnection(true);
 	}
 	
 	$prefix = $db->getRow("select * from gridprefix where prefix= '$myriad'");

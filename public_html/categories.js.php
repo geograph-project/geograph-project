@@ -46,8 +46,7 @@ if (isset($_GET['days'])) {
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (empty($db)) die('Database connection failed');
+	$db = GeographDatabaseConnection(true);
 
 	$filter = "(imageclass NOT LIKE 'Supplemental%' AND imageclass NOT LIKE 'Geograph%' AND imageclass NOT LIKE 'Accept%')";
 

@@ -32,8 +32,7 @@ $data = array();
 $data['searchq'] = '';
 $error = false;
 
-$db=NewADOConnection($GLOBALS['DSN']);
-if (empty($db)) die('Database connection failed');
+$db = GeographDatabaseConnection(true);
 
 $pid = intval($_GET['placename']);
 

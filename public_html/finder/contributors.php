@@ -55,7 +55,7 @@ if (!empty($_GET['q'])) {
 		if (count($ids)) {
 			$where = "user_id IN(".join(",",$ids).")";
 
-			$db=NewADOConnection($GLOBALS['DSN']);
+			$db = GeographDatabaseConnection(true);
 
 			$limit = 25;
 
