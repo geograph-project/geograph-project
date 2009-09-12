@@ -50,6 +50,19 @@ if (!$smarty->templateExists($template))
 }
 
 
+$mtime = $smarty->templateDate($template);
+
+if ($mtime) {
+	//page is unqiue per user (the profile and links)
+	$hash = $USER->user_id;
+
+	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
+	customCacheControl($mtime,$hash,($USER->user_id == 0));
+}
+
+
+customGZipHandlerStart();
+customExpiresHeader(86400*3,true);
 
 $smarty->display($template);
 
