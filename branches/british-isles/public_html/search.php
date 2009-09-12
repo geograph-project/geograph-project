@@ -1070,8 +1070,7 @@ if (isset($_GET['fav']) && $i) {
 	}
 	if (!$smarty->is_cached('search.tpl')) {
 		if (!isset($db)) {
-			$db=NewADOConnection($GLOBALS['DSN']);
-			if (empty($db)) die('Database connection failed');
+			$db = GeographDatabaseConnection(true);
 		}
 		//list of a few image classes
 		$arr = $db->GetAssoc("select imageclass,concat(imageclass,' [',c,']') from category_stat
@@ -1087,8 +1086,7 @@ if (isset($_GET['fav']) && $i) {
 	}
 	if ($USER->registered) {
 		if (!$db) {
-			$db=NewADOConnection($GLOBALS['DSN']);
-			if (!$db) die('Database connection failed');
+			$db = GeographDatabaseConnection(true);
 		}
 		if (isset($_GET['all'])) {
 			$flimit = "";
@@ -1103,7 +1101,7 @@ if (isset($_GET['fav']) && $i) {
 			$nlimit = "limit 12";
 		}
 		#group by searchdesc,searchq,displayclass,resultsperpage
-		$recentsearchs = $db->GetAssoc("
+		$recentsearchs = $db->cacheGetAssoc(30,"
 			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass ,searchq,displayclass,resultsperpage from queries
 			left join queries_count using (id)
 			where user_id = {$USER->user_id} and favorite = 'N' and searchuse = 'search'
@@ -1167,8 +1165,7 @@ if (isset($_GET['fav']) && $i) {
 		if (!empty($_POST['reverse_order_ind']))
 			$smarty->assign('reverse_order_checked', 'checked="checked"');
 		if (empty($db)) {
-			$db=NewADOConnection($GLOBALS['DSN']);
-			if (empty($db)) die('Database connection failed');
+			$db = GeographDatabaseConnection(true);
 		}
 		advanced_form($smarty,$db);
 	}
