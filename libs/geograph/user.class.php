@@ -78,7 +78,7 @@ class GeographUser
 	{
 		if (($uid>0) && preg_match('/^[0-9]+$/' , $uid))
 		{
-			$db = $this->_getDB();
+			$db = $this->_getDB(true);
 						
 			$arr =& $db->GetRow("select * from user where user_id=$uid limit 1");	
 			if (count($arr))
@@ -106,7 +106,7 @@ class GeographUser
 	{
 		if (!empty($nickname))
 		{
-			$db = $this->_getDB();
+			$db = $this->_getDB(true);
 
 			$nickname = $db->Quote($nickname);
 			
@@ -137,7 +137,7 @@ class GeographUser
 	
 	
 	function getForumSortOrder() {
-		$db = $this->_getDB();
+		$db = $this->_getDB(true);
 	
 		$this->sortBy =& $db->getOne("select user_sorttopics from geobb_users where user_id='{$this->user_id}'");
 		return $this->sortBy;
@@ -207,7 +207,7 @@ class GeographUser
 			if (isset($this->$name)) {
 				$value=$this->$name;
 			} else {
-				$db = $this->_getDB();
+				$db = $this->_getDB(true);
 				
 				$value = $db->getOne("select user_$name from geobb_users where user_id='{$this->user_id}'");
 				$this->$name = $value;
@@ -223,7 +223,7 @@ class GeographUser
 	*/
 	function getStats()
 	{
-		$db = $this->_getDB();
+		$db = $this->_getDB(true);
 		
 		$this->stats=$db->GetRow("select * from user_stat where user_id='{$this->user_id}'");
 
@@ -237,7 +237,7 @@ class GeographUser
 	*/
 	function countTickets()
 	{
-		$db = $this->_getDB();
+		$db = $this->_getDB(true);
 		
 		list($this->tickets,$this->last_ticket_time)=$db->GetRow("select count(*),unix_timestamp(max(suggested)) from gridimage inner join gridimage_ticket using (gridimage_id) where gridimage.user_id='{$this->user_id}' and status != 'closed'");
 		return $this->tickets;
@@ -964,7 +964,7 @@ class GeographUser
 			$email=stripslashes(trim($_SERVER['PHP_AUTH_USER']));
 			$password=stripslashes(trim($_SERVER['PHP_AUTH_PW']));
 			
-			$db = $this->_getDB();
+			$db = $this->_getDB(true);
 
 			$sql="";
 			if (isValidEmailAddress($email))
@@ -1323,11 +1323,12 @@ class GeographUser
 	 * get stored db object, creating if necessary
 	 * @access private
 	 */
-	function &_getDB()
+	function &_getDB($allow_readonly = false)
 	{
-		if (!is_object($this->db))
-			$this->db=NewADOConnection($GLOBALS['DSN']);
-		if (!$this->db) die('Database connection failed'); 
+		//check we have a db object or if we need to 'upgrade' it
+		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
+			$this->db=GeographDatabaseConnection($allow_readonly);
+		} 
 		return $this->db;
 	}	
 	
