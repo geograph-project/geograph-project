@@ -51,7 +51,7 @@ if (empty($_GET['inline']) && !isset($_REQUEST['inner'])) {
 	}
 }
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(true);
 
 $data = $db->getRow("show table status like 'content'");
 

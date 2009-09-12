@@ -71,7 +71,7 @@ if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 	$rss->geo = true;
 }
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(true);
 	
 $limit = (isset($_GET['nolimit']))?1000:50;
 

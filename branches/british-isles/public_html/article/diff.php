@@ -45,7 +45,7 @@ if (isset($_SESSION[$_GET['page']])) {
 $smarty->assign_by_ref('isadmin', $isadmin);
 
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(true);
 
 $page = $db->getRow("
 select article.article_id,title,url,article.user_id,extract,licence,approved,realname

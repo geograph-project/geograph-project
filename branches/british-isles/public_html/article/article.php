@@ -214,7 +214,7 @@ function smarty_function_articletext($input) {
 
 $smarty->register_modifier("articletext", "smarty_function_articletext");
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(false);
 
 $page = $db->getRow("
 select article.*,realname,gs.grid_reference,category_name

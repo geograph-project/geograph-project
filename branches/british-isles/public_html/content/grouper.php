@@ -32,7 +32,7 @@ $USER->mustHavePerm("basic");
 
 $template = 'content_grouper.tpl';
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(false);
 
 if (isset($_POST['save'])) {
 	$updates= array();

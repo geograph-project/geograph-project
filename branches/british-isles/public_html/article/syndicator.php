@@ -87,7 +87,7 @@ if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 	$rss->geo = true;
 }
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(true);
 	
 
 $sql="select article_id, article.article_cat_id, category_name, article.user_id, url, title, extract, licence, publish_date, approved, update_time, create_time, realname, article.gridsquare_id
