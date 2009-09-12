@@ -25,7 +25,7 @@ require_once('geograph/global.inc.php');
 
 if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.org/bot')!==FALSE) ) {
 	//die as quickly as possible with the minimum html (with the approval of geourl owner)
-	$db = NewADOConnection($GLOBALS['DSN']);
+	$db = GeographDatabaseConnection(true);
 
 	$row =& $db->getRow("select gridimage_id,wgs84_lat,wgs84_long,title,grid_reference from gridimage_search where gridimage_id=".intval($_GET['id']) );
 
@@ -153,7 +153,7 @@ if ($image->isValid())
 	    (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE) &&
 	    empty($_SESSION['photos'][$image->gridimage_id]) )
 	{
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db = GeographDatabaseConnection(false);
 		
 		$db->Query("INSERT LOW_PRIORITY INTO gridimage_log VALUES({$image->gridimage_id},1,0,now()) ON duplicate KEY UPDATE hits=hits+1");
 		
@@ -215,7 +215,7 @@ if ($image->isValid())
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
 
 		if (empty($db)) {
-			$db=NewADOConnection($GLOBALS['DSN']);
+			$db = GeographDatabaseConnection(true);
 		}
 		
 		$image->hits = $db->getOne("SELECT hits+hits_archive FROM gridimage_log WHERE gridimage_id = {$image->gridimage_id}");

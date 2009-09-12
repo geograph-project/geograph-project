@@ -29,7 +29,7 @@ $password = isset($_GET['password']) ? $_GET['password'] : "";
 // echo $action . " " . $username . " " . $password . "\n";
 
 $xml = "";
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(true);
 if (empty($db)) {
 	$xml['status'] = 'Server Error: Unable to connect to database';
 	returnXML();
