@@ -41,7 +41,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	//lets find some recent photos
 	new RecentImageList($smarty);
 	
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db = GeographDatabaseConnection(true);
 	
 
 	

@@ -54,9 +54,7 @@ $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
-	#$db->debug = true;
+	$db = GeographDatabaseConnection(true);
 	
 
 	require_once('geograph/gridsquare.class.php');

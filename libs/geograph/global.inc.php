@@ -84,6 +84,10 @@ if (empty($CONF['db_tempdb'])) {
 function GeographDatabaseConnection($allow_readonly = false) {
 	if ($allow_readonly && !empty($GLOBALS['DSN_READ']) && $GLOBALS['DSN'] != $GLOBALS['DSN_READ']) {
 		$db=NewADOConnection($GLOBALS['DSN_READ']);
+		
+		if (!$db) {
+			$db=NewADOConnection($GLOBALS['DSN']);
+		}
 	} else {
 		$db=NewADOConnection($GLOBALS['DSN']);
 	} 
