@@ -72,10 +72,10 @@ if (!empty($DSN_READ) && $DSN_READ != $DSN) {
 	
 		?>
 		<div id="hidemaster" style="text-align:center"><a href="javascript:void(show_tree('master'));">Show Master Detail</a></div>
-		<div id="showmaster" class="interestBox" style="display:none">
+		<div id="showmaster" class="interestBox" style="display:none"><pre>
 		<?
 			print_r($row = $db->getRow("SHOW MASTER STATUS"));
-		?>
+		?></pre>
 		</div>
 		<?
 		
@@ -86,14 +86,16 @@ if (!empty($DSN_READ) && $DSN_READ != $DSN) {
 
 	print "<h2>Slave Database Status ";
 	print "<tt>{$CONF['db_read_user']}@{$CONF['db_read_connect']}/{$CONF['db_read_db']}</tt></h2>";
-	if (database_status($DSN_READ)) {
-
+	if ($db = database_status($DSN_READ)) {
+		
+		print "<hr/>";
+		
 		?>
 		<div id="hideslave" style="text-align:center"><a href="javascript:void(show_tree('slave'));">Show Slave Detail</a></div>
-		<div id="showslave" class="interestBox" style="display:none">
+		<div id="showslave" class="interestBox" style="display:none"><pre>
 		<?
 			print_r($row = $db->getRow("SHOW SLAVE STATUS"));
-		?>
+		?></pre>
 		</div>
 		<?
 	
@@ -122,8 +124,8 @@ print "<hr/>";
 
 
 if ($DSN2 != $DSN) {
-	print "<h2>Second Database Status</h2>";
-	print "<tt>{$CONF['db_user2']}@{$CONF['db_connect2']}/{$CONF['db_db2']}</tt>";
+	print "<h2>Second Database Status ";
+	print "<tt>{$CONF['db_user2']}@{$CONF['db_connect2']}/{$CONF['db_db2']}</tt></h2>";
 	$db = database_status($DSN2);
 		
 } else {
