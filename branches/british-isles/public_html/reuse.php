@@ -57,7 +57,7 @@ if (isset($_REQUEST['id']))
 			header("Content-Type: image/jpeg");
 			header("Content-Disposition: attachment; filename=\"$filename\"");
 			
-			customExpiresHeader(86400,true);
+			customExpiresHeader(86400*180,true);
 			customCacheControl($lastmod,$image->gridimage_id);
 			
 			readfile($_SERVER['DOCUMENT_ROOT'].$filepath);
