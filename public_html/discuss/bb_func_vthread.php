@@ -188,7 +188,7 @@ if (($topicDesc && !$postID) || !$topicDesc)
 
 if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
 	global $memcache;
-	$mkey = $cols[6].((!empty($_GET['l']))?'y':'');
+	$mkey = $cols[6].$_SERVER['HTTP_HOST'].((!empty($_GET['l']))?'y':'');
 	//fails quickly if not using memcached!
 	if ($memtext =& $memcache->name_get('fp',$mkey)) {
 		$posterText = $memtext;
