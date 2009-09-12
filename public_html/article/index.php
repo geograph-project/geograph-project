@@ -45,7 +45,7 @@ if (isset($_GET['table'])) {
 
 if ($isadmin) {
 	if (!empty($_GET['page']) && preg_match('/^[\w-]+$/',$_GET['page'])) {
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db = GeographDatabaseConnection(false);
 		
 		$a = intval($_GET['approve']);	
 		
@@ -70,7 +70,7 @@ if ($isadmin) {
 	}
 }
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(true);
 
 $data = $db->getRow("show table status like 'article'");
 
