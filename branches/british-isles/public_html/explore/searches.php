@@ -46,7 +46,7 @@ if (isset($_REQUEST['i']) && is_numeric($_REQUEST['i'])) {
 
 
 if ($is_mod && $i && isset($_GET['a'])) {
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db = GeographDatabaseConnection(false);
 
 	$a = intval($_GET['a']);	
 
@@ -60,8 +60,7 @@ if ($is_mod && $i && isset($_GET['a'])) {
 if ($i) {
 	$template='explore_searches_suggest.tpl';
 	
-	$db=NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');  
+	$db = GeographDatabaseConnection(false);
 
 	if (isset($_POST['submit'])) {
 		$sql = "INSERT INTO queries_featured SET
@@ -109,8 +108,7 @@ if ($is_mod) {
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
+	$db = GeographDatabaseConnection(true);
 	
 	$where = array();
 	if ($is_mod ) {

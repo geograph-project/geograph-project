@@ -84,9 +84,7 @@ $smarty->assign('by', $by);
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (empty($db)) die('Database connection failed');  
-	#$db->debug = true;
+	$db = GeographDatabaseConnection(true);
 	
 	$smarty->assign('ri', $ri);
 

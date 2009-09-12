@@ -32,11 +32,8 @@ $smarty = new GeographPage;
 //regenerate?
 if (!$smarty->is_cached('explore.tpl'))
 {
-	if (!$db) {
-		$db=NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');
-	}
-
+	$db = GeographDatabaseConnection(true);
+	
 	$countylist = array();
 	$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0"); 
 	while (!$recordSet->EOF) 
