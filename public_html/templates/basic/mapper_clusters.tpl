@@ -143,7 +143,7 @@
 		});
 
 		gc.setCallback(GC_CB_POINTCLICK, function (marker, point_id, freetext, opt_field1, opt_field2) {
-			var myHtml = "<b><a href='/photo/" + point_id + "' target='_blank'>" + freetext + "</a></b><br/><br/><a href='/profile/" + opt_field1 + "' target='_blank'>User Profile</a>";
+			var myHtml = "<iframe src='/frame.php?id=" + point_id + "' width='500' height='300'><br/><b><a href='/photo/" + point_id + "' target='_blank'>" + freetext + "</a></b> <a href='/profile/" + opt_field1 + "' target='_blank'>User Profile</a>";
 			map.openInfoWindowHtml(marker.getLatLng(),myHtml);
 		});
 
