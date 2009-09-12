@@ -78,7 +78,7 @@ $correctErr="<a href=\"{$main_url}/{$indexphp}action=vthread&amp;forum=$forum&am
 	
 //delete it now as users expect their edit to show up!
 	global $memcache;
-	$mkey = $post;
+	$mkey = $post.$_SERVER['HTTP_HOST'];
 	$memcache->name_delete('fp',$mkey);
 
 if ($user_id!=1 and $postRange!=0) {
