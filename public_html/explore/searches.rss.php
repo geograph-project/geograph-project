@@ -35,7 +35,7 @@ $rss->title = 'Geograph Featured Searches';
 $rss->link = "http://{$_SERVER['HTTP_HOST']}/explore/searches.php";
 
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(true);
 	
 
 $where = array();

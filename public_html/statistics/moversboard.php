@@ -40,8 +40,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/imagelist.class.php');
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed'); 
+	$db = GeographDatabaseConnection(true); 
 	
 	/////////////
 	// in the following code 'geographs' is used a column for legacy reasons, but dont always represent actual geographs....

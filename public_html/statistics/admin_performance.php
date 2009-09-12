@@ -53,8 +53,7 @@ if (isset($_GET['output']) && $_GET['output'] == 'csv') {
 if (!$smarty->is_cached($template, $cacheid))
 {
 
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
+	$db = GeographDatabaseConnection(true); 
 	 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	
 	if (!empty($u)) {

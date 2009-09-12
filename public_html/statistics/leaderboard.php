@@ -77,8 +77,8 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$filtered = ($when || $ri || $myriad);
 	
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
+	$db = GeographDatabaseConnection(true);
+	
 	$sql_table = "gridimage_search i";
 	$sql_where = "1";
 	$sql_orderby = '';
