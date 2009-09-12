@@ -394,6 +394,7 @@ if ($grid_given)
 				$imagelist->images =& $memcache->name_get('bx',$mkey);
 				
 				if (empty($imagelist->images)) {
+					$imagelist->_setDB($db);
 				
 					$columns = "gridimage_id,user_id,realname,credit_realname,title,imageclass,grid_reference";
 					$gis_where = "grid_reference = '{$square->grid_reference}'";
@@ -426,7 +427,7 @@ if ($grid_given)
 						case 'user+category': 
 							//http://stackoverflow.com/questions/1138006/multi-column-distinct-in-mysql
 
-							$table = "tmp_".md5(uniqid());
+							$table = $CONF['db_tempdb'].".tmp_".md5(uniqid());
 
 							$db->Execute("CREATE TEMPORARY TABLE $table SELECT $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf DESC, REVERSE(gridimage_id)");
 

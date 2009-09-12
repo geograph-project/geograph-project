@@ -681,7 +681,7 @@ class GridImageTroubleTicket
 			if (isset($CONF['tickets_notify_all'])) {
 			
 				//no moderator has handled this ticket yet, so lets forward to message to all of them
-				$db=&$this->_getDB();
+				$db=&$this->_getDB(true);
 				$mods=$db->GetCol("select email from user where FIND_IN_SET('ticketmod',rights)>0;");
 			} else {
 				//lets not send the email!
@@ -781,7 +781,6 @@ class GridImageTroubleTicket
 	 */
 	function addSuggesterComment($user_id, $comment)
 	{
-		$db=&$this->_getDB();
 		if (!$this->isValid())
 			die("addSuggestorComment - bad ticket");
 	
@@ -927,11 +926,12 @@ class GridImageTroubleTicket
 	 * get stored db object, creating if necessary
 	 * @access private
 	 */
-	function &_getDB()
+	function &_getDB($allow_readonly = false)
 	{
-		if (!is_object($this->db))
-			$this->db=NewADOConnection($GLOBALS['DSN']);
-		if (!$this->db) die('Database connection failed');  
+		//check we have a db object or if we need to 'upgrade' it
+		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
+			$this->db=GeographDatabaseConnection($allow_readonly);
+		} 
 		return $this->db;
 	}
 
@@ -1001,7 +1001,7 @@ class GridImageTroubleTicket
 	*/
 	function loadItems()
 	{
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		if ($this->isValid())
 		{
 			$this->changes=$db->GetAll("select * from gridimage_ticket_item where gridimage_ticket_id={$this->gridimage_ticket_id}");
@@ -1032,7 +1032,7 @@ class GridImageTroubleTicket
 	*/
 	function loadComments()
 	{
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		if ($this->isValid())
 		{
 			$this->comments=$db->GetAll("select c.*,u.realname , ".
@@ -1054,7 +1054,7 @@ class GridImageTroubleTicket
 	*/
 	function loadFromId($gridimage_ticket_id)
 	{
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		
 		$this->_clear();
 		if (preg_match('/^\d+$/', $gridimage_ticket_id))

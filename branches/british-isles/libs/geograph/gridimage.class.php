@@ -143,11 +143,12 @@ class GridImage
 	 * get stored db object, creating if necessary
 	 * @access private
 	 */
-	function &_getDB()
+	function &_getDB($allow_readonly = false)
 	{
-		if (!is_object($this->db))
-			$this->db=NewADOConnection($GLOBALS['DSN']);
-		if (!$this->db) die('Database connection failed');  
+		//check we have a db object or if we need to 'upgrade' it
+		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
+			$this->db=GeographDatabaseConnection($allow_readonly);
+		}
 		return $this->db;
 	}
 
@@ -165,7 +166,7 @@ class GridImage
 	*/
 	function& getImageClasses()
 	{
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		
 		$arr = $db->CacheGetAssoc(24*3600,"select imageclass,imageclass from gridimage ".
 			"where length(imageclass)>0 and moderation_status in ('accepted','geograph') ".
@@ -369,7 +370,7 @@ class GridImage
 	{
 		//todo memcache
 		
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		
 		$this->_clear();
 		if (preg_match('/^\d+$/', $gridimage_id))
@@ -542,7 +543,7 @@ class GridImage
 		if (!is_array($aStatus))
 			die("GridImage::getTroubleTickets expects array param");
 			
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		
 		$statuses="'".implode("','", $aStatus)."'";
 	
@@ -556,6 +557,7 @@ class GridImage
 		{
 			//create new ticket object
 			$t=new GridImageTroubleTicket;
+			$t->_setDB($db);
 			$t->loadFromRecordset($recordSet);
 			
 			if ($t->days > 365) {
@@ -1412,7 +1414,7 @@ class GridImage
 	*/
 	function isImageLocked($mid = 0)
 	{	
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(false); //dont use slave here - incase there is a lag
 
 		return $db->getOne("
 			select 
@@ -1431,7 +1433,7 @@ class GridImage
 	*/
 	function lookupModerator() 
 	{
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		if (empty($this->moderator_id))
 			return;
 		return $this->mod_realname = $db->getOne("select realname from user where user_id = {$this->moderator_id}");	
@@ -1580,7 +1582,7 @@ class GridImage
 		//old one is in $this->grid_square
 		$newsq=new GridSquare;
 		if (is_object($this->db))
-			$newsq->_setDB($this->db);
+			$newsq->_setDB($this->_getDB());
 		if ($newsq->setByFullGridRef($grid_reference,false,true))
 		{
 			$db=&$this->_getDB();
@@ -1592,13 +1594,13 @@ class GridImage
 				//we use a negative sequence number
 				if ($this->moderation_status!='rejected')
 				{
-					$seq_no = $this->db->GetOne("select max(seq_no) from gridimage ".
+					$seq_no = $db->GetOne("select max(seq_no) from gridimage ".
 						"where gridsquare_id={$newsq->gridsquare_id}");
 					$seq_no=max($seq_no+1, 0);
 				}
 				else
 				{
-					$seq_no = $this->db->GetOne("select min(seq_no) from gridimage ".
+					$seq_no = $db->GetOne("select min(seq_no) from gridimage ".
 						"where gridsquare_id={$newsq->gridsquare_id}");
 					$seq_no=min($seq_no-1, -1);
 				}

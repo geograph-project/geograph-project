@@ -692,10 +692,8 @@ class GeographMap
 		global $CONF;
 		
 		//figure out what we're mapping in internal coords
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		
-		$dbImg=NewADOConnection($GLOBALS['DSN']);
-
 		$left=$this->map_x;
 		$bottom=$this->map_y;
 		$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
@@ -810,11 +808,8 @@ class GeographMap
 		}
 		
 		//figure out what we're mapping in internal coords
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(false);
 		
-		$dbImg=NewADOConnection($GLOBALS['DSN']);
-		
-
 		$left=$this->map_x;
 		$bottom=$this->map_y;
 		$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
@@ -867,7 +862,7 @@ class GeographMap
 					} else {//type_or_user > 0
 						$crit = "user_id = {$this->type_or_user}";
 					}
-					$table = "gi".md5($rectangle.$crit);
+					$table = $CONF['db_tempdb'].".gi".md5($rectangle.$crit);
 					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
 						SELECT gridimage_id,grid_reference,x,y,user_id,moderation_status FROM gridimage_search WHERE 
 						CONTAINS( GeomFromText($rectangle),	point_xy) AND $crit
@@ -889,7 +884,7 @@ class GeographMap
 					CONTAINS( GeomFromText($rectangle),	point_xy)
 					and imagecount>$number";
 			} else {
-				$table = "gi".md5($rectangle);
+				$table = $CONF['db_tempdb'].".gi".md5($rectangle);
 				$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
 					SELECT gridimage_id,grid_reference,moderation_status,user_id,x,y FROM gridimage_search WHERE 
 					CONTAINS( GeomFromText($rectangle),	point_xy)
@@ -1080,7 +1075,7 @@ class GeographMap
 			return false;
 		}
 		
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		
 		if ($this->type_or_user == -3) {
                         $sql="select imagecount from gridsquare_group_count group by imagecount";
@@ -1157,14 +1152,14 @@ class GeographMap
 			group by gi.gridsquare_id "; #where CONTAINS( GeomFromText($rectangle),	point_xy) 
 			
 			$sql="select * from gridsquare_group_count";
-			
-		} elseif ($this->type_or_user == -5) {
-                        $sql="select x,y,gs.gridsquare_id,round(log10(hits)*2) as imagecount
-                                from
-                                gridsquare gs
-                                inner join gridsquare_log using (gridsquare_id)"; 
 
-                } elseif (!empty($this->mapDateCrit)) {
+		} elseif ($this->type_or_user == -5) {
+			$sql="select x,y,gs.gridsquare_id,round(log10(hits)*2) as imagecount
+				from
+				gridsquare gs
+				inner join gridsquare_log using (gridsquare_id)"; 
+
+		} elseif (!empty($this->mapDateCrit)) {
 		$sql="select x,y,gs.gridsquare_id,count(*) as imagecount
 			from 
 			gridsquare gs 
@@ -1173,9 +1168,9 @@ class GeographMap
 			submitted < '{$this->mapDateStart}'
 			group by gi.gridsquare_id ";
 		} else {
-		$sql="select x,y,gridsquare_id,imagecount from gridsquare where 
-			CONTAINS( GeomFromText($rectangle),	point_xy)
-			and imagecount>$number"; #and percent_land = 100  #can uncomment this if using the standard green base
+			$sql="select x,y,gridsquare_id,imagecount from gridsquare where 
+				CONTAINS( GeomFromText($rectangle),	point_xy)
+				and imagecount>$number"; #and percent_land = 100  #can uncomment this if using the standard green base
 		}
 
 
@@ -1278,7 +1273,7 @@ class GeographMap
 		$colBorder=imagecolorallocate($img, 255,255,255);
 		$black = imagecolorallocate ($img, 70, 70, 0);
 
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 
 		#$sql="select imagecount from gridsquare group by imagecount";
 		#$counts = $db->getCol($sql);
@@ -1404,11 +1399,8 @@ class GeographMap
 		$colBorder=imagecolorallocate($img, 255,255,255);
 		
 		//figure out what we're mapping in internal coords
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		
-		$dbImg=NewADOConnection($GLOBALS['DSN']);
-		
-
 		$left=$this->map_x;
 		$bottom=$this->map_y;
 		$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
@@ -1497,7 +1489,7 @@ class GeographMap
 			$sql="select * from gridimage_search where gridimage_id='$gridimage_id' and moderation_status<>'rejected' limit 1";
 
 			//echo "$sql\n";	
-			$rec=$dbImg->GetRow($sql);
+			$rec=$db->GetRow($sql);
 			if (count($rec))
 			{
 				$gridimage=new GridImage;
@@ -1550,7 +1542,7 @@ class GeographMap
 	}		
 	
 	function _plotPlacenames(&$img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left) {			
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 
 		$black=imagecolorallocate ($img, 0,64,0);
 
@@ -1771,7 +1763,7 @@ END;
 			return;
 		}
 		
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 
 		
 		//TODO  - HARD CODED VALUES!!
@@ -1906,7 +1898,7 @@ END;
 	*/
 	function& getGridArray($isimgmap = false)
 	{
-		global $memcache;
+		global $memcache,$CONF;
 
 		if ($this->type_or_user == -10) {
 			//we want a blank map!
@@ -1926,7 +1918,7 @@ END;
 		}
 
 		//figure out what we're mapping in internal coords
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		
 		$grid=array();
 
@@ -1954,7 +1946,7 @@ END;
 					$columns = ',0 as imagecount';
 				} 
 			}
-			$table = "gi".md5($rectangle);
+			$table = $CONF['db_tempdb'].".gi".md5($rectangle);
 			$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
 				SELECT gridimage_id,grid_reference,x,y $columns FROM gridimage_search WHERE 
 				CONTAINS( GeomFromText($rectangle),	point_xy) $where_crit
@@ -1962,13 +1954,14 @@ END;
 			$db->Execute($sql);
 			
 			if (!empty($this->type_or_user) && ($this->type_or_user > 0 || $this->type_or_user == -6)) {
-				$sql="CREATE TEMPORARY TABLE tmp$table ENGINE HEAP 
+				$table2 = $table."tmp2";
+				$sql="CREATE TEMPORARY TABLE $table2 ENGINE HEAP 
 					SELECT x,y,count(*) as imagecount 
 					FROM $table GROUP BY x,y ORDER BY null";
 				$db->Execute($sql);
 	
-				$sql="UPDATE tmp$table,$table SET $table.imagecount = tmp$table.imagecount 
-					WHERE $table.x = tmp$table.x AND $table.y = tmp$table.y";
+				$sql="UPDATE $table2,$table SET $table.imagecount = $table2.imagecount 
+					WHERE $table.x = $table2.x AND $table.y = $table2.y";
 				$db->Execute($sql);
 				$columns = ", $table.imagecount";
 			}
@@ -2033,11 +2026,12 @@ END;
 	 * get stored db object, creating if necessary
 	 * @access private
 	 */
-	function &_getDB()
+	function &_getDB($allow_readonly = false)
 	{
-		if (!is_object($this->db))
-			$this->db=NewADOConnection($GLOBALS['DSN']);
-		if (!$this->db) die('Database connection failed');  
+		//check we have a db object or if we need to 'upgrade' it
+		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
+			$this->db=GeographDatabaseConnection($allow_readonly);
+		}
 		return $this->db;
 	}
 

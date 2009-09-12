@@ -121,11 +121,12 @@ class GridSquare
 	 * get stored db object, creating if necessary
 	 * @access private
 	 */
-	function &_getDB()
+	function &_getDB($allow_readonly = false)
 	{
-		if (!is_object($this->db))
-			$this->db=NewADOConnection($GLOBALS['DSN']);
-		if (!$this->db) die('Database connection failed: '.mysql_error());  
+		//check we have a db object or if we need to 'upgrade' it
+		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
+			$this->db=GeographDatabaseConnection($allow_readonly);
+		}
 		return $this->db;
 	}
 
@@ -159,7 +160,7 @@ class GridSquare
 			return;
 		}
 	
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		
 		$sql='select t.topic_id,posts_count-1 as comments,CONCAT(\'Discussion on \',t.topic_title) as topic_title '.
 			'from gridsquare_topic as gt '.
@@ -215,7 +216,7 @@ class GridSquare
 			$mkey = $this->gridsquare;
 			$square =& $memcache->name_get('pr',$mkey);
 			if (!$square) {
-				$db=&$this->_getDB();
+				$db=&$this->_getDB(true);
 
 				$square = $db->GetRow('select origin_x,origin_y from gridprefix where prefix='.$db->Quote($this->gridsquare).' limit 1');
 				
@@ -254,7 +255,7 @@ class GridSquare
 	function getGridPrefixes($ri = 0)
 	{
 		$andwhere = ($ri)?" and reference_index = $ri ":'';
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		return $db->CacheGetAssoc(3600*24*7,"select prefix,prefix from gridprefix ".
 			"where landcount>0 $andwhere".
 			"order by reference_index,prefix");
@@ -444,7 +445,7 @@ class GridSquare
 	*/
 	function loadFromId($gridsquare_id)
 	{
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		$square = $db->GetRow('select * from gridsquare where gridsquare_id='.$db->Quote($gridsquare_id).' limit 1');	
 		if (count($square))
 		{		
@@ -470,7 +471,7 @@ class GridSquare
 	function loadFromPosition($internalx, $internaly, $findnearest = false)
 	{
 		$ok=false;
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		$square = $db->GetRow("select * from gridsquare where CONTAINS( GeomFromText('POINT($internalx $internaly)'),point_xy ) order by percent_land desc limit 1");
 		if (count($square))
 		{		
@@ -505,7 +506,7 @@ class GridSquare
 	{
 		$ok=true;
 
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		
 		//store the reference 
 		$this->_storeGridRef($gridref);
@@ -565,6 +566,8 @@ class GridSquare
 				
 				if ($ok)
 				{
+					$db=&$this->_getDB();
+					
 					//square is close to land, so we're letting it slide, but we
 					//need to create the square - we give it a land_percent of -1
 					//to indicate it needs review, and also to prevent it being
@@ -613,7 +616,7 @@ class GridSquare
 			return true;
 		}
 		
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 
 		//to optimise the query, we scan a square centred on the
 		//the required point
@@ -686,7 +689,7 @@ class GridSquare
 			return $images;
 		}
 		
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		$images=array();
 		if ($inc_all_user && ctype_digit($inc_all_user)) {
 			$inc_all_user = "=$inc_all_user";
@@ -716,7 +719,7 @@ class GridSquare
 	
 	function &getImageCount($inc_all_user = false,$custom_where_sql = '')
 	{
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		
 		$count = $db->getOne("select count(*) 
 			from gridimage gi 
@@ -748,6 +751,8 @@ class GridSquare
 		//update the has_geographs flag
 		$db->Query("update gridsquare set has_geographs=$has_geographs,imagecount=$imagecount ".
 			"where gridsquare_id={$this->gridsquare_id}");
+			
+		//todo - update the has_recent flag. 
 	}
 }
 

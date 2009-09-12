@@ -82,18 +82,38 @@ if (empty($CONF['db_tempdb'])) {
 }
 
 function GeographDatabaseConnection($allow_readonly = false) {
+
+	//see if we can use a read only slave connection
 	if ($allow_readonly && !empty($GLOBALS['DSN_READ']) && $GLOBALS['DSN'] != $GLOBALS['DSN_READ']) {
 		$db=NewADOConnection($GLOBALS['DSN_READ']);
 		
-		if (!$db) {
+		if ($db) {
+			$db->readonly = true;
+			print "CONNECTION[READONLY]<BR>\n";
+			print "<pre>";
+			debug_print_backtrace();
+			print "</pre>";
+			return $db;
+		} else {
+			//try and fallback and get a master connection
 			$db=NewADOConnection($GLOBALS['DSN']);
 		}
 	} else {
+		//otherwise just get a standard connection
+		
+		//todo - we could add a 'curtail' feature here, to disable any page that needs write access - allowing some pages to still work without master online!
 		$db=NewADOConnection($GLOBALS['DSN']);
 	} 
 	if (!$db) {
+		//todo - show a 'smart' smarty error here... (probably check for existance of a global $smarty var) 
+		header("HTTP/1.0 503 Service Unavailable");
 		die("Database connection failed");
 	}
+	$db->readonly = false;
+	print "CONNECTION[WRITEABLE]<BR>";
+	print "<pre>";
+	debug_print_backtrace();
+	print "</pre>";
 	return $db;
 }
 

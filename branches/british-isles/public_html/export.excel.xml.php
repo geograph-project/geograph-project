@@ -132,7 +132,7 @@ $recordSet->Close();
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
-$db = GeographDatabaseConnection(false);	
+$db = GeographDatabaseConnection(false);
 
 //todo
 //if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {

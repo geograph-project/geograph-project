@@ -999,7 +999,7 @@ class GeographMapMosaic
 
 		$sql="select * from mapcache where $crit";
 		$deleted = 0;
-		$recordSet = &$this->db->Execute($sql);
+		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$file = $this->getImageFilename($recordSet->fields);
