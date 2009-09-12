@@ -40,8 +40,7 @@ function smarty_block_highlight($params, $content, &$smarty, &$repeat)
 $smarty->register_block('highlight', 'smarty_block_highlight');
 
 
-	$db = NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
+	$db = GeographDatabaseConnection(true);
 
 	if (!empty($_GET['apikey'])) {
 		//load the info for editing the record

@@ -28,7 +28,7 @@ $USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(true);
 
 
 	$smarty->display('_std_begin.tpl');

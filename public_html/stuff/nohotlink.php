@@ -52,7 +52,7 @@ $black=imagecolorallocate($img, 255,255,255);
 
 if ($id) {
 	//die as quickly as possible with the minimum 
-	$db = NewADOConnection($GLOBALS['DSN']);
+	$db = GeographDatabaseConnection(true);
 
 	$realname =& $db->getOne($sql = "select realname from gridimage_search where gridimage_id=".intval($id) );
 }

@@ -192,7 +192,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	
 	if ($sql) {
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db = GeographDatabaseConnection(true);
 		
 		
 		$result = mysql_query($sql) or die ("Couldn't select query : $sql " . mysql_error() . "\n");

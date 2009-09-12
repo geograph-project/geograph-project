@@ -27,7 +27,7 @@ require_once('geograph/global.inc.php');
 init_session();
 
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(true);
 
 $where = array();
 if (isset($_GET['mine']) && $USER->user_id) {
