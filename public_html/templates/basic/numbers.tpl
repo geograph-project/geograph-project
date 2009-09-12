@@ -77,7 +77,7 @@
 	<div class="redbar" style="width:{$stats.percentage}%;">
 
 		<div class="righttextbox">
-			<b class="nowrap">{$stats.squares|thousends}</b> Squares photographed<br/>
+			<b class="nowrap">{$stats.points|thousends}</b> Squares geographed<br/>
 			<br/>
 		</div>
 		<br style="clear:both"/>
@@ -101,8 +101,8 @@
 			contributors
 		</div>
 		<div> 
-			<b class="nowrap">{$stats.points|thousends}</b><br/>
-			points awarded
+			<b class="nowrap">{$stats.squares|thousends}</b><br/>
+			squares photographed
 		</div>
 		<div> 
 			<b class="nowrap">{$stats.images|thousends}</b><br/>

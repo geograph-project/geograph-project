@@ -55,7 +55,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$stats['nophotos'] = $stats['total'] - $stats['squares'];
 	
-	$stats['percentage'] = sprintf("%.2f",$stats['squares']/$stats['total']*100);
+	$stats['percentage'] = sprintf("%.2f",$stats['points']/$stats['total']*100);
 	$stats['fewpercentage'] = sprintf("%.2f",$stats['fewphotos']/$stats['total']*100);
 	$stats['negfewpercentage'] = sprintf("%.1f",100-$stats['fewpercentage']);
 	$stats['persquare'] = sprintf("%.1f",$stats['images']/$stats['squares']);
