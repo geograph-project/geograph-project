@@ -503,7 +503,7 @@ class GeographMapMosaic
 			//invert the y coordinate
 			$y=$this->image_h-$y;
 		}
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		
 		//convert pixel pos to internal coordinates
 		$x_km=$this->map_x + floor($x/$this->pixels_per_km);
@@ -923,7 +923,7 @@ class GeographMapMosaic
 	{
 		global $memcache;
 		
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(false);
 		
 		$and_crit = " and type_or_user IN (-1,0";
 		if ($user_id > 0) {
@@ -993,7 +993,7 @@ class GeographMapMosaic
 	function deleteBySql($crit,$dummy=false,$expire_basemaps=false)
 	{
 		global $memcache;
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(false);
 		
 		$root=preg_replace('/\/$/','',$_SERVER['DOCUMENT_ROOT']);
 
@@ -1023,7 +1023,7 @@ class GeographMapMosaic
 		if (!$dummy) {
 			//takes a long time..
 			unset($this->db);
-			$db=&$this->_getDB();
+			$db=&$this->_getDB(false);
 			
 			$db->Execute("delete from mapcache where $crit");
                         $GLOBALS['deleted_records'] = mysql_affected_rows();
@@ -1072,7 +1072,7 @@ class GeographMapMosaic
 	*/
 	function invalidateAll()
 	{
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(false);
 		$sql="update mapcache set age=age+1";
 		$db->Execute($sql);
 	}
@@ -1088,7 +1088,7 @@ class GeographMapMosaic
 		//todo *nix specific
 		`rm -Rf $dir`;
 		
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(false);
 		$sql="update mapcache set age=age+1";
 		$db->Execute($sql);
 	}
@@ -1107,7 +1107,7 @@ class GeographMapMosaic
 		`rm -Rf $dir`;
 		
 		//clear out the table as well!
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(false);
 		$sql="delete from mapcache";
 		$db->Execute($sql);
 		
@@ -1124,11 +1124,12 @@ class GeographMapMosaic
 	 * get stored db object, creating if necessary
 	 * @access private
 	 */
-	function &_getDB()
+	function &_getDB($allow_readonly = false)
 	{
-		if (!is_object($this->db))
-			$this->db=NewADOConnection($GLOBALS['DSN']);
-		if (!$this->db) die('Database connection failed');  
+		//check we have a db object or if we need to 'upgrade' it
+		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
+			$this->db=GeographDatabaseConnection($allow_readonly);
+		} 
 		return $this->db;
 	}
 
