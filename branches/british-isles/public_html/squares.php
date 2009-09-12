@@ -130,8 +130,7 @@ if ($grid_ok)
 			LIMIT 1000"; ##limt just to make sure
 		}
 		
-		$db=NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');  
+		$db = GeographDatabaseConnection(true);
 
 		$data = $db->getAssoc($sql);
 

@@ -26,9 +26,7 @@ init_session();
 
 
 
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
-	#$db->debug = true;
+	$db = GeographDatabaseConnection(true);
 	
 	$all = $db->cachegetAssoc(3600,"select right(grid_reference,4) as gr,count(*) as c from gridimage_search group by right(grid_reference,4)");
 

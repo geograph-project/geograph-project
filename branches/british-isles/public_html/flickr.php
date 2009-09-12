@@ -50,8 +50,7 @@ if ($_GET['gridsquare']) {
  	
  	//should never fail?? - but display form 'in case'
  	
- 	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');
+ 	$db = GeographDatabaseConnection(true);
 
 	advanced_form($smarty,$db);
  	
@@ -88,10 +87,9 @@ if ($_GET['gridsquare']) {
 		$smarty->display('search_multiple.tpl');
 	} else {
 		if ($_GET['i']) {
-			$db=NewADOConnection($GLOBALS['DSN']);
-			if (!$db) die('Database connection failed');
+			$db = GeographDatabaseConnection(true);
 		
-			$query = $db->GetRow("SELECT searchq FROM queries WHERE id = ".$_GET['i']);
+			$query = $db->GetRow("SELECT searchq FROM queries WHERE id = ".intval($_GET['i']));
 			$smarty->assign('searchq', $query['searchq']);
 		} else if ($_SESSION['searchq']) {
 			$smarty->assign('searchq', $_SESSION['searchq']);
@@ -184,10 +182,9 @@ if ($_GET['gridsquare']) {
 	// -------------------------------
 	
 	if ($_GET['i']) {
-		$db=NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');
+		$db = GeographDatabaseConnection(true);
 	
-		$query = $db->GetRow("SELECT searchq FROM queries WHERE id = ".$_GET['i']);
+		$query = $db->GetRow("SELECT searchq FROM queries WHERE id = ".intval($_GET['i']));
 		$smarty->assign('searchq', $query['searchq']);
 	} else if ($_SESSION['searchq']) {
 		$smarty->assign('searchq', $_SESSION['searchq']);

@@ -74,7 +74,7 @@ if (!empty($_GET['q'])) {
 			if (!empty($ids) && count($ids)) {
 				$where = "id IN(".join(",",$ids).")";
 
-				$db=NewADOConnection($GLOBALS['DSN2']);
+				$db = GeographDatabaseConnection(true);
 
 				$limit = 25;
 

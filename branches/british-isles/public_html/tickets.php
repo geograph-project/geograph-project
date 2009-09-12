@@ -32,7 +32,7 @@ $smarty = new GeographPage;
 if (isset($_SESSION['editpage_options']))
 	unset($_SESSION['editpage_options']);
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(true);
 
 if (isset($_GET['others'])) {
 	$opencol = "if (notify = 'suggestor',count(distinct c.gridimage_ticket_comment_id),CONCAT('<s>',count(distinct c.gridimage_ticket_comment_id),'</s>') )";

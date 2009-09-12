@@ -30,8 +30,6 @@ $smarty = new GeographPage;
 
 $template='juppy.tpl';
 $cacheid='';
-
-$db=NewADOConnection($GLOBALS['DSN']);
 	
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
@@ -57,6 +55,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	//lets find some recent photos
 	new RecentImageList($smarty);
+	
+	$db = GeographDatabaseConnection(true);
 	
 	//let's find recent posts in the announcements forum made by
 	//administrators

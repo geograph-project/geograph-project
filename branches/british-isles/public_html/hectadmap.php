@@ -58,8 +58,7 @@ $smarty->register_modifier("colerize", "smarty_modifier_colerize");
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
+	$db = GeographDatabaseConnection(true);
 	
 	$title = "Hectad Coverages";
 	

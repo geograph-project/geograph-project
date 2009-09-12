@@ -130,8 +130,7 @@ if ($grid_given)
 		
 		$blocks = array();
 		
-		$db=NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');  
+		$db = GeographDatabaseConnection(true);  
 		
 		
 		$rows = $db->cacheGetAll(3600,"SELECT 

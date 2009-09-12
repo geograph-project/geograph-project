@@ -28,7 +28,7 @@ require_once('geograph/global.inc.php');
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(true);
 
 if ((empty($_GET['key']) || preg_match("/[^\w\.@]/",$_GET['key'])) )
 	die("ERROR: no api key ");
