@@ -89,10 +89,6 @@ function GeographDatabaseConnection($allow_readonly = false) {
 		
 		if ($db) {
 			$db->readonly = true;
-			print "CONNECTION[READONLY]<BR>\n";
-			print "<pre>";
-			debug_print_backtrace();
-			print "</pre>";
 			return $db;
 		} else {
 			//try and fallback and get a master connection
@@ -110,10 +106,6 @@ function GeographDatabaseConnection($allow_readonly = false) {
 		die("Database connection failed");
 	}
 	$db->readonly = false;
-	print "CONNECTION[WRITEABLE]<BR>";
-	print "<pre>";
-	debug_print_backtrace();
-	print "</pre>";
 	return $db;
 }
 
