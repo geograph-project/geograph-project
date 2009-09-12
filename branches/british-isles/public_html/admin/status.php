@@ -28,8 +28,30 @@ $USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 
+ini_set("display_errors",1);
+error_reporting(E_ALL ^ E_NOTICE);
+
 $smarty->assign("page_title",'System Status');
 $smarty->display('_std_begin.tpl');
+?>
+<style type="text/css">
+	#maincontent h1 {
+		background-color:pink;
+		color:black;
+		padding:10px;
+		border:4px solid yellow;
+	}
+	pre {
+		border:1px solid red;
+		padding:4px;
+		background-color:silver;
+	}
+	h2 tt {
+		font-size:0.6em;
+		font-weight:normal;
+	}
+</style>
+<?
 flush();
 
 $hostname=trim(`hostname`);
@@ -38,16 +60,61 @@ print "Host = $hostname";
 print "<hr/>";
 	
 
-print "<h2>Main Database Status</h2>";
-print "<tt>{$CONF['db_user']}@{$CONF['db_connect']}/{$CONF['db_db']}</tt>";
-database_status($DSN);
+print "<h2>Main Database Status ";
+print "<tt>{$CONF['db_user']}@{$CONF['db_connect']}/{$CONF['db_db']}</tt></h2>";
+$db = database_status($DSN);
+
 print "<hr/>";
 
 
 if (!empty($DSN_READ) && $DSN_READ != $DSN) {
-	print "<h2>Slave Database Status</h2>";
-	print "<tt>{$CONF['db_read_user']}@{$CONF['db_read_connect']}/{$CONF['db_read_db']}</tt>";
-	database_status($DSN_READ);
+	if ($db) {
+	
+		?>
+		<div id="hidemaster" style="text-align:center"><a href="javascript:void(show_tree('master'));">Show Master Detail</a></div>
+		<div id="showmaster" class="interestBox" style="display:none">
+		<?
+			print_r($row = $db->getRow("SHOW MASTER STATUS"));
+		?>
+		</div>
+		<?
+		
+		$master = $row['File'].'|'.$row['Position'];
+		
+	}
+	print "<hr/>";
+
+	print "<h2>Slave Database Status ";
+	print "<tt>{$CONF['db_read_user']}@{$CONF['db_read_connect']}/{$CONF['db_read_db']}</tt></h2>";
+	if (database_status($DSN_READ)) {
+
+		?>
+		<div id="hideslave" style="text-align:center"><a href="javascript:void(show_tree('slave'));">Show Slave Detail</a></div>
+		<div id="showslave" class="interestBox" style="display:none">
+		<?
+			print_r($row = $db->getRow("SHOW SLAVE STATUS"));
+		?>
+		</div>
+		<?
+	
+		$slave = $row['Master_Log_File'].'|'.$row['Read_Master_Log_Pos'];
+		if ($slave != $master) {
+			print "<h1>Slave Read Failure?</h1>";
+			print "<pre>Master: $master\nSlave: $slave</pre>";
+		}
+			
+		$slave = $row['Master_Log_File'].'|'.$row['Exec_Master_Log_Pos'];
+		if ($slave != $master) {
+			print "<h1>Slave Execute Failure?</h1>";
+			print "<pre>Master: $master\nSlave: $slave</pre>";
+		}
+		if ($row['Last_Error']) {
+			print "<pre>Last Error: {$row['Last_Error']}</pre>";
+		}
+		if ($row['Seconds_Behind_Master']) {
+			print "<h1>Seconds Behind Master: {$row['Seconds_Behind_Master']}</h1>";
+		}
+	}
 } else {
 	print "<h4 style='color:gray'>no slave database</h4>";
 }
@@ -71,6 +138,7 @@ if ($memcache->valid) {
 	memcache_status();
 } else {
 	print "<h1>Memcache NOT valid</h1>";
+	print "<p>This might be deliberate but certainly not recommended</p>";
 }
 print "<hr/>";
 
@@ -85,10 +153,26 @@ if (!empty($CONF['sphinx_host'])) {
 	
 	if (!empty($ids) && count($ids)) {
 		print "<p>Ids returned: ".count($ids)."</p>";
+		?>
+		<div id="hidesphinx" style="text-align:center"><a href="javascript:void(show_tree('sphinx'));">Show Sphinx Detail</a></div>
+		<div id="showsphinx" class="interestBox" style="display:none">
+		<?		
+	
+		print "<table border=1 cellspacing=0>";
+		print "<tr>";
+		print "<th>server</th>";
+			print "<th>{$CONF['sphinx_host']}:{$CONF['sphinx_port']}</th>";
+		print "</tr>";
+		foreach ($cl->Status() as $row) {
+			print "<tr>";
+			foreach ($row as $i => $data) {
+				print "<td align=\"right\">{$data}</td>";
+			}
+			print "</tr>";
+		}
+		print "</table>";
 		
-		print "<pre>";
-		print_r($cl->Status());
-		print "</pre>";
+		print "</div>";
 	} else {
 		
 		print "<h1>".$cl->GetLastError()."</h1>";
@@ -107,6 +191,7 @@ exit;
 
 function database_status($DSN) {
 	global $CONF;
+	static $counter = 1;
 	
 	$db=NewADOConnection($DSN);
 	
@@ -125,8 +210,8 @@ function database_status($DSN) {
 	
 	
 	#print_r($data);
-	print "<p>Uptime: ".$data['Uptime']."</p>";
-	print "<p>Threads_connected: ".$data['Threads_connected']."</p>";
+	print "<p>Uptime: ".$data['Uptime'].", ";
+	print "Threads_connected: ".$data['Threads_connected'].", ";
 	
 	
 	
@@ -145,10 +230,27 @@ function database_status($DSN) {
 			return;
 		}
 
-		print "<p>Created temp table.</p>";
+		print " Created temp table.";
 	}
+	print "</p>";
+
+
+	?>
+	<div id="hide<? echo $counter; ?>" style="text-align:center"><a href="javascript:void(show_tree('<? echo $counter; ?>'));">Show Database <? echo $counter; ?> Detail</a></div>
+	<div id="show<? echo $counter; ?>" class="interestBox" style="display:none">
+	<?
 	
-	
+	print "<table border=1 cellspacing=0>";
+	foreach ($data as $name => $value) {
+		print "<tr>";
+		print "<th align=\"left\">{$name}</th>";
+		print "<td align=\"right\">{$value}</td>";
+		print "</tr>";
+	}
+	print "</table>";
+		
+	print "</div>";
+	$counter++;
 	return $db;
 }
 
@@ -157,6 +259,30 @@ function memcache_status() {
 	
 	$a = $memcache->getExtendedStats();
 	$a = array_reverse($a);
+	$keys = array_keys($a);
+	$keys = array_keys($a[$keys[0]]);
+	?>
+		<div id="hidememcache" style="text-align:center">
+	<?
+	print "<table border=1 cellspacing=0>";
+	print "<tr>";
+	print "<th>server</th>";
+	foreach ($a as $name => $row) {
+		print "<th>{$name}</th>";
+	}
+	print "</tr>";
+	$column = 'uptime';
+	print "<tr>";
+	print "<th>$column</th>";
+	foreach ($a as $name => $row) {
+		print "<td align=\"right\">{$a[$name][$column]}</td>";
+	}
+	print "</tr>";
+	print "</table>";
+	?>
+		<p><a href="javascript:void(show_tree('memcache'));">Show Memcache Detail</a></p></div>
+		<div id="showmemcache" class="interestBox" style="display:none">
+	<?
 	print "<table border=1 cellspacing=0>";
 		print "<tr>";
 		print "<th>server</th>";
@@ -164,8 +290,7 @@ function memcache_status() {
 			print "<th>{$name}</th>";
 		}
 		print "</tr>";
-		$keys = array_keys($a);
-		$keys = array_keys($a[$keys[0]]);
+		
 		foreach ($keys as $id => $column) {
 			print "<tr>";
 			print "<th>$column</th>";
@@ -175,6 +300,8 @@ function memcache_status() {
 			print "</tr>";
 		}
 	print "</table>";
+	
+	print "</div>";
 }
 
 ####################################
