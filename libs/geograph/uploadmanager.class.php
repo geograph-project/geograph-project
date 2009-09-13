@@ -594,8 +594,8 @@ class UploadManager
 		$src=$this->_pendingJPEG($this->upload_id);
 		
 		$image=new GridImage;
-		$iamge->_setDB($this->db); //ensure it uses the same DB connection (incase of slave lag) 
-		$image->loadFromId($gridimage_id);
+		$image->gridimage_id = $gridimage_id;
+		$image->user_id = $USER->user_id;
 		
 		if ($ok = $image->storeImage($src)) {
 			$this->cleanUp();
