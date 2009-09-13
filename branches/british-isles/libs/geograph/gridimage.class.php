@@ -370,7 +370,7 @@ class GridImage
 	{
 		//todo memcache
 		
-		$db=&$this->_getDB(true);
+		$db=&$this->_getDB(30); //we dont tollerate much delay
 		
 		$this->_clear();
 		if (preg_match('/^\d+$/', $gridimage_id))
@@ -543,7 +543,7 @@ class GridImage
 		if (!is_array($aStatus))
 			die("GridImage::getTroubleTickets expects array param");
 			
-		$db=&$this->_getDB(true);
+		$db=&$this->_getDB(30); //need currency
 		
 		$statuses="'".implode("','", $aStatus)."'";
 	
@@ -645,6 +645,14 @@ class GridImage
 			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
 			$fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}.jpg";
 		}
+		
+		if (empty($check_exists)) {
+			if ($returntotalpath)
+				$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
+			
+			return $fullpath;
+		}
+		
 		$ok=file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath);
 		
 		if (!$ok)
@@ -1414,7 +1422,7 @@ class GridImage
 	*/
 	function isImageLocked($mid = 0)
 	{	
-		$db=&$this->_getDB(false); //dont use slave here - incase there is a lag
+		$db=&$this->_getDB(10); //dont tollerate a lag
 
 		return $db->getOne("
 			select 

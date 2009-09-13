@@ -88,6 +88,26 @@ function GeographDatabaseConnection($allow_readonly = false) {
 		$db=NewADOConnection($GLOBALS['DSN_READ']);
 		
 		if ($db) {
+			//if the application dictates it needs currency
+			if ($allow_readonly > 1) {
+				$row = $db->getRow("SHOW SLAVE STATUS");
+				if ($row['Seconds_Behind_Master'] > $allow_readonly) {
+					$db2=NewADOConnection($GLOBALS['DSN']);
+					if ($db2) {
+						$db2->readonly = false;
+						return $db2;
+					}
+				}
+				if (($row['Seconds_Behind_Master'] > 10) && ($row['Seconds_Behind_Master'] < 100) && (rand(1,10) > 7)) {
+					//email me if we lag, but once gets big no point continuing to notify!
+					ob_start();
+					debug_print_backtrace();
+					print "\n\nHost: ".`hostname`."\n\n";
+					$con = ob_get_clean();
+               				mail('geograph@barryhunter.co.uk','[Geograph LAG] '.$row['Seconds_Behind_Master'],$con);
+				}
+			}
+		
 			$db->readonly = true;
 			return $db;
 		} else {
