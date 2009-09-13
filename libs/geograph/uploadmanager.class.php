@@ -196,7 +196,7 @@ class UploadManager
 			$uploadfile = $this->_pendingJPEG($id);
 			if (file_exists($uploadfile))
 			{
-				customExpiresHeader(3600);
+				customExpiresHeader(3600*48);
 				header("Content-Type:image/jpeg");
 				readfile($uploadfile);
 				exit;
@@ -594,10 +594,13 @@ class UploadManager
 		$src=$this->_pendingJPEG($this->upload_id);
 		
 		$image=new GridImage;
+		$iamge->_setDB($this->db); //ensure it uses the same DB connection (incase of slave lag) 
 		$image->loadFromId($gridimage_id);
-		$image->storeImage($src);
 		
-		$this->cleanUp();
+		if ($ok = $image->storeImage($src)) {
+			$this->cleanUp();
+		}
+		
 		$this->gridimage_id = $gridimage_id;
 	}
 	
