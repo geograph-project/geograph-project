@@ -1,0 +1,71 @@
+# www.geograph.org.uk robot exclusion file
+# * $Id$
+
+User-agent: *
+Disallow: /mapbrowse.php
+Disallow: /map/t
+Disallow: /mapper/
+Disallow: /maplarge.php
+Disallow: /mapprint.php
+Disallow: /admin/
+Disallow: /search.php
+Disallow: /full-text.php
+Disallow: /finder/
+Disallow: /explore/wordnet.php
+Disallow: /explore/calendar.php
+Disallow: /places.php
+Disallow: /explore/places.php
+Disallow: /usermsg.php
+Disallow: /statistics/breakdown.php
+Disallow: /submit.php
+Disallow: /submit_popup.php
+Disallow: /map_frame.php
+Disallow: /discuss/
+Disallow: /mapsheet.php
+Disallow: /kml.php
+Disallow: /gpx.php
+Disallow: /reuse.php
+Disallow: /editimage.php
+Disallow: /browse.php
+Disallow: /location.php
+Disallow: /gridref/
+Disallow: /ecard.php
+Disallow: /show_exif.php
+Disallow: /export.
+Disallow: /auth.php
+Disallow: /feed/
+Disallow: /syndicator.php
+Disallow: /export.excel.xml.php
+Disallow: /export.csv.php
+Disallow: /_scripts/
+Disallow: /stuff/conversion.php
+Disallow: /article/edit.php
+Disallow: /article/history.php
+Disallow: /content/syndicator.php
+Disallow: /content/feed
+Disallow: /article/feed
+Disallow: /squares.php
+Disallow: /explore/places/1/
+Disallow: /explore/places/2/
+Disallow: /sitemap/terms/
+Disallow: /sitemap/clusters/
+Disallow: /sitemap/categories/
+Disallow: /sitemap/termlist/
+Disallow: /kml/
+Disallow: /stuff/
+
+#The following are wildcard excludes which most crawlers don't understand
+#Disallow: /profile/*/map
+#Disallow: /profile/*/feed
+#Disallow: /photo/*?style=*
+#Disallow: /photo/*.kml
+#Disallow: /explore/calendar.php?*Year*
+#Disallow: /statistics/leaderboard.php?*when*
+#Disallow: /statistics/moversboard.php?*when*
+#Disallow: /statistics/*?*csv
+#Disallow: /syndicator.php?key=
+#Disallow: /map/t*
+#Disallow: /sitemap*xml*
+#Disallow: /content/*order=*
+
+
