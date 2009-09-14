@@ -612,12 +612,13 @@ class RasterMap
 
 	function getFootNote() 
 	{
+		global $CONF;
 		if ($this->service == 'Google') {
 			return '';
 		} elseif ($this->issubmit) {
 			return "<span id=\"mapFootNoteOS50k\"".(($this->service == 'OS50k' && $this->issubmit)?'':' style="display:none"')."><br/>Centre the blue circle on the subject and mark the photographer position with the black circle. <b style=\"color:red\">The circle centre marks the spot.</b> The red arrow will then show view direction.</span>".
 			"<span id=\"mapFootNoteVoB\"".($this->service == 'VoB'?'':' style="display:none"')."><br/>Historical Map provided by <a href=\"http://www.visionofbritain.org.uk/\" title=\"Vision of Britain\">VisionOfBritain.org.uk</a></span>";
-		} elseif ($this->service == 'OS50k') {
+		} elseif ($this->service == 'OS50k' && $CONF['template']!='archive') {
 			$str = '';
 			if (empty($this->service2)) {
 				$token=new Token;
@@ -641,6 +642,8 @@ class RasterMap
 			} else {
 				return "<span id=\"mapFootNoteOS50k\"".(($this->displayMarker1 || $this->displayMarker2)?'':' style="display:none"').">TIP: Hover over the icons to hide$str</span><span id=\"mapFootNoteVoB\"></span>";
 			}
+		} else {
+			return '';
 		}
 	}
 

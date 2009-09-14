@@ -11,6 +11,7 @@
     ServerAlias t0.geograph.org.uk
     ServerAlias new.geograph.org.uk
     ServerAlias new.geograph.co.uk
+    ServerAlias archive.geograph.org.uk
 
     ServerAlias www.geograph.ie
     ServerAlias geograph.ie
@@ -62,22 +63,30 @@
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.ie [NC]
     RewriteCond %{HTTP_HOST}   !^t0\.www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^t0\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !^archive\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^$
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
     RewriteCond %{HTTP_HOST}   ^kml\.geograph\.org\.uk [NC]
     RewriteCond %{REQUEST_URI} !^/kml
+    RewriteCond %{REQUEST_URI} !^/robots
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
     RewriteCond %{HTTP_HOST}   ^t0\.www\.geograph\.org\.uk [NC,OR]
     RewriteCond %{HTTP_HOST}   ^t0\.geograph\.org\.uk [NC]
     RewriteCond %{REQUEST_URI} !^/tile
+    RewriteCond %{REQUEST_URI} !^/robots
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^kml\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.ie [NC]
     RewriteRule ^/robots.txt   /robots-none.txt [qsa]
+
+    #For webarchive.co.uk
+    RewriteCond %{X_FORWARDED_FOR}   128.86.236.164 [NC,OR]
+    RewriteCond %{HTTP_HOST}   ^archive\.geograph\.org.uk [NC]
+    RewriteRule ^/robots.txt   /robots-archive.txt [qsa]
 
     RewriteCond %{HTTP_HOST}   ^www\.geograph\.ie [NC]
     RewriteRule ^/robots.txt   /robots.ie.txt [qsa]

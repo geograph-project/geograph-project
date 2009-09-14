@@ -44,6 +44,8 @@ Disallow: /stuff/conversion.php
 Disallow: /article/edit.php
 Disallow: /article/history.php
 Disallow: /content/syndicator.php
+Disallow: /squares.php
+
 
 User-Agent: Googlebot
 User-agent: Slurp
@@ -96,6 +98,7 @@ Disallow: /article/history.php
 Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
 Disallow: /content/syndicator.php
+Disallow: /squares.php
 
 
 User-agent: Fasterfox

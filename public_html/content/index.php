@@ -66,6 +66,10 @@ $smarty->assign("inline",$inline);
 
 $order = (isset($_GET['order']) && ctype_lower($_GET['order']))?$_GET['order']:'updated';
 
+if ($CONF['template']=='archive') {
+	$order = 'title';
+}
+
 switch ($order) {
 	case 'relevance': $sql_order = "NULL"; //will be fixed later
 		$title = "Relevance"; break;
@@ -74,7 +78,7 @@ switch ($order) {
 	case 'created': $sql_order = "created desc";
 		$title = "Recently Created"; break;
 	case 'title': $sql_order = "title";
-		$title = "By Content Title";break;
+		$title = "By Collection Title";break;
 	case 'updated':
 	default: $sql_order = "updated desc";
 		$title = "Recently Updated";
@@ -88,7 +92,11 @@ if (($template == 'content_iframe.tpl' || $inline) && !$smarty->is_cached($templ
 {
 	$extra = $inline?'':'inner';
 	
-	$pageSize = 25;
+	if ($CONF['template']=='archive') {
+		$pageSize = 1000;
+	} else {
+		$pageSize = 25;
+	}
 	
 	#$pg = empty($_GET['page'])?1:intval($_GET['page']);
 	

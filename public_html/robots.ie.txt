@@ -44,6 +44,7 @@ Disallow: /stuff/conversion.php
 Disallow: /article/edit.php
 Disallow: /article/history.php
 Disallow: /content/syndicator.php
+Disallow: /squares.php
 Disallow: /explore/places/1/
 Disallow: /content/
 Disallow: /article/
@@ -104,6 +105,7 @@ Disallow: /article/history.php
 Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
 Disallow: /content/syndicator.php
+Disallow: /squares.php
 Disallow: /sitemap/??.html
 Disallow: /sitemap/??/
 Disallow: /explore/places/1/
