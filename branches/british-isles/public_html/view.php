@@ -81,6 +81,10 @@ customGZipHandlerStart();
 
 $smarty = new GeographPage;
 
+if ($CONF['template']=='archive') {
+	dieUnderHighLoad(1.5);
+}
+
 $template='view.tpl';
 
 $cacheid=0;
@@ -130,7 +134,7 @@ if ($image->isValid())
 		header("Status: 301 Moved Permanently");
 		header("Location: http://www.geograph.org.uk/photo/".intval($_GET['id']));
 		exit;
-	} elseif ($image->grid_square->reference_index == 2 && $_SERVER['HTTP_HOST'] != 'www.geograph.ie') {
+	} elseif ($image->grid_square->reference_index == 2 && $_SERVER['HTTP_HOST'] != 'www.geograph.ie' && $CONF['template']!='archive') {
 		$smarty->assign("ireland_prompt",1);
 	}
 
@@ -151,7 +155,8 @@ if ($image->isValid())
 
 	if ( (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE) &&
 	    (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE) &&
-	    empty($_SESSION['photos'][$image->gridimage_id]) )
+	    empty($_SESSION['photos'][$image->gridimage_id]) &&
+	    $CONF['template']!='archive')
 	{
 		$db = GeographDatabaseConnection(false);
 		
@@ -214,12 +219,13 @@ if ($image->isValid())
 	{
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
 
-		if (empty($db)) {
-			$db = GeographDatabaseConnection(true);
+		if ($CONF['template']!='archive') {
+			if (empty($db)) {
+				$db = GeographDatabaseConnection(true);
+			}
+
+			$image->hits = $db->getOne("SELECT hits+hits_archive FROM gridimage_log WHERE gridimage_id = {$image->gridimage_id}");
 		}
-		
-		$image->hits = $db->getOne("SELECT hits+hits_archive FROM gridimage_log WHERE gridimage_id = {$image->gridimage_id}");
-		
 
 		$image->assignToSmarty($smarty);
 	}
