@@ -8,7 +8,6 @@ Disallow: /mapper/
 Disallow: /maplarge.php
 Disallow: /mapprint.php
 Disallow: /admin/
-Allow: /admin/team.php
 Disallow: /search.php
 Disallow: /full-text.php
 Disallow: /finder/
@@ -57,7 +56,6 @@ Disallow: /mapper/
 Disallow: /maplarge.php
 Disallow: /mapprint.php
 Disallow: /admin/
-Allow: /admin/team.php
 Disallow: /search.php?
 Disallow: /full-text.php?
 Disallow: /finder/

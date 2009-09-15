@@ -37,7 +37,7 @@ div:target { background-color:orange;padding-bottom:10px; }
  <li><a href="/help/freedom">Geograph Freedom</a></li>
  <li><a href="/help/terms">Terms &amp; Conditions</a><br/><br/></li>
  <li><a href="/contact.php">Contact Us</a></li>
- <li><a href="/admin/team.php">The Team</a> &amp; <a href="/help/credits">Credits</a><br/><br/></li>
+ <li><a href="/team.php">The Team</a> &amp; <a href="/help/credits">Credits</a><br/><br/></li>
  </ul>
  <b>Further Resources</b>:
  <ul>
@@ -366,7 +366,7 @@ The <b>Geograph Website</b>:
 <a name="built"></a>
 <h3>Who built this marvellous site?</h3>
 	<p>Please see the <a href="/help/credits" title="Credits Page">Credits Page</a> for
-	information on all the <a href="/admin/team.php">people</a> who make this site possible.</p>
+	information on all the <a href="/team.php">people</a> who make this site possible.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 

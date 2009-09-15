@@ -41,7 +41,7 @@
     
     <h3>Moderators</h3>
     <ul>
-    <li>A growing number of volunteer moderators drawn from the contributor list, donate their time and effort to help sort and maintain the image archive. View <a href="/admin/team.php">the Geograph Team</a> for the list of current and past moderators.</li>
+    <li>A growing number of volunteer moderators drawn from the contributor list, donate their time and effort to help sort and maintain the image archive. View <a href="/team.php">the Geograph Team</a> for the list of current and past moderators.</li>
     </ul>
     
     <h3>Mapping &amp; Location Data</h3>
