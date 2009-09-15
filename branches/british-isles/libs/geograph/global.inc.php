@@ -91,14 +91,14 @@ function GeographDatabaseConnection($allow_readonly = false) {
 			//if the application dictates it needs currency
 			if ($allow_readonly > 1) {
 				$row = $db->getRow("SHOW SLAVE STATUS");
-				if ($row['Seconds_Behind_Master'] > $allow_readonly) {
+				if (is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > $allow_readonly) {
 					$db2=NewADOConnection($GLOBALS['DSN']);
 					if ($db2) {
 						$db2->readonly = false;
 						return $db2;
 					}
 				}
-				if (($row['Seconds_Behind_Master'] > 10) && ($row['Seconds_Behind_Master'] < 100) && (rand(1,10) > 7)) {
+				if ((is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > 10) && ($row['Seconds_Behind_Master'] < 100) && (rand(1,10) > 7)) {
 					//email me if we lag, but once gets big no point continuing to notify!
 					ob_start();
 					debug_print_backtrace();
@@ -170,6 +170,27 @@ if (!empty($CONF['memcache']['app'])) {
 
 //global security routines
 require_once('geograph/security.inc.php');
+
+#################################################
+
+// a 'Hack' so that webarchive.org.uk can come crawling...
+
+$ip = getRemoteIP();
+if ($ip == '128.86.236.164') {
+
+	if ($CONF['curtail_level'] > 3) {
+		//actually we kinda busy... 
+		header("HTTP/1.1 503 Service Unavailable");
+
+		die("server busy, please try later");
+	}
+	
+	$CONF['template']='archive';
+	
+	
+	$CONF['curtail_level'] = 0; //we dont want any messy proxy urls cached!
+}
+
 
 #################################################
 

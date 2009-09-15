@@ -520,6 +520,9 @@ class GridImage
 		} elseif (isset($this->view_direction) && strlen($this->view_direction) && $this->view_direction != -1) {
 			$rastermap->addViewDirection($this->view_direction);
 		}
+		if ($CONF['template']=='archive') {
+			$rastermap->inline=true;
+		}
 		$smarty->assign_by_ref('rastermap', $rastermap);
 
 

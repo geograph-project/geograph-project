@@ -66,6 +66,6 @@ Disallow: /stuff/
 #Disallow: /syndicator.php?key=
 #Disallow: /map/t*
 #Disallow: /sitemap*xml*
-#Disallow: /content/*order=*
+#Disallow: /content/*?*order=*
 
 
