@@ -26,7 +26,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-$template = 'admin_team.tpl';
+$template = 'team.tpl';
 $cacheid = '';
 
 if (!$smarty->is_cached($template, $cacheid))
