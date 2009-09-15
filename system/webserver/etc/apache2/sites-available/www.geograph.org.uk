@@ -82,12 +82,12 @@
     RewriteCond %{HTTP_HOST}   !^kml\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.ie [NC]
     RewriteCond %{HTTP_HOST}   !^t0\.geograph\.org\.uk [NC]
-    RewriteCond %{HTTP_HOST}   !^archive\.geograph\.org.uk [NC]
+    RewriteCond %{HTTP_HOST}   !^archive\.geograph\.org\.uk [NC]
     RewriteRule ^/robots.txt   /robots-none.txt [qsa]
 
     #For webarchive.co.uk
     RewriteCond %{X_FORWARDED_FOR}   128.86.236.164 [NC,OR]
-    RewriteCond %{HTTP_HOST}   ^archive\.geograph\.org.uk [NC]
+    RewriteCond %{HTTP_HOST}   ^archive\.geograph\.org\.uk [NC]
     RewriteRule ^/robots.txt   /robots-archive.txt [qsa]
 
     RewriteCond %{HTTP_HOST}   ^www\.geograph\.ie [NC]
