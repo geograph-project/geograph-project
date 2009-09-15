@@ -42,7 +42,7 @@ $cacheid = '';
 
 
 
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db = GeographDatabaseConnection(false);
 	if ($_REQUEST['page'] == 'new' || $_REQUEST['article_id'] == 'new') {
 		$smarty->assign('article_id', "new");
 		$smarty->assign('title', "New Article");
