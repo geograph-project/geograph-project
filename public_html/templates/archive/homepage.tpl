@@ -95,7 +95,7 @@ Recently completed hectads:
 
 <h3>Quick Links...</h3>
 <ul>
-	<li><a title="Browse by Map" href="/mapbrowse.php">browse images on a <b>map</b></a></li>
+	<li><a title="Browse by Map" href="/map/">browse images on a <b>map</b></a></li>
 	<li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a></li>
 	<li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a></li>
 	<li><a title="Discussion forums" href="/discuss/"><b>discuss the site</b> on our forums</a></li>
