@@ -264,6 +264,8 @@ function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '',$list = '') {
 			$file1 = str_replace("kml",'sitemap',$file1);
 			$file1 = str_replace("kmz",'html',$file1);
 			
+			$html = str_replace("http://{$_SERVER['HTTP_HOST']}/",'/',$html);
+			
 			$html = "<html><head><title>{$s}</title></head>\n".
 			"<body>".
 			"<h3>Geograph British Isles</h3>".
