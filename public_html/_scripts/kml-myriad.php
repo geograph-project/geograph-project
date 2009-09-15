@@ -34,7 +34,7 @@ if (!isLocalIPAddress())
         $USER->mustHavePerm("admin");
 }
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false);
 
 require_once('geograph/conversions.class.php');
 $conv = new Conversions;
