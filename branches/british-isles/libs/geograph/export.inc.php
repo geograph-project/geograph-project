@@ -22,7 +22,7 @@
  */
  
  
-$this->db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(true);
 
 if (isset($_SERVER['REMOTE_ADDR'])) {
 	if ((empty($_GET['key']) || preg_match("/[^\w\.@]/",$_GET['key'])) && empty($_GET['u']))
