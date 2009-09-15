@@ -41,7 +41,7 @@ $topic_id = intval($m[1]);
 
 $cacheid = "$topic_id.$pg";
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(false);
 
 $page = $db->getRow("
 select t.topic_id,topic_title,topic_poster,topic_poster_name,topic_time,post_time,posts_count
