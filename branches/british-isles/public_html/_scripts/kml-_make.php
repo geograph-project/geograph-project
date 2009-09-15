@@ -29,8 +29,7 @@ if (!isLocalIPAddress())
         $USER->mustHavePerm("admin");
 }
 
-$db=NewADOConnection($GLOBALS['DSN']);
-if (!$db) die('Database connection failed');  
+$db = GeographDatabaseConnection(false);
 
 set_time_limit(3600*24);
 
@@ -79,7 +78,7 @@ order by
 	imagecount desc,
 	(natgrlen != '4') desc,
 	(gi.moderation_status = 'geograph') desc,
-	rand()");
+	rand(date(now()))");
 
 # order preference:
 #  dense squares first (so they shown in the tile selection)

@@ -34,8 +34,7 @@ if (!isLocalIPAddress())
         $USER->mustHavePerm("admin");
 }
 
-$db=NewADOConnection($GLOBALS['DSN']);
-if (!$db) die('Database connection failed');  
+$db = GeographDatabaseConnection(true);
 
 require_once('geograph/conversions.class.php');
 $conv = new Conversions;

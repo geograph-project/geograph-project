@@ -33,8 +33,7 @@ if (!isLocalIPAddress())
 }
 
 $conv = new Conversions;	
-$db=NewADOConnection($GLOBALS['DSN']);
-if (!$db) die('Database connection failed');  
+$db = GeographDatabaseConnection(true);
 			
 $kml = new kmlFile();
 $kml->atom = true;

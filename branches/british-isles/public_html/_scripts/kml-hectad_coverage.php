@@ -27,7 +27,7 @@ init_session();
 require_once('geograph/conversions.class.php');
 $conv = new Conversions;
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(true);
 
 $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'points';
 
