@@ -717,13 +717,10 @@ class GridImage
 	}
 	
 	/**
-	* returns HTML img tag to display this image at full size
+	* returns the size of the image in getimagesize format. loads from cache if possible - fetching the image from remote if needbe.
 	*/
-	function getFull($returntotalpath = true)
+	function _getFullSize()
 	{
-		global $CONF;
-		$fullpath=$this->_getFullpath();
-		
 		if (isset($this->cached_size)) {
 			$size = $this->cached_size;
 		} elseif ($this->gridimage_id) {
@@ -733,15 +730,17 @@ class GridImage
 			$size =& $memcache->name_get('is',$mkey);
 			if (!$size) {
 				$db=&$this->_getDB();
-				
+
 				$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
 				$size = $db->getRow("select width,height from gridimage_size where gridimage_id = {$this->gridimage_id}");
 				$db->SetFetchMode($prev_fetch_mode);
 				if ($size) {
 					$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
 				} else {
+					$fullpath = $this->_getFullpath(true); //will fetch the file if needbe
+					
 					$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
-				
+
 					$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]}");
 				}
 				//fails quickly if not using memcached!
@@ -752,10 +751,23 @@ class GridImage
 			$size = array();
 			$size[3] = '';
 		}
-		
+
 		if (!empty($size[1]) && empty($size[3])) {//todo - temporally while some results in memcache are broken
 			$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
 		}
+		return $size;
+	}
+	
+	/**
+	* returns HTML img tag to display this image at full size
+	*/
+	function getFull($returntotalpath = true)
+	{
+		global $CONF;
+
+		$size = $this->_getFullSize();
+
+		$fullpath=$this->_getFullpath(false); //we can set $check_exists=false because _getFullSize will have called _getFullSize(true) if the size was not loaded from cache (if in cache dont need to check for file existance)
 
 		$title=htmlentities2($this->title);
 		
@@ -777,39 +789,9 @@ class GridImage
 		if (!$this->gridimage_id) {
 			return 1;
 		} 
-		if (isset($this->cached_size)) {
-			$result = $this->cached_size[0]>$this->cached_size[1];
-			return $result;
-		} 
-		global $memcache;
 		
-		$mkey = "{$this->gridimage_id}:F";
-		//fails quickly if not using memcached!
-		$size =& $memcache->name_get('is',$mkey);
-		if (!$size) {
-			$db=&$this->_getDB();
-			if ($this->gridimage_id) {
-				$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
-				$size = $db->getRow("select width,height from gridimage_size where gridimage_id = {$this->gridimage_id}");
-				$db->SetFetchMode($prev_fetch_mode);
-			}
-			
-			if ($size) { 
-				//store this because we want it in cached_size and memcache
-				$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
-			} else {
-				$fullpath=$this->_getFullpath();
-				$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
-				
-				if ($this->gridimage_id) {
-					$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]}");
-				}
-			}
-			
-			//fails quickly if not using memcached!
-			$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long);
-		}
-		$this->cached_size = $size;
+		$size = $this->_getFullSize();
+		
 		$result = $size[0]>$size[1];
 		return $result;
 	}
