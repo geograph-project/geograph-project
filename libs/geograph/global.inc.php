@@ -173,20 +173,19 @@ require_once('geograph/security.inc.php');
 
 #################################################
 
-// a 'Hack' so that webarchive.org.uk can come crawling...
+// a 'Hack' so that webarchive.org.uk can come crawling... (but lets do the same for 
 
 $ip = getRemoteIP();
-if ($ip == '128.86.236.164') {
+if ($ip == '128.86.236.164' || (strpos($_SERVER['HTTP_USER_AGENT'], 'ia_archiver')!==FALSE) || (strpos($_SERVER['HTTP_USER_AGENT'], 'heritrix')!==FALSE) ) {
 
 	if ($CONF['curtail_level'] > 3) {
-		//actually we kinda busy... 
+		
 		header("HTTP/1.1 503 Service Unavailable");
 
 		die("server busy, please try later");
 	}
 	
 	$CONF['template']='archive';
-	
 	
 	$CONF['curtail_level'] = 0; //we dont want any messy proxy urls cached!
 }
@@ -574,7 +573,7 @@ class GeographPage extends Smarty
 //this is a bit cheeky - if the xhtml validator calls, turn off the automatic
 //session id insertion, as it uses & instead of &amp; in urls
 //we also turn it off for bots, as session ids can bugger it up
-if ( (strpos($_SERVER['HTTP_USER_AGENT'], 'W3C_Validator')!==FALSE) ||
+if ( (strpos($_SERVER['HTTP_USER_AGENT'], 'W3C_Validator')!==FALSE) || $CONF['template']=='archive' ||
     (strpos($_SERVER['HTTP_USER_AGENT'], 'bot')>0) )
 {
 	ini_set ('url_rewriter.tags', '');
