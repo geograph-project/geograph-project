@@ -2,6 +2,7 @@
 # * $Id$
 
 User-agent: *
+Crawl-Delay: 3
 Disallow: /mapbrowse.php
 Disallow: /map/t
 Disallow: /mapper/
@@ -53,6 +54,8 @@ Disallow: /sitemap/categories/
 Disallow: /sitemap/termlist/
 Disallow: /kml/
 Disallow: /stuff/
+
+
 
 #The following are wildcard excludes which most crawlers don't understand
 #Disallow: /profile/*/map
