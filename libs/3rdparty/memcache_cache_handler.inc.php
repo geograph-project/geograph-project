@@ -19,6 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_file=null, $cache_id=null, $compile_id=null, $exp_time=null) {
+	global $CONF;
+	
 	// ref to the memcache object
 	$m = $GLOBALS['memcached_res'];
 	
@@ -35,43 +37,35 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 	switch ($action) {
 	case 'read':
 		// grab the key from memcached
-		$contents = $m->get($cache_file);
+		$cache_content = $m->get($CONF['template'].$cache_file);
 		
-		// use compression
+		foreach(debug_backtrace() as $entry){ 
+			print "\nFile: ".$entry['file']." (Line: ".$entry['line'].") "; 
+			print "Function: ".$entry['function']."<br/>";
+		} 
+		
+		// use compression?
 		if(!empty($smarty_obj->use_gzip) && function_exists("gzuncompress")) {
-			$cache_content = gzuncompress($contents);
-		} else {
-			$cache_content = $contents;
-		}
+			$cache_content = gzuncompress($cache_content);
+		} 
 		
 		$return = true;
 		break;
 	
 	case 'write':
-		// use compression
+		// use compression?
 		if(!empty($smarty_obj->use_gzip) && function_exists("gzcompress")) {
-			$contents = gzcompress($cache_content);
-		} else {
-			$contents = $cache_content;
-		}
-		
-		$current_time = time();
-		if (is_null($exp_time) || $exp_time < $current_time)
-			$ttl = 0;
-		else
-			$ttl = $exp_time - time(); 
-		
-		// store the metadata in mysql
-		$db=&$m->_getDB();
-		$db->Execute("REPLACE INTO smarty_cache_page VALUES(
-			'$cache_file',
-			'$tpl_file',
-			'$cache_id')"); 
+			$cache_content = gzcompress($cache_content);
+		} 
 		
 		// store the value in memcached
-		$stored = $m->set($cache_file, $contents, false, $ttl);
+		$stored = $m->set($CONF['template'].$cache_file, $cache_content, false, (int)$exp_time);
 		
-		if(!$stored) {
+		if($stored) {
+			// store the metadata in mysql
+			$db=&$m->_getDB();
+			$db->Execute("REPLACE INTO smarty_cache_page VALUES('{$CONF['template']}',".$db->Quote($cache_file).",".$db->Quote($tpl_file).",".$db->Quote($cache_id).",NOW(),".intval($ttl).")"); 
+		} else {
 			$smarty_obj->trigger_error("cache_handler: set failed.");
 		}
 		
@@ -86,12 +80,12 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 		} else {
 			if(strpos($cache_id, '|') !== false) {
 				if(!empty($tpl_file)) {
-					$results = memcache_cache_handler_clear_helper($db,$m,"WHERE TemplateFile='" .$tpl_file ."' AND GroupCache LIKE '$cache_id%'");
+					$results = memcache_cache_handler_clear_helper($db,$m," AND TemplateFile='" .$tpl_file ."' AND GroupCache LIKE ".$db->Quote($cache_id.'%'));
 				} else {
-					$results = memcache_cache_handler_clear_helper($db,$m,"WHERE GroupCache LIKE '$cache_id%'");
+					$results = memcache_cache_handler_clear_helper($db,$m," AND GroupCache LIKE ".$db->Quote($cache_id.'%'));
 				}
 			} else {
-				$results = memcache_cache_handler_clear_helper($db,$m,"WHERE CacheID='$cache_file'");
+				$results = memcache_cache_handler_clear_helper($db,$m," AND CacheID=".$db->Quote($cache_file));
 			}
 		} 
 		if(!$results) {
@@ -111,18 +105,17 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 }
 
 function memcache_cache_handler_clear_helper(&$db,&$m,$where = '') {
+	global $CONF;
 	$r = 1;
-	$recordSet = &$db->Execute("SELECT CacheID FROM smarty_cache_page $where");
+	$recordSet = &$db->Execute("SELECT CacheID FROM smarty_cache_page WHERE Folder = '{$CONF['template']}' $where");
 	while (!$recordSet->EOF) 
 	{
-		$cid = $recordSet->fields['CacheID'];
-
-		$r += $m->delete($cid);
+		$r += $m->delete($CONF['template'].$recordSet->fields['CacheID']);
 
 		$recordSet->MoveNext();
 	}
 	$recordSet->Close();
-	$db->Execute("DELETE FROM smarty_cache_page $where");
+	$db->Execute("DELETE FROM smarty_cache_page WHERE Folder = '{$CONF['template']}' $where");
 	return $r;
 }
 

@@ -376,7 +376,7 @@ class GeographPage extends Smarty
 		//gridimage
 		$this->register_function("gridimage", "smarty_function_gridimage");
 
-		//gridimage
+		//gazetteer line
 		$this->register_function("place", "smarty_function_place");
 
 		//linktoself
