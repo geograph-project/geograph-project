@@ -39,11 +39,6 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 		// grab the key from memcached
 		$cache_content = $m->get($CONF['template'].$cache_file);
 		
-		foreach(debug_backtrace() as $entry){ 
-			print "\nFile: ".$entry['file']." (Line: ".$entry['line'].") "; 
-			print "Function: ".$entry['function']."<br/>";
-		} 
-		
 		// use compression?
 		if(!empty($smarty_obj->use_gzip) && function_exists("gzuncompress")) {
 			$cache_content = gzuncompress($cache_content);
