@@ -420,20 +420,22 @@ if ($grid_given)
 					switch ($method) {
 						case 'category':
 							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where GROUP BY imageclass ORDER BY seq_no LIMIT $limit";
+							break;
 						
 						case 'groups':
 							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search INNER JOIN gridimage_group USING (gridimage_id) WHERE $gis_where GROUP BY label ORDER BY seq_no LIMIT $limit";
+							break;
 						
 						case 'user+category': 
 							//http://stackoverflow.com/questions/1138006/multi-column-distinct-in-mysql
 
 							$table = $CONF['db_tempdb'].".tmp_".md5(uniqid());
 
-							$db->Execute("CREATE TEMPORARY TABLE $table SELECT $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf DESC, REVERSE(gridimage_id)");
+							$db->Execute("CREATE TEMPORARY TABLE geograph_tmp.tmp_myrtest SELECT gridimage_id,user_id,realname,credit_realname,title,imageclass,grid_reference FROM gridimage_search WHERE grid_reference = 'TQ3602' ORDER BY ftf DESC, REVERSE(gridimage_id)");
 
-							$db->Execute("ALTER IGNORE TABLE $table ADD UNIQUE (user_id),ADD UNIQUE (imageclass)");
+							$db->Execute("ALTER IGNORE TABLE geograph_tmp.tmp_myrtest ADD UNIQUE (user_id),ADD UNIQUE (imageclass)");
 
-							$sql = "SELECT SQL_CALC_FOUND_ROWS * FROM $table LIMIT $limit";
+							$sql = "/* {$square->grid_reference}/{$square->gridsquare_id} */ SELECT SQL_CALC_FOUND_ROWS * FROM geograph_tmp.tmp_myrtest LIMIT 12";
 							break;
 							
 						case 'spaced': 
@@ -441,16 +443,20 @@ if ($grid_given)
 							$space = max(1,floor($square->imagecount/$limit));
 							
 							$sql = "select SQL_CALC_FOUND_ROWS $columns,if(@c=$space,@c:=0,@c:=@c+1) AS c FROM gridimage_search WHERE $gis_where HAVING c=0 ORDER by seq_no";
-
+							break;
+						
 						case 'any':
 							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf DESC LIMIT $limit";
-					
+							break;
+						
 						case 'random':
 							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf DESC, REVERSE(gridimage_id) LIMIT $limit";
-					
+							break;
+						
 						case 'latest':
 							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf DESC, seq_no DESC LIMIT $limit";
-					
+							break;
+						
 						case 'few':
 						default:
 							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY seq_no LIMIT $limit";
