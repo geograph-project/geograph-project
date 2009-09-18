@@ -56,7 +56,7 @@
 {/if}
 
 <br/>
-<div class="interestBox">... see also the <a href="/help/credits">Contributor Credits</a> and <a href="/help/credits">Website Credits</a></div>
+<div class="interestBox">... see also the <a href="/credits/">Contributor Credits</a> and <a href="/help/credits">Website Credits</a></div>
 
 {dynamic}
 {if $user->registered && ($user->stats.squares gt 20)}
