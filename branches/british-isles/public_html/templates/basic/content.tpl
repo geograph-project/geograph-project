@@ -63,7 +63,7 @@
 <input type="submit" value="Find"/>
 </div>
 <lable for="qs">Search Content:</label> <br/>
-<input type="text" name="q" id="qs" size="30"/>
+<input type="text" name="q" id="qs" size="30" {if $q} value="{$q|escape:'html'}"{/if}/>
 </form><hr/>
 Shortcuts:
 <ul>
