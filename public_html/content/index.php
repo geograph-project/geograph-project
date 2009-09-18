@@ -130,8 +130,9 @@ if (($template == 'content_iframe.tpl' || $inline) && !$smarty->is_cached($templ
 			$sphinx->q = preg_replace('/\bp(age|)\d+\s*$/','',$sphinx->q);
 		}
 		
-		$extra .= "&amp;q=".urlencode($sphinx->q);
-		$title = "Matching word search [ ".htmlentities($sphinx->q)." ]";
+		$smarty->assign_by_ref('q', $list);
+		$extra .= "&amp;q=".urlencode($sphinx->qclean);
+		$title = "Matching word search [ ".htmlentities($sphinx->qclean)." ]";
 		
 		#$sphinx->processQuery();
 		
@@ -294,7 +295,7 @@ if (($template == 'content.tpl' || $inline)  && !$smarty->is_cached($template, $
 			$title = "By ".($profile->realname);
 		} elseif (!empty($_GET['q'])) {
 			$sphinx = new sphinxwrapper(trim($_GET['q']));
-			$title = "Matching [ ".htmlentities($sphinx->q)." ]";
+			$title = "Matching [ ".htmlentities($sphinx->qclean)." ]";
 		} elseif (isset($_GET['docs'])) {
 			$title = "Geograph Documents";
 		} elseif (isset($_GET['loc'])) {
