@@ -431,11 +431,11 @@ if ($grid_given)
 
 							$table = $CONF['db_tempdb'].".tmp_".md5(uniqid());
 
-							$db->Execute("CREATE TEMPORARY TABLE geograph_tmp.tmp_myrtest SELECT gridimage_id,user_id,realname,credit_realname,title,imageclass,grid_reference FROM gridimage_search WHERE grid_reference = 'TQ3602' ORDER BY ftf DESC, REVERSE(gridimage_id)");
+							$db->Execute("CREATE TEMPORARY TABLE $table SELECT $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf DESC, REVERSE(gridimage_id)");
 
-							$db->Execute("ALTER IGNORE TABLE geograph_tmp.tmp_myrtest ADD UNIQUE (user_id),ADD UNIQUE (imageclass)");
+							$db->Execute("ALTER IGNORE TABLE $table ADD UNIQUE (user_id),ADD UNIQUE (imageclass)");
 
-							$sql = "/* {$square->grid_reference}/{$square->gridsquare_id} */ SELECT SQL_CALC_FOUND_ROWS * FROM geograph_tmp.tmp_myrtest LIMIT 12";
+							$sql = "/* {$square->grid_reference}/{$square->gridsquare_id} */ SELECT SQL_CALC_FOUND_ROWS * FROM $table LIMIT $limit";
 							break;
 							
 						case 'spaced': 
