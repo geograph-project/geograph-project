@@ -370,7 +370,8 @@ class ImageList
 	 */
 	function &_getDB()
 	{
-		$this->db = GeographDatabaseConnection(true);
+		if (!is_object($this->db))
+			$this->db = GeographDatabaseConnection(true);
 		return $this->db;
 	}
 
