@@ -77,6 +77,22 @@ if (isset($_GET['getExtendedStats'])) {
 		
 	}
 	print "</table>";
+
+} elseif (!empty($_GET['CacheID'])) {
+	$key = $_GET['Folder'].$_GET['CacheID'];
+	print "<h2>Smarty Cache</h2>";
+	print "<h3>Memcache key: <tt>$key</tt></h3>";
+	if ($_GET['action'] == 'view') {
+		$v = $memcache->get($key);
+		print "Length: ".strlen($v);
+		print "<pre style='background-color:silver;border:4px solid black;padding:10px'>";
+		print htmlentities($v);
+		print "</pre>";
+	} elseif ($_GET['action'] == 'delete') {
+		$ok = $memcache->delete($key);
+		print "<p>Delete return value: $ok</p>";
+	}
+
 } elseif (!empty($_GET['post_id'])) {
 	$namespace = 'fp';
 	$key = $memcache->prefix.$namespace.':'.intval($_GET['post_id']);
@@ -90,8 +106,9 @@ if (isset($_GET['getExtendedStats'])) {
 		print "</pre>";
 	} elseif ($_GET['action'] == 'delete') {
 		$ok = $memcache->name_delete($namespace,intval($_GET['post_id']))?1:0;
-		print "Delete return value: $ok";
+		print "<p>Delete return value: $ok</p>";
 	}
+
 } elseif (!empty($_GET['image_id'])) {
 	$namespace = 'is';
 	$size = "120x120";if (!empty($_GET['size'])) $size = $_GET['size'];
@@ -105,7 +122,7 @@ if (isset($_GET['getExtendedStats'])) {
 		print "</pre>";
 	} elseif ($_GET['action'] == 'delete') {
 		$ok = $memcache->name_delete($namespace,intval($_GET['image_id']).':'.$size);
-		print "Delete return value: $ok";
+		print "<p>Delete return value: $ok</p>";
 	}
 
 } elseif (isset($_GET['flushMemcache'])) {
@@ -158,6 +175,16 @@ post_id: <input type="text" name="image_id" value="" size="7"/> <input type="sub
 
 <input type="radio" name="action" value="view" checked> View Contents<br/>
 <input type="radio" name="action" value="delete"> Delete Cache<br/>
+</form>
+
+<hr/>
+<form method="get">
+<h3>Smarty Cache</h3>
+Folder: <input type="text" name="Folder" value="<? echo $CONF['template']; ?>" size="7"/> <input type="submit" value="Go"><br/>
+CacheID: <input type="text" name="CacheID" value="" size="50"/> <br/>
+
+<input type="radio" name="action" value="view" checked> View Contents<br/>
+<input type="radio" name="action" value="delete"> Delete Cache (does not delete from meta db)<br/>
 </form>
 
 <hr/>
