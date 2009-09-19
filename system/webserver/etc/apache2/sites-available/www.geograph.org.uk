@@ -12,6 +12,7 @@
     ServerAlias new.geograph.org.uk
     ServerAlias new.geograph.co.uk
     ServerAlias archive.geograph.org.uk
+    ServerAlias api.geograph.org.uk
 
     ServerAlias www.geograph.ie
     ServerAlias geograph.ie
@@ -53,51 +54,71 @@
 
     RewriteEngine on
 
-    RewriteCond %{HTTP_HOST}   ^geograph\.ie [NC]
+	#canonical domain for Ireland
+    RewriteCond %{HTTP_HOST}   ^geograph\.ie [NC,OR]
+    RewriteCond %{HTTP_HOST}   ^ireland\.geograph\.org\.uk [NC]
     RewriteRule ^/(.*)         http://www.geograph.ie/$1 [L,R=permanent]
 
+	#canonical domain for .uk
+	#List of valid domains - all OTHERS are redirected back to www.
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^kml\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^schools\.geograph\.org\.uk [NC]
-    RewriteCond %{HTTP_HOST}   !^ireland\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.ie [NC]
     RewriteCond %{HTTP_HOST}   !^t0\.www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^t0\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^archive\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !^api\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^$
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
+	#List of valid urls on api...
+    RewriteCond %{HTTP_HOST}   ^api\.geograph\.org\.uk [NC]
+    RewriteCond %{REQUEST_URI} !^/api
+    RewriteCond %{REQUEST_URI} !^/syndicator
+    RewriteCond %{REQUEST_URI} !^/export
+    RewriteCond %{REQUEST_URI} !^/robots
+    RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
+
+	#List of valid urls on kml....
     RewriteCond %{HTTP_HOST}   ^kml\.geograph\.org\.uk [NC]
     RewriteCond %{REQUEST_URI} !^/kml
     RewriteCond %{REQUEST_URI} !^/robots
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
+	#List of valid urls on t0....
     RewriteCond %{HTTP_HOST}   ^t0\.www\.geograph\.org\.uk [NC,OR]
     RewriteCond %{HTTP_HOST}   ^t0\.geograph\.org\.uk [NC]
     RewriteCond %{REQUEST_URI} !^/tile
     RewriteCond %{REQUEST_URI} !^/robots
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
+	#List of valid crawling domains (but maybe specific robots.txt for some below) 
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^kml\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.ie [NC]
     RewriteCond %{HTTP_HOST}   !^t0\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !^api\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^archive\.geograph\.org\.uk [NC]
     RewriteRule ^/robots.txt   /robots-none.txt [qsa]
 
-    #For webarchive.co.uk
-    RewriteCond %{HTTP:X_FORWARDED_FOR}   128.86.236.164 [NC,OR]
+	#Special robots file for archiveable - served on ALL domains, but previewed on archive...
+    RewriteCond %{HTTP:X-Forwarded-For}   128.86.236.164 [NC,OR]  #webarchive.org.uk's crawler
     RewriteCond %{HTTP_HOST}   ^archive\.geograph\.org\.uk [NC]
     RewriteRule ^/robots.txt   /robots-archive.txt [qsa]
 
+	#Special robots file for Ireland
     RewriteCond %{HTTP_HOST}   ^www\.geograph\.ie [NC]
     RewriteRule ^/robots.txt   /robots.ie.txt [qsa]
 
+	#Special Sitemap for Ireland
     RewriteCond %{HTTP_HOST}   ^www\.geograph\.ie [NC]
     RewriteRule ^/sitemap/(geograph.html|index.html|)$   http://www.geograph.ie/sitemap/ireland.html [L,R=permanent]
 
-
+	#canonical for feeds (georss is now the default for .rss)
     RewriteRule ^/(feed|profile)/(.*)\.georss$   /$1/$2.rss [L,R=permanent]
+
+
 
     #the following includes a fix as some useragents auto add a / to what it thinks is a folder
 
@@ -132,7 +153,6 @@
     RewriteRule ^/reg/([^/]+)/(.*) /register.php?u=$1&confirm=$2 [qsa]
     RewriteRule ^/list/([A-Z]{1,2}) /list.php?square=$1 [qsa]
 
-
     RewriteRule ^/credits/?([\d-]*)/?$ /credits.php?when=$1
     RewriteRule ^/contributors/(\d+) /statistics/breakdown.php?by=user&i=$1
 
@@ -159,6 +179,7 @@
 
     RewriteRule ^/get-juppy.jnlp /get-juppy.php [qsa]
 
+    #allow sitemap files to be at top level, but served from a shared folder
     RewriteRule ^/(sitemap[\d\w\.-]*\.xml.*)$ /sitemap/root/$1 [L]
 
     #rewrite imagemap clicks as regular urls - must do this otherwise
@@ -166,9 +187,10 @@
     RewriteCond %{QUERY_STRING} (.+)\?([0-9]+),([0-9]+)$
     RewriteRule ^/mapbrowse.php /mapbrowse.php?x=%2&y=%3&%1
 
-
+    #version urls for js/css
     RewriteRule ^/(.*)\.v[0-9]+\.(css|js)$ /$1.$2 [L]
 
+    #short urls
     RewriteRule /g/(.*) http://%{HTTP_HOST}/gridref/$1 [qsa,L,R=permanent]
     RewriteRule /u/(.*) http://%{HTTP_HOST}/profile/$1 [qsa,L,R=permanent]
     RewriteRule /p/(.*) http://%{HTTP_HOST}/photo/$1 [qsa,L,R=permanent]
@@ -176,6 +198,7 @@
 
     ErrorDocument 404 /staticpage.php?page=404
 
+    #list of known sites that 'hotlink'
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?myspace\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?facebook\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?blogspot\.com/ [NC,OR]
