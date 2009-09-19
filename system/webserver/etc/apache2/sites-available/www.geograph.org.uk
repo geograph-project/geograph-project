@@ -86,7 +86,7 @@
     RewriteRule ^/robots.txt   /robots-none.txt [qsa]
 
     #For webarchive.co.uk
-    RewriteCond %{X_FORWARDED_FOR}   128.86.236.164 [NC,OR]
+    RewriteCond %{HTTP:X_FORWARDED_FOR}   128.86.236.164 [NC,OR]
     RewriteCond %{HTTP_HOST}   ^archive\.geograph\.org\.uk [NC]
     RewriteRule ^/robots.txt   /robots-archive.txt [qsa]
 
@@ -148,7 +148,7 @@
     RewriteRule ^/feed/results([0-9]*)/([0-9]+)/?([^/]*)/? /syndicator.php?page=$1&i=$2&format=$3 [qsa]
 
     RewriteRule ^/results/([0-9]+)(/[0-9]+|)\.?([\w]*)$ /search.php?page=$2&i=$1&extension=$3 [qsa]
-
+    RewriteRule ^/results/$ /search.php [qsa]
 
     RewriteRule ^/discuss/topic([0-9]+) /discuss/?action=vthread&topic=$1 [qsa,r]
     RewriteRule ^/discuss/forum([0-9]+) /discuss/?action=vtopic&forum=$1 [qsa,r]
