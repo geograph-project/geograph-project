@@ -102,7 +102,7 @@ if (!@is_dir($CONF['sphinx_cache']."place/$q1")) {
 		$cl->SetMatchMode ( $mode );
 		$cl->SetSortMode ( SPH_SORT_EXTENDED, "score ASC, @relevance DESC" );
 		$cl->SetLimits(0,20);
-		$res = $cl->Query ( $q, $index );
+		$res = $cl->Query ( $q, $CONF['sphinx_prefix'].$index );
 		
 		// --------------
 		

@@ -256,15 +256,15 @@ class sphinxwrapper {
 	
 	
 	public function countMatches($index_in = "user") {
-		
+		global $CONF;
 		$cl = $this->_getClient();
 		
 		if ($index_in == "_images") {
-			$index = "gi_stemmed,gi_delta_stemmed";
+			$index = "{$CONF['sphinx_prefix']}gi_stemmed,{$CONF['sphinx_prefix']}gi_delta_stemmed";
 		} elseif ($index_in == "_posts") {
-			$index = "post_stemmed,post_delta_stemmed";
+			$index = "{$CONF['sphinx_prefix']}post_stemmed,{$CONF['sphinx_prefix']}post_delta_stemmed";
 		} else {
-			$index = $index_in;
+			$index = $CONF['sphinx_prefix'].$index_in;
 		}
 		
 		$q = $this->q;
@@ -370,6 +370,7 @@ class sphinxwrapper {
 	}
 	
 	public function returnIds($page = 1,$index_in = "user",$DateColumn = '') {
+		global $CONF;
 		$q = $this->q;
 		if (empty($this->qoutput)) {
 			$this->qoutput = $q;
@@ -442,14 +443,14 @@ class sphinxwrapper {
 		
 		if ($index_in == "_images") {
 			$q = preg_replace('/@text\b/','@(title,comment,imageclass)',$q);
-			$index = "gi_stemmed,gi_delta_stemmed";
+			$index = "{$CONF['sphinx_prefix']}gi_stemmed,{$CONF['sphinx_prefix']}gi_delta_stemmed";
 		} elseif ($index_in == "_images_exact") {
 			$q = preg_replace('/@text\b/','@(title,comment,imageclass)',$q);
-			$index = "gridimage,gi_delta";
+			$index = "{$CONF['sphinx_prefix']}gridimage,{$CONF['sphinx_prefix']}gi_delta";
 		} elseif ($index_in == "_posts") {
-			$index = "post_stemmed,post_delta_stemmed";
+			$index = "{$CONF['sphinx_prefix']}post_stemmed,p{$CONF['sphinx_prefix']}ost_delta_stemmed";
 		} else {
-			$index = $index_in;
+			$index = $CONF['sphinx_prefix'].$index_in;
 		}
 		
 		$res = $cl->Query ( $q, $index );
@@ -541,8 +542,9 @@ class sphinxwrapper {
 	}
 	
 	function BuildExcerpts($docs, $index, $words, $opts=array() ) {
+		global $CONF;
 		$cl = $this->_getClient();
-		return $cl->BuildExcerpts ( $docs, $index, $words, $opts);
+		return $cl->BuildExcerpts ( $docs, $CONF['sphinx_prefix'].$index, $words, $opts);
 	}
 	
 	function setSort($sort) {

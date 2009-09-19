@@ -150,7 +150,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$cl->SetSortMode ( SPH_SORT_EXTENDED2, "@relevance DESC, @id DESC" );
 		$cl->SetMatchMode ( $mode );
 		$cl->SetLimits($offset,25);
-		$res = $cl->Query ( $q, $index );
+		$res = $cl->Query ( $q, $CONF['sphinx_prefix'].$index );
 		
 		if (strlen($q) < 64 && $mode != SPH_MATCH_EXTENDED)
 			$smarty->assign("suggestions",didYouMean($q,$cl));
@@ -234,8 +234,9 @@ $smarty->display($template,$cacheid);
 
 
 function didYouMean($q,$cl) {
+	global $CONF;
 	$cl->SetMatchMode ( SPH_MATCH_ANY );
-	$res = $cl->Query ( preg_replace('/\s*\b(the|to|of)\b\s*/',' ',$q), 'gaz' );
+	$res = $cl->Query ( preg_replace('/\s*\b(the|to|of)\b\s*/',' ',$q), $CONF['sphinx_prefix'].'gaz' );
 	$arr = array();
 	if ( $res!==false && is_array($res["matches"]) )
 	{
