@@ -74,8 +74,6 @@ if (isset($_GET['legacy']) && isset($CONF['curtail_level']) && $CONF['curtail_le
 
 
 
-
-
 if (isset($_GET['fav']) && $i) {
 	if (!$db) {
 		$db=NewADOConnection($GLOBALS['DSN']);
@@ -659,57 +657,82 @@ if (isset($_GET['fav']) && $i) {
 	} elseif (isset($_GET['kml'])) {
 		$engine->page = "kml.php";
 	}
- 	$engine->buildSimpleQuery($q,$CONF['default_search_distance'],(isset($_GET['form']) && $_GET['form'] == 'simple')?'simple':'auto',(!empty($_GET['user_id']))?intval($_GET['user_id']):0);
- 	if (isset($engine->criteria) && $engine->criteria->is_multiple) {
- 		if (empty($_GET['distance']))
- 			$_GET['distance'] = $CONF['default_search_distance'];
+ 	
+ 	if (isset($_GET['form']) && $_GET['form'] == 'simple') {
+ 		$autoredirect = 'simple';
+ 	} elseif ($_SERVER['SCRIPT_NAME'] == '/results/') {
+ 		$autoredirect = false;
+ 	} else {
+ 		$autoredirect = 'auto';
+ 	}
 
-		//todo these shouldnt be hardcoded as there other possiblities for suggestions
-		$smarty->assign('multipletitle', "Placename");
-		$smarty->assign('multipleon', "placename");
+ 	$i = $engine->buildSimpleQuery($q,$CONF['default_search_distance'],$autoredirect,(!empty($_GET['user_id']))?intval($_GET['user_id']):0);
+ 	
+ 	if ($_SERVER['SCRIPT_NAME'] == '/results/' && !empty($i)) {
+ 		unset($_GET['form']);
+ 		
+ 		$i = intval($i);
+ 		
+ 		//falls though to display search results below...
+ 		
+ 	} else {
+ 	
+ 	
+		//query failed!
+		if (isset($engine->criteria) && $engine->criteria->is_multiple) {
+			if (empty($_GET['distance']))
+				$_GET['distance'] = $CONF['default_search_distance'];
 
-		if (!empty($engine->criteria->realname)) {
-			$smarty->assign('pos_realname', $engine->criteria->realname);
-			$smarty->assign('pos_user_id', $engine->criteria->user_id);
-			if (!empty($engine->criteria->nickname)) 
-				$smarty->assign('pos_nickname', $engine->criteria->nickname);
-		} else {
-			$usercriteria = new SearchCriteria_All();
-			$usercriteria->setByUsername($q);
-			if (!empty($usercriteria->realname)) {
-				//could also be a username
-				$smarty->assign('pos_realname', $usercriteria->realname);
-				$smarty->assign('pos_user_id', $usercriteria->user_id);
-				if (!empty($usercriteria->nickname)) 
-					$smarty->assign('pos_nickname', $usercriteria->nickname);
+			//todo these shouldnt be hardcoded as there other possiblities for suggestions
+			$smarty->assign('multipletitle', "Placename");
+			$smarty->assign('multipleon', "placename");
+
+			if (!empty($engine->criteria->realname)) {
+				$smarty->assign('pos_realname', $engine->criteria->realname);
+				$smarty->assign('pos_user_id', $engine->criteria->user_id);
+				if (!empty($engine->criteria->nickname)) 
+					$smarty->assign('pos_nickname', $engine->criteria->nickname);
+			} else {
+				$usercriteria = new SearchCriteria_All();
+				$usercriteria->setByUsername($q);
+				if (!empty($usercriteria->realname)) {
+					//could also be a username
+					$smarty->assign('pos_realname', $usercriteria->realname);
+					$smarty->assign('pos_user_id', $usercriteria->user_id);
+					if (!empty($usercriteria->nickname)) 
+						$smarty->assign('pos_nickname', $usercriteria->nickname);
+				}
 			}
+
+			$smarty->assign_by_ref('criteria', $engine->criteria);
+			$smarty->assign_by_ref('post', $_GET);
+			$smarty->assign_by_ref('references',$CONF['references']);
+			$smarty->assign('searchdesc', $engine->searchdesc);
+			if (isset($_GET['form']) && $_GET['form'] == 'simple') {
+				$smarty->assign('form','simple');
+			}
+			$smarty->display('search_multiple.tpl');
+		} else {
+
+			$smarty->assign('errormsg', $engine->errormsg);
+			list($q,$loc) = explode(' near ',$q,2);
+			$smarty->assign('searchlocation', $loc);
+			$smarty->assign('searchq', $q);
+
+
+			require_once('geograph/imagelist.class.php');
+			require_once('geograph/gridimage.class.php');
+			require_once('geograph/gridsquare.class.php');
+			//lets find some recent photos
+			new RecentImageList($smarty);
+			$smarty->display('search.tpl');
 		}
 		
-		$smarty->assign_by_ref('criteria', $engine->criteria);
-		$smarty->assign_by_ref('post', $_GET);
-		$smarty->assign_by_ref('references',$CONF['references']);
-		$smarty->assign('searchdesc', $engine->searchdesc);
-		if (isset($_GET['form']) && $_GET['form'] == 'simple') {
-			$smarty->assign('form','simple');
-		}
-		$smarty->display('search_multiple.tpl');
-	} else {
-
-		$smarty->assign('errormsg', $engine->errormsg);
-		list($q,$loc) = explode(' near ',$q,2);
-		$smarty->assign('searchlocation', $loc);
-		$smarty->assign('searchq', $q);
-
-
-		require_once('geograph/imagelist.class.php');
-		require_once('geograph/gridimage.class.php');
-		require_once('geograph/gridsquare.class.php');
-		//lets find some recent photos
-		new RecentImageList($smarty);
-		$smarty->display('search.tpl');
+		exit;
 	}
+} 
 
-} else if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'text' || $_GET['form'] == 'first' || $_GET['form'] == 'check' || $_GET['form'] == 'cluster2')) {
+if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'text' || $_GET['form'] == 'first' || $_GET['form'] == 'check' || $_GET['form'] == 'cluster2')) {
 	dieUnderHighLoad(1.5,'search_unavailable.tpl');
 	// -------------------------------
 	//  Advanced Form
@@ -917,6 +940,14 @@ if (isset($_GET['fav']) && $i) {
 		}
 
 		$smarty->assign('querytime', $engine->Execute($pg));
+
+		$page_title = "Search Results".$engine->criteria->searchdesc;
+		if ($engine->islimited && $engine->resultCount ) {
+			$page_title = preg_replace("/Search Results, (matching|containing) (['\[])/",number_format($engine->resultCount).' Photos of $2',$page_title);
+		} elseif (!$engine->islimited) {
+			$page_title = "All Photos".$engine->criteria->searchdesc;
+		}
+		$smarty->assign('page_title', $page_title);
 
 		$smarty->assign('i', $i);
 		$smarty->assign('currentPage', $pg);
@@ -1139,6 +1170,7 @@ if (isset($_GET['fav']) && $i) {
 	$smarty->display('search.tpl');
 }
 
+
 	function fallBackForm(&$data) {
 		global $smarty,$db;
 		$smarty->assign($data);
@@ -1168,6 +1200,8 @@ if (isset($_GET['fav']) && $i) {
 			$db = GeographDatabaseConnection(true);
 		}
 		advanced_form($smarty,$db);
+		
+		exit;
 	}
 	
 	function advanced_form(&$smarty,&$db,$is_cachable = false) {
