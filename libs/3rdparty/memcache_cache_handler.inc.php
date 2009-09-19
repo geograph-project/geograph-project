@@ -69,20 +69,21 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 	
 	case 'clear':
 		$db=&$m->_getDB();
+		$where = '';
 		if(empty($cache_id) && empty($compile_id) && empty($tpl_file)) {
 			// get all cache ids
-			$results = memcache_cache_handler_clear_helper($db,$m,'');
 		} else {
+			if (!empty($tpl_file)) {
+				$where = " AND TemplateFile='" .$tpl_file ."'";
+			}
 			if(strpos($cache_id, '|') !== false) {
-				if(!empty($tpl_file)) {
-					$results = memcache_cache_handler_clear_helper($db,$m," AND TemplateFile='" .$tpl_file ."' AND GroupCache LIKE ".$db->Quote($cache_id.'%'));
-				} else {
-					$results = memcache_cache_handler_clear_helper($db,$m," AND GroupCache LIKE ".$db->Quote($cache_id.'%'));
-				}
+				$where.=" AND GroupCache LIKE ".$db->Quote($cache_id.'%');
 			} else {
-				$results = memcache_cache_handler_clear_helper($db,$m," AND CacheID=".$db->Quote($cache_file));
+				$where.=" AND CacheID=".$db->Quote($cache_file);
 			}
 		} 
+		$results = memcache_cache_handler_clear_helper($db,$m,$where);
+		
 		if(!$results) {
 			$smarty_obj->trigger_error("cache_handler: query failed.");
 		}
@@ -106,7 +107,6 @@ function memcache_cache_handler_clear_helper(&$db,&$m,$where = '') {
 	while (!$recordSet->EOF) 
 	{
 		$r += $m->delete($CONF['template'].$recordSet->fields['CacheID']);
-
 		$recordSet->MoveNext();
 	}
 	$recordSet->Close();

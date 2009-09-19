@@ -6,14 +6,12 @@
     ServerAlias kml.geograph.org.uk
     ServerAlias www.geograph.co.uk
     ServerAlias schools.geograph.org.uk
-    ServerAlias ireland.geograph.org.uk
     ServerAlias t0.www.geograph.org.uk
     ServerAlias t0.geograph.org.uk
-    ServerAlias new.geograph.org.uk
-    ServerAlias new.geograph.co.uk
     ServerAlias archive.geograph.org.uk
     ServerAlias api.geograph.org.uk
 
+    ServerAlias ireland.geograph.org.uk
     ServerAlias www.geograph.ie
     ServerAlias geograph.ie
 

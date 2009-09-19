@@ -28,7 +28,7 @@ $CONF['server_ip'] = '127.0.0.';
 $CONF['enable_cluster'] = 2;
 $CONF['STATIC_HOST'] = "s0.geograph.mobile";
 
-//hostname to use for thumbnails if cluster is disabled 
+//hostname to use for thumbnails if cluster is disabled (used to be used for full images, but now use $CONF['STATIC_HOST'])
 $CONF['CONTENT_HOST'] = "geograph.mobile";
 
 //this *can* be different to your main hostname if want dedicated host for cookieless tile.php requests

@@ -26,6 +26,10 @@ init_session();
 
 $USER->mustHavePerm("admin");
 
+if (!empty($_GET['Folder']) && preg_match('/^[\w]+$/',$_GET['Folder'])) {
+	$CONF['template'] = $_GET['Folder'];
+}
+
 $smarty = new GeographPage;
 
 $db = NewADOConnection($GLOBALS['DSN']);
@@ -93,6 +97,11 @@ if (isset($_GET['getExtendedStats'])) {
 		print "<p>Delete return value: $ok</p>";
 	}
 
+} elseif (isset($_GET['Folder'])) {
+	print "<h2>Clear Smarty Cache</h2>";
+		
+	$smarty->clear_cache($_GET['template'],$_GET['cache_id']);
+	print "<h3>done</h3>";
 } elseif (!empty($_GET['post_id'])) {
 	$namespace = 'fp';
 	$key = $memcache->prefix.$namespace.':'.intval($_GET['post_id']);
@@ -128,10 +137,6 @@ if (isset($_GET['getExtendedStats'])) {
 } elseif (isset($_GET['flushMemcache'])) {
 	print "<h2>Flush Memcache</h2>";
 	print $memcache->flush();
-	print "<h3>done</h3>";
-} elseif (isset($_GET['clearSmarty'])) {
-	print "<h2>Clear Whole Smarty Cache</h2>";
-	$smarty->clear_cache();
 	print "<h3>done</h3>";
 } elseif (isset($_GET['get'])) {
 	$v = $memcache->get($_GET['get']);
@@ -181,7 +186,7 @@ post_id: <input type="text" name="image_id" value="" size="7"/> <input type="sub
 <form method="get">
 <h3>Smarty Cache</h3>
 Folder: <input type="text" name="Folder" value="<? echo $CONF['template']; ?>" size="7"/> <input type="submit" value="Go"><br/>
-CacheID: <input type="text" name="CacheID" value="" size="50"/> <br/>
+CacheID: <input type="text" name="CacheID" value="" size="50"/> (db-key)<br/>
 
 <input type="radio" name="action" value="view" checked> View Contents<br/>
 <input type="radio" name="action" value="delete"> Delete Cache (does not delete from meta db)<br/>
@@ -189,8 +194,11 @@ CacheID: <input type="text" name="CacheID" value="" size="50"/> <br/>
 
 <hr/>
 <form method="get">
-<h3>Clear Whole Smarty Cache</h3>
-<input type=submit name="clearSmarty" value="Go"> (NOT recommended)
+<h4>Clear Cache - using smarty->clear_cache</h4>
+Folder: <input type="text" name="Folder" value="<? echo $CONF['template']; ?>" size="7"/> <input type="submit" value="Go"><br/>
+$template: <input type="text" name="template" value="homepage.tpl" size="50"/> <br/>
+and/or $cache_id: <input type="text" name="cache_id" value="5" size="50"/>(clears all caches with this prefix if contains |) <br/>
+
 </form>
 
 <hr/>
