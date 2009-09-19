@@ -821,8 +821,8 @@ class GridImage
 		}
 		if (!file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))
 		{
-			//get path to fullsize image, but don't fallback to error image..
-			$fullpath=$this->_getFullpath(false);
+			//get path to fullsize image, 
+			$fullpath=$this->_getFullpath();
 			if ($fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			{
 				//generate resized image
@@ -948,8 +948,8 @@ class GridImage
 		}
 		if (!file_exists($base.$thumbpath))
 		{
-			//get path to fullsize image, but don't fallback to error image..
-			$fullpath=$this->_getFullpath(false);
+			//get path to fullsize image
+			$fullpath=$this->_getFullpath();
 			
 			if ($fullpath != '/photos/error.jpg' && file_exists($base.$fullpath))
 			{
@@ -1144,8 +1144,8 @@ class GridImage
 
 		if (!file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))
 		{
-			//get path to fullsize image, but don't fallback to error image..
-			$fullpath=$this->_getFullpath(false);
+			//get path to fullsize image (will try to fetch it from fetch_on_demand)
+			$fullpath=$this->_getFullpath();
 			
 			if ($fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			{
@@ -1485,7 +1485,11 @@ class GridImage
 		//we want to detect changes in ftf status...a pending image is always ftf 0
 		$original_ftf=$this->ftf;
 		
-		//todo: lock tables
+		//lock tables
+		$db->Execute("LOCK TABLES 
+		gridsquare WRITE,
+		gridimage WRITE,
+		gridimage_search WRITE");
 		
 		//you only get ftf if new status is 'geograph' and there are no other 
 		//first geograph images
@@ -1524,7 +1528,11 @@ class GridImage
 
 		}
 		
-		//todo: unlock tables. 
+		//todo? should $this->grid_square->updateCounts(); be inside the lock
+		
+		//unlock tables. 
+		$db->Execute("UNLOCK TABLES");
+
 		
 		//update maps on moderation if:
 			//was pending

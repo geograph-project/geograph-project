@@ -91,7 +91,8 @@ if (isset($_GET['gridimage_id']))
 				
 				$info=$image->setModerationStatus($status, $USER->user_id);
 				echo $info;
-
+				flush;
+				
 				if ($status == 'rejected')
 				{
 					$ticket=new GridImageTroubleTicket();
@@ -111,14 +112,14 @@ if (isset($_GET['gridimage_id']))
 				}
 
 				//clear caches involving the image
-				$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_0");
-				$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_1");
-				$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_0");
-				$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_1");
+				$ab=floor($gridimage_id/10000);
+				$smarty->clear_cache('', "img$ab|{$gridimage_id}|");
+			
 
 				//clear the users profile cache
-				$smarty->clear_cache('profile.tpl', "{$image->user_id}_0");
-				$smarty->clear_cache('profile.tpl', "{$image->user_id}_1");
+				//todo - maybe we only need to do this if a recent image?
+				$ab=floor($image->user_id/10000);
+				$smarty->clear_cache('', "user$ab|{$image->user_id}|");
 				
 				$memcache->name_delete('us',$image->user_id);
 			}
@@ -218,11 +219,11 @@ gridsquare_moderation_lock l WRITE,
 moderation_log WRITE,
 gridsquare READ,
 gridsquare gs READ,
-gridimage gi READ,
-user READ,
+gridimage gi READ LOCAL,
+user READ LOCAL,
 gridprefix READ,
-user v READ,
-user m READ");
+user v READ LOCAL,
+user m READ LOCAL");
 
 #############################
 # find the list of squares with self pending images, and exclude them...
@@ -373,8 +374,9 @@ limit $limit";
 # fetch the list of images...
 
 $images=new ImageList(); 
-
+$images->_setDB($db);
 $c = $images->_getImagesBySql($sql);
+
 
 $realname = array();
 foreach ($images->images as $i => $image) {
