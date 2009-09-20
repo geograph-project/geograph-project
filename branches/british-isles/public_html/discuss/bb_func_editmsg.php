@@ -80,6 +80,11 @@ $correctErr="<a href=\"{$main_url}/{$indexphp}action=vthread&amp;forum=$forum&am
 	global $memcache;
 	$mkey = $post.$_SERVER['HTTP_HOST'];
 	$memcache->name_delete('fp',$mkey);
+	$mkey = $post."www.geograph.org.uk";
+	$memcache->name_delete('fp',$mkey);
+	$mkey = $post."www.geograph.ie";
+	$memcache->name_delete('fp',$mkey);
+	
 
 if ($user_id!=1 and $postRange!=0) {
 if($useSessions and !session_is_registered($cookiename.'Update')) { session_register($cookiename.'Update'); $_SESSION[$cookiename.'Update']=time()+$postRange;}
