@@ -69,12 +69,15 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 	
 	case 'clear':
 		$db=&$m->_getDB();
-		$where = '';
+		$where = '1';
+		if (!empty($smarty_obj->clear_this_template_only)){ 
+			$where = " Folder = '{$CONF['template']}'";
+		}
 		if(empty($cache_id) && empty($compile_id) && empty($tpl_file)) {
 			// get all cache ids
 		} else {
 			if (!empty($tpl_file)) {
-				$where = " AND TemplateFile='" .$tpl_file ."'";
+				$where.=" AND TemplateFile='" .$tpl_file ."'";
 			}
 			if(strpos($cache_id, '|') !== false) {
 				$where.=" AND GroupCache LIKE ".$db->Quote($cache_id.'%');
@@ -82,9 +85,16 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 				$where.=" AND CacheID=".$db->Quote($cache_file);
 			}
 		} 
-		$results = memcache_cache_handler_clear_helper($db,$m,$where);
+		$r = 1;
+		$recordSet = &$db->Execute("SELECT Folder,CacheID FROM smarty_cache_page WHERE $where");
+		while (!$recordSet->EOF) {
+			$r += $m->delete($recordSet->fields['Folder'].$recordSet->fields['CacheID']);
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close();
+		$db->Execute("DELETE FROM smarty_cache_page WHERE $where");
 		
-		if(!$results) {
+		if(!$r) {
 			$smarty_obj->trigger_error("cache_handler: query failed.");
 		}
 		$return = true;
@@ -98,20 +108,6 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 	}
 	
 	return $return;
-}
-
-function memcache_cache_handler_clear_helper(&$db,&$m,$where = '') {
-	global $CONF;
-	$r = 1;
-	$recordSet = &$db->Execute("SELECT CacheID FROM smarty_cache_page WHERE Folder = '{$CONF['template']}' $where");
-	while (!$recordSet->EOF) 
-	{
-		$r += $m->delete($CONF['template'].$recordSet->fields['CacheID']);
-		$recordSet->MoveNext();
-	}
-	$recordSet->Close();
-	$db->Execute("DELETE FROM smarty_cache_page WHERE Folder = '{$CONF['template']}' $where");
-	return $r;
 }
 
 ?>

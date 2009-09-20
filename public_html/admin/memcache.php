@@ -97,9 +97,12 @@ if (isset($_GET['getExtendedStats'])) {
 		print "<p>Delete return value: $ok</p>";
 	}
 
-} elseif (isset($_GET['Folder'])) {
+} elseif (isset($_GET['clear_cache'])) {
 	print "<h2>Clear Smarty Cache</h2>";
 		
+	if (!empty($_GET['Folder'])) {
+		$smarty->clear_this_template_only=true;
+	}
 	$smarty->clear_cache($_GET['template'],$_GET['cache_id']);
 	print "<h3>done</h3>";
 } elseif (!empty($_GET['post_id'])) {
@@ -195,8 +198,8 @@ CacheID: <input type="text" name="CacheID" value="" size="50"/> (db-key)<br/>
 <hr/>
 <form method="get">
 <h4>Clear Cache - using smarty->clear_cache</h4>
-Folder: <input type="text" name="Folder" value="<? echo $CONF['template']; ?>" size="7"/> <input type="submit" value="Go"><br/>
-$template: <input type="text" name="template" value="homepage.tpl" size="50"/> <br/>
+Folder: <input type="text" name="Folder" value="" size="7"/> (leave blank to clear all folders)<br/>
+$template: <input type="text" name="template" value="homepage.tpl" size="50"/>  <input type="submit" name="clear_cache" value="Go"><br/>
 and/or $cache_id: <input type="text" name="cache_id" value="5" size="50"/>(clears all caches with this prefix if contains |) <br/>
 
 </form>
