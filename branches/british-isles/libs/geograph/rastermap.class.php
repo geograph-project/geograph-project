@@ -174,7 +174,9 @@ class RasterMap
 		$width = $this->width;
 
 		if ($this->service == 'OSM-Static-Dev') {
-			$mapurl = "http://old-dev.openstreetmap.org/~ojw/StaticMap/?mode=Export&lat={$this->lat}&lon={$this->long}&z=13&w={$width}&h={$width}&show=1&layer=cycle";
+			//params mirror http://old-dev.openstreetmap.org/~ojw/StaticMap/?mode=API&
+			//we use a proxy url primarlly because old-dev disallows robots.
+			$mapurl = "http://{$CONF['TILE_HOST']}/tile-static.php?source=OSM-cycle&lat={$this->lat}&lon={$this->long}&z=13&w={$width}&h={$width}";
 			
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
