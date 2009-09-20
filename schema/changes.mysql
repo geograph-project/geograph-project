@@ -672,8 +672,12 @@ ALTER IGNORE TABLE `smarty_cache_page` DROP PRIMARY KEY , ADD PRIMARY KEY (  `Fo
 ################################################
 
 
+ALTER TABLE  `smarty_cache_page` CHANGE `TTL` `Expire` INT UNSIGNED NOT NULL ;
 
 
+ALTER TABLE  `smarty_cache_page` ADD INDEX (`GroupCache`);
+
+################################################
 
 
 
