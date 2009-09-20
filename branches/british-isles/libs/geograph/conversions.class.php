@@ -122,7 +122,7 @@ function internal_to_wgs84($x,$y,$reference_index = 0) {
 
 //use:	list($lat,$long) = national_to_wgs84($e,$n,$reference_index);
 
-function national_to_wgs84($e,$n,$reference_index,$usehermert = true) {
+function national_to_wgs84($e,$n,$reference_index,$usehermert = true,$truncate = false) {
 	require_once('geograph/conversionslatlong.class.php');
 	$conv = new ConversionsLatLong;
 	$latlong = array();
@@ -131,6 +131,11 @@ function national_to_wgs84($e,$n,$reference_index,$usehermert = true) {
 	} else if ($reference_index == 2) {
 		$latlong = $conv->irish_to_wgs84($e,$n,$usehermert);
 	}
+	if ($truncate) {
+		$latlong[0] = sprintf("%.6f",$latlong[0]);
+		$latlong[1] = sprintf("%.6f",$latlong[1]);
+	}
+	
 	return $latlong;
 }
 

@@ -84,6 +84,7 @@ class RasterMap
 			'OS50k-small'=>125,
 			'VoB'=>250,
 			'Google'=>250,
+			'OSM-Static-Dev'=>250,
 			'OS250k-m10k'=>250,
 			'OS250k-m40k'=>250
 		);
@@ -131,6 +132,8 @@ class RasterMap
 					$this->enabled = true;
 					$this->service = 'VoB';
 				} 
+			} elseif($CONF['template'] == 'archive') {
+				$this->service = 'OSM-Static-Dev';
 			} elseif(($this->exactPosition || in_array('Grid',$services)) && in_array('Google',$services)) {
 				//$this->enabled = true;
 				$this->service = 'Google';
@@ -145,7 +148,7 @@ class RasterMap
 	} 
 	
 	function addLatLong($lat,$long) {
-		if ($this->service == 'Google') {
+		if ($this->service == 'Google' || $this->service == 'OSM-Static-Dev') {
 			$this->enabled = true;
 		}
 		$this->lat = floatval($lat);
@@ -170,7 +173,52 @@ class RasterMap
 
 		$width = $this->width;
 
-		if ($this->service == 'Google') {
+		if ($this->service == 'OSM-Static-Dev') {
+			$mapurl = "http://old-dev.openstreetmap.org/~ojw/StaticMap/?mode=Export&lat={$this->lat}&lon={$this->long}&z=13&w={$width}&h={$width}&show=1&layer=cycle";
+			
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;
+			
+			$e = floor($this->nateastings/1000) * 1000;
+			$n = floor($this->natnorthings/1000) * 1000;
+			
+			$mapurl .= $this->getStaticLineParam($conv,0,$e-1000,$n,$e+2000,$n);
+			$mapurl .= $this->getStaticLineParam($conv,1,$e-1000,$n+1000,$e+2000,$n+1000);
+			$mapurl .= $this->getStaticLineParam($conv,2,$e,$n-1000,$e,$n+2000);
+			$mapurl .= $this->getStaticLineParam($conv,3,$e+1000,$n-1000,$e+1000,$n+2000);
+			
+			if ($this->exactPosition) {
+				$mapurl .= "&mlat0={$this->lat}&mlon0={$this->long}&mico0=27710";
+			}
+			
+			if (!empty($this->viewpoint_northings)) {
+				$different_square_true = (intval($this->nateastings/1000) != intval($this->viewpoint_eastings/1000)
+					|| intval($this->natnorthings/1000) != intval($this->viewpoint_northings/1000));
+
+				$show_viewpoint = (intval($this->viewpoint_grlen) > 4) || ($different_square_true && ($this->viewpoint_grlen == '4'));
+
+				if ($show_viewpoint) {
+					$ve = $this->viewpoint_eastings;	$vn = $this->viewpoint_northings;
+					if (false) { //this isn't done by gridsquare_to_wgs84 - so doesnt make sence to do it here...
+						if ($this->viewpoint_grlen == '4') {
+							$ve +=500; $vn += 500;
+						}
+						if ($this->viewpoint_grlen == '6') {
+							$ve +=50; $vn += 50;
+						}
+					}
+					list($lat,$long) = $conv->national_to_wgs84($ve,$vn,$this->reference_index,true,true);
+					
+					$mapurl .= "&mlat1=$lat&mlon1=$long&mico1=8513";
+				}
+			}
+			
+			$title = "Map data (c) openstreetmap.org  CC-BY-SA 2.0";
+			
+			return "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img name=\"tile\" src=\"$mapurl\" style=\"width:{$width}px;height:{$width}px\" border=\"1\" alt=\"$title\"/></div>";
+
+			
+		} elseif ($this->service == 'Google') {
 			if (!empty($this->inline) || !empty($this->issubmit)) {
 				return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\">Loading map... (JavaScript required)</div>";
 			} else {
@@ -445,6 +493,12 @@ class RasterMap
 		}
 	}
 
+	function getStaticLineParam(&$conv,$l,$e1,$n1,$e2,$n2) {
+		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index,true,true);
+		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index,true,true);
+		return "&d{$l}p0lat=$lat1&d{$l}p0lon=$long1&d{$l}p1lat=$lat2&d{$l}p1lon=$long2";
+	}
+
 	function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2) {
 		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
 		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
@@ -471,7 +525,9 @@ class RasterMap
 	function getScriptTag()
 	{
 		global $CONF;
-		if ($this->service == 'Google') {
+		if ($this->service == 'OSM-Static-Dev') {
+		
+		} elseif ($this->service == 'Google') {
 			if (empty($this->inline) && empty($this->issubmit)) {
 				//its now handled by the 'childmap'
 				return;
@@ -497,11 +553,13 @@ class RasterMap
 
 					if ($show_viewpoint) {
 						$ve = $this->viewpoint_eastings;	$vn = $this->viewpoint_northings;
-						if ($this->viewpoint_grlen == '4') {
-							$ve +=500; $vn += 500;
-						}
-						if ($this->viewpoint_grlen == '6') {
-							$ve +=50; $vn += 50;
+						if (false) { //this isn't done by gridsquare_to_wgs84 - so doesnt make sence to do it here...
+							if ($this->viewpoint_grlen == '4') {
+								$ve +=500; $vn += 500;
+							}
+							if ($this->viewpoint_grlen == '6') {
+								$ve +=50; $vn += 50;
+							}
 						}
 						list($lat,$long) = $conv->national_to_wgs84($ve,$vn,$this->reference_index);
 						$block .= "
@@ -603,7 +661,7 @@ class RasterMap
 
 	function getTitle($gridref) 
 	{
-		if ($this->service == 'Google') {
+		if ($this->service == 'Google' || $this->service == 'OSM-Static-Dev') {
 			return '';
 		} 
 		return "<span id=\"mapTitleOS50k\"".($this->service == 'OS50k'?'':' style="display:none"').">1:50,000 Modern Day Landranger&trade; Map</span>".
@@ -613,7 +671,9 @@ class RasterMap
 	function getFootNote() 
 	{
 		global $CONF;
-		if ($this->service == 'Google') {
+		if ($this->service == 'OSM-Static-Dev') {
+			return 'Subject Location: <img src="http://old-dev.openstreetmap.org/~ojw/StaticMap/symbols/27710.png" width="12" height="12"/>, Photographer Location: <img src="http://old-dev.openstreetmap.org/~ojw/StaticMap/symbols/8513.png" width="12" height="12"/>';
+		} elseif ($this->service == 'Google') {
 			return '';
 		} elseif ($this->issubmit) {
 			return "<span id=\"mapFootNoteOS50k\"".(($this->service == 'OS50k' && $this->issubmit)?'':' style="display:none"')."><br/>Centre the blue circle on the subject and mark the photographer position with the black circle. <b style=\"color:red\">The circle centre marks the spot.</b> The red arrow will then show view direction.</span>".
