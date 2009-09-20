@@ -178,9 +178,9 @@ The <b>Geograph Website</b>:
 
 	<p>Ideally images shouldn't have the longest dimension less than 480 pixels, while we might accept such images if they hold particular interest, we would really prefer a larger image.</p>
 
-	<p>We do preserve the EXIF headers from your original image, so it is
+	<p>We do record the EXIF headers from your original image, so it is
 	advantageous to upload your original camera image if you want this information
-	to be kept.</p>
+	to be kept. (but we don't currently make use of the data)</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
