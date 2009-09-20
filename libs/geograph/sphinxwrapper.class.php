@@ -555,11 +555,12 @@ class sphinxwrapper {
 	 * get stored db object, creating if necessary
 	 * @access private
 	 */
-	function &_getDB()
+	function &_getDB($allow_readonly = false)
 	{
-		if (!is_object($this->db))
-			$this->db=NewADOConnection($GLOBALS['DSN']);
-		if (!$this->db) die('Database connection failed'); 
+		//check we have a db object or if we need to 'upgrade' it
+		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
+			$this->db=GeographDatabaseConnection($allow_readonly);
+		} 
 		return $this->db;
 	}
 	

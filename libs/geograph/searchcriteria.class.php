@@ -83,7 +83,7 @@ class SearchCriteria
 	}
 	
 	function toDays($date) {
-		$db = $this->_getDB();
+		$db = $this->_getDB(true);
 		$date = str_replace('-00','-01',$date);
 		return intval($db->GetOne('select to_days('.
 			(preg_match('/\)$/',$date)?$date:$db->Quote($date)).
@@ -387,7 +387,7 @@ class SearchCriteria
 				$this->sphinx['impossible']++;
 			} else {
 				#$this->sphinx['filters']['imageclass'] = "\"".$this->limit3."\"";
-				$db = $this->_getDB();
+				$db = $this->_getDB(true);
 				$this->sphinx['filters']['classcrc'] = array($db->GetOne('select crc32('.$db->Quote($this->limit3).')'));
 			}
 		} 
@@ -408,7 +408,7 @@ class SearchCriteria
 				$sql_where .= ' and ';
 			}
 			
-			$db = $this->_getDB();
+			$db = $this->_getDB(true);
 			
 			$prefix = $db->GetRow('select * from gridprefix where prefix='.$db->Quote($this->limit5).' limit 1');	
 			
@@ -580,7 +580,7 @@ class SearchCriteria
 	function getSQLPartsFromText($q) {
 		if (empty($q)) 
 			return;
-		$db = $this->_getDB();
+		$db = $this->_getDB(true);
 		
 		extract($this->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
 		
@@ -678,7 +678,7 @@ class SearchCriteria
 	
 	function countSingleSquares($radius = 4) {
 		global $CONF;
-		$db = $this->_getDB();
+		$db = $this->_getDB(true);
 		
 		$x = $this->x;
 		$y = $this->y;
@@ -750,11 +750,12 @@ class SearchCriteria
 	 * get stored db object, creating if necessary
 	 * @access private
 	 */
-	function &_getDB()
+	function &_getDB($allow_readonly = false)
 	{
-		if (!is_object($this->db))
-			$this->db=NewADOConnection($GLOBALS['DSN']);
-		if (!$this->db) die('Database connection failed');  
+		//check we have a db object or if we need to 'upgrade' it
+		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
+			$this->db=GeographDatabaseConnection($allow_readonly);
+		}
 		return $this->db;
 	}
 
@@ -826,7 +827,7 @@ class SearchCriteria_All extends SearchCriteria
 	* allows finding of a user by text string
 	*/
 	function setByUsername($username) {
-		$db = $this->_getDB();
+		$db = $this->_getDB(true);
 		if (preg_match('/^(\d+):/',$username,$m)) {
 			$users = $db->GetAll("select user_id,realname,nickname from user where user_id={$m[1]} limit 2");
 		} elseif (!preg_match('/\bnear\b/',$username)) {
@@ -868,7 +869,7 @@ class SearchCriteria_Placename extends SearchCriteria
 		$places = $gaz->findPlacename($placename);
 		
 		if (count($places) == 1) {
-			$db = $this->_getDB();
+			$db = $this->_getDB(true);
 			$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$places[0]['reference_index']." and origin_x > 0 order by origin_x,origin_y limit 1");	
 
 			$this->x = intval($places[0]['e']/1000) + $origin['origin_x'];
@@ -889,7 +890,7 @@ class SearchCriteria_Placename extends SearchCriteria
 class SearchCriteria_Postcode extends SearchCriteria
 {
 	function setByPostcode($code) {
-		$db = $this->_getDB();
+		$db = $this->_getDB(true);
 		if (strpos($code,' ') === FALSE) {
 			//yes know avg(reference_index) is always same as reference_index, but get round restriction in mysql
 			$postcode = $db->GetRow('select avg(e) as e,avg(n) as n,avg(reference_index) as reference_index from loc_postcodes where code like'.$db->Quote("$code _").'');			
@@ -917,7 +918,7 @@ class SearchCriteria_County extends SearchCriteria
 	}
 	
 	function setByCounty($county_id) {
-		$db = $this->_getDB();
+		$db = $this->_getDB(true);
 		
 		$county = $db->GetRow('select e,n,name,reference_index from loc_counties where county_id='.$db->Quote($county_id).' limit 1');	
 	
