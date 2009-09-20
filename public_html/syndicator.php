@@ -286,7 +286,7 @@ for ($i=0; $i<$cnt; $i++)
 	}
 
 	$item->date = strtotime($images->images[$i]->submitted);
-	$item->source = str_replace('//','/',$rss->link.$images->images[$i]->profile_link);
+	$item->source = $rss->link.preg_replace('/^\//','',$images->images[$i]->profile_link);
 	$item->author = $images->images[$i]->realname;
 
 	if ($geoformat) {

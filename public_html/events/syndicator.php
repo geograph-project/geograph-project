@@ -55,7 +55,7 @@ if ($format == 'KML') {
 $format_extension = strtolower(str_replace('.','_',$format));
 
 
-$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/events-{$format}-".empty($_GET['admin']).".$extension";
+$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/events-{$format}-".empty($_GET['admin']).".$extension";
 
 
 $rss = new UniversalFeedCreator();

@@ -46,7 +46,7 @@ $extension = ($format == 'KML')?'kml':'xml';
 
 $format_extension = strtolower(str_replace('.','_',$format));
 
-$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/content-{$format}-".md5(serialize($_GET)).".$extension";
+$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/content-{$format}-".md5(serialize($_GET)).".$extension";
 
 
 $rss = new UniversalFeedCreator();
