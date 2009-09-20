@@ -423,7 +423,7 @@ if ($grid_given)
 							break;
 						
 						case 'groups':
-							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search INNER JOIN gridimage_group USING (gridimage_id) WHERE $gis_where GROUP BY label ORDER BY seq_no LIMIT $limit";
+							$sql = "SELECT DISTINCT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search INNER JOIN gridimage_group USING (gridimage_id) WHERE $gis_where GROUP BY label ORDER BY seq_no LIMIT $limit";
 							break;
 						
 						case 'user+category': 
