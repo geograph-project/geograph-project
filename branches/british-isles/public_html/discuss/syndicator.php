@@ -67,14 +67,14 @@ $opt_gridref = (isset($_GET['gridref']) && preg_match('/^([A-Z]{1,2})(\d\d)(\d\d
 $extension = ($format == 'KML')?'kml':'xml';
 
 if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-t{$_GET['topic']}-{$format}-{$opt_expand}-{$opt_noLimit}-{$opt_when}.$extension";
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/discuss-t{$_GET['topic']}-{$format}-{$opt_expand}-{$opt_noLimit}-{$opt_when}.$extension";
 } elseif (!empty($_GET['gridref']) && preg_match('/^([A-Z]{1,2})(\d\d)(\d\d)$/',$_GET['gridref'])) {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-f{$_GET['gridref']}-{$format}-{$opt_sortBy}-{$opt_first}-{$opt_when}.$extension";
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/discuss-f{$_GET['gridref']}-{$format}-{$opt_sortBy}-{$opt_first}-{$opt_when}.$extension";
 	$_GET['forum'] = 5;
 } elseif (!empty($_GET['forum']) && is_numeric($_GET['forum'])) {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-f{$_GET['forum']}-{$format}-{$opt_sortBy}-{$opt_first}-{$opt_when}.$extension";
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/discuss-f{$_GET['forum']}-{$format}-{$opt_sortBy}-{$opt_first}-{$opt_when}.$extension";
 } else {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/discuss-{$format}-{$opt_sortBy}-{$opt_first}-{$opt_when}.$extension";
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/discuss-{$format}-{$opt_sortBy}-{$opt_first}-{$opt_when}.$extension";
 }
 
 $rss = new UniversalFeedCreator();
