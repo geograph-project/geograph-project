@@ -35,6 +35,10 @@ customCacheControl(filemtime(__FILE__),$_SERVER['QUERY_STRING']);
 
 $mapurl = "http://old-dev.openstreetmap.org/~ojw/StaticMap/?mode=Export&show=1&layer=cycle&";
 
+//actully we can host 'our' own version that uses thiner lines and smaller icons
+//see http://svn.openstreetmap.org/sites/other/StaticMap/
+
+$mapurl = "http://www.nearby.org.uk/StaticMap/?mode=Export&show=1&layer=cycle&";
 
 
 if (preg_match('/^[\w&=\.-]+$/',$_SERVER['QUERY_STRING'])) {
