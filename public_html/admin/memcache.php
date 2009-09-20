@@ -119,6 +119,10 @@ if (isset($_GET['getExtendedStats'])) {
 	} elseif ($_GET['action'] == 'delete') {
 		$ok = $memcache->name_delete($namespace,intval($_GET['post_id']))?1:0;
 		print "<p>Delete return value: $ok</p>";
+                $ok = $memcache->name_delete($namespace,intval($_GET['post_id'])."www.geograph.org.uk")?1:0;
+                print "<p>Delete www.geograph.org.uk return value: $ok</p>";
+ 		$ok = $memcache->name_delete($namespace,intval($_GET['post_id'])."www.geograph.ie")?1:0;
+		print "<p>Delete www.geograph.ie return value: $ok</p>";
 	}
 
 } elseif (!empty($_GET['image_id'])) {
