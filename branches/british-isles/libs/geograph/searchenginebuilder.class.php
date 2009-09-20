@@ -230,7 +230,7 @@ class SearchEngineBuilder extends SearchEngine
 		}
 
 		if (!empty($searchclass) && empty($criteria->is_multiple)) {
-			$db=$this->_GetDB();
+			$db=$this->_GetDB(false);
 
 			$sql = "INSERT INTO queries SET searchclass = '$searchclass',".
 			"searchtext = ".$db->Quote($searchtext).",".
@@ -444,10 +444,7 @@ class SearchEngineBuilder extends SearchEngine
 		} 
 		
 		if (isset($searchclass)) {
-			$db=NewADOConnection($GLOBALS['DSN']);
-			if (empty($db)) die('Database connection failed'); 
-
-			
+			$db=$this->_GetDB(false);
 			
 			$sql = "INSERT INTO queries SET searchclass = '$searchclass',".
 				"searchuse = ".$db->Quote($this->searchuse).",".

@@ -82,7 +82,7 @@ class SearchEngine
 	{
 		if (is_numeric($query_id)) {
 	
-			$db=$this->_getDB();
+			$db=$this->_getDB(true);
 
 			$query = $db->GetRow("SELECT *,crt_timestamp+0 as crt_timestamp_ts FROM queries WHERE id = $query_id LIMIT 1");
 			if (!count($query)) {
@@ -113,7 +113,7 @@ class SearchEngine
 	 */
 	function getMarkedCount() {
 		if ($this->query_id && $this->criteria->searchclass == 'Special' && $this->criteria->searchq == "inner join gridimage_query using (gridimage_id) where query_id = $this->query_id") {
-			$db=$this->_getDB();
+			$db=$this->_getDB(true);
 			return $db->getOne("SELECT COUNT(*) FROM gridimage_query WHERE query_id = ?",$this->query_id);
 		}
 	}
@@ -125,8 +125,8 @@ class SearchEngine
 			return;
 		}
 
-		 $db=$this->_getDB();
-		global $ADODB_FETCH_MODE;		
+		$db=$this->_getDB(true);
+		global $ADODB_FETCH_MODE;
 		$oldmode = $ADODB_FETCH_MODE;
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		$explain = $db->getAll("EXPLAIN $sql");
@@ -168,7 +168,7 @@ class SearchEngine
 	function ExecuteReturnRecordset($pg,$extra_fields = '') 
 	{
 		global $CONF;
-		$db=$this->_getDB();
+		$db=$this->_getDB(true);
 		
 		$this->criteria->getSQLParts();
 		extract($this->criteria->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
@@ -234,6 +234,7 @@ class SearchEngine
 
 				$this->resultCount = $db->CacheGetOne(3600,$sql);
 				if (empty($_GET['BBOX']) && $this->display != 'reveal') {
+					$db=$this->_getDB(false); //'upgrade' to a read/write connection
 					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 				}
 			}
@@ -287,6 +288,7 @@ END;
 				} else {
 					$this->numberOfPages = ceil($this->resultCount/$pgsize);
 					if (empty($_GET['BBOX']) && $this->display != 'reveal') {
+						$db=$this->_getDB(false); //'upgrade' to a read/write connection
 						$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 					}
 				}
@@ -307,7 +309,7 @@ END;
 	 */
 	function ExecuteSphinxRecordSet($pg) {
 		global $CONF;
-		$db=$this->_getDB();
+		$db=$this->_getDB(true);
 		
 		extract($this->criteria->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
 		
@@ -460,6 +462,7 @@ END;
 		
 	//finish off
 		if (!empty($recordSet) && empty($_GET['BBOX']) && $this->display != 'reveal') {
+			$db=$this->_getDB(false); //'upgrade' to a read/write connection
 			$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 		}
 
@@ -473,7 +476,7 @@ END;
 	function ExecuteCachedReturnRecordset($pg) 
 	{
 		global $CONF;
-		$db=$this->_getDB();
+		$db=$this->_getDB(true);
 		
 		$this->criteria->getSQLParts();
 		extract($this->criteria->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
@@ -549,6 +552,7 @@ END;
 
 				$this->resultCount = $db->CacheGetOne(3600,$sql);
 				if (empty($_GET['BBOX']) && $this->display != 'reveal') {
+					$db=$this->_getDB(false); //'upgrade' to a read/write connection
 					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 				}
 			}
@@ -600,6 +604,7 @@ END;
 				} else {
 					$this->numberOfPages = ceil($this->resultCount/$pgsize);
 					if (empty($_GET['BBOX']) && $this->display != 'reveal') {
+						$db=$this->_getDB(false); //'upgrade' to a read/write connection
 						$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 					}
 				}
@@ -711,9 +716,8 @@ END;
 				$lastPage = ($this->resultCount -1)* $pgsize;
 			
 				if ($this->currentPage < $lastPage) {
-					$db=$this->_getDB();
-					
 					if (empty($_GET['BBOX']) && $this->display != 'reveal') {
+						$db=$this->_getDB(false); //'upgrade' to a read/write connection
 						$db->Execute("replace into queries_count set id = {$this->query_id},`count` = 0");
 					}
 					$this->resultCount = 0;
@@ -739,7 +743,7 @@ END;
 	 */
 	function setDisplayclass($di) {
 		global $USER;
-		$db=$this->_getDB();
+		$db=$this->_getDB(false);
 		
 		if ($this->query_id) {
 			$db->Execute("update queries set displayclass = ".$db->Quote($di)." where id = {$this->query_id} and user_id = {$USER->user_id}");
@@ -836,11 +840,12 @@ END;
 	 * get stored db object, creating if necessary
 	 * @access private
 	 */
-	function &_getDB()
+	function &_getDB($allow_readonly = false)
 	{
-		if (!is_object($this->db))
-			$this->db=NewADOConnection($GLOBALS['DSN']);
-		if (!$this->db) die('Database connection failed');  
+		//check we have a db object or if we need to 'upgrade' it
+		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
+			$this->db=GeographDatabaseConnection($allow_readonly);
+		} 
 		return $this->db;
 	}
 

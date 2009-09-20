@@ -137,18 +137,6 @@ class ThrottleToken
 	}
 	
 	/**
-	 * get stored db object, creating if necessary
-	 * @access private
-	 */
-	function &_getDB()
-	{
-		if (!is_object($this->db))
-			$this->db=NewADOConnection($GLOBALS['DSN']);
-		if (!$this->db) die('Database connection failed'); 
-		return $this->db;
-	}	
-	
-	/**
 	 * remove the stored db object ready to serialize
 	 * @access private
 	 */
