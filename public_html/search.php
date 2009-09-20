@@ -211,8 +211,7 @@ if (isset($_GET['fav']) && $i) {
 	$data = $_GET;
 	$error = false;
 
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (empty($db)) die('Database connection failed');
+	$db=GeographDatabaseConnection(false);
 
 	if (empty($data['orderby'])) {
 		$data['orderby'] = 'seq_id';
@@ -278,8 +277,7 @@ if (isset($_GET['fav']) && $i) {
 	$data = $_GET;
 	$error = false;
 
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (empty($db)) die('Database connection failed');
+	$db=GeographDatabaseConnection(false);
 
 	$isadmin=$USER->hasPerm('moderator')?1:0;
 
@@ -472,7 +470,7 @@ if (isset($_GET['fav']) && $i) {
 	if (!empty($_GET['label'])) {
 		$data['description'] = "labeled [".strip_tags($_GET['label'])."]";
 	
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db=GeographDatabaseConnection(true);
 		$where = "label = ".$db->Quote($_GET['label']);
 	} else {
 		$data['description'] = "in a cluster";
@@ -738,8 +736,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	//  Advanced Form
 	// -------------------------------
 
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');
+	$db=GeographDatabaseConnection(true);
 
 		$smarty->assign('submitted_start', "0-0-0");
 		$smarty->assign('submitted_end', "0-0-0");
@@ -1061,9 +1058,8 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	}
 
 	if ($engine->criteria->user_id == $USER->user_id) {
-		if (!$db) {
-			$db=NewADOConnection($GLOBALS['DSN']);
-			if (!$db) die('Database connection failed');
+		if (!$db || $db->readonly) {
+			$db=GeographDatabaseConnection(false);
 		}
 		$db->query("UPDATE queries SET use_timestamp = null WHERE id = $i");
 		if (!$db->Affected_Rows()) {
