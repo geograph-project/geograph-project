@@ -674,7 +674,7 @@ class RasterMap
 	{
 		global $CONF;
 		if ($this->service == 'OSM-Static-Dev') {
-			return 'Subject Location: <img src="http://old-dev.openstreetmap.org/~ojw/StaticMap/symbols/27710.png" width="12" height="12"/>, Photographer Location: <img src="http://old-dev.openstreetmap.org/~ojw/StaticMap/symbols/8513.png" width="12" height="12"/>';
+			return 'Subject Location: <img src="http://data.geograph.org.uk/symbols/27710.png" width="12" height="12"/>, Photographer Location: <img src="http://data.geograph.org.uk/symbols/8513.png" width="12" height="12"/>';
 		} elseif ($this->service == 'Google') {
 			return '';
 		} elseif ($this->issubmit) {
