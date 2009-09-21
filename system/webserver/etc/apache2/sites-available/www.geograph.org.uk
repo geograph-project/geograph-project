@@ -91,19 +91,18 @@
     RewriteCond %{REQUEST_URI} !^/robots
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
+	#Special robots file for archiveable - served on ALL domains except archive which should see none
+    RewriteCond %{HTTP:X-Forwarded-For}   128.86.236.164 [NC]  #webarchive.org.uk's crawler
+    RewriteCond %{HTTP_HOST}   !^archive\.geograph\.org\.uk [NC]
+    RewriteRule ^/robots.txt   /robots-archive.txt [qsa]
+
 	#List of valid crawling domains (but maybe specific robots.txt for some below) 
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^kml\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.ie [NC]
     RewriteCond %{HTTP_HOST}   !^t0\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^api\.geograph\.org\.uk [NC]
-    RewriteCond %{HTTP_HOST}   !^archive\.geograph\.org\.uk [NC]
     RewriteRule ^/robots.txt   /robots-none.txt [qsa]
-
-	#Special robots file for archiveable - served on ALL domains, but previewed on archive...
-    RewriteCond %{HTTP:X-Forwarded-For}   128.86.236.164 [NC,OR]  #webarchive.org.uk's crawler
-    RewriteCond %{HTTP_HOST}   ^archive\.geograph\.org\.uk [NC]
-    RewriteRule ^/robots.txt   /robots-archive.txt [qsa]
 
 	#Special robots file for Ireland
     RewriteCond %{HTTP_HOST}   ^www\.geograph\.ie [NC]
