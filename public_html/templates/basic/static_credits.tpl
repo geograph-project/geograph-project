@@ -68,6 +68,7 @@
     </li>
     <li>Great Britain 1:50 000 Scale Colour Raster Mapping (Same as paper based Landranger&trade; product). &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616. Provided as part of Sponsorship deal.</li>
     <li>Maps for Ireland and also during the search using the {external href="http://www.google.com/apis/maps/" text="Google Maps API"}.</li>
+    <li>Selected map extracts are from the {external href="http://www.openstreetmap.org/" text="OpenStreetMap project"}, via the {external href="http://www.gravitystorm.co.uk/shine/cycle-info/" text="Cycle Map"} rendering.</li>
     </ul>
     
     <h3>Hosting</h3>
