@@ -3,20 +3,20 @@
 
 
 {if $google_maps_api_key}
-	<div style="float:right;position:relative"><a title="Geograph Google Earth Clusters" href="http://gokml.net/2kf.kml" class="xml-kml">KML</a> {external href="http://gokml.net/2kf.kml" text="Download the Google Earth Version"} <sup style="color:red">NEW!</sup></div> 
+	<div style="float:right;position:relative"><a title="Geograph Google Earth Clusters" href="http://gokml.net/2kf.kml" class="xml-kml">KML</a> {external href="http://gokml.net/2kf.kml" text="Download the Google Earth Version"}</div> 
 		
 	<h2>Geograph Map Clusters</h2>
 
-	<form action="" onsubmit="return updateFilters(this);" name="theForm">
-	<h3>Apply Optional Filters</h3>
+	<form action="" onsubmit="return updateFilters(this);" name="theForm" style="background-color:#eeeeee;">
+	<div style="padding-left:10px;border-bottom:1px solid silver"><b style="margin-bottom:1px">Apply Optional Filters</b></div>
 	<div style="float:left;position:relative;padding:10px;">
 	Title Keyword:<br/> <input type="text" name="q" value="" id="q"/><br/>
-	<small>(Example: <tt>river</tt> - single keyword only)</small>
+	<small>Example: <tt>river</tt> (single keyword only)</small>
 	</div>
 
 	<div style="float:left;position:relative;padding:10px;">
 	User ID:<br/> <input type="text" name="user_id" value="" id="user_id" size="3"/><br/>
-	<small>(Example: <tt>{dynamic}{$user->user_id|default:123}{/dynamic}</tt>)</small>
+	<small>Example: <tt>{dynamic}{$user->user_id|default:123}{/dynamic}</tt></small>
 	</div>
 
 	<div style="float:left;position:relative;padding:10px;">
@@ -24,9 +24,14 @@
 	<input type="submit" value="Update Map"/>
 	</div>
 
+	<div style="float:left;position:relative;padding:10px;border-left:1px solid silver">Display: <br/>
+	<input type="radio" name="clouds" onclick="setClouds(false)" id="clouds_0" checked/> <label for="clouds_0"> Squares</label> /
+	<input type="radio" name="clouds" onclick="setClouds(true)" id="clouds_1"/> <label for="clouds_1"> Circles</label><br/><br/>
+	</div>
+	<br style="clear:both"/>
 	</form>
 	
-	<div style="clear:both;text-align:right;position:relative" id="countDiv"></div>
+	<div style="clear:both;text-align:right;position:relative;font-family:monospace" id="countDiv"></div>
 	<div id="map" style="width:100%; height:600px; position:relative;"></div>
 	{literal}
 	<script type="text/javascript">
@@ -79,7 +84,7 @@
 				if (argname == "u") {document.theForm.elements['user_id'].value = decodeURI(value); filter = true;}
 				if (argname == "c") {document.theForm.elements['imageclass'].value = decodeURI(value); filter = true;}
 				if (argname == "r") {
-					if (value == "c") {clouds = true}
+					if (value == "c") {document.theForm.elements['clouds'][1].checked = true; clouds = true}
 				}
 			}
 		}
@@ -163,7 +168,18 @@
 		gc.enableRenderGrid();
 
 	}
-
+	
+	function setClouds(result) {
+		clouds = result;
+		if (clouds) {
+			gc.setRendering(GC_RND_CLOUDS);
+		} else {
+			gc.setRendering(GC_RND_CUBES);
+		}
+		gc.enableRenderGrid();
+		makeHash();
+	}
+	
 	function makeHash() {
 		var ll = map.getCenter().toUrlValue(6);
 		var z = map.getZoom();
