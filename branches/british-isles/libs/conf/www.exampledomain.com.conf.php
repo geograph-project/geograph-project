@@ -220,8 +220,8 @@ $CONF['use_gazetteer'] = 'towns'; //OS250/OS/hist/towns/default
 //NOTE: for GB, OS, OS250 and hist are (c)'ed datasets and are not available under the GPL licence
 
 //optionally get a key for sending your data to geocubes. 
-#$CONF['GEOCUBES_API_KEY'] = "";
-#$CONF['GEOCUBES_API_TOKEN'] = "";
+$CONF['GEOCUBES_API_KEY'] = "";
+$CONF['GEOCUBES_API_TOKEN'] = "";
 
 ###################################
 # country info

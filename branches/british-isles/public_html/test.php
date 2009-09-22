@@ -63,17 +63,19 @@ function check_include($file)
 	return $ok;
 }
 
-function check_http($page, $pattern, &$errstr)
+function check_http($page, $pattern, &$errstr, $host = '', $status_expected = 200)
 {
 	$ok=false;
 
 	$errstr='';
-	$host=$_SERVER['HTTP_HOST'];
-
+	if (empty($host)) {
+		$host=$_SERVER['HTTP_HOST'];
+	} 
 
 	$fp = fsockopen($host, 80, $errno, $errstr, 30);
 	if (!$fp) 
 	{
+		$errstr="Unable to Connect";
 		return $ok;
 	} 
 	else 
@@ -117,7 +119,7 @@ function check_http($page, $pattern, &$errstr)
 	{
 
 		$status=$matches[1];
-		if ($status==200)
+		if ($status==$status_expected)
 		{
 			//hurrah - lets check the content
 			$ok=preg_match($pattern, $body);
@@ -276,8 +278,26 @@ if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/maps'))
 if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/photos'))
 	fail('public_html/photos not writable - REQUIRED');
 
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/geophotos'))
+	fail('public_html/geophotos not writable - REQUIRED');
+
 if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/rss'))
 	fail('public_html/rss not writable - REQUIRED');
+
+if (!is_dir($_SERVER['DOCUMENT_ROOT'].'/rss/'.$CONF['template']))
+	fail('public_html/rss/'.$CONF['template'].' doesn\'t exist - REQUIRED');
+
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/rss/'.$CONF['template']))
+	fail('public_html/rss/'.$CONF['template'].' not writable - REQUIRED');
+
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/sitemap'))
+	fail('public_html/sitemap not writable - REQUIRED');
+
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/sitemap/root'))
+	fail('public_html/sitemap/root not writable - REQUIRED');
+
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/kml'))
+	fail('public_html/sitemap/kml not writable - REQUIRED');
 
 if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/memorymap'))
 	fail('public_html/memorymap not writable - REQUIRED');
@@ -291,11 +311,24 @@ if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/basic/compiled'))
 if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/basic/cache'))
 	fail('public_html/templates/basic/cache not writable - REQUIRED');
 
+
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/'.$CONF['template'].'/compiled'))
+	fail('public_html/templates/'.$CONF['template'].'/compiled not writable - REQUIRED');
+
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/'.$CONF['template'].'/cache'))
+	fail('public_html/templates/'.$CONF['template'].'/cache not writable - REQUIRED');
+
+
 if (!is_writable($CONF['adodb_cache_dir']))
 	fail('$CONF[\'adodb_cache_dir\'] ('.$CONF['adodb_cache_dir'].') not writable - REQUIRED');
 
 if (!is_writable($CONF['photo_upload_dir']))
 	fail('$CONF[\'photo_upload_dir\'] ('.$CONF['photo_upload_dir'].') not writable - REQUIRED');
+
+if (!empty($CONF['sphinx_host'])) {
+	if (!is_writable($CONF['sphinx_cache']))
+		fail('$CONF[\'sphinx_cache\'] ('.$CONF['sphinx_cache'].') not writable - REQUIRED');
+}
 
 if ($CONF['log_script_timing']=='file') {
 	if (!is_writable($CONF['log_script_folder']))
@@ -316,6 +349,14 @@ else
 }
 
 
+if (empty($CONF['sphinx_host'])) {
+	warn('sphinx does not appear to be enabled - HIGHLY RECOMMENDED');
+}
+
+if (!function_exists('memcache_pconnect')) {
+	warn('memcache PHP extension does not appear to be installed - RECOMMENDED');
+}
+
 /////////////////////////////////////////////////////////////
 // rewrite rules
 
@@ -327,6 +368,7 @@ if (!check_http('/gridref/HP0000', '/HP0000 seems to be all at sea/',$httperr))
 status("checking /help rewrite rules...");
 if (!check_http('/help/credits', '/This project relies on the following open-source technologies/',$httperr))
 	fail("mod_rewrite rule for /help/<em>page</em> failed ($httperr) - REQUIRED");
+	
 if (!check_http('/help/credits/', '/This project relies on the following open-source technologies/',$httperr))
 	fail("mod_rewrite rule for /help/<em>page</em>/ doesn't cope with trailing slash on request ($httperr) - REQUIRED");
 
@@ -335,18 +377,68 @@ if (!check_http('/reg/123/abcdef1234567890', '/there was a problem confirming yo
 	fail("mod_rewrite rule for /reg/<em>uid</em>/<em>hash</em> failed ($httperr) - REQUIRED");
 
 status("checking /photo rewrite rules...");
-if (!check_http('/photo/999999', '/image not available/',$httperr))
+if (!check_http('/photo/9999999', '/image not available/',$httperr,'',404))
 	fail("mod_rewrite rule for /photo/<em>id</em> failed ($httperr) - REQUIRED");
-
-status("checking /mapbrowse.php rewrite rules...");
-if (!check_http('/mapbrowse.php?t=dummy&i=2&j=2&zoomin=1?43,72', '/TR00100/',$httperr))
-	fail("mod_rewrite rule for mapbrowse.php image maps failed ($httperr) - REQUIRED");
 
 status("checking /feed/recent rewrite rules...");
 if (!check_http('/feed/recent', '/http:\/\/purl\.org\/rss\/1\.0\//',$httperr))
 	fail("mod_rewrite rule for /feed/recent failed ($httperr) - REQUIRED");
-if (!check_http('/feed/recent/GeoRSS/', '/http:\/\/www\.georss\.org\/georss\//',$httperr))
+	
+if (!check_http('/feed/recent/GeoRSS/', '/http:\/\/www\.georss\.org\/georss/',$httperr))
 	fail("mod_rewrite rule for /feed/recent/<em>format</em> doesn't cope with bad clients ($httperr) - REQUIRED");
+
+
+/////////////////////////////////////////////////////////////
+// hostname setups
+
+if (!empty($CONF['KML_HOST'])) {
+	status("checking ".$CONF['KML_HOST']);
+	if (!check_http('/kml/images/cam1.png', '/.+/',$httperr,$CONF['KML_HOST'],200))
+		fail('$CONF[\'KML_HOST\'] ('.$CONF['KML_HOST'].") - does not seem to work ($httperr) - REQUIRED");
+} else {
+	fail('$CONF[\'KML_HOST\'] not defined - REQUIRED');
+}
+
+if (!empty($CONF['TILE_HOST'])) {
+	status("checking ".$CONF['TILE_HOST']);
+	if (!check_http('/tie.php', '/no action specified/',$httperr,$CONF['TILE_HOST'],200))
+		fail('$CONF[\'TILE_HOST\'] ('.$CONF['TILE_HOST'].") - does not seem to work ($httperr) - REQUIRED");
+} else {
+	fail('$CONF[\'TILE_HOST\'] not defined - REQUIRED');
+}
+
+if (!empty($CONF['CONTENT_HOST'])) {
+	status("checking ".$CONF['CONTENT_HOST']);
+	if (!check_http('/img/adodb.png', '/.+/',$httperr,$CONF['CONTENT_HOST'],200))
+		fail('$CONF[\'CONTENT_HOST\'] ('.$CONF['CONTENT_HOST'].") - does not seem to work ($httperr) - REQUIRED");
+} else {
+	fail('$CONF[\'CONTENT_HOST\'] not defined - REQUIRED');
+}
+
+if (!empty($CONF['STATIC_HOST'])) {
+	status("checking ".$CONF['STATIC_HOST']);
+	if (!check_http('/img/adodb.png', '/.+/',$httperr,$CONF['STATIC_HOST'],200))
+		fail('$CONF[\'STATIC_HOST\'] ('.$CONF['STATIC_HOST'].") - does not seem to work ($httperr) - REQUIRED");
+	if ($CONF['enable_cluster']) {
+		if (strpos($CONF['STATIC_HOST'],'0') !== FALSE) {
+			for($q = 0; $q < $CONF['enable_cluster']; $q++ ) {
+				$host = str_replace('0',($q%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
+				status("checking ".$host);
+				if (!check_http('/img/adodb.png', '/.+/',$httperr,$host,200))
+					fail("$host - does not seem to work ($httperr) - REQUIRED (or disable \$CONF['enable_cluster'])");
+			}
+		} else {
+			fail('$CONF[\'STATIC_HOST\'] doesn\'t contain "0" - REQUIRED');
+		}
+	}
+} else {
+	fail('$CONF[\'STATIC_HOST\'] not defined - REQUIRED');
+}
+
+if (empty($CONF['server_ip']) || strpos($_SERVER['SERVER_ADDR'],$CONF['server_ip']) !== 0) {
+	warn('$CONF[\'server_ip\'] ('.$CONF['server_ip'].') does not match $_SERVER[\'SERVER_ADDR\'] ('.$_SERVER['SERVER_ADDR'].') - HIGHLY RECOMMENDED');
+}
+
 
 
 /////////////////////////////////////////////////////////////
@@ -373,6 +465,12 @@ if (strpos($_ENV["OS"],'Windows') === FALSE) {
 }
 
 //////////////////////////////////////////////////////////////////
+
+#todo? Database check...
+
+#todo? API key checks - flickr, GMaps, Geocubes, metacarta etc... 
+
+//////////////////////////////////////////////////////////////////
 // END OF TESTING
 // We show some diagnostics if any tests failed...
 status("completed");
@@ -385,6 +483,5 @@ if (!$ok)
 else
 {
 	echo "<li style=\"color:green;font-weight:bold;\">Server is correctly configured to run Geograph!</li>";
-	phpinfo();
 }
 ?>
