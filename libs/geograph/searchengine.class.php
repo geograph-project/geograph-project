@@ -82,14 +82,22 @@ class SearchEngine
 	{
 		if (is_numeric($query_id)) {
 	
-			$db=$this->_getDB(true);
-
-			$query = $db->GetRow("SELECT *,crt_timestamp+0 as crt_timestamp_ts FROM queries WHERE id = $query_id LIMIT 1");
-			if (!count($query)) {
-				$query = $db->GetRow("SELECT *,crt_timestamp+0 as crt_timestamp_ts FROM queries_archive WHERE id = $query_id LIMIT 1");
+			$db=$this->_getDB(10);
+			
+			$tries = 0;
+			$query = array();
+			while (!count($query) && $tries < 10) {
+				$query = $db->GetRow("SELECT *,crt_timestamp+0 as crt_timestamp_ts FROM queries WHERE id = $query_id LIMIT 1");
 				if (!count($query)) {
-					return;
+					$query = $db->GetRow("SELECT *,crt_timestamp+0 as crt_timestamp_ts FROM queries_archive WHERE id = $query_id LIMIT 1");
 				}
+				if (!count($query) && $tries < 9) {
+					sleep(2); //give time for replication to catch up
+					$tries++;
+				}
+			}
+			if (!count($query)) {
+				return false;
 			}
 
 			$this->query_id = $query_id;
@@ -98,13 +106,11 @@ class SearchEngine
 			$this->criteria = new $classname($query['q']);
 			
 			if ($query['searchclass'] == "Special")	{
-					$query['searchq'] = stripslashes($query['searchq']);
+				$query['searchq'] = stripslashes($query['searchq']);
 			}
 
 			$this->criteria->_initFromArray($query);
 		} 
-
-  
 	} 
 	
 	/**
