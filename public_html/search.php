@@ -75,13 +75,13 @@ if (isset($_GET['legacy']) && isset($CONF['curtail_level']) && $CONF['curtail_le
 
 
 if (isset($_GET['fav']) && $i) {
-	if (!$db) {
-		$db=NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');
-	}
+
+	$db=GeographDatabaseConnection(false);
+	
 	$fav = ($_GET['fav'])?'Y':'N';
 	$db->query("UPDATE queries SET favorite = '$fav' WHERE id = $i AND user_id = {$USER->user_id}");
-
+	
+	sleep(2);//fake delay to allow replication to catch up - ekk!
 	header("Location:/search.php");
 	exit;
 
@@ -354,6 +354,7 @@ if (isset($_GET['fav']) && $i) {
 		$data = array();
 		
 		if (empty($engine->criteria)) {
+			dieUnderHighLoad(0,'search_unavailable.tpl');
 			die("Invalid Search Parameter");
 		}
 
@@ -750,6 +751,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		$engine = new SearchEngine($i);
 
 		if (empty($engine->criteria)) {
+			dieUnderHighLoad(0,'search_unavailable.tpl');
 			die("Invalid Search Parameter");
 		}
 		
@@ -879,6 +881,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	$engine = new SearchEngine($i);
 
 	if (empty($engine->criteria)) {
+		dieUnderHighLoad(0,'search_unavailable.tpl');
 		die("Invalid Search Parameter");
 	}
 
@@ -1081,6 +1084,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		require_once('geograph/searchcriteria.class.php');
 		$engine = new SearchEngine($i);
 		if (empty($engine->criteria)) {
+			dieUnderHighLoad(0,'search_unavailable.tpl');
 			die("Invalid Search Parameter");
 		}
 		$query = $engine->criteria;
