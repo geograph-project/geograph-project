@@ -380,6 +380,8 @@ if (isset($_GET['map']))
 		} 
 
 	} 
+} else {
+	die("no action specified");
 }
 
 
