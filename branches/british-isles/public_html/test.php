@@ -259,14 +259,16 @@ foreach($example as $name=>$value)
 	}
 }
 
+
 //the following is only useful on develoment domains
-foreach($CONF as $name=>$value)
-{
-	if (!isset($example[$name]))
+if ($CONF['adodb_debugging'] || $CONF['smarty_debugging'] || !$CONF['smarty_caching'] || $CONF['fetch_on_demand'])
+	foreach($CONF as $name=>$value)
 	{
-		warn("The Example configuration file has no \$example['$name'] entry - see please define its use");
+		if (!isset($example[$name]))
+		{
+			warn("The Example configuration file has no \$example['$name'] entry - see please define its use");
+		}
 	}
-}
 
 //////////////////////////////////////////////////////////////////
 // directory permissions
@@ -401,7 +403,7 @@ if (!empty($CONF['KML_HOST'])) {
 
 if (!empty($CONF['TILE_HOST'])) {
 	status("checking ".$CONF['TILE_HOST']);
-	if (!check_http('/tie.php', '/no action specified/',$httperr,$CONF['TILE_HOST'],200))
+	if (!check_http('/tile.php', '/no action specified/',$httperr,$CONF['TILE_HOST'],200))
 		fail('$CONF[\'TILE_HOST\'] ('.$CONF['TILE_HOST'].") - does not seem to work ($httperr) - REQUIRED");
 } else {
 	fail('$CONF[\'TILE_HOST\'] not defined - REQUIRED');
@@ -409,7 +411,7 @@ if (!empty($CONF['TILE_HOST'])) {
 
 if (!empty($CONF['CONTENT_HOST'])) {
 	status("checking ".$CONF['CONTENT_HOST']);
-	if (!check_http('/img/adodb.png', '/.+/',$httperr,$CONF['CONTENT_HOST'],200))
+	if (!check_http('/img/adodb.gif', '/.+/',$httperr,$CONF['CONTENT_HOST'],200))
 		fail('$CONF[\'CONTENT_HOST\'] ('.$CONF['CONTENT_HOST'].") - does not seem to work ($httperr) - REQUIRED");
 } else {
 	fail('$CONF[\'CONTENT_HOST\'] not defined - REQUIRED');
@@ -417,14 +419,14 @@ if (!empty($CONF['CONTENT_HOST'])) {
 
 if (!empty($CONF['STATIC_HOST'])) {
 	status("checking ".$CONF['STATIC_HOST']);
-	if (!check_http('/img/adodb.png', '/.+/',$httperr,$CONF['STATIC_HOST'],200))
+	if (!check_http('/img/adodb.gif', '/.+/',$httperr,$CONF['STATIC_HOST'],200))
 		fail('$CONF[\'STATIC_HOST\'] ('.$CONF['STATIC_HOST'].") - does not seem to work ($httperr) - REQUIRED");
 	if ($CONF['enable_cluster']) {
 		if (strpos($CONF['STATIC_HOST'],'0') !== FALSE) {
 			for($q = 0; $q < $CONF['enable_cluster']; $q++ ) {
 				$host = str_replace('0',($q%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
 				status("checking ".$host);
-				if (!check_http('/img/adodb.png', '/.+/',$httperr,$host,200))
+				if (!check_http('/img/adodb.gif', '/.+/',$httperr,$host,200))
 					fail("$host - does not seem to work ($httperr) - REQUIRED (or disable \$CONF['enable_cluster'])");
 			}
 		} else {
@@ -436,10 +438,50 @@ if (!empty($CONF['STATIC_HOST'])) {
 }
 
 if (empty($CONF['server_ip']) || strpos($_SERVER['SERVER_ADDR'],$CONF['server_ip']) !== 0) {
-	warn('$CONF[\'server_ip\'] ('.$CONF['server_ip'].') does not match $_SERVER[\'SERVER_ADDR\'] ('.$_SERVER['SERVER_ADDR'].') - HIGHLY RECOMMENDED');
+	fail('$CONF[\'server_ip\'] ('.$CONF['server_ip'].') does not match $_SERVER[\'SERVER_ADDR\'] ('.$_SERVER['SERVER_ADDR'].') - HIGHLY RECOMMENDED');
+}
+
+/////////////////////////////////////////////////////////////
+// few sanity checks
+
+if (empty($CONF['register_confirmation_secret']) || $CONF['register_confirmation_secret']=='CHANGETHIS') {
+	fail('$CONF[\'register_confirmation_secret\'] does not appear to have been configured. RECOMMEND CHANGING NOW');
+}
+
+if (empty($CONF['photo_hashing_secret']) || $CONF['photo_hashing_secret']=='CHANGETHISTOO') {
+	fail('$CONF[\'photo_hashing_secret\'] does not appear to have been configured. RECOMMEND CHANGING NOW');
+}
+
+if (empty($CONF['token_secret']) || $CONF['token_secret']=='CHANGETHIS') {
+	fail('$CONF[\'token_secret\'] does not appear to have been configured. RECOMMEND CHANGING NOW');
 }
 
 
+if (empty($CONF['google_maps_api_key']) || $CONF['google_maps_api_key'] == 'XXXXXXX') {
+	fail('$CONF[\'google_maps_api_key\'] does not appear to have been configured. HIGHLY RECOMMENDED');
+}
+
+if (empty($CONF['OS_licence']) || $CONF['OS_licence'] == 'XXXXXXXX') {
+	warn('$CONF[\'OS_licence\'] does not appear to have been configured. Only a problem if Geograph British Isles');
+}
+
+if (empty($CONF['metacarta_auth']) || $CONF['metacarta_auth'] == '') {
+	warn('$CONF[\'metacarta_auth\'] does not appear to have been configured. OK, experimental anyway');
+}
+
+if (empty($CONF['GEOCUBES_API_KEY'])) {
+	warn('$CONF[\'GEOCUBES_API_KEY\'] does not appear to have been configured.');
+} elseif (empty($CONF['GEOCUBES_API_TOKEN'])) {
+	warn('$CONF[\'GEOCUBES_API_TOKEN\'] does not appear to have been configured. NEEDED IF HAVE GEOCUBES_API_KEY');
+}
+
+if (empty($CONF['flickr_api_key'])) {
+	warn('$CONF[\'flickr_api_key\'] does not appear to have been configured. OK, not really used anyway');
+}
+
+if (empty($CONF['picnik_api_key'])) {
+	warn('$CONF[\'picnik_api_key\'] does not appear to have been configured. RECOMMENDED but not required (code may need changing to take account of this)');
+}
 
 /////////////////////////////////////////////////////////////
 // server setup
