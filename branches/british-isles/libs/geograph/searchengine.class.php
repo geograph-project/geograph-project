@@ -91,15 +91,20 @@ class SearchEngine
 				if (!count($query)) {
 					$query = $db->GetRow("SELECT *,crt_timestamp+0 as crt_timestamp_ts FROM queries_archive WHERE id = $query_id LIMIT 1");
 				}
-				if (!count($query) && $tries < 9) {
-					sleep(2); //give time for replication to catch up
-					$tries++;
+				if (!count($query)) {
+					if ($db->readonly && $tries < 9) {
+						if ($tries == 8) {
+							//try swapping back to the master connection
+							$db=$this->_getDB(false);
+						}
+						sleep(2); //give time for replication to catch up
+						$tries++;
+					} else {
+						return false;
+					}
 				}
 			}
-			if (!count($query)) {
-				return false;
-			}
-
+			
 			$this->query_id = $query_id;
 			
 			$classname = "SearchCriteria_".$query['searchclass'];
