@@ -58,6 +58,11 @@ class sphinxwrapper {
 			//remove unsuitable chars
 		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'=<^$-]+/',' ',trim(strtolower($q))));
 	
+			//remove any = not at word start
+		$q = preg_replace('/(^|[\s\(]+)=/','$1%',$q);
+		$q = str_replace('=',' ',$q);
+		$q = trim(str_replace('%','=',$q));
+	
 			//remove any ^ not at field start
 		$q = preg_replace('/(^|@[\(\)\w,]+ )\^/','$1%',$q);
 		$q = str_replace('^',' ',$q);
