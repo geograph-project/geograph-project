@@ -941,9 +941,11 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 
 		$smarty->assign('querytime', $engine->Execute($pg));
 
-		$page_title = "Search Results".$engine->criteria->searchdesc;
+		$page_title = "Photos".$engine->criteria->searchdesc;
 		if ($engine->islimited && $engine->resultCount ) {
-			$page_title = preg_replace("/Search Results, (matching|containing) (['\[])/",number_format($engine->resultCount).' Photos of $2',$page_title);
+			$pname = ($engine->resultCount == 1)?'Photo':'Photos';
+			$page_title = preg_replace("/Photos, (matching|containing) (['\[])/",number_format($engine->resultCount).' '.$pname.' of $2',$page_title);
+			$page_title = str_replace("Photos, by ",number_format($engine->resultCount)." $pname by ",$page_title);
 		} elseif (!$engine->islimited) {
 			$page_title = "All Photos".$engine->criteria->searchdesc;
 		}

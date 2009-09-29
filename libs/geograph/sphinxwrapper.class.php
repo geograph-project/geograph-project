@@ -58,6 +58,13 @@ class sphinxwrapper {
 			//remove unsuitable chars
 		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'=<^$-]+/',' ',trim(strtolower($q))));
 	
+			//remove any ^ not at field start
+		$q = preg_replace('/(^|@[\(\)\w,]+ )\^/','$1%',$q);
+		$q = str_replace('^',' ',$q);
+		$q = trim(str_replace('%','^',$q));
+	
+			//remove any $ not at field end
+		$q = trim(preg_replace('/\$(?!@ |$)/',' ',$q));
 	
 			//change it back to simple: syntax
 		$q2 = preg_replace('/(-?)[@]([a-z_]+) (-?)/','$1$3$2:',$q);
@@ -254,6 +261,69 @@ class sphinxwrapper {
 		}
 	} 
 	
+	public function SetSelect($clause) {
+		return $this->_getClient()->SetSelect($clause);
+	}
+	
+	public function SetGroupBy($attribute, $func, $groupsort="@group desc") {
+		return $this->_getClient()->SetGroupBy($attribute, $func, $groupsort);
+	}
+	
+	public function SetGroupDistinct($attribute) {
+		return $this->_getClient()->SetGroupDistinct($attribute);
+	}
+	
+	public function groupByQuery($page = 1,$index_in = "_images") {
+		global $CONF;
+		$cl = $this->_getClient();
+		
+		if ($index_in == "_images") {
+			$index = "{$CONF['sphinx_prefix']}gi_groupby,{$CONF['sphinx_prefix']}gi_delta_groupby";
+		} else {
+			$index = $CONF['sphinx_prefix'].$index_in;
+		}
+		
+
+		$sqlpage = ($page -1)* $this->pageSize;
+		$cl->SetLimits($sqlpage,$this->pageSize);
+		
+		if (!empty($this->upper_limit)) {
+			//todo a bodge to run on dev/staging
+			$cl->SetIDRange ( 1, $this->upper_limit+0);
+		}
+		
+
+		if (is_array($this->filters) && count($this->filters)) {
+			$this->getFilterString(); //we only support int filters which call SetFilter for us
+		}
+		
+		$cl->SetMatchMode ( SPH_MATCH_FULLSCAN );
+		
+		if (!empty($this->sort)) {
+			if ($this->sort == -1) {
+				#special token to mean will deal with it externally!
+			} else {
+				$cl->SetSortMode ( SPH_SORT_EXTENDED, $this->sort);
+			}
+		}
+		print " cl->Query ( '{$this->q}', {$index} );";
+		$res = $cl->Query ( $this->q, $index );
+		if ( $res===false ) {
+			//lets make this non fatal
+			$this->query_info = $cl->GetLastError();
+			$this->resultCount = 0;
+			return 0;
+		} else {
+			if ( $cl->GetLastWarning() )
+				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
+
+			$this->query_info = "Query '{$q}' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+			$this->resultCount = $res['total_found'];
+			if (!empty($this->pageSize))
+				$this->numberOfPages = ceil($this->resultCount/$this->pageSize);
+			return $res;
+		}	
+	}	
 	
 	public function countMatches($index_in = "user") {
 		global $CONF;
