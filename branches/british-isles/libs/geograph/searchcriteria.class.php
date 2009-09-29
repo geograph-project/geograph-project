@@ -650,7 +650,7 @@ class SearchCriteria
 		} elseif (strpos($q,'^') === 0) {
 			$words = str_replace('^','',$q);
 			$sql_where .= ' title REGEXP '.$db->Quote('[[:<:]]'.preg_replace('/\+$/','',$words).'[[:>:]]');
-			$this->sphinx['query'] .= " ".$words;
+			$this->sphinx['query'] .= " ^".$words;
 		} elseif (preg_match('/\+$/',$q)) {
 			$words = $db->Quote('%'.preg_replace("/\+$/",'',$q).'%');
 			$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';
