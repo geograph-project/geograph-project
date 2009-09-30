@@ -216,7 +216,6 @@ class EventProcessor
 	
 							if ($ext1=="class" && $ext2=="php")
 							{
-								$this->verbose("($classname, $ext1, $ext2)");
 								$this->handlers[$event_name][]=$entry;
 							}
 						}
@@ -252,6 +251,14 @@ class EventProcessor
 	*/
 	function start()
 	{
+		$check = $this->db->GetRow("select unix_timestamp(now())-unix_timestamp(logtime) as seconds,log like 'Processing complete%' as success from event_log where event_log_id = (select max(event_log_id) from event_log)");
+	
+		if ($check['seconds'] < ($this->max_execution/2) || !$check['success']) 
+		{
+			$this->warning("A processor seems still active - dying (last log entry {$check['seconds']} ago)");
+			return false;
+		}
+	
 		$this->_buildHandlerTable();
 		$this->_gc();
 		
