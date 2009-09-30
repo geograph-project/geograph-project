@@ -43,7 +43,7 @@ class RebuildUserStats extends EventHandler
 		
 		$db->Execute("DROP TABLE IF EXISTS user_stat_tmp");
 		
-		
+	//create table
 		$db->Execute("CREATE TABLE user_stat_tmp (
 					`user_id` int(11) unsigned NOT NULL default '0',
 					`images` mediumint(5) unsigned NOT NULL default '0',
@@ -67,7 +67,7 @@ class RebuildUserStats extends EventHandler
 				SELECT user_id,
 					count(*) as images,
 					count(distinct grid_reference) as squares,
-					0 as geosquares,
+					count(distinct if(moderation_status = 'geograph',grid_reference,null)) as geosquares,
 					0 as geo_rank,
 					0 as geo_rise,
 					sum(ftf=1 and moderation_status = 'geograph') as points,
@@ -82,24 +82,16 @@ class RebuildUserStats extends EventHandler
 					0 as `content`
 				FROM gridimage_search
 				GROUP BY user_id
-				ORDER BY user_id");
+				ORDER BY NULL");
 		
 		$GLOBALS['ADODB_FETCH_MODE'] = ADODB_FETCH_ASSOC;
-		$overall = $db->getRow("select 
-			sum(imagecount) as images,
-			sum(imagecount>0) as squares,
-			sum(has_geographs=1) as points,
-			0 as user_id
-		from gridsquare 
-		where percent_land > 0");
-		$db->Execute('INSERT INTO user_stat_tmp SET `'.implode('` = ?,`',array_keys($overall)).'` = ?',array_values($overall));
-
-
-		$topusers=$db->GetAll("SELECT user_id,sum(ftf=1) as points,count(distinct grid_reference) as geosquares
-		FROM gridimage_search 
-		WHERE moderation_status = 'geograph'
-		GROUP BY user_id
-		ORDER BY points desc"); 
+		
+	//get rank data
+		$topusers=$db->GetAll("SELECT user_id,points,geosquares
+		FROM user_stat_tmp 
+		ORDER BY points DESC"); 
+	
+	//create point rank	
 		$last = 0;
 		$toriserank = 0;
 		$ranks = $rise = $geosquares = array();
@@ -115,7 +107,7 @@ class RebuildUserStats extends EventHandler
 			$geosquares[$entry['user_id']] = intval($entry['geosquares']);
 		}
 		
-		
+	//create personal rank	
 		arsort($geosquares);
 		$lastpoints = 0;
 		$toriserank = 0;
@@ -133,17 +125,27 @@ class RebuildUserStats extends EventHandler
 			$r++;
 		}
 		
-		
+	//insert ranks	
 		foreach ($ranks as $user_id => $rank) {
 			$db->query("UPDATE user_stat_tmp 
 			SET points_rank = $rank,
 			points_rise = {$rise[$user_id]},
-			geosquares = {$geosquares[$user_id]},
 			geo_rank = {$granks[$user_id]},
 			geo_rise = {$grise[$user_id]}
 			WHERE user_id = $user_id");
 		}
 		
+	//work out overall stat
+		$overall = $db->getRow("select 
+			sum(imagecount) as images,
+			sum(imagecount>0) as squares,
+			sum(has_geographs=1) as points,
+			0 as user_id
+		from gridsquare 
+		where percent_land > 0");
+		$db->Execute('INSERT INTO user_stat_tmp SET `'.implode('` = ?,`',array_keys($overall)).'` = ?',array_values($overall));
+
+	//add content data
 		$topusers=$db->GetAssoc("SELECT user_id,count(*) as content
 			FROM content 
 			WHERE source != 'themed'
@@ -154,7 +156,8 @@ class RebuildUserStats extends EventHandler
 			SET content = $count
 			WHERE user_id = $user_id");
 		}
-		
+
+	//swap tables around		
 		$db->Execute("DROP TABLE IF EXISTS user_stat_old");
 		
 		//done in one operation so there is always a user_stat table, even if the tmp fails 
