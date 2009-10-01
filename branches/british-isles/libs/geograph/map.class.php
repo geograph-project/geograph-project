@@ -294,7 +294,7 @@ class GeographMap
 			//invert the y coordinate
 			$y=$this->image_h-$y;
 		}
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		
 		//convert pixel pos to internal coordinates
 		$x_km=$this->map_x + floor($x/$this->pixels_per_km);
@@ -510,24 +510,27 @@ class GeographMap
 	#STANDARD MAP
 		if ($this->type_or_user == 0) {
 			$ok = $this->_renderImage();
+
 		} else if ($this->type_or_user < 0) {
-	
-	
-	#GROUP DEPTH - (via gridimage_group/gridsquare_group_count) 
-			if ($this->type_or_user == -3) {
-				$ok = $this->_renderDepthImage();
-				
 	#MAP FIXING ACTIVITY  (via mapfix_log) 
-			} elseif ($this->type_or_user == -4) {
+			if ($this->type_or_user == -4
+	#RECENT ONLY MAP
+				|| $this->type_or_user == -6) {
+
 				$ok = $this->_renderImage();
 
+	#GROUP DEPTH - (via gridimage_group/gridsquare_group_count) 
+			} elseif ($this->type_or_user == -3
 	#PHOTO VIEWING  (via gridimage_log) 
-			} elseif ($this->type_or_user == -5) {
-				$ok = $this->_renderDepthImage();
+				|| $this->type_or_user == -5
+	#CENTISQUARE DEPTH MAP
+				|| $this->type_or_user == -7
+	#PHOTO AGE MAP
+				|| $this->type_or_user == -8
+	#QUADS DEPTH MAP
+				|| $this->type_or_user == -9) {
 				
-	#RECENT ONLY MAP
-			} elseif ($this->type_or_user == -6) {
-				$ok = $this->_renderImage();
+				$ok = $this->_renderDepthImage();
 
 	#DEPTH MAP (_renderDepthImage also understands date maps)
 			} elseif ($this->type_or_user == -1) {
@@ -560,7 +563,7 @@ class GeographMap
 
 		//save it for rerendering later. 
 		//if ($ok) {
-			$db=&$this->_getDB();
+			$db=&$this->_getDB(false);
 			
 			$age = ($ok)?0:-1;
 
@@ -627,7 +630,7 @@ class GeographMap
 		$land[-1]=imagecolorallocate($img, $rmin,$gmin,$bmin);
 		
 		//paint the land
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 			
 		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 		
@@ -808,7 +811,7 @@ class GeographMap
 		}
 		
 		//figure out what we're mapping in internal coords
-		$db=&$this->_getDB(false);
+		$db=&$this->_getDB(true);
 		
 		$left=$this->map_x;
 		$bottom=$this->map_y;
@@ -1077,15 +1080,18 @@ class GeographMap
 		
 		$db=&$this->_getDB(true);
 		
-		if ($this->type_or_user == -3) {
-                        $sql="select imagecount from gridsquare_group_count group by imagecount";
-                } elseif ($this->type_or_user == -5) {
-			$sql="select distinct round(log10(hits)*2) from gridsquare_log order by hits";
+		if ($this->type_or_user == -7 || $this->type_or_user == -8) {
+			$counts = range(0,130);
 		} else {
-			$sql="select imagecount from gridsquare group by imagecount";
+			if ($this->type_or_user == -3) {
+				$sql="select imagecount from gridsquare_group_count group by imagecount";
+			} elseif ($this->type_or_user == -5) {
+				$sql="select distinct round(log10(hits)*2) from gridsquare_log order by hits";
+			} else {
+				$sql="select imagecount from gridsquare group by imagecount";
+			}
+			$counts = $db->cacheGetCol(3600,$sql);
 		}
-		$counts = $db->cacheGetCol(3600,$sql);
-
 		$colour=array();
 		$last=$lastcolour=null;
 		for ($p=0; $p<count($counts); $p++)
@@ -1141,14 +1147,40 @@ class GeographMap
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 
 		$number = !empty($this->minimum)?intval($this->minimum):0;
+	
+		if ($this->type_or_user == -9) {
+			$sql="select x,y,gs.gridsquare_id,(count(distinct nateastings DIV 500, natnorthings DIV 500) - (sum(nateastings = 0) > 0) )  as imagecount
+				from 
+				gridsquare gs 
+				inner join gridimage gi using(gridsquare_id)
+				where CONTAINS( GeomFromText($rectangle),	point_xy)
+				and moderation_status in ('accepted','geograph')
+				group by gi.gridsquare_id ";
 
-		if ($this->type_or_user == -3) {
+		} elseif ($this->type_or_user == -8) {
+			$sql="select x,y,gs.gridsquare_id,(count(distinct nateastings DIV 100, natnorthings DIV 100) - (sum(nateastings = 0) > 0) )  as imagecount
+				from 
+				gridsquare gs 
+				inner join gridimage gi using(gridsquare_id)
+				where CONTAINS( GeomFromText($rectangle),	point_xy)
+				and moderation_status in ('accepted','geograph')
+				group by gi.gridsquare_id ";
+
+		} elseif ($this->type_or_user == -7) {
+			$sql="select x,y,gs.gridsquare_id,ceil(datediff(now(),max(imagetaken)) / 356) as imagecount
+				from 
+				gridsquare gs 
+				inner join gridimage gi using(gridsquare_id)
+				where CONTAINS( GeomFromText($rectangle),	point_xy)
+				and moderation_status in ('accepted','geograph')
+				group by gi.gridsquare_id ";
+
+		} elseif ($this->type_or_user == -3) {
 			$sql="select x,y,gs.gridsquare_id,count(distinct label) as imagecount
 				from 
 				gridsquare gs 
 				inner join gridimage2 gi using(gridsquare_id)
 				inner join gridimage_group gg using(gridimage_id)
-				
 			group by gi.gridsquare_id "; #where CONTAINS( GeomFromText($rectangle),	point_xy) 
 			
 			$sql="select * from gridsquare_group_count";
@@ -1160,13 +1192,15 @@ class GeographMap
 				inner join gridsquare_log using (gridsquare_id)"; 
 
 		} elseif (!empty($this->mapDateCrit)) {
-		$sql="select x,y,gs.gridsquare_id,count(*) as imagecount
-			from 
-			gridsquare gs 
-			inner join gridimage gi using(gridsquare_id)
-			where CONTAINS( GeomFromText($rectangle),	point_xy) and
-			submitted < '{$this->mapDateStart}'
-			group by gi.gridsquare_id ";
+			$sql="select x,y,gs.gridsquare_id,count(*) as imagecount
+				from 
+				gridsquare gs 
+				inner join gridimage gi using(gridsquare_id)
+				where CONTAINS( GeomFromText($rectangle),	point_xy)
+				and submitted < '{$this->mapDateStart}'
+				and moderation_status in ('accepted','geograph')
+				group by gi.gridsquare_id ";
+
 		} else {
 			$sql="select x,y,gridsquare_id,imagecount from gridsquare where 
 				CONTAINS( GeomFromText($rectangle),	point_xy)
