@@ -314,7 +314,7 @@ class sphinxwrapper {
 				$cl->SetSortMode ( SPH_SORT_EXTENDED, $this->sort);
 			}
 		}
-		print " cl->Query ( '{$this->q}', {$index} );";
+		
 		$res = $cl->Query ( $this->q, $index );
 		if ( $res===false ) {
 			//lets make this non fatal
