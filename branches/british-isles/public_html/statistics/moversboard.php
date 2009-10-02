@@ -31,7 +31,7 @@ $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['t
 $smarty = new GeographPage;
 
 $template='statistics_moversboard.tpl';
-$cacheid=$type;
+$cacheid="statistics|".$type;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -161,10 +161,10 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "Category Depth";
 		$desc = "the category depth score";
 	} elseif ($type == 'centi') {
-		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
+		//NOT RECOMMENDED AS REQUIRES A NEW INDEX ON gridimage!
 		$sql_column = "COUNT(DISTINCT nateastings div 100, natnorthings div 100)";
 		$sql_where = "and i.moderation_status='geograph' and nateastings div 1000 > 0";
-		$heading = "Centigraph<br/>Points";
+		$heading = "Centisquares";
 		$desc = "centisquares photographed";
 	} else { #if ($type == 'points') {
 		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph')";
