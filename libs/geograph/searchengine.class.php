@@ -245,8 +245,12 @@ class SearchEngine
 
 				$this->resultCount = $db->CacheGetOne(3600,$sql);
 				if (empty($_GET['BBOX']) && $this->display != 'reveal') {
-					$db=$this->_getDB(false); //'upgrade' to a read/write connection
-					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+					if ($db->readonly) {
+						$db2=$this->_getDB(false); //get a read/write connection
+					} else {
+						$db2=&$db;
+					}
+					$db2->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 				}
 			}
 			$this->numberOfPages = ceil($this->resultCount/$pgsize);
@@ -563,8 +567,12 @@ END;
 
 				$this->resultCount = $db->CacheGetOne(3600,$sql);
 				if (empty($_GET['BBOX']) && $this->display != 'reveal') {
-					$db=$this->_getDB(false); //'upgrade' to a read/write connection
-					$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+					if ($db->readonly) {
+						$db2=$this->_getDB(false); //get a read/write connection
+					} else {
+						$db2=&$db;
+					}
+					$db2->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 				}
 			}
 			$this->numberOfPages = ceil($this->resultCount/$pgsize);
