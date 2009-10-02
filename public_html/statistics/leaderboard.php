@@ -64,7 +64,7 @@ if (isset($_GET['inner'])) {
 } else {
 	$template='statistics_leaderboard.tpl';
 }
-$cacheid=$minimum.'-'.$maximum.$type.$date.$when.$limit.'.'.$ri.'.'.$u.$myriad;
+$cacheid="statistics|".$minimum.'-'.$maximum.$type.$date.$when.$limit.'.'.$ri.'.'.$u.$myriad;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*3; //3hour cache
@@ -275,11 +275,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		$desc = "the category depth score";
 
 	} elseif ($type == 'centi') {
-/*	SELECT COUNT(DISTINCT nateastings div 100, natnorthings div 100), COUNT(*) AS `_count_all`
-	FROM gridimage
-	WHERE  moderation_status in ('geograph','accepted') and nateastings div 1000 > 0
-	ORDER BY _count_all DESC
-	LIMIT 30; */
+		//lets hobble this!
+		header("HTTP/1.1 503 Service Unavailable");
+		$smarty->display('function_disabled.tpl');
+		exit;
+
 		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
 		$sql_table = "gridimage i ";
 		$sql_column = "COUNT(DISTINCT nateastings div 100, natnorthings div 100)";

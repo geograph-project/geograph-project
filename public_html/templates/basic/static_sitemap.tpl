@@ -113,7 +113,6 @@ Refine:
 <option value="classes">Categories</option>
 <option value="additional">Additional Geographs</option>
 <option value="supps">Supplementals</option>
-<option value="centi">Centisquares</option>
 <option value="clen">Description Length</option>
 </select>
  <input type="submit" value="Go"/>
@@ -138,7 +137,6 @@ Refine:
 <option value="classes">Categories</option>
 <option value="additional">Additional Geographs</option>
 <option value="supps">Supplementals</option>
-<option value="centi">Centisquares</option>
 <option value="clen">Description Length</option>
 </select>
 
