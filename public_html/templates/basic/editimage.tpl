@@ -40,6 +40,14 @@
 </div>
 {if $showfull}
   	{if $isowner and $image->moderation_status eq 'pending'}
+  	  {if $thankyou eq 'mod'}
+	  	<h2 class="titlebar" style="background-color:lightgreen">Thank You</h2>
+	  	<p>Your suggestion has been recorded, it will be taken into account during moderation. <a href="/photo/{$image->gridimage_id}">return to the image page</a></p>
+	  {elseif $thankyou eq 'modreply'}
+	  	<h2 class="titlebar" style="background-color:lightgreen">Thank You</h2>
+	  	<p>Your suggestion has been recorded, it will be taken into account during moderation, however please use the comment box below to explain the reason for the suggestion.</p>
+	  {/if}
+	  
   	  <form action="/moderation.php" method="post">
   	  <input type="hidden" name="gridimage_id" value="{$image->gridimage_id}"/>
   	  <h2 class="titlebar">Moderation Suggestion</h2>
@@ -51,12 +59,13 @@
   	  <input class="accept" type="submit" id="accept" name="user_status" value="Supplemental"/>
   	  {/if}
   	  {if $image->user_status != 'rejected'}
-  	  <input class="reject" type="submit" id="reject" name="user_status" value="Reject"/>
+  	  <input class="reject" type="submit" id="reject" name="user_status" value="Reject" onclick="this.form.elements['comment'].value = prompt('Please leave a comment to explain the reason for suggesting rejection of this image.','');"/>
   	  {/if}
   	  {if $image->user_status}
 	  <br/><small>[Current suggestion: {if $image->user_status eq "accepted"}supplemental{else}{$image->user_status}{/if}</small>]
 	  {/if}</p>
   	  <p style="font-size:0.8em">(Click one of these buttons to leave a hint to the moderator when they moderate your image)</p>
+  	  <input type="hidden" name="comment"/>
   	  </form>
   	{elseif $isadmin and $image->user_status}
   	  <h2 class="titlebar">Moderation Suggestion</h2>
@@ -82,7 +91,7 @@
 
 {if $thankyou eq 'pending'}
 	<a name="form"></a>
-	<h2>Thankyou!</h2>
+	<h2 class="titlebar" style="background-color:lightgreen">Thankyou!</h2>
 	<p>Thanks for suggesting changes, you will receive an email when 
 	we process your suggestion. </p>
 
@@ -91,7 +100,7 @@
 
 {if $thankyou eq 'comment'}
 	<a name="form"></a>
-	<h2>Thankyou!</h2>
+	<h2 class="titlebar" style="background-color:lightgreen">Thankyou!</h2>
 	<p>Thanks for commenting on the change request, the moderators have been notified.</p>
 
 	<p>You can review outstanding change requests below, or <a href="/photo/{$image->gridimage_id}">click here to return to the photo page</a></p>
