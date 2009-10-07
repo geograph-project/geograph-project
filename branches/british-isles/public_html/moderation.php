@@ -67,13 +67,20 @@ if (isset($_POST['gridimage_id']))
 						echo "UNKNOWN STATUS";
 						exit;
 				}
-
+				
+				$thankyou = 'mod';
+				
 				if ($user_status == 'rejected' || $image->moderation_status != 'pending' 
 				     || $db->getOne("SELECT COUNT(*) FROM gridsquare_moderation_lock WHERE gridsquare_id = {$image->gridsquare_id} AND lock_obtained > DATE_SUB(NOW(),INTERVAL 1 HOUR)") ) {
 					$ticket=new GridImageTroubleTicket();
 					$ticket->setSuggester($USER->user_id);
 					$ticket->setImage($gridimage_id);
-					$ticket->setNotes("Auto-generated ticket, as a result of Self Moderation. Please leave a comment (in the reply box just below this message) to explain the reason for suggesting '$status'.");
+					if (!empty($_POST['comment'])) {
+						$ticket->setNotes("Auto-generated ticket, as a result of Self Moderation. Suggest rejecting this image because: ".stripslashes($_POST['comment']));
+					} else {
+						$ticket->setNotes("Auto-generated ticket, as a result of Self Moderation. Please leave a comment (in the reply box just below this message) to explain the reason for suggesting '$status'.");
+						$thankyou = 'modreply';
+					}
 					$status=$ticket->commit('pending');
 				}
 
@@ -81,7 +88,7 @@ if (isset($_POST['gridimage_id']))
 				$db->Query("update gridimage set user_status = '$user_status' where gridimage_id={$gridimage_id}");
 
 
-				header("Location:/editimage.php?id={$gridimage_id}");
+				header("Location:/editimage.php?id={$gridimage_id}".($thankyou?"&thankyou=$thankyou":''));
 				exit;
 			}
 			else
