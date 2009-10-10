@@ -19,6 +19,7 @@ mkdir _attic
 
 mv search/ _attic/
 mv img*/ _attic/
+mv user*/ _attic/
 
 nice nice rm -Rf _attic
 

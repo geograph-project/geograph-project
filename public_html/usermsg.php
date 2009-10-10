@@ -212,6 +212,8 @@ elseif (isset($_POST['init']))
 
 	$msg=trim(stripslashes($_POST['init']));
 	$smarty->assign_by_ref('msg', $msg);
+	
+	customExpiresHeader(360,false,true);
 }
 elseif (isset($_GET['image']))
 {
@@ -228,6 +230,8 @@ elseif (isset($_GET['image']))
 		$msg="Re: image for {$image->grid_reference} ({$image->title})\r\nhttp://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\r\n";
 	}
 	$smarty->assign_by_ref('msg', $msg);
+	
+	customExpiresHeader(360,false,true);
 }
 
 if (preg_match('/(DORMANT|DELETED|@.*geograph\.org\.uk|@.*geograph\.co\.uk)/i',$recipient->email) || strpos($recipient->rights,'dormant') !== FALSE) {

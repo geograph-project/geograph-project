@@ -36,7 +36,7 @@ $template='maplarge.tpl';
 $smarty = new GeographPage;
 
 $smarty->caching = 2; // lifetime is per cache
-
+customExpiresHeader(360,false,true);
 
 //initialise mosaic
 $mosaic=new GeographMapMosaic;

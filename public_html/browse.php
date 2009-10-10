@@ -37,6 +37,7 @@ $smarty = new GeographPage;
 dieUnderHighLoad(4);
 
 customGZipHandlerStart();
+customExpiresHeader(360,false,true);
 
 $square=new GridSquare;
 
@@ -251,6 +252,11 @@ if ($grid_given)
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$custom_where .= " and imageclass = ".$db->Quote($_GET['class']);
 			$filtered_title .= " categorised as '".htmlentities2($_GET['class'])."'";
+		}
+		if (!empty($_GET['cluster'])) {
+			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			$custom_where .= " and label = ".$db->Quote($_GET['cluster']);
+			$filtered_title .= " labeled as '".htmlentities2($_GET['cluster'])."'";
 		}
 		if (!empty($_GET['taken'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
@@ -499,17 +505,25 @@ if ($grid_given)
 			AND $user_crit");
 			
 			$breakdowns = array();
-                        $breakdowns[] = array('type'=>'user','name'=>'Contributor','count'=>$row['user'].' Contributors');
-                        $breakdowns[] = array('type'=>'centi','name'=>'Centisquare','count'=>$row['centi'].' Centisquares');
-                        $breakdowns[] = array('type'=>'class','name'=>'Category','count'=>$row['class'].' Categories');
-                        $breakdowns[] = array('type'=>'taken','name'=>'Month Taken','count'=>$row['taken'].' Months');
-                        $breakdowns[] = array('type'=>'takenyear','name'=>'Year Taken','count'=>$row['takenyear'].' Years');
-                        $breakdowns[] = array('type'=>'direction','name'=>'View Direction','count'=>$row['direction'].' Directions');
-                        $breakdowns[] = array('type'=>'viewpoint','name'=>'Photographer Location','count'=>$row['viewpoints'].' Gridsquares');
-                        $breakdowns[] = array('type'=>'viewcenti','name'=>'Photographer Centisquare','count'=>'unknown');
-                        $breakdowns[] = array('type'=>'status','name'=>'Classification','count'=>$row['status'].' Classifications');
-                        $breakdowns[] = array('type'=>'submitted','name'=>'Month Submitted','count'=>$row['submitted'].' Months');
-                        $breakdowns[] = array('type'=>'submittedyear','name'=>'Year Submitted','count'=>$row['submittedyear'].' Years');
+			$breakdowns[] = array('type'=>'user','name'=>'Contributor','count'=>$row['user'].' Contributors');
+			$breakdowns[] = array('type'=>'centi','name'=>'Centisquare','count'=>$row['centi'].' Centisquares');
+			$breakdowns[] = array('type'=>'class','name'=>'Category','count'=>$row['class'].' Categories');
+			$breakdowns[] = array('type'=>'taken','name'=>'Month Taken','count'=>$row['taken'].' Months');
+			$breakdowns[] = array('type'=>'takenyear','name'=>'Year Taken','count'=>$row['takenyear'].' Years');
+			$breakdowns[] = array('type'=>'direction','name'=>'View Direction','count'=>$row['direction'].' Directions');
+			$breakdowns[] = array('type'=>'viewpoint','name'=>'Photographer Location','count'=>$row['viewpoints'].' Gridsquares');
+			$breakdowns[] = array('type'=>'viewcenti','name'=>'Photographer Centisquare','count'=>'unknown');
+			$breakdowns[] = array('type'=>'status','name'=>'Classification','count'=>$row['status'].' Classifications');
+			$breakdowns[] = array('type'=>'submitted','name'=>'Month Submitted','count'=>$row['submitted'].' Months');
+			$breakdowns[] = array('type'=>'submittedyear','name'=>'Year Submitted','count'=>$row['submittedyear'].' Years');
+
+			if ($square->imagecount > 15) {
+				$c = $db->getOne("SELECT c FROM gridsquare_group_stat WHERE gridsquare_id = {$square->gridsquare_id}");
+				if ($c > 1) {
+					array_unshift($breakdowns,array('type'=>'cluster','name'=>'Automatic Cluster <sup style=color:red>New!</sup>','count'=>$c.' Groups'));
+				}
+			}
+
 			$smarty->assign_by_ref('breakdowns', $breakdowns);
 			
 			if (rand(1,10) > 7) {
@@ -534,13 +548,22 @@ if ($grid_given)
 			
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$breakdown = array();
-			$i = 0;		
+			$i = 0;
+			
+			if (empty($_GET['ht'])) {
+				//we only need these columsn if not hiding thumbnails
+				$columns = ",title,user_id,gi.realname AS credit_realname,IF(gi.realname!='',gi.realname,user.realname) AS realname,user.realname AS user_realname";
+				$gridimage_join = " INNER JOIN user USING(user_id)";
+			} else {
+				$columns = '';
+				$gridimage_join = '';
+			}
 			
 			if ($_GET['by'] == 'class') {
 				$breakdown_title = "Category";
-				$all = $db->cacheGetAll($cacheseconds,"SELECT imageclass,count(*) as count,
-				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname
-				FROM gridimage gi inner join user using(user_id)
+				$all = $db->cacheGetAll($cacheseconds,"SELECT imageclass,COUNT(*) AS count,
+				gridimage_id $columns
+				FROM gridimage gi $gridimage_join
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit $custom_where
 				GROUP BY imageclass");
@@ -562,11 +585,38 @@ if ($grid_given)
 					}
 					$i++;
 				}
+			} elseif ($_GET['by'] == 'cluster') {
+				$breakdown_title = "Cluster";
+				$all = $db->cacheGetAll($cacheseconds,"SELECT label,COUNT(*) AS count,
+				gi.gridimage_id $columns
+				FROM gridimage gi $gridimage_join
+				INNER JOIN gridimage_group gg ON (gi.gridimage_id = gg.gridimage_id)
+				WHERE gridsquare_id = '{$square->gridsquare_id}'
+				AND $user_crit $custom_where
+				GROUP BY label");
+				$start = rand(0,max(0,count($all)-20));
+				$end = $start + 20;
+				foreach ($all as $row) {
+					$breakdown[$i] = array('name'=>"in cluster <b>{$row[0]}</b>",'count'=>$row[1]);
+					if (empty($_GET['ht']) && $i >= $start && $i< $end) {
+						$row['grid_reference'] = $square->grid_reference;
+						$breakdown[$i]['image'] = new GridImage();
+						$breakdown[$i]['image']->fastInit($row);
+					}
+					if ($row[1] > 1) { //todo - browse.php?cluster=... doesnt currently work (square->getImages cant join on gridimage_cluster.)
+						$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=score+desc&amp;displayclass=full&amp;cluster2=1&amp;label=".urlencode($row[0])."&amp;do=1";
+					} elseif ($row[1] == 1) {
+						$breakdown[$i]['link']="/photo/{$row[2]}";
+					} else {
+						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?cluster=".urlencode($row[0]).$extra;
+					}
+					$i++;
+				}
 			} elseif ($_GET['by'] == 'status') {
 				$breakdown_title = "Classification";
-				$all = $db->cacheGetAll($cacheseconds,"SELECT moderation_status,count(*) as count,
-				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname
-				FROM gridimage gi inner join user using(user_id)
+				$all = $db->cacheGetAll($cacheseconds,"SELECT moderation_status,COUNT(*) AS count,
+				gridimage_id $columns
+				FROM gridimage gi $gridimage_join
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit $custom_where
 				GROUP BY moderation_status 
@@ -594,10 +644,9 @@ if ($grid_given)
 				}
 			} elseif ($_GET['by'] == 'user') {
 				$breakdown_title = "Contributor";
-				$all = $db->cacheGetAll($cacheseconds,"SELECT user.realname as user_realname,count(*) as count,
-				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname
-				FROM gridimage gi
-				INNER JOIN user USING(user_id)
+				$all = $db->cacheGetAll($cacheseconds,"SELECT user.realname AS user_realname,COUNT(*) AS count,
+				gridimage_id $columns
+				FROM gridimage gi INNER JOIN user USING(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit $custom_where
 				GROUP BY user_id
@@ -622,9 +671,9 @@ if ($grid_given)
 				}
 			} elseif ($_GET['by'] == 'direction') {
 				$breakdown_title = "View Direction";
-				$all = $db->cacheGetAll($cacheseconds,"SELECT view_direction,count(*),
-				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname
-				FROM gridimage gi inner join user using(user_id)
+				$all = $db->cacheGetAll($cacheseconds,"SELECT view_direction,COUNT(*) AS count,
+				gridimage_id $columns
+				FROM gridimage gi $gridimage_join
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit $custom_where
 				GROUP BY view_direction");
@@ -652,9 +701,9 @@ if ($grid_given)
 				}
 			} elseif ($_GET['by'] == 'viewpoint') {
 				$breakdown_title = "Photographer Gridsquare";
-				$all = $db->cacheGetAll($cacheseconds,"SELECT viewpoint_eastings,count(*),gridimage_id,viewpoint_northings,
-				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname
-				FROM gridimage gi inner join user using(user_id)
+				$all = $db->cacheGetAll($cacheseconds,"SELECT viewpoint_eastings,COUNT(*) as COUNT,viewpoint_northings,
+				gridimage_id $columns
+				FROM gridimage gi $gridimage_join
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit $custom_where
 				GROUP BY viewpoint_eastings DIV 1000, viewpoint_northings DIV 1000");
@@ -691,7 +740,7 @@ if ($grid_given)
 				}
 			} elseif ($_GET['by'] == 'centi') {
 				$breakdown_title = "Centisquare<a href=\"/help/squares\">?</a>";
-				$all = $db->cacheGetAll($cacheseconds,"SELECT (nateastings = 0),count(*),gridimage_id,nateastings DIV 100, natnorthings DIV 100
+				$all = $db->cacheGetAll($cacheseconds,"SELECT (nateastings = 0),COUNT(*) AS count,gridimage_id,nateastings DIV 100, natnorthings DIV 100
 				FROM gridimage gi
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit $custom_where
@@ -730,7 +779,7 @@ if ($grid_given)
 				$e = intval($square->getNatEastings()/1000);
 				$n = intval($square->getNatNorthings()/1000);
 				$breakdown_title = "Photographer Centisquare<a href=\"/help/squares\">?</a>";
-				$all = $db->cacheGetAll($cacheseconds,"SELECT (viewpoint_eastings = 0),count(*),gridimage_id,viewpoint_eastings DIV 100, viewpoint_northings DIV 100
+				$all = $db->cacheGetAll($cacheseconds,"SELECT (viewpoint_eastings = 0),COUNT(*) AS count,gridimage_id,viewpoint_eastings DIV 100, viewpoint_northings DIV 100
 				FROM gridimage gi
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit $custom_where
@@ -770,9 +819,9 @@ if ($grid_given)
 				$column = (preg_match('/^taken/',$_GET['by']))?'imagetaken':'submitted';
 				$title = (preg_match('/^taken/',$_GET['by']))?'Taken':'Submitted';
 				$breakdown_title = "$title".((preg_match('/year$/',$_GET['by']))?'':' Month');
-				$all = $db->cacheGetAll($cacheseconds,"SELECT SUBSTRING($column,1,$length) as date,count(*),
-				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname
-				FROM gridimage gi inner join user using(user_id)
+				$all = $db->cacheGetAll($cacheseconds,"SELECT SUBSTRING($column,1,$length) AS date,COUNT(*) AS count,
+				gridimage_id $columns
+				FROM gridimage gi $gridimage_join
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit $custom_where
 				GROUP BY SUBSTRING($column,1,$length)");

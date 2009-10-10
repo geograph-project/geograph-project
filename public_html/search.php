@@ -946,6 +946,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			$pname = ($engine->resultCount == 1)?'Photo':'Photos';
 			$page_title = preg_replace("/Photos, (matching|containing) (['\[])/",number_format($engine->resultCount).' '.$pname.' of $2',$page_title);
 			$page_title = str_replace("Photos, by ",number_format($engine->resultCount)." $pname by ",$page_title);
+			$page_title = str_replace("Photos, within ",number_format($engine->resultCount)." $pname within ",$page_title);
 		} elseif (!$engine->islimited) {
 			$page_title = "All Photos".$engine->criteria->searchdesc;
 		}
@@ -1072,6 +1073,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		}
 	}
 
+	customExpiresHeader(3600,false,true);
 	$smarty->display($template, $cacheid);
 
 
@@ -1168,7 +1170,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	//lets find some recent photos
 	new RecentImageList($smarty);
 
-
+	customExpiresHeader(360,false,true);
 	$smarty->display('search.tpl');
 }
 
@@ -1277,6 +1279,8 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		if ($is_cachable && $smarty->caching) {
 			$smarty->caching = 2; // lifetime is per cache
 			$smarty->cache_lifetime = 3600*3; //3hr cache
+			
+			customExpiresHeader($smarty->cache_lifetime,false,true);
 		} else {
 			$smarty->caching = 0; // NO caching
 		}

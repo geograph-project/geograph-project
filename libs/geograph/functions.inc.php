@@ -680,14 +680,17 @@ function customNoCacheHeader($type = 'nocache',$disable_auto = false) {
 	}
 }
 
-function customExpiresHeader($diff,$public = false) {
+function customExpiresHeader($diff,$public = false,$overwrite = false) {
 	if ($diff > 0) {
 		$expires=gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+$diff);
 		header("Expires: $expires");
-		header("Cache-Control: max-age=$diff",false);
+		header("Cache-Control: max-age=$diff",$overwrite);
+		if ($overwrite) {
+			header("Pragma:"); //sessions by default set this
+		}
 	} else {
 		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past 
-		header("Cache-Control: max-age=0",false);
+		header("Cache-Control: max-age=0",$overwrite);
 	}
 	if ($public)
 		header("Cache-Control: Public",false);

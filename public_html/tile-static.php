@@ -63,7 +63,7 @@ header("Content-Type: image/png");
 $str =  file_get_contents($mapurl, false, $context);
 
 if (!$str || strlen($str) < 600) { //something so small is likly to be an error message :(
-
+	header("HTTP/1.0 503 Service Unavailable");
 	$str = file_get_contents("maps/sorry.png");
 }
 
