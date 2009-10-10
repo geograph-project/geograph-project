@@ -30,6 +30,7 @@ require_once('geograph/rastermap.class.php');
 init_session();
 
 $smarty = new GeographPage;
+customExpiresHeader(3600,false,true);
 
 $template = "squares.tpl";
 $cacheid = 'no';

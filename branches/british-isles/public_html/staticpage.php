@@ -62,7 +62,7 @@ if ($mtime) {
 
 
 customGZipHandlerStart();
-customExpiresHeader(86400*3,true);
+customExpiresHeader(86400*3,false,true);
 
 $smarty->display($template);
 

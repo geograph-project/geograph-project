@@ -189,6 +189,8 @@ if ($template=='profile.tpl')
 		}
 	}
 	
+	customExpiresHeader(360,false,true);
+	
 	if ($uid==$USER->user_id) {
 		$level = 1;
 	} elseif ($USER->hasPerm('moderator')) {

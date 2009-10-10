@@ -37,6 +37,8 @@ $smarty = new GeographPage;
 dieUnderHighLoad(4);
 
 customGZipHandlerStart();
+customExpiresHeader(360,false,true);
+
 
 $square=new GridSquare;
 
