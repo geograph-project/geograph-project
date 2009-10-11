@@ -28,8 +28,8 @@
         FileETag MTime Size
 
         ExpiresActive On
-        ExpiresByType image/gif "access plus 30 days"
-        ExpiresByType image/png "access plus 30 days"
+        ExpiresByType image/gif "access plus 180 days"
+        ExpiresByType image/png "access plus 180 days"
         ExpiresByType image/jpeg "access plus 180 days"
         ExpiresByType text/css "access plus 180 days"
         ExpiresByType application/x-javascript "access plus 180 days"
