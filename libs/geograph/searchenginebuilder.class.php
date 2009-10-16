@@ -334,7 +334,28 @@ class SearchEngineBuilder extends SearchEngine
 			}
 		}
 		
-		if (!empty($dataarray['postcode'])) {
+		if (!empty($dataarray['latlong'])) {
+			if (preg_match("/^\s*(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\s*$/",$dataarray['latlong'],$ll)) {
+				require_once('geograph/conversions.class.php');
+				require_once('geograph/gridsquare.class.php');
+				$square=new GridSquare;
+				$conv = new Conversions;
+				list($x,$y,$reference_index) = $conv->wgs84_to_internal($ll[1],$ll[2]);
+				$grid_ok=$square->loadFromPosition($x, $y, true);
+				if ($grid_ok) {
+					$searchclass = 'GridRef';
+					list($latdm,$longdm) = $conv->wgs84_to_friendly($ll[1],$ll[2]);
+					$searchdesc = ", $nearstring $latdm, $longdm";
+					$searchx = $x;
+					$searchy = $y;			
+					$criteria->reference_index = $square->reference_index;	
+				} else {
+					$this->errormsg = "unable to parse lat/long";
+				}
+			} else {
+				$this->errormsg = "Does not appear to be a valid Lat/Long";
+			}
+		} elseif (!empty($dataarray['postcode'])) {
 			if (preg_match("/^\s*([A-Z]{1,2})([0-9]{1,2}[A-Z]?)\s*([0-9]?)([A-Z]{0,2})\s*$/",strtoupper($dataarray['postcode']),$pc)) {
 				require_once('geograph/searchcriteria.class.php');
 				$searchq = $pc[1].$pc[2].($pc[3]?" ".$pc[3]:'');
