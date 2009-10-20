@@ -53,6 +53,10 @@ if (!empty($_POST['submit'])) {
 	$subject = "Feedback Form";
 	$msg=stripslashes(trim($_POST['comments']));
 	if (!empty($msg)) {
+		if (!empty($_POST['name'])) {
+			die("Spam, Spam, Eggs, Spam, Cheese and Spam!");
+		}
+		
 		$msg.="\n\n-------------------------------\n";
 		if (!empty($_POST['template'])) {
 			$msg.="Template: {$_POST['template']}\n";

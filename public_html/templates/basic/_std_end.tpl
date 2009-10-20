@@ -10,6 +10,11 @@
 {/if}{/dynamic}
 <input type="hidden" name="template" value="{$smarty_template}"/>
 <input type="hidden" name="referring_page" value="{$smarty.server.HTTP_REFERER}"/>
+    <div style="display:none">
+    <br /><br />
+    <label for="name">Leave Blank!</label><br/>   
+	<input size="40" id="name" name="name" value=""/>
+    </div>
 </form></div>{/if}
 </div>
 </div>
