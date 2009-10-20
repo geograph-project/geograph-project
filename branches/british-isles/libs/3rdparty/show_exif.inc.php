@@ -30,6 +30,120 @@
 * @version $Revision$
 */
 
+#based on http://users.aber.ac.uk/ruw/geograph/exif_kml.php
+
+/*
+string angle_kml($exif,$ee,$nn,$len,$vdir,$lat,$lon,$filename,$reference_index)
+version: 090711
+string $exif: unserialised 'exif' array straight from the Geograph database
+int $ee: camera easting as taken from 'viewpoint_eastings' in Geograph database
+int $nn: camera northing as taken from 'viewpoint_northings' in Geograph database
+int $len: camera GR resolution as taken from 'viewpoint_grlen' in Geograph database
+int $dir: 'view_direction' as taken from Geograph database
+float $lat: subject latitude as taken from 'wgs84_lat' in Geograph database
+float $lon: subject longitude as taken from 'wgs84_long' in Geograph database
+string $filename: filename for the kml file
+int $reference_index: matches the Geograph Reference index (in British Isles, gb=1, ireland=2) 
+return value: file name of kml file, or false if none was created
+*/
+function angle_kml($exif,$ee,$nn,$len,$vdir,$lat,$lon,$filename='',$reference_index = 1) {
+  require_once('geograph/conversions.class.php');
+  $conv = new Conversions;
+  
+  // get relevant exif data`
+  $focalLength=($exif['EXIF']['FocalLength']) or die('<p><b>Error: Can\'t determine focal length.</b>');
+  $fract=explode('/',$focalLength);
+  $focalLength=$fract[0]/$fract[1];
+
+  $fpxr=($exif['EXIF']['FocalPlaneXResolution']) or die('<p><b>Error: Can\'t determine focal place resolution.</b>');
+  $fract=explode('/',$fpxr);
+  $fpxr=$fract[0]/$fract[1];
+
+  if (!empty($_GET['debug']))
+    printf("<dt>Focal plane width (x) resolution</dt>\n<dd>%d dpi</dd>",$fpxr);
+
+  $imageWidth=($exif['EXIF']['ExifImageWidth']) or die('<p><b>Error: Can\'t determine cropped image width.</b>');
+
+  if (!empty($_GET['debug']))
+    printf("<dt>Image width</dt>\n<dd>$imageWidth pixels</dd>");
+
+  // Compute opening angle.
+  $viewAngle=2.*atan(25.4*$imageWidth/2./$focalLength/$fpxr)*180./M_PI;
+
+  if (!empty($_GET['debug']))
+    printf("<dt>Calculated opening angle:</dt>\n<dd>%5.1f deg</dd>",$viewAngle);
+
+  if ($ee&&$vdir) {
+    if ($len<12) {                   // move location to centre of referenced area
+      $off=5.*pow(10,4-$len/2);
+      $ee+=$off;
+      $nn+=$off;
+    }
+
+    // Get lat/lon for camera and two points 80km and two points 2km distant at the edges of the field of view.
+    $phi=$vdir-.5*$viewAngle;
+    $left[0]=$ee+80000.*sin(M_PI*$phi/180.);
+    $left[1]=$nn+80000.*cos(M_PI*$phi/180.);
+    $left[2]=$ee+ 2000.*sin(M_PI*$phi/180.);    // The near point is needed because the line drawn in GE tends to
+    $left[3]=$nn+ 2000.*cos(M_PI*$phi/180.);    // disappear underground in hilly terrain despite tessellation.
+    $phi=$vdir+.5*$viewAngle;
+    $right[0]=$ee+80000.*sin(M_PI*$phi/180.);
+    $right[1]=$nn+80000.*cos(M_PI*$phi/180.);
+    $right[2]=$ee+ 2000.*sin(M_PI*$phi/180.);
+    $right[3]=$nn+ 2000.*cos(M_PI*$phi/180.);
+    $gecm[0] =$ee-   50.*sin(M_PI*$vdir/180.);  // move the GE camera a little in the opposite direction for better overview
+    $gecm[1] =$nn-   50.*cos(M_PI*$vdir/180.);
+    $cmra=    $conv->national_to_wgs84($ee,      $nn,      $reference_index);
+    $left_80= $conv->national_to_wgs84($left[0], $left[1], $reference_index);
+    $right_80=$conv->national_to_wgs84($right[0],$right[1],$reference_index);
+    $left_2=  $conv->national_to_wgs84($left[2], $left[3], $reference_index);
+    $right_2= $conv->national_to_wgs84($right[2],$right[3],$reference_index);
+    $gecm=    $conv->national_to_wgs84($gecm[0], $gecm[1], $reference_index);
+    
+    // Make kml file.
+    Header("Content-Type:application/vnd.google-earth.kml+xml; charset=utf-8; filename=".basename($filename));
+    Header("Content-Disposition: attachment; filename=".basename($filename));
+			
+    printf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");             /*<?*/
+    printf("<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\" xmlns:kml=\"http://www.opengis.net/kml/2.2\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n");
+    printf("  <Document>\n");
+    printf("    <Camera>\n");
+    printf("      <longitude>%f</longitude>\n",$gecm[1]);
+    printf("      <latitude>%f</latitude>\n",$gecm[0]);
+    printf("      <altitude>10</altitude>\n");
+    printf("      <heading>%f</heading>\n",$vdir);
+    printf("      <tilt>80.</tilt>\n");
+    printf("    </Camera>\n");
+    printf("    <Placemark>\n");    // view cone
+    printf("      <Style>\n");
+    printf("        <LineStyle>\n");
+    printf("          <color>aa0000ff</color>\n");
+    printf("          <width>4</width>\n");
+    printf("        </LineStyle>\n");
+    printf("      </Style>\n");
+    printf("      <LineString>\n");
+    printf("        <tessellate>1</tessellate>\n");
+    printf("        <coordinates>\n");   // note lon goes before lat in kml
+    printf("%f,%f,0 %f,%f,0 %f,%f,0 %f,%f,0 %f,%f,0\n",$left_80[1],$left_80[0],$left_2[1],$left_2[0],$cmra[1],$cmra[0],$right_2[1],$right_2[0],$right_80[1],$right_80[0]);
+    printf("        </coordinates>\n");
+    printf("      </LineString>\n");
+    printf("    </Placemark>\n");
+    printf("    <Placemark>\n");    // subject
+    printf("      <Point>\n");
+    printf("        <coordinates>$lon,$lat,0</coordinates>\n");
+    printf("      </Point>\n");
+    printf("    </Placemark>\n");
+    printf("  </Document>\n");
+    printf("</kml>\n");
+
+  } else {
+    echo "<p><b>Picture needs both camera position and view direction to create kml file.</b><p>";
+    return false;
+  }
+}
+
+
+
 #based on http://users.aber.ac.uk/ruw/geograph/show_exif.inc
 
 /*

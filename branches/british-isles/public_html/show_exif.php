@@ -53,7 +53,7 @@ if (isset($_REQUEST['id']))
 		header("HTTP/1.0 410 Gone");
 		header("Status: 410 Gone");
 		$template = "static_404.tpl";
-	} elseif ($image->user_id != $USER->user_id) {
+	} elseif (!isset($_GET['kml']) && $image->user_id != $USER->user_id && !$USER->hasPerm('admin')) {
 		//clear the image
 		$image=new GridImage;
 		header("HTTP/1.0 403 Forbidden");
@@ -70,10 +70,31 @@ if (isset($_REQUEST['id']))
 		if (empty($exif)) {
 			$exif = $db->getOne("SELECT exif FROM gridimage_exif1 WHERE gridimage_id = ".$image->gridimage_id);
 		}
+		if (empty($exif)) {
+			$exif = $db->getOne("SELECT exif FROM gridimage_exif2 WHERE gridimage_id = ".$image->gridimage_id);
+		}
 		
 		if (!empty($exif)) {
 			$exif = unserialize($exif);
+			
 			$smarty->assign_by_ref('exif', $exif);
+			
+			if (isset($_GET['kml'])) {
+				require_once('3rdparty/show_exif.inc.php');
+				
+				require_once('geograph/conversions.class.php');
+				$conv = new Conversions;
+				
+				list($lat,$lon) = $conv->gridsquare_to_wgs84($image->grid_square);
+				
+				$filename = "geograph-".$image->gridimage_id."-view.kml";
+				
+				angle_kml($exif,$image->viewpoint_eastings,$image->viewpoint_northings,$image->viewpoint_grlen,$image->view_direction,$lat,$lon,$filename,$image->grid_square->reference_index);
+			
+				exit;			
+			} elseif ($image->viewpoint_eastings && $image->view_direction) {
+				$smarty->assign('kml_available', 1);
+			}
 		}
 	}
 	
