@@ -28,7 +28,8 @@ init_session();
 $smarty = new GeographPage;
 $template='show_exif.tpl';	
 
-$USER->mustHavePerm("basic");
+if (!isset($_GET['kml']))
+	$USER->mustHavePerm("basic");
 
 
 function smarty_function_show_exif($params) {
