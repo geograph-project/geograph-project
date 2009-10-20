@@ -111,7 +111,28 @@ if (isset($_POST['msg']))
 		$verification = md5($CONF['register_confirmation_secret'].$msg.$from_email.$from_name);
 		
 		
-		if (!isset($_POST['verify']) || empty($_POST['verification']) || $_POST['verification'] != $verification || empty($_SESSION['verification'])  || $_SESSION['verification'] != $verification) {
+		if (!empty($CONF['recaptcha_publickey'])) {
+			require_once('3rdparty/recaptchalib.php');
+			
+			if ($_POST['verification'] != $verification || empty($_SESSION['verification'])  || $_SESSION['verification'] != $verification) {
+				$ok = false;
+				$smarty->assign('verification', $verification);
+				
+				$smarty->assign('recaptcha', recaptcha_get_html($CONF['recaptcha_publickey']));
+				
+			} else {
+				$resp = recaptcha_check_answer($CONF['recaptcha_privatekey'],getRemoteIP(),$_POST["recaptcha_challenge_field"],$_POST["recaptcha_response_field"]);
+			
+				if (!$resp->is_valid) {
+					$ok = false;
+					$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
+					$smarty->assign('verification', $verification);
+					
+					$smarty->assign('recaptcha', recaptcha_get_html($CONF['recaptcha_publickey'], $resp->error));
+				}
+			}
+		
+		} elseif (!isset($_POST['verify']) || empty($_POST['verification']) || $_POST['verification'] != $verification || empty($_SESSION['verification'])  || $_SESSION['verification'] != $verification) {
 			$ok = false;
 			$smarty->assign('verification', $verification);
 		} else {
