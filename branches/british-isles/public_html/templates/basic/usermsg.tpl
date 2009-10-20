@@ -35,12 +35,16 @@
 			<textarea name="msg" style="display:none">{$msg|escape:'html'}</textarea>
 
 			<br />
+			
+			{if $recaptcha}
+				{$recaptcha}
+			{else}
+				<img src="/stuff/captcha.jpg.php?{$verification|escape:'html'}" style="padding:20px; border:1px solid silver"/><br />
+				<br />
 
-			<img src="/stuff/captcha.jpg.php?{$verification|escape:'html'}" style="padding:20px; border:1px solid silver"/><br />
-			<br />
-
-			<label for="verify">To continue, enter the <i>big letters and numbers</i> shown in the image above:</label><br/>
-			<input type="text" name="verify" id="verify"/><br />
+				<label for="verify">To continue, enter the <i>big letters and numbers</i> shown in the image above:</label><br/>
+				<input type="text" name="verify" id="verify"/><br />
+			{/if}
 		</div>
 		<br />
 		
