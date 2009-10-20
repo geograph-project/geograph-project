@@ -90,8 +90,7 @@
 		</div>
 		
 		<div style="float:right; position:relative; vertical-align:top;">
-			- <b>{external href="http://akismet.com/" text="Protected by Akismet"}</b> -
-			<span style="font-size:0.8em">{external href="http://wordpress.com/" text="Blog with WordPress"}</span> -
+			- <b>{external href="http://recaptcha.net/" text="Protected by reCAPTCHA"}</b></span> -
 		</div>
 		
 		<input type="submit" name="send" value="Send">
