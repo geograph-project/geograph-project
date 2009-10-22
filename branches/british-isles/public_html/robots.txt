@@ -47,7 +47,7 @@ Disallow: /squares.php
 
 
 User-Agent: Googlebot
-User-agent: Slurp
+User-Agent: Slurp
 Disallow: /profile/*/map
 Disallow: /photo/*?style=*
 Disallow: /mapbrowse.php?

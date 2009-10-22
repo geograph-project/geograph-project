@@ -239,8 +239,9 @@ class sphinxwrapper {
 				$this->filters['grid_reference'] = $gr2;
 			} elseif ($data['d'] < 10) {
 				#$grs[] = $gr2;
-				for($x=$e-$data['d'];$x<=$e+$data['d'];$x++) {
-					for($y=$n-$data['d'];$y<=$n+$data['d'];$y++) {
+				$d = abs($data['d']);
+				for($x=$e-$d;$x<=$e+$d;$x++) {
+					for($y=$n-$d;$y<=$n+$d;$y++) {
 						list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,4,$reference_index,false);
 						$grs[] = $gr2;
 					}
@@ -248,7 +249,7 @@ class sphinxwrapper {
 				$this->filters['grid_reference'] = "(".join(" | ",$grs).")";
 			} else {
 				#$this->filters['grid_reference'] = $gr2;
-				$d = intval($data['d']/10)*10;
+				$d = intval(abs($data['d'])/10)*10;
 				for($x=$e-$d;$x<=$e+$d;$x+=10) {
 					for($y=$n-$d;$y<=$n+$d;$y+=10) {
 						list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,2,$reference_index,false);
