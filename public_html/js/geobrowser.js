@@ -24,7 +24,7 @@
 
 
 function updateGridReference(form) {
-	
+	form.elements['gridref'].value = form.elements['gridref'].value.toUpperCase();
 
 	location.hash = "gridref="+escape(form.elements['gridref'].value);
 	
@@ -444,16 +444,14 @@ function viewThumbnails() {
 	
 	ele.innerHTML = '';
 	
-	num = table.rows.length;
-	if (num > 100) {
-		num = 100;
-	}
-	
-	for (j=1;j<100;j++) {
-		value = table.rows[j].cells[column].innerHTML;
-		
-		ele.innerHTML = ele.innerHTML + '<div style="float:left;position:relative; width:130px; height:130px"><div align="center">'+value+'</div></div>';
-		
+	var shown = 0;
+	for (j=1;j<table.rows.length && shown <100;j++) {
+		if (table.rows[j].style.display == '') {
+			value = table.rows[j].cells[column].innerHTML;
+
+			ele.innerHTML = ele.innerHTML + '<div style="float:left;position:relative; width:130px; height:130px"><div align="center">'+value+'</div></div>';
+			shown = shown+1;
+		}
 	}	
 	
 }
