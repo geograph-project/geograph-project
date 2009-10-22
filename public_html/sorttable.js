@@ -27,6 +27,28 @@ AttachEvent(window, "load", sortables_init,false);
 
 var SORT_COLUMN_INDEX;
 
+	document.getElementsByClassName = function(clsName){
+	    var retVal = new Array();
+	    var elements = document.getElementsByTagName("*");
+	    for(var i = 0;i < elements.length;i++){
+		if(elements[i].className.indexOf(" ") >= 0){
+		    var classes = elements[i].className.split(" ");
+		    for(var j = 0;j < classes.length;j++){
+			if(classes[j] == clsName)
+			    retVal.push(elements[i]);
+		    }
+		}
+		else if(elements[i].className == clsName)
+		    retVal.push(elements[i]);
+	    }
+	    return retVal;
+	}
+
+	String.prototype.nbsptrim = function () {
+		var bits = this.split(unescape('%A0'));
+		return bits[0];
+	}
+
 function sortables_init() {
     // Find all tables with class sortable and make them sortable
     if (!document.getElementsByTagName) return;
@@ -38,6 +60,55 @@ function sortables_init() {
             ts_makeSortable(thisTbl);
         }
     }
+    
+    
+	if (location.hash.length) {
+		// If there are any parameters at the end of the URL,
+		// looking something like  "#sort=name%A0%A0%u2191"
+
+		// skip the first character, we are not interested in the "#"
+		var query = location.hash.substring(1);
+
+		var pairs = query.split("&");
+		for (var i=0; i<pairs.length; i++) {
+			// break each pair at the first "=" to obtain the argname and value
+			var pos = pairs[i].indexOf("=");
+			var argname = pairs[i].substring(0,pos).toLowerCase();
+			var value = unescape(pairs[i].substring(pos+1));
+
+			if (argname == "sort") {
+				var bits = value.split(unescape('%A0'));
+				
+				var ele = document.getElementsByClassName('sortheader');
+				if (bits[2].length == 1) {
+					//ie/firefox do things diffenently with auto unescaping
+					bits[2] = escape(bits[2]);
+				}
+				
+				for(var q = 0;q<ele.length;q++) {
+					
+					if (bits[0] == ts_getInnerText(ele[q]).replace(/  /,unescape('%A0%A0')).nbsptrim()) {
+						var link = ele[q];
+						
+						ts_resortTable(link);
+						
+						if (bits[2] == '%u2191') {
+							
+							setTimeout(function() {
+								ts_resortTable(link);
+							}, 100);
+						}
+					}
+				}
+			}
+			
+		}
+	}
+
+	//to stop the page being 'cached' which prevents onload firing when pressing back.
+	//http://www.stillnetstudios.com/2008/06/23/reset-javascript-firefox-back-button/
+	window.onunload = function(){};
+
 }
 
 function ts_makeSortable(table) {
@@ -103,12 +174,12 @@ function ts_resortTable(lnk) {
     if (itm.match(/^\d\d[\/-]\d\d[\/-]\d\d\d\d$/)) parsefn = ts_parse_date;
     if (itm.match(/^\d\d[\/-]\d\d[\/-]\d\d$/)) parsefn = ts_parse_date;
     if (itm.match(/^[£$]/)) parsefn = ts_parse_currency;
-    if (itm.match(/^[\d\.,]+$/)) parsefn = ts_parse_numeric;
+    if (itm.match(/^[\d\.]+$/)) parsefn = ts_parse_numeric;
     
     if (table.rows[1].cells[column].getAttribute && 
     table.rows[1].cells[column].getAttribute('sortvalue')!=null) {
     	itm = table.rows[1].cells[column].getAttribute('sortvalue');
-    	if (itm.match(/^[\d]+$/)) {
+    	if (itm.match(/^[\d\.,]+$/)) {
     		parsefn=ts_parse_hidden_numeric;	
     	} else {
     		parsefn=ts_parse_hidden;
@@ -170,6 +241,13 @@ function ts_resortTable(lnk) {
     }
         
     span.innerHTML = ARROW;
+    
+    
+	location.hash = "sort="+escape(ts_getInnerText(lnk)).replace(/%20%20/,'%A0%A0');
+
+	if (reGroup) {
+		reGroup();
+	}
 }
 
 function getParent(el, pTagName) {
@@ -219,7 +297,7 @@ function ts_parse_hidden(a,b) {
 }
 
 function ts_parse_hidden_numeric(a,b) {
-    aa = parseInt(a.cells[SORT_COLUMN_INDEX].getAttribute('sortvalue'));
+    aa = parseFloat(a.cells[SORT_COLUMN_INDEX].getAttribute('sortvalue').replace(/,/,''));
     return aa;
 }
 
