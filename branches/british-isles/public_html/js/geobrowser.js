@@ -131,9 +131,14 @@ function updateGridReference(form) {
 								cell = document.createElement("td");
 									img = document.createElement("img");
 									img.setAttribute('alt',"hover to load");
+									img.setAttribute('title',data[j].title+' by '+data[j].realname);
 									img.setAttribute('lowsrc',data[j].thumbnail);
 									img.setAttribute('onmouseover',"if (!this.src) this.src=this.lowsrc");
-								cell.appendChild(img);
+									a = document.createElement("a");
+									a.appendChild(img);
+									a.setAttribute('href','/photo/'+data[j].gridimage_id);
+									a.setAttribute('target','gimage');
+								cell.appendChild(a);
 								cell.setAttribute('sortvalue',data[j].seq_no);
 								row.appendChild(cell);
 								break;
@@ -272,6 +277,7 @@ function updateGridReference(form) {
 				sortables_init();
 				dragtable.init();
 				reGroup(form);
+				document.getElementById('toolbar').style.display='';
 			}
 		}
 	});
@@ -284,7 +290,7 @@ function updateGridReference(form) {
 function findColumn(table,text) {
 	text = text.replace(/Month$/,'Day');
 	text = text.replace(/Year$/,'Day');
-	for (j=1;j<table.rows[0].cells.length;j++) {
+	for (j=0;j<table.rows[0].cells.length;j++) {
 		if (table.rows[0].cells[j].className == text) {
 			return j;
 		}
@@ -422,4 +428,32 @@ function countPopularity(form) {
 			
 		}
 	}
+}
+
+
+
+function viewThumbnails() {
+	document.getElementById('light').style.display='block';
+	document.getElementById('fade').style.display='block';
+	
+	table = document.getElementById('myTable');
+
+	column = findColumn(table,'Image');
+	
+	var ele = document.getElementById('thumbnails');
+	
+	ele.innerHTML = '';
+	
+	num = table.rows.length;
+	if (num > 100) {
+		num = 100;
+	}
+	
+	for (j=1;j<100;j++) {
+		value = table.rows[j].cells[column].innerHTML;
+		
+		ele.innerHTML = ele.innerHTML + '<div style="float:left;position:relative; width:130px; height:130px"><div align="center">'+value+'</div></div>';
+		
+	}	
+	
 }
