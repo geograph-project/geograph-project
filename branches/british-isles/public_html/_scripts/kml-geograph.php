@@ -85,13 +85,13 @@ foreach (array(1,2) as $ri) {
 	$most = $db->GetAll("select 
 	grid_reference,x,y,avg(x) as avgx,avg(y) as avgy,
 	substring(grid_reference,1,$letterlength) as hunk_square,
-	sum(has_geographs) as geograph_count,
+	sum(imagecount) as images,
 	sum(percent_land >0) as land_count,
 	(sum(has_geographs) * 100 / sum(percent_land >0)) as percentage
 	from gridsquare 
 	where reference_index = $ri 
 	group by hunk_square 
-	having geograph_count > 0 
+	having images > 0 
 	order by hunk_square");
 
 	foreach($most as $id=>$entry) 

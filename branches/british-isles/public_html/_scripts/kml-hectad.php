@@ -127,13 +127,11 @@ LPAD(substring(grid_reference,$letterlength+3,2) div 5 * 5,2,'0')
 $most = $db->GetAll("select 
 grid_reference,x,y,
 $sql_column as hunk_square,
-sum(has_geographs) as geograph_count,
-sum(percent_land >0) as land_count,
-(sum(has_geographs) * 100 / sum(percent_land >0)) as percentage
+sum(imagecount) as images
 from gridsquare 
 where $sql_where
 group by hunk_square 
-having geograph_count > 0 
+having images > 0 
 order by hunk_square");
 
 
