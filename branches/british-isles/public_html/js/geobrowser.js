@@ -30,7 +30,7 @@ function updateGridReference(form) {
 	
 	
 	document.getElementById('myTable').innerHTML = 'Fetching Data...';
-	
+	document.getElementById('info').innerHTML = "Please wait";
 	
 	$.ajax({
 		type: "GET",
@@ -129,6 +129,7 @@ function updateGridReference(form) {
 									a = document.createElement("a");
 									a.appendChild(document.createTextNode(data[j].title || '-untitled-'));
 									a.setAttribute('href','/photo/'+data[j].gridimage_id);
+									a.setAttribute('target','gimage');
 								cell.appendChild(a);
 								cell.setAttribute('sortvalue',data[j].title || data[j].seq_no);
 								row.appendChild(cell);
@@ -139,6 +140,7 @@ function updateGridReference(form) {
 									a = document.createElement("a");
 									a.appendChild(document.createTextNode(data[j].realname));
 									a.setAttribute('href',data[j].profile_link);
+									a.setAttribute('target','guser');
 								cell.appendChild(a);
 								cell.setAttribute('sortvalue',data[j].realname);
 								row.appendChild(cell);
