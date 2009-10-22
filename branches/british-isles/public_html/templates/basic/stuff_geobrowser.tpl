@@ -53,7 +53,7 @@ td.caption { font-size:0.7em}
 	<!--label for="incterms">Include cluster/terms</label> 
 		<input type="checkbox" name="incterms" id="incterms"/-->
 	
-	<input type=submit value="Update &gt;"> <br/>
+	<input type=submit value="Update &gt;"> <hr/>
 	
 	
 	<label for="showrows">Show first</label> 
@@ -91,7 +91,9 @@ td.caption { font-size:0.7em}
 			<option value="100000">all</option>
 		</select> <br/>
 	
-	
+	<label for="filter">Only show images containing</label>
+		<input type=text size=30 name="filter" id="filter" onkeyup="reGroup(this.form)">
+	 (matches whole string anywhere in any column)
 </form>
 </div>
 

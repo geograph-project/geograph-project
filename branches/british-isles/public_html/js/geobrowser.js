@@ -303,63 +303,98 @@ function reGroup(form) {
 		form = document.forms['theForm'];
 	numrows = form.elements['numrows'].value;
 	showrows = form.elements['showrows'].value;
+	filter = form.elements['filter'].value;
 	groupby_text = form.elements['groupby'].options[form.elements['groupby'].selectedIndex].text;
 	
 	table = document.getElementById('myTable');
 	
 	groupby = findColumn(table,groupby_text);
 	
+	var shown = 0;
+	var matches = 0;
+	
+	if (filter.length > 0) {
+		var filterRegExp = new RegExp(filter,'i');
+	}
 	
 	if (groupby == -1) {
 		for (j=1;j<table.rows.length;j++) {
-			if (j <= numrows) {
+			show = true;
+
+			if (filter.length > 0) {
+				value = table.rows[j].innerHTML;
+				if (value.search(filterRegExp) == -1) {
+					show = false;
+				} else {
+					matches = matches+1;
+				}
+			}
+			if (show && shown < numrows) {
 				table.rows[j].style.display = '';
+				shown = shown+1;
 			} else {
 				table.rows[j].style.display = 'none';
 			}
 		}
-		document.getElementById('info').innerHTML = (table.rows.length-1) + " images in total";
+		if (filter.length > 0) {
+			document.getElementById('info').innerHTML = matches + " images match out of "+ (table.rows.length-1) + " total";
+		} else {
+			document.getElementById('info').innerHTML = (table.rows.length-1) + " images in total";
+		}
 		return 0;
 	}
 	
 	var done = new Object();
-	var shown = 0;
+	
 	var clusters = 0;
 	for (j=1;j<table.rows.length;j++) {
-	 	value = ts_getInnerText(table.rows[j].cells[groupby]);
-		if (groupby_text == 'Taken Month') {
-			value = value.substring(1,7);
-		} else if (groupby_text == 'Taken Year') {
-			value = value.substring(1,4);
+		show = true;
+	
+		if (filter.length > 0) {
+			value = table.rows[j].innerHTML;
+			if (value.search(filterRegExp) == -1) {
+				show = false;
+			}
 		}
-				
-		if (shown < numrows) {
-			if (done[value]) {
-				if (done[value] >= showrows) { 
-					table.rows[j].style.display = 'none';
+	
+		if (show) {
+			value = ts_getInnerText(table.rows[j].cells[groupby]);
+			if (groupby_text == 'Taken Month') {
+				value = value.substring(1,7);
+			} else if (groupby_text == 'Taken Year') {
+				value = value.substring(1,4);
+			}
+
+			if (shown < numrows) {
+				if (done[value]) {
+					if (done[value] >= showrows) { 
+						table.rows[j].style.display = 'none';
+					} else {
+						table.rows[j].style.display = '';
+						shown = shown+1;
+					}
+
+					done[value] = done[value] + 1;
 				} else {
 					table.rows[j].style.display = '';
 					shown = shown+1;
+
+					done[value] = 1;
+					clusters = clusters + 1;
 				}
-
-				done[value] = done[value] + 1;
 			} else {
-				table.rows[j].style.display = '';
-				shown = shown+1;
+				if (done[value]) {
+					done[value] = done[value] + 1;
+				} else {
+					done[value] = 1;
+					clusters = clusters + 1;
+				}
+				//we have enough rows already...
+				table.rows[j].style.display = 'none';
 
-				done[value] = 1;
-				clusters = clusters + 1;
 			}
 		} else {
-			if (done[value]) {
-				done[value] = done[value] + 1;
-			} else {
-				done[value] = 1;
-				clusters = clusters + 1;
-			}
-			//we have enough rows already...
 			table.rows[j].style.display = 'none';
-			
 		}
 	}
 	
