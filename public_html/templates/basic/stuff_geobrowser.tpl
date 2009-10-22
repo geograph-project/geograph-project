@@ -2,6 +2,34 @@
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
 td.caption { font-size:0.7em}
+
+        .black_overlay{
+            display: none;
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index:1001;
+            -moz-opacity: 0.8;
+            opacity:.80;
+            filter: alpha(opacity=80);
+        }
+        .white_content {
+            display: none;
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            padding: 6px;
+            border: 6px solid orange;
+            background-color: white;
+            z-index:1002;
+            overflow: auto;
+        }
+
 </style>{/literal}
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
 <!--script src="/js/jquery.min.js" type="text/javascript"></script-->
@@ -12,6 +40,11 @@ td.caption { font-size:0.7em}
 
 
 <h2>Geobrowser - Alpha</h2>
+
+<div id="light" class="white_content">
+<div id="thumbnails"></div>
+<div style="text-align:right;"><a href="javascript:void(0)" onclick="document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'">Close</a></div>
+</div><div id="fade" class="black_overlay"></div>
 
 <form action="" onsubmit="return updateGridReference(this)" name="theForm" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 	<label for="gridref">Grid Reference</label>
@@ -68,6 +101,8 @@ td.caption { font-size:0.7em}
 <div id="info"></div>
 <table id="myTable" class="report sortable draggable" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5">
 </table>
+
+<div class="interestBox" style="display:none" id="toolbar">| <a href="javascript:void(viewThumbnails())">View as Thumbnails</a> |</div>
 
 <br/><br/>
 
