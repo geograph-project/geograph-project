@@ -62,11 +62,12 @@ td.caption { font-size:0.7em}
 </form>
 </div>
 
-<p<i>Click</i> a column header to reorder images, <i>Drag</i> a column header to reorder columns</p>
-<table id="myTable" class="report sortable draggable" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5">
-</table>
+<p style="font-size:0.7em"><nobr>&middot; <i>Click</i> a column header to reorder images</nobr> <nobr>&middot; <i>Drag</i> a column header to reorder columns</nobr> <nobr>
+&middot; <i>Hover</i> over Image column to load thumbnail</nobr> </p>
 
 <div id="info"></div>
+<table id="myTable" class="report sortable draggable" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5">
+</table>
 
 <br/><br/>
 
