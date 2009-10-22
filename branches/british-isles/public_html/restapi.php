@@ -146,40 +146,87 @@ class RestAPI
 			{
 				$images=$square->getImages(false,'',"order by null");
 				$count = count($images);
-			
-				echo '<status state="ok" count="'.$count.'"/>';
-
-				foreach ($images as $i => $image) {
-					if ($image->moderation_status=='geograph' || $image->moderation_status=='accepted')
-					{
-						echo " <image url=\"http://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\">";
-
-						echo ' <title>'.htmlentities($image->title).'</title>';
-						echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".htmlentities($image->realname).'</user>';
-
-						echo ' '.preg_replace('/alt=".*?" /','',$image->getThumbnail(120,120));
-
-						if ($more) {
-							echo '<taken>'.htmlentities($image->imagetaken).'</taken>';
-							echo '<submitted>'.htmlentities($image->submitted).'</submitted>';
-							echo '<category>'.htmlentities2($image->imageclass).'</category>';
-							echo '<comment><![CDATA['.htmlentities2($image->comment).']]></comment>';
+				
+				if (isset($_GET['output']) && $_GET['output']=='json') {
+					require_once '3rdparty/JSON.php';
+					$json = new Services_JSON();
+					$whitelist = array();
+					$whitelist['gridimage_id'] = 1;
+					$whitelist['seq_no'] = 1;
+					$whitelist['user_id'] = 1;
+					$whitelist['ftf'] = 1;
+					$whitelist['moderation_status'] = 1;
+					$whitelist['title'] = 1;
+					$whitelist['comment'] = 1;
+					$whitelist['submitted'] = 1;
+					$whitelist['realname'] = 1;
+					$whitelist['nateastings'] = 1;
+					$whitelist['natnorthings'] = 1;
+					$whitelist['natgrlen'] = 1;
+					$whitelist['imageclass'] = 1;
+					$whitelist['imagetaken'] = 1;
+					$whitelist['upd_timestamp'] = 1;
+					$whitelist['viewpoint_eastings'] = 1;
+					$whitelist['viewpoint_northings'] = 1;
+					$whitelist['viewpoint_grlen'] = 1;
+					$whitelist['view_direction'] = 1;
+					$whitelist['use6fig'] = 1;
+					$whitelist['credit_realname'] = 1;
+					$whitelist['profile_link'] = 1;
+					
+					foreach ($images as $i => $image) {
+						foreach ($image as $k => $v) {
+							if (empty($v) || empty($whitelist[$k])) {
+								unset($images[$i]->$k);
+							}
 						}
+						$images[$i]->thumbnail = $image->getThumbnail(120,120,true);
+					}
+					print $json->encode($images);
+				} else {
+			
+					echo '<status state="ok" count="'.$count.'"/>';
 
-						echo ' <location grid="'.($square->reference_index).'" eastings="'.($image->nateastings).'" northings="'.($image->natnorthings).'" figures="'.($image->natgrlen).'"/>';
-						echo '</image>';
+					foreach ($images as $i => $image) {
+						if ($image->moderation_status=='geograph' || $image->moderation_status=='accepted')
+						{
+							echo " <image url=\"http://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\">";
+
+							echo ' <title>'.htmlentities($image->title).'</title>';
+							echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".htmlentities($image->realname).'</user>';
+
+							echo ' '.preg_replace('/alt=".*?" /','',$image->getThumbnail(120,120));
+
+							if ($more) {
+								echo '<taken>'.htmlentities($image->imagetaken).'</taken>';
+								echo '<submitted>'.htmlentities($image->submitted).'</submitted>';
+								echo '<category>'.htmlentities2($image->imageclass).'</category>';
+								echo '<comment><![CDATA['.htmlentities2($image->comment).']]></comment>';
+							}
+
+							echo ' <location grid="'.($square->reference_index).'" eastings="'.($image->nateastings).'" northings="'.($image->natnorthings).'" figures="'.($image->natgrlen).'"/>';
+							echo '</image>';
+						}
 					}
 				}
 			} 
 			else 
 			{
-				echo '<status state="ok" count="0"/>';
+				if (isset($_GET['output']) && $_GET['output']=='json') {
+					die("{error: '{$square->errormsg}'}");
+				} else {
+					echo '<status state="ok" count="0"/>';
+				}
 			}
 			$this->endResponse();
 		}
 		else
 		{
-			$this->error("Invalid grid reference ".$this->params[0]);	
+			if (isset($_GET['output']) && $_GET['output']=='json') {
+				die("{error: 'Invalid grid reference ".$this->params[0]."'}");
+			} else {
+				$this->error("Invalid grid reference ".$this->params[0]);
+			}
 		}
 		
 	}
@@ -222,14 +269,23 @@ class RestAPI
 	
 	function beginResponse()
 	{
-		header("Content-Type:text/xml");
-		echo '<?xml version="1.0" encoding="UTF-8"?>';
-		echo '<geograph>';
+		customExpiresHeader(360,true,true);
+		if (isset($_GET['output']) && $_GET['output']=='json') {
+		
+		} else {
+			header("Content-Type:text/xml");
+			echo '<?xml version="1.0" encoding="UTF-8"?>';
+			echo '<geograph>';
+		}
 	}
 	
 	function endResponse()
 	{
-		echo '</geograph>';
+		if (isset($_GET['output']) && $_GET['output']=='json') {
+		
+		} else {
+			echo '</geograph>';
+		}
 	}
 	
 	/**
