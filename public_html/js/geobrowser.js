@@ -29,6 +29,24 @@ function updateGridReference(form) {
 	location.hash = "gridref="+escape(form.elements['gridref'].value);
 	
 	
+	var grid=new GT_OSGB();
+	if (grid.parseGridRef(form.elements['gridref'].value)) {
+		var subgr=new GT_OSGB();
+		var phgr=new GT_OSGB();
+	} else {
+		grid=new GT_Irish();
+		if(grid.parseGridRef(form.elements['gridref'].value)) {
+			var subgr=new GT_Irish();
+			var phgr=new GT_Irish();
+		}
+	}
+	
+	if (!subgr) {
+		document.getElementById('myTable').innerHTML = '';
+		document.getElementById('info').innerHTML = "Invalid Grid Reference";
+		return false;
+	}
+	
 	document.getElementById('myTable').innerHTML = 'Fetching Data...';
 	document.getElementById('info').innerHTML = "Please wait";
 	
@@ -97,15 +115,11 @@ function updateGridReference(form) {
 					row = document.createElement("tr");
 					
 					if (data[j].nateastings) {
-						var subgr=new GT_OSGB();
-						//todo - or use GT_Irish!
 						subgr.eastings = data[j].nateastings;
 						subgr.northings = data[j].natnorthings;
 					}
 					
 					if (data[j].viewpoint_eastings) {
-						var phgr=new GT_OSGB();
-						//todo - or use GT_Irish!
 						phgr.eastings = data[j].viewpoint_eastings;
 						phgr.northings = data[j].viewpoint_northings;
 					}
@@ -181,7 +195,7 @@ function updateGridReference(form) {
 								break;
 
 							case 'Centisquare': 
-								if (data[j].nateastings > 0) {//only set if 6fig+
+								if (data[j].nateastings && data[j].nateastings > 0) {//only set if 6fig+
 									value=subgr.getGridRef(3);
 								} else {
 									value='-';
@@ -192,7 +206,7 @@ function updateGridReference(form) {
 								break;
 						
 							case 'Subject': 
-								if (data[j].nateastings > 0) {//only set if 6fig+
+								if (data[j].nateastings && data[j].nateastings > 0) {//only set if 6fig+
 									if (data[j].use6fig) {
 										value=subgr.getGridRef(3);
 									} else {
@@ -207,7 +221,7 @@ function updateGridReference(form) {
 								break;
 						
 							case 'Photographer': 
-								if (data[j].viewpoint_eastings > 0) {
+								if (data[j].viewpoint_eastings && data[j].viewpoint_eastings > 0) {
 									var prec = data[j].viewpoint_grlen/2;
 									if (data[j].use6fig && prec > 3) {
 										prec = 3;
@@ -223,7 +237,7 @@ function updateGridReference(form) {
 								break;
 								
 							case 'Distance': 
-								if (data[j].nateastings > 0 && data[j].viewpoint_eastings > 0 && (subgr.getGridRef(2) != phgr.getGridRef(2) || data[j].viewpoint_grlen > 4) ) {
+								if (data[j].nateastings && data[j].viewpoint_eastings && (subgr.getGridRef(2) != phgr.getGridRef(2) || data[j].viewpoint_grlen > 4) ) {
 									distance = Math.sqrt( Math.pow(subgr.eastings - phgr.eastings,2) + Math.pow(subgr.northings - phgr.northings,2) );
 									if (distance < 100) {
 										distance = Math.round(distance);
