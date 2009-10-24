@@ -168,7 +168,7 @@ if (isset($_POST['msg']))
 			}
 		
 		//otherwise validate our own capatcha
-		} else {
+		} elseif (!empty($_POST['verify'])) {
 			define('CHECK_CAPTCHA',true);
 
 			require("stuff/captcha.jpg.php");
