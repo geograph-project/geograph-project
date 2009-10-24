@@ -45,6 +45,16 @@
 				<label for="verify">To continue, enter the <i>big letters and numbers</i> shown in the image above:</label><br/>
 				<input type="text" name="verify" id="verify"/><br />
 			{/if}
+			<br/><br/>
+			... or 
+			{if $encoded} 
+				<h3>Email Sent to <tt>{$from_email|escape:'html'}</tt></h3>
+				<input type="hidden" name="encoded" value="{$encoded|escape:'html'}"/>	
+				<label for="confirmcode">Please enter the code contained in the email</label><br />
+				<input type="text" name="confirmcode" id="confirmcode" size="50"/>
+			{else}
+				<input type="submit" name="sendcode" value="Email me a confirmation code"/> <small>(to <tt>{$from_email|escape:'html'}</tt>) - on the next screen you will be asked to enter the code sent.</small> 
+			{/if}
 		</div>
 		<br />
 		
