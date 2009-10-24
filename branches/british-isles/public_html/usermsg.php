@@ -130,7 +130,9 @@ if (isset($_POST['msg']))
 			$message.="Please enter the following code into the box on the Geograph website:\n\n";
 			$message.="$c\n\n";
 			$message.="Thank you,\n\n";
-			$message.="The Geograph.org.uk Team";
+			$message.="The Geograph.org.uk Team\n\n";
+			
+			$message.="P.S. Please note that while your email address is sent to the contributor so they can reply, Geograph do not store it at all, and certainly won't use it for spam!";
 			
 			@mail($from_email, '[geograph] Confirm email address', $message,
 			"From: Geograph Website <noreply@geograph.org.uk>");
