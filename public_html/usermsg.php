@@ -161,7 +161,6 @@ if (isset($_POST['msg']))
 			
 			if (!$resp->is_valid) {
 				$ok = false;
-				$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
 				$smarty->assign('verification', $verification);
 				
 				$smarty->assign('recaptcha', recaptcha_get_html($CONF['recaptcha_publickey'], $resp->error));
