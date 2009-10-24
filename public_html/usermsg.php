@@ -110,31 +110,63 @@ if (isset($_POST['msg']))
 	
 		$verification = md5($CONF['register_confirmation_secret'].$msg.$from_email.$from_name);
 		
-		
-		if (!empty($CONF['recaptcha_publickey'])) {
-			require_once('3rdparty/recaptchalib.php');
-			
-			if ($_POST['verification'] != $verification || empty($_SESSION['verification'])  || $_SESSION['verification'] != $verification) {
-				$ok = false;
-				$smarty->assign('verification', $verification);
-				
-				$smarty->assign('recaptcha', recaptcha_get_html($CONF['recaptcha_publickey']));
-				
-			} else {
-				$resp = recaptcha_check_answer($CONF['recaptcha_privatekey'],getRemoteIP(),$_POST["recaptcha_challenge_field"],$_POST["recaptcha_response_field"]);
-			
-				if (!$resp->is_valid) {
-					$ok = false;
-					$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
-					$smarty->assign('verification', $verification);
-					
-					$smarty->assign('recaptcha', recaptcha_get_html($CONF['recaptcha_publickey'], $resp->error));
-				}
-			}
-		
-		} elseif (!isset($_POST['verify']) || empty($_POST['verification']) || $_POST['verification'] != $verification || empty($_SESSION['verification'])  || $_SESSION['verification'] != $verification) {
+		//check the verification code
+		if (empty($_POST['verification']) || $_POST['verification'] != $verification || empty($_SESSION['verification']) || $_SESSION['verification'] != $verification) {
 			$ok = false;
 			$smarty->assign('verification', $verification);
+		}
+		$_SESSION['verification'] = $verification;
+		
+		//user has requested a emailed code
+		if (!empty($_POST['sendcode'])) {
+			$c = uniqid('v',true);
+			
+			$token=new Token;
+			$token->setValue("v5", md5($c.$CONF['register_confirmation_secret']));
+			
+			$smarty->assign('encoded', $token->getToken());
+			
+			$message="This message is to confirm your email address, for spam prevention purposes.\n\n";
+			$message.="Please enter the following code into the box on the Geograph website:\n\n";
+			$message.="$c\n\n";
+			$message.="Thank you,\n\n";
+			$message.="The Geograph.org.uk Team";
+			
+			@mail($from_email, '[geograph] Confirm email address', $message,
+			"From: Geograph Website <noreply@geograph.org.uk>");
+			
+			$ok = false;
+			$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
+			$smarty->assign('verification', $verification);
+		
+		//need to verify the entered confirm code
+		} elseif (!empty($_POST['confirmcode'])) {
+			$token=new Token;
+			
+			if ($token->parse($_POST['encoded']) && $token->hasValue("v5") && md5(trim($_POST['confirmcode']).$CONF['register_confirmation_secret']) == $token->getValue("v5")) {
+				//who-ooo!
+			} else {
+				$ok = false;
+				$smarty->assign('verification', $verification);
+				$smarty->assign('error', "Confirmation code doesn't match");
+			}
+		
+		//validate a recapatcha if enabled
+		} elseif (!empty($CONF['recaptcha_publickey']) && !empty($_POST["recaptcha_response_field"])) {
+			require_once('3rdparty/recaptchalib.php');
+			
+			$resp = recaptcha_check_answer($CONF['recaptcha_privatekey'],getRemoteIP(),$_POST["recaptcha_challenge_field"],$_POST["recaptcha_response_field"]);
+			
+			if (!$resp->is_valid) {
+				$ok = false;
+				$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
+				$smarty->assign('verification', $verification);
+				
+				$smarty->assign('recaptcha', recaptcha_get_html($CONF['recaptcha_publickey'], $resp->error));
+				$smarty->assign('error', "Captcha Failed - see below");
+			}
+		
+		//otherwise validate our own capatcha
 		} else {
 			define('CHECK_CAPTCHA',true);
 
@@ -147,7 +179,7 @@ if (isset($_POST['msg']))
 
 			} else {
 				if (isset($_SESSION['verCount']) && $_SESSION['verCount'] > 3) {
-					$smarty->assign('error', "Too many failures please try again later");
+					$smarty->assign('error', "Too many failures, please try again later");
 				} else {
 					$smarty->assign('verification', $verification);
 					$smarty->assign('error', "Please Try again");
@@ -159,8 +191,10 @@ if (isset($_POST['msg']))
 			} 
 		}
 		
-		$_SESSION['verification'] = $verification;
-		
+		if (!$ok && !empty($CONF['recaptcha_publickey']) && empty($resp)) {
+			require_once('3rdparty/recaptchalib.php');
+			$smarty->assign('recaptcha', recaptcha_get_html($CONF['recaptcha_publickey']));
+		}
 	}
 	
 	//still ok?
