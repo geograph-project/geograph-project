@@ -57,7 +57,7 @@ if (!empty($_GET['upload_id'])) {
 $db = GeographDatabaseConnection(false);
 
 
-if (!empty($_POST['create']) && !empty($_POST['title'])) {
+if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comment'])) ) {
 
 	$updates = array();
 	$updates['user_id'] = $USER->user_id;
@@ -154,7 +154,9 @@ if (!empty($_GET['gr'])) {
 		print "invalid GR!";
 	}
 	$orderby = "ORDER BY s.snippet_id";
-	if ($CONF['sphinx_host']) {
+	
+	if ($CONF['sphinx_host'] && !empty($_POST['q'])) {  //todo - for the moment we only use sphinx for full text searches- because of the indexing delay 
+	
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
 		
