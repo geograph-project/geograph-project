@@ -234,6 +234,10 @@ body>#nav_block {width:128px;}
 	z-index:3;
 	color:silver;
 }
+.content_photoblack a.text 
+{
+	color:silver;
+}
 
 .content_photoblack h2
 {
@@ -290,6 +294,11 @@ body>#nav_block {width:128px;}
 	
 	border:2px solid black;
 	z-index:3;
+	color:silver;
+}
+
+.content_photogray a.text 
+{
 	color:silver;
 }
 
@@ -364,7 +373,10 @@ body>#nav_block {width:128px;}
 	z-index:3;
 	color:black;
 }
-
+.content_photowhite a.text 
+{
+	color:black;
+}
 .content_photowhite h2
 {
 	color:black;
