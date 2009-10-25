@@ -46,7 +46,17 @@
   {if $image->comment}
   <div class="caption">{$image->comment|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
   {/if}
+  {if $snippets}
+	{foreach from=$snippets item=item name=used}
 
+		<div style="margin-left:auto;margin-right:auto;width:640px;text-align:left">
+			{$smarty.foreach.used.iteration}. 
+			<b>{$item.title|escape:'html'}</b><br/>
+			<div style="font-size:0.7em">{$item.comment|escape:'html'}</div>
+		</div>
+
+	{/foreach}
+  {/if}
 </div>
 
 

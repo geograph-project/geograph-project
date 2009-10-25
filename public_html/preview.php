@@ -187,8 +187,8 @@ if (!empty($_POST['spelling'])) {
 	//what style should we use?
 	$style = $USER->getStyle();
 
-	if (!$smarty->is_cached($template, $cacheid))
-	{
+	#if (!$smarty->is_cached($template, $cacheid))
+	#{
 		function smarty_function_hidekeywords($input) {
 			return preg_replace('/(^|[\n\r\s]+)(Keywords?[\s:][^\n\r>]+)$/','<span class="keywords">$2</span>',$input);
 		}
@@ -197,7 +197,12 @@ if (!empty($_POST['spelling'])) {
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
 	
 		$image->assignToSmarty($smarty);
-	}
+		
+		$gid = crc32($_POST['upload_id'])+4294967296;
+		$gid += $USER->user_id * 4294967296;
+
+		$image->assignSnippetsToSmarty($smarty,$gid);
+	#}
 } else {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");
