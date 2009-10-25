@@ -8,7 +8,7 @@
 
 {if $isadmin && $locked_by_moderator}
 	<p style="position:relative;padding:10px;border:1px solid pink; color:white; background-color:red">
-	<b>This image is currently open by {$locked_by_moderator}</b>, please come back later.
+	<b>This image is currently locked by {$locked_by_moderator}</b>, please come back later.
 	</p>
 {/if}
 
@@ -138,7 +138,7 @@
 
 {if $isadmin && $locked_by_moderator}
 	<p style="position:relative;padding:10px;border:1px solid pink; color:white; background-color:red">
-	<b>This image is currently open by {$locked_by_moderator}</b>, please come back later.
+	<b>This image is currently locked by {$locked_by_moderator}</b>, please come back later.
 	</p>
 {/if}
 
@@ -617,6 +617,19 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 	</select>
 {/if}
 </div>
+
+
+<br/>
+<h2 class="titlebar">Shared Descriptions/References (Optional) <sup style="color:red">- Experimental!</sup> <input type="button" value="expand" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?gridimage_id={$image->gridimage_id}&gr='+escape(document.theForm.grid_reference.value)+'&gr2={$image->subject_gridref|escape:'html'}';" id="hideshare"/></h2>
+<div class="interestBox" id="showshare" style="display:none">
+	NOTE: Currently 'Shared Descriptsion' are not tracked though the Change suggestion system, and updates apply immediately. (but all changes are monitored)<br/>
+	Also note that only you (and the moderators) can edit a shared description, although anyone can use your descriptions.
+	<iframe src="about:blank" height="400" width="100%" id="shareframe">
+	</iframe>
+	
+</div>
+
+
 </form>
 
 {/if}

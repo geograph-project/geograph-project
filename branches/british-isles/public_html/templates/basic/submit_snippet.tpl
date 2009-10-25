@@ -46,7 +46,8 @@
 
 <div class="interestBox" style="font-size:0.8em" id="hidecreate">
 	<div style="float:right">
-		<input type="button" value="Create New Shared Description" onclick="show_tree('create')"/>
+		<input type="button" value="Create New Shared Description" onclick="show_tree('create')"/><br/>
+		<a href="/snippets.php?gr={$gr|escape:'html'}" target="_blank">Edit your Shared Descriptions</a>
 	</div>
 	Here you can create descriptions that are common to multiple images. For example can create a generic description for a object shown in a photo, and reuse the description on all photos of the object. All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.
 </div>
