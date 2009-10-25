@@ -277,7 +277,7 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 		}
 	}
 	
-	$smarty->assign_by_ref('radius',$_POST['radius']);
+	$smarty->assign_by_ref('radius',$_REQUEST['radius']);
 	
 	
 	$where[] = "enabled = 1"; 
