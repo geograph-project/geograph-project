@@ -49,9 +49,9 @@
   {if $snippets}
 	{foreach from=$snippets item=item name=used}
 
-		<div style="margin-left:auto;margin-right:auto;width:640px;text-align:left;font-size:0.8em">
-			<small class="searchresults">{$smarty.foreach.used.iteration}. 
-			<b><a href="/snippet.php?id={$item.snippet_id}" class="text">{$item.title|escape:'html'}</a></b> {if $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}" class="text">{$item.grid_reference}</a></small> {/if}<br/></small>
+		<div style="margin-left:auto;margin-right:auto;width:640px;text-align:left;font-size:0.8em;padding-top:3px">
+			<small class="searchresults">{if $snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}
+			<a href="/snippet.php?id={$item.snippet_id}" class="text">{$item.title|escape:'html'}</a> {if $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}" class="text">{$item.grid_reference}</a></small> {/if}<br/></small>
 			<div style="font-size:0.9em">{$item.comment|escape:'html'}</div>
 		</div>
 
