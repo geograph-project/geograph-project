@@ -731,3 +731,21 @@ CREATE TABLE IF NOT EXISTS `snippet` (
   SPATIAL KEY `point_en` (`point_en`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
+################################################
+
+ALTER TABLE  `snippet` ADD  `enabled` TINYINT NOT NULL DEFAULT  '1' AFTER  `created` ;
+
+ALTER TABLE  `snippet` ADD  `reference_index` TINYINT UNSIGNED NOT NULL DEFAULT  '1' AFTER  `natgrlen` ;
+
+CREATE TABLE IF NOT EXISTS `snippet_item` (
+  `snippet_item_id` int(11) NOT NULL auto_increment,
+  `snippet_id` int(11) NOT NULL default '0',
+  `user_id` int(11) default NULL,
+  `field` varchar(64) default NULL,
+  `oldvalue` text,
+  `newvalue` text,
+  PRIMARY KEY  (`snippet_item_id`),
+  KEY `snippet_id` (`snippet_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1  ;
+
+################################################

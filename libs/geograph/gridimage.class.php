@@ -198,7 +198,7 @@ class GridImage
 	function getPhotographerGridref($spaced = false)
 	{
 		//already calculated?
-		if (strlen($this->photographer_gridref))	
+		if (strlen($this->photographer_gridref))
 			return $this->photographer_gridref;
 
 		$this->photographer_gridref='';
@@ -544,7 +544,7 @@ class GridImage
 		
 		$db=&$this->_getDB(30); //need currency
 		
-		$snippets = $db->getAll("SELECT snippet.* FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) WHERE gridimage_id = $gid ORDER BY gridimage_snippet.created");
+		$snippets = $db->getAll("SELECT snippet.* FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) WHERE gridimage_id = $gid AND enabled = 1 ORDER BY gridimage_snippet.created");
 
 		$smarty->assign_by_ref('snippets',$snippets);
 	}

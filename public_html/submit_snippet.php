@@ -77,6 +77,7 @@ if (!empty($_POST['create']) && !empty($_POST['title'])) {
 			$updates['natnorthings'] = $square->natnorthings;
 			$updates['natgrlen'] = $square->natgrlen;
 		}
+		$updates['reference_index'] = $square->reference_index;
 		
 		//for the sphinx index
 		$updates['grid_reference'] = $square->grid_reference;
@@ -85,12 +86,12 @@ if (!empty($_POST['create']) && !empty($_POST['title'])) {
 		$updates['wgs84_long'] = $long;
 		
 		//for mysql indexing (where sphinx not available) 
-		$point = "POINT({$square->nateastings} {$square->natnorthings})";
+		$point = "'POINT({$square->nateastings} {$square->natnorthings})'";
 	} else {
-		$point = "POINT(0 0)";
+		$point = "'POINT(0 0)'";
 	}
 	
-	$db->Execute('INSERT INTO snippet SET created=NOW(),point_en=GeomFromText("'.$point.'"),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+	$db->Execute('INSERT INTO snippet SET created=NOW(),point_en=GeomFromText('.$point.'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 	
 	$updates = array();
 	$updates['user_id'] = $USER->user_id;
@@ -152,7 +153,7 @@ if (!empty($_GET['gr'])) {
 	} else {
 		print "invalid GR!";
 	}
-	
+	$orderby = "ORDER BY s.snippet_id";
 	if ($CONF['sphinx_host']) {
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
@@ -196,8 +197,8 @@ if (!empty($_GET['gr'])) {
 
 		if (!empty($ids) && count($ids)) {
 			$id_list = implode(',',$ids);
-			$where = "s.snippet_id IN($id_list) ORDER BY FIELD(s.snippet_id,$id_list)";
-			
+			$where = "s.snippet_id IN($id_list) ";
+			$orderby = "ORDER BY FIELD(s.snippet_id,$id_list)";
 		} else {
 			$where = 0;
 		}
@@ -223,12 +224,14 @@ if (!empty($_GET['gr'])) {
 			$where .= " AND (title LIKE '%$q%' OR comment LIKE '%$q%')";
 			$smarty->assign('q',trim($_POST['q']));
 		}
+		
+		$where = " AND enabled = 1"; 
 	}
 	
 	$smarty->assign_by_ref('radius',$_POST['radius']);
 	
 	
-	$results = $db->getAll($sql="SELECT s.* $fields FROM snippet s LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id = $gid) WHERE gridimage_id IS NULL AND $where"); //the left join is to exclude results already attached to this image
+	$results = $db->getAll($sql="SELECT s.* $fields FROM snippet s LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id = $gid) WHERE gridimage_id IS NULL AND $where $orderby"); //the left join is to exclude results already attached to this image
 	#print $sql;
 	
 	list($usec, $sec) = explode(' ',microtime());
