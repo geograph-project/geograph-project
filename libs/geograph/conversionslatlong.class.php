@@ -384,9 +384,9 @@ function E_N_to_Lat($East, $North, $a, $b, $e0, $n0, $f0, $PHI0, $LAM0) {
 	#Compute Latitude
     $VII = (tan($PHId)) / (2 * $rho * $nu);
     $VIII = ((tan($PHId)) / (24 * $rho * pow($nu,3))) * (5 + (3 * (pow(tan($PHId),2))) + $eta2 - (9 * $eta2 * (pow(tan($PHId),2))));
-    $IX = ((tan($PHId)) / (720 * $rho * pow($nu,5))) * (61 + (90 * ((tan($PHId)) ^ 2)) + (45 * (pow(tan($PHId),4))));
+    $IX = ((tan($PHId)) / (720 * $rho * pow($nu,5))) * (61 + (90 * (pow(tan($PHId),2))) + (45 * (pow(tan($PHId),4))));
     
-    $E_N_to_Lat = (180 / $Pi) * ($PHId - (pow($Et,2) * $VII) + (pow($Et,4) * $VIII) - (($Et ^ 6) * $IX));
+    $E_N_to_Lat = (180 / $Pi) * ($PHId - (pow($Et,2) * $VII) + (pow($Et,4) * $VIII) - (pow($Et,6) * $IX));
 	return ($E_N_to_Lat);
 }
 

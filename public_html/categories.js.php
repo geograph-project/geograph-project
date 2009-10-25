@@ -41,7 +41,7 @@ if (isset($_GET['days'])) {
 } elseif (isset($_SESSION['days'])) {
 	$_GET['days']=min(max(intval($_SESSION['days']),1),30);
 } else {
-	$_GET['days']=3;
+	$_GET['days']=10;
 }
 
 if (!$smarty->is_cached($template, $cacheid))
