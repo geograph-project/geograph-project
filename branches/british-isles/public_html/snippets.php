@@ -187,6 +187,7 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 	} elseif (!empty($_REQUEST['gr'])) {
 		print "invalid GR!";
 	}
+	$where = array();
 	$fields = '';
 	$orderby = "ORDER BY s.snippet_id";
 	if ($CONF['sphinx_host']) {
@@ -241,11 +242,11 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 
 		if (!empty($ids) && count($ids)) {
 			$id_list = implode(',',$ids);
-			$where = "s.snippet_id IN($id_list) ";
+			$where[] = "s.snippet_id IN($id_list)";
 			$orderby = "ORDER BY FIELD(s.snippet_id,$id_list)";
 			
 		} else {
-			$where = 0;
+			$where[] = '0';
 		}
 	} else {
 		$radius = !empty($_REQUEST['radius'])?intval($_REQUEST['radius']*1000):1000;
@@ -259,19 +260,19 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 
 		$fields = ",if(natnorthings > 0,(nateastings-{$square->nateastings})*(nateastings-{$square->nateastings})+(natnorthings-{$square->natnorthings})*(natnorthings-{$square->natnorthings}),0) as distance";
 		
-		$where = "CONTAINS(
+		$where[] = "CONTAINS(
 				GeomFromText($rectangle),
 				point_en)";
 		
 		if (!$USER->hasPerm('moderator')) {
-			$where .= " AND s.user_id = {$USER->user_id}";
+			$where[] = "s.user_id = {$USER->user_id}";
 			$smarty->assign("onlymine",1);
 		}
 		
 		if (!empty($_REQUEST['q'])) {
 			$q=mysql_real_escape_string(trim($_REQUEST['q']));
 			
-			$where .= " AND (title LIKE '%$q%' OR comment LIKE '%$q%')";
+			$where[] = "(title LIKE '%$q%' OR comment LIKE '%$q%')";
 			$smarty->assign('q',trim($_POST['q']));
 		}
 	}
@@ -279,7 +280,10 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 	$smarty->assign_by_ref('radius',$_POST['radius']);
 	
 	
-	$results = $db->getAll($sql="SELECT s.*,realname,COUNT(gs.snippet_id) AS images,SUM(gs.user_id = {$USER->user_id}) AS yours $fields FROM snippet s INNER JOIN user u USING (user_id) LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296) WHERE enabled = 1 AND $where GROUP BY s.snippet_id $orderby"); 
+	$where[] = "enabled = 1"; 
+	$where= implode(' AND ',$where);
+	
+	$results = $db->getAll($sql="SELECT s.*,realname,COUNT(gs.snippet_id) AS images,SUM(gs.user_id = {$USER->user_id}) AS yours $fields FROM snippet s INNER JOIN user u USING (user_id) LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296) WHERE $where GROUP BY s.snippet_id $orderby"); 
 	
 	list($usec, $sec) = explode(' ',microtime());
 	$querytime_after = ((float)$usec + (float)$sec);
