@@ -153,6 +153,7 @@ if (!empty($_GET['gr'])) {
 	} else {
 		print "invalid GR!";
 	}
+	$where = array();
 	$orderby = "ORDER BY s.snippet_id";
 	
 	if ($CONF['sphinx_host'] && !empty($_POST['q'])) {  //todo - for the moment we only use sphinx for full text searches- because of the indexing delay 
@@ -199,10 +200,10 @@ if (!empty($_GET['gr'])) {
 
 		if (!empty($ids) && count($ids)) {
 			$id_list = implode(',',$ids);
-			$where = "s.snippet_id IN($id_list) ";
+			$where[] = "s.snippet_id IN($id_list)";
 			$orderby = "ORDER BY FIELD(s.snippet_id,$id_list)";
 		} else {
-			$where = 0;
+			$where[] = '0';
 		}
 	} else {
 		$radius = !empty($_POST['radius'])?intval($_POST['radius']*1000):1000;
@@ -216,24 +217,26 @@ if (!empty($_GET['gr'])) {
 
 		$fields = ",if(natnorthings > 0,(nateastings-{$square->nateastings})*(nateastings-{$square->nateastings})+(natnorthings-{$square->natnorthings})*(natnorthings-{$square->natnorthings}),0) as distance";
 		
-		$where = "CONTAINS(
+		$where[] = "CONTAINS(
 				GeomFromText($rectangle),
 				point_en)";
 		
 		if (!empty($_POST['q'])) {
 			$q=mysql_real_escape_string(trim($_POST['q']));
 			
-			$where .= " AND (title LIKE '%$q%' OR comment LIKE '%$q%')";
+			$where[] = "(title LIKE '%$q%' OR comment LIKE '%$q%')";
 			$smarty->assign('q',trim($_POST['q']));
 		}
 		
-		$where = " AND enabled = 1"; 
+		$where[] = "enabled = 1"; 
 	}
 	
 	$smarty->assign_by_ref('radius',$_POST['radius']);
 	
+	$where[] = 'gridimage_id IS NULL';
+	$where= implode(' AND ',$where);
 	
-	$results = $db->getAll($sql="SELECT s.* $fields FROM snippet s LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id = $gid) WHERE gridimage_id IS NULL AND $where $orderby"); //the left join is to exclude results already attached to this image
+	$results = $db->getAll($sql="SELECT s.* $fields FROM snippet s LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id = $gid) WHERE $where $orderby"); //the left join is to exclude results already attached to this image
 	#print $sql;
 	
 	list($usec, $sec) = explode(' ',microtime());

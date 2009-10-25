@@ -51,7 +51,7 @@
 
 		<div style="margin-left:auto;margin-right:auto;width:640px;text-align:left">
 			{$smarty.foreach.used.iteration}. 
-			<b>{$item.title|escape:'html'}</b><br/>
+			<b>{$item.title|escape:'html'}</b> {if $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small> {/if}<br/>
 			<div style="font-size:0.7em">{$item.comment|escape:'html'}</div>
 		</div>
 
