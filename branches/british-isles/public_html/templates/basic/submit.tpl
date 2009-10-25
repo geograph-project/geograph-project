@@ -382,8 +382,18 @@ it was taken or other interesting geographical information. <span id="styleguide
 <p style="clear:both"><label for="comment"><b>Description/Comment</b></label> <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span></span><br/>
 <textarea id="comment" name="comment" rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$comment|escape:'html'}</textarea></p>
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
-to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
+to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
 
+You can add a list of keywords as well as (or instead of) a description. On a separate line at the end of the description just type 'Keywords:' followed by your list. Keywords are useful to add words to aid people searching for images, without including the words in the description itself.</div>
+<br/>
+<div class="interestBox">
+	<b>Shared Descriptions/References (Optional)</b> <sup style="color:red">- Experimental!</sup>
+	<input type="button" value="expand" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';" id="hideshare"/>
+	<div id="showshare" style="display:none">
+		<iframe src="about:blank" height="400" width="100%" id="shareframe">
+		</iframe>
+	</div>
+</div>
 
 <h3>Further Information</h3>
 

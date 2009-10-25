@@ -235,11 +235,11 @@ class sphinxwrapper {
 
 			list($gr2,$len) = $conv->national_to_gridref($e*1000,$n*1000,4,$reference_index,false);
 
-			if ($data['d'] == 1) {
+			if ($data['d'] <= 1) {
 				$this->filters['grid_reference'] = $gr2;
 			} elseif ($data['d'] < 10) {
 				#$grs[] = $gr2;
-				$d = abs($data['d']);
+				$d = max(1,abs($data['d']));
 				for($x=$e-$d;$x<=$e+$d;$x++) {
 					for($y=$n-$d;$y<=$n+$d;$y++) {
 						list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,4,$reference_index,false);
@@ -259,10 +259,14 @@ class sphinxwrapper {
 				$this->filters['hectad'] = "(".join(" | ",$grs).")";
 			}
 
-			if ($data['d'] > 1) {
-				list($lat,$long) = $conv->national_to_wgs84($e*1000+500,$n*1000+500,$reference_index);
+			if ($data['d'] != 1) {
 				$cl = $this->_getClient();
-				$cl->SetGeoAnchor('wgs84_lat', 'wgs84_long', deg2rad($lat), deg2rad($long) );
+				if (!empty($data['lat']) || !empty($data['long'])) {
+					$cl->SetGeoAnchor('wgs84_lat', 'wgs84_long', deg2rad($data['lat']), deg2rad($data['long']) );
+				} else {
+					list($lat,$long) = $conv->national_to_wgs84($e*1000+500,$n*1000+500,$reference_index);
+					$cl->SetGeoAnchor('wgs84_lat', 'wgs84_long', deg2rad($lat), deg2rad($long) );
+				}
 				$cl->SetFilterFloatRange('@geodist', 0.0, floatval($data['d']*1000));
 			} else {
 				$this->sort = preg_replace('/@geodist \w+,?\s*/','',$this->sort);

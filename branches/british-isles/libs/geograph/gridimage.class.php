@@ -120,13 +120,13 @@ class GridImage
 	
 	/**
 	* external image?
-	 */
+	*/
 	var $ext;
-	var $ext_server;
-	var $ext_thumb_url;
-	var $ext_img_url;
-	var $ext_profile_url;
-	var $ext_gridimage_id;
+	private $ext_server;
+	private $ext_thumb_url;
+	private $ext_img_url;
+	private $ext_profile_url;
+	private $ext_gridimage_id;
 
 	/**
 	* constructor
@@ -535,6 +535,18 @@ class GridImage
 
 		$level = ($this->grid_square->imagecount > 1)?6:5;
 		$smarty->assign('sitemap',getSitemapFilepath($level,$this->grid_square)); 
+	}
+	
+	function assignSnippetsToSmarty($smarty, $gid = 0) {
+		if (empty($gid)) {
+			$gid = $this->gridimage_id;
+		}
+		
+		$db=&$this->_getDB(30); //need currency
+		
+		$snippets = $db->getAll("SELECT snippet.* FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) WHERE gridimage_id = $gid ORDER BY gridimage_snippet.created");
+
+		$smarty->assign_by_ref('snippets',$snippets);
 	}
 	
 	
