@@ -110,6 +110,8 @@
 </form>
 
 {/dynamic}
+<hr/>
+<p style="background-color:pink; font-size:0.7em;"><i>For clarification, you are submitting these shared descriptions to Geograph Project directly. Geograph Project then grants any contributor the right to reuse any shared description within their Creative Commons licensed submission. From a practical point of view this allows the contributor the use the description without attribution (as its not Creative Commons licensed).</i></p>
 
 </body>
 </html>
