@@ -69,6 +69,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		}
 
 		$smarty->assign($data);
+		$smarty->assign('page_title',$data['title']);
 	} else {
 		$template = 'static_404.tpl';
 	}

@@ -3,12 +3,10 @@
 <h2>{$title|escape:'html'} <small>:: Shared Description</small></h2>
 
 <div class="interestBox">
-	<div style="float:left;position:relative"><a href="/gridref/{$grid_reference}/links"><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" style="padding:10px;" alt="More Links for {$grid_reference}"/></a></div>
-
 	<div style="float:right;position:relative">By <a href="/profile/{$user_id}">{$realname|escape:'html'}</a></div>
 
-	<p>{$comment|escape:'html'}</p>
-	<div style="font-size:0.7em"><a href="/gridref/{$grid_reference}/links">Links for {$grid_reference}</a></div>
+	<div>{$comment|escape:'html'}</div>
+	<div style="font-size:0.8em;margin-top:8px;border-top:1px solid silver"><a href="/gridref/{$grid_reference}/links"><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" style="padding:2px;" alt="More Links for {$grid_reference}"/></a> | <a href="/gridref/{$grid_reference}/links">Links for <b>{$grid_reference}</b></a> | <a href="/search.php?searchtext={$title|escape:'url'}&amp;gridref={$grid_reference}&amp;do=1">Find nearby images mentioning '{$title|escape:'html'}'</a> |</div>
 </div>
 {if $images}
 	<p>{$images} image{if $images == 1} uses{else}s use{/if} this description{if $images > 10}. Preview shown below:{else}:{/if}</p>
