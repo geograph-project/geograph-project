@@ -59,8 +59,7 @@
 {else}
 
 <p>
-
-	Here you can create descriptions that are common to multiple images. For example can create a generic description for a object shown in a photo, and reuse the description on all photos of the object. All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.
+	Here you can manage descriptions that are common to multiple images, create new descriptions during image submission, or on the 'Change Image Details' page for your own images. For example a generic description for a object shown in a photo, and reuse the description on all photos of the object. All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.
 </p>
 
 
@@ -100,11 +99,11 @@
 			<input type="submit" name="delete[{$item.snippet_id}]" value="Delete"/>
 		</div>
 
-		<b>{$item.title|escape:'html'}</b> {if $item.grid_reference != $grid_reference} :: {$item.grid_reference} {/if}{if $item.distance}(Distance {$item.distance}km){/if}<br/>
+		<b><a href="/snippet.php?id={$item.snippet_id}" class="text">{$item.title|escape:'html'}</a></b> {if $item.grid_reference != $grid_reference} :: {$item.grid_reference} {/if}{if $item.distance}(Distance {$item.distance}km){/if}<br/>
 		<div style="font-size:0.7em">{$item.comment|escape:'html'}</div>
 		<div style="font-size:0.7em;color:gray;margin-left:10px;">
 		
-		{if $user->user_id == $item.user_id} 		
+		{if $user->user_id != $item.user_id} 		
 			By <a href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a>. 
 		{/if}
 		
@@ -114,7 +113,9 @@
 	</div>
 
 {foreachelse}
-	<p><i>no shared descriptions found</i></p>
+	{if $gr || $q}
+		<p><i>no shared descriptions found</i></p>
+	{/if}
 {/foreach}
 {if $query_info}
 	<p><i>{$query_info}</i></p>
