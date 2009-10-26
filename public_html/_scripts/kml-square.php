@@ -148,7 +148,7 @@ if ($square->imagecount > 20) {
 
 
 	$photos = $db->GetAll($sql = "select 
-	gridimage_id,grid_reference,title,x,y,credit_realname,realname,user_id,comment,
+	gridimage_id,grid_reference,title,title2,x,y,credit_realname,realname,user_id,comment,
 	wgs84_lat,wgs84_long
 	from gridimage_search 
 	where $sql_where
@@ -165,16 +165,22 @@ if ($square->imagecount > 20) {
 
 	foreach($photos as $id=>$entry) 
 	{
-		$point = new kmlPoint($entry['wgs84_lat'],$entry['wgs84_long']);			
+		$point = new kmlPoint($entry['wgs84_lat'],$entry['wgs84_long']);
+		if (empty($entry['title2']))
+			$title = $entry['title'];
+		elseif (empty($entry['title']))
+			$title = $entry['title2'];
+		else
+			$title = $entry['title'] . ' (' . $entry['title2'] . ')';
 
-		$placemark = new kmlPlacemark_Photo($entry['gridimage_id'],$entry['grid_reference'].' :: '.$entry['title'],$point);
+		$placemark = new kmlPlacemark_Photo($entry['gridimage_id'],$entry['grid_reference'].' :: '.$title,$point);
 		$placemark->useHoverStyle();
 
 		$image=new GridImage;
 		$image->fastInit($entry);
 
 			$placemark->useCredit($image->realname,"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id);
-			$html .= getHtmlLinkP($placemark->link,$entry['grid_reference'].' :: '.$entry['title'].' by '.$image->realname);
+			$html .= getHtmlLinkP($placemark->link,$entry['grid_reference'].' :: '.$title.' by '.$image->realname);
 			$linkTag = "<a href=\"".$placemark->link."\">";
 
 			$details = $image->getThumbnail(120,120,2);

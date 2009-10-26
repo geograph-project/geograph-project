@@ -73,7 +73,7 @@ $sql_where = "CONTAINS(GeomFromText($rectangle),point_xy)";
 
 
 $photos = $db->GetAll("select 
-gridimage_id,grid_reference,title,imagecount,user_id,realname,x,y,view_direction,credit_realname,realname,
+gridimage_id,grid_reference,title,title2,imagecount,user_id,realname,x,y,view_direction,credit_realname,realname,
 wgs84_lat,wgs84_long
 from gridimage_kml 
 where $sql_where
@@ -83,9 +83,15 @@ order by null");
 foreach($photos as $id=>$entry) 
 {
 	if ($entry['imagecount'] == 1) {
-		$point = new kmlPoint($entry['wgs84_lat'],$entry['wgs84_long']);			
+		$point = new kmlPoint($entry['wgs84_lat'],$entry['wgs84_long']);
+		if (empty($entry['title2']))
+			$title = $entry['title'];
+		elseif (empty($entry['title']))
+			$title = $entry['title2'];
+		else
+			$title = $entry['title'] . ' (' . $entry['title2'] . ')';
 
-		$placemark = new kmlPlacemark_Photo($entry['gridimage_id'],$entry['grid_reference'].' :: '.$entry['title'],$point);
+		$placemark = new kmlPlacemark_Photo($entry['gridimage_id'],$entry['grid_reference'].' :: '.$title,$point);
 		
 		$placemark->useHoverStyle();
 
@@ -93,7 +99,7 @@ foreach($photos as $id=>$entry)
 		$image->fastInit($entry);
 		
 			$placemark->useCredit($image->realname,"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id);
-			$html .= getHtmlLinkP($placemark->link,$entry['grid_reference'].' :: '.$entry['title'].' by '.$image->realname);
+			$html .= getHtmlLinkP($placemark->link,$entry['grid_reference'].' :: '.$title.' by '.$image->realname);
 			$linkTag = "<a href=\"".$placemark->link."\">";
 
 			$details = $image->getThumbnail(120,120,2);
