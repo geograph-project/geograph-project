@@ -60,6 +60,8 @@ Disallow: /places.php
 Disallow: /explore/places.php
 Disallow: /usermsg.php
 Disallow: /statistics/breakdown.php
+Disallow: /statistics/leaderboard.php?*when*
+Disallow: /statistics/moversboard.php?*when*
 Disallow: /submit.php
 Disallow: /submit_popup.php
 Disallow: /map_frame.php
@@ -84,7 +86,7 @@ Disallow: /stuff/conversion.php
 Disallow: /article/edit.php
 Disallow: /article/history.php
 
-User-agent: Slurp
+User-Agent: Slurp
 Disallow: /profile/*/map
 Disallow: /photo/*?style=*
 Disallow: /mapbrowse.php
