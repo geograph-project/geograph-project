@@ -1,10 +1,10 @@
 {if $inner}
-{assign var="page_title" value="Grid Ref Finder"}
+{assign var="page_title" value="Planquadrat-Suche"}
 
 {include file="_basic_begin.tpl"}
 {else}
 
-{assign var="page_title" value="Grid Ref Finder"}
+{assign var="page_title" value="Planquadrat-Suche"}
 {include file="_std_begin.tpl"}
 {/if}
 
@@ -31,7 +31,7 @@
 			if (geocoder) {
 				geocoder.getLatLng(address,function(point) {
 					if (!point) {
-						alert("Your entry '" + address + "' could not be geocoded, please try again");
+						alert("Die Eingabe '" + address + "' konnte nicht bearbeitet werden, bitte nochmals versuchen");
 					} else {
 						if (themarker) {
 							themarker.setPoint(point);
@@ -134,21 +134,21 @@
 	</script>
 {/literal}
 
-<p>Click on the map to create a point, pick it up and drag to move to better location...</p>{*FIXME Translate*}
+<p>Bitte Karte anklicken um einen verschiebbaren Marker zu erzeugen...</p>
 
 <form {if $picasa}action="/puploader.php?inner"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
 
-<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $grid_reference}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)"/>
+<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Aktuelle Koordinate</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $grid_reference}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)"/>
 
-<input type="submit" value="Step 2 &gt; &gt;"/></div>
+<input type="submit" value="Schritt 2 &gt; &gt;"/></div>
 
-<div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div><br/>			
+<div id="map" style="width:600px; height:500px;border:1px solid blue">Karte wird geladen... (JavaScript nötig)</div><br/>
 
-<div style="width:600px; text-align:right;"><label for="addressInput">Enter Address: 
+<div style="width:600px; text-align:right;"><label for="addressInput">Adresse eingeben:
 	<input type="text" size="50" id="addressInput" name="address" value="" />
-	<input type="button" value="Find" onclick="showAddress(this.form.address.value)"/><small><small><br/>
-	(Powered by the Google Maps API Geocoder)</small></small>
+	<input type="button" value="Suchen" onclick="showAddress(this.form.address.value)"/><small><small><br/>
+	(über Google Maps API Geocoder)</small></small>
 </div>
 
 <input type="hidden" name="gridsquare" value=""/>
