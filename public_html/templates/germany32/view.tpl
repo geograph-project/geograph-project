@@ -17,7 +17,7 @@
 
 <p>This photograph has been rejected by the site moderators, and is only viewable by you.</p>
 
-<p>You can find any messages related to this image on the <a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">edit page</a>, where you can reply or raise new concerns in the "Please tell us what is wrong..." box, which will be communicated with site moderators. You may also like to read this general article on common <a href="/article/Reasons-for-rejection">Reasons for rejection</a>.
+<p>You can find any messages related to this image on the <a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">edit page</a>, where you can reply or raise new concerns in the "Please tell us what is wrong..." box, which will be communicated with site moderators. You may also like to read this general article on common <a href="http://www.geograph.org.uk/article/Reasons-for-rejection">Reasons for rejection</a>.
 
 </div>
 <br/>
@@ -52,7 +52,7 @@
      {if ! $image->title1 }
        <div class="caption"><b>{$image->title2|escape:'html'}</b></div>
        <div class="caption">{$image->comment2|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
-       <div class="caption">&msp;</div>
+       <hr style="width:3em" />
        <div class="caption">{$image->comment1|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
      {else}
        <div class="caption"><b>{$image->title1|escape:'html'}</b></div>
@@ -95,6 +95,10 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 {include file="_rdf.tpl"}
 
 -->
+
+{if $image_taken}
+<div class="keywords" style="top:-3em;float:right;position:relative;font-size:0.8em;height:0em;z-index:-10" title="year photo was taken">year taken <div style="font-size:3em;line-height:0.5em">{$image->imagetaken|truncate:4:''}</div></div>
+{/if}
 
 <div class="buttonbar">
 
@@ -267,8 +271,6 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 {external title="Open in Google Maps" href="http://maps.google.co.uk/maps?q=http://`$http_host`/photo/`$image->gridimage_id`.kml" text="Google Maps"}, 
 
 {/if}
-
-{getamap gridref=$image->subject_gridref text="OS Get-a-map&trade;"},
 
 {if $rastermap->reference_index == 1}<a href="/mapper/?t={$map_token}&amp;gridref_from={$image->grid_reference}">OS Map Checksheet</a>, {/if}
 
