@@ -36,7 +36,7 @@
 	  <a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,true)}</a></div>
 	  </div>
 	{foreachelse}
-		<p><i>no images to display {if $images}this could be because still pending - and/or recently rejected{/if}</i></p>
+		<p><i>no images to display{if $images}, this could be because still pending and/or recently rejected{/if}</i></p>
 	{/foreach}
 	<br style="clear:both"/>
 
