@@ -369,7 +369,7 @@ it was taken or other interesting geographical information. <span id="styleguide
 	<br/><span class="formerror">{$error.title}</span>
 	{/if}<br/>
 <input size="50" maxlength="128" id="title" name="title" value="{$title|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title',true);" onkeyup="checkstyle(this,'title',false);"/> <span class="formerror" style="display:none" id="titlestyle">Possible style issue. See Guide above. <span id="titlestylet" style="font-size:0.9em"></span></span></p>
-<p><label for="title2"><b>English Title</b> (optional)</label> {if $error.title2}
+<p><label for="title2"><b>Non-English Title</b> (optional)</label> {if $error.title2}
 	<br/><span class="formerror">{$error.title2}</span>
 	{/if}<br/>
 <input size="50" maxlength="128" id="title2" name="title2" value="{$title2|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title2',true);" onkeyup="checkstyle(this,'title2',false);"/> <span class="formerror" style="display:none" id="title2style">Possible style issue. See Guide above. <span id="title2stylet" style="font-size:0.9em"></span></span></p>
@@ -379,7 +379,7 @@ it was taken or other interesting geographical information. <span id="styleguide
 
 <p style="clear:both"><label for="comment"><b>Description/Comment</b></label> <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span></span><br/>
 <textarea id="comment" name="comment" rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$comment|escape:'html'}</textarea></p>
-<p style="clear:both"><label for="comment2"><b>English Description/Comment</b> (optional)</label> <span class="formerror" style="display:none" id="comment2style">Possible style issue. See Guide above. <span id="comment2stylet"></span></span><br/>
+<p style="clear:both"><label for="comment2"><b>Non-English Description/Comment</b> (optional)</label> <span class="formerror" style="display:none" id="comment2style">Possible style issue. See Guide above. <span id="comment2stylet"></span></span><br/>
 <textarea id="comment2" name="comment2" rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment2',true);" onkeyup="checkstyle(this,'comment2',false);">{$comment2|escape:'html'}</textarea></p>
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
 to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
@@ -463,7 +463,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 <p>Tick this box only if you believe your photograph is not a 'geograph'. The moderator will just use the box as a suggestion, so if you are not sure, leave it unticked. Note: There can be many geograph images per square.</p>
 
-<p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in this {newwin href="/article/Geograph-or-supplemental" text="article on how images are moderated"}.</span></p>
+<p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in this {newwin href="http://www.geograph.org.uk/article/Geograph-or-supplemental" text="article on how images are moderated"}.</span></p>
 </div>
 
 <p>

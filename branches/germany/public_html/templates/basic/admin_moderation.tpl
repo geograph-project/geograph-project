@@ -51,14 +51,14 @@
 	  title: <b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title1|escape:'html'}</a></b><br/>
 	  {/if}
 	  {if $image->title2}
-	  English title: <b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title2|escape:'html'}</a></b><br/>
+	  Non-English title: <b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title2|escape:'html'}</a></b><br/>
 	  {/if}
 	  
 	  {if $image->comment1}
 	  comments: <i style="font-size:0.8em">{$image->comment1|escape:'html'|geographlinks}</i><br/>
 	  {/if}
 	  {if $image->comment2}
-	  English comments: <i style="font-size:0.8em">{$image->comment2|escape:'html'|geographlinks}</i><br/>
+	  Non-English comments: <i style="font-size:0.8em">{$image->comment2|escape:'html'|geographlinks}</i><br/>
 	  {/if}
 	  
 	  <br/>

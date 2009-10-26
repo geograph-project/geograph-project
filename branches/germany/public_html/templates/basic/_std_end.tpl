@@ -11,13 +11,7 @@
      <li><a title="Submitted Content" href="/content/">Content</a></li>
     </ul></li>
     <li>Interact<ul>
-     <li><a title="Play Games" href="/games/">Games</a></li>
-     <li><a title="Activities" href="/activities/">Activities</a> </li>
      <li><a title="Discuss" href="/discuss/">Discuss</a></li>
-     {dynamic}{if $user->registered}
-     <li><a title="Chat" href="/chat/">Chat</a> {if $irc_seen}<span style="color:gray">({$irc_seen} online)</span>{/if}</li>
-     <li><a title="Find out about local Events" href="/events/">Events</a></li>
-     {/if}{/dynamic}
     </ul></li>
     <li>Contributors<ul>
      <li><a title="Submit" href="/submit.php">Submit</a></li>
@@ -45,8 +39,6 @@
   {/if}
   {/dynamic}
   </ul> 
-<div style="text-align:center; padding-top:15px; border-top: 2px solid black; margin-top: 15px;">sponsored by <br/> <br/>
-<a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="http://{$static_host}/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey" style="padding:4px;"/></a></div>
 {if $discuss}
 {foreach from=$discuss item=newsitem}
 <h3 class="newstitle" style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;">{$newsitem.topic_title}</h3>
@@ -119,9 +111,6 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
        <a href="http://validator.w3.org/check/referer" title="check our xhtml standards compliance">XHTML</a>
        <span class="sep">|</span>
        <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://{$static_host}/templates/basic/css/basic.css" title="check our css standards compliance">CSS</a>
-    </p>
-    <p style="color:#777788;">Hosting supported by 
-    {external title="click to visit the Fubra website" href="http://www.fubra.com/" text="Fubra"}
     </p>
   </div>
 </div>

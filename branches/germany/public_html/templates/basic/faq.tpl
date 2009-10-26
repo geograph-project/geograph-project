@@ -8,15 +8,15 @@
  <b>Contributing</b> photos:
  <ul>
  <li><a href="/help/guide">Geograph Guide</a></li>
- <li><a href="/article/Geograph-or-supplemental">Moderation Guide</a></li>
- <li><a href="/article/Which-Square">Locating your Image</a></li>
+ <li><a href="http://www.geograph.org.uk/article/Geograph-or-supplemental">Moderation Guide</a></li>
+ <li><a href="http://www.geograph.org.uk/article/Which-Square">Locating your Image</a></li>
  <li><a href="/help/style">Submission Style Guide</a><br/><br/></li>
  <li><a href="/help/changes">Change Request System</a><br/><br/></li>
  </ul>
  <b>Browsing</b> the site:
  <ul>
  <li><a href="/help/squares">Square Definitions</a><br/><br/></li>
- <li><a href="/article/Searching-on-Geograph">Search Help</a></li>
+ <li><a href="http://www.geograph.org.uk/article/Searching-on-Geograph">Search Help</a></li>
  <li><a href="/help/stats_faq">Statistics FAQ</a><br/><br/></li>
  {if $enable_forums}
  <li><a href="/help/bbcodes">Forum BBcodes Help</a><br/><br/></li>
@@ -93,7 +93,7 @@ The <b>Geograph Website</b>:
 	<li>It's a free and <a href="#opensource">open online community</a> project for all</li>
 	</ul>
 	
-	<p>See the original <a title="guide to geographing" href="/help/guide">guide to good geographing</a>, and <a title="Geograph Quickstart Guide" href="/article/Geograph-Quickstart-Guide">contributors quickstart guide</a>.</p>
+	<p>See the original <a title="guide to geographing" href="/help/guide">guide to good geographing</a>, and <a title="Geograph Quickstart Guide" href="http://www.geograph.org.uk/article/Geograph-Quickstart-Guide">contributors quickstart guide</a>.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
@@ -127,7 +127,7 @@ The <b>Geograph Website</b>:
 	but the image will still appear on the selected grid square. A square that just contains
 	supplemental images is still open to be claimed as a geograph though!</p>
 
-	<p><img src="/templates/basic/img/icon_alert.gif" alt="Note" width="25" height="22" align="absmiddle"/> Follow this link for a <a title="geograph and supplemental guide" href="/article/Geograph-or-supplemental">more in depth discussion</a> on the finer points of moderation.</p>
+	<p><img src="http://www.geograph.org.uk/templates/basic/img/icon_alert.gif" alt="Note" width="25" height="22" align="absmiddle"/> Follow this link for a <a title="geograph and supplemental guide" href="/article/Geograph-or-supplemental">more in depth discussion</a> on the finer points of moderation.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
@@ -213,7 +213,7 @@ The <b>Geograph Website</b>:
 <div id="geographism">
 <a name="geographism"></a>
 <h3>What do all these strange words mean?</h3>
-	<p>Well, if it's a 'geographism' - a term developed during use on this site, then see <a href="/article/Geographisms">this glossary article</a> we have started compiling. There is also a wide range of sites dealing with Acronyms, and Abbreviations, listed on {external href="http://www.dmoz.org/Reference/Dictionaries/By_Subject/Computers/Internet_Terms_and_Acronyms/" text="DMOZ here"}.</p>
+	<p>Well, if it's a 'geographism' - a term developed during use on this site, then see <a href="http://www.geograph.org.uk/article/Geographisms">this glossary article</a> we have started compiling. There is also a wide range of sites dealing with Acronyms, and Abbreviations, listed on {external href="http://www.dmoz.org/Reference/Dictionaries/By_Subject/Computers/Internet_Terms_and_Acronyms/" text="DMOZ here"}.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
@@ -274,7 +274,7 @@ The <b>Geograph Website</b>:
 	for details.</p>
 
 	<ul>
-	<li>Are you a developer and maybe looking for <a href="/article/Ways-to-view-Geograph-Images">ways to access images outside the website</a>.</li>
+	<li>Are you a developer and maybe looking for <a href="http://www.geograph.org.uk/article/Ways-to-view-Geograph-Images">ways to access images outside the website</a>.</li>
 	</ul>
 	
 	<p>We also have a Google Gadget: * {external href="http://www.google.com/ig/add?moduleurl=http%3A%2F%2Fwww.geograph.org.uk%2Fstuff%2Fggadget0.xml" target="_blank" text="Add to my iGoogle page"} * {external href="http://www.google.com/ig/creator?url=http%3A%2F%2Fwww.geograph.org.uk%2Fstuff%2Fggadget0.xml" text="Add to any webpage"} *</p>
@@ -290,7 +290,7 @@ The <b>Geograph Website</b>:
 	is available for re-use under the terms of the GNU Public Licence (GPL).</p>
 
 	<ul>
-	<li>If you want to get involved as a developer, <a href="/article/Geograph-for-Developers">see this article</a>.</li>
+	<li>If you want to get involved as a developer, <a href="http://www.geograph.org.uk/article/Geograph-for-Developers">see this article</a>.</li>
 	</ul>
 
 	<p>In addition, we require all submitters to adopt a 

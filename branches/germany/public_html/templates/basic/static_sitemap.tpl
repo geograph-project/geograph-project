@@ -6,20 +6,12 @@
  
  <p>Quick links to nealy all Geograph Webpages</p>
  
- <div style="float:right;padding:5px;background:pink;position:relative; font-size:0.8em;margin-left:20px;top:-30px">
- <b>Press Releases</b> 
- <ul style="margin-top:0;padding:0 0 0 1em;">
- <li><a href="/help/press_release_001">Ordnance Survey to sponsor the Geograph Project</a></li>
- </ul></div>
-
- <br style="clear:both;"/>
- 
  <div style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;margin-left:20px;top:-30px">
  <h3>Help and Info...</h3>
  <ul style="margin-top:0;padding:0 0 0 1em;">
  <li><a href="/help/guide">Geograph Guide</a></li>
- <li><a href="/article/Geograph-or-supplemental">Moderation Guide</a></li>
- <li><a href="/article/Which-Square">Locating your Image</a></li>
+ <li><a href="http://www.geograph.org.uk/article/Geograph-or-supplemental">Moderation Guide</a></li>
+ <li><a href="http://www.geograph.org.uk/article/Which-Square">Locating your Image</a></li>
  <li><a href="/help/style">Submission Style Guide</a><br/><br/></li>
  <li><a href="/help/changes">Change Request System</a><br/><br/></li>
  <li><a href="/help/squares">Square Definitions</a><br/><br/></li>
@@ -42,7 +34,6 @@
 	<li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a></li>
 	<li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a></li>
 	<li><a title="Content" href="/content/">read <b>content</b> submitted by members</a> <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></li>
-	<li><a title="Education Area" href="/teachers/">Geograph for <b>teachers</b></a></li>
 </ul>
  
 <h3>Exploring in more depth...</h3>
@@ -52,11 +43,7 @@
 	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
 	<li><a title="Photo Gallery" href="/gallery/">view some <b>themed galleries</b></a></li>
 	<li><a title="List of all images" href="/sitemap/geograph.html">view the <b>full list</b> of images</a></li>
-	<li><a title="Games" href="/games/"><b>play</b> with geograph images</a></li>
-	<li><a title="Draggable Map" href="/mapper/">interactive <b>draggable map</b></a></li>
-	<li><a href="/activities/">explore our Activities section</a></li>
-	<li><a href="/help/imagine">Through The Square Window...</a></li>
-	<li><a href="/explore/places/">Explore the <b>placename gazetteer</b></a></li>
+	<!--li><a href="/help/imagine">Through The Square Window...</a></li-->
 	<li><a href="/explore/searches.php">A list of <b>featured searches</b></a> <a title="RSS Feed Featured Searches" href="/explore/searches.rss.php" class="xml-rss">RSS</a></li>
 </ul>
 
@@ -64,8 +51,6 @@
 <h3><a name="social"></a>Interacting with other members...</h3>
 <ul>
 	<li><a title="Discussion forums" href="/discuss/"><b>discuss the site</b> on our forums</a></li>
-	<li><a title="IRC Chat" href="/chat/"><b>realtime chat</b> with other members</a></li>
-	<li><a title="Geograph Events" href="/events/"><b>meet other members</b> at local events</a> <a title="geoRSS Feed for Geograph Events" href="/events/feed.rss" class="xml-rss">RSS</a></li>
 	<li><a title="Articles" href="/article/">submit your own <b>article</b></a> <a title="RSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-rss">RSS</a></li>
 	<li><a title="Galleries" href="/discuss/?action=vtopic&forum={$forum_gallery}">create <b>submitted galleries</b></a> <a title="RSS Feed for Geograph Galleries" href="/discuss/syndicator.php?forum={$forum_gallery}" class="xml-rss">RSS</a></li>
 </ul>
@@ -216,10 +201,6 @@ Refine:
    <li><a href="/explore/calendar.php">Geograph <b>Calendar</b></a>, view images by date taken.<br/><br/></li>
 
    <li><b>Centre Points</b>: (really just arbitrary lists of Grid References!)<ul>
-	   <li><a href="/explore/counties.php?type=modern">Modern Administrative Counties</a></li>
-	   <li><a href="/explore/counties.php">Ceremonial (Pre 1994) Counties</a></li>
-	   <li><a href="/explore/counties.php?type=pre74">Historic (Pre 1974) Counties</a></li>
-	   <li><a href="/explore/counties.php?type=capital">(Irish) County Capitals</a></li>
 	   <li><a href="/explore/cities.php">Cities and Large Towns</a></li>
         </ul>
     </li>
@@ -232,7 +213,7 @@ Refine:
 
 <ul>
 	<li><a href="/latlong.php">Lat/Long Entry Form</a></li>
-	<li><a href="/conversion.php">Coordinate Conversion</a></li>
+	<!--<li><a href="/stuff/conversion.php">Coordinate Conversion</a></li>-->
 </ul>
 
 
