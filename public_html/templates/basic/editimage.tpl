@@ -475,7 +475,7 @@
 {if $error.title}<span class="formerror">{$error.title}</span><br/>{/if}
 <input type="text" id="title" name="title" size="50" value="{$image->title1|escape:'html'}" title="Original: {$image->current_title1|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title',true);" onkeyup="checkstyle(this,'title',false);" maxlength="128"/>
 </p>
-<p><label for="title2"><b>English Title</b> (optional) {if $moderated.title2}<span class="moderatedlabel">(moderated)</span>{/if}</label> <br/>
+<p><label for="title2"><b>Non-English Title</b> (optional) {if $moderated.title2}<span class="moderatedlabel">(moderated)</span>{/if}</label> <br/>
  <span class="formerror" style="display:none" id="title2style">Possible style issue. See Guide above. <span id="title2stylet" style="font-size:0.9em"></span><br/></span>
 {if $error.title2}<span class="formerror">{$error.title2}</span><br/>{/if}
 <input type="text" id="title2" name="title2" size="50" value="{$image->title2|escape:'html'}" title="Original: {$image->current_title2|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title2',true);" onkeyup="checkstyle(this,'title2',false);" maxlength="128"/>
@@ -532,7 +532,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 <textarea id="comment" name="comment" rows="7" cols="80" title="Original: {$image->current_comment1|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$image->comment1|escape:'html'}</textarea>
 </p>
 <p>
-<label for="comment2"><b>English Description</b> (optional) {if $moderated.comment2}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
+<label for="comment2"><b>Non-English Description</b> (optional) {if $moderated.comment2}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
  <span class="formerror" style="display:none" id="comment2style">Possible style issue. See Guide above. <span id="comment2stylet"></span><br/></span>
 {if $error.comment2}<span class="formerror">{$error.comment2}</span><br/>{/if}
 <textarea id="comment2" name="comment2" rows="7" cols="80" title="Original: {$image->current_comment2|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'comment2',true);" onkeyup="checkstyle(this,'comment2',false);">{$image->comment2|escape:'html'}</textarea>
