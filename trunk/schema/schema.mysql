@@ -532,7 +532,9 @@ CREATE TABLE `gridimage` (
   `ftf` int(11) NOT NULL DEFAULT '0',
   `moderation_status` enum('rejected','pending','accepted','geograph') DEFAULT NULL,
   `title` varchar(128) DEFAULT NULL,
+  `title2` varchar(128) DEFAULT NULL,
   `comment` text,
+  `comment2` text,
   `submitted` datetime DEFAULT NULL,
   `nateastings` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `natnorthings` mediumint(8) unsigned NOT NULL DEFAULT '0',
@@ -649,6 +651,7 @@ CREATE TABLE `gridimage_recent` (
   `user_id` int(11) NOT NULL DEFAULT '0',
   `moderation_status` enum('rejected','pending','accepted','geograph') DEFAULT NULL,
   `title` varchar(128) DEFAULT NULL,
+  `title2` varchar(128) DEFAULT NULL,
   `submitted` datetime DEFAULT NULL,
   `imageclass` varchar(32) NOT NULL DEFAULT '',
   `imagetaken` date NOT NULL DEFAULT '0000-00-00',
@@ -660,6 +663,7 @@ CREATE TABLE `gridimage_recent` (
   `realname` varchar(128) NOT NULL DEFAULT '',
   `reference_index` tinyint(1) NOT NULL DEFAULT '0',
   `comment` text,
+  `comment2` text,
   `wgs84_lat` decimal(10,6) NOT NULL DEFAULT '0.000000',
   `wgs84_long` decimal(10,6) NOT NULL DEFAULT '0.000000',
   `ftf` tinyint(3) unsigned NOT NULL DEFAULT '0',
@@ -681,6 +685,7 @@ CREATE TABLE `gridimage_search` (
   `user_id` int(11) NOT NULL DEFAULT '0',
   `moderation_status` enum('rejected','pending','accepted','geograph') DEFAULT NULL,
   `title` varchar(128) DEFAULT NULL,
+  `title2` varchar(128) DEFAULT NULL,
   `submitted` datetime DEFAULT NULL,
   `imageclass` varchar(32) NOT NULL DEFAULT '',
   `imagetaken` date NOT NULL DEFAULT '0000-00-00',
@@ -692,6 +697,7 @@ CREATE TABLE `gridimage_search` (
   `realname` varchar(128) NOT NULL DEFAULT '',
   `reference_index` tinyint(1) NOT NULL DEFAULT '0',
   `comment` text,
+  `comment2` text,
   `wgs84_lat` decimal(10,6) NOT NULL DEFAULT '0.000000',
   `wgs84_long` decimal(10,6) NOT NULL DEFAULT '0.000000',
   `ftf` tinyint(3) unsigned NOT NULL DEFAULT '0',
@@ -705,12 +711,12 @@ CREATE TABLE `gridimage_search` (
   KEY `submitted` (`submitted`),
   KEY `x` (`x`,`y`),
   KEY `moderation_status` (`moderation_status`),
-  KEY `title` (`title`),
+  KEY `title` (`title`, `title2`),
   KEY `wgs84_lat` (`wgs84_lat`,`wgs84_long`),
   KEY `grid_reference` (`grid_reference`),
   SPATIAL KEY `point_xy` (`point_xy`),
   SPATIAL KEY `point_ll` (`point_ll`),
-  KEY `title_2` (`title`,`comment`(500),`imageclass`)
+  KEY `title_2` (`title`, `title2`, `comment`(300), `comment2`(300), `imageclass`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --

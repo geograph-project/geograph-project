@@ -59,6 +59,7 @@ select
 	gi.y,
 	gi.grid_reference,
 	gi.title,
+	gi.title2,
 	gi.credit_realname,
 	gi.realname,
 	gi.user_id,

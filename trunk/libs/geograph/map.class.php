@@ -1913,7 +1913,7 @@ END;
 		}
 		if ($isimgmap) {
 			//yes I know the imagecount is possibly strange in the join, but does speeds it up, having it twice speeds it up even more! (by preference have the second one, speed wise!), also keeping the join on gridsquare_id really does help too for some reason! 
-			$sql="select gs.*,gridimage_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,title 
+			$sql="select gs.*,gridimage_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,title,title2 
 				from gridsquare gs
 				left join gridimage gi ON 
 				(imagecount > 0 AND gi.gridsquare_id = gs.gridsquare_id $where_crit2 AND imagecount > 0 AND gridimage_id = 
@@ -1945,6 +1945,13 @@ END;
 			$posx=$gridx-$this->map_x;
 			$posy=($top-$bottom) - ($gridy-$bottom);
 			$recordSet->fields['geographs'] = $recordSet->fields['imagecount'] - $recordSet->fields['accepted'];
+			$recordSet->fields['title1'] = $recordSet->fields['title'];
+			if (empty($recordSet->fields['title2']))
+				$recordSet->fields['title'] = $recordSet->fields['title1'];
+			elseif (empty($recordSet->fields['title1']))
+				$recordSet->fields['title'] = $recordSet->fields['title2'];
+			else
+				$recordSet->fields['title'] = $recordSet->fields['title1'] . ' (' . $recordSet->fields['title2'] . ')';
 			$grid[$posx][$posy]=$recordSet->fields;
 			
 			$recordSet->MoveNext();

@@ -74,7 +74,7 @@ $folder->setItem('name',"$gr :: Geograph SuperLayer");
 	
 
 	$photos = $db->GetAll($sql = "select 
-	gridimage_id,title,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.user_id,comment,nateastings,natnorthings,natgrlen,view_direction
+	gridimage_id,title,title2,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.user_id,comment,nateastings,natnorthings,natgrlen,view_direction
 	from gridimage gi
 		 inner join user using(user_id)
 	where $sql_where
@@ -83,6 +83,12 @@ $folder->setItem('name',"$gr :: Geograph SuperLayer");
 
 	foreach($photos as $id=>$entry) 
 	{
+		if (empty($entry['title2']))
+			$title = $entry['title'];
+		elseif (empty($entry['title']))
+			$title = $entry['title2'];
+		else
+			$title = $entry['title'] . ' (' . $entry['title2'] . ')';
 		if ($entry['nateastings']) {
 			if ($entry['natgrlen'] == 6) {
 				$entry['nateastings']+=50;
@@ -94,14 +100,14 @@ $folder->setItem('name',"$gr :: Geograph SuperLayer");
 		}
 		$point = new kmlPoint($wgs84_lat,$wgs84_long);			
 
-		$placemark = new kmlPlacemark_Photo($entry['gridimage_id'],$square->grid_reference.' :: '.$entry['title'],$point);
+		$placemark = new kmlPlacemark_Photo($entry['gridimage_id'],$square->grid_reference.' :: '.$title,$point);
 		$placemark->useHoverStyle();
 
 		$image=new GridImage;
 		$image->fastInit($entry);
 
 			$placemark->useCredit($image->realname,"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id);
-			$html .= getHtmlLinkP($placemark->link,$square->grid_reference.' :: '.$entry['title'].' by '.$image->realname);
+			$html .= getHtmlLinkP($placemark->link,$square->grid_reference.' :: '.$title.' by '.$image->realname);
 			$linkTag = "<a href=\"".$placemark->link."\">";
 
 			$details = $image->getThumbnail(120,120,2);

@@ -72,7 +72,7 @@ $sql_where = "CONTAINS(GeomFromText($rectangle),point_xy)";
 
 
 $photos = $db->GetAll("select 
-gridimage_id,grid_reference,title,imagecount,view_direction,natgrlen,realname,
+gridimage_id,grid_reference,title,title2,imagecount,view_direction,natgrlen,realname,
 wgs84_lat,wgs84_long
 from gridimage_kml 
 where $sql_where and tile = 0
@@ -81,12 +81,18 @@ order by null");
 
 foreach($photos as $id=>$entry) 
 {
-	$point = new kmlPoint($entry['wgs84_lat'],$entry['wgs84_long']);			
+	$point = new kmlPoint($entry['wgs84_lat'],$entry['wgs84_long']);
+	if (empty($entry['title2']))
+		$title = $entry['title'];
+	elseif (empty($entry['title']))
+		$title = $entry['title2'];
+	else
+		$title = $entry['title'] . ' (' . $entry['title2'] . ')';
 
 	if ($entry['imagecount']==1) {
-		$placemark = new kmlPlacemark($entry['gridimage_id'],$entry['grid_reference'].' :: '.$entry['title'],$point);
+		$placemark = new kmlPlacemark($entry['gridimage_id'],$entry['grid_reference'].' :: '.$title,$point);
 		$placemark->useCredit($entry['realname'],"http://{$_SERVER['HTTP_HOST']}/photo/{$entry['gridimage_id']}");
-		$html .= getHtmlLinkP($placemark->link,$entry['grid_reference'].' :: '.$entry['title'].' by '.$entry['realname']);
+		$html .= getHtmlLinkP($placemark->link,$entry['grid_reference'].' :: '.$title.' by '.$entry['realname']);
 		$placemark->setItem('description',$placemark->link);
 		$r = ($entry['natgrlen'] > 4)?'':'r';
 		if ($entry['view_direction'] != -1) {
@@ -98,7 +104,7 @@ foreach($photos as $id=>$entry)
 			$placemark->useHoverStyle('p1'.$r);
 		}
 	} else {
-		$placemark = new kmlPlacemark($entry['grid_reference'],$entry['grid_reference'].' :: '.$entry['imagecount'].' images e.g. '.$entry['title'],$point);
+		$placemark = new kmlPlacemark($entry['grid_reference'],$entry['grid_reference'].' :: '.$entry['imagecount'].' images e.g. '.$title,$point);
 		$placemark->setItem('description',"http://{$_SERVER['HTTP_HOST']}/gridref/{$entry['grid_reference']}");
 		$c = ($entry['imagecount']>20)?20:(($entry['imagecount']>4)?10:$entry['imagecount']);
 		$placemark->useHoverStyle('p'.$c);
