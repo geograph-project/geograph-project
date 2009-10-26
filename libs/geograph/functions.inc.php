@@ -265,9 +265,9 @@ function smarty_function_place($params) {
 	$place = $params['place'];
 	$t = '';
 	if ($place['distance'] > 3)
-		$t .= ($place['distance']-0.01)." km from ";
+		$t .= ($place['distance']-0.01)." km entfernt von ";# FIXME language variable
 	elseif (!$place['isin'])
-		$t .= "<span title=\"about ".($place['distance']-0.01)." km from\">near</span> to ";
+		$t .= "<span title=\"etwa ".($place['distance']-0.01)." km entfernt\">in der Nähe</span> von ";#FIXME language variable
 
 	$place['full_name'] = _utf8_decode($place['full_name']);
 
@@ -777,7 +777,8 @@ function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtm
  * returns a standard textual representation of a number
  */
 function heading_string($deg) {
-	$dirs = array('north','east','south','west');
+	#$dirs = array('north','east','south','west'); #FIXME lang variable!
+	$dirs = array('nord','ost','süd','west'); #FIXME lang variable!
 	$rounded = round($deg / 22.5) % 16;
 	if ($rounded < 0)
 		$rounded += 16;
@@ -787,7 +788,7 @@ function heading_string($deg) {
 		$s = $dirs[2 * intval(((intval($rounded / 4) + 1) % 4) / 2)];
 		$s .= $dirs[1 + 2 * intval($rounded / 8)];
 		if ($rounded % 2 == 1) {
-			$s = $dirs[round($rounded/4) % 4] . '-' . $s;
+			$s = $dirs[round($rounded/4) % 4] . $s; # FIXME lang variable!
 		}
 	}
 	return $s;

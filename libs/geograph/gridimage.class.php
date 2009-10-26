@@ -621,20 +621,20 @@ class GridImage
 			$t=new GridImageTroubleTicket;
 			$t->loadFromRecordset($recordSet);
 			
-			if ($t->days > 365) {
-				$t->days = 'over a year';
+			if ($t->days > 365) {##FIXME lang!
+				$t->days = 'über einem Jahr';
 			} elseif ($t->days > 30) {
-				$t->days = 'over '.intval($t->days/30).' months';
+				$t->days = 'über '.intval($t->days/30).' Monaten';
 			} elseif ($t->days > 14) {
-				$t->days = 'over '.intval($t->days/7).' weeks';
+				$t->days = 'über '.intval($t->days/7).' Wochen';
 			} elseif ($t->days > 7) {
-				$t->days = 'over a week';
+				$t->days = 'über einer Woche';
 			} elseif ($t->days > 1) {
-				$t->days = $t->days.' days';
+				$t->days = $t->days.' Tagen';
 			} elseif ($t->days < 1) {
-				$t->days = 'less than a day';
+				$t->days = 'weniger als einem Tag';
 			} else {
-				$t->days = '1 day';
+				$t->days = 'einem Tag';
 			}
 			
 			//load its ticket items (should this be part of load from Recordset?
