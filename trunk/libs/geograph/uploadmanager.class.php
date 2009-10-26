@@ -406,7 +406,6 @@ class UploadManager
 		$destwidth = $width;
 		$destheight = $height;
 		$changedim = false;
-		trigger_error("--: $destwidth, $destheight", E_USER_NOTICE);
 		if ($height == 0)
 			return array($width, $height, $width, false);//$destdim = $width;
 		elseif ($width == 0)
@@ -455,7 +454,6 @@ class UploadManager
 				}
 			}
 		}
-		trigger_error("----: $destwidth, $destheight, $destdim", E_USER_NOTICE);
 		return array($destwidth, $destheight, $destdim, $changedim);
 	}
 
@@ -487,8 +485,6 @@ class UploadManager
 					list($destwidth, $destheight, $destdim, $changedim) = $this->_new_size($width, $height);
 					//if ($width > $max_dimension || $height > $max_dimension) {
 					if ($changedim) {
-						trigger_error("------: im", E_USER_NOTICE);
-
 						//removed the unsharp as it makes some images worse - needs to be optional
 						// best fit found so far: -unsharp 0x1+0.8+0.1 -blur 0x.1
 						$cmd = sprintf ("\"%smogrify\" -resize %ldx%ld -quality 87 -strip jpg:%s", $CONF['imagemagick_path'],$destdim, $destdim, $pendingfile);
@@ -500,8 +496,6 @@ class UploadManager
 					
 					if ($width && $height && $width <= $destdim && $height <= $destdim) {
 						//check it did actully work
-						trigger_error("------: im ok", E_USER_NOTICE);
-					
 						//remember useful stuff
 						$this->upload_id=$upload_id;
 						$this->upload_width=$width;
@@ -511,7 +505,6 @@ class UploadManager
 				} 
 				
 				if (!$ok) {
-					trigger_error("------: no im !--------------------------!", E_USER_NOTICE);
 					//generate a resized image
 					$uploadimg = @imagecreatefromjpeg ($pendingfile); 
 					if ($uploadimg)
