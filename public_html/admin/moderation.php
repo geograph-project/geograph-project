@@ -234,15 +234,22 @@ $recordSet->Close();
 #############################
 # define the images to moderate
 
-if (!isset($_GET['moderator']) && !isset($_GET['review']) && !isset($_GET['remoderate'])) {
-
-	$count = $db->getRow("select count(*) as total,sum(created > date_sub(now(),interval 60 day)) as recent from moderation_log WHERE user_id = {$USER->user_id} AND type='dummy'");
-	if ($count['total'] == 0) {
-		$_GET['remoderate'] = 1;
-		$limit = 25;
-	} elseif ($count['recent'] < 5) {
-		$_GET['remoderate'] = 1;
-		$limit = 10;
+if ($CONF['remod_enable'] && !isset($_GET['moderator']) && !isset($_GET['review']) && !isset($_GET['remoderate'])) {
+#
+	$count = $db->getRow("select count(*) as total,sum(created > date_sub(now(),interval {$CONF['remod_recent_days']} day)) as recent from moderation_log WHERE user_id = {$USER->user_id} AND type='dummy'");
+	#$imgrow = $db->getRow("select * from gridimage as gi inner join gridsquare as gs using(gridsquare_id) where moderation_status != 2 and moderator_id != {$USER->user_id} and submitted > date_sub(now(),interval {$CONF['remod_recent_days']} day) limit 1");
+	#$imgrow = $db->getRow("select * from gridimage where moderation_status != 2 and moderator_id != {$USER->user_id} and submitted > date_sub(now(),interval {$CONF['remod_recent_days']} day) limit 1");
+	$imgrow = $db->getRow("select * from gridimage as gi where moderation_status != 2 and moderator_id != {$USER->user_id} and submitted > date_sub(now(),interval {$CONF['remod_days']} day) limit 1");
+	$imgexists = count($imgrow); trigger_error("---- <{$imgexists}> <{$count['total']}> <{$count['recent']}>", E_USER_NOTICE);
+	# 0 0 ""
+	if (count($imgrow)) {
+		if ($count['total'] == 0) {
+			$_GET['remoderate'] = 1;
+			$limit = $CONF['remod_count_init'];
+		} elseif ($count['recent'] < $CONF['remod_recent_count']) {
+			$_GET['remoderate'] = 1;
+			$limit = $CONF['remod_count'];
+		}
 	}
 }
 $sql_where2 = "
@@ -315,8 +322,9 @@ if (isset($_GET['review'])) {
 	$sql_order = "gridimage_id desc";
 	$smarty->assign('remoderate', 1);
 } elseif (isset($_GET['remoderate'])) {
-	$sql_where = "moderation_status != 2 and moderator_id != {$USER->user_id} and submitted > date_sub(now(),interval 10 day) ";
-	$sql_order = "gridimage_id desc";
+	$sql_where = "moderation_status != 2 and moderator_id != {$USER->user_id} and submitted > date_sub(now(),interval {$CONF['remod_days']} day) ";
+	$sql_order = "rand()";
+	#$sql_order = "gridimage_id desc";
 	$smarty->assign('remoderate', 1);
 } else {
 	$sql_where = "(moderation_status = 2)";

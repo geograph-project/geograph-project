@@ -291,6 +291,15 @@ $CONF['pano_upper_limit'] = 0; # 0.5  : try to keep height constant for 2:1 and 
 $CONF['pano_lower_limit'] = 0; # 0.25 : keep height*width constant for 4:1 and above
 $CONF['img_max_size'] = 640;
 
+// remoderation
+
+$CONF['remod_enable'] = false;
+$CONF['remod_count_init'] = 10;
+$CONF['remod_count'] = 3;
+$CONF['remod_recent_days'] = 10;
+$CONF['remod_recent_count'] = 20;
+$CONF['remod_days'] = 10;
+
 ###################################
 # search setup
 
