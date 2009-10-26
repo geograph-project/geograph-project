@@ -536,7 +536,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
  <span class="formerror" style="display:none" id="comment2style">Possible style issue. See Guide above. <span id="comment2stylet"></span><br/></span>
 {if $error.comment2}<span class="formerror">{$error.comment2}</span><br/>{/if}
 <textarea id="comment2" name="comment2" rows="7" cols="80" title="Original: {$image->current_comment2|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'comment2',true);" onkeyup="checkstyle(this,'comment2',false);">{$image->comment2|escape:'html'}</textarea>
-<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
+<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TPT2769]]</span> or <span style="color:blue">[[34]]</span> to link 
 to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 </p>
 
