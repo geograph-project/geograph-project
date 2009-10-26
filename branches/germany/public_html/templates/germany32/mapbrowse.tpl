@@ -1,9 +1,9 @@
 {if $token_zoomout}
         {assign var="page_title" value="Map Browsing :: $gridref"}
 {else}
-        {assign var="page_title" value="Map Browsing :: British Isles"}
+        {assign var="page_title" value="Map Browsing :: Germany"}
 {/if}
-{assign var="meta_description" value="Geograph coverage map of the British Isles, showing where we have photos, green squares are yet to be photographed."}
+{assign var="meta_description" value="Geograph coverage map of Germany, showing where we have photos, green squares are yet to be photographed."}
 {assign var="extra_meta" value="<meta name=\"robots\" content=\"noindex, nofollow\"/>"}
 {include file="_std_begin.tpl"}
  
@@ -127,7 +127,7 @@
 	{foreach from=$overview key=y item=maprow}
 		<div style="position:absolute;top:0px;left:0px;">
 		{foreach from=$maprow key=x item=mapcell}
-		<img alt="British Isles Overview Map" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/>
+		<img alt="Germany Overview Map" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/>
 		{/foreach}
 		</div>
 	{/foreach}
