@@ -5,9 +5,21 @@
 <div class="interestBox">
 	<div style="float:right;position:relative">By <a href="/profile/{$user_id}">{$realname|escape:'html'}</a></div>
 
-	<div>{$comment|escape:'html'}</div>
+	<div>{$comment}</div>
 	<div style="font-size:0.8em;margin-top:8px;border-top:1px solid silver"><a href="/gridref/{$grid_reference}/links"><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" style="padding:2px;" alt="More Links for {$grid_reference}"/></a> | <a href="/gridref/{$grid_reference}/links">Links for <b>{$grid_reference}</b></a> | <a href="/search.php?searchtext={$title|escape:'url'}&amp;gridref={$grid_reference}&amp;do=1">Find nearby images mentioning '{$title|escape:'html'}'</a> |</div>
 </div>
+
+{if $others} 
+	<div style="float:right;position:relative; background-color:lightgreen;padding:8px">
+		<b>More nearby...</b>
+		<ul style="padding:0 0 0 1em;">
+			{foreach from=$others item=item}
+				<li><a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'}</a></li>
+			{/foreach}
+		</ul>
+	</div>
+{/if}
+
 {if $images}
 	<p>{$images} image{if $images == 1} uses{else}s use{/if} this description{if $images > 10}. Preview shown below:{else}:{/if}</p>
 {/if}
