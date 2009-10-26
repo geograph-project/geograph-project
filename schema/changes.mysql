@@ -749,3 +749,5 @@ CREATE TABLE IF NOT EXISTS `snippet_item` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1  ;
 
 ################################################
+
+ALTER TABLE  `snippet_item` ADD `updated` timestamp NOT NULL default CURRENT_TIMESTAMP ;

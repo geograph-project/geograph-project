@@ -50,6 +50,11 @@
 		<a href="/snippets.php?gr={$gr|escape:'html'}" target="_blank">Edit your Shared Descriptions</a>
 	</div>
 	Here you can create descriptions that are common to multiple images. For example can create a generic description for a object shown in a photo, and reuse the description on all photos of the object. All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.
+	
+	{if $gridimage_id < 4294967296}
+		<b>NOTE: Changes made here apply immediately and don't go though the change request system.</b>
+	{/if}
+	
 </div>
 
 {foreach from=$used item=item name=used}
