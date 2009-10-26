@@ -67,6 +67,59 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 			$data['grid_reference'] = $gr;
 		}
+		
+		//we do this here first, rather than in smarty - so we can attach html. 
+		//todo call geographlinks?
+		$data['comment'] = htmlentities2($data['comment']);
+		
+		if ($CONF['sphinx_host']) {
+
+			$sphinx = new sphinxwrapper();
+			$sphinx->pageSize = $pgsize = 25;
+			$pg = 1;
+			
+			if ($data['nateastings']) {
+				$geodata = array();
+
+				list($geodata['x'],$geodata['y']) = $conv->national_to_internal($data['nateastings'],$data['natnorthings'],$data['reference_index']);
+
+				if ($data['natgrlen'] > 4) {
+					list($geodata['lat'],$geodata['long']) = array($data['wgs84_lat'],$data['wgs84_long']);
+				}
+				$geodata['d'] = 2;
+				$geodata['sort'] = "@geodist ASC, @relevance DESC, @id DESC";
+
+				$sphinx->setSort($geodata['sort']);
+				$sphinx->setSpatial($geodata);
+			} else {
+				$sphinx->prepareQuery($data['grid_reference']);
+			}
+			
+			$ids = $sphinx->returnIds($pg,'snippet');
+
+			if (!empty($ids) && count($ids) > 1) {
+				$where = array();
+
+				$id_list = implode(',',$ids);
+				$where[] = "s.snippet_id IN($id_list)";
+				$orderby = "ORDER BY FIELD(s.snippet_id,$id_list)";
+
+				$where[] = "enabled = 1"; 
+				$where[] = "s.snippet_id != {$data['snippet_id']}";
+
+				$where= implode(' AND ',$where);
+
+				$others = $db->getAll($sql="SELECT snippet_id,title,comment FROM snippet s WHERE $where $orderby"); 
+
+				$smarty->assign_by_ref('others',$others);
+				
+				
+				foreach ($others as $id => $row) {
+					if (strlen($row['title']) > 3)
+						$data['comment'] = preg_replace("/\b(".preg_quote($row['title'],'/').")\b/i",'<a href="/snippet.php?id='.$row['snippet_id'].'">$1</a>',$data['comment']);
+				}
+			} 
+		}
 
 		$smarty->assign($data);
 		$smarty->assign('page_title',$data['title']);
