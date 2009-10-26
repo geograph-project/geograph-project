@@ -52,7 +52,7 @@
      {if ! $image->title1 }
        <div class="caption"><b>{$image->title2|escape:'html'}</b></div>
        <div class="caption">{$image->comment2|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
-       <div class="caption">&msp;</div>
+       <hr style="width:3em" />
        <div class="caption">{$image->comment1|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
      {else}
        <div class="caption"><b>{$image->title1|escape:'html'}</b></div>
