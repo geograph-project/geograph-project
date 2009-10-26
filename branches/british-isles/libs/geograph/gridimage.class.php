@@ -547,6 +547,7 @@ class GridImage
 		$snippets = $db->getAll("SELECT snippet.* FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) WHERE gridimage_id = $gid AND enabled = 1 ORDER BY gridimage_snippet.created");
 
 		$smarty->assign_by_ref('snippets',$snippets);
+		$smarty->assign_by_ref('snippet_count',count($snippets));
 		
 		if (preg_match('/\[\d+\]/',$this->comment))
 			$smarty->assign('snippets_as_ref',1);
