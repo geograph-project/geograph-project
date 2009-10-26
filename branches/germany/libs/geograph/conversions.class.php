@@ -283,8 +283,9 @@ function internal_to_national($x,$y,$reference_index = 0) {
 //use:	list($e,$n) = osgb36_to_irish($e,$n);
 			// this is used when we have a dataset in osgb and need to convert it to irish national (eg loc_placenames etc)
 
+#FIXME language dependend! also ... near to ... => language in CONF!
 function wgs84_to_friendly($lat,$long) {
-	$el = ($long > 0)?'E':'W';
+	$el = ($long > 0)?'O':'W';
 	$nl = ($lat > 0)?'N':'S';
 	
 	$xd = intval(abs($long));
@@ -295,10 +296,12 @@ function wgs84_to_friendly($lat,$long) {
 	$ym = intval((abs($lat)-$yd)*60);
 	$ys = (abs($lat)*3600)-($ym*60)-($yd*3600);
 
-	$ymd = sprintf("%.4f",$ym+($ys/60));
-	$xmd = sprintf("%.4f",$xm+($xs/60));
+	#$ymd = sprintf("%.4f",$ym+($ys/60));
+	#$xmd = sprintf("%.4f",$xm+($xs/60));
+	$xss=sprintf("%.2f",$xs);
+	$yss=sprintf("%.2f",$ys);
 	
-	return array("$yd:$ymd$nl","$xd:$xmd$el");
+	return array("{$yd}°$ym'$yss\"$nl","{$xd}°$xm'$xss\"$el");
 }
 
 function wgs84_to_friendly_smarty_parts($lat,$long,&$smarty) {
