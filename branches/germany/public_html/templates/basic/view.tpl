@@ -96,6 +96,10 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 -->
 
+{if $image_taken}
+<div class="keywords" style="top:-3em;float:right;position:relative;font-size:0.8em;height:0em;z-index:-10" title="year photo was taken">year taken <div style="font-size:3em;line-height:0.5em">{$image->imagetaken|truncate:4:''}</div></div>
+{/if}
+
 <div class="buttonbar">
 
 <table style="width:100%">
