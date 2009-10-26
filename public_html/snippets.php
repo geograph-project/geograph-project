@@ -109,7 +109,7 @@ if (!empty($_REQUEST['edit'])) {
 		
 		
 		
-		if (!$errors) {
+		if (!$errors && count($updates)) {
 		
 				
 			$db->Execute("UPDATE snippet SET $point`".implode('` = ?,`',array_keys($updates)).'` = ? WHERE snippet_id = '.$snippet_id,array_values($updates));
@@ -130,6 +130,9 @@ if (!empty($_REQUEST['edit'])) {
 			print "<a href=\"{$_SERVER['PHP_SELF']}\">continue</a>";
 			exit;
 		} else {
+			if (!count($updates)) {
+				$errors['title'] = "Nothing Changed!";
+			}
 			$smarty->assign('errors',$errors);
 			$smarty->assign($_POST);
 			
