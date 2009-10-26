@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: show_exif.php 5875 2009-10-20 17:43:17Z barry $
+ * $Id$
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2009 Barry Hunter (geo@barryhunter.co.uk)
