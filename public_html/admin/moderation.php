@@ -315,8 +315,9 @@ if (isset($_GET['review'])) {
 	$sql_order = "gridimage_id desc";
 	$smarty->assign('remoderate', 1);
 } elseif (isset($_GET['remoderate'])) {
-	$sql_where = "moderation_status != 2 and moderator_id != {$USER->user_id} and submitted > date_sub(now(),interval 10 day) ";
-	$sql_order = "gridimage_id desc";
+	$sql_where = "moderation_status != 2 and moderator_id != {$USER->user_id} and submitted > date_sub(now(),interval {$CONF['remod_days']} day) ";
+	$sql_order = "rand()";
+	#$sql_order = "gridimage_id desc";
 	$smarty->assign('remoderate', 1);
 } else {
 	$sql_where = "(moderation_status = 2)";

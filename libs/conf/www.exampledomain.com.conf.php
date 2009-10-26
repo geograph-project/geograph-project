@@ -323,6 +323,15 @@ $CONF['pano_upper_limit'] = 0.5;
 $CONF['pano_lower_limit'] = 0.25;
 $CONF['img_max_size'] = 640;
 
+// remoderation
+
+$CONF['remod_enable'] = false;
+$CONF['remod_count_init'] = 10;
+$CONF['remod_count'] = 3;
+$CONF['remod_recent_days'] = 10;
+$CONF['remod_recent_count'] = 20;
+$CONF['remod_days'] = 10;
+
 ###################################
 # search setup
 
