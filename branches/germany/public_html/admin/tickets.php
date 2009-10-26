@@ -343,8 +343,19 @@ $newtickets=$db->GetAll($sql =
 	limit $limit");
 if (!empty($_GET['debug']))
 	print $sql;
-foreach ($newtickets as &$row) {
-#foreach ($newtickets as $i => $row) {
+#foreach ($newtickets as &$row) {
+##foreach ($newtickets as $i => $row) {
+#	#	$db->Execute("REPLACE INTO gridimage_moderation_lock SET user_id = {$USER->user_id}, gridimage_id = {$row['gridimage_id']}");
+#	if (empty($row['title2']))
+#		$ctitle = $row['title'];
+#	elseif (empty($row['title']))
+#		$ctitle = $row['title2'];
+#	else
+#		$ctitle = $row['title'] . ' (' . $row['title2'] . ')';
+#	$row['title1'] = $row['title'];
+#	$row['title'] = $ctitle;
+#}
+foreach ($newtickets as $i => $row) {
 	#	$db->Execute("REPLACE INTO gridimage_moderation_lock SET user_id = {$USER->user_id}, gridimage_id = {$row['gridimage_id']}");
 	if (empty($row['title2']))
 		$ctitle = $row['title'];
@@ -352,8 +363,8 @@ foreach ($newtickets as &$row) {
 		$ctitle = $row['title2'];
 	else
 		$ctitle = $row['title'] . ' (' . $row['title2'] . ')';
-	$row['title1'] = $row['title'];
-	$row['title'] = $ctitle;
+	$newtickets[$i]['title1'] = $row['title'];
+	$newtickets[$i]['title'] = $ctitle;
 }
 
 $smarty->assign_by_ref('newtickets', $newtickets);
