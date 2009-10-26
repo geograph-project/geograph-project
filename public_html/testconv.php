@@ -18,13 +18,16 @@ require_once('geograph/global.inc.php');
 		array (3, 500 + 94, 5200 + 41, 3), // TNT9441 < 10.5 32 3
 		array (3, 600 + 19, 5200 + 74, 4), // TPT1974 > 10.5 32 4
 		array (3, 700 + 19, 5300 + 99, 4), // UQU1999 < 12.0 32 4
-		array (4, 200 + 96, 5700 + 52, 4)  // UTT9652 > 12.0 33 4
+		array (4, 200 + 96, 5700 + 52, 4),  // UTT9652 > 12.0 33 4
+		array (1, 191.873, 179.791, 0)
 	);
 	foreach ($points as $point) {
 		$ri = $point[0];
 		$east = $point[1]*1000;
 		$nort = $point[2]*1000;
 		$gk = $point[3];
+		if ($ri < 3)
+			continue;
 
 		list ($lat,$long) =   $conv->national_to_wgs84($east+ 500,$nort+ 500,$ri);
 		list ($ge, $gn) = $conv->wgs84_to_gk($lat,$long, $gk);
@@ -46,6 +49,22 @@ require_once('geograph/global.inc.php');
 		echo "Geogr. coordinates: $lat / $long <br />";
 		echo "Dest. coordinates:  $ge / $gn <br />";
 		echo "Distorsion: $len1 / $len2, $rot ($rotn), $del";
+		echo "</p>";
+	}
+	foreach ($points as $point) {
+		$ri = $point[0];
+		$east = $point[1]*1000;
+		$nort = $point[2]*1000;
+
+		list ($lat,$long)       = $conv->national_to_wgs84($east,$nort,$ri);
+		list ($e2, $n2, $ri2)   = $conv->wgs84_to_national($lat,$long/*, $ri*/);
+		$dn = $n2 - $nort;
+		$de = $e2 - $east;
+		echo "<p>";
+		echo "Source coordinates: $east / $nort ($ri) <br />";
+		echo "Dest. coordinates:  $e2 / $n2 ($ri2) <br />";
+		echo "Diff:               $de / $dn <br />";
+		echo "Geogr. coordinates: $lat / $long <br />";
 		echo "</p>";
 	}
 ?>
