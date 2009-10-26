@@ -5,8 +5,7 @@
 <h2>Shared Descriptions</h2>
 
 {if $thankyou && $thankyou == 'saved'} 
-	<h3>Thank you</h3>
-	<p>Changes saved</p>
+	<h3 class="titlebar" style="background-color:lightgreen">Thank you - Changes saved</h3>
 {/if}
 
 {if $edit}

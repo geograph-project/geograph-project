@@ -126,6 +126,8 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	} else {
 		$template = 'static_404.tpl';
 	}
+} else {
+	$smarty->assign('snippet_id',$snippet_id);
 }
  
 
