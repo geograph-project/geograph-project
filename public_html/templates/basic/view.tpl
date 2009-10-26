@@ -17,7 +17,7 @@
 
 <p>This photograph has been rejected by the site moderators, and is only viewable by you.</p>
 
-<p>You can find any messages related to this image on the <a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">edit page</a>, where you can reply or raise new concerns in the "Please tell us what is wrong..." box, which will be communicated with site moderators. You may also like to read this general article on common <a href="/article/Reasons-for-rejection">Reasons for rejection</a>.
+<p>You can find any messages related to this image on the <a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">edit page</a>, where you can reply or raise new concerns in the "Please tell us what is wrong..." box, which will be communicated with site moderators. You may also like to read this general article on common <a href="http://www.geograph.org.uk/article/Reasons-for-rejection">Reasons for rejection</a>.
 
 </div>
 <br/>
