@@ -198,17 +198,33 @@
    <td colspan="4" class="textcell" align="center">
    
    <div style="line-height:1em;padding-top:2px;">
-   {if $hectad}</b>
-   Hectad<a href="/help/squares">?</a> <b><a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Search for images centered around {$gridref}">{$hectad}</a></b>  
+   {if !$token_zoomin}
+<form action="/map/{$mosaic_token}" method="get">
+<div>
+	<label for="gridref">Zentrum bei</label>
+	<input id="gridref" type="text" name="gridref" value="{$gridref}" size="8"/>
+	<input type="submit" name="setref" value="Los"/>
+</div>
+</form>{if $hectad}</b>
+   Hectad<a href="/help/squares">?</a> <b><a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Bilder um {$gridref} suchen">{$hectad}</a></b>  
    {if $hectad_row}
-   <a title="View Mosaic for {$hectad_row.hectad_ref}, completed {$hectad_row.completed}" href="/maplarge.php?t={$hectad_row.largemap_token}">view large map</a>
+   <a title="Mosaik für {$hectad_row.hectad_ref} zeigen, vervollständigt {$hectad_row.completed}" href="/maplarge.php?t={$hectad_row.largemap_token}">große Karte zeigen</a>
    {/if}
-   {else}Koordinaten Kartenmitte:
+   {else}
+ <a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Bilder um {$gridref} suchen">Bildersuche</a>
+   {/if}
+   {else}
+   {if $hectad}</b>
+   Hectad<a href="/help/squares">?</a> <b><a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Bilder um {$gridref} suchen">{$hectad}</a></b>  
+   {if $hectad_row}
+   <a title="Mosaik für {$hectad_row.hectad_ref} zeigen, vervollständigt {$hectad_row.completed}" href="/maplarge.php?t={$hectad_row.largemap_token}">große Karte zeigen</a>
+   {/if}
+   {else}Zentrum bei:
  {if $token_zoomout}
  <a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Bilder um {$gridref} suchen">{$gridref}</a>
  {else}
  {$gridref}
- {/if}{/if}</div>
+ {/if}{/if}{/if}</div>
  
   <div style="line-height:1em;padding-top:6px;">Breite: <b>{$mapwidth}&nbsp;<small>km</small></b></div>
  
@@ -279,6 +295,12 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/germanyde/mapnav/south_F
 	{assign var="tab" value="1"}
 {/if}
 
+{if $gridref_param && !$gridref_ok }
+<div>
+Ungültige Koordinaten: {$gridref_param}!
+</div>
+<br style="clear:both;"/><br/>
+{/if}
 <div class="tabHolder" style="margin-top:3px">
 	Kartentyp:
 	<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" href="/map/{$mosaic_token}?depth=0">Abdeckung</a>

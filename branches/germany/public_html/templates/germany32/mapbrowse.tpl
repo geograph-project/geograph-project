@@ -198,6 +198,35 @@
    <td colspan="4" class="textcell" align="center">
    
    <div style="line-height:1em;padding-top:2px;">
+   {if !$token_zoomin}
+<form action="/map/{$mosaic_token}" method="get">
+<div>
+	<label for="gridref">Grid Reference at centre</label>
+	<input id="gridref" type="text" name="gridref" value="{$gridref}" size="8"/>
+	<input type="submit" name="setref" value="Go"/>
+	{*<select id="gridsquare" name="gridsquare">
+		{html_options options=$prefixes selected=$gridsquare}
+	</select>
+	<label for="eastings">E</label>
+	<select id="eastings" name="eastings">
+		{html_options options=$kmlist selected=$eastings}
+	</select>
+	<label for="northings">N</label>
+	<select id="northings" name="northings">
+		{html_options options=$kmlist selected=$northings}
+	</select>
+
+	<input type="submit" name="setpos" value="Show &gt;"/>*}
+</div>
+</form>{if $hectad}</b>
+   Hectad<a href="/help/squares">?</a> <b><a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Search for images centered around {$gridref}">{$hectad}</a></b>  
+   {if $hectad_row}
+   <a title="View Mosaic for {$hectad_row.hectad_ref}, completed {$hectad_row.completed}" href="/maplarge.php?t={$hectad_row.largemap_token}">view large map</a>
+   {/if}
+   {else}
+ <a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Search for images centered around {$gridref}">search images</a>
+   {/if}
+   {else}
    {if $hectad}</b>
    Hectad<a href="/help/squares">?</a> <b><a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Search for images centered around {$gridref}">{$hectad}</a></b>  
    {if $hectad_row}
@@ -208,7 +237,7 @@
  <a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Search for images centered around {$gridref}">{$gridref}</a>
  {else}
  {$gridref}
- {/if}{/if}</div>
+ {/if}{/if}{/if}</div>
  
   <div style="line-height:1em;padding-top:6px;">Map width <b>{$mapwidth}&nbsp;<small>km</small></b></div>
  
@@ -262,6 +291,7 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 
 
  
+{* {$gridref_param} {$gridref_ok} "/map/{$mosaic_token}&amp;gridref=ABC1234" *}
 {if $token_zoomout || $realname}
 <div style="position:relative;">
 	<div style="position:absolute;left:445px;top:5px;">
@@ -279,6 +309,12 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 	{assign var="tab" value="1"}
 {/if}
 
+{if $gridref_param && !$gridref_ok }
+<div>
+Invalid grid reference {$gridref_param}!
+</div>
+<br style="clear:both;"/><br/>
+{/if}
 <div class="tabHolder" style="margin-top:3px">
 	Style: 
 	<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" href="/map/{$mosaic_token}?depth=0">Coverage</a>
