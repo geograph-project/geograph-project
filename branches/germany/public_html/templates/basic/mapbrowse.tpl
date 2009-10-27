@@ -201,9 +201,8 @@
    {if !$token_zoomin}
 <form action="/map/{$mosaic_token}" method="get">
 <div>
-	<label for="gridref">Grid Reference at centre</label>
-	<input id="gridref" type="text" name="gridref" value="{$gridref}" size="8"/>
-	<input type="submit" name="setref" value="Go"/>
+	<input id="gridref" type="text" name="gridref" value="{$gridref}" size="9" style="font-size:90%;"/>
+	<input type="submit" name="setref" value="Go" style="font-size:90%;"/>
 	{*<select id="gridsquare" name="gridsquare">
 		{html_options options=$prefixes selected=$gridsquare}
 	</select>
@@ -218,16 +217,16 @@
 
 	<input type="submit" name="setpos" value="Show &gt;"/>*}
 </div>
-</form>{if $hectad}</b>
-   Hectad<a href="/help/squares">?</a> <b><a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Search for images centered around {$gridref}">{$hectad}</a></b>  
+</form>{if $hectad}
+   Hectad<a href="/help/squares" style="font-size:90%;">?</a> <a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Search for images centered around {$gridref}">{$hectad}</a>
    {if $hectad_row}
-   <a title="View Mosaic for {$hectad_row.hectad_ref}, completed {$hectad_row.completed}" href="/maplarge.php?t={$hectad_row.largemap_token}">view large map</a>
+   <a title="View Mosaic for {$hectad_row.hectad_ref}, completed {$hectad_row.completed}" href="/maplarge.php?t={$hectad_row.largemap_token}">large map</a>
    {/if}
    {else}
  <a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Search for images centered around {$gridref}">search images</a>
    {/if}
    {else}
-   {if $hectad}</b>
+   {if $hectad}
    Hectad<a href="/help/squares">?</a> <b><a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Search for images centered around {$gridref}">{$hectad}</a></b>  
    {if $hectad_row}
    <a title="View Mosaic for {$hectad_row.hectad_ref}, completed {$hectad_row.completed}" href="/maplarge.php?t={$hectad_row.largemap_token}">view large map</a>
@@ -239,7 +238,7 @@
  {$gridref}
  {/if}{/if}{/if}</div>
  
-  <div style="line-height:1em;padding-top:6px;">Map width <b>{$mapwidth}&nbsp;<small>km</small></b></div>
+  <div style="line-height:1em;padding-top:6px;">Width <b>{$mapwidth}&nbsp;<small>km</small></b></div>
  
 
  {if $token_big}

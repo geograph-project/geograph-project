@@ -201,20 +201,19 @@
    {if !$token_zoomin}
 <form action="/map/{$mosaic_token}" method="get">
 <div>
-	<label for="gridref">Zentrum bei</label>
-	<input id="gridref" type="text" name="gridref" value="{$gridref}" size="8"/>
-	<input type="submit" name="setref" value="Los"/>
+	<input id="gridref" type="text" name="gridref" value="{$gridref}" size="9" style="font-size:90%;"/>
+	<input type="submit" name="setref" value="Los" style="font-size:90%;"/>
 </div>
-</form>{if $hectad}</b>
-   Hectad<a href="/help/squares">?</a> <b><a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Bilder um {$gridref} suchen">{$hectad}</a></b>  
+</form>{if $hectad}
+   Hectad<a href="/help/squares" style="font-size:90%;">?</a> <a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Bilder um {$gridref} suchen">{$hectad}</a>
    {if $hectad_row}
-   <a title="Mosaik f¸r {$hectad_row.hectad_ref} zeigen, vervollst‰ndigt {$hectad_row.completed}" href="/maplarge.php?t={$hectad_row.largemap_token}">groﬂe Karte zeigen</a>
+   <a title="Mosaik f¸r {$hectad_row.hectad_ref} zeigen, vervollst‰ndigt {$hectad_row.completed}" href="/maplarge.php?t={$hectad_row.largemap_token}">groﬂe Karte</a>
    {/if}
    {else}
  <a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Bilder um {$gridref} suchen">Bildersuche</a>
    {/if}
    {else}
-   {if $hectad}</b>
+   {if $hectad}
    Hectad<a href="/help/squares">?</a> <b><a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Bilder um {$gridref} suchen">{$hectad}</a></b>  
    {if $hectad_row}
    <a title="Mosaik f¸r {$hectad_row.hectad_ref} zeigen, vervollst‰ndigt {$hectad_row.completed}" href="/maplarge.php?t={$hectad_row.largemap_token}">groﬂe Karte zeigen</a>
