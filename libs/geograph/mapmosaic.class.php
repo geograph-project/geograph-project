@@ -481,9 +481,9 @@ class GeographMapMosaic
 			}
 		if ($recent) {
 			if ( abs($recent-$oldest) < 1000) {
-				return "Maps last updated at: ".strftime("%A, %d %b at %H:%M",$recent);
+				return "Karten aktualisiert am ".strftime("%A, %d.%m. um %H:%M",$recent); //FIXME configurable language
 			} else {
-				return "Maps updated between: ".strftime("%A, %d %b at %H:%M",$oldest)." and ".strftime("%A, %d %b at %H:%M",$recent);
+				return "Karten aktualisiert zwischen ".strftime("%A, %d.%m. um %H:%M",$oldest)." und ".strftime("%A, %d.%m. um %H:%M",$recent); //FIXME configurable language
 			}
 		}
 	}
