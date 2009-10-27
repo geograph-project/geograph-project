@@ -162,6 +162,17 @@ if (isset($_GET['recenter']))
 	
 }
 
+if (isset($_GET['gridref']) && preg_match('/^[a-zA-Z]{1,3}\d{4}$/',$_GET['gridref'])) {
+	$gridsquare=new GridSquare;
+	$grid_ok=$gridsquare->setByFullGridRef($_GET['gridref'],false,true);
+	$gridref_param=$_GET['gridref'];
+	if ($grid_ok)
+		$mosaic->setCentre($gridsquare->x,$gridsquare->y,/*true*/false, true);
+} else {
+	$gridref_param='';
+	$grid_ok=false;
+}
+
 if ($mosaic->pixels_per_km > 40) {
 	$mosaic->pixels_per_km = 40;
 	$mosaic->image_w /= 2;
@@ -174,12 +185,17 @@ $token=$mosaic->getToken();
 
 //regenerate html?
 $cacheid='mapbrowse|'.$token;
+if (!empty($gridref_param) && !$gridref_ok) {
+	$cacheid.='|'.$gridref_param;
+}
 
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
 if (isset($_GET['gridref_from']) && preg_match('/^[a-zA-Z]{1,3}\d{4}$/',$_GET['gridref_from'])) {
 	$smarty->assign('gridref_from', $_GET['gridref_from']);
 }
+$smarty->assign('gridref_param', $gridref_param);
+$smarty->assign('gridref_ok', $grid_ok);
 
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
@@ -250,6 +266,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('token_west', $mosaic->getPanToken(-1, 0));
 	$smarty->assign('token_east', $mosaic->getPanToken(1, 0));
 	
+	/*$square=new GridSquare;
+	$smarty->assign('prefixes', $square->getGridPrefixes());
+	$smarty->assign('kmlist', $square->getKMList());*/
 	
 			
 	//no big unless you are zoomed in

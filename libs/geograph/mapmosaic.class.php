@@ -763,7 +763,7 @@ class GeographMapMosaic
 	* Sets the origin, but aligns the origin on particular boundaries to
 	* reduce the number of image tiles that get generated
 	*/
-	function setAlignedOrigin($bestoriginx, $bestoriginy, $ispantoken = false)
+	function setAlignedOrigin($bestoriginx, $bestoriginy, $ispantoken = false, $exact = false )
 	{
 		global $CONF;
 		//figure out image size in km
@@ -791,13 +791,18 @@ class GeographMapMosaic
 		$bestoriginx=min($bestoriginx, 860);
 		$bestoriginy=max($bestoriginy, 0);
 		$bestoriginy=min($bestoriginy, 1220);
-		
+
+		if ($exact) {
+			$this->setOrigin($bestoriginx, $bestoriginy);//FIXME skip range check?
+			$this->getGridRef(-1,-1);
+			return;
+		}
 		
 		//this sets the most likly reference_index for the center of the map
 		if (!$this->reference_index) {
 			$this->setOrigin($bestoriginx, $bestoriginy);
 			$this->getGridRef(-1,-1);
-		}
+		} // FIXME return?
 		
 		//find closest aligned origin 
 		$originx=round(($bestoriginx-$CONF['origins'][$this->reference_index][0])/$walign)*$walign+$CONF['origins'][$this->reference_index][0];
@@ -834,11 +839,11 @@ class GeographMapMosaic
 	* Set center of map in internal coordinates, returns true if valid
 	* @access public
 	*/
-	function setCentre($x,$y, $ispantoken = false)
+	function setCentre($x,$y, $ispantoken = false, $exact = false)
 	{
 		return $this->setAlignedOrigin(
 			intval($x - ($this->image_w / $this->pixels_per_km)/2),
-			intval($y - ($this->image_h / $this->pixels_per_km)/2), $ispantoken);
+			intval($y - ($this->image_h / $this->pixels_per_km)/2), $ispantoken, $exact);
 	}
 	
 	/**
