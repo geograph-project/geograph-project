@@ -338,7 +338,7 @@ function smarty_function_linktoself($params) {
 	} else {
 		$a[$params['name']] = $params['value'];
 	}
-	return htmlentities($_SERVER['SCRIPT_NAME'].count($a)?("?".http_build_query($a)):'');
+	return htmlentities(count($a)?("?".http_build_query($a,'', '&')):'');
 }
 
 /**
