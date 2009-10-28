@@ -136,7 +136,9 @@ if ($gid) {
 
 	$smarty->assign_by_ref('used',$used);
 }
-
+if (empty($_GET['gr']) && !empty($_GET['gr2'])) {
+	$_GET['gr'] = $_GET['gr2'];
+}
 
 if (!empty($_GET['gr'])) {
 	$square=new GridSquare;
