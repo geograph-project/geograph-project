@@ -310,7 +310,7 @@ function markImage(image) {
 	newtext = 'marked';
 	if (current) {
 		re = new RegExp("\\b"+image+"\\b");
-		if (current.search(re) > -1) {
+		if (current == image || current.search(re) > -1) {
 			newCookie = current.replace(re,',').commatrim();
 			newtext = 'Mark';
 		} else {
@@ -322,11 +322,28 @@ function markImage(image) {
 
 	createCookie('markedImages',newCookie,10);
 
+	if (document.getElementById('marked_number')) {
+		if (!newCookie) {//chrome needs this... 
+			document.getElementById('marked_number').innerHTML = '[0]';
+		} else {
+			splited = newCookie.commatrim().split(',');
+			document.getElementById('marked_number').innerHTML = '['+(splited.length+0)+']';
+		}
+	}
+
 	ele = document.getElementById('mark'+image);
 	if(ele.innerText != undefined) {
 		ele.innerText = newtext;
 	} else {
 		ele.textContent = newtext;
+	}
+}
+
+function markAllImages(str) {
+	for(var q=0;q<document.links.length;q++) {
+		if (document.links[q].text == str) {
+			markImage(document.links[q].id.substr(4));
+		}
 	}
 }
 
