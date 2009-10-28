@@ -45,14 +45,14 @@
 </div>
 
 <div class="interestBox" style="font-size:0.8em" id="hidecreate">
-	<div style="float:right">
+	<div style="float:right;text-align:center">
 		<input type="button" value="Create New Shared Description" onclick="show_tree('create')"/><br/>
 		<a href="/snippets.php?gr={$gr|escape:'html'}" target="_blank">Edit your Shared Descriptions</a>
 	</div>
-	Here you can create descriptions that are common to multiple images. For example can create a generic description for a object shown in a photo, and reuse the description on all photos of the object. All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.
+	&middot; Here you can create descriptions that are common to multiple images.<br/>&middot; For example can create a generic description for a object or location shown in a photo, and reuse the description on all photos of the object or location.<br/>&middot; All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.<br/>&middot; These shared descriptions can operate in addition <i>or</i> instead of the main description.{if $used}<br/> &middot; Reference a shared description by its number eg [1] in the main description.{/if}
 	
 	{if $gridimage_id < 4294967296}
-		<b>NOTE: Changes made here apply immediately and don't go though the change request system.</b>
+		<br/>&middot; <b>Changes made here apply immediately and don't go though the change request system.</b>
 	{/if}
 	
 </div>
@@ -72,14 +72,14 @@
 	</div>
 
 {foreachelse}
-	<p><i>nothing has been attached to this image yet</i></p>
+	<p><i>Click 'Create New Shared Description'{if $results}, or a 'Use this Description' button below,{/if} to add a description to this image.</i> <small>Shared descriptions for this image will be listed here</small></p>
 {/foreach}
 
 
-<div class="interestBox">
+<div class="interestBox" style="border-top:2px solid white">
 
 <b>View nearby descriptions</b> &nbsp;
-<label for="fq">Search</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+<label for="fq">Search{if $sphinx} keywords{/if}</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 {if !$sphinx}
 	(single keyword only)
 {/if}
@@ -96,7 +96,7 @@
 	
 	<div style="border-top: 1px solid gray">
 		<div style="float:right">
-			<input type="submit" name="add[{$item.snippet_id}]" value="use this"/>
+			<input type="submit" name="add[{$item.snippet_id}]" value="Use this Description"/>
 		</div>
 
 		<b>{$item.title|escape:'html'}</b> {if $item.grid_reference != $grid_reference} :: {$item.grid_reference} {/if}{if $item.distance}(Distance {$item.distance}km){/if}<br/>
@@ -106,7 +106,7 @@
 	</div>
 
 {foreachelse}
-	<p><i>no shared descriptions found</i></p>
+	<p><i>No shared descriptions found, create one now!</i></p><br/>
 {/foreach}
 {if $query_info}
 	<p><i>{$query_info}</i></p>
@@ -115,8 +115,8 @@
 </form>
 
 {/dynamic}
-<hr/>
-<p style="background-color:pink; font-size:0.7em;"><i>For clarification, you are submitting these shared descriptions to Geograph Project directly. Geograph Project then grants any contributor the right to reuse any shared description within their Creative Commons licensed submission. From a practical point of view this allows the contributor the use the description without attribution (as its not Creative Commons licensed).</i></p>
+
+<div class="interestBox" style="background-color:pink; font-size:0.7em; border-top:2px solid white"><i>For clarification, you are submitting these shared descriptions to Geograph Project directly. Geograph Project then grants any contributor the right to reuse any shared description within their Creative Commons licensed submission. From a practical point of view this allows the contributor the use the description without attribution (as its not Creative Commons licensed).</i></div>
 
 </body>
 </html>
