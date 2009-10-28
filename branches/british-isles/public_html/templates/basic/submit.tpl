@@ -384,14 +384,15 @@ it was taken or other interesting geographical information. <span id="styleguide
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
 to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
 
-You can add a list of keywords as well as (or instead of) a description. On a separate line at the end of the description just type 'Keywords:' followed by your list. Keywords are useful to add words to aid people searching for images, without including the words in the description itself.</div>
+<sup style="color:red"><b>New</b></sup> You can add a list of keywords as well as (or instead of) a description. On a separate line at the end of the description just type 'Keywords:' followed by your list. Keywords are useful to add words to aid people searching for images, without including the words in the description itself.</div>
 <br/>
 <div class="interestBox">
-	<b>Shared Descriptions/References (Optional)</b> <sup style="color:red">- Experimental!</sup>
-	<input type="button" value="expand" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';" id="hideshare"/>
-	<div id="showshare" style="display:none">
-		<iframe src="about:blank" height="400" width="100%" id="shareframe">
+	<b>Shared Descriptions/References (Optional)</b> <sup style="color:red">- <b>New</b>!</sup>
+	<a href="#" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;" id="hideshare" {if !$last_imagetaken}style="display:none"{/if}>++ Expand <i>Shared Descriptions</I> box ++</a>
+	<div id="showshare" {if $last_imagetaken}style="display:none"{/if}>
+		<iframe {if $last_imagetaken}src="about:blank"{else}src="submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}"{/if} height="400" width="98%" id="shareframe" style="border:2px solid gray">
 		</iframe>
+		<div style="text-align:right"><a href="#" onclick="hide_tree('share');return false">- Contract <i>Shared Descriptions</I> box</a> -</div>
 	</div>
 </div>
 
