@@ -388,9 +388,9 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 <br/>
 <div class="interestBox">
 	<b>Shared Descriptions/References (Optional)</b> <sup style="color:red">- <b>New</b>!</sup>
-	<a href="#" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;" id="hideshare" {if !$last_imagetaken}style="display:none"{/if}>++ Expand <i>Shared Descriptions</I> box ++</a>
-	<div id="showshare" {if $last_imagetaken}style="display:none"{/if}>
-		<iframe {if $last_imagetaken}src="about:blank"{else}src="submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}"{/if} height="400" width="98%" id="shareframe" style="border:2px solid gray">
+	<a href="#" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;" id="hideshare">++ Expand <i>Shared Descriptions</I> box ++</a>
+	<div id="showshare" style="display:none">
+		<iframe src="about:blank" height="400" width="98%" id="shareframe" style="border:2px solid gray">
 		</iframe>
 		<div style="text-align:right"><a href="#" onclick="hide_tree('share');return false">- Contract <i>Shared Descriptions</I> box</a> -</div>
 	</div>
