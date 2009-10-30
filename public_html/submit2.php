@@ -100,7 +100,7 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 				
 				if (preg_match("/(_|\b)([a-zA-Z]{1,2})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
 					if (strlen($m[3]) != strlen($m[4])) {
-						if (preg_match("/(_|\b)([a-zA-Z]{1,2})[ \._-]?(\d{4,10})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {						
+						if (preg_match("/(_|\b)([a-zA-Z]{1,2})[ \._-]?(\d{4,10})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
 							$smarty->assign('grid_reference', $grid_reference = $m[2].$m[3]); 
 						}
 					} else {
@@ -123,8 +123,6 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 				$smarty->assign('error', $uploadmanager->errormsg);
 				$uploadmanager->errormsg = '';
 			}
-			
-			
 			break;
 		case UPLOAD_ERR_INI_SIZE:
 		case UPLOAD_ERR_FORM_SIZE:
@@ -231,7 +229,6 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 	$smarty->assign('submit2', 1);
 	$smarty->assign('status', $status);
 	$smarty->assign('filenames', $filenames);
-				
 }
 
 if (isset($_REQUEST['inner'])) {

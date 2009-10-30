@@ -115,7 +115,7 @@ function doneStep(step) {
 <form action="{$script_name}" name="theForm" method="post">
 
 	{if !$user->use_autocomplete}
-	<p>(<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Tick this box, to try a new auto-complete text entry for image category selection, rather than dropdown. Change permanently on your <a href="/profile.php?edit=1">profile settings page</a></label>)</p>	
+	<p>(<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Tick this box, to try a new auto-complete text entry for image category selection, rather than dropdown. Change permanently on your <a href="/profile.php?edit=1" target="_blank">profile settings page</a></label>)</p>	
 	{/if}
 	
 <!-- # -->	 
@@ -143,27 +143,13 @@ function doneStep(step) {
 		<iframe src="about:blank" id="iframe4" width="100%" height="700px"></iframe>
 	</div>
 <!-- # -->	 
-	<a id="sh5" href="#" class="sh sn" onclick="return clicker(5)"><span id="se5">+</span> Step 5 - Attribution</a>
+	<a id="sh5" href="#" class="sh sn" onclick="return clicker(5)"><span id="se5">+</span> Step 5 - Confirm Licencing and Finish</a>
 	
 	<div id="sd5" class="sd">
-		<div class="termsbox" style="margin:0">
-			
-			{assign var="credit" value=$user->credit_realname}
-			{assign var="credit_default" value=0}
-			{include file="_submit_licence.tpl"}
-
-			<p>{external title="View licence" href="http://creativecommons.org/licenses/by-sa/2.0/" text="Here is the Commons Deed for the <b>Attribution-Share Alike 2.0 Generic</b> Creative Commons Licence outlining the licence terms" target="_blank"}</p>
-
+		<div style="width:230px;float:right;position:relative;text-align:center;font-size:0.7em">
+			<a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank"><img src="http://{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed"/></a><br/>
+			[ Click to see full Licence Deed ]
 		</div>
-	</div>
-<!-- # -->	 
-	<a id="sh6" href="#" class="sh sn" onclick="return clicker(6)"><span id="se6">+</span> Step 6 - Confirm Licencing and Finish</a>
-	
-	<div id="sd6" class="sd">
-   <div style="width:230px;float:right;position:relative;text-align:center;font-size:0.7em">
-   	<a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank"><img src="http://{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed"/></a><br/>
-   	[ Click to see full Licence Deed ]
-   </div>
 
 		<p>
 		Because we are an open project we want to ensure our content is licensed
@@ -184,7 +170,13 @@ function doneStep(step) {
 
 		<p>{external title="View licence" href="http://creativecommons.org/licenses/by-sa/2.0/" text="Here is the Commons Deed outlining the licence terms" target="_blank"}</p>
 	
-		<br/><br/><br/>
+		<br style="clear:both"/>
+
+		<div class="termsbox" style="margin:0">
+			{assign var="credit" value=$user->credit_realname}
+			{assign var="credit_default" value=0}
+			{include file="_submit_licence.tpl"}
+		</div>
 	
 		<p>If you agree with these terms, click "I agree" and your image will be stored in the grid square.<br/><br/>
 		<input style="background-color:pink; width:200px" type="submit" name="abandon" value="I DO NOT AGREE" onclick="return confirm('Are you sure? The current upload will be discarded!');"/>

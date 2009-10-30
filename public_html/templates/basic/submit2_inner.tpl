@@ -31,7 +31,9 @@
 		
 		<p><a href="/submit2.php?inner&amp;step=1">Start over</a></p>
 	{else}
-	
+		{if $error}
+			<p style="color:#990000;font-weight:bold;">{$error}</p>
+		{/if}
 		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label>  - recommend resizing to 640px on longest side<br/>	
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" style="background-color:white"/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000"/></div>
