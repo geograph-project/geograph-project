@@ -96,10 +96,9 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 					list ($grid_reference,$len) = $conv->national_to_gridref(intval($e),intval($n),4,$reference_index);
 					
 					$smarty->assign('grid_reference', $grid_reference);
-
-						
+				} 
 				
-				} elseif (preg_match("/\b([a-zA-Z]{1,2})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
+				if (preg_match("/(\b|_)([a-zA-Z]{1,2})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
 					if (strlen($m[2]) != strlen($m[3])) {
 						if (preg_match("/\b([a-zA-Z]{1,2})[ \._-]?(\d{4,10})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {						
 							$smarty->assign('grid_reference', $grid_reference = $m[1].$m[2]); 

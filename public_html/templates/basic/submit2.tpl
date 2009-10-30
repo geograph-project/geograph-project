@@ -88,6 +88,9 @@ function clicker(step,override) {
 		} else if (step == 3) {
 			document.getElementById('iframe'+step).src = '/puploader.php?inner&submit2&step=2'+loc;
 		} else if (step == 4) {
+			if (theForm.elements['use_autocomplete'] && theForm.elements['use_autocomplete'].checked) {
+				loc = loc + "&use_autocomplete=1";
+			}
 			document.getElementById('iframe'+step).src = '/puploader.php?inner&submit2&step=3'+loc+'&upload_id='+escape(theForm.elements['upload_id['+name+']'].value);
 		} else {
 			
@@ -103,20 +106,17 @@ function doneStep(step) {
 	clicker(step,false);
 }
 
-function updateAttribDivsSetup() {
-	document.theForm.pattrib[0].checked = false;
-
-	
-}
-AttachEvent(window,'load',updateAttribDivsSetup,false);
-
 </script>
 {/literal}
 {dynamic}
-	<h2>Submit version 2 <sup>Alpha</sup></h2> 
+	<h2>Submit version 2 <sup>Beta</sup></h2> 
 	
-	<p>Complete the following steps in any order (and continue onto step 2/3 while the photo is still uploading!). Step 2 is optional, can directly enter a grid reference in step 3 if wish. </p>
-	
+	<p>Complete the following steps in any order (and continue onto the following steps while the photo is still uploading!). Step 2 is optional, can directly enter a grid reference in step 3 if wish. If possible the date, and grid-reference are automatically extracted from the submitted image.</p>
+<form action="{$script_name}" name="theForm" method="post">
+
+	{if !$user->use_autocomplete}
+	<p>(<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Tick this box, to try a new auto-complete text entry for image category selection, rather than dropdown. Change permanently on your <a href="/profile.php?edit=1">profile settings page</a></label>)</p>	
+	{/if}
 	
 <!-- # -->	 
 	<a id="sh1" href="#" class="sh sn" onclick="return clicker(1)"><span id="se1">-</span> Step 1 - Upload Photo</a>
@@ -137,25 +137,22 @@ AttachEvent(window,'load',updateAttribDivsSetup,false);
 		<iframe src="about:blank" id="iframe3" width="100%" height="500px"></iframe>
 	</div>
 <!-- # -->	 
-	<a id="sh4" href="#" class="sh sn" onclick="return clicker(4)"><span id="se4">+</span> Step 4 - Title/Description/Meta</a>
+	<a id="sh4" href="#" class="sh sn" onclick="return clicker(4)"><span id="se4">+</span> Step 4 - Title/Description and Date</a>
 	
 	<div id="sd4" class="sd">
-		<iframe src="about:blank" id="iframe4" width="100%" height="650px"></iframe>
+		<iframe src="about:blank" id="iframe4" width="100%" height="700px"></iframe>
 	</div>
-<form action="{$script_name}" name="theForm" method="post">
 <!-- # -->	 
 	<a id="sh5" href="#" class="sh sn" onclick="return clicker(5)"><span id="se5">+</span> Step 5 - Attribution</a>
 	
 	<div id="sd5" class="sd">
-		<div class="termsbox">
+		<div class="termsbox" style="margin:0">
 			
-			
-			<p>{external title="View licence" href="http://creativecommons.org/licenses/by-sa/2.0/" text="Here is the Commons Deed outlining the licence terms" target="_blank"}</p>
-
 			{assign var="credit" value=$user->credit_realname}
 			{assign var="credit_default" value=0}
 			{include file="_submit_licence.tpl"}
 
+			<p>{external title="View licence" href="http://creativecommons.org/licenses/by-sa/2.0/" text="Here is the Commons Deed for the <b>Attribution-Share Alike 2.0 Generic</b> Creative Commons Licence outlining the licence terms" target="_blank"}</p>
 
 		</div>
 	</div>
@@ -164,13 +161,13 @@ AttachEvent(window,'load',updateAttribDivsSetup,false);
 	
 	<div id="sd6" class="sd">
    <div style="width:230px;float:right;position:relative;text-align:center;font-size:0.7em">
-   	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img src="http://{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed"/></a><br/>
+   	<a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank"><img src="http://{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed"/></a><br/>
    	[ Click to see full Licence Deed ]
    </div>
 
 		<p>
 		Because we are an open project we want to ensure our content is licensed
-		as openly as possible and so we ask that all images are released under a {external title="Learn more about Creative Commons" href="http://creativecommons.org" text="Creative Commons" target="_blank"}
+		as openly as possible and so we ask that all images are released under a <b>Attribution-Share Alike</b> {external title="Learn more about Creative Commons" href="http://creativecommons.org" text="Creative Commons" target="_blank"}
 		licence, including accompanying metadata.</p>
 
 		<p>With a Creative Commons licence, the photographer <b>keeps the copyright</b> but allows 
@@ -187,18 +184,19 @@ AttachEvent(window,'load',updateAttribDivsSetup,false);
 
 		<p>{external title="View licence" href="http://creativecommons.org/licenses/by-sa/2.0/" text="Here is the Commons Deed outlining the licence terms" target="_blank"}</p>
 	
-		<br/><br/><br/><br/>
+		<br/><br/><br/>
 	
-		<p>If you agree with these terms, click "I agree" and your image will be submitted to Geograph.<br />
-		<input type="button" value="Close Window" onclick="location.href='minibrowser:close'"/>
+		<p>If you agree with these terms, click "I agree" and your image will be stored in the grid square.<br/><br/>
+		<input style="background-color:pink; width:200px" type="submit" name="abandon" value="I DO NOT AGREE" onclick="return confirm('Are you sure? The current upload will be discarded!');"/>
 		<input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="{literal}if (checkMultiFormSubmission()) {autoDisable(this); return true} else {return false;}{/literal}"/>
 		</p>
+		<br/><br/>
 	</div>
 <!-- # -->	 
 	<a id="sh10" href="#" class="sh sn" onclick="return clicker(10)" style="background-color:yellow; font-size:0.9em"><span id="se10">+</span> The Scratch Pad</a>
 	
 	<div id="sd10" class="sd">
-		Dont Edit anything here - its just where we store stuff as you go along. Its only shown for debugging - the final version will have it permentally hidden.
+		<p><b>Do not Edit anything here</b> - its just where we store stuff as you go along. Its only shown for debugging - the final version will have it permentally hidden.</p>
 		{assign var="key" value="0"}
 		<div><span>Upload ID:</span><input type="text" name="upload_id[{$key}]" value="" size="60"/> </div>
 		<div><span>Subject:</span><input type="text" name="grid_reference[{$key}]" value="" size="12" maxlength="12"/> </div>
@@ -214,6 +212,42 @@ AttachEvent(window,'load',updateAttribDivsSetup,false);
 	</div>
 <!-- # -->	 
 </form>
+
+
+	<script type="text/javascript">{literal}
+	function previewImage() {
+		window.open('','_preview');//forces a new window rather than tab?
+		var f1 = document.forms['theForm'];
+		var f2 = document.forms['previewForm'];
+		
+		var name = f1.elements['selected'].value;
+		
+		for (q=0;q<f2.elements.length;q++) {
+			if (f2.elements[q].name && f1.elements[f2.elements[q].name+'['+name+']']) {
+				f2.elements[q].value = f1.elements[f2.elements[q].name+'['+name+']'].value;
+			}
+		}
+		return true;
+	}
+	{/literal}</script>
+	<form action="/preview.php" method="post" name="previewForm" target="_preview" style="padding:10px; text-align:center">
+	<input type="hidden" name="grid_reference"/>
+	<input type="hidden" name="photographer_gridref"/>
+	<input type="hidden" name="view_direction"/>
+	<input type="hidden" name="use6fig"/>
+	<input type="hidden" name="title"/>
+	<textarea name="comment" style="display:none"/></textarea>
+	<input type="hidden" name="imageclass"/>
+	<input type="hidden" name="imageclassother"/>
+	<input type="hidden" name="imagetakenDay"/>
+	<input type="hidden" name="imagetakenMonth"/>
+	<input type="hidden" name="imagetakenYear"/>
+	<input type="hidden" name="upload_id"/>
+	<input type="submit" value="Preview Submission in a new window" onclick="previewImage()"/> 
+	
+	<input type="checkbox" name="spelling"/>Check Spelling
+	<sup style="color:red">Experimental!</sup>
+	</form>
 
 {/dynamic}    
 {include file="_std_end.tpl"}

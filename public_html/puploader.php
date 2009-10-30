@@ -33,6 +33,10 @@ $USER->mustHavePerm("basic");
 $template='puploader.tpl';
 $cacheid='';
 
+if (!empty($_REQUEST['use_autocomplete'])) {
+	$USER->use_autocomplete = 1;
+}
+
 if (isset($_REQUEST['submit2'])) {
 	$cacheid .= 'submit2';
 	$smarty->assign('submit2',1);

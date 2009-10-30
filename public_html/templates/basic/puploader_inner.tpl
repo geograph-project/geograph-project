@@ -102,7 +102,6 @@
 	{getamap gridref=$square->grid_reference text="Open Get-a-Map"}, <a href="/gridref/{$square->grid_reference}" target="_blank">Open {$square->grid_reference} Page</a> <small>(in new window)</small></div>
 	{/if}
 	
-	<h3>Title and Comments</h3>
 	<p>Please provide a short title for the image, and any other comments about where
 	it was taken or other interesting geographical information. (Open <a href="/help/style" target="_blank" id="styleguidelink">Style Guide</a>)</p>
 
@@ -114,7 +113,7 @@
 	 <p style="font-size:0.7em">Gazetteer info as will appear:<br/> <span style="color:silver;">{place place=$place}</span></p>
 	 {/if}
 
-	<p style="clear:both"><label for="comment"><b>Comment</b></label> <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span></span><br/>
+	<p style="clear:both"><label for="comment"><b>Description/Comment</b></label> <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span></span><br/>
 	<textarea id="comment" name="comment" rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$comment|escape:'html'}</textarea></p>
 	<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
 	to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
@@ -123,26 +122,19 @@
 
 
 {if $submit2}
-	<br/>
 	{if $upload_id}
-		<div class="interestBox">
-			<b>Shared Descriptions/References (Optional)</b> <sup style="color:red">- <b>New</b>!</sup>
+		<p><b>Shared Descriptions/References (Optional)</b> <sup style="color:red">- <b>New</b>!</sup>
 			<a href="#" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;" id="hideshare">++ Expand <i>Shared Descriptions</I> box ++</a>
 			<div id="showshare" style="display:none">
 				<iframe src="about:blank" height="400" width="98%" id="shareframe" style="border:2px solid gray">
 				</iframe>
-				<div style="text-align:right"><a href="#" onclick="hide_tree('share');return false">- Contract <i>Shared Descriptions</I> box</a> -</div>
-			</div>
-		</div>
+				<div><a href="#" onclick="hide_tree('share');return false">- Close <i>Shared Descriptions</I> box</a> -</div>
+			</div></p>
 	{else}
-		<div class="interestBox">
-			<b>Shared Descriptions/References (Optional)</b> <sup style="color:red">- <b>New</b>!</sup>
-		</div>
-		<p style="color:red">&nbsp; - Shared description can only be set once image has finished uploading, close and reopen this step. 
+		<p><b>Shared Descriptions/References (Optional)</b> <sup style="color:red">- <b>New</b>!</sup><br/>
+		<span style="color:red">&nbsp; - Shared description can only be set once image has finished uploading, close and reopen this step once the image has uploaded. </span></p>
 	{/if}
 {/if}
-
-	<h3>Further Information</h3>
 
 {if $use_autocomplete}
 
