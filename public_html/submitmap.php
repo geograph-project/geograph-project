@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: faq.php 15 2005-02-16 12:23:35Z lordelph $
+ * $Id$
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -41,7 +41,25 @@ if (isset($_REQUEST['inner'])) {
 if (isset($_REQUEST['picasa'])) {
 	$cacheid .= 'picasa';
 	$smarty->assign('picasa',1);
+} elseif (isset($_REQUEST['submit2'])) {
+	$cacheid .= 'submit2';
+	$smarty->assign('submit2',1);
 }
+
+if (!empty($_REQUEST['grid_reference'])) 
+{
+	$square=new GridSquare;
+
+	$ok= $square->setByFullGridRef($_REQUEST['grid_reference']);
+
+	if ($ok) {
+		$smarty->assign('grid_reference', $grid_reference = $_REQUEST['grid_reference']);
+		$smarty->assign('success', 1);
+	} else {
+		$smarty->assign('errormsg', $square->errormsg);	
+	}
+} 
+
 
 $smarty->display('submitmap.tpl',$cacheid);
 

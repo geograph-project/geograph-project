@@ -49,7 +49,7 @@
 		<input type="button" value="Create New Shared Description" onclick="show_tree('create')"/><br/>
 		<a href="/snippets.php?gr={$gr|escape:'html'}" target="_blank">Edit your Shared Descriptions</a>
 	</div>
-	&middot; Here you can create descriptions that are common to multiple images.<br/>&middot; For example can create a generic description for a object or location shown in a photo, and reuse the description on all photos of the object or location.<br/>&middot; All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.<br/>&middot; These shared descriptions can operate in addition <i>or</i> instead of the main description.{if $used}<br/> &middot; Reference a shared description by its number eg [1] in the main description.{/if}
+	&middot; Here you can create descriptions that are common to multiple images.<br/>&middot; For example can create a generic description for a object or location shown in a photo, and reuse the description on all photos of the object or location.<br/>&middot; All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.<br/>&middot; These shared descriptions can operate in addition <i>or</i> instead of the main description.{if $used}<br/> &middot; Optional: Reference a shared description by its number eg [1] in the main description.{/if}
 	
 	{if $gridimage_id < 4294967296}
 		<br/>&middot; <b>Changes made here apply immediately and don't go though the change request system.</b>
