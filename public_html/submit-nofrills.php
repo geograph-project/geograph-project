@@ -29,6 +29,22 @@ init_session();
 
 $smarty = new GeographPage;
 
+$USER->mustHavePerm("basic");
+
+$USER->getStats();
+
+if ($USER->stats['images'] < 50) {
+	die("Currently this page is only available to contributors with over 50 images. <a href=/help/submission>View other submission methods</a>");
+}
+
+if (empty($_GET['letmein'])) {
+	$template='static_404.tpl';
+	$smarty->display($template);
+	exit;
+
+}
+
+
 
 $dirs = array (-1 => '');
 $jump = 360/16; $jump2 = 360/32;

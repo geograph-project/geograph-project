@@ -145,7 +145,7 @@ function doneStep(step) {
 <!-- # -->	 
 	<a id="sh5" href="#" class="sh sn" onclick="return clicker(5)"><span id="se5">+</span> Step 5 - Confirm Licencing and Finish</a>
 	
-	<div id="sd5" class="sd">
+	<div id="sd5" class="sd" style="border:2px solid red; padding:4px;border-top:0">
 		<div style="width:230px;float:right;position:relative;text-align:center;font-size:0.7em">
 			<a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank"><img src="http://{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed"/></a><br/>
 			[ Click to see full Licence Deed ]
@@ -184,8 +184,10 @@ function doneStep(step) {
 		</p>
 		<br/><br/>
 	</div>
-<!-- # -->	 
+<!-- # -->	
+	{if !$is_admin}
 	<a id="sh10" href="#" class="sh sn" onclick="return clicker(10)" style="background-color:yellow; font-size:0.9em"><span id="se10">+</span> The Scratch Pad</a>
+	{/if}
 	
 	<div id="sd10" class="sd">
 		<p><b>Do not Edit anything here</b> - its just where we store stuff as you go along. Its only shown for debugging - the final version will have it permentally hidden.</p>
@@ -208,7 +210,6 @@ function doneStep(step) {
 
 	<script type="text/javascript">{literal}
 	function previewImage() {
-		window.open('','_preview');//forces a new window rather than tab?
 		var f1 = document.forms['theForm'];
 		var f2 = document.forms['previewForm'];
 		
@@ -219,6 +220,14 @@ function doneStep(step) {
 				f2.elements[q].value = f1.elements[f2.elements[q].name+'['+name+']'].value;
 			}
 		}
+		
+		if ((f2.elements['title'].value == '') || (f2.elements['upload_id'].value == '') || (f2.elements['grid_reference'].value == '')) {
+			alert("Needs Image, Title and Subject Grid Reference before preview can be used"); 
+			return false;
+		}
+		
+		window.open('','_preview');//forces a new window rather than tab?
+		
 		return true;
 	}
 	{/literal}</script>
@@ -235,7 +244,7 @@ function doneStep(step) {
 	<input type="hidden" name="imagetakenMonth"/>
 	<input type="hidden" name="imagetakenYear"/>
 	<input type="hidden" name="upload_id"/>
-	<input type="submit" value="Preview Submission in a new window" onclick="previewImage()"/> 
+	<input type="submit" value="Preview Submission in a new window" onclick="return previewImage()"/> 
 	
 	<input type="checkbox" name="spelling"/>Check Spelling
 	<sup style="color:red">Experimental!</sup>
