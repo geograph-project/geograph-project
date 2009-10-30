@@ -7,10 +7,11 @@
 {dynamic}
 	<h2>No Frills Submit - for experts only <sup style="color:red">Alpha</sup></h2> 
 	
-	<p>This submission process is designed to be very quick - and very little validation of input is done - be careful.</p>
+	<p>This submission process is designed to be very quick - and <b>very little validation of input is done - be careful</b>.</p>
 	
 	<p>In particular, there is no maps, no calculation of view direction, and category entry is a plain text box. The subject grid reference isnt even checked to see if a valid square - only fails after image submission.</p>
 	
+	<p>Please only use this process, if you double check your grid-references, category, and dates, as its very easy to input invalid data!</p>
 	
 <form action="/submit2.php" name="theForm" method="post">
 
@@ -47,7 +48,7 @@
 		
 		<div><span style="width:120px;display:block;float:left"><b>Category:</b></span><input type="text" name="imageclass[{$key}]" value="" size="20" maxlength="64"/> (no auto complete beyond what your browser provides)</div>  
 		
-		<div><span style="width:120px;display:block;float:left"><b>Taken Date</b>:</span><input type="text" name="imagetaken[{$key}]" value="" size="10" maxlength="10"/> (YYYY-MM-DD <b>ONLY</b>)</div>  
+		<div><span style="width:120px;display:block;float:left"><b>Taken Date</b>:</span><input type="text" name="imagetaken[{$key}]" value="" size="10" maxlength="10"/> (YYYY-MM-DD <b>ONLY</b> - double check its a valid date!)</div>  
 	
 		<input type="hidden" name="selected" value="{$key}"/>
 		
@@ -93,7 +94,6 @@
 
 	<script type="text/javascript">{literal}
 	function previewImage() {
-		window.open('','_preview');//forces a new window rather than tab?
 		var f1 = document.forms['theForm'];
 		var f2 = document.forms['previewForm'];
 		
@@ -104,6 +104,12 @@
 				f2.elements[q].value = f1.elements[f2.elements[q].name+'['+name+']'].value;
 			}
 		}
+		if ((f2.elements['title'].value == '') || (f2.elements['upload_id'].value == '') || (f2.elements['grid_reference'].value == '')) {
+			alert("Needs Image, Title and Subject Grid Reference before preview can be used"); 
+			return false;
+		}
+		
+		window.open('','_preview');//forces a new window rather than tab?
 		return true;
 	}
 	function checkGridref(that) {
@@ -171,7 +177,7 @@
 	<input type="hidden" name="imagetakenMonth"/>
 	<input type="hidden" name="imagetakenYear"/>
 	<input type="hidden" name="upload_id"/>
-	<input type="submit" value="Preview Submission in a new window" onclick="previewImage()"/> 
+	<input type="submit" value="Preview Submission in a new window" onclick="return previewImage()"/> 
 	
 	<input type="checkbox" name="spelling"/>Check Spelling
 	<sup style="color:red">Experimental!</sup>

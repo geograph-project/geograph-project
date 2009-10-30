@@ -1,3 +1,4 @@
+{assign var="page_title" value="Submission Processes"}
 {include file="_std_begin.tpl"}
 
 <h2>Geograph Submission Processes</h2>
@@ -87,7 +88,7 @@
   <td style="background-color:lightgreen" align="center">*</td>
  </tr>
  <tr>
-  <td>Multiple Upload</td>
+  <td>Multiple Image Upload</td>
   <td></td>
   <td></td>
   <td style="background-color:lightgreen" align="center">*</td>
