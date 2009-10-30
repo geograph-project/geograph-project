@@ -113,8 +113,11 @@ AttachEvent(window,'load',updateAttribDivsSetup,false);
 </script>
 {/literal}
 {dynamic}
-	<h2>Submit v2</h2> 
-
+	<h2>Submit version 2 <sup>Alpha</sup></h2> 
+	
+	<p>Complete the following steps in any order (and continue onto step 2/3 while the photo is still uploading!). Step 2 is optional, can directly enter a grid reference in step 3 if wish. </p>
+	
+	
 <!-- # -->	 
 	<a id="sh1" href="#" class="sh sn" onclick="return clicker(1)"><span id="se1">-</span> Step 1 - Upload Photo</a>
 	

@@ -71,7 +71,7 @@
 		{/literal}
 	{else}
 		{literal}
-			AttachEvent(window,'load',function() { window.parent.clicker(2,1) },false);
+			//AttachEvent(window,'load',function() { window.parent.clicker(2,1) },false);
 		{/literal}
 	{/if}
 {else}
