@@ -200,7 +200,7 @@ AttachEvent(window,'load',updateAttribDivsSetup,false);
 	<div id="sd10" class="sd">
 		Dont Edit anything here - its just where we store stuff as you go along. Its only shown for debugging - the final version will have it permentally hidden.
 		{assign var="key" value="0"}
-		<div><span>Upload ID:</span><input type="text" name="upload_id[{$key}]" value="" size="12" maxlength="12"/> </div>
+		<div><span>Upload ID:</span><input type="text" name="upload_id[{$key}]" value="" size="60"/> </div>
 		<div><span>Subject:</span><input type="text" name="grid_reference[{$key}]" value="" size="12" maxlength="12"/> </div>
 		<div><span>Photographer:</span><input type="text" name="photographer_gridref[{$key}]" value="" size="12" maxlength="12"/></div>  
 		<div><span>use 6 Fig:</span><input type="text" name="use6fig[{$key}]" value="" size="1" maxlength="2"/></div> 
