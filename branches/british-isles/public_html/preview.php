@@ -47,13 +47,23 @@ if (!empty($_POST))
 {
 	$image=new GridImage;
 	
-	$image->gridimage_id = 0;
-	$image->moderation_status = 'pending';
-	$image->submitted = time();
-	$image->user_id = $USER->user_id;
-	$image->realname = $USER->realname;
-	$image->profile_link = "/profile/{$image->user_id}";
-
+	if (!empty($_POST['id'])) {
+		$image->loadFromId(intval($_POST['id']));
+	} else {
+		$image->gridimage_id = 0;
+		$image->moderation_status = 'pending';
+		$image->submitted = time();
+		$image->user_id = $USER->user_id;
+		$image->realname = $USER->realname;
+		$image->profile_link = "/profile/{$image->user_id}";
+		
+		if (!empty($_POST['pattrib']) && $_POST['pattrib'] == 'other') {
+			$image->realname = strip_tags(trim(stripslashes($_POST['pattrib_name'])));
+			$image->profile_link .= "?a=".urlencode($_POST['pattrib_name']);
+		}
+		
+	}
+	
 	$image->title = strip_tags(trim(stripslashes($_POST['title'])));
 	$image->comment = strip_tags(trim(stripslashes($_POST['comment'])));
 	
@@ -89,8 +99,8 @@ if (!empty($_POST))
 	
 	$image->view_direction = intval(strip_tags(trim(stripslashes($_POST['view_direction']))));
 	
-	
-	$image->fullpath = "/submit.php?preview=".strip_tags(trim(stripslashes($_POST['upload_id'])));
+	if (!empty($_POST['upload_id']))
+		$image->fullpath = "/submit.php?preview=".strip_tags(trim(stripslashes($_POST['upload_id'])));
 
 
 if (!empty($_POST['spelling'])) {
