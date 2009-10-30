@@ -41,10 +41,10 @@
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
   
-  <div class="caption" style="font-weight:bold" xmlns:dc="http://purl.org/dc/elements/1.1/" property="dc:title">{$image->title|escape:'html'}</div>
+  <div class="caption" style="font-weight:bold;margin-left:auto;margin-right:auto;width:640px;" xmlns:dc="http://purl.org/dc/elements/1.1/" property="dc:title">{$image->title|escape:'html'}</div>
 
   {if $image->comment}
-  <div class="caption">{$image->comment|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
+  <div class="caption" style="margin-left:auto;margin-right:auto;width:640px;">{$image->comment|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
   {/if}
   {if $snippets}
 	{if !$image->comment && $snippet_count == 1}
