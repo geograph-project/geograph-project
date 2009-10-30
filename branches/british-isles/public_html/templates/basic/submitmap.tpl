@@ -28,10 +28,23 @@
 				 geocoder = new GClientGeocoder();
 			}
 			if (geocoder) {
+				//replace full uk postcodes by the sector version
+				address = address.replace(/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i,'$1$2 $3'); 
+			
 				geocoder.getLatLng(address,function(point) {
 					if (!point) {
 						alert("Your entry '" + address + "' could not be geocoded, please try again");
 					} else {
+						lat = point.lat();
+						lng = point.lng();
+						ire = (lat > 51.2 && lat < 55.73 && lng > -12.2 && lng < -4.8);
+						uk = (lat > 49 && lat < 62 && lng > -9.5 && lng < 2.3);
+						
+						if (!uk && !ire) {
+							alert("Address could not be resolved to a British Isles location, please try again");
+							return;
+						}
+						
 						if (themarker) {
 							themarker.setPoint(point);
 							GEvent.trigger(themarker,'drag');
@@ -140,14 +153,14 @@
 
 <div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)"/>
 
-<input type="submit" value="Step 2 &gt; &gt;"/></div>
+<input type="submit" value="Next Step &gt; &gt;"/></div>
 
 <div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div><br/>			
 
 <div style="width:600px; text-align:right;"><label for="addressInput">Enter Address: 
 	<input type="text" size="50" id="addressInput" name="address" value="" />
 	<input type="button" value="Find" onclick="showAddress(this.form.address.value)"/><small><small><br/>
-	(Powered by the Google Maps API Geocoder)</small></small>
+	(Powered by the Google Maps API Geocoder <br/>- <b>Note: it doesn't cope with postcodes well</b>)</small></small>
 </div>
 
 <input type="hidden" name="gridsquare" value=""/>

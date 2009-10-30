@@ -392,7 +392,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 	<div id="showshare" style="display:none">
 		<iframe src="about:blank" height="400" width="98%" id="shareframe" style="border:2px solid gray">
 		</iframe>
-		<div style="text-align:right"><a href="#" onclick="hide_tree('share');return false">- Contract <i>Shared Descriptions</I> box</a> -</div>
+		<div><a href="#" onclick="hide_tree('share');return false">- Close <i>Shared Descriptions</I></a> -</div>
 	</div>
 </div>
 
@@ -635,7 +635,7 @@ have problems
 		return true;
 	}
 	{/literal}</script>
-	<form action="/preview.php" method="post" name="previewForm" target="_preview" style="background-color:lightgreen; padding:10px; text-align:center">
+	<form action="/preview.php" method="post" name="previewForm" target="_preview" style="padding:10px; text-align:center">
 	<input type="hidden" name="grid_reference"/>
 	<input type="hidden" name="photographer_gridref"/>
 	<input type="hidden" name="view_direction"/>

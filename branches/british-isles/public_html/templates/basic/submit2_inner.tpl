@@ -32,7 +32,7 @@
 		<p><a href="/submit2.php?inner&amp;step=1">Start over</a></p>
 	{else}
 	
-		<div><label for="jpeg_exif">Select Image file to upload - recommend resizing to 640px on longest side</label> <br/>	
+		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label>  - recommend resizing to 640px on longest side<br/>	
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" style="background-color:white"/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000"/></div>
 		<div>
@@ -40,9 +40,9 @@
 		</div>
 
 		<br/>
-		<div><b><i>Optionally</i> upload an image with Locational information attached</b><br/>
+		<div><i>Optionally</i> upload an image with Locational information attached<br/>
 		<ul>
-			<li>GPS-EXIF tags based on WGS84 Lat/Long</li>
+			<li>GPS-EXIF tags based on WGS84 Lat/Long (used for the Photographer Position)</li>
 			<li>Subject grid-reference from the name of the file (eg "<tt>photo-<b style="padding:1px">TQ435646</b>A.jpg</tt>")</li>
 			<li>Subject grid-reference in EXIF Comment tag</li>
 		</ul></div>
