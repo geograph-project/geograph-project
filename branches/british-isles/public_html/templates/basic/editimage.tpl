@@ -617,6 +617,39 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 	</select>
 {/if}
 </div>
+</form>
+
+	<script type="text/javascript">{literal}
+	function previewImage() {
+		window.open('','_preview');//forces a new window rather than tab?
+		var f1 = document.forms['theForm'];
+		var f2 = document.forms['previewForm'];
+		for (q=0;q<f2.elements.length;q++) {
+			if (f2.elements[q].name && f1.elements[f2.elements[q].name]) {
+				f2.elements[q].value = f1.elements[f2.elements[q].name].value;
+			}
+		}
+		return true;
+	}
+	{/literal}</script>
+	<form action="/preview.php" method="post" name="previewForm" target="_preview" style="padding:10px; text-align:center">
+	<input type="hidden" name="grid_reference"/>
+	<input type="hidden" name="photographer_gridref"/>
+	<input type="hidden" name="view_direction"/>
+	<input type="hidden" name="use6fig"/>
+	<input type="hidden" name="title"/>
+	<textarea name="comment" style="display:none"/></textarea>
+	<input type="hidden" name="imageclass"/>
+	<input type="hidden" name="imageclassother"/>
+	<input type="hidden" name="imagetakenDay"/>
+	<input type="hidden" name="imagetakenMonth"/>
+	<input type="hidden" name="imagetakenYear"/>
+	<input type="hidden" name="id"/>
+	<input type="submit" value="Preview edits in a new window" onclick="previewImage()"/> 
+	
+	<input type="checkbox" name="spelling"/>Check Spelling
+	<sup style="color:red">Experimental!</sup>
+	</form>
 
 {if $isadmin || $isowner} 
 <br/>
@@ -630,7 +663,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 </div>
 {/if}
 
-</form>
+
 
 {/if}
 
