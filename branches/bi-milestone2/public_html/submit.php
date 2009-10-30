@@ -469,11 +469,6 @@ if (isset($_POST['gridsquare']))
 				
 				if (!$err)
 					$smarty->assign('gridimage_id', $uploadmanager->gridimage_id);
-					
-					
-				if (in_array($USER->age_group,array('',11,18))) {
-					$smarty->assign('show_comp',1); 
-				}
 			}
 			
 			$step=($err)?7:5;
@@ -529,6 +524,8 @@ if (isset($_POST['gridsquare']))
 		
 			//find a possible place within 25km
 			$smarty->assign('place', $square->findNearestPlace(25000));
+
+			$smarty->assign('use_autocomplete', $USER->use_autocomplete);
 
 			$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
 			$smarty->assign('preview_url', $preview_url);

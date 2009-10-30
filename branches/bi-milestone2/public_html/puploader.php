@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: export.csv.php 2805 2006-12-30 12:03:55Z barry $
+ * $Id$
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2008 Barry Hunter (geo@barryhunter.co.uk)
@@ -33,15 +33,21 @@ $USER->mustHavePerm("basic");
 $template='puploader.tpl';
 $cacheid='';
 
+if (isset($_REQUEST['submit2'])) {
+	$cacheid .= 'submit2';
+	$smarty->assign('submit2',1);
+	
+	if (isset($_REQUEST['upload_id'])) {
+		$smarty->assign('upload_id',$_REQUEST['upload_id']);
+	}
+}
+
 if (isset($_GET['success'])) {  
 	$token=new Token;
 	if ($token->parse($_GET['t'])) {
 		$template='puploader_success.tpl';
 		$smarty->assign('status', unserialize($token->getValueBinary("s")));
 		$smarty->assign('filenames', unserialize($token->getValueBinary("f")));
-	}
-	if (in_array($USER->age_group,array('',11,18))) {
-		$smarty->assign('show_comp',1); 
 	}
 	
 } elseif (isset($_POST['selected'])) {  //we dont get the button :(
@@ -194,21 +200,6 @@ if (isset($_GET['success'])) {
 
 		$rastermap->addLatLong($lat,$long);
 
-		$images=$square->getImages($USER->user_id,'',"order by submitted desc limit 6");
-		$square->totalimagecount = count($images);
-
-		$smarty->assign('shownimagecount', $square->totalimagecount);
-
-		if ($square->totalimagecount == 6) {
-			$square->totalimagecount = $square->getImageCount($USER->user_id);
-		}			
-
-		$smarty->assign('totalimagecount', $square->totalimagecount);
-
-		if ($square->totalimagecount > 0) {
-			$smarty->assign_by_ref('images', $images);
-		}
-
 		$dirs = array (-1 => '');
 		$jump = 360/16; $jump2 = 360/32;
 		for($q = 0; $q< 360; $q+=$jump) {
@@ -236,6 +227,8 @@ if (isset($_GET['success'])) {
 
 		//find a possible place within 25km
 		$smarty->assign('place', $square->findNearestPlace(25000));
+		
+		$smarty->assign('use_autocomplete', $USER->use_autocomplete);
 		
 		if (!empty($_REQUEST['grid_reference'])) {
 			$token=new Token;

@@ -3,7 +3,9 @@
 {literal}<style type="text/css">
 
 .sh {
-	border:2px solid brown;
+	border-top:2px solid brown;
+	border-left:2px solid brown;
+	border-right:2px solid brown;
 	padding:10px;
 	margin:0px;
 	font-size:1.6em;
@@ -40,15 +42,26 @@
 	padding:10px;
 }
 
+#iframe1,#iframe2,#iframe3,#iframe4,#iframe5 {
+	border-top:0;
+}
+
 </style>
+{/literal}
+<script type="text/javascript" src="{"/js/puploader.js"|revision}"></script>
+{literal}
 <script type="text/javascript">
-function clicker(step) {
+function clicker(step,override) {
 	var theForm = document.forms['theForm'];
 	var name = document.forms['theForm'].elements['selected'].value;
 	
 	var ele = document.getElementById('sd'+step);
 	var ele2 = document.getElementById('se'+step);
 	var showing = (ele.style.display == 'block');
+	
+	if (typeof(override) != 'undefined') {
+		showing = !override;
+	}
 	
 	if (showing) {
 		ele.style.display = 'none';
@@ -58,24 +71,24 @@ function clicker(step) {
 		ele2.innerHTML = '-';
 		
 		
-		puploader = '/puploader.php?inner';
+		var loc = '';
 		
 		if (theForm.elements['grid_reference['+name+']'] && theForm.elements['grid_reference['+name+']'].value != '') {
-			puploader = puploader + "&grid_reference="+escape(theForm.elements['grid_reference['+name+']'].value);
+			loc = loc + "&grid_reference="+escape(theForm.elements['grid_reference['+name+']'].value);
 		}
 		if (theForm.elements['photographer_gridref['+name+']'] && theForm.elements['photographer_gridref['+name+']'].value != '') {
-			puploader = puploader + "&photographer_gridref="+escape(theForm.elements['photographer_gridref['+name+']'].value);
+			loc = loc + "&photographer_gridref="+escape(theForm.elements['photographer_gridref['+name+']'].value);
 		}
 
 		
 		if (step == 1) {
 			//document.getElementById('iframe'+step).src = '/submit2.php?inner&step=1';
 		} else if (step == 2) {
-			document.getElementById('iframe'+step).src = '/submitmap.php?inner&picasa';
+			document.getElementById('iframe'+step).src = '/submitmap.php?inner&submit2'+loc;
 		} else if (step == 3) {
-			document.getElementById('iframe'+step).src = puploader+'&step=2';
+			document.getElementById('iframe'+step).src = '/puploader.php?inner&submit2&step=2'+loc;
 		} else if (step == 4) {
-			document.getElementById('iframe'+step).src = puploader+'&step=3';
+			document.getElementById('iframe'+step).src = '/puploader.php?inner&submit2&step=3'+loc+'&upload_id='+escape(theForm.elements['upload_id['+name+']'].value);
 		} else {
 			
 		}  
@@ -83,6 +96,11 @@ function clicker(step) {
 		
 	}
 	return false;
+}
+
+function doneStep(step) {
+	document.getElementById('sh'+step).className = "sh sy";
+	clicker(step,false);
 }
 
 function updateAttribDivsSetup() {
@@ -119,9 +137,9 @@ AttachEvent(window,'load',updateAttribDivsSetup,false);
 	<a id="sh4" href="#" class="sh sn" onclick="return clicker(4)"><span id="se4">+</span> Step 4 - Title/Description/Meta</a>
 	
 	<div id="sd4" class="sd">
-		<iframe src="about:blank" id="iframe4" width="100%" height="600px"></iframe>
+		<iframe src="about:blank" id="iframe4" width="100%" height="650px"></iframe>
 	</div>
-<form action="{$script_name}" name="theForm">
+<form action="{$script_name}" name="theForm" method="post">
 <!-- # -->	 
 	<a id="sh5" href="#" class="sh sn" onclick="return clicker(5)"><span id="se5">+</span> Step 5 - Attribution</a>
 	
@@ -170,14 +188,16 @@ AttachEvent(window,'load',updateAttribDivsSetup,false);
 	
 		<p>If you agree with these terms, click "I agree" and your image will be submitted to Geograph.<br />
 		<input type="button" value="Close Window" onclick="location.href='minibrowser:close'"/>
-		<input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="{literal}if (checkPicasaFormSubmission()) {autoDisable(this); return true} else {return false;}{/literal}"/>
+		<input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="{literal}if (checkMultiFormSubmission()) {autoDisable(this); return true} else {return false;}{/literal}"/>
 		</p>
 	</div>
 <!-- # -->	 
 	<a id="sh10" href="#" class="sh sn" onclick="return clicker(10)" style="background-color:yellow; font-size:0.9em"><span id="se10">+</span> The Scratch Pad</a>
 	
 	<div id="sd10" class="sd">
+		Dont Edit anything here - its just where we store stuff as you go along. Its only shown for debugging - the final version will have it permentally hidden.
 		{assign var="key" value="0"}
+		<div><span>Upload ID:</span><input type="text" name="upload_id[{$key}]" value="" size="12" maxlength="12"/> </div>
 		<div><span>Subject:</span><input type="text" name="grid_reference[{$key}]" value="" size="12" maxlength="12"/> </div>
 		<div><span>Photographer:</span><input type="text" name="photographer_gridref[{$key}]" value="" size="12" maxlength="12"/></div>  
 		<div><span>use 6 Fig:</span><input type="text" name="use6fig[{$key}]" value="" size="1" maxlength="2"/></div> 
