@@ -50,9 +50,17 @@
   <th>Juppy</th>
   <th>Picasa</th>
  </tr>
- <tr><td colspan="7" style="background-color:gray;line-height:3px">.</td></tr>
  <tr>
-  <td>Upload Via Browser</td>
+  <td>JavaScript Required</td>
+  <td align="center">NO</td>
+  <td align="center">yes</td>
+  <td align="center">yes</td>
+  <td align="center">yes</td>
+  <td align="center">na</td>
+  <td align="center">yes</td>
+ </tr> <tr><td colspan="7" style="background-color:gray;line-height:3px">.</td></tr>
+ <tr>
+  <td>Upload via Website</td>
   <td style="background-color:lightgreen" align="center">*</td>
   <td style="background-color:lightgreen" align="center">*</td>
   <td style="background-color:lightgreen" align="center">*</td>
@@ -61,7 +69,7 @@
   <td></td>
  </tr>
  <tr>
-  <td>Upload Via Picnik</td>
+  <td>Upload via Picnik</td>
   <td style="background-color:lightgreen" align="center">*</td>
   <td></td>
   <td></td>
@@ -70,7 +78,7 @@
   <td></td>
  </tr>
  <tr>
-  <td >Upload Via Application</td>
+  <td >Upload via Application</td>
   <td></td>
   <td></td>
   <td></td>
@@ -81,11 +89,11 @@
  <tr>
   <td>Multiple Upload</td>
   <td></td>
+  <td></td>
   <td style="background-color:lightgreen" align="center">*</td>
   <td></td>
   <td style="background-color:lightgreen" align="center">*</td>
   <td style="background-color:lightgreen" align="center">*</td>
-  <td></td>
  </tr>
  <tr><td colspan="7" style="background-color:gray;line-height:3px">.</td></tr>
  <tr>
@@ -145,6 +153,15 @@
  </tr>
  <tr><td colspan="7" style="background-color:gray;line-height:3px">.</td></tr>
  <tr>
+  <td>EXIF Preservation[1]</td>
+  <td align="center">resized</td>
+  <td align="center">resized</td>
+  <td align="center">yes</td>
+  <td align="center">resized</td>
+  <td align="center">resized</td>
+  <td align="center">NO</td>
+ </tr>
+ <tr>
   <td>Image Dimensions Checked</td>
   <td style="background-color:lightgreen" align="center">*</td>
   <td></td>
@@ -192,7 +209,23 @@
   <td style="background-color:lightgreen" align="center">*</td>
  </tr>
  <tr><td colspan="7" style="background-color:gray;line-height:3px">.</td></tr>
+ <tr>
+  <th>.</th>
+  <th>Submit</th>
+  <th>Submit v2</th>
+  <th>Multi-Upload</th>
+  <th>No Frills Submit</th>
+  <th>Juppy</th>
+  <th>Picasa</th>
+ </tr>
 </table>
+
+
+<b>Notes</b>
+<ol>
+	<li>'resized' - EXIF perserved if image is resized to 640px before upload. If left to application, EXIF data lost from image file itself.<br/>
+	However with all methods except Picasa we still store the EXIF data for future use</li>
+</ol>
 
 <br/><br/><br/>
 
