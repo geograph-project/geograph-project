@@ -29,9 +29,9 @@
 		{assign var="key" value="0"}
 		<input type="hidden" name="upload_id[{$key}]" value="" size="60"/> 
 		
-		<div><span style="width:120px;display:block;float:left">Subject:</span><input type="text" name="grid_reference[{$key}]" value="" size="12" maxlength="12" onblur="checkGridref(this)"/> </div>
+		<div><span style="width:120px;display:block;float:left"><b>Subject</b>:</span><input type="text" name="grid_reference[{$key}]" value="" size="12" maxlength="12" onblur="checkGridref(this)"/><span style="color:red" id="msg-grid_reference[{$key}]"></span> (at least 4 figures required)</div>
 		
-		<div><span style="width:120px;display:block;float:left">Photographer:</span><input type="text" name="photographer_gridref[{$key}]" value="" size="12" maxlength="12" onblur="checkGridref(this)"/></div>  
+		<div><span style="width:120px;display:block;float:left">Photographer:</span><input type="text" name="photographer_gridref[{$key}]" value="" size="12" maxlength="12" onblur="checkGridref(this)"/><span style="color:red" id="msg-photographer_gridref[{$key}]"></span></div>  
 		
 		<div><span style="width:120px;display:block;float:left">Use 6 Fig:</span><input type="checkbox" name="use6fig[{$key}]" value="1"/> <label for="use6fig">Only display 6 figure grid reference ({newwin href="/help/map_precision" text="Explanation"})</label></div> 
 		
@@ -41,17 +41,17 @@
 			{/foreach}
 		</select> (no automatic selection)</div> 
 		
-		<div><span style="width:120px;display:block;float:left">Title:</span><input type="text" name="title[{$key}]" value="" size="50" maxlength="128"/></div>
+		<div><span style="width:120px;display:block;float:left"><b>Title</b>:</span><input type="text" name="title[{$key}]" value="" size="50" maxlength="128"/></div>
 		
 		<div><span style="width:120px;display:block;float:left">Description:</span><textarea name="comment[{$key}]" cols="60" rows="5" wrap="soft"></textarea></div>  
 		
-		<div><span style="width:120px;display:block;float:left">Category:</span><input type="text" name="imageclass[{$key}]" value="" size="20" maxlength="64"/> (no auto complete beyond what your browser provides)</div>  
+		<div><span style="width:120px;display:block;float:left"><b>Category:</b></span><input type="text" name="imageclass[{$key}]" value="" size="20" maxlength="64"/> (no auto complete beyond what your browser provides)</div>  
 		
-		<div><span style="width:120px;display:block;float:left">Date:</span><input type="text" name="imagetaken[{$key}]" value="" size="10" maxlength="10"/> (YYYY-MM-DD <b>ONLY</b>)</div>  
+		<div><span style="width:120px;display:block;float:left"><b>Taken Date</b>:</span><input type="text" name="imagetaken[{$key}]" value="" size="10" maxlength="10"/> (YYYY-MM-DD <b>ONLY</b>)</div>  
 	
 		<input type="hidden" name="selected" value="{$key}"/>
 		
-		<p>Shared Descriptions/References (Optional)
+		<p>Shared Descriptions/References
 			<a href="#" onclick="return showShared();" id="hideshare">Expand <i>Shared Descriptions</i></a>
 			<div id="showshare" style="display:none">
 				<iframe src="about:blank" height="400" width="98%" id="shareframe" style="border:2px solid gray">
@@ -108,7 +108,7 @@
 	}
 	function checkGridref(that) {
 		if (that.value.length == 0) {
-			alert("No Grid Reference");
+			document.getElementById("msg-"+that.name).innerHTML = "No Grid Reference";
 		}
 		
 		that.value = that.value.toUpperCase();
@@ -123,8 +123,10 @@
 			grid=new GT_Irish();
 			ok = grid.parseGridRef(gridref)
 		}
-		if (!ok) {
-			alert("Invalid Grid Reference");
+		if (ok) {
+			document.getElementById("msg-"+that.name).innerHTML = '';
+		} else {
+			document.getElementById("msg-"+that.name).innerHTML = "Invalid Grid Reference";
 		} 
 	}
 	function doneStep(step) {
