@@ -4,7 +4,8 @@
 <script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
 <script type="text/javascript" src="{"/js/puploader.js"|revision}"></script>
 
-{dynamic}
+	<div style="float:right;position:relative">&middot; <a href="/help/submission">Alternative Submission Methods</a> &middot;</div>
+	
 	<h2>No Frills Submit - for experts only <sup style="color:red">Alpha</sup></h2> 
 	
 	<p>This submission process is designed to be very quick - and <b>very little validation of input is done - be careful</b>.</p>
@@ -67,11 +68,11 @@
 	<h3>Step 3 - Confirm Licencing and Finish</h3>
 	
 		<div class="termsbox" style="margin:0">
-			
+{dynamic}
 			{assign var="credit" value=$user->credit_realname}
 			{assign var="credit_default" value=0}
 			{include file="_submit_licence.tpl"}
-
+{/dynamic}
 		</div>
 		
 	<div id="sd6" class="sd">
@@ -183,5 +184,4 @@
 	<sup style="color:red">Experimental!</sup>
 	</form>
 
-{/dynamic}    
 {include file="_std_end.tpl"}
