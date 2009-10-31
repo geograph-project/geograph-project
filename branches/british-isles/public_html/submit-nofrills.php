@@ -38,8 +38,7 @@ if ($USER->stats['images'] < 50) {
 }
 
 if (empty($_GET['letmein'])) {
-	$template='static_404.tpl';
-	$smarty->display($template);
+	die("Currently this page is only available by invite - if would like to try it, let us know!");
 	exit;
 
 }
