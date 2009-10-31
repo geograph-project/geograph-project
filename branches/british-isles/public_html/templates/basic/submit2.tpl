@@ -119,15 +119,22 @@ function doneStep(step) {
 
 </script>
 {/literal}
-{dynamic}
+	<div style="float:right;position:relative">&middot; <a href="/help/submission">Alternative Submission Methods</a> &middot;</div>
+	
 	<h2>Submit version 2 <sup>Beta</sup></h2> 
 	
-	<p>Complete the following steps in any order (and continue onto the following steps while the photo is still uploading!). Step 2 is optional, can directly enter a grid reference in step 3 if wish. If possible the date, and grid-reference are automatically extracted from the submitted image.</p>
+	<noscript>
+	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php">Submission Process</a> should be functional with it.</div>
+	</noscript>
+	
+	<p>Complete the following steps in any order (and continue onto the following steps while the photo is still uploading!). Step 2 is optional, can directly enter a grid reference in step 3 if wish. If possible, the date, and grid-reference(s) are automatically extracted from the submitted image.</p>
 <form action="{$script_name}" name="theForm" method="post">
+{dynamic}
 
 	{if !$user->use_autocomplete}
 	<p>(<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Tick this box, to try a new auto-complete text entry for image category selection, rather than dropdown. Change permanently on your <a href="/profile.php?edit=1" target="_blank">profile settings page</a></label>)</p>	
 	{/if}
+{/dynamic}
 	
 <!-- # -->	 
 	<a id="sh1" href="#" class="sh sn" onclick="return clicker(1)"><span id="se1">-</span> Step 1 - Upload Photo</a>
@@ -184,9 +191,11 @@ function doneStep(step) {
 		<br style="clear:both"/>
 
 		<div class="termsbox" style="margin:0">
+{dynamic}
 			{assign var="credit" value=$user->credit_realname}
 			{assign var="credit_default" value=0}
 			{include file="_submit_licence.tpl"}
+{/dynamic}
 		</div>
 	
 		<p>If you agree with these terms, click "I agree" and your image will be stored in the grid square.<br/><br/>
@@ -195,10 +204,12 @@ function doneStep(step) {
 		</p>
 		<br/><br/>
 	</div>
-<!-- # -->	
+<!-- # -->
+{dynamic}
 	{if $is_admin}
 	<a id="sh10" href="#" class="sh sn" onclick="return clicker(10)" style="background-color:yellow; font-size:0.9em"><span id="se10">+</span> The Scratch Pad</a>
 	{/if}
+{/dynamic}
 	
 	<div id="sd10" class="sd">
 		<p><b>Do not Edit anything here</b> - its just where we store stuff as you go along. Its only shown for debugging - the final version will have it permentally hidden.</p>
@@ -261,5 +272,4 @@ function doneStep(step) {
 	<sup style="color:red">Experimental!</sup>
 	</form>
 
-{/dynamic}    
 {include file="_std_end.tpl"}
