@@ -24,9 +24,9 @@
 
 
 {if $nofrills}
-	<p><a href="/submit-nofrills.php?letmein=1">Submit another image</a></p>
+	<p><a href="/submit-nofrills.php?letmein=1{if $grid_reference}#gridref={$grid_reference|escape:"url"}{/if}">Submit another image</a></p>
 {elseif $submit2}
-	<p><a href="/submit2.php">Submit another image</a></p>
+	<p><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:"url"}{/if}">Submit another image</a></p>
 {/if}
 <br/><br/><br/><br/>
 

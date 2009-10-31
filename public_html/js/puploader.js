@@ -10,7 +10,7 @@
 			for(q=0;q<theForm.elements.length;q++) {
 				var ele = theForm.elements[q];
 				if (thatForm.elements[ele.name+'['+name+']']) {
-					//we dont need to check for select as IE does pupulate .value
+					//we dont need to check for select as IE does pupulate .value - doto - byt IE6 doesnt!
 					if (ele.tagName.toLowerCase() == 'input' && ele.type.toLowerCase() == 'checkbox') {
 						if (ele.checked) 
 							thatForm.elements[ele.name+'['+name+']'].value = ele.value;
