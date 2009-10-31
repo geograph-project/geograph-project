@@ -14,7 +14,6 @@
 	<script type="text/javascript">
 	//<![CDATA[
 		var issubmit = 1;
-		var themarker;
 		
 		//the google map object
 		var map;
@@ -45,15 +44,15 @@
 							return;
 						}
 						
-						if (themarker) {
-							themarker.setPoint(point);
-							GEvent.trigger(themarker,'drag');
+						if (currentelement) {
+							currentelement.setPoint(point);
+							GEvent.trigger(currentelement,'drag');
 
 						} else {
-							themarker = createMarker(point,null);
-							map.addOverlay(themarker);
+							currentelement = createMarker(point,null);
+							map.addOverlay(currentelement);
 
-							GEvent.trigger(themarker,'drag');
+							GEvent.trigger(currentelement,'drag');
 						}
 						map.setCenter(point, 12);
 					}
@@ -83,15 +82,15 @@
 		
 				GEvent.addListener(map, "click", function(marker, point) {
 					if (marker) {
-					} else if (themarker) {
-						themarker.setPoint(point);
-						GEvent.trigger(themarker,'drag');
+					} else if (currentelement) {
+						currentelement.setPoint(point);
+						GEvent.trigger(currentelement,'drag');
 					
 					} else {
-						themarker = createMarker(point,null);
-						map.addOverlay(themarker);
+						currentelement = createMarker(point,null);
+						map.addOverlay(currentelement);
 						
-						GEvent.trigger(themarker,'drag');
+						GEvent.trigger(currentelement,'drag');
 					}
 				});
 
