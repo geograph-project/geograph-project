@@ -1,15 +1,17 @@
 {include file="_basic_begin.tpl"}
-
-<form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
-	<input type="hidden" name="inner" value="1"/>
 {dynamic}
+
+<form enctype="multipart/form-data" action="{$script_name}{if $submit2}?submit2=1{/if}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
+	<input type="hidden" name="inner" value="1"/>
 
 	{if $errormsg}
 	<p style="color:#990000;font-weight:bold;">{$errormsg}</p>
 	{/if}
 
 {if $step eq 1}	
+	{if !$submit2}
 	<script type="text/javascript">window.parent.tabClick('tab','',1,4);</script>
+	{/if}
 	<p>Begin by choosing the grid square you wish to submit.</p>
 
 	<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, if you wish you can specify a photographer location in the next step.</p>
@@ -28,7 +30,9 @@
 	<script type="text/javascript" src="{"/mapping1.js"|revision}"></script>
 	<script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
 {elseif $step eq 2}
+	{if !$submit2}
 	<script type="text/javascript">window.parent.tabClick('tab','',3,4);</script>
+	{/if}
 	{if $rastermap->enabled}
 		<div style="float:left;width:50%;position:relative">
 	{else}
@@ -95,7 +99,9 @@
 		{$rastermap->getFooterTag()}
 	{/if}
 {elseif $step eq 3}
+	{if !$submit2}
 	<script type="text/javascript">window.parent.tabClick('tab','',4,4);</script>
+	{/if}
 	
 	{if $reopenmaptoken}
 	<div class="interestBox" style="z-index:0"><a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> <small>(and view list of placenames)</small>
