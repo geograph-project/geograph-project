@@ -70,9 +70,9 @@ if (!$smarty->is_cached($template, $cacheid))
 }
 
 if ($u) {
-	customExpiresHeader(300,false);
+	customExpiresHeader(300,false,true);
 } else {
-	customExpiresHeader(3600*3,true);
+	customExpiresHeader(3600*3,true,true);
 }
 
 header("Content-type: text/javascript");

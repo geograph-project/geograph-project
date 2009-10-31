@@ -13,7 +13,7 @@
 	
 	<p>Please only use this process, if you double check your grid-references, category, and dates, as its very easy to input invalid data!</p>
 	
-<form action="/submit2.php" name="theForm" method="post">
+<form action="/submit2.php?nofrills" name="theForm" method="post">
 
 	
 <!-- # -->	 

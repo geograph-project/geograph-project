@@ -640,7 +640,7 @@ else
 		$ok= $square->setByFullGridRef($_GET['grid_reference']);
 		
 		//preserve inputs in smarty
-		$smarty->assign('grid_reference', $_GET['grid_reference']);	
+		$smarty->assign('grid_reference', $_GET['grid_reference']);
 	
 		if ($ok) {
 			$smarty->assign('gridsquare', $square->gridsquare);

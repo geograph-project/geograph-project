@@ -43,7 +43,9 @@ if (empty($_GET['letmein'])) {
 
 }
 
-
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+	customExpiresHeader(3600,false,true);
+}
 
 $dirs = array (-1 => '');
 $jump = 360/16; $jump2 = 360/32;

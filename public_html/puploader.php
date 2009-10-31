@@ -264,6 +264,12 @@ if (isset($_GET['success'])) {
 	
 	//which step to display?
 	$smarty->assign('step', $step);
+	
+	if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+		customExpiresHeader(3600,false,true);
+	}
+
+	
 } elseif(!empty($_POST['rss'])) {
 	$xh = new xmlHandler();
 	$nodeNames = array("PHOTO:THUMBNAIL", "PHOTO:IMGSRC", "TITLE");

@@ -153,7 +153,7 @@
 
 <div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)"/>
 
-<input type="submit" value="Next Step &gt; &gt;"/></div>
+<input type="submit" value="Next Step &gt; &gt;"/> <span id="dist_message"></span></div>
 
 <div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div><br/>			
 
