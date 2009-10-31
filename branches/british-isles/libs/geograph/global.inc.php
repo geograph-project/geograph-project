@@ -98,11 +98,12 @@ function GeographDatabaseConnection($allow_readonly = false) {
 						return $db2;
 					}
 				}
-				if ((is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > 10) && ($row['Seconds_Behind_Master'] < 100) && (rand(1,10) > 7)) {
+				if ((is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > 60) && ($row['Seconds_Behind_Master'] < 100) && (rand(1,10) > 7)) {
 					//email me if we lag, but once gets big no point continuing to notify!
 					ob_start();
 					debug_print_backtrace();
 					print "\n\nHost: ".`hostname`."\n\n";
+					print_r($row);
 					$con = ob_get_clean();
                				mail('geograph@barryhunter.co.uk','[Geograph LAG] '.$row['Seconds_Behind_Master'],$con);
 				}
@@ -179,6 +180,8 @@ $ip = getRemoteIP();
 if ($ip == '128.86.236.164' || (strpos($_SERVER['HTTP_USER_AGENT'], 'ia_archiver')!==FALSE) || (strpos($_SERVER['HTTP_USER_AGENT'], 'heritrix')!==FALSE) ) {
 
 	if ($CONF['curtail_level'] > 3) {
+		  //heritrix doesn't understand 503 errors - so lets cause it to timeout.... (uses a socket timeout of 20000ms)
+                        sleep(30);
 		
 		header("HTTP/1.1 503 Service Unavailable");
 
@@ -329,9 +332,11 @@ class GeographPage extends Smarty
 		$this->template_dir=$_SERVER['DOCUMENT_ROOT'].'/templates/'.$CONF['template'];
 		$this->compile_dir=$this->template_dir."/compiled";
 		$this->config_dir=$this->template_dir."/configs";
-
+		$this->cache_dir=$this->template_dir."/cache";
 		
 		if (!empty($CONF['memcache']['smarty'])) {
+			$this->compile_dir=$this->template_dir."/compiled-mnt"; ##this seems to fix a bug
+		
 			global $memcached_res,$memcache;
 			if ($CONF['memcache']['smarty'] != $CONF['memcache']['app']) {
 				$GLOBALS['memcached_res'] = new MultiServerMemcache($CONF['memcache']['smarty']);
@@ -344,8 +349,6 @@ class GeographPage extends Smarty
 		} else {
 			//subdirs more efficient
 			$this->use_sub_dirs=true;
-			
-			$this->cache_dir=$this->template_dir."/cache";
 		}
 
 		//if we're not using the basic template,install this default template

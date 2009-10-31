@@ -51,6 +51,9 @@ class sphinxwrapper {
 		
 			//change OR to the right syntax
 		$q = str_replace(' OR ',' | ',$q);
+
+			//AND is pointless
+		$q = str_replace(' AND ',' ',$q);
 		
 			//setup field: syntax
 		$q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);

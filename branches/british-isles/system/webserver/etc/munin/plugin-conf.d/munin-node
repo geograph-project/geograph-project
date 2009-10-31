@@ -23,6 +23,9 @@ group adm
 [cps*]
 user root
 
+[cpubyuser]
+env.USERS mysqld nfsd apache2 memcached php
+
 [exim_mailqueue]
 group mail, (Debian-exim)
 

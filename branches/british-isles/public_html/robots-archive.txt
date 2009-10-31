@@ -2,7 +2,7 @@
 # * $Id$
 
 User-agent: *
-Crawl-Delay: 3
+#Crawl-Delay: 1
 Disallow: /mapbrowse.php
 Disallow: /map/t
 Disallow: /mapper/

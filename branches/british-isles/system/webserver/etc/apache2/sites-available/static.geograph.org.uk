@@ -53,6 +53,12 @@
     RewriteCond %{HTTP_REFERER} (thread|topic|forum|blog) [NC]    
     RewriteRule /(geo|)photos/\d.*\d{6}_\w{8}\.jpg$ http://s9.geograph.org.uk$0 [R=307,L]
 
+        #Special robots file for archiveable - served on ALL domains, but previewed on archive...
+    RewriteCond %{HTTP:X-Forwarded-For}   128.86.236.164 [NC,OR]  #webarchive.org.uk's crawler
+    RewriteCond %{HTTP_HOST}   ^archive\.geograph\.org\.uk [NC]
+    RewriteRule ^/robots.txt   /robots-archive.txt [qsa]
+
+
     ErrorDocument 404 /error.php
     ErrorDocument 403 /error.php
 

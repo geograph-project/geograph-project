@@ -520,7 +520,7 @@ status("completed");
 if (!$ok)
 {
 	echo "<br><br><br><br>";
-	phpinfo();
+	##phpinfo();
 }
 else
 {

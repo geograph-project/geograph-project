@@ -134,8 +134,8 @@ if ($today)
 	foreach $server (@servers)
    	{
 #		`sudo -u geograph rm $logdir/$server` if (-e "$logdir/$server");
-#		`sudo -u geograph scp $server:/var/www/geograph_live/logs/access_log $logdir/$server`;
-                `sudo -u geograph rsync $server:/var/www/geograph_live/logs/access_log $logdir/$server`;
+#		`sudo -u geograph scp $server-pvt:/var/www/geograph_live/logs/access_log $logdir/$server`;
+                `sudo -u geograph rsync $server-pvt:/var/www/geograph_live/logs/access_log $logdir/$server`;
 
 		$merge.=" $logdir/$server";
 	}
@@ -143,8 +143,8 @@ if ($today)
         {
 		my $file = $server."static";
 #               `sudo -u geograph rm $logdir/$file` if (-e "$logdir/$file");
-#               `sudo -u geograph scp $server:/var/www/geograph_static/logs/access_log $logdir/$file`;
-                `sudo -u geograph rsync $server:/var/www/geograph_static/logs/access_log $logdir/$file`;
+#               `sudo -u geograph scp $server-pvt:/var/www/geograph_static/logs/access_log $logdir/$file`;
+                `sudo -u geograph rsync $server-pvt:/var/www/geograph_static/logs/access_log $logdir/$file`;
 
 
                 $merge.=" $logdir/$file";
@@ -172,7 +172,7 @@ if ($cvsupdate)
 {
    print "Updating staging area...\n";
    my $rev = ($revision)?" -r $revision":'';
-   my $update_out = `cd /var/www/geograph_svn && sudo -u geograph svn update $rev`;
+   my $update_out = `cd /var/www/geograph_svn && sudo -u geograph svn update --ignore-externals $rev`;
    print "$update_out\n\n";
 
 if ($update_out =~ /^C/m) {
@@ -192,7 +192,7 @@ if ($update_out =~ /^C/m) {
         "--cvs-exclude ".
         "--exclude-from=/var/www/geograph_svn/scripts/makelive-exclusion ".
         "/var/www/geograph_svn/ ".
-        "$server:/var/www/geograph_svn/";
+        "$server-pvt:/var/www/geograph_svn/";
 
        print "Copying updates to $server...\n";
        `sudo -u geograph $cmd`;
@@ -206,7 +206,7 @@ if (my @files = ($update_out =~ /([^ ]+\.js|[^ ]+?\.css)'?$/mg)) {
     {
        my $cmd="rsync ".
         "/var/www/geograph_svn/libs/conf/revisions.conf.php ".
-        "$server:/var/www/geograph_svn/libs/conf/";
+        "$server-pvt:/var/www/geograph_svn/libs/conf/";
 
        print "Copying Revision File to $server...\n";
        `sudo -u geograph $cmd`;
@@ -322,7 +322,7 @@ else
         "--exclude-from=/var/www/geograph_svn/scripts/makelive-exclusion ".
         $filter.
         "/var/www/geograph_live/ ".
-        "$server:/var/www/geograph_live/";
+        "$server-pvt:/var/www/geograph_live/";
 
        print "Copying to $server...\n";
        `sudo -u geograph $cmd`;
@@ -335,7 +335,7 @@ else
     {
        my $cmd="rsync ".
         "/var/www/geograph_live/libs/conf/revisions.conf.php ".
-        "$server:/var/www/geograph_live/libs/conf/";
+        "$server-pvt:/var/www/geograph_live/libs/conf/";
 
        print "Copying Revision File to $server...\n";
        `sudo -u geograph $cmd`;

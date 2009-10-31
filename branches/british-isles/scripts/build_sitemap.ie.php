@@ -194,7 +194,7 @@ for ($s=0; $s<=$sitemaps; $s++)
 	fprintf($fh, "<sitemap>");
 	
 	//first file is not compressed...
-	$fname=($s==0)?"sitemap0000.xml":sprintf("sitemap%04d.ie.xml.gz", $s);
+	$fname=($s==0)?"sitemap0000.ie.xml":sprintf("sitemap%04d.ie.xml.gz", $s);
 	
 	$mtime=filemtime($param['dir']."/public_html/sitemap/root/".$fname);
 	$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);

@@ -36,9 +36,7 @@ $smarty->cache_lifetime = 3600*6; //6hr cache
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
-	#$db->debug = true;
+	$db = GeographDatabaseConnection(true); 
 
 	$mosaic=new GeographMapMosaic;
 	$mosaic->setScale(40);

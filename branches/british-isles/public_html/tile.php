@@ -228,13 +228,18 @@ if (isset($_GET['map']))
 			// no hit from the cache....
 			
 			$lastmod = time();
+#	header("HTTP/1.1 503 Service Unavailable");
+#	header("Content-Type: image/png");
+#	readfile($_SERVER['DOCUMENT_ROOT']."/maps/sorry.png");
+#	exit;
+
 			
 			
 			$w = $rastermap->tilewidth[$rastermap->service];
 			
 			list($x,$y) = $conv->national_to_internal($e,$n,$reference_index);
 			
-			$db=NewADOConnection($GLOBALS['DSN']);
+			$db=GeographDatabaseConnection(true);
 			
 			$scanleft=$x;
 			$scanright=$x+$stepdist;
@@ -390,6 +395,8 @@ if (isset($_GET['map']))
 		} 
 
 	} 
+} else {
+	die("no action specified");
 }
 
 

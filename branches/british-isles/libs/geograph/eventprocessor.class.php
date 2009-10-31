@@ -232,12 +232,14 @@ class EventProcessor
 	*/
 	function _gc()
 	{
-		if (rand(1,10) < 3) 
+		if (rand(1,100) < 3) 
 		{
 			//clear events and event log entries older than one month
-
-			$this->db->Execute("delete from event where status='completed' and processed < date_sub(now(),interval 30 day)");
-			$this->db->Execute("delete from event_log where logtime < date_sub(now(),interval 30 day)");
+			if (rand(1,100) < 3)
+			{
+				$this->db->Execute("delete from event where status='completed' and processed < date_sub(now(),interval 30 day)");
+				$this->db->Execute("delete from event_log where logtime < date_sub(now(),interval 30 day)");
+			}
 
 			//clear all verbose entries not associated with a event once they are 8 hours old - they are really just for debugging
 			$this->db->Execute("delete from event_log where event_id=0 and verbosity in('trace', 'verbose') and logtime < date_sub(now(),interval 8 hour)");

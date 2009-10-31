@@ -192,7 +192,7 @@ if ($_POST['choice']) {
 	foreach ($ids as $id) {
 		$token=new Token;
 		$token->setValue("id", intval($id));
-		$token->setValue("small", 1);
+#		$token->setValue("small", 1);
 		$t = $token->getToken();
 	
 		print "<td id='td$t' align=center><label for=\"$t\"><img src=\"captcha.php?token=$t&\"></label><br/>";

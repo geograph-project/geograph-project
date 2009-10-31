@@ -1292,12 +1292,12 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 				return $a."km";
 			}
 			if ($_GET['form'] == 'text' || $_GET['form'] == 'cluster2') {
-				$d = array(1,2,3,4,5,7,8,10,20,30);
+				$d = array(1,2,3,4,5,7,8,10,20);
 				$d = array_combine($d,array_map('addkm',$d));
 			} else {
-				$d = array(1,2,3,4,5,7,8,10,20,30,40,50,71,100,2000);
+				$d = array(1,2,3,4,5,7,8,10,20,2000);
 				$d = array_combine($d,array_map('addkm',$d));
-				$d += array(-5=>'5km square',-10=>'10km square',-50=>'50km square');
+				$d += array(-5=>'5km square',-10=>'10km square');
 			
 				$topicsraw = $db->GetAssoc("select gp.topic_id,concat(topic_title,' [',count(*),']') as title,forum_name from gridimage_post gp
 					inner join geobb_topics using (topic_id)

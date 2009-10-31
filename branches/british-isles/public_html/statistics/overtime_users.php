@@ -51,8 +51,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');
 
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
+        $db = GeographDatabaseConnection(true);
+
 	$column = 'signup_date';
 	if (isset($_GET['week'])) {
 		$from_date = "date(min($column))";
