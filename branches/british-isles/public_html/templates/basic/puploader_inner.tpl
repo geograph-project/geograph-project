@@ -262,7 +262,7 @@
 <script type="text/javascript">
 	AttachEvent(window,'load',function() { 
 		setupTheForm(); 
-		if (updateMapMarkers) { 
+		if (typeof updateMapMarkers == 'function') { 
 			updateMapMarkers(); 
 		}
 	},false);
