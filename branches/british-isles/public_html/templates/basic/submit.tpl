@@ -17,7 +17,10 @@
     <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
 {if $step eq 1}	
-
+	{if $user->stats.images gt 10} 
+	<p align="center">&middot; <a href="/help/submission">Alternative Submission Methods</a> &middot;</p>
+	{/if}
+	
 	<h2>Submit Step 1 of 4 : Choose grid square</h2>
 
 {if $user->stats.images eq 0} 
@@ -47,16 +50,12 @@ geographing</a> first.</p>
 	<p style="color:#990000;font-weight:bold;">{$errormsg}</p>
 	{/if}
 	
-	<p>Choose your submission method:</p>
-	
 <div style="position:relative;">
 	<div class="tabHolder">
-		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,6)">Enter Grid Reference</a>
-		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,6)">Choose Square</a>
-		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,6)">Tagged Image</a>
-		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,6); if (!document.getElementById('innerFrame4').src) document.getElementById('innerFrame4').src = '/submitmap.php?inner'"><b>Map</b>/Placename</a>
-		<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" onclick="tabClick('tab','div',5,6)">Application</a>
-		<a class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6" onclick="tabClick('tab','div',6,6)">Multi-Upload<sup style="color:red;font-size:0.6em">Experimental!</sup></a>
+		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,4)">Enter Grid Reference</a>
+		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,4)">Choose Square</a>
+		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,4)">Tagged Image</a>
+		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,4); if (!document.getElementById('innerFrame4').src) document.getElementById('innerFrame4').src = '/submitmap.php?inner'"><b>Map</b>/Placename</a>
 	</div>
 
 	<div style="position:relative;{if $tab != 1}display:none{/if}" class="interestBox" id="div1">
@@ -120,36 +119,15 @@ geographing</a> first.</p>
 		<li>Subject grid-reference in EXIF Comment tag</li>
 		</ul></div>
 			
-		<p><sup style=color:red>New!</sup> the <a href="#" onclick="tabClick('tab','div',6,6); return false">experimental Multi-Upload tool</a>, now understands tagged images like this upload box does.</p>
+		<p><sup style=color:red>New!</sup> the {external href="http://www.nearby.org.uk/geograph/upload/" text="experimental Multi-Upload tool"}, now understands tagged images like this upload box does.</p>
 	</div>
 
 	<div style="position:relative;{if $tab != 4}display:none{/if}" class="interestBox" id="div4">
 		<iframe {if $tab == 4}src="/submitmap.php?inner"{/if} id="innerFrame4" width="613" height="660" frameborder="0"><a href="/submitmap.php">Click here to open a Draggable Interactive Google Map</a></iframe>
 	</div>
 	
-	<div style="position:relative;{if $tab != 5}display:none{/if}" class="interestBox" id="div5">
-
-		<h3>JUppy Java&trade; Client</h3>
-		<p><a href="/juppy.php">JUppy</a> is coded in cross-platform Java, and is an ideal solution to upload many images, allowing you to prepare the images without an internet connection. <b><a href="/juppy.php">Read More, and Get it Now!</a></b></p>
-		<hr/>
-		<h3>Picasa Plugin<sup style="color:red">New!</sup></h3>	
-		<p>We have recently created a new submission process that intergrates into the {external href="http://picasa.google.com/" text="Picasa"} image mananagement program. With this button installed can use the selection tools in Picasa to upload photos in bulk, the submission process matches the online upload allowing selection with maps etc. Picasa automatically resizes the photo to Geograph specifications before upload, EXIF data is preserved however its only provided to Geograph at the end so it can't be used to find geolocation or dates embedded in the file. <br/>
-		<b><a href="picasa://importbutton/?url=http://{$http_host}/stuff/geograph-for-picasa.pbz.php/geograph-for-picasa.pbz">Install the Geograph Uploader, Picasa Button</a></b>.<br/> (You will be asked to confirm this action, <b>only works if have Picasa installed!)</b></p>
-		<hr/>
-		<p>Note while JUppy is an Offline Application, with which you can prepare the upload in advance of connecting; the Picasa button requires a Internet Connection to work as it integrates the interactive maps and other aids from the Geograph website.</p>
-	</div>
-	
-	<div style="position:relative;{if $tab != 6}display:none{/if}" class="interestBox" id="div6">
-		<br/><br/>{external href="http://www.nearby.org.uk/geograph/upload/" text="Open Multi-Upload form here"} (Flash Required, currently hosted on nearby.org.uk)
-		<br/><br/>
-		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
-		<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
-		 This feature is still in development, and is an early but working prototype.<br/><br/> {if $enable_forums}<b>Read more about it on the <a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=12&topic=10322">Discussion Forum</a></b>{/if}
-		</div>
-	</div>
-	
 </div>
-	{if !$user->use_autocomplete}
+	{if !$user->use_autocomplete && $user->stats.images gt 10}
 	(<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Tick this box, to try a new auto-complete text entry for image category selection, rather than dropdown. Change permanently on your <a href="/profile.php?edit=1">profile settings page</a></label>)	
 	{/if}
 

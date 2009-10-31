@@ -160,7 +160,7 @@
 <div style="width:600px; text-align:right;"><label for="addressInput">Enter Address: 
 	<input type="text" size="50" id="addressInput" name="address" value="" />
 	<input type="button" value="Find" onclick="showAddress(this.form.address.value)"/><small><small><br/>
-	(Powered by the Google Maps API Geocoder <br/>- <b>Note: it doesn't cope with postcodes well</b>)</small></small>
+	(Powered by the Google Maps API Geocoder - <b>Note: it doesn't cope with postcodes well</b>)</small></small>
 </div>
 
 <input type="hidden" name="gridsquare" value=""/>
