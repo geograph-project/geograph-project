@@ -226,6 +226,8 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 
 
 	$template='puploader_success.tpl';
+	if (isset($_GET['nofrills']))
+		$smarty->assign('nofrills', 1);
 	$smarty->assign('submit2', 1);
 	$smarty->assign('status', $status);
 	$smarty->assign('filenames', $filenames);
@@ -253,6 +255,10 @@ if (isset($_REQUEST['inner'])) {
 	} 
 	
 	$smarty->assign('step', $step);
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+	customExpiresHeader(3600,false,true);
 }
 
 $smarty->display($template, $cacheid);

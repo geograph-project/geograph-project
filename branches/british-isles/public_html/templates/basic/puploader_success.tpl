@@ -22,10 +22,15 @@
 </dl>
 </div>
 
+
+{if $nofrills}
+	<p><a href="/submit-nofrills.php?letmein=1">Submit another image</a></p>
+{elseif $submit2}
+	<p><a href="/submit2.php">Submit another image</a></p>
+{/if}
 <br/><br/><br/><br/>
 
 <p><i>If any have any failed you should only reupload those images, all images assigned a id number have been successfuly uploaded.</i></p>
-
 
 {/dynamic} 
 

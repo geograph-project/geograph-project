@@ -1,6 +1,6 @@
 {include file="_basic_begin.tpl"}
 
-<form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
+<form enctype="multipart/form-data" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 	<input type="hidden" name="inner" value="1"/>
 {dynamic}
 

@@ -51,6 +51,12 @@
 <script type="text/javascript" src="{"/js/puploader.js"|revision}"></script>
 {literal}
 <script type="text/javascript">
+
+  String.prototype.endsWith = function (pattern) {
+    var d = this.length - pattern.length;
+    return d >= 0 && this.lastIndexOf(pattern) === d;
+  }
+
 function clicker(step,override) {
 	var theForm = document.forms['theForm'];
 	var name = document.forms['theForm'].elements['selected'].value;
@@ -76,27 +82,32 @@ function clicker(step,override) {
 		if (theForm.elements['grid_reference['+name+']'] && theForm.elements['grid_reference['+name+']'].value != '') {
 			loc = loc + "&grid_reference="+escape(theForm.elements['grid_reference['+name+']'].value);
 		}
-		if (theForm.elements['photographer_gridref['+name+']'] && theForm.elements['photographer_gridref['+name+']'].value != '') {
-			loc = loc + "&photographer_gridref="+escape(theForm.elements['photographer_gridref['+name+']'].value);
-		}
-
+		
 		
 		if (step == 1) {
+			//we dont reload this - as it could be in progress, and features its own 'start over' link
 			//document.getElementById('iframe'+step).src = '/submit2.php?inner&step=1';
 		} else if (step == 2) {
-			document.getElementById('iframe'+step).src = '/submitmap.php?inner&submit2'+loc;
+			if (document.getElementById('iframe'+step).src.endsWith('/submitmap.php?inner&submit2'+loc) == false)
+				   document.getElementById('iframe'+step).src = '/submitmap.php?inner&submit2'+loc;
 		} else if (step == 3) {
-			document.getElementById('iframe'+step).src = '/puploader.php?inner&submit2&step=2'+loc;
+			//todo - this only NEEDS a 4fig subject GR - the rest is loaded with javascript anyway
+			if (document.getElementById('iframe'+step).src.endsWith('/puploader.php?inner&submit2&step=2'+loc) == false)
+				   document.getElementById('iframe'+step).src = '/puploader.php?inner&submit2&step=2'+loc;
 		} else if (step == 4) {
+			if (theForm.elements['photographer_gridref['+name+']'] && theForm.elements['photographer_gridref['+name+']'].value != '') {
+				loc = loc + "&photographer_gridref="+escape(theForm.elements['photographer_gridref['+name+']'].value);
+			}
 			if (theForm.elements['use_autocomplete'] && theForm.elements['use_autocomplete'].checked) {
 				loc = loc + "&use_autocomplete=1";
 			}
-			document.getElementById('iframe'+step).src = '/puploader.php?inner&submit2&step=3'+loc+'&upload_id='+escape(theForm.elements['upload_id['+name+']'].value);
+			loc = loc + '&upload_id='+escape(theForm.elements['upload_id['+name+']'].value);
+
+			if (document.getElementById('iframe'+step).src.endsWith('/puploader.php?inner&submit2&step=3'+loc) == false)
+				   document.getElementById('iframe'+step).src = '/puploader.php?inner&submit2&step=3'+loc;
 		} else {
 			
 		}  
-		
-		
 	}
 	return false;
 }
@@ -185,7 +196,7 @@ function doneStep(step) {
 		<br/><br/>
 	</div>
 <!-- # -->	
-	{if !$is_admin}
+	{if $is_admin}
 	<a id="sh10" href="#" class="sh sn" onclick="return clicker(10)" style="background-color:yellow; font-size:0.9em"><span id="se10">+</span> The Scratch Pad</a>
 	{/if}
 	
