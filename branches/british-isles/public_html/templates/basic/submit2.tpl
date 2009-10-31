@@ -119,11 +119,44 @@ function doneStep(step) {
 	document.getElementById('sh'+step).className = "sh sy";
 	clicker(step,false);
 }
+function showPreview(url,width,height) {
+	document.getElementById('previewInner').innerHTML = '<img src="'+url+'" width="'+(width/2)+'" height="'+(height/2)+'" id="imgPreview"/>';
+	document.getElementById('hidePreview').style.display='';
+}
+function scalePreview(scale) {
+	var ele = document.getElementById('imgPreview');
+	ele.width = ele.width * scale;
+	ele.height = ele.height * scale;
+}
+function readHash() {
+	if (location.hash.length) {
+		// If there are any parameters at the end of the URL, they will be in location.search
+		// looking something like  "#ll=50,-3&z=10&t=h"
 
+		// skip the first character, we are not interested in the "#"
+		var query = location.hash.substring(1);
+
+		var pairs = query.split("&");
+		for (var i=0; i<pairs.length; i++) {
+			// break each pair at the first "=" to obtain the argname and value
+			var pos = pairs[i].indexOf("=");
+			var argname = pairs[i].substring(0,pos).toLowerCase();
+			var value = pairs[i].substring(pos+1).toUpperCase();
+
+			if (argname == "gridref") {
+				var theForm = document.forms['theForm'];
+				var name = theForm.elements['selected'].value;
+				theForm.elements['grid_reference['+name+']'].value = value;
+				clicker(3,true);
+			}
+		}
+	}
+}
+AttachEvent(window,'load',readHash,false);
 </script>
 {/literal}
+
 	<div style="float:right;position:relative">&middot; <a href="/help/submission">Alternative Submission Methods</a> &middot;</div>
-	
 	<h2>Submit version 2 <sup>Beta</sup></h2> 
 	
 	<noscript>
@@ -131,13 +164,18 @@ function doneStep(step) {
 	</noscript>
 	
 	<p>Complete the following steps in any order (and continue onto the following steps while the photo is still uploading!). Step 2 is optional, can directly enter a grid reference in step 3 if wish. If possible, the date, and grid-reference(s) are automatically extracted from the submitted image.</p>
-<form action="{$script_name}" name="theForm" method="post">
-{dynamic}
 
+	<div style="float:right;position:relative;display:none" id="hidePreview"><div id="previewInner"></div>
+	<a href="javascript:void(show_tree('Preview'));">Hide Preview</a> Make: <a href="javascript:void(scalePreview(2));">Bigger</a>/<a href="javascript:void(scalePreview(0.5));">Smaller</a></div>
+	<div style="float:right;position:relative;display:none" id="showPreview"><a href="javascript:void(hide_tree('Preview'));">Show Preview</a></div>
+	
+	<form action="{$script_name}" name="theForm" method="post">
+{dynamic}
+	<p>Options: (close and reopen step to take effect)<br/>
 	{if !$user->use_autocomplete}
-	<p>(<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Tick this box, to try a new auto-complete text entry for image category selection in Step 4, rather than dropdown. Change permanently on your <a href="/profile.php?edit=1" target="_blank">profile settings page</a></label>)</p>	
+	<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Use auto-complete text entry for image category selection in Step 4. <a href="/profile.php?edit=1" target="_blank">Change permanently</a></label> /
 	{/if}
-	<p>(<input type="checkbox" name="service" id="service_google" value="Google"/> <label for="service_google">Tick this box, to use Google Mapping in Step 3 - even for Great Britain</label>)</p>
+	<input type="checkbox" name="service" id="service_google" value="Google"/> <label for="service_google">Use Google Mapping in Step 3 - even for Great Britain</label></p>
 
 {/dynamic}
 	
@@ -258,7 +296,7 @@ function doneStep(step) {
 		return true;
 	}
 	{/literal}</script>
-	<form action="/preview.php" method="post" name="previewForm" target="_preview" style="padding:10px; text-align:center">
+	<form action="/preview.php" method="post" name="previewForm" target="_preview" style="padding:10px; text-align:center; border-top:2px solid black;">
 	<input type="hidden" name="grid_reference"/>
 	<input type="hidden" name="photographer_gridref"/>
 	<input type="hidden" name="view_direction"/>

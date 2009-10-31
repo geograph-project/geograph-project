@@ -98,17 +98,21 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 					$smarty->assign('grid_reference', $grid_reference);
 				} 
 				
-				if (preg_match("/(_|\b)([a-zA-Z]{1,2})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
+				if (preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
 					if (strlen($m[3]) != strlen($m[4])) {
-						if (preg_match("/(_|\b)([a-zA-Z]{1,2})[ \._-]?(\d{4,10})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
-							$smarty->assign('grid_reference', $grid_reference = $m[2].$m[3]); 
+						if (preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{4,10})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
+							if (strlen($m[3])%2==0) {
+								$smarty->assign('grid_reference', $grid_reference = $m[2].$m[3]); 
+							}
 						}
 					} else {
 						$smarty->assign('grid_reference', $grid_reference = $m[2].$m[3].$m[4]); 
 					}
 		
-				} elseif (!empty($exif['COMMENT']) && preg_match("/\b([a-zA-Z]{1,2})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",implode(' ',$exif['COMMENT']),$m)) {
-					$smarty->assign('grid_reference', $grid_reference = $m[1].$m[2].$m[3]); 
+				} elseif (!empty($exif['COMMENT']) && preg_match("/\b([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",implode(' ',$exif['COMMENT']),$m)) {
+					if (strlen($m[2]) == strlen($m[3]) || (strlen($m[2])+strlen($m[3]))%2==0) {
+						$smarty->assign('grid_reference', $grid_reference = $m[1].$m[2].$m[3]); 
+					}
 				}
 				
 				if (isset($uploadmanager->exifdate)) {
@@ -160,7 +164,7 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 
 		$filenames[$key] = $_POST['title'][$key];
 
-		$ok = $square->setByFullGridRef($_POST['grid_reference'][$key]);
+		$ok = $square->setByFullGridRef($grid_reference = $_POST['grid_reference'][$key]);
 		if ($ok) {
 			// set up attributes from uploaded data
 			$uploadmanager->setSquare($square);
@@ -231,6 +235,7 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 	$smarty->assign('submit2', 1);
 	$smarty->assign('status', $status);
 	$smarty->assign('filenames', $filenames);
+	$smarty->assign('grid_reference', $grid_reference);
 }
 
 if (isset($_REQUEST['inner'])) {

@@ -199,13 +199,14 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 		//now work with wgs84.latitude and wgs84.longitude
 		var point = new GLatLng(wgs84.latitude,wgs84.longitude);
 
-		if (currentelement == null && map) {
+		if ((currentelement == null) && map) {
 			currentelement = createMarker(point,null);
 			map.addOverlay(currentelement);
 
 			GEvent.trigger(currentelement,'drag');
+		} else {
+			currentelement.setPoint(point);
 		}
-		currentelement.setPoint(point);
 
 		if (that.name == 'photographer_gridref') {
 			eastings2 = grid.eastings;

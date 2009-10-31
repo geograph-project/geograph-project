@@ -76,6 +76,11 @@
 			//AttachEvent(window,'load',function() { window.parent.clicker(2,1) },false);
 		{/literal}
 	{/if}
+	{if $preview_url}
+		{literal}
+		AttachEvent(window,'load',function() { window.parent.showPreview({/literal}'{$preview_url}',{$preview_width},{$preview_height}{literal}) },false);
+		{/literal}
+	{/if}
 {else}
 	{literal}
 		AttachEvent(window,'load',function() { setTimeout("setupTheForm()",100); },false);

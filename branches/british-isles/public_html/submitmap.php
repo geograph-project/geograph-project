@@ -60,6 +60,10 @@ if (!empty($_REQUEST['grid_reference']))
 	}
 } 
 
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+	customExpiresHeader(3600,false,true);
+}
+
 
 $smarty->display('submitmap.tpl',$cacheid);
 
