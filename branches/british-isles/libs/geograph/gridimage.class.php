@@ -562,7 +562,7 @@ class GridImage
 		if (!is_array($aStatus))
 			die("GridImage::getTroubleTickets expects array param");
 			
-		$db=&$this->_getDB(30); //need currency
+		$db=&$this->_getDB(5); //need currency
 		
 		$statuses="'".implode("','", $aStatus)."'";
 	
