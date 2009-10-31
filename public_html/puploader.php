@@ -176,11 +176,18 @@ if (isset($_GET['success'])) {
 	}
 	if (empty($_REQUEST['grid_reference']) && $step == 2) 
 		$step = 1;
+		
+	if (isset($_REQUEST['service']) && $_REQUEST['service'] == 'Google') {
+		$smarty->assign('service', 'Google');
+	}
 	
 	if ($step == 2) {
 		require_once('geograph/rastermap.class.php');
 
 		$rastermap = new RasterMap($square,true);
+		if (isset($_REQUEST['service']) && $_REQUEST['service'] == 'Google') {
+			$rastermap->service = 'Google';
+		}
 
 		if (isset($_POST['photographer_gridref'])) {
 			$square2=new GridSquare;

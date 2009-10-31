@@ -91,6 +91,9 @@ function clicker(step,override) {
 			if (document.getElementById('iframe'+step).src.endsWith('/submitmap.php?inner&submit2'+loc) == false)
 				   document.getElementById('iframe'+step).src = '/submitmap.php?inner&submit2'+loc;
 		} else if (step == 3) {
+			if (theForm.elements['service'] && theForm.elements['service'].checked) {
+				loc = loc + "&service="+escape(theForm.elements['service'].value);
+			}
 			//todo - this only NEEDS a 4fig subject GR - the rest is loaded with javascript anyway
 			if (document.getElementById('iframe'+step).src.endsWith('/puploader.php?inner&submit2&step=2'+loc) == false)
 				   document.getElementById('iframe'+step).src = '/puploader.php?inner&submit2&step=2'+loc;
@@ -132,8 +135,10 @@ function doneStep(step) {
 {dynamic}
 
 	{if !$user->use_autocomplete}
-	<p>(<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Tick this box, to try a new auto-complete text entry for image category selection, rather than dropdown. Change permanently on your <a href="/profile.php?edit=1" target="_blank">profile settings page</a></label>)</p>	
+	<p>(<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Tick this box, to try a new auto-complete text entry for image category selection in Step 4, rather than dropdown. Change permanently on your <a href="/profile.php?edit=1" target="_blank">profile settings page</a></label>)</p>	
 	{/if}
+	<p>(<input type="checkbox" name="service" id="service_google" value="Google"/> <label for="service_google">Tick this box, to use Google Mapping in Step 3 - even for Great Britain</label>)</p>
+
 {/dynamic}
 	
 <!-- # -->	 

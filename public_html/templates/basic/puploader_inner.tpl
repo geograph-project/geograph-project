@@ -26,7 +26,9 @@
 	&nbsp;&nbsp;&nbsp;
 	<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}or <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>{/if}
 	</p>
-
+	{if $service}
+		<input type="hidden" name="service" value="{$service|escape:'html'}"/>
+	{/if}
 	<script type="text/javascript" src="{"/mapping1.js"|revision}"></script>
 	<script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
 {elseif $step eq 2}
@@ -94,7 +96,7 @@
 	{/if}
 	<br style="clear:both"/>
 	{if $submit2}
-		<input type="button" value="done" onclick="if (checkFormSubmission(this.form,{if $rastermap->enabled}true{else}false{/if}{literal})) { window.parent.doneStep(3);} else {return false;}{/literal}"/>
+		<input type="button" value="Next Step &gt;&gt;" onclick="if (checkFormSubmission(this.form,{if $rastermap->enabled}true{else}false{/if}{literal})) { window.parent.doneStep(3);} else {return false;}{/literal}"/>
 	{/if}
 	{if $rastermap->enabled}
 		{$rastermap->getFooterTag()}
@@ -238,7 +240,7 @@
 		<br/><br/><span style="font-size:0.7em">(please provide as much detail as possible, if you only know the year or month then that's fine)</span></p>
 
 	{if $submit2}
-		<input type="button" value="done" onclick="window.parent.doneStep(4);"/>
+		<input type="button" value="Next Step &gt;&gt;" onclick="window.parent.doneStep(4);"/>
 	{/if}
 
 {if $use_autocomplete}
