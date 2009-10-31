@@ -1001,7 +1001,7 @@ class GridImageTroubleTicket
 	*/
 	function loadItems()
 	{
-		$db=&$this->_getDB(true);
+		$db=&$this->_getDB(5);
 		if ($this->isValid())
 		{
 			$this->changes=$db->GetAll("select * from gridimage_ticket_item where gridimage_ticket_id={$this->gridimage_ticket_id}");
@@ -1032,7 +1032,7 @@ class GridImageTroubleTicket
 	*/
 	function loadComments()
 	{
-		$db=&$this->_getDB(true);
+		$db=&$this->_getDB(5);
 		if ($this->isValid())
 		{
 			$this->comments=$db->GetAll("select c.*,u.realname , ".
@@ -1054,7 +1054,7 @@ class GridImageTroubleTicket
 	*/
 	function loadFromId($gridimage_ticket_id)
 	{
-		$db=&$this->_getDB(true);
+		$db=&$this->_getDB(5);
 		
 		$this->_clear();
 		if (preg_match('/^\d+$/', $gridimage_ticket_id))
