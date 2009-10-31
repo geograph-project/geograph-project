@@ -48,12 +48,17 @@ $cacheid='statistics|overtime_ticket'.isset($_GET['month']).isset($_GET['week'])
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+	//lets hobble this!
+	header("HTTP/1.1 503 Service Unavailable");
+	$smarty->assign('searchq',stripslashes($_GET['q']));
+	$smarty->display('function_disabled.tpl');
+	exit;
+
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');
 
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
+        $db = GeographDatabaseConnection(true);
 
 	$column = 'suggested';  
 	

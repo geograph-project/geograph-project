@@ -36,6 +36,9 @@ if (isset($_POST['msg']))
 	$msg=stripslashes(trim($_POST['msg']));
 	$from=stripslashes(trim($_POST['from']));
 	$subject=stripslashes(trim($_POST['subject']));
+
+	$subject = str_replace('[Geograph]','',$subject);
+	$subject = trim(preg_replace('/\s+/',' ',$subject));
 	
 	$smarty->assign('msg', $msg);
 	$smarty->assign('from', $from);
@@ -99,6 +102,8 @@ if (preg_match("/photo\/(\d+)/",$referring_page,$m)) {
 	$image->loadFromId($m[1]);
 	
 	$smarty->assign_by_ref('image', $image);
+	if (!isset($_POST['msg']))
+		$smarty->assign('subject', '[Geograph] ');
 }
 	
 	

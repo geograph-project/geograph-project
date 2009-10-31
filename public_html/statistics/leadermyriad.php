@@ -43,9 +43,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');
 
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
-		
+        $db = GeographDatabaseConnection(true);
 	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$myriads = $db->CacheGetAll(3600,"select 

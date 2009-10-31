@@ -23,7 +23,7 @@ representative photographs and information for every square kilometre of
 	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a></li>
 	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
 	<li><a title="Photo Gallery" href="/discuss/?action=vtopic&amp;forum=11">view some <b>themed galleries</b></a></li>
-	<li><a title="List of all pages" href="/help/sitemap">view the <b>full list</b> of pages</a></li>
+	<li><a title="List of all pages" href="/sitemap/ireland.html">view the <b>full list</b> of images</a></li>
 </ul>
     
 

@@ -97,9 +97,32 @@ if (!empty($_GET['worker'])) {
 
 if (isset($_GET['getJob'])) {
 	
+                //check load average, abort if too high
+                $buffer = "0 0 0";
+                if (is_readable("/proc/loadavg")) {
+                        $f = fopen("/proc/loadavg","r");
+                        if ($f)
+                        {
+                                if (!feof($f)) {
+                                        $buffer = fgets($f, 1024);
+                                }
+                                fclose($f);
+                        }
+                }
+                $loads = explode(" ",$buffer);
+                $load=(float)$loads[0];
+		if ($load>0.6) {
+			if (isset($_GET['output']) && $_GET['output']=='json') {
+				die("{error: 'Server Busy, try later'}");
+                	} else {
+        	                die("Error:Server Busy, try later");
+	                }
+
+		}
+
 	//yahoo should only ever have one worker!
 	$timeout = ($task == 'yahoo_terms')?'1 MINUTE':"10 MINUTE";
-	
+
 	//find any jobs not completed - so can be resumed
 	if ($jid = $db->getOne("SELECT at_home_job_id FROM at_home_job WHERE `task` = '$task' AND at_home_worker_id = $worker AND completed = '0000-00-00 00:00:00' AND sent < DATE_SUB(NOW(),INTERVAL $timeout) ")) { 
 		if (isset($_GET['output']) && $_GET['output']=='json') {
@@ -143,7 +166,7 @@ if (isset($_GET['getJob'])) {
 		}
 
 		//atomic claim! - looks messy, but avoids locks
-		$pid = 99999+(getmypid()*$worker); //something reasonably unique
+		$pid = 99999+(getmypid()+$worker); //something reasonably unique
 		$db->Execute("UPDATE at_home_job SET at_home_worker_id = $pid WHERE `task` = '$task' AND sent = '0000-00-00 00:00:00' LIMIT 1");
 		$row = $db->getRow("SELECT * FROM at_home_job WHERE at_home_worker_id = $pid");
 		if (count($row)) {

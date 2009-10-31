@@ -37,8 +37,7 @@ $smarty->cache_lifetime = 3600*24; //24hour cache
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
+	$db = GeographDatabaseConnection(true); 
 	
 	$title = "User Submissions";
 	

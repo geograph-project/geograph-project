@@ -10,6 +10,7 @@
     ServerAlias t0.geograph.org.uk
     ServerAlias archive.geograph.org.uk
     ServerAlias api.geograph.org.uk
+    ServerAlias toast.www.geograph.org.uk
 
     ServerAlias ireland.geograph.org.uk
     ServerAlias www.geograph.ie
@@ -66,6 +67,7 @@
     RewriteCond %{HTTP_HOST}   !^t0\.www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^t0\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^archive\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !^toast\.www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^api\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^$
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]

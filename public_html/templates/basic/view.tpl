@@ -1,4 +1,4 @@
-{if $ireland_prompt}{assign var="extra_meta" value="<link rel=\"canonical\" href=\"http://www.geograph.ie/photo/`$image->gridimage_id`\" />"}{else}{assign var="extra_meta" value="<link rel=\"short_url\" href=\"http://geograph.org.uk/p/`$image->gridimage_id`\" />"}{/if}
+{if $ireland_prompt}{assign var="extra_meta" value="<link rel=\"canonical\" href=\"http://www.geograph.ie/photo/`$image->gridimage_id`\" />"}{/if}
 {include file="_std_begin.tpl"}
 
 {if $image}

@@ -1501,11 +1501,13 @@ class GridImage
 		//we want to detect changes in ftf status...a pending image is always ftf 0
 		$original_ftf=$this->ftf;
 		
+/*
 		//lock tables
 		$db->Execute("LOCK TABLES 
 		gridsquare WRITE,
 		gridimage WRITE,
 		gridimage_search WRITE");
+*/
 		
 		//you only get ftf if new status is 'geograph' and there are no other 
 		//first geograph images
@@ -1545,10 +1547,11 @@ class GridImage
 		}
 		
 		//todo? should $this->grid_square->updateCounts(); be inside the lock
-		
+
+/*		
 		//unlock tables. 
 		$db->Execute("UNLOCK TABLES");
-
+*/
 		
 		//update maps on moderation if:
 			//was pending

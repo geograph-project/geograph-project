@@ -55,7 +55,11 @@ if (isset($_GET['getExtendedStats'])) {
 			print "<tr>";
 			print "<th>$column</th>";
 			foreach ($a as $name => $row) {
-				print "<td align=\"right\">{$a[$name][$column]}</td>";
+				if (is_numeric($a[$name][$column])) {
+					print "<td align=\"right\">".number_format($a[$name][$column])."</td>";
+				} else {
+					print "<td>{$a[$name][$column]}</td>";
+				}
 			}
 			print "</tr>";
 		}

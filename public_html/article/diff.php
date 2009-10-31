@@ -127,7 +127,7 @@ function getRevisionArray($aid,$revid) {
 	$a[] = "---------------------------------";
 	$a[] = "";
 	
-	return array_merge($a,explode("\n",$page['content']),array(''));
+	return array_merge($a,explode("\n",$page['content']),array('','--END--',"Revision: {$page['update_time']}"));
 }
 
 #######################

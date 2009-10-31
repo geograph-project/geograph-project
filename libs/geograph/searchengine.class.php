@@ -237,8 +237,11 @@ class SearchEngine
 				} else {
 					$sql = "/* i{$this->query_id} */ SELECT count(*) FROM gridimage AS gi $count_from $sql_from WHERE $sql_where";
 				}
-				if (!empty($_GET['debug']))
+				if (!empty($_GET['debug'])) {
 					print "<BR><BR>$sql";
+		                        if ($_GET['debug'] > 5)
+                		                exit;
+		                }
 
 				$this->checkExplain($sql);
 				$doneexplain = 1;
@@ -273,9 +276,11 @@ WHERE $sql_where
 $sql_order
 LIMIT $page,$pgsize
 END;
-		if (!empty($_GET['debug']))
+		if (!empty($_GET['debug'])) {
 			print "<BR><BR>$sql";
-
+			if ($_GET['debug'] > 5)
+				exit;
+		}
 		if (!isset($doneexplain)) {
 			$this->checkExplain($sql);
 		}
@@ -451,8 +456,12 @@ END;
 			$sql = "/* i{$this->query_id} */ SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN ($id_list)";
 		}
 		
-		if (!empty($_GET['debug']))
+		if (!empty($_GET['debug'])) {
 			print "<BR><BR>{$sphinx->q}<BR><BR>$sql";
+                        if ($_GET['debug'] > 5)
+                                exit;
+                }
+
 
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_before = ((float)$usec + (float)$sec);
@@ -559,8 +568,11 @@ END;
 				} else {
 					$sql = "/* i{$this->query_id} */ SELECT count(*) FROM gridimage_search as gi $sql_from $sql_where";
 				}
-				if (!empty($_GET['debug']))
+				if (!empty($_GET['debug'])) {
 					print "<BR><BR>$sql";
+		                        if ($_GET['debug'] > 5)
+                		                exit;
+                		}
 
                                 $this->checkExplain($sql);
                                 $doneexplain = 1;
@@ -593,8 +605,11 @@ $sql_where
 $sql_order
 LIMIT $page,$pgsize
 END;
-		if (!empty($_GET['debug']))
+		if (!empty($_GET['debug'])) {
 			print "<BR><BR>$sql";
+                        if ($_GET['debug'] > 5)
+                                exit;
+                }
 
                 if (!isset($doneexplain)) {
                         $this->checkExplain($sql);

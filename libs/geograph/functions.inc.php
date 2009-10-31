@@ -518,8 +518,12 @@ function GeographLinks(&$posterText,$thumbs = false) {
 
 //available as a function, as doesn't come into effect if just re-using a smarty cache
 function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl') {
-	global $smarty,$USER;
+	global $smarty,$USER,$CONF;
 	if ($threshold == 0) {
+		if ($CONF['template']=='archive') {
+			//heritrix doesn't understand 503 errors - so lets cause it to timeout.... (uses a socket timeout of 20000ms)
+			sleep(30);
+		}
 		header("HTTP/1.1 503 Service Unavailable");
 		$smarty->assign('searchq',stripslashes($_GET['q']));
 		$smarty->display($template);
@@ -547,6 +551,10 @@ function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl')
 
 		if ($load>$threshold)
 		{
+			if ($CONF['template']=='archive') {
+				//heritrix doesn't understand 503 errors - so lets cause it to timeout.... (uses a socket timeout of 20000ms)
+				sleep(30);
+			}
 			header("HTTP/1.1 503 Service Unavailable");
 			$smarty->assign('searchq',stripslashes($_GET['q']));
 			$smarty->display($template);

@@ -1,4 +1,6 @@
 #!/bin/bash
+
+#this command is all this whole script does - just aims to do it more effiently
 #find /var/www/geograph_live/public_html/templates/basic/cache -mtime +2 | xargs rm
 
 #########################
@@ -19,7 +21,6 @@ mkdir _attic
 
 mv search/ _attic/
 mv img*/ _attic/
-mv user*/ _attic/
 
 nice nice rm -Rf _attic
 
