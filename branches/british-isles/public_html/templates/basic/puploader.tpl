@@ -58,7 +58,9 @@ a.c1 {
 }
 
 </style>
+{/literal}
 <script type="text/javascript" src="{"/js/puploader.js"|revision}"></script>
+{literal}
 <script type="text/javascript">
 function selectPhoto(name) {
 	var ele = document.forms['theForm'].elements['selected'];
