@@ -419,6 +419,7 @@ if ($grid_given)
 			$rec=$db->GetRow($sql);
 			if (count($rec))
 			{
+				$rec['grid_reference'] = $square->grid_reference;
 				$image=new GridImage;
 				$image->fastInit($rec);
 				$smarty->assign_by_ref('image', $image);
@@ -705,6 +706,9 @@ if ($grid_given)
 			//todo ideally here we only want to forward teh user_id IF they have images in the square, or a mod, for greater cachablity, but the chicken and the egg thingy....
 			$images=$square->getImages($inc_all_user,$custom_where,'order by ftf desc,gridimage_id');
 			$square->totalimagecount = count($images);
+			foreach ($images as $img) {
+				$img->grid_reference = $square->grid_reference;
+			}
 		
 			//otherwise, lets gether the info we need to display some thumbs
 			if ($square->totalimagecount)
