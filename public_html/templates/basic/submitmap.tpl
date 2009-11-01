@@ -58,6 +58,7 @@
 					}
 				 });
 			}
+			return false;
 		}
 
 		function loadmap() {
@@ -154,17 +155,18 @@
 
 <input type="submit" value="Next Step &gt; &gt;"/> <span id="dist_message"></span></div>
 
-<div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div><br/>			
-
-<div style="width:600px; text-align:right;"><label for="addressInput">Enter Address: 
-	<input type="text" size="50" id="addressInput" name="address" value="" />
-	<input type="button" value="Find" onclick="showAddress(this.form.address.value)"/><small><small><br/>
-	(Powered by the Google Maps API Geocoder - <b>Note: it doesn't cope with postcodes well</b>)</small></small>
-</div>
+<div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div>		
 
 <input type="hidden" name="gridsquare" value=""/>
 <input type="hidden" name="setpos" value=""/>
 
+</form>
+<form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
+<div style="width:600px; text-align:center;"><label for="addressInput">Enter Address: 
+	<input type="text" size="50" id="addressInput" name="address" value="" />
+	<input type="submit" value="Find"/><small><small><br/>
+	(Powered by the Google Maps API Geocoder - <b>Note: Doesn't cope with postcodes well.</b>)</small></small>
+</div>
 </form>
 
 <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>

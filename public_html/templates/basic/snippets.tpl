@@ -98,7 +98,7 @@
 			<input type="submit" name="delete[{$item.snippet_id}]" value="Delete"/>
 		</div>
 
-		<b><a href="/snippet.php?id={$item.snippet_id}" class="text">{$item.title|escape:'html'}</a></b> {if $item.grid_reference != $grid_reference} :: {$item.grid_reference} {/if}{if $item.distance}(Distance {$item.distance}km){/if}<br/>
+		<b><a href="/snippet.php?id={$item.snippet_id}" class="text">{$item.title|escape:'html'|default:'Untitled'}</a></b> {if $item.grid_reference != $grid_reference} :: {$item.grid_reference} {/if}{if $item.distance}(Distance {$item.distance}km){/if}<br/>
 		<div style="font-size:0.7em">{$item.comment|escape:'html'}</div>
 		<div style="font-size:0.7em;color:gray;margin-left:10px;">
 		
@@ -106,7 +106,7 @@
 			By <a href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a>. 
 		{/if}
 		
-		Used on {$item.images|thousends} images {if $item.images != $item.yours}(of which are {$item.yours|thousends} yours){/if}</div>
+		Used on {$item.images|thousends} images {if $item.images != $item.yours}(of which {$item.yours|thousends} are yours){/if}</div>
 		
 		<br style="clear:both"/>
 	</div>
