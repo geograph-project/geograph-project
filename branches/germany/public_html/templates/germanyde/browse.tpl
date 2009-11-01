@@ -1,8 +1,8 @@
 {dynamic}
 {if $showresult}
-	{assign var="page_title" value="$gridref :: Browse"}
+	{assign var="page_title" value="$gridref :: Quadrate"}
 {else}
-	{assign var="page_title" value="Browse"}
+	{assign var="page_title" value="Quadrate"}
 {/if}
 
 {include file="_std_begin.tpl"}
@@ -16,19 +16,19 @@
 	<table border="0" cellspacing="0" cellpadding="2">
 	<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}">NW</a></td>
 	<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}">N</a></td>
-	<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}">NE</a></td></tr>
+	<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}">NO</a></td></tr>
 	<tr><td><a href="/browse.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}">W</a></td>
-	<td><b>Go</b></td>
-	<td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}">E</a></td></tr>
+	<td><b>Nach</b></td>
+	<td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}">O</a></td></tr>
 	<tr><td><a href="/browse.php?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}">SW</a></td>
 	<td align="center"><a href="/browse.php?p={math equation="900*(y-1)+900-(x)" x=$x y=$y}">S</a></td>
-	<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}">SE</a></td></tr>
+	<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}">SO</a></td></tr>
 	</table>
 	</div>
 {else}
-	   <h2>Browse</h2>
-	<p>You can view a particular grid square below - if the square hasn't been filled yet,
-	we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Get-a-map&trade;'} to help locate your grid square)</p>
+	   <h2>Planquadrate</h2>
+	<p>Unten kann ein bestimmtes Planquadrat betrachtet werden. Wenn noch keine Koordinaten angegeben wurden,
+	geben wir die Entfernung zum nächstgelegenen Planquadrat an.</p>
 {/if}
 
 
@@ -36,19 +36,19 @@
 <form action="/browse.php" method="get">
 <div>
 
-	<label for="gridref">Enter grid reference (e.g. SY9582)</label>
+	<label for="gridref">Koordinaten eingeben (z.B. TPT2769)</label>
 	<input id="gridref" type="text" name="gridref" value="{$gridrefraw|escape:'html'}" size="8"/>
-	<input type="submit" name="setref" value="Show &gt;"/>
+	<input type="submit" name="setref" value="Los &gt;"/>
 
 	
 	<br/>
-	<i>or</i><br/>
+	<i>oder</i><br/>
 
-	<label for="gridsquare">Choose grid reference</label>
+	<label for="gridsquare">Koordinaten wählen</label>
 	<select id="gridsquare" name="gridsquare">
 		{html_options options=$prefixes selected=$gridsquare}
 	</select>
-	<label for="eastings">E</label>
+	<label for="eastings">O</label>
 	<select id="eastings" name="eastings">
 		{html_options options=$kmlist selected=$eastings}
 	</select>
@@ -57,7 +57,7 @@
 		{html_options options=$kmlist selected=$northings}
 	</select>
 
-	<input type="submit" name="setpos" value="Show &gt;"/>
+	<input type="submit" name="setpos" value="Los &gt;"/>
 </div>
 </form>
 
@@ -66,7 +66,7 @@
 
 	{if $square->percent_land < 50 && $square->percent_land != -1}
 	<form action="/mapfixer.php" method="get">
-		<p align="right"><input type="submit" name="save" value="Bring this square to the attention of a moderator"/>
+		<p align="right"><input type="submit" name="save" value="Landstatus dieses Quadrats von den Moderatoren prüfen lassen"/>
 		<input type="hidden" name="gridref" value="{$gridref}"/>
 		</p>
 	</form>
@@ -85,54 +85,54 @@
 
 	{if $imagecount}
 		{* There are some thumbnails to display *}
-		<small><small><b>Sample links for this square...</b></small></small>
+		<small><small><b>Link-Auswahl für dieses Quadrat...</b></small></small>
 		<ul style="margin-top:5px; padding-left:24px">
 	{else}
 		{* There are no images in this square (yet) *}
 		
-		<p>We have no images for <b>{$gridref}</b> yet,
+		<p>Es gibt noch keine Bilder für <b>{$gridref}</b>.
 		
 		{if $nearest_distance}
 			</p>
-			<small><small><b>Sample links...</b></small></small>
+			<small><small><b>Link-Auswahl...</b></small></small>
 			<ul style="margin-top:5px; padding-left:24px">
-			<li>The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away<br/><br/></li>
+			<li>Das nächstgelegene fotografierte Quadrat ist <a title="{$nearest_gridref} anzeigen" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> ({$nearest_distance}km entfernt).<br/><br/></li>
 		{else}
-			and have no pictures for any grid square within 100km either!</p>
-			<small><small><b>Sample links...</b></small></small>
+			Auch in weitem Umkreis (100km) sind keine Bilder verfügbar!</p>
+			<small><small><b>Link-Auswahl...</b></small></small>
 			<ul style="margin-top:5px; padding-left:24px">
 		{/if}
 	{/if}
-		<li><a href="/submit.php?gridreference={$gridrefraw}"><b>submit your own picture for {$gridref}</b></a></li>
+		<li><a href="/submit.php?gridreference={$gridrefraw}"><b>Bilder für {$gridref} einreichen</b></a></li>
 		{if $enable_forums}
 			<li>
 			{if $discuss}
-				There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a 
-				<a href="/discuss/index.php?gridref={$gridref}"><b>discussion</b> about {$gridref}</a> (preview on the left)
+				Es gibt {if $totalcomments == 1}einen Beitrag{else}{$totalcomments} Beiträge{/if} im
+				<a href="/discuss/index.php?gridref={$gridref}"><b>Forum</b> zu {$gridref}</a> (Vorschau links)
 			{else}
 				{if $user->registered} 
-					<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a <b>discussion</b> about {$gridref}</a>
+					<a href="/discuss/index.php?gridref={$gridref}#newtopic"><b>Forumsdiskussion</b> zu {$gridref} beginnen</a>
 				{else}
-					<a href="/login.php">login</a> to start a <b>discussion</b> about {$gridref}</a>
+					<a href="/login.php">Einloggen</a> um im <b>Forum</b> über {$gridref} zu diskutieren</a>
 				{/if}
 			{/if}</li>
 		{/if}
 
-		<li><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph <b>map</b> for {if $gridref2}{$gridrefraw}{else}{$gridref}{/if}</a>{if $square->reference_index == 1} (<a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}"><b>Draggable</b>)</a>{/if}</li>
+		<li><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph <b>Karte</b> für {if $gridref2}{$gridrefraw}{else}{$gridref}{/if}</a>{if $square->reference_index == 1} (<a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}"><b>Draggable</b>)</a>{/if}</li>
 		
 		{if $gridref6}
-			<li style="margin-top:10px"><a href="/gridref/{$gridref}?viewcenti={$gridref6}">image(s) <b>taken in {$gridref6}</b></b></a> / <span class="nowrap"><a href="/gridref/{$gridref}?centi={$gridref6}">of <b>subjects in {$gridref6}</b></a> (if any)</span> <sup style="color:red">new!</sup></li>
+			<li style="margin-top:10px"><a href="/gridref/{$gridref}?viewcenti={$gridref6}"><b>In {$gridref6} aufgenommene</b> Bilder</a> / <span class="nowrap"><a href="/gridref/{$gridref}?centi={$gridref6}">Bilder von <b>Motiven in {$gridref6}</b></a></span> (falls vorhanden)</li>
 		{/if}
 		
 		{if $viewpoint_count}
-			<li style="margin-top:10px"><a href="/gridref/{$gridref}?takenfrom">view <b>{$viewpoint_count} images taken <i>from</i> {$gridref}</b></a></li>
+			<li style="margin-top:10px"><a href="/gridref/{$gridref}?takenfrom"><b>{$viewpoint_count} <i>von</i> {$gridref} aus aufgenommene Bilder</b> betrachten</a></li>
 		{/if}
 		{if $mention_count}
-			<li><a href="/gridref/{$gridref}?mentioning">view <b>{$mention_count} images <i>mentioning</i> {$gridref}</b></a> <sup style="color:red">new!</sup></li>
+			<li><a href="/gridref/{$gridref}?mentioning"><b>{$mention_count} Bilder, die sich auf {$gridref} <i>beziehen</i>,</b> betrachten</a></li>
 		{/if}
 		
 		</ul>
-	<p><big><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" alt="geotagged!"/> <b><a href="/gridref/{$gridrefraw}/links">More Links for {$gridrefraw}</a></b> </big></p>
+	<p><big><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" alt="geotagged!"/> <b><a href="/gridref/{$gridrefraw}/links">Weitere Links zu {$gridrefraw}</a></b> </big></p>
 {/if}
 
 </div>
@@ -160,37 +160,37 @@
 {if $showresult}
 	{* We have a valid GridRef *}
 	
-	<div class="interestBox" style="position:relative; margin-left:10px">We have 
-	{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
-	{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
+	<div class="interestBox" style="position:relative; margin-left:10px">Wir haben
+	{if $imagecount eq 1}nur ein Bild{else}{$imagecount} Bilder{/if} 
+	{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(und {$totalimagecount-$imagecount} versteckte{if $totalimagecount-$imagecount eq 1}s{/if}){/if}
 	
 	{if $mode eq 'takenfrom'}
-		taken from <b>{$gridref}</b>
+		mit Aufnahmestandort in <b>{$gridref}</b>
 	{elseif $mode eq 'mentioning'}
-		mentioning <b>{$gridref}</b> <sup>[Note: Currently only matches 4 Figure Grid References]</sup>
+		mit Bezug zu <b>{$gridref}</b> <sup>[Anmerkung: Momentan nur für Koordinaten mit vier Ziffern]</sup>
 	{else}
-		for <b>{$gridref}</b>
+		für <b>{$gridref}</b>
 	{/if}
-	{if !$breakdown && !$breakdowns && $totalimagecount > 0}<span style="font-size:0.8em;">- click for larger version</span>{/if}</div>
+	{if !$breakdown && !$breakdowns && $totalimagecount > 0}<span style="font-size:0.8em;">- zum Vergrößern anklicken</span>{/if}</div>
 
 	<div style="position:relative;float:right; text-align:right; font-size:0.7em">
 	{if !$breakdown && !$breakdowns && $totalimagecount > 0 &&  $totalimagecount > 1}
-		<a href="{linktoself name="by" value="1"}">View as <b>breakdown list</b></a>&nbsp;<br/>
+		<a href="{linktoself name="by" value="1"}"><b>Aufschlüsseln</b></a>&nbsp;<br/>
 	
 	{/if}	
 	{if $user->registered && $mode eq 'normal'}
 		{if !$nl}
-			<a href="{linktoself name="nl" value="1"}">Include <b>pending and rejected</b> images</a>&nbsp;<br/>
+			<a href="{linktoself name="nl" value="1"}"><b>Unmoderierte und abgelehnte</b> Bilder einschließen</a>&nbsp;<br/>
 		{else}
-			<a href="{linktoself name="nl" value="0"}">Exclude <b>pending and rejected</b> images</a>&nbsp;<br/>
+			<a href="{linktoself name="nl" value="0"}"><b>Unmoderierte und abgelehnte</b> Bilder ausnehmen</a>&nbsp;<br/>
 		{/if}
 	{/if}
 	{if $breakdown}
 		{if !$ht}
-			<a href="{linktoself name="ht" value="1"}">Hide <b>thumbnail</b> images</a>&nbsp;<br/>
+			<a href="{linktoself name="ht" value="1"}"><b>Vorschaubilder</b> ausblenden</a>&nbsp;<br/>
 		{else}
 			
-			<a href="{linktoself name="ht" value="0"}">Show <b>thumbnail</b> images</a>&nbsp;<br/>
+			<a href="{linktoself name="ht" value="0"}"><b>Vorschaubilder</b> anzeigen</a>&nbsp;<br/>
 		{/if}
 	{/if}
 	</div>
@@ -198,20 +198,20 @@
 	{if $breakdown}
 		{* We want to display a breakdown list *}
 		<blockquote>
-		<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images <b>{if filtered_title}{$filtered_title},{/if} by {$breakdown_title}</b>:</p>
+		<p>{if $imagecount > 15}Wegen der großen Zahl von Bildern, bitte{else}Bitte{/if} Bilder <b>{if $filtered_title}{$filtered_title},{/if} nach {$breakdown_title}</b> wählen:</p>
 
 		{if $by eq 'centi' || $by eq 'viewcenti' }
-			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6figure grid reference.</small></p>
+			<p><small>Das folgende Gitter zeigt die 100 &bdquo;centisquares&rdquo; in {$gridref}, von denen {$allcount} Bilder enthalten. Um die sechsziffrigen Koordinaten zu sehen, bitte mit der Maus über das betreffende Quadrat fahren.</small></p>
 	<table border="0" cellspacing="0" cellpadding="2">
 		<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}&amp;by={$by}">NW</a></td>
 		<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}&amp;by={$by}">N</a></td>
-		<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}&amp;by={$by}">NE</a></td></tr>
+		<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}&amp;by={$by}">NO</a></td></tr>
 		<tr><td><a href="/browse.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}&amp;by={$by}">W</a></td>
 		<td>	
 			{if $rastermap->enabled && $rastermap->mapurl}
 				<div style="position:relative; width:330px; height:330px">
 					<div style="position:absolute; top:-150px; left:-120px; overflow:hidden; clip: rect(150px 450px 450px 150px); width:600px; height:600px;">
-						<img id="background" src="{$rastermap->mapurl}" alt="Background-image" height="600" width="600" style="filter:alpha(opacity=80);-moz-opacity:.80;opacity:.80;"/>
+						<img id="background" src="{$rastermap->mapurl}" alt="Hintergrundbild" height="600" width="600" style="filter:alpha(opacity=80);-moz-opacity:.80;opacity:.80;"/>
 					</div>
 					<div style="position:absolute; width:330px; height:330px">
 			<table cellspacing="0" cellpadding="4" border="1"  style="filter:alpha(opacity=80);-moz-opacity:.80;opacity:.80;">
@@ -242,10 +242,10 @@
 				</div>
 			{/if}
 	</td>
-		<td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}&amp;by={$by}">E</a></td></tr>
+		<td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}&amp;by={$by}">O</a></td></tr>
 		<tr><td><a href="/browse.php?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}&amp;by={$by}">SW</a></td>
 		<td align="center"><a href="/browse.php?p={math equation="900*(y-1)+900-(x)" x=$x y=$y}&amp;by={$by}">S</a></td>
-		<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}&amp;by={$by}">SE</a></td></tr>
+		<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}&amp;by={$by}">SO</a></td></tr>
 	</table>
 			{if $breakdown.50.50.link}
 				<ul>
@@ -254,7 +254,7 @@
 			{/if}
 		{else}
 		{if !$ht}
-			<span style="color:gray; font-size:0.8em">{if $breakdown_count> 20}Random 20 groupings{else}The groupings will{/if} show an example image [total number in brackets].</span>
+			<span style="color:gray; font-size:0.8em">{if $breakdown_count> 20}Zwanzig zufällige{else}Die{/if} Bildergruppen werden jeweils durch ein Beispielbild repräsentiert [Gesamtzahl in Klammern].</span>
 		{/if}
 			<ul style="margin-top:0">
 			{foreach from=$breakdown item=b}
@@ -264,9 +264,9 @@
 					<div class="interestBox" style="height:2.4em;padding:1px;margin:-2px"><a href="{$b.link}">{$b.name}</a> <b>[{$b.count}]</b></div><br/><br/>
 					
 					
-					<div style="height:{$thumbh}px;vertical-align:middle"><a title="{$b.image->grid_reference} : {$b.image->title|escape:'html'} by {$b.image->realname} {$b.image->dist_string} - click to view full size image" href="/photo/{$b.image->gridimage_id}">{$b.image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
-					<div class="caption"><div class="minheightprop" style="height:2.5em"></div>{if $mode != 'normal'}<a title="view full size image" href="/gridref/{$b.image->grid_reference}">{$b.image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$b.image->gridimage_id}">{$b.image->title|escape:'html'}</a><div class="minheightclear"></div></div>
-					<div class="statuscaption">by <a href="{$b.image->profile_link}">{$b.image->realname}</a></div>
+					<div style="height:{$thumbh}px;vertical-align:middle"><a title="{$b.image->grid_reference} : {$b.image->title|escape:'html'} von {$b.image->realname} {$b.image->dist_string} - zum Vergrößern anklicken" href="/photo/{$b.image->gridimage_id}">{$b.image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
+					<div class="caption"><div class="minheightprop" style="height:2.5em"></div>{if $mode != 'normal'}<a title="in voller Größe anzeigen" href="/gridref/{$b.image->grid_reference}">{$b.image->grid_reference}</a> : {/if}<a title="in voller Größe anzeigen" href="/photo/{$b.image->gridimage_id}">{$b.image->title|escape:'html'}</a><div class="minheightclear"></div></div>
+					<div class="statuscaption">von <a href="{$b.image->profile_link}">{$b.image->realname}</a></div>
 					</div>
 				{else}
 					<li style="clear:both"><a href="{$b.link}">{$b.name}</a> [{$b.count}]</li>
@@ -275,20 +275,20 @@
 			</ul>	
 		{/if}
 		<br style="clear:both" />
-		<p>{if $imagecount < 15}<a href="/gridref/{$gridref}?by=1{if $extra}?{$extra}{/if}">&lt;&lt; Choose a different filter method</a></p>{/if}
+		<p>{if $imagecount < 15}<a href="/gridref/{$gridref}?by=1{if $extra}?{$extra}{/if}">&lt;&lt; Andere Filtermethode wählen</a></p>{/if}
 		
 		</blockquote>
 	{else}
 		{if $breakdowns}
 			{* We want to choose a breakdown criteria to show *}
 
-			<blockquote><p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select how you would like to view the images</p></blockquote>
+			<blockquote><p>{if $imagecount > 15}Wegen der vielen Bilder in diesem Quadrat bitte{else}Bitte{/if} auswählen, wie die Bilder angezeigt werden sollen.</p></blockquote>
 
 			{if $image}
-			<div style="float:right;" class="photo33"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160,false,true)}</a>
-			<div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
-			<div class="statuscaption">classification:
-			  {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}{if $image->ftf} (first){/if}</div>
+			<div style="float:right;" class="photo33"><a title="{$image->grid_reference} : {$image->title|escape:'html'} von {$image->realname} {$image->dist_string} - zum Vergrößern anklicken" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160,false,true)}</a>
+			<div class="caption"><a title="in voller Größe anzeigen" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
+			<div class="statuscaption">Klassifikation:
+			{if $image->ftf}Geobild (Erstling){elseif $image->moderation_status eq "rejected"}Abgelehnt{elseif $image->moderation_status eq "pending"}Unmoderiert{elseif $image->moderation_status eq "geograph"}Geobild{elseif $image->moderation_status eq "accepted"}Extrabild{else}{$image->moderation_status}{/if}</div>
 			</div>
 			{/if}
 			
@@ -297,24 +297,24 @@
 				<li><a href="/gridref/{$gridref}?by={$b.type}{$extra}">{$b.name}</a> [{$b.count}]</li>
 			{/foreach}
 
-			<li style="margin-top:10px;">Clustering: <a href="/search.php?gridref={$gridref}&amp;cluster2=1&amp;orderby=label">Automatic</a><sup style="color:red">Experimental</sup>, 
-				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imageclass%2B&amp;orderby=imageclass&amp;do=1">Category</a>, 
-				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=realname%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Contributor</a> or
-				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imagetaken%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Date Taken</a> <sup style="color:red">New!</sup></li>
+			<li style="margin-top:10px;">Clustering: <a href="/search.php?gridref={$gridref}&amp;cluster2=1&amp;orderby=label">Automatisch</a><sup style="color:red">Experimentell</sup>, 
+				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imageclass%2B&amp;orderby=imageclass&amp;do=1">Kategorie</a>, 
+				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=realname%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Einreicher</a> oder
+				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imagetaken%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Aufnahmedatum</a></li>
 
 			<li style="margin-top:10px;">
 			<form method="get" action="/search.php">
-				Or <b>search within images in this square</b>:<br/> 
+				Oder <b>Bildersuche inerhalb des Quadrats</b> durchführen:<br/> 
 				<div class="interestBox" style="width:400px">
-				<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="30"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
-				<input type="submit" value="Search"/><br/>
+				<label for="fq">Suchbegriffe</label>: <input type="text" name="q" id="fq" size="30"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+				<input type="submit" value="Los"/><br/>
 				<input type="hidden" name="location" value="{$gridref}"/>
-				<input type="radio" name="distance" value="1" checked id="d1"/><label for="d1">In {$gridref} only</label> /
-				<input type="radio" name="distance" value="3" id="d3"/><label for="d1">including surrounding squares</label><br/>
-				<input type="checkbox" name="displayclass" value="thumbs" id="dc"/><label for="dc">Show thumbnails only</label> <small>(<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Direct Link</a>)</small>
+				<input type="radio" name="distance" value="1" checked id="d1"/><label for="d1">Nur in {$gridref}</label> /
+				<input type="radio" name="distance" value="3" id="d3"/><label for="d1">Einschließlich der umgebenden Quadrate</label><br/>
+				<input type="checkbox" name="displayclass" value="thumbs" id="dc"/><label for="dc">Nur Thumbnails zeigen</label> <small>(<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Direktlink</a>)</small>
 				<input type="hidden" name="do" value="1"/>
 				</div>
-				<small>(leave keywords box blank to simply page though all images)</small><br/>
+				<small>(um alle Bilder aufzulisten, keine Suchbegriffe angeben)</small><br/>
 			</form></li>
 
 			</ul>
@@ -324,21 +324,21 @@
 			
 			
 			{if $filtered}
-				<blockquote><p>{$totalimagecount} Images, {$filtered_title}... (<a href="/gridref/{$gridref}{if $extra}?{$extra}{/if}">Remove Filter</a>)</p></blockquote>
+				<blockquote><p>{$totalimagecount} Bilder, {$filtered_title}... (<a href="/gridref/{$gridref}{if $extra}?{$extra}{/if}">Filter entfernen</a>)</p></blockquote>
 			{/if}
 
 			{foreach from=$images item=image}
-				<div style="float:left;" class="photo33"><div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
-				<div class="caption"><div class="minheightprop" style="height:2.5em"></div>{if $mode != 'normal'}<a title="view full size image" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
-				<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
+				<div style="float:left;" class="photo33"><div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} von {$image->realname} {$image->dist_string} - zum Vergrößern anklicken" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
+				<div class="caption"><div class="minheightprop" style="height:2.5em"></div>{if $mode != 'normal'}<a title="in voller Größe anzeigen" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="in voller Größe anzeigen" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
+				<div class="statuscaption">von <a href="{$image->profile_link}">{$image->realname}</a></div>
 				</div>
 			{/foreach}
 			<br style="clear:left;"/>&nbsp;
 			
 			{if $mode eq 'takenfrom'}
-				<div class="interestBox">| <a href="/search.php?searchtext={$viewpoint_query}&amp;displayclass=gmap&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View these photos on a Map</a> |</div>
+				<div class="interestBox">| <a href="/search.php?searchtext={$viewpoint_query}&amp;displayclass=gmap&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Diese Fotos auf einer Karte anzeigen</a> |</div>
 			{elseif $mode eq 'mentioning'}
-				<div class="interestBox">| <a href="/search.php?searchtext={$gridref}+-gridref:{$gridref}&amp;displayclass=gmap&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1&amp;resultsperpage=50">View these photos on a Map</a> | <a href="/search.php?searchtext={$gridref}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Find all images about this square</a> |</div>
+				<div class="interestBox">| <a href="/search.php?searchtext={$gridref}+-gridref:{$gridref}&amp;displayclass=gmap&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1&amp;resultsperpage=50">Diese Fotos auf einer Karte anzeigen</a> | <a href="/search.php?searchtext={$gridref}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Alle Bilder mit Bezug zu diesem Quadrat suchen</a> |</div>
 			{/if}
 		{/if}
 	{/if}
@@ -347,7 +347,7 @@
    		{* We on the coast so offer the option to request removal *}
    		
    		<form action="/mapfixer.php" method="get">
-   		<p align="right"><input type="submit" value="Request check of land status for this square" style="font-size:0.7em;"/>
+   		<p align="right"><input type="submit" value="Landstatus dieses Quadrats von den Moderatoren prüfen lassen" style="font-size:0.7em;"/>
    		<input type="hidden" name="gridref" value="{$gridref}"/>
    		</p>
    		</form>
@@ -360,11 +360,11 @@
 	
 	<ul>
 	{if $nearest_distance}
-		<li>The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away<br/><br/></li>
+		<li>Das nächstgelegene fotografierte Quadrat ist <a title="{$nearest_gridref} anzeigen" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> ({$nearest_distance}km entfernt).<br/><br/></li>
 	{/if}
 		
 	{if $map_token}
-		<li>You may still be able to view the <a href="/mapbrowse.php?t={$map_token}" title="Geograph map for {$gridref}">Map</a> for this square.</li>
+		<li><a href="/mapbrowse.php?t={$map_token}" title="Geograph Karte für {$gridref}">Landkarte</a> für dieses Quadrat zeigen.</li>
 	{/if}
 	</ul>
 {/if}
