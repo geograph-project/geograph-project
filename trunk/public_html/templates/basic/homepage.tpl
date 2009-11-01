@@ -134,7 +134,7 @@ we hope you'll enjoy being a part of this great project
 
 or <a title="Memory Map Export" href="/memorymap.php">in <b>Memory Map</b></a><br/><br/>
 
-and <a href="/article/Ways-to-view-Geograph-Images">even more ways to view images</a>
+and <a href="http://www.geograph.org.uk/article/Ways-to-view-Geograph-Images">even more ways to view images</a>
 </div>
 
 <br style="clear:both"/>
