@@ -329,6 +329,7 @@ class GridSquare
 	*/
 	function setByFullGridRef($gridreference,$setnatfor4fig = false,$allowzeropercent = false)
 	{
+		global $CONF;
 		$matches=array();
 		$isfour=false;
 		
@@ -380,7 +381,10 @@ class GridSquare
 			}
 		} else {
 			$ok=false;
-			$this->_error(htmlentities($gridreference).' ist keine gültige Koordinate'); # FIXME translation?
+			if ($CONF['lang'] == 'de')
+				$this->_error(htmlentities($gridreference).' ist keine gültige Koordinate');
+			else
+				$this->_error(htmlentities($gridreference).' is not a valid grid reference');
 
 		}
 				
@@ -449,6 +453,7 @@ class GridSquare
 	*/
 	function setGridRef($gridref)
 	{
+		global $CONF;
 		$gridref = preg_replace('/[^\w]+/','',strtoupper($gridref)); #assume the worse and remove everything, also not everyone uses the shift key
 		//assume the inputs are tainted..
 		$ok=$this->validGridRef($gridref);
@@ -463,11 +468,17 @@ class GridSquare
 			if (preg_match('/^([A-Z]{1,3})(\d\d)\d(\d\d)\d$/',$gridref,$matches))
 			{
 				$fixed=$matches[1].$matches[2].$matches[3];
-				$this->_error('Bitte eine Koordinate mit vier Ziffern eingeben, z.B. '.$fixed.' statt '.$gridref); # FIXME translation?
+				if ($CONF['lang'] == 'de')
+					$this->_error('Bitte eine Koordinate mit vier Ziffern eingeben, z.B. '.$fixed.' statt '.$gridref);
+				else
+					$this->_error('Please enter a 4 figure reference, i.e. '.$fixed.' instead of '.$gridref);
 			}
 			else
 			{
-				$this->_error(htmlentities($gridref).' ist keine gültige Koordinate'); # FIXME translation?
+				if ($CONF['lang'] == 'de')
+					$this->_error(htmlentities($gridref).' ist keine gültige Koordinate');
+				else
+					$this->_error(htmlentities($gridref).' is not a valid grid reference');
 			}
 		}
 		
@@ -505,6 +516,7 @@ class GridSquare
 	*/
 	function loadFromPosition($internalx, $internaly, $findnearest = false)
 	{
+		global $CONF;
 		$ok=false;
 		$db=&$this->_getDB();
 		$square = $db->GetRow("select * from gridsquare where CONTAINS( GeomFromText('POINT($internalx $internaly)'),point_xy ) order by percent_land desc limit 1");
@@ -530,7 +542,10 @@ class GridSquare
 				$this->findNearby($square['x'], $square['y'], 100);
 			}
 		} else {
-			$this->_error("Dieser Ort scheint außerhalb des Landes/der Zone zu liegen! Wir bitten um Rückmeldung, falls dies nicht der Fall sein sollte."); # FIXME translation?
+			if ($CONF['lang'] == 'de')
+				$this->_error("Dieser Ort scheint außerhalb des Landes/der Zone zu liegen! Wir bitten um Rückmeldung, falls dies nicht der Fall sein sollte.");
+			else
+				$this->_error("This location seems to be outside the supported area! Please contact us if you think this is in error");
 		}
 		return $ok;
 	}
@@ -540,6 +555,7 @@ class GridSquare
 	*/
 	function _setGridRef($gridref,$allowzeropercent = false)
 	{
+		global $CONF;
 		$ok=true;
 
 		$db=&$this->_getDB();
@@ -563,7 +579,10 @@ class GridSquare
 			
 			if ($this->percent_land==0 && (!$allowzeropercent || $this->imagecount==0) )
 			{
-				$this->_error("$gridref scheint außerhalb des Landes/der Zone zu liegen! Wir bitten um <a href=\"/mapfixer.php?gridref=$gridref\">Rückmeldung</a>, falls dies nicht der Fall sein sollte."); # FIXME translation?
+				if ($CONF['lang'] == 'de')
+					$this->_error("$gridref scheint außerhalb des Landes/der Zone zu liegen! Wir bitten um <a href=\"/mapfixer.php?gridref=$gridref\">Rückmeldung</a>, falls dies nicht der Fall sein sollte.");
+				else
+					$this->_error("$gridref seems to be outside the supported area! Please <a href=\"/mapfixer.php?gridref=$gridref\">contact us</a> if you think this is in error.");
 				$ok=false;
 
 			}
@@ -626,8 +645,12 @@ class GridSquare
 			}
 			
 			
-			if (!$ok)
-				$this->_error("$gridref scheint außerhalb des Landes/der Zone zu liegen! Wir bitten um Rückmeldung, falls dies nicht der Fall sein sollte."); # FIXME translation?
+			if (!$ok) {
+				if ($CONF['lang'] == 'de')
+					$this->_error("$gridref scheint außerhalb des Landes/der Zone zu liegen! Wir bitten um Rückmeldung, falls dies nicht der Fall sein sollte.");
+				else
+					$this->_error("$gridref seems to be outside the supported area! Please contact us if you think this is in error");
+			}
 
 		}
 

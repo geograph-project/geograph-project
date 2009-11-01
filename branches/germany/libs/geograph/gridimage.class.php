@@ -584,6 +584,7 @@ class GridImage
 	*/
 	function& getTroubleTickets($aStatus)
 	{
+		global $CONF;
 		if (!is_array($aStatus))
 			die("GridImage::getTroubleTickets expects array param");
 			
@@ -603,20 +604,38 @@ class GridImage
 			$t=new GridImageTroubleTicket;
 			$t->loadFromRecordset($recordSet);
 			
-			if ($t->days > 365) {##FIXME lang!
-				$t->days = 'über einem Jahr';
-			} elseif ($t->days > 30) {
-				$t->days = 'über '.intval($t->days/30).' Monaten';
-			} elseif ($t->days > 14) {
-				$t->days = 'über '.intval($t->days/7).' Wochen';
-			} elseif ($t->days > 7) {
-				$t->days = 'über einer Woche';
-			} elseif ($t->days > 1) {
-				$t->days = $t->days.' Tagen';
-			} elseif ($t->days < 1) {
-				$t->days = 'weniger als einem Tag';
+			if ($CONF['lang'] == 'de') {
+				if ($t->days > 365) {
+					$t->days = 'über einem Jahr';
+				} elseif ($t->days > 30) {
+					$t->days = 'über '.intval($t->days/30).' Monaten';
+				} elseif ($t->days > 14) {
+					$t->days = 'über '.intval($t->days/7).' Wochen';
+				} elseif ($t->days > 7) {
+					$t->days = 'über einer Woche';
+				} elseif ($t->days > 1) {
+					$t->days = $t->days.' Tagen';
+				} elseif ($t->days < 1) {
+					$t->days = 'weniger als einem Tag';
+				} else {
+					$t->days = 'einem Tag';
+				}
 			} else {
-				$t->days = 'einem Tag';
+				if ($t->days > 365) {
+					$t->days = 'over a year';
+				} elseif ($t->days > 30) {
+					$t->days = 'over '.intval($t->days/30).' months';
+				} elseif ($t->days > 14) {
+					$t->days = 'over '.intval($t->days/7).' weeks';
+				} elseif ($t->days > 7) {
+					$t->days = 'over a week';
+				} elseif ($t->days > 1) {
+					$t->days = $t->days.' days';
+				} elseif ($t->days < 1) {
+					$t->days = 'less than a day';
+				} else {
+					$t->days = '1 day';
+				}
 			}
 			
 			//load its ticket items (should this be part of load from Recordset?

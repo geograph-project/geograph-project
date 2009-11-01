@@ -133,6 +133,10 @@ $CONF['forum_title'] = 'Discuss';
 $CONF['phpdir']='/usr/bin/';
 
 ###################################
+
+$CONF['lang']='en';
+
+###################################
 # optional sphinx setup
 
 //sphinx is not required but highly recommended
