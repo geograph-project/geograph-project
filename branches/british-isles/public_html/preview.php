@@ -49,6 +49,8 @@ if (!empty($_POST))
 	
 	if (!empty($_POST['id'])) {
 		$image->loadFromId(intval($_POST['id']));
+		
+		$image->assignSnippetsToSmarty($smarty);
 	} else {
 		$image->gridimage_id = 0;
 		$image->moderation_status = 'pending';
@@ -208,10 +210,12 @@ if (!empty($_POST['spelling'])) {
 	
 		$image->assignToSmarty($smarty);
 		
-		$gid = crc32($_POST['upload_id'])+4294967296;
-		$gid += $USER->user_id * 4294967296;
-
-		$image->assignSnippetsToSmarty($smarty,$gid);
+		if (!empty($_POST['upload_id'])) {
+			$gid = crc32($_POST['upload_id'])+4294967296;
+			$gid += $USER->user_id * 4294967296;
+			
+			$image->assignSnippetsToSmarty($smarty,$gid);
+		}
 	#}
 } else {
 	header("HTTP/1.0 404 Not Found");
