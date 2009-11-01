@@ -283,11 +283,9 @@ function internal_to_national($x,$y,$reference_index = 0) {
 //use:	list($e,$n) = osgb36_to_irish($e,$n);
 			// this is used when we have a dataset in osgb and need to convert it to irish national (eg loc_placenames etc)
 
-#FIXME language dependend! also ... near to ... => language in CONF!
 function wgs84_to_friendly($lat,$long) {
-	$el = ($long > 0)?'O':'W';
-	$nl = ($lat > 0)?'N':'S';
-	
+	global $CONF;
+
 	$xd = intval(abs($long));
 	$xm = intval((abs($long)-$xd)*60);
 	$xs = (abs($long)*3600)-($xm*60)-($xd*3600);
@@ -296,12 +294,23 @@ function wgs84_to_friendly($lat,$long) {
 	$ym = intval((abs($lat)-$yd)*60);
 	$ys = (abs($lat)*3600)-($ym*60)-($yd*3600);
 
-	#$ymd = sprintf("%.4f",$ym+($ys/60));
-	#$xmd = sprintf("%.4f",$xm+($xs/60));
-	$xss=sprintf("%.2f",$xs);
-	$yss=sprintf("%.2f",$ys);
+	if ($CONF['lang'] == 'de') {
+		$el = ($long > 0)?'O':'W';
+		$nl = ($lat > 0)?'N':'S';
 	
-	return array("{$yd}°$ym'$yss\"$nl","{$xd}°$xm'$xss\"$el");
+		$xss=sprintf("%.2f",$xs); //FIXME needs locale de_DE
+		$yss=sprintf("%.2f",$ys); //FIXME needs locale de_DE
+		
+		return array("{$yd}°$ym'$yss\"$nl","{$xd}°$xm'$xss\"$el");
+	} else {
+		$el = ($long > 0)?'E':'W';
+		$nl = ($lat > 0)?'N':'S';
+
+		$ymd = sprintf("%.4f",$ym+($ys/60));
+		$xmd = sprintf("%.4f",$xm+($xs/60));
+
+		return array("$yd:$ymd$nl","$xd:$xmd$el");
+	}
 }
 
 function wgs84_to_friendly_smarty_parts($lat,$long,&$smarty) {

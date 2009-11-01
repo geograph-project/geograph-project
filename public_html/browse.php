@@ -394,17 +394,31 @@ if ($grid_given)
 			AND $user_crit");
 			
 			$breakdowns = array();
-			$breakdowns[] = array('type'=>'user','name'=>'Contributors','count'=>$row['user']);
-			$breakdowns[] = array('type'=>'centi','name'=>'Centisquares','count'=>$row['centi']);
-			$breakdowns[] = array('type'=>'class','name'=>'Categories','count'=>$row['class']);
-			$breakdowns[] = array('type'=>'taken','name'=>'Taken Months','count'=>$row['taken']);
-			$breakdowns[] = array('type'=>'takenyear','name'=>'Taken Years','count'=>$row['takenyear']);
-			$breakdowns[] = array('type'=>'submitted','name'=>'Submitted Months','count'=>$row['submitted']);
-			$breakdowns[] = array('type'=>'submittedyear','name'=>'Submitted Years','count'=>$row['submittedyear']);
-			$breakdowns[] = array('type'=>'direction','name'=>'View Directions','count'=>$row['direction']);
-			$breakdowns[] = array('type'=>'viewpoint','name'=>'Photographer Gridsquares','count'=>$row['viewpoints']);
-			$breakdowns[] = array('type'=>'viewcenti','name'=>'Photographer Centisquares','count'=>'?');
-			$breakdowns[] = array('type'=>'status','name'=>'Classifications','count'=>$row['status']);
+			if ($CONF['lang'] == 'de') {
+				$breakdowns[] = array('type'=>'user','name'=>'Einreicher','count'=>$row['user']);
+				$breakdowns[] = array('type'=>'centi','name'=>'Centisquare','count'=>$row['centi']);
+				$breakdowns[] = array('type'=>'class','name'=>'Kategorie','count'=>$row['class']);
+				$breakdowns[] = array('type'=>'taken','name'=>'Aufnahmemonat','count'=>$row['taken']);
+				$breakdowns[] = array('type'=>'takenyear','name'=>'Aufnahmejahr','count'=>$row['takenyear']);
+				$breakdowns[] = array('type'=>'submitted','name'=>'Einreichmonat','count'=>$row['submitted']);
+				$breakdowns[] = array('type'=>'submittedyear','name'=>'Einreichjahr','count'=>$row['submittedyear']);
+				$breakdowns[] = array('type'=>'direction','name'=>'Blickrichtung','count'=>$row['direction']);
+				$breakdowns[] = array('type'=>'viewpoint','name'=>'Aufnahmestandort','count'=>$row['viewpoints']);
+				$breakdowns[] = array('type'=>'viewcenti','name'=>'Aufnahmecentisquare','count'=>'?');
+				$breakdowns[] = array('type'=>'status','name'=>'Klassifizierung','count'=>$row['status']);
+			} else {
+				$breakdowns[] = array('type'=>'user','name'=>'Contributors','count'=>$row['user']);
+				$breakdowns[] = array('type'=>'centi','name'=>'Centisquares','count'=>$row['centi']);
+				$breakdowns[] = array('type'=>'class','name'=>'Categories','count'=>$row['class']);
+				$breakdowns[] = array('type'=>'taken','name'=>'Taken Months','count'=>$row['taken']);
+				$breakdowns[] = array('type'=>'takenyear','name'=>'Taken Years','count'=>$row['takenyear']);
+				$breakdowns[] = array('type'=>'submitted','name'=>'Submitted Months','count'=>$row['submitted']);
+				$breakdowns[] = array('type'=>'submittedyear','name'=>'Submitted Years','count'=>$row['submittedyear']);
+				$breakdowns[] = array('type'=>'direction','name'=>'View Directions','count'=>$row['direction']);
+				$breakdowns[] = array('type'=>'viewpoint','name'=>'Photographer Gridsquares','count'=>$row['viewpoints']);
+				$breakdowns[] = array('type'=>'viewcenti','name'=>'Photographer Centisquares','count'=>'?');
+				$breakdowns[] = array('type'=>'status','name'=>'Classifications','count'=>$row['status']);
+			}
 			$smarty->assign_by_ref('breakdowns', $breakdowns);
 			
 			if (rand(1,10) > 7) {
@@ -432,7 +446,13 @@ if ($grid_given)
 			$i = 0;		
 			
 			if ($_GET['by'] == 'class') {
-				$breakdown_title = "Category";
+				if ($CONF['lang'] == 'de') {
+					$breakdown_title = "Kategorie";
+					$title = "in Kategorie";
+				} else {
+					$breakdown_title = "Category";
+					$title = "in category";
+				}
 				$all = $db->cacheGetAll($cacheseconds,"SELECT imageclass,count(*) as count,
 				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname
 				FROM gridimage gi inner join user using(user_id)
@@ -442,7 +462,7 @@ if ($grid_given)
 				$start = rand(0,max(0,count($all)-20));
 				$end = $start + 20;
 				foreach ($all as $row) {
-					$breakdown[$i] = array('name'=>"in category <b>{$row[0]}</b>",'count'=>$row[1]);
+					$breakdown[$i] = array('name'=>"{$title} <b>{$row[0]}</b>",'count'=>$row[1]);
 					if (empty($_GET['ht']) && $i >= $start && $i< $end) {
 						$row['grid_reference'] = $square->grid_reference;
 						$breakdown[$i]['image'] = new GridImage();
@@ -458,7 +478,13 @@ if ($grid_given)
 					$i++;
 				}
 			} elseif ($_GET['by'] == 'status') {
-				$breakdown_title = "Classification";
+				if ($CONF['lang'] == 'de') {
+					$breakdown_title = "Klassifizierung";
+					$substs = array('geograph'=>'Geobild','accepted'=>'Extrabild','pending'=>'Unmoderiert','rejected'=>'Abgelehnt');
+				} else {
+					$breakdown_title = "Classification";
+					$substs = array('accepted'=>'supplemental');
+				}
 				$all = $db->cacheGetAll($cacheseconds,"SELECT moderation_status,count(*) as count,
 				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname
 				FROM gridimage gi inner join user using(user_id)
@@ -467,7 +493,7 @@ if ($grid_given)
 				GROUP BY moderation_status 
 				ORDER BY ftf DESC,moderation_status+0 DESC");
 				foreach ($all as $row) {
-					$rowname = str_replace('accepted','supplemental',$row[0]);
+					$rowname = isset($substs[$row[0]]) ? $substs[$row[0]] : $row[0];
 					$breakdown[$i] = array('name'=>"<b>{$rowname}</b>",'count'=>$row[1]);
 					if (empty($_GET['ht']) && $i< 20) {
 						$breakdown[$i]['image'] = new GridImage();
@@ -488,7 +514,13 @@ if ($grid_given)
 					$i++;
 				}
 			} elseif ($_GET['by'] == 'user') {
-				$breakdown_title = "Contributor";
+				if ($CONF['lang'] == 'de') {
+					$breakdown_title = "Einreicher";
+					$title = "eingereicht von";
+				} else {
+					$breakdown_title = "Contributor";
+					$title = "contributed by";
+				}
 				$all = $db->cacheGetAll($cacheseconds,"SELECT user.realname as user_realname,count(*) as count,
 				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname
 				FROM gridimage gi
@@ -500,7 +532,7 @@ if ($grid_given)
 				$start = rand(0,max(0,count($all)-20));
 				$end = $start + 20;
 				foreach ($all as $row) {
-					$breakdown[$i] = array('name'=>"contributed by <b>{$row[0]}</b>",'count'=>$row[1]);
+					$breakdown[$i] = array('name'=>"{$title} <b>{$row[0]}</b>",'count'=>$row[1]);
 					if (empty($_GET['ht']) && $i >= $start && $i< $end) {
 						$breakdown[$i]['image'] = new GridImage();
 						$row['grid_reference'] = $square->grid_reference;
@@ -516,7 +548,17 @@ if ($grid_given)
 					$i++;
 				}
 			} elseif ($_GET['by'] == 'direction') {
-				$breakdown_title = "View Direction";
+				if ($CONF['lang'] == 'de') {
+					$breakdown_title = "Blickrichtung";
+					$title = "Blick nach";
+					$titleunknown = "Blickrichtung unbekannt";
+					$formatdegree = "etwa %d°";
+				} else {
+					$breakdown_title = "View Direction";
+					$title = "looking";
+					$titleunknown = "unknown direction";
+					$formatdegree = "about %d degrees";
+				}
 				$all = $db->cacheGetAll($cacheseconds,"SELECT view_direction,count(*),
 				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname
 				FROM gridimage gi inner join user using(user_id)
@@ -528,10 +570,11 @@ if ($grid_given)
 				$end = $start + 20;
 				foreach ($all as $row) {
 					if ($row[0] != -1) {
+						$titledegree = sprintf($formatdegree, $row[0]);
 						$view_direction = ($row[0]%90==0)?strtoupper(heading_string($row[0])):ucwords(heading_string($row[0])) ;
-						$breakdown[$i] = array('name'=>"looking <b>$view_direction</b>$br (about {$row[0]} degrees)",'count'=>$row[1]);
+						$breakdown[$i] = array('name'=>"$title <b>$view_direction</b>$br ($titledegree)",'count'=>$row[1]);
 					} else {
-						$breakdown[$i] = array('name'=>"unknown direction",'count'=>$row[1]);
+						$breakdown[$i] = array('name'=>$titleunknown,'count'=>$row[1]);
 					}
 					if (empty($_GET['ht']) && $i >= $start && $i< $end) {
 						$breakdown[$i]['image'] = new GridImage();
@@ -546,7 +589,17 @@ if ($grid_given)
 					$i++;
 				}
 			} elseif ($_GET['by'] == 'viewpoint') {
-				$breakdown_title = "Photographer Gridsquare";
+				if ($CONF['lang'] == 'de') {
+					$breakdown_title = "Aufnahmestandort";
+					$title = 'aufgenommen in';
+					$titlehere = 'aufgenommen in diesem Quadrat';
+					$titleunknown = 'Aufnahmestandort unbekannt';
+				} else {
+					$breakdown_title = "Photographer Gridsquare";
+					$title = 'taken in';
+					$titlehere = 'taken in this square';
+					$titleunknown = 'photographer position unspecified';
+				}
 				$all = $db->cacheGetAll($cacheseconds,"SELECT viewpoint_eastings,count(*),gridimage_id,viewpoint_northings,
 				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname
 				FROM gridimage gi inner join user using(user_id)
@@ -564,12 +617,12 @@ if ($grid_given)
 							4,
 							$square->reference_index,false);
 						if ($posgr == $square->grid_reference) {
-							$breakdown[$i] = array('name'=>"taken in this square",'count'=>$row[1]);
+							$breakdown[$i] = array('name'=>$titlehere,'count'=>$row[1]);
 						} else {
-							$breakdown[$i] = array('name'=>"taken in <b>$posgr</b>",'count'=>$row[1]);
+							$breakdown[$i] = array('name'=>"$title <b>$posgr</b>",'count'=>$row[1]);
 						}
 					} else {
-						$breakdown[$i] = array('name'=>"photographer position unspecified",'count'=>$row[1]);
+						$breakdown[$i] = array('name'=>$titleunknown,'count'=>$row[1]);
 						$posgr = '-';
 					}
 					if (empty($_GET['ht']) && $i >= $start && $i< $end) {
@@ -585,7 +638,10 @@ if ($grid_given)
 					$i++;
 				}
 			} elseif ($_GET['by'] == 'centi') {
-				$breakdown_title = "Centisquare<a href=\"/help/squares\">?</a>";
+				if ($CONF['lang'] == 'de')
+					$breakdown_title = "Centisquare";
+				else
+					$breakdown_title = "Centisquare<a href=\"/help/squares\">?</a>";
 				$all = $db->cacheGetAll($cacheseconds,"SELECT (nateastings = 0),count(*),gridimage_id,nateastings DIV 100, natnorthings DIV 100
 				FROM gridimage gi
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
@@ -624,7 +680,10 @@ if ($grid_given)
 			} elseif ($_GET['by'] == 'viewcenti') {
 				$e = intval($square->getNatEastings()/1000);
 				$n = intval($square->getNatNorthings()/1000);
-				$breakdown_title = "Photographer Centisquare<a href=\"/help/squares\">?</a>";
+				if ($CONF['lang'] == 'de')
+					$breakdown_title = "Aufnahmecentisquare";
+				else
+					$breakdown_title = "Photographer Centisquare<a href=\"/help/squares\">?</a>";
 				$all = $db->cacheGetAll($cacheseconds,"SELECT (viewpoint_eastings = 0),count(*),gridimage_id,viewpoint_eastings DIV 100, viewpoint_northings DIV 100
 				FROM gridimage gi
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
@@ -661,10 +720,17 @@ if ($grid_given)
 				$smarty->assign('tenup', range(0,9));
 				$smarty->assign('tendown', range(9,0));
 			} else { //must be a date (unless something has gone wrong!)
-				$length = (preg_match('/year$/',$_GET['by']))?4:7;
-				$column = (preg_match('/^taken/',$_GET['by']))?'imagetaken':'submitted';
-				$title = (preg_match('/^taken/',$_GET['by']))?'Taken':'Submitted';
-				$breakdown_title = "$title".((preg_match('/year$/',$_GET['by']))?'':' Month');
+				if ($CONF['lang'] == 'de') {
+					$length = (preg_match('/year$/',$_GET['by']))?4:7;
+					$column = (preg_match('/^taken/',$_GET['by']))?'imagetaken':'submitted';
+					$title =           ((preg_match('/^taken/',$_GET['by']))?'Aufgenommen':'Eingereicht').((preg_match('/year$/',$_GET['by']))?'':' im');
+					$breakdown_title = ((preg_match('/^taken/',$_GET['by']))?'Aufnahme':'Einreich').((preg_match('/year$/',$_GET['by']))?'jahr':'monat');
+				} else {
+					$length = (preg_match('/year$/',$_GET['by']))?4:7;
+					$column = (preg_match('/^taken/',$_GET['by']))?'imagetaken':'submitted';
+					$title = (preg_match('/^taken/',$_GET['by']))?'Taken':'Submitted';
+					$breakdown_title = "$title".((preg_match('/year$/',$_GET['by']))?'':' Month');
+				}
 				$all = $db->cacheGetAll($cacheseconds,"SELECT SUBSTRING($column,1,$length) as date,count(*),
 				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname
 				FROM gridimage gi inner join user using(user_id)

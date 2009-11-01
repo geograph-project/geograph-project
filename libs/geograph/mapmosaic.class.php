@@ -462,6 +462,7 @@ class GeographMapMosaic
 	*/
 	function getUpdateDateString()
 	{
+		global $CONF;
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 		
 		if (empty($this->imagearray))
@@ -481,9 +482,15 @@ class GeographMapMosaic
 			}
 		if ($recent) {
 			if ( abs($recent-$oldest) < 1000) {
-				return "Karten aktualisiert am ".strftime("%A, %d.%m. um %H:%M",$recent); //FIXME configurable language
+				if ($CONF['lang'] == 'de')
+					return "Karten aktualisiert am ".strftime("%A, %d.%m. um %H:%M",$recent);
+				else
+					return "Maps last updated at: ".strftime("%A, %d %b at %H:%M",$recent);
 			} else {
-				return "Karten aktualisiert zwischen ".strftime("%A, %d.%m. um %H:%M",$oldest)." und ".strftime("%A, %d.%m. um %H:%M",$recent); //FIXME configurable language
+				if ($CONF['lang'] == 'de')
+					return "Karten aktualisiert zwischen ".strftime("%A, %d.%m. um %H:%M",$oldest)." und ".strftime("%A, %d.%m. um %H:%M",$recent);
+				else
+					return "Maps updated between: ".strftime("%A, %d %b at %H:%M",$oldest)." and ".strftime("%A, %d %b at %H:%M",$recent);
 			}
 		}
 	}
