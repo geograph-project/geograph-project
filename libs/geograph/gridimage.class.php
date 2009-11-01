@@ -294,31 +294,12 @@ class GridImage
 		}
 	}
 
-	function _combineComment($a, $b)
-	{
-		if (empty($b))
-			return $a;
-		elseif (empty($a))
-			return $b;
-		else
-			return $a . ' (' . $b . ')';
-	}
-
-	function _combineTitle($a, $b)
-	{
-		if (empty($b))
-			return $a;
-		elseif (empty($a))
-			return $b;
-		else
-			return $a . ' (' . $b . ')';
-	}
-
 	/**
 	* assign members from array containing required members
 	*/
 	function _initFromArray(&$arr)
 	{
+		//require_once('geograph/functions.inc.php');
 		foreach($arr as $name=>$value)
 		{
 			if (!is_numeric($name))
@@ -347,8 +328,8 @@ class GridImage
 
 		$this->title1 = $this->title;
 		$this->comment1 = $this->comment;
-		$this->title = $this->_combineTitle($this->title1, $this->title2);
-		$this->comment = $this->_combineComment($this->comment1, $this->comment2);
+		$this->title = combineTexts($this->title1, $this->title2);
+		$this->comment = combineTexts($this->comment1, $this->comment2);
 		
 		if (empty($this->title))
 			$this->title="Untitled photograph for {$this->grid_reference}";
@@ -361,6 +342,7 @@ class GridImage
 	*/
 	function fastInit(&$arr)
 	{
+		//require_once('geograph/functions.inc.php');
 		$this->ext = false;
 		$this->grid_square=null;
 		$this->grid_reference='';
@@ -377,8 +359,8 @@ class GridImage
 
 		$this->title1 = $this->title;
 		$this->comment1 = $this->comment;
-		$this->title = $this->_combineTitle($this->title1, $this->title2);
-		$this->comment = $this->_combineComment($this->comment1, $this->comment2);
+		$this->title = combineTexts($this->title1, $this->title2);
+		$this->comment = combineTexts($this->comment1, $this->comment2);
 	}
 	
 	/**
