@@ -47,7 +47,7 @@ function log_script_timing()
 
 	list($usec, $sec) = explode(' ',microtime());
 	$endtime = ((float)$usec + (float)$sec);
-	$timetaken = sprintf('%0.4f', $endtime - $STARTTIME);
+	$timetaken = sprintf('%0.4F', $endtime - $STARTTIME);
 
 	if ($CONF['log_script_timing']=='file')
 	{

@@ -144,7 +144,7 @@ class kmlPlacemark_Circle extends kmlPlacemark {
 			$lat_rad = asin(sin($lat1)*cos($d_rad) + cos($lat1)*sin($d_rad)*cos($radial));
 			$dlon_rad = atan2(sin($radial)*sin($d_rad)*cos($lat1), cos($d_rad)-sin($lat1)*sin($lat_rad));
 			$lon_rad = fmod(($long1+$dlon_rad + M_PI), 2*M_PI) - M_PI;
-			$coordinates[] = sprintf('%.6f,%.6f,0',rad2deg($lon_rad),rad2deg($lat_rad));
+			$coordinates[] = sprintf('%.6F,%.6F,0',rad2deg($lon_rad),rad2deg($lat_rad));
 		}
 		$coordinates[] = $coordinates[0];//join it back up by reusing the first point
 
