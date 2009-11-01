@@ -121,7 +121,7 @@
 		<li><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph <b>map</b> for {if $gridref2}{$gridrefraw}{else}{$gridref}{/if}</a>{if $square->reference_index == 1} (<a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}"><b>Draggable</b>)</a>{/if}</li>
 		
 		{if $gridref6}
-			<li style="margin-top:10px"><a href="/gridref/{$gridref}?viewcenti={$gridref6}">image(s) <b>taken in {$gridref6}</b></b></a> / <span class="nowrap"><a href="/gridref/{$gridref}?centi={$gridref6}">of <b>subjects in {$gridref6}</b></a> (if any)</span> <sup style="color:red">new!</sup></li>
+			<li style="margin-top:10px"><a href="/gridref/{$gridref}?viewcenti={$gridref6}">image(s) <b>taken in {$gridref6}</b></a> / <span class="nowrap"><a href="/gridref/{$gridref}?centi={$gridref6}">of <b>subjects in {$gridref6}</b></a> (if any)</span></li>
 		{/if}
 		
 		{if $viewpoint_count}
@@ -198,7 +198,7 @@
 	{if $breakdown}
 		{* We want to display a breakdown list *}
 		<blockquote>
-		<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images <b>{if filtered_title}{$filtered_title},{/if} by {$breakdown_title}</b>:</p>
+		<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images <b>{if $filtered_title}{$filtered_title},{/if} by {$breakdown_title}</b>:</p>
 
 		{if $by eq 'centi' || $by eq 'viewcenti' }
 			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6figure grid reference.</small></p>
