@@ -36,7 +36,7 @@
 <form action="/browse.php" method="get">
 <div>
 
-	<label for="gridref">Enter grid reference (e.g. SY9582)</label>
+	<label for="gridref">Enter grid reference (e.g. TPT2769)</label>
 	<input id="gridref" type="text" name="gridref" value="{$gridrefraw|escape:'html'}" size="8"/>
 	<input type="submit" name="setref" value="Show &gt;"/>
 
