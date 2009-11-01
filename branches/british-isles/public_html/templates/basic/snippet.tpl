@@ -6,7 +6,7 @@
 {/if}
 {/dynamic}
 
-<h2>{$title|escape:'html'} <small>:: Shared Description</small></h2>
+<h2>{$title|escape:'html'|default:'Untitled'} <small>:: Shared Description</small></h2>
 
 <div style="text-align:right;position:relative;">By <a href="/profile/{$user_id}">{$realname|escape:'html'}</a></div>
 <div class="interestBox">
