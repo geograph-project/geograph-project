@@ -229,6 +229,28 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 	}
 }
 
+function relocateMapToMarkers() {
+	if (!marker1 && !marker2) {
+		return;
+	}
+	var bounds = new GLatLngBounds();
+	
+	if (marker1) {
+		bounds.extend(marker1.getLatLng());
+	}
+	if (marker2) {
+		bounds.extend(marker2.getLatLng());
+	}
+	
+	var newZoom = map.getBoundsZoomLevel(bounds);
+	var center = bounds.getCenter();
+		
+	if (newZoom > 13) {
+		newZoom = 13;
+	}
+	map.setCenter(center, newZoom);
+}
+
 function updateViewDirection() {
 	document.getElementById("dist_message").innerHTML = '';
 	if (eastings1 > 0 && eastings2 > 0) {
