@@ -173,7 +173,7 @@ if ($grid_given)
 		}
 	}
 	$smarty->assign('mode','normal');
-	if ($grid_ok && (isset($_GET['takenfrom']) || isset($_GET['mentioning'])) ) {
+	if ($grid_ok && !empty($CONF['sphinx_host']) && (isset($_GET['takenfrom']) || isset($_GET['mentioning'])) ) {
 		
 		$sphinx = new sphinxwrapper();
 		$sphinx->pageSize = 15;
@@ -745,16 +745,18 @@ if ($grid_given)
 			$square->assignDiscussionToSmarty($smarty);
 		}
 		
-		//look for images from here...
-		$sphinx = new sphinxwrapper();
-		if (!isset($viewpoint_count) && $viewpoint_count = $sphinx->countImagesViewpoint($square->nateastings,$square->natnorthings,$square->reference_index,$square->grid_reference)) {
-			$smarty->assign('viewpoint_count', $viewpoint_count);
-			#$smarty->assign('viewpoint_query', $sphinx->q);
+		if (!empty($CONF['sphinx_host'])) {
+			//look for images from here...
+			$sphinx = new sphinxwrapper();
+			if (!isset($viewpoint_count) && $viewpoint_count = $sphinx->countImagesViewpoint($square->nateastings,$square->natnorthings,$square->reference_index,$square->grid_reference)) {
+				$smarty->assign('viewpoint_count', $viewpoint_count);
+				#$smarty->assign('viewpoint_query', $sphinx->q);
+			}
+			
+			if (!isset($mention_count) && $mention_count = $sphinx->countQuery("{$square->grid_reference} -grid_reference:{$square->grid_reference}","_images")) {
+				$smarty->assign('mention_count', $mention_count);
+			} 
 		}
-		
-		if (!isset($mention_count) && $mention_count = $sphinx->countQuery("{$square->grid_reference} -grid_reference:{$square->grid_reference}","_images")) {
-			$smarty->assign('mention_count', $mention_count);
-		} 
 		
 		if ($square->natspecified && $square->natgrlen >= 6) {
 			$conv = new Conversions('');
