@@ -157,21 +157,17 @@ if (!empty($_REQUEST['edit'])) {
 		$smarty->assign('edit',1);
 	}
 
-} elseif (!empty($_POST['delete'])) {
+} elseif (!empty($_REQUEST['delete'])) {
 	
 	$where = '';
 	if (!$USER->hasPerm('moderator')) {
 		$where = " user_id = {$USER->user_id} AND ";
 	}
 	
-	
-	foreach ($_POST['delete'] as $id => $text) {
-		
-	
+	foreach ($_REQUEST['delete'] as $id => $text) {
 		
 		$db->Execute("UPDATE snippet SET enabled = 0 WHERE $where snippet_id = ".intval($id));
 	}
-
 }
 
 
