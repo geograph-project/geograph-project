@@ -163,6 +163,8 @@ AttachEvent(window,'load',readHash,false);
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php">Submission Process</a> should be functional with it.</div>
 	</noscript>
 	
+	<p><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Warning" width="25" height="22" align="left" style="margin-right:10px"/> This is a new experimental submission process, try it out if you like, but you might prefer to use the <a href="/submit.php">original submission method</a>.</p>
+	
 	<p>Complete the following steps in any order (and continue onto the following steps while the photo is still uploading!). Step 2 is optional, can directly enter a grid reference in step 3 if wish. If possible, the date, and grid-reference(s) are automatically extracted from the submitted image.</p>
 
 	<div style="float:right;position:relative;display:none" id="hidePreview"><div id="previewInner"></div>

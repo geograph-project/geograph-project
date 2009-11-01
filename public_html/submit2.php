@@ -35,6 +35,8 @@ if (!empty($_REQUEST['use_autocomplete'])) {
 	$USER->use_autocomplete = 1;
 }
 
+$clear_cache = array();
+
 if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_NO_FILE)
 {
 	$uploadmanager=new UploadManager;
@@ -98,9 +100,9 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 					$smarty->assign('grid_reference', $grid_reference);
 				} 
 				
-				if (preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
+				if (preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",$_FILES['jpeg_exif']['name'],$m)) {
 					if (strlen($m[3]) != strlen($m[4])) {
-						if (preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{4,10})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
+						if (preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{4,10})(\b|[A-Za-z_])/i",$_FILES['jpeg_exif']['name'],$m)) {
 							if (strlen($m[3])%2==0) {
 								$smarty->assign('grid_reference', $grid_reference = $m[2].$m[3]); 
 							}
@@ -109,7 +111,7 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 						$smarty->assign('grid_reference', $grid_reference = $m[2].$m[3].$m[4]); 
 					}
 		
-				} elseif (!empty($exif['COMMENT']) && preg_match("/\b([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",implode(' ',$exif['COMMENT']),$m)) {
+				} elseif (!empty($exif['COMMENT']) && preg_match("/\b([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",implode(' ',$exif['COMMENT']),$m)) {
 					if (strlen($m[2]) == strlen($m[3]) || (strlen($m[2])+strlen($m[3]))%2==0) {
 						$smarty->assign('grid_reference', $grid_reference = $m[1].$m[2].$m[3]); 
 					}
@@ -212,22 +214,8 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 			$_SESSION['last_imagetaken'] = $_POST['imagetaken'][$key];
 		}
 		
-		if ($memcache->valid) {
-			//the submit list
-			$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by submitted desc limit 6");
-			$memcache->name_delete('gi',$mkey);
-			//the browse page for the user (to show pending)
-			$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by ftf desc,gridimage_id");
-			$memcache->name_delete('gi',$mkey);
-		}	
+		$clear_cache[$square->gridsquare_id] = 1;
 	}
-	if (!empty($_POST['pattrib_default'])) {
-		$USER->setCreditDefault(($_POST['pattrib'] == 'other')?stripslashes($_POST['pattrib_name']):'');
-	}
-	//clear user profile
-	$ab=floor($USER->user_id/10000);
-	$smarty->clear_cache(null, "user$ab|{$USER->user_id}");
-
 
 	$template='puploader_success.tpl';
 	if (isset($_GET['nofrills']))
@@ -236,10 +224,8 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 	$smarty->assign('status', $status);
 	$smarty->assign('filenames', $filenames);
 	$smarty->assign('grid_reference', $grid_reference);
-}
 
-if (isset($_REQUEST['inner'])) {
-	#print_r($_REQUEST);
+} elseif (isset($_REQUEST['inner'])) {
 	$template='submit2_inner.tpl';
 	$step = 1;
 	
@@ -267,5 +253,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 }
 
 $smarty->display($template, $cacheid);
+
+flush();
+
+//things that can be done 'lazy' ie after given confirmation to the user... 
+
+if (!empty($_POST['pattrib_default'])) {
+	$USER->setCreditDefault(($_POST['pattrib'] == 'other')?stripslashes($_POST['pattrib_name']):'');
+}
+
+if (!empty($clear_cache) && count($clear_cache)) {
+	
+	foreach ($clear_cache as $gridsquare_id => $dummy) {
+		if ($memcache->valid) {
+			//the submit list
+			$mkey = md5("{$gridsquare_id}:{$USER->user_id},,order by submitted desc limit 6");
+			$memcache->name_delete('gi',$mkey);
+			//the browse page for the user (to show pending)
+			$mkey = md5("{$gridsquare_id}:{$USER->user_id},,order by ftf desc,gridimage_id");
+			$memcache->name_delete('gi',$mkey);
+		}
+	}
+	
+	//clear user profile
+	$ab=floor($USER->user_id/10000);
+	$smarty->clear_cache(null, "user$ab|{$USER->user_id}");
+
+	
+}
+
 
 ?>

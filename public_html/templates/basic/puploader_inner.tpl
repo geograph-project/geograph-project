@@ -41,8 +41,7 @@
 		<div>
 	{/if}
 	
-		<p>You might like to check you've selected the correct square<br/> by
-		viewing the Modern {getamap gridref="document.theForm.grid_reference.value" gridref2=$gridref text="OS Get-a-map&trade;"}</p>
+		<p>Open the subject location on {getamap gridref="document.theForm.grid_reference.value" gridref2=$gridref text="OS Get-a-map&trade;"}</p>
 
 		{if $reference_index == 2} 
 		{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
@@ -96,7 +95,8 @@
 	{/if}
 	<br style="clear:both"/>
 	{if $submit2}
-		<input type="button" value="Next Step &gt;&gt;" onclick="if (checkFormSubmission(this.form,{if $rastermap->enabled}true{else}false{/if}{literal})) { window.parent.doneStep(3);} else {return false;}{/literal}"/>
+		<input type="button" value="Done" onclick="if (checkFormSubmission(this.form,{if $rastermap->enabled}true{else}false{/if}{literal})) { window.parent.doneStep(3);} else {return false;}{/literal}"/>
+		<input type="button" value="Next Step &gt;&gt;" onclick="if (checkFormSubmission(this.form,{if $rastermap->enabled}true{else}false{/if}{literal})) { window.parent.doneStep(3); window.parent.clicker(4,true);} else {return false;}{/literal}"/>
 	{/if}
 	{if $rastermap->enabled}
 		{$rastermap->getFooterTag()}
@@ -240,7 +240,8 @@
 		<br/><br/><span style="font-size:0.7em">(please provide as much detail as possible, if you only know the year or month then that's fine)</span></p>
 
 	{if $submit2}
-		<input type="button" value="Next Step &gt;&gt;" onclick="window.parent.doneStep(4);"/>
+		<input type="button" value="Done" onclick="window.parent.doneStep(4);"/>
+		<input type="button" value="Next Step &gt;&gt;" onclick="window.parent.doneStep(4); window.parent.clicker(5,true);"/>
 	{/if}
 
 {if $use_autocomplete}
