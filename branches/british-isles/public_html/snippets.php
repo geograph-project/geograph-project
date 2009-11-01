@@ -175,16 +175,18 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 	$square=new GridSquare;
 	
 	$grid_given=true;
-	if ($grid_ok=$square->setByFullGridRef($_REQUEST['gr'],true)) {
-	
-		$smarty->assign('gr',$_REQUEST['gr']);
-		
-		if ($square->natgrlen > 4) {
-			$smarty->assign('centisquare',1);
+	if (!empty($_REQUEST['gr'])) {
+		if ($grid_ok=$square->setByFullGridRef($_REQUEST['gr'],true)) {
+
+			$smarty->assign('gr',$_REQUEST['gr']);
+
+			if ($square->natgrlen > 4) {
+				$smarty->assign('centisquare',1);
+			}
+
+		} else
+			print "invalid GR!";
 		}
-		
-	} elseif (!empty($_REQUEST['gr'])) {
-		print "invalid GR!";
 	}
 	$where = array();
 	$fields = '';
@@ -214,17 +216,19 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 			$title = "Matching word search [ ".htmlentities($sphinx->qclean)." ]";
 		}
 		
-		$data = array();
-		$data['x'] = $square->x;
-		$data['y'] = $square->y;
-		if ($square->natgrlen > 4) {
-			list($data['lat'],$data['long']) = $conv->gridsquare_to_wgs84($square);
+		if (!empty($_REQUEST['gr'])) {
+			$data = array();
+			$data['x'] = $square->x;
+			$data['y'] = $square->y;
+			if ($square->natgrlen > 4) {
+				list($data['lat'],$data['long']) = $conv->gridsquare_to_wgs84($square);
+			}
+			$data['d'] = !empty($_REQUEST['radius'])?floatval($_REQUEST['radius']):1;
+			$data['sort'] = "@geodist ASC, @relevance DESC, @id DESC";
+
+			$sphinx->setSort($data['sort']);
+			$sphinx->setSpatial($data);
 		}
-		$data['d'] = !empty($_REQUEST['radius'])?floatval($_REQUEST['radius']):1;
-		$data['sort'] = "@geodist ASC, @relevance DESC, @id DESC";
-		
-		$sphinx->setSort($data['sort']);
-		$sphinx->setSpatial($data);
 		
 		$filters = array();
 		if (!$USER->hasPerm('moderator') || !empty($_REQUEST['onlymine'])) {
@@ -248,20 +252,22 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 			$where[] = '0';
 		}
 	} else {
-		$radius = !empty($_REQUEST['radius'])?intval($_REQUEST['radius']*1000):1000;
+		if (!empty($_REQUEST['gr'])) {
+			$radius = !empty($_REQUEST['radius'])?intval($_REQUEST['radius']*1000):1000;
 
-		$left=$square->nateastings-$radius;
-		$right=$square->nateastings+$radius;
-		$top=$square->natnorthings-$radius;
-		$bottom=$square->natnorthings+$radius;
+			$left=$square->nateastings-$radius;
+			$right=$square->nateastings+$radius;
+			$top=$square->natnorthings-$radius;
+			$bottom=$square->natnorthings+$radius;
 
-		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+			$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-		$fields = ",if(natnorthings > 0,(nateastings-{$square->nateastings})*(nateastings-{$square->nateastings})+(natnorthings-{$square->natnorthings})*(natnorthings-{$square->natnorthings}),0) as distance";
-		
-		$where[] = "CONTAINS(
-				GeomFromText($rectangle),
-				point_en)";
+			$fields = ",if(natnorthings > 0,(nateastings-{$square->nateastings})*(nateastings-{$square->nateastings})+(natnorthings-{$square->natnorthings})*(natnorthings-{$square->natnorthings}),0) as distance";
+
+			$where[] = "CONTAINS(
+					GeomFromText($rectangle),
+					point_en)";
+		}
 		
 		if (!$USER->hasPerm('moderator')) {
 			$where[] = "s.user_id = {$USER->user_id}";
