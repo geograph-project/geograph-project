@@ -235,20 +235,18 @@ function relocateMapToMarkers() {
 	}
 	var bounds = new GLatLngBounds();
 	
-	if (marker1) {
+	if (marker1 && eastings1 > 0) {
 		bounds.extend(marker1.getLatLng());
 	}
-	if (marker2) {
+	if (marker2 && eastings2 > 0) {
 		bounds.extend(marker2.getLatLng());
 	}
 	
 	var newZoom = map.getBoundsZoomLevel(bounds);
-	var center = bounds.getCenter();
-		
 	if (newZoom > 13) {
 		newZoom = 13;
 	}
-	map.setCenter(center, newZoom);
+	map.setCenter(bounds.getCenter(), newZoom);
 }
 
 function updateViewDirection() {
