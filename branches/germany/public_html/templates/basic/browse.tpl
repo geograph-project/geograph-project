@@ -28,7 +28,7 @@
 {else}
 	   <h2>Browse</h2>
 	<p>You can view a particular grid square below - if the square hasn't been filled yet,
-	we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Get-a-map&trade;'} to help locate your grid square)</p>
+	we'll tell you how far away the nearest one is.</p>
 {/if}
 
 
