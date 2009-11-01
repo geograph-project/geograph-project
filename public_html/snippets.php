@@ -184,7 +184,7 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 				$smarty->assign('centisquare',1);
 			}
 
-		} else
+		} else {
 			print "invalid GR!";
 		}
 	}
