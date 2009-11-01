@@ -37,7 +37,7 @@ if (!empty($_REQUEST['use_autocomplete'])) {
 
 $clear_cache = array();
 
-if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_NO_FILE)
+if (isset($_FILES['jpeg_exif']))
 {
 	$uploadmanager=new UploadManager;
 
@@ -225,7 +225,9 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 	$smarty->assign('filenames', $filenames);
 	$smarty->assign('grid_reference', $grid_reference);
 
-} elseif (isset($_REQUEST['inner'])) {
+} 
+
+if (isset($_REQUEST['inner'])) {
 	$template='submit2_inner.tpl';
 	$step = 1;
 	
