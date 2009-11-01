@@ -44,10 +44,22 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
 <div id="search_block">
   <div id="search">
     <div id="searchform">
+{?!noSphinx|
     <form method="get" action="/finder/discussions.php">
 	<div id="searchfield"><label for="searchterm">Forensuche</label>
 	<input id="searchterm" type="text" name="q" value="{$searchFor}" size="10"/>
 	<input id="searchbutton" type="submit" value="los"/></div>
+}{?noSphinx|
+     <form method="get" action="/discuss/index.php">
+        <input type="hidden" name="action" value="search"/>
+        <input type="hidden" name="searchForum" value="0"/>
+        <input type="hidden" name="days" value="60"/>
+        <input type="hidden" name="searchWhere" value="0"/>
+        <input type="hidden" name="searchHow" value="0"/>
+        <div id="searchfield"><label for="searchterm">Forensuche</label>
+        <input id="searchterm" type="text" name="searchFor" value="{$searchFor}" size="10"/>
+        <input id="searchbutton" type="submit" name="go" value="los"/></div>
+}
 	</form>
     </div>
   </div>
