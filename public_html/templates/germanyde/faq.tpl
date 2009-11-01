@@ -89,7 +89,7 @@ Die <b>Geograph Website</b>:
 	<li>Es ist ein Spiel: Wie viele Quadrate kann ich beitragen?</li>
 	<li>Es ist ein Geographie-Projekt für alle.</li>
 	<li>Es ist ein Fotografie-Projekt.</li>
-	<li>Es ist eine gute Gelegenheit, mal raus zu gehen.</li>
+	<li>Es ist eine gute Gelegenheit, mal rauszugehen.</li>
 	<li>Es ist ein freies <a href="#opensource">Opensource</a>-Projekt.</li>
 	</ul>
 	
