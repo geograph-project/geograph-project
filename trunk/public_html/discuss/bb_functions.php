@@ -37,6 +37,36 @@ if(isset($GLOBALS[$xx[0]])) $to=$GLOBALS[$xx[0]]; else $to='';
 $tpl=str_replace('{$'.$xx[0].'}', $to, $tpl);
 }
 }
+$qs=array();/* ugly code... */
+$qv=array();
+$ex=explode ('{?',$tpl);
+for ($i=0; $i<=sizeof($ex); $i++){
+	if (!empty($ex[$i]) and substr_count($ex[$i],'}')>0) {
+		$yy=explode('}',$ex[$i]);
+		if (substr_count($yy[0],'|')>0) {
+			$xx=explode('|',$yy[0]);
+			if ($xx[0][0] == '!') {
+				$res=true;
+				$vn=substr($xx[0],1);
+			} else {
+				$res=false;
+				$vn=$xx[0];
+			}
+			$to=$xx[1];
+			if (substr_count($vn,'[')>0) {
+				$clr=explode ('[',$vn); $sp=$clr[1]+0; $clr=$clr[0];
+				if (!in_array($clr,$qs)) {$qs[]=$clr; }
+					if(isset($GLOBALS[$clr][$sp])&&$GLOBALS[$clr][$sp]) $res=!$res;
+			}
+			else { if(!in_array($vn, $qv)) {$qv[]=$vn; }
+				if(isset($GLOBALS[$vn])&&$GLOBALS[$vn]) $res=!$res;
+			}
+			if (!$res) $to = '';
+			$tpl=str_replace('{?'.$yy[0].'}', $to, $tpl);
+		}
+	}
+}
+
 return $tpl;
 }
 
