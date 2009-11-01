@@ -88,24 +88,24 @@ oder per <a href="mailto:geo@hlipp.de">Mail</a> möglich.
 <br style="clear:both"/>
 
 <div style="margin-top:10px;padding:5px;position:relative;text-align:center">
-	<h3 style="margin-top:0;margin-bottom:4px;text-align:center">What is Geographing?</h3>
+	<h3 style="margin-top:0;margin-bottom:4px;text-align:center">Was ist Geograph?</h3>
 	
-	&middot; It's a game - how many grid squares will you contribute? &middot;<br/>
-	&middot; It's a geography project for the people &middot;<br/>
-	&middot; It's a national photography project &middot;<br/>
-	&middot; It's a good excuse to get out more! &middot;<br/>
-	&middot; It's a free and <a href="/faq.php#opensource">open online community</a> project for all &middot;<br/>
+	&middot; Es ist ein Spiel: Wie viele Quadrate kann ich beitragen? &middot;<br/>
+	&middot; Es ist ein Geographie-Projekt für alle &middot;<br/>
+	&middot; Es ist ein Fotografie-Projekt &middot;<br/>
+	&middot; Es ist eine gute Gelegenheit, mal rauszugehen &middot;<br/>
+	&middot; Es ist ein freies <a href="/faq.php#opensource">Opensource</a>-Project &middot;<br/>
 	
 </div>
 <br style="clear:both"/>
-<div style="font-size:0.8em; text-align:center; border: 1px solid silver; padding:5px"><b class="nowrap">{$stats.users|thousends} Benutzer</b> haben <b class="nowrap">{$stats.images|thousends} Bilder</b> eingereicht, die <span  class="nowrap"><b class="nowrap">{$stats.squares|thousends} Planquadrate</b>, d.h. <b class="nowrap">{$stats.percentage}%</b> aller Quadrate, abdecken</span>.<br/>
+<div style="font-size:0.8em; text-align:center; border: 1px solid silver; padding:5px"><b class="nowrap">{$stats.users|thousends} Benutzer</b> haben <b class="nowrap">{$stats.images|thousends} Bilder</b> eingereicht, die <span  class="nowrap"><b class="nowrap">{$stats.squares|thousends} Planquadrate</b>, d.h. <b class="nowrap">{$stats.percentage|number_format:2:",":"."}%</b> aller Quadrate, abdecken</span>.<br/>
 
 {if count($hectads)}
-Recently completed hectads: 
+Zuletzt vervollständigte 10km&thinsp;x&thinsp;10&thinsp;km-Quadrate:
 {foreach from=$hectads key=id item=obj}
-<a title="View Mosaic for {$obj.hectad_ref}, completed {$obj.completed}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad_ref}</a>,
+<a title="Mosaik für {$obj.hectad_ref} (Seit {$obj.completed})" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad_ref}</a>,
 {/foreach}
-<a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">more...</a><br/>
+<a href="/statistics/fully_geographed.php" title="Vollständige 10km&thinsp;x&thinsp;10&thinsp;km-Quadrate">weitere...</a><br/>
 {/if}
 
 <b class="nowrap">{$stats.fewphotos|thousends} fotografierte Quadrate</b> haben <b class="nowrap">weniger als 4 Fotos</b>, wir bitten um Einreichungen!
@@ -115,46 +115,42 @@ Recently completed hectads:
 
 <div style="width:350px;float:left;position:relative">
 
-<h3>Quick Links...</h3>
+<h3>Wichtige Links...</h3>
 <ul>
-	<li><a title="Browse by Map" href="/mapbrowse.php">browse images on a <b>map</b></a></li>
-	<li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a></li>
-	<li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a></li>
-	<li><a title="Discussion forums" href="/discuss/"><b>discuss the site</b> on our forums</a></li>
+	<li><a title="Landkarte" href="/mapbrowse.php">Die <b>Landkarte</b> betrachten</a></li>
+	<li><a title="Bild einreichen" href="/submit.php">Eigene <b>Bilder hochladen</b></a></li>
+	<li><a title="Bildersuche" href="/search.php"><b>Bilder suchen</b></a></li>
+	<li><a title="Diskussionsforum" href="/discuss/">Im <b>Forum</b> diskutieren</a></li>
 </ul>
 
-<h3>Exploring in more depth...</h3>
+<h3>Im Detail...</h3>
 <ul>
-	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a></li>
-	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
-	<li><a title="Submitted Content" href="/content/">view <b>content and articles</b></a> <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></li>
-	<li><a title="List of all pages" href="/help/sitemap">view the <b>full list</b> of pages</a></li>
-	<li><a title="Features Searches" href="/explore/searches.php">browse <b>featured collections</b></a> <a title="RSS Feed Featured Searches" href="/explore/searches.rss.php" class="xml-rss">RSS</a></li>
+	<li><a title="Statistik" href="/statistics.php"><b>Statistiken</b> zu den eingereichten Bildern</a></li>
+	<li><a title="Zusammenstellungen von Bildern" href="/explore/">In den Bildern <b>stöbern</b></a></li>
+	<!--li><a title="Submitted Content" href="/content/">view <b>content and articles</b></a> <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></li-->
+	<li><a title="Liste aller Seiten" href="/help/sitemap">Sitemap: <b>Liste der Seiten</b></a></li>
+	<!--li><a title="Features Searches" href="/explore/searches.php">browse <b>featured collections</b></a> <a title="RSS Feed Featured Searches" href="/explore/searches.rss.php" class="xml-rss">RSS</a></li-->
 </ul>
 
 </div>
 
 <div style="width:300px;float:left;position:relative">
 
-<p><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how 
-many grid squares you submit! 
-
-Read the <a title="Frequently Asked Questions" href="/faq.php">FAQ</a>, then get submitting -
-we hope you'll enjoy being a part of this great project
+<p>Die <a title="register now" href="/register.php">Registrierung</a> ist kostenlos, wir freuen uns über jeden Gast und noch mehr über alle, die zum gelingen des Projekts beitragen wollen! Die wichtigsten Informationen dazu können in der <a title="Fragen und Antworten" href="/faq.php">FAQ</a> gefunden werden.
 </p>
 
 
-<h3>View Images elsewhere...</h3>
+<h3>Die Bilder woanders betrachten...</h3>
 
-<a title="Recent Images in Google Earth" href="/feed/recent.kml" class="xml-kml">KML</a> (for <a title="Google Earth Export" href="/kml.php"><b>Google Earth</b> and <b>Maps</b></a>)<br/>
+<a title="Aktuelle Bilder in Google Earth" href="/feed/recent.kml" class="xml-kml">KML</a> (für <a title="Google Earth Export" href="/kml.php"><b>Google Earth</b> und <b>Maps</b></a>)<br/>
 
-<a title="RSS Feed of Recent Images" href="/feed/recent.rss" rel="RSS" class="xml-rss">RSS</a> (<a title="RSS Feeds" href="/faq.php#rss">more <b>RSS feeds</b> of images</a>)<br/>
+<a title="RSS Feed aktueller Bilder" href="/feed/recent.rss" rel="RSS" class="xml-rss">RSS</a> (<a title="RSS Feeds" href="/faq.php#rss">mehr <b>RSS feeds</b></a>)<br/>
 
-<a title="GPX File of Recent Images" href="/feed/recent.gpx" rel="RSS" class="xml-gpx">GPX</a> (<a title="GPX File Export" href="/gpx.php">more GPX options</a>)<br/>
+<a title="GPX-Datei aktueller Bilder" href="/feed/recent.gpx" rel="RSS" class="xml-gpx">GPX</a> (<a title="GPX File Export" href="/gpx.php">mehr GPX-Optionen</a>)<br/>
 
-or <a title="Memory Map Export" href="/memorymap.php">in <b>Memory Map</b></a><br/><br/>
+oder <a title="Memory Map Export" href="/memorymap.php">in <b>Memory Map</b></a><br/><br/>
 
-and <a href="/article/Ways-to-view-Geograph-Images">even more ways to view images</a>
+und <a href="http://www.geograph.org.uk/article/Ways-to-view-Geograph-Images">andere Methoden, Bilder zu betrachten</a>
 </div>
 
 <br style="clear:both"/>
