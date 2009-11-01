@@ -33,6 +33,8 @@ if (empty($CONF['forums'])) {
 	$USER->mustHavePerm("admin");
 }
 
+$noSphinx=empty($CONF['sphinx_host']);
+
 $static_host = $CONF['STATIC_HOST'];
 $static_url = "http://{$CONF['STATIC_HOST']}/discuss";
 

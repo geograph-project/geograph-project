@@ -9,6 +9,8 @@ require_once('geograph/global.inc.php');
 init_session();
 $USER->mustHavePerm("admin");
 
+$noSphinx=empty($CONF['sphinx_host']);
+
 $static_host = $CONF['STATIC_HOST']; 
 
 function get_microtime() {
