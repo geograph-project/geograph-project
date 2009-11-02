@@ -263,8 +263,6 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 {/if}
 
-{getamap gridref=$image->subject_gridref text="OS Get-a-map&trade;"},
-
 {if $rastermap->reference_index == 1}<a href="/mapper/?t={$map_token}&amp;gridref_from={$image->grid_reference}">OS Map Checksheet</a>, {/if}
 
 <a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$image->grid_reference}">Geograph Map</a>, 
