@@ -230,7 +230,9 @@ if ($image->isValid())
 		$image->assignToSmarty($smarty);
 		
 		$image->assignSnippetsToSmarty($smarty);
+		$image->assignCollectionsToSmarty($smarty);
 	}
+	
 } elseif (!empty($rejected)) {
 	header("HTTP/1.0 410 Gone");
 	header("Status: 410 Gone");

@@ -1141,7 +1141,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			left join queries_count using (id)
 			where user_id = {$USER->user_id} and favorite = 'N' and searchuse = 'search'
 			order by use_timestamp desc,id desc	$nlimit)
-		UNION
+		UNION ALL
 			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass ,searchq,displayclass,resultsperpage from queries
 			left join queries_count using (id)
 			where user_id = {$USER->user_id} and favorite = 'Y' and searchuse = 'search'

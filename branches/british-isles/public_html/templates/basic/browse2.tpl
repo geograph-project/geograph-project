@@ -201,7 +201,7 @@
 	
 	<div class="interestBox" style="position:relative; margin-left:10px">
 	{if $sample}
-	Random <b>sample</b> of photos ({$sample|thousends}/<b>{$imagecount|thousends}</b>)
+	A <b>sample</b> of {$sample|thousends} photos from <b>{$imagecount|thousends}</b>
 	{else}
 	We have 
 	{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 

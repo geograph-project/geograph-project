@@ -75,6 +75,12 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
 </div>
 {/foreach}
 {/if}
+{if $collections}
+<h3 class="newstitle" style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;">Collections for this image: <sup style="color:red">new!</sup></h3>
+{foreach from=$collections item=item}
+<div class="newsbody">&middot; <a href="{$item.url}" title="{$item.type|escape:'html'}">{$item.title|escape:'html'}</a></div>
+{/foreach}
+{/if}
 {if $news}
 {foreach from=$news item=newsitem}
 <h3 class="newstitle" style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;">{$newsitem.topic_title}</h3>
