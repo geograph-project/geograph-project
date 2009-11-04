@@ -751,3 +751,24 @@ CREATE TABLE IF NOT EXISTS `snippet_item` (
 ################################################
 
 ALTER TABLE  `snippet_item` ADD `updated` timestamp NOT NULL default CURRENT_TIMESTAMP ;
+
+################################################
+
+CREATE TABLE IF NOT EXISTS `gridimage_content` (
+  `seq_id` int(10) unsigned NOT NULL auto_increment,
+  `content_id` int(10) unsigned NOT NULL default '0',
+  `gridimage_id` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`seq_id`),
+  UNIQUE KEY `content_id` (`content_id`,`gridimage_id`),
+  KEY `gridimage_id` (`gridimage_id`)
+) ENGINE=MyISAM;
+
+ALTER TABLE  `gridimage_post` ADD INDEX (  `gridimage_id` );
+
+
+
+
+
+
+
+

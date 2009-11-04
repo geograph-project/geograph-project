@@ -616,7 +616,10 @@ class RasterMap
 							map.addMapType(G_PHYSICAL_MAP);
 							map.addControl(new GSmallZoomControl());
 							map.addControl(new GMapTypeControl(true));
-							//map.disableDragging();
+							map.enableDoubleClickZoom(); 
+							map.enableContinuousZoom();
+							map.enableScrollWheelZoom();
+
 							var point = new GLatLng({$this->lat},{$this->long});
 							map.setCenter(point, 13, G_PHYSICAL_MAP);
 							$block 

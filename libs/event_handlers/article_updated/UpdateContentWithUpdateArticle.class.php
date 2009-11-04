@@ -51,13 +51,13 @@ class UpdateContentWithUpdateArticle extends EventHandler
 		left join article_cat on (article.article_cat_id = article_cat.article_cat_id)
 		where (licence != 'none' and approved > 0) and article_id = $article_id");
 		
+		$updates = array();
+		$updates[] = "`foreign_id` = {$article_id}";
+		$updates[] = "`source` = 'article'";
+
+		$content_id = $db->getOne("SELECT content_id FROM content WHERE ".implode(' AND ',$updates));
+		
 		if (count($page)) {
-			$updates = array();
-			$updates[] = "`foreign_id` = {$page['article_id']}";
-			$updates[] = "`source` = 'article'";
-			
-			$content_id = $db->getOne("SELECT content_id FROM content WHERE ".implode(' AND ',$updates));
-			
 			
 			$updates[] = "`title` = ".$db->Quote($page['title']);
 			$updates[] = "`url` = ".$db->Quote("/article/".$page['url']);
@@ -107,6 +107,14 @@ class UpdateContentWithUpdateArticle extends EventHandler
 				$sql = "UPDATE `content` SET ".implode(',',$updates)." WHERE content_id = $content_id";
 			} else {
 				$sql = "REPLACE INTO `content` SET ".implode(',',$updates);
+				
+				if (count($this->gridimage_ids)) {
+					$updates = array();
+					$updates[] = "`foreign_id` = {$article_id}";
+					$updates[] = "`source` = 'article'";
+
+					$content_id = $db->getOne("SELECT content_id FROM content WHERE ".implode(' AND ',$updates));
+				}
 			}
 
 			$db->Execute($sql);
@@ -119,14 +127,20 @@ class UpdateContentWithUpdateArticle extends EventHandler
 			$sql = "INSERT INTO `article_stat` SET article_id = {$page['article_id']}, words = $words, images = $images ON DUPLICATE KEY UPDATE words = $words, images = $images"; 
 			
 			$db->Execute($sql);
-		} else {
-			$updates = array();
-			$updates[] = "`foreign_id` = $article_id";
-			$updates[] = "`source` = 'article'";
 			
+			if (count($this->gridimage_ids) && $content_id) {
+				$db->Execute("DELETE FROM gridimage_content WHERE content_id=$content_id");
+				foreach ($this->gridimage_ids as $i => $g_id) {
+
+					$db->Execute("INSERT INTO gridimage_content SET gridimage_id = $g_id,content_id = $content_id");
+				}
+			}
+		} elseif ($content_id) {
 			$sql = "DELETE FROM `content` WHERE ".implode(' AND ',$updates);
 			
 			$db->Execute($sql);
+			
+			$db->Execute("DELETE FROM gridimage_content WHERE content_id=$content_id");
 		}
 	
 		//return true to signal completed processing
