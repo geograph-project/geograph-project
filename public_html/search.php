@@ -591,6 +591,8 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign_by_ref('references',$CONF['references']);
 		$smarty->assign('searchdesc', $engine->searchdesc);
 		$smarty->display('search_multiple.tpl');
+		
+		exit;
 	} else {
 		fallBackForm($_POST);
 	}
