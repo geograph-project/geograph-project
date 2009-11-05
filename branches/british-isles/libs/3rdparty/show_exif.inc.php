@@ -151,7 +151,7 @@ return value: Number of exif tags successfully processed
 function show_exif($exif_array) {
   // list of exif tags to be processed - show_exif() silently ignores any that aren't present in the file
   $relevant=array(
-    'Make'
+    'Make',
     'Model',
     'CCDWidth',
     'ExposureTime',
