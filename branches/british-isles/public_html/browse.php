@@ -645,7 +645,7 @@ if ($grid_given)
 			} elseif ($_GET['by'] == 'user') {
 				$breakdown_title = "Contributor";
 				$all = $db->cacheGetAll($cacheseconds,"SELECT user.realname AS user_realname,COUNT(*) AS count,
-				gridimage_id, user_id, $columns
+				gridimage_id, user_id $columns
 				FROM gridimage gi INNER JOIN user USING(user_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit $custom_where
