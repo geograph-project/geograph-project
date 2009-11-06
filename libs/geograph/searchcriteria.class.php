@@ -214,7 +214,7 @@ class SearchCriteria
 					}
 				}
 			}
-			if ($this->limit8 && $this->limit8 <= 20 && $this->limit8 > -20) {
+			if ($this->limit8 && $this->limit8 <= 20 && $this->limit8 > -20) { //todo - increase this? sphinx could use hectads
 				//possible, but calculate it JIT
 				$this->sphinx['x'] = $x;
 				$this->sphinx['y'] = $y;

@@ -358,7 +358,11 @@ END;
 					&& (empty($this->criteria->searchtext) || ($this->criteria->searchq == $this->criteria->searchtext) )
 					&& isset($GLOBALS['smarty'])
 				) {
-				$suggestions = array(array('gr'=>'(anywhere)','localities'=>'as text search','query'=>$this->criteria->searchq) );
+				$suggestions = array(array(
+					'query'=>$this->criteria->searchq,
+					'gr'=>'(anywhere)',
+					'localities'=>'as text search'
+					));
 			}
 			if (!empty($this->criteria->searchtext)) {
 
@@ -374,7 +378,12 @@ END;
 						($image->moderation_status!='rejected' && $image->moderation_status!='pending')
 						|| $image->user_id == $GLOBALS['USER']->user_id
 					) ) {
-						$suggestions += array(array('link'=>"/photo/{$image->gridimage_id}",'gr'=>'(anywhere)','localities'=>"Image by ".htmlentities($image->realname).", ID: {$image->gridimage_id}",'query'=>htmlentities2($image->title)));
+						$suggestions += array(array(
+							'link'=>"/photo/{$image->gridimage_id}",
+							'query'=>htmlentities2($image->title),
+							'gr'=>'(anywhere)',
+							'localities'=>"Image by ".htmlentities($image->realname).", ID: {$image->gridimage_id}"
+							));
 					}
 				} else {
 					require_once("3rdparty/spellchecker.class.php");
@@ -383,7 +392,11 @@ END;
 
 					if (strcasecmp($correction,$this->criteria->searchtext) != 0 && levenshtein($correction,$this->criteria->searchtext) < 0.25*strlen($correction)) {
 
-						$suggestions += array(array('gr'=>'(anywhere)','localities'=>'','query'=>$correction));
+						$suggestions += array(array(
+							'query'=>$correction,
+							'gr'=>'(anywhere)',
+							'localities'=>'spelling suggestion'
+							));
 					}
 				}
 			} 
@@ -535,9 +548,23 @@ END;
 		# /run_via_sphinx
 		###################
 	
-		
+		//look for suggestions - this needs to be done before the filters are added - the same filters wont work on the gaz index
 		if ($this->criteria->searchclass == 'Placename' && strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE && isset($GLOBALS['smarty'])) {
-			$GLOBALS['smarty']->assign("suggestions",array(array('gr'=>'(anywhere)','localities'=>'as text search','query'=>$this->criteria->searchq) ));
+			$GLOBALS['smarty']->assign("suggestions",array(array(
+				'query'=>$this->criteria->searchq,
+				'gr'=>'(anywhere)',
+				'localities'=>'as text search'
+				) ));
+		} elseif ($this->criteria->searchclass == 'Special' && preg_match('/labeled \[([\w ]+)\], in grid reference (\w+)/',$this->criteria->searchdesc,$m) && isset($GLOBALS['smarty'])) {
+		
+			$suggestions = array(array(
+				'link'=>"/search.php?q=".urlencode($m[1])."+near+{$m[2]}",
+				'query'=>$m[1],
+				'name'=>$m[2],
+				'localities'=>'as text search'
+				) );
+			$GLOBALS['smarty']->assign_by_ref("suggestions",$suggestions);
+
 		}
 
 		if (!empty($sql_where)) {

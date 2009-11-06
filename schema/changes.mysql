@@ -765,9 +765,11 @@ CREATE TABLE IF NOT EXISTS `gridimage_content` (
 
 ALTER TABLE  `gridimage_post` ADD INDEX (  `gridimage_id` );
 
+#create events to update all the articles with images. 
+INSERT INTO event
+	SELECT NULL AS `event_id`,'article_updated' AS event_name,foreign_id AS event_param,NOW() AS posted,0 AS processed,1 AS instances,80 AS priority,'pending' AS status FROM `content` INNER JOIN article_stat ON(article_id = foreign_id) WHERE source = 'article' AND images > 0;
 
-
-
+################################################
 
 
 

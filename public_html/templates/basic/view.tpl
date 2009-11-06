@@ -46,17 +46,17 @@
   {if $image->comment}
   <div class="caption" style="margin-left:auto;margin-right:auto;width:640px;">{$image->comment|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
   {/if}
-  {if $snippets}
-	{if !$image->comment && $snippet_count == 1}
-		{assign var="item" value=$snippets[0]}
+  {if $image->snippet_count}
+	{if !$image->comment && $image->snippet_count == 1}
+		{assign var="item" value=$image->snippets[0]}
 		<div class="caption">
 		{$item.comment|escape:'html'|nl2br|geographlinks}<br/><br/>
 		<small>See other images of <a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'}</a></small>
 		</div>
 	{else}
-		{foreach from=$snippets item=item name=used}
+		{foreach from=$image->snippets item=item name=used}
 			<div style="margin-left:auto;margin-right:auto;width:640px;text-align:left;font-size:0.8em;padding-top:3px">
-			<small class="searchresults">{if $snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}
+			<small class="searchresults">{if $image->snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}
 			<a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'}</a> {if $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small> {/if}<br/></small>
 			<div style="font-size:0.9em">{$item.comment|escape:'html'|nl2br|geographlinks}</div>
 			</div>
