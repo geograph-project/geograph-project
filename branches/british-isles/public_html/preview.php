@@ -197,6 +197,8 @@ if (!empty($_POST['spelling'])) {
 	//what style should we use?
 	$style = $USER->getStyle();
 
+	$smarty->assign('maincontentclass', 'content_photo'.$style);
+	
 	#if (!$smarty->is_cached($template, $cacheid))
 	#{
 		function smarty_function_hidekeywords($input) {
@@ -204,8 +206,6 @@ if (!empty($_POST['spelling'])) {
 		}
 		$smarty->register_modifier("hidekeywords", "smarty_function_hidekeywords");
 
-		$smarty->assign('maincontentclass', 'content_photo'.$style);
-	
 		$image->assignToSmarty($smarty);
 		
 		if (!empty($_POST['upload_id'])) {

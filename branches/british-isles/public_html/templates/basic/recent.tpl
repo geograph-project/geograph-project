@@ -3,6 +3,7 @@
 <title>Recent Photos</title>
 <link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/basic/css/basic.css"|revision}" media="screen" />
 </head>
+{dynamic}
 <body style="background-color:{$maincontentclass|replace:"content_photo":""}"
 
 {if $maincontentclass eq "content_photowhite"}
@@ -14,9 +15,8 @@
 {if $maincontentclass eq "content_photogray"}
 	text="#CCCCCC"
 {/if}
-
-
 >
+{/dynamic}
 
  {if $recentcount}
   

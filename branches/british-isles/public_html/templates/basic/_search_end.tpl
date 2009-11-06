@@ -65,21 +65,12 @@ View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteri
 </form> &nbsp;&nbsp; | &nbsp;&nbsp;
 
 Background Color: [
-{if $maincontentclass eq "content_photowhite"}
-	<b>white</b>
-{else}
-	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=white" rel="nofollow" class="robots-nofollow robots-noindex">White</a>
-{/if}/
-{if $maincontentclass eq "content_photoblack"}
-	<b>black</b>
-{else}
-	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=black" rel="nofollow" class="robots-nofollow robots-noindex">Black</a>
-{/if}/
-{if $maincontentclass eq "content_photogray"}
-	<b>grey</b>
-{else}
-	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=gray" rel="nofollow" class="robots-nofollow robots-noindex">Grey</a>
-{/if} ]
+	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=white" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photowhite"} hidelink{/if}{/dynamic}">White</a>
+/
+	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=black" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photoblack"} hidelink{/if}{/dynamic}">Black</a>
+/
+	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=gray" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photogray"} hidelink{/if}{/dynamic}">Grey</a>
+ ]
 </div>
 
 {include file="_std_end.tpl"}
