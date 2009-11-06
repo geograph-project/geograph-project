@@ -68,6 +68,7 @@ init_session();
 if (isset($_GET['style'])) {
 	$USER->getStyle();
 	if (isset($_GET['id'])) {
+		$_SESSION['setstyle'] = 1;
 		header("HTTP/1.0 301 Moved Permanently");
 		header("Status: 301 Moved Permanently");
 		header("Location: /photo/".intval($_GET['id']));
@@ -140,17 +141,20 @@ if ($image->isValid())
 
 	//what style should we use?
 	$style = $USER->getStyle();
-	$cacheid.=$style;
-
-
+	
 	//when this image was modified
 	$mtime = strtotime($image->upd_timestamp);
 
 	//page is unqiue per user (the profile and links)
 	$hash = $cacheid.'.'.$USER->user_id;
 
-	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
-	customCacheControl($mtime,$hash,($USER->user_id == 0));
+	//if they have just just changed the style dont allow sending a 304 :) (of course can still exploit the smarty cache)
+	if (!empty($_SESSION['setstyle'])) {
+		unset($_SESSION['setstyle']);
+	} else {
+		//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
+		customCacheControl($mtime,$hash,($USER->user_id == 0));
+	}
 
 
 	if ( (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE) &&
@@ -215,10 +219,10 @@ if ($image->isValid())
 		}
 	}
 
+	$smarty->assign('maincontentclass', 'content_photo'.$style);
+
 	if (!$smarty->is_cached($template, $cacheid))
 	{
-		$smarty->assign('maincontentclass', 'content_photo'.$style);
-
 		if ($CONF['template']!='archive') {
 			if (empty($db)) {
 				$db = GeographDatabaseConnection(true);

@@ -47,17 +47,17 @@ $cacheid=rand(1,5); //so we get a selection of homepages
 
 //what style should we use?
 $style = $USER->getStyle();
-$cacheid.=$style;
 
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 600; //10min cache
+}
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 600; //10min cache
-
+$smarty->assign('maincontentclass', 'content_photo'.$style);
+	
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$smarty->assign('maincontentclass', 'content_photo'.$style);
-	
 	//lets find some recent photos
 	new RecentImageList($smarty);
 }

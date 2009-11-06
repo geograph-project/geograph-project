@@ -32,7 +32,7 @@ if (!empty($_GET['debug'])) {
 if (!empty($_GET['style'])) {
 	$USER->getStyle();
 	if (!empty($_SERVER['QUERY_STRING'])) {
-		$query = preg_replace('/style=(\w+)/','',$_SERVER['QUERY_STRING']);
+		$query = preg_replace('/style=(\w+)/','r='.rand(),$_SERVER['QUERY_STRING']);
 		header("HTTP/1.0 301 Moved Permanently");
 		header("Status: 301 Moved Permanently");
 		header("Location: /search.php?".$query);
@@ -913,7 +913,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 
 	//what style should we use?
 	$style = $USER->getStyle();
-	$cacheid.=$style;
+	$smarty->assign('maincontentclass', 'content_photo'.$style);
 	
 	if (!empty($_GET['legacy'])) {
 		$cacheid.="X";
@@ -925,16 +925,15 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		if ($token->parse($_GET['t']) && $token->getValue("i") == $i)
 			$smarty->clear_cache($template, $cacheid);
 	}
-
+	
+	$smarty->register_function("votestars", "smarty_function_votestars");
 	if (!$smarty->is_cached($template, $cacheid)) {
 		dieUnderHighLoad(3,'search_unavailable.tpl');
 		
 		$smarty->assign_by_ref('google_maps_api_key', $CONF['google_maps_api_key']);
 		
 		$smarty->register_function("searchbreak", "smarty_function_searchbreak");
-		$smarty->register_function("votestars", "smarty_function_votestars");
-
-		$smarty->assign('maincontentclass', 'content_photo'.$style);
+		
 		
 		if ($display == 'reveal') {
 			$engine->noCache = true;

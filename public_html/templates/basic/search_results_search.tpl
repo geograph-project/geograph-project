@@ -3,8 +3,8 @@
 <title>Search Results</title>
 <link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/basic/css/basic.css"|revision}" media="screen" />
 </head>
+{dynamic}
 <body style="background-color:{$maincontentclass|replace:"content_photo":""}"
-
 {if $maincontentclass eq "content_photowhite"}
 	text="#000000"
 {/if}
@@ -14,9 +14,8 @@
 {if $maincontentclass eq "content_photogray"}
 	text="#CCCCCC"
 {/if}
-
-
 >
+{/dynamic}
 
 <h2>Search Results</h2>
 

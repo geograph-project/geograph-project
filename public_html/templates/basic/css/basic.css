@@ -38,6 +38,12 @@ a Img
 	overflow:hidden;
 }
 
+a.hidelink {
+	text-transform:lowercase;
+	text-decoration:none;
+	cursor:normal;
+}
+
 /*---------------------------------------------------------------*
  * title header
  *---------------------------------------------------------------*/
@@ -241,7 +247,7 @@ body>#nav_block {width:128px;}
 	z-index:3;
 	color:silver;
 }
-.content_photoblack a.text 
+.content_photoblack a.text, .content_photoblack a.hidelink 
 {
 	color:silver;
 }
@@ -275,8 +281,6 @@ body>#nav_block {width:128px;}
 	font-size:0.9em;
 }
 
-
-
 .content_photoblack a 
 {
 	color:#00CCCC;
@@ -291,6 +295,8 @@ body>#nav_block {width:128px;}
 	border-bottom:1px solid #333333;
 }
 
+/*----------*/
+
 .content_photogray
 {
 	background:gray;
@@ -304,7 +310,7 @@ body>#nav_block {width:128px;}
 	color:silver;
 }
 
-.content_photogray a.text 
+.content_photogray a.text, .content_photogray a.hidelink 
 {
 	color:silver;
 }
@@ -368,6 +374,8 @@ body>#nav_block {width:128px;}
 	border-bottom:1px solid #888888;
 }
 
+/*----------*/
+
 .content_photowhite
 {
 	background:white;
@@ -380,7 +388,7 @@ body>#nav_block {width:128px;}
 	z-index:3;
 	color:black;
 }
-.content_photowhite a.text 
+.content_photowhite a.text, .content_photowhite a.hidelink  
 {
 	color:black;
 }
@@ -412,6 +420,7 @@ body>#nav_block {width:128px;}
 	font-size:0.9em;
 }
 
+/*----------*/
 
 /* All the content boxes belong to the content class. */
 .content3 {
