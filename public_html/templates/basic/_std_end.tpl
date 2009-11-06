@@ -71,7 +71,7 @@
 	{foreach from=$image->collections item=item}
 		{if $lasttype != $item.type}
 			<div class="newsheader">{$item.type|regex_replace:"/y$/":'ie'}s</div>
-		{/if}
+		{/if}{assign var="lasttype" value=$item.type}
 		<div class="newsbody">&middot; <a href="{$item.url}" title="{$item.type|escape:'html'}">{$item.title|escape:'html'}</a></div>
 	{/foreach}
 {/if}
