@@ -92,7 +92,7 @@ function bodyOnLoad()
 
 <div id="breadcrumbs">
 </div>
-
+{dynamic}
 <div id="content" {if $maincontentclass}class="{$maincontentclass}"{/if}>
-
+{/dynamic}
 

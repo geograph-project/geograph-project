@@ -78,30 +78,40 @@
   </ul> 
 <div style="text-align:center; padding-top:15px; border-top: 2px solid black; margin-top: 15px;">sponsored by <br/> <br/>
 <a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="http://{$static_host}/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey" style="padding:4px;"/></a></div>
+{if $image && $image->collections}
+	<h3 class="newstitle" style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;">Collections: <sup style="color:red">new!</sup></h3>
+	{assign var="lasttype" value="0"}
+	{foreach from=$image->collections item=item}
+		{if $lasttype != $item.type}
+			<div class="newsheader">{$item.type|regex_replace:"/y$/":'ie'}s</div>
+		{/if}
+		<div class="newsbody">&middot; <a href="{$item.url}" title="{$item.type|escape:'html'}">{$item.title|escape:'html'}</a></div>
+	{/foreach}
+{/if}
 {if $discuss}
-{foreach from=$discuss item=newsitem}
-<h3 class="newstitle" style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;">{$newsitem.topic_title}</h3>
-<div class="newsbody">{$newsitem.post_text}</div>
-<div class="newsfooter">
-Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$newsitem.topic_time|date_format:"%a, %e %b"}
-<a href="/discuss/index.php?action=vthread&amp;topic={$newsitem.topic_id}">({$newsitem.comments} {if $newsitem.comments eq 1}comment{else}comments{/if})</a>
-</div>
-{/foreach}
+	{foreach from=$discuss item=newsitem}
+		<h3 class="newstitle" style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;">{$newsitem.topic_title}</h3>
+		<div class="newsbody">{$newsitem.post_text}</div>
+		<div class="newsfooter">
+		Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$newsitem.topic_time|date_format:"%a, %e %b"}
+		<a href="/discuss/index.php?action=vthread&amp;topic={$newsitem.topic_id}">({$newsitem.comments} {if $newsitem.comments eq 1}comment{else}comments{/if})</a>
+		</div>
+	{/foreach}
 {/if}
 {if $news}
-{foreach from=$news item=newsitem}
-<h3 class="newstitle" style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;">{$newsitem.topic_title}</h3>
-<div class="newsbody">{$newsitem.post_text}</div>
-<div class="newsfooter">
-Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$newsitem.topic_time|date_format:"%a, %e %b"}
-<a href="/discuss/index.php?action=vthread&amp;topic={$newsitem.topic_id}">({$newsitem.comments} {if $newsitem.comments eq 1}comment{else}comments{/if})</a>
-</div>
-{/foreach}
-{if $rss_url}
-<div style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;">
-<a rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}" class="xml-rss">News RSS Feed</a>
-</div>
-{/if}
+	{foreach from=$news item=newsitem}
+		<h3 class="newstitle" style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;">{$newsitem.topic_title}</h3>
+		<div class="newsbody">{$newsitem.post_text}</div>
+		<div class="newsfooter">
+		Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$newsitem.topic_time|date_format:"%a, %e %b"}
+		<a href="/discuss/index.php?action=vthread&amp;topic={$newsitem.topic_id}">({$newsitem.comments} {if $newsitem.comments eq 1}comment{else}comments{/if})</a>
+		</div>
+	{/foreach}
+	{if $rss_url}
+		<div style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;">
+		<a rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}" class="xml-rss">News RSS Feed</a>
+		</div>
+	{/if}
 {/if}
   </div>
 </div>
