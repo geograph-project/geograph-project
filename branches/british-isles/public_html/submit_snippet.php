@@ -99,6 +99,12 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 	$updates['gridimage_id'] = $gid;
 	
 	$db->Execute('INSERT INTO gridimage_snippet SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+
+	if ($gid < 4294967296) 
+		//clear any caches involving this photo
+		$ab=floor($gid/10000);
+		$smarty->clear_cache(null, "img$ab|{$gid}");
+	}
 	
 } elseif ($gid && !empty($_POST['remove'])) {
 	
@@ -110,6 +116,12 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 		$criteria['snippet_id'] = $id;
 		
 		$db->Execute('DELETE FROM gridimage_snippet WHERE `'.implode('` = ? AND `',array_keys($criteria)).'` = ?',array_values($criteria));
+	}
+
+	if ($gid < 4294967296) 
+		//clear any caches involving this photo
+		$ab=floor($gid/10000);
+		$smarty->clear_cache(null, "img$ab|{$gid}");
 	}
 
 } elseif ($gid && !empty($_POST['add'])) {
@@ -124,6 +136,13 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 		
 		$db->Execute('INSERT IGNORE INTO gridimage_snippet SET `'.implode('` = ?, `',array_keys($updates)).'` = ?',array_values($updates));
 	}
+	
+	if ($gid < 4294967296) 
+		//clear any caches involving this photo
+		$ab=floor($gid/10000);
+		$smarty->clear_cache(null, "img$ab|{$gid}");
+	}
+	
 }
 
 

@@ -131,7 +131,7 @@ class GridImage
 	/**
 	* constructor
 	*/
-	function GridImage($id = null)
+	function GridImage($id = null) //todo - offer to load the snippets, and collection references here (remmeber memcache!) 
 	{
 		$this->ext = false;
 		if (!empty($id)) {
@@ -537,7 +537,7 @@ class GridImage
 		$smarty->assign('sitemap',getSitemapFilepath($level,$this->grid_square)); 
 	}
 	
-	function assignSnippetsToSmarty($smarty, $gid = 0) {
+	function loadSnippets($gid = 0) {
 		if (empty($gid)) {
 			$gid = $this->gridimage_id;
 			$cachetime = 3600;
@@ -547,17 +547,17 @@ class GridImage
 		
 		$db=&$this->_getDB(30); //need currency
 		
-		$snippets = $db->CacheGetAll($cachetime,"SELECT snippet.* FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) WHERE gridimage_id = $gid AND enabled = 1 ORDER BY gridimage_snippet.created");
+		$this->snippets = $db->CacheGetAll($cachetime,"SELECT snippet.* FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) WHERE gridimage_id = $gid AND enabled = 1 ORDER BY gridimage_snippet.created");
 
-		$smarty->assign_by_ref('snippets',$snippets);
-		$smarty->assign_by_ref('snippet_count',$this->snippet_count = count($snippets));
+		
+		$this->snippet_count = count($this->snippets);
 		
 		if (preg_match('/[^\[]\[\d+\]/',$this->comment))
-			$smarty->assign('snippets_as_ref',1);
+			$this->snippets_as_ref =1;
 	}
 	
 	
-	function assignCollectionsToSmarty($smarty) {
+	function loadCollections() {
 		
 		//only show on active images (non active images wont be in those tables anyway) 
 		if ($this->moderation_status != 'rejected' && $this->moderation_status != 'pending') { 
@@ -565,7 +565,7 @@ class GridImage
 			$db=&$this->_getDB(false); 
 
 			//find articles
-			$collections = $db->CacheGetAll(3600*6,"
+			$this->collections = $db->CacheGetAll(3600*6,"
 				SELECT c.url,c.title,'Article' AS `type`
 				FROM gridimage_content gc
 					INNER JOIN content c USING (content_id) 
@@ -573,38 +573,37 @@ class GridImage
 				ORDER BY content_id DESC");
 
 			//find galleries (not net harmogized into gridimage_content)
-			$collections += $db->CacheGetAll(3600*6,"
+			$this->collections += $db->CacheGetAll(3600*6,"
 				SELECT c.url,c.title,'Gallery' AS `type` 
 				FROM gridimage_post gp
 					INNER JOIN content c ON (c.foreign_id = topic_id AND c.source = 'gallery') 
 				WHERE gp.gridimage_id = {$this->gridimage_id} 
 				ORDER BY content_id DESC");
 			//todo - could add themed topics (if a registered user) and gsds (if they become part of content)
-			
-			
-			//todo -experimental - might be removed...
-			if ($collections += $db->CacheGetAll(3600*6,"
-				SELECT '' AS url,label AS title,'Automatic Cluster' AS `type` 
-				FROM gridimage_group 
-				WHERE gridimage_id = {$this->gridimage_id} 
-				ORDER BY score DESC")) {
-				foreach ($collections as $i => $row) {
-					if (empty($row['url']) && !empty($row['title'])) {
-						$collections[$i]['url'] = "/search.php?gridref={$this->grid_reference}&amp;distance=1&amp;orderby=score+desc&amp;displayclass=full&amp;cluster2=1&amp;label=".urlencode($row['title'])."&amp;do=1";
-					}
-				}
-			}
+						
 			//todo -experimental and duplicate anyway!
 			if (!empty($this->snippet_count)) {
-				foreach ($smarty->get_template_vars('snippets') as $i => $row) {
+				foreach ($this->snippets as $i => $row) {
 					if (!empty($row['title'])) {
-						$collections[] = array('url'=>"/snippet.php?id=".$row['snippet_id'],'title'=>$row['title'],'type'=>'Shared Description');
+						$this->collections[] = array('url'=>"/snippet.php?id=".$row['snippet_id'],'title'=>$row['title'],'type'=>'Shared Description');
 					}
 				}
 			}
 		
-			$smarty->assign_by_ref('collections',$collections);
-			$smarty->assign_by_ref('collections_count',count($collections));
+			//todo -experimental - might be removed...
+			if ($this->collections += $db->CacheGetAll(3600*30,"
+				SELECT '' AS url,label AS title,'Automatic Cluster' AS `type` 
+				FROM gridimage_group 
+				WHERE gridimage_id = {$this->gridimage_id} 
+				ORDER BY score DESC")) {
+				foreach ($this->collections as $i => $row) {
+					if (empty($row['url']) && !empty($row['title'])) {
+						$this->collections[$i]['url'] = "/search.php?gridref={$this->grid_reference}&amp;distance=1&amp;orderby=score+desc&amp;displayclass=full&amp;cluster2=1&amp;label=".urlencode($row['title'])."&amp;do=1";
+					}
+				}
+			}
+
+			$this->collections_count = count($this->collections);
 		}
 	}	
 	

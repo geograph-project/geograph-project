@@ -229,8 +229,8 @@ if ($image->isValid())
 
 		$image->assignToSmarty($smarty);
 		
-		$image->assignSnippetsToSmarty($smarty);
-		$image->assignCollectionsToSmarty($smarty);
+		$image->loadSnippets();
+		$image->loadCollections();
 	}
 	
 } elseif (!empty($rejected)) {

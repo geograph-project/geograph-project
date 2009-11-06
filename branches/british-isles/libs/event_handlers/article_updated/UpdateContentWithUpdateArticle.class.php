@@ -76,7 +76,7 @@ class UpdateContentWithUpdateArticle extends EventHandler
 			$content = $page['content'];
 			$content = str_replace("\r",'',$content);
 			
-			$content = preg_replace('/\{image id=(\d+) text=([^\}]+)\}/e',"\$this->add_image_to_list('\$1','\$2')",$content);
+			$content = preg_replace('/\[image id=(\d+) text=([^\}]+)\]/e',"\$this->add_image_to_list('\$1','\$2')",$content);
 			
 			$content = preg_replace('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/e',"\$this->add_image_to_list('\$2','\$2')",$content);
 			

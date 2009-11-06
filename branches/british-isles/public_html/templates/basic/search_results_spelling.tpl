@@ -27,6 +27,7 @@
 		  <div class="interestBox" id="showshare{$image->gridimage_id}" style="display:none">
 			<iframe src="about:blank" height="400" width="100%" id="shareframe{$image->gridimage_id}">
 			</iframe>
+			<div><a href="#" onclick="hide_tree('share{$image->gridimage_id}');return false">- Close <i>Shared Descriptions</I> box</a> -</div>
 		  </div>
 		{/if}
 	  </form><br/>
