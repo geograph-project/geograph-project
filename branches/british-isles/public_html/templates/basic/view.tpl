@@ -41,21 +41,21 @@
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
   
-  <div class="caption" style="font-weight:bold;margin-left:auto;margin-right:auto;width:640px;" xmlns:dc="http://purl.org/dc/elements/1.1/" property="dc:title">{$image->title|escape:'html'}</div>
+  <div class="caption640" style="font-weight:bold" xmlns:dc="http://purl.org/dc/elements/1.1/" property="dc:title">{$image->title|escape:'html'}</div>
 
   {if $image->comment}
-  <div class="caption" style="margin-left:auto;margin-right:auto;width:640px;">{$image->comment|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
+  <div class="caption640">{$image->comment|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
   {/if}
   {if $image->snippet_count}
 	{if !$image->comment && $image->snippet_count == 1}
 		{assign var="item" value=$image->snippets[0]}
-		<div class="caption">
+		<div class="caption640">
 		{$item.comment|escape:'html'|nl2br|geographlinks}<br/><br/>
 		<small>See other images of <a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'}</a></small>
 		</div>
 	{else}
 		{foreach from=$image->snippets item=item name=used}
-			<div style="margin-left:auto;margin-right:auto;width:640px;text-align:left;font-size:0.8em;padding-top:3px">
+			<div class="snippet640">
 			<small class="searchresults">{if $image->snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}
 			<a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'}</a> {if $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small> {/if}<br/></small>
 			<div style="font-size:0.9em">{$item.comment|escape:'html'|nl2br|geographlinks}</div>
@@ -80,7 +80,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 -->
 
 {if $image_taken && $image->imagetaken < 2009}
-<div class="keywords" style="top:-3em;float:right;position:relative;font-size:0.8em;height:0em;z-index:-10" title="year photo was taken">year taken <div style="font-size:3em;line-height:0.5em">{$image->imagetaken|truncate:4:''}</div></div>
+<div class="keywords yeardisplay" title="year photo was taken">year taken <div class="year">{$image->imagetaken|truncate:4:''}</div></div>
 {/if}
 
 <div class="buttonbar">
@@ -242,7 +242,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </div>
 <br style="clear:both"/>
 {if $image->hits}
-	<div style="text-align:right;font-size:0.8em">This page has been viewed about <b>{$image->hits}</b> times. <a href="/help/hit_counter">Read more</a></div>
+	<div class="hits">This page has been viewed about <b>{$image->hits}</b> times. <a href="/help/hit_counter">Read more</a></div>
 {/if}
 <div class="interestBox" style="text-align:center">View this location: 
 

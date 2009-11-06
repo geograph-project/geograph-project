@@ -13,7 +13,7 @@ body
 }
 
 /* no border on hyperlinked images*/
-a Img
+a img
 {
 	border:0;
 }
@@ -36,6 +36,12 @@ a Img
 	clear:both;
 	height:1px;
 	overflow:hidden;
+}
+
+a.hidelink {
+	text-transform:lowercase;
+	text-decoration:none;
+	cursor:normal;
 }
 
 /*---------------------------------------------------------------*
@@ -203,6 +209,13 @@ body>#nav_block {width:128px;}
 	margin: 0.8em 0 0 0;
 }
 
+.nav .newsheader
+{
+	font-weight:bold;
+	font-size:0.8em;
+	background-color:#eeeeee;
+}
+
 .nav .newsbody
 {
 	border-top: 1px solid silver;
@@ -232,6 +245,10 @@ body>#nav_block {width:128px;}
 	
 	border:2px solid black;
 	z-index:3;
+	color:silver;
+}
+.content_photoblack a.text, .content_photoblack a.hidelink 
+{
 	color:silver;
 }
 
@@ -264,8 +281,6 @@ body>#nav_block {width:128px;}
 	font-size:0.9em;
 }
 
-
-
 .content_photoblack a 
 {
 	color:#00CCCC;
@@ -280,6 +295,8 @@ body>#nav_block {width:128px;}
 	border-bottom:1px solid #333333;
 }
 
+/*----------*/
+
 .content_photogray
 {
 	background:gray;
@@ -290,6 +307,11 @@ body>#nav_block {width:128px;}
 	
 	border:2px solid black;
 	z-index:3;
+	color:silver;
+}
+
+.content_photogray a.text, .content_photogray a.hidelink 
+{
 	color:silver;
 }
 
@@ -352,6 +374,8 @@ body>#nav_block {width:128px;}
 	border-bottom:1px solid #888888;
 }
 
+/*----------*/
+
 .content_photowhite
 {
 	background:white;
@@ -364,7 +388,10 @@ body>#nav_block {width:128px;}
 	z-index:3;
 	color:black;
 }
-
+.content_photowhite a.text, .content_photowhite a.hidelink  
+{
+	color:black;
+}
 .content_photowhite h2
 {
 	color:black;
@@ -393,6 +420,7 @@ body>#nav_block {width:128px;}
 	font-size:0.9em;
 }
 
+/*----------*/
 
 /* All the content boxes belong to the content class. */
 .content3 {
@@ -467,13 +495,31 @@ p.wordnet a
 
 p.wordnet a:hover
 {
-	text-decoration: underline;
+	text-decoration: underline
 }
 
 div.caption
 {
 	clear:left;
+	font-size:0.8em
+}
+div.caption640
+{
+	clear:left;
 	font-size:0.8em;
+	margin-left:auto;
+	margin-right:auto;
+	width:640px
+}
+div.snippet640
+{
+	clear:left;
+	font-size:0.8em;
+	margin-left:auto;
+	margin-right:auto;
+	width:640px;
+	text-align:left;
+	padding-top:3px
 }
 div.statuscaption
 {
@@ -485,6 +531,22 @@ div.statuscaption a
 {
 	color:silver;
 }
+div.yeardisplay {
+	top:-3em;
+	float:right;
+	position:relative;
+	font-size:0.8em;
+	height:0em;
+	z-index:-10
+}
+div.yeardisplay .year { 
+	font-size:3em;
+	line-height:0.5em
+}
+div.hits {
+	text-align:right;
+	font-size:0.8em
+}
 
 dl.browselist
 {
@@ -494,22 +556,21 @@ dl.browselist
 dl.browselist dt
 {
 	font-weight:bold;
-	border-bottom:1px solid #dddddd;
+	border-bottom:1px solid #dddddd
 }
 
 dl.browselist dd
 {
 	margin-left:5px;
-	padding-bottom:15px;
+	padding-bottom:15px
 }
 
 div.rastermap {
-  border: 1px solid #a9a9a9;
-  padding: 4px;
-  float:left;
-  z-index:5;
-  padding:10px;
-
+	border: 1px solid #a9a9a9;
+	padding: 4px;
+	float:left;
+	z-index:5;
+	padding:10px
 }
 
 div.ccmessage
@@ -517,7 +578,7 @@ div.ccmessage
 	width:inherit;
 	text-align:center;
 	padding:3px;
-	font-size:0.9em;
+	font-size:0.9em
 }
 
 div.ccmessage img
