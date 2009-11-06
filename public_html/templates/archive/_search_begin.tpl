@@ -1,4 +1,3 @@
-{assign var="page_title" value="Search Results`$engine->criteria->searchdesc`"|escape:"html"}
 {include file="_std_begin.tpl"}
 
 <div style="padding:10px;" class="searchresults">
