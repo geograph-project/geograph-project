@@ -17,6 +17,18 @@ a img
 	border:0;
 }
 
+.nowrap 
+{
+
+	white-space:nowrap;
+}
+
+a.hidelink {
+	text-transform:lowercase;
+	text-decoration:none;
+	cursor:normal;
+}
+
 /*
 banner div covers the entire top navigation area
 */
@@ -498,6 +510,10 @@ margin:10px;
 	z-index:3;
 	color:silver;
 }
+.content_photoblack a.text, .content_photoblack a.hidelink 
+{
+	color:silver;
+}
 
 .content_photoblack h2
 {
@@ -515,13 +531,18 @@ margin:10px;
 	color:silver;
 }
 
+.content_photoblack .keywords {
+	color:#666666;
+	font-size: 0.8em;
+	margin-top:2px;
+	padding:2px;
+}
+
 .content_photoblack .interestBox {
 	background-color:#333333;
 	color:#bbbbbb;
 	font-size:0.9em;
 }
-
-
 
 .content_photoblack a 
 {
@@ -537,11 +558,17 @@ margin:10px;
 	border-bottom:1px solid #333333;
 }
 
+/*----------*/
+
 .content_photogray
 {
 	background:gray;
 	position:relative;
+	color:silver;
+}
 
+.content_photogray a.text, .content_photogray a.hidelink 
+{
 	color:silver;
 }
 
@@ -571,6 +598,13 @@ margin:10px;
 	color:#999999;
 }
 
+.content_photogray .keywords {
+	color:#999999;
+	font-size: 0.8em;
+	margin-top:2px;
+	padding:2px;
+}
+
 .content_photogray .interestBox {
 	background-color:#cccccc;
 	color:#444444;
@@ -597,6 +631,8 @@ margin:10px;
 	border-bottom:1px solid #888888;
 }
 
+/*----------*/
+
 .content_photowhite
 {
 	background:white;
@@ -605,7 +641,10 @@ margin:10px;
 	z-index:3;
 	color:black;
 }
-
+.content_photowhite a.text, .content_photowhite a.hidelink  
+{
+	color:black;
+}
 .content_photowhite h2
 {
 	color:black;
@@ -622,6 +661,14 @@ margin:10px;
 	color:silver;
 
 }
+
+.content_photowhite .keywords {
+	color:#cccccc;
+	font-size: 0.8em;
+	margin-top:2px;
+	padding:2px;
+}
+
 .content_photowhite .interestBox {
 	font-size:0.9em;
 }
@@ -673,19 +720,56 @@ p.wordnet a
 
 p.wordnet a:hover
 {
-	text-decoration: underline;
+	text-decoration: underline
 }
 
 div.caption
 {
 	clear:left;
+	font-size:0.8em
+}
+div.caption640
+{
+	clear:left;
 	font-size:0.8em;
+	margin-left:auto;
+	margin-right:auto;
+	width:640px
+}
+div.snippet640
+{
+	clear:left;
+	font-size:0.8em;
+	margin-left:auto;
+	margin-right:auto;
+	width:640px;
+	text-align:left;
+	padding-top:3px
 }
 div.statuscaption
 {
 	clear:left;
 	font-size:0.7em;
 	color:silver;
+}
+div.statuscaption a
+{
+	color:silver;
+}
+div.yeardisplay {
+	top:-6.3em;
+	float:right;
+	position:relative;
+	font-size:0.8em;
+	height:0em;
+}
+div.yeardisplay .year { 
+	font-size:3em;
+	line-height:0.5em
+}
+div.hits {
+	text-align:right;
+	font-size:0.8em
 }
 
 dl.browselist
@@ -696,22 +780,21 @@ dl.browselist
 dl.browselist dt
 {
 	font-weight:bold;
-	border-bottom:1px solid #dddddd;
+	border-bottom:1px solid #dddddd
 }
 
 dl.browselist dd
 {
 	margin-left:5px;
-	padding-bottom:15px;
+	padding-bottom:15px
 }
 
 div.rastermap {
-  border: 1px solid #a9a9a9;
-  padding: 4px;
-  float:left;
-  z-index:5;
-  padding:10px;
-
+	border: 1px solid #a9a9a9;
+	padding: 4px;
+	float:left;
+	z-index:5;
+	padding:10px
 }
 
 div.ccmessage
@@ -719,7 +802,7 @@ div.ccmessage
 	width:inherit;
 	text-align:center;
 	padding:3px;
-	font-size:0.9em;
+	font-size:0.9em
 }
 
 div.ccmessage img
