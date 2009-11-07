@@ -43,7 +43,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 {if $approved == 2}
 <legend>Edit Public Article</legend>
 
-<p><a href="/article/edit.php?page={$url|escape:"url"}&amp;release=1">Close page without saving edits</a><small> (leaving this page open prevents others from editing)</small></p>
+<p><a href="/article/edit.php?page={$url|escape:"url"}&amp;release=1">Close editor without saving edits</a><small> (leaving this page open prevents others from editing)</small></p>
 
 {else}
 
@@ -147,6 +147,10 @@ AttachEvent(window,'load',setupSubmitForm,false);
 
 <input type="reset" name="reset" value="Reset" onclick="return confirm('Are you sure? Changes will be lost!');" style="color:green"/>
 <input type="submit" name="submit" value="Save Changes..." style="font-size:1.1em; color:green"/> {if $title == 'New Article'}<br/>(Articles will only show on the site once they have been approved by a site moderator){/if}</p>
+
+ <br/> <br/>
+Or <a href="/article/edit.php?page={$url|escape:"url"}&amp;release=1">Close editor without saving edits</a><small> (leaving this page open prevents others from editing)</small>
+
 </form>
 <br/><br/><br/>
 <div style="padding:5px; border: 1px solid gray; background-color:silver; font-size:0.9em">
