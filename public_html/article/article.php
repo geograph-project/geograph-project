@@ -57,7 +57,7 @@ function article_make_table($input) {
 		$GLOBALS['smarty']->assign("include_sorttable",1);
 		$output = '<table class="report sortable" id="table'.($idcounter++).'" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5">';
 	} else {
-		$output = '<table class="report" id="table'.($idcounter++).'>';
+		$output = '<table class="report" id="table'.($idcounter++).'">';
 	}
 	$c = 1;
 	foreach ($rows as $row) {
