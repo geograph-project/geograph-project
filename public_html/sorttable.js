@@ -242,10 +242,9 @@ function ts_resortTable(lnk) {
         
     span.innerHTML = ARROW;
     
-    
-	location.hash = "sort="+escape(ts_getInnerText(lnk)).replace(/%20%20/,'%A0%A0');
+   	location.hash = "sort="+escape(ts_getInnerText(lnk)).replace(/%20%20/,'%A0%A0');
 
-	if (reGroup) {
+	if (typeof reGroup != 'undefined') {
 		reGroup();
 	}
 }

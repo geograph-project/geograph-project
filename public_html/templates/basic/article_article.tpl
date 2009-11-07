@@ -3,7 +3,9 @@
 {assign var="content_articletext" value=$content|articletext}
 
 {include file="_std_begin.tpl"}
-
+{if $include_sorttable}
+<script src="{"/sorttable.js"|revision}"></script>
+{/if}
 {literal}<style type="text/css">
 #maincontent h1 { padding: 5px; margin-top:0px; background-color: black; color:white}
 #maincontent h2 { padding: 5px; background-color: lightgrey}
