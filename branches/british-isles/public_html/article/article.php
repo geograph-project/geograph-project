@@ -51,9 +51,14 @@ if (!empty($_GET['epoch']) && preg_match('/^[\w]+$/',$_GET['epoch'])) {
 
 function article_make_table($input) {
 	static $idcounter=1;
-	$GLOBALS['smarty']->assign("include_sorttable",1);
 	$rows = explode("\n",stripslashes($input));
-	$output = '<table class="report sortable" id="table'.($idcounter++).'" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5">';
+	
+	if (strpos($rows[0],'*') === 0) {
+		$GLOBALS['smarty']->assign("include_sorttable",1);
+		$output = '<table class="report sortable" id="table'.($idcounter++).'" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5">';
+	} else {
+		$output = '<table class="report" id="table'.($idcounter++).'>';
+	}
 	$c = 1;
 	foreach ($rows as $row) {
 		$head = 0;
