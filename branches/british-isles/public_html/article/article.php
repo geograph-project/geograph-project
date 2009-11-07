@@ -50,8 +50,10 @@ if (!empty($_GET['epoch']) && preg_match('/^[\w]+$/',$_GET['epoch'])) {
 
 
 function article_make_table($input) {
-	$rows = explode("\n",$input);
-	$output = "<table class=\"report\">";
+	static $idcounter=1;
+	$GLOBALS['smarty']->assign("include_sorttable",1);
+	$rows = explode("\n",stripslashes($input));
+	$output = '<table class="report sortable" id="table'.($idcounter++).'" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5">';
 	$c = 1;
 	foreach ($rows as $row) {
 		$head = 0;
@@ -84,7 +86,7 @@ function article_make_table($input) {
 function smarty_function_articletext($input) {
 	global $imageCredits,$smarty,$CONF;
 	
-	$output = preg_replace('/\n(-{7,})\n(.*?)\n(-{7,})/es',"article_make_table('\$2')",str_replace("\r",'',$input));
+	$output = preg_replace('/(^|\n)(-{7,})\n(.*?)\n(-{7,})/es',"article_make_table('\$3')",str_replace("\r",'',$input));
 
 	if ($CONF['CONTENT_HOST'] != $_SERVER['HTTP_HOST']) {
 		$output = str_replace($CONF['CONTENT_HOST'],$_SERVER['HTTP_HOST'],$output);
