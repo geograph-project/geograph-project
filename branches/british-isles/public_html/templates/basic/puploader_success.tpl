@@ -30,7 +30,7 @@
 {/if}
 <br/><br/><br/><br/>
 
-<p><i>If any have any failed you should only reupload those images, all images assigned a id number have been successfuly uploaded.</i></p>
+<p><i>All images assigned an ID number have been successfully uploaded. Please do not resubmit those images, only the failures.</i></p>
 
 {/dynamic} 
 

@@ -492,7 +492,7 @@ function updateViewDirection() {
 			} else{
 				distance = Math.round(distance/50)*50;
 			}
-			document.getElementById("dist_message").innerHTML = "range about "+distance+" meters";
+			document.getElementById("dist_message").innerHTML = "range about "+distance+" metres";
 		}
 	}
 }
