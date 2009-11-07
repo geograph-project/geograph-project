@@ -190,15 +190,6 @@ function smarty_function_articletext($input) {
 		}
 	}
 	
-	$output=preg_replace($pattern, $replacement, $output);
-	
-	$output=str_replace('¬','[',$output);
-	
-	if (count($m[0])) {
-		$smarty->assign("copyright", '<div class="copyright">Great Britain 1:50 000 Scale Colour Raster Mapping Extracts &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.</div>');
-	}
-	
-	
 	if (count($imageCredits)) {
 		arsort($imageCredits);
 
@@ -207,6 +198,17 @@ function smarty_function_articletext($input) {
 		$imageCreditsStr = preg_replace('/, ([^,]+)$/',' and $1',$imageCreditsStr);
 
 		$smarty->assign("imageCredits", $imageCreditsStr);
+		
+		$pattern[]="/\[imageCredits\]/i";
+		$replacement[]=$imageCreditsStr;
+	}
+	
+	$output=preg_replace($pattern, $replacement, $output);
+	
+	$output=str_replace('¬','[',$output);
+	
+	if (count($m[0])) {
+		$smarty->assign("copyright", '<div class="copyright">Great Britain 1:50 000 Scale Colour Raster Mapping Extracts &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.</div>');
 	}
 	
 	return $output;

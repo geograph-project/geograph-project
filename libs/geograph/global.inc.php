@@ -215,7 +215,7 @@ if (!empty($CONF['memcache']['sessions'])) {
 	
 	$memcachesession->period = ini_get("session.gc_maxlifetime");
 } elseif (isset($CONF['db_driver2'])) {
-	//adodb session configuration - we use same database
+	//adodb session configuration - we use second database if possible
 	$ADODB_SESSION_DRIVER=$CONF['db_driver2'];
 	$ADODB_SESSION_CONNECT=$CONF['db_connect2'];
 	$ADODB_SESSION_USER =$CONF['db_user2'];

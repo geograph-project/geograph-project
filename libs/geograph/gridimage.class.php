@@ -308,6 +308,9 @@ class GridImage
 		
 		if (empty($this->title))
 			$this->title="Untitled photograph for {$this->grid_reference}";
+			
+			
+		//todo if comment empty - try loading snippets, and if one use it as the description (view.tpl contains this logic currently) 
 	}
 	
 	/**
@@ -1194,7 +1197,7 @@ class GridImage
 			$return=array();
 			$return['url']=$thumbpath;
 
-			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
+			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.htmlentities2($this->realname);
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
@@ -1412,7 +1415,7 @@ class GridImage
 		if ($this->ext) {
 			# (120,120,false,true);
 			# $resized['html'];
-			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
+			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.htmlentities2($this->realname);
 			#$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 			# width="120" height="90"
 			$html="<img alt=\"$title\" $attribname=\"{$this->ext_thumb_url}\" />";
