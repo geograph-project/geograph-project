@@ -4,7 +4,7 @@
 
  <h2>Geograph Sitemap</h2>
  
- <p>Quick links to nealy all Geograph Webpages</p>
+ <p>Quick links to nearly all Geograph Webpages</p>
  
  <div style="float:right;padding:5px;background:pink;position:relative; font-size:0.8em;margin-left:20px;top:-30px">
  <b>Press Releases</b> 
