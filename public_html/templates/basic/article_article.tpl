@@ -11,6 +11,7 @@
 #maincontent h2 { padding: 5px; background-color: lightgrey}
 #maincontent h3 { padding: 5px; margin-top:20px; border: 1px solid lightgrey; background-color: #eeeeee}
 #maincontent h4 { padding: 5px; margin-top:20px; border: 1px dashed lightgrey; background-color: #eeeeee}
+#maincontent tt { padding: 1px; background-color: #f9f9f9}
 
 #contents_table {  border: 1px solid lightgrey; background-color: #eeeeee; padding: 10px } 
 #contents_table .title { font-weight:bolder;  padding:3px; border-bottom:1px solid black; margin-bottom:5px; }
