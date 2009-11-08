@@ -165,7 +165,9 @@ AttachEvent(window,'load',readHash,false);
 	
 	<p><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Warning" width="25" height="22" align="left" style="margin-right:10px"/> This is a new experimental submission process, try it out if you like, but you might prefer to use the <a href="/submit.php">original submission method</a>.</p>
 	
-	<p>Complete the following steps in any order (and continue onto the following steps while the photo is still uploading!). Step 2 is optional, can directly enter a grid reference in step 3 if wish. If possible, the date, and grid-reference(s) are automatically extracted from the submitted image.</p>
+	<p>Complete the following steps in any order (and continue onto the following steps while the photo is still uploading!). 
+	 A overview map is provided to help locate a square, but is optional, can directly enter a grid reference in step 2 if wish.
+	 If possible, the date, and grid-reference(s) are automatically extracted from the submitted image.</p>
 
 	<div style="float:right;position:relative;display:none" id="hidePreview"><div id="previewInner"></div>
 	<a href="javascript:void(show_tree('Preview'));">Hide Preview</a> Make: <a href="javascript:void(scalePreview(2));">Bigger</a>/<a href="javascript:void(scalePreview(0.5));">Smaller</a></div>
@@ -177,7 +179,7 @@ AttachEvent(window,'load',readHash,false);
 	{if !$user->use_autocomplete}
 	<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Use auto-complete text entry for image category selection in Step 4. <a href="/profile.php?edit=1" target="_blank">Change permanently</a></label> /
 	{/if}
-	<input type="checkbox" name="service" id="service_google" value="Google"/> <label for="service_google">Use Google Mapping in Step 3 - even for Great Britain</label></p>
+	<input type="checkbox" name="service" id="service_google" value="Google"/> <label for="service_google">Use Google Mapping in Step 2 - even for Great Britain</label></p>
 
 {/dynamic}
 	
@@ -188,25 +190,25 @@ AttachEvent(window,'load',readHash,false);
 		<iframe src="/submit2.php?inner&amp;step=1" id="iframe1" width="100%" height="220px" style="border:0"></iframe>
 	</div>
 <!-- # -->	 
-	<a id="sh2" href="#" class="sh sn" onclick="return clicker(2)"><span id="se2">+</span> Step 2 - Find Square on Map</a>
+	<a id="sh2" href="#" class="sh sn" onclick="return clicker(2)" style="font-size:0.9em"><span id="se2">+</span> Find Square on Map (optional tool)</a>
 	
 	<div id="sd2" class="sd">
 		<iframe src="about:blank" id="iframe2" width="100%" height="700px"></iframe>
 	</div>
 <!-- # -->	 
-	<a id="sh3" href="#" class="sh sn" onclick="return clicker(3)"><span id="se3">+</span> Step 3 - Enter Map References</a>
+	<a id="sh3" href="#" class="sh sn" onclick="return clicker(3)"><span id="se3">+</span> Step 2 - Enter Map References</a>
 	
 	<div id="sd3" class="sd">
 		<iframe src="about:blank" id="iframe3" width="100%" height="500px"></iframe>
 	</div>
 <!-- # -->	 
-	<a id="sh4" href="#" class="sh sn" onclick="return clicker(4)"><span id="se4">+</span> Step 4 - Title/Description and Date</a>
+	<a id="sh4" href="#" class="sh sn" onclick="return clicker(4)"><span id="se4">+</span> Step 3 - Title/Description and Date</a>
 	
 	<div id="sd4" class="sd">
 		<iframe src="about:blank" id="iframe4" width="100%" height="700px"></iframe>
 	</div>
 <!-- # -->	 
-	<a id="sh5" href="#" class="sh sn" onclick="return clicker(5)"><span id="se5">+</span> Step 5 - Confirm Licencing and Finish</a>
+	<a id="sh5" href="#" class="sh sn" onclick="return clicker(5)"><span id="se5">+</span> Step 4 - Confirm Licencing and Finish</a>
 	
 	<div id="sd5" class="sd" style="border:2px solid red; padding:4px;border-top:0">
 		<div style="width:230px;float:right;position:relative;text-align:center;font-size:0.7em">
