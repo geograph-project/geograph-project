@@ -6,7 +6,7 @@
 	{/if}
 
 	{if count($images) > 0}
-	<div style="{if count($images) > 3}height:520px; overflow:auto; {/if}position:relative; background-color:{$backgroundcolor}" onscroll="return showThumbnails(this);" id="scrollDiv">
+	<div {if $maincontentclass}class="{$maincontentclass}"{/if} style="{if count($images) > 3}height:520px; overflow:auto; {/if}position:relative;margin:0" onscroll="return showThumbnails(this);" id="scrollDiv">
 		<div style="position:relative;height:250px;">
 		{foreach from=$images item=image name=i}
 

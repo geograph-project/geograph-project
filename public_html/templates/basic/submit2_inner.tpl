@@ -68,13 +68,18 @@
 	{/literal}
 	{if $grid_reference} 
 		{literal}
-			AttachEvent(window,'load',function() { window.parent.doneStep(2) },false);
-			AttachEvent(window,'load',function() { window.parent.clicker(3,1) },false);
+			AttachEvent(window,'load',function() { window.parent.doneStep(9) },false);
+			AttachEvent(window,'load',function() { window.parent.clicker(2,1) },false);
 		{/literal}
 	{else}
 		{literal}
 			//AttachEvent(window,'load',function() { window.parent.clicker(2,1) },false);
 		{/literal}
+	{/if}
+	{if $imagetaken}
+		{literal}
+		AttachEvent(window,'load',function() { window.parent.setTakenDate({/literal}'{$imagetaken}'{literal}) },false);
+		{/literal}	
 	{/if}
 	{if $preview_url}
 		{literal}
