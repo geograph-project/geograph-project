@@ -84,12 +84,13 @@
 	(single keyword only)
 {/if}
 <input type="submit" value="Find"/><br/>
-{if $centisquare}
-<small><input type="radio" name="radius" value="0.1"{if $radius == 0.1} checked{/if}/> This centisquare / 
+radius:{if $centisquare}
+<small><input type="radio" name="radius" value="0.1"{if $radius == 0.1} checked{/if}/> centisquare / 
 {/if}
-<input type="radio" name="radius" value="1" {if $radius == 1 || !$radius} checked{/if}/> This gridsquare  / 
-<input type="radio" name="radius" value="2" {if $radius == 2} checked{/if}/> including surrounding gridsquares / 
-<input type="radio" name="radius" value="10"{if $radius == 10} checked{/if}/> within 10km </small>
+<input type="radio" name="radius" value="1" {if $radius == 1 || !$radius} checked{/if}/> gridsquare  / 
+<input type="radio" name="radius" value="2" {if $radius == 2} checked{/if}/> surrounding gridsquares / 
+<input type="radio" name="radius" value="10"{if $radius == 10} checked{/if}/> within 10km /
+<input type="radio" name="radius" value="1000"{if $radius == 1000} checked{/if}/> anywhere <sub>(keyword needed above!)</sub> </small>
 </div>
 
 {foreach from=$results item=item}

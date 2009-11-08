@@ -71,7 +71,7 @@ function angle_kml($exif,$ee,$nn,$len,$vdir,$lat,$lon,$filename='',$reference_in
   if (!empty($_GET['debug']))
     printf("<dt>Calculated opening angle:</dt>\n<dd>%5.1f deg</dd>",$viewAngle);
 
-  if ($ee&&$vdir) {
+  if ($ee&&$vdir>-1) {
     if ($len<12) {                   // move location to centre of referenced area
       $off=5.*pow(10,4-$len/2);
       $ee+=$off;

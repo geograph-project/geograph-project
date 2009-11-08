@@ -125,8 +125,10 @@ function showPreview(url,width,height) {
 }
 function scalePreview(scale) {
 	var ele = document.getElementById('imgPreview');
-	ele.width = ele.width * scale;
-	ele.height = ele.height * scale;
+	if ((ele.width * scale) <= 1280 && (ele.width * scale) > 10) {
+		ele.width = ele.width * scale;
+		ele.height = ele.height * scale;
+	}
 }
 function setTakenDate(value) {
 	if (document.getElementById('iframe'+3).src.length > 11) {
@@ -174,15 +176,16 @@ AttachEvent(window,'load',readHash,false);
 	 A overview map is provided to help locate a square, but is optional, can directly enter a grid reference in step 2 if wish.
 	 If possible, the date, and grid-reference(s) are automatically extracted from the submitted image.</p>
 
-	<div style="float:right;position:relative;display:none" id="hidePreview"><div id="previewInner"></div>
-	<a href="javascript:void(show_tree('Preview'));">Hide Preview</a> Make: <a href="javascript:void(scalePreview(2));">Bigger</a>/<a href="javascript:void(scalePreview(0.5));">Smaller</a></div>
+	<div style="float:right;position:relative;display:none" id="hidePreview">
+	<a href="javascript:void(show_tree('Preview'));">Hide Preview</a> Make: <a href="javascript:void(scalePreview(2));">Bigger</a>/<a href="javascript:void(scalePreview(0.5));">Smaller</a>
+	<div id="previewInner"></div></div>
 	<div style="float:right;position:relative;display:none" id="showPreview"><a href="javascript:void(hide_tree('Preview'));">Show Preview</a></div>
 	
 	<form action="{$script_name}" name="theForm" method="post">
 {dynamic}
-	<p>Options: (close and reopen step to take effect)<br/>
+	<p><b>Options</b>: (close and reopen step to take effect)<br/>
 	{if !$user->use_autocomplete}
-	<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Use auto-complete text entry for image category selection in Step 4. <a href="/profile.php?edit=1" target="_blank">Change permanently</a></label> /
+	<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Use auto-complete text entry for image category selection in Step 4. <a href="/profile.php?edit=1" target="_blank">Change permanently</a></label> <br/>
 	{/if}
 	<input type="checkbox" name="service" id="service_google" value="Google"/> <label for="service_google">Use Google Mapping in Step 2 - even for Great Britain</label></p>
 

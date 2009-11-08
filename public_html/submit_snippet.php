@@ -159,36 +159,38 @@ if (empty($_GET['gr']) && !empty($_GET['gr2'])) {
 	$_GET['gr'] = $_GET['gr2'];
 }
 
-if (!empty($_GET['gr'])) {
+if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'])) {
 	$square=new GridSquare;
 	
 	$grid_given=true;
-	if ($grid_ok=$square->setByFullGridRef($_GET['gr'],true)) {
-	
-		$smarty->assign('gr',$_GET['gr']);
-		
-		if ($square->natgrlen > 4) {
-			$smarty->assign('centisquare',1);
+	if (!empty($_REQUEST['gr'])) {
+		if ($grid_ok=$square->setByFullGridRef($_REQUEST['gr'],true)) {
+
+			$smarty->assign('gr',$_REQUEST['gr']);
+
+			if ($square->natgrlen > 4) {
+				$smarty->assign('centisquare',1);
+			}
+
+		} else {
+			print "invalid GR!";
 		}
-		
-	} else {
-		print "invalid GR!";
 	}
 	$where = array();
 	$orderby = "ORDER BY s.snippet_id";
 	
-	if ($CONF['sphinx_host'] && !empty($_POST['q'])) {  //todo - for the moment we only use sphinx for full text searches- because of the indexing delay 
+	if ($CONF['sphinx_host'] && !empty($_REQUEST['q'])) {  //todo - for the moment we only use sphinx for full text searches- because of the indexing delay 
 	
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
 		
-		if (!empty($_GET['page'])) {
-			$pg = intval($_GET['page']);
+		if (!empty($_REQUEST['page'])) {
+			$pg = intval($_REQUEST['page']);
 		} else {
 			$pg = 1;
 		}
 		
-		$q=trim($_POST['q']);
+		$q=trim($_REQUEST['q']);
 		
 		$sphinx = new sphinxwrapper($q);
 		$sphinx->pageSize = $pgsize = 25;
@@ -203,18 +205,19 @@ if (!empty($_GET['gr'])) {
 			$title = "Matching word search [ ".htmlentities($sphinx->qclean)." ]";
 		}
 		
-		$data = array();
-		$data['x'] = $square->x;
-		$data['y'] = $square->y;
-		if ($square->natgrlen > 4) {
-			list($data['lat'],$data['long']) = $conv->gridsquare_to_wgs84($square);
+		if (!empty($_REQUEST['gr']) && (empty($_REQUEST['radius']) || $_REQUEST['radius'] <= 20) ) {
+			$data = array();
+			$data['x'] = $square->x;
+			$data['y'] = $square->y;
+			if ($square->natgrlen > 4) {
+				list($data['lat'],$data['long']) = $conv->gridsquare_to_wgs84($square);
+			}
+			$data['d'] = !empty($_REQUEST['radius'])?floatval($_REQUEST['radius']):1;
+			$data['sort'] = "@geodist ASC, @relevance DESC, @id DESC";
+			
+			$sphinx->setSort($data['sort']);
+			$sphinx->setSpatial($data);
 		}
-		$data['d'] = !empty($_POST['radius'])?floatval($_POST['radius']):1;
-		$data['sort'] = "@geodist ASC, @relevance DESC, @id DESC";
-		
-		$sphinx->setSort($data['sort']);
-		$sphinx->setSpatial($data);
-
 		$ids = $sphinx->returnIds($pg,'snippet');
 
 		$smarty->assign("query_info",$sphinx->query_info);
@@ -227,26 +230,32 @@ if (!empty($_GET['gr'])) {
 			$where[] = '0';
 		}
 	} else {
-		$radius = !empty($_POST['radius'])?intval($_POST['radius']*1000):1000;
+		if (!empty($_REQUEST['gr']) && (empty($_REQUEST['radius']) || $_REQUEST['radius'] <= 20) ) {
+			$radius = !empty($_REQUEST['radius'])?intval($_REQUEST['radius']*1000):1000;
 
-		$left=$square->nateastings-$radius;
-		$right=$square->nateastings+$radius;
-		$top=$square->natnorthings-$radius;
-		$bottom=$square->natnorthings+$radius;
+			$left=$square->nateastings-$radius;
+			$right=$square->nateastings+$radius;
+			$top=$square->natnorthings-$radius;
+			$bottom=$square->natnorthings+$radius;
 
-		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+			$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-		$fields = ",if(natnorthings > 0,(nateastings-{$square->nateastings})*(nateastings-{$square->nateastings})+(natnorthings-{$square->natnorthings})*(natnorthings-{$square->natnorthings}),0) as distance";
+			$fields = ",if(natnorthings > 0,(nateastings-{$square->nateastings})*(nateastings-{$square->nateastings})+(natnorthings-{$square->natnorthings})*(natnorthings-{$square->natnorthings}),0) as distance";
+			
+			$where[] = "CONTAINS(
+					GeomFromText($rectangle),
+					point_en)";
+		}
 		
-		$where[] = "CONTAINS(
-				GeomFromText($rectangle),
-				point_en)";
-		
-		if (!empty($_POST['q'])) {
-			$q=mysql_real_escape_string(trim($_POST['q']));
+		if (!empty($_REQUEST['q'])) {
+			$q=mysql_real_escape_string(trim($_REQUEST['q']));
 			
 			$where[] = "(title LIKE '%$q%' OR comment LIKE '%$q%')";
 			$smarty->assign('q',trim($_POST['q']));
+		}
+		
+		if (count($where) == 0) {
+			$where[] = "0";
 		}
 		
 		$where[] = "enabled = 1"; 
