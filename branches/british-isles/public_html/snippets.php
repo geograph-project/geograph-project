@@ -216,7 +216,7 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 			$title = "Matching word search [ ".htmlentities($sphinx->qclean)." ]";
 		}
 		
-		if (!empty($_REQUEST['gr'])) {
+		if (!empty($_REQUEST['gr']) && (empty($_REQUEST['radius']) || $_REQUEST['radius'] <= 20) ) {
 			$data = array();
 			$data['x'] = $square->x;
 			$data['y'] = $square->y;
@@ -247,12 +247,11 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 			$id_list = implode(',',$ids);
 			$where[] = "s.snippet_id IN($id_list)";
 			$orderby = "ORDER BY FIELD(s.snippet_id,$id_list)";
-			
 		} else {
 			$where[] = '0';
 		}
 	} else {
-		if (!empty($_REQUEST['gr'])) {
+		if (!empty($_REQUEST['gr']) && (empty($_REQUEST['radius']) || $_REQUEST['radius'] <= 20) ) {
 			$radius = !empty($_REQUEST['radius'])?intval($_REQUEST['radius']*1000):1000;
 
 			$left=$square->nateastings-$radius;

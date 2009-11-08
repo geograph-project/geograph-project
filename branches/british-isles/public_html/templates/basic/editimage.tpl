@@ -652,11 +652,14 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 	</form>
 
 {if $isadmin || $isowner} 
-<br/>
+<br/><br/>
 <h2 class="titlebar">Shared Descriptions/References (Optional) <sup style="color:red">- Experimental!</sup> <input type="button" value="expand" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?gridimage_id={$image->gridimage_id}&gr='+escape(document.theForm.grid_reference.value)+'&gr2={$image->subject_gridref|escape:'html'}';" id="hideshare"/></h2>
-<div class="interestBox" id="showshare" style="display:none">
-	NOTE: Currently 'Shared Descriptions' are not tracked though the 'Change Suggestion' system, and updates apply immediately. (but all changes are monitored)<br/>
-	Also note that only you (and the moderators) can edit a shared description, although anyone can use your descriptions on their own images.
+<div id="showshare" style="display:none">
+	<ul>
+		<li>Currently 'Shared Descriptions' are not tracked though the 'Change Suggestion' system, and updates apply immediately. (but all changes are monitored)</li>
+		<li>There is no need to click 'Submit Changes' above to apply changes to shared descriptions.</li>
+		<li>Only you (and the moderators) can edit your shared description, although anyone can use your descriptions on their own images.</li>
+	</ul>
 	<iframe src="about:blank" height="400" width="100%" id="shareframe">
 	</iframe>
 	

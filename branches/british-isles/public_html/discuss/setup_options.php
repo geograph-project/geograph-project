@@ -114,8 +114,8 @@ $dbUserAct='activity';
 $dbUserNp='user_newpasswd';
 $dbUserNk='user_newpwdkey';
 
-$enableNewRegistrations=true;
-$enableProfileUpdate=true;
+$enableNewRegistrations=false;
+$enableProfileUpdate=false;
 
 $indexphp='index.php?';
 $useSessions=true;
