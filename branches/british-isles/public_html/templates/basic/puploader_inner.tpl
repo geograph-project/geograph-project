@@ -97,8 +97,8 @@
 	{/if}
 	<br style="clear:both"/>
 	{if $submit2}
-		<input type="button" value="Done" onclick="if (checkFormSubmission(this.form,{if $rastermap->enabled}true{else}false{/if}{literal})) { window.parent.doneStep(3);} else {return false;}{/literal}"/>
-		<input type="button" value="Next Step &gt;&gt;" onclick="if (checkFormSubmission(this.form,{if $rastermap->enabled}true{else}false{/if}{literal})) { window.parent.doneStep(3); window.parent.clicker(4,true);} else {return false;}{/literal}"/>
+		<input type="button" value="Done" onclick="if (checkFormSubmission(this.form,{if $rastermap->enabled}true{else}false{/if}{literal})) { window.parent.doneStep(2);} else {return false;}{/literal}"/>
+		<input type="button" value="Next Step &gt;&gt;" onclick="if (checkFormSubmission(this.form,{if $rastermap->enabled}true{else}false{/if}{literal})) { window.parent.doneStep(2); window.parent.clicker(3,true);} else {return false;}{/literal}"/>
 	{/if}
 	{if $rastermap->enabled}
 		{$rastermap->getFooterTag()}
@@ -242,8 +242,8 @@
 		<br/><br/><span style="font-size:0.7em">(please provide as much detail as possible, if you only know the year or month then that's fine)</span></p>
 
 	{if $submit2}
-		<input type="button" value="Done" onclick="window.parent.doneStep(4);"/>
-		<input type="button" value="Next Step &gt;&gt;" onclick="window.parent.doneStep(4); window.parent.clicker(5,true);"/>
+		<input type="button" value="Done" onclick="window.parent.doneStep(3);"/>
+		<input type="button" value="Next Step &gt;&gt;" onclick="window.parent.doneStep(3); window.parent.clicker(4,true);"/>
 	{/if}
 
 {if $use_autocomplete}
@@ -271,6 +271,10 @@
 			updateMapMarkers(); 
 		}
 	},false);
+	
+	function setTakenDate(value) {
+		setdate('imagetaken',value,document.forms['theForm']);
+	}
 </script>
 {/literal}
 

@@ -77,7 +77,7 @@ function clicker(step,override) {
 		ele2.innerHTML = '-';
 		
 		
-		var loc = '';
+		var loc = 'inner&submit2&step='+step;
 		
 		if (theForm.elements['grid_reference['+name+']'] && theForm.elements['grid_reference['+name+']'].value != '') {
 			loc = loc + "&grid_reference="+escape(theForm.elements['grid_reference['+name+']'].value);
@@ -87,17 +87,17 @@ function clicker(step,override) {
 		if (step == 1) {
 			//we dont reload this - as it could be in progress, and features its own 'start over' link
 			//document.getElementById('iframe'+step).src = '/submit2.php?inner&step=1';
+		} else if (step == 9) {
+			if (document.getElementById('iframe'+step).src.endsWith('/submitmap.php?'+loc) == false)
+				   document.getElementById('iframe'+step).src = '/submitmap.php?'+loc;
 		} else if (step == 2) {
-			if (document.getElementById('iframe'+step).src.endsWith('/submitmap.php?inner&submit2'+loc) == false)
-				   document.getElementById('iframe'+step).src = '/submitmap.php?inner&submit2'+loc;
-		} else if (step == 3) {
 			if (theForm.elements['service'] && theForm.elements['service'].checked) {
 				loc = loc + "&service="+escape(theForm.elements['service'].value);
 			}
 			//todo - this only NEEDS a 4fig subject GR - the rest is loaded with javascript anyway
-			if (document.getElementById('iframe'+step).src.endsWith('/puploader.php?inner&submit2&step=2'+loc) == false)
-				   document.getElementById('iframe'+step).src = '/puploader.php?inner&submit2&step=2'+loc;
-		} else if (step == 4) {
+			if (document.getElementById('iframe'+step).src.endsWith('/puploader.php?'+loc) == false)
+				   document.getElementById('iframe'+step).src = '/puploader.php?'+loc;
+		} else if (step == 3) {
 			if (theForm.elements['photographer_gridref['+name+']'] && theForm.elements['photographer_gridref['+name+']'].value != '') {
 				loc = loc + "&photographer_gridref="+escape(theForm.elements['photographer_gridref['+name+']'].value);
 			}
@@ -106,8 +106,8 @@ function clicker(step,override) {
 			}
 			loc = loc + '&upload_id='+escape(theForm.elements['upload_id['+name+']'].value);
 
-			if (document.getElementById('iframe'+step).src.endsWith('/puploader.php?inner&submit2&step=3'+loc) == false)
-				   document.getElementById('iframe'+step).src = '/puploader.php?inner&submit2&step=3'+loc;
+			if (document.getElementById('iframe'+step).src.endsWith('/puploader.php?'+loc) == false)
+				   document.getElementById('iframe'+step).src = '/puploader.php?'+loc;
 		} else {
 			
 		}  
@@ -128,6 +128,11 @@ function scalePreview(scale) {
 	ele.width = ele.width * scale;
 	ele.height = ele.height * scale;
 }
+function setTakenDate(value) {
+	if (document.getElementById('iframe'+3).src.length > 11) {
+		top.frames['iframe3'].setTakenDate(value);
+	}
+}
 function readHash() {
 	if (location.hash.length) {
 		// If there are any parameters at the end of the URL, they will be in location.search
@@ -147,7 +152,7 @@ function readHash() {
 				var theForm = document.forms['theForm'];
 				var name = theForm.elements['selected'].value;
 				theForm.elements['grid_reference['+name+']'].value = value;
-				clicker(3,true);
+				clicker(2,true);
 			}
 		}
 	}
@@ -190,27 +195,27 @@ AttachEvent(window,'load',readHash,false);
 		<iframe src="/submit2.php?inner&amp;step=1" id="iframe1" width="100%" height="220px" style="border:0"></iframe>
 	</div>
 <!-- # -->	 
-	<a id="sh2" href="#" class="sh sn" onclick="return clicker(2)" style="font-size:0.9em"><span id="se2">+</span> Find Square on Map (optional tool)</a>
+	<a id="sh9" href="#" class="sh sn" onclick="return clicker(9)" style="font-size:0.9em"><span id="se9">+</span> Find Square on Map (optional tool)</a>
+	
+	<div id="sd9" class="sd">
+		<iframe src="about:blank" id="iframe9" width="100%" height="700px"></iframe>
+	</div>
+<!-- # -->	 
+	<a id="sh2" href="#" class="sh sn" onclick="return clicker(2)"><span id="se2">+</span> Step 2 - Enter Map References</a>
 	
 	<div id="sd2" class="sd">
-		<iframe src="about:blank" id="iframe2" width="100%" height="700px"></iframe>
+		<iframe src="about:blank" id="iframe2" width="100%" height="500px"></iframe>
 	</div>
 <!-- # -->	 
-	<a id="sh3" href="#" class="sh sn" onclick="return clicker(3)"><span id="se3">+</span> Step 2 - Enter Map References</a>
+	<a id="sh3" href="#" class="sh sn" onclick="return clicker(3)"><span id="se3">+</span> Step 3 - Title/Description and Date</a>
 	
 	<div id="sd3" class="sd">
-		<iframe src="about:blank" id="iframe3" width="100%" height="500px"></iframe>
+		<iframe src="about:blank" id="iframe3" name="iframe3" width="100%" height="700px"></iframe>
 	</div>
 <!-- # -->	 
-	<a id="sh4" href="#" class="sh sn" onclick="return clicker(4)"><span id="se4">+</span> Step 3 - Title/Description and Date</a>
+	<a id="sh4" href="#" class="sh sn" onclick="return clicker(4)"><span id="se4">+</span> Step 4 - Confirm Licencing and Finish</a>
 	
-	<div id="sd4" class="sd">
-		<iframe src="about:blank" id="iframe4" width="100%" height="700px"></iframe>
-	</div>
-<!-- # -->	 
-	<a id="sh5" href="#" class="sh sn" onclick="return clicker(5)"><span id="se5">+</span> Step 4 - Confirm Licencing and Finish</a>
-	
-	<div id="sd5" class="sd" style="border:2px solid red; padding:4px;border-top:0">
+	<div id="sd4" class="sd" style="border:2px solid red; padding:4px;border-top:0">
 		<div style="width:230px;float:right;position:relative;text-align:center;font-size:0.7em">
 			<a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank"><img src="http://{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed"/></a><br/>
 			[ Click to see full Licence Deed ]
