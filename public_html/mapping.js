@@ -78,6 +78,7 @@ var eastings2 = 0;
 var northings2 = 0;
 var grlen2 = 0;
 
+var distance;
 
 function overlayMouseUp(e) {
 	if (currentelement != null) {
@@ -277,6 +278,12 @@ function overlayMouseMove(e) {
 
 function checkFormSubmission(that_form,mapenabled) {
 	if (checkGridReferences(that_form)) {
+		if (typeof distance != 'undefined' && distance > 10000) {
+			message = "The apparent distance between subject and photographer is "+distance+" metres, are you sure this is correct?";
+			if (!confirm(message)) {
+				return false;
+			}
+		}
 		message = '';
 		if (that_form.grid_reference.value == '' || that_form.grid_reference.value.length < 7) 
 			message = message + "* Subject Grid Reference\n";
