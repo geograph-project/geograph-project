@@ -154,7 +154,7 @@ function readHash() {
 			if (argname == "gridref") {
 				var theForm = document.forms['theForm'];
 				var name = theForm.elements['selected'].value;
-				theForm.elements['grid_reference['+name+']'].value = value;
+				theForm.elements['grid_reference['+name+']'].value = unescape(value);
 				clicker(2,true);
 			}
 		}
