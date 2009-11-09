@@ -17,6 +17,7 @@
 
 .sh span {
 	float:left;
+	position:relative;
 	width:20px;
 	border:1px solid gray;
 	background-color:lightgrey;
