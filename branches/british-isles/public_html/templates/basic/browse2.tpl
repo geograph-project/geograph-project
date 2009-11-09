@@ -147,7 +147,7 @@
 			<ul style="margin-top:5px; padding-left:24px">
 		{/if}
 	{/if}
-		<li style="margin-top:4px"><a href="/submit.php?gridreference={$gridrefraw}"><b>Submit your own picture</b></a> (<a href="/submit2.php?v=2#gridref={$gridrefraw}">v2</a>)</li>
+		<li style="margin-top:4px"><a href="/submit.php?gridreference={$gridrefraw}"><b>Submit your own picture</b></a> (<a href="/submit2.php#gridref={$gridrefraw}">v2</a>)</li>
 
 		{if $enable_forums}
 			<li style="margin-top:4px">

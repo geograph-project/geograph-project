@@ -182,7 +182,7 @@ AttachEvent(window,'load',readHash,false);
 	<div id="previewInner"></div></div>
 	<div style="float:right;position:relative;display:none" id="showPreview"><a href="javascript:void(hide_tree('Preview'));">Show Preview</a></div>
 	
-	<form action="{$script_name}" name="theForm" method="post">
+	<form action="{$script_name}?process" name="theForm" method="post">
 {dynamic}
 	<p><b>Options</b>: (close and reopen step to take effect)<br/>
 	{if !$user->use_autocomplete}

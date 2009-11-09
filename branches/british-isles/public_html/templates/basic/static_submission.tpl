@@ -18,7 +18,7 @@
 
 <hr/>
 
- <h3><a href="/submit2.php?v=2">Submit v2</a> <sup style="color:red">New!</sup></h3>
+ <h3><a href="/submit2.php">Submit v2</a> <sup style="color:red">New!</sup></h3>
  
  <p>More streamlined version - all one one page. If you familiar with Geograph submission you might like this.</p>
 
