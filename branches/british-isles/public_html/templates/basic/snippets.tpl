@@ -93,7 +93,7 @@
 {foreach from=$results item=item}
 	
 	<div style="border-top: 1px solid gray">
-		<div style="float:right">
+		<div style="float:right;position:relative">
 			<input type="submit" name="edit[{$item.snippet_id}]" value="Edit"/>
 			<input type="submit" name="delete[{$item.snippet_id}]" value="Delete"/>
 		</div>

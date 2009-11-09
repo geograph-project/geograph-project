@@ -1,7 +1,7 @@
 {assign var="page_title" value="Snippets"}
 {include file="_basic_begin.tpl"}
 {dynamic}
-<form method="post" style="background-color:#f0f0f0;">
+<form method="post" style="background-color:#f0f0f0;" name="theForm">
 <input type="hidden" name="gridimage_id" value="{$gridimage_id}" />
 <input type="hidden" name="gr" value="{$gr|escape:'html'}" />
 
@@ -45,7 +45,7 @@
 </div>
 
 <div class="interestBox" style="font-size:0.8em" id="hidecreate">
-	<div style="float:right;text-align:center">
+	<div style="float:right;text-align:center;position:relative">
 		<input type="button" value="Create New Shared Description" onclick="show_tree('create')"/><br/>
 		<a href="/snippets.php?gr={$gr|escape:'html'}" target="_blank">Edit your Shared Descriptions</a>
 	</div>
@@ -60,7 +60,7 @@
 {foreach from=$used item=item name=used}
 	
 	<div style=" border-top: 1px solid gray">
-		<div style="float:right">
+		<div style="float:right;position:relative">
 			<input type="submit" name="remove[{$item.snippet_id}]" value="remove"/>
 		</div>
 
@@ -96,7 +96,7 @@ radius:{if $centisquare}
 {foreach from=$results item=item}
 	
 	<div style="border-top: 1px solid gray">
-		<div style="float:right">
+		<div style="float:right;position:relative">
 			<input type="submit" name="add[{$item.snippet_id}]" value="Use this Description"/>
 		</div>
 
@@ -112,7 +112,7 @@ radius:{if $centisquare}
 {if $query_info}
 	<p><i>{$query_info}</i></p>
 {/if}
-
+<input type="text" value="" style="display:none"/>
 </form>
 
 {/dynamic}
