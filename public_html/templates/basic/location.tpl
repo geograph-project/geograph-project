@@ -43,7 +43,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 <small><b>Links within Geograph for gridsquare {$gridref}:</b></small>
 
 <ul style="list-style-type:none; padding-left:5px">
-	<li><img src="http://{$static_host}/img/links/20/submit.png" width="20" height="20" alt="submit icon" align="absmiddle"/> <a href="/submit.php?gridreference={$gridrefraw}"><b>submit your own picture</b></a> (<a href="/submit2.php#gridref={$gridrefraw}">v2</a>)</li>
+	<li><img src="http://{$static_host}/img/links/20/submit.png" width="20" height="20" alt="submit icon" align="absmiddle"/> <a href="/submit.php?gridreference={$gridrefraw}"><b>submit your own picture</b></a> (<a href="/submit2.php?v=2#gridref={$gridrefraw}">v2</a>)</li>
 	<li><img src="http://{$static_host}/img/links/20/browse.png" width="20" height="20" alt="browse icon" align="absmiddle"/> <a href="/gridref/{$gridrefraw}">View the <b>browse page</b></a> 
 		{if $square->imagecount > 2}
 				(<img src="http://{$static_host}/img/links/20/grid.png" width="20" height="20" alt="centisquare icon" align="absmiddle"/>  <a href="/gridref/{$gridref}?by=1">or a <b>breakdown</b></a>)
