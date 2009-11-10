@@ -245,11 +245,17 @@ function smarty_function_gridimage($params)
 
 	if (isset($params['extra'])) {
 		if ($params['extra'] == '{description}') {
-			$desc = GeographLinks(nl2br(htmlentities2($image->comment))).'<div style="text-align:right;font-size:0.8em">by '.htmlentities2($image->realname).'</a></div>';
+			if (!empty($image->comment)) {
+				$desc = GeographLinks(nl2br(htmlentities2($image->comment))).'<div style="text-align:right;font-size:0.8em">by '.htmlentities2($image->realname).'</a></div>';
+			} else {
+				$desc = '';
+			}
 		} else {
 			$desc = htmlentities2($params['extra']);
 		} 
-		$html.='<div style="float:left;padding-left:20px; width:400px;">'.$desc.'</div>';
+		if (!empty($desc)) {
+			$html.='<div style="float:left;padding-left:20px; width:400px;">'.$desc.'</div>';
+		}
 	}
 
 	$html.='<br style="clear:both"/></div>';

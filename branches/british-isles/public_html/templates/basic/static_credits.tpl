@@ -87,6 +87,7 @@
     <ul>
      <li>Natural Language Query Parsing by {external href="http://developers.metacarta.com/" text="MetaCarta Web Services"}</li>
      <li>Online image manipulation by {external href="http://picnik.com/" text="picnik.com"}</li>
+     <li>Interactive 3D image viewer by {external href="http://cooliris.com/" text="cooliris.com"}</li>
     </ul>
     <p>NOTE: use of these features does not imply endorsement by the host organizations</p>
     
@@ -98,8 +99,11 @@
     {external title="ADOdb Database Abstraction Library" href="http://adodb.sourceforge.net" text='<img src="/img/adodb.gif" width="88" height="31" alt="adodb"/>'}
     {external title="MySQL Database Server" href="http://www.mysql.com" text='<img src="/img/mysql.png" width="88" height="31" alt="MySQL"/>'}
     {external title="Sphinx Full Text Search" href="http://www.sphinxsearch.com/" text='<img src="/img/sphinx_silver.gif" width="88" height="31" alt="powered by Sphinx"/>'}
-    {external href="http://www.danga.com/memcached/" text="memcached"} </div>
-    
+     </div>
+   
+   <p>In addition www.geograph.org.uk uses:<br/> Linux (Debian &amp; Ubuntu), Apache, <b>{external href="http://www.danga.com/memcached/" text="memcached"}</b>, munin, nfs, haproxy and varnish.<br/> to deliver a high performance website - but are not required to run the Geograph codebase.</p/>
+   
+   
     <h3>Code Libaries</h3>
     <p>We have reused code from following open-source projects:</p>
     <ul>

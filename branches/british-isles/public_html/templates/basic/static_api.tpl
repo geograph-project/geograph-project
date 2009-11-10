@@ -1,11 +1,12 @@
 {assign var="page_title" value="API"}
 {include file="_std_begin.tpl"}
 
-	 <h2>Geograph API v0.81</h2> 
+	 <h2>Geograph API v0.9</h2> 
 	 <div
 	  style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;"><b>Contents</b><br/>
 		<ul style="margin-top:0;margin-left:0;padding:0 0 0 1em;"> 
-		  <li><a href="#api">API-key</a></li> 
+		  <li><a href="#dumps">Database Dumps</a></li> 
+		  <li><a href="#torrents">Image bittorrent downloads</a></li> 
 		  <li><a href="#rss">RSS feeds</a> 
 			 <ul> 
 				<li><a href="#rss_param">Types</a>, <a href="#rss_options">Options</a>, <a href="#rss_format">Formats</a></li> 
@@ -58,31 +59,36 @@
 			
 		</table>
 	</form>
-	
+<br/><br/>
+
 	 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 	 <img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
-	 <b>Each of these Feeds includes the photographer credit/name, which under the CC licence MUST be displayed along any use of the image. Also the fact the image is CC licenced needs to be mentioned.</b><br/><br/>Ideally also you could link back to the main photo page, either with the link supplied or with <a href="http://{$http_host}/photo/[id]">http://{$http_host}/photo/[id]</a>.<br/><br/> <i>Thank you for your attention in this matter.</i>
+	 <b>All exports includes the photographer credit/name, which under the CC licence MUST be displayed along any use of the image. Also the fact the image is CC licenced needs to be mentioned.</b><br/><br/>Ideally also you could link back to the main photo page, either with the link supplied or with <a href="http://{$http_host}/photo/[id]">http://{$http_host}/photo/[id]</a>.<br/><br/> <i>Thank you for your attention in this matter.</i>
 	 </div>
+
+	 <h3 style="border:1px solid #cccccc;background-color:lightgreen; padding:10px; clear:both;margin-top:30px;"><a name="dumps"></a>Database Dumps - Bulk Data download</h3> 
+	 <p>We have created a mysqldump snapshot of the database and made it available for download, see 
+		{external title="Geograph Archive Database Dump" href="http://data.geograph.org.uk/dumps/" text="data.geograph.org.uk/dumps"} for details.</p>
 	
-	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px; clear:both;margin-top:30px;"><a name="torrents"></a>Torrents - Bulk Image download</h3> 
-	 <p>The entire (or at least it will be) archive is available for download via bittorrent - see 
-		{external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk" text="http://torrents.geograph.org.uk"} for details.</p>
-	
-	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px; clear:both;margin-top:30px;"><a name="api"></a>API-key</h3> 
+	 <h3 style="border:1px solid #cccccc;background-color:lightgreen; padding:10px; clear:both;margin-top:30px;"><a name="torrents"></a>Torrents - Bulk Image download</h3> 
+	 <p>The entire (or at least it will be) archive is available for download via bittorrent, see 
+		{external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk/" text="torrents.geograph.org.uk"} for details.</p>
+
+	 <h3 style="border:1px solid #cccccc;background-color:pink; padding:10px; clear:both;margin-top:30px;"><a name="api"></a>API-key</h3> 
 	 <p>If you haven't got one you will need to obtain a unique API-key, which
-		gives you access to the pages below, simply <a href="/contact.php">contact
+		gives you access to the feeds below, simply <a href="/contact.php">contact
 		us</a>, with a brief outline of your project, please include the URL so we can
 		take a look.</p> 
 	 <p>Once you have a API-key simply replace [apikey] in the examples below to
 		obtain your feed.</p> 
 		
-	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="rss"></a>RSS-feeds <a title="RSS Feed of Recent Images" href="/faq.php" class="xml-rss">RSS</a></h3> 
+	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="rss"></a>RSS-feeds <a href="/faq.php#rss" class="xml-rss">RSS</a></h3> 
 	 <p>Really Simple Syndication allows you to obtain a details for a number of
 		images, (usually) in XML format, this makes it really easy for you to reuse
 		small section of information on your website or project. The feed lives at<br/><br/>
 	 <a title="Geograph RSS feed"
 		href="http://{$http_host}/syndicator.php?key=[apikey]">http://{$http_host}/syndicator.php?key=[apikey]</a><br/><br/>
-	 and by default returns obtains an up-to-date listing of the 20 latest
+	 and by default returns obtains an up-to-date listing of the 15 latest
 		geograph submissions, you can however return different results as below</p> 
 	 <h4><a name="rss_param"></a>Feed Type</h4> 
 	 <p>You should supply <b>one</b> of the following parameters to specify the type of
@@ -90,7 +96,7 @@
 	 <table cellpadding="3" cellspacing="0" border="1"> 
 		<tr> 
 		  <th rowspan="2"><i>-none-</i></th> 
-		  <td>20 latest geograph submissions</td> 
+		  <td>15 latest geograph submissions</td> 
 		</tr> 
 		<tr> 
 		  <td>
@@ -258,7 +264,7 @@
 			 <table border="1" cellpadding="3" cellspacing="0"> 
 				<tr> 
 				  <th>simple=1</th> 
-				  <td>If present includes styling to hide the picture label unless hovering over the photo (recommended!)</td> 
+				  <td>If present includes styling to hide the picture label unless hovering over the photo (recommended if using with Google Earth!)</td> 
 				</tr> 
 		 </table></td> 
 		</tr>
@@ -320,12 +326,14 @@
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="csv"></a>CSV Export</h3> 
 	 
 	 
-	  <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+	 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 	 <img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
-	 <b>Note, that these CSV exports have become very inefficient, and so will only return 1000 records without prior arrangement.</b>
+	 <b>Note, that these CSV exports have become very inefficient, and so will only return 1000 records without prior arrangement.</b><br/><br/>
+	 
+	 Please consider {external text="Database Dumps" href="http://data.geograph.org.uk/dumps/"} instead.
 	 </div>
 	 
-	 <p>This is ideal for bulk downloads, or for keeping an offsite cache
+	 <p>More suited for bulk downloads, or for keeping an offsite cache
 		up-to-date, it lives at:<br/><br/>
 	 <a title="Geograph RSS feed"
 		href="http://{$http_host}/export.csv.php?key=[apikey]">http://{$http_host}/export.csv.php?key=[apikey]</a><br/><br/>
@@ -467,61 +475,81 @@
 	 <h4><a name="extra"></a>Returning Extra Columns</h4> 
 	 <p style="color:#990000;">NOTE: You can only supply EITHER en OR ll, not both</p>
 	 <table border="1" cellpadding="3" cellspacing="0"> 
-		<tr> 
+		<tr style="background-color:#eeeeee"> 
+		  <th colspan="2" ALIGN="LEFT">&amp;taken=1</th> 
+		  <td><b>taken date</b> of the image</td> 
+		  <td class="nowrap">2008-07-22</td>
+		</tr> 
+		
+		<tr style="background-color:#eeeeee"> 
 		  <th colspan="2" ALIGN="LEFT" rowspan="2">&amp;en=1</th> 
-		  <td colspan="2">add this parameter to add the Eastings, Northings and Precision
+		  <td colspan="2">add this parameter to add the <b>Eastings, Northings and Precision</b>
 			 </td> 
 		</tr> 
 		<tr> 
 		  <td colspan="2"><a 
 			 href="http://{$http_host}/export.csv.php?key=[apikey]&en=1">http://{$http_host}/export.csv.php?key=[apikey]&amp;en=1</a></td>
 		</tr> 
-		<tr> 
+		<tr style="font-size:0.8em"> 
 		  <th rowspan="3">&nbsp;</th> 
 		  <th>Easting</th> 
 		  <td rowspan="3">Absolute position for the image in m from the Grid
 			 False origin. Use the <i>Grid Ref</i> column to deduce with Grid the location
 			 refers to.<b> These columns will be 0 when the image isn't positioned with more
-			 than a 4 figure Grid Reference</b>. <sup style="color:red">New!</sup> include &coords=1 to get eastings/northings even for 4fig References</td> 
+			 than a 4 figure Grid Reference. <span style="color:red">include <tt>&coords=1</tt> to get eastings/northings even for 4fig References</span></b></td> 
 		  <td>545667</td> 
 		</tr> 
-		<tr> 
+		<tr style="font-size:0.8em"> 
 		  <th>Northing</th> 
 		  <td>234556</td> 
 		</tr> 
-		<tr> 
+		<tr style="font-size:0.8em"> 
 		  <th>Figures</th> 
 		  <td>10</td> 
 		</tr> 
-		<tr> 
+		
+		<tr style="background-color:#eeeeee"> 
 		  <th colspan="2" ALIGN="LEFT">&amp;ll=1</th> 
-		  <td colspan="2">add this parameter to return the WGS84 Latitude and
-			 Longitude </td> 
+		  <td colspan="2">add this parameter to return the <b>WGS84 Latitude and
+			 Longitude</b></td> 
 		</tr> 
-		<tr> 
+		<tr style="font-size:0.8em"> 
 		  <th rowspan="2" &nbsp;</th> 
 		  <th>Lat</th> 
 		  <td rowspan="2">Position for the image in decimal degrees lat/long,
 			 negative Longitude is West, specified to as high as accuracy as possible.</td> 
 		  <td>53.5564</td> 
 		</tr> 
-		<tr> 
+		<tr style="font-size:0.8em"> 
 		  <th>Long</th> 
 		  <td>-2.5466</td> 
 		</tr> 
-		<tr> 
+		
+		<tr style="background-color:#eeeeee"> 
 		  <th colspan="2" ALIGN="LEFT">&amp;thumb=1</th> 
 		  <td colspan="2">add this parameter to return the full url to a 120x120
 			 pixel thumbnail </td> 
 		</tr> 
-		<tr> 
+		<tr style="font-size:0.8em"> 
 		  <th>&nbsp;</th> 
 		  <th>Thumb URL</th> 
 		  <td colspan="2"> Example:<br/><a
 			 href="http://{$http_host}/photos/01/76/017622_ed5d17d5_120x120.jpg">http://{$http_host}/photos/01/76/017622_ed5d17d5_120x120.jpg</a>
 			 </td> 
 		</tr> 
-		<tr> 
+		
+		<tr style="background-color:#eeeeee"> 
+		  <th colspan="2" ALIGN="LEFT">&amp;desc=1</th> 
+		  <td colspan="2">include the <b>photo description</b></td> 
+		</tr> 
+		
+		<tr style="background-color:#eeeeee"> 
+		  <th colspan="2" ALIGN="LEFT">&amp;dir=1</th> 
+		  <td><b> view direction</b> in degrees (-1 = undefined)</td> 
+		  <td>145</td>
+		</tr> 
+		
+		<tr style="background-color:#eeeeee"> 
 		  <th colspan="2" ALIGN="LEFT" rowspan="2">&amp;ppos=1</th> 
 		  <td colspan="2">add this parameter to add the Eastings, Northings and Precision of the Photographer Position
 			 </td> 
@@ -530,7 +558,7 @@
 		  <td colspan="2"><a 
 			 href="http://{$http_host}/export.csv.php?key=[apikey]&en=1">http://{$http_host}/export.csv.php?key=[apikey]&amp;ppos=1</a></td>
 		</tr> 
-		<tr> 
+		<tr style="font-size:0.8em"> 
 		  <th rowspan="3">&nbsp;</th> 
 		  <th>Easting</th> 
 		  <td rowspan="3">Absolute position for the photographer in m from the Grid
@@ -538,11 +566,11 @@
 			 refers to.<b> These columns will be 0 when the image doesnt include a Photographer Grid Reference</b></td> 
 		  <td>545667</td> 
 		</tr> 
-		<tr> 
+		<tr style="font-size:0.8em"> 
 		  <th>Northing</th> 
 		  <td>234556</td> 
 		</tr> 
-		<tr> 
+		<tr style="font-size:0.8em"> 
 		  <th>Figures</th> 
 		  <td>10</td> 
 		</tr> 
@@ -668,14 +696,15 @@
 		<li><a href="/memorymap.php">MemoryMap Exports</a></li>
 		<li><a href="/gpx.php">GPX Exports</a></li>
 		<li>100x100km CheckSheets (<a href="http://{$http_host}/mapsheet.php?t=tolJ5oOXXJ0oOJFoOXXJfoMXbJqoOXXJL5405o4VZMlXwZblw4MMuX">example</a>) <small>- nice easy parseable listing, could be used for creating coverage maps</small></li>
-		<li>Please DON'T use the /list/ namespace as that's for Search Engines</li>
 		<li>sitemap.xml - see {external href="http://www.sitemaps.org"}</li>
 		<li><a href="http://www.geourl.org/" style="text-decoration: line-through">geourl.org</a> (Coming soon)</li>
 		<li>We can also create coverage csv's on demand, (listing squares currently with images)</li>
+		<li>{external title="Geograph Archive Database Dump" href="http://data.geograph.org.uk/dumps/" text="data.geograph.org.uk/dumps"} &amp; {external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk/" text="torrents.geograph.org.uk"}<br/><br/></li>
+		<li>Please DON'T use the <tt>/list/</tt> and/or <tt>/sitemap/</tt> namespace as they are to help Search Engines crewlers.</li>
 	 </ul>
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="finally"></a>Finally</h3> 
 	 <p>We wish you luck in you project and look forward to seeing the results! If you have any 
-		problems using the API, then please do get in <a href="/contact.php">contact</a>, or join the <a href="http://groups-beta.google.com/group/geograph-api-users">Geograph-API-Users</a> Google Discussion Group.</p>
+		problems using the API, then please do get in <a href="/contact.php">contact</a>. Please consider joining the <a href="http://groups-beta.google.com/group/geograph-api-users">Geograph-API-Users</a> Google Discussion Group, which is primarlly used for announcements.</p>
 {include file="_std_end.tpl"}
 
 
