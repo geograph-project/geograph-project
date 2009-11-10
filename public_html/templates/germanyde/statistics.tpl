@@ -1,7 +1,7 @@
 {assign var="page_title" value="Statistics"}
 {include file="_std_begin.tpl"}
  
-    <h2>Overview Statistics for Geograph British Isles</h2>
+    <h2>Overview Statistics for Geograph Deutschland</h2>
 
 <ul>
 <li><b>{$users_submitted}</b> Users have Submitted Images</li>
