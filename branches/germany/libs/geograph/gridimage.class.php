@@ -299,7 +299,7 @@ class GridImage
 	*/
 	function _initFromArray(&$arr)
 	{
-		//require_once('geograph/functions.inc.php');
+		require_once('geograph/functions.inc.php');
 		foreach($arr as $name=>$value)
 		{
 			if (!is_numeric($name))
@@ -342,7 +342,7 @@ class GridImage
 	*/
 	function fastInit(&$arr)
 	{
-		//require_once('geograph/functions.inc.php');
+		require_once('geograph/functions.inc.php');
 		$this->ext = false;
 		$this->grid_square=null;
 		$this->grid_reference='';

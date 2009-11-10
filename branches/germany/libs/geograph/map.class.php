@@ -1976,12 +1976,7 @@ END;
 			$posy=($top-$bottom) - ($gridy-$bottom);
 			$recordSet->fields['geographs'] = $recordSet->fields['imagecount'] - $recordSet->fields['accepted'];
 			$recordSet->fields['title1'] = $recordSet->fields['title'];
-			if (empty($recordSet->fields['title2']))
-				$recordSet->fields['title'] = $recordSet->fields['title1'];
-			elseif (empty($recordSet->fields['title1']))
-				$recordSet->fields['title'] = $recordSet->fields['title2'];
-			else
-				$recordSet->fields['title'] = $recordSet->fields['title1'] . ' (' . $recordSet->fields['title2'] . ')';
+			$recordSet->fields['title'] = combineTexts($recordSet->fields['title1'], $recordSet->fields['title2']);
 			$grid[$posx][$posy]=$recordSet->fields;
 			
 			$recordSet->MoveNext();
