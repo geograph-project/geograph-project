@@ -1,61 +1,63 @@
-{assign var="page_title" value="Register"}
+{assign var="page_title" value="Registrierung"}
 {include file="_std_begin.tpl"}
 
-<h2>Register</h2>
+<h2>Registrierung</h2>
 
 {dynamic}
 
 {if $registration_ok}
 
-	<p>Thanks for registering - we've sent you an email, simply
-	follow the link contained in the email to confirm your 
-	registration</p>
+	<p>Vielen Dank für die Registrierung. Wir haben eine Bestätigungsmail verschickt,
+	in der ein Bestätigungs-Link angegeben ist. Nach dem Aufrufen dieses Links ist die
+	Registrierung vollständig.</p>
 
-        <p><b>Hotmail users please note:</b> Check your "Junk E-Mail" folder as we've found
-	Hotmail sometimes treats the confirmation mail as spam.</p>
+        <p><b>Falls keine Bestätigungsmail kommt:</b> Die Mail könnte im SPAM- bzw. Junk-Ordner gelandet sein.
+	Außerdem kommt es immer wieder vor, dass die E-Mail-Adresse falsch angegeben wurde und die Bestätigungsmail
+	dann natürlich nicht erfolgreich versandt werden konnte. Oft kommt es auch zu Verzögerungen, weil
+	manche Anbieter nur verzögert E-Mails annehmen (z.B. wegen sog. Graylistings); insbesondere Yahoo fällt
+	diesbezüglich gelegentlich auf.</p>
 
 
 {elseif $confirmation_status eq "ok"}
-	<p>Congratulations - your registration is complete. We 
-	hope you'll enjoy contributing!</p>
+	<p>Herzlichen Glückwunsch, die Registrierung ist abgeschlossen. Wir 
+	wünschen viel Spass!</p>
 	
-	<p>You should now <a title="view your profile" href="/profile.php">view your profile</a>
-	to configure your site preferences.
-
+	<p>Auf der <a title="Profil anzeigen" href="/profile.php">Profilseite</a>
+	sind nun weitere Einstellungen möglich.
 	</p>
 
 {elseif $confirmation_status eq "alreadycomplete"}
-	<p>You have already completed the registration confirmation - please
-	<a title="Login in here" href="/login.php">log in</a> using your username and password</p>
+	<p>Die Registrierung ist bereits abgeschlossen. Bitte mit Benutzernamen und Passwort
+	<a title="Hier anmelden" href="/login.php">einloggen</a>.</p>
 
 {elseif $confirmation_status eq "fail"}
-	<p>Sorry, there was a problem confirming your registration.
-	Please <a href="contact.php">contact us</a> if the problem persists.</p>
+	<p>Bei der Bestätigung der Registrierung ist ein Problem aufgetreten.
+	Wenn das Problem fortbesteht, bitten wir um <a href="contact.php">Rückmeldung</a>.</p>
 {else}
 
 	<form action="register.php" method="post">
 
-	<p>You must register before you can upload photos, but it's quick
-	and painless and free. </p>
+	<p>Vor dem Einreichen von Bildern ist es erforderlich, sich zu registrieren. Die Registrierung ist aber
+	schnell, schmerz- und natürlich kostenlos.</p>
 
-	<label for="name">Your name</label><br/>
+	<label for="name">Name</label><br/>
 	<input id="name" name="name" value="{$name|escape:'html'}"/>
 	<span class="formerror">{$errors.name}</span>
 
 	<br/><br/>
 
-	<label for="email">Your email address</label><br/>
+	<label for="email">E-Mail-Adresse</label><br/>
 	<input id="email" name="email" value="{$email|escape:'html'}"/>
 	<span class="formerror">{$errors.email}</span>
 
 	<br/><br/>
 
-	<label for="password1">Choose a password</label><br/>
+	<label for="password1">Passwort</label><br/>
 	<input size="12" type="password" id="password1" name="password1" value="{$password1|escape:'html'}"/>
 	<span class="formerror">{$errors.password1}</span>
 
 	<br/><br/>
-	<label for="password2">Confirm password</label><br/>
+	<label for="password2">Passwort wiederholen</label><br/>
 	<input size="12" type="password" id="password2" name="password2" value="{$password2|escape:'html'}"/>
 	<span class="formerror">{$errors.password2}</span>
 	<br/>
@@ -65,8 +67,7 @@
 	<input type="submit" name="register" value="Register"/>
 	</form>  
 
-	<p>We won't sell or distribute your
-	email address, we hate spam, we really do.</p>
+	<p>Selbstverständlich werden wir die Daten nicht weitergeben!</p>
 
 {/if}
 
