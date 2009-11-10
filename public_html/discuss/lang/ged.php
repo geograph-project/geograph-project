@@ -20,7 +20,6 @@ $l_months='Jan:Feb:Mär:Apr:Mai:Jun:Jul:Aug:Sep:Okt:Nov:Dez';
 
 $l_admin = 'Admin';
 $l_about = 'Benutzerinfo';
-$l_forum='Forum';
 $l_num_topics='Themen';
 $l_topic='Thema';
 $l_replies='Antworten';
@@ -404,5 +403,13 @@ $l_page='Page';
 /* v2.3 */
 $l_today='<strong>Today</strong>';
 $l_yesterday='Yesterday';
+
+/* geograph */
+$l_forum='Forum &nbsp; (<a href="?forums=0" style="color:white;font-weight:normal" title="Nur aktuelle Diskussionen anzeigen.">Liste verbergen</a>)';
+$l_sub_answer11='Neue Bilder für diese Galerie';
+$l_unsubscribeinfo='E-Mail-Benachrichtigung für neue Postings zu diesem Thema -';
+$l_subscribe='oder E-Mail-Benachrichtigung anfordern ohne zu posten';
+$l_privateForum='Dieses Forum ist nicht zugänglich.';
+
 
 ?>
