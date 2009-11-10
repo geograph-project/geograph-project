@@ -218,6 +218,16 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'])) {
 			$sphinx->setSort($data['sort']);
 			$sphinx->setSpatial($data);
 		}
+		
+		$filters = array();
+		if (!empty($_REQUEST['onlymine'])) {
+			$filters['user_id'] = array($USER->user_id);
+			$smarty->assign("onlymine",1);
+		}
+		if (!empty($filters)) {
+			$sphinx->addFilters($filters);
+		}
+		
 		$ids = $sphinx->returnIds($pg,'snippet');
 
 		$smarty->assign("query_info",$sphinx->query_info);
@@ -245,6 +255,11 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'])) {
 			$where[] = "CONTAINS(
 					GeomFromText($rectangle),
 					point_en)";
+		}
+		
+		if (!empty($_REQUEST['onlymine'])) {
+			$where[] = "s.user_id = {$USER->user_id}";
+			$smarty->assign("onlymine",1);
 		}
 		
 		if (!empty($_REQUEST['q'])) {

@@ -268,7 +268,7 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 					point_en)";
 		}
 		
-		if (!$USER->hasPerm('moderator')) {
+		if (!$USER->hasPerm('moderator') || !empty($_REQUEST['onlymine'])) {
 			$where[] = "s.user_id = {$USER->user_id}";
 			$smarty->assign("onlymine",1);
 		}
