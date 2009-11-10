@@ -1,20 +1,20 @@
-{assign var="page_title" value="Password Change"}
+{assign var="page_title" value="Passwortänderung"}
 {include file="_std_begin.tpl"}
 
-<h2>Password Change</h2>
+<h2>Passwortänderung</h2>
 
 {dynamic}
 
 {if $confirmation_status eq "ok"}
-	<p>Thankyou, your profile will now use your new password.</p>
+	<p>Vielen Dank, ab jetzt wird das neue Passwort verwendet.</p>
 	
 
 {elseif $confirmation_status eq "alreadycomplete"}
-	<p>You have already confirmed this password change.</p>
+	<p>Diese Passwortänderung wurde bereits bestätigt!</p>
 
 {else}
-	<p>Sorry, there was a problem confirming your password changes.
-	Please <a href="contact.php">contact us</a> if the problem persists.</p>
+	<p>Bei der Bestätigung der Passwortänderung ist ein Problem aufgetreten.
+	Wenn das Problem fortbesteht, bitten wir um <a href="contact.php">Rückmeldung</a>.</p>
 {/if}
 
 {/dynamic}
