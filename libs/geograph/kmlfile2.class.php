@@ -163,9 +163,11 @@ function getKmlFilepath($extension,$level,$square = null,$gr='',$i = 0) {
 		if ($level > 2) {
 			$n = sprintf("%d%d",intval($square->eastings/20)*2,intval($square->northings/20)*2);
 		}
-		
+		if (empty($gr)) {
+			$gr = $square->grid_reference;
+		}
 	} elseif (!empty($gr)) {
-		preg_match('/^([A-Z]{1,3})([\d_]*)$/',strtoupper($gr),$m);
+		preg_match('/^([A-Z]{1,3})([\d_]*)([NS]*)([EW]*)$/',strtoupper($gr),$m);
 		$s = $m[1];
 		if ($level > 2) {
 			$numbers = $m[2];
@@ -175,6 +177,20 @@ function getKmlFilepath($extension,$level,$square = null,$gr='',$i = 0) {
 			$n = sprintf("%d%d",intval($numbers{0}/2)*2,intval($numbers{$c}/2)*2);
 		}
 	}
+	
+	if ($level == 5) {
+		//if level 5 quantize to subhectad/mosaic (and define gr to be in SH43NW format) 
+		//importantly doesnt affect a gr already in this format.
+		
+		//SH4(0)35  -> SH435(W) 
+		$gr = preg_replace('/^(.+)[5-9](\d)(\d)$/','$1$2$3E',$gr);
+		$gr = preg_replace('/^(.+)[0-4](\d)(\d)$/','$1$2$3W',$gr);
+		//SH43(5)E  -> SH43(N)E 
+		$gr = preg_replace('/^(.+)[5-9]([EW])$/e','$1."N".$2',$gr);
+		$gr = preg_replace('/^(.+)[0-4]([EW])$/e','$1."S".$2',$gr);
+	}
+			
+	
 	
 	$base=$_SERVER['DOCUMENT_ROOT'].'/kml';
 	$prefix = "/kml";
@@ -234,6 +250,8 @@ function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '',$list = '') {
 			
 			if (!empty($list)) {
 				$s = "Photos in ".$list." :: Geograph Germany";
+			} elseif (!empty($gr) && $level == 5) {
+				$s = "Photos in ".$gr." :: Geograph Germany";
 			} elseif (isset($square->grid_reference)) {
 				$s = "Photos in {$square->grid_reference} :: Geograph Germany";
 			} elseif (!empty($gr)) {
@@ -245,6 +263,8 @@ function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '',$list = '') {
 			$file1 = getKmlFilepath($kml->extension,$level-1,$square,$gr);
 			$file1 = str_replace("kml",'sitemap',$file1);
 			$file1 = str_replace("kmz",'html',$file1);
+			
+			$html = str_replace("http://{$_SERVER['HTTP_HOST']}/",'/',$html);
 			
 			$html = "<html><head><title>{$s}</title></head>\n".
 			"<body>".
