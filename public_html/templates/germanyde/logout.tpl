@@ -1,13 +1,11 @@
 {include file="_std_begin.tpl"}
 
 
-    <h2>Logout</h2>
+    <h2>Ausgeloggt</h2>
  
- 	<p>You are now logged out!</p>
+ 	<p>Mit dem Ausloggen wurde auch das &bdquo;automatische Einloggen&rdquo; auf diesem Computer deaktiviert.</p>
  	
- 	<p>The 'Remember me' setting has also been cleared on this computer.</p>
- 	
- 	<p>You will need to log back in to access certain features of this site.</p>
+ 	<p>Einige Funktionen dieser Seite sind nun bis zum erneuten Einloggen nicht mehr verfügbar.</p>
 
     
 {include file="_std_end.tpl"}
