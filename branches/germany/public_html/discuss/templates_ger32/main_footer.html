@@ -38,6 +38,20 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
      <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a></li>
      <li><a title="Impressum" href="http://www.hlipp.de/contact.html">Impressum</a></li>
     </ul></li>
+{?isModAdmin|
+    <li>Admin<ul>
+     <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
+}
+{?isModerator|
+     	<li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
+}
+{?isTicketMod|
+     	<li><a title="Trouble Tickets" href="/admin/tickets.php">Tickets</a> (<a href="/admin/tickets.php?sidebar=1" target="_search" title="Open in Sidebar, IE and Firefox Only">S</a>)</li>
+}
+{?isModAdmin|
+     <li><a title="Finish Moderation for this session" href="/admin/moderation.php?abandon=1">Finish</a></li>
+    </ul></li>
+}
 </ul>
   </div>
 </div>
