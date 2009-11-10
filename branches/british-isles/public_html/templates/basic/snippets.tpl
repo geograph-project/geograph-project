@@ -76,7 +76,7 @@
 
 <input type="submit" value="Find"/><br/>
 <label for="gr">Grid Reference</label>: 
-<input type="text" name="gr" id="gr" value="{$gr|escape:'html'}" size="12" maxlength="12"/><br/>
+<input type="text" name="gr" id="gr" value="{$gr|escape:'html'}" size="12" maxlength="12"/>{if $is_mod} &nbsp;&nbsp; (<input type="checkbox" name="onlymine" {if $onlymine} checked{/if}/> Only show my descriptions. Moderators can edit all descriptions){/if}<br/>
 
 <label for="gr">Radius</label>: 
 {if $centisquare}
@@ -85,9 +85,7 @@
 <input type="radio" name="radius" value="1" {if $radius == 1 || !$radius} checked{/if}/> Gridsquare  / 
 <input type="radio" name="radius" value="2" {if $radius == 2} checked{/if}/> including surrounding gridsquares / 
 <input type="radio" name="radius" value="10"{if $radius == 10} checked{/if}/> within 10km </small><br/>
-{if $is_mod}
-	<input type="checkbox" name="onlymine" {if $onlymine} checked{/if}/> Only show my descriptions (moderators can edit all descriptions)
-{/if}
+
 </div>
 
 {foreach from=$results item=item}

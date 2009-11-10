@@ -76,14 +76,14 @@
 {/foreach}
 
 
-<div class="interestBox" style="border-top:2px solid white">
+<div class="interestBox" style="border-top:2px solid gray">
 
 <b>View nearby descriptions</b> &nbsp;
 <label for="fq">Search{if $sphinx} keywords{/if}</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 {if !$sphinx}
 	(single keyword only)
 {/if}
-<input type="submit" value="Find"/><br/>
+<input type="submit" value="Find"/> (<input type="checkbox" name="onlymine" {if $onlymine} checked{/if}/> Only show my descriptions)<br/>
 radius:{if $centisquare}
 <small><input type="radio" name="radius" value="0.1"{if $radius == 0.1} checked{/if}/> centisquare / 
 {/if}
