@@ -368,8 +368,8 @@ class GridImageTroubleTicket
 			
 			$status="immediate";
 			$approver_id=$this->user_id;
-			$img->title = $img->_combineTitle($img->title1, $img->title2);
-			$img->comment = $img->_combineComment($img->comment1, $img->comment2);
+			$img->title = combineTexts($img->title1, $img->title2);
+			$img->comment = combineTexts($img->comment1, $img->comment2);
 		}
 		else
 		{

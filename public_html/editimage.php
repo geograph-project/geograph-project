@@ -503,8 +503,8 @@ if (isset($_REQUEST['id']))
 				$image->comment1=$comment;
 				$image->title2=$title2;
 				$image->comment2=$comment2;
-				$image->title = $image->_combineTitle($title, $title2);
-				$image->comment = $image->_combineComment($comment, $comment2);
+				$image->title = combineTexts($title, $title2);
+				$image->comment = combineTexts($comment, $comment2);
 				$image->imageclass=$imageclass;
 				$image->imagetaken=$imagetaken;
 				$image->subject_gridref=$grid_reference;
@@ -614,8 +614,8 @@ if (isset($_REQUEST['id']))
 			$image->title2=$title2;
 			$image->comment2=$comment2;
 
-			$image->title = $image->_combineTitle($title, $title2);
-			$image->comment = $image->_combineComment($comment, $comment2);
+			$image->title = combineTexts($title, $title2);
+			$image->comment = combineTexts($comment, $comment2);
 		}
 		//strip out zeros from date
 		#$image->imagetaken=str_replace('0000-', '-', $image->imagetaken);
