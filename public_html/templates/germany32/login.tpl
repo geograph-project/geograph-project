@@ -48,7 +48,7 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 {/foreach}
 {if count($_post) && !$_post.login}
 	<br/><br/>
-	<div class="interestBox"><sup style="color:red">new!</sup> Entering your details above should allow you to continue without loss of data. The exception is actully uploading an image, for example on Step 2 of the submission process, which will need to be resent. <br/><br/>
+	<div class="interestBox">Entering your details above should allow you to continue without loss of data. The exception is actually uploading an image, for example on Step 2 of the submission process, which will need to be resent. <br/><br/>
 	It's highly recommended to use the 'Remember me' function to reduce the likelyhood of seeing this message, even on public computers; using the Logout function will also clear the 'Remember me' cookie.</div>
 {/if}
 
