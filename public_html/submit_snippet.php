@@ -104,6 +104,8 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 		//clear any caches involving this photo
 		$ab=floor($gid/10000);
 		$smarty->clear_cache(null, "img$ab|{$gid}");
+		
+		$memcache->name_delete('sd', $gid);
 	}
 	
 } elseif ($gid && !empty($_POST['remove'])) {
@@ -122,6 +124,8 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 		//clear any caches involving this photo
 		$ab=floor($gid/10000);
 		$smarty->clear_cache(null, "img$ab|{$gid}");
+		
+		$memcache->name_delete('sd', $gid);
 	}
 
 } elseif ($gid && !empty($_POST['add'])) {
@@ -141,6 +145,8 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 		//clear any caches involving this photo
 		$ab=floor($gid/10000);
 		$smarty->clear_cache(null, "img$ab|{$gid}");
+		
+		$memcache->name_delete('sd', $gid);
 	}
 	
 }
