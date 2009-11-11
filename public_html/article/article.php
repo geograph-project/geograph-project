@@ -37,11 +37,8 @@ $isadmin=$USER->hasPerm('moderator')?1:0;
 
 $template = 'article_article.tpl';
 $cacheid = 'articles|'.$_GET['page'];
-$cacheid .= '|'.$USER->hasPerm('moderator')?1:0;
+$cacheid .= '|'.$isadmin;
 $cacheid .= '-'.(isset($_SESSION['article_urls']) && in_array($_GET['page'],$_SESSION['article_urls'])?1:0);
-if (isset($_SESSION[$_GET['page']])) {
-	$cacheid .= '-'.$_SESSION[$_GET['page']];
-}
 if (!empty($_GET['epoch']) && preg_match('/^[\w]+$/',$_GET['epoch'])) {
 	$cacheid .= "--".$_GET['epoch'];
 } else {
@@ -237,10 +234,12 @@ where ( (licence != 'none' and approved > 0)
 	and url = ".$db->Quote($_GET['page']).'
 limit 1');
 if (count($page)) {
+	$cacheid .= '|'.$page['update_time'];
+	
 	if ($page['user_id'] == $USER->user_id) {
 		$cacheid .= '|'.$USER->user_id;
 	}
-	
+	print $cacheid;
 	if (!isset($_GET['dontcount']) && $CONF['template']!='archive' && @strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE) {
 		$db->Execute("UPDATE LOW_PRIORITY article_stat SET views=views+1 WHERE article_id = ".$page['article_id']);
 	}

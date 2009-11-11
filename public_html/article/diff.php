@@ -37,13 +37,6 @@ $isadmin=$USER->hasPerm('moderator')?1:0;
 
 $template = 'article_diff.tpl';
 $cacheid = 'articles|'.$_GET['page'];
-$cacheid .= '|'.$USER->hasPerm('moderator')?1:0;
-$cacheid .= '-'.(isset($_SESSION['article_urls']) && in_array($_GET['page'],$_SESSION['article_urls'])?1:0);
-if (isset($_SESSION[$_GET['page']])) {
-	$cacheid .= '-'.$_SESSION[$_GET['page']];
-}
-$smarty->assign_by_ref('isadmin', $isadmin);
-
 
 $db = GeographDatabaseConnection(true);
 
