@@ -12,7 +12,7 @@
 <div class="interestBox">
 
 	<div>{$comment}</div>
-	<div style="font-size:0.8em;margin-top:8px;border-top:1px solid silver"><a href="/gridref/{$grid_reference}/links"><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" style="padding:2px;" alt="More Links for {$grid_reference}"/></a> | <a href="/gridref/{$grid_reference}/links">Links for <b>{$grid_reference}</b></a> | <a href="/search.php?searchtext={$title|escape:'url'}&amp;gridref={$grid_reference}&amp;do=1">Find nearby images mentioning the words '{$title|escape:'html'}'</a> |</div>
+	<div style="font-size:0.8em;margin-top:8px;border-top:1px solid silver"><a href="/gridref/{$grid_reference}/links"><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" style="padding:2px;" alt="More Links for {$grid_reference}"/></a> | <a href="/gridref/{$grid_reference}/links">Links for <b>{$grid_reference}</b></a> | {if $title}<a href="/search.php?searchtext={$title|escape:'url'}&amp;gridref={$grid_reference}&amp;do=1">Find nearby images mentioning the words '{$title|escape:'html'}'</a> |{/if}</div>
 </div>
 
 {if $others} 
@@ -40,6 +40,11 @@
 	{/foreach}
 	<br style="clear:both"/>
 
+{if $images && $title}
+<ul>
+	<li><a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1">View all images using this description</a></li>
+</ul>
+{/if}
 
 <div class="interestBox" style="font-size:0.7em">These descriptions are common to multiple images. For example can create a generic description for a object shown in a photo, and reuse the description on all photos of the object. All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.</div>
 
