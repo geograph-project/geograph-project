@@ -37,6 +37,7 @@ $isadmin=$USER->hasPerm('moderator')?1:0;
 
 $template = 'article_diff.tpl';
 $cacheid = 'articles|'.$_GET['page'];
+$cacheid .= '|'.$isadmin;
 
 $db = GeographDatabaseConnection(true);
 
@@ -51,6 +52,10 @@ where ( (licence != 'none' and approved >0)
 limit 1');
 
 if (count($page)) {
+	if ($page['user_id'] == $USER->user_id) {
+		$cacheid .= '|'.$USER->user_id;
+	}
+
 	$r1 = (!empty($_GET['1']))?intval($_GET['1']):0;
 	$r2 = (!empty($_GET['2']))?intval($_GET['2']):0;
 	
