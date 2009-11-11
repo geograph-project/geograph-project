@@ -541,6 +541,8 @@ class GridImage
 	}
 	
 	function loadSnippets($gid = 0) {
+		global $memcache;
+		
 		if (empty($gid)) {
 			$gid = $this->gridimage_id;
 			$cachetime = 3600;
@@ -548,10 +550,25 @@ class GridImage
 			$cachetime = 0;
 		}
 		
-		$db=&$this->_getDB(30); //need currency
+		if ($cachetime && $memcache->valid) {
+			$mkey = $this->gridimage_id;
+			
+			$this->snippets =& $memcache->name_get('sd',$mkey);
+			
+			if ($this->snippets === FALSE) {
+				$db=&$this->_getDB(true); 
+				
+				$this->snippets = $db->getAll("SELECT snippet.* FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) WHERE gridimage_id = $gid AND enabled = 1 ORDER BY gridimage_snippet.created");
+				$memcache->name_set('sd',$mkey,$this->snippets,$memcache->compress,$memcache->period_long);
+			}
+		} else {
+			//even without memcache we can use adodb caching - but then dont get invalidation
+			
+			$db=&$this->_getDB(30); //need currency
 		
-		$this->snippets = $db->CacheGetAll($cachetime,"SELECT snippet.* FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) WHERE gridimage_id = $gid AND enabled = 1 ORDER BY gridimage_snippet.created");
-
+			$this->snippets = $db->CacheGetAll($cachetime,"SELECT snippet.* FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) WHERE gridimage_id = $gid AND enabled = 1 ORDER BY gridimage_snippet.created");
+		}
+		
 		
 		$this->snippet_count = count($this->snippets);
 		

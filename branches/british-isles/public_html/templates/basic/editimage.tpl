@@ -657,7 +657,9 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 <div id="showshare" style="display:none">
 	<ul>
 		<li>Currently 'Shared Descriptions' are not tracked though the 'Change Suggestion' system, and updates apply immediately. (but all changes are monitored)</li>
-		<li>There is no need to click 'Submit Changes' above to apply changes to shared descriptions.</li>
+		<li>There is no need to click 'Submit Changes' above to apply changes to shared descriptions.<ul>
+			<li><b>In fact don't click the button if you are only changing the shared description(s).</b></li>
+			</ul></li>
 		<li>Only you (and the moderators) can edit your shared description, although anyone can use your descriptions on their own images.</li>
 	</ul>
 	<iframe src="about:blank" height="400" width="100%" id="shareframe">
