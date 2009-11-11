@@ -186,7 +186,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		if ($_REQUEST['page'] == 'new' || $_REQUEST['article_id'] == 'new') {
 			$_REQUEST['article_id'] = $db->Insert_ID();
 		}
-
+		
 		require_once('geograph/event.class.php');
 		new Event("article_updated", $_REQUEST['article_id']);
 
@@ -194,14 +194,14 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		$sql = "INSERT INTO article_revisions SELECT *,NULL,{$USER->user_id} FROM article WHERE article_id = ".$db->Quote($_REQUEST['article_id']);
 		$db->Execute($sql);
 
-		$_SESSION[$_POST['url']] = $db->Insert_ID();
-
-		$smarty->clear_cache('article_article.tpl', $_POST['url']);
+		$smarty->clear_cache('', 'article|'.$_POST['url'].'|');
 		$smarty->clear_cache('article.tpl');
-
+		
+		header("Location: /article/".(empty($_POST['url'])?$page['url']:$_POST['url']));
+		flush();
+		
 		$db->Execute("DELETE FROM article_lock WHERE user_id = {$USER->user_id} AND article_id = {$_REQUEST['article_id']}");
 
-		header("Location: /article/".(empty($_POST['url'])?$page['url']:$_POST['url']));
 		exit;
 	} else {
 		if ($errors[1] != 1)

@@ -35,11 +35,8 @@ $isadmin=$USER->hasPerm('moderator')?1:0;
 
 $template = 'article_history.tpl';
 $cacheid = 'articles|'.$_GET['page'];
-$cacheid .= '|'.$USER->hasPerm('moderator')?1:0;
+$cacheid .= '|'.$isadmin;
 $cacheid .= '-'.(isset($_SESSION['article_urls']) && in_array($_GET['page'],$_SESSION['article_urls'])?1:0);
-if (isset($_SESSION[$_GET['page']])) {
-	$cacheid .= '-'.$_SESSION[$_GET['page']];
-}
 $smarty->assign_by_ref('isadmin', $isadmin);
 
 
@@ -56,6 +53,8 @@ where ( (licence != 'none' and approved > 0)
 limit 1');
 
 if (count($page)) {
+	$cacheid .= '|'.$page['update_time'];
+	
 	if ($page['user_id'] == $USER->user_id) {
 		$cacheid .= '|'.$USER->user_id;
 	}
