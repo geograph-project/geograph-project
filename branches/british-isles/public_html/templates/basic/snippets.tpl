@@ -111,7 +111,7 @@
 
 {foreachelse}
 	{if $gr || $q}
-		<p><i>no shared descriptions found</i></p>
+		<p><i>no shared descriptions found (NOTE: it can take 10 minutes for new descriptions to be found)</i></p>
 	{/if}
 {/foreach}
 {if $query_info}
