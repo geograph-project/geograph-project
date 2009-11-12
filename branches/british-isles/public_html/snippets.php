@@ -128,6 +128,10 @@ if (!empty($_REQUEST['edit'])) {
 			}
 			header("Location: {$_SERVER['PHP_SELF']}?".preg_replace('/edit[\[\d\]%bdBD]+=\w+/','thankyou=saved',$_SERVER['QUERY_STRING']));
 			print "<a href=\"{$_SERVER['PHP_SELF']}\">continue</a>";
+			
+			
+			$smarty->clear_cache("snippet.tpl", $snippet_id);
+			
 			exit;
 		} else {
 			if (!count($updates)) {
