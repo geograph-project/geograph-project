@@ -55,7 +55,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		} 
 
 
-		if ($data['nateastings']) {
+		if ($data['nateastings'] && intval($data['natgrlen']) > 4) {
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
 
