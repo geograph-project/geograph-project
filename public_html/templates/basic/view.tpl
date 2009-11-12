@@ -50,14 +50,14 @@
 	{if !$image->comment && $image->snippet_count == 1}
 		{assign var="item" value=$image->snippets[0]}
 		<div class="caption640">
-		{$item.comment|escape:'html'|nl2br|geographlinks}<br/><br/>
-		<small>See other images of <a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'}</a></small>
+		{$item.comment|escape:'html'|nl2br|geographlinks}{if $item.$title}<br/><br/>
+		<small>See other images of <a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'}</a></small>{/if}
 		</div>
 	{else}
 		{foreach from=$image->snippets item=item name=used}
 			{if !$image->snippets_as_ref && !$item.comment}
 				<div class="caption640 searchresults"><br/>
-				<small>	See other images of <a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'}</a></small>
+				<small>See other images of <a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'}</a></small>
 				</div>
 			{else}
 				<div class="snippet640 searchresults">

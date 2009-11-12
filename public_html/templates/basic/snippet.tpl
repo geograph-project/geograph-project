@@ -6,17 +6,16 @@
 {/if}
 {/dynamic}
 
-<h2>{$title|escape:'html'|default:'Untitled'} <small>:: Shared Description</small></h2>
+<h2>{$title|escape:'html'|default:'Untitled'}{if $comment} <small>:: Shared Description</small>{/if}</h2>
 
 <div style="text-align:right;position:relative;">By <a href="/profile/{$user_id}">{$realname|escape:'html'}</a></div>
-<div class="interestBox">
 
-	<div>{$comment}</div>
-	<div style="font-size:0.8em;margin-top:8px;border-top:1px solid silver"><a href="/gridref/{$grid_reference}/links"><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" style="padding:2px;" alt="More Links for {$grid_reference}"/></a> | <a href="/gridref/{$grid_reference}/links">Links for <b>{$grid_reference}</b></a> | {if $title}<a href="/search.php?searchtext={$title|escape:'url'}&amp;gridref={$grid_reference}&amp;do=1">Find nearby images mentioning the words '{$title|escape:'html'}'</a> |{/if}</div>
-</div>
+{if $comment}
+	<div class="caption640" style="border:1px solid silver;padding:10px;">{$comment}</div>
+{/if}
 
 {if $others} 
-	<div style="float:right;position:relative; background-color:lightgreen;padding:8px">
+	<div style="float:right;position:relative;padding:8px; border-left:2px solid gray;height:300px">
 		<b>More nearby...</b>
 		<ul style="padding:0 0 0 1em;">
 			{foreach from=$others item=item}
@@ -27,7 +26,7 @@
 {/if}
 
 {if $images}
-	<p>{$images} image{if $images == 1} uses{else}s use{/if} this description{if $images > 10}. Preview shown below:{else}:{/if}</p>
+	<p><b>{$images} image{if $images == 1} uses{else}s use{/if} this description{if $images > 10}. Preview shown below:{else}:{/if}</b></p>
 {/if}
 
 	{foreach from=$results item=image}
@@ -40,11 +39,20 @@
 	{/foreach}
 	<br style="clear:both"/>
 
-{if $images && $title}
-<ul>
-	<li><a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1">View all images using this description</a></li>
+
+<ul class="explore">
+	{if $images && $title}
+		<li><a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1"><b>View all images</b> using this description</a>
+		{if $images < 15}
+			| <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1&displayclass=gmap">On a <b>Map</b></a>
+		{/if}
+		</li>
+	{/if}
+	<li><a href="/gridref/{$grid_reference}/links"><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" style="padding:2px;" alt="More Links for {$grid_reference}"/></a> <a href="/gridref/{$grid_reference}/links">Links for <b>{$grid_reference}</b></a> | <a href="/gridref/{$grid_reference}"><b>Photos</b> for {$grid_reference}</a></li>
+	{if $title}<li><a href="/search.php?searchtext={$title|escape:'url'}&amp;gridref={$grid_reference}&amp;do=1">Find nearby images <b>mentioning the words [ {$title|escape:'html'} ]</b></a></li>{/if}
 </ul>
-{/if}
+
+<br/>
 
 <div class="interestBox" style="font-size:0.7em">These descriptions are common to multiple images. For example can create a generic description for a object shown in a photo, and reuse the description on all photos of the object. All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.</div>
 

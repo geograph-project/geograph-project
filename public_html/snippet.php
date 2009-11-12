@@ -69,8 +69,9 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		}
 		
 		//we do this here first, rather than in smarty - so we can attach html. 
-		//todo call geographlinks?
 		$data['comment'] = htmlentities2($data['comment']);
+		$data['comment'] = GeographLinks(nl2br($data['comment']));
+		$data['comment'] = preg_replace('/(^|[\n\r\s]+)(Keywords?[\s:][^\n\r>]+)$/','<span class="keywords">$2</span>',$data['comment']);
 		
 		if ($CONF['sphinx_host']) {
 
