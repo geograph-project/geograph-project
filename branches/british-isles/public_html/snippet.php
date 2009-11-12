@@ -73,7 +73,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$data['comment'] = GeographLinks(nl2br($data['comment']));
 		$data['comment'] = preg_replace('/(^|[\n\r\s]+)(Keywords?[\s:][^\n\r>]+)$/','<span class="keywords">$2</span>',$data['comment']);
 		
-		if ($CONF['sphinx_host']) {
+		if ($CONF['sphinx_host'] && $data['grid_reference']) {
 
 			$sphinx = new sphinxwrapper();
 			$sphinx->pageSize = $pgsize = 25;
