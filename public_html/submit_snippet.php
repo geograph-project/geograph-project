@@ -105,6 +105,8 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 		$ab=floor($gid/10000);
 		$smarty->clear_cache(null, "img$ab|{$gid}");
 		
+		$smarty->clear_cache("snippet.tpl", $updates['snippet_id']);
+		
 		$memcache->name_delete('sd', $gid);
 	}
 	
@@ -124,6 +126,8 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 		//clear any caches involving this photo
 		$ab=floor($gid/10000);
 		$smarty->clear_cache(null, "img$ab|{$gid}");
+		
+		$smarty->clear_cache("snippet.tpl", $criteria['snippet_id']);
 		
 		$memcache->name_delete('sd', $gid);
 	}
@@ -145,6 +149,8 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 		//clear any caches involving this photo
 		$ab=floor($gid/10000);
 		$smarty->clear_cache(null, "img$ab|{$gid}");
+		
+		$smarty->clear_cache("snippet.tpl", $updates['snippet_id']);
 		
 		$memcache->name_delete('sd', $gid);
 	}
