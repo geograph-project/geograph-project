@@ -80,6 +80,9 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			$pg = 1;
 			
 			if ($data['nateastings']) {
+				require_once('geograph/conversions.class.php');
+				$conv = new Conversions;
+
 				$geodata = array();
 
 				list($geodata['x'],$geodata['y']) = $conv->national_to_internal($data['nateastings'],$data['natnorthings'],$data['reference_index']);
@@ -123,7 +126,11 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		}
 
 		$smarty->assign($data);
-		$smarty->assign('page_title',$data['title']);
+		if ($data['images']) {
+			$smarty->assign('page_title',$data['title']." [{$data['images']} photos]");
+		} else {
+			$smarty->assign('page_title',$data['title']);
+		}
 	} else {
 		$template = 'static_404.tpl';
 	}
