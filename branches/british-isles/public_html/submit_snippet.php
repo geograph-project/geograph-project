@@ -75,7 +75,7 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 			//we store these so can recreate the original GR - but only if specifically entered
 			$updates['nateastings'] = $square->nateastings;
 			$updates['natnorthings'] = $square->natnorthings;
-			$updates['natgrlen'] = $square->natgrlen;
+			$updates['natgrlen'] = "".$square->natgrlen;//have to be careful its a enum but holding numberic - so needs string
 		}
 		$updates['reference_index'] = $square->reference_index;
 		
