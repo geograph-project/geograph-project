@@ -24,7 +24,7 @@
 			<label for="title"><b>Short Title</b>:</label>
 			<input type="text" id="title" name="title" value="{$title|escape:'html'}" size="30" maxlength="64"/>
 
-			<div class="fieldnotes" style="font-size:0.7em">Short title for the object being represented</div>
+			<div class="fieldnotes" style="font-size:0.7em;color:gray">Short title for the object/location being represented</div>
 
 			{if $errors.title}</div>{/if}
 		</div>
@@ -35,7 +35,10 @@
 
 			<textarea name="comment" id="comment" rows="10" cols="60">{$comment|escape:'html'}</textarea>
 
-			<div class="fieldnotes" style="font-size:0.7em">Remember this shared description may be used on multiple images - so keep it generic.
+			<div class="fieldnotes" style="font-size:0.7em;color:gray">Remember this shared description may be used on multiple images - so keep it generic.<br/>
+			
+			TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
+to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
 			</div>
 		</div>
 		
@@ -45,12 +48,15 @@
 			<label for="grid_reference"><b>Grid Reference</b>:</label>
 			<input type="text" id="grid_reference" name="grid_reference" value="{$grid_reference|escape:'html'}" size="10" maxlength="12"/>
 
-			<div class="fieldnotes" style="font-size:0.7em">Optional Grid Reference for the feature/location. Ideally 6 figure plus.</div>
+			<div class="fieldnotes" style="font-size:0.7em;color:gray">Optional Grid Reference for the feature/location, great if this description describes a specific location. Ideally 6 figure plus.</div>
 
 			{if $errors.grid_reference}</div>{/if}
 		</div>
 		
 		<input type="submit" name="save" value="Save"/> <input type="submit" name="cancel" value="Cancel"/>
+		
+		<div class="fieldnotes" style="font-size:0.7em;color:gray">Idea: Even if you leave the description itself blank, a 'shared description' can still be used as a way to link a series of images into 'Collection'.</div>
+		
 	</fieldset>
 </div>
 </form>

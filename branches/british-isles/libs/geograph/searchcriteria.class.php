@@ -388,7 +388,7 @@ class SearchCriteria
 			} else {
 				#$this->sphinx['filters']['imageclass'] = "\"".$this->limit3."\"";
 				$db = $this->_getDB(true);
-				$this->sphinx['filters']['classcrc'] = array($db->GetOne('select crc32('.$db->Quote($this->limit3).')'));
+				$this->sphinx['filters']['classcrc'] = array($db->GetOne('select crc32(lower('.$db->Quote($this->limit3).'))'));
 			}
 		} 
 		if (!empty($this->limit4)) {
