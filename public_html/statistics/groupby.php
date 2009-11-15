@@ -213,7 +213,7 @@ function encode_option($option,$value) {
 		case 'hectad':
 			$value = $db->getOne("select conv('$value',36,10)"); break;
 		case 'classcrc':
-			$value = $db->getOne("select crc32('$value')"); break;
+			$value = $db->getOne("select crc32(lower('$value'))"); break;
 		case 'scenti':
 		case 'viewsquare':
 		case 'pcenti':
@@ -235,7 +235,7 @@ function decode_option($option,$value) {
 			$value = $db->getOne("select conv('$value',10,36)"); break;
 		case 'classcrc':
 			//todo MIGHT be quicker to ask sphinx and look it up on an example image? (or use image from sphinx result directly?()
-			$value = $db->getOne("select imageclass from category_stat where crc32(imageclass) = $value"); break;
+			$value = $db->getOne("select imageclass from category_stat where crc32(lower(imageclass)) = $value"); break;
 		case 'scenti':
 		case 'viewsquare':
 		case 'pcenti':
