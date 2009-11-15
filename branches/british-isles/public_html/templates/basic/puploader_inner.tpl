@@ -164,7 +164,10 @@
 	    new Autocompleter.Request.JSON(inputWord, '/finder/categories.json.php', {
 	        'postVar': 'q',
 	        'minLength': 2,
-	        maxChoices: 60
+	        maxChoices: 60,
+	        onSelection: function() {
+	        	parentUpdateVariables();
+	        }
 	    });
 	    
 	},false);
