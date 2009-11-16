@@ -515,7 +515,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 				$thumb_count++;
 			} else {
 				//link to grid ref
-				$posterText = str_replace("[[$prefix$g_id]]","<a href=\"http://{$server}/gridref/$g_id\">".str_replace(' ','+',$g_id)."</a>",$posterText);
+				$posterText = str_replace("[[$prefix$g_id]]","<a href=\"http://{$server}/gridref/".str_replace(' ','+',$g_id)."\">$g_id</a>",$posterText);
 			}
 		}
 	}
