@@ -50,7 +50,7 @@
 	{if !$image->comment && $image->snippet_count == 1}
 		{assign var="item" value=$image->snippets[0]}
 		<div class="caption640">
-		{$item.comment|escape:'html'|nl2br|geographlinks}{if $item.$title}<br/><br/>
+		{$item.comment|escape:'html'|nl2br|geographlinks}{if $item.title}<br/><br/>
 		<small>See other images of <a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'}</a></small>{/if}
 		</div>
 	{else}
