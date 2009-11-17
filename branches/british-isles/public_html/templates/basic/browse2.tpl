@@ -82,13 +82,15 @@
 		{include file="_overview.tpl"}
 		</div>
 	{/if}
-
+	{if $place}
+		<div style="font-size:0.8em;border-bottom:1px solid silver;margin-bottom:2px">{place place=$place}</div>
+	{/if}
 	{if $imagecount}
 		{* There are some thumbnails to display *}
 		
 		<ul style="margin-top:5px;">
 		
-		<li>We have 
+		<li><big>We have 
 			{if $imagecount eq 1}just one image{else}{$imagecount|thousends} images{/if} 
 			{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
 			{if $mode eq 'takenfrom'}
@@ -97,25 +99,12 @@
 				mentioning <b>{$gridref}</b> <sup>[Note: Currently only matches 4 Figure Grid References]</sup>
 			{else}
 				for <b>{$gridref}</b>
-			{/if}
+			{/if}</big>
 			{if false && $imagecount > 15}
 				<br/>&nbsp;&nbsp;&nbsp;
 				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View all images page by page</a>
 			{/if}
 		</li>
-
-		<li style="margin-top:4px;">
-		<form method="get" action="/search.php">
-			<div class="interestBox" style="width:290px">
-			<b>Search images in this square</b>:<br/> 
-			<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
-			<input type="submit" value="Search"/><br/>
-			<input type="hidden" name="location" value="{$gridref}"/>
-			<input type="radio" name="distance" value="1" checked id="d1"/><label for="d1">In {$gridref} only</label> /
-			<input type="radio" name="distance" value="3" id="d3"/><label for="d1">inc surrounding squares</label><br/>
-			<input type="hidden" name="do" value="1"/>
-			</div> 
-		</form></li>
 		
 		{if $by eq 'centi' || $by eq 'viewcenti' }
 		<li style="margin-top:4px"><b>distribution of pictures</b> across the grid square.</b></li>
@@ -126,7 +115,7 @@
 		{if $by}
 		<li style="margin-top:4px"><a href="{linktoself name="by" value="1"}"><b>reset filtering options</b></a></li>
 		{else}
-		<li style="margin-top:4px"><a href="{linktoself name="by" value="1"}">Access <b>more filtering options</b></a></li>
+		<li style="margin-top:4px"><img src="http://{$static_host}/img/links/20/grid.png" width="20" height="20" alt="centisquare icon" align="absmiddle"/> <a href="{linktoself name="by" value="1"}">Access <b>more filtering options</b></a></li>
 		{/if}
 		
 		<li style="margin-top:4px">View all images: <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show" class="nowrap"><b>slideshow</b></a>, <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;orderby=submitted&amp;do=1" title="View just thumbnails" class="nowrap"><b>thumbnails</b></a></li>
@@ -175,7 +164,22 @@
 		{/if}
 		
 		</ul>
-	<p align=center><big><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" alt="geotagged!"/> <b><a href="/gridref/{$gridrefraw}/links">More Links for {$gridrefraw}</a></b> </big></p>
+		
+	{if $imagecount}
+		<form method="get" action="/search.php">
+				<div class="interestBox" style="width:340px">
+				<b>Search local images</b>:<br/> 
+				<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+				<input type="submit" value="Search"/><br/>
+				<input type="hidden" name="location" value="{$gridref}"/>
+				<input type="radio" name="distance" value="1" checked id="d1"/><label for="d1">In {$gridref} only</label> /
+				<input type="radio" name="distance" value="3" id="d3"/><label for="d1">inc surrounding squares</label><br/>
+				<input type="hidden" name="do" value="1"/>
+				</div> 
+		</form>	
+	{/if}
+	
+	<p style="padding-left:20px"><big><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" alt="geotagged!"/> <b><a href="/gridref/{$gridrefraw}/links">More Links for {$gridrefraw}</a></b> </big></p>
 {/if}
 
 </div>

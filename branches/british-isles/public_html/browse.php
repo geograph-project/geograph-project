@@ -181,6 +181,12 @@ if ($grid_given)
 			$smarty->assign('nearest_distance', $square->nearest->distance);
 			$smarty->assign('nearest_gridref', $square->nearest->grid_reference);
 		}
+		
+		if ($square->percent_land > 0) {
+			//find a possible place within 25km
+			$smarty->assign('place', $square->findNearestPlace(75000));
+		}
+		
 	}
 	$smarty->assign('mode','normal');
 	if ($grid_ok && (isset($_GET['takenfrom']) || isset($_GET['mentioning'])) ) {
