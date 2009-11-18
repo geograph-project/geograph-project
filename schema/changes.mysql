@@ -776,4 +776,32 @@ INSERT INTO event
 
 
 
+CREATE TABLE IF NOT EXISTS `swarm` (
+  `swarm_id` int(10) unsigned NOT NULL auto_increment,
+  `user_id` int(10) unsigned NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `created` datetime NOT NULL,
+  `enabled` tinyint(4) NOT NULL default '1',
+  `title` varchar(64) NOT NULL,
+  `grid_reference` varchar(6) NOT NULL,
+  `images` mediumint(8) unsigned default NULL,
+  `type` char(1) default NULL,
+  `query_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`swarm_id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 ;
+
+
+CREATE TABLE IF NOT EXISTS `gridimage_swarm` (
+  `gridimage_id` bigint(20) unsigned NOT NULL,
+  `swarm_id` int(10) unsigned NOT NULL,
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`gridimage_id`,`swarm_id`),
+  KEY `snippet_id` (`swarm_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+################################################
+
+
 
