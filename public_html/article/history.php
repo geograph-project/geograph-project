@@ -43,7 +43,7 @@ $smarty->assign_by_ref('isadmin', $isadmin);
 $db = GeographDatabaseConnection(true);
 
 $page = $db->getRow("
-select article.article_id,title,url,article.user_id,extract,licence,approved,realname
+select article.article_id,title,url,article.user_id,extract,licence,approved,realname,update_time
 from article 
 	left join user using (user_id)
 where ( (licence != 'none' and approved > 0) 
