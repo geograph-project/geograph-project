@@ -62,7 +62,7 @@
 			{else}
 				<div class="snippet640 searchresults">
 				{if $image->snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}
-				<a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'}</a> {if $item.grid_reference && $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small> {/if}<br/>
+				<a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'}</a> {if $item.grid_reference && $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small> {else} <small style="color:silver">&lt;-- view more images</small>{/if}<br/>
 				{$item.comment|escape:'html'|nl2br|geographlinks}
 				</div>
 			{/if}

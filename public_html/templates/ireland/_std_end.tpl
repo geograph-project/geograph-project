@@ -50,7 +50,7 @@
     </ul></li>
     <li>Further Info<ul rel="open">
      <li><a title="FAQ" href="/faq.php">FAQ</a><ul>
-      <li><a title="Geograph Documents" href="/content/?docs&amp;order=title">Documents</a></li>
+      <li><a title="Geograph Documents" href="/content/documentation.php">Documents</a></li>
      </ul></li>
      <li><a title="View More Pages" href="/help/more_pages">More Pages</a><ul>
       <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>

@@ -81,7 +81,7 @@ $cacheid = '';
 					header("Content-Length: 0");
 					flush();
 				} else {
-					header("Location: /article/");
+					header("Location: /article/".$page['url']);
 				}
 				exit;
 				

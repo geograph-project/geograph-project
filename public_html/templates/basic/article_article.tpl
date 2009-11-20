@@ -100,7 +100,7 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 {/if}
 
 {if $imageCredits && $licence != 'cc-by-sa/2.0'}
-	<div class="ccmessage" style="color:gray; font-size:0.9em; text-align:right">Images are under a seperate <a href="#imlicence">Creative Commons licence</a>.</div>
+	<div class="ccmessage" style="color:gray; font-size:0.9em; text-align:right">Images are under a separate <a href="#imlicence">Creative Commons licence</a>.</div>
 {/if}
 
 </div>
@@ -125,9 +125,9 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 
 {if $imageCredits}
 	<hr/>
-	<div style="float:right;position:relative"><a title="View these images in Google Earth" href="/search.php?article_id={$article_id}&amp;kml" class="xml-kml">KML</a></div>
+	<div style="float:right;position:relative"><a title="View these images in Google Earth" href="/search.php?article_id={$article_id}&amp;orderby=seq_id&amp;kml" class="xml-kml">KML</a></div>
 	<div class="ccmessage copyright"><a rel="license" name="imlicence" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-		alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; <b><a href="/search.php?article_id={$article_id}">Images used on this page</a></b>, &copy; Copyright {$imageCredits};
+		alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; <b><a href="/search.php?article_id={$article_id}&amp;orderby=seq_id">Images used on this page</a></b>, &copy; Copyright {$imageCredits};
 		licensed for reuse under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>. <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">http://creativecommons.org/licenses/by-sa/2.0/</a><br/><br/></div>
 {/if}
 
