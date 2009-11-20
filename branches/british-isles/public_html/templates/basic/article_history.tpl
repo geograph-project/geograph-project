@@ -64,7 +64,7 @@
 		<td align="right">{$item.content_length}</td>
 		<td><small>{$item.licence}</small></td>
 		
-		<td sortvalue="{$item.update_time}" style="font-size:0.8em">{$item.update_time|date_format:"%a, %e %b %Y"}</td>
+		<td sortvalue="{$item.update_time}" style="font-size:0.8em">{if $item.update_time|date_format:"%a, %e %b %Y" eq $smarty.now|date_format:"%a, %e %b %Y"}Today {$item.update_time|date_format:"%H:%M"}{else}{$item.update_time|date_format:"%a, %e %b %Y"}{/if}</td>
 		
 		<td style="font-size:0.9em"><a href="/profile/{$item.modifier}" title="View Geograph Profile for {$item.modifier_realname}">{$item.modifier_realname}</a></td>
 		
