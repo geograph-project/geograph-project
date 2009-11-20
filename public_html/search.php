@@ -32,7 +32,7 @@ if (!empty($_GET['debug'])) {
 if (!empty($_GET['style'])) {
 	$USER->getStyle();
 	if (!empty($_SERVER['QUERY_STRING'])) {
-		$query = preg_replace('/&style=(\w+)/','r='.rand(),$_SERVER['QUERY_STRING']);
+		$query = preg_replace('/&style=(\w+)/','&r='.rand(),$_SERVER['QUERY_STRING']);
 		header("HTTP/1.0 301 Moved Permanently");
 		header("Status: 301 Moved Permanently");
 		header("Location: /search.php?".$query);

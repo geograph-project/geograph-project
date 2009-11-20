@@ -1,20 +1,10 @@
 <html>
 <head>
-<title>{$engine->criteria->searchdesc|escape:"html"}</title>
+<title>Photos{$engine->criteria->searchdesc|escape:"html"}</title>
 <link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/basic/css/basic.css"|revision}" media="screen" />
 </head>
 {dynamic}
-<body style="background-color:{$maincontentclass|replace:"content_photo":""}"
-{if $maincontentclass eq "content_photowhite"}
-	text="#000000"
-{/if}
-{if $maincontentclass eq "content_photoblack"}
-	text="#FFFFFF"
-{/if}
-{if $maincontentclass eq "content_photogray"}
-	text="#CCCCCC"
-{/if}
->
+<body {if $maincontentclass}class="{$maincontentclass}" style="margin:2;border:0"{/if}>
 {/dynamic}
 
 <div style="float:right;position:relative">Back to normal <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=slide">Slide Show</a> mode &nbsp;&nbsp;</div>
@@ -22,7 +12,7 @@
 
 {if $engine->resultCount}
 
-	<br/>( Page {$engine->pagesString()}) {if $engine->criteria->searchclass != 'Special'}[<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}
+	Images<i>{$engine->criteria->searchdesc|escape:"html"}</i>  (Page {$engine->pagesString()}) {if $engine->criteria->searchclass != 'Special'}[<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}
 
 	<script src="{"/slideshow.js"|revision}"></script>
 
