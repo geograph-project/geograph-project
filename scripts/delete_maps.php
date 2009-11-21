@@ -70,6 +70,8 @@ $param=array(
 
 	'config'=>'www.geograph.org.uk', //effective config
 
+	'action'=>'nonalign', 
+	
 	'timeout'=>14, //timeout in minutes
 	'sleep'=>10,	//sleep time in seconds
 	'load'=>100,	//maximum load average
@@ -109,6 +111,7 @@ delete_maps.php
 php delete_maps.php 
     --dir=<dir>         : base directory (/home/geograph)
     --config=<domain>   : effective domain config (www.geograph.org.uk)
+    --action=<action>   : one of 'nonalign' (default) or 'recent'
     --timeout=<minutes> : maximum runtime of script (14)
     --sleep=<seconds>   : seconds to sleep if load average exceeded (10)
     --load=<loadavg>    : maximum load average (100)
@@ -116,7 +119,7 @@ php delete_maps.php
     --dryrun=1/0        : dont actully delete (0)
     --help              : show this message	
 ---------------------------------------------------------------------
-	
+
 ENDHELP;
 exit;
 }
@@ -143,49 +146,88 @@ $start_time = time();
 
 $end_time = $start_time + (60*$param['timeout']);
 
+$total = 0;
 
-$prefixes = $db->GetAll("select * from gridprefix order by rand();");
+if ($param['action'] == 'nonalign') { 
+	$prefixes = $db->GetAll("select * from gridprefix order by rand();");
 
 
-foreach($prefixes as $idx=>$prefix) {
-		
-	//sleep until calm if we've specified a load average
-	if ($param['load']<100)
-	{
-		while (get_loadavg() > $param['load'])
+	foreach($prefixes as $idx=>$prefix) {
+
+		//sleep until calm if we've specified a load average
+		if ($param['load']<100)
 		{
-			sleep($param['sleep']);
-			if (time()>$end_time) 
-				exit;	
+			while (get_loadavg() > $param['load'])
+			{
+				sleep($param['sleep']);
+				if (time()>$end_time) 
+					exit;	
+			}
+		}
+
+		//mysql might of closed the connection in the meantime if we reuse the same object
+		$mosaic = new GeographMapMosaic;
+
+		print "Starting {$prefix['prefix']}...\n";flush();
+
+		$minx=$prefix['origin_x'];
+		$maxx=$prefix['origin_x']+$prefix['width']-1;
+		$miny=$prefix['origin_y'];
+		$maxy=$prefix['origin_y']+$prefix['height']-1;
+
+		$crit = "map_x between $minx and $maxx and ".
+			"map_y between $miny and $maxy and ".
+			"pixels_per_km >= 40 and ".
+			"((map_x-{$prefix['origin_x']}) mod 5) != 0 and ".
+			"((map_y-{$prefix['origin_y']}) mod 5) != 0";
+
+		$count = $mosaic->deleteBySql($crit,$param['dryrun'],$param['base']);
+		print "Deleted $count\n";
+
+		$total += $count;
+
+		if (time()>$end_time) {
+			//well come to the end of the scripts useful life
+			exit;	
 		}
 	}
+} elseif ($param['action'] == 'recent') { 
+	$crit = "type_or_user = -6 limit 500";
+	
+	while (1) {
+		//sleep until calm if we've specified a load average
+		if ($param['load']<100)
+		{
+			while (get_loadavg() > $param['load'])
+			{
+				sleep($param['sleep']);
+				if (time()>$end_time) 
+					exit;	
+			}
+		}
+		//mysql might of closed the connection in the meantime if we reuse the same object
+		$mosaic = new GeographMapMosaic;
 
-	//mysql might of closed the connection in the meantime if we reuse the same object
-	$mosaic = new GeographMapMosaic;
+		print "Starting...\n";flush();
 
-	print "Starting {$prefix['prefix']}...\n";flush();
+		$count = $mosaic->deleteBySql($crit,$param['dryrun'],$param['base']);
+		print "... Deleted $count\n";
 
-	$minx=$prefix['origin_x'];
-	$maxx=$prefix['origin_x']+$prefix['width']-1;
-	$miny=$prefix['origin_y'];
-	$maxy=$prefix['origin_y']+$prefix['height']-1;
+		$total += $count;
 
-	$crit = "map_x between $minx and $maxx and ".
-		"map_y between $miny and $maxy and ".
-		"pixels_per_km >= 40 and ".
-		"((map_x-{$prefix['origin_x']}) mod 5) != 0 and ".
-		"((map_y-{$prefix['origin_y']}) mod 5) != 0";
-
-	$count = $mosaic->deleteBySql($crit,$param['dryrun'],$param['base']);
-	print "Deleted $count\n";
-
-	$total += $count;
-
-	if (time()>$end_time) {
-		//well come to the end of the scripts useful life
-		exit;	
+	
+		if (!$count) {
+			break;
+		} elseif (time()>$end_time) {
+			//well come to the end of the scripts useful life
+			exit;	
+		}
+		
 	}
+} else {
+	die("unknown action\n");
 }
+ 
 print "Total: $total\n";
 exit;
 
