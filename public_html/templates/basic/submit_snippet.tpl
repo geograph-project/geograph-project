@@ -1,7 +1,7 @@
 {assign var="page_title" value="Snippets"}
 {include file="_basic_begin.tpl"}
 {dynamic}
-<form method="post" style="background-color:#f0f0f0;" name="theForm">
+<form method="post" action="#top" style="background-color:#f0f0f0;" name="theForm">
 <input type="hidden" name="gridimage_id" value="{$gridimage_id}" />
 <input type="hidden" name="gr" value="{$gr|escape:'html'}" />
 
@@ -53,14 +53,14 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 <div class="interestBox" style="font-size:0.8em" id="hidecreate">
 	<div style="float:right;text-align:center;position:relative">
 		<input type="button" value="Create New Shared Description" onclick="show_tree('create')" style="background-color:lightgreen"/><br/>
-		<a href="/snippets.php?gr={$gr|escape:'html'}" target="_blank">Edit your Shared Descriptions</a>
+		<a href="/snippets.php?gr={$gr|escape:'html'}" target="_blank">Edit nearby Shared Descriptions</a>
 	</div>
-	&middot; Here you can create descriptions that are common to multiple images.<br/>&middot; For example can create a generic description for a object or location shown in a photo, and reuse the description on all photos of the object or location.<br/>&middot; These shared descriptions can operate in addition <i>or</i> instead of the main description.{if $used}<br/> &middot; Optional: Reference a shared description by its number eg [1] in the main description.{/if}
+	&middot; Here you can create descriptions that are common to multiple images.<br/>&middot; These shared descriptions can operate in addition <i>or</i> instead of the main description.{if $used}<br/> &middot; Optional: Reference a shared description by its number eg [1] in the main description.{/if}
 	
 	{if $gridimage_id < 4294967296}
 		<br/>&middot; <b>Changes made here apply immediately and don't go though the change request system.</b>
 	{/if}
-	
+	<a href="#more"><b>read more...</b></a>
 </div>
 <div style="font-size:0.7em;color:green;border-top:2px solid gray">&nbsp;Shared Descriptions attached to this image:</div>
 {foreach from=$used item=item name=used}
@@ -78,7 +78,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 	</div>
 
 {foreachelse}
-	<p style="margin:4px"><i><b>None</b>. <small>Click 'Create New Shared Description'{if $results}, or a 'Use this Description' button below,{/if} to add a description to this image.</small></i></p>
+	<p style="margin:4px;margin-bottom:10px"><i><b>None</b>. <small>Click 'Create New Shared Description'{if $results}, or a 'Use this Description' button below,{/if} to add a description to this image.</small></i></p>
 {/foreach}
 
 <div style="font-size:0.7em;color:green;border-top:2px solid gray">&nbsp;Shared Descriptions available:</div>
@@ -127,8 +127,10 @@ Within radius:<small>{if $centisquare}
 </form>
 
 {/dynamic}
-<div class="interestBox" style="font-size:0.8em;border-top:2px solid gray">
+<div class="interestBox" style="font-size:0.8em;border-top:2px solid gray"><a name="more"></a>
+&middot; For example can create a generic description for a object or location shown in a photo, and reuse the description on all photos of the object or location.<br/>
 &middot; All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.<br/>
+<b>... read more in our {newwin href="/article/Shared-Descriptions" text="Shared Descriptions Article"}, or <a href="#top">back to top</a></b>
 </div>
 <div class="interestBox" style="background-color:pink; font-size:0.7em; border-top:2px solid white"><i>For clarification, you are submitting these shared descriptions to Geograph Project directly. Geograph Project then grants any contributor the right to reuse any shared description within their Creative Commons licensed submission. From a practical point of view this allows the contributor the use the description without attribution (as its not Creative Commons licensed).</i></div>
 
