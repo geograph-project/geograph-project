@@ -29,6 +29,10 @@ $smarty = new GeographPage;
 $template='swarms.tpl';	
 $cacheid=$USER->user_id;
 
+if (!empty($_GET['oid'])) {
+	$cacheid=intval($_GET['oid']);
+}
+
 $USER->mustHavePerm("basic");
 
 
@@ -43,7 +47,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$fields = '';
 	
 	
-	$where[] = "s.user_id = 2"; 
+	$where[] = "s.user_id = ".$cacheid; 
 	
 	$where[] = "enabled = 1"; 
 	$where= implode(' AND ',$where);
