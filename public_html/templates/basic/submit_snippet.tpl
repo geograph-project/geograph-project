@@ -62,10 +62,10 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 	{/if}
 	
 </div>
-<div style="font-size:0.7em;color:blue;border-top:2px solid gray">&nbsp;Shared Descriptions attached to this image:</div>
+<div style="font-size:0.7em;color:green;border-top:2px solid gray">&nbsp;Shared Descriptions attached to this image:</div>
 {foreach from=$used item=item name=used}
 	
-	<div style=" border-top: 1px solid gray">
+	<div style=" border-top: 1px solid gray;margin-left:4px">
 		<div style="float:right;position:relative">
 			<input type="submit" name="remove[{$item.snippet_id}]" value="Remove" style="background-color:pink"/>
 		</div>
@@ -78,19 +78,19 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 	</div>
 
 {foreachelse}
-	<p><b>None</b>. <small>Click 'Create New Shared Description'{if $results}, or a 'Use this Description' button below,{/if} to add a description to this image.</small></p>
+	<p style="margin:4px"><i><b>None</b>. <small>Click 'Create New Shared Description'{if $results}, or a 'Use this Description' button below,{/if} to add a description to this image.</small></i></p>
 {/foreach}
 
-<div style="font-size:0.7em;color:blue;border-top:2px solid gray">&nbsp;Shared Descriptions available:</div>
+<div style="font-size:0.7em;color:green;border-top:2px solid gray">&nbsp;Shared Descriptions available:</div>
 
 <div class="interestBox" style="margin:4px">
-Radius:{if $centisquare}
-<small><input type="radio" name="radius" value="0.1"{if $radius == 0.1} checked{/if}/> centisquare / 
+Within radius:<small>{if $centisquare}
+<span class="nowrap"><input type="radio" name="radius" value="0.1"{if $radius == 0.1} checked{/if}/> centisquare</span> / 
 {/if}
-<input type="radio" name="radius" value="1" {if $radius == 1 || !$radius} checked{/if}/> gridsquare  / 
-<input type="radio" name="radius" value="2" {if $radius == 2} checked{/if}/> surrounding gridsquares / 
-<input type="radio" name="radius" value="10"{if $radius == 10} checked{/if}/> within 10km /
-<input type="radio" name="radius" value="1000"{if $radius == 1000} checked{/if}/> anywhere <sub>(keyword needed below!)</sub> </small><br/>
+<span class="nowrap"><input type="radio" name="radius" value="1" {if $radius == 1 || !$radius} checked{/if}/> gridsquare</span> / 
+<span class="nowrap"><input type="radio" name="radius" value="2" {if $radius == 2} checked{/if}/> surrounding gridsquares</span> / 
+<span class="nowrap"><input type="radio" name="radius" value="10"{if $radius == 10} checked{/if}/> within 10km</span> /
+<span class="nowrap"><input type="radio" name="radius" value="1000"{if $radius == 1000} checked{/if}/> anywhere <sub>(keyword needed below!)</sub></span>  </small><br/>
 <label for="fq">Search{if $sphinx} keywords{/if}</label>: <input type="text" name="q" id="fq" size="20"{if $q} value="{$q|escape:'html'}"{/if}/>
 {if !$sphinx}
 	(single keyword only)
