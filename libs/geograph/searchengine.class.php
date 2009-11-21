@@ -233,9 +233,9 @@ class SearchEngine
 				// construct the count query sql
 				if (preg_match("/group by ([\w\,\(\)\/ ]+)/i",$sql_where,$matches)) {
 					$sql_where2 = preg_replace("/group by ([\w\,\(\)\/ ]+)/i",'',$sql_where);
-					$sql = "/* i{$this->query_id} */ SELECT count(DISTINCT {$matches[1]}) FROM gridimage AS gi $count_from $sql_from WHERE $sql_where2";
+					$sql = "SELECT count(DISTINCT {$matches[1]}) FROM gridimage AS gi $count_from $sql_from WHERE $sql_where2";
 				} else {
-					$sql = "/* i{$this->query_id} */ SELECT count(*) FROM gridimage AS gi $count_from $sql_from WHERE $sql_where";
+					$sql = "SELECT count(*) FROM gridimage AS gi $count_from $sql_from WHERE $sql_where";
 				}
 				if (!empty($_GET['debug'])) {
 					print "<BR><BR>$sql";
@@ -268,7 +268,7 @@ class SearchEngine
 			$sql_order = "ORDER BY $sql_order";
 	// construct the query sql
 $sql = <<<END
-/* i{$this->query_id} */ SELECT gi.*,x,y,gs.grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname $sql_fields $extra_fields
+SELECT gi.*,x,y,gs.grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname $sql_fields $extra_fields
 FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 	INNER JOIN user ON(gi.user_id=user.user_id)
 	$sql_from
@@ -460,13 +460,13 @@ END;
 		$id_list = implode(',',$ids);
 		if ($this->noCache) {
 $sql = <<<END
-/* i{$this->query_id} */ SELECT gi.*,x,y,gs.grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname $sql_fields
+SELECT gi.*,x,y,gs.grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname $sql_fields
 FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 	INNER JOIN user ON(gi.user_id=user.user_id)
 WHERE gi.gridimage_id IN ($id_list)
 END;
 		} else {
-			$sql = "/* i{$this->query_id} */ SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN ($id_list)";
+			$sql = "SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN ($id_list)";
 		}
 		
 		if (!empty($_GET['debug'])) {
@@ -591,9 +591,9 @@ END;
 					if ($matches[1] == 'gridimage_id') {
 						$matches[1] = 'gi.gridimage_id';
 					}
-					$sql = "/* i{$this->query_id} */ SELECT count(DISTINCT {$matches[1]}) FROM gridimage_search as gi $sql_from $sql_where2";
+					$sql = "SELECT count(DISTINCT {$matches[1]}) FROM gridimage_search as gi $sql_from $sql_where2";
 				} else {
-					$sql = "/* i{$this->query_id} */ SELECT count(*) FROM gridimage_search as gi $sql_from $sql_where";
+					$sql = "SELECT count(*) FROM gridimage_search as gi $sql_from $sql_where";
 				}
 				if (!empty($_GET['debug'])) {
 					print "<BR><BR>$sql";
@@ -626,7 +626,7 @@ END;
 			$sql_order = "ORDER BY $sql_order";
 	// construct the query sql
 $sql = <<<END
-/* i{$this->query_id} */ SELECT gi.* $sql_fields
+SELECT gi.* $sql_fields
 FROM gridimage_search as gi $sql_from
 $sql_where
 $sql_order
