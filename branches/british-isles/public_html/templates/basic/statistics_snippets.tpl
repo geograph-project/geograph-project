@@ -1,13 +1,13 @@
 {assign var="page_title" value="Shared Description Statistics"}
 {include file="_std_begin.tpl"}
 
-<h2>Statistics :: Shared Descriptions</h2>
+<h2>Basic Statistics for Shared Descriptions</h2>
 
 <h3>Overview</h3>
  
- <p>So far we have {$snippets.snippets|thousends} 'Shared Descriptions', for {$snippets.squares|thousends} different squares; contributed by {$snippets.users|thousends} users, over the course of {$snippets.days|thousends} days.</p>
+ <p>So far we have <b>{$snippets.snippets|thousends}</b> {external href="/article/Shared-Descriptions" text="Shared Descriptions" title="read more about shared descriptions in our documentation section"}, for <b>{$snippets.squares|thousends}</b> different squares; contributed by <b>{$snippets.users|thousends}</b> users, over the course of <b>{$snippets.days|thousends}</b> days.</p>
  
- <p>These are used on {$gridimage_snippets.images|thousends} images; attached by {$snippets.users|thousends} different users, over the course of {$snippets.days|thousends} days.</p>
+ <p>These are used on <b>{$gridimage_snippets.images|thousends}</b> images; attached by <b>{$snippets.users|thousends}</b> different users, over the course of <b>{$snippets.days|thousends}</b> days.</p>
 
 
 <h3>and a sample of recent collections <a href="/snippet-syndicator.php" class="xml-rss">RSS</a></h3>

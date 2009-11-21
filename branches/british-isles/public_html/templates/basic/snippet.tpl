@@ -56,7 +56,7 @@
 
 <br/>
 
-<div class="interestBox" style="font-size:0.7em">These descriptions are common to multiple images. For example can create a generic description for a object shown in a photo, and reuse the description on all photos of the object. All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.</div>
+<div class="interestBox" style="font-size:0.7em">These {external href="/article/Shared-Descriptions" text="shared descriptions" title="read more about shared descriptions in our documentation section"} are common to multiple images. For example can create a generic description for a object shown in a photo, and reuse the description on all photos of the object. All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.</div>
 
 
 {include file="_std_end.tpl"}
