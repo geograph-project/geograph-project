@@ -245,6 +245,8 @@ class SearchEngineBuilder extends SearchEngine
 				$sql .= ",user_id = {$USER->user_id}";
 				if (!empty($USER->search_results))
 					$sql .= ",resultsperpage = ".$db->Quote($USER->search_results);				
+			} elseif (!empty($_GET['perpage'])) {
+				 $sql .= ",resultsperpage = ".min(100,intval($_GET['perpage']));
 			}
 			$db->Execute($sql);
 
