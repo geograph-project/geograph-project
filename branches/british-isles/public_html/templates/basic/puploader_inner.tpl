@@ -139,7 +139,7 @@
 			<div id="showshare" style="display:none">
 				<iframe src="about:blank" height="400" width="98%" id="shareframe" style="border:2px solid gray">
 				</iframe>
-				<div><a href="#" onclick="hide_tree('share');return false">- Close <i>Shared Descriptions</I> box</a> -</div>
+				<div><a href="#" onclick="hide_tree('share');return false">- Close <i>Shared Descriptions</I> box</a> (<b>{newwin href="/article/Shared-Descriptions" text="Article about Shared Descriptions"}</b>)</div>
 			</div></p>
 	{else}
 		<p><b>Shared Descriptions/References (Optional)</b> <sup style="color:red">- <b>New</b>!</sup><br/>
