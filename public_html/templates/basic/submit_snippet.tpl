@@ -52,22 +52,22 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 
 <div class="interestBox" style="font-size:0.8em" id="hidecreate">
 	<div style="float:right;text-align:center;position:relative">
-		<input type="button" value="Create New Shared Description" onclick="show_tree('create')"/><br/>
+		<input type="button" value="Create New Shared Description" onclick="show_tree('create')" style="background-color:lightgreen"/><br/>
 		<a href="/snippets.php?gr={$gr|escape:'html'}" target="_blank">Edit your Shared Descriptions</a>
 	</div>
-	&middot; Here you can create descriptions that are common to multiple images.<br/>&middot; For example can create a generic description for a object or location shown in a photo, and reuse the description on all photos of the object or location.<br/>&middot; All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.<br/>&middot; These shared descriptions can operate in addition <i>or</i> instead of the main description.{if $used}<br/> &middot; Optional: Reference a shared description by its number eg [1] in the main description.{/if}
+	&middot; Here you can create descriptions that are common to multiple images.<br/>&middot; For example can create a generic description for a object or location shown in a photo, and reuse the description on all photos of the object or location.<br/>&middot; These shared descriptions can operate in addition <i>or</i> instead of the main description.{if $used}<br/> &middot; Optional: Reference a shared description by its number eg [1] in the main description.{/if}
 	
 	{if $gridimage_id < 4294967296}
 		<br/>&middot; <b>Changes made here apply immediately and don't go though the change request system.</b>
 	{/if}
 	
 </div>
-
+<div style="font-size:0.7em;color:blue;border-top:2px solid gray">&nbsp;Shared Descriptions attached to this image:</div>
 {foreach from=$used item=item name=used}
 	
 	<div style=" border-top: 1px solid gray">
 		<div style="float:right;position:relative">
-			<input type="submit" name="remove[{$item.snippet_id}]" value="remove"/>
+			<input type="submit" name="remove[{$item.snippet_id}]" value="Remove" style="background-color:pink"/>
 		</div>
 
 		{$smarty.foreach.used.iteration}. 
@@ -78,32 +78,33 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 	</div>
 
 {foreachelse}
-	<p><i>Click 'Create New Shared Description'{if $results}, or a 'Use this Description' button below,{/if} to add a description to this image.</i> <small>Shared descriptions for this image will be listed here</small></p>
+	<p><b>None</b>. <small>Click 'Create New Shared Description'{if $results}, or a 'Use this Description' button below,{/if} to add a description to this image.</small></p>
 {/foreach}
 
+<div style="font-size:0.7em;color:blue;border-top:2px solid gray">&nbsp;Shared Descriptions available:</div>
 
-<div class="interestBox" style="border-top:2px solid gray">
-
-<b>View nearby descriptions</b> &nbsp;
-<label for="fq">Search{if $sphinx} keywords{/if}</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
-{if !$sphinx}
-	(single keyword only)
-{/if}
-<input type="submit" value="Find"/> (<input type="checkbox" name="onlymine" {if $onlymine} checked{/if}/> Only show my descriptions)<br/>
-radius:{if $centisquare}
+<div class="interestBox" style="margin:4px">
+Radius:{if $centisquare}
 <small><input type="radio" name="radius" value="0.1"{if $radius == 0.1} checked{/if}/> centisquare / 
 {/if}
 <input type="radio" name="radius" value="1" {if $radius == 1 || !$radius} checked{/if}/> gridsquare  / 
 <input type="radio" name="radius" value="2" {if $radius == 2} checked{/if}/> surrounding gridsquares / 
 <input type="radio" name="radius" value="10"{if $radius == 10} checked{/if}/> within 10km /
-<input type="radio" name="radius" value="1000"{if $radius == 1000} checked{/if}/> anywhere <sub>(keyword needed above!)</sub> </small>
+<input type="radio" name="radius" value="1000"{if $radius == 1000} checked{/if}/> anywhere <sub>(keyword needed below!)</sub> </small><br/>
+<label for="fq">Search{if $sphinx} keywords{/if}</label>: <input type="text" name="q" id="fq" size="20"{if $q} value="{$q|escape:'html'}"{/if}/>
+{if !$sphinx}
+	(single keyword only)
+{/if}
+ <input type="checkbox" name="onlymine" {if $onlymine} checked{/if}/> Only show my descriptions. 
+ 
+ <input type="submit" value="Update"/>
 </div>
 
 {foreach from=$results item=item}
 	
-	<div style="border-top: 1px solid gray">
+	<div style="border-top: 1px solid gray;margin-left:4px">
 		<div style="float:right;position:relative">
-			<input type="submit" name="add[{$item.snippet_id}]" value="Use this Description"/>
+			<input type="submit" name="add[{$item.snippet_id}]" value="Use this Description" style="background-color:lightgreen"/>
 		</div>
 
 		<b>{$item.title|escape:'html'}</b> {if $item.grid_reference != $grid_reference} :: {$item.grid_reference} {/if}{if $item.distance}(Distance {$item.distance}km){/if}<br/>
@@ -113,7 +114,11 @@ radius:{if $centisquare}
 	</div>
 
 {foreachelse}
-	<p><i>No shared descriptions found, create one now!</i></p><br/>
+	{if $empty}
+	<p style="margin:4px"><i>please specify some keywords{if $grid_reference}, or choose a smaller radius{/if}</i></p><br/>
+	{else}
+	<p style="margin:4px"><i>No shared descriptions found{if $radius == 1 || !$radius} in {$grid_reference}{/if}{if $q}, matching [{$q|escape:'html'}]{/if}, create your own!</i></p><br/>
+	{/if}
 {/foreach}
 {if $query_info}
 	<p><i>{$query_info}</i></p>
@@ -122,7 +127,9 @@ radius:{if $centisquare}
 </form>
 
 {/dynamic}
-
+<div class="interestBox" style="font-size:0.8em;border-top:2px solid gray">
+&middot; All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.<br/>
+</div>
 <div class="interestBox" style="background-color:pink; font-size:0.7em; border-top:2px solid white"><i>For clarification, you are submitting these shared descriptions to Geograph Project directly. Geograph Project then grants any contributor the right to reuse any shared description within their Creative Commons licensed submission. From a practical point of view this allows the contributor the use the description without attribution (as its not Creative Commons licensed).</i></div>
 
 </body>

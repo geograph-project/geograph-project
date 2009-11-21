@@ -250,6 +250,7 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'])) {
 			$orderby = "ORDER BY FIELD(s.snippet_id,$id_list)";
 		} else {
 			$where[] = '0';
+			$smarty->assign('empty',1);
 		}
 	} else {
 		if (!empty($_REQUEST['gr']) && (empty($_REQUEST['radius']) || $_REQUEST['radius'] <= 20) ) {
@@ -283,6 +284,7 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'])) {
 		
 		if (count($where) == 0) {
 			$where[] = "0";
+			$smarty->assign('empty',1);
 		}
 		
 		$where[] = "enabled = 1"; 

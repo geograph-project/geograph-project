@@ -653,7 +653,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 
 {if $isadmin || $isowner} 
 <br/><br/>
-<h2 class="titlebar">Shared Descriptions/References (Optional) <sup style="color:red">- Experimental!</sup> <input type="button" value="expand" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?gridimage_id={$image->gridimage_id}&gr='+escape(document.theForm.grid_reference.value)+'&gr2={$image->subject_gridref|escape:'html'}';" id="hideshare"/></h2>
+<h2 class="titlebar">Shared Descriptions/References (Optional) <input type="button" value="expand" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?gridimage_id={$image->gridimage_id}&gr='+escape(document.theForm.grid_reference.value)+'&gr2={$image->subject_gridref|escape:'html'}';" id="hideshare"/></h2>
 <div id="showshare" style="display:none">
 	<ul>
 		<li>Currently 'Shared Descriptions' are not tracked though the 'Change Suggestion' system, and updates apply immediately. (but all changes are monitored)</li>
@@ -661,10 +661,12 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 			<li><b>In fact don't click the button if you are only changing the shared description(s).</b></li>
 			</ul></li>
 		<li>Only you (and the moderators) can edit your shared description, although anyone can use your descriptions on their own images.</li>
+		<li>... read more in {newwin href="/article/Shared-Descriptions" text="Article about Shared Descriptions"}</li>
 	</ul>
 	<iframe src="about:blank" height="400" width="100%" id="shareframe">
 	</iframe>
 	
+	<p><a href="/photo/{$image->gridimage_id}">return to photo page</a> <small>- changes made inside the Shared Description box apply immediately</small></p>
 </div>
 {/if}
 
