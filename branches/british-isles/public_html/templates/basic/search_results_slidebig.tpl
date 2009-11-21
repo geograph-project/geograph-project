@@ -7,12 +7,12 @@
 <body {if $maincontentclass}class="{$maincontentclass}" style="margin:2;border:0"{/if}>
 {/dynamic}
 
-<div style="float:right;position:relative">Back to normal <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=slide">Slide Show</a> mode &nbsp;&nbsp;</div>
+<div style="float:right;position:relative">To normal <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=slide">Slide Show</a> mode &nbsp;&nbsp;</div>
 
 
 {if $engine->resultCount}
 
-	Images<i>{$engine->criteria->searchdesc|escape:"html"}</i>  (Page {$engine->pagesString()}) {if $engine->criteria->searchclass != 'Special'}[<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}
+	<div class="interestBox" style="display:inline">Images<b>{$engine->criteria->searchdesc|escape:"html"}</b> | Page {$engine->pagesString()}</div>
 
 	<script src="{"/slideshow.js"|revision}"></script>
 
@@ -24,8 +24,8 @@
 	 <div id="result{$smarty.foreach.results.iteration}"{if !$smarty.foreach.results.first} style="display:none;"{/if} class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}" style="position:relative">
 	 <div style="float:right; position:relative;">{$smarty.foreach.results.iteration}/{$engine->numberofimages}</div>
 		<div class="caption" style="font-size:1.2em"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a> by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a><br/>
-		{if $image->moderation_status == 'geograph'}geograph{else}{if $image->moderation_status == 'pending'}pending{/if}{/if} for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
-		<i class="nowrap">{$image->dist_string}</i><br/>
+		<small>{if $image->moderation_status == 'geograph'}geograph{else}{if $image->moderation_status == 'pending'}pending{/if}{/if} for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
+		<i class="nowrap">{$image->dist_string}</i></small><br/>
 		{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 		</div>
@@ -60,13 +60,13 @@ var delayinsec = {$user->slideshow_delay|default:5};
 {/dynamic}
  //]]></script>
  	<br style="clear:both"/>
-	<p>Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
+	<div style="font-size:0.9em">&nbsp;Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})</div>
 	{/if}
 {else}
 	{include file="_search_noresults.tpl"}
 {/if}
 
-<div class="interestBox" style="font-size:0.8em">| <a href="/">Geograph British Isles</a> homepage | Back to normal <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=slide">Slide Show</a> mode |</div>
+<div style="font-size:0.8em;border-top:1px solid silver;margin-top:2px;padding-top:2px">| <a href="/">Geograph British Isles</a> homepage | Back to normal <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=slide">Slide Show</a> mode | {if $engine->criteria->searchclass != 'Special'}<a href="/search.php?i={$i}&amp;form=advanced">Refine this search</a> |{/if} </div>
 
 
 </body>
