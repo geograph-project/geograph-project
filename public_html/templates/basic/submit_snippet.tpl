@@ -51,7 +51,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 </div>
 
 <div class="interestBox" style="font-size:0.8em" id="hidecreate">
-	<div style="float:right;text-align:center;position:relative">
+	<div style="float:right;text-align:center;position:relative;background-color:white;padding:3px">
 		<input type="button" value="Create New Shared Description" onclick="show_tree('create')" style="background-color:lightgreen"/><br/>
 		<a href="/snippets.php?gr={$gr|escape:'html'}" target="_blank">Edit nearby Shared Descriptions</a>
 	</div>
@@ -127,7 +127,7 @@ Within radius:<small>{if $centisquare}
 </form>
 
 {/dynamic}
-<div class="interestBox" style="font-size:0.8em;border-top:2px solid gray"><a name="more"></a>
+<div class="interestBox" style="margin-top:25px;font-size:0.8em;border-top:2px solid gray"><a name="more"></a>
 &middot; For example can create a generic description for a object or location shown in a photo, and reuse the description on all photos of the object or location.<br/>
 &middot; All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.<br/>
 <b>... read more in our {newwin href="/article/Shared-Descriptions" text="Shared Descriptions Article"}, or <a href="#top">back to top</a></b>
