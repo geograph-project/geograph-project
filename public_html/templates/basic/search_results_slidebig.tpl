@@ -12,7 +12,7 @@
 
 {if $engine->resultCount}
 
-	<div class="interestBox" style="display:inline">Images<b>{$engine->criteria->searchdesc|escape:"html"}</b> | Page {$engine->pagesString()}</div>
+	<div class="interestBox" style="display:inline">{if $engine->pageOneOnly && $engine->resultCount == $engine->numberofimages}{elseif $engine->islimited}<b>{$engine->resultCount|number_format}</b> {/if} Images<b>{$engine->criteria->searchdesc|escape:"html"}</b> | Page {$engine->pagesString()}</div>
 
 	<script src="{"/slideshow.js"|revision}"></script>
 
