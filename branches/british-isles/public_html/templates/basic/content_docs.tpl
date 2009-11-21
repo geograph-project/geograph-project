@@ -6,7 +6,7 @@
 <div class="interestBox">
 <h2>Information, Guides and Tutorials</h2>
 </div>
-
+<div style="text-align:right;margin-right:20px"><a href="/content/?docs&amp;order=updated">View by last updated</a></div>
 
 
 {assign var="lastid" value="0"}
