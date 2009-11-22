@@ -60,6 +60,8 @@
 					ele.value = thatForm.elements[ele.name+'['+name+']'].value;
 					AttachEvent(ele,'mouseup',parentUpdateVariables,false);
 					AttachEvent(ele,'keyup',parentUpdateVariables,false);
+					AttachEvent(ele,'paste',parentUpdateVariables,false);
+					AttachEvent(ele,'input',parentUpdateVariables,false);
 				}
 			}
 		}
