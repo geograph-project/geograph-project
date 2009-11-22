@@ -43,7 +43,7 @@ class kmlPlacemark_Photo extends kmlPlacemark {
 		$this->children = array();
 		
 		//set the minimum back
-		$this->setItem('name',$subjectPlacemark->getItem('name'));
+		$this->setItem('name',$subjectPlacemark->getItem('name'),true);
 		if ($timestamp = $subjectPlacemark->getChild('TimeStamp')) {
 			$this->addChild(clone $timestamp,'','TimeStamp');
 		}
