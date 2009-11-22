@@ -185,11 +185,11 @@ if (isset($_FILES['jpeg_exif']))
 			} else if ($_POST['imageclass'] != 'Other') {
 				$imageclass =  stripslashes($_POST['imageclass'][$key]);
 			}			
-			$uploadmanager->setClass(utf8_decode($imageclass));
+			$uploadmanager->setClass($imageclass);
 
 			if ($_POST['pattrib'] == 'other') {
-				$uploadmanager->setCredit(stripslashes(utf8_decode($_POST['pattrib_name'])));
-				$smarty->assign('credit_realname',utf8_decode($_POST['pattrib_name']));
+				$uploadmanager->setCredit(stripslashes($_POST['pattrib_name']));
+				$smarty->assign('credit_realname',$_POST['pattrib_name']);
 			} elseif ($_POST['pattrib'] == 'self') {
 				$uploadmanager->setCredit('');
 			}
