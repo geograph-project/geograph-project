@@ -520,7 +520,7 @@ div.snippet640
 	margin-right:auto;
 	width:640px;
 	text-align:left;
-	padding-top:3px
+	padding-top:2px
 }
 div.snippet640 blockquote
 {
@@ -530,31 +530,43 @@ div.snippet640 blockquote
 }
 div.snippetcollapsed 
 {
-	height:69px;
-	overflow:hidden;
-	border-bottom:1px dashed silver
+	height:67px;
+	overflow:hidden
 }
 div.snippetexpander 
 {
 	position:absolute;
-	font-size:12px;
-	top:54px;
+	font-size:10px;
+	top:48px;
 	left:250px;
-	padding:2px;
-	border:1px dashed silver;
+	padding:3px;
+	border:1px solid silver;
 	padding-left:10px;
 	padding-right:10px;
 	background-color:white;
 }
-.content_photoblack .snippetexpander { background-color:black }
-.content_photowhite .snippetexpander { background-color:white }
-.content_photogray .snippetexpander { background-color:gray }
+.content_photoblack .snippetexpander, .content_photoblack .snippetfooter { background-color:black }
+.content_photowhite .snippetexpander, .content_photowhite .snippetfooter { background-color:white }
+.content_photogray .snippetexpander, .content_photogray .snippetfooter { background-color:gray }
 
 div.snippetexpander a
 {
 	text-decoration:none;
 	font-weight:bold
+	background-color:black;
 }
+
+div.snippetfooter 
+{
+	position:absolute;
+	top:58px;
+	left:0px;
+	width:640px;
+	background-color:red;
+	border-top:1px dashed silver;
+	height:20px;
+}
+
 div.statuscaption
 {
 	clear:left;
