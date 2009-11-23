@@ -68,10 +68,17 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			$data['grid_reference'] = $gr;
 		}
 		
-		//we do this here first, rather than in smarty - so we can attach html. 
-		$data['comment'] = htmlentities2($data['comment']);
-		$data['comment'] = GeographLinks(nl2br($data['comment']));
-		$data['comment'] = preg_replace('/(^|[\n\r\s]+)(Keywords?[\s:][^\n\r>]+)$/','<span class="keywords">$2</span>',$data['comment']);
+		if (!empty($data['comment'])) {
+			require_once("smarty/libs/plugins/modifier.truncate.php");
+			$smarty->assign('meta_description', smarty_modifier_truncate(preg_replace('/[\s\n]+/',' ',$data['comment']), 255) );
+
+			//we do this here first, rather than in smarty - so we can attach html. 
+			$data['comment'] = htmlentities2($data['comment']);
+			$data['comment'] = GeographLinks(nl2br($data['comment']));
+			$data['comment'] = preg_replace('/(^|[\n\r\s]+)(Keywords?[\s:][^\n\r>]+)$/','<span class="keywords">$2</span>',$data['comment']);
+		} else {
+			$smarty->assign('meta_description', "Shared description for ".$data['title'].', featuring '.$data['images'].' images');
+		}
 		
 		if ($CONF['sphinx_host'] && $data['grid_reference']) {
 
@@ -126,10 +133,11 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		}
 
 		$smarty->assign($data);
+		$t2 = ($data['grid_reference'])?" in {$data['grid_reference']}":'';
 		if ($data['images']) {
-			$smarty->assign('page_title',$data['title']." [{$data['images']} photos]");
+			$smarty->assign('page_title',"{$data['title']} [{$data['images']} photos]$t2");
 		} else {
-			$smarty->assign('page_title',$data['title']);
+			$smarty->assign('page_title',$data['title'].$t2);
 		}
 	} else {
 		$template = 'static_404.tpl';
