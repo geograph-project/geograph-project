@@ -489,7 +489,7 @@ function collapseSnippets() {
 	while (document.getElementById("snippet"+c)) {
 		var ele = document.getElementById("snippet"+c);
 		
-		if (ele.clientHeight > 72) {
+		if (ele.clientHeight > 78) {
 			ele.className = ele.className+" snippetcollapsed";
 			
 			
@@ -501,8 +501,13 @@ function collapseSnippets() {
 		}
 		
 		c++;
+		var p=0;
+		while (!document.getElementById("snippet"+c) &&p<3) {
+			p++;
+			c++;
+		}
 	}
-	
+	alert(c);
 }
 
 function expandSnippet(c) {
