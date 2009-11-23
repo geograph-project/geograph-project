@@ -63,7 +63,17 @@ class RebuildUserStats extends EventHandler
 					`content` mediumint(5) unsigned NOT NULL default '0',
 					PRIMARY KEY  (`user_id`),
 					KEY `points` (`points`)
-				) ENGINE=MyISAM
+				) ENGINE=MyISAM");
+				
+		$size = 5000;
+		$users = $db->getOne("SELECT MAX(user_id) FROM gridimage_search");
+		
+		$end = ceil($users/$size)*$size;
+		
+		for($q=0;$q<$end;$q+=$size) {
+			$crit = sprintf("user_id BETWEEN %d AND %d",$q,$q+$size-1);
+			
+			$db->Execute("INSERT INTO user_stat_tmp
 				SELECT user_id,
 					count(*) as images,
 					count(distinct grid_reference) as squares,
@@ -81,8 +91,12 @@ class RebuildUserStats extends EventHandler
 					max(gridimage_id) as last,
 					0 as `content`
 				FROM gridimage_search
+				WHERE $crit
 				GROUP BY user_id
 				ORDER BY NULL");
+				
+			sleep(2);//allow held up threads a chance to run
+		}
 		
 		$GLOBALS['ADODB_FETCH_MODE'] = ADODB_FETCH_ASSOC;
 		
