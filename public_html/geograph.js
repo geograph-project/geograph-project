@@ -492,7 +492,6 @@ function collapseSnippets() {
 		if (ele.clientHeight > 78) {
 			ele.className = ele.className+" snippetcollapsed";
 			
-			
 			var div = document.createElement('div');
 			div.id = "hidesnippet"+c;
 			div.className = 'snippetexpander';
