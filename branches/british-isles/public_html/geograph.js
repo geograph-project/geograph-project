@@ -484,6 +484,35 @@ function eraseCookie(name) {
 		document.getElementById("hide"+id).style.display='';
 	}
 
+function collapseSnippets() {
+	var c = 1;
+	while (document.getElementById("snippet"+c)) {
+		var ele = document.getElementById("snippet"+c);
+		
+		if (ele.clientHeight > 60) {
+			ele.className = ele.className+" snippetcollapsed";
+			
+			
+			var div = document.createElement('div');
+			div.id = "hidesnippet"+c;
+			div.className = 'snippetexpander';
+			div.innerHTML = '<a href="javascript:void(expandSnippet('+c+'));">Expand Description ...</a>';
+			ele.appendChild( div);
+		}
+		
+		c++;
+	}
+	
+}
+
+function expandSnippet(c) {
+	var ele = document.getElementById("snippet"+c);
+	ele.className = ele.className.replace(/ snippetcollapsed/,'');
+	var ele = document.getElementById("hidesnippet"+c);
+	ele.style.display="none";
+	return null;
+}
+
 //	-	-	-	-	-	-	-	-
 
 var marker1left = 14;

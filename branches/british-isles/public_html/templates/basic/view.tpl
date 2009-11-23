@@ -26,8 +26,10 @@
 {dynamic}
 {if $search_keywords && $search_count}
 	<div class="interestBox" style="text-align:center; font-size:0.9em">
+		{if !$user->registered}
 		<div style="width:640px;margin-left:auto;margin-right:auto"><i>The Geograph British Isles project aims to collect geographically representative photographs and information for every square kilometre of Great Britain and Ireland, and you can be part of it.</i> <br/><a href="/faq.php">Read more...</a></div><br/>
-
+		{/if}
+		
 		<b>We have at least <b>{$search_count} images</b> that match your query [{$search_keywords|escape:'html'}] in the area! <a href="/search.php?searchtext={$search_keywords|escape:'url'}&amp;gridref={$image->grid_reference}&amp;do=1">View them now</a></b>
 	</div>
 {/if}
@@ -60,10 +62,10 @@
 				<small>See other images of <a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'}</a></small>
 				</div>
 			{else}
-				<div class="snippet640 searchresults">
+				<div class="snippet640 searchresults" id="snippet{$smarty.foreach.used.iteration}">
 				{if $image->snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}
-				<a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'}</a> {if $item.grid_reference && $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small> {else} <small style="color:silver">&lt;-- view more images</small>{/if}<br/>
-				{$item.comment|escape:'html'|nl2br|geographlinks}
+				<b><a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'|default:'untitled'}</a></b> {if $item.grid_reference && $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small> {else} <small style="color:silver">&lt;-- view more images</small>{/if}<br/>
+				<blockquote>{$item.comment|escape:'html'|nl2br|geographlinks}</blockquote>
 				</div>
 			{/if}
 		{/foreach}
@@ -85,7 +87,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 -->
 
-{if $image_taken && $image->imagetaken < 2009}
+{if $image_taken && $image->imagetaken < 2009 && $image->imagetaken > 1}
 <div class="keywords yeardisplay" title="year photo was taken">year taken <div class="year">{$image->imagetaken|truncate:4:''}</div></div>
 {/if}
 
@@ -292,6 +294,7 @@ function redrawMainImage() {
 }
  AttachEvent(window,'load',redrawMainImage,false);
  AttachEvent(window,'load',showMarkedImages,false);
+ AttachEvent(window,'load',collapseSnippets,false);
 
 {/literal}
 /* ]]> */
