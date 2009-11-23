@@ -507,7 +507,6 @@ function collapseSnippets() {
 			c++;
 		}
 	}
-	alert(c);
 }
 
 function expandSnippet(c) {
