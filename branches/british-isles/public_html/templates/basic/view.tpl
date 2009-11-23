@@ -196,6 +196,11 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 <dt>Submitted</dt>
 	<dd>{$image->submitted|date_format:"%A, %e %B, %Y"}</dd>
 
+{if $image->keywords}
+	<dt>Keywords</dt>
+		<dd style="width:200px;font-size:0.9em">{$image->keywords|escape:'html'}</dd>
+{/if}
+
 <dt>Category</dt>
 
 <dd>{if $image->imageclass}

@@ -489,7 +489,7 @@ function collapseSnippets() {
 	while (document.getElementById("snippet"+c)) {
 		var ele = document.getElementById("snippet"+c);
 		
-		if (ele.clientHeight > 60) {
+		if (ele.clientHeight > 72) {
 			ele.className = ele.className+" snippetcollapsed";
 			
 			
