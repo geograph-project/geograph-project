@@ -255,7 +255,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </div>
 <br style="clear:both"/>
 {if $image->hits}
-	<div class="hits">This page has been viewed about <b>{$image->hits}</b> times. <a href="/help/hit_counter">Read more</a></div>
+	<div class="hits">This page has been <a href="/help/hit_counter">viewed</a> about <b>{$image->hits}</b> times.</div>
 {/if}
 <div class="interestBox" style="text-align:center">View this location: 
 
