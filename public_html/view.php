@@ -246,7 +246,12 @@ if ($image->isValid())
 }
 
 function smarty_function_hidekeywords($input) {
-	return preg_replace('/(^|[\n\r\s]+)(Keywords?[\s:][^\n\r>]+)$/','<span class="keywords">$2</span>',$input);
+	if (preg_match('/(^|[\n\r\s]+)Keywords?[\s:]([^\n\r>]+)$/',$input,$m)) {
+		$GLOBALS['image']->keywords = $m[2];
+		return preg_replace('/(^|[\n\r\s]+)Keywords?[\s:][^\n\r>]+$/','',$input);
+	} else {
+		return $input;
+	}
 }
 $smarty->register_modifier("hidekeywords", "smarty_function_hidekeywords");
 
