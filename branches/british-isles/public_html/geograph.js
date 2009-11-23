@@ -493,6 +493,12 @@ function collapseSnippets() {
 			ele.className = ele.className+" snippetcollapsed";
 			
 			var div = document.createElement('div');
+			div.id = "hidesnippetf"+c;
+			div.className = 'snippetfooter';
+			div.innerHTML = ' ';
+			ele.appendChild( div);
+
+			var div = document.createElement('div');
 			div.id = "hidesnippet"+c;
 			div.className = 'snippetexpander';
 			div.innerHTML = '<a href="javascript:void(expandSnippet('+c+'));">Expand Description ...</a>';
@@ -512,6 +518,8 @@ function expandSnippet(c) {
 	var ele = document.getElementById("snippet"+c);
 	ele.className = ele.className.replace(/ snippetcollapsed/,'');
 	var ele = document.getElementById("hidesnippet"+c);
+	ele.style.display="none";
+	var ele = document.getElementById("hidesnippetf"+c);
 	ele.style.display="none";
 	return null;
 }
