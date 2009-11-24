@@ -45,8 +45,9 @@ $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 
 $type = (isset($_GET['type']) && preg_match('/^[\w ]+$/' , $_GET['type']))?$_GET['type']:'Posts';
 
+$f = (isset($_GET['f']) && is_numeric($_GET['f']))?intval($_GET['f']):0;
 
-$cacheid='statistics|leaderthread_forum'.$u.$type;
+$cacheid='statistics|leaderthread_forum'.$u.$type.'.'.$f;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -63,6 +64,13 @@ if (!$smarty->is_cached($template, $cacheid))
 		$profile=new GeographUser($u);
 		$smarty->assign_by_ref('profile', $profile);
 		$title .= " for ".($profile->realname);
+	} 
+	
+	if (!empty($f)) {
+		$where[] = "geobb_topics.forum_id=".$f;
+		$smarty->assign('f', $f);
+
+		$title .= " for ".($f);
 	} 
 	
 	if (count($where))
