@@ -803,5 +803,9 @@ CREATE TABLE IF NOT EXISTS `gridimage_swarm` (
 
 ################################################
 
+alter table snippet change `comment` `comment` varchar(16384) NOT NULL;
+
+
+################################################
 
 
