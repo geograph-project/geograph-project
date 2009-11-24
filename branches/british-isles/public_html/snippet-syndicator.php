@@ -114,7 +114,7 @@ while (!$recordSet->EOF)
 	$item->date = strtotime($recordSet->fields['created']);
 	$item->author = $recordSet->fields['realname'];
 	
-	if (!empty($recordSet->fields['wgs84_lat']) || !empty($recordSet->fields['wgs84_long'])) {
+	if ($recordSet->fields['wgs84_lat'] != 0 || $recordSet->fields['wgs84_long'] != 0) {
 		list($item->lat,$item->long) = array($recordSet->fields['wgs84_lat'],$recordSet->fields['wgs84_long']);
 	}
 		
