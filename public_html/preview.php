@@ -203,7 +203,10 @@ if (!empty($_POST['spelling'])) {
 	#{
 		function smarty_function_hidekeywords($input) {
 			if (preg_match('/(^|[\n\r\s]+)Keywords?[\s:]([^\n\r>]+)$/',$input,$m)) {
-				$GLOBALS['image']->keywords = $m[2];
+				if (empty($GLOBALS['image']->keywords)) {
+					$GLOBALS['image']->keywords = array();
+				}
+				$GLOBALS['image']->keywords[] = $m[2];
 				return preg_replace('/(^|[\n\r\s]+)Keywords?[\s:][^\n\r>]+$/','',$input);
 			} else {
 				return $input;
