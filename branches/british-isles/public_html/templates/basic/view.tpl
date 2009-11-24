@@ -64,8 +64,8 @@
 			{else}
 				<div class="snippet640 searchresults" id="snippet{$smarty.foreach.used.iteration}">
 				{if $image->snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}
-				<b><a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'|default:'untitled'}</a></b> {if $item.grid_reference && $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small> {else} <small style="color:silver">&lt;-- view more images</small>{/if}<br/>
-				<blockquote>{$item.comment|escape:'html'|nl2br|geographlinks}</blockquote>
+				<div class="interestBox" style="padding:0"><b><a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'|default:'untitled'}</a></b> {if $item.grid_reference && $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small> {else} <small style="color:silver">&lt;-- view more images</small>{/if}</div>
+				<blockquote>{$item.comment|escape:'html'|nl2br|geographlinks|hidekeywords}</blockquote>
 				</div>
 			{/if}
 		{/foreach}
@@ -198,7 +198,9 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 {if $image->keywords}
 	<dt>Keywords</dt>
-		<dd style="width:200px;font-size:0.9em">{$image->keywords|escape:'html'}</dd>
+	{foreach from=$image->keywords item=item}
+		<dd style="width:200px;font-size:0.9em">{$item|escape:'html'}</dd>
+	{/foreach}
 {/if}
 
 <dt>Category</dt>
@@ -299,7 +301,9 @@ function redrawMainImage() {
 }
  AttachEvent(window,'load',redrawMainImage,false);
  AttachEvent(window,'load',showMarkedImages,false);
- AttachEvent(window,'load',collapseSnippets,false);
+ AttachEvent(window,'load',function () {
+		collapseSnippets({/literal}{$image->snippet_count}{literal});
+	},false);
 
 {/literal}
 /* ]]> */

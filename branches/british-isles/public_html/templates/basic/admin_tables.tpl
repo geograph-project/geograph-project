@@ -40,7 +40,7 @@
    	
 	<table cellpadding="4" cellspacing="0" border="1" class="report sortable" id="reportlist"> 
 	<thead>
-	<tr><th>Table</th><th>Type</th><th>Rows</th><th>Data Length</th><th>Created</th><th>Updated</th><th>Checked</th></tr>
+	<tr><th>Table</th><th>Type</th><th>Rows</th><th>Data Length</th><th>Created</th><th>Updated</th><th>Checked</th><th>Edit</th><th>Skipped</th></tr>
 	</thead>
 	<tbody>
 	{foreach key=table item=row from=$arr name=loop}
@@ -53,6 +53,7 @@
 		<td align=right>{$row.Update_time}</td>
 		<td align=right>{$row.Check_time}</td>
 		<td align=right><a href="{$script_name}?table={$table}">Edit...</a></td>
+		<td align=right>{$row.skipped}</td>
 		</tr>
 	{/foreach}
 	</tbody>

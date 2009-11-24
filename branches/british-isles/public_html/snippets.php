@@ -81,7 +81,15 @@ if (!empty($_REQUEST['edit'])) {
 		}
 		
 		$square=new GridSquare;
-		if (!empty($_POST['grid_reference']) && $data['grid_reference'] != $_POST['grid_reference'] && $square->setByFullGridRef($_POST['grid_reference'],true) ) {
+		if (!empty($_POST['nogr'])) {
+			$updates['nateastings'] = 0;
+			$updates['natnorthings'] = 0;
+			$updates['natgrlen'] = '0';
+			$updates['grid_reference'] = '';
+			$updates['wgs84_lat'] = 0;
+			$updates['wgs84_long'] = 0;
+			$point = "";
+		} elseif (!empty($_POST['grid_reference']) && $data['grid_reference'] != $_POST['grid_reference'] && $square->setByFullGridRef($_POST['grid_reference'],true) ) {
 
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
@@ -126,7 +134,7 @@ if (!empty($_REQUEST['edit'])) {
 					$db->Execute('INSERT INTO snippet_item SET `'.implode('` = ?,`',array_keys($inserts)).'` = ?',array_values($inserts));
 				}
 			}
-			header("Location: {$_SERVER['PHP_SELF']}?".preg_replace('/edit[\[\d\]%bdBD]+=\w+/','thankyou=saved',$_SERVER['QUERY_STRING']));
+			header("Location: {$_SERVER['PHP_SELF']}?".preg_replace('/edit[\[\d\]%bdBD]+=\w+/','thankyou=saved&id='.$snippet_id,$_SERVER['QUERY_STRING']));
 			print "<a href=\"{$_SERVER['PHP_SELF']}\">continue</a>";
 			
 			
@@ -155,7 +163,7 @@ if (!empty($_REQUEST['edit'])) {
 				$data['reference_index'],false);
 			$data['grid_reference'] = $gr;
 		}
-	
+
 		$smarty->assign($data);
 
 		$smarty->assign('edit',1);
@@ -311,6 +319,7 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 
 if (!empty($_GET['thankyou'])) {
 	$smarty->assign('thankyou',$_GET['thankyou']);
+	$smarty->assign('id',intval($_GET['id']));
 }
 
 

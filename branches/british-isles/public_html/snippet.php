@@ -32,6 +32,11 @@ $snippet_id = intval($_REQUEST['id']);
 
 $cacheid = $snippet_id;
 
+//what style should we use?
+$style = $USER->getStyle();
+	
+$smarty->assign('maincontentclass', 'content_photo'.$style.'" style="padding:10px');
+
 
 if (!$smarty->is_cached($template, $cacheid)) {
 
@@ -75,7 +80,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			//we do this here first, rather than in smarty - so we can attach html. 
 			$data['comment'] = htmlentities2($data['comment']);
 			$data['comment'] = GeographLinks(nl2br($data['comment']));
-			$data['comment'] = preg_replace('/(^|[\n\r\s]+)(Keywords?[\s:][^\n\r>]+)$/','<span class="keywords">$2</span>',$data['comment']);
+			$data['comment'] = preg_replace('/(^|[\n\r\s]+)(Keywords?[\s:][^\n\r>]+)$/i','<span class="keywords">$2</span>',$data['comment']);
 		} else {
 			$smarty->assign('meta_description', "Shared description for ".$data['title'].', featuring '.$data['images'].' images');
 		}

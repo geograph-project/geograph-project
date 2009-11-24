@@ -36,7 +36,8 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 			{if $errors.grid_reference}<div class="formerror"><p class="error">{$errors.grid_reference}</p>{/if}
 
 			<label for="grid_reference"><b>Grid Reference</b>:</label>
-			<input type="text" id="grid_reference" name="grid_reference" size="10" maxlength="12"/> {if $gr}<small>(<a href="javascript:void(document.theForm.grid_reference.value='{$gr|escape:'url'}');">Use {$gr}</a>)</small>{/if}
+			<input type="text" id="grid_reference" name="grid_reference" size="10" maxlength="12"/> {if $gr}<small><a href="javascript:void(document.theForm.grid_reference.value='{$gr|escape:'url'}');">Use {$gr}</a></small>{/if}
+			| or <input type="checkbox" name="nogr" value="1" id="nogr"/><label for="nogr">Don't attach a location to this description</label>
 
 			<div class="fieldnotes" style="font-size:0.7em;color:gray">Optional Grid Reference for the feature/location, great if this description describes a specific location. Ideally 6 figure plus.</div>
 
@@ -65,14 +66,14 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 <div style="font-size:0.7em;color:green;border-top:2px solid gray">&nbsp;Shared Descriptions attached to this image:</div>
 {foreach from=$used item=item name=used}
 	
-	<div style=" border-top: 1px solid gray;margin-left:4px">
+	<div style="margin-left:4px;background-color:{cycle values="#e4e4e4,#f4f4f4"}">
 		<div style="float:right;position:relative">
 			<input type="submit" name="remove[{$item.snippet_id}]" value="Remove" style="background-color:pink"/>
 		</div>
 
 		{$smarty.foreach.used.iteration}. 
-		<b>{$item.title|escape:'html'}</b><br/>
-		<div style="font-size:0.7em">{$item.comment|escape:'html'}</div>
+		<a href="/snippet.php?id={$item.snippet_id}" target="_blank"><b>{$item.title|escape:'html'|default:'untitled description'}</b></a><br/>
+		<div style="font-size:0.7em">{$item.comment|escape:'html'|truncate:250:' (more...)'}</div>
 
 		<br style="clear:both"/>
 	</div>
@@ -102,13 +103,13 @@ Within radius:<small>{if $centisquare}
 
 {foreach from=$results item=item}
 	
-	<div style="border-top: 1px solid gray;margin-left:4px">
+	<div style="margin-left:4px;background-color:{cycle values="#e4e4e4,#f4f4f4"}">
 		<div style="float:right;position:relative">
 			<input type="submit" name="add[{$item.snippet_id}]" value="Use this Description" style="background-color:lightgreen"/>
 		</div>
 
-		<b>{$item.title|escape:'html'}</b> {if $item.grid_reference != $grid_reference} :: {$item.grid_reference} {/if}{if $item.distance}(Distance {$item.distance}km){/if}<br/>
-		<div style="font-size:0.7em">{$item.comment|escape:'html'}</div>
+		<a href="/snippet.php?id={$item.snippet_id}" target="_blank"><b>{$item.title|escape:'html'|default:'<span style=color:gray>untitled description</span>'}</b></a> {if $item.grid_reference != $grid_reference} :: {$item.grid_reference} {/if}{if $item.distance}(Distance {$item.distance}km){/if}<br/>
+		<div style="font-size:0.7em">{$item.comment|escape:'html'|truncate:250:' (more...)'}</div>
 
 		<br style="clear:both"/>
 	</div>

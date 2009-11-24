@@ -5,7 +5,12 @@
 <h2>Shared Descriptions</h2>
 
 {if $thankyou && $thankyou == 'saved'} 
-	<h3 class="titlebar" style="background-color:lightgreen">Thank you - Changes saved</h3>
+	<div style="background-color:lightgreen;padding:10px">
+	<h3 class="titlebar" style="margin:0">Thank you - Changes saved</h3>
+	{if $id} 
+		<a href="/snippet.php?id={$id}">View the Shared Description</a>
+	{/if}
+	</div>
 {/if}
 
 {if $edit}
@@ -47,7 +52,8 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 
 			<label for="grid_reference"><b>Grid Reference</b>:</label>
 			<input type="text" id="grid_reference" name="grid_reference" value="{$grid_reference|escape:'html'}" size="10" maxlength="12"/>
-
+			 or <input type="checkbox" name="nogr" value="1" id="nogr" {if $wgs84_lat == 0 && $wgs84_long == 0} checked{/if}/><label for="nogr">Don't attach a location to this description</label>
+			
 			<div class="fieldnotes" style="font-size:0.7em;color:gray">Optional Grid Reference for the feature/location, great if this description describes a specific location. Ideally 6 figure plus.</div>
 
 			{if $errors.grid_reference}</div>{/if}
