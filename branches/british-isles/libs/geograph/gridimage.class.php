@@ -553,7 +553,7 @@ class GridImage
 		if ($cachetime && $memcache->valid) {
 			$mkey = $this->gridimage_id;
 			
-			$this->snippets =& $memcache->name_get('sd11',$mkey);
+			$this->snippets =& $memcache->name_get('sd',$mkey);
 			
 			if ($this->snippets === FALSE) {
 				$db=&$this->_getDB(true); 
