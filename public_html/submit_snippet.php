@@ -65,7 +65,11 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 	$updates['comment'] =  $_POST['comment'];
 	
 	$square=new GridSquare;
-	if ((!empty($_POST['grid_reference']) && $square->setByFullGridRef($_POST['grid_reference'],true)) || $square->setByFullGridRef($_GET['gr'],true) ) {
+	if (!empty($_POST['nogr'])) {
+		$updates['nateastings'] = 0;
+		$point = "'POINT(0 0)'";
+		
+	} elseif ((!empty($_POST['grid_reference']) && $square->setByFullGridRef($_POST['grid_reference'],true)) || $square->setByFullGridRef($_GET['gr'],true) ) {
 		
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;

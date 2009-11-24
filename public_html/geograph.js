@@ -484,12 +484,10 @@ function eraseCookie(name) {
 		document.getElementById("hide"+id).style.display='';
 	}
 
-function collapseSnippets() {
-	var c = 1;
-	while (document.getElementById("snippet"+c)) {
-		var ele = document.getElementById("snippet"+c);
-		
-		if (ele.clientHeight > 78) {
+function collapseSnippets(num) {
+	var ele;
+	for (c=1;c<=num;c++) {
+		if ((ele = document.getElementById("snippet"+c)) && ele.clientHeight > 78) {
 			ele.className = ele.className+" snippetcollapsed";
 			
 			var div = document.createElement('div');
@@ -503,13 +501,6 @@ function collapseSnippets() {
 			div.className = 'snippetexpander';
 			div.innerHTML = '<a href="javascript:void(expandSnippet('+c+'));">Expand Description ...</a>';
 			ele.appendChild( div);
-		}
-		
-		c++;
-		var p=0;
-		while (!document.getElementById("snippet"+c) &&p<3) {
-			p++;
-			c++;
 		}
 	}
 }
