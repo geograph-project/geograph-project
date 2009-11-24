@@ -46,10 +46,13 @@ if ($format == 'KML') {
 	if (!isset($_GET['simple']))
 		$_GET['simple'] = 1; //default to on
 	$extension = (empty($_GET['simple']))?'kml':'simple.kml';
+	$crit = "and wgs84_lat != 0 and grid_reference != ''";
 } elseif ($format == 'GPX') {
 	$extension = 'gpx';
+	$crit = "and wgs84_lat != 0 and grid_reference != ''";
 } else {
 	$extension = 'xml';
+	$crit = '';
 }
 
 $format_extension = strtolower(str_replace('.','_',$format));
@@ -77,8 +80,8 @@ if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 	require_once('geograph/gridsquare.class.php');
 	$conv = new Conversions;
 
-	$rss->geo = true;
-}
+	$rss->geo = true;	
+} 
 
 $db=NewADOConnection($GLOBALS['DSN']);
 	
@@ -86,9 +89,9 @@ $db=NewADOConnection($GLOBALS['DSN']);
 $sql="select snippet_id,title,comment,created,wgs84_lat,wgs84_long,realname
 from snippet
 	inner join user using (user_id)
-where enabled = 1
+where enabled = 1 $crit
 order by snippet_id desc
-limit 64";
+limit 96";
 
 $recordSet = &$db->Execute($sql);
 while (!$recordSet->EOF)
@@ -111,7 +114,9 @@ while (!$recordSet->EOF)
 	$item->date = strtotime($recordSet->fields['created']);
 	$item->author = $recordSet->fields['realname'];
 	
-	list($item->lat,$item->long) = array($recordSet->fields['wgs84_lat'],$recordSet->fields['wgs84_long']);
+	if (!empty($recordSet->fields['wgs84_lat']) || !empty($recordSet->fields['wgs84_long'])) {
+		list($item->lat,$item->long) = array($recordSet->fields['wgs84_lat'],$recordSet->fields['wgs84_long']);
+	}
 		
 	$rss->addItem($item);
 	
