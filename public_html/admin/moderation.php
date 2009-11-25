@@ -223,7 +223,8 @@ gridimage gi READ LOCAL,
 user READ LOCAL,
 gridprefix READ,
 user v READ LOCAL,
-user m READ LOCAL");
+user m READ LOCAL,
+user_stat us READ LOCAL");
 
 #############################
 # find the list of squares with self pending images, and exclude them...
@@ -348,7 +349,7 @@ if (isset($_GET['xmas'])) {
 }
 
 
-$sql = "select gi.*,grid_reference,user.realname,imagecount $sql_columns
+$sql = "select gi.*,grid_reference,user.realname,imagecount,coalesce(images,0) as images $sql_columns
 from 
 	gridimage as gi
 	inner join gridsquare as gs
@@ -358,6 +359,8 @@ from
 		on(gi.gridsquare_id=l.gridsquare_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) )
 	inner join user
 		on(gi.user_id=user.user_id)
+	left join user_stat us
+		on(gi.user_id=us.user_id)
 where
 	$sql_where
 	$sql_where2
