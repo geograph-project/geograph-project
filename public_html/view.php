@@ -251,7 +251,7 @@ function smarty_function_hidekeywords($input) {
 			$GLOBALS['image']->keywords = array();
 		}
 		$GLOBALS['image']->keywords[] = $m[2];
-		return preg_replace('/(^|[\n\r\s]+)Keywords?[\s:][^\n\r>]+$/i','',$input);
+		return preg_replace('/([\r\n]*<br \/>)+$/','',preg_replace('/(^|[\n\r\s]+)Keywords?[\s:][^\n\r>]+$/i','',$input));
 	} else {
 		return $input;
 	}
