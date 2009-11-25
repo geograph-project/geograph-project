@@ -487,7 +487,7 @@ function eraseCookie(name) {
 function collapseSnippets(num) {
 	var ele;
 	for (c=1;c<=num;c++) {
-		if ((ele = document.getElementById("snippet"+c)) && ele.clientHeight > 78) {
+		if ((ele = document.getElementById("snippet"+c)) && ele.clientHeight > 118) {
 			ele.className = ele.className+" snippetcollapsed";
 			
 			var div = document.createElement('div');
