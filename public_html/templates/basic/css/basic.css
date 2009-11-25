@@ -530,14 +530,14 @@ div.snippet640 blockquote
 }
 div.snippetcollapsed 
 {
-	height:67px;
+	height:107px;
 	overflow:hidden
 }
 div.snippetexpander 
 {
 	position:absolute;
 	font-size:10px;
-	top:40px;
+	top:80px;
 	left:500px;
 	padding:3px;
 	border:1px solid silver;
@@ -559,7 +559,7 @@ div.snippetexpander a
 div.snippetfooter 
 {
 	position:absolute;
-	top:58px;
+	top:98px;
 	left:0px;
 	width:640px;
 	background-color:red;
