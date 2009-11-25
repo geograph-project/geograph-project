@@ -333,10 +333,22 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('heading', $heading);
 	$smarty->assign('desc', $desc);
 	$smarty->assign('type', $type);
-
-	if ($sql_table != 'user_stat i') {
+	
+	$start_rank = 1;
+	
+	if ($u && !$filtered && $sql_table == "user_stat i" && ($sql_column == "depth,points" || $sql_column == "geosquares")) {
+		$rank_column = ($sql_column == "depth,points")?'points_rank':'geo_rank';
+		$user_rank = $db->getOne("select $rank_column from user_stat where user_id = $u");
+		
+		$start_rank = max(1,$user_rank-intval($limit/5)); //todo kinda arbitary ??
+	
+		$sql_where .= " and $rank_column >= $start_rank"; 
+		
+		
+	} elseif ($sql_table != 'user_stat i') {
 		$sql_column = "max(gridimage_id) as last,$sql_column";
 	}
+	
 	$limit2 = intval($limit * 1.6);
 	$topusers=$db->GetAll("select 
 	i.user_id,u.realname, $sql_column as imgcount
@@ -351,12 +363,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	$images = 0;
 	foreach($topusers as $idx=>$entry)
 	{
-		$i=$idx+1;
+		$i=$idx+$start_rank;
 			
 		if ($lastimgcount == $entry['imgcount']) {
 			if ($u && $u == $entry['user_id']) {
-				$topusers[$idx]['ordinal'] = smarty_function_ordinal($i);
-			} elseif ($i > $limit) {
+				$topusers[$idx]['ordinal'] = smarty_function_ordinal((!empty($user_rank))?$user_rank:$i);
+			} elseif ($i > $limit+$start_rank) {
 				unset($topusers[$idx]);
 			} else {
 				$topusers[$idx]['ordinal'] = '&nbsp;&nbsp;&nbsp;&quot;';
@@ -365,7 +377,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$toriserank = ($lastimgcount - $entry['imgcount']);
 			if ($u && $u == $entry['user_id']) {
                                 $topusers[$idx]['ordinal'] = smarty_function_ordinal($i);
-                        } elseif ($i > $limit) {
+                        } elseif ($i > $limit+$start_rank) {
 				unset($topusers[$idx]);
 			} else {
 				$topusers[$idx]['ordinal'] = smarty_function_ordinal($i);
@@ -400,6 +412,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign_by_ref('extra',$extra);	
 	$smarty->assign_by_ref('extralink',$extralink);	
 	$smarty->assign_by_ref('limit',$limit);	
+	$smarty->assign_by_ref('u',$u);	
 	
 	//lets find some recent photos
 	new RecentImageList($smarty);

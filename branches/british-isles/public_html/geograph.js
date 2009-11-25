@@ -499,7 +499,7 @@ function collapseSnippets(num) {
 			var div = document.createElement('div');
 			div.id = "hidesnippet"+c;
 			div.className = 'snippetexpander';
-			div.innerHTML = '<a href="javascript:void(expandSnippet('+c+'));">Expand Description ...</a>';
+			div.innerHTML = '<a href="javascript:void(expandSnippet('+c+'));">+ Further information</a>';
 			ele.appendChild( div);
 		}
 	}

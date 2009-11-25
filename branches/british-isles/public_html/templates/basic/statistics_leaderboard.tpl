@@ -20,7 +20,7 @@ top submitters this week.</p>
 <tbody>
 
 {foreach from=$topusers item=topuser}
-<tr><td>{$topuser.ordinal}</td><td><a title="View profile" href="/profile/{$topuser.user_id}">{$topuser.realname}</a></td>
+<tr {if $u && $topuser.user_id == $u} style="background-color:yellow"{/if}><td>{$topuser.ordinal}</td><td><a title="View profile" href="/profile/{$topuser.user_id}">{$topuser.realname}</a></td>
 <td align="right">{$topuser.imgcount}</td>
 {if $points}<td align="right">{$topuser.points}</td>{/if}
 {if $images}<td align="right">{$topuser.images}</td>{/if}

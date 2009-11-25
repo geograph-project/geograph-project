@@ -94,7 +94,7 @@
 	{if !$profile->deceased_date}
 	<h2 style="margin-top:0px;margin-bottom:0px">About Me</h2>
 	{/if}
-	{$profile->about_yourself|TruncateWithExpand:'(<small>this is a preview only</small>) <big>Click here to <b>Read More</b></big>...'|nl2br|GeographLinks:true}</div>
+	{$profile->about_yourself|TruncateWithExpand:'(<small>this is a preview only</small>) <big><b>Further information</b></big>...'|nl2br|GeographLinks:true}</div>
 {/if}
 
 {if $user->user_id eq $profile->user_id}
