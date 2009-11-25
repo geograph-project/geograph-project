@@ -63,8 +63,7 @@
 				</div>
 			{else}
 				<div class="snippet640 searchresults" id="snippet{$smarty.foreach.used.iteration}">
-				{if $image->snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}
-				<div class="interestBox" style="padding:0"><b><a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'|default:'untitled'}</a></b> {if $item.grid_reference && $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small> {else} <small style="color:silver">&lt;-- view more images</small>{/if}</div>
+				<div class="interestBox" style="padding:0">{if $image->snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}<b><a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'|default:'untitled'}</a></b> {if $item.grid_reference && $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small> {else} <small style="color:silver">&lt;-- view more images</small>{/if}</div>
 				<blockquote>{$item.comment|escape:'html'|nl2br|geographlinks|hidekeywords}</blockquote>
 				</div>
 			{/if}
