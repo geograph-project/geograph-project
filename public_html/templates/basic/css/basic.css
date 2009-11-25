@@ -526,7 +526,6 @@ div.snippet640 blockquote
 {
 	margin:0;
 	padding-left:5px;
-	border-left:1px solid silver
 }
 div.snippetcollapsed 
 {
@@ -538,7 +537,7 @@ div.snippetexpander
 	position:absolute;
 	font-size:10px;
 	top:80px;
-	left:500px;
+	left:480px;
 	padding:3px;
 	border:1px solid silver;
 	padding-left:10px;
@@ -553,7 +552,6 @@ div.snippetexpander a
 {
 	text-decoration:none;
 	font-weight:bold
-	background-color:black;
 }
 
 div.snippetfooter 
@@ -562,7 +560,6 @@ div.snippetfooter
 	top:98px;
 	left:0px;
 	width:640px;
-	background-color:red;
 	border-top:1px dashed silver;
 	height:20px;
 }
