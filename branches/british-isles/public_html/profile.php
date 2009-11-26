@@ -211,7 +211,7 @@ if ($template=='profile.tpl')
 		$limit = 100;
 	}
 	$cacheid.="_$limit";
-	if ((!empty($_GET['expand']) || $USER->expand_about == 1) && $profile->about_yourself) {
+	if (!empty($_GET['expand']) || $USER->expand_about == 1) {
 		$cacheid .= "E";
 	}
 	if (isset($_GET['reject']) && empty($_GET['reject'])) {
