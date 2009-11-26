@@ -28,7 +28,7 @@
 
 {if $url}
 <dt>Link</dt>
- <dd style="font-size:1.2em">{external href=$url text="more info"}</dd>
+ <dd style="font-size:1.2em">{external href=$url text="more info" nofollow="1"}</dd>
 {/if}
 
 <dt>Event Lister</dt>
