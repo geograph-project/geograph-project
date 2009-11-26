@@ -101,6 +101,13 @@ where $sql_where
 limit 1");
 
 if (count($page)) {
+	
+	if ($page['approved'] == -1 && !$USER->hasPerm('moderator')) {
+		header("HTTP/1.0 403 Forbidden");
+		header("Status: 403 Forbidden");
+		$template = "static_404.tpl";
+	}
+
 	if ($page['user_id'] == $USER->user_id) {
 		$cacheid .= '|'.$USER->user_id;
 	}
