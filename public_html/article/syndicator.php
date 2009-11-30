@@ -127,7 +127,7 @@ while (!$recordSet->EOF)
 			where article_id = {$recordSet->fields['article_id']} and update_time = '{$recordSet->fields['update_time']}'");
 	
 		$item->title .= " [rev #$version by $realname]";
-		$recordSet->fields['url'] = "history.php?page={$recordSet->fields['url']}";
+		$recordSet->fields['url'] = "history.php?page={$recordSet->fields['url']}&v=$version";
 		
 		$item->author = $realname;
 		$item->date = strtotime($recordSet->fields['update_time']);
@@ -137,10 +137,8 @@ while (!$recordSet->EOF)
 	}
 
 	//htmlspecialchars is called on link so dont use &amp;
-	$item->link = "http://{$_SERVER['HTTP_HOST']}/article/{$recordSet->fields['url']}";
+	$item->guid = $item->link = "http://{$_SERVER['HTTP_HOST']}/article/{$recordSet->fields['url']}";
 	
-	$item->guid = $item->link."?v=$version";
-
 	
 	$description = $recordSet->fields['extract'];
 	if (strlen($description) > 160)
