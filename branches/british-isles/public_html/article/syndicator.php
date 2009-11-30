@@ -61,16 +61,18 @@ $rss->link = "http://{$_SERVER['HTTP_HOST']}/article/";
 $rss->description = "Recently updated articles on Geograph British Isles"; 
 
 if (!empty($_GET['admin'])) {
-	$sql_where = "licence = 'none' or approved = 0";
+	$sql_where = "(licence = 'none' or approved = 0)";
 	$rss->title = 'Geograph Pending Articles'; 
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/syndicator.php?format=$format&amp;admin=1";
 
 } elseif (!empty($_GET['revdocs'])) {
-	$sql_where = "approved > 0 and article.article_cat_id = 7"; #Geograph Project - Information Documents
+	$sql_where = "approved > 0 and category_name regexp '[[:<:]]Geograph[[:>:]]'"; 
+	$rss->title = 'Geograph Document Revisions'; 
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/syndicator.php?format=$format&amp;revdocs=1";
 
 } elseif (!empty($_GET['revisions'])) {
 	$sql_where = "approved > -1";
+	$rss->title = 'Geograph Article Revisions'; 
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/syndicator.php?format=$format&amp;revisions=1";
 
 } else {
@@ -78,6 +80,11 @@ if (!empty($_GET['admin'])) {
 	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/feed/recent.$format_extension";
 
 }
+
+if (!empty($_GET['user_id'])) {
+	$sql_where .= " and user_id=".intval($_GET['user_id']);
+	$rss->syndicationURL .= "&amp;user_id=".intval($_GET['user_id']);
+} 
 
 if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 	require_once('geograph/conversions.class.php');
