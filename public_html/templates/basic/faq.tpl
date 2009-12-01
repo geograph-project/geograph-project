@@ -350,15 +350,17 @@ The <b>Geograph Website</b>:
 <div id="commercial">
 <a name="commercial"></a>
 <h3>Why must I agree to allow commercial use of my image?</h3>
-	<p>Running this site costs money, particularly over time as the storage
-	requirements are quite large. We require commercial rights to enable us to
-	support the running costs. One way we may do this is through sales of 
-	montage posters once we reach a critical mass of submissions.</p>
 
-	<p>Granting everyone the same rights actually protects the site community
-	from exploitation (see previous FAQ entry), but do bear in mind that we only
-	retain a screen-quality version of your image, and that under the terms of 
-	the Creative Commons licence, you must be credited for any use of your image</p>
+<p>Running this site costs money, particularly over time as the storage requirements 
+are quite large. While we are confident we can meet those costs with sponsorship, granting 
+commercial use allows anyone who runs the archive in the distant future to explore 
+other options for generating funds, such as sales of montage posters. </p>
+
+<p>Granting everyone those same rights actually protects the site community from 
+exploitation (see previous FAQ entry), but do bear in mind that we only retain a 
+screen-quality version of your image, and that under the terms of the Creative Commons 
+licence, you must be credited for any use of your image </p>
+
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
