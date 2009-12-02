@@ -127,8 +127,9 @@ if (isset($_POST['msg']))
 			$smarty->assign('encoded', $token->getToken());
 			
 			$message="This message is to confirm your email address, for spam prevention purposes.\n\n";
-			$message.="Please enter the following code into the box on the Geograph website:\n\n";
+			$message.="Please enter the following code:\n\n";
 			$message.="$c\n\n";
+			$message.="into the the webpage where you clicked 'Email me the confirmation code'\n\n";
 			$message.="Thank you,\n\n";
 			$message.="The Geograph.org.uk Team\n\n";
 			
