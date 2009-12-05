@@ -231,13 +231,15 @@
 	var photoList = new Object();
 	var photoQueue = new Object();
 	var photoTimer = null;
+	var floatname;
 	
 	function enablePhotos(that) {
 		var mapDiv = document.getElementById("map");
 		var mapWrapperDiv = document.getElementById("mapWrapper");
 
 		mapDiv.style.width = (mapDiv.clientWidth-130)+"px";
-		mapDiv.style.cssFloat = "left";
+		floatname = (mapDiv.style.styleFloat === undefined) ? 'cssFloat' : 'styleFloat';
+		mapDiv.style[floatname] = "left";
 		map.checkResize();
 		that.form.style.display = 'none';
 		
@@ -274,7 +276,7 @@
 				if (photoQueue[id].distance - lastdistance > 600) {
 					var newdiv = document.createElement('div');
 					newdiv.setAttribute('id','p'+id);
-					newdiv.style.cssFloat = 'left';
+					newdiv.style[floatname] = 'left';
 					newdiv.style.width = '126px';
 					newdiv.style.height = '126px';
 					newdiv.style.paddingTop = '3px';
@@ -307,11 +309,12 @@
 							//todo, extract width height, from <img src="....0019_b7c03099.jpg" width="320" height="240"/> and scale to 120px
 							
 							var match = /\/(\d{6,})_/.exec(src);
-							var id = match[1];
-							
-							var thediv = document.getElementById('p'+id);
-							thediv.innerHTML = '<a href="/photo/'+id+'" title="'+title+' by '+realname+'" target="_blank"><img src="'+src+'"/></a>'; 
+							if (match && match.length && match.length > 1 && match[1]) {
+								var id = match[1];
 
+								var thediv = document.getElementById('p'+id);
+								thediv.innerHTML = '<a href="/photo/'+id+'" title="'+title+' by '+realname+'" target="_blank"><img src="'+src+'"/></a>'; 
+							}
 						}
 					});
 
