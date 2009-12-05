@@ -51,6 +51,7 @@
 		map.addMapType(G_PHYSICAL_MAP);
 		map.addControl(new GLargeMapControl());
 		map.addControl(new GMapTypeControl());
+		map.addControl(new GScaleControl());
 	
 	//
 		var mapType = G_PHYSICAL_MAP;
@@ -243,10 +244,10 @@
 		gc.setCallback(GC_CB_ONCREATEPOINT, function (marker, point_id, freetext, opt_field1, opt_field2) {
 			photoQueue[point_id] = {marker:marker,distance:map.getCenter().distanceFrom(marker.getLatLng()) };
 			
-			if (photoTimer == null) {
-				photoTimer = setTimeout("processPhotoQueue()",500);
+			if (photoTimer != null) {
+				clearTimeout(photoTimer)
 			}
-			
+			photoTimer = setTimeout("processPhotoQueue()",100);
 		});
 		
 	}
@@ -276,7 +277,7 @@
 					newdiv.style.cssFloat = 'left';
 					newdiv.style.width = '126px';
 					newdiv.style.height = '126px';
-					newdiv.style.padding = '1px';
+					newdiv.style.paddingTop = '3px';
 					newdiv.style.margin = '1px';
 					newdiv.style.textAlign = 'center';
 					newdiv.style.color = 'silver';
