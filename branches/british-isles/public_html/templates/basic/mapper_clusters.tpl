@@ -310,7 +310,7 @@
 							
 							var match = /\/(\d{6,})_/.exec(src);
 							if (match && match.length && match.length > 1 && match[1]) {
-								var id = match[1]+0;
+								var id = parseInt(match[1],10);
 
 								var thediv = document.getElementById('p'+id);
 								thediv.innerHTML = '<a href="/photo/'+id+'" title="'+title+' by '+realname+'" target="_blank"><img src="'+src+'"/></a>'; 
