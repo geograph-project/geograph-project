@@ -32,7 +32,11 @@
 	</form>
 	
 	<div style="clear:both;text-align:right;position:relative;font-family:monospace" id="countDiv"></div>
+	<div id="mapWrapper">
 	<div id="map" style="width:100%; height:600px; position:relative;"></div>
+	<br style="clear:both"/>
+	</div>
+	<form><input type="button" value="Enable Photo Display" onclick="enablePhotos(this)"/> - Displays photos as you drag the map <sup style="color:red">Experimental</sup>
 	{literal}
 	<script type="text/javascript">
 	//<![CDATA[
@@ -40,6 +44,7 @@
 	var gc;
 	var filterUrl = '';
 	var clouds = false;
+	var categorycrc = 0;
 	
 	function onLoad() {
 		map = new GMap2(document.getElementById("map"));
@@ -83,6 +88,7 @@
 				if (argname == "q") {document.theForm.elements['q'].value = decodeURI(value); filter = true;}
 				if (argname == "u") {document.theForm.elements['user_id'].value = decodeURI(value); filter = true;}
 				if (argname == "c") {document.theForm.elements['imageclass'].value = decodeURI(value); filter = true;}
+				if (argname == "c2") {categorycrc = decodeURI(value); filter = true;}
 				if (argname == "r") {
 					if (value == "c") {document.theForm.elements['clouds'][1].checked = true; clouds = true}
 				}
@@ -205,6 +211,11 @@
 			filterUrl = filterUrl + "&u=" + parseInt(f.user_id.value,10);
 		}
 
+		if (categorycrc != 0) {
+			gc.andFilter (GC_FD1, GC_EQ, parseInt(categorycrc,10));
+			filterUrl = filterUrl + "&c2=" + parseInt(categorycrc,10);
+		}
+
 		if (filterUrl.length > 0) {
 			gc.renderFilter();
 		}
@@ -214,6 +225,142 @@
 	}
 
 	AttachEvent(window,'load',onLoad,false);
+	
+	
+	var photoList = new Object();
+	var photoQueue = new Object();
+	var photoTimer = null;
+	
+	function enablePhotos(that) {
+		var mapDiv = document.getElementById("map");
+		var mapWrapperDiv = document.getElementById("mapWrapper");
+
+		mapDiv.style.width = (mapDiv.clientWidth-130)+"px";
+		mapDiv.style.cssFloat = "left";
+		map.checkResize();
+		that.form.style.display = 'none';
+		
+		gc.setCallback(GC_CB_ONCREATEPOINT, function (marker, point_id, freetext, opt_field1, opt_field2) {
+			photoQueue[point_id] = {marker:marker,distance:map.getCenter().distanceFrom(marker.getLatLng()) };
+			
+			if (photoTimer == null) {
+				photoTimer = setTimeout("processPhotoQueue()",500);
+			}
+			
+		});
+		
+	}
+	
+	function processPhotoQueue() {
+		var mapDiv = document.getElementById("map");
+		var mapWrapperDiv = document.getElementById("mapWrapper");
+		
+		//create a sorted array
+		var tmpArray = new Array();
+		for (var id in photoQueue) {
+			tmpArray[tmpArray.length] = id;
+		} 
+		tmpArray.sort(function(a,b) {
+			return photoQueue[a].distance-photoQueue[b].distance;
+		});
+		
+		var added=0;
+		var lastdistance = -600;
+		//loop though the queue, and add a few never seen before images
+		for(var q=0;q<tmpArray.length;q++) {
+			id = tmpArray[q];
+			if (typeof photoList[id] == 'undefined') {
+				if (photoQueue[id].distance - lastdistance > 600) {
+					var newdiv = document.createElement('div');
+					newdiv.setAttribute('id','p'+id);
+					newdiv.style.cssFloat = 'left';
+					newdiv.style.width = '125px';
+					newdiv.style.height = '125px';
+					newdiv.style.margin = '2px';
+					newdiv.style.textAlign = 'center';
+					newdiv.style.color = 'silver';
+					newdiv.style.backgroundColor = 'black';
+					newdiv.setAttribute('onmouseover','onPhotoOver('+id+')');
+					newdiv.setAttribute('onmouseout','onPhotoOut('+id+')');
+					newdiv.innerHTML = "Loading...<br/> #"+id;
+					insertAfter(newdiv,mapDiv);
+					
+					GDownloadUrl("/api/photo/"+id,function(doc,status) {
+						if (status == 200) {
+							var xmlDoc = GXml.parse(doc);
+							var statuses = xmlDoc.documentElement.getElementsByTagName("status");
+
+							if (!statuses || statuses[0].getAttribute("state") != 'ok') {
+								return; //stops the inner function only. 
+							}
+
+							var titles = xmlDoc.documentElement.getElementsByTagName("title");
+							var realnames = xmlDoc.documentElement.getElementsByTagName("user");
+							var thumbnails = xmlDoc.documentElement.getElementsByTagName("thumbnail");
+
+							i = 0;
+							var title = GXml.value(titles[i]);
+							var realname = GXml.value(realnames[i]);
+							var src = GXml.value(thumbnails[i]);
+							//todo, extract width height, from <img src="....0019_b7c03099.jpg" width="320" height="240"/> and scale to 120px
+							var thediv = document.getElementById('p'+id);//function closure!
+							thediv.innerHTML = '<a href="/photo/'+id+'" title="'+title+' by '+realname+'" target="_blank"><img src="'+src+'"/></a>'; 
+
+						}
+					});
+
+					photoList[id] = photoQueue[id];
+
+					added=added+1;
+					if (added == 4) {
+						break;
+					}
+					lastdistance = photoQueue[id].distance;
+				}
+			} else {
+				//need to update its marker reference (GeoCubes calls clearOverlays each time)
+				photoList[id].marker = photoQueue[id].marker;
+			}
+		}
+		
+		//loop though the displayed list and remove any no longer in the viewport (because they not in the queue) 
+		for (var id in photoList) {
+			if (typeof photoQueue[id] == 'undefined') {
+				var olddiv = document.getElementById('p'+id);
+				mapWrapperDiv.removeChild(olddiv);
+				delete photoList[id];
+			}
+		}
+		
+		//clear the queue so can start over
+		photoQueue = new Object();
+		photoTimer = null;
+	}
+	
+	//create function, it expects 2 values.
+	function insertAfter(newElement,targetElement) {
+		//target is what you want it to go after. Look for this elements parent.
+		var parent = targetElement.parentNode;
+	 
+		//if the parents lastchild is the targetElement...
+		if(parent.lastchild == targetElement) {
+			//add the newElement after the target element.
+			parent.appendChild(newElement);
+		} else {
+			// else the target has siblings, insert the new element between the target and it's next sibling.
+			parent.insertBefore(newElement, targetElement.nextSibling);
+		}
+	}
+	
+	function onPhotoOver(id) {
+		if (typeof photoList[id] != 'undefined')
+			photoList[id].marker.setImage('http://{/literal}{$static_host}{literal}/img/highlight_gc_point.png');
+	}
+	function onPhotoOut(id) {
+		if (typeof photoList[id] != 'undefined')
+			photoList[id].marker.setImage("http://api.geocubes.com/images/default_gc_point.png");
+	}
+		
 	//]]>
 	</script>
 	{/literal}
