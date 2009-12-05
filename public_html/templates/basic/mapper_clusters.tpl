@@ -274,9 +274,10 @@
 					var newdiv = document.createElement('div');
 					newdiv.setAttribute('id','p'+id);
 					newdiv.style.cssFloat = 'left';
-					newdiv.style.width = '125px';
-					newdiv.style.height = '125px';
-					newdiv.style.margin = '2px';
+					newdiv.style.width = '126px';
+					newdiv.style.height = '126px';
+					newdiv.style.padding = '1px';
+					newdiv.style.margin = '1px';
 					newdiv.style.textAlign = 'center';
 					newdiv.style.color = 'silver';
 					newdiv.style.backgroundColor = 'black';
@@ -303,7 +304,11 @@
 							var realname = GXml.value(realnames[i]);
 							var src = GXml.value(thumbnails[i]);
 							//todo, extract width height, from <img src="....0019_b7c03099.jpg" width="320" height="240"/> and scale to 120px
-							var thediv = document.getElementById('p'+id);//function closure!
+							
+							var match = /\/(\d{6,})_/.exec(src);
+							var id = match[1];
+							
+							var thediv = document.getElementById('p'+id);
 							thediv.innerHTML = '<a href="/photo/'+id+'" title="'+title+' by '+realname+'" target="_blank"><img src="'+src+'"/></a>'; 
 
 						}
