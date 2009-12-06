@@ -1,4 +1,3 @@
-{dynamic}
 {assign var="page_title" value="Geograph Image"}
 {include file="_basic_begin.tpl"}
 
@@ -19,7 +18,5 @@
 	<br style="clear:both"/>
 </div>
 
- 
-{/dynamic}
 </body>
 </html>
