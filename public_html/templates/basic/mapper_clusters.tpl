@@ -45,6 +45,8 @@
 	var filterUrl = '';
 	var clouds = false;
 	var categorycrc = 0;
+	var myHtml = '';
+	var myLatLng = '';
 	
 	function onLoad() {
 		map = new GMap2(document.getElementById("map"));
@@ -155,17 +157,20 @@
 		});
 
 		gc.setCallback(GC_CB_POINTCLICK, function (marker, point_id, freetext, opt_field1, opt_field2) {
-			var myHtml = "<iframe src='/frame.php?id=" + point_id + "' width='500' height='300'><br/><b><a href='/photo/" + point_id + "' target='_blank'>" + freetext + "</a></b> <a href='/profile/" + opt_field1 + "' target='_blank'>User Profile</a>";
-			map.openInfoWindowHtml(marker.getLatLng(),myHtml);
+			myHtml = "<iframe src='/frame.php?id=" + point_id + "' width='500' height='300'><br/><b><a href='/photo/" + point_id + "' target='_blank'>" + freetext + "</a></b> <a href='/profile/" + opt_field1 + "' target='_blank'>User Profile</a>";
+			map.openInfoWindowHtml(myLatLng = marker.getLatLng(),myHtml);
+			GEvent.addListener(map.getInfoWindow(), "closeclick", function() { myHtml = ''; });
 		});
 
-		gc.setCallback(GC_CB_ONLOADSTART, function ()
-		{
+		gc.setCallback(GC_CB_ONLOADSTART, function () {
 			document.getElementById('countDiv').innerHTML = "loading photos...";
 		});
-		gc.setCallback(GC_CB_ONLOADEND, function ()
-		{
+		gc.setCallback(GC_CB_ONLOADEND, function () {
 			document.getElementById('countDiv').innerHTML = gc.getTotalCount() + " photos in current map";
+			if (myHtml != '') {
+				map.openInfoWindowHtml(myLatLng,myHtml);
+				GEvent.addListener(map.getInfoWindow(), "closeclick", function() { myHtml = ''; });
+			}
 		});
 
 		if (filter) {
