@@ -71,11 +71,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	select 
 	$from_date as `Date` ,
 	count(*) as `Signups`,
-	sum((select gridimage_id 
-		from gridimage_search gi 
-		where gi.user_id = user.user_id
-		limit 1) is not NULL) as `Who later Contribute`
+	sum(user_stat.images>0) as `Who later Contribute`
 	from user 
+	left join user_stat using (user_id)
 	where rights <> ''  
 	group by $group_date
 	" );
