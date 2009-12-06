@@ -32,7 +32,7 @@
 {/if}
 <link rel="search" type="application/opensearchdescription+xml" 
 title="Geograph British Isles search" href="/stuff/osd.xml" />
-<script type="text/javascript" src="{"/geograph.js"|revision}"></script>
+<script type="text/javascript" src="{"/js/geograph.js"|revision}"></script>
 
 <script type="text/javascript">
 var static_host = '{$static_host}';
