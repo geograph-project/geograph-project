@@ -26,7 +26,7 @@ require_once('geograph/global.inc.php');
 $smarty = new GeographPage;
 $template='frame.tpl';	
 
-customExpiresHeader(3600*24,true,true);
+customExpiresHeader(3600*6,true,true);
 
 if (isset($_REQUEST['id'])) {
 	$cacheid = intval($_REQUEST['id']);
