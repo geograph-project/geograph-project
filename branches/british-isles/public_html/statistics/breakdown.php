@@ -228,7 +228,7 @@ group by $sql_group
 $mysql_order";
 	if ($_GET['debug'])
 		print $sql;
-	$breakdown=$db->GetAll($sql);
+	$breakdown=$db->cacheGetAll(3600*6,$sql);
 	$total = 0;
 	foreach($breakdown as $idx=>$entry) {
 		$total += $entry['c'];
