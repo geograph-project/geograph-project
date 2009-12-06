@@ -218,6 +218,17 @@ if (!$smarty->is_cached($template, $cacheid))
 		$mysql_order = "ORDER BY field$sql_dir";
 	}
 	
+	if ($by == 'class' && $sql_where == '' && $sql_crit == '' && $sql_from == '') {
+$sql = "select $sql_fieldname as field,c 
+from category_stat 
+$mysql_order";	
+		$cacheseconds = 3600*6;
+	} elseif ($by == 'user' && $sql_where == '' && $sql_crit == '' && $sql_from == '') {
+$sql = "select $sql_fieldname as field, images as c, user_id
+from user_stat inner join user using (user_id) 
+$mysql_order";	
+		$cacheseconds = 600;
+	} else {
 $sql = "select 
 $sql_fieldname as field,
 count(*) as c $mysql_fields
@@ -226,9 +237,11 @@ where 1 $sql_where
  $sql_crit
 group by $sql_group 
 $mysql_order";
+		$cacheseconds = 3600*12;
+	}
 	if ($_GET['debug'])
 		print $sql;
-	$breakdown=$db->cacheGetAll(3600*6,$sql);
+	$breakdown=$db->cacheGetAll($cacheseconds,$sql);
 	$total = 0;
 	foreach($breakdown as $idx=>$entry) {
 		$total += $entry['c'];
