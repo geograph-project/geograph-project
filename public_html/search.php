@@ -887,6 +887,13 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		dieUnderHighLoad(0,'search_unavailable.tpl');
 		die("Invalid Search Parameter");
 	}
+	
+	if (isset($_GET['legacy']) && (!empty($engine->criteria->searchq) || !empty($engine->criteria->searchtext) || empty($engine->criteria->limit6)) {
+		header("HTTP/1.1 503 Service Unavailable");
+		$smarty->assign('searchq',stripslashes($_GET['q']));
+		$smarty->display('function_disabled.tpl');
+		exit;
+	}
 
 	$display = $engine->getDisplayclass();
 	if (isset($_GET['displayclass']) && preg_match('/^\w+$/',$_GET['displayclass'])) {

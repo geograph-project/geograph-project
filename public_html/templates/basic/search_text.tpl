@@ -35,7 +35,11 @@
 	<div class="tabHolder">
 		<a href="/search.php?form=simple" class="tab">simple search</a>
 		<span class="tabSelected">Advanced Search</span>
+		{dynamic}
+		{if $user->registered}
 		<a href="/search.php?form=advanced&amp;legacy=true" class="tab"><small>old advanced</small></a>
+		{/if}
+		{/dynamic}
 		<a href="/search.php?form=first" class="tab">first geographs</a>
 	</div>
 	<div class="interestBox">
