@@ -32,11 +32,21 @@
 	</form>
 	
 	<div style="clear:both;text-align:right;position:relative;font-family:monospace" id="countDiv"></div>
-	<div id="mapWrapper">
-	<div id="map" style="width:100%; height:600px; position:relative;"></div>
-	<br style="clear:both"/>
+	<div id="mapOuter">
+		<div id="mapWrapper" style="width:100%; position:relative;">
+			<div id="map" style="width:100%; height:600px; position:relative;"></div>
+			<form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px;width:600px; text-align:center;font-size:0.6em">
+				<label for="addressInput" style="font-size:1.3em">Jump to Location:</label>
+				<input type="text" size="50" id="addressInput" name="address" value="" />
+				<input type="submit" value="Find"/><br/>
+				(Powered by the Google Maps API Geocoder - <b>Note: Doesn't cope with postcodes well.</b>)
+			
+			</form>
+		</div>
+		<br style="clear:both"/>
 	</div>
-	<form><input type="button" value="Enable Photo Display" onclick="enablePhotos(this)"/> - Displays photos as you drag the map <sup style="color:red">Experimental</sup>
+	<form><input type="button" value="Enable Photo Display" onclick="enablePhotos(this)"/> - Displays photos as you drag the map <sup style="color:red">Experimental</sup></form>
+	
 	{literal}
 	<script type="text/javascript">
 	//<![CDATA[
@@ -230,6 +240,43 @@
 		return false;
 	}
 
+
+	function showAddress(address) {
+		var geocoder = new GClientGeocoder();
+		geocoder.setBaseCountryCode('uk'); //its a ccTLD
+		
+		//replace full uk postcodes by the sector version
+		address = address.replace(/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i,'$1$2 $3'); 
+		
+		geocoder.getLocations(address, function(location) {
+			if(location.Status.code == 200) {
+				var placeMark = location.Placemark[0];
+				var point = new GLatLng(placeMark.Point.coordinates[1], placeMark.Point.coordinates[0]);
+				
+				lat = point.lat();
+				lng = point.lng();
+				ire = (lat > 51.2 && lat < 55.73 && lng > -12.2 && lng < -4.8);
+				uk = (lat > 49 && lat < 62 && lng > -9.5 && lng < 2.3);
+
+				if (!uk && !ire) {
+					alert("Address could not be resolved to a British Isles location, please try again");
+					return;
+				}
+				
+				var latLngBox;
+				var zoom = 10;
+				if(latLngBox = placeMark.ExtendedData.LatLonBox) {
+					//determine zoom level if possible
+					var latLngBound = new GLatLngBounds(new GLatLng(latLngBox.south, latLngBox.west), new GLatLng(latLngBox.north, latLngBox.east));
+					zoom = map.getBoundsZoomLevel(latLngBound);
+				}
+				map.setCenter(point, zoom);
+			} else {
+				alert('Address not found.');
+			}
+		});
+	}
+
 	AttachEvent(window,'load',onLoad,false);
 	
 	
@@ -239,12 +286,12 @@
 	var floatname;
 	
 	function enablePhotos(that) {
-		var mapDiv = document.getElementById("map");
+		var mapOuterDiv = document.getElementById("mapOuter");
 		var mapWrapperDiv = document.getElementById("mapWrapper");
 
-		mapDiv.style.width = (mapDiv.clientWidth-130)+"px";
-		floatname = (mapDiv.style.styleFloat === undefined) ? 'cssFloat' : 'styleFloat';
-		mapDiv.style[floatname] = "left";
+		mapWrapper.style.width = (mapWrapper.clientWidth-130)+"px";
+		floatname = (mapWrapper.style.styleFloat === undefined) ? 'cssFloat' : 'styleFloat';
+		mapWrapper.style[floatname] = "left";
 		map.checkResize();
 		that.form.style.display = 'none';
 		
@@ -260,8 +307,12 @@
 	}
 	
 	function processPhotoQueue() {
-		var mapDiv = document.getElementById("map");
+		var mapOuterDiv = document.getElementById("mapOuter");
 		var mapWrapperDiv = document.getElementById("mapWrapper");
+		
+		var bounds = map.getBounds();
+		
+		var stepdistance = bounds.getSouthWest().distanceFrom(bounds.getNorthEast()) / 10;
 		
 		//create a sorted array
 		var tmpArray = new Array();
@@ -273,12 +324,12 @@
 		});
 		
 		var added=0;
-		var lastdistance = -600;
+		var lastdistance = -1 * stepdistance;
 		//loop though the queue, and add a few never seen before images
 		for(var q=0;q<tmpArray.length;q++) {
 			id = tmpArray[q];
 			if (typeof photoList[id] == 'undefined') {
-				if (photoQueue[id].distance - lastdistance > 600) {
+				if (photoQueue[id].distance - lastdistance > stepdistance) {
 					var newdiv = document.createElement('div');
 					newdiv.setAttribute('id','p'+id);
 					newdiv.style[floatname] = 'left';
@@ -292,7 +343,7 @@
 					newdiv.setAttribute('onmouseover','onPhotoOver('+id+')');
 					newdiv.setAttribute('onmouseout','onPhotoOut('+id+')');
 					newdiv.innerHTML = "Loading...<br/> #"+id;
-					insertAfter(newdiv,mapDiv);
+					insertAfter(newdiv,mapWrapperDiv);
 					
 					GDownloadUrl("/api/photo/"+id,function(doc,status) {
 						if (status == 200) {
@@ -341,7 +392,7 @@
 		for (var id in photoList) {
 			if (typeof photoQueue[id] == 'undefined') {
 				var olddiv = document.getElementById('p'+id);
-				mapWrapperDiv.removeChild(olddiv);
+				mapOuterDiv.removeChild(olddiv);
 				delete photoList[id];
 			}
 		}
@@ -374,7 +425,7 @@
 		if (typeof photoList[id] != 'undefined')
 			photoList[id].marker.setImage("http://api.geocubes.com/images/default_gc_point.png");
 	}
-		
+	
 	//]]>
 	</script>
 	{/literal}
