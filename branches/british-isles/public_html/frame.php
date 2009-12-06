@@ -23,31 +23,32 @@
 
 require_once('geograph/global.inc.php');
 
-init_session();
-
 $smarty = new GeographPage;
 $template='frame.tpl';	
 
+customExpiresHeader(3600*24,true,true);
 
-
-if (isset($_REQUEST['id']))
-{
-	//initialise message
-	require_once('geograph/gridsquare.class.php');
-	require_once('geograph/gridimage.class.php');
-
-	$image=new GridImage();
-	$ok = $image->loadFromId($_REQUEST['id']);
+if (isset($_REQUEST['id'])) {
+	$cacheid = intval($_REQUEST['id']);
 	
-	if (!$ok || $image->moderation_status=='rejected') {
-		//clear the image
-		$image=new GridImage;
-		header("HTTP/1.0 410 Gone");
-		header("Status: 410 Gone");
-		$template = "static_404.tpl";
-	} 
-	
-	$smarty->assign_by_ref('image', $image);
+	if (!$smarty->is_cached($template, $cacheid)) {
+		
+		$image=new GridImage();
+		$ok = $image->loadFromId($_REQUEST['id']);
+
+		if (!$ok || $image->moderation_status=='rejected') {
+			//clear the image
+			$image=new GridImage;
+			header("HTTP/1.0 410 Gone");
+			header("Status: 410 Gone");
+			$template = "static_404.tpl";
+		} else {
+			//bit late doing it now, but at least if smarty doesnt have it cached we might be able to prevent generating the whole page
+			customCacheControl(strtotime($image->upd_timestamp),$cacheid);
+
+			$smarty->assign_by_ref('image', $image);
+		}
+	}
 } else {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");
@@ -55,6 +56,6 @@ if (isset($_REQUEST['id']))
 }
 
 
-$smarty->display($template);
+$smarty->display($template, $cacheid);
 
 ?>
