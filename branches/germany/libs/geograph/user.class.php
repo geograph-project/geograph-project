@@ -825,13 +825,19 @@ EOT;
 			if (!isValidRealName($profile['realname']))
 			{
 				$ok=false;
-				$errors['realname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+				if ($CONF['lang'] == 'de')
+					$errors['realname']='Der Name enthält ungültige Zeichen!';
+				else
+					$errors['realname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
 			}
 		}
 		else
 		{
 			$ok=false;
-			$errors['realname']='Please enter your real name, we use it to credit your photographs';
+			if ($CONF['lang'] == 'de')
+				$errors['realname']='Please enter your real name, we use it to credit your photographs';
+			else
+				$errors['realname']='Es wurde kein Name angegeben!';
 		}
 		
 		
@@ -845,7 +851,10 @@ EOT;
 			else
 			{
 				$ok=false;
-				$errors['website']='This doesn\'t appear to be a valid URL';
+				if ($CONF['lang'] == 'de')
+					$errors['website']='Die Adresse scheint ungültig zu sein.';
+				else
+					$errors['website']='This doesn\'t appear to be a valid URL';
 			}
 		}
 		
@@ -859,7 +868,10 @@ EOT;
 			if (count($r))
 			{
 				$ok=false;
-				$errors['nickname']='Sorry, this nickname is already taken by another user';
+				if ($CONF['lang'] == 'de')
+					$errors['nickname']='Dieser Kurzname ist schon vergeben!';
+				else
+					$errors['nickname']='Sorry, this nickname is already taken by another user';
 			}
 			//todo check seperate table
 		}
@@ -870,16 +882,25 @@ EOT;
 			#	$errors['nickname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
 			#else
 			#	$errors['nickname']='Please enter a nickname for use on the forums';
-			$errors['nickname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+			if ($CONF['lang'] == 'de')
+				$errors['nickname']='Der Name enthält ungültige Zeichen!';
+			else
+				$errors['nickname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
 		}
 
 		if (strlen($profile['password1'])) {
 			if (md5($profile['oldpassword']) != $this->password) {
 				$ok=false;
-				$errors['oldpassword']='Please enter your current password if you wish to change it';
+				if ($CONF['lang'] == 'de')
+					$errors['oldpassword']='Bitte aktuelles Passwort angeben, wenn ein Passwortwechsel gewünscht ist!';
+				else
+					$errors['oldpassword']='Please enter your current password if you wish to change it';
 			} elseif ($profile['password1'] != $profile['password2']) {
 				$ok=false;
-				$errors['password2']='Passwords didn\'t match, please try again';
+				if ($CONF['lang'] == 'de')
+					$errors['password2']='Passwörter stimmen nicht überein!';
+				else
+					$errors['password2']='Passwords didn\'t match, please try again';
 			} else {
 				$password = md5($profile['password1']);
 			}
@@ -892,9 +913,14 @@ EOT;
 		{
 			if (isValidEmailAddress($profile['email']))
 			{
-				$errors['general']='To change your email address, '.
-				'we\'ve sent an email to '.$profile['email'].' which contains '.
-				'instructions on how to confirm the change.';
+				if ($CONF['lang'] == 'de')
+					$errors['general']='Um den E-Mail-Adressen-Wechsel '.
+						'zu bestätigen, bitte die Anweisungen in der E-Mail befolgen, '.
+						'die wir an '.$profile['email'].' geschickt haben!';
+				else
+					$errors['general']='To change your email address, '.
+						'we\'ve sent an email to '.$profile['email'].' which contains '.
+						'instructions on how to confirm the change.';
 				$ok=false;
 				
 				
@@ -911,24 +937,57 @@ EOT;
 				$url="http://".
 					$_SERVER['HTTP_HOST'].'/reg/m'.$id.
 					'/'.substr(md5('m'.$id.$CONF['register_confirmation_secret']),0,16);
-						
-				$msg="You recently requested the email address ".
-				"for your account at ".$_SERVER['HTTP_HOST']." be changed to {$profile['email']}.\n\n".
-				
-				"To confirm, please click this link:\n\n".
-				
-				"$url\n\n".
-				
-				"If you do not wish to change your address, simply disregard this message";
-				
-				@mail($profile['email'], 'Please confirm your email address change', $msg,
-				"From: geo.hlipp.de <mail@hlipp.de>","-f mail@hlipp.de"); #FIXME variable from/env from?
-				
-				
+
+				if ($CONF['lang'] == 'de') {
+					$mail_body = <<<EOT
+Hallo,
+
+wir wurden aufgefordert, die E-Mail-Adresse für den Account bei %s zu %s zu ändern.
+Um die neue E-Mail-Adresse zu bestätigen bitte folgenden Link aufrufen:
+
+%s
+
+Wenn die Adresse nicht geändert werden soll, kann diese Mail einfach ignoriert werden.
+
+Mit freundlichen Grüßen
+
+Das Geograph-Deutschland-Team
+EOT;
+					$mail_subject = '[geograph-de] Bestätigung der neuen E-Mail-Adresse für %s';
+				} else {
+					$mail_body = <<<EOT
+Hello.
+
+You recently requested the email address for your account at %s be changed to %s.
+To confirm, please click this link:
+
+%s
+
+If you do not wish to change your address, simply disregard this message.
+
+Kind Regards,
+
+The Geograph Deutschland Team
+EOT;
+					$mail_subject = '[geograph-de] Please confirm your email address change for %s';
+				}
+				$msg = sprintf($mail_body, $_SERVER['HTTP_HOST'], $profile['email'], $url);
+				$sub = sprintf($mail_subject, $_SERVER['HTTP_HOST']);
+
+				@mail($profile['email'], mb_encode_mimeheader($sub), $msg,
+					"From: geo.hlipp.de <mail@hlipp.de>\n".
+					"MIME-Version: 1.0\n".
+					"Content-Type: text/plain; charset=iso-8859-1\n".
+					"Content-Disposition: inline\n".
+					"Content-Transfer-Encoding: 8bit",
+					"-f mail@hlipp.de"); #FIXME variable from/env from/mime?
 			}
 			else
 			{
-				$errors['email']='Invalid email address';
+				if ($CONF['lang'] == 'de')
+					$errors['email']='Ungültige E-Mail-Adresse!';
+				else
+					$errors['email']='Invalid email address';
 				$ok=false;
 			}
 			
@@ -1005,7 +1064,10 @@ EOT;
 
 			if ($db->Execute($sql) === false) 
 			{
-				$errors['general']='error updating: '.$db->ErrorMsg();
+				if ($CONF['lang'] == 'de')
+					$errors['general']='Datenbank-Update fehlgeschlagen: '.$db->ErrorMsg();
+				else
+					$errors['general']='error updating: '.$db->ErrorMsg();
 				$ok=false;
 			}
 			else
@@ -1049,7 +1111,10 @@ EOT;
 
 					if ($db->Execute($sql) === false) 
 					{
-						$errors['general']='error updating: '.$db->ErrorMsg();
+						if ($CONF['lang'] == 'de')
+							$errors['general']='Datenbank-Update fehlgeschlagen: '.$db->ErrorMsg();
+						else
+							$errors['general']='error updating: '.$db->ErrorMsg();
 						$ok=false;
 					}
 				}
