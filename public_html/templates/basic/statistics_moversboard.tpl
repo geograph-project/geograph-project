@@ -32,7 +32,7 @@ how much each person will climb when their pictures are moderated!{/if}</p>
 {/foreach}
 
 
-<tr class="totalrow"><th>&nbsp;</th><th>Totals</th><th align="right">{$geographs}</th>{if $points}<th align="right">{$points}</th>{/if}{if $pending}<th align="right" style="font-size:0.8em">({$pending} pending)</th>{/if}</tr></thead>
+<tr class="totalrow"><th>&nbsp;</th><th>Totals</th><th align="right">{$geographs|string_format:"%.5g"}</th>{if $points}<th align="right">{$points}</th>{/if}{if $pending}<th align="right" style="font-size:0.8em">({$pending} pending)</th>{/if}</tr></thead>
 </tbody>
 </table>
 
