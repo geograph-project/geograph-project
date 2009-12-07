@@ -86,230 +86,296 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql_orderby = '';
 	$sql_column = "count(*)";
 	$sql_having_having = '';
+	if ($maximum) {
+		$minimax = "between $minimum and $maximum";
+		$sql_minimax = "between $minimum and $maximum";
+	} else {
+		$minimax = "over $minimum";
+		$sql_minimax = "> $minimum";
+	}
 
-	if ($type == 'squares') {
-		if ($filtered) {
-			$sql_column = "count(distinct grid_reference)";
-		} else {
-			$sql_table = "user_stat i";
-			$sql_column = "squares";
-		}
-		$heading = "Squares Photographed";
-		$desc = "different squares photographed";
-
-	} elseif ($type == 'geosquares') {
-		if ($filtered) {
-			$sql_column = "count(distinct grid_reference)";
-			$sql_where = "i.moderation_status='geograph'";
-		} else {
-			$sql_table = "user_stat i";
-			$sql_column = "geosquares";
-		}
-		$heading = "Squares Geographed";
-		$desc = "different squares geographed (aka Personal Points)";
-
-	} elseif ($type == 'geographs') {
-		if ($filtered) {
-			$sql_where = "i.moderation_status='geograph'";
-		} else {
-			$sql_table = "user_stat i";
-			$sql_column = "geographs";
-		}
-		$heading = "Geograph Images";
-		$desc = "'geograph' images submitted";
-
-	} elseif ($type == 'additional') {
-		$sql_where = "i.moderation_status='geograph' and ftf = 0";
-		$heading = "Non-First Geograph Images";
-		$desc = "non first 'geograph' images submitted";
-
-	} elseif ($type == 'supps') {
-		if ($filtered) {
-			$sql_where = "i.moderation_status='accepted'";
-		} else {
-			$sql_table = "user_stat i";
-			$sql_column = "images-geographs";
-		}
-		$heading = "Supplemental Images";
-		$desc = "'supplemental' images submitted";
-
-	} elseif ($type == 'images') {
-		if ($filtered) {
-			$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph') as points, count(*)";
-			$sql_where = "1";
-		} else {
-			$sql_table = "user_stat i";
-			$sql_column = "points, images";
-		}
-		$sql_orderby = ',points desc';
-		$heading = "Images";
-		$desc = "images submitted";
-
-	} elseif ($type == 'test_points') {
-		if ($filtered) {
-			$sql_column = "sum((i.moderation_status = 'geograph') + ftf + 1)";
-		} else {
-			$sql_table = "user_stat i";
-			$sql_column = "images, images/(points+1)";
-		}
-		$heading = "G-Points";
-		$desc = "test points";
-
-	} elseif ($type == 'reverse_points') {
-		if ($filtered) {
-			$sql_column = "count(*) as images, count(*)/(sum(ftf=1)+1)";
-			$sql_having_having = "having count(*) > $minimum";
-		} else {
-			$sql_table = "user_stat i";
-			$sql_column = "images, images/(points+1)";
-			$sql_having_having = "having images > $minimum";
-		}
-		$heading = "Depth";
-		$desc = "the <b>approx</b> images/points ratio, and having submitted over $minimum images";
-
-	} elseif ($type == 'depth') {
-		if ($filtered) {
-			$sql_column = "count(*)/count(distinct grid_reference)";
-			if ($maximum) {
-				$sql_having_having = "having count(*) between $minimum and $maximum";
-				$desc = "the depth score, and having submitted between $minimum and $maximum images";
-			} else {
-				$sql_having_having = "having count(*) > $minimum";
-				$desc = "the depth score, and having submitted over $minimum images";
-			}
-		} else {
-			$sql_table = "user_stat i";
-			$sql_column = "images, depth";
-			if ($maximum) {
-				$sql_having_having = "having images between $minimum and $maximum";
-				$desc = "the depth score, and having submitted between $minimum and $maximum images";
-			} else {
-				$sql_having_having = "having images > $minimum";
-				$desc = "the depth score, and having submitted over $minimum images";
-			}
-		}
-		$heading = "Depth";
-
-	} elseif ($type == 'depth2') {
-		if ($filtered) {
-			$sql_column = "round(pow(count(*),2)/count(distinct grid_reference))";
-			$sql_having_having = "having count(*) > $minimum";
-		} else {
-			$sql_column = "round(pow(images,2)/squares";
-			$sql_having_having = "having images > $minimum";
-		}
-		$heading = "High Depth";
-		$desc = "the depth score X images, and having submitted over $minimum images";
-
-	} elseif ($type == 'myriads') {
-		if ($filtered) {
-			$sql_column = "count(distinct substring(grid_reference,1,length(grid_reference) - 4))";
-		} else {
-			$sql_table = "user_stat i";
-			$sql_column = "myriads";
-		}
-		$heading = "Myriads";
-		$desc = "different myriads";
-
-	} elseif ($type == 'antispread') {
-		if ($filtered) {
-			$sql_column = "count(*)/count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )";
-		} else {
-			$sql_table = "user_stat i";
-			$sql_column = "images/hectads";
-		}
-		$heading = "AntiSpread Score";
-		$desc = "antispread score (images/hectads)";
-
-	} elseif ($type == 'spread') {
-		if ($filtered) {
-			$sql_column = "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )/count(*)";
-			$sql_having_having = "having count(*) > $minimum";
-		} else {
-			$sql_table = "user_stat i";
-			$sql_column = "hectads/images";
-			$sql_having_having = "having count(*) > $minimum";
-		}
-		$heading = "Spread Score";
-		$desc = "spread score (hectads/images), and having submitted over $minimum images";
-
-	} elseif ($type == 'hectads') {
-		if ($filtered) {
-			$sql_column = "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )";
-		} else {
-			$sql_table = "user_stat i";
-			$sql_column = "hectads";
-		}
-		$heading = "Hectads";
-		$desc = "different hectads";
-
-	} elseif ($type == 'days') {
-		if ($filtered) {
-			$sql_column = "count(distinct imagetaken)";
-		} else {
-			$sql_table = "user_stat i";
-			$sql_column = "days";
-		}
-		$heading = "Days";
-		$desc = "different days";
-
-	} elseif ($type == 'classes') {
-		$sql_column = "count(distinct imageclass)";
-		$heading = "Categories";
-		$desc = "different categories";
-
-	} elseif ($type == 'clen') {
-		$sql_column = "avg(length(comment))";
-		$sql_having_having = "having count(*) > $minimum";
-		$heading = "Average Description Length";
-		$desc = "average length of the description, and having submitted over $minimum images";
-
-	} elseif ($type == 'tlen') {
-		$sql_column = "avg(length(title))";
-		$sql_having_having = "having count(*) > $minimum";
-		$heading = "Average Title Length";
-		$desc = "average length of the title, and having submitted over $minimum images";
-
-	} elseif ($type == 'category_depth') {
-		$sql_column = "count(*)/count(distinct imageclass)";
-		$heading = "Category Depth";
-		$desc = "the category depth score";
-
-	} elseif ($type == 'centi') {
-/*	SELECT COUNT(DISTINCT nateastings div 100, natnorthings div 100), COUNT(*) AS `_count_all`
-	FROM gridimage
-	WHERE  moderation_status in ('geograph','accepted') and nateastings div 1000 > 0
-	ORDER BY _count_all DESC
-	LIMIT 30; */
+	$sql_qtable_filtered = array (
+		'squares' => array(
+			'column' => "count(distinct grid_reference)",
+		),
+		'geosquares' => array(
+			'column' => "count(distinct grid_reference)",
+			'where' => "i.moderation_status='geograph'",
+		),
+		'geographs' => array(
+			'where' => "i.moderation_status='geograph'",
+		),
+		'additional' => array(
+			'where' => "i.moderation_status='geograph' and ftf = 0",
+		),
+		'supps' => array(
+			'where' => "i.moderation_status='accepted'",
+		),
+		'images' => array(
+			'column' => "sum(i.ftf=1 and i.moderation_status='geograph') as points, count(*)",
+			'where' => "1",
+			'orderby' => ",points desc",
+		),
+		'test_points' => array(
+			'column' => "sum((i.moderation_status = 'geograph') + ftf + 1)",
+		),
+		'reverse_points' => array(
+			'column' => "count(*) as images, count(*)/(sum(ftf=1)+1)",
+			'having_having' => "having count(*) > $minimum",
+		),
+		'depth' => array(
+			'column' => "count(*)/count(distinct grid_reference)",
+			'having_having' => "having count(*) $sql_minimax",
+		),
+		'depth2' => array(
+			'column' => "round(pow(count(*),2)/count(distinct grid_reference))",
+			'having_having' => "having count(*) > $minimum",
+		),
+		'myriads' => array(
+			'column' => "count(distinct substring(grid_reference,1,length(grid_reference) - 4))",
+		),
+		'antispread' => array(
+			'column' => "count(*)/count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )",
+		),
+		'spread' => array(
+			'column' => "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )/count(*)",
+			'having_having' => "having count(*) > $minimum",
+		),
+		'hectads' => array(
+			'column' => "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )",
+		),
+		'days' => array(
+			'column' => "count(distinct imagetaken)",
+		),
+		'classes' => array(
+			'column' => "count(distinct imageclass)",
+		),
+		'clen' => array(
+			'column' => "avg(length(comment))",
+			'having_having' => "having count(*) > $minimum",
+		),
+		'tlen' => array(
+			'column' => "avg(length(title))",
+			'having_having' => "having count(*) > $minimum",
+		),
+		'category_depth' => array(
+			'column' => "count(*)/count(distinct imageclass)",
+		),
+		'centi' => array(
 		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
-		$sql_table = "gridimage i ";
-		$sql_column = "COUNT(DISTINCT nateastings div 100, natnorthings div 100)";
-		$sql_where = "i.moderation_status='geograph' and nateastings div 1000 > 0";
-		$heading = "Centigraph Points";
-		$desc = "centigraph points awarded (centisquares photographed)";
+			'table' => "gridimage i ",
+			'column' => "COUNT(DISTINCT nateastings div 100, natnorthings div 100)",
+			'where' => "i.moderation_status='geograph' and nateastings div 1000 > 0",
+		),
+		'points' => array(
+			'where' => "i.ftf=1 and i.moderation_status='geograph'",
+		),
+	);
+	$sql_qtable_unfiltered = array (
+		'squares' => array(
+			'table' => "user_stat i",
+			'column' => "squares",
+		),
+		'geosquares' => array(
+			'table' => "user_stat i",
+			'column' => "geosquares",
+		),
+		'geographs' => array(
+			'table' => "user_stat i",
+			'column' => "geographs",
+		),
+		'additional' => array(
+			'where' => "i.moderation_status='geograph' and ftf = 0",
+		),
+		'supps' => array(
+			'table' => "user_stat i",
+			'column' => "images-geographs",
+		),
+		'images' => array(
+			'table' => "user_stat i",
+			'column' => "points, images",
+			'orderby' => ",points desc",
+		),
+		'test_points' => array(
+			'table' => "user_stat i",
+			'column' => "images, images/(points+1)",
+		),
+		'reverse_points' => array(
+			'table' => "user_stat i",
+			'column' => "images, images/(points+1)",
+			'having_having' => "having images > $minimum",
+		),
+		'depth' => array(
+			'table' => "user_stat i",
+			'column' => "images, depth",
+			'having_having' => "having images $sql_minimax",
+		),
+		'depth2' => array(
+			'column' => "round(pow(images,2)/squares",
+			'having_having' => "having images > $minimum",
+		),
+		'myriads' => array(
+			'table' => "user_stat i",
+			'column' => "myriads",
+		),
+		'antispread' => array(
+			'table' => "user_stat i",
+			'column' => "images/hectads",
+		),
+		'spread' => array(
+			'table' => "user_stat i",
+			'column' => "hectads/images",
+			'having_having' => "having count(*) > $minimum",
+		),
+		'hectads' => array(
+			'table' => "user_stat i",
+			'column' => "hectads",
+		),
+		'days' => array(
+			'table' => "user_stat i",
+			'column' => "days",
+		),
+		'classes' => array(
+			'column' => "count(distinct imageclass)",
+		),
+		'clen' => array(
+			'column' => "avg(length(comment))",
+			'having_having' => "having count(*) > $minimum",
+		),
+		'tlen' => array(
+			'column' => "avg(length(title))",
+			'having_having' => "having count(*) > $minimum",
+		),
+		'category_depth' => array(
+			'column' => "count(*)/count(distinct imageclass)",
+		),
+		'centi' => array(
+		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
+			'table' => "gridimage i ",
+			'column' => "COUNT(DISTINCT nateastings div 100, natnorthings div 100)",
+			'where' => "i.moderation_status='geograph' and nateastings div 1000 > 0",
+		),
+		'content' => array(
+			'table' => "user_stat i",
+			'column' => "content",
+			'where' => "content > 0",
+		),
+		'points' => array(
+			'table' => "user_stat i",
+			'column' => "depth,points",
+		),
+	);
 
-	} elseif ($type == 'content') {
-		if ($filtered) {
-			die("invalid request");
-		} else {
-			$sql_table = "user_stat i";
-			$sql_column = "content";
-			$sql_where = "content > 0";
-		}
-		$heading = "Content Items";
-		$desc = "items submitted";
+	$text_table = array (
+		'squares' => array(
+			'heading' => "Squares Photographed",
+			'desc' => "different squares photographed",
+		),
+		'geosquares' => array(
+			'heading' => "Squares Geographed",
+			'desc' => "different squares geographed (aka Personal Points)",
+		),
+		'geographs' => array(
+			'heading' => "Geograph Images",
+			'desc' => "'geograph' images submitted",
+		),
+		'additional' => array(
+			'heading' => "Non-First Geograph Images",
+			'desc' => "non first 'geograph' images submitted",
+		),
+		'supps' => array(
+			'heading' => "Supplemental Images",
+			'desc' => "'supplemental' images submitted",
+		),
+		'images' => array(
+			'heading' => "Images",
+			'desc' => "images submitted",
+		),
+		'test_points' => array(
+			'heading' => "G-Points",
+			'desc' => "test points",
+		),
+		'reverse_points' => array(
+			'heading' => "Depth",
+			'desc' => "the <b>approx</b> images/points ratio, and having submitted over $minimum images",
+		),
+		'depth' => array(
+			'desc' => "the depth score, and having submitted $minimax images",
+			'heading' => "Depth",
+		),
+		'depth2' => array(
+			'heading' => "High Depth",
+			'desc' => "the depth score X images, and having submitted over $minimum images",
+		),
+		'myriads' => array(
+			'heading' => "Myriads",
+			'desc' => "different myriads",
+		),
+		'antispread' => array(
+			'heading' => "AntiSpread Score",
+			'desc' => "antispread score (images/hectads)",
+		),
+		'spread' => array(
+			'heading' => "Spread Score",
+			'desc' => "spread score (hectads/images), and having submitted over $minimum images",
+		),
+		'hectads' => array(
+			'heading' => "Hectads",
+			'desc' => "different hectads",
+		),
+		'days' => array(
+			'heading' => "Days",
+			'desc' => "different days",
+		),
+		'classes' => array(
+			'heading' => "Categories",
+			'desc' => "different categories",
+		),
+		'clen' => array(
+			'heading' => "Average Description Length",
+			'desc' => "average length of the description, and having submitted over $minimum images",
+		),
+		'tlen' => array(
+			'heading' => "Average Title Length",
+			'desc' => "average length of the title, and having submitted over $minimum images",
+		),
+		'category_depth' => array(
+			'heading' => "Category Depth",
+			'desc' => "the category depth score",
+		),
+		'centi' => array(
+		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
+			'heading' => "Centigraph Points",
+			'desc' => "centigraph points awarded (centisquares photographed)",
+		),
+		'content' => array(
+			'heading' => "Content Items",
+			'desc' => "items submitted",
+		),
+		'points' => array(
+			'heading' => "Geograph Points",
+			'desc' => "geograph points awarded",
+		),
+	);
 
-	} else { #if ($type == 'points') {
-		if ($filtered) {
-			$sql_where = "i.ftf=1 and i.moderation_status='geograph'";
-		} else {
-			$sql_table = "user_stat i";
-			$sql_column = "depth,points";
-		}
-		$heading = "Geograph Points";
-		$desc = "geograph points awarded";
+	if ($filtered) {
+		$sql_qtable =& $sql_qtable_filtered;
+	} else {
+		$sql_qtable =& $sql_qtable_unfiltered;
+	}
+
+	if (!isset($sql_qtable[$type])) {
 		$type = 'points';
-	} 
+	}
+
+	if (isset($sql_qtable[$type]['column'])) $sql_column = $sql_qtable[$type]['column'];
+	if (isset($sql_qtable[$type]['having_having'])) $sql_having_having = $sql_qtable[$type]['having_having'];
+	if (isset($sql_qtable[$type]['where'])) $sql_where = $sql_qtable[$type]['where'];
+	if (isset($sql_qtable[$type]['table'])) $sql_table = $sql_qtable[$type]['table'];
+	if (isset($sql_qtable[$type]['orderby'])) $sql_orderby = $sql_qtable[$type]['orderby'];
+
+	$heading = $text_table[$type]['heading'];
+	$desc = $text_table[$type]['desc'];
 
 	if ($when) {
 		if ($date == 'both') {
