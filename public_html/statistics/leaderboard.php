@@ -94,7 +94,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_table = "user_stat i";
 			$sql_column = "squares";
 		}
-		$heading = "Squares<br/>Photographed";
+		$heading = "Squares Photographed";
 		$desc = "different squares photographed";
 
 	} elseif ($type == 'geosquares') {
@@ -105,7 +105,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_table = "user_stat i";
 			$sql_column = "geosquares";
 		}
-		$heading = "Squares<br/>Geographed";
+		$heading = "Squares Geographed";
 		$desc = "different squares geographed (aka Personal Points)";
 
 	} elseif ($type == 'geographs') {
@@ -285,7 +285,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_table = "gridimage i ";
 		$sql_column = "COUNT(DISTINCT nateastings div 100, natnorthings div 100)";
 		$sql_where = "i.moderation_status='geograph' and nateastings div 1000 > 0";
-		$heading = "Centigraph<br/>Points";
+		$heading = "Centigraph Points";
 		$desc = "centigraph points awarded (centisquares photographed)";
 
 	} elseif ($type == 'content') {
@@ -306,7 +306,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_table = "user_stat i";
 			$sql_column = "depth,points";
 		}
-		$heading = "Geograph<br/>Points";
+		$heading = "Geograph Points";
 		$desc = "geograph points awarded";
 		$type = 'points';
 	} 

@@ -52,10 +52,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($type == 'squares' || $type == 'geosquares') {
 		if ($type == 'geosquares') {
 			$sql_where = " and i.moderation_status='geograph'";
-			$heading = "Squares<br/>Geographed";
+			$heading = "Squares Geographed";
 			$desc = "different squares geographed";
 		} else {
-			$heading = "Squares<br/>Photographed";
+			$heading = "Squares Photographed";
 			$desc = "different squares photographed";
 		}
 		//squares has to use a count(distinct ...) meaning cant have pending in same query... possibly could do with a funky subquery but probably would lower performance...
@@ -87,20 +87,20 @@ if (!$smarty->is_cached($template, $cacheid))
 		//no need to resort the combined array as should have imlicit ordering!
 	} elseif ($type == 'geographs') {
 		$sql_column = "sum(i.moderation_status='geograph')";
-		$heading = "New<br/>Geographs";
+		$heading = "New Geographs";
 		$desc = "'geograph' images submitted";
 	} elseif ($type == 'additional') {
 		$sql_column = "sum(i.moderation_status='geograph' and ftf = 0)";
-		$heading = "Non-First<br/>Geographs";
+		$heading = "Non-First Geographs";
 		$desc = "non first 'geograph' images submitted";
 	} elseif ($type == 'supps') {
 		$sql_column = "sum(i.moderation_status='accepted')";
-		$heading = "New<br/>Supplemental";
+		$heading = "New Supplemental";
 		$desc = "'supplemental' images submitted";
 	} elseif ($type == 'images') {
 		$sql_orderby = ',points desc';
 		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph') as points, sum(i.moderation_status in ('geograph','accepted'))";
-		$heading = "New<br/>Images";
+		$heading = "New Images";
 		$desc = "images submitted";
 	} elseif ($type == 'test_points') {
 		$sql_column = "sum((i.moderation_status = 'geograph') + ftf + 1)";
@@ -165,11 +165,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
 		$sql_column = "COUNT(DISTINCT nateastings div 100, natnorthings div 100)";
 		$sql_where = "and i.moderation_status='geograph' and nateastings div 1000 > 0";
-		$heading = "Centigraph<br/>Points";
+		$heading = "Centigraph Points";
 		$desc = "centisquares photographed";
 	} else { #if ($type == 'points') {
 		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph')";
-		$heading = "New<br/>Geograph<br/>Points";
+		$heading = "New Geograph Points";
 		$desc = "geograph points awarded";
 		$type = 'points';
 	} 
