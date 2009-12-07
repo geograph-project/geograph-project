@@ -184,8 +184,8 @@
 
 	<div class="fieldnotes"><span style="color:red">Note: HTML code will be removed, 
 	however basic URLs will be autolinked.</span><br/>
-	TIP: use <span style="color:blue">[[TQ7506]]</span> or 
-	<span style="color:blue">[[5463]]</span> to link to a Grid Square or another Image.
+	TIP: use <span style="color:blue">[[TPT2769]]</span> or 
+	<span style="color:blue">[[34]]</span> to link to a grid square or an image.
 	</div>
 
 
