@@ -2,7 +2,7 @@
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
-<h2>Top {$limit} Leaderboard :: {$heading|replace:'<br/>':' '}</h2>
+<h2>Top {$limit} Leaderboard :: {$heading}</h2>
 
 <p>Variation: {foreach from=$types item=t key=key}
 [{if $t == $type}<b>{$typenames.$key}</b>{else}<a href="/statistics/leaderboard.php?type={$t}{$extralink}">{$typenames.$key}</a>{/if}]
