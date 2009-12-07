@@ -106,7 +106,6 @@
 	
 	<div class="fieldnotes">To setup or change your Avatar image, goto {external href="http://www.gravatar.com" text="gravatar.com" target="_blank"} and use the same email address set above.</div>
 	
-	{if $errors.nickname}</div>{/if}
 </div>
 
 </fieldset>
@@ -273,7 +272,7 @@
 	<label for="sortBy" class="nowrap">Forum Sort Order</label>
 	
 	<select name="sortBy" id="sortBy" size="1">
-	 	<option value="0">Latest Replies
+	 	<option value="0">Latest Replies</option>
 	 	<option value="1" {if $profile->getForumSortOrder() eq 1}selected{/if}>New Topics</option>
 	 </select>
 	 
