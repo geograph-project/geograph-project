@@ -387,6 +387,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 
 	$smarty->assign('types', array('points','geosquares','images','depth'));
+	$smarty->assign('typenames', array('points','geosquares','images','depth'));
 	
 	
 	$extra = array();

@@ -5,8 +5,8 @@
 
 <h2>Weekly Leaderboard :: {$heading}</h2>
 	
-<p><i>Variation</i>: {foreach from=$types item=t}
-[{if $t == $type}<b>{$type}</b>{else}<a href="/statistics/moversboard.php?type={$t}">{$t}</a>{/if}]
+<p><i>Variation</i>: {foreach from=$types item=t key=key}
+[{if $t == $type}<b>{$typenames.$key}</b>{else}<a href="/statistics/moversboard.php?type={$t}">{$typenames.$key}</a>{/if}]
 {/foreach} <a href="/help/sitemap#users">more...</a></p>
 
 <p>Here is a list of contributors in the past 7 days, ordered by
