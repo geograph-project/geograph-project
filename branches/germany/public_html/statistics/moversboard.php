@@ -46,6 +46,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	/////////////
 	// in the following code 'geographs' is used a column for legacy reasons, but dont always represent actual geographs....
 	$sql_column = '';
+	$sql_denom = '';
 	$sql_orderby = '';
 	$sql_table = " gridimage as i ";
 	$sql_where = '';
@@ -108,7 +109,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "G-Points";
 		$desc = "test points";
 	} elseif ($type == 'depth') {
-		$sql_column = "count(*)/count(distinct grid_reference)";
+		#$sql_column = "count(*)/count(distinct grid_reference)";
+		$sql_column = "count(*)";
+		$sql_denom = "count(distinct grid_reference)";
 		$sql_table = " gridimage_search i ";
 		$heading = "Depth";
 		$desc = "depth score";
@@ -129,30 +132,38 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_table = " gridimage_search i ";
 		$heading = "Days";
 		$desc = "different days";
-        } elseif ($type == 'antispread') {
-                //we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
-                $sql_column = "count(*)/count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )";
+	} elseif ($type == 'antispread') {
+		//we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
+		#$sql_column = "count(*)/count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )";
+		$sql_column = "count(*)";
+		$sql_denom = "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )";
 		$sql_table = " gridimage_search i ";
-                $heading = "AntiSpread Score";
-                $desc = "antispread score (images/hectads)";
-        } elseif ($type == 'spread') {
-                //we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
-                $sql_column = "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )/count(*)";
-                $sql_table = " gridimage_search i ";
-                $heading = "Spread Score";
-                $desc = "spread score (hectads/images)";
+		$heading = "AntiSpread Score";
+		$desc = "antispread score (images/hectads)";
+	} elseif ($type == 'spread') {
+		//we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
+		#$sql_column = "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )/count(*)";
+		$sql_column = "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )";
+		$sql_denom = "count(*)";
+		$sql_table = " gridimage_search i ";
+		$heading = "Spread Score";
+		$desc = "spread score (hectads/images)";
 	} elseif ($type == 'classes') {
 		$sql_column = "count(distinct imageclass)";
 		$sql_table = " gridimage_search i ";
 		$heading = "Categories";
 		$desc = "different categories";
 	} elseif ($type == 'clen') {
-		$sql_column = "avg(length(comment))";
+		#$sql_column = "avg(length(comment))";
 		$sql_table = " gridimage_search i ";
+		$sql_denom = "count(*)";
+		$sql_column = "sum(length(comment))";
 		$heading = "Average Description Length";
 		$desc = "average length of the description";
 	} elseif ($type == 'tlen') {
-		$sql_column = "avg(length(title))";
+		#$sql_column = "avg(length(title))";
+		$sql_column = "sum(length(title))";
+		$sql_denom = "count(*)";
 		$sql_table = " gridimage_search i ";
 		$heading = "Average Title Length";
 		$desc = "average length of the title";
@@ -178,16 +189,25 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('type', $type);
 	
 	if ($sql_column) {
+		if ($sql_denom !== '') {
+			#$sql_column .=  ',' . $sql_denom . ' as denom,geographs/denom as average';
+			$sql_column =  $sql_column . ' as num,' . $sql_denom . ' as denom,('.$sql_column.')/('.$sql_denom.') as geographs';
+			$sql_ordermain = 'geographs';
+		} else {
+			$sql_column = $sql_column . " as geographs";
+			$sql_ordermain = 'geographs';
+		}
+
 		$sql_pending = (strpos($sql_table,'_search') === FALSE)?"sum(i.moderation_status='pending')":'0';
 		//we want to find all users with geographs/pending images 
 		$sql="select i.user_id,u.realname,
-		$sql_column as geographs, 
+		$sql_column, 
 		$sql_pending as pending
 		from $sql_table left join user as u using(user_id) 
 		where i.submitted > date_sub(now(), interval 7 day) $sql_where
 		group by i.user_id 
 		having (geographs > 0 or pending > 0)
-		order by geographs desc $sql_orderby, pending desc ";
+		order by $sql_ordermain desc $sql_orderby, pending desc ";
 		if ($_GET['debug'])
 			print $sql;
 		$topusers=$db->GetAssoc($sql);
@@ -198,22 +218,34 @@ if (!$smarty->is_cached($template, $cacheid))
 	$geographs = 0;
 	$pending = 0;
 	$points = 0;
+	$denom = 0;
+	$have_denom = false;
 	foreach($topusers as $user_id=>$entry)
 	{
-		if ($lastgeographs == $entry['geographs'])
+		$curval = $entry['geographs'];
+		if ($lastgeographs == $curval)
 			$topusers[$user_id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
 		else {
 			$topusers[$user_id]['ordinal'] = smarty_function_ordinal($i);
-			$lastgeographs = $entry['geographs'];
+			$lastgeographs = $curval;
 		}
 		$i++;
-		$geographs += $entry['geographs'];
+		if (isset($entry['denom'])) {
+			$denom += $entry['denom'];
+			$geographs += $entry['num'];
+			$have_denom = true;
+		} else {
+			$geographs += $entry['geographs'];
+		}
 		$pending += $entry['pending'];
 		$points += $entry['points'];
 		if (empty($entry['points'])) $topusers[$user_id]['points'] = '';
 	}	
 	
 	
+	if ($have_denom) {
+		$geographs /= $denom;
+	}
 	$smarty->assign('geographs', $geographs);
 	$smarty->assign('pending', $pending);
 	$smarty->assign('points', $points);
