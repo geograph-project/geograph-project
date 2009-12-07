@@ -1,20 +1,20 @@
-{assign var="page_title" value="Email Address Change"}
+{assign var="page_title" value="Neue E-Mail-Adresse"}
 {include file="_std_begin.tpl"}
 
-<h2>Email Address Change</h2>
+<h2>Neue E-Mail-Adresse</h2>
 
 {dynamic}
 
 {if $confirmation_status eq "ok"}
-	<p>Thankyou, your profile will now use your new email address.</p>
+	<p>Vielen Dank, ab jetzt wird die neue E-Mail-Adresse verwendet.</p>
 	
 
 {elseif $confirmation_status eq "alreadycomplete"}
-	<p>You have already confirmed this email address change.</p>
+	<p>Diese E-Mail-Adresse wurde bereits bestätigt!</p>
 
 {else}
-	<p>Sorry, there was a problem confirming your email address changes.
-	Please <a href="contact.php">contact us</a> if the problem persists.</p>
+	<p>Bei der Bestätigung der neuen E-Mail-Adresse ist ein Problem aufgetreten.
+	Wenn das Problem fortbesteht, bitten wir um <a href="contact.php">Rückmeldung</a>.</p>
 {/if}
 
 {/dynamic}

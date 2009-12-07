@@ -10,16 +10,16 @@
 
  
 <fieldset>
-<legend>Basic Information</legend>
+<legend>Allgemeine Informationen</legend>
 
 <div class="field">
 	{if $errors.realname}<div class="formerror"><p class="error">{$errors.realname}</p>{/if}
 	 
-	<label for="realname">Real Name:</label>
+	<label for="realname">Realname:</label>
 	<input type="text" id="realname" name="realname" value="{$profile->realname|escape:'html'}"/>
 	
-	<div class="fieldnotes">Your real name is used to give you attribution
-	whenever your photographs are displayed.</div>
+	<div class="fieldnotes">Der Realname wird benötigt, damit wir
+	den Urheber der Bilder angeben können.</div>
 	
 	{if $errors.realname}</div>{/if}
 </div>
@@ -29,11 +29,11 @@
 
 	{if $errors.nickname}<div class="formerror"><p class="error">{$errors.nickname}</p>{/if}
 	
-	<label for="nickname">Nick Name:</label>
+	<label for="nickname">Kurzname (Nick):</label>
 	<input type="text" id="nickname" name="nickname" value="{$profile->nickname|escape:'html'}"/>
 	
-	<div class="fieldnotes">Your nickname can be used to login and is also 
-	used to identify you on the forums.</div>
+	<div class="fieldnotes">Der Kurzname kann zum Einloggen verwendet werden und
+	wird in Forendiskussionen angezeigt.</div>
 	
 	{if $errors.nickname}</div>{/if}
 </div>
@@ -46,7 +46,7 @@
  
 	{if $errors.email}<div class="formerror"><p class="error">{$errors.email}</p>{/if}
 	
-	<label for="email">Email:</label>
+	<label for="email">E-Mail:</label>
 	<input type="text" id="email" name="email" value="{$profile->email|escape:'html'}" size="35"/>
 	<script type="text/javascript">{literal}
 		// really ugly 'fix' for http://code.google.com/p/chromium/issues/detail?id=1854
@@ -69,27 +69,26 @@
 			document.getElementById('email').disabled = false;
 		}
 	{/literal}</script>
-	  <div class="fieldnotes">We need your email address to
-	  keep you notified about any changes requested or made to your
-	  submissions. It also allows anyone who is interested in your photos
-	  to contact you, but you can control whether you make your address
-	  public or not...</div>
+	  <div class="fieldnotes">Die E-Mail-Adresse wird für Benachrichtigungen benötigt,
+	  wenn es Änderungswünsche zu Bildern gibt. Außerdem erlaubt sie Leuten, die an den
+	  Bildern interessiert sind, die Kontaktaufnahme; ob die Adresse öffentlich sichtbar sein soll,
+	  kann eingestellt werden.</div>
 	
 	{if $errors.email}</div>{/if}
 	
     <fieldset>
-    <legend>Email privacy</legend>
+    <legend>E-Mail: Privatsphäre</legend>
     
 	    <input {if $profile->public_email eq 0}checked{/if} type="radio" name="public_email" id="public_email_no" value="0">
-	    <label for="public_email_no">Hide my email address 
-	    (people can still contact you through the site, but will not discover
-	    your email address unless you reply).
+	    <label for="public_email_no">E-Mail-Adresse verstecken
+	    (Die Kontaktaufnahme über die Seite ist noch immer möglich, die E-Mail-Adresse wird aber nicht angezeigt; Achtung:
+	    Mit einer <b>Antwort</b>-Mail auf die empfangene Kontaktmail gibt man natürlich seine E-Mail-Adresse preis!)
 	    </label>
 	    
 	    <br/>
 	    
 	    <input {if $profile->public_email eq 1}checked{/if} type="radio" name="public_email" id="public_email_yes" value="1">
-	    <label for="public_email_yes">Show my email address. 
+	    <label for="public_email_yes">E-Mail-Adresse anzeigen 
 	    </label>
    
     
@@ -104,43 +103,42 @@
 	<label for="gravatar">Gravatar:</label>
 	<img src="http://www.gravatar.com/avatar/{$profile->md5_email}?r=G&amp;d=http://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=30&amp;s=50" align="left" alt="{$profile->realname|escape:'html'}'s Gravatar" style="padding-right:10px"/>
 	
-	<div class="fieldnotes">To setup or change your Avatar image, goto {external href="http://www.gravatar.com" text="gravatar.com" target="_blank"} and use the same email address set above.</div>
+	<div class="fieldnotes">Um ein Avatar einzurichten oder zu ändern, bitte {external href="http://www.gravatar.com" text="gravatar.com" target="_blank"} besuchen und dabei die oben angegebene E-Mail-Adresse verwenden.</div>
 	
-	{if $errors.nickname}</div>{/if}
 </div>
 
 </fieldset>
 
 <fieldset>
-<legend>Change Password</legend>
-<p style="color:green">You only need to fill out this section if you wish to change your password</p>
+<legend>Passwort ändern</legend>
+<p style="color:green">Dieser Abschnitt muss nur ausgefüllt werden, wenn das Passwort geändert werden soll.</p>
 
 <div class="field">
 	{if $errors.oldpassword}<div class="formerror"><p class="error">{$errors.oldpassword}</p>{/if}
-		<label for="oldpassword">Current password:</label>
+		<label for="oldpassword">Aktuelles Passwort:</label>
 		<input id="oldpassword" name="oldpassword" type="password" value="{$profile->oldpassword|escape:'html'}" size="35"/>
-		<div class="fieldnotes">Please enter your current password.</div>
+		<div class="fieldnotes">Bitte das alte, zu ändernde Passwort eingeben.</div>
 	{if $errors.oldpassword}</div>{/if}
 </div>
 <div class="field">
 	{if $errors.password1}<div class="formerror"><p class="error">{$errors.password1}</p>{/if}
-		<label for="password1">New password:</label>
+		<label for="password1">Neues Passwort:</label>
 		<input id="password1" name="password1" type="password" value="{$profile->password1|escape:'html'}" size="35"/>
-		<div class="fieldnotes">Enter your new password here. Leave empty if you want to keep your old password.</div>
+		<div class="fieldnotes">Bitte hier neues Passwort eingeben. Um das alte Passwort beizubehalten, bitte leer lassen.</div>
 	{if $errors.password1}</div>{/if}
 </div>
 <div class="field">
 	{if $errors.password2}<div class="formerror"><p class="error">{$errors.password2}</p>{/if}
-		<label for="password2">Confirm the new password:</label>
+		<label for="password2">Neues Passwort wiederholen:</label>
 		<input id="password2" name="password2" type="password" value="{$profile->password2|escape:'html'}" size="35"/>
-		<div class="fieldnotes">Enter your new password here in order to avoid spelling errors.</div>
+		<div class="fieldnotes">Um Tippfehler auszuschließen, bitte das neue Passwort erneut eingeben.</div>
 	{if $errors.password2}</div>{/if}
 </div>
 
 </fieldset>
 
 <fieldset>
-<legend>More about you</legend>
+<legend>Persönliche Angaben</legend>
 
 
 <div class="field">
@@ -148,11 +146,11 @@
 	{if $errors.website}<div class="formerror"><p class="error">{$errors.website}</p>{/if}
 	
 	
-	<label for="website" class="nowrap">Your website:</label>
+	<label for="website" class="nowrap">Website:</label>
 	<input type="text" id="website" name="website" value="{$profile->website|escape:'html'}" size="50"/>
 
-	<div class="fieldnotes">If you wish, tell us the URL of your personal 
-	website or blog to link from your profile page. </div>
+	<div class="fieldnotes">Hier kann die Adresse einer persönlichen Website oder Blogs o.ä. angegeben werden.
+	Auf der Profilseite wird dann ein Link darauf gesetzt.</div>
 	
 	
 	{if $errors.website}</div>{/if}
@@ -163,10 +161,10 @@
 
 	{if $errors.grid_reference}<div class="formerror"><p class="error">{$errors.grid_reference}</p>{/if}
 	
-	<label for="grid_reference">Home grid square:</label>
-	<input type="text" id="grid_reference" name="grid_reference" value="{$profile->grid_reference|escape:'html'}" size="6" />
+	<label for="grid_reference">Heimatquadrat:</label>
+	<input type="text" id="grid_reference" name="grid_reference" value="{$profile->grid_reference|escape:'html'}" size="8" />
 	
-	<div class="fieldnotes">If you wish, tell us the OS grid reference of your home.</div>
+	<div class="fieldnotes">Hier können die Herkunftskoordinaten eingetragen werden.</div>
 
 	{if $errors.grid_reference}</div>{/if}
 </div>
@@ -177,128 +175,130 @@
 
 <div class="field">
 
-	<label for="about_yourself">About Yourself:</label>
+	<label for="about_yourself">Persönliche Anmerkungen für die Profilseite:</label>
 	
 	 
 	<textarea name="about_yourself" id="about_yourself" rows="10" cols="85">{$profile->about_yourself|escape:'html'}</textarea>
 
-	<div class="fieldnotes"><span style="color:red">Note: HTML code will be removed, 
-	however basic URLs will be autolinked.</span><br/>
-	TIP: use <span style="color:blue">[[TQ7506]]</span> or 
-	<span style="color:blue">[[5463]]</span> to link to a Grid Square or another Image.
+	<div class="fieldnotes"><span style="color:red">Anmerkung: HTML-Code wird entfernt,
+	Adressen/URLs werden aber in Links umgewandelt.</span><br/>
+	Tipp: Mit <span style="color:blue">[[TPT2769]]</span> oder
+	<span style="color:blue">[[34]]</span> können Planquadrate oder Bilder verlinkt werden.
 	</div>
 
 
 </div>
 
 
-<div class="field">
+<!--div class="field">
 
 
-	<label for="age_group">Age Group:</label>
+	<label for="age_group">Altersgruppe:</label>
 
 	<select name="age_group" id="age_group"> 
 	<option value=""></option>
-	<option value="11" {if $profile->age_group == 11} selected="selected"{/if}>11 or under</option>
+	<option value="11" {if $profile->age_group == 11} selected="selected"{/if}>11 oder jünger</option>
 	<option value="18" {if $profile->age_group == 18} selected="selected"{/if}>12-18</option>
 	<option value="25" {if $profile->age_group == 25} selected="selected"{/if}>19-25</option>
 	<option value="50" {if $profile->age_group == 50} selected="selected"{/if}>26-50</option>
 	<option value="70" {if $profile->age_group == 70} selected="selected"{/if}>51-70</option>
-	<option value="90" {if $profile->age_group == 90} selected="selected"{/if}>71+</option>
+	<option value="90" {if $profile->age_group == 90} selected="selected"{/if}>71 oder älter</option>
 	</select>
 	
-	<div class="fieldnotes">This information is not made publicly visible, but
-	it provides useful demographic information to help us plan future features.</div>
+	<div class="fieldnotes">Diese Information ist nicht öffentlich sichtbar, sondern
+	hilft uns abzuschätzen, welche Neuerungen gewünscht sein könnten.</div>
 	
-</div> 
+</div--> 
 
 
 </fieldset>
 
 <fieldset>
-<legend>Site Preferences</legend>
+<legend>Einstellungen</legend>
  
 
 <div class="field"> 
-	<label for="message_sig" class="nowrap">Message Signature</label>
+	<label for="message_sig">Signatur für Mitteilungen:</label>
 	
 	<textarea name="message_sig" id="message_sig" rows="4" cols="60">{$profile->message_sig|escape:'html'}</textarea>
 
 	 
-	<div class="fieldnotes">Automatically include this text in messages sent though the site. <br/>
-	(250 chars max) 
-	<input type="button" value="Use Suggested Text" onclick="this.form.message_sig.value='-- '+this.form.realname.value+' http://{$http_host}/profile/{$user->user_id}'"/></div>
+	<div class="fieldnotes">Diesen Text automatisch an Mitteilungen anhängen, die über die Seite verschickt werden.<br/>
+	(bis zu 250 Zeichen) 
+	<input type="button" value="Signatur vorschlagen" onclick="this.form.message_sig.value='-- '+this.form.realname.value+' http://{$http_host}/profile/{$user->user_id}'"/></div>
 </div>
 
 
 <div class="field"> 
-	<label for="ticket_public" class="nowrap">Ticket Anonymity</label>
+	<label for="ticket_public">Anonymität in Tickets:</label>
 	
 	<select name="ticket_public" id="ticket_public">
-		<option value="no">Do not disclose my name</option>
-		<option value="owner" {if $profile->ticket_public eq 'owner'} selected{/if}>Show my name to the photo owner</option>
-		<option value="everyone" {if $profile->ticket_public eq 'everyone'} selected{/if}>Show my name against the ticket</option>
+		<option value="no">Meinen Namen nicht anzeigen.</option>
+		<option value="owner" {if $profile->ticket_public eq 'owner'} selected{/if}>Meinen Namen nur dem Einreicher des Bilds mitteilen.</option>
+		<option value="everyone" {if $profile->ticket_public eq 'everyone'} selected{/if}>Meinen Namen anzeigen.</option>
 	</select>
 	 
-	<div class="fieldnotes">Change how your name is disclosed on tickets your create from now on.</div>
+	<div class="fieldnotes">Hier kann eingestellt werden, ob bei Änderungsvorschlägen von nun an der Name genannt werden soll.</div>
 </div>
 
 
 <div class="field"> 
-	<label for="ticket_public_change" class="nowrap">Anonymity for previous tickets</label>
-	<br/>
-	<select name="ticket_public_change" id="ticket_public_change" style="margin-left:10em;">
-		<option value="">- no change - leave previous tickets as is</option>
-		<option value="no">Do not disclose my name</option>
-		<option value="owner">Show my name to the photo owner</option>
-		<option value="everyone">Show my name against the ticket</option>
+	<label for="ticket_public_change">Anonymität in alten Tickets:</label>
+	<select name="ticket_public_change" id="ticket_public_change">
+		<option value="">Keine Änderung: Alte Tickets nicht ändern.</option>
+		<option value="no">Meinen Namen nicht anzeigen.</option>
+		<option value="owner">Meinen Namen nur dem Einreicher des Bilds mitteilen.</option>
+		<option value="everyone">Meinen Namen anzeigen.</option>
 	</select>
 	 
-	<div class="fieldnotes">Optionally use this box to change all your previous tickets to a new setting.</div>
+	<div class="fieldnotes">Dieser Kasten kann verwendet werden, um die Anonymitäts-Einstellungen aller früheren Änderungsvorschläge zu ändern.</div>
 </div>
 
 
 <div class="field"> 
-	<label for="ticket_option" class="nowrap">Trouble Ticket Emails</label>
-	
-	<select name="ticket_option" id="ticket_option" size="1"> 
-		{html_options options=$ticket_options selected=$profile->ticket_option}
+	<label for="ticket_option">Benachrichtigungs-Mails für Tickets:</label>
+	<select name="ticket_option" id="ticket_option" size="1">
+		<option value="all"{if $profile->ticket_option eq 'all'} selected{/if}>Benachrichtigungen für alle Änderungsvorschläge</option>
+		<option value="major"{if $profile->ticket_option eq 'major'} selected{/if}>Nur größere Änderungen</option>
+		<!--option value="digest"{if $profile->ticket_option eq 'digest'} selected{/if}>Receive Digest emails Once per Day</option-->
+		<option value="none"{if $profile->ticket_option eq 'none'} selected{/if}>Keine Anfangsbenachrichtigung</option>
 	</select>
 	 
-	<div class="fieldnotes">Allows opting out of receiving initial notification of certain suggestions. Note you however receive follow up comments and notification of the closure - in-case there is information needed by a moderator.</div>
+	<div class="fieldnotes">Hier kann der Empfang von Benachrichtigungs-Mails für bestimmte Änderungsvorschläge deaktiviert werden. Allerdings
+	werden bei Kommentaren und beim Schließen von Tickets weiterhin Mails versandt (für den Fall, dass ein Moderator Informationen benötigt).</div>
 </div>
 
 
 <div class="field"> 
-	<label for="sortBy" class="nowrap">Forum Sort Order</label>
+	<label for="sortBy" class="nowrap">Foren-Sortierung:</label>
 	
 	<select name="sortBy" id="sortBy" size="1">
-	 	<option value="0">Latest Replies
-	 	<option value="1" {if $profile->getForumSortOrder() eq 1}selected{/if}>New Topics</option>
+	 	<option value="0">Neue Beiträge</option>
+	 	<option value="1" {if $profile->getForumSortOrder() eq 1}selected{/if}>Neue Themen</option>
 	 </select>
 	 
-	 <div class="fieldnotes">The default order you will see recent discussions.</div>
+	 <div class="fieldnotes">In der Standardeinstellung werden neue Themen angezeigt.</div>
 </div>
 
 <div class="field"> 
-	<label for="search_results" class="nowrap">Search Results</label>
+	<label for="search_results" class="nowrap">Suchergebnisse:</label>
 	<select name="search_results" id="search_results" style="text-align:right" size="1"> 
 		{html_options values=$pagesizes output=$pagesizes selected=$profile->search_results}
-	</select> per page
+	</select> pro Seite
 	
-	<div class="fieldnotes">Default number of search results per page.</div>
+	<div class="fieldnotes">Voreinstellung der Anzahl von Suchergebnissen je Seite.</div>
 </div>
   
   
 <div class="field"> 
   
-	<label for="slideshow_delay" class="nowrap">Slide Show Delay</label>
+	<label for="slideshow_delay" class="nowrap">Dia-Zeit:</label>
 	
 	<select name="slideshow_delay" id="slideshow_delay" style="text-align:right" size="1">
 		{html_options values=$delays output=$delays selected=$profile->slideshow_delay}
-	</select> seconds
+	</select> Sekunden
 	
-	<div class="fieldnotes">Number of seconds slides are shown for.</div>  
+	<div class="fieldnotes">Wie lang soll ein Bild im Dia-Show-Modus angezeigt werden?</div>
 </div>
 
 
@@ -306,35 +306,36 @@
 
 
 
- 	<input type="submit" name="savechanges" value="Save Changes"/>
- 	<input type="submit" name="cancel" value="Cancel"/>
+ 	<input type="submit" name="savechanges" value="Änderungen speichern"/>
+ 	<input type="submit" name="cancel" value="Abbrechen"/>
 
 {if ($profile->stats.squares gt 20) || ($profile->rights && $profile->rights ne 'basic')}
 	<br/><br/><br/><br/><br/><br/>
 	<fieldset>
-	<legend>User Roles</legend>
+	<legend>Funktionen bei Geograph</legend>
 
 
 	<div class="field"> 
 
 		<label for="moderator" class="nowrap">Moderator</label>
 		{if strpos($profile->rights,'moderator') > 0}
-			<input type="button" value="Relinquish moderator rights" onclick="location.href = '/admin/moderation.php?relinquish=1';"/>
+			<input type="button" value="Moderatorenrechte abgeben" onclick="location.href = '/admin/moderation.php?relinquish=1';"/>
 
-			<div class="fieldnotes">If you are no longer able to help out with moderation then click the button above. (you will have to reapply)</div>  
+			<div class="fieldnotes">Wenn es nicht mehr möglich ist, uns bei der Moderation zu unterstützen, bitte obigen Knopf drücken.
+			Um danach wieder Moderator zu werden, ist wieder eine "Bewerbung" erforderlich.</div>  
 		{else}
 			{if strpos($profile->rights,'traineemod') > 0}
-				<input type="button" value="Visit Demo Moderation Page" onclick="location.href = '/admin/moderation.php?apply=1';"/>
+				<input type="button" value="Demo-Moderations-Seite besuchen" onclick="location.href = '/admin/moderation.php?apply=1';"/>
 			{else}
-				<input type="button" value="Apply to become a moderator" onclick="location.href = '/admin/moderation.php?apply=1';"/>
+				<input type="button" value="Ich möchte Moderator werden" onclick="location.href = '/admin/moderation.php?apply=1';"/>
 			{/if}
 
 			<div class="fieldnotes">
 			{if strpos($profile->rights,'traineemod') > 0}
-				or <input type="button" value="Cancel Application" onclick="location.href = '/admin/moderation.php?relinqush=1';"/><br/><br/>
+				oder <input type="button" value="Bewerbung abbrechen" onclick="location.href = '/admin/moderation.php?relinqush=1';"/><br/><br/>
 			{/if}
 
-			If you have an interest in helping out with moderation, then click the button above to try a dummy moderation run. There is no commitment to complete the whole application.</div>  
+			Falls Interesse daran besteht, uns als Moderator zu unterstützen, bitte obigen Knopf drücken um eine Demo-Moderation durchzuführen.</div>
 		{/if}
 	</div>
 
@@ -342,7 +343,7 @@
 	<div class="field"> 
 
 		<label for="moderator" class="nowrap">Tickets</label>
-			<input type="button" value="Relinqush ticket moderator rights" onclick="location.href = '/admin/tickets.php?relinqush=1';"/>
+			<input type="button" value="Ticket-Moderatorenrechte abgeben" onclick="location.href = '/admin/tickets.php?relinqush=1';"/>
 
 	</div>
 	{/if}
