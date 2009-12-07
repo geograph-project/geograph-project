@@ -4,8 +4,8 @@
 
 <h2>Top {$limit} Leaderboard :: {$heading|replace:'<br/>':' '}</h2>
 
-<p>Variation: {foreach from=$types item=t}
-[{if $t == $type}<b>{$type}</b>{else}<a href="/statistics/leaderboard.php?type={$t}{$extralink}">{$t}</a>{/if}]
+<p>Variation: {foreach from=$types item=t key=key}
+[{if $t == $type}<b>{$typenames.$key}</b>{else}<a href="/statistics/leaderboard.php?type={$t}{$extralink}">{$typenames.$key}</a>{/if}]
 {/foreach} <a href="/help/sitemap#users">more...</a></p>
 
 <p>Listed below are the top {$limit} contributors based on number of

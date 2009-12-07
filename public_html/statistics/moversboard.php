@@ -222,6 +222,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('cutoff_time', time()-86400*7);
 	
 	$smarty->assign('types', array('points','geosquares','images','depth'));
+	$smarty->assign('typenames', array('points','geosquares','images','depth'));
 	
 	//lets find some recent photos
 	new RecentImageList($smarty);
