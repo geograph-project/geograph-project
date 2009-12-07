@@ -5,8 +5,8 @@
 
 <h2>Weekly Leaderboard :: {$heading}</h2>
 	
-<p><i>Variation</i>: {foreach from=$types item=t}
-[{if $t == $type}<b>{$type}</b>{else}<a href="/statistics/moversboard.php?type={$t}">{$t}</a>{/if}]
+<p><i>Variation</i>: {foreach from=$types item=t key=key}
+[{if $t == $type}<b>{$typenames.$key}</b>{else}<a href="/statistics/moversboard.php?type={$t}">{$typenames.$key}</a>{/if}]
 {/foreach} <a href="/help/sitemap#users">more...</a></p>
 
 <p>Here is a list of contributors in the past 7 days, ordered by
@@ -32,7 +32,7 @@ how much each person will climb when their pictures are moderated!{/if}</p>
 {/foreach}
 
 
-<tr class="totalrow"><th>&nbsp;</th><th>Totals</th><th align="right">{$geographs}</th>{if $points}<th align="right">{$points}</th>{/if}{if $pending}<th align="right" style="font-size:0.8em">({$pending} pending)</th>{/if}</tr></thead>
+<tr class="totalrow"><th>&nbsp;</th><th>Totals</th><th align="right">{$geographs|string_format:"%.5g"}</th>{if $points}<th align="right">{$points}</th>{/if}{if $pending}<th align="right" style="font-size:0.8em">({$pending} pending)</th>{/if}</tr></thead>
 </tbody>
 </table>
 
