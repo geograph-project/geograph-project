@@ -631,9 +631,10 @@ class GridImageTroubleTicket
 		
 		$image=& $this->_getImage();
 		
-		$ttype = ($this->type == 'minor')?' Minor':'';
-		$msg['subject']="[Geograph]$ttype Suggestion for {$image->grid_reference} {$image->title} [#{$this->gridimage_ticket_id}]";
+		$ttype = ($this->type == 'minor')?'Kleiner Änderungsvorschlag für / Minor suggestion for':'Änderungsvorschlag für / Suggestion for';
+		$msg['subject']="$ttype {$image->grid_reference} {$image->title} [#{$this->gridimage_ticket_id}]";
 		
+		#FIXME translate body
 		$msg['body']="Re: {$image->grid_reference} {$image->title}\n";
 		$msg['body'].="http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$this->gridimage_id}\n";
 		$msg['body'].="---------------------------------------\n";
@@ -654,8 +655,14 @@ class GridImageTroubleTicket
 	*/
 	function _sendMail($to, &$msg)
 	{
-		mail($to, $msg['subject'], $msg['body'],
-				"From: Geograph - Reply Using Link <mail@hlipp.de>", "-f mail@hlipp.de"); #FIXME conf var
+		#mail($to, mb_encode_mimeheader("[geograph-de] ".$msg['subject']), $msg['body'],
+		mail($to, mb_encode_mimeheader("[geograph-de] ".$msg['subject'], 'iso-8859-1', 'Q'), $msg['body'],
+			"From: Geograph - Reply Using Link <mail@hlipp.de>\n".
+			"MIME-Version: 1.0\n".
+			"Content-Type: text/plain; charset=iso-8859-1\n".
+			"Content-Disposition: inline\n".
+			"Content-Transfer-Encoding: 8bit",
+			"-f mail@hlipp.de"); #FIXME conf var
 		
 	}
 	
