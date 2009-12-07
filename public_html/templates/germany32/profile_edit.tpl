@@ -106,7 +106,6 @@
 	
 	<div class="fieldnotes">To setup or change your Avatar image, goto {external href="http://www.gravatar.com" text="gravatar.com" target="_blank"} and use the same email address set above.</div>
 	
-	{if $errors.nickname}</div>{/if}
 </div>
 
 </fieldset>
@@ -164,7 +163,7 @@
 	{if $errors.grid_reference}<div class="formerror"><p class="error">{$errors.grid_reference}</p>{/if}
 	
 	<label for="grid_reference">Home grid square:</label>
-	<input type="text" id="grid_reference" name="grid_reference" value="{$profile->grid_reference|escape:'html'}" size="6" />
+	<input type="text" id="grid_reference" name="grid_reference" value="{$profile->grid_reference|escape:'html'}" size="8" />
 	
 	<div class="fieldnotes">If you wish, tell us the OS grid reference of your home.</div>
 
@@ -192,7 +191,7 @@
 </div>
 
 
-<div class="field">
+<!--div class="field">
 
 
 	<label for="age_group">Age Group:</label>
@@ -210,7 +209,7 @@
 	<div class="fieldnotes">This information is not made publicly visible, but
 	it provides useful demographic information to help us plan future features.</div>
 	
-</div> 
+</div--> 
 
 
 </fieldset>
@@ -225,7 +224,7 @@
 	<textarea name="message_sig" id="message_sig" rows="4" cols="60">{$profile->message_sig|escape:'html'}</textarea>
 
 	 
-	<div class="fieldnotes">Automatically include this text in messages sent though the site. <br/>
+	<div class="fieldnotes">Automatically include this text in messages sent through the site. <br/>
 	(250 chars max) 
 	<input type="button" value="Use Suggested Text" onclick="this.form.message_sig.value='-- '+this.form.realname.value+' http://{$http_host}/profile/{$user->user_id}'"/></div>
 </div>
@@ -240,7 +239,7 @@
 		<option value="everyone" {if $profile->ticket_public eq 'everyone'} selected{/if}>Show my name against the ticket</option>
 	</select>
 	 
-	<div class="fieldnotes">Change how your name is disclosed on tickets your create from now on.</div>
+	<div class="fieldnotes">Change how your name is disclosed on tickets you create from now on.</div>
 </div>
 
 
@@ -260,9 +259,12 @@
 
 <div class="field"> 
 	<label for="ticket_option" class="nowrap">Trouble Ticket Emails</label>
-	
-	<select name="ticket_option" id="ticket_option" size="1"> 
-		{html_options options=$ticket_options selected=$profile->ticket_option}
+	<br/>
+	<select name="ticket_option" id="ticket_option" size="1" style="margin-left:10em;">
+		<option value="all"{if $profile->ticket_option eq 'all'} selected{/if}>Notifications for all suggestions</option>
+		<option value="major"{if $profile->ticket_option eq 'major'} selected{/if}>Only Major suggestions</option>
+		<!--option value="digest"{if $profile->ticket_option eq 'digest'} selected{/if}>Receive Digest emails Once per Day</option-->
+		<option value="none"{if $profile->ticket_option eq 'none'} selected{/if}>No Initial Notifications</option>
 	</select>
 	 
 	<div class="fieldnotes">Allows opting out of receiving initial notification of certain suggestions. Note you however receive follow up comments and notification of the closure - in-case there is information needed by a moderator.</div>
@@ -273,7 +275,7 @@
 	<label for="sortBy" class="nowrap">Forum Sort Order</label>
 	
 	<select name="sortBy" id="sortBy" size="1">
-	 	<option value="0">Latest Replies
+	 	<option value="0">Latest Replies</option>
 	 	<option value="1" {if $profile->getForumSortOrder() eq 1}selected{/if}>New Topics</option>
 	 </select>
 	 
