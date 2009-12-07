@@ -851,7 +851,7 @@ EOT;
 		
 		
 		//unique nickname, since you can log in with it
-		if (isValidRealName($profile['nickname']))
+		if (isValidRealName($profile['nickname'])) // FIXME empty string!
 		{
 			//lets be sure it's unique
 			$sql='select * from user where nickname='.$db->Quote(stripslashes($profile['nickname']))." and user_id<>{$this->user_id} limit 1";
@@ -866,10 +866,11 @@ EOT;
 		else
 		{
 			$ok=false;
-			if (strlen($errors['nickname']))
-				$errors['nickname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
-			else
-				$errors['nickname']='Please enter a nickname for use on the forums';
+			#if (strlen($errors['nickname']))
+			#	$errors['nickname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+			#else
+			#	$errors['nickname']='Please enter a nickname for use on the forums';
+			$errors['nickname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
 		}
 
 		if (strlen($profile['password1'])) {
