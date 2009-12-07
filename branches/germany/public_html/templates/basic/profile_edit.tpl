@@ -191,7 +191,7 @@
 </div>
 
 
-<div class="field">
+<!--div class="field">
 
 
 	<label for="age_group">Age Group:</label>
@@ -209,7 +209,7 @@
 	<div class="fieldnotes">This information is not made publicly visible, but
 	it provides useful demographic information to help us plan future features.</div>
 	
-</div> 
+</div--> 
 
 
 </fieldset>
