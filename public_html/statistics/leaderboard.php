@@ -87,10 +87,16 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql_column = "count(*)";
 	$sql_having_having = '';
 	if ($maximum) {
-		$minimax = "between $minimum and $maximum";
+		if ($CONF['lang'] == 'de')
+			$minimax = "zwischen $minimum und $maximum";
+		else
+			$minimax = "between $minimum and $maximum";
 		$sql_minimax = "between $minimum and $maximum";
 	} else {
-		$minimax = "over $minimum";
+		if ($CONF['lang'] == 'de')
+			$minimax = "über $minimum";
+		else
+			$minimax = "over $minimum";
 		$sql_minimax = "> $minimum";
 	}
 
@@ -266,7 +272,97 @@ if (!$smarty->is_cached($template, $cacheid))
 		),
 	);
 
-	$text_table = array (
+	if ($CONF['lang'] == 'de') $text_table = array (
+		'squares' => array(
+			'heading' => "Fotografierte Quadrate",
+			'desc' => "der Anzahl verschiedener fotografierter Quadrate",
+		),
+		'geosquares' => array(
+			'heading' => "Quadrate mit Geobildern",
+			'desc' => "der Anzahl verschiedener Quadrate mit Geobildern (persönlicher Punkte)",
+		),
+		'geographs' => array(
+			'heading' => "Geobilder",
+			'desc' => "der Anzahl eingereichter Geobilder",
+		),
+		'additional' => array(
+			'heading' => "Zusätzliche Geobilder",
+			'desc' => "der Anzahl eingereichter Geobilder in schon fotografierten Quadraten",
+		),
+		'supps' => array(
+			'heading' => "Extrabilder",
+			'desc' => "der Anzahl eingereichter Extrabilder",
+		),
+		'images' => array(
+			'heading' => "Bilder",
+			'desc' => "der Anzahl eingereichter Bilder",
+		),
+		'test_points' => array(
+			'heading' => "G-Points",
+			'desc' => "test points",
+		),
+		'reverse_points' => array(
+			'heading' => "Dichte",
+			'desc' => "dem <b>ungefähren</b> Verhältnis von Bildern zu Punkten bei mehr als $minimum eingereichten Bildern",
+		),
+		'depth' => array(
+			'desc' => "der Dichte bei $minimax eingereichten Bildern",
+			'heading' => "Dichte",
+		),
+		'depth2' => array(
+			'heading' => "High Depth",
+			'desc' => "the depth score X images, and having submitted over $minimum images",
+		),
+		'myriads' => array(
+			'heading' => "100km-Quadrate",
+			'desc' => "der Anzahl unterschiedlicher 100km-Quadrate",
+		),
+		'antispread' => array(
+			'heading' => "AntiSpread Score",
+			'desc' => "antispread score (images/hectads)",
+		),
+		'spread' => array(
+			'heading' => "Spread Score",
+			'desc' => "spread score (hectads/images), and having submitted over $minimum images",
+		),
+		'hectads' => array(
+			'heading' => "10km-Quadrate",
+			'desc' => "der Anzahl unterschiedlicher 10km-Quadrate",
+		),
+		'days' => array(
+			'heading' => "Tage",
+			'desc' => "der Anzahl unterschiedlicher Tage",
+		),
+		'classes' => array(
+			'heading' => "Kategorien",
+			'desc' => "der Anzahl unterschiedlicher Kategorien",
+		),
+		'clen' => array(
+			'heading' => "Average Description Length",
+			'desc' => "average length of the description, and having submitted over $minimum images",
+		),
+		'tlen' => array(
+			'heading' => "Average Title Length",
+			'desc' => "average length of the title, and having submitted over $minimum images",
+		),
+		'category_depth' => array(
+			'heading' => "Category Depth",
+			'desc' => "the category depth score",
+		),
+		'centi' => array(
+		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
+			'heading' => "100m-Quadrate",
+			'desc' => "der Anzahl unterschiedlicher 100m-Quadrate",
+		),
+		'content' => array(
+			'heading' => "Content Items",
+			'desc' => "items submitted",
+		),
+		'points' => array(
+			'heading' => "Geograph-Punkte",
+			'desc' => "der Anzahl erreichter Geograph-Punkte",
+		),
+	); else $text_table = array (
 		'squares' => array(
 			'heading' => "Squares Photographed",
 			'desc' => "different squares photographed",
@@ -380,21 +476,35 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($when) {
 		if ($date == 'both') {
 			$sql_where .= " and imagetaken LIKE '$when%' and submitted LIKE '$when%'";
-			$desc .= ", <b>for images taken and submitted during ".getFormattedDate($when)."</b>";
+			if ($CONF['lang'] == 'de')
+				$desc .= " <b>für Bilder mit Aufnahme- und Einreichdatum ".getFormattedDate($when)."</b>";
+			else
+				$desc .= ", <b>for images taken and submitted during ".getFormattedDate($when)."</b>";
 		} else {
 			$column = ($date == 'taken')?'imagetaken':'submitted';
 			$sql_where .= " and $column LIKE '$when%'";
-			$title = ($date == 'taken')?'taken':'submitted'; 
-			$desc .= ", <b>for images $title during ".getFormattedDate($when)."</b>";
+			if ($CONF['lang'] == 'de') {
+				$title = ($date == 'taken')?'Aufnahmedatum':'Einreichdatum'; 
+				$desc .= " <b>für Bilder mit $title ".getFormattedDate($when)."</b>";
+			} else {
+				$title = ($date == 'taken')?'taken':'submitted'; 
+				$desc .= ", <b>for images $title during ".getFormattedDate($when)."</b>";
+			}
 		}
 	}
 	if ($myriad) {
 		$sql_where .= " and grid_reference LIKE '{$myriad}____'";
-		$desc .= " in Myriad $myriad";
+		if ($CONF['lang'] == 'de')
+			$desc .= " bezogen auf das 100km-Quadrat $myriad";
+		else
+			$desc .= " in Myriad $myriad";
 	}
 	if ($ri) {
 		$sql_where .= " and reference_index = $ri";
-		$desc .= " in ".$CONF['references_all'][$ri];
+		if ($CONF['lang'] == 'de')
+			$desc .= " in ".$CONF['references_all'][$ri];
+		else
+			$desc .= " in ".$CONF['references_all'][$ri];
 	}
 	
 	$smarty->assign('heading', $heading);
@@ -453,7 +563,10 @@ if (!$smarty->is_cached($template, $cacheid))
 
 
 	$smarty->assign('types', array('points','geosquares','images','depth'));
-	$smarty->assign('typenames', array('points','geosquares','images','depth'));
+	if ($CONF['lang'] == 'de')
+		$smarty->assign('typenames', array('Punkte','Geoquadrate','Bilder','Dichte'));
+	else
+		$smarty->assign('typenames', array('points','geosquares','images','depth'));
 	
 	
 	$extra = array();

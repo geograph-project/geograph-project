@@ -259,9 +259,12 @@
 
 <div class="field"> 
 	<label for="ticket_option" class="nowrap">Trouble Ticket Emails</label>
-	
-	<select name="ticket_option" id="ticket_option" size="1"> 
-		{html_options options=$ticket_options selected=$profile->ticket_option}
+	<br/>
+	<select name="ticket_option" id="ticket_option" size="1" style="margin-left:10em;">
+		<option value="all"{if $profile->ticket_option eq 'all'} selected{/if}>Notifications for all suggestions</option>
+		<option value="major"{if $profile->ticket_option eq 'major'} selected{/if}>Only Major suggestions</option>
+		<!--option value="digest"{if $profile->ticket_option eq 'digest'} selected{/if}>Receive Digest emails Once per Day</option-->
+		<option value="none"{if $profile->ticket_option eq 'none'} selected{/if}>No Initial Notifications</option>
 	</select>
 	 
 	<div class="fieldnotes">Allows opting out of receiving initial notification of certain suggestions. Note you however receive follow up comments and notification of the closure - in-case there is information needed by a moderator.</div>

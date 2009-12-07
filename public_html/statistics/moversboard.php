@@ -134,7 +134,86 @@ if (!$smarty->is_cached($template, $cacheid))
 		),
 	);
 	// s/\$\([a-z]*\) *= *"\([^"]*\)" *; *$/^I'\1' => "\2",/
-	$text_table = array (
+	if ($CONF['lang'] == 'de') $text_table = array (
+		'geosquares' => array(
+			'heading' => "Quadrate mit Geobildern",
+			'desc' => "der Anzahl verschiedener Quadrate mit Geobildern",
+		),
+		'squares' => array(
+			'heading' => "Fotografierte Quadrate",
+			'desc' => "der Anzahl verschiedener fotografierter Quadrate",
+		),
+		'geographs' => array(
+			'heading' => "Neue Geobilder",
+			'desc' => "der Anzahl eingereichter Geobilder",
+		),
+		'additional' => array(
+			'heading' => "Zusätzliche Geobilder",
+			'desc' => "der Anzahl eingereichter Geobilder in schon fotografierten Quadraten",
+		),
+		'supps' => array(
+			'heading' => "Neue Extrabilder",
+			'desc' => "der Anzahl eingereichter Extrabilder",
+		),
+		'images' => array(
+			'heading' => "Neue Bilder",
+			'desc' => "der Anzahl eingereichter Bilder",
+		),
+		'test_points' => array(
+			'heading' => "G-Points",
+			'desc' => "test points",
+		),
+		'depth' => array(
+			'heading' => "Dichte",
+			'desc' => "der Dichte",
+		),
+		'myriads' => array(
+			'heading' => "100km-Quadrate",
+			'desc' => "der Anzahl unterschiedlicher 100km-Quadrate",
+		),
+		'hectads' => array(
+			'heading' => "10km-Quadrate",
+			'desc' => "der Anzahl unterschiedlicher 10km-Quadrate",
+		),
+		'days' => array(
+			'heading' => "Tage",
+			'desc' => "der Anzahl unterschiedlicher Tage",
+		),
+		'antispread' => array(
+			'heading' => "AntiSpread Score",
+			'desc' => "antispread score (images/hectads)",
+		),
+		'spread' => array(
+			'heading' => "Spread Score",
+			'desc' => "spread score (hectads/images)",
+		),
+		'classes' => array(
+			'heading' => "Kategorien",
+			'desc' => "der Anzahl unterschiedlicher Kategorien",
+		),
+		'clen' => array(
+			'heading' => "Average Description Length",
+			'desc' => "average length of the description",
+		),
+		'tlen' => array(
+			'heading' => "Average Title Length",
+			'desc' => "average length of the title",
+		),
+		'category_depth' => array(
+			'heading' => "Category Depth",
+			'desc' => "the category depth score",
+		),
+		'centi' => array(
+		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
+			'heading' => "100m-Quadrate",
+			'desc' => "der Anzahl unterschiedlicher 100m-Quadrate",
+		),
+		'points' => array(
+			'heading' => "Geograph-Punkte",
+			'desc' => "der Anzahl erreichter Geograph-Punkte",
+		),
+	);
+	else $text_table = array (
 		'geosquares' => array(
 			'heading' => "Squares Geographed",
 			'desc' => "different squares geographed",
@@ -328,7 +407,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('cutoff_time', time()-86400*7);
 	
 	$smarty->assign('types', array('points','geosquares','images','depth'));
-	$smarty->assign('typenames', array('points','geosquares','images','depth'));
+	if ($CONF['lang'] == 'de')
+		$smarty->assign('typenames', array('Punkte','Geoquadrate','Bilder','Dichte'));
+	else
+		$smarty->assign('typenames', array('points','geosquares','images','depth'));
 	
 	//lets find some recent photos
 	new RecentImageList($smarty);
