@@ -9,7 +9,8 @@
 	 <div style="border-top: 1px solid lightgrey; padding-top:1px;">
 	  <form action="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" target="editor" style="display:inline">
 	  <div style="float:left; position:relative; width:130px; text-align:center">
-		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
+		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a><br/>
+		<div class="caption">{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
 	  </div>
 	  <div style="float:left; position:relative">
 		<a name="{$image->gridimage_id}"><input type="text" name="title" size="80" value="{$image->title|escape:'html'}" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''"/></a> [<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>]
@@ -19,7 +20,7 @@
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 		
 		
-		<div>{if $image->comment}<textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea>{/if}<input type="submit" name="create" value="create ticket"/>{if $is_mod || $user->user_id == $image->user_id}
+		<div>{if $image->comment}<textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea>{/if}<input type="submit" name="create" value="continue &gt;"/>{if $is_mod || $user->user_id == $image->user_id}
 		<br/><a href="#" onclick="show_tree('share{$image->gridimage_id}'); document.getElementById('shareframe{$image->gridimage_id}').src='/submit_snippet.php?gridimage_id={$image->gridimage_id}&gr={$image->grid_reference}';return false;" id="hideshare{$image->gridimage_id}" style="font-size:0.7em">Shared Descriptions</a>
 		{/if}
 		</div>
