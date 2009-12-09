@@ -225,7 +225,7 @@
 	<textarea name="message_sig" id="message_sig" rows="4" cols="60">{$profile->message_sig|escape:'html'}</textarea>
 
 	 
-	<div class="fieldnotes">Automatically include this text in messages sent though the site. <br/>
+	<div class="fieldnotes">Automatically include this text in messages sent through the site. <br/>
 	(250 chars max) 
 	<input type="button" value="Use Suggested Text" onclick="this.form.message_sig.value='-- '+this.form.realname.value+' http://{$http_host}/profile/{$user->user_id}'"/></div>
 </div>
@@ -240,7 +240,7 @@
 		<option value="everyone" {if $profile->ticket_public eq 'everyone'} selected{/if}>Show my name against the ticket</option>
 	</select>
 	 
-	<div class="fieldnotes">Change how your name is disclosed on tickets your create from now on.</div>
+	<div class="fieldnotes">Change how your name is disclosed on tickets you create from now on.</div>
 </div>
 
 
