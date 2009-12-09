@@ -164,7 +164,7 @@
 	{if $errors.grid_reference}<div class="formerror"><p class="error">{$errors.grid_reference}</p>{/if}
 	
 	<label for="grid_reference">Home grid square:</label>
-	<input type="text" id="grid_reference" name="grid_reference" value="{$profile->grid_reference|escape:'html'}" size="6" />
+	<input type="text" id="grid_reference" name="grid_reference" value="{$profile->grid_reference|escape:'html'}" size="8" />
 	
 	<div class="fieldnotes">If you wish, tell us the OS grid reference of your home.</div>
 
