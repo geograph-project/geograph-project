@@ -64,9 +64,8 @@
 <div class="interestBox" style="margin-top:60px;">
 	<big><a name="cheatsheet"></a>Cheatsheet</big>:
 	<ul class="explore">
-		<li>you can enter just the first few letters of a name</li>
-		<li>prefix a keyword with - to <b>exclude</b> that word from the match; example : <tt>smith -john</tt></li>
-		<li>can use OR (Uppercase only!) to match <b>either/or</b> keywords; example: <tt>john OR joan</tt></li>
+		<li>prefix a keyword with - to <b>exclude</b> that word from the match; example: <tt>stone wall -sheep</tt></li>
+		<li>can use OR to match <b>either/or</b> keywords; example: <tt>bridge river OR canal</tt></li>
 	</ul>
 </div>
 
