@@ -77,7 +77,7 @@ if (!empty($_GET['q'])) {
 					$row = $rows[$id];
 					
 					$images=new ImageList();
-					$images->getImagesBySphinx($q.' '.$row['grid_reference'],5);
+					$images->getImagesBySphinx($q.' '.$row['grid_reference'],2);
 					$row['images'] = $images->images;
 					$row['resultCount'] = $images->resultCount;
 					$results[] = $row;
