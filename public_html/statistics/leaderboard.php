@@ -66,8 +66,10 @@ if (isset($_GET['inner'])) {
 }
 $cacheid=$minimum.'-'.$maximum.$type.$date.$when.$limit.'.'.$ri.'.'.$u.$myriad;
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*3; //3hour cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*3; //3hour cache
+}
 
 if (!$smarty->is_cached($template, $cacheid))
 {
