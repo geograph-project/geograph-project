@@ -59,16 +59,22 @@ if (!empty($_GET['title'])) {
 	$title= $_GET['title'];
 } 
 
-$cacheid = md5("$include|$exclude|$title");
+$size = (!empty($_GET['size']))?intval($_GET['size']):3000;
+$size = max(100,min(10000,$size));
+
+$cacheid = md5("$include|$exclude|$title|$size");
 
 if ($smarty->caching) {
 	$smarty->caching = 2; // lifetime is per cache
 	$smarty->cache_lifetime = 3600; //1hour cache
 	customExpiresHeader(3600,false,true);
 }
+
+$smarty->assign('sizes',array(1000=>1000,3000=>3000,5000=>5000,10000=>10000));
+$smarty->assign('size',$size);
 	
 //regenerate?
-if (!$smarty->is_cached($template, $cacheid) && strlen($include) > 2)
+if (!$smarty->is_cached($template, $cacheid) && strlen($include))
 {
 	$where = array();
 	
@@ -99,9 +105,9 @@ if (!$smarty->is_cached($template, $cacheid) && strlen($include) > 2)
 		} 
 	}
 	if (count($where)) {
-		$last = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
+		$last_id = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 	
-		$where[] = 'gridimage_id > '.($last-3000);
+		$where[] = 'gridimage_id > '.($last_id-$size);
 		
 		$where= implode(' AND ',$where);
 	} else {
@@ -117,6 +123,10 @@ if (!$smarty->is_cached($template, $cacheid) && strlen($include) > 2)
 #exit;
 	$imagelist->_getImagesBySql($sql);
 	
+	if ($db->readonly) {
+		$db = GeographDatabaseConnection(false);
+	}
+
 	if (count($imagelist->images)) {
 		
 		$smarty->assign_by_ref('images', $imagelist->images);
@@ -135,7 +145,54 @@ if (!$smarty->is_cached($template, $cacheid) && strlen($include) > 2)
 
 			$smarty->assign('next', $token->getToken());
 		}*/
-	} 
+		
+		$inserts = array();
+		$inserts[] = "created=NOW()";
+		$inserts[] = "include = ".$db->Quote($_GET['include']);
+		$inserts[] = "exclude = ".$db->Quote($_GET['exclude']);
+		$inserts[] = "title = ".intval($_GET['title']);
+		
+		$inserts[] = "last_results = ".count($imagelist->images);
+		$inserts[] = "last_time=NOW()";
+		$inserts[] = "last_size=$size";
+		$inserts[] = "last_gridimage_id=$last_id";
+		
+		$inserts[] = "total_results = ".count($imagelist->images);
+		$inserts[] = "total_runs = 1";
+		
+		$inserts[] = "user_id = ".$USER->user_id;
+		$inserts[] = "last_user_id = ".$USER->user_id;
+		
+		
+		$updates = array();
+		$updates[] = "last_results = ".count($imagelist->images);
+		$updates[] = "last_time=NOW()";
+		$updates[] = "last_size=$size";
+		$updates[] = "last_gridimage_id=$last_id";
+		$updates[] = "total_results = total_results + ".count($imagelist->images);
+		$updates[] = "total_runs = total_runs + 1";
+		$updates[] = "last_user_id = ".$USER->user_id;
+		
+		$db->Execute('INSERT INTO typo SET '.implode(',',$inserts).' ON DUPLICATE KEY UPDATE '.implode(',',$updates));
+
+	} else {
+		//if no results, just update, no insert. 
+		
+		$where = array();
+		$where[] = "include = ".$db->Quote($_GET['include']);
+		$where[] = "exclude = ".$db->Quote($_GET['exclude']);
+		$where[] = "title = ".intval($_GET['title']);
+		
+		$updates = array();
+		$updates[] = "last_results = 0";
+		$updates[] = "last_time=NOW()";
+		$updates[] = "last_size=$size";
+		$updates[] = "last_gridimage_id=$last_id";
+		$updates[] = "total_runs = total_runs + 1";
+		$updates[] = "last_user_id = ".$USER->user_id;
+		
+		$db->Execute('UPDATE typo SET '.implode(',',$updates).' WHERE '.implode(' AND ',$where));
+	}
 
 }
 
