@@ -94,7 +94,7 @@ if (!$smarty->is_cached($template, $cacheid) && strlen($include) > 2)
 			$smarty->assign('include',$_GET['include']);
 		} 
 		if (!empty($_GET['exclude'])) {
-			$where[] = 'comment LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['exclude']).'%');
+			$where[] = 'comment NOT LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['exclude']).'%');
 			$smarty->assign('exclude',$_GET['exclude']);
 		} 
 	}
@@ -113,7 +113,7 @@ if (!$smarty->is_cached($template, $cacheid) && strlen($include) > 2)
 		"where $where ".
 		($max_gridimage_id?" and gridimage_id < $max_gridimage_id ":'').
 		"order by gridimage_id desc limit 50";
-#print "<pre>$sql</pre>";
+print "<pre>$sql</pre>";
 #exit;
 	$imagelist->_getImagesBySql($sql);
 	
