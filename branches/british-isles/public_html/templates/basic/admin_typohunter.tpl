@@ -1,15 +1,15 @@
 {assign var="page_title" value="Typo Hunter"}
 {include file="_std_begin.tpl"}
 
-<h2>Typo Hunter v0.5 {if $criteria}<small style="font-weight:normal">, submitted at or before: {$criteria|escape:'html'}</small>{/if}</h2>
+<h2><a href="/admin/typolist.php">Typos</a> :: Typo Hunter v0.5 {if $criteria}<small style="font-weight:normal">, submitted at or before: {$criteria|escape:'html'}</small>{/if}</h2>
 	
 <div class="interestBox">
 	<form action="{$script_name}" method="get">
-		<label for="include"><b>Include</b>:</label> <input type="text" size="40" name="include" value="{$include|escape:'html'}" id="include" />
+		<label for="include"><b>Include</b>:</label> <input type="text" size="40" name="include" value="{$include|escape:'html'}" id="include" /> | 
 		<label for="exclude">Exclude (optional):</label> <input type="text" size="40" name="exclude" value="{$exclude|escape:'html'}" id="exclude" />
 		<input type="submit" value="Find" /><br/>
-		<input type="checkbox" name="title" {if $title} checked="checked"{/if} id="title" /> <label for="title">Search <b>title</b> as well as description (please ONLY use it if need too)</label> 
-		
+		<label for="size">Number of images to search:</label> <select name="size" id="size">{html_options options=$sizes selected=$size}</select> | 
+		<input type="checkbox" name="title" {if $title} checked="checked"{/if} id="title" /> <label for="title">Search <b>title</b> as well as description</label> 
 		
 	</form>
 </div>
@@ -36,10 +36,10 @@
 			<i>No results</i>
 		{/if}
 		<ul>
-			<li>Only searches the <b>most recent 3000 images</b>, that have been moderated<br/><br/></li>
+			<li>Only searches the <b>most recent and moderated</b> images<br/><br/></li>
 			<li>Include/Exclude boxes accept a <b>single exact search string</b>, including special charactors; matches part words. (but not case sensitive)<br/><br/></li>
 			<li>By default looks for in the description <b>only</b>, as that is the most useful for typo hunting. But can also search the title, but please only do that when needed<br/><br/></li>
-			<li>There is no saving of the searches, however can bookmark the results page and/or use your browser auto-complete<br/><br/></li>
+			<li>Searches are automatically recorded so can be rerun easily. <a href="/admin/typolist.php">View results here</a><br/><br/></li>
 		</ul>
 	{/foreach}
 	
@@ -57,7 +57,7 @@
 </div>
 {/if}
 
-<p><small>Note: Only searches the last 3000 images and only includes moderated images.<br/>
+<p><small>Note: Only searches the last {$size} images and only includes moderated images.<br/>
 Page generated at 1 hour intervals, please don't refresh more often than that.</small></p> 
 
 
