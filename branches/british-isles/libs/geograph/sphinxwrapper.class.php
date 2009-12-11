@@ -294,7 +294,7 @@ class sphinxwrapper {
 		$cl = $this->_getClient();
 		
 		if ($index_in == "_images") {
-			$index = "{$CONF['sphinx_prefix']}gi_groupby,{$CONF['sphinx_prefix']}gi_delta_groupby";
+			$index = "{$CONF['sphinx_prefix']}gi_groupby,{$CONF['sphinx_prefix']}gi_groupby_delta";
 		} else {
 			$index = $CONF['sphinx_prefix'].$index_in;
 		}
@@ -346,9 +346,9 @@ class sphinxwrapper {
 		$cl = $this->_getClient();
 		
 		if ($index_in == "_images") {
-			$index = "{$CONF['sphinx_prefix']}gi_stemmed,{$CONF['sphinx_prefix']}gi_delta_stemmed";
+			$index = "{$CONF['sphinx_prefix']}gi_stemmed,{$CONF['sphinx_prefix']}gi_stemmed_delta";
 		} elseif ($index_in == "_posts") {
-			$index = "{$CONF['sphinx_prefix']}post_stemmed,{$CONF['sphinx_prefix']}post_delta_stemmed";
+			$index = "{$CONF['sphinx_prefix']}post_stemmed,{$CONF['sphinx_prefix']}post_stemmed_delta";
 		} else {
 			$index = $CONF['sphinx_prefix'].$index_in;
 		}
@@ -529,12 +529,12 @@ class sphinxwrapper {
 		
 		if ($index_in == "_images") {
 			$q = preg_replace('/@text\b/','@(title,comment,imageclass)',$q);
-			$index = "{$CONF['sphinx_prefix']}gi_stemmed,{$CONF['sphinx_prefix']}gi_delta_stemmed";
+			$index = "{$CONF['sphinx_prefix']}gi_stemmed,{$CONF['sphinx_prefix']}gi_stemmed_delta";
 		} elseif ($index_in == "_images_exact") {
 			$q = preg_replace('/@text\b/','@(title,comment,imageclass)',$q);
 			$index = "{$CONF['sphinx_prefix']}gridimage,{$CONF['sphinx_prefix']}gi_delta";
 		} elseif ($index_in == "_posts") {
-			$index = "{$CONF['sphinx_prefix']}post_stemmed,p{$CONF['sphinx_prefix']}ost_delta_stemmed";
+			$index = "{$CONF['sphinx_prefix']}post_stemmed,{$CONF['sphinx_prefix']}post_stemmed_delta";
 		} else {
 			$index = $CONF['sphinx_prefix'].$index_in;
 		}
