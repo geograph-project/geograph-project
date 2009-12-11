@@ -30,6 +30,7 @@ $smarty = new GeographPage;
 
 customGZipHandlerStart();
 
+dieUnderHighLoad(0.8);
 
 $USER->mustHavePerm("basic");
 

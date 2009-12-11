@@ -830,7 +830,7 @@ CREATE TABLE IF NOT EXISTS `typo` (
   PRIMARY KEY  (`typo_id`),
   UNIQUE KEY `include` (`include`,`exclude`,`title`),
   KEY `enabled` (`enabled`,`created`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 
 #################################################

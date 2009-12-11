@@ -30,16 +30,70 @@ $smarty = new GeographPage;
 
 customGZipHandlerStart();
 
+dieUnderHighLoad(0.8);
 
 $USER->mustHavePerm("basic");
 
 if (!empty($_GET['hide'])) {
 	$db = GeographDatabaseConnection(false);
 	$db->Execute("update typo set quieted = NOW() where typo_id = ".intval($_GET['hide']));
+
 } elseif (!empty($_GET['delete'])) {
 	$db = GeographDatabaseConnection(false);
 	$db->Execute("update typo set enabled = 0 where typo_id = ".intval($_GET['delete']));
+
+} elseif (!empty($_POST['rows'])) {
+	$rows = str_replace("\r",'',$_POST['rows']);
+	$results = array();
+	foreach (explode("\n",$rows) as $q) {
+	
+		if (preg_match("/\b(AND|OR|NOT)\b/",$q) || preg_match('/^\^.*\+$/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q)) {
+			$terms = '';
+			$tokens = preg_split('/\s+/',trim(preg_replace('/([\(\)])/',' $1 ',preg_replace('/(^|\s+)-([\w^]+)/e','("$1"?"$1AND ":"")."NOT $2"',$q))));
+			$number = count($tokens);
+			$c = 1;
+			$tokens[] = 'END';
+			foreach ($tokens as $token) {
+				switch ($token) {
+					case 'END': $token = '';
+					case 'AND':
+					case 'OR': 
+						if ($c != 1 && $c != $number) {
+							if (strpos($terms,'^') === 0) {
+								$results[] = str_replace('^','',preg_replace('/\+$/','',$terms));
+							} else {
+								$results[] = preg_replace('/[\+~]$/','',$terms);
+							}
+							$terms = '';
+						}
+						break;
+					case '(': 
+					case ')': 
+					case 'NOT': break;
+					default: 
+						if ($terms)	$terms .= " ";
+						$terms .= $token;
+				}
+				$c++;
+			}
+		} else {
+			$results[] = $q;
+		}
+	}
+	
+	$db = GeographDatabaseConnection(false);
+	foreach ($results as $result) {
+		$inserts = array();
+		$inserts[] = "created=NOW()";
+		$inserts[] = "include = ".$db->Quote($result);
+		$inserts[] = "title = ".intval($_GET['title']);
+
+		$inserts[] = "user_id = ".$USER->user_id;
+				
+		$db->Execute('INSERT IGNORE INTO typo SET '.implode(',',$inserts));
+	}
 }
+
 
 
 

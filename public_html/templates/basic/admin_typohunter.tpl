@@ -1,7 +1,7 @@
 {assign var="page_title" value="Typo Hunter"}
 {include file="_std_begin.tpl"}
 
-<h2><a href="/admin/typolist.php">Typos</a> :: Typo Hunter v0.5 {if $criteria}<small style="font-weight:normal">, submitted at or before: {$criteria|escape:'html'}</small>{/if}</h2>
+<h2><a href="/admin/typolist.php">Typos</a> :: Typo Hunter v0.6 {if $criteria}<small style="font-weight:normal">, submitted at or before: {$criteria|escape:'html'}</small>{/if}</h2>
 	
 <div class="interestBox">
 	<form action="{$script_name}" method="get">
@@ -46,7 +46,7 @@
 	<br/><br/>
 	
 	{if $image_count}
-		<p>Showing {$image_count} image(s), there might be more.</p>
+		<p>Showing {$image_count} image(s){if $image_count eq 50}, there might be more{/if}.</p>
 	{/if}
 
 <br/><br/>
