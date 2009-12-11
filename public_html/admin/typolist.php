@@ -76,6 +76,16 @@ if (!empty($_GET['hide'])) {
 				}
 				$c++;
 			}
+		} elseif (strpos($q,'^') === 0 || preg_match('/\+$/',$q)) {
+			$results[] = preg_replace('/[\+~]$/','',str_replace('^','',$q));
+		} elseif (strpos($q,'~') === 0) {
+			$q = preg_replace('/^\~/','',$q);
+			
+			$sphinx = new sphinxwrapper($q);
+			
+			foreach ($sphinx->explodeWithQuotes(" ",$q) as $token) {
+				$results[] = str_replace('"','',$token);
+			}
 		} else {
 			$results[] = $q;
 		}
@@ -85,7 +95,7 @@ if (!empty($_GET['hide'])) {
 	foreach ($results as $result) {
 		$inserts = array();
 		$inserts[] = "created=NOW()";
-		$inserts[] = "include = ".$db->Quote($result);
+		$inserts[] = "include = ".$db->Quote(preg_replace('/^=/','',$result));
 		$inserts[] = "title = ".intval($_GET['title']);
 
 		$inserts[] = "user_id = ".$USER->user_id;
