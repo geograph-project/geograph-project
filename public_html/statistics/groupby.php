@@ -150,7 +150,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sphinx->addFilters($filters);
 		}
 		
-		$res = $sphinx->groupByQuery($pg,'gi_groupby,gi_delta_groupby');
+		$res = $sphinx->groupByQuery($pg,'gi_groupby,gi_groupby_delta');
 		
 		if ($res && $res['matches']) {
 			if ($groupby == 'user_id') {
