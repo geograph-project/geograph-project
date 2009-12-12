@@ -30,9 +30,9 @@
 	<div class="interestBox">
 	
 	{if $item.resultCount > 3}
-		<div style="float:right"><a href="/search.php?gridref={$item.grid_reference}&amp;searchtext={$q|escape:'url'}&amp;do=1&amp;distance=1">View {$item.resultCount} text matches in {$item.grid_reference}</a></div>
+		<div style="float:right"><a href="/search.php?gridref={$item.grid_reference}&amp;searchtext={$q2|escape:'url'}&amp;do=1&amp;distance=1">View {$item.resultCount} text matches in {$item.grid_reference}</a></div>
 	{elseif $item.skipped}
-		<div style="float:right"><a href="/search.php?gridref={$item.grid_reference}&amp;searchtext={$q|escape:'url'}&amp;do=1&amp;distance=1">Look for text matches in {$item.grid_reference}</a></div>
+		<div style="float:right"><a href="/search.php?gridref={$item.grid_reference}&amp;searchtext={$q2|escape:'url'}&amp;do=1&amp;distance=1">Look for text matches in {$item.grid_reference}</a></div>
 	{/if}
 	
 	<b><a href="/gridref/{$item.grid_reference|escape:'url'}" title="{$item.imagecount} images in {$item.grid_reference}">{$item.grid_reference}</a></b> 
