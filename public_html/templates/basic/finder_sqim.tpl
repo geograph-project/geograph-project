@@ -1,4 +1,4 @@
-{assign var="page_title" value="Alternative Image Search"}
+{assign var="page_title" value="Search by Gridquare"}
 {include file="_std_begin.tpl"}
 {literal}
 <style type="text/css">
@@ -9,7 +9,7 @@
 </style>
 {/literal}
 
-<h2><a href="/finder/">Finder</a> :: Alternative Image Search</h2>
+<h2><a href="/finder/">Finder</a> :: Search by Gridquare</h2>
 
 <form action="{$script_name}" method="get" onsubmit="focusBox()">
 	<p>
@@ -27,7 +27,13 @@
 <ol start="{$offset}">
 {foreach from=$results item=item}
 	<li>
-	<div class="interestBox"><b><a href="/gridref/{$item.grid_reference|escape:'url'}" title="{$item.imagecount} images in {$item.grid_reference}">{$item.grid_reference}</a></b> 
+	<div class="interestBox">
+	
+	{if $item.resultCount > 3}
+		<div style="float:right"><a href="/search.php?gridref={$item.grid_reference}&amp;searchtext={$q|escape:'url'}&amp;do=1&amp;distance=1">View {$item.resultCount} matches in {$item.grid_reference}</a></div>
+	{/if}
+	
+	<b><a href="/gridref/{$item.grid_reference|escape:'url'}" title="{$item.imagecount} images in {$item.grid_reference}">{$item.grid_reference}</a></b> 
 	
 	{if $item.imagecount}
 		<small style="color:green">({$item.imagecount|thousends} images)</small>
@@ -51,9 +57,6 @@
 		{/if}
 	{/foreach}
 	<br style="clear:left;"/>
-	{if $item.resultCount > 3}
-		<div style="text-align:right"><a href="/search.php?gridref={$item.grid_reference}&amp;searchtext={$q|escape:'url'}&amp;do=1&amp;distance=1">View {$item.resultCount} matches in {$item.grid_reference}</a></div>
-	{/if}
 	
 	</li>
 {foreachelse}
