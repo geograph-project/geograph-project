@@ -72,6 +72,7 @@ if (!empty($_GET['q'])) {
 				limit $limit");
 
 				$q2 = trim(preg_replace('/\b(easting|northing):([ \d\(\)OR\|]+)/',' ',$q));
+				$smarty->assign("q2",$q2);
 				
 				$results = array();
 				foreach ($ids as $c => $id) {
