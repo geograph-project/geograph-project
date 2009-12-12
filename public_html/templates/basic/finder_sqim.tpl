@@ -27,19 +27,33 @@
 <ol start="{$offset}">
 {foreach from=$results item=item}
 	<li>
-	<div style="border-top:1px solid #eeeeee; padding:1px"><b><a href="/gridref/{$item.grid_reference|escape:'url'}" title="{$item.imagecount} images in {$item.grid_reference}">{$item.grid_reference}</a></b></div>
+	<div class="interestBox"><b><a href="/gridref/{$item.grid_reference|escape:'url'}" title="{$item.imagecount} images in {$item.grid_reference}">{$item.grid_reference}</a></b> 
+	
+	{if $item.imagecount}
+		<small style="color:green">({$item.imagecount|thousends} images)</small>
+	{/if}
+	{if $item.place}
+		<i>near {$item.place|escape:'html'}</i>
+	{/if}
+	
+	</div>
 	
 	{foreach from=$item.images item=image}
 		<div style="float:left;width:160px" class="photo33"><div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
 		<div class="caption"><div class="minheightprop" style="height:2.5em"></div><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
 		<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
 		</div>
+	{foreachelse}
+		{if $item.skipped}
+			<div><small><i>matching images in square not checked</i></small></div>
+		{else}
+			<div><small><i>no images found matching {$q|escape:'html'} in square</i></small></div>
+		{/if}
 	{/foreach}
 	<br style="clear:left;"/>
-	{if $item.resultCount > 5}
-	<a href="/search.php?gridref={$item.grid_reference}&amp;searchtext={$q|escape:'url'}&amp;do=1&amp;distance=1">View all {$item.resultCount} results</a>
+	{if $item.resultCount > 3}
+		<div style="text-align:right"><a href="/search.php?gridref={$item.grid_reference}&amp;searchtext={$q|escape:'url'}&amp;do=1&amp;distance=1">View {$item.resultCount} matches in {$item.grid_reference}</a></div>
 	{/if}
-	
 	
 	</li>
 {foreachelse}

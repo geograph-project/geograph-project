@@ -66,8 +66,9 @@ if (!empty($_GET['q'])) {
 				$prev_fetch_mode = $ADODB_FETCH_MODE;
 				$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 				$rows = $db->getAssoc("
-				select gridsquare_id,grid_reference,imagecount
+				select gridsquare_id,grid_reference,imagecount,name as place
 				from gridsquare 
+				left join placename_index p on (placename_id = p.id) 
 				where $where
 				limit $limit");
 
@@ -76,10 +77,14 @@ if (!empty($_GET['q'])) {
 				foreach ($ids as $c => $id) {
 					$row = $rows[$id];
 					
-					$images=new ImageList();
-					$images->getImagesBySphinx($q.' '.$row['grid_reference'],2);
-					$row['images'] = $images->images;
-					$row['resultCount'] = $images->resultCount;
+					if (rand(1,10) < 8) {
+						$images=new ImageList();
+						$images->getImagesBySphinx($q.' '.$row['grid_reference'],3);
+						$row['images'] = $images->images;
+						$row['resultCount'] = $images->resultCount;
+					} else {
+						$row['skipped'] = 1;
+					}
 					$results[] = $row;
 				}
 				
