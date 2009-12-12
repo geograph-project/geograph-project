@@ -53,8 +53,8 @@ if (!empty($_GET['q'])) {
 		if ($offset < (1000-$pgsize) ) { 
 			$sphinx->processQuery();
 		
-			$ids = $sphinx->returnIds($pg,'sqim');	
-			
+			#$ids = $sphinx->returnIds($pg,'sqim');	
+			$ids = array(8,7,9,10);
 			
 			if (!empty($ids) && count($ids)) {
 				$where = "gridsquare_id IN(".join(",",$ids).")";
@@ -72,14 +72,15 @@ if (!empty($_GET['q'])) {
 				where $where
 				limit $limit");
 
-
+				$q2 = trim(preg_replace('/\b(easting|northing):([ \d\(\)OR\|]+)/',' ',$q));
+				
 				$results = array();
 				foreach ($ids as $c => $id) {
 					$row = $rows[$id];
 					
-					if (rand(1,10) < 8) {
+					if (rand(1,10) < 8 && strlen($q2) > 3) {
 						$images=new ImageList();
-						$images->getImagesBySphinx($q.' '.$row['grid_reference'],3);
+						$images->getImagesBySphinx($q2.' '.$row['grid_reference'],3);
 						$row['images'] = $images->images;
 						$row['resultCount'] = $images->resultCount;
 					} else {
