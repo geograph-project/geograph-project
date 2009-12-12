@@ -9,7 +9,7 @@
 </style>
 {/literal}
 
-<h2><a href="/finder/">Finder</a> :: Search by Gridquare</h2>
+<h2><a href="/finder/">Finder</a> :: Search by Gridsquare</h2>
 
 <form action="{$script_name}" method="get" onsubmit="focusBox()">
 	<p>
