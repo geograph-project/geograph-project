@@ -53,8 +53,7 @@ if (!empty($_GET['q'])) {
 		if ($offset < (1000-$pgsize) ) { 
 			$sphinx->processQuery();
 		
-			#$ids = $sphinx->returnIds($pg,'sqim');	
-			$ids = array(8,7,9,10);
+			$ids = $sphinx->returnIds($pg,'sqim');	
 			
 			if (!empty($ids) && count($ids)) {
 				$where = "gridsquare_id IN(".join(",",$ids).")";
