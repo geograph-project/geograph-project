@@ -24,7 +24,7 @@
 
 <div class="interestBox">Use this page to play with the new querying possibilities of the <a href="/help/search_new">new search</a>. It is not intended to replace main search which will soon include full-text keyword matching as available here; this interface is deliberatly very simple to focus on the query syntax. You can find other <a href="/finder/">similar searches here</a>. <i>Thank you for your patience while we continue to improve our searching facilities.</i></div>
 
-<form action="/stuff/search-service.php" method="get" target="searchwindow" onsubmit="focusBox()">
+<form action="/finder/search-service.php" method="get" target="searchwindow" onsubmit="focusBox()">
 	<p>
 		<label for="fq">Free Text Search</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 		<input type="submit" value="Search"/>
@@ -36,7 +36,7 @@
 	</p>
 </form>
 
-<iframe {dynamic}{if $q} src="/stuff/search-service.php?q={$q|escape:'url'}"{else}src="about:blank"{/if}{/dynamic} width="700" height="700" name="searchwindow" style="width:100%"></iframe>
+<iframe {dynamic}{if $q} src="/finder/search-service.php?q={$q|escape:'url'}"{else}src="about:blank"{/if}{/dynamic} width="700" height="700" name="searchwindow" style="width:100%"></iframe>
 
 
 <div class="interestBox" style="margin-top:60px;">
