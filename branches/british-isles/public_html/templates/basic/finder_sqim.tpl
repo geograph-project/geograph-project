@@ -13,7 +13,7 @@
 
 <form action="{$script_name}" method="get" onsubmit="focusBox()">
 	<p>
-		<label for="fq">Name</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+		<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 		<input type="submit" value="Search"/>
 	</p>
 </form>
@@ -30,7 +30,9 @@
 	<div class="interestBox">
 	
 	{if $item.resultCount > 3}
-		<div style="float:right"><a href="/search.php?gridref={$item.grid_reference}&amp;searchtext={$q|escape:'url'}&amp;do=1&amp;distance=1">View {$item.resultCount} matches in {$item.grid_reference}</a></div>
+		<div style="float:right"><a href="/search.php?gridref={$item.grid_reference}&amp;searchtext={$q|escape:'url'}&amp;do=1&amp;distance=1">View {$item.resultCount} text matches in {$item.grid_reference}</a></div>
+	{elseif $item.skipped}
+		<div style="float:right"><a href="/search.php?gridref={$item.grid_reference}&amp;searchtext={$q|escape:'url'}&amp;do=1&amp;distance=1">Look for text matches in {$item.grid_reference}</a></div>
 	{/if}
 	
 	<b><a href="/gridref/{$item.grid_reference|escape:'url'}" title="{$item.imagecount} images in {$item.grid_reference}">{$item.grid_reference}</a></b> 
@@ -82,6 +84,8 @@
 	<big><a name="cheatsheet"></a>Cheatsheet</big>:
 	<ul class="explore">
 		<li>prefix a keyword with - to <b>exclude</b> that word from the match; example: <tt>stone wall -sheep</tt></li>
+		<li>use gridsquares, hectads or myriads as keywords <tt>stone wall sh65</tt> or <tt>stone wall tq</tt></li>
+		<li>find images in specific eastings and/or northings (in any myriad) <tt>easting:34 northing:24</tt> </li>
 		<li>can use OR to match <b>either/or</b> keywords; example: <tt>bridge river OR canal</tt></li>
 	</ul>
 </div>
