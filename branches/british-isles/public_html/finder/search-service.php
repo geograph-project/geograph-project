@@ -140,7 +140,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		} elseif (preg_match('/[~\|\(\)@"\/-]/',$q)) {
 			$mode = SPH_MATCH_EXTENDED;
 		} 
-		$index = "gi_stemmed,gi_delta_stemmed";
+		$index = "gi_stemmed,gi_stemmed_delta";
  if (strpos($q,'*') !== FALSE) {
 	$index = 'gi_star';
 }		
