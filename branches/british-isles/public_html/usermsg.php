@@ -119,7 +119,7 @@ if (isset($_POST['msg']))
 		
 		//user has requested a emailed code
 		if (!empty($_POST['sendcode'])) {
-			$c = uniqid('v',true);
+			$c = uniqid('v');
 			
 			$token=new Token;
 			$token->setValue("v5", md5($c.$CONF['register_confirmation_secret']));
@@ -129,7 +129,7 @@ if (isset($_POST['msg']))
 			$message="This message is to confirm your email address, for spam prevention purposes.\n\n";
 			$message.="Please enter the following code:\n\n";
 			$message.="$c\n\n";
-			$message.="into the the webpage where you clicked 'Email me the confirmation code'\n\n";
+			$message.="into the the webpage where you clicked 'Request confirmation code by email'\n\n";
 			$message.="Thank you,\n\n";
 			$message.="The Geograph.org.uk Team\n\n";
 			
@@ -143,7 +143,7 @@ if (isset($_POST['msg']))
 			$smarty->assign('verification', $verification);
 		
 		//need to verify the entered confirm code
-		} elseif (!empty($_POST['confirmcode'])) {
+		} elseif (isset($_POST['confirmcode'])) {
 			$token=new Token;
 			
 			if ($token->parse($_POST['encoded']) && $token->hasValue("v5") && md5(trim($_POST['confirmcode']).$CONF['register_confirmation_secret']) == $token->getValue("v5")) {

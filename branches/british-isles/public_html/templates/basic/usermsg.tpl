@@ -21,11 +21,6 @@
 	{elseif $verification}
 		<form method="post" action="/usermsg.php">
 		
-		<div class="interestBox">
-		
-			<p><b>We hate spam, we really do!</b><br/>
-			So please take a moment to fill out the below to help prevent spamming of our members.</p>
-
 			<input type="hidden" name="to" value="{$recipient->user_id|escape:'html'}">
 
 			<input type="hidden" name="from_name" value="{$from_name|escape:'html'}"/>
@@ -34,31 +29,47 @@
 			<input type="hidden" name="verification" value="{$verification|escape:'html'}"/>				
 			<textarea name="msg" style="display:none">{$msg|escape:'html'}</textarea>
 
-			<br />
-			
-			{if $recaptcha}
-				{$recaptcha}
-			{else}
-				<img src="/stuff/captcha.jpg.php?{$verification|escape:'html'}" style="padding:20px; border:1px solid silver"/><br />
-				<br />
-
-				<label for="verify">To continue, enter the <i>big letters and numbers</i> shown in the image above:</label><br/>
-				<input type="text" name="verify" id="verify"/><br />
-			{/if}
-			<br/><br/>
-			... or 
 			{if $encoded} 
-				<h3>Email Sent to <tt>{$from_email|escape:'html'}</tt></h3>
+				<h4 style="text-align:center;color:red">Do not close this window!</h4>
+				<div class="interestBox">
+				<h3>Confirmation code sent to <tt>{$from_email|escape:'html'}</tt></h3>
 				<input type="hidden" name="encoded" value="{$encoded|escape:'html'}"/>	
 				<label for="confirmcode">Please enter the code contained in the email, in the box below:</label><br />
 				<input type="text" name="confirmcode" id="confirmcode" size="50"/>
+				<br/>
+				</div><br/>
+				<small>Alternatively just click send without entering anything above, to have another go at the Captcha. </small>
+				<br/>
+				
 			{else}
-				<input type="submit" name="sendcode" value="Email me a confirmation code"/> <small>(to <tt>{$from_email|escape:'html'}</tt>) - on the next screen you will be asked to enter the code sent.</small> 
+				<div class="interestBox">
+					<b>In order to help prevent spamming our members we ask you to take a moment to fill out the following. </b>
+				</div>
+
+				{if $recaptcha}
+					<p>Please enter the two words contained in the big white box, alternativly click the speaker icon to listen to a audio version. 
+					{$recaptcha}
+				{else}
+					<p>So please take a moment to fill out the below to help prevent spamming of our members.</p>
+					<br/>
+					<img src="/stuff/captcha.jpg.php?{$verification|escape:'html'}" style="padding:20px; border:1px solid silver"/><br />
+					<br />
+
+					<label for="verify">To continue, enter the <i>big letters and numbers</i> shown in the image above:</label><br/>
+					<input type="text" name="verify" id="verify"/><br />
+				{/if}
+				<br/><br/>
+
+				<blockquote style="border:1px solid pink; padding:10px">
+					... or if you are unable to enter the two words above, and listening to the audio version didn't work, <br/>
+					then you can instead <input type="submit" name="sendcode" value="Request confirmation code by email"/> <br/>
+
+					<small>We will email a code to <tt>{$from_email|escape:'html'}</tt> which <b>you must enter on the next page</b>.</small> 
+				</blockquote>
 			{/if}
-		</div>
-		<br />
-		
-		<input type="submit" name="send" value="Send">
+			<br />
+
+			<input type="submit" name="send" value="Send">
 		</form>	
 	{else}
 		{if $invalid_email} 
