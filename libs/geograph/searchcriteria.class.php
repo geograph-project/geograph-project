@@ -290,33 +290,10 @@ class SearchCriteria
 			$this->sphinx['compatible_order']=0;
 		}
 		if ($this->breakby) {
-			if (preg_match('/imagetaken_(year|month|decade)$/',$this->breakby) && strpos($sql_order,'imagetaken') === FALSE) {
-				switch ($this->breakby) {
-					case 'imagetaken_month':
-						$breakby = "SUBSTRING(imagetaken,1,7)";
-						break;
-					case 'imagetaken_year':
-						$breakby = "SUBSTRING(imagetaken,1,4)";
-						break;
-					case 'imagetaken_decade':
-						$breakby = "SUBSTRING(imagetaken,1,3)";
-						break;
-				}
-			} else {
-				$breakby = preg_replace('/_(year|month|decade)$/','',$this->breakby);
-			}
-			$breakby = preg_replace('/^submitted/','gridimage_id',$breakby);
-			
-			if (strpos($sql_order,' desc') !== FALSE) {
-				$breakby .= ' desc';
-				$sorder2 = " DESC";
-			} else {
-				$sorder2 = " ASC";
-			}
-			
-			switch (str_replace(' desc','',$breakby)) {
+			switch (str_replace(' desc','',$this->breakby)) {
 				case 'gridimage_id':
 				case 'submitted': 
+					$breakby = 'gridimage_id';
 					$sorder = '@id';
 					break;
 				case 'x':
@@ -328,9 +305,24 @@ class SearchCriteria
 					$sorder = 'wgs84_lat';
 					break;
 				case 'imagetaken':
-				case 'SUBSTRING(imagetaken,1,7)':
-				case 'SUBSTRING(imagetaken,1,4)':
-				case 'SUBSTRING(imagetaken,1,3)':
+				case 'imagetaken_month':
+				case 'imagetaken_year':
+				case 'imagetaken_decade':
+					$breakby = 'imagetaken';
+					if (strpos($sql_order,'imagetaken') === FALSE) {
+						//todo - maybe remove this section, it probably has performance issues, and it still "works" if sorted just by date directly (that what sphinx does)
+						switch ($breakby) {
+							case 'imagetaken_month':
+								$breakby = "SUBSTRING(imagetaken,1,7)";
+								break;
+							case 'imagetaken_year':
+								$breakby = "SUBSTRING(imagetaken,1,4)";
+								break;
+							case 'imagetaken_decade':
+								$breakby = "SUBSTRING(imagetaken,1,3)";
+								break;
+						}
+					}
 					$this->sphinx['compatible_order'] = 0;
 					$sorder = 'takendays';
 					break;
@@ -342,6 +334,13 @@ class SearchCriteria
 				case 'grid_reference':
 				default: 
 					$this->sphinx['impossible']++;
+			}
+			
+			if (strpos($sql_order,' desc') !== FALSE) {
+				$breakby .= ' desc';
+				$sorder2 = " DESC";
+			} else {
+				$sorder2 = " ASC";
 			}
 			
 			if ($breakby != $sql_order && !preg_match('/^(\w+)\+$/i',$this->breakby) ) {
@@ -510,7 +509,10 @@ class SearchCriteria
 				if (preg_match("/0{4}-([01]?[1-9]+|10)-/",$dates[0]) > 0) {
 					//month only
 					$sql_where .= "MONTH(imagetaken) = $m ";
-					$this->sphinx['impossible']++;
+					
+					$db = $this->_getDB(true);
+					$this->sphinx['filters']['month'] = $db->GetOne("SELECT MONTHNAME('2001-$m-01')");
+			
 				} elseif (preg_match("/0{4}-0{2}-([01]?[1-9]+|10)/",$dates[0]) > 0) {
 					//day only ;)
 					$sql_where .= "imagetaken > DATE_SUB(NOW(),INTERVAL $d DAY)";
