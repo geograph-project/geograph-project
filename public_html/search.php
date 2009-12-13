@@ -888,7 +888,9 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		die("Invalid Search Parameter");
 	}
 	
-	if (isset($_GET['legacy']) && (!empty($engine->criteria->searchq) || !empty($engine->criteria->searchtext) || empty($engine->criteria->limit6))) {
+	if (isset($_GET['legacy']) 
+		&& (!empty($engine->criteria->searchq) || !empty($engine->criteria->searchtext) || !empty($engine->criteria->x) )
+		&& empty($engine->criteria->limit6) && empty($engine->criteria->limit1) ) {
 		header("HTTP/1.1 503 Service Unavailable");
 		$smarty->assign('searchq',stripslashes($_GET['q']));
 		$smarty->display('function_disabled.tpl');
@@ -1222,9 +1224,16 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 
 		if ($_GET['form'] == 'first') {
 			$template = 'search_first.tpl';
+			
+			//as the feature is now disabled, the page is just a static html page :)
+			$smarty->display($template);
+			exit;
+
 		} elseif ($_GET['form'] == 'cluster2') {
 			$template = 'search_cluster2.tpl';
 		} elseif ($_GET['form'] == 'check') {
+			$USER->mustHavePerm("basic");
+
 			$template = 'search_check.tpl';
 			if (!$_GET['i']) {
 				$smarty->assign('user_name', "{$USER->user_id}:{$USER->realname}");
@@ -1300,12 +1309,10 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			function addkm($a) {
 				return $a."km";
 			}
+			$d = array(1,2,3,4,5,7,8,10,20);
+			$d = array_combine($d,array_map('addkm',$d));
 			if ($_GET['form'] == 'text' || $_GET['form'] == 'cluster2') {
-				$d = array(1,2,3,4,5,7,8,10,20);
-				$d = array_combine($d,array_map('addkm',$d));
 			} else {
-				$d = array(1,2,3,4,5,7,8,10,20,2000);
-				$d = array_combine($d,array_map('addkm',$d));
 				$d += array(-5=>'5km square',-10=>'10km square');
 			
 				$topicsraw = $db->GetAssoc("select gp.topic_id,concat(topic_title,' [',count(*),']') as title,forum_name from gridimage_post gp

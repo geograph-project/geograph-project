@@ -65,6 +65,7 @@
 	<li><a href="search.php?more=1" title="View More of your recent searches" rel="nofollow"><i>view more...</i></a></li>
 	{/if}
 	</ul><br/>
+	<small>Not seeing all your searches? <a href="/discuss/index.php?&action=vthread&forum=1&topic=11167">Let us know, if you affected</a>.</small>
 	</li>
 	{/if}
 	<div style="position:relative; padding:10px; background-color:#eeeeee;">
