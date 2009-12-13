@@ -206,6 +206,26 @@ class SearchEngine
 			return 0; 
 		}
 	
+		if (!empty($this->criteria->searchtext) && !empty($GLOBALS['smarty'])) { 
+			//this really should have been turned over to sphinx
+			header("HTTP/1.1 503 Service Unavailable");
+			$GLOBALS['smarty']->assign('searchq',stripslashes($_GET['q']));
+			$GLOBALS['smarty']->display('function_disabled.tpl');
+			
+			ob_start();
+			print "\n\nHost: ".`hostname`."\n\n";
+			if (!empty($GLOBALS['USER']->user_id)) {
+				print "User: {$GLOBALS['USER']->user_id} [{$GLOBALS['USER']->realname}]\n";
+			}
+			print_r($this->criteria);
+			print_r($_SERVER);
+			$con = ob_get_clean();
+			mail('geograph@barryhunter.co.uk','[Geograph Disabled] '.$this->criteria->searchdesc,$con);
+			
+			exit;
+		}
+		
+	
 		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=`]+) where/i",$sql_where,$matches)) {
 			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\'`]+) where/i",'',$sql_where);
 			$sql_from .= " {$matches[1]} join {$matches[2]}";
