@@ -210,6 +210,7 @@ class SearchEngine
 			//this really should have been turned over to sphinx
 			header("HTTP/1.1 503 Service Unavailable");
 			$GLOBALS['smarty']->assign('searchq',stripslashes($_GET['q']));
+			$GLOBALS['smarty']->assign('temp',1);
 			$GLOBALS['smarty']->display('function_disabled.tpl');
 			
 			ob_start();
@@ -217,6 +218,7 @@ class SearchEngine
 			if (!empty($GLOBALS['USER']->user_id)) {
 				print "User: {$GLOBALS['USER']->user_id} [{$GLOBALS['USER']->realname}]\n";
 			}
+			unset($this->criteria->db);
 			print_r($this->criteria);
 			print_r($_SERVER);
 			$con = ob_get_clean();
@@ -567,6 +569,29 @@ END;
 		}
 		# /run_via_sphinx
 		###################
+
+                if (!empty($this->criteria->searchtext) && !empty($GLOBALS['smarty'])) {
+                        //this really should have been turned over to sphinx
+                        header("HTTP/1.1 503 Service Unavailable");
+                        $GLOBALS['smarty']->assign('searchq',stripslashes($_GET['q']));
+			$GLOBALS['smarty']->assign('temp',1);
+                        $GLOBALS['smarty']->display('function_disabled.tpl');
+
+                        ob_start();
+                        print "\n\nHost: ".`hostname`."\n\n";
+                        if (!empty($GLOBALS['USER']->user_id)) {
+                                print "User: {$GLOBALS['USER']->user_id} [{$GLOBALS['USER']->realname}]\n";
+                        }
+                        unset($this->criteria->db);
+                        print_r($this->criteria);
+                        print_r($_SERVER);
+                        $con = ob_get_clean();
+                        mail('geograph@barryhunter.co.uk','[Geograph Disabled] '.$this->criteria->searchdesc,$con);
+
+                        exit;
+                }
+
+
 	
 		//look for suggestions - this needs to be done before the filters are added - the same filters wont work on the gaz index
 		if ($this->criteria->searchclass == 'Placename' && strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE && isset($GLOBALS['smarty'])) {

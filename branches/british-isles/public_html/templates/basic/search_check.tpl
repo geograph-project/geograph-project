@@ -2,6 +2,12 @@
 {include file="_std_begin.tpl"}
 
 <h2>Advanced Search Builder</h2>
+<br/><br/>
+	<div style="color:red">
+	<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="15" height="15" align="left" style="margin-right:10px"/>
+	NOTE: Recently this form has been locked to only search your images. Let us <a href="/contact.php">know</a> if this is an issue for you. </div>
+<br/><br/>
+
 
 {if $errormsg}
 <p style="color:red"><b>{$errormsg}</b></p>
@@ -78,14 +84,12 @@
 			 <td><label for="user_name">contributor</label></td> 
 			 <td colspan="2"> 
 			 	<input type="text" name="user_name" id="user_name" value="{dynamic}{$user_name|escape:'html'}{/dynamic}" class="searchinput" style="width:200px"
-			 	title="enter the nickname of a contributor, the full name should work too. if you know it you can enter the users ID followed by a colon"/>
-				{dynamic}
-				{if $user->registered}
-					<input type="button" value="you!" onclick="this.form.user_name.value='{$user->user_id}:{$user->realname|escape:"html"}'">
-				{/if}
-				{/dynamic}
-				<input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label><br/>
-				<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"})</small></td>  
+			 	title="enter the nickname of a contributor, the full name should work too. if you know it you can enter the users ID followed by a colon"
+				readonly="readonly"/>
+				<div style="color:red">
+				<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="15" height="15" align="left" style="margin-right:10px"/>
+				NOTE: Recently this form has been locked to only search your images. Let us <a href="/contact.php">know</a> if this is an issue for you. </div>
+
 		  </tr> 
 		  <tr> 
 			 <td><label for="moderation_status">classification</label></td> 

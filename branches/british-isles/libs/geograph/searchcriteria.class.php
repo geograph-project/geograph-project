@@ -328,6 +328,9 @@ class SearchCriteria
 					$sorder = 'wgs84_lat';
 					break;
 				case 'imagetaken':
+				case 'SUBSTRING(imagetaken,1,7)':
+				case 'SUBSTRING(imagetaken,1,4)':
+				case 'SUBSTRING(imagetaken,1,3)':
 					$this->sphinx['compatible_order'] = 0;
 					$sorder = 'takendays';
 					break;
