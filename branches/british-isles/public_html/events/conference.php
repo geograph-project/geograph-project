@@ -44,6 +44,20 @@ if (!empty($_GET['action']))
 		
 			$smarty->assign_by_ref("data",$data);
 			
+			$total = array();
+			foreach ($data as $row) {
+				$total['Name']++;
+				if ($row['Speaking'] == 'Yes')
+					$total['Speaking']++;
+				if ($row['confirmed'] >0)
+					$total['Confirmed']++;
+				if ($row['cancelled'] >0)
+					$total['Cancelled']++;
+				if ($row['emailed'] >0)
+					$total['Emailed']++;
+			}
+			$smarty->assign_by_ref("total",$total);
+			
 			$template = "event_conference_list.tpl";
 			break;
 		
