@@ -48,6 +48,8 @@ if (!empty($_GET['action']))
 			break;
 		
 		case 'sendemail':
+			$USER->mustHavePerm('admin');
+			
 			$data = $db->getAll("SELECT * FROM conference_registration WHERE confirmed = 0 AND cancelled = 0 AND emailed = 0 LIMIT 10");
 			
 			$from_email = "conference@barryhunter.co.uk";
