@@ -16,7 +16,6 @@
 
 <table class="report sortable" id="events">
 <thead><tr>
-	<td>#</td>
 	<td sorted="asc">ID</td>
 	<td>Name</td>
 	<td>Nickname</td>
@@ -30,7 +29,6 @@
 {foreach from=$data item=item name=names}
 		{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 	<tr bgcolor="{$bgcolor}" id="row{$item.entry_id}">
-		<td align="right">{$smarty.foreach.names.iteration}</td>
 		<td align="right">{$item.entry_id}</td>
 		<td><a href="mailto:{$item.Email|escape:'html'}">{$item.Name|escape:'html'} {$item.Last|escape:'html'}</a></td>
 		<td>{$item.Nickname|escape:'html'}</td>
@@ -42,6 +40,15 @@
 	
 {/foreach}
 </tbody>
+<tfoot><tr class="totalrow sortbottom">
+	<td>Total</td>
+	<td>{$total.Name}</td>
+	<td>.</td>
+	<td>{$total.Speaking}</td>
+	<td>{$total.Confirmed}</td>
+	<td>{$total.Cancelled}</td>
+	<td>{$total.Emailed}</td>
+</tr></tfoot>
 </table>
 {else}
   <p>There are no listed items.</p>
