@@ -130,7 +130,7 @@ if (!empty($_GET['action']))
 
 					}
 					
-					$data = $db->getRow("SELECT * FROM conference_registration WHERE entry_id = entry_id");
+					$data = $db->getRow("SELECT * FROM conference_registration WHERE entry_id = $entry_id");
 				} else {
 					$smarty->assign('get',1);
 				}
