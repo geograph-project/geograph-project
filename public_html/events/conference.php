@@ -61,7 +61,7 @@ if (!empty($_GET['action']))
 				
 				$body .= "Thank you for your interest in attending the first Geograph Conference, 17th Feb 2010 in Southampton.\n\n";
 				
-				$body .= "We are pleased to say this message confirms your place should to still be able to attend, please click the link below and confirm!\n\n";
+				$body .= "We are pleased to say this message confirms your place should you still be able to attend, please click the link below and confirm!\n\n";
 				
 				
 				$body = wordwrap($body);
