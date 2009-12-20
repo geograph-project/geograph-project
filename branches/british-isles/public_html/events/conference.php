@@ -82,12 +82,6 @@ if (!empty($_GET['action']))
 				
 				$body = $body.wordwrap($body2);
 				
-				print "<p>To: $email</p>";
-				print "<h4>$subject</h4>";
-				print "<pre>$body</pre>";
-				print "<hr/>";
-				exit;
-				
 				if (@mail($email, $subject, $body, $received."From: $from_name <$from_email>")) 
 				{
 					$db->query("UPDATE conference_registration SET emailed = NOW() WHERE entry_id = {$row['entry_id']}");
