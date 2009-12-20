@@ -113,6 +113,17 @@ if (!empty($_GET['action']))
 			
 				$data = $db->getRow("SELECT * FROM conference_registration WHERE entry_id = $entry_id");
 				
+				if ($data['duplicates']) {
+				
+					$token=new Token;
+					$token->magic = md5($CONF['photo_hashing_secret'].$CONF['register_confirmation_secret']);
+					$token->setValue("eid", intval($data['duplicates']));
+					$token = $token->getToken();
+
+					$url = "http://{$_SERVER['HTTP_HOST']}/events/conference.php?action=confirm&ident=$token\n\n";
+					header("Location: $url");
+					exit;
+				}
 		
 				if (!empty($_POST) && $_GET['ident'] == $_POST['ident'] && $data['entry_id']) {
 		
