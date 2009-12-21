@@ -40,7 +40,7 @@ if (!empty($_GET['action']))
 		case 'listall':
 			$USER->mustHavePerm('admin');
 		
-			$data = $db->getAll("SELECT * FROM conference_registration WHERE cancelled = 0");
+			$data = $db->getAll("SELECT cr.*,count(comment != '') as comments FROM conference_registration cr LEFT JOIN conference_comment cc USING (entry_id) WHERE cancelled = 0 GROUP BY entry_id");
 		
 			$smarty->assign_by_ref("data",$data);
 			
@@ -61,6 +61,19 @@ if (!empty($_GET['action']))
 			$template = "event_conference_list.tpl";
 			break;
 		
+		case 'viewcomments':
+			if (!empty($_GET['entry_id'])) {
+				$entry_id = intval($_GET['entry_id']);
+				$data = $db->getAll("SELECT cr.*,cc.*,realname FROM conference_registration cr INNER JOIN conference_comment cc USING (entry_id) LEFT JOIN user USING (user_id) WHERE cr.entry_id = $entry_id ORDER BY cr.entry_id,cc.created");
+			} else {
+				$data = $db->getAll("SELECT cr.*,cc.*,realname FROM conference_registration cr INNER JOIN conference_comment cc USING (entry_id) LEFT JOIN user USING (user_id) WHERE confirmed = 0 AND comment != '' ORDER BY cr.entry_id,cc.created");
+			}
+			
+			$smarty->assign_by_ref("data",$data);
+			
+			$template = "event_conference_comments.tpl";
+			break;
+			
 		case 'sendspeakeremail':
 			$USER->mustHavePerm('admin');
 			
