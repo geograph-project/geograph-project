@@ -61,6 +61,60 @@ if (!empty($_GET['action']))
 			$template = "event_conference_list.tpl";
 			break;
 		
+		case 'sendspeakeremail':
+			$USER->mustHavePerm('admin');
+			
+			if (!empty($_GET['entry_id'])) {
+				$entry_id = intval($_GET['entry_id']);
+				$data = $db->getAll("SELECT * FROM conference_registration WHERE cancelled = 0 AND entry_id = $entry_id");
+			} else {
+				$data = $db->getAll("SELECT * FROM conference_registration WHERE confirmed = 1 AND Speaking = 'Yes' AND sentspeaker = 0 LIMIT 10");
+			}
+			
+			$from_email = "conference@barryhunter.co.uk";
+			$from_name = "Geograph Conference";
+			
+			foreach ($data as $idx => $row) {
+				
+				$email = $row['Email'];
+				$subject = "[Geograph] Conference - call for Talks";
+				$body = "Dear {$row['Name']},\n\n";
+				
+				$body .= "Thank you for your interest in speaking at our first Conference, on the 17th Feb 2010 in Southampton.\n\n";
+				
+				$body .= "Please fill out the form below to let us know about your idea fo a talk:\n\n";
+				
+				$body = wordwrap($body);
+				
+				$body .= "http://spreadsheets.google.com/viewform?formkey=dDI2aTE3RVBONWtVWWtxT3NGWGhqVEE6MA\n\n";
+				
+				$body .= " or: http://bit.ly/8rRgbN if the above link doesn't work\n\n";
+							
+				$body2.="Kind Regards,\n\n";
+				$body2.="Barry\non behalf of the Geograph Team\n\n";
+				
+				$body = $body.wordwrap($body2);
+				
+				
+				if (@mail($email, $subject, $body, $received."From: $from_name <$from_email>")) 
+				{
+					$db->query("UPDATE conference_registration SET sentspeaker = NOW() WHERE entry_id = {$row['entry_id']}");
+
+					print "SENT TO $email<br/>";
+				}
+				else 
+				{
+					print "SEND TO $email FAILED<br/>";
+					
+				}
+				
+			}
+			
+			print "<hr/>DONE";
+			exit;
+			
+			break;
+			
 		case 'sendemail':
 			$USER->mustHavePerm('admin');
 			
