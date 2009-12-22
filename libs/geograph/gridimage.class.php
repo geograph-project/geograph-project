@@ -371,6 +371,7 @@ class GridImage
 	*/
 	function loadFromId($gridimage_id,$usesearch = false)
 	{
+		global $CONF;
 		//todo memcache
 		
 		$db=&$this->_getDB(30); //we dont tollerate much delay
@@ -378,6 +379,15 @@ class GridImage
 		$this->_clear();
 		if (preg_match('/^\d+$/', $gridimage_id))
 		{
+			if (!empty($CONF['use_insertionqueue'])) {
+				$check = $db->GetOne("select gridimage_id from gridimage_queue where gridimage_id={$gridimage_id} limit 1");
+				if ($check == $gridimage_id) {
+					$image->unavailable = true;
+					return false;
+				}
+			}
+		
+		
 			if ($usesearch) {
 				$row = &$db->GetRow("select * from gridimage_search where gridimage_id={$gridimage_id} limit 1");
 			} else {

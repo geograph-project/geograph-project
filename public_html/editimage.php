@@ -85,6 +85,16 @@ $image=new GridImage;
 if (isset($_REQUEST['id']))
 {
 	$image->loadFromId($_REQUEST['id']);
+	
+	if (!empty($CONF['use_insertionqueue']) && isset($image->unavailable)) {
+		
+		header("HTTP/1.1 503 Service Unavailable");
+		$smarty->display("image_notready.tpl");
+
+		exit;
+	}
+	
+	
 	$isowner=($image->user_id==$USER->user_id)?1:0;
 	$isadmin=(!$isowner && $USER->hasPerm('ticketmod'))?1:0;
 

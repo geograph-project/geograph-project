@@ -546,8 +546,10 @@ class UploadManager
 		
 		
 		//get sequence number
-		$seq_no = $this->db->GetOne("select max(seq_no) from gridimage ".
-			"where gridsquare_id={$this->square->gridsquare_id}");
+		$seq_no = $this->db->GetOne("select max(seq_no) from gridimage where gridsquare_id={$this->square->gridsquare_id}");
+		if (!empty($CONF['use_insertionqueue'])) {
+			$seq_no = max($seq_no,$this->db->GetOne("select max(seq_no) from gridimage_queue where gridsquare_id={$this->square->gridsquare_id}"));
+		}
 		$seq_no=max($seq_no+1, 0);
 		
 		//ftf is zero under image is moderated
@@ -563,9 +565,15 @@ class UploadManager
 			fclose($f);
 		}
 		
+		if (!empty($CONF['use_insertionqueue'])) {
+			$table = "gridimage_queue";
+		} else {
+			$table = "gridimage";
+		}
+		
 		//create record
 		// nateasting/natnorthings will only have values if getNatEastings has been called (in this case because setByFullGridRef has been called IF an exact location is specifed)
-		$sql=sprintf("insert into gridimage(".
+		$sql=sprintf("insert into $table (".
 			"gridsquare_id, seq_no, user_id, ftf,".
 			"moderation_status,title,comment,nateastings,natnorthings,natgrlen,imageclass,imagetaken,".
 			"submitted,viewpoint_eastings,viewpoint_northings,viewpoint_grlen,view_direction,use6fig,user_status,realname) values ".
