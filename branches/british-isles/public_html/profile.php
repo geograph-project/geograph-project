@@ -189,14 +189,16 @@ if ($template=='profile.tpl')
 		}
 	}
 	
-	customExpiresHeader(360,false,true);
 	
 	if ($uid==$USER->user_id) {
 		$level = 1;
+		customExpiresHeader(60,false,true);
 	} elseif ($USER->hasPerm('moderator')) {
 		$level = 2;
+		customExpiresHeader(120,false,true);
 	} else {
 		$level = 0;
+		customExpiresHeader(360,false,true);
 	}
 	
 	$ab=floor($uid/10000);
