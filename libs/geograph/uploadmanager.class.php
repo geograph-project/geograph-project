@@ -517,7 +517,7 @@ class UploadManager
 	*/
 	function commit()
 	{
-		global $USER,$CONF;
+		global $USER,$CONF,$memcache;
 		
 		if($this->validUploadId($this->upload_id))
 		{
@@ -546,11 +546,19 @@ class UploadManager
 		
 		
 		//get sequence number
-		$seq_no = $this->db->GetOne("select max(seq_no) from gridimage where gridsquare_id={$this->square->gridsquare_id}");
-		if (!empty($CONF['use_insertionqueue'])) {
-			$seq_no = max($seq_no,$this->db->GetOne("select max(seq_no) from gridimage_queue where gridsquare_id={$this->square->gridsquare_id}"));
+		
+		$mkey = $this->square->gridsquare_id;
+		$seq_no =& $memcache->name_get('sid',$mkey);
+		
+		if (empty($seq_no) && !empty($CONF['use_insertionqueue'])) {
+			$seq_no = $this->db->GetOne("select max(seq_no) from gridimage_queue where gridsquare_id={$this->square->gridsquare_id}");
+		} 
+		if (empty($seq_no)) {
+			$seq_no = $this->db->GetOne("select max(seq_no) from gridimage where gridsquare_id={$this->square->gridsquare_id}");
 		}
 		$seq_no=max($seq_no+1, 0);
+		
+		$memcache->name_set('sid',$mkey,$seq_no,false,$memcache->period_long);
 		
 		//ftf is zero under image is moderated
 		$ftf=0;
