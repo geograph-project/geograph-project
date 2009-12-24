@@ -67,7 +67,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$where[] = "length(comment) > FLOOR(40 + (RAND() * 60))"; 
 	$where= implode(' AND ',$where);
 	
-	$results = $db->getAll($sql="SELECT $fields FROM  WHERE $where GROUP BY s.snippet_id HAVING images > 1 ORDER BY s.created DESC LIMIT 10"); 
+	$results = $db->getAll($sql="SELECT $fields FROM $tables WHERE $where GROUP BY s.snippet_id HAVING images > 1 ORDER BY s.created DESC LIMIT 10"); 
 	
 	$smarty->assign_by_ref('results',$results);
 
