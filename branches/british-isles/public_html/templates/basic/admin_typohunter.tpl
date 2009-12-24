@@ -23,7 +23,7 @@
 	  <div style="float:left; position:relative">
 		<a name="{$image->gridimage_id}"><input type="text" name="title" size="80" value="{$image->title|escape:'html'}" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''"/></a>
 		<br/>
-		[[<a href="/photo/{$image->gridimage_id}">{$image->gridimage_id}</a>]] for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $image->realname} by <a title="view user profile" href="/profile/{$user->user_id}">{$image->realname}</a>{/if}<br/>
+		[[<a href="/photo/{$image->gridimage_id}">{$image->gridimage_id}</a>]] for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $image->realname} by <a title="view user profile" href="/profile/{$image->user_id}">{$image->realname}</a>{/if}<br/>
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 		
 		<div>{if $image->comment}<textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea>{/if}<input type="submit" name="create" value="continue &gt;"/>
