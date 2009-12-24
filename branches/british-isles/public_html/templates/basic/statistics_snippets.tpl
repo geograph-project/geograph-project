@@ -5,14 +5,14 @@
 
 <h3>Overview</h3>
  
- <p>So far we have <b>{$snippets.snippets|thousends}</b> {external href="/article/Shared-Descriptions" text="Shared Descriptions" title="read more about shared descriptions in our documentation section"}, for <b>{$snippets.squares|thousends}</b> different squares; contributed by <b>{$snippets.users|thousends}</b> users, over the course of <b>{$snippets.days|thousends}</b> days.</p>
+ <p>So far we have <b>{$snippets.snippets|thousends}</b> <a href="/article/Shared-Descriptions" title="read more about shared descriptions in our documentation section">Shared Descriptions</a>, for <b>{$snippets.squares|thousends}</b> different squares; contributed by <b>{$snippets.users|thousends}</b> users, over the course of <b>{$snippets.days|thousends}</b> days.</p>
  
  <p>These are used on <b>{$gridimage_snippets.images|thousends}</b> images; attached by <b>{$snippets.users|thousends}</b> different users, over the course of <b>{$snippets.days|thousends}</b> days.</p>
 
 
-<h3>and a sample of recent collections <a href="/snippet-syndicator.php" class="xml-rss">RSS</a></h3>
+<h3>A sample of recent shared descriptions <a href="/snippet-syndicator.php" class="xml-rss">RSS</a></h3>
 
-{foreach from=$results2 item=item}
+{foreach from=$results item=item}
 	
 	<div style="border-top:1px solid gray;padding-top:2px;padding-bottom:8px">
 
@@ -30,9 +30,9 @@
 {/foreach}
 
 
-<h3>Some of the biggest collections</h3>
+<h3>Some active shared descriptions</h3>
 
-{foreach from=$results item=item}
+{foreach from=$results2 item=item}
 	
 	<div style="border-top:1px solid gray;padding-top:2px;padding-bottom:8px">
 

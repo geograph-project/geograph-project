@@ -33,14 +33,12 @@ $cacheid='statistics|main';
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*3; //6hr cache
-	
 
 
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db = GeographDatabaseConnection(true);
 	
-
 	$smarty->assign("snippets",  $db->GetRow("
 		select 
 			count(*) as snippets,
@@ -49,7 +47,6 @@ if (!$smarty->is_cached($template, $cacheid))
 			count(distinct grid_reference) as squares
 		from snippet 
 		where enabled = 1"));
-
 
 	$smarty->assign("gridimage_snippets",  $db->GetRow("
 		select 
@@ -61,30 +58,31 @@ if (!$smarty->is_cached($template, $cacheid))
 		where gridimage_id < 4294967296"));
 	
 	
-	$where = array();
-	$where[] = "enabled = 1"; 
-	$where= implode(' AND ',$where);
+	$fields = "s.*,realname,COUNT(gs.snippet_id) AS images";
+	$tables = "snippet s INNER JOIN user u USING (user_id) LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296)";
 	
-	$results = $db->getAll($sql="SELECT s.*,realname,COUNT(gs.snippet_id) AS images FROM snippet s INNER JOIN user u USING (user_id) LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296) WHERE $where GROUP BY s.snippet_id ORDER BY images DESC LIMIT 10"); 
-	
-	$smarty->assign_by_ref('results',$results);
-
-
+	#A sample of recent shared descriptions
 	$where = array();
 	$where[] = "enabled = 1"; 
 	$where[] = "length(comment) > FLOOR(40 + (RAND() * 60))"; 
 	$where= implode(' AND ',$where);
 	
-	$results2 = $db->getAll($sql="SELECT s.*,realname,COUNT(gs.snippet_id) AS images FROM snippet s INNER JOIN user u USING (user_id) LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296) WHERE $where GROUP BY s.snippet_id HAVING images > 1 ORDER BY CRC32(s.snippet_id) LIMIT 10"); 
+	$results = $db->getAll($sql="SELECT $fields FROM  WHERE $where GROUP BY s.snippet_id HAVING images > 1 ORDER BY s.created DESC LIMIT 10"); 
+	
+	$smarty->assign_by_ref('results',$results);
+
+
+	#Some active shared descriptions
+	$where = array();
+	$where[] = "enabled = 1"; 
+	$where= implode(' AND ',$where);
+	
+	$results2 = $db->getAll($sql="SELECT $fields FROM $tables WHERE $where GROUP BY s.snippet_id HAVING images > 2 ORDER BY gs.created DESC LIMIT 15"); 
 	
 	$smarty->assign_by_ref('results2',$results2);
 
-
-
-} 
+}
 
 
 $smarty->display($template, $cacheid);
 
-	
-?>
