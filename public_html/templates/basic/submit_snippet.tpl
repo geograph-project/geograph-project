@@ -83,16 +83,15 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 {/foreach}
 
 <div style="font-size:0.7em;color:green;border-top:2px solid gray">&nbsp;Shared Descriptions available: {if $recent}
-	(<a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}">Search/Local Filter</a>/<b>My Recently used</b>)
+	(<a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}">Search/Local Filter</a>/<b>My Recently used</b>)</div>
 {else}	
-	(<b>Search/Local Filter</b>/<a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;recent=true">My Recently used</a>)
-{/if}</div>
+	(<b>Search/Local Filter</b>/<a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;recent=true">My Recently used</a>)</div>
 
 <div class="interestBox" style="margin:4px">
 Within radius:{if $centisquare}
 <label for="rad01" class="nowrap"><input type="radio" name="radius" id="rad01" value="0.1"{if $radius == 0.1} checked{/if}/> centisquare</label> / 
 {/if}
-<label for="rad1" class="nowrap"><input type="radio" name="radius" id="rad1" value="1" {if $radius == 1 || !$radius} checked{/if}/> {$grid_reference}</label> / 
+<label for="rad1" class="nowrap"><input type="radio" name="radius" id="rad1" value="1" {if $radius == 1 || !$radius} checked{/if}/> {$grid_reference|default:'gridsquare'}</label> / 
 <label for="rad2" class="nowrap"><input type="radio" name="radius" id="rad2" value="2" {if $radius == 2} checked{/if}/> surrounding gridsquares</label> / 
 <label for="rad10" class="nowrap"><input type="radio" name="radius" id="rad10" value="10"{if $radius == 10} checked{/if}/> within 10km</label> /
 <label for="rad1000" class="nowrap"><input type="radio" name="radius" id="rad1000" value="1000"{if $radius == 1000} checked{/if}/> anywhere <sub>(keyword needed below!)</sub></label>  <br/>
@@ -104,6 +103,7 @@ Within radius:{if $centisquare}
  
  <input type="submit" value="Update"/>
 </div>
+{/if}
 
 {foreach from=$results item=item}
 	
