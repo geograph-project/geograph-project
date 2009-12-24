@@ -165,9 +165,6 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 
 
 if ($gid) {
-	list($usec, $sec) = explode(' ',microtime());
-		$querytime_before = ((float)$usec + (float)$sec);
-	
 	$used = $db->getAll("SELECT * FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) WHERE gridimage_id = $gid ORDER BY gridimage_snippet.created");
 
 	$smarty->assign_by_ref('used',$used);
@@ -193,129 +190,135 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'])) {
 			print "invalid GR!";
 		}
 	}
-	$where = array();
-	$orderby = "ORDER BY s.snippet_id";
-	
-	if (!empty($_REQUEST['q']) && is_numeric($_REQUEST['q'])) {  
-	
-		$ids = $db->getCol("SELECT snippet_id FROM gridimage_snippet WHERE gridimage_id = ".intval($_REQUEST['q']));
-		
-		$ids[] = intval($_REQUEST['q']); //incase it's a snippet ID
-		
-		$where[] = "s.snippet_id IN (".implode(',',$ids).")";
-		
-		$_POST['radius'] = 1000; //it ignored anyway. 
-		
-	} elseif ($CONF['sphinx_host'] && !empty($_REQUEST['q'])) {  //todo - for the moment we only use sphinx for full text searches- because of the indexing delay 
-	
-		require_once('geograph/conversions.class.php');
-		$conv = new Conversions;
-		
-		if (!empty($_REQUEST['page'])) {
-			$pg = intval($_REQUEST['page']);
-		} else {
-			$pg = 1;
-		}
-		
-		$q=trim($_REQUEST['q']);
-		
-		$sphinx = new sphinxwrapper($q);
-		$sphinx->pageSize = $pgsize = 25;
+	$fields = '';
 
-		if (preg_match('/\bp(age|)(\d+)\s*$/',$q,$m)) {
-			$pg = intval($m[2]);
-			$sphinx->q = preg_replace('/\bp(age|)\d+\s*$/','',$sphinx->q);
-		}
-
-		$smarty->assign('q', $sphinx->qclean);
-		if ($q) {
-			$title = "Matching word search [ ".htmlentities($sphinx->qclean)." ]";
-		}
+	if (!empty($_REQUEST['recent'])) {  
 		
-		if (!empty($_REQUEST['gr']) && (empty($_REQUEST['radius']) || $_REQUEST['radius'] <= 20) ) {
-			$data = array();
-			$data['x'] = $square->x;
-			$data['y'] = $square->y;
-			if ($square->natgrlen > 4) {
-				list($data['lat'],$data['long']) = $conv->gridsquare_to_wgs84($square);
-			}
-			$data['d'] = !empty($_REQUEST['radius'])?floatval($_REQUEST['radius']):1;
-			$data['sort'] = "@geodist ASC, @relevance DESC, @id DESC";
-			
-			$sphinx->setSort($data['sort']);
-			$sphinx->setSpatial($data);
-		}
+		$results = $db->getAll($sql="SELECT s.* $fields FROM snippet s INNER JOIN gridimage_snippet gs USING (snippet_id) WHERE gs.user_id = {$USER->user_id} AND gridimage_id != $gid GROUP BY s.snippet_id ORDER BY gs.created DESC LIMIT 50"); 
 		
-		$filters = array();
-		if (!empty($_REQUEST['onlymine'])) {
-			$filters['user_id'] = array($USER->user_id);
-			$smarty->assign("onlymine",1);
-		}
-		if (!empty($filters)) {
-			$sphinx->addFilters($filters);
-		}
 		
-		$ids = $sphinx->returnIds($pg,'snippet');
-
-		$smarty->assign("query_info",$sphinx->query_info);
-
-		if (!empty($ids) && count($ids)) {
-			$id_list = implode(',',$ids);
-			$where[] = "s.snippet_id IN($id_list)";
-			$orderby = "ORDER BY FIELD(s.snippet_id,$id_list)";
-		} else {
-			$where[] = '0';
-		}
+		$smarty->assign('recent',1);
+		
 	} else {
-		if (!empty($_REQUEST['gr']) && (empty($_REQUEST['radius']) || $_REQUEST['radius'] <= 20) ) {
-			$radius = !empty($_REQUEST['radius'])?intval($_REQUEST['radius']*1000):1000;
+		$where = array();
+		$orderby = "ORDER BY s.snippet_id";
+	
+		if (!empty($_REQUEST['q']) && is_numeric($_REQUEST['q'])) {  
 
-			$left=$square->nateastings-$radius;
-			$right=$square->nateastings+$radius;
-			$top=$square->natnorthings-$radius;
-			$bottom=$square->natnorthings+$radius;
+			$ids = $db->getCol("SELECT snippet_id FROM gridimage_snippet WHERE gridimage_id = ".intval($_REQUEST['q']));
 
-			$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+			$ids[] = intval($_REQUEST['q']); //incase it's a snippet ID
 
-			$fields = ",if(natnorthings > 0,(nateastings-{$square->nateastings})*(nateastings-{$square->nateastings})+(natnorthings-{$square->natnorthings})*(natnorthings-{$square->natnorthings}),0) as distance";
-			
-			$where[] = "CONTAINS(
-					GeomFromText($rectangle),
-					point_en)";
+			$where[] = "s.snippet_id IN (".implode(',',$ids).")";
+
+			$_POST['radius'] = 1000; //it ignored anyway. 
+
+		} elseif ($CONF['sphinx_host'] && !empty($_REQUEST['q'])) {  //todo - for the moment we only use sphinx for full text searches- because of the indexing delay 
+
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;
+
+			if (!empty($_REQUEST['page'])) {
+				$pg = intval($_REQUEST['page']);
+			} else {
+				$pg = 1;
+			}
+
+			$q=trim($_REQUEST['q']);
+
+			$sphinx = new sphinxwrapper($q);
+			$sphinx->pageSize = $pgsize = 25;
+
+			if (preg_match('/\bp(age|)(\d+)\s*$/',$q,$m)) {
+				$pg = intval($m[2]);
+				$sphinx->q = preg_replace('/\bp(age|)\d+\s*$/','',$sphinx->q);
+			}
+
+			$smarty->assign('q', $sphinx->qclean);
+			if ($q) {
+				$title = "Matching word search [ ".htmlentities($sphinx->qclean)." ]";
+			}
+
+			if (!empty($_REQUEST['gr']) && (empty($_REQUEST['radius']) || $_REQUEST['radius'] <= 20) ) {
+				$data = array();
+				$data['x'] = $square->x;
+				$data['y'] = $square->y;
+				if ($square->natgrlen > 4) {
+					list($data['lat'],$data['long']) = $conv->gridsquare_to_wgs84($square);
+				}
+				$data['d'] = !empty($_REQUEST['radius'])?floatval($_REQUEST['radius']):1;
+				$data['sort'] = "@geodist ASC, @relevance DESC, @id DESC";
+
+				$sphinx->setSort($data['sort']);
+				$sphinx->setSpatial($data);
+			}
+
+			$filters = array();
+			if (!empty($_REQUEST['onlymine'])) {
+				$filters['user_id'] = array($USER->user_id);
+				$smarty->assign("onlymine",1);
+			}
+			if (!empty($filters)) {
+				$sphinx->addFilters($filters);
+			}
+
+			$ids = $sphinx->returnIds($pg,'snippet');
+
+			$smarty->assign("query_info",$sphinx->query_info);
+
+			if (!empty($ids) && count($ids)) {
+				$id_list = implode(',',$ids);
+				$where[] = "s.snippet_id IN($id_list)";
+				$orderby = "ORDER BY FIELD(s.snippet_id,$id_list)";
+			} else {
+				$where[] = '0';
+			}
+		} else {
+			if (!empty($_REQUEST['gr']) && (empty($_REQUEST['radius']) || $_REQUEST['radius'] <= 20) ) {
+				$radius = !empty($_REQUEST['radius'])?intval($_REQUEST['radius']*1000):1000;
+
+				$left=$square->nateastings-$radius;
+				$right=$square->nateastings+$radius;
+				$top=$square->natnorthings-$radius;
+				$bottom=$square->natnorthings+$radius;
+
+				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
+				$fields = ",if(natnorthings > 0,(nateastings-{$square->nateastings})*(nateastings-{$square->nateastings})+(natnorthings-{$square->natnorthings})*(natnorthings-{$square->natnorthings}),0) as distance";
+
+				$where[] = "CONTAINS(
+						GeomFromText($rectangle),
+						point_en)";
+			}
+
+			if (!empty($_REQUEST['onlymine'])) {
+				$where[] = "s.user_id = {$USER->user_id}";
+				$smarty->assign("onlymine",1);
+			}
+
+			if (!empty($_REQUEST['q'])) {
+				$q=mysql_real_escape_string(trim($_REQUEST['q']));
+
+				$where[] = "(title LIKE '%$q%' OR comment LIKE '%$q%')";
+				$smarty->assign('q',trim($_POST['q']));
+			}
+
+			if (count($where) == 0) {
+				$where[] = "0";
+				$smarty->assign('empty',1);
+			}
+
+			$where[] = "enabled = 1"; 
 		}
-		
-		if (!empty($_REQUEST['onlymine'])) {
-			$where[] = "s.user_id = {$USER->user_id}";
-			$smarty->assign("onlymine",1);
-		}
-		
-		if (!empty($_REQUEST['q'])) {
-			$q=mysql_real_escape_string(trim($_REQUEST['q']));
-			
-			$where[] = "(title LIKE '%$q%' OR comment LIKE '%$q%')";
-			$smarty->assign('q',trim($_POST['q']));
-		}
-		
-		if (count($where) == 0) {
-			$where[] = "0";
-			$smarty->assign('empty',1);
-		}
-		
-		$where[] = "enabled = 1"; 
+
+		$smarty->assign_by_ref('radius',$_POST['radius']);
+
+		$where[] = 'gridimage_id IS NULL';
+		$where= implode(' AND ',$where);
+
+		$results = $db->getAll($sql="SELECT s.* $fields FROM snippet s LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id = $gid) WHERE $where $orderby LIMIT 200"); //the left join is to exclude results already attached to this image
+		#print $sql;
 	}
-	
-	$smarty->assign_by_ref('radius',$_POST['radius']);
-	
-	$where[] = 'gridimage_id IS NULL';
-	$where= implode(' AND ',$where);
-	
-	$results = $db->getAll($sql="SELECT s.* $fields FROM snippet s LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id = $gid) WHERE $where $orderby"); //the left join is to exclude results already attached to this image
-	#print $sql;
-	
-	list($usec, $sec) = explode(' ',microtime());
-	$querytime_after = ((float)$usec + (float)$sec);
-	
-	#$smarty->assign("query_info", "time: ".($querytime_after - $querytime_before));
 	
 	if ($fields) {
 		foreach ($results as $id => $row) {
