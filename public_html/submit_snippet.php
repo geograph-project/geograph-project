@@ -97,13 +97,14 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 	
 	$db->Execute('INSERT INTO snippet SET created=NOW(),point_en=GeomFromText('.$point.'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 	
-	$updates = array();
-	$updates['user_id'] = $USER->user_id;
-	$updates['snippet_id'] = $db->Insert_ID();
-	$updates['gridimage_id'] = $gid;
-	
-	$db->Execute('INSERT INTO gridimage_snippet SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+	if ($gid) {
+		$updates = array();
+		$updates['user_id'] = $USER->user_id;
+		$updates['snippet_id'] = $db->Insert_ID();
+		$updates['gridimage_id'] = $gid;
 
+		$db->Execute('INSERT INTO gridimage_snippet SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+	}
 	if ($gid < 4294967296) {
 		//clear any caches involving this photo
 		$ab=floor($gid/10000);

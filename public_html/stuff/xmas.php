@@ -67,7 +67,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	
 	$smarty->assign_by_ref("year",$cacheid);
 	
-    require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
 	
@@ -75,14 +75,14 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$data['taken_start'] = "$cacheid-12-25";
 		$data['taken_end'] = $data['taken_start'];
 		
-		$image->imagetaken = $data['taken_start'];					
+		$image->imagetaken = $data['taken_start'];
 		$data['taken_startString'] = getFormattedDate($data['taken_start']);
 		
 		$data['orderby'] = 'gridimage_id'; 
 		$data['reverse_order_ind'] = 1; 
 		$sortorders = array('gridimage_id'=>'Date Submitted');
 
-		$data['searchtext'] = "category:christmas";
+		$data['searchtext'] = "(category:christmas day) OR (snippet_title:midday christmas)";
 
 		$engine = new SearchEngineBuilder('#'); 
 		$i = $engine->buildAdvancedQuery($data,false);
@@ -93,5 +93,4 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 $smarty->display($template, $cacheid);
 
-	
-?>
+
