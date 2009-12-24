@@ -1473,7 +1473,7 @@ class GeographMap
 				//tofix - removed the $rectangle - pretty much we only do national xmas maps anyway...
 				$sql="select x,y,gi.gridimage_id,gi.user_id,realname from gridimage_search gi
 				left join gridimage_snippet gs using (gridimage_id)
-				inner join snippet s using (snippet_id)
+				left join snippet s using (snippet_id)
 				where imagetaken = '$year-12-25'
 				and ( gi.imageclass = 'christmas day $year' OR s.title = 'midday christmas $year') 
 				group by gi.gridimage_id
