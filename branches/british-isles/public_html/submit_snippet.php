@@ -173,7 +173,7 @@ if (empty($_GET['gr']) && !empty($_GET['gr2'])) {
 	$_GET['gr'] = $_GET['gr2'];
 }
 
-if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'])) {
+if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['recent'])) {
 	$square=new GridSquare;
 	
 	$grid_given=true;
