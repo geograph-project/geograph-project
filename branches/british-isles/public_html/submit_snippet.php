@@ -195,7 +195,17 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'])) {
 	$where = array();
 	$orderby = "ORDER BY s.snippet_id";
 	
-	if ($CONF['sphinx_host'] && !empty($_REQUEST['q'])) {  //todo - for the moment we only use sphinx for full text searches- because of the indexing delay 
+	if (!empty($_REQUEST['q']) && is_numeric($_REQUEST['q'])) {  
+	
+		$ids = $db->getCol("SELECT snippet_id FROM gridimage_snippet WHERE gridimage_id = ".intval($_REQUEST['q']));
+		
+		$ids[] = intval($_REQUEST['q']); //incase it's a snippet ID
+		
+		$where[] = "s.snippet_id IN (".implode(',',$ids).")";
+		
+		$_POST['radius'] = 1000; //it ignored anyway. 
+		
+	} elseif ($CONF['sphinx_host'] && !empty($_REQUEST['q'])) {  //todo - for the moment we only use sphinx for full text searches- because of the indexing delay 
 	
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
