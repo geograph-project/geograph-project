@@ -43,7 +43,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	$db = GeographDatabaseConnection(false);
 
 
-	$data = $db->getRow("SELECT s.*,realname FROM snippet s INNER JOIN user USING (user_id) WHERE snippet_id = $snippet_id AND enabled = 1");
+	$data = $db->getRow("SELECT s.*,realname FROM snippet s LEFT JOIN user USING (user_id) WHERE snippet_id = $snippet_id AND enabled = 1");
 	
 	if ($data['snippet_id']) {
 	
