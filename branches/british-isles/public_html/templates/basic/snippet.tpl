@@ -12,7 +12,9 @@
 {if $comment}
 	<div class="caption640" style="border:1px solid silver;padding:10px;">{$comment}</div>
 {/if}
+{if $user_id}
 <div style="text-align:center;position:relative;">By <a href="/profile/{$user_id}">{$realname|escape:'html'}</a></div>
+{/if}
 
 {if $others} 
 	<div style="float:right;position:relative;padding:8px; border-left:2px solid gray;height:300px">
