@@ -340,12 +340,19 @@ if (isset($_GET['review'])) {
 
 if (isset($_GET['xmas'])) {
 	
-	$ii = $db->getAll("select gridsquare_id from gridimage as gi where imageclass like '%christmas%' and moderation_status = 'pending' and submitted > date_sub(now(),interval 1 day) limit 10");
+	$year = date('Y');
+	
+	$ii = $db->getAll("select gridsquare_id from gridimage as gi 
+	left join gridimage_snippet gs using (gridimage_id)
+	left join snippet s using (snippet_id)
+	where (gi.imageclass = 'christmas day $year' OR s.title = 'midday christmas $year')
+	and moderation_status = 'pending' 
+	and submitted > date_sub(now(),interval 1 day)");
 	
 	foreach ($ii as $i => $row) {
 		$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$row['gridsquare_id']}");
 	}
-	$sql_where .= " AND (lock_type = 'modding' OR imageclass like '%christmas%')";
+	$sql_where .= " AND (lock_type = 'modding')";
 }
 
 
