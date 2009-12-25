@@ -88,7 +88,7 @@ $db=NewADOConnection($GLOBALS['DSN']);
 
 $sql="select snippet_id,title,comment,created,wgs84_lat,wgs84_long,realname
 from snippet
-	inner join user using (user_id)
+	left join user using (user_id)
 where enabled = 1 $crit
 order by snippet_id desc
 limit 96";
