@@ -299,7 +299,7 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 	$where[] = "enabled = 1"; 
 	$where= implode(' AND ',$where);
 	
-	$results = $db->getAll($sql="SELECT s.*,realname,COUNT(gs.snippet_id) AS images,SUM(gs.user_id = {$USER->user_id}) AS yours $fields FROM snippet s INNER JOIN user u USING (user_id) LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296) WHERE $where GROUP BY s.snippet_id $orderby"); 
+	$results = $db->getAll($sql="SELECT s.*,realname,COUNT(gs.snippet_id) AS images,SUM(gs.user_id = {$USER->user_id}) AS yours $fields FROM snippet s LEFT JOIN user u USING (user_id) LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296) WHERE $where GROUP BY s.snippet_id $orderby"); 
 	
 	list($usec, $sec) = explode(' ',microtime());
 	$querytime_after = ((float)$usec + (float)$sec);
