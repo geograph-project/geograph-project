@@ -61,6 +61,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$sql = "SELECT MAX(gridimage_id) FROM gridimage_search";
 	calc("Last Moderated Image",$sql);
+	
+	$data = $db->GetRow("select count(*) as `count`,(unix_timestamp(now()) - unix_timestamp(min(submitted))) as age from gridimage where moderation_status='pending'");
+	
+	$table[] = array("Parameter"=>"Images Pending","Value"=>$data['count']);
+	$table[] = array("Parameter"=>"Oldest Pending","Value"=>$data['age'].' hours');
+	
 
 $table[] = array("Parameter"=>'',"Value"=>'');
 	
@@ -101,13 +107,13 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 $table[] = array("Parameter"=>'',"Value"=>'');
 	
 	$sql = "SELECT COUNT(*) FROM geobb_posts WHERE post_time > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
-	calc("Forum Posts in last 24 hours",$sql);
+	calc("Forum Posts in last 24 hours",$sql,3600);
 
 	$sql = "SELECT COUNT(DISTINCT poster_id) FROM geobb_posts WHERE post_time > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
-	calc("Forum Posters in last 24 hours",$sql);
+	calc("Forum Posters in last 24 hours",$sql,3600);
 
 	$sql = "SELECT COUNT(DISTINCT user_id) FROM geobb_lastviewed WHERE ts > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
-	calc("Forum Viewers in last 24 hours",$sql);
+	calc("Forum Viewers in last 24 hours",$sql,3600);
 
 $table[] = array("Parameter"=>'',"Value"=>'');
 	
@@ -131,13 +137,16 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 	}
 	
 	$sql = "SELECT count(*) FROM event WHERE status='pending'";
-	calc("Pending Hamster Tasks",$sql);
+	calc("Pending Hamster Tasks",$sql,100);
 		
 	$sql = "SELECT COUNT(*) FROM kmlcache WHERE rendered = 0";
-	calc("Superlayers tiles to update",$sql);
+	calc("Superlayers tiles to update",$sql,3600);
 	
 	$sql = "SELECT COUNT(DISTINCT url) FROM gridimage_link WHERE next_check < NOW()";
 	calc("Links waiting to be checked",$sql);
+	
+	$sql = "SELECT COUNT(*) FROM kmlcache WHERE rendered = 0";
+	calc("Images in prepending queue",$sql);
 	
 	$smarty->assign_by_ref('table', $table);
 	
