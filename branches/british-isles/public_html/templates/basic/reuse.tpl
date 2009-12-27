@@ -152,9 +152,9 @@ licensed for reuse under this [url=http://creativecommons.org/licenses/by-sa/2.0
 
 The following is the recommended template for using on the photo page. You should <a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">download the image</a>, and upload to {external href="http://commons.wikimedia.org/wiki/Main_Page" text="wikimedia commons"}.
 
-<form><textarea rows="7" style="font-size:0.8em">== Summary ==
+<form><textarea rows="7" style="font-size:0.8em">== {{int:filedesc}} ==
 {literal}{{{/literal}Information
-|Description={$image->title|escape:'html'}
+|Description={literal}{{{/literal}en|1={$image->title|escape:'html'}{literal}}}{/literal}
 |Source=From [http://{$http_host}/photo/{$image->gridimage_id} geograph.org.uk]
 {if $image->imagetaken && strpos($image->imagetaken,'0000') !== 0}
 |Date={$image->imagetaken|replace:'-00':''}
@@ -170,7 +170,7 @@ The following is the recommended template for using on the photo page. You shoul
 {literal}{{{/literal}Location dec|{$lat|string_format:"%.5f"}|{$long|string_format:"%.5f"}{if $image->view_direction > -1}|heading:{$image->view_direction}{/if}{literal}}}{/literal}
 {/if}
 
-== [[Commons:Copyright tags|Licensing]]: ==
+== {{int:license}} ==
 {literal}{{{/literal}geograph|{$image->gridimage_id}|{$image->realname|escape:'html'}{literal}}}{/literal}</textarea><br/>
 <small>This template includes the {external href="http://commons.wikimedia.org/wiki/Template:Information" text="information box"} with the relevent data (title, links and licence), {external href="http://commons.wikimedia.org/wiki/Template:Location" text="geotags the image"}, as well as the specific {external href="http://commons.wikimedia.org/wiki/Template:Geograph" text="Geograph Template"}</small></form>
 </div>
