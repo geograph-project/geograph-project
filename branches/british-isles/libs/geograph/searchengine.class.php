@@ -242,6 +242,13 @@ class SearchEngine
 				$sql_where = " moderation_status in ('accepted','geograph') and $sql_where";
 		}
 		
+		if (!empty($_GET['safe'])) {
+			$this->upper_limit = max(0,$db->getOne("SELECT MIN(gridimage_id) FROM gridimage WHERE moderation_status = 'pending'"));
+			if ($this->upper_limit>1) {
+				$sql_where .= " AND gi.gridimage_id < {$this->upper_limit}";
+			}
+		}
+		
 		$sql_from = str_replace('gridimage_query using (gridimage_id)','gridimage_query on (gi.gridimage_id = gridimage_query.gridimage_id)',$sql_from);
 		
 		if ($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly) {
@@ -449,6 +456,9 @@ END;
 		if (!empty($CONF['fetch_on_demand'])) {
 			$sphinx->upper_limit = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 		}
+		if (!empty($_GET['safe'])) {
+			$sphinx->upper_limit = max(0,$db->getOne("SELECT MIN(gridimage_id)-1 FROM gridimage WHERE moderation_status = 'pending'"));
+		}
 
 		if (is_array($this->criteria->sphinx['filters']) && count($this->criteria->sphinx['filters'])) {
 			$sphinx->addFilters($this->criteria->sphinx['filters']);
@@ -623,6 +633,13 @@ END;
 		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=`]+) where/i",$sql_where,$matches)) {
 			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\'`]+) where/i",'',$sql_where);
 			$sql_from .= " {$matches[1]} join {$matches[2]}";
+		}
+		
+		if (!empty($_GET['safe'])) {
+			$this->upper_limit = max(0,$db->getOne("SELECT MIN(gridimage_id) FROM gridimage WHERE moderation_status = 'pending'"));
+			if ($this->upper_limit>1) {
+				$sql_where .= " AND gi.gridimage_id < {$this->upper_limit}";
+			}
 		}
 		
 		if ($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly) {
@@ -872,6 +889,10 @@ END;
 		if (!empty($_GET['legacy'])) { //todo - technically a bodge!
 			$postfix .= "&amp;legacy=true";
 		}
+		if (!empty($_GET['safe'])) {
+			$postfix .= "&amp;safe=true";
+		}
+		
 		if ($this->currentPage > 1) 
 			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage-1)."$postfix\"$extrahtml>&lt; &lt; prev</a> ";
 		$start = max(1,$this->currentPage-5);
