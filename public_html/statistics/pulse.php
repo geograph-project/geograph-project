@@ -65,7 +65,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$data = $db->GetRow("select count(*) as `count`,(unix_timestamp(now()) - unix_timestamp(min(submitted))) as age from gridimage where moderation_status='pending'");
 	
 	$table[] = array("Parameter"=>"Images Pending","Value"=>$data['count']);
-	$table[] = array("Parameter"=>"Oldest Pending","Value"=>$data['age'].' hours');
+	$table[] = array("Parameter"=>"Oldest Pending","Value"=>intval($data['age']/3600).' hours');
 	
 
 $table[] = array("Parameter"=>'',"Value"=>'');
