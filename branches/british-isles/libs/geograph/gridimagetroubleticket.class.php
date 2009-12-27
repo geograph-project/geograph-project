@@ -1059,7 +1059,7 @@ class GridImageTroubleTicket
 		$this->_clear();
 		if (preg_match('/^\d+$/', $gridimage_ticket_id))
 		{
-			$row = &$db->GetRow("select * from gridimage_ticket where gridimage_ticket_id={$gridimage_ticket_id} limit 1");
+			$row = &$db->GetRow("select * from gridimage_ticket_merge where gridimage_ticket_id={$gridimage_ticket_id} limit 1");
 			if (is_array($row))
 			{
 				$this->_initFromArray($row);
