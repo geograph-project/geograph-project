@@ -245,7 +245,10 @@ class SearchEngine
 		if (!empty($_GET['safe'])) {
 			$this->upper_limit = max(0,$db->getOne("SELECT MIN(gridimage_id) FROM gridimage WHERE moderation_status = 'pending'"));
 			if ($this->upper_limit>1) {
-				$sql_where .= " AND gi.gridimage_id < {$this->upper_limit}";
+				if (!empty($sql_where)) {
+					$sql_where .= " AND ";
+				}
+				$sql_where .= " gi.gridimage_id < {$this->upper_limit}";
 			}
 		}
 		
@@ -622,10 +625,20 @@ END;
 
 		}
 
+		if (!empty($_GET['safe'])) {
+			$this->upper_limit = max(0,$db->getOne("SELECT MIN(gridimage_id) FROM gridimage WHERE moderation_status = 'pending'"));
+			if ($this->upper_limit>1) {
+				if (!empty($sql_where)) {
+					$sql_where .= " AND ";
+				}
+				$sql_where .= " gi.gridimage_id < {$this->upper_limit}";
+			}
+		}
+		
 		if (!empty($sql_where)) {
 			$sql_where = "WHERE $sql_where";
 			$this->islimited = true;
-		} elseif (preg_match('/^ rand\(/',$sql_order)) {
+		} elseif (preg_match('/rand\(/',$sql_order)) {
 			//homefully temporally
 			dieUnderHighLoad(0,'search_unavailable.tpl');
 		}
@@ -633,13 +646,6 @@ END;
 		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=`]+) where/i",$sql_where,$matches)) {
 			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\'`]+) where/i",'',$sql_where);
 			$sql_from .= " {$matches[1]} join {$matches[2]}";
-		}
-		
-		if (!empty($_GET['safe'])) {
-			$this->upper_limit = max(0,$db->getOne("SELECT MIN(gridimage_id) FROM gridimage WHERE moderation_status = 'pending'"));
-			if ($this->upper_limit>1) {
-				$sql_where .= " AND gi.gridimage_id < {$this->upper_limit}";
-			}
 		}
 		
 		if ($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly) {
