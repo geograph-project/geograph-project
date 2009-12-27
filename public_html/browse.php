@@ -184,7 +184,13 @@ if ($grid_given)
 		
 		if ($square->percent_land > 0) {
 			//find a possible place within 25km
-			$smarty->assign('place', $square->findNearestPlace(75000));
+			$smarty->assign('place', $place = $square->findNearestPlace(75000));
+			
+			$place_name = strip_tags(smarty_function_place(array('place'=>$place)));
+			
+			$smarty->assign('meta_description', "Geograph currently has {$square->imagecount} photos in {$square->grid_reference}, $place_name");
+
+			
 		}
 		
 	}
