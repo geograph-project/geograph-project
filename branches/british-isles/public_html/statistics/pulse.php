@@ -59,8 +59,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql = "SELECT COUNT(*) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 1 HOUR)";
 	calc("Images Submitted in last hour",$sql);
 	
-	$sql = "SELECT MAX(gridimage_id) FROM gridimage_search";
-	calc("Last Moderated Image",$sql);
+	if ($upper_limit = $db->getOne("SELECT MIN(gridimage_id) FROM gridimage WHERE moderation_status = 'pending'")) {
+		$sql = "SELECT MAX(gridimage_id) FROM gridimage_search WHERE gridimage_id < $upper_limit";
+	} else {
+		$sql = "SELECT MAX(gridimage_id) FROM gridimage_search";
+	}
+	calc("All moderated upto ID",$sql);
 	
 	$data = $db->GetRow("select count(*) as `count`,(unix_timestamp(now()) - unix_timestamp(min(submitted))) as age from gridimage where moderation_status='pending'");
 	

@@ -836,5 +836,72 @@ CREATE TABLE IF NOT EXISTS `typo` (
 #################################################
 
 
+CREATE TABLE gridimage_queue LIKE gridimage;
+
+########
+##make sure auto_increment is in sync...
+
+LOCK TABLES gridimage_queue WRITE, gridimage WRITE;
+
+## check no waiting inserts
+SHOW PROCESSLIST;
+#(if there are unlock tables, and relock -repeat until no waiting) 
+
+#Update the code.
+
+##find ID from SHOW CREATE TABLE gridimage;
+ALTER TABLE gridimage_queue AUTO_INCREMENT=XX;
+
+UNLOCK TABLES;
+
+########
+
+#then
+#while (1) {
+#	perl mk-archiver --source h=localhost,D=geograph_live,t=gridimage_queue --dest t=gridimage --where '1' --txnsize 0 --nosafeautoinc
+#	sleep(2);
+#}
 
 
+#################################################
+
+
+CREATE TABLE gridimage_ticket_archive LIKE gridimage_ticket;
+
+CREATE TABLE `gridimage_ticket_merge`  (
+   `gridimage_ticket_id` int(11) NOT NULL AUTO_INCREMENT,
+   `gridimage_id` int(11) DEFAULT NULL,
+   `suggested` datetime DEFAULT NULL,
+   `user_id` int(11) DEFAULT NULL,
+   `moderator_id` int(11) DEFAULT NULL,
+   `updated` datetime DEFAULT NULL,
+   `status` enum('pending','open','closed') DEFAULT NULL,
+   `notes` text,
+   `type` enum('normal','minor') NOT NULL DEFAULT 'normal',
+   `notify` enum('','suggestor') NOT NULL DEFAULT 'suggestor',
+   `deferred` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+   `public` enum('no','owner','everyone') NOT NULL DEFAULT 'everyone',
+   PRIMARY KEY (`gridimage_ticket_id`),
+   KEY `gridimage_id` (`gridimage_id`),
+   KEY `status` (`status`),
+   KEY `suggested` (`suggested`)
+ ) ENGINE=MERGE UNION(`gridimage_ticket`,`gridimage_ticket_archive`) INSERT_METHOD=FIRST;
+
+#then...
+
+#needs a cronjob
+#perl mk-archiver --source h=localhost,D=geograph_live,t=gridimage_ticket --dest t=gridimage_ticket_archive --where 'status="closed" and suggested < date_sub(now(),interval 30 day)'  --txn-size 0
+
+
+#################################################
+
+
+#CREATE TABLE queries_archive LIKE queries;
+
+#needs a cronjob
+#perl mk-archiver --source h=localhost,D=geograph_live,t=queries --dest t=queries_archive --where 'user_id = 0 and crt_timestamp < date_sub(now(),interval 7 day)' --txn-size 0
+
+#perl mk-archiver --source h=localhost,D=geograph_live,t=queries --dest t=queries_archive --where 'user_id > 0 and crt_timestamp < date_sub(now(),interval 1 year)' --txn-size 0
+
+
+#################################################
