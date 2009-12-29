@@ -93,7 +93,7 @@ if (isset($_POST['submit'])) {
 				));
 				
 			$db->Execute(sprintf("update gridimage_search set 
-				realname = %s,
+				realname = %s
 				where user_id = %d
 				and credit_realname = 0 ", //ensures specifically credited ones arent changed
 				$db->Quote($updates['realname']),
