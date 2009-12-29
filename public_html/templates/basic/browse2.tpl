@@ -173,7 +173,7 @@
 				<input type="submit" value="Search"/><br/>
 				<input type="hidden" name="location" value="{$gridref}"/>
 				<input type="radio" name="distance" value="1" checked id="d1"/><label for="d1">In {$gridref} only</label> /
-				<input type="radio" name="distance" value="3" id="d3"/><label for="d1">inc surrounding squares</label><br/>
+				<input type="radio" name="distance" value="3" id="d3"/><label for="d3">inc surrounding squares</label><br/>
 				<input type="hidden" name="do" value="1"/>
 				</div> 
 		</form>	

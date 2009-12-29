@@ -37,6 +37,7 @@ if (!empty($_GET['upload_id'])) {
 	$gid = crc32($_GET['upload_id'])+4294967296;
 	$gid += $USER->user_id * 4294967296;
 
+	$smarty->assign('upload_id',$_GET['upload_id']);
 	$smarty->assign('gridimage_id',$gid);
 } elseif (!empty($_REQUEST['gridimage_id'])) {
 
@@ -173,7 +174,7 @@ if (empty($_GET['gr']) && !empty($_GET['gr2'])) {
 	$_GET['gr'] = $_GET['gr2'];
 }
 
-if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['recent'])) {
+if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab'])) {
 	$square=new GridSquare;
 	
 	$grid_given=false;
@@ -198,7 +199,7 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['recen
 		$results = $db->getAll($sql="SELECT s.* $fields FROM snippet s INNER JOIN gridimage_snippet gs USING (snippet_id) WHERE gs.user_id = {$USER->user_id} AND gridimage_id != $gid GROUP BY s.snippet_id ORDER BY gs.created DESC LIMIT 50"); 
 		
 		
-		$smarty->assign('recent',1);
+		$smarty->assign('tab',$_REQUEST['tab']);
 		
 	} else {
 		$where = array();
@@ -242,7 +243,8 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['recen
 			} else {
 				$where[] = '0';
 			}			
-		
+			$smarty->assign('tab',$_REQUEST['tab']);
+			
 		} elseif (!empty($_REQUEST['q']) && is_numeric($_REQUEST['q'])) {  
 
 			$ids = $db->getCol("SELECT snippet_id FROM gridimage_snippet WHERE gridimage_id = ".intval($_REQUEST['q']));
