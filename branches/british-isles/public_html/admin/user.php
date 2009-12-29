@@ -112,6 +112,8 @@ if (isset($_POST['submit'])) {
 		}		
 	}	
 	
+	$profile=new GeographUser($i);
+	$profile->_forumUpdateProfile();
 	
 	$smarty->assign_by_ref("i",$i);
 	
