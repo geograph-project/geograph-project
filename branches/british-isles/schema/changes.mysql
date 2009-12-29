@@ -836,6 +836,40 @@ CREATE TABLE IF NOT EXISTS `typo` (
 #################################################
 
 
+ALTER TABLE `geoevent` ADD `type` enum('signup','other') DEFAULT 'signup';
+
+
+CREATE TABLE `conference_comment` (
+  `comment_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `entry_id` mediumint(8) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `comment` text NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`comment_id`),
+  KEY `entry_id` (`entry_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE `conference_registration` (
+  `entry_id` mediumint(8) unsigned NOT NULL,
+  `Name` varchar(64) NOT NULL,
+  `Last` varchar(64) NOT NULL,
+  `Nickname` varchar(64) NOT NULL,
+  `Email` varchar(128) NOT NULL,
+  `Speaking` enum('No','Yes') NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `confirmed` datetime NOT NULL,
+  `cancelled` datetime NOT NULL,
+  `emailed` datetime NOT NULL,
+  `duplicates` mediumint(9) DEFAULT NULL,
+  `sentspeaker` datetime NOT NULL,
+  PRIMARY KEY (`entry_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+#################################################
+
+
 CREATE TABLE gridimage_queue LIKE gridimage;
 
 ########
