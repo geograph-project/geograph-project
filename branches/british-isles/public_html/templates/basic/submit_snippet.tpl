@@ -61,9 +61,10 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 	{if $gridimage_id < 4294967296}
 		<br/>&middot; <b>Changes made here apply immediately and don't go though the change request system.</b>
 	{/if}
-	<a href="#more"><b>read more...</b></a>
+	<br/>&middot; <b>{newwin href="/article/Shared-Descriptions" text="Read more about Shared Descriptions here"}</b>
 </div>
-<div style="font-size:0.7em;color:green;border-top:2px solid gray">&nbsp;Shared Descriptions attached to this image:</div>
+{if $used}
+<div style="font-size:0.7em;color:green;border-top:2px solid gray;padding:2px">&nbsp;<b>Shared Descriptions attached to this image</b>:</div>
 {foreach from=$used item=item name=used}
 	
 	<div style="margin-left:4px;background-color:{cycle values="#e4e4e4,#f4f4f4"}">
@@ -81,16 +82,17 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 {foreachelse}
 	<p style="margin:4px;margin-bottom:10px"><i><b>None</b>. <small>Click 'Create New Shared Description'{if $results}, or a 'Use this Description' button below,{/if} to add a description to this image.</small></i></p>
 {/foreach}
+{/if}
 
-<div style="font-size:0.7em;color:green;border-top:2px solid gray">&nbsp;Shared Descriptions available: 
+<div style="font-size:0.7em;color:green;border-top:2px solid gray;padding:2px">&nbsp;<b>Shared Descriptions available</b>: 
 {if $tab eq 'recent'}
-	( <a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}">Search/Local Filter</a> / <b>My Recently used</b> {if $sphinx}/ <a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=suggestions" onclick="return suggestionsClicker(this);">Suggestions</a>{/if} )</div>
+	( <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}">Search/Local Filter</a> / <b>My Recently used</b> {if $sphinx}/ <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=suggestions" onclick="return suggestionsClicker(this);">Suggestions</a>{/if} )</div>
 {elseif $tab eq 'suggestions'}
-	( <a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}">Search/Local Filter</a> / <a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=recent">My Recently used</a> / <b>Suggestions</b> )</div>
+	( <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}">Search/Local Filter</a> / <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=recent">My Recently used</a> / <b>Suggestions</b> )</div>
 {else}	
-	( <b>Search/Local Filter</b> / <a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=recent">My Recently used</a> {if $sphinx}/ <a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=suggestions" onclick="return suggestionsClicker(this);">Suggestions</a>{/if} )</div>
+	( <b>Search/Local Filter</b> / <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=recent">My Recently used</a> {if $sphinx}/ <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=suggestions" onclick="return suggestionsClicker(this);">Suggestions</a>{/if} )</div>
 
-<div class="interestBox" style="margin:4px">
+<div class="interestBox" style="margin:4px;margin-left:24px">
 Within radius:{if $centisquare}
 <label for="rad01" class="nowrap"><input type="radio" name="radius" id="rad01" value="0.1"{if $radius == 0.1} checked{/if}/> centisquare</label> / 
 {/if}
@@ -125,7 +127,7 @@ Within radius:{if $centisquare}
 	{if $empty}
 	<p style="margin:4px"><i>please specify some keywords{if $grid_reference}, or choose a smaller radius{/if}</i></p><br/>
 	{else}
-	<p style="margin:4px"><i>No shared descriptions found{if $radius == 1 || !$radius} in {$grid_reference}{/if}{if $q}, matching [{$q|escape:'html'}]{/if}, create your own!</i></p><br/>
+	<p style="margin:4px"><i>No shared descriptions found{if $grid_reference && ($radius == 1 || !$radius)} in {$grid_reference}{/if}{if $q}, matching [{$q|escape:'html'}]{/if}, create your own!</i></p><br/>
 	{/if}
 {/foreach}
 {if $query_info}
@@ -135,12 +137,30 @@ Within radius:{if $centisquare}
 </form>
 
 {/dynamic}
-<div class="interestBox" style="margin-top:25px;font-size:0.8em;border-top:2px solid gray"><a name="more"></a>
-&middot; For example can create a generic description for a object or location shown in a photo, and reuse the description on all photos of the object or location.<br/>
-&middot; All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.<br/>
-<b>... read more in our {newwin href="/article/Shared-Descriptions" text="Shared Descriptions Article"}, or <a href="#top">back to top</a></b>
-</div>
-<div class="interestBox" style="background-color:pink; font-size:0.7em; border-top:2px solid white"><i>For clarification, you are submitting these shared descriptions to Geograph Project directly. Geograph Project then grants any contributor the right to reuse any shared description within their Creative Commons licensed submission. From a practical point of view this allows the contributor the use the description without attribution (as its not Creative Commons licensed).</i></div>
+
+<div class="interestBox" style="background-color:pink; font-size:0.7em; border-top:2px solid gray"><i>For clarification, you are submitting these shared descriptions to Geograph Project directly. Geograph Project then grants any contributor the right to reuse any shared description within their Creative Commons licensed submission. From a practical point of view this allows the contributor the use the description without attribution (as its not Creative Commons licensed).</i></div>
+
+<script type="text/javascript">{literal}
+
+function suggestionsClicker(that) {
+	var str;
+	var thatForm = window.parent.document.forms['theForm'];
+
+	if (thatForm.elements['title']) {
+		str = thatForm.elements['title'].value;
+	}
+	if (thatForm.elements['comment']) {
+		str = str + ' '+ thatForm.elements['comment'].value;
+	}
+	if (thatForm.elements['imageclass']) {
+		str = str + ' '+ thatForm.elements['imageclass'].value;
+	}
+	
+	window.location.href = that.href + "&corpus="+encodeURIComponent(str.replace(/[\r\n]+/,' '));
+	return false;
+}
+		
+{/literal}</script>
 
 </body>
 </html>
