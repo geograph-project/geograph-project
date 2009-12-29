@@ -117,7 +117,7 @@ Within radius:{if $centisquare}
 			<input type="submit" name="add[{$item.snippet_id}]" value="Use this Description" style="background-color:lightgreen"/>
 		</div>
 
-		<a href="/snippet.php?id={$item.snippet_id}" target="_blank"><b>{$item.title|escape:'html'|default:'<span style=color:gray>untitled description</span>'}</b></a> {if $item.grid_reference != $grid_reference} :: {$item.grid_reference} {/if}{if $item.distance}(Distance {$item.distance}km){/if}<br/>
+		<a href="/snippet.php?id={$item.snippet_id}" target="_blank"><b>{$item.title|escape:'html'|default:'<span style=color:gray>untitled description</span>'}</b></a> {if $item.grid_reference && $item.grid_reference != $grid_reference} :: {$item.grid_reference} {/if}{if $item.distance}(Distance {$item.distance}km){/if}<br/>
 		<div style="font-size:0.7em">{$item.comment|escape:'html'|truncate:250:' (more...)'}</div>
 
 		<br style="clear:both"/>

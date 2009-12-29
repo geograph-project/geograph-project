@@ -194,6 +194,10 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 	}
 	$fields = '';
 
+	if ($grid_given && $grid_ok) {
+		$fields = ",if(natnorthings > 0,(nateastings-{$square->nateastings})*(nateastings-{$square->nateastings})+(natnorthings-{$square->natnorthings})*(natnorthings-{$square->natnorthings}),0) as distance";
+	}
+
 	if (!empty($_REQUEST['tab']) && $_REQUEST['tab'] == 'recent') {  
 		
 		$results = $db->getAll($sql="SELECT s.* $fields FROM snippet s INNER JOIN gridimage_snippet gs USING (snippet_id) WHERE gs.user_id = {$USER->user_id} AND gridimage_id != $gid GROUP BY s.snippet_id ORDER BY gs.created DESC LIMIT 50"); 
@@ -325,8 +329,6 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 				$bottom=$square->natnorthings+$radius;
 
 				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
-
-				$fields = ",if(natnorthings > 0,(nateastings-{$square->nateastings})*(nateastings-{$square->nateastings})+(natnorthings-{$square->natnorthings})*(natnorthings-{$square->natnorthings}),0) as distance";
 
 				$where[] = "CONTAINS(
 						GeomFromText($rectangle),
