@@ -82,10 +82,13 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 	<p style="margin:4px;margin-bottom:10px"><i><b>None</b>. <small>Click 'Create New Shared Description'{if $results}, or a 'Use this Description' button below,{/if} to add a description to this image.</small></i></p>
 {/foreach}
 
-<div style="font-size:0.7em;color:green;border-top:2px solid gray">&nbsp;Shared Descriptions available: {if $recent}
-	(<a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}">Search/Local Filter</a>/<b>My Recently used</b>)</div>
+<div style="font-size:0.7em;color:green;border-top:2px solid gray">&nbsp;Shared Descriptions available: 
+{if $tab eq 'recent'}
+	( <a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}">Search/Local Filter</a> / <b>My Recently used</b> {if $sphinx}/ <a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=suggestions" onclick="return suggestionsClicker(this);">Suggestions</a>{/if} )</div>
+{elseif $tab eq 'suggestions'}
+	( <a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}">Search/Local Filter</a> / <a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=recent">My Recently used</a> / <b>Suggestions</b> )</div>
 {else}	
-	(<b>Search/Local Filter</b>/<a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;recent=true">My Recently used</a>)</div>
+	( <b>Search/Local Filter</b> / <a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=recent">My Recently used</a> {if $sphinx}/ <a href="?gr={$gr|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=suggestions" onclick="return suggestionsClicker(this);">Suggestions</a>{/if} )</div>
 
 <div class="interestBox" style="margin:4px">
 Within radius:{if $centisquare}

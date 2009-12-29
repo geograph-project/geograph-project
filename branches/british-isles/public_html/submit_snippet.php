@@ -176,8 +176,9 @@ if (empty($_GET['gr']) && !empty($_GET['gr2'])) {
 if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['recent'])) {
 	$square=new GridSquare;
 	
-	$grid_given=true;
+	$grid_given=false;
 	if (!empty($_REQUEST['gr'])) {
+		$grid_given = true;
 		if ($grid_ok=$square->setByFullGridRef($_REQUEST['gr'],true)) {
 
 			$smarty->assign('gr',$_REQUEST['gr']);
@@ -192,7 +193,7 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['recen
 	}
 	$fields = '';
 
-	if (!empty($_REQUEST['recent'])) {  
+	if (!empty($_REQUEST['tab']) && $_REQUEST['tab'] == 'recent') {  
 		
 		$results = $db->getAll($sql="SELECT s.* $fields FROM snippet s INNER JOIN gridimage_snippet gs USING (snippet_id) WHERE gs.user_id = {$USER->user_id} AND gridimage_id != $gid GROUP BY s.snippet_id ORDER BY gs.created DESC LIMIT 50"); 
 		
@@ -203,7 +204,46 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['recen
 		$where = array();
 		$orderby = "ORDER BY s.snippet_id";
 	
-		if (!empty($_REQUEST['q']) && is_numeric($_REQUEST['q'])) {  
+		if (!empty($_REQUEST['tab']) && $_REQUEST['tab'] == 'suggestions') {  
+		
+			$pg = 1;
+			
+			$q=preg_replace("/[^\w ]+/",' ',$_REQUEST['corpus']);
+			$q=trim(preg_replace("/\b(or|and)\b/",' ',$q));
+			
+			if ($grid_given && $grid_ok) {
+				$q .= ' '.$square->grid_reference.' '.$square->gridsquare;
+			}
+			
+			if (strlen($q) > 40) {
+				$q = '"'.$q.'"/4';
+			} else {
+				$q = '~'.$q;
+			}
+			
+			$sphinx = new sphinxwrapper($q);
+			$sphinx->pageSize = $pgsize = 40;
+
+			$filters = array();
+			if (!empty($_REQUEST['onlymine'])) {
+				$filters['user_id'] = array($USER->user_id);
+				$smarty->assign("onlymine",1);
+			}
+			if (!empty($filters)) {
+				$sphinx->addFilters($filters);
+			}
+
+			$ids = $sphinx->returnIds($pg,'snippet');
+
+			if (!empty($ids) && count($ids)) {
+				$id_list = implode(',',$ids);
+				$where[] = "s.snippet_id IN($id_list)";
+				$orderby = "ORDER BY FIELD(s.snippet_id,$id_list)";
+			} else {
+				$where[] = '0';
+			}			
+		
+		} elseif (!empty($_REQUEST['q']) && is_numeric($_REQUEST['q'])) {  
 
 			$ids = $db->getCol("SELECT snippet_id FROM gridimage_snippet WHERE gridimage_id = ".intval($_REQUEST['q']));
 
