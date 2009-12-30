@@ -59,16 +59,18 @@
  
 <h2>Feature Matrix</h2>
  
-<table style="font-size:0.9em" border=1 cellspacing=0 cellpadding=3>
+<table style="font-size:0.9em" border=1 cellspacing=0 cellpadding=3 class="report">
+<thead>
  <tr>
-  <th>.</th>
-  <th>Submit</th>
-  <th>Submit v2</th>
-  <th>Multi-Upload</th>
-  <th>No Frills Submit</th>
-  <th>Juppy</th>
-  <th>Picasa</th>
+  <td>.</td>
+  <td>Submit</td>
+  <td>Submit v2</td>
+  <td>Multi-Upload</td>
+  <td>No Frills Submit</td>
+  <td>Juppy</td>
+  <td>Picasa</td>
  </tr>
+</thead>
  <tr>
   <td>JavaScript Required</td>
   <td style="background-color:lightgreen" align="center">NO</td>
@@ -78,6 +80,15 @@
   <td align="center">na</td>
   <td align="center">yes</td>
  </tr> <tr><td colspan="7" style="background-color:gray;line-height:3px">.</td></tr>
+ <tr>
+  <td>Upload larger than 640px</td>
+  <td></td>
+  <td style="background-color:lightgreen" align="center">* <sup style="color:red">new!</sup></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+ </tr>
  <tr>
   <td>Upload via Website</td>
   <td style="background-color:lightgreen" align="center">*</td>
@@ -237,15 +248,17 @@
   <td style="background-color:lightgreen" align="center">*</td>
  </tr>
  <tr><td colspan="7" style="background-color:gray;line-height:3px">.</td></tr>
+<thead>
  <tr>
-  <th>.</th>
-  <th>Submit</th>
-  <th>Submit v2</th>
-  <th>Multi-Upload</th>
-  <th>No Frills Submit</th>
-  <th>Juppy</th>
-  <th>Picasa</th>
+  <td>.</td>
+  <td>Submit</td>
+  <td>Submit v2</td>
+  <td>Multi-Upload</td>
+  <td>No Frills Submit</td>
+  <td>Juppy</td>
+  <td>Picasa</td>
  </tr>
+</thead>
 </table>
 
 

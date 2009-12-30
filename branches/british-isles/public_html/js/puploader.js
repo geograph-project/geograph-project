@@ -11,9 +11,10 @@
 				var ele = theForm.elements[q];
 				if (thatForm.elements[ele.name+'['+name+']']) {
 					//we dont need to check for select as IE does pupulate .value - doto - byt IE6 doesnt!
-					if (ele.tagName.toLowerCase() == 'input' && ele.type.toLowerCase() == 'checkbox') {
+					if (ele.tagName.toLowerCase() == 'input' && (ele.type.toLowerCase() == 'checkbox' || ele.type.toLowerCase() == 'radio')) {
 						if (ele.checked) 
 							thatForm.elements[ele.name+'['+name+']'].value = ele.value;
+							
 					} else {
 						thatForm.elements[ele.name+'['+name+']'].value = ele.value;
 					}
@@ -50,6 +51,10 @@
 						onChangeImageclass();
 					}
 					
+				} else if (ele.tagName.toLowerCase() == 'input' && ele.type.toLowerCase() == 'radio') {
+					if (thatForm.elements[ele.name+'['+name+']'].value == ele.value)
+						ele.checked = true;
+					AttachEvent(ele,'click',parentUpdateVariables,false);
 				} else if (ele.tagName.toLowerCase() == 'input' && ele.type.toLowerCase() == 'checkbox') {
 					if (thatForm.elements[ele.name+'['+name+']'].value != '')
 						ele.checked = true;

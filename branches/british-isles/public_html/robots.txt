@@ -25,6 +25,7 @@ Disallow: /mapsheet.php
 Disallow: /kml.php
 Disallow: /gpx.php
 Disallow: /reuse.php
+Disallow: /more.php
 Disallow: /editimage.php
 Disallow: /browse.php
 Disallow: /location.php
@@ -44,7 +45,6 @@ Disallow: /article/edit.php
 Disallow: /article/history.php
 Disallow: /content/syndicator.php
 Disallow: /squares.php
-
 
 User-Agent: Googlebot
 User-Agent: Slurp
@@ -76,6 +76,7 @@ Disallow: /mapsheet.php
 Disallow: /kml.php?
 Disallow: /gpx.php?
 Disallow: /reuse.php
+Disallow: /more.php
 Disallow: /editimage.php
 Disallow: /browse.php?
 Disallow: /location.php
@@ -97,6 +98,7 @@ Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
 Disallow: /content/syndicator.php
 Disallow: /squares.php
+
 
 
 User-agent: Fasterfox

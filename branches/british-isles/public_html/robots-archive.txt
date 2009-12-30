@@ -26,6 +26,7 @@ Disallow: /mapsheet.php
 Disallow: /kml.php
 Disallow: /gpx.php
 Disallow: /reuse.php
+Disallow: /more.php
 Disallow: /editimage.php
 Disallow: /browse.php
 Disallow: /location.php

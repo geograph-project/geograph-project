@@ -41,6 +41,9 @@
 {/if}
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
+	{if $image->original_width}
+		<div class="caption640" style="text-align:right;"><a href="/more.php?id={$image->gridimage_id}">More sizes</a></div>
+	{/if}
   <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
   
   <div class="caption640" style="font-weight:bold" xmlns:dc="http://purl.org/dc/elements/1.1/" property="dc:title">{$image->title|escape:'html'}</div>

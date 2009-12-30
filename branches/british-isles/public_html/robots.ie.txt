@@ -25,6 +25,7 @@ Disallow: /mapsheet.php
 Disallow: /kml.php
 Disallow: /gpx.php
 Disallow: /reuse.php
+Disallow: /more.php
 Disallow: /editimage.php
 Disallow: /browse.php
 Disallow: /location.php
@@ -54,7 +55,7 @@ Disallow: /results/
 Disallow: /feed/
 
 User-Agent: Googlebot
-User-agent: Slurp
+User-Agent: Slurp
 Disallow: /profile/*/map
 Disallow: /photo/*?style=*
 Disallow: /mapbrowse.php?
@@ -83,6 +84,7 @@ Disallow: /mapsheet.php
 Disallow: /kml.php?
 Disallow: /gpx.php?
 Disallow: /reuse.php
+Disallow: /more.php
 Disallow: /editimage.php
 Disallow: /browse.php?
 Disallow: /location.php

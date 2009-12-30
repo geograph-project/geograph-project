@@ -23,22 +23,81 @@
 		{if $imagetaken}
 		<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
 		{/if}
-		<h2>Image Uploaded</h2>
 		
-		{if $preview_url}
+		{if $original_width}
+			<div>Please choose the size you wish to upload: <sup style="color:red">New!</sup></div>
+		
+			{math equation="o/180" o=$original_width assign="ratio"}
+			
+			<table style="font-weight:bold" cellspacing="0" border="1" bordercolor="#cccccc">
+				<tr>
+				
+					<td valign="top"><input type="radio" name="largestsize" checked value="640" id="large640"/> {$preview_width} x {$preview_height}<br/><small style="color:red">(minimum req)</small><br/>
+					<label for="large640"><img src="{$preview_url}" width="{$preview_width/$ratio}" height="{$preview_height/$ratio}"/></label>
+					{assign var="last_width" value=$preview_width} 
+					{assign var="last_height" value=$preview_height} 
+					</td>
+				
+				{if $original_width > 800 || $original_height > 800}
+					
+					{if $original_width>$original_height}
+						{assign var="resized_width" value=800}
+						{math assign="resized_height" equation="round(dw*sh/sw)" dw=$resized_width sh=$original_height sw=$original_width}
+					{else}
+						{assign var="resized_height" value=800}
+						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
+					{/if}
+					
+					<td valign="top"><input type="radio" name="largestsize" value="800" id="large800"/> {$resized_width} x {$resized_height}<br/><br/>
+					<label for="large800"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}"/></label>
+					{assign var="last_width" value=$resized_width}
+					{assign var="last_height" value=$resized_height}
+					</td>
+				{/if}
+				
+				{if $original_width > 1024 || $original_height > 1024}
+					
+					{if $original_width>$original_height}
+						{assign var="resized_width" value=1024}
+						{math assign="resized_height" equation="round(dw*sh/sw)" dw=$resized_width sh=$original_height sw=$original_width}
+					{else}
+						{assign var="resized_height" value=1024}
+						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
+					{/if}
+					
+					<td valign="top"><input type="radio" name="largestsize" value="1024" id="large1024"/> {$resized_width} x {$resized_height}<br/><br/>
+					<label for="large1024"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}"/></label>
+					{assign var="last_width" value=$resized_width}
+					{assign var="last_height" value=$resized_height}
+					</td>
+				{/if}
+				
+				{if $original_width > $last_width || $original_height > $last_height}
+
+					<td valign="top"><input type="radio" name="largestsize" value="8192" id="large8192"/> {$original_width} x {$original_height}<br/><br/>
+					<label for="large8192"><img src="{$preview_url}" width="{$original_width/$ratio}" height="{$original_height/$ratio}"/></label>
+					</td>
+				{/if}
+				</tr>
+			</table>
+			Previews shown at <b>{math equation="round(100/r)" r=$ratio}</b>% of actual size - NOT representive of the final quality.		
+			
+			
+		{elseif $preview_url}
+		<h2>Image Uploaded</h2>
 		<img src="{$preview_url}" width="{$preview_width}" height="{$preview_height}"/>
 		{/if}
 		
-		<p><a href="/submit2.php?inner&amp;step=1">Start over</a></p>
+		<p>Is this the wrong image? <a href="/submit2.php?inner&amp;step=1">Upload a different image</a></p>
 	{else}
 		{if $error}
 			<p style="color:#990000;font-weight:bold;">{$error}</p>
 		{/if}
-		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label>  - recommend resizing to 640px on longest side<br/>	
+		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label> - (upload photos larger than 640px - <sup style="color:red">New!</sup>)<br/>	
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" style="background-color:white"/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000"/></div>
 		<div>
-		<input type="submit" name="sendfile" value="Send File &gt;" style="margin-left:140px"/> (while file is sending can continue on the steps below)<br/>
+		<input type="submit" name="sendfile" value="Send File &gt;" style="margin-left:140px;font-size:1.2em"/> (while file is sending can continue on the steps below)<br/>
 		</div>
 
 		<br/>
@@ -64,7 +123,7 @@
 {if $success}
 	{literal}
 		AttachEvent(window,'load',parentUpdateVariables,false);
-		AttachEvent(window,'load',function() { window.parent.doneStep({/literal}{$step}{literal}) },false);
+		AttachEvent(window,'load',function() { window.parent.doneStep({/literal}{$step},{if $original_width}true{else}false{/if}{literal}) },false);
 	{/literal}
 	{if $grid_reference} 
 		{literal}
@@ -86,11 +145,11 @@
 		AttachEvent(window,'load',function() { window.parent.showPreview({/literal}'{$preview_url}',{$preview_width},{$preview_height}{literal}) },false);
 		{/literal}
 	{/if}
-{else}
+{/if}
 	{literal}
 		AttachEvent(window,'load',function() { setTimeout("setupTheForm()",100); },false);
 	{/literal}
-{/if}	
+	
 {/dynamic}
 </script>
 

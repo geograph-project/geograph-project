@@ -28,7 +28,7 @@
 }
 
 .sn {
-	background-color:pink;
+	background-color:#dddddd;
 }
 .sy {
 	background-color:lightgreen;
@@ -116,9 +116,11 @@ function clicker(step,override) {
 	return false;
 }
 
-function doneStep(step) {
+function doneStep(step,dontclose) {
 	document.getElementById('sh'+step).className = "sh sy";
-	clicker(step,false);
+	if (!dontclose) {
+		clicker(step,false);
+	}
 }
 function showPreview(url,width,height) {
 	document.getElementById('previewInner').innerHTML = '<img src="'+url+'" width="'+(width/2)+'" height="'+(height/2)+'" id="imgPreview"/>';
@@ -171,20 +173,21 @@ AttachEvent(window,'load',readHash,false);
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php">Submission Process</a> should be functional with it.</div>
 	</noscript>
 	
+	<div style="float:right;position:relative;display:none;background-color:silver;padding:2px" id="hidePreview">
+	<a href="javascript:void(show_tree('Preview'));">Hide Preview</a> Make: <a href="javascript:void(scalePreview(2));">Bigger</a>/<a href="javascript:void(scalePreview(0.5));">Smaller</a>
+	<div id="previewInner"></div></div>
+	<div style="float:right;position:relative;display:none" id="showPreview"><a href="javascript:void(hide_tree('Preview'));">Show Preview</a></div>
+	
 	<p><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Warning" width="25" height="22" align="left" style="margin-right:10px"/> This is a new experimental submission process, try it out if you like, but you might prefer to use the <a href="/submit.php">original submission method</a>.</p>
 	
 	<p>Complete the following steps in any order (and continue onto the following steps while the photo is still uploading!). 
 	 A overview map is provided to help locate a square, but is optional, can directly enter a grid reference in step 2 if wish.
 	 If possible, the date, and grid-reference(s) are automatically extracted from the submitted image.</p>
 
-	<div style="float:right;position:relative;display:none" id="hidePreview">
-	<a href="javascript:void(show_tree('Preview'));">Hide Preview</a> Make: <a href="javascript:void(scalePreview(2));">Bigger</a>/<a href="javascript:void(scalePreview(0.5));">Smaller</a>
-	<div id="previewInner"></div></div>
-	<div style="float:right;position:relative;display:none" id="showPreview"><a href="javascript:void(hide_tree('Preview'));">Show Preview</a></div>
 	
 	<form action="{$script_name}?process" name="theForm" method="post">
 {dynamic}
-	<p><b>Options</b>: (close and reopen step to take effect)<br/>
+	<p style="background-color:#eeeeee;padding:2px"><b>Options</b>: (close and reopen step to take effect)<br/>
 	{if !$user->use_autocomplete}
 	<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Use auto-complete text entry for image category selection in Step 4. <a href="/profile.php?edit=1" target="_blank">Change permanently</a></label> <br/>
 	{/if}
@@ -271,6 +274,7 @@ AttachEvent(window,'load',readHash,false);
 		<p><b>Do not Edit anything here</b> - its just where we store stuff as you go along. Its only shown for debugging - the final version will have it permentally hidden.</p>
 		{assign var="key" value="0"}
 		<div><span>Upload ID:</span><input type="text" name="upload_id[{$key}]" value="" size="60"/> </div>
+		<div><span>Largest Size:</span><input type="text" name="largestsize[{$key}]" value="" size="4"/> </div>
 		<div><span>Subject:</span><input type="text" name="grid_reference[{$key}]" value="" size="12" maxlength="12"/> </div>
 		<div><span>Photographer:</span><input type="text" name="photographer_gridref[{$key}]" value="" size="12" maxlength="12"/></div>  
 		<div><span>use 6 Fig:</span><input type="text" name="use6fig[{$key}]" value="" size="1" maxlength="2"/></div> 
