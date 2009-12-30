@@ -939,3 +939,11 @@ CREATE TABLE `gridimage_ticket_merge`  (
 
 
 #################################################
+
+
+ALTER TABLE  `gridimage_size` ADD  `original_width` MEDIUMINT UNSIGNED NOT NULL DEFAULT  '0',
+ADD  `original_height` MEDIUMINT UNSIGNED NOT NULL DEFAULT  '0';
+
+
+#################################################
+
