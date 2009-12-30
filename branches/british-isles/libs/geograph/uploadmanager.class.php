@@ -79,6 +79,15 @@ class UploadManager
 	}
 
 	/**
+	* return full path to temporary image file
+	*/
+	function _originalJPEG($id)
+	{
+		global $USER;
+		return $this->tmppath.'/newpic_u'.$USER->user_id.'_'.$id.'.original.jpeg';
+	}
+
+	/**
 	* return full path to temporary file for EXIF data
 	*/
 	function _pendingEXIF($id)
@@ -166,6 +175,14 @@ class UploadManager
 	function setUse6fig($use6fig)
 	{
 		$this->use6fig=$use6fig;
+	}
+	
+	/**
+	* set largestsize
+	*/
+	function setLargestSize($largestsize)
+	{
+		$this->largestsize=$largestsize;
 	}
 	
 	/**
@@ -385,111 +402,136 @@ class UploadManager
 	function _processFile($upload_id,$pendingfile) {
 		global $USER,$CONF;
 		$ok = false;
-				//save the exif data for the loaded image
-				$exif = @exif_read_data($pendingfile,0,true); 
+		//save the exif data for the loaded image
+		$exif = @exif_read_data($pendingfile,0,true); 
+
+		if ($exif!==false)
+		{
+			$this->trySetDateFromExif($exif);
+			$this->rawExifData = $exif;
+			$strExif=serialize($exif);
+			$exif =  $this->_pendingEXIF($upload_id);
+			$f=fopen($exif, 'w');
+			if ($f)
+			{
+				fwrite($f, $strExif);
+				fclose($f);
+			}
+		}
+		$max_dimension=640;
+
+		list($width, $height, $type, $attr) = getimagesize($pendingfile);
+		
+		if ($width > $max_dimension || $height > $max_dimension) {
+		
+			//save a copy
+			$orginalfile = $this->_originalJPEG($upload_id);
+			copy($pendingfile,$orginalfile);
+			$this->hasoriginal = true;
+		
+			//resize image to required size
+			if ($ok = $this->_downsizeFile($pendingfile,$max_dimension)) {
+				//remember useful stuff
+				$this->upload_id=$upload_id;
+				$this->original_width=$width;
+				$this->original_height=$height;
+			}
+		} else {
+			$ok = true;
+			$this->upload_id=$upload_id;
+			$this->upload_width=$width;
+			$this->upload_height=$height;
+		}
+		return $ok;
+	}
+
+	function _downsizeFile($filename,$max_dimension) {
+		global $USER,$CONF;
+		
+		if (strlen($CONF['imagemagick_path'])) {
+			//try imagemagick first
+			list($width, $height, $type, $attr) = getimagesize($filename);
+
+			if ($width > $max_dimension || $height > $max_dimension) {
 				
-				if ($exif!==false)
+				//removed the unsharp as it makes some images worse - needs to be optional
+				// best fit found so far: -unsharp 0x1+0.8+0.1 -blur 0x.1
+				$cmd = sprintf ("\"%smogrify\" -resize %ldx%ld -quality 87 -strip jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $filename);
+
+				passthru ($cmd);
+
+				list($width, $height, $type, $attr) = getimagesize($filename);
+			}
+
+			if ($width && $height && $width <= $max_dimension && $height <= $max_dimension) {
+				//check it did actully work
+
+				$this->upload_width=$width;
+				$this->upload_height=$height;
+				$ok=true;
+			}
+		} 
+
+		if (!$ok) {
+			//generate a resized image
+			$uploadimg = @imagecreatefromjpeg ($filename); 
+			if ($uploadimg)
+			{
+				$srcw=imagesx($uploadimg);
+				$srch=imagesy($uploadimg);
+
+
+				if (($srcw>$max_dimension) || ($srch>$max_dimension))
 				{
-					$this->trySetDateFromExif($exif);
-					$this->rawExifData = $exif;
-					$strExif=serialize($exif);
-					$exif =  $this->_pendingEXIF($upload_id);
-					$f=fopen($exif, 'w');
-					if ($f)
+					//figure out size of image we'll keep
+					if ($srcw>$srch)
 					{
-						fwrite($f, $strExif);
-						fclose($f);
-					}
-				}
-				$max_dimension=640;
-				
-				if (strlen($CONF['imagemagick_path'])) {
-					//try imagemagick first
-					list($width, $height, $type, $attr) = getimagesize($pendingfile);
-				
-					if ($width > $max_dimension || $height > $max_dimension) {
-
-						//removed the unsharp as it makes some images worse - needs to be optional
-						// best fit found so far: -unsharp 0x1+0.8+0.1 -blur 0x.1
-						$cmd = sprintf ("\"%smogrify\" -resize %ldx%ld -quality 87 -strip jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $pendingfile);
-
-						passthru ($cmd);
-						
-						list($width, $height, $type, $attr) = getimagesize($pendingfile);
-					}
-					
-					if ($width && $height && $width <= $max_dimension && $height <= $max_dimension) {
-						//check it did actully work
-					
-						//remember useful stuff
-						$this->upload_id=$upload_id;
-						$this->upload_width=$width;
-						$this->upload_height=$height;
-						$ok=true;
-					}
-				} 
-				
-				if (!$ok) {
-					//generate a resized image
-					$uploadimg = @imagecreatefromjpeg ($pendingfile); 
-					if ($uploadimg)
-					{
-						$srcw=imagesx($uploadimg);
-						$srch=imagesy($uploadimg);
-
-						
-						if (($srcw>$max_dimension) || ($srch>$max_dimension))
-						{
-							//figure out size of image we'll keep
-							if ($srcw>$srch)
-							{
-								//landscape
-								$destw=$max_dimension;
-								$desth=round(($destw * $srch)/$srcw);
-							}
-							else
-							{
-								//portrait
-								$desth=$max_dimension;
-								$destw=round(($desth * $srcw)/$srch);
-							}
-
-
-							$resized = imagecreatetruecolor($destw, $desth);
-							imagecopyresampled($resized, $uploadimg, 0, 0, 0, 0, 
-										$destw,$desth, $srcw, $srch);
-
-							#require_once('geograph/image.inc.php');
-
-							#UnsharpMask($resized,100,0.5,3);
-
-							imagedestroy($uploadimg);
-
-							//overwrite the upload
-							imagejpeg ($resized, $pendingfile, 87);
-							imagedestroy($resized);
-
-						}
-						else
-						{
-							//don't need it anymore
-							imagedestroy($uploadimg);
-							$desth=$srch;
-							$destw=$srcw;
-
-						}
-
-						//remember useful stuff
-						$this->upload_id=$upload_id;
-						$this->upload_width=$destw;
-						$this->upload_height=$desth;
-						$ok=true;
+						//landscape
+						$destw=$max_dimension;
+						$desth=round(($destw * $srch)/$srcw);
 					}
 					else
 					{
-						$this->error("Unable to load image - we can only accept valid JPEG images");
+						//portrait
+						$desth=$max_dimension;
+						$destw=round(($desth * $srcw)/$srch);
 					}
+
+
+					$resized = imagecreatetruecolor($destw, $desth);
+					imagecopyresampled($resized, $uploadimg, 0, 0, 0, 0, 
+								$destw,$desth, $srcw, $srch);
+
+					#require_once('geograph/image.inc.php');
+
+					#UnsharpMask($resized,100,0.5,3);
+
+					imagedestroy($uploadimg);
+
+					//overwrite the upload
+					imagejpeg ($resized, $filename, 87);
+					imagedestroy($resized);
+
 				}
+				else
+				{
+					//don't need it anymore
+					imagedestroy($uploadimg);
+					$desth=$srch;
+					$destw=$srcw;
+
+				}
+
+				//remember useful stuff
+				$this->upload_width=$destw;
+				$this->upload_height=$desth;
+				$ok=true;
+			}
+			else
+			{
+				$this->error("Unable to load image - we can only accept valid JPEG images");
+			}
+		}
 		return $ok;
 	}
 	
@@ -607,13 +649,23 @@ class UploadManager
 		$this->db->Query($sql);
 		
 		//copy image to correct area
-		$src=$this->_pendingJPEG($this->upload_id);
+		$src=$this->_pendingJPEG($this->upload_id);		
 		
 		$image=new GridImage;
 		$image->gridimage_id = $gridimage_id;
 		$image->user_id = $USER->user_id;
 		
 		if ($ok = $image->storeImage($src)) {
+		
+			$orginalfile = $this->_originalJPEG($this->upload_id);
+			
+			if (file_exists($orginalfile) && $this->largestsize && $this->largestsize > 640) {
+				
+				$this->_downsizeFile($orginalfile,$this->largestsize);
+				
+				$ok =$image->storeOriginal($orginalfile);
+			}
+		
 			$this->cleanUp();
 		}
 		
@@ -632,13 +684,10 @@ class UploadManager
 	*/
 	function cleanUp()
 	{
-		$jpeg = $this->_pendingJPEG($this->upload_id);
-		$exif = $this->_pendingEXIF($this->upload_id);
-		@unlink($jpeg);
-		@unlink($exif);
+		@unlink($this->_pendingJPEG($this->upload_id));
+		@unlink($this->_pendingEXIF($this->upload_id));
+		@unlink($this->_originalJPEG($this->upload_id));
 	}
-		
-	
 	
 }
 

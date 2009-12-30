@@ -569,7 +569,7 @@ class GridImage
 				$db=&$this->_getDB(true); 
 				
 				$this->snippets = $db->getAll("SELECT snippet.* FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) WHERE gridimage_id = $gid AND enabled = 1 ORDER BY (comment != ''),gridimage_snippet.created");
-				$memcache->name_set('sd',$mkey,$this->snippets,$memcache->compress,$memcache->period_long);
+				$memcache->name_set('sd',$mkey,$this->snippets,$memcache->compress,$memcache->period_med);
 			}
 		} else {
 			//even without memcache we can use adodb caching - but then dont get invalidation
@@ -721,6 +721,63 @@ class GridImage
 	}
 	
 	/**
+	* given a temporary file, transfer to final destination for the image
+	*/
+	function storeOriginal($srcfile, $movefile=false)
+	{
+		$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
+		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
+		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
+		$abcdef=sprintf("%06d", $this->gridimage_id);
+		$hash=$this->_getAntiLeechHash();
+
+		$base=$_SERVER['DOCUMENT_ROOT'].'/geophotos';
+		if (!is_dir("$base/$yz"))
+			mkdir("$base/$yz");
+		if (!is_dir("$base/$yz/$ab"))
+			mkdir("$base/$yz/$ab");
+		if (!is_dir("$base/$yz/$ab/$cd"))
+			mkdir("$base/$yz/$ab/$cd");
+
+		$dest="$base/$yz/$ab/$cd/{$abcdef}_{$hash}_original.jpg";
+		if ($movefile)
+			return @rename($srcfile, $dest);
+		else
+			return @copy($srcfile, $dest);
+	}
+	
+	function _getOriginalpath($check_exists=true,$returntotalpath = false)
+	{
+		global $CONF;
+
+		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
+		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
+		$abcdef=sprintf("%06d", $this->gridimage_id);
+		$hash=$this->_getAntiLeechHash();
+		if ($this->gridimage_id<1000000) {
+			$fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}_original.jpg";
+		} else {
+			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
+			$fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_original.jpg";
+		}
+
+		if (empty($check_exists)) {
+			if ($returntotalpath)
+				$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
+
+			return $fullpath;
+		}
+
+		$ok=file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath);
+		
+		if (!$ok)
+			$fullpath="/photos/error.jpg";
+		
+		return $fullpath;
+	}
+	
+	
+	/**
 	* calculate the path to the full size photo image
 	* if you specify true for check_exists parameter (the default), the
 	* function will verify the file exists and returnt he path to an
@@ -833,21 +890,34 @@ class GridImage
 				$db=&$this->_getDB();
 
 				$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
-				$size = $db->getRow("select width,height from gridimage_size where gridimage_id = {$this->gridimage_id}");
+				$size = $db->getRow("select width,height,0,0,original_width,original_height from gridimage_size where gridimage_id = {$this->gridimage_id}");
 				$db->SetFetchMode($prev_fetch_mode);
 				if ($size) {
 					$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
+					$this->original_width = $size[4];
+					$this->original_height = $size[5];
 				} else {
 					$fullpath = $this->_getFullpath(true); //will fetch the file if needbe
 					
 					$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
-
-					$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]}");
+					
+					$origpath = $this->_getOriginalpath(true);
+					if ($origpath!="/photos/error.jpg") {
+						$osize=getimagesize($_SERVER['DOCUMENT_ROOT'].$origpath);
+						$this->original_width = $size[4] = $osize[0];
+						$this->original_height = $size[5] = $osize[1];
+					
+						$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]},original_width={$osize[0]}, original_height={$osize[1]}");
+					} else {
+						$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]}");
+					}
 				}
 				//fails quickly if not using memcached!
 				$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long);
 			}
 			$this->cached_size = $size;
+			$this->original_width = $size[4];
+			$this->original_height = $size[5];
 		} else {
 			$size = array();
 			$size[3] = '';
@@ -1161,6 +1231,7 @@ class GridImage
 		$bestfit=isset($params['bestfit'])?$params['bestfit']:true;
 		$bevel=isset($params['bevel'])?$params['bevel']:true;
 		$unsharp=isset($params['unsharp'])?$params['unsharp']:true;
+		$source=isset($params['source'])?$params['source']:'';
 		
 		
 		
@@ -1195,31 +1266,7 @@ class GridImage
 		$mkey = "{$this->gridimage_id}:{$maxw}x{$maxh}";
 		//fails quickly if not using memcached!
 		$size =& $memcache->name_get('is',$mkey);
-		if (false && !$size && file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath)) {
-			$db=&$this->_getDB();
-			$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
-			$size = $db->getRow("select width,height from gridimage_size where gridimage_id = {$this->gridimage_id}");
-			$db->SetFetchMode($prev_fetch_mode);
-
-			if ($size) {
-				//figure out size of image we'll keep
-				if ($size[0]>$size[1])
-				{
-					//landscape
-					$destw=$maxw;
-					$desth=round(($destw * $size[1])/$size[0]);
-				}
-				else
-				{
-					//portrait
-					$desth=$maxh;
-					$destw=round(($desth * $size[0])/$size[1]);
-				}
-				$size[0] = $destw; 
-				$size[1] = $desth;
-				$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
-			}
-		}
+		
 		if ($size) {
 			$return=array();
 			$return['url']=$thumbpath;
@@ -1245,8 +1292,12 @@ class GridImage
 
 		if (!file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))
 		{
-			//get path to fullsize image (will try to fetch it from fetch_on_demand)
-			$fullpath=$this->_getFullpath();
+			if ($source == 'original') {
+				$fullpath=$this->_getOriginalpath();
+			} else {
+				//get path to fullsize image (will try to fetch it from fetch_on_demand)
+				$fullpath=$this->_getFullpath();
+			}
 			
 			if ($fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			{
@@ -1482,6 +1533,22 @@ class GridImage
 		
 		return $resized['html'];
 	}	
+
+	/**
+	* 
+	*/
+	function getImageFromOriginal($maxw, $maxh)
+	{
+		$params['maxw']=$maxw;
+		$params['maxh']=$maxh;
+		$params['bevel']=false;
+		$params['unsharp']=false;
+		$params['source']='original';
+		$resized=$this->_getResized($params);
+		
+		return $resized['url'];
+	}	
+
 	
 	/**
 	* Locks this image so its not shown to other moderators
