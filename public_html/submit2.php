@@ -52,6 +52,10 @@ if (isset($_FILES['jpeg_exif']))
 			{
 				$smarty->assign('upload_id', $uploadmanager->upload_id);
 				$smarty->assign('transfer_id', $uploadmanager->upload_id);
+				if ($uploadmanager->hasoriginal) {
+					$smarty->assign('original_width', $uploadmanager->original_width);
+					$smarty->assign('original_height', $uploadmanager->original_height);
+				}
 				
 				$smarty->assign('preview_url', "/submit.php?preview=".$uploadmanager->upload_id);
 				$smarty->assign('preview_width', $uploadmanager->upload_width);
@@ -175,6 +179,7 @@ if (isset($_FILES['jpeg_exif']))
 			$uploadmanager->setUse6fig(stripslashes($_POST['use6fig'][$key]));
 			$uploadmanager->setTaken($_POST['imagetaken'][$key]);
 			$uploadmanager->setTitle($_POST['title'][$key]);
+			$uploadmanager->setLargestSize($_POST['largestsize'][$key]);
 			if ($_POST['comment'][$key] != "comment[$key]") {
 				//bug? in Picasa sends the name in the value if blank, useful! (but only seems to apply to textareas)
 				$uploadmanager->setComment($_POST['comment'][$key]);
