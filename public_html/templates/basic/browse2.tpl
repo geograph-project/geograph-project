@@ -187,11 +187,9 @@
 	<div class="rastermap" style="width:{$rastermap->width}px;position:relative;font-size:0.8em">
 	{$rastermap->getImageTag($gridrefraw)}
 	{if $rastermap->getFootNote()}
-	<div class="interestBox" style="margin-top:3px;margin-left:2px;padding:1px;"><small>{$rastermap->getFootNote()}</small>
+	<div class="interestBox" style="margin-top:3px;margin-left:2px;padding:1px;"><small>{$rastermap->getFootNote()}</small></div>
+	{if $square->reference_index == 1}<br/><a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}&amp;centi=1">Open <b>Interactive OS Map Overlay</b></a>{/if}
 	
-	{if $square->reference_index == 1}<br/><a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}&amp;centi=1">Open <b>Interactive OS Map Overlay</b></a><sup style="color:red">New!</sup>{/if}
-	
-	</div>
 	{/if}
 	{$rastermap->getScriptTag()}
 	</div>

@@ -48,7 +48,9 @@ if (isset($_REQUEST['id']))
 		header("Status: 410 Gone");
 		$template = "static_404.tpl";
 	} else {
-
+		
+		$style = $USER->getStyle();
+		$smarty->assign('maincontentclass', 'content_photo'.$style);
 	}
 	$smarty->assign_by_ref('image', $image);
 } else {

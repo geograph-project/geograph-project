@@ -16,17 +16,21 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 	<div style="float:left;width:213px">
 		<a title="view full size image" href="/photo/{$image->gridimage_id}">
 		{$image->getThumbnail(213,160)}
-		</a><div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a> for <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></div>
+		</a>
 	</div>
 	<div style="float:left;padding-left:20px; width:400px;">
+		<div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a> for <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></div>
 		<span style="font-size:0.7em">{$image->comment|escape:'html'|nl2br|geographlinks|default:"<tt>no description for this image</tt>"}</span><br/>
 		<br/>
-		<small style="background-color:yellow"><b>&nbsp; &copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
+		<small><b>&nbsp; &copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
 		licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a></b></small>
 	</div>
 	
 	<br style="clear:both"/>
 </div>
+
+
+<div style="padding:20px">
 
 <h3>The following sizes of images are available for download:</h3>
 <p>Note: all sizes are <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licenced</a>, and any reuse needs to credit <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a>.</p>
@@ -37,10 +41,13 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 
 {assign var="preview_width" value=$size.0}
 {assign var="preview_height" value=$size.1}
-{assign var="original_width" value=$image->original_width}
-{assign var="original_height" value=$image->original_height}
-{math equation="o/180" o=$original_width assign="ratio"}
-
+{if $image->original_width}
+	{assign var="original_width" value=$image->original_width}
+	{assign var="original_height" value=$image->original_height}
+	{math equation="o/180" o=$original_width assign="ratio"}
+{else}
+	{assign var="ratio" value=2}
+{/if}
 
 			<table style="font-weight:bold" cellspacing="0" border="1" bordercolor="#cccccc" cellpadding="10">
 				<tr>
@@ -101,6 +108,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 
 <br/><br/>
 Return to <a href="/photo/{$image->gridimage_id}">photo page</a> or find <a href="/reuse.php?id={$image->gridimage_id}">more ways to use image</a>
+</div>
 
 {/dynamic}
 {include file="_std_end.tpl"}
