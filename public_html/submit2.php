@@ -125,7 +125,7 @@ if (isset($_FILES['jpeg_exif']))
 					$smarty->assign('imagetaken', $uploadmanager->exifdate);
 				}
 				
-				
+				$smarty->assign('filename',basename(str_replace("\\",'/',$_FILES['jpeg_exif']['name'])));
 
 				
 				$smarty->assign('success', 1);
