@@ -80,7 +80,7 @@
 				{/if}
 				</tr>
 			</table>
-			Previews shown at <b>{math equation="round(100/r)" r=$ratio}</b>% of actual size - NOT representive of the final quality.		
+			Previews shown at <b>{math equation="round(100/r)" r=$ratio}</b>% of actual size - NOT representive of the final quality. Even if choose a larger size, we will still make the smaller sizes available too.
 			
 			
 		{elseif $preview_url}
