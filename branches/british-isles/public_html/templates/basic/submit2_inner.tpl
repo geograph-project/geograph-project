@@ -142,7 +142,7 @@
 	{/if}
 	{if $preview_url}
 		{literal}
-		AttachEvent(window,'load',function() { window.parent.showPreview({/literal}'{$preview_url}',{$preview_width},{$preview_height}{literal}) },false);
+		AttachEvent(window,'load',function() { window.parent.showPreview({/literal}'{$preview_url}',{$preview_width},{$preview_height},'{$filename|escape:'javascript'}'{literal}) },false);
 		{/literal}
 	{/if}
 {/if}
