@@ -58,7 +58,7 @@ if (isset($_REQUEST['id']))
 				default: $filepath = $image->_getFullpath();
 			} 
 			$filename = basename($filepath);
-			$filename = preg_replace('/_\w+(\.jpg)/'," by {$image->realname}\$1",$filename);
+			$filename = "geograph-".preg_replace('/_\w+(\.jpg)/'," by {$image->realname}\$1",$filename);
 			$filename = preg_replace('/ /','-',trim($filename));
 			$filename = preg_replace('/[^\w-\.,]+/','',$filename);
 			$lastmod = filemtime($_SERVER['DOCUMENT_ROOT'].$filepath);

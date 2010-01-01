@@ -32,8 +32,8 @@
 			<table style="font-weight:bold" cellspacing="0" border="1" bordercolor="#cccccc">
 				<tr>
 				
-					<td valign="top"><input type="radio" name="largestsize" checked value="640" id="large640"/> {$preview_width} x {$preview_height}<br/><small style="color:red">(minimum req)</small><br/>
-					<label for="large640"><img src="{$preview_url}" width="{$preview_width/$ratio}" height="{$preview_height/$ratio}"/></label>
+					<td valign="top"><input type="radio" name="largestsize" checked value="640" id="large640" onclick="selectImage(this)"/> {$preview_width} x {$preview_height}<br/><small style="color:red">(minimum req)</small><br/>
+					<label for="large640"><img src="{$preview_url}" width="{$preview_width/$ratio}" height="{$preview_height/$ratio}" name="large640" style="border:2px solid blue"/></label>
 					{assign var="last_width" value=$preview_width} 
 					{assign var="last_height" value=$preview_height} 
 					</td>
@@ -48,8 +48,8 @@
 						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
 					{/if}
 					
-					<td valign="top"><input type="radio" name="largestsize" value="800" id="large800"/> {$resized_width} x {$resized_height}<br/><br/>
-					<label for="large800"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}"/></label>
+					<td valign="top"><input type="radio" name="largestsize" value="800" id="large800" onclick="selectImage(this)"/> {$resized_width} x {$resized_height}<br/><br/>
+					<label for="large800"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}" name="large800" style="border:2px solid white"/></label>
 					{assign var="last_width" value=$resized_width}
 					{assign var="last_height" value=$resized_height}
 					</td>
@@ -65,8 +65,8 @@
 						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
 					{/if}
 					
-					<td valign="top"><input type="radio" name="largestsize" value="1024" id="large1024"/> {$resized_width} x {$resized_height}<br/><br/>
-					<label for="large1024"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}"/></label>
+					<td valign="top"><input type="radio" name="largestsize" value="1024" id="large1024" onclick="selectImage(this)"/> {$resized_width} x {$resized_height}<br/><br/>
+					<label for="large1024"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}" name="large1024" style="border:2px solid white"/></label>
 					{assign var="last_width" value=$resized_width}
 					{assign var="last_height" value=$resized_height}
 					</td>
@@ -74,8 +74,8 @@
 				
 				{if $original_width > $last_width || $original_height > $last_height}
 
-					<td valign="top"><input type="radio" name="largestsize" value="8192" id="large8192"/> {$original_width} x {$original_height}<br/><br/>
-					<label for="large8192"><img src="{$preview_url}" width="{$original_width/$ratio}" height="{$original_height/$ratio}"/></label>
+					<td valign="top"><input type="radio" name="largestsize" value="8192" id="large8192" onclick="selectImage(this)"/> {$original_width} x {$original_height}<br/><br/>
+					<label for="large8192"><img src="{$preview_url}" width="{$original_width/$ratio}" height="{$original_height/$ratio}" name="large8192" style="border:2px solid white"/></label>
 					</td>
 				{/if}
 				</tr>
@@ -148,6 +148,18 @@
 {/if}
 	{literal}
 		AttachEvent(window,'load',function() { setTimeout("setupTheForm()",100); },false);
+
+
+function selectImage(that) {
+	for(q=0;q<document.images.length;q++) {
+		if (document.images[q].name && document.images[q].name == that.id) {
+			document.images[q].style.border='2px solid blue';
+		} else {
+			document.images[q].style.border='2px solid white';
+		}
+	}
+	return true;
+}
 	{/literal}
 	
 {/dynamic}

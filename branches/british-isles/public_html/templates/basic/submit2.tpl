@@ -123,7 +123,8 @@ function doneStep(step,dontclose) {
 	}
 }
 function showPreview(url,width,height) {
-	document.getElementById('previewInner').innerHTML = '<img src="'+url+'" width="'+(width/2)+'" height="'+(height/2)+'" id="imgPreview"/>';
+	height2=Math.round((148 * height)/width);
+	document.getElementById('previewInner').innerHTML = '<img src="'+url+'" width="148" height="'+height2+'" id="imgPreview" onmouseover="this.height='+height+';this.width='+width+'" onmouseout="this.height='+height2+';this.width=148" />';
 	document.getElementById('hidePreview').style.display='';
 }
 function scalePreview(scale) {
@@ -173,11 +174,6 @@ AttachEvent(window,'load',readHash,false);
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php">Submission Process</a> should be functional with it.</div>
 	</noscript>
 	
-	<div style="float:right;position:relative;display:none;background-color:silver;padding:2px" id="hidePreview">
-	<a href="javascript:void(show_tree('Preview'));">Hide Preview</a> Make: <a href="javascript:void(scalePreview(2));">Bigger</a>/<a href="javascript:void(scalePreview(0.5));">Smaller</a>
-	<div id="previewInner"></div></div>
-	<div style="float:right;position:relative;display:none" id="showPreview"><a href="javascript:void(hide_tree('Preview'));">Show Preview</a></div>
-	
 	<p><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Warning" width="25" height="22" align="left" style="margin-right:10px"/> This is a new experimental submission process, try it out if you like, but you might prefer to use the <a href="/submit.php">original submission method</a>.</p>
 	
 	<p>Complete the following steps in any order (and continue onto the following steps while the photo is still uploading!). 
@@ -189,7 +185,7 @@ AttachEvent(window,'load',readHash,false);
 {dynamic}
 	<p style="background-color:#eeeeee;padding:2px"><b>Options</b>: (close and reopen step to take effect)<br/>
 	{if !$user->use_autocomplete}
-	<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Use auto-complete text entry for image category selection in Step 4. <a href="/profile.php?edit=1" target="_blank">Change permanently</a></label> <br/>
+	<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Use auto-complete text entry for image category selection in Step 3. <a href="/profile.php?edit=1" target="_blank">Change permanently</a></label> <br/>
 	{/if}
 	<input type="checkbox" name="service" id="service_google" value="Google"/> <label for="service_google">Use Google Mapping in Step 2 - even for Great Britain</label></p>
 
@@ -331,5 +327,10 @@ AttachEvent(window,'load',readHash,false);
 	<input type="checkbox" name="spelling"/>Check Spelling
 	<sup style="color:red">Experimental!</sup>
 	</form>
+
+	<div style="position:fixed;left:10px;bottom:10px;display:none;background-color:silver;padding:2px" id="hidePreview">
+	<div id="previewInner"></div></div>
+	
+	
 
 {include file="_std_end.tpl"}
