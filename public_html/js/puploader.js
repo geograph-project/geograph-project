@@ -67,6 +67,9 @@
 					AttachEvent(ele,'keyup',parentUpdateVariables,false);
 					AttachEvent(ele,'paste',parentUpdateVariables,false);
 					AttachEvent(ele,'input',parentUpdateVariables,false);
+					if (ele.disabled) {
+						ele.disabled = false;
+					}
 				}
 			}
 		}
