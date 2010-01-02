@@ -1,4 +1,4 @@
-{if $smarty.server.REQUEST_METHOD == 'GET' && $smarty_template != 'view.tpl' && $smarty_template != 'editimage.tpl'}
+{if $smarty.server.REQUEST_METHOD == 'GET' && $smarty_template != 'view.tpl' && $smarty_template != 'editimage.tpl' && $smarty_template != 'tickets.tpl'}
 <div id="hidefeed" style="text-align:center"><a href="javascript:void(show_tree('feed'));">&middot; Give Feedback &middot;</a></div>
 <div id="showfeed" class="interestBox" style="display:none"><form method="post" action="/stuff/feedback.php">
 <label for="feedback_comments">What do you like, dislike or otherwise want to comment on about <b>this</b> page:</label><br/>
