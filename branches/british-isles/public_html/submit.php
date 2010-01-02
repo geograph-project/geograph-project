@@ -22,14 +22,17 @@
  */
 
 require_once('geograph/global.inc.php');
-require_once('geograph/gridimage.class.php');
-require_once('geograph/gridsquare.class.php');
+
+if (isset($_GET['preview'])) {
+	session_cache_limiter('none');
+} else {
+	require_once('geograph/gridimage.class.php');
+	require_once('geograph/gridsquare.class.php');
+}
+
 require_once('geograph/uploadmanager.class.php');
 
 init_session();
-
-list($usec, $sec) = explode(' ',microtime());
-$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
 
 $uploadmanager=new UploadManager;
 
@@ -39,6 +42,9 @@ if (isset($_GET['preview']))
 	$uploadmanager->outputPreviewImage($_GET['preview']);
 	exit;
 }
+
+list($usec, $sec) = explode(' ',microtime());
+$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
 
 $square=new GridSquare;
 $smarty = new GeographPage;
