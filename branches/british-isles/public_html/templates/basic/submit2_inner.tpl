@@ -72,6 +72,23 @@
 					</td>
 				{/if}
 				
+				{if $original_width > 1600 || $original_height > 1600}
+					
+					{if $original_width>$original_height}
+						{assign var="resized_width" value=1600}
+						{math assign="resized_height" equation="round(dw*sh/sw)" dw=$resized_width sh=$original_height sw=$original_width}
+					{else}
+						{assign var="resized_height" value=1600}
+						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
+					{/if}
+					
+					<td valign="top"><input type="radio" name="largestsize" value="1600" id="large1600" onclick="selectImage(this)"/> {$resized_width} x {$resized_height}<br/><br/>
+					<label for="large1600"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}" name="large1600" style="border:2px solid white"/></label>
+					{assign var="last_width" value=$resized_width}
+					{assign var="last_height" value=$resized_height}
+					</td>
+				{/if}
+				
 				{if $original_width > $last_width || $original_height > $last_height}
 
 					<td valign="top"><input type="radio" name="largestsize" value="8192" id="large8192" onclick="selectImage(this)"/> {$original_width} x {$original_height}<br/><br/>
